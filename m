@@ -2,159 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD22722A6FE
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 07:40:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C426E22A705
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 07:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgGWFkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 01:40:53 -0400
-Received: from mail-eopbgr20074.outbound.protection.outlook.com ([40.107.2.74]:43119
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725536AbgGWFkw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Jul 2020 01:40:52 -0400
+        id S1726010AbgGWFoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 01:44:08 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:39696 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725536AbgGWFoH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 01:44:07 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06N5ZBp5016187;
+        Wed, 22 Jul 2020 22:43:54 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=ceVyK1nspjFtSTffP+dKK9w1ePTFuOoOfW+MEHkXULs=;
+ b=Oc1vTfHmrWaNf/YvsR2xZ+ELKAXpxh7w8CwEverxjhbMeIBvwGqJSqLG6vN/51eTwhiy
+ VWMAPWNgJNoxZc/n3yC6aUcPuKvgB3CTkTX2dURAv1O9NLXk5emIrWGqYLuWdKZA1yAE
+ b3ccfwfyTl81Yz8g2P31EY8N2YFibaw3xgg= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 32etbg2jwb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 22 Jul 2020 22:43:54 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 22 Jul 2020 22:43:53 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jSmH1szUoLQ4zeuZTaUqMHFI53nELhNVmgERYr3mEuDT52TH8tYnsjnCMP0502IslY/NacXFcx+h+3VA/f17qsOkLoarIAZ190mpl4NeYSz3pKlF/zucEkZK/MHiuzRucoP9q/EsTot2Ty98FQP78KOcONo7YUlBW6GV44qj846lIUBxkwRJnY4FUYceBx+ZQDZM3fqVcOhRqSwI9qFuP9e9xxi/5S4MSoWVecYHCsyeo/R/INAmZHsI38dCTHwh03x2IdgG/KoZRPrGmeJrcPeqx6S6lQGgeEzIRjj9yMsEBE1mM1/Jv3CiLT8Xym7JtZ3yRCNA3aujJokgSGvOIQ==
+ b=HdsaZGVlE6luRnu1dYIpfconO/JsLYvtYRLdep0XATgnL05b61Lha5RMzVkIh/osxLrNfiBTBJJDXpa823R0OaESjn8Y0d37BIrySD7Z1yEeUvpHeNbp9ge4KopAyoNeer+o9cnTNXeRYehcWVsl3U/uJpxlwseCAGfvmwabBeEGKsDdUc5qMu7zGEyx+gij/MHLEBaEUQmVnFa+J8gVouzhaYUvMrQpaN8t34Xe9R3jMFWTl5TKg16LdnCJELaeoTJDqFbfCsQxPr0KMys6NRAJIqFEYbMnL3vCixIfvDoRYUX3uc1S2/EcD6Hfpru1g7EIqpdSrMnnlv51L/vQ1Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eaS/TlDo7cqi4FbDalwnmowouBaF73RbMKLUTJpPgcM=;
- b=RHZyHb8yQTJWZyWE/++6Q/79KwGyostRlDsTFZBXBkLhkPDZtGyMAZX1oIN3uUJ+fSxVHW2xVXhrLgxwl6HaLBW7l73HrRKK1w8HzEQf668r0sbBMJ0hdOXZUkYxBigitA01QQYpfgJm6h6weKbI3zV1OhB8fliejd2Cjhvz9keXpCquNYy/IpICKwyaV1uvQypR4eyQtavuHoTXp5kBlrqRQbftnjjO7lXrQGhisTinHXm8T2t2Uk2Zt+ApydXnXmV5xT4iX4+CTGAZ5ihrLQSJFY1NtCEJ7StbMEgtr7c9g1G6rR5szjyZ84osYo+eG/0dAumDCJYuYc6jzKLA+g==
+ bh=ceVyK1nspjFtSTffP+dKK9w1ePTFuOoOfW+MEHkXULs=;
+ b=cMTd4vyb/WiBGajDheghcDc+SM5Xn2MKuefHPUg5RQhNSFQilVoamjnJaapg6i2EpiZ1mEXvmrgd/HX9t06tOp5nPGgFOqK5uzgS1Tc9NRtFfmU/xJ30f0q9/6r3zA6fHd0cJWPJ+AOrIJ5jVRuMBZc8WXZ4LXDnk5eoms5kQyuKfN5qSXQ9crdUIaJtaWaRy4l67AHrDSYLsHMKelObr7yyWD3TqUOfd81WJM5J1qUSjNVcAVpbVB3wfhqQYMxUzlTgXDPTeNQtILM9YSJRZ/am4K/z/JVZq/yrHtNh7mJmC4qrDQA58fINwD6KbiK37kilbsJr45NokV3Wn+ujnQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eaS/TlDo7cqi4FbDalwnmowouBaF73RbMKLUTJpPgcM=;
- b=bImpdVRp/VzcFN4ysZDyAbWMJoYyYtBqk8JvB1X5V26CBHAeo9hKHbkbJTyY1pNrMa9vO6O0FcQqOH5e0G13q3rE97iTZpWzyvfNg2E6FH88q2L4OANMik1ademJaeXgRAWGoIbJX5Sq1M+CA7VhSvLarLtqzulh7TcaJcOb9O8=
-Received: from AM6PR04MB3976.eurprd04.prod.outlook.com (2603:10a6:209:3f::17)
- by AM6PR04MB5079.eurprd04.prod.outlook.com (2603:10a6:20b:4::24) with
+ bh=ceVyK1nspjFtSTffP+dKK9w1ePTFuOoOfW+MEHkXULs=;
+ b=UJkhJ8H69Q+vLTTa1He4KOR99lkT03XoL/QxFMlIgu/LP3me/ScTOL2PRc6yXElS55xLg0+GdNwQmHro54mntcPnGhVmIZAkY0x6vVKt0OhQiQQAoIEDaDHrGQYyygeLV5ciHmuiGW+s8/JqfbF/kKkZlVgOqq5qD4u+yWufgYU=
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.24; Thu, 23 Jul
- 2020 05:40:48 +0000
-Received: from AM6PR04MB3976.eurprd04.prod.outlook.com
- ([fe80::51e7:c810:fec7:6943]) by AM6PR04MB3976.eurprd04.prod.outlook.com
- ([fe80::51e7:c810:fec7:6943%3]) with mapi id 15.20.3174.030; Thu, 23 Jul 2020
- 05:40:48 +0000
-From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-CC:     "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "paulus@samba.org" <paulus@samba.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Radu-andrei Bulie <radu-andrei.bulie@nxp.com>,
-        "fido_max@inbox.ru" <fido_max@inbox.ru>
-Subject: RE: [PATCH devicetree 3/4] powerpc: dts: t1040rdb: put SGMII PHY
- under &mdio0 label
-Thread-Topic: [PATCH devicetree 3/4] powerpc: dts: t1040rdb: put SGMII PHY
- under &mdio0 label
-Thread-Index: AQHWYEz+LgZibInI10i2/O6ewv0daakUplWQ
-Date:   Thu, 23 Jul 2020 05:40:48 +0000
-Message-ID: <AM6PR04MB39763CA66048BD4F221D0DE4EC760@AM6PR04MB3976.eurprd04.prod.outlook.com>
-References: <20200722172422.2590489-1-olteanv@gmail.com>
- <20200722172422.2590489-4-olteanv@gmail.com>
-In-Reply-To: <20200722172422.2590489-4-olteanv@gmail.com>
-Accept-Language: en-US
+ 2020 05:43:38 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3216.021; Thu, 23 Jul 2020
+ 05:43:38 +0000
+Subject: Re: [PATCH bpf-next v2 01/13] bpf: refactor bpf_iter_reg to have
+ separate seq_info member
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>
+References: <20200722184945.3777103-1-yhs@fb.com>
+ <20200722184945.3777163-1-yhs@fb.com>
+ <20200723053840.tnqzumivvtjwy3tv@ast-mbp.dhcp.thefacebook.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <3300d901-122d-3954-ef51-ea7b6df8ee48@fb.com>
+Date:   Wed, 22 Jul 2020 22:43:36 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.10.0
+In-Reply-To: <20200723053840.tnqzumivvtjwy3tv@ast-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=oss.nxp.com;
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [5.14.204.117]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 30811635-b75a-46a0-1b37-08d82ecaf405
-x-ms-traffictypediagnostic: AM6PR04MB5079:
-x-ms-exchange-sharedmailbox-routingagent-processed: True
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR04MB5079AD348F569C950C4E48B8AD760@AM6PR04MB5079.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /Bv17ujXPqbg74Cv8yFInypvDL1dKa09B0vWwYrgJNpBwuDc14pPIeWHnURs+korboP21mBrOgjuxrFxZyiqqMz12riMx/m1/jp1gdUhb4JL7lRw/PQAzcsqPwRINAgUMamZGpeEaZeQW3ifQ/TB7zczvZexmi7o+z0TQeoNKhbdOWeai6FFcTeUOgH9n7VS3hHRhy4FcDyWZ2473qVQnrnyHPR8OA2goMYjJpntLgd/aB/d9mCFuVBliJ2egIm0OIibWkjaKJ80LCDLxAxJHbEQnoOrgZgmSDhiUVBPxfJnzx9UraWv1RCI2bYAH54+
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB3976.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(396003)(39860400002)(366004)(136003)(186003)(8936002)(64756008)(66476007)(478600001)(83380400001)(66556008)(2906002)(5660300002)(66446008)(7696005)(7416002)(316002)(33656002)(76116006)(52536014)(8676002)(26005)(110136005)(54906003)(9686003)(86362001)(71200400001)(53546011)(4326008)(6506007)(66946007)(55016002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: JYal8yjGjhmUpyCL23LXjXcejFQTZ8ako1F/2UL7OOQg/n/HQ2Ew+kIZrKc0/MVxlaw5RSFcDC9XKfxDaCzl4rs6U/2bRo404kTjj+HoXI2r5Oj4++WH94xQdtyH3WnNtUbjS7G99jDnDNHbW6742skjsSM2MfI1kBw9/uFqOCEMH9RdX40JW60hEBY2H0lgkxJisxllhhQxGUneAK7mofLwqPDnz2Oe4gz/NF4KoR+ifqUAysSbbMREgRKQg9sNMGUOmw+kWKak1bL4JtMoxAY7Isi2xrVYj8ohi58kojpQmB4pCK7TQ1UtpQAus3pLSwvnkfCy3ndiP7V9rJg5uvhn10pVtb8gZqT6ttMOseixs+tJDr8YDlExMR2SFCkdbPLRoIuLEKUUskV2oUUHY9kph8L6mQogLDCK3ZrYgZl+D9VTA9m8IauTqDNMyxcgi6uGZM5ox09AWHeCFoQEWOJfa7kPKv5kg1/5EriKLsQ=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY5PR13CA0014.namprd13.prod.outlook.com
+ (2603:10b6:a03:180::27) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
-X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c1::1888] (2620:10d:c090:400::5:eebd) by BY5PR13CA0014.namprd13.prod.outlook.com (2603:10b6:a03:180::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.17 via Frontend Transport; Thu, 23 Jul 2020 05:43:37 +0000
+X-Originating-IP: [2620:10d:c090:400::5:eebd]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8c8980d1-113a-4283-3b92-08d82ecb58bb
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2999:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB299919F8D32B63C36511187AD3760@BYAPR15MB2999.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:1443;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uIwM/EApQfeK6xGn2KDnQ/FmtU6QxqzaQeWQDg41QuzDW8mWV6rWQg4Sv+64r6wuE5CPrurKSqUYOEVNs8yqis/he5ww38ProaEwhP83s3zZBse8ur0mrk/fSD70PSIb/TH21ii7ObO3GkVABET8y+dTd0gqzqeV37ZdfNLDr39VjSxlpJlTt/9JDVax04FXdNOuOw5oRoMtPlGRzh5+wB04+5x4MUfScx01KsiyuDzZV79zDOkoaNzIohKlbwokOgAtWVMNkgmZZVqmIQQDBL9l7+x7HR6u8yCt4LnDamLqTEKu0Z553ul/yULK5KLup1TKJc9P62fkNzaSseAVfg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(39860400002)(366004)(136003)(376002)(346002)(52116002)(31686004)(54906003)(316002)(2616005)(31696002)(2906002)(478600001)(86362001)(4326008)(66476007)(66556008)(66946007)(36756003)(6486002)(53546011)(16526019)(186003)(8936002)(8676002)(6916009)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: ANSbk8TKR3kSSMzhLn1UtcqdkMTHPc/UN5ak2zbIPnEbzZg33aS0FiU7Kt0oHxU637QhSBI4JuayoXQ91/4s8+Hz9jW4xhw7N/qWQUhW7JLwpsZLbyFxhideRUTix1ULjjK6nHYdcQTh6bAiqswa5XmNrdwAkBAukHwj3ANFQHzEqQW8Cl9lAErzY3lHvETG+e5gNXPyZX4NDYNYDx8xSdsqXuJVCupDaU6kWDyjUaGZnGU8bd53lUFgVC+fvX/PyvpvPgNYgBj0+rOoJ6hGXrLXAtqSXc2bsYFXnDqY416O8+TewdSK5SQ2ZkL7vdlSowTW+55b8JPp9UwnYPOR3OHEgJros+IE/qy9n9E96/Gs/RugJ/DcS2gNJzvQOU2kMu+J9zF5NhIoGFic19s94hDlqp9Pnywd9fHeFFUWX0jI2ha8yfzR1kHwE/6hfzuO/taZU+oxChRA9/P5dmtjg9ZxmMY0TPJT8iEBfr5hLHpIga7TSzVHQc+X7R72RqxkvM1JIIuHCxLHeEV0WmTAuw==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c8980d1-113a-4283-3b92-08d82ecb58bb
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB3976.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 30811635-b75a-46a0-1b37-08d82ecaf405
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jul 2020 05:40:48.3732
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2020 05:43:38.0066
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /Ov+hqQMBgJgE5yGTDeKqx9QweO+ZPr4vLyDMnKPW9WCiT5K6cPcI7WqIxksXVo8v49Y3q7v1RAyLmj3FhzUlA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5079
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oVuZCjFpiXRe86WXj5nbn7hWbChmtZA9GVGVMxQuRVYutC39oc20+W3Mn0TJGmi1
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2999
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-23_01:2020-07-22,2020-07-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 mlxlogscore=999 spamscore=0 adultscore=0 suspectscore=0
+ clxscore=1015 bulkscore=0 phishscore=0 malwarescore=0 priorityscore=1501
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007230045
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Vladimir Oltean <olteanv@gmail.com>
-> Sent: Wednesday, July 22, 2020 8:24 PM
-> To: robh+dt@kernel.org; shawnguo@kernel.org; mpe@ellerman.id.au;
-> devicetree@vger.kernel.org
-> Cc: benh@kernel.crashing.org; paulus@samba.org; linuxppc-
-> dev@lists.ozlabs.org; linux-kernel@vger.kernel.org;
-> netdev@vger.kernel.org; Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>;
-> Radu-andrei Bulie <radu-andrei.bulie@nxp.com>; fido_max@inbox.ru
-> Subject: [PATCH devicetree 3/4] powerpc: dts: t1040rdb: put SGMII PHY
-> under &mdio0 label
->=20
-> We're going to add 8 more PHYs in a future patch. It is easier to follow
-> the hardware description if we don't need to fish for the path of the
-> MDIO controllers inside the SoC and just use the labels.
->=20
 
-Please align to the existing structure, it may be easier to add something
-without paying attention to that but it's better to keep things organized.
-This structure is used across all the device trees of the platforms using
-DPAA, let's not start diverging now.
 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
->  arch/powerpc/boot/dts/fsl/t1040rdb.dts | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
->=20
-> diff --git a/arch/powerpc/boot/dts/fsl/t1040rdb.dts
-> b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
-> index 65ff34c49025..40d7126dbe90 100644
-> --- a/arch/powerpc/boot/dts/fsl/t1040rdb.dts
-> +++ b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
-> @@ -59,12 +59,6 @@ ethernet@e4000 {
->  				phy-handle =3D <&phy_sgmii_2>;
->  				phy-connection-type =3D "sgmii";
->  			};
-> -
-> -			mdio@fc000 {
-> -				phy_sgmii_2: ethernet-phy@3 {
-> -					reg =3D <0x03>;
-> -				};
-> -			};
->  		};
->  	};
->=20
-> @@ -76,3 +70,9 @@ cpld@3,0 {
->  };
->=20
->  #include "t1040si-post.dtsi"
-> +
-> +&mdio0 {
-> +	phy_sgmii_2: ethernet-phy@3 {
-> +		reg =3D <0x3>;
-> +	};
-> +};
-> --
-> 2.25.1
+On 7/22/20 10:38 PM, Alexei Starovoitov wrote:
+> On Wed, Jul 22, 2020 at 11:49:45AM -0700, Yonghong Song wrote:
+>> diff --git a/kernel/bpf/map_iter.c b/kernel/bpf/map_iter.c
+>> index 8a7af11b411f..5812dd465c49 100644
+>> --- a/kernel/bpf/map_iter.c
+>> +++ b/kernel/bpf/map_iter.c
+>> @@ -85,17 +85,21 @@ static const struct seq_operations bpf_map_seq_ops = {
+>>   BTF_ID_LIST(btf_bpf_map_id)
+>>   BTF_ID(struct, bpf_map)
+>>   
+>> -static struct bpf_iter_reg bpf_map_reg_info = {
+>> -	.target			= "bpf_map",
+>> +static const struct bpf_iter_seq_info bpf_map_seq_info = {
+>>   	.seq_ops		= &bpf_map_seq_ops,
+>>   	.init_seq_private	= NULL,
+>>   	.fini_seq_private	= NULL,
+>>   	.seq_priv_size		= sizeof(struct bpf_iter_seq_map_info),
+>> +};
+>> +
+>> +static struct bpf_iter_reg bpf_map_reg_info = {
+>> +	.target			= "bpf_map",
+>>   	.ctx_arg_info_size	= 1,
+>>   	.ctx_arg_info		= {
+>>   		{ offsetof(struct bpf_iter__bpf_map, map),
+>>   		  PTR_TO_BTF_ID_OR_NULL },
+>>   	},
+>> +	.seq_info		= &bpf_map_seq_info,
+>>   };
+> 
+> ahh. this patch needs one more rebase, since I've just added prog_iter.
+> Could you please respin ? Thanks!
 
+Sure. Will respin.
