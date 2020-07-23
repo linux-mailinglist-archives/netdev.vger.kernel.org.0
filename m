@@ -2,127 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF22F22B889
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:20:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 417AF22B89C
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:28:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbgGWVUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 17:20:07 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:56440 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726173AbgGWVUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 17:20:06 -0400
-Received: by mail-io1-f69.google.com with SMTP id f21so4903866ioo.23
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 14:20:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=8OsQi/rtngRly2aes5OHJCr6XU7KTICHzhKX0xPzoq4=;
-        b=jJWD2zvyH7KswzdQX4NdfxCZtBnnKXFqFCP3uTqZnZT5qAVwxyqpb/Al+iPixNMTpU
-         NuK1MbguCEjd4o2qQ32QU8PizHZfC0RyGmxwHdPzt6A9Myq5jXz4cqOXhl8G8ItLVBs9
-         /QoQ65MuLZ5P1X0MzvvQROrtBAvTnMc2MeBpV0gSa4Vqk/9UErwcdjQPu5UbgDxyVpTd
-         CYUojw6x1tVP0JkLEFrRNGtQnmA0x2dJzgtcJ4A4fM4+6AreP7VQsbwL/UOSaZJVuREP
-         MRzN6Fur3fbHEO6A0NeZqBNRFbjbURfqhmMZ7Qu5ZtX0HVhrEDABENofvk56ZArplodX
-         ceXA==
-X-Gm-Message-State: AOAM530y/IGnCSUfoMaLolRhl6I1knmOmCAvdnkrB0BqggEIo53BeL24
-        r/yD2dRor7lAL7NIfnaSBdVTqHvLFkhMY+l5XZzB47TcO6H2
-X-Google-Smtp-Source: ABdhPJySXYoykumIrlUktwKjkmXgW7KFAwAJVGuQHGNXzGRgHXRiekNfL/HLAh/yfSaCAJV29uQD4tvuHcS03PqthES9It126o4f
+        id S1726807AbgGWV2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 17:28:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57882 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbgGWV2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 17:28:01 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881FFC0619D3
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 14:28:00 -0700 (PDT)
+Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 83425891B2
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 09:27:56 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1595539676;
+        bh=JUvoMsem218rI/L0/uzeD6ZPpS4FkYObDAlZzZITEJ4=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To;
+        b=HjXABbRQXyYbFXbPT6i0OP8zHC0KEUrgQQI/tKzfAFMCmp8qTDHnXOhmiidyyaIWh
+         nCtQqUYnjvdpQ115jtlR5xp3j5NdKwt9WPj+l6L4Qkj97q2H/swR20fPjytHe9Cqtk
+         rex99htaXCHzAtLjUSWlGxxTkDlN5eywTjHSSOIWD1P35w8pOzQ9No2Z4qe6Ay8l8I
+         ushmH7KteFUV78MES7thhXb/8a241Qy95WCeSaKWyMlI/y8Ec2Ll7YkatQZosNF/kP
+         7KjNObiqcXNI+8Tc1CB8bCmpUYNgOINnm3ZnBRR7QNWE6YNaBaP7XOGIkJ3t1lSSTA
+         kFxZ5LFtq0kCQ==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
+        id <B5f1a00db0000>; Fri, 24 Jul 2020 09:27:55 +1200
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8)
+ by svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8) with
+ Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Jul 2020 09:27:55 +1200
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.006; Fri, 24 Jul 2020 09:27:55 +1200
+From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+To:     =?utf-8?B?TWFyZWsgQmVow7pu?= <marek.behun@nic.cz>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: dsa: mv88e6xxx losing DHCPv6 solicit packets / IPv6 multicast
+ packets?
+Thread-Topic: dsa: mv88e6xxx losing DHCPv6 solicit packets / IPv6 multicast
+ packets?
+Thread-Index: AQHWYQAGIidp0Toi3ka6skvQc0rqhKkU5RUA
+Date:   Thu, 23 Jul 2020 21:27:54 +0000
+Message-ID: <1b6ba265-4651-79d2-9b43-f14e7f6ec19b@alliedtelesis.co.nz>
+References: <20200723164610.62e70bde@dellmb.labs.office.nic.cz>
+In-Reply-To: <20200723164610.62e70bde@dellmb.labs.office.nic.cz>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.32.1.11]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <81E7B203F7787D4388FE4447D06EBBD1@atlnz.lc>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Received: by 2002:a92:150d:: with SMTP id v13mr6690732ilk.297.1595539205575;
- Thu, 23 Jul 2020 14:20:05 -0700 (PDT)
-Date:   Thu, 23 Jul 2020 14:20:05 -0700
-In-Reply-To: <CAM_iQpXTe-DCr2MozGTik-SxOt8wiTehe6YkNhZGtDWfbHNPTA@mail.gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000092da5105ab226b64@google.com>
-Subject: Re: KASAN: use-after-free Read in macvlan_dev_get_iflink
-From:   syzbot <syzbot+95eec132c4bd9b1d8430@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-general protection fault in macvlan_get_link_net
-
-general protection fault, probably for non-canonical address 0xdffffc00000000b3: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000598-0x000000000000059f]
-CPU: 0 PID: 8229 Comm: syz-executor.0 Not tainted 5.8.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:read_pnet include/net/net_namespace.h:330 [inline]
-RIP: 0010:dev_net include/linux/netdevice.h:2261 [inline]
-RIP: 0010:macvlan_get_link_net+0x43/0x60 drivers/net/macvlan.c:1667
-Code: c6 f0 0b 00 00 4c 89 f0 48 c1 e8 03 42 80 3c 38 00 74 08 4c 89 f7 e8 dc cb d6 fc bb 98 05 00 00 49 03 1e 48 89 d8 48 c1 e8 03 <42> 80 3c 38 00 74 08 48 89 df e8 be cb d6 fc 48 8b 03 5b 41 5e 41
-RSP: 0018:ffffc90004e47110 EFLAGS: 00010202
-RAX: 00000000000000b3 RBX: 0000000000000598 RCX: ffff88808f57c040
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff888089dc8000
-RBP: ffffc90004e47228 R08: ffffffff866c14ae R09: fffffbfff12b7531
-R10: fffffbfff12b7531 R11: 0000000000000000 R12: 1ffff110113b904b
-R13: ffff888089dc825f R14: ffff888089dc8bf0 R15: dffffc0000000000
-FS:  00007f40720ea700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00005623955cb160 CR3: 000000009dc8e000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- rtnl_fill_link_netnsid net/core/rtnetlink.c:1569 [inline]
- rtnl_fill_ifinfo+0x3355/0x4650 net/core/rtnetlink.c:1758
- rtmsg_ifinfo_build_skb+0xe2/0x180 net/core/rtnetlink.c:3706
- rollback_registered_many+0xc9b/0x14a0 net/core/dev.c:8972
- unregister_netdevice_many+0x46/0x260 net/core/dev.c:10113
- __rtnl_newlink net/core/rtnetlink.c:3381 [inline]
- rtnl_newlink+0x1876/0x1c10 net/core/rtnetlink.c:3398
- rtnetlink_rcv_msg+0x889/0xd40 net/core/rtnetlink.c:5461
- netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2469
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2352
- ___sys_sendmsg net/socket.c:2406 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
- do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45cb99
-Code: Bad RIP value.
-RSP: 002b:00007f40720e9c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000502680 RCX: 000000000045cb99
-RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000006
-RBP: 000000000078bfa0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000a40 R14: 00000000004cd2f6 R15: 00007f40720ea6d4
-Modules linked in:
----[ end trace 45c7e0a1442252cb ]---
-RIP: 0010:read_pnet include/net/net_namespace.h:330 [inline]
-RIP: 0010:dev_net include/linux/netdevice.h:2261 [inline]
-RIP: 0010:macvlan_get_link_net+0x43/0x60 drivers/net/macvlan.c:1667
-Code: c6 f0 0b 00 00 4c 89 f0 48 c1 e8 03 42 80 3c 38 00 74 08 4c 89 f7 e8 dc cb d6 fc bb 98 05 00 00 49 03 1e 48 89 d8 48 c1 e8 03 <42> 80 3c 38 00 74 08 48 89 df e8 be cb d6 fc 48 8b 03 5b 41 5e 41
-RSP: 0018:ffffc90004e47110 EFLAGS: 00010202
-RAX: 00000000000000b3 RBX: 0000000000000598 RCX: ffff88808f57c040
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff888089dc8000
-RBP: ffffc90004e47228 R08: ffffffff866c14ae R09: fffffbfff12b7531
-R10: fffffbfff12b7531 R11: 0000000000000000 R12: 1ffff110113b904b
-R13: ffff888089dc825f R14: ffff888089dc8bf0 R15: dffffc0000000000
-FS:  00007f40720ea700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00005623955cb160 CR3: 000000009dc8e000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
-Tested on:
-
-commit:         9506a941 net: fix a race condition in dev_get_iflink()
-git tree:       https://github.com/congwang/linux.git net
-console output: https://syzkaller.appspot.com/x/log.txt?x=1569d430900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b1a5a263f7a540cb
-dashboard link: https://syzkaller.appspot.com/bug?extid=95eec132c4bd9b1d8430
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-
+SGkgTWFyZWssDQoNCk9uIDI0LzA3LzIwIDI6NDYgYW0sIE1hcmVrIEJlaMO6biB3cm90ZToNCj4g
+SGksDQo+DQo+IGEgY3VzdG9tZXIgb2Ygb3VycyBmaWxlZCBhIHRpY2tldCBzYXlpbmcgdGhhdCB3
+aGVuIHVzaW5nIHVwc3RyZWFtIGtlcm5lbA0KPiAoNS44LjAtcmM2IG9uIERlYmlhbiAxMCkgb24g
+VHVycmlzIE1PWCAoODhlNjE5MCBzd2l0Y2gpIHdpdGggRFNBIHdpdGgNCj4gZGVmYXVsdCBjb25m
+aWd1cmF0aW9uLCB0aGUgc3dpdGNoIGlzIGxvc2luZyBESENQdjYgc29saWNpdCBwYWNrZXRzIC8N
+Cj4gSVB2NiBtdWx0aWNhc3QgcGFja2V0cyBzZW50IHRvIGZmMDI6OjE6OjIgYWRkcmVzcy4NCj4N
+Cj4+IFNwZWNpZmljYWxseSwgaXQgc2VlbXMgdGhlIDg4RTYxOTAgaGFyZHdhcmUgc3dpdGNoZXMg
+aW4gdGhlIFBlcmlkb3QNCj4+IG1vZHVsZSBpcyBzd2FsbG93aW5nIElQdjYgbXVsdGljYXN0IHBh
+Y2tldHMgKHNlbnQgdG8gZmYwMjo6MToyICkuDQo+PiBXZSB0ZXN0ZWQgdGhpcyBieSBtaXJyb3Jp
+bmcgdGhlIE1veCBMQU4gcG9ydCBvbiB0aGUgc3dpdGNoIGFuZCBzYXcgdGhlDQo+PiBESENQdjYg
+c29saWNpdCBwYWNrZXQgYXJyaXZpbmcgb3V0IG9mIHRoZSBzd2l0Y2ggYnV0IHRoZSBNb3gga2Vy
+bmVsDQo+PiBkaWRuJ3Qgc2VlIGl0ICh1c2luZyB0Y3BkdW1wKS4NCj4gSXMgdGhpcyBpc3N1ZSBr
+bm93bj8NCg0KSSBjYW4ndCBzcGVhayB0byB0aGUgUGVyaWRvdCBzcGVjaWZpY2FsbHkgYnV0IG90
+aGVyIE1hcnZlbGwgc2lsaWNvbiBJJ3ZlIA0KZGVhbHQgd2l0aCBkb2VzIHRyeSB0byBhdm9pZCB0
+cmFwcGluZyBwYWNrZXRzIHRvIHRoZSBDUFUuIE5vcm1hbGx5IHlvdSANCndvdWxkIHNldCBzcGVj
+aWZpYyByZWdpc3RlcnMvdGFibGUgZW50cmllcyB0byBkZWNsYXJlIGludGVyZXN0IGluIA0KcGFy
+dGljdWxhciByZXNlcnZlZCBtdWx0aWNhc3QgZ3JvdXBzLg0KDQpJIGhhZCBhIHF1aWNrIHNraW0g
+b2YgdGhlIFBlcmlkb3QgZG9jcyBhbmQgdGhlIHJlZmVyZW5jZXMgdG8gcmVzZXJ2ZWQgDQptdWx0
+aWNhc3QgSSBzZWUgYXJlIGFsbCBhYm91dCB0aGUgODAyLjFEIEJQRFVzLg0KDQpJdCBtaWdodCBi
+ZSBuZWNlc3NhcnkgdG8gY29uZmlndXJlIE1MRCBzbm9vcGluZyBvciBhZGQgYW4gRkRCIGVudHJ5
+IHRvIA0KZ2V0IHRoZSBmZjAyOjoxOjoyIHBhY2tldHMgdG8gdGhlIENQVS4NCg0KVGhlcmUgaXMg
+YWxzbyB0aGUgcG9zc2liaWxpdHkgdGhhdCB0aGUgQ1BVcyBFdGhlcm5ldCBwb3J0IGlzIGRyb3Bw
+aW5nIA0KdGhlIHBhY2tldHMgZm9yIHNpbWlsYXIgcmVhc29ucy4gSSdkIGV4cGVjdCBMaW51eCB0
+byBoYW5kbGUgdGhhdCANCmNvcnJlY3RseSBwdXQgcGVyaGFwcyB3aXRoIGEgRFNBIGNvbmZpZ3Vy
+YXRpb24gaXQgc2tpcHMgdGhlIG11bHRpY2FzdCANCnJlY2VwdGlvbiBjb25maWcuDQoNCkFzIGFu
+b3RoZXIgdGhvdWdodCBkbyB5b3Uga25vdyB3aGF0IERIQ1B2NiBjbGllbnQvc2VydmVyIGlzIGJl
+aW5nIHVzZWQuIA0KVGhlcmUgd2FzIGEgZmFpcmx5IHJlY2VudCBidWdmaXggZm9yIGJ1c3lib3gg
+dGhhdCB3YXMgbmVlZGVkIGJlY2F1c2UgdGhlIA0KdjYgY29kZSB3YXMgdXNpbmcgdGhlIHdyb25n
+IE1BQyBhZGRyZXNzLg0K
