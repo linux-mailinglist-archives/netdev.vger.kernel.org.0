@@ -2,235 +2,464 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 297A622A8F3
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 08:27:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0484922A910
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 08:41:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726938AbgGWG1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 02:27:22 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:41451 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726330AbgGWG1V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 02:27:21 -0400
-Received: by mail-il1-f197.google.com with SMTP id k6so2798055ilg.8
-        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 23:27:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=qsxan2GHbh5Yt6TauSl3DTt9Ex/YOf+2LUY4AkusbFA=;
-        b=WB+yCTBzRmvG1km6FsvOQ4kf7qVvPedSFkqq/mWTsNs8DU61/XRB/ujYqRkRxDk5d/
-         9tzHpPageNP7qjyfBnSU2eBuDCSKszwGnyucGysz0BYuHDYRRXv0uIKrq+Dsdk/LdEhg
-         Ldp2wYoAbyWtKpWA06vEY52mxpl1qzWHSD9G+DdUxRIJSZ/kY/+mACIpM/G6Q69PSfQH
-         oySCdfx0KMdp5A+7jKndg/Epl8oo8Mmrmxdh5UG5p2CKlAHsGc72qhyqRamkyK/RC9O6
-         qgQbYqOwHbrNGyb2w0v7X0UtT3zzFFu99hGxCwv4M1oQlE3CGCYRR8QZ2v2GFjq61zR6
-         4tqA==
-X-Gm-Message-State: AOAM532ik1YWYc8eBz0sKOcb7dit1Fqnt+agusMvyN1n9pjlzM/Q1hOY
-        vvWCS1ch/A7bskdoYYFMtVENKoOn48Ay2pltXp4HVFH/Ed0p
-X-Google-Smtp-Source: ABdhPJzZaTVmHoa345chVU84noFvR8WhAV9DV1Xl1RV8bl81eic6mqvPhU+o4QB7LKL78uyk15PsVbBjxsSVftOC6g81Zp04/1jM
+        id S1725873AbgGWGlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 02:41:19 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45830 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725774AbgGWGlT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 02:41:19 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 06N6BbSg015682
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 23:15:51 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=dOAHlqZaNX9kqzMA31DgSnQTY/fLcr2ufcxXpo4Yrgk=;
+ b=FxDbULNUfhIP0jJ1f+vg+4eXkfNiXqthUOIuf9OEXhoj/CnnG164ixHw6ZJJXfLFVCRO
+ sMCBEYpIbsbQKNpAWZafjNe2Wu+GldFh5LBKtD5Loq4FFQ0953LWyZTDYXCR6UPnin/L
+ EXlYppD/GsCQcMa3Re2yMK388doNN3fWSjQ= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 32esdjk1a0-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 23:15:51 -0700
+Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 22 Jul 2020 23:15:49 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id 4424A3705266; Wed, 22 Jul 2020 23:15:45 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next v3 10/13] selftests/bpf: add test for bpf hash map iterators
+Date:   Wed, 22 Jul 2020 23:15:45 -0700
+Message-ID: <20200723061545.2100623-1-yhs@fb.com>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200723061533.2099842-1-yhs@fb.com>
+References: <20200723061533.2099842-1-yhs@fb.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:dc4:: with SMTP id l4mr3710287ilj.134.1595485639187;
- Wed, 22 Jul 2020 23:27:19 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 23:27:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c4a77205ab15f238@google.com>
-Subject: INFO: task hung in ovs_exit_net
-From:   syzbot <syzbot+2c4ff3614695f75ce26c@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dev@openvswitch.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pshelar@ovn.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-23_02:2020-07-22,2020-07-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 clxscore=1015
+ malwarescore=0 spamscore=0 adultscore=0 impostorscore=0 phishscore=0
+ suspectscore=25 bulkscore=0 priorityscore=1501 mlxlogscore=999
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007230050
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Two subtests are added.
+  $ ./test_progs -n 4
+  ...
+  #4/18 bpf_hash_map:OK
+  #4/19 bpf_percpu_hash_map:OK
+  ...
 
-syzbot found the following issue on:
-
-HEAD commit:    a6c0d093 net: explicitly include <linux/compat.h> in net/c..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=179ee640900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2b7b67c0c1819c87
-dashboard link: https://syzkaller.appspot.com/bug?extid=2c4ff3614695f75ce26c
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+2c4ff3614695f75ce26c@syzkaller.appspotmail.com
-
-INFO: task kworker/u4:3:235 blocked for more than 143 seconds.
-      Not tainted 5.8.0-rc4-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-kworker/u4:3    D24856   235      2 0x00004000
-Workqueue: netns cleanup_net
-Call Trace:
- context_switch kernel/sched/core.c:3453 [inline]
- __schedule+0x8e1/0x1eb0 kernel/sched/core.c:4178
- schedule+0xd0/0x2a0 kernel/sched/core.c:4253
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:4312
- __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
- __mutex_lock+0x3e2/0x10d0 kernel/locking/mutex.c:1103
- ovs_lock net/openvswitch/datapath.c:105 [inline]
- ovs_exit_net+0x1de/0xba0 net/openvswitch/datapath.c:2491
- ops_exit_list+0xb0/0x160 net/core/net_namespace.c:186
- cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:603
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:291
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
-INFO: task kworker/0:5:9052 blocked for more than 143 seconds.
-      Not tainted 5.8.0-rc4-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-kworker/0:5     D27408  9052      2 0x00004000
-Workqueue: events ovs_dp_masks_rebalance
-Call Trace:
- context_switch kernel/sched/core.c:3453 [inline]
- __schedule+0x8e1/0x1eb0 kernel/sched/core.c:4178
- schedule+0xd0/0x2a0 kernel/sched/core.c:4253
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:4312
- __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
- __mutex_lock+0x3e2/0x10d0 kernel/locking/mutex.c:1103
- ovs_lock net/openvswitch/datapath.c:105 [inline]
- ovs_dp_masks_rebalance+0x18/0x80 net/openvswitch/datapath.c:2355
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:291
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
-INFO: task syz-executor.3:21286 blocked for more than 143 seconds.
-      Not tainted 5.8.0-rc4-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-syz-executor.3  D26160 21286   7072 0x00004004
-Call Trace:
- context_switch kernel/sched/core.c:3453 [inline]
- __schedule+0x8e1/0x1eb0 kernel/sched/core.c:4178
- schedule+0xd0/0x2a0 kernel/sched/core.c:4253
- schedule_timeout+0x1d8/0x250 kernel/time/timer.c:1873
- do_wait_for_common kernel/sched/completion.c:85 [inline]
- __wait_for_common kernel/sched/completion.c:106 [inline]
- wait_for_common kernel/sched/completion.c:117 [inline]
- wait_for_completion+0x163/0x260 kernel/sched/completion.c:138
- __flush_work+0x51f/0xab0 kernel/workqueue.c:3046
- __cancel_work_timer+0x5de/0x700 kernel/workqueue.c:3133
- ovs_dp_cmd_del+0x18c/0x270 net/openvswitch/datapath.c:1790
- genl_family_rcv_msg_doit net/netlink/genetlink.c:669 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:714 [inline]
- genl_rcv_msg+0x61d/0x980 net/netlink/genetlink.c:731
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:742
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2363
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2417
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2450
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45c1f9
-Code: Bad RIP value.
-RSP: 002b:00007f75a409cc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000002b3c0 RCX: 000000000045c1f9
-RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000004
-RBP: 000000000078bf40 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000078bf0c
-R13: 00007ffed0e2724f R14: 00007f75a409d9c0 R15: 000000000078bf0c
-INFO: task syz-executor.3:21355 blocked for more than 144 seconds.
-      Not tainted 5.8.0-rc4-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-syz-executor.3  D27400 21355   7072 0x00004004
-Call Trace:
- context_switch kernel/sched/core.c:3453 [inline]
- __schedule+0x8e1/0x1eb0 kernel/sched/core.c:4178
- schedule+0xd0/0x2a0 kernel/sched/core.c:4253
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:4312
- __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
- __mutex_lock+0x3e2/0x10d0 kernel/locking/mutex.c:1103
- ovs_lock net/openvswitch/datapath.c:105 [inline]
- ovs_dp_cmd_del+0x4a/0x270 net/openvswitch/datapath.c:1780
- genl_family_rcv_msg_doit net/netlink/genetlink.c:669 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:714 [inline]
- genl_rcv_msg+0x61d/0x980 net/netlink/genetlink.c:731
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:742
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2363
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2417
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2450
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45c1f9
-Code: Bad RIP value.
-RSP: 002b:00007f75a405ac78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000002b3c0 RCX: 000000000045c1f9
-RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000004
-RBP: 000000000078c080 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000078c04c
-R13: 00007ffed0e2724f R14: 00007f75a405b9c0 R15: 000000000078c04c
-
-Showing all locks held in the system:
-4 locks held by kworker/u4:3/235:
- #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
- #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
- #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
- #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
- #0: ffff8880a97ad138 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x82b/0x1670 kernel/workqueue.c:2240
- #1: ffffc90001847da8 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work+0x85f/0x1670 kernel/workqueue.c:2244
- #2: ffffffff8a7ad4b0 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0xa00 net/core/net_namespace.c:565
- #3: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_lock net/openvswitch/datapath.c:105 [inline]
- #3: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_exit_net+0x1de/0xba0 net/openvswitch/datapath.c:2491
-1 lock held by khungtaskd/1150:
- #0: ffffffff89bc0ec0 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:5779
-1 lock held by in:imklog/6505:
-3 locks held by kworker/0:5/9052:
- #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
- #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
- #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
- #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
- #0: ffff8880aa026d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x82b/0x1670 kernel/workqueue.c:2240
- #1: ffffc90001b17da8 ((work_completion)(&(&dp->masks_rebalance)->work)){+.+.}-{0:0}, at: process_one_work+0x85f/0x1670 kernel/workqueue.c:2244
- #2: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_lock net/openvswitch/datapath.c:105 [inline]
- #2: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_dp_masks_rebalance+0x18/0x80 net/openvswitch/datapath.c:2355
-2 locks held by syz-executor.3/21286:
- #0: ffffffff8a817cf0 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40 net/netlink/genetlink.c:741
- #1: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_lock net/openvswitch/datapath.c:105 [inline]
- #1: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_dp_cmd_del+0x4a/0x270 net/openvswitch/datapath.c:1780
-2 locks held by syz-executor.3/21355:
- #0: ffffffff8a817cf0 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40 net/netlink/genetlink.c:741
- #1: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_lock net/openvswitch/datapath.c:105 [inline]
- #1: ffffffff8aa5dfe8 (ovs_mutex){+.+.}-{3:3}, at: ovs_dp_cmd_del+0x4a/0x270 net/openvswitch/datapath.c:1780
-
-=============================================
-
-NMI backtrace for cpu 1
-CPU: 1 PID: 1150 Comm: khungtaskd Not tainted 5.8.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- nmi_cpu_backtrace.cold+0x70/0xb1 lib/nmi_backtrace.c:101
- nmi_trigger_cpumask_backtrace+0x1b3/0x223 lib/nmi_backtrace.c:62
- trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
- check_hung_uninterruptible_tasks kernel/hung_task.c:209 [inline]
- watchdog+0xd7d/0x1000 kernel/hung_task.c:295
- kthread+0x3b5/0x4a0 kernel/kthread.c:291
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0 skipped: idling at native_safe_halt+0xe/0x10 arch/x86/include/asm/irqflags.h:60
-
-
+Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ .../selftests/bpf/prog_tests/bpf_iter.c       | 187 ++++++++++++++++++
+ .../bpf/progs/bpf_iter_bpf_hash_map.c         | 100 ++++++++++
+ .../bpf/progs/bpf_iter_bpf_percpu_hash_map.c  |  50 +++++
+ 3 files changed, 337 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_bpf_hash_m=
+ap.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_bpf_percpu=
+_hash_map.c
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/te=
+sting/selftests/bpf/prog_tests/bpf_iter.c
+index fed42755416d..72790b600c62 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+@@ -15,6 +15,8 @@
+ #include "bpf_iter_test_kern2.skel.h"
+ #include "bpf_iter_test_kern3.skel.h"
+ #include "bpf_iter_test_kern4.skel.h"
++#include "bpf_iter_bpf_hash_map.skel.h"
++#include "bpf_iter_bpf_percpu_hash_map.skel.h"
+=20
+ static int duration;
+=20
+@@ -455,6 +457,187 @@ static void test_overflow(bool test_e2big_overflow,=
+ bool ret1)
+ 	bpf_iter_test_kern4__destroy(skel);
+ }
+=20
++static void test_bpf_hash_map(void)
++{
++	__u32 expected_key_a =3D 0, expected_key_b =3D 0, expected_key_c =3D 0;
++	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
++	struct bpf_iter_bpf_hash_map *skel;
++	int err, i, len, map_fd, iter_fd;
++	__u64 val, expected_val =3D 0;
++	struct bpf_link *link;
++	struct key_t {
++		int a;
++		int b;
++		int c;
++	} key;
++	char buf[64];
++
++	skel =3D bpf_iter_bpf_hash_map__open();
++	if (CHECK(!skel, "bpf_iter_bpf_hash_map__open",
++		  "skeleton open failed\n"))
++		return;
++
++	skel->bss->in_test_mode =3D true;
++
++	err =3D bpf_iter_bpf_hash_map__load(skel);
++	if (CHECK(!skel, "bpf_iter_bpf_hash_map__load",
++		  "skeleton load failed\n"))
++		goto out;
++
++	/* iterator with hashmap2 and hashmap3 should fail */
++	opts.map_fd =3D bpf_map__fd(skel->maps.hashmap2);
++	link =3D bpf_program__attach_iter(skel->progs.dump_bpf_hash_map, &opts)=
+;
++	if (CHECK(!IS_ERR(link), "attach_iter",
++		  "attach_iter for hashmap2 unexpected succeeded\n"))
++		goto out;
++
++	opts.map_fd =3D bpf_map__fd(skel->maps.hashmap3);
++	link =3D bpf_program__attach_iter(skel->progs.dump_bpf_hash_map, &opts)=
+;
++	if (CHECK(!IS_ERR(link), "attach_iter",
++		  "attach_iter for hashmap3 unexpected succeeded\n"))
++		goto out;
++
++	/* hashmap1 should be good, update map values here */
++	map_fd =3D bpf_map__fd(skel->maps.hashmap1);
++	for (i =3D 0; i < bpf_map__max_entries(skel->maps.hashmap1); i++) {
++		key.a =3D i + 1;
++		key.b =3D i + 2;
++		key.c =3D i + 3;
++		val =3D i + 4;
++		expected_key_a +=3D key.a;
++		expected_key_b +=3D key.b;
++		expected_key_c +=3D key.c;
++		expected_val +=3D val;
++
++		err =3D bpf_map_update_elem(map_fd, &key, &val, BPF_ANY);
++		if (CHECK(err, "map_update", "map_update failed\n"))
++			goto out;
++	}
++
++	opts.map_fd =3D map_fd;
++	link =3D bpf_program__attach_iter(skel->progs.dump_bpf_hash_map, &opts)=
+;
++	if (CHECK(IS_ERR(link), "attach_iter", "attach_iter failed\n"))
++		goto out;
++
++	iter_fd =3D bpf_iter_create(bpf_link__fd(link));
++	if (CHECK(iter_fd < 0, "create_iter", "create_iter failed\n"))
++		goto free_link;
++
++	/* do some tests */
++	while ((len =3D read(iter_fd, buf, sizeof(buf))) > 0)
++		;
++	if (CHECK(len < 0, "read", "read failed: %s\n", strerror(errno)))
++		goto close_iter;
++
++	/* test results */
++	if (CHECK(skel->bss->key_sum_a !=3D expected_key_a,
++		  "key_sum_a", "got %u expected %u\n",
++		  skel->bss->key_sum_a, expected_key_a))
++		goto close_iter;
++	if (CHECK(skel->bss->key_sum_b !=3D expected_key_b,
++		  "key_sum_b", "got %u expected %u\n",
++		  skel->bss->key_sum_b, expected_key_b))
++		goto close_iter;
++	if (CHECK(skel->bss->val_sum !=3D expected_val,
++		  "val_sum", "got %llu expected %llu\n",
++		  skel->bss->val_sum, expected_val))
++		goto close_iter;
++
++close_iter:
++	close(iter_fd);
++free_link:
++	bpf_link__destroy(link);
++out:
++	bpf_iter_bpf_hash_map__destroy(skel);
++}
++
++static void test_bpf_percpu_hash_map(void)
++{
++	__u32 expected_key_a =3D 0, expected_key_b =3D 0, expected_key_c =3D 0;
++	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
++	struct bpf_iter_bpf_percpu_hash_map *skel;
++	int err, i, j, len, map_fd, iter_fd;
++	__u32 expected_val =3D 0;
++	struct bpf_link *link;
++	struct key_t {
++		int a;
++		int b;
++		int c;
++	} key;
++	char buf[64];
++	void *val;
++
++	val =3D malloc(8 * bpf_num_possible_cpus());
++
++	skel =3D bpf_iter_bpf_percpu_hash_map__open();
++	if (CHECK(!skel, "bpf_iter_bpf_percpu_hash_map__open",
++		  "skeleton open failed\n"))
++		return;
++
++	skel->rodata->num_cpus =3D bpf_num_possible_cpus();
++
++	err =3D bpf_iter_bpf_percpu_hash_map__load(skel);
++	if (CHECK(!skel, "bpf_iter_bpf_percpu_hash_map__load",
++		  "skeleton load failed\n"))
++		goto out;
++
++	/* update map values here */
++	map_fd =3D bpf_map__fd(skel->maps.hashmap1);
++	for (i =3D 0; i < bpf_map__max_entries(skel->maps.hashmap1); i++) {
++		key.a =3D i + 1;
++		key.b =3D i + 2;
++		key.c =3D i + 3;
++		expected_key_a +=3D key.a;
++		expected_key_b +=3D key.b;
++		expected_key_c +=3D key.c;
++
++		for (j =3D 0; j < bpf_num_possible_cpus(); j++) {
++			*(__u32 *)(val + j * 8) =3D i + j;
++			expected_val +=3D i + j;
++		}
++
++		err =3D bpf_map_update_elem(map_fd, &key, val, BPF_ANY);
++		if (CHECK(err, "map_update", "map_update failed\n"))
++			goto out;
++	}
++
++	opts.map_fd =3D map_fd;
++	link =3D bpf_program__attach_iter(skel->progs.dump_bpf_percpu_hash_map,=
+ &opts);
++	if (CHECK(IS_ERR(link), "attach_iter", "attach_iter failed\n"))
++		goto out;
++
++	iter_fd =3D bpf_iter_create(bpf_link__fd(link));
++	if (CHECK(iter_fd < 0, "create_iter", "create_iter failed\n"))
++		goto free_link;
++
++	/* do some tests */
++	while ((len =3D read(iter_fd, buf, sizeof(buf))) > 0)
++		;
++	if (CHECK(len < 0, "read", "read failed: %s\n", strerror(errno)))
++		goto close_iter;
++
++	/* test results */
++	if (CHECK(skel->bss->key_sum_a !=3D expected_key_a,
++		  "key_sum_a", "got %u expected %u\n",
++		  skel->bss->key_sum_a, expected_key_a))
++		goto close_iter;
++	if (CHECK(skel->bss->key_sum_b !=3D expected_key_b,
++		  "key_sum_b", "got %u expected %u\n",
++		  skel->bss->key_sum_b, expected_key_b))
++		goto close_iter;
++	if (CHECK(skel->bss->val_sum !=3D expected_val,
++		  "val_sum", "got %u expected %u\n",
++		  skel->bss->val_sum, expected_val))
++		goto close_iter;
++
++close_iter:
++	close(iter_fd);
++free_link:
++	bpf_link__destroy(link);
++out:
++	bpf_iter_bpf_percpu_hash_map__destroy(skel);
++}
++
+ void test_bpf_iter(void)
+ {
+ 	if (test__start_subtest("btf_id_or_null"))
+@@ -491,4 +674,8 @@ void test_bpf_iter(void)
+ 		test_overflow(true, false);
+ 	if (test__start_subtest("prog-ret-1"))
+ 		test_overflow(false, true);
++	if (test__start_subtest("bpf_hash_map"))
++		test_bpf_hash_map();
++	if (test__start_subtest("bpf_percpu_hash_map"))
++		test_bpf_percpu_hash_map();
+ }
+diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_bpf_hash_map.c b/=
+tools/testing/selftests/bpf/progs/bpf_iter_bpf_hash_map.c
+new file mode 100644
+index 000000000000..07ddbfdbcab7
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bpf_iter_bpf_hash_map.c
+@@ -0,0 +1,100 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020 Facebook */
++#include "bpf_iter.h"
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++char _license[] SEC("license") =3D "GPL";
++
++struct key_t {
++	int a;
++	int b;
++	int c;
++};
++
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__uint(max_entries, 3);
++	__type(key, struct key_t);
++	__type(value, __u64);
++} hashmap1 SEC(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__uint(max_entries, 3);
++	__type(key, __u64);
++	__type(value, __u64);
++} hashmap2 SEC(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__uint(max_entries, 3);
++	__type(key, struct key_t);
++	__type(value, __u32);
++} hashmap3 SEC(".maps");
++
++/* will set before prog run */
++bool in_test_mode =3D 0;
++
++/* will collect results during prog run */
++__u32 key_sum_a =3D 0, key_sum_b =3D 0, key_sum_c =3D 0;
++__u64 val_sum =3D 0;
++
++SEC("iter/bpf_map_elem")
++int dump_bpf_hash_map(struct bpf_iter__bpf_map_elem *ctx)
++{
++	struct seq_file *seq =3D ctx->meta->seq;
++	__u32 seq_num =3D ctx->meta->seq_num;
++	struct bpf_map *map =3D ctx->map;
++	struct key_t *key =3D ctx->key;
++	__u64 *val =3D ctx->value;
++
++	if (in_test_mode) {
++		/* test mode is used by selftests to
++		 * test functionality of bpf_hash_map iter.
++		 *
++		 * the above hashmap1 will have correct size
++		 * and will be accepted, hashmap2 and hashmap3
++		 * should be rejected due to smaller key/value
++		 * size.
++		 */
++		if (key =3D=3D (void *)0 || val =3D=3D (void *)0)
++			return 0;
++
++		key_sum_a +=3D key->a;
++		key_sum_b +=3D key->b;
++		key_sum_c +=3D key->c;
++		val_sum +=3D *val;
++		return 0;
++	}
++
++	/* non-test mode, the map is prepared with the
++	 * below bpftool command sequence:
++	 *   bpftool map create /sys/fs/bpf/m1 type hash \
++	 *   	key 12 value 8 entries 3 name map1
++	 *   bpftool map update id 77 key 0 0 0 1 0 0 0 0 0 0 0 1 \
++	 *   	value 0 0 0 1 0 0 0 1
++	 *   bpftool map update id 77 key 0 0 0 1 0 0 0 0 0 0 0 2 \
++	 *   	value 0 0 0 1 0 0 0 2
++	 * The bpftool iter command line:
++	 *   bpftool iter pin ./bpf_iter_bpf_hash_map.o /sys/fs/bpf/p1 \
++	 *   	map id 77
++	 * The below output will be:
++	 *   map dump starts
++	 *   77: (1000000 0 2000000) (200000001000000)
++	 *   77: (1000000 0 1000000) (100000001000000)
++	 *   map dump ends
++	 */
++	if (seq_num =3D=3D 0)
++		BPF_SEQ_PRINTF(seq, "map dump starts\n");
++
++	if (key =3D=3D (void *)0 || val =3D=3D (void *)0) {
++		BPF_SEQ_PRINTF(seq, "map dump ends\n");
++		return 0;
++	}
++
++	BPF_SEQ_PRINTF(seq, "%d: (%x %d %x) (%llx)\n", map->id,
++		       key->a, key->b, key->c, *val);
++
++	return 0;
++}
+diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_bpf_percpu_hash_m=
+ap.c b/tools/testing/selftests/bpf/progs/bpf_iter_bpf_percpu_hash_map.c
+new file mode 100644
+index 000000000000..feaaa2b89c57
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bpf_iter_bpf_percpu_hash_map.c
+@@ -0,0 +1,50 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020 Facebook */
++#include "bpf_iter.h"
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++char _license[] SEC("license") =3D "GPL";
++
++struct key_t {
++	int a;
++	int b;
++	int c;
++};
++
++struct {
++	__uint(type, BPF_MAP_TYPE_PERCPU_HASH);
++	__uint(max_entries, 3);
++	__type(key, struct key_t);
++	__type(value, __u32);
++} hashmap1 SEC(".maps");
++
++/* will set before prog run */
++volatile const __u32 num_cpus =3D 0;
++
++/* will collect results during prog run */
++__u32 key_sum_a =3D 0, key_sum_b =3D 0, key_sum_c =3D 0;
++__u32 val_sum =3D 0;
++
++SEC("iter/bpf_map_elem")
++int dump_bpf_percpu_hash_map(struct bpf_iter__bpf_map_elem *ctx)
++{
++	struct key_t *key =3D ctx->key;
++	void *pptr =3D ctx->value;
++	__u32 step;
++	int i;
++
++	if (key =3D=3D (void *)0 || pptr =3D=3D (void *)0)
++		return 0;
++
++	key_sum_a +=3D key->a;
++	key_sum_b +=3D key->b;
++	key_sum_c +=3D key->c;
++
++	step =3D 8;
++	for (i =3D 0; i < num_cpus; i++) {
++		val_sum +=3D *(__u32 *)pptr;
++		pptr +=3D step;
++	}
++	return 0;
++}
+--=20
+2.24.1
+
