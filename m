@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D02122ADF3
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:43:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D92722ADF5
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:43:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728636AbgGWLnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 07:43:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46014 "EHLO mail.kernel.org"
+        id S1728654AbgGWLnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 07:43:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46066 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728627AbgGWLnI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Jul 2020 07:43:08 -0400
+        id S1728627AbgGWLnM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jul 2020 07:43:12 -0400
 Received: from lore-desk.redhat.com (unknown [151.48.142.198])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AEBDA208E4;
-        Thu, 23 Jul 2020 11:43:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9A5C922B43;
+        Thu, 23 Jul 2020 11:43:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595504588;
-        bh=bEqWNVHLaaPCKQTgLqQQH5kpGpp2VD7M69JOxRx3qmA=;
+        s=default; t=1595504591;
+        bh=kIdzdnR5oMJlEqKbVwcJr7xWuFT9MuTFnSq8zco5Xws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bNuypVMH9aB9N9DTka1kG2fiv/h/Wbahbfe2b3hTfaOJZBS+tU8GB85qwioKcAArZ
-         rR/6UqzgsfC4/0S+OtJo5r613eYch48dvNBjy8hcOfGtS4M/uUpcX7QgaEJ45fkzhs
-         sIHUKveQJKVQ5+Fy1jE0t9rI2wWFktfA+vZYDsqg=
+        b=a1frIJa5m8+u37LaF1Mq/PEe9zEkoVzOV12IBTUixGUwiVESGkZk1AdQZwRaLZKGR
+         iGb9axurJNnGObf8PrCFkDKYgt5lPQoFZrS5yt3dpI0/8GetzTNNrgz2Di+IWDoMnL
+         OwucPUF5JlYRv2kHtNQsTvTLvcuTWJ+KTsQmKWPs=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
         brouer@redhat.com, daniel@iogearbox.net,
         lorenzo.bianconi@redhat.com, echaudro@redhat.com,
         sameehj@amazon.com, kuba@kernel.org
-Subject: [RFC net-next 02/22] xdp: initialize xdp_buff mb bit to 0 in netif_receive_generic_xdp
-Date:   Thu, 23 Jul 2020 13:42:14 +0200
-Message-Id: <0c3c29b8d87259cd54bb7b1ec5892f71d12d62bb.1595503780.git.lorenzo@kernel.org>
+Subject: [RFC net-next 03/22] net: virtio_net: initialize mb bit of xdp_buff to 0
+Date:   Thu, 23 Jul 2020 13:42:15 +0200
+Message-Id: <f7b4192b77bf24b43f4cb54098aabaedd5fc06cf.1595503780.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1595503780.git.lorenzo@kernel.org>
 References: <cover.1595503780.git.lorenzo@kernel.org>
@@ -47,21 +47,29 @@ This is a preliminary patch to enable xdp multi-buffer support.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- net/core/dev.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/virtio_net.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 316349f6cea5..eb3e54df198c 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4641,6 +4641,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	/* SKB "head" area always have tailroom for skb_shared_info */
- 	xdp->frame_sz  = (void *)skb_end_pointer(skb) - xdp->data_hard_start;
- 	xdp->frame_sz += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+	xdp->mb = 0;
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index ba38765dc490..100fa9b60026 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -690,6 +690,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
+ 		xdp.data_meta = xdp.data;
+ 		xdp.rxq = &rq->xdp_rxq;
+ 		xdp.frame_sz = buflen;
++		xdp.mb = 0;
+ 		orig_data = xdp.data;
+ 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
+ 		stats->xdp_packets++;
+@@ -860,6 +861,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+ 		xdp.data_meta = xdp.data;
+ 		xdp.rxq = &rq->xdp_rxq;
+ 		xdp.frame_sz = frame_sz - vi->hdr_len;
++		xdp.mb = 0;
  
- 	orig_data_end = xdp->data_end;
- 	orig_data = xdp->data;
+ 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
+ 		stats->xdp_packets++;
 -- 
 2.26.2
 
