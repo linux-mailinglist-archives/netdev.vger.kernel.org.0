@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D62322B72A
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 22:07:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFE9F22B73A
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 22:08:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbgGWUHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 16:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
+        id S1726985AbgGWUIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 16:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725894AbgGWUHS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 16:07:18 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D096EC0619DC;
-        Thu, 23 Jul 2020 13:07:17 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1jyhUc-009mYg-5X; Thu, 23 Jul 2020 22:07:02 +0200
-Message-ID: <ce380ea1fd1f5db40a92f67673f070a1f88eee50.camel@sipsolutions.net>
-Subject: Re: [RFC 1/7] mac80211: Add check for napi handle before WARN_ON
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Rakesh Pillai <pillair@codeaurora.org>, ath10k@lists.infradead.org
-Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, dianders@chromium.org, evgreen@chromium.org
-Date:   Thu, 23 Jul 2020 22:06:46 +0200
-In-Reply-To: <003201d6611e$c54a1c90$4fde55b0$@codeaurora.org>
-References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
-                 <1595351666-28193-2-git-send-email-pillair@codeaurora.org>
-         <0dbdef912f9d61521011f638200fd451a3530568.camel@sipsolutions.net>
-         <003201d6611e$c54a1c90$4fde55b0$@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.3 (3.36.3-1.fc32) 
+        with ESMTP id S1726046AbgGWUIr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 16:08:47 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5223CC0619DC;
+        Thu, 23 Jul 2020 13:08:47 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id i4so7567021iov.11;
+        Thu, 23 Jul 2020 13:08:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZypJVFE6v/3Jo2AiBRXxfrvf66bExjGHXFBsT718YSg=;
+        b=SpQK6K2X7N0C93+yndRn4e10pNS3E6luEgTo2qRq7ZDJmopozQp8rc8IfHFTso3kYd
+         aMzLH2nJyI1b5h6m8Q1tY7vuWgduwqhhFg2OENjbJ0w/TtUeDw5cKCKhMR6szmGZ9K1c
+         TzvbuU0yyf/2Vi+FTeNgFhvk47WwNW2KAWUu5u8htMwNzauJnHmhQZT8Ldohg1FR64OQ
+         PENHr9Grjx4NITpr5hDCI1F/2OSCI7AmNHwclsSCK3yLE1zJVpYkTp0swFwAp0iqda1L
+         i4kvxOssLg/IRmTIXAj6BV1yVpwpGKGR/nsBWGvc6/yP5WyikuA27BuUnEGqZ9L9iHvc
+         DYlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZypJVFE6v/3Jo2AiBRXxfrvf66bExjGHXFBsT718YSg=;
+        b=LhLoZK/OJ4ByOTiseYa8eTJdiPGFvynIfOttqGDdYVJar6ioKuxP5JLlJI0IGbHLJq
+         dOynwKA5kYwZR+LZWcnbyUVqGrBphX7XWzDUEEwfuQ3WKyYSuZr3GI0fhziC8xY30uf5
+         vlBn0uneY1PCmuo+N6DwyLe1kfer7toofwK/lVOQS4gvu5kuCZw0SYPp6Ua3DspMJlkd
+         E9acrIF0N0vD22BqgFUPjLCg2HXJ7qFrMFfzmcfdLuJaPK3qoYT2AE7Nwv+GtTaMWfNc
+         hkaME7knFoSRh43iVaQYcCPK0dR+LRi6jXxTFPrjdQd+WHtqIt2jDSLvpz+AJU5RWxUY
+         1Yrw==
+X-Gm-Message-State: AOAM532El7tfQyztNRKbdLwPb+MrsUUmZBO2LiIzw1D1mWI/ofsMzZEk
+        DeOna5DsF7D6Sz4kEm6N9P9HFzMWvekGRPokcgA=
+X-Google-Smtp-Source: ABdhPJzixoHFO5I7nPAR72Dn5wBNlGEL/NvAFr0dUTpDHWk5arAIEJvA5sLvjSFR2WuRuSzwG/YuToZLIWJ0ABDkT7g=
+X-Received: by 2002:a05:6602:1581:: with SMTP id e1mr6911572iow.44.1595534926642;
+ Thu, 23 Jul 2020 13:08:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <000000000000b1b74105a91bf53d@google.com>
+In-Reply-To: <000000000000b1b74105a91bf53d@google.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 23 Jul 2020 13:08:34 -0700
+Message-ID: <CAM_iQpXTe-DCr2MozGTik-SxOt8wiTehe6YkNhZGtDWfbHNPTA@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Read in macvlan_dev_get_iflink
+To:     syzbot <syzbot+95eec132c4bd9b1d8430@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-07-23 at 23:56 +0530, Rakesh Pillai wrote:
-
-> > > -	WARN_ON_ONCE(softirq_count() == 0);
-> > > +	WARN_ON_ONCE(napi && softirq_count() == 0);
-> > 
-> > FWIW, I'm pretty sure this is incorrect - we make assumptions on
-> > softirqs being disabled in mac80211 for serialization and in place of
-> > some locking, I believe.
-> > 
-> 
-> I checked this, but let me double confirm.
-> But after this change, no packet is submitted from driver in a softirq context.
-> So ideally this should take care of serialization.
-
-I'd guess that we have some reliance on BHs already being disabled, for
-things like u64 sync updates, or whatnot. I mean, we did "rx_ni()" for a
-reason ... Maybe lockdep can help catch some of the issues.
-
-But couldn't you be in a thread and have BHs disabled too?
-
-johannes
-
+#syz test: https://github.com/congwang/linux.git net
