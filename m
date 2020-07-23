@@ -2,135 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADB7522AC03
+	by mail.lfdr.de (Postfix) with ESMTP id 1691322AC02
 	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 12:00:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725858AbgGWKAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 06:00:01 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:26108 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728224AbgGWKAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 06:00:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595498398;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=O/LqmY9ryCOwjYYuheS4VUlb9xhQlPFp+vHDmf9KXGo=;
-        b=bkI1jEzShasJXwAMjsG2GkkDux2ZNB9wa63UbnDkR77OZWNm2E1YFSLRv6Il8jDy+JxK/5
-        RQNQvdcXnc+AA/Pl+l8oyoULLN4vSTHDMLIQzZaXB/wWzczywEiZ25s0KqtjmM6h2hK/U2
-        PYPl5LaboXVUbEJFNmN40DLMrET4Zkc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-185-KnszgqgHN-yD3ML3VtpJ8g-1; Thu, 23 Jul 2020 05:59:56 -0400
-X-MC-Unique: KnszgqgHN-yD3ML3VtpJ8g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ACA2518C63C0;
-        Thu, 23 Jul 2020 09:59:54 +0000 (UTC)
-Received: from [10.36.112.205] (ovpn-112-205.ams2.redhat.com [10.36.112.205])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5BE2E5D9D3;
-        Thu, 23 Jul 2020 09:59:53 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Florian Westphal" <fw@strlen.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dev@openvswitch.org,
-        kuba@kernel.org, pabeni@redhat.com, pshelar@ovn.org
-Subject: Re: [PATCH net-next 2/2] net: openvswitch: make masks cache size
- configurable
-Date:   Thu, 23 Jul 2020 11:59:51 +0200
-Message-ID: <F147B9A7-3CD7-4F62-9BF4-389FD0FC36BC@redhat.com>
-In-Reply-To: <20200722192252.GC23458@breakpoint.cc>
-References: <159540642765.619787.5484526399990292188.stgit@ebuild>
- <159540647223.619787.13052866492035799125.stgit@ebuild>
- <20200722192252.GC23458@breakpoint.cc>
+        id S1728241AbgGWJ77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 05:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35592 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725858AbgGWJ76 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 05:59:58 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12591C0619DC
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 02:59:58 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id z24so5670784ljn.8
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 02:59:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+YCu61UdRIfgGgtfqTiNyVZA7tw12eV3zO14rYdK+r8=;
+        b=UcKlTWJ3Fvc1OLdRwEpKYaXJpEy6em4FggJ5+39Jl2AsioWf5Ng0CyjDHrRi64xtaX
+         oq5WzFxzeu2W7DQhjBiFUP31xKCjp94nb0Xo4j7g2BNYKtLKJgoOkEaXYIpOAB0dKagq
+         ZOXMwT8cWuVcBNJCFeYqnAyb1zOF0m9CSTmts=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+YCu61UdRIfgGgtfqTiNyVZA7tw12eV3zO14rYdK+r8=;
+        b=pfWOd+VX/v8a/opW4ixpdDsdent1OYpEPw5MVBvbBVRtIH7jaK4FXhsv+10Kl/00lt
+         Gaw2flO0hhILxCE6fCeww/s/daBBM4EhWiqhG6EM22qkvBXzMjPguAOLvg2r1bjsMj3E
+         fQjndY1rG4L+D2Z+ZHR9iTv1XM6y1ktC7e8/Vh/UTynjZ6gzaCTkhB5CV+k82iuXeV2/
+         aQxoxv5TKbEU+yLmfEvauXOSBQFKa66Hiz0qxotmfIqzuYElchkeSf3dG5yKEpkBCv7b
+         RuumAktLNGA65YPCAkdRndnPII27U8zCuG25hpM/LV6tvZmNqVB52AiPAwKH/U8GbyiC
+         GQXw==
+X-Gm-Message-State: AOAM531RK1rcK0LqDKX+Ms5BUoXMHzLxi8dJFLErC60LN7juE/7kiojl
+        82a3L3gKHJQK7W5Dfjp1KFo37g==
+X-Google-Smtp-Source: ABdhPJxtU6iQ/CnhU72RZEDTQKHwUn6XCBSY5Z+KwJsWaRVbl7pAhlAA6tLwKCXFx7Hz+ncZzY29EQ==
+X-Received: by 2002:a05:651c:222:: with SMTP id z2mr1701058ljn.395.1595498396415;
+        Thu, 23 Jul 2020 02:59:56 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id e12sm2334666ljl.94.2020.07.23.02.59.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jul 2020 02:59:55 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>
+Subject: [PATCH bpf v2 1/2] bpf: Load zeros for narrow loads beyond target field
+Date:   Thu, 23 Jul 2020 11:59:52 +0200
+Message-Id: <20200723095953.1003302-2-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20200723095953.1003302-1-jakub@cloudflare.com>
+References: <20200723095953.1003302-1-jakub@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+For narrow loads from context that are:
 
+  1) as big in size as the target field, and
+  2) at an offset beyond the target field,
 
-On 22 Jul 2020, at 21:22, Florian Westphal wrote:
+the verifier does not emit the shift-and-mask instruction sequence
+following the target field load instruction, as it happens for narrow loads
+smaller in size than the target field width.
 
-> Eelco Chaudron <echaudro@redhat.com> wrote:
->> This patch makes the masks cache size configurable, or with
->> a size of 0, disable it.
->>
->> Reviewed-by: Paolo Abeni <pabeni@redhat.com>
->> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->> ---
->>  include/uapi/linux/openvswitch.h |    1
->>  net/openvswitch/datapath.c       |   11 +++++
->>  net/openvswitch/flow_table.c     |   86 
->> ++++++++++++++++++++++++++++++++++----
->>  net/openvswitch/flow_table.h     |   10 ++++
->>  4 files changed, 98 insertions(+), 10 deletions(-)
->>
->> diff --git a/include/uapi/linux/openvswitch.h 
->> b/include/uapi/linux/openvswitch.h
->> index 7cb76e5ca7cf..8300cc29dec8 100644
->> --- a/include/uapi/linux/openvswitch.h
->> +++ b/include/uapi/linux/openvswitch.h
->> @@ -86,6 +86,7 @@ enum ovs_datapath_attr {
->>  	OVS_DP_ATTR_MEGAFLOW_STATS,	/* struct ovs_dp_megaflow_stats */
->>  	OVS_DP_ATTR_USER_FEATURES,	/* OVS_DP_F_*  */
->>  	OVS_DP_ATTR_PAD,
->> +	OVS_DP_ATTR_MASKS_CACHE_SIZE,
->
-> This new attr should probably get an entry in
-> datapath.c datapath_policy[].
+This has an unexpected effect of loading the same data, no matter what the
+offset. While, arguably, the expected behavior is to load zeros for offsets
+that beyond the target field.
 
-Yes, I should have, will fix in v2.
+For instance, 2-byte load from a 4-byte context field, backed by a 2-byte
+target field at an offset of 2 bytes results in:
 
->> --- a/net/openvswitch/datapath.c
->> +++ b/net/openvswitch/datapath.c
->> @@ -1535,6 +1535,10 @@ static int ovs_dp_cmd_fill_info(struct 
->> datapath *dp, struct sk_buff *skb,
->>  	if (nla_put_u32(skb, OVS_DP_ATTR_USER_FEATURES, dp->user_features))
->>  		goto nla_put_failure;
->>
->> +	if (nla_put_u32(skb, OVS_DP_ATTR_MASKS_CACHE_SIZE,
->> +			ovs_flow_tbl_masks_cache_size(&dp->table)))
->> +		goto nla_put_failure;
->> +
->>  	genlmsg_end(skb, ovs_header);
->>  	return 0;
->
->
-> ovs_dp_cmd_msg_size() should add another nla_total_size(sizeof(u32))
-> to make sure there is enough space.
+  $ cat progs/test_narrow_load.c
+  [...]
+  SEC("sk_reuseport/narrow_load_half_word")
+  int narrow_load_half_word(struct sk_reuseport_md *ctx)
+  {
+  	__u16 *half;
 
-Same as above
+  	half = (__u16 *)&ctx->ip_protocol;
+  	if (half[0] != IPPROTO_UDP)
+  		return SK_DROP;
+  	if (half[1] != 0)
+  		return SK_DROP;
+  	return SK_PASS;
+  }
 
->> +	if (a[OVS_DP_ATTR_MASKS_CACHE_SIZE]) {
->> +		u32 cache_size;
->> +
->> +		cache_size = nla_get_u32(a[OVS_DP_ATTR_MASKS_CACHE_SIZE]);
->> +		ovs_flow_tbl_masks_cache_resize(&dp->table, cache_size);
->> +	}
->
-> I see a 0 cache size is legal (turns it off) and that the allocation
-> path has a few sanity checks as well.
->
-> Would it make sense to add min/max policy to datapath_policy[] for 
-> this
-> as well?
+  $ llvm-objdump -S --no-show-raw-insn ...
+  [...]
+  0000000000000000 narrow_load_half_word:
+  ; {
+         0:       w0 = 0
+  ;       if (half[0] != IPPROTO_UDP)
+         1:       r2 = *(u16 *)(r1 + 24)
+         2:       if w2 != 17 goto +4 <LBB1_3>
+  ;       if (half[1] != 0)
+         3:       r1 = *(u16 *)(r1 + 26)
+         4:       w0 = 1
+         5:       if w1 == 0 goto +1 <LBB1_3>
+         6:       w0 = 0
 
-Yes I could add the following:
+  0000000000000038 LBB1_3:
+  ; }
+         7:       exit
 
-@@ -1906,7 +1906,8 @@ static const struct nla_policy 
-datapath_policy[OVS_DP_ATTR_MAX + 1] = {
-         [OVS_DP_ATTR_NAME] = { .type = NLA_NUL_STRING, .len = IFNAMSIZ 
-- 1 },
-         [OVS_DP_ATTR_UPCALL_PID] = { .type = NLA_U32 },
-         [OVS_DP_ATTR_USER_FEATURES] = { .type = NLA_U32 },
-+       [OVS_DP_ATTR_MASKS_CACHE_SIZE] =  NLA_POLICY_RANGE(NLA_U32, 0,
-+               PCPU_MIN_UNIT_SIZE / sizeof(struct mask_cache_entry)),
-  };
+  $ bpftool prog dump xlated ...
+  int narrow_load_half_word(struct sk_reuseport_md * ctx):
+  ; int narrow_load_half_word(struct sk_reuseport_md *ctx)
+     0: (b4) w0 = 0
+  ; if (half[0] != IPPROTO_UDP)
+     1: (79) r2 = *(u64 *)(r1 +8)
+     2: (69) r2 = *(u16 *)(r2 +924)
+  ; if (half[0] != IPPROTO_UDP)
+     3: (56) if w2 != 0x11 goto pc+5
+  ; if (half[1] != 0)
+     4: (79) r1 = *(u64 *)(r1 +8)
+     5: (69) r1 = *(u16 *)(r1 +924)
+     6: (b4) w0 = 1
+  ; if (half[1] != 0)
+     7: (16) if w1 == 0x0 goto pc+1
+     8: (b4) w0 = 0
+  ; }
+     9: (95) exit
 
-Let me know your thoughts
+In this case half[0] == half[1] == sk->sk_protocol, which is the target
+field for the ctx->ip_protocol.
+
+Fix it by emitting 'wX = 0' or 'rX = 0' instruction for all narrow loads
+from an offset that is beyond the target field.
+
+Going back to the example, with the fix in place, the upper half load from
+ctx->ip_protocol yields zero:
+
+  int narrow_load_half_word(struct sk_reuseport_md * ctx):
+  ; int narrow_load_half_word(struct sk_reuseport_md *ctx)
+     0: (b4) w0 = 0
+  ; if (half[0] != IPPROTO_UDP)
+     1: (79) r2 = *(u64 *)(r1 +8)
+     2: (69) r2 = *(u16 *)(r2 +924)
+  ; if (half[0] != IPPROTO_UDP)
+     3: (56) if w2 != 0x11 goto pc+4
+  ; if (half[1] != 0)
+     4: (b4) w1 = 0
+     5: (b4) w0 = 1
+  ; if (half[1] != 0)
+     6: (16) if w1 == 0x0 goto pc+1
+     7: (b4) w0 = 0
+  ; }
+     8: (95) exit
+
+Fixes: f96da09473b5 ("bpf: simplify narrower ctx access")
+Suggested-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
+ kernel/bpf/verifier.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 94cead5a43e5..0a9dbcdd6341 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -9614,11 +9614,11 @@ static int opt_subreg_zext_lo32_rnd_hi32(struct bpf_verifier_env *env,
+  */
+ static int convert_ctx_accesses(struct bpf_verifier_env *env)
+ {
++	u32 target_size, size_default, off, access_off;
+ 	const struct bpf_verifier_ops *ops = env->ops;
+ 	int i, cnt, size, ctx_field_size, delta = 0;
+ 	const int insn_cnt = env->prog->len;
+ 	struct bpf_insn insn_buf[16], *insn;
+-	u32 target_size, size_default, off;
+ 	struct bpf_prog *new_prog;
+ 	enum bpf_access_type type;
+ 	bool is_narrower_load;
+@@ -9760,7 +9760,26 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
+ 			return -EINVAL;
+ 		}
+ 
+-		if (is_narrower_load && size < target_size) {
++		/* When context field is wider than the target field,
++		 * narrow load from an offset beyond the target field
++		 * can be reduced to loading zero because there is
++		 * nothing to load from memory.
++		 */
++		access_off = off & (size_default - 1);
++		if (is_narrower_load && access_off >= target_size) {
++			cnt = 0;
++			if (ctx_field_size <= 4)
++				insn_buf[cnt++] = BPF_MOV32_IMM(insn->dst_reg, 0);
++			else
++				insn_buf[cnt++] = BPF_MOV64_IMM(insn->dst_reg, 0);
++		}
++		/* Narrow load from an offset within the target field,
++		 * smaller in size than the target field, needs
++		 * shifting and masking because convert_ctx_access
++		 * always emits full-size target field load.
++		 */
++		if (is_narrower_load && access_off < target_size &&
++		    size < target_size) {
+ 			u8 shift = bpf_ctx_narrow_access_offset(
+ 				off, size, size_default) * 8;
+ 			if (ctx_field_size <= 4) {
+-- 
+2.25.4
 
