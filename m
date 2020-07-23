@@ -2,128 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AEC022B303
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 17:53:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC77622B353
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 18:20:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729751AbgGWPxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 11:53:35 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:50062 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726761AbgGWPxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 11:53:34 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06NFkYM4134791;
-        Thu, 23 Jul 2020 15:53:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=YEJKJVrh9zyoniRPLQ5+w7YtIh1urn01ae/6cECcoOs=;
- b=rF4NclcxAYyJyD6H+rKmY9tFMDz/axd5uFwaZWuGC+0r5tVShxd5zHntlPmOzdcKCA22
- B3Bji8s5s0NtXMqZgwa6E0ZY05ClKySatJOFrEHtW5xIo590eHOmED9M/CiwH/o89etj
- 603PUT4xfNNAyg1tO6dASXYP1O/UpkyRySMvhDoW1HD1c3nmSHGreY1PywGMj2R6kMA/
- lajZOBoBX3MaU/xChX8hsbwjiQPE1jkU6CL1+kunQn/A4bUuWrA4rys6AZ7WWoK9H7Rn
- oJtAdiI9Sj8pqh3OAio3L6x2nx4YLws4H31pmgvKToWJCqwPg//JFk330v33Za1Sea+P Zg== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2130.oracle.com with ESMTP id 32brgrt955-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 23 Jul 2020 15:53:13 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06NFmKPK034186;
-        Thu, 23 Jul 2020 15:51:12 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3030.oracle.com with ESMTP id 32fc4qmutx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 23 Jul 2020 15:51:12 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 06NFp7bh031099;
-        Thu, 23 Jul 2020 15:51:07 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 23 Jul 2020 08:51:06 -0700
-Date:   Thu, 23 Jul 2020 18:50:58 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     Joerg Reuter <jreuter@yaina.de>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        syzkaller-bugs@googlegroups.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [Linux-kernel-mentees] [PATCH net] AX.25: Fix out-of-bounds read
- in ax25_connect()
-Message-ID: <20200723155057.GS2549@kadam>
-References: <20200722151901.350003-1-yepeilin.cs@gmail.com>
- <20200723142814.GQ2549@kadam>
- <20200723151355.GA412829@PWN>
+        id S1729649AbgGWQUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 12:20:11 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:17374 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726632AbgGWQUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 12:20:11 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06NG17jQ029257;
+        Thu, 23 Jul 2020 09:19:18 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=uYkymn3qu6S/owdLk0LARi4PWvdDC1KxzOnIzpf/Oso=;
+ b=ZkAZ9sVddT5rJdO8qY/IXVuQyiogSousqmwCq5kmXLFiAg0f0j0SSRVyhmsyeQW08wVU
+ j0JEv3AUgCJB/606Tm9guXSRuK9bIzJ42jphXwIncyC1ddfXawNFZfzuSHRKa6kWL9eX
+ oCimxNJSx9Ax9cKo6WnofR8KEPLGalTVZYCIidCsuOT67Xwe1C2NB3TtxOrapUiF13aZ
+ Q0oEpyjcZC2ocsSXSPImuZQoct1b2LM9AJumuOYWggWKfkgbdkCJTvqBo1DZiSPlcV6i
+ B0Fy8FF6k+Ql5YF01Oncy+ZDhVWFTE4r9eAD12zxm1EDxlvM/3GRusNvcYVwCtlNzDmY UA== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 32bxenxm97-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 23 Jul 2020 09:19:18 -0700
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 23 Jul
+ 2020 09:19:17 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
+ by SC-EXCH04.marvell.com (10.93.176.84) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Thu, 23 Jul 2020 09:19:17 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GlT71cg2vBmAUP97wTM2xxTlPbOPhMoi8QDmNFLqfSkKfNpJ7w9626nDv4CUHjCdSdDfEe+b+BqQN1aqBoqB6KuDzGenjIRalOt2RcwMeu5ahj5UcWAJ2nsISHFnC2nTrLKRbsBuwRPrsWMstdRSHbVUXSA+aB/Qv6AOMmlpeQMHvNalruvfwi9buA+shztRYX+9n9M5p+E+qQNhPd0n7QsYQ4RxJq8PlL8NM+/4wOtFhTCb/6Zzzs+AnHeOY3XiR1w4KE2jDGa8X81Z3QDMDqJV6/oxJV/jJSN+XTMVLI1fUc+RzfAtnSVoWwg07GyDklmGnXWVBRYrHqdWkV4s/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uYkymn3qu6S/owdLk0LARi4PWvdDC1KxzOnIzpf/Oso=;
+ b=T3BujDcVN/9v60uPVD10CCV+daA4l8pR1bjO9OYlqi3nOWa7XuM0q6zfOmSiOKNX+hCvAS2reKrnaM+TXNWHZyH61nt01l7orV28wb0BYxxawpwXj2AgrUUa61FdlXamnWn0nY0H2gsNgGjZVISIpsVNSLx5jV+AT3VtVYIieBbZVsWgn0ew98vZv0e7EtHah6KJhaf9zaB4R7VBIXa6f50qHy3l9xj9c3YqZVscuIQ05k3s6RbMVr+/xF7I2D2E7MDEYRJXtq4lS9wqlnjxlh8VnUT4nkxsDAUB5JC3lAW8it0LJnL5Jxnb3f+tv7PzD80rf5O3Z2wXmn4p9QYH9w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uYkymn3qu6S/owdLk0LARi4PWvdDC1KxzOnIzpf/Oso=;
+ b=W9E8uNEYVcVcPw1XEkZFL2C/JYpjC631bl6gvuoAFqbSGqNC4V8i098iEYryXkXp2cnqtpAWL5clnLR/Gm9BwM2+t1Vul1lDoaljCk6Um3queWXY0XK2uki20ieLjysTyTDA3yuVfRN3od5prHS6ZpP0WHZlKwGmjGUb0wEyTbU=
+Received: from MW2PR18MB2267.namprd18.prod.outlook.com (2603:10b6:907:3::11)
+ by MWHPR18MB1280.namprd18.prod.outlook.com (2603:10b6:320:2b::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.20; Thu, 23 Jul
+ 2020 16:19:16 +0000
+Received: from MW2PR18MB2267.namprd18.prod.outlook.com
+ ([fe80::b9a6:a3f2:2263:dc32]) by MW2PR18MB2267.namprd18.prod.outlook.com
+ ([fe80::b9a6:a3f2:2263:dc32%4]) with mapi id 15.20.3195.026; Thu, 23 Jul 2020
+ 16:19:16 +0000
+From:   Alex Belits <abelits@marvell.com>
+To:     "tglx@linutronix.de" <tglx@linutronix.de>,
+        "peterz@infradead.org" <peterz@infradead.org>
+CC:     "mingo@kernel.org" <mingo@kernel.org>,
+        Prasun Kapoor <pkapoor@marvell.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [EXT] Re: [PATCH v4 00/13] "Task_isolation" mode
+Thread-Topic: [EXT] Re: [PATCH v4 00/13] "Task_isolation" mode
+Thread-Index: AQHWYDagTVb+dYV8A0GKqxFlnWyBeKkVJq8AgAAUHACAABRRgIAAAdcAgAAIo4A=
+Date:   Thu, 23 Jul 2020 16:19:16 +0000
+Message-ID: <c326dd17cab3a43e3e500636005e14b9c315d6cf.camel@marvell.com>
+References: <04be044c1bcd76b7438b7563edc35383417f12c8.camel@marvell.com>
+         <87imeextf3.fsf@nanos.tec.linutronix.de>
+         <20200723142902.GT5523@worktop.programming.kicks-ass.net>
+         <670609a91be23ebb4f179850601439fbed844479.camel@marvell.com>
+         <20200723154820.GA709@worktop.programming.kicks-ass.net>
+In-Reply-To: <20200723154820.GA709@worktop.programming.kicks-ass.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: linutronix.de; dkim=none (message not signed)
+ header.d=none;linutronix.de; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [173.228.7.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8120efc5-50c8-46ab-9e84-08d82f242537
+x-ms-traffictypediagnostic: MWHPR18MB1280:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR18MB1280ECBE386724FABD9AFB2CBC760@MWHPR18MB1280.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1824;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 07SHaaHQLZj7nTr+hgLGEpe2ksumNDh/+hHleUAwCLNEEDAMVJhDVx7IyN0nbaHdBpKU8vQ5LGo9G8lFsZMvQLf05UVA/YqMRT+5bvO309u0ABZ52F70LJIUegSFd9s9qLbprD9TgST1PGuKOnSW0RKWR33YRS2t9DWgA0X14ahxDJqMBWk1Q78lpdxwcUOVtNNDKl+e1BiLFAMSwKTkKsXjD2TFYPhOgN9HjV0Q6U0zzM5YzXaeOOZRwGzEVurCfFQ9uCk1Up6jTqCnLUC7orL0gL/bWGnJTXjxJsMNefj4az5nHr0IFObujCgQGaDYlQFb2IK4ihdAN0uQ+JLsavKa4/rlZgrYECBQExPvM7D79k5psxpBfwdErMaannfXT4+NAut+ehsW1CuSMBnMDg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR18MB2267.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(366004)(136003)(346002)(39860400002)(36756003)(71200400001)(6506007)(86362001)(2616005)(5660300002)(478600001)(4326008)(186003)(8936002)(26005)(6512007)(316002)(2906002)(966005)(76116006)(91956017)(110136005)(66476007)(8676002)(64756008)(66946007)(66556008)(66446008)(7416002)(6486002)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 3aWNYXg+NScx88KvPK9O4oFYRIoGKL8K24J/OBMWaRk/9Zqv1UJKwKt1YgYzyFndvOZZ7+wTxtDBc9sABVvbXrpSa57SpTTb1Xe7m8i/d+9tKli3P8ceWYWgx5LUbGAci9phuInxz61U3If1emdFNhPP7htNehk9F5Is79xmnmPVfJNsDaLjTPI6jXw3GEU2koxReTktc1QmO9p5fNSIE6E/z6W8gtju+MytmiQSPwCJ2HpyfOim5yzb1gZCBHinCEU/kKyuS1PImi4ULWlsnMzkN6Trjdn8sRanMMmIfVaUB9aLL19IB2sWK5NQbgPup6rOdHTNdbMIu8egKTbMu0f0kYYpP+lMaLr4lV4xNeVjozN3CMjkzPyHzm/9JM63eQDdnoJK/QPdu8HUBh0aol1+FzdCnFwzxPwNkCtazC1IMb6zlFBslymWuesPnXLe+ntnYe8vomXkYbxuoJpJP7Fv9guuHH0r244i0iz3Jcg=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <EA32F048CCD89743A1D51F632B9A7DED@namprd18.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200723151355.GA412829@PWN>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9691 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 malwarescore=0
- suspectscore=0 mlxlogscore=999 adultscore=0 spamscore=0 bulkscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007230117
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9691 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0 spamscore=0
- impostorscore=0 suspectscore=0 adultscore=0 clxscore=1015 mlxlogscore=999
- priorityscore=1501 phishscore=0 lowpriorityscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007230117
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW2PR18MB2267.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8120efc5-50c8-46ab-9e84-08d82f242537
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jul 2020 16:19:16.1066
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sQCOOmPTvu0fo/Gm88jKW1BJXocO9HXQTvozGznE87Mb8hzCZ7d+kxvt7ep+1KnL0nqMqTvIOi7Haa/7YMFGDQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR18MB1280
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-23_09:2020-07-23,2020-07-23 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 23, 2020 at 11:13:55AM -0400, Peilin Ye wrote:
-> On Thu, Jul 23, 2020 at 05:28:15PM +0300, Dan Carpenter wrote:
-> > On Wed, Jul 22, 2020 at 11:19:01AM -0400, Peilin Ye wrote:
-> > > Checks on `addr_len` and `fsa->fsa_ax25.sax25_ndigis` are insufficient.
-> > > ax25_connect() can go out of bounds when `fsa->fsa_ax25.sax25_ndigis`
-> > > equals to 7 or 8. Fix it.
-> > > 
-> > > This issue has been reported as a KMSAN uninit-value bug, because in such
-> > > a case, ax25_connect() reaches into the uninitialized portion of the
-> > > `struct sockaddr_storage` statically allocated in __sys_connect().
-> > > 
-> > > It is safe to remove `fsa->fsa_ax25.sax25_ndigis > AX25_MAX_DIGIS` because
-> > > `addr_len` is guaranteed to be less than or equal to
-> > > `sizeof(struct full_sockaddr_ax25)`.
-> > > 
-> > > Reported-by: syzbot+c82752228ed975b0a623@syzkaller.appspotmail.com
-> > > Link: https://syzkaller.appspot.com/bug?id=55ef9d629f3b3d7d70b69558015b63b48d01af66
-> > > Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
-> > > ---
-> > >  net/ax25/af_ax25.c | 4 +++-
-> > >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-> > > index fd91cd34f25e..ef5bf116157a 100644
-> > > --- a/net/ax25/af_ax25.c
-> > > +++ b/net/ax25/af_ax25.c
-> > > @@ -1187,7 +1187,9 @@ static int __must_check ax25_connect(struct socket *sock,
-> > >  	if (addr_len > sizeof(struct sockaddr_ax25) &&
-> > >  	    fsa->fsa_ax25.sax25_ndigis != 0) {
-> > >  		/* Valid number of digipeaters ? */
-> > > -		if (fsa->fsa_ax25.sax25_ndigis < 1 || fsa->fsa_ax25.sax25_ndigis > AX25_MAX_DIGIS) {
-> > > +		if (fsa->fsa_ax25.sax25_ndigis < 1 ||
-> > > +		    addr_len < sizeof(struct sockaddr_ax25) +
-> > > +		    sizeof(ax25_address) * fsa->fsa_ax25.sax25_ndigis) {
-> > 
-> > The "sizeof(ax25_address) * fsa->fsa_ax25.sax25_ndigis" can have an
-> > integer overflow so you still need the
-> > "fsa->fsa_ax25.sax25_ndigis > AX25_MAX_DIGIS" check.
-> 
-> Thank you for fixing this up! I did some math but I didn't think of
-> that. Will be more careful when removing things.
-
-No problem.  You had the right approach to look for ways to clean things
-up.
-
-Your patches make me happy because you're trying to fix important bugs.
-
-regards,
-dan carpenter
+DQpPbiBUaHUsIDIwMjAtMDctMjMgYXQgMTc6NDggKzAyMDAsIFBldGVyIFppamxzdHJhIHdyb3Rl
+Og0KPiBPbiBUaHUsIEp1bCAyMywgMjAyMCBhdCAwMzo0MTo0NlBNICswMDAwLCBBbGV4IEJlbGl0
+cyB3cm90ZToNCj4gPiBPbiBUaHUsIDIwMjAtMDctMjMgYXQgMTY6MjkgKzAyMDAsIFBldGVyIFpp
+amxzdHJhIHdyb3RlOg0KPiA+ID4gLg0KPiA+ID4gDQo+ID4gPiBUaGlzLi4gYXMgcHJlc2VudGVk
+IGl0IGlzIGFuIGFic29sdXRlbHkgdW5yZXZpZXdhYmxlIHBpbGUgb2YNCj4gPiA+IGp1bmsuIEl0
+DQo+ID4gPiBwcmVzZW50cyBjb2RlIHdpdG91dCBhbnkgY29oZXJlbnQgcHJvYmxlbSBkZXNjcmlw
+dGlvbiBhbmQNCj4gPiA+IGFuYWx5c2lzLg0KPiA+ID4gQW5kDQo+ID4gPiB0aGUgcGF0Y2hlcyBh
+cmUgbm90IHNwbGl0IHNhbmVseSBlaXRoZXIuDQo+ID4gDQo+ID4gVGhlcmUgaXMgYSBtb3JlIGNv
+bXBsZXRlIGFuZCBzbGlnaHRseSBvdXRkYXRlZCBkZXNjcmlwdGlvbiBpbiB0aGUNCj4gPiBwcmV2
+aW91cyB2ZXJzaW9uIG9mIHRoZSBwYXRjaCBhdCANCj4gPiBodHRwczovL3VybGRlZmVuc2UucHJv
+b2Zwb2ludC5jb20vdjIvdXJsP3U9aHR0cHMtM0FfX2xvcmUua2VybmVsLm9yZ19sa21sXzA3YzI1
+YzI0NmM1NTAxMjk4MWVjMDI5NmVlZTIzZTY4YzcxOTMzM2EuY2FtZWwtNDBtYXJ2ZWxsLmNvbV8m
+ZD1Ed0lCQWcmYz1uS2pXZWMyYjZSMG1PeVBhejd4dGZRJnI9MXFndk9uWGZrM1pISkEzcDdSSWI2
+TkZxczRTUFBEeVBJX1Bjd05GcDhLWSZtPXNoazlhNUZEd2t0T1p5c1NiRklqeG1nVWctSVB5dzJV
+a2JWQUhHQmhOVjAmcz1GRlphai1LYW53cUVpWFlDZGpkOTZKT2dQX0dBT25hbnBrdzZiQnZOcks0
+JmU9IA0KPiANCj4gTm90IHRoZSBwb2ludCwgeW91J3JlIG1peGluZyBmYXIgdG9vIG1hbnkgdGhp
+bmdzIGluIG9uZSBnby4gWW91IGFsc28NCj4gaGF2ZSB0aGUgcGF0Y2hlcyBzcGxpdCBsaWtlICdn
+ZW5lcmljIC8gYXJjaC0xIC8gYXJjaC0yJyB3aGljaCBpcw0KPiB3cm9uZw0KPiBwZXIgZGVmaW5p
+dGlvbiwgYXMgcGF0Y2hlcyBzaG91bGQgYmUgc3BsaXQgcGVyIGNoYW5nZSBhbmQgbm90IGNhcmUN
+Cj4gYWJvdXQNCj4gc2lseSBib3VuZGFyaWVzLg0KDQpUaGlzIGZvbGxvd3MgdGhlIG9yaWdpbmFs
+IHBhdGNoIGJ5IENocmlzIE1ldGNhbGYuIFRoZXJlIGlzIGEgcmVhc29uIGZvcg0KdGhhdCAtLSBw
+ZXItYXJjaGl0ZWN0dXJlIGNoYW5nZXMgYXJlIGluZGVwZW5kZW50IGZyb20gZWFjaCBvdGhlciBh
+bmQNCmFmZmVjdCBub3QganVzdCBjb2RlIGJ1dCBmdW5jdGlvbmFsaXR5IHRoYXQgd2FzIGltcGxl
+bWVudGVkIHBlci0NCmFyY2hpdGVjdHVyZS4gVG8gc3VwcG9ydCBtb3JlIGFyY2hpdGVjdHVyZXMs
+IGl0IHdpbGwgYmUgbmVjZXNzYXJ5IHRvIGRvDQppdCBzZXBhcmF0ZWx5IGZvciBlYWNoLCBhbmQg
+bWFyayB0aGVtIHN1cHBvcnRlZCB3aXRoDQpIQVZFX0FSQ0hfVEFTS19JU09MQVRJT04uIEhhdmlu
+ZyBvbmx5IHNvbWUgYXJjaGl0ZWN0dXJlcyBzdXBwb3J0ZWQgZG9lcw0Kbm90IGJyZWFrIGFueXRo
+aW5nIGZvciB0aGUgcmVzdCAtLSBhcmNoaXRlY3R1cmVzIHRoYXQgYXJlIG5vdCBjb3ZlcmVkLA0K
+d291bGQgbm90IGhhdmUgdGhpcyBmdW5jdGlvbmFsaXR5Lg0KDQo+IA0KPiBBbHNvLCBpZiB5b3Ug
+d2FudCBnZW5lcmljIGVudHJ5IGNvZGUsIHRoZXJlJ3MgcGF0Y2hlcyBmb3IgdGhhdCBoZXJlOg0K
+PiANCj4gICANCj4gaHR0cHM6Ly91cmxkZWZlbnNlLnByb29mcG9pbnQuY29tL3YyL3VybD91PWh0
+dHBzLTNBX19sa21sLmtlcm5lbC5vcmdfcl8yMDIwMDcyMjIxNTk1NC40NjQyODE5MzAtNDBsaW51
+dHJvbml4LmRlJmQ9RHdJQkFnJmM9bktqV2VjMmI2UjBtT3lQYXo3eHRmUSZyPTFxZ3ZPblhmazNa
+SEpBM3A3UkliNk5GcXM0U1BQRHlQSV9QY3dORnA4S1kmbT1zaGs5YTVGRHdrdE9aeXNTYkZJanht
+Z1VnLUlQeXcyVWtiVkFIR0JoTlYwJnM9blpYSXZpWTdydmEzMUt2UGdTVm5UYWN3Rk5ic21rZFcw
+THhTVGZZU2lxZyZlPQ0KPiAgDQo+IA0KPiANCg0KVGhhdCBsb29rcyB1c2VmdWwuIFdoeSBkaWRu
+J3QgVGhvbWFzIEdsZWl4bmVyIG1lbnRpb24gaXQgaW4gaGlzDQpjcml0aWNpc20gb2YgbXkgYXBw
+cm9hY2ggaWYgaGUgYWxyZWFkeSBzb2x2ZWQgdGhhdCBleGFjdCBwcm9ibGVtLCBhdA0KbGVhc3Qg
+Zm9yIHg4Nj8NCg0KLS0gDQpBbGV4DQo=
