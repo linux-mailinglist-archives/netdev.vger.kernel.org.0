@@ -2,118 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E05C22B267
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 17:22:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0EBE22B28A
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 17:28:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729535AbgGWPWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 11:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57514 "EHLO
+        id S1729649AbgGWP1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 11:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725808AbgGWPWd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 11:22:33 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B82C0619DC;
-        Thu, 23 Jul 2020 08:22:33 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id k17so3482958lfg.3;
-        Thu, 23 Jul 2020 08:22:33 -0700 (PDT)
+        with ESMTP id S1729668AbgGWP1W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 11:27:22 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E711DC0619DC;
+        Thu, 23 Jul 2020 08:27:21 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id e8so6811607ljb.0;
+        Thu, 23 Jul 2020 08:27:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=L81wTFA53gfp7hYtms3C94J0jBeZGUSiKMHUeZoLf74=;
-        b=EJ/MMS9NJ0fa7vp2B2cpL8GsEZFuIK04OhTRyhJVsY5qLLm+Jldv7Rx2TXbULPN2Cs
-         62Ct2jJU+poxwYVG1TUtpgXqlGVsODkX4GlAkQPnxR7RPRPGgZN5xnIQLvA7DD8fCA1E
-         ETgwAwT/t1vrZwjgmkv2WzX0igbmKVqkS8OBnvMiQ9ix8UkR1sq93/djIqJTg0iwAIK2
-         vZZ5z1yBdGJoJxcL+fwkFmoTESEbAg5oOahR3NrMqCyTYphW2oUjaENHITHjuGcecNIj
-         cFOMDsr/5kXwCuiY71153T9y2zbuN4IGZIwlFnBbGWf3K1f3vSJgg8UVtgMa2bwOXjb+
-         +tFA==
+        bh=icDrOEVC/8epZOak8kb0H/2e+mCU2SCzkHlrnG8TscA=;
+        b=X/ZmKmF04YhdoJNrfvi5V/RM9Nu870qnC3kLeTrtfFp73YnwrxcajumDhvPTNNAeyc
+         XM6hIDpuoGyKCTYQ1gKKMllEzrGoXXAKCWYI+I8ruapSC2O5zvT5nc/AyevI1yGqQdso
+         M0U0MOVYqoI/nrnIvkCeuJ+/qnpqER4ep0I0ZyZt/yt486bdv5POJFm9DbUBiK6RLxOE
+         cKwYojbAoANHV4l/+I4koCRrxgOVVCpgBhHgUrBBKhg9JTQLEi/CVXkREgIjiEEpRUCT
+         a5Q/xR2Yp4pK5BXYIp7x20LFymQ7XdSdZlzdTEkebQ5UjgyPI4nJHrznW0MYTt0w3/9s
+         dDQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=L81wTFA53gfp7hYtms3C94J0jBeZGUSiKMHUeZoLf74=;
-        b=hEiR1RdSL8uKi1wQSMKIHlHacnaerOvU8wOQqyWWf7GBNZLIsFf9MOieoeOCy2vWpv
-         iGVqjqgPF/P9V3A//lAuTTXQ7UBOTKJ93Pk1CifIh8p37CLQyC9oimS/4kN7NfztO5QB
-         zpOUlH8Ht4KSLcfbpURFbxdYoN30rp/xT/zbYmoWZPCbI+us8B5s2YyScZjtmz0cCNQg
-         RFTcCLGuzUD1mZ5OaFN4n7Dh5iYZ088do7rlz5TQ5d2XI2HOnbsSGSiS/qpwB9PLIUAG
-         b6MhDvhMh3K96Rp6sz4etzCXeHf7Qnd4XuE4sUt343kLePn9PhQn8yXXLsA3sbl3WsEz
-         V+zQ==
-X-Gm-Message-State: AOAM530MMzvZ9oCwPT8KstW1e7Re0+pgVxkadu3SBUaSf5ZkFAMHjiY/
-        LRbs/5QsYRflAJ/XbV1OIfc7y9oY1XD9aEjJMeE=
-X-Google-Smtp-Source: ABdhPJxuvwgfuAanQGNYX7PvikPhn/NQCxwDohI9W4Y893EwG29iNI4LFtdnK9U3931oOB6GvwOtBKz8kki1RW+GZso=
-X-Received: by 2002:ac2:5f48:: with SMTP id 8mr2469875lfz.157.1595517751613;
- Thu, 23 Jul 2020 08:22:31 -0700 (PDT)
+        bh=icDrOEVC/8epZOak8kb0H/2e+mCU2SCzkHlrnG8TscA=;
+        b=pVdqfDqKaZeAwp3gmkQTELfsJ8Ed4Wul+4nsoFYTJfzQP2WGzoi2/KLPZSfCmuMh7w
+         RKLp2AZekV660wNmW1uUNCW7C0NOBZbhoDl0mQGJJO0AuuLqMTIIntSc3cOYqe96Xj69
+         Ar8KkJixz4wDf5uhyx+lHeQ9uu1MerVPAXMZNkOvQV/y8K6RSMEPXlCCv5g6sz6dUKkO
+         XdKB2j5Muo6AyZFFVDleV0Wx52XqWnuruBqYPsUVIXtDUoCjrgAgsTytTRFoFrdF+42j
+         NND/CRhKMT4dnmSckU6n0bydV3sNpDHvQsJ7th+wA71lXKqe5MWXbJi3zldJdiL6TweG
+         6EtA==
+X-Gm-Message-State: AOAM5314D7no0ccKUAvwcfmJVhyb2YRXBOSyQo+vbFbs4c0mc+CXDMDr
+        61h5fJPgBfqFvtm9UJ9SNPnEvD7wIBIR8Iv+mQQ=
+X-Google-Smtp-Source: ABdhPJys2Y8KPPvvS8hAEOfeBh/cxXaslg/nRGG2CqfBBypTJG5NaYZw4bBCSPovLsojGPswX04aNzT3bZ73DvdQXCw=
+X-Received: by 2002:a2e:90da:: with SMTP id o26mr2313514ljg.91.1595518040467;
+ Thu, 23 Jul 2020 08:27:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200722184210.4078256-1-songliubraving@fb.com>
- <20200722184210.4078256-3-songliubraving@fb.com> <20200723055518.onydx7uhmzomt7ud@ast-mbp.dhcp.thefacebook.com>
- <684DA506-6780-4CB5-B99C-24D939CDE6DF@fb.com>
-In-Reply-To: <684DA506-6780-4CB5-B99C-24D939CDE6DF@fb.com>
+References: <20200723141914.20722-1-trix@redhat.com>
+In-Reply-To: <20200723141914.20722-1-trix@redhat.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 23 Jul 2020 08:22:19 -0700
-Message-ID: <CAADnVQK+xX8oKF5f=FzmE+xxbSovJ+rbZD6TRxTAtdH+-ockEw@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 2/4] bpf: fail PERF_EVENT_IOC_SET_BPF when
- bpf_get_[stack|stackid] cannot work
-To:     Song Liu <songliubraving@fb.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Thu, 23 Jul 2020 08:27:08 -0700
+Message-ID: <CAADnVQJYsqosZ804geM1Urrz73+z1fMZu1w76KN-847S3CL+nQ@mail.gmail.com>
+Subject: Re: [PATCH] bpf: BPF_SYSCALL depends INET
+To:     trix@redhat.com
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Will Deacon <will@kernel.org>, krzk@kernel.org,
+        patrick.bellasi@arm.com, David Howells <dhowells@redhat.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 22, 2020 at 11:20 PM Song Liu <songliubraving@fb.com> wrote:
+On Thu, Jul 23, 2020 at 7:19 AM <trix@redhat.com> wrote:
 >
+> From: Tom Rix <trix@redhat.com>
 >
+> A link error
 >
-> > On Jul 22, 2020, at 10:55 PM, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Wed, Jul 22, 2020 at 11:42:08AM -0700, Song Liu wrote:
-> >> diff --git a/kernel/events/core.c b/kernel/events/core.c
-> >> index 856d98c36f562..f77d009fcce95 100644
-> >> --- a/kernel/events/core.c
-> >> +++ b/kernel/events/core.c
-> >> @@ -9544,6 +9544,24 @@ static int perf_event_set_bpf_handler(struct perf_event *event, u32 prog_fd)
-> >>      if (IS_ERR(prog))
-> >>              return PTR_ERR(prog);
-> >>
-> >> +    if (event->attr.precise_ip &&
-> >> +        prog->call_get_stack &&
-> >> +        (!(event->attr.sample_type & __PERF_SAMPLE_CALLCHAIN_EARLY) ||
-> >> +         event->attr.exclude_callchain_kernel ||
-> >> +         event->attr.exclude_callchain_user)) {
-> >> +            /*
-> >> +             * On perf_event with precise_ip, calling bpf_get_stack()
-> >> +             * may trigger unwinder warnings and occasional crashes.
-> >> +             * bpf_get_[stack|stackid] works around this issue by using
-> >> +             * callchain attached to perf_sample_data. If the
-> >> +             * perf_event does not full (kernel and user) callchain
-> >> +             * attached to perf_sample_data, do not allow attaching BPF
-> >> +             * program that calls bpf_get_[stack|stackid].
-> >> +             */
-> >> +            bpf_prog_put(prog);
-> >> +            return -EINVAL;
-> >
-> > I suspect this will be a common error. bpftrace and others will be hitting
-> > this issue and would need to fix how they do perf_event_open.
-> > But EINVAL is too ambiguous and sys_perf_event_open has no ability to
-> > return a string.
-> > So how about we pick some different errno here to make future debugging
-> > a bit less painful?
-> > May be EBADFD or EPROTO or EPROTOTYPE ?
-> > I think anything would be better than EINVAL.
+> kernel/bpf/net_namespace.o: In function `bpf_netns_link_release':
+> net_namespace.c: undefined reference to `bpf_sk_lookup_enabled'
 >
-> I like EPROTO most. I will change it to EPROTO if we don't have better ideas.
->
-> Btw, this is not the error code on sys_perf_event_open(). It is the ioctl()
-> on the perf_event fd. So debugging this error will be less painful than
-> debugging sys_perf_event_open() errors.
+> bpf_sk_lookup_enabled is defined with INET
+> net_namespace is controlled by BPF_SYSCALL
 
-ahh. right. Could you also add a string hint to libbpf when it sees this errno?
+pls rebase. it was fixed already.
