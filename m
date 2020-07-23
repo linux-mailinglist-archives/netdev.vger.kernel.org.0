@@ -2,45 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D32822ADC7
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:30:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB30622ADCA
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728714AbgGWLaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 07:30:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728536AbgGWLaF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 07:30:05 -0400
-Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8DB82C0619E2
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 04:30:05 -0700 (PDT)
+        id S1728723AbgGWLaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 07:30:14 -0400
+Received: from mail.katalix.com ([3.9.82.81]:44046 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728531AbgGWLaH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jul 2020 07:30:07 -0400
 Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
         (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 8A8D28AD78;
+        by mail.katalix.com (Postfix) with ESMTPSA id 029948AD87;
         Thu, 23 Jul 2020 12:30:04 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1595503804; bh=YW3I8SnzAhZlI7sWArroBiyLFJrQvSqW5Ja3udfmjBc=;
+        t=1595503805; bh=OIIxnwb9DWGoR57H0e73lq1IK+kcyIZzTghpRyh4So0=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:From;
         z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
          rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
-         in@katalix.com>|Subject:=20[PATCH=204/6]=20l2tp:=20cleanup=20netli
-         nk=20send=20of=20tunnel=20address=20information|Date:=20Thu,=2023=
-         20Jul=202020=2012:29:53=20+0100|Message-Id:=20<20200723112955.1980
-         8-5-tparkin@katalix.com>|In-Reply-To:=20<20200723112955.19808-1-tp
-         arkin@katalix.com>|References:=20<20200723112955.19808-1-tparkin@k
-         atalix.com>;
-        b=MVtklMjWC1klW9HI+vnqVodI/zHUNIv9elxKWOvxYgQxSRErOnqiDfgNGGoMVTF85
-         AKBuAt/ldIp8+vYwo1kcCX2Azb97SdSfXUtLEJffRw/EEfDfiXEu9tK0Lku30qRr7P
-         Vae2WEgVYAQLBx2JOj396AjsmmqUSRlreadiPA6QsFIysj6Q9EzWQxEAFRAeV/8C7E
-         NA5cFxRLNppn05WcIOZKCoeDAldBWevu4wCQpydgcjE4bIBZiB5gEWBEuier8asiOn
-         IKSSt77WVZnucexXYoyHPznFtNhLLY7yHmYrA/Klm+6Qrgm/m5t1dZWqa0/jixXTEz
-         9Dt/tXEf1E3FQ==
+         in@katalix.com>|Subject:=20[PATCH=205/6]=20l2tp:=20cleanup=20netli
+         nk=20tunnel=20create=20address=20handling|Date:=20Thu,=2023=20Jul=
+         202020=2012:29:54=20+0100|Message-Id:=20<20200723112955.19808-6-tp
+         arkin@katalix.com>|In-Reply-To:=20<20200723112955.19808-1-tparkin@
+         katalix.com>|References:=20<20200723112955.19808-1-tparkin@katalix
+         .com>;
+        b=LuU4mryaVsistTHPsMia6LnsxBDu/Pz3zjIqA4PA8Vpsv0ZHnkpEtTsRRdOAlcg27
+         SLnZymNLwUS3jLHaZG+PN/hDlQ3K8FGU7EhmEji4ZNEa7W54XvWdJl1Heefg4HMbH+
+         a/9UlNDLpXj0ZKW7sOaGrKijeiGtab71g4XHc2SdZrCTHBV39vrNlmAn6rIPPu6OzA
+         hTH6sXk/mcp4FYZJMJ7RQ0HEIl40jt7nBDw3I0COfDiYj7uo9omnIH8UL53XKQtopj
+         1ch4a+62PNhGa69abhdBQ0a7aA5ZANdSGZ27cINH7mPtMDXaInhRQrcCFfK6p6JcY6
+         AYFfK1LvxS+LQ==
 From:   Tom Parkin <tparkin@katalix.com>
 To:     netdev@vger.kernel.org
 Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
-Subject: [PATCH 4/6] l2tp: cleanup netlink send of tunnel address information
-Date:   Thu, 23 Jul 2020 12:29:53 +0100
-Message-Id: <20200723112955.19808-5-tparkin@katalix.com>
+Subject: [PATCH 5/6] l2tp: cleanup netlink tunnel create address handling
+Date:   Thu, 23 Jul 2020 12:29:54 +0100
+Message-Id: <20200723112955.19808-6-tparkin@katalix.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200723112955.19808-1-tparkin@katalix.com>
 References: <20200723112955.19808-1-tparkin@katalix.com>
@@ -49,169 +46,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-l2tp_nl_tunnel_send has conditionally compiled code to support AF_INET6,
-which makes the code difficult to follow and triggers checkpatch
-warnings.
+When creating an L2TP tunnel using the netlink API, userspace must
+either pass a socket FD for the tunnel to use (for managed tunnels),
+or specify the tunnel source/destination address (for unmanaged
+tunnels).
 
-Split the code out into functions to handle the AF_INET v.s. AF_INET6
-cases, which both improves readability and resolves the checkpatch
-warnings.
+Since source/destination addresses may be AF_INET or AF_INET6, the l2tp
+netlink code has conditionally compiled blocks to support IPv6.
+
+Rather than embedding these directly into l2tp_nl_cmd_tunnel_create
+(where it makes the code difficult to read and confuses checkpatch to
+boot) split the handling of address-related attributes into a separate
+function.
 
 Signed-off-by: Tom Parkin <tparkin@katalix.com>
 ---
- net/l2tp/l2tp_netlink.c | 126 ++++++++++++++++++++++------------------
- 1 file changed, 70 insertions(+), 56 deletions(-)
+ net/l2tp/l2tp_netlink.c | 57 ++++++++++++++++++++++++-----------------
+ 1 file changed, 33 insertions(+), 24 deletions(-)
 
 diff --git a/net/l2tp/l2tp_netlink.c b/net/l2tp/l2tp_netlink.c
-index fc26ebad2f4f..0021cc03417e 100644
+index 0021cc03417e..35716a6e1e2c 100644
 --- a/net/l2tp/l2tp_netlink.c
 +++ b/net/l2tp/l2tp_netlink.c
-@@ -310,16 +310,79 @@ static int l2tp_nl_cmd_tunnel_modify(struct sk_buff *skb, struct genl_info *info
+@@ -155,12 +155,38 @@ static int l2tp_session_notify(struct genl_family *family,
  	return ret;
  }
  
++static int l2tp_nl_cmd_tunnel_create_get_addr(struct nlattr **attrs, struct l2tp_tunnel_cfg *cfg)
++{
++	if (attrs[L2TP_ATTR_UDP_SPORT])
++		cfg->local_udp_port = nla_get_u16(attrs[L2TP_ATTR_UDP_SPORT]);
++	if (attrs[L2TP_ATTR_UDP_DPORT])
++		cfg->peer_udp_port = nla_get_u16(attrs[L2TP_ATTR_UDP_DPORT]);
++	cfg->use_udp_checksums = nla_get_flag(attrs[L2TP_ATTR_UDP_CSUM]);
++
++	/* Must have either AF_INET or AF_INET6 address for source and destination */
 +#if IS_ENABLED(CONFIG_IPV6)
-+static int l2tp_nl_tunnel_send_addr6(struct sk_buff *skb, struct sock *sk,
-+				     enum l2tp_encap_type encap)
-+{
-+	struct inet_sock *inet = inet_sk(sk);
-+	struct ipv6_pinfo *np = inet6_sk(sk);
-+
-+	switch (encap) {
-+	case L2TP_ENCAPTYPE_UDP:
-+		if (udp_get_no_check6_tx(sk) &&
-+		    nla_put_flag(skb, L2TP_ATTR_UDP_ZERO_CSUM6_TX))
-+			return -1;
-+		if (udp_get_no_check6_rx(sk) &&
-+		    nla_put_flag(skb, L2TP_ATTR_UDP_ZERO_CSUM6_RX))
-+			return -1;
-+		if (nla_put_u16(skb, L2TP_ATTR_UDP_SPORT, ntohs(inet->inet_sport)) ||
-+		    nla_put_u16(skb, L2TP_ATTR_UDP_DPORT, ntohs(inet->inet_dport)))
-+			return -1;
-+		fallthrough;
-+	case L2TP_ENCAPTYPE_IP:
-+		if (nla_put_in6_addr(skb, L2TP_ATTR_IP6_SADDR, &np->saddr) ||
-+		    nla_put_in6_addr(skb, L2TP_ATTR_IP6_DADDR, &sk->sk_v6_daddr))
-+			return -1;
-+		break;
-+	}
-+	return 0;
-+}
-+#endif
-+
-+static int l2tp_nl_tunnel_send_addr4(struct sk_buff *skb, struct sock *sk,
-+				     enum l2tp_encap_type encap)
-+{
-+	struct inet_sock *inet = inet_sk(sk);
-+
-+	switch (encap) {
-+	case L2TP_ENCAPTYPE_UDP:
-+		if (nla_put_u8(skb, L2TP_ATTR_UDP_CSUM, !sk->sk_no_check_tx) ||
-+		    nla_put_u16(skb, L2TP_ATTR_UDP_SPORT, ntohs(inet->inet_sport)) ||
-+		    nla_put_u16(skb, L2TP_ATTR_UDP_DPORT, ntohs(inet->inet_dport)))
-+			return -1;
-+		fallthrough;
-+	case L2TP_ENCAPTYPE_IP:
-+		if (nla_put_in_addr(skb, L2TP_ATTR_IP_SADDR, inet->inet_saddr) ||
-+		    nla_put_in_addr(skb, L2TP_ATTR_IP_DADDR, inet->inet_daddr))
-+			return -1;
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+/* Append attributes for the tunnel address, handling the different attribute types
-+ * used for different tunnel encapsulation and AF_INET v.s. AF_INET6.
-+ */
-+static int l2tp_nl_tunnel_send_addr(struct sk_buff *skb, struct l2tp_tunnel *tunnel)
-+{
-+	struct sock *sk = tunnel->sock;
-+
-+	if (!sk)
++	if (attrs[L2TP_ATTR_IP6_SADDR] && attrs[L2TP_ATTR_IP6_DADDR]) {
++		cfg->local_ip6 = nla_data(attrs[L2TP_ATTR_IP6_SADDR]);
++		cfg->peer_ip6 = nla_data(attrs[L2TP_ATTR_IP6_DADDR]);
++		cfg->udp6_zero_tx_checksums = nla_get_flag(attrs[L2TP_ATTR_UDP_ZERO_CSUM6_TX]);
++		cfg->udp6_zero_rx_checksums = nla_get_flag(attrs[L2TP_ATTR_UDP_ZERO_CSUM6_RX]);
 +		return 0;
-+
-+#if IS_ENABLED(CONFIG_IPV6)
-+	if (sk->sk_family == AF_INET6)
-+		return l2tp_nl_tunnel_send_addr6(skb, sk, tunnel->encap);
++	}
 +#endif
-+	return l2tp_nl_tunnel_send_addr4(skb, sk, tunnel->encap);
++	if (attrs[L2TP_ATTR_IP_SADDR] && attrs[L2TP_ATTR_IP_DADDR]) {
++		cfg->local_ip.s_addr = nla_get_in_addr(attrs[L2TP_ATTR_IP_SADDR]);
++		cfg->peer_ip.s_addr = nla_get_in_addr(attrs[L2TP_ATTR_IP_DADDR]);
++		return 0;
++	}
++	return -EINVAL;
 +}
 +
- static int l2tp_nl_tunnel_send(struct sk_buff *skb, u32 portid, u32 seq, int flags,
- 			       struct l2tp_tunnel *tunnel, u8 cmd)
+ static int l2tp_nl_cmd_tunnel_create(struct sk_buff *skb, struct genl_info *info)
  {
- 	void *hdr;
- 	struct nlattr *nest;
--	struct sock *sk = NULL;
--	struct inet_sock *inet;
--#if IS_ENABLED(CONFIG_IPV6)
--	struct ipv6_pinfo *np = NULL;
--#endif
+ 	u32 tunnel_id;
+ 	u32 peer_tunnel_id;
+ 	int proto_version;
+-	int fd;
++	int fd = -1;
+ 	int ret = 0;
+ 	struct l2tp_tunnel_cfg cfg = { 0, };
+ 	struct l2tp_tunnel *tunnel;
+@@ -191,33 +217,16 @@ static int l2tp_nl_cmd_tunnel_create(struct sk_buff *skb, struct genl_info *info
+ 	}
+ 	cfg.encap = nla_get_u16(attrs[L2TP_ATTR_ENCAP_TYPE]);
  
- 	hdr = genlmsg_put(skb, portid, seq, &l2tp_nl_family, flags, cmd);
- 	if (!hdr)
-@@ -363,58 +426,9 @@ static int l2tp_nl_tunnel_send(struct sk_buff *skb, u32 portid, u32 seq, int fla
- 		goto nla_put_failure;
- 	nla_nest_end(skb, nest);
- 
--	sk = tunnel->sock;
--	if (!sk)
--		goto out;
--
+-	fd = -1;
++	/* Managed tunnels take the tunnel socket from userspace.
++	 * Unmanaged tunnels must call out the source and destination addresses
++	 * for the kernel to create the tunnel socket itself.
++	 */
+ 	if (attrs[L2TP_ATTR_FD]) {
+ 		fd = nla_get_u32(attrs[L2TP_ATTR_FD]);
+ 	} else {
 -#if IS_ENABLED(CONFIG_IPV6)
--	if (sk->sk_family == AF_INET6)
--		np = inet6_sk(sk);
--#endif
--
--	inet = inet_sk(sk);
--
--	switch (tunnel->encap) {
--	case L2TP_ENCAPTYPE_UDP:
--		switch (sk->sk_family) {
--		case AF_INET:
--			if (nla_put_u8(skb, L2TP_ATTR_UDP_CSUM, !sk->sk_no_check_tx))
--				goto nla_put_failure;
--			break;
--#if IS_ENABLED(CONFIG_IPV6)
--		case AF_INET6:
--			if (udp_get_no_check6_tx(sk) &&
--			    nla_put_flag(skb, L2TP_ATTR_UDP_ZERO_CSUM6_TX))
--				goto nla_put_failure;
--			if (udp_get_no_check6_rx(sk) &&
--			    nla_put_flag(skb, L2TP_ATTR_UDP_ZERO_CSUM6_RX))
--				goto nla_put_failure;
--			break;
--#endif
--		}
--		if (nla_put_u16(skb, L2TP_ATTR_UDP_SPORT, ntohs(inet->inet_sport)) ||
--		    nla_put_u16(skb, L2TP_ATTR_UDP_DPORT, ntohs(inet->inet_dport)))
--			goto nla_put_failure;
--		/* fall through  */
--	case L2TP_ENCAPTYPE_IP:
--#if IS_ENABLED(CONFIG_IPV6)
--		if (np) {
--			if (nla_put_in6_addr(skb, L2TP_ATTR_IP6_SADDR,
--					     &np->saddr) ||
--			    nla_put_in6_addr(skb, L2TP_ATTR_IP6_DADDR,
--					     &sk->sk_v6_daddr))
--				goto nla_put_failure;
+-		if (attrs[L2TP_ATTR_IP6_SADDR] && attrs[L2TP_ATTR_IP6_DADDR]) {
+-			cfg.local_ip6 = nla_data(attrs[L2TP_ATTR_IP6_SADDR]);
+-			cfg.peer_ip6 = nla_data(attrs[L2TP_ATTR_IP6_DADDR]);
 -		} else
 -#endif
--		if (nla_put_in_addr(skb, L2TP_ATTR_IP_SADDR,
--				    inet->inet_saddr) ||
--		    nla_put_in_addr(skb, L2TP_ATTR_IP_DADDR,
--				    inet->inet_daddr))
--			goto nla_put_failure;
--		break;
--	}
-+	if (l2tp_nl_tunnel_send_addr(skb, tunnel))
-+		goto nla_put_failure;
+-		if (attrs[L2TP_ATTR_IP_SADDR] && attrs[L2TP_ATTR_IP_DADDR]) {
+-			cfg.local_ip.s_addr = nla_get_in_addr(attrs[L2TP_ATTR_IP_SADDR]);
+-			cfg.peer_ip.s_addr = nla_get_in_addr(attrs[L2TP_ATTR_IP_DADDR]);
+-		} else {
+-			ret = -EINVAL;
++		ret = l2tp_nl_cmd_tunnel_create_get_addr(attrs, &cfg);
++		if (ret < 0)
+ 			goto out;
+-		}
+-		if (attrs[L2TP_ATTR_UDP_SPORT])
+-			cfg.local_udp_port = nla_get_u16(attrs[L2TP_ATTR_UDP_SPORT]);
+-		if (attrs[L2TP_ATTR_UDP_DPORT])
+-			cfg.peer_udp_port = nla_get_u16(attrs[L2TP_ATTR_UDP_DPORT]);
+-		cfg.use_udp_checksums = nla_get_flag(attrs[L2TP_ATTR_UDP_CSUM]);
+-
+-#if IS_ENABLED(CONFIG_IPV6)
+-		cfg.udp6_zero_tx_checksums = nla_get_flag(attrs[L2TP_ATTR_UDP_ZERO_CSUM6_TX]);
+-		cfg.udp6_zero_rx_checksums = nla_get_flag(attrs[L2TP_ATTR_UDP_ZERO_CSUM6_RX]);
+-#endif
+ 	}
  
--out:
- 	genlmsg_end(skb, hdr);
- 	return 0;
- 
+ 	if (attrs[L2TP_ATTR_DEBUG])
 -- 
 2.17.1
 
