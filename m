@@ -2,85 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03ABB22B8D3
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:44:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B219522B8D6
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:44:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbgGWVoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 17:44:14 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:41800 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbgGWVoN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 17:44:13 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id CF01B1C0BD5; Thu, 23 Jul 2020 23:44:10 +0200 (CEST)
-Date:   Thu, 23 Jul 2020 23:44:10 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Marek =?utf-8?B?QmVow7pu?= <marek.behun@nic.cz>,
-        linux-leds@vger.kernel.org, jacek.anaszewski@gmail.com,
-        Dan Murphy <dmurphy@ti.com>,
-        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
-        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC leds + net-next v2 1/1] net: phy: marvell: add
- support for PHY LEDs via LED class
-Message-ID: <20200723214410.jf4vwj3vnymzqngw@duo.ucw.cz>
-References: <20200723181319.15988-1-marek.behun@nic.cz>
- <20200723181319.15988-2-marek.behun@nic.cz>
- <20200723213531.GK1553578@lunn.ch>
+        id S1727107AbgGWVo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 17:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60442 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726115AbgGWVo0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 17:44:26 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BCEC0619D3;
+        Thu, 23 Jul 2020 14:44:26 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1595540664;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YJAOZn+NV3c8JWx5UIem9HzDm7TCzzCZdh+QLWV9zos=;
+        b=uDfZmcKsPrtAZ9EPCn7wuQ2LYhtSESV/A3K5F2BxInsEbE5KGH3iTpU6hfb8Iq3xSCK73q
+        V9Cj62JEzbOFW3OO9Qd4MRy2gZ2LSAw0z46WszgaNU/zJbi7ZP7wk8dnXiKQf60M7aLhsx
+        jA/7O0lW2KwCga8BN95btUdT1LJ9rQgh/X0cFNLnGiatFNKk6B3MMAUoyAmKRGq5mWhl79
+        odbPA/3HPG1ndaQplTcsZgUZws6tgJxUTJ71z6h374VhakEAxq6k5LLugh0TyHZ/kGjtDo
+        JwM8uW6KKdYjq7gj0dY71e+o+dj1Dtmc74+ETE3waVxSWFBvllqwwCzBYnJN7g==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1595540664;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YJAOZn+NV3c8JWx5UIem9HzDm7TCzzCZdh+QLWV9zos=;
+        b=gtKjIi1mnr4FAzRJ1lQR9YtI+U6Z6fGDmO5VwPoawB9wYFUsAn5WivGjVh4rSWoYiyjTpS
+        sAHmg2otDHvRriBw==
+To:     Alex Belits <abelits@marvell.com>,
+        "peterz\@infradead.org" <peterz@infradead.org>
+Cc:     "davem\@davemloft.net" <davem@davemloft.net>,
+        Prasun Kapoor <pkapoor@marvell.com>,
+        "mingo\@kernel.org" <mingo@kernel.org>,
+        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
+        "frederic\@kernel.org" <frederic@kernel.org>,
+        "catalin.marinas\@arm.com" <catalin.marinas@arm.com>,
+        "linux-arch\@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "will\@kernel.org" <will@kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel\@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v4 00/13] "Task_isolation" mode
+In-Reply-To: <3ff1383e669b543462737b0d12c0d1fb7d409e3e.camel@marvell.com>
+References: <04be044c1bcd76b7438b7563edc35383417f12c8.camel@marvell.com> <87imeextf3.fsf@nanos.tec.linutronix.de> <831e023422aa0e4cb3da37ceef6fdcd5bc854682.camel@marvell.com> <20200723154933.GB709@worktop.programming.kicks-ass.net> <3ff1383e669b543462737b0d12c0d1fb7d409e3e.camel@marvell.com>
+Date:   Thu, 23 Jul 2020 23:44:24 +0200
+Message-ID: <877dutx5xj.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="fkrsjbmmzh66h3mu"
-Content-Disposition: inline
-In-Reply-To: <20200723213531.GK1553578@lunn.ch>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Alex Belits <abelits@marvell.com> writes:
+> On Thu, 2020-07-23 at 17:49 +0200, Peter Zijlstra wrote:
+>> 
+>> 'What does noinstr mean? and why do we have it" -- don't dare touch
+>> the
+>> entry code until you can answer that.
+>
+> noinstr disables instrumentation, so there would not be calls and
+> dependencies on other parts of the kernel when it's not yet safe to
+> call them. Relevant functions already have it, and I add an inline call
+> to perform flags update and synchronization. Unless something else is
+> involved, those operations are safe, so I am not adding anything that
+> can break those.
 
---fkrsjbmmzh66h3mu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Sure.
 
-Hi!
+ 1) That inline function can be put out of line by the compiler and
+    placed into the regular text section which makes it subject to
+    instrumentation
 
-> > +{
-> > +	struct phy_device *phydev =3D to_phy_device(cdev->dev->parent);
-> > +	struct marvell_phy_led *led =3D to_marvell_phy_led(cdev);
-> > +	u8 val;
-> > +
-> > +	/* don't do anything if HW control is enabled */
-> > +	if (check_trigger && cdev->trigger =3D=3D &marvell_hw_led_trigger)
-> > +		return 0;
->=20
-> I thought the brightness file disappeared when a trigger takes
-> over. So is this possible?
+ 2) That inline function invokes local_irq_save() which is subject to
+    instrumentation _before_ the entry state for the instrumentation
+    mechanisms is established.
 
-No.
+ 3) That inline function invokes sync_core() before important state has
+    been established, which is especially interesting in NMI like
+    exceptions.
 
-When trigger is set, brightness controls "maximum" brightness LED can
-have (and can turn trigger off by setting brightness to 0). Interface
-is ... not quite nice.
-									Pavel
+As you clearly documented why all of the above is safe and does not
+cause any problems, it's just me and Peter being silly, right?
 
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
+Try again.
 
---fkrsjbmmzh66h3mu
-Content-Type: application/pgp-signature; name="signature.asc"
+Thanks,
 
------BEGIN PGP SIGNATURE-----
-
-iF0EARECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCXxoEqgAKCRAw5/Bqldv6
-8hefAJ9ac5IueIkjdIjwb5RWM/zSWJpK2ACgmDEAOcfipS2uJLurnNQ+/XjYO2o=
-=+YWF
------END PGP SIGNATURE-----
-
---fkrsjbmmzh66h3mu--
+        tglx
