@@ -2,148 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2373522A55A
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 04:36:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5755E22A56F
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 04:59:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387497AbgGWCf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 22:35:57 -0400
-Received: from mail-proxy25223.qiye.163.com ([103.129.252.23]:8003 "EHLO
-        mail-proxy25223.qiye.163.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731405AbgGWCf4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 22:35:56 -0400
-Received: from [192.168.188.14] (unknown [106.75.220.2])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 728A841AD9;
-        Thu, 23 Jul 2020 10:35:54 +0800 (CST)
-Subject: Re: [PATCH net] openvswitch: fix drop over mtu packet after defrag in
- act_ct
-From:   wenxu <wenxu@ucloud.cn>
-To:     paulb@mellanox.com, Pravin Shelar <pshelar@ovn.org>
-References: <1595300992-18381-1-git-send-email-wenxu@ucloud.cn>
-Cc:     netdev@vger.kernel.org
-Message-ID: <25c70926-1f20-395e-952c-b802aca2cbdc@ucloud.cn>
-Date:   Thu, 23 Jul 2020 10:35:52 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <1595300992-18381-1-git-send-email-wenxu@ucloud.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZSBoZQxpOT08aGE9CVkpOQk5PTEpMTk9MT05VGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKTFVKS0tZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NBA6IRw*Tj5CCTwdN0MQIxEt
-        NjkKCUJVSlVKTkJOT0xKTE5PQktPVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
-        TlVJSUtVSVlXWQgBWUFPT0NINwY+
-X-HM-Tid: 0a737986f5842086kuqy728a841ad9
+        id S2387546AbgGWC6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 22:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55288 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728902AbgGWC6u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 22:58:50 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E831C0619DC;
+        Wed, 22 Jul 2020 19:58:50 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id k6so3133353ili.6;
+        Wed, 22 Jul 2020 19:58:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=pCEmXUzqxk9okJ46w5/kqnzWiON/PCFBw3SwsJJjA2o=;
+        b=NtNAZUXmro3U0W/eNGRzVoBsxEYtYMLzoPj5l7VxYOpm/X0b/0EZvb11cK+dng1tOF
+         E5Dycrk89GiRbg83zdDDoMo2b4l96xYzWE/5tg8t/1QIK2x5HoYNxuMO68sMnbji6uWX
+         e9HVv1kIU5XGUGy9X0evv0fqoe3+qEj3o7Gl6JA222lS9SASteFBbfH764ZQcDTgqFd/
+         kVAe6ARC88PVePDdbPFw4if1xI2H921HfOLjdo22ZG/ewvzAt6EUhDtxklaOVKY0vVo7
+         gCnN2JQHGYn7OacZrRV1OMfGWPSjuz84SR1dOA0M/Roy1/q5AkN5aDc5IAagW8xepZbG
+         kIFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=pCEmXUzqxk9okJ46w5/kqnzWiON/PCFBw3SwsJJjA2o=;
+        b=nnkhTAqvx5LzReS2NSix/gBAjF5rCCmcVXf+zQpBeeqU1NUh9RB4e1LwLrMKJ+zKXX
+         AF+u0bbJiCvxUtU1kQmELuUAomF8KA0HaN3U3inwDwaOk+vy2D52IV/hpe+qlDxOo8yh
+         4UrzQSfKGydRb5acooEpOqH/qnLHOWQFE2JAyem+SzisHGYis1ifdgGjEWtNrgeK2T6d
+         MwZW8FcYtRncFJX/3cXSluDVodd9B1lO6MpQbjdrXBSdIIpPCmCzD58e1VZWPSCRNDB8
+         0GmBquIZV8fFTWKg4HXPYppcA++ifS6xILC3ZDYUNZtK4u4eDfjbU1HijvH93rzPgm5C
+         c8LA==
+X-Gm-Message-State: AOAM532Of/Tb1IwUnJsSI8n29gKKZQf/DhMzQOkCrCx9LbPC/SAB1H7o
+        KOPZS8EUMHM3M9MEKqRpB24=
+X-Google-Smtp-Source: ABdhPJwAoE8fRLdmHRlsEZEJYMK7ZYOKfvLS/NusuyNuU49d0EFTv0opFhb1XqOR7WOyHLulJ1S3vA==
+X-Received: by 2002:a92:794f:: with SMTP id u76mr2747797ilc.215.1595473130030;
+        Wed, 22 Jul 2020 19:58:50 -0700 (PDT)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [160.94.145.20])
+        by smtp.googlemail.com with ESMTPSA id c3sm744628ilj.31.2020.07.22.19.58.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2020 19:58:49 -0700 (PDT)
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+To:     Vishal Kulkarni <vishal@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     emamd001@umn.edu, Navid Emamdoost <navid.emamdoost@gmail.com>
+Subject: [PATCH v3] cxgb4: add missing release on skb in uld_send()
+Date:   Wed, 22 Jul 2020 21:58:39 -0500
+Message-Id: <20200723025841.22535-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200722.181436.414462601873878102.davem@davemloft.net>
+References: <20200722.181436.414462601873878102.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi paulb & Pravin,
+In the implementation of uld_send(), the skb is consumed on all
+execution paths except one. Release skb when returning NET_XMIT_DROP.
 
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+---
+v3:
+	- fixed the base problem, and used kfree_skb
+---
+ drivers/net/ethernet/chelsio/cxgb4/sge.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Could you review for this patch> Thanks.
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+index 32a45dc51ed7..92eee66cbc84 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+@@ -2938,6 +2938,7 @@ static inline int uld_send(struct adapter *adap, struct sk_buff *skb,
+ 	txq_info = adap->sge.uld_txq_info[tx_uld_type];
+ 	if (unlikely(!txq_info)) {
+ 		WARN_ON(true);
++		kfree_skb(skb);
+ 		return NET_XMIT_DROP;
+ 	}
+ 
+-- 
+2.17.1
 
-
-BR
-
-wenxu
-
-On 7/21/2020 11:09 AM, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
->
-> When openvswitch conntrack offload with act_ct action. Fragment packets
-> defrag in the ingress tc act_ct action and miss the next chain. Then the
-> packet pass to the openvswitch datapath without the mru. The defrag over
-> mtu packet will be dropped in output of openvswitch for over mtu.
->
-> "kernel: net2: dropped over-mtu packet: 1508 > 1500"
->
-> Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
->  include/linux/skbuff.h    | 1 +
->  include/net/sch_generic.h | 1 +
->  net/openvswitch/flow.c    | 1 +
->  net/sched/act_ct.c        | 8 ++++++--
->  net/sched/cls_api.c       | 1 +
->  5 files changed, 10 insertions(+), 2 deletions(-)
->
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 0c0377f..0d842d6 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -283,6 +283,7 @@ struct nf_bridge_info {
->   */
->  struct tc_skb_ext {
->  	__u32 chain;
-> +	__u16 mru;
->  };
->  #endif
->  
-> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-> index c510b03..45401d5 100644
-> --- a/include/net/sch_generic.h
-> +++ b/include/net/sch_generic.h
-> @@ -384,6 +384,7 @@ struct qdisc_skb_cb {
->  	};
->  #define QDISC_CB_PRIV_LEN 20
->  	unsigned char		data[QDISC_CB_PRIV_LEN];
-> +	u16			mru;
->  };
->  
->  typedef void tcf_chain_head_change_t(struct tcf_proto *tp_head, void *priv);
-> diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-> index 9d375e7..03942c3 100644
-> --- a/net/openvswitch/flow.c
-> +++ b/net/openvswitch/flow.c
-> @@ -890,6 +890,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
->  	if (static_branch_unlikely(&tc_recirc_sharing_support)) {
->  		tc_ext = skb_ext_find(skb, TC_SKB_EXT);
->  		key->recirc_id = tc_ext ? tc_ext->chain : 0;
-> +		OVS_CB(skb)->mru = tc_ext ? tc_ext->mru : 0;
->  	} else {
->  		key->recirc_id = 0;
->  	}
-> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> index 5928efb..69445ab 100644
-> --- a/net/sched/act_ct.c
-> +++ b/net/sched/act_ct.c
-> @@ -706,8 +706,10 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
->  		if (err && err != -EINPROGRESS)
->  			goto out_free;
->  
-> -		if (!err)
-> +		if (!err) {
->  			*defrag = true;
-> +			cb.mru = IPCB(skb)->frag_max_size;
-> +		}
->  	} else { /* NFPROTO_IPV6 */
->  #if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
->  		enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
-> @@ -717,8 +719,10 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
->  		if (err && err != -EINPROGRESS)
->  			goto out_free;
->  
-> -		if (!err)
-> +		if (!err) {
->  			*defrag = true;
-> +			cb.mru = IP6CB(skb)->frag_max_size;
-> +		}
->  #else
->  		err = -EOPNOTSUPP;
->  		goto out_free;
-> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> index e62beec..a4d9eaa 100644
-> --- a/net/sched/cls_api.c
-> +++ b/net/sched/cls_api.c
-> @@ -1628,6 +1628,7 @@ int tcf_classify_ingress(struct sk_buff *skb,
->  		if (WARN_ON_ONCE(!ext))
->  			return TC_ACT_SHOT;
->  		ext->chain = last_executed_chain;
-> +		ext->mru = qdisc_skb_cb(skb)->mru;
->  	}
->  
->  	return ret;
