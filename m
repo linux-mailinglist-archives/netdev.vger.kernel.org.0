@@ -2,492 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBE5A22B9D9
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 00:58:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B39D22BA01
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 01:09:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727783AbgGWW6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 18:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43624 "EHLO
+        id S1727841AbgGWXJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 19:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726608AbgGWW6g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 18:58:36 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8AFC0619D3
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 15:58:35 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id g10so7407571wmc.1
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 15:58:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mNhBV89gj5tybMw6LElFkcS2Pr1tc7+w2lsAgC77CXs=;
-        b=VwcqeqXQIZueUsuVRcTBUGKKUxAshSs/9SMjn8znk4SD5/jWqSCatlCf2f4j9LuiPD
-         HlXvO10TNxlmuU1tTNf4fpHHhxWer3oy3nt1MwRfuuWjrLbezafY52ZptIS5Pai802OY
-         PpD6SyYMXWcmATHnBLwJZGIxbezzijMDIh6OwW15m152ESp0mo57Xx+4tX2Q3HK7dxxQ
-         Gg+vnFjRg3E50x8RGTjxS/xoX3lCSGnhYXGHryRK46HkzXBzqau4HRUxlmc3v8GoBSYU
-         xbbpX0gDLod+jh1Jm4UFfjmDA294Jdm7gAaCOzEa1OBRX2Kp1l69zrmarKwh5V6ope75
-         Exrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=mNhBV89gj5tybMw6LElFkcS2Pr1tc7+w2lsAgC77CXs=;
-        b=IRbHPxTrRAAchnw4R9h+vH/ur66pAvxGpZnqTCtjlluaJ5Ey873a461eShWJwqgB1F
-         8CCkr1rzx1HCvMUvVfp/6ZdYhZ8aiGItfkHCSJsWTy4uK61F8d62lsGfBkZ7wkQI1RLU
-         y1kNxeNgiAQSzKt4iQfB2liMpJ6UrxPWqUiDlCtgtaKoZVnFd91wATwPNaS+wFvi3srw
-         yGRma5xnTR3FLM/nYbdvPeRHar5Ly7zLBaQnXVdQ/5BmlXikY7R/VqOk7YylPwXXLzkQ
-         YE6E956BRWlko/5jc8/dVe/PtMDsLlVBrJY4gZsHFix0/BhGhZ9HTFa68AWoLZTISO4/
-         K/ew==
-X-Gm-Message-State: AOAM5311H1VLAhjioG+9evZjMRQjBIfSOxaYN6o4EZ90fiwTyLmkRo6g
-        ycbiPotqf+XNxE4BSrV/jpw=
-X-Google-Smtp-Source: ABdhPJzmatSEBNIFeMCX+Vxa63SKEfkKhC4mCDWLY4d2vSHQAnYrkGaQuUBwF5pI66L0zqTsOG6Gyg==
-X-Received: by 2002:a05:600c:2144:: with SMTP id v4mr6446982wml.128.1595545114191;
-        Thu, 23 Jul 2020 15:58:34 -0700 (PDT)
-Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id a11sm5824341wrq.0.2020.07.23.15.58.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jul 2020 15:58:33 -0700 (PDT)
-Subject: Re: [PATCH net-next] Documentation: networking: Clarify switchdev
- devices behavior
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        vivien.didelot@gmail.com, cphealy@gmail.com, idosch@mellanox.com,
-        jiri@mellanox.com, bridge@lists.linux-foundation.org,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
-        rdunlap@infradead.org, ilias.apalodimas@linaro.org,
-        ivan.khoronzhuk@linaro.org, kuba@kernel.org
-References: <20200722225253.28848-1-f.fainelli@gmail.com>
- <20200723221151.qdt4yowfktuddrkd@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <d8ce0a04-3d3a-5d11-d3e6-861e6cbcca24@gmail.com>
-Date:   Thu, 23 Jul 2020 15:58:24 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        with ESMTP id S1726608AbgGWXJH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 19:09:07 -0400
+X-Greylist: delayed 155 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 23 Jul 2020 16:09:06 PDT
+Received: from mail.as201155.net (mail.as201155.net [IPv6:2a05:a1c0:f001::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6404C0619D3
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 16:09:06 -0700 (PDT)
+Received: from smtps.newmedia-net.de ([2a05:a1c0:0:de::167]:59700 helo=webmail.newmedia-net.de)
+        by mail.as201155.net with esmtps (TLSv1:DHE-RSA-AES256-SHA:256)
+        (Exim 4.82_1-5b7a7c0-XX)
+        (envelope-from <s.gottschall@dd-wrt.com>)
+        id 1jykIE-0001gh-0A; Fri, 24 Jul 2020 01:06:26 +0200
+X-CTCH-RefID: str=0001.0A782F25.5F1A17F2.000D,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=dd-wrt.com; s=mikd;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=y7wndpGYNB6A7pAdmWmgEzm7i2bkmfDpsJHSV7MZfgM=;
+        b=TIgX0JeeNnKHIGHrNifq/iTDlTtMkUsixAQ/YLRLOj1jeGFuITFO3JIW9GSSe3oHu3ND8uaslLfqfpMITVcZ2iSUIq+3X3hQ0hM7FjHyDvoKSYuuDNMvZpfx7q9EkEx9y7ARpvNpWOPpp5NPaf9WTcC1KvemDHhvi83jkp7byHI=;
+Subject: Re: [RFC 7/7] ath10k: Handle rx thread suspend and resume
+To:     Rakesh Pillai <pillair@codeaurora.org>, ath10k@lists.infradead.org
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvalo@codeaurora.org, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        dianders@chromium.org, evgreen@chromium.org
+References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
+ <1595351666-28193-8-git-send-email-pillair@codeaurora.org>
+From:   Sebastian Gottschall <s.gottschall@dd-wrt.com>
+Message-ID: <1540605b-c54e-d482-296f-8139eb07c195@dd-wrt.com>
+Date:   Fri, 24 Jul 2020 01:06:23 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101
+ Thunderbird/79.0
 MIME-Version: 1.0
-In-Reply-To: <20200723221151.qdt4yowfktuddrkd@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1595351666-28193-8-git-send-email-pillair@codeaurora.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Received:  from [2003:c9:3f22:a900:a9b6:9d0f:69f2:ec96]
+        by webmail.newmedia-net.de with esmtpsa (TLSv1:AES128-SHA:128)
+        (Exim 4.72)
+        (envelope-from <s.gottschall@dd-wrt.com>)
+        id 1jykID-000JGc-FU; Fri, 24 Jul 2020 01:06:25 +0200
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/23/20 3:11 PM, Vladimir Oltean wrote:
-> On Wed, Jul 22, 2020 at 03:52:53PM -0700, Florian Fainelli wrote:
->> This patch provides details on the expected behavior of switchdev
->> enabled network devices when operating in a "stand alone" mode, as well
->> as when being bridge members. This clarifies a number of things that
->> recently came up during a bug fixing session on the b53 DSA switch
->> driver.
->>
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->> ---
->> Since this has been submitted in a while, removing the patch numbering,
->> but previous patches and discussions can be found here:
->>
->> http://patchwork.ozlabs.org/project/netdev/patch/20190103224702.21541-1-f.fainelli@gmail.com/
->> http://patchwork.ozlabs.org/project/netdev/patch/20190109043930.8534-1-f.fainelli@gmail.com/
->> http://patchwork.ozlabs.org/project/netdev/patch/20190110193206.9872-1-f.fainelli@gmail.com/
->>
->> David, I would like to hear from Vladimir and Ido specifically to make
->> sure that the documentation is up to date with expectations or desired
->> behavior so we can move forward with Vladimir's DSA rx filtering patch
->> series. So don't apply this just yet ;)
->>
->> Thanks!
->>
-> 
-> Thanks for giving me the opportunity to speak up.
-> 
-> Your addition to switchdev.rst is more than welcome, and the content is
-> good. I had opened this file a few days ago searching for a few words on
-> address filtering, but alas, there were none. And even now, with your
-> addition - there is something, but it's more focused on multicast, and I
-> haven't used that nearly enough to have a strong opinion about it. Let
-> me try to add my 2 cents about what concerns me on this particular topic.
-> 
-> I'm not asking you to add it to your documentation patch - not that you
-> could even do that, as I'm talking more about how things should be than
-> how they are, things like IVDF aren't even in mainline.
-> 
-> If people agree at least in principle with my words below, I can make
-> the necessary changes to the bridge driver to conform to this
-> interpretation of things.
-> 
-> 
-> Address filtering
-> ^^^^^^^^^^^^^^^^^
-> 
-> With regular network interface cards, address filters are used to drop
-> in hardware the frames that have a destination address different than
-> what the card is configured to perform termination on.
-> 
-> With switchdev, the hardware is usually geared towards accepting traffic
-> regardless of destination MAC address, because the primary objective is
-> forwarding to another host based on that address, and not termination.
-> 
-> Therefore, the address filters of a switchdev interface cannot typically
-> be implemented at the same hardware layer as they are for a regular
-> interface. The behavior as seen by the operating system should, however,
-> be the same.
-> 
-> In the case of a regular NIC, the expectation is that only the frames
-> having a destination that is present in the RX filtering lists (managed
-> through dev_uc_add() and dev_mc_add()) are accepted, while the others
-> are dropped. The filters can be bypassed using the IFF_PROMISC and
-> IFF_ALLMULTI flags.
-> 
-> A switchdev interface that is capable of offloading the Linux bridge
-> should have hardware provisioning for flooding unknown destination
-> addresses and learning from source addresses. Strictly speaking, the
-> hardware design of such an interface should be promiscuous out of
-> necessity: as long as flooding is enabled, hardware promiscuity is
-> implied.
-> 
-> However, this is of no relevance to the operating system. Since flooding
-> and forwarding happen autonomously, it makes no difference to the end
-> result whether the forwarded and flooded addresses are, or aren't,
-> present in the address list of the network interface corresponding to
-> the switchdev port.
-> 
-> To achieve a similar behavior between switchdev and non-switchdev
-> interfaces, address filtering for switchdev can be defined in terms of
-> the frames that the CPU sees.
+your patch seem to only affect the WCN3990 chipset. all other ath10k 
+supported chipset are not supported here. so you see a chance to 
+implement this more generic?
 
-Nit here, I don't know if we want to refer to CPU, host or management
-interface of the switch, all terms are IMHO inter changeable and clear
-in the context below, though I wonder what "pure" switchdev drivers
-would prefer to see being used.
+Sebastian
 
-> 
-> - Primary MAC address: A driver should deliver to the CPU, and only to
->   the CPU, for termination purposes, frames having a destination address
->   that matches the MAC address of the ingress interface.
-
-Ack. We could go one step further and say that this is the MAC address
-of the Ethernet MAC connected to the CPU port. As we say in French this
-would be busting through an open door.
-
-> 
-> - Secondary MAC addresses: A driver should deliver to the CPU frames
->   having a destination address that matches an entry added with
->   dev_uc_add() or dev_mc_add(). These typically correspond to upper
->   interfaces configured on top of the switchdev interface, such as
->   8021q, bridge, macvlan.
-
-Ack.
-
-> 
-> - A driver is allowed to not deliver to the CPU frames that don't have a
->   match in the ingress interface's primary and secondary address lists.
->   An exception to this rule is when the interface is configured as
->   promiscuous, or to receive all multicast traffic.
-
-Ack.
-
-> 
-> - An interface can be configured as promiscuous when it is required that
->   the CPU sees frames with an unknown destination (same as in the
->   non-switchdev case). Otherwise said, promiscuous mode manages the
->   presence (or the absence) of the CPU in the flooding domain of the
->   switch. A similar comment applies to IFF_ALLMULTI, although that case
->   applies only to unknown multicast traffic.
-
-Ack.
-
-> 
-> - Other layers of the network stack that actively make use of switchdev
->   offloads should not request promiscuous mode for the sole purpose of
->   accepting ingress frames that will end up reinjected in the hardware
->   data path anyway. The switchdev framework can be considered to offload
->   the need of promiscuity for this purpose. An example of valid use of
->   promiscuous mode for a switchdev driver is when it is bridged with a
->   non-switchdev interface, and the CPU needs to perform termination
->   (from the hardware's perspective) of unknown-destination traffic, in
->   order to forward it in software to the other network interfaces.
-
-Ack.
-
-> 
-> - If the hardware supports filtering MAC addresses per VLAN domain, then
->   CPU membership of a VLAN could be managed through IVDF (Individual
->   Virtual Device Filtering). Namely, the CPU should join the VLAN of all
->   IVDF addresses in its filter list, and can exit all VLANs that are not
->   there.
-
-Ack. A complication can exist if VLAN filtering applies globally to the
-switch and the CPU interface is put in promiscuous mode. We would then
-expect the CPU interface to join all VLANs for the sake of receiving all
-frames.
-
-> 
->>  Documentation/networking/switchdev.rst | 118 +++++++++++++++++++++++++
->>  1 file changed, 118 insertions(+)
->>
->> diff --git a/Documentation/networking/switchdev.rst b/Documentation/networking/switchdev.rst
->> index ddc3f35775dc..2e4f50e6c63c 100644
->> --- a/Documentation/networking/switchdev.rst
->> +++ b/Documentation/networking/switchdev.rst
->> @@ -385,3 +385,121 @@ The driver can monitor for updates to arp_tbl using the netevent notifier
->>  NETEVENT_NEIGH_UPDATE.  The device can be programmed with resolved nexthops
->>  for the routes as arp_tbl updates.  The driver implements ndo_neigh_destroy
->>  to know when arp_tbl neighbor entries are purged from the port.
->> +
->> +Device driver expected behavior
->> +-------------------------------
->> +
->> +Below is a set of defined behavior that switchdev enabled network devices must
->> +adhere to.
->> +
->> +Configuration less state
->> +^^^^^^^^^^^^^^^^^^^^^^^^
->> +
->> +Upon driver bring up, the network devices must be fully operational, and the
->> +backing driver must configure the network device such that it is possible to
->> +send and receive traffic to this network device and it is properly separated
->> +from other network devices/ports (e.g.: as is frequent with a switch ASIC). How
->> +this is achieved is heavily hardware dependent, but a simple solution can be to
->> +use per-port VLAN identifiers unless a better mechanism is available
->> +(proprietary metadata for each network port for instance).
->> +
->> +The network device must be capable of running a full IP protocol stack
->> +including multicast, DHCP, IPv4/6, etc. If necessary, it should program the
->> +appropriate filters for VLAN, multicast, unicast etc. The underlying device
->> +driver must effectively be configured in a similar fashion to what it would do
->> +when IGMP snooping is enabled for IP multicast over these switchdev network
->> +devices and unsolicited multicast must be filtered as early as possible into
->> +the hardware.
->> +
->> +When configuring VLANs on top of the network device, all VLANs must be working,
->> +irrespective of the state of other network devices (e.g.: other ports being part
->> +of a VLAN aware bridge doing ingress VID checking). See below for details.
->> +
->> +If the device implements e.g.: VLAN filtering, putting the interface in
->> +promiscuous mode should allow the reception of all VLAN tags (including those
->> +not present in the filter(s)).
->> +
->> +Bridged switch ports
->> +^^^^^^^^^^^^^^^^^^^^
->> +
->> +When a switchdev enabled network device is added as a bridge member, it should
->> +not disrupt any functionality of non-bridged network devices and they
->> +should continue to behave as normal network devices. Depending on the bridge
->> +configuration knobs below, the expected behavior is documented.
->> +
->> +Bridge VLAN filtering
->> +^^^^^^^^^^^^^^^^^^^^^
->> +
->> +The Linux bridge allows the configuration of a VLAN filtering mode (compile and
->> +run time) which must be observed by the underlying switchdev network
-> 
-> s/compile and run time/statically, at interface creation time, and dynamically/
-
-Thanks.
-
-> 
->> +device/hardware:
->> +
->> +- with VLAN filtering turned off: the bridge is strictly VLAN unaware and its
->> +  data path will only process untagged Ethernet frames. Frames ingressing the
->> +  device with a VID that is not programmed into the bridge/switch's VLAN table
->> +  must be forwarded and may be processed using a VLAN device (see below).
->> +
->> +- with VLAN filtering turned on: the bridge is VLAN aware and frames ingressing
->> +  the device with a VID that is not programmed into the bridges/switch's VLAN
->> +  table must be dropped (strict VID checking).
->> +
->> +Non-bridged network ports of the same switch fabric must not be disturbed in any
->> +way by the enabling of VLAN filtering on the bridge device(s).
->> +
->> +VLAN devices configured on top of a switchdev network device (e.g: sw0p1.100)
->> +which is a bridge port member must also observe the following behavior:
->> +
->> +- with VLAN filtering turned off, enslaving VLAN devices into the bridge might
->> +  be allowed provided that there is sufficient separation using e.g.: a
->> +  reserved VLAN ID (4095 for instance) for untagged traffic. The VLAN data path
->> +  is used to pop/push the VLAN tag such that the bridge's data path only
->> +  processes untagged traffic.
->> +
-> 
-> Why does the bridge's data path only process untagged traffic?
-> It should process frames that are untagged or have a VLAN ID which does
-> not match the VLAN ID of any 8021q upper of the ingress interface.
-> Which brings me to the question: how is a VLAN frame having an unknown
-> (to 8021q) VLAN ID going to be treated by such a switchdev interface? It
-> should accept it. Will it? Well, I don't really understand the advice
-> given here, about the separation, and how does the pvid of 4095 help
-> with frames that are already VLAN-tagged.
-
-I was trying to capture a discussion Ido and I had on IRC a while ago.
-He clarified that the VLAN-unaware bridge should only see untagged
-traffic within its data path. To answer your question, a VLAN frame with
-an unknown VID may be accepted by the switch hardware, but should not be
-delivered to the bridge data path because there is no software VLAN to
-process that VID.
-
-The advice regarding separation is about the following use case: we have
-two physical switch ports sw0p0 and sw0p1. sw0p1.100 is created to
-terminate VID 100 tagged, and sw0p1.100 is created to terminate VID 100
-tagged as well.
-
-sw0p0 is added to a bridge, and so is sw0p1.100, it seems to me that
-sw0p0.100 and sw0p1.100 should still be separate because they are not
-part of the same broadcast domain. One port (sw0p0) is part of the
-bridge, whereas the other (sw0p1) is not. Without a FID or internal
-double tagging, I am not sure how you can maintain that separation.
-
-Maybe this is not worth mentioning, or maybe I am wrong, having some
-feedback would be welcome here.
-
-> 
->> +- with VLAN filtering turned on, these VLAN devices can be created as long as
->> +  there is not an existing VLAN entry into the bridge with an identical VID and
->> +  port membership. These VLAN devices cannot be enslaved into the bridge since
->> +  because they duplicate functionality/use case with the bridge's VLAN data path
->> +  processing.
->> +
-> 
-> The way I visualize things for myself, it's not so much that the bridge
-> and 8021q modules are duplicating functionality, but rather that the
-> requirements are contradictory. 'bridge vlan add ...' wants to configure
-> the forwarding data path, while 'ip link add link ... type vlan' wants
-> to steal frames from the data path and deliver them to the CPU.
-
-Yes, that is a good way to look at it. With a VLAN aware bridge you can
-terminate VLAN traffic at the bridge level too, if your bridge master is
-also part of the VLAN group, which is why I felt that explaining that
-would be necessary.
-
-> 
->> +Because VLAN filtering can be turned on/off at runtime, the switchdev driver
->> +must be able to re-configure the underlying hardware on the fly to honor the
->> +toggling of that option and behave appropriately.
->> +
->> +A switchdev driver can also refuse to support dynamic toggling of the VLAN
->> +filtering knob at runtime and require a destruction of the bridge device(s) and
->> +creation of new bridge device(s) with a different VLAN filtering value to
->> +ensure VLAN awareness is pushed down to the HW.
->> +
->> +Finally, even when VLAN filtering in the bridge is turned off, the underlying
->> +switch hardware and driver may still configured itself in a VLAN aware mode
->> +provided that the behavior described above is observed.
->> +
-> 
-> Otherwise stated: VLAN filtering shall be considered from the
-> perspective of observable behavior, and not from the perspective of
-> hardware configuration.
-
-Yes, that is clearer.
-
-> 
->> +Bridge IGMP snooping
->> +^^^^^^^^^^^^^^^^^^^^
->> +
->> +The Linux bridge allows the configuration of IGMP snooping (compile and run
->> +time) which must be observed by the underlying switchdev network device/hardware
-> 
-> Same comment about "compile and run time" as above.
-> 
->> +in the following way:
->> +
->> +- when IGMP snooping is turned off, multicast traffic must be flooded to all
->> +  switch ports within the same broadcast domain. The CPU/management port
-> 
-> I think that if mc_disabled == true, multicast should be flooded only to
-> the ports which have mc_flood == true.
-
-OK.
-
-> 
->> +  should ideally not be flooded and continue to learn multicast traffic through
-> 
-> unless the ingress interface has IFF_ALLMULTI or IFF_PROMISC, then I
-> suppose the CPU should be flooded from that particular port.
-
-Yes indeed.
-
-> 
->> +  the network stack notifications. If the hardware is not capable of doing that
->> +  then the CPU/management port must also be flooded and multicast filtering
->> +  happens in software.
->> +
->> +- when IGMP snooping is turned on, multicast traffic must selectively flow
->> +  to the appropriate network ports (including CPU/management port) and not be
->> +  unnecessarily flooding.
->> +
-> 
-> I believe that when mc_disabled == false, unknown multicast should be
-> flooded only to the ports connected to a multicast router. The local
-> device may also act as a multicast router.
-
-OK that makes sense.
-
-> 
->> +The switch must adhere to RFC 4541 and flood multicast traffic accordingly
->> +since that is what the Linux bridge implementation does.
->> +
-> 
-> I have a lot of questions in this area.
-> Mainly, what should a driver do if the hardware can't parse IGMP/MLD but
-> just route by (maskable) layer 2 destination address?
-
-Which hardware would fall in that category? Would that be sja1105 for
-instance?
--- 
-Florian
+Am 21.07.2020 um 19:14 schrieb Rakesh Pillai:
+> During the system suspend or resume, the rx thread
+> also needs to be suspended or resume respectively.
+>
+> Handle the rx thread as well during the system
+> suspend and resume.
+>
+> Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.1-01040-QCAHLSWMTPLZ-1
+>
+> Signed-off-by: Rakesh Pillai <pillair@codeaurora.org>
+> ---
+>   drivers/net/wireless/ath/ath10k/core.c | 23 ++++++++++++++++++
+>   drivers/net/wireless/ath/ath10k/core.h |  5 ++++
+>   drivers/net/wireless/ath/ath10k/snoc.c | 44 +++++++++++++++++++++++++++++++++-
+>   3 files changed, 71 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
+> index 4064fa2..b82b355 100644
+> --- a/drivers/net/wireless/ath/ath10k/core.c
+> +++ b/drivers/net/wireless/ath/ath10k/core.c
+> @@ -668,6 +668,27 @@ static unsigned int ath10k_core_get_fw_feature_str(char *buf,
+>   	return scnprintf(buf, buf_len, "%s", ath10k_core_fw_feature_str[feat]);
+>   }
+>   
+> +int ath10k_core_thread_suspend(struct ath10k_thread *thread)
+> +{
+> +	ath10k_dbg(thread->ar, ATH10K_DBG_BOOT, "Suspending thread %s\n",
+> +		   thread->name);
+> +	set_bit(ATH10K_THREAD_EVENT_SUSPEND, thread->event_flags);
+> +	wait_for_completion(&thread->suspend);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(ath10k_core_thread_suspend);
+> +
+> +int ath10k_core_thread_resume(struct ath10k_thread *thread)
+> +{
+> +	ath10k_dbg(thread->ar, ATH10K_DBG_BOOT, "Resuming thread %s\n",
+> +		   thread->name);
+> +	complete(&thread->resume);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(ath10k_core_thread_resume);
+> +
+>   void ath10k_core_thread_post_event(struct ath10k_thread *thread,
+>   				   enum ath10k_thread_events event)
+>   {
+> @@ -700,6 +721,8 @@ int ath10k_core_thread_init(struct ath10k *ar,
+>   
+>   	init_waitqueue_head(&thread->wait_q);
+>   	init_completion(&thread->shutdown);
+> +	init_completion(&thread->suspend);
+> +	init_completion(&thread->resume);
+>   	memcpy(thread->name, thread_name, ATH10K_THREAD_NAME_SIZE_MAX);
+>   	clear_bit(ATH10K_THREAD_EVENT_SHUTDOWN, thread->event_flags);
+>   	ath10k_info(ar, "Starting thread %s\n", thread_name);
+> diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
+> index 596d31b..df65e75 100644
+> --- a/drivers/net/wireless/ath/ath10k/core.h
+> +++ b/drivers/net/wireless/ath/ath10k/core.h
+> @@ -976,6 +976,7 @@ enum ath10k_thread_events {
+>   	ATH10K_THREAD_EVENT_SHUTDOWN,
+>   	ATH10K_THREAD_EVENT_RX_POST,
+>   	ATH10K_THREAD_EVENT_TX_POST,
+> +	ATH10K_THREAD_EVENT_SUSPEND,
+>   	ATH10K_THREAD_EVENT_MAX,
+>   };
+>   
+> @@ -983,6 +984,8 @@ struct ath10k_thread {
+>   	struct ath10k *ar;
+>   	struct task_struct *task;
+>   	struct completion shutdown;
+> +	struct completion suspend;
+> +	struct completion resume;
+>   	wait_queue_head_t wait_q;
+>   	DECLARE_BITMAP(event_flags, ATH10K_THREAD_EVENT_MAX);
+>   	char name[ATH10K_THREAD_NAME_SIZE_MAX];
+> @@ -1296,6 +1299,8 @@ static inline bool ath10k_peer_stats_enabled(struct ath10k *ar)
+>   
+>   extern unsigned long ath10k_coredump_mask;
+>   
+> +int ath10k_core_thread_suspend(struct ath10k_thread *thread);
+> +int ath10k_core_thread_resume(struct ath10k_thread *thread);
+>   void ath10k_core_thread_post_event(struct ath10k_thread *thread,
+>   				   enum ath10k_thread_events event);
+>   int ath10k_core_thread_shutdown(struct ath10k *ar,
+> diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+> index 3eb5eac..a373b2b 100644
+> --- a/drivers/net/wireless/ath/ath10k/snoc.c
+> +++ b/drivers/net/wireless/ath/ath10k/snoc.c
+> @@ -932,13 +932,31 @@ int ath10k_snoc_rx_thread_loop(void *data)
+>   					    rx_thread->event_flags) ||
+>   			 test_and_clear_bit(ATH10K_THREAD_EVENT_TX_POST,
+>   					    rx_thread->event_flags) ||
+> +			 test_bit(ATH10K_THREAD_EVENT_SUSPEND,
+> +				  rx_thread->event_flags) ||
+>   			 test_bit(ATH10K_THREAD_EVENT_SHUTDOWN,
+>   				  rx_thread->event_flags)));
+>   
+> +		if (test_and_clear_bit(ATH10K_THREAD_EVENT_SUSPEND,
+> +				       rx_thread->event_flags)) {
+> +			complete(&rx_thread->suspend);
+> +			ath10k_info(ar, "rx thread suspend\n");
+> +			wait_for_completion(&rx_thread->resume);
+> +			ath10k_info(ar, "rx thread resume\n");
+> +		}
+> +
+>   		ath10k_htt_txrx_compl_task(ar, thread_budget);
+>   		if (test_and_clear_bit(ATH10K_THREAD_EVENT_SHUTDOWN,
+>   				       rx_thread->event_flags))
+>   			shutdown = true;
+> +
+> +		if (test_and_clear_bit(ATH10K_THREAD_EVENT_SUSPEND,
+> +				       rx_thread->event_flags)) {
+> +			complete(&rx_thread->suspend);
+> +			ath10k_info(ar, "rx thread suspend\n");
+> +			wait_for_completion(&rx_thread->resume);
+> +			ath10k_info(ar, "rx thread resume\n");
+> +		}
+>   	}
+>   
+>   	ath10k_dbg(ar, ATH10K_DBG_SNOC, "rx thread exiting\n");
+> @@ -1133,15 +1151,30 @@ static int ath10k_snoc_hif_suspend(struct ath10k *ar)
+>   	if (!device_may_wakeup(ar->dev))
+>   		return -EPERM;
+>   
+> +	if (ar->rx_thread_enable) {
+> +		ret = ath10k_core_thread_suspend(&ar->rx_thread);
+> +		if (ret) {
+> +			ath10k_err(ar, "failed to suspend rx_thread, %d\n",
+> +				   ret);
+> +			return ret;
+> +		}
+> +	}
+> +
+>   	ret = enable_irq_wake(ar_snoc->ce_irqs[ATH10K_SNOC_WAKE_IRQ].irq_line);
+>   	if (ret) {
+>   		ath10k_err(ar, "failed to enable wakeup irq :%d\n", ret);
+> -		return ret;
+> +		goto fail;
+>   	}
+>   
+>   	ath10k_dbg(ar, ATH10K_DBG_SNOC, "snoc device suspended\n");
+>   
+>   	return ret;
+> +
+> +fail:
+> +	if (ar->rx_thread_enable)
+> +		ath10k_core_thread_resume(&ar->rx_thread);
+> +
+> +	return ret;
+>   }
+>   
+>   static int ath10k_snoc_hif_resume(struct ath10k *ar)
+> @@ -1158,6 +1191,15 @@ static int ath10k_snoc_hif_resume(struct ath10k *ar)
+>   		return ret;
+>   	}
+>   
+> +	if (ar->rx_thread_enable) {
+> +		ret = ath10k_core_thread_resume(&ar->rx_thread);
+> +		if (ret) {
+> +			ath10k_err(ar, "failed to suspend rx_thread, %d\n",
+> +				   ret);
+> +			return ret;
+> +		}
+> +	}
+> +
+>   	ath10k_dbg(ar, ATH10K_DBG_SNOC, "snoc device resumed\n");
+>   
+>   	return ret;
