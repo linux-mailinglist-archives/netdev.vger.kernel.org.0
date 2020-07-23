@@ -2,184 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C3D122A3D6
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 02:47:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 966C622A3D8
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 02:48:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732755AbgGWArf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 20:47:35 -0400
-Received: from mga02.intel.com ([134.134.136.20]:65065 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726685AbgGWAre (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Jul 2020 20:47:34 -0400
-IronPort-SDR: hfLLA5Vp+TqhgagAL6iMNpLhSey1VJQkh1FUz7xp34slXa/ULGPTJEdREidz2UQq2Ao8ZgVzMp
- k0AyQxmmLHSw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9690"; a="138527972"
-X-IronPort-AV: E=Sophos;i="5.75,383,1589266800"; 
-   d="scan'208";a="138527972"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2020 17:47:32 -0700
-IronPort-SDR: 0DrW/RPprbN7H7OqQNO1RGZNU3+1zkFZ2QP3F1fipoMY0dwLx76jNnBmspyS89BbbrNxxYcTrO
- vFJizcLeZYyA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,383,1589266800"; 
-   d="scan'208";a="270899646"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga007.fm.intel.com with ESMTP; 22 Jul 2020 17:47:32 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 22 Jul 2020 17:47:32 -0700
-Received: from FMSEDG001.ED.cps.intel.com (10.1.192.133) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Wed, 22 Jul 2020 17:47:32 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.100)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server (TLS) id
- 14.3.439.0; Wed, 22 Jul 2020 17:47:32 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RVxQ7CZc9QdiBqavJfWzqIO8C2zpW2ui9LQYBEYeiu5CFp+XWzX2Nm2aE/xTyBzJo0qcuBTc8slaKYqXM78dW0RQmHr7wIoczEDucuTenqW/rU6KykOlvCMkIqBihthzfZtek0GbpPRtNZX/6QeHpBBw2a3yI2e0K7TrGw3ghVNk3DEZmZ9/xWcRREw1KbK6PVMd6q2oHqdUvcqWLKLvdQ/Gjrbyxkq2rE2AbHlIEvY3F0y2v4tcedTDC8EjoRHKcb4fw7zIhLDxH+ybU1YB2lhxOWuIxQyyy86zXPKOrmKgYtkKRtyMPRIVYMYPjLkDGrZ/cD1g+17jTHzbyPVpdg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6nEoP3KsN5QGx70YK7EDjI6RF8CcVfFqdmZrN23TdcM=;
- b=Qc+oS2Cyj5e/WzI+uPszrfbDMqnnMZLvIBpQvtxXXQvmVPRXE8xoKM3ZwkfbhpRApy5VkeqVcI3cWtQTdJ60gUsxPgI73rPap8uJYNeQkldQznzkr8RQ65P+k9psLGHaV8H22jeSHRZnGVlv/2pl3Bka3cTeIWPzVJSH/oGl/EZUpQOjnWocTSAS7PGBfFzDNZymfWrZUWpfc975Un/GQnTH1f+qsXduifxzZZV7nUKbXht6yfKz+7THCnghGOY5MxzMlgOc0vusCrwZHKngxQeAANekdWhDAQtjr9ctc3Vjb9Hvlwrh282Iffa38PzakQH5Gjn757Ygp5xlLQso3A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6nEoP3KsN5QGx70YK7EDjI6RF8CcVfFqdmZrN23TdcM=;
- b=wdNJbCQW0mxo43pVe5am+rDxliycbzgMLkwAgoDMYvvuZq4gvx72btq4de7dImuUvPDzgjmfTQfiXYNYAk0E+79HvS//k4sQYWlyWu6tmHaEAUik/cAjeWxyM37L8yVzLzf9lNsKTVt18p4wdPi77l7XUu5dkXXf6UrN4hWePHc=
-Received: from MW3PR11MB4522.namprd11.prod.outlook.com (2603:10b6:303:2d::8)
- by MWHPR11MB0014.namprd11.prod.outlook.com (2603:10b6:301:64::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.23; Thu, 23 Jul
- 2020 00:47:29 +0000
-Received: from MW3PR11MB4522.namprd11.prod.outlook.com
- ([fe80::a43e:b4a1:3c31:aecd]) by MW3PR11MB4522.namprd11.prod.outlook.com
- ([fe80::a43e:b4a1:3c31:aecd%9]) with mapi id 15.20.3216.020; Thu, 23 Jul 2020
- 00:47:29 +0000
-From:   "Brady, Alan" <alan.brady@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "Michael, Alice" <alice.michael@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "Burra, Phani R" <phani.r.burra@intel.com>,
-        "Hay, Joshua A" <joshua.a.hay@intel.com>,
-        "Chittim, Madhu" <madhu.chittim@intel.com>,
-        "Linga, Pavan Kumar" <pavan.kumar.linga@intel.com>,
-        "Skidmore, Donald C" <donald.c.skidmore@intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Subject: RE: [net-next v4 06/15] iecm: Implement mailbox functionality
-Thread-Topic: [net-next v4 06/15] iecm: Implement mailbox functionality
-Thread-Index: AQHWXvdUsd8ZG91aOkup8VGE9K7Tj6kSU+IAgAIDeAA=
-Date:   Thu, 23 Jul 2020 00:47:28 +0000
-Message-ID: <MW3PR11MB45221A2D18E5FF5D30396F348F760@MW3PR11MB4522.namprd11.prod.outlook.com>
-References: <20200721003810.2770559-1-anthony.l.nguyen@intel.com>
-        <20200721003810.2770559-7-anthony.l.nguyen@intel.com>
- <20200721110108.428105d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200721110108.428105d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.2.0.6
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [174.127.217.60]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 888660ee-9df6-4319-a3c9-08d82ea1f9f0
-x-ms-traffictypediagnostic: MWHPR11MB0014:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR11MB00141EB8EEE5E57A50447B5E8F760@MWHPR11MB0014.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2958;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ezN2b3eksZacY0GniOA02Z6iQiy+IGndUosl49RAH98eS7FGB7RHytFPMhxqEJLayU9Tt/pddwZQykqiI9vQgFO98FmqRQAZSViLGBGIdBI0dhSgXwNP9SzGHguLrr2QKS4VjEImWJuk8ZB0YtnY8yzHXuLGF2SqLiNSHU6M6DU8hLPnH4Lg/Ked+H57iR9OhVpfCuXjDRkR6apUuDdv8hmGOoeeVeGIKJ1JbxfNSLyhbFlIHKdpU91yAxtD6nsRG4Zh3vVSQgQBW5nnMqW2EC5gBeDUTleeIn8lp/ygROgaiZ9XOJgLRgkenJvd0XyJ2n4tjKaFNCbmidS08i8dfA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4522.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(7696005)(6636002)(316002)(64756008)(66446008)(66556008)(66476007)(76116006)(66946007)(52536014)(83380400001)(107886003)(26005)(478600001)(8936002)(33656002)(186003)(2906002)(15650500001)(86362001)(55016002)(71200400001)(8676002)(9686003)(110136005)(6506007)(4326008)(53546011)(54906003)(5660300002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: vvkb58UDcuzgql0eyyiANz0p46btDeoPhBUnXWBeWXi92B7cYgOntTkApXtoJE5A9jXYaWzrygbznkNys7yJN8vpQ5mdDPsJvbPaXEpl3G0U0rnsu4yGLEOo1u1nVrGjRT5bKcq+lxUMAcLA2owJ/DOKY1IyZ0dSRn4qjKxZ8BVc4XbWh4sO+CdY6+ZTVjecjmzDqEn1prSKhadmepwiSreP8j++EEX6/dLn34ENY7fhcn0VHftC1inVSSuWPUgNcwe90NrR/AqxfeEzBraQc1mhYRycBAiT89WBWN0qe85LWDkOF4hCRiH3BsvDIOEplNwcHTTLrLWCV5TPyb9mw/JLyjj05rzim2c1axJlvMsZDAIm7odEWqww//CLQ5dMnbPBjl+TM7WRrWA+zQmLOXe8s3TpPYad9fekybiPtFfVAke2vgXmY2ni4/ohqOY5wdvAUF07KYwt3e0G421tlj6l9uWf7ccHrLfmyL6xaLTq/NLHGvxbzGUu4tvPjhxE
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1733174AbgGWAsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 20:48:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35246 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728607AbgGWAsj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 20:48:39 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E174BC0619DC
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 17:48:38 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id x69so3928607qkb.1
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 17:48:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Eu2/iLDXjQl3orB1eBGpy+4VFyvF7pQYeOjHN75uN5E=;
+        b=JKev97ScTEF+tXvZ7j8ofoI3l51ZxfpqNdqkpKW6JbZ+msL6Veb3U3B0RARv9FydVn
+         fAP7M8F71uBnY3s/ow4VtWgkMuiFcMlsSR1i+C8gZPX640M0gLwh+IB4LnL3xrwwzCgq
+         otNRSgcz/0+eJP3BYobrOgXEMwV7j+ETLbOJXwfIIFsXNXuLrR2MdBGY8/KJSXYy4Fce
+         sgbQjoKWT2tYA4lGSYTjPzMNPXERnGe/ic5uXroMS4tYFBHaUWV/0OR9iRwbyDcxcj7t
+         /epJkjLm+m3MfQEOYtL89uOdeU9mHDTXfuOKxhLhtd8Hcmf1aSDpbAGUcfLfxFuAwOuF
+         pjyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Eu2/iLDXjQl3orB1eBGpy+4VFyvF7pQYeOjHN75uN5E=;
+        b=TpI5rsiT1Gl9FyGceEP7+2b798sZ4evNaUbsxL2Qe+Z9VoRRpRG/56dhOAkB93za9X
+         z0Ve+7oTwIxCcLDtVJB5S3uIiIjc9KyncuCQrpKKIFB5DRH1uEqwFKBMy1afdi5KlCCv
+         YyIPfNkvKtZsQCoQ2g5swvj2R2Yo4Q8/OC7WAntQgcwRQ4azVAF9IcnD/gyfcaEwfU28
+         GC62POyBQi2SQNzhbE0ITu9TYKlisNPyblce6xfpwo9EpSXPuDpeXSw5ee5W8puN10zw
+         2IPBiEDi4mvssfuMhEtr71VCOaVBsze3QHulT/jAsOO/ZJHgiBS0TlkeiHUH23ydtprn
+         Sz7w==
+X-Gm-Message-State: AOAM531ky1ITw1cr0pru9eBia1UTEw5Y/yKAqnWs2n16vdpacnOscElr
+        K1GCMI4KgfFzqLWkKoi7VG4=
+X-Google-Smtp-Source: ABdhPJxfc0irL4e2/LOwjcvejmhRdhKZ/HzddC7ZJK+1pQ8OdAA6Kvt9SKMKXPr46HckaVeqbFkLZg==
+X-Received: by 2002:a37:aa87:: with SMTP id t129mr2818976qke.70.1595465317940;
+        Wed, 22 Jul 2020 17:48:37 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:5c10:aafb:1d38:5735? ([2601:282:803:7700:5c10:aafb:1d38:5735])
+        by smtp.googlemail.com with ESMTPSA id q65sm1312327qkf.50.2020.07.22.17.48.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jul 2020 17:48:37 -0700 (PDT)
+Subject: Re: [RFC PATCH] Fix: ipv4/icmp: icmp error route lookup performed on
+ wrong routing table
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        netdev <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     David Ahern <dsa@cumulusnetworks.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20200720221118.26148-1-mathieu.desnoyers@efficios.com>
+ <1949069529.26392.1595438806291.JavaMail.zimbra@efficios.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c69f44ec-f1af-2caf-bb9f-c30cf32b9452@gmail.com>
+Date:   Wed, 22 Jul 2020 18:48:35 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.10.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4522.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 888660ee-9df6-4319-a3c9-08d82ea1f9f0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jul 2020 00:47:28.8445
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XlAf8qXdE0AjhHQWlFqArDIb8rnIK6sDphOrS0iqKW42LS4K9r3qBxWVzXbcF4ObtaX9DyHIMaabThgupqggVA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB0014
-X-OriginatorOrg: intel.com
+In-Reply-To: <1949069529.26392.1595438806291.JavaMail.zimbra@efficios.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Tuesday, July 21, 2020 11:01 AM
-> To: Nguyen, Anthony L <anthony.l.nguyen@intel.com>
-> Cc: davem@davemloft.net; Michael, Alice <alice.michael@intel.com>;
-> netdev@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
-> Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; Brady, Alan
-> <alan.brady@intel.com>; Burra, Phani R <phani.r.burra@intel.com>; Hay,
-> Joshua A <joshua.a.hay@intel.com>; Chittim, Madhu
-> <madhu.chittim@intel.com>; Linga, Pavan Kumar
-> <pavan.kumar.linga@intel.com>; Skidmore, Donald C
-> <donald.c.skidmore@intel.com>; Brandeburg, Jesse
-> <jesse.brandeburg@intel.com>; Samudrala, Sridhar
-> <sridhar.samudrala@intel.com>
-> Subject: Re: [net-next v4 06/15] iecm: Implement mailbox functionality
->=20
-> On Mon, 20 Jul 2020 17:38:01 -0700 Tony Nguyen wrote:
-> > @@ -30,7 +38,32 @@ static enum iecm_status iecm_ctlq_init_regs(struct
-> iecm_hw *hw,
-> >  					    struct iecm_ctlq_info *cq,
-> >  					    bool is_rxq)
-> >  {
-> > -	/* stub */
-> > +	u32 reg =3D 0;
-> > +
-> > +	if (is_rxq)
-> > +		/* Update tail to post pre-allocated buffers for Rx queues */
-> > +		wr32(hw, cq->reg.tail, (u32)(cq->ring_size - 1));
-> > +	else
-> > +		wr32(hw, cq->reg.tail, 0);
-> > +
-> > +	/* For non-Mailbox control queues only TAIL need to be set */
-> > +	if (cq->q_id !=3D -1)
-> > +		return 0;
-> > +
-> > +	/* Clear Head for both send or receive */
-> > +	wr32(hw, cq->reg.head, 0);
-> > +
-> > +	/* set starting point */
-> > +	wr32(hw, cq->reg.bal, IECM_LO_DWORD(cq->desc_ring.pa));
-> > +	wr32(hw, cq->reg.bah, IECM_HI_DWORD(cq->desc_ring.pa));
-> > +	wr32(hw, cq->reg.len, (cq->ring_size | cq->reg.len_ena_mask));
-> > +
-> > +	/* Check one register to verify that config was applied */
-> > +	reg =3D rd32(hw, cq->reg.bah);
-> > +	if (reg !=3D IECM_HI_DWORD(cq->desc_ring.pa))
-> > +		return IECM_ERR_CTLQ_ERROR;
->=20
-> Please stop using your own error codes.
->=20
+On 7/22/20 11:26 AM, Mathieu Desnoyers wrote:
+> Adding IPv4/IPv6 maintainers in CC, along with David Ahern's k.org email address.
+> 
+> ----- On Jul 20, 2020, at 6:11 PM, Mathieu Desnoyers mathieu.desnoyers@efficios.com wrote:
+> 
+>> As per RFC792, ICMP errors should be sent to the source host.
+>>
+>> However, in configurations with Virtual Forwarding and Routing tables,
 
-We did drastically reduce the amount enum idpf_status usage, but if still n=
-ot quite satisfactory, we will try and go further with it.
+FYI: you have it backwards; it is VRF as in Virtual Routing and
+Forwarding, not VFR. The commit message should be update accordingly.
 
-Alan
+>> looking up which routing table to use is currently done by using the
+>> destination net_device.
+>>
+>> commit 9d1a6c4ea43e ("net: icmp_route_lookup should use rt dev to
+>> determine L3 domain") changes the interfaces passed to
+>> l3mdev_master_ifindex() and inet_addr_type_dev_table() from skb_in->dev
+>> to skb_dst(skb_in)->dev in order to fix a NULL pointer dereference. This
+>> changes the interface used for routing table lookup from source to
+>> destination. Therefore, if the source and destination interfaces are
+>> within separate VFR, or one in the global routing table and the other in
+>> a VFR, looking up the source host in the destination interface's routing
+>> table is likely to fail.
+>>
+>> One observable effect of this issue is that traceroute does not work in
+>> the following cases:
+>>
+>> - Route leaking between global routing table and VRF
+>> - Route leaking between VRFs
+>>
+>> [ Note 1: I'm not entirely sure what routing table should be used when
+>>  param->replyopts.opt.opt.srr is set ? Is it valid to honor Strict
+>>  Source Route when sending an ICMP error ? ]
+>>
+>> [ Note 2: I notice that ipv6 icmp6_send() uses skb_dst(skb)->dev as
+>>  argument to l3mdev_master_ifindex(). I'm not sure if it is correct ? ]
+>>
+>> [ This patch is only compile-tested. ]
+
+please devise a test using namespaces which demonstrates the problem and
+proves the change fixes it. The test can be added to
+tools/testing/selftests/net/fcnal-test.sh, use_cases(). VRF route
+leaking is only useful and relevant for the forwarding case, not locally
+generated packets, so the test case should be based on forwarding
+packets across VRFs.
+
+
+>>
+>> Fixes: 9d1a6c4ea43e ("net: icmp_route_lookup should use rt dev to determine L3
+>> domain")
+>> Link: https://tools.ietf.org/html/rfc792
+>> Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+>> Cc: David Ahern <dsa@cumulusnetworks.com>
+>> Cc: David S. Miller <davem@davemloft.net>
+>> Cc: netdev@vger.kernel.org
+>> ---
+>> net/ipv4/icmp.c | 12 ++++++++++--
+>> 1 file changed, 10 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+>> index e30515f89802..3d1da70c7293 100644
+>> --- a/net/ipv4/icmp.c
+>> +++ b/net/ipv4/icmp.c
+>> @@ -465,6 +465,7 @@ static struct rtable *icmp_route_lookup(struct net *net,
+>> 					int type, int code,
+>> 					struct icmp_bxm *param)
+>> {
+>> +	struct net_device *route_lookup_dev;
+>> 	struct rtable *rt, *rt2;
+>> 	struct flowi4 fl4_dec;
+>> 	int err;
+>> @@ -479,7 +480,14 @@ static struct rtable *icmp_route_lookup(struct net *net,
+>> 	fl4->flowi4_proto = IPPROTO_ICMP;
+>> 	fl4->fl4_icmp_type = type;
+>> 	fl4->fl4_icmp_code = code;
+>> -	fl4->flowi4_oif = l3mdev_master_ifindex(skb_dst(skb_in)->dev);
+>> +	/*
+>> +	 * The device used for looking up which routing table to use is
+>> +	 * preferably the source whenever it is set, which should ensure
+>> +	 * the icmp error can be sent to the source host, else fallback
+>> +	 * on the destination device.
+>> +	 */
+>> +	route_lookup_dev = skb_in->dev ? skb_in->dev : skb_dst(skb_in)->dev;
+>> +	fl4->flowi4_oif = l3mdev_master_ifindex(route_lookup_dev);
+>>
+>> 	security_skb_classify_flow(skb_in, flowi4_to_flowi(fl4));
+>> 	rt = ip_route_output_key_hash(net, fl4, skb_in);
+>> @@ -503,7 +511,7 @@ static struct rtable *icmp_route_lookup(struct net *net,
+>> 	if (err)
+>> 		goto relookup_failed;
+>>
+>> -	if (inet_addr_type_dev_table(net, skb_dst(skb_in)->dev,
+>> +	if (inet_addr_type_dev_table(net, route_lookup_dev,
+>> 				     fl4_dec.saddr) == RTN_LOCAL) {
+>> 		rt2 = __ip_route_output_key(net, &fl4_dec);
+>> 		if (IS_ERR(rt2))
+
+I *think* this is ok, but a test case and running all of the IPv4
+existing tests in fcnal-test.sh (-4 arg) would help.
