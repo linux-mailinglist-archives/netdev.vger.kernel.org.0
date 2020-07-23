@@ -2,90 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B429722B1DA
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 16:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 147D822B1ED
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 16:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728752AbgGWOxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 10:53:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726761AbgGWOxV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 10:53:21 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0537C0619DC;
-        Thu, 23 Jul 2020 07:53:21 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595516000;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xReGl6rTwlABQqLHz4nZq26+2OiWDgg160LyB2p5G1Y=;
-        b=h+R7c7Oqa+NtfxuxU6ErUL3QgyKMiY86p1+Kw7jgFvrPWdf1Q0qClfz317j9HUmF2fwC/1
-        5acMlB6QLMHuQ5C80LW1aEUjGMzQKOLyRA1SAmDUiUIFBgINPfAmbPmW258xRB4SST2MAd
-        GsIWTwBzzKWejXNRLcn0/kylOrHmYzxeC+YBi5HEro2PJgagKpxzZ/H2OjSnTCbjwhoJ22
-        xkmLAuyyoc25iqroV83OtXKN3Ts+LbJSF0t5tzsVbkxhIuuNqUCPkFbZGSqZEgmsXrkCIr
-        pnMbd2XwB2NTi505+WXCf8zIwWxOv0AIhY/IC+XmYNJ03E2iS3sY9MAhMmqOEQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595516000;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xReGl6rTwlABQqLHz4nZq26+2OiWDgg160LyB2p5G1Y=;
-        b=ZWPvwgt7LIfOjZ/LyDvsBRAenC3Lmc63twFT/Q12fb4/k/DMfWqwI6MbrS7HjD3pi6hH84
-        QAlVEytmbw2nKuAQ==
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alex Belits <abelits@marvell.com>,
-        "frederic\@kernel.org" <frederic@kernel.org>,
-        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
-        Prasun Kapoor <pkapoor@marvell.com>,
-        "mingo\@kernel.org" <mingo@kernel.org>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "linux-arch\@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "catalin.marinas\@arm.com" <catalin.marinas@arm.com>,
-        "will\@kernel.org" <will@kernel.org>,
-        "linux-arm-kernel\@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v4 00/13] "Task_isolation" mode
-In-Reply-To: <20200723142623.GS5523@worktop.programming.kicks-ass.net>
-References: <04be044c1bcd76b7438b7563edc35383417f12c8.camel@marvell.com> <87imeextf3.fsf@nanos.tec.linutronix.de> <20200723142623.GS5523@worktop.programming.kicks-ass.net>
-Date:   Thu, 23 Jul 2020 16:53:19 +0200
-Message-ID: <87y2nawae8.fsf@nanos.tec.linutronix.de>
+        id S1728431AbgGWO4j convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Jul 2020 10:56:39 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:49754 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728711AbgGWO4i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 10:56:38 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-82-SdYRZOb-OAyxxDdIZA3c_Q-1; Thu, 23 Jul 2020 15:56:34 +0100
+X-MC-Unique: SdYRZOb-OAyxxDdIZA3c_Q-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 23 Jul 2020 15:56:33 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 23 Jul 2020 15:56:33 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christoph Hellwig' <hch@lst.de>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "linux-hams@vger.kernel.org" <linux-hams@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
+        "linux-decnet-user@lists.sourceforge.net" 
+        <linux-decnet-user@lists.sourceforge.net>,
+        "linux-wpan@vger.kernel.org" <linux-wpan@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "mptcp@lists.01.org" <mptcp@lists.01.org>,
+        "lvs-devel@vger.kernel.org" <lvs-devel@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>
+Subject: RE: [PATCH 03/26] bpfilter: reject kernel addresses
+Thread-Topic: [PATCH 03/26] bpfilter: reject kernel addresses
+Thread-Index: AQHWYLhxJPyZOJNDGEen8+LVytPg86kVPIvA///w6YCAABGh0A==
+Date:   Thu, 23 Jul 2020 14:56:33 +0000
+Message-ID: <5fc6b1716f1b4534bda95bab49512754@AcuMS.aculab.com>
+References: <20200723060908.50081-1-hch@lst.de>
+ <20200723060908.50081-4-hch@lst.de>
+ <c3dc5b4d84e64230bb6ca8df7bb70705@AcuMS.aculab.com>
+ <20200723144455.GA12280@lst.de>
+In-Reply-To: <20200723144455.GA12280@lst.de>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Peter Zijlstra <peterz@infradead.org> writes:
-> On Thu, Jul 23, 2020 at 03:17:04PM +0200, Thomas Gleixner wrote:
->
->>   2) Instruction synchronization
->> 
->>      Trying to do instruction synchronization delayed is a clear recipe
->>      for hard to diagnose failures. Just because it blew not up in your
->>      face does not make it correct in any way. It's broken by design and
->>      violates _all_ rules of safe instruction patching and introduces a
->>      complete trainwreck in x86 NMI processing.
->> 
->>      If you really think that this is correct, then please have at least
->>      the courtesy to come up with a detailed and precise argumentation
->>      why this is a valid approach.
->> 
->>      While writing that up you surely will find out why it is not.
->
-> So delaying the sync_core() IPIs for kernel text patching _might_ be
-> possible, but it very much wants to be a separate patchset and not
-> something hidden inside a 'gem' like this.
+From: 'Christoph Hellwig'
+> Sent: 23 July 2020 15:45
+> 
+> On Thu, Jul 23, 2020 at 02:42:11PM +0000, David Laight wrote:
+> > From: Christoph Hellwig
+> > > Sent: 23 July 2020 07:09
+> > >
+> > > The bpfilter user mode helper processes the optval address using
+> > > process_vm_readv.  Don't send it kernel addresses fed under
+> > > set_fs(KERNEL_DS) as that won't work.
+> >
+> > What sort of operations is the bpf filter doing on the sockopt buffers?
+> >
+> > Any attempts to reject some requests can be thwarted by a second
+> > application thread modifying the buffer after the bpf filter has
+> > checked that it allowed.
+> >
+> > You can't do security by reading a user buffer twice.
+> 
+> I'm not saying that I approve of the design, but the current bpfilter
+> design uses process_vm_readv to access the buffer, which obviously does
+> not work with kernel buffers.
 
-I'm not saying it's impossible, but the proposed hack is definitely
-beyond broken and you really don't want to be the one who has to mop up
-the pieces later.
+Is this a different bit of bpf that that which used to directly
+intercept setsockopt() requests and pass them down from a kernel buffer?
 
-Thanks,
+I can't held feeling that bpf is getting 'too big for its boots' and
+will have a local-user privilege escalation hiding in it somewhere.
 
-        tglx
+I've had to fix my 'out of tree' driver to remove the [sg]etsockopt()
+calls. Some of the replacements will go badly wrong if I've accidentally
+lost track of the socket type.
+I do have a daemon process sleeping in the driver - so I can wake it up
+and make the requests from it with a user buffer.
+I may have to implement that to get the negotiated number of 'ostreams'
+to an SCTP connection.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
