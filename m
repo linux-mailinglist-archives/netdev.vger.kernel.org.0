@@ -2,47 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 864D122AF81
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 14:35:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6EA422AF89
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 14:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728827AbgGWMfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 08:35:44 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:35394 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726109AbgGWMfn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 08:35:43 -0400
-Received: from localhost (lakshmi-pc.asicdesigners.com [10.193.177.132] (may be forged))
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 06NCZYGH012447;
-        Thu, 23 Jul 2020 05:35:35 -0700
-Date:   Thu, 23 Jul 2020 18:05:33 +0530
-From:   Vishal Kulkarni <vishal@chelsio.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com
-Subject: Re: [PATCH net-next v2] cxgb4: add loopback ethtool self-test
-Message-ID: <20200723123533.GA20236@chelsio.com>
-References: <20200722135844.7432-1-vishal@chelsio.com>
- <20200722100414.6e4e07ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1728663AbgGWMj4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Jul 2020 08:39:56 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:56092 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728499AbgGWMj4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 08:39:56 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-491--lZAuefPNcq8pO6zwbDlzA-1; Thu, 23 Jul 2020 08:39:46 -0400
+X-MC-Unique: -lZAuefPNcq8pO6zwbDlzA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AD4D5106B244;
+        Thu, 23 Jul 2020 12:39:45 +0000 (UTC)
+Received: from bistromath.localdomain (ovpn-112-107.ams2.redhat.com [10.36.112.107])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B080B69524;
+        Thu, 23 Jul 2020 12:39:44 +0000 (UTC)
+Date:   Thu, 23 Jul 2020 14:39:43 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        syzbot+7ebc2e088af5e4c0c9fa@syzkaller.appspotmail.com
+Subject: Re: [Patch net] geneve: fix an uninitialized value in
+ geneve_changelink()
+Message-ID: <20200723123943.GH3939726@bistromath.localdomain>
+References: <20200723015625.19255-1-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20200723015625.19255-1-xiyou.wangcong@gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Content-Disposition: inline
-In-Reply-To: <20200722100414.6e4e07ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday, July 07/22/20, 2020 at 10:04:14 -0700, Jakub Kicinski wrote:
-> On Wed, 22 Jul 2020 19:28:44 +0530 Vishal Kulkarni wrote:
-> > In this test, loopback pkt is created and sent on default queue.
-> > 
-> > v2:
-> > - Add only loopback self-test.
+2020-07-22, 18:56:25 -0700, Cong Wang wrote:
+> geneve_nl2info() sets 'df' conditionally, so we have to
+> initialize it by copying the value from existing geneve
+> device in geneve_changelink().
 > 
-> Thanks for dropping the rest of the patches. Is it worth specifying
-> what level of loopback this test is? PCI / MAC / PHY / other?
+> Fixes: 56c09de347e4 ("geneve: allow changing DF behavior after creation")
+> Reported-by: syzbot+7ebc2e088af5e4c0c9fa@syzkaller.appspotmail.com
+> Cc: Sabrina Dubroca <sd@queasysnail.net>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 
-Hi Jakub,
+Ouch. Thanks for fixing this.
 
-I will add details to commit message and send v3.
+Reviewed-by: Sabrina Dubroca <sd@queasysnail.net>
 
--Vishal
+This should only be needed in net/stable. In net-next, I removed this
+in commit 9e06e8596bc8 (which will conflict with this patch).
+
+-- 
+Sabrina
+
