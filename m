@@ -2,197 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 145DA22B881
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:19:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF22F22B889
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:20:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727997AbgGWVSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 17:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727023AbgGWVSw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 17:18:52 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2646BC0619D3
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 14:18:52 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id f18so6463986wml.3
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 14:18:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pxKsPUQTHAT6oTogti6gb/4uxYGRikFrC1YiMgLzuxA=;
-        b=g6f4zR1wemh+vXoYo9ALzJQ7GTzbevmYdvoLYZjRq9Vq27FbT4trEafPWJr3b0w4gA
-         AWnX6QQqZOJnDc5P1i3GrMDXRaIHwtw2yKZz65BUWxd4T2kYmGL05/UqPteHghlbDRVj
-         7o5iexwSNPSIUPg0wcuj0xV2cK2GY8E21xPVMAYpD/wB58BSNCRYYRjUy9Qmj6mpJnCd
-         5WlXY9x28NTmjVXhjWVdJ+kZuIRvsGL5RT5C0ybTtn7HkYBj1pZrBczQGNBvJY57bo3n
-         sQVtl3hwt/hD0EgXIx0Yby/0rmrZyRdBhgEXNe85ZJ6SFxBdptvkC/NO1jGdEFsOSwMQ
-         EZ3A==
+        id S1726520AbgGWVUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 17:20:07 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:56440 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726173AbgGWVUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 17:20:06 -0400
+Received: by mail-io1-f69.google.com with SMTP id f21so4903866ioo.23
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 14:20:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=pxKsPUQTHAT6oTogti6gb/4uxYGRikFrC1YiMgLzuxA=;
-        b=L4+S2KCQKguAXsvo+60T2jbpZs3s6BpZZBp5iNL+v94AHp7BLSKn68s7wbwet93vaw
-         IkzkArVbESulPTRByvvI4u00+b4tgxNMhP6rITXH9kuW+odYWAyaKibNxMVkW8HGq4GG
-         BbXUj+VJsIj9I4AYqpKWeOJb3Ntyv+enUtnHpV8OEMP9eCrZ1wEcgrcW1hq7tU5rtk42
-         m63wgpgHhqXS5JPeJv0TWbcJU54Ad8sUMy09xSoQqFr531C/EN1SvH+qWuXSy8UzHH6b
-         5Hz5UpnCMzXk1yS8+Aj1sQmW4ORAaYOlGCvTYVfoe3cSnXrrMRGOXVcDFiyluUW0EUBV
-         gkAQ==
-X-Gm-Message-State: AOAM532rrIY3ij9xs7KePA+wC74IwBGJhXqYVhrQTtp8wTSt156i1ViA
-        wtu3nqInWXHdFsLzB1cSB3A=
-X-Google-Smtp-Source: ABdhPJxEjd4prGU1EgCKhLSL3NInunh/deTvCS3RtcSMBE2Kxj9UvEZHxm5W/5e7tDY1gJ5HijgfHQ==
-X-Received: by 2002:a7b:c090:: with SMTP id r16mr5332947wmh.143.1595539130841;
-        Thu, 23 Jul 2020 14:18:50 -0700 (PDT)
-Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y11sm5474174wrs.80.2020.07.23.14.18.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jul 2020 14:18:50 -0700 (PDT)
-Subject: Re: [PATCH net-next] mscc: Add LCPLL Reset to VSC8574 Family of phy
- drivers
-To:     Bryan Whitehead <Bryan.Whitehead@microchip.com>,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
-References: <1595534997-29187-1-git-send-email-Bryan.Whitehead@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <c8791db0-b036-51c0-c714-676357fd8be1@gmail.com>
-Date:   Thu, 23 Jul 2020 14:18:41 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=8OsQi/rtngRly2aes5OHJCr6XU7KTICHzhKX0xPzoq4=;
+        b=jJWD2zvyH7KswzdQX4NdfxCZtBnnKXFqFCP3uTqZnZT5qAVwxyqpb/Al+iPixNMTpU
+         NuK1MbguCEjd4o2qQ32QU8PizHZfC0RyGmxwHdPzt6A9Myq5jXz4cqOXhl8G8ItLVBs9
+         /QoQ65MuLZ5P1X0MzvvQROrtBAvTnMc2MeBpV0gSa4Vqk/9UErwcdjQPu5UbgDxyVpTd
+         CYUojw6x1tVP0JkLEFrRNGtQnmA0x2dJzgtcJ4A4fM4+6AreP7VQsbwL/UOSaZJVuREP
+         MRzN6Fur3fbHEO6A0NeZqBNRFbjbURfqhmMZ7Qu5ZtX0HVhrEDABENofvk56ZArplodX
+         ceXA==
+X-Gm-Message-State: AOAM530y/IGnCSUfoMaLolRhl6I1knmOmCAvdnkrB0BqggEIo53BeL24
+        r/yD2dRor7lAL7NIfnaSBdVTqHvLFkhMY+l5XZzB47TcO6H2
+X-Google-Smtp-Source: ABdhPJySXYoykumIrlUktwKjkmXgW7KFAwAJVGuQHGNXzGRgHXRiekNfL/HLAh/yfSaCAJV29uQD4tvuHcS03PqthES9It126o4f
 MIME-Version: 1.0
-In-Reply-To: <1595534997-29187-1-git-send-email-Bryan.Whitehead@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a92:150d:: with SMTP id v13mr6690732ilk.297.1595539205575;
+ Thu, 23 Jul 2020 14:20:05 -0700 (PDT)
+Date:   Thu, 23 Jul 2020 14:20:05 -0700
+In-Reply-To: <CAM_iQpXTe-DCr2MozGTik-SxOt8wiTehe6YkNhZGtDWfbHNPTA@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000092da5105ab226b64@google.com>
+Subject: Re: KASAN: use-after-free Read in macvlan_dev_get_iflink
+From:   syzbot <syzbot+95eec132c4bd9b1d8430@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/23/20 1:09 PM, Bryan Whitehead wrote:
-> The LCPLL Reset sequence is added to the initialization path
-> of the VSC8574 Family of phy drivers.
-> 
-> The LCPLL Reset sequence is known to reduce hardware inter-op
-> issues when using the QSGMII MAC interface.
-> 
-> This patch is submitted to net-next to avoid merging conflicts that
-> may arise if submitted to net.
-> 
-> Signed-off-by: Bryan Whitehead <Bryan.Whitehead@microchip.com>
+Hello,
 
-Can you copy the PHY library maintainers for future changes such that
-this does not escape their review?
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+general protection fault in macvlan_get_link_net
 
-> ---
->  drivers/net/phy/mscc/mscc_main.c | 90 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 90 insertions(+)
-> 
-> diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-> index a4fbf3a..f2fa221 100644
-> --- a/drivers/net/phy/mscc/mscc_main.c
-> +++ b/drivers/net/phy/mscc/mscc_main.c
-> @@ -929,6 +929,90 @@ static bool vsc8574_is_serdes_init(struct phy_device *phydev)
->  }
->  
->  /* bus->mdio_lock should be locked when using this function */
-> +/* Page should already be set to MSCC_PHY_PAGE_EXTENDED_GPIO */
-> +static int vsc8574_wait_for_micro_complete(struct phy_device *phydev)
-> +{
-> +	u16 timeout = 500;
-> +	u16 reg18g = 0;
-> +
-> +	reg18g = phy_base_read(phydev, 18);
-> +	while (reg18g & 0x8000) {
-> +		timeout--;
-> +		if (timeout == 0)
-> +			return -1;
-> +		usleep_range(1000, 2000);
-> +		reg18g = phy_base_read(phydev, 18);
+general protection fault, probably for non-canonical address 0xdffffc00000000b3: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000598-0x000000000000059f]
+CPU: 0 PID: 8229 Comm: syz-executor.0 Not tainted 5.8.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:read_pnet include/net/net_namespace.h:330 [inline]
+RIP: 0010:dev_net include/linux/netdevice.h:2261 [inline]
+RIP: 0010:macvlan_get_link_net+0x43/0x60 drivers/net/macvlan.c:1667
+Code: c6 f0 0b 00 00 4c 89 f0 48 c1 e8 03 42 80 3c 38 00 74 08 4c 89 f7 e8 dc cb d6 fc bb 98 05 00 00 49 03 1e 48 89 d8 48 c1 e8 03 <42> 80 3c 38 00 74 08 48 89 df e8 be cb d6 fc 48 8b 03 5b 41 5e 41
+RSP: 0018:ffffc90004e47110 EFLAGS: 00010202
+RAX: 00000000000000b3 RBX: 0000000000000598 RCX: ffff88808f57c040
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff888089dc8000
+RBP: ffffc90004e47228 R08: ffffffff866c14ae R09: fffffbfff12b7531
+R10: fffffbfff12b7531 R11: 0000000000000000 R12: 1ffff110113b904b
+R13: ffff888089dc825f R14: ffff888089dc8bf0 R15: dffffc0000000000
+FS:  00007f40720ea700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005623955cb160 CR3: 000000009dc8e000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ rtnl_fill_link_netnsid net/core/rtnetlink.c:1569 [inline]
+ rtnl_fill_ifinfo+0x3355/0x4650 net/core/rtnetlink.c:1758
+ rtmsg_ifinfo_build_skb+0xe2/0x180 net/core/rtnetlink.c:3706
+ rollback_registered_many+0xc9b/0x14a0 net/core/dev.c:8972
+ unregister_netdevice_many+0x46/0x260 net/core/dev.c:10113
+ __rtnl_newlink net/core/rtnetlink.c:3381 [inline]
+ rtnl_newlink+0x1876/0x1c10 net/core/rtnetlink.c:3398
+ rtnetlink_rcv_msg+0x889/0xd40 net/core/rtnetlink.c:5461
+ netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2469
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x519/0x800 net/socket.c:2352
+ ___sys_sendmsg net/socket.c:2406 [inline]
+ __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
+ do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:384
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45cb99
+Code: Bad RIP value.
+RSP: 002b:00007f40720e9c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000502680 RCX: 000000000045cb99
+RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000006
+RBP: 000000000078bfa0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 0000000000000a40 R14: 00000000004cd2f6 R15: 00007f40720ea6d4
+Modules linked in:
+---[ end trace 45c7e0a1442252cb ]---
+RIP: 0010:read_pnet include/net/net_namespace.h:330 [inline]
+RIP: 0010:dev_net include/linux/netdevice.h:2261 [inline]
+RIP: 0010:macvlan_get_link_net+0x43/0x60 drivers/net/macvlan.c:1667
+Code: c6 f0 0b 00 00 4c 89 f0 48 c1 e8 03 42 80 3c 38 00 74 08 4c 89 f7 e8 dc cb d6 fc bb 98 05 00 00 49 03 1e 48 89 d8 48 c1 e8 03 <42> 80 3c 38 00 74 08 48 89 df e8 be cb d6 fc 48 8b 03 5b 41 5e 41
+RSP: 0018:ffffc90004e47110 EFLAGS: 00010202
+RAX: 00000000000000b3 RBX: 0000000000000598 RCX: ffff88808f57c040
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff888089dc8000
+RBP: ffffc90004e47228 R08: ffffffff866c14ae R09: fffffbfff12b7531
+R10: fffffbfff12b7531 R11: 0000000000000000 R12: 1ffff110113b904b
+R13: ffff888089dc825f R14: ffff888089dc8bf0 R15: dffffc0000000000
+FS:  00007f40720ea700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005623955cb160 CR3: 000000009dc8e000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-Please consider using phy_read_poll_timeout() instead of open coding
-this busy waiting loop.
 
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +/* bus->mdio_lock should be locked when using this function */
-> +static int vsc8574_reset_lcpll(struct phy_device *phydev)
-> +{
-> +	u16 reg_val = 0;
-> +	int ret = 0;
-> +
-> +	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS,
-> +		       MSCC_PHY_PAGE_EXTENDED_GPIO);
-> +
-> +	/* Read LCPLL config vector into PRAM */
-> +	phy_base_write(phydev, 18, 0x8023);
-> +	ret = vsc8574_wait_for_micro_complete(phydev);
-> +	if (ret)
-> +		goto done;
+Tested on:
 
-It might make sense to write a helper function that encapsulates the:
+commit:         9506a941 net: fix a race condition in dev_get_iflink()
+git tree:       https://github.com/congwang/linux.git net
+console output: https://syzkaller.appspot.com/x/log.txt?x=1569d430900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b1a5a263f7a540cb
+dashboard link: https://syzkaller.appspot.com/bug?extid=95eec132c4bd9b1d8430
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
 
-- phy_base_write()
-- wait_for_complete
-
-pattern and use it throughout, with an option delay range argument so
-you can put that in there, too.
--- 
-Florian
