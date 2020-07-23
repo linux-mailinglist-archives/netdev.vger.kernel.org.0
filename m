@@ -2,263 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0945622B988
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 00:32:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC66022B997
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 00:34:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbgGWWcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 18:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39536 "EHLO
+        id S1728107AbgGWWeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 18:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726608AbgGWWcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 18:32:08 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11722C0619D3
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 15:32:08 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id b9so3333420plx.6
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 15:32:08 -0700 (PDT)
+        with ESMTP id S1728062AbgGWWeJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 18:34:09 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82623C0619D3;
+        Thu, 23 Jul 2020 15:34:09 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id 9so6310984wmj.5;
+        Thu, 23 Jul 2020 15:34:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ITH754qZqbedNV4/wZ4mpLi4ARIbviJuSmpRyy39b2w=;
-        b=VuKSl1qaJel4kQuNy0YokRuv2mT0TdkJfzaaFhTx8aV895ht3EYWWi0AHAn+J6O5sD
-         HYRs90I5kM9lbfN+JNHk+EBmHOjH0dULW1O4RKJyKcbaUuZ5KcJafaykG/9ugkiLFH2q
-         pOho8KIOnd9vgQQbInbTWoy27vF6gfSrVoxUsrUpEOgG3cAXDENUxX1ETQb5yPreCfL/
-         /L8kyJ+trQ04HQ5Bh1/mDqYg1ME3bx/R5NJVHaRqwE2ZZ6oVhyldJNtW+cBPYNdBCKpJ
-         u9bEoOaP6UXP/YtZXHkuXEIVwnb0YmhEiykxUkZB/dkG+0Zv2fkkhjJxLn1G8Lvzy8Nt
-         9fSw==
+        bh=448dqQuCFaUnNm1WJ4ZEIYQ5IyDQZsuGd3tMx7sn1II=;
+        b=WxegyGy9JoUJZvmU3v8KYrJx+/KozqC/qZuJ3ZSjU3CaulBheWlszlUtLU6QzLIrG9
+         RXEGhZbu3xV3SuxVklzl5sBHw0wpYzWuShpGE0vlxdw9SPu8ANXgwC8wYNWgfniPREBw
+         Ozb46/mEGVoj0k6jMGcwP6UaeaoHqdYGE1RV9HofTvaHMicu4gA+kAVO75bWwxHXfoOu
+         UJcBSi8cfJZSyaye0PBwnD1kUhdAJ6BEVsxoea6YqU+f0dZzDkvzvh/CAcTUIhNuke7D
+         UlT7tjpG1yWqw+jmavrgKtBRzdwI+WvfJj1r49YhfNfH0lHbH4rmqO/ag2zxnTIxGUjG
+         jDaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ITH754qZqbedNV4/wZ4mpLi4ARIbviJuSmpRyy39b2w=;
-        b=A21MfEkf9Fj4GWEQuHkmiMzup3Xjr6j4SmVa0hZkXgwLp550g0GyrdpqncEV0QsRAf
-         n0Z0ttp51PXGNECcaC3YzoJ2GJbqxJX2MhQA0eTRP43+FZseWEXzif+QD2N6aYk8qqIL
-         oNF7z4nCmLvsVHitTQLfE5oEZ//W3NIMKEgLIpdn51ZXvCQHvauqYZIFXKwnKAkwLQb7
-         Y8GUL+b4w8nuWEjs4DP7fsFSlN39dU6rLVbZRKypn6ty1uW6EpZtkIYkftTUJn/REFQp
-         lp2xgXWsQs3cL24UJsrMxHfj+psT64lcoUpKL23CASQ11/buGmSAfdakl5a8beyG3NwV
-         u73A==
-X-Gm-Message-State: AOAM533Dx8iboMZO60I3pFUyP+y6WnpvNSfF+jykxeiadswugNW5DapE
-        smoPNvQUQjBjIlB6oQhAa+X2ylM7
-X-Google-Smtp-Source: ABdhPJwlJS7LwXXIMvthX5QV/3fif3ogscJlNKmY8ZWO9+8S9fXn7H/nhyA3/COcVdKXo02yOBTcSw==
-X-Received: by 2002:a17:902:6b08:: with SMTP id o8mr5692773plk.104.1595543527478;
-        Thu, 23 Jul 2020 15:32:07 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id g19sm3972074pfb.152.2020.07.23.15.32.06
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=448dqQuCFaUnNm1WJ4ZEIYQ5IyDQZsuGd3tMx7sn1II=;
+        b=ip1/ceBBKlsqV6ldltT0wjlMXLcKHH+AoYtfgTkLH5FOClmOm1OMTJOOMlkggpsuw6
+         X8fs9058C2xl7M7O568YcJ+/J2V/qx69NqjIOisrHBYFNasaGTtgK7hv1cKv9fFaMTaK
+         cuvJfjAmVctyerwrIlOB4iT9qw8bzhputFgIku91yxhRnwagehNSbQN7144Fg06hL4pN
+         Jxzx/Wv/eb05d2GS9GhH4VcRIyxVOVszTm5xEpWlXxPY1n8SZ05+J9XxOs0vviSxmpQk
+         jmDyOwX8R14VX2OliYyYvWWZTFzV/uAmVCsUOK0YKNmM3xepdYWfIGyaAdkVoGdiuMc8
+         7EGw==
+X-Gm-Message-State: AOAM532I7b81l6oFCGFAG/Sf8mLT+vu6l5PMVWOd2eK7yw/7cIFaU8GI
+        VGEsWv/y5GrAy+csPBWLpVo=
+X-Google-Smtp-Source: ABdhPJzX0YEiFfKzdjjDbCatHLSmiLVMTqd00rFk44V+u7Uftv+Cyn6s5FvoQ9xnUXSigvMv9KBW6A==
+X-Received: by 2002:a1c:7ecb:: with SMTP id z194mr5597919wmc.12.1595543648205;
+        Thu, 23 Jul 2020 15:34:08 -0700 (PDT)
+Received: from [10.67.50.75] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id k10sm4669322wrm.74.2020.07.23.15.34.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jul 2020 15:32:06 -0700 (PDT)
-Subject: Re: PROBLEM: potential concurrency bug in rhashtable.h
-To:     "Gong, Sishuai" <sishuai@purdue.edu>,
-        "tgraf@suug.ch" <tgraf@suug.ch>,
-        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Sousa da Fonseca, Pedro Jose" <pfonseca@purdue.edu>
-References: <5964B1AB-3A3D-482C-A13B-4528C015E1ED@purdue.edu>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <22d7b981-c105-ebee-46e9-241797769e06@gmail.com>
-Date:   Thu, 23 Jul 2020 15:32:05 -0700
+        Thu, 23 Jul 2020 15:34:07 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/7] net: macb: parse PHY nodes found under an
+ MDIO node
+To:     Codrin.Ciubotariu@microchip.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Nicolas.Ferre@microchip.com, Claudiu.Beznea@microchip.com,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        robh+dt@kernel.org, alexandre.belloni@bootlin.com,
+        Ludovic.Desroches@microchip.com
+References: <20200721171316.1427582-1-codrin.ciubotariu@microchip.com>
+ <20200721171316.1427582-4-codrin.ciubotariu@microchip.com>
+ <460e5f3d-f3a0-154e-d617-d1536c96e390@gmail.com>
+ <1ba55a2a-487a-dbd5-29e6-5d4231e80167@microchip.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <4c286a61-6da9-392f-7a06-bace7f04700d@gmail.com>
+Date:   Thu, 23 Jul 2020 15:33:55 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <5964B1AB-3A3D-482C-A13B-4528C015E1ED@purdue.edu>
+In-Reply-To: <1ba55a2a-487a-dbd5-29e6-5d4231e80167@microchip.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 7/23/20 3:08 PM, Codrin.Ciubotariu@microchip.com wrote:
+> On 23.07.2020 21:59, Florian Fainelli wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>
+>> On 7/21/20 10:13 AM, Codrin Ciubotariu wrote:
+>>> The MACB embeds an MDIO bus controller. For this reason, the PHY nodes
+>>> were represented as sub-nodes in the MACB node. Generally, the
+>>> Ethernet controller is different than the MDIO controller, so the PHYs
+>>> are probed by a separate MDIO driver. Since adding the PHY nodes directly
+>>> under the ETH node became deprecated, we adjust the MACB driver to look
+>>> for an MDIO node and register the subnode MDIO devices.
+>>>
+>>> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+>>> ---
+>>>
+>>> Changes in v2:
+>>>   - readded newline removed by mistake;
+>>>
+>>>   drivers/net/ethernet/cadence/macb_main.c | 10 ++++++++++
+>>>   1 file changed, 10 insertions(+)
+>>>
+>>> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+>>> index 89fe7af5e408..b25c64b45148 100644
+>>> --- a/drivers/net/ethernet/cadence/macb_main.c
+>>> +++ b/drivers/net/ethernet/cadence/macb_main.c
+>>> @@ -740,10 +740,20 @@ static int macb_mii_probe(struct net_device *dev)
+>>>   static int macb_mdiobus_register(struct macb *bp)
+>>>   {
+>>>        struct device_node *child, *np = bp->pdev->dev.of_node;
+>>> +     struct device_node *mdio_node;
+>>> +     int ret;
+>>>
+>>>        if (of_phy_is_fixed_link(np))
+>>>                return mdiobus_register(bp->mii_bus);
+>>
+>> Does not this need changing as well? Consider the use case of having
+>> your MACB Ethernet node have a fixed-link property to describe how it
+>> connects to a switch, and your MACB MDIO controller, expressed as a
+>> sub-node, describing the MDIO attached switch it connects to.
+> 
+> Right, this is what I was discussing with Claudiu on the other thread. I 
+> am thinking to just move the look for mdio before checking for 
+> fixed-link. This will probe the MDIO devices and simple mdiobus_register 
+> will be called only if the mdio node is missing.
 
+Found it after I had sent this email. What you propose sounds
+reasonable, looking forward to v3.
 
-On 7/23/20 1:14 PM, Gong, Sishuai wrote:
-> Hi,
 > 
-> We found a concurrency bug in linux kernel 5.3.11. We were able to reproduce this bug in x86 when the kernel is compiled with non-standard GCC options and under specific thread interleavings. This bug causes a page fault that the kernel can’t handle due to an illegal memory access (“BUG: unable to handle page fault”). 
-> 
-> After some investigation, it seems the problem is caused by the use of the GCC extension for ternary operators (“Conditionals with Omitted Operands”) in the function __rht_ptr. 
-> 
-> The kernel seems to assume that the first operand is only evaluated once when the condition is true, but our experiments show that GCC actually evaluates twice the first operand causing two reads of the bkt variable (one to evaluate the condition and another to evaluate the implicit 2nd operand). Unfortunately under concurrency another thread can change the value of the variable in-between the two reads. 
-> 
-> In particular, if a) the condition evaluates to true during the first read, b) another thread changes the value that bkt is pointing to, which makes the condition false, c) the second (omitted) operand gets evaluated but is evaluated with a second read that returns a value inconsistent with the true condition.
-> 
-> Note that the GCC documentation mentions that the ternary operator with “Omitted Operands” should not cause side-effects to execute twice but there is no guarantee that non-volatile read memory operations are not executed twice, which we have also confirmed with GCC developers and you could find the information here. https://gcc.gnu.org/pipermail/gcc/2020-July/233018.html
->  
-> ------------------------------------------ 
-> Console output
-> 
-> [  109.796573] BUG: unable to handle page fault for address: ffffffe0
-> [  110.250775] #PF: supervisor read access in kernel mode
-> [  110.851490] #PF: error_code(0x0000) - not-present page
-> [  111.575747] *pde = 02248067 *pte = 00000000
-> [  112.170468] Oops: 0000 [#1] SMP
-> [  113.137733] CPU: 1 PID: 1799 Comm: ski-executor Not tainted 5.3.11 #1
-> [  113.936036] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2007
-> [  114.567487] EIP: memcmp+0x9/0x32
-> [  115.636968] Code: 55 89 e5 57 56 8b 75 08 85 f6 74 11 bf 00 00 00 00 89 14 f8 89 4c f8 04 47 39 f7 75 f4 5e 5f 5d c3 55 89 e5 56 53 85 c9 74 22 <0f> b6 18 0f b6 32 29 f3 75 12 01 c1 40 42 39 c1 74 0a 0f b6 18 0f
-> [  118.578949] EAX: ffffffe0 EBX: 00000000 ECX: 00000004 EDX: ce4b5f3c
-> [  119.412369] ESI: c2076a9c EDI: ffffffe0 EBP: ce4b5f14 ESP: ce4b5f0c
-> [  120.380135] DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00000202
-> [  121.241093] CR0: 80050033 CR2: ffffffe0 CR3: 0e272000 CR4: 00000690
-> [  122.258051] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> [  123.705309] DR6: 00000000 DR7: 00000000
-> [  124.875237] Call Trace:
-> [  126.062462]  ipcget+0xfa/0x26c
-> [  127.034312]  ksys_msgget+0x46/0x5d
-> [  127.667337]  sys_msgget+0x13/0x15
-> [  128.421597]  do_fast_syscall_32+0x99/0x285
-> [  129.166383]  entry_SYSENTER_32+0x9f/0xf2
-> [  130.204738] EIP: 0xb7fffaad
-> [  130.823257] Code: 8b 5d 08 e8 19 00 00 00 89 d3 eb e5 8b 04 24 c3 8b 0c 24 c3 8b 1c 24 c3 8b 34 24 c3 8b 3c 24 c3 90 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d 76 00 58 b8 77 00 00 00 cd 80 90 8d 76
-> [  133.839387] EAX: ffffffda EBX: 798e2635 ECX: 00000000 EDX: 00000000
-> [  134.921710] ESI: 00000000 EDI: 00000000 EBP: 00000000 ESP: bffff81c
-> [  136.039511] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00000296
-> [  137.326581] Modules linked in:
-> [  138.350381] CR2: 00000000ffffffe0
-> [  139.121664] ---[ end trace 5a43bf9a3ce51e57 ]---
-> [  139.987631] EIP: memcmp+0x9/0x32
-> [  140.203250] Code: 55 89 e5 57 56 8b 75 08 85 f6 74 11 bf 00 00 00 00 89 14 f8 89 4c f8 04 47 39 f7 75 f4 5e 5f 5d c3 55 89 e5 56 53 85 c9 74 22 <0f> b6 18 0f b6 32 29 f3 75 12 01 c1 40 42 39 c1 74 0a 0f b6 18 0f
-> [  140.553281] EAX: ffffffe0 EBX: 00000000 ECX: 00000004 EDX: ce4b5f3c
-> [  140.734438] ESI: c2076a9c EDI: ffffffe0 EBP: ce4b5f14 ESP: ce4b5f0c
-> [  140.858536] DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00000202
-> [  140.959192] CR0: 80050033 CR2: ffffffe0 CR3: 0e272000 CR4: 00000690
-> [  141.052654] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> [  141.177823] DR6: 00000000 DR7: 00000000
-> 
-> 
-> ------------------------------------------ 
-> Input and source code
-> 
-> This bug occurs when two syscalls, msget and msgctl, are invoked concurrently. Our analysis has located two lines of code, one of which will read a shared memory rhash_head __rcu object while the other writes to it. 
-> 
-> Writer:
-> starting from include/linux/rhashtable.h:399
->     static inline void rht_assign_unlock(struct bucket_table *tbl,
->         struct rhash_lock_head **bkt,
->         struct rhash_head *obj)
->     {
->         struct rhash_head __rcu **p = (struct rhash_head __rcu **)bkt;
-> 
->         if (rht_is_a_nulls(obj))
-> --->       obj = NULL;
->         lock_map_release(&tbl->dep_map);
->         rcu_assign_pointer(*p, obj);
->         preempt_enable();
->         __release(bitlock);
->         local_bh_enable();
->     }
-> 
-> 
-> Reader:
-> starting at include/linux/rhashtable.h:352
->     static inline struct rhash_head rcu *rht_ptr(
->         struct rhash_lock_head const **bkt)
-> {
->         return (struct rhash_head __rcu *)
->         ((unsigned long)*bkt & ~BIT(0) ?:
->         (unsigned long)RHT_NULLS_MARKER(bkt));
-> }
-> 
-> return (struct rhash_head __rcu *)
-> --->       ((unsigned long)*bkt & ~BIT(0) ?:
->         (unsigned long)RHT_NULLS_MARKER(bkt));
-> 
-> ------------------------------------------ 
-> Thread interleaving
-> 
-> For presentation purposes, we convert the original code to explain the thread interleaving.
-> 
-> Original code:
-> return (struct rhash_head __rcu *)
->        ((unsigned long)*bkt & ~BIT(0) ?:
->         (unsigned long)RHT_NULLS_MARKER(bkt));
-> 
-> Converted code:
-> if ((unsigned long)*bkt & ~BIT(0)){
-> return  (struct rhash_head __rcu *)(unsigned long)*bkt & ~BIT(0);
-> }else{
-> return  (struct rhash_head __rcu *)(unsigned long)RHT_NULLS_MARKER(bkt);
-> }
-> 
-> Interleaving that triggers the bug:
-> 
-> CPU0 (msgctl) 			CPU1(msget)
-> …
-> if (rht_is_a_nulls(obj))
-> 						…
-> 						if ((unsigned long)*bkt & ~BIT(0)){
-> 
-> obj = NULL;
-> 						return  (struct rhash_head __rcu *)(unsigned long)*bkt & ~BIT(0);
-> 						…
-> 						rhashtable_compare(…)
-> 						…
-> 						return memcmp(ptr + ht->p.key_offset, arg->key, ht->p.key_len);
-> 						[from rhashtable_compare at include/linux/rhashtable.h: 584]
-> 						[page fault]
-> 
-> ------------------------------------------ 
-> Kernel configuration and compilation
-> 
-> We were only able to reproduce this bug when the kernel is compiled with “-O1 -fno-if-conversion -fno-if-conversion2 -fno-delayed-branch -fno-tree-fre -fno-tree-dominator-opts -fno-cprop-registers” instead of the default “-O2”. The compiler emits different instructions for the reader depending on the optimization level. In the buggy version, the writer has two read accesses to the bkt address but in the non-buggy version it only has one memory read operation.
-> 
-> It is unclear to us how this affects other architectures.
-> 
-> 
-> static inline struct rhash_head __rcu *__rht_ptr(
->       struct rhash_lock_head *const *bkt)
->   {
->  return (struct rhash_head __rcu *)
->       c11a36d4:   8b 45 e4                mov    -0x1c(%ebp),%eax
->       c11a36d7:   83 c8 01                or     $0x1,%eax
->       c11a36da:   89 45 e0                mov    %eax,-0x20(%ebp)
->       c11a36dd:   89 75 d8                mov    %esi,-0x28(%ebp)
->       c11a36e0:   8b 45 e4                mov    -0x1c(%ebp),%eax
-> ---> c11a36e3:   f7 00 fe ff ff ff       testl  $0xfffffffe,(%eax)
->       c11a36e9:   74 69                   je     c11a3754 <bpf_offload_find_netdev+0x107>
-> ---> c11a36eb:   8b 00                   mov    (%eax),%eax
->       c11a36ed:   89 45 dc                mov    %eax,-0x24(%ebp)
->       c11a36f0:   83 e0 fe                and    $0xfffffffe,%eax
-> 
-> 
-> static inline struct rhash_head __rcu *__rht_ptr(
->      struct rhash_lock_head *const *bkt)
->  {
->      return (struct rhash_head __rcu *)
->        c119b644:   8b 45 e4                mov    -0x1c(%ebp),%eax
->        c119b647:   83 c8 01                or     $0x1,%eax
->        c119b64a:   89 45 dc                mov    %eax,-0x24(%ebp)
->        c119b64d:   89 75 d8                mov    %esi,-0x28(%ebp)
->          ((unsigned long)*bkt & ~BIT(0) ?:
->        c119b650:   8b 45 e4                mov    -0x1c(%ebp),%eax
->   ---> c119b653:   8b 00                   mov    (%eax),%eax
->         c119b655:   89 45 e0                mov    %eax,-0x20(%ebp)
->       return (struct rhash_head __rcu *)
->        c119b658:   83 e0 fe                and    $0xfffffffe,%eax
->        c119b65b:   75 03                   jne    c119b660 <bpf_offload_find_netdev+0xa3>
->        c119b65d:   8b 45 dc                mov    -0x24(%ebp),%eax
-> 
-> 
-> Thanks,
-> Sishuai
-> 
+> Thank you for your review(s)!
 
-Thanks for the report/analysis. 
-
-READ_ONCE() should help here, can you test/submit an official patch ?
-
-diff --git a/include/linux/rhashtable.h b/include/linux/rhashtable.h
-index d3432ee65de7684dbfb3cd6f04e207335db7f3bf..f9f88d67c8f7293b3aa9fdece5e70e51fa4859b5 100644
---- a/include/linux/rhashtable.h
-+++ b/include/linux/rhashtable.h
-@@ -353,7 +353,7 @@ static inline struct rhash_head __rcu *__rht_ptr(
-        struct rhash_lock_head *const *bkt)
- {
-        return (struct rhash_head __rcu *)
--               ((unsigned long)*bkt & ~BIT(0) ?:
-+               ((unsigned long)READ_ONCE(*bkt) & ~BIT(0) ?:
-                 (unsigned long)RHT_NULLS_MARKER(bkt));
- }
- 
-
+Of course.
+-- 
+Florian
