@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 495AF22A78C
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 08:11:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D85BA22A780
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 08:11:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728061AbgGWGKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 02:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56538 "EHLO
+        id S1727992AbgGWGKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 02:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726858AbgGWGJy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 02:09:54 -0400
+        with ESMTP id S1727808AbgGWGJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 02:09:55 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E40C0619DC;
-        Wed, 22 Jul 2020 23:09:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910CCC0619DC;
+        Wed, 22 Jul 2020 23:09:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=W9DCuh+32aeos/novSkbFq+x7P6ru3xc8ujj+xYmqPk=; b=fJ+b1K7ZCdgn1uMZIKEm5HMeBR
-        0cIOSj/xV0MndLXB38ioamT2fc/m1Ax6l0HP5ni25UAb3ciFwPAFvcfK8iMgJOTrnPfJ4a+lPRZbr
-        sGPRZxDlz2wnHW2sr7HnoERsDkThHWPxehSVn1fdikFweIgYpxItFOdf/kTtrgpueInOcKg4K/XT+
-        fzkHXbim1yQAU8DDym+kUNqF2vH76iCHONXu2eXi1quSbjcmU8oPbYyYJV7RbFsry7z90ak2XM3Pr
-        fdoogmLDYgKBNbdv7llf8EKbFsoHvSRq/nBvwBkhuKQUifvS0NA745IiONvfik2+SRxgIN6Ddwzra
-        qMFG8L5Q==;
+        bh=UdgYuJlmWZokLcAOPnfw8PlZRvn7vjQf/6iOObq/cjM=; b=aIaMhclEEnD1ULwrKvn78xfvE4
+        8LhP29U8BKD5dCx/PZ4xzwjJk056rLJlvUegZOy3Vu6Yef9on/jdjTYZDrYzfTZl8bVQbbTop0UWR
+        M8Yx1TSJ9NA/9mJk31ud6h2bSkcvPf+C2+x6wKPLcYNdkFZ6us0Lb3ds14cqloxiLsw3vi7XqwMx5
+        hpYczsqWiGeLGvsYypY38x3+nsPb17XruzF454E+faRyBokX2ig/VaOf+Jyic1oOFiasUFAxiY5zh
+        h3Y5fDzIOIWdfMwKL7ZrXjv5DnfDd7AZWh3ZQ4AiSNMLsHjYpJvbeUT3B/4GZ+BqlGh21EpzBzSK+
+        4fcp8kXw==;
 Received: from [2001:4bb8:18c:2acc:91df:aae8:fa3b:de9c] (helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jyUQH-0003p4-T5; Thu, 23 Jul 2020 06:09:42 +0000
+        id 1jyUQJ-0003pG-7a; Thu, 23 Jul 2020 06:09:43 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -46,9 +46,9 @@ Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
         mptcp@lists.01.org, lvs-devel@vger.kernel.org,
         rds-devel@oss.oracle.com, linux-afs@lists.infradead.org,
         tipc-discussion@lists.sourceforge.net, linux-x25@vger.kernel.org
-Subject: [PATCH 23/26] net/tcp: switch ->md5_parse to sockptr_t
-Date:   Thu, 23 Jul 2020 08:09:05 +0200
-Message-Id: <20200723060908.50081-24-hch@lst.de>
+Subject: [PATCH 24/26] net/tcp: switch do_tcp_setsockopt to sockptr_t
+Date:   Thu, 23 Jul 2020 08:09:06 +0200
+Message-Id: <20200723060908.50081-25-hch@lst.de>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200723060908.50081-1-hch@lst.de>
 References: <20200723060908.50081-1-hch@lst.de>
@@ -65,83 +65,131 @@ pointer from bpf-cgroup.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- include/net/tcp.h   | 2 +-
- net/ipv4/tcp.c      | 3 ++-
- net/ipv4/tcp_ipv4.c | 4 ++--
- net/ipv6/tcp_ipv6.c | 4 ++--
- 4 files changed, 7 insertions(+), 6 deletions(-)
+ net/ipv4/tcp.c | 34 ++++++++++++++++------------------
+ 1 file changed, 16 insertions(+), 18 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 9f7f7c0c110451..e3c8e1d820214c 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2002,7 +2002,7 @@ struct tcp_sock_af_ops {
- 					 const struct sk_buff *skb);
- 	int		(*md5_parse)(struct sock *sk,
- 				     int optname,
--				     char __user *optval,
-+				     sockptr_t optval,
- 				     int optlen);
- #endif
- };
 diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 58ede3d62b2e2c..49bf15c27deac7 100644
+index 49bf15c27deac7..71cbc61c335f71 100644
 --- a/net/ipv4/tcp.c
 +++ b/net/ipv4/tcp.c
-@@ -3249,7 +3249,8 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
+@@ -2764,7 +2764,7 @@ static inline bool tcp_can_repair_sock(const struct sock *sk)
+ 		(sk->sk_state != TCP_LISTEN);
+ }
+ 
+-static int tcp_repair_set_window(struct tcp_sock *tp, char __user *optbuf, int len)
++static int tcp_repair_set_window(struct tcp_sock *tp, sockptr_t optbuf, int len)
+ {
+ 	struct tcp_repair_window opt;
+ 
+@@ -2774,7 +2774,7 @@ static int tcp_repair_set_window(struct tcp_sock *tp, char __user *optbuf, int l
+ 	if (len != sizeof(opt))
+ 		return -EINVAL;
+ 
+-	if (copy_from_user(&opt, optbuf, sizeof(opt)))
++	if (copy_from_sockptr(&opt, optbuf, sizeof(opt)))
+ 		return -EFAULT;
+ 
+ 	if (opt.max_window < opt.snd_wnd)
+@@ -2796,17 +2796,17 @@ static int tcp_repair_set_window(struct tcp_sock *tp, char __user *optbuf, int l
+ 	return 0;
+ }
+ 
+-static int tcp_repair_options_est(struct sock *sk,
+-		struct tcp_repair_opt __user *optbuf, unsigned int len)
++static int tcp_repair_options_est(struct sock *sk, sockptr_t optbuf,
++		unsigned int len)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct tcp_repair_opt opt;
+ 
+ 	while (len >= sizeof(opt)) {
+-		if (copy_from_user(&opt, optbuf, sizeof(opt)))
++		if (copy_from_sockptr(&opt, optbuf, sizeof(opt)))
+ 			return -EFAULT;
+ 
+-		optbuf++;
++		sockptr_advance(optbuf, sizeof(opt));
+ 		len -= sizeof(opt);
+ 
+ 		switch (opt.opt_code) {
+@@ -3020,8 +3020,8 @@ EXPORT_SYMBOL(tcp_sock_set_keepcnt);
+ /*
+  *	Socket option code for TCP.
+  */
+-static int do_tcp_setsockopt(struct sock *sk, int level,
+-		int optname, char __user *optval, unsigned int optlen)
++static int do_tcp_setsockopt(struct sock *sk, int level, int optname,
++		sockptr_t optval, unsigned int optlen)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+@@ -3037,7 +3037,7 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
+ 		if (optlen < 1)
+ 			return -EINVAL;
+ 
+-		val = strncpy_from_user(name, optval,
++		val = strncpy_from_sockptr(name, optval,
+ 					min_t(long, TCP_CA_NAME_MAX-1, optlen));
+ 		if (val < 0)
+ 			return -EFAULT;
+@@ -3056,7 +3056,7 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
+ 		if (optlen < 1)
+ 			return -EINVAL;
+ 
+-		val = strncpy_from_user(name, optval,
++		val = strncpy_from_sockptr(name, optval,
+ 					min_t(long, TCP_ULP_NAME_MAX - 1,
+ 					      optlen));
+ 		if (val < 0)
+@@ -3079,7 +3079,7 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
+ 		    optlen != TCP_FASTOPEN_KEY_BUF_LENGTH)
+ 			return -EINVAL;
+ 
+-		if (copy_from_user(key, optval, optlen))
++		if (copy_from_sockptr(key, optval, optlen))
+ 			return -EFAULT;
+ 
+ 		if (optlen == TCP_FASTOPEN_KEY_BUF_LENGTH)
+@@ -3095,7 +3095,7 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
+ 	if (optlen < sizeof(int))
+ 		return -EINVAL;
+ 
+-	if (get_user(val, (int __user *)optval))
++	if (copy_from_sockptr(&val, optval, sizeof(val)))
+ 		return -EFAULT;
+ 
+ 	lock_sock(sk);
+@@ -3174,9 +3174,7 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
+ 		if (!tp->repair)
+ 			err = -EINVAL;
+ 		else if (sk->sk_state == TCP_ESTABLISHED)
+-			err = tcp_repair_options_est(sk,
+-					(struct tcp_repair_opt __user *)optval,
+-					optlen);
++			err = tcp_repair_options_est(sk, optval, optlen);
+ 		else
+ 			err = -EPERM;
+ 		break;
+@@ -3249,8 +3247,7 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
  #ifdef CONFIG_TCP_MD5SIG
  	case TCP_MD5SIG:
  	case TCP_MD5SIG_EXT:
--		err = tp->af_specific->md5_parse(sk, optname, optval, optlen);
-+		err = tp->af_specific->md5_parse(sk, optname,
-+						 USER_SOCKPTR(optval), optlen);
+-		err = tp->af_specific->md5_parse(sk, optname,
+-						 USER_SOCKPTR(optval), optlen);
++		err = tp->af_specific->md5_parse(sk, optname, optval, optlen);
  		break;
  #endif
  	case TCP_USER_TIMEOUT:
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index daa39d33702b13..f8913923a6c05e 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1195,7 +1195,7 @@ static void tcp_clear_md5_list(struct sock *sk)
+@@ -3334,7 +3331,8 @@ int tcp_setsockopt(struct sock *sk, int level, int optname, char __user *optval,
+ 	if (level != SOL_TCP)
+ 		return icsk->icsk_af_ops->setsockopt(sk, level, optname,
+ 						     optval, optlen);
+-	return do_tcp_setsockopt(sk, level, optname, optval, optlen);
++	return do_tcp_setsockopt(sk, level, optname, USER_SOCKPTR(optval),
++				 optlen);
  }
+ EXPORT_SYMBOL(tcp_setsockopt);
  
- static int tcp_v4_parse_md5_keys(struct sock *sk, int optname,
--				 char __user *optval, int optlen)
-+				 sockptr_t optval, int optlen)
- {
- 	struct tcp_md5sig cmd;
- 	struct sockaddr_in *sin = (struct sockaddr_in *)&cmd.tcpm_addr;
-@@ -1206,7 +1206,7 @@ static int tcp_v4_parse_md5_keys(struct sock *sk, int optname,
- 	if (optlen < sizeof(cmd))
- 		return -EINVAL;
- 
--	if (copy_from_user(&cmd, optval, sizeof(cmd)))
-+	if (copy_from_sockptr(&cmd, optval, sizeof(cmd)))
- 		return -EFAULT;
- 
- 	if (sin->sin_family != AF_INET)
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index c34b7834fd84a8..305870a72352d6 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -567,7 +567,7 @@ static struct tcp_md5sig_key *tcp_v6_md5_lookup(const struct sock *sk,
- }
- 
- static int tcp_v6_parse_md5_keys(struct sock *sk, int optname,
--				 char __user *optval, int optlen)
-+				 sockptr_t optval, int optlen)
- {
- 	struct tcp_md5sig cmd;
- 	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)&cmd.tcpm_addr;
-@@ -577,7 +577,7 @@ static int tcp_v6_parse_md5_keys(struct sock *sk, int optname,
- 	if (optlen < sizeof(cmd))
- 		return -EINVAL;
- 
--	if (copy_from_user(&cmd, optval, sizeof(cmd)))
-+	if (copy_from_sockptr(&cmd, optval, sizeof(cmd)))
- 		return -EFAULT;
- 
- 	if (sin6->sin6_family != AF_INET6)
 -- 
 2.27.0
 
