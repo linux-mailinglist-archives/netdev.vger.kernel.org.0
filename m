@@ -2,83 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B16D22ADC8
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:30:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C81FB22ADED
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:42:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728720AbgGWLaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 07:30:12 -0400
-Received: from mail.katalix.com ([3.9.82.81]:44048 "EHLO mail.katalix.com"
+        id S1728521AbgGWLm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 07:42:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45784 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728535AbgGWLaG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Jul 2020 07:30:06 -0400
-Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 23A2B8AD88;
-        Thu, 23 Jul 2020 12:30:05 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1595503805; bh=Ls8curZf6Cv1QIh0sm0Lz4UaRbbSF9ZSUL/0K0NLgcg=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:From;
-        z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
-         rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
-         in@katalix.com>|Subject:=20[PATCH=206/6]=20l2tp:=20cleanup=20kzall
-         oc=20calls|Date:=20Thu,=2023=20Jul=202020=2012:29:55=20+0100|Messa
-         ge-Id:=20<20200723112955.19808-7-tparkin@katalix.com>|In-Reply-To:
-         =20<20200723112955.19808-1-tparkin@katalix.com>|References:=20<202
-         00723112955.19808-1-tparkin@katalix.com>;
-        b=KbyNkkJPVOSfj81GCWZBx3iPJ+rlzb+XBkmnN8xFbSA10+oAOHOgzMCduEeEzmzjY
-         N0avtfVRaDbS74uakMcW1oG0KI8cmI2r4XGAdR2Kn19RGXIi8pfJF4UE6/eAZ4kW9V
-         TeOpuTJ8DJnvoTG7wlamXLqKxqCrUyxNB63dbUQDFf7Th7wcb13nstAURpgCICg3b1
-         HM4bpqoNa9aT47JoFo86CKIEirWPOXNcp9Oj3LaPG/6quP8Kic+AlE+lkG2ug3WC0I
-         EgA/CwGPgjRcy0RcuOgX5aH+lhNj/GlLLElA4h8nzYRdP0x1DDBhgcT4KVtkQLe2Cn
-         aMxE1eqI8Tjuw==
-From:   Tom Parkin <tparkin@katalix.com>
+        id S1727859AbgGWLmz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jul 2020 07:42:55 -0400
+Received: from lore-desk.redhat.com (unknown [151.48.142.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3B2A42080D;
+        Thu, 23 Jul 2020 11:42:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595504575;
+        bh=8oBfRskePkkS6eyvSY1a9b5Gu4gA3IFuwT0e4ypbaQI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ayI0+g+7iwpKZlcrg/wNgNOuksLf0JTz5Skk9hrBLgAiAz8/pHCol29YPh447lYp9
+         DKb/iffv2d8HdltJm/bCQBWGirxvRJx75evOLw63+EgDjPaVRqU4bNXHavnMluYfpI
+         oCQftxXBF7toGvMgrBXqyuNlYe09L4z59vPPGCJw=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
-Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
-Subject: [PATCH 6/6] l2tp: cleanup kzalloc calls
-Date:   Thu, 23 Jul 2020 12:29:55 +0100
-Message-Id: <20200723112955.19808-7-tparkin@katalix.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200723112955.19808-1-tparkin@katalix.com>
-References: <20200723112955.19808-1-tparkin@katalix.com>
+Cc:     bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
+        brouer@redhat.com, daniel@iogearbox.net,
+        lorenzo.bianconi@redhat.com, echaudro@redhat.com,
+        sameehj@amazon.com, kuba@kernel.org
+Subject: [RFC net-next 00/22] Introduce mb bit in xdp_buff/xdp_frame
+Date:   Thu, 23 Jul 2020 13:42:12 +0200
+Message-Id: <cover.1595503780.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Passing "sizeof(struct blah)" in kzalloc calls is less readable,
-potentially prone to future bugs if the type of the pointer is changed,
-and triggers checkpatch warnings.
+Introduce multi-buffer bit (mb) in xdp_frame/xdp_buffer to specify
+if shared_info area has been properly initialized for non-linear
+xdp buffers.
+Initialize mb to 0 for all xdp drivers
 
-Tweak the kzalloc calls in l2tp which use this form to avoid the
-warning.
+Lorenzo Bianconi (22):
+  xdp: introduce mb in xdp_buff/xdp_frame
+  xdp: initialize xdp_buff mb bit to 0 in netif_receive_generic_xdp
+  net: virtio_net: initialize mb bit of xdp_buff to 0
+  net: xen-netfront: initialize mb bit of xdp_buff to 0
+  net: veth: initialize mb bit of xdp_buff to 0
+  net: hv_netvsc: initialize mb bit of xdp_buff to 0
+  net: bnxt: initialize mb bit in xdp_buff to 0
+  net: dpaa2: initialize mb bit in xdp_buff to 0
+  net: ti: initialize mb bit in xdp_buff to 0
+  net: nfp: initialize mb bit in xdp_buff to 0
+  net: mvpp2: initialize mb bit in xdp_buff to 0
+  net: sfc: initialize mb bit in xdp_buff to 0
+  net: qede: initialize mb bit in xdp_buff to 0
+  net: amazon: ena: initialize mb bit in xdp_buff to 0
+  net: cavium: thunder: initialize mb bit in xdp_buff to 0
+  net: socionext: initialize mb bit in xdp_buff to 0
+  net: tun: initialize mb bit in xdp_buff to 0
+  net: ixgbe: initialize mb bit in xdp_buff to 0
+  net: ice: initialize mb bit in xdp_buff to 0
+  net: i40e: initialize mb bit in xdp_buff to 0
+  net: mlx5: initialize mb bit in xdp_buff to 0
+  net: mlx4: initialize mb bit in xdp_buff to 0
 
-Signed-off-by: Tom Parkin <tparkin@katalix.com>
----
- net/l2tp/l2tp_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_netdev.c        | 1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c       | 1 +
+ drivers/net/ethernet/cavium/thunder/nicvf_main.c    | 1 +
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c    | 1 +
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c         | 1 +
+ drivers/net/ethernet/intel/ice/ice_txrx.c           | 1 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c       | 1 +
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c   | 1 +
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c     | 1 +
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c          | 1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c     | 1 +
+ drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 1 +
+ drivers/net/ethernet/qlogic/qede/qede_fp.c          | 1 +
+ drivers/net/ethernet/sfc/rx.c                       | 1 +
+ drivers/net/ethernet/socionext/netsec.c             | 1 +
+ drivers/net/ethernet/ti/cpsw.c                      | 1 +
+ drivers/net/ethernet/ti/cpsw_new.c                  | 1 +
+ drivers/net/hyperv/netvsc_bpf.c                     | 1 +
+ drivers/net/tun.c                                   | 2 ++
+ drivers/net/veth.c                                  | 1 +
+ drivers/net/virtio_net.c                            | 2 ++
+ drivers/net/xen-netfront.c                          | 1 +
+ include/net/xdp.h                                   | 8 ++++++--
+ net/core/dev.c                                      | 1 +
+ 24 files changed, 31 insertions(+), 2 deletions(-)
 
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index d1403f27135e..7e3523015d6f 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -1410,7 +1410,7 @@ int l2tp_tunnel_create(struct net *net, int fd, int version, u32 tunnel_id, u32
- 	if (cfg)
- 		encap = cfg->encap;
- 
--	tunnel = kzalloc(sizeof(struct l2tp_tunnel), GFP_KERNEL);
-+	tunnel = kzalloc(sizeof(*tunnel), GFP_KERNEL);
- 	if (!tunnel) {
- 		err = -ENOMEM;
- 		goto err;
-@@ -1647,7 +1647,7 @@ struct l2tp_session *l2tp_session_create(int priv_size, struct l2tp_tunnel *tunn
- {
- 	struct l2tp_session *session;
- 
--	session = kzalloc(sizeof(struct l2tp_session) + priv_size, GFP_KERNEL);
-+	session = kzalloc(sizeof(*session) + priv_size, GFP_KERNEL);
- 	if (session) {
- 		session->magic = L2TP_SESSION_MAGIC;
- 		session->tunnel = tunnel;
 -- 
-2.17.1
+2.26.2
 
