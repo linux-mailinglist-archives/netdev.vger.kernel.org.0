@@ -2,103 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EEF022A92D
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 08:59:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5510622AA05
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 09:50:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726597AbgGWG7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 02:59:10 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:53506 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725774AbgGWG7K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 02:59:10 -0400
-Received: by linux.microsoft.com (Postfix, from userid 1070)
-        id 5477C20B4908; Wed, 22 Jul 2020 23:59:09 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5477C20B4908
-Received: from localhost (localhost [127.0.0.1])
-        by linux.microsoft.com (Postfix) with ESMTP id 523B030705AF;
-        Wed, 22 Jul 2020 23:59:09 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 23:59:09 -0700 (PDT)
-From:   Chi Song <chisong@microsoft.com>
-X-X-Sender: chisong@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net
-To:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v7 net-next] net: hyperv: dump TX indirection table to ethtool
- regs
-Message-ID: <alpine.LRH.2.23.451.2007222356070.2641@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.inter>
+        id S1727847AbgGWHum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 03:50:42 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:55918 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726141AbgGWHum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 03:50:42 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1595490640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=zyycNe4ZzkSfaJzBfhJ/Dm0R6COHypmems0qhZm4PMA=;
+        b=SOwwHWMApmbvlHnGjg6nML2zwFVc5ltNOsUXip26Ajm9g4RtoKm8WnZyJuBbtUj9NoUodA
+        Pl88uQtXbhLZPio6UCnjGf34e8YyeyWjX6ZIxdDwrfnh5x7fxrJZMOd32lmWhPeYdibmI9
+        H/MtfyFESG8mcPF11BXyGRU/lrDq3O1J1VAreHOC1yxAhd0SiGU4QoTt2ppODk3GRQJwOB
+        xivDt7+Dgs9BgG7zJthbTvsrbJlDRMVR6AyRUVV6V6p3BZgh0V3EtDE0sdlmgIxHc97INP
+        E/OhSpKB/cjvnDIz66ThG55pPWDsuIsG42vudPgEibw28cVjYK3Gz1F+WVLXcQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1595490640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=zyycNe4ZzkSfaJzBfhJ/Dm0R6COHypmems0qhZm4PMA=;
+        b=/9imX7FPyn0tqip+yS53yDRFgVBJrasxU/gg89VHaPbBtQZpHGCt0SJBl7zJC6eP0z59vA
+        T+edVEumKpFOeeDg==
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH v1 0/2] ptp: Add generic header parsing function
+Date:   Thu, 23 Jul 2020 09:49:44 +0200
+Message-Id: <20200723074946.14253-1-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An imbalanced TX indirection table causes netvsc to have low
-performance. This table is created and managed during runtime. To help
-better diagnose performance issues caused by imbalanced tables, it needs
-make TX indirection tables visible.
+Hi,
 
-Because TX indirection table is driver specified information, so
-display it via ethtool register dump.
+in order to reduce code duplication in the ptp code of DSA drivers, move the
+header parsing function to ptp_classify. This way the Marvell and the hellcreek
+drivers can share the same implementation. And probably more drivers can benefit
+from it. Implemented as discussed [1] [2].
 
-Signed-off-by: Chi Song <chisong@microsoft.com>
----
-v7: move to ethtool register dump
-v6: update names to be more precise, remove useless assignment
-v5: update variable orders
-v4: use a separated group to organize tx_indirection better, change
- location of attributes init/exit to netvsc_drv_init/exit
+@DSA maintainers: Please, have a look the Marvell code. I don't have hardware to
+test it. I've tested this series only on the Hirschmann switch.
 
- drivers/net/hyperv/netvsc_drv.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+Thanks,
+Kurt
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c
-b/drivers/net/hyperv/netvsc_drv.c
-index 6267f706e8ee..3288221726ea 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -1934,6 +1934,23 @@ static int netvsc_set_features(struct net_device
-*ndev,
- 	return ret;
- }
+[1] - https://lkml.kernel.org/netdev/20200713140112.GB27934@hoboy/
+[2] - https://lkml.kernel.org/netdev/20200720142146.GB16001@hoboy/
 
-+static int netvsc_get_regs_len(struct net_device *netdev)
-+{
-+	return VRSS_SEND_TAB_SIZE * sizeof(u32);
-+}
-+
-+static void netvsc_get_regs(struct net_device *netdev,
-+			    struct ethtool_regs *regs, void *p)
-+{
-+	struct net_device_context *ndc = netdev_priv(netdev);
-+	u32 *regs_buff = p;
-+
-+	/* increase the version, if buffer format is changed. */
-+	regs->version = 1;
-+
-+	memcpy(regs_buff, ndc->tx_table, VRSS_SEND_TAB_SIZE *
-sizeof(u32));
-+}
-+
- static u32 netvsc_get_msglevel(struct net_device *ndev)
- {
- 	struct net_device_context *ndev_ctx = netdev_priv(ndev);
-@@ -1950,6 +1967,8 @@ static void netvsc_set_msglevel(struct net_device
-*ndev, u32 val)
+Kurt Kanzenbach (2):
+  ptp: Add generic ptp v2 header parsing function
+  net: dsa: mv88e6xxx: Use generic ptp header parsing function
 
- static const struct ethtool_ops ethtool_ops = {
- 	.get_drvinfo	= netvsc_get_drvinfo,
-+	.get_regs_len	= netvsc_get_regs_len,
-+	.get_regs	= netvsc_get_regs,
- 	.get_msglevel	= netvsc_get_msglevel,
- 	.set_msglevel	= netvsc_set_msglevel,
- 	.get_link	= ethtool_op_get_link,
+ drivers/net/dsa/mv88e6xxx/Kconfig    |  1 +
+ drivers/net/dsa/mv88e6xxx/hwtstamp.c | 59 ++++++----------------------
+ include/linux/ptp_classify.h         | 38 ++++++++++++++++++
+ net/core/ptp_classifier.c            | 30 ++++++++++++++
+ 4 files changed, 82 insertions(+), 46 deletions(-)
+
 -- 
-2.25.1
-
+2.20.1
 
