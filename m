@@ -2,58 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C30FC22A45A
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 03:08:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1E8822A45D
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 03:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387468AbgGWBHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jul 2020 21:07:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
+        id S2387528AbgGWBI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jul 2020 21:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728607AbgGWBHY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 21:07:24 -0400
+        with ESMTP id S1728607AbgGWBI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jul 2020 21:08:56 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B8BC0619DC;
-        Wed, 22 Jul 2020 18:07:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCE5C0619DC
+        for <netdev@vger.kernel.org>; Wed, 22 Jul 2020 18:08:56 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 03364126B39BC;
-        Wed, 22 Jul 2020 17:50:38 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 18:07:23 -0700 (PDT)
-Message-Id: <20200722.180723.102622644879670834.davem@davemloft.net>
-To:     yepeilin.cs@gmail.com
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, gregkh@linuxfoundation.org,
-        syzkaller-bugs@googlegroups.com,
-        linux-kernel-mentees@lists.linuxfoundation.org, kuba@kernel.org,
-        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [Linux-kernel-mentees] [PATCH net] AX.25: Prevent
- out-of-bounds read in ax25_sendmsg()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0EAA5126B5342;
+        Wed, 22 Jul 2020 17:52:10 -0700 (PDT)
+Date:   Wed, 22 Jul 2020 18:08:55 -0700 (PDT)
+Message-Id: <20200722.180855.1247228846076080749.davem@davemloft.net>
+To:     tparkin@katalix.com
+Cc:     netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [PATCH v2 net-next 00/10] l2tp: cleanup checkpatch.pl warnings
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200722160512.370802-1-yepeilin.cs@gmail.com>
-References: <20200722160512.370802-1-yepeilin.cs@gmail.com>
+In-Reply-To: <20200722163214.7920-1-tparkin@katalix.com>
+References: <20200722163214.7920-1-tparkin@katalix.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 22 Jul 2020 17:50:39 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 22 Jul 2020 17:52:11 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peilin Ye <yepeilin.cs@gmail.com>
-Date: Wed, 22 Jul 2020 12:05:12 -0400
+From: Tom Parkin <tparkin@katalix.com>
+Date: Wed, 22 Jul 2020 17:32:04 +0100
 
-> Checks on `addr_len` and `usax->sax25_ndigis` are insufficient.
-> ax25_sendmsg() can go out of bounds when `usax->sax25_ndigis` equals to 7
-> or 8. Fix it.
+> l2tp hasn't been kept up to date with the static analysis checks offered
+> by checkpatch.pl.
 > 
-> It is safe to remove `usax->sax25_ndigis > AX25_MAX_DIGIS`, since
-> `addr_len` is guaranteed to be less than or equal to
-> `sizeof(struct full_sockaddr_ax25)`
+> This series addresses a range of minor issues which don't involve large
+> changes to code structure.  The changes include:
 > 
-> Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
+>  * tweaks to use of whitespace, comment style, line breaks,
+>    and indentation
+> 
+>  * two minor modifications to code to use a function or macro suggested
+>    by checkpatch
+> 
+> v1 -> v2
+> 
+>  * combine related patches (patches fixing whitespace issues, patches
+>    addressing comment style)
+> 
+>  * respin the single large patchset into a multiple smaller series for
+>    easier review
 
-Applied.
+Series applied, thank you.
