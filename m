@@ -2,88 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B91E622AD2F
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:03:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2CE022AD20
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:02:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728478AbgGWLDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 07:03:16 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30583 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728460AbgGWLDO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 07:03:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595502193;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PnoOa8/buTToM4i8wQuSvDxjgNJ51b4HZV65Yx/oJZE=;
-        b=WsSTREEPIjyPvpeVojupAlKidCaVyXUvuotLZcBODQ/MsgmlobmB5Ri8aQFOE1t42dYDl/
-        ZuC+V4vTpotp7m3S9KgX1wp7UZ5OFCWoZ37zUOn7yT5bS5FUnr4nF2OCNFgZ6j3bmdqZeM
-        10S6Js2VudB7ZIeUbH9Z/UghHYOh6Rg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-367-4IMAkWEZMI2PSaPvMEK5LA-1; Thu, 23 Jul 2020 07:03:10 -0400
-X-MC-Unique: 4IMAkWEZMI2PSaPvMEK5LA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F3BB7800688;
-        Thu, 23 Jul 2020 11:03:09 +0000 (UTC)
-Received: from linux.fritz.box.com (ovpn-113-9.ams2.redhat.com [10.36.113.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EF4968BED5;
-        Thu, 23 Jul 2020 11:03:08 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>, mptcp@lists.01.org
-Subject: [PATCH net-next 8/8] subflow: introduce and use mptcp_can_accept_new_subflow()
-Date:   Thu, 23 Jul 2020 13:02:36 +0200
-Message-Id: <f917ce96fa7c3ff623378a01ae8fb52d4ac1884f.1595431326.git.pabeni@redhat.com>
-In-Reply-To: <cover.1595431326.git.pabeni@redhat.com>
-References: <cover.1595431326.git.pabeni@redhat.com>
+        id S1728156AbgGWLCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 07:02:37 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8366 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726867AbgGWLCh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jul 2020 07:02:37 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 247DF9CBDFD54E8E0C4F;
+        Thu, 23 Jul 2020 19:02:33 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Thu, 23 Jul 2020
+ 19:02:15 +0800
+From:   linmiaohe <linmiaohe@huawei.com>
+To:     <vishal@chelsio.com>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH] cxgb4: use eth_zero_addr() to clear mac address
+Date:   Thu, 23 Jul 2020 19:05:00 +0800
+Message-ID: <1595502300-9470-1-git-send-email-linmiaohe@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So that we can easily perform some basic PM-related
-adimission checks before creating the child socket.
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Tested-by: Christoph Paasch <cpaasch@apple.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Use eth_zero_addr() to clear mac address insetad of memset().
+
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- net/mptcp/subflow.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/chelsio/cxgb4/smt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index ada04df6f99f..e645483d1200 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -53,6 +53,12 @@ static void subflow_generate_hmac(u64 key1, u64 key2, u32 nonce1, u32 nonce2,
- 	mptcp_crypto_hmac_sha(key1, key2, msg, 8, hmac);
- }
- 
-+static bool mptcp_can_accept_new_subflow(const struct mptcp_sock *msk)
-+{
-+	return mptcp_is_fully_established((void *)msk) &&
-+	       READ_ONCE(msk->pm.accept_subflow);
-+}
-+
- /* validate received token and create truncated hmac and nonce for SYN-ACK */
- static struct mptcp_sock *subflow_token_join_request(struct request_sock *req,
- 						     const struct sk_buff *skb)
-@@ -443,6 +449,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
- 	} else if (subflow_req->mp_join) {
- 		mptcp_get_options(skb, &mp_opt);
- 		if (!mp_opt.mp_join ||
-+		    !mptcp_can_accept_new_subflow(subflow_req->msk) ||
- 		    !subflow_hmac_valid(req, &mp_opt)) {
- 			SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_JOINACKMAC);
- 			fallback = true;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/smt.c b/drivers/net/ethernet/chelsio/cxgb4/smt.c
+index cbe72ed27b1e..e617e4aabbcc 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/smt.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/smt.c
+@@ -55,7 +55,7 @@ struct smt_data *t4_init_smt(void)
+ 	for (i = 0; i < s->smt_size; ++i) {
+ 		s->smtab[i].idx = i;
+ 		s->smtab[i].state = SMT_STATE_UNUSED;
+-		memset(&s->smtab[i].src_mac, 0, ETH_ALEN);
++		eth_zero_addr(s->smtab[i].src_mac);
+ 		spin_lock_init(&s->smtab[i].lock);
+ 		s->smtab[i].refcnt = 0;
+ 	}
 -- 
-2.26.2
+2.19.1
 
