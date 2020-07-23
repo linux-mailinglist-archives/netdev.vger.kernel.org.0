@@ -2,113 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4380A22B295
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 17:30:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6382622B2B0
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 17:41:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729428AbgGWPab (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 11:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58770 "EHLO
+        id S1729623AbgGWPlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 11:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726761AbgGWPaa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 11:30:30 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4A1C0619DC;
-        Thu, 23 Jul 2020 08:30:29 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id e13so5706830qkg.5;
-        Thu, 23 Jul 2020 08:30:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4M2X8c1o1GLGue/gT+Yu3vbhPjzYcFb5GdcwmFKqkWY=;
-        b=eXAJZ9XD5BqetmyLyB5TZz7wGQpBNIlz+C1NMxXQWh3hmhzYlYzU8aFhAnM4isDJjo
-         IAqxstbtahBVLsriVMNzBUD7iApZ4zg8mmltzroHrgfdqolM4v07afdVDVmFsEPInZBO
-         hSXLz1yYAtQzKThbpWYZYThayUziLpWJspR7y5zXrWUtM7S8LLIQEjnoEieJysRISUlr
-         vMvsrWA+lB5suoZO39AYNiwSNRSAChRNLhlCTZGyafU0OIXE7wSd9roD0BE6+q3cK6zS
-         gmLoDWoD/yPIlLU7cTuv6WiohyB51M+vXE4OyCqsqs0FWIuLnFfDymgooPM/PcmD17XJ
-         H50A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4M2X8c1o1GLGue/gT+Yu3vbhPjzYcFb5GdcwmFKqkWY=;
-        b=jtaJ+MfOaubfO5g9m5pWGu4070/Quj3eyx/aAu/Ou4E3OWVZ/QRI6Xv5lpDlYHxX9D
-         8hRIbFcWrrVn/hYAqMt5mQBs1S4w9cxZmWcoLwJZDLmO5ANJE+xFKW2TTIcJjsZ89n/u
-         nl7QrLpBRy2T9NugpOBnz+U7AR7kJoU+4tNSJ9HdPu4nXOS11/+2aQH/x2BYYDgzAqLS
-         lzFrPN6wOyewzyqpMfcRmgG757Cc4LoP1yTXaOXRvGnfWH7H5/kwIHYpDvCZxEC2Yn1T
-         qnvR/NLumhzGmrQZWLicL9yxKj/s3fpT4e7n68jJUIqe1Imeygg37ICW9FJQs8TnoNfd
-         /QFw==
-X-Gm-Message-State: AOAM533QryD80IueF8YQbiJgDh5KDo4SLf8mfieVaMhs2DNC03NoWAdP
-        OQZqldvYOvWnDKPtsI8wLCyi0RJD
-X-Google-Smtp-Source: ABdhPJwR9Hh6hYOYz3Hz+plQtfbh1jjySQlltnsfxlkdKygETBvNDCJ0V/hIO3Ge7DxIOv10r7B7Sg==
-X-Received: by 2002:a37:5b46:: with SMTP id p67mr5813992qkb.346.1595518228834;
-        Thu, 23 Jul 2020 08:30:28 -0700 (PDT)
-Received: from localhost.localdomain ([138.204.24.96])
-        by smtp.gmail.com with ESMTPSA id n81sm2909642qke.11.2020.07.23.08.30.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jul 2020 08:30:27 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 334DFC18B3; Thu, 23 Jul 2020 12:30:25 -0300 (-03)
-Date:   Thu, 23 Jul 2020 12:30:25 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+        with ESMTP id S1726761AbgGWPk6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 11:40:58 -0400
+Received: from a3.inai.de (a3.inai.de [IPv6:2a01:4f8:10b:45d8::f5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8452C0619DC;
+        Thu, 23 Jul 2020 08:40:52 -0700 (PDT)
+Received: by a3.inai.de (Postfix, from userid 25121)
+        id 049975872C746; Thu, 23 Jul 2020 17:40:49 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by a3.inai.de (Postfix) with ESMTP id 038D360C4009F;
+        Thu, 23 Jul 2020 17:40:49 +0200 (CEST)
+Date:   Thu, 23 Jul 2020 17:40:49 +0200 (CEST)
+From:   Jan Engelhardt <jengelh@inai.de>
 To:     Christoph Hellwig <hch@lst.de>
-Cc:     netdev@vger.kernel.org, Neil Horman <nhorman@tuxdriver.com>,
-        linux-sctp@vger.kernel.org
-Subject: Re: [PATCH net-next] sctp: fix slab-out-of-bounds in
- SCTP_DELAYED_SACK processing
-Message-ID: <20200723153025.GF3307@localhost.localdomain>
-References: <5955bc857c93d4bb64731ef7a9e90cb0094a8989.1595450200.git.marcelo.leitner@gmail.com>
- <20200722204231.GA3398@localhost.localdomain>
- <20200723092238.GA21143@lst.de>
+cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Netfilter Developer Mailing List 
+        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
+        linux-sctp@vger.kernel.org, linux-hams@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-can@vger.kernel.org, dccp@vger.kernel.org,
+        linux-decnet-user@lists.sourceforge.net,
+        linux-wpan@vger.kernel.org, linux-s390@vger.kernel.org,
+        mptcp@lists.01.org, lvs-devel@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-afs@lists.infradead.org,
+        tipc-discussion@lists.sourceforge.net, linux-x25@vger.kernel.org
+Subject: Re: [PATCH 04/26] net: add a new sockptr_t type
+In-Reply-To: <20200723060908.50081-5-hch@lst.de>
+Message-ID: <nycvar.YFH.7.77.849.2007231725090.11202@n3.vanv.qr>
+References: <20200723060908.50081-1-hch@lst.de> <20200723060908.50081-5-hch@lst.de>
+User-Agent: Alpine 2.22 (LSU 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200723092238.GA21143@lst.de>
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 23, 2020 at 11:22:38AM +0200, Christoph Hellwig wrote:
-> On Wed, Jul 22, 2020 at 05:42:31PM -0300, Marcelo Ricardo Leitner wrote:
-> > Cc'ing linux-sctp@vger.kernel.org.
-> 
-> What do you think of this version, which I think is a little cleaner?
 
-It splits up the argument parsing from the actual handling, ok. Looks
-good. Just one point:
+On Thursday 2020-07-23 08:08, Christoph Hellwig wrote:
+>+typedef struct {
+>+	union {
+>+		void		*kernel;
+>+		void __user	*user;
+>+	};
+>+	bool		is_kernel : 1;
+>+} sockptr_t;
+>+
+>+static inline bool sockptr_is_null(sockptr_t sockptr)
+>+{
+>+	return !sockptr.user && !sockptr.kernel;
+>+}
 
-> +static int sctp_setsockopt_delayed_ack(struct sock *sk,
-> +				       struct sctp_sack_info *params,
-> +				       unsigned int optlen)
-> +{
-> +	if (optlen == sizeof(struct sctp_assoc_value)) {
-> +		struct sctp_sack_info p;
-> +
-> +		pr_warn_ratelimited(DEPRECATED
-> +				    "%s (pid %d) "
-> +				    "Use of struct sctp_assoc_value in delayed_ack socket option.\n"
-> +				    "Use struct sctp_sack_info instead\n",
-> +				    current->comm, task_pid_nr(current));
-> +
-> +		memcpy(&p, params, sizeof(struct sctp_assoc_value));
-> +		p.sack_freq = p.sack_delay ? 0 : 1;
+"""If the member used to access the contents of a union is not the same as the
+member last used to store a value, the object representation of the value that
+was stored is reinterpreted as an object representation of the new type (this
+is known as type punning). If the size of the new type is larger than the size
+of the last-written type, the contents of the excess bytes are unspecified (and
+may be a trap representation)"""
 
-Please add a comment saying that sctp_sack_info.sack_delay maps
-exactly to sctp_assoc_value.assoc_value, so that's why we can do
-memcpy and read assoc_value as sack_delay. I think it will help us not
-trip on this again in the future.
+As I am not too versed with the consequences of trap representations, I will
+just point out that a future revision of the C standard may introduce (proposal
+N2362) stronger C++-like requirements; as for union, that would imply a simple:
 
-> +		return __sctp_setsockopt_delayed_ack(sk, &p);
-> +	}
-> +
-> +	if (optlen != sizeof(struct sctp_sack_info))
-> +		return -EINVAL;
-> +	if (params->sack_delay == 0 && params->sack_freq == 0)
-> +		return 0;
-> +	return __sctp_setsockopt_delayed_ack(sk, params);
-> +}
-> +
->  /* 7.1.3 Initialization Parameters (SCTP_INITMSG)
->   *
->   * Applications can specify protocol parameters for the default association
+"""It's undefined behavior to read from the member of the union that wasn't
+most recently written.""" [cppreference.com]
+
+
+So, in the spirit of copy_from/to_sockptr, the is_null function should read
+
+{
+	return sockptr.is_kernel ? !sockptr.user : !sockptr.kernel;
+}
+
