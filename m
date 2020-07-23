@@ -2,94 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 202DA22B8C5
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:35:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0126922B903
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:56:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726697AbgGWVfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 17:35:48 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52272 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726033AbgGWVfs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Jul 2020 17:35:48 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jyisF-006aCj-2o; Thu, 23 Jul 2020 23:35:31 +0200
-Date:   Thu, 23 Jul 2020 23:35:31 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        jacek.anaszewski@gmail.com, Dan Murphy <dmurphy@ti.com>,
-        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
-        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC leds + net-next v2 1/1] net: phy: marvell: add
- support for PHY LEDs via LED class
-Message-ID: <20200723213531.GK1553578@lunn.ch>
-References: <20200723181319.15988-1-marek.behun@nic.cz>
- <20200723181319.15988-2-marek.behun@nic.cz>
+        id S1727908AbgGWV4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 17:56:47 -0400
+Received: from pecan-mail.exetel.com.au ([220.233.0.8]:45715 "EHLO
+        pecan.exetel.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726638AbgGWV4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 17:56:46 -0400
+X-Greylist: delayed 914 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 Jul 2020 17:56:45 EDT
+Received: from 221.167.233.220.static.exetel.com.au ([220.233.167.221] helo=[192.168.1.125])
+        by pecan.exetel.com.au with esmtp (Exim 4.91)
+        (envelope-from <vk2tv@exemail.com.au>)
+        id 1jyixu-0006Af-0h; Fri, 24 Jul 2020 07:41:22 +1000
+Subject: Re: [Linux-kernel-mentees] [PATCH net] AX.25: Fix out-of-bounds read
+ in ax25_connect()
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     Joerg Reuter <jreuter@yaina.de>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        syzkaller-bugs@googlegroups.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200722151901.350003-1-yepeilin.cs@gmail.com>
+ <20200723142814.GQ2549@kadam> <20200723151355.GA412829@PWN>
+ <20200723155057.GS2549@kadam>
+From:   vk2tv <vk2tv@exemail.com.au>
+Message-ID: <88638b87-0021-71af-cda8-5a58c81a6e8a@exemail.com.au>
+Date:   Fri, 24 Jul 2020 07:41:20 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200723181319.15988-2-marek.behun@nic.cz>
+In-Reply-To: <20200723155057.GS2549@kadam>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 23, 2020 at 08:13:19PM +0200, Marek Behún wrote:
-> This patch adds support for controlling the LEDs connected to several
-> families of Marvell PHYs via Linux' LED API. These families are:
-> 88E1112, 88E1121R, 88E1240, 88E1340S, 88E1510 and 88E1545. More can be
-> added.
-> 
-> The code reads LEDs definitions from the device-tree node of the PHY.
-> 
-> Since the LEDs can be controlled by hardware, we add one LED-private LED
-> trigger named "hw-control". This trigger is private and displayed only
-> for Marvell PHY LEDs.
-> 
-> When this driver is activated, another sysfs file is created in that
-> LEDs sysfs directory, names "hw_control". This file contains space
-> separated list of possible HW controlled modes for this LED. The one
-> which is selected is enclosed by square brackets. To change HW control
-> mode the user has to write the name of desired mode to this "hw_control"
-> file.
-> 
-> This patch does not yet add support for compound LED modes. This could
-> be achieved via the LED multicolor framework (which is not yet in
-> upstream).
-> 
-> Settings such as HW blink rate or pulse stretch duration are not yet
-> supported, nor are LED polarity settings.
 
-Hi Marek
 
-I expect some of this should be moved into the phylib core. We don't
-want each PHY inventing its own way to do this. The core should
-provide a framework and the PHY driver fills in the gaps.
+On 24/7/20 1:50 am, Dan Carpenter wrote:
+> On Thu, Jul 23, 2020 at 11:13:55AM -0400, Peilin Ye wrote:
+>> On Thu, Jul 23, 2020 at 05:28:15PM +0300, Dan Carpenter wrote:
+>>> On Wed, Jul 22, 2020 at 11:19:01AM -0400, Peilin Ye wrote:
+>>>> Checks on `addr_len` and `fsa->fsa_ax25.sax25_ndigis` are insufficient.
+>>>> ax25_connect() can go out of bounds when `fsa->fsa_ax25.sax25_ndigis`
+>>>> equals to 7 or 8. Fix it.
+>>>>
+>>>> This issue has been reported as a KMSAN uninit-value bug, because in such
+>>>> a case, ax25_connect() reaches into the uninitialized portion of the
+>>>> `struct sockaddr_storage` statically allocated in __sys_connect().
+>>>>
+>>>> It is safe to remove `fsa->fsa_ax25.sax25_ndigis > AX25_MAX_DIGIS` because
+>>>> `addr_len` is guaranteed to be less than or equal to
+>>>> `sizeof(struct full_sockaddr_ax25)`.
+>>>>
+>>>> Reported-by: syzbot+c82752228ed975b0a623@syzkaller.appspotmail.com
+>>>> Link: https://syzkaller.appspot.com/bug?id=55ef9d629f3b3d7d70b69558015b63b48d01af66
+>>>> Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
+>>>> ---
+>>>>   net/ax25/af_ax25.c | 4 +++-
+>>>>   1 file changed, 3 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+>>>> index fd91cd34f25e..ef5bf116157a 100644
+>>>> --- a/net/ax25/af_ax25.c
+>>>> +++ b/net/ax25/af_ax25.c
+>>>> @@ -1187,7 +1187,9 @@ static int __must_check ax25_connect(struct socket *sock,
+>>>>   	if (addr_len > sizeof(struct sockaddr_ax25) &&
+>>>>   	    fsa->fsa_ax25.sax25_ndigis != 0) {
+>>>>   		/* Valid number of digipeaters ? */
+>>>> -		if (fsa->fsa_ax25.sax25_ndigis < 1 || fsa->fsa_ax25.sax25_ndigis > AX25_MAX_DIGIS) {
+>>>> +		if (fsa->fsa_ax25.sax25_ndigis < 1 ||
+>>>> +		    addr_len < sizeof(struct sockaddr_ax25) +
+>>>> +		    sizeof(ax25_address) * fsa->fsa_ax25.sax25_ndigis) {
+>>> The "sizeof(ax25_address) * fsa->fsa_ax25.sax25_ndigis" can have an
+>>> integer overflow so you still need the
+>>> "fsa->fsa_ax25.sax25_ndigis > AX25_MAX_DIGIS" check.
+>> Thank you for fixing this up! I did some math but I didn't think of
+>> that. Will be more careful when removing things.
+> No problem.  You had the right approach to look for ways to clean things
+> up.
+>
+> Your patches make me happy because you're trying to fix important bugs.
+>
+> regards,
+> dan carpenter
+As a long-term user (25 years) of kernel ax25 I appreciate any and all 
+efforts to improve the code (which I mostly don't understand), and I 
+applaud those individuals rising to the task.
 
-Take a look at for example mscc_main.c and its LED information. It has
-pretty similar hardware to the Marvell. And microchip.c also has LED
-handling, etc.
+Thanks guys (and gals).
 
-> +static int _marvell_led_brightness_set(struct led_classdev *cdev, enum led_brightness brightness,
-> +				       bool check_trigger)
-
-Please avoid _ functions. 
-
-> +{
-> +	struct phy_device *phydev = to_phy_device(cdev->dev->parent);
-> +	struct marvell_phy_led *led = to_marvell_phy_led(cdev);
-> +	u8 val;
-> +
-> +	/* don't do anything if HW control is enabled */
-> +	if (check_trigger && cdev->trigger == &marvell_hw_led_trigger)
-> +		return 0;
-
-I thought the brightness file disappeared when a trigger takes
-over. So is this possible?
-
-      Andrew
+Ray vk2tv
