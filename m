@@ -2,98 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 417AF22B89C
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:28:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02D1622B8AB
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:30:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726807AbgGWV2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 17:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57882 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726029AbgGWV2B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 17:28:01 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881FFC0619D3
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 14:28:00 -0700 (PDT)
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 83425891B2
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 09:27:56 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1595539676;
-        bh=JUvoMsem218rI/L0/uzeD6ZPpS4FkYObDAlZzZITEJ4=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=HjXABbRQXyYbFXbPT6i0OP8zHC0KEUrgQQI/tKzfAFMCmp8qTDHnXOhmiidyyaIWh
-         nCtQqUYnjvdpQ115jtlR5xp3j5NdKwt9WPj+l6L4Qkj97q2H/swR20fPjytHe9Cqtk
-         rex99htaXCHzAtLjUSWlGxxTkDlN5eywTjHSSOIWD1P35w8pOzQ9No2Z4qe6Ay8l8I
-         ushmH7KteFUV78MES7thhXb/8a241Qy95WCeSaKWyMlI/y8Ec2Ll7YkatQZosNF/kP
-         7KjNObiqcXNI+8Tc1CB8bCmpUYNgOINnm3ZnBRR7QNWE6YNaBaP7XOGIkJ3t1lSSTA
-         kFxZ5LFtq0kCQ==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5f1a00db0000>; Fri, 24 Jul 2020 09:27:55 +1200
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8)
- by svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8) with
- Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Jul 2020 09:27:55 +1200
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1497.006; Fri, 24 Jul 2020 09:27:55 +1200
-From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-To:     =?utf-8?B?TWFyZWsgQmVow7pu?= <marek.behun@nic.cz>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: dsa: mv88e6xxx losing DHCPv6 solicit packets / IPv6 multicast
- packets?
-Thread-Topic: dsa: mv88e6xxx losing DHCPv6 solicit packets / IPv6 multicast
- packets?
-Thread-Index: AQHWYQAGIidp0Toi3ka6skvQc0rqhKkU5RUA
-Date:   Thu, 23 Jul 2020 21:27:54 +0000
-Message-ID: <1b6ba265-4651-79d2-9b43-f14e7f6ec19b@alliedtelesis.co.nz>
-References: <20200723164610.62e70bde@dellmb.labs.office.nic.cz>
-In-Reply-To: <20200723164610.62e70bde@dellmb.labs.office.nic.cz>
-Accept-Language: en-NZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.32.1.11]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <81E7B203F7787D4388FE4447D06EBBD1@atlnz.lc>
-Content-Transfer-Encoding: base64
+        id S1727034AbgGWVaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 17:30:09 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:39000 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726033AbgGWVaI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 17:30:08 -0400
+Received: by mail-il1-f199.google.com with SMTP id f66so4403327ilh.6
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 14:30:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=iJhRwEB1xHBmgw6l/JGnS6BQGfboMUGTe4J+3YIhjrY=;
+        b=rekOE9TyIfDtGMcLUnEuRSneU/LQRN1fwq7q0lwE6UUJtOHWp7Kh4jj3/ymtNVo/xz
+         WT6EHksNE6WCEBeI6E6VN6iYTKTdqNGWg/pm27Plflc958e303N3cI8q2wLhBTo6KZbN
+         Kad7UvWRNVC8xY3R/9xJYlnnCZrU0o8Tqu/9iFcMkjLgi034cL+nyU6/JQpW15Q2fam/
+         rwWktMdPTvbrQRJEa3DOvDHFviypNLCnG6K6vwCf1fF5uGZSzXqBwrDL2YF1xbfE7hhZ
+         U/xHfGD30Hr81cCLwamIr3hUTLsDujYvNwONQl/KgKbHaquwSpU2Q30lKV0o5iMxJ8KT
+         ygmg==
+X-Gm-Message-State: AOAM5333jFXy3ZLv7MRnwSnlz/4lW92Mthlzkl1PY6roIbNFlaDsS21H
+        7hLOY29MfoYd3foVC4/IKXC7rYWM4q+blg2Rigl7Ga3EaYVC
+X-Google-Smtp-Source: ABdhPJwzg4AcXVHS74igdyEENBPIPx4X3QHdLVDcd8HF8wK0jLWE1igjbSfZQ522tmQtsAdQ3QKfceaajl9hJTRpS5Sa5vToljm3
 MIME-Version: 1.0
+X-Received: by 2002:a05:6e02:50:: with SMTP id i16mr399043ilr.173.1595539807520;
+ Thu, 23 Jul 2020 14:30:07 -0700 (PDT)
+Date:   Thu, 23 Jul 2020 14:30:07 -0700
+In-Reply-To: <CAM_iQpXq9dYj67Lrv73UazJWG5UVVuMO0iFwJJWg7S_H-z1YcA@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000073cea505ab228feb@google.com>
+Subject: Re: KASAN: use-after-free Read in vlan_dev_get_iflink
+From:   syzbot <syzbot+d702fd2351989927037c@syzkaller.appspotmail.com>
+To:     ap420073@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgTWFyZWssDQoNCk9uIDI0LzA3LzIwIDI6NDYgYW0sIE1hcmVrIEJlaMO6biB3cm90ZToNCj4g
-SGksDQo+DQo+IGEgY3VzdG9tZXIgb2Ygb3VycyBmaWxlZCBhIHRpY2tldCBzYXlpbmcgdGhhdCB3
-aGVuIHVzaW5nIHVwc3RyZWFtIGtlcm5lbA0KPiAoNS44LjAtcmM2IG9uIERlYmlhbiAxMCkgb24g
-VHVycmlzIE1PWCAoODhlNjE5MCBzd2l0Y2gpIHdpdGggRFNBIHdpdGgNCj4gZGVmYXVsdCBjb25m
-aWd1cmF0aW9uLCB0aGUgc3dpdGNoIGlzIGxvc2luZyBESENQdjYgc29saWNpdCBwYWNrZXRzIC8N
-Cj4gSVB2NiBtdWx0aWNhc3QgcGFja2V0cyBzZW50IHRvIGZmMDI6OjE6OjIgYWRkcmVzcy4NCj4N
-Cj4+IFNwZWNpZmljYWxseSwgaXQgc2VlbXMgdGhlIDg4RTYxOTAgaGFyZHdhcmUgc3dpdGNoZXMg
-aW4gdGhlIFBlcmlkb3QNCj4+IG1vZHVsZSBpcyBzd2FsbG93aW5nIElQdjYgbXVsdGljYXN0IHBh
-Y2tldHMgKHNlbnQgdG8gZmYwMjo6MToyICkuDQo+PiBXZSB0ZXN0ZWQgdGhpcyBieSBtaXJyb3Jp
-bmcgdGhlIE1veCBMQU4gcG9ydCBvbiB0aGUgc3dpdGNoIGFuZCBzYXcgdGhlDQo+PiBESENQdjYg
-c29saWNpdCBwYWNrZXQgYXJyaXZpbmcgb3V0IG9mIHRoZSBzd2l0Y2ggYnV0IHRoZSBNb3gga2Vy
-bmVsDQo+PiBkaWRuJ3Qgc2VlIGl0ICh1c2luZyB0Y3BkdW1wKS4NCj4gSXMgdGhpcyBpc3N1ZSBr
-bm93bj8NCg0KSSBjYW4ndCBzcGVhayB0byB0aGUgUGVyaWRvdCBzcGVjaWZpY2FsbHkgYnV0IG90
-aGVyIE1hcnZlbGwgc2lsaWNvbiBJJ3ZlIA0KZGVhbHQgd2l0aCBkb2VzIHRyeSB0byBhdm9pZCB0
-cmFwcGluZyBwYWNrZXRzIHRvIHRoZSBDUFUuIE5vcm1hbGx5IHlvdSANCndvdWxkIHNldCBzcGVj
-aWZpYyByZWdpc3RlcnMvdGFibGUgZW50cmllcyB0byBkZWNsYXJlIGludGVyZXN0IGluIA0KcGFy
-dGljdWxhciByZXNlcnZlZCBtdWx0aWNhc3QgZ3JvdXBzLg0KDQpJIGhhZCBhIHF1aWNrIHNraW0g
-b2YgdGhlIFBlcmlkb3QgZG9jcyBhbmQgdGhlIHJlZmVyZW5jZXMgdG8gcmVzZXJ2ZWQgDQptdWx0
-aWNhc3QgSSBzZWUgYXJlIGFsbCBhYm91dCB0aGUgODAyLjFEIEJQRFVzLg0KDQpJdCBtaWdodCBi
-ZSBuZWNlc3NhcnkgdG8gY29uZmlndXJlIE1MRCBzbm9vcGluZyBvciBhZGQgYW4gRkRCIGVudHJ5
-IHRvIA0KZ2V0IHRoZSBmZjAyOjoxOjoyIHBhY2tldHMgdG8gdGhlIENQVS4NCg0KVGhlcmUgaXMg
-YWxzbyB0aGUgcG9zc2liaWxpdHkgdGhhdCB0aGUgQ1BVcyBFdGhlcm5ldCBwb3J0IGlzIGRyb3Bw
-aW5nIA0KdGhlIHBhY2tldHMgZm9yIHNpbWlsYXIgcmVhc29ucy4gSSdkIGV4cGVjdCBMaW51eCB0
-byBoYW5kbGUgdGhhdCANCmNvcnJlY3RseSBwdXQgcGVyaGFwcyB3aXRoIGEgRFNBIGNvbmZpZ3Vy
-YXRpb24gaXQgc2tpcHMgdGhlIG11bHRpY2FzdCANCnJlY2VwdGlvbiBjb25maWcuDQoNCkFzIGFu
-b3RoZXIgdGhvdWdodCBkbyB5b3Uga25vdyB3aGF0IERIQ1B2NiBjbGllbnQvc2VydmVyIGlzIGJl
-aW5nIHVzZWQuIA0KVGhlcmUgd2FzIGEgZmFpcmx5IHJlY2VudCBidWdmaXggZm9yIGJ1c3lib3gg
-dGhhdCB3YXMgbmVlZGVkIGJlY2F1c2UgdGhlIA0KdjYgY29kZSB3YXMgdXNpbmcgdGhlIHdyb25n
-IE1BQyBhZGRyZXNzLg0K
+Hello,
+
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+general protection fault in vlan_get_link_net
+
+general protection fault, probably for non-canonical address 0xdffffc00000000b3: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000598-0x000000000000059f]
+CPU: 1 PID: 8207 Comm: syz-executor.3 Not tainted 5.8.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:read_pnet include/net/net_namespace.h:330 [inline]
+RIP: 0010:dev_net include/linux/netdevice.h:2261 [inline]
+RIP: 0010:vlan_get_link_net+0x46/0x70 net/8021q/vlan_netlink.c:279
+Code: fa 48 c1 ea 03 80 3c 02 00 75 2e 48 8b 9b 70 0c 00 00 48 b8 00 00 00 00 00 fc ff df 48 8d bb 98 05 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 10 48 8b 83 98 05 00 00 5b c3 e8 86 1f 63 fa eb cb
+RSP: 0018:ffffc90004706eb8 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffff888092c85230
+RDX: 00000000000000b3 RSI: ffffffff874ffe39 RDI: 0000000000000598
+RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8a7b8647
+R10: 0000000000000000 R11: 0000000000000000 R12: ffffc90004706f80
+R13: 0000000000000030 R14: ffff8880930ba900 R15: ffff8880930cc000
+FS:  00007f4a9113a700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005643b6ad2140 CR3: 000000009335e000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ rtnl_fill_link_netnsid net/core/rtnetlink.c:1569 [inline]
+ rtnl_fill_ifinfo+0x1bc5/0x3c40 net/core/rtnetlink.c:1758
+ rtmsg_ifinfo_build_skb+0xcd/0x1a0 net/core/rtnetlink.c:3706
+ rollback_registered_many+0xb7d/0xf60 net/core/dev.c:8972
+ unregister_netdevice_many.part.0+0x1a/0x2f0 net/core/dev.c:10113
+ unregister_netdevice_many+0x36/0x50 net/core/dev.c:10112
+ __rtnl_newlink+0x13bd/0x1750 net/core/rtnetlink.c:3381
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3398
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5461
+ netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45c1f9
+Code: Bad RIP value.
+RSP: 002b:00007f4a91139c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000002b580 RCX: 000000000045c1f9
+RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000006
+RBP: 000000000078bfe0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000078bfac
+R13: 00007ffc004cce8f R14: 00007f4a9113a9c0 R15: 000000000078bfac
+Modules linked in:
+---[ end trace e42f7b565341dee6 ]---
+RIP: 0010:read_pnet include/net/net_namespace.h:330 [inline]
+RIP: 0010:dev_net include/linux/netdevice.h:2261 [inline]
+RIP: 0010:vlan_get_link_net+0x46/0x70 net/8021q/vlan_netlink.c:279
+Code: fa 48 c1 ea 03 80 3c 02 00 75 2e 48 8b 9b 70 0c 00 00 48 b8 00 00 00 00 00 fc ff df 48 8d bb 98 05 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 10 48 8b 83 98 05 00 00 5b c3 e8 86 1f 63 fa eb cb
+RSP: 0018:ffffc90004706eb8 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffff888092c85230
+RDX: 00000000000000b3 RSI: ffffffff874ffe39 RDI: 0000000000000598
+RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8a7b8647
+R10: 0000000000000000 R11: 0000000000000000 R12: ffffc90004706f80
+R13: 0000000000000030 R14: ffff8880930ba900 R15: ffff8880930cc000
+FS:  00007f4a9113a700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005643b6ad2140 CR3: 000000009335e000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+Tested on:
+
+commit:         9506a941 net: fix a race condition in dev_get_iflink()
+git tree:       https://github.com/congwang/linux.git net
+console output: https://syzkaller.appspot.com/x/log.txt?x=158bd540900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=dddbcb5a9f4192db
+dashboard link: https://syzkaller.appspot.com/bug?extid=d702fd2351989927037c
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
