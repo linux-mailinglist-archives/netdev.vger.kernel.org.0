@@ -2,178 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88ED822B658
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 21:03:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DDEC22B666
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 21:07:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727769AbgGWTCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 15:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35304 "EHLO
+        id S1727085AbgGWTHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 15:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726425AbgGWTCy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 15:02:54 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06800C0619DC;
-        Thu, 23 Jul 2020 12:02:53 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id b6so6153366wrs.11;
-        Thu, 23 Jul 2020 12:02:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PKPyxdsT1i1xdkaqcT2QwJWHG5Gos11psRoYlqmPZgw=;
-        b=Q0eMLBNFPvAvhwbItWc2kwC4ETNxft+dMu95I6FvImrDTZ/2a2UsYE03Vj2Q/rrva/
-         y1wCahM8NYNwNAQyuo1QfkkCpjUrj5fIr/eISPuMxzOqAySelVVPdSAXNgPDpPUx2Ywu
-         GnYDpcctIFN5s1AiYo21iVDoJLG7/P+gM75+SRmLJJfYW6Hwk8JUcQvmf0v9OP1VsQaB
-         /8nqh9y3jKAeDaK3+00e/G5wl8Y97/e56LSdUcEVGEx/0ovl1oAej9WCkarGdvdTABkS
-         hkToIPc4F6dI5kEfHvThmgeqHgsfR/rUWmyB6m1/j6lXIr4GMnkI7GaSwKfrPxHHEln3
-         kp1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=PKPyxdsT1i1xdkaqcT2QwJWHG5Gos11psRoYlqmPZgw=;
-        b=KStEFSTJg0w/EpnJ9elvruMn23ZBJZM/T3Mqj0sChf1bqHD7TMUYpPVKbJbMyzZP6f
-         5aJezkXKVGPd8WgJ+OV03eAeaPdOkdorMFmutf9RH3naS7ZlwZ5UcqSxcLIDKXnTyE9d
-         WXUU0efv8LF73s16lPYXzFmRAW8sYv+f+EVLwM03s30J9CCmYQwLj4WImB9i1+GYtUKx
-         42eePfdBS0xcXsFvRZJTg+2UMZqZ1RX7sU8SMKYHMBmRxemeFLJBXquPmpDHow+Nya9T
-         RhQ6BkL02OVQ5SYD3M732PHFFNOZDkiAY69QddKSG7/G9YPD6zz8qydY5V5BheS8G1+q
-         SO6g==
-X-Gm-Message-State: AOAM531Wi6MWPv71luxXNoEymPazEpLwrlAxgwFJ5THOKFw+J9wd6+MM
-        QmqCWj1crd2ziF+klWzrOJVlGeey
-X-Google-Smtp-Source: ABdhPJzMAEoIx5xcExHoQvLcQ/ko2LaJnU8zur3V7dnM7LOhP/cCTJgnWZxb3OnckMTxlCFrtfNOog==
-X-Received: by 2002:a5d:6b08:: with SMTP id v8mr5465144wrw.2.1595530972656;
-        Thu, 23 Jul 2020 12:02:52 -0700 (PDT)
-Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id u1sm6195681wrb.78.2020.07.23.12.02.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jul 2020 12:02:51 -0700 (PDT)
-Subject: Re: [RFC 0/7] Add support to process rx packets in thread
-To:     Rakesh Pillai <pillair@codeaurora.org>,
-        'Andrew Lunn' <andrew@lunn.ch>
-Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvalo@codeaurora.org,
-        johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, dianders@chromium.org, evgreen@chromium.org
-References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
- <20200721172514.GT1339445@lunn.ch>
- <f6d93d76-9e59-c257-9318-31c71df28018@gmail.com>
- <002e01d6611e$0d8ac640$28a052c0$@codeaurora.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
- xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
- X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
- AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
- ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
- SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
- nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
- qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz80nRmxvcmlhbiBG
- YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+wmYEExECACYCGyMGCwkIBwMCBBUCCAME
- FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
- 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSDOwU0EVxvH8AEQAOqv6agYuT4x3DgFIJNv9i0e
- S443rCudGwmg+CbjXGA4RUe1bNdPHYgbbIaN8PFkXfb4jqg64SyU66FXJJJO+DmPK/t7dRNA
- 3eMB1h0GbAHlLzsAzD0DKk1ARbjIusnc02aRQNsAUfceqH5fAMfs2hgXBa0ZUJ4bLly5zNbr
- r0t/fqZsyI2rGQT9h1D5OYn4oF3KXpSpo+orJD93PEDeseho1EpmMfsVH7PxjVUlNVzmZ+tc
- IDw24CDSXf0xxnaojoicQi7kzKpUrJodfhNXUnX2JAm/d0f9GR7zClpQMezJ2hYAX7BvBajb
- Wbtzwi34s8lWGI121VjtQNt64mSqsK0iQAE6OYk0uuQbmMaxbBTT63+04rTPBO+gRAWZNDmQ
- b2cTLjrOmdaiPGClSlKx1RhatzW7j1gnUbpfUl91Xzrp6/Rr9BgAZydBE/iu57KWsdMaqu84
- JzO9UBGomh9eyBWBkrBt+Fe1qN78kM7JO6i3/QI56NA4SflV+N4PPgI8TjDVaxgrfUTV0gVa
- cr9gDE5VgnSeSiOleChM1jOByZu0JTShOkT6AcSVW0kCz3fUrd4e5sS3J3uJezSvXjYDZ53k
- +0GS/Hy//7PSvDbNVretLkDWL24Sgxu/v8i3JiYIxe+F5Br8QpkwNa1tm7FK4jOd95xvYADl
- BUI1EZMCPI7zABEBAAHCwagEGBECAAkFAlcbx/ACGwICKQkQYVeZFbVjdg7BXSAEGQECAAYF
- Alcbx/AACgkQh9CWnEQHBwSJBw//Z5n6IO19mVzMy/ZLU/vu8flv0Aa0kwk5qvDyvuvfiDTd
- WQzq2PLs+obX0y1ffntluhvP+8yLzg7h5O6/skOfOV26ZYD9FeV3PIgR3QYF26p2Ocwa3B/k
- P6ENkk2pRL2hh6jaA1Bsi0P34iqC2UzzLq+exctXPa07ioknTIJ09BT31lQ36Udg7NIKalnj
- 5UbkRjqApZ+Rp0RAP9jFtq1n/gjvZGyEfuuo/G+EVCaiCt3Vp/cWxDYf2qsX6JxkwmUNswuL
- C3duQ0AOMNYrT6Pn+Vf0kMboZ5UJEzgnSe2/5m8v6TUc9ZbC5I517niyC4+4DY8E2m2V2LS9
- es9uKpA0yNcd4PfEf8bp29/30MEfBWOf80b1yaubrP5y7yLzplcGRZMF3PgBfi0iGo6kM/V2
- 13iD/wQ45QTV0WTXaHVbklOdRDXDHIpT69hFJ6hAKnnM7AhqZ70Qi31UHkma9i/TeLLzYYXz
- zhLHGIYaR04dFT8sSKTwTSqvm8rmDzMpN54/NeDSoSJitDuIE8givW/oGQFb0HGAF70qLgp0
- 2XiUazRyRU4E4LuhNHGsUxoHOc80B3l+u3jM6xqJht2ZyMZndbAG4LyVA2g9hq2JbpX8BlsF
- skzW1kbzIoIVXT5EhelxYEGqLFsZFdDhCy8tjePOWK069lKuuFSssaZ3C4edHtkZ8gCfWWtA
- 8dMsqeOIg9Trx7ZBCDOZGNAAnjYQmSb2eYOAti3PX3Ex7vI8ZhJCzsNNBEjPuBIQEAC/6NPW
- 6EfQ91ZNU7e/oKWK91kOoYGFTjfdOatp3RKANidHUMSTUcN7J2mxww80AQHKjr3Yu2InXwVX
- SotMMR4UrkQX7jqabqXV5G+88bj0Lkr3gi6qmVkUPgnNkIBe0gaoM523ujYKLreal2OQ3GoJ
- PS6hTRoSUM1BhwLCLIWqdX9AdT6FMlDXhCJ1ffA/F3f3nTN5oTvZ0aVF0SvQb7eIhGVFxrlb
- WS0+dpyulr9hGdU4kzoqmZX9T/r8WCwcfXipmmz3Zt8o2pYWPMq9Utby9IEgPwultaP06MHY
- nhda1jfzGB5ZKco/XEaXNvNYADtAD91dRtNGMwRHWMotIGiWwhEJ6vFc9bw1xcR88oYBs+7p
- gbFSpmMGYAPA66wdDKGj9+cLhkd0SXGht9AJyaRA5AWB85yNmqcXXLkzzh2chIpSEawRsw8B
- rQIZXc5QaAcBN2dzGN9UzqQArtWaTTjMrGesYhN+aVpMHNCmJuISQORhX5lkjeg54oplt6Zn
- QyIsOCH3MfG95ha0TgWwyFtdxOdY/UY2zv5wGivZ3WeS0TtQf/BcGre2y85rAohFziWOzTaS
- BKZKDaBFHwnGcJi61Pnjkz82hena8OmsnsBIucsz4N0wE+hVd6AbDYN8ZcFNIDyt7+oGD1+c
- PfqLz2df6qjXzq27BBUboklbGUObNwADBQ//V45Z51Q4fRl/6/+oY5q+FPbRLDPlUF2lV6mb
- hymkpqIzi1Aj/2FUKOyImGjbLAkuBQj3uMqy+BSSXyQLG3sg8pDDe8AJwXDpG2fQTyTzQm6l
- OnaMCzosvALk2EOPJryMkOCI52+hk67cSFA0HjgTbkAv4Mssd52y/5VZR28a+LW+mJIZDurI
- Y14UIe50G99xYxjuD1lNdTa/Yv6qFfEAqNdjEBKNuOEUQOlTLndOsvxOOPa1mRUk8Bqm9BUt
- LHk3GDb8bfDwdos1/h2QPEi+eI+O/bm8YX7qE7uZ13bRWBY+S4+cd+Cyj8ezKYAJo9B+0g4a
- RVhdhc3AtW44lvZo1h2iml9twMLfewKkGV3oG35CcF9mOd7n6vDad3teeNpYd/5qYhkopQrG
- k2oRBqxyvpSLrJepsyaIpfrt5NNaH7yTCtGXcxlGf2jzGdei6H4xQPjDcVq2Ra5GJohnb/ix
- uOc0pWciL80ohtpSspLlWoPiIowiKJu/D/Y0bQdatUOZcGadkywCZc/dg5hcAYNYchc8AwA4
- 2dp6w8SlIsm1yIGafWlNnfvqbRBglSTnxFuKqVggiz2zk+1wa/oP+B96lm7N4/3Aw6uy7lWC
- HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
- TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <fdedf787-1bb0-601c-0959-6f1bfb38e5d7@gmail.com>
-Date:   Thu, 23 Jul 2020 12:02:40 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <002e01d6611e$0d8ac640$28a052c0$@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S1726617AbgGWTH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 15:07:29 -0400
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9C4C0619DC;
+        Thu, 23 Jul 2020 12:07:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Mime-Version:Content-Type:References:
+        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=GTusUKPy+WCNFhhn/IREKuAiqRFDfm1P4OMQsULO0Ss=; b=dSUJtRaFrlUUekqFDFTOJn42If
+        gthlaX5PTV2kN8GaRsL2l/+nqhvaKa33vXRqIwal5/gNiynKZ6H1QkIzTerYGrmTvk+yrev1IoN0m
+        AB9ZsvR9y9o1iguy0v4n9UL9ahQftqLGzn/bsl4E9bsIxuCXq38cttVfYuDfzu5i2A/nhslG10YWW
+        3ObD+c5ESWm9PHR18M0NRBvvf19Fr/9bogy/vXGvBIwdrOGVB3tTXlF10oxszrCRuVklXhnAzs0A9
+        lU6a8asBiECVz7bM5fuCSsMUlkXI9jMRf6wlUaI8SMV8pubbGWM9lKYmE4lM8usI2ak+okED9zbcB
+        jG5o4+nQ==;
+Received: from 54-240-197-239.amazon.com ([54.240.197.239] helo=u3832b3a9db3152.ant.amazon.com)
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jygYi-0003f2-VI; Thu, 23 Jul 2020 19:07:13 +0000
+Message-ID: <52f10e30f62b8521fd83525a03ecff94b72d509b.camel@infradead.org>
+Subject: [PATCH] net: ethernet: mtk_eth_soc: Always call
+ mtk_gmac0_rgmii_adjust() for mt7623
+From:   David Woodhouse <dwmw2@infradead.org>
+To:     davem@davemloft.net
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Sean Wang <sean.wang@mediatek.com>, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@savoirfairelinux.com,
+        Mark-MC.Lee@mediatek.com, john@phrozen.org,
+        Landen.Chao@mediatek.com, steven.liu@mediatek.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?ISO-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
+        linux-mediatek <linux-mediatek@lists.infradead.org>
+Date:   Thu, 23 Jul 2020 20:07:10 +0100
+In-Reply-To: <trinity-fb0cdf15-dfcf-4d60-9144-87d8fbfad5ba-1586179542451@3c-app-gmx-bap62>
+References: <trinity-fb0cdf15-dfcf-4d60-9144-87d8fbfad5ba-1586179542451@3c-app-gmx-bap62>
+Content-Type: multipart/signed; micalg="sha-256";
+        protocol="application/x-pkcs7-signature";
+        boundary="=-dvDDyJLpNyF5xlF8RnJm"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by merlin.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/23/20 11:21 AM, Rakesh Pillai wrote:
-> 
-> 
->> -----Original Message-----
->> From: Florian Fainelli <f.fainelli@gmail.com>
->> Sent: Tuesday, July 21, 2020 11:35 PM
->> To: Andrew Lunn <andrew@lunn.ch>; Rakesh Pillai <pillair@codeaurora.org>
->> Cc: ath10k@lists.infradead.org; linux-wireless@vger.kernel.org; linux-
->> kernel@vger.kernel.org; kvalo@codeaurora.org; johannes@sipsolutions.net;
->> davem@davemloft.net; kuba@kernel.org; netdev@vger.kernel.org;
->> dianders@chromium.org; evgreen@chromium.org
->> Subject: Re: [RFC 0/7] Add support to process rx packets in thread
->>
->> On 7/21/20 10:25 AM, Andrew Lunn wrote:
->>> On Tue, Jul 21, 2020 at 10:44:19PM +0530, Rakesh Pillai wrote:
->>>> NAPI gets scheduled on the CPU core which got the
->>>> interrupt. The linux scheduler cannot move it to a
->>>> different core, even if the CPU on which NAPI is running
->>>> is heavily loaded. This can lead to degraded wifi
->>>> performance when running traffic at peak data rates.
->>>>
->>>> A thread on the other hand can be moved to different
->>>> CPU cores, if the one on which its running is heavily
->>>> loaded. During high incoming data traffic, this gives
->>>> better performance, since the thread can be moved to a
->>>> less loaded or sometimes even a more powerful CPU core
->>>> to account for the required CPU performance in order
->>>> to process the incoming packets.
->>>>
->>>> This patch series adds the support to use a high priority
->>>> thread to process the incoming packets, as opposed to
->>>> everything being done in NAPI context.
->>>
->>> I don't see why this problem is limited to the ath10k driver. I expect
->>> it applies to all drivers using NAPI. So shouldn't you be solving this
->>> in the NAPI core? Allow a driver to request the NAPI core uses a
->>> thread?
->>
->> What's more, you should be able to configure interrupt affinity to steer
->> RX processing onto a desired CPU core, is not that working for you
->> somehow?
-> 
-> Hi Florian,
-> Yes, the affinity of IRQ does work for me.
-> But the affinity of IRQ does not happen runtime based on load.
 
-It can if you also run irqbalance.
--- 
-Florian
+--=-dvDDyJLpNyF5xlF8RnJm
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+From: Ren=C3=A9 van Dorst <opensource@vdorst.com>
+
+Modify mtk_gmac0_rgmii_adjust() so it can always be called.
+mtk_gmac0_rgmii_adjust() sets-up the TRGMII clocks.
+
+Signed-off-by: Ren=C3=A9 van Dorst <opensource@vdorst.com>
+Signed-off-By: David Woodhouse <dwmw2@infradead.org>
+Tested-by: Frank Wunderlich <frank-w@public-files.de>
+---
+On Mon, 2020-04-06 at 15:25 +0200, Frank Wunderlich wrote:
+> have tested these 2 and additional rene's 3rd Patch on my tree [1]
+> on BPi-R2, no problem with trgmii yet (multiple power-cycle+reboots).
+> I had issues with current 5.6.0 version, so imho these should go
+> also into 5.6.y
+
+Here's that third patch of which Frank speaks. I don't see it submitted
+yet, and I found I needed it on 5.4 too for the Ethernet to be
+functional.
+
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethe=
+rnet/mediatek/mtk_eth_soc.c
+index b5408c5b954a..f89f225ab144 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -171,11 +171,21 @@ static int mt7621_gmac0_rgmii_adjust(struct mtk_eth *=
+eth,
+ 	return 0;
+ }
+=20
+-static void mtk_gmac0_rgmii_adjust(struct mtk_eth *eth, int speed)
++static void mtk_gmac0_rgmii_adjust(struct mtk_eth *eth,
++				   phy_interface_t interface, int speed)
+ {
+ 	u32 val;
+ 	int ret;
+=20
++	if (interface =3D=3D PHY_INTERFACE_MODE_TRGMII) {
++		mtk_w32(eth, TRGMII_MODE, INTF_MODE);
++		val =3D 500000000;
++		ret =3D clk_set_rate(eth->clks[MTK_CLK_TRGPLL], val);
++		if (ret)
++			dev_err(eth->dev, "Failed to set trgmii pll: %d\n", ret);
++		return;
++	}
++
+ 	val =3D (speed =3D=3D SPEED_1000) ?
+ 		INTF_MODE_RGMII_1000 : INTF_MODE_RGMII_10_100;
+ 	mtk_w32(eth, val, INTF_MODE);
+@@ -262,10 +272,9 @@ static void mtk_mac_config(struct phylink_config *conf=
+ig, unsigned int mode,
+ 							      state->interface))
+ 					goto err_phy;
+ 			} else {
+-				if (state->interface !=3D
+-				    PHY_INTERFACE_MODE_TRGMII)
+-					mtk_gmac0_rgmii_adjust(mac->hw,
+-							       state->speed);
++				mtk_gmac0_rgmii_adjust(mac->hw,
++						       state->interface,
++						       state->speed);
+=20
+ 				/* mt7623_pad_clk_setup */
+ 				for (i =3D 0 ; i < NUM_TRGMII_CTRL; i++)
+
+
+--=-dvDDyJLpNyF5xlF8RnJm
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
+ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
+OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
+RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
+cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
+uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
+Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
+Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
+xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
+BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
+dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
+LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
+Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
+Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
+KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
+YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
+nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
+PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
+7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
+Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
+MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
+NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
+/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
+0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
+vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
+ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
+ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
+CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
+BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
+aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
+bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
+bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
+LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
+CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
+W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
+vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
+gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
+RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
+jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
+b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
+AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
+BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
++bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
+WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
+aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
+CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
+u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
+RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
+QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
+b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
+cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
+SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
+0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
+KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
+E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
+M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
+jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
+yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
+gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
+R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
+ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjAw
+NzIzMTkwNzEwWjAvBgkqhkiG9w0BCQQxIgQgMvSN3b9IY70tdd3sqEDlvMyZTIWJouSwWuQjVR5u
+00swgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
+PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
+aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
+DQEBAQUABIIBAJuWSjeEwt+cFTo3TTI95KnNnoqEBfHMEyQ7czNp4YBL4MsXDJOwQOvjDJO1G4zf
+H7UkdcUJlyqqIr9OMUEfTe0EqQdw2Sul5Z9a7yr6pnxwPPmkER/DDbAJlg0FvV/uBBzZ2hVab9/w
+9a6XD8ts2Zw5z6PdORy3VCeX1eyXLNWF25+7UlKR2bR9k3u8CpdjeUjbpZtSex6T/7P+d4CEKxVX
+cAGdl65GyqyUeNOopivDzTmYN4fEV4Uy5S8rZslpytlc9KNTJehbviiwl0pAko49XEL8DsKHc202
+DeHkSOMM3wre63eQNtHeSGTCvXh+ouWX+jaHp7LKkLQfey5MEgUAAAAAAAA=
+
+
+--=-dvDDyJLpNyF5xlF8RnJm--
+
