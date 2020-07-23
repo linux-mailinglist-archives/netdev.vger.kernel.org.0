@@ -2,99 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B87322A6FA
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 07:38:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD22722A6FE
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 07:40:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726089AbgGWFio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 01:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbgGWFio (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 01:38:44 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3540C0619DC;
-        Wed, 22 Jul 2020 22:38:43 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id d7so2037078plq.13;
-        Wed, 22 Jul 2020 22:38:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Onkxxt1KvjHNTiaY1A1kT/O/mITa9ddnS/eXBAaG1Z4=;
-        b=dP/aXDOAmB2s0o55uGvwL3qUYygREi9gvUsxYQVfazZlAJQrq2e6fcluIcWbCzc+CQ
-         PvOZgC5n/8F8FxWf2IOzchy/l+bjdocaqkVmnR187nrWHbu0kS6/PL3DpCrsxBvVt7KX
-         cQbSFFDj2qTglf8OtpfYquX2o1Ms1loWs5IkjlzvNP/El2sy8f8oPmWu2GNcJBstAq9C
-         +GHkuMKsIAoxzgrFnUgYoNOCieGfCC/fk8U83pPK8NcocSuxxua9ZvJ7erkgS1KBQtXg
-         IHNus1xY0FP1qX0GA6pg7QBw5mEn2E48BcpnbjRxIfgJpCl4gYzbd//MU/HBQoyZOnqX
-         D/Iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Onkxxt1KvjHNTiaY1A1kT/O/mITa9ddnS/eXBAaG1Z4=;
-        b=GhhP7ceVo9C25aqQKkAOB4vE4d+GOofP/3u65LhZ8gGYbWe3MmYgfCFgc2FzdgpDQD
-         hrrsIZJ87lWRwbaf+/Q5d77F0XRvzPr5UeGJ0GeNxMu1szQYqYdq8PreJJV0wBNscS5y
-         yIUqmujaBUIEWAI7xqS1/PxE1Igeo0mmA69Xbk68vRbJE+Xk6M+G4KUsprT44Nd1fzTA
-         CdQgPva/Vu4viUIUzOab3IGjDc/Zmn0DIBzqvm4STMCVabJhi2m0HEkwXPPBsxytlP5a
-         eBXt09X717iBWbMwfnur6o2J1KtOB5NgM8sR7nCnLhbyQQQV2Wuv05DkNh6l9U1Twlm5
-         L67g==
-X-Gm-Message-State: AOAM530yXocR+o2ftbU+RnyX0Bfpkz3O6E1EBnwU84RY5IK4SdTwrh7w
-        hlnSVONie54PHQuGnr4ZuzB4bkMq
-X-Google-Smtp-Source: ABdhPJyROstPbS4hBgLk3I6F/PiyY0WzIDNN5S6OkRoPuA15UAquJz9iccdRqNQfGClbQFJwLk9qbQ==
-X-Received: by 2002:a17:90a:1a83:: with SMTP id p3mr2489156pjp.113.1595482723166;
-        Wed, 22 Jul 2020 22:38:43 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:6cd6])
-        by smtp.gmail.com with ESMTPSA id v197sm1477385pfc.35.2020.07.22.22.38.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2020 22:38:42 -0700 (PDT)
-Date:   Wed, 22 Jul 2020 22:38:40 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next v2 01/13] bpf: refactor bpf_iter_reg to have
- separate seq_info member
-Message-ID: <20200723053840.tnqzumivvtjwy3tv@ast-mbp.dhcp.thefacebook.com>
-References: <20200722184945.3777103-1-yhs@fb.com>
- <20200722184945.3777163-1-yhs@fb.com>
+        id S1726539AbgGWFkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 01:40:53 -0400
+Received: from mail-eopbgr20074.outbound.protection.outlook.com ([40.107.2.74]:43119
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725536AbgGWFkw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jul 2020 01:40:52 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jSmH1szUoLQ4zeuZTaUqMHFI53nELhNVmgERYr3mEuDT52TH8tYnsjnCMP0502IslY/NacXFcx+h+3VA/f17qsOkLoarIAZ190mpl4NeYSz3pKlF/zucEkZK/MHiuzRucoP9q/EsTot2Ty98FQP78KOcONo7YUlBW6GV44qj846lIUBxkwRJnY4FUYceBx+ZQDZM3fqVcOhRqSwI9qFuP9e9xxi/5S4MSoWVecYHCsyeo/R/INAmZHsI38dCTHwh03x2IdgG/KoZRPrGmeJrcPeqx6S6lQGgeEzIRjj9yMsEBE1mM1/Jv3CiLT8Xym7JtZ3yRCNA3aujJokgSGvOIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eaS/TlDo7cqi4FbDalwnmowouBaF73RbMKLUTJpPgcM=;
+ b=RHZyHb8yQTJWZyWE/++6Q/79KwGyostRlDsTFZBXBkLhkPDZtGyMAZX1oIN3uUJ+fSxVHW2xVXhrLgxwl6HaLBW7l73HrRKK1w8HzEQf668r0sbBMJ0hdOXZUkYxBigitA01QQYpfgJm6h6weKbI3zV1OhB8fliejd2Cjhvz9keXpCquNYy/IpICKwyaV1uvQypR4eyQtavuHoTXp5kBlrqRQbftnjjO7lXrQGhisTinHXm8T2t2Uk2Zt+ApydXnXmV5xT4iX4+CTGAZ5ihrLQSJFY1NtCEJ7StbMEgtr7c9g1G6rR5szjyZ84osYo+eG/0dAumDCJYuYc6jzKLA+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eaS/TlDo7cqi4FbDalwnmowouBaF73RbMKLUTJpPgcM=;
+ b=bImpdVRp/VzcFN4ysZDyAbWMJoYyYtBqk8JvB1X5V26CBHAeo9hKHbkbJTyY1pNrMa9vO6O0FcQqOH5e0G13q3rE97iTZpWzyvfNg2E6FH88q2L4OANMik1ademJaeXgRAWGoIbJX5Sq1M+CA7VhSvLarLtqzulh7TcaJcOb9O8=
+Received: from AM6PR04MB3976.eurprd04.prod.outlook.com (2603:10a6:209:3f::17)
+ by AM6PR04MB5079.eurprd04.prod.outlook.com (2603:10a6:20b:4::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.24; Thu, 23 Jul
+ 2020 05:40:48 +0000
+Received: from AM6PR04MB3976.eurprd04.prod.outlook.com
+ ([fe80::51e7:c810:fec7:6943]) by AM6PR04MB3976.eurprd04.prod.outlook.com
+ ([fe80::51e7:c810:fec7:6943%3]) with mapi id 15.20.3174.030; Thu, 23 Jul 2020
+ 05:40:48 +0000
+From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+CC:     "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "paulus@samba.org" <paulus@samba.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Radu-andrei Bulie <radu-andrei.bulie@nxp.com>,
+        "fido_max@inbox.ru" <fido_max@inbox.ru>
+Subject: RE: [PATCH devicetree 3/4] powerpc: dts: t1040rdb: put SGMII PHY
+ under &mdio0 label
+Thread-Topic: [PATCH devicetree 3/4] powerpc: dts: t1040rdb: put SGMII PHY
+ under &mdio0 label
+Thread-Index: AQHWYEz+LgZibInI10i2/O6ewv0daakUplWQ
+Date:   Thu, 23 Jul 2020 05:40:48 +0000
+Message-ID: <AM6PR04MB39763CA66048BD4F221D0DE4EC760@AM6PR04MB3976.eurprd04.prod.outlook.com>
+References: <20200722172422.2590489-1-olteanv@gmail.com>
+ <20200722172422.2590489-4-olteanv@gmail.com>
+In-Reply-To: <20200722172422.2590489-4-olteanv@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=oss.nxp.com;
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [5.14.204.117]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 30811635-b75a-46a0-1b37-08d82ecaf405
+x-ms-traffictypediagnostic: AM6PR04MB5079:
+x-ms-exchange-sharedmailbox-routingagent-processed: True
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR04MB5079AD348F569C950C4E48B8AD760@AM6PR04MB5079.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /Bv17ujXPqbg74Cv8yFInypvDL1dKa09B0vWwYrgJNpBwuDc14pPIeWHnURs+korboP21mBrOgjuxrFxZyiqqMz12riMx/m1/jp1gdUhb4JL7lRw/PQAzcsqPwRINAgUMamZGpeEaZeQW3ifQ/TB7zczvZexmi7o+z0TQeoNKhbdOWeai6FFcTeUOgH9n7VS3hHRhy4FcDyWZ2473qVQnrnyHPR8OA2goMYjJpntLgd/aB/d9mCFuVBliJ2egIm0OIibWkjaKJ80LCDLxAxJHbEQnoOrgZgmSDhiUVBPxfJnzx9UraWv1RCI2bYAH54+
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB3976.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(396003)(39860400002)(366004)(136003)(186003)(8936002)(64756008)(66476007)(478600001)(83380400001)(66556008)(2906002)(5660300002)(66446008)(7696005)(7416002)(316002)(33656002)(76116006)(52536014)(8676002)(26005)(110136005)(54906003)(9686003)(86362001)(71200400001)(53546011)(4326008)(6506007)(66946007)(55016002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: JYal8yjGjhmUpyCL23LXjXcejFQTZ8ako1F/2UL7OOQg/n/HQ2Ew+kIZrKc0/MVxlaw5RSFcDC9XKfxDaCzl4rs6U/2bRo404kTjj+HoXI2r5Oj4++WH94xQdtyH3WnNtUbjS7G99jDnDNHbW6742skjsSM2MfI1kBw9/uFqOCEMH9RdX40JW60hEBY2H0lgkxJisxllhhQxGUneAK7mofLwqPDnz2Oe4gz/NF4KoR+ifqUAysSbbMREgRKQg9sNMGUOmw+kWKak1bL4JtMoxAY7Isi2xrVYj8ohi58kojpQmB4pCK7TQ1UtpQAus3pLSwvnkfCy3ndiP7V9rJg5uvhn10pVtb8gZqT6ttMOseixs+tJDr8YDlExMR2SFCkdbPLRoIuLEKUUskV2oUUHY9kph8L6mQogLDCK3ZrYgZl+D9VTA9m8IauTqDNMyxcgi6uGZM5ox09AWHeCFoQEWOJfa7kPKv5kg1/5EriKLsQ=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200722184945.3777163-1-yhs@fb.com>
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB3976.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30811635-b75a-46a0-1b37-08d82ecaf405
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jul 2020 05:40:48.3732
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /Ov+hqQMBgJgE5yGTDeKqx9QweO+ZPr4vLyDMnKPW9WCiT5K6cPcI7WqIxksXVo8v49Y3q7v1RAyLmj3FhzUlA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5079
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 22, 2020 at 11:49:45AM -0700, Yonghong Song wrote:
-> diff --git a/kernel/bpf/map_iter.c b/kernel/bpf/map_iter.c
-> index 8a7af11b411f..5812dd465c49 100644
-> --- a/kernel/bpf/map_iter.c
-> +++ b/kernel/bpf/map_iter.c
-> @@ -85,17 +85,21 @@ static const struct seq_operations bpf_map_seq_ops = {
->  BTF_ID_LIST(btf_bpf_map_id)
->  BTF_ID(struct, bpf_map)
->  
-> -static struct bpf_iter_reg bpf_map_reg_info = {
-> -	.target			= "bpf_map",
-> +static const struct bpf_iter_seq_info bpf_map_seq_info = {
->  	.seq_ops		= &bpf_map_seq_ops,
->  	.init_seq_private	= NULL,
->  	.fini_seq_private	= NULL,
->  	.seq_priv_size		= sizeof(struct bpf_iter_seq_map_info),
-> +};
-> +
-> +static struct bpf_iter_reg bpf_map_reg_info = {
-> +	.target			= "bpf_map",
->  	.ctx_arg_info_size	= 1,
->  	.ctx_arg_info		= {
->  		{ offsetof(struct bpf_iter__bpf_map, map),
->  		  PTR_TO_BTF_ID_OR_NULL },
->  	},
-> +	.seq_info		= &bpf_map_seq_info,
->  };
+> -----Original Message-----
+> From: Vladimir Oltean <olteanv@gmail.com>
+> Sent: Wednesday, July 22, 2020 8:24 PM
+> To: robh+dt@kernel.org; shawnguo@kernel.org; mpe@ellerman.id.au;
+> devicetree@vger.kernel.org
+> Cc: benh@kernel.crashing.org; paulus@samba.org; linuxppc-
+> dev@lists.ozlabs.org; linux-kernel@vger.kernel.org;
+> netdev@vger.kernel.org; Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>;
+> Radu-andrei Bulie <radu-andrei.bulie@nxp.com>; fido_max@inbox.ru
+> Subject: [PATCH devicetree 3/4] powerpc: dts: t1040rdb: put SGMII PHY
+> under &mdio0 label
+>=20
+> We're going to add 8 more PHYs in a future patch. It is easier to follow
+> the hardware description if we don't need to fish for the path of the
+> MDIO controllers inside the SoC and just use the labels.
+>=20
 
-ahh. this patch needs one more rebase, since I've just added prog_iter.
-Could you please respin ? Thanks!
+Please align to the existing structure, it may be easier to add something
+without paying attention to that but it's better to keep things organized.
+This structure is used across all the device trees of the platforms using
+DPAA, let's not start diverging now.
+
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> ---
+>  arch/powerpc/boot/dts/fsl/t1040rdb.dts | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/arch/powerpc/boot/dts/fsl/t1040rdb.dts
+> b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
+> index 65ff34c49025..40d7126dbe90 100644
+> --- a/arch/powerpc/boot/dts/fsl/t1040rdb.dts
+> +++ b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
+> @@ -59,12 +59,6 @@ ethernet@e4000 {
+>  				phy-handle =3D <&phy_sgmii_2>;
+>  				phy-connection-type =3D "sgmii";
+>  			};
+> -
+> -			mdio@fc000 {
+> -				phy_sgmii_2: ethernet-phy@3 {
+> -					reg =3D <0x03>;
+> -				};
+> -			};
+>  		};
+>  	};
+>=20
+> @@ -76,3 +70,9 @@ cpld@3,0 {
+>  };
+>=20
+>  #include "t1040si-post.dtsi"
+> +
+> +&mdio0 {
+> +	phy_sgmii_2: ethernet-phy@3 {
+> +		reg =3D <0x3>;
+> +	};
+> +};
+> --
+> 2.25.1
+
