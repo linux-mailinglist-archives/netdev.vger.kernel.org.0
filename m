@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715AA22B642
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 20:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3638F22B649
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 21:00:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727992AbgGWS7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 14:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34742 "EHLO
+        id S1728087AbgGWS74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 14:59:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727769AbgGWS7c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 14:59:32 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1E1C0619DC;
-        Thu, 23 Jul 2020 11:59:32 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id o8so5893723wmh.4;
-        Thu, 23 Jul 2020 11:59:32 -0700 (PDT)
+        with ESMTP id S1726994AbgGWS74 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 14:59:56 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F81C0619DC;
+        Thu, 23 Jul 2020 11:59:56 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id a15so6146601wrh.10;
+        Thu, 23 Jul 2020 11:59:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yx0FRYVZazDg6R96qxZk7mLoyLW4A0c4Rd4cAo02g4k=;
-        b=iMaA0JWpLrgs6txs+NkcjfT3ByjayLPcrUxkWdLoFVuBkTu3vlE0HbJoMNmfG490vB
-         LPVoW8rbhCa1tdkf4CIoMeXpltzz/O7lpwaq5RayqjT50XA4t6wTL6htpuTs+90wIuu6
-         fYtlyFPzayYQD/apVXatIYVAokJN97FT9tj+YX1v8OvGLAyma1L6ejzj0e2AW5hzxr1Y
-         O5PxcuPpkZNWrR9oA09mGqJqxn4DMGBWXRiLkpqx77h/l3jeLjJvJXi908lwAADCPfYO
-         E9bsaVikJsaroIV9yA048/pfRwa9hee9YHYPo6IvwcPJgS+FOo0Z7Sg6Nwg6ID8U8OVk
-         PzqA==
+        bh=bxQ7tQ6z3mNBLFtLdG+90Disq7Kpghx+V15fQV2DmfA=;
+        b=ADcNFt/hL/S2Bfy/XiygdhiABZ3QqmWxM6cqizk2p33AkfzIOEQyL1akStOQVnmEHn
+         GM52kcU3sEPsR+rgjzQcN/CpN+szv5TCxoSvsnua6C3MNe1HrTYWJRTYjea2kvg3k4d9
+         4n49f7Px2/zzGIounCbR8Ml8RKNKlZJPJTZB5sAqo+tQqN4OK1i53Ge7AeUb3lvUi4xi
+         Yuc5Us0x4xNcEtSJdu2mGUCPXSpXfEETxCx8Z2NQkf/H6q3o5TnBzaCgg4D5qVLc8+32
+         GQNgV3wBgCY8mMn8l7EHcgRhwikkyLpqxAEIXBSpETqonBl5o9flWL4f3GssMjewje1a
+         si8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=yx0FRYVZazDg6R96qxZk7mLoyLW4A0c4Rd4cAo02g4k=;
-        b=sTlAtshwB7mCpKuun7f6bQFUParUcB7WyewnVXZ77HvK30qx0na65DL+P4Y5eVLJtF
-         vO7truCCsyl7n5e7EQ+wK6zDHGEM0pBVQwbRPx6fUuiMadDEE1AN+ay6VyRCk4xlzlsP
-         9xOTjc6dC2CuY0C2wHvwyENzr4xgxjzoKhJLwRr5QNaNHwFEbS6i4+MCUektgE/uwD5N
-         c1ODTxUY3o68jVolhjyQiyyGfLex7QuFD+PfsDqhJuYHNY40aJe327+pi/gBzhFNP0TH
-         RL4ar9n7CX0/oB/0+UzyUmBB+vgXi4cFXBc/Vnck9tM3z2wrx7UdeXcbmyZ0cHLYrUM9
-         9/9Q==
-X-Gm-Message-State: AOAM533tkymloAIjo7Ou9WK4/27BJGJl+PQKRoHzCxZCGNI8G3BwDRCP
-        vQqBm1uS+WoKie+WKhgKIds=
-X-Google-Smtp-Source: ABdhPJzJa4cPj7lI6QXoZEXy7mMiZ6iMClpPuBrikzItc47NvphI7RGHHdyhKk4t2Tnuh9RHNVBJ8Q==
-X-Received: by 2002:a05:600c:21a:: with SMTP id 26mr5298341wmi.148.1595530771048;
-        Thu, 23 Jul 2020 11:59:31 -0700 (PDT)
+        bh=bxQ7tQ6z3mNBLFtLdG+90Disq7Kpghx+V15fQV2DmfA=;
+        b=QLDc7jYEnCF1fJk6vKYm2z057qpKpOjlkS/G5iiqCl1zoGtTQC54m2JUg94tqRqjYK
+         F0QqO7UBprykomrjhasW9PLZSxL0Yf4Y4sv4sWJAnSImAzZBcQv1IMKIqnTD3A3Pw/j9
+         5QPGw3gS7rFTEltiv5ZA14WK2W61w59E0wswPKuetlahOygwQhUyUIpbreSDfERJfzDN
+         YHDpcqIAIjeUj3HxZ5gxMtNkoG508wEqZY4q3nlyDjtQrPpix5Q6qHZyIYqrvaXB/pPv
+         HkQWUaBhG89PNBVm8SyOofwLG/tMxtuX19GTqzaOXVEpECYuTVJ0S9isk6JXRcvVJCiE
+         My6g==
+X-Gm-Message-State: AOAM532GF8Ca28gTPD/Y/olocR+3VnF8p0fz4CeRmI9dqIo2kCIbc7t2
+        17gPIDoMaPqWu2kaQDOq84c=
+X-Google-Smtp-Source: ABdhPJzhsGgALwe0nVnimz4+kPoWBa0nOisb3f0O2pYmbeA++FaBXXs0icm0j5qGbBaLqzKs1oEKXQ==
+X-Received: by 2002:adf:e98c:: with SMTP id h12mr5145336wrm.3.1595530794770;
+        Thu, 23 Jul 2020 11:59:54 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id z6sm5118041wrs.36.2020.07.23.11.59.27
+        by smtp.googlemail.com with ESMTPSA id t2sm4777407wmb.25.2020.07.23.11.59.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jul 2020 11:59:30 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 3/7] net: macb: parse PHY nodes found under an
- MDIO node
+        Thu, 23 Jul 2020 11:59:53 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 4/7] ARM: dts: at91: sama5d2: add an mdio
+ sub-node to macb
 To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
@@ -58,7 +58,7 @@ Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
         robh+dt@kernel.org, alexandre.belloni@bootlin.com,
         ludovic.desroches@microchip.com
 References: <20200721171316.1427582-1-codrin.ciubotariu@microchip.com>
- <20200721171316.1427582-4-codrin.ciubotariu@microchip.com>
+ <20200721171316.1427582-5-codrin.ciubotariu@microchip.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -114,12 +114,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <460e5f3d-f3a0-154e-d617-d1536c96e390@gmail.com>
-Date:   Thu, 23 Jul 2020 11:59:26 -0700
+Message-ID: <d7b5ebe1-8790-3be3-d538-938eeb16a11a@gmail.com>
+Date:   Thu, 23 Jul 2020 11:59:49 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200721171316.1427582-4-codrin.ciubotariu@microchip.com>
+In-Reply-To: <20200721171316.1427582-5-codrin.ciubotariu@microchip.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,55 +129,11 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 7/21/20 10:13 AM, Codrin Ciubotariu wrote:
-> The MACB embeds an MDIO bus controller. For this reason, the PHY nodes
-> were represented as sub-nodes in the MACB node. Generally, the
-> Ethernet controller is different than the MDIO controller, so the PHYs
-> are probed by a separate MDIO driver. Since adding the PHY nodes directly
-> under the ETH node became deprecated, we adjust the MACB driver to look
-> for an MDIO node and register the subnode MDIO devices.
+> Use the new macb bindings and add an mdio sub-node to contain all the
+> phy nodes.
 > 
 > Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-> ---
-> 
-> Changes in v2:
->  - readded newline removed by mistake;
-> 
->  drivers/net/ethernet/cadence/macb_main.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index 89fe7af5e408..b25c64b45148 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -740,10 +740,20 @@ static int macb_mii_probe(struct net_device *dev)
->  static int macb_mdiobus_register(struct macb *bp)
->  {
->  	struct device_node *child, *np = bp->pdev->dev.of_node;
-> +	struct device_node *mdio_node;
-> +	int ret;
->  
->  	if (of_phy_is_fixed_link(np))
->  		return mdiobus_register(bp->mii_bus);
 
-Does not this need changing as well? Consider the use case of having
-your MACB Ethernet node have a fixed-link property to describe how it
-connects to a switch, and your MACB MDIO controller, expressed as a
-sub-node, describing the MDIO attached switch it connects to.
-
->  
-> +	/* if an MDIO node is present, it should contain the PHY nodes */
-> +	mdio_node = of_get_child_by_name(np, "mdio");
-> +	if (mdio_node) {
-> +		ret = of_mdiobus_register(bp->mii_bus, mdio_node);
-> +		of_node_put(mdio_node);
-> +		return ret;
-> +	}
-> +
->  	/* Only create the PHY from the device tree if at least one PHY is
->  	 * described. Otherwise scan the entire MDIO bus. We do this to support
->  	 * old device tree that did not follow the best practices and did not
-> 
-
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
