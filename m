@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7D222AE79
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:56:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D81A22AE7A
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728560AbgGWL4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 07:56:30 -0400
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:33886 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726109AbgGWL42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 07:56:28 -0400
+        id S1728588AbgGWL4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 07:56:37 -0400
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:50760 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726109AbgGWL4g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 07:56:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1595505387; x=1627041387;
+  t=1595505395; x=1627041395;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=c9cf+yqkxJFtCdCghMbFfcDHmBUoTBqFsVimgFHWM+8=;
-  b=dcbRRUS4/5hkk2Et3ISgyfb6ixJTO4YV2ncx85kIwCx36sAKhBmepTQm
-   hXBO9uNmyz4zPeW36NtU+krZ1Dj7d5ekUGm6m89JVhjwm917A0zQ2f93G
-   sVS2pSqyKQdEIHJYdwzc812JwIh74RGJqKvAyRosdpgmSKuzsVwTuHU3/
-   sIX8Dxwca6f0V3IDoy0wq7yM+Cxgz/8JdwC5Qmw+lZajU/8k006m7JECR
-   Wmptq4KpZM8wIcbBIkGMbzsRWWluaWDO8D5USYWmsv+lvIP5XQALI1yDB
-   oUX8U/erTrLWwbdhUgOPw43C1003WQ0tr6BXQmBXj2Pz+Xbt8ge00IGum
-   Q==;
-IronPort-SDR: DnzKIYHj5hPdUeLnEaEN8KnaTNe0v6PIzhNBEQ0Za5eqTdoRKQ07htlYdFt/QxISPihZlf9ibo
- 0zRq2k/pknAKBeiTC/auZ2UGjDLnSgQA87HWnwg0jPFS+Jl6OhI+2t76Og89n5G+hAxv2jIgs/
- ztXsP0MPlDWv1cJYZbxP9NMzd51NPJNd73GLepx3DlT+Wul3yqBkunSdZMKWi9AzQjNQj8264E
- xNgFVgbX06Ux5CQykBL8rPIv80gxvIKtK1EBdrozmmlBNea6iV2BmpYNnFEULhlzicm2UrcCyP
- 93Y=
+  bh=aO0aYQwUSovmbXLoGxRCLOv6fo8TyIugmImIYPwwfWU=;
+  b=NchX+S25L96Xt5ISMbZ4/HmYbn8hR5MJp3fUs3gJDp0RBJHCLy0kWfFb
+   PmpVHvyYfE1N22gSoEdaF7yrTUs2RToZ8y6D0pbFm2ul/XUJkjlK4VTUe
+   kXabcAfaTPpw1gIq0F2ASvGS24VEw10cZnLEIhg7QafpW4041icudcG83
+   QuoA/0aWBWOMpyFCstv0J8d1xTA+Zev5XgfWDkN/E6wlwHhNIyucfhbOu
+   y1kp0N5VG0rNcuUNqrXaT8yGapMUQpAV6DylIFrxJBjtGxU7EWkoOEhYw
+   J5XSDFd8hL8UphaPNnA2uAh5tDEwEaebEzQnJL1LEcNm/tCORl//ayowJ
+   g==;
+IronPort-SDR: KlqN0TrhcKzasNUIXCUzEh9KkY9OzUqF66SEO3MaGa9HDX+yuKGvo3Ixtbfu6O5UJTWnSnWHiY
+ hMtZRTbr8J/3E6afAlgAsv2doQZit63hizdn4jc98BpzHyldZ7jfoA0BBCE1DgtRjaaew1EfGM
+ OtkKVX9lo/EoEkPkpX+mOSK2KRtSe9gBLU86zxc9hhTwx76TkVsZeVRDoHYgH+LBJPUTIdu7b8
+ DkMidwazRXIOyglxriwi+SbI3GXjBgeviejBEQVRGFHTJ2TdOIa5aVXXH0yJuIgsjvIitHCt8Y
+ V9U=
 X-IronPort-AV: E=Sophos;i="5.75,386,1589266800"; 
-   d="scan'208";a="20277508"
+   d="scan'208";a="81033874"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Jul 2020 04:56:27 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Jul 2020 04:56:35 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 23 Jul 2020 04:55:45 -0700
+ 15.1.1979.3; Thu, 23 Jul 2020 04:56:35 -0700
 Received: from xasv.mchp-main.com (10.10.115.15) by chn-vm-ex02.mchp-main.com
  (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Thu, 23 Jul 2020 04:55:44 -0700
+ Transport; Thu, 23 Jul 2020 04:55:52 -0700
 From:   Andre Edich <andre.edich@microchip.com>
 To:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
         <steve.glendinning@shawell.net>
 CC:     <Parthiban.Veerasooran@microchip.com>,
         Andre Edich <andre.edich@microchip.com>
-Subject: [PATCH net-next v2 5/6] smsc95xx: use PAL framework read/write functions
-Date:   Thu, 23 Jul 2020 13:55:06 +0200
-Message-ID: <20200723115507.26194-6-andre.edich@microchip.com>
+Subject: [PATCH net-next v2 6/6] smsc95xx: use PHY framework instead of MII library
+Date:   Thu, 23 Jul 2020 13:55:07 +0200
+Message-ID: <20200723115507.26194-7-andre.edich@microchip.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200723115507.26194-1-andre.edich@microchip.com>
 References: <20200723115507.26194-1-andre.edich@microchip.com>
@@ -59,109 +59,222 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use functions phy_read and phy_write instead of smsc95xx_mdio_read and
-smsc95xx_mdio_write respectively.
+Since the PHY framework is used anyway, replace the rest of the calls to
+the MII library, including those from the USB Network driver
+infrastructure, by the calls to the PHY framework.
 
 Signed-off-by: Andre Edich <andre.edich@microchip.com>
 ---
- drivers/net/usb/smsc95xx.c | 43 +++++++++++++++-----------------------
- 1 file changed, 17 insertions(+), 26 deletions(-)
+ drivers/net/usb/smsc95xx.c | 78 +++++++++++++++-----------------------
+ 1 file changed, 30 insertions(+), 48 deletions(-)
 
 diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index 8731724bf2c5..8add7109e661 100644
+index 8add7109e661..7de20c0aad36 100644
 --- a/drivers/net/usb/smsc95xx.c
 +++ b/drivers/net/usb/smsc95xx.c
-@@ -582,22 +582,20 @@ static int smsc95xx_link_reset(struct usbnet *dev)
+@@ -174,10 +174,14 @@ static int __must_check __smsc95xx_phy_wait_not_busy(struct usbnet *dev,
+ 	return -EIO;
+ }
  
- 	if (pdata->internal_phy) {
- 		/* clear interrupt status */
--		ret = smsc95xx_mdio_read(dev->net, mii->phy_id, PHY_INT_SRC);
-+		ret = phy_read(pdata->phydev, PHY_INT_SRC);
- 		if (ret < 0)
- 			return ret;
+-static int __smsc95xx_mdio_read(struct net_device *netdev, int phy_id, int idx,
++static u32 mii_address(u16 op, int phy_id, int idx)
++{
++	return (phy_id & 0x1f) << 11 | (idx & 0x1f) << 6 | op | MII_BUSY_;
++}
++
++static int __smsc95xx_mdio_read(struct usbnet *dev, int phy_id, int idx,
+ 				int in_pm)
+ {
+-	struct usbnet *dev = netdev_priv(netdev);
+ 	u32 val, addr;
+ 	int ret;
  
--		smsc95xx_mdio_write(dev->net, mii->phy_id, PHY_INT_MASK,
--				    PHY_INT_MASK_DEFAULT_);
-+		ret = phy_write(pdata->phydev, PHY_INT_MASK,
-+				PHY_INT_MASK_DEFAULT_);
-+		if (ret < 0)
-+			return ret;
+@@ -191,9 +195,7 @@ static int __smsc95xx_mdio_read(struct net_device *netdev, int phy_id, int idx,
  	}
  
- 	mii_check_media(mii, 1, 1);
- 	mii_ethtool_gset(&dev->mii, &ecmd);
--	lcladv = smsc95xx_mdio_read(dev->net, mii->phy_id, MII_ADVERTISE);
--	rmtadv = smsc95xx_mdio_read(dev->net, mii->phy_id, MII_LPA);
+ 	/* set the address, index & direction (read from PHY) */
+-	phy_id &= dev->mii.phy_id_mask;
+-	idx &= dev->mii.reg_num_mask;
+-	addr = (phy_id << 11) | (idx << 6) | MII_READ_ | MII_BUSY_;
++	addr = mii_address(MII_READ_, phy_id, idx);
+ 	ret = __smsc95xx_write_reg(dev, MII_ADDR, addr, in_pm);
+ 	if (ret < 0) {
+ 		netdev_warn(dev->net, "Error writing MII_ADDR\n");
+@@ -219,10 +221,9 @@ static int __smsc95xx_mdio_read(struct net_device *netdev, int phy_id, int idx,
+ 	return ret;
+ }
+ 
+-static void __smsc95xx_mdio_write(struct net_device *netdev, int phy_id,
++static void __smsc95xx_mdio_write(struct usbnet *dev, int phy_id,
+ 				  int idx, int regval, int in_pm)
+ {
+-	struct usbnet *dev = netdev_priv(netdev);
+ 	u32 val, addr;
+ 	int ret;
+ 
+@@ -243,9 +244,7 @@ static void __smsc95xx_mdio_write(struct net_device *netdev, int phy_id,
+ 	}
+ 
+ 	/* set the address, index & direction (write to PHY) */
+-	phy_id &= dev->mii.phy_id_mask;
+-	idx &= dev->mii.reg_num_mask;
+-	addr = (phy_id << 11) | (idx << 6) | MII_WRITE_ | MII_BUSY_;
++	addr = mii_address(MII_WRITE_, phy_id, idx);
+ 	ret = __smsc95xx_write_reg(dev, MII_ADDR, addr, in_pm);
+ 	if (ret < 0) {
+ 		netdev_warn(dev->net, "Error writing MII_ADDR\n");
+@@ -264,34 +263,23 @@ static void __smsc95xx_mdio_write(struct net_device *netdev, int phy_id,
+ 
+ static int smsc95xx_mdio_read_nopm(struct usbnet *dev, int idx)
+ {
+-	struct mii_if_info *mii = &dev->mii;
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 
+-	return __smsc95xx_mdio_read(dev->net, mii->phy_id, idx, 1);
++	return __smsc95xx_mdio_read(dev, pdata->phydev->mdio.addr, idx, 1);
+ }
+ 
+ static void smsc95xx_mdio_write_nopm(struct usbnet *dev, int idx, int regval)
+ {
+-	struct mii_if_info *mii = &dev->mii;
 -
--	netif_dbg(dev, link, dev->net,
--		  "speed: %u duplex: %d lcladv: %04x rmtadv: %04x\n",
--		  ethtool_cmd_speed(&ecmd), ecmd.duplex, lcladv, rmtadv);
-+	lcladv = phy_read(pdata->phydev, MII_ADVERTISE);
-+	rmtadv = phy_read(pdata->phydev, MII_LPA);
+-	__smsc95xx_mdio_write(dev->net, mii->phy_id, idx, regval, 1);
+-}
+-
+-static int smsc95xx_mdio_read(struct net_device *netdev, int phy_id, int idx)
+-{
+-	return __smsc95xx_mdio_read(netdev, phy_id, idx, 0);
+-}
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 
+-static void smsc95xx_mdio_write(struct net_device *netdev, int phy_id, int idx,
+-				int regval)
+-{
+-	__smsc95xx_mdio_write(netdev, phy_id, idx, regval, 0);
++	__smsc95xx_mdio_write(dev, pdata->phydev->mdio.addr, idx, regval, 1);
+ }
+ 
+ static int smsc95xx_mdiobus_read(struct mii_bus *bus, int phy_id, int idx)
+ {
+ 	struct usbnet *dev = bus->priv;
+ 
+-	return __smsc95xx_mdio_read(dev->net, phy_id, idx, 0);
++	return __smsc95xx_mdio_read(dev, phy_id, idx, 0);
+ }
+ 
+ static int smsc95xx_mdiobus_write(struct mii_bus *bus, int phy_id, int idx,
+@@ -299,7 +287,7 @@ static int smsc95xx_mdiobus_write(struct mii_bus *bus, int phy_id, int idx,
+ {
+ 	struct usbnet *dev = bus->priv;
+ 
+-	__smsc95xx_mdio_write(dev->net, phy_id, idx, regval, 0);
++	__smsc95xx_mdio_write(dev, phy_id, idx, regval, 0);
+ 	return 0;
+ }
+ 
+@@ -570,8 +558,7 @@ static int smsc95xx_phy_update_flowcontrol(struct usbnet *dev, u8 duplex,
+ static int smsc95xx_link_reset(struct usbnet *dev)
+ {
+ 	struct smsc95xx_priv *pdata = dev->driver_priv;
+-	struct mii_if_info *mii = &dev->mii;
+-	struct ethtool_cmd ecmd = { .cmd = ETHTOOL_GSET };
++	struct ethtool_link_ksettings cmd;
+ 	unsigned long flags;
+ 	u16 lcladv, rmtadv;
+ 	int ret;
+@@ -592,13 +579,12 @@ static int smsc95xx_link_reset(struct usbnet *dev)
+ 			return ret;
+ 	}
+ 
+-	mii_check_media(mii, 1, 1);
+-	mii_ethtool_gset(&dev->mii, &ecmd);
++	phy_ethtool_ksettings_get(pdata->phydev, &cmd);
+ 	lcladv = phy_read(pdata->phydev, MII_ADVERTISE);
+ 	rmtadv = phy_read(pdata->phydev, MII_LPA);
  
  	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
- 	if (ecmd.duplex != DUPLEX_FULL) {
-@@ -761,10 +759,11 @@ static int smsc95xx_ethtool_set_wol(struct net_device *net,
- static int get_mdix_status(struct net_device *net)
- {
- 	struct usbnet *dev = netdev_priv(net);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	u32 val;
- 	int buf;
+-	if (ecmd.duplex != DUPLEX_FULL) {
++	if (cmd.base.duplex != DUPLEX_FULL) {
+ 		pdata->mac_cr &= ~MAC_CR_FDPX_;
+ 		pdata->mac_cr |= MAC_CR_RCVOWN_;
+ 	} else {
+@@ -611,7 +597,8 @@ static int smsc95xx_link_reset(struct usbnet *dev)
+ 	if (ret < 0)
+ 		return ret;
  
--	buf = smsc95xx_mdio_read(dev->net, dev->mii.phy_id, SPECIAL_CTRL_STS);
-+	buf = phy_read(pdata->phydev, SPECIAL_CTRL_STS);
- 	if (buf & SPECIAL_CTRL_STS_OVRRD_AMDIX_) {
- 		if (buf & SPECIAL_CTRL_STS_AMDIX_ENABLE_)
- 			return ETH_TP_MDI_AUTO;
-@@ -790,39 +789,31 @@ static void set_mdix_status(struct net_device *net, __u8 mdix_ctrl)
- 	    (pdata->chip_id == ID_REV_CHIP_ID_89530_) ||
- 	    (pdata->chip_id == ID_REV_CHIP_ID_9730_)) {
- 		/* Extend Manual AutoMDIX timer for 9500A/9500Ai */
--		buf = smsc95xx_mdio_read(dev->net, dev->mii.phy_id,
--					 PHY_EDPD_CONFIG);
-+		buf = phy_read(pdata->phydev, PHY_EDPD_CONFIG);
- 		buf |= PHY_EDPD_CONFIG_EXT_CROSSOVER_;
--		smsc95xx_mdio_write(dev->net, dev->mii.phy_id,
--				    PHY_EDPD_CONFIG, buf);
-+		phy_write(pdata->phydev, PHY_EDPD_CONFIG, buf);
- 	}
+-	ret = smsc95xx_phy_update_flowcontrol(dev, ecmd.duplex, lcladv, rmtadv);
++	ret = smsc95xx_phy_update_flowcontrol(dev, cmd.base.duplex, lcladv,
++					      rmtadv);
+ 	if (ret < 0)
+ 		netdev_warn(dev->net, "Error updating PHY flow control\n");
  
- 	if (mdix_ctrl == ETH_TP_MDI) {
--		buf = smsc95xx_mdio_read(dev->net, dev->mii.phy_id,
--					 SPECIAL_CTRL_STS);
-+		buf = phy_read(pdata->phydev, SPECIAL_CTRL_STS);
- 		buf |= SPECIAL_CTRL_STS_OVRRD_AMDIX_;
- 		buf &= ~(SPECIAL_CTRL_STS_AMDIX_ENABLE_ |
- 			 SPECIAL_CTRL_STS_AMDIX_STATE_);
--		smsc95xx_mdio_write(dev->net, dev->mii.phy_id,
--				    SPECIAL_CTRL_STS, buf);
-+		phy_write(pdata->phydev, SPECIAL_CTRL_STS, buf);
- 	} else if (mdix_ctrl == ETH_TP_MDI_X) {
--		buf = smsc95xx_mdio_read(dev->net, dev->mii.phy_id,
--					 SPECIAL_CTRL_STS);
-+		buf = phy_read(pdata->phydev, SPECIAL_CTRL_STS);
- 		buf |= SPECIAL_CTRL_STS_OVRRD_AMDIX_;
- 		buf &= ~(SPECIAL_CTRL_STS_AMDIX_ENABLE_ |
- 			 SPECIAL_CTRL_STS_AMDIX_STATE_);
- 		buf |= SPECIAL_CTRL_STS_AMDIX_STATE_;
--		smsc95xx_mdio_write(dev->net, dev->mii.phy_id,
--				    SPECIAL_CTRL_STS, buf);
-+		phy_write(pdata->phydev, SPECIAL_CTRL_STS, buf);
- 	} else if (mdix_ctrl == ETH_TP_MDI_AUTO) {
--		buf = smsc95xx_mdio_read(dev->net, dev->mii.phy_id,
--					 SPECIAL_CTRL_STS);
-+		buf = phy_read(pdata->phydev, SPECIAL_CTRL_STS);
- 		buf &= ~SPECIAL_CTRL_STS_OVRRD_AMDIX_;
- 		buf &= ~(SPECIAL_CTRL_STS_AMDIX_ENABLE_ |
- 			 SPECIAL_CTRL_STS_AMDIX_STATE_);
- 		buf |= SPECIAL_CTRL_STS_AMDIX_ENABLE_;
--		smsc95xx_mdio_write(dev->net, dev->mii.phy_id,
--				    SPECIAL_CTRL_STS, buf);
-+		phy_write(pdata->phydev, SPECIAL_CTRL_STS, buf);
- 	}
- 	pdata->mdix_ctrl = mdix_ctrl;
+@@ -825,7 +812,7 @@ static int smsc95xx_get_link_ksettings(struct net_device *net,
+ 	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	int retval;
+ 
+-	retval = usbnet_get_link_ksettings(net, cmd);
++	retval = phy_ethtool_get_link_ksettings(net, cmd);
+ 	if (pdata->internal_phy) {
+ 		cmd->base.eth_tp_mdix = pdata->mdix_ctrl;
+ 		cmd->base.eth_tp_mdix_ctrl = pdata->mdix_ctrl;
+@@ -842,13 +829,18 @@ static int smsc95xx_set_link_ksettings(struct net_device *net,
+ 
+ 	if (pdata->mdix_ctrl != mdix_ctrl && pdata->internal_phy)
+ 		set_mdix_status(net, mdix_ctrl);
++	return phy_ethtool_set_link_ksettings(net, cmd);
++}
+ 
+-	return usbnet_set_link_ksettings(net, cmd);
++static u32 smsc95xx_get_link(struct net_device *net)
++{
++	phy_read_status(net->phydev);
++	return net->phydev->link;
  }
+ 
+ static const struct ethtool_ops smsc95xx_ethtool_ops = {
+-	.get_link	= usbnet_get_link,
+-	.nway_reset	= usbnet_nway_reset,
++	.get_link	= smsc95xx_get_link,
++	.nway_reset	= phy_ethtool_nway_reset,
+ 	.get_drvinfo	= usbnet_get_drvinfo,
+ 	.get_msglevel	= usbnet_get_msglevel,
+ 	.set_msglevel	= usbnet_set_msglevel,
+@@ -866,12 +858,10 @@ static const struct ethtool_ops smsc95xx_ethtool_ops = {
+ 
+ static int smsc95xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
+ {
+-	struct usbnet *dev = netdev_priv(netdev);
+-
+ 	if (!netif_running(netdev))
+ 		return -EINVAL;
+ 
+-	return generic_mii_ioctl(&dev->mii, if_mii(rq), cmd, NULL);
++	return phy_mii_ioctl(netdev->phydev, rq, cmd);
+ }
+ 
+ static void smsc95xx_init_mac_address(struct usbnet *dev)
+@@ -1233,9 +1223,6 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	pdata->mdiobus->name = "smsc95xx-mdiobus";
+ 	pdata->mdiobus->parent = &dev->udev->dev;
+ 
+-	dev->mii.phy_id_mask = 0x1f;
+-	dev->mii.reg_num_mask = 0x1f;
+-
+ 	snprintf(pdata->mdiobus->id, ARRAY_SIZE(pdata->mdiobus->id),
+ 		 "usb-%03d:%03d", dev->udev->bus->busnum, dev->udev->devnum);
+ 
+@@ -1252,11 +1239,6 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
+ 		goto unregister_mdio;
+ 	}
+ 
+-	dev->mii.dev = dev->net;
+-	dev->mii.mdio_read = smsc95xx_mdio_read;
+-	dev->mii.mdio_write = smsc95xx_mdio_write;
+-	dev->mii.phy_id = pdata->phydev->mdio.addr;
+-
+ 	/* detect device revision as different features may be available */
+ 	ret = smsc95xx_read_reg(dev, ID_REV, &val);
+ 	if (ret < 0)
 -- 
 2.27.0
 
