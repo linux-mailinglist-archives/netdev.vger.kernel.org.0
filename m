@@ -2,90 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3A9322AD04
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 12:54:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C83A22AD27
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:03:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728332AbgGWKyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 06:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726675AbgGWKyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 06:54:23 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE4AC0619DC
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 03:54:23 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595501661;
+        id S1728306AbgGWLDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 07:03:03 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:20904 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726867AbgGWLDD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 07:03:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1595502182;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ucYQ37yr4qowI1FdnRoqWDH/etFONX4Ezpyme+d6JPo=;
-        b=MJYswWbQZYvBW5Wglin6D8nGB7tYKABtf7N9HNlcKoyNrCfvatBENp4LdS5IzHzrKCD2OJ
-        syJm0+mFiyFoN2ui90gNl93fj8nlyicesx43dqdPNRo6PhLw/yNWbNC7NPbhftjFTHflHv
-        G1W3I5QqZuIqlOc7AQ7YdH7w04UC0KnFirciTgB7JTp+jM/8fc5X9dq10tKqXF1IBpPDog
-        OC0bs2QNI8XwU3kwHHouBm83PDkZhytV1vg+MF5WiVq1z3npXRMoS/xkqzpUWqurOcZJ8u
-        9+hI2zf8nvGx5IdDF19FM6htExcdOeAqFYFGgJ6rpjhqxEsZP43FXvY0qOjn6A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595501661;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ucYQ37yr4qowI1FdnRoqWDH/etFONX4Ezpyme+d6JPo=;
-        b=v4GNYTJwJ7v+bp16Ipkmg/K2853v8eElzzZfWWvmb5iJNIpFsDqXeHqWA6lK8gzdOU5O/f
-        LHgbxvAVjPVVIpDQ==
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] ptp: Add generic ptp v2 header parsing function
-In-Reply-To: <20200723074946.14253-2-kurt@linutronix.de>
-References: <20200723074946.14253-1-kurt@linutronix.de> <20200723074946.14253-2-kurt@linutronix.de>
-Date:   Thu, 23 Jul 2020 12:54:18 +0200
-Message-ID: <87a6zq7b8l.fsf@kurt>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=rN7mBZqwvGKQlHN3zcLFKxzADlvKqBmKSAh4b3bGUkU=;
+        b=cQShG9YLVK4Qsp2o7/Wc7lQSEYkjhTEWXJ60FnJR86Q6VBGeUKzcEd4W5NC3+L6BeqHBjC
+        j3sGg6OOOjerbvwulZEgSeirjuwsrhWFhUXQnkxlRP9eX1TNacaPqZmZejPeRZV+z+6cH6
+        fl1RVRhwW8sr836qC7tsFPIF1RcgA1w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-350-RQ4-Q6hVNn2928u31scp-w-1; Thu, 23 Jul 2020 07:03:00 -0400
+X-MC-Unique: RQ4-Q6hVNn2928u31scp-w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E797C57;
+        Thu, 23 Jul 2020 11:02:58 +0000 (UTC)
+Received: from linux.fritz.box.com (ovpn-113-9.ams2.redhat.com [10.36.113.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D52088BED5;
+        Thu, 23 Jul 2020 11:02:57 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>, mptcp@lists.01.org
+Subject: [PATCH net-next 0/8] mptcp: non backup subflows pre-reqs
+Date:   Thu, 23 Jul 2020 13:02:28 +0200
+Message-Id: <cover.1595431326.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+This series contains a bunch of MPTCP improvements loosely related to
+concurrent subflows xmit usage, currently under development.
 
-On Thu Jul 23 2020, Kurt Kanzenbach wrote:
-> +static struct ptp_header *ptp_parse_header(struct sk_buff *skb,
-> +					   unsigned int type)
-> +{
-> +	return NULL;
-> +}
->  #endif
+The first 3 patches are actually bugfixes for issues that will become apparent
+as soon as we will enable the above feature.
 
-That should be static inline ofc.
+The later patches improve the handling of incoming additional subflows,
+improving significantly the performances in stress tests based on a high new
+connection rate.
 
-Thanks,
-Kurt
+Paolo Abeni (8):
+  subflow: always init 'rel_write_seq'
+  mptcp: avoid data corruption on reinsert
+  mptcp: mark as fallback even early ones
+  mptcp: explicitly track the fully established status
+  mptcp: cleanup subflow_finish_connect()
+  subflow: explicitly check for plain tcp rsk
+  subflow: use rsk_ops->send_reset()
+  subflow: introduce and use mptcp_can_accept_new_subflow()
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+ net/mptcp/options.c  |  5 +--
+ net/mptcp/protocol.c | 23 ++++++++---
+ net/mptcp/protocol.h |  8 ++++
+ net/mptcp/subflow.c  | 91 ++++++++++++++++++++++++++------------------
+ 4 files changed, 81 insertions(+), 46 deletions(-)
 
------BEGIN PGP SIGNATURE-----
+-- 
+2.26.2
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8ZbFoACgkQeSpbgcuY
-8KYANBAAz8gFakCbFDbC0xggVDV/6WPVQdFeIUuMnJKgdX2ASP3XagYQQF4MTOsL
-wn6sasyZh2Tlu7TVa7MnpiMTzSKYIsxauACwPDYkJPL2iTBDUxju40Yz25gHD1Fz
-Y503w0vLlMM0ucJvTIKHawsHP9w9fTIfs6xjnsodsz0rVzgc7ZS7TfO01k2GiXl2
-BEdctR0/YPlHfrHbRuiMWRg9iN8uo4ULvFkTOI+J3x3HBf6DSON2TDr0+HzkvYC+
-yoH07c9tVGR0CeWi7OUmLfpClR9LVCdnQK5965KFPK1tsTGc2i/NXXaP0/zkihcU
-lB539SH20SWrG8mMGoqkx35l/wrr4Qnb1G0aII+XxgTbOs8T3EMYoLlIv8JojUFp
-wTf+iA8hmHVde++mmomoE+1s2fFaqw8NTi+AATMsvbbeKLq/YXlLAJnZuHoLGqie
-EbBS6S5spBlZsUy0zGnBgTuGf0ZxASWZV/MId9P5Ignre5nWY855y3lU2LdxdClG
-1tzY/MKZJCOUiKu5vsqxokAi9VG+KT0MX4hQvt4XGMj8ZyixYbzPlPx6VCqk+Rin
-gFYz8nb8LK4AOQKqU4JCBb7yk2IroGYNFhVODkZzzCNLG6hwu8ku54HBt9N5Qheg
-ZxCAOHcSkX1G0BAKPYx/KbP0CahL8Sp9DIP6dMN6VCy74rTPdwo=
-=1Uwa
------END PGP SIGNATURE-----
---=-=-=--
