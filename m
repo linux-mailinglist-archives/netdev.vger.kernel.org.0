@@ -2,74 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 009A122B851
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:07:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 248DC22B85C
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 23:09:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726334AbgGWVHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 17:07:09 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:40115 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726135AbgGWVHJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 17:07:09 -0400
-Received: by mail-il1-f198.google.com with SMTP id z16so4354512ill.7
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 14:07:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=xSJ7/AO/6lFKOpWNdlJkZ7IuUzYOAbFTfGyilIxrJTA=;
-        b=bABCFiijSO2WjBZObsChlfwZC980+XhIEuESldQsUi5tb7k/HXQjrMmgbhWYO6qCPB
-         LBCWPDU7X9rCgjtMAewEYka/t0Y76pZdE4mH3eH05Xyj03a0Dyez5egFNm/NSdU1qbci
-         L2i9f6ACEQAirPMSZimAc8ZRdU44+O1oyHTEuLQ/3+F73hCUGutNPpU19ZnukF0ri7mm
-         OTn3LClqSI5FJkrNJE/fqpsr9ynhDI1H6NH9LH4pSKJ3JFnD1iNGh3rv0DvC89V4+Iif
-         MAuFtj/R8PCvg0Dp3C10YxqeVIHUnBaLbE8HH0GyZg8qDAJ7XDu/Cu/oRq//Ia6W0NoX
-         4UHA==
-X-Gm-Message-State: AOAM533r43kXwT2M6mPOBL8hILl87S8byCmWqQ42ysAkhLQ1t0vjiaAR
-        F3l0TKHujTksgkC+QWi8gaDtI/ncXsEBERlm+UuHw0qIUFt/
-X-Google-Smtp-Source: ABdhPJxYUTSFYLbJirO5SmxzloqaeYADQ3DxhbFAabRldIzWkPHkVFQjpT7AWxxHG1jFZHTks11qkmQ3pLU2rwcKL+yfzctTrFuc
+        id S1726437AbgGWVJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 17:09:20 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:36805 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726258AbgGWVJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 17:09:19 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 574F722F2E;
+        Thu, 23 Jul 2020 23:09:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1595538556;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bEcb6vSDQsnzOcchwltvx/jb9b32oo0bZooPAH9Llos=;
+        b=ui0IFJsnI3HhMAiLGNOtmSZ/mN1rN4nSr7rj1Ec3xxEJLSyNbdwfK6gvVUfYG3Vj1XABl6
+        gmsLvfbJXY3Sx6o3SA/+RTOxESV0i/bU5gbF8KZW1U9HJlImepJN5EqxPW3c7JlWM6Ww5a
+        pzijJaLr3INbI43QRGodgp64OLCIu6k=
 MIME-Version: 1.0
-X-Received: by 2002:a6b:4f19:: with SMTP id d25mr219660iob.190.1595538428817;
- Thu, 23 Jul 2020 14:07:08 -0700 (PDT)
-Date:   Thu, 23 Jul 2020 14:07:08 -0700
-In-Reply-To: <000000000000ba65ba05a2fd48d9@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000467ece05ab223d81@google.com>
-Subject: Re: kernel BUG at net/core/dev.c:LINE! (3)
-From:   syzbot <syzbot+af23e7f3e0a7e10c8b67@syzkaller.appspotmail.com>
-To:     andriy.shevchenko@linux.intel.com, andy@greyhouse.net,
-        andy@infradead.org, arnd@arndb.de, davem@davemloft.net,
-        dvhart@infradead.org, gregkh@linuxfoundation.org,
-        j.vosburgh@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        peterz@infradead.org, platform-driver-x86@vger.kernel.org,
-        skunberg.kelsey@gmail.com, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, vfalico@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 23 Jul 2020 23:09:15 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org,
+        dl-linux-imx <linux-imx@nxp.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
+In-Reply-To: <e38cf40b-ead3-81de-0be7-18cca5ca1a0c@pengutronix.de>
+References: <20200416093126.15242-1-qiangqing.zhang@nxp.com>
+ <20200416093126.15242-2-qiangqing.zhang@nxp.com>
+ <DB8PR04MB6795F7E28A9964A121A06140E6D80@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <d5579883c7e9ab3489ec08a73c407982@walle.cc>
+ <39b5d77bda519c4d836f44a554890bae@walle.cc>
+ <e38cf40b-ead3-81de-0be7-18cca5ca1a0c@pengutronix.de>
+User-Agent: Roundcube Webmail/1.4.7
+Message-ID: <332a98a376e4becf9b10910138034be4@walle.cc>
+X-Sender: michael@walle.cc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+Am 2020-06-25 14:56, schrieb Marc Kleine-Budde:
+> On 6/25/20 2:37 PM, Michael Walle wrote:
+>> Am 2020-06-02 12:15, schrieb Michael Walle:
+>>> Hi Marc,
+>>> 
+>>> Am 2020-04-16 11:41, schrieb Joakim Zhang:
+>>>> Hi Marc,
+>>>> 
+>>>> How about FlexCAN FD patch set, it is pending for a long time. Many
+>>>> work would base on it, we are happy to see it in upstream mainline
+>>>> ASAP.
+>>>> 
+>>>> Michael Walle also gives out the test-by tag:
+>>>> 	Tested-by: Michael Walle <michael@walle.cc>
+>>> 
+>>> There seems to be no activity for months here. Any reason for that? 
+>>> Is
+>>> there anything we can do to speed things up?
+>> 
+>> ping.. There are no replies or anything. Sorry but this is really
+>> annoying and frustrating.
+>> 
+>> Marc, is there anything wrong with the flexcan patches?
+> 
+> I've cleaned up the patches a bit, can you test this branch:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/log/?h=flexcan
 
-commit 5a707af10da95a53a55011a612e69063491020d4
-Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Date:   Fri Apr 21 13:36:06 2017 +0000
+Ping. Could we please try to get this into next soon?
 
-    platform/x86: wmi: Describe function parameters
+See also
+https://lore.kernel.org/netdev/20200629181809.25338-1-michael@walle.cc/
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14a9ad40900000
-start commit:   994e99a9 Merge tag 'platform-drivers-x86-v5.8-2' of git://..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=16a9ad40900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=12a9ad40900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e944500a36bc4d55
-dashboard link: https://syzkaller.appspot.com/bug?extid=af23e7f3e0a7e10c8b67
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12ea63cf100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14afdb9f100000
-
-Reported-by: syzbot+af23e7f3e0a7e10c8b67@syzkaller.appspotmail.com
-Fixes: 5a707af10da9 ("platform/x86: wmi: Describe function parameters")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+-michael
