@@ -2,97 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BCC122AD68
-	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:16:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E03622ADBE
+	for <lists+netdev@lfdr.de>; Thu, 23 Jul 2020 13:29:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727859AbgGWLQY convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Jul 2020 07:16:24 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:24293 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728319AbgGWLQX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 07:16:23 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mtapsc-1-ViGpBrHmNJOPXyJW7yMjBg-2; Thu, 23 Jul 2020 12:16:19 +0100
-X-MC-Unique: ViGpBrHmNJOPXyJW7yMjBg-2
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 23 Jul 2020 12:16:16 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 23 Jul 2020 12:16:16 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Christoph Hellwig' <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "Eric Dumazet" <edumazet@google.com>
-CC:     "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "linux-hams@vger.kernel.org" <linux-hams@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
-        "linux-decnet-user@lists.sourceforge.net" 
-        <linux-decnet-user@lists.sourceforge.net>,
-        "linux-wpan@vger.kernel.org" <linux-wpan@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "mptcp@lists.01.org" <mptcp@lists.01.org>,
-        "lvs-devel@vger.kernel.org" <lvs-devel@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>
-Subject: RE: [PATCH 13/26] bpfilter: switch bpfilter_ip_set_sockopt to
- sockptr_t
-Thread-Topic: [PATCH 13/26] bpfilter: switch bpfilter_ip_set_sockopt to
- sockptr_t
-Thread-Index: AQHWYOJf8qVR0zowd02v8gaMoEO9+6kVA2RQ
-Date:   Thu, 23 Jul 2020 11:16:16 +0000
-Message-ID: <621e193e4af74d8198ed87d6a9ce8260@AcuMS.aculab.com>
-References: <20200723060908.50081-1-hch@lst.de>
- <20200723060908.50081-14-hch@lst.de>
-In-Reply-To: <20200723060908.50081-14-hch@lst.de>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1728635AbgGWL27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 07:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728110AbgGWL27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 07:28:59 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3766FC0619DC
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 04:28:59 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id a1so5965472ejg.12
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 04:28:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=nnu0NRmUPcKn4fQa0wev1nnzODNwOYJZaD0Q5nkQ7Z4=;
+        b=gfZ6PPtsLVzQNXU2S6KCU0rnhFfCd0ZJLwurMW3CfRqnID+9B+SXoQ4/CjuAgrxOpt
+         dSIQ2A/j2w57u0Ke+3W7duIOFkcTTmqTeHcyEUSOK4sqxnS2brAOPHbvNllq3HcVUT7n
+         1Dc9ytbxDy+T0jjOuyo9I/LxivHfhOyGBADHTJn/EtxUTO9WDEwHrXAZ0eJv2j4SjMuf
+         lt/AlQZUagbz6XyI87syijk7XqeceZVCodl839xpWYry507jw4eBwMdZiOITjX6heb/c
+         oDmiy4ghgBlDCiwqRrNgXBRCGWoz0/6mS6W7mMeSsKTnoVT+2KGgnwssrPpoOCDAEXWk
+         TWLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=nnu0NRmUPcKn4fQa0wev1nnzODNwOYJZaD0Q5nkQ7Z4=;
+        b=WG/XZKFVy24AFqy3pdBKKw/fpFNwtAToOneU5JWohUsSTtfOQLxaYNs3xZDdutWVGU
+         RejmSJJoCUKQWnlAJulSec6P1dB44AKUyAxP71j8uaynASN6o4EwGTHJAvxkCo+uBRSD
+         yJ6vAg6kp326wdY8zrBlJ3zkGrG9dwPRP6WhcZQ8TogI5/HEnI9Jkr+26HLQUlC/YC5T
+         H7scoxermRjNFuaI91yce79rDhWfVg5xMIvkHXO2HdZMqyG0qvel8n9ukSlFf720n9RK
+         wXTZOcZb7Vzh9cKq4KesiPQ6ykpjm/touk1NuCiRqNJk9o4zhvgNSTb6UOciTMWIq8jb
+         Qbag==
+X-Gm-Message-State: AOAM532J+vd/gNFFb5DVLF56lmEAPtZ8j73BeEAbAgRbq5tPRl/mH1DM
+        n48zrqOq4x/A2jL4c0PKixXU4AH+nUvUffLDOLM=
+X-Google-Smtp-Source: ABdhPJyL5+4pR+EkeSeBEcNT6CSVNhu2OOhSfXy9mK5W424hXr5wN92+KdoDqmvRnUhU+kyBto4w8u4KffTFZcmpKrk=
+X-Received: by 2002:a17:906:dbf4:: with SMTP id yd20mr1105201ejb.369.1595503737970;
+ Thu, 23 Jul 2020 04:28:57 -0700 (PDT)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Received: by 2002:a17:906:16c9:0:0:0:0 with HTTP; Thu, 23 Jul 2020 04:28:57
+ -0700 (PDT)
+Reply-To: web.1nfo@yandex.com
+From:   "@Barrister Muhammed" <unupdatry@gmail.com>
+Date:   Thu, 23 Jul 2020 13:28:57 +0200
+Message-ID: <CA+43gu6L-tZD+gMdSihDqA5NMGvWkaja2OsX=VfomnqR1qJCtQ@mail.gmail.com>
+Subject: =?UTF-8?B?TmFsw6loYXbDoSB6cHLDoXZhLA==?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christoph Hellwig
-> Sent: 23 July 2020 07:09
-> 
-> This is mostly to prepare for cleaning up the callers, as bpfilter by
-> design can't handle kernel pointers.
-
-You've failed to fix the sense of the above...
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+TmFsw6loYXbDoSB6cHLDoXZhLA0KDQpKYWsgb2JlY27Emz8gRG91ZsOhbSwgxb5lIHNlIHRhdG8g
+enByw6F2YSBzIHbDoW1pIGRvYsWZZSBzZXRrw6F2w6EuDQpOZXphcG9tZcWIdGUgcHJvc8OtbSB0
+dXRvIHpwcsOhdnUgbmEgcm96ZMOtbCBvZCBkxZnDrXbEm2rFocOtY2gsIHByb3Rvxb5lIHbDocWh
+DQpkxJtkaWNrw70gZm9uZCB2ZSB2w73FoWkgOSwyIG1pbGlvbnUgVVNEIG55bsOtIG9kaGFsdWpl
+IHZhxaFpIG9rYW3Fvml0b3UNCnBveml0aXZuw60gb2Rwb3bEm8SPLiBWeXrDvXbDoW0gdsOhcyB2
+xaFhaywgYWJ5c3RlIGxhc2thdsSbIHDFmWVkYWxpIHN2w6kgY2Vsw6kNCmptw6lubzogWmVtxJs6
+IEFkcmVzYTogUG92b2zDoW7DrTogUm9kaW5uw70gc3RhdjogUG9obGF2w606IFbEm2s6IFNvdWty
+b23DqQ0KxI3DrXNsbzoga29uZcSNbsSbLCBQbGF0bsOhIGtvcGllIGlkZW50aXR5Og0KDQpTIMO6
+Y3RvdSBWw6HFoS4NCkJhcnJpc3RlciBNdWhhbW1lZCBSYWhtYW4gQWxpIChFc3EpLg0K
