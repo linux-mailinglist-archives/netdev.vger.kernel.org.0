@@ -2,82 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2EA222BB23
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 02:50:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4A3A22BB26
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 02:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728395AbgGXAuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 20:50:37 -0400
-Received: from helcar.hmeau.com ([216.24.177.18]:37630 "EHLO fornost.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727783AbgGXAug (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Jul 2020 20:50:36 -0400
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
-        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1jyluo-0001bl-IO; Fri, 24 Jul 2020 10:50:23 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 24 Jul 2020 10:50:22 +1000
-Date:   Fri, 24 Jul 2020 10:50:22 +1000
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     wenxu <wenxu@ucloud.cn>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH] flow_offload: Move rhashtable inclusion to the source file
-Message-ID: <20200724005022.GA29161@gondor.apana.org.au>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727955AbgGXAvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 20:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726791AbgGXAvb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 20:51:31 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B033BC0619D3
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 17:51:31 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2C79011DB3159;
+        Thu, 23 Jul 2020 17:34:46 -0700 (PDT)
+Date:   Thu, 23 Jul 2020 17:51:25 -0700 (PDT)
+Message-Id: <20200723.175125.1061358245366802716.davem@davemloft.net>
+To:     dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, andrea.mayer@uniroma2.it,
+        rdunlap@infradead.org
+Subject: Re: [PATCH net] vrf: Handle CONFIG_SYSCTL not set
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200723232309.48952-1-dsahern@kernel.org>
+References: <20200723232309.48952-1-dsahern@kernel.org>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 23 Jul 2020 17:34:46 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I noticed that touching linux/rhashtable.h causes lib/vsprintf.c to
-be rebuilt.  This dependency came through a bogus inclusion in the
-file net/flow_offload.h.  This patch moves it to the right place.
+From: David Ahern <dsahern@kernel.org>
+Date: Thu, 23 Jul 2020 17:23:09 -0600
 
-This patch also removes a lingering rhashtable inclusion in cls_api
-created by the same commit.
+> Randy reported compile failure when CONFIG_SYSCTL is not set/enabled:
+> 
+> ERROR: modpost: "sysctl_vals" [drivers/net/vrf.ko] undefined!
+> 
+> Fix by splitting out the sysctl init and cleanup into helpers that
+> can be set to do nothing when CONFIG_SYSCTL is disabled. In addition,
+> move vrf_strict_mode and vrf_strict_mode_change to above
+> vrf_shared_table_handler (code move only) and wrap all of it
+> in the ifdef CONFIG_SYSCTL.
+> 
+> Update the strict mode tests to check for the existence of the
+> /proc/sys entry.
+> 
+> Fixes: 33306f1aaf82 ("vrf: add sysctl parameter for strict mode")
+> Cc: Andrea Mayer <andrea.mayer@uniroma2.it>
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Signed-off-by: David Ahern <dsahern@kernel.org>
 
-Fixes: 4e481908c51b ("flow_offload: move tc indirect block to...")
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index f2c8311a0433..1075369d21d3 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -5,7 +5,6 @@
- #include <linux/list.h>
- #include <linux/netlink.h>
- #include <net/flow_dissector.h>
--#include <linux/rhashtable.h>
- 
- struct flow_match {
- 	struct flow_dissector	*dissector;
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index 0cfc35e6be28..e88320c17665 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -4,6 +4,7 @@
- #include <net/flow_offload.h>
- #include <linux/rtnetlink.h>
- #include <linux/mutex.h>
-+#include <linux/rhashtable.h>
- 
- struct flow_rule *flow_rule_alloc(unsigned int num_actions)
- {
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index a00a203b2ef5..caa254ece49f 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -20,7 +20,6 @@
- #include <linux/kmod.h>
- #include <linux/slab.h>
- #include <linux/idr.h>
--#include <linux/rhashtable.h>
- #include <linux/jhash.h>
- #include <linux/rculist.h>
- #include <net/net_namespace.h>
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Applied to net-next, thanks David.
