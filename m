@@ -2,123 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63AB222D173
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 23:45:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A34B322D179
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 23:47:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726711AbgGXVpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 17:45:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59154 "EHLO
+        id S1726801AbgGXVrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 17:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726593AbgGXVpX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 17:45:23 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA8BC0619D3
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 14:45:23 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id i138so2502209ild.9
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 14:45:23 -0700 (PDT)
+        with ESMTP id S1726591AbgGXVrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 17:47:32 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6CEC0619D3
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 14:47:31 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id v18so3032362ejb.0
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 14:47:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=android.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=YZGD4OodDleZ/Yxr9/TUm5yXUoLz2XAGYdSqw9Im1hk=;
-        b=D9i2ZHiThHuwK+qViCHANccMkvriE1UbajxhaLuXoQgrdd+KHecfVmrhJ3gXfsvAvF
-         430N1y4dm8jwgKy5wrm/GEvNNsATIIk4hxos7joFCASijHp6QKQG9C8DedjfutZdarlZ
-         SsaCDprLjV4TdHa/KUr9cymgj2oFF876LhE7f9jjHtFyt3sVvTynypwoA0GfHVV+KX4c
-         l7SZZzp1DKcjiwGGjDYpGWMj8sMq7g1DYck0mVjftTGDkvu8dDjhmzF1BYxMlHdKt7/f
-         4oQplz8JyWNErMpl+iMiYko/iT11WnrYzab7nyPoGN9dtishcFDzDrotW+dGrR/qFTce
-         BzNw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RiQE4DBnFE5++miAG59HLKGw+ZeKXwPzcd4r1fRSRpM=;
+        b=Jqwn06XPvBxMAKyq8t7qlTl/KN1JOKX+96ZjkuEo4Dh8zl3Vcz/DfIQXJWIdtA0yix
+         Hn+bhzaU5V9360tWocb5j66gxnAUx78PDxyNxE/CKsJfEbKXQAf6bRlTVYZBAWQfJprn
+         qZ33QIqe5jmtUPG9K90kiDogQrHu+PMDwFhNAoWNWZ1M/8BHAVpNGMfOo8XW2BLOFLGx
+         sN1xg7FABxTehoSutIHSKhY8wLB0dZk4wm11zNFwXJreatPl7YYXDBtFx/RCxaLiPqXm
+         xmUQS0mmB/T9pndHxxp0mp5PDnlC7GwP37BkhX386iC/zdrLypWIILblElA9qQNFkg5k
+         JfgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=YZGD4OodDleZ/Yxr9/TUm5yXUoLz2XAGYdSqw9Im1hk=;
-        b=rDKTVU/4MlTAEZDzkW9HFIS/64LyY7zSUA7B46GYM4uMyGHuRHzy6u3pT42F15KAU9
-         j2ZpEaC5zyBt7x2gk1uKLG8OMuLmscjYWU0mFrnbe6vMzliV1anfWf2gHdqZYHapCcMg
-         AwIW9LkTVejEWZvfuhoUeeeldpJxHtGVd3ALxxSX41toagS+TLsdMd5AUGoq0OT5W/UT
-         /GCR9w9w2iFRqDDpoZLJeKT5IfDVWVIeDxAILhDOQwaezuzKtL3ng83S+RNQTzii4R+b
-         XM6RTDOUM0iH2YPeJv/tBCuMuaj1LasRpD9Zw9X49rXoVtnK+j+Rxt35jB38JG+KrLRo
-         XL7A==
-X-Gm-Message-State: AOAM5321JzTsn7QFutg03EMZyG8TmHZsI26jxs6Y2KFpYWXsGZ8JrjjD
-        QXvPAK/LnLX4X/rxOyTNURq88w==
-X-Google-Smtp-Source: ABdhPJwGzfbMpQm1GWIUAQwFmvZbNFYqEvFeTXGKC+Oi6qy3/2yXnVqOXVeJrag63xkz9ibbOkLlxw==
-X-Received: by 2002:a92:c792:: with SMTP id c18mr12541365ilk.223.1595627121666;
-        Fri, 24 Jul 2020 14:45:21 -0700 (PDT)
-Received: from nebulus.mtv.corp.google.com ([2620:15c:211:0:4a0f:cfff:fe35:d61b])
-        by smtp.googlemail.com with ESMTPSA id f206sm3866369ilh.75.2020.07.24.14.45.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jul 2020 14:45:21 -0700 (PDT)
-Subject: Re: [PATCH] netlink: add buffer boundary checking
-To:     Jacob Keller <jacob.e.keller@intel.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        linux-kernel@vger.kernel.org
-Cc:     kernel-team@android.com, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Thomas Graf <tgraf@suug.ch>
-References: <20200723182136.2550163-1-salyzyn@android.com>
- <09cd1829-8e41-bef5-ba5e-1c446c166778@gmail.com>
- <8bd7695c-0012-83e9-8a5a-94a40d91d6f6@intel.com>
-From:   Mark Salyzyn <salyzyn@android.com>
-Message-ID: <e23f7bec-7675-20f7-8ec9-822c6ac3339f@android.com>
-Date:   Fri, 24 Jul 2020 14:45:20 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RiQE4DBnFE5++miAG59HLKGw+ZeKXwPzcd4r1fRSRpM=;
+        b=pBajmkmAE53yAEJd14eWU44nKum4OH+VugcDYtQSZVkbJWuemGBMHMhwAsrHXJlguc
+         c6Gj+usTj+1xdjzKu/Pof8MUqKC6XXclSOTi+LaWCfifFz5yMzIw/g6y6j0LbKRY6Mlb
+         dTK69N0VPWQykY+QXZJq1nZX0MRDt8tdzheo6mZKwQ8jWpyYVmF3K2B3dKydgZ/aVkGN
+         CFbohDc48HmghwuwHi6Pa0wHq/lODbFIzOfQ9RV5qVP/glyBQ6ezx2kGXPGmpGzzrKvA
+         bv2v22UZrF0iKbbd6xlOqkia/VuvXwGzGQJ5NWdPtkeuzJ/mlsxTHnBs8wnNN4tbaVEA
+         apEA==
+X-Gm-Message-State: AOAM5329P7FD4bs0GpcHBVv05DgGamH4amL3Sv+VlNANaCCEaKkAA2E/
+        G4hMuZX/31Z9mk0A4RMIfKU=
+X-Google-Smtp-Source: ABdhPJzcIGqbsNWN9tO2IRY06VqCmFLw2SG8MGXRZppGu6w9Q27De8iLH3nOQP2CDvaqyIlPXGw0Cw==
+X-Received: by 2002:a17:907:72cc:: with SMTP id du12mr10988685ejc.357.1595627250282;
+        Fri, 24 Jul 2020 14:47:30 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id c9sm1500815edv.8.2020.07.24.14.47.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jul 2020 14:47:29 -0700 (PDT)
+Date:   Sat, 25 Jul 2020 00:47:27 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, andrew@lunn.ch, linux@armlinux.org.uk,
+        f.fainelli@gmail.com
+Subject: Re: [PATCH net-next v4 0/5] net: phy: add Lynx PCS MDIO module
+Message-ID: <20200724214727.c7dgmhb57hlecvgm@skbuf>
+References: <20200724080143.12909-1-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <8bd7695c-0012-83e9-8a5a-94a40d91d6f6@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200724080143.12909-1-ioana.ciornei@nxp.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/24/20 2:14 PM, Jacob Keller wrote:
->
-> On 7/23/2020 12:35 PM, Eric Dumazet wrote:
->> On 7/23/20 11:21 AM, Mark Salyzyn wrote:
->>> Many of the nla_get_* inlines fail to check attribute's length before
->>> copying the content resulting in possible out-of-boundary accesses.
->>> Adjust the inlines to perform nla_len checking, for the most part
->>> using the nla_memcpy function to faciliate since these are not
->>> necessarily performance critical and do not need a likely fast path.
->>>
->>> Signed-off-by: Mark Salyzyn <salyzyn@android.com>
->>> Cc: netdev@vger.kernel.org
->>> Cc: linux-kernel@vger.kernel.org
->>> Cc: kernel-team@android.com
->>> Cc: "David S. Miller" <davem@davemloft.net>
->>> Cc: Jakub Kicinski <kuba@kernel.org>
->>> Cc: Thomas Graf <tgraf@suug.ch>
->>> Fixes: bfa83a9e03cf ("[NETLINK]: Type-safe netlink messages/attributes interface")
->>> ---
->>>   include/net/netlink.h | 66 +++++++++++++++++++++++++++++++++++--------
->>>   1 file changed, 54 insertions(+), 12 deletions(-)
->>>
->>> diff --git a/include/net/netlink.h b/include/net/netlink.h
->>> index c0411f14fb53..11c0f153be7c 100644
->>> --- a/include/net/netlink.h
->>> +++ b/include/net/netlink.h
->>> @@ -1538,7 +1538,11 @@ static inline int nla_put_bitfield32(struct sk_buff *skb, int attrtype,
->>>    */
->>>   static inline u32 nla_get_u32(const struct nlattr *nla)
->>>   {
->>> -	return *(u32 *) nla_data(nla);
->>> +	u32 tmp;
->>> +
->>> +	nla_memcpy(&tmp, nla, sizeof(tmp));
->>> +
->>> +	return tmp;
->> I believe this will hide bugs, that syzbot was able to catch.
->>
->> Instead, you could perhaps introduce a CONFIG_DEBUG_NETLINK option,
->> and add a WARN_ON_ONCE(nla_len(nla) < sizeof(u32)) so that we can detect bugs in callers.
->>
->>
-> I also think this is a better approach.
+On Fri, Jul 24, 2020 at 11:01:38AM +0300, Ioana Ciornei wrote:
+> Add support for the Lynx PCS as a separate module in drivers/net/phy/.
+> The advantage of this structure is that multiple ethernet or switch
+> drivers used on NXP hardware (ENETC, Seville, Felix DSA switch etc) can
+> share the same implementation of PCS configuration and runtime
+> management.
+> 
+> The module implements phylink_pcs_ops and exports a phylink_pcs
+> (incorporated into a lynx_pcs) which can be directly passed to phylink
+> through phylink_pcs_set.
+> 
+> The first 3 patches add some missing pieces in phylink and the locked
+> mdiobus write accessor. Next, the Lynx PCS MDIO module is added as a
+> standalone module. The majority of the code is extracted from the Felix
+> DSA driver. The last patch makes the necessary changes in the Felix and
+> Seville drivers in order to use the new common PCS implementation.
+> 
+> At the moment, USXGMII (only with in-band AN), SGMII, QSGMII (with and
+> without in-band AN) and 2500Base-X (only w/o in-band AN) are supported
+> by the Lynx PCS MDIO module since these were also supported by Felix and
+> no functional change is intended at this time.
+> 
+> Changes in v2:
+>  * got rid of the mdio_lynx_pcs structure and directly exported the
+>  functions without the need of an indirection
+>  * made the necessary adjustments for this in the Felix DSA driver
+>  * solved the broken allmodconfig build test by making the module
+>  tristate instead of bool
+>  * fixed a memory leakage in the Felix driver (the pcs structure was
+>  allocated twice)
+> 
+> Changes in v3:
+>  * added support for PHYLINK PCS ops in DSA (patch 5/9)
+>  * cleanup in Felix PHYLINK operations and migrate to
+>  phylink_mac_link_up() being the callback of choice for applying MAC
+>  configuration (patches 6-8)
+> 
+> Changes in v4:
+>  * use the newly introduced phylink PCS mechanism
+>  * install the phylink_pcs in the phylink_mac_config DSA ops
+>  * remove the direct implementations of the PCS ops
+>  * do no use the SGMII_ prefix when referring to the IF_MORE register
+>  * add a phylink helper to decode the USXGMII code word
+>  * remove cleanup patches for Felix (these have been already accepted)
+>  * Seville (recently introduced) now has PCS support through the same
+>  Lynx PCS module
+> 
+> Ioana Ciornei (5):
+>   net: phylink: add helper function to decode USXGMII word
+>   net: phylink: consider QSGMII interface mode in
+>     phylink_mii_c22_pcs_get_state
+>   net: mdiobus: add clause 45 mdiobus write accessor
+>   net: phy: add Lynx PCS module
+>   net: dsa: ocelot: use the Lynx PCS helpers in Felix and Seville
+> 
+>  MAINTAINERS                              |   7 +
+>  drivers/net/dsa/ocelot/Kconfig           |   1 +
+>  drivers/net/dsa/ocelot/felix.c           |  28 +-
+>  drivers/net/dsa/ocelot/felix.h           |  20 +-
+>  drivers/net/dsa/ocelot/felix_vsc9959.c   | 374 ++---------------------
+>  drivers/net/dsa/ocelot/seville_vsc9953.c |  21 +-
+>  drivers/net/phy/Kconfig                  |   6 +
+>  drivers/net/phy/Makefile                 |   1 +
+>  drivers/net/phy/pcs-lynx.c               | 314 +++++++++++++++++++
+>  drivers/net/phy/phylink.c                |  44 +++
+>  include/linux/mdio.h                     |   6 +
+>  include/linux/pcs-lynx.h                 |  21 ++
+>  include/linux/phylink.h                  |   3 +
+>  13 files changed, 442 insertions(+), 404 deletions(-)
+>  create mode 100644 drivers/net/phy/pcs-lynx.c
+>  create mode 100644 include/linux/pcs-lynx.h
+> 
+> -- 
+> 2.25.1
+> 
 
-We (another engineer here) are looking into that and will get back to 
-everyone.
+For the entire series:
 
-Sincerely -- Mark Salyzyn
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
+Seville QSGMII with in-band AN
+Felix QSGMII with in-band AN
+Felix SGMII without in-band AN
+Felix USXGMII with in-band AN
+
+Thanks,
+-Vladimir
