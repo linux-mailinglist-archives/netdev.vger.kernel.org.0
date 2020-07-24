@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7CFD22C9A5
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 18:00:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53B5422C9A6
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 18:00:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgGXQAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 12:00:35 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:58642 "EHLO
+        id S1726726AbgGXQAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 12:00:43 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:32834 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726493AbgGXQAe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 12:00:34 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id CBD17200DB;
-        Fri, 24 Jul 2020 16:00:33 +0000 (UTC)
-Received: from us4-mdac16-39.at1.mdlocal (unknown [10.110.51.54])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id C9EB46009B;
-        Fri, 24 Jul 2020 16:00:33 +0000 (UTC)
+        by vger.kernel.org with ESMTP id S1726493AbgGXQAn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 12:00:43 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 35B9C20083;
+        Fri, 24 Jul 2020 16:00:42 +0000 (UTC)
+Received: from us4-mdac16-62.at1.mdlocal (unknown [10.110.50.155])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 2EB9C800A4;
+        Fri, 24 Jul 2020 16:00:42 +0000 (UTC)
 X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.6])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 64809220054;
-        Fri, 24 Jul 2020 16:00:33 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.8])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id B60A74007A;
+        Fri, 24 Jul 2020 16:00:41 +0000 (UTC)
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 266B5B0009C;
-        Fri, 24 Jul 2020 16:00:33 +0000 (UTC)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 7E69A4C007E;
+        Fri, 24 Jul 2020 16:00:41 +0000 (UTC)
 Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
  (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Jul
- 2020 17:00:21 +0100
+ 2020 17:00:37 +0100
 From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH v4 net-next 13/16] sfc_ef100: actually perform resets
+Subject: [PATCH v4 net-next 14/16] sfc_ef100: probe the PHY and configure the
+ MAC
 To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>
 References: <d224dbb2-ef20-dca9-d50b-7f583b45d859@solarflare.com>
-Message-ID: <797a846a-254d-66e3-fbe6-83945be6cb6f@solarflare.com>
-Date:   Fri, 24 Jul 2020 17:00:18 +0100
+Message-ID: <8aacc47f-c12d-da84-4422-edf10ae3e47b@solarflare.com>
+Date:   Fri, 24 Jul 2020 17:00:34 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -47,56 +48,96 @@ X-Originating-IP: [10.17.20.203]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25560.003
-X-TM-AS-Result: No-4.580800-8.000000-10
-X-TMASE-MatchedRID: 6PuENcpAJhNUHLGrNupy0AlpVkdtt3Wu3V4UShoTXadjLp8Cm8vwFwoe
-        RRhCZWIBxI0yMICTJDyPQi9XuOWoOHI/MxNRI7UkuoibJpHRrFmi8D/o42y/SlIxScKXZnK0E6+
-        pYTgIYFSveSUy9VcQXJGTpe1iiCJq71zr0FZRMbALbigRnpKlKZx+7GyJjhAULnoF2g/NZYolnE
-        HBI0l+X79QBggUWGuAA845vAlR7nfBa9dMXAuKPWphMoiYL3P8MTM6luaFSL5xhHe8czYwQmEvu
-        VMBERPc7X0NUj756kyalV1F4xrI89hfrwWZbOCvsmqnO4HNG+VfCOKFKuVYGg==
+X-TM-AS-Result: No-4.185000-8.000000-10
+X-TMASE-MatchedRID: +P4bk6H27dGh9oPbMj7PPPCoOvLLtsMhljgw/8s6b3cHZBaLwEXlKGlF
+        7OhYLlct4Bf6QB/uLAsKcKXSCIuKCdIo0YBrKTWVj0FWpA5CVPlQYo4xNF42PrxgMf9QE2eb45N
+        KjsoDTQ9YHxG6vTRI6n5srx3ISKqWN9rojbjxBkwHtOpEBhWiFoiuaoNXJrK/V4i674aSi3zN6o
+        aSBNupLxG19haWtoGpZ1nCVPRwHviVGRgUWSxGYsnUT+eskUQPyiKgKtIyB4rXLRpcXl5f6FQcO
+        V/n25DvS7kQ8sC0ftSRk6XtYogiau9c69BWUTGwC24oEZ6SpSmb4wHqRpnaDmLs0DkejDoRHj64
+        eVKAuM91sapGSB1Qva+++MZ3VvbIg4j23Xis5N1U5260bjlLxR36whqyGg0qzg6JSeftUAJufRJ
+        AJEkZIe19DVI++epMmpVdReMayPPYX68FmWzgr7JqpzuBzRvlw2tMTSg0x74=
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--4.580800-8.000000
+X-TMASE-Result: 10--4.185000-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25560.003
-X-MDID: 1595606433-WiAEOfSR8HoG
+X-MDID: 1595606442-DUhluI4vT7vi
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ef100_reset(), make the MCDI call to do the reset.
-Also, do a reset at start-of-day during probe, to put the function in
- a clean state.
-
 Signed-off-by: Edward Cree <ecree@solarflare.com>
 ---
- drivers/net/ethernet/sfc/ef100_nic.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/ethernet/sfc/ef100_nic.c | 42 +++++++++++++++++++++++++++-
+ 1 file changed, 41 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-index bb246acca574..5e6a8337a336 100644
+index 5e6a8337a336..dc7d4aaa2b04 100644
 --- a/drivers/net/ethernet/sfc/ef100_nic.c
 +++ b/drivers/net/ethernet/sfc/ef100_nic.c
-@@ -332,6 +332,10 @@ static int ef100_reset(struct efx_nic *efx, enum reset_type reset_type)
- 		__clear_bit(reset_type, &efx->reset_pending);
- 		rc = dev_open(efx->net_dev, NULL);
- 	} else if (reset_type == RESET_TYPE_ALL) {
-+		rc = efx_mcdi_reset(efx, reset_type);
-+		if (rc)
-+			return rc;
-+
- 		netif_device_attach(efx->net_dev);
+@@ -288,16 +288,54 @@ static irqreturn_t ef100_msi_interrupt(int irq, void *dev_id)
  
- 		rc = dev_open(efx->net_dev, NULL);
-@@ -466,6 +470,11 @@ static int ef100_probe_main(struct efx_nic *efx)
- 	}
- 	if (rc)
- 		goto fail;
-+	/* Reset (most) configuration for this function */
-+	rc = efx_mcdi_reset(efx, RESET_TYPE_ALL);
-+	if (rc)
-+		goto fail;
+ static int ef100_phy_probe(struct efx_nic *efx)
+ {
+-	/* stub: allocate the phy_data */
++	struct efx_mcdi_phy_data *phy_data;
++	int rc;
 +
- 	rc = efx_ef100_init_datapath_caps(efx);
- 	if (rc < 0)
- 		goto fail;
++	/* Probe for the PHY */
+ 	efx->phy_data = kzalloc(sizeof(struct efx_mcdi_phy_data), GFP_KERNEL);
+ 	if (!efx->phy_data)
+ 		return -ENOMEM;
+ 
++	rc = efx_mcdi_get_phy_cfg(efx, efx->phy_data);
++	if (rc)
++		return rc;
++
++	/* Populate driver and ethtool settings */
++	phy_data = efx->phy_data;
++	mcdi_to_ethtool_linkset(phy_data->media, phy_data->supported_cap,
++				efx->link_advertising);
++	efx->fec_config = mcdi_fec_caps_to_ethtool(phy_data->supported_cap,
++						   false);
++
++	/* Default to Autonegotiated flow control if the PHY supports it */
++	efx->wanted_fc = EFX_FC_RX | EFX_FC_TX;
++	if (phy_data->supported_cap & (1 << MC_CMD_PHY_CAP_AN_LBN))
++		efx->wanted_fc |= EFX_FC_AUTO;
++	efx_link_set_wanted_fc(efx, efx->wanted_fc);
++
++	/* Push settings to the PHY. Failure is not fatal, the user can try to
++	 * fix it using ethtool.
++	 */
++	rc = efx_mcdi_port_reconfigure(efx);
++	if (rc && rc != -EPERM)
++		netif_warn(efx, drv, efx->net_dev,
++			   "could not initialise PHY settings\n");
++
+ 	return 0;
+ }
+ 
+ /*	Other
+  */
++static int ef100_reconfigure_mac(struct efx_nic *efx, bool mtu_only)
++{
++	WARN_ON(!mutex_is_locked(&efx->mac_lock));
++
++	efx_mcdi_filter_sync_rx_mode(efx);
++
++	if (mtu_only && efx_has_cap(efx, SET_MAC_ENHANCED))
++		return efx_mcdi_set_mtu(efx);
++	return efx_mcdi_set_mac(efx);
++}
+ 
+ static enum reset_type ef100_map_reset_reason(enum reset_type reason)
+ {
+@@ -401,6 +439,8 @@ const struct efx_nic_type ef100_pf_nic_type = {
+ 	.rx_write = ef100_rx_write,
+ 	.rx_packet = __ef100_rx_packet,
+ 
++	.reconfigure_mac = ef100_reconfigure_mac,
++
+ 	/* Per-type bar/size configuration not used on ef100. Location of
+ 	 * registers is defined by extended capabilities.
+ 	 */
 
