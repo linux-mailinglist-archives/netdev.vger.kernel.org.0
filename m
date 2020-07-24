@@ -2,67 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26B6F22D289
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 01:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EB8B22D290
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 01:59:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726807AbgGXX5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 19:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51418 "EHLO
+        id S1726711AbgGXX7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 19:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726572AbgGXX5Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 19:57:24 -0400
+        with ESMTP id S1726493AbgGXX7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 19:59:31 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F4BC0619D3;
-        Fri, 24 Jul 2020 16:57:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA6AC0619D3
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 16:59:31 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2E89612756FCF;
-        Fri, 24 Jul 2020 16:40:38 -0700 (PDT)
-Date:   Fri, 24 Jul 2020 16:57:22 -0700 (PDT)
-Message-Id: <20200724.165722.526735468993909990.davem@davemloft.net>
-To:     dinghao.liu@zju.edu.cn
-Cc:     kjlu@umn.edu, sgoutham@marvell.com, lcherian@marvell.com,
-        gakula@marvell.com, jerinj@marvell.com, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] octeontx2-af: Fix use of uninitialized pointer bmap
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A739F12756FD3;
+        Fri, 24 Jul 2020 16:42:45 -0700 (PDT)
+Date:   Fri, 24 Jul 2020 16:59:29 -0700 (PDT)
+Message-Id: <20200724.165929.973861664107084279.davem@davemloft.net>
+To:     echaudro@redhat.com
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org, kuba@kernel.org,
+        pabeni@redhat.com, pshelar@ovn.org
+Subject: Re: [PATCH net-next] net: openvswitch: fixes potential deadlock in
+ dp cleanup code
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200724080657.19182-1-dinghao.liu@zju.edu.cn>
-References: <20200724080657.19182-1-dinghao.liu@zju.edu.cn>
+In-Reply-To: <159557885902.884526.12945945970267356485.stgit@ebuild>
+References: <159557885902.884526.12945945970267356485.stgit@ebuild>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 24 Jul 2020 16:40:38 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 24 Jul 2020 16:42:45 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dinghao Liu <dinghao.liu@zju.edu.cn>
-Date: Fri, 24 Jul 2020 16:06:57 +0800
+From: Eelco Chaudron <echaudro@redhat.com>
+Date: Fri, 24 Jul 2020 10:20:59 +0200
 
-> If req->ctype does not match any of NIX_AQ_CTYPE_CQ,
-> NIX_AQ_CTYPE_SQ or NIX_AQ_CTYPE_RQ, pointer bmap will remain
-> uninitialized and be accessed in test_bit(), which can lead
-> to kernal crash.
-
-This can never happen.
-
-> Fix this by returning an error code if this case is triggered.
+> The previous patch introduced a deadlock, this patch fixes it by making
+> sure the work is canceled without holding the global ovs lock. This is
+> done by moving the reorder processing one layer up to the netns level.
 > 
-> Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+> Fixes: eac87c413bf9 ("net: openvswitch: reorder masks array based on usage")
+> Reported-by: syzbot+2c4ff3614695f75ce26c@syzkaller.appspotmail.com
+> Reported-by: syzbot+bad6507e5db05017b008@syzkaller.appspotmail.com
+> Reviewed-by: Paolo <pabeni@redhat.com>
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 
-I strongly dislike changes like this.
-
-Most callers of nix_lf_hwctx_disable() inside of rvu_nix.c set
-req->ctype to one of the handled values.
-
-The only other case, rvu_mbox_handler_nix_hwctx_disable(), is a
-completely unused function and should be removed.
-
-There is no functional problem in this code at all.
-
-It is not possible show a code path where the stated problem can
-actually occur.
+Applied, thank you.
