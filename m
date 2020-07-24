@@ -2,66 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6200E22CB8D
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 18:57:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1ADC22CC2B
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 19:26:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726863AbgGXQ5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 12:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726591AbgGXQ5f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 12:57:35 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA72DC0619D3
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 09:57:35 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id x8so4779209plm.10
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 09:57:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WeY5BPHL/E7lEbn1yCY49qTN31+LXQiDTN+4S0/viW0=;
-        b=CP7YZ3wUtjG4JC1jfyeSlwqvDGIajd9a1ff80gFpxjHa/YUiLX2af1iPWP2fOwH9XS
-         GhumY4CB5Mz6oyT1dgkccoEK8FLNe8awBtrKJ/ZlgivTWzNbeegi8S9QU5LbcpPa0r3n
-         vKaM1GFeb1aSo13i5LaUxuZ+5u+GY+VaGrlztqm/xi58kzl9+aX3A91AXPJWbAK8goXh
-         s6STmrkEeQOQu/nPukbKv+1n+KGfGSyLTzppIyS+//QUPr0F28VMvWrIsFsLQRXEzBqx
-         xtckN6rWPsUWNeJTGHWAWFy8jw8LuL8AiK07ixYQh1nH+3+l1a4Y0BVI69vHBwexh4wx
-         rEJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WeY5BPHL/E7lEbn1yCY49qTN31+LXQiDTN+4S0/viW0=;
-        b=jUtFCtFy/y2u/G6xXgNWsKOKRoksVGM5zn9QN3DkADXCZJC3+gKA8+fy+Ag3w247y+
-         o3475p15eymG38Lc97FbtS80Crv7+o1FhlzyoYVkBZEdEo0Qu9Um88T8x8jIyQh6iC/m
-         pecupAi/k8xGPWowRkKL4ZOmgyt78jHKwRWtaQPSfIxohWPF0mC1eVV540SbAPG2sgZd
-         cP3v2sVLHlWaw34PySt+kRrV/s0sbjOy4dUrmzCiZOsqyU3Geldn7mASYS2PDINF3bU9
-         XC5/ZipJULoTzvfPzC+tM9j/17/eeKtWns2IfHCWcfiNRU9DauT5Cd+IeiCGMX/8mFqd
-         2W5w==
-X-Gm-Message-State: AOAM5305rMzHN9DaSfF7U2nlSmXngGBV33o8oPtJAXWRbNLZy73/Ejg3
-        tvgpy1KguBGi1o8DUMIx3y4=
-X-Google-Smtp-Source: ABdhPJwy4QN7xq3Gb/yNI5zTpcdRe0gdOXVT6wsBCTVzi5ODhXDq9HtYsK+KOedB9EN2Ufw7T4nDFQ==
-X-Received: by 2002:a17:90a:ce0c:: with SMTP id f12mr6566899pju.19.1595609855490;
-        Fri, 24 Jul 2020 09:57:35 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id u66sm6804502pfb.191.2020.07.24.09.57.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jul 2020 09:57:34 -0700 (PDT)
-Subject: Re: [Patch net v2] qrtr: orphan socket in qrtr_release()
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     syzbot+6720d64f31c081c2f708@syzkaller.appspotmail.com,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <20200724164551.24109-1-xiyou.wangcong@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <4b799848-8e77-ec4a-1a79-aa08c0f856c7@gmail.com>
-Date:   Fri, 24 Jul 2020 09:57:33 -0700
+        id S1727904AbgGXR0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 13:26:30 -0400
+Received: from foss.arm.com ([217.140.110.172]:37468 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726639AbgGXR02 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jul 2020 13:26:28 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B18D431B;
+        Fri, 24 Jul 2020 10:26:27 -0700 (PDT)
+Received: from [192.168.122.166] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5186D3F66F;
+        Fri, 24 Jul 2020 10:26:27 -0700 (PDT)
+Subject: Re: [net-next PATCH v7 1/6] Documentation: ACPI: DSD: Document MDIO
+ PHY
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        netdev@vger.kernel.org, linux.cj@gmail.com,
+        linux-acpi@vger.kernel.org
+References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
+ <20200715090400.4733-2-calvin.johnson@oss.nxp.com>
+ <1a031e62-1e87-fdc1-b672-e3ccf3530fda@arm.com>
+ <20200724133931.GF1472201@lunn.ch>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+Message-ID: <97973095-5458-8ac2-890c-667f4ea6cd0e@arm.com>
+Date:   Fri, 24 Jul 2020 12:26:26 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200724164551.24109-1-xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200724133931.GF1472201@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -69,36 +49,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
+
+On 7/24/20 8:39 AM, Andrew Lunn wrote:
+>> Otherwise the MDIO bus and its phy should be a
+>> child of the nic/mac using it, with standardized behaviors/etc left up to
+>> the OSPM when it comes to MDIO bus enumeration/etc.
+> 
+> Hi Jeremy
+> 
+> Could you be a bit more specific here please.
+> 
+> DT allows
+> 
+>          macb0: ethernet@fffc4000 {
+>                  compatible = "cdns,at32ap7000-macb";
+>                  reg = <0xfffc4000 0x4000>;
+>                  interrupts = <21>;
+>                  phy-mode = "rmii";
+>                  local-mac-address = [3a 0e 03 04 05 06];
+>                  clock-names = "pclk", "hclk", "tx_clk";
+>                  clocks = <&clkc 30>, <&clkc 30>, <&clkc 13>;
+>                  ethernet-phy@1 {
+>                          reg = <0x1>;
+>                          reset-gpios = <&pioE 6 1>;
+>                  };
+>          };
+> 
+> So the PHY is a direct child of the MAC. The MDIO bus is not modelled
+> at all. Although this is allowed, it is deprecated, because it results > in problems with advanced systems which have multiple different
+> children, and the need to differentiate them. So drivers are slowly
+
+I don't think i'm suggesting that, because AFAIK in ACPI you would have 
+to specify the DEVICE() for mdio, in order to nest a further set of 
+phy's via _ADR(). I think in general what I was describing would look 
+more like what you have below. But..
+
+> migrating to always modelling the MDIO bus. In that case, the
+> phy-handle is always used to point to the PHY:
+> 
+>          eth0: ethernet@522d0000 {
+>                  compatible = "socionext,synquacer-netsec";
+>                  reg = <0 0x522d0000 0x0 0x10000>, <0 0x10000000 0x0 0x10000>;
+>                  interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
+>                  clocks = <&clk_netsec>;
+>                  clock-names = "phy_ref_clk";
+>                  phy-mode = "rgmii";
+>                  max-speed = <1000>;
+>                  max-frame-size = <9000>;
+>                  phy-handle = <&phy1>;
+> 
+>                  mdio {
+>                          #address-cells = <1>;
+>                          #size-cells = <0>;
+>                          phy1: ethernet-phy@1 {
+>                                  compatible = "ethernet-phy-ieee802.3-c22";
+>                                  reg = <1>;
+>                          };
+>                  };
+> 
+> "mdio-handle" is just half of phy-handle.
+> 
+> What you seem to be say is that although we have defined a generic
+> solution for ACPI which should work in all cases, it is suggested to
+> not use it? What exactly are you suggesting in its place?
+
+When you put it that way, what i'm saying sounds crazy.
+
+In this case what are are doing isn't as clean as what you have 
+described above, its more like:
+
+mdio: {
+   phy1: {}
+   phy2: {}
+}
+...
+// somewhere else
+dmac1: {
+     phy-handle = <&phy1>;
+}
+
+... //somewhere else
+eth0: {
+    //another device talking to the mgmt controller
+}
 
 
-On 7/24/20 9:45 AM, Cong Wang wrote:
-> We have to detach sock from socket in qrtr_release(),
-> otherwise skb->sk may still reference to this socket
-> when the skb is released in tun->queue, particularly
-> sk->sk_wq still points to &sock->wq, which leads to
-> a UAF.
-> 
-> Reported-and-tested-by: syzbot+6720d64f31c081c2f708@syzkaller.appspotmail.com
-> Fixes: 28fb4e59a47d ("net: qrtr: Expose tunneling endpoint to user space")
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Eric Dumazet <eric.dumazet@gmail.com>
-> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-> ---
->  net/qrtr/qrtr.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> index 24a8c3c6da0d..300a104b9a0f 100644
-> --- a/net/qrtr/qrtr.c
-> +++ b/net/qrtr/qrtr.c
-> @@ -1180,6 +1180,7 @@ static int qrtr_release(struct socket *sock)
->  		sk->sk_state_change(sk);
->  
->  	sock_set_flag(sk, SOCK_DEAD);
-> +	sock_orphan(sk);
->  	sock->sk = NULL;
->  
->  	if (!sock_flag(sk, SOCK_ZAPPED))
-> 
+Which is special in a couple ways.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Lets rewind for a moment and say for ARM/ACPI, what we are talking about 
+are "edge/server class" devices (with RAS statements/etc) where the 
+expectation is that they will be running virtualized workloads using LTS 
+distros, or non linux OSes. DT/etc remains an option for networking 
+devices which are more "embedded", aren't SBSA, etc. So an Arm 
+based/ACPI machine should be more regular and share more in the way of 
+system architecture with other SBSA/SBBR/ACPI/etc machines than has been 
+the case for DT machines.
+
+A concern is then how we punch networking devices into an arbitrary VM 
+in a standardized way using libvirt/whatever. If the networking device 
+doesn't look like a simple self contained memory mapped resource with an 
+IOMMU domain, I think everything becomes more complicated and you have 
+to start going down the path of special caseing the VM firmware beyond 
+how its done for self contained PCIe/SRIOV devices. The latter manage to 
+pull this all off with a PCIe id, and a couple BARs fed into the VM.
+
+So, I would hope an ACPI nic representation is closer to just a minimal 
+resource list like:
+
+eth0: {
+       compatible = "cdns,at32ap7000-macb";
+       reg = <0xfffc4000 0x4000>;
+       interrupts = <21>;
+}
+or in ACPI speak:
+Device (ETH0)
+{
+       Name (_HID, "CDNSXXX")
+       Method (_CRS, 0x0, Serialized)
+       {
+         Name (RBUF, ResourceTemplate ()
+         {
+           Memory32Fixed (ReadWrite, 0xfffc4000, 0x4000, )
+           Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive)
+           {
+             21
+           }
+         })
+         Return (RBUF)
+       }
+}
+
+(Plus methods for pwr mgmt/etc as needed, the iommu info comes from 
+another table).
+
+Returning to the NXP part. They avoid the entirety of the above 
+discussion because all this MDIO/PHY mgmt is just feeding the data into 
+the mgmt controller, and the bits that are punched into the VM are 
+fairly standalone.
+
+Anyway, I think this set is generally fine, I would like to see this 
+part working well with ACPI given its what we have available today. For 
+the future, we also need to continue pushing everyone towards common 
+hardware standards. One of the ways of doing this is having hardware 
+which can be automatically enumerated/configured. Suggesting that the 
+kernel has a recommended way of doing this which aids fragmentation 
+isn't what we are trying to achieve with ACPI. Hence my previous comment 
+that we should consider this an escape hatch rather than the last word 
+in how to describe networking on ACPI/SBSA platforms.
+
+Thanks,
