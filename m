@@ -2,57 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B2B022D1B7
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 00:19:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6596422D1BE
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 00:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726826AbgGXWSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 18:18:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
+        id S1726719AbgGXWVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 18:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726593AbgGXWSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 18:18:54 -0400
+        with ESMTP id S1726591AbgGXWVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 18:21:38 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26065C0619D3;
-        Fri, 24 Jul 2020 15:18:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F27C0619D3;
+        Fri, 24 Jul 2020 15:21:38 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9A9F01195421E;
-        Fri, 24 Jul 2020 15:02:08 -0700 (PDT)
-Date:   Fri, 24 Jul 2020 15:18:53 -0700 (PDT)
-Message-Id: <20200724.151853.1338329532264832068.davem@davemloft.net>
-To:     chisong@linux.microsoft.com
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, kuba@kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 net-next] net: hyperv: dump TX indirection table to
- ethtool regs
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0A2871274C3A1;
+        Fri, 24 Jul 2020 15:04:53 -0700 (PDT)
+Date:   Fri, 24 Jul 2020 15:21:36 -0700 (PDT)
+Message-Id: <20200724.152136.239820662240192829.davem@davemloft.net>
+To:     m-karicheri2@ti.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
+        nsekhar@ti.com, grygorii.strashko@ti.com, vinicius.gomes@intel.com
+Subject: Re: [net-next v5 PATCH 0/7] Add PRP driver
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200724041426.GB25409@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
-References: <alpine.LRH.2.23.451.2007222356070.2641@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.inter>
-        <20200724041426.GB25409@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+In-Reply-To: <7133d5ca-e72b-b406-feb2-21429085c96a@ti.com>
+References: <20200722144022.15746-1-m-karicheri2@ti.com>
+        <7133d5ca-e72b-b406-feb2-21429085c96a@ti.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 24 Jul 2020 15:02:09 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 24 Jul 2020 15:04:53 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chi Song <chisong@linux.microsoft.com>
-Date: Thu, 23 Jul 2020 21:14:26 -0700
+From: Murali Karicheri <m-karicheri2@ti.com>
+Date: Fri, 24 Jul 2020 08:27:01 -0400
 
-> An imbalanced TX indirection table causes netvsc to have low
-> performance. This table is created and managed during runtime. To help
-> better diagnose performance issues caused by imbalanced tables, it needs
-> make TX indirection tables visible.
-> 
-> Because TX indirection table is driver specified information, so
-> display it via ethtool register dump.
-> 
-> Signed-off-by: Chi Song <chisong@microsoft.com>
+> If there are no more comments, can we consider merging this to
+> net-next? I could re-base and repost if there is any conflict.
 
-Applied, thank you.
+I can't apply them until I next merge net into net-next, and I don't
+know exactly when that will happen yet.
+
+It'd also be nice to get some review and ACK's on this series
+meanwhile.
