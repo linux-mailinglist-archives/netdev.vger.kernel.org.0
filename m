@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE58422CB49
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 18:46:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B44A022CB51
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 18:46:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbgGXQqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 12:46:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
+        id S1726821AbgGXQqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 12:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726326AbgGXQp7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 12:45:59 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE4BC0619D3
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 09:45:59 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id m16so4768295pls.5
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 09:45:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7dO7tZEdiUY9tOGjM8VNG2nAtt28ObMbKayjnz3C1jk=;
-        b=hRQDS77NKTMW5ry05exZ0aPJQoUWK3I2n/ItdiRwnjjVasluOSSUmURQAMvumMfR10
-         BG8QciT1xQw/l59D0P5oxu84kiWIdRwDMU5KEGe3mvLDaILVyPrF4K+1n2RnBOfLgs3n
-         x3FzWFa5fQZ4wfJYHaOgZ/2mBY/hI0qvezXrCYlM9l4pUBk+9nqTzSLGynRARnXnNKih
-         9ird+5QZuSXKEbxdlZmT5kfqe4631Tv2IweCgCVozJWixq/PnLdfyxlIUWHyKheSFk4K
-         e4AMf/AagWa4FmpkNRoIAzhWpWDDEvRdjJkEmN2NsEf1L5FWl5wzT5z1ME/XRGXK8FZh
-         QMvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7dO7tZEdiUY9tOGjM8VNG2nAtt28ObMbKayjnz3C1jk=;
-        b=cWoDjxBG6LpTCnpJ1mu6qseS0r5/+XPn4d1vcL82SmVlGbYqgriuHa2K7wUZ+ywogY
-         IE8mXqQIAmdynoov/L4T1i5nPIqiBleru8V4dR7Ep5+eGlapsbs081cJMGa2nu19Nr16
-         kPvSXwMEeYzSTChrqTyjI6+gWnMyasNCP1VoUrfn9Iex+YtdD9NEnAgfOTbSfeJn3ISx
-         6udK2Ece2/p4d+Q5qLIraPkeSx+xZWhBXwvzn5q7Or2UUb4Y63qSn/sqgbqbo0kJGZuH
-         RN226rPw57sISsK9cDm4dAuhkTNNZSLb05cDlkqmQkay51qhRnGKfAZGkcq8WkrX1KnW
-         mtVg==
-X-Gm-Message-State: AOAM532sPXwy0+w9rbtW4qKhe4UTAiywnlcbQdssygmCrbE+691pHhlm
-        ay/TF6H81C0oNjjebqHFsYAJfj1bdow=
-X-Google-Smtp-Source: ABdhPJzgA9rTvFBSTfw+zQX2rL7xoLRzLPARbk4HaRj16boG6Q7P89KT+CsFYbCWG+MDHAikmhYAaA==
-X-Received: by 2002:a17:902:7284:: with SMTP id d4mr8441934pll.164.1595609156009;
-        Fri, 24 Jul 2020 09:45:56 -0700 (PDT)
-Received: from MacBookAir.linux-6brj.site ([2600:1700:727f::46])
-        by smtp.gmail.com with ESMTPSA id j26sm6711936pfe.200.2020.07.24.09.45.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2020 09:45:55 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
+        with ESMTP id S1726639AbgGXQqG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 12:46:06 -0400
+Received: from mail.nic.cz (lists.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8E4C0619E4;
+        Fri, 24 Jul 2020 09:46:06 -0700 (PDT)
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTP id 0E8FB140801;
+        Fri, 24 Jul 2020 18:46:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1595609164; bh=uVEK4+lNEwNHSkbt4FwgcwamVpjAjW9xrSCBYvsp+fU=;
+        h=From:To:Date;
+        b=ODIqmaFrBnepS5Ewc5sPX8LbJbZF9jV0HzWrF6sj74qVeThg0sfnxINPFQX4IcoMd
+         wA9vybKY8uvLq/lfdMVaoyPsEPXTebXNnnLF0DfFdihRSnNDfN0rsizFHzPJ9L4LZi
+         7g8MmCnLPQ5I/KzGmdUT8IUmHnN9cZ/IFl8PySnk=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+6720d64f31c081c2f708@syzkaller.appspotmail.com,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [Patch net v2] qrtr: orphan socket in qrtr_release()
-Date:   Fri, 24 Jul 2020 09:45:51 -0700
-Message-Id: <20200724164551.24109-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.27.0
+Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        jacek.anaszewski@gmail.com, Dan Murphy <dmurphy@ti.com>,
+        =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megous@megous.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+Subject: [PATCH RFC leds + net-next v3 0/2] Add support for LEDs on Marvell PHYs
+Date:   Fri, 24 Jul 2020 18:46:01 +0200
+Message-Id: <20200724164603.29148-1-marek.behun@nic.cz>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Spam-Status: No, score=0.00
+X-Spamd-Bar: /
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have to detach sock from socket in qrtr_release(),
-otherwise skb->sk may still reference to this socket
-when the skb is released in tun->queue, particularly
-sk->sk_wq still points to &sock->wq, which leads to
-a UAF.
+Hi,
 
-Reported-and-tested-by: syzbot+6720d64f31c081c2f708@syzkaller.appspotmail.com
-Fixes: 28fb4e59a47d ("net: qrtr: Expose tunneling endpoint to user space")
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- net/qrtr/qrtr.c | 1 +
- 1 file changed, 1 insertion(+)
+this is v3 of my RFC adding support for LEDs connected to Marvell PHYs.
 
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index 24a8c3c6da0d..300a104b9a0f 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -1180,6 +1180,7 @@ static int qrtr_release(struct socket *sock)
- 		sk->sk_state_change(sk);
- 
- 	sock_set_flag(sk, SOCK_DEAD);
-+	sock_orphan(sk);
- 	sock->sk = NULL;
- 
- 	if (!sock_flag(sk, SOCK_ZAPPED))
+Please note that if you want to test this, you still need to first apply
+the patch adding the LED private triggers support from Pavel's tree.
+https://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/commit/?h=for-next&id=93690cdf3060c61dfce813121d0bfc055e7fa30d
+
+Changes since v2:
+- to share code with other drivers which may want to also offer PHY HW
+  control of LEDs some of the code was refactored and now resides in
+  phy_hw_led_mode.c. This code is compiled in when config option
+  LED_TRIGGER_PHY_HW is enabled. Drivers wanting to offer PHY HW control
+  of LEDs should depend on this option.
+- the "hw-control" trigger is renamed to "phydev-hw-mode" and is
+  registered by the code in phy_hw_led_mode.c
+- the "hw_control" sysfs file is renamed to "hw_mode"
+- struct phy_driver is extended by three methods to support PHY HW LED
+  control
+- I renamed the various HW control modes offeret by Marvell PHYs to
+  conform to other Linux mode names, for example the "1000/100/10/else"
+  mode was renamed to "1Gbps/100Mbps/10Mbps", or "recv/else" was renamed
+  to "rx" (this is the name of the mode in netdev trigger).
+
+Marek
+
+Marek Behún (2):
+  net: phy: add API for LEDs controlled by PHY HW
+  net: phy: marvell: add support for PHY LEDs via LED class
+
+ drivers/net/phy/Kconfig           |  10 +
+ drivers/net/phy/Makefile          |   1 +
+ drivers/net/phy/marvell.c         | 364 ++++++++++++++++++++++++++++++
+ drivers/net/phy/phy_hw_led_mode.c |  96 ++++++++
+ include/linux/phy.h               |  15 ++
+ 5 files changed, 486 insertions(+)
+ create mode 100644 drivers/net/phy/phy_hw_led_mode.c
+
 -- 
-2.27.0
+2.26.2
 
