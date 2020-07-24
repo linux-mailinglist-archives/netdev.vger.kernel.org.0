@@ -2,62 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F2D822CCCE
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 20:12:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A6AC22CCDF
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 20:18:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726892AbgGXSLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 14:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53800 "EHLO
+        id S1726717AbgGXSSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 14:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726512AbgGXSLr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 14:11:47 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF0EC0619D3
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 11:11:47 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id t18so7974878ilh.2
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 11:11:47 -0700 (PDT)
+        with ESMTP id S1726326AbgGXSSC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 14:18:02 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F27EC0619D3
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 11:18:02 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id d27so7552693qtg.4
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 11:18:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7boAqxbklIVoCOnNruyfDwdmhhUZeF1tVmDe3wmYFhY=;
-        b=q695YtLLUW2jGWrcpOR07frj1vx0/pDEM4tWRTcoGmwigFYvujTVBIYICnTxDkHIK0
-         zsSOjSWLrhTtS6VRrNGL9hVJ/sRoNh/uz8T6ux9XQJOncsYKlKeWb/dHhFncm29UaBPL
-         PTSGEG7YbJL7xu0FMRdQJKb2uwgyCqUqFkh/OvUNhN/481YWqFeiWxoiQpFPRTvHh1K1
-         Q8Oe+rtmzE2xqwESYZ9h53cV3nklUA2IdFbOaZutpLM6VLbmHrT6XVc1u8GdeDkxsHdU
-         xL7asHmE37waWeGAVGWYxZ9Urm0XKmFQDQI2QdF2TvrqFHBS2gHrERTo8JJ5ZmadDnOM
-         PoUA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IM+k+BPK9bSz4jD4o6435UpTaeLCWKIRqQ/FMa90ZXI=;
+        b=bRgrcT/K+3rZ//SjLRT7rM6IdNJOhgKj+AbDXVGY/lrkn+9Y0JI5D0F5RYFfI8PbPo
+         sZP51+kVm0cMBOiG+okB9+ekwFAGAJhXSjud5YDePe3EYG1y83jf4UvjDlzZ58X5t8vf
+         8S1VzEh+U7L+g+GS6E4sjUIy1myQVeCpEDNKptN082Xe0UQOJUB/GNVYaIa3w/5ACzGz
+         r1fSM8b4FcU4AO72EanKOqtOR0HZwJ9FU+2fbPzBP5lOppHUX+YtDbjc2SWZYQMRKz0L
+         Hck9oNceA+jezPHdB8JBVJImiViRsLQXBbuSzCdMNVDpzq1XeFfMgIpf7axPQHL6oosL
+         VvMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7boAqxbklIVoCOnNruyfDwdmhhUZeF1tVmDe3wmYFhY=;
-        b=CWegSm0FRqbdXV38N42C35N0p0An4ks3hVp9dR6u+QO8jhlWoDl4o17ZVzKzb6+ZNC
-         6lU/lSx5IrRxkylOIk31yvxENetC4FqKB8rujhrYhh0Y/7VkF2qpGKi8rc+1KluDFbsn
-         6OayR7YA9Wrt6RZPfdpTwiz5kz7+ZHB8L/D+uTGgB2z4Zv/3XQ7IhXocV7aP8cuUqm4U
-         AUWjBqLVLktRS4XEy5FCorGjmzGDoQYq4WUkMmWqPfYusvi0ly0aa0tmZ81d3CozJhiU
-         lrQqCE7Jf2Km+J+mPEdFfBI0ZZy56GKTfJg/O9FKfytM/rMBy8HsY27w7izcG8rhwOfD
-         J4ZA==
-X-Gm-Message-State: AOAM531U4CYiYnRIr+zGXGFsQpl/hIjKnOcWV4/uANs6XzMeUmC9qSns
-        wVhNt4zsvgSkFHPipqyMyH3b2A==
-X-Google-Smtp-Source: ABdhPJykvocW2yX0jIN90Id6omnMQGqwx0w/GZ6CBNVtdbWC21x0QiVL9KpJPIECVv6fEC6l3hv4WA==
-X-Received: by 2002:a05:6e02:ec4:: with SMTP id i4mr9088302ilk.121.1595614306996;
-        Fri, 24 Jul 2020 11:11:46 -0700 (PDT)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id b13sm2407802iod.40.2020.07.24.11.11.45
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IM+k+BPK9bSz4jD4o6435UpTaeLCWKIRqQ/FMa90ZXI=;
+        b=gJngbiGv8JN9L0vlRBHuGGAYiaLX09NIknT4ccEQxNJFr4GtxJyR0fvLzjjN3IpZFL
+         vgocHA3Gnk6CxxhJUoGs+dka1RCSq2RQ2W4yuduexhrgNcnDpBILGz7hRLGiGTMG0pwG
+         rSMK3MpUbfAZJUv3ZR6YWpT8XzmBEv/hQDs/1RXVEseBlHdNNy2/Qb0OU7HZvDJyaf4w
+         myANOj7oimVgrENXozM4OkbQGnKnP1J+T3ruqTqZK6q8JFQ4WyxMbcU0/xS2053EJPtP
+         GXVeNCoJn1DqiIH9O2mHdS4LD4ZrzKlSrE2jXRKVbxWDsd5SYEfBF4NIGCi4b/AeVDLh
+         RDmQ==
+X-Gm-Message-State: AOAM532ZpzPjOHfPWi2x7rC9wHMilryb1K2bwfLwrD5eCoFHrJ+5Jj/p
+        4ObRk/I8NyZhetIQl+WmESL2obqt
+X-Google-Smtp-Source: ABdhPJz6EnBSpRv8gQbXY6AiCfvp4ye8/QUL1Q9ScAQ4jWkM7F96uEGXkF1B0ErrlXMy4CjPYtQkNQ==
+X-Received: by 2002:ac8:6793:: with SMTP id b19mr1531516qtp.333.1595614681288;
+        Fri, 24 Jul 2020 11:18:01 -0700 (PDT)
+Received: from tannerlove.nyc.corp.google.com ([2620:0:1003:316:f693:9fff:feea:df57])
+        by smtp.gmail.com with ESMTPSA id x29sm2041217qtv.80.2020.07.24.11.18.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2020 11:11:46 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     evgreen@chromium.org, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] net: ipa: new notification infrastructure
-Date:   Fri, 24 Jul 2020 13:11:41 -0500
-Message-Id: <20200724181142.13581-2-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200724181142.13581-1-elder@linaro.org>
-References: <20200724181142.13581-1-elder@linaro.org>
+        Fri, 24 Jul 2020 11:18:00 -0700 (PDT)
+From:   Tanner Love <tannerlove.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, Tanner Love <tannerlove@google.com>,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net] selftests/net: fix clang issues for target arch PowerPC and others
+Date:   Fri, 24 Jul 2020 14:17:57 -0400
+Message-Id: <20200724181757.2331172-1-tannerlove.kernel@gmail.com>
+X-Mailer: git-send-email 2.28.0.rc0.142.g3c755180ce-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -65,145 +62,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new SSR notifier infrastructure to request notifications of
-modem events, rather than the remoteproc IPA notification system.
-The latter was put in place temporarily with the knowledge that the
-new mechanism would become available.
+From: Tanner Love <tannerlove@google.com>
 
-Signed-off-by: Alex Elder <elder@linaro.org>
+Address these warnings observed with clang 9.
+
+rxtimestamp:
+The signedness of char is implementation-dependent. Some systems
+(including PowerPC and ARM) use unsigned char.
+Compilation yielded:
+warning: result of comparison of constant -1 with expression of type \
+'char' is always true [-Wtautological-constant-out-of-range-compare]
+                                  &arg_index)) != -1) {
+
+psock_fanout:
+Compilation yielded warnings like:
+warning: format specifies type 'unsigned short' but the argument has \
+type 'int' [-Wformat]
+                typeflags, PORT_BASE, PORT_BASE + port_off);
+
+so_txtime:
+On powerpcle, int64_t maps to long long.
+Compilation yielded:
+warning: absolute value function 'labs' given an argument of type \
+'long long' but has parameter of type 'long' which may cause \
+truncation of value [-Wabsolute-value]
+        if (labs(tstop - texpect) > cfg_variance_us)
+
+tcp_mmap:
+Compilation yielded:
+warning: result of comparison of constant 34359738368 with \
+expression of type 'size_t' (aka 'unsigned int') is always true \
+[-Wtautological-constant-out-of-range-compare]
+        while (total < FILE_SZ) {
+
+Tested: make -C tools/testing/selftests TARGETS="net" run_tests
+
+Fixes: 16e781224198 ("selftests/net: Add a test to validate behavior of rx timestamps")
+Fixes: af5136f95045 ("selftests/net: SO_TXTIME with ETF and FQ")
+Fixes: 77f65ebdca50 ("packet: packet fanout rollover during socket overload")
+Fixes: 192dc405f308 ("selftests: net: add tcp_mmap program")
+Signed-off-by: Tanner Love <tannerlove@google.com>
+Acked-by: Willem de Bruijn <willemb@google.com>
 ---
-David:  If you approve, please only ACK; Bjorn will merge.
+ tools/testing/selftests/net/psock_fanout.c | 3 ++-
+ tools/testing/selftests/net/rxtimestamp.c  | 3 +--
+ tools/testing/selftests/net/so_txtime.c    | 2 +-
+ tools/testing/selftests/net/tcp_mmap.c     | 2 +-
+ 4 files changed, 5 insertions(+), 5 deletions(-)
 
- drivers/net/ipa/ipa.h       |  3 ++
- drivers/net/ipa/ipa_modem.c | 56 +++++++++++++++++++++++--------------
- 2 files changed, 38 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
-index b10a853929525..55115cfb29720 100644
---- a/drivers/net/ipa/ipa.h
-+++ b/drivers/net/ipa/ipa.h
-@@ -10,6 +10,7 @@
- #include <linux/device.h>
- #include <linux/notifier.h>
- #include <linux/pm_wakeup.h>
-+#include <linux/notifier.h>
+diff --git a/tools/testing/selftests/net/psock_fanout.c b/tools/testing/selftests/net/psock_fanout.c
+index 8c8c7d79c38d..2c522f7a0aec 100644
+--- a/tools/testing/selftests/net/psock_fanout.c
++++ b/tools/testing/selftests/net/psock_fanout.c
+@@ -350,7 +350,8 @@ static int test_datapath(uint16_t typeflags, int port_off,
+ 	int fds[2], fds_udp[2][2], ret;
  
- #include "ipa_version.h"
- #include "gsi.h"
-@@ -73,6 +74,8 @@ struct ipa {
- 	enum ipa_version version;
- 	struct platform_device *pdev;
- 	struct rproc *modem_rproc;
-+	struct notifier_block nb;
-+	void *notifier;
- 	struct ipa_smp2p *smp2p;
- 	struct ipa_clock *clock;
- 	atomic_t suspend_ref;
-diff --git a/drivers/net/ipa/ipa_modem.c b/drivers/net/ipa/ipa_modem.c
-index ed10818dd99f2..e34fe2d77324e 100644
---- a/drivers/net/ipa/ipa_modem.c
-+++ b/drivers/net/ipa/ipa_modem.c
-@@ -9,7 +9,7 @@
- #include <linux/netdevice.h>
- #include <linux/skbuff.h>
- #include <linux/if_rmnet.h>
--#include <linux/remoteproc/qcom_q6v5_ipa_notify.h>
-+#include <linux/remoteproc/qcom_rproc.h>
+ 	fprintf(stderr, "\ntest: datapath 0x%hx ports %hu,%hu\n",
+-		typeflags, PORT_BASE, PORT_BASE + port_off);
++		typeflags, (uint16_t)PORT_BASE,
++		(uint16_t)(PORT_BASE + port_off));
  
- #include "ipa.h"
- #include "ipa_data.h"
-@@ -311,43 +311,40 @@ static void ipa_modem_crashed(struct ipa *ipa)
- 		dev_err(dev, "error %d zeroing modem memory regions\n", ret);
- }
+ 	fds[0] = sock_fanout_open(typeflags, 0);
+ 	fds[1] = sock_fanout_open(typeflags, 0);
+diff --git a/tools/testing/selftests/net/rxtimestamp.c b/tools/testing/selftests/net/rxtimestamp.c
+index 422e7761254d..bcb79ba1f214 100644
+--- a/tools/testing/selftests/net/rxtimestamp.c
++++ b/tools/testing/selftests/net/rxtimestamp.c
+@@ -329,8 +329,7 @@ int main(int argc, char **argv)
+ 	bool all_tests = true;
+ 	int arg_index = 0;
+ 	int failures = 0;
+-	int s, t;
+-	char opt;
++	int s, t, opt;
  
--static void ipa_modem_notify(void *data, enum qcom_rproc_event event)
-+static int ipa_modem_notify(struct notifier_block *nb, unsigned long action,
-+			    void *data)
+ 	while ((opt = getopt_long(argc, argv, "", long_options,
+ 				  &arg_index)) != -1) {
+diff --git a/tools/testing/selftests/net/so_txtime.c b/tools/testing/selftests/net/so_txtime.c
+index ceaad78e9667..3155fbbf644b 100644
+--- a/tools/testing/selftests/net/so_txtime.c
++++ b/tools/testing/selftests/net/so_txtime.c
+@@ -121,7 +121,7 @@ static bool do_recv_one(int fdr, struct timed_send *ts)
+ 	if (rbuf[0] != ts->data)
+ 		error(1, 0, "payload mismatch. expected %c", ts->data);
+ 
+-	if (labs(tstop - texpect) > cfg_variance_us)
++	if (llabs(tstop - texpect) > cfg_variance_us)
+ 		error(1, 0, "exceeds variance (%d us)", cfg_variance_us);
+ 
+ 	return false;
+diff --git a/tools/testing/selftests/net/tcp_mmap.c b/tools/testing/selftests/net/tcp_mmap.c
+index 4555f88252ba..92086d65bd87 100644
+--- a/tools/testing/selftests/net/tcp_mmap.c
++++ b/tools/testing/selftests/net/tcp_mmap.c
+@@ -344,7 +344,7 @@ int main(int argc, char *argv[])
  {
--	struct ipa *ipa = data;
--	struct device *dev;
-+	struct ipa *ipa = container_of(nb, struct ipa, nb);
-+	struct qcom_ssr_notify_data *notify_data = data;
-+	struct device *dev = &ipa->pdev->dev;
- 
--	dev = &ipa->pdev->dev;
--	switch (event) {
--	case MODEM_STARTING:
-+	switch (action) {
-+	case QCOM_SSR_BEFORE_POWERUP:
- 		dev_info(dev, "received modem starting event\n");
- 		ipa_smp2p_notify_reset(ipa);
- 		break;
- 
--	case MODEM_RUNNING:
-+	case QCOM_SSR_AFTER_POWERUP:
- 		dev_info(dev, "received modem running event\n");
- 		break;
- 
--	case MODEM_STOPPING:
--	case MODEM_CRASHED:
-+	case QCOM_SSR_BEFORE_SHUTDOWN:
- 		dev_info(dev, "received modem %s event\n",
--			 event == MODEM_STOPPING ? "stopping"
--						 : "crashed");
-+			 notify_data->crashed ? "crashed" : "stopping");
- 		if (ipa->setup_complete)
- 			ipa_modem_crashed(ipa);
- 		break;
- 
--	case MODEM_OFFLINE:
-+	case QCOM_SSR_AFTER_SHUTDOWN:
- 		dev_info(dev, "received modem offline event\n");
- 		break;
- 
--	case MODEM_REMOVING:
--		dev_info(dev, "received modem stopping event\n");
--		break;
--
- 	default:
--		dev_err(&ipa->pdev->dev, "unrecognized event %u\n", event);
-+		dev_err(dev, "received unrecognized event %lu\n", action);
- 		break;
- 	}
-+
-+	return NOTIFY_OK;
- }
- 
- int ipa_modem_init(struct ipa *ipa, bool modem_init)
-@@ -362,13 +359,30 @@ void ipa_modem_exit(struct ipa *ipa)
- 
- int ipa_modem_config(struct ipa *ipa)
- {
--	return qcom_register_ipa_notify(ipa->modem_rproc, ipa_modem_notify,
--					ipa);
-+	void *notifier;
-+
-+	ipa->nb.notifier_call = ipa_modem_notify;
-+
-+	notifier = qcom_register_ssr_notifier("mpss", &ipa->nb);
-+	if (IS_ERR(notifier))
-+		return PTR_ERR(notifier);
-+
-+	ipa->notifier = notifier;
-+
-+	return 0;
- }
- 
- void ipa_modem_deconfig(struct ipa *ipa)
- {
--	qcom_deregister_ipa_notify(ipa->modem_rproc);
-+	struct device *dev = &ipa->pdev->dev;
-+	int ret;
-+
-+	ret = qcom_unregister_ssr_notifier(ipa->notifier, &ipa->nb);
-+	if (ret)
-+		dev_err(dev, "error %d unregistering notifier", ret);
-+
-+	ipa->notifier = NULL;
-+	memset(&ipa->nb, 0, sizeof(ipa->nb));
- }
- 
- int ipa_modem_setup(struct ipa *ipa)
+ 	struct sockaddr_storage listenaddr, addr;
+ 	unsigned int max_pacing_rate = 0;
+-	size_t total = 0;
++	unsigned long total = 0;
+ 	char *host = NULL;
+ 	int fd, c, on = 1;
+ 	char *buffer;
 -- 
-2.20.1
+2.28.0.rc0.142.g3c755180ce-goog
 
