@@ -2,62 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4A3A22BB26
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 02:51:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB82222BB27
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 02:52:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727955AbgGXAvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jul 2020 20:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32876 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726791AbgGXAvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jul 2020 20:51:31 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B033BC0619D3
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 17:51:31 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2C79011DB3159;
-        Thu, 23 Jul 2020 17:34:46 -0700 (PDT)
-Date:   Thu, 23 Jul 2020 17:51:25 -0700 (PDT)
-Message-Id: <20200723.175125.1061358245366802716.davem@davemloft.net>
-To:     dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, andrea.mayer@uniroma2.it,
-        rdunlap@infradead.org
-Subject: Re: [PATCH net] vrf: Handle CONFIG_SYSCTL not set
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200723232309.48952-1-dsahern@kernel.org>
-References: <20200723232309.48952-1-dsahern@kernel.org>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 23 Jul 2020 17:34:46 -0700 (PDT)
+        id S1728344AbgGXAw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jul 2020 20:52:27 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:37658 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728131AbgGXAw1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Jul 2020 20:52:27 -0400
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1jylwm-0001fs-L6; Fri, 24 Jul 2020 10:52:25 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 24 Jul 2020 10:52:24 +1000
+Date:   Fri, 24 Jul 2020 10:52:24 +1000
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "Gong, Sishuai" <sishuai@purdue.edu>,
+        "tgraf@suug.ch" <tgraf@suug.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Sousa da Fonseca, Pedro Jose" <pfonseca@purdue.edu>
+Subject: Re: PROBLEM: potential concurrency bug in rhashtable.h
+Message-ID: <20200724005224.GA29920@gondor.apana.org.au>
+References: <5964B1AB-3A3D-482C-A13B-4528C015E1ED@purdue.edu>
+ <22d7b981-c105-ebee-46e9-241797769e06@gmail.com>
+ <20200724000927.GA27290@gondor.apana.org.au>
+ <a0b1aa08-b8dd-3b41-6c0c-7482e05a9986@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a0b1aa08-b8dd-3b41-6c0c-7482e05a9986@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
-Date: Thu, 23 Jul 2020 17:23:09 -0600
+On Thu, Jul 23, 2020 at 05:34:15PM -0700, Eric Dumazet wrote:
+>
+> Sure, but __rht_ptr() is used with different RCU checks,
+> I guess a that adding these lockdep conditions will make
+> a patch more invasive.
 
-> Randy reported compile failure when CONFIG_SYSCTL is not set/enabled:
-> 
-> ERROR: modpost: "sysctl_vals" [drivers/net/vrf.ko] undefined!
-> 
-> Fix by splitting out the sysctl init and cleanup into helpers that
-> can be set to do nothing when CONFIG_SYSCTL is disabled. In addition,
-> move vrf_strict_mode and vrf_strict_mode_change to above
-> vrf_shared_table_handler (code move only) and wrap all of it
-> in the ifdef CONFIG_SYSCTL.
-> 
-> Update the strict mode tests to check for the existence of the
-> /proc/sys entry.
-> 
-> Fixes: 33306f1aaf82 ("vrf: add sysctl parameter for strict mode")
-> Cc: Andrea Mayer <andrea.mayer@uniroma2.it>
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Signed-off-by: David Ahern <dsahern@kernel.org>
+Yes it is large but the only substantial change is to __rht_ptr
+and its callers.  Everything else is just juggling RCU markings.
 
-Applied to net-next, thanks David.
+Cheers,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
