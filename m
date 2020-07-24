@@ -2,129 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F88422C87C
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 16:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F63C22C856
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 16:46:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727016AbgGXOwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 10:52:45 -0400
-Received: from zg8tmja5ljk3lje4mi4ymjia.icoremail.net ([209.97.182.222]:54570
-        "HELO zg8tmja5ljk3lje4mi4ymjia.icoremail.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with SMTP id S1726170AbgGXOwp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 10:52:45 -0400
-X-Greylist: delayed 392 seconds by postgrey-1.27 at vger.kernel.org; Fri, 24 Jul 2020 10:52:43 EDT
-Received: from [166.111.139.116] (unknown [166.111.139.116])
-        by app-5 (Coremail) with SMTP id EwQGZQAn2UkG9BpfubdyAw--.49696S2;
-        Fri, 24 Jul 2020 22:45:26 +0800 (CST)
-From:   Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
-Subject: Rule about streaming DMA mapping
-To:     3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
-        doshir@vmware.com, pv-drivers@vmware.com, davem@davemloft.net,
-        kuba@kernel.org, Greg KH <gregkh@linuxfoundation.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <73f8f864-058a-c899-b07d-5dc1e4f3e9e6@tsinghua.edu.cn>
-Date:   Fri, 24 Jul 2020 22:45:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726811AbgGXOqt convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 24 Jul 2020 10:46:49 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:48196 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726591AbgGXOqt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 10:46:49 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-150-Sv6EjPSkPGGxpkP40Mj3KA-1; Fri, 24 Jul 2020 10:46:44 -0400
+X-MC-Unique: Sv6EjPSkPGGxpkP40Mj3KA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 07C058E2B41;
+        Fri, 24 Jul 2020 14:46:41 +0000 (UTC)
+Received: from hog.localdomain, (unknown [10.40.194.193])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A6F88712C0;
+        Fri, 24 Jul 2020 14:46:38 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     Sabrina Dubroca <sd@queasysnail.net>,
+        Paul Wouters <paul@nohats.ca>,
+        Andrew Cagney <andrew.cagney@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Tobias Brunner <tobias@strongswan.org>
+Subject: [RFC PATCH ipsec] xfrm: don't pass too short packets to userspace with ESPINUDP encap
+Date:   Fri, 24 Jul 2020 16:46:07 +0200
+Message-Id: <18a669995a73fefd70e179e6bc11b74e397e56ad.1595594449.git.sd@queasysnail.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-CM-TRANSID: EwQGZQAn2UkG9BpfubdyAw--.49696S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxWF4UuFW5tFyDZr1fKrW3Jrb_yoW5WrWkpF
-        4kXF15trWYqr1ktryUGr1rXryUJw1kt34UGr1UJ3Z5u3y5Jr1jqry0qr10gr1UCw4kZr4U
-        Jr1UXw4kZr1UtwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUv2b7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
-        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lc7I2V7IY0VAS07AlzVAYIcxG8wCY
-        02Avz4vE14v_Xryl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
-        Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q
-        6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
-        kF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE
-        14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa
-        7IU5gL07UUUUU==
-X-CM-SenderInfo: xedlyxhdmxq3pvlqwxlxdovvfxof0/
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Currently, any UDP-encapsulated packet of 8 bytes or less will be
+passed to userspace, whether it starts with the non-ESP prefix or
+not (except keepalives). This includes:
+ - messages of 1, 2, 3 bytes
+ - messages of 4 to 8 bytes not starting with 00 00 00 00
 
- From the book "Linux device drivers" (3rd edition), I find an 
-interesting rule for streaming DMA mapping:
+This patch changes that behavior, so that only properly-formed non-ESP
+messages are passed to userspace. Messages of 8 bytes or less that
+don't contain a full non-ESP prefix followed by some data (at least
+one byte) will be dropped and counted as XfrmInHdrError.
 
-Once a buffer has been mapped, it belongs to the device, not the 
-processor. Until
-the buffer has been unmapped, the driver should not touch its contents 
-in any
-way. Only after dma_unmap_single has been called is it safe for the 
-driver to
-access the contents of the buffer (with one exception that we see shortly).
-Among other things, this rule implies that a buffer being written to a 
-device cannot
-be mapped until it contains all the data to write.
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+---
+ net/ipv4/xfrm4_input.c | 9 +++++++--
+ net/ipv6/xfrm6_input.c | 9 +++++++--
+ 2 files changed, 14 insertions(+), 4 deletions(-)
 
-I find some violations about this rule, and there are two examples in 
-Linux-5.6:
-
-=== EXAMPLE 1 ===
-In vmxnet3_probe_device() in drivers/net/vmxnet3/vmxnet3_drv.c:
-     adapter->adapter_pa = dma_map_single(&adapter->pdev->dev, adapter,
-                          sizeof(struct vmxnet3_adapter),
-                          PCI_DMA_TODEVICE);
-     if (dma_mapping_error(&adapter->pdev->dev, adapter->adapter_pa)) {
-         dev_err(&pdev->dev, "Failed to map dma\n");
-         err = -EFAULT;
-         goto err_set_mask;
-     }
-     adapter->shared = dma_alloc_coherent(
-                 &adapter->pdev->dev,
-                 sizeof(struct Vmxnet3_DriverShared),
-                 &adapter->shared_pa, GFP_KERNEL);
-     if (!adapter->shared) {
-         dev_err(&pdev->dev, "Failed to allocate memory\n");
-         err = -ENOMEM;
-         goto err_alloc_shared;
-     }
-
-     adapter->num_rx_queues = num_rx_queues;
-     adapter->num_tx_queues = num_tx_queues;
-     adapter->rx_buf_per_pkt = 1;
-
-The variable "adapter" is mapped to streaming DMA, but its fields are 
-used before this variable is unmapped.
-
-=== EXAMPLE 2 ===
-In queue_skb() in drivers/atm/idt77252.c:
-     IDT77252_PRV_PADDR(skb) = dma_map_single(&card->pcidev->dev, skb->data,
-                          skb->len, DMA_TO_DEVICE);
-
-     error = -EINVAL;
-
-     if (oam) {
-         if (skb->len != 52)
-             goto errout;
-
-         tbd->word_1 = SAR_TBD_OAM | ATM_CELL_PAYLOAD | SAR_TBD_EPDU;
-         tbd->word_2 = IDT77252_PRV_PADDR(skb) + 4;
-         tbd->word_3 = 0x00000000;
-         tbd->word_4 = (skb->data[0] << 24) | (skb->data[1] << 16) |
-                   (skb->data[2] <<  8) | (skb->data[3] <<  0);
-
-The array "skb->data" is mapped to streaming DMA, but its elements are 
-used before this array is unmapped.
-
-Because I am not familiar with streaming DMA mapping, I wonder whether 
-these violations are real?
-If they are real, what problems can they cause?
-
-Thanks a lot :)
-
-
-Best wishes,
-Jia-Ju Bai
+diff --git a/net/ipv4/xfrm4_input.c b/net/ipv4/xfrm4_input.c
+index ad2afeef4f10..2a2bb38ac798 100644
+--- a/net/ipv4/xfrm4_input.c
++++ b/net/ipv4/xfrm4_input.c
+@@ -114,9 +114,14 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+ 		} else if (len > sizeof(struct ip_esp_hdr) && udpdata32[0] != 0) {
+ 			/* ESP Packet without Non-ESP header */
+ 			len = sizeof(struct udphdr);
+-		} else
+-			/* Must be an IKE packet.. pass it through */
++		} else if (len > 4 && udpdata32[0] == 0) {
++			/* IKE packet: pass it through */
+ 			return 1;
++		} else {
++			/* incomplete packet, drop */
++			XFRM_INC_STATS(dev_net(skb->dev), LINUX_MIB_XFRMINHDRERROR);
++			goto drop;
++		}
+ 		break;
+ 	case UDP_ENCAP_ESPINUDP_NON_IKE:
+ 		/* Check if this is a keepalive packet.  If so, eat it. */
+diff --git a/net/ipv6/xfrm6_input.c b/net/ipv6/xfrm6_input.c
+index 04cbeefd8982..7e14d59d55cb 100644
+--- a/net/ipv6/xfrm6_input.c
++++ b/net/ipv6/xfrm6_input.c
+@@ -110,9 +110,14 @@ int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+ 		} else if (len > sizeof(struct ip_esp_hdr) && udpdata32[0] != 0) {
+ 			/* ESP Packet without Non-ESP header */
+ 			len = sizeof(struct udphdr);
+-		} else
+-			/* Must be an IKE packet.. pass it through */
++		} else if (len > 4 && udpdata32[0] == 0) {
++			/* IKE packet: pass it through */
+ 			return 1;
++		} else {
++			/* incomplete packet, drop */
++			XFRM_INC_STATS(dev_net(skb->dev), LINUX_MIB_XFRMINHDRERROR);
++			goto drop;
++		}
+ 		break;
+ 	case UDP_ENCAP_ESPINUDP_NON_IKE:
+ 		/* Check if this is a keepalive packet.  If so, eat it. */
+-- 
+2.27.0
 
