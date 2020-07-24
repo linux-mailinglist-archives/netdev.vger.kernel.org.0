@@ -2,110 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB53A22BE08
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 08:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1C8022BE0F
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 08:26:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgGXGVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 02:21:31 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:33143 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726760AbgGXGVa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jul 2020 02:21:30 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1595571690; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: Date: Subject: In-Reply-To: References: Cc:
- To: From: Sender; bh=BZ8AC3965Q0AhovgKqImxBL3OP0Y01iMFp0654oHm0Y=; b=BI6UuB2QVMvfANHGqi2ewdpoL2y7cUt8438gYJa+HCgl69tBPpbQRHzBIp09u5hb9402mxxK
- 4SEhemo5Tk9fawQZ/vRrq/PFAY2w/lVDpSRlj+KGeezkmfd200zxmV0ausJVw7sC4IxKzd29
- kIVS4fTTfhNCIOAJHTooS1t5DOE=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n18.prod.us-west-2.postgun.com with SMTP id
- 5f1a7dde8e9b2c49c6e2397c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 24 Jul 2020 06:21:18
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 52921C433CB; Fri, 24 Jul 2020 06:21:18 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from Pillair (unknown [183.83.71.149])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: pillair)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id ED84CC433C9;
-        Fri, 24 Jul 2020 06:21:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org ED84CC433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=pillair@codeaurora.org
-From:   "Rakesh Pillai" <pillair@codeaurora.org>
-To:     "'Johannes Berg'" <johannes@sipsolutions.net>,
-        <ath10k@lists.infradead.org>
-Cc:     <linux-wireless@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kvalo@codeaurora.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <netdev@vger.kernel.org>, <dianders@chromium.org>,
-        <evgreen@chromium.org>
-References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>           <1595351666-28193-2-git-send-email-pillair@codeaurora.org>      <0dbdef912f9d61521011f638200fd451a3530568.camel@sipsolutions.net>       <003201d6611e$c54a1c90$4fde55b0$@codeaurora.org> <ce380ea1fd1f5db40a92f67673f070a1f88eee50.camel@sipsolutions.net>
-In-Reply-To: <ce380ea1fd1f5db40a92f67673f070a1f88eee50.camel@sipsolutions.net>
-Subject: RE: [RFC 1/7] mac80211: Add check for napi handle before WARN_ON
-Date:   Fri, 24 Jul 2020 11:51:12 +0530
-Message-ID: <000401d66182$a3d97ab0$eb8c7010$@codeaurora.org>
+        id S1726742AbgGXG0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 02:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726178AbgGXG0C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 02:26:02 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FABC0619D3
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 23:26:02 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1595571960;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=06rp+oHIu83X014OwhuO3Yo50SE1lVaYHF3HF2M3tlo=;
+        b=ZR80GPs/7Eo5HtL+8bmFHwkhFTwTCHQWSZDfiXnIEXk/6v+VE7IYdOHik45t0uRFvrcvFh
+        132B0LqqBoun9G8hj9QAWx/tF26GR9kMghL+98OmVb2cFcOwtnbcJl4w5uvhn5yTXqXH2U
+        3NwccxFZU036tX6dgMbuA2FzAOVLOGMalbaSrJTzkt5M7Uoma4pAzQ+rVJJthKpDQtotrf
+        dmeZM6nqyy/teOHOaSugg8IR60uLKbc5k7XzrDVpOj1xZM3Jj9TA7lth5cIJx5nxWLHVtF
+        baMl2oNJYBzxJyp0V28tlwA6plA6lMj5i8DlF9GtP4XvW/OSBq6DbF3UTP6Bjg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1595571960;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=06rp+oHIu83X014OwhuO3Yo50SE1lVaYHF3HF2M3tlo=;
+        b=BUCnCxCAgt/YSsPMr0YdGZhEerrU12NvVAAQsP+WxLoORZ0qt0+SMo/CvJnWNr09FYL8Zd
+        0n1E4SZAoil8QzDQ==
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH v1 0/2] ptp: Add generic header parsing function
+In-Reply-To: <20200723170842.GB2975@hoboy>
+References: <20200723074946.14253-1-kurt@linutronix.de> <20200723170842.GB2975@hoboy>
+Date:   Fri, 24 Jul 2020 08:25:59 +0200
+Message-ID: <87r1t12zuw.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQG1Bu1FBYi7G1oVhHY/01uT1gSslwIktOPGArPni2UCL/NlBQHsbdYmqRFPSaA=
-Content-Language: en-us
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
+On Thu Jul 23 2020, Richard Cochran wrote:
+> Kurt,
+>
+> On Thu, Jul 23, 2020 at 09:49:44AM +0200, Kurt Kanzenbach wrote:
+>> in order to reduce code duplication in the ptp code of DSA drivers, move=
+ the
+>> header parsing function to ptp_classify. This way the Marvell and the he=
+llcreek
+>> drivers can share the same implementation. And probably more drivers can=
+ benefit
+>> from it. Implemented as discussed [1] [2].
+>
+> This looks good.  I made a list of drivers that can possibily use this he=
+lper.
+>
+> Finding symbol: PTP_CLASS_PMASK
+>
+> *** drivers/net/dsa/mv88e6xxx/hwtstamp.c:
+> parse_ptp_header[223]          switch (type & PTP_CLASS_PMASK) {
 
-> -----Original Message-----
-> From: Johannes Berg <johannes@sipsolutions.net>
-> Sent: Friday, July 24, 2020 1:37 AM
-> To: Rakesh Pillai <pillair@codeaurora.org>; ath10k@lists.infradead.org
-> Cc: linux-wireless@vger.kernel.org; linux-kernel@vger.kernel.org;
-> kvalo@codeaurora.org; davem@davemloft.net; kuba@kernel.org;
-> netdev@vger.kernel.org; dianders@chromium.org; evgreen@chromium.org
-> Subject: Re: [RFC 1/7] mac80211: Add check for napi handle before
-> WARN_ON
->=20
-> On Thu, 2020-07-23 at 23:56 +0530, Rakesh Pillai wrote:
->=20
-> > > > -	WARN_ON_ONCE(softirq_count() =3D=3D 0);
-> > > > +	WARN_ON_ONCE(napi && softirq_count() =3D=3D 0);
-> > >
-> > > FWIW, I'm pretty sure this is incorrect - we make assumptions on
-> > > softirqs being disabled in mac80211 for serialization and in place =
-of
-> > > some locking, I believe.
-> > >
-> >
-> > I checked this, but let me double confirm.
-> > But after this change, no packet is submitted from driver in a =
-softirq
-> context.
-> > So ideally this should take care of serialization.
->=20
-> I'd guess that we have some reliance on BHs already being disabled, =
-for
-> things like u64 sync updates, or whatnot. I mean, we did "rx_ni()" for =
-a
-> reason ... Maybe lockdep can help catch some of the issues.
->=20
-> But couldn't you be in a thread and have BHs disabled too?
+Sure, done already (see patch 2).
 
-This would ideally beat the purpose and possibly hurt the other =
-subsystems running on the same core.
+>
+> *** drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c:
+> mlxsw_sp_ptp_parse[335]        switch (ptp_class & PTP_CLASS_PMASK) {
 
->=20
-> johannes
+Works ootb.
 
+>
+> *** drivers/net/ethernet/ti/am65-cpts.c:
+> am65_skb_get_mtype_seqid[761]  switch (ptp_class & PTP_CLASS_PMASK) {
+>
+> *** drivers/net/ethernet/ti/cpts.c:
+> cpts_skb_get_mtype_seqid[459]  switch (ptp_class & PTP_CLASS_PMASK) {
+>
+> *** drivers/net/phy/dp83640.c:
+> match[815]                     switch (type & PTP_CLASS_PMASK) {
+> is_sync[990]                   switch (type & PTP_CLASS_PMASK) {
 
+These three drivers also deal with ptp v1 and they need access to the
+message type. However, the message type is located at a different offset
+depending on the ptp version. They all do:
+
+|if (unlikely(ptp_class & PTP_CLASS_V1))
+|	msgtype =3D data + offset + OFF_PTP_CONTROL;
+|else
+|	msgtype =3D data + offset;
+
+Maybe we can put that in a helper function, too?
+
+|static inline u8 ptp_get_msgtype(const struct ptp_header *hdr, unsigned in=
+t type)
+|{
+|	u8 msg;
+|
+|	if (unlikely(type & PTP_CLASS_V1))
+|		/* msg type is located @ offset 20 for ptp v1 */=20
+|		msg =3D hdr->source_port_identity.clock_identity.id[0];
+|	else
+|		msg =3D hdr->tsmt & 0x0f;
+|
+|	return msg;
+|}
+
+What do you think about it?
+
+>
+> *** drivers/ptp/ptp_ines.c:
+> ines_match[457]                switch (ptp_class & PTP_CLASS_PMASK) {
+> is_sync_pdelay_resp[703]       switch (type & PTP_CLASS_PMASK) {
+
+Works ootb.
+
+>
+>> @DSA maintainers: Please, have a look the Marvell code. I don't have har=
+dware to
+>> test it. I've tested this series only on the Hirschmann switch.
+>
+> I'll test the marvell switch with your change and let you know...
+
+Great.
+
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8afvcACgkQeSpbgcuY
+8KbVCg//XcabFWBUdhKx1Qcno9kNmn1X8SV1Nor+E47G7lcnUaBbsxYavz1tCxEE
+QMWhv3XOwbrcpXPqzodI+bIytOJNUzoZT00GXKsqRBuQMsGoCQxeeY7DA0JYiBiX
+emaEZxpak7Qo/iSxdjHKNOY0l+r/Md9QKYhTicULw5/7qy9mLjnAiFMOGsoF6wRH
+YFR5XSnwGmD8EnGp73WNzHU7ZRkY/asEOnvz8AR0RCfdKcotJGQMw2WZLoCWdIY2
+qoRnq+7kT1CjYysre8MRABCQtyC/DNSItuMuUkn3GMsj1wgZOiEu5vXSk5JmT8nZ
+lYxAtmrRXztxJWSJcCcx0YjwivdlxH5DATxQqCLDITaD+fWK/8avEf65tsVBy8O5
+rF7HzvWgebWiBtvodOpCOBcnZYSaBQYc6A/jUpGAba35eHVz8wAZt7Mzhd8duBYY
+MHr0wE34YbqEugrT7Ij9uU8tQr6bXuQ0FM1sojBuLC6dxloA4EZccVLEtw+bSLKW
+dG2gm5PKbsjvuqoazqoYvACAMtzXsSeiIGV/Lzm1vQZJcM7fciFiTzWix9dMRDNJ
+Y7w/CR901UK3vQVsFgvslksbNAGQoahzatSK7c9VRppR05lKMDcsES2zNig1pbzx
+nirsX9TOxXB8WAbdgalvarqDol/k6Vreqf+4GxPxGRylLifhh7c=
+=TOJG
+-----END PGP SIGNATURE-----
+--=-=-=--
