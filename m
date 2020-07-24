@@ -2,144 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 315C322BDA8
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 07:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D97A322BDC7
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 07:59:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726717AbgGXFoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 01:44:16 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:43191 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726543AbgGXFoQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 01:44:16 -0400
-Received: by mail-il1-f197.google.com with SMTP id y13so5030547ila.10
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 22:44:15 -0700 (PDT)
+        id S1726554AbgGXF66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 01:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52166 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726178AbgGXF66 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 01:58:58 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E8B0C0619D3;
+        Thu, 23 Jul 2020 22:58:57 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id t11so4482147pfq.11;
+        Thu, 23 Jul 2020 22:58:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=tHJSlrryDhZfzxVQ+HnXZ49XsiGJt/zqq4Bp2OPlHWw=;
+        b=hjsZiBz7NZxINWxsf9cQBL6t/ncB4jCjSXw3AnvKn9EtENmn4CFWJeAdUCeqaZt+Bk
+         m930hqCkoSAMjG3E+uQMtateKEfRKrI4sQz+tut/WAmgNaLS8HSBitvrnWtWj0JRqWc+
+         nOKUlOghhuYwuGGKGnuiUAtScc9HpuF1FC4SuvHZeBKdH8o2dr4njtWOD7lqeCbTaKbN
+         ZMVtKdNwLaGdYMqZnEIQik4ax1ZrKh6eVGfxCp5hAthogp1+tL3NOxG8H9eLll7Jmx8Y
+         wJIcNp+Zut/o9ELD7mTiRnt9E89o5FYxmSnCwIZ/0L7h/4evfQp+zSMcrd8YW57JkqRc
+         7GFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=OMRIqu8obzB7sqBNMSf9FQ4q4I4IeW7Bg8oejJNF6U0=;
-        b=EtLUowdYINxwMgYc7hRfvRRxktFSUyZEJ4Ws3Ty1cZJHg9LDk0SBSMxt2L2GYzDcj2
-         P53g05np+BhyO0szJvnBGmNFPC4nBPrQfS4AQjKQJ5NnkmcHQdghr9uM9J3FBUqL2ybC
-         S1ZvPmwRYQBpOexUR4XVdIlQTy6XGUIcSi9iw5ItfT7PfDSO61V10zr7HHB6dmV3YpFB
-         JHZYwUeUuGtBtxmdqjfgqKsn/aTwbgh8AwilFrkLdxZjZKmW4B8WY1jRra1bxJxPYqb6
-         8P7eqZjGz6XZx7sAKgF4tp7Ei7YmhI9uqsyqBXjJiqSx9JrKZEhDDe1UEGplEluw6eaI
-         LCag==
-X-Gm-Message-State: AOAM532G1RV216po9YH3d5HBm5kqF0xcUJIPfZ+SpzOpFm49CgJV6o7T
-        M5KfiaPUU6R7Lf58V3NAOlaeAG7U5NOexkX6cD6FcWxLvFTv
-X-Google-Smtp-Source: ABdhPJz+cEqTGRpwSTZo9WNIglVqLWwOEuLvSiDPE+iKmJWXKYSfuDsc4pBL0flCRkMB3teDVKLvV6dIV7FLzDJdqlvUlkIIrxWx
-MIME-Version: 1.0
-X-Received: by 2002:a92:d602:: with SMTP id w2mr4817149ilm.247.1595569454951;
- Thu, 23 Jul 2020 22:44:14 -0700 (PDT)
-Date:   Thu, 23 Jul 2020 22:44:14 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000093b26605ab2976f0@google.com>
-Subject: INFO: rcu detected stall in rtnl_newlink
-From:   syzbot <syzbot+d46d08c4209a3a86ccc5@syzkaller.appspotmail.com>
-To:     fweisbec@gmail.com, linux-kernel@vger.kernel.org, mingo@kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=tHJSlrryDhZfzxVQ+HnXZ49XsiGJt/zqq4Bp2OPlHWw=;
+        b=YNb8lUJg/C5gUMwOkOJMtW1YFHne9+A56yO2gwkGL4tOUmcao/7Tkxq+UihrUEaCHn
+         UpaslhTi6YP9JIOWDgLD+MPhF//WJ+Qwq3ffD4AATY/oK1DH/lig4DbBSiN6k6RV59ek
+         D+76dnX4He2YhP4lCL/iTEzP+hAZpYjBEhO4Y9jcOGebRIuJunvGmzhpN1KNHncgfzZD
+         NfT7UMJm87KaXn191V0PjzjA+rVshttP93q1kDR0Xtrgpccj4hL+8/7k2edywms1Mstw
+         PAC2BZ5F3O8Z6Kr4ZJnJVvBkdlxLpDeOWr6+dO1/9jmW9vvjqRzGCeh0rX3eC3/nwwMK
+         kHgw==
+X-Gm-Message-State: AOAM532xWjjoAhv++6L8TMInAKVx6Oe5lcJxTbUKMleTlq3efebrFWfr
+        VsttYzkYPd52AS16r07sEro=
+X-Google-Smtp-Source: ABdhPJxzHWhd5ZuOr1+dnN7zVP4t9hUxpX/mO08MYCkqSlvqYNff/RD2PDfwDoS5kzR2Lr8WnFm+aw==
+X-Received: by 2002:a62:7942:: with SMTP id u63mr7293736pfc.54.1595570336759;
+        Thu, 23 Jul 2020 22:58:56 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([163.114.132.7])
+        by smtp.gmail.com with ESMTPSA id j10sm4909893pgh.28.2020.07.23.22.58.55
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 23 Jul 2020 22:58:55 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, torvalds@linux-foundation.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH v3 bpf-next 0/4] bpf: Populate bpffs with map and prog iterators
+Date:   Thu, 23 Jul 2020 22:58:50 -0700
+Message-Id: <20200724055854.59013-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Alexei Starovoitov <ast@kernel.org>
 
-syzbot found the following issue on:
+v2->v3:
+- fixed module unload race (Daniel)
+- added selftest (Daniel)
+- fixed build bot warning
 
-HEAD commit:    e6827d1a cxgb4: add missing release on skb in uld_send()
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=17a227b4900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=dddbcb5a9f4192db
-dashboard link: https://syzkaller.appspot.com/bug?extid=d46d08c4209a3a86ccc5
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15a38228900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1302e4c4900000
+v1->v2:
+- changed names to 'progs.debug' and 'maps.debug' to hopefully better indicate
+  instability of the text output. Having dot in the name also guarantees
+  that these special files will not conflict with normal bpf objects pinned
+  in bpffs, since dot is disallowed for normal pins.
+- instead of hard coding link_name in the core bpf moved into UMD.
+- cleanedup error handling.
+- addressed review comments from Yonghong and Andrii.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+d46d08c4209a3a86ccc5@syzkaller.appspotmail.com
+This patch set is the first real user of user moder driver facility. The
+general use case for user mode driver is to ship vmlinux with preloaded BPF
+programs. In this particular case the user mode driver populates bpffs instance
+with two BPF iterators. In several months BPF_LSM project would need to preload
+the kernel with its own set of BPF programs and attach to LSM hooks instead of
+bpffs. BPF iterators and BPF_LSM are unstable from uapi perspective. They are
+tracing based and peek into arbitrary kernel data structures. One can question
+why a kernel module cannot embed BPF programs inside. The reason is that libbpf
+is necessary to load them. First libbpf loads BPF Type Format, then creates BPF
+maps, populates them. Then it relocates code sections inside BPF programs,
+loads BPF programs, and finally attaches them to events. Theoretically libbpf
+can be rewritten to work in the kernel, but that is massive undertaking. The
+maintenance of in-kernel libbpf and user space libbpf would be another
+challenge. Another obstacle to embedding BPF programs into kernel module is
+sys_bpf api. Loading of programs, BTF, maps goes through the verifier. It
+validates and optimizes the code. It's possible to provide in-kernel api to all
+of sys_bpf commands (load progs, create maps, update maps, load BTF, etc), but
+that is huge amount of work and forever maintenance headache.
+Hence the decision is to ship vmlinux with user mode drivers that load
+BPF programs. Just like kernel modules extend vmlinux BPF programs
+are safe extensions of the kernel and some of them need to ship with vmlinux.
 
-rcu: INFO: rcu_preempt self-detected stall on CPU
-rcu: 	1-....: (10491 ticks this GP) idle=5d2/1/0x4000000000000000 softirq=10100/10100 fqs=5226 
-	(t=10500 jiffies g=8229 q=552)
-NMI backtrace for cpu 1
-CPU: 1 PID: 6812 Comm: syz-executor138 Not tainted 5.8.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- nmi_cpu_backtrace.cold+0x70/0xb1 lib/nmi_backtrace.c:101
- nmi_trigger_cpumask_backtrace+0x1b3/0x223 lib/nmi_backtrace.c:62
- trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
- rcu_dump_cpu_stacks+0x194/0x1cf kernel/rcu/tree_stall.h:320
- print_cpu_stall kernel/rcu/tree_stall.h:553 [inline]
- check_cpu_stall kernel/rcu/tree_stall.h:627 [inline]
- rcu_pending kernel/rcu/tree.c:3489 [inline]
- rcu_sched_clock_irq.cold+0x5b3/0xccc kernel/rcu/tree.c:2504
- update_process_times+0x25/0x60 kernel/time/timer.c:1726
- tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:176
- tick_sched_timer+0x108/0x290 kernel/time/tick-sched.c:1320
- __run_hrtimer kernel/time/hrtimer.c:1520 [inline]
- __hrtimer_run_queues+0x1d5/0xfc0 kernel/time/hrtimer.c:1584
- hrtimer_interrupt+0x32a/0x930 kernel/time/hrtimer.c:1646
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1080 [inline]
- __sysvec_apic_timer_interrupt+0x142/0x5e0 arch/x86/kernel/apic/apic.c:1097
- asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:711
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
- sysvec_apic_timer_interrupt+0xe0/0x120 arch/x86/kernel/apic/apic.c:1091
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:587
-RIP: 0010:should_resched arch/x86/include/asm/preempt.h:102 [inline]
-RIP: 0010:__local_bh_enable_ip+0x189/0x250 kernel/softirq.c:196
-Code: 89 48 ba 00 00 00 00 00 fc ff df 48 c1 e8 03 80 3c 10 00 0f 85 c4 00 00 00 48 83 3d 60 5a 6e 08 00 74 7b fb 66 0f 1f 44 00 00 <65> 8b 05 80 78 bb 7e 85 c0 74 6b 5b 5d 41 5c c3 80 3d a3 6a 63 09
-RSP: 0018:ffffc90001816d80 EFLAGS: 00000286
-RAX: 1ffffffff1369c12 RBX: 0000000000000201 RCX: 0000000000000002
-RDX: dffffc0000000000 RSI: 0000000000000000 RDI: ffffffff81468609
-RBP: ffffffff87cdbce5 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: ffff8880a9298400
-R13: 0000000000000001 R14: 0000000000000034 R15: dffffc0000000000
- spin_unlock_bh include/linux/spinlock.h:398 [inline]
- batadv_tt_local_purge+0x285/0x370 net/batman-adv/translation-table.c:1446
- batadv_tt_local_resize_to_mtu+0x8e/0x130 net/batman-adv/translation-table.c:4197
- batadv_hardif_activate_interface.part.0.cold+0x14c/0x1ba net/batman-adv/hard-interface.c:653
- batadv_hardif_activate_interface net/batman-adv/hard-interface.c:800 [inline]
- batadv_hardif_enable_interface+0xa7d/0xb10 net/batman-adv/hard-interface.c:792
- batadv_softif_slave_add+0x92/0x150 net/batman-adv/soft-interface.c:892
- do_set_master+0x1c8/0x220 net/core/rtnetlink.c:2476
- do_setlink+0x903/0x35c0 net/core/rtnetlink.c:2611
- __rtnl_newlink+0xc21/0x1750 net/core/rtnetlink.c:3272
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3398
- rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5461
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x4437d9
-Code: Bad RIP value.
-RSP: 002b:00007ffdfad85898 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000004437d9
-RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000004
-RBP: 00007ffdfad858a0 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
-R10: 0000000001bbbbbb R11: 0000000000000246 R12: 00007ffdfad858b0
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+This patch set adds a kernel module with user mode driver that populates bpffs
+with two BPF iterators.
 
+$ mount bpffs /my/bpffs/ -t bpf
+$ ls -la /my/bpffs/
+total 4
+drwxrwxrwt  2 root root    0 Jul  2 00:27 .
+drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
+-rw-------  1 root root    0 Jul  2 00:27 maps.debug
+-rw-------  1 root root    0 Jul  2 00:27 progs.debug
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+The user mode driver will load BPF Type Formats, create BPF maps, populate BPF
+maps, load two BPF programs, attach them to BPF iterators, and finally send two
+bpf_link IDs back to the kernel.
+The kernel will pin two bpf_links into newly mounted bpffs instance under
+names "progs.debug" and "maps.debug". These two files become human readable.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+$ cat /my/bpffs/progs.debug
+  id name            pages attached
+  11 dump_bpf_map        1 bpf_iter_bpf_map
+  12 dump_bpf_prog       1 bpf_iter_bpf_prog
+  27 test_pkt_access     1
+  32 test_main           1 test_pkt_access test_pkt_access
+  33 test_subprog1       1 test_pkt_access_subprog1 test_pkt_access
+  34 test_subprog2       1 test_pkt_access_subprog2 test_pkt_access
+  35 test_subprog3       1 test_pkt_access_subprog3 test_pkt_access
+  36 new_get_skb_len     1 get_skb_len test_pkt_access
+  37 new_get_skb_ifi     1 get_skb_ifindex test_pkt_access
+  38 new_get_constan     1 get_constant test_pkt_access
+
+The BPF program dump_bpf_prog() in iterators.bpf.c is printing this data about
+all BPF programs currently loaded in the system. This information is unstable
+and will change from kernel to kernel.
+
+In some sence this output is similar to 'bpftool prog show' that is using
+stable api to retreive information about BPF programs. The BPF subsytems grows
+quickly and there is always demand to show as much info about BPF things as
+possible. But we cannot expose all that info via stable uapi of bpf syscall,
+since the details change so much. Right now a BPF program can be attached to
+only one other BPF program. Folks are working on patches to enable
+multi-attach, but for debugging it's necessary to see the current state. There
+is no uapi for that, but above output shows it:
+  37 new_get_skb_ifi     1 get_skb_ifindex test_pkt_access
+  38 new_get_constan     1 get_constant test_pkt_access
+     [1]                   [2]          [3]
+[1] is the name of BPF prog.
+[2] is the name of function inside target BPF prog.
+[3] is the name of target BPF prog.
+
+[2] and [3] are not exposed via uapi, since they will change from single to
+multi soon. There are many other cases where bpf internals are useful for
+debugging, but shouldn't be exposed via uapi due to high rate of changes.
+
+systemd mounts /sys/fs/bpf at the start, so this kernel module with user mode
+driver needs to be available early. BPF_LSM most likely would need to preload
+BPF programs even earlier.
+
+Few interesting observations:
+- though bpffs comes with two human readble files "progs.debug" and
+  "maps.debug" they can be removed. 'rm -f /sys/fs/bpf/progs.debug' will remove
+  bpf_link and kernel will automatically unload corresponding BPF progs, maps,
+  BTFs. In the future '-o remount' will be able to restore them. This is not
+  implemented yet.
+
+- 'ps aux|grep bpf_preload' shows nothing. User mode driver loaded BPF
+  iterators and exited. Nothing is lingering in user space at this point.
+
+- We can consider giving 0644 permissions to "progs.debug" and "maps.debug"
+  to allow unprivileged users see BPF things loaded in the system.
+  We cannot do so with "bpftool prog show", since it's using cap_sys_admin
+  parts of bpf syscall.
+
+- The functionality split between core kernel, bpf_preload kernel module and
+  user mode driver is very similar to bpfilter style of interaction.
+
+- Similar BPF iterators can be used as unstable extensions to /proc.
+  Like mounting /proc can prepopolate some subdirectory in there with
+  a BPF iterator that will print QUIC sockets instead of tcp and udp.
+
+Alexei Starovoitov (4):
+  bpf: Factor out bpf_link_get_by_id() helper.
+  bpf: Add BPF program and map iterators as built-in BPF programs.
+  bpf: Add kernel module with user mode driver that populates bpffs.
+  selftests/bpf: Add bpffs preload test.
+
+ include/linux/bpf.h                           |   1 +
+ init/Kconfig                                  |   2 +
+ kernel/bpf/Makefile                           |   1 +
+ kernel/bpf/inode.c                            | 132 ++++++-
+ kernel/bpf/preload/Kconfig                    |  18 +
+ kernel/bpf/preload/Makefile                   |  21 +
+ kernel/bpf/preload/bpf_preload.h              |  16 +
+ kernel/bpf/preload/bpf_preload_kern.c         |  83 ++++
+ kernel/bpf/preload/bpf_preload_umd_blob.S     |   7 +
+ kernel/bpf/preload/iterators/.gitignore       |   2 +
+ kernel/bpf/preload/iterators/Makefile         |  57 +++
+ kernel/bpf/preload/iterators/README           |   4 +
+ .../preload/iterators/bpf_preload_common.h    |  13 +
+ kernel/bpf/preload/iterators/iterators.bpf.c  |  82 ++++
+ kernel/bpf/preload/iterators/iterators.c      |  94 +++++
+ kernel/bpf/preload/iterators/iterators.skel.h | 360 ++++++++++++++++++
+ kernel/bpf/syscall.c                          |  46 ++-
+ .../selftests/bpf/prog_tests/test_bpffs.c     |  94 +++++
+ 18 files changed, 1012 insertions(+), 21 deletions(-)
+ create mode 100644 kernel/bpf/preload/Kconfig
+ create mode 100644 kernel/bpf/preload/Makefile
+ create mode 100644 kernel/bpf/preload/bpf_preload.h
+ create mode 100644 kernel/bpf/preload/bpf_preload_kern.c
+ create mode 100644 kernel/bpf/preload/bpf_preload_umd_blob.S
+ create mode 100644 kernel/bpf/preload/iterators/.gitignore
+ create mode 100644 kernel/bpf/preload/iterators/Makefile
+ create mode 100644 kernel/bpf/preload/iterators/README
+ create mode 100644 kernel/bpf/preload/iterators/bpf_preload_common.h
+ create mode 100644 kernel/bpf/preload/iterators/iterators.bpf.c
+ create mode 100644 kernel/bpf/preload/iterators/iterators.c
+ create mode 100644 kernel/bpf/preload/iterators/iterators.skel.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/test_bpffs.c
+
+-- 
+2.23.0
+
