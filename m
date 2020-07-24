@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 421B422C987
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 17:56:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B60322C98E
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 17:57:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726780AbgGXP4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 11:56:20 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54548 "EHLO
+        id S1726783AbgGXP5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 11:57:15 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:56544 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726381AbgGXP4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 11:56:20 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 3E182200B2;
-        Fri, 24 Jul 2020 15:56:19 +0000 (UTC)
-Received: from us4-mdac16-51.at1.mdlocal (unknown [10.110.48.100])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 3B955800A4;
-        Fri, 24 Jul 2020 15:56:19 +0000 (UTC)
+        by vger.kernel.org with ESMTP id S1726381AbgGXP5P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 11:57:15 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7B02C200B9;
+        Fri, 24 Jul 2020 15:57:14 +0000 (UTC)
+Received: from us4-mdac16-32.at1.mdlocal (unknown [10.110.49.216])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7842F800A7;
+        Fri, 24 Jul 2020 15:57:14 +0000 (UTC)
 X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.8])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id B52CC4006F;
-        Fri, 24 Jul 2020 15:56:18 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.107])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 19021100078;
+        Fri, 24 Jul 2020 15:57:14 +0000 (UTC)
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 631224C0062;
-        Fri, 24 Jul 2020 15:56:18 +0000 (UTC)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D4D0F280079;
+        Fri, 24 Jul 2020 15:57:13 +0000 (UTC)
 Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
  (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Jul
- 2020 16:56:13 +0100
+ 2020 16:57:09 +0100
 From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH v4 net-next 00/16] sfc: driver for EF100 family NICs, part 1
+Subject: [PATCH v4 net-next 01/16] sfc: remove efx_ethtool_nway_reset()
 To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>
-Message-ID: <d224dbb2-ef20-dca9-d50b-7f583b45d859@solarflare.com>
-Date:   Fri, 24 Jul 2020 16:56:10 +0100
+References: <d224dbb2-ef20-dca9-d50b-7f583b45d859@solarflare.com>
+Message-ID: <ab21ad56-2b1e-cb75-f9df-0da7339a1a7b@solarflare.com>
+Date:   Fri, 24 Jul 2020 16:57:05 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
+In-Reply-To: <d224dbb2-ef20-dca9-d50b-7f583b45d859@solarflare.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
@@ -45,126 +47,82 @@ X-Originating-IP: [10.17.20.203]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25560.003
-X-TM-AS-Result: No-2.752000-8.000000-10
-X-TMASE-MatchedRID: X3MNZ1y6GUR09yt1Yp3gn7bQFsbjObJeLozI+rhNYbklbkXtj2kSO1uE
-        36pB6+0bofKl0HWAHQPX53LJkoR7zjTuXZRUSTQGuZBZOg7RfX9MtkHpT9ho+lrJqhTz0WH26aX
-        8TYIrj1uyniowqjihGB8Pq6yM7fNIyw0dUT70SVFTLFbi+a8u3bzETYfYS4xZi3i2HAbFd/fqYf
-        M0tIgPqcUGtPIFi9Wb/V+Z6GKjSReKmX0SaEcqm6iUivh0j2PvRwDU669267w4XREg9Ki104Rsx
-        t8GP3C3f5Zq/VZOXh7U887R5LNclzbcsMCH+ZLFiJwEp8weVXwwjY20D2quYgL+e4+Xk/QWvNj7
-        Q/9J9nt9Ho28QgzyPjbtjVWZc8/OnM8FMFzcocI1VHP4fCovggAWEaci2Ej6BO++kW5c7hD1Zeb
-        7KEkrKKXyclUbGCUE8KJ9+iKms0LXPfWTmsBa3Ro8wYJxWb0ONV9S7O+u3KYDAA5uRHailqXXyb
-        C2uBgGmGtEmkq5VfImE42irklNT3fasbVZ1j1qLIrMljt3adsEa8g1x8eqF4pl689MOw1GbBUWr
-        0rJkZZriWy7wPumNHAxcMmPggHaBRx9b+h52aoHwuCWPSIIAD+k5IvvZ1N/mvnco5r4a3OjxYyR
-        Ba/qJQPTK4qtAgwIPcCXjNqUmkUnRE+fI6etkgfvT942bFntpzGN/HcuQqy2f3KM8m2jM5gCQvZ
-        GO7VTz30b0BhnA1l7MLj/tLvj8zIb3/HveSXya8gTsrNbys2b1iG5HyYyVDHCqV7rv9Y1QDMFuK
-        2P9FjtoWavEW7HRE3Z8jKJCdR0Rfwnj+uLV5w=
+X-TM-AS-Result: No-1.075700-8.000000-10
+X-TMASE-MatchedRID: QtNN9W95DWv8XlijEAp3PsVbb3pjW5Mn7qPKKDEKjrLiRCPcinj8UqEF
+        sAUWv0FPd/e1oYDeXOxQpiUwGXA626H2g9syPs888Kg68su2wyE/pOSL72dTfwdkFovAReUoilv
+        Ab18i4hP65TDaYHP8l6ZY4q+T5VVFvi/XXOZZp4ogCPGiZqtI8H0tCKdnhB58vqq8s2MNhPCZMP
+        CnTMzfOiq2rl3dzGQ1L/+/bHPzNDcXopMYO4l02U2A4S07Nvw7pQrvyg4ulFsILFf+nLXWwsK+I
+        8WyktsPU9K7y0PBPRDltfuL95f14vE/nqZok8mLl0kb426sKbJDgw2OfwbhLKMa5OkNpiHkifsL
+        +6CY4RnJZmo0UvMlsUMMprcbiest
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.752000-8.000000
+X-TMASE-Result: 10--1.075700-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25560.003
-X-MDID: 1595606179-pfOzjmoP2QZZ
+X-MDID: 1595606234-1iYpVqP8diYi
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-EF100 is a new NIC architecture under development at Xilinx, based
- partly on existing Solarflare technology.  As many of the hardware
- interfaces resemble EF10, support is implemented within the 'sfc'
- driver, which previous patch series "commonised" for this purpose.
+An MDIO-based n-way restart does not make sense for any of the NICs
+ supported by this driver, nor for the coming EF100.
+Unlike on Falcon (which was already split off into a separate driver),
+ the PHY on all of Siena, EF10 and EF100 is managed by MC firmware.
+While Siena can talk to the PHY over MDIO, doing so for anything other
+ than debugging purposes (mdio_mii_ioctl) is likely to confuse the
+ firmware.
+(According to the SFC firmware team, this support was originally added
+ to the Siena driver early in the development of that product, before
+ it was decided to have firmware manage the PHY.)
 
-In order to maintain bisectability while splitting into patches of a
- reasonable size, I had to do a certain amount of back-and-forth with
- stubs for things that the common code may try to call, mainly because
- we can't do them until we've set up MCDI, but we can't set up MCDI
- without probing the event queues, at which point a lot of the common
- machinery becomes reachable from event handlers.
-Consequently, this first series doesn't get as far as actually sending
- and receiving packets.  I have a second series ready to follow it
- which implements the datapath (and a few other things like ethtool).
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/ethtool.c        | 1 -
+ drivers/net/ethernet/sfc/ethtool_common.c | 8 --------
+ drivers/net/ethernet/sfc/ethtool_common.h | 1 -
+ 3 files changed, 10 deletions(-)
 
-Changes from v3:
- * combine both drivers (sfc_ef100 and sfc) into a single module, to
-   make non-modular builds work.  Patch #4 now adds a few indirections
-   to support this; the ones in the RX and TX path use indirect-call-
-   wrappers to minimise the performance impact.
-
-Changes from v2:
- * remove MODULE_VERSION.
- * call efx_destroy_reset_workqueue() from ef100_exit_module().
- * correct uint32_ts to u32s.  While I was at it, I fixed a bunch of
-   other style issues in the function-control-window code.
-All in patch #4.
-
-Changes from v1:
- * kernel test robot spotted a link error when sfc_ef100 was built
-   without mdio.  It turns out the thing we were trying to link to
-   was a bogus thing to do on anything but Falcon, so new patch #1
-   removes it from this driver.
- * fix undeclared symbols in patch #4 by shuffling around prototypes
-   and #includes and adding 'static' where appropriate.
- * fix uninitialised variable 'rc2' in patch #7.
-
-Edward Cree (16):
-  sfc: remove efx_ethtool_nway_reset()
-  sfc_ef100: add EF100 register definitions
-  sfc_ef100: register accesses on EF100
-  sfc: skeleton EF100 PF driver
-  sfc_ef100: reset-handling stub
-  sfc_ef100: PHY probe stub
-  sfc_ef100: don't call efx_reset_down()/up() on EF100
-  sfc_ef100: implement MCDI transport
-  sfc_ef100: implement ndo_open/close and EVQ probing
-  sfc_ef100: process events for MCDI completions
-  sfc_ef100: read datapath caps, implement check_caps
-  sfc_ef100: extend ef100_check_caps to cover datapath_caps3
-  sfc_ef100: actually perform resets
-  sfc_ef100: probe the PHY and configure the MAC
-  sfc_ef100: read device MAC address at probe time
-  sfc_ef100: implement ndo_get_phys_port_{id,name}
-
- drivers/net/ethernet/sfc/Kconfig          |   5 +-
- drivers/net/ethernet/sfc/Makefile         |   4 +-
- drivers/net/ethernet/sfc/ef10.c           |   7 +
- drivers/net/ethernet/sfc/ef100.c          | 541 +++++++++++++++++
- drivers/net/ethernet/sfc/ef100.h          |  12 +
- drivers/net/ethernet/sfc/ef100_ethtool.c  |  24 +
- drivers/net/ethernet/sfc/ef100_ethtool.h  |  12 +
- drivers/net/ethernet/sfc/ef100_netdev.c   | 274 +++++++++
- drivers/net/ethernet/sfc/ef100_netdev.h   |  17 +
- drivers/net/ethernet/sfc/ef100_nic.c      | 619 +++++++++++++++++++
- drivers/net/ethernet/sfc/ef100_nic.h      |  32 +
- drivers/net/ethernet/sfc/ef100_regs.h     | 693 ++++++++++++++++++++++
- drivers/net/ethernet/sfc/ef100_rx.c       |  31 +
- drivers/net/ethernet/sfc/ef100_rx.h       |  21 +
- drivers/net/ethernet/sfc/ef100_tx.c       |  51 ++
- drivers/net/ethernet/sfc/ef100_tx.h       |  24 +
- drivers/net/ethernet/sfc/efx.c            |   8 +
- drivers/net/ethernet/sfc/efx.h            |  19 +-
- drivers/net/ethernet/sfc/efx_common.c     |  11 +-
- drivers/net/ethernet/sfc/ethtool.c        |   3 -
- drivers/net/ethernet/sfc/ethtool_common.c |  10 +-
- drivers/net/ethernet/sfc/ethtool_common.h |   3 -
- drivers/net/ethernet/sfc/io.h             |  16 +-
- drivers/net/ethernet/sfc/mcdi.c           |   2 +-
- drivers/net/ethernet/sfc/mcdi.h           |   4 +-
- drivers/net/ethernet/sfc/net_driver.h     |  18 +
- drivers/net/ethernet/sfc/nic_common.h     |   6 +
- drivers/net/ethernet/sfc/siena.c          |   3 +
- drivers/net/ethernet/sfc/tx.c             |   4 +-
- drivers/net/ethernet/sfc/tx_common.h      |   2 +
- 30 files changed, 2444 insertions(+), 32 deletions(-)
- create mode 100644 drivers/net/ethernet/sfc/ef100.c
- create mode 100644 drivers/net/ethernet/sfc/ef100.h
- create mode 100644 drivers/net/ethernet/sfc/ef100_ethtool.c
- create mode 100644 drivers/net/ethernet/sfc/ef100_ethtool.h
- create mode 100644 drivers/net/ethernet/sfc/ef100_netdev.c
- create mode 100644 drivers/net/ethernet/sfc/ef100_netdev.h
- create mode 100644 drivers/net/ethernet/sfc/ef100_nic.c
- create mode 100644 drivers/net/ethernet/sfc/ef100_nic.h
- create mode 100644 drivers/net/ethernet/sfc/ef100_regs.h
- create mode 100644 drivers/net/ethernet/sfc/ef100_rx.c
- create mode 100644 drivers/net/ethernet/sfc/ef100_rx.h
- create mode 100644 drivers/net/ethernet/sfc/ef100_tx.c
- create mode 100644 drivers/net/ethernet/sfc/ef100_tx.h
+diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
+index 9828516bd82d..038c08d2d7aa 100644
+--- a/drivers/net/ethernet/sfc/ethtool.c
++++ b/drivers/net/ethernet/sfc/ethtool.c
+@@ -232,7 +232,6 @@ const struct ethtool_ops efx_ethtool_ops = {
+ 	.get_regs		= efx_ethtool_get_regs,
+ 	.get_msglevel		= efx_ethtool_get_msglevel,
+ 	.set_msglevel		= efx_ethtool_set_msglevel,
+-	.nway_reset		= efx_ethtool_nway_reset,
+ 	.get_link		= ethtool_op_get_link,
+ 	.get_coalesce		= efx_ethtool_get_coalesce,
+ 	.set_coalesce		= efx_ethtool_set_coalesce,
+diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
+index e9a5a66529bf..fb06097b70d8 100644
+--- a/drivers/net/ethernet/sfc/ethtool_common.c
++++ b/drivers/net/ethernet/sfc/ethtool_common.c
+@@ -173,14 +173,6 @@ void efx_ethtool_self_test(struct net_device *net_dev,
+ 		test->flags |= ETH_TEST_FL_FAILED;
+ }
+ 
+-/* Restart autonegotiation */
+-int efx_ethtool_nway_reset(struct net_device *net_dev)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-
+-	return mdio45_nway_restart(&efx->mdio);
+-}
+-
+ void efx_ethtool_get_pauseparam(struct net_device *net_dev,
+ 				struct ethtool_pauseparam *pause)
+ {
+diff --git a/drivers/net/ethernet/sfc/ethtool_common.h b/drivers/net/ethernet/sfc/ethtool_common.h
+index 3f3aaa92fbb5..0c0ea9ac4d08 100644
+--- a/drivers/net/ethernet/sfc/ethtool_common.h
++++ b/drivers/net/ethernet/sfc/ethtool_common.h
+@@ -19,7 +19,6 @@ u32 efx_ethtool_get_msglevel(struct net_device *net_dev);
+ void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable);
+ void efx_ethtool_self_test(struct net_device *net_dev,
+ 			   struct ethtool_test *test, u64 *data);
+-int efx_ethtool_nway_reset(struct net_device *net_dev);
+ void efx_ethtool_get_pauseparam(struct net_device *net_dev,
+ 				struct ethtool_pauseparam *pause);
+ int efx_ethtool_set_pauseparam(struct net_device *net_dev,
 
