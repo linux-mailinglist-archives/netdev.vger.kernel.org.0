@@ -2,242 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81A7822C880
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 16:54:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A60D722C894
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 16:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726667AbgGXOyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 10:54:01 -0400
-Received: from www62.your-server.de ([213.133.104.62]:44572 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726170AbgGXOyA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 10:54:00 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jyz51-0003nF-So; Fri, 24 Jul 2020 16:53:47 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jyz51-000Hv8-Mj; Fri, 24 Jul 2020 16:53:47 +0200
-Subject: Re: [PATCH v3 bpf-next 3/4] bpf: Add kernel module with user mode
- driver that populates bpffs.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        davem@davemloft.net
-Cc:     torvalds@linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-References: <20200724055854.59013-1-alexei.starovoitov@gmail.com>
- <20200724055854.59013-4-alexei.starovoitov@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <418b538a-1799-af47-be1e-22e88d0119af@iogearbox.net>
-Date:   Fri, 24 Jul 2020 16:53:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726731AbgGXO5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 10:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51258 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726326AbgGXO5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 10:57:11 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50103C0619D3
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 07:57:11 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id d18so10094775ion.0
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 07:57:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9Is/bQU4jwdWiMgDyl2swKgH/chVCW6A8VnlLnJKb7Q=;
+        b=WbKKW8VaBguWRdFxe/2VttlkaMH2yFn4VgV/GpD1Egi/0Xpwf9BnkLalbA2cMYna+e
+         B4OGR9+pRPWfAu7GoJeE414mJRjZVOZ1FP/9GjPMIiILDXxeoJn8zuP7CdZASYmudOsu
+         0SOL6mnXGRU4+IPGkcsb1buH4MLKey8bn9GX/srV5fZ+W/AFaGIitjBPFUkwo194u7F/
+         dRvF4XuHGvvslW0OBJ9JFcIR8MqdPf+lSCpfhhbjoQ9Vw5VXkAB3t+r780hmSXCEb7pt
+         3/xDDO0ovv1M+hHz6nWEJQ7Se1vwCUkbCvQa8Rh4lQ9vDIvdF/6V0ri8rQ2o/pG7U5pN
+         iCRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Is/bQU4jwdWiMgDyl2swKgH/chVCW6A8VnlLnJKb7Q=;
+        b=izoh87Lt9leSoaZvB5Gx45W+xvGQRq8/Y4/KHycAhCeIwT+lTfzV5kjuHbDf3QYkZD
+         7cjS3Cs8/uNB/nOWfSJfEDDN2E5I6aUi+8AIBuW1uvIZqQiVHbNDGc9YRFe7aMAo4Tg4
+         rN0CNPbsCT6gym2yq5B2JnG16hvjMJ4r2xuNQLH9mCA2suQ6I477jrlb8FGkftznyaVg
+         Og68qoMp45WR30EUYI6WjYZ8a/41t4GLLa6pNVyZq0/qw6YK8bpBjF92Po41ew+M/ym6
+         GvcspAqDIXkd5IgV3vVjHi38Z/6jLBeszWCrMMCW2G0rqdNQoxjGSd01I/L44w6StXRW
+         P6XQ==
+X-Gm-Message-State: AOAM531Bf25Zo3QYu51/CmSI0EK/x/T6ieaOOjsyqWw/9xGOpDXvKYba
+        l/ruQkbrlbty7dFBVP6S0AoK3v8RXmkKgtGhJpE=
+X-Google-Smtp-Source: ABdhPJyjlNDt7uExZF2t7cXDl7epsmq1nThUX3pQoXUTrc2q3q8iP/DVvi8nH77f+uffLnoy3pn4Y8fksH8sQQWxcd8=
+X-Received: by 2002:a5d:8d04:: with SMTP id p4mr10853314ioj.187.1595602630451;
+ Fri, 24 Jul 2020 07:57:10 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200724055854.59013-4-alexei.starovoitov@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25882/Thu Jul 23 16:39:16 2020)
+References: <CAA85sZvKNXCo5bB5a6kKmsOUAiw+_daAVaSYqNW6QbSBJ0TcyQ@mail.gmail.com>
+ <CAA85sZua6Q8UR7TfCGO0bV=VU0gKtqj-8o_mqH38RpKrwYZGtg@mail.gmail.com>
+ <20200715133136.5f63360c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAA85sZu09Z4gydJ8rAO_Ey0zqx-8Lg28=fBJ=FxFnp6cetNd3g@mail.gmail.com>
+ <CAA85sZtjCW2Yg+tXPgYyoFA5BKAVZC8kVKG=6SiR64c8ur8UcQ@mail.gmail.com>
+ <20200715144017.47d06941@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAA85sZvnytPzpia_ROnkmJoZC8n4vUsrwTQh2UBs6u6g2Fgqxw@mail.gmail.com>
+ <CAKgT0UdwsmE=ygE2KObzM0z-0KgrPcr59JZzVk41F6-iqsSL+Q@mail.gmail.com>
+ <CAA85sZturDN7uOHMDhUnntM43PHjop=TNDb4qvEA2L=jdRa1MA@mail.gmail.com>
+ <CAKgT0Uf42EhnM+zPSb-oL1R8hmo0vEdssGztptbkWKoHXS7ygw@mail.gmail.com>
+ <CAA85sZtHNkocj840i0ohMVekh0B4byuojU02UunK_bR+LB1WiQ@mail.gmail.com>
+ <CAKgT0UdDjabvShwDv0qiume=Q2RKGkm3JhPMZ+f8v5yO37ZLxA@mail.gmail.com>
+ <CAA85sZt6B+rG8pUfRoNVOH=VqHn=rT-+2kHpFDzW+eBwvODxJA@mail.gmail.com>
+ <CAKgT0UfhMjZ6kZSkfpEVHBbQ+4eHQqWRbXk5Sm4nLQD6sSrj0A@mail.gmail.com>
+ <CAA85sZs5D_ReOhsEv1SVbE5D8q77utNBZ=Uv34PVof9gHs9QWw@mail.gmail.com>
+ <CAA85sZvi4x1zc_21a6zPJw0rELOY=RCV4W7Fi4fvcSXfy-6m4g@mail.gmail.com> <CAA85sZvMjcRnuECtFBDKKAG3q2MGeytsxPx8RR-M4hSxruj5Vw@mail.gmail.com>
+In-Reply-To: <CAA85sZvMjcRnuECtFBDKKAG3q2MGeytsxPx8RR-M4hSxruj5Vw@mail.gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 24 Jul 2020 07:56:59 -0700
+Message-ID: <CAKgT0UfcPfNJCP=nT59t4RRwL3T8cQ5dnXeEgW1QXBG24fo-Cg@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] NAT performance issue 944mbit -> ~40mbit
+To:     Ian Kumlien <ian.kumlien@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/24/20 7:58 AM, Alexei Starovoitov wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
-> 
-> Add kernel module with user mode driver that populates bpffs with
-> BPF iterators.
-> 
-> $ mount bpffs /my/bpffs/ -t bpf
-> $ ls -la /my/bpffs/
-> total 4
-> drwxrwxrwt  2 root root    0 Jul  2 00:27 .
-> drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
-> -rw-------  1 root root    0 Jul  2 00:27 maps.debug
-> -rw-------  1 root root    0 Jul  2 00:27 progs.debug
-> 
-> The user mode driver will load BPF Type Formats, create BPF maps, populate BPF
-> maps, load two BPF programs, attach them to BPF iterators, and finally send two
-> bpf_link IDs back to the kernel.
-> The kernel will pin two bpf_links into newly mounted bpffs instance under
-> names "progs.debug" and "maps.debug". These two files become human readable.
-> 
-> $ cat /my/bpffs/progs.debug
->    id name            pages attached
->    11 dump_bpf_map        1 bpf_iter_bpf_map
->    12 dump_bpf_prog       1 bpf_iter_bpf_prog
->    27 test_pkt_access     1
->    32 test_main           1 test_pkt_access test_pkt_access
->    33 test_subprog1       1 test_pkt_access_subprog1 test_pkt_access
->    34 test_subprog2       1 test_pkt_access_subprog2 test_pkt_access
->    35 test_subprog3       1 test_pkt_access_subprog3 test_pkt_access
->    36 new_get_skb_len     1 get_skb_len test_pkt_access
->    37 new_get_skb_ifi     1 get_skb_ifindex test_pkt_access
->    38 new_get_constan     1 get_constant test_pkt_access
-> 
-> The BPF program dump_bpf_prog() in iterators.bpf.c is printing this data about
-> all BPF programs currently loaded in the system. This information is unstable
-> and will change from kernel to kernel as ".debug" suffix conveys.
-> 
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
->   init/Kconfig                                  |   2 +
->   kernel/bpf/Makefile                           |   1 +
->   kernel/bpf/inode.c                            | 132 +++++++++++++++++-
->   kernel/bpf/preload/Kconfig                    |  18 +++
->   kernel/bpf/preload/Makefile                   |  21 +++
->   kernel/bpf/preload/bpf_preload.h              |  16 +++
->   kernel/bpf/preload/bpf_preload_kern.c         |  83 +++++++++++
->   kernel/bpf/preload/bpf_preload_umd_blob.S     |   7 +
->   .../preload/iterators/bpf_preload_common.h    |  13 ++
->   kernel/bpf/preload/iterators/iterators.c      |  94 +++++++++++++
->   10 files changed, 384 insertions(+), 3 deletions(-)
->   create mode 100644 kernel/bpf/preload/Kconfig
->   create mode 100644 kernel/bpf/preload/Makefile
->   create mode 100644 kernel/bpf/preload/bpf_preload.h
->   create mode 100644 kernel/bpf/preload/bpf_preload_kern.c
->   create mode 100644 kernel/bpf/preload/bpf_preload_umd_blob.S
->   create mode 100644 kernel/bpf/preload/iterators/bpf_preload_common.h
->   create mode 100644 kernel/bpf/preload/iterators/iterators.c
-[...]
->   
-> +struct bpf_preload_ops bpf_preload_ops = { .info.driver_name = "bpf_preload" };
-> +EXPORT_SYMBOL_GPL(bpf_preload_ops);
-> +
-> +#if !IS_BUILTIN(CONFIG_BPF_PRELOAD_UMD)
-> +static struct module *bpf_preload_mod;
-> +#endif
-> +
-> +static bool bpf_preload_mod_get(void)
-> +{
-> +	bool ret = true;
-> +
-> +#if IS_BUILTIN(CONFIG_BPF_PRELOAD_UMD)
-> +	return ret;
-> +#else
-> +	/* if bpf_preload.ko wasn't loaded earlier then load it now */
-> +	if (!bpf_preload_ops.do_preload) {
-> +		request_module("bpf_preload");
-> +		if (!bpf_preload_ops.do_preload) {
-> +			pr_err("bpf_preload module is missing.\n"
-> +			       "bpffs will not have iterators.\n");
-> +			return false;
-> +		}
-> +	}
-> +	/* and grab the reference, so it doesn't disappear while the kernel
-> +	 * is interacting with kernel module and its UMD
-> +	 */
-> +	preempt_disable();
-> +	bpf_preload_mod = __module_address((long)bpf_preload_ops.do_preload);
-> +	if (!bpf_preload_mod || !try_module_get(bpf_preload_mod)) {
+On Fri, Jul 24, 2020 at 5:33 AM Ian Kumlien <ian.kumlien@gmail.com> wrote:
+>
+> On Fri, Jul 24, 2020 at 2:01 PM Ian Kumlien <ian.kumlien@gmail.com> wrote:
+> >
+> > On Fri, Jul 17, 2020 at 3:45 PM Ian Kumlien <ian.kumlien@gmail.com> wrote:
+>
+> [--8<--]
+>
+> > As a side note, would something like this fix it - not even compile tested
+> >
+> >
+> > diff --git a/drivers/net/ethernet/intel/igb/igb_main.c
+> > b/drivers/net/ethernet/intel/igb/igb_main.c
+> > index 8bb3db2cbd41..1a7240aae85c 100644
+> > --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> > +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> > @@ -3396,6 +3396,13 @@ static int igb_probe(struct pci_dev *pdev,
+> > const struct pci_device_id *ent)
+> >                           "Width x2" :
+> >                           (hw->bus.width == e1000_bus_width_pcie_x1) ?
+> >                           "Width x1" : "unknown"), netdev->dev_addr);
+> > +               /* quirk */
+> > +#ifdef CONFIG_PCIEASPM
+> > +               if (hw->bus.width == e1000_bus_width_pcie_x1) {
+> > +                       /* single lane pcie causes problems with ASPM */
+> > +                       pdev->pcie_link_state->aspm_enabled = 0;
+> > +               }
+> > +#endif
+> >         }
+> >
+> >         if ((hw->mac.type >= e1000_i210 ||
+> >
+> > I don't know where the right place to put a quirk would be...
+>
+> Ok so that was a real brainfart... turns out that there is a lack of
+> good ways to get to that but it was more intended to
+> know where the quirk should go...
+>
+> Due to the lack of api:s i started wondering if this will apply to
+> more devices than just network cards - potentially we could
+> be a little bit more selective and only not enable it in one direction but...
+>
+> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
+> index b17e5ffd31b1..96a3c6837124 100644
+> --- a/drivers/pci/pcie/aspm.c
+> +++ b/drivers/pci/pcie/aspm.c
+> @@ -584,15 +584,16 @@ static void pcie_aspm_cap_init(struct
+> pcie_link_state *link, int blacklist)
+>          * given link unless components on both sides of the link each
+>          * support L0s.
+>          */
+> -       if (dwreg.support & upreg.support & PCIE_LINK_STATE_L0S)
+> -               link->aspm_support |= ASPM_STATE_L0S;
+> -       if (dwreg.enabled & PCIE_LINK_STATE_L0S)
+> -               link->aspm_enabled |= ASPM_STATE_L0S_UP;
+> -       if (upreg.enabled & PCIE_LINK_STATE_L0S)
+> -               link->aspm_enabled |= ASPM_STATE_L0S_DW;
+> -       link->latency_up.l0s = calc_l0s_latency(upreg.latency_encoding_l0s);
+> -       link->latency_dw.l0s = calc_l0s_latency(dwreg.latency_encoding_l0s);
+> -
+> +       if (pcie_get_width_cap(child) != PCIE_LNK_X1) {
+> +               if (dwreg.support & upreg.support & PCIE_LINK_STATE_L0S)
+> +                       link->aspm_support |= ASPM_STATE_L0S;
+> +               if (dwreg.enabled & PCIE_LINK_STATE_L0S)
+> +                       link->aspm_enabled |= ASPM_STATE_L0S_UP;
+> +               if (upreg.enabled & PCIE_LINK_STATE_L0S)
+> +                       link->aspm_enabled |= ASPM_STATE_L0S_DW;
+> +               link->latency_up.l0s =
+> calc_l0s_latency(upreg.latency_encoding_l0s);
+> +               link->latency_dw.l0s =
+> calc_l0s_latency(dwreg.latency_encoding_l0s);
+> +       }
+>
+> this time it's compile tested...
+>
+> It could also be  if (pcie_get_width_cap(child) > PCIE_LNK_X1) {
+>
+> I assume that ASPM is not enabled for: PCIE_LNK_WIDTH_RESRV ;)
 
-Set looks good overall, but this combination looks a bit odd. Meaning, we request the
-module via request_module(), in its init fn, it will set bpf_preload_ops.do_preload
-callback, and here we need to search kallsyms on __module_address(bpf_preload_ops.do_preload)
-just to get the module struct in order to place a ref on it via try_module_get().
+This is probably a bit too broad of a scope to be used generically
+since this will disable ASPM for all devices that have a x1 link
+width.
 
-Why can't the bpf_preload module simply do:
+It might make more sense to look at something such as
+e1000e_disable_aspm as an example of how to approach this.
 
-static const struct bpf_preload_umd_ops umd_ops = {
-         .preload        = do_preload,
-         .finish         = do_finish,
-         .owner          = THIS_MODULE,
-};
+As far as what triggers it we would need to get more details about the
+setup. I'd be curious if we have an "lspci -vvv" for the system
+available. The assumption is that the ASPM exit latency is high on
+this system and that in turn is causing the bandwidth issues as you
+start entering L1. If I am not mistaken the device should advertise
+about 16us for the exit latency. I'd be curious if we have a device
+somewhere between the NIC and the root port that might be increasing
+the delay in exiting L1, and then if we could identify that we could
+add a PCIe quirk for that.
 
-And then in load_umd():
+Thanks.
 
-static int __init load_umd(void)
-{
-	int err;
-
-	err = umd_load_blob(&bpf_preload_ops.info, &bpf_preload_umd_start,
-			    &bpf_preload_umd_end - &bpf_preload_umd_start);
-	if (!err)
-		bpf_preload_umd_ops = &umd_ops;
-	return err;
-}
-
-Then later in bpf_preload_mod_get() you just do ...
-
-   try_module_get(bpf_preload_umd_ops->owner)
-
-... and can avoid this whole detour with symbol address search which looks odd and
-unneeded for this case.
-
-Thanks,
-Daniel
-
-> +		bpf_preload_mod = NULL;
-> +		pr_err("bpf_preload module get failed.\n");
-> +		ret = false;
-> +	}
-> +	preempt_enable();
-> +	return ret;
-> +#endif
-> +}
-> +
-> +static void bpf_preload_mod_put(void)
-> +{
-> +#if !IS_BUILTIN(CONFIG_BPF_PRELOAD_UMD)
-> +	if (bpf_preload_mod) {
-> +		/* now user can "rmmod bpf_preload" if necessary */
-> +		module_put(bpf_preload_mod);
-> +		bpf_preload_mod = NULL;
-> +	}
-> +#endif
-> +}
-> +
-> +static int populate_bpffs(struct dentry *parent)
-> +{
-> +	struct bpf_preload_info objs[BPF_PRELOAD_LINKS] = {};
-> +	struct bpf_link *links[BPF_PRELOAD_LINKS] = {};
-> +	int err = 0, i;
-> +
-> +	/* grab the mutex to make sure the kernel interactions with bpf_preload
-> +	 * UMD are serialized
-> +	 */
-> +	mutex_lock(&bpf_preload_ops.lock);
-> +
-> +	/* if bpf_preload.ko wasn't built into vmlinux then load it */
-> +	if (!bpf_preload_mod_get())
-> +		goto out;
-> +
-> +	if (!bpf_preload_ops.info.tgid) {
-> +		/* do_preload will start UMD that will load BPF iterator programs */
-> +		err = bpf_preload_ops.do_preload(objs);
-> +		if (err)
-> +			goto out_put;
-> +		for (i = 0; i < BPF_PRELOAD_LINKS; i++) {
-> +			links[i] = bpf_link_by_id(objs[i].link_id);
-> +			if (IS_ERR(links[i])) {
-> +				err = PTR_ERR(links[i]);
-> +				goto out_put;
-> +			}
-> +		}
-> +		for (i = 0; i < BPF_PRELOAD_LINKS; i++) {
-> +			err = bpf_iter_link_pin_kernel(parent,
-> +						       objs[i].link_name, links[i]);
-> +			if (err)
-> +				goto out_put;
-> +			/* do not unlink successfully pinned links even
-> +			 * if later link fails to pin
-> +			 */
-> +			links[i] = NULL;
-> +		}
-> +		/* do_finish() will tell UMD process to exit */
-> +		err = bpf_preload_ops.do_finish();
-> +		if (err)
-> +			goto out_put;
-> +	}
-> +out_put:
-> +	bpf_preload_mod_put();
-> +out:
-> +	mutex_unlock(&bpf_preload_ops.lock);
-> +	for (i = 0; i < BPF_PRELOAD_LINKS && err; i++)
-> +		if (!IS_ERR_OR_NULL(links[i]))
-> +			bpf_link_put(links[i]);
-[...]
+- Alex
