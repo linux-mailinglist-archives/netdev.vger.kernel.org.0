@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5622C22C3B6
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 12:51:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB07422C3B9
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 12:51:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728044AbgGXKuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 06:50:52 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:55265 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726258AbgGXKuu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 06:50:50 -0400
+        id S1728067AbgGXKu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 06:50:58 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:40568 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726329AbgGXKuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 06:50:55 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1595587850; x=1627123850;
+  t=1595587857; x=1627123857;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=JPT5jZOsGT2B+NINcpYtfUVeN8a8QBU08K/b7FI06Ag=;
-  b=ARChtt8i9sM9PEQwDxw3rEtHD56t8zMA3Fp3+2bod+q+zY119Lu1+v3E
-   SffmOFCEYrxv/qGU3pc71WQzc798KmjRe770m2zAKrDOYKajIDnG7WUrz
-   BaIVV45qXdKgEClLAsy2BGQCPEWlaz4aqjd9quwqFuZWduUUFZAkb74x+
-   y6NvOblnU3oo86rD8nAKYBz/+ZhbusslSFEmGxuRXrN9zLTRsPeWjJqnN
-   eFZmdNJeaSYjxqAZfxo4cge3O6yYvSE1p1N9pz5E3KsX+GdKmlopmmMcd
-   7HuyNYK/Gc9rMjhRCmszM4CJbbtuV4UCHmE9DZR+M3M3XXpqgVAYxDelq
-   w==;
-IronPort-SDR: HMa1ZH+s2UPSueHBq/YbryWGwsGb4XlE0+ZGEj1fYkPuDlK33ldhzzEZKMN7Q3+Yt6KmPQZzIx
- HWMqVsGKzEsu0eaVdtDVaiEuR8H2gpKTI2SPVxaDzp+zCGrq1LRxQ+nspTrxtD7ZsdJpuPVMYT
- w1YPz5a1yLtRalBoAjU7+hfn6dtJFE+2Xy2E7/JTabTm9u0cY+S4pdwG2ElAAPjn8g5+3bbsD2
- JEenuwmUK7QLkH1cBS+79Igwmu/QxgnDV/nWhjDN9gqZdGmwF0ai44elw6CbQzzTeNA/VqGIqR
- lPA=
+  bh=n4qDjdS4aJARjsbRK53YPMVPhwJsBHC7jGieRK5mseY=;
+  b=1Y8ucun42+W51S+HFfCjzmUojzbMvBo5JlvKl/BTuLd8bfdDSep5wWrb
+   SR+pff/8LxXrIfqkbVIlST20dqWZ5/X9SWWz+1SrIeerTAbeLlZIs39wK
+   XCpp5468WiieASzZQ2sFrpSdaPZFhD/ytI8S947tXjUkGqXd5A8M9sxGa
+   LyDH8gqSFvq9Pjs/zPGeIQOzdpyatflc7SOf49KYohUf1yiyJIktfNVzw
+   z29Qovv4UNsQTCMV/RQfUOJTT2jKzdSBtF2Jj00C5F10PkmUP/EA6QPmJ
+   PPp/9DZ6jYRmY3liyBGQZfcJq/Q1UOUkgakJNyixbC2G6JlDS50wro2z+
+   A==;
+IronPort-SDR: LcoYlfsVMsYNce8usGky2WRqwRCWrMe2Mmk81h9WnehE5loCzjBq4aQm+f6svT9dalOvI2u2eb
+ QSumn23FEhXjQ2WL2/WD85aKgg1KpEzuqymhnoPrpG2T2++AN5Z+Z4aOr/WxSOvT60P9G4GXe0
+ uSgvyZ4PdY8tYW7jEghXc+uH0DCKCvHidxbuqM9zPC5nVHGOL9i0k1DJOKo/cRsmQWPaBIg+2/
+ O6kCBE53aQt2LuVTYL58D0ZbQ20ke9vggvaWN0NTWUdyMpK9JdDHJ0eimNbGn8oDCvitNWEbMs
+ Cks=
 X-IronPort-AV: E=Sophos;i="5.75,390,1589266800"; 
-   d="scan'208";a="83152928"
+   d="scan'208";a="84467163"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jul 2020 03:50:49 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jul 2020 03:50:56 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 24 Jul 2020 03:50:06 -0700
+ 15.1.1979.3; Fri, 24 Jul 2020 03:50:11 -0700
 Received: from rob-ult-m19940.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Fri, 24 Jul 2020 03:50:04 -0700
+ 15.1.1979.3 via Frontend Transport; Fri, 24 Jul 2020 03:50:09 -0700
 From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
@@ -48,11 +48,10 @@ CC:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
         <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <f.fainelli@gmail.com>, <robh+dt@kernel.org>,
         <alexandre.belloni@bootlin.com>, <ludovic.desroches@microchip.com>,
-        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH net-next v3 2/7] dt-bindings: net: macb: use an MDIO node as a container for PHY nodes
-Date:   Fri, 24 Jul 2020 13:50:28 +0300
-Message-ID: <20200724105033.2124881-3-codrin.ciubotariu@microchip.com>
+        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>
+Subject: [PATCH net-next v3 3/7] net: macb: parse PHY nodes found under an MDIO node
+Date:   Fri, 24 Jul 2020 13:50:29 +0300
+Message-ID: <20200724105033.2124881-4-codrin.ciubotariu@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200724105033.2124881-1-codrin.ciubotariu@microchip.com>
 References: <20200724105033.2124881-1-codrin.ciubotariu@microchip.com>
@@ -64,60 +63,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MACB driver embeds an MDIO bus controller and for this reason there
-was no need for an MDIO sub-node present to contain the PHY nodes. Adding
-MDIO devies directly under an Ethernet node is deprecated, so an MDIO node
-is included to contain of the PHY nodes (and other MDIO devices' nodes).
+The MACB embeds an MDIO bus controller. For this reason, the PHY nodes
+were represented as sub-nodes in the MACB node. Generally, the
+Ethernet controller is different than the MDIO controller, so the PHYs
+are probed by a separate MDIO driver. Since adding the PHY nodes directly
+under the ETH node became deprecated, we adjust the MACB driver to look
+for an MDIO node and register the subnode MDIO devices.
 
 Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Acked-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 
 Changes in v3:
- - Added tags from Claudiu, Rob and Florian
+ - moved the check for the mdio node at the beginnging of
+   macb_mdiobus_register(). This way, the mdio devices will be probed even
+   if macb is a fixed-link
 
 Changes in v2:
- - patch renamed from "macb: bindings doc: use an MDIO node as a
-   container for PHY nodes" to "dt-bindings: net: macb: use an MDIO
-   node as a container for PHY nodes" 
+ - readded newline removed by mistake;
 
- Documentation/devicetree/bindings/net/macb.txt | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
-index 0b61a90f1592..88d5199c2279 100644
---- a/Documentation/devicetree/bindings/net/macb.txt
-+++ b/Documentation/devicetree/bindings/net/macb.txt
-@@ -32,6 +32,11 @@ Required properties:
- The MAC address will be determined using the optional properties
- defined in ethernet.txt.
- 
-+Optional subnodes:
-+- mdio : specifies the MDIO bus in the MACB, used as a container for PHY nodes or other
-+  nodes of devices present on the MDIO bus. Please see ethernet-phy.yaml in the same
-+  directory for more details.
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 89fe7af5e408..cb0b3637651c 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -740,6 +740,16 @@ static int macb_mii_probe(struct net_device *dev)
+ static int macb_mdiobus_register(struct macb *bp)
+ {
+ 	struct device_node *child, *np = bp->pdev->dev.of_node;
++	struct device_node *mdio_node;
++	int ret;
 +
- Optional properties for PHY child node:
- - reset-gpios : Should specify the gpio for phy reset
- - magic-packet : If present, indicates that the hardware supports waking
-@@ -48,8 +53,12 @@ Examples:
- 		local-mac-address = [3a 0e 03 04 05 06];
- 		clock-names = "pclk", "hclk", "tx_clk";
- 		clocks = <&clkc 30>, <&clkc 30>, <&clkc 13>;
--		ethernet-phy@1 {
--			reg = <0x1>;
--			reset-gpios = <&pioE 6 1>;
-+		mdio {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			ethernet-phy@1 {
-+				reg = <0x1>;
-+				reset-gpios = <&pioE 6 1>;
-+			};
- 		};
- 	};
++	/* if an MDIO node is present, it should contain the PHY nodes */
++	mdio_node = of_get_child_by_name(np, "mdio");
++	if (mdio_node) {
++		ret = of_mdiobus_register(bp->mii_bus, mdio_node);
++		of_node_put(mdio_node);
++		return ret;
++	}
+ 
+ 	if (of_phy_is_fixed_link(np))
+ 		return mdiobus_register(bp->mii_bus);
 -- 
 2.25.1
 
