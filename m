@@ -2,91 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81B6222BD2D
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 06:50:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FB8922BD5B
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 07:12:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726572AbgGXEuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 00:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41588 "EHLO
+        id S1726559AbgGXFMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 01:12:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725860AbgGXEuw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 00:50:52 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6E9C0619D3
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 21:50:51 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id 72so3832974ple.0
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 21:50:51 -0700 (PDT)
+        with ESMTP id S1725901AbgGXFMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 01:12:02 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B8EC0619D3;
+        Thu, 23 Jul 2020 22:12:02 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id mn17so4606048pjb.4;
+        Thu, 23 Jul 2020 22:12:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lBbONK3/3q1TsKJGKzM0GmT2Z8r1yOy5gHh7hXuu8rg=;
-        b=jKXdWUFDh2VQbGrAcqQvvAbabsqDAkmy3ghtjRzAFc1VQQBaUKcefiIHrd3Q+sgP4S
-         /xCJmHB+g/ROfjUdCbUoXHSkxZV14zz4AShkcB89oHD+E85fEC2c4r/M1ey0wWJEEUhl
-         hefk5cobeAoSNI4haP7TOkz61gzdWbGcn8yrHBKkyABdSbCyMA8SatMJiA/Z2c6yzXlr
-         2zbc3IngVWwPiD4nAzCXTZ5Ojs+y8Li48iWontRJaq2Bau6Id32t9e9B43OwAJzOT8bL
-         JSYP7JYW6o5ZXsMerKadfE9yoLJ6mpDI/UNyev0Xm5oy6Dbftk4+2xOJd4NXqJ8m2Ngf
-         TUfw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=53iCg0K8sIicCs0Rtdo5gg3EGRpc3SDPj593SVXw0tU=;
+        b=JI7g0y2ohQ2BVxLmA6Twv+EQJ4y1gEEZ2pn8FxaBgc3uYj9tWIebKxmpv57LPdL/Sj
+         w1HWSJ5bmElOrqkN5lALaGQXVeX5N//wX+jHXeNPS2c1SG9z+1etb+wgAEqGU2Lf8jyZ
+         8fm8195JtJ+wrQ6ftdJMOwk8evEu5M7ClwQgxLi0+tSQi327rGV/TBkvXoLv6VwdYRyr
+         rqlBSX7aCobkR8eZYlp8x9ZIbnxeVSe8a9iz93isWvOljhbamBhmqM/UBzZRenSqr5i8
+         s3psUFIqFE+0vTYKVfKL2RqIsjtHps3p/6p+jR4X5RtEw5P+kmL8ZWe+XS2LQeuXBKt3
+         HN3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lBbONK3/3q1TsKJGKzM0GmT2Z8r1yOy5gHh7hXuu8rg=;
-        b=BpR+AFJnO/H/o3uCHEyaFwhXC6oiAQtOXZKFYNXPYQKQws8zrEBGY4QV31DbYsINFD
-         1Mn4ezf2Hsazoya6VH1apStaP4eTjtCx3bt3inp7BSMmjZ+LyrcHd/KMTB4FzB/Yg8co
-         efEUYom89XEKnB/xQRwUoYymyvXHVo0W6pYGkKlrfeSvSMH0MWYhvmHdhfUQDlrCWAAW
-         YJ9GGHublqRJ3DJNAPBDncDF7aONG+FS6U0slSXsWk3Y2cXFw5AHyqSVKyYTvK/Iw8o1
-         IMr21PSl8HRTj8Sn8eh2T/n3vKq0KIHSWi++gcbMT1k5W0q/zgXrvoz3S2G/cWxrHfac
-         qUhw==
-X-Gm-Message-State: AOAM530xkBNyaRSOKMc4iM4bcIteNKjH4HM5F569E5LgAFypgz/AYHRF
-        QBT0rZWOoHGcsPL4VNyxDB+4b+PYGjs=
-X-Google-Smtp-Source: ABdhPJz/cj/FROm6Nv1AI29PusAElGmupgsqJWVuD24+dNE9rRMeKv08zGzRSA96+Z9EAq900ZVy0g==
-X-Received: by 2002:a17:90a:ec0a:: with SMTP id l10mr3277955pjy.152.1595566250629;
-        Thu, 23 Jul 2020 21:50:50 -0700 (PDT)
-Received: from MacBookAir.linux-6brj.site ([2600:1700:727f::46])
-        by smtp.gmail.com with ESMTPSA id z11sm4579074pfk.46.2020.07.23.21.50.49
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=53iCg0K8sIicCs0Rtdo5gg3EGRpc3SDPj593SVXw0tU=;
+        b=pg/ze2/7JRg2USqRE3SpIfT+svfkqzaDUaWkH1ixAJvYLhPOJQz3WkCNwW7MNaP73g
+         O5ABeRP64B/03LJ2MAeD6iuZ4AV/1WK3N/Nkce6inEJWrLnGf4O8P6OUKO2Jf2d9AM9T
+         noQYcD+sNuhi1FweuII99a4/A1xUq/NYpv/AVOrckoNynPxQg2R0PV/TDVdYw3GoKJYW
+         vfdWs5IIN70L5pps+Q9c37UfiG0UIGkqV1lvN87dRqjnvwBoRvyUCcC/VftI2HWMy2oo
+         XVfyozT96zyHyrzLoMiRdX6qoqXlROYwdmVuKwxusv3wvvgZtKUfA9HVVeyfbk2a5gWZ
+         dB3w==
+X-Gm-Message-State: AOAM5303qHnnBP9diHRj9ac+oLFldKrNfEf05AK7NAc5OVt6/kaq6ZxN
+        A8hY80OVZ7TknVqGZe9EOAX3qcNn
+X-Google-Smtp-Source: ABdhPJzfctU7l4JJfp4ReWyfN3A/OEwPZzXJHv18364102+hnpVLSz6YdNAZmBtmknR8nCYP/STQEQ==
+X-Received: by 2002:a17:90a:9285:: with SMTP id n5mr3400061pjo.27.1595567522354;
+        Thu, 23 Jul 2020 22:12:02 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:dfa8])
+        by smtp.gmail.com with ESMTPSA id o14sm4621512pjj.42.2020.07.23.22.12.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jul 2020 21:50:50 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+6720d64f31c081c2f708@syzkaller.appspotmail.com,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [Patch net] qrtr: orphan skb before queuing in xmit
-Date:   Thu, 23 Jul 2020 21:50:40 -0700
-Message-Id: <20200724045040.20070-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Thu, 23 Jul 2020 22:12:01 -0700 (PDT)
+Date:   Thu, 23 Jul 2020 22:11:59 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf-next v4 00/13] bpf: implement bpf iterator for map
+ elements
+Message-ID: <20200724051159.xyuunt2xbskgxpsg@ast-mbp.dhcp.thefacebook.com>
+References: <20200723184108.589857-1-yhs@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200723184108.589857-1-yhs@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to tun_net_xmit(), we have to orphan the skb
-before queuing it, otherwise we may use the socket when
-purging the queue after it is freed by user-space.
+On Thu, Jul 23, 2020 at 11:41:08AM -0700, Yonghong Song wrote:
+> Bpf iterator has been implemented for task, task_file,
+> bpf_map, ipv6_route, netlink, tcp and udp so far.
+> 
+> For map elements, there are two ways to traverse all elements from
+> user space:
+>   1. using BPF_MAP_GET_NEXT_KEY bpf subcommand to get elements
+>      one by one.
+>   2. using BPF_MAP_LOOKUP_BATCH bpf subcommand to get a batch of
+>      elements.
+> Both these approaches need to copy data from kernel to user space
+> in order to do inspection.
+> 
+> This patch implements bpf iterator for map elements.
+> User can have a bpf program in kernel to run with each map element,
+> do checking, filtering, aggregation, modifying values etc.
+> without copying data to user space.
+> 
+> Patch #1 and #2 are refactoring. Patch #3 implements readonly/readwrite
+> buffer support in verifier. Patches #4 - #7 implements map element
+> support for hash, percpu hash, lru hash lru percpu hash, array,
+> percpu array and sock local storage maps. Patches #8 - #9 are libbpf
+> and bpftool support. Patches #10 - #13 are selftests for implemented
+> map element iterators.
+> 
+> Changelogs:
+>   v3 -> v4:
+>     . fix a kasan failure triggered by a failed bpf_iter link_create,
+>       not just free_link but need cleanup_link. (Alexei)
 
-Reported-and-tested-by: syzbot+6720d64f31c081c2f708@syzkaller.appspotmail.com
-Fixes: 28fb4e59a47d ("net: qrtr: Expose tunneling endpoint to user space")
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- net/qrtr/tun.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/qrtr/tun.c b/net/qrtr/tun.c
-index 15ce9b642b25..54a565dcfef3 100644
---- a/net/qrtr/tun.c
-+++ b/net/qrtr/tun.c
-@@ -20,6 +20,7 @@ static int qrtr_tun_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
- {
- 	struct qrtr_tun *tun = container_of(ep, struct qrtr_tun, ep);
- 
-+	skb_orphan(skb);
- 	skb_queue_tail(&tun->queue, skb);
- 
- 	/* wake up any blocking processes, waiting for new data */
--- 
-2.27.0
-
+Applied, Thanks
