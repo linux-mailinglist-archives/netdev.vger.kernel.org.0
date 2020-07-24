@@ -2,108 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30BB522C741
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 16:03:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E13E22C7BA
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 16:18:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726753AbgGXODt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 10:03:49 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:13847 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726686AbgGXODt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jul 2020 10:03:49 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1595599428; h=Date: Message-Id: Cc: To: Subject: From:
- Content-Transfer-Encoding: MIME-Version: Content-Type: Sender;
- bh=Tu15BLUwKvHQDTbj5GU8pQlCzoGF12QBNrYYHMnPAuQ=; b=pd+tFesJeVPrRpJ/uBMMltFVYQSuw5LLWA4ce2Udr+yZ6+gTQziS7S7HN/DsvKwF7nqg+IAD
- fyohjUtPd5xsmkjmzKRfCsXWmos0eYN0qrQi0kdXRp61aGkPqgH/WuAPoaAzHsydF2NSf20j
- ZCF6TNLRfeLm48tLrJTRA9bHFrE=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 5f1aea17845c4d05a3d01c3b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 24 Jul 2020 14:03:03
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D143AC433CB; Fri, 24 Jul 2020 14:03:02 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0296CC433C6;
-        Fri, 24 Jul 2020 14:03:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0296CC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726702AbgGXOSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 10:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726317AbgGXOSY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 10:18:24 -0400
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B082BC0619D3;
+        Fri, 24 Jul 2020 07:18:23 -0700 (PDT)
+Received: from [IPv6:2a02:2121:283:8d02:15d6:da5b:427d:49dc] ([IPv6:2a02:2121:283:8d02:15d6:da5b:427d:49dc])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 06OEIFZg003614
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 24 Jul 2020 16:18:16 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1595600297; bh=TrUfVBoeJkZ1QmlO5khT5aTGpRfHV2YfkpfBwbBHIlE=;
+        h=Date:References:Subject:To:CC:From:Message-ID:From;
+        b=S9jDUszaBm3VkJHVhbAl6i1F2/AsVuFYR6c9NRkn/IeBkaKpruw9vEb2ME+eVd2+u
+         L0FXhHIVT0JB5+c7rTbtmzdKduducZxbT+jXBCKPdD/833x9up6U6HQ20G7bC/dCwE
+         /WjAKA5JuiEI0SKNzsAt5iT7xWMUkY8+E2f6+1ec=
+Date:   Fri, 24 Jul 2020 16:18:08 +0200
+User-Agent: K-9 Mail for Android
+In-Reply-To: <1595322008.29149.5.camel@suse.de>
+References: <20200715184100.109349-1-bjorn@mork.no> <20200715184100.109349-3-bjorn@mork.no> <1595322008.29149.5.camel@suse.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-From:   Kalle Valo <kvalo@codeaurora.org>
-Subject: pull-request: wireless-drivers-2020-07-24
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20200724140302.D143AC433CB@smtp.codeaurora.org>
-Date:   Fri, 24 Jul 2020 14:03:02 +0000 (UTC)
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v5 net-next 2/5] net: cdc_ether: export usbnet_cdc_update_filter
+To:     Oliver Neukum <oneukum@suse.de>, netdev@vger.kernel.org
+CC:     linux-usb@vger.kernel.org, wxcafe@wxcafe.net,
+        =?ISO-8859-1?Q?Miguel=09Rodr=EDguez_P=E9rez?= 
+        <miguel@det.uvigo.gal>
+From:   =?ISO-8859-1?Q?Bj=F8rn_Mork?= <bjorn@mork.no>
+Message-ID: <2B227F47-F76D-45EF-85D6-8A5A85AE19A1@mork.no>
+X-Virus-Scanned: clamav-milter 0.102.2 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-here's a pull request to net tree, more info below. Please let me know if there
-are any problems.
 
-Kalle
+On July 21, 2020 11:00:08 AM GMT+02:00, Oliver Neukum <oneukum@suse=2Ede> =
+wrote:
+>Am Mittwoch, den 15=2E07=2E2020, 20:40 +0200 schrieb Bj=C3=B8rn Mork:
+>>=20
+>> @@ -90,6 +90,7 @@ static void usbnet_cdc_update_filter(struct usbnet
+>*dev)
+>>  			USB_CTRL_SET_TIMEOUT
+>>  		);
+>>  }
+>> +EXPORT_SYMBOL_GPL(usbnet_cdc_update_filter);
+>
+>Hi,
+>
+>this function is pretty primitive=2E In fact it more or less
+>is a straight take from the spec=2E Can this justify the _GPL
+>version?
 
-The following changes since commit dc7bd30b97aac8a97eccef0ffe31f6cefb6e2c3e:
+Maybe not? I must admit I didn't put much thought into it=2E=20
 
-  mt76: mt7615: fix EEPROM buffer size (2020-06-23 11:43:41 +0300)
+I will not object to changing it=2E And you're the boss anyway :-)
 
-are available in the git repository at:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-2020-07-24
-
-for you to fetch changes up to 1cfd3426ef989b83fa6176490a38777057e57f6c:
-
-  ath10k: Fix NULL pointer dereference in AHB device probe (2020-07-20 20:23:48 +0300)
-
-----------------------------------------------------------------
-wireless-drivers fixes for v5.8
-
-Second set of fixes for v5.8, and hopefully also the last. Three
-important regressions fixed.
-
-ath9k
-
-* fix a regression which broke support for all ath9k usb devices
-
-ath10k
-
-* fix a regression which broke support for all QCA4019 AHB devices
-
-iwlwifi
-
-* fix a regression which broke support for some Killer Wireless-AC 1550 cards
-
-----------------------------------------------------------------
-Alessio Bonfiglio (1):
-      iwlwifi: Make some Killer Wireless-AC 1550 cards work again
-
-Hauke Mehrtens (1):
-      ath10k: Fix NULL pointer dereference in AHB device probe
-
-Mark O'Donovan (1):
-      ath9k: Fix regression with Atheros 9271
-
- drivers/net/wireless/ath/ath10k/ahb.c         |  2 +-
- drivers/net/wireless/ath/ath10k/pci.c         | 78 +++++++++++++--------------
- drivers/net/wireless/ath/ath9k/hif_usb.c      |  4 +-
- drivers/net/wireless/intel/iwlwifi/pcie/drv.c |  2 +
- 4 files changed, 43 insertions(+), 43 deletions(-)
+Bj=C3=B8rn 
