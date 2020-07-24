@@ -2,102 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFD9D22C3C4
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 12:51:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9446822C461
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 13:29:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728238AbgGXKvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 06:51:20 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:21329 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728222AbgGXKvR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 06:51:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1595587877; x=1627123877;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=jetXb1L6fLqY5EPX3I8ct9K8ZfusnMFMrVfT80KlChM=;
-  b=yp4bhniKIzAKVrSICWkUxPqN9C2HieEtCNXzUyZaEQc4sjoE9LbzM+9v
-   fwkBFn/ynva13u9ixXsFP044CMxJBrDBb0eEH5q/YMbxZwc+E+9+fi4gZ
-   eAcahy5QMS78lNVssoVawixY46O9kmKOfJFKpTNUwFDG1Xl+DxyClssUc
-   b832cEsHp5QamEuddXuD9lCkPwKhfzYw3BjddNF0ocSB/dvCuuTPOI30Z
-   ZjMjtsJguQThpZC5WQVFEDLnVtT9vDwBKzkSrfaLGWGjqEGmGRLz3g+gv
-   o8DkdOZljh8bWwRhLSu+JXPGL7t8dNq1TrzUG9JztafwyK81vLyOCxfVs
-   Q==;
-IronPort-SDR: lQaUv3GuPcpn9wqPTQPNY5I+P0KI30PcbwRSVMJS8dB52UJmfZ61GaxtoKnzIt5yjxpgUL2iYf
- ABFtzYYHQ6d0y91tkj9c7Kw2M5QwaA5zxWWSH5+6d9u7azEICqShsRadMrSX1S89TfW2UyEZpx
- Npu/rQHs5vqIZb0ag/fQsmCdQdBoAZTLNQbmQkxKCkNu9R0eMh9iMb9e+pGVTuAWiYrkU+v+GR
- /YFSjLoOm3plQAoMlUosdDiZhRpDYlMIQ6ugdWkk7kiOBd1kXy86GKMePDZwWGU1FClUAMsyNI
- jOA=
-X-IronPort-AV: E=Sophos;i="5.75,390,1589266800"; 
-   d="scan'208";a="85237040"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jul 2020 03:51:16 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 24 Jul 2020 03:51:16 -0700
-Received: from rob-ult-m19940.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Fri, 24 Jul 2020 03:50:31 -0700
-From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
-        <f.fainelli@gmail.com>, <robh+dt@kernel.org>,
-        <alexandre.belloni@bootlin.com>, <ludovic.desroches@microchip.com>,
-        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>
-Subject: [PATCH net-next v3 7/7] ARM: dts: at91: sam9x60: add an mdio sub-node to macb
-Date:   Fri, 24 Jul 2020 13:50:33 +0300
-Message-ID: <20200724105033.2124881-8-codrin.ciubotariu@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200724105033.2124881-1-codrin.ciubotariu@microchip.com>
-References: <20200724105033.2124881-1-codrin.ciubotariu@microchip.com>
+        id S1726506AbgGXL3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 07:29:01 -0400
+Received: from correo.us.es ([193.147.175.20]:44590 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726182AbgGXL3A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jul 2020 07:29:00 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 6245C18CDCA
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 13:28:59 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 50B64DA8E8
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 13:28:59 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 45461DA856; Fri, 24 Jul 2020 13:28:59 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D1F8EDA73F;
+        Fri, 24 Jul 2020 13:28:56 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 24 Jul 2020 13:28:56 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 6A39242EFB83;
+        Fri, 24 Jul 2020 13:28:56 +0200 (CEST)
+Date:   Fri, 24 Jul 2020 13:28:56 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
+        kuba@kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-kernel@vger.kernel.org,
+        linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: Re: [PATCH for v5.9] netfilter: Replace HTTP links with HTTPS ones
+Message-ID: <20200724112856.GA26061@salvia>
+References: <20200719115202.58449-1-grandmaster@al2klimov.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200719115202.58449-1-grandmaster@al2klimov.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new macb bindings and add an mdio sub-node to contain all the
-phy nodes.
+On Sun, Jul 19, 2020 at 01:52:02PM +0200, Alexander A. Klimov wrote:
+> Rationale:
+> Reduces attack surface on kernel devs opening the links for MITM
+> as HTTPS traffic is much harder to manipulate.
 
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
+LGTM.
 
-Changes in v3:
- - added tag from Florian
+Can you squash this patch into this?
 
-Changes in v2:
- - none
+netfilter: xtables: Replace HTTP links with HTTPS ones
 
- arch/arm/boot/dts/at91-sam9x60ek.dts | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Probably better if this can be done for the entire netfilter tree in
+one single patch.
 
-diff --git a/arch/arm/boot/dts/at91-sam9x60ek.dts b/arch/arm/boot/dts/at91-sam9x60ek.dts
-index a5f5718c711a..ba871ebe10d4 100644
---- a/arch/arm/boot/dts/at91-sam9x60ek.dts
-+++ b/arch/arm/boot/dts/at91-sam9x60ek.dts
-@@ -324,8 +324,12 @@ &macb0 {
- 	pinctrl-0 = <&pinctrl_macb0_rmii>;
- 	status = "okay";
- 
--	ethernet-phy@0 {
--		reg = <0x0>;
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		ethernet-phy@0 {
-+			reg = <0x0>;
-+		};
- 	};
- };
- 
--- 
-2.25.1
-
+Thanks.
