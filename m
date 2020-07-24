@@ -2,98 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CE6122D05E
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 23:14:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 978D322D085
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 23:29:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726759AbgGXVO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 17:14:26 -0400
-Received: from mga07.intel.com ([134.134.136.100]:2641 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726639AbgGXVO0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jul 2020 17:14:26 -0400
-IronPort-SDR: 0djh0dCjjpd5F+KtjQWdBV2uk3/gIMmff24yuAQk/zhTrEtLwByv7CsQYkALQNpkudtguEW737
- m2cNwOIMKYaw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9692"; a="215365018"
-X-IronPort-AV: E=Sophos;i="5.75,392,1589266800"; 
-   d="scan'208";a="215365018"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2020 14:14:26 -0700
-IronPort-SDR: sATOhYz40y+cGfnFT7Xq9uZ7pU51qOr3ByTfyP0CDW+NLGVwYqP0LgB5G6AQIpMkH1P0K31VB3
- MXJNmRB4VsVw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,392,1589266800"; 
-   d="scan'208";a="289108474"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.254.52.44]) ([10.254.52.44])
-  by orsmga006.jf.intel.com with ESMTP; 24 Jul 2020 14:14:25 -0700
-Subject: Re: [PATCH] netlink: add buffer boundary checking
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Mark Salyzyn <salyzyn@android.com>,
-        linux-kernel@vger.kernel.org
-Cc:     kernel-team@android.com, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Thomas Graf <tgraf@suug.ch>
-References: <20200723182136.2550163-1-salyzyn@android.com>
- <09cd1829-8e41-bef5-ba5e-1c446c166778@gmail.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <8bd7695c-0012-83e9-8a5a-94a40d91d6f6@intel.com>
-Date:   Fri, 24 Jul 2020 14:14:25 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.0.1
+        id S1726731AbgGXV3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 17:29:44 -0400
+Received: from smtprelay0080.hostedemail.com ([216.40.44.80]:42774 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726411AbgGXV3n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 17:29:43 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 9DAC2362A;
+        Fri, 24 Jul 2020 21:29:42 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3867:3868:3871:4321:5007:6119:7903:8603:9010:10004:10400:10848:11026:11232:11657:11658:11914:12043:12048:12296:12297:12438:12740:12760:12895:13439:13972:14659:14721:21080:21451:21627:21990:30041:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: way24_3e0938d26f4a
+X-Filterd-Recvd-Size: 3199
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf04.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 24 Jul 2020 21:29:41 +0000 (UTC)
+Message-ID: <2cdef8d442bb5da39aed17bf994a800e768942f7.camel@perches.com>
+Subject: Re: [PATCH net-next] liquidio: Remove unneeded cast from memory
+ allocation
+From:   Joe Perches <joe@perches.com>
+To:     Wang Hai <wanghai38@huawei.com>, dchickles@marvell.com,
+        sburla@marvell.com, fmanlunas@marvell.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Fri, 24 Jul 2020 14:29:39 -0700
+In-Reply-To: <20200724130001.71528-1-wanghai38@huawei.com>
+References: <20200724130001.71528-1-wanghai38@huawei.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.3-0ubuntu1 
 MIME-Version: 1.0
-In-Reply-To: <09cd1829-8e41-bef5-ba5e-1c446c166778@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 2020-07-24 at 21:00 +0800, Wang Hai wrote:
+> Remove casting the values returned by memory allocation function.
+> 
+> Coccinelle emits WARNING:
+> 
+> ./drivers/net/ethernet/cavium/liquidio/octeon_device.c:1155:14-36: WARNING:
+>  casting value returned by memory allocation function to (struct octeon_dispatch *) is useless.
+[]
+> diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_device.c b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
+[]
+> @@ -1152,8 +1152,7 @@ octeon_register_dispatch_fn(struct octeon_device *oct,
+>  
+>  		dev_dbg(&oct->pci_dev->dev,
+>  			"Adding opcode to dispatch list linked list\n");
+> -		dispatch = (struct octeon_dispatch *)
+> -			   vmalloc(sizeof(struct octeon_dispatch));
+> +		dispatch = vmalloc(sizeof(struct octeon_dispatch));
+
+More the question is why this is vmalloc at all
+as the structure size is very small.
+
+Likely this should just be kmalloc.
+
+drivers/net/ethernet/cavium/liquidio/octeon_device.h:struct octeon_dispatch {
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-   /** List head for this entry */
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-   struct list_head list;
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-   /** The opcode for which the dispatch function & arg should be used */
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-   u16 opcode;
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-   /** The function to be called for a packet received by the driver */
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-   octeon_dispatch_fn_t dispatch_fn;
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-   /* The application specified argument to be passed to the above
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-    * function along with the received packet
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-    */
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-   void *arg;
+drivers/net/ethernet/cavium/liquidio/octeon_device.h-}
+
+>  		if (!dispatch) {
+>  			dev_err(&oct->pci_dev->dev,
+>  				"No memory to add dispatch function\n");
+
+And this dev_err is unnecessary.
 
 
-On 7/23/2020 12:35 PM, Eric Dumazet wrote:
-> On 7/23/20 11:21 AM, Mark Salyzyn wrote:
->> Many of the nla_get_* inlines fail to check attribute's length before
->> copying the content resulting in possible out-of-boundary accesses.
->> Adjust the inlines to perform nla_len checking, for the most part
->> using the nla_memcpy function to faciliate since these are not
->> necessarily performance critical and do not need a likely fast path.
->>
->> Signed-off-by: Mark Salyzyn <salyzyn@android.com>
->> Cc: netdev@vger.kernel.org
->> Cc: linux-kernel@vger.kernel.org
->> Cc: kernel-team@android.com
->> Cc: "David S. Miller" <davem@davemloft.net>
->> Cc: Jakub Kicinski <kuba@kernel.org>
->> Cc: Thomas Graf <tgraf@suug.ch>
->> Fixes: bfa83a9e03cf ("[NETLINK]: Type-safe netlink messages/attributes interface")
->> ---
->>  include/net/netlink.h | 66 +++++++++++++++++++++++++++++++++++--------
->>  1 file changed, 54 insertions(+), 12 deletions(-)
->>
->> diff --git a/include/net/netlink.h b/include/net/netlink.h
->> index c0411f14fb53..11c0f153be7c 100644
->> --- a/include/net/netlink.h
->> +++ b/include/net/netlink.h
->> @@ -1538,7 +1538,11 @@ static inline int nla_put_bitfield32(struct sk_buff *skb, int attrtype,
->>   */
->>  static inline u32 nla_get_u32(const struct nlattr *nla)
->>  {
->> -	return *(u32 *) nla_data(nla);
->> +	u32 tmp;
->> +
->> +	nla_memcpy(&tmp, nla, sizeof(tmp));
->> +
->> +	return tmp;
-> 
-> I believe this will hide bugs, that syzbot was able to catch.
-> 
-> Instead, you could perhaps introduce a CONFIG_DEBUG_NETLINK option,
-> and add a WARN_ON_ONCE(nla_len(nla) < sizeof(u32)) so that we can detect bugs in callers.
-> 
-> 
-
-I also think this is a better approach.
