@@ -2,55 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ACB122C5C5
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 15:09:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B436C22C5C8
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 15:09:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726759AbgGXNJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 09:09:09 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:38098 "EHLO
+        id S1726676AbgGXNJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 09:09:20 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:64374 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726182AbgGXNJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 09:09:08 -0400
+        by vger.kernel.org with ESMTP id S1726572AbgGXNJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 09:09:10 -0400
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06OD5G9r016733;
-        Fri, 24 Jul 2020 06:08:49 -0700
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06OD5C4A016534;
+        Fri, 24 Jul 2020 06:08:53 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pfpt0818;
- bh=5ncU4YhlrFWv4aPXJAGTVEtBnnZAB0sjpKES3YaGU04=;
- b=B2YQv+TqjyOZSp+Wry/pFeZ2Xz3RjwPJb7Q1UbTtAwYC0u5BHfkyaFU92akMI4dEB2nr
- Z6tMyaMpBTf8in8k/lfYUksD9noADlt9Q4bU36SjmKn7xZhsfRLVLUVyjshV4x30KeMg
- OxbNPatyLw/t1V5EFTU5T9xwoT5EV5+08Qhd72Sr9y9F9wgEWtndjThkxSpyO5KqPGhg
- lCBjqpEECje4BUr30xUNzsQC3AmAumL6DFN+2xCTFi9ZMonmeY9VMKZ/YlmYCxUujvUa
- WtAjtDn0WrMoiJK604TYzJguZoW6ZEmmeBdhgum0boqI7NVNScDPULj74/sSyzI2DuMx 4Q== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0b-0016f401.pphosted.com with ESMTP id 32c0km1t5t-1
+ content-type; s=pfpt0818; bh=Kg+j/FA6sfQA6yTyopt10mkUO5RoYS/cQvXcQGaa9tI=;
+ b=JGyMJ6XwIYJDSqbwS8bwzpU5i0mjgS5dxnEL8LDzYYcy/L26VUGnt94dWBFcS/JLjHBK
+ ZvNiXr18hI1CXRDDebxktwdRaqkNuchIdV9dcBwXkG0ZcvEzav9oANiqCdK2KLSv+6uU
+ DW4+KoeYlja6us6D/TOLOAAACaTprTiAB4z5pLijM0dZGtnNaJ1ngQT6nyf0MBucQo4X
+ zhHwLMPFbKR4dLMgPWyHq9bUwd4FeMhTwjcjqVpe2heGwSSDuq4c9HiDZqqH1ZUX7JwM
+ LMFviyITvo9IjsyXJd4rfTzJ7HUQrXeQbp9zPPQUY+jymW2+NuMp+8+dzuGimx/EpQNO 6Q== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 32c0km1t68-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jul 2020 06:08:47 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Jul
- 2020 06:08:45 -0700
+        Fri, 24 Jul 2020 06:08:52 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Jul
+ 2020 06:08:50 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 24 Jul 2020 06:08:45 -0700
+ Transport; Fri, 24 Jul 2020 06:08:50 -0700
 Received: from hyd1schalla-dt.marvell.com (hyd1schalla-dt.marvell.com [10.29.8.39])
-        by maili.marvell.com (Postfix) with ESMTP id 69C0E3F703F;
-        Fri, 24 Jul 2020 06:08:42 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 2E3BA3F703F;
+        Fri, 24 Jul 2020 06:08:46 -0700 (PDT)
 From:   Srujana Challa <schalla@marvell.com>
 To:     <herbert@gondor.apana.org.au>
 CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
         <linux-crypto@vger.kernel.org>, <schandran@marvell.com>,
         <pathreya@marvell.com>, <sgoutham@marvell.com>,
         Srujana Challa <schalla@marvell.com>
-Subject: [PATCH 2/4] drivers: crypto: add support for OCTEONTX2 CPT engine
-Date:   Fri, 24 Jul 2020 18:38:02 +0530
-Message-ID: <1595596084-29809-3-git-send-email-schalla@marvell.com>
+Subject: [PATCH 3/4] drivers: crypto: add the Virtual Function driver for OcteonTX2 CPT
+Date:   Fri, 24 Jul 2020 18:38:03 +0530
+Message-ID: <1595596084-29809-4-git-send-email-schalla@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1595596084-29809-1-git-send-email-schalla@marvell.com>
 References: <1595596084-29809-1-git-send-email-schalla@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-24_04:2020-07-24,2020-07-24 signatures=0
 Sender: netdev-owner@vger.kernel.org
@@ -58,2300 +56,300 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the cryptographic acceleration unit (CPT) on
-OcteonTX2 CN96XX SoC.
+Add support for the cryptographic accelerator unit virtual functions on
+OcteonTX2 96XX SoC.
 
 Signed-off-by: Srujana Challa <schalla@marvell.com>
 ---
- drivers/crypto/marvell/octeontx2/otx2_cpt_common.h |   53 +
- .../crypto/marvell/octeontx2/otx2_cpt_hw_types.h   |  567 +++++
- .../marvell/octeontx2/otx2_cpt_mbox_common.c       |  286 +++
- .../marvell/octeontx2/otx2_cpt_mbox_common.h       |  100 +
- drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h |   81 +
- drivers/crypto/marvell/octeontx2/otx2_cptlf.h      |  365 ++++
- drivers/crypto/marvell/octeontx2/otx2_cptpf.h      |   79 +
- drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c |  599 ++++++
- drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c |  694 +++++++
- .../crypto/marvell/octeontx2/otx2_cptpf_ucode.c    | 2173 ++++++++++++++++++++
- .../crypto/marvell/octeontx2/otx2_cptpf_ucode.h    |  180 ++
- drivers/crypto/marvell/octeontx2/otx2_cptvf.h      |   24 +
- 12 files changed, 5201 insertions(+)
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_common.h
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.c
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.h
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptlf.h
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf.h
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.h
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf.h
+ .../crypto/marvell/octeontx2/otx2_cpt_hw_types.h   |    5 +
+ drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h |  121 ++
+ drivers/crypto/marvell/octeontx2/otx2_cptlf.h      |    5 +
+ drivers/crypto/marvell/octeontx2/otx2_cptlf_main.c |  964 +++++++++++
+ drivers/crypto/marvell/octeontx2/otx2_cptvf.h      |    5 +
+ drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c | 1708 ++++++++++++++++++++
+ drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h |  172 ++
+ drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c |  229 +++
+ drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c |  189 +++
+ .../crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c   |  536 ++++++
+ 10 files changed, 3934 insertions(+)
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptlf_main.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
 
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cpt_common.h b/drivers/crypto/marvell/octeontx2/otx2_cpt_common.h
-new file mode 100644
-index 0000000..00cd534
---- /dev/null
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cpt_common.h
-@@ -0,0 +1,53 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ * Copyright (C) 2020 Marvell.
-+ */
-+
-+#ifndef __OTX2_CPT_COMMON_H
-+#define __OTX2_CPT_COMMON_H
-+
-+#include <linux/pci.h>
-+#include <linux/types.h>
-+#include <linux/module.h>
-+#include <linux/delay.h>
-+#include <linux/crypto.h>
-+#include "otx2_cpt_hw_types.h"
-+#include "rvu.h"
-+
-+#define OTX2_CPT_MAX_VFS_NUM 128
-+#define OTX2_CPT_MAX_LFS_NUM 64
-+
-+#define OTX2_CPT_RVU_PFFUNC(pf, func)	\
-+	((((pf) & RVU_PFVF_PF_MASK) << RVU_PFVF_PF_SHIFT) | \
-+	(((func) & RVU_PFVF_FUNC_MASK) << RVU_PFVF_FUNC_SHIFT))
-+
-+#define OTX2_CPT_RVU_FUNC_ADDR_S(blk, slot, offs) \
-+		(((blk) << 20) | ((slot) << 12) | (offs))
-+
-+#define OTX2_CPT_DMA_MINALIGN 128
-+#define OTX2_CPT_INVALID_CRYPTO_ENG_GRP 0xFF
-+
-+#define OTX2_CPT_NAME_LENGTH 64
-+
-+#define BAD_OTX2_CPT_ENG_TYPE OTX2_CPT_MAX_ENG_TYPES
-+
-+enum otx2_cpt_eng_type {
-+	OTX2_CPT_AE_TYPES = 1,
-+	OTX2_CPT_SE_TYPES = 2,
-+	OTX2_CPT_IE_TYPES = 3,
-+	OTX2_CPT_MAX_ENG_TYPES,
-+};
-+
-+static inline void otx2_cpt_write64(void __iomem *reg_base, u64 blk, u64 slot,
-+				    u64 offs, u64 val)
-+{
-+	writeq_relaxed(val, reg_base +
-+		       OTX2_CPT_RVU_FUNC_ADDR_S(blk, slot, offs));
-+}
-+
-+static inline u64 otx2_cpt_read64(void __iomem *reg_base, u64 blk, u64 slot,
-+				  u64 offs)
-+{
-+	return readq_relaxed(reg_base +
-+			     OTX2_CPT_RVU_FUNC_ADDR_S(blk, slot, offs));
-+}
-+#endif /* __OTX2_CPT_COMMON_H */
 diff --git a/drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h b/drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h
-new file mode 100644
-index 0000000..8063259
---- /dev/null
+index 8063259..c403e24 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h
 +++ b/drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h
-@@ -0,0 +1,567 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ * Copyright (C) 2020 Marvell.
-+ */
-+
-+#ifndef __OTX2_CPT_HW_TYPES_H
-+#define __OTX2_CPT_HW_TYPES_H
-+
-+#include <linux/types.h>
-+
-+/* Device IDs */
-+#define OTX2_CPT_PCI_PF_DEVICE_ID 0xa0FD
-+#define OTX2_CPT_PCI_VF_DEVICE_ID 0xa0FE
-+
-+/* Mailbox interrupts offset */
-+#define OTX2_CPT_PF_MBOX_INT	6
-+#define OTX2_CPT_PF_INT_VEC_E_MBOXX(x, a) ((x) + (a))
-+
-+/* Number of MSIX supported in PF */
-+#define OTX2_CPT_PF_MSIX_VECTORS 7
-+
-+/* Maximum supported microcode groups */
-+#define OTX2_CPT_MAX_ENGINE_GROUPS 8
-+
-+/* CPT instruction size in bytes */
-+#define OTX2_CPT_INST_SIZE	64
-+/*
-+ * CPT VF MSIX vectors and their offsets
-+ */
-+#define OTX2_CPT_VF_MSIX_VECTORS 1
-+#define OTX2_CPT_VF_INTR_MBOX_MASK BIT(0)
-+
-+/* CPT LF MSIX vectors */
-+#define OTX2_CPT_LF_MSIX_VECTORS 2
-+
-+/* OcteonTX2 CPT PF registers */
-+#define OTX2_CPT_PF_CONSTANTS           (0x0)
-+#define OTX2_CPT_PF_RESET               (0x100)
-+#define OTX2_CPT_PF_DIAG                (0x120)
-+#define OTX2_CPT_PF_BIST_STATUS         (0x160)
-+#define OTX2_CPT_PF_ECC0_CTL            (0x200)
-+#define OTX2_CPT_PF_ECC0_FLIP           (0x210)
-+#define OTX2_CPT_PF_ECC0_INT            (0x220)
-+#define OTX2_CPT_PF_ECC0_INT_W1S        (0x230)
-+#define OTX2_CPT_PF_ECC0_ENA_W1S        (0x240)
-+#define OTX2_CPT_PF_ECC0_ENA_W1C        (0x250)
-+#define OTX2_CPT_PF_MBOX_INTX(b)        (0x400 | (b) << 3)
-+#define OTX2_CPT_PF_MBOX_INT_W1SX(b)    (0x420 | (b) << 3)
-+#define OTX2_CPT_PF_MBOX_ENA_W1CX(b)    (0x440 | (b) << 3)
-+#define OTX2_CPT_PF_MBOX_ENA_W1SX(b)    (0x460 | (b) << 3)
-+#define OTX2_CPT_PF_EXEC_INT            (0x500)
-+#define OTX2_CPT_PF_EXEC_INT_W1S        (0x520)
-+#define OTX2_CPT_PF_EXEC_ENA_W1C        (0x540)
-+#define OTX2_CPT_PF_EXEC_ENA_W1S        (0x560)
-+#define OTX2_CPT_PF_GX_EN(b)            (0x600 | (b) << 3)
-+#define OTX2_CPT_PF_EXEC_INFO           (0x700)
-+#define OTX2_CPT_PF_EXEC_BUSY           (0x800)
-+#define OTX2_CPT_PF_EXEC_INFO0          (0x900)
-+#define OTX2_CPT_PF_EXEC_INFO1          (0x910)
-+#define OTX2_CPT_PF_INST_REQ_PC         (0x10000)
-+#define OTX2_CPT_PF_INST_LATENCY_PC     (0x10020)
-+#define OTX2_CPT_PF_RD_REQ_PC           (0x10040)
-+#define OTX2_CPT_PF_RD_LATENCY_PC       (0x10060)
-+#define OTX2_CPT_PF_RD_UC_PC            (0x10080)
-+#define OTX2_CPT_PF_ACTIVE_CYCLES_PC    (0x10100)
-+#define OTX2_CPT_PF_EXE_CTL             (0x4000000)
-+#define OTX2_CPT_PF_EXE_STATUS          (0x4000008)
-+#define OTX2_CPT_PF_EXE_CLK             (0x4000010)
-+#define OTX2_CPT_PF_EXE_DBG_CTL         (0x4000018)
-+#define OTX2_CPT_PF_EXE_DBG_DATA        (0x4000020)
-+#define OTX2_CPT_PF_EXE_BIST_STATUS     (0x4000028)
-+#define OTX2_CPT_PF_EXE_REQ_TIMER       (0x4000030)
-+#define OTX2_CPT_PF_EXE_MEM_CTL         (0x4000038)
-+#define OTX2_CPT_PF_EXE_PERF_CTL        (0x4001000)
-+#define OTX2_CPT_PF_EXE_DBG_CNTX(b)     (0x4001100 | (b) << 3)
-+#define OTX2_CPT_PF_EXE_PERF_EVENT_CNT  (0x4001180)
-+#define OTX2_CPT_PF_EXE_EPCI_INBX_CNT(b)  (0x4001200 | (b) << 3)
-+#define OTX2_CPT_PF_EXE_EPCI_OUTBX_CNT(b) (0x4001240 | (b) << 3)
-+#define OTX2_CPT_PF_ENGX_UCODE_BASE(b)  (0x4002000 | (b) << 3)
-+#define OTX2_CPT_PF_QX_CTL(b)           (0x8000000 | (b) << 20)
-+#define OTX2_CPT_PF_QX_GMCTL(b)         (0x8000020 | (b) << 20)
-+#define OTX2_CPT_PF_QX_CTL2(b)          (0x8000100 | (b) << 20)
-+#define OTX2_CPT_PF_VFX_MBOXX(b, c)     (0x8001000 | (b) << 20 | \
-+					 (c) << 8)
-+
-+/* OcteonTX2 CPT LF registers */
-+#define OTX2_CPT_LF_CTL                 (0x10)
-+#define OTX2_CPT_LF_DONE_WAIT           (0x30)
-+#define OTX2_CPT_LF_INPROG              (0x40)
-+#define OTX2_CPT_LF_DONE                (0x50)
-+#define OTX2_CPT_LF_DONE_ACK            (0x60)
-+#define OTX2_CPT_LF_DONE_INT_ENA_W1S    (0x90)
-+#define OTX2_CPT_LF_DONE_INT_ENA_W1C    (0xa0)
-+#define OTX2_CPT_LF_MISC_INT            (0xb0)
-+#define OTX2_CPT_LF_MISC_INT_W1S        (0xc0)
-+#define OTX2_CPT_LF_MISC_INT_ENA_W1S    (0xd0)
-+#define OTX2_CPT_LF_MISC_INT_ENA_W1C    (0xe0)
-+#define OTX2_CPT_LF_Q_BASE              (0xf0)
-+#define OTX2_CPT_LF_Q_SIZE              (0x100)
-+#define OTX2_CPT_LF_Q_INST_PTR          (0x110)
-+#define OTX2_CPT_LF_Q_GRP_PTR           (0x120)
-+#define OTX2_CPT_LF_NQX(a)              (0x400 | (a) << 3)
-+#define OTX2_CPT_RVU_FUNC_BLKADDR_SHIFT 20
-+/* LMT LF registers */
-+#define OTX2_CPT_LMT_LFBASE             BIT_ULL(OTX2_CPT_RVU_FUNC_BLKADDR_SHIFT)
-+#define OTX2_CPT_LMT_LF_LMTLINEX(a)     (OTX2_CPT_LMT_LFBASE | 0x000 | \
-+					 (a) << 12)
-+
-+/*
-+ * Enumeration otx2_cpt_ucode_error_code_e
-+ *
-+ * Enumerates ucode errors
-+ */
-+enum otx2_cpt_ucode_comp_code_e {
-+	OTX2_CPT_UCC_SUCCESS = 0x00,
-+	OTX2_CPT_UCC_INVALID_OPCODE = 0x01,
-+
-+	/* Scatter gather */
-+	OTX2_CPT_UCC_SG_WRITE_LENGTH = 0x02,
-+	OTX2_CPT_UCC_SG_LIST = 0x03,
-+	OTX2_CPT_UCC_SG_NOT_SUPPORTED = 0x04,
-+
-+};
-+
-+/*
-+ * Enumeration otx2_cpt_comp_e
-+ *
-+ * OcteonTX2 CPT Completion Enumeration
-+ * Enumerates the values of CPT_RES_S[COMPCODE].
-+ */
-+enum otx2_cpt_comp_e {
-+	OTX2_CPT_COMP_E_NOTDONE = 0x00,
-+	OTX2_CPT_COMP_E_GOOD = 0x01,
-+	OTX2_CPT_COMP_E_FAULT = 0x02,
-+	OTX2_CPT_COMP_E_HWERR = 0x04,
-+	OTX2_CPT_COMP_E_INSTERR = 0x05,
-+	OTX2_CPT_COMP_E_LAST_ENTRY = 0x06
-+};
-+
-+/*
-+ * Enumeration otx2_cpt_vf_int_vec_e
-+ *
-+ * OcteonTX2 CPT VF MSI-X Vector Enumeration
-+ * Enumerates the MSI-X interrupt vectors.
-+ */
-+enum otx2_cpt_vf_int_vec_e {
-+	OTX2_CPT_VF_INT_VEC_E_MBOX = 0x00
-+};
-+
-+/*
-+ * Enumeration otx2_cpt_lf_int_vec_e
-+ *
-+ * OcteonTX2 CPT LF MSI-X Vector Enumeration
-+ * Enumerates the MSI-X interrupt vectors.
-+ */
-+enum otx2_cpt_lf_int_vec_e {
-+	OTX2_CPT_LF_INT_VEC_E_MISC = 0x00,
-+	OTX2_CPT_LF_INT_VEC_E_DONE = 0x01
-+};
-+
-+/*
-+ * Structure otx2_cpt_inst_s
-+ *
-+ * CPT Instruction Structure
-+ * This structure specifies the instruction layout. Instructions are
-+ * stored in memory as little-endian unless CPT()_PF_Q()_CTL[INST_BE] is set.
-+ * cpt_inst_s_s
-+ * Word 0
-+ * doneint:1 Done interrupt.
-+ *	0 = No interrupts related to this instruction.
-+ *	1 = When the instruction completes, CPT()_VQ()_DONE[DONE] will be
-+ *	incremented,and based on the rules described there an interrupt may
-+ *	occur.
-+ * Word 1
-+ * res_addr [127: 64] Result IOVA.
-+ *	If nonzero, specifies where to write CPT_RES_S.
-+ *	If zero, no result structure will be written.
-+ *	Address must be 16-byte aligned.
-+ *	Bits <63:49> are ignored by hardware; software should use a
-+ *	sign-extended bit <48> for forward compatibility.
-+ * Word 2
-+ *  grp:10 [171:162] If [WQ_PTR] is nonzero, the SSO guest-group to use when
-+ *	CPT submits work SSO.
-+ *	For the SSO to not discard the add-work request, FPA_PF_MAP() must map
-+ *	[GRP] and CPT()_PF_Q()_GMCTL[GMID] as valid.
-+ *  tt:2 [161:160] If [WQ_PTR] is nonzero, the SSO tag type to use when CPT
-+ *	submits work to SSO
-+ *  tag:32 [159:128] If [WQ_PTR] is nonzero, the SSO tag to use when CPT
-+ *	submits work to SSO.
-+ * Word 3
-+ *  wq_ptr [255:192] If [WQ_PTR] is nonzero, it is a pointer to a
-+ *	work-queue entry that CPT submits work to SSO after all context,
-+ *	output data, and result write operations are visible to other
-+ *	CNXXXX units and the cores. Bits <2:0> must be zero.
-+ *	Bits <63:49> are ignored by hardware; software should
-+ *	use a sign-extended bit <48> for forward compatibility.
-+ *	Internal:
-+ *	Bits <63:49>, <2:0> are ignored by hardware, treated as always 0x0.
-+ * Word 4
-+ *  ei0; [319:256] Engine instruction word 0. Passed to the AE/SE.
-+ * Word 5
-+ *  ei1; [383:320] Engine instruction word 1. Passed to the AE/SE.
-+ * Word 6
-+ *  ei2; [447:384] Engine instruction word 1. Passed to the AE/SE.
-+ * Word 7
-+ *  ei3; [511:448] Engine instruction word 1. Passed to the AE/SE.
-+ *
-+ */
-+union otx2_cpt_inst_s {
-+	u64 u[8];
-+
-+	struct {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+		u64 nixtx_addr:60;
-+		u64 doneint:1;
-+		u64 nixtxl:3;
-+#else /* Word 0 - Little Endian */
-+		u64 nixtxl:3;
-+		u64 doneint:1;
-+		u64 nixtx_addr:60;
-+#endif /* Word 0 - End */
-+		u64 res_addr;
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 2 - Big Endian */
-+		u64 rvu_pf_func:16;
-+		u64 reserved_172_175:4;
-+		u64 grp:10;
-+		u64 tt:2;
-+		u64 tag:32;
-+#else /* Word 2 - Little Endian */
-+		u64 tag:32;
-+		u64 tt:2;
-+		u64 grp:10;
-+		u64 reserved_172_175:4;
-+		u64 rvu_pf_func:16;
-+#endif /* Word 2 - End */
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 3 - Big Endian */
-+		u64 wq_ptr:61;
-+		u64 reserved_194_193:2;
-+		u64 qord:1;
-+#else /* Word 3 - Little Endian */
-+		u64 qord:1;
-+		u64 reserved_194_193:2;
-+		u64 wq_ptr:61;
-+#endif /* Word 3 - End */
-+		u64 ei0;
-+		u64 ei1;
-+		u64 ei2;
-+		u64 ei3;
-+	} s;
-+};
-+
-+/*
-+ * Structure otx2_cpt_res_s
-+ *
-+ * CPT Result Structure
-+ * The CPT coprocessor writes the result structure after it completes a
-+ * CPT_INST_S instruction. The result structure is exactly 16 bytes, and
-+ * each instruction completion produces exactly one result structure.
-+ *
-+ * This structure is stored in memory as little-endian unless
-+ * CPT()_PF_Q()_CTL[INST_BE] is set.
-+ * cpt_res_s_s
-+ * Word 0
-+ *  doneint:1 [16:16] Done interrupt. This bit is copied from the
-+ *	corresponding instruction's CPT_INST_S[DONEINT].
-+ *  compcode:8 [7:0] Indicates completion/error status of the CPT coprocessor
-+ *	for the	associated instruction, as enumerated by CPT_COMP_E.
-+ *	Core software may write the memory location containing [COMPCODE] to
-+ *	0x0 before ringing the doorbell, and then poll for completion by
-+ *	checking for a nonzero value.
-+ *	Once the core observes a nonzero [COMPCODE] value in this case,the CPT
-+ *	coprocessor will have also completed L2/DRAM write operations.
-+ * Word 1
-+ *  reserved
-+ *
-+ */
-+union otx2_cpt_res_s {
-+	u64 u[2];
-+
-+	struct {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+		u64 reserved_17_63:47;
-+		u64 doneint:1;
-+		u64 uc_compcode:8;
-+		u64 compcode:8;
-+#else /* Word 0 - Little Endian */
-+		u64 compcode:8;
-+		u64 uc_compcode:8;
-+		u64 doneint:1;
-+		u64 reserved_17_63:47;
-+#endif /* Word 0 - End */
-+		u64 reserved_64_127;
-+	} s;
-+};
-+
-+/*
-+ * Register (RVU_PF_BAR0) cpt#_af_constants1
-+ *
-+ * CPT AF Constants Register
-+ * This register contains implementation-related parameters of CPT.
-+ */
-+union otx2_cptx_af_constants1 {
-+	u64 u;
-+	struct otx2_cptx_af_constants1_s {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+		u64 reserved_48_63:16;
-+		u64 ae:16;
-+		u64 ie:16;
-+		u64 se:16;
-+#else /* Word 0 - Little Endian */
-+		u64 se:16;
-+		u64 ie:16;
-+		u64 ae:16;
-+		u64 reserved_48_63:16;
-+#endif /* Word 0 - End */
-+	} s;
-+};
-+
-+/*
-+ * RVU_PFVF_BAR2 - cpt_lf_misc_int
-+ *
-+ * This register contain the per-queue miscellaneous interrupts.
-+ *
-+ */
-+union otx2_cptx_lf_misc_int {
-+	u64 u;
-+	struct otx2_cptx_lf_misc_int_s {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+		u64 reserved_7_63:57;
-+		u64 fault:1;
-+		u64 hwerr:1;
-+		u64 reserved_4:1;
-+		u64 nwrp:1;
-+		u64 irde:1;
-+		u64 nqerr:1;
-+		u64 reserved_0:1;
-+#else /* Word 0 - Little Endian */
-+		u64 reserved_0:1;
-+		u64 nqerr:1;
-+		u64 irde:1;
-+		u64 nwrp:1;
-+		u64 reserved_4:1;
-+		u64 hwerr:1;
-+		u64 fault:1;
-+		u64 reserved_7_63:57;
-+#endif
-+	} s;
-+};
-+
-+/*
-+ * RVU_PFVF_BAR2 - cpt_lf_misc_int_ena_w1s
-+ *
-+ * This register sets interrupt enable bits.
-+ *
-+ */
-+union otx2_cptx_lf_misc_int_ena_w1s {
-+	u64 u;
-+	struct otx2_cptx_lf_misc_int_ena_w1s_s {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+		u64 reserved_7_63:57;
-+		u64 fault:1;
-+		u64 hwerr:1;
-+		u64 reserved_4:1;
-+		u64 nwrp:1;
-+		u64 irde:1;
-+		u64 nqerr:1;
-+		u64 reserved_0:1;
-+#else /* Word 0 - Little Endian */
-+		u64 reserved_0:1;
-+		u64 nqerr:1;
-+		u64 irde:1;
-+		u64 nwrp:1;
-+		u64 reserved_4:1;
-+		u64 hwerr:1;
-+		u64 fault:1;
-+		u64 reserved_7_63:57;
-+#endif
-+	} s;
-+};
-+
-+/*
-+ * RVU_PFVF_BAR2 - cpt_lf_ctl
-+ *
-+ * This register configures the queue.
-+ *
-+ * When the queue is not execution-quiescent (see CPT_LF_INPROG[EENA,INFLIGHT]),
-+ * software must only write this register with [ENA]=0.
-+ */
-+union otx2_cptx_lf_ctl {
-+	u64 u;
-+	struct otx2_cptx_lf_ctl_s {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+		u64 reserved_8_63:56;
-+		u64 fc_hyst_bits:4;
-+		u64 reserved_3:1;
-+		u64 fc_up_crossing:1;
-+		u64 fc_ena:1;
-+		u64 ena:1;
-+#else /* Word 0 - Little Endian */
-+		u64 ena:1;
-+		u64 fc_ena:1;
-+		u64 fc_up_crossing:1;
-+		u64 reserved_3:1;
-+		u64 fc_hyst_bits:4;
-+		u64 reserved_8_63:56;
-+#endif
-+	} s;
-+};
-+
-+/*
-+ * RVU_PFVF_BAR2 - cpt_lf_done_wait
-+ *
-+ * This register specifies the per-queue interrupt coalescing settings.
-+ */
-+union otx2_cptx_lf_done_wait {
-+	u64 u;
-+	struct otx2_cptx_lf_done_wait_s {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+		u64 reserved_48_63:16;
-+		u64 time_wait:16;
-+		u64 reserved_20_31:12;
-+		u64 num_wait:20;
-+#else /* Word 0 - Little Endian */
-+		u64 num_wait:20;
-+		u64 reserved_20_31:12;
-+		u64 time_wait:16;
-+		u64 reserved_48_63:16;
-+#endif /* Word 0 - End */
-+	} s;
-+};
-+
-+/*
-+ * RVU_PFVF_BAR2 - cpt_lf_done
-+ *
-+ * This register contain the per-queue instruction done count.
-+ */
-+union otx2_cptx_lf_done {
-+	u64 u;
-+	struct otx2_cptx_lf_done_s {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+		u64 reserved_20_63:44;
-+		u64 done:20;
-+#else /* Word 0 - Little Endian */
-+		u64 done:20;
-+		u64 reserved_20_63:44;
-+#endif /* Word 0 - End */
-+	} s;
-+};
-+
-+/*
-+ * RVU_PFVF_BAR2 - cpt_lf_inprog
-+ *
-+ * These registers contain the per-queue instruction in flight registers.
-+ *
-+ */
-+union otx2_cptx_lf_inprog {
-+	u64 u;
-+	struct otx2_cptx_lf_inprog_s {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+		u64 reserved_48_63:16;
-+		u64 gwb_cnt:8;
-+		u64 grb_cnt:8;
-+		u64 grb_partial:1;
-+		u64 reserved_18_30:13;
-+		u64 grp_drp:1;
-+		u64 eena:1;
-+		u64 reserved_9_15:7;
-+		u64 inflight:9;
-+#else /* Word 0 - Little Endian */
-+		u64 inflight:9;
-+		u64 reserved_9_15:7;
-+		u64 eena:1;
-+		u64 grp_drp:1;
-+		u64 reserved_18_30:13;
-+		u64 grb_partial:1;
-+		u64 grb_cnt:8;
-+		u64 gwb_cnt:8;
-+		u64 reserved_48_63:16;
-+#endif
-+	} s;
-+};
-+
-+/*
-+ * RVU_PFVF_BAR2 - cpt_lf_q_base
-+ *
-+ * CPT initializes these CSR fields to these values on any CPT_LF_Q_BASE write:
-+ * _ CPT_LF_Q_INST_PTR[XQ_XOR]=0.
-+ * _ CPT_LF_Q_INST_PTR[NQ_PTR]=2.
-+ * _ CPT_LF_Q_INST_PTR[DQ_PTR]=2.
-+ * _ CPT_LF_Q_GRP_PTR[XQ_XOR]=0.
-+ * _ CPT_LF_Q_GRP_PTR[NQ_PTR]=1.
-+ * _ CPT_LF_Q_GRP_PTR[DQ_PTR]=1.
-+ */
-+union otx2_cptx_lf_q_base {
-+	u64 u;
-+	struct otx2_cptx_lf_q_base_s {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+	u64 reserved_53_63:11;
-+	u64 addr:46;
-+	u64 reserved_1_6:6;
-+	u64 fault:1;
-+#else /* Word 0 - Little Endian */
-+	u64 fault:1;
-+	u64 reserved_1_6:6;
-+	u64 addr:46;
-+	u64 reserved_53_63:11;
-+#endif
-+	} s;
-+};
-+
-+/*
-+ * RVU_PFVF_BAR2 - cpt_lf_q_size
-+ *
-+ * CPT initializes these CSR fields to these values on any CPT_LF_Q_SIZE write:
-+ * _ CPT_LF_Q_INST_PTR[XQ_XOR]=0.
-+ * _ CPT_LF_Q_INST_PTR[NQ_PTR]=2.
-+ * _ CPT_LF_Q_INST_PTR[DQ_PTR]=2.
-+ * _ CPT_LF_Q_GRP_PTR[XQ_XOR]=0.
-+ * _ CPT_LF_Q_GRP_PTR[NQ_PTR]=1.
-+ * _ CPT_LF_Q_GRP_PTR[DQ_PTR]=1.
-+ */
-+union otx2_cptx_lf_q_size {
-+	u64 u;
-+	struct otx2_cptx_lf_q_size_s {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+	u64 reserved_15_63:49;
-+	u64 size_div40:15;
-+#else /* Word 0 - Little Endian */
-+	u64 size_div40:15;
-+	u64 reserved_15_63:49;
-+#endif
-+	} s;
-+};
-+
-+/*
-+ * RVU_PF_BAR0 - cpt_af_lf_ctl
-+ *
-+ * This register configures queues. This register should be written only
-+ * when the queue is execution-quiescent (see CPT_LF_INPROG[INFLIGHT]).
-+ */
-+union otx2_cptx_af_lf_ctrl {
-+	u64 u;
-+	struct otx2_cptx_af_lf_ctrl_s {
-+#if defined(__BIG_ENDIAN_BITFIELD) /* Word 0 - Big Endian */
-+	u64 reserved_56_63:8;
-+	u64 grp:8;
-+	u64 reserved_17_47:31;
-+	u64 nixtx_en:1;
-+	u64 reserved_11_15:5;
-+	u64 cont_err:1;
-+	u64 pf_func_inst:1;
-+	u64 reserved_1_8:8;
-+	u64 pri:1;
-+#else /* Word 0 - Little Endian */
-+	u64 pri:1;
-+	u64 reserved_1_8:8;
-+	u64 pf_func_inst:1;
-+	u64 cont_err:1;
-+	u64 reserved_11_15:5;
-+	u64 nixtx_en:1;
-+	u64 reserved_17_47:31;
-+	u64 grp:8;
-+	u64 reserved_56_63:8;
-+#endif
-+	} s;
-+};
-+
-+#endif /* __OTX2_CPT_HW_TYPES_H */
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.c b/drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.c
-new file mode 100644
-index 0000000..1a41d13
---- /dev/null
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.c
-@@ -0,0 +1,286 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2020 Marvell. */
-+
-+#include "otx2_cpt_mbox_common.h"
-+
-+static inline struct otx2_mbox *get_mbox(struct pci_dev *pdev)
-+{
-+	struct otx2_cptpf_dev *cptpf;
-+	struct otx2_cptvf_dev *cptvf;
-+
-+	if (pdev->is_physfn) {
-+		cptpf = pci_get_drvdata(pdev);
-+		return &cptpf->afpf_mbox;
-+	}
-+	cptvf = pci_get_drvdata(pdev);
-+	return &cptvf->pfvf_mbox;
-+}
-+
-+static inline int get_pf_id(struct pci_dev *pdev)
-+{
-+	struct otx2_cptpf_dev *cptpf;
-+
-+	if (pdev->is_physfn) {
-+		cptpf = pci_get_drvdata(pdev);
-+		return cptpf->pf_id;
-+	}
-+	return 0;
-+}
-+
-+static inline int get_vf_id(struct pci_dev *pdev)
-+{
-+	struct otx2_cptvf_dev *cptvf;
-+
-+	if (pdev->is_virtfn) {
-+		cptvf = pci_get_drvdata(pdev);
-+		return cptvf->vf_id;
-+	}
-+	return 0;
-+}
-+
-+char *otx2_cpt_get_mbox_opcode_str(int msg_opcode)
-+{
-+	char *str = "Unknown";
-+
-+	switch (msg_opcode) {
-+	case MBOX_MSG_READY:
-+		str = "READY";
-+		break;
-+
-+	case MBOX_MSG_ATTACH_RESOURCES:
-+		str = "ATTACH_RESOURCES";
-+		break;
-+
-+	case MBOX_MSG_DETACH_RESOURCES:
-+		str = "DETACH_RESOURCES";
-+		break;
-+
-+	case MBOX_MSG_MSIX_OFFSET:
-+		str = "MSIX_OFFSET";
-+		break;
-+
-+	case MBOX_MSG_CPT_RD_WR_REGISTER:
-+		str = "RD_WR_REGISTER";
-+		break;
-+
-+	case MBOX_MSG_GET_ENG_GRP_NUM:
-+		str = "GET_ENG_GRP_NUM";
-+		break;
-+
-+	case MBOX_MSG_RX_INLINE_IPSEC_LF_CFG:
-+		str = "RX_INLINE_IPSEC_LF_CFG";
-+		break;
-+
-+	case MBOX_MSG_GET_CAPS:
-+		str = "GET_CAPS";
-+		break;
-+
-+	case MBOX_MSG_GET_KCRYPTO_LIMITS:
-+		str = "GET_KCRYPTO_LIMITS";
-+		break;
-+	}
-+	return str;
-+}
-+
-+int otx2_cpt_send_mbox_msg(struct pci_dev *pdev)
-+{
-+	struct otx2_mbox *mbox = get_mbox(pdev);
-+	int ret;
-+
-+	otx2_mbox_msg_send(mbox, 0);
-+	ret = otx2_mbox_wait_for_rsp(mbox, 0);
-+	if (ret == -EIO) {
-+		dev_err(&pdev->dev, "RVU MBOX timeout.\n");
-+		return ret;
-+	} else if (ret) {
-+		dev_err(&pdev->dev, "RVU MBOX error: %d.\n", ret);
-+		return -EFAULT;
-+	}
-+	return ret;
-+}
-+
-+int otx2_cpt_send_ready_msg(struct pci_dev *pdev)
-+{
-+	struct otx2_mbox *mbox = get_mbox(pdev);
-+	struct mbox_msghdr *req;
-+
-+	req = otx2_mbox_alloc_msg_rsp(mbox, 0, sizeof(*req),
-+				      sizeof(struct ready_msg_rsp));
-+
-+	if (req == NULL) {
-+		dev_err(&pdev->dev, "RVU MBOX failed to get message.\n");
-+		return -EFAULT;
-+	}
-+
-+	req->id = MBOX_MSG_READY;
-+	req->sig = OTX2_MBOX_REQ_SIG;
-+	req->pcifunc = OTX2_CPT_RVU_PFFUNC(get_pf_id(pdev), get_vf_id(pdev));
-+
-+	return otx2_cpt_send_mbox_msg(pdev);
-+}
-+
-+int otx2_cpt_attach_rscrs_msg(struct pci_dev *pdev)
-+{
-+	struct otx2_cptlfs_info *lfs = otx2_cpt_get_lfs_info(pdev);
-+	struct otx2_mbox *mbox = get_mbox(pdev);
-+	struct rsrc_attach *req;
-+	int ret;
-+
-+	req = (struct rsrc_attach *)
-+			otx2_mbox_alloc_msg_rsp(mbox, 0, sizeof(*req),
-+						sizeof(struct msg_rsp));
-+	if (req == NULL) {
-+		dev_err(&pdev->dev, "RVU MBOX failed to get message.\n");
-+		return -EFAULT;
-+	}
-+
-+	req->hdr.id = MBOX_MSG_ATTACH_RESOURCES;
-+	req->hdr.sig = OTX2_MBOX_REQ_SIG;
-+	req->hdr.pcifunc = OTX2_CPT_RVU_PFFUNC(get_pf_id(pdev),
-+					       get_vf_id(pdev));
-+	req->cptlfs = lfs->lfs_num;
-+	ret = otx2_cpt_send_mbox_msg(pdev);
-+	if (ret)
-+		return ret;
-+
-+	if (!lfs->are_lfs_attached)
-+		ret = -EINVAL;
-+
-+	return ret;
-+}
-+
-+int otx2_cpt_detach_rsrcs_msg(struct pci_dev *pdev)
-+{
-+	struct otx2_cptlfs_info *lfs = otx2_cpt_get_lfs_info(pdev);
-+	struct otx2_mbox *mbox = get_mbox(pdev);
-+	struct rsrc_detach *req;
-+	int ret;
-+
-+	req = (struct rsrc_detach *)
-+				otx2_mbox_alloc_msg_rsp(mbox, 0, sizeof(*req),
-+							sizeof(struct msg_rsp));
-+	if (req == NULL) {
-+		dev_err(&pdev->dev, "RVU MBOX failed to get message.\n");
-+		return -EFAULT;
-+	}
-+
-+	req->hdr.id = MBOX_MSG_DETACH_RESOURCES;
-+	req->hdr.sig = OTX2_MBOX_REQ_SIG;
-+	req->hdr.pcifunc = OTX2_CPT_RVU_PFFUNC(get_pf_id(pdev),
-+					       get_vf_id(pdev));
-+	ret = otx2_cpt_send_mbox_msg(pdev);
-+	if (ret)
-+		return ret;
-+
-+	if (lfs->are_lfs_attached)
-+		ret = -EINVAL;
-+
-+	return ret;
-+}
-+
-+int otx2_cpt_msix_offset_msg(struct pci_dev *pdev)
-+{
-+	struct otx2_cptlfs_info *lfs = otx2_cpt_get_lfs_info(pdev);
-+	struct otx2_mbox *mbox = get_mbox(pdev);
-+	struct mbox_msghdr *req;
-+	int ret, i;
-+
-+	req = otx2_mbox_alloc_msg_rsp(mbox, 0, sizeof(*req),
-+				      sizeof(struct msix_offset_rsp));
-+	if (req == NULL) {
-+		dev_err(&pdev->dev, "RVU MBOX failed to get message.\n");
-+		return -EFAULT;
-+	}
-+
-+	req->id = MBOX_MSG_MSIX_OFFSET;
-+	req->sig = OTX2_MBOX_REQ_SIG;
-+	req->pcifunc = OTX2_CPT_RVU_PFFUNC(get_pf_id(pdev), get_vf_id(pdev));
-+	ret = otx2_cpt_send_mbox_msg(pdev);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < lfs->lfs_num; i++) {
-+		if (lfs->lf[i].msix_offset == MSIX_VECTOR_INVALID) {
-+			dev_err(&pdev->dev,
-+				"Invalid msix offset %d for LF %d\n",
-+				lfs->lf[i].msix_offset, i);
-+			return -EINVAL;
-+		}
-+	}
-+	return ret;
-+}
-+
-+int otx2_cpt_send_af_reg_requests(struct pci_dev *pdev)
-+{
-+	return otx2_cpt_send_mbox_msg(pdev);
-+}
-+
-+int otx2_cpt_add_read_af_reg(struct pci_dev *pdev, u64 reg, u64 *val)
-+{
-+	struct otx2_mbox *mbox = get_mbox(pdev);
-+	struct cpt_rd_wr_reg_msg *reg_msg;
-+
-+	reg_msg = (struct cpt_rd_wr_reg_msg *)
-+			otx2_mbox_alloc_msg_rsp(mbox, 0, sizeof(*reg_msg),
-+						sizeof(*reg_msg));
-+	if (reg_msg == NULL) {
-+		dev_err(&pdev->dev, "RVU MBOX failed to get message.\n");
-+		return -EFAULT;
-+	}
-+
-+	reg_msg->hdr.id = MBOX_MSG_CPT_RD_WR_REGISTER;
-+	reg_msg->hdr.sig = OTX2_MBOX_REQ_SIG;
-+	reg_msg->hdr.pcifunc = OTX2_CPT_RVU_PFFUNC(get_pf_id(pdev),
-+						   get_vf_id(pdev));
-+	reg_msg->is_write = 0;
-+	reg_msg->reg_offset = reg;
-+	reg_msg->ret_val = val;
-+
-+	return 0;
-+}
-+
-+int otx2_cpt_add_write_af_reg(struct pci_dev *pdev, u64 reg, u64 val)
-+{
-+	struct otx2_mbox *mbox = get_mbox(pdev);
-+	struct cpt_rd_wr_reg_msg *reg_msg;
-+
-+	reg_msg = (struct cpt_rd_wr_reg_msg *)
-+			otx2_mbox_alloc_msg_rsp(mbox, 0, sizeof(*reg_msg),
-+						sizeof(*reg_msg));
-+	if (reg_msg == NULL) {
-+		dev_err(&pdev->dev, "RVU MBOX failed to get message.\n");
-+		return -EFAULT;
-+	}
-+
-+	reg_msg->hdr.id = MBOX_MSG_CPT_RD_WR_REGISTER;
-+	reg_msg->hdr.sig = OTX2_MBOX_REQ_SIG;
-+	reg_msg->hdr.pcifunc = OTX2_CPT_RVU_PFFUNC(get_pf_id(pdev),
-+						   get_vf_id(pdev));
-+	reg_msg->is_write = 1;
-+	reg_msg->reg_offset = reg;
-+	reg_msg->val = val;
-+
-+	return 0;
-+}
-+
-+int otx2_cpt_read_af_reg(struct pci_dev *pdev, u64 reg, u64 *val)
-+{
-+	int ret;
-+
-+	ret = otx2_cpt_add_read_af_reg(pdev, reg, val);
-+	if (ret)
-+		return ret;
-+
-+	return otx2_cpt_send_mbox_msg(pdev);
-+}
-+
-+int otx2_cpt_write_af_reg(struct pci_dev *pdev, u64 reg, u64 val)
-+{
-+	int ret;
-+
-+	ret = otx2_cpt_add_write_af_reg(pdev, reg, val);
-+	if (ret)
-+		return ret;
-+
-+	return otx2_cpt_send_mbox_msg(pdev);
-+}
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.h b/drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.h
-new file mode 100644
-index 0000000..f92b76b
---- /dev/null
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.h
-@@ -0,0 +1,100 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ * Copyright (C) 2020 Marvell.
-+ */
-+
-+#ifndef __OTX2_CPT_MBOX_COMMON_H
-+#define __OTX2_CPT_MBOX_COMMON_H
-+
-+#include "otx2_cptpf.h"
-+#include "otx2_cptvf.h"
-+
-+/* Take mbox id from end of CPT mbox range in AF (range 0xA00 - 0xBFF) */
-+#define MBOX_MSG_RX_INLINE_IPSEC_LF_CFG 0xBFE
-+#define MBOX_MSG_GET_ENG_GRP_NUM        0xBFF
-+#define MBOX_MSG_GET_CAPS               0xBFD
-+#define MBOX_MSG_GET_KCRYPTO_LIMITS     0xBFC
-+
-+/*
-+ * Message request and response to get engine group number
-+ * which has attached a given type of engines (SE, AE, IE)
-+ * This messages are only used between CPT PF <-> CPT VF
-+ */
-+struct otx2_cpt_eng_grp_num_msg {
-+	struct mbox_msghdr hdr;
-+	u8 eng_type;
-+};
-+
-+struct otx2_cpt_eng_grp_num_rsp {
-+	struct mbox_msghdr hdr;
-+	u8 eng_type;
-+	u8 eng_grp_num;
-+};
-+
-+/*
-+ * Message request to config cpt lf for inline inbound ipsec.
-+ * This message is only used between CPT PF <-> CPT VF
-+ */
-+struct otx2_cpt_rx_inline_lf_cfg {
-+	struct mbox_msghdr hdr;
-+	u16 sso_pf_func;
-+};
-+
-+/*
-+ * Message request and response to get HW capabilities for each
-+ * engine type (SE, IE, AE).
-+ * This messages are only used between CPT PF <-> CPT VF
-+ */
-+struct otx2_cpt_caps_msg {
-+	struct mbox_msghdr hdr;
-+};
-+
-+struct otx2_cpt_caps_rsp {
-+	struct mbox_msghdr hdr;
-+	u16 cpt_pf_drv_version;
-+	u8 cpt_revision;
-+	union otx2_cpt_eng_caps eng_caps[OTX2_CPT_MAX_ENG_TYPES];
-+};
-+
-+/*
-+ * Message request and response to get kernel crypto limits
-+ * This messages are only used between CPT PF <-> CPT VF
-+ */
-+struct otx2_cpt_kcrypto_limits_msg {
-+	struct mbox_msghdr hdr;
-+};
-+
-+struct otx2_cpt_kcrypto_limits_rsp {
-+	struct mbox_msghdr hdr;
-+	u8 kcrypto_limits;
-+};
-+
-+static inline struct otx2_cptlfs_info *
-+		     otx2_cpt_get_lfs_info(struct pci_dev *pdev)
-+{
-+	struct otx2_cptpf_dev *cptpf;
-+	struct otx2_cptvf_dev *cptvf;
-+
-+	if (pdev->is_physfn) {
-+		cptpf = (struct otx2_cptpf_dev *) pci_get_drvdata(pdev);
-+		return &cptpf->lfs;
-+	}
-+
-+	cptvf = (struct otx2_cptvf_dev *) pci_get_drvdata(pdev);
-+	return &cptvf->lfs;
-+}
-+
-+int otx2_cpt_send_ready_msg(struct pci_dev *pdev);
-+int otx2_cpt_attach_rscrs_msg(struct pci_dev *pdev);
-+int otx2_cpt_detach_rsrcs_msg(struct pci_dev *pdev);
-+int otx2_cpt_msix_offset_msg(struct pci_dev *pdev);
-+
-+int otx2_cpt_send_af_reg_requests(struct pci_dev *pdev);
-+int otx2_cpt_add_read_af_reg(struct pci_dev *pdev, u64 reg, u64 *val);
-+int otx2_cpt_add_write_af_reg(struct pci_dev *pdev, u64 reg, u64 val);
-+int otx2_cpt_read_af_reg(struct pci_dev *pdev, u64 reg, u64 *val);
-+int otx2_cpt_write_af_reg(struct pci_dev *pdev, u64 reg, u64 val);
-+
-+int otx2_cpt_send_mbox_msg(struct pci_dev *pdev);
-+char *otx2_cpt_get_mbox_opcode_str(int msg_opcode);
-+
-+#endif /* __OTX2_CPT_MBOX_COMMON_H */
+@@ -104,6 +104,11 @@
+ #define OTX2_CPT_LMT_LFBASE             BIT_ULL(OTX2_CPT_RVU_FUNC_BLKADDR_SHIFT)
+ #define OTX2_CPT_LMT_LF_LMTLINEX(a)     (OTX2_CPT_LMT_LFBASE | 0x000 | \
+ 					 (a) << 12)
++/* RVU VF registers */
++#define OTX2_RVU_VF_INT                 (0x20)
++#define OTX2_RVU_VF_INT_W1S             (0x28)
++#define OTX2_RVU_VF_INT_ENA_W1S         (0x30)
++#define OTX2_RVU_VF_INT_ENA_W1C         (0x38)
+ 
+ /*
+  * Enumeration otx2_cpt_ucode_error_code_e
 diff --git a/drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h b/drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h
-new file mode 100644
-index 0000000..b24e2ef
---- /dev/null
+index b24e2ef..c0e8783 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h
 +++ b/drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h
-@@ -0,0 +1,81 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ * Copyright (C) 2020 Marvell.
-+ */
-+
-+#ifndef __OTX2_CPT_REQMGR_H
-+#define __OTX2_CPT_REQMGR_H
-+
-+#include "otx2_cpt_common.h"
-+
-+/* Completion code size and initial value */
-+#define OTX2_CPT_COMPLETION_CODE_SIZE 8
-+#define OTX2_CPT_COMPLETION_CODE_INIT OTX2_CPT_COMP_E_NOTDONE
-+
-+union otx2_cpt_opcode {
-+	u16 flags;
-+	struct {
-+		u8 major;
-+		u8 minor;
-+	} s;
-+};
-+
-+struct otx2_cptvf_request {
-+	u32 param1;
-+	u32 param2;
-+	u16 dlen;
-+	union otx2_cpt_opcode opcode;
-+};
-+
+@@ -10,6 +10,22 @@
+ /* Completion code size and initial value */
+ #define OTX2_CPT_COMPLETION_CODE_SIZE 8
+ #define OTX2_CPT_COMPLETION_CODE_INIT OTX2_CPT_COMP_E_NOTDONE
 +/*
-+ * CPT_INST_S software command definitions
-+ * Words EI (0-3)
++ * Maximum total number of SG buffers is 100, we divide it equally
++ * between input and output
 + */
-+union otx2_cpt_iq_cmd_word0 {
-+	u64 u;
-+	struct {
-+		u16 opcode;
-+		u16 param1;
-+		u16 param2;
-+		u16 dlen;
-+	} s;
++#define OTX2_CPT_MAX_SG_IN_CNT  50
++#define OTX2_CPT_MAX_SG_OUT_CNT 50
++
++/* DMA mode direct or SG */
++#define OTX2_CPT_DMA_MODE_DIRECT 0
++#define OTX2_CPT_DMA_MODE_SG     1
++
++/* Context source CPTR or DPTR */
++#define OTX2_CPT_FROM_CPTR 0
++#define OTX2_CPT_FROM_DPTR 1
++
++#define OTX2_CPT_MAX_REQ_SIZE 65535
+ 
+ union otx2_cpt_opcode {
+ 	u16 flags;
+@@ -78,4 +94,109 @@ struct otx2_cpt_pending_queue {
+ 	u32 qlen;		/* Queue length */
+ 	spinlock_t lock;	/* Queue lock */
+ };
++
++struct otx2_cpt_buf_ptr {
++	u8 *vptr;
++	dma_addr_t dma_addr;
++	u16 size;
 +};
 +
-+union otx2_cpt_iq_cmd_word3 {
-+	u64 u;
++union otx2_cpt_ctrl_info {
++	u32 flags;
 +	struct {
 +#if defined(__BIG_ENDIAN_BITFIELD)
-+		u64 grp:3;
-+		u64 cptr:61;
++		u32 reserved_6_31:26;
++		u32 grp:3;	/* Group bits */
++		u32 dma_mode:2;	/* DMA mode */
++		u32 se_req:1;	/* To SE core */
 +#else
-+		u64 cptr:61;
-+		u64 grp:3;
++		u32 se_req:1;	/* To SE core */
++		u32 dma_mode:2;	/* DMA mode */
++		u32 grp:3;	/* Group bits */
++		u32 reserved_6_31:26;
 +#endif
 +	} s;
 +};
 +
-+struct otx2_cpt_iq_command {
-+	union otx2_cpt_iq_cmd_word0 cmd;
-+	u64 dptr;
-+	u64 rptr;
-+	union otx2_cpt_iq_cmd_word3 cptr;
-+};
-+
-+struct otx2_cpt_pending_entry {
-+	void *completion_addr;	/* Completion address */
-+	void *info;
++struct otx2_cpt_req_info {
 +	/* Kernel async request callback */
 +	void (*callback)(int status, void *arg1, void *arg2);
 +	struct crypto_async_request *areq; /* Async request callback arg */
-+	u8 resume_sender;	/* Notify sender to resume sending requests */
-+	u8 busy;		/* Entry status (free/busy) */
++	struct otx2_cptvf_request req;/* Request information (core specific) */
++	union otx2_cpt_ctrl_info ctrl;/* User control information */
++	struct otx2_cpt_buf_ptr in[OTX2_CPT_MAX_SG_IN_CNT];
++	struct otx2_cpt_buf_ptr out[OTX2_CPT_MAX_SG_OUT_CNT];
++	u8 *iv_out;     /* IV to send back */
++	u16 rlen;	/* Output length */
++	u8 in_cnt;	/* Number of input buffers */
++	u8 out_cnt;	/* Number of output buffers */
++	u8 req_type;	/* Type of request */
++	u8 is_enc;	/* Is a request an encryption request */
++	u8 is_trunc_hmac;/* Is truncated hmac used */
 +};
 +
-+struct otx2_cpt_pending_queue {
-+	struct otx2_cpt_pending_entry *head; /* Head of the queue */
-+	u32 front;		/* Process work from here */
-+	u32 rear;		/* Append new work here */
-+	u32 pending_count;	/* Pending requests count */
-+	u32 qlen;		/* Queue length */
-+	spinlock_t lock;	/* Queue lock */
-+};
-+#endif /* __OTX2_CPT_REQMGR_H */
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptlf.h b/drivers/crypto/marvell/octeontx2/otx2_cptlf.h
-new file mode 100644
-index 0000000..528f16f
---- /dev/null
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptlf.h
-@@ -0,0 +1,365 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ * Copyright (C) 2020 Marvell.
-+ */
-+
-+#ifndef __OTX2_CPTLF_H
-+#define __OTX2_CPTLF_H
-+
-+#include "otx2_cpt_reqmgr.h"
-+
-+/*
-+ * CPT instruction and pending queues user requested length in CPT_INST_S msgs
-+ */
-+#define OTX2_CPT_USER_REQUESTED_QLEN_MSGS 8200
-+
-+/*
-+ * CPT instruction queue size passed to HW is in units of 40*CPT_INST_S
-+ * messages.
-+ */
-+#define OTX2_CPT_SIZE_DIV40 (OTX2_CPT_USER_REQUESTED_QLEN_MSGS/40)
-+
-+/*
-+ * CPT instruction and pending queues length in CPT_INST_S messages
-+ */
-+#define OTX2_CPT_INST_QLEN_MSGS	((OTX2_CPT_SIZE_DIV40 - 1) * 40)
-+
-+/* CPT instruction queue length in bytes */
-+#define OTX2_CPT_INST_QLEN_BYTES (OTX2_CPT_SIZE_DIV40 * 40 * \
-+				  OTX2_CPT_INST_SIZE)
-+
-+/* CPT instruction group queue length in bytes */
-+#define OTX2_CPT_INST_GRP_QLEN_BYTES (OTX2_CPT_SIZE_DIV40 * 16)
-+
-+/* CPT FC length in bytes */
-+#define OTX2_CPT_Q_FC_LEN 128
-+
-+/* CPT instruction queue alignment */
-+#define OTX2_CPT_INST_Q_ALIGNMENT  128
-+
-+/* Mask which selects all engine groups */
-+#define OTX2_CPT_ALL_ENG_GRPS_MASK 0xFF
-+
-+/* Queue priority */
-+#define OTX2_CPT_QUEUE_HI_PRIO  0x1
-+#define OTX2_CPT_QUEUE_LOW_PRIO 0x0
-+
-+
-+struct otx2_cptlf_sysfs_cfg {
-+	char name[OTX2_CPT_NAME_LENGTH];
-+	struct device_attribute eng_grps_mask_attr;
-+	struct device_attribute coalesc_tw_attr;
-+	struct device_attribute coalesc_nw_attr;
-+	struct device_attribute prio_attr;
-+#define OTX2_CPT_ATTRS_NUM 5
-+	struct attribute *attrs[OTX2_CPT_ATTRS_NUM];
-+	struct attribute_group attr_grp;
-+	bool is_sysfs_grp_created;
++struct otx2_cpt_inst_info {
++	struct otx2_cpt_pending_entry *pentry;
++	struct otx2_cpt_req_info *req;
++	struct pci_dev *pdev;
++	void *completion_addr;
++	u8 *out_buffer;
++	u8 *in_buffer;
++	dma_addr_t dptr_baddr;
++	dma_addr_t rptr_baddr;
++	dma_addr_t comp_baddr;
++	unsigned long time_in;
++	u32 dlen;
++	u32 dma_len;
++	u8 extra_time;
 +};
 +
-+struct otx2_cpt_inst_queue {
-+	u8 *vaddr;
-+	u8 *real_vaddr;
-+	dma_addr_t dma_addr;
-+	dma_addr_t real_dma_addr;
-+	u32 size;
++struct otx2_cpt_sglist_component {
++	u16 len0;
++	u16 len1;
++	u16 len2;
++	u16 len3;
++	u64 ptr0;
++	u64 ptr1;
++	u64 ptr2;
++	u64 ptr3;
 +};
 +
-+struct otx2_cptlfs_info;
-+struct otx2_cptlf_wqe {
-+	struct tasklet_struct work;
-+	struct otx2_cptlfs_info *lfs;
-+	u8 lf_num;
-+};
-+
-+struct otx2_cptlf_info {
-+	struct otx2_cptlfs_info *lfs;		/* Ptr to cptlfs_info struct */
-+	struct otx2_cptlf_sysfs_cfg sysfs_cfg;	/* LF sysfs config entries */
-+	void *lmtline;				/* Address of LMTLINE */
-+	void *ioreg;                            /* LMTLINE send register */
-+	int msix_offset;			/* MSI-X interrupts offset */
-+	cpumask_var_t affinity_mask;		/* IRQs affinity mask */
-+	u8 irq_name[OTX2_CPT_LF_MSIX_VECTORS][32];/* Interrupts name */
-+	u8 is_irq_reg[OTX2_CPT_LF_MSIX_VECTORS];  /* Is interrupt registered */
-+	u8 slot;				/* Slot number of this LF */
-+
-+	struct otx2_cpt_inst_queue iqueue;/* Instruction queue */
-+	struct otx2_cpt_pending_queue pqueue; /* Pending queue */
-+	struct otx2_cptlf_wqe *wqe;	/* Tasklet work info */
-+};
-+
-+struct otx2_cptlfs_info {
-+	/* Registers start address of VF/PF LFs are attached to */
-+	void __iomem *reg_base;
-+	struct pci_dev *pdev;   /* Device LFs are attached to */
-+	struct otx2_cptlf_info lf[OTX2_CPT_MAX_LFS_NUM];
-+	u8 kcrypto_eng_grp_num;	/* Kernel crypto engine group number */
-+	u8 are_lfs_attached;	/* Whether CPT LFs are attached */
-+	u8 lfs_num;		/* Number of CPT LFs */
-+	u8 kcrypto_limits;      /* Kernel crypto limits */
-+};
-+
-+static inline void otx2_cpt_free_instruction_queues(
-+					struct otx2_cptlfs_info *lfs)
++static inline void otx2_cpt_info_destroy(struct pci_dev *pdev,
++					 struct otx2_cpt_inst_info *info)
 +{
-+	struct otx2_cpt_inst_queue *iq;
++	struct otx2_cpt_req_info *req;
 +	int i;
 +
-+	for (i = 0; i < lfs->lfs_num; i++) {
-+		iq = &lfs->lf[i].iqueue;
-+		if (iq->real_vaddr)
-+			dma_free_coherent(&lfs->pdev->dev,
-+					  iq->size,
-+					  iq->real_vaddr,
-+					  iq->real_dma_addr);
-+		iq->real_vaddr = NULL;
-+		iq->vaddr = NULL;
-+	}
-+}
++	if (info->dptr_baddr)
++		dma_unmap_single(&pdev->dev, info->dptr_baddr,
++				 info->dma_len, DMA_BIDIRECTIONAL);
 +
-+static inline int otx2_cpt_alloc_instruction_queues(
-+					struct otx2_cptlfs_info *lfs)
-+{
-+	struct otx2_cpt_inst_queue *iq;
-+	int ret = 0, i;
-+
-+	if (!lfs->lfs_num)
-+		return -EINVAL;
-+
-+	for (i = 0; i < lfs->lfs_num; i++) {
-+		iq = &lfs->lf[i].iqueue;
-+		iq->size = OTX2_CPT_INST_QLEN_BYTES +
-+			   OTX2_CPT_Q_FC_LEN +
-+			   OTX2_CPT_INST_GRP_QLEN_BYTES +
-+			   OTX2_CPT_INST_Q_ALIGNMENT;
-+		iq->real_vaddr = dma_alloc_coherent(&lfs->pdev->dev, iq->size,
-+					&iq->real_dma_addr, GFP_KERNEL);
-+		if (!iq->real_vaddr) {
-+			ret = -ENOMEM;
-+			goto error;
++	if (info->req) {
++		req = info->req;
++		for (i = 0; i < req->out_cnt; i++) {
++			if (req->out[i].dma_addr)
++				dma_unmap_single(&pdev->dev,
++						 req->out[i].dma_addr,
++						 req->out[i].size,
++						 DMA_BIDIRECTIONAL);
 +		}
-+		iq->vaddr = iq->real_vaddr + OTX2_CPT_INST_GRP_QLEN_BYTES;
-+		iq->dma_addr = iq->real_dma_addr + OTX2_CPT_INST_GRP_QLEN_BYTES;
 +
-+		/* Align pointers */
-+		iq->vaddr = PTR_ALIGN(iq->vaddr, OTX2_CPT_INST_Q_ALIGNMENT);
-+		iq->dma_addr = PTR_ALIGN(iq->dma_addr,
-+					 OTX2_CPT_INST_Q_ALIGNMENT);
++		for (i = 0; i < req->in_cnt; i++) {
++			if (req->in[i].dma_addr)
++				dma_unmap_single(&pdev->dev,
++						 req->in[i].dma_addr,
++						 req->in[i].size,
++						 DMA_BIDIRECTIONAL);
++		}
 +	}
-+
-+	return 0;
-+error:
-+	otx2_cpt_free_instruction_queues(lfs);
-+	return ret;
++	kzfree(info);
 +}
 +
-+static inline void otx2_cptlf_set_iqueues_base_addr(
-+					struct otx2_cptlfs_info *lfs)
-+{
-+	union otx2_cptx_lf_q_base lf_q_base;
-+	int slot;
++struct otx2_cptlf_wqe;
++int otx2_cpt_get_kcrypto_eng_grp_num(struct pci_dev *pdev);
++int otx2_cpt_do_request(struct pci_dev *pdev, struct otx2_cpt_req_info *req,
++			int cpu_num);
++void otx2_cpt_post_process(struct otx2_cptlf_wqe *wqe);
 +
-+	for (slot = 0; slot < lfs->lfs_num; slot++) {
-+		lf_q_base.u = lfs->lf[slot].iqueue.dma_addr;
-+		otx2_cpt_write64(lfs->reg_base, BLKADDR_CPT0, slot,
-+				 OTX2_CPT_LF_Q_BASE, lf_q_base.u);
-+	}
+ #endif /* __OTX2_CPT_REQMGR_H */
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptlf.h b/drivers/crypto/marvell/octeontx2/otx2_cptlf.h
+index 528f16f..1842aa9 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptlf.h
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptlf.h
+@@ -362,4 +362,9 @@ static inline void otx2_cpt_send_cmd(union otx2_cpt_inst_s *cptinst,
+ 
+ 	} while (!ret);
+ }
++
++int otx2_cptvf_lf_init(struct pci_dev *pdev, void *reg_base,
++		       struct otx2_cptlfs_info *lfs, int lfs_num);
++int otx2_cptvf_lf_shutdown(struct pci_dev *pdev, struct otx2_cptlfs_info *lfs);
++
+ #endif /* __OTX2_CPTLF_H */
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptlf_main.c b/drivers/crypto/marvell/octeontx2/otx2_cptlf_main.c
+new file mode 100644
+index 0000000..bc84b41
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptlf_main.c
+@@ -0,0 +1,964 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Marvell. */
++
++#include "otx2_cpt_common.h"
++#include "otx2_cpt_reqmgr.h"
++#include "otx2_cptvf_algs.h"
++#include "otx2_cpt_mbox_common.h"
++#include "rvu_reg.h"
++
++#define CPT_TIMER_HOLD 0x03F
++#define CPT_COUNT_HOLD 32
++/* Minimum and maximum values for interrupt coalescing */
++#define CPT_COALESC_MIN_TIME_WAIT  0x0
++#define CPT_COALESC_MAX_TIME_WAIT  ((1<<16)-1)
++#define CPT_COALESC_MIN_NUM_WAIT   0x0
++#define CPT_COALESC_MAX_NUM_WAIT   ((1<<20)-1)
++
++static int cptlf_get_done_time_wait(struct otx2_cptlf_info *lf)
++{
++	union otx2_cptx_lf_done_wait done_wait;
++
++	done_wait.u = otx2_cpt_read64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
++				      OTX2_CPT_LF_DONE_WAIT);
++	return done_wait.s.time_wait;
 +}
 +
-+static inline void otx2_cptlf_do_set_iqueue_size(struct otx2_cptlf_info *lf)
++static void cptlf_do_set_done_time_wait(struct otx2_cptlf_info *lf,
++					int time_wait)
 +{
-+	union otx2_cptx_lf_q_size lf_q_size = { .u = 0x0 };
++	union otx2_cptx_lf_done_wait done_wait;
 +
-+	lf_q_size.s.size_div40 = OTX2_CPT_SIZE_DIV40;
++	done_wait.u = otx2_cpt_read64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
++				      OTX2_CPT_LF_DONE_WAIT);
++	done_wait.s.time_wait = time_wait;
 +	otx2_cpt_write64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
-+			 OTX2_CPT_LF_Q_SIZE, lf_q_size.u);
++			 OTX2_CPT_LF_DONE_WAIT, done_wait.u);
 +}
 +
-+static inline void otx2_cptlf_set_iqueues_size(struct otx2_cptlfs_info *lfs)
++static int cptlf_get_done_num_wait(struct otx2_cptlf_info *lf)
++{
++	union otx2_cptx_lf_done_wait done_wait;
++
++	done_wait.u = otx2_cpt_read64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
++				      OTX2_CPT_LF_DONE_WAIT);
++	return done_wait.s.num_wait;
++}
++
++static void cptlf_do_set_done_num_wait(struct otx2_cptlf_info *lf, int num_wait)
++{
++	union otx2_cptx_lf_done_wait done_wait;
++
++	done_wait.u = otx2_cpt_read64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
++				      OTX2_CPT_LF_DONE_WAIT);
++	done_wait.s.num_wait = num_wait;
++	otx2_cpt_write64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
++			 OTX2_CPT_LF_DONE_WAIT, done_wait.u);
++}
++
++static void cptlf_set_done_time_wait(struct otx2_cptlfs_info *lfs,
++				     int time_wait)
 +{
 +	int slot;
 +
 +	for (slot = 0; slot < lfs->lfs_num; slot++)
-+		otx2_cptlf_do_set_iqueue_size(&lfs->lf[slot]);
++		cptlf_do_set_done_time_wait(&lfs->lf[slot], time_wait);
 +}
 +
-+static inline void otx2_cptlf_do_disable_iqueue(struct otx2_cptlf_info *lf)
-+{
-+	union otx2_cptx_lf_ctl lf_ctl = { .u = 0x0 };
-+	union otx2_cptx_lf_inprog lf_inprog;
-+	int timeout = 20;
-+
-+	/* Disable instructions enqueuing */
-+	otx2_cpt_write64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
-+			 OTX2_CPT_LF_CTL, lf_ctl.u);
-+
-+	/* Wait for instruction queue to become empty */
-+	do {
-+		lf_inprog.u = otx2_cpt_read64(lf->lfs->reg_base, BLKADDR_CPT0,
-+					      lf->slot, OTX2_CPT_LF_INPROG);
-+		if (!lf_inprog.s.inflight)
-+			break;
-+
-+		usleep_range(10000, 20000);
-+		if (timeout-- < 0) {
-+			dev_err(&lf->lfs->pdev->dev,
-+				"Error LF %d is still busy.\n", lf->slot);
-+			break;
-+		}
-+
-+	} while (1);
-+
-+	/*
-+	 * Disable executions in the LF's queue,
-+	 * the queue should be empty at this point
-+	 */
-+	lf_inprog.s.eena = 0x0;
-+	otx2_cpt_write64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
-+			 OTX2_CPT_LF_INPROG, lf_inprog.u);
-+}
-+
-+static inline void otx2_cptlf_disable_iqueues(struct otx2_cptlfs_info *lfs)
++static void cptlf_set_done_num_wait(struct otx2_cptlfs_info *lfs, int num_wait)
 +{
 +	int slot;
 +
 +	for (slot = 0; slot < lfs->lfs_num; slot++)
-+		otx2_cptlf_do_disable_iqueue(&lfs->lf[slot]);
++		cptlf_do_set_done_num_wait(&lfs->lf[slot], num_wait);
 +}
 +
-+static inline void otx2_cptlf_set_iqueue_enq(struct otx2_cptlf_info *lf,
-+					     bool enable)
-+{
-+	union otx2_cptx_lf_ctl lf_ctl;
-+
-+	lf_ctl.u = otx2_cpt_read64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
-+				   OTX2_CPT_LF_CTL);
-+
-+	/* Set iqueue's enqueuing */
-+	lf_ctl.s.ena = enable ? 0x1 : 0x0;
-+	otx2_cpt_write64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
-+			 OTX2_CPT_LF_CTL, lf_ctl.u);
-+}
-+
-+static inline void otx2_cptlf_enable_iqueue_enq(struct otx2_cptlf_info *lf)
-+{
-+	otx2_cptlf_set_iqueue_enq(lf, true);
-+}
-+
-+static inline void otx2_cptlf_set_iqueue_exec(struct otx2_cptlf_info *lf,
-+					      bool enable)
++static int cptlf_get_inflight(struct otx2_cptlf_info *lf)
 +{
 +	union otx2_cptx_lf_inprog lf_inprog;
 +
 +	lf_inprog.u = otx2_cpt_read64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
 +				      OTX2_CPT_LF_INPROG);
 +
-+	/* Set iqueue's execution */
-+	lf_inprog.s.eena = enable ? 0x1 : 0x0;
-+	otx2_cpt_write64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
-+			 OTX2_CPT_LF_INPROG, lf_inprog.u);
++	return lf_inprog.s.inflight;
 +}
 +
-+static inline void otx2_cptlf_enable_iqueue_exec(struct otx2_cptlf_info *lf)
++static int cptlf_get_pri(struct pci_dev *pdev, struct otx2_cptlf_info *lf,
++			 int *pri)
 +{
-+	otx2_cptlf_set_iqueue_exec(lf, true);
-+}
++	union otx2_cptx_af_lf_ctrl lf_ctrl;
++	int ret;
 +
-+static inline void otx2_cptlf_disable_iqueue_exec(struct otx2_cptlf_info *lf)
-+{
-+	otx2_cptlf_set_iqueue_exec(lf, false);
-+}
-+
-+static inline void otx2_cptlf_enable_iqueues(struct otx2_cptlfs_info *lfs)
-+{
-+	int slot;
-+
-+	for (slot = 0; slot < lfs->lfs_num; slot++) {
-+		otx2_cptlf_enable_iqueue_exec(&lfs->lf[slot]);
-+		otx2_cptlf_enable_iqueue_enq(&lfs->lf[slot]);
-+	}
-+}
-+
-+static inline void otx2_cpt_fill_inst(union otx2_cpt_inst_s *cptinst,
-+				      struct otx2_cpt_iq_command *iq_cmd,
-+				      u64 comp_baddr)
-+{
-+	cptinst->u[0] = 0x0;
-+	cptinst->s.doneint = true;
-+	cptinst->s.res_addr = comp_baddr;
-+	cptinst->u[2] = 0x0;
-+	cptinst->u[3] = 0x0;
-+	cptinst->s.ei0 = iq_cmd->cmd.u;
-+	cptinst->s.ei1 = iq_cmd->dptr;
-+	cptinst->s.ei2 = iq_cmd->rptr;
-+	cptinst->s.ei3 = iq_cmd->cptr.u;
-+}
-+
-+#if defined(CONFIG_ARM64)
-+static inline long otx2_lmt_flush(void *ioreg)
-+{
-+	long result = 0;
-+
-+	__asm__ volatile(".cpu  generic+lse\n"
-+			 "ldeor xzr, %0, [%1]\n"
-+			 : "=r" (result)
-+			 : "r" (ioreg) : "memory");
-+
-+	return result;
-+}
-+
-+#else
-+#define otx2_lmt_flush(addr)     ({ 0; })
-+#endif
-+
-+/*
-+ * On OcteonTX2 platform the parameter insts_num is used as a count of
-+ * instructions to be enqueued. The valid values for insts_num are:
-+ * 1 - 1 CPT instruction will be enqueued during LMTST operation
-+ * 2 - 2 CPT instructions will be enqueued during LMTST operation
-+ */
-+static inline void otx2_cpt_send_cmd(union otx2_cpt_inst_s *cptinst,
-+				     u32 insts_num, void *obj)
-+{
-+	struct otx2_cptlf_info *lf = obj;
-+	void *lmtline = lf->lmtline;
-+	long ret;
-+
-+	/*
-+	 * Make sure memory areas pointed in CPT_INST_S
-+	 * are flushed before the instruction is sent to CPT
-+	 */
-+	smp_wmb();
-+
-+	do {
-+		/* Copy CPT command to LMTLINE */
-+		memcpy(lmtline, cptinst, insts_num * OTX2_CPT_INST_SIZE);
-+
-+		/*
-+		 * Make sure compiler does not reorder memcpy and ldeor.
-+		 * LMTST transactions are always flushed from the write
-+		 * buffer immediately, a DMB is not required to push out
-+		 * LMTSTs.
-+		 */
-+		barrier();
-+		/*
-+		 * LDEOR initiates atomic transfer to I/O device
-+		 * The following will cause the LMTST to fail (the LDEOR
-+		 * returns zero):
-+		 * - No stores have been performed to the LMTLINE since it was
-+		 * last invalidated.
-+		 * - The bytes which have been stored to LMTLINE since it was
-+		 * last invalidated form a pattern that is non-contiguous, does
-+		 * not start at byte 0, or does not end on a 8-byte boundary.
-+		 * (i.e.comprises a formation of other than 1–16 8-byte
-+		 * words.)
-+		 *
-+		 * These rules are designed such that an operating system
-+		 * context switch or hypervisor guest switch need have no
-+		 * knowledge of the LMTST operations; the switch code does not
-+		 * need to store to LMTCANCEL. Also note as LMTLINE data cannot
-+		 * be read, there is no information leakage between processes.
-+		 */
-+		ret = otx2_lmt_flush(lf->ioreg);
-+
-+	} while (!ret);
-+}
-+#endif /* __OTX2_CPTLF_H */
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf.h b/drivers/crypto/marvell/octeontx2/otx2_cptpf.h
-new file mode 100644
-index 0000000..d55f831
---- /dev/null
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf.h
-@@ -0,0 +1,79 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ * Copyright (C) 2020 Marvell.
-+ */
-+
-+#ifndef __OTX2_CPTPF_H
-+#define __OTX2_CPTPF_H
-+
-+#include "otx2_cptpf_ucode.h"
-+#include "otx2_cptlf.h"
-+
-+struct otx2_cptpf_dev;
-+struct otx2_cptvf_info {
-+	struct otx2_cptpf_dev *cptpf;	/* PF pointer this VF belongs to */
-+	struct work_struct vfpf_mbox_work;
-+	struct pci_dev *vf_dev;
-+	int vf_id;
-+	int intr_idx;
-+};
-+
-+struct otx2_cpt_kvf_limits {
-+	struct device_attribute kvf_limits_attr;
-+	int lfs_num; /* Number of LFs allocated for kernel VF driver */
-+};
-+
-+/* CPT HW capabilities */
-+union otx2_cpt_eng_caps {
-+	u64 u;
-+	struct {
-+		u64 reserved_0_4:5;
-+		u64 mul:1;
-+		u64 sha1_sha2:1;
-+		u64 chacha20:1;
-+		u64 zuc_snow3g:1;
-+		u64 sha3:1;
-+		u64 aes:1;
-+		u64 kasumi:1;
-+		u64 des:1;
-+		u64 crc:1;
-+		u64 reserved_14_63:50;
-+	};
-+};
-+
-+struct otx2_cptpf_dev {
-+	void __iomem *reg_base;		/* CPT PF registers start address */
-+	void __iomem *afpf_mbox_base;	/* PF-AF mbox start address */
-+	void __iomem *vfpf_mbox_base;   /* VF-PF mbox start address */
-+	struct pci_dev *pdev;		/* PCI device handle */
-+	struct otx2_cptvf_info vf[OTX2_CPT_MAX_VFS_NUM];
-+	struct otx2_cptlfs_info lfs;	/* CPT LFs attached to this PF */
-+	struct otx2_cpt_eng_grps eng_grps;/* Engine groups information */
-+	/* HW capabilities for each engine type */
-+	union otx2_cpt_eng_caps eng_caps[OTX2_CPT_MAX_ENG_TYPES];
-+	bool is_eng_caps_discovered;
-+
-+	/* AF <=> PF mbox */
-+	struct otx2_mbox	afpf_mbox;
-+	struct work_struct	afpf_mbox_work;
-+	struct workqueue_struct *afpf_mbox_wq;
-+
-+	/* VF <=> PF mbox */
-+	struct otx2_mbox	vfpf_mbox;
-+	struct workqueue_struct *vfpf_mbox_wq;
-+
-+	u8 pf_id;		/* RVU PF number */
-+	u8 max_vfs;		/* Maximum number of VFs supported by CPT */
-+	u8 enabled_vfs;		/* Number of enabled VFs */
-+	u8 sso_pf_func_ovrd;	/* SSO PF_FUNC override bit */
-+	u8 kvf_limits;		/* Kernel VF limits */
-+};
-+
-+irqreturn_t otx2_cptpf_afpf_mbox_intr(int irq, void *arg);
-+irqreturn_t otx2_cptpf_vfpf_mbox_intr(int irq, void *arg);
-+void otx2_cptpf_afpf_mbox_handler(struct work_struct *work);
-+void otx2_cptpf_vfpf_mbox_handler(struct work_struct *work);
-+int otx2_cptpf_lf_init(struct otx2_cptpf_dev *cptpf, u8 eng_grp_mask,
-+		       int pri, int lfs_num);
-+void otx2_cptpf_lf_cleanup(struct otx2_cptlfs_info *lfs);
-+
-+#endif /* __OTX2_CPTPF_H */
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c b/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
-new file mode 100644
-index 0000000..6721193
---- /dev/null
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
-@@ -0,0 +1,599 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2020 Marvell. */
-+
-+#include <linux/firmware.h>
-+#include "otx2_cpt_mbox_common.h"
-+#include "rvu_reg.h"
-+
-+#define OTX2_CPT_DRV_NAME    "octeontx2-cpt"
-+#define OTX2_CPT_DRV_STRING  "Marvell OcteonTX2 CPT Physical Function Driver"
-+#define OTX2_CPT_DRV_VERSION "1.0"
-+
-+static void cptpf_enable_vf_flr_intrs(struct otx2_cptpf_dev *cptpf)
-+{
-+	/* Clear interrupt if any */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_VFFLR_INTX(0),
-+			~0x0ULL);
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_VFFLR_INTX(1),
-+			~0x0ULL);
-+
-+	/* Enable VF FLR interrupts */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			 RVU_PF_VFFLR_INT_ENA_W1SX(0), ~0x0ULL);
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			 RVU_PF_VFFLR_INT_ENA_W1SX(1), ~0x0ULL);
-+}
-+
-+static void cptpf_disable_vf_flr_intrs(struct otx2_cptpf_dev *cptpf)
-+{
-+	/* Disable VF FLR interrupts */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			 RVU_PF_VFFLR_INT_ENA_W1CX(0), ~0x0ULL);
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			 RVU_PF_VFFLR_INT_ENA_W1CX(1), ~0x0ULL);
-+
-+	/* Clear interrupt if any */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_VFFLR_INTX(0),
-+			 ~0x0ULL);
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_VFFLR_INTX(1),
-+			 ~0x0ULL);
-+}
-+
-+static void cptpf_enable_afpf_mbox_intrs(struct otx2_cptpf_dev *cptpf)
-+{
-+	/* Clear interrupt if any */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_INT, 0x1ULL);
-+
-+	/* Enable AF-PF interrupt */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_INT_ENA_W1S,
-+			 0x1ULL);
-+}
-+
-+static void cptpf_disable_afpf_mbox_intrs(struct otx2_cptpf_dev *cptpf)
-+{
-+	/* Disable AF-PF interrupt */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_INT_ENA_W1C,
-+			 0x1ULL);
-+
-+	/* Clear interrupt if any */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_INT, 0x1ULL);
-+}
-+
-+static void cptpf_enable_vfpf_mbox_intrs(struct otx2_cptpf_dev *cptpf,
-+					 int numvfs)
-+{
-+	int ena_bits;
-+
-+	/* Clear any pending interrupts */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			 RVU_PF_VFPF_MBOX_INTX(0), ~0x0ULL);
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			 RVU_PF_VFPF_MBOX_INTX(1), ~0x0ULL);
-+
-+	/* Enable VF interrupts for VFs from 0 to 63 */
-+	ena_bits = ((numvfs - 1) % 64);
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			 RVU_PF_VFPF_MBOX_INT_ENA_W1SX(0),
-+			 GENMASK_ULL(ena_bits, 0));
-+
-+	if (numvfs > 64) {
-+		/* Enable VF interrupts for VFs from 64 to 127 */
-+		ena_bits = numvfs - 64 - 1;
-+		otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+				RVU_PF_VFPF_MBOX_INT_ENA_W1SX(1),
-+				GENMASK_ULL(ena_bits, 0));
-+	}
-+}
-+
-+static void cptpf_disable_vfpf_mbox_intrs(struct otx2_cptpf_dev *cptpf)
-+{
-+	/* Disable VF-PF interrupts */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			 RVU_PF_VFPF_MBOX_INT_ENA_W1CX(0), ~0x0ULL);
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			 RVU_PF_VFPF_MBOX_INT_ENA_W1CX(1), ~0x0ULL);
-+
-+	/* Clear any pending interrupts */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			 RVU_PF_VFPF_MBOX_INTX(0), ~0x0ULL);
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			 RVU_PF_VFPF_MBOX_INTX(1), ~0x0ULL);
-+}
-+
-+static irqreturn_t cptpf_vf_flr_intr(int __always_unused irq, void *arg)
-+{
-+	struct otx2_cptpf_dev *cptpf = arg;
-+
-+	/* Clear transaction pending register */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_VFTRPENDX(0),
-+			 ~0x0ULL);
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_VFTRPENDX(1),
-+			 ~0x0ULL);
-+
-+	/* Clear interrupt if any */
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_VFFLR_INTX(0),
-+			 ~0x0ULL);
-+	otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_VFFLR_INTX(1),
-+			 ~0x0ULL);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int cptpf_register_interrupts(struct otx2_cptpf_dev *cptpf)
-+{
-+	struct pci_dev *pdev = cptpf->pdev;
-+	struct device *dev = &pdev->dev;
-+	int ret, irq;
-+	u32 num_vec;
-+
-+	num_vec = OTX2_CPT_PF_MSIX_VECTORS;
-+
-+	/* Enable MSI-X */
-+	ret = pci_alloc_irq_vectors(pdev, num_vec, num_vec, PCI_IRQ_MSIX);
-+	if (ret < 0) {
-+		dev_err(dev, "Request for %d msix vectors failed\n", num_vec);
-+		return ret;
-+	}
-+	irq = pci_irq_vector(pdev, RVU_PF_INT_VEC_VFFLR0);
-+	/* Register VF FLR interrupt handler */
-+	ret = devm_request_irq(dev, irq, cptpf_vf_flr_intr, 0, "CPTPF FLR0",
-+			       cptpf);
++	ret = otx2_cpt_read_af_reg(pdev, CPT_AF_LFX_CTL(lf->slot), &lf_ctrl.u);
 +	if (ret)
 +		return ret;
 +
-+	irq = pci_irq_vector(pdev, RVU_PF_INT_VEC_VFFLR1);
-+	ret = devm_request_irq(dev, irq, cptpf_vf_flr_intr, 0,
-+			       "CPTPF FLR1", cptpf);
-+	if (ret)
-+		return ret;
-+
-+	irq = pci_irq_vector(pdev, RVU_PF_INT_VEC_AFPF_MBOX);
-+	/* Register AF-PF mailbox interrupt handler */
-+	ret = devm_request_irq(dev, irq, otx2_cptpf_afpf_mbox_intr, 0,
-+			       "CPTAFPF Mbox", cptpf);
-+	if (ret)
-+		return ret;
-+
-+	irq = pci_irq_vector(pdev, RVU_PF_INT_VEC_VFPF_MBOX0);
-+	/* Register VF-PF mailbox interrupt handler */
-+	ret = devm_request_irq(dev, irq, otx2_cptpf_vfpf_mbox_intr, 0,
-+			       "CPTVFPF Mbox0", cptpf);
-+	if (ret)
-+		return ret;
-+
-+	irq = pci_irq_vector(pdev, RVU_PF_INT_VEC_VFPF_MBOX1);
-+	ret = devm_request_irq(dev, irq, otx2_cptpf_vfpf_mbox_intr, 0,
-+			       "CPTVFPF Mbox1", cptpf);
++	*pri = lf_ctrl.s.pri;
 +
 +	return ret;
-+}
-+
-+static int cptpf_afpf_mbox_init(struct otx2_cptpf_dev *cptpf)
-+{
-+	int err;
-+
-+	cptpf->afpf_mbox_wq = alloc_workqueue("cpt_afpf_mailbox",
-+					      WQ_UNBOUND | WQ_HIGHPRI |
-+					      WQ_MEM_RECLAIM, 1);
-+	if (!cptpf->afpf_mbox_wq)
-+		return -ENOMEM;
-+
-+	err = otx2_mbox_init(&cptpf->afpf_mbox, cptpf->afpf_mbox_base,
-+			     cptpf->pdev, cptpf->reg_base, MBOX_DIR_PFAF, 1);
-+	if (err)
-+		goto error;
-+
-+	INIT_WORK(&cptpf->afpf_mbox_work, otx2_cptpf_afpf_mbox_handler);
-+	return 0;
-+error:
-+	destroy_workqueue(cptpf->afpf_mbox_wq);
-+	return err;
-+}
-+
-+static int cptpf_vfpf_mbox_init(struct otx2_cptpf_dev *cptpf, int numvfs)
-+{
-+	int err, i;
-+
-+	cptpf->vfpf_mbox_wq = alloc_workqueue("cpt_vfpf_mailbox",
-+					      WQ_UNBOUND | WQ_HIGHPRI |
-+					      WQ_MEM_RECLAIM, 1);
-+	if (!cptpf->vfpf_mbox_wq)
-+		return -ENOMEM;
-+
-+	err = otx2_mbox_init(&cptpf->vfpf_mbox, cptpf->vfpf_mbox_base,
-+			     cptpf->pdev, cptpf->reg_base, MBOX_DIR_PFVF,
-+			     numvfs);
-+	if (err)
-+		goto error;
-+
-+	for (i = 0; i < numvfs; i++) {
-+		cptpf->vf[i].vf_id = i;
-+		cptpf->vf[i].cptpf = cptpf;
-+		cptpf->vf[i].intr_idx = i % 64;
-+		INIT_WORK(&cptpf->vf[i].vfpf_mbox_work,
-+			  otx2_cptpf_vfpf_mbox_handler);
-+	}
-+	return 0;
-+error:
-+	destroy_workqueue(cptpf->vfpf_mbox_wq);
-+	return err;
-+}
-+
-+static void cptpf_afpf_mbox_destroy(struct otx2_cptpf_dev *cptpf)
-+{
-+	destroy_workqueue(cptpf->afpf_mbox_wq);
-+	otx2_mbox_destroy(&cptpf->afpf_mbox);
-+}
-+
-+static void cptpf_vfpf_mbox_destroy(struct otx2_cptpf_dev *cptpf)
-+{
-+	destroy_workqueue(cptpf->vfpf_mbox_wq);
-+	otx2_mbox_destroy(&cptpf->vfpf_mbox);
-+}
-+
-+static int cptpf_device_reset(struct otx2_cptpf_dev *cptpf)
-+{
-+	int timeout = 10, ret;
-+	u64 reg = 0;
-+
-+	ret = otx2_cpt_write_af_reg(cptpf->pdev, CPT_AF_BLK_RST, 0x1);
-+	if (ret)
-+		return ret;
-+
-+	do {
-+		ret = otx2_cpt_read_af_reg(cptpf->pdev, CPT_AF_BLK_RST,
-+					   &reg);
-+		if (ret)
-+			return ret;
-+
-+		if (!((reg >> 63) & 0x1))
-+			break;
-+
-+		usleep_range(10000, 20000);
-+		if (timeout-- < 0)
-+			return -EBUSY;
-+	} while (1);
-+
-+	return ret;
-+}
-+
-+static int cptpf_device_init(struct otx2_cptpf_dev *cptpf)
-+{
-+	union otx2_cptx_af_constants1 af_cnsts1 = {0};
-+	int ret = 0;
-+
-+	/* Reset the CPT PF device */
-+	ret = cptpf_device_reset(cptpf);
-+	if (ret)
-+		return ret;
-+
-+	/* Get number of SE, IE and AE engines */
-+	ret = otx2_cpt_read_af_reg(cptpf->pdev, CPT_AF_CONSTANTS1,
-+				   &af_cnsts1.u);
-+	if (ret)
-+		return ret;
-+
-+	cptpf->eng_grps.avail.max_se_cnt = af_cnsts1.s.se;
-+	cptpf->eng_grps.avail.max_ie_cnt = af_cnsts1.s.ie;
-+	cptpf->eng_grps.avail.max_ae_cnt = af_cnsts1.s.ae;
-+
-+	/* Disable all cores */
-+	ret = otx2_cpt_disable_all_cores(cptpf);
-+
-+	return ret;
-+}
-+
-+static ssize_t sso_pf_func_ovrd_show(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
-+{
-+	struct otx2_cptpf_dev *cptpf = dev_get_drvdata(dev);
-+
-+	return sprintf(buf, "%d\n", cptpf->sso_pf_func_ovrd);
-+}
-+
-+static ssize_t sso_pf_func_ovrd_store(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf, size_t count)
-+{
-+	struct otx2_cptpf_dev *cptpf = dev_get_drvdata(dev);
-+	u8 sso_pf_func_ovrd;
-+
-+	if (kstrtou8(buf, 0, &sso_pf_func_ovrd))
-+		return -EINVAL;
-+
-+	cptpf->sso_pf_func_ovrd = sso_pf_func_ovrd;
-+
-+	return count;
-+}
-+
-+static ssize_t kvf_limits_show(struct device *dev,
-+			       struct device_attribute *attr, char *buf)
-+{
-+	struct otx2_cptpf_dev *cptpf = dev_get_drvdata(dev);
-+
-+	return sprintf(buf, "%d\n", cptpf->kvf_limits);
-+}
-+
-+static ssize_t kvf_limits_store(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf, size_t count)
-+{
-+	struct otx2_cptpf_dev *cptpf = dev_get_drvdata(dev);
-+	int lfs_num;
-+
-+	if (kstrtoint(buf, 0, &lfs_num)) {
-+		dev_err(dev, "lfs count %d must be in range [1 - %d]\n",
-+			lfs_num, num_online_cpus());
-+		return -EINVAL;
-+	}
-+	if (lfs_num < 1 || lfs_num > num_online_cpus()) {
-+		dev_err(dev, "lfs count %d must be in range [1 - %d]\n",
-+			lfs_num, num_online_cpus());
-+		return -EINVAL;
-+	}
-+	cptpf->kvf_limits = lfs_num;
-+
-+	return count;
-+}
-+
-+static DEVICE_ATTR_RW(kvf_limits);
-+static DEVICE_ATTR_RW(sso_pf_func_ovrd);
-+
-+static struct attribute *cptpf_attrs[] = {
-+	&dev_attr_kvf_limits.attr,
-+	&dev_attr_sso_pf_func_ovrd.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group cptpf_sysfs_group = {
-+	.attrs = cptpf_attrs,
-+};
-+
-+static int cpt_is_pf_usable(struct otx2_cptpf_dev *cptpf)
-+{
-+	u64 rev;
-+
-+	rev = otx2_cpt_read64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+			      RVU_PF_BLOCK_ADDRX_DISC(BLKADDR_RVUM));
-+	rev = (rev >> 12) & 0xFF;
-+	/*
-+	 * Check if AF has setup revision for RVUM block, otherwise
-+	 * driver probe should be deferred until AF driver comes up
-+	 */
-+	if (!rev) {
-+		dev_warn(&cptpf->pdev->dev,
-+			 "AF is not initialized, deferring probe\n");
-+		return -EPROBE_DEFER;
-+	}
-+	return 0;
-+}
-+
-+static int otx2_cptpf_sriov_configure(struct pci_dev *pdev, int numvfs)
-+{
-+	struct otx2_cptpf_dev *cptpf = pci_get_drvdata(pdev);
-+	int ret = 0;
-+
-+	if (numvfs > cptpf->max_vfs)
-+		numvfs = cptpf->max_vfs;
-+
-+	if (numvfs > 0) {
-+		/* Get CPT HW capabilities using LOAD_FVC operation. */
-+		ret = otx2_cpt_discover_eng_capabilities(cptpf);
-+		if (ret)
-+			return ret;
-+		ret = otx2_cpt_try_create_default_eng_grps(cptpf->pdev,
-+							   &cptpf->eng_grps);
-+		if (ret)
-+			return ret;
-+
-+		cptpf->enabled_vfs = numvfs;
-+
-+		ret = pci_enable_sriov(pdev, numvfs);
-+		if (ret)
-+			goto reset_numvfs;
-+
-+		otx2_cpt_set_eng_grps_is_rdonly(&cptpf->eng_grps, true);
-+		try_module_get(THIS_MODULE);
-+		ret = numvfs;
-+	} else {
-+		pci_disable_sriov(pdev);
-+		otx2_cpt_set_eng_grps_is_rdonly(&cptpf->eng_grps, false);
-+		module_put(THIS_MODULE);
-+		cptpf->enabled_vfs = 0;
-+	}
-+
-+	dev_notice(&cptpf->pdev->dev, "VFs enabled: %d\n", ret);
-+	return ret;
-+reset_numvfs:
-+	cptpf->enabled_vfs = 0;
-+	return ret;
-+}
-+
-+static int otx2_cptpf_probe(struct pci_dev *pdev,
-+			    const struct pci_device_id *ent)
-+{
-+	struct device *dev = &pdev->dev;
-+	resource_size_t offset, size;
-+	struct otx2_cptpf_dev *cptpf;
-+	u64 vfpf_mbox_base;
-+	int err;
-+
-+	cptpf = devm_kzalloc(dev, sizeof(*cptpf), GFP_KERNEL);
-+	if (!cptpf)
-+		return -ENOMEM;
-+
-+	pci_set_drvdata(pdev, cptpf);
-+	cptpf->pdev = pdev;
-+	cptpf->max_vfs = pci_sriov_get_totalvfs(pdev);
-+
-+	err = pcim_enable_device(pdev);
-+	if (err) {
-+		dev_err(dev, "Failed to enable PCI device\n");
-+		goto clear_drvdata;
-+	}
-+
-+	pci_set_master(pdev);
-+
-+	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(48));
-+	if (err) {
-+		dev_err(dev, "Unable to get usable DMA configuration\n");
-+		goto clear_drvdata;
-+	}
-+
-+	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(48));
-+	if (err) {
-+		dev_err(dev, "Unable to get 48-bit DMA for consistent allocations\n");
-+		goto clear_drvdata;
-+	}
-+
-+	/* Map PF's configuration registers */
-+	err = pcim_iomap_regions_request_all(pdev, 1 << PCI_PF_REG_BAR_NUM,
-+					     OTX2_CPT_DRV_NAME);
-+	if (err) {
-+		dev_err(dev, "Couldn't get PCI resources 0x%x\n", err);
-+		goto clear_drvdata;
-+	}
-+
-+	cptpf->reg_base = pcim_iomap_table(pdev)[PCI_PF_REG_BAR_NUM];
-+
-+	/* Check if AF driver is up, otherwise defer probe */
-+	err = cpt_is_pf_usable(cptpf);
-+	if (err)
-+		goto clear_drvdata;
-+
-+	offset = pci_resource_start(pdev, PCI_MBOX_BAR_NUM);
-+	size = pci_resource_len(pdev, PCI_MBOX_BAR_NUM);
-+	/* Map AF-PF mailbox memory */
-+	cptpf->afpf_mbox_base = devm_ioremap_wc(dev, offset, size);
-+	if (!cptpf->afpf_mbox_base) {
-+		dev_err(&pdev->dev, "Unable to map BAR4\n");
-+		err = -ENODEV;
-+		goto clear_drvdata;
-+	}
-+
-+	/* Map VF-PF mailbox memory */
-+	vfpf_mbox_base = readq((void __iomem *) ((u64)cptpf->reg_base +
-+			       RVU_PF_VF_BAR4_ADDR));
-+	if (!vfpf_mbox_base) {
-+		dev_err(&pdev->dev, "VF-PF mailbox address not configured\n");
-+		err = -ENOMEM;
-+		goto clear_drvdata;
-+	}
-+	cptpf->vfpf_mbox_base = devm_ioremap_wc(dev, vfpf_mbox_base,
-+					   MBOX_SIZE * cptpf->max_vfs);
-+	if (!cptpf->vfpf_mbox_base) {
-+		dev_err(&pdev->dev,
-+			"Mapping of VF-PF mailbox address failed\n");
-+		err = -ENOMEM;
-+		goto clear_drvdata;
-+	}
-+
-+	/* Initialize AF-PF mailbox */
-+	err = cptpf_afpf_mbox_init(cptpf);
-+	if (err)
-+		goto clear_drvdata;
-+
-+	/* Initialize VF-PF mailbox */
-+	err = cptpf_vfpf_mbox_init(cptpf, cptpf->max_vfs);
-+	if (err)
-+		goto destroy_afpf_mbox;
-+
-+	/* Register interrupts */
-+	err = cptpf_register_interrupts(cptpf);
-+	if (err)
-+		goto destroy_vfpf_mbox;
-+
-+	/* Enable VF FLR interrupts */
-+	cptpf_enable_vf_flr_intrs(cptpf);
-+
-+	/* Enable AF-PF mailbox interrupts */
-+	cptpf_enable_afpf_mbox_intrs(cptpf);
-+
-+	/* Enable VF-PF mailbox interrupts */
-+	cptpf_enable_vfpf_mbox_intrs(cptpf, cptpf->max_vfs);
-+
-+	/* Initialize CPT PF device */
-+	err = cptpf_device_init(cptpf);
-+	if (err)
-+		goto unregister_interrupts;
-+
-+	err = otx2_cpt_send_ready_msg(cptpf->pdev);
-+	if (err)
-+		goto unregister_interrupts;
-+
-+	/* Initialize engine groups */
-+	err = otx2_cpt_init_eng_grps(pdev, &cptpf->eng_grps);
-+	if (err)
-+		goto unregister_interrupts;
-+
-+	err = sysfs_create_group(&dev->kobj, &cptpf_sysfs_group);
-+	if (err)
-+		goto cleanup_eng_grps;
-+	return 0;
-+
-+cleanup_eng_grps:
-+	otx2_cpt_cleanup_eng_grps(pdev, &cptpf->eng_grps);
-+unregister_interrupts:
-+	cptpf_disable_vfpf_mbox_intrs(cptpf);
-+	cptpf_disable_afpf_mbox_intrs(cptpf);
-+	cptpf_disable_vf_flr_intrs(cptpf);
-+destroy_vfpf_mbox:
-+	cptpf_vfpf_mbox_destroy(cptpf);
-+destroy_afpf_mbox:
-+	cptpf_afpf_mbox_destroy(cptpf);
-+clear_drvdata:
-+	pci_set_drvdata(pdev, NULL);
-+	return err;
-+}
-+
-+static void otx2_cptpf_remove(struct pci_dev *pdev)
-+{
-+	struct otx2_cptpf_dev *cptpf = pci_get_drvdata(pdev);
-+
-+	if (!cptpf)
-+		return;
-+
-+	/* Disable SRIOV */
-+	pci_disable_sriov(pdev);
-+	/*
-+	 * Delete sysfs entry created for kernel VF limits
-+	 * and sso_pf_func_ovrd bit.
-+	 */
-+	sysfs_remove_group(&pdev->dev.kobj, &cptpf_sysfs_group);
-+	/* Cleanup engine groups */
-+	otx2_cpt_cleanup_eng_grps(pdev, &cptpf->eng_grps);
-+	/* Disable VF-PF interrupts */
-+	cptpf_disable_vfpf_mbox_intrs(cptpf);
-+	/* Disable AF-PF mailbox interrupt */
-+	cptpf_disable_afpf_mbox_intrs(cptpf);
-+	/* Disable VF FLR interrupts */
-+	cptpf_disable_vf_flr_intrs(cptpf);
-+	/* Unregister CPT interrupts */
-+	/* Destroy AF-PF mbox */
-+	cptpf_afpf_mbox_destroy(cptpf);
-+	/* Destroy VF-PF mbox */
-+	cptpf_vfpf_mbox_destroy(cptpf);
-+	pci_set_drvdata(pdev, NULL);
-+}
-+
-+/* Supported devices */
-+static const struct pci_device_id otx2_cpt_id_table[] = {
-+	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, OTX2_CPT_PCI_PF_DEVICE_ID) },
-+	{ 0, }  /* end of table */
-+};
-+
-+static struct pci_driver otx2_cpt_pci_driver = {
-+	.name = OTX2_CPT_DRV_NAME,
-+	.id_table = otx2_cpt_id_table,
-+	.probe = otx2_cptpf_probe,
-+	.remove = otx2_cptpf_remove,
-+	.sriov_configure = otx2_cptpf_sriov_configure
-+};
-+
-+module_pci_driver(otx2_cpt_pci_driver);
-+
-+MODULE_AUTHOR("Marvell");
-+MODULE_DESCRIPTION(OTX2_CPT_DRV_STRING);
-+MODULE_LICENSE("GPL v2");
-+MODULE_VERSION(OTX2_CPT_DRV_VERSION);
-+MODULE_DEVICE_TABLE(pci, otx2_cpt_id_table);
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c b/drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c
-new file mode 100644
-index 0000000..5cc5218
---- /dev/null
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c
-@@ -0,0 +1,694 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2020 Marvell. */
-+
-+#include "otx2_cpt_mbox_common.h"
-+#include "rvu_reg.h"
-+
-+/* Fastpath ipsec opcode with inplace processing */
-+#define CPT_INLINE_RX_OPCODE (0x26 | (1 << 6))
-+/*
-+ * CPT PF driver version, It will be incremented by 1 for every feature
-+ * addition in CPT PF driver.
-+ */
-+#define OTX2_CPT_PF_DRV_VERSION 0x2
-+
-+static void dump_mbox_msg(struct mbox_msghdr *msg, int size)
-+{
-+	u16 pf_id, vf_id;
-+
-+	pf_id = (msg->pcifunc >> RVU_PFVF_PF_SHIFT) & RVU_PFVF_PF_MASK;
-+	vf_id = (msg->pcifunc >> RVU_PFVF_FUNC_SHIFT) & RVU_PFVF_FUNC_MASK;
-+
-+	pr_debug("MBOX opcode %s received from (PF%d/VF%d), size %d, rc %d",
-+		 otx2_cpt_get_mbox_opcode_str(msg->id), pf_id, vf_id, size,
-+		 msg->rc);
-+	print_hex_dump_debug("", DUMP_PREFIX_OFFSET, 16, 2, msg, size, false);
-+}
-+
-+static int get_eng_grp(struct otx2_cptpf_dev *cptpf, u8 eng_type)
-+{
-+	int eng_grp_num = OTX2_CPT_INVALID_CRYPTO_ENG_GRP;
-+	struct otx2_cpt_eng_grp_info *grp;
-+	int i;
-+
-+
-+	mutex_lock(&cptpf->eng_grps.lock);
-+
-+	switch (eng_type) {
-+	case OTX2_CPT_SE_TYPES:
-+		/*
-+		 * Find engine group for kernel crypto functionality, select
-+		 * first engine group which is configured and has only
-+		 * SE engines attached
-+		 */
-+		for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+			grp = &cptpf->eng_grps.grp[i];
-+			if (!grp->is_enabled)
-+				continue;
-+
-+			if (otx2_cpt_eng_grp_has_eng_type(grp,
-+							  OTX2_CPT_SE_TYPES) &&
-+			    !otx2_cpt_eng_grp_has_eng_type(grp,
-+							   OTX2_CPT_IE_TYPES)) {
-+				eng_grp_num = i;
-+				break;
-+			}
-+		}
-+		break;
-+
-+	case OTX2_CPT_AE_TYPES:
-+	case OTX2_CPT_IE_TYPES:
-+		for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+			grp = &cptpf->eng_grps.grp[i];
-+			if (!grp->is_enabled)
-+				continue;
-+
-+			if (otx2_cpt_eng_grp_has_eng_type(grp, eng_type)) {
-+				eng_grp_num = i;
-+				break;
-+			}
-+		}
-+		break;
-+
-+	default:
-+		dev_err(&cptpf->pdev->dev, "Invalid engine type %d\n",
-+			eng_type);
-+	}
-+	mutex_unlock(&cptpf->eng_grps.lock);
-+
-+	return eng_grp_num;
 +}
 +
 +static int cptlf_set_pri(struct pci_dev *pdev, struct otx2_cptlf_info *lf,
@@ -2367,13 +365,12 @@ index 0000000..5cc5218
 +	lf_ctrl.s.pri = pri ? 1 : 0;
 +
 +	ret = otx2_cpt_write_af_reg(pdev, CPT_AF_LFX_CTL(lf->slot), lf_ctrl.u);
-+
 +	return ret;
 +}
 +
-+static int cptlf_set_eng_grps_mask(struct pci_dev *pdev,
++static int cptlf_get_eng_grps_mask(struct pci_dev *pdev,
 +				   struct otx2_cptlf_info *lf,
-+				   u8 eng_grp_mask)
++				   int *eng_grps_mask)
 +{
 +	union otx2_cptx_af_lf_ctrl lf_ctrl;
 +	int ret;
@@ -2382,18 +379,33 @@ index 0000000..5cc5218
 +	if (ret)
 +		return ret;
 +
-+	lf_ctrl.s.grp = eng_grp_mask;
++	*eng_grps_mask = lf_ctrl.s.grp;
++
++	return ret;
++}
++
++static int cptlf_set_eng_grps_mask(struct pci_dev *pdev,
++				   struct otx2_cptlf_info *lf,
++				   int eng_grps_mask)
++{
++	union otx2_cptx_af_lf_ctrl lf_ctrl;
++	int ret;
++
++	ret = otx2_cpt_read_af_reg(pdev, CPT_AF_LFX_CTL(lf->slot), &lf_ctrl.u);
++	if (ret)
++		return ret;
++
++	lf_ctrl.s.grp = eng_grps_mask;
 +
 +	ret = otx2_cpt_write_af_reg(pdev, CPT_AF_LFX_CTL(lf->slot), lf_ctrl.u);
-+
 +	return ret;
 +}
 +
 +static int cptlf_set_grp_and_pri(struct pci_dev *pdev,
 +				 struct otx2_cptlfs_info *lfs,
-+				 u8 eng_grp_mask, int pri)
++				 int eng_grp_mask, int pri)
 +{
-+	int slot, ret;
++	int slot, ret = 0;
 +
 +	for (slot = 0; slot < lfs->lfs_num; slot++) {
 +		ret = cptlf_set_pri(pdev, &lfs->lf[slot], pri);
@@ -2405,2963 +417,3683 @@ index 0000000..5cc5218
 +		if (ret)
 +			return ret;
 +	}
-+	return 0;
++	return ret;
 +}
 +
-+void otx2_cptpf_lf_cleanup(struct otx2_cptlfs_info *lfs)
++static void cptlf_hw_init(struct otx2_cptlfs_info *lfs)
 +{
++	/* Disable instruction queues */
 +	otx2_cptlf_disable_iqueues(lfs);
-+	otx2_cpt_free_instruction_queues(lfs);
-+	otx2_cpt_detach_rsrcs_msg(lfs->pdev);
-+	lfs->lfs_num = 0;
++
++	/* Set instruction queues base addresses */
++	otx2_cptlf_set_iqueues_base_addr(lfs);
++
++	/* Set instruction queues sizes */
++	otx2_cptlf_set_iqueues_size(lfs);
++
++	/* Set done interrupts time wait */
++	cptlf_set_done_time_wait(lfs, CPT_TIMER_HOLD);
++
++	/* Set done interrupts num wait */
++	cptlf_set_done_num_wait(lfs, CPT_COUNT_HOLD);
++
++	/* Enable instruction queues */
++	otx2_cptlf_enable_iqueues(lfs);
 +}
 +
-+int otx2_cptpf_lf_init(struct otx2_cptpf_dev *cptpf, u8 eng_grp_mask, int pri,
-+		       int lfs_num)
++static void cptlf_hw_cleanup(struct otx2_cptlfs_info *lfs)
 +{
-+	struct otx2_cptlfs_info *lfs = &cptpf->lfs;
-+	struct pci_dev *pdev = cptpf->pdev;
-+	int ret, slot;
++	/* Disable instruction queues */
++	otx2_cptlf_disable_iqueues(lfs);
++}
 +
-+	lfs->reg_base = cptpf->reg_base;
++static void cptlf_set_misc_intrs(struct otx2_cptlfs_info *lfs, u8 enable)
++{
++	union otx2_cptx_lf_misc_int_ena_w1s irq_misc = { .u = 0x0 };
++	u64 reg = enable ? OTX2_CPT_LF_MISC_INT_ENA_W1S :
++			   OTX2_CPT_LF_MISC_INT_ENA_W1C;
++	int slot;
++
++	irq_misc.s.fault = 0x1;
++	irq_misc.s.hwerr = 0x1;
++	irq_misc.s.irde = 0x1;
++	irq_misc.s.nqerr = 0x1;
++	irq_misc.s.nwrp = 0x1;
++
++	for (slot = 0; slot < lfs->lfs_num; slot++)
++		otx2_cpt_write64(lfs->reg_base, BLKADDR_CPT0, slot, reg,
++				 irq_misc.u);
++}
++
++static void cptlf_enable_misc_intrs(struct otx2_cptlfs_info *lfs)
++{
++	cptlf_set_misc_intrs(lfs, true);
++}
++
++static void cptlf_disable_misc_intrs(struct otx2_cptlfs_info *lfs)
++{
++	cptlf_set_misc_intrs(lfs, false);
++}
++
++static void cptlf_enable_done_intr(struct otx2_cptlfs_info *lfs)
++{
++	int slot;
++
++	for (slot = 0; slot < lfs->lfs_num; slot++)
++		otx2_cpt_write64(lfs->reg_base, BLKADDR_CPT0, slot,
++				 OTX2_CPT_LF_DONE_INT_ENA_W1S, 0x1);
++}
++
++static void cptlf_disable_done_intr(struct otx2_cptlfs_info *lfs)
++{
++	int slot;
++
++	for (slot = 0; slot < lfs->lfs_num; slot++)
++		otx2_cpt_write64(lfs->reg_base, BLKADDR_CPT0, slot,
++				 OTX2_CPT_LF_DONE_INT_ENA_W1C, 0x1);
++}
++
++static inline int cptlf_read_done_cnt(struct otx2_cptlf_info *lf)
++{
++	union otx2_cptx_lf_done irq_cnt;
++
++	irq_cnt.u = otx2_cpt_read64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
++				    OTX2_CPT_LF_DONE);
++	return irq_cnt.s.done;
++}
++
++static irqreturn_t cptlf_misc_intr_handler(int __always_unused irq, void *arg)
++{
++	union otx2_cptx_lf_misc_int irq_misc, irq_misc_ack;
++	struct otx2_cptlf_info *lf = arg;
++	struct device *dev;
++
++	dev = &lf->lfs->pdev->dev;
++	irq_misc.u = otx2_cpt_read64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
++				     OTX2_CPT_LF_MISC_INT);
++	irq_misc_ack.u = 0x0;
++
++	if (irq_misc.s.fault) {
++		dev_err(dev, "Memory error detected while executing CPT_INST_S, LF %d.\n",
++			lf->slot);
++		irq_misc_ack.s.fault = 0x1;
++
++	} else if (irq_misc.s.hwerr) {
++		dev_err(dev, "HW error from an engine executing CPT_INST_S, LF %d.",
++			lf->slot);
++		irq_misc_ack.s.hwerr = 0x1;
++
++	} else if (irq_misc.s.nwrp) {
++		dev_err(dev, "SMMU fault while writing CPT_RES_S to CPT_INST_S[RES_ADDR], LF %d.\n",
++			lf->slot);
++		irq_misc_ack.s.nwrp = 0x1;
++
++	} else if (irq_misc.s.irde) {
++		dev_err(dev, "Memory error when accessing instruction memory queue CPT_LF_Q_BASE[ADDR].\n");
++		irq_misc_ack.s.irde = 0x1;
++
++	} else if (irq_misc.s.nqerr) {
++		dev_err(dev, "Error enqueuing an instruction received at CPT_LF_NQ.\n");
++		irq_misc_ack.s.nqerr = 0x1;
++
++	} else {
++		dev_err(dev, "Unhandled interrupt in CPT LF %d\n", lf->slot);
++		return IRQ_NONE;
++	}
++
++	/* Acknowledge interrupts */
++	otx2_cpt_write64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
++			 OTX2_CPT_LF_MISC_INT, irq_misc_ack.u);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t cptlf_done_intr_handler(int irq, void *arg)
++{
++	union otx2_cptx_lf_done_wait done_wait;
++	struct otx2_cptlf_info *lf = arg;
++	int irq_cnt;
++
++	/* Read the number of completed requests */
++	irq_cnt = cptlf_read_done_cnt(lf);
++	if (irq_cnt) {
++		done_wait.u = otx2_cpt_read64(lf->lfs->reg_base, BLKADDR_CPT0,
++					      lf->slot, OTX2_CPT_LF_DONE_WAIT);
++		/* Acknowledge the number of completed requests */
++		otx2_cpt_write64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
++				 OTX2_CPT_LF_DONE_ACK, irq_cnt);
++
++		otx2_cpt_write64(lf->lfs->reg_base, BLKADDR_CPT0, lf->slot,
++				 OTX2_CPT_LF_DONE_WAIT, done_wait.u);
++		if (unlikely(!lf->wqe)) {
++			dev_err(&lf->lfs->pdev->dev, "No work for LF %d\n",
++				lf->slot);
++			return IRQ_NONE;
++		}
++
++		/* Schedule processing of completed requests */
++		tasklet_hi_schedule(&lf->wqe->work);
++	}
++	return IRQ_HANDLED;
++}
++
++static void cptlf_unregister_interrupts(struct otx2_cptlfs_info *lfs)
++{
++	int i, offs;
++
++	for (i = 0; i < lfs->lfs_num; i++) {
++		for (offs = 0; offs < OTX2_CPT_LF_MSIX_VECTORS; offs++) {
++			if (lfs->lf[i].is_irq_reg[offs]) {
++				free_irq(pci_irq_vector(lfs->pdev,
++							lfs->lf[i].msix_offset
++							+ offs),
++							&lfs->lf[i]);
++				lfs->lf[i].is_irq_reg[offs] = false;
++			}
++		}
++	}
++}
++
++static int cptlf_do_register_interrrupts(struct otx2_cptlfs_info *lfs,
++					 int lf_num, int irq_offset,
++					 irq_handler_t handler)
++{
++	int ret;
++
++	ret = request_irq(pci_irq_vector(lfs->pdev, lfs->lf[lf_num].msix_offset
++			  + irq_offset), handler, 0,
++			  lfs->lf[lf_num].irq_name[irq_offset],
++			  &lfs->lf[lf_num]);
++	if (ret)
++		return ret;
++
++	lfs->lf[lf_num].is_irq_reg[irq_offset] = true;
++
++	return ret;
++}
++
++static int cptlf_register_interrupts(struct otx2_cptlfs_info *lfs)
++{
++	int irq_offs, ret, i;
++
++	for (i = 0; i < lfs->lfs_num; i++) {
++		irq_offs = OTX2_CPT_LF_INT_VEC_E_MISC;
++		snprintf(lfs->lf[i].irq_name[irq_offs], 32, "CPTLF Misc%d", i);
++		ret = cptlf_do_register_interrrupts(lfs, i, irq_offs,
++						    cptlf_misc_intr_handler);
++		if (ret)
++			goto free_irq;
++
++		irq_offs = OTX2_CPT_LF_INT_VEC_E_DONE;
++		snprintf(lfs->lf[i].irq_name[irq_offs], 32, "OTX2_CPTLF Done%d",
++			 i);
++		ret = cptlf_do_register_interrrupts(lfs, i, irq_offs,
++						    cptlf_done_intr_handler);
++		if (ret)
++			goto free_irq;
++	}
++	return 0;
++free_irq:
++	cptlf_unregister_interrupts(lfs);
++	return ret;
++}
++
++static void cptlf_free_irqs_affinity(struct otx2_cptlfs_info *lfs)
++{
++	int slot, offs;
++
++	for (slot = 0; slot < lfs->lfs_num; slot++) {
++		for (offs = 0; offs < OTX2_CPT_LF_MSIX_VECTORS; offs++)
++			irq_set_affinity_hint(pci_irq_vector(lfs->pdev,
++					      lfs->lf[slot].msix_offset +
++					      offs), NULL);
++		if (lfs->lf[slot].affinity_mask)
++			free_cpumask_var(lfs->lf[slot].affinity_mask);
++	}
++}
++
++static int cptlf_set_irqs_affinity(struct otx2_cptlfs_info *lfs)
++{
++	struct otx2_cptlf_info *lf = lfs->lf;
++	int slot, offs, ret;
++
++	for (slot = 0; slot < lfs->lfs_num; slot++) {
++		if (!zalloc_cpumask_var(&lf[slot].affinity_mask, GFP_KERNEL)) {
++			dev_err(&lfs->pdev->dev,
++				"cpumask allocation failed for LF %d", slot);
++			ret = -ENOMEM;
++			goto free_affinity_mask;
++		}
++
++		cpumask_set_cpu(cpumask_local_spread(slot,
++				dev_to_node(&lfs->pdev->dev)),
++				lf[slot].affinity_mask);
++
++		for (offs = 0; offs < OTX2_CPT_LF_MSIX_VECTORS; offs++) {
++			ret = irq_set_affinity_hint(pci_irq_vector(lfs->pdev,
++						lf[slot].msix_offset + offs),
++						lf[slot].affinity_mask);
++			if (ret)
++				goto free_affinity_mask;
++		}
++	}
++	return 0;
++free_affinity_mask:
++	cptlf_free_irqs_affinity(lfs);
++	return ret;
++}
++
++static void cptlf_work_handler(unsigned long data)
++{
++	otx2_cpt_post_process((struct otx2_cptlf_wqe *) data);
++}
++
++static void cleanup_tasklet_work(struct otx2_cptlfs_info *lfs)
++{
++	int i;
++
++	for (i = 0; i <  lfs->lfs_num; i++) {
++		if (!lfs->lf[i].wqe)
++			continue;
++
++		tasklet_kill(&lfs->lf[i].wqe->work);
++		kfree(lfs->lf[i].wqe);
++		lfs->lf[i].wqe = NULL;
++	}
++}
++
++static int init_tasklet_work(struct otx2_cptlfs_info *lfs)
++{
++	struct otx2_cptlf_wqe *wqe;
++	int i, ret = 0;
++
++	for (i = 0; i < lfs->lfs_num; i++) {
++		wqe = kzalloc(sizeof(struct otx2_cptlf_wqe), GFP_KERNEL);
++		if (!wqe) {
++			ret = -ENOMEM;
++			goto cleanup_tasklet;
++		}
++
++		tasklet_init(&wqe->work, cptlf_work_handler, (u64) wqe);
++		wqe->lfs = lfs;
++		wqe->lf_num = i;
++		lfs->lf[i].wqe = wqe;
++	}
++	return 0;
++cleanup_tasklet:
++	cleanup_tasklet_work(lfs);
++	return ret;
++}
++
++static void free_pending_queues(struct otx2_cptlfs_info *lfs)
++{
++	int i;
++
++	for (i = 0; i < lfs->lfs_num; i++) {
++		kfree(lfs->lf[i].pqueue.head);
++		lfs->lf[i].pqueue.head = NULL;
++	}
++}
++
++static int alloc_pending_queues(struct otx2_cptlfs_info *lfs)
++{
++	int size, ret, i;
++
++	if (!lfs->lfs_num)
++		return -EINVAL;
++
++	for (i = 0; i < lfs->lfs_num; i++) {
++		lfs->lf[i].pqueue.qlen = OTX2_CPT_INST_QLEN_MSGS;
++		size = lfs->lf[i].pqueue.qlen *
++		       sizeof(struct otx2_cpt_pending_entry);
++
++		lfs->lf[i].pqueue.head = kzalloc(size, GFP_KERNEL);
++		if (!lfs->lf[i].pqueue.head) {
++			ret = -ENOMEM;
++			goto error;
++		}
++
++		/* Initialize spin lock */
++		spin_lock_init(&lfs->lf[i].pqueue.lock);
++	}
++	return 0;
++error:
++	free_pending_queues(lfs);
++	return ret;
++}
++
++static int cptlf_sw_init(struct otx2_cptlfs_info *lfs)
++{
++	int ret;
++
++	ret = otx2_cpt_alloc_instruction_queues(lfs);
++	if (ret) {
++		dev_err(&lfs->pdev->dev,
++			"Allocating instruction queues failed\n");
++		return ret;
++	}
++
++	ret = alloc_pending_queues(lfs);
++	if (ret) {
++		dev_err(&lfs->pdev->dev,
++			"Allocating pending queues failed\n");
++		goto instruction_queues_free;
++	}
++
++	ret = init_tasklet_work(lfs);
++	if (ret) {
++		dev_err(&lfs->pdev->dev,
++			"Tasklet work init failed\n");
++		goto pending_queues_free;
++	}
++	return 0;
++
++pending_queues_free:
++	free_pending_queues(lfs);
++instruction_queues_free:
++	otx2_cpt_free_instruction_queues(lfs);
++	return ret;
++}
++
++static void cptlf_sw_cleanup(struct otx2_cptlfs_info *lfs)
++{
++	cleanup_tasklet_work(lfs);
++	free_pending_queues(lfs);
++	otx2_cpt_free_instruction_queues(lfs);
++}
++
++static ssize_t cptlf_coalesc_time_wait_show(struct device *dev,
++					    struct device_attribute *attr,
++					    char *buf)
++{
++	struct otx2_cptlf_sysfs_cfg *cfg;
++	struct otx2_cptlf_info *lf;
++
++	cfg = container_of(attr, struct otx2_cptlf_sysfs_cfg, coalesc_tw_attr);
++	lf = container_of(cfg, struct otx2_cptlf_info, sysfs_cfg);
++
++	return scnprintf(buf, PAGE_SIZE, "%d\n", cptlf_get_done_time_wait(lf));
++}
++
++static ssize_t cptlf_coalesc_time_wait_store(struct device *dev,
++					     struct device_attribute *attr,
++					     const char *buf, size_t count)
++{
++	struct otx2_cptlf_sysfs_cfg *cfg;
++	struct otx2_cptlf_info *lf;
++	long val;
++	int ret;
++
++	ret = kstrtol(buf, 10, &val);
++	if (ret != 0)
++		return ret;
++
++	if (val < CPT_COALESC_MIN_TIME_WAIT ||
++	    val > CPT_COALESC_MAX_TIME_WAIT)
++		return -EINVAL;
++
++	cfg = container_of(attr, struct otx2_cptlf_sysfs_cfg, coalesc_tw_attr);
++	lf = container_of(cfg, struct otx2_cptlf_info, sysfs_cfg);
++
++	cptlf_do_set_done_time_wait(lf, val);
++	return count;
++}
++
++static ssize_t cptlf_coalesc_num_wait_show(struct device *dev,
++					   struct device_attribute *attr,
++					   char *buf)
++{
++	struct otx2_cptlf_sysfs_cfg *cfg;
++	struct otx2_cptlf_info *lf;
++
++	cfg = container_of(attr, struct otx2_cptlf_sysfs_cfg, coalesc_nw_attr);
++	lf = container_of(cfg, struct otx2_cptlf_info, sysfs_cfg);
++
++	return scnprintf(buf, PAGE_SIZE, "%d\n", cptlf_get_done_num_wait(lf));
++}
++
++static ssize_t cptlf_coalesc_num_wait_store(struct device *dev,
++					    struct device_attribute *attr,
++					    const char *buf, size_t count)
++{
++	struct otx2_cptlf_sysfs_cfg *cfg;
++	struct otx2_cptlf_info *lf;
++	long val;
++	int ret;
++
++	ret = kstrtol(buf, 10, &val);
++	if (ret != 0)
++		return ret;
++
++	if (val < CPT_COALESC_MIN_NUM_WAIT ||
++	    val > CPT_COALESC_MAX_NUM_WAIT)
++		return -EINVAL;
++
++	cfg = container_of(attr, struct otx2_cptlf_sysfs_cfg, coalesc_nw_attr);
++	lf = container_of(cfg, struct otx2_cptlf_info, sysfs_cfg);
++
++	cptlf_do_set_done_num_wait(lf, val);
++	return count;
++}
++
++static ssize_t cptlf_priority_show(struct device *dev,
++				   struct device_attribute *attr, char *buf)
++{
++	struct otx2_cptlf_sysfs_cfg *cfg;
++	struct otx2_cptlf_info *lf;
++	struct pci_dev *pdev;
++	int pri, ret;
++
++	cfg = container_of(attr, struct otx2_cptlf_sysfs_cfg, prio_attr);
++	lf = container_of(cfg, struct otx2_cptlf_info, sysfs_cfg);
++	pdev = container_of(dev, struct pci_dev, dev);
++
++	ret = cptlf_get_pri(pdev, lf, &pri);
++	if (ret)
++		return ret;
++
++	return scnprintf(buf, PAGE_SIZE, "%d\n", pri);
++}
++
++static ssize_t cptlf_priority_store(struct device *dev,
++				    struct device_attribute *attr,
++				    const char *buf, size_t count)
++{
++	struct otx2_cptlf_sysfs_cfg *cfg;
++	struct otx2_cptlf_info *lf;
++	struct pci_dev *pdev;
++	long val;
++	int ret;
++
++	ret = kstrtol(buf, 10, &val);
++	if (ret)
++		return ret;
++
++	if (val < OTX2_CPT_QUEUE_LOW_PRIO ||
++	    val > OTX2_CPT_QUEUE_HI_PRIO)
++		return -EINVAL;
++
++	cfg = container_of(attr, struct otx2_cptlf_sysfs_cfg, prio_attr);
++	lf = container_of(cfg, struct otx2_cptlf_info, sysfs_cfg);
++	pdev = container_of(dev, struct pci_dev, dev);
++
++	/* Queue's priority can be modified only if queue is quiescent */
++	if (cptlf_get_inflight(lf)) {
++		ret = -EPERM;
++		goto err_print;
++	}
++
++	otx2_cptlf_disable_iqueue_exec(lf);
++
++	if (cptlf_get_inflight(lf)) {
++		ret = -EPERM;
++		otx2_cptlf_enable_iqueue_exec(lf);
++		goto err_print;
++	}
++
++	ret = cptlf_set_pri(pdev, lf, val);
++	if (ret) {
++		otx2_cptlf_enable_iqueue_exec(lf);
++		goto err;
++	}
++
++	otx2_cptlf_enable_iqueue_exec(lf);
++	return count;
++
++err_print:
++	dev_err(&pdev->dev,
++		"Disable traffic before modifying queue's priority");
++err:
++	return ret;
++}
++
++static ssize_t cptlf_eng_grps_mask_show(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
++{
++	struct otx2_cptlf_sysfs_cfg *cfg;
++	struct otx2_cptlf_info *lf;
++	struct pci_dev *pdev;
++	int eng_grps_mask;
++	int ret;
++
++	cfg = container_of(attr, struct otx2_cptlf_sysfs_cfg,
++			   eng_grps_mask_attr);
++	lf = container_of(cfg, struct otx2_cptlf_info, sysfs_cfg);
++	pdev = container_of(dev, struct pci_dev, dev);
++
++	ret = cptlf_get_eng_grps_mask(pdev, lf, &eng_grps_mask);
++	if (ret)
++		return ret;
++
++	return scnprintf(buf, PAGE_SIZE, "0x%2.2X\n", eng_grps_mask);
++}
++
++static ssize_t cptlf_eng_grps_mask_store(struct device *dev,
++					 struct device_attribute *attr,
++					 const char *buf, size_t count)
++{
++	struct otx2_cptlf_sysfs_cfg *cfg;
++	struct otx2_cptlf_info *lf;
++	struct pci_dev *pdev;
++	long val;
++	int ret;
++
++	ret = kstrtol(buf, 16, &val);
++	if (ret)
++		return ret;
++
++	if (val < 1 ||
++	    val > OTX2_CPT_ALL_ENG_GRPS_MASK)
++		return -EINVAL;
++
++	cfg = container_of(attr, struct otx2_cptlf_sysfs_cfg,
++			   eng_grps_mask_attr);
++	lf = container_of(cfg, struct otx2_cptlf_info, sysfs_cfg);
++	pdev = container_of(dev, struct pci_dev, dev);
++
++	/*
++	 * Queue's engine groups mask can be modified only if queue is
++	 * quiescent
++	 */
++	if (cptlf_get_inflight(lf)) {
++		ret = -EPERM;
++		goto err_print;
++	}
++
++	otx2_cptlf_disable_iqueue_exec(lf);
++
++	if (cptlf_get_inflight(lf)) {
++		ret = -EPERM;
++		otx2_cptlf_enable_iqueue_exec(lf);
++		goto err_print;
++	}
++
++	ret = cptlf_set_eng_grps_mask(pdev, lf, val);
++	if (ret) {
++		otx2_cptlf_enable_iqueue_exec(lf);
++		goto err;
++	}
++
++	otx2_cptlf_enable_iqueue_exec(lf);
++	return count;
++
++err_print:
++	dev_err(&pdev->dev,
++		"Disable traffic before modifying queue's engine groups mask");
++err:
++	return ret;
++}
++
++static void cptlf_delete_sysfs_cfg(struct otx2_cptlfs_info *lfs)
++{
++	struct otx2_cptlf_sysfs_cfg *cfg;
++	int i;
++
++	for (i = 0; i < lfs->lfs_num; i++) {
++		cfg = &lfs->lf[i].sysfs_cfg;
++		if (cfg->is_sysfs_grp_created) {
++			sysfs_remove_group(&lfs->pdev->dev.kobj,
++					   &cfg->attr_grp);
++			cfg->is_sysfs_grp_created = false;
++		}
++	}
++}
++
++static int cptlf_create_sysfs_cfg(struct otx2_cptlfs_info *lfs)
++{
++	struct otx2_cptlf_sysfs_cfg *cfg;
++	int i, ret = 0;
++
++	for (i = 0; i < lfs->lfs_num; i++) {
++		cfg = &lfs->lf[i].sysfs_cfg;
++		snprintf(cfg->name, OTX2_CPT_NAME_LENGTH, "cpt_queue%d", i);
++
++		cfg->eng_grps_mask_attr.show = cptlf_eng_grps_mask_show;
++		cfg->eng_grps_mask_attr.store = cptlf_eng_grps_mask_store;
++		cfg->eng_grps_mask_attr.attr.name = "eng_grps_mask";
++		cfg->eng_grps_mask_attr.attr.mode = 0664;
++		sysfs_attr_init(&cfg->eng_grps_mask_attr.attr);
++
++		cfg->coalesc_tw_attr.show = cptlf_coalesc_time_wait_show;
++		cfg->coalesc_tw_attr.store = cptlf_coalesc_time_wait_store;
++		cfg->coalesc_tw_attr.attr.name = "coalescence_time_wait";
++		cfg->coalesc_tw_attr.attr.mode = 0664;
++		sysfs_attr_init(&cfg->coalesc_tw_attr.attr);
++
++		cfg->coalesc_nw_attr.show = cptlf_coalesc_num_wait_show;
++		cfg->coalesc_nw_attr.store = cptlf_coalesc_num_wait_store;
++		cfg->coalesc_nw_attr.attr.name = "coalescence_num_wait";
++		cfg->coalesc_nw_attr.attr.mode = 0664;
++		sysfs_attr_init(&cfg->coalesc_nw_attr.attr);
++
++		cfg->prio_attr.show = cptlf_priority_show;
++		cfg->prio_attr.store = cptlf_priority_store;
++		cfg->prio_attr.attr.name = "priority";
++		cfg->prio_attr.attr.mode = 0664;
++		sysfs_attr_init(&cfg->prio_attr.attr);
++
++		cfg->attrs[0] = &cfg->eng_grps_mask_attr.attr;
++		cfg->attrs[1] = &cfg->coalesc_tw_attr.attr;
++		cfg->attrs[2] = &cfg->coalesc_nw_attr.attr;
++		cfg->attrs[3] = &cfg->prio_attr.attr;
++		cfg->attrs[OTX2_CPT_ATTRS_NUM - 1] = NULL;
++
++		cfg->attr_grp.name = cfg->name;
++		cfg->attr_grp.attrs = cfg->attrs;
++		ret = sysfs_create_group(&lfs->pdev->dev.kobj,
++					 &cfg->attr_grp);
++		if (ret)
++			goto err;
++		cfg->is_sysfs_grp_created = true;
++	}
++
++	return 0;
++err:
++	cptlf_delete_sysfs_cfg(lfs);
++	return ret;
++}
++
++int otx2_cptvf_lf_init(struct pci_dev *pdev, void *reg_base,
++		       struct otx2_cptlfs_info *lfs, int lfs_num)
++{
++	int slot, ret;
++
++	lfs->reg_base = reg_base;
 +	lfs->lfs_num = lfs_num;
 +	lfs->pdev = pdev;
-+
 +	for (slot = 0; slot < lfs->lfs_num; slot++) {
 +		lfs->lf[slot].lfs = lfs;
 +		lfs->lf[slot].slot = slot;
 +		lfs->lf[slot].lmtline = lfs->reg_base +
 +			OTX2_CPT_RVU_FUNC_ADDR_S(BLKADDR_LMT, slot,
-+			OTX2_CPT_LMT_LF_LMTLINEX(0));
++						 OTX2_CPT_LMT_LF_LMTLINEX(0));
 +		lfs->lf[slot].ioreg = lfs->reg_base +
 +			OTX2_CPT_RVU_FUNC_ADDR_S(BLKADDR_CPT0, slot,
-+			OTX2_CPT_LF_NQX(0));
++						 OTX2_CPT_LF_NQX(0));
 +	}
++
++	/* Send request to attach LFs */
 +	ret = otx2_cpt_attach_rscrs_msg(pdev);
 +	if (ret)
-+		goto clear_lfs_num;
++		return ret;
 +
-+	ret = otx2_cpt_alloc_instruction_queues(lfs);
++	/* Get msix offsets for attached LFs */
++	ret = otx2_cpt_msix_offset_msg(pdev);
++	if (ret)
++		goto detach_rscrs;
++
++	/* Initialize LFs software side */
++	ret = cptlf_sw_init(lfs);
++	if (ret)
++		goto detach_rscrs;
++
++	/* Register LFs interrupts */
++	ret = cptlf_register_interrupts(lfs);
++	if (ret)
++		goto sw_cleanup;
++
++	/* Initialize LFs hardware side */
++	cptlf_hw_init(lfs);
++
++	/*
++	 * Allow each LF to execute requests destined to any of 8 engine
++	 * groups and set queue priority of each LF to high
++	 */
++	ret = cptlf_set_grp_and_pri(pdev, lfs, OTX2_CPT_ALL_ENG_GRPS_MASK,
++				    OTX2_CPT_QUEUE_HI_PRIO);
++	if (ret)
++		goto hw_cleanup;
++
++	/* Create sysfs configuration entries */
++	ret = cptlf_create_sysfs_cfg(lfs);
++	if (ret)
++		goto hw_cleanup;
++
++	/* Set interrupts affinity */
++	ret = cptlf_set_irqs_affinity(lfs);
++	if (ret)
++		goto delete_sysfs_cfg;
++
++	/* Enable interrupts */
++	cptlf_enable_misc_intrs(lfs);
++	cptlf_enable_done_intr(lfs);
++
++	/* Register crypto algorithms */
++	ret = otx2_cpt_crypto_init(pdev, THIS_MODULE, OTX2_CPT_SE_TYPES,
++				   lfs_num, 1);
 +	if (ret) {
-+		dev_err(&pdev->dev,
-+			"Allocating instruction queues failed\n");
-+		goto detach_rsrcs;
++		dev_err(&pdev->dev, "algorithms registration failed\n");
++		goto disable_irqs;
 +	}
-+	otx2_cptlf_disable_iqueues(lfs);
-+
-+	otx2_cptlf_set_iqueues_base_addr(lfs);
-+
-+	otx2_cptlf_set_iqueues_size(lfs);
-+
-+	otx2_cptlf_enable_iqueues(lfs);
-+
-+	ret = cptlf_set_grp_and_pri(pdev, lfs, eng_grp_mask, pri);
-+	if (ret)
-+		goto free_iqueue;
-+
 +	return 0;
 +
-+free_iqueue:
-+	otx2_cptlf_disable_iqueues(lfs);
-+	otx2_cpt_free_instruction_queues(lfs);
-+detach_rsrcs:
++disable_irqs:
++	cptlf_disable_done_intr(lfs);
++	cptlf_disable_misc_intrs(lfs);
++	cptlf_free_irqs_affinity(lfs);
++delete_sysfs_cfg:
++	cptlf_delete_sysfs_cfg(lfs);
++hw_cleanup:
++	cptlf_hw_cleanup(lfs);
++	cptlf_unregister_interrupts(lfs);
++sw_cleanup:
++	cptlf_sw_cleanup(lfs);
++detach_rscrs:
 +	otx2_cpt_detach_rsrcs_msg(pdev);
-+clear_lfs_num:
-+	lfs->lfs_num = 0;
-+	return ret;
-+}
-+
-+static int forward_to_af(struct otx2_cptpf_dev *cptpf,
-+			 struct otx2_cptvf_info *vf,
-+			 struct mbox_msghdr *req, int size)
-+{
-+	struct mbox_msghdr *msg;
-+	int ret;
-+
-+	msg = otx2_mbox_alloc_msg(&cptpf->afpf_mbox, 0, size);
-+	if (msg == NULL)
-+		return -ENOMEM;
-+
-+	memcpy((uint8_t *)msg + sizeof(struct mbox_msghdr),
-+	       (uint8_t *)req + sizeof(struct mbox_msghdr), size);
-+	msg->id = req->id;
-+	msg->pcifunc = req->pcifunc;
-+	msg->sig = req->sig;
-+	msg->ver = req->ver;
-+
-+	otx2_mbox_msg_send(&cptpf->afpf_mbox, 0);
-+	ret = otx2_mbox_wait_for_rsp(&cptpf->afpf_mbox, 0);
-+	if (ret == -EIO) {
-+		dev_err(&cptpf->pdev->dev, "RVU MBOX timeout.\n");
-+		return ret;
-+	} else if (ret) {
-+		dev_err(&cptpf->pdev->dev, "RVU MBOX error: %d.\n", ret);
-+		return -EFAULT;
-+	}
-+	return 0;
-+}
-+
-+static int check_attach_rsrcs_req(struct otx2_cptpf_dev *cptpf,
-+				  struct otx2_cptvf_info *vf,
-+				  struct mbox_msghdr *req, int size)
-+{
-+	struct rsrc_attach *rsrc_req = (struct rsrc_attach *)req;
-+
-+	if (rsrc_req->sso > 0 || rsrc_req->ssow > 0 || rsrc_req->npalf > 0 ||
-+	    rsrc_req->timlfs > 0 || rsrc_req->nixlf > 0) {
-+		dev_err(&cptpf->pdev->dev,
-+			"Invalid ATTACH_RESOURCES request from %s\n",
-+			dev_name(&vf->vf_dev->dev));
-+
-+		return -EINVAL;
-+	}
-+
-+	return forward_to_af(cptpf, vf, req, size);
-+}
-+
-+static int reply_ready_msg(struct otx2_cptpf_dev *cptpf,
-+			   struct otx2_cptvf_info *vf,
-+			   struct mbox_msghdr *req)
-+{
-+	struct ready_msg_rsp *rsp;
-+
-+	rsp = (struct ready_msg_rsp *)
-+	       otx2_mbox_alloc_msg(&cptpf->vfpf_mbox, vf->vf_id, sizeof(*rsp));
-+	if (!rsp)
-+		return -ENOMEM;
-+
-+	rsp->hdr.id = MBOX_MSG_READY;
-+	rsp->hdr.sig = OTX2_MBOX_RSP_SIG;
-+	rsp->hdr.pcifunc = req->pcifunc;
-+
-+	return 0;
-+}
-+
-+static int reply_eng_grp_num_msg(struct otx2_cptpf_dev *cptpf,
-+				 struct otx2_cptvf_info *vf,
-+				 struct mbox_msghdr *req)
-+{
-+	struct otx2_cpt_eng_grp_num_msg *grp_req =
-+			(struct otx2_cpt_eng_grp_num_msg *)req;
-+	struct otx2_cpt_eng_grp_num_rsp *rsp;
-+
-+	rsp = (struct otx2_cpt_eng_grp_num_rsp *)
-+			      otx2_mbox_alloc_msg(&cptpf->vfpf_mbox, vf->vf_id,
-+						  sizeof(*rsp));
-+	if (!rsp)
-+		return -ENOMEM;
-+
-+	rsp->hdr.id = MBOX_MSG_GET_ENG_GRP_NUM;
-+	rsp->hdr.sig = OTX2_MBOX_RSP_SIG;
-+	rsp->hdr.pcifunc = req->pcifunc;
-+	rsp->eng_type = grp_req->eng_type;
-+	rsp->eng_grp_num = get_eng_grp(cptpf, grp_req->eng_type);
-+
-+	return 0;
-+}
-+
-+static int rx_inline_ipsec_lf_cfg(struct otx2_cptpf_dev *cptpf, u8 egrp,
-+				  u16 sso_pf_func, bool enable)
-+{
-+	struct cpt_inline_ipsec_cfg_msg *req;
-+	struct nix_inline_ipsec_cfg *nix_req;
-+	struct pci_dev *pdev = cptpf->pdev;
-+	int ret;
-+
-+	nix_req = (struct nix_inline_ipsec_cfg *)
-+			otx2_mbox_alloc_msg_rsp(&cptpf->afpf_mbox, 0,
-+						sizeof(*nix_req),
-+						sizeof(struct msg_rsp));
-+	if (nix_req == NULL) {
-+		dev_err(&pdev->dev, "RVU MBOX failed to get message.\n");
-+		return -EFAULT;
-+	}
-+	memset(nix_req, 0, sizeof(*nix_req));
-+	nix_req->hdr.id = MBOX_MSG_NIX_INLINE_IPSEC_CFG;
-+	nix_req->hdr.sig = OTX2_MBOX_REQ_SIG;
-+	nix_req->enable = enable;
-+	nix_req->cpt_credit = OTX2_CPT_INST_QLEN_MSGS - 1;
-+	nix_req->gen_cfg.egrp = egrp;
-+	nix_req->gen_cfg.opcode = CPT_INLINE_RX_OPCODE;
-+	nix_req->inst_qsel.cpt_pf_func = OTX2_CPT_RVU_PFFUNC(cptpf->pf_id, 0);
-+	nix_req->inst_qsel.cpt_slot = 0;
-+	ret = otx2_cpt_send_mbox_msg(pdev);
-+	if (ret)
-+		return ret;
-+
-+	req = (struct cpt_inline_ipsec_cfg_msg *)
-+			otx2_mbox_alloc_msg_rsp(&cptpf->afpf_mbox, 0,
-+						sizeof(*req),
-+						sizeof(struct msg_rsp));
-+	if (req == NULL) {
-+		dev_err(&pdev->dev, "RVU MBOX failed to get message.\n");
-+		return -EFAULT;
-+	}
-+	memset(req, 0, sizeof(*req));
-+	req->hdr.id = MBOX_MSG_CPT_INLINE_IPSEC_CFG;
-+	req->hdr.sig = OTX2_MBOX_REQ_SIG;
-+	req->hdr.pcifunc = OTX2_CPT_RVU_PFFUNC(cptpf->pf_id, 0);
-+	req->dir = CPT_INLINE_INBOUND;
-+	req->slot = 0;
-+	req->sso_pf_func_ovrd = cptpf->sso_pf_func_ovrd;
-+	req->sso_pf_func = sso_pf_func;
-+	req->enable = enable;
-+	ret = otx2_cpt_send_mbox_msg(pdev);
 +
 +	return ret;
 +}
 +
-+static int rx_inline_ipsec_lf_enable(struct otx2_cptpf_dev *cptpf,
-+				     struct mbox_msghdr *req)
++int otx2_cptvf_lf_shutdown(struct pci_dev *pdev, struct otx2_cptlfs_info *lfs)
 +{
-+	struct otx2_cpt_rx_inline_lf_cfg *cfg_req =
-+					(struct otx2_cpt_rx_inline_lf_cfg *)req;
-+	u8 egrp;
 +	int ret;
 +
-+	if (cptpf->lfs.lfs_num) {
-+		dev_err(&cptpf->pdev->dev,
-+			"LF is already configured for RX inline ipsec.\n");
-+		return -EEXIST;
-+	}
++	/* Unregister crypto algorithms */
++	otx2_cpt_crypto_exit(pdev, THIS_MODULE, OTX2_CPT_SE_TYPES);
++
++	/* Disable interrupts */
++	cptlf_disable_done_intr(lfs);
++	cptlf_disable_misc_intrs(lfs);
++
++	/* Remove interrupts affinity */
++	cptlf_free_irqs_affinity(lfs);
++
++	/* Remove sysfs configuration entries */
++	cptlf_delete_sysfs_cfg(lfs);
++
++	/* Cleanup LFs hardware side */
++	cptlf_hw_cleanup(lfs);
++
++	/* Unregister LFs interrupts */
++	cptlf_unregister_interrupts(lfs);
++
++	/* Cleanup LFs software side */
++	cptlf_sw_cleanup(lfs);
++
++	/* Send request to detach LFs */
++	ret = otx2_cpt_detach_rsrcs_msg(pdev);
++
++	return ret;
++}
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf.h b/drivers/crypto/marvell/octeontx2/otx2_cptvf.h
+index 51039c7..6a4d8b5 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptvf.h
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf.h
+@@ -21,4 +21,9 @@ struct otx2_cptvf_dev {
+ 	struct workqueue_struct *pfvf_mbox_wq;
+ };
+ 
++irqreturn_t otx2_cptvf_pfvf_mbox_intr(int irq, void *arg);
++void otx2_cptvf_pfvf_mbox_handler(struct work_struct *work);
++int otx2_cptvf_send_eng_grp_num_msg(struct otx2_cptvf_dev *cptvf, int eng_type);
++int otx2_cptvf_send_kcrypto_limits_msg(struct otx2_cptvf_dev *cptvf);
++
+ #endif /* __OTX2_CPTVF_H */
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+new file mode 100644
+index 0000000..d8831dd
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+@@ -0,0 +1,1708 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Marvell. */
++
++#include <crypto/aes.h>
++#include <crypto/authenc.h>
++#include <crypto/cryptd.h>
++#include <crypto/des.h>
++#include <crypto/internal/aead.h>
++#include <crypto/sha.h>
++#include <crypto/xts.h>
++#include <crypto/gcm.h>
++#include <crypto/scatterwalk.h>
++#include <linux/rtnetlink.h>
++#include <linux/sort.h>
++#include <linux/module.h>
++#include "otx2_cptvf.h"
++#include "otx2_cptvf_algs.h"
++#include "otx2_cpt_reqmgr.h"
++
++#define CPT_MAX_LF_NUM 64
++/* Size of salt in AES GCM mode */
++#define AES_GCM_SALT_SIZE 4
++/* Size of IV in AES GCM mode */
++#define AES_GCM_IV_SIZE 8
++/* Size of ICV (Integrity Check Value) in AES GCM mode */
++#define AES_GCM_ICV_SIZE 16
++/* Offset of IV in AES GCM mode */
++#define AES_GCM_IV_OFFSET 8
++#define CONTROL_WORD_LEN 8
++#define KEY2_OFFSET 48
++#define DMA_MODE_FLAG(dma_mode) \
++	(((dma_mode) == OTX2_CPT_DMA_MODE_SG) ? (1 << 7) : 0)
++
++/* Truncated SHA digest size */
++#define SHA1_TRUNC_DIGEST_SIZE 12
++#define SHA256_TRUNC_DIGEST_SIZE 16
++#define SHA384_TRUNC_DIGEST_SIZE 24
++#define SHA512_TRUNC_DIGEST_SIZE 32
++
++static DEFINE_MUTEX(mutex);
++static int is_crypto_registered;
++
++struct cpt_device_desc {
++	struct pci_dev *dev;
++	int num_queues;
++};
++
++struct cpt_device_table {
++	atomic_t count;
++	struct cpt_device_desc desc[CPT_MAX_LF_NUM];
++};
++
++static struct cpt_device_table se_devices = {
++	.count = ATOMIC_INIT(0)
++};
++
++static struct cpt_device_table ae_devices = {
++	.count = ATOMIC_INIT(0)
++};
++
++static inline int get_se_device(struct pci_dev **pdev, int *cpu_num)
++{
++	int count;
++
++	count = atomic_read(&se_devices.count);
++	if (count < 1)
++		return -ENODEV;
++
++	*cpu_num = get_cpu();
 +	/*
-+	 * Allow LFs to execute requests destined to only grp IE_TYPES and
-+	 * set queue priority of each LF to high
++	 * On OcteonTX2 platform CPT instruction queue is bound to each
++	 * local function LF, in turn LFs can be attached to PF
++	 * or VF therefore we always use first device. We get maximum
++	 * performance if one CPT queue is available for each cpu
++	 * otherwise CPT queues need to be shared between cpus.
 +	 */
-+	egrp = get_eng_grp(cptpf, OTX2_CPT_IE_TYPES);
-+	if (egrp == OTX2_CPT_INVALID_CRYPTO_ENG_GRP) {
-+		dev_err(&cptpf->pdev->dev,
-+			"Engine group for inline ipsec is not available\n");
-+		return -ENOENT;
-+	}
++	if (*cpu_num >= se_devices.desc[0].num_queues)
++		*cpu_num %= se_devices.desc[0].num_queues;
++	*pdev = se_devices.desc[0].dev;
 +
-+	ret = otx2_cptpf_lf_init(cptpf, 1 << egrp, OTX2_CPT_QUEUE_HI_PRIO, 1);
-+	if (ret)
-+		return ret;
-+
-+	ret = rx_inline_ipsec_lf_cfg(cptpf, egrp, cfg_req->sso_pf_func, true);
-+	if (ret)
-+		goto lf_cleanup;
-+
-+	return 0;
-+
-+lf_cleanup:
-+	otx2_cptpf_lf_cleanup(&cptpf->lfs);
-+	return ret;
-+}
-+
-+static int reply_caps_msg(struct otx2_cptpf_dev *cptpf,
-+			  struct otx2_cptvf_info *vf,
-+			  struct mbox_msghdr *req)
-+{
-+	struct otx2_cpt_caps_rsp *rsp;
-+
-+	rsp = (struct otx2_cpt_caps_rsp *)
-+			      otx2_mbox_alloc_msg(&cptpf->vfpf_mbox, vf->vf_id,
-+						  sizeof(*rsp));
-+	if (!rsp)
-+		return -ENOMEM;
-+
-+	rsp->hdr.id = MBOX_MSG_GET_CAPS;
-+	rsp->hdr.sig = OTX2_MBOX_RSP_SIG;
-+	rsp->hdr.pcifunc = req->pcifunc;
-+	rsp->cpt_pf_drv_version = OTX2_CPT_PF_DRV_VERSION;
-+	rsp->cpt_revision = cptpf->pdev->revision;
-+	memcpy(&rsp->eng_caps, &cptpf->eng_caps, sizeof(rsp->eng_caps));
++	put_cpu();
 +
 +	return 0;
 +}
 +
-+static int reply_kcrypto_limits_msg(struct otx2_cptpf_dev *cptpf,
-+				    struct otx2_cptvf_info *vf,
-+				    struct mbox_msghdr *req)
++static inline int validate_hmac_cipher_null(struct otx2_cpt_req_info *cpt_req)
 +{
-+	struct otx2_cpt_kcrypto_limits_rsp *rsp;
++	struct otx2_cpt_req_ctx *rctx;
++	struct aead_request *req;
++	struct crypto_aead *tfm;
 +
-+	rsp = (struct otx2_cpt_kcrypto_limits_rsp *)
-+			      otx2_mbox_alloc_msg(&cptpf->vfpf_mbox, vf->vf_id,
-+						  sizeof(*rsp));
-+	if (!rsp)
-+		return -ENOMEM;
-+
-+	rsp->hdr.id = MBOX_MSG_GET_KCRYPTO_LIMITS;
-+	rsp->hdr.sig = OTX2_MBOX_RSP_SIG;
-+	rsp->hdr.pcifunc = req->pcifunc;
-+	rsp->kcrypto_limits = cptpf->kvf_limits;
++	req = container_of(cpt_req->areq, struct aead_request, base);
++	tfm = crypto_aead_reqtfm(req);
++	rctx = aead_request_ctx(req);
++	if (memcmp(rctx->fctx.hmac.s.hmac_calc,
++		   rctx->fctx.hmac.s.hmac_recv,
++		   crypto_aead_authsize(tfm)) != 0)
++		return -EBADMSG;
 +
 +	return 0;
 +}
 +
-+static int check_cpt_lf_alloc_req(struct otx2_cptpf_dev *cptpf,
-+				  struct otx2_cptvf_info *vf,
-+				  struct mbox_msghdr *req, int size)
++static void otx2_cpt_aead_callback(int status, void *arg1, void *arg2)
 +{
-+	struct cpt_lf_alloc_req_msg *alloc_req =
-+					(struct cpt_lf_alloc_req_msg *)req;
++	struct otx2_cpt_inst_info *inst_info = arg2;
++	struct crypto_async_request *areq = arg1;
++	struct otx2_cpt_req_info *cpt_req;
++	struct pci_dev *pdev;
 +
-+	if (alloc_req->eng_grpmsk == 0x0)
-+		alloc_req->eng_grpmsk = OTX2_CPT_ALL_ENG_GRPS_MASK;
-+
-+	return forward_to_af(cptpf, vf, req, size);
-+}
-+
-+static int cptpf_handle_vf_req(struct otx2_cptpf_dev *cptpf,
-+			       struct otx2_cptvf_info *vf,
-+			       struct mbox_msghdr *req, int size)
-+{
-+	int err = 0;
-+
-+	/* Check if msg is valid, if not reply with an invalid msg */
-+	if (req->sig != OTX2_MBOX_REQ_SIG)
-+		return otx2_reply_invalid_msg(&cptpf->vfpf_mbox, vf->vf_id,
-+					      req->pcifunc, req->id);
-+	switch (req->id) {
-+	case MBOX_MSG_READY:
-+		err = reply_ready_msg(cptpf, vf, req);
-+		break;
-+
-+	case MBOX_MSG_ATTACH_RESOURCES:
-+		err = check_attach_rsrcs_req(cptpf, vf, req, size);
-+		break;
-+
-+	case MBOX_MSG_GET_ENG_GRP_NUM:
-+		err = reply_eng_grp_num_msg(cptpf, vf, req);
-+		break;
-+
-+	case MBOX_MSG_RX_INLINE_IPSEC_LF_CFG:
-+		err = rx_inline_ipsec_lf_enable(cptpf, req);
-+		break;
-+
-+	case MBOX_MSG_GET_CAPS:
-+		err = reply_caps_msg(cptpf, vf, req);
-+		break;
-+
-+	case MBOX_MSG_GET_KCRYPTO_LIMITS:
-+		err = reply_kcrypto_limits_msg(cptpf, vf, req);
-+		break;
-+
-+	case MBOX_MSG_CPT_LF_ALLOC:
-+		err = check_cpt_lf_alloc_req(cptpf, vf, req, size);
-+		break;
-+
-+	default:
-+		err = forward_to_af(cptpf, vf, req, size);
-+		break;
++	if (inst_info) {
++		cpt_req = inst_info->req;
++		if (!status) {
++			/*
++			 * When selected cipher is NULL we need to manually
++			 * verify whether calculated hmac value matches
++			 * received hmac value
++			 */
++			if (cpt_req->req_type ==
++			    OTX2_CPT_AEAD_ENC_DEC_NULL_REQ &&
++			    !cpt_req->is_enc)
++				status = validate_hmac_cipher_null(cpt_req);
++		}
++		pdev = inst_info->pdev;
++		otx2_cpt_info_destroy(pdev, inst_info);
 +	}
-+
-+	return err;
++	if (areq)
++		areq->complete(areq, status);
 +}
 +
-+irqreturn_t otx2_cptpf_afpf_mbox_intr(int __always_unused irq, void *arg)
++static void output_iv_copyback(struct crypto_async_request *areq)
 +{
-+	struct otx2_cptpf_dev *cptpf = arg;
-+	u64 intr;
++	struct otx2_cpt_req_info *req_info;
++	struct otx2_cpt_req_ctx *rctx;
++	struct skcipher_request *sreq;
++	struct crypto_skcipher *stfm;
++	struct otx2_cpt_enc_ctx *ctx;
++	u32 start, ivsize;
 +
-+	/* Read the interrupt bits */
-+	intr = otx2_cpt_read64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_INT);
++	sreq = container_of(areq, struct skcipher_request, base);
++	stfm = crypto_skcipher_reqtfm(sreq);
++	ctx = crypto_skcipher_ctx(stfm);
++	if (ctx->cipher_type == OTX2_CPT_AES_CBC ||
++	    ctx->cipher_type == OTX2_CPT_DES3_CBC) {
++		rctx = skcipher_request_ctx(sreq);
++		req_info = &rctx->cpt_req;
++		ivsize = crypto_skcipher_ivsize(stfm);
++		start = sreq->cryptlen - ivsize;
 +
-+	if (intr & 0x1ULL) {
-+		/* Schedule work queue function to process the MBOX request */
-+		queue_work(cptpf->afpf_mbox_wq, &cptpf->afpf_mbox_work);
-+		/* Clear and ack the interrupt */
-+		otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM, 0, RVU_PF_INT,
-+			    0x1ULL);
-+	}
-+	return IRQ_HANDLED;
-+}
-+
-+irqreturn_t otx2_cptpf_vfpf_mbox_intr(int __always_unused irq, void *arg)
-+{
-+	struct otx2_cptpf_dev *cptpf = arg;
-+	struct otx2_cptvf_info *vf;
-+	int i, vf_idx;
-+	u64 intr;
-+
-+	/*
-+	 * Check which VF has raised an interrupt and schedule
-+	 * corresponding work queue to process the messages
-+	 */
-+	for (i = 0; i < 2; i++) {
-+		/* Read the interrupt bits */
-+		intr = otx2_cpt_read64(cptpf->reg_base, BLKADDR_RVUM, 0,
-+				       RVU_PF_VFPF_MBOX_INTX(i));
-+
-+		for (vf_idx = i * 64; vf_idx < cptpf->enabled_vfs; vf_idx++) {
-+			vf = &cptpf->vf[vf_idx];
-+			if (intr & (1ULL << vf->intr_idx)) {
-+				queue_work(cptpf->vfpf_mbox_wq,
-+					   &vf->vfpf_mbox_work);
-+				/* Clear the interrupt */
-+				otx2_cpt_write64(cptpf->reg_base, BLKADDR_RVUM,
-+						 0, RVU_PF_VFPF_MBOX_INTX(i),
-+						 BIT_ULL(vf->intr_idx));
++		if (req_info->is_enc) {
++			scatterwalk_map_and_copy(sreq->iv, sreq->dst, start,
++						 ivsize, 0);
++		} else {
++			if (sreq->src != sreq->dst) {
++				scatterwalk_map_and_copy(sreq->iv, sreq->src,
++							 start, ivsize, 0);
++			} else {
++				memcpy(sreq->iv, req_info->iv_out, ivsize);
++				kfree(req_info->iv_out);
 +			}
 +		}
 +	}
++}
++
++static void otx2_cpt_skcipher_callback(int status, void *arg1, void *arg2)
++{
++	struct otx2_cpt_inst_info *inst_info = arg2;
++	struct crypto_async_request *areq = arg1;
++	struct pci_dev *pdev;
++
++	if (areq) {
++		if (!status)
++			output_iv_copyback(areq);
++		if (inst_info) {
++			pdev = inst_info->pdev;
++			otx2_cpt_info_destroy(pdev, inst_info);
++		}
++		areq->complete(areq, status);
++	}
++}
++
++static inline void update_input_data(struct otx2_cpt_req_info *req_info,
++				     struct scatterlist *inp_sg,
++				     u32 nbytes, u32 *argcnt)
++{
++	req_info->req.dlen += nbytes;
++
++	while (nbytes) {
++		u32 len = min(nbytes, inp_sg->length);
++		u8 *ptr = sg_virt(inp_sg);
++
++		req_info->in[*argcnt].vptr = (void *)ptr;
++		req_info->in[*argcnt].size = len;
++		nbytes -= len;
++		++(*argcnt);
++		inp_sg = sg_next(inp_sg);
++	}
++}
++
++static inline void update_output_data(struct otx2_cpt_req_info *req_info,
++				      struct scatterlist *outp_sg,
++				      u32 offset, u32 nbytes, u32 *argcnt)
++{
++	req_info->rlen += nbytes;
++
++	while (nbytes) {
++		u32 len = min(nbytes, outp_sg->length - offset);
++		u8 *ptr = sg_virt(outp_sg);
++
++		req_info->out[*argcnt].vptr = (void *) (ptr + offset);
++		req_info->out[*argcnt].size = len;
++		nbytes -= len;
++		++(*argcnt);
++		offset = 0;
++		outp_sg = sg_next(outp_sg);
++	}
++}
++
++static inline int create_ctx_hdr(struct skcipher_request *req, u32 enc,
++				 u32 *argcnt)
++{
++	struct crypto_skcipher *stfm = crypto_skcipher_reqtfm(req);
++	struct otx2_cpt_req_ctx *rctx = skcipher_request_ctx(req);
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(stfm);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	struct otx2_cpt_fc_ctx *fctx = &rctx->fctx;
++	int ivsize = crypto_skcipher_ivsize(stfm);
++	u32 start = req->cryptlen - ivsize;
++	gfp_t flags;
++
++	flags = (req->base.flags & CRYPTO_TFM_REQ_MAY_SLEEP) ?
++			GFP_KERNEL : GFP_ATOMIC;
++	req_info->ctrl.s.dma_mode = OTX2_CPT_DMA_MODE_SG;
++	req_info->ctrl.s.se_req = 1;
++
++	req_info->req.opcode.s.major = OTX2_CPT_MAJOR_OP_FC |
++				DMA_MODE_FLAG(OTX2_CPT_DMA_MODE_SG);
++	if (enc) {
++		req_info->req.opcode.s.minor = 2;
++	} else {
++		req_info->req.opcode.s.minor = 3;
++		if ((ctx->cipher_type == OTX2_CPT_AES_CBC ||
++		    ctx->cipher_type == OTX2_CPT_DES3_CBC) &&
++		    req->src == req->dst) {
++			req_info->iv_out = kmalloc(ivsize, flags);
++			if (!req_info->iv_out)
++				return -ENOMEM;
++
++			scatterwalk_map_and_copy(req_info->iv_out, req->src,
++						 start, ivsize, 0);
++		}
++	}
++	/* Encryption data length */
++	req_info->req.param1 = req->cryptlen;
++	/* Authentication data length */
++	req_info->req.param2 = 0;
++
++	fctx->enc.enc_ctrl.e.enc_cipher = ctx->cipher_type;
++	fctx->enc.enc_ctrl.e.aes_key = ctx->key_type;
++	fctx->enc.enc_ctrl.e.iv_source = OTX2_CPT_FROM_CPTR;
++
++	if (ctx->cipher_type == OTX2_CPT_AES_XTS)
++		memcpy(fctx->enc.encr_key, ctx->enc_key, ctx->key_len * 2);
++	else
++		memcpy(fctx->enc.encr_key, ctx->enc_key, ctx->key_len);
++
++	memcpy(fctx->enc.encr_iv, req->iv, crypto_skcipher_ivsize(stfm));
++
++	cpu_to_be64s(&fctx->enc.enc_ctrl.u);
++
++	/*
++	 * Storing  Packet Data Information in offset
++	 * Control Word First 8 bytes
++	 */
++	req_info->in[*argcnt].vptr = (u8 *)&rctx->ctrl_word;
++	req_info->in[*argcnt].size = CONTROL_WORD_LEN;
++	req_info->req.dlen += CONTROL_WORD_LEN;
++	++(*argcnt);
++
++	req_info->in[*argcnt].vptr = (u8 *)fctx;
++	req_info->in[*argcnt].size = sizeof(struct otx2_cpt_fc_ctx);
++	req_info->req.dlen += sizeof(struct otx2_cpt_fc_ctx);
++
++	++(*argcnt);
++
++	return 0;
++}
++
++static inline int create_input_list(struct skcipher_request *req, u32 enc,
++				    u32 enc_iv_len)
++{
++	struct otx2_cpt_req_ctx *rctx = skcipher_request_ctx(req);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	u32 argcnt =  0;
++	int ret;
++
++	ret = create_ctx_hdr(req, enc, &argcnt);
++	if (ret)
++		return ret;
++
++	update_input_data(req_info, req->src, req->cryptlen, &argcnt);
++	req_info->in_cnt = argcnt;
++
++	return 0;
++}
++
++static inline void create_output_list(struct skcipher_request *req,
++				      u32 enc_iv_len)
++{
++	struct otx2_cpt_req_ctx *rctx = skcipher_request_ctx(req);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	u32 argcnt = 0;
++
++	/*
++	 * OUTPUT Buffer Processing
++	 * AES encryption/decryption output would be
++	 * received in the following format
++	 *
++	 * ------IV--------|------ENCRYPTED/DECRYPTED DATA-----|
++	 * [ 16 Bytes/     [   Request Enc/Dec/ DATA Len AES CBC ]
++	 */
++	update_output_data(req_info, req->dst, 0, req->cryptlen, &argcnt);
++	req_info->out_cnt = argcnt;
++}
++
++static inline int cpt_enc_dec(struct skcipher_request *req, u32 enc)
++{
++	struct crypto_skcipher *stfm = crypto_skcipher_reqtfm(req);
++	struct otx2_cpt_req_ctx *rctx = skcipher_request_ctx(req);
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(stfm);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	u32 enc_iv_len = crypto_skcipher_ivsize(stfm);
++	struct pci_dev *pdev;
++	int status, cpu_num;
++
++	if (!req->cryptlen || req->cryptlen > OTX2_CPT_MAX_REQ_SIZE ||
++	    !IS_ALIGNED(req->cryptlen, ctx->enc_align_len))
++		return -EINVAL;
++
++	/* Clear control words */
++	rctx->ctrl_word.flags = 0;
++	rctx->fctx.enc.enc_ctrl.u = 0;
++
++	status = create_input_list(req, enc, enc_iv_len);
++	if (status)
++		return status;
++	create_output_list(req, enc_iv_len);
++
++	status = get_se_device(&pdev, &cpu_num);
++	if (status)
++		return status;
++
++	req_info->callback = otx2_cpt_skcipher_callback;
++	req_info->areq = &req->base;
++	req_info->req_type = OTX2_CPT_ENC_DEC_REQ;
++	req_info->is_enc = enc;
++	req_info->is_trunc_hmac = false;
++	req_info->ctrl.s.grp = otx2_cpt_get_kcrypto_eng_grp_num(pdev);
++
++	/*
++	 * We perform an asynchronous send and once
++	 * the request is completed the driver would
++	 * intimate through registered call back functions
++	 */
++	status = otx2_cpt_do_request(pdev, req_info, cpu_num);
++
++	return status;
++}
++
++static int otx2_cpt_skcipher_encrypt(struct skcipher_request *req)
++{
++	return cpt_enc_dec(req, true);
++}
++
++static int otx2_cpt_skcipher_decrypt(struct skcipher_request *req)
++{
++	return cpt_enc_dec(req, false);
++}
++
++static int otx2_cpt_skcipher_xts_setkey(struct crypto_skcipher *tfm,
++				       const u8 *key, u32 keylen)
++{
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(tfm);
++	const u8 *key2 = key + (keylen / 2);
++	const u8 *key1 = key;
++	int ret;
++
++	ret = xts_check_key(crypto_skcipher_tfm(tfm), key, keylen);
++	if (ret)
++		return ret;
++	ctx->key_len = keylen;
++	ctx->enc_align_len = 1;
++	memcpy(ctx->enc_key, key1, keylen / 2);
++	memcpy(ctx->enc_key + KEY2_OFFSET, key2, keylen / 2);
++	ctx->cipher_type = OTX2_CPT_AES_XTS;
++	switch (ctx->key_len) {
++	case 2 * AES_KEYSIZE_128:
++		ctx->key_type = OTX2_CPT_AES_128_BIT;
++		break;
++	case 2 * AES_KEYSIZE_256:
++		ctx->key_type = OTX2_CPT_AES_256_BIT;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int cpt_des_setkey(struct crypto_skcipher *tfm, const u8 *key,
++			  u32 keylen, u8 cipher_type)
++{
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(tfm);
++
++	if (keylen != DES3_EDE_KEY_SIZE)
++		return -EINVAL;
++
++	ctx->key_len = keylen;
++	ctx->cipher_type = cipher_type;
++	ctx->enc_align_len = 8;
++
++	memcpy(ctx->enc_key, key, keylen);
++
++	return 0;
++}
++
++static int cpt_aes_setkey(struct crypto_skcipher *tfm, const u8 *key,
++			  u32 keylen, u8 cipher_type)
++{
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(tfm);
++
++	switch (keylen) {
++	case AES_KEYSIZE_128:
++		ctx->key_type = OTX2_CPT_AES_128_BIT;
++		break;
++	case AES_KEYSIZE_192:
++		ctx->key_type = OTX2_CPT_AES_192_BIT;
++		break;
++	case AES_KEYSIZE_256:
++		ctx->key_type = OTX2_CPT_AES_256_BIT;
++		break;
++	default:
++		return -EINVAL;
++	}
++	if (cipher_type == OTX2_CPT_AES_CBC || cipher_type == OTX2_CPT_AES_ECB)
++		ctx->enc_align_len = 16;
++	else
++		ctx->enc_align_len = 1;
++
++	ctx->key_len = keylen;
++	ctx->cipher_type = cipher_type;
++
++	memcpy(ctx->enc_key, key, keylen);
++
++	return 0;
++}
++
++static int otx2_cpt_skcipher_cbc_aes_setkey(struct crypto_skcipher *tfm,
++					    const u8 *key, u32 keylen)
++{
++	return cpt_aes_setkey(tfm, key, keylen, OTX2_CPT_AES_CBC);
++}
++
++static int otx2_cpt_skcipher_ecb_aes_setkey(struct crypto_skcipher *tfm,
++					    const u8 *key, u32 keylen)
++{
++	return cpt_aes_setkey(tfm, key, keylen, OTX2_CPT_AES_ECB);
++}
++
++static int otx2_cpt_skcipher_cfb_aes_setkey(struct crypto_skcipher *tfm,
++					    const u8 *key, u32 keylen)
++{
++	return cpt_aes_setkey(tfm, key, keylen, OTX2_CPT_AES_CFB);
++}
++
++static int otx2_cpt_skcipher_cbc_des3_setkey(struct crypto_skcipher *tfm,
++					     const u8 *key, u32 keylen)
++{
++	return cpt_des_setkey(tfm, key, keylen, OTX2_CPT_DES3_CBC);
++}
++
++static int otx2_cpt_skcipher_ecb_des3_setkey(struct crypto_skcipher *tfm,
++					     const u8 *key, u32 keylen)
++{
++	return cpt_des_setkey(tfm, key, keylen, OTX2_CPT_DES3_ECB);
++}
++
++static int otx2_cpt_enc_dec_init(struct crypto_skcipher *tfm)
++{
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(tfm);
++
++	memset(ctx, 0, sizeof(*ctx));
++	/*
++	 * Additional memory for ablkcipher_request is
++	 * allocated since the cryptd daemon uses
++	 * this memory for request_ctx information
++	 */
++	crypto_skcipher_set_reqsize(tfm, sizeof(struct otx2_cpt_req_ctx) +
++					sizeof(struct skcipher_request));
++
++	return 0;
++}
++
++static int cpt_aead_init(struct crypto_aead *tfm, u8 cipher_type, u8 mac_type)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++
++	ctx->cipher_type = cipher_type;
++	ctx->mac_type = mac_type;
++
++	/*
++	 * When selected cipher is NULL we use HMAC opcode instead of
++	 * FLEXICRYPTO opcode therefore we don't need to use HASH algorithms
++	 * for calculating ipad and opad
++	 */
++	if (ctx->cipher_type != OTX2_CPT_CIPHER_NULL) {
++		switch (ctx->mac_type) {
++		case OTX2_CPT_SHA1:
++			ctx->hashalg = crypto_alloc_shash("sha1", 0,
++							  CRYPTO_ALG_ASYNC);
++			if (IS_ERR(ctx->hashalg))
++				return PTR_ERR(ctx->hashalg);
++			break;
++
++		case OTX2_CPT_SHA256:
++			ctx->hashalg = crypto_alloc_shash("sha256", 0,
++							  CRYPTO_ALG_ASYNC);
++			if (IS_ERR(ctx->hashalg))
++				return PTR_ERR(ctx->hashalg);
++			break;
++
++		case OTX2_CPT_SHA384:
++			ctx->hashalg = crypto_alloc_shash("sha384", 0,
++							  CRYPTO_ALG_ASYNC);
++			if (IS_ERR(ctx->hashalg))
++				return PTR_ERR(ctx->hashalg);
++			break;
++
++		case OTX2_CPT_SHA512:
++			ctx->hashalg = crypto_alloc_shash("sha512", 0,
++							  CRYPTO_ALG_ASYNC);
++			if (IS_ERR(ctx->hashalg))
++				return PTR_ERR(ctx->hashalg);
++			break;
++		}
++	}
++	switch (ctx->cipher_type) {
++	case OTX2_CPT_AES_CBC:
++	case OTX2_CPT_AES_ECB:
++		ctx->enc_align_len = 16;
++		break;
++	case OTX2_CPT_DES3_CBC:
++	case OTX2_CPT_DES3_ECB:
++		ctx->enc_align_len = 8;
++		break;
++	case OTX2_CPT_AES_GCM:
++	case OTX2_CPT_CIPHER_NULL:
++		ctx->enc_align_len = 1;
++		break;
++	}
++	crypto_aead_set_reqsize(tfm, sizeof(struct otx2_cpt_req_ctx));
++
++	return 0;
++}
++
++static int otx2_cpt_aead_cbc_aes_sha1_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_AES_CBC, OTX2_CPT_SHA1);
++}
++
++static int otx2_cpt_aead_cbc_aes_sha256_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_AES_CBC, OTX2_CPT_SHA256);
++}
++
++static int otx2_cpt_aead_cbc_aes_sha384_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_AES_CBC, OTX2_CPT_SHA384);
++}
++
++static int otx2_cpt_aead_cbc_aes_sha512_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_AES_CBC, OTX2_CPT_SHA512);
++}
++
++static int otx2_cpt_aead_ecb_null_sha1_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_CIPHER_NULL, OTX2_CPT_SHA1);
++}
++
++static int otx2_cpt_aead_ecb_null_sha256_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_CIPHER_NULL, OTX2_CPT_SHA256);
++}
++
++static int otx2_cpt_aead_ecb_null_sha384_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_CIPHER_NULL, OTX2_CPT_SHA384);
++}
++
++static int otx2_cpt_aead_ecb_null_sha512_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_CIPHER_NULL, OTX2_CPT_SHA512);
++}
++
++static int otx2_cpt_aead_gcm_aes_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_AES_GCM, OTX2_CPT_MAC_NULL);
++}
++
++static void otx2_cpt_aead_exit(struct crypto_aead *tfm)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++
++	kfree(ctx->ipad);
++	kfree(ctx->opad);
++	if (ctx->hashalg)
++		crypto_free_shash(ctx->hashalg);
++	kfree(ctx->sdesc);
++}
++
++static int otx2_cpt_aead_gcm_set_authsize(struct crypto_aead *tfm,
++					  unsigned int authsize)
++{
++	if (crypto_rfc4106_check_authsize(authsize))
++		return -EINVAL;
++
++	tfm->authsize = authsize;
++	return 0;
++}
++
++static int otx2_cpt_aead_set_authsize(struct crypto_aead *tfm,
++				      unsigned int authsize)
++{
++	tfm->authsize = authsize;
++
++	return 0;
++}
++
++static int otx2_cpt_aead_null_set_authsize(struct crypto_aead *tfm,
++					   unsigned int authsize)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++
++	ctx->is_trunc_hmac = true;
++	tfm->authsize = authsize;
++
++	return 0;
++}
++
++static struct otx2_cpt_sdesc *alloc_sdesc(struct crypto_shash *alg)
++{
++	struct otx2_cpt_sdesc *sdesc;
++	int size;
++
++	size = sizeof(struct shash_desc) + crypto_shash_descsize(alg);
++	sdesc = kmalloc(size, GFP_KERNEL);
++	if (!sdesc)
++		return NULL;
++
++	sdesc->shash.tfm = alg;
++
++	return sdesc;
++}
++
++static inline void swap_data32(void *buf, u32 len)
++{
++	u32 *store = (u32 *) buf;
++	int i = 0;
++
++	for (i = 0 ; i < len/sizeof(u32); i++, store++)
++		*store = cpu_to_be32(*store);
++}
++
++static inline void swap_data64(void *buf, u32 len)
++{
++	u64 *store = (u64 *) buf;
++	int i = 0;
++
++	for (i = 0 ; i < len/sizeof(u64); i++, store++)
++		*store = cpu_to_be64(*store);
++}
++
++static int copy_pad(u8 mac_type, u8 *out_pad, u8 *in_pad)
++{
++	struct sha512_state *sha512;
++	struct sha256_state *sha256;
++	struct sha1_state *sha1;
++
++	switch (mac_type) {
++	case OTX2_CPT_SHA1:
++		sha1 = (struct sha1_state *) in_pad;
++		swap_data32(sha1->state, SHA1_DIGEST_SIZE);
++		memcpy(out_pad, &sha1->state, SHA1_DIGEST_SIZE);
++		break;
++
++	case OTX2_CPT_SHA256:
++		sha256 = (struct sha256_state *) in_pad;
++		swap_data32(sha256->state, SHA256_DIGEST_SIZE);
++		memcpy(out_pad, &sha256->state, SHA256_DIGEST_SIZE);
++		break;
++
++	case OTX2_CPT_SHA384:
++	case OTX2_CPT_SHA512:
++		sha512 = (struct sha512_state *) in_pad;
++		swap_data64(sha512->state, SHA512_DIGEST_SIZE);
++		memcpy(out_pad, &sha512->state, SHA512_DIGEST_SIZE);
++		break;
++
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int aead_hmac_init(struct crypto_aead *cipher)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(cipher);
++	int state_size = crypto_shash_statesize(ctx->hashalg);
++	int ds = crypto_shash_digestsize(ctx->hashalg);
++	int bs = crypto_shash_blocksize(ctx->hashalg);
++	int authkeylen = ctx->auth_key_len;
++	u8 *ipad = NULL, *opad = NULL;
++	int ret = 0, icount = 0;
++
++	ctx->sdesc = alloc_sdesc(ctx->hashalg);
++	if (!ctx->sdesc)
++		return -ENOMEM;
++
++	ctx->ipad = kzalloc(bs, GFP_KERNEL);
++	if (!ctx->ipad) {
++		ret = -ENOMEM;
++		goto calc_fail;
++	}
++
++	ctx->opad = kzalloc(bs, GFP_KERNEL);
++	if (!ctx->opad) {
++		ret = -ENOMEM;
++		goto calc_fail;
++	}
++
++	ipad = kzalloc(state_size, GFP_KERNEL);
++	if (!ipad) {
++		ret = -ENOMEM;
++		goto calc_fail;
++	}
++
++	opad = kzalloc(state_size, GFP_KERNEL);
++	if (!opad) {
++		ret = -ENOMEM;
++		goto calc_fail;
++	}
++
++	if (authkeylen > bs) {
++		ret = crypto_shash_digest(&ctx->sdesc->shash, ctx->key,
++					  authkeylen, ipad);
++		if (ret)
++			goto calc_fail;
++
++		authkeylen = ds;
++	} else {
++		memcpy(ipad, ctx->key, authkeylen);
++	}
++
++	memset(ipad + authkeylen, 0, bs - authkeylen);
++	memcpy(opad, ipad, bs);
++
++	for (icount = 0; icount < bs; icount++) {
++		ipad[icount] ^= 0x36;
++		opad[icount] ^= 0x5c;
++	}
++
++	/*
++	 * Partial Hash calculated from the software
++	 * algorithm is retrieved for IPAD & OPAD
++	 */
++
++	/* IPAD Calculation */
++	crypto_shash_init(&ctx->sdesc->shash);
++	crypto_shash_update(&ctx->sdesc->shash, ipad, bs);
++	crypto_shash_export(&ctx->sdesc->shash, ipad);
++	ret = copy_pad(ctx->mac_type, ctx->ipad, ipad);
++	if (ret)
++		goto calc_fail;
++
++	/* OPAD Calculation */
++	crypto_shash_init(&ctx->sdesc->shash);
++	crypto_shash_update(&ctx->sdesc->shash, opad, bs);
++	crypto_shash_export(&ctx->sdesc->shash, opad);
++	ret = copy_pad(ctx->mac_type, ctx->opad, opad);
++	if (ret)
++		goto calc_fail;
++
++	kfree(ipad);
++	kfree(opad);
++
++	return 0;
++
++calc_fail:
++	kfree(ctx->ipad);
++	ctx->ipad = NULL;
++	kfree(ctx->opad);
++	ctx->opad = NULL;
++	kfree(ipad);
++	kfree(opad);
++	kfree(ctx->sdesc);
++	ctx->sdesc = NULL;
++
++	return ret;
++}
++
++static int otx2_cpt_aead_cbc_aes_sha_setkey(struct crypto_aead *cipher,
++					    const unsigned char *key,
++					    unsigned int keylen)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(cipher);
++	struct crypto_authenc_key_param *param;
++	int enckeylen = 0, authkeylen = 0;
++	struct rtattr *rta = (void *)key;
++	int status;
++
++	if (!RTA_OK(rta, keylen))
++		return -EINVAL;
++
++	if (rta->rta_type != CRYPTO_AUTHENC_KEYA_PARAM)
++		return -EINVAL;
++
++	if (RTA_PAYLOAD(rta) < sizeof(*param))
++		return -EINVAL;
++
++	param = RTA_DATA(rta);
++	enckeylen = be32_to_cpu(param->enckeylen);
++	key += RTA_ALIGN(rta->rta_len);
++	keylen -= RTA_ALIGN(rta->rta_len);
++	if (keylen < enckeylen)
++		return -EINVAL;
++
++	if (keylen > OTX2_CPT_MAX_KEY_SIZE)
++		return -EINVAL;
++
++	authkeylen = keylen - enckeylen;
++	memcpy(ctx->key, key, keylen);
++
++	switch (enckeylen) {
++	case AES_KEYSIZE_128:
++		ctx->key_type = OTX2_CPT_AES_128_BIT;
++		break;
++	case AES_KEYSIZE_192:
++		ctx->key_type = OTX2_CPT_AES_192_BIT;
++		break;
++	case AES_KEYSIZE_256:
++		ctx->key_type = OTX2_CPT_AES_256_BIT;
++		break;
++	default:
++		/* Invalid key length */
++		return -EINVAL;
++	}
++
++	ctx->enc_key_len = enckeylen;
++	ctx->auth_key_len = authkeylen;
++
++	status = aead_hmac_init(cipher);
++	if (status)
++		return status;
++
++	return 0;
++}
++
++static int otx2_cpt_aead_ecb_null_sha_setkey(struct crypto_aead *cipher,
++					     const unsigned char *key,
++					     unsigned int keylen)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(cipher);
++	struct crypto_authenc_key_param *param;
++	struct rtattr *rta = (void *)key;
++	int enckeylen = 0;
++
++	if (!RTA_OK(rta, keylen))
++		return -EINVAL;
++
++	if (rta->rta_type != CRYPTO_AUTHENC_KEYA_PARAM)
++		return -EINVAL;
++
++	if (RTA_PAYLOAD(rta) < sizeof(*param))
++		return -EINVAL;
++
++	param = RTA_DATA(rta);
++	enckeylen = be32_to_cpu(param->enckeylen);
++	key += RTA_ALIGN(rta->rta_len);
++	keylen -= RTA_ALIGN(rta->rta_len);
++	if (enckeylen != 0)
++		return -EINVAL;
++
++	if (keylen > OTX2_CPT_MAX_KEY_SIZE)
++		return -EINVAL;
++
++	memcpy(ctx->key, key, keylen);
++	ctx->enc_key_len = enckeylen;
++	ctx->auth_key_len = keylen;
++
++	return 0;
++}
++
++static int otx2_cpt_aead_gcm_aes_setkey(struct crypto_aead *cipher,
++					const unsigned char *key,
++					unsigned int keylen)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(cipher);
++
++	/*
++	 * For aes gcm we expect to get encryption key (16, 24, 32 bytes)
++	 * and salt (4 bytes)
++	 */
++	switch (keylen) {
++	case AES_KEYSIZE_128 + AES_GCM_SALT_SIZE:
++		ctx->key_type = OTX2_CPT_AES_128_BIT;
++		ctx->enc_key_len = AES_KEYSIZE_128;
++		break;
++	case AES_KEYSIZE_192 + AES_GCM_SALT_SIZE:
++		ctx->key_type = OTX2_CPT_AES_192_BIT;
++		ctx->enc_key_len = AES_KEYSIZE_192;
++		break;
++	case AES_KEYSIZE_256 + AES_GCM_SALT_SIZE:
++		ctx->key_type = OTX2_CPT_AES_256_BIT;
++		ctx->enc_key_len = AES_KEYSIZE_256;
++		break;
++	default:
++		/* Invalid key and salt length */
++		return -EINVAL;
++	}
++
++	/* Store encryption key and salt */
++	memcpy(ctx->key, key, keylen);
++
++	return 0;
++}
++
++static inline int create_aead_ctx_hdr(struct aead_request *req, u32 enc,
++				      u32 *argcnt)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct crypto_aead *tfm = crypto_aead_reqtfm(req);
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	struct otx2_cpt_fc_ctx *fctx = &rctx->fctx;
++	int mac_len = crypto_aead_authsize(tfm);
++	int ds;
++
++	rctx->ctrl_word.e.enc_data_offset = req->assoclen;
++
++	switch (ctx->cipher_type) {
++	case OTX2_CPT_AES_CBC:
++		if (req->assoclen > 248 || !IS_ALIGNED(req->assoclen, 8))
++			return -EINVAL;
++
++		fctx->enc.enc_ctrl.e.iv_source = OTX2_CPT_FROM_CPTR;
++		/* Copy encryption key to context */
++		memcpy(fctx->enc.encr_key, ctx->key + ctx->auth_key_len,
++		       ctx->enc_key_len);
++		/* Copy IV to context */
++		memcpy(fctx->enc.encr_iv, req->iv, crypto_aead_ivsize(tfm));
++
++		ds = crypto_shash_digestsize(ctx->hashalg);
++		if (ctx->mac_type == OTX2_CPT_SHA384)
++			ds = SHA512_DIGEST_SIZE;
++		if (ctx->ipad)
++			memcpy(fctx->hmac.e.ipad, ctx->ipad, ds);
++		if (ctx->opad)
++			memcpy(fctx->hmac.e.opad, ctx->opad, ds);
++		break;
++
++	case OTX2_CPT_AES_GCM:
++		if (crypto_ipsec_check_assoclen(req->assoclen))
++			return -EINVAL;
++
++		fctx->enc.enc_ctrl.e.iv_source = OTX2_CPT_FROM_DPTR;
++		/* Copy encryption key to context */
++		memcpy(fctx->enc.encr_key, ctx->key, ctx->enc_key_len);
++		/* Copy salt to context */
++		memcpy(fctx->enc.encr_iv, ctx->key + ctx->enc_key_len,
++		       AES_GCM_SALT_SIZE);
++
++		rctx->ctrl_word.e.iv_offset = req->assoclen - AES_GCM_IV_OFFSET;
++		break;
++
++	default:
++		/* Unknown cipher type */
++		return -EINVAL;
++	}
++	rctx->ctrl_word.flags = cpu_to_be64(rctx->ctrl_word.flags);
++
++	req_info->ctrl.s.dma_mode = OTX2_CPT_DMA_MODE_SG;
++	req_info->ctrl.s.se_req = 1;
++	req_info->req.opcode.s.major = OTX2_CPT_MAJOR_OP_FC |
++				 DMA_MODE_FLAG(OTX2_CPT_DMA_MODE_SG);
++	if (enc) {
++		req_info->req.opcode.s.minor = 2;
++		req_info->req.param1 = req->cryptlen;
++		req_info->req.param2 = req->cryptlen + req->assoclen;
++	} else {
++		req_info->req.opcode.s.minor = 3;
++		req_info->req.param1 = req->cryptlen - mac_len;
++		req_info->req.param2 = req->cryptlen + req->assoclen - mac_len;
++	}
++
++	fctx->enc.enc_ctrl.e.enc_cipher = ctx->cipher_type;
++	fctx->enc.enc_ctrl.e.aes_key = ctx->key_type;
++	fctx->enc.enc_ctrl.e.mac_type = ctx->mac_type;
++	fctx->enc.enc_ctrl.e.mac_len = mac_len;
++	cpu_to_be64s(&fctx->enc.enc_ctrl.u);
++
++	/*
++	 * Storing Packet Data Information in offset
++	 * Control Word First 8 bytes
++	 */
++	req_info->in[*argcnt].vptr = (u8 *)&rctx->ctrl_word;
++	req_info->in[*argcnt].size = CONTROL_WORD_LEN;
++	req_info->req.dlen += CONTROL_WORD_LEN;
++	++(*argcnt);
++
++	req_info->in[*argcnt].vptr = (u8 *)fctx;
++	req_info->in[*argcnt].size = sizeof(struct otx2_cpt_fc_ctx);
++	req_info->req.dlen += sizeof(struct otx2_cpt_fc_ctx);
++	++(*argcnt);
++
++	return 0;
++}
++
++static inline void create_hmac_ctx_hdr(struct aead_request *req, u32 *argcnt,
++				      u32 enc)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct crypto_aead *tfm = crypto_aead_reqtfm(req);
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++
++	req_info->ctrl.s.dma_mode = OTX2_CPT_DMA_MODE_SG;
++	req_info->ctrl.s.se_req = 1;
++	req_info->req.opcode.s.major = OTX2_CPT_MAJOR_OP_HMAC |
++				 DMA_MODE_FLAG(OTX2_CPT_DMA_MODE_SG);
++	req_info->is_trunc_hmac = ctx->is_trunc_hmac;
++
++	req_info->req.opcode.s.minor = 0;
++	req_info->req.param1 = ctx->auth_key_len;
++	req_info->req.param2 = ctx->mac_type << 8;
++
++	/* Add authentication key */
++	req_info->in[*argcnt].vptr = ctx->key;
++	req_info->in[*argcnt].size = round_up(ctx->auth_key_len, 8);
++	req_info->req.dlen += round_up(ctx->auth_key_len, 8);
++	++(*argcnt);
++}
++
++static inline int create_aead_input_list(struct aead_request *req, u32 enc)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	u32 inputlen =  req->cryptlen + req->assoclen;
++	u32 status, argcnt = 0;
++
++	status = create_aead_ctx_hdr(req, enc, &argcnt);
++	if (status)
++		return status;
++	update_input_data(req_info, req->src, inputlen, &argcnt);
++	req_info->in_cnt = argcnt;
++
++	return 0;
++}
++
++static inline void create_aead_output_list(struct aead_request *req, u32 enc,
++					   u32 mac_len)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct otx2_cpt_req_info *req_info =  &rctx->cpt_req;
++	u32 argcnt = 0, outputlen = 0;
++
++	if (enc)
++		outputlen = req->cryptlen +  req->assoclen + mac_len;
++	else
++		outputlen = req->cryptlen + req->assoclen - mac_len;
++
++	update_output_data(req_info, req->dst, 0, outputlen, &argcnt);
++	req_info->out_cnt = argcnt;
++}
++
++static inline void create_aead_null_input_list(struct aead_request *req,
++					       u32 enc, u32 mac_len)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	u32 inputlen, argcnt = 0;
++
++	if (enc)
++		inputlen =  req->cryptlen + req->assoclen;
++	else
++		inputlen =  req->cryptlen + req->assoclen - mac_len;
++
++	create_hmac_ctx_hdr(req, &argcnt, enc);
++	update_input_data(req_info, req->src, inputlen, &argcnt);
++	req_info->in_cnt = argcnt;
++}
++
++static inline int create_aead_null_output_list(struct aead_request *req,
++					       u32 enc, u32 mac_len)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct otx2_cpt_req_info *req_info =  &rctx->cpt_req;
++	struct scatterlist *dst;
++	u8 *ptr = NULL;
++	int argcnt = 0, status, offset;
++	u32 inputlen;
++
++	if (enc)
++		inputlen =  req->cryptlen + req->assoclen;
++	else
++		inputlen =  req->cryptlen + req->assoclen - mac_len;
++
++	/*
++	 * If source and destination are different
++	 * then copy payload to destination
++	 */
++	if (req->src != req->dst) {
++
++		ptr = kmalloc(inputlen, (req_info->areq->flags &
++					 CRYPTO_TFM_REQ_MAY_SLEEP) ?
++					 GFP_KERNEL : GFP_ATOMIC);
++		if (!ptr)
++			return -ENOMEM;
++
++		status = sg_copy_to_buffer(req->src, sg_nents(req->src), ptr,
++					   inputlen);
++		if (status != inputlen) {
++			status = -EINVAL;
++			goto error_free;
++		}
++		status = sg_copy_from_buffer(req->dst, sg_nents(req->dst), ptr,
++					     inputlen);
++		if (status != inputlen) {
++			status = -EINVAL;
++			goto error_free;
++		}
++		kfree(ptr);
++	}
++
++	if (enc) {
++		/*
++		 * In an encryption scenario hmac needs
++		 * to be appended after payload
++		 */
++		dst = req->dst;
++		offset = inputlen;
++		while (offset >= dst->length) {
++			offset -= dst->length;
++			dst = sg_next(dst);
++			if (!dst)
++				return -ENOENT;
++		}
++
++		update_output_data(req_info, dst, offset, mac_len, &argcnt);
++	} else {
++		/*
++		 * In a decryption scenario calculated hmac for received
++		 * payload needs to be compare with hmac received
++		 */
++		status = sg_copy_buffer(req->src, sg_nents(req->src),
++					rctx->fctx.hmac.s.hmac_recv, mac_len,
++					inputlen, true);
++		if (status != mac_len)
++			return -EINVAL;
++
++		req_info->out[argcnt].vptr = rctx->fctx.hmac.s.hmac_calc;
++		req_info->out[argcnt].size = mac_len;
++		argcnt++;
++	}
++
++	req_info->out_cnt = argcnt;
++	return 0;
++
++error_free:
++	kfree(ptr);
++	return status;
++}
++
++static int cpt_aead_enc_dec(struct aead_request *req, u8 reg_type, u8 enc)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	struct crypto_aead *tfm = crypto_aead_reqtfm(req);
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++	struct pci_dev *pdev;
++	int status, cpu_num;
++
++	/* Clear control words */
++	rctx->ctrl_word.flags = 0;
++	rctx->fctx.enc.enc_ctrl.u = 0;
++
++	req_info->callback = otx2_cpt_aead_callback;
++	req_info->areq = &req->base;
++	req_info->req_type = reg_type;
++	req_info->is_enc = enc;
++	req_info->is_trunc_hmac = false;
++
++	switch (reg_type) {
++	case OTX2_CPT_AEAD_ENC_DEC_REQ:
++		status = create_aead_input_list(req, enc);
++		if (status)
++			return status;
++		create_aead_output_list(req, enc, crypto_aead_authsize(tfm));
++		break;
++
++	case OTX2_CPT_AEAD_ENC_DEC_NULL_REQ:
++		create_aead_null_input_list(req, enc,
++					    crypto_aead_authsize(tfm));
++		status = create_aead_null_output_list(req, enc,
++						crypto_aead_authsize(tfm));
++		if (status)
++			return status;
++		break;
++
++	default:
++		return -EINVAL;
++	}
++	if (!req_info->req.param1 ||
++	    req_info->req.param1 > OTX2_CPT_MAX_REQ_SIZE ||
++	    req_info->req.param2 > OTX2_CPT_MAX_REQ_SIZE ||
++	    !IS_ALIGNED(req_info->req.param1, ctx->enc_align_len))
++		return -EINVAL;
++
++	status = get_se_device(&pdev, &cpu_num);
++	if (status)
++		return status;
++
++	req_info->ctrl.s.grp = otx2_cpt_get_kcrypto_eng_grp_num(pdev);
++
++	/*
++	 * We perform an asynchronous send and once
++	 * the request is completed the driver would
++	 * intimate through registered call back functions
++	 */
++	status = otx2_cpt_do_request(pdev, req_info, cpu_num);
++
++	return status;
++}
++
++static int otx2_cpt_aead_encrypt(struct aead_request *req)
++{
++	return cpt_aead_enc_dec(req, OTX2_CPT_AEAD_ENC_DEC_REQ, true);
++}
++
++static int otx2_cpt_aead_decrypt(struct aead_request *req)
++{
++	return cpt_aead_enc_dec(req, OTX2_CPT_AEAD_ENC_DEC_REQ, false);
++}
++
++static int otx2_cpt_aead_null_encrypt(struct aead_request *req)
++{
++	return cpt_aead_enc_dec(req, OTX2_CPT_AEAD_ENC_DEC_NULL_REQ, true);
++}
++
++static int otx2_cpt_aead_null_decrypt(struct aead_request *req)
++{
++	return cpt_aead_enc_dec(req, OTX2_CPT_AEAD_ENC_DEC_NULL_REQ, false);
++}
++
++static struct skcipher_alg otx2_cpt_skciphers[] = { {
++	.base.cra_name = "xts(aes)",
++	.base.cra_driver_name = "cpt_xts_aes",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = AES_BLOCK_SIZE,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.ivsize = AES_BLOCK_SIZE,
++	.min_keysize = 2 * AES_MIN_KEY_SIZE,
++	.max_keysize = 2 * AES_MAX_KEY_SIZE,
++	.setkey = otx2_cpt_skcipher_xts_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++}, {
++	.base.cra_name = "cbc(aes)",
++	.base.cra_driver_name = "cpt_cbc_aes",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = AES_BLOCK_SIZE,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.ivsize = AES_BLOCK_SIZE,
++	.min_keysize = AES_MIN_KEY_SIZE,
++	.max_keysize = AES_MAX_KEY_SIZE,
++	.setkey = otx2_cpt_skcipher_cbc_aes_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++}, {
++	.base.cra_name = "ecb(aes)",
++	.base.cra_driver_name = "cpt_ecb_aes",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = AES_BLOCK_SIZE,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.ivsize = 0,
++	.min_keysize = AES_MIN_KEY_SIZE,
++	.max_keysize = AES_MAX_KEY_SIZE,
++	.setkey = otx2_cpt_skcipher_ecb_aes_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++}, {
++	.base.cra_name = "cfb(aes)",
++	.base.cra_driver_name = "cpt_cfb_aes",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = 1,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.ivsize = AES_BLOCK_SIZE,
++	.min_keysize = AES_MIN_KEY_SIZE,
++	.max_keysize = AES_MAX_KEY_SIZE,
++	.setkey = otx2_cpt_skcipher_cfb_aes_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++}, {
++	.base.cra_name = "cbc(des3_ede)",
++	.base.cra_driver_name = "cpt_cbc_des3_ede",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = DES3_EDE_BLOCK_SIZE,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.min_keysize = DES3_EDE_KEY_SIZE,
++	.max_keysize = DES3_EDE_KEY_SIZE,
++	.ivsize = DES_BLOCK_SIZE,
++	.setkey = otx2_cpt_skcipher_cbc_des3_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++}, {
++	.base.cra_name = "ecb(des3_ede)",
++	.base.cra_driver_name = "cpt_ecb_des3_ede",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = DES3_EDE_BLOCK_SIZE,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.min_keysize = DES3_EDE_KEY_SIZE,
++	.max_keysize = DES3_EDE_KEY_SIZE,
++	.ivsize = 0,
++	.setkey = otx2_cpt_skcipher_ecb_des3_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++} };
++
++static struct aead_alg otx2_cpt_aeads[] = { {
++	.base = {
++		.cra_name = "authenc(hmac(sha1),cbc(aes))",
++		.cra_driver_name = "cpt_hmac_sha1_cbc_aes",
++		.cra_blocksize = AES_BLOCK_SIZE,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_cbc_aes_sha1_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_cbc_aes_sha_setkey,
++	.setauthsize = otx2_cpt_aead_set_authsize,
++	.encrypt = otx2_cpt_aead_encrypt,
++	.decrypt = otx2_cpt_aead_decrypt,
++	.ivsize = AES_BLOCK_SIZE,
++	.maxauthsize = SHA1_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha256),cbc(aes))",
++		.cra_driver_name = "cpt_hmac_sha256_cbc_aes",
++		.cra_blocksize = AES_BLOCK_SIZE,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_cbc_aes_sha256_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_cbc_aes_sha_setkey,
++	.setauthsize = otx2_cpt_aead_set_authsize,
++	.encrypt = otx2_cpt_aead_encrypt,
++	.decrypt = otx2_cpt_aead_decrypt,
++	.ivsize = AES_BLOCK_SIZE,
++	.maxauthsize = SHA256_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha384),cbc(aes))",
++		.cra_driver_name = "cpt_hmac_sha384_cbc_aes",
++		.cra_blocksize = AES_BLOCK_SIZE,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_cbc_aes_sha384_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_cbc_aes_sha_setkey,
++	.setauthsize = otx2_cpt_aead_set_authsize,
++	.encrypt = otx2_cpt_aead_encrypt,
++	.decrypt = otx2_cpt_aead_decrypt,
++	.ivsize = AES_BLOCK_SIZE,
++	.maxauthsize = SHA384_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha512),cbc(aes))",
++		.cra_driver_name = "cpt_hmac_sha512_cbc_aes",
++		.cra_blocksize = AES_BLOCK_SIZE,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_cbc_aes_sha512_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_cbc_aes_sha_setkey,
++	.setauthsize = otx2_cpt_aead_set_authsize,
++	.encrypt = otx2_cpt_aead_encrypt,
++	.decrypt = otx2_cpt_aead_decrypt,
++	.ivsize = AES_BLOCK_SIZE,
++	.maxauthsize = SHA512_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha1),ecb(cipher_null))",
++		.cra_driver_name = "cpt_hmac_sha1_ecb_null",
++		.cra_blocksize = 1,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_ecb_null_sha1_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_ecb_null_sha_setkey,
++	.setauthsize = otx2_cpt_aead_null_set_authsize,
++	.encrypt = otx2_cpt_aead_null_encrypt,
++	.decrypt = otx2_cpt_aead_null_decrypt,
++	.ivsize = 0,
++	.maxauthsize = SHA1_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha256),ecb(cipher_null))",
++		.cra_driver_name = "cpt_hmac_sha256_ecb_null",
++		.cra_blocksize = 1,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_ecb_null_sha256_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_ecb_null_sha_setkey,
++	.setauthsize = otx2_cpt_aead_null_set_authsize,
++	.encrypt = otx2_cpt_aead_null_encrypt,
++	.decrypt = otx2_cpt_aead_null_decrypt,
++	.ivsize = 0,
++	.maxauthsize = SHA256_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha384),ecb(cipher_null))",
++		.cra_driver_name = "cpt_hmac_sha384_ecb_null",
++		.cra_blocksize = 1,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_ecb_null_sha384_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_ecb_null_sha_setkey,
++	.setauthsize = otx2_cpt_aead_null_set_authsize,
++	.encrypt = otx2_cpt_aead_null_encrypt,
++	.decrypt = otx2_cpt_aead_null_decrypt,
++	.ivsize = 0,
++	.maxauthsize = SHA384_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha512),ecb(cipher_null))",
++		.cra_driver_name = "cpt_hmac_sha512_ecb_null",
++		.cra_blocksize = 1,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_ecb_null_sha512_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_ecb_null_sha_setkey,
++	.setauthsize = otx2_cpt_aead_null_set_authsize,
++	.encrypt = otx2_cpt_aead_null_encrypt,
++	.decrypt = otx2_cpt_aead_null_decrypt,
++	.ivsize = 0,
++	.maxauthsize = SHA512_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "rfc4106(gcm(aes))",
++		.cra_driver_name = "cpt_rfc4106_gcm_aes",
++		.cra_blocksize = 1,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_gcm_aes_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_gcm_aes_setkey,
++	.setauthsize = otx2_cpt_aead_gcm_set_authsize,
++	.encrypt = otx2_cpt_aead_encrypt,
++	.decrypt = otx2_cpt_aead_decrypt,
++	.ivsize = AES_GCM_IV_SIZE,
++	.maxauthsize = AES_GCM_ICV_SIZE,
++} };
++
++static inline int is_any_alg_used(void)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(otx2_cpt_skciphers); i++)
++		if (refcount_read(&otx2_cpt_skciphers[i].base.cra_refcnt) != 1)
++			return true;
++	for (i = 0; i < ARRAY_SIZE(otx2_cpt_aeads); i++)
++		if (refcount_read(&otx2_cpt_aeads[i].base.cra_refcnt) != 1)
++			return true;
++	return false;
++}
++
++static inline int cpt_register_algs(void)
++{
++	int i, err = 0;
++
++	if (!IS_ENABLED(CONFIG_DM_CRYPT)) {
++		for (i = 0; i < ARRAY_SIZE(otx2_cpt_skciphers); i++)
++			otx2_cpt_skciphers[i].base.cra_flags &=
++							~CRYPTO_ALG_DEAD;
++
++		err = crypto_register_skciphers(otx2_cpt_skciphers,
++						ARRAY_SIZE(otx2_cpt_skciphers));
++		if (err)
++			return err;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(otx2_cpt_aeads); i++)
++		otx2_cpt_aeads[i].base.cra_flags &= ~CRYPTO_ALG_DEAD;
++
++	err = crypto_register_aeads(otx2_cpt_aeads,
++				    ARRAY_SIZE(otx2_cpt_aeads));
++	if (err) {
++		crypto_unregister_skciphers(otx2_cpt_skciphers,
++					    ARRAY_SIZE(otx2_cpt_skciphers));
++		return err;
++	}
++
++	return 0;
++}
++
++static inline void cpt_unregister_algs(void)
++{
++	crypto_unregister_skciphers(otx2_cpt_skciphers,
++				    ARRAY_SIZE(otx2_cpt_skciphers));
++	crypto_unregister_aeads(otx2_cpt_aeads, ARRAY_SIZE(otx2_cpt_aeads));
++}
++
++static int compare_func(const void *lptr, const void *rptr)
++{
++	const struct cpt_device_desc *ldesc = (struct cpt_device_desc *) lptr;
++	const struct cpt_device_desc *rdesc = (struct cpt_device_desc *) rptr;
++
++	if (ldesc->dev->devfn < rdesc->dev->devfn)
++		return -1;
++	if (ldesc->dev->devfn > rdesc->dev->devfn)
++		return 1;
++	return 0;
++}
++
++static void swap_func(void *lptr, void *rptr, int size)
++{
++	struct cpt_device_desc *ldesc = lptr;
++	struct cpt_device_desc *rdesc = rptr;
++	struct cpt_device_desc desc;
++
++	desc = *ldesc;
++	*ldesc = *rdesc;
++	*rdesc = desc;
++}
++
++int otx2_cpt_crypto_init(struct pci_dev *pdev, struct module *mod,
++			 enum otx2_cpt_eng_type engine_type,
++			 int num_queues, int num_devices)
++{
++	int ret = 0;
++	int count;
++
++	mutex_lock(&mutex);
++	switch (engine_type) {
++	case OTX2_CPT_SE_TYPES:
++		count = atomic_read(&se_devices.count);
++		if (count >= CPT_MAX_LF_NUM) {
++			dev_err(&pdev->dev, "No space to add a new device\n");
++			ret = -ENOSPC;
++			goto unlock;
++		}
++		se_devices.desc[count].num_queues = num_queues;
++		se_devices.desc[count++].dev = pdev;
++		atomic_inc(&se_devices.count);
++
++		if (atomic_read(&se_devices.count) == num_devices &&
++		    is_crypto_registered == false) {
++			if (cpt_register_algs()) {
++				dev_err(&pdev->dev,
++				   "Error in registering crypto algorithms\n");
++				ret =  -EINVAL;
++				goto unlock;
++			}
++			try_module_get(mod);
++			is_crypto_registered = true;
++		}
++		sort(se_devices.desc, count, sizeof(struct cpt_device_desc),
++		     compare_func, swap_func);
++		break;
++
++	case OTX2_CPT_AE_TYPES:
++		count = atomic_read(&ae_devices.count);
++		if (count >= CPT_MAX_LF_NUM) {
++			dev_err(&pdev->dev, "No space to a add new device\n");
++			ret = -ENOSPC;
++			goto unlock;
++		}
++		ae_devices.desc[count].num_queues = num_queues;
++		ae_devices.desc[count++].dev = pdev;
++		atomic_inc(&ae_devices.count);
++		sort(ae_devices.desc, count, sizeof(struct cpt_device_desc),
++		     compare_func, swap_func);
++		break;
++
++	default:
++		dev_err(&pdev->dev, "Unknown VF type %d\n", engine_type);
++		ret = BAD_OTX2_CPT_ENG_TYPE;
++	}
++unlock:
++	mutex_unlock(&mutex);
++	return ret;
++}
++
++void otx2_cpt_crypto_exit(struct pci_dev *pdev, struct module *mod,
++			  enum otx2_cpt_eng_type engine_type)
++{
++	struct cpt_device_table *dev_tbl;
++	bool dev_found = false;
++	int i, j, count;
++
++	mutex_lock(&mutex);
++
++	dev_tbl = (engine_type == OTX2_CPT_AE_TYPES) ? &ae_devices :
++						       &se_devices;
++	count = atomic_read(&dev_tbl->count);
++	for (i = 0; i < count; i++)
++		if (pdev == dev_tbl->desc[i].dev) {
++			for (j = i; j < count-1; j++)
++				dev_tbl->desc[j] = dev_tbl->desc[j+1];
++			dev_found = true;
++			break;
++		}
++
++	if (!dev_found) {
++		dev_err(&pdev->dev, "%s device not found\n", __func__);
++		goto unlock;
++	}
++
++	if (engine_type == OTX2_CPT_SE_TYPES) {
++		if (atomic_dec_and_test(&se_devices.count) &&
++		    !is_any_alg_used()) {
++			cpt_unregister_algs();
++			module_put(mod);
++			is_crypto_registered = false;
++		}
++	} else
++		atomic_dec(&ae_devices.count);
++unlock:
++	mutex_unlock(&mutex);
++}
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h
+new file mode 100644
+index 0000000..85f418d
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h
+@@ -0,0 +1,172 @@
++/* SPDX-License-Identifier: GPL-2.0-only
++ * Copyright (C) 2020 Marvell.
++ */
++
++#ifndef __OTX2_CPT_ALGS_H
++#define __OTX2_CPT_ALGS_H
++
++#include <crypto/hash.h>
++#include "otx2_cpt_common.h"
++
++#define OTX2_CPT_MAX_ENC_KEY_SIZE    32
++#define OTX2_CPT_MAX_HASH_KEY_SIZE   64
++#define OTX2_CPT_MAX_KEY_SIZE (OTX2_CPT_MAX_ENC_KEY_SIZE + \
++			       OTX2_CPT_MAX_HASH_KEY_SIZE)
++enum otx2_cpt_request_type {
++	OTX2_CPT_ENC_DEC_REQ            = 0x1,
++	OTX2_CPT_AEAD_ENC_DEC_REQ       = 0x2,
++	OTX2_CPT_AEAD_ENC_DEC_NULL_REQ  = 0x3,
++	OTX2_CPT_PASSTHROUGH_REQ	= 0x4
++};
++
++enum otx2_cpt_major_opcodes {
++	OTX2_CPT_MAJOR_OP_MISC = 0x01,
++	OTX2_CPT_MAJOR_OP_FC   = 0x33,
++	OTX2_CPT_MAJOR_OP_HMAC = 0x35,
++};
++
++enum otx2_cpt_cipher_type {
++	OTX2_CPT_CIPHER_NULL = 0x0,
++	OTX2_CPT_DES3_CBC = 0x1,
++	OTX2_CPT_DES3_ECB = 0x2,
++	OTX2_CPT_AES_CBC  = 0x3,
++	OTX2_CPT_AES_ECB  = 0x4,
++	OTX2_CPT_AES_CFB  = 0x5,
++	OTX2_CPT_AES_CTR  = 0x6,
++	OTX2_CPT_AES_GCM  = 0x7,
++	OTX2_CPT_AES_XTS  = 0x8
++};
++
++enum otx2_cpt_mac_type {
++	OTX2_CPT_MAC_NULL = 0x0,
++	OTX2_CPT_MD5      = 0x1,
++	OTX2_CPT_SHA1     = 0x2,
++	OTX2_CPT_SHA224   = 0x3,
++	OTX2_CPT_SHA256   = 0x4,
++	OTX2_CPT_SHA384   = 0x5,
++	OTX2_CPT_SHA512   = 0x6,
++	OTX2_CPT_GMAC     = 0x7
++};
++
++enum otx2_cpt_aes_key_len {
++	OTX2_CPT_AES_128_BIT = 0x1,
++	OTX2_CPT_AES_192_BIT = 0x2,
++	OTX2_CPT_AES_256_BIT = 0x3
++};
++
++union otx2_cpt_encr_ctrl {
++	u64 u;
++	struct {
++#if defined(__BIG_ENDIAN_BITFIELD)
++		u64 enc_cipher:4;
++		u64 reserved_59:1;
++		u64 aes_key:2;
++		u64 iv_source:1;
++		u64 mac_type:4;
++		u64 reserved_49_51:3;
++		u64 auth_input_type:1;
++		u64 mac_len:8;
++		u64 reserved_32_39:8;
++		u64 encr_offset:16;
++		u64 iv_offset:8;
++		u64 auth_offset:8;
++#else
++		u64 auth_offset:8;
++		u64 iv_offset:8;
++		u64 encr_offset:16;
++		u64 reserved_32_39:8;
++		u64 mac_len:8;
++		u64 auth_input_type:1;
++		u64 reserved_49_51:3;
++		u64 mac_type:4;
++		u64 iv_source:1;
++		u64 aes_key:2;
++		u64 reserved_59:1;
++		u64 enc_cipher:4;
++#endif
++	} e;
++};
++
++struct otx2_cpt_cipher {
++	const char *name;
++	u8 value;
++};
++
++struct otx2_cpt_fc_enc_ctx {
++	union otx2_cpt_encr_ctrl enc_ctrl;
++	u8 encr_key[32];
++	u8 encr_iv[16];
++};
++
++union otx2_cpt_fc_hmac_ctx {
++	struct {
++		u8 ipad[64];
++		u8 opad[64];
++	} e;
++	struct {
++		u8 hmac_calc[64]; /* HMAC calculated */
++		u8 hmac_recv[64]; /* HMAC received */
++	} s;
++};
++
++struct otx2_cpt_fc_ctx {
++	struct otx2_cpt_fc_enc_ctx enc;
++	union otx2_cpt_fc_hmac_ctx hmac;
++};
++
++struct otx2_cpt_enc_ctx {
++	u32 key_len;
++	u8 enc_key[OTX2_CPT_MAX_KEY_SIZE];
++	u8 cipher_type;
++	u8 key_type;
++	u8 enc_align_len;
++};
++
++union otx2_cpt_offset_ctrl {
++	u64 flags;
++	struct {
++#if defined(__BIG_ENDIAN_BITFIELD)
++		u64 reserved:32;
++		u64 enc_data_offset:16;
++		u64 iv_offset:8;
++		u64 auth_offset:8;
++#else
++		u64 auth_offset:8;
++		u64 iv_offset:8;
++		u64 enc_data_offset:16;
++		u64 reserved:32;
++#endif
++	} e;
++};
++
++struct otx2_cpt_req_ctx {
++	struct otx2_cpt_req_info cpt_req;
++	union otx2_cpt_offset_ctrl ctrl_word;
++	struct otx2_cpt_fc_ctx fctx;
++};
++
++struct otx2_cpt_sdesc {
++	struct shash_desc shash;
++};
++
++struct otx2_cpt_aead_ctx {
++	u8 key[OTX2_CPT_MAX_KEY_SIZE];
++	struct crypto_shash *hashalg;
++	struct otx2_cpt_sdesc *sdesc;
++	u8 *ipad;
++	u8 *opad;
++	u32 enc_key_len;
++	u32 auth_key_len;
++	u8 cipher_type;
++	u8 mac_type;
++	u8 key_type;
++	u8 is_trunc_hmac;
++	u8 enc_align_len;
++};
++int otx2_cpt_crypto_init(struct pci_dev *pdev, struct module *mod,
++			 enum otx2_cpt_eng_type engine_type,
++			 int num_queues, int num_devices);
++void otx2_cpt_crypto_exit(struct pci_dev *pdev, struct module *mod,
++			  enum otx2_cpt_eng_type engine_type);
++
++#endif /* __OTX2_CPT_ALGS_H */
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
+new file mode 100644
+index 0000000..623745e
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
+@@ -0,0 +1,229 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Marvell. */
++
++#include "otx2_cpt_mbox_common.h"
++#include "rvu_reg.h"
++
++#define OTX2_CPTVF_DRV_NAME "octeontx2-cptvf"
++#define OTX2_CPTVF_DRV_VERSION "1.0"
++
++static void cptvf_enable_pfvf_mbox_intrs(struct otx2_cptvf_dev *cptvf)
++{
++	/* Clear interrupt if any */
++	otx2_cpt_write64(cptvf->reg_base, BLKADDR_RVUM, 0, OTX2_RVU_VF_INT,
++			 0x1ULL);
++
++	/* Enable PF-VF interrupt */
++	otx2_cpt_write64(cptvf->reg_base, BLKADDR_RVUM, 0,
++			 OTX2_RVU_VF_INT_ENA_W1S, 0x1ULL);
++}
++
++static void cptvf_disable_pfvf_mbox_intrs(struct otx2_cptvf_dev *cptvf)
++{
++	/* Disable PF-VF interrupt */
++	otx2_cpt_write64(cptvf->reg_base, BLKADDR_RVUM, 0,
++			 OTX2_RVU_VF_INT_ENA_W1C, 0x1ULL);
++
++	/* Clear interrupt if any */
++	otx2_cpt_write64(cptvf->reg_base, BLKADDR_RVUM, 0, OTX2_RVU_VF_INT,
++			 0x1ULL);
++}
++
++static int cptvf_register_interrupts(struct otx2_cptvf_dev *cptvf)
++{
++	int ret, irq;
++	u32 num_vec;
++
++	num_vec = pci_msix_vec_count(cptvf->pdev);
++	if (num_vec <= 0)
++		return -EINVAL;
++
++	/* Enable MSI-X */
++	ret = pci_alloc_irq_vectors(cptvf->pdev, num_vec, num_vec,
++				    PCI_IRQ_MSIX);
++	if (ret < 0) {
++		dev_err(&cptvf->pdev->dev,
++			"Request for %d msix vectors failed\n", num_vec);
++		return ret;
++	}
++	irq = pci_irq_vector(cptvf->pdev, OTX2_CPT_VF_INT_VEC_E_MBOX);
++	/* Register VF-PF mailbox interrupt handler */
++	ret = devm_request_irq(&cptvf->pdev->dev, irq,
++			       otx2_cptvf_pfvf_mbox_intr, 0,
++			       "CPTPFVF Mbox", cptvf);
++	return ret;
++}
++
++static int cptvf_pfvf_mbox_init(struct otx2_cptvf_dev *cptvf)
++{
++	int ret;
++
++	cptvf->pfvf_mbox_wq = alloc_workqueue("cpt_pfvf_mailbox",
++					      WQ_UNBOUND | WQ_HIGHPRI |
++					      WQ_MEM_RECLAIM, 1);
++	if (!cptvf->pfvf_mbox_wq)
++		return -ENOMEM;
++
++	ret = otx2_mbox_init(&cptvf->pfvf_mbox, cptvf->pfvf_mbox_base,
++			     cptvf->pdev, cptvf->reg_base, MBOX_DIR_VFPF, 1);
++	if (ret)
++		goto free_wqe;
++
++	INIT_WORK(&cptvf->pfvf_mbox_work, otx2_cptvf_pfvf_mbox_handler);
++	return 0;
++free_wqe:
++	destroy_workqueue(cptvf->pfvf_mbox_wq);
++	return ret;
++}
++
++static void cptvf_pfvf_mbox_destroy(struct otx2_cptvf_dev *cptvf)
++{
++	destroy_workqueue(cptvf->pfvf_mbox_wq);
++	otx2_mbox_destroy(&cptvf->pfvf_mbox);
++}
++
++static int otx2_cptvf_probe(struct pci_dev *pdev,
++			    const struct pci_device_id *ent)
++{
++	struct device *dev = &pdev->dev;
++	resource_size_t offset, size;
++	struct otx2_cptvf_dev *cptvf;
++	int ret, kcrypto_lfs;
++
++	cptvf = devm_kzalloc(dev, sizeof(*cptvf), GFP_KERNEL);
++	if (!cptvf)
++		return -ENOMEM;
++
++	pci_set_drvdata(pdev, cptvf);
++	cptvf->pdev = pdev;
++
++	ret = pcim_enable_device(pdev);
++	if (ret) {
++		dev_err(dev, "Failed to enable PCI device\n");
++		goto clear_drvdata;
++	}
++	pci_set_master(pdev);
++
++	ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(48));
++	if (ret) {
++		dev_err(dev, "Unable to get usable DMA configuration\n");
++		goto clear_drvdata;
++	}
++
++	ret = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(48));
++	if (ret) {
++		dev_err(dev, "Unable to get 48-bit DMA for consistent allocations\n");
++		goto clear_drvdata;
++	}
++
++	/* Map VF's configuration registers */
++	ret = pcim_iomap_regions_request_all(pdev, 1 << PCI_PF_REG_BAR_NUM,
++					     OTX2_CPTVF_DRV_NAME);
++	if (ret) {
++		dev_err(dev, "Couldn't get PCI resources 0x%x\n", ret);
++		goto clear_drvdata;
++	}
++	cptvf->reg_base = pcim_iomap_table(pdev)[PCI_PF_REG_BAR_NUM];
++
++	offset = pci_resource_start(pdev, PCI_MBOX_BAR_NUM);
++	size = pci_resource_len(pdev, PCI_MBOX_BAR_NUM);
++	/* Map PF-VF mailbox memory */
++	cptvf->pfvf_mbox_base = devm_ioremap_wc(dev, offset, size);
++	if (!cptvf->pfvf_mbox_base) {
++		dev_err(&pdev->dev, "Unable to map BAR4\n");
++		ret = -ENODEV;
++		goto clear_drvdata;
++	}
++
++	/* Initialize PF-VF mailbox */
++	ret = cptvf_pfvf_mbox_init(cptvf);
++	if (ret)
++		goto clear_drvdata;
++
++	/* Register interrupts */
++	ret = cptvf_register_interrupts(cptvf);
++	if (ret)
++		goto destroy_pfvf_mbox;
++
++	/* Enable PF-VF mailbox interrupts */
++	cptvf_enable_pfvf_mbox_intrs(cptvf);
++
++	/* Send ready message */
++	ret = otx2_cpt_send_ready_msg(cptvf->pdev);
++	if (ret)
++		goto unregister_interrupts;
++
++	/* Get engine group number for symmetric crypto */
++	cptvf->lfs.kcrypto_eng_grp_num = OTX2_CPT_INVALID_CRYPTO_ENG_GRP;
++	ret = otx2_cptvf_send_eng_grp_num_msg(cptvf, OTX2_CPT_SE_TYPES);
++	if (ret)
++		goto unregister_interrupts;
++
++	if (cptvf->lfs.kcrypto_eng_grp_num == OTX2_CPT_INVALID_CRYPTO_ENG_GRP) {
++		dev_err(dev, "Engine group for kernel crypto not available\n");
++		ret = -ENOENT;
++		goto unregister_interrupts;
++	}
++	ret = otx2_cptvf_send_kcrypto_limits_msg(cptvf);
++	if (ret)
++		goto unregister_interrupts;
++
++	kcrypto_lfs = cptvf->lfs.kcrypto_limits ? cptvf->lfs.kcrypto_limits :
++		      num_online_cpus();
++	/* Initialize CPT LFs */
++	ret = otx2_cptvf_lf_init(pdev, cptvf->reg_base, &cptvf->lfs,
++				 kcrypto_lfs);
++	if (ret)
++		goto unregister_interrupts;
++
++	return 0;
++
++unregister_interrupts:
++	cptvf_disable_pfvf_mbox_intrs(cptvf);
++destroy_pfvf_mbox:
++	cptvf_pfvf_mbox_destroy(cptvf);
++clear_drvdata:
++	pci_set_drvdata(pdev, NULL);
++
++	return ret;
++}
++
++static void otx2_cptvf_remove(struct pci_dev *pdev)
++{
++	struct otx2_cptvf_dev *cptvf = pci_get_drvdata(pdev);
++
++	if (!cptvf) {
++		dev_err(&pdev->dev, "Invalid CPT VF device.\n");
++		return;
++	}
++
++	/* Shutdown CPT LFs */
++	if (otx2_cptvf_lf_shutdown(pdev, &cptvf->lfs))
++		dev_err(&pdev->dev, "CPT LFs shutdown failed.\n");
++	/* Disable PF-VF mailbox interrupt */
++	cptvf_disable_pfvf_mbox_intrs(cptvf);
++	/* Destroy PF-VF mbox */
++	cptvf_pfvf_mbox_destroy(cptvf);
++	pci_set_drvdata(pdev, NULL);
++}
++
++/* Supported devices */
++static const struct pci_device_id otx2_cptvf_id_table[] = {
++	{PCI_VDEVICE(CAVIUM, OTX2_CPT_PCI_VF_DEVICE_ID), 0},
++	{ 0, }  /* end of table */
++};
++
++static struct pci_driver otx2_cptvf_pci_driver = {
++	.name = OTX2_CPTVF_DRV_NAME,
++	.id_table = otx2_cptvf_id_table,
++	.probe = otx2_cptvf_probe,
++	.remove = otx2_cptvf_remove,
++};
++
++module_pci_driver(otx2_cptvf_pci_driver);
++
++MODULE_AUTHOR("Marvell");
++MODULE_DESCRIPTION("Marvell OcteonTX2 CPT Virtual Function Driver");
++MODULE_LICENSE("GPL v2");
++MODULE_VERSION(OTX2_CPTVF_DRV_VERSION);
++MODULE_DEVICE_TABLE(pci, otx2_cptvf_id_table);
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c
+new file mode 100644
+index 0000000..976c0a2
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c
+@@ -0,0 +1,189 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Marvell. */
++
++#include "otx2_cpt_mbox_common.h"
++#include "rvu_reg.h"
++
++static void dump_mbox_msg(struct mbox_msghdr *msg, int size)
++{
++	u16 pf_id, vf_id;
++
++	pf_id = (msg->pcifunc >> RVU_PFVF_PF_SHIFT) & RVU_PFVF_PF_MASK;
++	vf_id = (msg->pcifunc >> RVU_PFVF_FUNC_SHIFT) & RVU_PFVF_FUNC_MASK;
++
++	pr_debug("MBOX opcode %s received from (PF%d/VF%d), size %d, rc %d",
++		 otx2_cpt_get_mbox_opcode_str(msg->id), pf_id, vf_id, size,
++		 msg->rc);
++	print_hex_dump_debug("", DUMP_PREFIX_OFFSET, 16, 2, msg, size, false);
++}
++
++irqreturn_t otx2_cptvf_pfvf_mbox_intr(int __always_unused irq, void *arg)
++{
++	struct otx2_cptvf_dev *cptvf = arg;
++	u64 intr;
++
++	/* Read the interrupt bits */
++	intr = otx2_cpt_read64(cptvf->reg_base, BLKADDR_RVUM, 0,
++			       OTX2_RVU_VF_INT);
++
++	if (intr & 0x1ULL) {
++		/* Schedule work queue function to process the MBOX request */
++		queue_work(cptvf->pfvf_mbox_wq, &cptvf->pfvf_mbox_work);
++		/* Clear and ack the interrupt */
++		otx2_cpt_write64(cptvf->reg_base, BLKADDR_RVUM, 0,
++				 OTX2_RVU_VF_INT, 0x1ULL);
++	}
 +	return IRQ_HANDLED;
 +}
 +
-+void otx2_cptpf_afpf_mbox_handler(struct work_struct *work)
++void otx2_cptvf_pfvf_mbox_handler(struct work_struct *work)
 +{
-+	struct cpt_rd_wr_reg_msg *rsp_rd_wr;
-+	struct otx2_cptpf_dev *cptpf;
-+	struct otx2_mbox *afpf_mbox;
-+	struct otx2_mbox *vfpf_mbox;
++	struct otx2_cpt_kcrypto_limits_rsp *rsp_limits;
++	struct otx2_cpt_eng_grp_num_rsp *rsp_grp;
++	struct cpt_rd_wr_reg_msg *rsp_reg;
++	struct msix_offset_rsp *rsp_msix;
++	struct otx2_cptvf_dev *cptvf;
++	struct otx2_mbox *pfvf_mbox;
 +	struct mbox_hdr *rsp_hdr;
 +	struct mbox_msghdr *msg;
-+	struct mbox_msghdr *fwd;
-+	int offset, size;
-+	int vf_id, i;
++	int offset, i, j, size;
 +
 +	/* Read latest mbox data */
 +	smp_rmb();
 +
-+	cptpf = container_of(work, struct otx2_cptpf_dev, afpf_mbox_work);
-+	afpf_mbox = &cptpf->afpf_mbox;
-+	vfpf_mbox = &cptpf->vfpf_mbox;
-+	rsp_hdr = (struct mbox_hdr *)(afpf_mbox->dev->mbase +
-+		   afpf_mbox->rx_start);
++	cptvf = container_of(work, struct otx2_cptvf_dev, pfvf_mbox_work);
++	pfvf_mbox = &cptvf->pfvf_mbox;
++	rsp_hdr = (struct mbox_hdr *)(pfvf_mbox->dev->mbase +
++		   pfvf_mbox->rx_start);
 +	if (rsp_hdr->num_msgs == 0)
 +		return;
 +	offset = ALIGN(sizeof(struct mbox_hdr), MBOX_MSG_ALIGN);
 +
 +	for (i = 0; i < rsp_hdr->num_msgs; i++) {
-+		msg = (struct mbox_msghdr *)(afpf_mbox->dev->mbase +
-+					     afpf_mbox->rx_start + offset);
++		msg = (struct mbox_msghdr *)(pfvf_mbox->dev->mbase +
++					     pfvf_mbox->rx_start + offset);
 +		size = msg->next_msgoff - offset;
 +
 +		if (msg->id >= MBOX_MSG_MAX) {
-+			dev_err(&cptpf->pdev->dev,
++			dev_err(&cptvf->pdev->dev,
 +				"MBOX msg with unknown ID %d\n", msg->id);
 +			goto error;
 +		}
 +
 +		if (msg->sig != OTX2_MBOX_RSP_SIG) {
-+			dev_err(&cptpf->pdev->dev,
++			dev_err(&cptvf->pdev->dev,
 +				"MBOX msg with wrong signature %x, ID %d\n",
 +				msg->sig, msg->id);
 +			goto error;
 +		}
 +
++		dump_mbox_msg(msg, size);
++
 +		offset = msg->next_msgoff;
-+		vf_id = (msg->pcifunc >> RVU_PFVF_FUNC_SHIFT) &
-+			 RVU_PFVF_FUNC_MASK;
-+		if (vf_id > 0) {
-+			vf_id--;
-+			if (vf_id >= cptpf->enabled_vfs) {
-+				dev_err(&cptpf->pdev->dev,
-+					"MBOX msg to unknown VF: %d >= %d\n",
-+					vf_id, cptpf->enabled_vfs);
++		switch (msg->id) {
++		case MBOX_MSG_READY:
++			cptvf->vf_id = ((msg->pcifunc >> RVU_PFVF_FUNC_SHIFT)
++					& RVU_PFVF_FUNC_MASK) - 1;
++			break;
++
++		case MBOX_MSG_ATTACH_RESOURCES:
++			/* Check if resources were successfully attached */
++			if (!msg->rc)
++				cptvf->lfs.are_lfs_attached = 1;
++			break;
++
++		case MBOX_MSG_DETACH_RESOURCES:
++			/* Check if resources were successfully detached */
++			if (!msg->rc)
++				cptvf->lfs.are_lfs_attached = 0;
++			break;
++
++		case MBOX_MSG_MSIX_OFFSET:
++			rsp_msix = (struct msix_offset_rsp *) msg;
++			for (j = 0; j < rsp_msix->cptlfs; j++)
++				cptvf->lfs.lf[j].msix_offset =
++						rsp_msix->cptlf_msixoff[j];
++			break;
++
++		case MBOX_MSG_CPT_RD_WR_REGISTER:
++			rsp_reg = (struct cpt_rd_wr_reg_msg *) msg;
++			if (msg->rc) {
++				dev_err(&cptvf->pdev->dev,
++					"Reg %llx rd/wr(%d) failed %d\n",
++					rsp_reg->reg_offset, rsp_reg->is_write,
++					msg->rc);
 +				goto error;
 +			}
-+			fwd = otx2_mbox_alloc_msg(vfpf_mbox, vf_id, size);
-+			if (!fwd) {
-+				dev_err(&cptpf->pdev->dev,
-+					"Forwarding to VF%d failed.\n", vf_id);
-+				goto error;
-+			}
-+			memcpy((uint8_t *)fwd + sizeof(struct mbox_msghdr),
-+			       (uint8_t *)msg + sizeof(struct mbox_msghdr),
-+			       size);
-+			fwd->id = msg->id;
-+			fwd->pcifunc = msg->pcifunc;
-+			fwd->sig = msg->sig;
-+			fwd->ver = msg->ver;
-+			fwd->rc = msg->rc;
-+		} else {
-+			dump_mbox_msg(msg, size);
-+			switch (msg->id) {
-+			case MBOX_MSG_READY:
-+				cptpf->pf_id =
-+					(msg->pcifunc >> RVU_PFVF_PF_SHIFT) &
-+					RVU_PFVF_PF_MASK;
-+				break;
 +
-+			case MBOX_MSG_CPT_RD_WR_REGISTER:
-+				rsp_rd_wr = (struct cpt_rd_wr_reg_msg *)
-+					     msg;
-+				if (msg->rc) {
-+					dev_err(&cptpf->pdev->dev,
-+						"Reg %llx rd/wr(%d) failed %d\n",
-+						rsp_rd_wr->reg_offset,
-+						rsp_rd_wr->is_write,
-+						msg->rc);
-+					goto error;
-+				}
-+
-+				if (!rsp_rd_wr->is_write)
-+					*rsp_rd_wr->ret_val = rsp_rd_wr->val;
-+				break;
-+
-+			case MBOX_MSG_ATTACH_RESOURCES:
-+				if (!msg->rc)
-+					cptpf->lfs.are_lfs_attached = 1;
-+				break;
-+
-+			case MBOX_MSG_DETACH_RESOURCES:
-+				if (!msg->rc)
-+					cptpf->lfs.are_lfs_attached = 0;
-+				break;
-+			case MBOX_MSG_CPT_INLINE_IPSEC_CFG:
-+			case MBOX_MSG_NIX_INLINE_IPSEC_CFG:
-+				break;
-+			default:
-+				dev_err(&cptpf->pdev->dev,
-+					"Unsupported msg %d received.\n",
-+					msg->id);
-+				break;
-+			}
-+		}
-+error:
-+		afpf_mbox->dev->msgs_acked++;
-+	}
-+
-+	otx2_mbox_reset(afpf_mbox, 0);
-+}
-+
-+void otx2_cptpf_vfpf_mbox_handler(struct work_struct *work)
-+{
-+	struct otx2_cptvf_info *vf = container_of(work, struct otx2_cptvf_info,
-+						  vfpf_mbox_work);
-+	struct otx2_cptpf_dev *cptpf = vf->cptpf;
-+	struct otx2_mbox *mbox = &cptpf->vfpf_mbox;
-+	struct otx2_mbox_dev *mdev;
-+	struct mbox_hdr *req_hdr;
-+	struct mbox_msghdr *msg;
-+	int offset, id, err;
-+
-+	/* sync with mbox memory region */
-+	rmb();
-+
-+	mdev = &mbox->dev[vf->vf_id];
-+	/* Process received mbox messages */
-+	req_hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
-+	offset = ALIGN(sizeof(*req_hdr), MBOX_MSG_ALIGN);
-+	id = 0;
-+	while (id < req_hdr->num_msgs) {
-+		while (id < req_hdr->num_msgs) {
-+			msg = (struct mbox_msghdr *)(mdev->mbase +
-+						     mbox->rx_start + offset);
-+
-+			/* Set which VF sent this message based on mbox IRQ */
-+			msg->pcifunc = ((u16)cptpf->pf_id << RVU_PFVF_PF_SHIFT)
-+				| ((vf->vf_id + 1) & RVU_PFVF_FUNC_MASK);
-+
-+			err = cptpf_handle_vf_req(cptpf, vf, msg,
-+						  msg->next_msgoff - offset);
-+
-+			/*
-+			 * Behave as the AF, drop the msg if there is
-+			 * no memory, timeout handling also goes here
-+			 */
-+			if (err == -ENOMEM ||
-+			    err == -EIO)
-+				break;
-+
-+			offset = msg->next_msgoff;
-+			id++;
-+		}
-+
-+		/* Send mbox responses to VF */
-+		if (mdev->num_msgs)
-+			otx2_mbox_msg_send(mbox, vf->vf_id);
-+	}
-+}
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
-new file mode 100644
-index 0000000..e5acc36
---- /dev/null
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
-@@ -0,0 +1,2173 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2020 Marvell. */
-+
-+#include <linux/ctype.h>
-+#include <linux/firmware.h>
-+#include "otx2_cptpf_ucode.h"
-+#include "otx2_cpt_common.h"
-+#include "otx2_cpt_mbox_common.h"
-+#include "rvu_reg.h"
-+
-+#define CSR_DELAY 30
-+/* Tar archive defines */
-+#define TAR_MAGIC "ustar"
-+#define TAR_MAGIC_LEN 6
-+#define TAR_BLOCK_LEN 512
-+#define REGTYPE '0'
-+#define AREGTYPE '\0'
-+
-+#define LOADFVC_RLEN 8
-+#define LOADFVC_MAJOR_OP 0x01
-+#define LOADFVC_MINOR_OP 0x08
-+
-+/* tar header as defined in POSIX 1003.1-1990. */
-+struct tar_hdr_t {
-+	char name[100];
-+	char mode[8];
-+	char uid[8];
-+	char gid[8];
-+	char size[12];
-+	char mtime[12];
-+	char chksum[8];
-+	char typeflag;
-+	char linkname[100];
-+	char magic[6];
-+	char version[2];
-+	char uname[32];
-+	char gname[32];
-+	char devmajor[8];
-+	char devminor[8];
-+	char prefix[155];
-+};
-+
-+struct tar_blk_t {
-+	union {
-+		struct tar_hdr_t hdr;
-+		char block[TAR_BLOCK_LEN];
-+	};
-+};
-+
-+struct tar_arch_info_t {
-+	struct list_head ucodes;
-+	const struct firmware *fw;
-+};
-+
-+static struct otx2_cpt_bitmap get_cores_bmap(struct device *dev,
-+					struct otx2_cpt_eng_grp_info *eng_grp)
-+{
-+	struct otx2_cpt_bitmap bmap = { {0} };
-+	bool found = false;
-+	int i;
-+
-+	if (eng_grp->g->engs_num > OTX2_CPT_MAX_ENGINES) {
-+		dev_err(dev, "unsupported number of engines %d on octeontx2\n",
-+			eng_grp->g->engs_num);
-+		return bmap;
-+	}
-+
-+	for (i = 0; i  < OTX2_CPT_MAX_ETYPES_PER_GRP; i++) {
-+		if (eng_grp->engs[i].type) {
-+			bitmap_or(bmap.bits, bmap.bits,
-+				  eng_grp->engs[i].bmap,
-+				  eng_grp->g->engs_num);
-+			bmap.size = eng_grp->g->engs_num;
-+			found = true;
-+		}
-+	}
-+
-+	if (!found)
-+		dev_err(dev, "No engines reserved for engine group %d\n",
-+			eng_grp->idx);
-+	return bmap;
-+}
-+
-+static int is_eng_type(int val, int eng_type)
-+{
-+	return val & (1 << eng_type);
-+}
-+
-+static int dev_supports_eng_type(struct otx2_cpt_eng_grps *eng_grps,
-+				 int eng_type)
-+{
-+	return is_eng_type(eng_grps->eng_types_supported, eng_type);
-+}
-+
-+static int is_2nd_ucode_used(struct otx2_cpt_eng_grp_info *eng_grp)
-+{
-+	if (eng_grp->ucode[1].type)
-+		return true;
-+	else
-+		return false;
-+}
-+
-+static void set_ucode_filename(struct otx2_cpt_ucode *ucode,
-+			       const char *filename)
-+{
-+	strlcpy(ucode->filename, filename, OTX2_CPT_NAME_LENGTH);
-+}
-+
-+static char *get_eng_type_str(int eng_type)
-+{
-+	char *str = "unknown";
-+
-+	switch (eng_type) {
-+	case OTX2_CPT_SE_TYPES:
-+		str = "SE";
-+		break;
-+
-+	case OTX2_CPT_IE_TYPES:
-+		str = "IE";
-+		break;
-+
-+	case OTX2_CPT_AE_TYPES:
-+		str = "AE";
-+		break;
-+	}
-+	return str;
-+}
-+
-+static char *get_ucode_type_str(int ucode_type)
-+{
-+	char *str = "unknown";
-+
-+	switch (ucode_type) {
-+	case (1 << OTX2_CPT_SE_TYPES):
-+		str = "SE";
-+		break;
-+
-+	case (1 << OTX2_CPT_IE_TYPES):
-+		str = "IE";
-+		break;
-+
-+	case (1 << OTX2_CPT_AE_TYPES):
-+		str = "AE";
-+		break;
-+
-+	case (1 << OTX2_CPT_SE_TYPES | 1 << OTX2_CPT_IE_TYPES):
-+		str = "SE+IPSEC";
-+		break;
-+	}
-+	return str;
-+}
-+
-+static void swap_engines(struct otx2_cpt_engines *engsl,
-+			 struct otx2_cpt_engines *engsr)
-+{
-+	struct otx2_cpt_engines engs;
-+
-+	engs = *engsl;
-+	*engsl = *engsr;
-+	*engsr = engs;
-+}
-+
-+static void swap_ucodes(struct otx2_cpt_ucode *ucodel,
-+			struct otx2_cpt_ucode *ucoder)
-+{
-+	struct otx2_cpt_ucode ucode;
-+
-+	ucode = *ucodel;
-+	*ucodel = *ucoder;
-+	*ucoder = ucode;
-+}
-+
-+static int get_ucode_type(struct device *dev,
-+			  struct otx2_cpt_ucode_hdr *ucode_hdr,
-+			  int *ucode_type)
-+{
-+	struct otx2_cptpf_dev *cptpf = dev_get_drvdata(dev);
-+	char ver_str_prefix[OTX2_CPT_UCODE_VER_STR_SZ];
-+	char tmp_ver_str[OTX2_CPT_UCODE_VER_STR_SZ];
-+	struct pci_dev *pdev = cptpf->pdev;
-+	int i, val = 0;
-+	u8 nn;
-+
-+	strlcpy(tmp_ver_str, ucode_hdr->ver_str, OTX2_CPT_UCODE_VER_STR_SZ);
-+	for (i = 0; i < strlen(tmp_ver_str); i++)
-+		tmp_ver_str[i] = tolower(tmp_ver_str[i]);
-+
-+	sprintf(ver_str_prefix, "ocpt-%02d", pdev->revision);
-+	if (!strnstr(tmp_ver_str, ver_str_prefix, OTX2_CPT_UCODE_VER_STR_SZ))
-+		return -EINVAL;
-+
-+	nn = ucode_hdr->ver_num.nn;
-+	if (strnstr(tmp_ver_str, "se-", OTX2_CPT_UCODE_VER_STR_SZ) &&
-+	    (nn == OTX2_CPT_SE_UC_TYPE1 || nn == OTX2_CPT_SE_UC_TYPE2 ||
-+	     nn == OTX2_CPT_SE_UC_TYPE3))
-+		val |= 1 << OTX2_CPT_SE_TYPES;
-+	if (strnstr(tmp_ver_str, "ipsec", OTX2_CPT_UCODE_VER_STR_SZ) &&
-+	    (nn == OTX2_CPT_IE_UC_TYPE1 || nn == OTX2_CPT_IE_UC_TYPE2 ||
-+	     nn == OTX2_CPT_IE_UC_TYPE3))
-+		val |= 1 << OTX2_CPT_IE_TYPES;
-+	if (strnstr(tmp_ver_str, "ae", OTX2_CPT_UCODE_VER_STR_SZ) &&
-+	    nn == OTX2_CPT_AE_UC_TYPE)
-+		val |= 1 << OTX2_CPT_AE_TYPES;
-+
-+	*ucode_type = val;
-+
-+	if (!val)
-+		return -EINVAL;
-+	if (is_eng_type(val, OTX2_CPT_AE_TYPES) &&
-+	    (is_eng_type(val, OTX2_CPT_SE_TYPES) ||
-+	    is_eng_type(val, OTX2_CPT_IE_TYPES)))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static int is_mem_zero(const char *ptr, int size)
-+{
-+	int i;
-+
-+	for (i = 0; i < size; i++) {
-+		if (ptr[i])
-+			return 0;
-+	}
-+	return 1;
-+}
-+
-+static int cpt_set_ucode_base(struct otx2_cpt_eng_grp_info *eng_grp, void *obj)
-+{
-+	struct otx2_cptpf_dev *cptpf = obj;
-+	struct otx2_cpt_engs_rsvd *engs;
-+	dma_addr_t dma_addr;
-+	int i, bit, ret;
-+
-+	/* Set PF number for microcode fetches */
-+	ret = otx2_cpt_write_af_reg(cptpf->pdev, CPT_AF_PF_FUNC,
-+				    cptpf->pf_id << RVU_PFVF_PF_SHIFT);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ETYPES_PER_GRP; i++) {
-+		engs = &eng_grp->engs[i];
-+		if (!engs->type)
-+			continue;
-+
-+		dma_addr = engs->ucode->dma;
-+
-+		/*
-+		 * Set UCODE_BASE only for the cores which are not used,
-+		 * other cores should have already valid UCODE_BASE set
-+		 */
-+		for_each_set_bit(bit, engs->bmap, eng_grp->g->engs_num)
-+			if (!eng_grp->g->eng_ref_cnt[bit]) {
-+				ret = otx2_cpt_write_af_reg(cptpf->pdev,
-+						CPT_AF_EXEX_UCODE_BASE(bit),
-+						(u64) dma_addr);
-+				if (ret)
-+					return ret;
-+			}
-+	}
-+	return 0;
-+}
-+
-+static int cpt_detach_and_disable_cores(struct otx2_cpt_eng_grp_info *eng_grp,
-+					void *obj)
-+{
-+	struct otx2_cptpf_dev *cptpf = obj;
-+	struct otx2_cpt_bitmap bmap;
-+	int i, timeout = 10;
-+	int busy, ret;
-+	u64 reg = 0;
-+
-+	bmap = get_cores_bmap(&cptpf->pdev->dev, eng_grp);
-+	if (!bmap.size)
-+		return -EINVAL;
-+
-+	/* Detach the cores from group */
-+	for_each_set_bit(i, bmap.bits, bmap.size) {
-+		ret = otx2_cpt_read_af_reg(cptpf->pdev, CPT_AF_EXEX_CTL2(i),
-+					   &reg);
-+		if (ret)
-+			return ret;
-+
-+		if (reg & (1ull << eng_grp->idx)) {
-+			eng_grp->g->eng_ref_cnt[i]--;
-+			reg &= ~(1ull << eng_grp->idx);
-+
-+			ret = otx2_cpt_write_af_reg(cptpf->pdev,
-+						    CPT_AF_EXEX_CTL2(i), reg);
-+			if (ret)
-+				return ret;
-+		}
-+	}
-+
-+	/* Wait for cores to become idle */
-+	do {
-+		busy = 0;
-+		usleep_range(10000, 20000);
-+		if (timeout-- < 0)
-+			return -EBUSY;
-+
-+		for_each_set_bit(i, bmap.bits, bmap.size) {
-+			ret = otx2_cpt_read_af_reg(cptpf->pdev,
-+						   CPT_AF_EXEX_STS(i), &reg);
-+			if (ret)
-+				return ret;
-+
-+			if (reg & 0x1) {
-+				busy = 1;
-+				break;
-+			}
-+		}
-+	} while (busy);
-+
-+	/* Disable the cores only if they are not used anymore */
-+	for_each_set_bit(i, bmap.bits, bmap.size) {
-+		if (!eng_grp->g->eng_ref_cnt[i]) {
-+			ret = otx2_cpt_write_af_reg(cptpf->pdev,
-+						    CPT_AF_EXEX_CTL(i), 0x0);
-+			if (ret)
-+				return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int cpt_attach_and_enable_cores(struct otx2_cpt_eng_grp_info *eng_grp,
-+				       void *obj)
-+{
-+	struct otx2_cptpf_dev *cptpf = obj;
-+	struct otx2_cpt_bitmap bmap;
-+	u64 reg = 0;
-+	int i, ret;
-+
-+	bmap = get_cores_bmap(&cptpf->pdev->dev, eng_grp);
-+	if (!bmap.size)
-+		return -EINVAL;
-+
-+	/* Attach the cores to the group */
-+	for_each_set_bit(i, bmap.bits, bmap.size) {
-+		ret = otx2_cpt_read_af_reg(cptpf->pdev, CPT_AF_EXEX_CTL2(i),
-+					   &reg);
-+		if (ret)
-+			return ret;
-+
-+		if (!(reg & (1ull << eng_grp->idx))) {
-+			eng_grp->g->eng_ref_cnt[i]++;
-+			reg |= 1ull << eng_grp->idx;
-+
-+			ret = otx2_cpt_write_af_reg(cptpf->pdev,
-+						    CPT_AF_EXEX_CTL2(i), reg);
-+			if (ret)
-+				return ret;
-+		}
-+	}
-+
-+	/* Enable the cores */
-+	for_each_set_bit(i, bmap.bits, bmap.size) {
-+		ret = otx2_cpt_add_write_af_reg(cptpf->pdev,
-+						CPT_AF_EXEX_CTL(i), 0x1);
-+		if (ret)
-+			return ret;
-+	}
-+	ret = otx2_cpt_send_af_reg_requests(cptpf->pdev);
-+
-+	return ret;
-+}
-+
-+static int process_tar_file(struct device *dev,
-+			    struct tar_arch_info_t *tar_arch, char *filename,
-+			    const u8 *data, int size)
-+{
-+	struct tar_ucode_info_t *tar_ucode_info;
-+	struct otx2_cpt_ucode_hdr *ucode_hdr;
-+	int ucode_type, ucode_size;
-+
-+	/*
-+	 * If size is less than microcode header size then don't report
-+	 * an error because it might not be microcode file, just process
-+	 * next file from archive
-+	 */
-+	if (size < sizeof(struct otx2_cpt_ucode_hdr))
-+		return 0;
-+
-+	ucode_hdr = (struct otx2_cpt_ucode_hdr *) data;
-+	/*
-+	 * If microcode version can't be found don't report an error
-+	 * because it might not be microcode file, just process next file
-+	 */
-+	if (get_ucode_type(dev, ucode_hdr, &ucode_type))
-+		return 0;
-+
-+	ucode_size = ntohl(ucode_hdr->code_length) * 2;
-+	if (!ucode_size || (size < round_up(ucode_size, 16) +
-+	    sizeof(struct otx2_cpt_ucode_hdr) + OTX2_CPT_UCODE_SIGN_LEN)) {
-+		dev_err(dev, "Ucode %s invalid size\n", filename);
-+		return -EINVAL;
-+	}
-+
-+	tar_ucode_info = kzalloc(sizeof(*tar_ucode_info), GFP_KERNEL);
-+	if (!tar_ucode_info)
-+		return -ENOMEM;
-+
-+	tar_ucode_info->ucode_ptr = data;
-+	set_ucode_filename(&tar_ucode_info->ucode, filename);
-+	memcpy(tar_ucode_info->ucode.ver_str, ucode_hdr->ver_str,
-+	       OTX2_CPT_UCODE_VER_STR_SZ);
-+	tar_ucode_info->ucode.ver_num = ucode_hdr->ver_num;
-+	tar_ucode_info->ucode.type = ucode_type;
-+	tar_ucode_info->ucode.size = ucode_size;
-+	list_add_tail(&tar_ucode_info->list, &tar_arch->ucodes);
-+
-+	return 0;
-+}
-+
-+static void release_tar_archive(struct tar_arch_info_t *tar_arch)
-+{
-+	struct tar_ucode_info_t *curr, *temp;
-+
-+	if (!tar_arch)
-+		return;
-+
-+	list_for_each_entry_safe(curr, temp, &tar_arch->ucodes, list) {
-+		list_del(&curr->list);
-+		kfree(curr);
-+	}
-+
-+	if (tar_arch->fw)
-+		release_firmware(tar_arch->fw);
-+	kfree(tar_arch);
-+}
-+
-+static struct tar_ucode_info_t *get_uc_from_tar_archive(
-+					struct tar_arch_info_t *tar_arch,
-+					int ucode_type)
-+{
-+	struct tar_ucode_info_t *curr, *uc_found = NULL;
-+
-+	list_for_each_entry(curr, &tar_arch->ucodes, list) {
-+		if (!is_eng_type(curr->ucode.type, ucode_type))
-+			continue;
-+
-+		if (ucode_type == OTX2_CPT_IE_TYPES &&
-+		    is_eng_type(curr->ucode.type, OTX2_CPT_SE_TYPES))
-+			continue;
-+
-+		if (!uc_found) {
-+			uc_found = curr;
-+			continue;
-+		}
-+
-+		switch (ucode_type) {
-+		case OTX2_CPT_AE_TYPES:
++			if (!rsp_reg->is_write)
++				*rsp_reg->ret_val = rsp_reg->val;
 +			break;
 +
-+		case OTX2_CPT_SE_TYPES:
-+			if (uc_found->ucode.ver_num.nn ==
-+							OTX2_CPT_SE_UC_TYPE2 ||
-+			    (uc_found->ucode.ver_num.nn ==
-+							OTX2_CPT_SE_UC_TYPE3 &&
-+			     curr->ucode.ver_num.nn == OTX2_CPT_SE_UC_TYPE1))
-+				uc_found = curr;
++		case MBOX_MSG_GET_ENG_GRP_NUM:
++			rsp_grp = (struct otx2_cpt_eng_grp_num_rsp *) msg;
++			cptvf->lfs.kcrypto_eng_grp_num = rsp_grp->eng_grp_num;
 +			break;
 +
-+		case OTX2_CPT_IE_TYPES:
-+			if (uc_found->ucode.ver_num.nn ==
-+							OTX2_CPT_IE_UC_TYPE2 ||
-+			    (uc_found->ucode.ver_num.nn ==
-+							OTX2_CPT_IE_UC_TYPE3 &&
-+			     curr->ucode.ver_num.nn == OTX2_CPT_IE_UC_TYPE1))
-+				uc_found = curr;
-+			break;
-+		}
-+	}
-+	return uc_found;
-+}
-+
-+static void print_tar_dbg_info(struct tar_arch_info_t *tar_arch,
-+			       char *tar_filename)
-+{
-+	struct tar_ucode_info_t *curr;
-+
-+	pr_debug("Tar archive filename %s\n", tar_filename);
-+	pr_debug("Tar archive pointer %p, size %ld\n", tar_arch->fw->data,
-+		 tar_arch->fw->size);
-+	list_for_each_entry(curr, &tar_arch->ucodes, list) {
-+		pr_debug("Ucode filename %s\n", curr->ucode.filename);
-+		pr_debug("Ucode version string %s\n", curr->ucode.ver_str);
-+		pr_debug("Ucode version %d.%d.%d.%d\n",
-+			 curr->ucode.ver_num.nn, curr->ucode.ver_num.xx,
-+			 curr->ucode.ver_num.yy, curr->ucode.ver_num.zz);
-+		pr_debug("Ucode type (%d) %s\n", curr->ucode.type,
-+			 get_ucode_type_str(curr->ucode.type));
-+		pr_debug("Ucode size %d\n", curr->ucode.size);
-+		pr_debug("Ucode ptr %p\n", curr->ucode_ptr);
-+	}
-+}
-+
-+static struct tar_arch_info_t *load_tar_archive(struct device *dev,
-+						char *tar_filename)
-+{
-+	struct tar_arch_info_t *tar_arch = NULL;
-+	struct tar_blk_t *tar_blk;
-+	unsigned int cur_size;
-+	size_t tar_offs = 0;
-+	size_t tar_size;
-+	int ret;
-+
-+	tar_arch = kzalloc(sizeof(struct tar_arch_info_t), GFP_KERNEL);
-+	if (!tar_arch)
-+		return NULL;
-+
-+	INIT_LIST_HEAD(&tar_arch->ucodes);
-+
-+	/* Load tar archive */
-+	ret = request_firmware(&tar_arch->fw, tar_filename, dev);
-+	if (ret)
-+		goto release_tar_arch;
-+
-+	if (tar_arch->fw->size < TAR_BLOCK_LEN) {
-+		dev_err(dev, "Invalid tar archive %s\n", tar_filename);
-+		goto release_tar_arch;
-+	}
-+
-+	tar_size = tar_arch->fw->size;
-+	tar_blk = (struct tar_blk_t *) tar_arch->fw->data;
-+	if (strncmp(tar_blk->hdr.magic, TAR_MAGIC, TAR_MAGIC_LEN - 1)) {
-+		dev_err(dev, "Unsupported format of tar archive %s\n",
-+			tar_filename);
-+		goto release_tar_arch;
-+	}
-+
-+	while (1) {
-+		/* Read current file size */
-+		ret = kstrtouint(tar_blk->hdr.size, 8, &cur_size);
-+		if (ret)
-+			goto release_tar_arch;
-+
-+		if (tar_offs + cur_size > tar_size ||
-+		    tar_offs + 2*TAR_BLOCK_LEN > tar_size) {
-+			dev_err(dev, "Invalid tar archive %s\n", tar_filename);
-+			goto release_tar_arch;
-+		}
-+
-+		tar_offs += TAR_BLOCK_LEN;
-+		if (tar_blk->hdr.typeflag == REGTYPE ||
-+		    tar_blk->hdr.typeflag == AREGTYPE) {
-+			ret = process_tar_file(dev, tar_arch,
-+					       tar_blk->hdr.name,
-+					       &tar_arch->fw->data[tar_offs],
-+					       cur_size);
-+			if (ret)
-+				goto release_tar_arch;
-+		}
-+
-+		tar_offs += (cur_size/TAR_BLOCK_LEN) * TAR_BLOCK_LEN;
-+		if (cur_size % TAR_BLOCK_LEN)
-+			tar_offs += TAR_BLOCK_LEN;
-+
-+		/* Check for the end of the archive */
-+		if (tar_offs + 2*TAR_BLOCK_LEN > tar_size) {
-+			dev_err(dev, "Invalid tar archive %s\n", tar_filename);
-+			goto release_tar_arch;
-+		}
-+
-+		if (is_mem_zero(&tar_arch->fw->data[tar_offs],
-+		    2*TAR_BLOCK_LEN))
-+			break;
-+
-+		/* Read next block from tar archive */
-+		tar_blk = (struct tar_blk_t *) &tar_arch->fw->data[tar_offs];
-+	}
-+
-+	print_tar_dbg_info(tar_arch, tar_filename);
-+	return tar_arch;
-+release_tar_arch:
-+	release_tar_archive(tar_arch);
-+	return NULL;
-+}
-+
-+static struct otx2_cpt_engs_rsvd *find_engines_by_type(
-+					struct otx2_cpt_eng_grp_info *eng_grp,
-+					int eng_type)
-+{
-+	int i;
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ETYPES_PER_GRP; i++) {
-+		if (!eng_grp->engs[i].type)
-+			continue;
-+
-+		if (eng_grp->engs[i].type == eng_type)
-+			return &eng_grp->engs[i];
-+	}
-+	return NULL;
-+}
-+
-+int otx2_cpt_uc_supports_eng_type(struct otx2_cpt_ucode *ucode, int eng_type)
-+{
-+	return is_eng_type(ucode->type, eng_type);
-+}
-+
-+int otx2_cpt_eng_grp_has_eng_type(struct otx2_cpt_eng_grp_info *eng_grp,
-+				  int eng_type)
-+{
-+	struct otx2_cpt_engs_rsvd *engs;
-+
-+	engs = find_engines_by_type(eng_grp, eng_type);
-+
-+	return (engs != NULL ? 1 : 0);
-+}
-+
-+static void print_ucode_info(struct otx2_cpt_eng_grp_info *eng_grp,
-+			     char *buf, int size)
-+{
-+	int len;
-+
-+	if (eng_grp->mirror.is_ena) {
-+		scnprintf(buf, size, "%s (shared with engine_group%d)",
-+			  eng_grp->g->grp[eng_grp->mirror.idx].ucode[0].ver_str,
-+			  eng_grp->mirror.idx);
-+	} else {
-+		scnprintf(buf, size, "%s", eng_grp->ucode[0].ver_str);
-+	}
-+
-+	if (is_2nd_ucode_used(eng_grp)) {
-+		len = strlen(buf);
-+		scnprintf(buf + len, size - len, ", %s (used by IE engines)",
-+			  eng_grp->ucode[1].ver_str);
-+	}
-+}
-+
-+static void print_engs_info(struct otx2_cpt_eng_grp_info *eng_grp,
-+			    char *buf, int size, int idx)
-+{
-+	struct otx2_cpt_engs_rsvd *mirrored_engs = NULL;
-+	struct otx2_cpt_engs_rsvd *engs;
-+	int len, i;
-+
-+	buf[0] = '\0';
-+	for (i = 0; i < OTX2_CPT_MAX_ETYPES_PER_GRP; i++) {
-+		engs = &eng_grp->engs[i];
-+		if (!engs->type)
-+			continue;
-+		if (idx != -1 && idx != i)
-+			continue;
-+
-+		if (eng_grp->mirror.is_ena)
-+			mirrored_engs = find_engines_by_type(
-+					&eng_grp->g->grp[eng_grp->mirror.idx],
-+					engs->type);
-+		if (i > 0 && idx == -1) {
-+			len = strlen(buf);
-+			scnprintf(buf+len, size-len, ", ");
-+		}
-+
-+		len = strlen(buf);
-+		scnprintf(buf+len, size-len, "%d %s ", mirrored_engs ?
-+			  engs->count + mirrored_engs->count : engs->count,
-+			  get_eng_type_str(engs->type));
-+		if (mirrored_engs) {
-+			len = strlen(buf);
-+			scnprintf(buf+len, size-len,
-+				  "(%d shared with engine_group%d) ",
-+				  engs->count <= 0 ? engs->count +
-+				  mirrored_engs->count : mirrored_engs->count,
-+				  eng_grp->mirror.idx);
-+		}
-+	}
-+}
-+
-+static void print_ucode_dbg_info(struct otx2_cpt_ucode *ucode)
-+{
-+	pr_debug("Ucode info\n");
-+	pr_debug("Ucode version string %s\n", ucode->ver_str);
-+	pr_debug("Ucode version %d.%d.%d.%d\n", ucode->ver_num.nn,
-+		 ucode->ver_num.xx, ucode->ver_num.yy, ucode->ver_num.zz);
-+	pr_debug("Ucode type %s\n", get_ucode_type_str(ucode->type));
-+	pr_debug("Ucode size %d\n", ucode->size);
-+	pr_debug("Ucode virt address %16.16llx\n", (u64)ucode->va);
-+	pr_debug("Ucode phys address %16.16llx\n", ucode->dma);
-+}
-+
-+static void print_engines_mask(struct otx2_cpt_eng_grp_info *eng_grp,
-+			       void *obj, char *buf, int size)
-+{
-+	struct otx2_cptpf_dev *cptpf = obj;
-+	struct otx2_cpt_bitmap bmap;
-+	u32 mask[4];
-+
-+	bmap = get_cores_bmap(&cptpf->pdev->dev, eng_grp);
-+	if (!bmap.size) {
-+		scnprintf(buf, size, "unknown");
-+		return;
-+	}
-+	bitmap_to_arr32(mask, bmap.bits, bmap.size);
-+	scnprintf(buf, size, "%8.8x %8.8x %8.8x %8.8x", mask[3], mask[2],
-+		  mask[1], mask[0]);
-+}
-+
-+static void print_dbg_info(struct device *dev,
-+			   struct otx2_cpt_eng_grps *eng_grps)
-+{
-+	struct otx2_cpt_eng_grp_info *mirrored_grp;
-+	char engs_info[2*OTX2_CPT_NAME_LENGTH];
-+	char engs_mask[OTX2_CPT_NAME_LENGTH];
-+	struct otx2_cpt_eng_grp_info *grp;
-+	struct otx2_cpt_engs_rsvd *engs;
-+	u32 mask[4];
-+	int i, j;
-+
-+	pr_debug("Engine groups global info\n");
-+	pr_debug("max SE %d, max IE %d, max AE %d\n",
-+		 eng_grps->avail.max_se_cnt, eng_grps->avail.max_ie_cnt,
-+		 eng_grps->avail.max_ae_cnt);
-+	pr_debug("free SE %d\n", eng_grps->avail.se_cnt);
-+	pr_debug("free IE %d\n", eng_grps->avail.ie_cnt);
-+	pr_debug("free AE %d\n", eng_grps->avail.ae_cnt);
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+		grp = &eng_grps->grp[i];
-+		pr_debug("engine_group%d, state %s\n", i, grp->is_enabled ?
-+			 "enabled" : "disabled");
-+		if (grp->is_enabled) {
-+			mirrored_grp = &eng_grps->grp[grp->mirror.idx];
-+			pr_debug("Ucode0 filename %s, version %s\n",
-+				 grp->mirror.is_ena ?
-+				 mirrored_grp->ucode[0].filename :
-+				 grp->ucode[0].filename,
-+				 grp->mirror.is_ena ?
-+				 mirrored_grp->ucode[0].ver_str :
-+				 grp->ucode[0].ver_str);
-+			if (is_2nd_ucode_used(grp))
-+				pr_debug("Ucode1 filename %s, version %s\n",
-+					 grp->ucode[1].filename,
-+					 grp->ucode[1].ver_str);
-+			else
-+				pr_debug("Ucode1 not used\n");
-+		}
-+
-+		for (j = 0; j < OTX2_CPT_MAX_ETYPES_PER_GRP; j++) {
-+			engs = &grp->engs[j];
-+			if (engs->type) {
-+				print_engs_info(grp, engs_info,
-+						2*OTX2_CPT_NAME_LENGTH,
-+						j);
-+				pr_debug("Slot%d: %s\n", j, engs_info);
-+				bitmap_to_arr32(mask, engs->bmap,
-+						eng_grps->engs_num);
-+				pr_debug("Mask:  %8.8x %8.8x %8.8x %8.8x\n",
-+					 mask[3], mask[2], mask[1], mask[0]);
-+			} else
-+				pr_debug("Slot%d not used\n", j);
-+		}
-+		if (grp->is_enabled) {
-+			print_engines_mask(grp, eng_grps->obj, engs_mask,
-+					   OTX2_CPT_NAME_LENGTH);
-+			pr_debug("Cmask: %s\n", engs_mask);
-+		}
-+	}
-+}
-+
-+static int update_engines_avail_count(struct device *dev,
-+				      struct otx2_cpt_engs_available *avail,
-+				      struct otx2_cpt_engs_rsvd *engs, int val)
-+{
-+	switch (engs->type) {
-+	case OTX2_CPT_SE_TYPES:
-+		avail->se_cnt += val;
-+		break;
-+
-+	case OTX2_CPT_IE_TYPES:
-+		avail->ie_cnt += val;
-+		break;
-+
-+	case OTX2_CPT_AE_TYPES:
-+		avail->ae_cnt += val;
-+		break;
-+
-+	default:
-+		dev_err(dev, "Invalid engine type %d\n", engs->type);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int update_engines_offset(struct device *dev,
-+				 struct otx2_cpt_engs_available *avail,
-+				 struct otx2_cpt_engs_rsvd *engs)
-+{
-+	switch (engs->type) {
-+	case OTX2_CPT_SE_TYPES:
-+		engs->offset = 0;
-+		break;
-+
-+	case OTX2_CPT_IE_TYPES:
-+		engs->offset = avail->max_se_cnt;
-+		break;
-+
-+	case OTX2_CPT_AE_TYPES:
-+		engs->offset = avail->max_se_cnt + avail->max_ie_cnt;
-+		break;
-+
-+	default:
-+		dev_err(dev, "Invalid engine type %d\n", engs->type);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int release_engines(struct device *dev,
-+			   struct otx2_cpt_eng_grp_info *grp)
-+{
-+	int i, ret = 0;
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ETYPES_PER_GRP; i++) {
-+		if (!grp->engs[i].type)
-+			continue;
-+
-+		if (grp->engs[i].count > 0) {
-+			ret = update_engines_avail_count(dev, &grp->g->avail,
-+							 &grp->engs[i],
-+							 grp->engs[i].count);
-+			if (ret)
-+				return ret;
-+		}
-+
-+		grp->engs[i].type = 0;
-+		grp->engs[i].count = 0;
-+		grp->engs[i].offset = 0;
-+		grp->engs[i].ucode = NULL;
-+		bitmap_zero(grp->engs[i].bmap, grp->g->engs_num);
-+	}
-+	return 0;
-+}
-+
-+static int do_reserve_engines(struct device *dev,
-+			      struct otx2_cpt_eng_grp_info *grp,
-+			      struct otx2_cpt_engines *req_engs)
-+{
-+	struct otx2_cpt_engs_rsvd *engs = NULL;
-+	int i, ret;
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ETYPES_PER_GRP; i++) {
-+		if (!grp->engs[i].type) {
-+			engs = &grp->engs[i];
-+			break;
-+		}
-+	}
-+
-+	if (!engs)
-+		return -ENOMEM;
-+
-+	engs->type = req_engs->type;
-+	engs->count = req_engs->count;
-+
-+	ret = update_engines_offset(dev, &grp->g->avail, engs);
-+	if (ret)
-+		return ret;
-+
-+	if (engs->count > 0) {
-+		ret = update_engines_avail_count(dev, &grp->g->avail, engs,
-+						 -engs->count);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int check_engines_availability(struct device *dev,
-+				      struct otx2_cpt_eng_grp_info *grp,
-+				      struct otx2_cpt_engines *req_eng)
-+{
-+	int avail_cnt = 0;
-+
-+	switch (req_eng->type) {
-+	case OTX2_CPT_SE_TYPES:
-+		avail_cnt = grp->g->avail.se_cnt;
-+		break;
-+
-+	case OTX2_CPT_IE_TYPES:
-+		avail_cnt = grp->g->avail.ie_cnt;
-+		break;
-+
-+	case OTX2_CPT_AE_TYPES:
-+		avail_cnt = grp->g->avail.ae_cnt;
-+		break;
-+
-+	default:
-+		dev_err(dev, "Invalid engine type %d\n", req_eng->type);
-+		return -EINVAL;
-+	}
-+
-+	if (avail_cnt < req_eng->count) {
-+		dev_err(dev,
-+			"Error available %s engines %d < than requested %d\n",
-+			get_eng_type_str(req_eng->type),
-+			avail_cnt, req_eng->count);
-+		return -EBUSY;
-+	}
-+	return 0;
-+}
-+
-+static int reserve_engines(struct device *dev,
-+			   struct otx2_cpt_eng_grp_info *grp,
-+			   struct otx2_cpt_engines *req_engs, int req_cnt)
-+{
-+	int i, ret = 0;
-+
-+	/* Validate if a number of requested engines is available */
-+	for (i = 0; i < req_cnt; i++) {
-+		ret = check_engines_availability(dev, grp, &req_engs[i]);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* Reserve requested engines for this engine group */
-+	for (i = 0; i < req_cnt; i++) {
-+		ret = do_reserve_engines(dev, grp, &req_engs[i]);
-+		if (ret)
-+			return ret;
-+	}
-+	return 0;
-+}
-+
-+static ssize_t eng_grp_info_show(struct device *dev,
-+				 struct device_attribute *attr,
-+				 char *buf)
-+{
-+	struct otx2_cpt_eng_grp_info *eng_grp;
-+	char ucode_info[2*OTX2_CPT_NAME_LENGTH];
-+	char engs_info[2*OTX2_CPT_NAME_LENGTH];
-+	char engs_mask[OTX2_CPT_NAME_LENGTH];
-+	int ret;
-+
-+	eng_grp = container_of(attr, struct otx2_cpt_eng_grp_info, info_attr);
-+	mutex_lock(&eng_grp->g->lock);
-+
-+	print_engs_info(eng_grp, engs_info, 2 * OTX2_CPT_NAME_LENGTH, -1);
-+	print_ucode_info(eng_grp, ucode_info, 2 * OTX2_CPT_NAME_LENGTH);
-+	print_engines_mask(eng_grp, eng_grp->g, engs_mask,
-+			   OTX2_CPT_NAME_LENGTH);
-+	ret = scnprintf(buf, PAGE_SIZE,
-+			"Microcode : %s\nEngines: %s\nEngines mask: %s\n",
-+			ucode_info, engs_info, engs_mask);
-+
-+	mutex_unlock(&eng_grp->g->lock);
-+	return ret;
-+}
-+
-+static int create_sysfs_eng_grps_info(struct device *dev,
-+				      struct otx2_cpt_eng_grp_info *eng_grp)
-+{
-+	int ret;
-+
-+	eng_grp->info_attr.show = eng_grp_info_show;
-+	eng_grp->info_attr.store = NULL;
-+	eng_grp->info_attr.attr.name = eng_grp->sysfs_info_name;
-+	eng_grp->info_attr.attr.mode = 0440;
-+	sysfs_attr_init(&eng_grp->info_attr.attr);
-+	ret = device_create_file(dev, &eng_grp->info_attr);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static void ucode_unload(struct device *dev, struct otx2_cpt_ucode *ucode)
-+{
-+	if (ucode->va) {
-+		dma_free_coherent(dev, ucode->size, ucode->va, ucode->dma);
-+		ucode->va = NULL;
-+		ucode->dma = 0;
-+		ucode->size = 0;
-+	}
-+
-+	memset(&ucode->ver_str, 0, OTX2_CPT_UCODE_VER_STR_SZ);
-+	memset(&ucode->ver_num, 0, sizeof(struct otx2_cpt_ucode_ver_num));
-+	set_ucode_filename(ucode, "");
-+	ucode->type = 0;
-+}
-+
-+static int copy_ucode_to_dma_mem(struct device *dev,
-+				 struct otx2_cpt_ucode *ucode,
-+				 const u8 *ucode_data)
-+{
-+	u32 i;
-+
-+	/*  Allocate DMAable space */
-+	ucode->va = dma_alloc_coherent(dev, ucode->size, &ucode->dma,
-+				       GFP_KERNEL);
-+	if (!ucode->va)
-+		return -ENOMEM;
-+
-+	memcpy(ucode->va, ucode_data + sizeof(struct otx2_cpt_ucode_hdr),
-+	       ucode->size);
-+
-+	/* Byte swap 64-bit */
-+	for (i = 0; i < (ucode->size / 8); i++)
-+		cpu_to_be64s(&((u64 *)ucode->va)[i]);
-+	/*  Ucode needs 16-bit swap */
-+	for (i = 0; i < (ucode->size / 2); i++)
-+		cpu_to_be16s(&((u16 *)ucode->va)[i]);
-+	return 0;
-+}
-+
-+static int ucode_load(struct device *dev, struct otx2_cpt_ucode *ucode,
-+		      const char *ucode_filename)
-+{
-+	struct otx2_cpt_ucode_hdr *ucode_hdr;
-+	const struct firmware *fw;
-+	int ret;
-+
-+	set_ucode_filename(ucode, ucode_filename);
-+	ret = request_firmware(&fw, ucode->filename, dev);
-+	if (ret)
-+		return ret;
-+
-+	ucode_hdr = (struct otx2_cpt_ucode_hdr *) fw->data;
-+	memcpy(ucode->ver_str, ucode_hdr->ver_str, OTX2_CPT_UCODE_VER_STR_SZ);
-+	ucode->ver_num = ucode_hdr->ver_num;
-+	ucode->size = ntohl(ucode_hdr->code_length) * 2;
-+	if (!ucode->size || (fw->size < round_up(ucode->size, 16)
-+	    + sizeof(struct otx2_cpt_ucode_hdr) + OTX2_CPT_UCODE_SIGN_LEN)) {
-+		dev_err(dev, "Ucode %s invalid size\n", ucode_filename);
-+		ret = -EINVAL;
-+		goto release_fw;
-+	}
-+
-+	ret = get_ucode_type(dev, ucode_hdr, &ucode->type);
-+	if (ret) {
-+		dev_err(dev, "Microcode %s unknown type 0x%x\n",
-+			ucode->filename, ucode->type);
-+		goto release_fw;
-+	}
-+
-+	ret = copy_ucode_to_dma_mem(dev, ucode, fw->data);
-+	if (ret)
-+		goto release_fw;
-+
-+	print_ucode_dbg_info(ucode);
-+release_fw:
-+	release_firmware(fw);
-+	return ret;
-+}
-+
-+static int enable_eng_grp(struct otx2_cpt_eng_grp_info *eng_grp,
-+			  void *obj)
-+{
-+	int ret;
-+
-+	/* Point microcode to each core of the group */
-+	ret = cpt_set_ucode_base(eng_grp, obj);
-+	if (ret)
-+		return ret;
-+
-+	/* Attach the cores to the group and enable them */
-+	ret = cpt_attach_and_enable_cores(eng_grp, obj);
-+
-+	return ret;
-+}
-+
-+static int disable_eng_grp(struct device *dev,
-+			   struct otx2_cpt_eng_grp_info *eng_grp,
-+			   void *obj)
-+{
-+	int i, ret;
-+
-+	/* Disable all engines used by this group */
-+	ret = cpt_detach_and_disable_cores(eng_grp, obj);
-+	if (ret)
-+		return ret;
-+
-+	/* Unload ucode used by this engine group */
-+	ucode_unload(dev, &eng_grp->ucode[0]);
-+	ucode_unload(dev, &eng_grp->ucode[1]);
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ETYPES_PER_GRP; i++) {
-+		if (!eng_grp->engs[i].type)
-+			continue;
-+
-+		eng_grp->engs[i].ucode = &eng_grp->ucode[0];
-+	}
-+
-+	/* Clear UCODE_BASE register for each engine used by this group */
-+	ret = cpt_set_ucode_base(eng_grp, obj);
-+
-+	return ret;
-+}
-+
-+static void setup_eng_grp_mirroring(struct otx2_cpt_eng_grp_info *dst_grp,
-+				    struct otx2_cpt_eng_grp_info *src_grp)
-+{
-+	/* Setup fields for engine group which is mirrored */
-+	src_grp->mirror.is_ena = false;
-+	src_grp->mirror.idx = 0;
-+	src_grp->mirror.ref_count++;
-+
-+	/* Setup fields for mirroring engine group */
-+	dst_grp->mirror.is_ena = true;
-+	dst_grp->mirror.idx = src_grp->idx;
-+	dst_grp->mirror.ref_count = 0;
-+}
-+
-+static void remove_eng_grp_mirroring(struct otx2_cpt_eng_grp_info *dst_grp)
-+{
-+	struct otx2_cpt_eng_grp_info *src_grp;
-+
-+	if (!dst_grp->mirror.is_ena)
-+		return;
-+
-+	src_grp = &dst_grp->g->grp[dst_grp->mirror.idx];
-+
-+	src_grp->mirror.ref_count--;
-+	dst_grp->mirror.is_ena = false;
-+	dst_grp->mirror.idx = 0;
-+	dst_grp->mirror.ref_count = 0;
-+}
-+
-+static void update_requested_engs(struct otx2_cpt_eng_grp_info *mirror_eng_grp,
-+				  struct otx2_cpt_engines *engs, int engs_cnt)
-+{
-+	struct otx2_cpt_engs_rsvd *mirrored_engs;
-+	int i;
-+
-+	for (i = 0; i < engs_cnt; i++) {
-+		mirrored_engs = find_engines_by_type(mirror_eng_grp,
-+						     engs[i].type);
-+		if (!mirrored_engs)
-+			continue;
-+
-+		/*
-+		 * If mirrored group has this type of engines attached then
-+		 * there are 3 scenarios possible:
-+		 * 1) mirrored_engs.count == engs[i].count then all engines
-+		 * from mirrored engine group will be shared with this engine
-+		 * group
-+		 * 2) mirrored_engs.count > engs[i].count then only a subset of
-+		 * engines from mirrored engine group will be shared with this
-+		 * engine group
-+		 * 3) mirrored_engs.count < engs[i].count then all engines
-+		 * from mirrored engine group will be shared with this group
-+		 * and additional engines will be reserved for exclusively use
-+		 * by this engine group
-+		 */
-+		engs[i].count -= mirrored_engs->count;
-+	}
-+}
-+
-+static struct otx2_cpt_eng_grp_info *find_mirrored_eng_grp(
-+					struct otx2_cpt_eng_grp_info *grp)
-+{
-+	struct otx2_cpt_eng_grps *eng_grps = grp->g;
-+	int i;
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+		if (!eng_grps->grp[i].is_enabled)
-+			continue;
-+		if (eng_grps->grp[i].ucode[0].type &&
-+		    eng_grps->grp[i].ucode[1].type)
-+			continue;
-+		if (grp->idx == i)
-+			continue;
-+		if (!strncasecmp(eng_grps->grp[i].ucode[0].ver_str,
-+				 grp->ucode[0].ver_str,
-+				 OTX2_CPT_UCODE_VER_STR_SZ))
-+			return &eng_grps->grp[i];
-+	}
-+
-+	return NULL;
-+}
-+
-+static struct otx2_cpt_eng_grp_info *find_unused_eng_grp(
-+					struct otx2_cpt_eng_grps *eng_grps)
-+{
-+	int i;
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+		if (!eng_grps->grp[i].is_enabled)
-+			return &eng_grps->grp[i];
-+	}
-+	return NULL;
-+}
-+
-+static int eng_grp_update_masks(struct device *dev,
-+				struct otx2_cpt_eng_grp_info *eng_grp)
-+{
-+	struct otx2_cpt_engs_rsvd *engs, *mirrored_engs;
-+	struct otx2_cpt_bitmap tmp_bmap = { {0} };
-+	int i, j, cnt, max_cnt;
-+	int bit;
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ETYPES_PER_GRP; i++) {
-+		engs = &eng_grp->engs[i];
-+		if (!engs->type)
-+			continue;
-+		if (engs->count <= 0)
-+			continue;
-+
-+		switch (engs->type) {
-+		case OTX2_CPT_SE_TYPES:
-+			max_cnt = eng_grp->g->avail.max_se_cnt;
-+			break;
-+
-+		case OTX2_CPT_IE_TYPES:
-+			max_cnt = eng_grp->g->avail.max_ie_cnt;
-+			break;
-+
-+		case OTX2_CPT_AE_TYPES:
-+			max_cnt = eng_grp->g->avail.max_ae_cnt;
++		case MBOX_MSG_GET_KCRYPTO_LIMITS:
++			rsp_limits = (struct otx2_cpt_kcrypto_limits_rsp *) msg;
++			cptvf->lfs.kcrypto_limits = rsp_limits->kcrypto_limits;
 +			break;
 +
 +		default:
-+			dev_err(dev, "Invalid engine type %d\n", engs->type);
-+			return -EINVAL;
-+		}
-+
-+		cnt = engs->count;
-+		WARN_ON(engs->offset + max_cnt > OTX2_CPT_MAX_ENGINES);
-+		bitmap_zero(tmp_bmap.bits, eng_grp->g->engs_num);
-+		for (j = engs->offset; j < engs->offset + max_cnt; j++) {
-+			if (!eng_grp->g->eng_ref_cnt[j]) {
-+				bitmap_set(tmp_bmap.bits, j, 1);
-+				cnt--;
-+				if (!cnt)
-+					break;
-+			}
-+		}
-+
-+		if (cnt)
-+			return -ENOSPC;
-+
-+		bitmap_copy(engs->bmap, tmp_bmap.bits, eng_grp->g->engs_num);
-+	}
-+
-+	if (!eng_grp->mirror.is_ena)
-+		return 0;
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ETYPES_PER_GRP; i++) {
-+		engs = &eng_grp->engs[i];
-+		if (!engs->type)
-+			continue;
-+
-+		mirrored_engs = find_engines_by_type(
-+					&eng_grp->g->grp[eng_grp->mirror.idx],
-+					engs->type);
-+		WARN_ON(!mirrored_engs && engs->count <= 0);
-+		if (!mirrored_engs)
-+			continue;
-+
-+		bitmap_copy(tmp_bmap.bits, mirrored_engs->bmap,
-+			    eng_grp->g->engs_num);
-+		if (engs->count < 0) {
-+			bit = find_first_bit(mirrored_engs->bmap,
-+					     eng_grp->g->engs_num);
-+			bitmap_clear(tmp_bmap.bits, bit, -engs->count);
-+		}
-+		bitmap_or(engs->bmap, engs->bmap, tmp_bmap.bits,
-+			  eng_grp->g->engs_num);
-+	}
-+	return 0;
-+}
-+
-+static int delete_engine_group(struct device *dev,
-+			       struct otx2_cpt_eng_grp_info *eng_grp)
-+{
-+	int i, ret;
-+
-+	if (!eng_grp->is_enabled)
-+		return -EINVAL;
-+
-+	if (eng_grp->mirror.ref_count) {
-+		dev_err(dev, "Can't delete engine_group%d as it is used by engine group(s):",
-+			eng_grp->idx);
-+		for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+			if (eng_grp->g->grp[i].mirror.is_ena &&
-+			    eng_grp->g->grp[i].mirror.idx == eng_grp->idx)
-+				pr_cont("%d", i);
-+		}
-+		pr_cont("\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Removing engine group mirroring if enabled */
-+	remove_eng_grp_mirroring(eng_grp);
-+
-+	/* Disable engine group */
-+	ret = disable_eng_grp(dev, eng_grp, eng_grp->g->obj);
-+	if (ret)
-+		return ret;
-+
-+	/* Release all engines held by this engine group */
-+	ret = release_engines(dev, eng_grp);
-+	if (ret)
-+		return ret;
-+
-+	device_remove_file(dev, &eng_grp->info_attr);
-+	eng_grp->is_enabled = false;
-+
-+	return 0;
-+}
-+
-+static int validate_2_ucodes_scenario(struct device *dev,
-+				      struct otx2_cpt_eng_grp_info *eng_grp)
-+{
-+	struct otx2_cpt_ucode *se_ucode = NULL, *ie_ucode = NULL;
-+	struct otx2_cpt_ucode *ucode;
-+	int i;
-+
-+	/*
-+	 * Find ucode which supports SE engines and ucode which supports
-+	 * IE engines only
-+	 */
-+	for (i = 0; i < OTX2_CPT_MAX_ETYPES_PER_GRP; i++) {
-+		ucode = &eng_grp->ucode[i];
-+		if (otx2_cpt_uc_supports_eng_type(ucode, OTX2_CPT_SE_TYPES))
-+			se_ucode = ucode;
-+		else if (otx2_cpt_uc_supports_eng_type(ucode,
-+						       OTX2_CPT_IE_TYPES) &&
-+			 !otx2_cpt_uc_supports_eng_type(ucode,
-+							OTX2_CPT_SE_TYPES))
-+			ie_ucode = ucode;
-+	}
-+
-+	if (!se_ucode || !ie_ucode) {
-+		dev_err(dev,
-+			"Only combination of SE+IE microcodes is supported.\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Keep SE ucode at index 0 */
-+	if (otx2_cpt_uc_supports_eng_type(&eng_grp->ucode[1],
-+					  OTX2_CPT_SE_TYPES))
-+		swap_ucodes(&eng_grp->ucode[0], &eng_grp->ucode[1]);
-+
-+	return 0;
-+}
-+
-+static int validate_1_ucode_scenario(struct device *dev,
-+				     struct otx2_cpt_eng_grp_info *eng_grp,
-+				     struct otx2_cpt_engines *engs,
-+				     int engs_cnt)
-+{
-+	int i;
-+
-+	/* Verify that ucode loaded supports requested engine types */
-+	for (i = 0; i < engs_cnt; i++) {
-+		if (otx2_cpt_uc_supports_eng_type(&eng_grp->ucode[0],
-+						  OTX2_CPT_SE_TYPES) &&
-+		    engs[i].type == OTX2_CPT_IE_TYPES) {
-+			dev_err(dev,
-+				"IE engines can't be used with SE microcode\n");
-+			return -EINVAL;
-+		}
-+
-+		if (!otx2_cpt_uc_supports_eng_type(&eng_grp->ucode[0],
-+						   engs[i].type)) {
-+			/*
-+			 * Exception to this rule is the case
-+			 * where IPSec ucode can use SE engines
-+			 */
-+			if (otx2_cpt_uc_supports_eng_type(&eng_grp->ucode[0],
-+							  OTX2_CPT_IE_TYPES) &&
-+			    engs[i].type == OTX2_CPT_SE_TYPES)
-+				continue;
-+
-+			dev_err(dev,
-+				"Microcode %s does not support %s engines\n",
-+				eng_grp->ucode[0].filename,
-+				get_eng_type_str(engs[i].type));
-+			return -EINVAL;
-+		}
-+	}
-+	return 0;
-+}
-+
-+static void update_ucode_ptrs(struct otx2_cpt_eng_grp_info *eng_grp)
-+{
-+	struct otx2_cpt_ucode *ucode;
-+
-+	if (eng_grp->mirror.is_ena)
-+		ucode = &eng_grp->g->grp[eng_grp->mirror.idx].ucode[0];
-+	else
-+		ucode = &eng_grp->ucode[0];
-+	WARN_ON(!eng_grp->engs[0].type);
-+	eng_grp->engs[0].ucode = ucode;
-+
-+	if (eng_grp->engs[1].type) {
-+		if (is_2nd_ucode_used(eng_grp))
-+			eng_grp->engs[1].ucode = &eng_grp->ucode[1];
-+		else
-+			eng_grp->engs[1].ucode = ucode;
-+	}
-+}
-+
-+static int get_eng_caps_discovery_grp(struct otx2_cpt_eng_grps *eng_grps,
-+				      u8 eng_type)
-+{
-+	struct otx2_cpt_eng_grp_info *grp;
-+	int eng_grp_num = 0xff, i;
-+
-+	switch (eng_type) {
-+	case OTX2_CPT_SE_TYPES:
-+		for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+			grp = &eng_grps->grp[i];
-+			if (!grp->is_enabled)
-+				continue;
-+
-+			if (otx2_cpt_eng_grp_has_eng_type(grp,
-+							  OTX2_CPT_SE_TYPES) &&
-+			    !otx2_cpt_eng_grp_has_eng_type(grp,
-+							   OTX2_CPT_IE_TYPES) &&
-+			    !otx2_cpt_eng_grp_has_eng_type(grp,
-+							   OTX2_CPT_AE_TYPES)) {
-+				eng_grp_num = i;
-+				break;
-+			}
-+		}
-+		break;
-+
-+	case OTX2_CPT_IE_TYPES:
-+		for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+			grp = &eng_grps->grp[i];
-+			if (!grp->is_enabled)
-+				continue;
-+
-+			if (otx2_cpt_eng_grp_has_eng_type(grp,
-+							  OTX2_CPT_IE_TYPES) &&
-+			    !otx2_cpt_eng_grp_has_eng_type(grp,
-+							   OTX2_CPT_SE_TYPES)) {
-+				eng_grp_num = i;
-+				break;
-+			}
-+		}
-+		break;
-+
-+	case OTX2_CPT_AE_TYPES:
-+		for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+			grp = &eng_grps->grp[i];
-+			if (!grp->is_enabled)
-+				continue;
-+
-+			if (otx2_cpt_eng_grp_has_eng_type(grp, eng_type)) {
-+				eng_grp_num = i;
-+				break;
-+			}
-+		}
-+		break;
-+	}
-+	return eng_grp_num;
-+}
-+
-+static int delete_eng_caps_discovery_grps(struct pci_dev *pdev,
-+					  struct otx2_cpt_eng_grps *eng_grps)
-+{
-+	struct otx2_cpt_eng_grp_info *grp;
-+	int i, ret;
-+
-+	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+		grp = &eng_grps->grp[i];
-+		ret = delete_engine_group(&pdev->dev, grp);
-+		if (ret)
-+			return ret;
-+	}
-+	return ret;
-+}
-+
-+static int create_engine_group(struct device *dev,
-+			       struct otx2_cpt_eng_grps *eng_grps,
-+			       struct otx2_cpt_engines *engs, int engs_cnt,
-+			       void *ucode_data[], int ucodes_cnt,
-+			       bool use_uc_from_tar_arch)
-+{
-+	struct otx2_cpt_eng_grp_info *mirrored_eng_grp;
-+	struct tar_ucode_info_t *tar_ucode_info;
-+	struct otx2_cpt_eng_grp_info *eng_grp;
-+	int i, ret = 0;
-+
-+	if (ucodes_cnt > OTX2_CPT_MAX_ETYPES_PER_GRP)
-+		return -EINVAL;
-+
-+	/* Validate if requested engine types are supported by this device */
-+	for (i = 0; i < engs_cnt; i++)
-+		if (!dev_supports_eng_type(eng_grps, engs[i].type)) {
-+			dev_err(dev, "Device does not support %s engines\n",
-+				get_eng_type_str(engs[i].type));
-+			return -EPERM;
-+		}
-+
-+	/* Find engine group which is not used */
-+	eng_grp = find_unused_eng_grp(eng_grps);
-+	if (!eng_grp) {
-+		dev_err(dev, "Error all engine groups are being used\n");
-+		return -ENOSPC;
-+	}
-+
-+	/* Load ucode */
-+	for (i = 0; i < ucodes_cnt; i++) {
-+		if (use_uc_from_tar_arch) {
-+			tar_ucode_info =
-+				     (struct tar_ucode_info_t *) ucode_data[i];
-+			eng_grp->ucode[i] = tar_ucode_info->ucode;
-+			ret = copy_ucode_to_dma_mem(dev, &eng_grp->ucode[i],
-+						    tar_ucode_info->ucode_ptr);
-+		} else
-+			ret = ucode_load(dev, &eng_grp->ucode[i],
-+					 (char *) ucode_data[i]);
-+		if (ret)
-+			goto err_ucode_unload;
-+	}
-+
-+	if (ucodes_cnt > 1) {
-+		/*
-+		 * Validate scenario where 2 ucodes are used - this
-+		 * is only allowed for combination of SE+IE ucodes
-+		 */
-+		ret = validate_2_ucodes_scenario(dev, eng_grp);
-+		if (ret)
-+			goto err_ucode_unload;
-+	} else {
-+		/* Validate scenario where 1 ucode is used */
-+		ret = validate_1_ucode_scenario(dev, eng_grp, engs, engs_cnt);
-+		if (ret)
-+			goto err_ucode_unload;
-+	}
-+
-+	/* Check if this group mirrors another existing engine group */
-+	mirrored_eng_grp = find_mirrored_eng_grp(eng_grp);
-+	if (mirrored_eng_grp) {
-+		/* Setup mirroring */
-+		setup_eng_grp_mirroring(eng_grp, mirrored_eng_grp);
-+
-+		/*
-+		 * Update count of requested engines because some
-+		 * of them might be shared with mirrored group
-+		 */
-+		update_requested_engs(mirrored_eng_grp, engs, engs_cnt);
-+	}
-+
-+	ret = reserve_engines(dev, eng_grp, engs, engs_cnt);
-+	if (ret)
-+		goto err_ucode_unload;
-+
-+	/* Update ucode pointers used by engines */
-+	update_ucode_ptrs(eng_grp);
-+
-+	/* Update engine masks used by this group */
-+	ret = eng_grp_update_masks(dev, eng_grp);
-+	if (ret)
-+		goto err_release_engs;
-+
-+	/* Create sysfs entry for engine group info */
-+	ret = create_sysfs_eng_grps_info(dev, eng_grp);
-+	if (ret)
-+		goto err_release_engs;
-+
-+	/* Enable engine group */
-+	ret = enable_eng_grp(eng_grp, eng_grps->obj);
-+	if (ret)
-+		goto err_release_engs;
-+
-+	/*
-+	 * If this engine group mirrors another engine group
-+	 * then we need to unload ucode as we will use ucode
-+	 * from mirrored engine group
-+	 */
-+	if (eng_grp->mirror.is_ena)
-+		ucode_unload(dev, &eng_grp->ucode[0]);
-+
-+	eng_grp->is_enabled = true;
-+	if (mirrored_eng_grp)
-+		dev_info(dev,
-+			 "Engine_group%d: reuse microcode %s from group %d\n",
-+			 eng_grp->idx, mirrored_eng_grp->ucode[0].ver_str,
-+			 mirrored_eng_grp->idx);
-+	else
-+		dev_info(dev, "Engine_group%d: microcode loaded %s\n",
-+			 eng_grp->idx, eng_grp->ucode[0].ver_str);
-+	if (is_2nd_ucode_used(eng_grp))
-+		dev_info(dev, "Engine_group%d: microcode loaded %s\n",
-+			 eng_grp->idx, eng_grp->ucode[1].ver_str);
-+
-+	return 0;
-+
-+err_release_engs:
-+	release_engines(dev, eng_grp);
-+err_ucode_unload:
-+	ucode_unload(dev, &eng_grp->ucode[0]);
-+	ucode_unload(dev, &eng_grp->ucode[1]);
-+	return ret;
-+}
-+
-+static ssize_t ucode_load_store(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf, size_t count)
-+{
-+	struct otx2_cpt_engines engs[OTX2_CPT_MAX_ETYPES_PER_GRP] = { {0} };
-+	char *ucode_filename[OTX2_CPT_MAX_ETYPES_PER_GRP];
-+	char tmp_buf[OTX2_CPT_NAME_LENGTH] = { 0 };
-+	struct otx2_cpt_eng_grps *eng_grps;
-+	char *start, *val, *err_msg, *tmp;
-+	int grp_idx = 0, ret = -EINVAL;
-+	bool has_se, has_ie, has_ae;
-+	int del_grp_idx = -1;
-+	int ucode_idx = 0;
-+	char *sbegin;
-+
-+	if (strlen(buf) > OTX2_CPT_NAME_LENGTH)
-+		return -EINVAL;
-+
-+	eng_grps = container_of(attr, struct otx2_cpt_eng_grps,
-+				ucode_load_attr);
-+	err_msg = "Invalid engine group format";
-+	strlcpy(tmp_buf, buf, OTX2_CPT_NAME_LENGTH);
-+	start = tmp_buf;
-+
-+	has_se = has_ie = has_ae = false;
-+
-+	for (;;) {
-+		val = strsep(&start, ";");
-+		if (!val)
++			dev_err(&cptvf->pdev->dev,
++				"Unsupported msg %d received.\n",
++				msg->id);
 +			break;
-+		val = strim(val);
-+		if (!*val)
++		}
++error:
++		pfvf_mbox->dev->msgs_acked++;
++	}
++	otx2_mbox_reset(pfvf_mbox, 0);
++}
++
++int otx2_cptvf_send_eng_grp_num_msg(struct otx2_cptvf_dev *cptvf, int eng_type)
++{
++	struct otx2_cpt_eng_grp_num_msg *req;
++	struct pci_dev *pdev = cptvf->pdev;
++	int ret;
++
++	req = (struct otx2_cpt_eng_grp_num_msg *)
++		otx2_mbox_alloc_msg_rsp(&cptvf->pfvf_mbox, 0,
++				sizeof(*req),
++				sizeof(struct otx2_cpt_eng_grp_num_rsp));
++	if (req == NULL) {
++		dev_err(&pdev->dev, "RVU MBOX failed to get message.\n");
++		return -EFAULT;
++	}
++	req->hdr.id = MBOX_MSG_GET_ENG_GRP_NUM;
++	req->hdr.sig = OTX2_MBOX_REQ_SIG;
++	req->hdr.pcifunc = OTX2_CPT_RVU_PFFUNC(cptvf->vf_id, 0);
++	req->eng_type = eng_type;
++
++	ret = otx2_cpt_send_mbox_msg(pdev);
++
++	return ret;
++}
++
++int otx2_cptvf_send_kcrypto_limits_msg(struct otx2_cptvf_dev *cptvf)
++{
++	struct pci_dev *pdev = cptvf->pdev;
++	struct mbox_msghdr *req;
++	int ret;
++
++	req = (struct mbox_msghdr *)
++		otx2_mbox_alloc_msg_rsp(&cptvf->pfvf_mbox, 0,
++				sizeof(*req),
++				sizeof(struct otx2_cpt_kcrypto_limits_rsp));
++	if (req == NULL) {
++		dev_err(&pdev->dev, "RVU MBOX failed to get message.\n");
++		return -EFAULT;
++	}
++	req->id = MBOX_MSG_GET_KCRYPTO_LIMITS;
++	req->sig = OTX2_MBOX_REQ_SIG;
++	req->pcifunc = OTX2_CPT_RVU_PFFUNC(cptvf->vf_id, 0);
++
++	ret = otx2_cpt_send_mbox_msg(pdev);
++
++	return ret;
++}
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
+new file mode 100644
+index 0000000..a963097
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
+@@ -0,0 +1,536 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Marvell. */
++
++#include "otx2_cptvf.h"
++#include "otx2_cptvf_algs.h"
++#include "otx2_cpt_mbox_common.h"
++
++/* SG list header size in bytes */
++#define SG_LIST_HDR_SIZE	8
++
++/* Default timeout when waiting for free pending entry in us */
++#define CPT_PENTRY_TIMEOUT	1000
++#define CPT_PENTRY_STEP		50
++
++/* Default threshold for stopping and resuming sender requests */
++#define CPT_IQ_STOP_MARGIN	128
++#define CPT_IQ_RESUME_MARGIN	512
++
++/* Default command timeout in seconds */
++#define CPT_COMMAND_TIMEOUT	4
++#define CPT_TIME_IN_RESET_COUNT 5
++
++static void otx2_cpt_dump_sg_list(struct pci_dev *pdev,
++				  struct otx2_cpt_req_info *req)
++{
++	int i;
++
++	pr_debug("Gather list size %d\n", req->in_cnt);
++	for (i = 0; i < req->in_cnt; i++) {
++		pr_debug("Buffer %d size %d, vptr 0x%p, dmaptr 0x%p\n", i,
++			 req->in[i].size, req->in[i].vptr,
++			 (void *) req->in[i].dma_addr);
++		pr_debug("Buffer hexdump (%d bytes)\n",
++			 req->in[i].size);
++		print_hex_dump_debug("", DUMP_PREFIX_NONE, 16, 1,
++				     req->in[i].vptr, req->in[i].size, false);
++	}
++
++	pr_debug("Scatter list size %d\n", req->out_cnt);
++	for (i = 0; i < req->out_cnt; i++) {
++		pr_debug("Buffer %d size %d, vptr 0x%p, dmaptr 0x%p\n", i,
++			 req->out[i].size, req->out[i].vptr,
++			 (void *) req->out[i].dma_addr);
++		pr_debug("Buffer hexdump (%d bytes)\n", req->out[i].size);
++		print_hex_dump_debug("", DUMP_PREFIX_NONE, 16, 1,
++				     req->out[i].vptr, req->out[i].size, false);
++	}
++}
++
++static inline struct otx2_cpt_pending_entry *get_free_pending_entry(
++					struct otx2_cpt_pending_queue *q,
++					int qlen)
++{
++	struct otx2_cpt_pending_entry *ent = NULL;
++
++	ent = &q->head[q->rear];
++	if (unlikely(ent->busy))
++		return NULL;
++
++	q->rear++;
++	if (unlikely(q->rear == qlen))
++		q->rear = 0;
++
++	return ent;
++}
++
++static inline u32 modulo_inc(u32 index, u32 length, u32 inc)
++{
++	if (WARN_ON(inc > length))
++		inc = length;
++
++	index += inc;
++	if (unlikely(index >= length))
++		index -= length;
++
++	return index;
++}
++
++static inline void free_pentry(struct otx2_cpt_pending_entry *pentry)
++{
++	pentry->completion_addr = NULL;
++	pentry->info = NULL;
++	pentry->callback = NULL;
++	pentry->areq = NULL;
++	pentry->resume_sender = false;
++	pentry->busy = false;
++}
++
++static inline int setup_sgio_components(struct pci_dev *pdev,
++					struct otx2_cpt_buf_ptr *list,
++					int buf_count, u8 *buffer)
++{
++	struct otx2_cpt_sglist_component *sg_ptr = NULL;
++	int ret = 0, i, j;
++	int components;
++
++	if (unlikely(!list)) {
++		dev_err(&pdev->dev, "Input list pointer is NULL\n");
++		return -EFAULT;
++	}
++
++	for (i = 0; i < buf_count; i++) {
++		if (unlikely(!list[i].vptr))
 +			continue;
-+
-+		if (!strncasecmp(val, "engine_group", 12)) {
-+			if (del_grp_idx != -1)
-+				goto err_print;
-+			sbegin = strsep(&val, ":");
-+			if (sbegin == NULL || val == NULL)
-+				goto err_print;
-+			tmp = strim(sbegin);
-+			if (strlen(tmp) != 13)
-+				goto err_print;
-+			if (kstrtoint((tmp + 12), 10, &del_grp_idx))
-+				goto err_print;
-+			val = strim(val);
-+			if (strncasecmp(val, "null", 4))
-+				goto err_print;
-+			if (strlen(val) != 4)
-+				goto err_print;
-+		} else if (!strncasecmp(val, "se", 2) && strchr(val, ':')) {
-+			if (has_se || ucode_idx)
-+				goto err_print;
-+			sbegin = strsep(&val, ":");
-+			if (sbegin == NULL || val == NULL)
-+				goto err_print;
-+			tmp = strim(sbegin);
-+			if (strlen(tmp) != 2)
-+				goto err_print;
-+			if (kstrtoint(strim(val), 10, &engs[grp_idx].count))
-+				goto err_print;
-+			engs[grp_idx++].type = OTX2_CPT_SE_TYPES;
-+			has_se = true;
-+		} else if (!strncasecmp(val, "ae", 2) && strchr(val, ':')) {
-+			if (has_ae || ucode_idx)
-+				goto err_print;
-+			sbegin = strsep(&val, ":");
-+			if (sbegin == NULL || !val)
-+				goto err_print;
-+			tmp = strim(sbegin);
-+			if (strlen(tmp) != 2)
-+				goto err_print;
-+			if (kstrtoint(strim(val), 10, &engs[grp_idx].count))
-+				goto err_print;
-+			engs[grp_idx++].type = OTX2_CPT_AE_TYPES;
-+			has_ae = true;
-+		} else if (!strncasecmp(val, "ie", 2) && strchr(val, ':')) {
-+			if (has_ie || ucode_idx)
-+				goto err_print;
-+			sbegin = strsep(&val, ":");
-+			if (sbegin == NULL || !val)
-+				goto err_print;
-+			tmp = strim(sbegin);
-+			if (strlen(tmp) != 2)
-+				goto err_print;
-+			if (kstrtoint(strim(val), 10, &engs[grp_idx].count))
-+				goto err_print;
-+			engs[grp_idx++].type = OTX2_CPT_IE_TYPES;
-+			has_ie = true;
-+		} else {
-+			if (ucode_idx > 1)
-+				goto err_print;
-+			if (!strlen(val))
-+				goto err_print;
-+			if (strnstr(val, " ", strlen(val)))
-+				goto err_print;
-+			ucode_filename[ucode_idx++] = val;
++		list[i].dma_addr = dma_map_single(&pdev->dev, list[i].vptr,
++						  list[i].size,
++						  DMA_BIDIRECTIONAL);
++		if (unlikely(dma_mapping_error(&pdev->dev, list[i].dma_addr))) {
++			dev_err(&pdev->dev, "Dma mapping failed\n");
++			ret = -EIO;
++			goto sg_cleanup;
 +		}
 +	}
-+
-+	/* Validate input parameters */
-+	if (del_grp_idx == -1) {
-+		if (!(grp_idx && ucode_idx))
-+			goto err_print;
-+
-+		if (ucode_idx > 1 && grp_idx < 2)
-+			goto err_print;
-+
-+		if (grp_idx > OTX2_CPT_MAX_ETYPES_PER_GRP) {
-+			err_msg = "Error max 2 engine types can be attached";
-+			goto err_print;
-+		}
-+
-+		if (grp_idx > 1) {
-+			if ((engs[0].type + engs[1].type) !=
-+			    (OTX2_CPT_SE_TYPES + OTX2_CPT_IE_TYPES)) {
-+				err_msg =
-+				"Only combination of SE+IE engines is allowed";
-+				goto err_print;
-+			}
-+
-+			/* Keep SE engines at zero index */
-+			if (engs[1].type == OTX2_CPT_SE_TYPES)
-+				swap_engines(&engs[0], &engs[1]);
-+		}
-+
-+	} else {
-+		if (del_grp_idx < 0 || del_grp_idx >=
-+						OTX2_CPT_MAX_ENGINE_GROUPS) {
-+			dev_err(dev, "Invalid engine group index %d\n",
-+				del_grp_idx);
-+			return -EINVAL;
-+		}
-+
-+		if (!eng_grps->grp[del_grp_idx].is_enabled) {
-+			dev_err(dev, "Error engine_group%d is not configured\n",
-+				del_grp_idx);
-+			return -EINVAL;
-+		}
-+
-+		if (grp_idx || ucode_idx)
-+			goto err_print;
++	components = buf_count / 4;
++	sg_ptr = (struct otx2_cpt_sglist_component *)buffer;
++	for (i = 0; i < components; i++) {
++		sg_ptr->len0 = cpu_to_be16(list[i * 4 + 0].size);
++		sg_ptr->len1 = cpu_to_be16(list[i * 4 + 1].size);
++		sg_ptr->len2 = cpu_to_be16(list[i * 4 + 2].size);
++		sg_ptr->len3 = cpu_to_be16(list[i * 4 + 3].size);
++		sg_ptr->ptr0 = cpu_to_be64(list[i * 4 + 0].dma_addr);
++		sg_ptr->ptr1 = cpu_to_be64(list[i * 4 + 1].dma_addr);
++		sg_ptr->ptr2 = cpu_to_be64(list[i * 4 + 2].dma_addr);
++		sg_ptr->ptr3 = cpu_to_be64(list[i * 4 + 3].dma_addr);
++		sg_ptr++;
 +	}
++	components = buf_count % 4;
 +
-+	mutex_lock(&eng_grps->lock);
-+
-+	if (eng_grps->is_rdonly) {
-+		dev_err(dev, "Disable VFs before modifying engine groups\n");
-+		ret = -EACCES;
-+		goto err_unlock;
++	switch (components) {
++	case 3:
++		sg_ptr->len2 = cpu_to_be16(list[i * 4 + 2].size);
++		sg_ptr->ptr2 = cpu_to_be64(list[i * 4 + 2].dma_addr);
++		fallthrough;
++	case 2:
++		sg_ptr->len1 = cpu_to_be16(list[i * 4 + 1].size);
++		sg_ptr->ptr1 = cpu_to_be64(list[i * 4 + 1].dma_addr);
++		fallthrough;
++	case 1:
++		sg_ptr->len0 = cpu_to_be16(list[i * 4 + 0].size);
++		sg_ptr->ptr0 = cpu_to_be64(list[i * 4 + 0].dma_addr);
++		break;
++	default:
++		break;
 +	}
++	return ret;
 +
-+	if (del_grp_idx == -1)
-+		/* create engine group */
-+		ret = create_engine_group(dev, eng_grps, engs, grp_idx,
-+					  (void **) ucode_filename,
-+					  ucode_idx, false);
-+	else
-+		/* delete engine group */
-+		ret = delete_engine_group(dev, &eng_grps->grp[del_grp_idx]);
-+	if (ret)
-+		goto err_unlock;
++sg_cleanup:
++	for (j = 0; j < i; j++) {
++		if (list[j].dma_addr) {
++			dma_unmap_single(&pdev->dev, list[j].dma_addr,
++					 list[j].size, DMA_BIDIRECTIONAL);
++		}
 +
-+	print_dbg_info(dev, eng_grps);
-+err_unlock:
-+	mutex_unlock(&eng_grps->lock);
-+	return ret ? ret : count;
-+err_print:
-+	dev_err(dev, "%s\n", err_msg);
-+
++		list[j].dma_addr = 0;
++	}
 +	return ret;
 +}
 +
-+static int create_eng_caps_discovery_grps(struct pci_dev *pdev,
-+					  struct otx2_cpt_eng_grps *eng_grps)
++static inline struct otx2_cpt_inst_info *info_create(struct pci_dev *pdev,
++					      struct otx2_cpt_req_info *req,
++					      gfp_t gfp)
 +{
-+	struct tar_ucode_info_t *tar_info[OTX2_CPT_MAX_ETYPES_PER_GRP] = { 0 };
-+	struct otx2_cpt_engines engs[OTX2_CPT_MAX_ETYPES_PER_GRP] = { {0} };
-+	struct tar_arch_info_t *tar_arch = NULL;
-+	char tar_filename[OTX2_CPT_NAME_LENGTH];
-+	int ret = -EINVAL;
++	int align = OTX2_CPT_DMA_MINALIGN;
++	struct otx2_cpt_inst_info *info;
++	u32 dlen, align_dlen, info_len;
++	u16 g_sz_bytes, s_sz_bytes;
++	u32 total_mem_len;
 +
-+	sprintf(tar_filename, "cpt%02d-mc.tar", pdev->revision);
-+	tar_arch = load_tar_archive(&pdev->dev, tar_filename);
-+	if (!tar_arch)
-+		return -EINVAL;
-+	/*
-+	 * If device supports AE engines and there is AE microcode in tar
-+	 * archive try to create engine group with AE engines.
-+	 */
-+	tar_info[0] = get_uc_from_tar_archive(tar_arch, OTX2_CPT_AE_TYPES);
-+	if (tar_info[0] && dev_supports_eng_type(eng_grps, OTX2_CPT_AE_TYPES)) {
++	if (unlikely(req->in_cnt > OTX2_CPT_MAX_SG_IN_CNT ||
++		     req->out_cnt > OTX2_CPT_MAX_SG_OUT_CNT)) {
++		dev_err(&pdev->dev, "Error too many sg components\n");
++		return NULL;
++	}
 +
-+		engs[0].type = OTX2_CPT_AE_TYPES;
-+		engs[0].count = 2;
++	g_sz_bytes = ((req->in_cnt + 3) / 4) *
++		      sizeof(struct otx2_cpt_sglist_component);
++	s_sz_bytes = ((req->out_cnt + 3) / 4) *
++		      sizeof(struct otx2_cpt_sglist_component);
 +
-+		ret = create_engine_group(&pdev->dev, eng_grps, engs, 1,
-+					  (void **) tar_info, 1, true);
-+		if (ret)
-+			goto release_tar;
++	dlen = g_sz_bytes + s_sz_bytes + SG_LIST_HDR_SIZE;
++	align_dlen = ALIGN(dlen, align);
++	info_len = ALIGN(sizeof(*info), align);
++	total_mem_len = align_dlen + info_len + sizeof(union otx2_cpt_res_s);
++
++	info = kzalloc(total_mem_len, gfp);
++	if (unlikely(!info))
++		return NULL;
++
++	info->dlen = dlen;
++	info->in_buffer = (u8 *)info + info_len;
++
++	((u16 *)info->in_buffer)[0] = req->out_cnt;
++	((u16 *)info->in_buffer)[1] = req->in_cnt;
++	((u16 *)info->in_buffer)[2] = 0;
++	((u16 *)info->in_buffer)[3] = 0;
++	cpu_to_be64s((u64 *)info->in_buffer);
++
++	/* Setup gather (input) components */
++	if (setup_sgio_components(pdev, req->in, req->in_cnt,
++				  &info->in_buffer[8])) {
++		dev_err(&pdev->dev, "Failed to setup gather list\n");
++		goto destroy_info;
++	}
++
++	if (setup_sgio_components(pdev, req->out, req->out_cnt,
++				  &info->in_buffer[8 + g_sz_bytes])) {
++		dev_err(&pdev->dev, "Failed to setup scatter list\n");
++		goto destroy_info;
++	}
++
++	info->dma_len = total_mem_len - info_len;
++	info->dptr_baddr = dma_map_single(&pdev->dev, info->in_buffer,
++					  info->dma_len, DMA_BIDIRECTIONAL);
++	if (unlikely(dma_mapping_error(&pdev->dev, info->dptr_baddr))) {
++		dev_err(&pdev->dev, "DMA Mapping failed for cpt req\n");
++		goto destroy_info;
 +	}
 +	/*
-+	 * If device supports SE engines and there is SE microcode in tar
-+	 * archive try to create engine group with SE engines.
++	 * Get buffer for union otx2_cpt_res_s response
++	 * structure and its physical address
 +	 */
-+	tar_info[0] = get_uc_from_tar_archive(tar_arch, OTX2_CPT_SE_TYPES);
-+	if (tar_info[0] && dev_supports_eng_type(eng_grps, OTX2_CPT_SE_TYPES)) {
++	info->completion_addr = info->in_buffer + align_dlen;
++	info->comp_baddr = info->dptr_baddr + align_dlen;
 +
-+		engs[0].type = OTX2_CPT_SE_TYPES;
-+		engs[0].count = 2;
-+
-+		ret = create_engine_group(&pdev->dev, eng_grps, engs, 1,
-+					  (void **) tar_info, 1, true);
-+		if (ret)
-+			goto release_tar;
-+	}
-+	/*
-+	 * If device supports IE engines and there is IE microcode in tar
-+	 * archive try to create engine group with IE engines.
-+	 */
-+	tar_info[0] = get_uc_from_tar_archive(tar_arch, OTX2_CPT_IE_TYPES);
-+	if (tar_info[0] && dev_supports_eng_type(eng_grps, OTX2_CPT_IE_TYPES)) {
-+
-+		engs[0].type = OTX2_CPT_IE_TYPES;
-+		engs[0].count = 2;
-+
-+		ret = create_engine_group(&pdev->dev, eng_grps, engs, 1,
-+					  (void **) tar_info, 1, true);
-+		if (ret)
-+			goto release_tar;
-+	}
-+release_tar:
-+	release_tar_archive(tar_arch);
-+	return ret;
++	return info;
++destroy_info:
++	otx2_cpt_info_destroy(pdev, info);
++	return NULL;
 +}
 +
-+/*
-+ * Get CPT HW capabilities using LOAD_FVC operation.
-+ */
-+int otx2_cpt_discover_eng_capabilities(void *obj)
++static int process_request(struct pci_dev *pdev, struct otx2_cpt_req_info *req,
++			   struct otx2_cpt_pending_queue *pqueue, void *obj)
 +{
-+	struct otx2_cptpf_dev *cptpf = obj;
++	struct otx2_cptvf_request *cpt_req = &req->req;
++	struct otx2_cpt_pending_entry *pentry = NULL;
++	union otx2_cpt_ctrl_info *ctrl = &req->ctrl;
++	struct otx2_cpt_inst_info *info = NULL;
++	union otx2_cpt_res_s *result = NULL;
 +	struct otx2_cpt_iq_command iq_cmd;
-+	union otx2_cpt_opcode opcode;
-+	union otx2_cpt_res_s *result;
-+	union otx2_cpt_inst_s inst;
-+	dma_addr_t rptr_baddr;
-+	struct pci_dev *pdev;
-+	u32 len, compl_rlen;
-+	int ret, etype;
-+	void *rptr;
++	union otx2_cpt_inst_s cptinst;
++	int retry, ret = 0;
++	u8 resume_sender;
++	gfp_t gfp;
++
++	gfp = (req->areq->flags & CRYPTO_TFM_REQ_MAY_SLEEP) ? GFP_KERNEL :
++							      GFP_ATOMIC;
++	info = info_create(pdev, req, gfp);
++	if (unlikely(!info)) {
++		dev_err(&pdev->dev, "Setting up cpt inst info failed");
++		return -ENOMEM;
++	}
++	cpt_req->dlen = info->dlen;
++
++	result = info->completion_addr;
++	result->s.compcode = OTX2_CPT_COMPLETION_CODE_INIT;
++
++	spin_lock_bh(&pqueue->lock);
++	pentry = get_free_pending_entry(pqueue, pqueue->qlen);
++	retry = CPT_PENTRY_TIMEOUT / CPT_PENTRY_STEP;
++	while (unlikely(!pentry) && retry--) {
++		spin_unlock_bh(&pqueue->lock);
++		udelay(CPT_PENTRY_STEP);
++		spin_lock_bh(&pqueue->lock);
++		pentry = get_free_pending_entry(pqueue, pqueue->qlen);
++	}
++
++	if (unlikely(!pentry)) {
++		ret = -ENOSPC;
++		goto destroy_info;
++	}
 +
 +	/*
-+	 * We don't get capabilities if it was already done
-+	 * (when user enabled VFs for the first time)
++	 * Check if we are close to filling in entire pending queue,
++	 * if so then tell the sender to stop/sleep by returning -EBUSY
++	 * We do it only for context which can sleep (GFP_KERNEL)
 +	 */
-+	if (cptpf->is_eng_caps_discovered)
-+		return 0;
++	if (gfp == GFP_KERNEL &&
++	    pqueue->pending_count > (pqueue->qlen - CPT_IQ_STOP_MARGIN)) {
++		pentry->resume_sender = true;
++	} else
++		pentry->resume_sender = false;
++	resume_sender = pentry->resume_sender;
++	pqueue->pending_count++;
 +
-+	pdev = cptpf->pdev;
-+	ret = create_eng_caps_discovery_grps(pdev, &cptpf->eng_grps);
-+	if (ret)
-+		goto delete_grps;
-+
-+	ret = otx2_cptpf_lf_init(cptpf, OTX2_CPT_ALL_ENG_GRPS_MASK,
-+				 OTX2_CPT_QUEUE_HI_PRIO, 1);
-+	if (ret)
-+		goto delete_grps;
-+
-+	compl_rlen = ALIGN(sizeof(union otx2_cpt_res_s), OTX2_CPT_DMA_MINALIGN);
-+	len = compl_rlen + LOADFVC_RLEN;
-+
-+	result = kzalloc(len, GFP_KERNEL);
-+	if (!result) {
-+		ret = -ENOMEM;
-+		goto lf_cleanup;
-+	}
-+	rptr_baddr = dma_map_single(&pdev->dev, (void *)result, len,
-+				    DMA_BIDIRECTIONAL);
-+	if (dma_mapping_error(&pdev->dev, rptr_baddr)) {
-+		dev_err(&pdev->dev, "DMA mapping failed\n");
-+		ret = -EFAULT;
-+		goto free_result;
-+	}
-+	rptr = (u8 *)result + compl_rlen;
++	pentry->completion_addr = info->completion_addr;
++	pentry->info = info;
++	pentry->callback = req->callback;
++	pentry->areq = req->areq;
++	pentry->busy = true;
++	info->pentry = pentry;
++	info->time_in = jiffies;
++	info->req = req;
 +
 +	/* Fill in the command */
-+	opcode.s.major = LOADFVC_MAJOR_OP;
-+	opcode.s.minor = LOADFVC_MINOR_OP;
-+
 +	iq_cmd.cmd.u = 0;
-+	iq_cmd.cmd.s.opcode = cpu_to_be16(opcode.flags);
++	iq_cmd.cmd.s.opcode = cpu_to_be16(cpt_req->opcode.flags);
++	iq_cmd.cmd.s.param1 = cpu_to_be16(cpt_req->param1);
++	iq_cmd.cmd.s.param2 = cpu_to_be16(cpt_req->param2);
++	iq_cmd.cmd.s.dlen   = cpu_to_be16(cpt_req->dlen);
 +
-+	/* 64-bit swap for microcode data reads, not needed for addresses */
++	/* 64-bit swap for microcode data reads, not needed for addresses*/
 +	cpu_to_be64s(&iq_cmd.cmd.u);
-+	iq_cmd.dptr = 0;
-+	iq_cmd.rptr = rptr_baddr + compl_rlen;
++	iq_cmd.dptr = info->dptr_baddr;
++	iq_cmd.rptr = 0;
 +	iq_cmd.cptr.u = 0;
++	iq_cmd.cptr.s.grp = ctrl->s.grp;
 +
-+	for (etype = 1; etype < OTX2_CPT_MAX_ENG_TYPES; etype++) {
-+		result->s.compcode = OTX2_CPT_COMPLETION_CODE_INIT;
-+		iq_cmd.cptr.s.grp = get_eng_caps_discovery_grp(
-+						&cptpf->eng_grps, etype);
-+		otx2_cpt_fill_inst(&inst, &iq_cmd, rptr_baddr);
-+		otx2_cpt_send_cmd(&inst, 1, &cptpf->lfs.lf[0]);
++	/* Fill in the CPT_INST_S type command for HW interpretation */
++	otx2_cpt_fill_inst(&cptinst, &iq_cmd, info->comp_baddr);
 +
-+		while (result->s.compcode == OTX2_CPT_COMPLETION_CODE_INIT)
-+			cpu_relax();
++	/* Print debug info if enabled */
++	otx2_cpt_dump_sg_list(pdev, req);
++	pr_debug("Cpt_inst_s hexdump (%d bytes)\n", OTX2_CPT_INST_SIZE);
++	print_hex_dump_debug("", 0, 16, 1, &cptinst, OTX2_CPT_INST_SIZE, false);
++	pr_debug("Dptr hexdump (%d bytes)\n", cpt_req->dlen);
++	print_hex_dump_debug("", 0, 16, 1, info->in_buffer,
++			     cpt_req->dlen, false);
 +
-+		cptpf->eng_caps[etype].u = be64_to_cpup(rptr);
-+	}
-+	dma_unmap_single(&pdev->dev, rptr_baddr, len, DMA_BIDIRECTIONAL);
-+	cptpf->is_eng_caps_discovered = true;
-+free_result:
-+	kzfree(result);
-+lf_cleanup:
-+	otx2_cptpf_lf_cleanup(&cptpf->lfs);
-+delete_grps:
-+	delete_eng_caps_discovery_grps(pdev, &cptpf->eng_grps);
++	/* Send CPT command */
++	otx2_cpt_send_cmd(&cptinst, 1, obj);
 +
++	/*
++	 * We allocate and prepare pending queue entry in critical section
++	 * together with submitting CPT instruction to CPT instruction queue
++	 * to make sure that order of CPT requests is the same in both
++	 * pending and instruction queues
++	 */
++	spin_unlock_bh(&pqueue->lock);
++
++	ret = resume_sender ? -EBUSY : -EINPROGRESS;
++	return ret;
++destroy_info:
++	spin_unlock_bh(&pqueue->lock);
++	otx2_cpt_info_destroy(pdev, info);
 +	return ret;
 +}
 +
-+
-+int otx2_cpt_try_create_default_eng_grps(struct pci_dev *pdev,
-+					 struct otx2_cpt_eng_grps *eng_grps)
++int otx2_cpt_get_kcrypto_eng_grp_num(struct pci_dev *pdev)
 +{
-+	struct tar_ucode_info_t *tar_info[OTX2_CPT_MAX_ETYPES_PER_GRP] = { 0 };
-+	struct otx2_cpt_engines engs[OTX2_CPT_MAX_ETYPES_PER_GRP] = { {0} };
-+	struct tar_arch_info_t *tar_arch = NULL;
-+	char tar_filename[OTX2_CPT_NAME_LENGTH];
-+	int i, ret = 0;
++	struct otx2_cptlfs_info *lfs = otx2_cpt_get_lfs_info(pdev);
 +
-+	mutex_lock(&eng_grps->lock);
-+
-+	/*
-+	 * We don't create engine group for kernel crypto if attempt to create
-+	 * it was already made (when user enabled VFs for the first time)
-+	 */
-+	if (eng_grps->is_first_try)
-+		goto unlock_mutex;
-+	eng_grps->is_first_try = true;
-+
-+	/* We create group for kcrypto only if no groups are configured */
-+	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++)
-+		if (eng_grps->grp[i].is_enabled)
-+			goto unlock_mutex;
-+
-+	sprintf(tar_filename, "cpt%02d-mc.tar", pdev->revision);
-+
-+	tar_arch = load_tar_archive(&pdev->dev, tar_filename);
-+	if (!tar_arch)
-+		goto unlock_mutex;
-+
-+	/*
-+	 * If device supports SE engines and there is SE microcode in tar
-+	 * archive try to create engine group with SE engines for kernel
-+	 * crypto functionality (symmetric crypto)
-+	 */
-+	tar_info[0] = get_uc_from_tar_archive(tar_arch, OTX2_CPT_SE_TYPES);
-+	if (tar_info[0] && dev_supports_eng_type(eng_grps, OTX2_CPT_SE_TYPES)) {
-+
-+		engs[0].type = OTX2_CPT_SE_TYPES;
-+		engs[0].count = eng_grps->avail.max_se_cnt;
-+
-+		ret = create_engine_group(&pdev->dev, eng_grps, engs, 1,
-+					  (void **) tar_info, 1, true);
-+		if (ret)
-+			goto release_tar_arch;
-+	}
-+
-+	/*
-+	 * If device supports SE+IE engines and there is SE and IE microcode in
-+	 * tar archive try to create engine group with SE+IE engines for IPSec.
-+	 * All SE engines will be shared with engine group 0.
-+	 */
-+	tar_info[0] = get_uc_from_tar_archive(tar_arch, OTX2_CPT_SE_TYPES);
-+	tar_info[1] = get_uc_from_tar_archive(tar_arch, OTX2_CPT_IE_TYPES);
-+	if (tar_info[0] && tar_info[1] &&
-+	    dev_supports_eng_type(eng_grps, OTX2_CPT_SE_TYPES) &&
-+	    dev_supports_eng_type(eng_grps, OTX2_CPT_IE_TYPES)) {
-+
-+		engs[0].type = OTX2_CPT_SE_TYPES;
-+		engs[0].count = eng_grps->avail.max_se_cnt;
-+		engs[1].type = OTX2_CPT_IE_TYPES;
-+		engs[1].count = eng_grps->avail.max_ie_cnt;
-+
-+		ret = create_engine_group(&pdev->dev, eng_grps, engs, 2,
-+					  (void **) tar_info, 2, true);
-+		if (ret)
-+			goto release_tar_arch;
-+	}
-+
-+	/*
-+	 * If device supports AE engines and there is AE microcode in tar
-+	 * archive try to create engine group with AE engines for asymmetric
-+	 * crypto functionality.
-+	 */
-+	tar_info[0] = get_uc_from_tar_archive(tar_arch, OTX2_CPT_AE_TYPES);
-+	if (tar_info[0] && dev_supports_eng_type(eng_grps, OTX2_CPT_AE_TYPES)) {
-+
-+		engs[0].type = OTX2_CPT_AE_TYPES;
-+		engs[0].count = eng_grps->avail.max_ae_cnt;
-+
-+		ret = create_engine_group(&pdev->dev, eng_grps, engs, 1,
-+					  (void **) tar_info, 1, true);
-+		if (ret)
-+			goto release_tar_arch;
-+	}
-+
-+	print_dbg_info(&pdev->dev, eng_grps);
-+release_tar_arch:
-+	release_tar_archive(tar_arch);
-+unlock_mutex:
-+	mutex_unlock(&eng_grps->lock);
-+	return ret;
++	return lfs->kcrypto_eng_grp_num;
 +}
 +
-+void otx2_cpt_set_eng_grps_is_rdonly(struct otx2_cpt_eng_grps *eng_grps,
-+				     bool is_rdonly)
++int otx2_cpt_do_request(struct pci_dev *pdev, struct otx2_cpt_req_info *req,
++			int cpu_num)
 +{
-+	mutex_lock(&eng_grps->lock);
++	struct otx2_cptlfs_info *lfs = otx2_cpt_get_lfs_info(pdev);
 +
-+	eng_grps->is_rdonly = is_rdonly;
-+
-+	mutex_unlock(&eng_grps->lock);
++	return process_request(pdev, req, &lfs->lf[cpu_num].pqueue,
++			       &lfs->lf[cpu_num]);
 +}
 +
-+int otx2_cpt_disable_all_cores(struct otx2_cptpf_dev *cptpf)
++static int cpt_process_ccode(struct pci_dev *pdev,
++			     union otx2_cpt_res_s *cpt_status,
++			     struct otx2_cpt_inst_info *info,
++			     u32 *res_code)
 +{
-+	int i, ret, busy, total_cores;
-+	int timeout = 10;
-+	u64 reg = 0;
++	u8 uc_ccode = cpt_status->s.uc_compcode;
++	u8 ccode = cpt_status->s.compcode;
 +
-+	total_cores = cptpf->eng_grps.avail.max_se_cnt +
-+		      cptpf->eng_grps.avail.max_ie_cnt +
-+		      cptpf->eng_grps.avail.max_ae_cnt;
++	switch (ccode) {
++	case OTX2_CPT_COMP_E_FAULT:
++		dev_err(&pdev->dev,
++			"Request failed with DMA fault\n");
++		otx2_cpt_dump_sg_list(pdev, info->req);
++		break;
 +
-+	/* Disengage the cores from groups */
-+	for (i = 0; i < total_cores; i++) {
-+		ret = otx2_cpt_add_write_af_reg(cptpf->pdev,
-+						CPT_AF_EXEX_CTL2(i), 0x0);
-+		if (ret)
-+			return ret;
++	case OTX2_CPT_COMP_E_HWERR:
++		dev_err(&pdev->dev,
++			"Request failed with hardware error\n");
++		otx2_cpt_dump_sg_list(pdev, info->req);
++		break;
 +
-+		cptpf->eng_grps.eng_ref_cnt[i] = 0;
-+	}
-+	ret = otx2_cpt_send_af_reg_requests(cptpf->pdev);
-+	if (ret)
-+		return ret;
++	case OTX2_CPT_COMP_E_INSTERR:
++		dev_err(&pdev->dev,
++			"Request failed with instruction error\n");
++		otx2_cpt_dump_sg_list(pdev, info->req);
++		break;
 +
-+	/* Wait for cores to become idle */
-+	do {
-+		busy = 0;
-+		usleep_range(10000, 20000);
-+		if (timeout-- < 0)
-+			return -EBUSY;
++	case OTX2_CPT_COMP_E_NOTDONE:
++		/* check for timeout */
++		if (time_after_eq(jiffies, info->time_in +
++				  CPT_COMMAND_TIMEOUT * HZ))
++			dev_warn(&pdev->dev,
++				 "Request timed out 0x%p", info->req);
++		else if (info->extra_time < CPT_TIME_IN_RESET_COUNT) {
++			info->time_in = jiffies;
++			info->extra_time++;
++		}
++		return 1;
 +
-+		for (i = 0; i < total_cores; i++) {
-+			ret = otx2_cpt_read_af_reg(cptpf->pdev,
-+						   CPT_AF_EXEX_STS(i), &reg);
-+			if (ret)
-+				return ret;
-+
-+			if (reg & 0x1) {
-+				busy = 1;
++	case OTX2_CPT_COMP_E_GOOD:
++		/*
++		 * Check microcode completion code, it is only valid
++		 * when completion code is CPT_COMP_E::GOOD
++		 */
++		if (uc_ccode != OTX2_CPT_UCC_SUCCESS) {
++			/*
++			 * If requested hmac is truncated and ucode returns
++			 * s/g write length error then we report success
++			 * because ucode writes as many bytes of calculated
++			 * hmac as available in gather buffer and reports
++			 * s/g write length error if number of bytes in gather
++			 * buffer is less than full hmac size.
++			 */
++			if (info->req->is_trunc_hmac &&
++			    uc_ccode == OTX2_CPT_UCC_SG_WRITE_LENGTH) {
++				*res_code = 0;
 +				break;
 +			}
++
++			dev_err(&pdev->dev,
++				"Request failed with software error code 0x%x\n",
++				cpt_status->s.uc_compcode);
++			otx2_cpt_dump_sg_list(pdev, info->req);
++			break;
 +		}
-+	} while (busy);
++		/* Request has been processed with success */
++		*res_code = 0;
++		break;
 +
-+	/* Disable the cores */
-+	for (i = 0; i < total_cores; i++) {
-+		ret = otx2_cpt_add_write_af_reg(cptpf->pdev, CPT_AF_EXEX_CTL(i),
-+						0x0);
-+		if (ret)
-+			return ret;
-+	}
-+	ret = otx2_cpt_send_af_reg_requests(cptpf->pdev);
-+
-+	return ret;
-+}
-+
-+void otx2_cpt_cleanup_eng_grps(struct pci_dev *pdev,
-+			       struct otx2_cpt_eng_grps *eng_grps)
-+{
-+	struct otx2_cpt_eng_grp_info *grp;
-+	int i, j;
-+
-+	mutex_lock(&eng_grps->lock);
-+	if (eng_grps->is_ucode_load_created) {
-+		device_remove_file(&pdev->dev,
-+				   &eng_grps->ucode_load_attr);
-+		eng_grps->is_ucode_load_created = false;
-+	}
-+
-+	/* First delete all mirroring engine groups */
-+	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++)
-+		if (eng_grps->grp[i].mirror.is_ena)
-+			delete_engine_group(&pdev->dev, &eng_grps->grp[i]);
-+
-+	/* Delete remaining engine groups */
-+	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++)
-+		delete_engine_group(&pdev->dev, &eng_grps->grp[i]);
-+
-+	/* Release memory */
-+	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+		grp = &eng_grps->grp[i];
-+		for (j = 0; j < OTX2_CPT_MAX_ETYPES_PER_GRP; j++) {
-+			kfree(grp->engs[j].bmap);
-+			grp->engs[j].bmap = NULL;
-+		}
-+	}
-+	mutex_unlock(&eng_grps->lock);
-+}
-+
-+int otx2_cpt_init_eng_grps(struct pci_dev *pdev,
-+			   struct otx2_cpt_eng_grps *eng_grps)
-+{
-+	struct otx2_cpt_eng_grp_info *grp;
-+	int i, j, ret;
-+
-+	mutex_init(&eng_grps->lock);
-+	eng_grps->obj = pci_get_drvdata(pdev);
-+	eng_grps->avail.se_cnt = eng_grps->avail.max_se_cnt;
-+	eng_grps->avail.ie_cnt = eng_grps->avail.max_ie_cnt;
-+	eng_grps->avail.ae_cnt = eng_grps->avail.max_ae_cnt;
-+
-+	eng_grps->engs_num = eng_grps->avail.max_se_cnt +
-+			     eng_grps->avail.max_ie_cnt +
-+			     eng_grps->avail.max_ae_cnt;
-+	if (eng_grps->engs_num > OTX2_CPT_MAX_ENGINES) {
++	default:
 +		dev_err(&pdev->dev,
-+			"Number of engines %d > than max supported %d\n",
-+			eng_grps->engs_num, OTX2_CPT_MAX_ENGINES);
-+		ret = -EINVAL;
-+		goto cleanup_eng_grps;
++			"Request returned invalid status %d\n", ccode);
++		break;
 +	}
++	return 0;
++}
 +
-+	for (i = 0; i < OTX2_CPT_MAX_ENGINE_GROUPS; i++) {
-+		grp = &eng_grps->grp[i];
-+		grp->g = eng_grps;
-+		grp->idx = i;
++static inline void process_pending_queue(struct pci_dev *pdev,
++					 struct otx2_cpt_pending_queue *pqueue)
++{
++	struct otx2_cpt_pending_entry *resume_pentry = NULL;
++	void (*callback)(int status, void *arg, void *req);
++	struct otx2_cpt_pending_entry *pentry = NULL;
++	union otx2_cpt_res_s *cpt_status = NULL;
++	struct otx2_cpt_inst_info *info = NULL;
++	struct otx2_cpt_req_info *req = NULL;
++	struct crypto_async_request *areq;
++	u32 res_code, resume_index;
 +
-+		snprintf(grp->sysfs_info_name, OTX2_CPT_NAME_LENGTH,
-+			 "engine_group%d", i);
-+		for (j = 0; j < OTX2_CPT_MAX_ETYPES_PER_GRP; j++) {
-+			grp->engs[j].bmap =
-+				kcalloc(BITS_TO_LONGS(eng_grps->engs_num),
-+					sizeof(long), GFP_KERNEL);
-+			if (!grp->engs[j].bmap) {
-+				ret = -ENOMEM;
-+				goto cleanup_eng_grps;
++	while (1) {
++		spin_lock_bh(&pqueue->lock);
++		pentry = &pqueue->head[pqueue->front];
++
++		if (WARN_ON(!pentry)) {
++			spin_unlock_bh(&pqueue->lock);
++			break;
++		}
++
++		res_code = -EINVAL;
++		if (unlikely(!pentry->busy)) {
++			spin_unlock_bh(&pqueue->lock);
++			break;
++		}
++
++		if (unlikely(!pentry->callback)) {
++			dev_err(&pdev->dev, "Callback NULL\n");
++			goto process_pentry;
++		}
++
++		info = pentry->info;
++		if (unlikely(!info)) {
++			dev_err(&pdev->dev, "Pending entry post arg NULL\n");
++			goto process_pentry;
++		}
++
++		req = info->req;
++		if (unlikely(!req)) {
++			dev_err(&pdev->dev, "Request NULL\n");
++			goto process_pentry;
++		}
++
++		cpt_status = pentry->completion_addr;
++		if (unlikely(!cpt_status)) {
++			dev_err(&pdev->dev, "Completion address NULL\n");
++			goto process_pentry;
++		}
++
++		if (cpt_process_ccode(pdev, cpt_status, info, &res_code)) {
++			spin_unlock_bh(&pqueue->lock);
++			return;
++		}
++		info->pdev = pdev;
++
++process_pentry:
++		/*
++		 * Check if we should inform sending side to resume
++		 * We do it CPT_IQ_RESUME_MARGIN elements in advance before
++		 * pending queue becomes empty
++		 */
++		resume_index = modulo_inc(pqueue->front, pqueue->qlen,
++					  CPT_IQ_RESUME_MARGIN);
++		resume_pentry = &pqueue->head[resume_index];
++		if (resume_pentry &&
++		    resume_pentry->resume_sender) {
++			resume_pentry->resume_sender = false;
++			callback = resume_pentry->callback;
++			areq = resume_pentry->areq;
++
++			if (callback) {
++				spin_unlock_bh(&pqueue->lock);
++
++				/*
++				 * EINPROGRESS is an indication for sending
++				 * side that it can resume sending requests
++				 */
++				callback(-EINPROGRESS, areq, info);
++				spin_lock_bh(&pqueue->lock);
 +			}
 +		}
++
++		callback = pentry->callback;
++		areq = pentry->areq;
++		free_pentry(pentry);
++
++		pqueue->pending_count--;
++		pqueue->front = modulo_inc(pqueue->front, pqueue->qlen, 1);
++		spin_unlock_bh(&pqueue->lock);
++
++		/*
++		 * Call callback after current pending entry has been
++		 * processed, we don't do it if the callback pointer is
++		 * invalid.
++		 */
++		if (callback)
++			callback(res_code, areq, info);
 +	}
-+
-+	eng_grps->eng_types_supported = 1 << OTX2_CPT_SE_TYPES |
-+					1 << OTX2_CPT_IE_TYPES |
-+					1 << OTX2_CPT_AE_TYPES;
-+
-+	eng_grps->ucode_load_attr.show = NULL;
-+	eng_grps->ucode_load_attr.store = ucode_load_store;
-+	eng_grps->ucode_load_attr.attr.name = "ucode_load";
-+	eng_grps->ucode_load_attr.attr.mode = 0220;
-+	sysfs_attr_init(&eng_grps->ucode_load_attr.attr);
-+	ret = device_create_file(&pdev->dev,
-+				 &eng_grps->ucode_load_attr);
-+	if (ret)
-+		goto cleanup_eng_grps;
-+	eng_grps->is_ucode_load_created = true;
-+
-+	print_dbg_info(&pdev->dev, eng_grps);
-+	return 0;
-+cleanup_eng_grps:
-+	otx2_cpt_cleanup_eng_grps(pdev, eng_grps);
-+	return ret;
 +}
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.h b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.h
-new file mode 100644
-index 0000000..7059fe6
---- /dev/null
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.h
-@@ -0,0 +1,180 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ * Copyright (C) 2020 Marvell.
-+ */
 +
-+#ifndef __OTX2_CPTPF_UCODE_H
-+#define __OTX2_CPTPF_UCODE_H
-+
-+#include <linux/pci.h>
-+#include <linux/types.h>
-+#include <linux/module.h>
-+#include "otx2_cpt_hw_types.h"
-+#include "otx2_cpt_common.h"
-+
-+/*
-+ * On OcteonTX2 platform IPSec ucode can use both IE and SE engines therefore
-+ * IE and SE engines can be attached to the same engine group.
-+ */
-+#define OTX2_CPT_MAX_ETYPES_PER_GRP 2
-+
-+/* CPT ucode alignment */
-+#define OTX2_CPT_UCODE_ALIGNMENT    128
-+
-+/* CPT ucode signature size */
-+#define OTX2_CPT_UCODE_SIGN_LEN     256
-+
-+/* Microcode version string length */
-+#define OTX2_CPT_UCODE_VER_STR_SZ   44
-+
-+/* Maximum number of supported engines/cores on OcteonTX2 platform */
-+#define OTX2_CPT_MAX_ENGINES        128
-+
-+#define OTX2_CPT_ENGS_BITMASK_LEN   (OTX2_CPT_MAX_ENGINES/(BITS_PER_BYTE * \
-+					 sizeof(unsigned long)))
-+
-+/* Microcode types */
-+enum otx2_cpt_ucode_type {
-+	OTX2_CPT_AE_UC_TYPE = 1,  /* AE-MAIN */
-+	OTX2_CPT_SE_UC_TYPE1 = 20,/* SE-MAIN - combination of 21 and 22 */
-+	OTX2_CPT_SE_UC_TYPE2 = 21,/* Fast Path IPSec + AirCrypto */
-+	OTX2_CPT_SE_UC_TYPE3 = 22,/*
-+				   * Hash + HMAC + FlexiCrypto + RNG +
-+				   * Full Feature IPSec + AirCrypto + Kasumi
-+				   */
-+	OTX2_CPT_IE_UC_TYPE1 = 30, /* IE-MAIN - combination of 31 and 32 */
-+	OTX2_CPT_IE_UC_TYPE2 = 31, /* Fast Path IPSec */
-+	OTX2_CPT_IE_UC_TYPE3 = 32, /*
-+				    * Hash + HMAC + FlexiCrypto + RNG +
-+				    * Full Future IPSec
-+				    */
-+};
-+
-+struct otx2_cpt_bitmap {
-+	unsigned long bits[OTX2_CPT_ENGS_BITMASK_LEN];
-+	int size;
-+};
-+
-+struct otx2_cpt_engines {
-+	int type;
-+	int count;
-+};
-+
-+/* Microcode version number */
-+struct otx2_cpt_ucode_ver_num {
-+	u8 nn;
-+	u8 xx;
-+	u8 yy;
-+	u8 zz;
-+};
-+
-+struct otx2_cpt_ucode_hdr {
-+	struct otx2_cpt_ucode_ver_num ver_num;
-+	u8 ver_str[OTX2_CPT_UCODE_VER_STR_SZ];
-+	u32 code_length;
-+	u32 padding[3];
-+};
-+
-+struct otx2_cpt_ucode {
-+	u8 ver_str[OTX2_CPT_UCODE_VER_STR_SZ];/*
-+					       * ucode version in readable
-+					       * format
-+					       */
-+	struct otx2_cpt_ucode_ver_num ver_num;/* ucode version number */
-+	char filename[OTX2_CPT_NAME_LENGTH];/* ucode filename */
-+	dma_addr_t dma;		/* phys address of ucode image */
-+	dma_addr_t align_dma;	/* aligned phys address of ucode image */
-+	void *va;		/* virt address of ucode image */
-+	void *align_va;		/* aligned virt address of ucode image */
-+	u32 size;		/* ucode image size */
-+	int type;		/* ucode image type SE, IE, AE or SE+IE */
-+};
-+
-+struct tar_ucode_info_t {
-+	struct list_head list;
-+	struct otx2_cpt_ucode ucode;/* microcode information */
-+	const u8 *ucode_ptr;	/* pointer to microcode in tar archive */
-+};
-+
-+/* Maximum and current number of engines available for all engine groups */
-+struct otx2_cpt_engs_available {
-+	int max_se_cnt;
-+	int max_ie_cnt;
-+	int max_ae_cnt;
-+	int se_cnt;
-+	int ie_cnt;
-+	int ae_cnt;
-+};
-+
-+/* Engines reserved to an engine group */
-+struct otx2_cpt_engs_rsvd {
-+	int type;	/* engine type */
-+	int count;	/* number of engines attached */
-+	int offset;     /* constant offset of engine type in the bitmap */
-+	unsigned long *bmap;		/* attached engines bitmap */
-+	struct otx2_cpt_ucode *ucode;	/* ucode used by these engines */
-+};
-+
-+struct otx2_cpt_mirror_info {
-+	int is_ena;	/*
-+			 * is mirroring enabled, it is set only for engine
-+			 * group which mirrors another engine group
-+			 */
-+	int idx;	/*
-+			 * index of engine group which is mirrored by this
-+			 * group, set only for engine group which mirrors
-+			 * another group
-+			 */
-+	int ref_count;	/*
-+			 * number of times this engine group is mirrored by
-+			 * other groups, this is set only for engine group
-+			 * which is mirrored by other group(s)
-+			 */
-+};
-+
-+struct otx2_cpt_eng_grp_info {
-+	struct otx2_cpt_eng_grps *g; /* pointer to engine_groups structure */
-+	struct device_attribute info_attr; /* group info entry attr */
-+	/* engines attached */
-+	struct otx2_cpt_engs_rsvd engs[OTX2_CPT_MAX_ETYPES_PER_GRP];
-+	/* ucodes information */
-+	struct otx2_cpt_ucode ucode[OTX2_CPT_MAX_ETYPES_PER_GRP];
-+	/* sysfs info entry name */
-+	char sysfs_info_name[OTX2_CPT_NAME_LENGTH];
-+	/* engine group mirroring information */
-+	struct otx2_cpt_mirror_info mirror;
-+	int idx;	 /* engine group index */
-+	bool is_enabled; /*
-+			  * is engine group enabled, engine group is enabled
-+			  * when it has engines attached and ucode loaded
-+			  */
-+};
-+
-+struct otx2_cpt_eng_grps {
-+	struct otx2_cpt_eng_grp_info grp[OTX2_CPT_MAX_ENGINE_GROUPS];
-+	struct device_attribute ucode_load_attr;/* ucode load attr */
-+	struct otx2_cpt_engs_available avail;
-+	struct mutex lock;
-+	void *obj;			/* device specific data */
-+	int engs_num;			/* total number of engines supported */
-+	int eng_types_supported;	/* engine types supported SE, IE, AE */
-+	u8 eng_ref_cnt[OTX2_CPT_MAX_ENGINES];/* engines reference count */
-+	bool is_ucode_load_created;	/* is ucode_load sysfs entry created */
-+	bool is_first_try; /* is this first try to create kcrypto engine grp */
-+	bool is_rdonly;	/* do engine groups configuration can be modified */
-+};
-+struct otx2_cptpf_dev;
-+int otx2_cpt_init_eng_grps(struct pci_dev *pdev,
-+			   struct otx2_cpt_eng_grps *eng_grps);
-+void otx2_cpt_cleanup_eng_grps(struct pci_dev *pdev,
-+			       struct otx2_cpt_eng_grps *eng_grps);
-+int otx2_cpt_try_create_default_eng_grps(struct pci_dev *pdev,
-+					 struct otx2_cpt_eng_grps *eng_grps);
-+void otx2_cpt_set_eng_grps_is_rdonly(struct otx2_cpt_eng_grps *eng_grps,
-+				     bool is_rdonly);
-+int otx2_cpt_uc_supports_eng_type(struct otx2_cpt_ucode *ucode, int eng_type);
-+int otx2_cpt_eng_grp_has_eng_type(struct otx2_cpt_eng_grp_info *eng_grp,
-+				  int eng_type);
-+int otx2_cpt_disable_all_cores(struct otx2_cptpf_dev *cptpf);
-+int otx2_cpt_discover_eng_capabilities(void *obj);
-+
-+#endif /* __OTX2_CPTPF_UCODE_H */
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf.h b/drivers/crypto/marvell/octeontx2/otx2_cptvf.h
-new file mode 100644
-index 0000000..51039c7
---- /dev/null
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf.h
-@@ -0,0 +1,24 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ * Copyright (C) 2020 Marvell.
-+ */
-+
-+#ifndef __OTX2_CPTVF_H
-+#define __OTX2_CPTVF_H
-+
-+#include "mbox.h"
-+#include "otx2_cptlf.h"
-+
-+struct otx2_cptvf_dev {
-+	void __iomem *reg_base;		/* Register start address */
-+	void __iomem *pfvf_mbox_base;	/* PF-VF mbox start address */
-+	struct pci_dev *pdev;		/* PCI device handle */
-+	struct otx2_cptlfs_info lfs;	/* CPT LFs attached to this VF */
-+	u8 vf_id;			/* Virtual function index */
-+
-+	/* PF <=> VF mbox */
-+	struct otx2_mbox	pfvf_mbox;
-+	struct work_struct	pfvf_mbox_work;
-+	struct workqueue_struct *pfvf_mbox_wq;
-+};
-+
-+#endif /* __OTX2_CPTVF_H */
++void otx2_cpt_post_process(struct otx2_cptlf_wqe *wqe)
++{
++	process_pending_queue(wqe->lfs->pdev,
++			      &wqe->lfs->lf[wqe->lf_num].pqueue);
++}
 -- 
 1.9.1
 
