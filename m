@@ -2,100 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D563C22CE51
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 21:05:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 502C922CE5D
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 21:07:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726835AbgGXTFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 15:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34086 "EHLO
+        id S1726553AbgGXTHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 15:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726617AbgGXTFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 15:05:22 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7141FC0619D3
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 12:05:22 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id f7so125990pln.13
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 12:05:22 -0700 (PDT)
+        with ESMTP id S1726381AbgGXTHg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 15:07:36 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31E3C0619D3
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 12:07:35 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id s189so3608578iod.2
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 12:07:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kZuJDLNkYmEH1H+FI4fEAAzRd6GebLnLgaZQFz+Bp78=;
-        b=paVe1GS/o7jQeXQzHtArlTtMGJIjDXb58Oj5gdCF24ycYR+bbHnTf3l28CsMlt5d8p
-         LQwEot7fFhUlb1fXq059/8JflaNWbvG7vEPu54QryRmPCP+h9ywT7HJzmGPA39q92wBE
-         15LdHJ67uOZzR64NBoQ7BwMMCk+hN1t4Pc2acYilHkgcDHXvvPoY6pKg2xohOzZVodW0
-         D+TgQMq4elFp8fGbNGaqSJ6rqyIAAP7Hy5bBG9w2yX82BUaspDlvBHkUTwqgDoGWEGIy
-         7Xs1BN5So1ZtihKuCLwGvam0zlUDt0tNhBQcuj6RW12GfMX3Clht2ApPgk19dkWL5LNz
-         d8NQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ivwisNvqmh/RqMsemp5nX3DJVrh+sMLojdMTLOijAa4=;
+        b=OSJQ4ciIgYcZXBPbtzhWRszyDoaQ6EsU9yIyHO8C/grRDTawuS+60jcVeApqYp0YhC
+         M7KTkT6qJQzxEqIeQM8Ot5GkPO8gmNMk1A8hnCDcHXizjhAF8L37WagMaRraOH7VIZek
+         Pcb3YzzNUjtvn7+ItYNoEx+u22AKMeI1F4vvKe0MTeYG8hUPWt+SEd0/295zCgtXN+dF
+         8P4drWR3QF/Stds6FkNANQnyz2R8hbs7E7X8+blWnvNKMVDUK8uNdMQOLsyC7xJ6kGdE
+         vOdADrPlB4fce4J4VJaHsj207QJgtU6FpDjAauuIdCEpo7QPFHo+S9LIoucxQDPi4A3X
+         IdCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kZuJDLNkYmEH1H+FI4fEAAzRd6GebLnLgaZQFz+Bp78=;
-        b=COVIYXYsQN5gVXK6OUe5kb9PLp5XLXYzP1y/YzEtepI1LzGd2m0JKbnyKjhfEvDqCJ
-         vAXhLALsRGgB9JS4vqaItszJhoyt3dIFeOA+R+ocluRc6qbetlrhXgPUS4h1HePe2Nop
-         NDjwEg9tnoE7Bp13Daf539hJfuBuQ03aDFBZv/EE5F9zEokXv/xe9VeihxqWEjWquEtT
-         YCJ+dKHzl8dckV3XuHsN/55UdhZuflgiYS4/SuGtBwdjwq/x2xgwzQn55yqYfXtGz8Jf
-         PLSIi7yJgJdumqNoB43Pf2994tX+G8vkDt4OMacNrxdXdY1HX8/OXdVG672wEx+Xuas8
-         TVmA==
-X-Gm-Message-State: AOAM533xSsVDNO1WkCTPLBsA+ezM4IqRbWzWn7szacvVZG2wH9MoeZIx
-        hnboEryXoOkjRdC7YFNh5Q5Mttcen8wQWA==
-X-Google-Smtp-Source: ABdhPJzsNiSBGH0mYJ/ZnImzSSpRFQCg7VgRXk3P4oxKJJJJ41BxmEAD9BpD7nlFHTtFzyJpBkxjLg==
-X-Received: by 2002:a17:90a:32cb:: with SMTP id l69mr6113559pjb.205.1595617521943;
-        Fri, 24 Jul 2020 12:05:21 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 38sm6555538pgu.61.2020.07.24.12.05.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2020 12:05:21 -0700 (PDT)
-Date:   Fri, 24 Jul 2020 12:05:13 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     nikolay@cumulusnetworks.com
-Cc:     George Shuklin <amarao@servers.com>, netdev@vger.kernel.org,
-        jiri@resnulli.us
-Subject: Re: [RFT iproute2] iplink_bridge: scale all time values by USER_HZ
-Message-ID: <20200724120513.13d4b3b1@hermes.lan>
-In-Reply-To: <F074B3B5-1B07-490F-87B8-887E2EFB32F3@cumulusnetworks.com>
-References: <869fed82-bb31-589f-bd26-591ccfa976ed@servers.com>
-        <20200724091517.7f5c2c9c@hermes.lan>
-        <F074B3B5-1B07-490F-87B8-887E2EFB32F3@cumulusnetworks.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ivwisNvqmh/RqMsemp5nX3DJVrh+sMLojdMTLOijAa4=;
+        b=qC6eRvKAT9LxAPcvlROzrDMvmul/Xi4tlgWWl7WRgJHrIuO+qORd/8nhwxWuf4ettT
+         jQ/Gsg9JHGqJaMOXxxOZV2fyfRrHAawa5dptAsDWdvZz2r8FdeeIfWuQ6XeIUN4aC71n
+         DKnIk3p37MdTfsTUbPi7oHUSH9HCEeaj349V2MGqwTeShI9t/CKb9/W6ptnml/cB5QW4
+         va9ax/nOglx+VY6CYszEw85mTrEjj+sz+bSCjFxPw1+kf/3Tr+USgK2PLzAVPck3v4ni
+         jC00UeFZTQMt2lNDWsW/bArJSQxzwh512QIprQcO9EvsUhi4m9M+b+0IAWHLX7LYgybz
+         dIuw==
+X-Gm-Message-State: AOAM53175dtMJ40ooomWZ8r09AiG5FJ/IKVuBQrypfCGqskj81HCLWxu
+        2I8tVh9hYu4+Gi4DvZctrGPtFvhmYJSjUpdN6rI=
+X-Google-Smtp-Source: ABdhPJwz6robWWuFJ9VQicTd0cqQnLNA4AnqgTT2gf50dtjGvxf9XjZtApUYl8AMAljdbaUxAtLumbuFhAhxFy8sRU4=
+X-Received: by 2002:a02:1d04:: with SMTP id 4mr12556069jaj.16.1595617655177;
+ Fri, 24 Jul 2020 12:07:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <CAJ5WPnEYfJgnU2D7nA9oSX5ZqxP0hDkpBnO2D8p6YtjupRbqTw@mail.gmail.com>
+In-Reply-To: <CAJ5WPnEYfJgnU2D7nA9oSX5ZqxP0hDkpBnO2D8p6YtjupRbqTw@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 24 Jul 2020 12:07:23 -0700
+Message-ID: <CAM_iQpWZ84uT3R4NJOcc4B9qtTda-X9ZD5F3pURdib1bUk-uKQ@mail.gmail.com>
+Subject: Re: memory leak in ipv6_sock_ac_join ( 5.8.0-rc6+)
+To:     "\\xcH3332\\" <ch3332xr@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller <syzkaller@googlegroups.com>
+Content-Type: multipart/mixed; boundary="00000000000088fbf105ab34af95"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Jul 2020 19:24:35 +0300
-nikolay@cumulusnetworks.com wrote:
+--00000000000088fbf105ab34af95
+Content-Type: text/plain; charset="UTF-8"
 
-> On 24 July 2020 19:15:17 EEST, Stephen Hemminger <stephen@networkplumber.org> wrote:
-> >
-> >The bridge portion of ip command was not scaling so the
-> >values were off.
-> >
-> >The netlink API's for setting and reading timers all conform
-> >to the kernel standard of scaling the values by USER_HZ (100).
-> >
-> >Fixes: 28d84b429e4e ("add bridge master device support")
-> >Fixes: 7f3d55922645 ("iplink: bridge: add support for
-> >IFLA_BR_MCAST_MEMBERSHIP_INTVL")
-> >Fixes: 10082a253fb2 ("iplink: bridge: add support for
-> >IFLA_BR_MCAST_LAST_MEMBER_INTVL")
-> >Fixes: 1f2244b851dd ("iplink: bridge: add support for
-> >IFLA_BR_MCAST_QUERIER_INTVL")
-> >Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
-> >---  
-> 
-> While I agree this should have been done from the start, it's too late to change. 
-> We'll break everyone using these commands. 
-> We have been discussing to add _ms version of all these which do the proper scaling. I'd prefer that, it's least disruptive
-> to users. 
-> 
-> Every user of the old commands scales the values by now.
+On Thu, Jul 23, 2020 at 5:06 PM \xcH3332\ <ch3332xr@gmail.com> wrote:
+>
+> Hi,
+>
+> SYZKALLER found the following Memory Leak
 
-So bridge is inconsistent with all other api's in iproute2!
-And the bridge option in ip link is scaled differently than the bridge-utils or sysfs.
+Thanks for your report!
 
-Maybe an environment variable?
-Or add new fixed syntax option and don't show the old syntax?
+Can you test the attached patch? I only did compile test as I don't
+have an environment to run syz programs.
+
+--00000000000088fbf105ab34af95
+Content-Type: text/x-patch; charset="US-ASCII"; name="ipv6-anycast.diff"
+Content-Disposition: attachment; filename="ipv6-anycast.diff"
+Content-Transfer-Encoding: base64
+Content-ID: <f_kd0lj37v0>
+X-Attachment-Id: f_kd0lj37v0
+
+ZGlmZiAtLWdpdCBhL2luY2x1ZGUvbmV0L2FkZHJjb25mLmggYi9pbmNsdWRlL25ldC9hZGRyY29u
+Zi5oCmluZGV4IGZkYjA3MTA1Mzg0Yy4uODQxOGI3ZDM4NDY4IDEwMDY0NAotLS0gYS9pbmNsdWRl
+L25ldC9hZGRyY29uZi5oCisrKyBiL2luY2x1ZGUvbmV0L2FkZHJjb25mLmgKQEAgLTI3NCw2ICsy
+NzQsNyBAQCBpbnQgaXB2Nl9zb2NrX2FjX2pvaW4oc3RydWN0IHNvY2sgKnNrLCBpbnQgaWZpbmRl
+eCwKIAkJICAgICAgY29uc3Qgc3RydWN0IGluNl9hZGRyICphZGRyKTsKIGludCBpcHY2X3NvY2tf
+YWNfZHJvcChzdHJ1Y3Qgc29jayAqc2ssIGludCBpZmluZGV4LAogCQkgICAgICBjb25zdCBzdHJ1
+Y3QgaW42X2FkZHIgKmFkZHIpOwordm9pZCBfX2lwdjZfc29ja19hY19jbG9zZShzdHJ1Y3Qgc29j
+ayAqc2spOwogdm9pZCBpcHY2X3NvY2tfYWNfY2xvc2Uoc3RydWN0IHNvY2sgKnNrKTsKIAogaW50
+IF9faXB2Nl9kZXZfYWNfaW5jKHN0cnVjdCBpbmV0Nl9kZXYgKmlkZXYsIGNvbnN0IHN0cnVjdCBp
+bjZfYWRkciAqYWRkcik7CmRpZmYgLS1naXQgYS9uZXQvaXB2Ni9hbnljYXN0LmMgYi9uZXQvaXB2
+Ni9hbnljYXN0LmMKaW5kZXggODkzMjYxMjMwZmZjLi5kYWNkZWE3ZmNiNjIgMTAwNjQ0Ci0tLSBh
+L25ldC9pcHY2L2FueWNhc3QuYworKysgYi9uZXQvaXB2Ni9hbnljYXN0LmMKQEAgLTE4Myw3ICsx
+ODMsNyBAQCBpbnQgaXB2Nl9zb2NrX2FjX2Ryb3Aoc3RydWN0IHNvY2sgKnNrLCBpbnQgaWZpbmRl
+eCwgY29uc3Qgc3RydWN0IGluNl9hZGRyICphZGRyKQogCXJldHVybiAwOwogfQogCi12b2lkIGlw
+djZfc29ja19hY19jbG9zZShzdHJ1Y3Qgc29jayAqc2spCit2b2lkIF9faXB2Nl9zb2NrX2FjX2Ns
+b3NlKHN0cnVjdCBzb2NrICpzaykKIHsKIAlzdHJ1Y3QgaXB2Nl9waW5mbyAqbnAgPSBpbmV0Nl9z
+ayhzayk7CiAJc3RydWN0IG5ldF9kZXZpY2UgKmRldiA9IE5VTEw7CkBAIC0xOTEsMTAgKzE5MSw3
+IEBAIHZvaWQgaXB2Nl9zb2NrX2FjX2Nsb3NlKHN0cnVjdCBzb2NrICpzaykKIAlzdHJ1Y3QgbmV0
+ICpuZXQgPSBzb2NrX25ldChzayk7CiAJaW50CXByZXZfaW5kZXg7CiAKLQlpZiAoIW5wLT5pcHY2
+X2FjX2xpc3QpCi0JCXJldHVybjsKLQotCXJ0bmxfbG9jaygpOworCUFTU0VSVF9SVE5MKCk7CiAJ
+cGFjID0gbnAtPmlwdjZfYWNfbGlzdDsKIAlucC0+aXB2Nl9hY19saXN0ID0gTlVMTDsKIApAQCAt
+MjExLDYgKzIwOCwxNiBAQCB2b2lkIGlwdjZfc29ja19hY19jbG9zZShzdHJ1Y3Qgc29jayAqc2sp
+CiAJCXNvY2tfa2ZyZWVfcyhzaywgcGFjLCBzaXplb2YoKnBhYykpOwogCQlwYWMgPSBuZXh0Owog
+CX0KK30KKwordm9pZCBpcHY2X3NvY2tfYWNfY2xvc2Uoc3RydWN0IHNvY2sgKnNrKQoreworCXN0
+cnVjdCBpcHY2X3BpbmZvICpucCA9IGluZXQ2X3NrKHNrKTsKKworCWlmICghbnAtPmlwdjZfYWNf
+bGlzdCkKKwkJcmV0dXJuOworCXJ0bmxfbG9jaygpOworCV9faXB2Nl9zb2NrX2FjX2Nsb3NlKHNr
+KTsKIAlydG5sX3VubG9jaygpOwogfQogCmRpZmYgLS1naXQgYS9uZXQvaXB2Ni9pcHY2X3NvY2tn
+bHVlLmMgYi9uZXQvaXB2Ni9pcHY2X3NvY2tnbHVlLmMKaW5kZXggMjA1NzZlODdhNWY3Li43NmY5
+ZTQxODU5YTIgMTAwNjQ0Ci0tLSBhL25ldC9pcHY2L2lwdjZfc29ja2dsdWUuYworKysgYi9uZXQv
+aXB2Ni9pcHY2X3NvY2tnbHVlLmMKQEAgLTI0MCw2ICsyNDAsNyBAQCBzdGF0aWMgaW50IGRvX2lw
+djZfc2V0c29ja29wdChzdHJ1Y3Qgc29jayAqc2ssIGludCBsZXZlbCwgaW50IG9wdG5hbWUsCiAK
+IAkJCWZsNl9mcmVlX3NvY2tsaXN0KHNrKTsKIAkJCV9faXB2Nl9zb2NrX21jX2Nsb3NlKHNrKTsK
+KwkJCV9faXB2Nl9zb2NrX2FjX2Nsb3NlKHNrKTsKIAogCQkJLyoKIAkJCSAqIFNvY2sgaXMgbW92
+aW5nIGZyb20gSVB2NiB0byBJUHY0IChza19wcm90KSwgc28K
+--00000000000088fbf105ab34af95--
