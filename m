@@ -2,69 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C181722CC46
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 19:39:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8520322CC55
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 19:41:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726782AbgGXRjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 13:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48622 "EHLO
+        id S1727013AbgGXRlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 13:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbgGXRjT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 13:39:19 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF36C0619D3;
-        Fri, 24 Jul 2020 10:39:19 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id f7so9045040wrw.1;
-        Fri, 24 Jul 2020 10:39:19 -0700 (PDT)
+        with ESMTP id S1726652AbgGXRk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 13:40:59 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E19C0619D3;
+        Fri, 24 Jul 2020 10:40:59 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id f2so9021888wrp.7;
+        Fri, 24 Jul 2020 10:40:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dMOTyj1bJjD0JwVcKSaFk5ZhNFNqHamKZ+nmeW0h9/0=;
-        b=Fcnk119mUhTpcxAENN8R4EJ54pYrG9iUVXfUZcmbCZOLOvu+ld6sxmq6KeYX2JW88J
-         FwI8rgZUicVSt10Mn1JlWjEFcJkFXiqY9a3+VbqGj/xwBAoDCx5o2wfugkbDN8QV8GCa
-         4kSM/o0WwQuwvpr87S4QdkkcmtzsYsbh76irq58LxwxxMHW7UtHVg/sPQ2bjy+COBugC
-         dqjWZRqJAkFBzIRjlB/G+G7hXcBkzb8JrgM5CQPYgdY+Yp/2V2VRYDWv9cb8Q8uOr/yT
-         PqAvG2a3xq8JnHvdIxRYxkyJ0X8wHepgc407iiu7ty4GQj3lpjZThYvPSS3fCRLdsTrk
-         QTTg==
+        bh=S9B43df6SARWSY2yn5Mw8hYQx9HnwxrrN+45ssJMdow=;
+        b=h74/M4LXnXYRy1Pf/GOEtCrKDQlOgbnlDLg+8sxiBYIiVRcOWaRq8GwxfbI6C5wKcj
+         QZq1QmeKT9i7rzADKBv6S3JWCi5/L6r6YNndOsOTwqNwuN1GpS9Yzfp1d9eaDi5e8FrS
+         Pt/yCpcF8/YXzMTn3ErMtIOyMUycHxg335LE5eqcqSmdaOWAWxR//tGhvm5tY/BtMvmB
+         DcdlgRcTAMJQcWlLzWWYilXKve1xIIKlHoKVXSkCF6h/+2vThQCg0vD9+YCxbDznFggF
+         coP+gZ/GthFalJfa+sxXm1AVESYseSvyAmP/BuJj1cA7KNFP3DN5aRjA1BeG9mEQFTt1
+         0lFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=dMOTyj1bJjD0JwVcKSaFk5ZhNFNqHamKZ+nmeW0h9/0=;
-        b=sQ6uWagpuoYUxq5DC28dosyZGY/01wdtTw5TrBqqDC6akCglB3RvMQK06+jlUEOzfy
-         eNsi1Jv4d+h1yD39U4CI/w/YB79Dho0DBk+/fNTSeuNnwCWNWZR7GO373ABqHyQdmuKA
-         Mo8rK5r0jw/B0KukhVVUF2PDOmnngzu72qJMhZv+g+UNCxeJhX8W+tAhWe0RsOr7eOqu
-         1lv+P9gaSzzT4YDgf+4iZDQe3mn7hgmPQFH4DOp0ClJwOVAjiN9ozJwMsXxZ6/1DpSKq
-         4uY3PRIvwawitIwWjoqINhDkVJJIfCEGLiBB5430kQ4b7mflNWH6/fcYNxD697vMveSz
-         O1ZQ==
-X-Gm-Message-State: AOAM532aFhg8bXpslgP4gtixnxZfSOk/KHn/fuW342G3mwBO4gIWgB+L
-        ArFaY5iBwPv16qQ6d0yC3/oYBhaw
-X-Google-Smtp-Source: ABdhPJwVIMAIoP7OpthWQQc8NuKMRA3Yez9KlgBBXPDjCeNENvoiu2W935zKsV06p0I2cxNjxpNtXA==
-X-Received: by 2002:a5d:550e:: with SMTP id b14mr10283001wrv.392.1595612357673;
-        Fri, 24 Jul 2020 10:39:17 -0700 (PDT)
+        bh=S9B43df6SARWSY2yn5Mw8hYQx9HnwxrrN+45ssJMdow=;
+        b=rDEMSg5BkVsVTh03A5OYUjanCZp0SfpVtjCLLvlT9fKbxCEbWTuY2vzRI03v/W/hfs
+         h7LP0iXfsbJSxIPa0+fHoMKV4yW5XhiyDfyY0vSUvmcOGQ3vJ1UdZzwSrsKBss1eF5MT
+         8GuGTY9kI9+1ertKf15RNieIQv+zaTcGnXrPPOnB7EUtfsQPSbMGOyBeuFWO3rxmq5+O
+         min8DDTH+5URd29YZJXxb1cYCvPnfWdqmD65HMd10XLy7WICEt260KxzSEawfKCN/ESq
+         l8gKJxA0GmCQfIK1UuRyZ73+mFGeee361Iyxk5E96rhewWRM2E6WdQwAb2wu2TdH7Ziv
+         tb5Q==
+X-Gm-Message-State: AOAM531mg7l/w+4Tk3j2UNwRZtsm8EK0vi+9Z8wleAWN/2nYhYdJBr2K
+        0Z+qpEdGAH7CL2NXxMLOmts=
+X-Google-Smtp-Source: ABdhPJxNcAFCW97O2cbJdOXcxSTXX0LYYH8H59BxQgpZKhKdob21ay0VSnX1Hrp9ygvRIHStWEEtuw==
+X-Received: by 2002:a5d:4649:: with SMTP id j9mr9052853wrs.270.1595612458236;
+        Fri, 24 Jul 2020 10:40:58 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id x204sm12408068wmg.2.2020.07.24.10.39.14
+        by smtp.googlemail.com with ESMTPSA id i67sm8105704wma.12.2020.07.24.10.40.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jul 2020 10:39:16 -0700 (PDT)
-Subject: Re: [net-next PATCH v7 1/6] Documentation: ACPI: DSD: Document MDIO
- PHY
-To:     Jeremy Linton <jeremy.linton@arm.com>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev@vger.kernel.org, linux.cj@gmail.com,
-        linux-acpi@vger.kernel.org
-References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
- <20200715090400.4733-2-calvin.johnson@oss.nxp.com>
- <1a031e62-1e87-fdc1-b672-e3ccf3530fda@arm.com>
- <20200724133931.GF1472201@lunn.ch>
- <97973095-5458-8ac2-890c-667f4ea6cd0e@arm.com>
+        Fri, 24 Jul 2020 10:40:57 -0700 (PDT)
+Subject: Re: [PATCH net-next v3 3/7] net: macb: parse PHY nodes found under an
+ MDIO node
+To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        robh+dt@kernel.org, alexandre.belloni@bootlin.com,
+        ludovic.desroches@microchip.com
+References: <20200724105033.2124881-1-codrin.ciubotariu@microchip.com>
+ <20200724105033.2124881-4-codrin.ciubotariu@microchip.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -120,12 +114,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <a95f8e07-176b-7f22-1217-466205fa22e7@gmail.com>
-Date:   Fri, 24 Jul 2020 10:39:02 -0700
+Message-ID: <426a15dd-62de-9ffb-baed-c527b9aa9b70@gmail.com>
+Date:   Fri, 24 Jul 2020 10:40:52 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <97973095-5458-8ac2-890c-667f4ea6cd0e@arm.com>
+In-Reply-To: <20200724105033.2124881-4-codrin.ciubotariu@microchip.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -134,170 +128,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/24/20 10:26 AM, Jeremy Linton wrote:
-> Hi,
+On 7/24/20 3:50 AM, Codrin Ciubotariu wrote:
+> The MACB embeds an MDIO bus controller. For this reason, the PHY nodes
+> were represented as sub-nodes in the MACB node. Generally, the
+> Ethernet controller is different than the MDIO controller, so the PHYs
+> are probed by a separate MDIO driver. Since adding the PHY nodes directly
+> under the ETH node became deprecated, we adjust the MACB driver to look
+> for an MDIO node and register the subnode MDIO devices.
 > 
-> On 7/24/20 8:39 AM, Andrew Lunn wrote:
->>> Otherwise the MDIO bus and its phy should be a
->>> child of the nic/mac using it, with standardized behaviors/etc left
->>> up to
->>> the OSPM when it comes to MDIO bus enumeration/etc.
->>
->> Hi Jeremy
->>
->> Could you be a bit more specific here please.
->>
->> DT allows
->>
->>          macb0: ethernet@fffc4000 {
->>                  compatible = "cdns,at32ap7000-macb";
->>                  reg = <0xfffc4000 0x4000>;
->>                  interrupts = <21>;
->>                  phy-mode = "rmii";
->>                  local-mac-address = [3a 0e 03 04 05 06];
->>                  clock-names = "pclk", "hclk", "tx_clk";
->>                  clocks = <&clkc 30>, <&clkc 30>, <&clkc 13>;
->>                  ethernet-phy@1 {
->>                          reg = <0x1>;
->>                          reset-gpios = <&pioE 6 1>;
->>                  };
->>          };
->>
->> So the PHY is a direct child of the MAC. The MDIO bus is not modelled
->> at all. Although this is allowed, it is deprecated, because it results
->> > in problems with advanced systems which have multiple different
->> children, and the need to differentiate them. So drivers are slowly
+> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+> ---
 > 
-> I don't think i'm suggesting that, because AFAIK in ACPI you would have
-> to specify the DEVICE() for mdio, in order to nest a further set of
-> phy's via _ADR(). I think in general what I was describing would look
-> more like what you have below. But..
+> Changes in v3:
+>  - moved the check for the mdio node at the beginnging of
+>    macb_mdiobus_register(). This way, the mdio devices will be probed even
+>    if macb is a fixed-link
 > 
->> migrating to always modelling the MDIO bus. In that case, the
->> phy-handle is always used to point to the PHY:
->>
->>          eth0: ethernet@522d0000 {
->>                  compatible = "socionext,synquacer-netsec";
->>                  reg = <0 0x522d0000 0x0 0x10000>, <0 0x10000000 0x0
->> 0x10000>;
->>                  interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
->>                  clocks = <&clk_netsec>;
->>                  clock-names = "phy_ref_clk";
->>                  phy-mode = "rgmii";
->>                  max-speed = <1000>;
->>                  max-frame-size = <9000>;
->>                  phy-handle = <&phy1>;
->>
->>                  mdio {
->>                          #address-cells = <1>;
->>                          #size-cells = <0>;
->>                          phy1: ethernet-phy@1 {
->>                                  compatible =
->> "ethernet-phy-ieee802.3-c22";
->>                                  reg = <1>;
->>                          };
->>                  };
->>
->> "mdio-handle" is just half of phy-handle.
->>
->> What you seem to be say is that although we have defined a generic
->> solution for ACPI which should work in all cases, it is suggested to
->> not use it? What exactly are you suggesting in its place?
+> Changes in v2:
+>  - readded newline removed by mistake;
 > 
-> When you put it that way, what i'm saying sounds crazy.
+>  drivers/net/ethernet/cadence/macb_main.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
-> In this case what are are doing isn't as clean as what you have
-> described above, its more like:
-> 
-> mdio: {
->   phy1: {}
->   phy2: {}
-> }
-> ...
-> // somewhere else
-> dmac1: {
->     phy-handle = <&phy1>;
-> }
-> 
-> ... //somewhere else
-> eth0: {
->    //another device talking to the mgmt controller
-> }
-> 
-> 
-> Which is special in a couple ways.
-> 
-> Lets rewind for a moment and say for ARM/ACPI, what we are talking about
-> are "edge/server class" devices (with RAS statements/etc) where the
-> expectation is that they will be running virtualized workloads using LTS
-> distros, or non linux OSes. DT/etc remains an option for networking
-> devices which are more "embedded", aren't SBSA, etc. So an Arm
-> based/ACPI machine should be more regular and share more in the way of
-> system architecture with other SBSA/SBBR/ACPI/etc machines than has been
-> the case for DT machines.
-> 
-> A concern is then how we punch networking devices into an arbitrary VM
-> in a standardized way using libvirt/whatever. If the networking device
-> doesn't look like a simple self contained memory mapped resource with an
-> IOMMU domain, I think everything becomes more complicated and you have
-> to start going down the path of special caseing the VM firmware beyond
-> how its done for self contained PCIe/SRIOV devices. The latter manage to
-> pull this all off with a PCIe id, and a couple BARs fed into the VM.
-> 
-> So, I would hope an ACPI nic representation is closer to just a minimal
-> resource list like:
-> 
-> eth0: {
->       compatible = "cdns,at32ap7000-macb";
->       reg = <0xfffc4000 0x4000>;
->       interrupts = <21>;
-> }
-> or in ACPI speak:
-> Device (ETH0)
-> {
->       Name (_HID, "CDNSXXX")
->       Method (_CRS, 0x0, Serialized)
->       {
->         Name (RBUF, ResourceTemplate ()
->         {
->           Memory32Fixed (ReadWrite, 0xfffc4000, 0x4000, )
->           Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive)
->           {
->             21
->           }
->         })
->         Return (RBUF)
->       }
-> }
-> 
-> (Plus methods for pwr mgmt/etc as needed, the iommu info comes from
-> another table).
-> 
-> Returning to the NXP part. They avoid the entirety of the above
-> discussion because all this MDIO/PHY mgmt is just feeding the data into
-> the mgmt controller, and the bits that are punched into the VM are
-> fairly standalone.
-> 
-> Anyway, I think this set is generally fine, I would like to see this
-> part working well with ACPI given its what we have available today. For
-> the future, we also need to continue pushing everyone towards common
-> hardware standards. One of the ways of doing this is having hardware
-> which can be automatically enumerated/configured. Suggesting that the
-> kernel has a recommended way of doing this which aids fragmentation
-> isn't what we are trying to achieve with ACPI. Hence my previous comment
-> that we should consider this an escape hatch rather than the last word
-> in how to describe networking on ACPI/SBSA platforms.
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index 89fe7af5e408..cb0b3637651c 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -740,6 +740,16 @@ static int macb_mii_probe(struct net_device *dev)
+>  static int macb_mdiobus_register(struct macb *bp)
+>  {
+>  	struct device_node *child, *np = bp->pdev->dev.of_node;
+> +	struct device_node *mdio_node;
+> +	int ret;
+> +
+> +	/* if an MDIO node is present, it should contain the PHY nodes */
+> +	mdio_node = of_get_child_by_name(np, "mdio");
+> +	if (mdio_node) {
+> +		ret = of_mdiobus_register(bp->mii_bus, mdio_node);
+> +		of_node_put(mdio_node);
+> +		return ret;
+> +	}
 
-We are at v7 of this patch series, and no authoritative ACPI Linux
-maintainer appears to have reviewed this, so there is no clear sign of
-this converging anywhere. This is looking a lot like busy work for
-nothing. Given that the representation appears to be wildly
-misunderstood and no one seems to come up with something that reaches
-community agreement, what exactly is the plan here?
+This does take care of registering the MDIO bus controller when present
+as a sub-node, however if you also plan on making use of fixed-link, we
+will have already returned.
 
-I am going to suggest something highly unpopular here: how about you
-just load Device Tree overlays based on matching a particular board and
-ship those overlays somewhere in the kernel that take care of
-registering your network devices with the desired network topology?
+>  
+>  	if (of_phy_is_fixed_link(np))
+>  		return mdiobus_register(bp->mii_bus);
+> 
+
+Really not sure what this is achieving, because we start off assuming
+that we have an OF driven configuration, but later on we register the
+MDIO bus with mdiobus_register() (and not of_mdiobus_register()), so no
+scanning of the MDIO bus will happen.
+
+How does the driver currently support being provided a fixed-link
+property? Should not we at least have this pattern:
+
+         */
+        if (of_phy_is_fixed_link(dn)) {
+                ret = of_phy_register_fixed_link(dn);
+                if (ret)
+			return ret;
+
+                priv->phy_dn = dn;
+        }
+
+It does not look like you are breaking anything here, because it does
+not look like this works at all.
 -- 
 Florian
