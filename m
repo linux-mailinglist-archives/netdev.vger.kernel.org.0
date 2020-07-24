@@ -2,110 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AFED22CE35
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 21:01:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D563C22CE51
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 21:05:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbgGXTBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 15:01:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33348 "EHLO
+        id S1726835AbgGXTFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 15:05:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbgGXTBT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 15:01:19 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54157C0619D3
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 12:01:19 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id s26so5721561pfm.4
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 12:01:19 -0700 (PDT)
+        with ESMTP id S1726617AbgGXTFW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 15:05:22 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7141FC0619D3
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 12:05:22 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id f7so125990pln.13
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 12:05:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZHhjSTHTI2mkISn6s0kW9hWL4aqRDxv5/uWBSLldThM=;
-        b=ahGqzI0MAlUtqsl/szj8KPbnbanqpGkOR5xn8u49cdfCHBkEsweq3nyaOaVVtCaOsy
-         i5qYJ9YfqpLyJOY2hkicKQS4uBV82/TgKrN8oo90qSQNG7LZ80FInQFBvs8XPHF31pst
-         hUMDFtYE3k2bMmqSH5lDs3cIpoOvpK83s5cnfEc5A1hj9ROryb44mSSa6m+ev4QjIkyW
-         hfBM12b/zW4hd6e87uXfg8rWRtSIUG/ivTEYfDw+KVLnliK/C690QEUh3D3dwY9thQWP
-         YkYkv/1z+9/qKBdBOHu1eIiCQB8gQ+a7yAlKdfKAfxVU5c3DqqV8H0ln+5G//TF9BM6t
-         b1tw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=kZuJDLNkYmEH1H+FI4fEAAzRd6GebLnLgaZQFz+Bp78=;
+        b=paVe1GS/o7jQeXQzHtArlTtMGJIjDXb58Oj5gdCF24ycYR+bbHnTf3l28CsMlt5d8p
+         LQwEot7fFhUlb1fXq059/8JflaNWbvG7vEPu54QryRmPCP+h9ywT7HJzmGPA39q92wBE
+         15LdHJ67uOZzR64NBoQ7BwMMCk+hN1t4Pc2acYilHkgcDHXvvPoY6pKg2xohOzZVodW0
+         D+TgQMq4elFp8fGbNGaqSJ6rqyIAAP7Hy5bBG9w2yX82BUaspDlvBHkUTwqgDoGWEGIy
+         7Xs1BN5So1ZtihKuCLwGvam0zlUDt0tNhBQcuj6RW12GfMX3Clht2ApPgk19dkWL5LNz
+         d8NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZHhjSTHTI2mkISn6s0kW9hWL4aqRDxv5/uWBSLldThM=;
-        b=efbP9FAtZYC4Dp3BS+Jpzj1ivm2OXj96b/mZ0a6NLQ7EnZUgta83tSduMPfc9/tcuk
-         vuYv+RuvSSx1eckpfmW7UGlLGVyxnCmFnorIdTeJaTNkOEMtTOONpS+M/XX2kUV6uy3O
-         t1KEy0a/Cgl0d2WGNocWUHS7cjHrac/+cmStht5x3J234W5LkRey/a81LwxL+oJbu/ag
-         W88IhVBWoBjFbWAyrDSZw5ueCFshwOQxLZwhvCz/vZKnkUS59U4gzt84ITGIq+UfJk6d
-         6jagVUQWZNRFdVg0NFTSRjAFECvvjBEcUDz4I/JrpVbZvqnvAF/2eP19eqTSgHw8WFfS
-         nRuQ==
-X-Gm-Message-State: AOAM530o4HADYZYdGsKl4FDDRHrI8KLgwSiK9RGMtPuDwEXqo32QCfvt
-        HgIVTq6os9mmijCzQt8QkP0=
-X-Google-Smtp-Source: ABdhPJwl+XKvTv7SPRLo0WL41+h/TpEKCJSRp174FEUvSbQxCNhp5CVSlidxvbYEzxVlBEBASyzg3A==
-X-Received: by 2002:a63:d912:: with SMTP id r18mr9822592pgg.358.1595617278935;
-        Fri, 24 Jul 2020 12:01:18 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id l23sm6357605pjy.45.2020.07.24.12.01.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jul 2020 12:01:18 -0700 (PDT)
-Subject: Re: [PATCH net] selftests/net: fix clang issues for target arch
- PowerPC and others
-To:     Tanner Love <tannerlove.kernel@gmail.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Tanner Love <tannerlove@google.com>,
-        Willem de Bruijn <willemb@google.com>
-References: <20200724181757.2331172-1-tannerlove.kernel@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <06be2c94-730f-2c0c-e1ee-a4b72c8885eb@gmail.com>
-Date:   Fri, 24 Jul 2020 12:01:17 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=kZuJDLNkYmEH1H+FI4fEAAzRd6GebLnLgaZQFz+Bp78=;
+        b=COVIYXYsQN5gVXK6OUe5kb9PLp5XLXYzP1y/YzEtepI1LzGd2m0JKbnyKjhfEvDqCJ
+         vAXhLALsRGgB9JS4vqaItszJhoyt3dIFeOA+R+ocluRc6qbetlrhXgPUS4h1HePe2Nop
+         NDjwEg9tnoE7Bp13Daf539hJfuBuQ03aDFBZv/EE5F9zEokXv/xe9VeihxqWEjWquEtT
+         YCJ+dKHzl8dckV3XuHsN/55UdhZuflgiYS4/SuGtBwdjwq/x2xgwzQn55yqYfXtGz8Jf
+         PLSIi7yJgJdumqNoB43Pf2994tX+G8vkDt4OMacNrxdXdY1HX8/OXdVG672wEx+Xuas8
+         TVmA==
+X-Gm-Message-State: AOAM533xSsVDNO1WkCTPLBsA+ezM4IqRbWzWn7szacvVZG2wH9MoeZIx
+        hnboEryXoOkjRdC7YFNh5Q5Mttcen8wQWA==
+X-Google-Smtp-Source: ABdhPJzsNiSBGH0mYJ/ZnImzSSpRFQCg7VgRXk3P4oxKJJJJ41BxmEAD9BpD7nlFHTtFzyJpBkxjLg==
+X-Received: by 2002:a17:90a:32cb:: with SMTP id l69mr6113559pjb.205.1595617521943;
+        Fri, 24 Jul 2020 12:05:21 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id 38sm6555538pgu.61.2020.07.24.12.05.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jul 2020 12:05:21 -0700 (PDT)
+Date:   Fri, 24 Jul 2020 12:05:13 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     nikolay@cumulusnetworks.com
+Cc:     George Shuklin <amarao@servers.com>, netdev@vger.kernel.org,
+        jiri@resnulli.us
+Subject: Re: [RFT iproute2] iplink_bridge: scale all time values by USER_HZ
+Message-ID: <20200724120513.13d4b3b1@hermes.lan>
+In-Reply-To: <F074B3B5-1B07-490F-87B8-887E2EFB32F3@cumulusnetworks.com>
+References: <869fed82-bb31-589f-bd26-591ccfa976ed@servers.com>
+        <20200724091517.7f5c2c9c@hermes.lan>
+        <F074B3B5-1B07-490F-87B8-887E2EFB32F3@cumulusnetworks.com>
 MIME-Version: 1.0
-In-Reply-To: <20200724181757.2331172-1-tannerlove.kernel@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 24 Jul 2020 19:24:35 +0300
+nikolay@cumulusnetworks.com wrote:
 
-
-On 7/24/20 11:17 AM, Tanner Love wrote:
-> From: Tanner Love <tannerlove@google.com>
+> On 24 July 2020 19:15:17 EEST, Stephen Hemminger <stephen@networkplumber.org> wrote:
+> >
+> >The bridge portion of ip command was not scaling so the
+> >values were off.
+> >
+> >The netlink API's for setting and reading timers all conform
+> >to the kernel standard of scaling the values by USER_HZ (100).
+> >
+> >Fixes: 28d84b429e4e ("add bridge master device support")
+> >Fixes: 7f3d55922645 ("iplink: bridge: add support for
+> >IFLA_BR_MCAST_MEMBERSHIP_INTVL")
+> >Fixes: 10082a253fb2 ("iplink: bridge: add support for
+> >IFLA_BR_MCAST_LAST_MEMBER_INTVL")
+> >Fixes: 1f2244b851dd ("iplink: bridge: add support for
+> >IFLA_BR_MCAST_QUERIER_INTVL")
+> >Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+> >---  
 > 
-> Address these warnings observed with clang 9.
+> While I agree this should have been done from the start, it's too late to change. 
+> We'll break everyone using these commands. 
+> We have been discussing to add _ms version of all these which do the proper scaling. I'd prefer that, it's least disruptive
+> to users. 
 > 
-> 
-> tcp_mmap:
-> Compilation yielded:
-> warning: result of comparison of constant 34359738368 with \
-> expression of type 'size_t' (aka 'unsigned int') is always true \
+> Every user of the old commands scales the values by now.
 
-size_t is not generally 'unsigned int', not sure how you get this ?
+So bridge is inconsistent with all other api's in iproute2!
+And the bridge option in ip link is scaled differently than the bridge-utils or sysfs.
 
-> [-Wtautological-constant-out-of-range-compare]
->         while (total < FILE_SZ) {
-> 
-> Tested: make -C tools/testing/selftests TARGETS="net" run_tests
-> 
->
-
-
-> diff --git a/tools/testing/selftests/net/tcp_mmap.c b/tools/testing/selftests/net/tcp_mmap.c
-> index 4555f88252ba..92086d65bd87 100644
-> --- a/tools/testing/selftests/net/tcp_mmap.c
-> +++ b/tools/testing/selftests/net/tcp_mmap.c
-> @@ -344,7 +344,7 @@ int main(int argc, char *argv[])
->  {
->  	struct sockaddr_storage listenaddr, addr;
->  	unsigned int max_pacing_rate = 0;
-> -	size_t total = 0;
-> +	unsigned long total = 0;
->  	char *host = NULL;
->  	int fd, c, on = 1;
->  	char *buffer;
-> 
-
-This will break on 32bit arches, where sizeof(unsigned long) == 4
-
+Maybe an environment variable?
+Or add new fixed syntax option and don't show the old syntax?
