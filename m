@@ -2,175 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A60D722C894
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 16:57:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F36B022C899
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 16:58:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726731AbgGXO5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 10:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51258 "EHLO
+        id S1726941AbgGXO6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 10:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726326AbgGXO5L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 10:57:11 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50103C0619D3
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 07:57:11 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id d18so10094775ion.0
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 07:57:11 -0700 (PDT)
+        with ESMTP id S1726397AbgGXO6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 10:58:43 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB36C0619D3;
+        Fri, 24 Jul 2020 07:58:43 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id a14so5266741pfi.2;
+        Fri, 24 Jul 2020 07:58:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9Is/bQU4jwdWiMgDyl2swKgH/chVCW6A8VnlLnJKb7Q=;
-        b=WbKKW8VaBguWRdFxe/2VttlkaMH2yFn4VgV/GpD1Egi/0Xpwf9BnkLalbA2cMYna+e
-         B4OGR9+pRPWfAu7GoJeE414mJRjZVOZ1FP/9GjPMIiILDXxeoJn8zuP7CdZASYmudOsu
-         0SOL6mnXGRU4+IPGkcsb1buH4MLKey8bn9GX/srV5fZ+W/AFaGIitjBPFUkwo194u7F/
-         dRvF4XuHGvvslW0OBJ9JFcIR8MqdPf+lSCpfhhbjoQ9Vw5VXkAB3t+r780hmSXCEb7pt
-         3/xDDO0ovv1M+hHz6nWEJQ7Se1vwCUkbCvQa8Rh4lQ9vDIvdF/6V0ri8rQ2o/pG7U5pN
-         iCRg==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=QkqqWSeWUuD3HygOIUorTjyLc3b0L3sITA+lUb4cF40=;
+        b=sVuj4ZUs9ormiALXE8mSBXmPwBAZjN1g/gp/PGZJo+xnCtLCXc+ib65AVMQsm2b2f+
+         X69daFQHIUotiKVt9msWSze3AjHsDu3r9q7xLGsJi93ZX8hRd6/np10qymypSAPx63eh
+         +7qVhcaJFsVVlSQnMGCmXYKOKI8QxRFYXjyeJ6JIVEevtRTmfJEjUKuY6ro6L/yjgzu4
+         Q8wB1CzaU7y86U3LIlqQ+ErVW/1OfumnjceWFoc03YQAwiluXPEecSTNSvUpLR96mUIB
+         Y65HDvIJeaKs/geZBTMDMmEZvvWiA9M6VeFNwPrFoDwBjSkNgl3/TmlJz2C2N07YAemh
+         OEXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9Is/bQU4jwdWiMgDyl2swKgH/chVCW6A8VnlLnJKb7Q=;
-        b=izoh87Lt9leSoaZvB5Gx45W+xvGQRq8/Y4/KHycAhCeIwT+lTfzV5kjuHbDf3QYkZD
-         7cjS3Cs8/uNB/nOWfSJfEDDN2E5I6aUi+8AIBuW1uvIZqQiVHbNDGc9YRFe7aMAo4Tg4
-         rN0CNPbsCT6gym2yq5B2JnG16hvjMJ4r2xuNQLH9mCA2suQ6I477jrlb8FGkftznyaVg
-         Og68qoMp45WR30EUYI6WjYZ8a/41t4GLLa6pNVyZq0/qw6YK8bpBjF92Po41ew+M/ym6
-         GvcspAqDIXkd5IgV3vVjHi38Z/6jLBeszWCrMMCW2G0rqdNQoxjGSd01I/L44w6StXRW
-         P6XQ==
-X-Gm-Message-State: AOAM531Bf25Zo3QYu51/CmSI0EK/x/T6ieaOOjsyqWw/9xGOpDXvKYba
-        l/ruQkbrlbty7dFBVP6S0AoK3v8RXmkKgtGhJpE=
-X-Google-Smtp-Source: ABdhPJyjlNDt7uExZF2t7cXDl7epsmq1nThUX3pQoXUTrc2q3q8iP/DVvi8nH77f+uffLnoy3pn4Y8fksH8sQQWxcd8=
-X-Received: by 2002:a5d:8d04:: with SMTP id p4mr10853314ioj.187.1595602630451;
- Fri, 24 Jul 2020 07:57:10 -0700 (PDT)
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=QkqqWSeWUuD3HygOIUorTjyLc3b0L3sITA+lUb4cF40=;
+        b=AmlVDCSIGeKxK2XmOSGJkWW699n10twcF1BZ266Hf/40RTeZst9W928+yqOnqgERD7
+         ob5CRZt74I2fiMCuKW2j2Z9J4ollzU5r8fWbs10aYPdTSh1FVoS73SlBK3jAmr8UrTZx
+         gyVRB4QM1cxPvEJ68dRtFJBCZa45POEJiwIDTFp6kz3hlv5ALmIe4aVt6sFHx4t8q9im
+         /Wq1MN0jsOn4m+ZkcxsbfOhG40IJEpf/0i9ZMOsDXWgrLiGYSgQ8KdJjS/7njNrF5/Po
+         7X/4cktb7BFuGhprFRDv80Wjx8Qv/JIEhR+U9U/qMH9grCdc9voF5Zx+f2R8tDjMIVy5
+         EGWg==
+X-Gm-Message-State: AOAM533128Ra/b/geTuZdq/wCdvQQ42wRGSooWFbjB//EaNPsdlnNwtN
+        W/tspGtXEOsSl/ja3F/j1A==
+X-Google-Smtp-Source: ABdhPJwyRpFJ4lQro4xWnibbtnjkVlbhkniCoPRqc53gNDf50tJkPSvISJXW2o44oSxG+s+ujaQLLg==
+X-Received: by 2002:a63:c404:: with SMTP id h4mr8756035pgd.336.1595602722446;
+        Fri, 24 Jul 2020 07:58:42 -0700 (PDT)
+Received: from madhuparna-HP-Notebook ([2402:3a80:d0b:42f6:80c3:156e:164d:54c2])
+        by smtp.gmail.com with ESMTPSA id a13sm6828930pfn.171.2020.07.24.07.58.38
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 24 Jul 2020 07:58:41 -0700 (PDT)
+From:   Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+X-Google-Original-From: Madhuparna Bhowmik <change_this_user_name@gmail.com>
+Date:   Fri, 24 Jul 2020 20:28:35 +0530
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        David Miller <davem@davemloft.net>, isdn@linux-pingi.de,
+        arnd@arndb.de, edumazet@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andrianov@ispras.ru,
+        ldv-project@linuxtesting.org
+Subject: Re: [PATCH] drivers: isdn: capi: Fix data-race bug
+Message-ID: <20200724145835.GA30994@madhuparna-HP-Notebook>
+References: <20200722172329.16727-1-madhuparnabhowmik10@gmail.com>
+ <20200723.151158.2190104866687627036.davem@davemloft.net>
+ <20200724044807.GA474@madhuparna-HP-Notebook>
+ <20200724065747.GF3880088@kroah.com>
 MIME-Version: 1.0
-References: <CAA85sZvKNXCo5bB5a6kKmsOUAiw+_daAVaSYqNW6QbSBJ0TcyQ@mail.gmail.com>
- <CAA85sZua6Q8UR7TfCGO0bV=VU0gKtqj-8o_mqH38RpKrwYZGtg@mail.gmail.com>
- <20200715133136.5f63360c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAA85sZu09Z4gydJ8rAO_Ey0zqx-8Lg28=fBJ=FxFnp6cetNd3g@mail.gmail.com>
- <CAA85sZtjCW2Yg+tXPgYyoFA5BKAVZC8kVKG=6SiR64c8ur8UcQ@mail.gmail.com>
- <20200715144017.47d06941@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAA85sZvnytPzpia_ROnkmJoZC8n4vUsrwTQh2UBs6u6g2Fgqxw@mail.gmail.com>
- <CAKgT0UdwsmE=ygE2KObzM0z-0KgrPcr59JZzVk41F6-iqsSL+Q@mail.gmail.com>
- <CAA85sZturDN7uOHMDhUnntM43PHjop=TNDb4qvEA2L=jdRa1MA@mail.gmail.com>
- <CAKgT0Uf42EhnM+zPSb-oL1R8hmo0vEdssGztptbkWKoHXS7ygw@mail.gmail.com>
- <CAA85sZtHNkocj840i0ohMVekh0B4byuojU02UunK_bR+LB1WiQ@mail.gmail.com>
- <CAKgT0UdDjabvShwDv0qiume=Q2RKGkm3JhPMZ+f8v5yO37ZLxA@mail.gmail.com>
- <CAA85sZt6B+rG8pUfRoNVOH=VqHn=rT-+2kHpFDzW+eBwvODxJA@mail.gmail.com>
- <CAKgT0UfhMjZ6kZSkfpEVHBbQ+4eHQqWRbXk5Sm4nLQD6sSrj0A@mail.gmail.com>
- <CAA85sZs5D_ReOhsEv1SVbE5D8q77utNBZ=Uv34PVof9gHs9QWw@mail.gmail.com>
- <CAA85sZvi4x1zc_21a6zPJw0rELOY=RCV4W7Fi4fvcSXfy-6m4g@mail.gmail.com> <CAA85sZvMjcRnuECtFBDKKAG3q2MGeytsxPx8RR-M4hSxruj5Vw@mail.gmail.com>
-In-Reply-To: <CAA85sZvMjcRnuECtFBDKKAG3q2MGeytsxPx8RR-M4hSxruj5Vw@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 24 Jul 2020 07:56:59 -0700
-Message-ID: <CAKgT0UfcPfNJCP=nT59t4RRwL3T8cQ5dnXeEgW1QXBG24fo-Cg@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] NAT performance issue 944mbit -> ~40mbit
-To:     Ian Kumlien <ian.kumlien@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200724065747.GF3880088@kroah.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 24, 2020 at 5:33 AM Ian Kumlien <ian.kumlien@gmail.com> wrote:
+On Fri, Jul 24, 2020 at 08:57:47AM +0200, Greg KH wrote:
+> On Fri, Jul 24, 2020 at 10:18:07AM +0530, Madhuparna Bhowmik wrote:
+> > On Thu, Jul 23, 2020 at 03:11:58PM -0700, David Miller wrote:
+> > > From: madhuparnabhowmik10@gmail.com
+> > > Date: Wed, 22 Jul 2020 22:53:29 +0530
+> > > 
+> > > > From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+> > > > 
+> > > > In capi_init(), after register_chrdev() the file operation callbacks
+> > > > can be called. However capinc_tty_init() is called later.
+> > > > Since capiminors and capinc_tty_driver are initialized in
+> > > > capinc_tty_init(), their initialization can race with their usage
+> > > > in various callbacks like in capi_release().
+> > > > 
+> > > > Therefore, call capinc_tty_init() before register_chrdev to avoid
+> > > > such race conditions.
+> > > > 
+> > > > Found by Linux Driver Verification project (linuxtesting.org).
+> > > > 
+> > > > Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+> > > 
+> > > I agree with Arnd that this just exchanges one set of problems for
+> > > another.
+> > 
+> > Thanks Arnd and David, for reviewing the patch.
+> > Do you have any suggestions on how to fix this correctly?
+> 
+> Based on the installed base of ISDN systems, and the fact that no one
+> has ever actually hit this race and reported it ever, I wouldn't worry
+> about it :)
 >
-> On Fri, Jul 24, 2020 at 2:01 PM Ian Kumlien <ian.kumlien@gmail.com> wrote:
-> >
-> > On Fri, Jul 17, 2020 at 3:45 PM Ian Kumlien <ian.kumlien@gmail.com> wrote:
->
-> [--8<--]
->
-> > As a side note, would something like this fix it - not even compile tested
-> >
-> >
-> > diff --git a/drivers/net/ethernet/intel/igb/igb_main.c
-> > b/drivers/net/ethernet/intel/igb/igb_main.c
-> > index 8bb3db2cbd41..1a7240aae85c 100644
-> > --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> > +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> > @@ -3396,6 +3396,13 @@ static int igb_probe(struct pci_dev *pdev,
-> > const struct pci_device_id *ent)
-> >                           "Width x2" :
-> >                           (hw->bus.width == e1000_bus_width_pcie_x1) ?
-> >                           "Width x1" : "unknown"), netdev->dev_addr);
-> > +               /* quirk */
-> > +#ifdef CONFIG_PCIEASPM
-> > +               if (hw->bus.width == e1000_bus_width_pcie_x1) {
-> > +                       /* single lane pcie causes problems with ASPM */
-> > +                       pdev->pcie_link_state->aspm_enabled = 0;
-> > +               }
-> > +#endif
-> >         }
-> >
-> >         if ((hw->mac.type >= e1000_i210 ||
-> >
-> > I don't know where the right place to put a quirk would be...
->
-> Ok so that was a real brainfart... turns out that there is a lack of
-> good ways to get to that but it was more intended to
-> know where the quirk should go...
->
-> Due to the lack of api:s i started wondering if this will apply to
-> more devices than just network cards - potentially we could
-> be a little bit more selective and only not enable it in one direction but...
->
-> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-> index b17e5ffd31b1..96a3c6837124 100644
-> --- a/drivers/pci/pcie/aspm.c
-> +++ b/drivers/pci/pcie/aspm.c
-> @@ -584,15 +584,16 @@ static void pcie_aspm_cap_init(struct
-> pcie_link_state *link, int blacklist)
->          * given link unless components on both sides of the link each
->          * support L0s.
->          */
-> -       if (dwreg.support & upreg.support & PCIE_LINK_STATE_L0S)
-> -               link->aspm_support |= ASPM_STATE_L0S;
-> -       if (dwreg.enabled & PCIE_LINK_STATE_L0S)
-> -               link->aspm_enabled |= ASPM_STATE_L0S_UP;
-> -       if (upreg.enabled & PCIE_LINK_STATE_L0S)
-> -               link->aspm_enabled |= ASPM_STATE_L0S_DW;
-> -       link->latency_up.l0s = calc_l0s_latency(upreg.latency_encoding_l0s);
-> -       link->latency_dw.l0s = calc_l0s_latency(dwreg.latency_encoding_l0s);
-> -
-> +       if (pcie_get_width_cap(child) != PCIE_LNK_X1) {
-> +               if (dwreg.support & upreg.support & PCIE_LINK_STATE_L0S)
-> +                       link->aspm_support |= ASPM_STATE_L0S;
-> +               if (dwreg.enabled & PCIE_LINK_STATE_L0S)
-> +                       link->aspm_enabled |= ASPM_STATE_L0S_UP;
-> +               if (upreg.enabled & PCIE_LINK_STATE_L0S)
-> +                       link->aspm_enabled |= ASPM_STATE_L0S_DW;
-> +               link->latency_up.l0s =
-> calc_l0s_latency(upreg.latency_encoding_l0s);
-> +               link->latency_dw.l0s =
-> calc_l0s_latency(dwreg.latency_encoding_l0s);
-> +       }
->
-> this time it's compile tested...
->
-> It could also be  if (pcie_get_width_cap(child) > PCIE_LNK_X1) {
->
-> I assume that ASPM is not enabled for: PCIE_LNK_WIDTH_RESRV ;)
+Fair enough! Thanks for having a look.
 
-This is probably a bit too broad of a scope to be used generically
-since this will disable ASPM for all devices that have a x1 link
-width.
+Regards,
+Madhuparna
 
-It might make more sense to look at something such as
-e1000e_disable_aspm as an example of how to approach this.
-
-As far as what triggers it we would need to get more details about the
-setup. I'd be curious if we have an "lspci -vvv" for the system
-available. The assumption is that the ASPM exit latency is high on
-this system and that in turn is causing the bandwidth issues as you
-start entering L1. If I am not mistaken the device should advertise
-about 16us for the exit latency. I'd be curious if we have a device
-somewhere between the NIC and the root port that might be increasing
-the delay in exiting L1, and then if we could identify that we could
-add a PCIe quirk for that.
-
-Thanks.
-
-- Alex
+> thanks,
+> 
+> greg k-h
