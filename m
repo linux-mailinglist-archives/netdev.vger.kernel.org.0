@@ -2,98 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 907A522BDEC
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 08:07:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A565722BDEF
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 08:10:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726573AbgGXGH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 02:07:28 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:35594 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbgGXGH1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 02:07:27 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595570845;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=i3UqHhhND85wx1Y7ueYU05hWXc1LpKz+O9Nq2V2qPGs=;
-        b=arxCywgCVY04h7n5VbiRyF0LPejvcq37AwOHNEOoAZaqnjvEP2iMaTW4Y7sEGMDNlFpsZn
-        zqBkGx2wS9jxgAH81hDAfScoj0DxdzqbQ668J2zQ+ca6q1cIHMCAb+p88NdumrYA3FXw13
-        e+NNeiDXOdH0sNwvdK5gp/3pBzV5FJspUl9mRQGCP/CSvR0JUfiVndK1n3iekwD9w2dF3d
-        UAhOwPmJhFMuOzHLIkKChK+LPZlQmFEiGgT3QZJMMcGVOYaZnetAMZ0rKf/b7hNiy6ZaJX
-        Rek5wvfr7iGqIw2Jii4HxnRfGRGNDnuthkGKnDR5kBE1Ef9svGgkfG3GL/fTDg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595570845;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=i3UqHhhND85wx1Y7ueYU05hWXc1LpKz+O9Nq2V2qPGs=;
-        b=r/6DGqd2NiZrM+ZHEBJlh8iG0Yw4a2kvFFzVgQeZyoIFJuv6g6BAmbk10JdqhWd9gDf6l4
-        1nO/dFRzWcMeJWCw==
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 2/2] net: dsa: mv88e6xxx: Use generic ptp header parsing function
-In-Reply-To: <20200723171150.GC2975@hoboy>
-References: <20200723074946.14253-1-kurt@linutronix.de> <20200723074946.14253-3-kurt@linutronix.de> <20200723171150.GC2975@hoboy>
-Date:   Fri, 24 Jul 2020 08:07:25 +0200
-Message-ID: <87tuxx30pu.fsf@kurt>
+        id S1726642AbgGXGKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 02:10:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726020AbgGXGKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 02:10:23 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31905C0619D3
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 23:10:23 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id 72so3905982ple.0
+        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 23:10:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BfGDsAaaj+TsFiWwpvcnBC33apYvRm+mH5nKXxR8gks=;
+        b=BmyJhTru2nAAoenTOXBhKfjjmcDvXg+wSWRdIKBccL8+LNxzCnNNM9wLJOHhaKUJ8s
+         v2GSzlChWqQbKDyN9b9nv9dJjU32a6xUEWzaE+HCgnwT72Kr/aBSsA4wzGwGpuKOOvTw
+         XtP/9FhKxSMvwmQTuYE6/DHmfEqki406ppnydRbLrj4LGbGhS8SiOQ9toz06efeJ/BYX
+         GvByYchNYYf4cjgt0B1u9laxo/63hoGD3IxHcEAxC8SWC/ECnGqQhdyaK0xy1OZ/g3+P
+         JdiwzXYG5pK1ZHlgYdM1/Qj8u3PQ5dtHIAuu6eufN8cjuTpmV9dTCabzKuWz6NtAuNzU
+         SsKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BfGDsAaaj+TsFiWwpvcnBC33apYvRm+mH5nKXxR8gks=;
+        b=XO1kq5Tk+CFwvn7Te5rgr6lthrb7bKG1wF93nJNJN4TrZAy1DRcY8ZEFtza/uFYmSX
+         jM/HyrX8umPG89B0vcMWve+EgsyKJhV35R5ginMow6v3p7j20zgvvV8lLr8Yo1XeMi3A
+         dn9s5qVTvF7CLSyWXV0dx8m3lOWwH0GFlad+iwT1oXEPxnsWmqllEWD21d/I545xPwUe
+         zwssV/b43pbg0LyO0X/kfGrpgXWE/zTcLzutEgKXtD49PJlaQoz/Qyd4plrhlSyqt+6A
+         4fB3jXGIsidBixgLT0p4IH9oaijIe2JeS0+13imycOswU1U2oL4WSD0qcHXXOQeoCp3C
+         7qJg==
+X-Gm-Message-State: AOAM5308DELUaW/X+scOeXUw6in2GIa03idUSzlJaxOu+pTr/D5f8mPj
+        aAUo32Tsgh0ec7NTslYlqHc=
+X-Google-Smtp-Source: ABdhPJyZgtLK4RQxloh9MLJN3ZgMyj0DYNyFUi75E0D0s5RiYaWa57EVGwJafkM+rkknDmONPDvA6Q==
+X-Received: by 2002:a17:90a:ac06:: with SMTP id o6mr3891281pjq.219.1595571022780;
+        Thu, 23 Jul 2020 23:10:22 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id y20sm5087090pfo.170.2020.07.23.23.10.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jul 2020 23:10:22 -0700 (PDT)
+Subject: Re: [Patch net] qrtr: orphan skb before queuing in xmit
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+6720d64f31c081c2f708@syzkaller.appspotmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+References: <20200724045040.20070-1-xiyou.wangcong@gmail.com>
+ <590b7621-95bf-1220-f786-783996fd4a4c@gmail.com>
+ <CAM_iQpW+TmWjFu=gqDkAVPZ9q6PkJAfMeu87WJ98d-c2PxWoQA@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <ee7386b1-fcdb-bd2d-fa8d-db87248dd7fd@gmail.com>
+Date:   Thu, 23 Jul 2020 23:10:21 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+In-Reply-To: <CAM_iQpW+TmWjFu=gqDkAVPZ9q6PkJAfMeu87WJ98d-c2PxWoQA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
 
-On Thu Jul 23 2020, Richard Cochran wrote:
-> On Thu, Jul 23, 2020 at 09:49:46AM +0200, Kurt Kanzenbach wrote:
->> @@ -26,6 +26,7 @@ config NET_DSA_MV88E6XXX_PTP
->>  	depends on NET_DSA_MV88E6XXX_GLOBAL2
->>  	depends on PTP_1588_CLOCK
->>  	imply NETWORK_PHY_TIMESTAMPING
->> +	select NET_PTP_CLASSIFY
->
-> Hm, PTP_1588_CLOCK already selects NET_PTP_CLASSIFY,
->
->   config PTP_1588_CLOCK
-> 	tristate "PTP clock support"
-> 	depends on NET && POSIX_TIMERS
-> 	select PPS
-> 	select NET_PTP_CLASSIFY
->
-> and so I expect that the 'select' in NET_DSA_MV88E6XXX_PTP isn't
-> needed.  What am I missing?
 
-OK, didn't noticed that.
+On 7/23/20 11:00 PM, Cong Wang wrote:
+> On Thu, Jul 23, 2020 at 10:35 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>>
+>>
+>> On 7/23/20 9:50 PM, Cong Wang wrote:
+>>> Similar to tun_net_xmit(), we have to orphan the skb
+>>> before queuing it, otherwise we may use the socket when
+>>> purging the queue after it is freed by user-space.
+>>
+>> Which socket ?
+> 
+> sk->sk_wq points to &sock->wq. The socket is of course from
+> qrtr_create().
+> 
+>>
+>> By not calling skb_orphan(skb), this skb should own a reference on skb->sk preventing
+>> skb->sk to disappear.
+>>
+> 
+> I said socket, not sock. I believe the socket can be gone while the sock is
+> still there.
+> 
+> 
+>> It seems that instead of skb_orphan() here, we could avoid calling skb_set_owner_w() in the first place,
+>> because this is confusing.
+> 
+> Not sure about this, at least tun calls skb_set_owner_w() too. More
+> importantly, sock_alloc_send_skb() calls it too. :)
+> 
 
-Thanks,
-Kurt
+tun is very different : skbs reaching it came come from all over the places, like TCP stack.
+Their skb->sk is not pointing to the tun sock.
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8aep0ACgkQeSpbgcuY
-8KafHQ/+Le1awl6MFnceMBbsrf6fElFJfjWvdJd2AwGGmoKe8Xufc6m7laC7MNhs
-6ufR9vYLdqECoEfP5Lo8IFIMD6mAPqhMp9Co8xXFuR6mafwl6XcGb3K0qv7kubm8
-bIq7Ik0WtlgmH22F7Nof1UOj3JpLiwc/qGsn6ZbEvWWQj2/J1VapzE1EwySIfX2m
-HwfHdCyBjf0NYFlfzv0Uy/HdFT0xa/N668eYXNDl2c1hsJWcJ5kKGtGDTpfefmNw
-jBjKvT8GDw28v9wHkZZMDhDINNFnHffkJOSo2F9Ryp9pdsS3M0zujMuno+4iQC1h
-5GrAVki1nL+ga2PJsTvHFknqBiRM4l7oje0LmRLG3hagWFMn4MdZBLXJacs5vql7
-i6Nrl/Ci9XutuXxKnFNNqQ7VXy1LsGwwfNl6lJW41Q7wrN318m1Uj4u5N10S/EPD
-zFWXOsdLXeO2vnlV4PxfbcWCoZTAHpgXPWUU3DmwPOBFIdFhT6akfrDNtTpfaUfv
-Y+PLoM2lAdyR5JMiIL0KlJSyIDb85RGorRFTlUvKowACCjbFMS5f3mQt4T7N+rVj
-S7nIk1El24qvcQbKmgq2kH2CJ4EFLRL/LSgwARb48gQ7A+deqQbDS4nWykDE1raX
-8dc/I7+7JCUuz7Pp/UW1HwJ11YZd/LFLKNkD+39IZipkZ7ITd7A=
-=Y5KK
------END PGP SIGNATURE-----
---=-=-=--
+Here, the skbs are cooked from net/qrtr/qrtr.c locations only.
