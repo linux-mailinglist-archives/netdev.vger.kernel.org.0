@@ -2,63 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8520322CC55
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 19:41:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2418922CCBB
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 20:01:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727013AbgGXRlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 13:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48920 "EHLO
+        id S1726841AbgGXSBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 14:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726652AbgGXRk7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 13:40:59 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E19C0619D3;
-        Fri, 24 Jul 2020 10:40:59 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id f2so9021888wrp.7;
-        Fri, 24 Jul 2020 10:40:59 -0700 (PDT)
+        with ESMTP id S1726317AbgGXSBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 14:01:06 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A38C0619D3
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 11:01:06 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id bm28so7653468edb.2
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 11:01:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=S9B43df6SARWSY2yn5Mw8hYQx9HnwxrrN+45ssJMdow=;
-        b=h74/M4LXnXYRy1Pf/GOEtCrKDQlOgbnlDLg+8sxiBYIiVRcOWaRq8GwxfbI6C5wKcj
-         QZq1QmeKT9i7rzADKBv6S3JWCi5/L6r6YNndOsOTwqNwuN1GpS9Yzfp1d9eaDi5e8FrS
-         Pt/yCpcF8/YXzMTn3ErMtIOyMUycHxg335LE5eqcqSmdaOWAWxR//tGhvm5tY/BtMvmB
-         DcdlgRcTAMJQcWlLzWWYilXKve1xIIKlHoKVXSkCF6h/+2vThQCg0vD9+YCxbDznFggF
-         coP+gZ/GthFalJfa+sxXm1AVESYseSvyAmP/BuJj1cA7KNFP3DN5aRjA1BeG9mEQFTt1
-         0lFQ==
+        bh=T2MZYItk78DRBwTgDd7Jp7TK4m6gryLglYr9iQqfq0o=;
+        b=OGU9X3tilat5/7JOWbheIwPnUb7Qk3/EVBIuTRW2CgWmpT3sdSjEtm7uBVzGijbLeA
+         O11xgWbYAjohLCpRmKRHmiUGwUH5j6BzJnTacif/qccXWyJh2NC0EirpdIbpo8/NO4Du
+         DqgtIdeSUHQJGFA8+ByZiAq6ug5w+wbjEPIrdjVd26guSKEhGvFqE3i8fAUYIwCYGRoB
+         WAp001xdGcypfxBkHvI0DOOoZzluRr/sbM+eWS8pDpz1MZCChqqO3s1BfgsTqiYitgzE
+         W+H2EfIYXPHUMCU8tZ4l9RwMmRnDcxxvqTYSvQUhTPXv9MYO5pdRxy5tW769Dnx3ZhUc
+         oIZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=S9B43df6SARWSY2yn5Mw8hYQx9HnwxrrN+45ssJMdow=;
-        b=rDEMSg5BkVsVTh03A5OYUjanCZp0SfpVtjCLLvlT9fKbxCEbWTuY2vzRI03v/W/hfs
-         h7LP0iXfsbJSxIPa0+fHoMKV4yW5XhiyDfyY0vSUvmcOGQ3vJ1UdZzwSrsKBss1eF5MT
-         8GuGTY9kI9+1ertKf15RNieIQv+zaTcGnXrPPOnB7EUtfsQPSbMGOyBeuFWO3rxmq5+O
-         min8DDTH+5URd29YZJXxb1cYCvPnfWdqmD65HMd10XLy7WICEt260KxzSEawfKCN/ESq
-         l8gKJxA0GmCQfIK1UuRyZ73+mFGeee361Iyxk5E96rhewWRM2E6WdQwAb2wu2TdH7Ziv
-         tb5Q==
-X-Gm-Message-State: AOAM531mg7l/w+4Tk3j2UNwRZtsm8EK0vi+9Z8wleAWN/2nYhYdJBr2K
-        0Z+qpEdGAH7CL2NXxMLOmts=
-X-Google-Smtp-Source: ABdhPJxNcAFCW97O2cbJdOXcxSTXX0LYYH8H59BxQgpZKhKdob21ay0VSnX1Hrp9ygvRIHStWEEtuw==
-X-Received: by 2002:a5d:4649:: with SMTP id j9mr9052853wrs.270.1595612458236;
-        Fri, 24 Jul 2020 10:40:58 -0700 (PDT)
+        bh=T2MZYItk78DRBwTgDd7Jp7TK4m6gryLglYr9iQqfq0o=;
+        b=gVuVQ6pf5yI4CcJ/0zsQDrElf/kHOL+CmN5H0jKqNqLhPrJvhcsLYPDJ42QjUgDQtY
+         f/t5qhoioJbTPsHM6ys9O/4nPfgLpvd0chtQyf2sYVuCgYGcUec6I/ooKypAbwpJmJXr
+         bCIgvoN2gi5dxAFUkNx/o0pPQnrr6YMIqP3aDfxEK5UlpfrOMKS0TM/wGprLA03PFEf4
+         gefk8tlbw6lKFGwq2kFP/hVZDDzCSs3F9Pz/YTGqiIYfbvTJw8z1U0sOg6FTF45RymTb
+         /m3CUr9Ng+dnUhk4Qifdb2O3NHFp+wiFvM0yZn9VpJs4rPOqZJxe3raXiSb4JIQzPnei
+         ddtw==
+X-Gm-Message-State: AOAM532lFf07eLT5Ew0g0BCwM5RPByp5WXndgUDgE//2ClGgrHCtxOpx
+        MWkk0frXODhqMW/1vbGhFgM=
+X-Google-Smtp-Source: ABdhPJw216lpPXhqA88+mWa+yYQWXTOWLDS7MdtSMG5GTRkqwEaf1sJMAA3rBD7s39NEQyUvzYN0Hg==
+X-Received: by 2002:a50:ee8d:: with SMTP id f13mr9716524edr.302.1595613664920;
+        Fri, 24 Jul 2020 11:01:04 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id i67sm8105704wma.12.2020.07.24.10.40.55
+        by smtp.googlemail.com with ESMTPSA id n2sm1144529edq.73.2020.07.24.11.01.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jul 2020 10:40:57 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 3/7] net: macb: parse PHY nodes found under an
- MDIO node
-To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        robh+dt@kernel.org, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com
-References: <20200724105033.2124881-1-codrin.ciubotariu@microchip.com>
- <20200724105033.2124881-4-codrin.ciubotariu@microchip.com>
+        Fri, 24 Jul 2020 11:01:04 -0700 (PDT)
+Subject: Re: [PATCH net-next] mscc: Add LCPLL Reset to VSC8574 Family of phy
+ drivers
+To:     Bryan.Whitehead@microchip.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
+References: <1595534997-29187-1-git-send-email-Bryan.Whitehead@microchip.com>
+ <c8791db0-b036-51c0-c714-676357fd8be1@gmail.com>
+ <MN2PR11MB36624200516FB937C0E91F0DFA770@MN2PR11MB3662.namprd11.prod.outlook.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -114,88 +110,51 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <426a15dd-62de-9ffb-baed-c527b9aa9b70@gmail.com>
-Date:   Fri, 24 Jul 2020 10:40:52 -0700
+Message-ID: <c55019cd-32cf-cc72-1188-3115c547102c@gmail.com>
+Date:   Fri, 24 Jul 2020 11:00:57 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200724105033.2124881-4-codrin.ciubotariu@microchip.com>
+In-Reply-To: <MN2PR11MB36624200516FB937C0E91F0DFA770@MN2PR11MB3662.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/24/20 3:50 AM, Codrin Ciubotariu wrote:
-> The MACB embeds an MDIO bus controller. For this reason, the PHY nodes
-> were represented as sub-nodes in the MACB node. Generally, the
-> Ethernet controller is different than the MDIO controller, so the PHYs
-> are probed by a separate MDIO driver. Since adding the PHY nodes directly
-> under the ETH node became deprecated, we adjust the MACB driver to look
-> for an MDIO node and register the subnode MDIO devices.
+On 7/24/20 9:29 AM, Bryan.Whitehead@microchip.com wrote:
+> Hi Florian, see below.
 > 
-> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-> ---
+>>>  /* bus->mdio_lock should be locked when using this function */
+>>> +/* Page should already be set to MSCC_PHY_PAGE_EXTENDED_GPIO */
+>>> +static int vsc8574_wait_for_micro_complete(struct phy_device *phydev)
+>>> +{
+>>> +     u16 timeout = 500;
+>>> +     u16 reg18g = 0;
+>>> +
+>>> +     reg18g = phy_base_read(phydev, 18);
+>>> +     while (reg18g & 0x8000) {
+>>> +             timeout--;
+>>> +             if (timeout == 0)
+>>> +                     return -1;
+>>> +             usleep_range(1000, 2000);
+>>> +             reg18g = phy_base_read(phydev, 18);
+>>
+>> Please consider using phy_read_poll_timeout() instead of open coding this busy
+>> waiting loop.
 > 
-> Changes in v3:
->  - moved the check for the mdio node at the beginnging of
->    macb_mdiobus_register(). This way, the mdio devices will be probed even
->    if macb is a fixed-link
+> There are a couple issues with the use of phy_read_poll_timeout
+> 1) It requires the use of phy_read, which acquires bus->mdio_lock.
+> But this function is run with the assumption that, that lock is already acquired.
+> There for I presume it will deadlock> 2) The implementation of phy_base_read uses __phy_package_read which
+uses a shared phy addr, rather than the addr associated with the phydev.
 > 
-> Changes in v2:
->  - readded newline removed by mistake;
-> 
->  drivers/net/ethernet/cadence/macb_main.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index 89fe7af5e408..cb0b3637651c 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -740,6 +740,16 @@ static int macb_mii_probe(struct net_device *dev)
->  static int macb_mdiobus_register(struct macb *bp)
->  {
->  	struct device_node *child, *np = bp->pdev->dev.of_node;
-> +	struct device_node *mdio_node;
-> +	int ret;
-> +
-> +	/* if an MDIO node is present, it should contain the PHY nodes */
-> +	mdio_node = of_get_child_by_name(np, "mdio");
-> +	if (mdio_node) {
-> +		ret = of_mdiobus_register(bp->mii_bus, mdio_node);
-> +		of_node_put(mdio_node);
-> +		return ret;
-> +	}
+> These issues could be eliminated if I used read_poll_timeout directly.
+> Does that seem reasonable to you?
 
-This does take care of registering the MDIO bus controller when present
-as a sub-node, however if you also plan on making use of fixed-link, we
-will have already returned.
-
->  
->  	if (of_phy_is_fixed_link(np))
->  		return mdiobus_register(bp->mii_bus);
-> 
-
-Really not sure what this is achieving, because we start off assuming
-that we have an OF driven configuration, but later on we register the
-MDIO bus with mdiobus_register() (and not of_mdiobus_register()), so no
-scanning of the MDIO bus will happen.
-
-How does the driver currently support being provided a fixed-link
-property? Should not we at least have this pattern:
-
-         */
-        if (of_phy_is_fixed_link(dn)) {
-                ret = of_phy_register_fixed_link(dn);
-                if (ret)
-			return ret;
-
-                priv->phy_dn = dn;
-        }
-
-It does not look like you are breaking anything here, because it does
-not look like this works at all.
+Certainly, whatever makes the code more maintainable and makes use of
+existing functions is better on all counts.
 -- 
 Florian
