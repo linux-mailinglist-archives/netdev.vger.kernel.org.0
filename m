@@ -2,210 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64CFB22C56B
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 14:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C07A22C58F
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 14:51:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726963AbgGXMmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 08:42:08 -0400
-Received: from mga18.intel.com ([134.134.136.126]:51357 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726842AbgGXMmF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jul 2020 08:42:05 -0400
-IronPort-SDR: +f++BzVCpnG65o5a5zs3a1gfmy5J2TrIiqdvv3Dz++uryCAPZ08k3VOI+7NKXAg/dK9oQK3rgP
- HdNthoJAqxxQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9691"; a="138198593"
-X-IronPort-AV: E=Sophos;i="5.75,390,1589266800"; 
-   d="scan'208";a="138198593"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2020 05:42:05 -0700
-IronPort-SDR: UdLbYDUNLCFMvxSejFZ07OFH3QnFnWLFpNGGB9ewFR/7uBA2faEYQsn2QH2Hk6u7EXg7N1gl5V
- k2sfEEsXIfMA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,390,1589266800"; 
-   d="scan'208";a="319299664"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga008.jf.intel.com with ESMTP; 24 Jul 2020 05:42:03 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     ast@kernel.org, daniel@iogearbox.net
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH v4 bpf-next 6/6] selftests: bpf: add dummy prog for bpf2bpf with tailcall
-Date:   Fri, 24 Jul 2020 14:36:44 +0200
-Message-Id: <20200724123644.5096-7-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200724123644.5096-1-maciej.fijalkowski@intel.com>
-References: <20200724123644.5096-1-maciej.fijalkowski@intel.com>
+        id S1726483AbgGXMva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 08:51:30 -0400
+Received: from mail.corporatemx.com ([78.140.179.7]:17891 "EHLO
+        mail.corporatemx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726280AbgGXMva (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 08:51:30 -0400
+X-Greylist: delayed 367 seconds by postgrey-1.27 at vger.kernel.org; Fri, 24 Jul 2020 08:51:29 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=servers.com
+        ; s=mail; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:Subject:From:To:Sender:Reply-To:Cc:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=2hRURaCWUciAn/c/BXwM3RuKRvRc5c2VihuUH9pOtJ4=; b=KT08PcTNnDY3eX2Fa4ckB7Utkj
+        szaf+n7W4Arl0pm7EhOWv2bMp67a7lAgz8mU6xWD2HAAd00qyrWSLzkp37uf7c/z6NZ8mBFRlrOYI
+        4ILlQgXYGSEeVt09OrFPA8UMvRIwGfFlO2F3+OtDW/3NU6ji8Mbyf/NKDFN1dZ7Kc0mU=;
+Received: from [109.110.245.170] (port=28730 helo=[192.168.0.152])
+        by mail.corporatemx.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (envelope-from <amarao@servers.com>)
+        id 1jyx4j-000E9J-Nz
+        for netdev@vger.kernel.org; Fri, 24 Jul 2020 14:45:21 +0200
+To:     netdev@vger.kernel.org
+From:   George Shuklin <amarao@servers.com>
+Subject: Bug in iproute2 man page (or in iproute itself)
+Message-ID: <869fed82-bb31-589f-bd26-591ccfa976ed@servers.com>
+Date:   Fri, 24 Jul 2020 15:45:20 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce 6th test to taicalls kselftest that checks if tailcall can be
-correctly executed from the BPF subprogram.
+Hello.
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- .../selftests/bpf/prog_tests/tailcalls.c      | 85 +++++++++++++++++++
- tools/testing/selftests/bpf/progs/tailcall6.c | 38 +++++++++
- 2 files changed, 123 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/tailcall6.c
+I'm writing Ansible module for iproute, and I found some discrepancies 
+between man page and actual behavior for ip link add type bridge.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tailcalls.c b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-index bb8fe646dd9f..192c94896809 100644
---- a/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- /* test_tailcall_1 checks basic functionality by patching multiple locations
-  * in a single program for a single tail call slot with nop->jmp, jmp->nop
-@@ -472,6 +473,88 @@ static void test_tailcall_5(void)
- 	bpf_object__close(obj);
- }
- 
-+/* test_tailcall_6 purpose is to make sure that tailcalls are working
-+ * correctly in correlation with BPF subprograms
-+ */
-+static void test_tailcall_6(void)
-+{
-+	int err, map_fd, prog_fd, main_fd, i;
-+	struct bpf_map *prog_array;
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	__u32 retval, duration;
-+	char prog_name[32];
-+
-+	err = bpf_prog_load("tailcall6.o", BPF_PROG_TYPE_SCHED_CLS, &obj,
-+			    &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	prog = bpf_object__find_program_by_title(obj, "classifier");
-+	if (CHECK_FAIL(!prog))
-+		goto out;
-+
-+	main_fd = bpf_program__fd(prog);
-+	if (CHECK_FAIL(main_fd < 0))
-+		goto out;
-+
-+	prog_array = bpf_object__find_map_by_name(obj, "jmp_table");
-+	if (CHECK_FAIL(!prog_array))
-+		goto out;
-+
-+	map_fd = bpf_map__fd(prog_array);
-+	if (CHECK_FAIL(map_fd < 0))
-+		goto out;
-+
-+	/* nop -> jmp */
-+	for (i = 0; i < bpf_map__def(prog_array)->max_entries; i++) {
-+		snprintf(prog_name, sizeof(prog_name), "classifier/%i", i);
-+
-+		prog = bpf_object__find_program_by_title(obj, prog_name);
-+		if (CHECK_FAIL(!prog))
-+			goto out;
-+
-+		prog_fd = bpf_program__fd(prog);
-+		if (CHECK_FAIL(prog_fd < 0))
-+			goto out;
-+
-+		err = bpf_map_update_elem(map_fd, &i, &prog_fd, BPF_ANY);
-+		if (CHECK_FAIL(err))
-+			goto out;
-+	}
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				0, &retval, &duration);
-+	CHECK(err || retval != 1, "tailcall",
-+	      "err %d errno %d retval %d\n", err, errno, retval);
-+
-+	/* jmp -> nop, call subprog that will do tailcall */
-+	i = 1;
-+	err = bpf_map_delete_elem(map_fd, &i);
-+	if (CHECK_FAIL(err))
-+		goto out;
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				0, &retval, &duration);
-+	CHECK(err || retval != 0, "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+
-+	/* make sure that subprog can access ctx and entry prog that
-+	 * called this subprog can properly return
-+	 */
-+	i = 0;
-+	err = bpf_map_delete_elem(map_fd, &i);
-+	if (CHECK_FAIL(err))
-+		goto out;
-+
-+	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
-+				0, &retval, &duration);
-+	CHECK(err || retval != 108, "tailcall", "err %d errno %d retval %d\n",
-+	      err, errno, retval);
-+out:
-+	bpf_object__close(obj);
-+}
-+
- void test_tailcalls(void)
- {
- 	if (test__start_subtest("tailcall_1"))
-@@ -484,4 +567,6 @@ void test_tailcalls(void)
- 		test_tailcall_4();
- 	if (test__start_subtest("tailcall_5"))
- 		test_tailcall_5();
-+	if (test__start_subtest("tailcall_6"))
-+		test_tailcall_6();
- }
-diff --git a/tools/testing/selftests/bpf/progs/tailcall6.c b/tools/testing/selftests/bpf/progs/tailcall6.c
-new file mode 100644
-index 000000000000..e72ca5869b58
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/tailcall6.c
-@@ -0,0 +1,38 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-+	__uint(max_entries, 2);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(__u32));
-+} jmp_table SEC(".maps");
-+
-+#define TAIL_FUNC(x) 				\
-+	SEC("classifier/" #x)			\
-+	int bpf_func_##x(struct __sk_buff *skb)	\
-+	{					\
-+		return x;			\
-+	}
-+TAIL_FUNC(0)
-+TAIL_FUNC(1)
-+
-+static __attribute__ ((noinline))
-+int subprog_tail(struct __sk_buff *skb)
-+{
-+	bpf_tail_call(skb, &jmp_table, 0);
-+
-+	return skb->len * 2;
-+}
-+
-+SEC("classifier")
-+int entry(struct __sk_buff *skb)
-+{
-+	bpf_tail_call(skb, &jmp_table, 1);
-+
-+	return subprog_tail(skb);
-+}
-+
-+char __license[] SEC("license") = "GPL";
-+int _version SEC("version") = 1;
--- 
-2.20.1
+man page said:
+
+hello_time HELLO_TIME - set the time in seconds between hello packets 
+sent by the bridge, when it is a root bridge or a designated bridges.  
+Only relevant if STP
+is enabled. Valid values are between 1 and 10.
+
+max_age MAX_AGE - set the hello packet timeout, ie the time in seconds 
+until another bridge in the spanning tree is assumed to be dead, after 
+reception of its
+last hello message. Only relevant if STP is enabled. Valid values are 
+between 6 and 40.
+
+In reality 'ip link add type bridge' requires hello_time to be at least 
+100, and max_age to be at least 600. I suspect there is a missing x100 
+multiplier, either in docs, or in the code.
+
+(I'm not sure where I should send bugreports for iproute2).
 
