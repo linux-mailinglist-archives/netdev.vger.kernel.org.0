@@ -2,89 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 978D322D085
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 23:29:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 295E622D166
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 23:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726731AbgGXV3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 17:29:44 -0400
-Received: from smtprelay0080.hostedemail.com ([216.40.44.80]:42774 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726411AbgGXV3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 17:29:43 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 9DAC2362A;
-        Fri, 24 Jul 2020 21:29:42 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3867:3868:3871:4321:5007:6119:7903:8603:9010:10004:10400:10848:11026:11232:11657:11658:11914:12043:12048:12296:12297:12438:12740:12760:12895:13439:13972:14659:14721:21080:21451:21627:21990:30041:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: way24_3e0938d26f4a
-X-Filterd-Recvd-Size: 3199
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf04.hostedemail.com (Postfix) with ESMTPA;
-        Fri, 24 Jul 2020 21:29:41 +0000 (UTC)
-Message-ID: <2cdef8d442bb5da39aed17bf994a800e768942f7.camel@perches.com>
-Subject: Re: [PATCH net-next] liquidio: Remove unneeded cast from memory
- allocation
-From:   Joe Perches <joe@perches.com>
-To:     Wang Hai <wanghai38@huawei.com>, dchickles@marvell.com,
-        sburla@marvell.com, fmanlunas@marvell.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Fri, 24 Jul 2020 14:29:39 -0700
-In-Reply-To: <20200724130001.71528-1-wanghai38@huawei.com>
-References: <20200724130001.71528-1-wanghai38@huawei.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1726971AbgGXVnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 17:43:31 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:37108 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726862AbgGXVn0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 17:43:26 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06OLgpkG088853;
+        Fri, 24 Jul 2020 16:42:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1595626971;
+        bh=EENDgKjYGdyjuwWFWxbHFsIqJ467mMOcoygJG/xnCoI=;
+        h=From:To:CC:Subject:Date;
+        b=EYQ2L2LWfZP6dD8JOenRLBNQPDb/OQs5WlBya1sjvMntH3dHBipDrHlcKPanQfDa+
+         FWNeBqUZJ7YL9xl7KcY5jepHyEYPcfQV64NMFRIkL5xHX9lfTM1jHgpcNwzr81B61O
+         OTniMLY8o22xvmkug62G2MTu+j/p30mCV4kUDxOU=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06OLgpNn103365
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 24 Jul 2020 16:42:51 -0500
+Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 24
+ Jul 2020 16:42:51 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 24 Jul 2020 16:42:51 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06OLgodS037326;
+        Fri, 24 Jul 2020 16:42:51 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     Murali Karicheri <m-karicheri2@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        <santosh.shilimkar@oracle.com>
+CC:     Sekhar Nori <nsekhar@ti.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Philippe Schenker <philippe.schenker@toradex.com>
+Subject: [RESEND PATCH] ARM: dts: keystone-k2g-evm: fix rgmii phy-mode for ksz9031 phy
+Date:   Sat, 25 Jul 2020 00:42:21 +0300
+Message-ID: <20200724214221.28125-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-07-24 at 21:00 +0800, Wang Hai wrote:
-> Remove casting the values returned by memory allocation function.
-> 
-> Coccinelle emits WARNING:
-> 
-> ./drivers/net/ethernet/cavium/liquidio/octeon_device.c:1155:14-36: WARNING:
->  casting value returned by memory allocation function to (struct octeon_dispatch *) is useless.
-[]
-> diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_device.c b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-[]
-> @@ -1152,8 +1152,7 @@ octeon_register_dispatch_fn(struct octeon_device *oct,
->  
->  		dev_dbg(&oct->pci_dev->dev,
->  			"Adding opcode to dispatch list linked list\n");
-> -		dispatch = (struct octeon_dispatch *)
-> -			   vmalloc(sizeof(struct octeon_dispatch));
-> +		dispatch = vmalloc(sizeof(struct octeon_dispatch));
+Since commit bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the
+KSZ9031 PHY") the networking is broken on keystone-k2g-evm board.
 
-More the question is why this is vmalloc at all
-as the structure size is very small.
+The above board have phy-mode = "rgmii-id" and it is worked before because
+KSZ9031 PHY started with default RGMII internal delays configuration (TX
+off, RX on 1.2 ns) and MAC provided TX delay by default.
+After above commit, the KSZ9031 PHY starts handling phy mode properly and
+enables both RX and TX delays, as result networking is become broken.
 
-Likely this should just be kmalloc.
+Fix it by switching to phy-mode = "rgmii-rxid" to reflect previous
+behavior.
 
-drivers/net/ethernet/cavium/liquidio/octeon_device.h:struct octeon_dispatch {
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-   /** List head for this entry */
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-   struct list_head list;
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-   /** The opcode for which the dispatch function & arg should be used */
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-   u16 opcode;
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-   /** The function to be called for a packet received by the driver */
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-   octeon_dispatch_fn_t dispatch_fn;
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-   /* The application specified argument to be passed to the above
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-    * function along with the received packet
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-    */
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-   void *arg;
-drivers/net/ethernet/cavium/liquidio/octeon_device.h-}
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Philippe Schenker <philippe.schenker@toradex.com>
+Fixes: bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the KSZ9031 PHY")
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+Fix for one more broken TI board with KSZ9031 PHY.
 
->  		if (!dispatch) {
->  			dev_err(&oct->pci_dev->dev,
->  				"No memory to add dispatch function\n");
+ arch/arm/boot/dts/keystone-k2g-evm.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-And this dev_err is unnecessary.
-
+diff --git a/arch/arm/boot/dts/keystone-k2g-evm.dts b/arch/arm/boot/dts/keystone-k2g-evm.dts
+index db640bab8c1d..8b3d64c913d8 100644
+--- a/arch/arm/boot/dts/keystone-k2g-evm.dts
++++ b/arch/arm/boot/dts/keystone-k2g-evm.dts
+@@ -402,7 +402,7 @@
+ 
+ &gbe0 {
+ 	phy-handle = <&ethphy0>;
+-	phy-mode = "rgmii-id";
++	phy-mode = "rgmii-rxid";
+ 	status = "okay";
+ };
+ 
+-- 
+2.17.1
 
