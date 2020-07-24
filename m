@@ -2,707 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAD6B22CFEE
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 22:48:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E79C22CF8B
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 22:38:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726658AbgGXUsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 16:48:36 -0400
-Received: from mga05.intel.com ([192.55.52.43]:31857 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726083AbgGXUsf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jul 2020 16:48:35 -0400
-IronPort-SDR: awEuvEkpASeBsRT0p6Z57xd5sdKpLYBKdQdVs9y3xJUvGLPO2f8/1NdhKhjM4WOe28c2SlD2w2
- nb+vmLAev+8Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9692"; a="235650606"
-X-IronPort-AV: E=Sophos;i="5.75,391,1589266800"; 
-   d="gz'50?scan'50,208,50";a="235650606"
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2020 13:33:30 -0700
-IronPort-SDR: NLp/32LbCZwWhGblfbe5ARdDn9UdJsp4rb0/n7feSla42RcREtp8Kt1pDWLnGpfFthUtKtpBW5
- 95zNMsMJXPIg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,391,1589266800"; 
-   d="gz'50?scan'50,208,50";a="329026488"
-Received: from lkp-server01.sh.intel.com (HELO df0563f96c37) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 24 Jul 2020 13:33:27 -0700
-Received: from kbuild by df0563f96c37 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1jz4Nj-0000XI-72; Fri, 24 Jul 2020 20:33:27 +0000
-Date:   Sat, 25 Jul 2020 04:32:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Edward Cree <ecree@solarflare.com>,
-        linux-net-drivers@solarflare.com, davem@davemloft.net
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 04/16] sfc: skeleton EF100 PF driver
-Message-ID: <202007250411.qUhQvyZz%lkp@intel.com>
-References: <b734869c-ee2f-a121-2470-a7d632e1dfbf@solarflare.com>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="EeQfGwPcQSOJBaQU"
-Content-Disposition: inline
-In-Reply-To: <b734869c-ee2f-a121-2470-a7d632e1dfbf@solarflare.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726607AbgGXUie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 16:38:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726455AbgGXUie (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 16:38:34 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA92C0619D3;
+        Fri, 24 Jul 2020 13:38:33 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id gc15so6340639pjb.0;
+        Fri, 24 Jul 2020 13:38:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=P0QstVAYHr0OWVQTODNsh03HereexIeDxjNo9/0EDhc=;
+        b=ofluR91ZF42RMkw+dxGqtzXJuMnc8Ycg/veeNXR+TJgkVutjqKvgXAbhoenCTzKc50
+         UW4Lq54xWNmRYr93FY8l+3S+A5wxdu0Nsopc87Pq1RUlh/CCqpcZvQka1A07y1JY41Dj
+         0sCWQWUhK3ZKNy5eDpgwRHjw2kHopv7wiMWQddU4j3pEzp9dPwQBJoacnMAx0qBqSms3
+         0lScZQbiEzG71op/w/Kl8LHsppxnz88Lwh7XxCNs2qR4Y/Z7TJc/QnK/8JZfv6X1Rv8G
+         wZLLssIYY36o7pcnBOATGm/JufBPrKWZcim0g9fRL1zWhLDzGvvvrgRsmPI1pRrULBZu
+         Dntg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=P0QstVAYHr0OWVQTODNsh03HereexIeDxjNo9/0EDhc=;
+        b=myK6EkyChzwpexIe2fsIQovfdOJO+/grFM0cuAyvzg80+D2ZYI/F5zV5yGPp3tYe8b
+         NEdKbkMeBr4Ae3ygwQrt5OFUorZ9Bok1nFvHMIEOopdBAZivfibjF+RLihLGZG1VOKip
+         Nyz7wxAwSAnwi1MAZvO1tBekrOOupvP+oIGWZO5g0Sl14bFW0iRxcHtxOdGH1U0vJEl8
+         qLwOLy0S4iF0QeOsoJXUWA2DvGdYxfKcCwBD54WqYfqbjZG1FFRGgedheSURWLJiR9c/
+         2VpUHTRD9mS7d6pcHLlAAaj8uWO/zbo7yWTbqmKk82jNnuBETcgpDg4dib1l1HUi3yXr
+         FFCA==
+X-Gm-Message-State: AOAM531UBI6g1G2G08lkk83c3HEbAVhu7VPDUNLpp+tPpg5uOrE/jXo4
+        Vl0WlP+7N5eGFOnnhUYzjf4=
+X-Google-Smtp-Source: ABdhPJzSBxK8t4x6yQ4RUcGdKCStU+DTyenDY6+04NHbp2mHwJnasDPsWFWwzH5DS8eS0gEfPtGZZA==
+X-Received: by 2002:a17:90a:7805:: with SMTP id w5mr7489135pjk.192.1595623113038;
+        Fri, 24 Jul 2020 13:38:33 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([163.114.132.7])
+        by smtp.gmail.com with ESMTPSA id lr1sm8114461pjb.27.2020.07.24.13.38.31
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 Jul 2020 13:38:32 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, torvalds@linux-foundation.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH v4 bpf-next 0/4] bpf: Populate bpffs with map and prog iterators
+Date:   Fri, 24 Jul 2020 13:38:26 -0700
+Message-Id: <20200724203830.81531-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Alexei Starovoitov <ast@kernel.org>
 
---EeQfGwPcQSOJBaQU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+v3->v4:
+- took THIS_MODULE in patch 3 as suggested by Daniel to simplify the code.
+- converted BPF iterator to use BTF (when available) to print full BPF program name
+instead of 16-byte truncated version.
+This is something I've been using drgn scripts for.
+Take a look at get_name() in iterators.bpf.c to see how short it is comparing
+to what user space bpftool would have to do to print the same full name:
+. get prog info via obj_info_by_fd
+. do get_fd_by_id from info->btf_id
+. fetch potentially large BTF of the program from the kernel
+. parse that BTF in user space to figure out all type boundaries and string section
+. read info->func_info to get btf_id of func_proto from there
+. find that btf_id in the parsed BTF
+That's quite a bit work for bpftool comparing to few lines in get_name().
+I guess would be good to make bpftool do this info extraction anyway.
+While doing this BTF reading in the kernel realized that the verifier is not smart
+enough to follow double pointers (added to my todo list), otherwise get_name()
+would have been even shorter.
 
-Hi Edward,
+v2->v3:
+- fixed module unload race (Daniel)
+- added selftest (Daniel)
+- fixed build bot warning
 
-I love your patch! Yet something to improve:
+v1->v2:
+- changed names to 'progs.debug' and 'maps.debug' to hopefully better indicate
+  instability of the text output. Having dot in the name also guarantees
+  that these special files will not conflict with normal bpf objects pinned
+  in bpffs, since dot is disallowed for normal pins.
+- instead of hard coding link_name in the core bpf moved into UMD.
+- cleanedup error handling.
+- addressed review comments from Yonghong and Andrii.
 
-[auto build test ERROR on net-next/master]
+This patch set is the first real user of user moder driver facility. The
+general use case for user mode driver is to ship vmlinux with preloaded BPF
+programs. In this particular case the user mode driver populates bpffs instance
+with two BPF iterators. In several months BPF_LSM project would need to preload
+the kernel with its own set of BPF programs and attach to LSM hooks instead of
+bpffs. BPF iterators and BPF_LSM are unstable from uapi perspective. They are
+tracing based and peek into arbitrary kernel data structures. One can question
+why a kernel module cannot embed BPF programs inside. The reason is that libbpf
+is necessary to load them. First libbpf loads BPF Type Format, then creates BPF
+maps, populates them. Then it relocates code sections inside BPF programs,
+loads BPF programs, and finally attaches them to events. Theoretically libbpf
+can be rewritten to work in the kernel, but that is massive undertaking. The
+maintenance of in-kernel libbpf and user space libbpf would be another
+challenge. Another obstacle to embedding BPF programs into kernel module is
+sys_bpf api. Loading of programs, BTF, maps goes through the verifier. It
+validates and optimizes the code. It's possible to provide in-kernel api to all
+of sys_bpf commands (load progs, create maps, update maps, load BTF, etc), but
+that is huge amount of work and forever maintenance headache.
+Hence the decision is to ship vmlinux with user mode drivers that load
+BPF programs. Just like kernel modules extend vmlinux BPF programs
+are safe extensions of the kernel and some of them need to ship with vmlinux.
 
-url:    https://github.com/0day-ci/linux/commits/Edward-Cree/sfc-driver-for-EF100-family-NICs-part-1/20200725-000401
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 1b6687e31a2df9fbdb12d25c1d1d372777bf96a8
-config: microblaze-randconfig-r021-20200725 (attached as .config)
-compiler: microblaze-linux-gcc (GCC) 9.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # save the attached .config to linux build tree
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=microblaze 
+This patch set adds a kernel module with user mode driver that populates bpffs
+with two BPF iterators.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+$ mount bpffs /my/bpffs/ -t bpf
+$ ls -la /my/bpffs/
+total 4
+drwxrwxrwt  2 root root    0 Jul  2 00:27 .
+drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
+-rw-------  1 root root    0 Jul  2 00:27 maps.debug
+-rw-------  1 root root    0 Jul  2 00:27 progs.debug
 
-All error/warnings (new ones prefixed by >>):
+The user mode driver will load BPF Type Formats, create BPF maps, populate BPF
+maps, load two BPF programs, attach them to BPF iterators, and finally send two
+bpf_link IDs back to the kernel.
+The kernel will pin two bpf_links into newly mounted bpffs instance under
+names "progs.debug" and "maps.debug". These two files become human readable.
 
->> drivers/net/ethernet/sfc/siena.c:1021:16: error: '__efx_enqueue_skb' undeclared here (not in a function); did you mean 'efx_enqueue_skb'?
-    1021 |  .tx_enqueue = __efx_enqueue_skb,
-         |                ^~~~~~~~~~~~~~~~~
-         |                efx_enqueue_skb
->> drivers/net/ethernet/sfc/siena.c:1029:15: error: '__efx_rx_packet' undeclared here (not in a function); did you mean 'efx_rx_packet'?
-    1029 |  .rx_packet = __efx_rx_packet,
-         |               ^~~~~~~~~~~~~~~
-         |               efx_rx_packet
---
->> drivers/net/ethernet/sfc/ef10.c:3981:16: error: '__efx_enqueue_skb' undeclared here (not in a function); did you mean 'efx_enqueue_skb'?
-    3981 |  .tx_enqueue = __efx_enqueue_skb,
-         |                ^~~~~~~~~~~~~~~~~
-         |                efx_enqueue_skb
->> drivers/net/ethernet/sfc/ef10.c:3989:15: error: '__efx_rx_packet' undeclared here (not in a function); did you mean 'efx_rx_packet'?
-    3989 |  .rx_packet = __efx_rx_packet,
-         |               ^~~~~~~~~~~~~~~
-         |               efx_rx_packet
---
->> drivers/net/ethernet/sfc/tx.c:287:13: warning: no previous prototype for '__efx_enqueue_skb' [-Wmissing-prototypes]
-     287 | netdev_tx_t __efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
-         |             ^~~~~~~~~~~~~~~~~
---
->> drivers/net/ethernet/sfc/rx.c:372:6: warning: no previous prototype for '__efx_rx_packet' [-Wmissing-prototypes]
-     372 | void __efx_rx_packet(struct efx_channel *channel)
-         |      ^~~~~~~~~~~~~~~
---
-   In file included from include/linux/skbuff.h:31,
-                    from include/linux/if_ether.h:19,
-                    from include/uapi/linux/ethtool.h:19,
-                    from include/linux/ethtool.h:18,
-                    from include/linux/netdevice.h:37,
-                    from drivers/net/ethernet/sfc/net_driver.h:13,
-                    from drivers/net/ethernet/sfc/ef100.c:12:
-   drivers/net/ethernet/sfc/ef100.c: In function 'ef100_pci_parse_continue_entry':
->> include/linux/dma-mapping.h:139:25: warning: conversion from 'long long unsigned int' to 'dma_addr_t' {aka 'unsigned int'} changes value from '18446744073709551615' to '4294967295' [-Woverflow]
-     139 | #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/sfc/ef100.c:145:6: note: in expansion of macro 'DMA_BIT_MASK'
-     145 |      DMA_BIT_MASK(ESF_GZ_TX_SEND_ADDR_WIDTH),
-         |      ^~~~~~~~~~~~
->> include/linux/dma-mapping.h:139:25: warning: conversion from 'long long unsigned int' to 'dma_addr_t' {aka 'unsigned int'} changes value from '18446744073709551615' to '4294967295' [-Woverflow]
-     139 | #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/sfc/ef100.c:163:6: note: in expansion of macro 'DMA_BIT_MASK'
-     163 |      DMA_BIT_MASK(ESF_GZ_TX_SEND_ADDR_WIDTH),
-         |      ^~~~~~~~~~~~
-   drivers/net/ethernet/sfc/ef100.c: In function 'ef100_pci_parse_xilinx_cap':
->> include/linux/dma-mapping.h:139:25: warning: conversion from 'long long unsigned int' to 'dma_addr_t' {aka 'unsigned int'} changes value from '18446744073709551615' to '4294967295' [-Woverflow]
-     139 | #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/sfc/ef100.c:337:5: note: in expansion of macro 'DMA_BIT_MASK'
-     337 |     DMA_BIT_MASK(ESF_GZ_TX_SEND_ADDR_WIDTH),
-         |     ^~~~~~~~~~~~
-   drivers/net/ethernet/sfc/ef100.c: In function 'ef100_pci_probe':
->> include/linux/dma-mapping.h:139:25: warning: conversion from 'long long unsigned int' to 'dma_addr_t' {aka 'unsigned int'} changes value from '18446744073709551615' to '4294967295' [-Woverflow]
-     139 | #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/sfc/ef100.c:498:5: note: in expansion of macro 'DMA_BIT_MASK'
-     498 |     DMA_BIT_MASK(ESF_GZ_TX_SEND_ADDR_WIDTH),
-         |     ^~~~~~~~~~~~
---
-   drivers/net/ethernet/sfc/ef100_netdev.c: In function 'ef100_hard_start_xmit':
->> drivers/net/ethernet/sfc/ef100_netdev.c:57:7: error: implicit declaration of function 'ef100_enqueue_skb'; did you mean 'efx_enqueue_skb_tso'? [-Werror=implicit-function-declaration]
-      57 |  rc = ef100_enqueue_skb(tx_queue, skb);
-         |       ^~~~~~~~~~~~~~~~~
-         |       efx_enqueue_skb_tso
-   cc1: some warnings being treated as errors
---
->> drivers/net/ethernet/sfc/ef100_rx.c:16:6: warning: no previous prototype for '__ef100_rx_packet' [-Wmissing-prototypes]
-      16 | void __ef100_rx_packet(struct efx_channel *channel)
-         |      ^~~~~~~~~~~~~~~~~
---
->> drivers/net/ethernet/sfc/ef100_tx.c:24:5: warning: no previous prototype for 'ef100_enqueue_skb' [-Wmissing-prototypes]
-      24 | int ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
-         |     ^~~~~~~~~~~~~~~~~
+$ cat /my/bpffs/progs.debug
+  id name            attached
+  11 dump_bpf_map    bpf_iter_bpf_map
+  12 dump_bpf_prog   bpf_iter_bpf_prog
+  27 test_pkt_access 
+  32 test_main       test_pkt_access test_pkt_access
+  33 test_subprog1   test_pkt_access_subprog1 test_pkt_access
+  34 test_subprog2   test_pkt_access_subprog2 test_pkt_access
+  35 test_subprog3   test_pkt_access_subprog3 test_pkt_access
+  36 new_get_skb_len get_skb_len test_pkt_access
+  37 new_get_skb_ifindex get_skb_ifindex test_pkt_access
+  38 new_get_constant get_constant test_pkt_access
 
-vim +1021 drivers/net/ethernet/sfc/siena.c
+The BPF program dump_bpf_prog() in iterators.bpf.c is printing this data about
+all BPF programs currently loaded in the system. This information is unstable
+and will change from kernel to kernel.
 
-   960	
-   961	/**************************************************************************
-   962	 *
-   963	 * Revision-dependent attributes used by efx.c and nic.c
-   964	 *
-   965	 **************************************************************************
-   966	 */
-   967	
-   968	const struct efx_nic_type siena_a0_nic_type = {
-   969		.is_vf = false,
-   970		.mem_bar = siena_mem_bar,
-   971		.mem_map_size = siena_mem_map_size,
-   972		.probe = siena_probe_nic,
-   973		.remove = siena_remove_nic,
-   974		.init = siena_init_nic,
-   975		.dimension_resources = siena_dimension_resources,
-   976		.fini = efx_port_dummy_op_void,
-   977	#ifdef CONFIG_EEH
-   978		.monitor = siena_monitor,
-   979	#else
-   980		.monitor = NULL,
-   981	#endif
-   982		.map_reset_reason = efx_mcdi_map_reset_reason,
-   983		.map_reset_flags = siena_map_reset_flags,
-   984		.reset = efx_mcdi_reset,
-   985		.probe_port = efx_mcdi_port_probe,
-   986		.remove_port = efx_mcdi_port_remove,
-   987		.fini_dmaq = efx_farch_fini_dmaq,
-   988		.prepare_flush = siena_prepare_flush,
-   989		.finish_flush = siena_finish_flush,
-   990		.prepare_flr = efx_port_dummy_op_void,
-   991		.finish_flr = efx_farch_finish_flr,
-   992		.describe_stats = siena_describe_nic_stats,
-   993		.update_stats = siena_update_nic_stats,
-   994		.start_stats = efx_mcdi_mac_start_stats,
-   995		.pull_stats = efx_mcdi_mac_pull_stats,
-   996		.stop_stats = efx_mcdi_mac_stop_stats,
-   997		.set_id_led = efx_mcdi_set_id_led,
-   998		.push_irq_moderation = siena_push_irq_moderation,
-   999		.reconfigure_mac = siena_mac_reconfigure,
-  1000		.check_mac_fault = efx_mcdi_mac_check_fault,
-  1001		.reconfigure_port = efx_mcdi_port_reconfigure,
-  1002		.get_wol = siena_get_wol,
-  1003		.set_wol = siena_set_wol,
-  1004		.resume_wol = siena_init_wol,
-  1005		.test_chip = siena_test_chip,
-  1006		.test_nvram = efx_mcdi_nvram_test_all,
-  1007		.mcdi_request = siena_mcdi_request,
-  1008		.mcdi_poll_response = siena_mcdi_poll_response,
-  1009		.mcdi_read_response = siena_mcdi_read_response,
-  1010		.mcdi_poll_reboot = siena_mcdi_poll_reboot,
-  1011		.irq_enable_master = efx_farch_irq_enable_master,
-  1012		.irq_test_generate = efx_farch_irq_test_generate,
-  1013		.irq_disable_non_ev = efx_farch_irq_disable_master,
-  1014		.irq_handle_msi = efx_farch_msi_interrupt,
-  1015		.irq_handle_legacy = efx_farch_legacy_interrupt,
-  1016		.tx_probe = efx_farch_tx_probe,
-  1017		.tx_init = efx_farch_tx_init,
-  1018		.tx_remove = efx_farch_tx_remove,
-  1019		.tx_write = efx_farch_tx_write,
-  1020		.tx_limit_len = efx_farch_tx_limit_len,
-> 1021		.tx_enqueue = __efx_enqueue_skb,
-  1022		.rx_push_rss_config = siena_rx_push_rss_config,
-  1023		.rx_pull_rss_config = siena_rx_pull_rss_config,
-  1024		.rx_probe = efx_farch_rx_probe,
-  1025		.rx_init = efx_farch_rx_init,
-  1026		.rx_remove = efx_farch_rx_remove,
-  1027		.rx_write = efx_farch_rx_write,
-  1028		.rx_defer_refill = efx_farch_rx_defer_refill,
-> 1029		.rx_packet = __efx_rx_packet,
+In some sence this output is similar to 'bpftool prog show' that is using
+stable api to retreive information about BPF programs. The BPF subsytems grows
+quickly and there is always demand to show as much info about BPF things as
+possible. But we cannot expose all that info via stable uapi of bpf syscall,
+since the details change so much. Right now a BPF program can be attached to
+only one other BPF program. Folks are working on patches to enable
+multi-attach, but for debugging it's necessary to see the current state. There
+is no uapi for that, but above output shows it:
+  37 new_get_skb_ifindex  get_skb_ifindex test_pkt_access
+  38 new_get_constant     get_constant    test_pkt_access
+     [1]                  [2]             [3]
+[1] is the full name of BPF prog from BTF.
+[2] is the name of function inside target BPF prog.
+[3] is the name of target BPF prog.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+[2] and [3] are not exposed via uapi, since they will change from single to
+multi soon. There are many other cases where bpf internals are useful for
+debugging, but shouldn't be exposed via uapi due to high rate of changes.
 
---EeQfGwPcQSOJBaQU
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
+systemd mounts /sys/fs/bpf at the start, so this kernel module with user mode
+driver needs to be available early. BPF_LSM most likely would need to preload
+BPF programs even earlier.
 
-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
-AQA=
+Few interesting observations:
+- though bpffs comes with two human readble files "progs.debug" and
+  "maps.debug" they can be removed. 'rm -f /sys/fs/bpf/progs.debug' will remove
+  bpf_link and kernel will automatically unload corresponding BPF progs, maps,
+  BTFs. In the future '-o remount' will be able to restore them. This is not
+  implemented yet.
 
---EeQfGwPcQSOJBaQU--
+- 'ps aux|grep bpf_preload' shows nothing. User mode driver loaded BPF
+  iterators and exited. Nothing is lingering in user space at this point.
+
+- We can consider giving 0644 permissions to "progs.debug" and "maps.debug"
+  to allow unprivileged users see BPF things loaded in the system.
+  We cannot do so with "bpftool prog show", since it's using cap_sys_admin
+  parts of bpf syscall.
+
+- The functionality split between core kernel, bpf_preload kernel module and
+  user mode driver is very similar to bpfilter style of interaction.
+
+- Similar BPF iterators can be used as unstable extensions to /proc.
+  Like mounting /proc can prepopolate some subdirectory in there with
+  a BPF iterator that will print QUIC sockets instead of tcp and udp.
+
+Alexei Starovoitov (4):
+  bpf: Factor out bpf_link_get_by_id() helper.
+  bpf: Add BPF program and map iterators as built-in BPF programs.
+  bpf: Add kernel module with user mode driver that populates bpffs.
+  selftests/bpf: Add bpffs preload test.
+
+ include/linux/bpf.h                           |   1 +
+ init/Kconfig                                  |   2 +
+ kernel/bpf/Makefile                           |   1 +
+ kernel/bpf/inode.c                            | 119 ++++-
+ kernel/bpf/preload/Kconfig                    |  18 +
+ kernel/bpf/preload/Makefile                   |  21 +
+ kernel/bpf/preload/bpf_preload.h              |  16 +
+ kernel/bpf/preload/bpf_preload_kern.c         |  91 ++++
+ kernel/bpf/preload/bpf_preload_umd_blob.S     |   7 +
+ kernel/bpf/preload/iterators/.gitignore       |   2 +
+ kernel/bpf/preload/iterators/Makefile         |  57 +++
+ kernel/bpf/preload/iterators/README           |   4 +
+ .../preload/iterators/bpf_preload_common.h    |  13 +
+ kernel/bpf/preload/iterators/iterators.bpf.c  | 118 +++++
+ kernel/bpf/preload/iterators/iterators.c      |  94 ++++
+ kernel/bpf/preload/iterators/iterators.skel.h | 411 ++++++++++++++++++
+ kernel/bpf/syscall.c                          |  46 +-
+ .../selftests/bpf/prog_tests/test_bpffs.c     |  94 ++++
+ 18 files changed, 1094 insertions(+), 21 deletions(-)
+ create mode 100644 kernel/bpf/preload/Kconfig
+ create mode 100644 kernel/bpf/preload/Makefile
+ create mode 100644 kernel/bpf/preload/bpf_preload.h
+ create mode 100644 kernel/bpf/preload/bpf_preload_kern.c
+ create mode 100644 kernel/bpf/preload/bpf_preload_umd_blob.S
+ create mode 100644 kernel/bpf/preload/iterators/.gitignore
+ create mode 100644 kernel/bpf/preload/iterators/Makefile
+ create mode 100644 kernel/bpf/preload/iterators/README
+ create mode 100644 kernel/bpf/preload/iterators/bpf_preload_common.h
+ create mode 100644 kernel/bpf/preload/iterators/iterators.bpf.c
+ create mode 100644 kernel/bpf/preload/iterators/iterators.c
+ create mode 100644 kernel/bpf/preload/iterators/iterators.skel.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/test_bpffs.c
+
+-- 
+2.23.0
+
