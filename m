@@ -2,84 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB63422BE18
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 08:31:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F97E22BE2F
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 08:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726717AbgGXGa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 02:30:57 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:51973 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726525AbgGXGa5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 02:30:57 -0400
-Received: from mail-ed1-f69.google.com ([209.85.208.69])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <andrea.righi@canonical.com>)
-        id 1jyrEM-0004iz-L5
-        for netdev@vger.kernel.org; Fri, 24 Jul 2020 06:30:54 +0000
-Received: by mail-ed1-f69.google.com with SMTP id w19so2534374edx.0
-        for <netdev@vger.kernel.org>; Thu, 23 Jul 2020 23:30:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=f5Bi1N9eHmzbwm4KZS+jcd4luzKCa17r9gngXjYNYvc=;
-        b=LeAJ1zmt/4MV1VVc3WOc20Ak1rqvP0MKcKo/frdx2iOqcrpD96rnyLxCVAX5bxqLfO
-         r2bf0GrFzyHKOmyWV0GsNTSCQXBsyOczauGKbtfdWZ3BvM0fmcl4pY14myTar8z7/aKG
-         Rr34DDeJENiv2yE0g9qKYXAGuyJoHw3Quu4I1byf2YDw/IbiA8ON396EiGQsPKVpLcRY
-         DARJn2wXxsI23vHJzJ6+71yUz9n6Hvaq1UmxZ3EbDhcxYwYFGU/H7j1vaIf1iW1MuqzW
-         hiKVYxzVj4TdWAnSrozh3OFphzewhXq605Yrtic9Hp3sFPgPdYDpM2JH+ul2cppf1GFU
-         UKlg==
-X-Gm-Message-State: AOAM531Vit2I6s+cVktxnOF9JWq8COovWRhh3IaorbI+f4SPW6Mp/Oo+
-        hWIi670db9dSX7Wu1FELgcFc7OVR3ZvVLtKBgkE6TlkUDd1acPlw9O/XQG1L2tZ6TTb4IG3RnZX
-        SjJGNWTVLNUzLDjR9Tst0KcuowbMtATHeaw==
-X-Received: by 2002:a17:906:3bd5:: with SMTP id v21mr3756080ejf.329.1595572254322;
-        Thu, 23 Jul 2020 23:30:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxXO1++pFVwTCL/tYfrIs0xm/tuHNlxlyRivKJ5/9QT5Rk/9NHc5BZDVgyqSnOH54Jo7XttPw==
-X-Received: by 2002:a17:906:3bd5:: with SMTP id v21mr3756053ejf.329.1595572254072;
-        Thu, 23 Jul 2020 23:30:54 -0700 (PDT)
-Received: from localhost (host-87-11-131-192.retail.telecomitalia.it. [87.11.131.192])
-        by smtp.gmail.com with ESMTPSA id r19sm48005edi.85.2020.07.23.23.30.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jul 2020 23:30:53 -0700 (PDT)
-Date:   Fri, 24 Jul 2020 08:30:52 +0200
-From:   Andrea Righi <andrea.righi@canonical.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     boris.ostrovsky@oracle.com, jgross@suse.com,
-        sstabellini@kernel.org, kuba@kernel.org,
-        xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] xen-netfront: fix potential deadlock in xennet_remove()
-Message-ID: <20200724063052.GG841369@xps-13>
-References: <20200722065211.GA841369@xps-13>
- <20200723.145722.752878326752101646.davem@davemloft.net>
+        id S1726617AbgGXGqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 02:46:06 -0400
+Received: from verein.lst.de ([213.95.11.211]:34386 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725942AbgGXGqG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jul 2020 02:46:06 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id C96CE68AFE; Fri, 24 Jul 2020 08:46:03 +0200 (CEST)
+Date:   Fri, 24 Jul 2020 08:46:03 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Christoph Hellwig <hch@lst.de>, netdev@vger.kernel.org,
+        Neil Horman <nhorman@tuxdriver.com>, linux-sctp@vger.kernel.org
+Subject: Re: [PATCH net-next] sctp: fix slab-out-of-bounds in
+ SCTP_DELAYED_SACK processing
+Message-ID: <20200724064603.GA8449@lst.de>
+References: <5955bc857c93d4bb64731ef7a9e90cb0094a8989.1595450200.git.marcelo.leitner@gmail.com> <20200722204231.GA3398@localhost.localdomain> <20200723092238.GA21143@lst.de> <20200723153025.GF3307@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200723.145722.752878326752101646.davem@davemloft.net>
+In-Reply-To: <20200723153025.GF3307@localhost.localdomain>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 23, 2020 at 02:57:22PM -0700, David Miller wrote:
-> From: Andrea Righi <andrea.righi@canonical.com>
-> Date: Wed, 22 Jul 2020 08:52:11 +0200
+On Thu, Jul 23, 2020 at 12:30:25PM -0300, Marcelo Ricardo Leitner wrote:
+> On Thu, Jul 23, 2020 at 11:22:38AM +0200, Christoph Hellwig wrote:
+> > On Wed, Jul 22, 2020 at 05:42:31PM -0300, Marcelo Ricardo Leitner wrote:
+> > > Cc'ing linux-sctp@vger.kernel.org.
+> > 
+> > What do you think of this version, which I think is a little cleaner?
 > 
-> > +static int xennet_remove(struct xenbus_device *dev)
+> It splits up the argument parsing from the actual handling, ok. Looks
+> good. Just one point:
+> 
+> > +static int sctp_setsockopt_delayed_ack(struct sock *sk,
+> > +				       struct sctp_sack_info *params,
+> > +				       unsigned int optlen)
 > > +{
-> > +	struct netfront_info *info = dev_get_drvdata(&dev->dev);
+> > +	if (optlen == sizeof(struct sctp_assoc_value)) {
+> > +		struct sctp_sack_info p;
 > > +
-> > +	dev_dbg(&dev->dev, "%s\n", dev->nodename);
+> > +		pr_warn_ratelimited(DEPRECATED
+> > +				    "%s (pid %d) "
+> > +				    "Use of struct sctp_assoc_value in delayed_ack socket option.\n"
+> > +				    "Use struct sctp_sack_info instead\n",
+> > +				    current->comm, task_pid_nr(current));
+> > +
+> > +		memcpy(&p, params, sizeof(struct sctp_assoc_value));
+> > +		p.sack_freq = p.sack_delay ? 0 : 1;
 > 
-> These kinds of debugging messages provide zero context and are so much
-> less useful than simply using tracepoints which are more universally
-> available than printk debugging facilities.
-> 
-> Please remove all of the dev_dbg() calls from this patch.
+> Please add a comment saying that sctp_sack_info.sack_delay maps
+> exactly to sctp_assoc_value.assoc_value, so that's why we can do
+> memcpy and read assoc_value as sack_delay. I think it will help us not
+> trip on this again in the future.
 
-I didn't add that dev_dbg() call, it's just the old code moved around,
-but I agree, I'll remove that call and send a new version of this patch.
-
-Thanks for looking at it!
--Andrea
+Yeah.  Actually I think I'll go all the way and kill the not very
+obvious or type safe memcpy as well.
