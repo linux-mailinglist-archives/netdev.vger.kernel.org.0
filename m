@@ -2,294 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E22A22CB00
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 18:24:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8596D22CB14
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 18:29:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726759AbgGXQYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 12:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37030 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726607AbgGXQYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 12:24:40 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658C0C0619D3
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 09:24:40 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id 184so8781911wmb.0
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 09:24:40 -0700 (PDT)
+        id S1726835AbgGXQ3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 12:29:45 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:56943 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726506AbgGXQ3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 12:29:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1595608184; x=1627144184;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=14xRivRQsHnmDdmRpGpQcnbd/XGZURbXV6Mw/qCE65E=;
+  b=k36eEGeP2FEuCsssj68QHqm4QfTLCA1f3C3oYxlzkNRzoTtc4XQ6zSeT
+   4gp633vQIL+U05//D9zbzbdVUAZTjSKAhbBSYohU+a5sqGQON5lnNqPks
+   EbkbuHMeh20CIckIWd+BjPi4KUq/P/2Ywaet2r+IRGMTUzmVZA8xAgrvV
+   24hmZfkeClweHJiKW3Wy+VBsTuVF8DDEnGYRWumkAb4GpMDmb61WeMYoW
+   TfQK/lmbAIPGJV0E7rqTKQeKEfmqlSz28Yyog+sBp6SzvtuO1bSEo1Skr
+   5gtYnuGpbCL43j+3t8FlbKpTkrzCqC0PUUl49/JjrVhjOkGb8ft0dS0sm
+   Q==;
+IronPort-SDR: ta6bCFYsf/gwwMc6SGdau57cqVAI1e9XEymZ3qvevNEMpaFn8yHhtbSXvZLEMB/WJ2ON8AH0kA
+ Q7xXbMbC13NbwL9POqVG7dc5m7pwi963XgGkfFTTwwTXfUf2/2vPFUp4MBn3k6h+xrL8zM/Bjp
+ CY724gs4iJzGRYnIxpET1mfb6h4+OAUgg6tjuYg8f5YJvIjgQyM52vUl3foZ+auvDx06rv0kU4
+ YGyRszh6qL31IEZbDUOvnGyzcVTqXl07W5GAVpRJfpHfli82p/xqIKF/hhvl2LXor8wOkOLuo+
+ pNQ=
+X-IronPort-AV: E=Sophos;i="5.75,391,1589266800"; 
+   d="scan'208";a="83189487"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jul 2020 09:29:43 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 24 Jul 2020 09:29:44 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3
+ via Frontend Transport; Fri, 24 Jul 2020 09:29:44 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B37vbjzdpO16zEuq5pm/IVJEZXeiP3LaFBvGtDTOaj8GnIB9rE4OPPInu/IONXU5NpAlJTVdSy9yV+lwT8ifg6pK+D/l+SmcfPslJdrRqWBzR6uSEe+HaN+uExb+Xw3r+MVGSpIY+LcxuUgbvd1iPpmQU8cUcaQVnohIZCX9/BYILvj3LmlCwE6+P7+rNJjH1lNQ+geqKXbxtfqR4VI0r1RFkhcCzJGSdf1Axq+Z5Y95Wy9M3EcgCAGUu4Gez5irtNrdfe3f6zMZbjFmhrtThtmSU7q2Ofc3T+KEsihtMKpaEZ8R0bdbl66UBYQJ9VIPr02msU38AdgSmQodTXgp2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=14xRivRQsHnmDdmRpGpQcnbd/XGZURbXV6Mw/qCE65E=;
+ b=lZ0XQKNknt4TIHR9WIZfTLGs5UKMs5/48ew0401FKUBkWm1H+xGwjjeiM1Wo32uWQ2bUJCBXhGTAOAnBho5XC12MIQurPyV5ERZts0WmEDJcdX8KgQZjhm2iYc7LUwiJ2wXbBfogOw4j5jfS5rO1gEN0WTJDtI6tqFOab2037XRhnDv6/4xj2Aqj4AkjfSe3iGTwe01fQlj/kKeVT3Vc33lE2bc3KXTgLkasjJ/lOck1jXTNnOV2oKhyn1UKklT5WvFFzK6qoyfoVmLCRE6XFqPzoNobjZLyR/BTzZG5ilL4tQ9KHhpnpSRSjqzxfKYeOeyGkPdqSHkBlVWaNGd2zg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=date:in-reply-to:references:mime-version:content-transfer-encoding
-         :subject:to:cc:from:message-id;
-        bh=yzAeBtByUuoYileXgXR2/rpqI4Yxhivgszl/ZqsYPIk=;
-        b=hAZjcIwY8s0RwbhSm9dVRfihTjsEDZrJrSZVdqpp+2huj+hlJdIe+vJCYZ/DmOruoe
-         NNSqFsBcWUGO8YzzCLZ1rUyjQcENs6YBcSQQ5mY/oqhfK3fU6c7bE98hYBcInzpROn/3
-         CRwOHjilzKfxszuU6XEWDz3ajMKPM76VW6s0E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:references:mime-version
-         :content-transfer-encoding:subject:to:cc:from:message-id;
-        bh=yzAeBtByUuoYileXgXR2/rpqI4Yxhivgszl/ZqsYPIk=;
-        b=A9LXooykRYjOECQj686iXVYNgLDjpmPHLXoKCMnl40Q76YUNNkizsWSXvMLnZ4u+Uq
-         VgWbMwB2fOmWcxcjj6l0uaG1TL0ZKzZCwS07rUi1hcoGyNHrCJtyuC6sLy09nbXlZKz/
-         vS1vYYXu+tUHBFClecSC2CQG2WU7r+7dyD6zWCTv5xLbrPyvMsaqVg84hz2P4ttPfNzW
-         uiEo7XXZHQLhI+6Cw+yZ2b3pNUUw9tcnvOfzOScskJLPqMG+Av6n2XTy6aQcMmHFmDGr
-         C0pRNBeblshlO4hKdQYH7JnZe0LPp3dH3fGIBCEd6GBa0kSW43nlICfl41Bh6bd+tT83
-         rvmQ==
-X-Gm-Message-State: AOAM532PXF+8a6h9obbcXKtfhwIO6j4zEC2agRojeOiAyReeHCAWXwjs
-        y8HzMSkxOm+z6HSQptjfwVlP5Q==
-X-Google-Smtp-Source: ABdhPJzIGR2dYNIy9M6P3+AnS/f9XerWJGsisodWVmipJNWqCpaloFOwGc6YXnXIeiR5xTlHe2KW8A==
-X-Received: by 2002:a05:600c:2050:: with SMTP id p16mr9054935wmg.44.1595607878313;
-        Fri, 24 Jul 2020 09:24:38 -0700 (PDT)
-Received: from localhost ([149.62.202.25])
-        by smtp.gmail.com with ESMTPSA id s205sm1849790wme.7.2020.07.24.09.24.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jul 2020 09:24:37 -0700 (PDT)
-Date:   Fri, 24 Jul 2020 19:24:35 +0300
-In-Reply-To: <20200724091517.7f5c2c9c@hermes.lan>
-References: <869fed82-bb31-589f-bd26-591ccfa976ed@servers.com> <20200724091517.7f5c2c9c@hermes.lan>
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=14xRivRQsHnmDdmRpGpQcnbd/XGZURbXV6Mw/qCE65E=;
+ b=Y/O07vC3j7fzqG6StfqXbP/fHQEqrp/fijqLg6TuE/ybHR25Ezq5uAVbLMYquc+Dh9uiUU9uuC/Uaq1yh0yt5uziTAaERZ3BCBaPK8O2mEbhtq/ac27BMlyBDusH1e8moR9HqyAKd/vHo8gLYHH7/AauTXv8+SCIAiWPZCQZe7c=
+Received: from MN2PR11MB3662.namprd11.prod.outlook.com (2603:10b6:208:ee::11)
+ by MN2PR11MB3744.namprd11.prod.outlook.com (2603:10b6:208:f5::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.24; Fri, 24 Jul
+ 2020 16:29:41 +0000
+Received: from MN2PR11MB3662.namprd11.prod.outlook.com
+ ([fe80::64d6:baa6:7bec:3c54]) by MN2PR11MB3662.namprd11.prod.outlook.com
+ ([fe80::64d6:baa6:7bec:3c54%7]) with mapi id 15.20.3216.026; Fri, 24 Jul 2020
+ 16:29:41 +0000
+From:   <Bryan.Whitehead@microchip.com>
+To:     <f.fainelli@gmail.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH net-next] mscc: Add LCPLL Reset to VSC8574 Family of phy
+ drivers
+Thread-Topic: [PATCH net-next] mscc: Add LCPLL Reset to VSC8574 Family of phy
+ drivers
+Thread-Index: AQHWYS1Pa/FhIgpObUi5DOaSOO6xe6kVq1KAgAE9OVA=
+Date:   Fri, 24 Jul 2020 16:29:41 +0000
+Message-ID: <MN2PR11MB36624200516FB937C0E91F0DFA770@MN2PR11MB3662.namprd11.prod.outlook.com>
+References: <1595534997-29187-1-git-send-email-Bryan.Whitehead@microchip.com>
+ <c8791db0-b036-51c0-c714-676357fd8be1@gmail.com>
+In-Reply-To: <c8791db0-b036-51c0-c714-676357fd8be1@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=microchip.com;
+x-originating-ip: [68.195.34.108]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d459c2f9-02f9-41dd-ca0e-08d82feec42d
+x-ms-traffictypediagnostic: MN2PR11MB3744:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR11MB3744967595A9BEA7943072F3FA770@MN2PR11MB3744.namprd11.prod.outlook.com>
+x-bypassexternaltag: True
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: UAsTqX5cGHdHg705FguNQIuhFKlDZWAWjfoQbUs5fjWLDgU/20X0W8pE586tlqxYPPirwt8xvjL4UsQxJlv0HyUYb4/2rg570+AzEFLWDViJXiz/yuwTk9MdbQME7kNVzn9GaieUWypL3DmONo6M4Dds/izxU8fsAZg4cLrD0hhWxhunmRwSph1ezvW4/WWToR0ZJinQBUL4gvRN41SQ++vCZTX3wnqZEhzxscLVJgCfrr+lKZ9MM3vkDYtimR6cjXxt5JOOvX8nwoHjkz/Ru7WYIdKm/gP0gXz5G5koWqBlAiaMiS8Qa+cRFekMLDEE78NYLJvCLFRXAA43AzfhfA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB3662.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(396003)(136003)(39860400002)(346002)(376002)(64756008)(66446008)(54906003)(66556008)(66476007)(83380400001)(66946007)(71200400001)(107886003)(6506007)(33656002)(5660300002)(26005)(2906002)(76116006)(316002)(52536014)(8676002)(9686003)(86362001)(55016002)(4326008)(110136005)(186003)(7696005)(478600001)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: clWO2x9Qht0mzlk+SJqlwm5w0yXTb56KJCU0yl1IJBd0c4NFAUQLKEzm6kTkpDnauSO/Ki6xv3S1JrNy1HaQn8hK4G35JeFxcaojjk2eLde8uL9aiMEfkIDR/vVYvdiA0cubt/ERm+4pQ3vsUxvSODd+xsVBzBx29CO6fsUlpcs1wIcimpqFAWGNqXPmNHeWp76lKnihrPUz5J89uZTRTPbcPHXKePlfRA525xYOcmvRy7JatWdagbgBLEPml3vPlmXXB2IDEcxh1H5ZvfQ/ivY9Lark3xDchb716SQIwBotQjVlXEGaRe6gwXRkT0uGr1Q1lBZrlyjW3sV1i9BqNU2SfnrhrngG4R5ajytSgX9jadnqPi4o0CkG9CK6THDjvSlvwH5XAF2MyNK0D33Pgq9yFYhuvi4q/n78ZuBJ1+EzVxu7gYE49HiHWKp3iSXbt1CNOmutWRwUatanxBp5ddnaDA0hfUzdLiQO3jmjBbk=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [RFT iproute2] iplink_bridge: scale all time values by USER_HZ
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        George Shuklin <amarao@servers.com>
-CC:     netdev@vger.kernel.org, jiri@resnulli.us, amarao@servers.com
-From:   nikolay@cumulusnetworks.com
-Message-ID: <F074B3B5-1B07-490F-87B8-887E2EFB32F3@cumulusnetworks.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR11MB3662.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d459c2f9-02f9-41dd-ca0e-08d82feec42d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2020 16:29:41.1852
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Kd+MW4PnvKWSbzJstjjiTfsgkWp8iWSDHk7sU2Gpe2gz05VAzfmWDSv4xOr1Zw57YiXGsoHMCnFy6GuoPdoo5g8cva3IUkfLFYJ8w+K0e34=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3744
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24 July 2020 19:15:17 EEST, Stephen Hemminger <stephen@networkplumber=2E=
-org> wrote:
->
->The bridge portion of ip command was not scaling so the
->values were off=2E
->
->The netlink API's for setting and reading timers all conform
->to the kernel standard of scaling the values by USER_HZ (100)=2E
->
->Fixes: 28d84b429e4e ("add bridge master device support")
->Fixes: 7f3d55922645 ("iplink: bridge: add support for
->IFLA_BR_MCAST_MEMBERSHIP_INTVL")
->Fixes: 10082a253fb2 ("iplink: bridge: add support for
->IFLA_BR_MCAST_LAST_MEMBER_INTVL")
->Fixes: 1f2244b851dd ("iplink: bridge: add support for
->IFLA_BR_MCAST_QUERIER_INTVL")
->Signed-off-by: Stephen Hemminger <stephen@networkplumber=2Eorg>
->---
-
-While I agree this should have been done from the start, it's too late to =
-change=2E=20
-We'll break everyone using these commands=2E=20
-We have been discussing to add _ms version of all these which do the prope=
-r scaling=2E I'd prefer that, it's least disruptive
-to users=2E=20
-
-Every user of the old commands scales the values by now=2E=20
-
-
->
->Compile tested only=2E
->
->
-> ip/iplink_bridge=2Ec | 45 ++++++++++++++++++++++++++-------------------
-> 1 file changed, 26 insertions(+), 19 deletions(-)
->
->diff --git a/ip/iplink_bridge=2Ec b/ip/iplink_bridge=2Ec
->index 3e81aa059cb3=2E=2E48495a08c484 100644
->--- a/ip/iplink_bridge=2Ec
->+++ b/ip/iplink_bridge=2Ec
->@@ -24,6 +24,7 @@
->=20
-> static unsigned int xstats_print_attr;
-> static int filter_index;
->+static unsigned int hz;
->=20
-> static void print_explain(FILE *f)
-> {
->@@ -85,19 +86,22 @@ static int bridge_parse_opt(struct link_util *lu,
->int argc, char **argv,
-> {
-> 	__u32 val;
->=20
->+	if (!hz)
->+		hz =3D get_user_hz();
->+
-> 	while (argc > 0) {
-> 		if (matches(*argv, "forward_delay") =3D=3D 0) {
-> 			NEXT_ARG();
-> 			if (get_u32(&val, *argv, 0))
-> 				invarg("invalid forward_delay", *argv);
->=20
->-			addattr32(n, 1024, IFLA_BR_FORWARD_DELAY, val);
->+			addattr32(n, 1024, IFLA_BR_FORWARD_DELAY, val * hz);
-> 		} else if (matches(*argv, "hello_time") =3D=3D 0) {
-> 			NEXT_ARG();
-> 			if (get_u32(&val, *argv, 0))
-> 				invarg("invalid hello_time", *argv);
->=20
->-			addattr32(n, 1024, IFLA_BR_HELLO_TIME, val);
->+			addattr32(n, 1024, IFLA_BR_HELLO_TIME, val * hz);
-> 		} else if (matches(*argv, "max_age") =3D=3D 0) {
-> 			NEXT_ARG();
-> 			if (get_u32(&val, *argv, 0))
->@@ -109,7 +113,7 @@ static int bridge_parse_opt(struct link_util *lu,
->int argc, char **argv,
-> 			if (get_u32(&val, *argv, 0))
-> 				invarg("invalid ageing_time", *argv);
->=20
->-			addattr32(n, 1024, IFLA_BR_AGEING_TIME, val);
->+			addattr32(n, 1024, IFLA_BR_AGEING_TIME, val * hz);
-> 		} else if (matches(*argv, "stp_state") =3D=3D 0) {
-> 			NEXT_ARG();
-> 			if (get_u32(&val, *argv, 0))
->@@ -266,7 +270,7 @@ static int bridge_parse_opt(struct link_util *lu,
->int argc, char **argv,
-> 				       *argv);
->=20
-> 			addattr64(n, 1024, IFLA_BR_MCAST_LAST_MEMBER_INTVL,
->-				  mcast_last_member_intvl);
->+				  mcast_last_member_intvl * hz);
-> 		} else if (matches(*argv, "mcast_membership_interval") =3D=3D 0) {
-> 			__u64 mcast_membership_intvl;
->=20
->@@ -276,7 +280,7 @@ static int bridge_parse_opt(struct link_util *lu,
->int argc, char **argv,
-> 				       *argv);
->=20
-> 			addattr64(n, 1024, IFLA_BR_MCAST_MEMBERSHIP_INTVL,
->-				  mcast_membership_intvl);
->+				  mcast_membership_intvl * hz);
-> 		} else if (matches(*argv, "mcast_querier_interval") =3D=3D 0) {
-> 			__u64 mcast_querier_intvl;
->=20
->@@ -286,7 +290,7 @@ static int bridge_parse_opt(struct link_util *lu,
->int argc, char **argv,
-> 				       *argv);
->=20
-> 			addattr64(n, 1024, IFLA_BR_MCAST_QUERIER_INTVL,
->-				  mcast_querier_intvl);
->+				  mcast_querier_intvl * hz);
-> 		} else if (matches(*argv, "mcast_query_interval") =3D=3D 0) {
-> 			__u64 mcast_query_intvl;
->=20
->@@ -296,7 +300,7 @@ static int bridge_parse_opt(struct link_util *lu,
->int argc, char **argv,
-> 				       *argv);
->=20
-> 			addattr64(n, 1024, IFLA_BR_MCAST_QUERY_INTVL,
->-				  mcast_query_intvl);
->+				  mcast_query_intvl * hz);
-> 		} else if (!matches(*argv, "mcast_query_response_interval")) {
-> 			__u64 mcast_query_resp_intvl;
->=20
->@@ -306,7 +310,7 @@ static int bridge_parse_opt(struct link_util *lu,
->int argc, char **argv,
-> 				       *argv);
->=20
-> 			addattr64(n, 1024, IFLA_BR_MCAST_QUERY_RESPONSE_INTVL,
->-				  mcast_query_resp_intvl);
->+				  mcast_query_resp_intvl * hz);
-> 		} else if (!matches(*argv, "mcast_startup_query_interval")) {
-> 			__u64 mcast_startup_query_intvl;
->=20
->@@ -316,7 +320,7 @@ static int bridge_parse_opt(struct link_util *lu,
->int argc, char **argv,
-> 				       *argv);
->=20
-> 			addattr64(n, 1024, IFLA_BR_MCAST_STARTUP_QUERY_INTVL,
->-				  mcast_startup_query_intvl);
->+				  mcast_startup_query_intvl * hz);
-> 		} else if (matches(*argv, "mcast_stats_enabled") =3D=3D 0) {
-> 			__u8 mcast_stats_enabled;
->=20
->@@ -407,29 +411,32 @@ static void bridge_print_opt(struct link_util
->*lu, FILE *f, struct rtattr *tb[])
-> 	if (!tb)
-> 		return;
->=20
->+	if (!hz)
->+		hz =3D get_user_hz();
->+
-> 	if (tb[IFLA_BR_FORWARD_DELAY])
-> 		print_uint(PRINT_ANY,
-> 			   "forward_delay",
-> 			   "forward_delay %u ",
->-			   rta_getattr_u32(tb[IFLA_BR_FORWARD_DELAY]));
->+			   rta_getattr_u32(tb[IFLA_BR_FORWARD_DELAY]) / hz);
->=20
-> 	if (tb[IFLA_BR_HELLO_TIME])
-> 		print_uint(PRINT_ANY,
-> 			   "hello_time",
-> 			   "hello_time %u ",
->-			   rta_getattr_u32(tb[IFLA_BR_HELLO_TIME]));
->+			   rta_getattr_u32(tb[IFLA_BR_HELLO_TIME]) / hz);
->=20
-> 	if (tb[IFLA_BR_MAX_AGE])
-> 		print_uint(PRINT_ANY,
-> 			   "max_age",
-> 			   "max_age %u ",
->-			   rta_getattr_u32(tb[IFLA_BR_MAX_AGE]));
->+			   rta_getattr_u32(tb[IFLA_BR_MAX_AGE]) / hz);
->=20
-> 	if (tb[IFLA_BR_AGEING_TIME])
-> 		print_uint(PRINT_ANY,
-> 			   "ageing_time",
-> 			   "ageing_time %u ",
->-			   rta_getattr_u32(tb[IFLA_BR_AGEING_TIME]));
->+			   rta_getattr_u32(tb[IFLA_BR_AGEING_TIME]) / hz);
->=20
-> 	if (tb[IFLA_BR_STP_STATE])
-> 		print_uint(PRINT_ANY,
->@@ -605,37 +612,37 @@ static void bridge_print_opt(struct link_util
->*lu, FILE *f, struct rtattr *tb[])
-> 		print_lluint(PRINT_ANY,
-> 			     "mcast_last_member_intvl",
-> 			     "mcast_last_member_interval %llu ",
->-			     rta_getattr_u64(tb[IFLA_BR_MCAST_LAST_MEMBER_INTVL]));
->+			     rta_getattr_u64(tb[IFLA_BR_MCAST_LAST_MEMBER_INTVL]) / hz);
->=20
-> 	if (tb[IFLA_BR_MCAST_MEMBERSHIP_INTVL])
-> 		print_lluint(PRINT_ANY,
-> 			     "mcast_membership_intvl",
-> 			     "mcast_membership_interval %llu ",
->-			     rta_getattr_u64(tb[IFLA_BR_MCAST_MEMBERSHIP_INTVL]));
->+			     rta_getattr_u64(tb[IFLA_BR_MCAST_MEMBERSHIP_INTVL]) / hz);
->=20
-> 	if (tb[IFLA_BR_MCAST_QUERIER_INTVL])
-> 		print_lluint(PRINT_ANY,
-> 			     "mcast_querier_intvl",
-> 			     "mcast_querier_interval %llu ",
->-			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERIER_INTVL]));
->+			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERIER_INTVL]) / hz);
->=20
-> 	if (tb[IFLA_BR_MCAST_QUERY_INTVL])
-> 		print_lluint(PRINT_ANY,
-> 			     "mcast_query_intvl",
-> 			     "mcast_query_interval %llu ",
->-			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_INTVL]));
->+			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_INTVL]) / hz);
->=20
-> 	if (tb[IFLA_BR_MCAST_QUERY_RESPONSE_INTVL])
-> 		print_lluint(PRINT_ANY,
-> 			     "mcast_query_response_intvl",
-> 			     "mcast_query_response_interval %llu ",
->-			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_RESPONSE_INTVL]));
->+			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_RESPONSE_INTVL]) / hz);
->=20
-> 	if (tb[IFLA_BR_MCAST_STARTUP_QUERY_INTVL])
-> 		print_lluint(PRINT_ANY,
-> 			     "mcast_startup_query_intvl",
-> 			     "mcast_startup_query_interval %llu ",
->-			     rta_getattr_u64(tb[IFLA_BR_MCAST_STARTUP_QUERY_INTVL]));
->+			     rta_getattr_u64(tb[IFLA_BR_MCAST_STARTUP_QUERY_INTVL]) / hz);
->=20
-> 	if (tb[IFLA_BR_MCAST_STATS_ENABLED])
-> 		print_uint(PRINT_ANY,
-
-
---=20
-Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
+SGkgRmxvcmlhbiwgc2VlIGJlbG93Lg0KDQo+ID4gIC8qIGJ1cy0+bWRpb19sb2NrIHNob3VsZCBi
+ZSBsb2NrZWQgd2hlbiB1c2luZyB0aGlzIGZ1bmN0aW9uICovDQo+ID4gKy8qIFBhZ2Ugc2hvdWxk
+IGFscmVhZHkgYmUgc2V0IHRvIE1TQ0NfUEhZX1BBR0VfRVhURU5ERURfR1BJTyAqLw0KPiA+ICtz
+dGF0aWMgaW50IHZzYzg1NzRfd2FpdF9mb3JfbWljcm9fY29tcGxldGUoc3RydWN0IHBoeV9kZXZp
+Y2UgKnBoeWRldikNCj4gPiArew0KPiA+ICsgICAgIHUxNiB0aW1lb3V0ID0gNTAwOw0KPiA+ICsg
+ICAgIHUxNiByZWcxOGcgPSAwOw0KPiA+ICsNCj4gPiArICAgICByZWcxOGcgPSBwaHlfYmFzZV9y
+ZWFkKHBoeWRldiwgMTgpOw0KPiA+ICsgICAgIHdoaWxlIChyZWcxOGcgJiAweDgwMDApIHsNCj4g
+PiArICAgICAgICAgICAgIHRpbWVvdXQtLTsNCj4gPiArICAgICAgICAgICAgIGlmICh0aW1lb3V0
+ID09IDApDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIHJldHVybiAtMTsNCj4gPiArICAgICAg
+ICAgICAgIHVzbGVlcF9yYW5nZSgxMDAwLCAyMDAwKTsNCj4gPiArICAgICAgICAgICAgIHJlZzE4
+ZyA9IHBoeV9iYXNlX3JlYWQocGh5ZGV2LCAxOCk7DQo+IA0KPiBQbGVhc2UgY29uc2lkZXIgdXNp
+bmcgcGh5X3JlYWRfcG9sbF90aW1lb3V0KCkgaW5zdGVhZCBvZiBvcGVuIGNvZGluZyB0aGlzIGJ1
+c3kNCj4gd2FpdGluZyBsb29wLg0KDQpUaGVyZSBhcmUgYSBjb3VwbGUgaXNzdWVzIHdpdGggdGhl
+IHVzZSBvZiBwaHlfcmVhZF9wb2xsX3RpbWVvdXQNCjEpIEl0IHJlcXVpcmVzIHRoZSB1c2Ugb2Yg
+cGh5X3JlYWQsIHdoaWNoIGFjcXVpcmVzIGJ1cy0+bWRpb19sb2NrLg0KQnV0IHRoaXMgZnVuY3Rp
+b24gaXMgcnVuIHdpdGggdGhlIGFzc3VtcHRpb24gdGhhdCwgdGhhdCBsb2NrIGlzIGFscmVhZHkg
+YWNxdWlyZWQuDQpUaGVyZSBmb3IgSSBwcmVzdW1lIGl0IHdpbGwgZGVhZGxvY2suDQoyKSBUaGUg
+aW1wbGVtZW50YXRpb24gb2YgcGh5X2Jhc2VfcmVhZCB1c2VzIF9fcGh5X3BhY2thZ2VfcmVhZCB3
+aGljaCB1c2VzIGEgc2hhcmVkIHBoeSBhZGRyLCByYXRoZXIgdGhhbiB0aGUgYWRkciBhc3NvY2lh
+dGVkIHdpdGggdGhlIHBoeWRldi4NCg0KVGhlc2UgaXNzdWVzIGNvdWxkIGJlIGVsaW1pbmF0ZWQg
+aWYgSSB1c2VkIHJlYWRfcG9sbF90aW1lb3V0IGRpcmVjdGx5Lg0KRG9lcyB0aGF0IHNlZW0gcmVh
+c29uYWJsZSB0byB5b3U/DQoNClJlZ2FyZHMsDQpCcnlhbg0K
