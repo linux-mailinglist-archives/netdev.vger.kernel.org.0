@@ -2,547 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB82F22C1EA
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 11:17:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 139E422C29F
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 11:56:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728107AbgGXJRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 05:17:42 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:56062 "EHLO huawei.com"
+        id S1726997AbgGXJ4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 05:56:48 -0400
+Received: from mail-eopbgr150075.outbound.protection.outlook.com ([40.107.15.75]:49988
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726801AbgGXJRf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jul 2020 05:17:35 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 591D2EF98F4429EC3430;
-        Fri, 24 Jul 2020 17:17:33 +0800 (CST)
-Received: from localhost.localdomain (10.175.118.36) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 24 Jul 2020 17:17:27 +0800
-From:   Luo bin <luobin9@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <luoxianjun@huawei.com>, <yin.yinshi@huawei.com>,
-        <cloud.wangxiaoyun@huawei.com>, <chiqijun@huawei.com>
-Subject: [PATCH net-next v4 2/2] hinic: add log in exception handling processes
-Date:   Fri, 24 Jul 2020 17:17:32 +0800
-Message-ID: <20200724091732.19819-3-luobin9@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200724091732.19819-1-luobin9@huawei.com>
-References: <20200724091732.19819-1-luobin9@huawei.com>
+        id S1726618AbgGXJ4s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jul 2020 05:56:48 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZyWRaotLMa9Q2uHvP+B9fgu86CDG/ge84xsSmwN9Vl4bvnY2PiH97TqqintKO4bmu3l5oH86MtbTvXjSnUk6/MSPaEztaOHre4lyUs4qW8On0LwodkwwJ2D/Wzh9HpxX6at3MP67Vl7OXU9mO/ZGCMivRbaxKc1axQkZe7pCQcqgKQFetOVrzMxV7kT1vGCh2MIs830fEhi+HNWDoiew8onxXL8+ITjbDRMx+VbmTHNcMd0b4KuwzbPnCVmHs6jSF7NcAgsddQ+SG2lBfXTftZtwekFJg62Z05hog7h6tFI20JmAx9E3wbaDFn4fgC0bDZaqLBKgWVLOm6Ujrgv7ng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=44HahzCLcKSzL5UcQjUfGvva2Uqj7wO191N8EaBIM0c=;
+ b=Zav43AqAnaNX8kjHLk/jvuhXoQjzEXCReBQyfc+sYveNEX7OcEz+tRNqLO0ex4e6snoZ+/twudoUvowykwV2QLeB95H0/BxcPx45UmYmQN58zkDzQsNd01Szz1nkRSfpGxas0Qhkk5IgwN/xq8pnrfG7NsdqAo6U2otYtb5JE6K++7b5cM+diEcxVW4srLGlg+HWyMKVm3fSV+lDZCKInnxF5yeX1EL+6PUXdJahlonht39i6Mvf4WBSJ8IHiXJsa3bB+gEy8wFCjma/NOLuba1mpxPgWlsBP51/9mpRKBY34DwvtRfUQ2p7ZTucdEpnZpS2qbwm7DpTpgpMP7L2Mg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=44HahzCLcKSzL5UcQjUfGvva2Uqj7wO191N8EaBIM0c=;
+ b=nVi5dSLEAq1i2eHTQwPYGJP+eQqgoDUypFN8vSoy4idun4+u6hY7EmGyAXzsMRtUYsTTD8bYnWR1rQyr4t+xrwZeAv2eaQ2Mq8qu6kHt3DsBhib15a7E6P60Fkwf3Jvxid89f4gOyCFZTxkLwi0fsvI4y6dlOR+Fe4skAZNT3Fo=
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
+ by AM0PR04MB4321.eurprd04.prod.outlook.com (2603:10a6:208:67::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.24; Fri, 24 Jul
+ 2020 09:56:45 +0000
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::c80:f72:a951:3420]) by AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::c80:f72:a951:3420%5]) with mapi id 15.20.3216.026; Fri, 24 Jul 2020
+ 09:56:45 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+CC:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michael Walle <michael@walle.cc>
+Subject: RE: linux-next: manual merge of the net-next tree with the net tree
+Thread-Topic: linux-next: manual merge of the net-next tree with the net tree
+Thread-Index: AQHWYWF4DqCdJt9420+ypwJcvKWzsakWdCfg
+Date:   Fri, 24 Jul 2020 09:56:45 +0000
+Message-ID: <AM0PR04MB6754526BAB0AA640A2EB571496770@AM0PR04MB6754.eurprd04.prod.outlook.com>
+References: <20200724122339.7abaf0e9@canb.auug.org.au>
+In-Reply-To: <20200724122339.7abaf0e9@canb.auug.org.au>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: canb.auug.org.au; dkim=none (message not signed)
+ header.d=none;canb.auug.org.au; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [82.76.66.138]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 17093999-6596-4a8c-ac64-08d82fb7e002
+x-ms-traffictypediagnostic: AM0PR04MB4321:
+x-microsoft-antispam-prvs: <AM0PR04MB4321B5D2DC6E51FBCD37B85796770@AM0PR04MB4321.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: PNXFed0IGy2Qwy0RkWcBdaiR0CJMs3eK7bzMBrlSj1QYzGS3NKYyNU2bqyMYI5t1Kjn/LhiimErL+v/ZYgWH9BRFGpWBkVpNwfHpSLLi2aD3F8YAnihr5IC5crpwcvJc+qqFaOXAkdBnpNzj9BlKSOg0BzyFk6mSdELwK23crXbvKJt4PqNTyuBMN7LMFdD7cRULwzX8RIa9IxEq4a+IsZ9m85bFwuBS+ZXHSEw5YSkn0pA7rfMFI50Uvp/DrcqlEAmQSVcz4ky04vNwpJD6toWTO7WDdh84fI5OqoIBypXGBihZ7akktQYFBbhwNig1wtsv817cQK5YjV+Hg/e13w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(376002)(39860400002)(346002)(136003)(8936002)(316002)(83380400001)(186003)(55016002)(71200400001)(64756008)(478600001)(66946007)(8676002)(52536014)(66556008)(66476007)(66446008)(54906003)(4326008)(76116006)(110136005)(44832011)(6506007)(5660300002)(2906002)(26005)(7696005)(9686003)(86362001)(33656002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: kBOcu1yvYqFsdPOaZGRx9TcOGRsmzKnZWVSkarL8nREPgPRyUPdNNdxOs64JlWY3KOmRAuOIgSYVTTLWK4SFn06rb5oPCW19oFNAuMA6jX9gaQ1DWDSt1l54RmRL9oU8z0ui8HdN0fv+sMTE77DnKiO977/X4EiBLpKTD5aPEzGJlRGp79F90lsEORhTixS2Nm1Eoue40sP3ob7CeJS1ilFS9u9eV66d7yhG7ks8h55Cjcv2GcEg5wRyyROkqz2EywarhaA3QBijG2UQPY6L6eMHIqAH8u65mcXLLgDrZBZljx6hxx3e2VZVizgSS0SfOVJBDOz3n3BRtnRbBOSv6vlKaFVV9czjEY4J7E8udbd2rXwCYtQ1nymS1eahlDRjZuih/o/2FJL+KCHa7EJ/cqzutLx/HCRwj+ksaPSbCdwLfX//E0114ZirQbEr9uGbBG76/mtn3l1c7WaV5Xg9ZgHz6QUcj0rSmQY2bPyVDK8=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.118.36]
-X-CFilter-Loop: Reflected
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17093999-6596-4a8c-ac64-08d82fb7e002
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2020 09:56:45.5797
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: t7Y5GjyPxhC/kWRs7Qt/cEqGEDR5sdLm9tUEwv0+CXcRBAo88tc8LNicuGGzfi6L1CvWINCReWqLdHWh1M2LWQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4321
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-improve the error message when functions return failure and dump
-relevant registers in some exception handling processes
+>-----Original Message-----
+>From: Stephen Rothwell <sfr@canb.auug.org.au>
+>Sent: Friday, July 24, 2020 5:24 AM
+[...]
+>Subject: linux-next: manual merge of the net-next tree with the net tree
+>
+>Hi all,
+>
+>Today's linux-next merge of the net-next tree got a conflict in:
+>
+>  drivers/net/ethernet/freescale/enetc/enetc_pf.c
+>
+>between commit:
+>
+>  26cb7085c898 ("enetc: Remove the mdio bus on PF probe bailout")
+>
+>from the net tree and commits:
+>
+>  07095c025ac2 ("net: enetc: Use DT protocol information to set up the por=
+ts")
+>  c6dd6488acd1 ("enetc: Remove the imdio bus on PF probe bailout")
+>
+>from the net-next tree.
+>
+>I fixed it up (see below) and can carry the fix as necessary. This
+>is now fixed as far as linux-next is concerned, but any non trivial
+>conflicts should be mentioned to your upstream maintainer when your tree
+>is submitted for merging.  You may also want to consider cooperating
+>with the maintainer of the conflicting tree to minimise any particularly
+>complex conflicts.
+>
 
-Signed-off-by: Luo bin <luobin9@huawei.com>
----
-V0~V1: fix some warning reported by sparse
+It's unfortunate, but I think the conflict was unavoidable at this stage.
+The net-next commit 07095c025ac2 uncovers an older bug making it worse
+by modifying code around it, introducing a regression for a use case that w=
+orked
+before. That prompted the 'net' tree fix 26cb7085c898, which inevitably got=
+ into conflict
+with 'net-next'.  The conflict is simple AFAIC, it's about one line, one fu=
+nction call on the
+bailout path.
 
- .../ethernet/huawei/hinic/hinic_hw_api_cmd.c  | 27 +++++++-
- .../ethernet/huawei/hinic/hinic_hw_api_cmd.h  |  4 ++
- .../net/ethernet/huawei/hinic/hinic_hw_cmdq.c |  2 +
- .../net/ethernet/huawei/hinic/hinic_hw_cmdq.h |  2 +
- .../net/ethernet/huawei/hinic/hinic_hw_dev.c  | 12 ++--
- .../net/ethernet/huawei/hinic/hinic_hw_eqs.c  | 39 ++++++++++++
- .../net/ethernet/huawei/hinic/hinic_hw_eqs.h  |  6 +-
- .../net/ethernet/huawei/hinic/hinic_hw_if.c   | 23 +++++++
- .../net/ethernet/huawei/hinic/hinic_hw_if.h   | 10 ++-
- .../net/ethernet/huawei/hinic/hinic_hw_mbox.c |  2 +
- .../net/ethernet/huawei/hinic/hinic_hw_mgmt.c |  1 +
- .../net/ethernet/huawei/hinic/hinic_port.c    | 62 +++++++++----------
- .../net/ethernet/huawei/hinic/hinic_sriov.c   |  6 +-
- 13 files changed, 151 insertions(+), 45 deletions(-)
+If you're asking me, you can go on with the resolution you consider to be t=
+he safest.
+Then I can send a follow up patch after 'net-next' gets merged into 'net',
+to make the necessary corrections if needed.
+Fyi,
+The bailout path after merging the patches should be as below, the tricky l=
+ine
+being marked as "=3D=3D>":
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_api_cmd.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_api_cmd.c
-index 583fd24c29cf..29e88e25a4a4 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_api_cmd.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_api_cmd.c
-@@ -112,6 +112,26 @@ static u32 get_hw_cons_idx(struct hinic_api_cmd_chain *chain)
- 	return HINIC_API_CMD_STATUS_GET(val, CONS_IDX);
- }
- 
-+static void dump_api_chain_reg(struct hinic_api_cmd_chain *chain)
-+{
-+	u32 addr, val;
-+
-+	addr = HINIC_CSR_API_CMD_STATUS_ADDR(chain->chain_type);
-+	val  = hinic_hwif_read_reg(chain->hwif, addr);
-+
-+	dev_err(&chain->hwif->pdev->dev, "Chain type: 0x%x, cpld error: 0x%x, check error: 0x%x, current fsm: 0x%x\n",
-+		chain->chain_type, HINIC_API_CMD_STATUS_GET(val, CPLD_ERR),
-+		HINIC_API_CMD_STATUS_GET(val, CHKSUM_ERR),
-+		HINIC_API_CMD_STATUS_GET(val, FSM));
-+
-+	dev_err(&chain->hwif->pdev->dev, "Chain hw current ci: 0x%x\n",
-+		HINIC_API_CMD_STATUS_GET(val, CONS_IDX));
-+
-+	addr = HINIC_CSR_API_CMD_CHAIN_PI_ADDR(chain->chain_type);
-+	val  = hinic_hwif_read_reg(chain->hwif, addr);
-+	dev_err(&chain->hwif->pdev->dev, "Chain hw current pi: 0x%x\n", val);
-+}
-+
- /**
-  * chain_busy - check if the chain is still processing last requests
-  * @chain: chain to check
-@@ -131,8 +151,10 @@ static int chain_busy(struct hinic_api_cmd_chain *chain)
- 
- 		/* check for a space for a new command */
- 		if (chain->cons_idx == MASKED_IDX(chain, prod_idx + 1)) {
--			dev_err(&pdev->dev, "API CMD chain %d is busy\n",
--				chain->chain_type);
-+			dev_err(&pdev->dev, "API CMD chain %d is busy, cons_idx: %d, prod_idx: %d\n",
-+				chain->chain_type, chain->cons_idx,
-+				chain->prod_idx);
-+			dump_api_chain_reg(chain);
- 			return -EBUSY;
- 		}
- 		break;
-@@ -332,6 +354,7 @@ static int wait_for_api_cmd_completion(struct hinic_api_cmd_chain *chain)
- 		err = wait_for_status_poll(chain);
- 		if (err) {
- 			dev_err(&pdev->dev, "API CMD Poll status timeout\n");
-+			dump_api_chain_reg(chain);
- 			break;
- 		}
- 		break;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_api_cmd.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_api_cmd.h
-index 0ba00fd828df..6d1654b050ad 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_api_cmd.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_api_cmd.h
-@@ -103,10 +103,14 @@
- 	 HINIC_API_CMD_STATUS_HEADER_##member##_MASK)
- 
- #define HINIC_API_CMD_STATUS_CONS_IDX_SHIFT                     0
-+#define HINIC_API_CMD_STATUS_FSM_SHIFT				24
- #define HINIC_API_CMD_STATUS_CHKSUM_ERR_SHIFT                   28
-+#define HINIC_API_CMD_STATUS_CPLD_ERR_SHIFT			30
- 
- #define HINIC_API_CMD_STATUS_CONS_IDX_MASK                      0xFFFFFF
-+#define HINIC_API_CMD_STATUS_FSM_MASK				0xFU
- #define HINIC_API_CMD_STATUS_CHKSUM_ERR_MASK                    0x3
-+#define HINIC_API_CMD_STATUS_CPLD_ERR_MASK			0x1U
- 
- #define HINIC_API_CMD_STATUS_GET(val, member)                   \
- 	(((val) >> HINIC_API_CMD_STATUS_##member##_SHIFT) &     \
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
-index cb5b6e5f787f..e0eb294779ec 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
-@@ -401,6 +401,7 @@ static int cmdq_sync_cmd_direct_resp(struct hinic_cmdq *cmdq,
- 
- 		spin_unlock_bh(&cmdq->cmdq_lock);
- 
-+		hinic_dump_ceq_info(cmdq->hwdev);
- 		return -ETIMEDOUT;
- 	}
- 
-@@ -807,6 +808,7 @@ static int init_cmdqs_ctxt(struct hinic_hwdev *hwdev,
- 
- 	cmdq_type = HINIC_CMDQ_SYNC;
- 	for (; cmdq_type < HINIC_MAX_CMDQ_TYPES; cmdq_type++) {
-+		cmdqs->cmdq[cmdq_type].hwdev = hwdev;
- 		err = init_cmdq(&cmdqs->cmdq[cmdq_type],
- 				&cmdqs->saved_wqs[cmdq_type], cmdq_type,
- 				db_area[cmdq_type]);
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.h
-index 3e4b0aef9fe6..f40c31e1879f 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.h
-@@ -130,6 +130,8 @@ struct hinic_cmdq_ctxt {
- };
- 
- struct hinic_cmdq {
-+	struct hinic_hwdev      *hwdev;
-+
- 	struct hinic_wq         *wq;
- 
- 	enum hinic_cmdq_type    cmdq_type;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-index 55672ee18aab..0c737765d113 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-@@ -258,9 +258,9 @@ static int init_fw_ctxt(struct hinic_hwdev *hwdev)
- 				 &fw_ctxt, sizeof(fw_ctxt),
- 				 &fw_ctxt, &out_size);
- 	if (err || (out_size != sizeof(fw_ctxt)) || fw_ctxt.status) {
--		dev_err(&pdev->dev, "Failed to init FW ctxt, ret = %d\n",
--			fw_ctxt.status);
--		return -EFAULT;
-+		dev_err(&pdev->dev, "Failed to init FW ctxt, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, fw_ctxt.status, out_size);
-+		return -EIO;
- 	}
- 
- 	return 0;
-@@ -425,9 +425,9 @@ static int get_base_qpn(struct hinic_hwdev *hwdev, u16 *base_qpn)
- 				 &cmd_base_qpn, sizeof(cmd_base_qpn),
- 				 &cmd_base_qpn, &out_size);
- 	if (err || (out_size != sizeof(cmd_base_qpn)) || cmd_base_qpn.status) {
--		dev_err(&pdev->dev, "Failed to get base qpn, status = %d\n",
--			cmd_base_qpn.status);
--		return -EFAULT;
-+		dev_err(&pdev->dev, "Failed to get base qpn, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, cmd_base_qpn.status, out_size);
-+		return -EIO;
- 	}
- 
- 	*base_qpn = cmd_base_qpn.qpn;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
-index 397936cac304..ca8cb68a8d20 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
-@@ -953,3 +953,42 @@ void hinic_ceqs_free(struct hinic_ceqs *ceqs)
- 	for (q_id = 0; q_id < ceqs->num_ceqs; q_id++)
- 		remove_eq(&ceqs->ceq[q_id]);
- }
-+
-+void hinic_dump_ceq_info(struct hinic_hwdev *hwdev)
-+{
-+	struct hinic_eq *eq = NULL;
-+	u32 addr, ci, pi;
-+	int q_id;
-+
-+	for (q_id = 0; q_id < hwdev->func_to_io.ceqs.num_ceqs; q_id++) {
-+		eq = &hwdev->func_to_io.ceqs.ceq[q_id];
-+		addr = EQ_CONS_IDX_REG_ADDR(eq);
-+		ci = hinic_hwif_read_reg(hwdev->hwif, addr);
-+		addr = EQ_PROD_IDX_REG_ADDR(eq);
-+		pi = hinic_hwif_read_reg(hwdev->hwif, addr);
-+		dev_err(&hwdev->hwif->pdev->dev, "Ceq id: %d, ci: 0x%08x, sw_ci: 0x%08x, pi: 0x%x, tasklet_state: 0x%lx, wrap: %d, ceqe: 0x%x\n",
-+			q_id, ci, eq->cons_idx, pi,
-+			eq->ceq_tasklet.state,
-+			eq->wrapped, be32_to_cpu(*(__be32 *)(GET_CURR_CEQ_ELEM(eq))));
-+	}
-+}
-+
-+void hinic_dump_aeq_info(struct hinic_hwdev *hwdev)
-+{
-+	struct hinic_aeq_elem *aeqe_pos = NULL;
-+	struct hinic_eq *eq = NULL;
-+	u32 addr, ci, pi;
-+	int q_id;
-+
-+	for (q_id = 0; q_id < hwdev->aeqs.num_aeqs; q_id++) {
-+		eq = &hwdev->aeqs.aeq[q_id];
-+		addr = EQ_CONS_IDX_REG_ADDR(eq);
-+		ci = hinic_hwif_read_reg(hwdev->hwif, addr);
-+		addr = EQ_PROD_IDX_REG_ADDR(eq);
-+		pi = hinic_hwif_read_reg(hwdev->hwif, addr);
-+		aeqe_pos = GET_CURR_AEQ_ELEM(eq);
-+		dev_err(&hwdev->hwif->pdev->dev, "Aeq id: %d, ci: 0x%08x, pi: 0x%x, work_state: 0x%x, wrap: %d, desc: 0x%x\n",
-+			q_id, ci, pi, work_busy(&eq->aeq_work.work),
-+			eq->wrapped, be32_to_cpu(aeqe_pos->desc));
-+	}
-+}
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.h
-index 74b9ff90640c..43065fc70869 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.h
-@@ -162,7 +162,7 @@ enum hinic_eqe_state {
- 
- struct hinic_aeq_elem {
- 	u8      data[HINIC_AEQE_DATA_SIZE];
--	u32     desc;
-+	__be32  desc;
- };
- 
- struct hinic_eq_work {
-@@ -254,4 +254,8 @@ int hinic_ceqs_init(struct hinic_ceqs *ceqs, struct hinic_hwif *hwif,
- 
- void hinic_ceqs_free(struct hinic_ceqs *ceqs);
- 
-+void hinic_dump_ceq_info(struct hinic_hwdev *hwdev);
-+
-+void hinic_dump_aeq_info(struct hinic_hwdev *hwdev);
-+
- #endif
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_if.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_if.c
-index cf127d896ba6..bc8925c0c982 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_if.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_if.c
-@@ -21,6 +21,8 @@
- 
- #define WAIT_HWIF_READY_TIMEOUT	10000
- 
-+#define HINIC_SELFTEST_RESULT 0x883C
-+
- /**
-  * hinic_msix_attr_set - set message attribute for msix entry
-  * @hwif: the HW interface of a pci function device
-@@ -369,6 +371,26 @@ u16 hinic_pf_id_of_vf_hw(struct hinic_hwif *hwif)
- 	return HINIC_FA0_GET(attr0, PF_IDX);
- }
- 
-+static void __print_selftest_reg(struct hinic_hwif *hwif)
-+{
-+	u32 addr, attr0, attr1;
-+
-+	addr   = HINIC_CSR_FUNC_ATTR1_ADDR;
-+	attr1  = hinic_hwif_read_reg(hwif, addr);
-+
-+	if (attr1 == HINIC_PCIE_LINK_DOWN) {
-+		dev_err(&hwif->pdev->dev, "PCIE is link down\n");
-+		return;
-+	}
-+
-+	addr   = HINIC_CSR_FUNC_ATTR0_ADDR;
-+	attr0  = hinic_hwif_read_reg(hwif, addr);
-+	if (HINIC_FA0_GET(attr0, FUNC_TYPE) != HINIC_VF &&
-+	    !HINIC_FA0_GET(attr0, PCI_INTF_IDX))
-+		dev_err(&hwif->pdev->dev, "Selftest reg: 0x%08x\n",
-+			hinic_hwif_read_reg(hwif, HINIC_SELFTEST_RESULT));
-+}
-+
- /**
-  * hinic_init_hwif - initialize the hw interface
-  * @hwif: the HW interface of a pci function device
-@@ -398,6 +420,7 @@ int hinic_init_hwif(struct hinic_hwif *hwif, struct pci_dev *pdev)
- 	err = wait_hwif_ready(hwif);
- 	if (err) {
- 		dev_err(&pdev->dev, "HW interface is not ready\n");
-+		__print_selftest_reg(hwif);
- 		goto err_hwif_ready;
- 	}
- 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h
-index 0872e035faa1..c06f2253151e 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h
-@@ -12,6 +12,8 @@
- #include <linux/types.h>
- #include <asm/byteorder.h>
- 
-+#define HINIC_PCIE_LINK_DOWN					0xFFFFFFFF
-+
- #define HINIC_DMA_ATTR_ST_SHIFT                                 0
- #define HINIC_DMA_ATTR_AT_SHIFT                                 8
- #define HINIC_DMA_ATTR_PH_SHIFT                                 10
-@@ -249,13 +251,17 @@ struct hinic_hwif {
- 
- static inline u32 hinic_hwif_read_reg(struct hinic_hwif *hwif, u32 reg)
- {
--	return be32_to_cpu(readl(hwif->cfg_regs_bar + reg));
-+	u32 out = readl(hwif->cfg_regs_bar + reg);
-+
-+	return be32_to_cpu(*(__be32 *)&out);
- }
- 
- static inline void hinic_hwif_write_reg(struct hinic_hwif *hwif, u32 reg,
- 					u32 val)
- {
--	writel(cpu_to_be32(val), hwif->cfg_regs_bar + reg);
-+	__be32 in = cpu_to_be32(val);
-+
-+	writel(*(u32 *)&in, hwif->cfg_regs_bar + reg);
- }
- 
- int hinic_msix_attr_set(struct hinic_hwif *hwif, u16 msix_index,
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
-index bc2f87e6cb5d..47c93f946b94 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
-@@ -650,6 +650,7 @@ wait_for_mbox_seg_completion(struct hinic_mbox_func_to_func *func_to_func,
- 		if (!wait_for_completion_timeout(done, jif)) {
- 			dev_err(&hwdev->hwif->pdev->dev, "Send mailbox segment timeout\n");
- 			dump_mox_reg(hwdev);
-+			hinic_dump_aeq_info(hwdev);
- 			return -ETIMEDOUT;
- 		}
- 
-@@ -897,6 +898,7 @@ int hinic_mbox_to_func(struct hinic_mbox_func_to_func *func_to_func,
- 		set_mbox_to_func_event(func_to_func, EVENT_TIMEOUT);
- 		dev_err(&func_to_func->hwif->pdev->dev,
- 			"Send mbox msg timeout, msg_id: %d\n", msg_info.msg_id);
-+		hinic_dump_aeq_info(func_to_func->hwdev);
- 		err = -ETIMEDOUT;
- 		goto err_send_mbox;
- 	}
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-index f5a46d5bb007..c6ce5966284c 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-@@ -276,6 +276,7 @@ static int msg_to_mgmt_sync(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 
- 	if (!wait_for_completion_timeout(recv_done, timeo)) {
- 		dev_err(&pdev->dev, "MGMT timeout, MSG id = %d\n", msg_id);
-+		hinic_dump_aeq_info(pf_to_mgmt->hwdev);
- 		err = -ETIMEDOUT;
- 		goto unlock_sync_msg;
- 	}
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-index ba358bbb74a2..02cd635d6914 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-@@ -61,8 +61,8 @@ static int change_mac(struct hinic_dev *nic_dev, const u8 *addr,
- 	    (port_mac_cmd.status  &&
- 	    port_mac_cmd.status != HINIC_PF_SET_VF_ALREADY &&
- 	    port_mac_cmd.status != HINIC_MGMT_STATUS_EXIST)) {
--		dev_err(&pdev->dev, "Failed to change MAC, ret = %d\n",
--			port_mac_cmd.status);
-+		dev_err(&pdev->dev, "Failed to change MAC, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, port_mac_cmd.status, out_size);
- 		return -EFAULT;
- 	}
- 
-@@ -129,8 +129,8 @@ int hinic_port_get_mac(struct hinic_dev *nic_dev, u8 *addr)
- 				 &port_mac_cmd, sizeof(port_mac_cmd),
- 				 &port_mac_cmd, &out_size);
- 	if (err || (out_size != sizeof(port_mac_cmd)) || port_mac_cmd.status) {
--		dev_err(&pdev->dev, "Failed to get mac, ret = %d\n",
--			port_mac_cmd.status);
-+		dev_err(&pdev->dev, "Failed to get mac, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, port_mac_cmd.status, out_size);
- 		return -EFAULT;
- 	}
- 
-@@ -172,9 +172,9 @@ int hinic_port_set_mtu(struct hinic_dev *nic_dev, int new_mtu)
- 	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_CHANGE_MTU,
- 				 &port_mtu_cmd, sizeof(port_mtu_cmd),
- 				 &port_mtu_cmd, &out_size);
--	if (err || (out_size != sizeof(port_mtu_cmd)) || port_mtu_cmd.status) {
--		dev_err(&pdev->dev, "Failed to set mtu, ret = %d\n",
--			port_mtu_cmd.status);
-+	if (err || out_size != sizeof(port_mtu_cmd) || port_mtu_cmd.status) {
-+		dev_err(&pdev->dev, "Failed to set mtu, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, port_mtu_cmd.status, out_size);
- 		return -EFAULT;
- 	}
- 
-@@ -264,8 +264,8 @@ int hinic_port_link_state(struct hinic_dev *nic_dev,
- 				 &link_cmd, sizeof(link_cmd),
- 				 &link_cmd, &out_size);
- 	if (err || (out_size != sizeof(link_cmd)) || link_cmd.status) {
--		dev_err(&pdev->dev, "Failed to get link state, ret = %d\n",
--			link_cmd.status);
-+		dev_err(&pdev->dev, "Failed to get link state, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, link_cmd.status, out_size);
- 		return -EINVAL;
- 	}
- 
-@@ -298,8 +298,8 @@ int hinic_port_set_state(struct hinic_dev *nic_dev, enum hinic_port_state state)
- 				 &port_state, sizeof(port_state),
- 				 &port_state, &out_size);
- 	if (err || (out_size != sizeof(port_state)) || port_state.status) {
--		dev_err(&pdev->dev, "Failed to set port state, ret = %d\n",
--			port_state.status);
-+		dev_err(&pdev->dev, "Failed to set port state, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, port_state.status, out_size);
- 		return -EFAULT;
- 	}
- 
-@@ -330,8 +330,8 @@ int hinic_port_set_func_state(struct hinic_dev *nic_dev,
- 				 &func_state, sizeof(func_state),
- 				 &func_state, &out_size);
- 	if (err || (out_size != sizeof(func_state)) || func_state.status) {
--		dev_err(&pdev->dev, "Failed to set port func state, ret = %d\n",
--			func_state.status);
-+		dev_err(&pdev->dev, "Failed to set port func state, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, func_state.status, out_size);
- 		return -EFAULT;
- 	}
- 
-@@ -361,9 +361,9 @@ int hinic_port_get_cap(struct hinic_dev *nic_dev,
- 				 port_cap, &out_size);
- 	if (err || (out_size != sizeof(*port_cap)) || port_cap->status) {
- 		dev_err(&pdev->dev,
--			"Failed to get port capabilities, ret = %d\n",
--			port_cap->status);
--		return -EINVAL;
-+			"Failed to get port capabilities, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, port_cap->status, out_size);
-+		return -EIO;
- 	}
- 
- 	return 0;
-@@ -393,9 +393,9 @@ int hinic_port_set_tso(struct hinic_dev *nic_dev, enum hinic_tso_state state)
- 				 &tso_cfg, &out_size);
- 	if (err || out_size != sizeof(tso_cfg) || tso_cfg.status) {
- 		dev_err(&pdev->dev,
--			"Failed to set port tso, ret = %d\n",
--			tso_cfg.status);
--		return -EINVAL;
-+			"Failed to set port tso, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, tso_cfg.status, out_size);
-+		return -EIO;
- 	}
- 
- 	return 0;
-@@ -423,9 +423,9 @@ int hinic_set_rx_csum_offload(struct hinic_dev *nic_dev, u32 en)
- 				 &rx_csum_cfg, &out_size);
- 	if (err || !out_size || rx_csum_cfg.status) {
- 		dev_err(&pdev->dev,
--			"Failed to set rx csum offload, ret = %d\n",
--			rx_csum_cfg.status);
--		return -EINVAL;
-+			"Failed to set rx csum offload, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, rx_csum_cfg.status, out_size);
-+		return -EIO;
- 	}
- 
- 	return 0;
-@@ -480,9 +480,9 @@ int hinic_set_max_qnum(struct hinic_dev *nic_dev, u8 num_rqs)
- 				 &rq_num, &out_size);
- 	if (err || !out_size || rq_num.status) {
- 		dev_err(&pdev->dev,
--			"Failed to rxq number, ret = %d\n",
--			rq_num.status);
--		return -EINVAL;
-+			"Failed to set rxq number, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, rq_num.status, out_size);
-+		return -EIO;
- 	}
- 
- 	return 0;
-@@ -508,9 +508,9 @@ static int hinic_set_rx_lro(struct hinic_dev *nic_dev, u8 ipv4_en, u8 ipv6_en,
- 				 &lro_cfg, &out_size);
- 	if (err || !out_size || lro_cfg.status) {
- 		dev_err(&pdev->dev,
--			"Failed to set lro offload, ret = %d\n",
--			lro_cfg.status);
--		return -EINVAL;
-+			"Failed to set lro offload, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, lro_cfg.status, out_size);
-+		return -EIO;
- 	}
- 
- 	return 0;
-@@ -542,10 +542,10 @@ static int hinic_set_rx_lro_timer(struct hinic_dev *nic_dev, u32 timer_value)
- 
- 	if (err || !out_size || lro_timer.status) {
- 		dev_err(&pdev->dev,
--			"Failed to set lro timer, ret = %d\n",
--			lro_timer.status);
-+			"Failed to set lro timer, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, lro_timer.status, out_size);
- 
--		return -EINVAL;
-+		return -EIO;
- 	}
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-index caf7e81e3f62..141206917e4d 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-@@ -40,9 +40,9 @@ static int hinic_set_mac(struct hinic_hwdev *hwdev, const u8 *mac_addr,
- 	if (err || out_size != sizeof(mac_info) ||
- 	    (mac_info.status && mac_info.status != HINIC_PF_SET_VF_ALREADY &&
- 	    mac_info.status != HINIC_MGMT_STATUS_EXIST)) {
--		dev_err(&hwdev->func_to_io.hwif->pdev->dev, "Failed to change MAC, ret = %d\n",
--			mac_info.status);
--		return -EFAULT;
-+		dev_err(&hwdev->func_to_io.hwif->pdev->dev, "Failed to set MAC, err: %d, status: 0x%x, out size: 0x%x\n",
-+			err, mac_info.status, out_size);
-+		return -EIO;
- 	}
- 
- 	return 0;
--- 
-2.17.1
+err_reg_netdev:
+	enetc_teardown_serdes(priv);
+	enetc_free_msix(priv);
+err_alloc_msix:
+[...]
+err_alloc_netdev:
+=3D=3D>	enetc_mdio_remove(pf);
+	enetc_of_put_phy(pf);
+err_map_pf_space:
+[...]
 
+Thanks.
+Claudiu
