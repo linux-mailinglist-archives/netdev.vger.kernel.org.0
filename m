@@ -2,94 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53C3A22C2A2
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 11:57:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D04C22C2AD
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 11:58:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727040AbgGXJ5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 05:57:42 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:33686 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726114AbgGXJ5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 05:57:41 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 84A7020054;
-        Fri, 24 Jul 2020 09:57:40 +0000 (UTC)
-Received: from us4-mdac16-43.at1.mdlocal (unknown [10.110.48.14])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 831C5800A4;
-        Fri, 24 Jul 2020 09:57:40 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.8])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2E41840060;
-        Fri, 24 Jul 2020 09:57:40 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E58A14C0068;
-        Fri, 24 Jul 2020 09:57:39 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Jul
- 2020 10:57:34 +0100
-Subject: Re: [PATCH net-next v3 1/2] hinic: add support to handle hw abnormal
- event
-To:     David Miller <davem@davemloft.net>, <luobin9@huawei.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <luoxianjun@huawei.com>, <yin.yinshi@huawei.com>,
-        <cloud.wangxiaoyun@huawei.com>, <chiqijun@huawei.com>
-References: <20200723144038.10430-1-luobin9@huawei.com>
- <20200723144038.10430-2-luobin9@huawei.com>
- <20200723.120852.1882569285026023193.davem@davemloft.net>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <92dac9af-8623-bd1e-7a4d-9d12671699ad@solarflare.com>
-Date:   Fri, 24 Jul 2020 10:57:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20200723.120852.1882569285026023193.davem@davemloft.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25560.003
-X-TM-AS-Result: No-8.820400-8.000000-10
-X-TMASE-MatchedRID: pBwXUM+nCwvmLzc6AOD8DfHkpkyUphL905gx+zrdgZaQzLINxjetpFbY
-        KMhwSW1CNnZ1cmyQc4mPr625QdxYkvFR4E58OzUoIp8MIsmMqvtUENBIMyKD0Zsoi2XrUn/JyeM
-        tMD9QOgADpAZ2/B/Blp1jVwOAgjOIavP8b9lJtWr6C0ePs7A07Q2y0JeZ/zscixCcHJ0l6L9U9V
-        7w4C4apCDeObfXRMUe1Ur+PJUaME0VVZKExyWDBgcRwsRXSGo3rrPhI00pdvPwClow2+L85TI9C
-        U2hgdVOUdNvZjjOj9C63BPMcrcQuXeYWV2RaAfD+kkf6HhPsBc=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--8.820400-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25560.003
-X-MDID: 1595584660-TA2_liJbFgvR
+        id S1727916AbgGXJ6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 05:58:14 -0400
+Received: from mx56.baidu.com ([61.135.168.56]:52016 "EHLO
+        tc-sys-mailedm02.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726114AbgGXJ6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 05:58:14 -0400
+Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
+        by tc-sys-mailedm02.tc.baidu.com (Postfix) with ESMTP id A624F11C0059;
+        Fri, 24 Jul 2020 17:57:59 +0800 (CST)
+From:   Li RongQing <lirongqing@baidu.com>
+To:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        magnus.karlsson@intel.com
+Subject: [PATCH 1/2] xdp/i40e/ixgbe: not flip rx buffer for copy mode xdp
+Date:   Fri, 24 Jul 2020 17:57:58 +0800
+Message-Id: <1595584679-30652-1-git-send-email-lirongqing@baidu.com>
+X-Mailer: git-send-email 1.7.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/07/2020 20:08, David Miller wrote:
-> From: Luo bin <luobin9@huawei.com>
-> Date: Thu, 23 Jul 2020 22:40:37 +0800
->
->> +static int hinic_fw_reporter_dump(struct devlink_health_reporter *reporter,
->> +				  struct devlink_fmsg *fmsg, void *priv_ctx,
->> +				  struct netlink_ext_ack *extack)
->> +{
->> +	struct hinic_mgmt_watchdog_info *watchdog_info;
->> +	int err;
->> +
->> +	if (priv_ctx) {
->> +		watchdog_info = priv_ctx;
->> +		err = mgmt_watchdog_report_show(fmsg, watchdog_info);
->> +		if (err)
->> +			return err;
->> +	}
->> +
->> +	return 0;
->> +}
-> This 'watchdog_info' variable is completely unnecessary, just pass
-> 'priv_ctx' as-is into mgmt_watchdog_report_show().
-Looks like the 'err' variable is unnecessary too...
+i40e/ixgbe_rx_buffer_flip in copy mode xdp can lead to data
+corruption, like the following flow:
 
--ed
+   1. first skb is not for xsk, and forwarded to another device
+      or socket queue
+   2. seconds skb is for xsk, copy data to xsk memory, and page
+      of skb->data is released
+   3. rx_buff is reusable since only first skb is in it, but
+      *_rx_buffer_flip will make that page_offset is set to
+      first skb data
+   4. then reuse rx buffer, first skb which still is living
+      will be corrupted.
+
+so not flip rx buffer for copy mode xdp
+
+Fixes: c497176cb2e4 ("xsk: add Rx receive functions and poll support")
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+Signed-off-by: Dongsheng Rong <rongdongsheng@baidu.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   |  5 ++++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  5 ++++-
+ include/linux/filter.h                        | 11 +++++++++++
+ 3 files changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index b3836092c327..a8cea62fdbf5 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -2394,7 +2394,10 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
+ 
+ 			if (xdp_res & (I40E_XDP_TX | I40E_XDP_REDIR)) {
+ 				xdp_xmit |= xdp_res;
+-				i40e_rx_buffer_flip(rx_ring, rx_buffer, size);
++
++				if (xdp.rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL ||
++				    xdp_get_map_type_no_direct() != BPF_MAP_TYPE_XSKMAP)
++					i40e_rx_buffer_flip(rx_ring, rx_buffer, size);
+ 			} else {
+ 				rx_buffer->pagecnt_bias++;
+ 			}
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index a8bf941c5c29..e5607ad7ac4f 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -2351,7 +2351,10 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
+ 
+ 			if (xdp_res & (IXGBE_XDP_TX | IXGBE_XDP_REDIR)) {
+ 				xdp_xmit |= xdp_res;
+-				ixgbe_rx_buffer_flip(rx_ring, rx_buffer, size);
++
++				if (xdp.rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL ||
++				    xdp_get_map_type_no_direct() != BPF_MAP_TYPE_XSKMAP)
++					ixgbe_rx_buffer_flip(rx_ring, rx_buffer, size);
+ 			} else {
+ 				rx_buffer->pagecnt_bias++;
+ 			}
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 259377723603..3b3103814693 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -919,6 +919,17 @@ static inline void xdp_clear_return_frame_no_direct(void)
+ 	ri->kern_flags &= ~BPF_RI_F_RF_NO_DIRECT;
+ }
+ 
++static inline enum bpf_map_type xdp_get_map_type_no_direct(void)
++{
++	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
++	struct bpf_map *map = READ_ONCE(ri->map);
++
++	if (map)
++		return map->map_type;
++	else
++		return BPF_MAP_TYPE_UNSPEC;
++}
++
+ static inline int xdp_ok_fwd_dev(const struct net_device *fwd,
+ 				 unsigned int pktlen)
+ {
+-- 
+2.16.2
+
