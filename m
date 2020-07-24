@@ -2,197 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A686F22CA46
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 18:08:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97E3722CAC3
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 18:15:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728538AbgGXQIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 12:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34290 "EHLO
+        id S1726650AbgGXQP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 12:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728521AbgGXQIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 12:08:17 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD77C0619E4;
-        Fri, 24 Jul 2020 09:08:16 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595606893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3s3Aqgk8wYEb6C7q76eOXNAqiLkE4bQcw2wKh9KEzyY=;
-        b=FauBewUnsIbIwsfTsUPJbI07vZky8mAkl6COdDJH8e9nhi7dsgWxCcZiz5++vGloYa3wt8
-        DJLWCHMQl5O+zK5Wo7MD6tkkesSF1QuLohYDxKaCf0tCms6mlkKUlTx+gFAoWQfqdrOUCX
-        6gvrKASHtAoTZ5eOZ8EqInEwe7CMPWx5Df0krM3ODVoHV0ImV1dkgHnRCLwSbObdmwf00d
-        UYNksdCl1f7je5OMYZLvE4+kDNmU8JuDBUQaLZxKRTMkC2HsVUCHhqMXTC+maDkF9LaN8Z
-        7+t3sUmjMF4iXbA2ZhMq/CxAMXm+W+hORXO5U35Xvx30ERGSYcFgpxttvrVdCg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595606893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3s3Aqgk8wYEb6C7q76eOXNAqiLkE4bQcw2wKh9KEzyY=;
-        b=PYQzksp8119gJXWIbAR97q2k9vMn1xwijpvcyOhpepzX0j2WJs2GqqH2gviiTC/qtVWSyE
-        M3LwSBgwFVJNHgCA==
-To:     Alex Belits <abelits@marvell.com>,
-        "peterz\@infradead.org" <peterz@infradead.org>
-Cc:     "mingo\@kernel.org" <mingo@kernel.org>,
-        Prasun Kapoor <pkapoor@marvell.com>,
-        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
-        "frederic\@kernel.org" <frederic@kernel.org>,
-        "catalin.marinas\@arm.com" <catalin.marinas@arm.com>,
-        "will\@kernel.org" <will@kernel.org>,
-        "linux-arch\@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel\@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v4 00/13] "Task_isolation" mode
-In-Reply-To: <851ee54e8317cd186338a76a045f738476144fcc.camel@marvell.com>
-References: <04be044c1bcd76b7438b7563edc35383417f12c8.camel@marvell.com> <87imeextf3.fsf@nanos.tec.linutronix.de> <831e023422aa0e4cb3da37ceef6fdcd5bc854682.camel@marvell.com> <20200723154933.GB709@worktop.programming.kicks-ass.net> <3ff1383e669b543462737b0d12c0d1fb7d409e3e.camel@marvell.com> <877dutx5xj.fsf@nanos.tec.linutronix.de> <851ee54e8317cd186338a76a045f738476144fcc.camel@marvell.com>
-Date:   Fri, 24 Jul 2020 18:08:13 +0200
-Message-ID: <87mu3ouc9e.fsf@nanos.tec.linutronix.de>
+        with ESMTP id S1726593AbgGXQP0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 12:15:26 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E11C0619D3
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 09:15:26 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a9so5513118pjd.3
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 09:15:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rCKvskBWlKSd9ZLSq+qhNnYRB+661+QDTxozyOU5BKk=;
+        b=WaKGEroB7laoR8ac3ZMFZohZEUZvECYVzKuwryj+lpo5rEE0cFCMB/e0/ovuQFudyv
+         jffQQJ8OoCUdo5bjCvUonm3P6fjW5yqmukGV8MJ1tyOcHDcrquHF4kdZDyIDgcKk2h6Z
+         FScgzhdGjmbSe9II0yE0aI3ejVp9sOU7//e4KezGoCwwvSdjnIFkFhyV+bhvhzmJzMGQ
+         VOBVtO9T0SYMt48b63FXJDwborKrZiGHkeKAQ632Qms9pIn4jAm2aSeUJ6EP9SwUNYny
+         wocun5hPPqgmZnSPfFjiyLYtyMF3VQPSkVlTfGBXP1+eJGTBzB5ksx5+c/IoB6yMUGNE
+         2VwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rCKvskBWlKSd9ZLSq+qhNnYRB+661+QDTxozyOU5BKk=;
+        b=uaULVLLNm5uEDr0q2CUASOCNgbMpIcRFqmNsHE5zbwSNqMAkiBULYfp6dCUNmXXe3w
+         +tgxtVtDSCxrOue6CDBwCk8yegNhmJjuDYQla/lja/tVZwb99Beqd2JcceIJC3C6/a1i
+         FJlXO0eBAeCpNWBtKcnCeYtx0qkUBh6iIgE1qpEWhUWHJKcw1yqpUX8iinkpXaRNypUt
+         3lvUTPPE49pQ5bR8d3WJxqPopCFQNSAPjFldRVTbvoPHEABBxj9/gtsF8911ifdbBU5N
+         eGT4lReqaTKbyXMIh5dKGOLG1YqaH4qEclgfeY8ZjVs70k1K3X2l4ijdley4qzWNvlYK
+         ERoQ==
+X-Gm-Message-State: AOAM531hXd4h+1/7KBkh/5fof1JszkU+OQSbJn6KyglW6Sw4Lzc5qQDu
+        GA3xnJS86k2korfnnJ6RxaxDuN1qk2JOIQ==
+X-Google-Smtp-Source: ABdhPJyBZ+Xg8YfWDTE0iBBlu6J+WbcqsVCvRBXC9gPHfVkVGw8MCC88NVB0Pfxqcvp7Gx4Lf0dIVQ==
+X-Received: by 2002:a17:902:c211:: with SMTP id 17mr8751354pll.302.1595607325590;
+        Fri, 24 Jul 2020 09:15:25 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id 141sm7058333pfw.72.2020.07.24.09.15.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jul 2020 09:15:25 -0700 (PDT)
+Date:   Fri, 24 Jul 2020 09:15:17 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     George Shuklin <amarao@servers.com>
+Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
+        jiri@resnulli.us, amarao@servers.com
+Subject: [RFT iproute2] iplink_bridge: scale all time values by USER_HZ
+Message-ID: <20200724091517.7f5c2c9c@hermes.lan>
+In-Reply-To: <869fed82-bb31-589f-bd26-591ccfa976ed@servers.com>
+References: <869fed82-bb31-589f-bd26-591ccfa976ed@servers.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alex,
 
-Alex Belits <abelits@marvell.com> writes:
-> On Thu, 2020-07-23 at 23:44 +0200, Thomas Gleixner wrote:
->>  1) That inline function can be put out of line by the compiler and
->>     placed into the regular text section which makes it subject to
->>     instrumentation
->> 
->>  2) That inline function invokes local_irq_save() which is subject to
->>     instrumentation _before_ the entry state for the instrumentation
->>     mechanisms is established.
->> 
->>  3) That inline function invokes sync_core() before important state
->> has
->>     been established, which is especially interesting in NMI like
->>     exceptions.
->> 
->> As you clearly documented why all of the above is safe and does not
->> cause any problems, it's just me and Peter being silly, right?
->> 
->> Try again.
->
-> I don't think, accusations and mockery are really necessary here.
+The bridge portion of ip command was not scaling so the
+values were off.
 
-Let's get some context to this.
+The netlink API's for setting and reading timers all conform
+to the kernel standard of scaling the values by USER_HZ (100).
 
-  I told you in my first mail, that this breaks noinstr and that
-  building with full debug would have told you.
+Fixes: 28d84b429e4e ("add bridge master device support")
+Fixes: 7f3d55922645 ("iplink: bridge: add support for IFLA_BR_MCAST_MEMBERSHIP_INTVL")
+Fixes: 10082a253fb2 ("iplink: bridge: add support for IFLA_BR_MCAST_LAST_MEMBER_INTVL")
+Fixes: 1f2244b851dd ("iplink: bridge: add support for IFLA_BR_MCAST_QUERIER_INTVL")
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+---
 
-  Peter gave you a clear hint where to look.
+Compile tested only.
 
-Now it might be expected that you investigate that or at least ask
-questions before making the bold claim:
 
->> > Unless something else is involved, those operations are safe, so I
->> > am not adding anything that can break those.
+ ip/iplink_bridge.c | 45 ++++++++++++++++++++++++++-------------------
+ 1 file changed, 26 insertions(+), 19 deletions(-)
 
-Surely I could have avoided the snide remark, but after you demonstrably
-ignored technically valid concerns and suggestions in your other reply,
-I was surely not in the mood to be overly careful in my choice of words.
+diff --git a/ip/iplink_bridge.c b/ip/iplink_bridge.c
+index 3e81aa059cb3..48495a08c484 100644
+--- a/ip/iplink_bridge.c
++++ b/ip/iplink_bridge.c
+@@ -24,6 +24,7 @@
+ 
+ static unsigned int xstats_print_attr;
+ static int filter_index;
++static unsigned int hz;
+ 
+ static void print_explain(FILE *f)
+ {
+@@ -85,19 +86,22 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
+ {
+ 	__u32 val;
+ 
++	if (!hz)
++		hz = get_user_hz();
++
+ 	while (argc > 0) {
+ 		if (matches(*argv, "forward_delay") == 0) {
+ 			NEXT_ARG();
+ 			if (get_u32(&val, *argv, 0))
+ 				invarg("invalid forward_delay", *argv);
+ 
+-			addattr32(n, 1024, IFLA_BR_FORWARD_DELAY, val);
++			addattr32(n, 1024, IFLA_BR_FORWARD_DELAY, val * hz);
+ 		} else if (matches(*argv, "hello_time") == 0) {
+ 			NEXT_ARG();
+ 			if (get_u32(&val, *argv, 0))
+ 				invarg("invalid hello_time", *argv);
+ 
+-			addattr32(n, 1024, IFLA_BR_HELLO_TIME, val);
++			addattr32(n, 1024, IFLA_BR_HELLO_TIME, val * hz);
+ 		} else if (matches(*argv, "max_age") == 0) {
+ 			NEXT_ARG();
+ 			if (get_u32(&val, *argv, 0))
+@@ -109,7 +113,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			if (get_u32(&val, *argv, 0))
+ 				invarg("invalid ageing_time", *argv);
+ 
+-			addattr32(n, 1024, IFLA_BR_AGEING_TIME, val);
++			addattr32(n, 1024, IFLA_BR_AGEING_TIME, val * hz);
+ 		} else if (matches(*argv, "stp_state") == 0) {
+ 			NEXT_ARG();
+ 			if (get_u32(&val, *argv, 0))
+@@ -266,7 +270,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				       *argv);
+ 
+ 			addattr64(n, 1024, IFLA_BR_MCAST_LAST_MEMBER_INTVL,
+-				  mcast_last_member_intvl);
++				  mcast_last_member_intvl * hz);
+ 		} else if (matches(*argv, "mcast_membership_interval") == 0) {
+ 			__u64 mcast_membership_intvl;
+ 
+@@ -276,7 +280,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				       *argv);
+ 
+ 			addattr64(n, 1024, IFLA_BR_MCAST_MEMBERSHIP_INTVL,
+-				  mcast_membership_intvl);
++				  mcast_membership_intvl * hz);
+ 		} else if (matches(*argv, "mcast_querier_interval") == 0) {
+ 			__u64 mcast_querier_intvl;
+ 
+@@ -286,7 +290,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				       *argv);
+ 
+ 			addattr64(n, 1024, IFLA_BR_MCAST_QUERIER_INTVL,
+-				  mcast_querier_intvl);
++				  mcast_querier_intvl * hz);
+ 		} else if (matches(*argv, "mcast_query_interval") == 0) {
+ 			__u64 mcast_query_intvl;
+ 
+@@ -296,7 +300,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				       *argv);
+ 
+ 			addattr64(n, 1024, IFLA_BR_MCAST_QUERY_INTVL,
+-				  mcast_query_intvl);
++				  mcast_query_intvl * hz);
+ 		} else if (!matches(*argv, "mcast_query_response_interval")) {
+ 			__u64 mcast_query_resp_intvl;
+ 
+@@ -306,7 +310,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				       *argv);
+ 
+ 			addattr64(n, 1024, IFLA_BR_MCAST_QUERY_RESPONSE_INTVL,
+-				  mcast_query_resp_intvl);
++				  mcast_query_resp_intvl * hz);
+ 		} else if (!matches(*argv, "mcast_startup_query_interval")) {
+ 			__u64 mcast_startup_query_intvl;
+ 
+@@ -316,7 +320,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				       *argv);
+ 
+ 			addattr64(n, 1024, IFLA_BR_MCAST_STARTUP_QUERY_INTVL,
+-				  mcast_startup_query_intvl);
++				  mcast_startup_query_intvl * hz);
+ 		} else if (matches(*argv, "mcast_stats_enabled") == 0) {
+ 			__u8 mcast_stats_enabled;
+ 
+@@ -407,29 +411,32 @@ static void bridge_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 	if (!tb)
+ 		return;
+ 
++	if (!hz)
++		hz = get_user_hz();
++
+ 	if (tb[IFLA_BR_FORWARD_DELAY])
+ 		print_uint(PRINT_ANY,
+ 			   "forward_delay",
+ 			   "forward_delay %u ",
+-			   rta_getattr_u32(tb[IFLA_BR_FORWARD_DELAY]));
++			   rta_getattr_u32(tb[IFLA_BR_FORWARD_DELAY]) / hz);
+ 
+ 	if (tb[IFLA_BR_HELLO_TIME])
+ 		print_uint(PRINT_ANY,
+ 			   "hello_time",
+ 			   "hello_time %u ",
+-			   rta_getattr_u32(tb[IFLA_BR_HELLO_TIME]));
++			   rta_getattr_u32(tb[IFLA_BR_HELLO_TIME]) / hz);
+ 
+ 	if (tb[IFLA_BR_MAX_AGE])
+ 		print_uint(PRINT_ANY,
+ 			   "max_age",
+ 			   "max_age %u ",
+-			   rta_getattr_u32(tb[IFLA_BR_MAX_AGE]));
++			   rta_getattr_u32(tb[IFLA_BR_MAX_AGE]) / hz);
+ 
+ 	if (tb[IFLA_BR_AGEING_TIME])
+ 		print_uint(PRINT_ANY,
+ 			   "ageing_time",
+ 			   "ageing_time %u ",
+-			   rta_getattr_u32(tb[IFLA_BR_AGEING_TIME]));
++			   rta_getattr_u32(tb[IFLA_BR_AGEING_TIME]) / hz);
+ 
+ 	if (tb[IFLA_BR_STP_STATE])
+ 		print_uint(PRINT_ANY,
+@@ -605,37 +612,37 @@ static void bridge_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 		print_lluint(PRINT_ANY,
+ 			     "mcast_last_member_intvl",
+ 			     "mcast_last_member_interval %llu ",
+-			     rta_getattr_u64(tb[IFLA_BR_MCAST_LAST_MEMBER_INTVL]));
++			     rta_getattr_u64(tb[IFLA_BR_MCAST_LAST_MEMBER_INTVL]) / hz);
+ 
+ 	if (tb[IFLA_BR_MCAST_MEMBERSHIP_INTVL])
+ 		print_lluint(PRINT_ANY,
+ 			     "mcast_membership_intvl",
+ 			     "mcast_membership_interval %llu ",
+-			     rta_getattr_u64(tb[IFLA_BR_MCAST_MEMBERSHIP_INTVL]));
++			     rta_getattr_u64(tb[IFLA_BR_MCAST_MEMBERSHIP_INTVL]) / hz);
+ 
+ 	if (tb[IFLA_BR_MCAST_QUERIER_INTVL])
+ 		print_lluint(PRINT_ANY,
+ 			     "mcast_querier_intvl",
+ 			     "mcast_querier_interval %llu ",
+-			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERIER_INTVL]));
++			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERIER_INTVL]) / hz);
+ 
+ 	if (tb[IFLA_BR_MCAST_QUERY_INTVL])
+ 		print_lluint(PRINT_ANY,
+ 			     "mcast_query_intvl",
+ 			     "mcast_query_interval %llu ",
+-			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_INTVL]));
++			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_INTVL]) / hz);
+ 
+ 	if (tb[IFLA_BR_MCAST_QUERY_RESPONSE_INTVL])
+ 		print_lluint(PRINT_ANY,
+ 			     "mcast_query_response_intvl",
+ 			     "mcast_query_response_interval %llu ",
+-			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_RESPONSE_INTVL]));
++			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_RESPONSE_INTVL]) / hz);
+ 
+ 	if (tb[IFLA_BR_MCAST_STARTUP_QUERY_INTVL])
+ 		print_lluint(PRINT_ANY,
+ 			     "mcast_startup_query_intvl",
+ 			     "mcast_startup_query_interval %llu ",
+-			     rta_getattr_u64(tb[IFLA_BR_MCAST_STARTUP_QUERY_INTVL]));
++			     rta_getattr_u64(tb[IFLA_BR_MCAST_STARTUP_QUERY_INTVL]) / hz);
+ 
+ 	if (tb[IFLA_BR_MCAST_STATS_ENABLED])
+ 		print_uint(PRINT_ANY,
+-- 
+2.27.0
 
-> The result of this may be not a "design" per se, but an understanding
-> of how things are implemented, and what rules are being followed, so I
-> could add my code in a manner consistent with what is done, and
-> document the whole thing.
-
-Every other big and technically complex project which has to change the
-very inner workings of the kernel started the same way. I'm not aware of
-any of them getting accepted as is or in a big code dump.
-
-What you have now qualifies as proof of concept and the big challenge is
-to turn it into something which is acceptable and maintainable.
-
-You talk in great length about how inconsistent stuff is all over the
-place. Yes, it is indeed. You even call that inconsistency an existing
-design:
-
-> My patches reflect what is already in code and in its design.
-
-I agree that you just work with the code as is, but you might have
-noticed that quite some of this stuff is clearly not designed at all or
-designed badly.
-
-The solution is not to pile on top of the inconsistency, the solution is
-to make it consistent in the first place.
-
-You are surely going to say, that's beyond the scope of your project. I
-can tell you that it is in the scope of your project simply because just
-proliferating the status quo and piling new stuff on top is not an
-option. And no, there are no people waiting in a row to mop up after
-you either.
-
-Quite some of the big technology projects have spent and still spend
-considerable amount of time to do exactly this kind of consolidation
-work upfront in order to make their features acceptable in a
-maintainable form.
-
-All of these projects have been merged or are still being merged
-piecewise in reviewable chunks.
-
-We are talking about intrusive technology which requires a very careful
-integration to prevent it from becoming a roadblock or a maintenaince
-headache. The approach and implementation has to be _agreed_ on by the
-involved parties, i.e. submitters, reviewers and maintainers.
-
-> While I understand that this is an unusual feature and by its nature
-> it affects kernel in multiple places, it does not deserve to be called
-> a "mess" and other synonyms of "mess".
-
-The feature is perfectly fine and I completely understand why you want
-it. Guess who started to lay the grounds for NOHZ_FULL more than a
-decade ago and why?
-
-The implementation is not acceptable on technical grounds,
-maintainability reasons, lack of design and proper consolidated
-integration.
-
-> Another issue that you have asked me to defend is the existence and
-> scope of task isolation itself.
-
-I have not asked you to defend the existance. I asked you for coherent
-explanations how the implementation works and why the chosen approach is
-correct and valid. That's a completely different thing.
-
-> It's an attempt to introduce a feature that turns Linux userspace into
-> superior replacement of RTOS.....
-
-Can you please spare me the advertising and marketing? I'm very well
-aware what an RTOS is and I'm also very well aware that there is no such
-thing like a 'superior replacement' for RTOS in general.
-
-If your view of RTOS is limited to this particular feature, then I have
-to tell you that this particular feature is only useful for a very small
-portion of the overall RTOS use cases.
-
-> However most definitely this is not a "mess", and it I do not believe
-> that I have to defend the validity of this direction of development, or
-> be accused of general incompetence every time someone finds a
-> frustrating mistake in my code.
-
-Nobody accuses you of incompetence, but you will have to defend the
-validity of your approach and implementation and accept that things
-might not be as shiny as you think they are. That's not hostility,
-that's just how Linux kernel development works whether you like it or
-not. 
-
-I surely can understand your frustration over my view of this series,
-but you might have noticed that aside of criticism I gave you very clear
-technical arguments and suggestions how to proceed.
-
-It's your decision what you make of that.
-
-Thanks,
-
-        tglx
