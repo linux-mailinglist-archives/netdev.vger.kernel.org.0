@@ -2,104 +2,326 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A09622C2DB
-	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 12:13:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F01A522C2E1
+	for <lists+netdev@lfdr.de>; Fri, 24 Jul 2020 12:14:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727786AbgGXKNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 06:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35262 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726114AbgGXKNi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 06:13:38 -0400
-Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A47C0619D3
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 03:13:38 -0700 (PDT)
-Received: by mail-oo1-xc43.google.com with SMTP id n21so816149ooj.5
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 03:13:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=WrA+9ve3/Dqcix5f7nCMaE/s2sxhoKsksExTOYQrc+Y=;
-        b=YoOaJoWEs2u8CcbcmDd2uofU4GjIhUAnE6eGYRBLkyhD110xE84rqQ8AM7vTyTrCg2
-         pRCGPnrahSvZwGFa7go+6bxUPqlOJPNkpn8yp7x1g0P6TwuO6aLEt/tlMrZod0rrCzVt
-         rTJ8UXw40A0mic+FK7c3aOn7adUQavVbyJ72dCWK0mx8ZVlKqIXLHGB0pdUzV1S3C3J7
-         mjR3IC1yaBGdZwwwQf1i/DKxmguCVTVXo+vCXuh5hdc56T4ZDDcYekG7KlDRht7r0Keb
-         5TV5WUX7cKKKNkOlq5XqBHxUh02AdxlqcuEd64gDTEJeHGiy8Fxkx/uvwttiu2WDl1aY
-         eSrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=WrA+9ve3/Dqcix5f7nCMaE/s2sxhoKsksExTOYQrc+Y=;
-        b=smlEWjowVrmZD6D0zBgQxvRyUYCiswYxYhSfco17z9UHyKhhU579/5+wTMaTI+vVrr
-         Y4W2/IMFEJTUePNb9lsDBADcvZIP3Hspp9ZO0k/7dOa1pdI8Czt0Cdmb2FlX6fGF5/OC
-         8sP+Q5asxScXvBfyFG5KYjpH5zOzXXFLy4xaVXMgbidepVNLPWf7DRxJLCRoMJctG9LS
-         jExqYtlRuFXj7Xtxv9L5MKmmYEYV/Et43lWi7BAsMxFQSsLa0nDxoR5X0w5JAUD7d1TG
-         L476iutqNnF6ZbQeFs/lmDH8j62OhcA4B6Vj5qnTvWgppSio9qkbPuyF0YRRB7JKHwRZ
-         GNJw==
-X-Gm-Message-State: AOAM530Hje66vJ+RmuQQhNxQBQCErP46JUWHszo7zK2XHT3iW5zuN7Hs
-        deIijSzy/1a/WED5xKGD+nhJ4oKXN/YnNdTCqNA=
-X-Google-Smtp-Source: ABdhPJwCQhBlT/45hSYVTzhAVU5YhMtxl4GntYfR9vbRygWsdhbC3kNjDpLT1agcS7WWPGJE+DS7No+rIEvg9XQ6mKg=
-X-Received: by 2002:a4a:a705:: with SMTP id g5mr8726574oom.5.1595585618074;
- Fri, 24 Jul 2020 03:13:38 -0700 (PDT)
+        id S1726838AbgGXKOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 06:14:38 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:38948 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726164AbgGXKOi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jul 2020 06:14:38 -0400
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1jyuio-0000vu-Ng; Fri, 24 Jul 2020 20:14:35 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 24 Jul 2020 20:14:34 +1000
+Date:   Fri, 24 Jul 2020 20:14:34 +1000
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "Gong, Sishuai" <sishuai@purdue.edu>,
+        "tgraf@suug.ch" <tgraf@suug.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Sousa da Fonseca, Pedro Jose" <pfonseca@purdue.edu>
+Subject: [v2 PATCH 2/2] rhashtable: Restore RCU marking on rhash_lock_head
+Message-ID: <20200724101434.GC15913@gondor.apana.org.au>
+References: <20200724101220.GA15913@gondor.apana.org.au>
 MIME-Version: 1.0
-Received: by 2002:a05:6830:1559:0:0:0:0 with HTTP; Fri, 24 Jul 2020 03:13:37
- -0700 (PDT)
-From:   Marina Bagni <marinadanielsbagni1@gmail.com>
-Date:   Fri, 24 Jul 2020 03:13:37 -0700
-X-Google-Sender-Auth: IKx1e6A-AcVbEcjJheLlRHmeJYk
-Message-ID: <CAAVv9AfuxRDkd=MT9jRorm6x5-rgxZR0Q8aF1MhdM6P3wyOO-Q@mail.gmail.com>
-Subject: Hello Greetings,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200724101220.GA15913@gondor.apana.org.au>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings Dear Friend,
-How are you today? With hope you are found in good condition of
-health, together with your beloved family?
-My dear, I know you may be wondering and very surprised how and why i
-chooses to contact you through this medium haven=E2=80=99t know each other =
-or
-meet with you before, but to be honest and sincere with you i believed
-that You and I can cooperate together in this service of the Lord,
-which I pray that God will touch your heart to assist me out in this
-humanitarian Investment project in your country.
-My names are Mrs. Marina Bagni, I deal in gold exportation, I am a
-widow diagnosed with brain tumor disease which has gotten to a very
-bad stage, Please I want you to understand the most important reason
-why I am contacting you through this means is because I need your
-sincerity and ability to carry out this transaction and fulfill my
-final wish in implementing this humanitarian project in your country
-as it requires absolute trust and devotion without any failure, I
-believe that you will not expose this to anyone or betray this trust
-and confident that I am about to entrust on you for the mutual benefit
-of the orphans, gives justice and help to the poor, needy, elderly
-ones, disables and to promote the words of God and the effort that the
-house of God will be maintained says The Lord. Jeremiah 22:15-16.
-I made a substantial deposit with the bank which I have decided to
-hand over and entrust the sum of ($ 9,650,000.00) in my account to you
-to Invest into the charitable project in your country. Based on my
-present health status I am permanently indisposed to handle finances
-or any financial related project following my diagnoses for Idiopathic
-Pulmonary Fibrosis. As my health has deteriorated so badly that was
-what prompted me to take this necessary decision from my sick bed in
-contacting you to assist me carry out this transaction and implement
-the humanitarian project with my fund only for honor and glory of God
-as I have indicated to you.
-However It will be my pleasure to compensate you as my Investment
-Manager/Partner with 50% percent of the total money for your effort in
-handling the transaction, while 50% of the fund will be invested into
-the charity project there in your country.
-Therefore I am waiting for your prompt response now I have access to
-the Internet in the hospital, if only you are interested I will give
-you further details and my data. Please always check your e-mail as I
-have only a few days to leave on this earth. Your early response will
-be appreciated.
+This patch restores the RCU marking on bucket_table->buckets as
+it really does need RCU protection.  Its removal had led to a fatal
+bug.
 
-Best Regards.
-Mrs. Marina Bagni.
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+
+diff --git a/include/linux/rhashtable.h b/include/linux/rhashtable.h
+index e3def7bbe932..83ad875a7ea2 100644
+--- a/include/linux/rhashtable.h
++++ b/include/linux/rhashtable.h
+@@ -84,7 +84,7 @@ struct bucket_table {
+ 
+ 	struct lockdep_map	dep_map;
+ 
+-	struct rhash_lock_head *buckets[] ____cacheline_aligned_in_smp;
++	struct rhash_lock_head __rcu *buckets[] ____cacheline_aligned_in_smp;
+ };
+ 
+ /*
+@@ -261,13 +261,12 @@ void rhashtable_free_and_destroy(struct rhashtable *ht,
+ 				 void *arg);
+ void rhashtable_destroy(struct rhashtable *ht);
+ 
+-struct rhash_lock_head **rht_bucket_nested(const struct bucket_table *tbl,
+-					   unsigned int hash);
+-struct rhash_lock_head **__rht_bucket_nested(const struct bucket_table *tbl,
+-					     unsigned int hash);
+-struct rhash_lock_head **rht_bucket_nested_insert(struct rhashtable *ht,
+-						  struct bucket_table *tbl,
+-						  unsigned int hash);
++struct rhash_lock_head __rcu **rht_bucket_nested(
++	const struct bucket_table *tbl, unsigned int hash);
++struct rhash_lock_head __rcu **__rht_bucket_nested(
++	const struct bucket_table *tbl, unsigned int hash);
++struct rhash_lock_head __rcu **rht_bucket_nested_insert(
++	struct rhashtable *ht, struct bucket_table *tbl, unsigned int hash);
+ 
+ #define rht_dereference(p, ht) \
+ 	rcu_dereference_protected(p, lockdep_rht_mutex_is_held(ht))
+@@ -284,21 +283,21 @@ struct rhash_lock_head **rht_bucket_nested_insert(struct rhashtable *ht,
+ #define rht_entry(tpos, pos, member) \
+ 	({ tpos = container_of(pos, typeof(*tpos), member); 1; })
+ 
+-static inline struct rhash_lock_head *const *rht_bucket(
++static inline struct rhash_lock_head __rcu *const *rht_bucket(
+ 	const struct bucket_table *tbl, unsigned int hash)
+ {
+ 	return unlikely(tbl->nest) ? rht_bucket_nested(tbl, hash) :
+ 				     &tbl->buckets[hash];
+ }
+ 
+-static inline struct rhash_lock_head **rht_bucket_var(
++static inline struct rhash_lock_head __rcu **rht_bucket_var(
+ 	struct bucket_table *tbl, unsigned int hash)
+ {
+ 	return unlikely(tbl->nest) ? __rht_bucket_nested(tbl, hash) :
+ 				     &tbl->buckets[hash];
+ }
+ 
+-static inline struct rhash_lock_head **rht_bucket_insert(
++static inline struct rhash_lock_head __rcu **rht_bucket_insert(
+ 	struct rhashtable *ht, struct bucket_table *tbl, unsigned int hash)
+ {
+ 	return unlikely(tbl->nest) ? rht_bucket_nested_insert(ht, tbl, hash) :
+@@ -325,7 +324,7 @@ static inline struct rhash_lock_head **rht_bucket_insert(
+  */
+ 
+ static inline void rht_lock(struct bucket_table *tbl,
+-			    struct rhash_lock_head **bkt)
++			    struct rhash_lock_head __rcu **bkt)
+ {
+ 	local_bh_disable();
+ 	bit_spin_lock(0, (unsigned long *)bkt);
+@@ -333,7 +332,7 @@ static inline void rht_lock(struct bucket_table *tbl,
+ }
+ 
+ static inline void rht_lock_nested(struct bucket_table *tbl,
+-				   struct rhash_lock_head **bucket,
++				   struct rhash_lock_head __rcu **bucket,
+ 				   unsigned int subclass)
+ {
+ 	local_bh_disable();
+@@ -342,7 +341,7 @@ static inline void rht_lock_nested(struct bucket_table *tbl,
+ }
+ 
+ static inline void rht_unlock(struct bucket_table *tbl,
+-			      struct rhash_lock_head **bkt)
++			      struct rhash_lock_head __rcu **bkt)
+ {
+ 	lock_map_release(&tbl->dep_map);
+ 	bit_spin_unlock(0, (unsigned long *)bkt);
+@@ -365,48 +364,41 @@ static inline struct rhash_head *__rht_ptr(
+  *            access is guaranteed, such as when destroying the table.
+  */
+ static inline struct rhash_head *rht_ptr_rcu(
+-	struct rhash_lock_head *const *p)
++	struct rhash_lock_head __rcu *const *bkt)
+ {
+-	struct rhash_lock_head __rcu *const *bkt = (void *)p;
+ 	return __rht_ptr(rcu_dereference(*bkt), bkt);
+ }
+ 
+ static inline struct rhash_head *rht_ptr(
+-	struct rhash_lock_head *const *p,
++	struct rhash_lock_head __rcu *const *bkt,
+ 	struct bucket_table *tbl,
+ 	unsigned int hash)
+ {
+-	struct rhash_lock_head __rcu *const *bkt = (void *)p;
+ 	return __rht_ptr(rht_dereference_bucket(*bkt, tbl, hash), bkt);
+ }
+ 
+ static inline struct rhash_head *rht_ptr_exclusive(
+-	struct rhash_lock_head *const *p)
++	struct rhash_lock_head __rcu *const *bkt)
+ {
+-	struct rhash_lock_head __rcu *const *bkt = (void *)p;
+ 	return __rht_ptr(rcu_dereference_protected(*bkt, 1), bkt);
+ }
+ 
+-static inline void rht_assign_locked(struct rhash_lock_head **bkt,
++static inline void rht_assign_locked(struct rhash_lock_head __rcu **bkt,
+ 				     struct rhash_head *obj)
+ {
+-	struct rhash_head __rcu **p = (struct rhash_head __rcu **)bkt;
+-
+ 	if (rht_is_a_nulls(obj))
+ 		obj = NULL;
+-	rcu_assign_pointer(*p, (void *)((unsigned long)obj | BIT(0)));
++	rcu_assign_pointer(*bkt, (void *)((unsigned long)obj | BIT(0)));
+ }
+ 
+ static inline void rht_assign_unlock(struct bucket_table *tbl,
+-				     struct rhash_lock_head **bkt,
++				     struct rhash_lock_head __rcu **bkt,
+ 				     struct rhash_head *obj)
+ {
+-	struct rhash_head __rcu **p = (struct rhash_head __rcu **)bkt;
+-
+ 	if (rht_is_a_nulls(obj))
+ 		obj = NULL;
+ 	lock_map_release(&tbl->dep_map);
+-	rcu_assign_pointer(*p, obj);
++	rcu_assign_pointer(*bkt, (void *)obj);
+ 	preempt_enable();
+ 	__release(bitlock);
+ 	local_bh_enable();
+@@ -594,7 +586,7 @@ static inline struct rhash_head *__rhashtable_lookup(
+ 		.ht = ht,
+ 		.key = key,
+ 	};
+-	struct rhash_lock_head *const *bkt;
++	struct rhash_lock_head __rcu *const *bkt;
+ 	struct bucket_table *tbl;
+ 	struct rhash_head *he;
+ 	unsigned int hash;
+@@ -710,7 +702,7 @@ static inline void *__rhashtable_insert_fast(
+ 		.ht = ht,
+ 		.key = key,
+ 	};
+-	struct rhash_lock_head **bkt;
++	struct rhash_lock_head __rcu **bkt;
+ 	struct rhash_head __rcu **pprev;
+ 	struct bucket_table *tbl;
+ 	struct rhash_head *head;
+@@ -996,7 +988,7 @@ static inline int __rhashtable_remove_fast_one(
+ 	struct rhash_head *obj, const struct rhashtable_params params,
+ 	bool rhlist)
+ {
+-	struct rhash_lock_head **bkt;
++	struct rhash_lock_head __rcu **bkt;
+ 	struct rhash_head __rcu **pprev;
+ 	struct rhash_head *he;
+ 	unsigned int hash;
+@@ -1148,7 +1140,7 @@ static inline int __rhashtable_replace_fast(
+ 	struct rhash_head *obj_old, struct rhash_head *obj_new,
+ 	const struct rhashtable_params params)
+ {
+-	struct rhash_lock_head **bkt;
++	struct rhash_lock_head __rcu **bkt;
+ 	struct rhash_head __rcu **pprev;
+ 	struct rhash_head *he;
+ 	unsigned int hash;
+diff --git a/lib/rhashtable.c b/lib/rhashtable.c
+index 9f6890aedd1a..c949c1e3b87c 100644
+--- a/lib/rhashtable.c
++++ b/lib/rhashtable.c
+@@ -31,7 +31,7 @@
+ 
+ union nested_table {
+ 	union nested_table __rcu *table;
+-	struct rhash_lock_head *bucket;
++	struct rhash_lock_head __rcu *bucket;
+ };
+ 
+ static u32 head_hashfn(struct rhashtable *ht,
+@@ -222,7 +222,7 @@ static struct bucket_table *rhashtable_last_table(struct rhashtable *ht,
+ }
+ 
+ static int rhashtable_rehash_one(struct rhashtable *ht,
+-				 struct rhash_lock_head **bkt,
++				 struct rhash_lock_head __rcu **bkt,
+ 				 unsigned int old_hash)
+ {
+ 	struct bucket_table *old_tbl = rht_dereference(ht->tbl, ht);
+@@ -275,7 +275,7 @@ static int rhashtable_rehash_chain(struct rhashtable *ht,
+ 				    unsigned int old_hash)
+ {
+ 	struct bucket_table *old_tbl = rht_dereference(ht->tbl, ht);
+-	struct rhash_lock_head **bkt = rht_bucket_var(old_tbl, old_hash);
++	struct rhash_lock_head __rcu **bkt = rht_bucket_var(old_tbl, old_hash);
+ 	int err;
+ 
+ 	if (!bkt)
+@@ -485,7 +485,7 @@ static int rhashtable_insert_rehash(struct rhashtable *ht,
+ }
+ 
+ static void *rhashtable_lookup_one(struct rhashtable *ht,
+-				   struct rhash_lock_head **bkt,
++				   struct rhash_lock_head __rcu **bkt,
+ 				   struct bucket_table *tbl, unsigned int hash,
+ 				   const void *key, struct rhash_head *obj)
+ {
+@@ -535,12 +535,10 @@ static void *rhashtable_lookup_one(struct rhashtable *ht,
+ 	return ERR_PTR(-ENOENT);
+ }
+ 
+-static struct bucket_table *rhashtable_insert_one(struct rhashtable *ht,
+-						  struct rhash_lock_head **bkt,
+-						  struct bucket_table *tbl,
+-						  unsigned int hash,
+-						  struct rhash_head *obj,
+-						  void *data)
++static struct bucket_table *rhashtable_insert_one(
++	struct rhashtable *ht, struct rhash_lock_head __rcu **bkt,
++	struct bucket_table *tbl, unsigned int hash, struct rhash_head *obj,
++	void *data)
+ {
+ 	struct bucket_table *new_tbl;
+ 	struct rhash_head *head;
+@@ -591,7 +589,7 @@ static void *rhashtable_try_insert(struct rhashtable *ht, const void *key,
+ {
+ 	struct bucket_table *new_tbl;
+ 	struct bucket_table *tbl;
+-	struct rhash_lock_head **bkt;
++	struct rhash_lock_head __rcu **bkt;
+ 	unsigned int hash;
+ 	void *data;
+ 
+@@ -1173,8 +1171,8 @@ void rhashtable_destroy(struct rhashtable *ht)
+ }
+ EXPORT_SYMBOL_GPL(rhashtable_destroy);
+ 
+-struct rhash_lock_head **__rht_bucket_nested(const struct bucket_table *tbl,
+-					     unsigned int hash)
++struct rhash_lock_head __rcu **__rht_bucket_nested(
++	const struct bucket_table *tbl, unsigned int hash)
+ {
+ 	const unsigned int shift = PAGE_SHIFT - ilog2(sizeof(void *));
+ 	unsigned int index = hash & ((1 << tbl->nest) - 1);
+@@ -1202,10 +1200,10 @@ struct rhash_lock_head **__rht_bucket_nested(const struct bucket_table *tbl,
+ }
+ EXPORT_SYMBOL_GPL(__rht_bucket_nested);
+ 
+-struct rhash_lock_head **rht_bucket_nested(const struct bucket_table *tbl,
+-					   unsigned int hash)
++struct rhash_lock_head __rcu **rht_bucket_nested(
++	const struct bucket_table *tbl, unsigned int hash)
+ {
+-	static struct rhash_lock_head *rhnull;
++	static struct rhash_lock_head __rcu *rhnull;
+ 
+ 	if (!rhnull)
+ 		INIT_RHT_NULLS_HEAD(rhnull);
+@@ -1213,9 +1211,8 @@ struct rhash_lock_head **rht_bucket_nested(const struct bucket_table *tbl,
+ }
+ EXPORT_SYMBOL_GPL(rht_bucket_nested);
+ 
+-struct rhash_lock_head **rht_bucket_nested_insert(struct rhashtable *ht,
+-						  struct bucket_table *tbl,
+-						  unsigned int hash)
++struct rhash_lock_head __rcu **rht_bucket_nested_insert(
++	struct rhashtable *ht, struct bucket_table *tbl, unsigned int hash)
+ {
+ 	const unsigned int shift = PAGE_SHIFT - ilog2(sizeof(void *));
+ 	unsigned int index = hash & ((1 << tbl->nest) - 1);
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
