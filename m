@@ -2,108 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0C222D5A0
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 09:04:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54E4322D5A3
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 09:06:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726732AbgGYHEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 03:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60752 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725874AbgGYHEj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 03:04:39 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0BCC0619D3
-        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 00:04:39 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595660677;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TnChhB4iMyKM7B2WXTjtIxWd1gDqy4U0wELOTljV0Ak=;
-        b=WQYPJIieFwGN7UmBc39MMU2pv6YiWXorqMPiOl1kDpGuE0Eib3p8E0jPduiSzPvsm/qQ4r
-        ui/o0aZkqvC3VsgtUyr2HLDijJ0TrJ5F1WBiAtEj+1CcCnZz9DPxfdxUzhbhNqPzcZocZL
-        2w6KOQuiQRqJvixcxnuw4F1adff82qKoKqxIYfoL3F+a8AauGyqa4OpiIHMp8RBNMaWOoK
-        5u7dhGas8zndX/lLSa6WJNjyLLrhPK37y1iaB1HhC7rAvG0rcu7qoGbHHs7IlHTIDkIEjj
-        lh8o2IESPSbXKW3htKQ0alf4FGcL6HPiMKK7VE6dRlP4LbiIs7m/yhON5R6MxA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595660677;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TnChhB4iMyKM7B2WXTjtIxWd1gDqy4U0wELOTljV0Ak=;
-        b=A/1HZWy9QZd2neZcPMbPF7+2xOX6bROr9f29xvPiumgIzXQH1vzmDGicuQIU8KdvrzJWVi
-        jfiB+GkSkfsdT5DQ==
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 0/2] ptp: Add generic header parsing function
-In-Reply-To: <20200724160335.GA30531@hoboy>
-References: <20200723074946.14253-1-kurt@linutronix.de> <20200723170842.GB2975@hoboy> <87r1t12zuw.fsf@kurt> <20200724160335.GA30531@hoboy>
-Date:   Sat, 25 Jul 2020 09:04:36 +0200
-Message-ID: <871rl0nkhn.fsf@kurt>
+        id S1727013AbgGYHGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 03:06:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46246 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725874AbgGYHGR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jul 2020 03:06:17 -0400
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 030B5206E3;
+        Sat, 25 Jul 2020 07:06:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595660777;
+        bh=2CHbIxC5Kb2WtZDnEWCdd+0JKhqhPfpbvIbPs1xwH4k=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=uwH6LviNKeZGE4LzNNRPr3R/92imSYJ2ZgeAEN7TOA44pZ/llpuI20rU+xXICJ5H7
+         iRnIa6vNoOk88t2s4QrIua+pndEJwCFEk40fa+C9jcg1PPzDYwO1OvKAkEcfOMT58/
+         8fGrHKhJc+pnJgAy8JiVQAJdWl7suR/I2SAQsRGo=
+Received: by mail-oi1-f172.google.com with SMTP id k4so10004727oik.2;
+        Sat, 25 Jul 2020 00:06:16 -0700 (PDT)
+X-Gm-Message-State: AOAM531RNgGdkGqdKRsLdqAQ8R6epkHCdgvLztMhWyZKeX1MEuPwOT/1
+        jKLPHNwzRiuRDl6+yLtBhV5ZEE31V3pVIgVAyJM=
+X-Google-Smtp-Source: ABdhPJzidd2j+iDxB/LYtohSgN4ly7uvOdd4MMroDSUd9hpc7Iq4dbDDtkMqbNUHllGwnfIzHzQ5G/xdxanlFrdAxEY=
+X-Received: by 2002:aca:5594:: with SMTP id j142mr280999oib.33.1595660776343;
+ Sat, 25 Jul 2020 00:06:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+References: <20200702101947.682-1-ardb@kernel.org> <20200702101947.682-5-ardb@kernel.org>
+ <20200702175022.GA2753@sol.localdomain> <CAMj1kXFen1nickdZab0s8iY7SgauoH56VginEoPdxaAAL2qENw@mail.gmail.com>
+ <CAMj1kXG7i1isB9cV57ccaOZhrG3s7x+nKGozzTewuE9uWvX_wg@mail.gmail.com> <CAMj1kXGiu5Wr8NAACBUtiJMY8rQAGCTOcQdK1QM6jgH-0Lm=YA@mail.gmail.com>
+In-Reply-To: <CAMj1kXGiu5Wr8NAACBUtiJMY8rQAGCTOcQdK1QM6jgH-0Lm=YA@mail.gmail.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Sat, 25 Jul 2020 10:06:04 +0300
+X-Gmail-Original-Message-ID: <CAMj1kXHA2R1UDcYROwiLgUQCrOpNWxt-BAP0aBD=3RP4HbcOnA@mail.gmail.com>
+Message-ID: <CAMj1kXHA2R1UDcYROwiLgUQCrOpNWxt-BAP0aBD=3RP4HbcOnA@mail.gmail.com>
+Subject: Re: [RFC PATCH 4/7] crypto: remove ARC4 support from the skcipher API
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-wireless@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Denis Kenzior <denkenz@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>, devel@driverdev.osuosl.org,
+        linux-nfs@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-On Fri Jul 24 2020, Richard Cochran wrote:
-> On Fri, Jul 24, 2020 at 08:25:59AM +0200, Kurt Kanzenbach wrote:
->> |static inline u8 ptp_get_msgtype(const struct ptp_header *hdr, unsigned=
- int type)
->> |{
->> |	u8 msg;
->> |
->> |	if (unlikely(type & PTP_CLASS_V1))
->> |		/* msg type is located @ offset 20 for ptp v1 */=20
->> |		msg =3D hdr->source_port_identity.clock_identity.id[0];
->> |	else
->> |		msg =3D hdr->tsmt & 0x0f;
->> |
->> |	return msg;
->> |}
->>=20
->> What do you think about it?
+On Sat, 18 Jul 2020 at 11:18, Ard Biesheuvel <ardb@kernel.org> wrote:
 >
-> Looks good.
-
-OK, I'll add it.
-
+> On Fri, 3 Jul 2020 at 02:04, Ard Biesheuvel <ardb@kernel.org> wrote:
+> >
+> > On Thu, 2 Jul 2020 at 20:21, Ard Biesheuvel <ardb@kernel.org> wrote:
+> > >
+> > > On Thu, 2 Jul 2020 at 19:50, Eric Biggers <ebiggers@kernel.org> wrote:
+> > > >
+> > > > [+linux-wireless, Marcel Holtmann, and Denis Kenzior]
+> > > >
+> > > > On Thu, Jul 02, 2020 at 12:19:44PM +0200, Ard Biesheuvel wrote:
+> > > > > Remove the generic ecb(arc4) skcipher, which is slightly cumbersome from
+> > > > > a maintenance perspective, since it does not quite behave like other
+> > > > > skciphers do in terms of key vs IV lifetime. Since we are leaving the
+> > > > > library interface in place, which is used by the various WEP and TKIP
+> > > > > implementations we have in the tree, we can safely drop this code now
+> > > > > it no longer has any users.
+> > > > >
+> > > > > Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+> > > >
+> > > > Last year there was a discussion where it was mentioned that iwd uses
+> > > > "ecb(arc4)" via AF_ALG.  So can we really remove it yet?
+> > > > See https://lkml.kernel.org/r/97BB95F6-4A4C-4984-9EAB-6069E19B4A4F@holtmann.org
+> > > > Note that the code isn't in "iwd" itself but rather in "libell" which iwd
+> > > > depends on: https://git.kernel.org/pub/scm/libs/ell/ell.git/
+> > > >
+> > > > Apparently it also uses md4 and ecb(des) too.
+> > > >
+> > >
+> > > Ah yes, I remember now :-(
+> > >
+> > > > Marcel and Denis, what's your deprecation plan for these obsolete and insecure
+> > > > algorithms?
+> > > >
+> > >
+> > > Given Denis's statement:
+> > >
+> > >   It sounds to me like it was broken and should be fixed.  So our vote /
+> > >   preference is to have ARC4 fixed to follow the proper semantics.  We
+> > >   can deal with the kernel behavioral change on our end easily enough;
+> > >   the required workarounds are the worse evil.
+> > >
+> > > I would think that an ABI break is not the end of the world for them,
+> > > and given how trivial it is to implement RC4 in C, the workaround
+> > > should be to simply implement RC4 in user space, and not even bother
+> > > trying to use AF_ALG to get at ecb(arc4)
+> > >
+> > > (same applies to md4 and ecb(des) btw)
+> > >
+> > > There will always be a long tail of use cases, and at some point, we
+> > > just have to draw the line and remove obsolete and insecure cruft,
+> > > especially when it impedes progress on other fronts.
+> > >
+> >
+> > I have ported iwd to Nettle's LGPL 2.1 implementation of ARC4, and the
+> > diffstat is
+> >
+> >  src/crypto.c      | 80 ++++++++++++--------
+> >  src/main.c        |  8 --
+> >  unit/test-eapol.c |  3 +-
+> >  3 files changed, 51 insertions(+), 40 deletions(-)
+> >
+> > https://git.kernel.org/pub/scm/linux/kernel/git/ardb/iwd.git/log/?h=arc4-cleanup
 >
-> I can also test the dp83640.  Maybe you could test the cpts on a bbb?
+> Marcel, Denis,
+>
+> Do you have any objections to the ecb(arc4) skcipher being dropped
+> from the kernel, given the fallback i proposed above (which is a much
+> better way of doing rc4 in user space anyway)?
+>
+> For libell, I would suggest dropping rc4 entirely, once iwd stops
+> relying on it, as using rc4 for tls is obsolete as well.
 
-Most likely, yes.
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8b2YQACgkQeSpbgcuY
-8KY0TQ/+NO77q666WFl/taM4WwxntpainTC4Rw7v+nm9vunjoX6fRHvbwiIXZthT
-QYWEusUQU3yYE2UQYLVLzgnikysbNHm9lDqt20FHUZG+0bDpA3f91KPeBR3GFYzo
-qvIe4O+G7y2eC9oP26n4jdKvGtl3RGUa82MqFyMyjHCX0cCDv+ccOTGOlsde5j7x
-4NJWYEMrFk0wqYZTLHwvZH36F57/vVsR6MzqKvDeArR+WJmUL0V+gOP4nZURgifA
-N9EGg2F9ZYaqBX3exNoexb/mhp2ZrcTc65pzLgp0aUk3+WhfnrxuiUwGDjSM1w1x
-WgFmzaqTlxhfKcoEpUanfTSYTKHEwVBT7jUNKnUr5G3vp/Y1bhn+zPW3CbbqlSff
-8c46a5CjDQYM32Jp8DNxbeEwXoPZYwK2YbNIyGzsz3pkdz99XXEH5Znyf1f0Kh/D
-q/mFFGhGwxh+QCcwllF3me4ZU3FRhUlJcN7rse5biNTrRrYslzKntNhvOePUbuu7
-QWGQ7K69TPGt1geG0+czKOCT25Q9L0ty/gHmTY8Ca8+IiSJKo3Y9RIALldbX6WoU
-Hf+kpDyMyWptF6FrVskT8hqk8YgzenUQzIA/sLUHfW68cZ/tXJl7lbpcqfRuZ7Iy
-qInt8CGR39+g+AVpNp89Ss/ZS7ywBjEbCK55ZbwybzhrzlFeOjc=
-=F8BW
------END PGP SIGNATURE-----
---=-=-=--
+Ping?
