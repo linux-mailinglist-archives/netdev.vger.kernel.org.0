@@ -2,105 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A739622D5EC
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 09:58:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 692D722D5F4
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 10:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726863AbgGYH6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 03:58:01 -0400
-Received: from mout.kundenserver.de ([217.72.192.73]:47723 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726434AbgGYH6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 03:58:00 -0400
-Received: from mail-qt1-f169.google.com ([209.85.160.169]) by
- mrelayeu.kundenserver.de (mreue106 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1N9M1q-1kvJNS2iUG-015J4a; Sat, 25 Jul 2020 09:57:58 +0200
-Received: by mail-qt1-f169.google.com with SMTP id h21so2218814qtp.11;
-        Sat, 25 Jul 2020 00:57:58 -0700 (PDT)
-X-Gm-Message-State: AOAM531uZjJYB8cu37wMA9gEr3iS+uXdtkWQ1L3OmAG3klRrftf8oDGX
-        e67p7cOO//lCAmbJHiGZz3oCo/vwrJzMV1392ZI=
-X-Google-Smtp-Source: ABdhPJwbhu349b6W7ly80SHf5qioCZqejIeokVKsvAD15ZNpVnDPsfJClkcWiDwOwPkEJU9Y0uBI/RPbLezsgxUVny8=
-X-Received: by 2002:ac8:4589:: with SMTP id l9mr13039488qtn.204.1595663877320;
- Sat, 25 Jul 2020 00:57:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200724214221.28125-1-grygorii.strashko@ti.com> <a91d2bad-b794-fe07-679a-e5096aa5ace8@oracle.com>
-In-Reply-To: <a91d2bad-b794-fe07-679a-e5096aa5ace8@oracle.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Sat, 25 Jul 2020 09:57:41 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3N70PbotC18K-SG9+XgfApHNZyCYvUgOyfrxrP55zSEw@mail.gmail.com>
-Message-ID: <CAK8P3a3N70PbotC18K-SG9+XgfApHNZyCYvUgOyfrxrP55zSEw@mail.gmail.com>
-Subject: Re: [RESEND PATCH] ARM: dts: keystone-k2g-evm: fix rgmii phy-mode for
- ksz9031 phy
-To:     "santosh.shilimkar@oracle.com" <santosh.shilimkar@oracle.com>
-Cc:     "arm@kernel.org" <arm@kernel.org>, Olof Johansson <olof@lixom.net>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:NQRxxDNnaKwYvx9fuQIat0bcb+FYdaDNsod9SW/Hh8SMJ15t2Hm
- 8H/MC2t87Y+kuUKfnf4iisQZxL+/hXLlTSZmGnBRNdO4JyKgMULV13Wzza0VUyDGVHDv2KM
- sGIqkK6zOZeacv7Rv9aLSg7q92CzlOc87cHGcFS6AIqoUQK2dFP5s24Djyv9pAF2PKhslVK
- canfZfxOyCb9JNxyMRxjQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:L9DkJih6lFA=:xuAAaUn/2gYK/Eo24+3/GV
- pBWcIbwgw2zDaf0YQeuIkgRwoSOw40ibvpwrnE81EBKdf9jdg5TUf1t/uClTsHWrU70ze8Y6b
- 0g5K76juwtDaUdPeyiCP2OjspVKvzG6mkJzhILMc1pr7ruY8m2LaGxb381OZ2GI/2srYqAtnG
- LH0whww7Ze3QhfSjHgddIT3Ld3UevkjgmFK3t9GKVpv82KjAhh+zkVtbndU+6uO5TXK5JPFGU
- xoGQveQWGrgEh1R0e6bAlMFc0x/UkAgkxWxu7WBQyYyioa/qfPIUivYvs1KGAQTsKUR3HjOnb
- eTCb+UnuxiGEpi3nVUer0BeON7QNckbO2ebFXmBz1k4PJX7kZMZoGb2E3ayA7QOVW1yMRANYH
- 4uZSnnD7+4gOvmSMGScgIQYDCswFgqyxER6QGqfWoj6oXaChTheHxxgYK0g0GzKx9BdYr2ZXC
- 3/4idNixwcMWiSGfx3iJLVcLk9eONXWEExrPqGpHZYVhVxVf5B+FxAWDk++VDqI0zoaDkXntQ
- /Rv9TTQb05w1xpNe5DTi/Zf8m51xOzcDOCVU3UOUEH7WghghFd4vNvpPqBRa9r1OKB1wB8qCA
- McCMpkhotmdBYi57cIkjxQaQSJDErX+W8sAQdSzOhwAsUCuPOnGr6QA6F6Hac3yJsvW/tp5Jm
- /M/RRS1ii59PKkYfngX5uIgzoC0IrgWYwZxyAJ66F/shlghP/O/2P6vKQWHkSsNGWDmyixryu
- fMjETuHe+5tNKucCpt0Y7EVcg1T/EhJ/luObjLForjGRrA44fd+uaRe/GFLUmsNhTzSkw0crh
- ie+WwxXeL5iSmqhHsp3LSYsZJTINjo6HUEuIoMFjkbbinL2SnAQdnFk4q7NOaoZjAScxjbGaM
- WidK+jl/beWkxqn/bW93+iYlTRiJWjWys+PotWUJM92e6A+5hy5INk7Z3NZijtPBICT0JUGUe
- PImiyc3jDT7X79goHKRAzjl8C7WqCdIaNAKtCa5gsV9rqjHqghfTV
+        id S1726663AbgGYILF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 04:11:05 -0400
+Received: from mail.fudan.edu.cn ([202.120.224.10]:47129 "EHLO fudan.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726434AbgGYILE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jul 2020 04:11:04 -0400
+X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Sat, 25 Jul 2020 04:11:02 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id; bh=Bmmdc9TdbNDoanpb/xc0KWb2EO1V4Pol3FKa645b28M=; b=z
+        9j/phfFLzDq96MMao2Hgly1H6lxHJPceSKaL0ryuAAR8BAyi4N1tzn+w16XSrUjX
+        vLj/343S8/6vPaSgPvsNZsxY5SmsMK8GUunwiTfXrQJrTvJ1Ow53fNL3nUDCEwni
+        BoBefddlefeb99QWsNH02h3mighjvORaNunjiDB23I=
+Received: from localhost.localdomain (unknown [202.120.224.53])
+        by app1 (Coremail) with SMTP id XAUFCgBX2EFe5xtfDEgvAg--.23318S3;
+        Sat, 25 Jul 2020 16:03:43 +0800 (CST)
+From:   Xiyu Yang <xiyuyang19@fudan.edu.cn>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Xiyu Yang <xiyuyang19@fudan.edu.cn>, Xin Tan <tanxin.ctf@gmail.com>
+Subject: [PATCH] ipv6: Fix nexthop refcnt leak when creating ipv6 route info
+Date:   Sat, 25 Jul 2020 16:02:18 +0800
+Message-Id: <1595664139-40703-1-git-send-email-xiyuyang19@fudan.edu.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: XAUFCgBX2EFe5xtfDEgvAg--.23318S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7Kr45uFyrXFWxWF15AryrJFb_yoW8XryfpF
+        WfKrZ8Xr1rCa4UGas5ta1xtF13Jw48G3WkWFy3Ca93Kr98Z34vyr1jgrWjvrW7XrWxG34a
+        qFWjvr1jkF9xCaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvm14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
+        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr
+        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IE
+        rcIFxwCY02Avz4vE14v_GFyl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
+        1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
+        14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
+        IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnU
+        UI43ZEXa7VUjn2atUUUUU==
+X-CM-SenderInfo: irzsiiysuqikmy6i3vldqovvfxof0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 24, 2020 at 11:57 PM santosh.shilimkar@oracle.com
-<santosh.shilimkar@oracle.com> wrote:
-> On 7/24/20 2:42 PM, Grygorii Strashko wrote:
-> > Since commit bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the
-> > KSZ9031 PHY") the networking is broken on keystone-k2g-evm board.
-> >
-> > The above board have phy-mode = "rgmii-id" and it is worked before because
-> > KSZ9031 PHY started with default RGMII internal delays configuration (TX
-> > off, RX on 1.2 ns) and MAC provided TX delay by default.
-> > After above commit, the KSZ9031 PHY starts handling phy mode properly and
-> > enables both RX and TX delays, as result networking is become broken.
-> >
-> > Fix it by switching to phy-mode = "rgmii-rxid" to reflect previous
-> > behavior.
-> >
-> > Cc: Oleksij Rempel <o.rempel@pengutronix.de>
-> > Cc: Andrew Lunn <andrew@lunn.ch>
-> > Cc: Philippe Schenker <philippe.schenker@toradex.com>
-> > Fixes: bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the KSZ9031 PHY")
-> > Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> > ---
-> > Fix for one more broken TI board with KSZ9031 PHY.
-> Can you please apply this patch to your v5.8 fixes branch and send it
-> upstream ? Without the fix K2G EVM board is broken with v5.8.
->
-> Am hoping you can pick this up with pull request since it just one
-> patch.
+ip6_route_info_create() invokes nexthop_get(), which increases the
+refcount of the "nh".
 
-I've applied it now, but would point out that it's generally better if you could
-forward the patch to soc@kernel.org with your Signed-off-by if you come
-across a similar patch again. That way it ends up in patchwork, and we
-are more likely to pick it up quickly.
+When ip6_route_info_create() returns, local variable "nh" becomes
+invalid, so the refcount should be decreased to keep refcount balanced.
 
-       Arnd
+The reference counting issue happens in one exception handling path of
+ip6_route_info_create(). When nexthops can not be used with source
+routing, the function forgets to decrease the refcnt increased by
+nexthop_get(), causing a refcnt leak.
+
+Fix this issue by pulling up the error source routing handling when
+nexthops can not be used with source routing.
+
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+---
+ net/ipv6/route.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 82cbb46a2a4f..427ecd7032bd 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3682,14 +3682,14 @@ static struct fib6_info *ip6_route_info_create(struct fib6_config *cfg,
+ 	rt->fib6_src.plen = cfg->fc_src_len;
+ #endif
+ 	if (nh) {
+-		if (!nexthop_get(nh)) {
+-			NL_SET_ERR_MSG(extack, "Nexthop has been deleted");
+-			goto out;
+-		}
+ 		if (rt->fib6_src.plen) {
+ 			NL_SET_ERR_MSG(extack, "Nexthops can not be used with source routing");
+ 			goto out;
+ 		}
++		if (!nexthop_get(nh)) {
++			NL_SET_ERR_MSG(extack, "Nexthop has been deleted");
++			goto out;
++		}
+ 		rt->nh = nh;
+ 		fib6_nh = nexthop_fib6_nh(rt->nh);
+ 	} else {
+-- 
+2.7.4
+
