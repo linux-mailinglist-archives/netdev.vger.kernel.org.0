@@ -2,349 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E54622D7F8
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 16:09:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48D1E22D814
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 16:24:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727125AbgGYOIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 10:08:54 -0400
-Received: from mail.as201155.net ([185.84.6.188]:43532 "EHLO mail.as201155.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726652AbgGYOIx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jul 2020 10:08:53 -0400
-Received: from smtps.newmedia-net.de ([2a05:a1c0:0:de::167]:51438 helo=webmail.newmedia-net.de)
-        by mail.as201155.net with esmtps (TLSv1:DHE-RSA-AES256-SHA:256)
-        (Exim 4.82_1-5b7a7c0-XX)
-        (envelope-from <s.gottschall@dd-wrt.com>)
-        id 1jzKqy-00008r-1F; Sat, 25 Jul 2020 16:08:44 +0200
-X-CTCH-RefID: str=0001.0A782F15.5F1C3CEC.0030,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=dd-wrt.com; s=mikd;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject; bh=1ghJ347rQXGrL60qrXDzlOKGy9ZSeOgAKRPY+zvmMAk=;
-        b=XAjko7dQOpfdu9lHrI+/DkEkwfbl2iCpA6OyTMg3HB5JFEe69DFPeoN2dtztL1dQhzm+a76OQDOSRNpeyUcgwPnTJtQ8xG1PmRmAoyogBaPpDPdcTkq4yTozTuRyqGj8oS1pwlAa4zNeSXq0SSUwn/tXFYsEQj/3lGgsmvepXJQ=;
-Subject: Re: [RFC 0/7] Add support to process rx packets in thread
-From:   Sebastian Gottschall <s.gottschall@dd-wrt.com>
-To:     Hillf Danton <hdanton@sina.com>,
-        David Laight <David.Laight@ACULAB.COM>,
+        id S1727846AbgGYOYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 10:24:52 -0400
+Received: from mail-eopbgr30045.outbound.protection.outlook.com ([40.107.3.45]:6534
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726944AbgGYOYw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jul 2020 10:24:52 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JigzsKC4RbN+FuBloodpb0A85sZbIewx5KfvLk+mMnEEbrC+/m7nD3zXR3adlj00GCA4er8Aql1+MmMbEeVvCgm7sV/9b+bCGTTGVvzFgU/u4UvadWuPo1Gl2pUw+8IqnAyEt8ReltUkIoHp4vcV0kWLN4QQD9dweO2Nl9T6MUicb2439nNAPYdCV3qOpqUG1n/uZOoY0gUVlbHapncYSOEYcpaHsPlSyg+GfUW52JiqoxFRYmEHL6gwcKAfBEbVCcbHox7ROsvEEgU1x1EoC6JROrcFzcCxMWsUoj8Or1c0PmSjIqhVE+vRLIJ/4R2NRj3VeWr86xeyjDB7BMkdAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XmmbJQp0vTEO3NaNO0vOrrCFuL+QnARjXIg3LMD4DTE=;
+ b=PTSu+N3FVVBP2qHj5D7E/UOSvFIT9lsvuqHLTbHwLS6a1hU/TJDJxwPeWU96PPrMi3RQADU1fc0CHl9BtcxOIHncgCxz5+BYTB1bEAqWW3RtD4xLnB9zmGDzJnckfqw7A0q1VIATVJvUPErSU8RE2+z/57xGtawfHCmSZ8TcgDOlg7xE01FZrBGQ/FCnjUKzwIKjcVlvWYhMmV+Bz+6IcHgHWUjHzSQMW0eORLzMKKgPhb+TbAoXmkgi6pNWMocSZ381o/VvE5fMk47yFTaVYx/aTXcoZfOyJPj1i5GI8x+nzQGXGjBM20LNVqvJzTJugNmDr0ywTSxdpkp8O0I6sw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XmmbJQp0vTEO3NaNO0vOrrCFuL+QnARjXIg3LMD4DTE=;
+ b=lniZCXZYTLAVy66g+O9NDd91guNQiYmExqre6LeaaQjdxSDdapYWMllYPIwHBszSx/zcFu4+foyZZrckb7F6Dmlp4tuqcEYFh/gErzQKXDA0pll4GEhKIv1VD4HcmC71WKPaQN73sNE/WZGGDQG+P6NAdGIs+EDsyA8RfPkZLgc=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB4931.eurprd04.prod.outlook.com (2603:10a6:208:c1::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.22; Sat, 25 Jul
+ 2020 14:24:47 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::b1ae:d2cd:6170:bf76]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::b1ae:d2cd:6170:bf76%7]) with mapi id 15.20.3216.027; Sat, 25 Jul 2020
+ 14:24:47 +0000
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Al Stone <ahs3@redhat.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Rakesh Pillai <pillair@codeaurora.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        Markus Elfring <Markus.Elfring@web.de>,
-        "evgreen@chromium.org" <evgreen@chromium.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
-References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
- <20200721172514.GT1339445@lunn.ch> <20200725081633.7432-1-hdanton@sina.com>
- <8359a849-2b8a-c842-a501-c6cb6966e345@dd-wrt.com>
-Message-ID: <2e443640-c051-2209-8d78-06a8e5944305@dd-wrt.com>
-Date:   Sat, 25 Jul 2020 16:08:41 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101
- Thunderbird/79.0
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>
+Cc:     linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
+        linux.cj@gmail.com, Paul Yang <Paul.Yang@arm.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>
+Subject: [net-next PATCH v7 0/6]  ACPI support for dpaa2 MAC driver.
+Date:   Sat, 25 Jul 2020 19:53:58 +0530
+Message-Id: <20200725142404.30634-1-calvin.johnson@oss.nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR0302CA0018.apcprd03.prod.outlook.com
+ (2603:1096:3:2::28) To AM0PR04MB5636.eurprd04.prod.outlook.com
+ (2603:10a6:208:130::22)
 MIME-Version: 1.0
-In-Reply-To: <8359a849-2b8a-c842-a501-c6cb6966e345@dd-wrt.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Received:  from [2a01:7700:8040:4d00:1098:21a4:6e8a:924b]
-        by webmail.newmedia-net.de with esmtpsa (TLSv1:AES128-SHA:128)
-        (Exim 4.72)
-        (envelope-from <s.gottschall@dd-wrt.com>)
-        id 1jzKqy-0008ql-0o; Sat, 25 Jul 2020 16:08:44 +0200
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR0302CA0018.apcprd03.prod.outlook.com (2603:1096:3:2::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.9 via Frontend Transport; Sat, 25 Jul 2020 14:24:42 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [14.142.151.118]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: bb1c84a3-3c1a-4df7-b137-08d830a67bd7
+X-MS-TrafficTypeDiagnostic: AM0PR04MB4931:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB49310E4A95BF9320C6A620B0D2740@AM0PR04MB4931.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eAmvAAWO4bguIjnDzZe+S527WMNeTlBrhBS++N3oU3JHImXOGlfaF3EgvAsp4yZxZJA9FDyscKlWWT3B91jL8mSTzqgmxcUNOsd6GNXHGJm9GZXgGRhr1EwjOg1nJ6K9Zig1tpBH25ecL3cEjhYE77+wTFw5+VLaxl9fzUR5fBfdu1a2/+TdbIRL5569F40wIhzeOq4EzjWzWNM7PHakuqsoKt5or65evfDJnPqq4O+lACtYcSA1JdignHJOEe/lT2AdrGvz/prQhGRMKp0vXDsL63ZQKePCurYqX1MIYZpElp9YMqJ3L8E3GPthpJ8IZfP/uiWJGoVbZ9G3QD+KmNkmwNooykEjScrwdou4AMclF8PslspAwPUBhrex8O7ltZUk6FpdSe1FQJqOF0Z5tIXs/RrzFhKNOU8Tynf8MqHYmA53AcQTRC7hNTRRPeDO4VHo6+l0yYmKz/eOeZUVTOTKMUZCtnGn7vghiPH8sHo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(366004)(346002)(396003)(376002)(136003)(66946007)(66476007)(5660300002)(6506007)(966005)(6512007)(86362001)(55236004)(52116002)(478600001)(44832011)(110136005)(8676002)(316002)(54906003)(1076003)(66556008)(4326008)(16526019)(956004)(2616005)(26005)(8936002)(6636002)(186003)(83380400001)(2906002)(6486002)(6666004)(1006002)(7416002)(110426005)(921003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: P0QbSvefBaYA5BJEbwp9RK0v15sKzJGCJ3qUcvaL+9VDapzWysZ2N8j+mBENi9C3hFPWez7xO3ULR5HA1igSwEGQ8EN1XxzGkdnq+OxjIVtiZUDm08ufi0h0NeR5SFTqAB1gHNy2Ysuv95I8AYcARpO4AtcBaTWEx565+j9kCcFcH5FFp+DqDUBhyqZXNVbGRoLheGjS4FDbaHLIGOqy5xktZVoDnNiaJWAr+fZquvQUmwsoh+jea9AFKhPabdG/372WqsC5dugeHYLlHIVYNU/nOyj2+dv1qxBUkNyqHbabi8kA9PjYGMsUmcygdSuwH5tHJ6UiWxWpd2gD5Z1bXd0TNqrs+rkJuqyDtyGYIuGsBudsxLSoWrqLBRv+QGf9xEgFgOJn5HR7P7kVtPhz757oSZUqbApcmHrD4eahJJpFf+Od8yxaF7RHst/Zb7ENHX7neF+mFmMmbZlt0ytFgkNahn+0Xzd02xyeZ3aKTcKZU0XRucg7FHhIDJFcnvJ0
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bb1c84a3-3c1a-4df7-b137-08d830a67bd7
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2020 14:24:47.5381
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oRFFxJ2FjvqeByCe7E9aukkPxXEwex+A8brRX+ESqhwE2tHwUnK2NmOaSzyYprpA+4Z1mRKyQI/WoXUX5yz24Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4931
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+ This patch series provides ACPI support for dpaa2 MAC driver.
+ This also introduces ACPI mechanism to get PHYs registered on a
+ MDIO bus and provide them to be connected to MAC.
 
-Am 25.07.2020 um 14:25 schrieb Hillf Danton:
-> On Sat, 25 Jul 2020 12:38:00 +0200 Sebastian Gottschall wrote:
->> you may consider this
->>
->> https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1142611.html 
->>
->> <https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1142611.html> 
->>
-> Thanks very much for your link.
->
->> years ago someone already wanted to bring this feature upstream, but it
->> was denied. i already tested this patch the last 2 days and it worked so
->> far (with some little modifications)
->> so such a solution existed already and may be considered here
-> I don't see outstanding difference in principle from Paolo's work in
-> 2016 except for the use of kthread_create() and friends because kworker
-> made use of them even before 2016. This is a simpler one as shown by
-> the diff stat in his cover letter.
-i agree. i just can say that i tested this patch recently due this 
-discussion here. and it can be changed by sysfs. but it doesnt work for
-wifi drivers which are mainly using dummy netdev devices. for this i 
-made a small patch to get them working using napi_set_threaded manually 
-hardcoded in the drivers. (see patch bellow)
-i also tested various networking drivers. one thing i notice doesnt 
-work. some napi code is used for tx polling. so from my experience this 
-concept just works good for rx with the most drivers.
-so far i tested mt76, ath10k and some soc ethernet chipsets with good 
-success. on ath10k i had about 10 - 20% performance gain on multicore 
-systems. using standard iperf3 with 4 parallel streams.
+ Previous discussions on this patchset is available at:
+ https://lore.kernel.org/linux-acpi/20200715090400.4733-1-calvin.johnson@oss.nxp.com/T/#t
 
--5439,7 +5441,7 @@ int napi_set_threaded(struct napi_struct *n, bool
-                 clear_bit(NAPI_STATE_THREADED, &n->state);
+ Patch "net: dpaa2-mac: Add ACPI support for DPAA2 MAC driver" depends on
+ https://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git/commit/?h=acpi/for-next&id=c279c4cf5bcd3c55b4fb9709d9036cd1bfe3beb8
+ Remaining patches are independent of the above patch and can be applied without
+ any issues.
 
-         /* if the device is initializing, nothing todo */
--       if (test_bit(__LINK_STATE_START, &n->dev->state))
-+       if (test_bit(__LINK_STATE_START, &n->dev->state) && 
-n->dev->reg_state != NETREG_DUMMY)
-                 return 0;
+ Device Tree can be tested on LX2160A-RDB with the below change which is also
+available in the above referenced patches:
 
-         napi_thread_stop(n)
-;
+--- a/drivers/bus/fsl-mc/fsl-mc-bus.c
++++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
+@@ -931,6 +931,7 @@ static int fsl_mc_bus_probe(struct platform_device *pdev)
+        if (error < 0)
+                goto error_cleanup_mc_io;
+
++       mc_bus_dev->dev.fwnode = pdev->dev.fwnode;
+        mc->root_mc_bus_dev = mc_bus_dev;
+        return 0;
 
 
->
-> Paolo, feel free to correct me if I misread anything.
->
-> Finally I don't see the need to add sysfs attr, given 
-> CONFIG_THREADED_NAPI
-> in this work.
->
-> BTW let us know if anyone has plans to pick up the 2016 RFC.
->
-> Hillf
->
-> Paolo Abeni (2):
->    net: implement threaded-able napi poll loop support
->    net: add sysfs attribute to control napi threaded mode
->
->   include/linux/netdevice.h |   4 ++
->   net/core/dev.c            | 113 
-> ++++++++++++++++++++++++++++++++++++++++++++++
->   net/core/net-sysfs.c      | 102 
-> +++++++++++++++++++++++++++++++++++++++++
->   3 files changed, 219 insertions(+)
->> Sebastian
->>
->>
->> someone
->>
->> Am 25.07.2020 um 10:16 schrieb Hillf Danton:
->>> On Wed, 22 Jul 2020 09:12:42 +0000 David Laight wrote:
->>>>> On 21 July 2020 18:25 Andrew Lunn wrote:
->>>>>
->>>>> On Tue, Jul 21, 2020 at 10:44:19PM +0530, Rakesh Pillai wrote:
->>>>>> NAPI gets scheduled on the CPU core which got the
->>>>>> interrupt. The linux scheduler cannot move it to a
->>>>>> different core, even if the CPU on which NAPI is running
->>>>>> is heavily loaded. This can lead to degraded wifi
->>>>>> performance when running traffic at peak data rates.
->>>>>>
->>>>>> A thread on the other hand can be moved to different
->>>>>> CPU cores, if the one on which its running is heavily
->>>>>> loaded. During high incoming data traffic, this gives
->>>>>> better performance, since the thread can be moved to a
->>>>>> less loaded or sometimes even a more powerful CPU core
->>>>>> to account for the required CPU performance in order
->>>>>> to process the incoming packets.
->>>>>>
->>>>>> This patch series adds the support to use a high priority
->>>>>> thread to process the incoming packets, as opposed to
->>>>>> everything being done in NAPI context.
->>>>> I don't see why this problem is limited to the ath10k driver. I 
->>>>> expect
->>>>> it applies to all drivers using NAPI. So shouldn't you be solving 
->>>>> this
->>>>> in the NAPI core? Allow a driver to request the NAPI core uses a
->>>>> thread?
->>>> It's not just NAPI the problem is with the softint processing.
->>>> I suspect a lot of systems would work better if it ran as
->>>> a (highish priority) kernel thread.
->>> Hi folks
->>>
->>> Below is a minimunm poc implementation I can imagine on top of 
->>> workqueue
->>> to make napi threaded. Thoughts are appreciated.
->>>
->>>> I've had to remove the main locks from a multi-threaded application
->>>> and replace them with atomic counters.
->>>> Consider what happens when the threads remove items from a shared
->>>> work list.
->>>> The code looks like:
->>>>     mutex_enter();
->>>>     remove_item_from_list();
->>>>     mutex_exit().
->>>> The mutex is only held for a few instructions, so while you'd expect
->>>> the cache line to be 'hot' you wouldn't get real contention.
->>>> However the following scenarios happen:
->>>> 1) An ethernet interrupt happens while the mutex is held.
->>>>      This stops the other threads until all the softint processing
->>>>      has finished.
->>>> 2) An ethernet interrupt (and softint) runs on a thread that is
->>>>      waiting for the mutex.
->>>>      (Or on the cpu that the thread's processor affinity ties it to.)
->>>>      In this case the 'fair' (ticket) mutex code won't let any other
->>>>      thread acquire the mutex.
->>>>      So again everything stops until the softints all complete.
->>>>
->>>> The second one is also a problem when trying to wake up all
->>>> the threads (eg after adding a lot of items to the list).
->>>> The ticket locks force them to wake in order, but
->>>> sometimes the 'thundering herd' would work better.
->>>>
->>>> IIRC this is actually worse for processes running under the RT
->>>> scheduler (without CONFIG_PREEMPT) because the they are almost
->>>> always scheduled on the same cpu they ran on last.
->>>> If it is busy, but cannot be pre-empted, they are not moved
->>>> to an idle cpu.
->>>>      To confound things there is a very broken workaround for broken
->>>> hardware in the driver for the e1000 interface on (at least)
->>>> Ivy Bridge cpu that can cause the driver to spin for a very
->>>> long time (IIRC milliseconds) whenever it has to write to a
->>>> MAC register (ie on every transmit setup).
->>>>
->>>>     David
->>>>
->>>> -
->>>> Registered Address Lakeside, Bramley Road, Mount Farm, Milton 
->>>> Keynes, MK1 1PT, UK
->>>> Registration No: 1397386 (Wales)
->>>>
->>>>
->>> To make napi threaded, if either irq or softirq thread is entirely 
->>> ruled
->>> out, add napi::work that will be queued on a highpri workqueue. It is
->>> actually a unbound one to facilitate scheduler to catter napi loads 
->>> on to
->>> idle CPU cores. What users need to do with the threaded napi
->>> is s/netif_napi_add/netif_threaded_napi_add/ and no more.
->>>
->>> --- a/include/linux/netdevice.h
->>> +++ b/include/linux/netdevice.h
->>> @@ -338,6 +338,9 @@ struct napi_struct {
->>>        struct list_head    dev_list;
->>>        struct hlist_node    napi_hash_node;
->>>        unsigned int        napi_id;
->>> +#ifdef CONFIG_THREADED_NAPI
->>> +    struct work_struct    work;
->>> +#endif
->>>    };
->>>       enum {
->>> @@ -2234,6 +2237,19 @@ static inline void *netdev_priv(const st
->>>    void netif_napi_add(struct net_device *dev, struct napi_struct 
->>> *napi,
->>>                int (*poll)(struct napi_struct *, int), int weight);
->>>    +#ifdef CONFIG_THREADED_NAPI
->>> +void netif_threaded_napi_add(struct net_device *dev, struct 
->>> napi_struct *napi,
->>> +            int (*poll)(struct napi_struct *, int), int weight);
->>> +#else
->>> +static inline void netif_threaded_napi_add(struct net_device *dev,
->>> +                    struct napi_struct *napi,
->>> +                    int (*poll)(struct napi_struct *, int),
->>> +                    int weight)
->>> +{
->>> +    netif_napi_add(dev, napi, poll, weight);
->>> +}
->>> +#endif
->>> +
->>>    /**
->>>     *    netif_tx_napi_add - initialize a NAPI context
->>>     *    @dev:  network device
->>> --- a/net/core/dev.c
->>> +++ b/net/core/dev.c
->>> @@ -6277,6 +6277,61 @@ static int process_backlog(struct napi_s
->>>        return work;
->>>    }
->>>    +#ifdef CONFIG_THREADED_NAPI
->>> +/* unbound highpri workqueue for threaded napi */
->>> +static struct workqueue_struct *napi_workq;
->>> +
->>> +static void napi_workfn(struct work_struct *work)
->>> +{
->>> +    struct napi_struct *n = container_of(work, struct napi_struct, 
->>> work);
->>> +
->>> +    for (;;) {
->>> +        if (!test_bit(NAPI_STATE_SCHED, &n->state))
->>> +            return;
->>> +
->>> +        if (n->poll(n, n->weight) < n->weight)
->>> +            return;
->>> +
->>> +        if (need_resched()) {
->>> +            /*
->>> +             * have to pay for the latency of task switch even if
->>> +             * napi is scheduled
->>> +             */
->>> +            if (test_bit(NAPI_STATE_SCHED, &n->state))
->>> +                queue_work(napi_workq, work);
->>> +            return;
->>> +        }
->>> +    }
->>> +}
->>> +
->>> +void netif_threaded_napi_add(struct net_device *dev,
->>> +                struct napi_struct *napi,
->>> +                int (*poll)(struct napi_struct *, int),
->>> +                int weight)
->>> +{
->>> +    netif_napi_add(dev, napi, poll, weight);
->>> +    INIT_WORK(&napi->work, napi_workfn);
->>> +}
->>> +
->>> +static inline bool is_threaded_napi(struct napi_struct *n)
->>> +{
->>> +    return n->work.func == napi_workfn;
->>> +}
->>> +
->>> +static inline void threaded_napi_sched(struct napi_struct *n)
->>> +{
->>> +    if (is_threaded_napi(n))
->>> +        queue_work(napi_workq, &n->work);
->>> +    else
->>> +        ____napi_schedule(this_cpu_ptr(&softnet_data), n);
->>> +}
->>> +#else
->>> +static inline void threaded_napi_sched(struct napi_struct *n)
->>> +{
->>> +    ____napi_schedule(this_cpu_ptr(&softnet_data), n);
->>> +}
->>> +#endif
->>> +
->>>    /**
->>>     * __napi_schedule - schedule for receive
->>>     * @n: entry to schedule
->>> @@ -6289,7 +6344,7 @@ void __napi_schedule(struct napi_struct
->>>        unsigned long flags;
->>>           local_irq_save(flags);
->>> -    ____napi_schedule(this_cpu_ptr(&softnet_data), n);
->>> +    threaded_napi_sched(n);
->>>        local_irq_restore(flags);
->>>    }
->>>    EXPORT_SYMBOL(__napi_schedule);
->>> @@ -6335,7 +6390,7 @@ EXPORT_SYMBOL(napi_schedule_prep);
->>>     */
->>>    void __napi_schedule_irqoff(struct napi_struct *n)
->>>    {
->>> -    ____napi_schedule(this_cpu_ptr(&softnet_data), n);
->>> +    threaded_napi_sched(n);
->>>    }
->>>    EXPORT_SYMBOL(__napi_schedule_irqoff);
->>>    @@ -10685,6 +10740,10 @@ static int __init net_dev_init(void)
->>>            sd->backlog.weight = weight_p;
->>>        }
->>>    +#ifdef CONFIG_THREADED_NAPI
->>> +    napi_workq = alloc_workqueue("napi_workq", WQ_UNBOUND | 
->>> WQ_HIGHPRI,
->>> +                        WQ_UNBOUND_MAX_ACTIVE);
->>> +#endif
->>>        dev_boot_phase = 0;
->>>           /* The loopback device is special if any other network 
->>> devices
->>>
->>>
->>> _______________________________________________
->>> ath10k mailing list
->>> ath10k@lists.infradead.org
->>> http://lists.infradead.org/mailman/listinfo/ath10k
->
+Changes in v7:
+- remove unnecessary -ve check for u32 var
+- assign flags to phy_dev
+
+Changes in v6:
+- change device_mdiobus_register() parameter position
+- improve documentation
+- change device_mdiobus_register() parameter position
+- clean up phylink_fwnode_phy_connect()
+
+Changes in v5:
+- add description
+- clean up if else
+- rename phy_find_by_fwnode() to phy_find_by_mdio_handle()
+- add docment for phy_find_by_mdio_handle()
+- error out DT in phy_find_by_mdio_handle()
+- clean up err return
+- return -EINVAL for invalid fwnode
+
+Changes in v4:
+- release fwnode_mdio after use
+- return ERR_PTR instead of NULL
+- introduce device_mdiobus_register()
+
+Changes in v3:
+- cleanup based on v2 comments
+- Added description for more properties
+- Added MDIO node DSDT entry
+- introduce fwnode_mdio_find_bus()
+- renamed and improved phy_find_by_fwnode()
+- cleanup based on v2 comments
+- move code into phylink_fwnode_phy_connect()
+
+Changes in v2:
+- clean up dpaa2_mac_get_node()
+- introduce find_phy_device()
+- use acpi_find_child_device()
+
+Calvin Johnson (6):
+  Documentation: ACPI: DSD: Document MDIO PHY
+  net: phy: introduce device_mdiobus_register()
+  net/fsl: use device_mdiobus_register()
+  net: phy: introduce phy_find_by_mdio_handle()
+  phylink: introduce phylink_fwnode_phy_connect()
+  net: dpaa2-mac: Add ACPI support for DPAA2 MAC driver
+
+ Documentation/firmware-guide/acpi/dsd/phy.rst | 90 +++++++++++++++++++
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 70 ++++++++-------
+ drivers/net/ethernet/freescale/xgmac_mdio.c   |  3 +-
+ drivers/net/phy/mdio_bus.c                    | 51 +++++++++++
+ drivers/net/phy/phy_device.c                  | 40 +++++++++
+ drivers/net/phy/phylink.c                     | 32 +++++++
+ include/linux/mdio.h                          |  1 +
+ include/linux/phy.h                           |  2 +
+ include/linux/phylink.h                       |  3 +
+ 9 files changed, 260 insertions(+), 32 deletions(-)
+ create mode 100644 Documentation/firmware-guide/acpi/dsd/phy.rst
+
+-- 
+2.17.1
+
