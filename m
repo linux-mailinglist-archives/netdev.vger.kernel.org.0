@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4FD722D2FC
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 02:07:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9E9422D2E3
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 02:06:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728278AbgGYAHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 20:07:21 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:48334 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726989AbgGYAEd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 20:04:33 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 06ONnmXh028001
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 17:04:32 -0700
+        id S1727773AbgGYAEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 20:04:39 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17904 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726980AbgGYAEc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jul 2020 20:04:32 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06ONmed6013832
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 17:04:31 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=E5fj286sWzoaQr7nStjBewDXZUwKa41tkymhPvCV7b0=;
- b=ickaujMftgY4ya9/TA+KqNzFZbwM1xODs+VZb1Bvaa9AIbuyUmfrECkPLZHLLpFgOKvC
- AT/Cps9laSGXA+bhqvEIL86LDG29liV7MOUnpPVk9pvkUp9bcuWPvgZ/EXY9sPCRBnO1
- 91RoggGs+MaOL5p9bI+g8JWqnDkvJkQi0Vw= 
+ bh=VdNVeo/r7n5BeWPKriNc/78VSdoV1W6Zt7B5MFzVu6Y=;
+ b=GJtRpz5WhWUxcNxby7A75VtbUMrwRYnocJHNtbWWFb0R5hKyS8fO+NT6CXl+bbbZrm9F
+ pMpYGUz/S6QdEH0Fn40uF47KSUDwsIdhb4sOgh8KBRK7+8kQui0r7VAXt4YAh2gUrsr0
+ ivDQypVThNqLPYebrtVL29+86+kBtS/FbYA= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 32esdjvm6w-5
+        by mx0a-00082601.pphosted.com with ESMTP id 32fh7kpdm6-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 17:04:32 -0700
-Received: from intmgw003.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Fri, 24 Jul 2020 17:04:31 -0700
+Received: from intmgw004.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 24 Jul 2020 17:04:31 -0700
+ 15.1.1979.3; Fri, 24 Jul 2020 17:04:30 -0700
 Received: by devvm1096.prn0.facebook.com (Postfix, from userid 111017)
-        id E06081B35A82; Fri, 24 Jul 2020 17:04:26 -0700 (PDT)
+        id E4C431B35A84; Fri, 24 Jul 2020 17:04:26 -0700 (PDT)
 Smtp-Origin-Hostprefix: devvm
 From:   Roman Gushchin <guro@fb.com>
 Smtp-Origin-Hostname: devvm1096.prn0.facebook.com
@@ -39,9 +39,9 @@ CC:     <netdev@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
         <linux-kernel@vger.kernel.org>, Roman Gushchin <guro@fb.com>
 Smtp-Origin-Cluster: prn0c01
-Subject: [PATCH bpf-next 11/35] bpf: refine memcg-based memory accounting for sockmap maps
-Date:   Fri, 24 Jul 2020 17:03:46 -0700
-Message-ID: <20200725000410.3566700-12-guro@fb.com>
+Subject: [PATCH bpf-next 12/35] bpf: refine memcg-based memory accounting for xskmap maps
+Date:   Fri, 24 Jul 2020 17:03:47 -0700
+Message-ID: <20200725000410.3566700-13-guro@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200725000410.3566700-1-guro@fb.com>
 References: <20200725000410.3566700-1-guro@fb.com>
@@ -51,58 +51,38 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-24_10:2020-07-24,2020-07-24 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 clxscore=1015
- malwarescore=0 spamscore=0 adultscore=0 impostorscore=0 phishscore=0
- suspectscore=13 bulkscore=0 priorityscore=1501 mlxlogscore=999
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007240164
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ priorityscore=1501 bulkscore=0 spamscore=0 mlxlogscore=799 adultscore=0
+ lowpriorityscore=0 mlxscore=0 suspectscore=13 malwarescore=0
+ impostorscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2007240164
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Include sockmap internal metadata into the memcg-based memory
-accounting. Also include the memory allocated on updating an element.
+Extend xskmap memory accounting to include the memory taken by
+the xsk_map_node structure.
 
 Signed-off-by: Roman Gushchin <guro@fb.com>
 ---
- net/core/sock_map.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/xdp/xskmap.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index 119f52a99dc1..bc797adca44c 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -38,7 +38,7 @@ static struct bpf_map *sock_map_alloc(union bpf_attr *a=
-ttr)
- 	    attr->map_flags & ~SOCK_CREATE_FLAG_MASK)
- 		return ERR_PTR(-EINVAL);
+diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+index 8367adbbe9df..e574b22defe5 100644
+--- a/net/xdp/xskmap.c
++++ b/net/xdp/xskmap.c
+@@ -28,7 +28,8 @@ static struct xsk_map_node *xsk_map_node_alloc(struct x=
+sk_map *map,
+ 	struct xsk_map_node *node;
+ 	int err;
 =20
--	stab =3D kzalloc(sizeof(*stab), GFP_USER);
-+	stab =3D kzalloc(sizeof(*stab), GFP_USER | __GFP_ACCOUNT);
- 	if (!stab)
- 		return ERR_PTR(-ENOMEM);
-=20
-@@ -829,7 +829,8 @@ static struct bpf_shtab_elem *sock_hash_alloc_elem(st=
-ruct bpf_shtab *htab,
- 		}
- 	}
-=20
--	new =3D kmalloc_node(htab->elem_size, GFP_ATOMIC | __GFP_NOWARN,
-+	new =3D kmalloc_node(htab->elem_size,
-+			   GFP_ATOMIC | __GFP_NOWARN | __GFP_ACCOUNT,
- 			   htab->map.numa_node);
- 	if (!new) {
- 		atomic_dec(&htab->count);
-@@ -1011,7 +1012,7 @@ static struct bpf_map *sock_hash_alloc(union bpf_at=
-tr *attr)
- 	if (attr->key_size > MAX_BPF_STACK)
- 		return ERR_PTR(-E2BIG);
-=20
--	htab =3D kzalloc(sizeof(*htab), GFP_USER);
-+	htab =3D kzalloc(sizeof(*htab), GFP_USER | __GFP_ACCOUNT);
- 	if (!htab)
+-	node =3D kzalloc(sizeof(*node), GFP_ATOMIC | __GFP_NOWARN);
++	node =3D kzalloc(sizeof(*node),
++		       GFP_ATOMIC | __GFP_NOWARN | __GFP_ACCOUNT);
+ 	if (!node)
  		return ERR_PTR(-ENOMEM);
 =20
 --=20
