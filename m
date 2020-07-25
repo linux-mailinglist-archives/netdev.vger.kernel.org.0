@@ -2,107 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 163B122D6F7
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 13:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03F6122D71B
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 13:43:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726915AbgGYLFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 07:05:43 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:42091 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726651AbgGYLFn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 07:05:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595675141;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LWB2709msljQucnBBqm1rM2bavmji2piZ9+wSongLc0=;
-        b=M+xBZ+zj3vbF7Tf28JRS5n9msj4ccTt7Dcx5jaNg3ZwfryiU7pvxy21Py3AR2kMEvt2LpY
-        kEQiLX0qRMaudUKZFj3VEHZDuEXFmpG7cFdKd031oNMLHxQ1YdLy0PS+BzlYTidR7DBp6N
-        wnjinay6dyjglasDdeFPpitWsaDVFD4=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-430-zLZALKudNhGTGwhWnCnGtA-1; Sat, 25 Jul 2020 07:05:40 -0400
-X-MC-Unique: zLZALKudNhGTGwhWnCnGtA-1
-Received: by mail-wm1-f72.google.com with SMTP id e15so5203456wme.8
-        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 04:05:39 -0700 (PDT)
+        id S1726652AbgGYLnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 07:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47282 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726583AbgGYLnd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 07:43:33 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3851C0619D3
+        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 04:43:32 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id l4so12451978ejd.13
+        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 04:43:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=SGMkATQ0BzQCqgOcGG7Dgfh7CB1yD8Nfkag1D9wyXY4=;
+        b=Dzg4SiA2xE38tcZ2rkLAr8eDRq6vqYxedqgk304DbE+/SO16SCW8y6wRANUnDGv4xK
+         ujnNyroHj34GOtUbYY/6WPKUKVW64qIWH4kkz5BbYhXTpI6XwJMItA4/tiI5d7TZLk0J
+         oUh0Q6IeI5r0krHsrud74h5ygH+IN4ArZn7tygADLSesNNEghozq5iWnQTr566u8HpuB
+         SBa/8VhXLxsWWuTSez538moOcwwHQvqYQ/xTV3CAaJEoELBStlnk76MpYgJbpPKSb4Wf
+         qrHU9GrsfmgLDkQlEW58dhsZh1lLztH3snQkN5o19/0QOzkkt+k36zmYjm168UpQ6hIZ
+         r+0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LWB2709msljQucnBBqm1rM2bavmji2piZ9+wSongLc0=;
-        b=Nj8Y1mGD/pfwFzLzZzQzIx3+uz40SsgR0mnpsrvOMAowAbSoLnECOk9kdrCChSRbXk
-         RJOaSyP3H9YSwFGcFxcgcXaj3WB2aBhZVTUx3diKsKhHpjRTQvGu9ykZ5CszRHOuV6Uj
-         I0jWohHY6tLSWGj9/ZypIm94wfHTOuuW55OAv5JVVjOPTrRPRn9thesFQ7vOitXym2to
-         pjvyNZoHf1o/2ZBC7+6XVodGYM+PgMIIfnETlwBir1iBERbMrlyfTzkSOwRBe8CoTKk2
-         mrqhl2zi8g6yXVNXddonTsBICAyiMOfrVBAEmAGnbhQ5tD7rzNmzVsCUKHg/4I3czPWw
-         b1ow==
-X-Gm-Message-State: AOAM530jwDrwMprh+2i3KVGXI0iejXrZff6yhDsk+Jupd3T6E7l0bG4D
-        xhnIDCbERji7sfvWSOoDwzVSF2fKzFdVG6Q6F4wPBJmMXn5f9LyblKg5ZJQdXN+soOkZpFDhYbF
-        tdUuDNLakmNs6ZSN3
-X-Received: by 2002:a1c:354:: with SMTP id 81mr5346774wmd.9.1595675138450;
-        Sat, 25 Jul 2020 04:05:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxEEPuhSdPQnsSL6KLrrdFIoHCrCr0Kkke4EcULzM+LISBGsERirapNC8In95ygvgR/e3+PpQ==
-X-Received: by 2002:a1c:354:: with SMTP id 81mr5346753wmd.9.1595675138143;
-        Sat, 25 Jul 2020 04:05:38 -0700 (PDT)
-Received: from pc-2.home (2a01cb058529bf0075b0798a7f5975cb.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:bf00:75b0:798a:7f59:75cb])
-        by smtp.gmail.com with ESMTPSA id s205sm4750952wme.7.2020.07.25.04.05.37
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=SGMkATQ0BzQCqgOcGG7Dgfh7CB1yD8Nfkag1D9wyXY4=;
+        b=A9bw4/v7fLW5zCjPy8IjysO1PM0jPK/QqmNk0IBDnNd8K4DbiA/6c2Mt1I8M0zs461
+         9f5bjE6iXTjUoAa0KETebZvBcH6kWWfIDyuj8KoeBWr+98jzeB8X9mkZDCdkPy7bvjP9
+         d4uH1Pchp+9/VbLT9Nn/tdSzKfSkRk+dLDTP4rwMVSX5GHB0fEHKkQZPq2YxyoKqi/gn
+         lc7GMJYshmSK6IMyK4MlAKrvhqEEt2w+qtaxx5T929r/ZxEOzHu0vnz4FtulYhNEVznE
+         7+coEAJgBD+E5RINpG2VlhZlN1jz1CHM+VTz8b4/jWbD9hjVf/RXbvg0Jw60l9OQkFgC
+         JWWg==
+X-Gm-Message-State: AOAM530Yej5WWwrJzwN6i8A9l0AP7P/CtIDSu8THJyuhgHYzUQtOdDkG
+        q9kC6S6NRGjVYmee7N0k1Zk=
+X-Google-Smtp-Source: ABdhPJzlcdjdywZh7ISF6Z6N7XgI+zuwdfTjgQGmbwY0mdgVWz0bIylogIha2FCVaSBYoc0rXm2TlQ==
+X-Received: by 2002:a17:906:1756:: with SMTP id d22mr13191999eje.29.1595677410315;
+        Sat, 25 Jul 2020 04:43:30 -0700 (PDT)
+Received: from manjaro.localdomain ([37.237.100.18])
+        by smtp.gmail.com with ESMTPSA id w19sm2647997ejv.92.2020.07.25.04.43.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jul 2020 04:05:37 -0700 (PDT)
-Date:   Sat, 25 Jul 2020 13:05:35 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH net] bareudp: forbid mixing IP and MPLS in multiproto mode
-Message-ID: <20200725110535.GA4152@pc-2.home>
-References: <f6e832e7632acf28b1d2b35dddb08769c7ce4fab.1595624517.git.gnault@redhat.com>
- <20200724162134.7b0c8aaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Sat, 25 Jul 2020 04:43:29 -0700 (PDT)
+Received: by manjaro.localdomain (Postfix, from userid 1000)
+        id 9D0378521B; Sat, 25 Jul 2020 14:43:27 +0300 (+03)
+Date:   Sat, 25 Jul 2020 14:43:27 +0300
+From:   Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Michal Kubecek <mkubecek@suse.cz>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
+Subject: ethtool 5.7: --change commands fail
+Message-ID: <20200725114327.GC125759@manjaro>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200724162134.7b0c8aaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 24, 2020 at 04:21:34PM -0700, Jakub Kicinski wrote:
-> On Fri, 24 Jul 2020 23:03:26 +0200 Guillaume Nault wrote:
-> > In multiproto mode, bareudp_xmit() accepts sending multicast MPLS and
-> > IPv6 packets regardless of the bareudp ethertype. In practice, this
-> > let an IP tunnel send multicast MPLS packets, or an MPLS tunnel send
-> > IPv6 packets.
-> > 
-> > We need to restrict the test further, so that the multiproto mode only
-> > enables
-> >   * IPv6 for IPv4 tunnels,
-> >   * or multicast MPLS for unicast MPLS tunnels.
-> > 
-> > To improve clarity, the protocol validation is moved to its own
-> > function, where each logical test has its own condition.
-> > 
-> > Fixes: 4b5f67232d95 ("net: Special handling for IP & MPLS.")
-> > Signed-off-by: Guillaume Nault <gnault@redhat.com>
-> 
-> Hi! this adds 10 sparse warnings:
-> 
-> drivers/net/bareudp.c:419:22: warning: cast to restricted __be16
-> drivers/net/bareudp.c:419:22: warning: cast to restricted __be16
-> drivers/net/bareudp.c:419:22: warning: cast to restricted __be16
-> drivers/net/bareudp.c:419:22: warning: cast to restricted __be16
-> drivers/net/bareudp.c:419:13: warning: restricted __be16 degrades to integer
-> drivers/net/bareudp.c:423:22: warning: cast to restricted __be16
-> drivers/net/bareudp.c:423:22: warning: cast to restricted __be16
-> drivers/net/bareudp.c:423:22: warning: cast to restricted __be16
-> drivers/net/bareudp.c:423:22: warning: cast to restricted __be16
-> 
-> I think this:
-> 
-> 	    proto == ntohs(ETH_P_MPLS_MC))
-> 
-> has to say htons() not ntohs(). For v6 as well.
-> 
-Ouch, sorry. I'll respin.
+ethtool: v5.7
+kernel: v5.4.52
+driver: r8169 + libphy
 
+Starting from v5.7, all ethtool --change commands fail to apply and
+show the following error message:
+
+$ ethtool -s ens5 autoneg off
+netlink error: No such file or directory
+Cannot set new settings: No such file or directory
+  not setting autoneg
+
+'git bisect' points to:
+8bb9a04 (ethtool.c: Report transceiver correctly)
+
+After debugging I found that this commit sets deprecated.transceiver
+and then do_ioctl_slinksettings() checks for it and returns -1.
+errno is thus invalid and the the error message is bogus.
+
+With debugging enabled:
+
+$ ethtool --debug 0xffff -s ens5 autoneg off
+sending genetlink packet (32 bytes):
+    msg length 32 genl-ctrl
+    CTRL_CMD_GETFAMILY
+        CTRL_ATTR_FAMILY_NAME = "ethtool"
+<message dump/>
+received genetlink packet (52 bytes):
+    msg length 52 error errno=-2
+<message dump/>
+netlink error: No such file or directory
+offending message:
+    ETHTOOL_MSG_LINKINFO_SET
+        ETHTOOL_A_LINKINFO_PORT = 101
+Cannot set new settings: No such file or directory
+  not setting autoneg
