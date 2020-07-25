@@ -2,210 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08D6122D793
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 14:46:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A33D822D794
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 14:49:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727014AbgGYMqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 08:46:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
+        id S1726870AbgGYMta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 08:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726618AbgGYMp7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 08:45:59 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E1CC0619E4
-        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 05:45:59 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id l63so6867438pge.12
-        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 05:45:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pesu-pes-edu.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=VtoqIS+zgI6nyufN52Ah9gEj+z/4I1H8Qa1t04sn3Tk=;
-        b=Pbc3RQ8ryfhXyi3ruEofGZZwrDXQBO4dwRl+LdXFgk/KMEQFIKOhPCt/jmd+zFDTuo
-         uC0Oy38WzwnzAbiAT4h0IS6uQwq7rC5TE6Do59eqAiSpEpH0VMztb82Pcvh3vgHYqRlP
-         YXc0SSfJzEKMDh6+8rV7ooD2kXqv8IoI26NXQ+bDIZ8Owqv048pyvpOGT7vjFqJ6Imjw
-         /px1tIxuSLcmfq09CqyFpuJMuFLGbhvO/NLan8l0kHoBXL/RQEIZbb9ivj5umxZSuvnL
-         YiO+4mBW1Z3Fnu+VE/48IcCkWiWv19XXZqEaK35dpni88UvrvklUGiDedp6VnDEjcoWl
-         edeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=VtoqIS+zgI6nyufN52Ah9gEj+z/4I1H8Qa1t04sn3Tk=;
-        b=EiuQ3ebgQQHkT7tQGqUkTuXNBDzywL64Li/sG/jZ03kE+Dvunz1cRV7Pulgfz6g6mt
-         9OGFhszaweLapR55RCdchLcnRGub/qlcSAfL5KNPrDqyhpk+2hWkGJhhrnYgPUD5VQWI
-         fJgc8RRLM3yeAsx7JkCVukMQ3JwwUM5XPSuY6rj9u9uOht6GS0+LG+N2jth0mtQdwS4y
-         kFYGyN6XnmSrdhZ2YDZKq0X52goh5crmxoGyh5VTsSpJVbpSmRw/+JL6qa3a3lYilVT7
-         ZEoj9NSpt0rUHgyprx7eoz9mQFHk8Ta+YsddFSU3nEQk2mKbPRzVTBA6LobQ0cQEvwcP
-         Ee7Q==
-X-Gm-Message-State: AOAM532b0pixczGyTEfVUwCKzap9L2b0iwXyr8XqPTTDcy3RJV0WAXAH
-        Ds7HbkPVNLDR7eA3ux6uTM6TRQ==
-X-Google-Smtp-Source: ABdhPJyxcPXppFGVI0NVUo80a0krOh+wYNshMyG7EJBlSFyuk2QDCFURy3r1FIjjzNzI6e5SwXeU0w==
-X-Received: by 2002:a63:ca11:: with SMTP id n17mr12240817pgi.439.1595681158939;
-        Sat, 25 Jul 2020 05:45:58 -0700 (PDT)
-Received: from localhost ([2406:7400:73:5836:d1f0:826d:1814:b78e])
-        by smtp.gmail.com with ESMTPSA id f207sm9650057pfa.107.2020.07.25.05.45.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jul 2020 05:45:57 -0700 (PDT)
-Date:   Sat, 25 Jul 2020 18:15:53 +0530
-From:   B K Karthik <bkkarthik@pesu.pes.edu>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-        skhan@linuxfoundation.org, syzkaller-bugs@googlegroups.com
-Subject: [PATCH] net: ipv6: fix slab-out-of-bounda Read in
- xfrm6_tunnel_alloc_spi
-Message-ID: <20200725124553.zunta65rf3j23cth@pesu.pes.edu>
+        with ESMTP id S1726728AbgGYMt3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 08:49:29 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69BDBC0619D3
+        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 05:49:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=LMOE/qlz5HT4t+wRZemGaaTpMEHo2jTlAXfkLQuMOJw=; b=lzBoNKkuriA37d2G7FE/Q06po
+        yBDd64aYwH5Pm6ZQtt2W5jtcvdanHSpt6sy/v6KaaJiAJySlXRyPoYA2r+SzGOv0kZNK5S9ogwnaX
+        S/2uj/Dxg2U9jTnoQXT0qxuU2GzKw+Obf0WwpJyqv1AK2ddN2Xc7a2TrWQXwGjVIKK2SuY+p4lQoO
+        tAaHUfY1kAVS1kpFcXzFuvAcCZy4r4gjilVXELRM6EyJZSGV2YhDAUwt3lynd3nP2H34XTgUwF8Fi
+        qNDxpZDuxWjakNUNrwzbMc0EXkCNPIj6gHWO+mmk9khm2Fku6bI8w613R3b0hkGo5j2KGykGxbR5t
+        nQ7pIchmQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43980)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jzJcG-0000xZ-2t; Sat, 25 Jul 2020 13:49:28 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jzJcF-0001fM-MW; Sat, 25 Jul 2020 13:49:27 +0100
+Date:   Sat, 25 Jul 2020 13:49:27 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: phc2sys - does it work?
+Message-ID: <20200725124927.GE1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lhvcifgdqsnv7n3m"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: NeoMutt/20180716
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
---lhvcifgdqsnv7n3m
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I've been writing another PTP clock driver, and I'm wondering whether
+phc2sys is actually working correctly.
 
-fix slab-out-of-bounds Read in xfrm6_tunnel_alloc_spi
-by checking for existance of head for the list spi_byspi
+I'm running it with: phc2sys -c /dev/ptp1 -s CLOCK_REALTIME -q -m -O 0
+and I have additional pr_info() to debug in the clock driver.
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-BUG: KASAN: slab-out-of-bounds in __xfrm6_tunnel_alloc_spi net/ipv6/xfrm6_t=
-unnel.c:124 [inline]
-BUG: KASAN: slab-out-of-bounds in xfrm6_tunnel_alloc_spi+0x779/0x8a0 net/ip=
-v6/xfrm6_tunnel.c:174
-Read of size 4 at addr ffff88809a3fe000 by task syz-executor597/6834
-CPU: 1 PID: 6834 Comm: syz-executor597 Not tainted 5.8.0-rc5-next-20200716-=
-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Goo=
-gle 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xae/0x497 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
- __xfrm6_tunnel_alloc_spi net/ipv6/xfrm6_tunnel.c:124 [inline]
- xfrm6_tunnel_alloc_spi+0x779/0x8a0 net/ipv6/xfrm6_tunnel.c:174
- ipcomp6_tunnel_create net/ipv6/ipcomp6.c:84 [inline]
- ipcomp6_tunnel_attach net/ipv6/ipcomp6.c:124 [inline]
- ipcomp6_init_state net/ipv6/ipcomp6.c:159 [inline]
- ipcomp6_init_state+0x2af/0x700 net/ipv6/ipcomp6.c:139
- __xfrm_init_state+0x9a6/0x14b0 net/xfrm/xfrm_state.c:2498
- xfrm_init_state+0x1a/0x70 net/xfrm/xfrm_state.c:2525
- pfkey_msg2xfrm_state net/key/af_key.c:1291 [inline]
- pfkey_add+0x1a10/0x2b70 net/key/af_key.c:1508
- pfkey_process+0x66d/0x7a0 net/key/af_key.c:2834
- pfkey_sendmsg+0x42d/0x800 net/key/af_key.c:3673
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x331/0x810 net/socket.c:2362
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2416
- __sys_sendmmsg+0x195/0x480 net/socket.c:2506
- __do_sys_sendmmsg net/socket.c:2535 [inline]
- __se_sys_sendmmsg net/socket.c:2532 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2532
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x440409
-Code: Bad RIP value.
-RSP: 002b:00007ffea3e50018 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440409
-RDX: 0400000000000282 RSI: 0000000020000180 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 00000000004002c8 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401c10
-R13: 0000000000401ca0 R14: 0000000000000000 R15: 0000000000000000
-Allocated by task 6731:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
- kasan_set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:461
- slab_post_alloc_hook mm/slab.h:535 [inline]
- slab_alloc mm/slab.c:3312 [inline]
- kmem_cache_alloc+0x138/0x3a0 mm/slab.c:3482
- dup_fd+0x89/0xc90 fs/file.c:293
- copy_files kernel/fork.c:1459 [inline]
- copy_process+0x1dd0/0x6b70 kernel/fork.c:2064
- _do_fork+0xe8/0xb10 kernel/fork.c:2434
- __do_sys_clone+0xc8/0x110 kernel/fork.c:2551
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-The buggy address belongs to the object at ffff88809a3fe0c0
- which belongs to the cache files_cache of size 832
-The buggy address is located 192 bytes to the left of
- 832-byte region [ffff88809a3fe0c0, ffff88809a3fe400)
-The buggy address belongs to the page:
-page:000000007671797d refcount:1 mapcount:0 mapping:0000000000000000 index:=
-0xffff88809a3fec00 pfn:0x9a3fe
-flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea00027a5248 ffffea0002a3b648 ffff88821bc47600
-raw: ffff88809a3fec00 ffff88809a3fe0c0 0000000100000003 0000000000000000
-page dumped because: kasan: bad access detected
-Memory state around the buggy address:
- ffff88809a3fdf00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88809a3fdf80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff88809a3fe000: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                   ^
- ffff88809a3fe080: fc fc fc fc fc fc fc fc 00 00 00 00 00 00 00 00
- ffff88809a3fe100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+What I see is the "sys offset" that phc2sys comes out with doesn't
+seem to make much sense:
 
-Reported-and-testedby: syzbot+87b2b4484df1d40e7ece@syzkaller.appspotmail.com
-Signed-off-by: B K Karthik <bkkarthik@pesu.pes.edu>
----
- net/ipv6/xfrm6_tunnel.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+kt: 000000005f1c273ds 371ce3f5ns t: 00005f1c273ds 374c6cf5.2ae8ac76ns
+kt: 000000005f1c273ds 377bf04cns t: 00005f1c273ds 37ab792b.4ef91e82ns
+kt: 000000005f1c273ds 37daf7ccns t: 00005f1c273ds 380a80c3.5d12653ans
+kt: 000000005f1c273ds 383a143cns t: 00005f1c273ds 38699d5c.cf1319f2ns
+kt: 000000005f1c273ds 38992094ns t: 00005f1c273ds 38c8a9c8.f4247162ns
+kt: 000000005f1c273ds 38f82d13ns t: 00005f1c273ds 3927b640.196edf5ans
+kt: 000000005f1c273ds 3957323bns t: 00005f1c273ds 3986bb74.1c28a8fans
+kt: 000000005f1c273ds 39b643e3ns t: 00005f1c273ds 39e5cd56.5b34c14ens
+kt: 000000005f1c273ds 3a155d5ans t: 00005f1c273ds 3a44e6bf.be0b79e6ns
+kt: 000000005f1c273ds 3a746fcans t: 00005f1c273ds 3aa3f943.001a4266ns
+phc2sys[127.224]: /dev/ptp1 sys offset      5788 s2 freq  -69793 delay 6229046
 
-diff --git a/net/ipv6/xfrm6_tunnel.c b/net/ipv6/xfrm6_tunnel.c
-index 25b7ebda2fab..2d049244be81 100644
---- a/net/ipv6/xfrm6_tunnel.c
-+++ b/net/ipv6/xfrm6_tunnel.c
-@@ -121,8 +121,9 @@ static u32 __xfrm6_tunnel_alloc_spi(struct net *net, xf=
-rm_address_t *saddr)
- 	struct xfrm6_tunnel_spi *x6spi;
- 	int index;
-=20
--	if (xfrm6_tn->spi < XFRM6_TUNNEL_SPI_MIN ||
--	    xfrm6_tn->spi >=3D XFRM6_TUNNEL_SPI_MAX)
-+	if ((xfrm6_tn->spi < XFRM6_TUNNEL_SPI_MIN ||
-+	    xfrm6_tn->spi >=3D XFRM6_TUNNEL_SPI_MAX) &&
-+		xfrm6_tn->spi_byspi)
- 		xfrm6_tn->spi =3D XFRM6_TUNNEL_SPI_MIN;
- 	else
- 		xfrm6_tn->spi++;
---=20
-2.20.1
+Here, ktime_real (kt) is behind the ptp timestamp (t), and we have a
+positive "sys offset".  This continues for a while:
 
+kt: 000000005f1c2743s 0e1c25bdns t: 00005f1c2743s 0e4ba86d.91ebf06ans
+kt: 000000005f1c2743s 0e7b3801ns t: 00005f1c2743s 0eaaba44.601c1f30ns
+kt: 000000005f1c2743s 0eda4225ns t: 00005f1c2743s 0f09c4c3.0fa0d134ns
+kt: 000000005f1c2743s 0f395a82ns t: 00005f1c2743s 0f68dd0a.f8abbf48ns
+kt: 000000005f1c2743s 0f986abens t: 00005f1c2743s 0fc7ed41.c00f543cns
+kt: 000000005f1c2743s 0ff773cans t: 00005f1c2743s 1026f675.6a32920cns
+kt: 000000005f1c2743s 1056784ens t: 00005f1c2743s 1085fad9.003b24aans
+kt: 000000005f1c2743s 10b57fcans t: 00005f1c2743s 10e50267.a378bd3cns
+kt: 000000005f1c2743s 111481f6ns t: 00005f1c2743s 1144047b.2fde6accns
+kt: 000000005f1c2743s 117387b9ns t: 00005f1c2743s 11a30a5c.cc1d52b4ns
+phc2sys[132.536]: /dev/ptp1 sys offset      4882 s2 freq  -62617 delay 6227425
 
---lhvcifgdqsnv7n3m
-Content-Type: application/pgp-signature; name="signature.asc"
+kt is still behind t, and we still have a positive "sys offset".
 
------BEGIN PGP SIGNATURE-----
+kt: 000000005f1c2744s 11d56067ns t: 00005f1c2744s 120473bd.c6a08dbfns
+kt: 000000005f1c2744s 12346f54ns t: 00005f1c2744s 1263806f.d008fce3ns
+kt: 000000005f1c2744s 12937d7ans t: 00005f1c2744s 12c28c2b.d57fe555ns
+kt: 000000005f1c2744s 12f29f00ns t: 00005f1c2744s 1321ab52.2aa69e70ns
+kt: 000000005f1c2744s 1351aedens t: 00005f1c2744s 1380b903.38258359ns
+kt: 000000005f1c2744s 13b0c614ns t: 00005f1c2744s 13dfcdef.635079dbns
+kt: 000000005f1c2744s 140fd641ns t: 00005f1c2744s 143edba0.70cf5ec4ns
+kt: 000000005f1c2744s 146ee8c7ns t: 00005f1c2744s 149debf2.8913fe8dns
+kt: 000000005f1c2744s 14cdf64dns t: 00005f1c2744s 14fcf6d6.8b147d37ns
+kt: 000000005f1c2744s 152d1233ns t: 00005f1c2744s 155c10cf.caf99eb8ns
+phc2sys[133.599]: /dev/ptp1 sys offset    -25014 s2 freq  -91049 delay 6229170
 
-iQGzBAEBCgAdFiEEIF+jd5Z5uS7xKTfpQZdt+T1HgiEFAl8cKYAACgkQQZdt+T1H
-giGjqgwAoMpTtsLtWp+AVfaoxVREC1SZSGjIBGIS8wZBDWGMloEL2ojsd7IOnqEB
-L10Kvn/Q9kva0FAiblXgQamlj1lcPvaozuMB7bnxgjXAmzopRcBmUOXmKKRPTmoz
-rjWNu5OP9FNxHSG6Ko1zgnnZZhMr/YpBR4QB/iaPgeKrXHd6KmgWYSJwk/05zOJ6
-yvWGcXjFEl/O6ov94MNzklAEbu++GC0CdMjC01Io2ZEGaNGfJnQHwQAgoHobIA/R
-muRmX9OV80YP6of81866hzA/2AOaVutjscoehIZpov8yabjpCOQp4gs4rdw1oyX+
-qLS+C5425f7+VyqVNKqhdRHFP/tdRtrvEGOM51E66jYD8Yl9/mZDC0mT6fXGL1iG
-DmqfGYz0a5GEb57WBezOIlEGRPxZ3TC7vupV/xcCwHj8rC74tBpS9DR6/gj/WG6Q
-oRbvDUPh4h4o0jrlmfgDDPUEo33YUOR3pk6QG4SLmAq8gFxnuj+GDCMSiNA/YJND
-fEsMPbMy
-=To8M
------END PGP SIGNATURE-----
+kt is still behind t, but now we have a negative "sys offset" ?
 
---lhvcifgdqsnv7n3m--
+kt: 000000005f1c2745s 158f0f04ns t: 00005f1c2745s 15bd0ce3.e88dec93ns
+kt: 000000005f1c2745s 15ee1e79ns t: 00005f1c2745s 161c1aa9.0c161488ns
+kt: 000000005f1c2745s 16503ebcns t: 00005f1c2745s 167e3973.7b6c4843ns
+kt: 000000005f1c2745s 16b0ebb1ns t: 00005f1c2745s 16dee4f2.436c858dns
+kt: 000000005f1c2745s 1711806dns t: 00005f1c2745s 173f7822.7a65ccddns
+kt: 000000005f1c2745s 177215f1ns t: 00005f1c2745s 17a00c04.b57f3ef8ns
+kt: 000000005f1c2745s 17d15448ns t: 00005f1c2745s 17ff48bd.f1275cb3ns
+kt: 000000005f1c2745s 1830735dns t: 00005f1c2745s 185e6670.73b72a47ns
+kt: 000000005f1c2745s 188f95bbns t: 00005f1c2745s 18bd8724.082da8dbns
+kt: 000000005f1c2745s 18ee9e77ns t: 00005f1c2745s 191c8e4e.044592dcns
+phc2sys[134.662]: /dev/ptp1 sys offset    -98237 s2 freq -171776 delay 6227754
+
+... and an even bigger negative "sys offset" but kt is still behind t.
+
+kt: 000000005f1c2746s 16ad1681ns t: 00005f1c2746s 16db503d.5a2783d6ns
+kt: 000000005f1c2746s 170f8b80ns t: 00005f1c2746s 173dc5a6.91660baans
+kt: 000000005f1c2746s 176ed88fns t: 00005f1c2746s 179d1366.45f7dc3ans
+kt: 000000005f1c2746s 17cdebcdns t: 00005f1c2746s 17fc2725.6da454bbns
+kt: 000000005f1c2746s 182cfb23ns t: 00005f1c2746s 185b371b.6ab43403ns
+kt: 000000005f1c2746s 188c0208ns t: 00005f1c2746s 18ba3e8f.07fd0ee9ns
+kt: 000000005f1c2746s 18eb07fdns t: 00005f1c2746s 1919451f.9b3f2f2bns
+kt: 000000005f1c2746s 194a13e3ns t: 00005f1c2746s 19785178.6fad0c97ns
+kt: 000000005f1c2746s 19a915c8ns t: 00005f1c2746s 19d753fa.d549cdabns
+phc2sys[135.674]: /dev/ptp1 sys offset    -77622 s2 freq -180632 delay 6226562
+
+... same story.
+
+I added the debug (which dramatically increased delay) because I notice
+that phc2sys exhibits random sudden jumps in the "sys offset" value.
+I've noticed it with this driver (which, without the debug, reports a
+delay of around 5000) and also with the Marvell PHY PTP driver.  I had
+put the Marvell PHY PTP driver instability down to other MDIO bus
+activity, as the delay would increase, but that is not the case here.
+
+There _is_ something odd going on with the adjfine adjustment, but I
+can't fathom that (which is another reason for adding the above debug.)
+
+If I undo some of the debug, this is the kind of thing I see:
+
+phc2sys[20.697]: /dev/ptp1 sys offset         2 s2 freq  -25586 delay 5244
+phc2sys[21.698]: /dev/ptp1 sys offset        17 s2 freq  -25570 delay 5262
+phc2sys[22.698]: /dev/ptp1 sys offset       -11 s2 freq  -25593 delay 5250
+phc2sys[23.698]: /dev/ptp1 sys offset       -14 s2 freq  -25600 delay 5265
+phc2sys[24.698]: /dev/ptp1 sys offset       -17 s2 freq  -25607 delay 5250
+phc2sys[25.698]: /dev/ptp1 sys offset        64 s2 freq  -25531 delay 5244
+phc2sys[26.698]: /dev/ptp1 sys offset        -9 s2 freq  -25585 delay 5251
+phc2sys[27.699]: /dev/ptp1 sys offset       -44 s2 freq  -25622 delay 5250
+phc2sys[28.699]: /dev/ptp1 sys offset        35 s2 freq  -25557 delay 5262
+phc2sys[29.699]: /dev/ptp1 sys offset   -433522 s2 freq -459103 delay 5256
+phc2sys[30.699]: /dev/ptp1 sys offset   -500029 s2 freq -655667 delay 5228
+phc2sys[31.700]: /dev/ptp1 sys offset   -369958 s2 freq -675604 delay 5259
+
+Notice the sudden massive jump in sys offset.
+
+Any ideas?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
