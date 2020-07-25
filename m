@@ -2,73 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B5BE22D547
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 07:55:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5E7322D54D
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 07:58:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726618AbgGYFzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 01:55:31 -0400
-Received: from mail.zju.edu.cn ([61.164.42.155]:40140 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725825AbgGYFza (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jul 2020 01:55:30 -0400
-Received: by ajax-webmail-mail-app3 (Coremail) ; Sat, 25 Jul 2020 13:55:09
- +0800 (GMT+08:00)
-X-Originating-IP: [210.32.144.186]
-Date:   Sat, 25 Jul 2020 13:55:09 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   dinghao.liu@zju.edu.cn
-To:     "David Miller" <davem@davemloft.net>
-Cc:     kjlu@umn.edu, sgoutham@marvell.com, lcherian@marvell.com,
-        gakula@marvell.com, jerinj@marvell.com, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH] octeontx2-af: Fix use of uninitialized pointer bmap
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.10 build 20190906(84e8bf8f)
- Copyright (c) 2002-2020 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20200724.165722.526735468993909990.davem@davemloft.net>
-References: <20200724080657.19182-1-dinghao.liu@zju.edu.cn>
- <20200724.165722.526735468993909990.davem@davemloft.net>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        id S1726593AbgGYF6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 01:58:42 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:38159 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725825AbgGYF6l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 01:58:41 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 1D6465C012D;
+        Sat, 25 Jul 2020 01:58:40 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Sat, 25 Jul 2020 01:58:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=NAfg5uNULqdE3UVUsrBrauPhrY/
+        FhLHsqmtBKoZLlwg=; b=GaNj2KIxLCe52Jw8AKy/OJ1sv6K7Q7q01PTvS1ghZJr
+        i2Z1XapHlCs3qU1PvurQCf8NwMJVvwcPgviEDzhLppTxvbG/oDMIFwGGVduq7XIX
+        ZwqV4JyBsZtXTQaFMRrcnTSgF5jFTGFXRFOHFdYFfZ7MVnXVVsVrOi1EdwHGw4tA
+        5bYAxWNXfDmNWGBOdA73kwEaRrE2DZn5uIZhVQwbOr9/EONLwLxJ5SN3Xcmnxnd5
+        10LfnLBOs54LZyjW6zhBZgBCMfut6zJeIuV+YJmuAH86jO8ZVtgd/lM/s6k5eiUR
+        9EY4LMMKtJN9KTkizMS1CzyxqOtTurdXHCa4vZn7VHA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=NAfg5u
+        NULqdE3UVUsrBrauPhrY/FhLHsqmtBKoZLlwg=; b=Q35a7uux7NMSyNsRfymz9n
+        UGHVPAoC1MfBoV4exwo/ULhcV2LuKs9iYin1q4okMx91uUesMFB4gtjIG0t5WR+t
+        wddNmNGoN4BF8h5q2XNX7+zJZXZm5g3uD6PceLa7ohy550eeUdaf7Of5uTTlE3zm
+        vzQA79+pXkv7TbvaWSeoy0+cIYVbdmBuH1IvTZ+r3MAJBUETt0UWS7zPggMk8yWn
+        /q5XLddCLGugkUkJFl3K59o8CkiHdCK8LTFw2LWUjxdxU3ugObCZrbck9AT4TOXy
+        bTvNvskvUI0MF5IAJQQ0+TTc+yCrvSrI7QEwagyhuDGNf1KGEEiLKpOAFW2HxTTQ
+        ==
+X-ME-Sender: <xms:D8obX6HBDvjMtiuUweBe-Ml3dj_6FRm2JnRPt9GD2Oh1evk1lXgGJA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrheeggddutdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucfkphepkeef
+    rdekiedrkeelrddutdejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
+    hilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
+X-ME-Proxy: <xmx:D8obX7UzoUZ1U6Tg-PRv8GovlL3Z9hpGsdTIoPWugAX-SYWTmZaAFA>
+    <xmx:D8obX0L6U39-ZHMrVVUSGnr_MQyVfsqP8-RwXK2iSn5lcbH6UlXpfA>
+    <xmx:D8obX0FGVN-bsbO1vYdrhsoYEy4FWiFy0l5d4NLenixtgry01Q859w>
+    <xmx:EMobX6ezBcjugYPdC8kLFQD-o0wrAs_v4CRyVlpYO_HYdpfxhau1ag>
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1C2223060067;
+        Sat, 25 Jul 2020 01:58:39 -0400 (EDT)
+Date:   Sat, 25 Jul 2020 07:58:40 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        'Eric Dumazet' <edumazet@google.com>,
+        'Willy Tarreau' <w@1wt.eu>,
+        Joseph Salisbury <Joseph.Salisbury@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>
+Subject: Re: UDP data corruption in v4.4
+Message-ID: <20200725055840.GD1047853@kroah.com>
+References: <KL1P15301MB028018F5C84C618BF7628045BF740@KL1P15301MB0280.APCP153.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Message-ID: <4107fd31.2d71b.173848a1987.Coremail.dinghao.liu@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgA3Ut49yRtf8O1nAQ--.19856W
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAggHBlZdtPRcawAWsh
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJTRUUUbX0S07vEb7Iv0x
-        C_JF4lV2xY67kC6x804xWlV2xY67CY07I20VC2zVCF04k26cxKx2IYs7xG6rWj6s0DMIAI
-        bVAFxVCF77xC64kEw24lV2xY67C26IkvcIIF6IxKo4kEV4ylV2xY628lY4IE4IxF12IF4w
-        CS07vE84x0c7CEj48ve4kI8wCS07vE84ACjcxK6xIIjxv20xvE14v26w1j6s0DMIAIbVA2
-        z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UMIAIbVA2z4x0Y4vEx4A2jsIE14v26r
-        xl6s0DMIAIbVA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1lV2xY62AIxVAIcxkEcVAq
-        07x20xvEncxIr21lV2xY6c02F40EFcxC0VAKzVAqx4xG6I80ewCS07vEYx0E2Ix0cI8IcV
-        AFwI0_Jr0_Jr4lV2xY6cIj6I8E87Iv67AKxVWUJVW8JwCS07vEOx8S6xCaFVCjc4AY6r1j
-        6r4UMIAIbVCjxxvEw4WlV2xY6xkIecxEwVAFwVW8WwCS07vEc2IjII80xcxEwVAKI48JMI
-        AIbVCF04k20xvE74AGY7Cv6cx26r4fKr1UJr1lV2xY6xCjnVCjjxCrMIAIbVCFx2IqxVCF
-        s4IE7xkEbVWUJVW8JwCS07vEx2IqxVAqx4xG67AKxVWUJVWUGwCS07vEx2IqxVCjr7xvwV
-        AFwI0_JrI_JrWlV2xY6I8E67AF67kF1VAFwI0_Jw0_GFylV2xY6IIF0xvE2Ix0cI8IcVAF
-        wI0_Jr0_JF4lV2xY6IIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCS07vEIxAIcVCF04
-        k26cxKx2IYs7xG6rW3Jr0E3s1lV2xY6IIF0xvEx4A2jsIE14v26r1j6r4UMIAIbVCI42IY
-        6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <KL1P15301MB028018F5C84C618BF7628045BF740@KL1P15301MB0280.APCP153.PROD.OUTLOOK.COM>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBEaW5naGFvIExpdSA8ZGluZ2hhby5saXVAemp1LmVkdS5jbj4KPiBEYXRlOiBGcmks
-IDI0IEp1bCAyMDIwIDE2OjA2OjU3ICswODAwCj4gCj4gPiBJZiByZXEtPmN0eXBlIGRvZXMgbm90
-IG1hdGNoIGFueSBvZiBOSVhfQVFfQ1RZUEVfQ1EsCj4gPiBOSVhfQVFfQ1RZUEVfU1Egb3IgTklY
-X0FRX0NUWVBFX1JRLCBwb2ludGVyIGJtYXAgd2lsbCByZW1haW4KPiA+IHVuaW5pdGlhbGl6ZWQg
-YW5kIGJlIGFjY2Vzc2VkIGluIHRlc3RfYml0KCksIHdoaWNoIGNhbiBsZWFkCj4gPiB0byBrZXJu
-YWwgY3Jhc2guCj4gCj4gVGhpcyBjYW4gbmV2ZXIgaGFwcGVuLgo+IAo+ID4gRml4IHRoaXMgYnkg
-cmV0dXJuaW5nIGFuIGVycm9yIGNvZGUgaWYgdGhpcyBjYXNlIGlzIHRyaWdnZXJlZC4KPiA+IAo+
-ID4gU2lnbmVkLW9mZi1ieTogRGluZ2hhbyBMaXUgPGRpbmdoYW8ubGl1QHpqdS5lZHUuY24+Cj4g
-Cj4gSSBzdHJvbmdseSBkaXNsaWtlIGNoYW5nZXMgbGlrZSB0aGlzLgo+IAo+IE1vc3QgY2FsbGVy
-cyBvZiBuaXhfbGZfaHdjdHhfZGlzYWJsZSgpIGluc2lkZSBvZiBydnVfbml4LmMgc2V0Cj4gcmVx
-LT5jdHlwZSB0byBvbmUgb2YgdGhlIGhhbmRsZWQgdmFsdWVzLgo+IAo+IFRoZSBvbmx5IG90aGVy
-IGNhc2UsIHJ2dV9tYm94X2hhbmRsZXJfbml4X2h3Y3R4X2Rpc2FibGUoKSwgaXMgYQo+IGNvbXBs
-ZXRlbHkgdW51c2VkIGZ1bmN0aW9uIGFuZCBzaG91bGQgYmUgcmVtb3ZlZC4KPiAKPiBUaGVyZSBp
-cyBubyBmdW5jdGlvbmFsIHByb2JsZW0gaW4gdGhpcyBjb2RlIGF0IGFsbC4KPiAKPiBJdCBpcyBu
-b3QgcG9zc2libGUgc2hvdyBhIGNvZGUgcGF0aCB3aGVyZSB0aGUgc3RhdGVkIHByb2JsZW0gY2Fu
-Cj4gYWN0dWFsbHkgb2NjdXIuCgpJdCdzIGNsZWFyIHRvIG1lIG5vdy4gVGhhbmtzLgoKUmVnYXJk
-cywKRGluZ2hhbw==
+On Sat, Jul 25, 2020 at 02:21:06AM +0000, Dexuan Cui wrote:
+> Hi,
+> The v4.4 stable kernel (currently it's v4.4.231) lacks this bugfix:
+> 327868212381 ("make skb_copy_datagram_msg() et.al. preserve ->msg_iter on error")
+> , as a result, the v4.4 kernel can deliver corrupt data to the application
+> when a corrupt UDP packet is closely followed by a valid UDP packet:
+> when the same invocation of the recvmsg() syscall delivers the corrupt
+> packet's UDP payload to the application's receive buffer, it provides the
+> UDP payload length and the "from IP/Port" of the valid packet to the 
+> application -- this mismatch makes the issue worse.
+> 
+> Details:
+> 
+> For a UDP packet longer than 76 bytes (see the v5.8-rc6 kernel's
+> include/linux/skbuff.h:3951), Linux delays the UDP checksum verification
+> until the application invokes the syscall recvmsg().
+> 
+> In the recvmsg() syscall handler, while Linux is copying the UDP payload
+> to the application's memory, it calculates the UDP checksum. If the
+> calculated checksum doesn't match the received checksum, Linux drops the
+> corrupt UDP packet, and then starts to process the next packet (if any),
+> and if the next packet is valid (i.e. the checksum is correct), Linux will
+> copy the valid UDP packet's payload to the application's receiver buffer.
+> 
+> The bug is: before Linux starts to copy the valid UDP packet, the data
+> structure used to track how many more bytes should be copied to the
+> application memory is not reset to what it was when the application just
+> entered the kernel by the syscall! Consequently, only a small portion or
+> none of the valid packet's payload is copied to the application's receive
+> buffer, and later when the application exits from the kernel, actually
+> most of the application's receive buffer contains the payload of the
+> corrupt packet while recvmsg() returns the length of the UDP payload of
+> the valid packet.
+> 
+> For the mainline kernel, the bug was fixed by Al Viro in the commit 
+> 327868212381, but unluckily the bugfix is only backported to the
+> upstream v4.9+ kernels. I hope the bugfix can be backported to the
+> v4.4 stable kernel, since it's a "longterm" kernel and is still used by
+> some Linux distros.
+> 
+> It turns out backporting 327868212381 to v4.4 means that some 
+> Supporting patches must be backported first, so the overall changes
+> are pretty big...
+> 
+> I made the below one-line workaround patch to force the recvmsg() syscall
+> handler to return to the userspace when Linux detects a corrupt UDP packet,
+> so the application will invoke the syscall again to receive the following valid
+> UDP packet (note: the patch may not work well with blocking sockets, for
+> which typically the application doesn't expect an error of -EAGAIN. I
+> guess it would be safer to return -EINTR instead?):
+> 
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -1367,6 +1367,7 @@ csum_copy_err:
+>         /* starting over for a new packet, but check if we need to yield */
+>         cond_resched();
+>         msg->msg_flags &= ~MSG_TRUNC;
+> +       return -EAGAIN;
+>         goto try_again;
+> }
+> 
+> 
+> Eric Dumazet made an alternative that performs the csum validation earlier:
+> 
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -1589,8 +1589,7 @@ int udp_queue_rcv_skb(struct sock *sk, struct
+> sk_buff *skb)
+>                 }
+>         }
+> 
+> -       if (rcu_access_pointer(sk->sk_filter) &&
+> -           udp_lib_checksum_complete(skb))
+> +       if (udp_lib_checksum_complete(skb))
+>                 goto csum_error;
+> 
+>         if (sk_rcvqueues_full(sk, sk->sk_rcvbuf)) {
+> 
+> I personally like Eric's fix and IMHO we'd better have it in v4.4 rather than
+> trying to backport 327868212381.
+
+Does Eric's fix work with your testing?  If so, great, can you turn it
+into something I can apply to the 4.4.y stable tree and send it to
+stable@vger.kernel.org?
+
+thanks,
+
+greg k-h
