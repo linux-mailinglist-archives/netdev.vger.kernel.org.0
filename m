@@ -2,175 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53CF822DA40
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 00:48:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E49C522DA46
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 01:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727009AbgGYWlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 18:41:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35458 "EHLO
+        id S1727861AbgGYXH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 19:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726686AbgGYWlC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 18:41:02 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B844C08C5C0
-        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 15:41:02 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id m8so266646pfh.3
-        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 15:41:02 -0700 (PDT)
+        with ESMTP id S1726784AbgGYXH6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 19:07:58 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB721C08C5C0
+        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 16:07:58 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id s23so9609910qtq.12
+        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 16:07:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zBh3Brw5i35dJGCDei6Frq9nRpSt9FDaFUnPZiZIX9g=;
-        b=rS27zlT1kCnBBkD6OJwugtWzI4X2HFFBpbfpPDr2M4EKbfJyl3GQKJIZsats6rmU6M
-         cZ0MP/guhgQsQDb9MmjZg2biK4RzuQGXmBFcqUKAVo1gj4Isk4+32g57La5g/Hi6j2P6
-         YBxV9WW+4uAFNqzoBQP+712J0m07xeOjqDA2ECm7SPSXYoIgJu3Tkc4FJaG7iQrvIJin
-         NknPDCmOP6MT5wf7++XV4K49asUhKFxVtYytNtB1xq5C92E+UBQ68PdjidwNoSdUAstg
-         N0hsd2IoHpUTTB/vn0J08kpefiW0jDOGrJuNW0uzKdysgJQsWDIyP/6dL8z/LcAd0ACA
-         xEdA==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=Rq5a/HVUIQf+18sccieM0oKYfff+JxrLa7aUTo3W2MM=;
+        b=iorc7YAY/RoMK4d4y5nd9rNinitsaZ/6TZDw46d0e42wdXbL9eRAHNPwBbX5bGVe/M
+         c3zqd3AxcNmjYVUSijS2fUpcwX82PF4/E0flTSKNL5RKmUXcwLtGWQJEfd6/FgAMhV15
+         +BETbj+GklwOnBIrDJ+PrPXqoMLSZMFw/aXFf0MZa1OFg9he1wgSXY4PaZ/OEikq9/sK
+         wpoZTt64IchprliIKrb0AKQO4HHy97tK0IvwVEgqfSpvwAR/ddg2bXwxlKNPg2GrsgMD
+         TeT5wa4/0mJ8IsKcIbCeBV6kEUrGHrc1y/GUblIBcrEbshdtMdsANpm8k792Or+tWf9I
+         5c4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zBh3Brw5i35dJGCDei6Frq9nRpSt9FDaFUnPZiZIX9g=;
-        b=SildR7kSYpqMuSlA5sySsWAioILdfm+O8m7ODuERN16m3t+edRVVIvk36NjTOqGTxt
-         XyVEpXxCJg+iqeEqaZDLtImxHVFkAMscqHUCq9Q8osQQPsqqM2fQWrpwQzkpuwMWUK9b
-         U8ggG1m6VH+wJ9VBAd9Ifgea1Pfyuv68DIAr8ncAdy8YPc9omd1siZLly0GjX/wgNj/n
-         b9wKfB8lW6a6nTMNjqsBarL5kR3kSM0Ftv9pdordAGczb+BvkaZiSE0fKF45kPwGM49N
-         K1VQt9x8p0eHImf4jjggOR8uXxxbcy59UfLxyC29VFpUD3O2dllF0fb6somURvenbjVN
-         adDA==
-X-Gm-Message-State: AOAM532ZNT8RNDtdB9voGdCSg86EmledhXM92UmoxSvDNwNpEc+5x+kA
-        +DPP0PFQwVPkZrpA8Ne60CDpxCugaXg=
-X-Google-Smtp-Source: ABdhPJwHROxayZPG6fm3/iMyimDFaWBtMuhGKXnBks0IHJqSoyUHoLL8kBeJyzONGLah6oRAsLHBLw==
-X-Received: by 2002:a62:7a56:: with SMTP id v83mr14316636pfc.114.1595716861520;
-        Sat, 25 Jul 2020 15:41:01 -0700 (PDT)
-Received: from MacBookAir.linux-6brj.site ([2600:1700:727f::1e])
-        by smtp.gmail.com with ESMTPSA id x9sm11476018pfq.216.2020.07.25.15.41.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jul 2020 15:41:01 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>, ch3332xr@gmail.com
-Subject: [Patch net] ipv6: fix memory leaks on IPV6_ADDRFORM path
-Date:   Sat, 25 Jul 2020 15:40:53 -0700
-Message-Id: <20200725224053.14752-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=Rq5a/HVUIQf+18sccieM0oKYfff+JxrLa7aUTo3W2MM=;
+        b=oYwKZHHXQqQx2edRIyjDmVfvVLV/ewU71NK7gxWBnk+Zrq/B/XdJIXIKVoeslgiXSY
+         rja+upw6ui60XBLWxucU0SpzA1HlNRxNKIOYGGCMY6+t71Nh1myO5PNei2TBM/EoxA08
+         jnPBZm5ir+WITq6GEwAvnp1Z9mm+h/eSGom2pUx+teZ8YaxtQZ8LW9Qc1imenhH2h0OJ
+         A63wdnAG9flcyRB1qwJmUDFXhTX8wa5rviue7NF2n4HeXkzYybXrjNdFQ42b8SHLB1p8
+         QO5i44oCzzXmAl4SAKLcxBmht0yqmFLUxErs0jNZ+8Zp3hcg3omjMd4EpIa7jQMvZbke
+         ulWQ==
+X-Gm-Message-State: AOAM5314UFJF6q0p7hpjsL/1rrpcUaHZ7AurNdLvcgNoEmzZKo57Q+5Y
+        nfL5ZDVgx/PHMbTj2dkCIR8j/f3FMnr/KsMluWJghRK/lFw=
+X-Google-Smtp-Source: ABdhPJxaTT3ofG5Z2/dhd+PZGBl7PS9rAvhdfzakK2nAzGbnc07NKRDvkj+mkHv1cwXer+tIzs2MOZ741ZzfJ8BqFlw=
+X-Received: by 2002:ac8:6d21:: with SMTP id r1mr2357706qtu.212.1595718477566;
+ Sat, 25 Jul 2020 16:07:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   Han <keepsimple@gmail.com>
+Date:   Sat, 25 Jul 2020 16:07:45 -0700
+Message-ID: <CAEjGaqfhr=1RMavYUAyG0qMyQe44CQbuet04LWSC8YRM8FMpKA@mail.gmail.com>
+Subject: question about using UDP GSO in Linux kernel 4.19
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPV6_ADDRFORM causes resource leaks when converting an IPv6 socket
-to IPv4, particularly struct ipv6_ac_socklist. Similar to
-struct ipv6_mc_socklist, we should just close it on this path.
+My apologies if this is not the right place to ask this question.
 
-This bug can be easily reproduced with the following C program:
+I'm trying to use UDP GSO to improve the throughput. My testing shows
+that UDP GSO works with the local server (i.e. loopback interface) but
+fails with a remote server (in WLAN, via wlan0 interface).
 
-  #include <stdio.h>
-  #include <string.h>
-  #include <sys/types.h>
-  #include <sys/socket.h>
-  #include <arpa/inet.h>
+My question is: do I need to explicitly enable UDP GSO for wlan0
+interface? If yes, how do I do it? I searched online but could not
+find a good answer.  I looked at "ethtool" but not clear which option
+to use:
 
-  int main()
-  {
-    int s, value;
-    struct sockaddr_in6 addr;
-    struct ipv6_mreq m6;
+$ ethtool  --show-offload wlan0 | grep -i generic-segment
+generic-segmentation-offload: off [requested on]
 
-    s = socket(AF_INET6, SOCK_DGRAM, 0);
-    addr.sin6_family = AF_INET6;
-    addr.sin6_port = htons(5000);
-    inet_pton(AF_INET6, "::ffff:192.168.122.194", &addr.sin6_addr);
-    connect(s, (struct sockaddr *)&addr, sizeof(addr));
+$ ethtool  --show-offload wlan0 | grep -i udp-segment
+tx-udp-segmentation: off [fixed]
 
-    inet_pton(AF_INET6, "fe80::AAAA", &m6.ipv6mr_multiaddr);
-    m6.ipv6mr_interface = 5;
-    setsockopt(s, SOL_IPV6, IPV6_JOIN_ANYCAST, &m6, sizeof(m6));
+A quick try did not work:
 
-    value = AF_INET;
-    setsockopt(s, SOL_IPV6, IPV6_ADDRFORM, &value, sizeof(value));
+$ sudo ethtool -K wlan0 gso on
+Could not change any device features
 
-    close(s);
-    return 0;
-  }
+My test hardware is Raspberry Pi 4, and the Linux kernel version is
+4.19. My test program is in C.
 
-Reported-by: ch3332xr@gmail.com
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- include/net/addrconf.h   |  1 +
- net/ipv6/anycast.c       | 17 ++++++++++++-----
- net/ipv6/ipv6_sockglue.c |  1 +
- 3 files changed, 14 insertions(+), 5 deletions(-)
-
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index fdb07105384c..8418b7d38468 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -274,6 +274,7 @@ int ipv6_sock_ac_join(struct sock *sk, int ifindex,
- 		      const struct in6_addr *addr);
- int ipv6_sock_ac_drop(struct sock *sk, int ifindex,
- 		      const struct in6_addr *addr);
-+void __ipv6_sock_ac_close(struct sock *sk);
- void ipv6_sock_ac_close(struct sock *sk);
- 
- int __ipv6_dev_ac_inc(struct inet6_dev *idev, const struct in6_addr *addr);
-diff --git a/net/ipv6/anycast.c b/net/ipv6/anycast.c
-index 893261230ffc..dacdea7fcb62 100644
---- a/net/ipv6/anycast.c
-+++ b/net/ipv6/anycast.c
-@@ -183,7 +183,7 @@ int ipv6_sock_ac_drop(struct sock *sk, int ifindex, const struct in6_addr *addr)
- 	return 0;
- }
- 
--void ipv6_sock_ac_close(struct sock *sk)
-+void __ipv6_sock_ac_close(struct sock *sk)
- {
- 	struct ipv6_pinfo *np = inet6_sk(sk);
- 	struct net_device *dev = NULL;
-@@ -191,10 +191,7 @@ void ipv6_sock_ac_close(struct sock *sk)
- 	struct net *net = sock_net(sk);
- 	int	prev_index;
- 
--	if (!np->ipv6_ac_list)
--		return;
--
--	rtnl_lock();
-+	ASSERT_RTNL();
- 	pac = np->ipv6_ac_list;
- 	np->ipv6_ac_list = NULL;
- 
-@@ -211,6 +208,16 @@ void ipv6_sock_ac_close(struct sock *sk)
- 		sock_kfree_s(sk, pac, sizeof(*pac));
- 		pac = next;
- 	}
-+}
-+
-+void ipv6_sock_ac_close(struct sock *sk)
-+{
-+	struct ipv6_pinfo *np = inet6_sk(sk);
-+
-+	if (!np->ipv6_ac_list)
-+		return;
-+	rtnl_lock();
-+	__ipv6_sock_ac_close(sk);
- 	rtnl_unlock();
- }
- 
-diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-index 20576e87a5f7..76f9e41859a2 100644
---- a/net/ipv6/ipv6_sockglue.c
-+++ b/net/ipv6/ipv6_sockglue.c
-@@ -240,6 +240,7 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
- 
- 			fl6_free_socklist(sk);
- 			__ipv6_sock_mc_close(sk);
-+			__ipv6_sock_ac_close(sk);
- 
- 			/*
- 			 * Sock is moving from IPv6 to IPv4 (sk_prot), so
--- 
-2.27.0
-
+Thanks.
+Han
