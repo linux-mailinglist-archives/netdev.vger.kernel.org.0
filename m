@@ -2,249 +2,378 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6719022D91D
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 19:57:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3178622D921
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 20:02:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727906AbgGYR5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 13:57:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727009AbgGYR5o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 13:57:44 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC41C08C5C0;
-        Sat, 25 Jul 2020 10:57:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:References:Cc:To:Subject:From:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=h53znqo50BBI6k34gkssxkyY0bumRYb9LTxmBY8PPFg=; b=QxGWSBKJ0ZvJZHoDS/TK06bNS5
-        3ampj5St5kQrPmkrfrd6zY0St+lf+15e07v5guHAyDAEXB5Nr593OV5jjNke6NU8uDB78SeUCURya
-        6H6PMvp/LsuxxQdw9aY/11U2XPEjS8qHx8u9vi/4Qj0ympMe/QGXpeHX+6yTma1EZNo0=;
-Received: from p5b206d80.dip0.t-ipconnect.de ([91.32.109.128] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1jzOQG-00030H-1y; Sat, 25 Jul 2020 19:57:24 +0200
-From:   Felix Fietkau <nbd@nbd.name>
-Subject: Re: [RFC 0/7] Add support to process rx packets in thread
-To:     Hillf Danton <hdanton@sina.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Rakesh Pillai <pillair@codeaurora.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        Markus Elfring <Markus.Elfring@web.de>,
-        "evgreen@chromium.org" <evgreen@chromium.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
-References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
- <20200721172514.GT1339445@lunn.ch> <20200725081633.7432-1-hdanton@sina.com>
-Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
- xsDiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
- ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
- Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
- AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
- vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
- wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
- TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
- l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwc0cRmVsaXggRmll
- dGthdSA8bmJkQG5iZC5uYW1lPsJgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
- HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
- VrwYTIThkTlQzsFNBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
- CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
- VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
- Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
- DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
- wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
- f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
- aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
- FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
- TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabwkkE
- GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
- RjMaxwtSdaCKMw3j33ZbsWS4
-Message-ID: <a50ebfba-9733-48db-c90b-5fc106e67f29@nbd.name>
-Date:   Sat, 25 Jul 2020 19:57:23 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.10.0
+        id S1727881AbgGYSC3 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 25 Jul 2020 14:02:29 -0400
+Received: from lists.nic.cz ([217.31.204.67]:39044 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726727AbgGYSC3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jul 2020 14:02:29 -0400
+Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
+        by mail.nic.cz (Postfix) with ESMTPSA id 3EBAC140B12;
+        Sat, 25 Jul 2020 20:02:25 +0200 (CEST)
+Date:   Sat, 25 Jul 2020 20:02:24 +0200
+From:   Marek Behun <marek.behun@nic.cz>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>, jacek.anaszewski@gmail.com,
+        Dan Murphy <dmurphy@ti.com>,
+        =?UTF-8?B?T25kxZllag==?= Jirman <megous@megous.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC leds + net-next v3 2/2] net: phy: marvell: add
+ support for PHY LEDs via LED class
+Message-ID: <20200725200224.3f03c041@nic.cz>
+In-Reply-To: <20200725172318.GK1472201@lunn.ch>
+References: <20200724164603.29148-1-marek.behun@nic.cz>
+        <20200724164603.29148-3-marek.behun@nic.cz>
+        <20200725172318.GK1472201@lunn.ch>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20200725081633.7432-1-hdanton@sina.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,URIBL_BLOCKED,
+        USER_IN_WHITELIST shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-07-25 10:16, Hillf Danton wrote:
-> Hi folks
+On Sat, 25 Jul 2020 19:23:18 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
+
+> On Fri, Jul 24, 2020 at 06:46:03PM +0200, Marek Behún wrote:
+> > This patch adds support for controlling the LEDs connected to several
+> > families of Marvell PHYs via the PHY HW LED trigger API. These families
+> > are: 88E1112, 88E1121R, 88E1240, 88E1340S, 88E1510 and 88E1545. More can
+> > be added.
+> > 
+> > The code reads LEDs definitions from the device-tree node of the PHY.
+> > 
+> > This patch does not yet add support for compound LED modes. This could
+> > be achieved via the LED multicolor framework (which is not yet in
+> > upstream).
+> > 
+> > Settings such as HW blink rate or pulse stretch duration are not yet
+> > supported, nor are LED polarity settings.
+> > 
+> > Signed-off-by: Marek Behún <marek.behun@nic.cz>
+> > ---
+> >  drivers/net/phy/Kconfig   |   1 +
+> >  drivers/net/phy/marvell.c | 364 ++++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 365 insertions(+)
+> > 
+> > diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> > index ffea11f73acd..5428a8af26d2 100644
+> > --- a/drivers/net/phy/Kconfig
+> > +++ b/drivers/net/phy/Kconfig
+> > @@ -462,6 +462,7 @@ config LXT_PHY
+> >  
+> >  config MARVELL_PHY
+> >  	tristate "Marvell PHYs"
+> > +	depends on LED_TRIGGER_PHY_HW  
 > 
-> Below is a minimunm poc implementation I can imagine on top of workqueue
-> to make napi threaded. Thoughts are appreciated.
-Hi Hillf,
+> Does it really depend on it? I think the driver will work fine without
+> it, just the LED control will be missing.
+> 
+> It is really a policy question. Cable test is always available, there
+> is no Kconfig'ury to stop it getting built. Is LED support really big
+> so that somebody might want to disable it? I think not. So lets just
+> enable it all the time.
 
-For some reason I don't see your mails on linux-wireless/netdev.
-I've cleaned up your implementation a bit and I ran some tests with mt76
-on an mt7621 embedded board. The results look pretty nice, performance
-is a lot more consistent in my tests now.
+OK
 
-Here are the changes that I've made compared to your version:
+> >  	help
+> >  	  Currently has a driver for the 88E1011S
+> >    
+> 
+> > +enum {
+> > +	L1V0_RECV		= BIT(0),
+> > +	L1V0_COPPER		= BIT(1),
+> > +	L1V5_100_FIBER		= BIT(2),
+> > +	L1V5_100_10		= BIT(3),
+> > +	L2V2_INIT		= BIT(4),
+> > +	L2V2_PTP		= BIT(5),
+> > +	L2V2_DUPLEX		= BIT(6),
+> > +	L3V0_FIBER		= BIT(7),
+> > +	L3V0_LOS		= BIT(8),
+> > +	L3V5_TRANS		= BIT(9),
+> > +	L3V7_FIBER		= BIT(10),
+> > +	L3V7_DUPLEX		= BIT(11),  
+> 
+> Maybe also add COMMON?
 
-- remove the #ifdef, I think it's unnecessary
-- add a state bit for threaded NAPI
-- make netif_threaded_napi_add inline
-- run queue_work outside of local_irq_save/restore (it does that
-internally already)
+These are meant to be interpreted as flag bits, one LED can have
+multiple flags. Most time in kernel bit fields use 0, not a constant,
+to express no flag.
 
-If you don't mind, I'd like to propose this to netdev soon. Can I have
-your Signed-off-by for that?
+> > +};
+> > +
+> > +struct marvell_led_mode_info {
+> > +	const char *name;
+> > +	s8 regval[MARVELL_PHY_MAX_LEDS];
+> > +	u32 flags;  
+> 
+> Maybe give the enum a name, and use it here? It can be quite hard
+> tracking the meaning of flags in this code. Here, it is an indication
+> of an individual feature.
 
-Thanks,
+led_flags?
 
-- Felix
+> 
+> > +};
+> > +
+> > +static const struct marvell_led_mode_info marvell_led_mode_info[] = {
+> > +	{ "link",			{ 0x0,  -1, 0x0,  -1,  -1,  -1, }, 0 },  
+> 
+> Replace flags 0 with COMMON?
+> 
+> > +	{ "link/act",			{ 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, }, 0 },
+> > +	{ "1Gbps/100Mbps/10Mbps",	{ 0x2,  -1,  -1,  -1,  -1,  -1, }, 0 },
+> > +	{ "act",			{ 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, }, 0 },
+> > +	{ "blink-act",			{ 0x4, 0x4, 0x4, 0x4, 0x4, 0x4, }, 0 },
+> > +	{ "tx",				{ 0x5,  -1, 0x5,  -1, 0x5, 0x5, }, 0 },
+> > +	{ "tx",				{  -1,  -1,  -1, 0x5,  -1,  -1, }, L3V5_TRANS },
+> > +	{ "rx",				{  -1,  -1,  -1,  -1, 0x0, 0x0, }, 0 },
+> > +	{ "rx",				{  -1, 0x0,  -1,  -1,  -1,  -1, }, L1V0_RECV },
+> > +	{ "copper",			{ 0x6,  -1,  -1,  -1,  -1,  -1, }, 0 },
+> > +	{ "copper",			{  -1, 0x0,  -1,  -1,  -1,  -1, }, L1V0_COPPER },
+> > +	{ "1Gbps",			{ 0x7,  -1,  -1,  -1,  -1,  -1, }, 0 },
+> > +	{ "link/rx",			{  -1, 0x2,  -1, 0x2, 0x2, 0x2, }, 0 },
+> > +	{ "100Mbps-fiber",		{  -1, 0x5,  -1,  -1,  -1,  -1, }, L1V5_100_FIBER },
+> > +	{ "100Mbps-10Mbps",		{  -1, 0x5,  -1,  -1,  -1,  -1, }, L1V5_100_10 },
+> > +	{ "1Gbps-100Mbps",		{  -1, 0x6,  -1,  -1,  -1,  -1, }, 0 },
+> > +	{ "1Gbps-10Mbps",		{  -1,  -1, 0x6, 0x6,  -1,  -1, }, 0 },
+> > +	{ "100Mbps",			{  -1, 0x7,  -1,  -1,  -1,  -1, }, 0 },
+> > +	{ "10Mbps",			{  -1,  -1, 0x7,  -1,  -1,  -1, }, 0 },
+> > +	{ "fiber",			{  -1,  -1,  -1, 0x0,  -1,  -1, }, L3V0_FIBER },
+> > +	{ "fiber",			{  -1,  -1,  -1, 0x7,  -1,  -1, }, L3V7_FIBER },
+> > +	{ "FullDuplex",			{  -1,  -1,  -1, 0x7,  -1,  -1, }, L3V7_DUPLEX },
+> > +	{ "FullDuplex",			{  -1,  -1,  -1,  -1, 0x6, 0x6, }, 0 },
+> > +	{ "FullDuplex/collision",	{  -1,  -1,  -1,  -1, 0x7, 0x7, }, 0 },
+> > +	{ "FullDuplex/collision",	{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_DUPLEX },
+> > +	{ "ptp",			{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_PTP },
+> > +	{ "init",			{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_INIT },
+> > +	{ "los",			{  -1,  -1,  -1, 0x0,  -1,  -1, }, L3V0_LOS },
+> > +	{ "hi-z",			{ 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, }, 0 },
+> > +	{ "blink",			{ 0xb, 0xb, 0xb, 0xb, 0xb, 0xb, }, 0 },
+> > +};
+> > +
+> > +struct marvell_leds_info {
+> > +	u32 family;
+> > +	int nleds;
+> > +	u32 flags;  
+> 
+> Here flags is a combination of all the features this specific PHY
+> supports.
+> 
+> > +};
+> > +
+> > +#define LED(fam,n,flg)								\
+> > +	{									\
+> > +		.family = MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E##fam),	\
+> > +		.nleds = (n),							\
+> > +		.flags = (flg),							\
+> > +	}									\
+> > +
+> > +static const struct marvell_leds_info marvell_leds_info[] = {
+> > +	LED(1112,  4, L1V0_COPPER | L1V5_100_FIBER | L2V2_INIT | L3V0_LOS | L3V5_TRANS | L3V7_FIBER),
+> > +	LED(1121R, 3, L1V5_100_10),
+> > +	LED(1240,  6, L3V5_TRANS),
+> > +	LED(1340S, 6, L1V0_COPPER | L1V5_100_FIBER | L2V2_PTP | L3V0_FIBER | L3V7_DUPLEX),
+> > +	LED(1510,  3, L1V0_RECV | L1V5_100_FIBER | L2V2_DUPLEX),
+> > +	LED(1545,  6, L1V0_COPPER | L1V5_100_FIBER | L3V0_FIBER | L3V7_DUPLEX),
+> > +};
+> > +
+> > +static inline int marvell_led_reg(int led)  
+> 
+> No inline functions in C code. Let the compiler decide.
 
----
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -347,6 +347,7 @@ struct napi_struct {
- 	struct list_head	dev_list;
- 	struct hlist_node	napi_hash_node;
- 	unsigned int		napi_id;
-+	struct work_struct	work;
- };
- 
- enum {
-@@ -357,6 +358,7 @@ enum {
- 	NAPI_STATE_HASHED,	/* In NAPI hash (busy polling possible) */
- 	NAPI_STATE_NO_BUSY_POLL,/* Do not add in napi_hash, no busy polling */
- 	NAPI_STATE_IN_BUSY_POLL,/* sk_busy_loop() owns this NAPI */
-+	NAPI_STATE_THREADED,	/* Use threaded NAPI */
- };
- 
- enum {
-@@ -367,6 +369,7 @@ enum {
- 	NAPIF_STATE_HASHED	 = BIT(NAPI_STATE_HASHED),
- 	NAPIF_STATE_NO_BUSY_POLL = BIT(NAPI_STATE_NO_BUSY_POLL),
- 	NAPIF_STATE_IN_BUSY_POLL = BIT(NAPI_STATE_IN_BUSY_POLL),
-+	NAPIF_STATE_THREADED	 = BIT(NAPI_STATE_THREADED),
- };
- 
- enum gro_result {
-@@ -2315,6 +2318,26 @@ static inline void *netdev_priv(const struct net_device *dev)
- void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
- 		    int (*poll)(struct napi_struct *, int), int weight);
- 
-+/**
-+ *	netif_threaded_napi_add - initialize a NAPI context
-+ *	@dev:  network device
-+ *	@napi: NAPI context
-+ *	@poll: polling function
-+ *	@weight: default weight
-+ *
-+ * This variant of netif_napi_add() should be used from drivers using NAPI
-+ * with CPU intensive poll functions.
-+ * This will schedule polling from a high priority workqueue that
-+ */
-+static inline void netif_threaded_napi_add(struct net_device *dev,
-+					   struct napi_struct *napi,
-+					   int (*poll)(struct napi_struct *, int),
-+					   int weight)
-+{
-+	set_bit(NAPI_STATE_THREADED, &napi->state);
-+	netif_napi_add(dev, napi, poll, weight);
-+}
-+
- /**
-  *	netif_tx_napi_add - initialize a NAPI context
-  *	@dev:  network device
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -158,6 +158,7 @@ static DEFINE_SPINLOCK(offload_lock);
- struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
- struct list_head ptype_all __read_mostly;	/* Taps */
- static struct list_head offload_base __read_mostly;
-+static struct workqueue_struct *napi_workq;
- 
- static int netif_rx_internal(struct sk_buff *skb);
- static int call_netdevice_notifiers_info(unsigned long val,
-@@ -6286,6 +6287,11 @@ void __napi_schedule(struct napi_struct *n)
- {
- 	unsigned long flags;
- 
-+	if (test_bit(NAPI_STATE_THREADED, &n->state)) {
-+		queue_work(napi_workq, &n->work);
-+		return;
-+	}
-+
- 	local_irq_save(flags);
- 	____napi_schedule(this_cpu_ptr(&softnet_data), n);
- 	local_irq_restore(flags);
-@@ -6333,6 +6339,11 @@ EXPORT_SYMBOL(napi_schedule_prep);
-  */
- void __napi_schedule_irqoff(struct napi_struct *n)
- {
-+	if (test_bit(NAPI_STATE_THREADED, &n->state)) {
-+		queue_work(napi_workq, &n->work);
-+		return;
-+	}
-+
- 	____napi_schedule(this_cpu_ptr(&softnet_data), n);
- }
- EXPORT_SYMBOL(__napi_schedule_irqoff);
-@@ -6601,6 +6612,29 @@ static void init_gro_hash(struct napi_struct *napi)
- 	napi->gro_bitmask = 0;
- }
- 
-+static void napi_workfn(struct work_struct *work)
-+{
-+	struct napi_struct *n = container_of(work, struct napi_struct, work);
-+
-+	for (;;) {
-+		if (!test_bit(NAPI_STATE_SCHED, &n->state))
-+			return;
-+
-+		if (n->poll(n, n->weight) < n->weight)
-+			return;
-+
-+		if (need_resched()) {
-+			/*
-+			 * have to pay for the latency of task switch even if
-+			 * napi is scheduled
-+			 */
-+			if (test_bit(NAPI_STATE_SCHED, &n->state))
-+				queue_work(napi_workq, work);
-+			return;
-+		}
-+	}
-+}
-+
- void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
- 		    int (*poll)(struct napi_struct *, int), int weight)
- {
-@@ -6621,6 +6655,7 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
- #ifdef CONFIG_NETPOLL
- 	napi->poll_owner = -1;
- #endif
-+	INIT_WORK(&napi->work, napi_workfn);
- 	set_bit(NAPI_STATE_SCHED, &napi->state);
- 	napi_hash_add(napi);
- }
-@@ -10676,6 +10711,10 @@ static int __init net_dev_init(void)
- 		sd->backlog.weight = weight_p;
- 	}
- 
-+	napi_workq = alloc_workqueue("napi_workq", WQ_UNBOUND | WQ_HIGHPRI,
-+				     WQ_UNBOUND_MAX_ACTIVE);
-+	BUG_ON(!napi_workq);
-+
- 	dev_boot_phase = 0;
- 
- 	/* The loopback device is special if any other network devices
+OK
+
+> 
+> > +{
+> > +	switch (led) {
+> > +	case 0 ... 3:
+> > +		return MII_PHY_LED_CTRL;
+> > +	case 4 ... 5:
+> > +		return MII_PHY_LED45_CTRL;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +}  
+> 
+> > +static inline bool is_valid_led_mode(struct marvell_priv *priv, struct marvell_phy_led *led,
+> > +				     const struct marvell_led_mode_info *mode)  
+> 
+> Same here, and anywhere else you might of used inline.
+> 
+> > +{
+> > +	return mode->regval[led->idx] != -1 && (!mode->flags || (priv->led_flags & mode->flags));  
+> 
+> If you have COMMON, this gets simpler.
+
+How? I need to check whether this specific LED mode has that specific
+flag bit...
+
+> > +}
+> > +  
+> 
+> > +static int marvell_register_led(struct phy_device *phydev, struct device_node *np, int nleds)
+> > +{
+> > +	struct marvell_priv *priv = phydev->priv;
+> > +	struct led_init_data init_data = {};
+> > +	struct marvell_phy_led *led;
+> > +	u32 reg, color;
+> > +	int err;
+> > +
+> > +	err = of_property_read_u32(np, "reg", &reg);
+> > +	if (err < 0)
+> > +		return err;
+> > +
+> > +	/*
+> > +	 * Maybe we should check here if reg >= nleds, where nleds is number of LEDs of this specific
+> > +	 * PHY.
+> > +	 */
+> > +	if (reg >= nleds) {
+> > +		phydev_err(phydev,
+> > +			   "LED node %pOF 'reg' property too large (%u, PHY supports max %u)\n",
+> > +			   np, reg, nleds - 1);
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	led = &priv->leds[reg];
+> > +
+> > +	err = of_property_read_u32(np, "color", &color);
+> > +	if (err < 0) {
+> > +		phydev_err(phydev, "LED node %pOF does not specify color\n", np);
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +#if 0
+> > +	/* LED_COLOR_ID_MULTI is not yet merged in Linus' tree */
+> > +	/* TODO: Support DUAL MODE */
+> > +	if (color == LED_COLOR_ID_MULTI) {
+> > +		phydev_warn(phydev, "node %pOF: This driver does not yet support multicolor LEDs\n",
+> > +			    np);
+> > +		return -ENOTSUPP;
+> > +	}
+> > +#endif  
+> 
+> Code getting committed should not be using #if 0. Is the needed code
+> in the LED tree? Do we want to consider a stable branch of the LED
+> tree which DaveM can pull into net-next? Or do you want to wait until
+> the next merge cycle?
+
+That's why this is RFC. But yes, I would like to have this merged for
+5.9, so maybe we should ask Dave. Is this common? Do we also need to
+tell Pavel or how does this work?
+
+> > +
+> > +	init_data.fwnode = &np->fwnode;
+> > +	init_data.devname_mandatory = true;
+> > +	init_data.devicename = phydev->attached_dev ? netdev_name(phydev->attached_dev) : "";  
+> 
+> This we need to think about. Are you running this on a system with
+> systemd? Does the interface have a name like enp2s0? Does the LED get
+> registered before or after systemd renames it from eth0 to enp2s0?
+
+Yes, well, this should be discussed also with LED guys. I don't suppose
+that renaming the sysfs symlink on interface rename event is
+appropriate, but who knows?
+The interfaces are platform specific, on mvebu. They aren't connected
+via PCI, so their names remain eth0, eth1 ...
+
+> > +
+> > +	if (led->cdev.max_brightness) {
+> > +		phydev_err(phydev, "LED node %pOF 'reg' property collision with another LED\n", np);
+> > +		return -EEXIST;
+> > +	}
+> > +
+> > +	led->cdev.max_brightness = 1;
+> > +	led->cdev.brightness_set_blocking = marvell_led_brightness_set;
+> > +	led->cdev.trigger_type = &phy_hw_led_trig_type;
+> > +	led->idx = reg;
+> > +
+> > +	of_property_read_string(np, "linux,default-trigger", &led->cdev.default_trigger);
+> > +
+> > +	err = devm_led_classdev_register_ext(&phydev->mdio.dev, &led->cdev, &init_data);
+> > +	if (err < 0) {
+> > +		phydev_err(phydev, "Cannot register LED %pOF: %i\n", np, err);
+> > +		return err;
+> > +	}  
+> 
+> I don't like having the DT binding in the driver. We want all PHY
+> drivers to use the same binding, and not feel free to implement
+> whatever they want in their own driver. These are all standard
+> properties which all PHY drivers should be using. So lets move it into
+> phylib core. That also allows us to specify the properties in DT,
+> maybe just pulling in the core LED yaml stuff.
+> 
+
+I also want this code to be generalized somehow so that it can be
+reused. The problem is that I want to have support for DUAL mode, which
+is Marvell specific, and a DUAL LED needs to be defined in device tree.
+
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static void marvell_register_leds(struct phy_device *phydev)
+> > +{
+> > +	struct marvell_priv *priv = phydev->priv;
+> > +	struct device_node *node = phydev->mdio.dev.of_node;
+> > +	struct device_node *leds, *led;
+> > +	const struct marvell_leds_info *info = NULL;
+> > +	int i;  
+> 
+> Reverse Christmas tree.
+> 
+> > +
+> > +	/* some families don't support LED control in this driver yet */
+> > +	if (!phydev->drv->led_set_hw_mode)
+> > +		return;
+> > +
+> > +	for (i = 0; i < ARRAY_SIZE(marvell_leds_info); ++i) {
+> > +		if (MARVELL_PHY_FAMILY_ID(phydev->phy_id) == marvell_leds_info[i].family) {
+> > +			info = &marvell_leds_info[i];
+> > +			break;
+> > +		}
+> > +	}
+> > +
+> > +	if (!info)
+> > +		return;
+> > +
+> > +	priv->led_flags = info->flags;
+> > +
+> > +#if 0
+> > +	/*
+> > +	 * TODO: here priv->led_flags should be changed so that hw_control values
+> > +	 * for unsupported modes won't be shown. This cannot be deduced from
+> > +	 * family only: for example the 88E1510 family contains 88E1510 which
+> > +	 * does not support fiber, but also 88E1512, which supports fiber.
+> > +	 */
+> > +	switch (MARVELL_PHY_FAMILY_ID(phydev->phy_id)) {
+> > +	}
+> > +#endif
+> > +
+> > +	leds = of_get_child_by_name(node, "leds");
+> > +	if (!leds)
+> > +		return;
+> > +
+> > +	for_each_available_child_of_node(leds, led) {
+> > +		/* Should this check if some LED registration failed? */
+> > +		marvell_register_led(phydev, led, info->nleds);
+> > +	}
+> > +}
+> > +  
+> 
+>   Andrew
+
