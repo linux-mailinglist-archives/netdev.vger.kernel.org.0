@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36F3122D818
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 16:25:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42B9622D81B
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 16:25:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727887AbgGYOZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 10:25:01 -0400
-Received: from mail-eopbgr30053.outbound.protection.outlook.com ([40.107.3.53]:46987
+        id S1727910AbgGYOZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 10:25:07 -0400
+Received: from mail-eopbgr30079.outbound.protection.outlook.com ([40.107.3.79]:2415
         "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726944AbgGYOZA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jul 2020 10:25:00 -0400
+        id S1726944AbgGYOZF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jul 2020 10:25:05 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UQCdhB4PCQB/XAttIT3s7zA5DJLWlB5wOTJDEUDCtFPZ9iELDwmn7fwJdTnHNSpemRrtC4zWpnUdrrySEPtOObCf6NoPZyun2YUk5WcQzQMmgqDhDI6m+WLcq9P8w7y0YNqRrIEGrzYT4UZe5MTKxl07mqlCP/W3nsQgnxzIW3ZuH1hf9Nj4xCm5NEpZ/oHh4UJdK/wsb2OyAO1fulMQBF7ECJ8SLqwfhiEaB3mRpeWpBtNaR6j47sFPXEyUMIDs7UVq0Rkwqau8IxsJGnDtjViXMAaljJhVf3o2mKq0GWn65Qv+0bw6QVad1AqHhw7PfOX66s/3I88V7IrVDlQRKw==
+ b=ROKMZEBuS4KRRL4sLJE5VN1VL3o4vJgYmt0/4N6hsktFzDZBLwUiYmu98vIVftXc9Q5MCaMjRzHRrIX4RQh/fn+n66L6Py/kwMsa183dAWMksUL+yKSZmm21eZ6+fLJxpA6ShwmZY0IhfezP24YzVQFlK537qTSJfxtDs52qp9/Jd9PorI31imIP/w9lG3EmNwI0jn37wRzWwoyKdkf5oiZgrssgwdCajd6b4p6gESJDgI8e9xD8c9tEEno2veVKI4TYve2rH5WVsksxoh/RB9MjmyA2n8ZKT7jHTnrm7bKfEnRXPobcYIP7k/BoPExl7mFtSI13W3eLbx3ygs/+1Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s3kdm1lDYjdzIJwkMrYd/NBbXanHVS+ZY/kzco22Wpw=;
- b=WL8KdW89bjoIbfK8Her5uPZ9jHqpOREzq7zxPQEWwMDjp/j/E6rDCdCEJ3cWGA2u80+XtS2sm3z1l/7Sbfnf4pVYGkeyuvDeYZibpEDWBEP9OnYRR+sgnDYX7T0ekdV0X6drj8V+oFwJk+mfdohk2+3Iu368YW+9gEC0RSUp4DIWjn412mBSn/mOkR9hN8bi1DmKQDQsE03eeyoXteC4cFLGomYtsVs+6OplGa5Rqzv5FpTD2o5MLCc4u+qGogsXdjkdmkqop8LyWImZva2B3mtIFxb0DjIyUPl7S1iCgtAF03Adz04d+WQc+2vkR2AAvohxVsiEuoBMo/s/hYkocA==
+ bh=f1viDoyHHBQierD0TQySliftKgcLbKdXUmBXhtUvd9o=;
+ b=eXsNniSShyH4V/ozMifaOWWrwrRswn7EdLXPe2Q3Nl78U7CER3/rUw/cXu1OKAsplBtDxlg1sc0qG8w+5oomEA6j9vP5l85VG1lu/85hA7rokVED8w4bdoMQ7esmPBHeoUShEFRPkr1SYGnitNMLRiWwYRgMlT9B2WnjWe40/Jf7j4v8l9xJF7suFUiYy1mn0scDAbsQeGD/FfmhVzBuikY1Gxw7wPT4lkMqMmSaoY3BkG7101U8K8adcnRVczeFqGKy+SFJYweDu0XXoP2RjsjNrusbnbfeHst2uXggzTyxPiigfs9y+pHGPz8D72MEueFEimHyUdGsmmrJm99P3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s3kdm1lDYjdzIJwkMrYd/NBbXanHVS+ZY/kzco22Wpw=;
- b=IVjqZsG7QFb+05A4Ij5KZczigqj/tkL0OuEMSqTXrhWwWKA1+w8CfejIbgy/rQsTYxIdlFmN9LXF+kvWyWsKCH89Rm5Soc+1uSPEc1OTGYOtuknvKS/srZ3Mw6omzmXZaMrccT/2HB9D0io7kF0svpKQdh4W9NwhUN50vCCSRzg=
+ bh=f1viDoyHHBQierD0TQySliftKgcLbKdXUmBXhtUvd9o=;
+ b=ESXs7kC1blyPPwksuBsnMETG4LvVp4ukmr2wctrGkiCnEWGimsez/1Z82hKsrRstTHT7ySJ+9aucAZrAEmardm8p4y7SdmLnE+M2axzNuygdYkvr+vkNookNSrFqf4Uulq1ZxSGDkwd5xDvgPidRhmv0Hlu5fQUGuYnYEshMKs4=
 Authentication-Results: kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=none action=none header.from=oss.nxp.com;
 Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
  by AM0PR04MB4931.eurprd04.prod.outlook.com (2603:10a6:208:c1::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.22; Sat, 25 Jul
- 2020 14:24:57 +0000
+ 2020 14:25:02 +0000
 Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
  ([fe80::b1ae:d2cd:6170:bf76]) by AM0PR04MB5636.eurprd04.prod.outlook.com
  ([fe80::b1ae:d2cd:6170:bf76%7]) with mapi id 15.20.3216.027; Sat, 25 Jul 2020
- 14:24:57 +0000
+ 14:25:02 +0000
 From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
 To:     "Rafael J . Wysocki" <rafael@kernel.org>,
         Len Brown <lenb@kernel.org>,
@@ -57,9 +57,9 @@ To:     "Rafael J . Wysocki" <rafael@kernel.org>,
 Cc:     linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
         linux.cj@gmail.com, Paul Yang <Paul.Yang@arm.com>,
         Calvin Johnson <calvin.johnson@oss.nxp.com>
-Subject: [net-next PATCH v7 2/6] net: phy: introduce device_mdiobus_register()
-Date:   Sat, 25 Jul 2020 19:54:00 +0530
-Message-Id: <20200725142404.30634-3-calvin.johnson@oss.nxp.com>
+Subject: [net-next PATCH v7 3/6] net/fsl: use device_mdiobus_register()
+Date:   Sat, 25 Jul 2020 19:54:01 +0530
+Message-Id: <20200725142404.30634-4-calvin.johnson@oss.nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200725142404.30634-1-calvin.johnson@oss.nxp.com>
 References: <20200725142404.30634-1-calvin.johnson@oss.nxp.com>
@@ -69,40 +69,42 @@ X-ClientProxiedBy: SG2PR0302CA0018.apcprd03.prod.outlook.com
  (2603:10a6:208:130::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR0302CA0018.apcprd03.prod.outlook.com (2603:1096:3:2::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.9 via Frontend Transport; Sat, 25 Jul 2020 14:24:52 +0000
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR0302CA0018.apcprd03.prod.outlook.com (2603:1096:3:2::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.9 via Frontend Transport; Sat, 25 Jul 2020 14:24:57 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [14.142.151.118]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 9ff7d112-194a-49da-374e-08d830a681b7
+X-MS-Office365-Filtering-Correlation-Id: 59290318-d538-4254-e2f4-08d830a6849f
 X-MS-TrafficTypeDiagnostic: AM0PR04MB4931:
 X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB49318CBF265B1778C993321AD2740@AM0PR04MB4931.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Microsoft-Antispam-PRVS: <AM0PR04MB4931CA68A16C7CDD1F5084B1D2740@AM0PR04MB4931.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2089;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TllzpI1m15PjFn5bazgfaHJ6DVrCTo1zKaL7/0W40UTPzN4oBveuSEQcuDyak5pM3kY/irlmM1n9QKbEpW41QDFFkKAVYf40HYcB+djZsEnGa1MIgy3uQYEAkYQ2NoKNHHg2KlJWa21aSDzi4Coa1WFGUWR6OuLwdIo0dkXOeCIXeiZgZj88qW80HcdaWJFSpAhJdw8QTpgtM6Oma/QYGWwYHfsZlxmhUFFvlfovbghasxH9rxYEgGWYCpQQH9H3MbI1sppLNVxF4PYeOINIsO/VRuptk6ERl+/oLw6dAxUW8Tk640l2Xvall2Yj+qalBSbRpdt2VqhC5R0eJKSJT2ReGj4INgF5oKmz6BVcmMdJ+ha2WhjwPs3M0jm/3qa5DjALmnSQkFtWK7lOSe5cwg==
+X-Microsoft-Antispam-Message-Info: obOAs9Omm/laDZ/TRxBtVYPG8TCOZyUwKGPJBzvP4pUdvN7vpvzkXgQl9FaISOnZKPRch4+aOARGspqeLzLhSPTs6f6YhJaS0oXM/uBpcvCClck+3/GgMl43m6KKVmENODr8SEGgpvSV+BDHncze3cLqYZka7UXjgz1St0bEILYjTkMLfvFfpWNThau29zDY5eecpI8QqKDmQ6rGcfrXHTBKQeYZYCo8WVGzRSioeRAygq6+b0yI+9Q/DRGJSS68tv1DHxO8devoG4UhsUGEgXGdjGoY49Zp/iSLstLE+EdBVA0avmYXFIUkaUGwvFTMqVRcbRisbtSe2BvFqlkeRs7lijq2DkFQ7RD+ia8DkEAa2x4Hbss6b/5cjmy1InZthbnU3cRAurUAbuwV5qhToA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(366004)(346002)(396003)(376002)(136003)(66946007)(66476007)(5660300002)(6506007)(6512007)(86362001)(55236004)(52116002)(478600001)(44832011)(110136005)(8676002)(316002)(54906003)(1076003)(66556008)(4326008)(16526019)(956004)(2616005)(26005)(8936002)(6636002)(186003)(83380400001)(2906002)(6486002)(6666004)(1006002)(7416002)(110426005)(921003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: raXNd4fChnllcAveXBlfAo49fH3B8yOYZkNPM+DUizupOiX3fWxDO6AXq4Jq4UEKV8Asz4jsUogGofhp4esiuYry4xfFR5Fc/3j96yXQkTf4fEvs4YdtHJtQ1a+o1GgWPFXE/imGdgLwf0kLPqIz7flpsWMZ5//AJkSqZ8mm9u8KoZXpIkEsmbkhwfQorYDlnGAAiJ9Jjr/VG5sAL3wQCvzk9MdS3nxgtjuHzYk5SOYM0mUCUGLYM0dlnOF3WgXGbczD6mu7p9wPUq23hx4gdjjyoQuMKuPLkkJVXYViX9Kw6ahlNKco6XwtKDFb4f6sIANGMQp+2JCol7vQFkDR+4p88hhhcIG2vRr4UPxg+v4mJoaAd3Z7EGAiv6i64d5QxQSoB7onq+dw+PyIS/d8JnV/pc/Ca3E9HbyyYSxTDM9IgJO3fBeJzj+290BfvsG4g31rxPm6MC59TYf1Q++4NmDx5+AiywXHuW78aa6WKRw=
+X-MS-Exchange-AntiSpam-MessageData: HIblcTaqhe+jwUcbvkEfuffpbA88BgxlZ0Q7J2Y4fL/FtMYKryleiLkRIPSyj17ZFbY49fOuYKPE+i4OvAg0u1YjMvKaBUaK9Zr1znm76ZuwYxEJLVT0r7JwsgbTiXHvEYHW1wk223UEJrtBrVGVxr4QO4dw6PoAP9a3XsrUeptR+5XEKh2F3g6vo4hSqdZkwUNa9KW+W/DUpjxW8NIkfHwc5rs7DvsUvRc+BDTVoc+dvs8I6h+EWRNNiRitwXB2HO236FIbE2mUqqopozlv01wvLQaClejXdB2OQD9qq0r8hDAZ+NXBIE8X9HVNfiAmTWFUGK2lPBukyW56b4VrVUK8Wyu3vbCXYp282+4LqFdOCj+PyOeCxdGij2hmkAf80+obRSo9SQtPGKxu+K2j8iZ90c64X6f9k2An9Sk2sGMPfYuRG7ZcG02YSK0fBntbv0nZXGyJ58yxIkqE0vaOmKGxjjCslSelBO0DckxPDGs=
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ff7d112-194a-49da-374e-08d830a681b7
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59290318-d538-4254-e2f4-08d830a6849f
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2020 14:24:57.3316
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2020 14:25:02.2339
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ityTJYmiO4q5Y2CoHvi9SW9KeoUc+85RDjs/KHUDAp68BGg+uwSyfPFaZ/ZQvOarA3p6D3dSIGAlj4jM7SPBUQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: RkO2E91LUNxDtmsBFO5FL1oO6dg9qLeADUqehqMm4cfvbMtBIPTSL9ItT58b1PzvymNZ1SnyBKixuv5QvIC/+w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4931
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce device_mdiobus_register() to register mdiobus
-in cases of either DT or ACPI.
+Replace of_mdiobus_register() with device_mdiobus_register()
+to take care of both DT and ACPI mdiobus_register.
+
+Remove unused device_node pointer.
 
 Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
 
@@ -111,69 +113,36 @@ Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
 Changes in v7: None
 Changes in v6:
 - change device_mdiobus_register() parameter position
-- improve documentation
 
-Changes in v5:
-- add description
-- clean up if else
-
+Changes in v5: None
 Changes in v4: None
 Changes in v3: None
 Changes in v2: None
 
- drivers/net/phy/mdio_bus.c | 26 ++++++++++++++++++++++++++
- include/linux/mdio.h       |  1 +
- 2 files changed, 27 insertions(+)
+ drivers/net/ethernet/freescale/xgmac_mdio.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 46b33701ad4b..8610f938f81f 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -501,6 +501,32 @@ static int mdiobus_create_device(struct mii_bus *bus,
- 	return ret;
- }
+diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
+index 98be51d8b08c..704f2b166d0a 100644
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -243,7 +243,6 @@ static int xgmac_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
  
-+/**
-+ * device_mdiobus_register - register mdiobus for either DT or ACPI
-+ * @bus: target mii_bus
-+ * @dev: given MDIO device
-+ *
-+ * Description: Given an MDIO device and target mii bus, this function
-+ * calls of_mdiobus_register() for DT node and mdiobus_register() in
-+ * case of ACPI.
-+ *
-+ * Returns 0 on success or negative error code on failure.
-+ */
-+int device_mdiobus_register(struct device *dev,
-+			    struct mii_bus *bus)
-+{
-+	struct fwnode_handle *fwnode = dev_fwnode(dev);
-+
-+	if (is_of_node(fwnode))
-+		return of_mdiobus_register(bus, to_of_node(fwnode));
-+	if (fwnode) {
-+		bus->dev.fwnode = fwnode;
-+		return mdiobus_register(bus);
-+	}
-+	return -ENODEV;
-+}
-+EXPORT_SYMBOL(device_mdiobus_register);
-+
- /**
-  * __mdiobus_register - bring up all the PHYs on a given bus and attach them to bus
-  * @bus: target mii_bus
-diff --git a/include/linux/mdio.h b/include/linux/mdio.h
-index 898cbf00332a..f454c5435101 100644
---- a/include/linux/mdio.h
-+++ b/include/linux/mdio.h
-@@ -358,6 +358,7 @@ static inline int mdiobus_c45_read(struct mii_bus *bus, int prtad, int devad,
- 	return mdiobus_read(bus, prtad, mdiobus_c45_addr(devad, regnum));
- }
+ static int xgmac_mdio_probe(struct platform_device *pdev)
+ {
+-	struct device_node *np = pdev->dev.of_node;
+ 	struct mii_bus *bus;
+ 	struct resource *res;
+ 	struct mdio_fsl_priv *priv;
+@@ -285,7 +284,7 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
+ 	priv->has_a011043 = device_property_read_bool(&pdev->dev,
+ 						      "fsl,erratum-a011043");
  
-+int device_mdiobus_register(struct device *dev, struct mii_bus *bus);
- int mdiobus_register_device(struct mdio_device *mdiodev);
- int mdiobus_unregister_device(struct mdio_device *mdiodev);
- bool mdiobus_is_registered_device(struct mii_bus *bus, int addr);
+-	ret = of_mdiobus_register(bus, np);
++	ret = device_mdiobus_register(&pdev->dev, bus);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "cannot register MDIO bus\n");
+ 		goto err_registration;
 -- 
 2.17.1
 
