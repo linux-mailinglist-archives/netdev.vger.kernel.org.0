@@ -2,294 +2,289 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B0A22D6AE
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 12:19:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFD6422D6CF
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 12:38:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726861AbgGYKTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 06:19:19 -0400
-Received: from mga12.intel.com ([192.55.52.136]:54026 "EHLO mga12.intel.com"
+        id S1726944AbgGYKiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 06:38:10 -0400
+Received: from mail.as201155.net ([185.84.6.188]:41766 "EHLO mail.as201155.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726572AbgGYKTS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jul 2020 06:19:18 -0400
-IronPort-SDR: sgpIm6lyw5YQPj9IuQvb5eSRefheBWt8p1aiP9fciyoCy4daj+YAWZui0Oz7TtB0q3YupmzTPV
- 10JybR6P2gjA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9692"; a="130382097"
-X-IronPort-AV: E=Sophos;i="5.75,394,1589266800"; 
-   d="scan'208";a="130382097"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2020 03:19:18 -0700
-IronPort-SDR: vC7ecFJckjo9BxNDXWsOk7Zzvf8xTYC9mNM3AFC4P3aQqi/0/cPd9wwMg+EhTQijm06aSdNmIm
- 81tmVPzj3uhA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,394,1589266800"; 
-   d="scan'208";a="327549434"
-Received: from vgjayaku-ilbpg7.png.intel.com ([10.88.227.96])
-  by FMSMGA003.fm.intel.com with ESMTP; 25 Jul 2020 03:19:15 -0700
-From:   vineetha.g.jaya.kumaran@intel.com
-To:     davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
-        robh+dt@kernel.org
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        weifeng.voon@intel.com, hock.leong.kweh@intel.com,
-        boon.leong.ong@intel.com
-Subject: [PATCH v2 2/2] net: stmmac: Add dwmac-intel-plat for GBE driver
-Date:   Sat, 25 Jul 2020 18:17:59 +0800
-Message-Id: <1595672279-13648-3-git-send-email-vineetha.g.jaya.kumaran@intel.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1595672279-13648-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
-References: <1595672279-13648-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+        id S1726636AbgGYKiJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jul 2020 06:38:09 -0400
+X-Greylist: delayed 127898 seconds by postgrey-1.27 at vger.kernel.org; Sat, 25 Jul 2020 06:38:07 EDT
+Received: from smtps.newmedia-net.de ([2a05:a1c0:0:de::167]:48828 helo=webmail.newmedia-net.de)
+        by mail.as201155.net with esmtps (TLSv1:DHE-RSA-AES256-SHA:256)
+        (Exim 4.82_1-5b7a7c0-XX)
+        (envelope-from <s.gottschall@dd-wrt.com>)
+        id 1jzHZ5-0003nz-2W; Sat, 25 Jul 2020 12:38:03 +0200
+X-CTCH-RefID: str=0001.0A782F21.5F1C0B8B.0051,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=dd-wrt.com; s=mikd;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=jq3dlc+cdk2c+17CURe7NgYwWb2Z4/X0bonnPMZqnwU=;
+        b=s3f/EwNj9aECmwSa4lZEFSQWpxhwGjBE+CtfnLMUCESNry3Xk03e2WYds8iESztGNVoXOHof93R0U7M4zuFtt512wYXzfolDjd66dYrzxYuFOJx1npOBkEEkI+x+Zea49TfKrAYNPG4lI0EdvzEGYLQ8uCL4J2zTozrXjVgDSEs=;
+Subject: Re: [RFC 0/7] Add support to process rx packets in thread
+To:     Hillf Danton <hdanton@sina.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Rakesh Pillai <pillair@codeaurora.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        Markus Elfring <Markus.Elfring@web.de>,
+        "evgreen@chromium.org" <evgreen@chromium.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
+References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
+ <20200721172514.GT1339445@lunn.ch> <20200725081633.7432-1-hdanton@sina.com>
+From:   Sebastian Gottschall <s.gottschall@dd-wrt.com>
+Message-ID: <8359a849-2b8a-c842-a501-c6cb6966e345@dd-wrt.com>
+Date:   Sat, 25 Jul 2020 12:38:00 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101
+ Thunderbird/79.0
+MIME-Version: 1.0
+In-Reply-To: <20200725081633.7432-1-hdanton@sina.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Received:  from [2a01:7700:8040:4d00:3da5:f3e1:ed1:597]
+        by webmail.newmedia-net.de with esmtpsa (TLSv1:AES128-SHA:128)
+        (Exim 4.72)
+        (envelope-from <s.gottschall@dd-wrt.com>)
+        id 1jzHZ5-0002yT-Bk; Sat, 25 Jul 2020 12:38:03 +0200
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rusaimi Amira Ruslan <rusaimi.amira.rusaimi@intel.com>
+you may consider this
 
-Add dwmac-intel-plat to enable the stmmac driver in Intel Keem Bay.
-Also add fix_mac_speed and tx_clk in order to change link speeds.
-This is required as mac_speed_o is not connected in the
-Intel Keem Bay SoC.
+https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1142611.html 
+<https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1142611.html>
 
-Signed-off-by: Rusaimi Amira Ruslan <rusaimi.amira.rusaimi@intel.com>
-Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/Kconfig        |  10 ++
- drivers/net/ethernet/stmicro/stmmac/Makefile       |   1 +
- .../net/ethernet/stmicro/stmmac/dwmac-intel-plat.c | 191 +++++++++++++++++++++
- 3 files changed, 202 insertions(+)
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
+years ago someone already wanted to bring this feature upstream, but it 
+was denied. i already tested this patch the last 2 days and it worked so 
+far (with some little modifications)
+so such a solution existed already and may be considered here
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 9a47c5a..7572cea 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -209,6 +209,16 @@ config DWMAC_IMX8
- 	  device driver. This driver is used for i.MX8 series like
- 	  iMX8MP/iMX8DXL GMAC ethernet controller.
- 
-+config DWMAC_INTEL_PLAT
-+	tristate "Intel dwmac support"
-+	depends on OF && COMMON_CLK
-+	depends on STMMAC_ETH
-+	help
-+	  Support for ethernet controllers on Intel SoCs
-+
-+	  This selects the Intel platform specific glue layer support for
-+	  the stmmac device driver. This driver is used for the Intel Keem Bay
-+	  SoC.
- endif
- 
- config DWMAC_INTEL
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
-index 295615a..24e6145 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Makefile
-+++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
-@@ -26,6 +26,7 @@ obj-$(CONFIG_DWMAC_STM32)	+= dwmac-stm32.o
- obj-$(CONFIG_DWMAC_SUNXI)	+= dwmac-sunxi.o
- obj-$(CONFIG_DWMAC_SUN8I)	+= dwmac-sun8i.o
- obj-$(CONFIG_DWMAC_DWC_QOS_ETH)	+= dwmac-dwc-qos-eth.o
-+obj-$(CONFIG_DWMAC_INTEL_PLAT)	+= dwmac-intel-plat.o
- obj-$(CONFIG_DWMAC_GENERIC)	+= dwmac-generic.o
- obj-$(CONFIG_DWMAC_IMX8)	+= dwmac-imx.o
- stmmac-platform-objs:= stmmac_platform.o
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
-new file mode 100644
-index 00000000..ccac7bf
---- /dev/null
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
-@@ -0,0 +1,191 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Intel DWMAC platform driver
-+ *
-+ * Copyright(C) 2020 Intel Corporation
-+ */
-+
-+#include <linux/ethtool.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/stmmac.h>
-+
-+#include "stmmac.h"
-+#include "stmmac_platform.h"
-+
-+struct intel_dwmac {
-+	struct device *dev;
-+	struct clk *tx_clk;
-+	const struct intel_dwmac_data *data;
-+};
-+
-+struct intel_dwmac_data {
-+	void (*fix_mac_speed)(void *priv, unsigned int speed);
-+	unsigned long ptp_ref_clk_rate;
-+	unsigned long tx_clk_rate;
-+	bool tx_clk_en;
-+};
-+
-+static void kmb_eth_fix_mac_speed(void *priv, unsigned int speed)
-+{
-+	struct intel_dwmac *dwmac = priv;
-+	unsigned long rate;
-+	int ret;
-+
-+	rate = clk_get_rate(dwmac->tx_clk);
-+
-+	switch (speed) {
-+	case SPEED_1000:
-+		rate = 125000000;
-+		break;
-+
-+	case SPEED_100:
-+		rate = 25000000;
-+		break;
-+
-+	case SPEED_10:
-+		rate = 2500000;
-+		break;
-+
-+	default:
-+		dev_err(dwmac->dev, "Invalid speed\n");
-+		break;
-+	}
-+
-+	ret = clk_set_rate(dwmac->tx_clk, rate);
-+	if (ret)
-+		dev_err(dwmac->dev, "Failed to configure tx clock rate\n");
-+}
-+
-+static const struct intel_dwmac_data kmb_data = {
-+	.fix_mac_speed = kmb_eth_fix_mac_speed,
-+	.ptp_ref_clk_rate = 200000000,
-+	.tx_clk_rate = 125000000,
-+	.tx_clk_en = true,
-+};
-+
-+static const struct of_device_id intel_eth_plat_match[] = {
-+	{ .compatible = "intel,keembay-dwmac", .data = &kmb_data },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, intel_eth_plat_match);
-+
-+static int intel_eth_plat_probe(struct platform_device *pdev)
-+{
-+	struct net_device *ndev = platform_get_drvdata(pdev);
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+	struct plat_stmmacenet_data *plat_dat;
-+	struct stmmac_resources stmmac_res;
-+	const struct of_device_id *match;
-+	struct intel_dwmac *dwmac;
-+	unsigned long rate;
-+	int ret;
-+
-+	plat_dat = priv->plat;
-+	ret = stmmac_get_platform_resources(pdev, &stmmac_res);
-+	if (ret)
-+		return ret;
-+
-+	plat_dat = stmmac_probe_config_dt(pdev, &stmmac_res.mac);
-+	if (IS_ERR(plat_dat)) {
-+		dev_err(&pdev->dev, "dt configuration failed\n");
-+		return PTR_ERR(plat_dat);
-+	}
-+
-+	dwmac = devm_kzalloc(&pdev->dev, sizeof(*dwmac), GFP_KERNEL);
-+	if (!dwmac) {
-+		ret = -ENOMEM;
-+		goto err_remove_config_dt;
-+	}
-+
-+	dwmac->dev = &pdev->dev;
-+	dwmac->tx_clk = NULL;
-+
-+	match = of_match_device(intel_eth_plat_match, &pdev->dev);
-+	if (match && match->data) {
-+		dwmac->data = (const struct intel_dwmac_data *)match->data;
-+
-+		if (dwmac->data->fix_mac_speed)
-+			plat_dat->fix_mac_speed = dwmac->data->fix_mac_speed;
-+
-+		/* Enable TX clock */
-+		if (dwmac->data->tx_clk_en) {
-+			dwmac->tx_clk = devm_clk_get(&pdev->dev, "tx_clk");
-+			if (IS_ERR(dwmac->tx_clk))
-+				goto err_remove_config_dt;
-+
-+			clk_prepare_enable(dwmac->tx_clk);
-+
-+			/* Check and configure TX clock rate */
-+			rate = clk_get_rate(dwmac->tx_clk);
-+			if (dwmac->data->tx_clk_rate &&
-+			    rate != dwmac->data->tx_clk_rate) {
-+				rate = dwmac->data->tx_clk_rate;
-+				ret = clk_set_rate(dwmac->tx_clk, rate);
-+				if (ret) {
-+					dev_err(&pdev->dev,
-+						"Failed to set tx_clk\n");
-+					return ret;
-+				}
-+			}
-+		}
-+
-+		/* Check and configure PTP ref clock rate */
-+		rate = clk_get_rate(plat_dat->clk_ptp_ref);
-+		if (dwmac->data->ptp_ref_clk_rate &&
-+		    rate != dwmac->data->ptp_ref_clk_rate) {
-+			rate = dwmac->data->ptp_ref_clk_rate;
-+			ret = clk_set_rate(plat_dat->clk_ptp_ref, rate);
-+			if (ret) {
-+				dev_err(&pdev->dev,
-+					"Failed to set clk_ptp_ref\n");
-+				return ret;
-+			}
-+		}
-+	}
-+
-+	plat_dat->bsp_priv = dwmac;
-+
-+	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
-+	if (ret) {
-+		if (dwmac->tx_clk)
-+			clk_disable_unprepare(dwmac->tx_clk);
-+
-+		goto err_remove_config_dt;
-+	}
-+
-+	return 0;
-+
-+err_remove_config_dt:
-+	stmmac_remove_config_dt(pdev, plat_dat);
-+
-+	return ret;
-+}
-+
-+static int intel_eth_plat_remove(struct platform_device *pdev)
-+{
-+	struct intel_dwmac *dwmac = get_stmmac_bsp_priv(&pdev->dev);
-+	int ret;
-+
-+	ret = stmmac_pltfr_remove(pdev);
-+
-+	if (dwmac->tx_clk)
-+		clk_disable_unprepare(dwmac->tx_clk);
-+
-+	return ret;
-+}
-+
-+static struct platform_driver intel_eth_plat_driver = {
-+	.probe  = intel_eth_plat_probe,
-+	.remove = intel_eth_plat_remove,
-+	.driver = {
-+		.name		= "intel-eth-plat",
-+		.pm		= &stmmac_pltfr_pm_ops,
-+		.of_match_table = intel_eth_plat_match,
-+	},
-+};
-+module_platform_driver(intel_eth_plat_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("Intel DWMAC platform driver");
--- 
-1.9.1
+Sebastian
 
+
+someone
+
+Am 25.07.2020 um 10:16 schrieb Hillf Danton:
+> On Wed, 22 Jul 2020 09:12:42 +0000 David Laight wrote:
+>>> On 21 July 2020 18:25 Andrew Lunn wrote:
+>>>
+>>> On Tue, Jul 21, 2020 at 10:44:19PM +0530, Rakesh Pillai wrote:
+>>>> NAPI gets scheduled on the CPU core which got the
+>>>> interrupt. The linux scheduler cannot move it to a
+>>>> different core, even if the CPU on which NAPI is running
+>>>> is heavily loaded. This can lead to degraded wifi
+>>>> performance when running traffic at peak data rates.
+>>>>
+>>>> A thread on the other hand can be moved to different
+>>>> CPU cores, if the one on which its running is heavily
+>>>> loaded. During high incoming data traffic, this gives
+>>>> better performance, since the thread can be moved to a
+>>>> less loaded or sometimes even a more powerful CPU core
+>>>> to account for the required CPU performance in order
+>>>> to process the incoming packets.
+>>>>
+>>>> This patch series adds the support to use a high priority
+>>>> thread to process the incoming packets, as opposed to
+>>>> everything being done in NAPI context.
+>>> I don't see why this problem is limited to the ath10k driver. I expect
+>>> it applies to all drivers using NAPI. So shouldn't you be solving this
+>>> in the NAPI core? Allow a driver to request the NAPI core uses a
+>>> thread?
+>> It's not just NAPI the problem is with the softint processing.
+>> I suspect a lot of systems would work better if it ran as
+>> a (highish priority) kernel thread.
+> Hi folks
+>
+> Below is a minimunm poc implementation I can imagine on top of workqueue
+> to make napi threaded. Thoughts are appreciated.
+>
+>> I've had to remove the main locks from a multi-threaded application
+>> and replace them with atomic counters.
+>> Consider what happens when the threads remove items from a shared
+>> work list.
+>> The code looks like:
+>> 	mutex_enter();
+>> 	remove_item_from_list();
+>> 	mutex_exit().
+>> The mutex is only held for a few instructions, so while you'd expect
+>> the cache line to be 'hot' you wouldn't get real contention.
+>> However the following scenarios happen:
+>> 1) An ethernet interrupt happens while the mutex is held.
+>>     This stops the other threads until all the softint processing
+>>     has finished.
+>> 2) An ethernet interrupt (and softint) runs on a thread that is
+>>     waiting for the mutex.
+>>     (Or on the cpu that the thread's processor affinity ties it to.)
+>>     In this case the 'fair' (ticket) mutex code won't let any other
+>>     thread acquire the mutex.
+>>     So again everything stops until the softints all complete.
+>>
+>> The second one is also a problem when trying to wake up all
+>> the threads (eg after adding a lot of items to the list).
+>> The ticket locks force them to wake in order, but
+>> sometimes the 'thundering herd' would work better.
+>>
+>> IIRC this is actually worse for processes running under the RT
+>> scheduler (without CONFIG_PREEMPT) because the they are almost
+>> always scheduled on the same cpu they ran on last.
+>> If it is busy, but cannot be pre-empted, they are not moved
+>> to an idle cpu.
+>>     
+>> To confound things there is a very broken workaround for broken
+>> hardware in the driver for the e1000 interface on (at least)
+>> Ivy Bridge cpu that can cause the driver to spin for a very
+>> long time (IIRC milliseconds) whenever it has to write to a
+>> MAC register (ie on every transmit setup).
+>>
+>> 	David
+>>
+>> -
+>> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+>> Registration No: 1397386 (Wales)
+> To make napi threaded, if either irq or softirq thread is entirely ruled
+> out, add napi::work that will be queued on a highpri workqueue. It is
+> actually a unbound one to facilitate scheduler to catter napi loads on to
+> idle CPU cores. What users need to do with the threaded napi
+> is s/netif_napi_add/netif_threaded_napi_add/ and no more.
+>
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -338,6 +338,9 @@ struct napi_struct {
+>   	struct list_head	dev_list;
+>   	struct hlist_node	napi_hash_node;
+>   	unsigned int		napi_id;
+> +#ifdef CONFIG_THREADED_NAPI
+> +	struct work_struct	work;
+> +#endif
+>   };
+>   
+>   enum {
+> @@ -2234,6 +2237,19 @@ static inline void *netdev_priv(const st
+>   void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+>   		    int (*poll)(struct napi_struct *, int), int weight);
+>   
+> +#ifdef CONFIG_THREADED_NAPI
+> +void netif_threaded_napi_add(struct net_device *dev, struct napi_struct *napi,
+> +		    int (*poll)(struct napi_struct *, int), int weight);
+> +#else
+> +static inline void netif_threaded_napi_add(struct net_device *dev,
+> +					struct napi_struct *napi,
+> +					int (*poll)(struct napi_struct *, int),
+> +					int weight)
+> +{
+> +	netif_napi_add(dev, napi, poll, weight);
+> +}
+> +#endif
+> +
+>   /**
+>    *	netif_tx_napi_add - initialize a NAPI context
+>    *	@dev:  network device
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -6277,6 +6277,61 @@ static int process_backlog(struct napi_s
+>   	return work;
+>   }
+>   
+> +#ifdef CONFIG_THREADED_NAPI
+> +/* unbound highpri workqueue for threaded napi */
+> +static struct workqueue_struct *napi_workq;
+> +
+> +static void napi_workfn(struct work_struct *work)
+> +{
+> +	struct napi_struct *n = container_of(work, struct napi_struct, work);
+> +
+> +	for (;;) {
+> +		if (!test_bit(NAPI_STATE_SCHED, &n->state))
+> +			return;
+> +
+> +		if (n->poll(n, n->weight) < n->weight)
+> +			return;
+> +
+> +		if (need_resched()) {
+> +			/*
+> +			 * have to pay for the latency of task switch even if
+> +			 * napi is scheduled
+> +			 */
+> +			if (test_bit(NAPI_STATE_SCHED, &n->state))
+> +				queue_work(napi_workq, work);
+> +			return;
+> +		}
+> +	}
+> +}
+> +
+> +void netif_threaded_napi_add(struct net_device *dev,
+> +				struct napi_struct *napi,
+> +				int (*poll)(struct napi_struct *, int),
+> +				int weight)
+> +{
+> +	netif_napi_add(dev, napi, poll, weight);
+> +	INIT_WORK(&napi->work, napi_workfn);
+> +}
+> +
+> +static inline bool is_threaded_napi(struct napi_struct *n)
+> +{
+> +	return n->work.func == napi_workfn;
+> +}
+> +
+> +static inline void threaded_napi_sched(struct napi_struct *n)
+> +{
+> +	if (is_threaded_napi(n))
+> +		queue_work(napi_workq, &n->work);
+> +	else
+> +		____napi_schedule(this_cpu_ptr(&softnet_data), n);
+> +}
+> +#else
+> +static inline void threaded_napi_sched(struct napi_struct *n)
+> +{
+> +	____napi_schedule(this_cpu_ptr(&softnet_data), n);
+> +}
+> +#endif
+> +
+>   /**
+>    * __napi_schedule - schedule for receive
+>    * @n: entry to schedule
+> @@ -6289,7 +6344,7 @@ void __napi_schedule(struct napi_struct
+>   	unsigned long flags;
+>   
+>   	local_irq_save(flags);
+> -	____napi_schedule(this_cpu_ptr(&softnet_data), n);
+> +	threaded_napi_sched(n);
+>   	local_irq_restore(flags);
+>   }
+>   EXPORT_SYMBOL(__napi_schedule);
+> @@ -6335,7 +6390,7 @@ EXPORT_SYMBOL(napi_schedule_prep);
+>    */
+>   void __napi_schedule_irqoff(struct napi_struct *n)
+>   {
+> -	____napi_schedule(this_cpu_ptr(&softnet_data), n);
+> +	threaded_napi_sched(n);
+>   }
+>   EXPORT_SYMBOL(__napi_schedule_irqoff);
+>   
+> @@ -10685,6 +10740,10 @@ static int __init net_dev_init(void)
+>   		sd->backlog.weight = weight_p;
+>   	}
+>   
+> +#ifdef CONFIG_THREADED_NAPI
+> +	napi_workq = alloc_workqueue("napi_workq", WQ_UNBOUND | WQ_HIGHPRI,
+> +					    WQ_UNBOUND_MAX_ACTIVE);
+> +#endif
+>   	dev_boot_phase = 0;
+>   
+>   	/* The loopback device is special if any other network devices
+>
+>
+> _______________________________________________
+> ath10k mailing list
+> ath10k@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/ath10k
+>
