@@ -2,92 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F39AD22D6EF
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 12:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 163B122D6F7
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 13:07:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726694AbgGYK6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 06:58:54 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:5637 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726572AbgGYK6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 06:58:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1595674733; x=1627210733;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=8yCuQp1jTum4mRZYjvOuHgeSPvfethR7PN2wJdJXAZk=;
-  b=OW0ef4y+6sprVMnbpkwaw4CpVz2qhrTv0mi19rK6bW9nB5uNUSf8jDws
-   sFpuaUvELflN8c0BGVvcQI1BskhQxO574K12zQEmi4IBbC4DJW9PKlVVL
-   gistspJ9QaPpzi8GFzrntsI1o9bLjo4Sfy8DSD78hxDjCs1J6LJ+mdgCi
-   A=;
-IronPort-SDR: uAxbuuyURjQ6k6z1cAtU4ogVYIh2Jf46Y2MFwTGvFlwmo+7hEz6HCilG/A9TfWU3OCLyaipd7l
- ryAcnwGlbcZQ==
-X-IronPort-AV: E=Sophos;i="5.75,394,1589241600"; 
-   d="scan'208";a="61470209"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1a-e34f1ddc.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 25 Jul 2020 10:58:52 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1a-e34f1ddc.us-east-1.amazon.com (Postfix) with ESMTPS id 49F06A1D5E;
-        Sat, 25 Jul 2020 10:58:51 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sat, 25 Jul 2020 10:58:49 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.161.203) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sat, 25 Jul 2020 10:58:45 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <willemdebruijn.kernel@gmail.com>
-CC:     <ast@kernel.org>, <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
-        <davem@davemloft.net>, <jakub@cloudflare.com>, <kuba@kernel.org>,
-        <kuniyu@amazon.co.jp>, <netdev@vger.kernel.org>,
-        <willemb@google.com>
-Subject: Re: [PATCH bpf-next] udp: reduce merge conflict on udp[46]_lib_lookup2
-Date:   Sat, 25 Jul 2020 19:58:41 +0900
-Message-ID: <20200725105841.19507-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <20200725025457.1004164-1-willemdebruijn.kernel@gmail.com>
-References: <20200725025457.1004164-1-willemdebruijn.kernel@gmail.com>
+        id S1726915AbgGYLFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 07:05:43 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:42091 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726651AbgGYLFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 07:05:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1595675141;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LWB2709msljQucnBBqm1rM2bavmji2piZ9+wSongLc0=;
+        b=M+xBZ+zj3vbF7Tf28JRS5n9msj4ccTt7Dcx5jaNg3ZwfryiU7pvxy21Py3AR2kMEvt2LpY
+        kEQiLX0qRMaudUKZFj3VEHZDuEXFmpG7cFdKd031oNMLHxQ1YdLy0PS+BzlYTidR7DBp6N
+        wnjinay6dyjglasDdeFPpitWsaDVFD4=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-430-zLZALKudNhGTGwhWnCnGtA-1; Sat, 25 Jul 2020 07:05:40 -0400
+X-MC-Unique: zLZALKudNhGTGwhWnCnGtA-1
+Received: by mail-wm1-f72.google.com with SMTP id e15so5203456wme.8
+        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 04:05:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LWB2709msljQucnBBqm1rM2bavmji2piZ9+wSongLc0=;
+        b=Nj8Y1mGD/pfwFzLzZzQzIx3+uz40SsgR0mnpsrvOMAowAbSoLnECOk9kdrCChSRbXk
+         RJOaSyP3H9YSwFGcFxcgcXaj3WB2aBhZVTUx3diKsKhHpjRTQvGu9ykZ5CszRHOuV6Uj
+         I0jWohHY6tLSWGj9/ZypIm94wfHTOuuW55OAv5JVVjOPTrRPRn9thesFQ7vOitXym2to
+         pjvyNZoHf1o/2ZBC7+6XVodGYM+PgMIIfnETlwBir1iBERbMrlyfTzkSOwRBe8CoTKk2
+         mrqhl2zi8g6yXVNXddonTsBICAyiMOfrVBAEmAGnbhQ5tD7rzNmzVsCUKHg/4I3czPWw
+         b1ow==
+X-Gm-Message-State: AOAM530jwDrwMprh+2i3KVGXI0iejXrZff6yhDsk+Jupd3T6E7l0bG4D
+        xhnIDCbERji7sfvWSOoDwzVSF2fKzFdVG6Q6F4wPBJmMXn5f9LyblKg5ZJQdXN+soOkZpFDhYbF
+        tdUuDNLakmNs6ZSN3
+X-Received: by 2002:a1c:354:: with SMTP id 81mr5346774wmd.9.1595675138450;
+        Sat, 25 Jul 2020 04:05:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxEEPuhSdPQnsSL6KLrrdFIoHCrCr0Kkke4EcULzM+LISBGsERirapNC8In95ygvgR/e3+PpQ==
+X-Received: by 2002:a1c:354:: with SMTP id 81mr5346753wmd.9.1595675138143;
+        Sat, 25 Jul 2020 04:05:38 -0700 (PDT)
+Received: from pc-2.home (2a01cb058529bf0075b0798a7f5975cb.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:bf00:75b0:798a:7f59:75cb])
+        by smtp.gmail.com with ESMTPSA id s205sm4750952wme.7.2020.07.25.04.05.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jul 2020 04:05:37 -0700 (PDT)
+Date:   Sat, 25 Jul 2020 13:05:35 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Martin Varghese <martin.varghese@nokia.com>,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH net] bareudp: forbid mixing IP and MPLS in multiproto mode
+Message-ID: <20200725110535.GA4152@pc-2.home>
+References: <f6e832e7632acf28b1d2b35dddb08769c7ce4fab.1595624517.git.gnault@redhat.com>
+ <20200724162134.7b0c8aaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.203]
-X-ClientProxiedBy: EX13D17UWC004.ant.amazon.com (10.43.162.195) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200724162134.7b0c8aaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 24 Jul 2020 22:54:57 -0400
-> From: Willem de Bruijn <willemb@google.com>
+On Fri, Jul 24, 2020 at 04:21:34PM -0700, Jakub Kicinski wrote:
+> On Fri, 24 Jul 2020 23:03:26 +0200 Guillaume Nault wrote:
+> > In multiproto mode, bareudp_xmit() accepts sending multicast MPLS and
+> > IPv6 packets regardless of the bareudp ethertype. In practice, this
+> > let an IP tunnel send multicast MPLS packets, or an MPLS tunnel send
+> > IPv6 packets.
+> > 
+> > We need to restrict the test further, so that the multiproto mode only
+> > enables
+> >   * IPv6 for IPv4 tunnels,
+> >   * or multicast MPLS for unicast MPLS tunnels.
+> > 
+> > To improve clarity, the protocol validation is moved to its own
+> > function, where each logical test has its own condition.
+> > 
+> > Fixes: 4b5f67232d95 ("net: Special handling for IP & MPLS.")
+> > Signed-off-by: Guillaume Nault <gnault@redhat.com>
 > 
-> Commit efc6b6f6c311 ("udp: Improve load balancing for SO_REUSEPORT.")
+> Hi! this adds 10 sparse warnings:
 > 
-> in net conflicts with
+> drivers/net/bareudp.c:419:22: warning: cast to restricted __be16
+> drivers/net/bareudp.c:419:22: warning: cast to restricted __be16
+> drivers/net/bareudp.c:419:22: warning: cast to restricted __be16
+> drivers/net/bareudp.c:419:22: warning: cast to restricted __be16
+> drivers/net/bareudp.c:419:13: warning: restricted __be16 degrades to integer
+> drivers/net/bareudp.c:423:22: warning: cast to restricted __be16
+> drivers/net/bareudp.c:423:22: warning: cast to restricted __be16
+> drivers/net/bareudp.c:423:22: warning: cast to restricted __be16
+> drivers/net/bareudp.c:423:22: warning: cast to restricted __be16
 > 
-> Commit 72f7e9440e9b ("udp: Run SK_LOOKUP BPF program on socket lookup")
+> I think this:
 > 
-> in bpf-next.
+> 	    proto == ntohs(ETH_P_MPLS_MC))
 > 
-> Commit 4a0e87bb1836 ("udp: Don't discard reuseport selection when group
-> has connections")
+> has to say htons() not ntohs(). For v6 as well.
 > 
-> also in bpf-next reduces the conflict.
-> 
-> Further simplify by applying the main change of the first commit to
-> bpf-next. After this a conflict remains, but the bpf-next side can be
-> taken as is.
-> 
-> Now unused variable reuseport_result added in net must also be
-> removed. That applies without a conflict, so is harder to spot.
-> 
-> Link: http://patchwork.ozlabs.org/project/netdev/patch/20200722165227.51046-1-kuniyu@amazon.co.jp/
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
+Ouch, sorry. I'll respin.
 
-Thank you for the follow up patch!
-
-Acked-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-
-Best Regards,
-Kuniyuki
