@@ -2,289 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFD6422D6CF
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 12:38:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0443522D6DF
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 12:48:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbgGYKiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 06:38:10 -0400
-Received: from mail.as201155.net ([185.84.6.188]:41766 "EHLO mail.as201155.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726636AbgGYKiJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jul 2020 06:38:09 -0400
-X-Greylist: delayed 127898 seconds by postgrey-1.27 at vger.kernel.org; Sat, 25 Jul 2020 06:38:07 EDT
-Received: from smtps.newmedia-net.de ([2a05:a1c0:0:de::167]:48828 helo=webmail.newmedia-net.de)
-        by mail.as201155.net with esmtps (TLSv1:DHE-RSA-AES256-SHA:256)
-        (Exim 4.82_1-5b7a7c0-XX)
-        (envelope-from <s.gottschall@dd-wrt.com>)
-        id 1jzHZ5-0003nz-2W; Sat, 25 Jul 2020 12:38:03 +0200
-X-CTCH-RefID: str=0001.0A782F21.5F1C0B8B.0051,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=dd-wrt.com; s=mikd;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=jq3dlc+cdk2c+17CURe7NgYwWb2Z4/X0bonnPMZqnwU=;
-        b=s3f/EwNj9aECmwSa4lZEFSQWpxhwGjBE+CtfnLMUCESNry3Xk03e2WYds8iESztGNVoXOHof93R0U7M4zuFtt512wYXzfolDjd66dYrzxYuFOJx1npOBkEEkI+x+Zea49TfKrAYNPG4lI0EdvzEGYLQ8uCL4J2zTozrXjVgDSEs=;
-Subject: Re: [RFC 0/7] Add support to process rx packets in thread
-To:     Hillf Danton <hdanton@sina.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Rakesh Pillai <pillair@codeaurora.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        Markus Elfring <Markus.Elfring@web.de>,
-        "evgreen@chromium.org" <evgreen@chromium.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
-References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
- <20200721172514.GT1339445@lunn.ch> <20200725081633.7432-1-hdanton@sina.com>
-From:   Sebastian Gottschall <s.gottschall@dd-wrt.com>
-Message-ID: <8359a849-2b8a-c842-a501-c6cb6966e345@dd-wrt.com>
-Date:   Sat, 25 Jul 2020 12:38:00 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101
- Thunderbird/79.0
+        id S1726899AbgGYKse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 06:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726618AbgGYKsd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 06:48:33 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDEAC0619D3;
+        Sat, 25 Jul 2020 03:48:33 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id z5so6785082pgb.6;
+        Sat, 25 Jul 2020 03:48:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=egbrpsXboldbIPxPzx8L1SY5zmDesIcRUjP9BGOlyoI=;
+        b=kjrrwM7WcB89fOhGqr4PjxnzSeMMJi4/SGBPiDNHLr89+TEVH3Z4I4d9ryC9t/U+d8
+         v0CgBjUM9UJPQGzzDj6mDK8OqUFPMpD/4E1p7BOpyYGlvqVxFOruQJTwZAJN4Qr88BCs
+         TptCUrku4uSMVDFrrptZcogemfRRAkTAbeTM7IBVy+OnTnEwK6RnE9xI8ipT5u9AKcDm
+         3EwaerGCJWLNrcxnooyp2hPdwt/xelBliqnv5U1VK3AHjqEmHYTiSR1zF3tATKFniP5X
+         5+AWGpLSalb8r8e+0wBeKGl7Wn+d8KKqE99iN53yekZJ5KtAorXXvuJo2J7XE6faiYiD
+         1F4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=egbrpsXboldbIPxPzx8L1SY5zmDesIcRUjP9BGOlyoI=;
+        b=Uj0Eehc9yyoYmttIih+MMT5w76wmACfFSH9GwktwLso6UWDXFYiyygmI6OsPgRG6PI
+         xCe9dUeSZSEDZX1MLaivnpA4I5Qgyivow9A6f0fR0L8vkuitadnk8hprhd7jelNdXMSS
+         iXO6ht1pSfijpYM903GDK0109U7N4nxZDd94zV8a2Kd8hwiX/DLR5QLeEClHu6rh2gQK
+         TJp6nCRcR+NF8MVco5ly49KDDNs3wWaD7PqMPFCM7wCZPTYxV3TuHjTt7f8kTmGDchte
+         bInqSHdNw71HsQL3IbWTxela3MNIrfI98fijIRN0vEwaA4H40DZ4nuZYJWohlQsNWpzE
+         mmfw==
+X-Gm-Message-State: AOAM5317cBLbf0eHaBql5sUNIlN2O2cDx3Pziq5O1v3rZNUZkk/xmVeT
+        iti3Ziu77ZHdk9/fPPfEX2PiZziMCEFHHIOvlJM=
+X-Google-Smtp-Source: ABdhPJxBQjl87MTP8w2Gtl8kw7gZoryfmLtxtqTknFCuoMqEs9b0UOwvRNrVgOn8g9Ru9D9PuMdaH5qcEQUDuhnfwrU=
+X-Received: by 2002:a63:a05f:: with SMTP id u31mr11805878pgn.4.1595674113172;
+ Sat, 25 Jul 2020 03:48:33 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200725081633.7432-1-hdanton@sina.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Received:  from [2a01:7700:8040:4d00:3da5:f3e1:ed1:597]
-        by webmail.newmedia-net.de with esmtpsa (TLSv1:AES128-SHA:128)
-        (Exim 4.72)
-        (envelope-from <s.gottschall@dd-wrt.com>)
-        id 1jzHZ5-0002yT-Bk; Sat, 25 Jul 2020 12:38:03 +0200
+References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
+ <20200715090400.4733-2-calvin.johnson@oss.nxp.com> <1a031e62-1e87-fdc1-b672-e3ccf3530fda@arm.com>
+ <20200724133931.GF1472201@lunn.ch> <97973095-5458-8ac2-890c-667f4ea6cd0e@arm.com>
+ <a95f8e07-176b-7f22-1217-466205fa22e7@gmail.com> <20200724192008.GI1594328@lunn.ch>
+ <CAHp75VdsGsTNc-SYRbM6-HHXSoDdLTqBrvJwyugjUR6HTxwDyA@mail.gmail.com>
+ <2fee02c2-4404-cd2e-8889-97e512a117f4@gmail.com> <CAHp75Vf4nDX-LQr=_FCmv5rj_v-6ZHr4H8pHmAU_N2Wgy=c5ug@mail.gmail.com>
+ <20200725073654.GA12097@lsv03152.swis.in-blr01.nxp.com>
+In-Reply-To: <20200725073654.GA12097@lsv03152.swis.in-blr01.nxp.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sat, 25 Jul 2020 13:48:16 +0300
+Message-ID: <CAHp75VcXWB+7VyLJvb+BC6ymObWChUCh-HS-KtPmU-VY5rwxZg@mail.gmail.com>
+Subject: Re: [net-next PATCH v7 1/6] Documentation: ACPI: DSD: Document MDIO PHY
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>, Al Stone <ahs3@redhat.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        netdev <netdev@vger.kernel.org>, linux.cj@gmail.com,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Paul Yang <Paul.Yang@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-you may consider this
+On Sat, Jul 25, 2020 at 10:37 AM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+> On Fri, Jul 24, 2020 at 11:20:04PM +0300, Andy Shevchenko wrote:
+> > On Fri, Jul 24, 2020 at 11:13 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
+> > > On 7/24/20 1:12 PM, Andy Shevchenko wrote:
+> > > > On Fri, Jul 24, 2020 at 10:20 PM Andrew Lunn <andrew@lunn.ch> wrote:
 
-https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1142611.html 
-<https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1142611.html>
+...
 
-years ago someone already wanted to bring this feature upstream, but it 
-was denied. i already tested this patch the last 2 days and it worked so 
-far (with some little modifications)
-so such a solution existed already and may be considered here
+> > > >> I think we need to NACK all attempts to add ACPI support to phylib and
+> > > >> phylink until an authoritative ACPI Linux maintainer makes an
+> > > >> appearance and actively steers the work. And not just this patchset,
+> > > >> but all patchsets in the networking domain which have an ACPI
+> > > >> component.
+> > > >
+> > > > It's funny, since I see ACPI mailing list and none of the maintainers
+> > > > in the Cc here...
+> > > > I'm not sure they pay attention to some (noise-like?) activity which
+> > > > (from their perspective) happens on unrelated lists.
+> > >
+> > > If you what you describe here is their perception of what is going on
+> > > here, that is very encouraging, we are definitively going to make progress.
+> >
+> > I can't speak for them. As a maintainer in other areas I expect that
+> > people Cc explicitly maintainer(s) if they want more attention.
+> > Otherwise I look at the mails to the mailing list just from time to
+> > time. But this is my expectation, don't take me wrong.
+>
+> Sorry about this miss.
+> In some past patch-set, I had added Rafael but somehow missed him this time.
+>
+> From the "MAINTAINERS" file, I got two maintainers. I don't know who else
+> can help with this discussion. I'll add others whom I know from ACPI list.
+> M:      "Rafael J. Wysocki" <rjw@rjwysocki.net>
+> M:      Len Brown <lenb@kernel.org>
+>
+> If you know others who can help, please add.
+>
+> Hi ACPI experts,
+> Would you please help review this patchset and guide us.
+>
+> Please see the discussion on this patchset here:
+> https://lore.kernel.org/linux-acpi/20200715090400.4733-1-calvin.johnson@oss.nxp.com/T/#t
 
-Sebastian
+I would recommend resending the entire series with an appropriate Cc list.
+See below as well.
 
+ACPI FOR ARM64 (ACPI/arm64)
+M: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+M: Hanjun Guo <guohanjun@huawei.com>
+M: Sudeep Holla <sudeep.holla@arm.com>
 
-someone
-
-Am 25.07.2020 um 10:16 schrieb Hillf Danton:
-> On Wed, 22 Jul 2020 09:12:42 +0000 David Laight wrote:
->>> On 21 July 2020 18:25 Andrew Lunn wrote:
->>>
->>> On Tue, Jul 21, 2020 at 10:44:19PM +0530, Rakesh Pillai wrote:
->>>> NAPI gets scheduled on the CPU core which got the
->>>> interrupt. The linux scheduler cannot move it to a
->>>> different core, even if the CPU on which NAPI is running
->>>> is heavily loaded. This can lead to degraded wifi
->>>> performance when running traffic at peak data rates.
->>>>
->>>> A thread on the other hand can be moved to different
->>>> CPU cores, if the one on which its running is heavily
->>>> loaded. During high incoming data traffic, this gives
->>>> better performance, since the thread can be moved to a
->>>> less loaded or sometimes even a more powerful CPU core
->>>> to account for the required CPU performance in order
->>>> to process the incoming packets.
->>>>
->>>> This patch series adds the support to use a high priority
->>>> thread to process the incoming packets, as opposed to
->>>> everything being done in NAPI context.
->>> I don't see why this problem is limited to the ath10k driver. I expect
->>> it applies to all drivers using NAPI. So shouldn't you be solving this
->>> in the NAPI core? Allow a driver to request the NAPI core uses a
->>> thread?
->> It's not just NAPI the problem is with the softint processing.
->> I suspect a lot of systems would work better if it ran as
->> a (highish priority) kernel thread.
-> Hi folks
->
-> Below is a minimunm poc implementation I can imagine on top of workqueue
-> to make napi threaded. Thoughts are appreciated.
->
->> I've had to remove the main locks from a multi-threaded application
->> and replace them with atomic counters.
->> Consider what happens when the threads remove items from a shared
->> work list.
->> The code looks like:
->> 	mutex_enter();
->> 	remove_item_from_list();
->> 	mutex_exit().
->> The mutex is only held for a few instructions, so while you'd expect
->> the cache line to be 'hot' you wouldn't get real contention.
->> However the following scenarios happen:
->> 1) An ethernet interrupt happens while the mutex is held.
->>     This stops the other threads until all the softint processing
->>     has finished.
->> 2) An ethernet interrupt (and softint) runs on a thread that is
->>     waiting for the mutex.
->>     (Or on the cpu that the thread's processor affinity ties it to.)
->>     In this case the 'fair' (ticket) mutex code won't let any other
->>     thread acquire the mutex.
->>     So again everything stops until the softints all complete.
->>
->> The second one is also a problem when trying to wake up all
->> the threads (eg after adding a lot of items to the list).
->> The ticket locks force them to wake in order, but
->> sometimes the 'thundering herd' would work better.
->>
->> IIRC this is actually worse for processes running under the RT
->> scheduler (without CONFIG_PREEMPT) because the they are almost
->> always scheduled on the same cpu they ran on last.
->> If it is busy, but cannot be pre-empted, they are not moved
->> to an idle cpu.
->>     
->> To confound things there is a very broken workaround for broken
->> hardware in the driver for the e1000 interface on (at least)
->> Ivy Bridge cpu that can cause the driver to spin for a very
->> long time (IIRC milliseconds) whenever it has to write to a
->> MAC register (ie on every transmit setup).
->>
->> 	David
->>
->> -
->> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
->> Registration No: 1397386 (Wales)
-> To make napi threaded, if either irq or softirq thread is entirely ruled
-> out, add napi::work that will be queued on a highpri workqueue. It is
-> actually a unbound one to facilitate scheduler to catter napi loads on to
-> idle CPU cores. What users need to do with the threaded napi
-> is s/netif_napi_add/netif_threaded_napi_add/ and no more.
->
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -338,6 +338,9 @@ struct napi_struct {
->   	struct list_head	dev_list;
->   	struct hlist_node	napi_hash_node;
->   	unsigned int		napi_id;
-> +#ifdef CONFIG_THREADED_NAPI
-> +	struct work_struct	work;
-> +#endif
->   };
->   
->   enum {
-> @@ -2234,6 +2237,19 @@ static inline void *netdev_priv(const st
->   void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
->   		    int (*poll)(struct napi_struct *, int), int weight);
->   
-> +#ifdef CONFIG_THREADED_NAPI
-> +void netif_threaded_napi_add(struct net_device *dev, struct napi_struct *napi,
-> +		    int (*poll)(struct napi_struct *, int), int weight);
-> +#else
-> +static inline void netif_threaded_napi_add(struct net_device *dev,
-> +					struct napi_struct *napi,
-> +					int (*poll)(struct napi_struct *, int),
-> +					int weight)
-> +{
-> +	netif_napi_add(dev, napi, poll, weight);
-> +}
-> +#endif
-> +
->   /**
->    *	netif_tx_napi_add - initialize a NAPI context
->    *	@dev:  network device
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -6277,6 +6277,61 @@ static int process_backlog(struct napi_s
->   	return work;
->   }
->   
-> +#ifdef CONFIG_THREADED_NAPI
-> +/* unbound highpri workqueue for threaded napi */
-> +static struct workqueue_struct *napi_workq;
-> +
-> +static void napi_workfn(struct work_struct *work)
-> +{
-> +	struct napi_struct *n = container_of(work, struct napi_struct, work);
-> +
-> +	for (;;) {
-> +		if (!test_bit(NAPI_STATE_SCHED, &n->state))
-> +			return;
-> +
-> +		if (n->poll(n, n->weight) < n->weight)
-> +			return;
-> +
-> +		if (need_resched()) {
-> +			/*
-> +			 * have to pay for the latency of task switch even if
-> +			 * napi is scheduled
-> +			 */
-> +			if (test_bit(NAPI_STATE_SCHED, &n->state))
-> +				queue_work(napi_workq, work);
-> +			return;
-> +		}
-> +	}
-> +}
-> +
-> +void netif_threaded_napi_add(struct net_device *dev,
-> +				struct napi_struct *napi,
-> +				int (*poll)(struct napi_struct *, int),
-> +				int weight)
-> +{
-> +	netif_napi_add(dev, napi, poll, weight);
-> +	INIT_WORK(&napi->work, napi_workfn);
-> +}
-> +
-> +static inline bool is_threaded_napi(struct napi_struct *n)
-> +{
-> +	return n->work.func == napi_workfn;
-> +}
-> +
-> +static inline void threaded_napi_sched(struct napi_struct *n)
-> +{
-> +	if (is_threaded_napi(n))
-> +		queue_work(napi_workq, &n->work);
-> +	else
-> +		____napi_schedule(this_cpu_ptr(&softnet_data), n);
-> +}
-> +#else
-> +static inline void threaded_napi_sched(struct napi_struct *n)
-> +{
-> +	____napi_schedule(this_cpu_ptr(&softnet_data), n);
-> +}
-> +#endif
-> +
->   /**
->    * __napi_schedule - schedule for receive
->    * @n: entry to schedule
-> @@ -6289,7 +6344,7 @@ void __napi_schedule(struct napi_struct
->   	unsigned long flags;
->   
->   	local_irq_save(flags);
-> -	____napi_schedule(this_cpu_ptr(&softnet_data), n);
-> +	threaded_napi_sched(n);
->   	local_irq_restore(flags);
->   }
->   EXPORT_SYMBOL(__napi_schedule);
-> @@ -6335,7 +6390,7 @@ EXPORT_SYMBOL(napi_schedule_prep);
->    */
->   void __napi_schedule_irqoff(struct napi_struct *n)
->   {
-> -	____napi_schedule(this_cpu_ptr(&softnet_data), n);
-> +	threaded_napi_sched(n);
->   }
->   EXPORT_SYMBOL(__napi_schedule_irqoff);
->   
-> @@ -10685,6 +10740,10 @@ static int __init net_dev_init(void)
->   		sd->backlog.weight = weight_p;
->   	}
->   
-> +#ifdef CONFIG_THREADED_NAPI
-> +	napi_workq = alloc_workqueue("napi_workq", WQ_UNBOUND | WQ_HIGHPRI,
-> +					    WQ_UNBOUND_MAX_ACTIVE);
-> +#endif
->   	dev_boot_phase = 0;
->   
->   	/* The loopback device is special if any other network devices
->
->
-> _______________________________________________
-> ath10k mailing list
-> ath10k@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/ath10k
->
+-- 
+With Best Regards,
+Andy Shevchenko
