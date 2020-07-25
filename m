@@ -2,105 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3109F22D67B
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 11:37:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE1D922D67E
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 11:41:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbgGYJhD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 25 Jul 2020 05:37:03 -0400
-Received: from lists.nic.cz ([217.31.204.67]:52132 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726434AbgGYJhD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jul 2020 05:37:03 -0400
-Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
-        by mail.nic.cz (Postfix) with ESMTPSA id 0DC9314095F;
-        Sat, 25 Jul 2020 11:37:01 +0200 (CEST)
-Date:   Sat, 25 Jul 2020 11:37:00 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
+        id S1726652AbgGYJlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 05:41:44 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:40924 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726434AbgGYJln (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 05:41:43 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id E77261C0BD2; Sat, 25 Jul 2020 11:41:39 +0200 (CEST)
+Date:   Sat, 25 Jul 2020 11:41:39 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marek Behun <marek.behun@nic.cz>, linux-leds@vger.kernel.org,
         jacek.anaszewski@gmail.com, Dan Murphy <dmurphy@ti.com>,
-        =?UTF-8?B?T25k?= =?UTF-8?B?xZllag==?= Jirman 
-        <megous@megous.com>, Russell King <linux@armlinux.org.uk>,
+        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
+        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Gregory Clement <gregory.clement@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC leds + net-next v3 1/2] net: phy: add API for LEDs
- controlled by PHY HW
-Message-ID: <20200725113700.7472dcd3@nic.cz>
-In-Reply-To: <20200725092124.GA29492@amd>
-References: <20200724164603.29148-1-marek.behun@nic.cz>
-        <20200724164603.29148-2-marek.behun@nic.cz>
-        <20200725092124.GA29492@amd>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC leds + net-next v2 1/1] net: phy: marvell: add
+ support for PHY LEDs via LED class
+Message-ID: <20200725094139.GA29992@amd>
+References: <20200723181319.15988-1-marek.behun@nic.cz>
+ <20200723181319.15988-2-marek.behun@nic.cz>
+ <20200723213531.GK1553578@lunn.ch>
+ <20200724005349.2e90a247@nic.cz>
+ <20200724102403.wyuteeql3jn5xouw@duo.ucw.cz>
+ <20200724131102.GD1472201@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,URIBL_BLOCKED,
-        USER_IN_WHITELIST shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="Dxnq1zWXvFF0Q93v"
+Content-Disposition: inline
+In-Reply-To: <20200724131102.GD1472201@lunn.ch>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 25 Jul 2020 11:21:24 +0200
-Pavel Machek <pavel@ucw.cz> wrote:
 
-> Hi!
-> 
-> > Many PHYs support various HW control modes for LEDs connected directly
-> > to them.
-> > 
-> > This code adds a new private LED trigger called phydev-hw-mode. When
-> > this trigger is enabled for a LED, the various HW control modes which
-> > the PHY supports for given LED can be get/set via hw_mode sysfs file.
-> > 
-> > A PHY driver wishing to utilize this API needs to register the LEDs on
-> > its own and set the .trigger_type member of LED classdev to
-> > &phy_hw_led_trig_type. It also needs to implement the methods
-> > .led_iter_hw_mode, .led_set_hw_mode and .led_get_hw_mode in struct
-> > phydev.
-> > 
-> > Signed-off-by: Marek Behún <marek.behun@nic.cz>  
-> 
-> Nothing too wrong.
-> 
-> New sysfs file will require documentation.
-> 
-> Plus I wonder: should we have single hw_mode file? It seems many
-> different "bits" fit inside. Would it be possible to split it further,
-> and have bits saying:
-> 
-> "I want the LED to be on if link is 10Mbps".
-> "I want the LED to be on if link is 100Mbps".
-> "I want the LED to be on if link is 1000Mbps".
-> "I want the LED to blink on tx".
-> "I want the LED to blink on rx".
-> 
-> ?
+--Dxnq1zWXvFF0Q93v
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I don't think this is possible. Only specific combinations are possible
-on Marvell PHYs. There is no HW control mode which would do, for
-example:
-  - ON when linked to 100Mbps
-  - BLINK when receive
+Hi!
 
-PHYs from other vendors can different mode sets.
+> > > My main issue though is whether one "hw-control" trigger should be
+> > > registered via LED API and the specific mode should be chosen via
+> > > another sysfs file as in this RFC, or whether each HW control mode
+> > > should have its own trigger. The second solution would either result =
+in
+> > > a lot of registered triggers or complicate LED API, though...
+> >=20
+> > If you register say 5 triggers.... that's okay. If you do like 1024
+> > additional triggers (it happened before!)... well please don't.
+>=20
+> Hi Pavel
+>=20
+> There tends to be around 15 different blink patterns per LED. And
+> there can be 2 to 3 LEDs per PHY. The blink patterns can be different
+> per PHY, or they can be the same. For the Marvell PHY we are looking
+> at around 45. Most of the others PHYs tend to have the same patterns
+> for all LEDs, so 15 triggers could be shared.
+>=20
+> But if you then think of a 10 port Ethernet switch, there could be 450
+> triggers, if the triggers are not shared at all.
+>=20
+> So to some extent, it is a question of how much effort should be put
+> in to sharing triggers.
 
-Marek
+It sounds to me ... lot of effort should be put to sharing triggers
+there :-).
 
-> +       { "1Gbps/100Mbps/10Mbps",       { 0x2,  -1,  -1,  -1,  -1,
-> +       { "1Gbps",                      { 0x7,  -1,  -1,  -1,  -1,
-> +       { "100Mbps-fiber",              {  -1, 0x5,  -1,  -1,  -1,
-> +       { "100Mbps-10Mbps",             {  -1, 0x5,  -1,  -1,  -1,
-> +       { "1Gbps-100Mbps",              {  -1, 0x6,  -1,  -1,  -1,
-> +       { "1Gbps-10Mbps",               {  -1,  -1, 0x6, 0x6,  -1,
-> +       { "100Mbps",                    {  -1, 0x7,  -1,  -1,  -1,
-> +       { "10Mbps",                     {  -1,  -1, 0x7,  -1,  -1,
-> 
-> Best regards,
-> 									Pavel
-> 
+Best regards,
+									Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
 
+--Dxnq1zWXvFF0Q93v
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAl8b/lMACgkQMOfwapXb+vKimwCfRGK+53fLznJ19wiqfJngn0BJ
+16sAoIn1IOwQhTF57yjnfe5HHzqtQeVC
+=93uu
+-----END PGP SIGNATURE-----
+
+--Dxnq1zWXvFF0Q93v--
