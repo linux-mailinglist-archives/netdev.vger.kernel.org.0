@@ -2,68 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2810F22D367
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 02:56:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 028F622D384
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 03:19:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726870AbgGYA4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jul 2020 20:56:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48294 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726613AbgGYA4N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Jul 2020 20:56:13 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 13C7A20674;
-        Sat, 25 Jul 2020 00:56:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595638573;
-        bh=mgG3SAbFmw/jSEX0DL/1lz7sofkUHvtlYADqrHHDwt0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bf3u2KXTGo8ObsKDeKNIB91NbY8ZgrXlfEJZPz8UVBbpRNApd1nsak2hDa8r5nF5t
-         s5a8jI8WZ7+IJIwJ7Zh/QN4qhDqrhMRm12uRng8CGy0hIRlHMmfGDlHfVa46VVAg3m
-         imhmcQgu+DH2vET8TPAqTTk2QLwkHE/1z4+MTvy0=
-Date:   Fri, 24 Jul 2020 17:56:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH net-next 4/4] ionic: separate interrupt for Tx and Rx
-Message-ID: <20200724175611.7b514bb1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200725002326.41407-5-snelson@pensando.io>
-References: <20200725002326.41407-1-snelson@pensando.io>
-        <20200725002326.41407-5-snelson@pensando.io>
+        id S1726969AbgGYBTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jul 2020 21:19:13 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:2662 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726884AbgGYBTM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Jul 2020 21:19:12 -0400
+Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.55])
+        by Forcepoint Email with ESMTP id B65F9D5E8D476D63CD58;
+        Sat, 25 Jul 2020 09:19:10 +0800 (CST)
+Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
+ DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Sat, 25 Jul 2020 09:19:10 +0800
+Received: from [10.174.61.242] (10.174.61.242) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Sat, 25 Jul 2020 09:19:08 +0800
+Subject: Re: [PATCH net-next v3 1/2] hinic: add support to handle hw abnormal
+ event
+To:     Edward Cree <ecree@solarflare.com>,
+        David Miller <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <luoxianjun@huawei.com>, <yin.yinshi@huawei.com>,
+        <cloud.wangxiaoyun@huawei.com>, <chiqijun@huawei.com>
+References: <20200723144038.10430-1-luobin9@huawei.com>
+ <20200723144038.10430-2-luobin9@huawei.com>
+ <20200723.120852.1882569285026023193.davem@davemloft.net>
+ <92dac9af-8623-bd1e-7a4d-9d12671699ad@solarflare.com>
+From:   "luobin (L)" <luobin9@huawei.com>
+Message-ID: <22a8ad8f-93c2-b5fb-b2d7-cc99e65d32ec@huawei.com>
+Date:   Sat, 25 Jul 2020 09:19:08 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <92dac9af-8623-bd1e-7a4d-9d12671699ad@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.61.242]
+X-ClientProxiedBy: dggeme719-chm.china.huawei.com (10.1.199.115) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Jul 2020 17:23:26 -0700 Shannon Nelson wrote:
-> Add the capability to split the Tx queues onto their own
-> interrupts with their own napi contexts.  This gives the
-> opportunity for more direct control of Tx interrupt
-> handling, such as CPU affinity and interrupt coalescing,
-> useful for some traffic loads.
+On 2020/7/24 17:57, Edward Cree wrote:
+> On 23/07/2020 20:08, David Miller wrote:
+>> From: Luo bin <luobin9@huawei.com>
+>> Date: Thu, 23 Jul 2020 22:40:37 +0800
+>>
+>>> +static int hinic_fw_reporter_dump(struct devlink_health_reporter *reporter,
+>>> +				  struct devlink_fmsg *fmsg, void *priv_ctx,
+>>> +				  struct netlink_ext_ack *extack)
+>>> +{
+>>> +	struct hinic_mgmt_watchdog_info *watchdog_info;
+>>> +	int err;
+>>> +
+>>> +	if (priv_ctx) {
+>>> +		watchdog_info = priv_ctx;
+>>> +		err = mgmt_watchdog_report_show(fmsg, watchdog_info);
+>>> +		if (err)
+>>> +			return err;
+>>> +	}
+>>> +
+>>> +	return 0;
+>>> +}
+>> This 'watchdog_info' variable is completely unnecessary, just pass
+>> 'priv_ctx' as-is into mgmt_watchdog_report_show().
+> Looks like the 'err' variable is unnecessary too...
 > 
-> To enable, use the ethtool private flag:
-> 	ethtool --set-priv-flag enp20s0 split-q-intr on
-> To restore defaults
-> 	ethtool --set-priv-flag enp20s0 split-q-intr off
+> -ed
+> .
 > 
-> When enabled, the number of queues is cut in half in order
-> to reuse the interrupts that have already been allocated to
-> the device.  When disabled, the queue count is restored.
-> 
-> Signed-off-by: Shannon Nelson <snelson@pensando.io>
-
-Splitting queues into tx-only and rx-only is done like this:
-
-ethtool -L enp20s0 rx N tx N combined 0
-
-And then back to combined:
-
-ethtool -L enp20s0 rx 0 tx 0 combined N
-
-No need for a private flag here.
+Will fix. Thanks for your review.
