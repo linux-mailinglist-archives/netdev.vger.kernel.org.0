@@ -2,109 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C6822D9D0
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 22:17:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07B9422D9EA
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 22:57:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727929AbgGYURM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 16:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726565AbgGYURL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 16:17:11 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E40C08C5C0
-        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 13:17:11 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id 1so7025368pfn.9
-        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 13:17:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uqRoqgqw9ITsbO+X2B3Qwe9+5+3hlGU3V3nlk+nOPyM=;
-        b=cNwWPGwCZNuE1TWbDIJ+TOhRZLb6aXLRh7k90JvOOVrJcohwQ5buh/e9WzZ1ZPV17S
-         iaFrvBnOq81NGfjDdh2MXvzd/ZO9653SuYz1Oj/pcqwcmtxq1dl/XN2Ypjx9XfqebXDi
-         r2w5gHJWlO5NTdqIvmQR1LspCX5ZlWpydgQ8knNbBL2y89aNM+qJHsqoEeXwb++CMyBS
-         TRdaYTYHHwJIGFdS+jL1bf/XCYNZ1mDL9SLdnsl5wiJKzD/I5EKG4pxUHDzYtcpyWPVZ
-         2A7/hQTpyaoiH0F8s9ivf0H6yW1DFBFi3ky8zBBzkiWcVSiYjXkJiaiZcV1jzYk2v7eU
-         BReg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uqRoqgqw9ITsbO+X2B3Qwe9+5+3hlGU3V3nlk+nOPyM=;
-        b=H4b7tu5uhhwx6NoSCzIKd6L55kLxY2+wH0VfOBls3dDWQMWQPH4oCOhhzAn08v1qL7
-         xwQUi3aAe9EDxLvr8Zh7RYahHs1raAgZQOiFob2k0ydpRpIploM9I19dOpFVr9K02MOH
-         pT0YFaBjlfsST8GKpngnISnMWyYZZ56XB1NrQkY+yGM8m2PJVa35wxR3LLvi8pThi2Z3
-         JMJClYzqyRlBn3oWEw8qaEgty9j2SWCxHQdIQdRmmNvtLE5GIKNFCo4qAp1/0qTYvMOa
-         c90VzqXorgxLjWXRuoFDeZG0N/p8078fb/ar7ioZvWhj0/L2omr5ITIMumbXElBkZDRs
-         rNhA==
-X-Gm-Message-State: AOAM530jRmpIYB6/WOGvGyy3sn+pQ5nbGhK4uLPzwub6A29dTN4UwV4Z
-        B+Y2PRVHF54ujpy+mmb/QfroWXt3MEg=
-X-Google-Smtp-Source: ABdhPJxfYHnSDeQ4wYnslPwJL/pbINWDRwLGPYh5dHtjUINfF9LNFd7FpVpXPww5XQTjjOKMwCEUjA==
-X-Received: by 2002:aa7:84ce:: with SMTP id x14mr14896873pfn.220.1595708231219;
-        Sat, 25 Jul 2020 13:17:11 -0700 (PDT)
-Received: from MacBookAir.linux-6brj.site ([2600:1700:727f::1e])
-        by smtp.gmail.com with ESMTPSA id o129sm10421987pfg.14.2020.07.25.13.17.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jul 2020 13:17:10 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+6e95a4fabf88dc217145@syzkaller.appspotmail.com,
-        Petr Machata <petrm@mellanox.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: [Patch net-next] net_sched: initialize timer earlier in red_init()
-Date:   Sat, 25 Jul 2020 13:17:07 -0700
-Message-Id: <20200725201707.16909-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S1728071AbgGYU5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 16:57:44 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:37460 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726681AbgGYU5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 16:57:44 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06PKpTMt031644;
+        Sat, 25 Jul 2020 20:57:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=c/tTjfAoYR2u5Pr1+bu/2No2loWgjwb232GxlPbMfwA=;
+ b=Aeg99tkxe9p/CgP2LtKuzjlFzS+5xvoc1ug+IYmSRvr6VnfG/CvVNWLHeFSflLrK+BAq
+ Y9QHw+JnH39NQ+B6px0Arc/PSxDg2nNS/Xd84Imll18CyzVbIIAbxsACpSoKLCdjkRQu
+ B+4HHQ09LTPzPgezdors8rgQPWfqqhRfRqfdC9D7RBV+MPiAxEwFfqzhdluItL1wtmg8
+ Ei8ZRb/BP2ssBRzDctywVBHqL7Ffap+Mvkkqa9TNd5hA2yjgaelhqoQhxECA2e4wFYHR
+ of5ukM0IDtCYgThJFSxCwLC8/+nAX3JCk0Kz3Ujvx2xuSSAnNg2ZoEQCFfndBG1XpzoX Dw== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 32gcpksm5n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sat, 25 Jul 2020 20:57:17 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06PKqX0Z009119;
+        Sat, 25 Jul 2020 20:57:16 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 32gasf3nwt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 25 Jul 2020 20:57:16 +0000
+Received: from abhmp0007.oracle.com (abhmp0007.oracle.com [141.146.116.13])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 06PKv1dA029834;
+        Sat, 25 Jul 2020 20:57:04 GMT
+Received: from dhcp-10-159-253-11.vpn.oracle.com (/10.159.253.11)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sat, 25 Jul 2020 13:57:01 -0700
+Subject: Re: [RESEND PATCH] ARM: dts: keystone-k2g-evm: fix rgmii phy-mode for
+ ksz9031 phy
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     "arm@kernel.org" <arm@kernel.org>, Olof Johansson <olof@lixom.net>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Philippe Schenker <philippe.schenker@toradex.com>
+References: <20200724214221.28125-1-grygorii.strashko@ti.com>
+ <a91d2bad-b794-fe07-679a-e5096aa5ace8@oracle.com>
+ <CAK8P3a3N70PbotC18K-SG9+XgfApHNZyCYvUgOyfrxrP55zSEw@mail.gmail.com>
+From:   "santosh.shilimkar@oracle.com" <santosh.shilimkar@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <feaa8f63-319a-1c3a-fcdd-804e74bbc8ec@oracle.com>
+Date:   Sat, 25 Jul 2020 13:56:50 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAK8P3a3N70PbotC18K-SG9+XgfApHNZyCYvUgOyfrxrP55zSEw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9693 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adultscore=0
+ mlxlogscore=999 phishscore=0 bulkscore=0 suspectscore=3 malwarescore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007250174
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9693 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 bulkscore=0
+ priorityscore=1501 phishscore=0 adultscore=0 malwarescore=0
+ lowpriorityscore=0 impostorscore=0 clxscore=1015 mlxlogscore=999
+ suspectscore=3 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007250174
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When red_init() fails, red_destroy() is called to clean up.
-If the timer is not initialized yet, del_timer_sync() will
-complain. So we have to move timer_setup() before any failure.
-
-Reported-and-tested-by: syzbot+6e95a4fabf88dc217145@syzkaller.appspotmail.com
-Fixes: aee9caa03fc3 ("net: sched: sch_red: Add qevents "early_drop" and "mark"")
-Cc: Petr Machata <petrm@mellanox.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- net/sched/sch_red.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
-index 4cc0ad0b1189..deac82f3ad7b 100644
---- a/net/sched/sch_red.c
-+++ b/net/sched/sch_red.c
-@@ -333,6 +333,10 @@ static int red_init(struct Qdisc *sch, struct nlattr *opt,
- 	struct nlattr *tb[TCA_RED_MAX + 1];
- 	int err;
- 
-+	q->qdisc = &noop_qdisc;
-+	q->sch = sch;
-+	timer_setup(&q->adapt_timer, red_adaptative_timer, 0);
-+
- 	if (!opt)
- 		return -EINVAL;
- 
-@@ -341,10 +345,6 @@ static int red_init(struct Qdisc *sch, struct nlattr *opt,
- 	if (err < 0)
- 		return err;
- 
--	q->qdisc = &noop_qdisc;
--	q->sch = sch;
--	timer_setup(&q->adapt_timer, red_adaptative_timer, 0);
--
- 	err = __red_change(sch, tb, extack);
- 	if (err)
- 		return err;
--- 
-2.27.0
-
+On 7/25/20 12:57 AM, Arnd Bergmann wrote:
+> On Fri, Jul 24, 2020 at 11:57 PM santosh.shilimkar@oracle.com
+> <santosh.shilimkar@oracle.com> wrote:
+>> On 7/24/20 2:42 PM, Grygorii Strashko wrote:
+>>> Since commit bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the
+>>> KSZ9031 PHY") the networking is broken on keystone-k2g-evm board.
+>>>
+>>> The above board have phy-mode = "rgmii-id" and it is worked before because
+>>> KSZ9031 PHY started with default RGMII internal delays configuration (TX
+>>> off, RX on 1.2 ns) and MAC provided TX delay by default.
+>>> After above commit, the KSZ9031 PHY starts handling phy mode properly and
+>>> enables both RX and TX delays, as result networking is become broken.
+>>>
+>>> Fix it by switching to phy-mode = "rgmii-rxid" to reflect previous
+>>> behavior.
+>>>
+>>> Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+>>> Cc: Andrew Lunn <andrew@lunn.ch>
+>>> Cc: Philippe Schenker <philippe.schenker@toradex.com>
+>>> Fixes: bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the KSZ9031 PHY")
+>>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+>>> ---
+>>> Fix for one more broken TI board with KSZ9031 PHY.
+>> Can you please apply this patch to your v5.8 fixes branch and send it
+>> upstream ? Without the fix K2G EVM board is broken with v5.8.
+>>
+>> Am hoping you can pick this up with pull request since it just one
+>> patch.
+> 
+> I've applied it now, but would point out that it's generally better if you could
+> forward the patch to soc@kernel.org with your Signed-off-by if you come
+> across a similar patch again. That way it ends up in patchwork, and we
+> are more likely to pick it up quickly.
+> 
+Will do next time. Thanks for picking it up.
+Regards,
+Santosh
