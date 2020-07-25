@@ -2,79 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A461422D87B
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 17:42:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F56E22D8A8
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 18:23:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbgGYPl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 11:41:56 -0400
-Received: from mail.as201155.net ([185.84.6.188]:25196 "EHLO mail.as201155.net"
+        id S1727014AbgGYQWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 12:22:46 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55278 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726567AbgGYPl4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Jul 2020 11:41:56 -0400
-Received: from smtps.newmedia-net.de ([2a05:a1c0:0:de::167]:52082 helo=webmail.newmedia-net.de)
-        by mail.as201155.net with esmtps (TLSv1:DHE-RSA-AES256-SHA:256)
-        (Exim 4.82_1-5b7a7c0-XX)
-        (envelope-from <s.gottschall@dd-wrt.com>)
-        id 1jzMJ5-00023J-0x; Sat, 25 Jul 2020 17:41:51 +0200
-X-CTCH-RefID: str=0001.0A782F1D.5F1C52BF.003A,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=dd-wrt.com; s=mikd;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=y8UpvgAJ1xBMK2OnuBZR1Bmmrw+CwmHHVi+lnnXK/7E=;
-        b=q9QZ2bmUjAbR5JFVPpoENTeOUIOTLg+ZSO6ttYzDOTu2BVr5lZ+v+cEo53ybCbepriKNcjJ3LCBzZD7WK7U0x/U+DH0vQHZyX95Q4S09guF5N5SeLowmBIi9qdPgHcQkk1+8Ts9bMktigzpTFRZxxLThidJOszEnZixz5fLktv0=;
-Subject: Re: [RFC 0/7] Add support to process rx packets in thread
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     David Laight <David.Laight@ACULAB.COM>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        Markus Elfring <Markus.Elfring@web.de>,
-        "evgreen@chromium.org" <evgreen@chromium.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
-References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
- <20200721172514.GT1339445@lunn.ch> <20200725081633.7432-1-hdanton@sina.com>
- <8359a849-2b8a-c842-a501-c6cb6966e345@dd-wrt.com>
- <20200725145728.10556-1-hdanton@sina.com>
-From:   Sebastian Gottschall <s.gottschall@dd-wrt.com>
-Message-ID: <2664182a-1d03-998d-8eff-8478174a310a@dd-wrt.com>
-Date:   Sat, 25 Jul 2020 17:41:48 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101
- Thunderbird/79.0
+        id S1726694AbgGYQWq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Jul 2020 12:22:46 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jzMwR-006pHK-D0; Sat, 25 Jul 2020 18:22:31 +0200
+Date:   Sat, 25 Jul 2020 18:22:31 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>, jacek.anaszewski@gmail.com,
+        Dan Murphy <dmurphy@ti.com>,
+        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC leds + net-next v3 1/2] net: phy: add API for LEDs
+ controlled by PHY HW
+Message-ID: <20200725162231.GJ1472201@lunn.ch>
+References: <20200724164603.29148-1-marek.behun@nic.cz>
+ <20200724164603.29148-2-marek.behun@nic.cz>
 MIME-Version: 1.0
-In-Reply-To: <20200725145728.10556-1-hdanton@sina.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Received:  from [2a01:7700:8040:4d00:1098:21a4:6e8a:924b]
-        by webmail.newmedia-net.de with esmtpsa (TLSv1:AES128-SHA:128)
-        (Exim 4.72)
-        (envelope-from <s.gottschall@dd-wrt.com>)
-        id 1jzMJ4-000BMm-U8; Sat, 25 Jul 2020 17:41:50 +0200
+In-Reply-To: <20200724164603.29148-2-marek.behun@nic.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jul 24, 2020 at 06:46:02PM +0200, Marek Behún wrote:
+> Many PHYs support various HW control modes for LEDs connected directly
+> to them.
+> 
+> This code adds a new private LED trigger called phydev-hw-mode. When
+> this trigger is enabled for a LED, the various HW control modes which
+> the PHY supports for given LED can be get/set via hw_mode sysfs file.
+> 
+> A PHY driver wishing to utilize this API needs to register the LEDs on
+> its own and set the .trigger_type member of LED classdev to
+> &phy_hw_led_trig_type. It also needs to implement the methods
+> .led_iter_hw_mode, .led_set_hw_mode and .led_get_hw_mode in struct
+> phydev.
+> 
+> Signed-off-by: Marek Behún <marek.behun@nic.cz>
+> ---
+>  drivers/net/phy/Kconfig           |  9 +++
+>  drivers/net/phy/Makefile          |  1 +
+>  drivers/net/phy/phy_hw_led_mode.c | 96 +++++++++++++++++++++++++++++++
+>  include/linux/phy.h               | 15 +++++
+>  4 files changed, 121 insertions(+)
+>  create mode 100644 drivers/net/phy/phy_hw_led_mode.c
+> 
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index dd20c2c27c2f..ffea11f73acd 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -283,6 +283,15 @@ config LED_TRIGGER_PHY
+>  		<Speed in megabits>Mbps OR <Speed in gigabits>Gbps OR link
+>  		for any speed known to the PHY.
+>  
+> +config LED_TRIGGER_PHY_HW
+> +	bool "Support HW LED control modes"
+> +	depends on LEDS_TRIGGERS
+> +	help
+> +	  Many PHYs can control blinking of LEDs connected directly to them.
+> +	  This adds a special LED trigger called phydev-hw-mode. When enabled,
+> +	  the various control modes supported by the PHY on given LED can be
+> +	  chosen via hw_mode sysfs file.
+> +
+>  
+>  comment "MII PHY device drivers"
+>  
+> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> index d84bab489a53..fd0253ab8097 100644
+> --- a/drivers/net/phy/Makefile
+> +++ b/drivers/net/phy/Makefile
+> @@ -20,6 +20,7 @@ endif
+>  obj-$(CONFIG_MDIO_DEVRES)	+= mdio_devres.o
+>  libphy-$(CONFIG_SWPHY)		+= swphy.o
+>  libphy-$(CONFIG_LED_TRIGGER_PHY)	+= phy_led_triggers.o
+> +libphy-$(CONFIG_LED_TRIGGER_PHY_HW)	+= phy_hw_led_mode.o
+>  
+>  obj-$(CONFIG_PHYLINK)		+= phylink.o
+>  obj-$(CONFIG_PHYLIB)		+= libphy.o
+> diff --git a/drivers/net/phy/phy_hw_led_mode.c b/drivers/net/phy/phy_hw_led_mode.c
+> new file mode 100644
+> index 000000000000..b4c2f25266a5
+> --- /dev/null
+> +++ b/drivers/net/phy/phy_hw_led_mode.c
+> @@ -0,0 +1,96 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * drivers/net/phy/phy_hw_led_mode.c
+> + *
+> + * PHY HW LED mode trigger
+> + *
+> + * Copyright (C) 2020 Marek Behun <marek.behun@nic.cz>
+> + */
+> +#include <linux/leds.h>
+> +#include <linux/phy.h>
+> +
+> +static void phy_hw_led_trig_deactivate(struct led_classdev *cdev)
+> +{
+> +	struct phy_device *phydev = to_phy_device(cdev->dev->parent);
+> +	int ret;
+> +
+> +	ret = phydev->drv->led_set_hw_mode(phydev, cdev, NULL);
+> +	if (ret < 0) {
+> +		phydev_err(phydev, "failed deactivating HW mode on LED %s\n", cdev->name);
+> +		return;
+> +	}
 
->> i agree. i just can say that i tested this patch recently due this
->> discussion here. and it can be changed by sysfs. but it doesnt work for
->> wifi drivers which are mainly using dummy netdev devices. for this i
->> made a small patch to get them working using napi_set_threaded manually
->> hardcoded in the drivers. (see patch bellow)
-> By CONFIG_THREADED_NAPI, there is no need to consider what you did here
-> in the napi core because device drivers know better and are responsible
-> for it before calling napi_schedule(n).
-yeah. but that approach will not work for some cases. some stupid 
-drivers are using locking context in the napi poll function.
-in that case the performance will runto shit. i discovered this with the 
-mvneta eth driver (marvell) and mt76 tx polling (rxÂ  works)
-for mvneta is will cause very high latencies and packet drops. for mt76 
-it causes packet stop. doesnt work simply (on all cases no crashes)
-so the threading will only work for drivers which are compatible with 
-that approach. it cannot be used as drop in replacement from my point of 
-view.
-its all a question of the driver design
+The core holds the phydev mutex when calling into the driver. There
+are a few exceptions, but it would be good if all the LED calls into
+the driver also held the mutex.
+
+> +}
+> +
+> +static ssize_t hw_mode_show(struct device *dev, struct device_attribute *attr, char *buf)
+> +{
+> +	struct led_classdev *cdev = led_trigger_get_led(dev);
+> +	struct phy_device *phydev = to_phy_device(cdev->dev->parent);
+> +	const char *mode, *cur_mode;
+> +	void *iter = NULL;
+> +	int len = 0;
+
+Reverse christmas tree.  
+
+> +static int __init phy_led_triggers_init(void)
+> +{
+> +	return led_trigger_register(&phy_hw_led_trig);
+> +}
+> +
+> +module_init(phy_led_triggers_init);
+> +
+> +static void __exit phy_led_triggers_exit(void)
+> +{
+> +	led_trigger_unregister(&phy_hw_led_trig);
+> +}
+> +
+> +module_exit(phy_led_triggers_exit);
+
+It is a bit of a surprise to find the module init/exit calls here, and
+not in phy.c. I think they should be moved.
+
+    Andrew
