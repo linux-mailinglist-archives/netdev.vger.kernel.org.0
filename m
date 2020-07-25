@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A93C22D59F
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 09:02:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C0C222D5A0
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 09:04:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726612AbgGYHCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 03:02:22 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:42848 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725874AbgGYHCW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 03:02:22 -0400
+        id S1726732AbgGYHEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 03:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725874AbgGYHEj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 03:04:39 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0BCC0619D3
+        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 00:04:39 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595660540;
+        s=2020; t=1595660677;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=yptN0zJhNFdhUHhD2jECvgn65xMx3wbcq7OuSFx4rjU=;
-        b=2K7kJtmmLGvmYTpmyVuz7bL2jOofIR5y/fGzmK4R8PSy28uWwTqnyvdHvGtohSMHBHGwhZ
-        DZXJaT2Krmgzx25t/0UsoCiiUq5xh+kxQ8FnSbcE0QC0F+1H5aZuMvNy0n7pAc3mmzEhhn
-        l/dZH+ZWCxfEyVxZSfRPJKZnYKpqdGhVg3yFakFiSWdCDyi6edWHth1cxNq2zDKb5sBSab
-        XSiMlGg0ZP/WHu67SwVK7cKlfBk/K6/W9qVWoIgA2t5POD/oMgKr/y0TsQhGxrA/BRSUE6
-        3/EFdbZ+H80QIn3/T8SRb5/wpbpbYfO8YmjQ99RjxG38pxGFoDp9axBpriBK5g==
+        bh=TnChhB4iMyKM7B2WXTjtIxWd1gDqy4U0wELOTljV0Ak=;
+        b=WQYPJIieFwGN7UmBc39MMU2pv6YiWXorqMPiOl1kDpGuE0Eib3p8E0jPduiSzPvsm/qQ4r
+        ui/o0aZkqvC3VsgtUyr2HLDijJ0TrJ5F1WBiAtEj+1CcCnZz9DPxfdxUzhbhNqPzcZocZL
+        2w6KOQuiQRqJvixcxnuw4F1adff82qKoKqxIYfoL3F+a8AauGyqa4OpiIHMp8RBNMaWOoK
+        5u7dhGas8zndX/lLSa6WJNjyLLrhPK37y1iaB1HhC7rAvG0rcu7qoGbHHs7IlHTIDkIEjj
+        lh8o2IESPSbXKW3htKQ0alf4FGcL6HPiMKK7VE6dRlP4LbiIs7m/yhON5R6MxA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595660540;
+        s=2020e; t=1595660677;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=yptN0zJhNFdhUHhD2jECvgn65xMx3wbcq7OuSFx4rjU=;
-        b=UPsPbCdncT3P1Wi6JosR1rKAtIpdSMnh5r+svRWT2YwL42Wr7zHANOH0gOUsL4Y0ZSVjVI
-        CCLGDu4zc6pQKfBw==
-To:     David Miller <davem@davemloft.net>
-Cc:     kuba@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, netdev@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, bigeasy@linutronix.de,
-        richardcochran@gmail.com, kamil.alkhouri@hs-offenburg.de,
-        ilias.apalodimas@linaro.org, olteanv@gmail.com
-Subject: Re: [PATCH v2 0/8] Hirschmann Hellcreek DSA driver
-In-Reply-To: <20200724.164725.2267540815357576064.davem@davemloft.net>
-References: <20200723081714.16005-1-kurt@linutronix.de> <20200723093339.7f2b6e27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <87wo2t30v9.fsf@kurt> <20200724.164725.2267540815357576064.davem@davemloft.net>
-Date:   Sat, 25 Jul 2020 09:02:06 +0200
-Message-ID: <874kpwnklt.fsf@kurt>
+        bh=TnChhB4iMyKM7B2WXTjtIxWd1gDqy4U0wELOTljV0Ak=;
+        b=A/1HZWy9QZd2neZcPMbPF7+2xOX6bROr9f29xvPiumgIzXQH1vzmDGicuQIU8KdvrzJWVi
+        jfiB+GkSkfsdT5DQ==
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH v1 0/2] ptp: Add generic header parsing function
+In-Reply-To: <20200724160335.GA30531@hoboy>
+References: <20200723074946.14253-1-kurt@linutronix.de> <20200723170842.GB2975@hoboy> <87r1t12zuw.fsf@kurt> <20200724160335.GA30531@hoboy>
+Date:   Sat, 25 Jul 2020 09:04:36 +0200
+Message-ID: <871rl0nkhn.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: multipart/signed; boundary="=-=-=";
         micalg=pgp-sha512; protocol="application/pgp-signature"
@@ -52,17 +55,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 --=-=-=
 Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-On Fri Jul 24 2020, David Miller wrote:
-> Please never submit patches for serious review when the dependencies
-> haven't landed in the target tree yet.
+On Fri Jul 24 2020, Richard Cochran wrote:
+> On Fri, Jul 24, 2020 at 08:25:59AM +0200, Kurt Kanzenbach wrote:
+>> |static inline u8 ptp_get_msgtype(const struct ptp_header *hdr, unsigned=
+ int type)
+>> |{
+>> |	u8 msg;
+>> |
+>> |	if (unlikely(type & PTP_CLASS_V1))
+>> |		/* msg type is located @ offset 20 for ptp v1 */=20
+>> |		msg =3D hdr->source_port_identity.clock_identity.id[0];
+>> |	else
+>> |		msg =3D hdr->tsmt & 0x0f;
+>> |
+>> |	return msg;
+>> |}
+>>=20
+>> What do you think about it?
 >
-> That makes so much wasted work for us and other reviewers.
->
-> Thank you.
->
+> Looks good.
 
-OK, noted. Sorry for that.
+OK, I'll add it.
+
+>
+> I can also test the dp83640.  Maybe you could test the cpts on a bbb?
+
+Most likely, yes.
 
 Thanks,
 Kurt
@@ -72,18 +92,18 @@ Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8b2O4ACgkQeSpbgcuY
-8KaAhA//Wn4wX46BAVF2a89qkj1k2ZaLFufJK5UBWA2TOCp2AocQVMlaNRppGBIH
-HAlTgaHUziXziB+w2OnMk+O3EOUrGUTmPovLpJFqi8Vrk9TQRYU0s2HOiVx7n8F9
-XHK5gTvJbMmMtcDsuhk3sISjBaGt4OvAPwktb66jf/27Q7d5AAvz5W9pvcf+Pf/O
-SjZjCbZ6XjDoMXQYykLppYed4Tc2cWqcs5x+DUUpuSxqu2bwPH4BDN+a+u3v+7x7
-fsEgHXnCtd07fYA8OrNPi7tS2LBOwbeLgRO1kGloxfKGTsU+lVQPSBIikiabFhtD
-6uluKZ2NLWRMf7pASGy+PRHCM0HSttYY8LtrtHVDT9PhT+mMzhG503+tusjGX23Q
-MoZaYZWx84yBaTz1UDMFCZW1mSDiqf/RNOjhQotlNwB1lfzi8Oa8zV6TMXzevHU7
-1x8vtqPxxiqdmKGS8gpaOJ3WQvq8fddRqqbEOLJZxRPCIsoiII0aSiMA9N4mUqAq
-zVvq0wujA2PPqvMoVrqWepBR1r4D9rbkyOjcSKIyIamXLHnYSvyV4rPiuTHoCc3+
-1OXdrI9vbtrmqnsKuEMXYSmYoqQVM7Z211dnM/g6lOl0mimm/x5KGmLZv+GJDcsc
-ur5zIkzTOqnlr2lhj6i59HDWr4812GVIG6Oaq+kcp7Z2eTGhTJQ=
-=Ncmj
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8b2YQACgkQeSpbgcuY
+8KY0TQ/+NO77q666WFl/taM4WwxntpainTC4Rw7v+nm9vunjoX6fRHvbwiIXZthT
+QYWEusUQU3yYE2UQYLVLzgnikysbNHm9lDqt20FHUZG+0bDpA3f91KPeBR3GFYzo
+qvIe4O+G7y2eC9oP26n4jdKvGtl3RGUa82MqFyMyjHCX0cCDv+ccOTGOlsde5j7x
+4NJWYEMrFk0wqYZTLHwvZH36F57/vVsR6MzqKvDeArR+WJmUL0V+gOP4nZURgifA
+N9EGg2F9ZYaqBX3exNoexb/mhp2ZrcTc65pzLgp0aUk3+WhfnrxuiUwGDjSM1w1x
+WgFmzaqTlxhfKcoEpUanfTSYTKHEwVBT7jUNKnUr5G3vp/Y1bhn+zPW3CbbqlSff
+8c46a5CjDQYM32Jp8DNxbeEwXoPZYwK2YbNIyGzsz3pkdz99XXEH5Znyf1f0Kh/D
+q/mFFGhGwxh+QCcwllF3me4ZU3FRhUlJcN7rse5biNTrRrYslzKntNhvOePUbuu7
+QWGQ7K69TPGt1geG0+czKOCT25Q9L0ty/gHmTY8Ca8+IiSJKo3Y9RIALldbX6WoU
+Hf+kpDyMyWptF6FrVskT8hqk8YgzenUQzIA/sLUHfW68cZ/tXJl7lbpcqfRuZ7Iy
+qInt8CGR39+g+AVpNp89Ss/ZS7ywBjEbCK55ZbwybzhrzlFeOjc=
+=F8BW
 -----END PGP SIGNATURE-----
 --=-=-=--
