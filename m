@@ -2,59 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2DAA22D9F5
-	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 23:03:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12B5622DA19
+	for <lists+netdev@lfdr.de>; Sat, 25 Jul 2020 23:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728107AbgGYVDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 17:03:45 -0400
-Received: from smtprelay0013.hostedemail.com ([216.40.44.13]:53398 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728015AbgGYVDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 17:03:45 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 83030100E7B47;
-        Sat, 25 Jul 2020 21:03:44 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1538:1568:1593:1594:1711:1714:1730:1747:1777:1792:1981:2194:2199:2393:2559:2562:2828:3138:3139:3140:3141:3142:3622:3867:3868:3870:3871:3872:4321:5007:7974:10004:10400:10848:11232:11658:11914:12043:12297:12555:12679:12740:12760:12895:12903:12986:13069:13161:13229:13311:13357:13439:14181:14659:14721:14819:21080:21627:30029:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: sun63_59013f726f53
-X-Filterd-Recvd-Size: 1432
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf18.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 25 Jul 2020 21:03:42 +0000 (UTC)
-Message-ID: <f7349cdd968aa8e8fa6552d62999a7e05fa875f7.camel@perches.com>
-Subject: Re: [PATCH 0/6] rtlwifi: Convert RT_TRACE to rtl_dbg and neatening
-From:   Joe Perches <joe@perches.com>
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        linux-wireless@vger.kernel.org
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Sat, 25 Jul 2020 14:03:41 -0700
-In-Reply-To: <cover.1595706419.git.joe@perches.com>
-References: <cover.1595706419.git.joe@perches.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1727119AbgGYVcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 17:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726601AbgGYVca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 17:32:30 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C6CBC08C5C0;
+        Sat, 25 Jul 2020 14:32:30 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id h28so9459539edz.0;
+        Sat, 25 Jul 2020 14:32:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nzlkgUksKHKvjyC1WqdXTsA35q0rjk7MHaBjqIWnjlQ=;
+        b=Zl3F8eWDLHoNjgDQzdT30Kx8/4VIzHWj4mf2BDBlDvZZLunYSlOMCdumd+tO/rN3mD
+         A9HXEHa5aW7K5huN5rJr3kPbSSsw8yC0+c+8NHslxgzjPbZno1Z2U6gODVFT/y/2gzW4
+         bx6++p7Q9t+zWvXBMSg05PCABlPv+Jc5hZeuUzWui8i2VgIPiY03gH4f2D/m5XxRCCCb
+         btpx2NcWAW4pZtRni++2PBNFYUwzYBd97TcQsbJXf9kY5gD7xc84l/otAN0KMOySWV41
+         vh4mlDqN9N5UHmSpK4g883NB/GDjvCO0DEV8QPBmHoDg6sc4qC1BchbiJWYvTmLObT6E
+         MyuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nzlkgUksKHKvjyC1WqdXTsA35q0rjk7MHaBjqIWnjlQ=;
+        b=QG0eHdapeLDZ/aj6GgpeoAzjmXaI+0UmLZqIvyj5C6zAUrumMtPpeixnCE3A1gHZaq
+         Tc4HT9puyhsvcwOCqzBCdM1ObzGIiZqlKJMTdgE1sC2zVTTAxKPsiPkF+b3dUs5lZzgw
+         5faU3OOAR3OWQKu8K6cXju45SibKl3uTY5VmUcaGRI8aHYU2vx29ODRZE4Veh6juVL//
+         PcVL4iqFvZ5Zou1RmNlhm/YN28Tqx00CsRzLprniHPXeJO0feWXWPJi8uRgWsH5MvAx9
+         rdrKNR62qYvzPYFJTn+kJwTzYWj0Ar2BeD8FEp6SvWoGZ5dFueYfwm22MBJcj44gPZ7E
+         0aPw==
+X-Gm-Message-State: AOAM532q/OruOn/Lt0vrOdG++2A5Td7b+2gLWO4qOBgeBI+mHZ2vzLuA
+        UV1B4zRXzJ/aCvrfNt1OATN0EWVh
+X-Google-Smtp-Source: ABdhPJxkqWGCqIFsWuIpm5PG1NeWwlCwFstln3uF/Q8Qgxf6PaIOHJkWz0pVirMYDs1F18x9r2v6MQ==
+X-Received: by 2002:a05:6402:3099:: with SMTP id de25mr15061729edb.228.1595712749179;
+        Sat, 25 Jul 2020 14:32:29 -0700 (PDT)
+Received: from skbuf ([188.25.219.134])
+        by smtp.gmail.com with ESMTPSA id vr6sm1727656ejb.36.2020.07.25.14.32.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jul 2020 14:32:28 -0700 (PDT)
+Date:   Sun, 26 Jul 2020 00:32:26 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org, sorganov@gmail.com,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next 3/3] docs: networking: timestamping: add a set
+ of frequently asked questions
+Message-ID: <20200725213226.hknk62rdovm3nmrz@skbuf>
+References: <20200717161027.1408240-4-olteanv@gmail.com>
+ <e6b6f240-c2b2-b57c-7334-4762f034aae3@intel.com>
+ <20200718113519.htopj6tgfvimaywn@skbuf>
+ <887fcc0d-4f3d-3cb8-bdea-8144b62c5d85@intel.com>
+ <20200720210518.5uddqqbjuci5wxki@skbuf>
+ <0fb4754b-6545-f8dc-484f-56aee25796f6@intel.com>
+ <20200720221314.xkdbw25nsjsyvgbv@skbuf>
+ <20200721002150.GB21585@hoboy>
+ <20200721195127.nxuxg6ef2h6cs3wj@skbuf>
+ <20200722032553.GB12524@hoboy>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200722032553.GB12524@hoboy>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-07-25 at 12:55 -0700, Joe Perches wrote:
-> RT_TRACE seems like it should be associated to tracing but it's not.
-> It's a generic debug logging mechanism.
-> Rename it to a more typical name.
-> Miscellaneous neatening around these changes.
+On Tue, Jul 21, 2020 at 08:25:53PM -0700, Richard Cochran wrote:
+> On Tue, Jul 21, 2020 at 10:51:27PM +0300, Vladimir Oltean wrote:
+> > So I think the position of "just don't have software timestamping code
+> > in DSA and you'll be fine" won't be getting us anywhere. Either you can
+> > or you can't, and there isn't anything absurd about it, so sooner or
+> > later somebody will want to do it. The rules surrounding it, however,
+> > are far from being ready, or clear.
+> > 
+> > Am I missing something?
+> 
+> I'm just trying to make things easy for you, as the author of DSA
+> drivers.  There is no need to set skb flags that have no purpose
+> within the stack.
+> 
+> Nobody is demanding software time stamps from any DSA devices yet, and
+> so I don't see the point in solving a problem that doesn't exist.
+> 
+> I'm sorry if the "rules" are not clear, but if you look around the
+> kernel internals, you will be hard pressed to find perfectly
+> documented rules anywhere!
+> 
+> Thanks,
+> Richard
 
-Patch 1/6 is over 1MB and is too large for some mailing lists.
+Could we perhaps take a step back and see what can be improved about the
+documentation updates?
 
-These patches are based on wireless-drivers-next and are also
-available at:
-
-git://repo.or.cz/linux-2.6/trivial-mods.git in branch 20200724_rtlwifi
-
-
+Thanks,
+-Vladimir
