@@ -2,144 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 362F122E2CC
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 23:43:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D2F22E32B
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 00:48:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726911AbgGZVnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 17:43:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57012 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726253AbgGZVnu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Jul 2020 17:43:50 -0400
-Received: from pali.im (pali.im [31.31.79.79])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E71A6206E3;
-        Sun, 26 Jul 2020 21:43:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595799830;
-        bh=NuinqTC0rRk064ZYaZrnWrKR4dJgNmfjHMZTY6hKTfM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=B4gf2fhYJm5YLqR9bfCvTfldNU9zzEFC+pMm7ITyYgpS26nnCT+Glfb/wxMDjh10K
-         nCpkwM4QFtcd1PUOGiq+OxV41i6G9cecZ7FhfQeuiw3d9nwdCcd9VReNWpN05iEEwq
-         0G33u82aN29vlmDe1TY29LViiDzkJ/U4CsIA2AZ0=
-Received: by pali.im (Postfix)
-        id 8D35076D; Sun, 26 Jul 2020 23:43:47 +0200 (CEST)
-Date:   Sun, 26 Jul 2020 23:43:47 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     "H. Peter Anvin" <hpa@zytor.com>, netdev@vger.kernel.org
-Subject: Re: IPv6: proxy_ndp to a network range
-Message-ID: <20200726214347.gezdwrn4l745vtsc@pali>
-References: <31ff66eb-38bd-0186-9e81-0543f0558323@zytor.com>
- <20160509083903.GA2462@omega>
- <A2319CD4-6907-4B21-A4DD-03CCA38328FA@zytor.com>
- <20160509145109.GB7267@omega>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20160509145109.GB7267@omega>
-User-Agent: NeoMutt/20180716
+        id S1727064AbgGZWsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 18:48:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33946 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726522AbgGZWsV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 18:48:21 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E95C0619D4
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 15:48:21 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id q145so5652096ybg.8
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 15:48:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Z7rJkPFkicEqRXa8H2H+eAkbcV3x2za6M1WWwBBQe94=;
+        b=h+6c/Wtv3G/E0Q5G7yq37gVbb2jPhWO4oajjn5Uqw65uikpw4CMnwnc4W18oCatp4H
+         Q1sVmi3uLly0vXXQiwm7/m2N14lerVEpteTuHvcfGadl04JOS6EVa5i8+cYR+n+CydFr
+         1j+0acIV1gWBHroI0eR5XGoiEj0QOqo2yXwXjhCeCsUOqcXju+hO4znR9yG85/F1JWY8
+         QgakH3G9WbZVi951IkRJ0kIQMzFUoTT0xIcZEG25b/L06+4YgQWPXCWUDCV7KE6mLO+G
+         +nMHY4VMUERkvqRin3aJxZzQpVaqsDuFPXXxmPhxkycWocsmWuyaTJQ4pjZ5S0ubBGRp
+         s8UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Z7rJkPFkicEqRXa8H2H+eAkbcV3x2za6M1WWwBBQe94=;
+        b=MSGC8v8ZSRfXEN1UGbiFSiOhzE0tyYAAqLKQsUF8kxw0o4NuADCqZc/lSGDURn4tZV
+         POO0RQbMLd9vB7tsZhegTzb6NU3gGbLUGYuJ0HezVlFb8ilR9Hsx0bGpf+dPllSoj6ym
+         VrqcxT/IwXoq9nYUk1AEhFSiNkOz6CEsAx1Pt5cDX6Bce/didXBZG2xtoR7LZrMRJOdi
+         D/5aq79q6xt8zz2nZazqFrMjAKF6eIBWPzvlqcaouHQJVR6dj8gLPyD1DECiS9f5mz/p
+         mT7QvlAFylBkKSVWFNlR4ytowgW6A31CqJGEe4BPimdg9MmXfIVXH0WqvCdDkiwGofnh
+         T0EQ==
+X-Gm-Message-State: AOAM532bQg0ubQGbYpis/ipIDb9mc3E4jUJo/FD2F+pfyDsXfU7mTFlq
+        G7EABKOGcF2so/LYgajMFgZGed0KSleO
+X-Google-Smtp-Source: ABdhPJz6soGdCdpY/T8IWZ8l4ICluj41UMvB+JcGPoP1P6aJcG+ZLJe84sSr2KDFxBTFwoXGbpPB9rKOQdaA
+X-Received: by 2002:a25:c615:: with SMTP id k21mr28496351ybf.379.1595803700661;
+ Sun, 26 Jul 2020 15:48:20 -0700 (PDT)
+Date:   Sun, 26 Jul 2020 15:48:16 -0700
+Message-Id: <20200726224816.1819557-1-brianvv@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.rc0.142.g3c755180ce-goog
+Subject: [PATCH V2 net-next] fib: use indirect call wrappers in the most
+ common fib_rules_ops
+From:   Brian Vazquez <brianvv@google.com>
+To:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, I would like to brisk up this thread again!
+This avoids another inderect call per RX packet which save us around
+20-40 ns.
 
-On Monday 09 May 2016 16:51:10 Alexander Aring wrote:
-> Hi,
-> 
-> On Mon, May 09, 2016 at 01:46:13AM -0700, H. Peter Anvin wrote:
-> > On May 9, 2016 1:39:08 AM PDT, Alexander Aring <alex.aring@gmail.com> wrote:
-> > >Hi,
-> > >
-> > >On Mon, May 09, 2016 at 01:06:51AM -0700, H. Peter Anvin wrote:
-> > >> Hello,
-> > >> 
-> > >> There currently doesn't seem to be any support for proxy_ndp of a whole
-> > >> network mask, as IPv4 proxy_arp seems to permit.
-> > >> 
-> > >> a) Am I actually correct in this, or am I just missing something important?
-> > >> 
+Changelog:
 
-IPv4 proxy_arp has ioctl API for specifying subnet (not only one
-address), but support for it was removed in Linux kernel version 2.1.79
-which was released long time ago. And therefore since Linux kernel 2.2
-support for specifying netmask different than 255.255.255.255 is not
-possible anymore.
+v1 -> v2:
+- Move declaraions to fib_rules.h to remove warnings
 
-There is for example still HOWTO guide for old Linux kernel 2.0 how to
-setup proxy arp with subnetting via "arp" command line utility.
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Brian Vazquez <brianvv@google.com>
+---
+ include/net/fib_rules.h | 18 ++++++++++++++++++
+ net/core/fib_rules.c    | 18 ++++++++++++++----
+ net/ipv4/fib_rules.c    | 12 ++++++++----
+ net/ipv6/fib6_rules.c   | 12 ++++++++----
+ 4 files changed, 48 insertions(+), 12 deletions(-)
 
-https://www.tldp.org/HOWTO/Proxy-ARP-Subnet/setup.html
+diff --git a/include/net/fib_rules.h b/include/net/fib_rules.h
+index a259050f84afc..4b10676c69d19 100644
+--- a/include/net/fib_rules.h
++++ b/include/net/fib_rules.h
+@@ -10,6 +10,7 @@
+ #include <net/flow.h>
+ #include <net/rtnetlink.h>
+ #include <net/fib_notifier.h>
++#include <linux/indirect_call_wrapper.h>
+ 
+ struct fib_kuid_range {
+ 	kuid_t start;
+@@ -203,4 +204,21 @@ int fib_nl_newrule(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		   struct netlink_ext_ack *extack);
+ int fib_nl_delrule(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		   struct netlink_ext_ack *extack);
++
++INDIRECT_CALLABLE_DECLARE(int fib6_rule_match(struct fib_rule *rule,
++					    struct flowi *fl, int flags));
++INDIRECT_CALLABLE_DECLARE(int fib4_rule_match(struct fib_rule *rule,
++					    struct flowi *fl, int flags));
++
++INDIRECT_CALLABLE_DECLARE(int fib6_rule_action(struct fib_rule *rule,
++			    struct flowi *flp, int flags,
++			    struct fib_lookup_arg *arg));
++INDIRECT_CALLABLE_DECLARE(int fib4_rule_action(struct fib_rule *rule,
++			    struct flowi *flp, int flags,
++			    struct fib_lookup_arg *arg));
++
++INDIRECT_CALLABLE_DECLARE(bool fib6_rule_suppress(struct fib_rule *rule,
++						struct fib_lookup_arg *arg));
++INDIRECT_CALLABLE_DECLARE(bool fib4_rule_suppress(struct fib_rule *rule,
++						struct fib_lookup_arg *arg));
+ #endif
+diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
+index bd7eba9066f8d..e7a8f87b0bb2b 100644
+--- a/net/core/fib_rules.c
++++ b/net/core/fib_rules.c
+@@ -14,6 +14,7 @@
+ #include <net/sock.h>
+ #include <net/fib_rules.h>
+ #include <net/ip_tunnels.h>
++#include <linux/indirect_call_wrapper.h>
+ 
+ static const struct fib_kuid_range fib_kuid_range_unset = {
+ 	KUIDT_INIT(0),
+@@ -267,7 +268,10 @@ static int fib_rule_match(struct fib_rule *rule, struct fib_rules_ops *ops,
+ 	    uid_gt(fl->flowi_uid, rule->uid_range.end))
+ 		goto out;
+ 
+-	ret = ops->match(rule, fl, flags);
++	ret = INDIRECT_CALL_INET(ops->match,
++				 fib6_rule_match,
++				 fib4_rule_match,
++				 rule, fl, flags);
+ out:
+ 	return (rule->flags & FIB_RULE_INVERT) ? !ret : ret;
+ }
+@@ -298,9 +302,15 @@ int fib_rules_lookup(struct fib_rules_ops *ops, struct flowi *fl,
+ 		} else if (rule->action == FR_ACT_NOP)
+ 			continue;
+ 		else
+-			err = ops->action(rule, fl, flags, arg);
+-
+-		if (!err && ops->suppress && ops->suppress(rule, arg))
++			err = INDIRECT_CALL_INET(ops->action,
++						 fib6_rule_action,
++						 fib4_rule_action,
++						 rule, fl, flags, arg);
++
++		if (!err && ops->suppress && INDIRECT_CALL_INET(ops->suppress,
++								fib6_rule_suppress,
++								fib4_rule_suppress,
++								rule, arg))
+ 			continue;
+ 
+ 		if (err != -EAGAIN) {
+diff --git a/net/ipv4/fib_rules.c b/net/ipv4/fib_rules.c
+index f99e3bac5cab2..ce54a30c2ef1e 100644
+--- a/net/ipv4/fib_rules.c
++++ b/net/ipv4/fib_rules.c
+@@ -29,6 +29,7 @@
+ #include <net/ip_fib.h>
+ #include <net/nexthop.h>
+ #include <net/fib_rules.h>
++#include <linux/indirect_call_wrapper.h>
+ 
+ struct fib4_rule {
+ 	struct fib_rule		common;
+@@ -103,8 +104,9 @@ int __fib_lookup(struct net *net, struct flowi4 *flp,
+ }
+ EXPORT_SYMBOL_GPL(__fib_lookup);
+ 
+-static int fib4_rule_action(struct fib_rule *rule, struct flowi *flp,
+-			    int flags, struct fib_lookup_arg *arg)
++INDIRECT_CALLABLE_SCOPE int fib4_rule_action(struct fib_rule *rule,
++					     struct flowi *flp, int flags,
++					     struct fib_lookup_arg *arg)
+ {
+ 	int err = -EAGAIN;
+ 	struct fib_table *tbl;
+@@ -138,7 +140,8 @@ static int fib4_rule_action(struct fib_rule *rule, struct flowi *flp,
+ 	return err;
+ }
+ 
+-static bool fib4_rule_suppress(struct fib_rule *rule, struct fib_lookup_arg *arg)
++INDIRECT_CALLABLE_SCOPE bool fib4_rule_suppress(struct fib_rule *rule,
++						struct fib_lookup_arg *arg)
+ {
+ 	struct fib_result *result = (struct fib_result *) arg->result;
+ 	struct net_device *dev = NULL;
+@@ -169,7 +172,8 @@ static bool fib4_rule_suppress(struct fib_rule *rule, struct fib_lookup_arg *arg
+ 	return true;
+ }
+ 
+-static int fib4_rule_match(struct fib_rule *rule, struct flowi *fl, int flags)
++INDIRECT_CALLABLE_SCOPE int fib4_rule_match(struct fib_rule *rule,
++					    struct flowi *fl, int flags)
+ {
+ 	struct fib4_rule *r = (struct fib4_rule *) rule;
+ 	struct flowi4 *fl4 = &fl->u.ip4;
+diff --git a/net/ipv6/fib6_rules.c b/net/ipv6/fib6_rules.c
+index 6053ef8515555..8f9a83314de7d 100644
+--- a/net/ipv6/fib6_rules.c
++++ b/net/ipv6/fib6_rules.c
+@@ -13,6 +13,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/notifier.h>
+ #include <linux/export.h>
++#include <linux/indirect_call_wrapper.h>
+ 
+ #include <net/fib_rules.h>
+ #include <net/ipv6.h>
+@@ -255,8 +256,9 @@ static int __fib6_rule_action(struct fib_rule *rule, struct flowi *flp,
+ 	return err;
+ }
+ 
+-static int fib6_rule_action(struct fib_rule *rule, struct flowi *flp,
+-			    int flags, struct fib_lookup_arg *arg)
++INDIRECT_CALLABLE_SCOPE int fib6_rule_action(struct fib_rule *rule,
++					     struct flowi *flp, int flags,
++					     struct fib_lookup_arg *arg)
+ {
+ 	if (arg->lookup_ptr == fib6_table_lookup)
+ 		return fib6_rule_action_alt(rule, flp, flags, arg);
+@@ -264,7 +266,8 @@ static int fib6_rule_action(struct fib_rule *rule, struct flowi *flp,
+ 	return __fib6_rule_action(rule, flp, flags, arg);
+ }
+ 
+-static bool fib6_rule_suppress(struct fib_rule *rule, struct fib_lookup_arg *arg)
++INDIRECT_CALLABLE_SCOPE bool fib6_rule_suppress(struct fib_rule *rule,
++						struct fib_lookup_arg *arg)
+ {
+ 	struct fib6_result *res = arg->result;
+ 	struct rt6_info *rt = res->rt6;
+@@ -296,7 +299,8 @@ static bool fib6_rule_suppress(struct fib_rule *rule, struct fib_lookup_arg *arg
+ 	return true;
+ }
+ 
+-static int fib6_rule_match(struct fib_rule *rule, struct flowi *fl, int flags)
++INDIRECT_CALLABLE_SCOPE int fib6_rule_match(struct fib_rule *rule,
++					    struct flowi *fl, int flags)
+ {
+ 	struct fib6_rule *r = (struct fib6_rule *) rule;
+ 	struct flowi6 *fl6 = &fl->u.ip6;
+-- 
+2.28.0.rc0.142.g3c755180ce-goog
 
-That "arp" utility in Linux distributions in recent versions still
-supports specifying "netmask" argument, but recent kernel versions just
-returns -EINVAL when netmask is specified to value different than
-255.255.255.255.
-
-I do not know what was the reason for removing this functionality...
-Maybe there were some optimizations in lookup tables and authors decided
-that such functionality was not used and did not reimplemented it? Just
-guessing, who knows...
-
-> > >> b) Is there a technical reason for this, or is it just a limitation of the
-> > >> current implementation?
-> > >> 
-
-I think this is just limitation of the current implementation (for both
-IPv4 and IPv6). I think that there were no interested users in such
-functionality and therefore nobody implemented it (again for IPv4).
-
-From technical point of view, it is probably harder to have optimized
-implementation as it would require some smart data structure with
-support for merging and splitting radix trees for fast query if address
-is in some proxy range or not.
-
-> > >
-> > >So far I know you can do this with the ndppd [0] userspace tool which listen
-> > >NS/NA messages and do the ip -6 neigh add proxy for you.
-> > >
-> > >- Alex
-> > >
-> > >[0] https://github.com/DanielAdolfsson/ndppd
-> > 
-> > Sure, but it seems like a workaround for something that ought to be simpler?
-> 
-> I don't know if there exists a simpler way, but I would also be
-> interested into that.
-> 
-> There are some people @linux-wpan which wants to plugin an ethernet cable
-> and everything works out of the box to access the 6LoWPAN network over
-> the ethernet connection without doing routing setup stuff.
-> 
-> "ndppd" was on my list to test for realize such setup. :-)
-
-There are already more userspace daemons which are doing this IPv6 NDP
-proxy either by forwarding packets or automatically answering NDP
-replies.
-
-So such setup / functionality is not rare and is already used by lot of
-people.
-
-> ---
-> 
-> For the simpler solution do you want to move the actually mechanism what
-> "ndppd" does into the kernel?
-
-Because we already have support for IPv4 ARP and IPv6 NDP proxies in
-kernel, with limitation to one address, I think it make sense to extend
-this implementation also for netmask/range.
-
-Personally, I would like to see this feature in kernel (again). There
-are lot of setup which requires NDP proxy in IPv6 world (e.g. when ISP
-provides only link prefix, not routed prefix) or also in IPv4 world
-(e.g. when ISP provides block of addresses via one PPPoE tunnel).
-
-For IPv4 we already have existing (ioctl) API and existing utilities
-which are using this API. But for IPv6 (and ideally also for IPv4) would
-be needed to extend netlink API which is used by "ip neighbour" utility.
-
-
-Alex and Peter, are you still interested in in-kernel IPv6 NDP proxy?
