@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 374AE22E353
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 01:34:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B774A22E354
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 01:35:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727939AbgGZXe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 19:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41176 "EHLO
+        id S1727973AbgGZXe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 19:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726736AbgGZXe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 19:34:56 -0400
+        with ESMTP id S1726736AbgGZXe6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 19:34:58 -0400
 Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C05C1C0619D2
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 16:34:55 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id s16so20893ljc.8
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 16:34:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2D5C0619D2
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 16:34:58 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id b25so15255189ljp.6
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 16:34:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Rc8F31vQgyzmseTSjEvvQ2ZmeNk370kua+35RMa42C4=;
-        b=OgV4FKg2bFryYIZG1CBaMggEvTkCLo/3eYeIrf2hzbeJXmmwYekh/9gWr5QzbV6+Gh
-         Sp0oOtSiMd5FLjOkaU/sU+TC03+1umvDfxoryaAoHBvpd2nsT6bmTHiQaPkWRIMOrfzh
-         2gx41dgrNJ0iaxngLIKSIgJLb1KImK7MqcTFInNeIHYUmyC/PE+BlEeCJDIvgzPXDdbI
-         +V0pSFYy1Qvxp1cG/ZleREB3q2LodgdcirKz+BIh/ZJotDi0SKXgWMLEfjMxRwicydef
-         iX69PJFCWqqwhP1xbGRiwz8LnMY9DQ1OzlKMt02R4qxolj+qrLQEVdvSGJmsOEv3eHKw
-         WySA==
+        bh=0NGy/9klYfszmbekc26ZLsPZ67iMjoQFTEnntnN7sDw=;
+        b=oxzlIgENYFcYEpBd6AK3b87691hiV5Nvedr6ayi7wOf62xXA7zkiDEB6LrDy4Y1ZHJ
+         ITgYYBSaM22ZAOqpFbJ8TmfAvucTqgTlRSjeFrXkfSP2zyoRqFtiH6kNW18snwk73nj4
+         vxd00uvd3TT+ojAt8lXE/FmeArq3pUxConVy9aDGzCcvWhAk8GuNlFmrY04+FSRB5pRT
+         WKRkmWbR4Sy/hUIf26CHyA44hF/TGpB9D/6tHDWEeVj5WJVq1cqJgjWPKxB1g3uKUR74
+         7UZ5h82j1sbGETMXy6OCmK8j/J87PGIxHwmpBw0P/wKHPZIPSjzm1AJiEvmVkOXEDPlZ
+         ND8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Rc8F31vQgyzmseTSjEvvQ2ZmeNk370kua+35RMa42C4=;
-        b=BD/QckveiXY94jLYMsqk5YcgyTVba73heYFXi2A0R+FYaxODFo7QV2bhHG598FBu0Q
-         0T5iSrBpKe83Od+HVswWW+/DpYnZFxTqJ2BU4rCieVcv/OiyWVIyxCvizfpBA3YIoU3j
-         GBMABTHz9qxhHHBnVKJ/hhAMstevv0wPEk76fgkgFZ2FMvbR4f52ozu1Ji/Bu5/NEoGu
-         qs5pbrgi4jrPCYqOi5W+lT2ALFFBOQT3aE1ZfsJIWKcRenIOxklH5mVcA/mLm57JcgSk
-         1DX1QtWiI2TG8MPH20gUtZ522JHX2RSFz07sKxp22spCLy29QcqHQpvEzvsGRDwoCCpn
-         9ouw==
-X-Gm-Message-State: AOAM531he0d5v0pH4ddPL5bXGgs6eB3Db2ilcMxyXaDF52V75JjBMXve
-        PR067RN+UZGiBs+Td4en1tR6fA==
-X-Google-Smtp-Source: ABdhPJzW2EUGvz8gkWvr/YdW6NAwbPzf0/0XBrFql6M6HRIg1AQ24q8PgszY/Smz3Zvax1rRwsoNQw==
-X-Received: by 2002:a2e:9d84:: with SMTP id c4mr8947727ljj.46.1595806493815;
-        Sun, 26 Jul 2020 16:34:53 -0700 (PDT)
+        bh=0NGy/9klYfszmbekc26ZLsPZ67iMjoQFTEnntnN7sDw=;
+        b=bFxMnKEt4qrsS3ll72g5GbWSzNIxvqEAWdNq5gQj6tRQEyWug2DLfwxK7vdAe+y1Lh
+         EnUsYefeXfTOeS92TrTLvYfS5hlWE4un9OoZaSuSfBV2ccvT4mNRf+wc6qAXm9oiCkh0
+         GS149x1YLEEAIqYnCHGbrBw3mQNPS+uM3Ziy1DLtY/oFzaazFTKLhoU7uZPH9n96V76k
+         l2z6PqzihjEKLPCB+AL0tGnwoB+GtB6abm/syepyX1xV035nCbvBP03SV1eh8qpctWzX
+         nRh40Cf+rDKtSMUsorCDaua5LdoMNo1NrUvLOZZa7RGJ7DoIO5D6Mko7gH40ZusNvhKH
+         t36Q==
+X-Gm-Message-State: AOAM5326vxzdi6XPDucv3ll1u8IJyK3XVU31yEi2v/lOLMgVVgN0KMSj
+        nNh7cudBLz6zmN48Po5f5smKvQ==
+X-Google-Smtp-Source: ABdhPJx8SYcePoJF0x/lC3zBf78M++V5OcaR1py5OS525vFx0Wpi8uKRPtBKJ99JRRHAMrg9DAVZhQ==
+X-Received: by 2002:a2e:9ed8:: with SMTP id h24mr8579896ljk.126.1595806496622;
+        Sun, 26 Jul 2020 16:34:56 -0700 (PDT)
 Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id v25sm2028605ljg.95.2020.07.26.16.34.52
+        by smtp.gmail.com with ESMTPSA id v25sm2028605ljg.95.2020.07.26.16.34.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jul 2020 16:34:53 -0700 (PDT)
+        Sun, 26 Jul 2020 16:34:55 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -55,9 +55,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
         DENG Qingfang <dqfext@gmail.com>,
         Mauri Sandberg <sandberg@mailfence.com>
-Subject: [net-next PATCH 1/2 v2] net: dsa: rtl8366: Fix VLAN semantics
-Date:   Mon, 27 Jul 2020 01:34:39 +0200
-Message-Id: <20200726233440.374390-2-linus.walleij@linaro.org>
+Subject: [net-next PATCH 2/2 v2] net: dsa: rtl8366: Fix VLAN set-up
+Date:   Mon, 27 Jul 2020 01:34:40 +0200
+Message-Id: <20200726233440.374390-3-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200726233440.374390-1-linus.walleij@linaro.org>
 References: <20200726233440.374390-1-linus.walleij@linaro.org>
@@ -68,21 +68,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The RTL8366 would not handle adding new members (ports) to
-a VLAN: the code assumed that ->port_vlan_add() was only
-called once for a single port. When intializing the
-switch with .configure_vlan_while_not_filtering set to
-true, the function is called numerous times for adding
-all ports to VLAN1, which was something the code could
-not handle.
+Alter the rtl8366_vlan_add() to call rtl8366_set_vlan()
+inside the loop that goes over all VIDs since we now
+properly support calling that function more than once.
+Augment the loop to postincrement as this is more
+intuitive.
 
-Alter rtl8366_set_vlan() to just |= new members and
-untagged flags to 4k and MC VLAN table entries alike.
-This makes it possible to just add new ports to a
-VLAN.
-
-Put in some helpful debug code that can be used to find
-any further bugs here.
+The loop moved past the last VID but called
+rtl8366_set_vlan() with the port number instead of
+the VID, assuming a 1-to-1 correspondence between
+ports and VIDs. This was also a bug.
 
 Cc: DENG Qingfang <dqfext@gmail.com>
 Cc: Mauri Sandberg <sandberg@mailfence.com>
@@ -93,61 +88,42 @@ Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ChangeLog v1->v2:
 - Collect Florian's Review-tag
 ---
- drivers/net/dsa/rtl8366.c | 21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+ drivers/net/dsa/rtl8366.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
-index 993cf3ac59d9..2997abeecc4a 100644
+index 2997abeecc4a..8f40fbf70a82 100644
 --- a/drivers/net/dsa/rtl8366.c
 +++ b/drivers/net/dsa/rtl8366.c
-@@ -43,18 +43,26 @@ int rtl8366_set_vlan(struct realtek_smi *smi, int vid, u32 member,
- 	int ret;
- 	int i;
+@@ -397,7 +397,7 @@ void rtl8366_vlan_add(struct dsa_switch *ds, int port,
+ 	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
+ 		dev_err(smi->dev, "port is DSA or CPU port\n");
  
-+	dev_dbg(smi->dev,
-+		"setting VLAN%d 4k members: 0x%02x, untagged: 0x%02x\n",
-+		vid, member, untag);
-+
- 	/* Update the 4K table */
- 	ret = smi->ops->get_vlan_4k(smi, vid, &vlan4k);
- 	if (ret)
- 		return ret;
+-	for (vid = vlan->vid_begin; vid <= vlan->vid_end; ++vid) {
++	for (vid = vlan->vid_begin; vid <= vlan->vid_end; vid++) {
+ 		int pvid_val = 0;
  
--	vlan4k.member = member;
--	vlan4k.untag = untag;
-+	vlan4k.member |= member;
-+	vlan4k.untag |= untag;
- 	vlan4k.fid = fid;
- 	ret = smi->ops->set_vlan_4k(smi, &vlan4k);
- 	if (ret)
- 		return ret;
- 
-+	dev_dbg(smi->dev,
-+		"resulting VLAN%d 4k members: 0x%02x, untagged: 0x%02x\n",
-+		vid, vlan4k.member, vlan4k.untag);
-+
- 	/* Try to find an existing MC entry for this VID */
- 	for (i = 0; i < smi->num_vlan_mc; i++) {
- 		struct rtl8366_vlan_mc vlanmc;
-@@ -65,11 +73,16 @@ int rtl8366_set_vlan(struct realtek_smi *smi, int vid, u32 member,
- 
- 		if (vid == vlanmc.vid) {
- 			/* update the MC entry */
--			vlanmc.member = member;
--			vlanmc.untag = untag;
-+			vlanmc.member |= member;
-+			vlanmc.untag |= untag;
- 			vlanmc.fid = fid;
- 
- 			ret = smi->ops->set_vlan_mc(smi, i, &vlanmc);
-+
-+			dev_dbg(smi->dev,
-+				"resulting VLAN%d MC members: 0x%02x, untagged: 0x%02x\n",
-+				vid, vlanmc.member, vlanmc.untag);
-+
- 			break;
+ 		dev_info(smi->dev, "add VLAN %04x\n", vid);
+@@ -420,13 +420,13 @@ void rtl8366_vlan_add(struct dsa_switch *ds, int port,
+ 			if (ret < 0)
+ 				return;
  		}
- 	}
+-	}
+ 
+-	ret = rtl8366_set_vlan(smi, port, member, untag, 0);
+-	if (ret)
+-		dev_err(smi->dev,
+-			"failed to set up VLAN %04x",
+-			vid);
++		ret = rtl8366_set_vlan(smi, vid, member, untag, 0);
++		if (ret)
++			dev_err(smi->dev,
++				"failed to set up VLAN %04x",
++				vid);
++	}
+ }
+ EXPORT_SYMBOL_GPL(rtl8366_vlan_add);
+ 
 -- 
 2.26.2
 
