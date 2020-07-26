@@ -2,87 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6570822DE9F
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 13:39:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C837A22DEA3
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 13:40:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727878AbgGZLjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 07:39:51 -0400
-Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:32814
+        id S1727983AbgGZLjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 07:39:54 -0400
+Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:32827
         "EHLO mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725794AbgGZLju (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 07:39:50 -0400
+        by vger.kernel.org with ESMTP id S1725794AbgGZLjw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 07:39:52 -0400
 X-IronPort-AV: E=Sophos;i="5.75,398,1589234400"; 
-   d="scan'208";a="355309542"
+   d="scan'208";a="355309544"
 Received: from palace.rsr.lip6.fr (HELO palace.lip6.fr) ([132.227.105.202])
   by mail3-relais-sop.national.inria.fr with ESMTP/TLS/AES256-SHA256; 26 Jul 2020 13:39:47 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     linux-rdma@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-media@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: [PATCH 0/7] drop unnecessary list_empty
-Date:   Sun, 26 Jul 2020 12:58:25 +0200
-Message-Id: <1595761112-11003-1-git-send-email-Julia.Lawall@inria.fr>
+To:     Solarflare linux maintainers <linux-net-drivers@solarflare.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/7] sfc: drop unnecessary list_empty
+Date:   Sun, 26 Jul 2020 12:58:27 +0200
+Message-Id: <1595761112-11003-3-git-send-email-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1595761112-11003-1-git-send-email-Julia.Lawall@inria.fr>
+References: <1595761112-11003-1-git-send-email-Julia.Lawall@inria.fr>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The various list iterators are able to handle an empty list.
-The only effect of avoiding the loop is not initializing some
-index variables.
+list_for_each_safe is able to handle an empty list.
+The only effect of avoiding the loop is not initializing the
+index variable.
 Drop list_empty tests in cases where these variables are not
 used.
 
-The semantic patch that makes these changes is as follows:
+The semantic patch that makes this change is as follows:
 (http://coccinelle.lip6.fr/)
 
 <smpl>
-@@
-expression x,e;
-iterator name list_for_each_entry;
-statement S;
-identifier i;
-@@
-
--if (!(list_empty(x))) {
-   list_for_each_entry(i,x,...) S
-- }
- ... when != i
-? i = e
-
-@@
-expression x,e;
-iterator name list_for_each_entry_safe;
-statement S;
-identifier i,j;
-@@
-
--if (!(list_empty(x))) {
-   list_for_each_entry_safe(i,j,x,...) S
-- }
- ... when != i
-     when != j
-(
-  i = e;
-|
-? j = e;
-)
-
-@@
-expression x,e;
-iterator name list_for_each;
-statement S;
-identifier i;
-@@
-
--if (!(list_empty(x))) {
-   list_for_each(i,x) S
-- }
- ... when != i
-? i = e
-
 @@
 expression x,e;
 iterator name list_for_each_safe;
@@ -100,74 +61,43 @@ identifier i,j;
 |
 ? j = e;
 )
-
-// -------------------
-
-@@
-expression x,e;
-statement S;
-identifier i;
-@@
-
--if (!(list_empty(x)))
-   list_for_each_entry(i,x,...) S
- ... when != i
-? i = e
-
-@@
-expression x,e;
-statement S;
-identifier i,j;
-@@
-
--if (!(list_empty(x)))
-   list_for_each_entry_safe(i,j,x,...) S
- ... when != i
-     when != j
-(
-  i = e;
-|
-? j = e;
-)
-
-@@
-expression x,e;
-statement S;
-identifier i;
-@@
-
--if (!(list_empty(x)))
-   list_for_each(i,x) S
- ... when != i
-? i = e
-
-@@
-expression x,e;
-statement S;
-identifier i,j;
-@@
-
--if (!(list_empty(x)))
-   list_for_each_safe(i,j,x) S
- ... when != i
-     when != j
-(
-  i = e;
-|
-? j = e;
-)
 </smpl>
 
----
+Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
- drivers/media/pci/saa7134/saa7134-core.c                      |   14 ++---
- drivers/media/usb/cx231xx/cx231xx-core.c                      |   16 ++----
- drivers/media/usb/tm6000/tm6000-core.c                        |   24 +++-------
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c |   13 ++---
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c    |    5 --
- drivers/net/ethernet/sfc/ptp.c                                |   20 +++-----
- drivers/net/wireless/ath/dfs_pattern_detector.c               |   15 ++----
- sound/soc/intel/atom/sst/sst_loader.c                         |   10 +---
- sound/soc/intel/skylake/skl-pcm.c                             |    8 +--
- sound/soc/intel/skylake/skl-topology.c                        |    5 --
- 10 files changed, 53 insertions(+), 77 deletions(-)
+---
+ drivers/net/ethernet/sfc/ptp.c |   20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
+index 393b7cb..bea4725 100644
+--- a/drivers/net/ethernet/sfc/ptp.c
++++ b/drivers/net/ethernet/sfc/ptp.c
+@@ -1154,17 +1154,15 @@ static void efx_ptp_drop_time_expired_events(struct efx_nic *efx)
+ 
+ 	/* Drop time-expired events */
+ 	spin_lock_bh(&ptp->evt_lock);
+-	if (!list_empty(&ptp->evt_list)) {
+-		list_for_each_safe(cursor, next, &ptp->evt_list) {
+-			struct efx_ptp_event_rx *evt;
+-
+-			evt = list_entry(cursor, struct efx_ptp_event_rx,
+-					 link);
+-			if (time_after(jiffies, evt->expiry)) {
+-				list_move(&evt->link, &ptp->evt_free_list);
+-				netif_warn(efx, hw, efx->net_dev,
+-					   "PTP rx event dropped\n");
+-			}
++	list_for_each_safe(cursor, next, &ptp->evt_list) {
++		struct efx_ptp_event_rx *evt;
++
++		evt = list_entry(cursor, struct efx_ptp_event_rx,
++				 link);
++		if (time_after(jiffies, evt->expiry)) {
++			list_move(&evt->link, &ptp->evt_free_list);
++			netif_warn(efx, hw, efx->net_dev,
++				   "PTP rx event dropped\n");
+ 		}
+ 	}
+ 	spin_unlock_bh(&ptp->evt_lock);
+
