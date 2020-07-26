@@ -2,108 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B865D22DEAD
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 13:40:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B45222DEDB
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 14:03:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728097AbgGZLkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 07:40:01 -0400
-Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:32833
-        "EHLO mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728014AbgGZLj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 07:39:57 -0400
-X-IronPort-AV: E=Sophos;i="5.75,398,1589234400"; 
-   d="scan'208";a="355309549"
-Received: from palace.rsr.lip6.fr (HELO palace.lip6.fr) ([132.227.105.202])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/AES256-SHA256; 26 Jul 2020 13:39:48 +0200
-From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     kernel-janitors@vger.kernel.org,
+        id S1726106AbgGZMDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 08:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47796 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725848AbgGZMC5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 08:02:57 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB48C0619D2
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 05:02:55 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id k13so7526206lfo.0
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 05:02:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/WFTpEv2YkfSsuVHpM6IlfzcgmJFvanmTKP/laL22Es=;
+        b=xBsRoeMlepACQ60DMmUhiobMeBYc4v7SbV4yNoYfDhTOJnsR8PedtvfKvxP3sjC7v/
+         iDfuRr8Df3L5fZZW4PXA+2hFjPxMvHyJd1jt8hJ2xRvXGUT+JFFyylc9LWqT9NBZJ9Zk
+         JvQHIcOz7zq0S+JAwIlx31Fc8M3QRcuIgX3QQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/WFTpEv2YkfSsuVHpM6IlfzcgmJFvanmTKP/laL22Es=;
+        b=hN92sS7rwjjNCJxLAgHyNmt29wHmEYvHuSI07yGO6z4qBw0ol+6cS7T/5xLPD7ULth
+         JDnkDlVj9s6rWcihDnQIUCoPwFZaP8COaCASsYcGaut4RfCtAhpAqyQWPVm0QdhywyXy
+         QiRbAdVkVyzRosBB3zQZu9OI8vf05PT5Wg6E3cJHCzK7/bfdoaek4L8vCGGXjCiKS2iE
+         iGw3TbhBWF7tpyRC0/Ucz4LHqtXwpkvRoYaNEAhcm+jdCzf+ZFqbYOXXh9y3zSQ2HTi7
+         nBmdoHp9nCZTIZ3/jpMaY02cFTePwnUV8ick2xTXCRPLCQ0YOUfoZbHUjl0DK6XLnQDW
+         gVUQ==
+X-Gm-Message-State: AOAM5327T5EB4uzE4sd6/0ppIzfSihDkfb4SLX6J4AMhzw5n3n5haScx
+        83Dv1xIKCPWvynkxXmKuRFhAAg==
+X-Google-Smtp-Source: ABdhPJzD+4enXXgAoaaCqLTHRKdTiHCt1Ot/xYF2ElIY1DXzcHqmB8eGAQ06bedti736lt/PRkCyWg==
+X-Received: by 2002:ac2:568b:: with SMTP id 11mr9337125lfr.87.1595764973711;
+        Sun, 26 Jul 2020 05:02:53 -0700 (PDT)
+Received: from cloudflare.com (user-5-173-242-59.play-internet.pl. [5.173.242.59])
+        by smtp.gmail.com with ESMTPSA id r13sm1768608ljg.101.2020.07.26.05.02.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jul 2020 05:02:53 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 7/7] ath: drop unnecessary list_empty
-Date:   Sun, 26 Jul 2020 12:58:32 +0200
-Message-Id: <1595761112-11003-8-git-send-email-Julia.Lawall@inria.fr>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1595761112-11003-1-git-send-email-Julia.Lawall@inria.fr>
-References: <1595761112-11003-1-git-send-email-Julia.Lawall@inria.fr>
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Subject: [PATCH bpf-next] udp, bpf: Ignore connections in reuseport group after BPF sk lookup
+Date:   Sun, 26 Jul 2020 14:02:28 +0200
+Message-Id: <20200726120228.1414348-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.25.4
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-list_for_each_entry{_safe} is able to handle an empty list.
-The only effect of avoiding the loop is not initializing the
-index variable.
-Drop list_empty tests in cases where these variables are not
-used.
+When BPF sk lookup invokes reuseport handling for the selected socket, it
+should ignore the fact that reuseport group can contain connected UDP
+sockets. With BPF sk lookup this is not relevant as we are not scoring
+sockets to find the best match, which might be a connected UDP socket.
 
-Note that list_for_each_entry{_safe} is defined in terms of
-list_first_entry, which indicates that it should not be used on an
-empty list.  But in list_for_each_entry{_safe}, the element obtained
-by list_first_entry is not really accessed, only the address of its
-list_head field is compared to the address of the list head, so the
-list_first_entry is safe.
+Fix it by unconditionally accepting the socket selected by reuseport.
 
-The semantic patch that makes this change for the list_for_each_entry
-case is as follows: (http://coccinelle.lip6.fr/)
+This fixes the following two failures reported by test_progs.
 
-<smpl>
-@@
-expression x,e;
-statement S;
-identifier i;
-@@
+  # ./test_progs -t sk_lookup
+  ...
+  #73/14 UDP IPv4 redir and reuseport with conns:FAIL
+  ...
+  #73/20 UDP IPv6 redir and reuseport with conns:FAIL
+  ...
 
--if (!(list_empty(x)))
-   list_for_each_entry(i,x,...) S
- ... when != i
-? i = e
-</smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
-
+Fixes: a57066b1a019 ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net")
+Cc: David S. Miller <davem@davemloft.net>
+Reported-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- drivers/net/wireless/ath/dfs_pattern_detector.c |   15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ net/ipv4/udp.c | 2 +-
+ net/ipv6/udp.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/dfs_pattern_detector.c b/drivers/net/wireless/ath/dfs_pattern_detector.c
-index a274eb0..0813473 100644
---- a/drivers/net/wireless/ath/dfs_pattern_detector.c
-+++ b/drivers/net/wireless/ath/dfs_pattern_detector.c
-@@ -253,17 +253,15 @@ static void channel_detector_exit(struct dfs_pattern_detector *dpd,
- static void dpd_reset(struct dfs_pattern_detector *dpd)
- {
- 	struct channel_detector *cd;
--	if (!list_empty(&dpd->channel_detectors))
--		list_for_each_entry(cd, &dpd->channel_detectors, head)
--			channel_detector_reset(dpd, cd);
-+	list_for_each_entry(cd, &dpd->channel_detectors, head)
-+		channel_detector_reset(dpd, cd);
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 7ce31beccfc2..e88efba07551 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -473,7 +473,7 @@ static struct sock *udp4_lookup_run_bpf(struct net *net,
+ 		return sk;
  
+ 	reuse_sk = lookup_reuseport(net, sk, skb, saddr, sport, daddr, hnum);
+-	if (reuse_sk && !reuseport_has_conns(sk, false))
++	if (reuse_sk)
+ 		sk = reuse_sk;
+ 	return sk;
  }
- static void dpd_exit(struct dfs_pattern_detector *dpd)
- {
- 	struct channel_detector *cd, *cd0;
--	if (!list_empty(&dpd->channel_detectors))
--		list_for_each_entry_safe(cd, cd0, &dpd->channel_detectors, head)
--			channel_detector_exit(dpd, cd);
-+	list_for_each_entry_safe(cd, cd0, &dpd->channel_detectors, head)
-+		channel_detector_exit(dpd, cd);
- 	kfree(dpd);
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index c394e674f486..29d9691359b9 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -208,7 +208,7 @@ static inline struct sock *udp6_lookup_run_bpf(struct net *net,
+ 		return sk;
+ 
+ 	reuse_sk = lookup_reuseport(net, sk, skb, saddr, sport, daddr, hnum);
+-	if (reuse_sk && !reuseport_has_conns(sk, false))
++	if (reuse_sk)
+ 		sk = reuse_sk;
+ 	return sk;
  }
- 
-@@ -331,9 +329,8 @@ static bool dpd_set_domain(struct dfs_pattern_detector *dpd,
- 		return false;
- 
- 	/* delete all channel detectors for previous DFS domain */
--	if (!list_empty(&dpd->channel_detectors))
--		list_for_each_entry_safe(cd, cd0, &dpd->channel_detectors, head)
--			channel_detector_exit(dpd, cd);
-+	list_for_each_entry_safe(cd, cd0, &dpd->channel_detectors, head)
-+		channel_detector_exit(dpd, cd);
- 	dpd->radar_spec = rt->radar_types;
- 	dpd->num_radar_types = rt->num_radar_types;
- 
+-- 
+2.25.4
 
