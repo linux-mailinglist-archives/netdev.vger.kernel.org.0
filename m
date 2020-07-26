@@ -2,79 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94EE922DB86
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 05:18:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAB9D22DB91
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 05:46:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728207AbgGZDSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 23:18:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49900 "EHLO
+        id S1728258AbgGZDqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 23:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726264AbgGZDSH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 23:18:07 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4EAAC0619D2
-        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 20:18:07 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id g67so7503139pgc.8
-        for <netdev@vger.kernel.org>; Sat, 25 Jul 2020 20:18:07 -0700 (PDT)
+        with ESMTP id S1727101AbgGZDqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 23:46:52 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA4BC0619D2;
+        Sat, 25 Jul 2020 20:46:52 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id b30so7209501lfj.12;
+        Sat, 25 Jul 2020 20:46:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=20oWGLBn2Xzgzp3jlz+c9a+GPfo7KJN2mwhINQO/Vbo=;
-        b=jCmXOAJrYELw6b9eSmRrkh80a5LzuSS8TXXPMYYI6afdB811UETBFFSiCQ7VrhT22q
-         87MipC2lF/gFKU/P2Z+EOMfxuYanU0KDv0Pmm0Bm/vMvG/++akaXCdBTGd8FpIncp9lR
-         pPzU4n6G7ib0KvfjUtRUFsfTd2Yb+jfDZMejch2kMKoMDSUB8qX5EBTqBs9+6DxBLYLN
-         2yQ2gfpNfsAhpdzxkk4VT6n25IklK9hv27rhckZsLfdpRIqgIcX30YkUMkOwBP0XqIxt
-         jK9+aTlptCmqyJSXiUfbhGsH5asK9aRem0w0AKcMx2oHdd3Ys6jaui9ezY6ygxz656xc
-         lPxw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ikuabT8VWStN+W6tQzPZZEVviS7mON42dmoBRas1K+8=;
+        b=OEQJlVe+VsPN7v2t2zCG3VM5THnlYZe2FDKHJhKZViJE1DyrCRcNp18wSvwAXyVNkm
+         mUAs7m/NpJnAxPGUB5gFG03iSOwgvuJK0dljmPyjJJymqnFeytdMF3BUJL1dlQGg5vyE
+         /Hje70XiRVjORjoE9kWXwmy8bvrdMtnT7CTG7tG1E3sC6vIPrD7VV3nQv5g4RwCi2MQY
+         e2FdHqtpe6cn3eljYEJ0hj0QiCTK5FRMert1DrsH2L2vGG3cEz1udhsrFUZhLN2x1YZE
+         aZsMLAF25Qv1vWyzxsnKxLLWu6ZcGCqrwsnr/lsdl3ugdmRpkUOv7ahd2W6wfKd5FJNQ
+         +fYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=20oWGLBn2Xzgzp3jlz+c9a+GPfo7KJN2mwhINQO/Vbo=;
-        b=iLbX7mq0HFF2xk5O8FQvQrKJZnGROulmvU8f4weC6Il4u/z1lecZ3d990SXpGbW36J
-         Tyl+Y3LI4cezfZVH38uYaWUJ0WYzZ5EeDnZtCNFdXb5dZH7nVU4+Q/nQBmirxnaCE9NU
-         p9zcc3bCwFYoUEocl4fGogn/eyk2WLk9eXqwBUcVLiz7Jl5FtVcUoxSNSgJPbv1VX/QN
-         INxIJ0EHsipJsFI1+Eixmtm2FJ/A0bZrDj8Q90eHoyg/kx7dUsMOJ5yFXHlQGylFCTh9
-         EDTxMize17radjr7GsuNmAIt8RQBF/AOjAM4Fe1NcF/OK6ba1W6d0Jh0IxAW3KSQKfI6
-         KGhg==
-X-Gm-Message-State: AOAM5302y5kwTP9AnHgiO9H5XpgJDVcEPKD+46bFT8a2BlV6mFxq4Nos
-        tUksIghmKqmvvOq9hbA/xzA85Q==
-X-Google-Smtp-Source: ABdhPJxvENbUer9wMy2t7byDLixStwnwrEWi8lbhoYdI4+NZbuITnCAEfVw9a90OFi24alNpdk61UA==
-X-Received: by 2002:a63:f814:: with SMTP id n20mr13915424pgh.92.1595733487174;
-        Sat, 25 Jul 2020 20:18:07 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id i13sm9737003pjd.33.2020.07.25.20.18.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jul 2020 20:18:06 -0700 (PDT)
-Date:   Sat, 25 Jul 2020 20:17:58 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     nikolay@cumulusnetworks.com, amarao@servers.com,
-        netdev@vger.kernel.org, jiri@resnulli.us
-Subject: Re: [RFT iproute2] iplink_bridge: scale all time values by USER_HZ
-Message-ID: <20200725201758.4cfae512@hermes.lan>
-In-Reply-To: <20200724.173112.451428196025351292.davem@davemloft.net>
-References: <869fed82-bb31-589f-bd26-591ccfa976ed@servers.com>
-        <20200724091517.7f5c2c9c@hermes.lan>
-        <F074B3B5-1B07-490F-87B8-887E2EFB32F3@cumulusnetworks.com>
-        <20200724.173112.451428196025351292.davem@davemloft.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ikuabT8VWStN+W6tQzPZZEVviS7mON42dmoBRas1K+8=;
+        b=K17RlndESEuujFXahv65W1HAjqF0CQkO5TByIgva37JdVegkleHlz2aTTUM5psS7/i
+         XEzIOisrR4OjtN6qTHFSZkA3Nn2W3ibP1UasfU/vHSJ8xfiameSBcp+fk+MbdagAQJWk
+         dTW3/PepxrbzNJxSK0uKkQwf6ceW6XCWQN8tyU4mBR7wKIepKv5rgBsP+5TpEKoY4axZ
+         eipZo8n9bEvCk1iJ0mPzSvq6Hpc5y6ZF2oHiOQdEDLzFiwYwv5REX39clSokEpKfneSt
+         Fe8h6xTdvvDmgc096CEjN0+3nEbDK7E+VUf9V2eFRqPG6mN21OyHJn1NrvADU2oiIECX
+         kEvw==
+X-Gm-Message-State: AOAM531qXzWvLLIQAa3DRIlLkfvkOTNTkdu4PaKYcJByBey97z7ePY9S
+        Wf/D+tT6eAF32rbLtqOxgZFvmqu/RAJHoZU62tc=
+X-Google-Smtp-Source: ABdhPJwu9WoP64XW2HQ0WL4P0mOdcel+R9MUVMXY+PNnY2jdIRrjRcF64qqLhW0u0yoqwl6izognUfSCqkg9EN4H4j4=
+X-Received: by 2002:a05:6512:3610:: with SMTP id f16mr8587995lfs.8.1595735210604;
+ Sat, 25 Jul 2020 20:46:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200722064603.3350758-1-andriin@fb.com>
+In-Reply-To: <20200722064603.3350758-1-andriin@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 25 Jul 2020 20:46:39 -0700
+Message-ID: <CAADnVQLMMxCh36EgPqqL9hkXkbEX2C-nhzT5N7eVdr4Rf7nSug@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 0/9] BPF XDP link
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Jul 2020 17:31:12 -0700 (PDT)
-David Miller <davem@davemloft.net> wrote:
+On Tue, Jul 21, 2020 at 11:46 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Following cgroup and netns examples, implement bpf_link support for XDP.
+>
+> The semantics is described in patch #2. Program and link attachments are
+> mutually exclusive, in the sense that neither link can replace attached
+> program nor program can replace attached link. Link can't replace attached
+> link as well, as is the case for any other bpf_link implementation.
+>
+> Patch #1 refactors existing BPF program-based attachment API and centralizes
+> high-level query/attach decisions in generic kernel code, while drivers are
+> kept simple and are instructed with low-level decisions about attaching and
+> detaching specific bpf_prog. This also makes QUERY command unnecessary, and
+> patch #8 removes support for it from all kernel drivers. If that's a bad idea,
+> we can drop that patch altogether.
+>
+> With refactoring in patch #1, adding bpf_xdp_link is completely transparent to
+> drivers, they are still functioning at the level of "effective" bpf_prog, that
+> should be called in XDP data path.
+>
+> Corresponding libbpf support for BPF XDP link is added in patch #5.
+>
+> v3->v4:
+> - fix a compilation warning in one of drivers (Jakub);
 
-> From: nikolay@cumulusnetworks.com
-> Date: Fri, 24 Jul 2020 19:24:35 +0300
-> 
-> > While I agree this should have been done from the start, it's too late to change.   
-> 
-> Agreed.
-
-Please fix the man page, the  usage and add a warning.
+As far as I could review everything looks fine,
+so I've applied the set.
+The code is delicate. I wish people were more active doing code reviews.
+So I encourage folks to still look at it. If there is anything missing I'm sure
+Andrii will fix it up in the follow up.
