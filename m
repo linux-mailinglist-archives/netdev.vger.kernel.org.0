@@ -2,175 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D463F22E18A
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 19:02:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5B9722E19C
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 19:19:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726918AbgGZRCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 13:02:35 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38492 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726117AbgGZRCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 13:02:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1595782950;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q4PSV4GeGBjCn5FsDdwn0t3kpi998oH57DHP0BLkxWw=;
-        b=UNZ5R97spH4BYKoktDD9LooGWC8TOvwNLwMeb5b67V8F3PsmYAWOAf2RAmo9PnkDnfkMRv
-        7fdGb6JOS4NfZi7oIMNRweRB+ZcVQ1Mu/nKZj64UpAI/+6kiEm/wvJGAP9+6JTvrBdFRlg
-        hEKxwOvNMoOhE6n+lSNeVBdUwXAM/tw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-129--iMjGbg8PtuwOEjWhAq1qg-1; Sun, 26 Jul 2020 13:02:15 -0400
-X-MC-Unique: -iMjGbg8PtuwOEjWhAq1qg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E62DF800688;
-        Sun, 26 Jul 2020 17:02:13 +0000 (UTC)
-Received: from elisabeth (unknown [10.36.110.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5F5385F21F;
-        Sun, 26 Jul 2020 17:02:11 +0000 (UTC)
-Date:   Sun, 26 Jul 2020 19:01:54 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        aconole@redhat.com
-Subject: Re: [PATCH net-next 1/3] udp_tunnel: allow to turn off path mtu
- discovery on encap sockets
-Message-ID: <20200726190154.3f6e5134@elisabeth>
-In-Reply-To: <5d5deb1f-0a7f-1519-4716-6a92aec40bd2@gmail.com>
-References: <20200712200705.9796-1-fw@strlen.de>
-        <20200712200705.9796-2-fw@strlen.de>
-        <20200713003813.01f2d5d3@elisabeth>
-        <20200713080413.GL32005@breakpoint.cc>
-        <b61d3e1f-02b3-ac80-4b9a-851871f7cdaa@gmail.com>
-        <20200713140219.GM32005@breakpoint.cc>
-        <20200714143327.2d5b8581@redhat.com>
-        <20200715124258.GP32005@breakpoint.cc>
-        <20200715153547.77dbaf82@elisabeth>
-        <20200715143356.GQ32005@breakpoint.cc>
-        <20200717142743.6d05d3ae@elisabeth>
-        <89e5ec7b-845f-ab23-5043-73e797a29a14@gmail.com>
-        <20200718085645.7420da02@elisabeth>
-        <9e47f521-b3dc-f116-658b-d6897b0ddf20@gmail.com>
-        <20200718195850.61104dd2@elisabeth>
-        <dda364c6-3ac8-31a8-23b5-c337042b7d5d@gmail.com>
-        <20200719234940.37adebe7@elisabeth>
-        <5d5deb1f-0a7f-1519-4716-6a92aec40bd2@gmail.com>
-Organization: Red Hat
+        id S1726676AbgGZRTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 13:19:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726121AbgGZRTG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 13:19:06 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA55EC0619D2
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 10:19:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Q+r5WejeZ4S+ow0CvB9UpVQtbE3qgcSkoXQgcBgbnqI=; b=bo2A7HsvS0Kj5NacIqMONYvnBS
+        A8Cws5hhnm88RzS3pp2ckFhcqpQ1WHPslST8Pyh9NYkhhNXnlFa6H1xmAYYVy6pUvsJQB4OcXxmM7
+        4zJvVRV2gdiKtTo9CwnGdw5n6er0ADjmMWyh2ij6TX4mnz1RZQNx80kOk0O/4xOjxqG8=;
+Received: from p5b206d80.dip0.t-ipconnect.de ([91.32.109.128] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1jzkIi-0006Fn-C7; Sun, 26 Jul 2020 19:19:04 +0200
+Subject: Re: [RFC] net: add support for threaded NAPI polling
+To:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org
+Cc:     Hillf Danton <hdanton@sina.com>
+References: <20200726163119.86162-1-nbd@nbd.name>
+ <546c2923-ca6e-00e7-8bcb-3a3eb034a58e@gmail.com>
+From:   Felix Fietkau <nbd@nbd.name>
+Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
+ xsDiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
+ ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
+ Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
+ AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
+ vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
+ wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
+ TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
+ l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwc0cRmVsaXggRmll
+ dGthdSA8bmJkQG5iZC5uYW1lPsJgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
+ HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
+ VrwYTIThkTlQzsFNBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
+ CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
+ VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
+ Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
+ DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
+ wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
+ f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
+ aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
+ FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
+ TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabwkkE
+ GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
+ RjMaxwtSdaCKMw3j33ZbsWS4
+Message-ID: <daad6ba2-6916-3923-c116-d0470920fe1a@nbd.name>
+Date:   Sun, 26 Jul 2020 19:19:03 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <546c2923-ca6e-00e7-8bcb-3a3eb034a58e@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 19 Jul 2020 21:19:44 -0600
-David Ahern <dsahern@gmail.com> wrote:
-
-> On 7/19/20 3:49 PM, Stefano Brivio wrote:
-> >>
-> >> With this test case, the lookup fails:
-> >>
-> >> [  144.689378] vxlan: vxlan_xmit_one: dev vxlan_a 10.0.1.1/57864 ->
-> >> 10.0.0.0/4789 len 5010 gw 10.0.1.2
-> >> [  144.692755] vxlan: skb_tunnel_check_pmtu: dst dev br0 skb dev vxlan_a
-> >> skb len 5010 encap_mtu 4000 headroom 50
-> >> [  144.697682] vxlan: skb_dst_update_pmtu_no_confirm: calling
-> >> ip_rt_update_pmtu+0x0/0x160/ffffffff825ee850 for dev br0 mtu 3950
-> >> [  144.703601] IPv4: __ip_rt_update_pmtu: dev br0 mtu 3950 old_mtu 5000
-> >> 192.168.2.1 -> 192.168.2.2
-> >> [  144.708177] IPv4: __ip_rt_update_pmtu: fib_lookup failed for
-> >> 192.168.2.1 -> 192.168.2.2
-> >>
-> >> Because the lookup fails, __ip_rt_update_pmtu skips creating the exception.
-> >>
-> >> This hack gets the lookup to succeed:
-> >>
-> >> fl4->flowi4_oif = dst->dev->ifindex;
-> >> or
-> >> fl4->flowi4_oif = 0;  
-> > 
-> > Oh, I didn't consider that... route. :) Here comes an added twist, which
-> > currently needs Florian's changes from:
-> > 	https://git.breakpoint.cc/cgit/fw/net-next.git/log/?h=udp_tun_pmtud_12
-> > 
-> > Test is as follows:
-> > 
-> > test_pmtu_ipv4_vxlan4_exception_bridge() {
-> > 	test_pmtu_ipvX_over_vxlanY_or_geneveY_exception vxlan  4 4
-> > 
-> > 	ip netns add ns-C
-> > 
-> > 	ip -n ns-C link add veth_c_a type veth peer name veth_a_c
-> > 	ip -n ns-C link set veth_a_c netns ns-A
-> > 
-> > 	ip -n ns-C addr add 192.168.2.100/24 dev veth_c
-> > 
-> > 	ip -n ns-C link set dev veth_c_a mtu 5000
-> > 	ip -n ns-C link set veth_c_a up
-> > 	ip -n ns-A link set dev veth_a_c mtu 5000
-> > 	ip -n ns-A link set veth_c_a up
-> > 
-> > 	ip -n ns-A link add br0 type bridge
-> > 	ip -n ns-A link set br0 up
-> > 	ip -n ns-A link set dev br0 mtu 5000
-> > 	ip -n ns-A link set veth_a_c master br0
-> > 	ip -n ns-A link set vxlan_a master br0
-> > 
-> > 	ip -n ns-A addr del 192.168.2.1/24 dev vxlan_a
-> > 	ip -n ns-A addr add 192.168.2.1/24 dev br0
-> > 
-> > 	ip -n ns-C exec ping -c 1 -w 2 -M want -s 5000 192.168.2.2
-> > }
-> > 
-> > I didn't check the test itself recently, I'm just copying from some
-> > local changes I was trying last week, some commands might be wrong.  
+On 2020-07-26 18:49, Eric Dumazet wrote:
+> On 7/26/20 9:31 AM, Felix Fietkau wrote:
+>> For some drivers (especially 802.11 drivers), doing a lot of work in the NAPI
+>> poll function does not perform well. Since NAPI poll is bound to the CPU it
+>> was scheduled from, we can easily end up with a few very busy CPUs spending
+>> most of their time in softirq/ksoftirqd and some idle ones.
+>> 
+>> Introduce threaded NAPI for such drivers based on a workqueue. The API is the
+>> same except for using netif_threaded_napi_add instead of netif_napi_add.
+>> 
+>> In my tests with mt76 on MT7621 using threaded NAPI + a thread for tx scheduling
+>> improves LAN->WLAN bridging throughput by 10-50%. Throughput without threaded
+>> NAPI is wildly inconsistent, depending on the CPU that runs the tx scheduling
+>> thread.
+>> 
+>> With threaded NAPI, throughput seems stable and consistent (and higher than
+>> the best results I got without it).
 > 
-> I fixed the exec typo, but yes even with my flowi4_oif hack it fails.
+> Note that even with a threaded NAPI, you will not be able to use more than one cpu
+> to process the traffic.
+For a single threaded NAPI user that's correct. The main difference here
+is that the CPU running the poll function does not have to be the same
+as the CPU that scheduled it, and it can change based on the load.
+That makes a huge difference in my tests.
+
+> Also I wonder how this will scale to more than one device using this ?
+The workqueue creates multiple workers that pick up poll work, so it
+should scale nicely.
+
+> Say we need 4 NAPI, how the different work queues will mix together ?
 > 
-> > 
-> > The idea is: what if we now have another host (here, it's ns-C) sending
-> > traffic to that bridge? Then the exception on a local interface isn't
-> > enough, we actually need to send Fragmentation Needed back to where the
-> > packet came from, and the bridge won't do it for us (with routing, it
-> > already works).
-> > 
-> > I haven't tried your hack, but I guess it would have the same problem.
-> >   
-> 
-> What I saw in my tests and debug statements is that vxlan xmit does
-> compensate for the tunnel overhead (e.g., skb_tunnel_check_pmtu in
-> vxlan_xmit_one). It still feels like there are some minor details that
-> are wrong - like the fib_lookup failing when called from the
-> vxlan_xmit_one path. Does finding and fixing those make it work vs
-> adding another config item? I can send my debug diff if it helps.
+> We invented years ago RPS and RFS, to be able to spread incoming traffic
+> to more cpus, for devices having one hardware queue.
+Unfortunately that does not work well at all for my use case (802.11
+drivers). A really large chunk of the work (e.g. 802.11 -> 802.3 header
+conversion, state checks, etc.) is being done inside the poll function,
+before it even goes anywhere near the network stack and RPS/RFS.
 
-Sorry, I forgot to answer this: I don't think so.
+I did a lot of experiments trying to parallelize the work by tuning RFS,
+IRQ affinity, etc. on MT7621. I didn't get anything close to the
+consistent performance I get by adding threaded NAPI to mt76 along with
+moving some other CPU intensive work from tasklets to threads.
 
-With your hack you can create an exception on the bridge, which fixes
-the local bridge case, but if you add another node, the exception on
-the local bridge doesn't help (Florian explained why in better detail),
-nothing will be sent to the sender. The ICMP message is sent to the
-sender in the routed case because of IP forwarding, but it won't work
-here.
-
-On top of your hack, we could now tell the bridge to send an ICMP
-message if the packet is too big for the destination. The destination
-isn't there, though -- finding it means building quite some IP logic
-into the bridge.
-
-The most logical thing to do, to me, seems to stick with Florian's
-approach (tunnel implementation sending ICMP to the IP sender, as it
-logically represents a part of the router forwarding implementation,
-and it implies adjusted MTU) and try to expose that functionality in a
-generic function. I'll try in a bit.
-
--- 
-Stefano
-
+- Felix
