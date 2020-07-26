@@ -2,110 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AC1022DD69
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 10:59:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D988422DDB7
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 11:20:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727067AbgGZI7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 04:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47784 "EHLO
+        id S1727937AbgGZJUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 05:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725794AbgGZI7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 04:59:40 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB42C0619D2;
-        Sun, 26 Jul 2020 01:59:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=raj459k/Ry/Z+q4J3+wwOawrxeEM4ca9YQ65wIbZMWs=; b=FKbfc6K6S9rPTM7UPjdjDgKVrJ
-        D6LJr3AeYr+fySva3u+UezV1ZolLU9QoWVjTWtrqB9m8Om85RsK9/tw4GWtEYW2aZVuPG5591iaug
-        gDl1ZwVYreM3J+YKXrfnYpCg8omSIgKLA8ckqzMZ3RLvAZ/smIX6TUdYXZMMN2dBLAeo=;
-Received: from p5b206d80.dip0.t-ipconnect.de ([91.32.109.128] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1jzcVF-0001wr-0T; Sun, 26 Jul 2020 10:59:29 +0200
-Subject: Re: [RFC 0/7] Add support to process rx packets in thread
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     David Laight <David.Laight@ACULAB.COM>,
+        with ESMTP id S1727801AbgGZJUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 05:20:20 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A004EC0619D4
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 02:20:20 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id p14so11099197wmg.1
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 02:20:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fbaoL9wc+TzhBeQPiolD3jgZoPFAPhgCzCV3R5hxi0Y=;
+        b=ZR8Q0E2Y5mOyQesOX7+JgXbKmUx5NBDaYTeIeWaGcUxyjsAii0tLS8a1EorpL/dBvE
+         AiBH07JCby8vRx797b1hIuC9sWh64XhoKlbXExiV8j9UHfPbwq+ABVXyGT1OJ6NJVZeI
+         z3/IopDkg44IGAMB7uB+RhLbp2m1uScx0HJF5zjmhAd87eR9zKEcW/6p2sppmnGuAHpA
+         2JJDYHtupHHKT6f4zBdxCTWNoktLCBnoVRLpNa4x5A4XxJvwpSyzLLK1pmB8ZJeuRyUK
+         t8FYbMT5tja7l+RIGcc5xfWyYdjg7eajyd7DsrA3y9Nguq8dSZgC9A835TfwhgOXSHkv
+         /v8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fbaoL9wc+TzhBeQPiolD3jgZoPFAPhgCzCV3R5hxi0Y=;
+        b=S8nFPWxaZplBmBZt10uQ0eGeb6G46V48fhCnCFPRDwlfGyed1CdB9dBcjx2sM5JFuQ
+         8oCsR+sJ/2TQr8GOhxG5a5o4NoKVZSLrLI6JU7tw9cIAKEQquCt7zvGalrDqGOxa/L2I
+         SiXFgPD/AHHQl8+aWF2lTycRJi29n5gTudQDLACwjbC/kpyGYmLPnJrfDXytdW7Yx8DM
+         jHW8mFbNHAAGjyej5XNwmgEQf/NJ2zu2Y/2E9u5OioxZbjjh2J02w1miV3UxkC+ACo1V
+         df6J5qHRheMBtRAPD3V89kmsYMJu+osXuJlPDs+mXIuRx9z1DImNGRhuP9T9iUklEhzg
+         zpKA==
+X-Gm-Message-State: AOAM531VdKa0XZ7t2fhWRZQ2P1sZjSZM+yyXPh2Qp5v3GorYXbimo3+1
+        +GsXjJj01XrdYW11p9NsJyd5/A==
+X-Google-Smtp-Source: ABdhPJxjBeGJhYNffhH7UmESIV9YZc+0Vs87J4kHBojWsAft6koYVjfBghO+QYeA0g8FeWet4MP7bg==
+X-Received: by 2002:a1c:6707:: with SMTP id b7mr8298414wmc.97.1595755219386;
+        Sun, 26 Jul 2020 02:20:19 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id k14sm7775988wrn.76.2020.07.26.02.20.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jul 2020 02:20:18 -0700 (PDT)
+Date:   Sun, 26 Jul 2020 11:20:18 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        Markus Elfring <Markus.Elfring@web.de>,
-        Ding Zhao Nan <oshack@hotmail.com>,
-        "evgreen@chromium.org" <evgreen@chromium.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
-References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
- <20200721172514.GT1339445@lunn.ch> <20200725081633.7432-1-hdanton@sina.com>
- <20200726012244.15264-1-hdanton@sina.com>
- <20200726083239.5060-1-hdanton@sina.com>
-From:   Felix Fietkau <nbd@nbd.name>
-Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
- xsDiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
- ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
- Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
- AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
- vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
- wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
- TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
- l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwc0cRmVsaXggRmll
- dGthdSA8bmJkQG5iZC5uYW1lPsJgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
- HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
- VrwYTIThkTlQzsFNBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
- CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
- VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
- Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
- DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
- wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
- f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
- aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
- FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
- TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabwkkE
- GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
- RjMaxwtSdaCKMw3j33ZbsWS4
-Message-ID: <805e66e3-3090-61d2-1fda-50421eb99e3d@nbd.name>
-Date:   Sun, 26 Jul 2020 10:59:27 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.10.0
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>
+Subject: Re: [net-next v3 3/6] net: marvell: prestera: Add basic devlink
+ support
+Message-ID: <20200726092018.GF2216@nanopsycho>
+References: <20200725150651.17029-1-vadym.kochan@plvision.eu>
+ <20200725150651.17029-4-vadym.kochan@plvision.eu>
 MIME-Version: 1.0
-In-Reply-To: <20200726083239.5060-1-hdanton@sina.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200725150651.17029-4-vadym.kochan@plvision.eu>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-07-26 10:32, Hillf Danton wrote:
-> 
-> On Sun, 26 Jul 2020 10:10:15 +0200 Felix Fietkau wrote:
->> On 2020-07-26 03:22, Hillf Danton wrote:
->> > 
->> > Feel free to do that. Is it likely for me to select a Cc?
->> > 
->> Shall I use Signed-off-by: Hillf Danton <hdanton@sina.com>?
-> 
-> s/Signed-off-by/Cc/
-> 
->> What Cc do you want me to add?
-> 
-> I prefer Cc over other tags.
-Ah, okay. I was planning on adding you as the author of the patch, since
-you did most of the work on it. If you want to be attributed as author
-(or in Co-developed-by), I'd need your Signed-off-by.
+Sat, Jul 25, 2020 at 05:06:48PM CEST, vadym.kochan@plvision.eu wrote:
+>Add very basic support for devlink interface:
+>
+>    - driver name
+>    - fw version
+>    - devlink ports
+>
+>Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
 
-If you don't want that, I can submit it under my name and leave you in
-as Cc only.
-
-- Felix
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
