@@ -2,105 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5462C22E1F5
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 20:25:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DFA622E1FF
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 20:34:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727053AbgGZSZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 14:25:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52794 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725972AbgGZSY7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Jul 2020 14:24:59 -0400
-Received: from localhost (p5486c93f.dip0.t-ipconnect.de [84.134.201.63])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A35892065F;
-        Sun, 26 Jul 2020 18:24:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595787899;
-        bh=X0SsSOPPqzDtDa3Lf0g5uMtwodCKBTDzAaWYJ2uyP8A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=reBlES1WaGLzbye+naXlGRq1uc2tWBe1Fwz0X4EXX7pTlwpzlDmbcy2ZTA7wYaGnG
-         CwIGIz1pof9w0QC9+SFkADwZaj3E5b5eQZauZ2DMDtMJMK1J7Ej2vY/7nbR22I4GD+
-         tTRWy15wVrnB1nVzKV8btwPjClhNsuZVSovAOLhU=
-Date:   Sun, 26 Jul 2020 20:24:53 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH] iwlwifi: yoyo: don't print failure if debug firmware
- is missing
-Message-ID: <20200726182453.GA1996@kunai>
-References: <20200625165210.14904-1-wsa@kernel.org>
- <20200726152642.GA913@ninjato>
- <87y2n6404y.fsf@codeaurora.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="uAKRQypu60I7Lcqm"
-Content-Disposition: inline
-In-Reply-To: <87y2n6404y.fsf@codeaurora.org>
+        id S1727042AbgGZSez (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 14:34:55 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:25652 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726043AbgGZSez (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 14:34:55 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06QIVXte139101;
+        Sun, 26 Jul 2020 14:34:53 -0400
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 32ggwwe3d0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 26 Jul 2020 14:34:53 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06QILLFw031216;
+        Sun, 26 Jul 2020 18:34:51 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 32gcy4hdmq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 26 Jul 2020 18:34:51 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06QIYmiN62587118
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 26 Jul 2020 18:34:48 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C04D252051;
+        Sun, 26 Jul 2020 18:34:48 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 755075204E;
+        Sun, 26 Jul 2020 18:34:48 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net-next 0/2] net/smc: show unique rsn code for exceeded max dmb count
+Date:   Sun, 26 Jul 2020 20:34:26 +0200
+Message-Id: <20200726183428.3284-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-26_09:2020-07-24,2020-07-26 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
+ priorityscore=1501 lowpriorityscore=0 spamscore=0 mlxlogscore=896
+ phishscore=0 impostorscore=0 clxscore=1015 bulkscore=0 mlxscore=0
+ suspectscore=1 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007260143
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Resolve some confusion at the user side when the reason code shows
+out-of-memory but actually there is enough memory left.
 
---uAKRQypu60I7Lcqm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Karsten Graul (2):
+  s390/ism: indicate correct error reason in ism_alloc_dmb()
+  net/smc: unique reason code for exceeded max dmb count
 
-On Sun, Jul 26, 2020 at 09:11:25PM +0300, Kalle Valo wrote:
-> Wolfram Sang <wsa@kernel.org> writes:
->=20
-> > On Thu, Jun 25, 2020 at 06:52:10PM +0200, Wolfram Sang wrote:
-> >> Missing this firmware is not fatal, my wifi card still works. Even mor=
-e,
-> >> I couldn't find any documentation what it is or where to get it. So, I
-> >> don't think the users should be notified if it is missing. If you brow=
-se
-> >> the net, you see the message is present is in quite some logs. Better
-> >> remove it.
-> >>=20
-> >> Signed-off-by: Wolfram Sang <wsa@kernel.org>
-> >> ---
-> >
-> > Any input on this? Or people I should add to CC?
->=20
-> This was discussed on another thread:
->=20
-> https://lkml.kernel.org/r/87mu3magfp.fsf@tynnyri.adurom.net
->=20
-> Unless Intel folks object I'm planning to take this to
-> wireless-drivers-next.
+ drivers/s390/net/ism_drv.c |  2 +-
+ net/smc/af_smc.c           | 13 +++++++++----
+ net/smc/smc_clc.h          |  1 +
+ net/smc/smc_core.c         |  4 ++--
+ 4 files changed, 13 insertions(+), 7 deletions(-)
 
-Cool, thanks for the heads up!
+-- 
+2.17.1
 
-
---uAKRQypu60I7Lcqm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl8dynEACgkQFA3kzBSg
-KbbLOA//cLtqhtfmDrzHrVvUxjU5Qa1RytBPogje3wfKQ0xIJ0UnI7IXDP04Lj7h
-PhkvasA/m1WlvYy2/xnsuK/ThR1I9eCdoDOkv1oUnO9fQpJ7JvHxGSdRXSPzrCbQ
-2UFwRleBH0uDm0aPn25HmI/O88CWaZiEEPugqCf6uGcUkfY66Z34u4045EJzOU3q
-pkOHD51oHfuQAx+D4MUmUG8lxd5EK69lxHgr4aFMHbM0Kp3bcLR6zDNT0h1aS3U8
-afRiOnPm3Vo11VZDadWu7NIsKoiWHpxKd7toNuvPZvpMkTETC6fmfHEP9mQYd7sA
-aG8af/SD1rQGkgx81N/tjnwtVD8KEZ7dmz/nNsCyiJgpHUfoB1NamCWTNsMDBXGr
-jKCB3kmf8IT3A/gn00+QpQ8G5XciGISHHZ/z2u8WHQzdPU2JYTdpETr91buFGXFz
-qw4G7s/Wlb0LFS8vJTjN5CSJGNoMylV9ISVnluX/IISECAyeaWds3nd301wC9nwH
-RZ1QENemFBFWuT7XI6+pKEPq1cwgdIJRGb/fHy3hvr+8ETkEPFQp4Yba7ydpiQgv
-0KgKk2j5bLKCEMXCamoSViwVNv+zXyLzeEDBUDj733Soc1IeW/7LNlDJ97tt1S7W
-6KdO4s1UEEXSdunmEOyAIbifTkDB52WVlAwKsTHZkhdcLwCKXJs=
-=4VPO
------END PGP SIGNATURE-----
-
---uAKRQypu60I7Lcqm--
