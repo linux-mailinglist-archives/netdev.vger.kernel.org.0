@@ -2,102 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3276622E2BE
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 23:30:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADED022E2CB
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 23:43:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726719AbgGZV34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 17:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726082AbgGZV34 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 17:29:56 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4260AC0619D2
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 14:29:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=98GLoylnnYE0IYHJBT/PDM4S5Dh2PDH0ju8/7RfC8gw=; b=EwyOzluBFHdLXbaxx7ZyUiHpd
-        9cgF1MvPzfs59xoTJgXXaqs87SyHW+bv8bvGGVGCyDvEv8KdtyrfdwueWkwm7anhwBhKtokgSN28F
-        fS44f4ksvCNft+b5Sib5jfm+dRQIMOCJYIGGi/SmM5b+umIZ+ol5AMh2pm5zu6Rm6JZwhfGyZytWH
-        fCYMN9P0o4mUkG8cLgQsN/q0W38hJ8aUu9O5WpbD6fl1/+GMKRAOICVtKCz1cjT2VboKN60aeeinm
-        hLFQiwP4CGGEcWtk975bAZs7m/YGZL8bZan5fGfqJbEAzN89ubodyjtYEB3xkJOdbmbNPt41xCr/0
-        fd0pWjIxg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44530)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jzoDR-00020W-NI; Sun, 26 Jul 2020 22:29:53 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jzoDR-0002yr-5R; Sun, 26 Jul 2020 22:29:53 +0100
-Date:   Sun, 26 Jul 2020 22:29:53 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-Subject: Re: phc2sys - does it work?
-Message-ID: <20200726212952.GF1551@shell.armlinux.org.uk>
-References: <20200725124927.GE1551@shell.armlinux.org.uk>
- <20200725132916.7ibhnre2be3hfsrt@skbuf>
- <20200726110104.GV1605@shell.armlinux.org.uk>
- <20200726180551.GA31684@hoboy>
+        id S1726794AbgGZVnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 17:43:21 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:52566 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726082AbgGZVnV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 17:43:21 -0400
+Received: by mail-il1-f198.google.com with SMTP id o17so10106727ilt.19
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 14:43:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=nAqhAZrp6ZJGNDfnLfTIkbQ8+pw1kWgohuV82v6isQ4=;
+        b=kCigpIQyuH/fGgrgejvYLk12m9EKqaN3cLN1TrkvzQOQeiyfydJmKDTOFqKyWNipkH
+         QrOIv8u0tLd7QnfYWJvH9mKs4seIzJNvKhK/YPhxJbP3mKKmnbuNhNbrveGQF5DQgMTy
+         XnAtsdMM6YgzgX0G4dopJ/hbFwJWN3WcWAW43X48b3b5SlsH24pPSLGD8hZUYEyhVSbv
+         jb4HDdNp11gILwdsMvc0ZOr0rJf4vJSfLPUOyWARKXeNtoLAFE2w3Hy3dia+vI4/JMs/
+         wxh/hqw4KIXc1gDEpO/0sS5cO5q0q2597O4keebAIQUIdNDiOdmVs3APFtLYTKEe3g6G
+         GGXQ==
+X-Gm-Message-State: AOAM530HJvVkLHno5syOZGmmYyFkRekpc+85NdGX6Mr2+HVsOlOtc0yt
+        OH+QywpywAdVFbAVQ4zeaCzVecJsCQCTj04XAk+l1xRTfHZ2
+X-Google-Smtp-Source: ABdhPJxhAvmMdgn2oYHl9DTNIo33R2en4NDhOaB9yqmt70XbzVOZv52k/R+zcZNzycxJn+tCdq3LLZknvLPm5I++5vnF4p7CK/vF
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200726180551.GA31684@hoboy>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a02:bb05:: with SMTP id y5mr13588273jan.98.1595799799952;
+ Sun, 26 Jul 2020 14:43:19 -0700 (PDT)
+Date:   Sun, 26 Jul 2020 14:43:19 -0700
+In-Reply-To: <00000000000065efbf05ab480bff@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000357d0105ab5f1854@google.com>
+Subject: Re: KMSAN: uninit-value in strstr
+From:   syzbot <syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com, jmaloy@redhat.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 26, 2020 at 11:05:51AM -0700, Richard Cochran wrote:
-> On Sun, Jul 26, 2020 at 12:01:05PM +0100, Russell King - ARM Linux admin wrote:
-> > Another solution would be to avoid running NTP on any machine intending
-> > to be the source of PTP time on a network, but that then brings up the
-> > problem that you can't synchronise the PTP time source to a reference
-> > time, which rather makes PTP pointless unless all that you're after is
-> > "all my local machines say the same wrong time."
-> 
-> It is clear that you can't have two services both adjusting the system
-> time.  For example, running ntpd and chrony on the same machine won't
-> work, and neither does running ntpd with 'phc2sys -a -r'.
+syzbot has found a reproducer for the following issue on:
 
-You've misunderstood, that is not what I'm doing.  The system time on
-the machine is sync'd using ntpd, and then I'm syncing the PTP clock
-to alone to the system time.  Right now, I'm just testing the PTP
-clock implementation, nothing else, to make sure that it is implemented
-properly.
+HEAD commit:    93f54a72 instrumented.h: fix KMSAN support
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=15692a74900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c534a9fad6323722
+dashboard link: https://syzkaller.appspot.com/bug?extid=a73d24a22eeeebe5f244
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15f4b9df100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14dd9d8c900000
 
-So, the setup is:
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.com
 
-     +----------+       +--------------------------+
-     |  host 1  |       |         test host        |           freq
-GPS ---> ntpd ---- lan ---> ntpd -> system -> TAI ---> PPS -> counter
-     |          |       |            time          |
-     +----------+       +--------------------------+
+=====================================================
+BUG: KMSAN: uninit-value in strlen lib/string.c:552 [inline]
+BUG: KMSAN: uninit-value in strstr+0xfe/0x2e0 lib/string.c:991
+CPU: 0 PID: 8431 Comm: syz-executor953 Not tainted 5.8.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1df/0x240 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ strlen lib/string.c:552 [inline]
+ strstr+0xfe/0x2e0 lib/string.c:991
+ tipc_nl_node_reset_link_stats+0x434/0xa90 net/tipc/node.c:2504
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:669 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:714 [inline]
+ genl_rcv_msg+0x1592/0x1740 net/netlink/genetlink.c:731
+ netlink_rcv_skb+0x451/0x650 net/netlink/af_netlink.c:2469
+ genl_rcv+0x63/0x80 net/netlink/genetlink.c:742
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x1246/0x14d0 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x1370/0x1400 net/socket.c:2352
+ ___sys_sendmsg net/socket.c:2406 [inline]
+ __sys_sendmsg+0x623/0x750 net/socket.c:2439
+ __do_sys_sendmsg net/socket.c:2448 [inline]
+ __se_sys_sendmsg+0x97/0xb0 net/socket.c:2446
+ __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2446
+ do_syscall_64+0xb0/0x150 arch/x86/entry/common.c:386
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x444249
+Code: Bad RIP value.
+RSP: 002b:00007ffe249b7e28 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002e0 RCX: 0000000000444249
+RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000003
+RBP: 00000000006ce018 R08: 0000000000000000 R09: 00000000004002e0
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401e70
+R13: 0000000000401f00 R14: 0000000000000000 R15: 0000000000000000
 
-The good news is - the whole thing has mostly settled - I no longer
-see large swings in the PPS signal produced by the PTP/TAI clock,
-where large is 10s of PPM.  I'm now down to a frequency error of
-around 500PPB.
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
+ slab_alloc_node mm/slub.c:2839 [inline]
+ __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4478
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1083 [inline]
+ netlink_alloc_large_skb net/netlink/af_netlink.c:1175 [inline]
+ netlink_sendmsg+0x7d3/0x14d0 net/netlink/af_netlink.c:1893
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x1370/0x1400 net/socket.c:2352
+ ___sys_sendmsg net/socket.c:2406 [inline]
+ __sys_sendmsg+0x623/0x750 net/socket.c:2439
+ __do_sys_sendmsg net/socket.c:2448 [inline]
+ __se_sys_sendmsg+0x97/0xb0 net/socket.c:2446
+ __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2446
+ do_syscall_64+0xb0/0x150 arch/x86/entry/common.c:386
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+=====================================================
 
-I think what was going on is ntpd on the test host was switching
-between different time sources, causing it to almost constantly slew
-the system time on the test host.
-
-I have noticed that phc2sys can sometimes get confused and it needs
-phc_ctl to reset the frequency back to zero for it to have another go.
-The hardware is capable of a max_adj of S32_MAX, and I think that
-allows phc2sys to get confused sometimes, so I probably need to clamp
-my calculated max_adj to a sane limit.  Is there an upper limit that
-phc2sys expects?
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
