@@ -2,149 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ECB222E201
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 20:34:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB4F322E211
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 20:47:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727103AbgGZSe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 14:34:56 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:27332 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726081AbgGZSe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 14:34:56 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06QIVbd2106680;
-        Sun, 26 Jul 2020 14:34:53 -0400
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 32ggmexepu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 26 Jul 2020 14:34:53 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06QILCXX031192;
-        Sun, 26 Jul 2020 18:34:52 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 32gcy4hdmr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 26 Jul 2020 18:34:52 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06QIYnBM58065008
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 26 Jul 2020 18:34:49 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5C14D52051;
-        Sun, 26 Jul 2020 18:34:49 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 1C3A752050;
-        Sun, 26 Jul 2020 18:34:49 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net-next 2/2] net/smc: unique reason code for exceeded max dmb count
-Date:   Sun, 26 Jul 2020 20:34:28 +0200
-Message-Id: <20200726183428.3284-3-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200726183428.3284-1-kgraul@linux.ibm.com>
-References: <20200726183428.3284-1-kgraul@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-26_09:2020-07-24,2020-07-26 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 mlxscore=0
- lowpriorityscore=0 impostorscore=0 spamscore=0 clxscore=1015 phishscore=0
- mlxlogscore=999 priorityscore=1501 adultscore=0 bulkscore=0 suspectscore=3
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007260143
+        id S1726427AbgGZSp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 14:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726072AbgGZSp6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 14:45:58 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76765C0619D2
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 11:45:58 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id 2so9265761qkf.10
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 11:45:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=prf1QclXqXGXjkPFOo811M0GolRd9qIDnvmNesJEZwU=;
+        b=fc0Bx75jtzQ8aoiBsYALJRMZxfd6hG0MlrfNpyGDGR68sWVmTNdayjMhMG6H+ZQYPb
+         QvM1Ax7FNVVN5LZFt4tBrTrC8SPrOFBGqeUnBeNDVz5aD9ytdiU667A22FAxFNRBpo5J
+         dQgoObkXgLq7Rqsc5E7K9uT8uvEPe50tAhpOO2QAlpxv1XUxVVAJ2+Z7vw/LIDDLtqeT
+         otSHvB983rgG8m/+wRhSy7pgkACTHvZ+wHgPLZUuO5kVHhTE1h0keK7jZ0zDLNcHJV4W
+         C8EsRSrItKV6WCuIIIZU524EMsT5rWiLSZB5J+pmXfzzviwm8J/Zkguk/QazSyXqh4j1
+         OcMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=prf1QclXqXGXjkPFOo811M0GolRd9qIDnvmNesJEZwU=;
+        b=BobdNclya6YMyHhW7Hq43FuymfjFz3CJ14Qp8b/pXf+cJenj+lXGQAOMIdvoI3ZemS
+         z8V1Z+ckwecOMCuEQlrvQ5CKVcR8LIXzdcp+qpoCxXomCaFhUpkffQlhG0Ssc4u9n5EH
+         jvTG9Ke+1RoNKjEq8s40YOP0+1OnMDmcQ3Qlrn7Yc+FMFKqnz4nji7pGN9+FOIbzdgrH
+         vHieIh33B7N0mfaPTs7mJ0nPL+77ucJdNhddHB2TFxsrKYcBPkwzvMEZwjVYdO/Z+G23
+         RfEBtlu6G0nJ3GCSzKJUP9Mvmx7U4ybqzzl9+bcCQLOMcwlz9VwRJDNLnaZI1ZfYaHCE
+         70lQ==
+X-Gm-Message-State: AOAM533emVdp6Wp3uvYAe38y//Ywz64qeelEZ2GV0+48QQhYBmv8yLm+
+        FkJZIFsweNOMKpTUZk4y/FBqOrV+
+X-Google-Smtp-Source: ABdhPJx4ILIAjAtMamPcsslsGdVQaPVNkV6VhNDqKAgy5xRz89HEM0H9v9WqAR/C4fMddZjuTgqEQA==
+X-Received: by 2002:a37:b341:: with SMTP id c62mr19375721qkf.128.1595789157235;
+        Sun, 26 Jul 2020 11:45:57 -0700 (PDT)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id t12sm14533990qkt.56.2020.07.26.11.45.56
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Jul 2020 11:45:56 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id q16so5388682ybk.6
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 11:45:56 -0700 (PDT)
+X-Received: by 2002:a25:6d87:: with SMTP id i129mr28884122ybc.315.1595789155635;
+ Sun, 26 Jul 2020 11:45:55 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAEjGaqfhr=1RMavYUAyG0qMyQe44CQbuet04LWSC8YRM8FMpKA@mail.gmail.com>
+ <CA+FuTSfpadw+ea-=pL0pMXxujzjoLW+d9yH2+GQo0jOJv=Zo4Q@mail.gmail.com> <CAEjGaqdo_6watKcGi1WUmrHiB9F=1+i+8LcxBXOMZvLneiEh7A@mail.gmail.com>
+In-Reply-To: <CAEjGaqdo_6watKcGi1WUmrHiB9F=1+i+8LcxBXOMZvLneiEh7A@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sun, 26 Jul 2020 14:45:19 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSddWpsor8n8WaDkR-f=843SVs6SiLXU_E-yRCctDDkg3g@mail.gmail.com>
+Message-ID: <CA+FuTSddWpsor8n8WaDkR-f=843SVs6SiLXU_E-yRCctDDkg3g@mail.gmail.com>
+Subject: Re: question about using UDP GSO in Linux kernel 4.19
+To:     Han <keepsimple@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the maximum dmb buffer limit for an ism device is reached no more
-dmb buffers can be registered. When this happens the reason code is set
-to SMC_CLC_DECL_MEM indicating out-of-memory. This is the same reason
-code that is used when no memory could be allocated for the new dmb
-buffer.
-This is confusing for users when they see this error but there is more
-memory available. To solve this set a separate new reason code when the
-maximum dmb limit exceeded.
+On Sun, Jul 26, 2020 at 2:18 PM Han <keepsimple@gmail.com> wrote:
+>
+> On Sun, Jul 26, 2020 at 6:42 AM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > On Sat, Jul 25, 2020 at 7:08 PM Han <keepsimple@gmail.com> wrote:
+> > >
+> > > My apologies if this is not the right place to ask this question.
+> > >
+> > > I'm trying to use UDP GSO to improve the throughput. My testing shows
+> > > that UDP GSO works with the local server (i.e. loopback interface) but
+> > > fails with a remote server (in WLAN, via wlan0 interface).
+> > >
+> > > My question is: do I need to explicitly enable UDP GSO for wlan0
+> > > interface? If yes, how do I do it? I searched online but could not
+> > > find a good answer.  I looked at "ethtool" but not clear which option
+> > > to use:
+> > >
+> > > $ ethtool  --show-offload wlan0 | grep -i generic-segment
+> > > generic-segmentation-offload: off [requested on]
+> >
+> > Which wireless driver does your device use. Does it have tx checksum offload?
+>
+> It seems to be "brcmfmac" :
+>
+> $ readlink /sys/class/net/wlan0/device/driver
+> ../../../../../../../../bus/sdio/drivers/brcmfmac
+>
+> I think tx checksum offload is off, and I couldn't turn it on. Does
+> "[fixed]" mean it cannot be changed?
 
-Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/af_smc.c   | 13 +++++++++----
- net/smc/smc_clc.h  |  1 +
- net/smc/smc_core.c |  4 ++--
- 3 files changed, 12 insertions(+), 6 deletions(-)
-
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 832e36269b10..e7649bbc2b87 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -719,8 +719,11 @@ static int smc_connect_ism(struct smc_sock *smc,
- 	}
- 
- 	/* Create send and receive buffers */
--	if (smc_buf_create(smc, true))
--		return smc_connect_abort(smc, SMC_CLC_DECL_MEM,
-+	rc = smc_buf_create(smc, true);
-+	if (rc)
-+		return smc_connect_abort(smc, (rc == -ENOSPC) ?
-+					      SMC_CLC_DECL_MAX_DMB :
-+					      SMC_CLC_DECL_MEM,
- 					 ini->cln_first_contact);
- 
- 	smc_conn_save_peer_info(smc, aclc);
-@@ -1200,12 +1203,14 @@ static int smc_listen_ism_init(struct smc_sock *new_smc,
- 	}
- 
- 	/* Create send and receive buffers */
--	if (smc_buf_create(new_smc, true)) {
-+	rc = smc_buf_create(new_smc, true);
-+	if (rc) {
- 		if (ini->cln_first_contact == SMC_FIRST_CONTACT)
- 			smc_lgr_cleanup_early(&new_smc->conn);
- 		else
- 			smc_conn_free(&new_smc->conn);
--		return SMC_CLC_DECL_MEM;
-+		return (rc == -ENOSPC) ? SMC_CLC_DECL_MAX_DMB :
-+					 SMC_CLC_DECL_MEM;
- 	}
- 
- 	return 0;
-diff --git a/net/smc/smc_clc.h b/net/smc/smc_clc.h
-index 76c2b150d040..cf7b45306f4e 100644
---- a/net/smc/smc_clc.h
-+++ b/net/smc/smc_clc.h
-@@ -48,6 +48,7 @@
- #define SMC_CLC_DECL_NOACTLINK	0x030a0000  /* no active smc-r link in lgr    */
- #define SMC_CLC_DECL_NOSRVLINK	0x030b0000  /* SMC-R link from srv not found  */
- #define SMC_CLC_DECL_VERSMISMAT	0x030c0000  /* SMC version mismatch	      */
-+#define SMC_CLC_DECL_MAX_DMB	0x030d0000  /* SMC-D DMB limit exceeded       */
- #define SMC_CLC_DECL_SYNCERR	0x04000000  /* synchronization error          */
- #define SMC_CLC_DECL_PEERDECL	0x05000000  /* peer declined during handshake */
- #define SMC_CLC_DECL_INTERR	0x09990000  /* internal error		      */
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index f82a2e599917..b42fa3b00d00 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -1614,7 +1614,7 @@ static struct smc_buf_desc *smcd_new_buf_create(struct smc_link_group *lgr,
- 		rc = smc_ism_register_dmb(lgr, bufsize, buf_desc);
- 		if (rc) {
- 			kfree(buf_desc);
--			return ERR_PTR(-EAGAIN);
-+			return (rc == -ENOMEM) ? ERR_PTR(-EAGAIN) : ERR_PTR(rc);
- 		}
- 		buf_desc->pages = virt_to_page(buf_desc->cpu_addr);
- 		/* CDC header stored in buf. So, pretend it was smaller */
-@@ -1688,7 +1688,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 	}
- 
- 	if (IS_ERR(buf_desc))
--		return -ENOMEM;
-+		return PTR_ERR(buf_desc);
- 
- 	if (!is_smcd) {
- 		if (smcr_buf_map_usable_links(lgr, buf_desc, is_rmb)) {
--- 
-2.17.1
-
+Indeed. That explains it.
