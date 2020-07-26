@@ -2,112 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9896E22DE1F
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 13:05:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFA5E22DE6A
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 13:16:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727815AbgGZLFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 07:05:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725972AbgGZLFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 07:05:32 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80365C0619D2;
-        Sun, 26 Jul 2020 04:05:31 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id s26so7594296pfm.4;
-        Sun, 26 Jul 2020 04:05:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HiCRrQCxdIa5HIW679AjRc9wXiJ6/iMtc+VYMoge+3c=;
-        b=WYkENyzYNLhggQIvWLddjbWxCjYrMSbzqNPQL1fj6YeDJ/9qPZxc5cQQwyNHLyZIM/
-         FGCZ9jLTyq9WFfYDRg0E8vaLl0le0BdIJ14LYb2+DbnaHJV1UoWAXTcURJqo7n8C837A
-         UlP3Rcv2MkXCbkjYNkwvi0vKnYAorDTChREz40/kYkvpaF8rvEEABaWVdEhpYCzMCFCy
-         Qml69TMC14lB3pyB9RatZMP5mMEyL+JY+t9GodCEblfEf8rNTk4bFCFJv0LFLnUHQuAO
-         pxjVfCsKTX2lM8rooNJj53HGkb1EaDKuaM5ardkNToiC64I5vBjEzx8nWDftzGytEXfC
-         vPbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HiCRrQCxdIa5HIW679AjRc9wXiJ6/iMtc+VYMoge+3c=;
-        b=Q0UmFUwI8mE5Y+bk1A75MsUeKSBNRAD6sgS/Mu+bsrRAeexunt95hJw9HuHm1YEEHC
-         cQmZ/r/7DS3aLMH/W4XkS4KHJH3rNbv6pho/k+Sb7O1XgLh1TZ/+eAW2MH0TC541dqFD
-         uCD1/ksLmUpPp2jnPTmGrY3D9D5navrFo3J7Nx6vd1/jNNRJBmf/iEUo6dbnlvbrgszv
-         bDW3xO4kykpsB0ZF0l3ozylsUHy5pYsQdxzIVnzCIcHQ41mF7jsEGjRq/rBGPWitEEKj
-         O686lGAn2XdZv5iWQ+jOrkbO+GQhTuiUXpiVNtVLlTmYk1waA5ckLHDRqycGUT+y9wwo
-         nG5g==
-X-Gm-Message-State: AOAM530J9qJtKfXeMQg23CPuctyGJ9aEYVYviU310i6GwZYCrvn6beIl
-        koXX9w8P0F+Xl7sXR0lb75k=
-X-Google-Smtp-Source: ABdhPJyiB5VtWifib5GOY++GVorvqouyq8vwC0EJyVkpB+Ix4FfPXx8aOuJ9pPX9LeT7k3oVTaNAHA==
-X-Received: by 2002:a62:7712:: with SMTP id s18mr3235662pfc.65.1595761531090;
-        Sun, 26 Jul 2020 04:05:31 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8880:9ae0:2977:21:5b62:ff11])
-        by smtp.gmail.com with ESMTPSA id q20sm12022374pfn.111.2020.07.26.04.05.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jul 2020 04:05:30 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH] drivers/net/wan/lapbether: Use needed_headroom instead of hard_header_len
-Date:   Sun, 26 Jul 2020 04:05:24 -0700
-Message-Id: <20200726110524.151957-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1727916AbgGZLQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 07:16:05 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:29189 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726042AbgGZLQF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 07:16:05 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-175-gr1C-2L-MRi0aJYN1JyBVw-1; Sun, 26 Jul 2020 12:16:01 +0100
+X-MC-Unique: gr1C-2L-MRi0aJYN1JyBVw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Sun, 26 Jul 2020 12:16:01 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Sun, 26 Jul 2020 12:16:01 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Sebastian Gottschall' <s.gottschall@dd-wrt.com>,
+        Hillf Danton <hdanton@sina.com>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Rakesh Pillai <pillair@codeaurora.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        Markus Elfring <Markus.Elfring@web.de>,
+        "evgreen@chromium.org" <evgreen@chromium.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
+Subject: RE: [RFC 0/7] Add support to process rx packets in thread
+Thread-Topic: [RFC 0/7] Add support to process rx packets in thread
+Thread-Index: AQHWYpohNM2Njdw2F0Sh0GJATpMrdKkZtSeg
+Date:   Sun, 26 Jul 2020 11:16:00 +0000
+Message-ID: <cb54c2746a3d4ce695e3bda8b576b40e@AcuMS.aculab.com>
+References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
+ <20200721172514.GT1339445@lunn.ch> <20200725081633.7432-1-hdanton@sina.com>
+ <8359a849-2b8a-c842-a501-c6cb6966e345@dd-wrt.com>
+ <20200725145728.10556-1-hdanton@sina.com>
+ <2664182a-1d03-998d-8eff-8478174a310a@dd-wrt.com>
+In-Reply-To: <2664182a-1d03-998d-8eff-8478174a310a@dd-wrt.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In net/packet/af_packet.c, the function packet_snd first reserves a
-headroom of length (dev->hard_header_len + dev->needed_headroom).
-Then if the socket is a SOCK_DGRAM socket, it calls dev_hard_header,
-which calls dev->header_ops->create, to create the link layer header.
-If the socket is a SOCK_RAW socket, it "un-reserves" a headroom of
-length (dev->hard_header_len), and assumes the user to provide the
-appropriate link layer header.
-
-So according to the logic of af_packet.c, dev->hard_header_len should
-be the length of the header that would be created by
-dev->header_ops->create.
-
-However, this driver doesn't provide dev->header_ops, so logically
-dev->hard_header_len should be 0.
-
-So we should use dev->needed_headroom instead of dev->hard_header_len
-to request necessary headroom to be allocated.
-
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- drivers/net/wan/lapbether.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index b2868433718f..34cf6db89912 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -305,6 +305,7 @@ static void lapbeth_setup(struct net_device *dev)
- 	dev->netdev_ops	     = &lapbeth_netdev_ops;
- 	dev->needs_free_netdev = true;
- 	dev->type            = ARPHRD_X25;
-+	dev->hard_header_len = 0;
- 	dev->mtu             = 1000;
- 	dev->addr_len        = 0;
- }
-@@ -331,7 +332,8 @@ static int lapbeth_new_device(struct net_device *dev)
- 	 * then this driver prepends a length field of 2 bytes,
- 	 * then the underlying Ethernet device prepends its own header.
- 	 */
--	ndev->hard_header_len = -1 + 3 + 2 + dev->hard_header_len;
-+	ndev->needed_headroom = -1 + 3 + 2 + dev->hard_header_len
-+					   + dev->needed_headroom;
- 
- 	lapbeth = netdev_priv(ndev);
- 	lapbeth->axdev = ndev;
--- 
-2.25.1
+RnJvbTogU2ViYXN0aWFuIEdvdHRzY2hhbGwgPHMuZ290dHNjaGFsbEBkZC13cnQuY29tPg0KPiBT
+ZW50OiAyNSBKdWx5IDIwMjAgMTY6NDINCj4gPj4gaSBhZ3JlZS4gaSBqdXN0IGNhbiBzYXkgdGhh
+dCBpIHRlc3RlZCB0aGlzIHBhdGNoIHJlY2VudGx5IGR1ZSB0aGlzDQo+ID4+IGRpc2N1c3Npb24g
+aGVyZS4gYW5kIGl0IGNhbiBiZSBjaGFuZ2VkIGJ5IHN5c2ZzLiBidXQgaXQgZG9lc250IHdvcmsg
+Zm9yDQo+ID4+IHdpZmkgZHJpdmVycyB3aGljaCBhcmUgbWFpbmx5IHVzaW5nIGR1bW15IG5ldGRl
+diBkZXZpY2VzLiBmb3IgdGhpcyBpDQo+ID4+IG1hZGUgYSBzbWFsbCBwYXRjaCB0byBnZXQgdGhl
+bSB3b3JraW5nIHVzaW5nIG5hcGlfc2V0X3RocmVhZGVkIG1hbnVhbGx5DQo+ID4+IGhhcmRjb2Rl
+ZCBpbiB0aGUgZHJpdmVycy4gKHNlZSBwYXRjaCBiZWxsb3cpDQoNCj4gPiBCeSBDT05GSUdfVEhS
+RUFERURfTkFQSSwgdGhlcmUgaXMgbm8gbmVlZCB0byBjb25zaWRlciB3aGF0IHlvdSBkaWQgaGVy
+ZQ0KPiA+IGluIHRoZSBuYXBpIGNvcmUgYmVjYXVzZSBkZXZpY2UgZHJpdmVycyBrbm93IGJldHRl
+ciBhbmQgYXJlIHJlc3BvbnNpYmxlDQo+ID4gZm9yIGl0IGJlZm9yZSBjYWxsaW5nIG5hcGlfc2No
+ZWR1bGUobikuDQoNCj4geWVhaC4gYnV0IHRoYXQgYXBwcm9hY2ggd2lsbCBub3Qgd29yayBmb3Ig
+c29tZSBjYXNlcy4gc29tZSBzdHVwaWQNCj4gZHJpdmVycyBhcmUgdXNpbmcgbG9ja2luZyBjb250
+ZXh0IGluIHRoZSBuYXBpIHBvbGwgZnVuY3Rpb24uDQo+IGluIHRoYXQgY2FzZSB0aGUgcGVyZm9y
+bWFuY2Ugd2lsbCBydW50byBzaGl0LiBpIGRpc2NvdmVyZWQgdGhpcyB3aXRoIHRoZQ0KPiBtdm5l
+dGEgZXRoIGRyaXZlciAobWFydmVsbCkgYW5kIG10NzYgdHggcG9sbGluZyAocnjCoCB3b3JrcykN
+Cj4gZm9yIG12bmV0YSBpcyB3aWxsIGNhdXNlIHZlcnkgaGlnaCBsYXRlbmNpZXMgYW5kIHBhY2tl
+dCBkcm9wcy4gZm9yIG10NzYNCj4gaXQgY2F1c2VzIHBhY2tldCBzdG9wLiBkb2VzbnQgd29yayBz
+aW1wbHkgKG9uIGFsbCBjYXNlcyBubyBjcmFzaGVzKQ0KPiBzbyB0aGUgdGhyZWFkaW5nIHdpbGwg
+b25seSB3b3JrIGZvciBkcml2ZXJzIHdoaWNoIGFyZSBjb21wYXRpYmxlIHdpdGgNCj4gdGhhdCBh
+cHByb2FjaC4gaXQgY2Fubm90IGJlIHVzZWQgYXMgZHJvcCBpbiByZXBsYWNlbWVudCBmcm9tIG15
+IHBvaW50IG9mDQo+IHZpZXcuDQo+IGl0cyBhbGwgYSBxdWVzdGlvbiBvZiB0aGUgZHJpdmVyIGRl
+c2lnbg0KDQpXaHkgc2hvdWxkIGl0IG1ha2UgKG11Y2gpIGRpZmZlcmVuY2Ugd2hldGhlciB0aGUg
+bmFwaSBjYWxsYmFja3MgKGV0YykNCmFyZSBkb25lIGluIHRoZSBjb250ZXh0IG9mIHRoZSBpbnRl
+cnJ1cHRlZCBwcm9jZXNzIG9yIHRoYXQgb2YgYQ0Kc3BlY2lmaWMga2VybmVsIHRocmVhZC4NClRo
+ZSBwcm9jZXNzIGZsYWdzIChvciB3aGF0ZXZlcikgY2FuIGV2ZW4gYmUgc2V0IHNvIHRoYXQgaXQg
+YXBwZWFycw0KdG8gYmUgdGhlIGV4cGVjdGVkICdzb2Z0aW50JyBjb250ZXh0Lg0KDQpJbiBhbnkg
+Y2FzZSBydW5uaW5nIE5BUEkgZnJvbSBhIHRocmVhZCB3aWxsIGp1c3Qgc2hvdyB1cCB0aGUgbmV4
+dA0KcGllY2Ugb2YgY29kZSB0aGF0IHJ1bnMgZm9yIGFnZXMgaW4gc29mdGludCBjb250ZXh0Lg0K
+SSB0aGluayBJJ3ZlIHNlZW4gdGhlIHRhaWwgZW5kIG9mIG1lbW9yeSBiZWluZyBmcmVlZCB1bmRl
+ciByY3UNCmZpbmFsbHkgaGFwcGVuaW5nIHVuZGVyIHNvZnRpbnQgYW5kIHRha2luZyBhYnNvbHV0
+ZWx5IGFnZXMuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJy
+YW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lz
+dHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
