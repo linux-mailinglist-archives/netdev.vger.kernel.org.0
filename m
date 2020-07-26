@@ -2,117 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF8922DE18
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 13:01:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9896E22DE1F
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 13:05:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727843AbgGZLBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 07:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
+        id S1727815AbgGZLFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 07:05:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725972AbgGZLBM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 07:01:12 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1613FC0619D2
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 04:01:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:To:From:Date:Reply-To:Cc:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=ulY2I+IdqsiikALX6t9mqEgCi59mweIpsrnoUGV7vPk=; b=eZlM5gI+2y2YxuJRJU2LaUN0B
-        WoL1R3rBCxJlAhJG2EdgtKwk9hosrdtevOvvV5AB2mWwTJ1qDM0aLSU2kdtkN/cpBZTIPgzHY5fWx
-        I637D6Rh0KrKxI+H6SgQRpepRNzRsjg6+bc4c64QAPwxZ6b8aV+jZDGgNZJKHuueFMANNJvqt1DGz
-        1ZpW8vBV9pNhIxZqlQHdLJ76BzHW3sn4SPpn6dfnHAaGCXS8iVTLHQzknjv6O4qVdoNOBT0CPu/Zo
-        d+jCuanblBc7TKl8Ex0ktIScY/tnVdkMAQoiyTYS2j3FiqwqgV1aMyygZoz7ZAd91r/e4Zr8vOPSc
-        ngufVqEzw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44352)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jzeOv-0001ez-Ii; Sun, 26 Jul 2020 12:01:05 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jzeOv-0002bM-2m; Sun, 26 Jul 2020 12:01:05 +0100
-Date:   Sun, 26 Jul 2020 12:01:05 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: phc2sys - does it work?
-Message-ID: <20200726110104.GV1605@shell.armlinux.org.uk>
-References: <20200725124927.GE1551@shell.armlinux.org.uk>
- <20200725132916.7ibhnre2be3hfsrt@skbuf>
+        with ESMTP id S1725972AbgGZLFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 07:05:32 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80365C0619D2;
+        Sun, 26 Jul 2020 04:05:31 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id s26so7594296pfm.4;
+        Sun, 26 Jul 2020 04:05:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HiCRrQCxdIa5HIW679AjRc9wXiJ6/iMtc+VYMoge+3c=;
+        b=WYkENyzYNLhggQIvWLddjbWxCjYrMSbzqNPQL1fj6YeDJ/9qPZxc5cQQwyNHLyZIM/
+         FGCZ9jLTyq9WFfYDRg0E8vaLl0le0BdIJ14LYb2+DbnaHJV1UoWAXTcURJqo7n8C837A
+         UlP3Rcv2MkXCbkjYNkwvi0vKnYAorDTChREz40/kYkvpaF8rvEEABaWVdEhpYCzMCFCy
+         Qml69TMC14lB3pyB9RatZMP5mMEyL+JY+t9GodCEblfEf8rNTk4bFCFJv0LFLnUHQuAO
+         pxjVfCsKTX2lM8rooNJj53HGkb1EaDKuaM5ardkNToiC64I5vBjEzx8nWDftzGytEXfC
+         vPbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HiCRrQCxdIa5HIW679AjRc9wXiJ6/iMtc+VYMoge+3c=;
+        b=Q0UmFUwI8mE5Y+bk1A75MsUeKSBNRAD6sgS/Mu+bsrRAeexunt95hJw9HuHm1YEEHC
+         cQmZ/r/7DS3aLMH/W4XkS4KHJH3rNbv6pho/k+Sb7O1XgLh1TZ/+eAW2MH0TC541dqFD
+         uCD1/ksLmUpPp2jnPTmGrY3D9D5navrFo3J7Nx6vd1/jNNRJBmf/iEUo6dbnlvbrgszv
+         bDW3xO4kykpsB0ZF0l3ozylsUHy5pYsQdxzIVnzCIcHQ41mF7jsEGjRq/rBGPWitEEKj
+         O686lGAn2XdZv5iWQ+jOrkbO+GQhTuiUXpiVNtVLlTmYk1waA5ckLHDRqycGUT+y9wwo
+         nG5g==
+X-Gm-Message-State: AOAM530J9qJtKfXeMQg23CPuctyGJ9aEYVYviU310i6GwZYCrvn6beIl
+        koXX9w8P0F+Xl7sXR0lb75k=
+X-Google-Smtp-Source: ABdhPJyiB5VtWifib5GOY++GVorvqouyq8vwC0EJyVkpB+Ix4FfPXx8aOuJ9pPX9LeT7k3oVTaNAHA==
+X-Received: by 2002:a62:7712:: with SMTP id s18mr3235662pfc.65.1595761531090;
+        Sun, 26 Jul 2020 04:05:31 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8880:9ae0:2977:21:5b62:ff11])
+        by smtp.gmail.com with ESMTPSA id q20sm12022374pfn.111.2020.07.26.04.05.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jul 2020 04:05:30 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH] drivers/net/wan/lapbether: Use needed_headroom instead of hard_header_len
+Date:   Sun, 26 Jul 2020 04:05:24 -0700
+Message-Id: <20200726110524.151957-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200725132916.7ibhnre2be3hfsrt@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 25, 2020 at 04:29:16PM +0300, Vladimir Oltean wrote:
-> Just a sanity check: do you have this patch?
-> https://github.com/richardcochran/linuxptp/commit/e0580929f451e685d92cd10d80b76f39e9b09a97
+In net/packet/af_packet.c, the function packet_snd first reserves a
+headroom of length (dev->hard_header_len + dev->needed_headroom).
+Then if the socket is a SOCK_DGRAM socket, it calls dev_hard_header,
+which calls dev->header_ops->create, to create the link layer header.
+If the socket is a SOCK_RAW socket, it "un-reserves" a headroom of
+length (dev->hard_header_len), and assumes the user to provide the
+appropriate link layer header.
 
-I did not, as I was running Debian stable's 1.9.2 version, whereas
-current git head for linuxptp appears to behave much better.  Thanks.
+So according to the logic of af_packet.c, dev->hard_header_len should
+be the length of the header that would be created by
+dev->header_ops->create.
 
-I've got to the bottom of stuff like:
+However, this driver doesn't provide dev->header_ops, so logically
+dev->hard_header_len should be 0.
 
-phc2sys[7190.912]: /dev/ptp1 sys offset        81 s2 freq  -71290 delay    641
-phc2sys[7191.912]: /dev/ptp1 sys offset        66 s2 freq  -71281 delay    640
-phc2sys[7192.912]: /dev/ptp1 sys offset      -926 s2 freq  -72253 delay    640
-phc2sys[7193.912]: /dev/ptp1 sys offset     -8124 s2 freq  -79729 delay    680
-phc2sys[7194.912]: /dev/ptp1 sys offset     -7794 s2 freq  -81836 delay    641
-phc2sys[7195.913]: /dev/ptp1 sys offset     -5355 s2 freq  -81735 delay    680
-phc2sys[7196.913]: /dev/ptp1 sys offset     -2994 s2 freq  -80981 delay    680
-phc2sys[7197.913]: /dev/ptp1 sys offset     -1336 s2 freq  -80221 delay    640
-phc2sys[7198.913]: /dev/ptp1 sys offset      -422 s2 freq  -79708 delay    640
-phc2sys[7199.913]: /dev/ptp1 sys offset        -9 s2 freq  -79421 delay    680
-phc2sys[7200.913]: /dev/ptp1 sys offset       159 s2 freq  -79256 delay    640
-phc2sys[7201.913]: /dev/ptp1 sys offset       211 s2 freq  -79156 delay    680
+So we should use dev->needed_headroom instead of dev->hard_header_len
+to request necessary headroom to be allocated.
 
-This is due to NTP.  Each NTP period (starting at 64s), ntpd updates
-the kernel timekeeping variables with the latest information.  One of
-these is the offset, which is applied to the kernel's timekeeping by
-adjusting the length of a tick:
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/lapbether.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-        /* Compute the phase adjustment for the next second */
-        tick_length      = tick_length_base;
-
-        delta            = ntp_offset_chunk(time_offset);
-        time_offset     -= delta;
-        tick_length     += delta;
-
-This has the effect of slightly changing the length of a second to slew
-small adjustments, which appears as a change of frequency compared to
-the PTP clock.  As we progress through the NTP period, the amount of
-adjustment is reduced (notice that time_offset is reduced.)  When
-time_offset hits zero, then no further adjustment is made, and the rate
-that the kernel time passes settles - and in turn phc2sys settles to
-a stable "freq" figure.
-
-What this means is that synchronising the PTP clock to the kernel time
-on a second by second basis exposes the PTP clock to these properties
-of the kernel NTP loop, which has the effect of throwing the PTP clock
-off by a 10s of PPM.
-
-One way around this would be to synchronise the PTP clock updates with
-NTP updates, but that is difficult due to NTP selecting how often it
-does its updates - it generally starts off at 64s, and the interval
-increases through powers of two.  However, just specifying -R to
-phc2sys does not give better results - the amount that the PTP clock
-fluctuates just gets larger.
-
-Another solution would be to avoid running NTP on any machine intending
-to be the source of PTP time on a network, but that then brings up the
-problem that you can't synchronise the PTP time source to a reference
-time, which rather makes PTP pointless unless all that you're after is
-"all my local machines say the same wrong time."
-
+diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
+index b2868433718f..34cf6db89912 100644
+--- a/drivers/net/wan/lapbether.c
++++ b/drivers/net/wan/lapbether.c
+@@ -305,6 +305,7 @@ static void lapbeth_setup(struct net_device *dev)
+ 	dev->netdev_ops	     = &lapbeth_netdev_ops;
+ 	dev->needs_free_netdev = true;
+ 	dev->type            = ARPHRD_X25;
++	dev->hard_header_len = 0;
+ 	dev->mtu             = 1000;
+ 	dev->addr_len        = 0;
+ }
+@@ -331,7 +332,8 @@ static int lapbeth_new_device(struct net_device *dev)
+ 	 * then this driver prepends a length field of 2 bytes,
+ 	 * then the underlying Ethernet device prepends its own header.
+ 	 */
+-	ndev->hard_header_len = -1 + 3 + 2 + dev->hard_header_len;
++	ndev->needed_headroom = -1 + 3 + 2 + dev->hard_header_len
++					   + dev->needed_headroom;
+ 
+ 	lapbeth = netdev_priv(ndev);
+ 	lapbeth->axdev = ndev;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
