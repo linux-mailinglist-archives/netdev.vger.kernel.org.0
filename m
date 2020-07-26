@@ -2,126 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C88F22E1C8
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 19:58:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBFF622E1DD
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 20:05:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726292AbgGZR6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 13:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46036 "EHLO
+        id S1727023AbgGZSFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 14:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725972AbgGZR6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 13:58:39 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B123BC0619D2
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 10:58:39 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id t11so7834238pfq.11
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 10:58:39 -0700 (PDT)
+        with ESMTP id S1726244AbgGZSFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 14:05:54 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5712BC0619D2
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 11:05:54 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id k4so6895951pld.12
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 11:05:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HYL7qm5HfK3gO+k1ZGAFSPu9gAOgsUgty4Q670wt4Js=;
-        b=dOvK1TXWpP8+gFau9jhrGr3VHVLrAlRL7IDipiw1GWeZ7IrmsIYn3CJnb8WU/aRD6r
-         q+yE1L76oAqvVhCueXYvYXnM+wK/Ae1wyvxH7Xc3SoDIFKR57ywKiWVH28nRZqaTSkcw
-         IvWbb2rzKofXm1ZA/WfU+QUU41m5OZRcAGyFPkxxM0aT46e6ZY9ZGn3uTYZ+dKeDdmPb
-         IxTX3TbBlZXezuvH0/u1+R+fvE1Q7wi24CciZFogZ9qvgDTOw91BvFZ8YEpjePq/YEZD
-         XghPv3x2O04nmcsFKwFBgXKrK04d9+w9RECYA58WaBRkIQ5EhzGHIiV3PULg+lJupK0m
-         aaaQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=BhCkJZuy4Xqk6xcjPuD08v581LOzX5vm3Q4rfNTkAco=;
+        b=iNLCv7SKwPXVAEv+p6Oq1N3erPrh1dVFZj2NHrYAw3cge7Ona4WPFxNfkjcWgbX7vo
+         FmUZ7q6knG+a8ssx+tXQjgZj2rV1IFbWbDQ/H5pJ0tOFRZuX4K4uUe5RoNMehYXd1FTc
+         iNQiEd4UjZnaztOGghtW1qJ6jAm88lAWAsut3b2Sek+e3OxwphNka29TD2GnFQRsw/4j
+         4odv0RU2cATTUjMXbISQK5jPVkDI/3BbP2p6hCYx0mS+wOUeikuXdqsAsxuMpsK+d4OV
+         TbUrIPK/VFUMp3L8VM5J/+I+l3BxT7M6u8rIWH6ye1nQZpYPIOFjVAVmSNPWX8Xdx77x
+         7W2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HYL7qm5HfK3gO+k1ZGAFSPu9gAOgsUgty4Q670wt4Js=;
-        b=dT/ib2Rm+GH1Hx45FWq7HElciwWV5qY3l62y/yxcRcxzUdG06//seIOOOWyaz60Ss5
-         izrC1Lv9pdzafqbxCW9iJ36/XSgHK1pjWUZZ5DE//5iBYb14mi08ipK80VlXa3Tl7qE1
-         KHBoGEkjTPBcZ1aUcgd7ktq044UKernHTaM7HGyg1sIs6mM0JSZSIivwFVi0Qum/N2Me
-         sYQr3U5pvAXUTc1H8hGbaeSHjcJZxZbqw5iyI05flOIzmrUQ2qVn9sJCzZHD5Ged1qeI
-         Y33Hi4UyJ023ybgOCg8OBL/xMKJ5KRtmqAV5Qubm5Ub6YAkqN3cnA6ZTSUyGp4k2MI/e
-         rnJA==
-X-Gm-Message-State: AOAM530OONYuCEj4M4QYtVo9cqpY7LFtFCdXm+a/Z5ERMdKdHe0FpqAm
-        bFgkdL+ZbGm6p2jeO52aLls=
-X-Google-Smtp-Source: ABdhPJxW2pT9VW4KamAxXiUXFNP1WlaR8uK054Be6UJEWfwgbYwPEefiBKqow5L8lSlFUydhNUtwKA==
-X-Received: by 2002:a05:6a00:14ce:: with SMTP id w14mr16570194pfu.304.1595786319030;
-        Sun, 26 Jul 2020 10:58:39 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id e8sm1768250pfd.34.2020.07.26.10.58.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Jul 2020 10:58:38 -0700 (PDT)
-Subject: Re: [RFC] net: add support for threaded NAPI polling
-To:     Felix Fietkau <nbd@nbd.name>,
-        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org
-Cc:     Hillf Danton <hdanton@sina.com>
-References: <20200726163119.86162-1-nbd@nbd.name>
- <546c2923-ca6e-00e7-8bcb-3a3eb034a58e@gmail.com>
- <daad6ba2-6916-3923-c116-d0470920fe1a@nbd.name>
-From:   Eric Dumazet <erdnetdev@gmail.com>
-Message-ID: <0305d884-0f59-b9c3-5489-b6fd1391d76d@gmail.com>
-Date:   Sun, 26 Jul 2020 10:58:37 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=BhCkJZuy4Xqk6xcjPuD08v581LOzX5vm3Q4rfNTkAco=;
+        b=tqyp4Skcz1QJR8oy2/R3rHVmirsq7ozRsfvA+tN38QXtc12EX0KjRnoLeh7wGWA2X1
+         ZLVhFc9S8lKqUOAeuyGahlOdNZdSx4/RdKkmJKCvZHZuxdwyFtxUSny9TxZBo85+qzmr
+         mAZdS3LJqFUf6RtnJlVYqGnIqJ3G1rSN6TnJ+Ypxz/mlOonqqJqr9n8wULu90gIjz0of
+         2SID00KurhvxwRKiezVUwqRQypzHI+1DocfUatmWozF4MEejqyGS54L8Qh84XlpOsjUL
+         EJgkGlOlGy9f9TgkN40YhNgGQi/QzNS1HkwwRUqBQ75ZSybMdQLx1JiZDqlNTdxnTcm0
+         oKCQ==
+X-Gm-Message-State: AOAM530zGHSP0XzyWIwEoB5c21znjM8QgfzcmovpieoURIwQk287Y9ST
+        MA6D/F1lh0TdSlcNbi2Rp6mIxVE2
+X-Google-Smtp-Source: ABdhPJxjL/LXAbdSVJKytY4V1qucpmV+Kcdp59Pa/hK8F8/HqhD03EYR0NEiZaRQ12kIo1IR6iBQgQ==
+X-Received: by 2002:a17:90a:ac06:: with SMTP id o6mr15108833pjq.219.1595786753694;
+        Sun, 26 Jul 2020 11:05:53 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id g18sm12490546pfk.40.2020.07.26.11.05.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jul 2020 11:05:53 -0700 (PDT)
+Date:   Sun, 26 Jul 2020 11:05:51 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
+Subject: Re: phc2sys - does it work?
+Message-ID: <20200726180551.GA31684@hoboy>
+References: <20200725124927.GE1551@shell.armlinux.org.uk>
+ <20200725132916.7ibhnre2be3hfsrt@skbuf>
+ <20200726110104.GV1605@shell.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <daad6ba2-6916-3923-c116-d0470920fe1a@nbd.name>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200726110104.GV1605@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Jul 26, 2020 at 12:01:05PM +0100, Russell King - ARM Linux admin wrote:
+> Another solution would be to avoid running NTP on any machine intending
+> to be the source of PTP time on a network, but that then brings up the
+> problem that you can't synchronise the PTP time source to a reference
+> time, which rather makes PTP pointless unless all that you're after is
+> "all my local machines say the same wrong time."
 
+It is clear that you can't have two services both adjusting the system
+time.  For example, running ntpd and chrony on the same machine won't
+work, and neither does running ntpd with 'phc2sys -a -r'.
 
-On 7/26/20 10:19 AM, Felix Fietkau wrote:
-> On 2020-07-26 18:49, Eric Dumazet wrote:
->> On 7/26/20 9:31 AM, Felix Fietkau wrote:
->>> For some drivers (especially 802.11 drivers), doing a lot of work in the NAPI
->>> poll function does not perform well. Since NAPI poll is bound to the CPU it
->>> was scheduled from, we can easily end up with a few very busy CPUs spending
->>> most of their time in softirq/ksoftirqd and some idle ones.
->>>
->>> Introduce threaded NAPI for such drivers based on a workqueue. The API is the
->>> same except for using netif_threaded_napi_add instead of netif_napi_add.
->>>
->>> In my tests with mt76 on MT7621 using threaded NAPI + a thread for tx scheduling
->>> improves LAN->WLAN bridging throughput by 10-50%. Throughput without threaded
->>> NAPI is wildly inconsistent, depending on the CPU that runs the tx scheduling
->>> thread.
->>>
->>> With threaded NAPI, throughput seems stable and consistent (and higher than
->>> the best results I got without it).
->>
->> Note that even with a threaded NAPI, you will not be able to use more than one cpu
->> to process the traffic.
-> For a single threaded NAPI user that's correct. The main difference here
-> is that the CPU running the poll function does not have to be the same
-> as the CPU that scheduled it, and it can change based on the load.
-> That makes a huge difference in my tests.
+However, if you want to use NTP as the global time source on a PTP GM,
+and you have a heterogeneous collection of PHC cards, then you can run
 
-This really looks like there is a problem in the driver itself.
+	phc2sys -a -r -r
 
-Have you first checked that this patch was not hurting your use case ?
+(note the two -r flags) and ptp4l with
 
-commit 4cd13c21b207e80ddb1144c576500098f2d5f882    softirq: Let ksoftirqd do its job
+	boundary_clock_jbod	1
+	free_running		1
+	priority1		100
 
-If yes, your proposal would again possibly hurt user space threads competing
-with a high priority workqueue, and packets would not be consumed by user applications.
-Having cpus burning 100% of cycles in kernel space is useless.
+for example.  After ptp4l starts, it will need to be configured as a
+GM, and for that you will need to provide the kernel with the correct
+TAI-UTC offset.  The ntpd program will set this offset, but
+unfortunately it waits until it a very long time to do so.  You can
+either wait until the kernel reports a non-zero TAI-UTC offset, or you
+can script/program the start up logic when starting ptp4l.  See below
+for a more or less complete example script.
 
+Just bear in mind that, because phc2sys synchronizes the PHCs to the
+NTP system time using software time stamps, there might be a time
+error on the order of microseconds.
 
-It seems you need two cpus per queue, I guess this might be because
-you use a single NAPI for both tx and rx ?
+The reasoning behind the above settings is:
 
-Have you simply tried to use two NAPI, as some Ethernet drivers do ?
+- phc2sys -a -r -r
 
-Do not get me wrong, but scheduling a thread only to process one packet at a time
-will hurt common cases.
+  Option -a makes phc2sys pay attention to the port state from ptp4l,
+  and the first -r lets it synchronize the system time from the port
+  with the SLAVE role.  The second -r allows phc2sys to consider the
+  system time as a time source, thus when all of the ports take the
+  MASTER role, phc2sys with synchronize the PHCs to the system time.
 
-Really I do not mind if you add a threaded NAPI, but it seems you missed
-a lot of NAPI requirements in the proposed patch.
+- boundary_clock_jbod=1
 
-For instance, many ->poll() handlers assume BH are disabled.
+  This allows ptp4l to act as a BC or GM using a set of PHCs that do
+  not share the same PHC.  The assumption is that some other process
+  (like phc2sys or ts2phc) looks after the PHC-to-PHC synchronization.
 
-Also part of RPS logic depends on net_rx_action() calling net_rps_action_and_irq_enable()
+- free_running=1
 
+  Since the intention is to become the GM, this prevents ptp4l from
+  accidentally adjusting the PHCs in the presence of a "better" remote
+  GM.
 
+- priority1=100
+
+  This sets a higher priority in order to let the GM win the BMCA
+  election.  Still you need to take care not to install a second GM in
+  the network at a higher priority.
+
+If the GM has PHCs that are either synchronized in hardware or can be
+using internal PPS signals, then the configuration should be
+different.  Not sure if that applies to your setup.
+
+HTH,
+Richard
+
+---8<---
+#!/bin/sh
+
+set -e
+set -x
+
+#
+# Look here for a hacked version of this program that sets the TAI-UTC offset.
+# https://github.com/richardcochran/ntpclient-2015
+#
+adjtimex=/usr/sbin/adjtimex
+
+#
+# Read the leapfile to get the current TAI-UTC offset
+#
+leapfile=$(awk -e '
+{
+	if ($1 == "leapfile") print $2;
+}
+' /etc/ntp.conf)
+
+now=`date +%s`
+
+# NTP/UTC conversion:
+# utc = ntp - 2208988800
+# ntp = utc + 2208988800
+
+offset=$(awk -v utc_now="$now" -e '
+!($1~/^\#/) {
+	ntp_leapsecond_date = $1;
+	utc_leapsecond_date = ntp_leapsecond_date - 2208988800;
+	if (utc_leapsecond_date < utc_now) {
+		current_offset = $2;
+	}
+}
+END {
+	print current_offset;
+}
+' $leapfile)
+
+#
+# Tell the kernel the current TAI-UTC offset.
+#
+$adjtimex -T $offset
+
+#
+# Tell ptp4l how to act like a Grand Master.
+#
+while [ 1 ]; do
+	if [ -e /var/run/ptp4l ]; then
+		break;
+	fi
+	echo Waiting for /var/run/ptp4l to appear...
+	sleep 1
+done
+exec /usr/sbin/pmc -u -b 0 \
+"set GRANDMASTER_SETTINGS_NP
+clockClass 248
+clockAccuracy 0xfe
+offsetScaledLogVariance 0xffff
+currentUtcOffset $offset
+leap61 0
+leap59 0
+currentUtcOffsetValid 1
+ptpTimescale 1
+timeTraceable 1
+frequencyTraceable 1
+timeSource 0x50
+"
