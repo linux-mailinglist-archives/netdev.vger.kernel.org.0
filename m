@@ -2,376 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3E922DE02
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 12:43:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFF8922DE18
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 13:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbgGZKns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 06:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35572 "EHLO
+        id S1727843AbgGZLBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 07:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725794AbgGZKns (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 06:43:48 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F7EC0619D2
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 03:43:47 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id a15so12073719wrh.10
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 03:43:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pIW148fTzxBLJ3/XBNUUN8d7Mb1jmQmVu1XjDuyJP20=;
-        b=CoqrsyxRoVRRXu9AEA/xjDuWqyAqqFBTXg6dDvZQwaoolaPo/zisCXil5R5I+E2Ndf
-         tPCQtNQhKsuKzdgvCoYzztgz7QN1rc7lxH0GXmbsyWH7wbnslxZOmIPRDNUodK7rlJwI
-         fpJ3qjuK/wcjkLp1xZKaB4llqISvo/Zh4mDV4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pIW148fTzxBLJ3/XBNUUN8d7Mb1jmQmVu1XjDuyJP20=;
-        b=G69J449B091phSxT92FP/oOeOKqF8iQE1rWhQ7NKxVSp7/+0KOOUeEc6fgkk8pMcQr
-         AAikYI4hoQoANm5r4ZpZ0WhebLUR4p82Quxs3CCwBgjNq97q12tEUbAGca7bbx25Y52f
-         tyQcSYUucwT1x8u+OBCcyNR1MbSiLLuhj67DmExlAc/DOpjjzMUjUH2Z5AwoG8RGqnmX
-         S0iggWXfdhjtROO/oagKYOHXGZiXKOpGwRaeDrZ2qDowEo+XULSy2+kG6u95DVTSttfe
-         /TpRqtrVdSh66e/EFIOyUv+TYl6FIk4UAtuyBCupXAFsK87s1nzoiu+XjluWf3HS0DsA
-         r0pg==
-X-Gm-Message-State: AOAM530Ul0vYlklJcuEnt3M/tlwH+bkDSKVSUOp6GzOTpIaMAftBj8MX
-        fxkVf4/zI1Fwzu6etNyJYtjRbQANmiE=
-X-Google-Smtp-Source: ABdhPJxdGmK0XshSAcmm51Iu7QOXEjhoMWHdtPBktHHqw+u/h3sS7lsrE4nM9s/jYf/IGcKRpgI2fg==
-X-Received: by 2002:adf:e60a:: with SMTP id p10mr15419739wrm.312.1595760225689;
-        Sun, 26 Jul 2020 03:43:45 -0700 (PDT)
-Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id a134sm14931179wmd.17.2020.07.26.03.43.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jul 2020 03:43:45 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, davem@davemloft.net,
-        roopa@cumulusnetworks.com, amarao@servers.com, olteanv@gmail.com,
-        jiri@resnulli.us, Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [RFC iproute2] ip: bridge: use -human to convert time-related values to seconds
-Date:   Sun, 26 Jul 2020 13:43:23 +0300
-Message-Id: <20200726104323.302946-1-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20200725201758.4cfae512@hermes.lan>
-References: <20200725201758.4cfae512@hermes.lan>
+        with ESMTP id S1725972AbgGZLBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 07:01:12 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1613FC0619D2
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 04:01:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:To:From:Date:Reply-To:Cc:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=ulY2I+IdqsiikALX6t9mqEgCi59mweIpsrnoUGV7vPk=; b=eZlM5gI+2y2YxuJRJU2LaUN0B
+        WoL1R3rBCxJlAhJG2EdgtKwk9hosrdtevOvvV5AB2mWwTJ1qDM0aLSU2kdtkN/cpBZTIPgzHY5fWx
+        I637D6Rh0KrKxI+H6SgQRpepRNzRsjg6+bc4c64QAPwxZ6b8aV+jZDGgNZJKHuueFMANNJvqt1DGz
+        1ZpW8vBV9pNhIxZqlQHdLJ76BzHW3sn4SPpn6dfnHAaGCXS8iVTLHQzknjv6O4qVdoNOBT0CPu/Zo
+        d+jCuanblBc7TKl8Ex0ktIScY/tnVdkMAQoiyTYS2j3FiqwqgV1aMyygZoz7ZAd91r/e4Zr8vOPSc
+        ngufVqEzw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44352)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jzeOv-0001ez-Ii; Sun, 26 Jul 2020 12:01:05 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jzeOv-0002bM-2m; Sun, 26 Jul 2020 12:01:05 +0100
+Date:   Sun, 26 Jul 2020 12:01:05 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org
+Subject: Re: phc2sys - does it work?
+Message-ID: <20200726110104.GV1605@shell.armlinux.org.uk>
+References: <20200725124927.GE1551@shell.armlinux.org.uk>
+ <20200725132916.7ibhnre2be3hfsrt@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200725132916.7ibhnre2be3hfsrt@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have been printing and expecting the time-related bridge options
-scaled by USER_HZ which is confusing to users and hasn't been documented
-anywhere. Unfortunately that has been the case for years and people who
-use ip-link are scaling the values themselves by now. In order to help
-anyone who wants to show and set the values in normal time (seconds) we
-can use the ip -h[uman] argument. When it is supplied all values will be
-shown and expected in their normal time (currently all in seconds).
-The man page is also adjusted everywhere to explain the current scaling
-and the new option.
+On Sat, Jul 25, 2020 at 04:29:16PM +0300, Vladimir Oltean wrote:
+> Just a sanity check: do you have this patch?
+> https://github.com/richardcochran/linuxptp/commit/e0580929f451e685d92cd10d80b76f39e9b09a97
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
-To avoid printing the values twice (i.e. the _ms solution) we can use
-the -human argument to scale them properly. Obviously -human is an alias
-right now for -human-readable, that's why I refer to it only as -human
-in the ip-link man page since we are now using it for setting values, too.
-Alternatively this can be any new option such as -Timescale.
+I did not, as I was running Debian stable's 1.9.2 version, whereas
+current git head for linuxptp appears to behave much better.  Thanks.
 
-What do you think ?
+I've got to the bottom of stuff like:
 
- ip/iplink_bridge.c    | 49 +++++++++++++++++++++++++------------------
- man/man8/ip-link.8.in | 33 +++++++++++++++++------------
- 2 files changed, 49 insertions(+), 33 deletions(-)
+phc2sys[7190.912]: /dev/ptp1 sys offset        81 s2 freq  -71290 delay    641
+phc2sys[7191.912]: /dev/ptp1 sys offset        66 s2 freq  -71281 delay    640
+phc2sys[7192.912]: /dev/ptp1 sys offset      -926 s2 freq  -72253 delay    640
+phc2sys[7193.912]: /dev/ptp1 sys offset     -8124 s2 freq  -79729 delay    680
+phc2sys[7194.912]: /dev/ptp1 sys offset     -7794 s2 freq  -81836 delay    641
+phc2sys[7195.913]: /dev/ptp1 sys offset     -5355 s2 freq  -81735 delay    680
+phc2sys[7196.913]: /dev/ptp1 sys offset     -2994 s2 freq  -80981 delay    680
+phc2sys[7197.913]: /dev/ptp1 sys offset     -1336 s2 freq  -80221 delay    640
+phc2sys[7198.913]: /dev/ptp1 sys offset      -422 s2 freq  -79708 delay    640
+phc2sys[7199.913]: /dev/ptp1 sys offset        -9 s2 freq  -79421 delay    680
+phc2sys[7200.913]: /dev/ptp1 sys offset       159 s2 freq  -79256 delay    640
+phc2sys[7201.913]: /dev/ptp1 sys offset       211 s2 freq  -79156 delay    680
 
-diff --git a/ip/iplink_bridge.c b/ip/iplink_bridge.c
-index 3e81aa059cb3..8313cdbd0a92 100644
---- a/ip/iplink_bridge.c
-+++ b/ip/iplink_bridge.c
-@@ -24,6 +24,7 @@
- 
- static unsigned int xstats_print_attr;
- static int filter_index;
-+static int hz = 1;
- 
- static void print_explain(FILE *f)
- {
-@@ -64,6 +65,9 @@ static void print_explain(FILE *f)
- 		"		  [ nf_call_arptables NF_CALL_ARPTABLES ]\n"
- 		"\n"
- 		"Where: VLAN_PROTOCOL := { 802.1Q | 802.1ad }\n"
-+		"Note that all time-related options are scaled by USER_HZ (%d), in order to\n"
-+		"set and show them as seconds please use the ip -h[uman] argument.\n",
-+		get_user_hz()
- 	);
- }
- 
-@@ -85,31 +89,34 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
- {
- 	__u32 val;
- 
-+	if (human_readable)
-+		hz = get_user_hz();
-+
- 	while (argc > 0) {
- 		if (matches(*argv, "forward_delay") == 0) {
- 			NEXT_ARG();
- 			if (get_u32(&val, *argv, 0))
- 				invarg("invalid forward_delay", *argv);
- 
--			addattr32(n, 1024, IFLA_BR_FORWARD_DELAY, val);
-+			addattr32(n, 1024, IFLA_BR_FORWARD_DELAY, val * hz);
- 		} else if (matches(*argv, "hello_time") == 0) {
- 			NEXT_ARG();
- 			if (get_u32(&val, *argv, 0))
- 				invarg("invalid hello_time", *argv);
- 
--			addattr32(n, 1024, IFLA_BR_HELLO_TIME, val);
-+			addattr32(n, 1024, IFLA_BR_HELLO_TIME, val * hz);
- 		} else if (matches(*argv, "max_age") == 0) {
- 			NEXT_ARG();
- 			if (get_u32(&val, *argv, 0))
- 				invarg("invalid max_age", *argv);
- 
--			addattr32(n, 1024, IFLA_BR_MAX_AGE, val);
-+			addattr32(n, 1024, IFLA_BR_MAX_AGE, val * hz);
- 		} else if (matches(*argv, "ageing_time") == 0) {
- 			NEXT_ARG();
- 			if (get_u32(&val, *argv, 0))
- 				invarg("invalid ageing_time", *argv);
- 
--			addattr32(n, 1024, IFLA_BR_AGEING_TIME, val);
-+			addattr32(n, 1024, IFLA_BR_AGEING_TIME, val * hz);
- 		} else if (matches(*argv, "stp_state") == 0) {
- 			NEXT_ARG();
- 			if (get_u32(&val, *argv, 0))
-@@ -266,7 +273,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
- 				       *argv);
- 
- 			addattr64(n, 1024, IFLA_BR_MCAST_LAST_MEMBER_INTVL,
--				  mcast_last_member_intvl);
-+				  mcast_last_member_intvl * hz);
- 		} else if (matches(*argv, "mcast_membership_interval") == 0) {
- 			__u64 mcast_membership_intvl;
- 
-@@ -276,7 +283,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
- 				       *argv);
- 
- 			addattr64(n, 1024, IFLA_BR_MCAST_MEMBERSHIP_INTVL,
--				  mcast_membership_intvl);
-+				  mcast_membership_intvl * hz);
- 		} else if (matches(*argv, "mcast_querier_interval") == 0) {
- 			__u64 mcast_querier_intvl;
- 
-@@ -286,7 +293,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
- 				       *argv);
- 
- 			addattr64(n, 1024, IFLA_BR_MCAST_QUERIER_INTVL,
--				  mcast_querier_intvl);
-+				  mcast_querier_intvl * hz);
- 		} else if (matches(*argv, "mcast_query_interval") == 0) {
- 			__u64 mcast_query_intvl;
- 
-@@ -296,7 +303,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
- 				       *argv);
- 
- 			addattr64(n, 1024, IFLA_BR_MCAST_QUERY_INTVL,
--				  mcast_query_intvl);
-+				  mcast_query_intvl * hz);
- 		} else if (!matches(*argv, "mcast_query_response_interval")) {
- 			__u64 mcast_query_resp_intvl;
- 
-@@ -306,7 +313,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
- 				       *argv);
- 
- 			addattr64(n, 1024, IFLA_BR_MCAST_QUERY_RESPONSE_INTVL,
--				  mcast_query_resp_intvl);
-+				  mcast_query_resp_intvl * hz);
- 		} else if (!matches(*argv, "mcast_startup_query_interval")) {
- 			__u64 mcast_startup_query_intvl;
- 
-@@ -316,7 +323,7 @@ static int bridge_parse_opt(struct link_util *lu, int argc, char **argv,
- 				       *argv);
- 
- 			addattr64(n, 1024, IFLA_BR_MCAST_STARTUP_QUERY_INTVL,
--				  mcast_startup_query_intvl);
-+				  mcast_startup_query_intvl * hz);
- 		} else if (matches(*argv, "mcast_stats_enabled") == 0) {
- 			__u8 mcast_stats_enabled;
- 
-@@ -406,30 +413,32 @@ static void bridge_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- {
- 	if (!tb)
- 		return;
-+	if (human_readable)
-+		hz = get_user_hz();
- 
- 	if (tb[IFLA_BR_FORWARD_DELAY])
- 		print_uint(PRINT_ANY,
- 			   "forward_delay",
- 			   "forward_delay %u ",
--			   rta_getattr_u32(tb[IFLA_BR_FORWARD_DELAY]));
-+			   rta_getattr_u32(tb[IFLA_BR_FORWARD_DELAY]) / hz);
- 
- 	if (tb[IFLA_BR_HELLO_TIME])
- 		print_uint(PRINT_ANY,
- 			   "hello_time",
- 			   "hello_time %u ",
--			   rta_getattr_u32(tb[IFLA_BR_HELLO_TIME]));
-+			   rta_getattr_u32(tb[IFLA_BR_HELLO_TIME]) / hz);
- 
- 	if (tb[IFLA_BR_MAX_AGE])
- 		print_uint(PRINT_ANY,
- 			   "max_age",
- 			   "max_age %u ",
--			   rta_getattr_u32(tb[IFLA_BR_MAX_AGE]));
-+			   rta_getattr_u32(tb[IFLA_BR_MAX_AGE]) / hz);
- 
- 	if (tb[IFLA_BR_AGEING_TIME])
- 		print_uint(PRINT_ANY,
- 			   "ageing_time",
- 			   "ageing_time %u ",
--			   rta_getattr_u32(tb[IFLA_BR_AGEING_TIME]));
-+			   rta_getattr_u32(tb[IFLA_BR_AGEING_TIME]) / hz);
- 
- 	if (tb[IFLA_BR_STP_STATE])
- 		print_uint(PRINT_ANY,
-@@ -605,37 +614,37 @@ static void bridge_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 		print_lluint(PRINT_ANY,
- 			     "mcast_last_member_intvl",
- 			     "mcast_last_member_interval %llu ",
--			     rta_getattr_u64(tb[IFLA_BR_MCAST_LAST_MEMBER_INTVL]));
-+			     rta_getattr_u64(tb[IFLA_BR_MCAST_LAST_MEMBER_INTVL]) / hz);
- 
- 	if (tb[IFLA_BR_MCAST_MEMBERSHIP_INTVL])
- 		print_lluint(PRINT_ANY,
- 			     "mcast_membership_intvl",
- 			     "mcast_membership_interval %llu ",
--			     rta_getattr_u64(tb[IFLA_BR_MCAST_MEMBERSHIP_INTVL]));
-+			     rta_getattr_u64(tb[IFLA_BR_MCAST_MEMBERSHIP_INTVL]) / hz);
- 
- 	if (tb[IFLA_BR_MCAST_QUERIER_INTVL])
- 		print_lluint(PRINT_ANY,
- 			     "mcast_querier_intvl",
- 			     "mcast_querier_interval %llu ",
--			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERIER_INTVL]));
-+			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERIER_INTVL]) / hz);
- 
- 	if (tb[IFLA_BR_MCAST_QUERY_INTVL])
- 		print_lluint(PRINT_ANY,
- 			     "mcast_query_intvl",
- 			     "mcast_query_interval %llu ",
--			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_INTVL]));
-+			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_INTVL]) / hz);
- 
- 	if (tb[IFLA_BR_MCAST_QUERY_RESPONSE_INTVL])
- 		print_lluint(PRINT_ANY,
- 			     "mcast_query_response_intvl",
- 			     "mcast_query_response_interval %llu ",
--			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_RESPONSE_INTVL]));
-+			     rta_getattr_u64(tb[IFLA_BR_MCAST_QUERY_RESPONSE_INTVL]) / hz);
- 
- 	if (tb[IFLA_BR_MCAST_STARTUP_QUERY_INTVL])
- 		print_lluint(PRINT_ANY,
- 			     "mcast_startup_query_intvl",
- 			     "mcast_startup_query_interval %llu ",
--			     rta_getattr_u64(tb[IFLA_BR_MCAST_STARTUP_QUERY_INTVL]));
-+			     rta_getattr_u64(tb[IFLA_BR_MCAST_STARTUP_QUERY_INTVL]) / hz);
- 
- 	if (tb[IFLA_BR_MCAST_STATS_ENABLED])
- 		print_uint(PRINT_ANY,
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index c6bd2c530547..efd8a877f7a3 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -1431,9 +1431,11 @@ corresponds to the 2010 version of the HSR standard. Option "1" activates the
- BRIDGE Type Support
- For a link of type
- .I BRIDGE
--the following additional arguments are supported:
-+the following additional arguments are supported. Note that by default time-related options are scaled by USER_HZ (100), use -h[uman] argument to convert them from seconds when
-+setting and to seconds when using show.
-+
- 
--.BI "ip link add " DEVICE " type bridge "
-+.BI "ip [-human] link add " DEVICE " type bridge "
- [
- .BI ageing_time " AGEING_TIME "
- ] [
-@@ -1523,21 +1525,22 @@ address format, ie an address of the form 01:80:C2:00:00:0X, with X
-  in [0, 4..f].
- 
- .BI forward_delay " FORWARD_DELAY "
--- set the forwarding delay in seconds, ie the time spent in LISTENING
-+- set the forwarding delay, ie the time spent in LISTENING
- state (before moving to LEARNING) and in LEARNING state (before
- moving to FORWARDING). Only relevant if STP is enabled. Valid values
--are between 2 and 30.
-+when -h[uman] is used (in seconds) are between 2 and 30.
- 
- .BI hello_time " HELLO_TIME "
--- set the time in seconds between hello packets sent by the bridge,
--when it is a root bridge or a designated bridges.
--Only relevant if STP is enabled. Valid values are between 1 and 10.
-+- set the time between hello packets sent by the bridge, when
-+it is a root bridge or a designated bridges.
-+Only relevant if STP is enabled. Valid values when -h[uman] is used
-+(in seconds) are between 1 and 10.
- 
- .BI max_age " MAX_AGE "
- - set the hello packet timeout, ie the time in seconds until another
- bridge in the spanning tree is assumed to be dead, after reception of
- its last hello message. Only relevant if STP is enabled. Valid values
--are between 6 and 40.
-+when -h[uman] is used (in seconds) are between 6 and 40.
- 
- .BI stp_state " STP_STATE "
- - turn spanning tree protocol on
-@@ -1619,7 +1622,7 @@ IGMP querier, ie sending of multicast queries by the bridge (default: disabled).
- after this delay has passed, the bridge will start to send its own queries
- (as if
- .BI mcast_querier
--was enabled).
-+was enabled). When -h[uman] is used the value will be interpreted as seconds.
- 
- .BI mcast_hash_elasticity " HASH_ELASTICITY "
- - set multicast database hash elasticity, ie the maximum chain length
-@@ -1636,25 +1639,29 @@ message has been received (defaults to 2).
- 
- .BI mcast_last_member_interval " LAST_MEMBER_INTERVAL "
- - interval between queries to find remaining members of a group,
--after a "leave" message is received.
-+after a "leave" message is received. When -h[uman] is used the value
-+will be interpreted as seconds.
- 
- .BI mcast_startup_query_count " STARTUP_QUERY_COUNT "
- - set the number of IGMP queries to send during startup phase (defaults to 2).
- 
- .BI mcast_startup_query_interval " STARTUP_QUERY_INTERVAL "
--- interval between queries in the startup phase.
-+- interval between queries in the startup phase. When -h[uman] is used the
-+value will be interpreted as seconds.
- 
- .BI mcast_query_interval " QUERY_INTERVAL "
- - interval between queries sent by the bridge after the end of the
--startup phase.
-+startup phase. When -h[uman] is used the value will be interpreted as seconds.
- 
- .BI mcast_query_response_interval " QUERY_RESPONSE_INTERVAL "
- - set the Max Response Time/Maximum Response Delay for IGMP/MLD
--queries sent by the bridge.
-+queries sent by the bridge. When -h[uman] is used the value will
-+be interpreted as seconds.
- 
- .BI mcast_membership_interval " MEMBERSHIP_INTERVAL "
- - delay after which the bridge will leave a group,
- if no membership reports for this group are received.
-+When -h[uman] is used the value will be interpreted as seconds.
- 
- .BI mcast_stats_enabled " MCAST_STATS_ENABLED "
- - enable
+This is due to NTP.  Each NTP period (starting at 64s), ntpd updates
+the kernel timekeeping variables with the latest information.  One of
+these is the offset, which is applied to the kernel's timekeeping by
+adjusting the length of a tick:
+
+        /* Compute the phase adjustment for the next second */
+        tick_length      = tick_length_base;
+
+        delta            = ntp_offset_chunk(time_offset);
+        time_offset     -= delta;
+        tick_length     += delta;
+
+This has the effect of slightly changing the length of a second to slew
+small adjustments, which appears as a change of frequency compared to
+the PTP clock.  As we progress through the NTP period, the amount of
+adjustment is reduced (notice that time_offset is reduced.)  When
+time_offset hits zero, then no further adjustment is made, and the rate
+that the kernel time passes settles - and in turn phc2sys settles to
+a stable "freq" figure.
+
+What this means is that synchronising the PTP clock to the kernel time
+on a second by second basis exposes the PTP clock to these properties
+of the kernel NTP loop, which has the effect of throwing the PTP clock
+off by a 10s of PPM.
+
+One way around this would be to synchronise the PTP clock updates with
+NTP updates, but that is difficult due to NTP selecting how often it
+does its updates - it generally starts off at 64s, and the interval
+increases through powers of two.  However, just specifying -R to
+phc2sys does not give better results - the amount that the PTP clock
+fluctuates just gets larger.
+
+Another solution would be to avoid running NTP on any machine intending
+to be the source of PTP time on a network, but that then brings up the
+problem that you can't synchronise the PTP time source to a reference
+time, which rather makes PTP pointless unless all that you're after is
+"all my local machines say the same wrong time."
+
 -- 
-2.25.4
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
