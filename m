@@ -2,90 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DD4622E1E8
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 20:11:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BF1622E1EF
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 20:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727026AbgGZSLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 14:11:39 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:22921 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726043AbgGZSLi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Jul 2020 14:11:38 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1595787098; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=dkeTWaUqQPIijBo2b2trYUH4UirL83EHI+atIYwWFzE=; b=eSn0mChU2LjbKtmg4Pj7qLsUKsoHgZ3eRIzVSaHi+++HjQ5WTws+Wd1gpuyDB6zUO6RWlSzc
- rH2dukq2wDC208IM7N2xoRbjqJmOBtccTSihKfdPVtFvX/VJgcncm8r/IHCBzS4MySFoE4LD
- zl+YIoylwn4+iyB62T/Q/UZn77c=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n11.prod.us-west-2.postgun.com with SMTP id
- 5f1dc75235f3e3d3168ebf01 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 26 Jul 2020 18:11:30
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C6F6FC43391; Sun, 26 Jul 2020 18:11:30 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 09F83C433C9;
-        Sun, 26 Jul 2020 18:11:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 09F83C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Wolfram Sang <wsa@kernel.org>
-Cc:     linux-wireless@vger.kernel.org,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH] iwlwifi: yoyo: don't print failure if debug firmware is missing
-References: <20200625165210.14904-1-wsa@kernel.org>
-        <20200726152642.GA913@ninjato>
-Date:   Sun, 26 Jul 2020 21:11:25 +0300
-In-Reply-To: <20200726152642.GA913@ninjato> (Wolfram Sang's message of "Sun,
-        26 Jul 2020 17:26:42 +0200")
-Message-ID: <87y2n6404y.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726467AbgGZSSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 14:18:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726043AbgGZSSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 14:18:05 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D5D3C0619D2
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 11:18:05 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id l23so13372108qkk.0
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 11:18:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uNfkCa3abx8Y+Foq/q1fkMndz87/txVSbN63T/tJ+Fw=;
+        b=VGE2Z9RfvRWVzXu9UaLb8tBrgv5HwwUR/wx46PUc6h6Z/J0qPdt7WC5TpRKs8WEtRi
+         XkBHfSrMqKUVOM8Av+8BvXboiOQT6ZCELviuTruQw/8dtamcgLBgV7emLVm7/hEkP85H
+         jv4cVQYdArGFElYKGNo7+6+ylxlpjIYndrHjAXtZ7A+wSEoUnaTPQkiIiSpR/I56Cz5e
+         fLmXumN4yFbM0hniZ5bYD+1fD8hKGc+tZ4bLc/kwQnEbjAT104E8ZCCXybuX2CqA7VSr
+         5I9gbDfndkU/LTrTM06q1Rx0BZyItdTq4gQ3zbFILykLX+L1aGipbzKXn0xB9iUmAUSn
+         xkGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uNfkCa3abx8Y+Foq/q1fkMndz87/txVSbN63T/tJ+Fw=;
+        b=M06fyGtLS6em8hmhdlA+phZEgRgMC2bbPQjUgKGgMBISSw2s0vOzk9/pjBv9CWaj/j
+         XdIi3b8/MMZuGrFD8vkghuAaHlZ7aYV19sJMPgIqJTzueF5Gy9Wq89KUyVYirwnl6kHP
+         QXhDx3ZwnUZtzTqI0A/jZj9lLBUSTB4qROlTWwGeXC2uv7mZqMOtT5N7VZpLWX3YkgVf
+         drWMStFz9t58a/0ugB9ir03YYTMN1l2J9C7rTyXs6uGLr7ebA+Xweg99WuWTiyfKHAIM
+         bkZptac2dTmq2an55RmozmrSE0exH7hFckzIQpfjM+rD3SIqLHtNvKkWVwNCQlfy+inq
+         jL0w==
+X-Gm-Message-State: AOAM5339qMbUfkpffW1XsfQpbIOsQPe9dl/kKgFmOU+VJ6h0euldMc3C
+        ydy9x9070Xpf1RqrRjRvKQ4+xmrNbyZvGLnNEPc=
+X-Google-Smtp-Source: ABdhPJwsHCaTFPQvDKyYA/ORNbNdI7DDoZ0WnGdtnip3KUfWRGGWqpPPo81Xw9SI+8p2B8JbzTGCx8LUmex6C8tfEl8=
+X-Received: by 2002:a37:910:: with SMTP id 16mr17410968qkj.466.1595787484579;
+ Sun, 26 Jul 2020 11:18:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <CAEjGaqfhr=1RMavYUAyG0qMyQe44CQbuet04LWSC8YRM8FMpKA@mail.gmail.com>
+ <CA+FuTSfpadw+ea-=pL0pMXxujzjoLW+d9yH2+GQo0jOJv=Zo4Q@mail.gmail.com>
+In-Reply-To: <CA+FuTSfpadw+ea-=pL0pMXxujzjoLW+d9yH2+GQo0jOJv=Zo4Q@mail.gmail.com>
+From:   Han <keepsimple@gmail.com>
+Date:   Sun, 26 Jul 2020 11:17:53 -0700
+Message-ID: <CAEjGaqdo_6watKcGi1WUmrHiB9F=1+i+8LcxBXOMZvLneiEh7A@mail.gmail.com>
+Subject: Re: question about using UDP GSO in Linux kernel 4.19
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wolfram Sang <wsa@kernel.org> writes:
-
-> On Thu, Jun 25, 2020 at 06:52:10PM +0200, Wolfram Sang wrote:
->> Missing this firmware is not fatal, my wifi card still works. Even more,
->> I couldn't find any documentation what it is or where to get it. So, I
->> don't think the users should be notified if it is missing. If you browse
->> the net, you see the message is present is in quite some logs. Better
->> remove it.
->> 
->> Signed-off-by: Wolfram Sang <wsa@kernel.org>
->> ---
+On Sun, Jul 26, 2020 at 6:42 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
 >
-> Any input on this? Or people I should add to CC?
+> On Sat, Jul 25, 2020 at 7:08 PM Han <keepsimple@gmail.com> wrote:
+> >
+> > My apologies if this is not the right place to ask this question.
+> >
+> > I'm trying to use UDP GSO to improve the throughput. My testing shows
+> > that UDP GSO works with the local server (i.e. loopback interface) but
+> > fails with a remote server (in WLAN, via wlan0 interface).
+> >
+> > My question is: do I need to explicitly enable UDP GSO for wlan0
+> > interface? If yes, how do I do it? I searched online but could not
+> > find a good answer.  I looked at "ethtool" but not clear which option
+> > to use:
+> >
+> > $ ethtool  --show-offload wlan0 | grep -i generic-segment
+> > generic-segmentation-offload: off [requested on]
+>
+> Which wireless driver does your device use. Does it have tx checksum offload?
 
-This was discussed on another thread:
+It seems to be "brcmfmac" :
 
-https://lkml.kernel.org/r/87mu3magfp.fsf@tynnyri.adurom.net
+$ readlink /sys/class/net/wlan0/device/driver
+../../../../../../../../bus/sdio/drivers/brcmfmac
 
-Unless Intel folks object I'm planning to take this to
-wireless-drivers-next.
+I think tx checksum offload is off, and I couldn't turn it on. Does
+"[fixed]" mean it cannot be changed?
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+$ ethtool  --show-offload wlan0 | grep -i sum
+rx-checksumming: off [fixed]
+tx-checksumming: off
+        tx-checksum-ipv4: off [fixed]
+        tx-checksum-ip-generic: off [fixed]
+        tx-checksum-ipv6: off [fixed]
+        tx-checksum-fcoe-crc: off [fixed]
+        tx-checksum-sctp: off [fixed]
+tx-gre-csum-segmentation: off [fixed]
+tx-udp_tnl-csum-segmentation: off [fixed]
+esp-tx-csum-hw-offload: off [fixed]
+
+Tried this but didn't work:
+
+$ sudo ethtool --offload wlan0 tx on
+Cannot change tx-checksumming
+Could not change any device features
+
+$ sudo ethtool -K wlan0 tx-checksum-ipv4 on
+Could not change any device features
+
+> That is a hard requirement. In udp_send_skb:
+>
+>                 if (skb->ip_summed != CHECKSUM_PARTIAL || is_udplite ||
+>                     dst_xfrm(skb_dst(skb))) {
+>                         kfree_skb(skb);
+>                         return -EIO;
+>                 }
+>
+> > $ ethtool  --show-offload wlan0 | grep -i udp-segment
+> > tx-udp-segmentation: off [fixed]
+>
+> This is hardware segmentation offload. It is not required.
