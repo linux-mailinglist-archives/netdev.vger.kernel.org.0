@@ -2,107 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A01722DAB5
-	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 02:08:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB55922DB0A
+	for <lists+netdev@lfdr.de>; Sun, 26 Jul 2020 03:01:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727936AbgGZAHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jul 2020 20:07:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48806 "EHLO
+        id S1727921AbgGZBBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jul 2020 21:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727789AbgGZAHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 20:07:53 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22127C08C5C0;
-        Sat, 25 Jul 2020 17:07:53 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id t4so11315085oij.9;
-        Sat, 25 Jul 2020 17:07:53 -0700 (PDT)
+        with ESMTP id S1726931AbgGZBBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jul 2020 21:01:16 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF59CC08C5C0;
+        Sat, 25 Jul 2020 18:01:15 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id b25so13623557ljp.6;
+        Sat, 25 Jul 2020 18:01:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7yG4ryB8jfwldPWWWRczVJAvSj8jKZekCuaFpys05pk=;
-        b=vKaOARyBh6QtfllqR4xwoLl5T6MfehkMfz52QhK/6O+0+ekZ9PLK+aqFrVe5Di9wOS
-         vsIs3Dio4Hlsg4Y7pxSx23Mr6bJVUcJ5Qbpai/Tmw51dZoVb/iNvqrTFkk0TI7dRdVXt
-         GsFt8Y9itKEXqaLLEQRAA3M8lvFHaWT0xV8iw4kCc8R2DE5doHUy3SVfgXwazJCDKnI9
-         /gMrWB5DAhnPTbc4S70WNz+pJK1CnEzT3OPtU+10uYKuqAnrnD2Nqnl2VR6apF4vgVPK
-         5fKTECiKtTBl/sg42CysSi+B3ubCOymWzjYJn5TW9MQjNE2RdbEddHnAdvkB46IeaS1q
-         L+aw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iRZ6k+2EudeHcZ1b0jIuHOrby+BxTb2SO0kPldgSHGM=;
+        b=VjrhvCM8b3FWo+/TIjekn4QFnPxqkpMJCmtYhSeNOjB5ric/d+Z8hkrquF9ISxcupt
+         qMzNsVZXAenccTbWWgh7rr7Dt9B5SlQLj/sv/AwB+ELvX6nMcAguBcy9iTfOfXP9xq7P
+         cOKAI3nz/hzJGBzEMeW5o6iDzEkMbDAjzP20z0Sa23EMKDPlxC8MSac4uljKj5cx2v4c
+         NTqklFJqxC341WhihVYbDSJEUPQdT1JeAvpWoF2Rpa70crpKLftobre8zlx7M//kGiT+
+         Bdjs3eMgBpZDJc6NCTrAE2h3N+iD0Kuuf37SV3l6Ab/yQ8E3nUj17KYorAzr4rFnWHA1
+         EQNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7yG4ryB8jfwldPWWWRczVJAvSj8jKZekCuaFpys05pk=;
-        b=st1DtqzG4GE3wp38PLXDurYVsMjCU8qjBu01GRxIvnlVfQmKu5s60gdHYrFf0o2xvo
-         x91309bGnmS9zODAaoyM8o3o875UFSLN3BU39WnDcry2TyV3imNCTx+ImRCBt917/ETf
-         XrdIzIZvIIO2Q+TGMNcfGW69j7jzs79uvRkM5yEQhMrupJqDoBEvZiB1SgfWuomU+YZh
-         BkF8YjUV+W+pLuqyJCs7T2aUytabzcV25mdmCkwWVCwMsfLX3V3eIVtpCeKBeFJePdm1
-         wpMAh22o/hwT6kvdJuXjh7mePtjVDuGtMpvPXxSun7ZA/KwTNRw1uL7l0bRXQZjedAMb
-         U/WQ==
-X-Gm-Message-State: AOAM530mKGt/yWzktRnr8k9e3SUWOQx1ZXRRuN6WqL8kyYZqPEpv1PC4
-        VMnrCECsIuMZNnGoAGCVN4A=
-X-Google-Smtp-Source: ABdhPJyaczFvIbpWNXLQN60Sy6Xgq9CNGT22YxPNwE+fVgxi/5S+Nq/7M0M9hfi0YgZi0dkmMIIMOg==
-X-Received: by 2002:a05:6808:34e:: with SMTP id j14mr13692622oie.166.1595722071537;
-        Sat, 25 Jul 2020 17:07:51 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:6c04:5f77:5096:1c38])
-        by smtp.googlemail.com with ESMTPSA id n7sm2157057ooo.38.2020.07.25.17.07.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Jul 2020 17:07:50 -0700 (PDT)
-Subject: Re: [PATCH] ipv6: Fix nexthop refcnt leak when creating ipv6 route
- info
-To:     Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Xin Tan <tanxin.ctf@gmail.com>
-References: <1595664139-40703-1-git-send-email-xiyuyang19@fudan.edu.cn>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <330e3acc-dff5-a59e-e138-97ffbb6e7892@gmail.com>
-Date:   Sat, 25 Jul 2020 18:07:49 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iRZ6k+2EudeHcZ1b0jIuHOrby+BxTb2SO0kPldgSHGM=;
+        b=aYEOm4XM3rQzzvbph+xIHxrvb10KQSpKyvt5NKQMyZ4aIboOExVQqEoh//a/WLe6B4
+         GGaI24K1znX13o4jHEtV+/vykRW8xuvhftxPdgjvz8qwBO2hGICzGWguQpFlOFZwjelH
+         jU8ZeGwiab47waFMixMHL/AaqjNfBJg2IO3vTR9js/oUHj9nOAbObRfkZhwKVgX9LwT8
+         O6yih6OSp9v4ccdZIuXY8wvg+zPNtwZCVrgUYJs7dQVRIH8Ytk0SL2rReSwp80fuSG22
+         LtkIZeMtd4figfidQkSpsRpJDOygNEutGg8sLtL/z7uqSVIkYkvhtfoai08PEEs53OYw
+         eIDA==
+X-Gm-Message-State: AOAM533xHNg7eUwAEvNYfdHhxxibs6bJZ+79w2frln330U4If3C7Ho0e
+        KWqCjj8Qf3NKiU21Jg6Y3eTxS1Y1f4UB+kNkTmI=
+X-Google-Smtp-Source: ABdhPJxztEx9LxUx2VCXP8Lb3AxeJujIxpEjuQTtRRKuD9r2U+RvhSUBRP/iHQR9IaqoqIm8Tblx05kje6uVTpnZRVs=
+X-Received: by 2002:a2e:8357:: with SMTP id l23mr6688105ljh.290.1595725274305;
+ Sat, 25 Jul 2020 18:01:14 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1595664139-40703-1-git-send-email-xiyuyang19@fudan.edu.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200725025457.1004164-1-willemdebruijn.kernel@gmail.com> <20200725105841.19507-1-kuniyu@amazon.co.jp>
+In-Reply-To: <20200725105841.19507-1-kuniyu@amazon.co.jp>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 25 Jul 2020 18:01:03 -0700
+Message-ID: <CAADnVQLbQuWGOUO-hN56WzRrVHoNaOhKOeuxZih9K-4b2C97Zw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] udp: reduce merge conflict on udp[46]_lib_lookup2
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/25/20 2:02 AM, Xiyu Yang wrote:
-> ip6_route_info_create() invokes nexthop_get(), which increases the
-> refcount of the "nh".
-> 
-> When ip6_route_info_create() returns, local variable "nh" becomes
-> invalid, so the refcount should be decreased to keep refcount balanced.
+On Sat, Jul 25, 2020 at 3:58 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+>
+> From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Date:   Fri, 24 Jul 2020 22:54:57 -0400
+> > From: Willem de Bruijn <willemb@google.com>
+> >
+> > Commit efc6b6f6c311 ("udp: Improve load balancing for SO_REUSEPORT.")
+> >
+> > in net conflicts with
+> >
+> > Commit 72f7e9440e9b ("udp: Run SK_LOOKUP BPF program on socket lookup")
+> >
+> > in bpf-next.
+> >
+> > Commit 4a0e87bb1836 ("udp: Don't discard reuseport selection when group
+> > has connections")
+> >
+> > also in bpf-next reduces the conflict.
+> >
+> > Further simplify by applying the main change of the first commit to
+> > bpf-next. After this a conflict remains, but the bpf-next side can be
+> > taken as is.
+> >
+> > Now unused variable reuseport_result added in net must also be
+> > removed. That applies without a conflict, so is harder to spot.
+> >
+> > Link: http://patchwork.ozlabs.org/project/netdev/patch/20200722165227.51046-1-kuniyu@amazon.co.jp/
+> > Signed-off-by: Willem de Bruijn <willemb@google.com>
+>
+> Thank you for the follow up patch!
+>
+> Acked-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 
-I forgot to write the test case for this very code path in
-tools/testing/selftests/net/fib_nexthops.sh. If you have the time, it
-goes in ipv6_fcnal_runtime() - see the last 'TO-DO' item.
-
-> 
-> The reference counting issue happens in one exception handling path of
-> ip6_route_info_create(). When nexthops can not be used with source
-> routing, the function forgets to decrease the refcnt increased by
-> nexthop_get(), causing a refcnt leak.
-> 
-> Fix this issue by pulling up the error source routing handling when
-> nexthops can not be used with source routing.
-> 
-
-Fixes: f88d8ea67fbd ("ipv6: Plumb support for nexthop object in a
-fib6_info")
-
-> Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-> Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-> ---
->  net/ipv6/route.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-
-
-Reviewed-by: David Ahern <dsahern@kernel.org>
+net is being merged into net-next. I think this one is no longer necessary.
