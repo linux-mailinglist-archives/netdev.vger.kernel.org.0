@@ -2,82 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 414D722F3D0
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 17:25:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8936722F3E8
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 17:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730193AbgG0PZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 11:25:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47148 "EHLO
+        id S1730461AbgG0PeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 11:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727938AbgG0PZH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 11:25:07 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B20C061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 08:25:07 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id p8so1059664vsm.12
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 08:25:07 -0700 (PDT)
+        with ESMTP id S1727784AbgG0PeA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 11:34:00 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E999C061794;
+        Mon, 27 Jul 2020 08:34:00 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id k71so9617485pje.0;
+        Mon, 27 Jul 2020 08:34:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=A5h4dypQhPAc0R/aU8Jwb6K0bgrXHrhCmVpPhAKripM=;
-        b=GisZaL/7Qt/4OjXysuizXCWvCY3p1qfFDe7GTYtN6774paQlFXk1sOL4YBhwGvhDFU
-         cT+GekNpNgnFKGGYc6AW0/sD8qKtEkytq6gMN39s1auq4EgpGqd9p3KnVnw7OS+Be19h
-         YHo2E/Kt0/rRuSjADKIk8dNKzz5St/T4Kg5pO0JULgpHxyhXYGt0RFxK8kUaD+KjAcVf
-         Y4lpiJaqKXIAPio1hC9LwbEREw/kgi0dIBEELGejInujCKFdvLtQ502nSEl+L7pT5GqK
-         DVjmS9vY+Qt+pFsDctNpXljnVqvkKLNMGZygHqGkMtDtUCLZ9H9O4g99dmdFrNBlP3QU
-         u0eg==
+        bh=pcY0A56aPSXRoinZe6gcqtnoZNboGx9+nJBDiq4Vbx4=;
+        b=oX9WXK5+2EvvTcwgfnjjqmWJEGAJFSDR+6Y+PALc3mZWl6t1xf36+ZokY1jfxLY7Qx
+         vTu998n7s3xDkI9n/LSZS0dMqffhKSJKb0hFh7pcle5RV5Std2H1RZ0r4v04vaJrnhzu
+         BRE3xUNHmeKVI2lsgqw+dSq9Rsmm3SHV+jCO3Kya+2LiTdlGvTzXMwtFZmNIgY420cJ3
+         e3W1GcEpIkCg0b79rAC+Ylq0CRIBh/T6VaY5/tg2M4JsO55k3cZKtH4euSXLnN6zoNOB
+         zG5Xhio5Ex4GeOLHwdwafmRKUSc4Ef25ch/lHKy5opAkEtNpwmCoowZSMZkkc/9Da2W5
+         cG2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=A5h4dypQhPAc0R/aU8Jwb6K0bgrXHrhCmVpPhAKripM=;
-        b=HAfyDGE+e7ssHSDdPeVuyYWCLRCV4o89+wH3Yx1+tlnIkG0rOuvgixmOU1KRf9quow
-         vkEM28wk5nhGzS21+QyMsjQHg2K2jZO4mSv8yTiREiaZbQebmpyXVemWpBWRlxpTZTz+
-         nFlAo8ZTO0ZGW6yxB6cYjQPxp1vMevLPC0MDLsixbKqC7si0ey5fiTTEb4cc2j406y6i
-         bfkZGClWzeapoAjiFP/kei0fcTdEw5CF7c83yk/XTj3WBHiV/wO1Oa9K3nefhDur7+87
-         pRzEXYifUx1SaTuBNYYjbI9EbUsEuIsB8w88vteRBIed6eSbn12w+XlDk43h/od5kNuo
-         4Huw==
-X-Gm-Message-State: AOAM531rf+L7q4wIQ8hsD2YpnsiGXzvAizudxGiLWQZVCtYKv0b/AG5D
-        neUVK2Kb84F5md6Ym4abiBWCPRH33lhmqdgxEmiJcrfo
-X-Google-Smtp-Source: ABdhPJzahywUOVgaAe4ka/clyzKJjIQuNO4hvefSXQ8Avtu2tf2Hrh0WZuiAiMchxhzpMuFKNuv8sYLPhg6/8z9Od+c=
-X-Received: by 2002:a05:6102:201b:: with SMTP id p27mr2418135vsr.145.1595863506821;
- Mon, 27 Jul 2020 08:25:06 -0700 (PDT)
+        bh=pcY0A56aPSXRoinZe6gcqtnoZNboGx9+nJBDiq4Vbx4=;
+        b=jEz4G8DnIuFgy+X+sdCt3j7ThdhloA1yBGB/BNXvSXGsi4WA1xSxlK4J2qz870pXc2
+         jbw8XllfRDeTXpGLIxVt+jyJGQ2ou3B9q8Vx46dUuK8YBAWEKlIAltieK/WCXpeapIt5
+         BYMmq/3HSnQM04AlRsRcrPOD4u65D1icwmQPMs1rSkVdbftbQrNhyA0cvNvz21hcnZNm
+         PpWl/Af29FTbtmos0ddC1514Ld7n3wzbvWvistdqOwTMV6tIjVIH18MOtVr5Agwqd4Kt
+         UhSgYEh59Vzy/P/KcXpSg7JWgOXCufR5Ak1znH5ETgpwXXACbXC5PNxOwmbmgYfLYryF
+         Oqjw==
+X-Gm-Message-State: AOAM531HyZZUfuPuXn4slX2uC92CkJdXI51RkFTLP7HpaQtE9pT9TRaq
+        LY/cNyg7Ad0sKQSpLIsMS53cj/9+1PZHc0HNDtU=
+X-Google-Smtp-Source: ABdhPJwFOUmxIDqsOSd+NVchInvYpDQG+Iuwpt2fmGBMHos1KdESwfZEZIwNlqyS+wub10WN3LvGw7Njhl8UDVddk08=
+X-Received: by 2002:a17:90a:a393:: with SMTP id x19mr17086062pjp.228.1595864040131;
+ Mon, 27 Jul 2020 08:34:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727052846.4070247-1-jonathan.lemon@gmail.com> <20200727052846.4070247-9-jonathan.lemon@gmail.com>
-In-Reply-To: <20200727052846.4070247-9-jonathan.lemon@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 27 Jul 2020 08:24:55 -0700
-Message-ID: <CANn89i+AZ9PnRssWpiE5zj41V1=85Jcy80Rtbp7mLjp73Y71Pw@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 08/21] skbuff: add a zc_netgpu bitflag
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
+References: <20200727122242.32337-1-vadym.kochan@plvision.eu>
+ <20200727122242.32337-3-vadym.kochan@plvision.eu> <CAHp75VeWGUB8izyHptfsXXv4GbsDu6_4rr9EaRR9wooXywaP+g@mail.gmail.com>
+ <20200727141152.GM2216@nanopsycho>
+In-Reply-To: <20200727141152.GM2216@nanopsycho>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 27 Jul 2020 18:33:45 +0300
+Message-ID: <CAHp75Vemcp1y3S09PVTQoyB10goZfhb1HYmeMxqiReQdQJ3JBw@mail.gmail.com>
+Subject: Re: [net-next v4 2/6] net: marvell: prestera: Add PCI interface support
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        borisp@mellanox.com, david@redhat.com
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mickey Rachamim <mickeyr@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 12:20 AM Jonathan Lemon
-<jonathan.lemon@gmail.com> wrote:
+On Mon, Jul 27, 2020 at 5:11 PM Jiri Pirko <jiri@resnulli.us> wrote:
+> Mon, Jul 27, 2020 at 03:29:17PM CEST, andy.shevchenko@gmail.com wrote:
+> >On Mon, Jul 27, 2020 at 3:23 PM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
+
+...
+
+> >> +err_prestera_dev_register:
+> >> +       free_irq(pci_irq_vector(pdev, 0), fw);
+> >> +err_request_irq:
+> >> +       pci_free_irq_vectors(pdev);
+> >> +err_irq_alloc:
+> >> +       destroy_workqueue(fw->wq);
+> >> +err_wq_alloc:
+> >> +       prestera_fw_uninit(fw);
+> >
+> >> +err_prestera_fw_init:
+> >> +err_pci_dev_alloc:
+> >> +err_dma_mask:
+> >
+> >All three are useless.
 >
-> This could likely be moved elsewhere.  The presence of the flag on
-> the skb indicates that one of the fragments may contain zerocopy
-> RX data, where the data is not accessible to the cpu.
+> This is okay. It is symmetrical with init. err_what_you_init. It is all
+> over the place.
 
-Why do we need yet another flag in skb exactly ?
+We use multi-point return and these are inconsistent with the
+approach. They simple LOCs without value.
 
-Please define what means "data not accessible to the cpu" ?
-
-This kind of change is a red flag for me.
+-- 
+With Best Regards,
+Andy Shevchenko
