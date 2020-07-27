@@ -2,287 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE92522FA07
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 22:28:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 876B222FA2F
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 22:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729102AbgG0U2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 16:28:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55384 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726196AbgG0U2X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 16:28:23 -0400
-Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4696E206E7;
-        Mon, 27 Jul 2020 20:28:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595881702;
-        bh=aYSeVSHouvNAoh4D27QzelNJE605X6Pqy1mo5TW2Y4A=;
-        h=Date:From:To:Cc:Subject:From;
-        b=wgH46tyrQPCV701y9bxUNPMT8OdNFXzLfyld1hCA4blHuT/HLRdEptgxWAipDur7F
-         svTK/RHIq7+4i481ud8/+UxPIjPbKzrS9oxzbTb3Wc44rvBpz4Z2thZQzcqBlF1Xnp
-         jWJHJWacMYwHzUVAZSemKQ/34bZu2ZZttiiyGdxo=
-Date:   Mon, 27 Jul 2020 15:34:13 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Li Yang <leoyang.li@nxp.com>, Zhang Wei <zw@zh-kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH][next] dmaengine: Use fallthrough pseudo-keyword
-Message-ID: <20200727203413.GA6245@embeddedor>
+        id S1728391AbgG0Uhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 16:37:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727008AbgG0Uhf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 16:37:35 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79204C061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 13:37:35 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id z5so10603644pgb.6
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 13:37:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=iYO9TjwOJSBaFSmBVm/ApHPrs2/MEZADWea4D2t+VOA=;
+        b=LQtjhILjp6R1W0qJF14TY81PwHb9zkH10r2BMLwtfOUifM+OGJ4vsCyEoou42d/Cku
+         AdLwpT2HMB7hRI0aAhe/WxTy0/TZadWm9BpUDHaOqdB8ZE0PAHutKWCxlVBlCBbiavnk
+         9USxHfKz3BFlUocWxPkOTGipTcajnrT6o01RezLjJENELmjU1irkxFVHfzjKx4tpbwjN
+         XQZa+Mod88CfFXQcfH14zA2SUY4JjgbftJGiRAqZOrD0oev1txWoydxeC09khsQgdD62
+         XvSoWofiUCW7wvZqVI2679jWN1ipMufo2RrDFcOQ9URPd65rilxw6CWawkl0W1LR4Shr
+         OaZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=iYO9TjwOJSBaFSmBVm/ApHPrs2/MEZADWea4D2t+VOA=;
+        b=EQJMX5vYe98ZfXlAm+vxrwrqGycE3gkA5K8L4IfErj80ZcGfO/t5EXjWTOuKstGGQo
+         qLhSjSk8knusCln5IQ7vCKXCEZxJXSVksNIg7qqPvIpnSrYxZH4q/nqR0jizWehrom57
+         OabIO2fqKFZKvXEpMoPTDRJyhzffAs+v3+ysaapT1XB4w6ntDqZtW1HrQy0etumzX0ay
+         URGIcNFKUHxqyMAjTDLblLRhwLIlnoZ+/fhYvOdXXT2hGJ6tk5xHNNWoIdxGcA8lC2gd
+         SxwZIxcENHe86fcuMcp4z6L7NnMZwjkqnPPICJf9DxqtzB38TxoGUvaVpPPyzojPD0bn
+         x+WA==
+X-Gm-Message-State: AOAM533DWB+z/oEJPSY0+5vn81RaSIi8g3RGV7NTfD/rY+4p4povgKsB
+        bw0gpWHt4nIuMP/7l5sGyJb4uw==
+X-Google-Smtp-Source: ABdhPJwRrhVBsPDgJDQyonWzT4HO61G5pvhEKFmnbCLMrRU7kkUdcUf6wZR2/OPVQVLpZQdUKI/VcQ==
+X-Received: by 2002:a05:6a00:2bb:: with SMTP id q27mr22722031pfs.176.1595882254930;
+        Mon, 27 Jul 2020 13:37:34 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id v3sm16649023pfb.207.2020.07.27.13.37.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jul 2020 13:37:34 -0700 (PDT)
+Date:   Mon, 27 Jul 2020 13:37:30 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     Briana Oursler <briana.oursler@gmail.com>, netdev@vger.kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: Question Print Formatting iproute2
+Message-ID: <20200727133730.344d583e@hermes.lan>
+In-Reply-To: <87wo2ohi07.fsf@mellanox.com>
+References: <20200727044616.735-1-briana.oursler@gmail.com>
+        <87wo2ohi07.fsf@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the existing /* fall through */ comments and its variants with
-the new pseudo-keyword macro fallthrough[1]. Also, remove unnecessary
-fall-through markings when it is the case.
+On Mon, 27 Jul 2020 21:31:36 +0200
+Petr Machata <petrm@mellanox.com> wrote:
 
-[1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
+> Briana Oursler <briana.oursler@gmail.com> writes:
+>=20
+> > I git bisected and found d0e450438571("tc: q_red: Add support for
+> > qevents "mark" and "early_drop"), the commit that introduced the
+> > formatting change causing the break.
+> >
+> > -       print_string(PRINT_FP, NULL, "max %s ", sprint_size(qopt->qth_m=
+ax, b3));
+> > +       print_string(PRINT_FP, NULL, "max %s", sprint_size(qopt->qth_ma=
+x, b3));
+> >
+> > I made a patch that adds a space after the format specifier in the
+> > iproute2 tc/q_red.c and tested it using: tdc.py -c qdisc. After the
+> > change, all the broken tdc qdisc red tests return ok. I'm including the
+> > patch under the scissors line.
+> >
+> > I wanted to ask the ML if adding the space after the specifier is prefe=
+rred usage.
+> > The commit also had:
+> >  -               print_uint(PRINT_ANY, "ewma", "ewma %u ", qopt->Wlog);
+> >  +               print_uint(PRINT_ANY, "ewma", " ewma %u ", qopt->Wlog);
+> >
+> > so I wanted to check with everyone. =20
+>=20
+> Yeah, I outsmarted myself with those space changes. Those two chunks
+> need reversing, and qevents need to have the space changed. This should
+> work:
+>=20
+> modified	  tc/q_red.c
+> @@ -222,12 +222,12 @@ static int red_print_opt(struct qdisc_util *qu, FIL=
+E *f, struct rtattr *opt)
+>  	print_uint(PRINT_JSON, "min", NULL, qopt->qth_min);
+>  	print_string(PRINT_FP, NULL, "min %s ", sprint_size(qopt->qth_min, b2));
+>  	print_uint(PRINT_JSON, "max", NULL, qopt->qth_max);
+> -	print_string(PRINT_FP, NULL, "max %s", sprint_size(qopt->qth_max, b3));
+> +	print_string(PRINT_FP, NULL, "max %s ", sprint_size(qopt->qth_max, b3));
+>=20
+>  	tc_red_print_flags(qopt->flags);
+>=20
+>  	if (show_details) {
+> -		print_uint(PRINT_ANY, "ewma", " ewma %u ", qopt->Wlog);
+> +		print_uint(PRINT_ANY, "ewma", "ewma %u ", qopt->Wlog);
+>  		if (max_P)
+>  			print_float(PRINT_ANY, "probability",
+>  				    "probability %lg ", max_P / pow(2, 32));
+> modified	  tc/tc_qevent.c
+> @@ -82,8 +82,9 @@ void qevents_print(struct qevent_util *qevents, FILE *f)
+>  			}
+>=20
+>  			open_json_object(NULL);
+> -			print_string(PRINT_ANY, "kind", " qevent %s", qevents->id);
+> +			print_string(PRINT_ANY, "kind", "qevent %s", qevents->id);
+>  			qevents->print_qevent(qevents, f);
+> +			print_string(PRINT_FP, NULL, "%s", " ");
+>  			close_json_object();
+>  		}
+>  	}
+>=20
+> Are you going to take care of this, or should I?
 
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/dma/amba-pl08x.c    | 10 +++++-----
- drivers/dma/fsldma.c        |  2 +-
- drivers/dma/imx-dma.c       |  2 +-
- drivers/dma/iop-adma.h      | 12 ++++++------
- drivers/dma/nbpfaxi.c       |  2 +-
- drivers/dma/pl330.c         | 10 +++-------
- drivers/dma/sh/shdma-base.c |  2 +-
- 7 files changed, 18 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/dma/amba-pl08x.c b/drivers/dma/amba-pl08x.c
-index 9adc7a2fa3d3..a24882ba3764 100644
---- a/drivers/dma/amba-pl08x.c
-+++ b/drivers/dma/amba-pl08x.c
-@@ -1767,7 +1767,7 @@ static u32 pl08x_memcpy_cctl(struct pl08x_driver_data *pl08x)
- 	default:
- 		dev_err(&pl08x->adev->dev,
- 			"illegal burst size for memcpy, set to 1\n");
--		/* Fall through */
-+		fallthrough;
- 	case PL08X_BURST_SZ_1:
- 		cctl |= PL080_BSIZE_1 << PL080_CONTROL_SB_SIZE_SHIFT |
- 			PL080_BSIZE_1 << PL080_CONTROL_DB_SIZE_SHIFT;
-@@ -1806,7 +1806,7 @@ static u32 pl08x_memcpy_cctl(struct pl08x_driver_data *pl08x)
- 	default:
- 		dev_err(&pl08x->adev->dev,
- 			"illegal bus width for memcpy, set to 8 bits\n");
--		/* Fall through */
-+		fallthrough;
- 	case PL08X_BUS_WIDTH_8_BITS:
- 		cctl |= PL080_WIDTH_8BIT << PL080_CONTROL_SWIDTH_SHIFT |
- 			PL080_WIDTH_8BIT << PL080_CONTROL_DWIDTH_SHIFT;
-@@ -1850,7 +1850,7 @@ static u32 pl08x_ftdmac020_memcpy_cctl(struct pl08x_driver_data *pl08x)
- 	default:
- 		dev_err(&pl08x->adev->dev,
- 			"illegal bus width for memcpy, set to 8 bits\n");
--		/* Fall through */
-+		fallthrough;
- 	case PL08X_BUS_WIDTH_8_BITS:
- 		cctl |= PL080_WIDTH_8BIT << FTDMAC020_LLI_SRC_WIDTH_SHIFT |
- 			PL080_WIDTH_8BIT << FTDMAC020_LLI_DST_WIDTH_SHIFT;
-@@ -2612,7 +2612,7 @@ static int pl08x_of_probe(struct amba_device *adev,
- 	switch (val) {
- 	default:
- 		dev_err(&adev->dev, "illegal burst size for memcpy, set to 1\n");
--		/* Fall through */
-+		fallthrough;
- 	case 1:
- 		pd->memcpy_burst_size = PL08X_BURST_SZ_1;
- 		break;
-@@ -2647,7 +2647,7 @@ static int pl08x_of_probe(struct amba_device *adev,
- 	switch (val) {
- 	default:
- 		dev_err(&adev->dev, "illegal bus width for memcpy, set to 8 bits\n");
--		/* Fall through */
-+		fallthrough;
- 	case 8:
- 		pd->memcpy_bus_width = PL08X_BUS_WIDTH_8_BITS;
- 		break;
-diff --git a/drivers/dma/fsldma.c b/drivers/dma/fsldma.c
-index ad72b3f42ffa..e342cf52d296 100644
---- a/drivers/dma/fsldma.c
-+++ b/drivers/dma/fsldma.c
-@@ -1163,7 +1163,7 @@ static int fsl_dma_chan_probe(struct fsldma_device *fdev,
- 	switch (chan->feature & FSL_DMA_IP_MASK) {
- 	case FSL_DMA_IP_85XX:
- 		chan->toggle_ext_pause = fsl_chan_toggle_ext_pause;
--		/* Fall through */
-+		fallthrough;
- 	case FSL_DMA_IP_83XX:
- 		chan->toggle_ext_start = fsl_chan_toggle_ext_start;
- 		chan->set_src_loop_size = fsl_chan_set_src_loop_size;
-diff --git a/drivers/dma/imx-dma.c b/drivers/dma/imx-dma.c
-index 5c0fb3134825..88717506c1f6 100644
---- a/drivers/dma/imx-dma.c
-+++ b/drivers/dma/imx-dma.c
-@@ -556,7 +556,7 @@ static int imxdma_xfer_desc(struct imxdma_desc *d)
- 		 * We fall-through here intentionally, since a 2D transfer is
- 		 * similar to MEMCPY just adding the 2D slot configuration.
- 		 */
--		/* Fall through */
-+		fallthrough;
- 	case IMXDMA_DESC_MEMCPY:
- 		imx_dmav1_writel(imxdma, d->src, DMA_SAR(imxdmac->channel));
- 		imx_dmav1_writel(imxdma, d->dest, DMA_DAR(imxdmac->channel));
-diff --git a/drivers/dma/iop-adma.h b/drivers/dma/iop-adma.h
-index c499c9578f00..d44eabb6f5eb 100644
---- a/drivers/dma/iop-adma.h
-+++ b/drivers/dma/iop-adma.h
-@@ -496,7 +496,7 @@ iop3xx_desc_init_xor(struct iop3xx_desc_aau *hw_desc, int src_cnt,
- 		}
- 		hw_desc->src_edc[AAU_EDCR2_IDX].e_desc_ctrl = edcr;
- 		src_cnt = 24;
--		/* fall through */
-+		fallthrough;
- 	case 17 ... 24:
- 		if (!u_desc_ctrl.field.blk_ctrl) {
- 			hw_desc->src_edc[AAU_EDCR2_IDX].e_desc_ctrl = 0;
-@@ -510,7 +510,7 @@ iop3xx_desc_init_xor(struct iop3xx_desc_aau *hw_desc, int src_cnt,
- 		}
- 		hw_desc->src_edc[AAU_EDCR1_IDX].e_desc_ctrl = edcr;
- 		src_cnt = 16;
--		/* fall through */
-+		fallthrough;
- 	case 9 ... 16:
- 		if (!u_desc_ctrl.field.blk_ctrl)
- 			u_desc_ctrl.field.blk_ctrl = 0x2; /* use EDCR0 */
-@@ -522,7 +522,7 @@ iop3xx_desc_init_xor(struct iop3xx_desc_aau *hw_desc, int src_cnt,
- 		}
- 		hw_desc->src_edc[AAU_EDCR0_IDX].e_desc_ctrl = edcr;
- 		src_cnt = 8;
--		/* fall through */
-+		fallthrough;
- 	case 2 ... 8:
- 		shift = 1;
- 		for (i = 0; i < src_cnt; i++) {
-@@ -602,19 +602,19 @@ iop_desc_init_null_xor(struct iop_adma_desc_slot *desc, int src_cnt,
- 	case 25 ... 32:
- 		u_desc_ctrl.field.blk_ctrl = 0x3; /* use EDCR[2:0] */
- 		hw_desc->src_edc[AAU_EDCR2_IDX].e_desc_ctrl = 0;
--		/* fall through */
-+		fallthrough;
- 	case 17 ... 24:
- 		if (!u_desc_ctrl.field.blk_ctrl) {
- 			hw_desc->src_edc[AAU_EDCR2_IDX].e_desc_ctrl = 0;
- 			u_desc_ctrl.field.blk_ctrl = 0x3; /* use EDCR[2:0] */
- 		}
- 		hw_desc->src_edc[AAU_EDCR1_IDX].e_desc_ctrl = 0;
--		/* fall through */
-+		fallthrough;
- 	case 9 ... 16:
- 		if (!u_desc_ctrl.field.blk_ctrl)
- 			u_desc_ctrl.field.blk_ctrl = 0x2; /* use EDCR0 */
- 		hw_desc->src_edc[AAU_EDCR0_IDX].e_desc_ctrl = 0;
--		/* fall through */
-+		fallthrough;
- 	case 1 ... 8:
- 		if (!u_desc_ctrl.field.blk_ctrl && src_cnt > 4)
- 			u_desc_ctrl.field.blk_ctrl = 0x1; /* use mini-desc */
-diff --git a/drivers/dma/nbpfaxi.c b/drivers/dma/nbpfaxi.c
-index 74df621402e1..ca4e0930207a 100644
---- a/drivers/dma/nbpfaxi.c
-+++ b/drivers/dma/nbpfaxi.c
-@@ -483,7 +483,7 @@ static size_t nbpf_xfer_size(struct nbpf_device *nbpf,
- 
- 	default:
- 		pr_warn("%s(): invalid bus width %u\n", __func__, width);
--		/* fall through */
-+		fallthrough;
- 	case DMA_SLAVE_BUSWIDTH_1_BYTE:
- 		size = burst;
- 	}
-diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-index 2c508ee672b9..9b69716172a4 100644
---- a/drivers/dma/pl330.c
-+++ b/drivers/dma/pl330.c
-@@ -1061,16 +1061,16 @@ static bool _start(struct pl330_thread *thrd)
- 
- 		if (_state(thrd) == PL330_STATE_KILLING)
- 			UNTIL(thrd, PL330_STATE_STOPPED)
--		/* fall through */
-+		fallthrough;
- 
- 	case PL330_STATE_FAULTING:
- 		_stop(thrd);
--		/* fall through */
-+		fallthrough;
- 
- 	case PL330_STATE_KILLING:
- 	case PL330_STATE_COMPLETING:
- 		UNTIL(thrd, PL330_STATE_STOPPED)
--		/* fall through */
-+		fallthrough;
- 
- 	case PL330_STATE_STOPPED:
- 		return _trigger(thrd);
-@@ -1121,7 +1121,6 @@ static u32 _emit_load(unsigned int dry_run, u8 buf[],
- 
- 	switch (direction) {
- 	case DMA_MEM_TO_MEM:
--		/* fall through */
- 	case DMA_MEM_TO_DEV:
- 		off += _emit_LD(dry_run, &buf[off], cond);
- 		break;
-@@ -1155,7 +1154,6 @@ static inline u32 _emit_store(unsigned int dry_run, u8 buf[],
- 
- 	switch (direction) {
- 	case DMA_MEM_TO_MEM:
--		/* fall through */
- 	case DMA_DEV_TO_MEM:
- 		off += _emit_ST(dry_run, &buf[off], cond);
- 		break;
-@@ -1216,7 +1214,6 @@ static int _bursts(struct pl330_dmac *pl330, unsigned dry_run, u8 buf[],
- 
- 	switch (pxs->desc->rqtype) {
- 	case DMA_MEM_TO_DEV:
--		/* fall through */
- 	case DMA_DEV_TO_MEM:
- 		off += _ldst_peripheral(pl330, dry_run, &buf[off], pxs, cyc,
- 			cond);
-@@ -1266,7 +1263,6 @@ static int _dregs(struct pl330_dmac *pl330, unsigned int dry_run, u8 buf[],
- 
- 	switch (pxs->desc->rqtype) {
- 	case DMA_MEM_TO_DEV:
--		/* fall through */
- 	case DMA_DEV_TO_MEM:
- 		off += _emit_MOV(dry_run, &buf[off], CCR, dregs_ccr);
- 		off += _ldst_peripheral(pl330, dry_run, &buf[off], pxs, 1,
-diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
-index 2deeaab078a4..788d696323bb 100644
---- a/drivers/dma/sh/shdma-base.c
-+++ b/drivers/dma/sh/shdma-base.c
-@@ -383,7 +383,7 @@ static dma_async_tx_callback __ld_cleanup(struct shdma_chan *schan, bool all)
- 			switch (desc->mark) {
- 			case DESC_COMPLETED:
- 				desc->mark = DESC_WAITING;
--				/* Fall through */
-+				fallthrough;
- 			case DESC_WAITING:
- 				if (head_acked)
- 					async_tx_ack(&desc->async_tx);
--- 
-2.27.0
-
+Missing spaces makes it impossible to read adding extra spaces is annoying,=
+=20
+=46rom a long term perspective it is better if anything that is trying to
+parse output pro grammatically should use JSON output format. With JSON
+it is easier to handle new data and not as dependent on ordering.
+Plus if some tests used JSON, maybe the issues would be found sooner.
