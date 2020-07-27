@@ -2,150 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DF7722FCD9
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:18:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CBF422FCE0
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727045AbgG0XSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 19:18:40 -0400
-Received: from mga07.intel.com ([134.134.136.100]:37735 "EHLO mga07.intel.com"
+        id S1726753AbgG0XWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 19:22:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34530 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726171AbgG0XSk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 19:18:40 -0400
-IronPort-SDR: 6Y/b5yryBtSUTQJJMZ6xc9xdof9OO4osaInt8uYDOPpe0nSETJUeXFUAztd7ay7TYvqMVy1FTV
- kFX8OuxrX0hA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="215656919"
-X-IronPort-AV: E=Sophos;i="5.75,404,1589266800"; 
-   d="scan'208";a="215656919"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 16:18:38 -0700
-IronPort-SDR: 63Fga2xdxv+H2rTQ2S4ohjjE0JHQop5j9OZ1mtOMWHY2sJnBuTib28YolpVI3ufjFgNxImG79U
- Dt7uu6FCPxww==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,404,1589266800"; 
-   d="scan'208";a="303634319"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.56.18]) ([10.212.56.18])
-  by orsmga002.jf.intel.com with ESMTP; 27 Jul 2020 16:18:38 -0700
-Subject: Re: [ethtool] ethtool: fix netlink bitmasks when sent as NOMASK
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Jamie Gloudon <jamie.gloudon@gmx.fr>
-References: <20200727214700.5915-1-jacob.e.keller@intel.com>
- <20200727222158.bg52mg2mfsta2f37@lion.mk-sys.cz>
- <10bd731c-8286-f62e-19d4-9ee567910392@intel.com>
- <20200727225359.hsy4bzmmfvrkw23e@lion.mk-sys.cz>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <06f2b84a-c015-a878-6c36-745e32e17e5e@intel.com>
-Date:   Mon, 27 Jul 2020 16:18:37 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.0.1
+        id S1726171AbgG0XWz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 19:22:55 -0400
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7B1A620829;
+        Mon, 27 Jul 2020 23:22:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595892174;
+        bh=neoNg6aLQ3HBDoqH28Cszm2AXNEiQWXsFwXzUporDEM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Y6xQ8wsvSS35bRQL73cQDAEPsEPublmmN5RrkIDlmbLWe927WJRRJFzV9cFZHFiOR
+         FtZN+cJDERVKH6+vJh/pkHuiqZShBS+3qv4U4hc2NfztikDojTI5Yb61biZW1a+8f+
+         tZJcrVj13SPIScw2KBSsJ65yWzMt20qk1SKjNyT0=
+Received: by mail-lf1-f46.google.com with SMTP id j22so4050011lfm.2;
+        Mon, 27 Jul 2020 16:22:54 -0700 (PDT)
+X-Gm-Message-State: AOAM530npxPyAB+oCx30SBWIQ2kWLZGlIv6TdAjt5tHb24/afFla30On
+        DVbX2XErNYchNMGIs/PuWWzp9vj4PvLVNzLxVTM=
+X-Google-Smtp-Source: ABdhPJzoxs9usbDOXkjthb2o1ZCQeNkWmZgUCB99ykeGoSRvwa2URDSjP5m7ksMZEcNn4UUFDAiH2hDeeAE2VPLb51w=
+X-Received: by 2002:a19:ec12:: with SMTP id b18mr12888686lfa.52.1595892172835;
+ Mon, 27 Jul 2020 16:22:52 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200727225359.hsy4bzmmfvrkw23e@lion.mk-sys.cz>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200727231445.1227594-1-andriin@fb.com> <20200727231445.1227594-2-andriin@fb.com>
+In-Reply-To: <20200727231445.1227594-2-andriin@fb.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 27 Jul 2020 16:22:41 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW77nCit0TweeBgermO=bHKztXEtKmh+pB7avXKH0hpZaQ@mail.gmail.com>
+Message-ID: <CAPhsuW77nCit0TweeBgermO=bHKztXEtKmh+pB7avXKH0hpZaQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf 2/2] selftests/bpf: extend map-in-map selftest to
+ detect memory leaks
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Song Liu <songliubraving@fb.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jul 27, 2020 at 4:15 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Add test validating that all inner maps are released properly after skeleton
+> is destroyed. To ensure determinism, trigger kernel-side synchronize_rcu()
+> before checking map existence by their IDs.
+>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
+Acked-by: Song Liu <songliubraving@fb.com>
 
-On 7/27/2020 3:53 PM, Michal Kubecek wrote:
-> On Mon, Jul 27, 2020 at 03:32:34PM -0700, Jacob Keller wrote:
->> On 7/27/2020 3:21 PM, Michal Kubecek wrote:
->>> On Mon, Jul 27, 2020 at 02:47:00PM -0700, Jacob Keller wrote:
->>>> The ethtool netlink API can send bitsets without an associated bitmask.
->>>> These do not get displayed properly, because the dump_link_modes, and
->>>> bitset_get_bit to not check whether the provided bitset is a NOMASK
->>>> bitset. This results in the inability to display peer advertised link
->>>> modes.
->>>>
->>>> The dump_link_modes and bitset_get_bit functions are designed so they
->>>> can print either the values or the mask. For a nomask bitmap, this
->>>> doesn't make sense. There is no mask.
->>>>
->>>> Modify dump_link_modes to check ETHTOOL_A_BITSET_NOMASK. For compact
->>>> bitmaps, always check and print the ETHTOOL_A_BITSET_VALUE bits,
->>>> regardless of the request to display the mask or the value. For full
->>>> size bitmaps, the set of provided bits indicates the valid values,
->>>> without using ETHTOOL_A_BITSET_VALUE fields. Thus, do not skip printing
->>>> bits without this attribute if nomask is set. This essentially means
->>>> that dump_link_modes will treat a NOMASK bitset as having a mask
->>>> equivalent to all of its set bits.
->>>>
->>>> For bitset_get_bit, also check for ETHTOOL_A_BITSET_NOMASK. For compact
->>>> bitmaps, always use ETHTOOL_A_BITSET_BIT_VALUE as in dump_link_modes.
->>>> For full bitmaps, if nomask is set, then always return true of the bit
->>>> is in the set, rather than only if it provides an
->>>> ETHTOOL_A_BITSET_BIT_VALUE. This will then correctly report the set
->>>> bits.
->>>>
->>>> This fixes display of link partner advertised fields when using the
->>>> netlink API.
->>>>
->>>> Reported-by: Jamie Gloudon <jamie.gloudon@gmx.fr>
->>>> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->>>> ---
->>>>  netlink/bitset.c   | 9 ++++++---
->>>>  netlink/settings.c | 8 +++++---
->>>>  2 files changed, 11 insertions(+), 6 deletions(-)
->>>>
->>>> diff --git a/netlink/bitset.c b/netlink/bitset.c
->>>> index 130bcdb5b52c..ba5d3ea77ff7 100644
->>>> --- a/netlink/bitset.c
->>>> +++ b/netlink/bitset.c
->>>> @@ -50,6 +50,7 @@ bool bitset_get_bit(const struct nlattr *bitset, bool mask, unsigned int idx,
->>>>  	DECLARE_ATTR_TB_INFO(bitset_tb);
->>>>  	const struct nlattr *bits;
->>>>  	const struct nlattr *bit;
->>>> +	bool nomask;
->>>>  	int ret;
->>>>  
->>>>  	*retptr = 0;
->>>> @@ -57,8 +58,10 @@ bool bitset_get_bit(const struct nlattr *bitset, bool mask, unsigned int idx,
->>>>  	if (ret < 0)
->>>>  		goto err;
->>>>  
->>>> -	bits = mask ? bitset_tb[ETHTOOL_A_BITSET_MASK] :
->>>> -		      bitset_tb[ETHTOOL_A_BITSET_VALUE];
->>>> +	nomask = bitset_tb[ETHTOOL_A_BITSET_NOMASK];
->>>> +
->>>> +	bits = mask && !nomask ? bitset_tb[ETHTOOL_A_BITSET_MASK] :
->>>> +		                 bitset_tb[ETHTOOL_A_BITSET_VALUE];
->>>>  	if (bits) {
->>>>  		const uint32_t *bitmap =
->>>>  			(const uint32_t *)mnl_attr_get_payload(bits);
->>>
->>> I don't like this part: (mask && nomask) is a situation which should
->>> never happen as it would mean we are trying to get mask value from
->>> a bitmap which does not any. In other words, if we ever see such
->>> combination, it is a result of a bug either on ethtool side or on kernel
->>> side.
->>>
->>> Rather than silently returning something else than asked, we should
->>> IMHO report an error. Which is easy in dump_link_modes() but it would
->>> require rewriting bitset_get_bit().
->>>
->>> Michal
->>
->> The "mask" boolean is an indication that you want to print the mask for
->> a bitmap, rather than its value. I think treating a bitmap without a
->> predefined mask to have its mask be equivalent to its values is
->> reasonable.
-> 
-> It depends on the context. In requests, value=0x1,mask=0x1 means "set
-> bit 0 and leave the rest untouched" while nomask bitmap with value=0x1
-> would mean "set bit 0 and clear the rest".
-> 
-> For kernel replies, it should be documented which variant is expected.
-> 
+With a couple nit below.
 
-Right, I was mostly referring to the reply side of things. I've updated
-the patch in v2 to explicitly reject trying to print the mask of a NO
-MASK bitset.
+> ---
+>  .../selftests/bpf/prog_tests/btf_map_in_map.c | 121 ++++++++++++++++--
+>  1 file changed, 108 insertions(+), 13 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> index f7ee8fa377ad..c06b61235212 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> @@ -5,10 +5,59 @@
+>
+>  #include "test_btf_map_in_map.skel.h"
+>
+> +static int duration;
+> +
+> +__u32 bpf_map_id(struct bpf_map *map)
+
+Make the function static?
+
+[...]
+
+> +int kern_sync_rcu() {
+
+static int kern_sync_rcu(void)
+{
+
+checkpatch.pl should complain here.
 
 Thanks,
-Jake
+Song
+
+[...]
