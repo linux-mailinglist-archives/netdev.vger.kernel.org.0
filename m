@@ -2,110 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A6FA22F702
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:49:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D15422F727
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:58:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730913AbgG0Rtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 13:49:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49962 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726846AbgG0Rte (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 13:49:34 -0400
-Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 39C8F2070B;
-        Mon, 27 Jul 2020 17:49:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595872174;
-        bh=2HB61QDPf92Lsa6Jf9B/n+P3MmdDD0gqtDvjOvcjP1g=;
-        h=Date:From:To:Cc:Subject:From;
-        b=UvUboc7otMxoumCsLUUP+igA9u9ZI3B8OmQXctMhbTROY+Bi5UZcwBQj468javLeg
-         qGOLSbbqKUQiM1LzYbtPooWQSyXO3YodxM9b+ZsvG3zBs7w/NVzrlY/M/NxENCA9SD
-         qgJFoRBthteOsmqjxUGcmYTfHnl+Zqckim4GbHkM=
-Date:   Mon, 27 Jul 2020 12:55:26 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Tariq Toukan <tariqt@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH][next] net/mlx4: Use fallthrough pseudo-keyword
-Message-ID: <20200727175526.GA21335@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1729619AbgG0R5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 13:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729063AbgG0R5w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 13:57:52 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82629C0619D2
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 10:57:52 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id k4so12947665pjs.1
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 10:57:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=VDh5LTn5/ZVR5v2GMBstyU78YrxDP+L2saq8RGpE+c4=;
+        b=VI+Js1LlOS4+vYfkrEcM9/2qZl7STFhKkIwyot5Fl2+47jj/NalIdRC+JtJJqDw45N
+         Q1zG0PLqQG4F8fW4i/bgwc1Twxh3MM99Dp8QzJvOW5+RGNiTfUwK28RUqTYIz6Sc5dqd
+         0He09JKyXRGOPXd2PxE8FuC603PdtQnRGwx+UISTJ3pjPEC/BVLf2CMiscpTOtgNSiCq
+         ZR863Zu9mtuqw/X9+lggUygUea1BjFWxarPOueKvEOieKoPx12cCZzZHWUmU4ymU+uVH
+         A8sY7hV1/1XV781MN7W2ZM+NMBgGH0wOHa0giTV+blIOOPgq4DhelbQuTZU1vtt4pDyc
+         8GfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=VDh5LTn5/ZVR5v2GMBstyU78YrxDP+L2saq8RGpE+c4=;
+        b=Jwws62ZW64MLdvqUBeQcMIBgpsZYHXqdTRRjpOdAH+NXzvjbIWrwsU1iZyJomygCBC
+         tq1dvXX+FbrOzTIgmRB860N3uDXsJx6gKXTelfDLl2fW5f7SPYLA15rYKY2HBdC/yr1g
+         mJISO9/Pei9jiHX/43z9hhYyC9/hMzxpm6VB4PR2yTcALhgo5jFcN6djkfwIuvLyGE8R
+         9kTP9VBljF7e2bAd1toVTdOpTE4/2v/XmOw20zvT9CS4jDmySL+58pS5gIqRSLfxqUJo
+         fZ1xL3F7Ku1NvCunBsn3zuNdbcaJWxi2DLRPEM6CsquRaVix3YXyAHAjQ6PU39VW9hIO
+         ZdBw==
+X-Gm-Message-State: AOAM532eu/ytE6DwUweoxt85Wrxgtd4326qy0epa4q4bJR6EdtueebUg
+        /4NaHbk3RnZDrdlmtv/j1T4adEyXOK6XUhZ81z0=
+X-Google-Smtp-Source: ABdhPJzDrjFU1sQNyMhzJqK6w6XXIYi7TYcE8bhVTDa1mS9FhJ0DS/ExvwpMcLroP8Bwx6S7A7cLZp47VpxSp903/IY=
+X-Received: by 2002:a63:1d4:: with SMTP id 203mr20365661pgb.356.1595872670647;
+ Mon, 27 Jul 2020 10:57:50 -0700 (PDT)
+Date:   Mon, 27 Jul 2020 17:57:19 +0000
+Message-Id: <20200727175720.4022402-1-willmcvicker@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.rc0.142.g3c755180ce-goog
+Subject: [PATCH 0/1] Netfilter OOB memory access security patch
+From:   Will McVicker <willmcvicker@google.com>
+To:     security@kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com, Will McVicker <willmcvicker@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the existing /* fall through */ comments and its variants with
-the new pseudo-keyword macro fallthrough[1].
+Hi,
+The attached patch fixes an OOB memory access security bug. The bug is
+already fixed in the upstream kernel due to the vulnerable code being
+refactored in commit fe2d0020994c ("netfilter: nat: remove
+l4proto->in_range") and commit d6c4c8ffb5e5 ("netfilter: nat: remove
+l3proto struct"), but the 4.19 and below LTS branches remain vulnerable.
+I have verifed the OOB kernel panic is fixed with this patch on both the
+4.19 and 4.14 kernels using the approariate hardware.
 
-[1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
+Please review the fix and apply to branches 4.19.y, 4.14.y, 4.9.y and
+4.4.y.
 
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/ethernet/mellanox/mlx4/en_rx.c | 4 ++--
- drivers/net/ethernet/mellanox/mlx4/eq.c    | 2 +-
- drivers/net/ethernet/mellanox/mlx4/mcg.c   | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+Thanks,
+Will
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-index 8a10285b0e10..b50c567ef508 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-@@ -806,10 +806,10 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 				goto xdp_drop_no_cnt; /* Drop on xmit failure */
- 			default:
- 				bpf_warn_invalid_xdp_action(act);
--				/* fall through */
-+				fallthrough;
- 			case XDP_ABORTED:
- 				trace_xdp_exception(dev, xdp_prog, act);
--				/* fall through */
-+				fallthrough;
- 			case XDP_DROP:
- 				ring->xdp_drop++;
- xdp_drop_no_cnt:
-diff --git a/drivers/net/ethernet/mellanox/mlx4/eq.c b/drivers/net/ethernet/mellanox/mlx4/eq.c
-index c790a5fcea73..ae305c2e9225 100644
---- a/drivers/net/ethernet/mellanox/mlx4/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/eq.c
-@@ -558,7 +558,7 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
- 			mlx4_dbg(dev, "%s: MLX4_EVENT_TYPE_SRQ_LIMIT. srq_no=0x%x, eq 0x%x\n",
- 				 __func__, be32_to_cpu(eqe->event.srq.srqn),
- 				 eq->eqn);
--			/* fall through */
-+			fallthrough;
- 		case MLX4_EVENT_TYPE_SRQ_CATAS_ERROR:
- 			if (mlx4_is_master(dev)) {
- 				/* forward only to slave owning the SRQ */
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mcg.c b/drivers/net/ethernet/mellanox/mlx4/mcg.c
-index 9486caecfbdc..f1b4ad9c66d2 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mcg.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/mcg.c
-@@ -1412,7 +1412,7 @@ int mlx4_multicast_attach(struct mlx4_dev *dev, struct mlx4_qp *qp, u8 gid[16],
- 	case MLX4_STEERING_MODE_A0:
- 		if (prot == MLX4_PROT_ETH)
- 			return 0;
--		/* fall through */
-+		fallthrough;
- 
- 	case MLX4_STEERING_MODE_B0:
- 		if (prot == MLX4_PROT_ETH)
-@@ -1442,7 +1442,7 @@ int mlx4_multicast_detach(struct mlx4_dev *dev, struct mlx4_qp *qp, u8 gid[16],
- 	case MLX4_STEERING_MODE_A0:
- 		if (prot == MLX4_PROT_ETH)
- 			return 0;
--		/* fall through */
-+		fallthrough;
- 
- 	case MLX4_STEERING_MODE_B0:
- 		if (prot == MLX4_PROT_ETH)
+Will McVicker (1):
+  netfilter: nat: add range checks for access to nf_nat_l[34]protos[]
+
+ net/ipv4/netfilter/nf_nat_l3proto_ipv4.c |  6 ++++--
+ net/ipv6/netfilter/nf_nat_l3proto_ipv6.c |  5 +++--
+ net/netfilter/nf_nat_core.c              | 27 ++++++++++++++++++++++--
+ net/netfilter/nf_nat_helper.c            |  4 ++++
+ 4 files changed, 36 insertions(+), 6 deletions(-)
+
 -- 
-2.27.0
+2.28.0.rc0.142.g3c755180ce-goog
 
