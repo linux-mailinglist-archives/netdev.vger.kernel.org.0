@@ -2,240 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A9C122FCC9
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:15:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E3F422FCD1
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:16:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726782AbgG0XPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 19:15:00 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:55236 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726340AbgG0XPA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 19:15:00 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RNEv57016496
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:14:59 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=7CWKNixQDcVQNXNCMBvHCt7Ku8k6MhDCgz1xTihXokY=;
- b=cBzd1E82IRfgq9ggSPKp3P9qjMFEXNjpj1Qo2rRhKQ+Oi1hVSKZOF+aOH2F4/e7Ujlk3
- XBiXvd+uB1qownw3ncAKMTb9JV2w2vm4IGTuj0ldx30CUxiG/bF+p/8mmdjdQVDKX01t
- b5krWCkWHFgxNIZLjQtURzacYGS/0uuZiVE= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 32h4q9ey0p-7
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:14:59 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+        id S1727789AbgG0XQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 19:16:01 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:29472 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726313AbgG0XQA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 19:16:00 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 06RN7Iuk014872;
+        Mon, 27 Jul 2020 16:15:47 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=NmfcTJjN0IyDuAfHLwKbxC346sD4a4PSJ/de2fIauT0=;
+ b=eG/CU3B6sXxsQKZOW8g7GOMOIDgyr4I5gEDOG0vH2OV/dGAn/+Jmh1I+UOMQ8O3i57gw
+ sj7AeK8hwqwuRHOszfvcsaYiZE6UKbsToYhoYmMJ2EUPp9BfgaYv83sOKljrj5e+/aa4
+ Nm/1PAo23O0lTEfOi+eW2Qadd7/xvoVcnro= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 32ggdmhpxy-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 27 Jul 2020 16:15:47 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 27 Jul 2020 16:14:49 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 787382EC4BB0; Mon, 27 Jul 2020 16:14:48 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Song Liu <songliubraving@fb.com>, <stable@vger.kernel.org>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf 2/2] selftests/bpf: extend map-in-map selftest to detect memory leaks
-Date:   Mon, 27 Jul 2020 16:14:45 -0700
-Message-ID: <20200727231445.1227594-2-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200727231445.1227594-1-andriin@fb.com>
-References: <20200727231445.1227594-1-andriin@fb.com>
+ 15.1.1979.3; Mon, 27 Jul 2020 16:15:42 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IbeWD+8f2FDhhRz47BOnl7mf8Karm7m9zr8LpBJ5Q49BBnAjkAkz/ZTXxwYoxRVnaWlY/cgWg5i8/OYN+8mmeq8OyN/wHN44VmorWex8kiv4IoExzmys/5+B0gAhknEjNfuuhuUrVH4MJ2AYcuau3ByXsOeRru6lCDVH6t9gJG60DSwk2kwZ6uThyKIFZMtiDrWFszKCfuXlqMpmXfTGbWpKlw60IZiZiH4q98ZYL7+kwm7hlkPW/cVCRxXVNtS/flaG99j9YUddZ8DOBT/7b/THC6jEZaYBPSc1nL8NePprI5fEJZMT/Q284yAVbJtGJkXWbNIUZ+16l9xTgcuOSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NmfcTJjN0IyDuAfHLwKbxC346sD4a4PSJ/de2fIauT0=;
+ b=A4Ke15N3/N77S9T53jFFsOKqY7wbs7b95hCCwO8uNFtEW94AXt4wzd1w6YVPhyPonh5K4460A8cZyYOE854RCCS3nK/rG1spdLEzVuli2xMbTlT4udWq3sS7lijpIJ2vn9KvmKoc8lnCksIPD5X83Y4iRoEUhKy9kAZ2PaWvKX/9YPRz9HTdyvHxkzn1dvSpX8z4vOS5cOn9xCq6NG5AcQ31Hc5Ho8Ug/0wsE+Eva3n8DNQDP/hgnVMUYa+eSNQpwcT/DMFeqP00exEq8xo+WHyXMPWWWYDbSxqpFuhUSUXVSrNcyYtsFuDZM4CcA6ukOiCy8Cs0wU9pE9h1n1TxFw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NmfcTJjN0IyDuAfHLwKbxC346sD4a4PSJ/de2fIauT0=;
+ b=SsrL7AOy986IJIgXfDcKIgKjXuVmCt3WQFiNnr4Jq4OPTVwhcocO0oBZ2ek+B2H2ui9LRCwcu5/DCU2k8oAg9VRGbE9njefePu3TAi4E3Txf8SM5r7UL7WC05IFYwupsZKMy7wMJ+KBn6ZSi06qv/VbzrUa9JYzn6MGbj449CA0=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4136.namprd15.prod.outlook.com (2603:10b6:a03:96::24)
+ by BYAPR15MB3477.namprd15.prod.outlook.com (2603:10b6:a03:10e::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.24; Mon, 27 Jul
+ 2020 23:15:41 +0000
+Received: from BYAPR15MB4136.namprd15.prod.outlook.com
+ ([fe80::48e3:c159:703d:a2f1]) by BYAPR15MB4136.namprd15.prod.outlook.com
+ ([fe80::48e3:c159:703d:a2f1%5]) with mapi id 15.20.3216.033; Mon, 27 Jul 2020
+ 23:15:41 +0000
+Date:   Mon, 27 Jul 2020 16:15:38 -0700
+From:   Roman Gushchin <guro@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v2 29/35] bpf: libbpf: cleanup RLIMIT_MEMLOCK
+ usage
+Message-ID: <20200727231538.GA352883@carbon.DHCP.thefacebook.com>
+References: <20200727184506.2279656-1-guro@fb.com>
+ <20200727184506.2279656-30-guro@fb.com>
+ <CAEf4BzZjbK4W1fmW07tMOJsRGCYNeBd6eqyFE_fSXAK6+0uHhw@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZjbK4W1fmW07tMOJsRGCYNeBd6eqyFE_fSXAK6+0uHhw@mail.gmail.com>
+X-ClientProxiedBy: BYAPR05CA0032.namprd05.prod.outlook.com
+ (2603:10b6:a03:c0::45) To BYAPR15MB4136.namprd15.prod.outlook.com
+ (2603:10b6:a03:96::24)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from carbon.DHCP.thefacebook.com (2620:10d:c090:400::5:9930) by BYAPR05CA0032.namprd05.prod.outlook.com (2603:10b6:a03:c0::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.10 via Frontend Transport; Mon, 27 Jul 2020 23:15:40 +0000
+X-Originating-IP: [2620:10d:c090:400::5:9930]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b3cb0c2c-cb09-4acb-9433-08d83282fb13
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3477:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB3477D7F3154B74CE2CBE26C9BE720@BYAPR15MB3477.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Jvxa/wwD6pWHUwx8dt8jbMGzqBIftvRrQ8GPjw5v9bvB6SA0PdcEgoiSZWlOg2A2TEMCk2cbtaybxYd2f4yfQAKM0Qdfh2iLZgh4xwWUB8EQUM5dcniyBS6TbaSsQGxvg4J/mrURmGphUjVQvaDZ0lWNKvdtFID7c0Wn9SeUjJZRef5VETZ6N7Cnpl8LaR7+9PQG/zXwLK8YASKFGAl//Q6t4KT9JUJ44ZqGSDLT6F/sCsX1qRHVJZgMC6vAfJzoaIrUZO7/jsOJgJEql31++G0xiIo2XNS5sajrgIRlDYvHzec++XIjpdMrtP1pHB5WbwhuPguO445JC6JcKHvO4g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4136.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(346002)(376002)(366004)(396003)(39860400002)(1076003)(4744005)(83380400001)(66946007)(8936002)(66556008)(66476007)(2906002)(52116002)(16526019)(9686003)(8676002)(478600001)(186003)(7696005)(55016002)(53546011)(316002)(86362001)(6506007)(5660300002)(6916009)(4326008)(33656002)(54906003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: y0irvZwOTm98S+72aC1sDW/tmzuWFRpXBufgt9n/U5LbcU29sELYYctfaNEUZ8YEyOpE76+porDhRw+MxJVbtSgXnmSRRSjVOgDIzY7Y3TH8PtC+kIHPLLyaFl9jzn26a8E3i5U0L3qreOstIReffrmwNw1/tbYlDKKmEi5z37t/uoDtEnhHn46u+GZGEyM1uVIe0wyhWApIKc3ptGR6geNzJFLyus08tWGS3/fFjZ4Aeeez+8mYfm/6uQimUB3Tdus2luINQ/LiGGtxCuTCcxSxO2dZi9wz7Um6M1uhiNgU7I2ssF1TFXTvXAwLCT/5wA/e+IU3SOwLX6FspCjhU+5aTGQAZslg5Kz7C/BbeKjYpv+9l5H33OjahbUmU7XGV/WTCq9nz8wHfZBh6sGeXS7SJGYNr0T09NBaPvpRoVHH4fwwMnnqGCTjExWXvKuBHZSZT9EG+fCl+RkeG7nUqnD4jt8ZD7Z44wc14lIHWkfHojqkVaxBorUgGMnD7qIWnpMEYAxyRCDor64O3VsLqw==
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3cb0c2c-cb09-4acb-9433-08d83282fb13
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4136.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2020 23:15:41.4335
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WPpPnxGeUEsiy9kFOFHI4IwDdWaYf6BQIhZb4b46P0K+F7e/glyu6uJC7Y/QYnOP
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3477
+X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-27_15:2020-07-27,2020-07-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- impostorscore=0 clxscore=1015 lowpriorityscore=0 mlxlogscore=999
- malwarescore=0 adultscore=0 phishscore=0 mlxscore=0 priorityscore=1501
- bulkscore=0 suspectscore=9 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007270158
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ malwarescore=0 adultscore=0 spamscore=0 impostorscore=0 mlxscore=0
+ clxscore=1011 bulkscore=0 lowpriorityscore=0 suspectscore=1
+ priorityscore=1501 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2007270157
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add test validating that all inner maps are released properly after skele=
-ton
-is destroyed. To ensure determinism, trigger kernel-side synchronize_rcu(=
-)
-before checking map existence by their IDs.
+On Mon, Jul 27, 2020 at 03:05:11PM -0700, Andrii Nakryiko wrote:
+> On Mon, Jul 27, 2020 at 12:21 PM Roman Gushchin <guro@fb.com> wrote:
+> >
+> > As bpf is not using memlock rlimit for memory accounting anymore,
+> > let's remove the related code from libbpf.
+> >
+> > Bpf operations can't fail because of exceeding the limit anymore.
+> >
+> 
+> They can't in the newest kernel, but libbpf will keep working and
+> supporting old kernels for a very long time now. So please don't
+> remove any of this.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../selftests/bpf/prog_tests/btf_map_in_map.c | 121 ++++++++++++++++--
- 1 file changed, 108 insertions(+), 13 deletions(-)
+Yeah, good point, agree.
+So we just can drop this patch from the series, no other changes
+are needed.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c b/to=
-ols/testing/selftests/bpf/prog_tests/btf_map_in_map.c
-index f7ee8fa377ad..c06b61235212 100644
---- a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
-+++ b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
-@@ -5,10 +5,59 @@
-=20
- #include "test_btf_map_in_map.skel.h"
-=20
-+static int duration;
-+
-+__u32 bpf_map_id(struct bpf_map *map)
-+{
-+	struct bpf_map_info info;
-+	__u32 info_len =3D sizeof(info);
-+	int err;
-+
-+	memset(&info, 0, info_len);
-+	err =3D bpf_obj_get_info_by_fd(bpf_map__fd(map), &info, &info_len);
-+	if (err)
-+		return 0;
-+	return info.id;
-+}
-+
-+/*
-+ * Trigger synchronize_cpu() in kernel.
-+ *
-+ * ARRAY_OF_MAPS/HASH_OF_MAPS lookup/update operations trigger
-+ * synchronize_rcu(), if looking up/updating non-NULL element. Use this =
-fact
-+ * to trigger synchronize_cpu(): create map-in-map, create a trivial ARR=
-AY
-+ * map, update map-in-map with ARRAY inner map. Then cleanup. At the end=
-, at
-+ * least one synchronize_rcu() would be called.
-+ */
-+int kern_sync_rcu() {
-+	int inner_map_fd, outer_map_fd, err, zero =3D 0;
-+
-+	inner_map_fd =3D bpf_create_map(BPF_MAP_TYPE_ARRAY, 4, 4, 1, 0);
-+	if (CHECK(inner_map_fd < 0, "inner_map_create", "failed %d\n", -errno))
-+		return -1;
-+
-+	outer_map_fd =3D bpf_create_map_in_map(BPF_MAP_TYPE_ARRAY_OF_MAPS, NULL=
-,
-+					     sizeof(int), inner_map_fd, 1, 0);
-+	if (CHECK(outer_map_fd < 0, "outer_map_create", "failed %d\n", -errno))=
- {
-+		close(inner_map_fd);
-+		return -1;
-+	}
-+
-+	err =3D bpf_map_update_elem(outer_map_fd, &zero, &inner_map_fd, 0);
-+	if (err)
-+		err =3D -errno;
-+	CHECK(err, "outer_map_update", "failed %d\n", err);
-+	close(inner_map_fd);
-+	close(outer_map_fd);
-+	return err;
-+}
-+
- void test_btf_map_in_map(void)
- {
--	int duration =3D 0, err, key =3D 0, val;
-+	int err, key =3D 0, val, i;
- 	struct test_btf_map_in_map* skel;
-+	int outer_arr_fd, outer_hash_fd;
-+	int fd, map1_fd, map2_fd, map1_id, map2_id;
-=20
- 	skel =3D test_btf_map_in_map__open_and_load();
- 	if (CHECK(!skel, "skel_open", "failed to open&load skeleton\n"))
-@@ -18,32 +67,78 @@ void test_btf_map_in_map(void)
- 	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
- 		goto cleanup;
-=20
-+	map1_fd =3D bpf_map__fd(skel->maps.inner_map1);
-+	map2_fd =3D bpf_map__fd(skel->maps.inner_map2);
-+	outer_arr_fd =3D bpf_map__fd(skel->maps.outer_arr);
-+	outer_hash_fd =3D bpf_map__fd(skel->maps.outer_hash);
-+
- 	/* inner1 =3D input, inner2 =3D input + 1 */
--	val =3D bpf_map__fd(skel->maps.inner_map1);
--	bpf_map_update_elem(bpf_map__fd(skel->maps.outer_arr), &key, &val, 0);
--	val =3D bpf_map__fd(skel->maps.inner_map2);
--	bpf_map_update_elem(bpf_map__fd(skel->maps.outer_hash), &key, &val, 0);
-+	map1_fd =3D bpf_map__fd(skel->maps.inner_map1);
-+	bpf_map_update_elem(outer_arr_fd, &key, &map1_fd, 0);
-+	map2_fd =3D bpf_map__fd(skel->maps.inner_map2);
-+	bpf_map_update_elem(outer_hash_fd, &key, &map2_fd, 0);
- 	skel->bss->input =3D 1;
- 	usleep(1);
-=20
--	bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map1), &key, &val);
-+	bpf_map_lookup_elem(map1_fd, &key, &val);
- 	CHECK(val !=3D 1, "inner1", "got %d !=3D exp %d\n", val, 1);
--	bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map2), &key, &val);
-+	bpf_map_lookup_elem(map2_fd, &key, &val);
- 	CHECK(val !=3D 2, "inner2", "got %d !=3D exp %d\n", val, 2);
-=20
- 	/* inner1 =3D input + 1, inner2 =3D input */
--	val =3D bpf_map__fd(skel->maps.inner_map2);
--	bpf_map_update_elem(bpf_map__fd(skel->maps.outer_arr), &key, &val, 0);
--	val =3D bpf_map__fd(skel->maps.inner_map1);
--	bpf_map_update_elem(bpf_map__fd(skel->maps.outer_hash), &key, &val, 0);
-+	bpf_map_update_elem(outer_arr_fd, &key, &map2_fd, 0);
-+	bpf_map_update_elem(outer_hash_fd, &key, &map1_fd, 0);
- 	skel->bss->input =3D 3;
- 	usleep(1);
-=20
--	bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map1), &key, &val);
-+	bpf_map_lookup_elem(map1_fd, &key, &val);
- 	CHECK(val !=3D 4, "inner1", "got %d !=3D exp %d\n", val, 4);
--	bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map2), &key, &val);
-+	bpf_map_lookup_elem(map2_fd, &key, &val);
- 	CHECK(val !=3D 3, "inner2", "got %d !=3D exp %d\n", val, 3);
-=20
-+	for (i =3D 0; i < 5; i++) {
-+		val =3D i % 2 ? map1_fd : map2_fd;
-+		err =3D bpf_map_update_elem(outer_hash_fd, &key, &val, 0);
-+		if (CHECK_FAIL(err)) {
-+			printf("failed to update hash_of_maps on iter #%d\n", i);
-+			goto cleanup;
-+		}
-+		err =3D bpf_map_update_elem(outer_arr_fd, &key, &val, 0);
-+		if (CHECK_FAIL(err)) {
-+			printf("failed to update hash_of_maps on iter #%d\n", i);
-+			goto cleanup;
-+		}
-+	}
-+
-+	map1_id =3D bpf_map_id(skel->maps.inner_map1);
-+	map2_id =3D bpf_map_id(skel->maps.inner_map2);
-+	CHECK(map1_id =3D=3D 0, "map1_id", "failed to get ID 1\n");
-+	CHECK(map2_id =3D=3D 0, "map2_id", "failed to get ID 2\n");
-+
-+	test_btf_map_in_map__destroy(skel);
-+	skel =3D NULL;
-+=09
-+	/* we need to either wait for or force synchronize_rcu(), before
-+	 * checking for "still exists" condition, otherwise map could still be
-+	 * resolvable by ID, causing false positives.
-+	 *
-+	 * Older kernels (5.8 and earlier) freed map only after two
-+	 * synchronize_rcu()s, so trigger two, to be entirely sure.
-+	 */
-+	CHECK(kern_sync_rcu(), "sync_rcu", "failed\n");
-+	CHECK(kern_sync_rcu(), "sync_rcu", "failed\n");
-+
-+	fd =3D bpf_map_get_fd_by_id(map1_id);
-+	if (CHECK(fd >=3D 0, "map1_leak", "inner_map1 leaked!\n")) {
-+		close(fd);
-+		goto cleanup;
-+	}
-+	fd =3D bpf_map_get_fd_by_id(map2_id);
-+	if (CHECK(fd >=3D 0, "map2_leak", "inner_map2 leaked!\n")) {
-+		close(fd);
-+		goto cleanup;
-+	}
-+
- cleanup:
- 	test_btf_map_in_map__destroy(skel);
- }
---=20
-2.24.1
+> 
+> But it would be nice to add a detection of whether kernel needs a
+> RLIMIT_MEMLOCK bump or not. Is there some simple and reliable way to
+> detect this from user-space?
 
+Hm, the best idea I can think of is to wait for -EPERM before bumping.
+We can in theory look for the presence of memory.stat::percpu in cgroupfs,
+but it's way to cryptic.
+
+Thanks!
