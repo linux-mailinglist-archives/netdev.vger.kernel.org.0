@@ -2,162 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B4F822F112
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 16:29:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C98F22F27F
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 16:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732752AbgG0O3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 10:29:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729827AbgG0O32 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 10:29:28 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1929C061794;
-        Mon, 27 Jul 2020 07:29:28 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id 72so8083674ple.0;
-        Mon, 27 Jul 2020 07:29:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=o0FwXWJzk9fg0IFqdpyGQiSwsPpWPqkwzppi0kl4fRE=;
-        b=X19ILMVnSbYreBVhndZtyG/r7ymaNtXrolJRzStGqDjC4fBj1tBNPp2/0EwMC3pEWg
-         ctByeaI16babSvSD07KdX/CGEYLGi5oDewwAmTQiiLyTPSU0nBcIJb0wqd9+0ZXUt5NA
-         R2wyGyskfKapkd0fa3WPAgXzhhvGPwgabtTeWg1q7bYeE4mpxLYsaj+mRlQqb931qLHs
-         Ol1abQ97x1y0CCetMhhAss3ahDc2dUUmOHVJjViV/pwqNlM9bsfT5zU3D1sK6nhYk/+g
-         sJrbZsg3VGdG7rPYQVrDxWsbptv6eFp2fcjuyDNBPEl+L7E1nbxdz/VVj9M823BV1jJs
-         6KRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=o0FwXWJzk9fg0IFqdpyGQiSwsPpWPqkwzppi0kl4fRE=;
-        b=hLIXlFTygGHP28woh80l2FN+tLaiQ7p0VmbldHdffDzdoW72Bk0b2DPBeiWkVuHXOZ
-         8Uv78JOMdQVWPMP5seCmt0pwhQMyf92u+6XZq2v8o5tl7hBSmyV7GI/8uNuFYlPBH2z3
-         l9j+BrmqDS3A3cwEMK0001wXCyFSQk6en3t86yLFNqc8LFqEOoYFk4Sqc6UFzi0yv+IJ
-         O3PtDsXyii6RyWItQuKbh0MyBbCnHDBygp+FoIG/dD3AACzxUnhjuNWSKMD4Fnh5Lgch
-         9Ko/H/m16MuV5WUOsJ+SidnEVoZPkIj5AvbHAzKStMkqoERBaBwaWsNz3rivLF8/cLCZ
-         EMjg==
-X-Gm-Message-State: AOAM532YpSKk/lS0d68YXDZtJcaPV0V7YZe7zrQGr09MTBz1bwxOoymd
-        oU/ijqafGsubDy1Fo2ERshg=
-X-Google-Smtp-Source: ABdhPJw9puvQA92a0JkpFjjmz2WkQsRKIqNGuvtIwBDIBtS9+/irr2W/OVTdPqbqO7VVJ6F2Tr0LAg==
-X-Received: by 2002:a17:902:9a96:: with SMTP id w22mr19257977plp.172.1595860168111;
-        Mon, 27 Jul 2020 07:29:28 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id o8sm14330081pgb.23.2020.07.27.07.29.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2020 07:29:27 -0700 (PDT)
-Date:   Mon, 27 Jul 2020 07:29:25 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Ooi, Joyce" <joyce.ooi@intel.com>
-Cc:     Thor Thayer <thor.thayer@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Dalon Westergreen <dalon.westergreen@linux.intel.com>,
-        Tan Ley Foon <ley.foon.tan@intel.com>,
-        See Chin Liang <chin.liang.see@intel.com>,
-        Dinh Nguyen <dinh.nguyen@intel.com>,
-        Dalon Westergreen <dalon.westergreen@intel.com>
-Subject: Re: [PATCH v5 08/10] net: eth: altera: add support for ptp and
- timestamping
-Message-ID: <20200727142925.GB16836@hoboy>
-References: <20200727092157.115937-1-joyce.ooi@intel.com>
- <20200727092157.115937-9-joyce.ooi@intel.com>
+        id S1729228AbgG0OkS convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 27 Jul 2020 10:40:18 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:40887 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729587AbgG0OJP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 10:09:15 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-250-GXr1mpTxOlmxyosLYcC-jw-1; Mon, 27 Jul 2020 15:09:11 +0100
+X-MC-Unique: GXr1mpTxOlmxyosLYcC-jw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 27 Jul 2020 15:09:10 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 27 Jul 2020 15:09:10 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Al Viro' <viro@zeniv.linux.org.uk>
+CC:     'David Miller' <davem@davemloft.net>, "hch@lst.de" <hch@lst.de>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "linux-hams@vger.kernel.org" <linux-hams@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
+        "linux-decnet-user@lists.sourceforge.net" 
+        <linux-decnet-user@lists.sourceforge.net>,
+        "linux-wpan@vger.kernel.org" <linux-wpan@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "mptcp@lists.01.org" <mptcp@lists.01.org>,
+        "lvs-devel@vger.kernel.org" <lvs-devel@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>
+Subject: RE: get rid of the address_space override in setsockopt v2
+Thread-Topic: get rid of the address_space override in setsockopt v2
+Thread-Index: AQHWYgvqDt5Xt3HFu0u82UKLVqcKxKkbLTEQgAA3GQCAABNbQA==
+Date:   Mon, 27 Jul 2020 14:09:09 +0000
+Message-ID: <5d958e937db54849b4ef9046e7e12277@AcuMS.aculab.com>
+References: <20200723060908.50081-1-hch@lst.de>
+ <20200724.154342.1433271593505001306.davem@davemloft.net>
+ <8ae792c27f144d4bb5cbea0c1cce4eed@AcuMS.aculab.com>
+ <20200727134814.GD794331@ZenIV.linux.org.uk>
+In-Reply-To: <20200727134814.GD794331@ZenIV.linux.org.uk>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200727092157.115937-9-joyce.ooi@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 05:21:55PM +0800, Ooi, Joyce wrote:
+From: Al Viro
+> Sent: 27 July 2020 14:48
+> 
+> On Mon, Jul 27, 2020 at 09:51:45AM +0000, David Laight wrote:
+> 
+> > I'm sure there is code that processes options in chunks.
+> > This probably means it is possible to put a chunk boundary
+> > at the end of userspace and continue processing the very start
+> > of kernel memory.
+> >
+> > At best this faults on the kernel copy code and crashes the system.
+> 
+> Really?  Care to provide some details, or is it another of your "I can't
+> be possibly arsed to check what I'm saying, but it stands for reason
+> that..." specials?
 
-> +/* ioctl to configure timestamping */
-> +static int tse_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-> +{
-> +	struct altera_tse_private *priv = netdev_priv(dev);
-> +	struct hwtstamp_config config;
-> +
-> +	if (!netif_running(dev))
-> +		return -EINVAL;
-> +
-> +	if (!priv->has_ptp) {
-> +		netdev_alert(priv->dev, "Timestamping not supported");
-> +		return -EOPNOTSUPP;
-> +	}
+I did more 'homework' than sometimes :-)
+Slightly difficult without a searchable net-next tree.
+However, as has been pointed out is a different thread
+this code is used to update IPv6 flow labels:
 
-The user might well have a PHY that supports time stamping.  The code
-must pass the ioctl through to the PHY even when !priv->has_ptp.
+> > -		if (copy_from_user(fl->opt+1, optval+CMSG_ALIGN(sizeof(*freq)), olen))
+> > +		sockptr_advance(optval, CMSG_ALIGN(sizeof(*freq)));
+> > +		if (copy_from_sockptr(fl->opt + 1, optval, olen))
+> >  			goto done;
 
-> +
-> +	if (!dev->phydev)
-> +		return -EINVAL;
-> +
-> +	if (!phy_has_hwtstamp(dev->phydev)) {
-> +		if (cmd == SIOCSHWTSTAMP) {
-> +			if (copy_from_user(&config, ifr->ifr_data,
-> +					   sizeof(struct hwtstamp_config)))
-> +				return -EFAULT;
-> +
-> +			if (config.flags)
-> +				return -EINVAL;
-> +
-> +			switch (config.tx_type) {
-> +			case HWTSTAMP_TX_OFF:
-> +				priv->hwts_tx_en = 0;
-> +				break;
-> +			case HWTSTAMP_TX_ON:
-> +				priv->hwts_tx_en = 1;
-> +				break;
-> +			default:
-> +				return -ERANGE;
-> +			}
-> +
-> +			switch (config.rx_filter) {
-> +			case HWTSTAMP_FILTER_NONE:
-> +				priv->hwts_rx_en = 0;
-> +				config.rx_filter = HWTSTAMP_FILTER_NONE;
-> +				break;
-> +			default:
-> +				priv->hwts_rx_en = 1;
-> +				config.rx_filter = HWTSTAMP_FILTER_ALL;
-> +				break;
-> +			}
-> +
-> +			if (copy_to_user(ifr->ifr_data, &config,
-> +					 sizeof(struct hwtstamp_config)))
-> +				return -EFAULT;
-> +			else
-> +				return 0;
-> +		}
-> +
-> +		if (cmd == SIOCGHWTSTAMP) {
-> +			config.flags = 0;
-> +
-> +			if (priv->hwts_tx_en)
-> +				config.tx_type = HWTSTAMP_TX_ON;
-> +			else
-> +				config.tx_type = HWTSTAMP_TX_OFF;
-> +
-> +			if (priv->hwts_rx_en)
-> +				config.rx_filter = HWTSTAMP_FILTER_ALL;
-> +			else
-> +				config.rx_filter = HWTSTAMP_FILTER_NONE;
-> +
-> +			if (copy_to_user(ifr->ifr_data, &config,
-> +					 sizeof(struct hwtstamp_config)))
-> +				return -EFAULT;
-> +			else
-> +				return 0;
-> +		}
-> +	}
-> +
-> +	return phy_mii_ioctl(dev->phydev, ifr, cmd);
-> +}
+and doesn't work because the advances are no longer cumulative.
 
-Thanks,
-Richard
+Now access_ok() has to take the base address and length to stop
+'running into' kernel space, but the code above can advance from
+a valid user pointer (which won't fault) to a kernel address.
+
+If there were always an unmapped 'guard' page in the user address
+space the access_ok() check prior to copy_to/from_user() wouldn't
+need the length.
+So I surmise that no such guard page exists and so the above
+can advance from user addresses into kernel ones.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
