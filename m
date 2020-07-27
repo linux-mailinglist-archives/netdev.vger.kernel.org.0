@@ -2,106 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9444722FC1B
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 00:26:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 317F522FC2F
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 00:31:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726590AbgG0W0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 18:26:47 -0400
-Received: from mx2.suse.de ([195.135.220.15]:39654 "EHLO mx2.suse.de"
+        id S1727774AbgG0WbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 18:31:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42116 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726171AbgG0W0r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 18:26:47 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 68C75AC37;
-        Mon, 27 Jul 2020 22:26:56 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id A6C286073D; Tue, 28 Jul 2020 00:26:45 +0200 (CEST)
-Date:   Tue, 28 Jul 2020 00:26:45 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        Jamie Gloudon <jamie.gloudon@gmx.fr>
-Subject: Re: [ethtool] ethtool: fix netlink bitmasks when sent as NOMASK
-Message-ID: <20200727222645.uhtve7x2wkzddnub@lion.mk-sys.cz>
-References: <20200727214700.5915-1-jacob.e.keller@intel.com>
- <20200727221104.GD1705504@lunn.ch>
+        id S1726731AbgG0WbG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 18:31:06 -0400
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0C50C20809;
+        Mon, 27 Jul 2020 22:31:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595889066;
+        bh=qMuXFcxMzvx0mR2Biber8GcV8u6iEgvTEwiheu9UbUY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=X4iRIY3OfKc7Jwfh6wmN9Yck32tyIDP+1owICcoXSqmzvU/wnmwLf80pzW1WG/ky8
+         CpYd2DopQ+sh6RgwBJO4mfKGdyFjxcmLYBvybwuJV5tv4ZqocbgWgk8obrWOL39H/4
+         jyjcpHLgvYSUmooeGaIR9uKc5SXOaq0D3Zy5MHIo=
+Received: by mail-lf1-f44.google.com with SMTP id y18so9871447lfh.11;
+        Mon, 27 Jul 2020 15:31:05 -0700 (PDT)
+X-Gm-Message-State: AOAM531MyayPYARMPI0RbmA11ro8oRYCXV/sHwqHJyMI72p3ZjiW0PFn
+        W6ewrATd43msSn5lZ02Gbe4CXgMhqzgu75rb5Y0=
+X-Google-Smtp-Source: ABdhPJyJSqwhde6IDem+A6PjaWq4kjB6gFsq4cNlr0EjJLJzkamOrulDaGuXrU6p2F3xlha3/Xw72kZNyQiWhIvqqUI=
+X-Received: by 2002:ac2:5683:: with SMTP id 3mr12510015lfr.69.1595889064422;
+ Mon, 27 Jul 2020 15:31:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200727221104.GD1705504@lunn.ch>
+References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-4-guro@fb.com>
+In-Reply-To: <20200727184506.2279656-4-guro@fb.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 27 Jul 2020 15:30:53 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW49Yo0WEDuNoujKtSwzKtBU3b4axuB=Z7rWTH78hrYgsQ@mail.gmail.com>
+Message-ID: <CAPhsuW49Yo0WEDuNoujKtSwzKtBU3b4axuB=Z7rWTH78hrYgsQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 03/35] bpf: refine memcg-based memory
+ accounting for arraymap maps
+To:     Roman Gushchin <guro@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 12:11:04AM +0200, Andrew Lunn wrote:
-> On Mon, Jul 27, 2020 at 02:47:00PM -0700, Jacob Keller wrote:
-> > The ethtool netlink API can send bitsets without an associated bitmask.
-> > These do not get displayed properly, because the dump_link_modes, and
-> > bitset_get_bit to not check whether the provided bitset is a NOMASK
-> > bitset. This results in the inability to display peer advertised link
-> > modes.
-> > 
-> > The dump_link_modes and bitset_get_bit functions are designed so they
-> > can print either the values or the mask. For a nomask bitmap, this
-> > doesn't make sense. There is no mask.
-> > 
-> > Modify dump_link_modes to check ETHTOOL_A_BITSET_NOMASK. For compact
-> > bitmaps, always check and print the ETHTOOL_A_BITSET_VALUE bits,
-> > regardless of the request to display the mask or the value. For full
-> > size bitmaps, the set of provided bits indicates the valid values,
-> > without using ETHTOOL_A_BITSET_VALUE fields. Thus, do not skip printing
-> > bits without this attribute if nomask is set. This essentially means
-> > that dump_link_modes will treat a NOMASK bitset as having a mask
-> > equivalent to all of its set bits.
-> > 
-> > For bitset_get_bit, also check for ETHTOOL_A_BITSET_NOMASK. For compact
-> > bitmaps, always use ETHTOOL_A_BITSET_BIT_VALUE as in dump_link_modes.
-> > For full bitmaps, if nomask is set, then always return true of the bit
-> > is in the set, rather than only if it provides an
-> > ETHTOOL_A_BITSET_BIT_VALUE. This will then correctly report the set
-> > bits.
-> > 
-> > This fixes display of link partner advertised fields when using the
-> > netlink API.
-> 
-> Hi Jacob
-> 
-> This is close
-> 
-> Netlink
-> 	Link partner advertised link modes:  10baseT/Half 10baseT/Full
-> 	                                     100baseT/Half 100baseT/Full
-> 	                                     1000baseT/Full
-> 	Link partner advertised pause frame use: No
-> 	Link partner advertised auto-negotiation: Yes
-> 	Link partner advertised FEC modes: No
-> 
-> IOCTL
-> 	Link partner advertised link modes:  10baseT/Half 10baseT/Full 
-> 	                                     100baseT/Half 100baseT/Full 
-> 	                                     1000baseT/Full 
-> 	Link partner advertised pause frame use: No
-> 	Link partner advertised auto-negotiation: Yes
-> 	Link partner advertised FEC modes: Not reported
-> 
-> So just the FEC modes differ.
+On Mon, Jul 27, 2020 at 12:23 PM Roman Gushchin <guro@fb.com> wrote:
+>
+> Include percpu arrays and auxiliary data into the memcg-based memory
+> accounting.
+>
+> Signed-off-by: Roman Gushchin <guro@fb.com>
 
-This is a different issue, the last call to dump_link_modes() in
-dump_peer_modes() should be
-
-	ret = dump_link_modes(nlctx, attr, false, LM_CLASS_FEC,
-
-(third parameter needs to be false, not true).
-
-Michal
-
-> 
-> However, i don't think this was part of the original issue, so:
-> 
-> Tested-by: Andrew Lunn <andrew@lunn.ch>
-> 
-> It would be nice to get the FEC modes fixed.
-> 
->     Andrew
+Acked-by: Song Liu <songliubraving@fb.com>
