@@ -2,98 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CC0022E9F5
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 12:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6604122EA16
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 12:33:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728016AbgG0KYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 06:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726268AbgG0KYl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 06:24:41 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACBABC061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 03:24:39 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id di22so4555319edb.12
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 03:24:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ew/mvZaAa0MKQUJkHMxg0jxr2TRBwbh2Nmfpyl37I+I=;
-        b=aK37klo/FRI+TgL6WW4qP8UtbBGyDnsRZUlfEJUAD/Zhb4ZYwL87atfbrsCS7sqOHB
-         0mt9no0Ql7VZNC65lXXoAxUSUOZX4WIt+lhlzqWAjTZRpsdh1c+ZaD44a2+sG96s/doS
-         QlKDuTFYIFOCDAgNZVaDF+5s3yBUUHDiIe5+jHKVuzs+OtHqq624tCaqInOIJ1neLFQi
-         ACSQXNV7Xds9AVa9HI57xesgyYgY0EwLC02F44WnWY34gVLu0o4t9va9ejWDe3Yn6TMb
-         ljKhcFx/NNkNkK1dwvMV0lpdJmuqfPihEAfTYO5v79EVFbhd0QoJAvGnfJXEz8BkLFXW
-         HCcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ew/mvZaAa0MKQUJkHMxg0jxr2TRBwbh2Nmfpyl37I+I=;
-        b=P7byiD4xbonK9WlBvfUVETlQtrtxRUZHAQbuWR1RYck9ibyy99HhYoLTE5MfM43E2Z
-         9RLC4KtIXgVyofjtgTCrnPDeg2eLeuY653gdSDje6iVdvtfbZkPrgAnNGLpBEXIRx/qY
-         vJH9ZO+d6bED0Bt8hSo3DLr2uR11Mz9oqUvjsWKqjWrZBxiYnBP1VMgt3LPCYfaDEVg6
-         YUW4KprOt2mJiIjkTrHF8JxQQTTEXQJJBSbo6IGqJ89fm7M5VR+Qj2OtDohiuPzbIHCb
-         TBTkAqt6SxAoNmJiXDaBzX+v9FSyV98wJYv2hjN8oKifi9R2QLfQg0qAuBw/dPOBivX1
-         IYZg==
-X-Gm-Message-State: AOAM531ZewmJvVh719yuPDoQOvwxSuCVEcjwVdtHyeEspNdLBaGcNZeC
-        FoQTX5J9uI0YTLNxusDA5U9ovz7DhC2mTw==
-X-Google-Smtp-Source: ABdhPJwACpz1Dt3WO295Cwmim5Oa3IRv/WSdlVIoUiactVYTBc/WgFp7/aZtBQlfVR+IHaJzlZulYQ==
-X-Received: by 2002:aa7:cdd2:: with SMTP id h18mr13654178edw.387.1595845477601;
-        Mon, 27 Jul 2020 03:24:37 -0700 (PDT)
-Received: from tsr-vdi-mbaerts.nix.tessares.net (static.23.216.130.94.clients.your-server.de. [94.130.216.23])
-        by smtp.gmail.com with ESMTPSA id i9sm1498756ejb.48.2020.07.27.03.24.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2020 03:24:37 -0700 (PDT)
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+        id S1728093AbgG0KdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 06:33:08 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:47618 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726701AbgG0KdH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 06:33:07 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id D1B62200879;
+        Mon, 27 Jul 2020 12:33:06 +0200 (CEST)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 16A7A200870;
+        Mon, 27 Jul 2020 12:33:03 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 1EA1C40243;
+        Mon, 27 Jul 2020 12:32:58 +0200 (CEST)
+From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     netdev@vger.kernel.org
-Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
+        laurent brando <laurent.brando@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, mptcp@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] mptcp: fix joined subflows with unblocking sk
-Date:   Mon, 27 Jul 2020 12:24:33 +0200
-Message-Id: <20200727102433.3422117-1-matthieu.baerts@tessares.net>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: [PATCH] net: mscc: ocelot: fix hardware timestamp dequeue logic
+Date:   Mon, 27 Jul 2020 18:26:14 +0800
+Message-Id: <20200727102614.24570-1-yangbo.lu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unblocking sockets used for outgoing connections were not containing
-inet info about the initial connection due to a typo there: the value of
-"err" variable is negative in the kernelspace.
+From: laurent brando <laurent.brando@nxp.com>
 
-This fixes the creation of additional subflows where the remote port has
-to be reused if the other host didn't announce another one. This also
-fixes inet_diag showing blank info about MPTCP sockets from unblocking
-sockets doing a connect().
+The next hw timestamp should be snapshoot to the read registers
+only once the current timestamp has been read.
+If none of the pending skbs matches the current HW timestamp
+just gracefully flush the available timestamp by reading it.
 
-Fixes: 41be81a8d3d0 ("mptcp: fix unblocking connect()")
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: laurent brando <laurent.brando@nxp.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 ---
- net/mptcp/protocol.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mscc/ocelot.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 3980fbb6f31e..c0abe738e7d3 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1833,7 +1833,7 @@ static int mptcp_stream_connect(struct socket *sock, struct sockaddr *uaddr,
- 	/* on successful connect, the msk state will be moved to established by
- 	 * subflow_finish_connect()
- 	 */
--	if (!err || err == EINPROGRESS)
-+	if (!err || err == -EINPROGRESS)
- 		mptcp_copy_inaddrs(sock->sk, ssock->sk);
- 	else
- 		inet_sk_state_store(sock->sk, inet_sk_state_load(ssock->sk));
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index e05a48c..82bde07 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -731,21 +731,21 @@ void ocelot_get_txtstamp(struct ocelot *ocelot)
+ 
+ 		spin_unlock_irqrestore(&port->tx_skbs.lock, flags);
+ 
+-		/* Next ts */
+-		ocelot_write(ocelot, SYS_PTP_NXT_PTP_NXT, SYS_PTP_NXT);
++		/* Get the h/w timestamp */
++		ocelot_get_hwtimestamp(ocelot, &ts);
+ 
+ 		if (unlikely(!skb_match))
+ 			continue;
+ 
+-		/* Get the h/w timestamp */
+-		ocelot_get_hwtimestamp(ocelot, &ts);
+-
+ 		/* Set the timestamp into the skb */
+ 		memset(&shhwtstamps, 0, sizeof(shhwtstamps));
+ 		shhwtstamps.hwtstamp = ktime_set(ts.tv_sec, ts.tv_nsec);
+ 		skb_tstamp_tx(skb_match, &shhwtstamps);
+ 
+ 		dev_kfree_skb_any(skb_match);
++
++		/* Next ts */
++		ocelot_write(ocelot, SYS_PTP_NXT_PTP_NXT, SYS_PTP_NXT);
+ 	}
+ }
+ EXPORT_SYMBOL(ocelot_get_txtstamp);
 -- 
-2.27.0
+2.7.4
 
