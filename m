@@ -2,216 +2,353 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1A3322FAB7
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 22:54:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDE9322FAE2
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 23:01:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726983AbgG0Uxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 16:53:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36346 "EHLO mail.kernel.org"
+        id S1726362AbgG0VBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 17:01:49 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58136 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726769AbgG0Uxb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 16:53:31 -0400
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EDC9020838;
-        Mon, 27 Jul 2020 20:53:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595883211;
-        bh=a6AU9sf1ZUMXutwnI1/Vf3w0L3i8tw6Su4jyOOk4+Q0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=x6rEsiY8NDPMoUxF1fHtYrbr1ZPeSBT/Mw0OP0+Rh+Cg5lMh40lQqnlr0W8Iz4eKY
-         idEyOwbyHtYsxTDD+SFMA3oysFj3xELxCSoYH5XcJ8q4yKZPUqZ5rrFp8QCQBrK8/X
-         X1/jk0Bn8aeavnLiBzm2NN95ZWm3yXAKrHmUkBs0=
-Received: by mail-lf1-f51.google.com with SMTP id h8so9751826lfp.9;
-        Mon, 27 Jul 2020 13:53:30 -0700 (PDT)
-X-Gm-Message-State: AOAM533MzsB1p7HZ1PgxhimG9wVxCUFXZLhh2oKzfT4RMb/ZR67LwC7S
-        lxEOkwjQgIKfSl83NCxqvZ6M4XXBg+uuKp0XSXQ=
-X-Google-Smtp-Source: ABdhPJyNnQou0xCOihO3lXbU/vFYvhDWPuoM6oxOOcpjRATL+9dcHAhqWM6fz3p5Jg2cX9QiMWwZp48oKJfgeXRq/jI=
-X-Received: by 2002:a19:c501:: with SMTP id w1mr11874138lfe.172.1595883209223;
- Mon, 27 Jul 2020 13:53:29 -0700 (PDT)
+        id S1726183AbgG0VBt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 17:01:49 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1k0AFh-0079mh-SH; Mon, 27 Jul 2020 23:01:41 +0200
+Date:   Mon, 27 Jul 2020 23:01:41 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     Jamie Gloudon <jamie.gloudon@gmx.fr>,
+        Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
+Subject: Re: Broken link partner advertised reporting in ethtool
+Message-ID: <20200727210141.GA1705504@lunn.ch>
+References: <20200727154715.GA1901@gmx.fr>
+ <871802ee-3b9a-87fb-4a16-db570828ef2d@intel.com>
+ <20200727200912.GA1884@gmx.fr>
+ <20200727204227.s2gv3hqszmpk7l7r@lion.mk-sys.cz>
 MIME-Version: 1.0
-References: <20200724011700.2854734-1-andriin@fb.com> <20200724011700.2854734-2-andriin@fb.com>
-In-Reply-To: <20200724011700.2854734-2-andriin@fb.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 27 Jul 2020 13:53:17 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW68tUDQf7kgB-r5aJFH3Bk_5_b_0eokqjYe9-8YpHX3zg@mail.gmail.com>
-Message-ID: <CAPhsuW68tUDQf7kgB-r5aJFH3Bk_5_b_0eokqjYe9-8YpHX3zg@mail.gmail.com>
-Subject: Re: [PATCH bpf 2/2] selftests/bpf: extend map-in-map selftest to
- detect memory leaks
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200727204227.s2gv3hqszmpk7l7r@lion.mk-sys.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 23, 2020 at 6:17 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Add test validating that all inner maps are released properly after skeleton
-> is destroyed. To ensure determinism, trigger kernel-size synchronize_rcu()
-> before checking map existence by their IDs.
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  .../selftests/bpf/prog_tests/btf_map_in_map.c | 104 +++++++++++++++---
->  1 file changed, 91 insertions(+), 13 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
-> index f7ee8fa377ad..043e8ffe03d1 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
-> @@ -5,10 +5,50 @@
->
->  #include "test_btf_map_in_map.skel.h"
->
-> +static int duration;
-> +
-> +int bpf_map_id(struct bpf_map *map)
-Should this return __u32?
+>   - the exact command you ran (including arguments)
+>   - expected output (or at least the relevant part)
+>   - actual output (or at least the relevant part)
+>   - output with dump of netlink messages, you can get it by enabling
+>     debugging flags, e.g. "ethtool --debug 0x12 eth0"
+ 
+Hi Michal
 
-> +{
-> +       struct bpf_map_info info;
-> +       __u32 info_len = sizeof(info);
-> +       int err;
-> +
-> +       memset(&info, 0, info_len);
-> +       err = bpf_obj_get_info_by_fd(bpf_map__fd(map), &info, &info_len);
-> +       if (err)
-> +               return 0;
-> +       return info.id;
-> +}
-> +
-> +int kern_sync_rcu() {
+See if this helps.
 
-int kern_sync_rcu(void)
-{
+This is a Marvel Ethernet switch port using an Marvell PHY.
+
+$ dpkg -l ethtool
+Desired=Unknown/Install/Remove/Purge/Hold
+| Status=Not/Inst/Conf-files/Unpacked/halF-conf/Half-inst/trig-aWait/Trig-pend
+|/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
+||/ Name           Version      Architecture Description
++++-==============-============-============-==========================================
+ii  ethtool        1:5.4-1      amd64        display or change Ethernet device settings
+
+root@rap:~# ethtool green
+Settings for green:
+	Supported ports: [ TP MII ]
+	Supported link modes:   10baseT/Half 10baseT/Full 
+	                        100baseT/Half 100baseT/Full 
+	                        1000baseT/Full 
+	Supported pause frame use: Symmetric
+	Supports auto-negotiation: Yes
+	Supported FEC modes: Not reported
+	Advertised link modes:  10baseT/Half 10baseT/Full 
+	                        100baseT/Half 100baseT/Full 
+	                        1000baseT/Full 
+	Advertised pause frame use: Symmetric
+	Advertised auto-negotiation: Yes
+	Advertised FEC modes: Not reported
+	Link partner advertised link modes:  10baseT/Half 10baseT/Full 
+	                                     100baseT/Half 100baseT/Full 
+	                                     1000baseT/Full 
+	Link partner advertised pause frame use: No
+	Link partner advertised auto-negotiation: Yes
+	Link partner advertised FEC modes: Not reported
+	Speed: 1000Mb/s
+	Duplex: Full
+	Port: MII
+	PHYAD: 4
+	Transceiver: internal
+	Auto-negotiation: on
+	Supports Wake-on: d
+	Wake-on: d
+	Link detected: yes
+
+And now ethtool from git 4e02c55227c9958184d5941de73d9cf1cd49bf2e.
+
+root@rap:/home/andrew/ethtool# /home/andrew/ethtool/ethtool green
+Settings for green:
+	Supported ports: [ TP	 MII ]
+	Supported link modes:   10baseT/Half 10baseT/Full
+	                        100baseT/Half 100baseT/Full
+	                        1000baseT/Full
+	Supported pause frame use: Symmetric
+	Supports auto-negotiation: Yes
+	Supported FEC modes: Not reported
+	Advertised link modes:  10baseT/Half 10baseT/Full
+	                        100baseT/Half 100baseT/Full
+	                        1000baseT/Full
+	Advertised pause frame use: Symmetric
+	Advertised auto-negotiation: Yes
+	Advertised FEC modes: Not reported
+	Link partner advertised link modes:  Not reported
+	Link partner advertised pause frame use: No
+	Link partner advertised auto-negotiation: No
+	Link partner advertised FEC modes: No
+	Speed: 1000Mb/s
+	Duplex: Full
+	Auto-negotiation: on
+	Port: MII
+	PHYAD: 4
+	Transceiver: external
+	Supports Wake-on: d
+	Wake-on: d
+	Link detected: yes
+
+So they are definitely missing.
+
+Here are the netlink messages.
+
+sending genetlink packet (32 bytes):
+    msg length 32 genl-ctrl
+    CTRL_CMD_GETFAMILY
+        CTRL_ATTR_FAMILY_NAME = "ethtool"
 ...
+...
+sending genetlink packet (36 bytes):
+    msg length 36 ethool ETHTOOL_MSG_LINKMODES_GET
+    ETHTOOL_MSG_LINKMODES_GET
+        ETHTOOL_A_LINKMODES_HEADER
+            ETHTOOL_A_HEADER_DEV_NAME = "green"
+received genetlink packet (572 bytes):
+    msg length 572 ethool ETHTOOL_MSG_LINKMODES_GET_REPLY
+    ETHTOOL_MSG_LINKMODES_GET_REPLY
+        ETHTOOL_A_LINKMODES_HEADER
+            ETHTOOL_A_HEADER_DEV_INDEX = 8
+            ETHTOOL_A_HEADER_DEV_NAME = "green"
+        ETHTOOL_A_LINKMODES_AUTONEG = on
+        ETHTOOL_A_LINKMODES_OURS
+            ETHTOOL_A_BITSET_SIZE = 90
+            ETHTOOL_A_BITSET_BITS
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 0
+                    ETHTOOL_A_BITSET_BIT_NAME = "10baseT/Half"
+                    ETHTOOL_A_BITSET_BIT_VALUE = true
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 1
+                    ETHTOOL_A_BITSET_BIT_NAME = "10baseT/Full"
+                    ETHTOOL_A_BITSET_BIT_VALUE = true
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 2
+                    ETHTOOL_A_BITSET_BIT_NAME = "100baseT/Half"
+                    ETHTOOL_A_BITSET_BIT_VALUE = true
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 3
+                    ETHTOOL_A_BITSET_BIT_NAME = "100baseT/Full"
+                    ETHTOOL_A_BITSET_BIT_VALUE = true
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 5
+                    ETHTOOL_A_BITSET_BIT_NAME = "1000baseT/Full"
+                    ETHTOOL_A_BITSET_BIT_VALUE = true
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 6
+                    ETHTOOL_A_BITSET_BIT_NAME = "Autoneg"
+                    ETHTOOL_A_BITSET_BIT_VALUE = true
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 7
+                    ETHTOOL_A_BITSET_BIT_NAME = "TP"
+                    ETHTOOL_A_BITSET_BIT_VALUE = true
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 9
+                    ETHTOOL_A_BITSET_BIT_NAME = "MII"
+                    ETHTOOL_A_BITSET_BIT_VALUE = true
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 13
+                    ETHTOOL_A_BITSET_BIT_NAME = "Pause"
+                    ETHTOOL_A_BITSET_BIT_VALUE = true
+        ETHTOOL_A_LINKMODES_PEER
+            ETHTOOL_A_BITSET_NOMASK = true
+            ETHTOOL_A_BITSET_SIZE = 90
+            ETHTOOL_A_BITSET_BITS
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 0
+                    ETHTOOL_A_BITSET_BIT_NAME = "10baseT/Half"
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 1
+                    ETHTOOL_A_BITSET_BIT_NAME = "10baseT/Full"
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 2
+                    ETHTOOL_A_BITSET_BIT_NAME = "100baseT/Half"
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 3
+                    ETHTOOL_A_BITSET_BIT_NAME = "100baseT/Full"
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 5
+                    ETHTOOL_A_BITSET_BIT_NAME = "1000baseT/Full"
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_INDEX = 6
+                    ETHTOOL_A_BITSET_BIT_NAME = "Autoneg"
+        ETHTOOL_A_LINKMODES_SPEED = 1000
+        ETHTOOL_A_LINKMODES_DUPLEX = 1
+Settings for green:
+	Supported ports: [ TP	 MII ]
+	Supported link modes:   10baseT/Half 10baseT/Full
+	                        100baseT/Half 100baseT/Full
+	                        1000baseT/Full
+	Supported pause frame use: Symmetric
+	Supports auto-negotiation: Yes
+	Supported FEC modes: Not reported
+	Advertised link modes:  10baseT/Half 10baseT/Full
+	                        100baseT/Half 100baseT/Full
+	                        1000baseT/Full
+	Advertised pause frame use: Symmetric
+	Advertised auto-negotiation: Yes
+	Advertised FEC modes: Not reported
+	Link partner advertised link modes:  Not reported
+	Link partner advertised pause frame use: No
+	Link partner advertised auto-negotiation: No
+	Link partner advertised FEC modes: No
+	Speed: 1000Mb/s
+	Duplex: Full
+	Auto-negotiation: on
+received genetlink packet (36 bytes):
+    msg length 36 error errno=0
+sending genetlink packet (36 bytes):
+    msg length 36 ethool ETHTOOL_MSG_LINKINFO_GET
+    ETHTOOL_MSG_LINKINFO_GET
+        ETHTOOL_A_LINKINFO_HEADER
+            ETHTOOL_A_HEADER_DEV_NAME = "green"
+received genetlink packet (84 bytes):
+    msg length 84 ethool ETHTOOL_MSG_LINKINFO_GET_REPLY
+    ETHTOOL_MSG_LINKINFO_GET_REPLY
+        ETHTOOL_A_LINKINFO_HEADER
+            ETHTOOL_A_HEADER_DEV_INDEX = 8
+            ETHTOOL_A_HEADER_DEV_NAME = "green"
+        ETHTOOL_A_LINKINFO_PORT = 2
+        ETHTOOL_A_LINKINFO_PHYADDR = 4
+        ETHTOOL_A_LINKINFO_TP_MDIX = 0
+        ETHTOOL_A_LINKINFO_TP_MDIX_CTRL = 0
+        ETHTOOL_A_LINKINFO_TRANSCEIVER = 1
+	Port: MII
+	PHYAD: 4
+	Transceiver: external
+received genetlink packet (36 bytes):
+    msg length 36 error errno=0
+sending genetlink packet (36 bytes):
+    msg length 36 ethool ETHTOOL_MSG_WOL_GET
+    ETHTOOL_MSG_WOL_GET
+        ETHTOOL_A_WOL_HEADER
+            ETHTOOL_A_HEADER_DEV_NAME = "green"
+received genetlink packet (60 bytes):
+    msg length 60 ethool ETHTOOL_MSG_WOL_GET_REPLY
+    ETHTOOL_MSG_WOL_GET_REPLY
+        ETHTOOL_A_WOL_HEADER
+            ETHTOOL_A_HEADER_DEV_INDEX = 8
+            ETHTOOL_A_HEADER_DEV_NAME = "green"
+        ETHTOOL_A_WOL_MODES
+            ETHTOOL_A_BITSET_SIZE = 8
+            ETHTOOL_A_BITSET_BITS
+	Supports Wake-on: d
+	Wake-on: d
+received genetlink packet (36 bytes):
+    msg length 36 error errno=0
+sending genetlink packet (36 bytes):
+    msg length 36 ethool ETHTOOL_MSG_DEBUG_GET
+    ETHTOOL_MSG_DEBUG_GET
+        ETHTOOL_A_DEBUG_HEADER
+            ETHTOOL_A_HEADER_DEV_NAME = "green"
+received genetlink packet (56 bytes):
+    msg length 56 error errno=-95
+offending message:
+    ETHTOOL_MSG_DEBUG_GET
+        ETHTOOL_A_DEBUG_HEADER
+            ETHTOOL_A_HEADER_DEV_NAME = "green"
+sending genetlink packet (36 bytes):
+    msg length 36 ethool ETHTOOL_MSG_LINKSTATE_GET
+    ETHTOOL_MSG_LINKSTATE_GET
+        ETHTOOL_A_LINKSTATE_HEADER
+            ETHTOOL_A_HEADER_DEV_NAME = "green"
+received genetlink packet (52 bytes):
+    msg length 52 ethool ETHTOOL_MSG_LINKSTATE_GET_REPLY
+    ETHTOOL_MSG_LINKSTATE_GET_REPLY
+        ETHTOOL_A_LINKSTATE_HEADER
+            ETHTOOL_A_HEADER_DEV_INDEX = 8
+            ETHTOOL_A_HEADER_DEV_NAME = "green"
+        ETHTOOL_A_LINKSTATE_LINK = on
+	Link detected: yes
+received genetlink packet (36 bytes):
+    msg length 36 error errno=0
 
-A comment for this function would be nice too.
 
-> +       int inner_map_fd, outer_map_fd, err, zero = 0;
-> +
-> +       inner_map_fd = bpf_create_map(BPF_MAP_TYPE_ARRAY, 4, 4, 1, 0);
-> +       if (CHECK(inner_map_fd < 0, "inner_map_create", "failed %d\n", -errno))
-> +               return -1;
-> +
-> +       outer_map_fd = bpf_create_map_in_map(BPF_MAP_TYPE_ARRAY_OF_MAPS, NULL,
-> +                                            sizeof(int), inner_map_fd, 1, 0);
-> +       if (CHECK(outer_map_fd < 0, "outer_map_create", "failed %d\n", -errno)) {
-> +               close(inner_map_fd);
-> +               return -1;
-> +       }
-> +
-> +       err = bpf_map_update_elem(outer_map_fd, &zero, &inner_map_fd, 0);
-> +       if (err)
-> +               err = -errno;
-> +       CHECK(err, "outer_map_update", "failed %d\n", err);
-> +       close(inner_map_fd);
-> +       close(outer_map_fd);
-> +       return err;
-> +}
-> +
->  void test_btf_map_in_map(void)
->  {
-> -       int duration = 0, err, key = 0, val;
-> +       int err, key = 0, val, i;
->         struct test_btf_map_in_map* skel;
-> +       int outer_arr_fd, outer_hash_fd;
-> +       int fd, map1_fd, map2_fd, map1_id, map2_id;
-nit: reverse Christmas tree.
+I also get similar results from a USB-Ethernet Dongle:
 
->
->         skel = test_btf_map_in_map__open_and_load();
->         if (CHECK(!skel, "skel_open", "failed to open&load skeleton\n"))
-> @@ -18,32 +58,70 @@ void test_btf_map_in_map(void)
->         if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
->                 goto cleanup;
->
-> +       map1_fd = bpf_map__fd(skel->maps.inner_map1);
-> +       map2_fd = bpf_map__fd(skel->maps.inner_map2);
-> +       outer_arr_fd = bpf_map__fd(skel->maps.outer_arr);
-> +       outer_hash_fd = bpf_map__fd(skel->maps.outer_hash);
-> +
->         /* inner1 = input, inner2 = input + 1 */
-> -       val = bpf_map__fd(skel->maps.inner_map1);
-> -       bpf_map_update_elem(bpf_map__fd(skel->maps.outer_arr), &key, &val, 0);
-> -       val = bpf_map__fd(skel->maps.inner_map2);
-> -       bpf_map_update_elem(bpf_map__fd(skel->maps.outer_hash), &key, &val, 0);
-> +       map1_fd = bpf_map__fd(skel->maps.inner_map1);
-> +       bpf_map_update_elem(outer_arr_fd, &key, &map1_fd, 0);
-> +       map2_fd = bpf_map__fd(skel->maps.inner_map2);
-> +       bpf_map_update_elem(outer_hash_fd, &key, &map2_fd, 0);
->         skel->bss->input = 1;
->         usleep(1);
->
-> -       bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map1), &key, &val);
-> +       bpf_map_lookup_elem(map1_fd, &key, &val);
->         CHECK(val != 1, "inner1", "got %d != exp %d\n", val, 1);
-> -       bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map2), &key, &val);
-> +       bpf_map_lookup_elem(map2_fd, &key, &val);
->         CHECK(val != 2, "inner2", "got %d != exp %d\n", val, 2);
->
->         /* inner1 = input + 1, inner2 = input */
-> -       val = bpf_map__fd(skel->maps.inner_map2);
-> -       bpf_map_update_elem(bpf_map__fd(skel->maps.outer_arr), &key, &val, 0);
-> -       val = bpf_map__fd(skel->maps.inner_map1);
-> -       bpf_map_update_elem(bpf_map__fd(skel->maps.outer_hash), &key, &val, 0);
-> +       bpf_map_update_elem(outer_arr_fd, &key, &map2_fd, 0);
-> +       bpf_map_update_elem(outer_hash_fd, &key, &map1_fd, 0);
->         skel->bss->input = 3;
->         usleep(1);
->
-> -       bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map1), &key, &val);
-> +       bpf_map_lookup_elem(map1_fd, &key, &val);
->         CHECK(val != 4, "inner1", "got %d != exp %d\n", val, 4);
-> -       bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map2), &key, &val);
-> +       bpf_map_lookup_elem(map2_fd, &key, &val);
->         CHECK(val != 3, "inner2", "got %d != exp %d\n", val, 3);
->
-> +       for (i = 0; i < 5; i++) {
-> +               val = i % 2 ? map1_fd : map2_fd;
-> +               err = bpf_map_update_elem(outer_hash_fd, &key, &val, 0);
-> +               if (CHECK_FAIL(err)) {
-> +                       printf("failed to update hash_of_maps on iter #%d\n", i);
-> +                       goto cleanup;
-> +               }
-> +               err = bpf_map_update_elem(outer_arr_fd, &key, &val, 0);
-> +               if (CHECK_FAIL(err)) {
-> +                       printf("failed to update hash_of_maps on iter #%d\n", i);
-> +                       goto cleanup;
-> +               }
-> +       }
-> +
-> +       map1_id = bpf_map_id(skel->maps.inner_map1);
-> +       map2_id = bpf_map_id(skel->maps.inner_map2);
-> +       CHECK(map1_id == 0, "map1_id", "failed to get ID 1\n");
-> +       CHECK(map2_id == 0, "map2_id", "failed to get ID 2\n");
-> +
-> +       test_btf_map_in_map__destroy(skel);
-> +       skel = NULL;
-> +
-> +       CHECK(kern_sync_rcu(), "sync_rcu", "failed\n");
-> +
-> +       fd = bpf_map_get_fd_by_id(map1_id);
-> +       if (CHECK(fd >= 0, "map1_leak", "inner_map1 leaked!\n")) {
-> +               close(fd);
-> +               goto cleanup;
-> +       }
-> +       fd = bpf_map_get_fd_by_id(map2_id);
-> +       if (CHECK(fd >= 0, "map2_leak", "inner_map2 leaked!\n")) {
-> +               close(fd);
-> +               goto cleanup;
-> +       }
-> +
->  cleanup:
->         test_btf_map_in_map__destroy(skel);
->  }
-> --
-> 2.24.1
->
+# ethtool enx0050b61b0207
+Settings for enx0050b61b0207:
+	Supported ports: [ TP MII ]
+	Supported link modes:   10baseT/Half 10baseT/Full 
+	                        100baseT/Half 100baseT/Full 
+	Supported pause frame use: No
+	Supports auto-negotiation: Yes
+	Supported FEC modes: Not reported
+	Advertised link modes:  10baseT/Half 10baseT/Full 
+	                        100baseT/Half 100baseT/Full 
+	Advertised pause frame use: Symmetric
+	Advertised auto-negotiation: Yes
+	Advertised FEC modes: Not reported
+	Link partner advertised link modes:  10baseT/Half 10baseT/Full 
+	                                     100baseT/Half 100baseT/Full 
+	Link partner advertised pause frame use: Symmetric
+	Link partner advertised auto-negotiation: Yes
+	Link partner advertised FEC modes: Not reported
+	Speed: 100Mb/s
+	Duplex: Full
+	Port: MII
+	PHYAD: 16
+	Transceiver: internal
+	Auto-negotiation: on
+	Supports Wake-on: pg
+	Wake-on: p
+	Current message level: 0x00000007 (7)
+			       drv probe link
+	Link detected: yes
+
+
+# /home/andrew/ethtool/ethtool enx0050b61b0207
+Settings for enx0050b61b0207:
+	Supported ports: [ TP	 MII ]
+	Supported link modes:   10baseT/Half 10baseT/Full
+	                        100baseT/Half 100baseT/Full
+	Supported pause frame use: No
+	Supports auto-negotiation: Yes
+	Supported FEC modes: Not reported
+	Advertised link modes:  10baseT/Half 10baseT/Full
+	                        100baseT/Half 100baseT/Full
+	Advertised pause frame use: No
+	Advertised auto-negotiation: Yes
+	Advertised FEC modes: Not reported
+	Link partner advertised link modes:  Not reported
+	Link partner advertised pause frame use: No
+	Link partner advertised auto-negotiation: No
+	Link partner advertised FEC modes: No
+	Speed: 100Mb/s
+	Duplex: Full
+	Auto-negotiation: on
+	Port: MII
+	PHYAD: 16
+	Transceiver: internal
+	Supports Wake-on: pg
+	Wake-on: p
+        Current message level: 0x00000007 (7)
+                               drv probe link
+	Link detected: yes
