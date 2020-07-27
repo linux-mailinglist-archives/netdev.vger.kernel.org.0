@@ -2,128 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E983022F402
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 17:41:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C80C022F415
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 17:47:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730914AbgG0Pli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 11:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49758 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730905AbgG0Plh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 11:41:37 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AB6C061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 08:41:37 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id v15so4716016lfg.6
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 08:41:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wIjDVPKqdkF+6aYtOIQ3W6Li/YJL+puMmH4ZvB1VMNM=;
-        b=mjU15NemkSZjw+n/lyfiQtFYkFUqUoXPGQ6FfBVa1UKAuG1RjscBFDbAcPuBdHR9YE
-         E4mAnt3JXDyx4RIU4uQ5sCLy9R/R+QfkZRsc9DFynW8vUXJZMTrnnKYlaBaJ95dmLyJV
-         tgZBM0GtVmwbBMVU3ITJWuTDA0QQTEzvkwCblCnFWw7Y8QBrzsHygdh3szgl8hidA+uf
-         0sbzSlbT2g9AwxQ4OppT/R7t1T9wkKhASpOjWOiHHu4KVIKwJr2oHD5jsp1OtPJOpgM1
-         QcsoUk+R+COQAzMtLZFhwpkK1Z++rN0dP70PtVpvXAUcyTYBMwSBvDJxkK44v1vofPwP
-         6bxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wIjDVPKqdkF+6aYtOIQ3W6Li/YJL+puMmH4ZvB1VMNM=;
-        b=P/ySrbXD0EUO3DmtsxDnAPCDe2lLb8BUH05Dr9UECilxpFmXMmK09vMLeJ4HuAf/4W
-         rwoenZnCMrT8RRvEmIzwPBHhZ9U8FEFBcFLSdMeHMusSVLs0K8fLkpGlmrP/H32q+xmE
-         g7w2PXC6H19q5xUXyoPBl3q95c5+3D6pMaRKmjS0xBJtR3zM0f0dIeRIV3TqxgpBI3LD
-         SPHP7v0qxqbNr1M4/mi9y9Jg9/XPH+1ECvRzkZ7bpS2ugfwQzsArt9pjOgyNkUuYzW3n
-         fjIFGs9JYHudDUHihRkMQzyuu/VA5uQhCmOqFXGXZ/kvBsF50kpQw+JO+3p2eI9ifupd
-         Fe7A==
-X-Gm-Message-State: AOAM5328iMYYre1K0C6mr2h71hENK6JBjYlPqYz/jhMoWlC+0fcpYXk7
-        DLI4LyouAuQYOEdq1t8C/PYCjDfqPktBXuEicYQ=
-X-Google-Smtp-Source: ABdhPJytldLJhrei4pxIcauyJ0+KSsu5hsnCAhII0TB61jVHehTStZVzkTVTPZmT2+AYd+wXvDBqICPCtYYAf4ANGU4=
-X-Received: by 2002:a19:c197:: with SMTP id r145mr11938012lff.41.1595864494933;
- Mon, 27 Jul 2020 08:41:34 -0700 (PDT)
+        id S1731071AbgG0PrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 11:47:23 -0400
+Received: from mout.gmx.net ([212.227.17.22]:59767 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728015AbgG0PrX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 11:47:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1595864841;
+        bh=mN6GANnkf0eAnusNsrpKeRJ15wx8yxDIaswTKwVd64Y=;
+        h=X-UI-Sender-Class:Date:From:To:Subject;
+        b=QY2pES+4OMDronUjoYA0STHFs/a8MpHXbMgKOjieXMU+wbzEtnnVJ6psp9XlG+DFz
+         NpFLkrQx7Ylb9DHNiFl1borzshDjYcgba64H9frYD7D8cCht3Zg0hALV6ri0Z9nNn9
+         tCH+zIfEAeNrEtXMeaKxjXO21vkWUrUmcNrA4axM=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from gmx.fr ([161.0.158.19]) by mail.gmx.com (mrgmx105
+ [212.227.17.174]) with ESMTPSA (Nemesis) id 1MplXp-1kaTNF3ift-00qDID; Mon, 27
+ Jul 2020 17:47:21 +0200
+Date:   Mon, 27 Jul 2020 11:47:15 -0400
+From:   Jamie Gloudon <jamie.gloudon@gmx.fr>
+To:     netdev@vger.kernel.org
+Subject: Broken link partner advertised reporting in ethtool
+Message-ID: <20200727154715.GA1901@gmx.fr>
 MIME-Version: 1.0
-References: <1587996484-3504-1-git-send-email-fugang.duan@nxp.com>
- <20200727012354.GT28704@pendragon.ideasonboard.com> <20200727020631.GW28704@pendragon.ideasonboard.com>
- <20200727021432.GM1661457@lunn.ch> <20200727023310.GA23988@pendragon.ideasonboard.com>
- <CAFXsbZrf11Nj4rzLJfisPr-fFo-+stt-G3-XQ_Mwus_2z0nsAg@mail.gmail.com>
- <CAFXsbZrysb6SGisEhgXHzj8NZ5o_EjY-rtiqg3gypgr0w-d-dw@mail.gmail.com>
- <CAFXsbZpBP_kzsC_dLYezJWo7+dQufoRmaFpJgKJbnn6T=sc5QA@mail.gmail.com>
- <20200727120545.GN1661457@lunn.ch> <20200727152434.GF20890@pendragon.ideasonboard.com>
-In-Reply-To: <20200727152434.GF20890@pendragon.ideasonboard.com>
-From:   Chris Healy <cphealy@gmail.com>
-Date:   Mon, 27 Jul 2020 08:41:23 -0700
-Message-ID: <CAFXsbZo5ufE0v_dmzQU9oWBeeRj+DKzDoiMj6OjuiER0O7nFfQ@mail.gmail.com>
-Subject: Re: [RESENT PATCH net--stat 1/1] net: ethernet: fec: Revert "net:
- ethernet: fec: Replace interrupt driven MDIO with polled IO"
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Fugang Duan <fugang.duan@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Provags-ID: V03:K1:b/wItvzNk8M0IIwLiEXV+a3gzBMnY7EybQSvcx/eAMLIpF0FB0k
+ AkQfMaHhryI36yBRJkFxSECuIN9O+pSfUV36+cc8aW02S+I1nMYaaKHigFZf0gOCEsjSSvO
+ JIZm/U5cqHDcftV6hOsdVd5bcuWZtwSsaGsTXuKJvmG4Et6p6NTWduR7VsW+Yxg0UrXkkGV
+ x/AbeshTpcTjKyUTBD1Sg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:6hB9fgx7QIc=:tcEI30ma6VgI9gga7B72qF
+ 3GN+7MFyexeXXfCXiVz3akJfMhBu9ZSs6sL1R+XfW32CFu264eZ/3uTg5EYHP1tlClrnI3kDS
+ 6IuFOgZyvjYvNOu3yBWcA4IdemclOhafd+73HaPgUqkEQKa3T/X1UNu3EE6BpKD1S1/oFY9Lj
+ zwIhQWFPIW8aq8k2EgArqMUiORMfhTZMNECV/vplJ7rCFSRyqE+oHj/LmfHGbcUcazm0lf13x
+ zbbmvb+eznJ8/slycS4BqrigWLhw038syeiIIdKyF/q2LKB8+aAK72J86E1Q3gWmU8bsGe0O2
+ 89m7zD90CeyC1znxbASs3j+OBI+52gw89fsRaMandVbNU7l8ji6LJ9rUGGwat988Dk0sq33YR
+ qbYs3xeNp0+jaEFdgw0sq9UJ20DA3WBt9kQN2ipY6XkTqKs5IiawN/42Ung/qRs1hSIi/40a3
+ bC9WV/tpUsDdvOB1R/saZ/R4WQ1Zf7vQaHJfG348pBKG5X/vfwmyxEkoosW5vo143nh2dECA4
+ UaEgsPS1h3DoiDFHOM0eXDLFeyiGH7hRGN5aksrxwfEcddMJRk4f2aL+FvPPT+dNoc3xMFYV7
+ nrHohZwNrUtmZ5PwBZMefpFpuN5awWJbmBpI0P1kK/UKv8wqw4QpBQSW8eutFgL/UlzZLl0jg
+ AjE+a3BW12mLk/Y9LQdNO6kezQEMcm75WVKujd/EUcoPxRXPJqpf4+R6wHkjXMHBY2ouFkZ6T
+ lwel4BDLCB2N0w9ju9I7nFyB+d2MM6wUCqHH9ixee16BT4ClskfV9styU9cNtxKli32QHQkoI
+ xWIWB1DEiDwy64mwVJiKbz+w+N8ns443hnNRvc6ZGEkVnxw3ypgufJUfpXDEbJia7ipYJVod3
+ VPlUsvaWXGmoM9IAz5e24gsU1Z7DTkAdnRaLdPNy7tjA8YcFeXMmvRsu6iDRRTy+6FdijjRQg
+ qPsBjYH5O8SLzp3Jua0pn/BrdmZZY4K54S9EVYl+vwsmmkoQ4bw5RMOXuWYCsPkq/h17nFgS2
+ j4GFRC1+tzYnFDQEWdicpZBALXVptFvaG7QKLqgJ7Bjvgwu4OEfeRgC1bmwW6uQcupuFnCB/Y
+ F5xKiqlYgcnlYztOzAux8PdGYiKI651ri3oXQoJ36wAZiAVSxPhP13BO/A6o9l0bPIrw7JtXs
+ wFm4CCoGKzNYGX55DMFiSMuBJD6MppFqn2FpvooOHIdWxMekLfyvgs4liErRPKME7Tgh5H6Sa
+ XilemjHvfoaZvMSFPlRcnK7G1GwC3/E9Dg76KQA==
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 8:24 AM Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
->
-> Hi Andrew,
->
-> On Mon, Jul 27, 2020 at 02:05:45PM +0200, Andrew Lunn wrote:
-> > On Sun, Jul 26, 2020 at 08:01:25PM -0700, Chris Healy wrote:
-> > > It appears quite a few boards were affected by this micrel PHY driver change:
-> > >
-> > > 2ccb0161a0e9eb06f538557d38987e436fc39b8d
-> > > 80bf72598663496d08b3c0231377db6a99d7fd68
-> > > 2de00450c0126ec8838f72157577578e85cae5d8
-> > > 820f8a870f6575acda1bf7f1a03c701c43ed5d79
-> > >
-> > > I just updated the phy-mode with my board from rgmii to rgmii-id and
-> > > everything started working fine with net-next again:
-> >
-> > Hi Chris
-> >
-> > Is this a mainline supported board? Do you plan to submit a patch?
-> >
-> > Laurent, does the change also work for your board? This is another one
-> > of those cases were a bug in the PHY driver, not respecting the
-> > phy-mode, has masked a bug in the device tree, using the wrong
-> > phy-mode. We had the same issue with the Atheros PHY a while back.
->
-> Yes, setting the phy-mode to rgmii-id fixes the issue.
->
-> Thank you everybody for your quick responses and very useful help !
->
-> On a side note, when the kernel boots, there's a ~10s delay for the
-> ethernet connection to come up:
->
-> [    4.050754] Micrel KSZ9031 Gigabit PHY 30be0000.ethernet-1:01: attached PHY driver [Micrel KSZ9031 Gigabit PHY] (mii_bus:phy_addr=30be0000.ethernet-1:01, irq=POLL)
-> [   15.628528] fec 30be0000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
-> [   15.676961] Sending DHCP requests ., OK
-> [   15.720925] IP-Config: Got DHCP answer from 192.168.2.47, my address is 192.168.2.210
->
-> The LED on the connected switch confirms this, it lits up synchronously
-> with the "Link is up" message. It's not an urgent issue, but if someone
-> had a few pointers on how I could debug that, it would be appreciated.
+Hey,
 
-Here's a few suggestions that could help in learning more:
+While having a discussion with Sasha from Intel. I noticed link partner
+advertised support is broken in ethtool 5.7. Sasha hinted to me, the
+new API that ethtool is using.
 
-1) Review the KSZ9031 HW errata and compare against the PHY driver
-code.  There's a number of errata that could cause this from my quick
-review.
-2) Based on what I read in the HW errata, try different link partners
-that utilize different copper PHYs to see if it results in different
-behaviour.
-3) Try setting your autonegotiate advertisement to only advertise
-100Mbps and see if this affects the timing.  Obviously this would not
-be a solution but might help in better understanding the issue.
+I see the actual cause in dump_peer_modes() in netlink/settings.c, that
+the mask parameter is set to false for dump_link_modes, dump_pause and
+bitset_get_bit.
 
->
-> --
-> Regards,
->
-> Laurent Pinchart
+Regards,
+Jamie Gloudon
