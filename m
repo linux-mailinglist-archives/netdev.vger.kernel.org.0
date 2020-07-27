@@ -2,100 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 212AC22EB82
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:54:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B7F322EB7A
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:52:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728276AbgG0LyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 07:54:12 -0400
-Received: from mail-bn7nam10on2064.outbound.protection.outlook.com ([40.107.92.64]:54240
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726873AbgG0LyM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 07:54:12 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VRR/H1OrF4zU9NGbIP9AFaDY7fbRQLnjt7sSTefS3Jkz+/O2CYLI9eac+v+2MZFSL5W/XIONotnKSW6Glg0zQJkpsjRMC29FBHuWfID+y32F96Ujm/rRli6rqCXRrZtjlSnjAoOg5/uf+5VcGfv8kcoO236PHbb4/LOZJB5+b7zSVaNiAveUZZT6oaA0BbKtW8aHerZMHfQ9hdY3YaY4ralX6zRJY6vkEim1eSgQAvpHidJRDFrgfi4NnC/X0bxe01Pu0/WlntiYB0qBNcOMR8SsMhXBv1OigrPL214Q7EHWCsl+ohurEOAwy3LuNsCRTRLtyEmIrFcOTcaqOhglTA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bmyILddlzE6b8rLZ7uHEXEZPJLFMABXC0tskFTC2hQo=;
- b=CaXK8OVYZJ4J4ck+8hGeZwOsxdvvQLWKh//Kj6b4G4ZLUlx94tagzPrQdZzl7hr8yXlk5z2B/c5TkyyoeB9s7C2GPaivpfUTwuE76UjPaNFWHOsB60gHVjInBmTtvspxRdUwgN6vTWyiVvcH9Ahvshr+q0BBxGJdpMgGNo8Sj4O7VOPTkcRVxE2T5Bp75zpc5LayB5Ilu1okwIJ63N/2FweIpmfvt4Q1Xmkyh9ICUC/miZ6Wf04fUDrJc2Va+m0Nd4a7Yi/WkQVjsQTRpkirrnivkQs6KbXtGXaX3uQtY5RRZnt9OP+IMnRrBjqYTsqRkcWswEWT95SMPtipv89RCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synaptics.com; dmarc=pass action=none
- header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bmyILddlzE6b8rLZ7uHEXEZPJLFMABXC0tskFTC2hQo=;
- b=bfgrUSF964Pgru4UIg3qbUeWjuwZKpc4Xn/le9A7Z3E+leV34Jc5O2qwax3fblC5H0upvPS4M3V1zkrjHJaH10Q1rc950/qHdU8f2m1FCaF/xe+OtFfPkpGFKc1K7PgZKIL7kpbHw5kZLpi5yDl0DiKyjEUPCeR79VMdU4VnmbQ=
-Authentication-Results: bootlin.com; dkim=none (message not signed)
- header.d=none;bootlin.com; dmarc=none action=none header.from=synaptics.com;
-Received: from BYAPR03MB3573.namprd03.prod.outlook.com (2603:10b6:a02:ae::15)
- by BYAPR03MB4599.namprd03.prod.outlook.com (2603:10b6:a03:134::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17; Mon, 27 Jul
- 2020 11:54:08 +0000
-Received: from BYAPR03MB3573.namprd03.prod.outlook.com
- ([fe80::b5cc:ca6b:3c25:a99c]) by BYAPR03MB3573.namprd03.prod.outlook.com
- ([fe80::b5cc:ca6b:3c25:a99c%4]) with mapi id 15.20.3216.033; Mon, 27 Jul 2020
- 11:54:08 +0000
-Date:   Mon, 27 Jul 2020 19:50:12 +0800
-From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-nex 0/2] net: mvneta: improve phylink_speed_up/down
- usage
-Message-ID: <20200727195012.4bcd069d@xhacker.debian>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TYAPR01CA0044.jpnprd01.prod.outlook.com
- (2603:1096:404:28::32) To BYAPR03MB3573.namprd03.prod.outlook.com
- (2603:10b6:a02:ae::15)
+        id S1728205AbgG0LwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 07:52:09 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:17894 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726873AbgG0LwJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 07:52:09 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RBpaGm000720;
+        Mon, 27 Jul 2020 04:52:06 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0818; bh=Nd7arwfxNZtpVI9ZnivLJIX8lOylM+VZWcCMVyaqn9U=;
+ b=vWluG5lrFsWCaoupxBxbOhIK2ZbtQqq8wTryqRE+EDrnw48/fkraCqbexYOqXkdohl6H
+ 4OPqi46wNPtT+a5f6kUopgF+GHo1bF79efqDgJzLT65iFLRTbWyVYm52sOwrIJJ/h2yU
+ /g4/eAu4QYUQ89CDgPmPXB4zEwG/+QZ3asDOHFbWWkkL8l3hiuLfLeU0GdGIFHmM8nSY
+ l+DWHi0Cds9jHaO30H6zL1/u0QDkPvPxhgj+3KIm6XfwtBThETfgkUQmQAikXEjs/IcK
+ cnk5sgkix/MIbctK7kBcaDtnTYOgia4oR1/pTOtcP59NmR/1PvSuAXINdgmqReYdfJnx 0w== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 32gj3qq5f4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jul 2020 04:52:06 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 27 Jul
+ 2020 04:52:05 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 27 Jul 2020 04:52:05 -0700
+Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
+        by maili.marvell.com (Postfix) with ESMTP id 27ECF3F703F;
+        Mon, 27 Jul 2020 04:52:01 -0700 (PDT)
+From:   Alexander Lobakin <alobakin@marvell.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Alexander Lobakin <alobakin@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        "Ariel Elior" <aelior@marvell.com>,
+        Denis Bolotin <denis.bolotin@marvell.com>,
+        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH net-next] qed: fix the allocation of the chains with an external PBL
+Date:   Mon, 27 Jul 2020 14:51:33 +0300
+Message-ID: <20200727115133.1631-1-alobakin@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from xhacker.debian (124.74.246.114) by TYAPR01CA0044.jpnprd01.prod.outlook.com (2603:1096:404:28::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.23 via Frontend Transport; Mon, 27 Jul 2020 11:54:06 +0000
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-X-Originating-IP: [124.74.246.114]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: aab0cb9a-6f8c-4bf8-112f-08d83223c4a1
-X-MS-TrafficTypeDiagnostic: BYAPR03MB4599:
-X-Microsoft-Antispam-PRVS: <BYAPR03MB459953A1E41920362F060100ED720@BYAPR03MB4599.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: r9iQybaTWsQa1FL4KTK9G0/5cq6BJIET5/Qw1hsr0Kq9uG3Srp551bgGOd6T1lvY37tRfFh7sGOBTGRsHz4Can54DMM4ard32MjYJM733J2RggnMCLb+MlgirJg6rph3kSSfzwDVCM0K3NbWuzOt0z0muz4AA40oS2NSJ6GtPhqcsumJwqib8eaUqgpVfEOS4vQ9krGIYSwPAzFzQpBjHf5agRY6KcINdmzA8lEqscnlSl3b3Iy/V2d3DKY5oWZUYB1+M2ziWwTVMVqePJml9xLSarGdHX1mC1gzQMjhiyJVCdHYFzPh3ANgRZb7X3Ub
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR03MB3573.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(136003)(376002)(366004)(346002)(39860400002)(478600001)(7696005)(4326008)(1076003)(956004)(16526019)(52116002)(66946007)(6506007)(186003)(26005)(86362001)(4744005)(110136005)(6666004)(2906002)(55016002)(8936002)(5660300002)(316002)(83380400001)(9686003)(8676002)(66476007)(66556008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: TCkvoSrhJsCtgVFn8K4F+jAfR6VFkGSearQju4Bv6yjR0V9KI9OhLB5H3n5dHuJovjBQi5It/dz/O6nPiJTazn2QOhnl48XKoPP7lMDawjxJ599xl79D2z4i0fngvqPpzEdUOjeEjMI14c/V/kqqDpwG9zYrnF4T9rRvDUiPIHPbOFE4ZIVNp5xiaGfkN5Bqbf7GDPCSlj4Sjp9fQy5JTORcLgOu1coFwOY+Wa+/NbYBRbpAgb0BRhc7nkPU8v62IfEtZbnybCenbiMpmVsoRfBRuOOeOUCt0cHbX0/DgTh7qQdjUXSX6WxBHg0CMtGkOLxgm6CngHqpRC57Ij3tmupSZ4oPgMjckFlDvvh1Dl7MXukGDPlHSIaPirAVsq5ptZdgM4Mktdkjjmut/jjUxL7FiM2Gbou0Qgd9rqHyE0b3O+a8Hw8NsAeEX+SzoLfkSa7aI+prwYgbLX+57sFuVOk22wouKegbnnBkvsz4l94Md6qU1rwBBeN6UwImPl6O
-X-OriginatorOrg: synaptics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aab0cb9a-6f8c-4bf8-112f-08d83223c4a1
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR03MB3573.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2020 11:54:08.0497
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: z3RIcUReGf3T1Z25I5AWy21X7SyxrH3YVHdaXKe7yZfe2mL+j9Ea8wciZtv1kIOzbUYIWW37U/TAH3AefghIPw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR03MB4599
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-27_07:2020-07-27,2020-07-27 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-patch1 fix the comment
-patch2 tries to avoid unnecessary phylink_speed_up() and
-phylink_speed_down() during changing the mtu.
+Dan reports static checker warning:
 
-Jisheng Zhang (2):
-  net: mvneta: fix comment about phylink_speed_down
-  net: mvneta: Don't speed down the PHY when changing mtu
+"The patch 9b6ee3cf95d3: "qed: sanitize PBL chains allocation" from Jul
+23, 2020, leads to the following static checker warning:
 
- drivers/net/ethernet/marvell/mvneta.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+	drivers/net/ethernet/qlogic/qed/qed_chain.c:299 qed_chain_alloc_pbl()
+	error: uninitialized symbol 'pbl_virt'.
 
+drivers/net/ethernet/qlogic/qed/qed_chain.c
+   249  static int qed_chain_alloc_pbl(struct qed_dev *cdev, struct qed_chain *chain)
+   250  {
+   251          struct device *dev = &cdev->pdev->dev;
+   252          struct addr_tbl_entry *addr_tbl;
+   253          dma_addr_t phys, pbl_phys;
+   254          __le64 *pbl_virt;
+                ^^^^^^^^^^^^^^^^
+[...]
+   271          if (chain->b_external_pbl)
+   272                  goto alloc_pages;
+                        ^^^^^^^^^^^^^^^^ uninitialized
+[...]
+   298                  /* Fill the PBL table with the physical address of the page */
+   299                  pbl_virt[i] = cpu_to_le64(phys);
+                        ^^^^^^^^^^^
+[...]
+"
+
+This issue was introduced with commit c3a321b06a80 ("qed: simplify
+initialization of the chains with an external PBL"), when
+chain->pbl_sp.table_virt initialization was moved up to
+qed_chain_init_params().
+Fix it by initializing pbl_virt with an already filled chain struct field.
+
+Fixes: c3a321b06a80 ("qed: simplify initialization of the chains with an external PBL")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_chain.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_chain.c b/drivers/net/ethernet/qlogic/qed/qed_chain.c
+index f8efd36d66e0..b83d17b14e85 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_chain.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_chain.c
+@@ -268,8 +268,10 @@ static int qed_chain_alloc_pbl(struct qed_dev *cdev, struct qed_chain *chain)
+ 
+ 	chain->pbl.pp_addr_tbl = addr_tbl;
+ 
+-	if (chain->b_external_pbl)
++	if (chain->b_external_pbl) {
++		pbl_virt = chain->pbl_sp.table_virt;
+ 		goto alloc_pages;
++	}
+ 
+ 	size = array_size(page_cnt, sizeof(*pbl_virt));
+ 	if (unlikely(size == SIZE_MAX))
 -- 
-2.28.0.rc0
+2.25.1
 
