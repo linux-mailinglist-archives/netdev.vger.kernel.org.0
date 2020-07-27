@@ -2,174 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC6F422FD29
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:25:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F64622FD32
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:26:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728677AbgG0XZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 19:25:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36934 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726956AbgG0XZc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 19:25:32 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B372720A8B;
-        Mon, 27 Jul 2020 23:25:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595892331;
-        bh=putxGiY+5IfGT6KOGyXiieruCr/zyJjCepA4Vq/teIA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OnSEb1WZ7bOR66Ehsu0+OAUn/cBdOk2yvp3MnPEUcSxYO8rflUEn8QAEDnt7H43UA
-         7HOO7KBmGdfgVTnCo1MCxxNKWsGWGtfJ8P9JfHQ2RsdpNehH8SI/B2wbwDFfx0nE1H
-         cCcqNBKu6S2tuaFt+XZVbee7rEVhchk7axJwI15Y=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrea Righi <andrea.righi@canonical.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        xen-devel@lists.xenproject.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 4/4] xen-netfront: fix potential deadlock in xennet_remove()
-Date:   Mon, 27 Jul 2020 19:25:25 -0400
-Message-Id: <20200727232525.718372-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200727232525.718372-1-sashal@kernel.org>
-References: <20200727232525.718372-1-sashal@kernel.org>
+        id S1728629AbgG0XZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 19:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727982AbgG0XZt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 19:25:49 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F681C061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:25:49 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id l17so18843159iok.7
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:25:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ul6OG5AcyM9q1mi7Ptad8xTbwNUTplojUbpuQmVnOns=;
+        b=IPa1kzP5ylvOjB10fuF6IEq885IGogjYVDb9kpeYpNKZVof0od0BcRsCGjG93WvhZF
+         XFpKcVArTG+IOG8IDmCHPzWgzo6h/Ovka5+IOqMCWgsN2K2extLFdRVXmSX5AyVE7Ler
+         oUeIWUZAo9ZSZlboKQK4hUuTzVlX7OzSkMl/4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ul6OG5AcyM9q1mi7Ptad8xTbwNUTplojUbpuQmVnOns=;
+        b=q78KQG+b/bogqZOaKIBmyr/bjAkHJlKFFJgvGYy0BDlcitwuD8+xzJ3vwnXQZRexDm
+         jjCqL/hOq25yYvFHfoEi1VszT4tsN3ScxDXJqLPurQ41IOy3e2wlTBftSyVGygxjHBOw
+         DHfX3RRmJ2qnoM4Sbj2MK7GOsJJQICdcbkfx5ZTWEAAIuNjqGyu0YNfnk1jDhhcNxn0T
+         56JdjkwJjogltdNYLoAo+4q/AJMoQukENITHbVNIqUmPAX37NlvEclgLO7OSCYmE5Szs
+         XiiAzuaWq5iAcu2d+MY6UBro+orw1sxySsYzV9PynkJGod7IMrKGl7yV44B2zgyicIxm
+         YCRA==
+X-Gm-Message-State: AOAM532ggvSSQuBA0qSByrAFt7Yg4tjlN+/U8sJwBwb5OPOzvRkhwZZj
+        ZiTEn3INw9MXwlLvapklf1bsQRuYpYTdi4aoLYWc
+X-Google-Smtp-Source: ABdhPJwxtoIRaMqJXNzMSbASUGjLtcFW/eeOzkWEbrzbg/6KTN3tLOLaoQWh9UCKEqFsoeHfxvtEFrbXlLFRCSNa+ps=
+X-Received: by 2002:a02:840e:: with SMTP id k14mr28736959jah.133.1595892348918;
+ Mon, 27 Jul 2020 16:25:48 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20200727162009.7618-1-julien@cumulusnetworks.com> <20200727093027.467da3a7@hermes.lan>
+In-Reply-To: <20200727093027.467da3a7@hermes.lan>
+From:   Julien Fortin <julien@cumulusnetworks.com>
+Date:   Tue, 28 Jul 2020 01:25:38 +0200
+Message-ID: <CAM_1_KxDbSqaUWr4apTs4ydizTiohm7_L=B=0mZxeMX=nNEwzA@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next master v2] bridge: fdb show: fix fdb entry
+ state output (+ add json support)
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, Roopa Prabhu <roopa@cumulusnetworks.com>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrea Righi <andrea.righi@canonical.com>
+On Mon, Jul 27, 2020 at 6:30 PM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Mon, 27 Jul 2020 18:20:09 +0200
+> Julien Fortin <julien@cumulusnetworks.com> wrote:
+>
+> > diff --git a/bridge/fdb.c b/bridge/fdb.c
+> > index d1f8afbe..765f4e51 100644
+> > --- a/bridge/fdb.c
+> > +++ b/bridge/fdb.c
+> > @@ -62,7 +62,10 @@ static const char *state_n2a(unsigned int s)
+> >       if (s & NUD_REACHABLE)
+> >               return "";
+> >
+> > -     sprintf(buf, "state=%#x", s);
+> > +     if (is_json_context())
+> > +             sprintf(buf, "%#x", s);
+> > +     else
+> > +             sprintf(buf, "state %#x", s)
+>
+> Please keep the "state=%#x" for the non JSON case.
+> No need to change output format.
 
-[ Upstream commit c2c633106453611be07821f53dff9e93a9d1c3f0 ]
+My v1 patch (see below) kept the "state=" but you asked me to remove
+it and re-submit.
 
-There's a potential race in xennet_remove(); this is what the driver is
-doing upon unregistering a network device:
+diff --git a/bridge/fdb.c b/bridge/fdb.c
+index d2247e80..198c51d1 100644
+--- a/bridge/fdb.c
++++ b/bridge/fdb.c
+@@ -62,7 +62,10 @@ static const char *state_n2a(unsigned int s)
+        if (s & NUD_REACHABLE)
+                return "";
 
-  1. state = read bus state
-  2. if state is not "Closed":
-  3.    request to set state to "Closing"
-  4.    wait for state to be set to "Closing"
-  5.    request to set state to "Closed"
-  6.    wait for state to be set to "Closed"
-
-If the state changes to "Closed" immediately after step 1 we are stuck
-forever in step 4, because the state will never go back from "Closed" to
-"Closing".
-
-Make sure to check also for state == "Closed" in step 4 to prevent the
-deadlock.
-
-Also add a 5 sec timeout any time we wait for the bus state to change,
-to avoid getting stuck forever in wait_event().
-
-Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/xen-netfront.c | 64 +++++++++++++++++++++++++-------------
- 1 file changed, 42 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 02b6a6c108400..7d4c0c46a889d 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -62,6 +62,8 @@ module_param_named(max_queues, xennet_max_queues, uint, 0644);
- MODULE_PARM_DESC(max_queues,
- 		 "Maximum number of queues per virtual interface");
- 
-+#define XENNET_TIMEOUT  (5 * HZ)
-+
- static const struct ethtool_ops xennet_ethtool_ops;
- 
- struct netfront_cb {
-@@ -1349,12 +1351,15 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
- 
- 	netif_carrier_off(netdev);
- 
--	xenbus_switch_state(dev, XenbusStateInitialising);
--	wait_event(module_wq,
--		   xenbus_read_driver_state(dev->otherend) !=
--		   XenbusStateClosed &&
--		   xenbus_read_driver_state(dev->otherend) !=
--		   XenbusStateUnknown);
-+	do {
-+		xenbus_switch_state(dev, XenbusStateInitialising);
-+		err = wait_event_timeout(module_wq,
-+				 xenbus_read_driver_state(dev->otherend) !=
-+				 XenbusStateClosed &&
-+				 xenbus_read_driver_state(dev->otherend) !=
-+				 XenbusStateUnknown, XENNET_TIMEOUT);
-+	} while (!err);
-+
- 	return netdev;
- 
-  exit:
-@@ -2166,28 +2171,43 @@ static const struct attribute_group xennet_dev_group = {
- };
- #endif /* CONFIG_SYSFS */
- 
--static int xennet_remove(struct xenbus_device *dev)
-+static void xennet_bus_close(struct xenbus_device *dev)
- {
--	struct netfront_info *info = dev_get_drvdata(&dev->dev);
--
--	dev_dbg(&dev->dev, "%s\n", dev->nodename);
-+	int ret;
- 
--	if (xenbus_read_driver_state(dev->otherend) != XenbusStateClosed) {
-+	if (xenbus_read_driver_state(dev->otherend) == XenbusStateClosed)
-+		return;
-+	do {
- 		xenbus_switch_state(dev, XenbusStateClosing);
--		wait_event(module_wq,
--			   xenbus_read_driver_state(dev->otherend) ==
--			   XenbusStateClosing ||
--			   xenbus_read_driver_state(dev->otherend) ==
--			   XenbusStateUnknown);
-+		ret = wait_event_timeout(module_wq,
-+				   xenbus_read_driver_state(dev->otherend) ==
-+				   XenbusStateClosing ||
-+				   xenbus_read_driver_state(dev->otherend) ==
-+				   XenbusStateClosed ||
-+				   xenbus_read_driver_state(dev->otherend) ==
-+				   XenbusStateUnknown,
-+				   XENNET_TIMEOUT);
-+	} while (!ret);
-+
-+	if (xenbus_read_driver_state(dev->otherend) == XenbusStateClosed)
-+		return;
- 
-+	do {
- 		xenbus_switch_state(dev, XenbusStateClosed);
--		wait_event(module_wq,
--			   xenbus_read_driver_state(dev->otherend) ==
--			   XenbusStateClosed ||
--			   xenbus_read_driver_state(dev->otherend) ==
--			   XenbusStateUnknown);
--	}
-+		ret = wait_event_timeout(module_wq,
-+				   xenbus_read_driver_state(dev->otherend) ==
-+				   XenbusStateClosed ||
-+				   xenbus_read_driver_state(dev->otherend) ==
-+				   XenbusStateUnknown,
-+				   XENNET_TIMEOUT);
-+	} while (!ret);
-+}
-+
-+static int xennet_remove(struct xenbus_device *dev)
-+{
-+	struct netfront_info *info = dev_get_drvdata(&dev->dev);
- 
-+	xennet_bus_close(dev);
- 	xennet_disconnect_backend(info);
- 
- 	if (info->netdev->reg_state == NETREG_REGISTERED)
--- 
-2.25.1
-
+-       sprintf(buf, "state=%#x", s);
++       if (is_json_context())
++               sprintf(buf, "%#x", s);
++       else
++               sprintf(buf, "state=%#x", s);
+        return buf;
+ }
