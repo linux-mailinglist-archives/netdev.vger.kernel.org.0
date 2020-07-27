@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08A7722EAD8
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:08:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3805A22EAD1
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:07:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728247AbgG0LHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 07:07:44 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40708 "EHLO
+        id S1726890AbgG0LHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 07:07:32 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40713 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728542AbgG0LGR (ORCPT
+        with ESMTP id S1728548AbgG0LGR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 07:06:17 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 27 Jul 2020 14:06:13 +0300
+        with SMTP; 27 Jul 2020 14:06:14 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 06RB6DXB022246;
-        Mon, 27 Jul 2020 14:06:13 +0300
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 06RB6Exr022250;
+        Mon, 27 Jul 2020 14:06:14 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 06RB6D2L002402;
-        Mon, 27 Jul 2020 14:06:13 +0300
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 06RB6Err002404;
+        Mon, 27 Jul 2020 14:06:14 +0300
 Received: (from moshe@localhost)
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 06RB6Dh9002401;
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 06RB6DNL002403;
         Mon, 27 Jul 2020 14:06:13 +0300
 From:   Moshe Shemesh <moshe@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
@@ -28,9 +28,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net-next RFC 10/13] net/mlx5: Add devlink param enable_remote_dev_reset support
-Date:   Mon, 27 Jul 2020 14:02:30 +0300
-Message-Id: <1595847753-2234-11-git-send-email-moshe@mellanox.com>
+Subject: [PATCH net-next RFC 11/13] net/mlx5: Add support for fw live patch event
+Date:   Mon, 27 Jul 2020 14:02:31 +0300
+Message-Id: <1595847753-2234-12-git-send-email-moshe@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
 References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
@@ -39,108 +39,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The enable_remote_dev_reset devlink param flags that the host admin
-allows resets by other hosts. In case it is cleared mlx5 host PF driver
-will send NACK on pci sync for firmware update reset request and the
-command will fail.
-By default enable_remote_dev_reset parameter is true, so pci sync for
-firmware update reset is enabled.
+Firmware live patch event notifies the driver that the firmware was just
+updated using live patch. In such case the driver should not reload or
+re-initiate entities, part to updating the firmware version and
+re-initiate the firmware tracer which can be updated by live patch with
+new strings database to help debugging an issue.
 
 Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/devlink.c | 29 +++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/fw_reset.c    | 12 ++++++++
- include/linux/mlx5/driver.h                   |  1 +
- 3 files changed, 42 insertions(+)
+ .../mellanox/mlx5/core/diag/fw_tracer.c       | 31 +++++++++++++++++++
+ .../mellanox/mlx5/core/diag/fw_tracer.h       |  1 +
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    | 27 ++++++++++++++++
+ include/linux/mlx5/device.h                   |  1 +
+ 4 files changed, 60 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 905d55cab4c3..a81204b3dd7c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -275,6 +275,32 @@ static int mlx5_devlink_large_group_num_validate(struct devlink *devlink, u32 id
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
+index ad3594c4afcb..08dae045d185 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
+@@ -1064,6 +1064,37 @@ void mlx5_fw_tracer_destroy(struct mlx5_fw_tracer *tracer)
+ 	kvfree(tracer);
  }
- #endif
  
-+static int mlx5_devlink_enable_remote_dev_reset_set(struct devlink *devlink, u32 id,
-+						    struct devlink_param_gset_ctx *ctx)
++int mlx5_fw_tracer_recreate_strings_db(struct mlx5_fw_tracer *tracer)
 +{
-+	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+	struct mlx5_core_health *health;
++	struct mlx5_core_dev *dev;
++	int err;
 +
-+	health = &dev->priv.health;
-+	if (ctx->val.vbool)
-+		clear_bit(MLX5_HEALTH_RESET_FLAGS_NACK_RESET_REQUEST, &health->reset_flags);
-+	else
-+		set_bit(MLX5_HEALTH_RESET_FLAGS_NACK_RESET_REQUEST, &health->reset_flags);
++	if (IS_ERR_OR_NULL(tracer))
++		return -EINVAL;
++
++	cancel_work_sync(&tracer->read_fw_strings_work);
++	mlx5_fw_tracer_clean_ready_list(tracer);
++	mlx5_fw_tracer_clean_print_hash(tracer);
++	mlx5_fw_tracer_clean_saved_traces_array(tracer);
++	mlx5_fw_tracer_free_strings_db(tracer);
++
++	dev = tracer->dev;
++	err = mlx5_query_mtrc_caps(tracer);
++	if (err) {
++		mlx5_core_dbg(dev, "FWTracer: Failed to query capabilities %d\n", err);
++		return err;
++	}
++
++	err = mlx5_fw_tracer_allocate_strings_db(tracer);
++	if (err) {
++		mlx5_core_warn(dev, "FWTracer: Allocate strings DB failed %d\n", err);
++		return err;
++	}
++	mlx5_fw_tracer_init_saved_traces_array(tracer);
++
 +	return 0;
 +}
 +
-+static int mlx5_devlink_enable_remote_dev_reset_get(struct devlink *devlink, u32 id,
-+						    struct devlink_param_gset_ctx *ctx)
-+{
-+	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+	struct mlx5_core_health *health;
-+
-+	health = &dev->priv.health;
-+	ctx->val.vbool = !test_bit(MLX5_HEALTH_RESET_FLAGS_NACK_RESET_REQUEST,
-+				   &health->reset_flags);
-+	return 0;
-+}
-+
- static const struct devlink_param mlx5_devlink_params[] = {
- 	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_FLOW_STEERING_MODE,
- 			     "flow_steering_mode", DEVLINK_PARAM_TYPE_STRING,
-@@ -290,6 +316,9 @@ static const struct devlink_param mlx5_devlink_params[] = {
- 			     NULL, NULL,
- 			     mlx5_devlink_large_group_num_validate),
- #endif
-+	DEVLINK_PARAM_GENERIC(ENABLE_REMOTE_DEV_RESET, BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			      mlx5_devlink_enable_remote_dev_reset_get,
-+			      mlx5_devlink_enable_remote_dev_reset_set, NULL),
- };
+ static int fw_tracer_event(struct notifier_block *nb, unsigned long action, void *data)
+ {
+ 	struct mlx5_fw_tracer *tracer = mlx5_nb_cof(nb, struct mlx5_fw_tracer, nb);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h
+index 40601fba80ba..1a755098aeeb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h
+@@ -191,5 +191,6 @@ void mlx5_fw_tracer_destroy(struct mlx5_fw_tracer *tracer);
+ int mlx5_fw_tracer_trigger_core_dump_general(struct mlx5_core_dev *dev);
+ int mlx5_fw_tracer_get_saved_traces_objects(struct mlx5_fw_tracer *tracer,
+ 					    struct devlink_fmsg *fmsg);
++int mlx5_fw_tracer_recreate_strings_db(struct mlx5_fw_tracer *tracer);
  
- static void mlx5_devlink_set_params_init_values(struct devlink *devlink)
+ #endif
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-index f95df226b915..45fdecbadf52 100644
+index 45fdecbadf52..87465a5e5577 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -61,12 +61,24 @@ static int mlx5_fw_set_reset_sync_ack(struct mlx5_core_dev *dev)
- 	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 1, false);
+@@ -2,11 +2,13 @@
+ /* Copyright (c) 2020, Mellanox Technologies inc.  All rights reserved. */
+ 
+ #include "fw_reset.h"
++#include "diag/fw_tracer.h"
+ 
+ struct mlx5_fw_reset {
+ 	struct mlx5_core_dev *dev;
+ 	struct mlx5_nb nb;
+ 	struct workqueue_struct *wq;
++	struct work_struct fw_live_patch_work;
+ 	struct work_struct reset_request_work;
+ 	struct work_struct reset_now_work;
+ 	struct work_struct reset_abort_work;
+@@ -66,6 +68,27 @@ static int mlx5_fw_set_reset_sync_nack(struct mlx5_core_dev *dev)
+ 	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 2, false);
  }
  
-+static int mlx5_fw_set_reset_sync_nack(struct mlx5_core_dev *dev)
++static void mlx5_fw_live_patch_event(struct work_struct *work)
 +{
-+	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 2, false);
++	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
++						      fw_live_patch_work);
++	struct mlx5_core_dev *dev = fw_reset->dev;
++	struct mlx5_fw_tracer *tracer;
++
++	mlx5_core_info(dev, "Live patch updated firmware version: %d.%d.%d\n", fw_rev_maj(dev),
++		       fw_rev_min(dev), fw_rev_sub(dev));
++
++	tracer = dev->tracer;
++	if (IS_ERR_OR_NULL(tracer))
++		return;
++
++	mlx5_fw_tracer_cleanup(tracer);
++	if (mlx5_fw_tracer_recreate_strings_db(tracer))
++		mlx5_core_err(dev, "Failed to recreate FW tracer strings DB\n");
++	if (mlx5_fw_tracer_init(tracer))
++		mlx5_core_err(dev, "Failed to re-initialize FW tracer\n");
 +}
 +
  static void mlx5_sync_reset_request_event(struct work_struct *work)
  {
  	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
- 						      reset_request_work);
- 	struct mlx5_core_dev *dev = fw_reset->dev;
-+	int err;
+@@ -241,6 +264,9 @@ static int fw_reset_event_notifier(struct notifier_block *nb, unsigned long acti
+ 	struct mlx5_eqe *eqe = data;
  
-+	if (test_bit(MLX5_HEALTH_RESET_FLAGS_NACK_RESET_REQUEST, &dev->priv.health.reset_flags)) {
-+		err = mlx5_fw_set_reset_sync_nack(dev);
-+		mlx5_core_warn(dev, "PCI Sync FW Update Reset Nack %s",
-+			       err ? "Failed" : "Sent");
-+		return;
-+	}
- 	mlx5_health_set_reset_requested_mode(dev);
- 	mlx5_reload_health_poll_timer(dev);
- 	if (mlx5_fw_set_reset_sync_ack(dev))
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 27b6086f3095..4999dff9dc8c 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -426,6 +426,7 @@ struct mlx5_sq_bfreg {
+ 	switch (eqe->sub_type) {
++	case MLX5_GENERAL_SUBTYPE_FW_LIVE_PATCH_EVENT:
++			queue_work(fw_reset->wq, &fw_reset->fw_live_patch_work);
++		break;
+ 	case MLX5_GENERAL_SUBTYPE_PCI_SYNC_FOR_FW_UPDATE_EVENT:
+ 		mlx5_sync_reset_events_handle(fw_reset, eqe);
+ 		break;
+@@ -280,6 +306,7 @@ int mlx5_fw_reset_events_init(struct mlx5_core_dev *dev)
+ 	fw_reset->dev = dev;
+ 	dev->priv.fw_reset = fw_reset;
+ 
++	INIT_WORK(&fw_reset->fw_live_patch_work, mlx5_fw_live_patch_event);
+ 	INIT_WORK(&fw_reset->reset_request_work, mlx5_sync_reset_request_event);
+ 	INIT_WORK(&fw_reset->reset_now_work, mlx5_sync_reset_now_event);
+ 	INIT_WORK(&fw_reset->reset_abort_work, mlx5_sync_reset_abort_event);
+diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
+index 57db125e5802..58e63bb718a2 100644
+--- a/include/linux/mlx5/device.h
++++ b/include/linux/mlx5/device.h
+@@ -364,6 +364,7 @@ enum {
  enum {
- 	MLX5_HEALTH_RESET_FLAGS_RESET_REQUESTED,
- 	MLX5_HEALTH_RESET_FLAGS_SILENT_RECOVERY,
-+	MLX5_HEALTH_RESET_FLAGS_NACK_RESET_REQUEST,
+ 	MLX5_GENERAL_SUBTYPE_DELAY_DROP_TIMEOUT = 0x1,
+ 	MLX5_GENERAL_SUBTYPE_PCI_POWER_CHANGE_EVENT = 0x5,
++	MLX5_GENERAL_SUBTYPE_FW_LIVE_PATCH_EVENT = 0x7,
+ 	MLX5_GENERAL_SUBTYPE_PCI_SYNC_FOR_FW_UPDATE_EVENT = 0x8,
  };
  
- struct mlx5_core_health {
 -- 
 2.17.1
 
