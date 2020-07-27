@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76A5022EAED
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:13:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4342D22EACF
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:07:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726800AbgG0LNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 07:13:40 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41936 "EHLO
+        id S1728074AbgG0LHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 07:07:24 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40691 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726324AbgG0LNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 07:13:40 -0400
+        with ESMTP id S1728541AbgG0LHV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 07:07:21 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
         with SMTP; 27 Jul 2020 14:06:12 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
