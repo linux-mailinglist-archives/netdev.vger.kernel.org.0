@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F84422FCC5
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:14:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A9C122FCC9
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:15:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbgG0XOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 19:14:52 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:50190 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726171AbgG0XOw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 19:14:52 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RNEOQf005871
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:14:51 -0700
+        id S1726782AbgG0XPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 19:15:00 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:55236 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726340AbgG0XPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 19:15:00 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RNEv57016496
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:14:59 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=yJ4J/cxiW9BD8NOPqr/b2KGplF1ohYTOh7P63Vds3kc=;
- b=H+E4gsidrObwB5ETvEkG2deE1lTThQrYrjeIhkiiRE24Y3+tL+9P3pcUQ/pM/AqjsK5z
- gN52J6VTNl5uG637ZFwWXDnRr2RVgMouZYfjS9hUzAdiIJrsY0PaNY72wDw6lAz8jTZp
- vZmyJorSE+7d812DscD9fIty3BRsluUSAoI= 
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=7CWKNixQDcVQNXNCMBvHCt7Ku8k6MhDCgz1xTihXokY=;
+ b=cBzd1E82IRfgq9ggSPKp3P9qjMFEXNjpj1Qo2rRhKQ+Oi1hVSKZOF+aOH2F4/e7Ujlk3
+ XBiXvd+uB1qownw3ncAKMTb9JV2w2vm4IGTuj0ldx30CUxiG/bF+p/8mmdjdQVDKX01t
+ b5krWCkWHFgxNIZLjQtURzacYGS/0uuZiVE= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 32gj8khbwn-2
+        by mx0a-00082601.pphosted.com with ESMTP id 32h4q9ey0p-7
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:14:51 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:14:59 -0700
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1979.3; Mon, 27 Jul 2020 16:14:49 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 504182EC4BB0; Mon, 27 Jul 2020 16:14:46 -0700 (PDT)
+        id 787382EC4BB0; Mon, 27 Jul 2020 16:14:48 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -39,20 +40,22 @@ CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
         Song Liu <songliubraving@fb.com>, <stable@vger.kernel.org>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf 1/2] bpf: fix map leak in HASH_OF_MAPS map
-Date:   Mon, 27 Jul 2020 16:14:44 -0700
-Message-ID: <20200727231445.1227594-1-andriin@fb.com>
+Subject: [PATCH v2 bpf 2/2] selftests/bpf: extend map-in-map selftest to detect memory leaks
+Date:   Mon, 27 Jul 2020 16:14:45 -0700
+Message-ID: <20200727231445.1227594-2-andriin@fb.com>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200727231445.1227594-1-andriin@fb.com>
+References: <20200727231445.1227594-1-andriin@fb.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-27_15:2020-07-27,2020-07-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- mlxlogscore=894 spamscore=0 impostorscore=0 malwarescore=0 suspectscore=25
- bulkscore=0 priorityscore=1501 clxscore=1015 phishscore=0 mlxscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ impostorscore=0 clxscore=1015 lowpriorityscore=0 mlxlogscore=999
+ malwarescore=0 adultscore=0 phishscore=0 mlxscore=0 priorityscore=1501
+ bulkscore=0 suspectscore=9 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2006250000 definitions=main-2007270158
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -60,61 +63,179 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix HASH_OF_MAPS bug of not putting inner map pointer on bpf_map_elem_upd=
-ate()
-operation. This is due to per-cpu extra_elems optimization, which bypasse=
-d
-free_htab_elem() logic doing proper clean ups. Make sure that inner map i=
-s put
-properly in optimized case as well.
+Add test validating that all inner maps are released properly after skele=
+ton
+is destroyed. To ensure determinism, trigger kernel-side synchronize_rcu(=
+)
+before checking map existence by their IDs.
 
-Fixes: 8c290e60fa2a ("bpf: fix hashmap extra_elems logic")
-Acked-by: Song Liu <songliubraving@fb.com>
-Cc: <stable@vger.kernel.org> # v4.14+
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- kernel/bpf/hashtab.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ .../selftests/bpf/prog_tests/btf_map_in_map.c | 121 ++++++++++++++++--
+ 1 file changed, 108 insertions(+), 13 deletions(-)
 
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index b4b288a3c3c9..b32cc8ce8ff6 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -779,15 +779,20 @@ static void htab_elem_free_rcu(struct rcu_head *hea=
-d)
- 	htab_elem_free(htab, l);
- }
+diff --git a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c b/to=
+ols/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+index f7ee8fa377ad..c06b61235212 100644
+--- a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
++++ b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+@@ -5,10 +5,59 @@
 =20
--static void free_htab_elem(struct bpf_htab *htab, struct htab_elem *l)
-+static void htab_put_fd_value(struct bpf_htab *htab, struct htab_elem *l=
-)
- {
- 	struct bpf_map *map =3D &htab->map;
-+	void *ptr;
+ #include "test_btf_map_in_map.skel.h"
 =20
- 	if (map->ops->map_fd_put_ptr) {
--		void *ptr =3D fd_htab_map_get_ptr(map, l);
--
-+		ptr =3D fd_htab_map_get_ptr(map, l);
- 		map->ops->map_fd_put_ptr(ptr);
- 	}
++static int duration;
++
++__u32 bpf_map_id(struct bpf_map *map)
++{
++	struct bpf_map_info info;
++	__u32 info_len =3D sizeof(info);
++	int err;
++
++	memset(&info, 0, info_len);
++	err =3D bpf_obj_get_info_by_fd(bpf_map__fd(map), &info, &info_len);
++	if (err)
++		return 0;
++	return info.id;
 +}
 +
-+static void free_htab_elem(struct bpf_htab *htab, struct htab_elem *l)
-+{
-+	htab_put_fd_value(htab, l);
++/*
++ * Trigger synchronize_cpu() in kernel.
++ *
++ * ARRAY_OF_MAPS/HASH_OF_MAPS lookup/update operations trigger
++ * synchronize_rcu(), if looking up/updating non-NULL element. Use this =
+fact
++ * to trigger synchronize_cpu(): create map-in-map, create a trivial ARR=
+AY
++ * map, update map-in-map with ARRAY inner map. Then cleanup. At the end=
+, at
++ * least one synchronize_rcu() would be called.
++ */
++int kern_sync_rcu() {
++	int inner_map_fd, outer_map_fd, err, zero =3D 0;
++
++	inner_map_fd =3D bpf_create_map(BPF_MAP_TYPE_ARRAY, 4, 4, 1, 0);
++	if (CHECK(inner_map_fd < 0, "inner_map_create", "failed %d\n", -errno))
++		return -1;
++
++	outer_map_fd =3D bpf_create_map_in_map(BPF_MAP_TYPE_ARRAY_OF_MAPS, NULL=
+,
++					     sizeof(int), inner_map_fd, 1, 0);
++	if (CHECK(outer_map_fd < 0, "outer_map_create", "failed %d\n", -errno))=
+ {
++		close(inner_map_fd);
++		return -1;
++	}
++
++	err =3D bpf_map_update_elem(outer_map_fd, &zero, &inner_map_fd, 0);
++	if (err)
++		err =3D -errno;
++	CHECK(err, "outer_map_update", "failed %d\n", err);
++	close(inner_map_fd);
++	close(outer_map_fd);
++	return err;
++}
++
+ void test_btf_map_in_map(void)
+ {
+-	int duration =3D 0, err, key =3D 0, val;
++	int err, key =3D 0, val, i;
+ 	struct test_btf_map_in_map* skel;
++	int outer_arr_fd, outer_hash_fd;
++	int fd, map1_fd, map2_fd, map1_id, map2_id;
 =20
- 	if (htab_is_prealloc(htab)) {
- 		__pcpu_freelist_push(&htab->freelist, &l->fnode);
-@@ -839,6 +844,7 @@ static struct htab_elem *alloc_htab_elem(struct bpf_h=
-tab *htab, void *key,
- 			 */
- 			pl_new =3D this_cpu_ptr(htab->extra_elems);
- 			l_new =3D *pl_new;
-+			htab_put_fd_value(htab, old_elem);
- 			*pl_new =3D old_elem;
- 		} else {
- 			struct pcpu_freelist_node *l;
+ 	skel =3D test_btf_map_in_map__open_and_load();
+ 	if (CHECK(!skel, "skel_open", "failed to open&load skeleton\n"))
+@@ -18,32 +67,78 @@ void test_btf_map_in_map(void)
+ 	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
+ 		goto cleanup;
+=20
++	map1_fd =3D bpf_map__fd(skel->maps.inner_map1);
++	map2_fd =3D bpf_map__fd(skel->maps.inner_map2);
++	outer_arr_fd =3D bpf_map__fd(skel->maps.outer_arr);
++	outer_hash_fd =3D bpf_map__fd(skel->maps.outer_hash);
++
+ 	/* inner1 =3D input, inner2 =3D input + 1 */
+-	val =3D bpf_map__fd(skel->maps.inner_map1);
+-	bpf_map_update_elem(bpf_map__fd(skel->maps.outer_arr), &key, &val, 0);
+-	val =3D bpf_map__fd(skel->maps.inner_map2);
+-	bpf_map_update_elem(bpf_map__fd(skel->maps.outer_hash), &key, &val, 0);
++	map1_fd =3D bpf_map__fd(skel->maps.inner_map1);
++	bpf_map_update_elem(outer_arr_fd, &key, &map1_fd, 0);
++	map2_fd =3D bpf_map__fd(skel->maps.inner_map2);
++	bpf_map_update_elem(outer_hash_fd, &key, &map2_fd, 0);
+ 	skel->bss->input =3D 1;
+ 	usleep(1);
+=20
+-	bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map1), &key, &val);
++	bpf_map_lookup_elem(map1_fd, &key, &val);
+ 	CHECK(val !=3D 1, "inner1", "got %d !=3D exp %d\n", val, 1);
+-	bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map2), &key, &val);
++	bpf_map_lookup_elem(map2_fd, &key, &val);
+ 	CHECK(val !=3D 2, "inner2", "got %d !=3D exp %d\n", val, 2);
+=20
+ 	/* inner1 =3D input + 1, inner2 =3D input */
+-	val =3D bpf_map__fd(skel->maps.inner_map2);
+-	bpf_map_update_elem(bpf_map__fd(skel->maps.outer_arr), &key, &val, 0);
+-	val =3D bpf_map__fd(skel->maps.inner_map1);
+-	bpf_map_update_elem(bpf_map__fd(skel->maps.outer_hash), &key, &val, 0);
++	bpf_map_update_elem(outer_arr_fd, &key, &map2_fd, 0);
++	bpf_map_update_elem(outer_hash_fd, &key, &map1_fd, 0);
+ 	skel->bss->input =3D 3;
+ 	usleep(1);
+=20
+-	bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map1), &key, &val);
++	bpf_map_lookup_elem(map1_fd, &key, &val);
+ 	CHECK(val !=3D 4, "inner1", "got %d !=3D exp %d\n", val, 4);
+-	bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map2), &key, &val);
++	bpf_map_lookup_elem(map2_fd, &key, &val);
+ 	CHECK(val !=3D 3, "inner2", "got %d !=3D exp %d\n", val, 3);
+=20
++	for (i =3D 0; i < 5; i++) {
++		val =3D i % 2 ? map1_fd : map2_fd;
++		err =3D bpf_map_update_elem(outer_hash_fd, &key, &val, 0);
++		if (CHECK_FAIL(err)) {
++			printf("failed to update hash_of_maps on iter #%d\n", i);
++			goto cleanup;
++		}
++		err =3D bpf_map_update_elem(outer_arr_fd, &key, &val, 0);
++		if (CHECK_FAIL(err)) {
++			printf("failed to update hash_of_maps on iter #%d\n", i);
++			goto cleanup;
++		}
++	}
++
++	map1_id =3D bpf_map_id(skel->maps.inner_map1);
++	map2_id =3D bpf_map_id(skel->maps.inner_map2);
++	CHECK(map1_id =3D=3D 0, "map1_id", "failed to get ID 1\n");
++	CHECK(map2_id =3D=3D 0, "map2_id", "failed to get ID 2\n");
++
++	test_btf_map_in_map__destroy(skel);
++	skel =3D NULL;
++=09
++	/* we need to either wait for or force synchronize_rcu(), before
++	 * checking for "still exists" condition, otherwise map could still be
++	 * resolvable by ID, causing false positives.
++	 *
++	 * Older kernels (5.8 and earlier) freed map only after two
++	 * synchronize_rcu()s, so trigger two, to be entirely sure.
++	 */
++	CHECK(kern_sync_rcu(), "sync_rcu", "failed\n");
++	CHECK(kern_sync_rcu(), "sync_rcu", "failed\n");
++
++	fd =3D bpf_map_get_fd_by_id(map1_id);
++	if (CHECK(fd >=3D 0, "map1_leak", "inner_map1 leaked!\n")) {
++		close(fd);
++		goto cleanup;
++	}
++	fd =3D bpf_map_get_fd_by_id(map2_id);
++	if (CHECK(fd >=3D 0, "map2_leak", "inner_map2 leaked!\n")) {
++		close(fd);
++		goto cleanup;
++	}
++
+ cleanup:
+ 	test_btf_map_in_map__destroy(skel);
+ }
 --=20
 2.24.1
 
