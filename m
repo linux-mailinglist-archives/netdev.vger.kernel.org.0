@@ -2,66 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6758722F30D
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 16:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 631C122F31A
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 16:53:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729619AbgG0Owj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 10:52:39 -0400
-Received: from smtprelay0056.hostedemail.com ([216.40.44.56]:49920 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729015AbgG0Owj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 10:52:39 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 8B7171730851;
-        Mon, 27 Jul 2020 14:52:38 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1537:1568:1593:1594:1711:1714:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3622:3867:3868:3872:3873:4321:5007:8531:10004:10400:10848:11232:11658:11914:12297:12740:12760:12895:13069:13311:13357:13439:14659:21080:21627:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: help13_470362226f62
-X-Filterd-Recvd-Size: 1689
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf07.hostedemail.com (Postfix) with ESMTPA;
-        Mon, 27 Jul 2020 14:52:36 +0000 (UTC)
-Message-ID: <6e0c07bc3d2f48d4a62a9e270366c536cfe56783.camel@perches.com>
-Subject: Re: [PATCH 2/6] rtlwifi: Remove unnecessary parenthese in rtl_dbg
- uses
-From:   Joe Perches <joe@perches.com>
-To:     Pkshih <pkshih@realtek.com>,
-        "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>
-Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Date:   Mon, 27 Jul 2020 07:52:35 -0700
-In-Reply-To: <1595840670.17671.4.camel@realtek.com>
-References: <cover.1595706419.git.joe@perches.com>
-         <9b2eaedb7ea123ea766a379459b20a9486d1cd41.1595706420.git.joe@perches.com>
-         <1595830034.12227.7.camel@realtek.com>
-         <ae9d562ec9ef765dddd1491d4cfb5f6d18f7025f.camel@perches.com>
-         <1595840670.17671.4.camel@realtek.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1730143AbgG0Ox1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 10:53:27 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:27141 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728593AbgG0Ox0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 10:53:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1595861604;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vsclEH4/HoXSeidb0EPcZes5Bz9S1rapf621nmEC7Bg=;
+        b=BznM9slvSbHfcHGkcWoH3nIkHSqodPTjm/GHKwv3mDSFsM+y4iv0VR57ERxzkQw9Sn3MB/
+        STuOAjFfmfs6q1NqXt5ZI4ClHcQlAKQeqpNa3CdV7K6loAOWQbXsPzDR85DlWgRcbBjd+R
+        4GoYJvIWRePHnGyB0vlgKyzD2ij6A1M=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-140-oen48mWPO5uFTpPc4DJpMg-1; Mon, 27 Jul 2020 10:53:23 -0400
+X-MC-Unique: oen48mWPO5uFTpPc4DJpMg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 67636C746F;
+        Mon, 27 Jul 2020 14:53:21 +0000 (UTC)
+Received: from krava (unknown [10.40.193.155])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1EF75705A0;
+        Mon, 27 Jul 2020 14:53:14 +0000 (UTC)
+Date:   Mon, 27 Jul 2020 16:53:13 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Eelco Chaudron <echaudro@redhat.com>
+Cc:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, andriin@fb.com,
+        toke@redhat.com
+Subject: Re: fentry/fexit attach to EXT type XDP program does not work
+Message-ID: <20200727145313.GA1201271@krava>
+References: <159162546868.10791.12432342618156330247.stgit@ebuild>
+ <42b0c8d3-e855-7531-b01c-a05414360aff@fb.com>
+ <88B08061-F85B-454C-9E9D-234154B9F000@redhat.com>
+ <20200726122450.GC1175442@krava>
+ <5CF6086F-412C-4934-9AC6-4B1821ADDF74@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5CF6086F-412C-4934-9AC6-4B1821ADDF74@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-07-27 at 09:04 +0000, Pkshih wrote:
-> So, I think you would like to have parenthesis intentionally.
-> If so, 
-> test1 ? : (test2 ? :)
-> would be better.
+On Mon, Jul 27, 2020 at 09:59:14AM +0200, Eelco Chaudron wrote:
 > 
 > 
-> If not,
-> test1 ? : test2 ? :
-> may be what you want (without any parenthesis).
+> On 26 Jul 2020, at 14:24, Jiri Olsa wrote:
+> 
+> > On Tue, Jun 09, 2020 at 10:52:34AM +0200, Eelco Chaudron wrote:
+> > 
+> > SNIP
+> > 
+> > > > >    libbpf: failed to load object 'test_xdp_bpf2bpf'
+> > > > >    libbpf: failed to load BPF skeleton 'test_xdp_bpf2bpf': -4007
+> > > > >    test_xdp_fentry_ext:FAIL:__load ftrace skeleton failed
+> > > > >    #91 xdp_fentry_ext:FAIL
+> > > > >    Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
+> > > > > 
+> > > > > Any idea what could be the case here? The same fentry/fexit attach
+> > > > > code works fine in the xdp_bpf2bpf.c tests case.
+> > > 
+> > > <SNIP>
+> > > > 
+> > > > I think this is not supported now. That is, you cannot attach a
+> > > > fentry
+> > > > trace
+> > > > to the EXT program. The current implementation for fentry
+> > > > program simply
+> > > > trying to find and match the signature of freplace program which by
+> > > > default
+> > > > is a pointer to void.
+> > > > 
+> > > > It is doable in that in kernel we could recognize to-be-attached
+> > > > program
+> > > > is
+> > > > a freplace and further trace down to find the real signature. The
+> > > > related
+> > > > kernel function is btf_get_prog_ctx_type(). You can try to
+> > > > implement by
+> > > > yourself
+> > > > or I can have a patch for this once bpf-next opens.
+> > > 
+> > > I’m not familiar with this area of the code, so if you could prepare
+> > > a patch
+> > > that would nice.
+> > > You can also send it to me before bpf-next opens and I can verify
+> > > it, and
+> > > clean up the self-test so it can be included as well.
+> > > 
+> > 
+> > hi,
+> > it seems that you cannot exten fentry/fexit programs,
+> > but it's possible to attach fentry/fexit to ext program.
+> > 
+> >    /* Program extensions can extend all program types
+> >     * except fentry/fexit. The reason is the following.
+> >     * The fentry/fexit programs are used for performance
+> >     * analysis, stats and can be attached to any program
+> >     * type except themselves. When extension program is
+> >     * replacing XDP function it is necessary to allow
+> >     * performance analysis of all functions. Both original
+> >     * XDP program and its program extension. Hence
+> >     * attaching fentry/fexit to BPF_PROG_TYPE_EXT is
+> >     * allowed. If extending of fentry/fexit was allowed it
+> >     * would be possible to create long call chain
+> >     * fentry->extension->fentry->extension beyond
+> >     * reasonable stack size. Hence extending fentry is not
+> >     * allowed.
+> >     */
+> > 
+> > I changed fexit_bpf2bpf.c test just to do a quick check
+> > and it seems to work:
+> 
+> Hi Jiri this is exactly what I’m trying, however when you do this where the
+> first argument is a pointer to some context data which you are accessing
+> it’s failing in the verifier.
+> This is a link to the original email, which has a test patch attached that
+> will show the failure when trying to load/attach the fentry function and
+> access the context:
+> 
+> https://lore.kernel.org/bpf/159162546868.10791.12432342618156330247.stgit@ebuild/
 
-Use whatever style you like, it's unimportant to me
-and it's not worth spending any real time on it.
+ok, I tried to trace ext program with __sk_buff argument and I can see
+the issue as well.. can't acess the skb argument
 
+patch below fixes it for me, I can access the skb pointer and its data
+via probe read, like:
+
+	SEC("fexit/new_get_skb_ifindex")
+	int BPF_PROG(fexit_new_get_skb_ifindex, int val, struct __sk_buff *skb, int var, int ret)
+	{
+		__u32 data;
+		int err;
+
+		bpf_printk("EXIT skb %p", skb);
+		bpf_probe_read_kernel(&data, sizeof(data), &skb->data);
+		bpf_printk("EXIT ret %d, data %p", err, data);
+		return 0;
+	}
+
+I think it should fix the xdp_md acess as well
+
+jirka
+
+
+---
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index ee36b7f60936..2145329f7b1b 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -3828,6 +3828,10 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 	}
+ 
+ 	info->reg_type = PTR_TO_BTF_ID;
++
++	if (tgt_prog && tgt_prog->type == BPF_PROG_TYPE_EXT)
++		tgt_prog = tgt_prog->aux->linked_prog;
++
+ 	if (tgt_prog) {
+ 		ret = btf_translate_to_vmlinux(log, btf, t, tgt_prog->type, arg);
+ 		if (ret > 0) {
 
