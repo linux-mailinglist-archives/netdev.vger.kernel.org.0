@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4B0B22E947
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 11:41:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA05322E948
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 11:41:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727936AbgG0JlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 05:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
+        id S1727975AbgG0JlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 05:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726139AbgG0JlP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 05:41:15 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2834EC061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 02:41:15 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id s189so9162418pgc.13
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 02:41:15 -0700 (PDT)
+        with ESMTP id S1726139AbgG0JlS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 05:41:18 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530BBC061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 02:41:18 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id n5so9178436pgf.7
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 02:41:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=KTsmP6nwmd8wRDLbbW3/oz+Q+fROVNjlX2EbifXxIWo=;
-        b=Ou+3BOnLMYtN0nw5Gg0Grhp2B0IMwdvdr+VWv93YrWmxnKfLvyX3dR8NoSGqFKgBd+
-         x3T4cGmdYLWlp6SNRERXd0d1fCY8xJ0hiUTVkKsnV5qC54FerGk7dQsA1Mk5Qeiu0+o3
-         MrIGaSAJ6tXg+20Vd6HQZ7R4gq266MYdHUWhU=
+        bh=6tptsJPMUdc0mO6knnROYlap2JYf8fFV3DG5yfDuadQ=;
+        b=BcKy2wWUhSN56pYNHU90LXj1rfUlZHj6vC1cJjfFDmgKNkLKuwmjVZJLuazQtqLHTv
+         sSCx2HUcWgsd9HtGTKIILr8Y7fXF/0NBIE8iPFyIpE4JkHy8uUxkX1FuzFVE1AHxi1Cy
+         knSw+lqMuDtTV0tpxc3xxqB34H7t6+vcUVg7E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=KTsmP6nwmd8wRDLbbW3/oz+Q+fROVNjlX2EbifXxIWo=;
-        b=b9v6pQJP/g2jP3X31BXMk4EjY8yvQPfj8RvNm9TVOxRd2VL6Xdh842qN7BZzndfohG
-         vQnoqeKSs4vLVD1bkB9dDXKl3bEgRMH4F7sQ18EyjILKCJ5oga3yqVWVsKtoTvK06i2Z
-         PAIQhkPwiLZP/ykPRBse/DxtU0FEvzq8NjiRHi7mSuIRT1jvhpQlLNgc0hV97XpH3sX6
-         +37fhgXoHIzXec0YD2KlTCWx7mnvdBIsACOTVLbwD7R9vQfsTES+rKg4CIYYrV+5lktQ
-         ZQ4xn+TI7FmG5TKCEEJjXjlKz4kuSmi+mBIDVm7tX9I+JkclAc8ZIiNITuju+a60NJgK
-         tFlQ==
-X-Gm-Message-State: AOAM530RxCy8mvwxqlFIM2UNnzLq/FQfFM/P/ZcpVf7kT3Y1PeOVyP82
-        sA7AWstLXz20rjyEcK17YevTbQ==
-X-Google-Smtp-Source: ABdhPJwj2cJYgefMcgbY3HY0yeZQaASrN0HbT9/d8xmb+GKTntFoBVoz8Nfp9+9QLZd0W3T52cGw3w==
-X-Received: by 2002:a65:4502:: with SMTP id n2mr18970828pgq.132.1595842874641;
-        Mon, 27 Jul 2020 02:41:14 -0700 (PDT)
+        bh=6tptsJPMUdc0mO6knnROYlap2JYf8fFV3DG5yfDuadQ=;
+        b=bWdnjFRjj3fYzbhwBP6jgnS/suQ7dpGDHe4fbQ7TpQRjOIANCLudrRwI4JAgtevfwU
+         6Lq7oNGixP4tycuRKRtKYNprIq6zrvvnCRKnGchyLcqIBLhrtBYnuCvMTL5u8peBFC8O
+         Pk2Mr9/XGYbM4shTrnyWs+XAbqfDdluC86euObPzkpzmG4T+AsdAEOXpFV6X84jf6Y5d
+         SABOdC8GRo6hwVcYbiI3+/bSjETF21KQg8nycWX3SXco4bvJezgJdJbHDcy0UPRwb9+Z
+         DqFKOWDIO8D74E4igjaU4XxXdkkTR+HLe1XPwh3q1GZEdlFStFXu+PPfiQ8KQVmRNTBO
+         sr5A==
+X-Gm-Message-State: AOAM533PeGo8v2wjTdLZd4ni6yJNl5bizAaTZHWXL1s4TysBOwj1A0o2
+        nyMCmicPowfWZt/2tYUQZlDnLdS2WHk=
+X-Google-Smtp-Source: ABdhPJzPwWfaF4JsvPPgLOS7FXsq9nLr5zBa+jNT9vcUjtnYUjiUEGsYQ/TcGcryQGXo3t+Qoz2e5Q==
+X-Received: by 2002:aa7:984d:: with SMTP id n13mr13809650pfq.276.1595842877667;
+        Mon, 27 Jul 2020 02:41:17 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f131sm14560945pgc.14.2020.07.27.02.41.12
+        by smtp.gmail.com with ESMTPSA id f131sm14560945pgc.14.2020.07.27.02.41.15
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Jul 2020 02:41:14 -0700 (PDT)
+        Mon, 27 Jul 2020 02:41:16 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next v2 03/10] bnxt_en: Use macros to define port statistics size and offset.
-Date:   Mon, 27 Jul 2020 05:40:38 -0400
-Message-Id: <1595842845-19403-4-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 04/10] bnxt_en: Refactor statistics code and structures.
+Date:   Mon, 27 Jul 2020 05:40:39 -0400
+Message-Id: <1595842845-19403-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1595842845-19403-1-git-send-email-michael.chan@broadcom.com>
 References: <1595842845-19403-1-git-send-email-michael.chan@broadcom.com>
@@ -57,68 +57,357 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The port statistics structures have hard coded padding and offset.
-Define macros to make this look cleaner.
+The driver manages multiple statistics structures of different sizes.
+They are all allocated, freed, and handled practically the same.  Define
+a new bnxt_stats_mem structure and common allocation and free functions
+for all staistics memory blocks.
 
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 8 ++++----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h | 8 +++++++-
- 2 files changed, 11 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 129 ++++++++++------------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  21 ++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c     |   2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  13 ++-
+ 4 files changed, 76 insertions(+), 89 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index cd794b0..b4a387c 100644
+index b4a387c..d232618 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3780,8 +3780,7 @@ static int bnxt_alloc_stats(struct bnxt *bp)
- 	if (bp->hw_rx_port_stats)
+@@ -3703,61 +3703,55 @@ static int bnxt_alloc_hwrm_short_cmd_req(struct bnxt *bp)
+ 	return 0;
+ }
+ 
+-static void bnxt_free_port_stats(struct bnxt *bp)
++static void bnxt_free_stats_mem(struct bnxt *bp, struct bnxt_stats_mem *stats)
+ {
+-	struct pci_dev *pdev = bp->pdev;
++	if (stats->hw_stats) {
++		dma_free_coherent(&bp->pdev->dev, stats->len, stats->hw_stats,
++				  stats->hw_stats_map);
++		stats->hw_stats = NULL;
++	}
++}
+ 
+-	bp->flags &= ~BNXT_FLAG_PORT_STATS;
+-	bp->flags &= ~BNXT_FLAG_PORT_STATS_EXT;
++static int bnxt_alloc_stats_mem(struct bnxt *bp, struct bnxt_stats_mem *stats)
++{
++	stats->hw_stats = dma_alloc_coherent(&bp->pdev->dev, stats->len,
++					     &stats->hw_stats_map, GFP_KERNEL);
++	if (!stats->hw_stats)
++		return -ENOMEM;
+ 
+-	if (bp->hw_rx_port_stats) {
+-		dma_free_coherent(&pdev->dev, bp->hw_port_stats_size,
+-				  bp->hw_rx_port_stats,
+-				  bp->hw_rx_port_stats_map);
+-		bp->hw_rx_port_stats = NULL;
+-	}
++	memset(stats->hw_stats, 0, stats->len);
++	return 0;
++}
+ 
+-	if (bp->hw_tx_port_stats_ext) {
+-		dma_free_coherent(&pdev->dev, sizeof(struct tx_port_stats_ext),
+-				  bp->hw_tx_port_stats_ext,
+-				  bp->hw_tx_port_stats_ext_map);
+-		bp->hw_tx_port_stats_ext = NULL;
+-	}
++static void bnxt_free_port_stats(struct bnxt *bp)
++{
++	bp->flags &= ~BNXT_FLAG_PORT_STATS;
++	bp->flags &= ~BNXT_FLAG_PORT_STATS_EXT;
+ 
+-	if (bp->hw_rx_port_stats_ext) {
+-		dma_free_coherent(&pdev->dev, sizeof(struct rx_port_stats_ext),
+-				  bp->hw_rx_port_stats_ext,
+-				  bp->hw_rx_port_stats_ext_map);
+-		bp->hw_rx_port_stats_ext = NULL;
+-	}
++	bnxt_free_stats_mem(bp, &bp->port_stats);
++	bnxt_free_stats_mem(bp, &bp->rx_port_stats_ext);
++	bnxt_free_stats_mem(bp, &bp->tx_port_stats_ext);
+ }
+ 
+ static void bnxt_free_ring_stats(struct bnxt *bp)
+ {
+-	struct pci_dev *pdev = bp->pdev;
+-	int size, i;
++	int i;
+ 
+ 	if (!bp->bnapi)
+ 		return;
+ 
+-	size = bp->hw_ring_stats_size;
+-
+ 	for (i = 0; i < bp->cp_nr_rings; i++) {
+ 		struct bnxt_napi *bnapi = bp->bnapi[i];
+ 		struct bnxt_cp_ring_info *cpr = &bnapi->cp_ring;
+ 
+-		if (cpr->hw_stats) {
+-			dma_free_coherent(&pdev->dev, size, cpr->hw_stats,
+-					  cpr->hw_stats_map);
+-			cpr->hw_stats = NULL;
+-		}
++		bnxt_free_stats_mem(bp, &cpr->stats);
+ 	}
+ }
+ 
+ static int bnxt_alloc_stats(struct bnxt *bp)
+ {
+ 	u32 size, i;
+-	struct pci_dev *pdev = bp->pdev;
++	int rc;
+ 
+ 	size = bp->hw_ring_stats_size;
+ 
+@@ -3765,11 +3759,10 @@ static int bnxt_alloc_stats(struct bnxt *bp)
+ 		struct bnxt_napi *bnapi = bp->bnapi[i];
+ 		struct bnxt_cp_ring_info *cpr = &bnapi->cp_ring;
+ 
+-		cpr->hw_stats = dma_alloc_coherent(&pdev->dev, size,
+-						   &cpr->hw_stats_map,
+-						   GFP_KERNEL);
+-		if (!cpr->hw_stats)
+-			return -ENOMEM;
++		cpr->stats.len = size;
++		rc = bnxt_alloc_stats_mem(bp, &cpr->stats);
++		if (rc)
++			return rc;
+ 
+ 		cpr->hw_stats_ctx_id = INVALID_STATS_CTX_ID;
+ 	}
+@@ -3777,22 +3770,14 @@ static int bnxt_alloc_stats(struct bnxt *bp)
+ 	if (BNXT_VF(bp) || bp->chip_num == CHIP_NUM_58700)
+ 		return 0;
+ 
+-	if (bp->hw_rx_port_stats)
++	if (bp->port_stats.hw_stats)
  		goto alloc_ext_stats;
  
--	bp->hw_port_stats_size = sizeof(struct rx_port_stats) +
--				 sizeof(struct tx_port_stats) + 1024;
-+	bp->hw_port_stats_size = BNXT_PORT_STATS_SIZE;
+-	bp->hw_port_stats_size = BNXT_PORT_STATS_SIZE;
+-
+-	bp->hw_rx_port_stats =
+-		dma_alloc_coherent(&pdev->dev, bp->hw_port_stats_size,
+-				   &bp->hw_rx_port_stats_map,
+-				   GFP_KERNEL);
+-	if (!bp->hw_rx_port_stats)
+-		return -ENOMEM;
++	bp->port_stats.len = BNXT_PORT_STATS_SIZE;
++	rc = bnxt_alloc_stats_mem(bp, &bp->port_stats);
++	if (rc)
++		return rc;
  
- 	bp->hw_rx_port_stats =
- 		dma_alloc_coherent(&pdev->dev, bp->hw_port_stats_size,
-@@ -3790,9 +3789,10 @@ static int bnxt_alloc_stats(struct bnxt *bp)
- 	if (!bp->hw_rx_port_stats)
- 		return -ENOMEM;
- 
--	bp->hw_tx_port_stats = (void *)(bp->hw_rx_port_stats + 1) + 512;
-+	bp->hw_tx_port_stats = (void *)bp->hw_rx_port_stats +
-+			       BNXT_TX_PORT_STATS_BYTE_OFFSET;
- 	bp->hw_tx_port_stats_map = bp->hw_rx_port_stats_map +
--				   sizeof(struct rx_port_stats) + 512;
-+				   BNXT_TX_PORT_STATS_BYTE_OFFSET;
+-	bp->hw_tx_port_stats = (void *)bp->hw_rx_port_stats +
+-			       BNXT_TX_PORT_STATS_BYTE_OFFSET;
+-	bp->hw_tx_port_stats_map = bp->hw_rx_port_stats_map +
+-				   BNXT_TX_PORT_STATS_BYTE_OFFSET;
  	bp->flags |= BNXT_FLAG_PORT_STATS;
  
  alloc_ext_stats:
+@@ -3801,26 +3786,26 @@ static int bnxt_alloc_stats(struct bnxt *bp)
+ 		if (!(bp->fw_cap & BNXT_FW_CAP_EXT_STATS_SUPPORTED))
+ 			return 0;
+ 
+-	if (bp->hw_rx_port_stats_ext)
++	if (bp->rx_port_stats_ext.hw_stats)
+ 		goto alloc_tx_ext_stats;
+ 
+-	bp->hw_rx_port_stats_ext =
+-		dma_alloc_coherent(&pdev->dev, sizeof(struct rx_port_stats_ext),
+-				   &bp->hw_rx_port_stats_ext_map, GFP_KERNEL);
+-	if (!bp->hw_rx_port_stats_ext)
++	bp->rx_port_stats_ext.len = sizeof(struct rx_port_stats_ext);
++	rc = bnxt_alloc_stats_mem(bp, &bp->rx_port_stats_ext);
++	/* Extended stats are optional */
++	if (rc)
+ 		return 0;
+ 
+ alloc_tx_ext_stats:
+-	if (bp->hw_tx_port_stats_ext)
++	if (bp->tx_port_stats_ext.hw_stats)
+ 		return 0;
+ 
+ 	if (bp->hwrm_spec_code >= 0x10902 ||
+ 	    (bp->fw_cap & BNXT_FW_CAP_EXT_STATS_SUPPORTED)) {
+-		bp->hw_tx_port_stats_ext =
+-			dma_alloc_coherent(&pdev->dev,
+-					   sizeof(struct tx_port_stats_ext),
+-					   &bp->hw_tx_port_stats_ext_map,
+-					   GFP_KERNEL);
++		bp->tx_port_stats_ext.len = sizeof(struct tx_port_stats_ext);
++		rc = bnxt_alloc_stats_mem(bp, &bp->tx_port_stats_ext);
++		/* Extended stats are optional */
++		if (rc)
++			return 0;
+ 	}
+ 	bp->flags |= BNXT_FLAG_PORT_STATS_EXT;
+ 	return 0;
+@@ -6431,7 +6416,7 @@ static int bnxt_hwrm_stat_ctx_alloc(struct bnxt *bp)
+ 		struct bnxt_napi *bnapi = bp->bnapi[i];
+ 		struct bnxt_cp_ring_info *cpr = &bnapi->cp_ring;
+ 
+-		req.stats_dma_addr = cpu_to_le64(cpr->hw_stats_map);
++		req.stats_dma_addr = cpu_to_le64(cpr->stats.hw_stats_map);
+ 
+ 		rc = _hwrm_send_message(bp, &req, sizeof(req),
+ 					HWRM_CMD_TIMEOUT);
+@@ -7472,8 +7457,9 @@ static int bnxt_hwrm_port_qstats(struct bnxt *bp)
+ 
+ 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PORT_QSTATS, -1, -1);
+ 	req.port_id = cpu_to_le16(pf->port_id);
+-	req.tx_stat_host_addr = cpu_to_le64(bp->hw_tx_port_stats_map);
+-	req.rx_stat_host_addr = cpu_to_le64(bp->hw_rx_port_stats_map);
++	req.tx_stat_host_addr = cpu_to_le64(bp->port_stats.hw_stats_map +
++					    BNXT_TX_PORT_STATS_BYTE_OFFSET);
++	req.rx_stat_host_addr = cpu_to_le64(bp->port_stats.hw_stats_map);
+ 	return hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
+ }
+ 
+@@ -7492,11 +7478,11 @@ static int bnxt_hwrm_port_qstats_ext(struct bnxt *bp)
+ 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PORT_QSTATS_EXT, -1, -1);
+ 	req.port_id = cpu_to_le16(pf->port_id);
+ 	req.rx_stat_size = cpu_to_le16(sizeof(struct rx_port_stats_ext));
+-	req.rx_stat_host_addr = cpu_to_le64(bp->hw_rx_port_stats_ext_map);
+-	tx_stat_size = bp->hw_tx_port_stats_ext ?
+-		       sizeof(*bp->hw_tx_port_stats_ext) : 0;
++	req.rx_stat_host_addr = cpu_to_le64(bp->rx_port_stats_ext.hw_stats_map);
++	tx_stat_size = bp->tx_port_stats_ext.hw_stats ?
++		       sizeof(struct tx_port_stats_ext) : 0;
+ 	req.tx_stat_size = cpu_to_le16(tx_stat_size);
+-	req.tx_stat_host_addr = cpu_to_le64(bp->hw_tx_port_stats_ext_map);
++	req.tx_stat_host_addr = cpu_to_le64(bp->tx_port_stats_ext.hw_stats_map);
+ 	mutex_lock(&bp->hwrm_cmd_lock);
+ 	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
+ 	if (!rc) {
+@@ -9574,7 +9560,7 @@ static void bnxt_get_ring_stats(struct bnxt *bp,
+ 	for (i = 0; i < bp->cp_nr_rings; i++) {
+ 		struct bnxt_napi *bnapi = bp->bnapi[i];
+ 		struct bnxt_cp_ring_info *cpr = &bnapi->cp_ring;
+-		struct ctx_hw_stats *hw_stats = cpr->hw_stats;
++		struct ctx_hw_stats *hw_stats = cpr->stats.hw_stats;
+ 
+ 		stats->rx_packets += le64_to_cpu(hw_stats->rx_ucast_pkts);
+ 		stats->rx_packets += le64_to_cpu(hw_stats->rx_mcast_pkts);
+@@ -9635,8 +9621,9 @@ static void bnxt_add_prev_stats(struct bnxt *bp,
+ 	bnxt_add_prev_stats(bp, stats);
+ 
+ 	if (bp->flags & BNXT_FLAG_PORT_STATS) {
+-		struct rx_port_stats *rx = bp->hw_rx_port_stats;
+-		struct tx_port_stats *tx = bp->hw_tx_port_stats;
++		struct rx_port_stats *rx = bp->port_stats.hw_stats;
++		struct tx_port_stats *tx = bp->port_stats.hw_stats +
++					   BNXT_TX_PORT_STATS_BYTE_OFFSET;
+ 
+ 		stats->rx_crc_errors = le64_to_cpu(rx->rx_fcs_err_frames);
+ 		stats->rx_frame_errors = le64_to_cpu(rx->rx_align_err_frames);
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 306636d..df62897 100644
+index df62897..7e9fe1f 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1926,12 +1926,18 @@ struct bnxt {
- 	struct device		*hwmon_dev;
+@@ -919,6 +919,12 @@ struct bnxt_sw_stats {
+ 	struct bnxt_cmn_sw_stats cmn;
  };
  
-+#define BNXT_PORT_STATS_SIZE				\
-+	(sizeof(struct rx_port_stats) + sizeof(struct tx_port_stats) + 1024)
++struct bnxt_stats_mem {
++	void		*hw_stats;
++	dma_addr_t	hw_stats_map;
++	int		len;
++};
 +
-+#define BNXT_TX_PORT_STATS_BYTE_OFFSET			\
-+	(sizeof(struct rx_port_stats) + 512)
-+
- #define BNXT_RX_STATS_OFFSET(counter)			\
- 	(offsetof(struct rx_port_stats, counter) / 8)
+ struct bnxt_cp_ring_info {
+ 	struct bnxt_napi	*bnapi;
+ 	u32			cp_raw_cons;
+@@ -943,8 +949,7 @@ struct bnxt_cp_ring_info {
  
- #define BNXT_TX_STATS_OFFSET(counter)			\
- 	((offsetof(struct tx_port_stats, counter) +	\
--	  sizeof(struct rx_port_stats) + 512) / 8)
-+	  BNXT_TX_PORT_STATS_BYTE_OFFSET) / 8)
+ 	dma_addr_t		cp_desc_mapping[MAX_CP_PAGES];
  
- #define BNXT_RX_STATS_EXT_OFFSET(counter)		\
- 	(offsetof(struct rx_port_stats_ext, counter) / 8)
+-	struct ctx_hw_stats	*hw_stats;
+-	dma_addr_t		hw_stats_map;
++	struct bnxt_stats_mem	stats;
+ 	u32			hw_stats_ctx_id;
+ 
+ 	struct bnxt_sw_stats	sw_stats;
+@@ -1776,15 +1781,9 @@ struct bnxt {
+ 	dma_addr_t		hwrm_cmd_kong_resp_dma_addr;
+ 
+ 	struct rtnl_link_stats64	net_stats_prev;
+-	struct rx_port_stats	*hw_rx_port_stats;
+-	struct tx_port_stats	*hw_tx_port_stats;
+-	struct rx_port_stats_ext	*hw_rx_port_stats_ext;
+-	struct tx_port_stats_ext	*hw_tx_port_stats_ext;
+-	dma_addr_t		hw_rx_port_stats_map;
+-	dma_addr_t		hw_tx_port_stats_map;
+-	dma_addr_t		hw_rx_port_stats_ext_map;
+-	dma_addr_t		hw_tx_port_stats_ext_map;
+-	int			hw_port_stats_size;
++	struct bnxt_stats_mem	port_stats;
++	struct bnxt_stats_mem	rx_port_stats_ext;
++	struct bnxt_stats_mem	tx_port_stats_ext;
+ 	u16			fw_rx_stats_ext_size;
+ 	u16			fw_tx_stats_ext_size;
+ 	u16			hw_ring_stats_size;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+index 02b2755..8e90224 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+@@ -544,7 +544,7 @@ static int bnxt_dcbnl_ieee_setets(struct net_device *dev, struct ieee_ets *ets)
+ static int bnxt_dcbnl_ieee_getpfc(struct net_device *dev, struct ieee_pfc *pfc)
+ {
+ 	struct bnxt *bp = netdev_priv(dev);
+-	__le64 *stats = (__le64 *)bp->hw_rx_port_stats;
++	__le64 *stats = bp->port_stats.hw_stats;
+ 	struct ieee_pfc *my_pfc = bp->ieee_pfc;
+ 	long rx_off, tx_off;
+ 	int i, rc;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index c8bafab..59ebb2b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -559,7 +559,8 @@ static void bnxt_get_ethtool_stats(struct net_device *dev,
+ 	for (i = 0; i < bp->cp_nr_rings; i++) {
+ 		struct bnxt_napi *bnapi = bp->bnapi[i];
+ 		struct bnxt_cp_ring_info *cpr = &bnapi->cp_ring;
+-		__le64 *hw_stats = (__le64 *)cpr->hw_stats;
++		struct ctx_hw_stats *hw = cpr->stats.hw_stats;
++		__le64 *hw_stats = cpr->stats.hw_stats;
+ 		u64 *sw;
+ 		int k;
+ 
+@@ -593,9 +594,9 @@ static void bnxt_get_ethtool_stats(struct net_device *dev,
+ 			buf[j] = sw[k];
+ 
+ 		bnxt_sw_func_stats[RX_TOTAL_DISCARDS].counter +=
+-			le64_to_cpu(cpr->hw_stats->rx_discard_pkts);
++			le64_to_cpu(hw->rx_discard_pkts);
+ 		bnxt_sw_func_stats[TX_TOTAL_DISCARDS].counter +=
+-			le64_to_cpu(cpr->hw_stats->tx_discard_pkts);
++			le64_to_cpu(hw->tx_discard_pkts);
+ 	}
+ 
+ 	for (i = 0; i < BNXT_NUM_SW_FUNC_STATS; i++, j++)
+@@ -603,7 +604,7 @@ static void bnxt_get_ethtool_stats(struct net_device *dev,
+ 
+ skip_ring_stats:
+ 	if (bp->flags & BNXT_FLAG_PORT_STATS) {
+-		__le64 *port_stats = (__le64 *)bp->hw_rx_port_stats;
++		__le64 *port_stats = bp->port_stats.hw_stats;
+ 
+ 		for (i = 0; i < BNXT_NUM_PORT_STATS; i++, j++) {
+ 			buf[j] = le64_to_cpu(*(port_stats +
+@@ -611,8 +612,8 @@ static void bnxt_get_ethtool_stats(struct net_device *dev,
+ 		}
+ 	}
+ 	if (bp->flags & BNXT_FLAG_PORT_STATS_EXT) {
+-		__le64 *rx_port_stats_ext = (__le64 *)bp->hw_rx_port_stats_ext;
+-		__le64 *tx_port_stats_ext = (__le64 *)bp->hw_tx_port_stats_ext;
++		__le64 *rx_port_stats_ext = bp->rx_port_stats_ext.hw_stats;
++		__le64 *tx_port_stats_ext = bp->tx_port_stats_ext.hw_stats;
+ 
+ 		for (i = 0; i < bp->fw_rx_stats_ext_size; i++, j++) {
+ 			buf[j] = le64_to_cpu(*(rx_port_stats_ext +
 -- 
 1.8.3.1
 
