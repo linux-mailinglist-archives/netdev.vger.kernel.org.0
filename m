@@ -2,79 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F369622F7EC
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 20:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E717722F7F1
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 20:43:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729917AbgG0SnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 14:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727880AbgG0Sm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 14:42:59 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E58C0619D2
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 11:42:59 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id s23so12989774qtq.12
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 11:42:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Tup9MI4sbjqIE70wBBQUb0zvEEbXi/n84/0hCym5Uuk=;
-        b=UZiHlnRmAO8cZUak8kr9EDZdCDV7vkhgcf76mGmQvXvhw6uDKTiZ/SBbR/ujlyZz/h
-         7Jfy3yaXggfcisvFLsmo3pq770aHWzIjZmgbTE0fWMQdwdChyXnMgmykevCtU35iT0QH
-         GPP3Yc0JgdMoyAfP8lr/96A+nNYE+J6qfmUOI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Tup9MI4sbjqIE70wBBQUb0zvEEbXi/n84/0hCym5Uuk=;
-        b=JJ4O8ocgjEZTsZSDAMghhmekS6pPJv2Ekoc6r9Sor9feFiUdA7Kw1GI9V6Trjn5hhD
-         dXCenV+KqbfXXk+0tvyKcFNm0d+7CKodyQCPMcw1El2VeIrRK0Fq//Iz3Q0zYViK0ERk
-         Gl4LDwYRzR0Rf1IaV3NeTN0pG7ci4/G7Nwd7HNTS1y0EjG/S5RWu4oSuZwewBT5v/elu
-         eirmKC+0DJXk5nZ8Nkx0E45cvSDB0tbJW2kIIXEhvCpM25JjqiFy21zFRzYxkYbm9OoP
-         E7WOT20DCk5fYKRYHQLOLb4Qgxi8A9vovStIB7mc7PsgXPj11jWVcDp7FfXNRDHR0vQi
-         yw/w==
-X-Gm-Message-State: AOAM532G6r9NTyzAPwAycljEB5S7tqiqXPLMRhYRFi5qziRX/LQXIDh9
-        GHJroUhSH9BlmJ5lfrwbJiDPMIP0vi7V6hLXdSEU4Q==
-X-Google-Smtp-Source: ABdhPJxSkNPjBOSJ/9/J+I7DYiGQxRnaLNe9tDTZPQyfGNmOH5kmRwqaQWoE6pLv3TXGimkZhozAjjHzDJ/wsyLgAwk=
-X-Received: by 2002:ac8:4815:: with SMTP id g21mr23998288qtq.148.1595875378755;
- Mon, 27 Jul 2020 11:42:58 -0700 (PDT)
+        id S1731115AbgG0SnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 14:43:24 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:33024 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727880AbgG0SnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 14:43:24 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RIdfCS031426;
+        Mon, 27 Jul 2020 11:43:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=nHW00hzpyAHXbB0A3uL7kKnUIYvs+c5xwu1Ge3VHp3A=;
+ b=tPl7ke5zy/bGc/r0fVg4nyi8K5xoUFSgQJrkQLM/KQhMZb0rRqzClVmDJHMvMWq7M2r9
+ KWEFjr1YTiJimWz/sQa/pc5+ehVjaJ0OwGj770EMc6PVRrOqrvIe4BNvRQ+UxbXdfydl
+ PdsJUcQJmxC0dozqBbnUTNSTOzigPle/AbIgh2Cb1/zkKxc4gwU2PxQeqEatXDjX1XcT
+ H8LksAwusIn0zEUFL2DkxdCu4D1DEYzaA79X043p+wDXvRgZpTzqkWCHgHl1eqdSVcIK
+ Jjji9n6YsafxgpLW1hEAS8cGy3s130Vp5vywgt8v+IKJnf5YrGZ7kQw7XN0bRXO9/lhL mg== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 32gm8nfyyk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 27 Jul 2020 11:43:19 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 27 Jul
+ 2020 11:43:17 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 27 Jul
+ 2020 11:43:16 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 27 Jul 2020 11:43:16 -0700
+Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.193.54.28])
+        by maili.marvell.com (Postfix) with ESMTP id A54BC3F703F;
+        Mon, 27 Jul 2020 11:43:14 -0700 (PDT)
+From:   Igor Russkikh <irusskikh@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH net-next 00/11] qed: introduce devlink health support
+Date:   Mon, 27 Jul 2020 21:42:59 +0300
+Message-ID: <20200727184310.462-1-irusskikh@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <1595820586-2203-1-git-send-email-michael.chan@broadcom.com> <20200727.113629.107398328821127489.davem@davemloft.net>
-In-Reply-To: <20200727.113629.107398328821127489.davem@davemloft.net>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Mon, 27 Jul 2020 11:42:47 -0700
-Message-ID: <CACKFLikM-gk8NbjvViEk7SZ97JL2JCW-d2tDy80u5ru2avdFKA@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/10] bnxt_en update.
-To:     David Miller <davem@davemloft.net>
-Cc:     Netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-27_13:2020-07-27,2020-07-27 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 11:36 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Michael Chan <michael.chan@broadcom.com>
-> Date: Sun, 26 Jul 2020 23:29:36 -0400
->
-> > This patchset removes the PCIe histogram and other debug register
-> > data from ethtool -S. The removed data are not counters and they have
-> > very large and constantly fluctuating values that are not suitable for
-> > the ethtool -S decimal counter display.
-> >
-> > The rest of the patches implement counter rollover for all hardware
-> > counters that are not 64-bit counters.  Different generations of
-> > hardware have different counter widths.  The driver will now query
-> > the counter widths of all counters from firmware and implement
-> > rollover support on all non-64-bit counters.
-> >
-> > The last patch adds the PCIe histogram and other PCIe register data back
-> > using the ethtool -d interface.
->
-> I guess you missed the necessary infiniband driver updates necessary
-> with the firmware interface changes?
+This is a followup implementation after series
 
-Yes, I missed it in v1, but v2 that I sent out afterwards has fixed it.  Thanks.
+https://patchwork.ozlabs.org/project/netdev/cover/20200514095727.1361-1-irusskikh@marvell.com/
+
+This is an implementation of devlink health infrastructure.
+
+With this we are now able to report HW errors to devlink, and it'll take
+its own actions depending on user configuration to capture and store the dump
+at the bad moment, and to request the driver to recover the device.
+
+So far we do not differentiate global device failures or specific PCI function
+failures. This means that some errors specific to one physical function will
+affect an entire device. This is not yet fully designed and verified, will
+followup in future.
+
+Solution was verified with artificial HW errors generated, existing tools
+for dump analysis could be used.
+
+Igor Russkikh (11):
+  qed: move out devlink logic into a new file
+  qed/qede: make devlink survive recovery
+  qed: swap param init and publish
+  qed: fix kconfig help entries
+  qed: implement devlink info request
+  qed: health reporter init deinit seq
+  qed: use devlink logic to report errors
+  qed*: make use of devlink recovery infrastructure
+  qed: implement devlink dump
+  qed: align adjacent indent
+  qede: make driver reliable on unload after failures
+
+ drivers/net/ethernet/qlogic/Kconfig           |   5 +-
+ drivers/net/ethernet/qlogic/qed/Makefile      |   1 +
+ drivers/net/ethernet/qlogic/qed/qed.h         |   3 +-
+ drivers/net/ethernet/qlogic/qed/qed_dev.c     |  10 +
+ drivers/net/ethernet/qlogic/qed/qed_devlink.c | 255 ++++++++++++++++++
+ drivers/net/ethernet/qlogic/qed/qed_devlink.h |  20 ++
+ drivers/net/ethernet/qlogic/qed/qed_main.c    | 116 +-------
+ drivers/net/ethernet/qlogic/qede/qede.h       |   2 +
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  35 ++-
+ include/linux/qed/qed_if.h                    |  23 +-
+ 10 files changed, 341 insertions(+), 129 deletions(-)
+ create mode 100644 drivers/net/ethernet/qlogic/qed/qed_devlink.c
+ create mode 100644 drivers/net/ethernet/qlogic/qed/qed_devlink.h
+
+-- 
+2.17.1
+
