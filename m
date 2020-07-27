@@ -2,37 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BD2522E863
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 11:06:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 150BB22E864
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 11:06:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727849AbgG0JGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 05:06:16 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:53678 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726151AbgG0JGP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 05:06:15 -0400
+        id S1727855AbgG0JGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 05:06:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44268 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727844AbgG0JGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 05:06:16 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA7FC061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 02:06:16 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595840773;
+        s=2020; t=1595840775;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ce4zSUbSioJLpk17RHd8VO3wHB5lWX9bXyATZVrqzsU=;
-        b=rnVfjHHiXGu6NFp6kCfhfp65Eay5JKLYFetQxJp2XIZkSHu11fE5kjf9QjO4ii1/o4/SK8
-        9vwLhOOaa/71engcwD6l71209Gzr7Su6AFtD3dcis7kd3n0HoXPbVmOdp/crP0zYgdLi8N
-        x4R7OOsT7RRPodU5M3pSp+x8io0zN9REEuwbFUjA97DX818cgFkTRrIcul1hgg7yya4vd/
-        58yZS2FIghqp/s4w97rOan4oDiVv1BY5V2nrAKFd5OcP8d7hcinBbEfehg7n8llBxi3i/Q
-        VoLWHmrVJCKLH7b3cyK50jmSZALyj58/GjGBNLXABr3DQBOnkfH51r5CHWGCEg==
+        bh=twoFF5IjqtbADNVDp0i4bjM6fDsPvbIANELIKsGVcaA=;
+        b=g++g4nCSxpohXnxvoHRSbvH/1+EpKvzNcyZMN+2P41K3H7DTf8Qu2C5agpGOrpeu6Upq4D
+        S0hqlXU7chT23YYhwSoTK6n+biDgQ2MJs5IFOs2lKMWgPFw8kur2M1xBe5ZKw/9Y1NAWM0
+        nx3H0tj9s9uWkmoW6Pf44dTFeO0xiYMFA/EePoecM7m6ZKvDwnzWOb3MWlrBv2mGPvDBWJ
+        AD8Zz+7Pr3/UavrHWqkP8XZEpLgetwL6HiUIjjrYYAIR9JvAE7GL9TOArZZgWaUdJYrCI9
+        uCr75mmA75kB/mi00gtTxMh7t6Z0KJ521PYLXMFa2hZr6K9CJfisyDIiZ5HWpA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595840773;
+        s=2020e; t=1595840775;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ce4zSUbSioJLpk17RHd8VO3wHB5lWX9bXyATZVrqzsU=;
-        b=qIw+CkW5gxVI7NmVj1eXROEIhTUtqDWeFBftxj7lF6aEiI/Qx4F5niWgyJit1g7Dp+DoGI
-        0DITH5RgJfgsumBA==
+        bh=twoFF5IjqtbADNVDp0i4bjM6fDsPvbIANELIKsGVcaA=;
+        b=RXU4M+dY1W8CSKfJ+m0s4fOxPUajpoei6YQQG0YzyB9HXHuVFIELhTenYw9BInsKIWbXkc
+        UlqMwl4RnRsZQSAw==
 To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -47,9 +50,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
         Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v2 1/9] ptp: Add generic ptp v2 header parsing function
-Date:   Mon, 27 Jul 2020 11:05:53 +0200
-Message-Id: <20200727090601.6500-2-kurt@linutronix.de>
+Subject: [PATCH v2 2/9] ptp: Add generic ptp message type function
+Date:   Mon, 27 Jul 2020 11:05:54 +0200
+Message-Id: <20200727090601.6500-3-kurt@linutronix.de>
 In-Reply-To: <20200727090601.6500-1-kurt@linutronix.de>
 References: <20200727090601.6500-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -59,122 +62,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reason: A lot of the ptp drivers - which implement hardware time stamping - need
-specific fields such as the sequence id from the ptp v2 header. Currently all
-drivers implement that themselves.
+The message type is located at different offsets within the ptp header depending
+on the ptp version (v1 or v2). Therefore, drivers which also deal with ptp v1
+have some code for it.
 
-Introduce a generic function to retrieve a pointer to the start of the ptp v2
-header.
+Extract this into a helper function for drivers to be used.
 
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- include/linux/ptp_classify.h | 38 ++++++++++++++++++++++++++++++++++++
- net/core/ptp_classifier.c    | 30 ++++++++++++++++++++++++++++
- 2 files changed, 68 insertions(+)
+ include/linux/ptp_classify.h | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
 diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
-index dd00fa41f7e7..26fd38a4bd67 100644
+index 26fd38a4bd67..e13f9c6150ad 100644
 --- a/include/linux/ptp_classify.h
 +++ b/include/linux/ptp_classify.h
-@@ -44,6 +44,30 @@
- #define OFF_IHL		14
- #define IPV4_HLEN(data) (((struct iphdr *)(data + OFF_IHL))->ihl << 2)
- 
-+struct clock_identity {
-+	u8 id[8];
-+} __packed;
-+
-+struct port_identity {
-+	struct clock_identity	clock_identity;
-+	__be16			port_number;
-+} __packed;
-+
-+struct ptp_header {
-+	u8			tsmt;  /* transportSpecific | messageType */
-+	u8			ver;   /* reserved          | versionPTP  */
-+	__be16			message_length;
-+	u8			domain_number;
-+	u8			reserved1;
-+	u8			flag_field[2];
-+	__be64			correction;
-+	__be32			reserved2;
-+	struct port_identity	source_port_identity;
-+	__be16			sequence_id;
-+	u8			control;
-+	u8			log_message_interval;
-+} __packed;
-+
- #if defined(CONFIG_NET_PTP_CLASSIFY)
- /**
-  * ptp_classify_raw - classify a PTP packet
-@@ -57,6 +81,15 @@
+@@ -90,6 +90,30 @@ unsigned int ptp_classify_raw(const struct sk_buff *skb);
   */
- unsigned int ptp_classify_raw(const struct sk_buff *skb);
+ struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type);
  
 +/**
-+ * ptp_parse_header - Get pointer to the PTP v2 header
-+ * @skb: packet buffer
++ * ptp_get_msgtype - Extract ptp message type from given header
++ * @hdr: ptp header
 + * @type: type of the packet (see ptp_classify_raw())
 + *
-+ * Return: Pointer to the ptp v2 header or NULL if not found
++ * This function returns the message type for a given ptp header. It takes care
++ * of the different ptp header versions (v1 or v2).
++ *
++ * Return: The message type
 + */
-+struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type);
++static inline u8 ptp_get_msgtype(const struct ptp_header *hdr,
++				 unsigned int type)
++{
++	u8 msgtype;
++
++	if (unlikely(type & PTP_CLASS_V1))
++		/* msg type is located @ offset 20 for ptp v1 */
++		msgtype = hdr->source_port_identity.clock_identity.id[0];
++	else
++		msgtype = hdr->tsmt & 0x0f;
++
++	return msgtype;
++}
 +
  void __init ptp_classifier_init(void);
  #else
  static inline void ptp_classifier_init(void)
-@@ -66,5 +99,10 @@ static inline unsigned int ptp_classify_raw(struct sk_buff *skb)
- {
- 	return PTP_CLASS_NONE;
- }
-+static inline struct ptp_header *ptp_parse_header(struct sk_buff *skb,
-+						  unsigned int type)
-+{
-+	return NULL;
-+}
- #endif
- #endif /* _PTP_CLASSIFY_H_ */
-diff --git a/net/core/ptp_classifier.c b/net/core/ptp_classifier.c
-index d964a5147f22..dc12338bf3cd 100644
---- a/net/core/ptp_classifier.c
-+++ b/net/core/ptp_classifier.c
-@@ -107,6 +107,36 @@ unsigned int ptp_classify_raw(const struct sk_buff *skb)
- }
- EXPORT_SYMBOL_GPL(ptp_classify_raw);
- 
-+struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type)
-+{
-+	u8 *data = skb_mac_header(skb);
-+	unsigned int offset = 0;
-+
-+	if (type & PTP_CLASS_VLAN)
-+		offset += VLAN_HLEN;
-+
-+	switch (type & PTP_CLASS_PMASK) {
-+	case PTP_CLASS_IPV4:
-+		offset += ETH_HLEN + IPV4_HLEN(data + offset) + UDP_HLEN;
-+		break;
-+	case PTP_CLASS_IPV6:
-+		offset += ETH_HLEN + IP6_HLEN + UDP_HLEN;
-+		break;
-+	case PTP_CLASS_L2:
-+		offset += ETH_HLEN;
-+		break;
-+	default:
-+		return NULL;
-+	}
-+
-+	/* Ensure that the entire header is present in this packet. */
-+	if (skb->len + ETH_HLEN < offset + sizeof(struct ptp_header))
-+		return NULL;
-+
-+	return (struct ptp_header *)(data + offset);
-+}
-+EXPORT_SYMBOL_GPL(ptp_parse_header);
-+
- void __init ptp_classifier_init(void)
- {
- 	static struct sock_filter ptp_filter[] __initdata = {
 -- 
 2.20.1
 
