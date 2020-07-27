@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4BC722E476
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 05:30:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FAC122E478
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 05:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726932AbgG0Dag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 23:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49012 "EHLO
+        id S1727072AbgG0Daj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 23:30:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726044AbgG0Daf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 23:30:35 -0400
+        with ESMTP id S1726044AbgG0Dai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 23:30:38 -0400
 Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075BEC0619D2
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 20:30:35 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id p3so8595415pgh.3
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 20:30:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00564C0619D2
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 20:30:37 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id s189so8584853pgc.13
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 20:30:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=MAi3Am317LeCluIV6Rdu6mwDRg8tdVZte/EbywqhOFc=;
-        b=HSuatYSOPv9+xhCREm6PiOoJRKyjyPjbsWM/2G/5FNH9B0gUzi7XA9YJq3saJ8HuMj
-         TYUw7EpcKYELR7eTVVONPR4m/MqR6q5ewEthKaSdasvziVgH1BiZr4sMPkdw2rqOBHBO
-         jJHQfKNeHxIgLEHxnyk38ByCuwcUHNaB0lsBs=
+        bh=1l7SwA1i9uTZ/QL+qfTtJnApyxV6aBEs35CWeg3VLCk=;
+        b=ZXEPcgMnN9aBnnHdWEyhnAuIkhbDGyvVQPTFD4YpL3cmIh8vLBVQw23692doBV9uSS
+         h/mNBSy+kZ2GDqYUDGXZaVzOOx/y3Dat9pJZI5/W1VB7gtin7SK8ibFozUCJL2PThLmT
+         Pi8ywouIvKC6Ozvw7YlOjQ6nNuNrOe321NlOY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=MAi3Am317LeCluIV6Rdu6mwDRg8tdVZte/EbywqhOFc=;
-        b=YtVUMeMELOrzw5bxkN8aUG/7xO+rWSbIw1k/DhpFumJR006PrSGBbcot3n3WJuSuRQ
-         APuFjxKqF3hjflTGgPOGlMQKDRvfSz84xKs2ROWy9LaW0jRhBbb/1RuGP2adKJuTnoF3
-         r56mG7GtpEP8ib9XG5xhlGQ2GLniztAfXIkau8jfSw8K7cvmB4GicseWDqd72vlYsaDA
-         LeNyCtrTS4x1esmt9kx9qQvmccg6E+bdMcBDdRTyKMAN0d7JbmK6cBFv09axx6ARFSML
-         swAvyEJvg0awYXSGTwlq1q14Ggo+bRxmAhltcg908Z9gNd2ejQb30WhqIWEGAMYc5B2T
-         LzIw==
-X-Gm-Message-State: AOAM532J28SBPvHju/3ksiQ0hx8nPX1bfWxlV2biteshj1cyvdPV+Ypl
-        1O1OWyWkHK/I23qgEzUJZE0aLRQKLSo=
-X-Google-Smtp-Source: ABdhPJxxNnxn/uT8t5enr1paXj94AqKn9d2PkSZgLsbfJUC6muRQhuzuk9W5naT++5b1IkC4wyz5tA==
-X-Received: by 2002:a63:e442:: with SMTP id i2mr18307253pgk.105.1595820634395;
-        Sun, 26 Jul 2020 20:30:34 -0700 (PDT)
+        bh=1l7SwA1i9uTZ/QL+qfTtJnApyxV6aBEs35CWeg3VLCk=;
+        b=rXTrqPKdbBvVgefKUfzvrbLIv7Ay8k/drl0iuaLQFD8c9wPt8XSVwM2XDDp7kcQWaA
+         4GO2WwUWydC4qpGJGJzFSgMunbAr5+rxVo/K5EjxzQvgakQCvYs7upZezzzKEgU/ek7u
+         G55utP3/i5tzD4tOobin0lmNn3B7mxED8mbcWsx9+GJQu3aIK3BQVZ9ORsy76qnRD33h
+         quEbSK50H5apgnBOMltRUHb/2Syx7rs68ceN3SPM5H28sLLUyUKLeRfPCHB3HEsXWw4V
+         quZZTlFGUDbTTrbC9VWjjER0DPjM+0SsiciH/UGlmVnBzEEKUooCtlatvG7d0IPdi+ns
+         O1hg==
+X-Gm-Message-State: AOAM531pcwACOGutyRtD/m0DFcqc+VVWOfF9ONZWHVRlARz21TjO2E49
+        Ujm5VMQJPmsBP87AKRUvNtc//uI+xcM=
+X-Google-Smtp-Source: ABdhPJyHKHC53gAeVfOOwnSt1G3HUgFteOPSd2ZGQ/ITS9PaKPtI3jqleo9DJn307lhE64os2iaF5Q==
+X-Received: by 2002:a62:35c3:: with SMTP id c186mr11705123pfa.1.1595820637359;
+        Sun, 26 Jul 2020 20:30:37 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id n25sm13504506pff.51.2020.07.26.20.30.32
+        by smtp.gmail.com with ESMTPSA id n25sm13504506pff.51.2020.07.26.20.30.34
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 26 Jul 2020 20:30:33 -0700 (PDT)
+        Sun, 26 Jul 2020 20:30:36 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 07/10] bnxt_en: Retrieve hardware masks for port counters.
-Date:   Sun, 26 Jul 2020 23:29:43 -0400
-Message-Id: <1595820586-2203-8-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 08/10] bnxt_en: Accumulate all counters.
+Date:   Sun, 26 Jul 2020 23:29:44 -0400
+Message-Id: <1595820586-2203-9-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1595820586-2203-1-git-send-email-michael.chan@broadcom.com>
 References: <1595820586-2203-1-git-send-email-michael.chan@broadcom.com>
@@ -57,158 +57,167 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If supported by newer firmware, make the firmware call to query all
-the port counter masks.  If not supported, assume 40-bit port
-counter masks.
+Now that we have the infrastructure in place, add the new function
+bnxt_accumulate_all_stats() to periodically accumulate and check for
+counter rollover of all ring stats and port stats.
+
+A chip bug was also discovered that could cause some ring counters to
+become 0 during DMA.  Workaround by ignoring zeros on the affected
+chips.
+
+Some older frimware will reset port counters during ifdown.  We need
+to check for that and free the accumulated port counters during ifdown
+to prevent bogus counter overflow detection during ifup.
 
 Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 75 ++++++++++++++++++++++++++++---
- 1 file changed, 70 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 91 ++++++++++++++++++++++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  1 +
+ 2 files changed, 90 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 65d503f..b79d8e9 100644
+index b79d8e9..a8e86da 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3785,13 +3785,19 @@ static int bnxt_hwrm_func_qstat_ext(struct bnxt *bp,
- 	return rc;
+@@ -4043,6 +4043,8 @@ static void bnxt_free_mem(struct bnxt *bp, bool irq_re_init)
+ 	bnxt_free_ntp_fltrs(bp, irq_re_init);
+ 	if (irq_re_init) {
+ 		bnxt_free_ring_stats(bp);
++		if (!(bp->fw_cap & BNXT_FW_CAP_PORT_STATS_NO_RESET))
++			bnxt_free_port_stats(bp);
+ 		bnxt_free_ring_grps(bp);
+ 		bnxt_free_vnics(bp);
+ 		kfree(bp->tx_ring_map);
+@@ -7584,6 +7586,88 @@ int bnxt_hwrm_fw_set_time(struct bnxt *bp)
+ 	return hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
  }
  
-+static int bnxt_hwrm_port_qstats(struct bnxt *bp, u8 flags);
-+static int bnxt_hwrm_port_qstats_ext(struct bnxt *bp, u8 flags);
++static void bnxt_add_one_ctr(u64 hw, u64 *sw, u64 mask)
++{
++	u64 sw_tmp;
 +
- static void bnxt_init_stats(struct bnxt *bp)
- {
- 	struct bnxt_napi *bnapi = bp->bnapi[0];
- 	struct bnxt_cp_ring_info *cpr;
- 	struct bnxt_stats_mem *stats;
-+	__le64 *rx_stats, *tx_stats;
-+	int rc, rx_count, tx_count;
-+	u64 *rx_masks, *tx_masks;
- 	u64 mask;
--	int rc;
-+	u8 flags;
- 
- 	cpr = &bnapi->cp_ring;
- 	stats = &cpr->stats;
-@@ -3803,6 +3809,54 @@ static void bnxt_init_stats(struct bnxt *bp)
- 			mask = -1ULL;
- 		bnxt_fill_masks(stats->hw_masks, mask, stats->len / 8);
- 	}
++	sw_tmp = (*sw & ~mask) | hw;
++	if (hw < (*sw & mask))
++		sw_tmp += mask + 1;
++	WRITE_ONCE(*sw, sw_tmp);
++}
++
++static void __bnxt_accumulate_stats(__le64 *hw_stats, u64 *sw_stats, u64 *masks,
++				    int count, bool ignore_zero)
++{
++	int i;
++
++	for (i = 0; i < count; i++) {
++		u64 hw = le64_to_cpu(READ_ONCE(hw_stats[i]));
++
++		if (ignore_zero && !hw)
++			continue;
++
++		if (masks[i] == -1ULL)
++			sw_stats[i] = hw;
++		else
++			bnxt_add_one_ctr(hw, &sw_stats[i], masks[i]);
++	}
++}
++
++static void bnxt_accumulate_stats(struct bnxt_stats_mem *stats)
++{
++	if (!stats->hw_stats)
++		return;
++
++	__bnxt_accumulate_stats(stats->hw_stats, stats->sw_stats,
++				stats->hw_masks, stats->len / 8, false);
++}
++
++static void bnxt_accumulate_all_stats(struct bnxt *bp)
++{
++	struct bnxt_stats_mem *ring0_stats;
++	bool ignore_zero = false;
++	int i;
++
++	/* Chip bug.  Counter intermittently becomes 0. */
++	if (bp->flags & BNXT_FLAG_CHIP_P5)
++		ignore_zero = true;
++
++	for (i = 0; i < bp->cp_nr_rings; i++) {
++		struct bnxt_napi *bnapi = bp->bnapi[i];
++		struct bnxt_cp_ring_info *cpr;
++		struct bnxt_stats_mem *stats;
++
++		cpr = &bnapi->cp_ring;
++		stats = &cpr->stats;
++		if (!i)
++			ring0_stats = stats;
++		__bnxt_accumulate_stats(stats->hw_stats, stats->sw_stats,
++					ring0_stats->hw_masks,
++					ring0_stats->len / 8, ignore_zero);
++	}
 +	if (bp->flags & BNXT_FLAG_PORT_STATS) {
-+		stats = &bp->port_stats;
-+		rx_stats = stats->hw_stats;
-+		rx_masks = stats->hw_masks;
-+		rx_count = sizeof(struct rx_port_stats) / 8;
-+		tx_stats = rx_stats + BNXT_TX_PORT_STATS_BYTE_OFFSET / 8;
-+		tx_masks = rx_masks + BNXT_TX_PORT_STATS_BYTE_OFFSET / 8;
-+		tx_count = sizeof(struct tx_port_stats) / 8;
++		struct bnxt_stats_mem *stats = &bp->port_stats;
++		__le64 *hw_stats = stats->hw_stats;
++		u64 *sw_stats = stats->sw_stats;
++		u64 *masks = stats->hw_masks;
++		int cnt;
 +
-+		flags = PORT_QSTATS_REQ_FLAGS_COUNTER_MASK;
-+		rc = bnxt_hwrm_port_qstats(bp, flags);
-+		if (rc) {
-+			mask = (1ULL << 40) - 1;
++		cnt = sizeof(struct rx_port_stats) / 8;
++		__bnxt_accumulate_stats(hw_stats, sw_stats, masks, cnt, false);
 +
-+			bnxt_fill_masks(rx_masks, mask, rx_count);
-+			bnxt_fill_masks(tx_masks, mask, tx_count);
-+		} else {
-+			bnxt_copy_hw_masks(rx_masks, rx_stats, rx_count);
-+			bnxt_copy_hw_masks(tx_masks, tx_stats, tx_count);
-+			bnxt_hwrm_port_qstats(bp, 0);
-+		}
++		hw_stats += BNXT_TX_PORT_STATS_BYTE_OFFSET / 8;
++		sw_stats += BNXT_TX_PORT_STATS_BYTE_OFFSET / 8;
++		masks += BNXT_TX_PORT_STATS_BYTE_OFFSET / 8;
++		cnt = sizeof(struct tx_port_stats) / 8;
++		__bnxt_accumulate_stats(hw_stats, sw_stats, masks, cnt, false);
 +	}
 +	if (bp->flags & BNXT_FLAG_PORT_STATS_EXT) {
-+		stats = &bp->rx_port_stats_ext;
-+		rx_stats = stats->hw_stats;
-+		rx_masks = stats->hw_masks;
-+		rx_count = sizeof(struct rx_port_stats_ext) / 8;
-+		stats = &bp->tx_port_stats_ext;
-+		tx_stats = stats->hw_stats;
-+		tx_masks = stats->hw_masks;
-+		tx_count = sizeof(struct tx_port_stats_ext) / 8;
-+
-+		flags = FUNC_QSTATS_EXT_REQ_FLAGS_COUNTER_MASK;
-+		rc = bnxt_hwrm_port_qstats_ext(bp, flags);
-+		if (rc) {
-+			mask = (1ULL << 40) - 1;
-+
-+			bnxt_fill_masks(rx_masks, mask, rx_count);
-+			if (tx_stats)
-+				bnxt_fill_masks(tx_masks, mask, tx_count);
-+		} else {
-+			bnxt_copy_hw_masks(rx_masks, rx_stats, rx_count);
-+			if (tx_stats)
-+				bnxt_copy_hw_masks(tx_masks, tx_stats,
-+						   tx_count);
-+			bnxt_hwrm_port_qstats_ext(bp, 0);
-+		}
++		bnxt_accumulate_stats(&bp->rx_port_stats_ext);
++		bnxt_accumulate_stats(&bp->tx_port_stats_ext);
 +	}
- }
- 
- static void bnxt_free_port_stats(struct bnxt *bp)
-@@ -7530,7 +7584,7 @@ int bnxt_hwrm_fw_set_time(struct bnxt *bp)
- 	return hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
- }
- 
--static int bnxt_hwrm_port_qstats(struct bnxt *bp)
-+static int bnxt_hwrm_port_qstats(struct bnxt *bp, u8 flags)
++}
++
+ static int bnxt_hwrm_port_qstats(struct bnxt *bp, u8 flags)
  {
  	struct bnxt_pf_info *pf = &bp->pf;
- 	struct hwrm_port_qstats_input req = {0};
-@@ -7538,6 +7592,10 @@ static int bnxt_hwrm_port_qstats(struct bnxt *bp)
- 	if (!(bp->flags & BNXT_FLAG_PORT_STATS))
- 		return 0;
- 
-+	if (flags && !(bp->fw_cap & BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED))
-+		return -EOPNOTSUPP;
-+
-+	req.flags = flags;
- 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PORT_QSTATS, -1, -1);
- 	req.port_id = cpu_to_le16(pf->port_id);
- 	req.tx_stat_host_addr = cpu_to_le64(bp->port_stats.hw_stats_map +
-@@ -7546,7 +7604,7 @@ static int bnxt_hwrm_port_qstats(struct bnxt *bp)
- 	return hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
- }
- 
--static int bnxt_hwrm_port_qstats_ext(struct bnxt *bp)
-+static int bnxt_hwrm_port_qstats_ext(struct bnxt *bp, u8 flags)
- {
- 	struct hwrm_port_qstats_ext_output *resp = bp->hwrm_cmd_resp_addr;
- 	struct hwrm_queue_pri2cos_qcfg_input req2 = {0};
-@@ -7558,7 +7616,11 @@ static int bnxt_hwrm_port_qstats_ext(struct bnxt *bp)
- 	if (!(bp->flags & BNXT_FLAG_PORT_STATS_EXT))
- 		return 0;
- 
-+	if (flags && !(bp->fw_cap & BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED))
-+		return -EOPNOTSUPP;
-+
- 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PORT_QSTATS_EXT, -1, -1);
-+	req.flags = flags;
- 	req.port_id = cpu_to_le16(pf->port_id);
- 	req.rx_stat_size = cpu_to_le16(sizeof(struct rx_port_stats_ext));
- 	req.rx_stat_host_addr = cpu_to_le64(bp->rx_port_stats_ext.hw_stats_map);
-@@ -7576,6 +7638,9 @@ static int bnxt_hwrm_port_qstats_ext(struct bnxt *bp)
- 		bp->fw_rx_stats_ext_size = 0;
- 		bp->fw_tx_stats_ext_size = 0;
+@@ -8702,6 +8786,9 @@ static int bnxt_hwrm_phy_qcaps(struct bnxt *bp)
+ 		if (BNXT_PF(bp))
+ 			bp->fw_cap |= BNXT_FW_CAP_SHARED_PORT_CFG;
  	}
-+	if (flags)
-+		goto qstats_done;
++	if (resp->flags & PORT_PHY_QCAPS_RESP_FLAGS_CUMULATIVE_COUNTERS_ON_RESET)
++		bp->fw_cap |= BNXT_FW_CAP_PORT_STATS_NO_RESET;
 +
- 	if (bp->fw_tx_stats_ext_size <=
- 	    offsetof(struct tx_port_stats_ext, pfc_pri0_tx_duration_us) / 8) {
- 		mutex_unlock(&bp->hwrm_cmd_lock);
-@@ -10494,8 +10559,8 @@ static void bnxt_sp_task(struct work_struct *work)
- 	if (test_and_clear_bit(BNXT_HWRM_EXEC_FWD_REQ_SP_EVENT, &bp->sp_event))
- 		bnxt_hwrm_exec_fwd_req(bp);
+ 	if (resp->supported_speeds_auto_mode)
+ 		link_info->support_auto_speeds =
+ 			le16_to_cpu(resp->supported_speeds_auto_mode);
+@@ -10272,8 +10359,7 @@ static void bnxt_timer(struct timer_list *t)
+ 	if (bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY)
+ 		bnxt_fw_health_check(bp);
+ 
+-	if (bp->link_info.link_up && (bp->flags & BNXT_FLAG_PORT_STATS) &&
+-	    bp->stats_coal_ticks) {
++	if (bp->link_info.link_up && bp->stats_coal_ticks) {
+ 		set_bit(BNXT_PERIODIC_STATS_SP_EVENT, &bp->sp_event);
+ 		bnxt_queue_sp_work(bp);
+ 	}
+@@ -10561,6 +10647,7 @@ static void bnxt_sp_task(struct work_struct *work)
  	if (test_and_clear_bit(BNXT_PERIODIC_STATS_SP_EVENT, &bp->sp_event)) {
--		bnxt_hwrm_port_qstats(bp);
--		bnxt_hwrm_port_qstats_ext(bp);
-+		bnxt_hwrm_port_qstats(bp, 0);
-+		bnxt_hwrm_port_qstats_ext(bp, 0);
+ 		bnxt_hwrm_port_qstats(bp, 0);
+ 		bnxt_hwrm_port_qstats_ext(bp, 0);
++		bnxt_accumulate_all_stats(bp);
  	}
  
  	if (test_and_clear_bit(BNXT_LINK_CHNG_SP_EVENT, &bp->sp_event)) {
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 69672ec..44c7812 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1769,6 +1769,7 @@ struct bnxt {
+ 	#define BNXT_FW_CAP_VLAN_RX_STRIP		0x01000000
+ 	#define BNXT_FW_CAP_VLAN_TX_INSERT		0x02000000
+ 	#define BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED	0x04000000
++	#define BNXT_FW_CAP_PORT_STATS_NO_RESET		0x10000000
+ 
+ #define BNXT_NEW_RM(bp)		((bp)->fw_cap & BNXT_FW_CAP_NEW_RM)
+ 	u32			hwrm_spec_code;
 -- 
 1.8.3.1
 
