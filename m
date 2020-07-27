@@ -2,200 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A90DE22F90E
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 21:29:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35E1522F914
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 21:31:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728445AbgG0T33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 15:29:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35962 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726541AbgG0T32 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 15:29:28 -0400
-Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BE7D020729;
-        Mon, 27 Jul 2020 19:29:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595878167;
-        bh=ytTEJ+stPjTn4AC1GT+S1W3B63rhspPmd4oDrpegaSw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Wj2MuMRmisOIMf71eqoAVofvEi+5yKNZEwbDdd14S93cWbx8Rd0s7jQe5uEROfTSt
-         MKz+JJ9NdWSLYd8CYK0KBq2Wp1AQwYYbPWKMq5Lts+y6UQHbUADxudmSOWNtuhrVre
-         R2ux50sKyf4rmnK/FzFDV9ODOgBSK4cqsK2y9kKs=
-Date:   Mon, 27 Jul 2020 14:35:20 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH][next] ath9k: Use fallthrough pseudo-keyword
-Message-ID: <20200727193520.GA832@embeddedor>
+        id S1726873AbgG0Tbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 15:31:44 -0400
+Received: from mail-am6eur05on2058.outbound.protection.outlook.com ([40.107.22.58]:44929
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726222AbgG0Tbn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 15:31:43 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WqqnrusJhJh7U0pqCrL3hc6PfzY+TTUT2m00J2+856qOxTd1nepAl7UEWGf1uxWJ5yhmcGvSb8ffoL4p1kRzEmKei3sFLpRbYdfn6eUSepSsJd9QRM8RNGHXA5bBBRK0IYflAeJ0EtRwLJNBU/oFJ5nOlJ9oIu+ym7Jju42kas94Ehms9s2RHmpaYeNZQj3sA6qRbO42oQOHMF2RGiea/wTY7c/TRzAjnAGVLA+7+fe6HahJM6XbtQve6itHE7iBhtBDrHtr+m7y01OXYNe4CnfELZN+9zE35IQ9VT0kGNlNcgppH7HQRBHQ4jSQhK+2A/AiPsP+cWOBmVzy2pdwog==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4FfipY4pASrd5WUFnt/bxnTCPjm4pwXnZumV0DBcio8=;
+ b=UDgxHMBmJtSkQ6sCXzT7RX25RrlHgBLl0NElcHpmx1P7aXQvyvjVVKWmLeralBux0hF6oLKW6pvc5ynbLasgmk50K2uCVwRgtKD4grRY8a26V482vHjOI2cQukecec5LqqogeI2Ri8e9buRdyfRFhMP5t3DpVUv40HjQZ/NuFoyqDuFDKch6TmR3BI2DgyKKYQ/SovqmoSbS7nd3jzmDEDQn6YyuJS49eeK9Av8uLa5chb1T5/QdnYnzib7YnjHsnJtGy5eu0zrTlf3lv1EfZwPyO9+/pktUQwvKY8ueI9VYNAKMBXOMhJPCtGAtJWzIn3pznmNEQeW0kU4qn3Ytmw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4FfipY4pASrd5WUFnt/bxnTCPjm4pwXnZumV0DBcio8=;
+ b=BbVbAQ3c+x+jlucbvyE2zpIFzlOIy8f/zDfi6BR7r2B1EYpJcuvWTIWE8mVUaw8CQqQPhAxX0VeGD/0q4kg1B3vN73ta9K17PFcCbRw9bXUe6GS8wwmHrtn6HYgnk7W3luQ+wjqyskaBZZCo+hK5x6Hzrl7Z1rXaRfXd4NAHjWo=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
+ HE1PR0501MB2843.eurprd05.prod.outlook.com (2603:10a6:3:cd::19) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3216.24; Mon, 27 Jul 2020 19:31:39 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::56c:7b22:6d6e:ed2b]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::56c:7b22:6d6e:ed2b%5]) with mapi id 15.20.3216.033; Mon, 27 Jul 2020
+ 19:31:39 +0000
+References: <20200727044616.735-1-briana.oursler@gmail.com>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     Briana Oursler <briana.oursler@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: Question Print Formatting iproute2
+In-reply-to: <20200727044616.735-1-briana.oursler@gmail.com>
+Date:   Mon, 27 Jul 2020 21:31:36 +0200
+Message-ID: <87wo2ohi07.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: FR2P281CA0010.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a::20) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yaviefel (213.220.234.169) by FR2P281CA0010.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:a::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.10 via Frontend Transport; Mon, 27 Jul 2020 19:31:38 +0000
+X-Originating-IP: [213.220.234.169]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 58a1a4a1-44ca-45c7-5ef9-08d83263aebf
+X-MS-TrafficTypeDiagnostic: HE1PR0501MB2843:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR0501MB284373C684D04083AF3C46A8DB720@HE1PR0501MB2843.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:69;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NJHlPmLZ7cqUMW8rEnd6b6BPpUfArGnb2JaOxpWV9cN6Cw3fmpdW+sjJ6wdcRMb4ICye56Ofce/0VyjBEPhwd20/vnQhGjYVadFzj4Cty4C4qmQYdaHkQPqceehjxDCQ5Rf7VL9IpwBRxuW0FbpU9pJwdfYS+fqRMDBvoOqwNYm4uN9Eniz+VJylDIVw+4G0tK5K5w9TyOCG4vHRfjquOCJNSJvbF+tRBtpP0Bc2f56ZpZtet1zKUu/u3OMu73E/OR/CQmNCCPucYuzdHMK7DXRo5XwwshTFKmGo3mmEwA7DjCtGjhVaR6f7zqVHRHp5m3L12iWg+fEUPpg/ebHNrA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(396003)(366004)(346002)(376002)(136003)(5660300002)(36756003)(26005)(2906002)(478600001)(83380400001)(66946007)(66556008)(66476007)(8936002)(4326008)(6916009)(2616005)(956004)(54906003)(316002)(52116002)(6496006)(6486002)(8676002)(107886003)(16526019)(186003)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: QLkOEUbIB940RIVuReddKis7yg3WuwrR0kSlXXkR1xGT0szE4jM1/WeJxbQaW2Y1/kY+Nv/cz79aSV21gXNNq0HjON3dtuW8lIAlT4glpBmCHBpOb65AQkhyNmdpYvJP0+qSPEaDdmEhBX9qh1RdDTU5vRJyfVOfPiW7Qxn5R2S/YmOujjDn3fYPen8VbxJx8TY/sk65VOc35C8IWvc62+YPhO/ealKZairq7GQDLX1/euDb0arphdYwDsz4asZI3qddft3H1IWfU+fAag8ZrjchEfrXhdGydtvoSoMVlhP/j/2hfTsd4XdofLjykw6MpRfiqqoAjRmlO/t9RXSYT5EB5bs3oILfSN8KdXMdnKBN8zrsBIzS67rAMFFS4RXGaLnCFhI9SmyQLXqnyF31qvu+889CoswF5aHL4lnJ0mUMYJnyZJjwDiZJMn0ysCxb5Ei1XMJZ1Tc5AzGCRuusF4d+e5U6Phg8iPQtcgcxzBgQmn/tGCx5lLh1M8nkP1il
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 58a1a4a1-44ca-45c7-5ef9-08d83263aebf
+X-MS-Exchange-CrossTenant-AuthSource: HE1PR05MB4746.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2020 19:31:39.0432
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5qggnUwMw4EQNQddGM0EE1+hpL7oygbXJ3aJfRgbCkPyOmYtolc0idFAx6ZReGVJvwHiJ+YLgMewl9IDCaCkFQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0501MB2843
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the existing /* fall through */ comments and its variants with
-the new pseudo-keyword macro fallthrough[1].
 
-[1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
+Briana Oursler <briana.oursler@gmail.com> writes:
 
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/wireless/ath/ath9k/ar5008_phy.c | 4 ++--
- drivers/net/wireless/ath/ath9k/ar9002_mac.c | 2 +-
- drivers/net/wireless/ath/ath9k/ar9002_phy.c | 2 +-
- drivers/net/wireless/ath/ath9k/ar9003_mac.c | 2 +-
- drivers/net/wireless/ath/ath9k/channel.c    | 4 ++--
- drivers/net/wireless/ath/ath9k/eeprom_def.c | 2 +-
- drivers/net/wireless/ath/ath9k/hw.c         | 6 +++---
- drivers/net/wireless/ath/ath9k/main.c       | 2 +-
- 8 files changed, 12 insertions(+), 12 deletions(-)
+> I git bisected and found d0e450438571("tc: q_red: Add support for
+> qevents "mark" and "early_drop"), the commit that introduced the
+> formatting change causing the break.
+>
+> -       print_string(PRINT_FP, NULL, "max %s ", sprint_size(qopt->qth_max, b3));
+> +       print_string(PRINT_FP, NULL, "max %s", sprint_size(qopt->qth_max, b3));
+>
+> I made a patch that adds a space after the format specifier in the
+> iproute2 tc/q_red.c and tested it using: tdc.py -c qdisc. After the
+> change, all the broken tdc qdisc red tests return ok. I'm including the
+> patch under the scissors line.
+>
+> I wanted to ask the ML if adding the space after the specifier is preferred usage.
+> The commit also had:
+>  -               print_uint(PRINT_ANY, "ewma", "ewma %u ", qopt->Wlog);
+>  +               print_uint(PRINT_ANY, "ewma", " ewma %u ", qopt->Wlog);
+>
+> so I wanted to check with everyone.
 
-diff --git a/drivers/net/wireless/ath/ath9k/ar5008_phy.c b/drivers/net/wireless/ath/ath9k/ar5008_phy.c
-index dae95402eb3a..0d34356baf73 100644
---- a/drivers/net/wireless/ath/ath9k/ar5008_phy.c
-+++ b/drivers/net/wireless/ath/ath9k/ar5008_phy.c
-@@ -579,14 +579,14 @@ static void ar5008_hw_init_chain_masks(struct ath_hw *ah)
- 	case 0x5:
- 		REG_SET_BIT(ah, AR_PHY_ANALOG_SWAP,
- 			    AR_PHY_SWAP_ALT_CHAIN);
--		/* fall through */
-+		fallthrough;
- 	case 0x3:
- 		if (ah->hw_version.macVersion == AR_SREV_REVISION_5416_10) {
- 			REG_WRITE(ah, AR_PHY_RX_CHAINMASK, 0x7);
- 			REG_WRITE(ah, AR_PHY_CAL_CHAINMASK, 0x7);
- 			break;
+Yeah, I outsmarted myself with those space changes. Those two chunks
+need reversing, and qevents need to have the space changed. This should
+work:
+
+modified	  tc/q_red.c
+@@ -222,12 +222,12 @@ static int red_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	print_uint(PRINT_JSON, "min", NULL, qopt->qth_min);
+ 	print_string(PRINT_FP, NULL, "min %s ", sprint_size(qopt->qth_min, b2));
+ 	print_uint(PRINT_JSON, "max", NULL, qopt->qth_max);
+-	print_string(PRINT_FP, NULL, "max %s", sprint_size(qopt->qth_max, b3));
++	print_string(PRINT_FP, NULL, "max %s ", sprint_size(qopt->qth_max, b3));
+
+ 	tc_red_print_flags(qopt->flags);
+
+ 	if (show_details) {
+-		print_uint(PRINT_ANY, "ewma", " ewma %u ", qopt->Wlog);
++		print_uint(PRINT_ANY, "ewma", "ewma %u ", qopt->Wlog);
+ 		if (max_P)
+ 			print_float(PRINT_ANY, "probability",
+ 				    "probability %lg ", max_P / pow(2, 32));
+modified	  tc/tc_qevent.c
+@@ -82,8 +82,9 @@ void qevents_print(struct qevent_util *qevents, FILE *f)
+ 			}
+
+ 			open_json_object(NULL);
+-			print_string(PRINT_ANY, "kind", " qevent %s", qevents->id);
++			print_string(PRINT_ANY, "kind", "qevent %s", qevents->id);
+ 			qevents->print_qevent(qevents, f);
++			print_string(PRINT_FP, NULL, "%s", " ");
+ 			close_json_object();
  		}
--		/* fall through */
-+		fallthrough;
- 	case 0x1:
- 	case 0x2:
- 	case 0x7:
-diff --git a/drivers/net/wireless/ath/ath9k/ar9002_mac.c b/drivers/net/wireless/ath/ath9k/ar9002_mac.c
-index 4b3c9b108197..ce9a0a53771e 100644
---- a/drivers/net/wireless/ath/ath9k/ar9002_mac.c
-+++ b/drivers/net/wireless/ath/ath9k/ar9002_mac.c
-@@ -267,7 +267,7 @@ ar9002_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
- 	switch (i->aggr) {
- 	case AGGR_BUF_FIRST:
- 		ctl6 |= SM(i->aggr_len, AR_AggrLen);
--		/* fall through */
-+		fallthrough;
- 	case AGGR_BUF_MIDDLE:
- 		ctl1 |= AR_IsAggr | AR_MoreAggr;
- 		ctl6 |= SM(i->ndelim, AR_PadDelim);
-diff --git a/drivers/net/wireless/ath/ath9k/ar9002_phy.c b/drivers/net/wireless/ath/ath9k/ar9002_phy.c
-index 6f32b8d2ec7f..fcfed8e59d29 100644
---- a/drivers/net/wireless/ath/ath9k/ar9002_phy.c
-+++ b/drivers/net/wireless/ath/ath9k/ar9002_phy.c
-@@ -119,7 +119,7 @@ static int ar9002_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
- 				aModeRefSel = 2;
- 			if (aModeRefSel)
- 				break;
--			/* fall through */
-+			fallthrough;
- 		case 1:
- 		default:
- 			aModeRefSel = 0;
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_mac.c b/drivers/net/wireless/ath/ath9k/ar9003_mac.c
-index e1fe7a7c3ad8..76b538942a79 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_mac.c
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_mac.c
-@@ -120,7 +120,7 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
- 	switch (i->aggr) {
- 	case AGGR_BUF_FIRST:
- 		ctl17 |= SM(i->aggr_len, AR_AggrLen);
--		/* fall through */
-+		fallthrough;
- 	case AGGR_BUF_MIDDLE:
- 		ctl12 |= AR_IsAggr | AR_MoreAggr;
- 		ctl17 |= SM(i->ndelim, AR_PadDelim);
-diff --git a/drivers/net/wireless/ath/ath9k/channel.c b/drivers/net/wireless/ath/ath9k/channel.c
-index fd61ae4782b6..6cf087522157 100644
---- a/drivers/net/wireless/ath/ath9k/channel.c
-+++ b/drivers/net/wireless/ath/ath9k/channel.c
-@@ -706,7 +706,7 @@ void ath_chanctx_event(struct ath_softc *sc, struct ieee80211_vif *vif,
- 			"Move chanctx state from FORCE_ACTIVE to IDLE\n");
- 
- 		sc->sched.state = ATH_CHANCTX_STATE_IDLE;
--		/* fall through */
-+		fallthrough;
- 	case ATH_CHANCTX_EVENT_SWITCH:
- 		if (!test_bit(ATH_OP_MULTI_CHANNEL, &common->op_flags) ||
- 		    sc->sched.state == ATH_CHANCTX_STATE_FORCE_ACTIVE ||
-@@ -1080,7 +1080,7 @@ static void ath_offchannel_timer(struct timer_list *t)
- 			mod_timer(&sc->offchannel.timer, jiffies + HZ / 10);
- 			break;
- 		}
--		/* fall through */
-+		fallthrough;
- 	case ATH_OFFCHANNEL_SUSPEND:
- 		if (!sc->offchannel.scan_req)
- 			return;
-diff --git a/drivers/net/wireless/ath/ath9k/eeprom_def.c b/drivers/net/wireless/ath/ath9k/eeprom_def.c
-index 56b44fc7a8e6..9729a69d3e2e 100644
---- a/drivers/net/wireless/ath/ath9k/eeprom_def.c
-+++ b/drivers/net/wireless/ath/ath9k/eeprom_def.c
-@@ -402,7 +402,7 @@ static u32 ath9k_hw_def_get_eeprom(struct ath_hw *ah,
- 			return AR5416_PWR_TABLE_OFFSET_DB;
- 	case EEP_ANTENNA_GAIN_2G:
- 		band = 1;
--		/* fall through */
-+		fallthrough;
- 	case EEP_ANTENNA_GAIN_5G:
- 		return max_t(u8, max_t(u8,
- 			pModal[band].antennaGainCh[0],
-diff --git a/drivers/net/wireless/ath/ath9k/hw.c b/drivers/net/wireless/ath/ath9k/hw.c
-index 8c97db73e34c..6609ce122e6e 100644
---- a/drivers/net/wireless/ath/ath9k/hw.c
-+++ b/drivers/net/wireless/ath/ath9k/hw.c
-@@ -1277,12 +1277,12 @@ static void ath9k_hw_set_operating_mode(struct ath_hw *ah, int opmode)
- 			REG_SET_BIT(ah, AR_CFG, AR_CFG_AP_ADHOC_INDICATION);
- 			break;
- 		}
--		/* fall through */
-+		fallthrough;
- 	case NL80211_IFTYPE_OCB:
- 	case NL80211_IFTYPE_MESH_POINT:
- 	case NL80211_IFTYPE_AP:
- 		set |= AR_STA_ID1_STA_AP;
--		/* fall through */
-+		fallthrough;
- 	case NL80211_IFTYPE_STATION:
- 		REG_CLR_BIT(ah, AR_CFG, AR_CFG_AP_ADHOC_INDICATION);
- 		break;
-@@ -2293,7 +2293,7 @@ void ath9k_hw_beaconinit(struct ath_hw *ah, u32 next_beacon, u32 beacon_period)
- 	case NL80211_IFTYPE_ADHOC:
- 		REG_SET_BIT(ah, AR_TXCFG,
- 			    AR_TXCFG_ADHOC_BEACON_ATIM_TX_POLICY);
--		/* fall through */
-+		fallthrough;
- 	case NL80211_IFTYPE_MESH_POINT:
- 	case NL80211_IFTYPE_AP:
- 		REG_WRITE(ah, AR_NEXT_TBTT_TIMER, next_beacon);
-diff --git a/drivers/net/wireless/ath/ath9k/main.c b/drivers/net/wireless/ath/ath9k/main.c
-index a47f6e978095..0ea3b80f664c 100644
---- a/drivers/net/wireless/ath/ath9k/main.c
-+++ b/drivers/net/wireless/ath/ath9k/main.c
-@@ -1934,7 +1934,7 @@ static int ath9k_ampdu_action(struct ieee80211_hw *hw,
- 	case IEEE80211_AMPDU_TX_STOP_FLUSH:
- 	case IEEE80211_AMPDU_TX_STOP_FLUSH_CONT:
- 		flush = true;
--		/* fall through */
-+		fallthrough;
- 	case IEEE80211_AMPDU_TX_STOP_CONT:
- 		ath9k_ps_wakeup(sc);
- 		ath_tx_aggr_stop(sc, sta, tid);
--- 
-2.27.0
+ 	}
 
+Are you going to take care of this, or should I?
