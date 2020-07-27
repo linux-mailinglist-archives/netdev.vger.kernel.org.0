@@ -2,40 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 736F822E867
+	by mail.lfdr.de (Postfix) with ESMTP id 0600C22E866
 	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 11:06:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726853AbgG0JGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 05:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727858AbgG0JGS (ORCPT
+        id S1727877AbgG0JGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 05:06:21 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:53760 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727844AbgG0JGS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 05:06:18 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED150C061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 02:06:17 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595840776;
+        s=2020; t=1595840777;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oyDZ/wrPkSHROwMI+XHFAkpo76daJjKonwUU6cDdr/o=;
-        b=ZwjmGuITOukhNb4sOkN+dbIPWNJnNxnjY8HjLWLIC0gsxrCRMkSdXF+ZBCEYxGsJQdsPCW
-        UlE14519Q9fl8A17e8z9jMkpJ/aMqZvnN4JzhX2YN3hHdPwZSkbMMtq5ji4aargZku6BNb
-        ugdEyTHFrfFF9OvuTMhlT9m2UqbSFgfEot2rz+HjNLNfihRbHBBgzWlT+hbVbBaB8fuXYE
-        N731OHxyUXnLMjUK+4a6YIvhVACanTdwqDEm/2vy4ZdG9AqC6VrxJUYG5+k0VRIbSBakPK
-        mEc4S7G9e8Fwq9Qyd2DL6lB//N+U9L7YRJjhZu06YQy70Etfu54MyEPkx6Fgkw==
+        bh=bViW/fwyNVYpaLBkhNhKImtxPFkf0fQzR+cUGcCym+4=;
+        b=sDNgB2R5k9MvN/pW40+ZAY4gIP8MoET/O1NbwaAKew1xBudc9HnQHErwZ3eJU8MuKGeNsn
+        B2MtXmeDaefsuOal5zW9x8s874fSb+T1Fc/AIwd0k4o+ezhowBcRpdl7vDENa9QxPbonly
+        e2h9hqrl1i93a3vg1l5NVA0l4kdXgkv3lKOsRfXuALTCwkeAdZcZhBGU0zzfBWMrUSIJvM
+        w6x5SS2TGUrvBtC9nkSybGXg0aL5S4eUjd0yNgNUNz5U9dCBxnNrWyudAU90JMf79VcYmo
+        ofLQ1LqhlmQjUpUp/CC5okSx9XsHT8SaWPZ+Lxw18WQRzDTKsm9RB6JVExoTBQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595840776;
+        s=2020e; t=1595840777;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oyDZ/wrPkSHROwMI+XHFAkpo76daJjKonwUU6cDdr/o=;
-        b=yXHz/WOJgHZy70K9lmQho6DZoCXZ3f0Q/A2xScUCu5SHEj54ojccemCREKlAsvBU5AhHyR
-        iYOSWpY043PiIuAg==
+        bh=bViW/fwyNVYpaLBkhNhKImtxPFkf0fQzR+cUGcCym+4=;
+        b=LfowtaJ1RFU6/x9WYVcJ1/pM3KikQXjczFKNH+dRrBDsmf2ih1sixXAj/S68AIYl3oWNWn
+        HmbUMqDt61uOv4Bg==
 To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -50,9 +47,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
         Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v2 4/9] mlxsw: spectrum_ptp: Use generic helper function
-Date:   Mon, 27 Jul 2020 11:05:56 +0200
-Message-Id: <20200727090601.6500-5-kurt@linutronix.de>
+Subject: [PATCH v2 5/9] ethernet: ti: am65-cpts: Use generic helper function
+Date:   Mon, 27 Jul 2020 11:05:57 +0200
+Message-Id: <20200727090601.6500-6-kurt@linutronix.de>
 In-Reply-To: <20200727090601.6500-1-kurt@linutronix.de>
 References: <20200727090601.6500-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -67,29 +64,26 @@ functions were introduced. Use them.
 
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_ptp.c    | 32 ++++---------------
- 1 file changed, 7 insertions(+), 25 deletions(-)
+ drivers/net/ethernet/ti/am65-cpts.c | 37 +++++++----------------------
+ 1 file changed, 9 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-index 9650562fc0ef..ca8090a28dec 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-@@ -314,11 +314,9 @@ static int mlxsw_sp_ptp_parse(struct sk_buff *skb,
- 			      u8 *p_message_type,
- 			      u16 *p_sequence_id)
+diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
+index c59a289e428c..2548324afa42 100644
+--- a/drivers/net/ethernet/ti/am65-cpts.c
++++ b/drivers/net/ethernet/ti/am65-cpts.c
+@@ -748,42 +748,23 @@ EXPORT_SYMBOL_GPL(am65_cpts_rx_enable);
+ static int am65_skb_get_mtype_seqid(struct sk_buff *skb, u32 *mtype_seqid)
  {
+ 	unsigned int ptp_class = ptp_classify_raw(skb);
+-	u8 *msgtype, *data = skb->data;
 -	unsigned int offset = 0;
- 	unsigned int ptp_class;
--	u8 *data;
+-	__be16 *seqid;
 +	struct ptp_header *hdr;
++	u8 msgtype;
++	u16 seqid;
  
--	data = skb_mac_header(skb);
- 	ptp_class = ptp_classify_raw(skb);
- 
- 	switch (ptp_class & PTP_CLASS_VMASK) {
-@@ -329,30 +327,14 @@ static int mlxsw_sp_ptp_parse(struct sk_buff *skb,
- 		return -ERANGE;
- 	}
+ 	if (ptp_class == PTP_CLASS_NONE)
+ 		return 0;
  
 -	if (ptp_class & PTP_CLASS_VLAN)
 -		offset += VLAN_HLEN;
@@ -105,25 +99,30 @@ index 9650562fc0ef..ca8090a28dec 100644
 -		offset += ETH_HLEN;
 -		break;
 -	default:
--		return -ERANGE;
+-		return 0;
 -	}
 -
--	/* PTP header is 34 bytes. */
--	if (skb->len < offset + 34)
+-	if (skb->len + ETH_HLEN < offset + OFF_PTP_SEQUENCE_ID + sizeof(*seqid))
 +	hdr = ptp_parse_header(skb, ptp_class);
 +	if (!hdr)
- 		return -EINVAL;
+ 		return 0;
  
--	*p_message_type = data[offset] & 0x0f;
--	*p_domain_number = data[offset + 4];
--	*p_sequence_id = (u16)(data[offset + 30]) << 8 | data[offset + 31];
-+	*p_message_type	 = ptp_get_msgtype(hdr, ptp_class);
-+	*p_domain_number = hdr->domain_number;
-+	*p_sequence_id	 = be16_to_cpu(hdr->sequence_id);
-+
- 	return 0;
+-	if (unlikely(ptp_class & PTP_CLASS_V1))
+-		msgtype = data + offset + OFF_PTP_CONTROL;
+-	else
+-		msgtype = data + offset;
++	msgtype = ptp_get_msgtype(hdr, ptp_class);
++	seqid	= be16_to_cpu(hdr->sequence_id);
+ 
+-	seqid = (__be16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
+-	*mtype_seqid = (*msgtype << AM65_CPTS_EVENT_1_MESSAGE_TYPE_SHIFT) &
++	*mtype_seqid  = (msgtype << AM65_CPTS_EVENT_1_MESSAGE_TYPE_SHIFT) &
+ 			AM65_CPTS_EVENT_1_MESSAGE_TYPE_MASK;
+-	*mtype_seqid |= (ntohs(*seqid) & AM65_CPTS_EVENT_1_SEQUENCE_ID_MASK);
++	*mtype_seqid |= (seqid & AM65_CPTS_EVENT_1_SEQUENCE_ID_MASK);
+ 
+ 	return 1;
  }
- 
 -- 
 2.20.1
 
