@@ -2,117 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C07D22FE0A
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:34:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72C8922FE0F
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:34:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727121AbgG0Xe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 19:34:26 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17558 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726196AbgG0Xe0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 19:34:26 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RNX4Wi009335
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:34:26 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=JDfgqHEGv/LvNvNKPVciWSLBRPWixDLg/YTu4wwbIk8=;
- b=qAVFcsf+xYdHPTe/lrLLKUtLQHaFwJw7Pi5XBHNGsyVbcv7sFu52gTlukF8SS1B+xKvm
- ulXrnVdN1DRXJRicWcT+RVlbrR69CKX3/fQQ3f4k+gE08nT+poPcfPWUKfqzvM/Ur4vV
- lH1FEwegZe/aXybKPmgGAqA2hX5eCVDYZOg= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 32h4q9f104-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:34:26 -0700
-Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 27 Jul 2020 16:33:52 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id C506F2EC4BAB; Mon, 27 Jul 2020 16:33:48 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] selftests/bpf: add new bpf_iter context structs to fix build on old kernels
-Date:   Mon, 27 Jul 2020 16:33:45 -0700
-Message-ID: <20200727233345.1686358-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-27_15:2020-07-27,2020-07-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- impostorscore=0 clxscore=1015 lowpriorityscore=0 mlxlogscore=797
- malwarescore=0 adultscore=0 phishscore=0 mlxscore=0 priorityscore=1501
- bulkscore=0 suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007270160
-X-FB-Internal: deliver
+        id S1727932AbgG0Xej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 19:34:39 -0400
+Received: from mga03.intel.com ([134.134.136.65]:2661 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726196AbgG0Xej (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 19:34:39 -0400
+IronPort-SDR: V5nYvnDaDS4M34mI8xtTzVL37UgigvQDqkb5zHZvgUUbNl5WD4x4povFiQPUnzpeiWz4puVeAn
+ D349fKNwug9w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="151110405"
+X-IronPort-AV: E=Sophos;i="5.75,404,1589266800"; 
+   d="scan'208";a="151110405"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 16:34:38 -0700
+IronPort-SDR: Go9d5qre4tCQcaCT99xQA/F4xyr9dL0gUxdm28/kxTA8BxoKSWnvJ+RWhyuEbOBtI8tfbGpeip
+ OX4xpl6G8I8w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,404,1589266800"; 
+   d="scan'208";a="289974188"
+Received: from bpujari-bxdsw.sc.intel.com ([10.232.14.242])
+  by orsmga006.jf.intel.com with ESMTP; 27 Jul 2020 16:34:38 -0700
+From:   bimmy.pujari@intel.com
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, mchehab@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, kafai@fb.com, maze@google.com,
+        bimmy.pujari@intel.com, ashkan.nikravesh@intel.com
+Subject: [PATCH] bpf: Add bpf_ktime_get_real_ns
+Date:   Mon, 27 Jul 2020 16:34:31 -0700
+Message-Id: <20200727233431.4103-1-bimmy.pujari@intel.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add bpf_iter__bpf_map_elem and bpf_iter__bpf_sk_storage_map to bpf_iter.h
+From: Ashkan Nikravesh <ashkan.nikravesh@intel.com>
 
-Cc: Yonghong Song <yhs@fb.com>
-Fixes: 3b1c420bd882 ("selftests/bpf: Add a test for bpf sk_storage_map it=
-erator")
-Fixes: 2a7c2fff7dd6 ("selftests/bpf: Add test for bpf hash map iterators"=
-)
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+The existing bpf helper functions to get timestamp return the time
+elapsed since system boot. This timestamp is not particularly useful
+where epoch timestamp is required or more than one server is involved
+and time sync is required. Instead, you want to use CLOCK_REALTIME,
+which provides epoch timestamp.
+Hence add bfp_ktime_get_real_ns() based around CLOCK_REALTIME.
+
+Signed-off-by: Ashkan Nikravesh <ashkan.nikravesh@intel.com>
+Signed-off-by: Bimmy Pujari <bimmy.pujari@intel.com>
 ---
- tools/testing/selftests/bpf/progs/bpf_iter.h | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/media/rc/bpf-lirc.c    |  2 ++
+ include/linux/bpf.h            |  1 +
+ include/uapi/linux/bpf.h       |  7 +++++++
+ kernel/bpf/core.c              |  1 +
+ kernel/bpf/helpers.c           | 14 ++++++++++++++
+ kernel/trace/bpf_trace.c       |  2 ++
+ tools/include/uapi/linux/bpf.h |  7 +++++++
+ 7 files changed, 34 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter.h b/tools/testing=
-/selftests/bpf/progs/bpf_iter.h
-index 17db3bac518b..c196280df90d 100644
---- a/tools/testing/selftests/bpf/progs/bpf_iter.h
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter.h
-@@ -11,6 +11,8 @@
- #define tcp6_sock tcp6_sock___not_used
- #define bpf_iter__udp bpf_iter__udp___not_used
- #define udp6_sock udp6_sock___not_used
-+#define bpf_iter__bpf_map_elem bpf_iter__bpf_map_elem___not_used
-+#define bpf_iter__bpf_sk_storage_map bpf_iter__bpf_sk_storage_map___not_=
-used
- #include "vmlinux.h"
- #undef bpf_iter_meta
- #undef bpf_iter__bpf_map
-@@ -22,6 +24,8 @@
- #undef tcp6_sock
- #undef bpf_iter__udp
- #undef udp6_sock
-+#undef bpf_iter__bpf_map_elem
-+#undef bpf_iter__bpf_sk_storage_map
-=20
- struct bpf_iter_meta {
- 	struct seq_file *seq;
-@@ -78,3 +82,17 @@ struct udp6_sock {
- 	struct udp_sock	udp;
- 	struct ipv6_pinfo inet6;
- } __attribute__((preserve_access_index));
+diff --git a/drivers/media/rc/bpf-lirc.c b/drivers/media/rc/bpf-lirc.c
+index 5bb144435c16..1cae0cfdcbaf 100644
+--- a/drivers/media/rc/bpf-lirc.c
++++ b/drivers/media/rc/bpf-lirc.c
+@@ -103,6 +103,8 @@ lirc_mode2_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_map_peek_elem_proto;
+ 	case BPF_FUNC_ktime_get_ns:
+ 		return &bpf_ktime_get_ns_proto;
++	case BPF_FUNC_ktime_get_real_ns:
++		return &bpf_ktime_get_real_ns_proto;
+ 	case BPF_FUNC_ktime_get_boot_ns:
+ 		return &bpf_ktime_get_boot_ns_proto;
+ 	case BPF_FUNC_tail_call:
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 72221aea1c60..9c00ad932f08 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1639,6 +1639,7 @@ extern const struct bpf_func_proto bpf_get_numa_node_id_proto;
+ extern const struct bpf_func_proto bpf_tail_call_proto;
+ extern const struct bpf_func_proto bpf_ktime_get_ns_proto;
+ extern const struct bpf_func_proto bpf_ktime_get_boot_ns_proto;
++extern const struct bpf_func_proto bpf_ktime_get_real_ns_proto;
+ extern const struct bpf_func_proto bpf_get_current_pid_tgid_proto;
+ extern const struct bpf_func_proto bpf_get_current_uid_gid_proto;
+ extern const struct bpf_func_proto bpf_get_current_comm_proto;
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 54d0c886e3ba..7742c10fbc95 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3377,6 +3377,12 @@ union bpf_attr {
+  *		A non-negative value equal to or less than *size* on success,
+  *		or a negative error in case of failure.
+  *
++ * u64 bpf_ktime_get_real_ns(void)
++ *      Description
++ *              Return the real time in nanoseconds.
++ *              See: **clock_gettime**\ (**CLOCK_REALTIME**)
++ *      Return
++ *              Current *ktime*.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3521,6 +3527,7 @@ union bpf_attr {
+ 	FN(skc_to_tcp_request_sock),	\
+ 	FN(skc_to_udp6_sock),		\
+ 	FN(get_task_stack),		\
++	FN(ktime_get_real_ns),		\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 7be02e555ab9..0f25f3413208 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2211,6 +2211,7 @@ const struct bpf_func_proto bpf_get_prandom_u32_proto __weak;
+ const struct bpf_func_proto bpf_get_smp_processor_id_proto __weak;
+ const struct bpf_func_proto bpf_get_numa_node_id_proto __weak;
+ const struct bpf_func_proto bpf_ktime_get_ns_proto __weak;
++const struct bpf_func_proto bpf_ktime_get_real_ns_proto __weak;
+ const struct bpf_func_proto bpf_ktime_get_boot_ns_proto __weak;
+ 
+ const struct bpf_func_proto bpf_get_current_pid_tgid_proto __weak;
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index be43ab3e619f..b726fd077698 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -155,6 +155,18 @@ const struct bpf_func_proto bpf_ktime_get_ns_proto = {
+ 	.ret_type	= RET_INTEGER,
+ };
+ 
++BPF_CALL_0(bpf_ktime_get_real_ns)
++{
++	/* NMI safe access to clock realtime */
++	return ktime_get_real_fast_ns();
++}
 +
-+struct bpf_iter__bpf_map_elem {
-+	struct bpf_iter_meta *meta;
-+	struct bpf_map *map;
-+	void *key;
-+	void *value;
++const struct bpf_func_proto bpf_ktime_get_real_ns_proto = {
++	.func           = bpf_ktime_get_real_ns,
++	.gpl_only       = true,
++	.ret_type       = RET_INTEGER,
 +};
 +
-+struct bpf_iter__bpf_sk_storage_map {
-+	struct bpf_iter_meta *meta;
-+	struct bpf_map *map;
-+	struct sock *sk;
-+	void *value;
-+};
---=20
-2.24.1
+ BPF_CALL_0(bpf_ktime_get_boot_ns)
+ {
+ 	/* NMI safe access to clock boottime */
+@@ -633,6 +645,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+ 		return &bpf_tail_call_proto;
+ 	case BPF_FUNC_ktime_get_ns:
+ 		return &bpf_ktime_get_ns_proto;
++	case BPF_FUNC_ktime_get_real_ns:
++		return &bpf_ktime_get_real_ns_proto;
+ 	case BPF_FUNC_ktime_get_boot_ns:
+ 		return &bpf_ktime_get_boot_ns_proto;
+ 	case BPF_FUNC_ringbuf_output:
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 3cc0dcb60ca2..4e048dfb527b 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1116,6 +1116,8 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_map_peek_elem_proto;
+ 	case BPF_FUNC_ktime_get_ns:
+ 		return &bpf_ktime_get_ns_proto;
++	case BPF_FUNC_ktime_get_real_ns:
++		return &bpf_ktime_get_real_ns_proto;
+ 	case BPF_FUNC_ktime_get_boot_ns:
+ 		return &bpf_ktime_get_boot_ns_proto;
+ 	case BPF_FUNC_tail_call:
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 54d0c886e3ba..9ca51f82dd35 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -3377,6 +3377,12 @@ union bpf_attr {
+  *		A non-negative value equal to or less than *size* on success,
+  *		or a negative error in case of failure.
+  *
++ * u64 bpf_ktime_get_real_ns(void)
++ *	Description
++ *		Return the real time in nanoseconds.
++ *		See: **clock_gettime**\ (**CLOCK_REALTIME**)
++ *	Return
++ *		Current *ktime*.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3521,6 +3527,7 @@ union bpf_attr {
+ 	FN(skc_to_tcp_request_sock),	\
+ 	FN(skc_to_udp6_sock),		\
+ 	FN(get_task_stack),		\
++	FN(ktime_get_real_ns),		\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+-- 
+2.17.1
 
