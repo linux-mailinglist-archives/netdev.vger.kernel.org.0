@@ -2,105 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8936722F3E8
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 17:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E983022F402
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 17:41:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730461AbgG0PeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 11:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48514 "EHLO
+        id S1730914AbgG0Pli (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 11:41:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727784AbgG0PeA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 11:34:00 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E999C061794;
-        Mon, 27 Jul 2020 08:34:00 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id k71so9617485pje.0;
-        Mon, 27 Jul 2020 08:34:00 -0700 (PDT)
+        with ESMTP id S1730905AbgG0Plh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 11:41:37 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AB6C061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 08:41:37 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id v15so4716016lfg.6
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 08:41:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=pcY0A56aPSXRoinZe6gcqtnoZNboGx9+nJBDiq4Vbx4=;
-        b=oX9WXK5+2EvvTcwgfnjjqmWJEGAJFSDR+6Y+PALc3mZWl6t1xf36+ZokY1jfxLY7Qx
-         vTu998n7s3xDkI9n/LSZS0dMqffhKSJKb0hFh7pcle5RV5Std2H1RZ0r4v04vaJrnhzu
-         BRE3xUNHmeKVI2lsgqw+dSq9Rsmm3SHV+jCO3Kya+2LiTdlGvTzXMwtFZmNIgY420cJ3
-         e3W1GcEpIkCg0b79rAC+Ylq0CRIBh/T6VaY5/tg2M4JsO55k3cZKtH4euSXLnN6zoNOB
-         zG5Xhio5Ex4GeOLHwdwafmRKUSc4Ef25ch/lHKy5opAkEtNpwmCoowZSMZkkc/9Da2W5
-         cG2w==
+        bh=wIjDVPKqdkF+6aYtOIQ3W6Li/YJL+puMmH4ZvB1VMNM=;
+        b=mjU15NemkSZjw+n/lyfiQtFYkFUqUoXPGQ6FfBVa1UKAuG1RjscBFDbAcPuBdHR9YE
+         E4mAnt3JXDyx4RIU4uQ5sCLy9R/R+QfkZRsc9DFynW8vUXJZMTrnnKYlaBaJ95dmLyJV
+         tgZBM0GtVmwbBMVU3ITJWuTDA0QQTEzvkwCblCnFWw7Y8QBrzsHygdh3szgl8hidA+uf
+         0sbzSlbT2g9AwxQ4OppT/R7t1T9wkKhASpOjWOiHHu4KVIKwJr2oHD5jsp1OtPJOpgM1
+         QcsoUk+R+COQAzMtLZFhwpkK1Z++rN0dP70PtVpvXAUcyTYBMwSBvDJxkK44v1vofPwP
+         6bxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pcY0A56aPSXRoinZe6gcqtnoZNboGx9+nJBDiq4Vbx4=;
-        b=jEz4G8DnIuFgy+X+sdCt3j7ThdhloA1yBGB/BNXvSXGsi4WA1xSxlK4J2qz870pXc2
-         jbw8XllfRDeTXpGLIxVt+jyJGQ2ou3B9q8Vx46dUuK8YBAWEKlIAltieK/WCXpeapIt5
-         BYMmq/3HSnQM04AlRsRcrPOD4u65D1icwmQPMs1rSkVdbftbQrNhyA0cvNvz21hcnZNm
-         PpWl/Af29FTbtmos0ddC1514Ld7n3wzbvWvistdqOwTMV6tIjVIH18MOtVr5Agwqd4Kt
-         UhSgYEh59Vzy/P/KcXpSg7JWgOXCufR5Ak1znH5ETgpwXXACbXC5PNxOwmbmgYfLYryF
-         Oqjw==
-X-Gm-Message-State: AOAM531HyZZUfuPuXn4slX2uC92CkJdXI51RkFTLP7HpaQtE9pT9TRaq
-        LY/cNyg7Ad0sKQSpLIsMS53cj/9+1PZHc0HNDtU=
-X-Google-Smtp-Source: ABdhPJwFOUmxIDqsOSd+NVchInvYpDQG+Iuwpt2fmGBMHos1KdESwfZEZIwNlqyS+wub10WN3LvGw7Njhl8UDVddk08=
-X-Received: by 2002:a17:90a:a393:: with SMTP id x19mr17086062pjp.228.1595864040131;
- Mon, 27 Jul 2020 08:34:00 -0700 (PDT)
+        bh=wIjDVPKqdkF+6aYtOIQ3W6Li/YJL+puMmH4ZvB1VMNM=;
+        b=P/ySrbXD0EUO3DmtsxDnAPCDe2lLb8BUH05Dr9UECilxpFmXMmK09vMLeJ4HuAf/4W
+         rwoenZnCMrT8RRvEmIzwPBHhZ9U8FEFBcFLSdMeHMusSVLs0K8fLkpGlmrP/H32q+xmE
+         g7w2PXC6H19q5xUXyoPBl3q95c5+3D6pMaRKmjS0xBJtR3zM0f0dIeRIV3TqxgpBI3LD
+         SPHP7v0qxqbNr1M4/mi9y9Jg9/XPH+1ECvRzkZ7bpS2ugfwQzsArt9pjOgyNkUuYzW3n
+         fjIFGs9JYHudDUHihRkMQzyuu/VA5uQhCmOqFXGXZ/kvBsF50kpQw+JO+3p2eI9ifupd
+         Fe7A==
+X-Gm-Message-State: AOAM5328iMYYre1K0C6mr2h71hENK6JBjYlPqYz/jhMoWlC+0fcpYXk7
+        DLI4LyouAuQYOEdq1t8C/PYCjDfqPktBXuEicYQ=
+X-Google-Smtp-Source: ABdhPJytldLJhrei4pxIcauyJ0+KSsu5hsnCAhII0TB61jVHehTStZVzkTVTPZmT2+AYd+wXvDBqICPCtYYAf4ANGU4=
+X-Received: by 2002:a19:c197:: with SMTP id r145mr11938012lff.41.1595864494933;
+ Mon, 27 Jul 2020 08:41:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727122242.32337-1-vadym.kochan@plvision.eu>
- <20200727122242.32337-3-vadym.kochan@plvision.eu> <CAHp75VeWGUB8izyHptfsXXv4GbsDu6_4rr9EaRR9wooXywaP+g@mail.gmail.com>
- <20200727141152.GM2216@nanopsycho>
-In-Reply-To: <20200727141152.GM2216@nanopsycho>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 27 Jul 2020 18:33:45 +0300
-Message-ID: <CAHp75Vemcp1y3S09PVTQoyB10goZfhb1HYmeMxqiReQdQJ3JBw@mail.gmail.com>
-Subject: Re: [net-next v4 2/6] net: marvell: prestera: Add PCI interface support
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
+References: <1587996484-3504-1-git-send-email-fugang.duan@nxp.com>
+ <20200727012354.GT28704@pendragon.ideasonboard.com> <20200727020631.GW28704@pendragon.ideasonboard.com>
+ <20200727021432.GM1661457@lunn.ch> <20200727023310.GA23988@pendragon.ideasonboard.com>
+ <CAFXsbZrf11Nj4rzLJfisPr-fFo-+stt-G3-XQ_Mwus_2z0nsAg@mail.gmail.com>
+ <CAFXsbZrysb6SGisEhgXHzj8NZ5o_EjY-rtiqg3gypgr0w-d-dw@mail.gmail.com>
+ <CAFXsbZpBP_kzsC_dLYezJWo7+dQufoRmaFpJgKJbnn6T=sc5QA@mail.gmail.com>
+ <20200727120545.GN1661457@lunn.ch> <20200727152434.GF20890@pendragon.ideasonboard.com>
+In-Reply-To: <20200727152434.GF20890@pendragon.ideasonboard.com>
+From:   Chris Healy <cphealy@gmail.com>
+Date:   Mon, 27 Jul 2020 08:41:23 -0700
+Message-ID: <CAFXsbZo5ufE0v_dmzQU9oWBeeRj+DKzDoiMj6OjuiER0O7nFfQ@mail.gmail.com>
+Subject: Re: [RESENT PATCH net--stat 1/1] net: ethernet: fec: Revert "net:
+ ethernet: fec: Replace interrupt driven MDIO with polled IO"
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Fugang Duan <fugang.duan@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
         netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mickey Rachamim <mickeyr@marvell.com>
+        Martin Fuzzey <martin.fuzzey@flowbird.group>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 5:11 PM Jiri Pirko <jiri@resnulli.us> wrote:
-> Mon, Jul 27, 2020 at 03:29:17PM CEST, andy.shevchenko@gmail.com wrote:
-> >On Mon, Jul 27, 2020 at 3:23 PM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
-
-...
-
-> >> +err_prestera_dev_register:
-> >> +       free_irq(pci_irq_vector(pdev, 0), fw);
-> >> +err_request_irq:
-> >> +       pci_free_irq_vectors(pdev);
-> >> +err_irq_alloc:
-> >> +       destroy_workqueue(fw->wq);
-> >> +err_wq_alloc:
-> >> +       prestera_fw_uninit(fw);
-> >
-> >> +err_prestera_fw_init:
-> >> +err_pci_dev_alloc:
-> >> +err_dma_mask:
-> >
-> >All three are useless.
+On Mon, Jul 27, 2020 at 8:24 AM Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
 >
-> This is okay. It is symmetrical with init. err_what_you_init. It is all
-> over the place.
+> Hi Andrew,
+>
+> On Mon, Jul 27, 2020 at 02:05:45PM +0200, Andrew Lunn wrote:
+> > On Sun, Jul 26, 2020 at 08:01:25PM -0700, Chris Healy wrote:
+> > > It appears quite a few boards were affected by this micrel PHY driver change:
+> > >
+> > > 2ccb0161a0e9eb06f538557d38987e436fc39b8d
+> > > 80bf72598663496d08b3c0231377db6a99d7fd68
+> > > 2de00450c0126ec8838f72157577578e85cae5d8
+> > > 820f8a870f6575acda1bf7f1a03c701c43ed5d79
+> > >
+> > > I just updated the phy-mode with my board from rgmii to rgmii-id and
+> > > everything started working fine with net-next again:
+> >
+> > Hi Chris
+> >
+> > Is this a mainline supported board? Do you plan to submit a patch?
+> >
+> > Laurent, does the change also work for your board? This is another one
+> > of those cases were a bug in the PHY driver, not respecting the
+> > phy-mode, has masked a bug in the device tree, using the wrong
+> > phy-mode. We had the same issue with the Atheros PHY a while back.
+>
+> Yes, setting the phy-mode to rgmii-id fixes the issue.
+>
+> Thank you everybody for your quick responses and very useful help !
+>
+> On a side note, when the kernel boots, there's a ~10s delay for the
+> ethernet connection to come up:
+>
+> [    4.050754] Micrel KSZ9031 Gigabit PHY 30be0000.ethernet-1:01: attached PHY driver [Micrel KSZ9031 Gigabit PHY] (mii_bus:phy_addr=30be0000.ethernet-1:01, irq=POLL)
+> [   15.628528] fec 30be0000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
+> [   15.676961] Sending DHCP requests ., OK
+> [   15.720925] IP-Config: Got DHCP answer from 192.168.2.47, my address is 192.168.2.210
+>
+> The LED on the connected switch confirms this, it lits up synchronously
+> with the "Link is up" message. It's not an urgent issue, but if someone
+> had a few pointers on how I could debug that, it would be appreciated.
 
-We use multi-point return and these are inconsistent with the
-approach. They simple LOCs without value.
+Here's a few suggestions that could help in learning more:
 
--- 
-With Best Regards,
-Andy Shevchenko
+1) Review the KSZ9031 HW errata and compare against the PHY driver
+code.  There's a number of errata that could cause this from my quick
+review.
+2) Based on what I read in the HW errata, try different link partners
+that utilize different copper PHYs to see if it results in different
+behaviour.
+3) Try setting your autonegotiate advertisement to only advertise
+100Mbps and see if this affects the timing.  Obviously this would not
+be a solution but might help in better understanding the issue.
+
+>
+> --
+> Regards,
+>
+> Laurent Pinchart
