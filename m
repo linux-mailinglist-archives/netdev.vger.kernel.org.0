@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA2FB22FA52
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 22:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B34022FA4F
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 22:47:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbgG0Urx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 16:47:53 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58100 "EHLO vps0.lunn.ch"
+        id S1726976AbgG0Urq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 16:47:46 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58086 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726899AbgG0Uru (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 16:47:50 -0400
+        id S1726838AbgG0Urp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 16:47:45 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1k0A2A-0079fY-HG; Mon, 27 Jul 2020 22:47:42 +0200
+        id 1k0A2A-0079fb-Kc; Mon, 27 Jul 2020 22:47:42 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     netdev <netdev@vger.kernel.org>
 Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
@@ -21,9 +21,9 @@ Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
         Russell King <rmk+kernel@armlinux.org.uk>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH RFC net-next 2/3] net: phy: Move into subdirectories
-Date:   Mon, 27 Jul 2020 22:47:30 +0200
-Message-Id: <20200727204731.1705418-3-andrew@lunn.ch>
+Subject: [PATCH RFC net-next 3/3] net: phy: Move and rename mdio-xpcs
+Date:   Mon, 27 Jul 2020 22:47:31 +0200
+Message-Id: <20200727204731.1705418-4-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200727204731.1705418-1-andrew@lunn.ch>
 References: <20200727204731.1705418-1-andrew@lunn.ch>
@@ -34,1669 +34,186 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move the PHY drivers into the phy subdirectory
-Move the MDIO bus drivers into the mdio subdirectory
-
-Take this opportunity to sort the Kconfig entries based on the text
-that appears in the menu, and the Makefiles.
+Create a subdirectory for PCS drivers. Introduce a new naming
+convention for PCS drivers, in that the files should have the prefix
+pcs-, and the Kconfig symbols should use the PCS_ prefix. This means
+renaming the one such driver that currently exists.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/Kconfig                       | 481 +-----------------
- drivers/net/phy/Makefile                      |  77 +--
- drivers/net/phy/mdio/Kconfig                  | 226 ++++++++
- drivers/net/phy/mdio/Makefile                 |  26 +
- drivers/net/phy/{ => mdio}/mdio-aspeed.c      |   0
- drivers/net/phy/{ => mdio}/mdio-bcm-iproc.c   |   0
- drivers/net/phy/{ => mdio}/mdio-bcm-unimac.c  |   0
- drivers/net/phy/{ => mdio}/mdio-bitbang.c     |   0
- drivers/net/phy/{ => mdio}/mdio-cavium.c      |   0
- drivers/net/phy/{ => mdio}/mdio-cavium.h      |   0
- drivers/net/phy/{ => mdio}/mdio-gpio.c        |   0
- drivers/net/phy/{ => mdio}/mdio-hisi-femac.c  |   0
- drivers/net/phy/{ => mdio}/mdio-ipq4019.c     |   0
- drivers/net/phy/{ => mdio}/mdio-ipq8064.c     |   0
- drivers/net/phy/{ => mdio}/mdio-moxart.c      |   0
- drivers/net/phy/{ => mdio}/mdio-mscc-miim.c   |   0
- .../net/phy/{ => mdio}/mdio-mux-bcm-iproc.c   |   0
- drivers/net/phy/{ => mdio}/mdio-mux-gpio.c    |   0
- .../net/phy/{ => mdio}/mdio-mux-meson-g12a.c  |   0
- drivers/net/phy/{ => mdio}/mdio-mux-mmioreg.c |   0
- .../net/phy/{ => mdio}/mdio-mux-multiplexer.c |   0
- drivers/net/phy/{ => mdio}/mdio-mux.c         |   0
- drivers/net/phy/{ => mdio}/mdio-mvusb.c       |   0
- drivers/net/phy/{ => mdio}/mdio-octeon.c      |   0
- drivers/net/phy/{ => mdio}/mdio-sun4i.c       |   0
- drivers/net/phy/{ => mdio}/mdio-thunder.c     |   0
- drivers/net/phy/{ => mdio}/mdio-xgene.c       |   0
- drivers/net/phy/phy/Kconfig                   | 243 +++++++++
- drivers/net/phy/phy/Makefile                  |  50 ++
- drivers/net/phy/{ => phy}/adin.c              |   0
- drivers/net/phy/{ => phy}/amd.c               |   0
- drivers/net/phy/{ => phy}/aquantia.h          |   0
- drivers/net/phy/{ => phy}/aquantia_hwmon.c    |   0
- drivers/net/phy/{ => phy}/aquantia_main.c     |   0
- drivers/net/phy/{ => phy}/at803x.c            |   0
- drivers/net/phy/{ => phy}/ax88796b.c          |   0
- drivers/net/phy/{ => phy}/bcm-cygnus.c        |   0
- drivers/net/phy/{ => phy}/bcm-phy-lib.c       |   0
- drivers/net/phy/{ => phy}/bcm-phy-lib.h       |   0
- drivers/net/phy/{ => phy}/bcm54140.c          |   0
- drivers/net/phy/{ => phy}/bcm63xx.c           |   0
- drivers/net/phy/{ => phy}/bcm7xxx.c           |   0
- drivers/net/phy/{ => phy}/bcm84881.c          |   0
- drivers/net/phy/{ => phy}/bcm87xx.c           |   0
- drivers/net/phy/{ => phy}/broadcom.c          |   0
- drivers/net/phy/{ => phy}/cicada.c            |   0
- drivers/net/phy/{ => phy}/cortina.c           |   0
- drivers/net/phy/{ => phy}/davicom.c           |   0
- drivers/net/phy/{ => phy}/dp83640.c           |   0
- drivers/net/phy/{ => phy}/dp83640_reg.h       |   0
- drivers/net/phy/{ => phy}/dp83822.c           |   0
- drivers/net/phy/{ => phy}/dp83848.c           |   0
- drivers/net/phy/{ => phy}/dp83867.c           |   0
- drivers/net/phy/{ => phy}/dp83869.c           |   0
- drivers/net/phy/{ => phy}/dp83tc811.c         |   0
- drivers/net/phy/{ => phy}/et1011c.c           |   0
- drivers/net/phy/{ => phy}/icplus.c            |   0
- drivers/net/phy/{ => phy}/intel-xway.c        |   0
- drivers/net/phy/{ => phy}/lxt.c               |   0
- drivers/net/phy/{ => phy}/marvell.c           |   0
- drivers/net/phy/{ => phy}/marvell10g.c        |   0
- drivers/net/phy/{ => phy}/meson-gxl.c         |   0
- drivers/net/phy/{ => phy}/micrel.c            |   0
- drivers/net/phy/{ => phy}/microchip.c         |   0
- drivers/net/phy/{ => phy}/microchip_t1.c      |   0
- drivers/net/phy/{ => phy}/mscc/Makefile       |   0
- drivers/net/phy/{ => phy}/mscc/mscc.h         |   0
- .../net/phy/{ => phy}/mscc/mscc_fc_buffer.h   |   0
- drivers/net/phy/{ => phy}/mscc/mscc_mac.h     |   0
- drivers/net/phy/{ => phy}/mscc/mscc_macsec.c  |   0
- drivers/net/phy/{ => phy}/mscc/mscc_macsec.h  |   0
- drivers/net/phy/{ => phy}/mscc/mscc_main.c    |   0
- drivers/net/phy/{ => phy}/national.c          |   0
- drivers/net/phy/{ => phy}/nxp-tja11xx.c       |   0
- drivers/net/phy/{ => phy}/qsemi.c             |   0
- drivers/net/phy/{ => phy}/realtek.c           |   0
- drivers/net/phy/{ => phy}/rockchip.c          |   0
- drivers/net/phy/{ => phy}/smsc.c              |   0
- drivers/net/phy/{ => phy}/ste10Xp.c           |   0
- drivers/net/phy/{ => phy}/teranetics.c        |   0
- drivers/net/phy/{ => phy}/uPD60620.c          |   0
- drivers/net/phy/{ => phy}/vitesse.c           |   0
- 82 files changed, 559 insertions(+), 544 deletions(-)
- create mode 100644 drivers/net/phy/mdio/Kconfig
- create mode 100644 drivers/net/phy/mdio/Makefile
- rename drivers/net/phy/{ => mdio}/mdio-aspeed.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-bcm-iproc.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-bcm-unimac.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-bitbang.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-cavium.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-cavium.h (100%)
- rename drivers/net/phy/{ => mdio}/mdio-gpio.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-hisi-femac.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-ipq4019.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-ipq8064.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-moxart.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-mscc-miim.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-mux-bcm-iproc.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-mux-gpio.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-mux-meson-g12a.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-mux-mmioreg.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-mux-multiplexer.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-mux.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-mvusb.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-octeon.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-sun4i.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-thunder.c (100%)
- rename drivers/net/phy/{ => mdio}/mdio-xgene.c (100%)
- create mode 100644 drivers/net/phy/phy/Kconfig
- create mode 100644 drivers/net/phy/phy/Makefile
- rename drivers/net/phy/{ => phy}/adin.c (100%)
- rename drivers/net/phy/{ => phy}/amd.c (100%)
- rename drivers/net/phy/{ => phy}/aquantia.h (100%)
- rename drivers/net/phy/{ => phy}/aquantia_hwmon.c (100%)
- rename drivers/net/phy/{ => phy}/aquantia_main.c (100%)
- rename drivers/net/phy/{ => phy}/at803x.c (100%)
- rename drivers/net/phy/{ => phy}/ax88796b.c (100%)
- rename drivers/net/phy/{ => phy}/bcm-cygnus.c (100%)
- rename drivers/net/phy/{ => phy}/bcm-phy-lib.c (100%)
- rename drivers/net/phy/{ => phy}/bcm-phy-lib.h (100%)
- rename drivers/net/phy/{ => phy}/bcm54140.c (100%)
- rename drivers/net/phy/{ => phy}/bcm63xx.c (100%)
- rename drivers/net/phy/{ => phy}/bcm7xxx.c (100%)
- rename drivers/net/phy/{ => phy}/bcm84881.c (100%)
- rename drivers/net/phy/{ => phy}/bcm87xx.c (100%)
- rename drivers/net/phy/{ => phy}/broadcom.c (100%)
- rename drivers/net/phy/{ => phy}/cicada.c (100%)
- rename drivers/net/phy/{ => phy}/cortina.c (100%)
- rename drivers/net/phy/{ => phy}/davicom.c (100%)
- rename drivers/net/phy/{ => phy}/dp83640.c (100%)
- rename drivers/net/phy/{ => phy}/dp83640_reg.h (100%)
- rename drivers/net/phy/{ => phy}/dp83822.c (100%)
- rename drivers/net/phy/{ => phy}/dp83848.c (100%)
- rename drivers/net/phy/{ => phy}/dp83867.c (100%)
- rename drivers/net/phy/{ => phy}/dp83869.c (100%)
- rename drivers/net/phy/{ => phy}/dp83tc811.c (100%)
- rename drivers/net/phy/{ => phy}/et1011c.c (100%)
- rename drivers/net/phy/{ => phy}/icplus.c (100%)
- rename drivers/net/phy/{ => phy}/intel-xway.c (100%)
- rename drivers/net/phy/{ => phy}/lxt.c (100%)
- rename drivers/net/phy/{ => phy}/marvell.c (100%)
- rename drivers/net/phy/{ => phy}/marvell10g.c (100%)
- rename drivers/net/phy/{ => phy}/meson-gxl.c (100%)
- rename drivers/net/phy/{ => phy}/micrel.c (100%)
- rename drivers/net/phy/{ => phy}/microchip.c (100%)
- rename drivers/net/phy/{ => phy}/microchip_t1.c (100%)
- rename drivers/net/phy/{ => phy}/mscc/Makefile (100%)
- rename drivers/net/phy/{ => phy}/mscc/mscc.h (100%)
- rename drivers/net/phy/{ => phy}/mscc/mscc_fc_buffer.h (100%)
- rename drivers/net/phy/{ => phy}/mscc/mscc_mac.h (100%)
- rename drivers/net/phy/{ => phy}/mscc/mscc_macsec.c (100%)
- rename drivers/net/phy/{ => phy}/mscc/mscc_macsec.h (100%)
- rename drivers/net/phy/{ => phy}/mscc/mscc_main.c (100%)
- rename drivers/net/phy/{ => phy}/national.c (100%)
- rename drivers/net/phy/{ => phy}/nxp-tja11xx.c (100%)
- rename drivers/net/phy/{ => phy}/qsemi.c (100%)
- rename drivers/net/phy/{ => phy}/realtek.c (100%)
- rename drivers/net/phy/{ => phy}/rockchip.c (100%)
- rename drivers/net/phy/{ => phy}/smsc.c (100%)
- rename drivers/net/phy/{ => phy}/ste10Xp.c (100%)
- rename drivers/net/phy/{ => phy}/teranetics.c (100%)
- rename drivers/net/phy/{ => phy}/uPD60620.c (100%)
- rename drivers/net/phy/{ => phy}/vitesse.c (100%)
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |  2 +-
+ drivers/net/ethernet/stmicro/stmmac/common.h  |  2 +-
+ drivers/net/phy/Kconfig                       |  8 ++------
+ drivers/net/phy/Makefile                      |  4 +---
+ drivers/net/phy/pcs/Kconfig                   | 20 +++++++++++++++++++
+ drivers/net/phy/pcs/Makefile                  |  4 ++++
+ .../net/phy/{mdio-xpcs.c => pcs/pcs-xpcs.c}   |  2 +-
+ include/linux/{mdio-xpcs.h => pcs-xpcs.h}     |  8 ++++----
+ 8 files changed, 34 insertions(+), 16 deletions(-)
+ create mode 100644 drivers/net/phy/pcs/Kconfig
+ create mode 100644 drivers/net/phy/pcs/Makefile
+ rename drivers/net/phy/{mdio-xpcs.c => pcs/pcs-xpcs.c} (99%)
+ rename include/linux/{mdio-xpcs.h => pcs-xpcs.h} (88%)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+index 9a47c5aec91a..35e8fd6411e2 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
++++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+@@ -3,7 +3,7 @@ config STMMAC_ETH
+ 	tristate "STMicroelectronics Multi-Gigabit Ethernet driver"
+ 	depends on HAS_IOMEM && HAS_DMA
+ 	select MII
+-	select MDIO_XPCS
++	select PCS_XPCS
+ 	select PAGE_POOL
+ 	select PHYLINK
+ 	select CRC32
+diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
+index 127f75862962..74dc742c9a3b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/common.h
++++ b/drivers/net/ethernet/stmicro/stmmac/common.h
+@@ -15,7 +15,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/stmmac.h>
+ #include <linux/phy.h>
+-#include <linux/mdio-xpcs.h>
++#include <linux/pcs-xpcs.h>
+ #include <linux/module.h>
+ #if IS_ENABLED(CONFIG_VLAN_8021Q)
+ #define STMMAC_VLAN_TAG_USED
 diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index dd20c2c27c2f..a193236fd65a 100644
+index a193236fd65a..6ce151b1254d 100644
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
-@@ -3,235 +3,7 @@
- # PHY Layer Configuration
- #
+@@ -5,12 +5,6 @@
  
--menuconfig MDIO_DEVICE
--	tristate "MDIO bus device drivers"
--	help
--	  MDIO devices and driver infrastructure code.
--
--if MDIO_DEVICE
--
--config MDIO_BUS
--	tristate
--	default m if PHYLIB=m
--	default MDIO_DEVICE
--	help
--	  This internal symbol is used for link time dependencies and it
--	  reflects whether the mdio_bus/mdio_device code is built as a
--	  loadable module or built-in.
--
--if MDIO_BUS
--
--config MDIO_DEVRES
--	tristate
--
--config MDIO_ASPEED
--	tristate "ASPEED MDIO bus controller"
--	depends on ARCH_ASPEED || COMPILE_TEST
--	depends on OF_MDIO && HAS_IOMEM
--	help
--	  This module provides a driver for the independent MDIO bus
--	  controllers found in the ASPEED AST2600 SoC. This is a driver for the
--	  third revision of the ASPEED MDIO register interface - the first two
--	  revisions are the "old" and "new" interfaces found in the AST2400 and
--	  AST2500, embedded in the MAC. For legacy reasons, FTGMAC100 driver
--	  continues to drive the embedded MDIO controller for the AST2400 and
--	  AST2500 SoCs, so say N if AST2600 support is not required.
--
--config MDIO_BCM_IPROC
--	tristate "Broadcom iProc MDIO bus controller"
--	depends on ARCH_BCM_IPROC || COMPILE_TEST
--	depends on HAS_IOMEM && OF_MDIO
--	default ARCH_BCM_IPROC
--	help
--	  This module provides a driver for the MDIO busses found in the
--	  Broadcom iProc SoC's.
--
--config MDIO_BCM_UNIMAC
--	tristate "Broadcom UniMAC MDIO bus controller"
--	depends on HAS_IOMEM
--	help
--	  This module provides a driver for the Broadcom UniMAC MDIO busses.
--	  This hardware can be found in the Broadcom GENET Ethernet MAC
--	  controllers as well as some Broadcom Ethernet switches such as the
--	  Starfighter 2 switches.
--
--config MDIO_BITBANG
--	tristate "Bitbanged MDIO buses"
--	help
--	  This module implements the MDIO bus protocol in software,
--	  for use by low level drivers that export the ability to
--	  drive the relevant pins.
--
--	  If in doubt, say N.
--
--config MDIO_BUS_MUX
--	tristate
--	depends on OF_MDIO
--	help
--	  This module provides a driver framework for MDIO bus
--	  multiplexers which connect one of several child MDIO busses
--	  to a parent bus.  Switching between child busses is done by
--	  device specific drivers.
--
--config MDIO_BUS_MUX_BCM_IPROC
--	tristate "Broadcom iProc based MDIO bus multiplexers"
--	depends on OF && OF_MDIO && (ARCH_BCM_IPROC || COMPILE_TEST)
--	select MDIO_BUS_MUX
--	default ARCH_BCM_IPROC
--	help
--	  This module provides a driver for MDIO bus multiplexers found in
--	  iProc based Broadcom SoCs. This multiplexer connects one of several
--	  child MDIO bus to a parent bus. Buses could be internal as well as
--	  external and selection logic lies inside the same multiplexer.
--
--config MDIO_BUS_MUX_GPIO
--	tristate "GPIO controlled MDIO bus multiplexers"
--	depends on OF_GPIO && OF_MDIO
--	select MDIO_BUS_MUX
--	help
--	  This module provides a driver for MDIO bus multiplexers that
--	  are controlled via GPIO lines.  The multiplexer connects one of
--	  several child MDIO busses to a parent bus.  Child bus
--	  selection is under the control of GPIO lines.
--
--config MDIO_BUS_MUX_MESON_G12A
--	tristate "Amlogic G12a based MDIO bus multiplexer"
--	depends on ARCH_MESON || COMPILE_TEST
--	depends on OF_MDIO && HAS_IOMEM && COMMON_CLK
--	select MDIO_BUS_MUX
--	default m if ARCH_MESON
--	help
--	  This module provides a driver for the MDIO multiplexer/glue of
--	  the amlogic g12a SoC. The multiplexers connects either the external
--	  or the internal MDIO bus to the parent bus.
--
--config MDIO_BUS_MUX_MMIOREG
--	tristate "MMIO device-controlled MDIO bus multiplexers"
--	depends on OF_MDIO && HAS_IOMEM
--	select MDIO_BUS_MUX
--	help
--	  This module provides a driver for MDIO bus multiplexers that
--	  are controlled via a simple memory-mapped device, like an FPGA.
--	  The multiplexer connects one of several child MDIO busses to a
--	  parent bus.  Child bus selection is under the control of one of
--	  the FPGA's registers.
--
--	  Currently, only 8/16/32 bits registers are supported.
--
--config MDIO_BUS_MUX_MULTIPLEXER
--	tristate "MDIO bus multiplexer using kernel multiplexer subsystem"
--	depends on OF_MDIO
--	select MULTIPLEXER
--	select MDIO_BUS_MUX
--	help
--	  This module provides a driver for MDIO bus multiplexer
--	  that is controlled via the kernel multiplexer subsystem. The
--	  bus multiplexer connects one of several child MDIO busses to
--	  a parent bus.  Child bus selection is under the control of
--	  the kernel multiplexer subsystem.
--
--config MDIO_CAVIUM
--	tristate
--
--config MDIO_GPIO
--	tristate "GPIO lib-based bitbanged MDIO buses"
--	depends on MDIO_BITBANG
--	depends on GPIOLIB || COMPILE_TEST
--	help
--	  Supports GPIO lib-based MDIO busses.
--
--	  To compile this driver as a module, choose M here: the module
--	  will be called mdio-gpio.
--
--config MDIO_HISI_FEMAC
--	tristate "Hisilicon FEMAC MDIO bus controller"
--	depends on HAS_IOMEM && OF_MDIO
--	help
--	  This module provides a driver for the MDIO busses found in the
--	  Hisilicon SoC that have an Fast Ethernet MAC.
--
--config MDIO_I2C
--	tristate
--	depends on I2C
--	help
--	  Support I2C based PHYs.  This provides a MDIO bus bridged
--	  to I2C to allow PHYs connected in I2C mode to be accessed
--	  using the existing infrastructure.
--
--	  This is library mode.
--
--config MDIO_IPQ4019
--	tristate "Qualcomm IPQ4019 MDIO interface support"
--	depends on HAS_IOMEM && OF_MDIO
--	help
--	  This driver supports the MDIO interface found in Qualcomm
--	  IPQ40xx series Soc-s.
--
--config MDIO_IPQ8064
--	tristate "Qualcomm IPQ8064 MDIO interface support"
--	depends on HAS_IOMEM && OF_MDIO
--	depends on MFD_SYSCON
--	help
--	  This driver supports the MDIO interface found in the network
--	  interface units of the IPQ8064 SoC
--
--config MDIO_MOXART
--	tristate "MOXA ART MDIO interface support"
--	depends on ARCH_MOXART || COMPILE_TEST
--	help
--	  This driver supports the MDIO interface found in the network
--	  interface units of the MOXA ART SoC
--
--config MDIO_MSCC_MIIM
--	tristate "Microsemi MIIM interface support"
--	depends on HAS_IOMEM
--	select MDIO_DEVRES
--	help
--	  This driver supports the MIIM (MDIO) interface found in the network
--	  switches of the Microsemi SoCs; it is recommended to switch on
--	  CONFIG_HIGH_RES_TIMERS
--
--config MDIO_MVUSB
--	tristate "Marvell USB to MDIO Adapter"
--	depends on USB
--	help
--	  A USB to MDIO converter present on development boards for
--	  Marvell's Link Street family of Ethernet switches.
--
--config MDIO_OCTEON
--	tristate "Octeon and some ThunderX SOCs MDIO buses"
--	depends on (64BIT && OF_MDIO) || COMPILE_TEST
--	depends on HAS_IOMEM
--	select MDIO_CAVIUM
--	help
--	  This module provides a driver for the Octeon and ThunderX MDIO
--	  buses. It is required by the Octeon and ThunderX ethernet device
--	  drivers on some systems.
--
--config MDIO_SUN4I
--	tristate "Allwinner sun4i MDIO interface support"
--	depends on ARCH_SUNXI || COMPILE_TEST
--	help
--	  This driver supports the MDIO interface found in the network
--	  interface units of the Allwinner SoC that have an EMAC (A10,
--	  A12, A10s, etc.)
--
--config MDIO_THUNDER
--	tristate "ThunderX SOCs MDIO buses"
--	depends on 64BIT
--	depends on PCI
--	select MDIO_CAVIUM
--	help
--	  This driver supports the MDIO interfaces found on Cavium
--	  ThunderX SoCs when the MDIO bus device appears as a PCI
--	  device.
--
--config MDIO_XGENE
--	tristate "APM X-Gene SoC MDIO bus controller"
--	depends on ARCH_XGENE || COMPILE_TEST
--	help
--	  This module provides a driver for the MDIO busses found in the
--	  APM X-Gene SoC's.
-+source "drivers/net/phy/mdio/Kconfig"
+ source "drivers/net/phy/mdio/Kconfig"
  
- config MDIO_XPCS
- 	tristate "Synopsys DesignWare XPCS controller"
-@@ -239,9 +11,6 @@ config MDIO_XPCS
- 	  This module provides helper functions for Synopsys DesignWare XPCS
- 	  controllers.
- 
--endif
--endif
+-config MDIO_XPCS
+-	tristate "Synopsys DesignWare XPCS controller"
+-	help
+-	  This module provides helper functions for Synopsys DesignWare XPCS
+-	  controllers.
 -
  config PHYLINK
  	tristate
  	depends on NETDEVICES
-@@ -292,132 +61,6 @@ config SFP
- 	depends on HWMON || HWMON=n
- 	select MDIO_I2C
+@@ -92,6 +86,8 @@ config XILINX_GMII2RGMII
  
--config ADIN_PHY
--	tristate "Analog Devices Industrial Ethernet PHYs"
--	help
--	  Adds support for the Analog Devices Industrial Ethernet PHYs.
--	  Currently supports the:
--	  - ADIN1200 - Robust,Industrial, Low Power 10/100 Ethernet PHY
--	  - ADIN1300 - Robust,Industrial, Low Latency 10/100/1000 Gigabit
--	    Ethernet PHY
--
--config AMD_PHY
--	tristate "AMD PHYs"
--	help
--	  Currently supports the am79c874
--
--config AQUANTIA_PHY
--	tristate "Aquantia PHYs"
--	help
--	  Currently supports the Aquantia AQ1202, AQ2104, AQR105, AQR405
--
--config AX88796B_PHY
--	tristate "Asix PHYs"
--	help
--	  Currently supports the Asix Electronics PHY found in the X-Surf 100
--	  AX88796B package.
--
--config BCM63XX_PHY
--	tristate "Broadcom 63xx SOCs internal PHY"
--	depends on BCM63XX || COMPILE_TEST
--	select BCM_NET_PHYLIB
--	help
--	  Currently supports the 6348 and 6358 PHYs.
--
--config BCM7XXX_PHY
--	tristate "Broadcom 7xxx SOCs internal PHYs"
--	select BCM_NET_PHYLIB
--	help
--	  Currently supports the BCM7366, BCM7439, BCM7445, and
--	  40nm and 65nm generation of BCM7xxx Set Top Box SoCs.
--
--config BCM87XX_PHY
--	tristate "Broadcom BCM8706 and BCM8727 PHYs"
--	help
--	  Currently supports the BCM8706 and BCM8727 10G Ethernet PHYs.
--
--config BCM_CYGNUS_PHY
--	tristate "Broadcom Cygnus/Omega SoC internal PHY"
--	depends on ARCH_BCM_IPROC || COMPILE_TEST
--	depends on MDIO_BCM_IPROC
--	select BCM_NET_PHYLIB
--	help
--	  This PHY driver is for the 1G internal PHYs of the Broadcom
--	  Cygnus and Omega Family SoC.
--
--	  Currently supports internal PHY's used in the BCM11300,
--	  BCM11320, BCM11350, BCM11360, BCM58300, BCM58302,
--	  BCM58303 & BCM58305 Broadcom Cygnus SoCs.
--
--config BCM_NET_PHYLIB
--	tristate
--
--config BROADCOM_PHY
--	tristate "Broadcom PHYs"
--	select BCM_NET_PHYLIB
--	help
--	  Currently supports the BCM5411, BCM5421, BCM5461, BCM54616S, BCM5464,
--	  BCM5481, BCM54810 and BCM5482 PHYs.
--
--config BCM54140_PHY
--	tristate "Broadcom BCM54140 PHY"
--	depends on PHYLIB
--	depends on HWMON || HWMON=n
--	select BCM_NET_PHYLIB
--	help
--	  Support the Broadcom BCM54140 Quad SGMII/QSGMII PHY.
--
--	  This driver also supports the hardware monitoring of this PHY and
--	  exposes voltage and temperature sensors.
--
--config BCM84881_PHY
--	tristate "Broadcom BCM84881 PHY"
--	depends on PHYLIB
--	help
--	  Support the Broadcom BCM84881 PHY.
--
--config CICADA_PHY
--	tristate "Cicada PHYs"
--	help
--	  Currently supports the cis8204
--
--config CORTINA_PHY
--	tristate "Cortina EDC CDR 10G Ethernet PHY"
--	help
--	  Currently supports the CS4340 phy.
--
--config DAVICOM_PHY
--	tristate "Davicom PHYs"
--	help
--	  Currently supports dm9161e and dm9131
--
--config DP83822_PHY
--	tristate "Texas Instruments DP83822/825/826 PHYs"
--	help
--	  Supports the DP83822, DP83825I, DP83825CM, DP83825CS, DP83825S,
--	  DP83826C and DP83826NC PHYs.
--
--config DP83TC811_PHY
--	tristate "Texas Instruments DP83TC811 PHY"
--	help
--	  Supports the DP83TC811 PHY.
--
--config DP83848_PHY
--	tristate "Texas Instruments DP83848 PHY"
--	help
--	  Supports the DP83848 PHY.
--
--config DP83867_PHY
--	tristate "Texas Instruments DP83867 Gigabit PHY"
--	help
--	  Currently supports the DP83867 PHY.
--
--config DP83869_PHY
--	tristate "Texas Instruments DP83869 Gigabit PHY"
--	help
--	  Currently supports the DP83869 PHY.  This PHY supports copper and
--	  fiber connections.
--
- config FIXED_PHY
- 	tristate "MDIO Bus/PHY emulation with fixed speed/link PHYs"
- 	depends on PHYLIB
-@@ -428,123 +71,17 @@ config FIXED_PHY
+ endif # PHYLIB
  
- 	  Currently tested with mpc866ads and mpc8349e-mitx.
- 
--config ICPLUS_PHY
--	tristate "ICPlus PHYs"
--	help
--	  Currently supports the IP175C and IP1001 PHYs.
--
--config INTEL_XWAY_PHY
--	tristate "Intel XWAY PHYs"
--	help
--	  Supports the Intel XWAY (former Lantiq) 11G and 22E PHYs.
--	  These PHYs are marked as standalone chips under the names
--	  PEF 7061, PEF 7071 and PEF 7072 or integrated into the Intel
--	  SoCs xRX200, xRX300, xRX330, xRX350 and xRX550.
--
--config LSI_ET1011C_PHY
--	tristate "LSI ET1011C PHY"
--	help
--	  Supports the LSI ET1011C PHY.
--
--config LXT_PHY
--	tristate "Intel LXT PHYs"
--	help
--	  Currently supports the lxt970, lxt971
--
--config MARVELL_PHY
--	tristate "Marvell PHYs"
--	help
--	  Currently has a driver for the 88E1011S
--
--config MARVELL_10G_PHY
--	tristate "Marvell Alaska 10Gbit PHYs"
--	help
--	  Support for the Marvell Alaska MV88X3310 and compatible PHYs.
--
--config MESON_GXL_PHY
--	tristate "Amlogic Meson GXL Internal PHY"
--	depends on ARCH_MESON || COMPILE_TEST
--	help
--	  Currently has a driver for the Amlogic Meson GXL Internal PHY
--
--config MICREL_PHY
--	tristate "Micrel PHYs"
--	help
--	  Supports the KSZ9021, VSC8201, KS8001 PHYs.
--
--config MICROCHIP_PHY
--	tristate "Microchip PHYs"
--	help
--	  Supports the LAN88XX PHYs.
--
--config MICROCHIP_T1_PHY
--	tristate "Microchip T1 PHYs"
--	help
--	  Supports the LAN87XX PHYs.
--
--config MICROSEMI_PHY
--	tristate "Microsemi PHYs"
--	depends on MACSEC || MACSEC=n
--	select CRYPTO_LIB_AES if MACSEC
--	help
--	  Currently supports VSC8514, VSC8530, VSC8531, VSC8540 and VSC8541 PHYs
--
--config NATIONAL_PHY
--	tristate "National Semiconductor PHYs"
--	help
--	  Currently supports the DP83865 PHY.
--
--config NXP_TJA11XX_PHY
--	tristate "NXP TJA11xx PHYs support"
--	depends on HWMON
--	help
--	  Currently supports the NXP TJA1100 and TJA1101 PHY.
--
--config AT803X_PHY
--	tristate "Qualcomm Atheros AR803X PHYs"
--	depends on REGULATOR
--	help
--	  Currently supports the AR8030, AR8031, AR8033 and AR8035 model
--
--config QSEMI_PHY
--	tristate "Quality Semiconductor PHYs"
--	help
--	  Currently supports the qs6612
--
--config REALTEK_PHY
--	tristate "Realtek PHYs"
--	help
--	  Supports the Realtek 821x PHY.
--
--config RENESAS_PHY
--	tristate "Driver for Renesas PHYs"
--	help
--	  Supports the Renesas PHYs uPD60620 and uPD60620A.
--
--config ROCKCHIP_PHY
--	tristate "Driver for Rockchip Ethernet PHYs"
--	help
--	  Currently supports the integrated Ethernet PHY.
--
--config SMSC_PHY
--	tristate "SMSC PHYs"
--	help
--	  Currently supports the LAN83C185, LAN8187 and LAN8700 PHYs
--
--config STE10XP
--	tristate "STMicroelectronics STe10Xp PHYs"
-+config MDIO_I2C
-+	tristate
-+	depends on I2C
- 	help
--	  This is the driver for the STe100p and STe101p PHYs.
-+	  Support I2C based PHYs.  This provides a MDIO bus bridged
-+	  to I2C to allow PHYs connected in I2C mode to be accessed
-+	  using the existing infrastructure.
- 
--config TERANETICS_PHY
--	tristate "Teranetics PHYs"
--	help
--	  Currently supports the Teranetics TN2020
-+	  This is library mode.
- 
--config VITESSE_PHY
--	tristate "Vitesse PHYs"
--	help
--	  Currently supports the vsc8244
-+source "drivers/net/phy/phy/Kconfig"
- 
- config XILINX_GMII2RGMII
- 	tristate "Xilinx GMII2RGMII converter driver"
++source "drivers/net/phy/pcs/Kconfig"
++
+ config MICREL_KS8995MA
+ 	tristate "Micrel KS8995MA 5-ports 10/100 managed Ethernet switch"
+ 	depends on SPI
 diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index d84bab489a53..6bdf04478d34 100644
+index 6bdf04478d34..c5db11f70ccf 100644
 --- a/drivers/net/phy/Makefile
 +++ b/drivers/net/phy/Makefile
-@@ -1,6 +1,8 @@
+@@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  # Makefile for Linux PHY drivers and MDIO bus drivers
  
-+obj-y				+= phy/ mdio/
-+
+-obj-y				+= phy/ mdio/
++obj-y				+= phy/ mdio/ pcs/
+ 
  libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o \
  				   linkmode.o
- mdio-bus-y			+= mdio_bus.o mdio_device.o
-@@ -23,30 +25,8 @@ libphy-$(CONFIG_LED_TRIGGER_PHY)	+= phy_led_triggers.o
- 
- obj-$(CONFIG_PHYLINK)		+= phylink.o
+@@ -27,8 +27,6 @@ obj-$(CONFIG_PHYLINK)		+= phylink.o
  obj-$(CONFIG_PHYLIB)		+= libphy.o
-+obj-$(CONFIG_FIXED_PHY)		+= fixed_phy.o
+ obj-$(CONFIG_FIXED_PHY)		+= fixed_phy.o
  
--obj-$(CONFIG_MDIO_ASPEED)	+= mdio-aspeed.o
--obj-$(CONFIG_MDIO_BCM_IPROC)	+= mdio-bcm-iproc.o
--obj-$(CONFIG_MDIO_BCM_UNIMAC)	+= mdio-bcm-unimac.o
--obj-$(CONFIG_MDIO_BITBANG)	+= mdio-bitbang.o
--obj-$(CONFIG_MDIO_BUS_MUX)	+= mdio-mux.o
--obj-$(CONFIG_MDIO_BUS_MUX_BCM_IPROC)	+= mdio-mux-bcm-iproc.o
--obj-$(CONFIG_MDIO_BUS_MUX_GPIO)	+= mdio-mux-gpio.o
--obj-$(CONFIG_MDIO_BUS_MUX_MESON_G12A)	+= mdio-mux-meson-g12a.o
--obj-$(CONFIG_MDIO_BUS_MUX_MMIOREG) += mdio-mux-mmioreg.o
--obj-$(CONFIG_MDIO_BUS_MUX_MULTIPLEXER) += mdio-mux-multiplexer.o
--obj-$(CONFIG_MDIO_CAVIUM)	+= mdio-cavium.o
--obj-$(CONFIG_MDIO_GPIO)		+= mdio-gpio.o
--obj-$(CONFIG_MDIO_HISI_FEMAC)	+= mdio-hisi-femac.o
--obj-$(CONFIG_MDIO_I2C)		+= mdio-i2c.o
--obj-$(CONFIG_MDIO_IPQ4019)	+= mdio-ipq4019.o
--obj-$(CONFIG_MDIO_IPQ8064)	+= mdio-ipq8064.o
--obj-$(CONFIG_MDIO_MOXART)	+= mdio-moxart.o
--obj-$(CONFIG_MDIO_MSCC_MIIM)	+= mdio-mscc-miim.o
--obj-$(CONFIG_MDIO_MVUSB)	+= mdio-mvusb.o
--obj-$(CONFIG_MDIO_OCTEON)	+= mdio-octeon.o
--obj-$(CONFIG_MDIO_SUN4I)	+= mdio-sun4i.o
--obj-$(CONFIG_MDIO_THUNDER)	+= mdio-thunder.o
--obj-$(CONFIG_MDIO_XGENE)	+= mdio-xgene.o
- obj-$(CONFIG_MDIO_XPCS)		+= mdio-xpcs.o
- 
+-obj-$(CONFIG_MDIO_XPCS)		+= mdio-xpcs.o
+-
  obj-$(CONFIG_NETWORK_PHY_TIMESTAMPING) += mii_timestamper.o
-@@ -54,54 +34,7 @@ obj-$(CONFIG_NETWORK_PHY_TIMESTAMPING) += mii_timestamper.o
- obj-$(CONFIG_SFP)		+= sfp.o
- sfp-obj-$(CONFIG_SFP)		+= sfp-bus.o
- obj-y				+= $(sfp-obj-y) $(sfp-obj-m)
-+obj-$(CONFIG_MDIO_I2C)		+= mdio-i2c.o
  
--obj-$(CONFIG_ADIN_PHY)		+= adin.o
--obj-$(CONFIG_AMD_PHY)		+= amd.o
--aquantia-objs			+= aquantia_main.o
--ifdef CONFIG_HWMON
--aquantia-objs			+= aquantia_hwmon.o
--endif
--obj-$(CONFIG_AQUANTIA_PHY)	+= aquantia.o
--obj-$(CONFIG_AX88796B_PHY)	+= ax88796b.o
--obj-$(CONFIG_AT803X_PHY)	+= at803x.o
--obj-$(CONFIG_BCM63XX_PHY)	+= bcm63xx.o
--obj-$(CONFIG_BCM7XXX_PHY)	+= bcm7xxx.o
--obj-$(CONFIG_BCM87XX_PHY)	+= bcm87xx.o
--obj-$(CONFIG_BCM_CYGNUS_PHY)	+= bcm-cygnus.o
--obj-$(CONFIG_BCM_NET_PHYLIB)	+= bcm-phy-lib.o
--obj-$(CONFIG_BROADCOM_PHY)	+= broadcom.o
--obj-$(CONFIG_BCM54140_PHY)	+= bcm54140.o
--obj-$(CONFIG_BCM84881_PHY)	+= bcm84881.o
--obj-$(CONFIG_CICADA_PHY)	+= cicada.o
--obj-$(CONFIG_CORTINA_PHY)	+= cortina.o
--obj-$(CONFIG_DAVICOM_PHY)	+= davicom.o
--obj-$(CONFIG_DP83640_PHY)	+= dp83640.o
--obj-$(CONFIG_DP83822_PHY)	+= dp83822.o
--obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811.o
--obj-$(CONFIG_DP83848_PHY)	+= dp83848.o
--obj-$(CONFIG_DP83867_PHY)	+= dp83867.o
--obj-$(CONFIG_DP83869_PHY)	+= dp83869.o
--obj-$(CONFIG_FIXED_PHY)		+= fixed_phy.o
--obj-$(CONFIG_ICPLUS_PHY)	+= icplus.o
--obj-$(CONFIG_INTEL_XWAY_PHY)	+= intel-xway.o
--obj-$(CONFIG_LSI_ET1011C_PHY)	+= et1011c.o
--obj-$(CONFIG_LXT_PHY)		+= lxt.o
--obj-$(CONFIG_MARVELL_PHY)	+= marvell.o
--obj-$(CONFIG_MARVELL_10G_PHY)	+= marvell10g.o
--obj-$(CONFIG_MESON_GXL_PHY)	+= meson-gxl.o
- obj-$(CONFIG_MICREL_KS8995MA)	+= spi_ks8995.o
--obj-$(CONFIG_MICREL_PHY)	+= micrel.o
--obj-$(CONFIG_MICROCHIP_PHY)	+= microchip.o
--obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
--obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
--obj-$(CONFIG_NATIONAL_PHY)	+= national.o
--obj-$(CONFIG_NXP_TJA11XX_PHY)	+= nxp-tja11xx.o
--obj-$(CONFIG_QSEMI_PHY)		+= qsemi.o
--obj-$(CONFIG_REALTEK_PHY)	+= realtek.o
--obj-$(CONFIG_RENESAS_PHY)	+= uPD60620.o
--obj-$(CONFIG_ROCKCHIP_PHY)	+= rockchip.o
--obj-$(CONFIG_SMSC_PHY)		+= smsc.o
--obj-$(CONFIG_STE10XP)		+= ste10Xp.o
--obj-$(CONFIG_TERANETICS_PHY)	+= teranetics.o
--obj-$(CONFIG_VITESSE_PHY)	+= vitesse.o
--obj-$(CONFIG_XILINX_GMII2RGMII) += xilinx_gmii2rgmii.o
-+
-diff --git a/drivers/net/phy/mdio/Kconfig b/drivers/net/phy/mdio/Kconfig
+ obj-$(CONFIG_SFP)		+= sfp.o
+diff --git a/drivers/net/phy/pcs/Kconfig b/drivers/net/phy/pcs/Kconfig
 new file mode 100644
-index 000000000000..f5ea07b84d65
+index 000000000000..436b6348f7e8
 --- /dev/null
-+++ b/drivers/net/phy/mdio/Kconfig
-@@ -0,0 +1,226 @@
-+menuconfig MDIO_DEVICE
-+	tristate "MDIO bus device drivers"
++++ b/drivers/net/phy/pcs/Kconfig
+@@ -0,0 +1,20 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# PCS driver configuration
++#
++# Please keep this file sorted by sting which apears in menuconfig.
++
++menuconfig PCS_DEVICE
++	tristate "PCS device drivers"
 +	help
-+	  MDIO devices and driver infrastructure code.
++	  PCS devices and driver infrastructure code.
 +
-+if MDIO_DEVICE
++if PCS_DEVICE
 +
-+config MDIO_BUS
-+	tristate
-+	default m if PHYLIB=m
-+	default MDIO_DEVICE
++config PCS_XPCS
++	tristate "Synopsys DesignWare XPCS controller"
 +	help
-+	  This internal symbol is used for link time dependencies and it
-+	  reflects whether the mdio_bus/mdio_device code is built as a
-+	  loadable module or built-in.
-+
-+if MDIO_BUS
-+
-+config MDIO_DEVRES
-+	tristate
-+
-+comment "MDIO Multiplexor drivers"
-+
-+config MDIO_BUS_MUX
-+	tristate
-+	depends on OF_MDIO
-+	help
-+	  This module provides a driver framework for MDIO bus
-+	  multiplexers which connect one of several child MDIO busses
-+	  to a parent bus.  Switching between child busses is done by
-+	  device specific drivers.
-+
-+config MDIO_BUS_MUX_MESON_G12A
-+	tristate "Amlogic G12a based MDIO bus multiplexer"
-+	depends on ARCH_MESON || COMPILE_TEST
-+	depends on OF_MDIO && HAS_IOMEM && COMMON_CLK
-+	select MDIO_BUS_MUX
-+	default m if ARCH_MESON
-+	help
-+	  This module provides a driver for the MDIO multiplexer/glue of
-+	  the amlogic g12a SoC. The multiplexers connects either the external
-+	  or the internal MDIO bus to the parent bus.
-+
-+config MDIO_BUS_MUX_BCM_IPROC
-+	tristate "Broadcom iProc based MDIO bus multiplexers"
-+	depends on OF && OF_MDIO && (ARCH_BCM_IPROC || COMPILE_TEST)
-+	select MDIO_BUS_MUX
-+	default ARCH_BCM_IPROC
-+	help
-+	  This module provides a driver for MDIO bus multiplexers found in
-+	  iProc based Broadcom SoCs. This multiplexer connects one of several
-+	  child MDIO bus to a parent bus. Buses could be internal as well as
-+	  external and selection logic lies inside the same multiplexer.
-+
-+config MDIO_BUS_MUX_GPIO
-+	tristate "GPIO controlled MDIO bus multiplexers"
-+	depends on OF_GPIO && OF_MDIO
-+	select MDIO_BUS_MUX
-+	help
-+	  This module provides a driver for MDIO bus multiplexers that
-+	  are controlled via GPIO lines.  The multiplexer connects one of
-+	  several child MDIO busses to a parent bus.  Child bus
-+	  selection is under the control of GPIO lines.
-+
-+config MDIO_BUS_MUX_MULTIPLEXER
-+	tristate "MDIO bus multiplexer using kernel multiplexer subsystem"
-+	depends on OF_MDIO
-+	select MULTIPLEXER
-+	select MDIO_BUS_MUX
-+	help
-+	  This module provides a driver for MDIO bus multiplexer
-+	  that is controlled via the kernel multiplexer subsystem. The
-+	  bus multiplexer connects one of several child MDIO busses to
-+	  a parent bus.  Child bus selection is under the control of
-+	  the kernel multiplexer subsystem.
-+
-+config MDIO_BUS_MUX_MMIOREG
-+	tristate "MMIO device-controlled MDIO bus multiplexers"
-+	depends on OF_MDIO && HAS_IOMEM
-+	select MDIO_BUS_MUX
-+	help
-+	  This module provides a driver for MDIO bus multiplexers that
-+	  are controlled via a simple memory-mapped device, like an FPGA.
-+	  The multiplexer connects one of several child MDIO busses to a
-+	  parent bus.  Child bus selection is under the control of one of
-+	  the FPGA's registers.
-+
-+	  Currently, only 8/16/32 bits registers are supported.
-+
-+comment "MDIO Bus drivers"
-+
-+config MDIO_SUN4I
-+	tristate "Allwinner sun4i MDIO interface support"
-+	depends on ARCH_SUNXI || COMPILE_TEST
-+	help
-+	  This driver supports the MDIO interface found in the network
-+	  interface units of the Allwinner SoC that have an EMAC (A10,
-+	  A12, A10s, etc.)
-+
-+config MDIO_XGENE
-+	tristate "APM X-Gene SoC MDIO bus controller"
-+	depends on ARCH_XGENE || COMPILE_TEST
-+	help
-+	  This module provides a driver for the MDIO busses found in the
-+	  APM X-Gene SoC's.
-+
-+config MDIO_ASPEED
-+	tristate "ASPEED MDIO bus controller"
-+	depends on ARCH_ASPEED || COMPILE_TEST
-+	depends on OF_MDIO && HAS_IOMEM
-+	help
-+	  This module provides a driver for the independent MDIO bus
-+	  controllers found in the ASPEED AST2600 SoC. This is a driver for the
-+	  third revision of the ASPEED MDIO register interface - the first two
-+	  revisions are the "old" and "new" interfaces found in the AST2400 and
-+	  AST2500, embedded in the MAC. For legacy reasons, FTGMAC100 driver
-+	  continues to drive the embedded MDIO controller for the AST2400 and
-+	  AST2500 SoCs, so say N if AST2600 support is not required.
-+
-+config MDIO_BITBANG
-+	tristate "Bitbanged MDIO buses"
-+	help
-+	  This module implements the MDIO bus protocol in software,
-+	  for use by low level drivers that export the ability to
-+	  drive the relevant pins.
-+
-+	  If in doubt, say N.
-+
-+config MDIO_BCM_IPROC
-+	tristate "Broadcom iProc MDIO bus controller"
-+	depends on ARCH_BCM_IPROC || COMPILE_TEST
-+	depends on HAS_IOMEM && OF_MDIO
-+	default ARCH_BCM_IPROC
-+	help
-+	  This module provides a driver for the MDIO busses found in the
-+	  Broadcom iProc SoC's.
-+
-+config MDIO_BCM_UNIMAC
-+	tristate "Broadcom UniMAC MDIO bus controller"
-+	depends on HAS_IOMEM
-+	help
-+	  This module provides a driver for the Broadcom UniMAC MDIO busses.
-+	  This hardware can be found in the Broadcom GENET Ethernet MAC
-+	  controllers as well as some Broadcom Ethernet switches such as the
-+	  Starfighter 2 switches.
-+
-+config MDIO_CAVIUM
-+	tristate
-+
-+config MDIO_GPIO
-+	tristate "GPIO lib-based bitbanged MDIO buses"
-+	depends on MDIO_BITBANG
-+	depends on GPIOLIB || COMPILE_TEST
-+	help
-+	  Supports GPIO lib-based MDIO busses.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called mdio-gpio.
-+
-+config MDIO_HISI_FEMAC
-+	tristate "Hisilicon FEMAC MDIO bus controller"
-+	depends on HAS_IOMEM && OF_MDIO
-+	help
-+	  This module provides a driver for the MDIO busses found in the
-+	  Hisilicon SoC that have an Fast Ethernet MAC.
-+
-+config MDIO_MVUSB
-+	tristate "Marvell USB to MDIO Adapter"
-+	depends on USB
-+	help
-+	  A USB to MDIO converter present on development boards for
-+	  Marvell's Link Street family of Ethernet switches.
-+
-+config MDIO_MSCC_MIIM
-+	tristate "Microsemi MIIM interface support"
-+	depends on HAS_IOMEM
-+	select MDIO_DEVRES
-+	help
-+	  This driver supports the MIIM (MDIO) interface found in the network
-+	  switches of the Microsemi SoCs; it is recommended to switch on
-+	  CONFIG_HIGH_RES_TIMERS
-+
-+config MDIO_MOXART
-+	tristate "MOXA ART MDIO interface support"
-+	depends on ARCH_MOXART || COMPILE_TEST
-+	help
-+	  This driver supports the MDIO interface found in the network
-+	  interface units of the MOXA ART SoC
-+
-+config MDIO_OCTEON
-+	tristate "Octeon and some ThunderX SOCs MDIO buses"
-+	depends on (64BIT && OF_MDIO) || COMPILE_TEST
-+	depends on HAS_IOMEM
-+	select MDIO_CAVIUM
-+	help
-+	  This module provides a driver for the Octeon and ThunderX MDIO
-+	  buses. It is required by the Octeon and ThunderX ethernet device
-+	  drivers on some systems.
-+
-+config MDIO_IPQ4019
-+	tristate "Qualcomm IPQ4019 MDIO interface support"
-+	depends on HAS_IOMEM && OF_MDIO
-+	help
-+	  This driver supports the MDIO interface found in Qualcomm
-+	  IPQ40xx series Soc-s.
-+
-+config MDIO_IPQ8064
-+	tristate "Qualcomm IPQ8064 MDIO interface support"
-+	depends on HAS_IOMEM && OF_MDIO
-+	depends on MFD_SYSCON
-+	help
-+	  This driver supports the MDIO interface found in the network
-+	  interface units of the IPQ8064 SoC
-+
-+config MDIO_THUNDER
-+	tristate "ThunderX SOCs MDIO buses"
-+	depends on 64BIT
-+	depends on PCI
-+	select MDIO_CAVIUM
-+	help
-+	  This driver supports the MDIO interfaces found on Cavium
-+	  ThunderX SoCs when the MDIO bus device appears as a PCI
-+	  device.
++	  This module provides helper functions for Synopsys DesignWare XPCS
++	  controllers.
 +
 +endif
-+endif
-diff --git a/drivers/net/phy/mdio/Makefile b/drivers/net/phy/mdio/Makefile
+diff --git a/drivers/net/phy/pcs/Makefile b/drivers/net/phy/pcs/Makefile
 new file mode 100644
-index 000000000000..9f52aca3bc60
+index 000000000000..f0480afc7157
 --- /dev/null
-+++ b/drivers/net/phy/mdio/Makefile
-@@ -0,0 +1,26 @@
++++ b/drivers/net/phy/pcs/Makefile
+@@ -0,0 +1,4 @@
 +# SPDX-License-Identifier: GPL-2.0
-+# Makefile for Linux MDIO bus drivers
++# Makefile for Linux PCS drivers
 +
-+obj-$(CONFIG_MDIO_BUS_MUX)		+= mdio-mux.o
-+obj-$(CONFIG_MDIO_BUS_MUX_BCM_IPROC)	+= mdio-mux-bcm-iproc.o
-+obj-$(CONFIG_MDIO_BUS_MUX_GPIO)		+= mdio-mux-gpio.o
-+obj-$(CONFIG_MDIO_BUS_MUX_MESON_G12A)	+= mdio-mux-meson-g12a.o
-+obj-$(CONFIG_MDIO_BUS_MUX_MMIOREG) 	+= mdio-mux-mmioreg.o
-+obj-$(CONFIG_MDIO_BUS_MUX_MULTIPLEXER) 	+= mdio-mux-multiplexer.o
-+
-+obj-$(CONFIG_MDIO_ASPEED)		+= mdio-aspeed.o
-+obj-$(CONFIG_MDIO_BCM_IPROC)		+= mdio-bcm-iproc.o
-+obj-$(CONFIG_MDIO_BCM_UNIMAC)		+= mdio-bcm-unimac.o
-+obj-$(CONFIG_MDIO_BITBANG)		+= mdio-bitbang.o
-+obj-$(CONFIG_MDIO_CAVIUM)		+= mdio-cavium.o
-+obj-$(CONFIG_MDIO_GPIO)			+= mdio-gpio.o
-+obj-$(CONFIG_MDIO_HISI_FEMAC)		+= mdio-hisi-femac.o
-+obj-$(CONFIG_MDIO_IPQ4019)		+= mdio-ipq4019.o
-+obj-$(CONFIG_MDIO_IPQ8064)		+= mdio-ipq8064.o
-+obj-$(CONFIG_MDIO_MOXART)		+= mdio-moxart.o
-+obj-$(CONFIG_MDIO_MSCC_MIIM)		+= mdio-mscc-miim.o
-+obj-$(CONFIG_MDIO_MVUSB)		+= mdio-mvusb.o
-+obj-$(CONFIG_MDIO_OCTEON)		+= mdio-octeon.o
-+obj-$(CONFIG_MDIO_SUN4I)		+= mdio-sun4i.o
-+obj-$(CONFIG_MDIO_THUNDER)		+= mdio-thunder.o
-+obj-$(CONFIG_MDIO_XGENE)		+= mdio-xgene.o
-diff --git a/drivers/net/phy/mdio-aspeed.c b/drivers/net/phy/mdio/mdio-aspeed.c
-similarity index 100%
-rename from drivers/net/phy/mdio-aspeed.c
-rename to drivers/net/phy/mdio/mdio-aspeed.c
-diff --git a/drivers/net/phy/mdio-bcm-iproc.c b/drivers/net/phy/mdio/mdio-bcm-iproc.c
-similarity index 100%
-rename from drivers/net/phy/mdio-bcm-iproc.c
-rename to drivers/net/phy/mdio/mdio-bcm-iproc.c
-diff --git a/drivers/net/phy/mdio-bcm-unimac.c b/drivers/net/phy/mdio/mdio-bcm-unimac.c
-similarity index 100%
-rename from drivers/net/phy/mdio-bcm-unimac.c
-rename to drivers/net/phy/mdio/mdio-bcm-unimac.c
-diff --git a/drivers/net/phy/mdio-bitbang.c b/drivers/net/phy/mdio/mdio-bitbang.c
-similarity index 100%
-rename from drivers/net/phy/mdio-bitbang.c
-rename to drivers/net/phy/mdio/mdio-bitbang.c
-diff --git a/drivers/net/phy/mdio-cavium.c b/drivers/net/phy/mdio/mdio-cavium.c
-similarity index 100%
-rename from drivers/net/phy/mdio-cavium.c
-rename to drivers/net/phy/mdio/mdio-cavium.c
-diff --git a/drivers/net/phy/mdio-cavium.h b/drivers/net/phy/mdio/mdio-cavium.h
-similarity index 100%
-rename from drivers/net/phy/mdio-cavium.h
-rename to drivers/net/phy/mdio/mdio-cavium.h
-diff --git a/drivers/net/phy/mdio-gpio.c b/drivers/net/phy/mdio/mdio-gpio.c
-similarity index 100%
-rename from drivers/net/phy/mdio-gpio.c
-rename to drivers/net/phy/mdio/mdio-gpio.c
-diff --git a/drivers/net/phy/mdio-hisi-femac.c b/drivers/net/phy/mdio/mdio-hisi-femac.c
-similarity index 100%
-rename from drivers/net/phy/mdio-hisi-femac.c
-rename to drivers/net/phy/mdio/mdio-hisi-femac.c
-diff --git a/drivers/net/phy/mdio-ipq4019.c b/drivers/net/phy/mdio/mdio-ipq4019.c
-similarity index 100%
-rename from drivers/net/phy/mdio-ipq4019.c
-rename to drivers/net/phy/mdio/mdio-ipq4019.c
-diff --git a/drivers/net/phy/mdio-ipq8064.c b/drivers/net/phy/mdio/mdio-ipq8064.c
-similarity index 100%
-rename from drivers/net/phy/mdio-ipq8064.c
-rename to drivers/net/phy/mdio/mdio-ipq8064.c
-diff --git a/drivers/net/phy/mdio-moxart.c b/drivers/net/phy/mdio/mdio-moxart.c
-similarity index 100%
-rename from drivers/net/phy/mdio-moxart.c
-rename to drivers/net/phy/mdio/mdio-moxart.c
-diff --git a/drivers/net/phy/mdio-mscc-miim.c b/drivers/net/phy/mdio/mdio-mscc-miim.c
-similarity index 100%
-rename from drivers/net/phy/mdio-mscc-miim.c
-rename to drivers/net/phy/mdio/mdio-mscc-miim.c
-diff --git a/drivers/net/phy/mdio-mux-bcm-iproc.c b/drivers/net/phy/mdio/mdio-mux-bcm-iproc.c
-similarity index 100%
-rename from drivers/net/phy/mdio-mux-bcm-iproc.c
-rename to drivers/net/phy/mdio/mdio-mux-bcm-iproc.c
-diff --git a/drivers/net/phy/mdio-mux-gpio.c b/drivers/net/phy/mdio/mdio-mux-gpio.c
-similarity index 100%
-rename from drivers/net/phy/mdio-mux-gpio.c
-rename to drivers/net/phy/mdio/mdio-mux-gpio.c
-diff --git a/drivers/net/phy/mdio-mux-meson-g12a.c b/drivers/net/phy/mdio/mdio-mux-meson-g12a.c
-similarity index 100%
-rename from drivers/net/phy/mdio-mux-meson-g12a.c
-rename to drivers/net/phy/mdio/mdio-mux-meson-g12a.c
-diff --git a/drivers/net/phy/mdio-mux-mmioreg.c b/drivers/net/phy/mdio/mdio-mux-mmioreg.c
-similarity index 100%
-rename from drivers/net/phy/mdio-mux-mmioreg.c
-rename to drivers/net/phy/mdio/mdio-mux-mmioreg.c
-diff --git a/drivers/net/phy/mdio-mux-multiplexer.c b/drivers/net/phy/mdio/mdio-mux-multiplexer.c
-similarity index 100%
-rename from drivers/net/phy/mdio-mux-multiplexer.c
-rename to drivers/net/phy/mdio/mdio-mux-multiplexer.c
-diff --git a/drivers/net/phy/mdio-mux.c b/drivers/net/phy/mdio/mdio-mux.c
-similarity index 100%
-rename from drivers/net/phy/mdio-mux.c
-rename to drivers/net/phy/mdio/mdio-mux.c
-diff --git a/drivers/net/phy/mdio-mvusb.c b/drivers/net/phy/mdio/mdio-mvusb.c
-similarity index 100%
-rename from drivers/net/phy/mdio-mvusb.c
-rename to drivers/net/phy/mdio/mdio-mvusb.c
-diff --git a/drivers/net/phy/mdio-octeon.c b/drivers/net/phy/mdio/mdio-octeon.c
-similarity index 100%
-rename from drivers/net/phy/mdio-octeon.c
-rename to drivers/net/phy/mdio/mdio-octeon.c
-diff --git a/drivers/net/phy/mdio-sun4i.c b/drivers/net/phy/mdio/mdio-sun4i.c
-similarity index 100%
-rename from drivers/net/phy/mdio-sun4i.c
-rename to drivers/net/phy/mdio/mdio-sun4i.c
-diff --git a/drivers/net/phy/mdio-thunder.c b/drivers/net/phy/mdio/mdio-thunder.c
-similarity index 100%
-rename from drivers/net/phy/mdio-thunder.c
-rename to drivers/net/phy/mdio/mdio-thunder.c
-diff --git a/drivers/net/phy/mdio-xgene.c b/drivers/net/phy/mdio/mdio-xgene.c
-similarity index 100%
-rename from drivers/net/phy/mdio-xgene.c
-rename to drivers/net/phy/mdio/mdio-xgene.c
-diff --git a/drivers/net/phy/phy/Kconfig b/drivers/net/phy/phy/Kconfig
-new file mode 100644
-index 000000000000..51c01e51be34
---- /dev/null
-+++ b/drivers/net/phy/phy/Kconfig
-@@ -0,0 +1,243 @@
-+config AMD_PHY
-+	tristate "AMD PHYs"
-+	help
-+	  Currently supports the am79c874
-+
-+config ADIN_PHY
-+	tristate "Analog Devices Industrial Ethernet PHYs"
-+	help
-+	  Adds support for the Analog Devices Industrial Ethernet PHYs.
-+	  Currently supports the:
-+	  - ADIN1200 - Robust,Industrial, Low Power 10/100 Ethernet PHY
-+	  - ADIN1300 - Robust,Industrial, Low Latency 10/100/1000 Gigabit
-+	    Ethernet PHY
-+
-+config MESON_GXL_PHY
-+	tristate "Amlogic Meson GXL Internal PHY"
-+	depends on ARCH_MESON || COMPILE_TEST
-+	help
-+	  Currently has a driver for the Amlogic Meson GXL Internal PHY
-+
-+config AQUANTIA_PHY
-+	tristate "Aquantia PHYs"
-+	help
-+	  Currently supports the Aquantia AQ1202, AQ2104, AQR105, AQR405
-+
-+config AX88796B_PHY
-+	tristate "Asix PHYs"
-+	help
-+	  Currently supports the Asix Electronics PHY found in the X-Surf 100
-+	  AX88796B package.
-+
-+config BCM_NET_PHYLIB
-+	tristate
-+
-+config BCM54140_PHY
-+	tristate "Broadcom BCM54140 PHY"
-+	depends on PHYLIB
-+	depends on HWMON || HWMON=n
-+	select BCM_NET_PHYLIB
-+	help
-+	  Support the Broadcom BCM54140 Quad SGMII/QSGMII PHY.
-+
-+	  This driver also supports the hardware monitoring of this PHY and
-+	  exposes voltage and temperature sensors.
-+
-+config BROADCOM_PHY
-+	tristate "Broadcom BCM5xxx PHYs"
-+	select BCM_NET_PHYLIB
-+	help
-+	  Currently supports the BCM5411, BCM5421, BCM5461, BCM54616S, BCM5464,
-+	  BCM5481, BCM54810 and BCM5482 PHYs.
-+
-+config BCM63XX_PHY
-+	tristate "Broadcom 63xx SOCs internal PHY"
-+	depends on BCM63XX || COMPILE_TEST
-+	select BCM_NET_PHYLIB
-+	help
-+	  Currently supports the 6348 and 6358 PHYs.
-+
-+config BCM7XXX_PHY
-+	tristate "Broadcom 7xxx SOCs internal PHYs"
-+	select BCM_NET_PHYLIB
-+	help
-+	  Currently supports the BCM7366, BCM7439, BCM7445, and
-+	  40nm and 65nm generation of BCM7xxx Set Top Box SoCs.
-+
-+config BCM84881_PHY
-+	tristate "Broadcom BCM84881 PHY"
-+	depends on PHYLIB
-+	help
-+	  Support the Broadcom BCM84881 PHY.
-+
-+config BCM87XX_PHY
-+	tristate "Broadcom BCM8706 and BCM8727 PHYs"
-+	help
-+	  Currently supports the BCM8706 and BCM8727 10G Ethernet PHYs.
-+
-+config BCM_CYGNUS_PHY
-+	tristate "Broadcom Cygnus/Omega SoC internal PHY"
-+	depends on ARCH_BCM_IPROC || COMPILE_TEST
-+	depends on MDIO_BCM_IPROC
-+	select BCM_NET_PHYLIB
-+	help
-+	  This PHY driver is for the 1G internal PHYs of the Broadcom
-+	  Cygnus and Omega Family SoC.
-+
-+	  Currently supports internal PHY's used in the BCM11300,
-+	  BCM11320, BCM11350, BCM11360, BCM58300, BCM58302,
-+	  BCM58303 & BCM58305 Broadcom Cygnus SoCs.
-+
-+config CICADA_PHY
-+	tristate "Cicada PHYs"
-+	help
-+	  Currently supports the cis8204
-+
-+config CORTINA_PHY
-+	tristate "Cortina EDC CDR 10G Ethernet PHY"
-+	help
-+	  Currently supports the CS4340 phy.
-+
-+config DAVICOM_PHY
-+	tristate "Davicom PHYs"
-+	help
-+	  Currently supports dm9161e and dm9131
-+
-+config ICPLUS_PHY
-+	tristate "ICPlus PHYs"
-+	help
-+	  Currently supports the IP175C and IP1001 PHYs.
-+
-+config INTEL_XWAY_PHY
-+	tristate "Intel XWAY PHYs"
-+	help
-+	  Supports the Intel XWAY (former Lantiq) 11G and 22E PHYs.
-+	  These PHYs are marked as standalone chips under the names
-+	  PEF 7061, PEF 7071 and PEF 7072 or integrated into the Intel
-+	  SoCs xRX200, xRX300, xRX330, xRX350 and xRX550.
-+
-+config LXT_PHY
-+	tristate "Intel LXT PHYs"
-+	help
-+	  Currently supports the lxt970, lxt971
-+
-+config LSI_ET1011C_PHY
-+	tristate "LSI ET1011C PHY"
-+	help
-+	  Supports the LSI ET1011C PHY.
-+
-+config MARVELL_PHY
-+	tristate "Marvell Alaska 1Gbit PHYs"
-+	help
-+	  Currently has a driver for the 88E1011S
-+
-+config MARVELL_10G_PHY
-+	tristate "Marvell Alaska 10Gbit PHYs"
-+	help
-+	  Support for the Marvell Alaska MV88X3310 and compatible PHYs.
-+
-+config MICREL_PHY
-+	tristate "Micrel PHYs"
-+	help
-+	  Supports the KSZ9021, VSC8201, KS8001 PHYs.
-+
-+config MICROCHIP_PHY
-+	tristate "Microchip LAN88XX PHYs"
-+	help
-+	  Supports the LAN88XX PHYs.
-+
-+config MICROCHIP_T1_PHY
-+	tristate "Microchip LAN87xx T1 PHYs"
-+	help
-+	  Supports the LAN87XX PHYs.
-+
-+config MICROSEMI_PHY
-+	tristate "Microsemi PHYs"
-+	depends on MACSEC || MACSEC=n
-+	select CRYPTO_LIB_AES if MACSEC
-+	help
-+	  Currently supports VSC8514, VSC8530, VSC8531, VSC8540 and VSC8541 PHYs
-+
-+config NATIONAL_PHY
-+	tristate "National Semiconductor PHYs"
-+	help
-+	  Currently supports the DP83865 PHY.
-+
-+config NXP_TJA11XX_PHY
-+	tristate "NXP TJA11xx PHYs support"
-+	depends on HWMON
-+	help
-+	  Currently supports the NXP TJA1100 and TJA1101 PHY.
-+
-+config AT803X_PHY
-+	tristate "Qualcomm Atheros AR803X PHYs"
-+	depends on REGULATOR
-+	help
-+	  Currently supports the AR8030, AR8031, AR8033 and AR8035 model
-+
-+config QSEMI_PHY
-+	tristate "Quality Semiconductor PHYs"
-+	help
-+	  Currently supports the qs6612
-+
-+config REALTEK_PHY
-+	tristate "Realtek PHYs"
-+	help
-+	  Supports the Realtek 821x PHY.
-+
-+config RENESAS_PHY
-+	tristate "Renesas PHYs"
-+	help
-+	  Supports the Renesas PHYs uPD60620 and uPD60620A.
-+
-+config ROCKCHIP_PHY
-+	tristate "Rockchip Ethernet PHYs"
-+	help
-+	  Currently supports the integrated Ethernet PHY.
-+
-+config SMSC_PHY
-+	tristate "SMSC PHYs"
-+	help
-+	  Currently supports the LAN83C185, LAN8187 and LAN8700 PHYs
-+
-+config STE10XP
-+	tristate "STMicroelectronics STe10Xp PHYs"
-+	help
-+	  This is the driver for the STe100p and STe101p PHYs.
-+
-+config TERANETICS_PHY
-+	tristate "Teranetics PHYs"
-+	help
-+	  Currently supports the Teranetics TN2020
-+
-+config DP83822_PHY
-+	tristate "Texas Instruments DP83822/825/826 PHYs"
-+	help
-+	  Supports the DP83822, DP83825I, DP83825CM, DP83825CS, DP83825S,
-+	  DP83826C and DP83826NC PHYs.
-+
-+config DP83848_PHY
-+	tristate "Texas Instruments DP83848 PHY"
-+	help
-+	  Supports the DP83848 PHY.
-+
-+config DP83867_PHY
-+	tristate "Texas Instruments DP83867 Gigabit PHY"
-+	help
-+	  Currently supports the DP83867 PHY.
-+
-+config DP83869_PHY
-+	tristate "Texas Instruments DP83869 Gigabit PHY"
-+	help
-+	  Currently supports the DP83869 PHY.  This PHY supports copper and
-+	  fiber connections.
-+
-+config DP83TC811_PHY
-+	tristate "Texas Instruments DP83TC811 PHY"
-+	help
-+	  Supports the DP83TC811 PHY.
-+
-+config VITESSE_PHY
-+	tristate "Vitesse PHYs"
-+	help
-+	  Currently supports the vsc8244
-diff --git a/drivers/net/phy/phy/Makefile b/drivers/net/phy/phy/Makefile
-new file mode 100644
-index 000000000000..f0c2b82c03ac
---- /dev/null
-+++ b/drivers/net/phy/phy/Makefile
-@@ -0,0 +1,50 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Makefile for Linux PHY drivers
-+
-+obj-$(CONFIG_ADIN_PHY)		+= adin.o
-+obj-$(CONFIG_AMD_PHY)		+= amd.o
-+aquantia-objs			+= aquantia_main.o
-+ifdef CONFIG_HWMON
-+aquantia-objs			+= aquantia_hwmon.o
-+endif
-+obj-$(CONFIG_AQUANTIA_PHY)	+= aquantia.o
-+obj-$(CONFIG_AT803X_PHY)	+= at803x.o
-+obj-$(CONFIG_AX88796B_PHY)	+= ax88796b.o
-+obj-$(CONFIG_BCM54140_PHY)	+= bcm54140.o
-+obj-$(CONFIG_BCM63XX_PHY)	+= bcm63xx.o
-+obj-$(CONFIG_BCM7XXX_PHY)	+= bcm7xxx.o
-+obj-$(CONFIG_BCM84881_PHY)	+= bcm84881.o
-+obj-$(CONFIG_BCM87XX_PHY)	+= bcm87xx.o
-+obj-$(CONFIG_BCM_CYGNUS_PHY)	+= bcm-cygnus.o
-+obj-$(CONFIG_BCM_NET_PHYLIB)	+= bcm-phy-lib.o
-+obj-$(CONFIG_BROADCOM_PHY)	+= broadcom.o
-+obj-$(CONFIG_CICADA_PHY)	+= cicada.o
-+obj-$(CONFIG_CORTINA_PHY)	+= cortina.o
-+obj-$(CONFIG_DAVICOM_PHY)	+= davicom.o
-+obj-$(CONFIG_DP83640_PHY)	+= dp83640.o
-+obj-$(CONFIG_DP83822_PHY)	+= dp83822.o
-+obj-$(CONFIG_DP83848_PHY)	+= dp83848.o
-+obj-$(CONFIG_DP83867_PHY)	+= dp83867.o
-+obj-$(CONFIG_DP83869_PHY)	+= dp83869.o
-+obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811.o
-+obj-$(CONFIG_ICPLUS_PHY)	+= icplus.o
-+obj-$(CONFIG_INTEL_XWAY_PHY)	+= intel-xway.o
-+obj-$(CONFIG_LSI_ET1011C_PHY)	+= et1011c.o
-+obj-$(CONFIG_LXT_PHY)		+= lxt.o
-+obj-$(CONFIG_MARVELL_10G_PHY)	+= marvell10g.o
-+obj-$(CONFIG_MARVELL_PHY)	+= marvell.o
-+obj-$(CONFIG_MESON_GXL_PHY)	+= meson-gxl.o
-+obj-$(CONFIG_MICREL_PHY)	+= micrel.o
-+obj-$(CONFIG_MICROCHIP_PHY)	+= microchip.o
-+obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
-+obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
-+obj-$(CONFIG_NATIONAL_PHY)	+= national.o
-+obj-$(CONFIG_NXP_TJA11XX_PHY)	+= nxp-tja11xx.o
-+obj-$(CONFIG_QSEMI_PHY)		+= qsemi.o
-+obj-$(CONFIG_REALTEK_PHY)	+= realtek.o
-+obj-$(CONFIG_RENESAS_PHY)	+= uPD60620.o
-+obj-$(CONFIG_ROCKCHIP_PHY)	+= rockchip.o
-+obj-$(CONFIG_SMSC_PHY)		+= smsc.o
-+obj-$(CONFIG_STE10XP)		+= ste10Xp.o
-+obj-$(CONFIG_TERANETICS_PHY)	+= teranetics.o
-+obj-$(CONFIG_VITESSE_PHY)	+= vitesse.o
-diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/phy/adin.c
-similarity index 100%
-rename from drivers/net/phy/adin.c
-rename to drivers/net/phy/phy/adin.c
-diff --git a/drivers/net/phy/amd.c b/drivers/net/phy/phy/amd.c
-similarity index 100%
-rename from drivers/net/phy/amd.c
-rename to drivers/net/phy/phy/amd.c
-diff --git a/drivers/net/phy/aquantia.h b/drivers/net/phy/phy/aquantia.h
-similarity index 100%
-rename from drivers/net/phy/aquantia.h
-rename to drivers/net/phy/phy/aquantia.h
-diff --git a/drivers/net/phy/aquantia_hwmon.c b/drivers/net/phy/phy/aquantia_hwmon.c
-similarity index 100%
-rename from drivers/net/phy/aquantia_hwmon.c
-rename to drivers/net/phy/phy/aquantia_hwmon.c
-diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/phy/aquantia_main.c
-similarity index 100%
-rename from drivers/net/phy/aquantia_main.c
-rename to drivers/net/phy/phy/aquantia_main.c
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/phy/at803x.c
-similarity index 100%
-rename from drivers/net/phy/at803x.c
-rename to drivers/net/phy/phy/at803x.c
-diff --git a/drivers/net/phy/ax88796b.c b/drivers/net/phy/phy/ax88796b.c
-similarity index 100%
-rename from drivers/net/phy/ax88796b.c
-rename to drivers/net/phy/phy/ax88796b.c
-diff --git a/drivers/net/phy/bcm-cygnus.c b/drivers/net/phy/phy/bcm-cygnus.c
-similarity index 100%
-rename from drivers/net/phy/bcm-cygnus.c
-rename to drivers/net/phy/phy/bcm-cygnus.c
-diff --git a/drivers/net/phy/bcm-phy-lib.c b/drivers/net/phy/phy/bcm-phy-lib.c
-similarity index 100%
-rename from drivers/net/phy/bcm-phy-lib.c
-rename to drivers/net/phy/phy/bcm-phy-lib.c
-diff --git a/drivers/net/phy/bcm-phy-lib.h b/drivers/net/phy/phy/bcm-phy-lib.h
-similarity index 100%
-rename from drivers/net/phy/bcm-phy-lib.h
-rename to drivers/net/phy/phy/bcm-phy-lib.h
-diff --git a/drivers/net/phy/bcm54140.c b/drivers/net/phy/phy/bcm54140.c
-similarity index 100%
-rename from drivers/net/phy/bcm54140.c
-rename to drivers/net/phy/phy/bcm54140.c
-diff --git a/drivers/net/phy/bcm63xx.c b/drivers/net/phy/phy/bcm63xx.c
-similarity index 100%
-rename from drivers/net/phy/bcm63xx.c
-rename to drivers/net/phy/phy/bcm63xx.c
-diff --git a/drivers/net/phy/bcm7xxx.c b/drivers/net/phy/phy/bcm7xxx.c
-similarity index 100%
-rename from drivers/net/phy/bcm7xxx.c
-rename to drivers/net/phy/phy/bcm7xxx.c
-diff --git a/drivers/net/phy/bcm84881.c b/drivers/net/phy/phy/bcm84881.c
-similarity index 100%
-rename from drivers/net/phy/bcm84881.c
-rename to drivers/net/phy/phy/bcm84881.c
-diff --git a/drivers/net/phy/bcm87xx.c b/drivers/net/phy/phy/bcm87xx.c
-similarity index 100%
-rename from drivers/net/phy/bcm87xx.c
-rename to drivers/net/phy/phy/bcm87xx.c
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/phy/broadcom.c
-similarity index 100%
-rename from drivers/net/phy/broadcom.c
-rename to drivers/net/phy/phy/broadcom.c
-diff --git a/drivers/net/phy/cicada.c b/drivers/net/phy/phy/cicada.c
-similarity index 100%
-rename from drivers/net/phy/cicada.c
-rename to drivers/net/phy/phy/cicada.c
-diff --git a/drivers/net/phy/cortina.c b/drivers/net/phy/phy/cortina.c
-similarity index 100%
-rename from drivers/net/phy/cortina.c
-rename to drivers/net/phy/phy/cortina.c
-diff --git a/drivers/net/phy/davicom.c b/drivers/net/phy/phy/davicom.c
-similarity index 100%
-rename from drivers/net/phy/davicom.c
-rename to drivers/net/phy/phy/davicom.c
-diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/phy/dp83640.c
-similarity index 100%
-rename from drivers/net/phy/dp83640.c
-rename to drivers/net/phy/phy/dp83640.c
-diff --git a/drivers/net/phy/dp83640_reg.h b/drivers/net/phy/phy/dp83640_reg.h
-similarity index 100%
-rename from drivers/net/phy/dp83640_reg.h
-rename to drivers/net/phy/phy/dp83640_reg.h
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/phy/dp83822.c
-similarity index 100%
-rename from drivers/net/phy/dp83822.c
-rename to drivers/net/phy/phy/dp83822.c
-diff --git a/drivers/net/phy/dp83848.c b/drivers/net/phy/phy/dp83848.c
-similarity index 100%
-rename from drivers/net/phy/dp83848.c
-rename to drivers/net/phy/phy/dp83848.c
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/phy/dp83867.c
-similarity index 100%
-rename from drivers/net/phy/dp83867.c
-rename to drivers/net/phy/phy/dp83867.c
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/phy/dp83869.c
-similarity index 100%
-rename from drivers/net/phy/dp83869.c
-rename to drivers/net/phy/phy/dp83869.c
-diff --git a/drivers/net/phy/dp83tc811.c b/drivers/net/phy/phy/dp83tc811.c
-similarity index 100%
-rename from drivers/net/phy/dp83tc811.c
-rename to drivers/net/phy/phy/dp83tc811.c
-diff --git a/drivers/net/phy/et1011c.c b/drivers/net/phy/phy/et1011c.c
-similarity index 100%
-rename from drivers/net/phy/et1011c.c
-rename to drivers/net/phy/phy/et1011c.c
-diff --git a/drivers/net/phy/icplus.c b/drivers/net/phy/phy/icplus.c
-similarity index 100%
-rename from drivers/net/phy/icplus.c
-rename to drivers/net/phy/phy/icplus.c
-diff --git a/drivers/net/phy/intel-xway.c b/drivers/net/phy/phy/intel-xway.c
-similarity index 100%
-rename from drivers/net/phy/intel-xway.c
-rename to drivers/net/phy/phy/intel-xway.c
-diff --git a/drivers/net/phy/lxt.c b/drivers/net/phy/phy/lxt.c
-similarity index 100%
-rename from drivers/net/phy/lxt.c
-rename to drivers/net/phy/phy/lxt.c
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/phy/marvell.c
-similarity index 100%
-rename from drivers/net/phy/marvell.c
-rename to drivers/net/phy/phy/marvell.c
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/phy/marvell10g.c
-similarity index 100%
-rename from drivers/net/phy/marvell10g.c
-rename to drivers/net/phy/phy/marvell10g.c
-diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/phy/meson-gxl.c
-similarity index 100%
-rename from drivers/net/phy/meson-gxl.c
-rename to drivers/net/phy/phy/meson-gxl.c
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/phy/micrel.c
-similarity index 100%
-rename from drivers/net/phy/micrel.c
-rename to drivers/net/phy/phy/micrel.c
-diff --git a/drivers/net/phy/microchip.c b/drivers/net/phy/phy/microchip.c
-similarity index 100%
-rename from drivers/net/phy/microchip.c
-rename to drivers/net/phy/phy/microchip.c
-diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/phy/microchip_t1.c
-similarity index 100%
-rename from drivers/net/phy/microchip_t1.c
-rename to drivers/net/phy/phy/microchip_t1.c
-diff --git a/drivers/net/phy/mscc/Makefile b/drivers/net/phy/phy/mscc/Makefile
-similarity index 100%
-rename from drivers/net/phy/mscc/Makefile
-rename to drivers/net/phy/phy/mscc/Makefile
-diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/phy/mscc/mscc.h
-similarity index 100%
-rename from drivers/net/phy/mscc/mscc.h
-rename to drivers/net/phy/phy/mscc/mscc.h
-diff --git a/drivers/net/phy/mscc/mscc_fc_buffer.h b/drivers/net/phy/phy/mscc/mscc_fc_buffer.h
-similarity index 100%
-rename from drivers/net/phy/mscc/mscc_fc_buffer.h
-rename to drivers/net/phy/phy/mscc/mscc_fc_buffer.h
-diff --git a/drivers/net/phy/mscc/mscc_mac.h b/drivers/net/phy/phy/mscc/mscc_mac.h
-similarity index 100%
-rename from drivers/net/phy/mscc/mscc_mac.h
-rename to drivers/net/phy/phy/mscc/mscc_mac.h
-diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/phy/mscc/mscc_macsec.c
-similarity index 100%
-rename from drivers/net/phy/mscc/mscc_macsec.c
-rename to drivers/net/phy/phy/mscc/mscc_macsec.c
-diff --git a/drivers/net/phy/mscc/mscc_macsec.h b/drivers/net/phy/phy/mscc/mscc_macsec.h
-similarity index 100%
-rename from drivers/net/phy/mscc/mscc_macsec.h
-rename to drivers/net/phy/phy/mscc/mscc_macsec.h
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/phy/mscc/mscc_main.c
-similarity index 100%
-rename from drivers/net/phy/mscc/mscc_main.c
-rename to drivers/net/phy/phy/mscc/mscc_main.c
-diff --git a/drivers/net/phy/national.c b/drivers/net/phy/phy/national.c
-similarity index 100%
-rename from drivers/net/phy/national.c
-rename to drivers/net/phy/phy/national.c
-diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/phy/nxp-tja11xx.c
-similarity index 100%
-rename from drivers/net/phy/nxp-tja11xx.c
-rename to drivers/net/phy/phy/nxp-tja11xx.c
-diff --git a/drivers/net/phy/qsemi.c b/drivers/net/phy/phy/qsemi.c
-similarity index 100%
-rename from drivers/net/phy/qsemi.c
-rename to drivers/net/phy/phy/qsemi.c
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/phy/realtek.c
-similarity index 100%
-rename from drivers/net/phy/realtek.c
-rename to drivers/net/phy/phy/realtek.c
-diff --git a/drivers/net/phy/rockchip.c b/drivers/net/phy/phy/rockchip.c
-similarity index 100%
-rename from drivers/net/phy/rockchip.c
-rename to drivers/net/phy/phy/rockchip.c
-diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/phy/smsc.c
-similarity index 100%
-rename from drivers/net/phy/smsc.c
-rename to drivers/net/phy/phy/smsc.c
-diff --git a/drivers/net/phy/ste10Xp.c b/drivers/net/phy/phy/ste10Xp.c
-similarity index 100%
-rename from drivers/net/phy/ste10Xp.c
-rename to drivers/net/phy/phy/ste10Xp.c
-diff --git a/drivers/net/phy/teranetics.c b/drivers/net/phy/phy/teranetics.c
-similarity index 100%
-rename from drivers/net/phy/teranetics.c
-rename to drivers/net/phy/phy/teranetics.c
-diff --git a/drivers/net/phy/uPD60620.c b/drivers/net/phy/phy/uPD60620.c
-similarity index 100%
-rename from drivers/net/phy/uPD60620.c
-rename to drivers/net/phy/phy/uPD60620.c
-diff --git a/drivers/net/phy/vitesse.c b/drivers/net/phy/phy/vitesse.c
-similarity index 100%
-rename from drivers/net/phy/vitesse.c
-rename to drivers/net/phy/phy/vitesse.c
++obj-$(CONFIG_PCS_XPCS)		+= pcs-xpcs.o
+diff --git a/drivers/net/phy/mdio-xpcs.c b/drivers/net/phy/pcs/pcs-xpcs.c
+similarity index 99%
+rename from drivers/net/phy/mdio-xpcs.c
+rename to drivers/net/phy/pcs/pcs-xpcs.c
+index 0d66a8ba7eb6..2c77b6245279 100644
+--- a/drivers/net/phy/mdio-xpcs.c
++++ b/drivers/net/phy/pcs/pcs-xpcs.c
+@@ -8,7 +8,7 @@
+ 
+ #include <linux/delay.h>
+ #include <linux/mdio.h>
+-#include <linux/mdio-xpcs.h>
++#include <linux/pcs-xpcs.h>
+ #include <linux/phylink.h>
+ #include <linux/workqueue.h>
+ 
+diff --git a/include/linux/mdio-xpcs.h b/include/linux/pcs-xpcs.h
+similarity index 88%
+rename from include/linux/mdio-xpcs.h
+rename to include/linux/pcs-xpcs.h
+index 9a841aa5982d..351c1c9aedc5 100644
+--- a/include/linux/mdio-xpcs.h
++++ b/include/linux/pcs-xpcs.h
+@@ -4,8 +4,8 @@
+  * Synopsys DesignWare XPCS helpers
+  */
+ 
+-#ifndef __LINUX_MDIO_XPCS_H
+-#define __LINUX_MDIO_XPCS_H
++#ifndef __LINUX_PCS_XPCS_H
++#define __LINUX_PCS_XPCS_H
+ 
+ #include <linux/phy.h>
+ #include <linux/phylink.h>
+@@ -29,7 +29,7 @@ struct mdio_xpcs_ops {
+ 	int (*probe)(struct mdio_xpcs_args *xpcs, phy_interface_t interface);
+ };
+ 
+-#if IS_ENABLED(CONFIG_MDIO_XPCS)
++#if IS_ENABLED(CONFIG_PCS_XPCS)
+ struct mdio_xpcs_ops *mdio_xpcs_get_ops(void);
+ #else
+ static inline struct mdio_xpcs_ops *mdio_xpcs_get_ops(void)
+@@ -38,4 +38,4 @@ static inline struct mdio_xpcs_ops *mdio_xpcs_get_ops(void)
+ }
+ #endif
+ 
+-#endif /* __LINUX_MDIO_XPCS_H */
++#endif /* __LINUX_PCS_XPCS_H */
 -- 
 2.28.0.rc0
 
