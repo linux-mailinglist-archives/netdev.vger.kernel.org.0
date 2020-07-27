@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B5F122F861
+	by mail.lfdr.de (Postfix) with ESMTP id 2A6E222F85F
 	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 20:48:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731228AbgG0SsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 14:48:20 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:58772 "EHLO
+        id S1732115AbgG0SsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 14:48:21 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:42462 "EHLO
         mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731630AbgG0SpT (ORCPT
+        by vger.kernel.org with ESMTP id S1731637AbgG0SpT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 14:45:19 -0400
 Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RIiSwo009961
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RIiMct009827
         for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 11:45:18 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=kgx1N3wv9TPtos9dN1aGlqsLHETqvrKshzL5gFr9kM8=;
- b=PlTmEP7rRyNPlxeWJKpCkdYfMlCRcicBVV5rhBcWoZG4EbG8wJwabOoNDbGiDW7agYOJ
- sMVw5SH2n6a66f1SS9236oNS8JV2U0O5o0Hc9kFMP/gghP0TULnAK4QWuErJisj8nA1+
- 3qHT0dBu+re0IicJwk06Pk9oGIwouQuBHrE= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32gj8kga43-9
+ bh=MfBRLRLGsy/1tMM++wlzJ5s7yWgWU4zl3ei5tqNLqCg=;
+ b=n2cUFF0S5gIHneq7Beg2k2JVJoWOTUazSxUzmdxga9yo81qlaZhbvZewEvLd89+hZIyQ
+ Y5z0tOf2Rtnmu8knvK90bbNJKLmWkMYYYQGIzEvuHvkcl2PQ9UEUAPDzq0L5dgBdS9Ob
+ k9VjcYA0FXU086XCUd9gyhwNhN/Lfit/LK4= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 32gj8kga42-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
         for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 11:45:18 -0700
-Received: from intmgw001.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+Received: from intmgw003.06.prn3.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1979.3; Mon, 27 Jul 2020 11:45:16 -0700
 Received: by devvm1096.prn0.facebook.com (Postfix, from userid 111017)
-        id E8CA61DAFE97; Mon, 27 Jul 2020 11:45:10 -0700 (PDT)
+        id EDFAF1DAFE99; Mon, 27 Jul 2020 11:45:10 -0700 (PDT)
 Smtp-Origin-Hostprefix: devvm
 From:   Roman Gushchin <guro@fb.com>
 Smtp-Origin-Hostname: devvm1096.prn0.facebook.com
@@ -39,9 +39,9 @@ CC:     <netdev@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
         <linux-kernel@vger.kernel.org>, Roman Gushchin <guro@fb.com>
 Smtp-Origin-Cluster: prn0c01
-Subject: [PATCH bpf-next v2 19/35] bpf: eliminate rlimit-based memory accounting for lpm_trie maps
-Date:   Mon, 27 Jul 2020 11:44:50 -0700
-Message-ID: <20200727184506.2279656-20-guro@fb.com>
+Subject: [PATCH bpf-next v2 20/35] bpf: eliminate rlimit-based memory accounting for queue_stack_maps maps
+Date:   Mon, 27 Jul 2020 11:44:51 -0700
+Message-ID: <20200727184506.2279656-21-guro@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200727184506.2279656-1-guro@fb.com>
 References: <20200727184506.2279656-1-guro@fb.com>
@@ -52,7 +52,7 @@ Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-27_13:2020-07-27,2020-07-27 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- mlxlogscore=748 spamscore=0 impostorscore=0 malwarescore=0 suspectscore=38
+ mlxlogscore=999 spamscore=0 impostorscore=0 malwarescore=0 suspectscore=13
  bulkscore=0 priorityscore=1501 clxscore=1015 phishscore=0 mlxscore=0
  lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2006250000 definitions=main-2007270127
@@ -62,50 +62,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do not use rlimit-based memory accounting for lpm_trie maps.
+Do not use rlimit-based memory accounting for queue_stack maps.
 It has been replaced with the memcg-based memory accounting.
 
 Signed-off-by: Roman Gushchin <guro@fb.com>
 ---
- kernel/bpf/lpm_trie.c | 13 -------------
- 1 file changed, 13 deletions(-)
+ kernel/bpf/queue_stack_maps.c | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
 
-diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
-index d85e0fc2cafc..c747f0835eb1 100644
---- a/kernel/bpf/lpm_trie.c
-+++ b/kernel/bpf/lpm_trie.c
-@@ -540,8 +540,6 @@ static int trie_delete_elem(struct bpf_map *map, void=
- *_key)
- static struct bpf_map *trie_alloc(union bpf_attr *attr)
+diff --git a/kernel/bpf/queue_stack_maps.c b/kernel/bpf/queue_stack_maps.=
+c
+index 44184f82916a..92e73c35a34a 100644
+--- a/kernel/bpf/queue_stack_maps.c
++++ b/kernel/bpf/queue_stack_maps.c
+@@ -66,29 +66,21 @@ static int queue_stack_map_alloc_check(union bpf_attr=
+ *attr)
+=20
+ static struct bpf_map *queue_stack_map_alloc(union bpf_attr *attr)
  {
- 	struct lpm_trie *trie;
--	u64 cost =3D sizeof(*trie), cost_per_node;
--	int ret;
+-	int ret, numa_node =3D bpf_map_attr_numa_node(attr);
+-	struct bpf_map_memory mem =3D {0};
++	int numa_node =3D bpf_map_attr_numa_node(attr);
+ 	struct bpf_queue_stack *qs;
+-	u64 size, queue_size, cost;
++	u64 size, queue_size;
 =20
- 	if (!bpf_capable())
- 		return ERR_PTR(-EPERM);
-@@ -567,20 +565,9 @@ static struct bpf_map *trie_alloc(union bpf_attr *at=
-tr)
- 			  offsetof(struct bpf_lpm_trie_key, data);
- 	trie->max_prefixlen =3D trie->data_size * 8;
-=20
--	cost_per_node =3D sizeof(struct lpm_trie_node) +
--			attr->value_size + trie->data_size;
--	cost +=3D (u64) attr->max_entries * cost_per_node;
+ 	size =3D (u64) attr->max_entries + 1;
+-	cost =3D queue_size =3D sizeof(*qs) + size * attr->value_size;
 -
--	ret =3D bpf_map_charge_init(&trie->map.memory, cost);
--	if (ret)
--		goto out_err;
--
- 	spin_lock_init(&trie->lock);
+-	ret =3D bpf_map_charge_init(&mem, cost);
+-	if (ret < 0)
+-		return ERR_PTR(ret);
++	queue_size =3D sizeof(*qs) + size * attr->value_size;
 =20
- 	return &trie->map;
--out_err:
--	kfree(trie);
--	return ERR_PTR(ret);
- }
+ 	qs =3D bpf_map_area_alloc(queue_size, numa_node);
+-	if (!qs) {
+-		bpf_map_charge_finish(&mem);
++	if (!qs)
+ 		return ERR_PTR(-ENOMEM);
+-	}
 =20
- static void trie_free(struct bpf_map *map)
+ 	memset(qs, 0, sizeof(*qs));
+=20
+ 	bpf_map_init_from_attr(&qs->map, attr);
+=20
+-	bpf_map_charge_move(&qs->map.memory, &mem);
+ 	qs->size =3D size;
+=20
+ 	raw_spin_lock_init(&qs->lock);
 --=20
 2.26.2
 
