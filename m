@@ -2,186 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1AC22ED33
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 15:25:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C53322ED3B
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 15:26:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728663AbgG0NY4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 27 Jul 2020 09:24:56 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:47900 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726495AbgG0NYw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 09:24:52 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-193-MlZusWDpPT2OM9ZpGGXrfQ-1; Mon, 27 Jul 2020 14:24:47 +0100
-X-MC-Unique: MlZusWDpPT2OM9ZpGGXrfQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 27 Jul 2020 14:24:45 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 27 Jul 2020 14:24:45 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Ido Schimmel' <idosch@idosch.org>, Christoph Hellwig <hch@lst.de>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "linux-hams@vger.kernel.org" <linux-hams@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
-        "linux-decnet-user@lists.sourceforge.net" 
-        <linux-decnet-user@lists.sourceforge.net>,
-        "linux-wpan@vger.kernel.org" <linux-wpan@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "mptcp@lists.01.org" <mptcp@lists.01.org>,
-        "lvs-devel@vger.kernel.org" <lvs-devel@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>
-Subject: RE: [PATCH 19/26] net/ipv6: switch ipv6_flowlabel_opt to sockptr_t
-Thread-Topic: [PATCH 19/26] net/ipv6: switch ipv6_flowlabel_opt to sockptr_t
-Thread-Index: AQHWZA+bicrTMJDvYkuXLSSepOLT0qkbaJEw
-Date:   Mon, 27 Jul 2020 13:24:45 +0000
-Message-ID: <8c747034a5b641d18734de5f4d3a7507@AcuMS.aculab.com>
-References: <20200723060908.50081-1-hch@lst.de>
- <20200723060908.50081-20-hch@lst.de> <20200727121505.GA1804864@shredder>
-In-Reply-To: <20200727121505.GA1804864@shredder>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1728671AbgG0N01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 09:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726139AbgG0N00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 09:26:26 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDB9C061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 06:26:25 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id v4so7535596ljd.0
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 06:26:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uw/RH0celvphSjJGmfO8R+FZlpx9mMKK+rAAVor0RbU=;
+        b=ZiuSGn+8glPgs4h0sYiE0Hp/q0X3RBUYgydrbvTfSVcNAZWvmAGm375HsRCklwGNc1
+         KeAylHYARqyM5Sf1s3za4pfO2JMqyqvg0xLl/qzhsmwRiMzWM45aMP6neqwsSjIz/wRM
+         z52MwtLBRmxKFvsiQ7Rl3zowhFAABATtkMLlIWBPQnVuCmGrDNNKaL+3yck29r2Tintp
+         KEdayt1ZI5LJcKxVfjHHMCOW9NV9qaoHJaXefdA7vmvsgaUQ/RT/HZEGH3HoXctYPD/g
+         HadwYJbrBB8lEN8sr43UvDLdwn01TMdZrxCrY8J/0U3F5p6j8ZAjaiQwqjIwumxAdE3T
+         2PdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uw/RH0celvphSjJGmfO8R+FZlpx9mMKK+rAAVor0RbU=;
+        b=MfrI14DY9Smu1susYXr+L4T+RgoyP4kOkXKlcGuSBjih7xIb35uW+lEr3TKe63J7ts
+         btmwWiaRXHhRXNzAsyPpiaUg6CO7bnMwOeV1asbo6gz2v7+gCZKxGH7uoWSWm66J9geg
+         7eRJj1HaNTWrJoE+oYeKVe/unO9+bwVFOS8Xip78oFn3xY9FkrjuNUruOfMPyG0bi/vC
+         /dgP4yzrLLNqf2BZCbJyVxgiEjYfeTVMrfDq9BdJwVrSoMCO0nb2FCq//bXup6maVTaM
+         9Q8u+bE9+6qAAueBVyl503UdakU4/8EeshgcEFuw83sbYbKGwz0ewvztE6sO4MSereIi
+         Molg==
+X-Gm-Message-State: AOAM5302iHYHZ9HZPrJfLbQv+nDHAzZzKiFy9ntLRtWaBYcfit0hg7XN
+        SpINTR6yb4p4XNx3SADk6ClfABJ1
+X-Google-Smtp-Source: ABdhPJwZQaMpWvR+FcYh5D6e9b8XAyHGxcJmtjor+5vf0biCpHhNmnEiWKPxMY4E3wJOnAcXvJLMZQ==
+X-Received: by 2002:a2e:999a:: with SMTP id w26mr9697577lji.371.1595856384250;
+        Mon, 27 Jul 2020 06:26:24 -0700 (PDT)
+Received: from dau-pc-work.sunlink.ru ([87.244.6.228])
+        by smtp.googlemail.com with ESMTPSA id 16sm2351103lju.100.2020.07.27.06.26.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jul 2020 06:26:23 -0700 (PDT)
+From:   Anton Danilov <littlesmilingcloud@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org,
+        Anton Danilov <littlesmilingcloud@gmail.com>
+Subject: [PATCH iproute2] bridge: fdb: the 'dynamic' option in the show/get commands
+Date:   Mon, 27 Jul 2020 16:26:07 +0300
+Message-Id: <20200727132606.251041-1-littlesmilingcloud@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel
-> Sent: 27 July 2020 13:15
-> On Thu, Jul 23, 2020 at 08:09:01AM +0200, Christoph Hellwig wrote:
-> > Pass a sockptr_t to prepare for set_fs-less handling of the kernel
-> > pointer from bpf-cgroup.
-> >
-> > Note that the get case is pretty weird in that it actually copies data
-> > back to userspace from setsockopt.
-> >
-> > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > ---
-> >  include/net/ipv6.h       |  2 +-
-> >  net/ipv6/ip6_flowlabel.c | 16 +++++++++-------
-> >  net/ipv6/ipv6_sockglue.c |  2 +-
-> >  3 files changed, 11 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-> > index 262fc88dbd7e2f..4c9d89b5d73268 100644
-> > --- a/include/net/ipv6.h
-> > +++ b/include/net/ipv6.h
-> > @@ -406,7 +406,7 @@ struct ipv6_txoptions *fl6_merge_options(struct ipv6_txoptions *opt_space,
-> >  					 struct ip6_flowlabel *fl,
-> >  					 struct ipv6_txoptions *fopt);
-> >  void fl6_free_socklist(struct sock *sk);
-> > -int ipv6_flowlabel_opt(struct sock *sk, char __user *optval, int optlen);
-> > +int ipv6_flowlabel_opt(struct sock *sk, sockptr_t optval, int optlen);
-> >  int ipv6_flowlabel_opt_get(struct sock *sk, struct in6_flowlabel_req *freq,
-> >  			   int flags);
-> >  int ip6_flowlabel_init(void);
-> > diff --git a/net/ipv6/ip6_flowlabel.c b/net/ipv6/ip6_flowlabel.c
-> > index 27ee6de9beffc4..6b3c315f3d461a 100644
-> > --- a/net/ipv6/ip6_flowlabel.c
-> > +++ b/net/ipv6/ip6_flowlabel.c
-> > @@ -371,7 +371,7 @@ static int fl6_renew(struct ip6_flowlabel *fl, unsigned long linger, unsigned lo
-> >
-> >  static struct ip6_flowlabel *
-> >  fl_create(struct net *net, struct sock *sk, struct in6_flowlabel_req *freq,
-> > -	  char __user *optval, int optlen, int *err_p)
-> > +	  sockptr_t optval, int optlen, int *err_p)
-> >  {
-> >  	struct ip6_flowlabel *fl = NULL;
-> >  	int olen;
-> > @@ -401,7 +401,8 @@ fl_create(struct net *net, struct sock *sk, struct in6_flowlabel_req *freq,
-> >  		memset(fl->opt, 0, sizeof(*fl->opt));
-> >  		fl->opt->tot_len = sizeof(*fl->opt) + olen;
-> >  		err = -EFAULT;
-> > -		if (copy_from_user(fl->opt+1, optval+CMSG_ALIGN(sizeof(*freq)), olen))
-> > +		sockptr_advance(optval, CMSG_ALIGN(sizeof(*freq)));
-> > +		if (copy_from_sockptr(fl->opt + 1, optval, olen))
-> >  			goto done;
-> >
-> >  		msg.msg_controllen = olen;
-> > @@ -604,7 +605,7 @@ static int ipv6_flowlabel_renew(struct sock *sk, struct in6_flowlabel_req *freq)
-> >  }
-> >
-> >  static int ipv6_flowlabel_get(struct sock *sk, struct in6_flowlabel_req *freq,
-> > -		void __user *optval, int optlen)
-> > +		sockptr_t optval, int optlen)
-> >  {
-> >  	struct ipv6_fl_socklist *sfl, *sfl1 = NULL;
-> >  	struct ip6_flowlabel *fl, *fl1 = NULL;
-> > @@ -702,8 +703,9 @@ static int ipv6_flowlabel_get(struct sock *sk, struct in6_flowlabel_req *freq,
-> >  		goto recheck;
-> >
-> >  	if (!freq->flr_label) {
-> > -		if (copy_to_user(&((struct in6_flowlabel_req __user *) optval)->flr_label,
-> > -				 &fl->label, sizeof(fl->label))) {
-> > +		sockptr_advance(optval,
-> > +				offsetof(struct in6_flowlabel_req, flr_label));
-> 
-> Christoph,
-> 
-> I see a regression with IPv6 flowlabel that I bisected to this patch.
-> When passing '-F 0' to 'ping' the flow label should be random, yet it's
-> the same every time after this patch.
-> 
-> It seems that the pointer is never advanced after the call to
-> sockptr_advance() because it is passed by value and not by reference.
-> Even if you were to pass it by reference I think you would later need to
-> call sockptr_decrease() or something similar. Otherwise it is very
-> error-prone.
+In most of cases a user wants to see only the dynamic mac addresses
+in the fdb output. But currently the 'fdb show' displays tons of
+various self entries, those only waste the output without any useful
+goal.
 
-Depending on the other checks you may also be able to cross from
-user addresses to kernel ones.
-At the minimum sockptr_advance() has to fail if the boundary
-would be crossed.
+New option 'dynamic' for 'show' and 'get' commands forces display
+only relevant records.
 
-> Maybe adding an offset to copy_to_sockptr() and copy_from_sockptr() is
-> better?
+Signed-off-by: Anton Danilov <littlesmilingcloud@gmail.com>
+---
+ bridge/fdb.c      | 17 +++++++++++++----
+ man/man8/bridge.8 | 30 ++++++++++++++++++------------
+ 2 files changed, 31 insertions(+), 16 deletions(-)
 
-The 'is this a kernel or user copy' needs to use the base
-address from the system call.
-So you do need the offset passed in to copy_to/from_sockptr().
-
-Clearly churn can be reduced by using a #define or static inline
-for the common case.
-
-The alternative is to pass a 'fat pointer' through than can
-contain an offset as well as the user/kernel bases and
-expected length.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/bridge/fdb.c b/bridge/fdb.c
+index 710dfc99..78aaaa5a 100644
+--- a/bridge/fdb.c
++++ b/bridge/fdb.c
+@@ -30,7 +30,8 @@
+ #include "rt_names.h"
+ #include "utils.h"
+ 
+-static unsigned int filter_index, filter_vlan, filter_state, filter_master;
++static unsigned int filter_index, filter_dynamic, filter_master,
++	filter_state, filter_vlan;
+ 
+ static void usage(void)
+ {
+@@ -40,9 +41,10 @@ static void usage(void)
+ 		"              [ sticky ] [ local | static | dynamic ] [ dst IPADDR ]\n"
+ 		"              [ vlan VID ] [ port PORT] [ vni VNI ] [ via DEV ]\n"
+ 		"              [ src_vni VNI ]\n"
+-		"       bridge fdb [ show [ br BRDEV ] [ brport DEV ] [ vlan VID ] [ state STATE ] ]\n"
+-		"       bridge fdb get ADDR [ br BRDEV ] { brport |dev }  DEV [ vlan VID ]\n"
+-		"              [ vni VNI ]\n");
++		"       bridge fdb [ show [ br BRDEV ] [ brport DEV ] [ vlan VID ]\n"
++		"              [ state STATE ] [ dynamic ] ]\n"
++		"       bridge fdb get [ to ] LLADDR [ br BRDEV ] { brport | dev } DEV\n"
++		"              [ vlan VID ] [ vni VNI ] [ self ] [ master ] [ dynamic ]\n");
+ 	exit(-1);
+ }
+ 
+@@ -167,6 +169,9 @@ int print_fdb(struct nlmsghdr *n, void *arg)
+ 	if (filter_vlan && filter_vlan != vid)
+ 		return 0;
+ 
++	if (filter_dynamic && (r->ndm_state & NUD_PERMANENT))
++		return 0;
++
+ 	open_json_object(NULL);
+ 	if (n->nlmsg_type == RTM_DELNEIGH)
+ 		print_bool(PRINT_ANY, "deleted", "Deleted ", true);
+@@ -322,6 +327,8 @@ static int fdb_show(int argc, char **argv)
+ 			if (state_a2n(&state, *argv))
+ 				invarg("invalid state", *argv);
+ 			filter_state |= state;
++		} else if (strcmp(*argv, "dynamic") == 0) {
++			filter_dynamic = 1;
+ 		} else {
+ 			if (matches(*argv, "help") == 0)
+ 				usage();
+@@ -566,6 +573,8 @@ static int fdb_get(int argc, char **argv)
+ 				duparg2("vlan", *argv);
+ 			NEXT_ARG();
+ 			vlan = atoi(*argv);
++		} else if (matches(*argv, "dynamic") == 0) {
++			filter_dynamic = 1;
+ 		} else {
+ 			if (strcmp(*argv, "to") == 0)
+ 				NEXT_ARG();
+diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
+index 71f2e890..5aa83e15 100644
+--- a/man/man8/bridge.8
++++ b/man/man8/bridge.8
+@@ -77,12 +77,12 @@ bridge \- show / manipulate bridge addresses and devices
+ .B port
+ .IR PORT " ] ["
+ .B via
+-.IR DEVICE " ]"
++.IR DEVICE " ] ["
++.B src_vni
++.IR VNI " ]"
+ 
+ .ti -8
+-.BR "bridge fdb" " [ " show " ] [ "
+-.B dev
+-.IR DEV " ] [ "
++.BR "bridge fdb" " [ [ " show " ] [ "
+ .B br
+ .IR BRDEV " ] [ "
+ .B brport
+@@ -90,18 +90,24 @@ bridge \- show / manipulate bridge addresses and devices
+ .B vlan
+ .IR VID " ] [ "
+ .B state
+-.IR STATE " ]"
++.IR STATE " ] ["
++.B dynamic
++.IR "] ]"
+ 
+ .ti -8
+-.B bridge fdb get
+-.I LLADDR " [ "
+-.B dev
+-.IR DEV " ] [ "
++.BR "bridge fdb get" " ["
++.B to
++.IR "]"
++.I LLADDR "[ "
+ .B br
+-.IR BRDEV " ] [ "
++.IR BRDEV " ]"
++.B { brport | dev }
++.IR DEV " [ "
+ .B vlan
+-.IR VID  " ] ["
+-.BR self " ] [ " master " ]"
++.IR VID  " ] [ "
++.B vni
++.IR VNI " ] ["
++.BR self " ] [ " master " ] [ " dynamic " ]"
+ 
+ .ti -8
+ .BR "bridge mdb" " { " add " | " del " } "
+-- 
+2.27.0
 
