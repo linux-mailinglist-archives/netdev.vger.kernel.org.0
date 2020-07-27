@@ -2,89 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E67C122FC7E
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 00:48:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97B7422FC82
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 00:53:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727854AbgG0Wsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 18:48:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47500 "EHLO mail.kernel.org"
+        id S1727101AbgG0WxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 18:53:02 -0400
+Received: from mga18.intel.com ([134.134.136.126]:27607 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726193AbgG0Wsi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 18:48:38 -0400
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3E45B20829;
-        Mon, 27 Jul 2020 22:48:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595890117;
-        bh=TOhQZKza90iwMIAs1uYyFDZuUVL2WSyMrGnwMcLOZ68=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=xzCYleq179jMpqUj+riUZvWtokCxNkLGyi9QUytLv1xmdPD/hOdWJ+5dp6WDB9IX5
-         F0jnkjsbo4xfmVuhILvt8logioUQ3m5wRQMs13xvXZkG1A1phJTads/zOkLkZKQ75g
-         PO8oFuvRJkWgxZuw5oVGkdI8JpKsUY/Pg8jNKfYs=
-Received: by mail-lj1-f179.google.com with SMTP id q6so19031826ljp.4;
-        Mon, 27 Jul 2020 15:48:37 -0700 (PDT)
-X-Gm-Message-State: AOAM531oUZjFBmZvfAEwbgtJeG6tt+DbydJfkczr6Ydgyc3tiaDO4pmu
-        2I97ogRtGPXpdZWJa0Gnh/t1SvMgiSXFAs6IwSA=
-X-Google-Smtp-Source: ABdhPJw1tm9z/uKaNtSzGme1cn0f8J3ABRl2w1A8eu3JzfJ4qeg0L+Neo9FfePMBPYm42hbGDW6d+L1YxrMoGW+Izt4=
-X-Received: by 2002:a2e:81c2:: with SMTP id s2mr2693713ljg.10.1595890115575;
- Mon, 27 Jul 2020 15:48:35 -0700 (PDT)
+        id S1726268AbgG0WxA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 18:53:00 -0400
+IronPort-SDR: tFf1f86n9ab5Qy13iy1xyo1om4BlZEnI6iZGMy+Y71063x+n3LILHtEP9cQw05ET0c+11+SYBh
+ IdxjoxjUg/UA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="138638236"
+X-IronPort-AV: E=Sophos;i="5.75,404,1589266800"; 
+   d="scan'208";a="138638236"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 15:52:59 -0700
+IronPort-SDR: KTMC6GW2ytUPQRY+KzDudNnxizOrXVDknnfAwT2qTlzljNf7514XUp9pgsSZ/R8Tnlaz/U7+o8
+ 7B2MVrv8qyPA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,404,1589266800"; 
+   d="scan'208";a="434104240"
+Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-stp-glorfindel.jf.intel.com) ([10.166.241.33])
+  by orsmga004.jf.intel.com with ESMTP; 27 Jul 2020 15:52:59 -0700
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>, Michal Kubecek <mkubecek@suse.cz>,
+        netdev@vger.kernel.org
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Jamie Gloudon <jamie.gloudon@gmx.fr>
+Subject: [ethtool v2 1/2] ethtool: fix netlink bitmasks when sent as NOMASK
+Date:   Mon, 27 Jul 2020 15:49:36 -0700
+Message-Id: <20200727224937.9185-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-5-guro@fb.com>
-In-Reply-To: <20200727184506.2279656-5-guro@fb.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 27 Jul 2020 15:48:24 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4gJ_3xJxmMuj+2yiPff1a1GiosjcNdaLG_VS6F=E+O1g@mail.gmail.com>
-Message-ID: <CAPhsuW4gJ_3xJxmMuj+2yiPff1a1GiosjcNdaLG_VS6F=E+O1g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 04/35] bpf: refine memcg-based memory
- accounting for cpumap maps
-To:     Roman Gushchin <guro@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 12:23 PM Roman Gushchin <guro@fb.com> wrote:
->
-> Include metadata and percpu data into the memcg-based memory accounting.
->
-> Signed-off-by: Roman Gushchin <guro@fb.com>
+The ethtool netlink API can send bitsets without an associated bitmask.
+These do not get displayed properly, because the dump_link_modes, and
+bitset_get_bit to not check whether the provided bitset is a NOMASK
+bitset. This results in the inability to display peer advertised link
+modes.
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Both the dump_link_modes and bitset_git_bit functions do not check
+ETHTOOL_A_BITSET_NOMASK, and thus do not properly handle bitsets which
+do not have a provided mask.
 
-> ---
->  kernel/bpf/cpumap.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-> index f1c46529929b..74ae9fcbe82e 100644
-> --- a/kernel/bpf/cpumap.c
-> +++ b/kernel/bpf/cpumap.c
-> @@ -99,7 +99,7 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
->             attr->map_flags & ~BPF_F_NUMA_NODE)
->                 return ERR_PTR(-EINVAL);
->
-> -       cmap = kzalloc(sizeof(*cmap), GFP_USER);
-> +       cmap = kzalloc(sizeof(*cmap), GFP_USER | __GFP_ACCOUNT);
->         if (!cmap)
->                 return ERR_PTR(-ENOMEM);
->
-> @@ -418,7 +418,7 @@ static struct bpf_cpu_map_entry *
->  __cpu_map_entry_alloc(struct bpf_cpumap_val *value, u32 cpu, int map_id)
->  {
->         int numa, err, i, fd = value->bpf_prog.fd;
-> -       gfp_t gfp = GFP_KERNEL | __GFP_NOWARN;
-> +       gfp_t gfp = GFP_KERNEL_ACCOUNT | __GFP_NOWARN;
->         struct bpf_cpu_map_entry *rcpu;
->         struct xdp_bulk_queue *bq;
->
-> --
-> 2.26.2
->
+For compact bitmaps, things work more or less ok, as long as mask was
+provided as "false". This is because it will always use the
+ETHTOOL_A_BITSET_BIT_VALUE section when mask is false. A NOMASK compact
+bitmap will provide this.
+
+Unfortunately, if the bitset is not sent in the compact format, these
+functions do not behave correctly. When NOMASK is set, then the
+ETHTOOL_A_BITSET_BIT_VALUE is not provided. Instead, the application is
+supposed to treat it as a list of all the valid values.
+
+Fix these functions so that they behave properly with NOMASK bitsets in
+the non-compact form. Additionally, make these functions report an error
+if requesting to operate with "mask" set on a NOMASK bitmap. This
+ensures that we catch issues in the case where ethtool is trying to
+print the mask of a bitset that has no mask. Doing so highlights a small
+bug in the FEC settings where we accidentally set mask to true. Fix this
+also.
+
+Reported-by: Jamie Gloudon <jamie.gloudon@gmx.fr>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+---
+ netlink/bitset.c   | 12 +++++++++++-
+ netlink/settings.c | 16 +++++++++++++---
+ 2 files changed, 24 insertions(+), 4 deletions(-)
+
+diff --git a/netlink/bitset.c b/netlink/bitset.c
+index 130bcdb5b52c..10ce8e9def9a 100644
+--- a/netlink/bitset.c
++++ b/netlink/bitset.c
+@@ -50,6 +50,7 @@ bool bitset_get_bit(const struct nlattr *bitset, bool mask, unsigned int idx,
+ 	DECLARE_ATTR_TB_INFO(bitset_tb);
+ 	const struct nlattr *bits;
+ 	const struct nlattr *bit;
++	bool nomask;
+ 	int ret;
+ 
+ 	*retptr = 0;
+@@ -57,6 +58,15 @@ bool bitset_get_bit(const struct nlattr *bitset, bool mask, unsigned int idx,
+ 	if (ret < 0)
+ 		goto err;
+ 
++	nomask = bitset_tb[ETHTOOL_A_BITSET_NOMASK];
++	if (mask && nomask) {
++		/* Trying to determine if a bit is set in the mask of a "no
++		 * mask" bitset doesn't make sense.
++		 */
++		ret = -EFAULT;
++		goto err;
++	}
++
+ 	bits = mask ? bitset_tb[ETHTOOL_A_BITSET_MASK] :
+ 		      bitset_tb[ETHTOOL_A_BITSET_VALUE];
+ 	if (bits) {
+@@ -87,7 +97,7 @@ bool bitset_get_bit(const struct nlattr *bitset, bool mask, unsigned int idx,
+ 
+ 		my_idx = mnl_attr_get_u32(tb[ETHTOOL_A_BITSET_BIT_INDEX]);
+ 		if (my_idx == idx)
+-			return mask || tb[ETHTOOL_A_BITSET_BIT_VALUE];
++			return mask || nomask || tb[ETHTOOL_A_BITSET_BIT_VALUE];
+ 	}
+ 
+ 	return false;
+diff --git a/netlink/settings.c b/netlink/settings.c
+index 35ba2f5dd6d5..66b0d4892cdd 100644
+--- a/netlink/settings.c
++++ b/netlink/settings.c
+@@ -280,12 +280,22 @@ int dump_link_modes(struct nl_context *nlctx, const struct nlattr *bitset,
+ 	const struct nlattr *bit;
+ 	bool first = true;
+ 	int prev = -2;
++	bool nomask;
+ 	int ret;
+ 
+ 	ret = mnl_attr_parse_nested(bitset, attr_cb, &bitset_tb_info);
+-	bits = bitset_tb[ETHTOOL_A_BITSET_BITS];
+ 	if (ret < 0)
+ 		goto err_nonl;
++
++	nomask = bitset_tb[ETHTOOL_A_BITSET_NOMASK];
++	/* Trying to print the mask of a "no mask" bitset doesn't make sense */
++	if (mask && nomask) {
++		ret = -EFAULT;
++		goto err_nonl;
++	}
++
++	bits = bitset_tb[ETHTOOL_A_BITSET_BITS];
++
+ 	if (!bits) {
+ 		const struct stringset *lm_strings;
+ 		unsigned int count;
+@@ -354,7 +364,7 @@ int dump_link_modes(struct nl_context *nlctx, const struct nlattr *bitset,
+ 		if (!tb[ETHTOOL_A_BITSET_BIT_INDEX] ||
+ 		    !tb[ETHTOOL_A_BITSET_BIT_NAME])
+ 			goto err;
+-		if (!mask && !tb[ETHTOOL_A_BITSET_BIT_VALUE])
++		if (!mask && !nomask && !tb[ETHTOOL_A_BITSET_BIT_VALUE])
+ 			continue;
+ 
+ 		idx = mnl_attr_get_u32(tb[ETHTOOL_A_BITSET_BIT_INDEX]);
+@@ -469,7 +479,7 @@ static int dump_peer_modes(struct nl_context *nlctx, const struct nlattr *attr)
+ 	printf("\tLink partner advertised auto-negotiation: %s\n",
+ 	       autoneg ? "Yes" : "No");
+ 
+-	ret = dump_link_modes(nlctx, attr, true, LM_CLASS_FEC,
++	ret = dump_link_modes(nlctx, attr, false, LM_CLASS_FEC,
+ 			      "Link partner advertised FEC modes: ",
+ 			      " ", "\n", "No");
+ 	return ret;
+-- 
+2.26.2
+
