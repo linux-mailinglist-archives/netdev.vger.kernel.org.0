@@ -2,129 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B49822EAAE
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:05:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E447722EAF1
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:15:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728472AbgG0LFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 07:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726357AbgG0LFi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 07:05:38 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4486BC061794;
-        Mon, 27 Jul 2020 04:05:38 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id n5so9299726pgf.7;
-        Mon, 27 Jul 2020 04:05:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/qqDBKnihG2XgFKzkTVnXhmjbAmwos65pYeAfPUz+TY=;
-        b=pPOEgylv6Y7MH8bv2omt+P9eNrjYD7Gvv22lyPeZ4pECv3ufllmMYYWrrdlnuFjRt9
-         bSrYstVxo77gL0pHHgw8bECA5nf07LTnlcgRF3i9sjV5KKWuALEkWJTlys0zNsienGpA
-         dkHALVm2EgRvjRA5At8fFLtQ78K5l17DNoHOBIV1hk//wRPHK6uIV/9e1YEjsvNHOHQG
-         ztl5zdAaROYoT6DQ4IROwPgdWd/No7ZqJgo1A3UN0FDpzVpZI4QF673lDaRm+z94DAw2
-         wJSsCSJfGbSolsww0hAWb69VzcQXvLlfNJjCi4PLOk0gmQ4RT+wGrTL4TJoxBaDaPjlf
-         23eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/qqDBKnihG2XgFKzkTVnXhmjbAmwos65pYeAfPUz+TY=;
-        b=sL8sIIXplUsyUmZTobtnlvsd9vIU2US8wP0z4idK4riD0D+6fGb5gO7JL3hZbKvS59
-         8XuAfQUzYqFdZVXAZb+pG1zN7M7ecf2URjDFSPUq+RM3L5kv0f4MhvT1s6xsM/PML2v5
-         BgzchDLvhacwz+tSfE9Y1bqXw9NAM7BsWlZj7Ii13+67c3wLZ3XFS2ijOOFBAH3d3jXP
-         iY9HzVXxtXwvJwkf2krzneEnJEefZh9R6r86yJQPARfrbn5X1YWZqv7ALXrBxXHfREH+
-         eA2XqRUuBzbPmDnkzk11xIPEMYw9nX+8LKhr3fgv7CuezaORTz0CdfS3l6gx52beRTVW
-         QyUQ==
-X-Gm-Message-State: AOAM533BFVb2XAYVnss90Lw752S5NRBNEfzcd5DtbK4RTGW+HdtXVJ+s
-        fxtyFDSIiHeWZsCIDzWbZvBDMCFIOibPhS3RBes=
-X-Google-Smtp-Source: ABdhPJzuBsxSLlKiomAknMEpLElLpk5DVv+r46SMf/pRDFGSQfeU2Cks1QOuxgp9TA0kJMnMY0dnmVF9jMWf+22TFXs=
-X-Received: by 2002:a63:924b:: with SMTP id s11mr18731996pgn.74.1595847937830;
- Mon, 27 Jul 2020 04:05:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200725150651.17029-1-vadym.kochan@plvision.eu>
- <20200725150651.17029-3-vadym.kochan@plvision.eu> <CAHp75VeLS+-QkHuee8oPP4TDQoQPGFHSVpzi0e4m3Xhy2K+d1g@mail.gmail.com>
- <20200726225545.GA11300@plvision.eu> <CAHp75Vea6eWUqvXAKtu5Qv3Q0Oo=mxD+zf+zogZdcYOFtRe17g@mail.gmail.com>
- <20200727093421.GA21360@plvision.eu>
-In-Reply-To: <20200727093421.GA21360@plvision.eu>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 27 Jul 2020 14:05:23 +0300
-Message-ID: <CAHp75VcC1zts-5fncuJAXq2wmZfZCvmmng4V_wvQWpV1Yny3dw@mail.gmail.com>
-Subject: Re: [net-next v3 2/6] net: marvell: prestera: Add PCI interface support
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mickey Rachamim <mickeyr@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726555AbgG0LPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 07:15:42 -0400
+Received: from mx.nohats.ca ([193.110.157.68]:45770 "EHLO mx.nohats.ca"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726269AbgG0LPl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 07:15:41 -0400
+X-Greylist: delayed 488 seconds by postgrey-1.27 at vger.kernel.org; Mon, 27 Jul 2020 07:15:40 EDT
+Received: from localhost (localhost [IPv6:::1])
+        by mx.nohats.ca (Postfix) with ESMTP id 4BFcTX22TqzGD5;
+        Mon, 27 Jul 2020 13:07:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nohats.ca;
+        s=default; t=1595848048;
+        bh=ihM5zlpPUwu5qc+sfphnwTk+/+5A/ctwB4iibx2ctqs=;
+        h=From:Subject:Date:References:Cc:In-Reply-To:To;
+        b=hvTLJL6szI+fhbR7O0d4W38tiyGsnzAr8Sr4nSeNjBLxcyQb3xpC1kgrduyEIFMbP
+         5HJq0KSWtqsuud2Zh9POE31YEaskHV43W/LiVufawGhWTmDjnu8CkBXsEzgJKR3QXZ
+         sJ6CrshfQ0p08ZGvzm+sTTyrjhTn4hjGsXOv3tno=
+X-Virus-Scanned: amavisd-new at mx.nohats.ca
+X-Spam-Flag: NO
+X-Spam-Score: 0.695
+X-Spam-Level: 
+X-Spam-Status: No, score=0.695 tagged_above=0 required=5 tests=[BAYES_00=-0.9,
+        DKIM_ADSP_ALL=0.8, RDNS_NONE=0.793, SPF_HELO_NONE=0.001,
+        SPF_NONE=0.001] autolearn=no autolearn_force=no
+Received: from mx.nohats.ca ([IPv6:::1])
+        by localhost (mx.nohats.ca [IPv6:::1]) (amavisd-new, port 10024)
+        with ESMTP id 1G_vQA4Nj0U2; Mon, 27 Jul 2020 13:07:27 +0200 (CEST)
+Received: from bofh.nohats.ca (unknown [193.110.157.194])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.nohats.ca (Postfix) with ESMTPS;
+        Mon, 27 Jul 2020 13:07:27 +0200 (CEST)
+Received: from [193.110.157.210] (unknown [193.110.157.210])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        by bofh.nohats.ca (Postfix) with ESMTPSA id CEC186029BA5;
+        Mon, 27 Jul 2020 07:07:25 -0400 (EDT)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+From:   Paul Wouters <paul@nohats.ca>
+Mime-Version: 1.0 (1.0)
+Subject: Re: [RFC PATCH ipsec] xfrm: don't pass too short packets to userspace with ESPINUDP encap
+Date:   Mon, 27 Jul 2020 07:07:24 -0400
+Message-Id: <6FEDD2D2-CBA1-41E8-85B8-0180EFB4738E@nohats.ca>
+References: <20200727092819.GY20687@gauss3.secunet.de>
+Cc:     Sabrina Dubroca <sd@queasysnail.net>, netdev@vger.kernel.org,
+        Andrew Cagney <andrew.cagney@gmail.com>,
+        Tobias Brunner <tobias@strongswan.org>
+In-Reply-To: <20200727092819.GY20687@gauss3.secunet.de>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+X-Mailer: iPhone Mail (17F80)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 12:34 PM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
-> On Mon, Jul 27, 2020 at 11:04:56AM +0300, Andy Shevchenko wrote:
-> > On Mon, Jul 27, 2020 at 1:55 AM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
-> > > On Sun, Jul 26, 2020 at 01:32:19PM +0300, Andy Shevchenko wrote:
-> > > > On Sat, Jul 25, 2020 at 6:10 PM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
+On Jul 27, 2020, at 05:28, Steffen Klassert <steffen.klassert@secunet.com> w=
+rote:
+>=20
+> =EF=BB=BF
+>>=20
+>> This patch changes that behavior, so that only properly-formed non-ESP
+>> messages are passed to userspace. Messages of 8 bytes or less that
+>> don't contain a full non-ESP prefix followed by some data (at least
+>> one byte) will be dropped and counted as XfrmInHdrError.
+>=20
+> I'm ok with that change. But it affects userspace, so the *swan
+> people have to tell if that's ok for them.
 
-...
 
-> > > > > +config PRESTERA_PCI
-> > > > > +       tristate "PCI interface driver for Marvell Prestera Switch ASICs family"
-> > > > > +       depends on PCI && HAS_IOMEM && PRESTERA
-> > > >
-> > > > > +       default m
-> > > >
-> > > > Even if I have CONFIG_PRESTERA=y, why as a user I must have this as a module?
-> > > > If it's a crucial feature, shouldn't it be rather
-> > > >   default CONFIG_PRESTERA
-> > > > ?
-> > >
-> > > The firmware image should be located on rootfs, and in case the rootfs
-> > > should be mounted later the pci driver can't pick this up when
-> > > statically compiled so I left it as 'm' by default.
-> >
-> > We have for a long time to catch firmware blobs from initrd (initramfs).
-> > default m is very unusual.
-> >
-> For example drivers/net/ethernet/mellanox/mlxsw/pci.c also uses 'm' as
-> default, but may be in that case the reason is that there are several
-> bus implementations - i2c, pci.
+Libreswan is okay with this, we actually discussed this with Sabrina as a re=
+sult of the TCP work where she noticed the difference.
 
-% git grep -n -w 'default m if' -- $(git ls-files | grep Kconfig) | wc -l
-240
-% git grep -n -w 'default m' -- $(git ls-files | grep Kconfig) | wc -l
-293
-% git grep -n -w 'default' -- $(git ls-files | grep Kconfig) | wc -l
-5226
+Paul=
 
-So, basically 'default m' cases are ~1% (53) of all default cases
-(5226) in the tree.
-
-...
-
-> > Maybe you may replace __stringify by explicit characters / strings and
-> > comment how the name was constructed?
-> >
-> > #define FW_NAME "patch/to/it/fileX.Y.img"
-> >
-> I used snprintf, and now it looks simpler.
-
-Works for me!
-
--- 
-With Best Regards,
-Andy Shevchenko
