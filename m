@@ -2,92 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 855C922E47E
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 05:38:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3405522E481
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 05:44:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726739AbgG0DiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 23:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50218 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726112AbgG0DiS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 23:38:18 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2AFDC0619D2;
-        Sun, 26 Jul 2020 20:38:17 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id e13so14113762qkg.5;
-        Sun, 26 Jul 2020 20:38:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=etLf3Qn1GJEodKzGEq3nxMs1IMFUoiG9sg8M9d7JnV4=;
-        b=CkvS5gu/Lr8B83R0V8/zwVhIzLRJrowpw7HuoZugZsPcASH7CkE4mMqHwQWnE0Qx5S
-         fkOSpJAOiA8nGaw+2wImo259XKiFIqtCwzUF6CgDzeNx+VAiHgAzFoNVpMhXCp+V46yX
-         VFBiHpibs3xPNiaAKK8qWgWsIcDNFFRpaM2u40FnKJISIbMgeknCb74fdRfCzbLHACBl
-         KxwPrsl4dxW/eDr/YW7XBjKP/SiCFT3wEhjHvfwVfMCDFSK11WAi9vY3wvEEPoYW1ZMa
-         B/YyjEWDesl9JXSCsIJA2ErwD0R2YvHX7rEOrQmy/a0UhkSU27WHHm+vJt2ziH4pEFhD
-         vexg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=etLf3Qn1GJEodKzGEq3nxMs1IMFUoiG9sg8M9d7JnV4=;
-        b=IYb6fel7gzmI+FVhho0UFKk/HT/SzFWpuYLpZAF3kbMOIlqFQ6DqwsSaZ/uaC9h1Kl
-         dHUSc+SBZwitUjxCy0MqHpNmmn0xHXHpQk5W9xZkoKVbuywTJaLM7tRX/3cDy46Ibdnt
-         hLe2ecL+z13GwbvUd3MpgUh9g0z26TBIAwvgAiNiXHZWia9m1THxKOe6z4kxl7i8RO6b
-         Rx78lVEMdOlQwTsQEGkaTFuLMbZKs6M0Q/GnRiDhCu6P944mL5OuZCVYB5B0ITyZZXXc
-         MUKqUMRP/RD/q7l3CSomthA+ih3F/3vonados6FeeLaLIPIAXrqu4Mn1RquuLlXMQE9X
-         ftew==
-X-Gm-Message-State: AOAM531C1ErASMXt4l1PGYnuVmQy29EHDY2H8LNP4pNaaBeirQZ6G87O
-        Ck3gp4gTxtXh1oZZsi27UCM=
-X-Google-Smtp-Source: ABdhPJwF7tlwpUsrbb25Ev2QYqbgMSuJJ0ZzpDVymTzyaNoJaB6JocZQfp7ZU/TAY714eh0ABAwJvw==
-X-Received: by 2002:a05:620a:5f8:: with SMTP id z24mr16106585qkg.372.1595821096969;
-        Sun, 26 Jul 2020 20:38:16 -0700 (PDT)
-Received: from linux.home ([2604:2000:1344:41d:9cb8:60da:6bf0:c998])
-        by smtp.googlemail.com with ESMTPSA id x29sm13677370qtx.74.2020.07.26.20.38.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jul 2020 20:38:16 -0700 (PDT)
-From:   Gaurav Singh <gaurav1086@gmail.com>
-To:     gaurav1086@gmail.com, "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org (open list:NETWORKING [IPv4/IPv6]),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] [net/ipv6] ip6_output: Add ipv6_pinfo null check
-Date:   Sun, 26 Jul 2020 23:38:10 -0400
-Message-Id: <20200727033810.28883-1-gaurav1086@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726800AbgG0Doi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 23:44:38 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:35563 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726666AbgG0Doh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Jul 2020 23:44:37 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4BFQfV5d2cz9sRR;
+        Mon, 27 Jul 2020 13:44:34 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1595821476;
+        bh=tSzjNT8u43gZrwdrTJb/CVyGDvl8I6ezLnCXyQXH9DU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=JnAOtWJ2EmAulpLGuhw5AunWdiOMLN2qoPrSpZ5g/7Mwrh4OS/C4nJwYL2Jb97DUQ
+         VKcwEGAhtiqZLw4qZZXRUUOVhgQhVyqfNCvxrINUYcHKpQUHr2oOjIgjTCpHeXsWvQ
+         Ukpc2uLkEXlcVH/zyPOuDwExwdRg1XLq9ZVh7oDWvn3wXTPRJnYCycKAe3QaDxUBYh
+         NDUOGK3kmXLXrlWuaeVYkFgQs2YTR4hjIHKN1W9FN3gbvQUcGdurK00LuO5XV7yGYC
+         /FSwuNq9hjj7JXd2T/xQy18w9hCA+aJu60JIM7+Dy7lYpQckUungMP0A6n5Q69JW5G
+         ogEpQemIWWHFg==
+Date:   Mon, 27 Jul 2020 13:44:33 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alain Michaud <alainm@chromium.org>,
+        Christoph Hellwig <hch@lst.de>
+Subject: linux-next: build failure after merge of the bluetooth tree
+Message-ID: <20200727134433.1c4ea34e@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/i4OPhDal54JmQi0C2gX3Cv0";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ipv6_pinfo is initlialized by inet6_sk() which returns NULL. 
-Hence it can cause segmentation fault. Fix this by adding a 
-NULL check.
+--Sig_/i4OPhDal54JmQi0C2gX3Cv0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
+Hi all,
+
+After merging the bluetooth tree, today's linux-next build (arm
+multi_v7_defconfig) failed like this:
+
+net/bluetooth/sco.c: In function 'sco_sock_setsockopt':
+net/bluetooth/sco.c:862:3: error: cannot convert to a pointer type
+  862 |   if (get_user(opt, (u32 __user *)optval)) {
+      |   ^~
+net/bluetooth/sco.c:862:3: error: cannot convert to a pointer type
+net/bluetooth/sco.c:862:3: error: cannot convert to a pointer type
+
+Caused by commit
+
+  00398e1d5183 ("Bluetooth: Add support for BT_PKT_STATUS CMSG data for SCO=
+ connections")
+
+interacting with commit
+
+  a7b75c5a8c41 ("net: pass a sockptr_t into ->setsockopt")
+
+from the net-next tree.
+
+I have applied the following merge fix patch:
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Mon, 27 Jul 2020 13:41:30 +1000
+Subject: [PATCH] Bluetooth: fix for introduction of sockptr_t
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
- net/ipv6/ip6_output.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/bluetooth/sco.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 8a8c2d0cfcc8..7c077a6847e4 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -181,10 +181,10 @@ int ip6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
- 
- bool ip6_autoflowlabel(struct net *net, const struct ipv6_pinfo *np)
- {
--	if (!np->autoflowlabel_set)
--		return ip6_default_np_autolabel(net);
--	else
-+	if (np && np->autoflowlabel_set)
- 		return np->autoflowlabel;
-+	else
-+		ip6_default_np_autolabel(net);
- }
- 
- /*
--- 
-2.17.1
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 6e6b03844a2a..dcf7f96ff417 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -859,7 +859,7 @@ static int sco_sock_setsockopt(struct socket *sock, int=
+ level, int optname,
+ 		break;
+=20
+ 	case BT_PKT_STATUS:
+-		if (get_user(opt, (u32 __user *)optval)) {
++		if (copy_from_sockptr(&opt, optval, sizeof(u32))) {
+ 			err =3D -EFAULT;
+ 			break;
+ 		}
+--=20
+2.27.0
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/i4OPhDal54JmQi0C2gX3Cv0
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8eTaEACgkQAVBC80lX
+0GxveAf9E0YoKtcwDaOdLI7Klv7Asr/se/R9oTCS//szh1Vp2vzEbGnnP7z5KKAG
+RY2D7lSSgrF/UTzBtRc3atsNajtmO1ObBOkF7JlmG8A2un02Q2rV0OeKV9Kg8vs2
+PWRi0NTOAddtqAMn/sdzMuXswKR/E8Jr79XTd4o2OxWZHmRXTb8QDjf4Lq0FrYw7
+Yy1LqJmoHVrb3WKsxQjywTk0GfkUXyoFsZ4GLm8Aa+VX80HOPDydrBlhvcPsSMrY
+8Dmq1u5ieG2JFBI5b9APr9zOkT38NE8YryA6oSSJ/cMJlUtn/pPFfqRuWvrPVW2G
+AjclIANAIA7iX7X/0Lys8uZJq3TlKQ==
+=/9Zv
+-----END PGP SIGNATURE-----
+
+--Sig_/i4OPhDal54JmQi0C2gX3Cv0--
