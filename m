@@ -2,42 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0095622F7F9
+	by mail.lfdr.de (Postfix) with ESMTP id 90FD222F7FA
 	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 20:43:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731529AbgG0Snq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 14:43:46 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:58712 "EHLO
+        id S1731545AbgG0Snr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 14:43:47 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:21212 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731448AbgG0Snp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 14:43:45 -0400
+        by vger.kernel.org with ESMTP id S1731453AbgG0Snq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 14:43:46 -0400
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RIdfCW031426;
-        Mon, 27 Jul 2020 11:43:42 -0700
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RIdtDl031592;
+        Mon, 27 Jul 2020 11:43:43 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=gV0xXFGq9yN5OLpV6YFQm58z89bUMWiVsMuUUGazLtI=;
- b=vb08StII4vbp2I9soamdCsf3SzLLT8+bdzTiyxxW/GD+1beQA2jWXtIYIn9OgZjtxbFJ
- N6tfKxFE0adofi8qANPgpdL6QxSVssdZN6IU5scRk7fAEM4a26lEBWdxAM6WwR3uVG+p
- 1frakb89RwK2VsTs+5qLo2WbwoYmemIA4+4BXNB8owF7j1kxPWAbOzD2QzQL5guVKfl3
- 4l2CDZaK8dG96HfTkvDS6cofcDO8llhBTpxK+saW9CZZ7ZgdAs6q9PP8oFvzJSYp2yse
- zY1XxfrSdDixUyOJhBeRAsY8QnwyE6trDbaqacDGrkS9fNv2GCS6Z25OQwLQCUmD+fXU UQ== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 32gm8ng02g-1
+ content-type; s=pfpt0818; bh=0EntJmu8zIbww0bKfXTri3s7NUZ9ftRtm0F4Wz4z7II=;
+ b=jjk1Yt+GvpK+VUdOdeDBL4nhz81RfaK4lz87+upimKsOkBPYokH6ZHt8NzoXgF3TyC1/
+ U1Ua/fcMVgi/HU0CzksjVUpNipGhZfZ/XsvA919dcSIjewyAmZsu3mOhuzq/53Q7M2LC
+ R9Rbz467l1VNZgyAkKCk5j/FJZIhEsHIlwrxTSyfgKq3mYgVbIB+N0TRExCmESMAoDdB
+ J4c37Pf5XUN1hbX9A7loUODq2n27p9gw+IceL0DEwGxa1iK1jLbJecLEsk0JPxM2XHmv
+ RRvosuq7LC3cxbMOE/+guFJ60a4YAgLUa6Z4zSAZ+miPSg9wydBys/w8e23aj4uukqgn WA== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0b-0016f401.pphosted.com with ESMTP id 32gm8ng02n-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 27 Jul 2020 11:43:42 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 27 Jul
- 2020 11:43:40 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 27 Jul
- 2020 11:43:39 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 27 Jul 2020 11:43:39 -0700
+        Mon, 27 Jul 2020 11:43:43 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 27 Jul
+ 2020 11:43:42 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 27 Jul 2020 11:43:42 -0700
 Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.193.54.28])
-        by maili.marvell.com (Postfix) with ESMTP id 151653F7040;
-        Mon, 27 Jul 2020 11:43:36 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id F06FD3F703F;
+        Mon, 27 Jul 2020 11:43:39 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
@@ -47,9 +44,9 @@ CC:     "David S . Miller" <davem@davemloft.net>,
         Igor Russkikh <irusskikh@marvell.com>,
         "Alexander Lobakin" <alobakin@marvell.com>,
         Michal Kalderon <michal.kalderon@marvell.com>
-Subject: [PATCH net-next 08/11] qed*: make use of devlink recovery infrastructure
-Date:   Mon, 27 Jul 2020 21:43:07 +0300
-Message-ID: <20200727184310.462-9-irusskikh@marvell.com>
+Subject: [PATCH net-next 09/11] qed: implement devlink dump
+Date:   Mon, 27 Jul 2020 21:43:08 +0300
+Message-ID: <20200727184310.462-10-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200727184310.462-1-irusskikh@marvell.com>
 References: <20200727184310.462-1-irusskikh@marvell.com>
@@ -62,103 +59,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove forcible recovery trigger and put it as a normal devlink
-callback.
-
-This allows user to enable/disable it via
-
-    devlink health set pci/0000:03:00.0 reporter fw_fatal auto_recover false
+Gather and push out full device dump to devlink.
+Device dump is the same as with `ethtool -d`, but now its generated
+exactly at the moment bad thing happens.
 
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
 Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed.h         |  1 +
- drivers/net/ethernet/qlogic/qed/qed_devlink.c | 14 ++++++++++++++
- drivers/net/ethernet/qlogic/qed/qed_main.c    |  2 +-
- drivers/net/ethernet/qlogic/qede/qede_main.c  | 10 ----------
- 4 files changed, 16 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_devlink.c | 42 +++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
-index ccd789eeda3e..f34b25a79449 100644
---- a/drivers/net/ethernet/qlogic/qed/qed.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed.h
-@@ -981,6 +981,7 @@ void qed_bw_update(struct qed_hwfn *hwfn, struct qed_ptt *ptt);
- u32 qed_unzip_data(struct qed_hwfn *p_hwfn,
- 		   u32 input_len, u8 *input_buf,
- 		   u32 max_size, u8 *unzip_buf);
-+int qed_recovery_process(struct qed_dev *cdev);
- void qed_schedule_recovery_handler(struct qed_hwfn *p_hwfn);
- void qed_hw_error_occurred(struct qed_hwfn *p_hwfn,
- 			   enum qed_hw_err_type err_type);
 diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.c b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-index ffe776a4f99a..b25be68f959c 100644
+index b25be68f959c..3a173eb167c2 100644
 --- a/drivers/net/ethernet/qlogic/qed/qed_devlink.c
 +++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-@@ -31,8 +31,22 @@ int qed_report_fatal_error(struct devlink *devlink, enum qed_hw_err_type err_typ
+@@ -31,6 +31,47 @@ int qed_report_fatal_error(struct devlink *devlink, enum qed_hw_err_type err_typ
  	return 0;
  }
  
 +static int
-+qed_fw_fatal_reporter_recover(struct devlink_health_reporter *reporter,
-+			      void *priv_ctx,
-+			      struct netlink_ext_ack *extack)
++qed_fw_fatal_reporter_dump(struct devlink_health_reporter *reporter,
++			   struct devlink_fmsg *fmsg, void *priv_ctx,
++			   struct netlink_ext_ack *extack)
 +{
 +	struct qed_devlink *qdl = devlink_health_reporter_priv(reporter);
++	struct qed_fw_fatal_ctx *fw_fatal_ctx = priv_ctx;
 +	struct qed_dev *cdev = qdl->cdev;
++	u32 dbg_data_buf_size;
++	u8 *p_dbg_data_buf;
++	int err;
 +
-+	qed_recovery_process(cdev);
++	/* Having context means that was a dump request after fatal,
++	 * so we enable extra debugging while gathering the dump,
++	 * just in case
++	 */
++	cdev->print_dbg_data = fw_fatal_ctx ? true : false;
 +
-+	return 0;
++	dbg_data_buf_size = qed_dbg_all_data_size(cdev);
++	p_dbg_data_buf = vzalloc(dbg_data_buf_size);
++	if (!p_dbg_data_buf) {
++		DP_NOTICE(cdev,
++			  "Failed to allocate memory for a debug data buffer\n");
++		return -ENOMEM;
++	}
++
++	err = qed_dbg_all_data(cdev, p_dbg_data_buf);
++	if (err) {
++		DP_NOTICE(cdev, "Failed to obtain debug data\n");
++		vfree(p_dbg_data_buf);
++		return err;
++	}
++
++	err = devlink_fmsg_binary_pair_put(fmsg, "dump_data",
++					   p_dbg_data_buf, dbg_data_buf_size);
++
++	vfree(p_dbg_data_buf);
++
++	return err;
 +}
 +
+ static int
+ qed_fw_fatal_reporter_recover(struct devlink_health_reporter *reporter,
+ 			      void *priv_ctx,
+@@ -47,6 +88,7 @@ qed_fw_fatal_reporter_recover(struct devlink_health_reporter *reporter,
  static const struct devlink_health_reporter_ops qed_fw_fatal_reporter_ops = {
  		.name = "fw_fatal",
-+		.recover = qed_fw_fatal_reporter_recover,
+ 		.recover = qed_fw_fatal_reporter_recover,
++		.dump = qed_fw_fatal_reporter_dump,
  };
  
  #define QED_REPORTER_FW_GRACEFUL_PERIOD 1200000
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index a64d594f9294..db5d003770ba 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -2817,7 +2817,7 @@ static int qed_set_led(struct qed_dev *cdev, enum qed_led_mode mode)
- 	return status;
- }
- 
--static int qed_recovery_process(struct qed_dev *cdev)
-+int qed_recovery_process(struct qed_dev *cdev)
- {
- 	struct qed_hwfn *p_hwfn = QED_LEADING_HWFN(cdev);
- 	struct qed_ptt *p_ptt;
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index df437c3f1fc9..937d8e69ad39 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -2596,8 +2596,6 @@ static void qede_atomic_hw_err_handler(struct qede_dev *edev)
- 
- static void qede_generic_hw_err_handler(struct qede_dev *edev)
- {
--	struct qed_dev *cdev = edev->cdev;
--
- 	DP_NOTICE(edev,
- 		  "Generic sleepable HW error handling started - err_flags 0x%lx\n",
- 		  edev->err_flags);
-@@ -2605,14 +2603,6 @@ static void qede_generic_hw_err_handler(struct qede_dev *edev)
- 	if (edev->devlink)
- 		edev->ops->common->report_fatal_error(edev->devlink, edev->last_err_type);
- 
--	/* Trigger a recovery process.
--	 * This is placed in the sleep requiring section just to make
--	 * sure it is the last one, and that all the other operations
--	 * were completed.
--	 */
--	if (test_bit(QEDE_ERR_IS_RECOVERABLE, &edev->err_flags))
--		edev->ops->common->recovery_process(cdev);
--
- 	clear_bit(QEDE_ERR_IS_HANDLED, &edev->err_flags);
- 
- 	DP_NOTICE(edev, "Generic sleepable HW error handling is done\n");
 -- 
 2.17.1
 
