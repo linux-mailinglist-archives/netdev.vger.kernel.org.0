@@ -2,207 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CB7D22FBC4
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 00:02:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D60FD22FBC3
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 00:02:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726863AbgG0WCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 18:02:33 -0400
-Received: from mout.gmx.net ([212.227.17.20]:52055 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726193AbgG0WCb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 18:02:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1595887344;
-        bh=AYlC2xyDHynf8fR8+g+VbwM9mmDG4TM/WCGqB1doPFA=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=XYdZk/zW7vcWRQgeWvcQvQ2BY4dr10RsvJwS0ZoPCXPcSAsr/kmz2s6XckGfOyyqs
-         ZUA2jlfuhx/Mop73tLRUnh5QYBYkBPw72Bg1elsWVg6Mb4HDJ07KWeX46VpOxiuCoY
-         6xn5gKZFa2Rp3OljrLyKm6OyRmdgY2+JOjOuHCtU=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from gmx.fr ([131.100.39.21]) by mail.gmx.com (mrgmx105
- [212.227.17.174]) with ESMTPSA (Nemesis) id 1MMofc-1kGbaV1xp6-00Ij2a; Tue, 28
- Jul 2020 00:02:23 +0200
-Date:   Mon, 27 Jul 2020 18:02:15 -0400
-From:   Jamie Gloudon <jamie.gloudon@gmx.fr>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Michal Kubecek <mkubecek@suse.cz>,
-        netdev@vger.kernel.org
-Subject: Re: [ethtool] ethtool: fix netlink bitmasks when sent as NOMASK
-Message-ID: <20200727220215.GA1886@gmx.fr>
-References: <20200727214700.5915-1-jacob.e.keller@intel.com>
- <e0b0dd6e-de26-b443-d688-90ab9beb5403@intel.com>
+        id S1726839AbgG0WCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 18:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52676 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726814AbgG0WCa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 18:02:30 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B729C061794;
+        Mon, 27 Jul 2020 15:02:30 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id l6so16840131qkc.6;
+        Mon, 27 Jul 2020 15:02:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p7qPUX9AfSEfT/d5vE+RQ31eLoNG6DmwgKTcfsE/tv0=;
+        b=ooVItlrKRIwt6CQxq6+yqfNDx2ZKjsCzJ0oO6zQYS3QRlE4uediO7HnVEfViW8QgO2
+         ho+SP2AtBj1sgmMnjwqb3yw03/8nEnOUqXVC/Dai05Vxskr/FOLwk2ao5qLuMkqLQISP
+         DsWY0RNAnbdDfNJ7q4IAYo8h5MsRsoXkZ3QpOjrSlNG9UwmDySR6VH2v1iAAVM+gpubE
+         BnpoohhvaliTy0VXRV3OPKRcew4siyYMkaX/efXu3OXgqeW8/pCJx0EAdntDIiRDGurb
+         cOZPcfQOlEOzBqXm7mKUq/+llsxAzbkNP0+MJnpI8VqmU+QlBP25VYT5q/UCBuebvz2f
+         gWnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p7qPUX9AfSEfT/d5vE+RQ31eLoNG6DmwgKTcfsE/tv0=;
+        b=SfYtBwdO3NIzPkiBtfrdoEaw8qQDBIngnD6jAk4dAhsMpOzxy2MPjv3vvzUTIoTaGw
+         GtUy37XNR9OQ1j+jYvfAwTP9MEkO51OArtKtpV1YACVTE0b1U8QmKxuTtUUoU6ZUBpzI
+         0IguxAyijXPg3veFtGpo9Foh7OfeBse3Le9MNUVAXs2unVlwUw15BzcQfSrn7HmvwZ+m
+         PD5QLOQsGGYH7fIfoq4AIcAYoEdgG+fZ04XWe7RFMai43TOjFdovgf9ttzmbJLUxMA4D
+         SYN+8tBuofJG7Bb3lJCd9m8iMi2Om2A2TrPjcasPGNqwL2iNmN3BegXC2CnKMFythjKB
+         vWGw==
+X-Gm-Message-State: AOAM530QvZ/7NEMBUkCGwbVsILenKcPa3nYDtJLUHJywZh/cP6wc6CSi
+        ygGYu6w/vQYzYcq0tK0aAiC56QKDyGqEbr14bp4=
+X-Google-Smtp-Source: ABdhPJyWyfuPBwNsMps1LLop+y20zsQpyxDvUoMkGhTqJWIfW/Be4ldA+NNa7zLpBIO81ZWCxn+A8EcNrKYmi4CVwyk=
+X-Received: by 2002:a37:2c45:: with SMTP id s66mr26380618qkh.449.1595887349398;
+ Mon, 27 Jul 2020 15:02:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e0b0dd6e-de26-b443-d688-90ab9beb5403@intel.com>
-X-Provags-ID: V03:K1:8LPmPMiizbRkbLzYjshyAk0YbO55XXDMzZMX7/FWIkBtL/46s3v
- f3nQmnrI/AEIuSzoJvZM2C90fymwEXre4GRSmibl1F03/UtcErZeqt6EtdyblQLsTfW3Px0
- D99HDCIspuJlthXbdJmvBsY4dcr/Y/GPsDkU6iV+/jnx9aHDHivG41J68OoAHJh5nqMenHl
- CBT95hmMO3VXThjCVOKKw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:tn+oCMJ/zmE=:67Cutg2HLfp+qYUenZC3Zx
- SRFsu7Gjqh8U/hM8jvxhlx3woAbOd5FsMfM1pLTo65jw5igZHg8STIuEEP2/poBNu9JtmzwVI
- YLLMihIavpIYy2Lf/wUujKPtWcWCTSSAGVDw1aQP6+r23nHJMRbnODWZr32IxBS3rE/UnpK+R
- c53sALyu/q+Op2iNkSHgyBJ9R3QLlu4uKpSFU2ayB+2whv0sFkJCsIFQLEqfY3gPuRgl1hd9u
- l/Dmp/AY3WeuUjRWssMqdV7ZVmpfPMgxp2HvV5jAevpilS/R5wePqrUbntOo4qyJs9X6XgjYt
- LlklLV29Glv1W0sqMwNhtBQqbFYl11II9bxwtnEFkY2LR1RswoN6+E0XaXzEyd1ixN9/Acg24
- 40jYUk0u66sFzqRM1rMJgKsYEAGe5Lgv1xkd/B7iTYmlnGTzzBvRayugcB/uvzzLT+J6MoWPf
- jj7aUdzjpjocb14RvA2pfKbWm600sn2W3OY/5YUp4QQmUfue65J3CwRWdCxR5Ul/XRN6G14or
- dcVPhlgNGKqFCaoxBvK0opvA+1ioua+BOLkfYPHPqAvrDKDZD009AZjWa7cVYWNRchqY33/oG
- o7N040wvwEubW2l4Sf4wy72uhema18ZKhQoSYhomFmlSihItO7tGJkh7Sw//alaPN8IykpzK6
- yl3frJChh+kQAbQdxIhgAi3ybQnidhnDQspUVC+baCdgZUmHPhMRIZxKzSz4UGM9Rfx3Swh5t
- vzMDrlnVTZ3j9A1E+22XNpJArGR88bRCqYXZ+hBJfiNitWDHHT82i62sNE9p34mAJuEqp+uMs
- c+5JJX/ZaIwZE+dEYxSHV3O1oZU42c/qi+1cVfzWNzcJQGAAdwurjqQBGoHHujQfVb1E2GR2k
- rugH3jJI9sEPjhc5+zG06Wvcj90mrsXBpHO0EtDt0ZQXME/Nh1ukjSe4RgRx5i6X0AdgXb83O
- gGKA+fwKaOFKv5OlJvqi7QD/97BK167Jv2wIOeTdbo1ngJ+wC9ttNbwo6Lk24lL/k6DAGtuyb
- lqGJ0FAcK9CyC0VKnXbtu4J789stPvjDSw11/XdEoeJirNvFNUFLjNNyOOsPX5JQ5N/7gzEUk
- YWD8oYKmEK0n9MggKrv0iedHVa33j73zb05cPzf5mVGRnAdoHxZfNuBdlFC4nVqX4hB3hOtkj
- jXXF4OGEkMR1c9ISNtS6QgzG8Q9MACRqB0OoNopmnGRBiYyHxSY7NRAEVXWG1wd3BRkiQZbVT
- 5AZZDMJv9KMfLY9jOzimDOizTrorSAMpraKG5zQ==
-Content-Transfer-Encoding: quoted-printable
+References: <20200724011700.2854734-1-andriin@fb.com> <20200724011700.2854734-2-andriin@fb.com>
+ <CAPhsuW68tUDQf7kgB-r5aJFH3Bk_5_b_0eokqjYe9-8YpHX3zg@mail.gmail.com>
+In-Reply-To: <CAPhsuW68tUDQf7kgB-r5aJFH3Bk_5_b_0eokqjYe9-8YpHX3zg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 27 Jul 2020 15:02:18 -0700
+Message-ID: <CAEf4BzZUN-kH8LzPp76BHW-8iBX=QUKCHmpxid0hxapbZ6t9rw@mail.gmail.com>
+Subject: Re: [PATCH bpf 2/2] selftests/bpf: extend map-in-map selftest to
+ detect memory leaks
+To:     Song Liu <song@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 02:51:28PM -0700, Jacob Keller wrote:
+On Mon, Jul 27, 2020 at 1:53 PM Song Liu <song@kernel.org> wrote:
 >
->
-> On 7/27/2020 2:47 PM, Jacob Keller wrote:
-> > The ethtool netlink API can send bitsets without an associated bitmask=
-.
-> > These do not get displayed properly, because the dump_link_modes, and
-> > bitset_get_bit to not check whether the provided bitset is a NOMASK
-> > bitset. This results in the inability to display peer advertised link
-> > modes.
+> On Thu, Jul 23, 2020 at 6:17 PM Andrii Nakryiko <andriin@fb.com> wrote:
 > >
-> > The dump_link_modes and bitset_get_bit functions are designed so they
-> > can print either the values or the mask. For a nomask bitmap, this
-> > doesn't make sense. There is no mask.
+> > Add test validating that all inner maps are released properly after skeleton
+> > is destroyed. To ensure determinism, trigger kernel-size synchronize_rcu()
+> > before checking map existence by their IDs.
 > >
-> > Modify dump_link_modes to check ETHTOOL_A_BITSET_NOMASK. For compact
-> > bitmaps, always check and print the ETHTOOL_A_BITSET_VALUE bits,
-> > regardless of the request to display the mask or the value. For full
-> > size bitmaps, the set of provided bits indicates the valid values,
-> > without using ETHTOOL_A_BITSET_VALUE fields. Thus, do not skip printin=
-g
-> > bits without this attribute if nomask is set. This essentially means
-> > that dump_link_modes will treat a NOMASK bitset as having a mask
-> > equivalent to all of its set bits.
-> >
-> > For bitset_get_bit, also check for ETHTOOL_A_BITSET_NOMASK. For compac=
-t
-> > bitmaps, always use ETHTOOL_A_BITSET_BIT_VALUE as in dump_link_modes.
-> > For full bitmaps, if nomask is set, then always return true of the bit
-> > is in the set, rather than only if it provides an
-> > ETHTOOL_A_BITSET_BIT_VALUE. This will then correctly report the set
-> > bits.
-> >
-> > This fixes display of link partner advertised fields when using the
-> > netlink API.
-> >
-> > Reported-by: Jamie Gloudon <jamie.gloudon@gmx.fr>
-> > Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->
-> Andrew, could you kindly test this in your setup? I believe it will
-> fully resolve the issue.
->
-> Michal, I think this is complete based on the docs in
-> ethtool-netlink.rst and some tests. Any further insight?
->
-> Thanks,
-> Jake
->
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 > > ---
-> >  netlink/bitset.c   | 9 ++++++---
-> >  netlink/settings.c | 8 +++++---
-> >  2 files changed, 11 insertions(+), 6 deletions(-)
+> >  .../selftests/bpf/prog_tests/btf_map_in_map.c | 104 +++++++++++++++---
+> >  1 file changed, 91 insertions(+), 13 deletions(-)
 > >
-> > diff --git a/netlink/bitset.c b/netlink/bitset.c
-> > index 130bcdb5b52c..ba5d3ea77ff7 100644
-> > --- a/netlink/bitset.c
-> > +++ b/netlink/bitset.c
-> > @@ -50,6 +50,7 @@ bool bitset_get_bit(const struct nlattr *bitset, boo=
-l mask, unsigned int idx,
-> >  	DECLARE_ATTR_TB_INFO(bitset_tb);
-> >  	const struct nlattr *bits;
-> >  	const struct nlattr *bit;
-> > +	bool nomask;
-> >  	int ret;
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> > index f7ee8fa377ad..043e8ffe03d1 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> > @@ -5,10 +5,50 @@
 > >
-> >  	*retptr =3D 0;
-> > @@ -57,8 +58,10 @@ bool bitset_get_bit(const struct nlattr *bitset, bo=
-ol mask, unsigned int idx,
-> >  	if (ret < 0)
-> >  		goto err;
+> >  #include "test_btf_map_in_map.skel.h"
 > >
-> > -	bits =3D mask ? bitset_tb[ETHTOOL_A_BITSET_MASK] :
-> > -		      bitset_tb[ETHTOOL_A_BITSET_VALUE];
-> > +	nomask =3D bitset_tb[ETHTOOL_A_BITSET_NOMASK];
+> > +static int duration;
 > > +
-> > +	bits =3D mask && !nomask ? bitset_tb[ETHTOOL_A_BITSET_MASK] :
-> > +		                 bitset_tb[ETHTOOL_A_BITSET_VALUE];
-> >  	if (bits) {
-> >  		const uint32_t *bitmap =3D
-> >  			(const uint32_t *)mnl_attr_get_payload(bits);
-> > @@ -87,7 +90,7 @@ bool bitset_get_bit(const struct nlattr *bitset, boo=
-l mask, unsigned int idx,
+> > +int bpf_map_id(struct bpf_map *map)
+> Should this return __u32?
+
+yeah, probably, will change
+
+>
+> > +{
+> > +       struct bpf_map_info info;
+> > +       __u32 info_len = sizeof(info);
+> > +       int err;
+> > +
+> > +       memset(&info, 0, info_len);
+> > +       err = bpf_obj_get_info_by_fd(bpf_map__fd(map), &info, &info_len);
+> > +       if (err)
+> > +               return 0;
+> > +       return info.id;
+> > +}
+> > +
+> > +int kern_sync_rcu() {
+>
+> int kern_sync_rcu(void)
+> {
+> ...
+>
+> A comment for this function would be nice too.
+
+Sure.
+
+>
+> > +       int inner_map_fd, outer_map_fd, err, zero = 0;
+> > +
+> > +       inner_map_fd = bpf_create_map(BPF_MAP_TYPE_ARRAY, 4, 4, 1, 0);
+> > +       if (CHECK(inner_map_fd < 0, "inner_map_create", "failed %d\n", -errno))
+> > +               return -1;
+> > +
+> > +       outer_map_fd = bpf_create_map_in_map(BPF_MAP_TYPE_ARRAY_OF_MAPS, NULL,
+> > +                                            sizeof(int), inner_map_fd, 1, 0);
+> > +       if (CHECK(outer_map_fd < 0, "outer_map_create", "failed %d\n", -errno)) {
+> > +               close(inner_map_fd);
+> > +               return -1;
+> > +       }
+> > +
+> > +       err = bpf_map_update_elem(outer_map_fd, &zero, &inner_map_fd, 0);
+> > +       if (err)
+> > +               err = -errno;
+> > +       CHECK(err, "outer_map_update", "failed %d\n", err);
+> > +       close(inner_map_fd);
+> > +       close(outer_map_fd);
+> > +       return err;
+> > +}
+> > +
+> >  void test_btf_map_in_map(void)
+> >  {
+> > -       int duration = 0, err, key = 0, val;
+> > +       int err, key = 0, val, i;
+> >         struct test_btf_map_in_map* skel;
+> > +       int outer_arr_fd, outer_hash_fd;
+> > +       int fd, map1_fd, map2_fd, map1_id, map2_id;
+> nit: reverse Christmas tree.
+
+We don't enforce that and it hasn't been a requirement for a long
+time. It's better to minimize a code churn rather than preserving
+pretty line ordering.
+
+
+>
 > >
-> >  		my_idx =3D mnl_attr_get_u32(tb[ETHTOOL_A_BITSET_BIT_INDEX]);
-> >  		if (my_idx =3D=3D idx)
-> > -			return mask || tb[ETHTOOL_A_BITSET_BIT_VALUE];
-> > +			return mask || nomask || tb[ETHTOOL_A_BITSET_BIT_VALUE];
-> >  	}
-> >
-> >  	return false;
-> > diff --git a/netlink/settings.c b/netlink/settings.c
-> > index 35ba2f5dd6d5..29557653336e 100644
-> > --- a/netlink/settings.c
-> > +++ b/netlink/settings.c
-> > @@ -280,9 +280,11 @@ int dump_link_modes(struct nl_context *nlctx, con=
-st struct nlattr *bitset,
-> >  	const struct nlattr *bit;
-> >  	bool first =3D true;
-> >  	int prev =3D -2;
-> > +	bool nomask;
-> >  	int ret;
-> >
-> >  	ret =3D mnl_attr_parse_nested(bitset, attr_cb, &bitset_tb_info);
-> > +	nomask =3D bitset_tb[ETHTOOL_A_BITSET_NOMASK];
-> >  	bits =3D bitset_tb[ETHTOOL_A_BITSET_BITS];
-> >  	if (ret < 0)
-> >  		goto err_nonl;
-> > @@ -297,8 +299,8 @@ int dump_link_modes(struct nl_context *nlctx, cons=
-t struct nlattr *bitset,
-> >  			goto err_nonl;
-> >  		lm_strings =3D global_stringset(ETH_SS_LINK_MODES,
-> >  					      nlctx->ethnl2_socket);
-> > -		bits =3D mask ? bitset_tb[ETHTOOL_A_BITSET_MASK] :
-> > -			      bitset_tb[ETHTOOL_A_BITSET_VALUE];
-> > +		bits =3D mask && !nomask ? bitset_tb[ETHTOOL_A_BITSET_MASK] :
-> > +			                 bitset_tb[ETHTOOL_A_BITSET_VALUE];
-> >  		ret =3D -EFAULT;
-> >  		if (!bits || !bitset_tb[ETHTOOL_A_BITSET_SIZE])
-> >  			goto err_nonl;
-> > @@ -354,7 +356,7 @@ int dump_link_modes(struct nl_context *nlctx, cons=
-t struct nlattr *bitset,
-> >  		if (!tb[ETHTOOL_A_BITSET_BIT_INDEX] ||
-> >  		    !tb[ETHTOOL_A_BITSET_BIT_NAME])
-> >  			goto err;
-> > -		if (!mask && !tb[ETHTOOL_A_BITSET_BIT_VALUE])
-> > +		if (!mask && !nomask && !tb[ETHTOOL_A_BITSET_BIT_VALUE])
-> >  			continue;
-> >
-> >  		idx =3D mnl_attr_get_u32(tb[ETHTOOL_A_BITSET_BIT_INDEX]);
+> >         skel = test_btf_map_in_map__open_and_load();
+> >         if (CHECK(!skel, "skel_open", "failed to open&load skeleton\n"))
+> > @@ -18,32 +58,70 @@ void test_btf_map_in_map(void)
+> >         if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
+> >                 goto cleanup;
 > >
 
-I can confirm that your patch works. As you can see below:
-
-	Link partner advertised pause frame use: Symmetric Receive-only
-        Link partner advertised auto-negotiation: Yes
-	Link partner advertised FEC modes: No
-
-You can tag this patch Tested-by me. Thanks!
-
-Regards,
-Jamie Gloudon
+[...]
