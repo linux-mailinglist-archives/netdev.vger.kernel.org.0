@@ -2,89 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63BC122F67B
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:23:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22C4522F672
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:18:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729973AbgG0RXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 13:23:36 -0400
-Received: from smtp7.emailarray.com ([65.39.216.66]:44969 "EHLO
-        smtp7.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728714AbgG0RXg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 13:23:36 -0400
-Received: (qmail 68399 invoked by uid 89); 27 Jul 2020 17:16:49 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
-  by smtp7.emailarray.com with SMTP; 27 Jul 2020 17:16:49 -0000
-Date:   Mon, 27 Jul 2020 10:16:42 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        borisp@mellanox.com, david@redhat.com
-Subject: Re: [RFC PATCH v2 08/21] skbuff: add a zc_netgpu bitflag
-Message-ID: <20200727171642.l6pmwcsxhskws3gv@bsd-mbp.dhcp.thefacebook.com>
-References: <20200727052846.4070247-1-jonathan.lemon@gmail.com>
- <20200727052846.4070247-9-jonathan.lemon@gmail.com>
- <CANn89i+AZ9PnRssWpiE5zj41V1=85Jcy80Rtbp7mLjp73Y71Pw@mail.gmail.com>
- <20200727165904.twsfhafflw2ws4t4@bsd-mbp.dhcp.thefacebook.com>
- <CANn89iJBLrmvtTmyBAwErejCEMdt6gLNNRX1XZ1oMorAWrbp4g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iJBLrmvtTmyBAwErejCEMdt6gLNNRX1XZ1oMorAWrbp4g@mail.gmail.com>
+        id S1730537AbgG0RSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 13:18:54 -0400
+Received: from mta1.srv.hcvlny.cv.net ([167.206.4.196]:61070 "EHLO
+        mta1.srv.hcvlny.cv.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728021AbgG0RSy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 13:18:54 -0400
+X-Content-Analysis: v=2.3 cv=eKiIcEh1 c=1 sm=1 tr=0 a=9FIXUFnz80d826bVJLDMVQ==:117 a=9FIXUFnz80d826bVJLDMVQ==:17 a=XYAwZIGsAAAA:8 a=uwFs3qsJmY0nFq-2H_YA:9 a=E8ToXWR_bxluHZ7gmE-Z:22
+Received: from [68.195.34.108] ([68.195.34.108:50538] helo=localhost.localdomain)
+        by mta1.srv.hcvlny.cv.net (envelope-from <Bryan.Whitehead@microchip.com>)
+        (ecelerity 3.6.9.48312 r(Core:3.6.9.0)) with ESMTP
+        id 57/62-13745-B7C0F1F5; Mon, 27 Jul 2020 13:18:52 -0400
+From:   Bryan Whitehead <Bryan.Whitehead@microchip.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk
+Subject: [PATCH v2 net-next] mscc: Add LCPLL Reset to VSC8574 Family of phy drivers
+Date:   Mon, 27 Jul 2020 13:18:28 -0400
+Message-Id: <1595870308-19041-1-git-send-email-Bryan.Whitehead@microchip.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 10:08:10AM -0700, Eric Dumazet wrote:
-> On Mon, Jul 27, 2020 at 10:01 AM Jonathan Lemon
-> <jonathan.lemon@gmail.com> wrote:
-> >
-> > On Mon, Jul 27, 2020 at 08:24:55AM -0700, Eric Dumazet wrote:
-> > > On Mon, Jul 27, 2020 at 12:20 AM Jonathan Lemon
-> > > <jonathan.lemon@gmail.com> wrote:
-> > > >
-> > > > This could likely be moved elsewhere.  The presence of the flag on
-> > > > the skb indicates that one of the fragments may contain zerocopy
-> > > > RX data, where the data is not accessible to the cpu.
-> > >
-> > > Why do we need yet another flag in skb exactly ?
-> > >
-> > > Please define what means "data not accessible to the cpu" ?
-> > >
-> > > This kind of change is a red flag for me.
-> >
-> > The architecture this is targeting is a ML cluster, where a 200Gbps NIC
-> > is attached to a PCIe switch which also has a GPU card attached.  There
-> > are several of these, and the link(s) to the host cpu (which has another
-> > NIC attached) can't handle the incoming traffic.
-> >
-> > So what we're doing here is transferring the data directly from the NIC
-> > to the GPU via DMA.  The host never sees the data, but can control it
-> > indirectly via the handles returned to userspace.
-> >
-> 
-> This seems to need a page/memory attribute or something.
+The LCPLL Reset sequence is added to the initialization path
+of the VSC8574 Family of phy drivers.
 
-'struct page' is even more constrained.  I opted to flag the skb since
-there should not be mixed zc/non-zc pages in the same skb.  I'd be happy
-to see other alternatives.
+The LCPLL Reset sequence is known to reduce hardware inter-op
+issues when using the QSGMII MAC interface.
 
+This patch is submitted to net-next to avoid merging conflicts that
+may arise if submitted to net.
 
-> skb should not have this knowledge, unless you are planning to make
-> sure that everything accessing skb data is going to test this new flag
-> and fail if it is set ?
+V2 Updates:
+Make use of read_poll_timeout for micro command completion.
+Combine command starter and timeout into helper function
+	vsc8574_micro_command
+Removed unused variable reg_val from vsc8574_reset_lcpll
 
-That might be how things end up going - in the samw way skb_zcopy()
-works.
---
-Jonathan
+Signed-off-by: Bryan Whitehead <Bryan.Whitehead@microchip.com>
+---
+ drivers/net/phy/mscc/mscc_main.c | 77 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 77 insertions(+)
+
+diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
+index a4fbf3a..db34faac 100644
+--- a/drivers/net/phy/mscc/mscc_main.c
++++ b/drivers/net/phy/mscc/mscc_main.c
+@@ -929,6 +929,77 @@ static bool vsc8574_is_serdes_init(struct phy_device *phydev)
+ }
+ 
+ /* bus->mdio_lock should be locked when using this function */
++/* Page should already be set to MSCC_PHY_PAGE_EXTENDED_GPIO */
++static int vsc8574_micro_command(struct phy_device *phydev, u16 command)
++{
++	u16 reg18g = 0;
++
++	phy_base_write(phydev, 18, command);
++
++	return read_poll_timeout(phy_base_read, reg18g,
++		!(reg18g & 0x8000),
++		4000, 500000, 0, phydev, 18);
++}
++
++/* bus->mdio_lock should be locked when using this function */
++static int vsc8574_reset_lcpll(struct phy_device *phydev)
++{
++	int ret = 0;
++
++	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS,
++		       MSCC_PHY_PAGE_EXTENDED_GPIO);
++
++	/* Read LCPLL config vector into PRAM */
++	ret = vsc8574_micro_command(phydev, 0x8023);
++	if (ret)
++		goto done;
++
++	/* Set Address to Poke */
++	ret = vsc8574_micro_command(phydev, 0xd7d5);
++	if (ret)
++		goto done;
++
++	/* Poke to reset PLL Start up State Machine,
++	 * set disable_fsm:bit 119
++	 */
++	ret = vsc8574_micro_command(phydev, 0x8d06);
++	if (ret)
++		goto done;
++
++	/* Rewrite PLL config vector */
++	ret = vsc8574_micro_command(phydev, 0x80c0);
++	if (ret)
++		goto done;
++
++	usleep_range(10000, 20000);
++
++	/* Poke to deassert Reset of PLL State Machine,
++	 * clear disable_fsm:bit 119
++	 */
++	ret = vsc8574_micro_command(phydev, 0x8506);
++	if (ret)
++		goto done;
++
++	/* Rewrite PLL config vector */
++	ret = vsc8574_micro_command(phydev, 0x80c0);
++	if (ret)
++		goto done;
++
++	usleep_range(10000, 20000);
++
++	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS,
++		       MSCC_PHY_PAGE_EXTENDED_3);
++	phy_base_read(phydev, 20);
++	phy_base_read(phydev, 20);
++
++	usleep_range(110000, 200000);
++
++done:
++	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
++	return ret;
++}
++
++/* bus->mdio_lock should be locked when using this function */
+ static int vsc8574_config_pre_init(struct phy_device *phydev)
+ {
+ 	static const struct reg_val pre_init1[] = {
+@@ -1002,6 +1073,12 @@ static int vsc8574_config_pre_init(struct phy_device *phydev)
+ 	bool serdes_init;
+ 	int ret;
+ 
++	ret = vsc8574_reset_lcpll(phydev);
++	if (ret) {
++		dev_err(dev, "failed lcpll reset\n");
++		return ret;
++	}
++
+ 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
+ 
+ 	/* all writes below are broadcasted to all PHYs in the same package */
+-- 
+2.7.4
+
