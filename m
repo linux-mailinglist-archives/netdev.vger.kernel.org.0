@@ -2,133 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9A9922F6C0
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:35:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CE0022F6CA
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:37:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731339AbgG0Rff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 13:35:35 -0400
-Received: from smtp4.emailarray.com ([65.39.216.22]:54928 "EHLO
-        smtp4.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726617AbgG0Rfe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 13:35:34 -0400
-Received: (qmail 59797 invoked by uid 89); 27 Jul 2020 17:35:32 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
-  by smtp4.emailarray.com with SMTP; 27 Jul 2020 17:35:32 -0000
-Date:   Mon, 27 Jul 2020 10:35:28 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        borisp@mellanox.com, david@redhat.com
-Subject: Re: [RFC PATCH v2 15/21] net/tcp: add MSG_NETDMA flag for sendmsg()
-Message-ID: <20200727173528.tfsrweswpyjxlqv6@bsd-mbp.dhcp.thefacebook.com>
-References: <20200727052846.4070247-1-jonathan.lemon@gmail.com>
- <20200727052846.4070247-16-jonathan.lemon@gmail.com>
- <CANn89iJ5vyx0WqdKTB3uHaWJrG-3jNXqXs6r7PacSqg0jRsRKA@mail.gmail.com>
- <20200727155549.gbwosugbugknsneo@bsd-mbp.dhcp.thefacebook.com>
- <CANn89iKY27R=ryQLohFPWa9dr6R9dMgB-hj+9eJO6H4NqfVKVw@mail.gmail.com>
+        id S1730313AbgG0Rhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 13:37:31 -0400
+Received: from perceval.ideasonboard.com ([213.167.242.64]:58234 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731344AbgG0Rh3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 13:37:29 -0400
+Received: from pendragon.ideasonboard.com (81-175-216-236.bb.dnainternet.fi [81.175.216.236])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 60EE0556;
+        Mon, 27 Jul 2020 19:37:25 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1595871445;
+        bh=XZ5UmqXA5czY35VWinVmDMvOn/YIwPOlRwwuxlDX1Qo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Agq8rjvPeVHUjYarOnsB0EsZpsyzd1r1GZE/2YAszslrWb+1Bp7yx5CcMw05I7PtN
+         hDbYe+SCgoewcrT5j+w8EjqhaYMoCCsOjFm/mNlZgkBpZ47hLVxQfaTADG60Aykr2h
+         2OeH45VjGmxJtF0z47Z7M3Z14QgIdxXGnteiee8U=
+Date:   Mon, 27 Jul 2020 20:37:17 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Chris Healy <cphealy@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Martin Fuzzey <martin.fuzzey@flowbird.group>
+Subject: Re: [RESENT PATCH net--stat 1/1] net: ethernet: fec: Revert "net:
+ ethernet: fec: Replace interrupt driven MDIO with polled IO"
+Message-ID: <20200727173717.GJ17521@pendragon.ideasonboard.com>
+References: <20200727012354.GT28704@pendragon.ideasonboard.com>
+ <20200727020631.GW28704@pendragon.ideasonboard.com>
+ <20200727021432.GM1661457@lunn.ch>
+ <20200727023310.GA23988@pendragon.ideasonboard.com>
+ <CAFXsbZrf11Nj4rzLJfisPr-fFo-+stt-G3-XQ_Mwus_2z0nsAg@mail.gmail.com>
+ <CAFXsbZrysb6SGisEhgXHzj8NZ5o_EjY-rtiqg3gypgr0w-d-dw@mail.gmail.com>
+ <CAFXsbZpBP_kzsC_dLYezJWo7+dQufoRmaFpJgKJbnn6T=sc5QA@mail.gmail.com>
+ <20200727120545.GN1661457@lunn.ch>
+ <20200727152434.GF20890@pendragon.ideasonboard.com>
+ <CAFXsbZo5ufE0v_dmzQU9oWBeeRj+DKzDoiMj6OjuiER0O7nFfQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CANn89iKY27R=ryQLohFPWa9dr6R9dMgB-hj+9eJO6H4NqfVKVw@mail.gmail.com>
+In-Reply-To: <CAFXsbZo5ufE0v_dmzQU9oWBeeRj+DKzDoiMj6OjuiER0O7nFfQ@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 09:09:48AM -0700, Eric Dumazet wrote:
-> On Mon, Jul 27, 2020 at 8:56 AM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
-> >
-> > On Mon, Jul 27, 2020 at 08:19:43AM -0700, Eric Dumazet wrote:
-> > > On Mon, Jul 27, 2020 at 12:51 AM Jonathan Lemon
-> > > <jonathan.lemon@gmail.com> wrote:
+Hi Chris,
+
+On Mon, Jul 27, 2020 at 08:41:23AM -0700, Chris Healy wrote:
+> On Mon, Jul 27, 2020 at 8:24 AM Laurent Pinchart wrote:
+> > On Mon, Jul 27, 2020 at 02:05:45PM +0200, Andrew Lunn wrote:
+> > > On Sun, Jul 26, 2020 at 08:01:25PM -0700, Chris Healy wrote:
+> > > > It appears quite a few boards were affected by this micrel PHY driver change:
 > > > >
-> > > > This flag indicates that the attached data is a zero-copy send,
-> > > > and the pages should be retrieved from the netgpu module.  The
-> > > > socket should should already have been attached to a netgpu queue.
+> > > > 2ccb0161a0e9eb06f538557d38987e436fc39b8d
+> > > > 80bf72598663496d08b3c0231377db6a99d7fd68
+> > > > 2de00450c0126ec8838f72157577578e85cae5d8
+> > > > 820f8a870f6575acda1bf7f1a03c701c43ed5d79
 > > > >
-> > > > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> > > > ---
-> > > >  include/linux/socket.h | 1 +
-> > > >  net/ipv4/tcp.c         | 8 ++++++++
-> > > >  2 files changed, 9 insertions(+)
-> > > >
-> > > > diff --git a/include/linux/socket.h b/include/linux/socket.h
-> > > > index 04d2bc97f497..63816cc25dee 100644
-> > > > --- a/include/linux/socket.h
-> > > > +++ b/include/linux/socket.h
-> > > > @@ -310,6 +310,7 @@ struct ucred {
-> > > >                                           */
-> > > >
-> > > >  #define MSG_ZEROCOPY   0x4000000       /* Use user data in kernel path */
-> > > > +#define MSG_NETDMA     0x8000000
-> > > >  #define MSG_FASTOPEN   0x20000000      /* Send data in TCP SYN */
-> > > >  #define MSG_CMSG_CLOEXEC 0x40000000    /* Set close_on_exec for file
-> > > >                                            descriptor received through
-> > > > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > > > index 261c28ccc8f6..340ce319edc9 100644
-> > > > --- a/net/ipv4/tcp.c
-> > > > +++ b/net/ipv4/tcp.c
-> > > > @@ -1214,6 +1214,14 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
-> > > >                         uarg->zerocopy = 0;
-> > > >         }
-> > > >
-> > > > +       if (flags & MSG_NETDMA && size && sock_flag(sk, SOCK_ZEROCOPY)) {
-> > > > +               zc = sk->sk_route_caps & NETIF_F_SG;
-> > > > +               if (!zc) {
-> > > > +                       err = -EFAULT;
-> > > > +                       goto out_err;
-> > > > +               }
-> > > > +       }
-> > > >
+> > > > I just updated the phy-mode with my board from rgmii to rgmii-id and
+> > > > everything started working fine with net-next again:
 > > >
-> > > Sorry, no, we can not allow adding yet another branch into TCP fast
-> > > path for yet another variant of zero copy.
+> > > Hi Chris
+> > >
+> > > Is this a mainline supported board? Do you plan to submit a patch?
+> > >
+> > > Laurent, does the change also work for your board? This is another one
+> > > of those cases were a bug in the PHY driver, not respecting the
+> > > phy-mode, has masked a bug in the device tree, using the wrong
+> > > phy-mode. We had the same issue with the Atheros PHY a while back.
 > >
-> > I'm not in disagreement with that statement, but the existing zerocopy
-> > work makes some assumptions that aren't suitable.  I take it that you'd
-> > rather have things folded together so the old/new code works together?
-> 
-> Exact.  Forcing users to use MSG_NETDMA, yet reusing SOCK_ZEROCOPY is silly.
-> 
-> SOCK_ZEROCOPY has been added to that user space and kernel would agree
-> on MSG_ZEROCOPY being not a nop (as it was on old kernels)
-> 
+> > Yes, setting the phy-mode to rgmii-id fixes the issue.
 > >
-> > Allocating an extra structure for every skbuff isn't ideal in my book.
+> > Thank you everybody for your quick responses and very useful help !
 > >
-> 
-> We do not allocate a structure for every skbuff. Please look again.
-
-I'm looking here:
-
-    uarg = sock_zerocopy_realloc(sk, size, skb_zcopy(skb));
-
-Doesn't sock_zerocopy_realloc() allocate a new structure if the skb
-doesn't have one already?
-
-
-> > > Overall, I think your patch series desperately tries to add changes in
-> > > TCP stack, while there is yet no proof
-> > > that you have to use TCP transport between the peers.
+> > On a side note, when the kernel boots, there's a ~10s delay for the
+> > ethernet connection to come up:
 > >
-> > The goal is having a reliable transport without resorting to RDMA.
+> > [    4.050754] Micrel KSZ9031 Gigabit PHY 30be0000.ethernet-1:01: attached PHY driver [Micrel KSZ9031 Gigabit PHY] (mii_bus:phy_addr=30be0000.ethernet-1:01, irq=POLL)
+> > [   15.628528] fec 30be0000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
+> > [   15.676961] Sending DHCP requests ., OK
+> > [   15.720925] IP-Config: Got DHCP answer from 192.168.2.47, my address is 192.168.2.210
+> >
+> > The LED on the connected switch confirms this, it lits up synchronously
+> > with the "Link is up" message. It's not an urgent issue, but if someone
+> > had a few pointers on how I could debug that, it would be appreciated.
 > 
-> And why should it be TCP ?
+> Here's a few suggestions that could help in learning more:
 > 
-> Are you dealing with lost packets, retransmits, timers, and al  ?
+> 1) Review the KSZ9031 HW errata and compare against the PHY driver
+> code.  There's a number of errata that could cause this from my quick
+> review.
 
-Yes?  If there was a true lossless medium, RDMA would have taken over by
-now.  Or are you suggesting that the transport protocol reliability
-should be performed in userspace?  (not all the world is QUIC yet)
+I'll have a look at that, thanks.
+
+> 2) Based on what I read in the HW errata, try different link partners
+> that utilize different copper PHYs to see if it results in different
+> behaviour.
+
+I have limited available test equipment, but I can give it a try.
+
+> 3) Try setting your autonegotiate advertisement to only advertise
+> 100Mbps and see if this affects the timing.  Obviously this would not
+> be a solution but might help in better understanding the issue.
+
+I've tested this, and the link then comes up in ~2 seconds instead of
+~10. That's clearly an improvement, but I have no idea what it implies
+:-)
+
+[    4.090655] Micrel KSZ9031 Gigabit PHY 30be0000.ethernet-1:01: attached PHY driver [Micrel KSZ9031 Gigabit PHY] (mii_bus:phy_addr=30be0000.ethernet-1:01, irq=POLL)
+[    6.188347] fec 30be0000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
+[    6.236843] Sending DHCP requests ., OK
+[    6.280807] IP-Config: Got DHCP answer from 192.168.2.47, my address is 192.168.2.210
+
 -- 
-Jonathan
+Regards,
+
+Laurent Pinchart
