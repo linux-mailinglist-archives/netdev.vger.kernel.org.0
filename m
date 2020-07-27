@@ -2,104 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A27D322F6B8
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9A9922F6C0
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:35:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731365AbgG0Rd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 13:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38886 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726617AbgG0Rd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 13:33:26 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5960BC061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 10:33:26 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id c2so6896251edx.8
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 10:33:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XFy4EwbQ1hruQWfyvxwpSGaXyhWKJikN0d4fu77mACg=;
-        b=RmPx0BV42vUOcwd6ebaLWVEV3xBH7X9PAQSv83L03SIFI38M/jJtJazZ3TwolatQ8y
-         LW25YtGedcK6Lvbf2QFtQf1I7i6+e5kyKSkBS33TDbX4Zf1Rcshg6HmnH1xZp7VoOI6z
-         orcmWNCVVVD2JEHaKhLaShcj/wUKD3V+H/9293vXHQORXdSJTWcW2O0hCp6mmaIomX8Y
-         1tgbgL3iGQWANfdbxYof7ErgwrNtR+cWT2isVO2f4zInlZMplwNQNQI7enp5IsCTc2NU
-         tjOGLzxcFujqeunVANKELdCFk9/mFnRj9SCE8RrQ8QMwaXL96FOgG1do4SaDKkfyx3R2
-         nsBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XFy4EwbQ1hruQWfyvxwpSGaXyhWKJikN0d4fu77mACg=;
-        b=aB3sW0MnzpS3HvBYbyI4iZKPxs5cSiYBZbpUWns//mCZr0AvSLP+j5pQsWtYWFHq0f
-         1/wmAmTE0O3rn9aODfFsg7nVHDXLX8ZrT+dB5Hy3ANq9LNZmG3rG/wFYaT52wlJF1IyC
-         75hXp2OaP1e1BTFFUP9SUkArzvD1HgRKQlxUGuA7P3Rfy8040vDSv7UfCEmBlXGqNmdr
-         K2UDeWP+F4CxPj+RFkifGM+vGuPPjHLICWKoPwMOhLA0ZvtUo5wwvjS60pJ8c1rrFIJY
-         Cq2psyUiivihVVUfHGKY8lVuaAY3MzCEbj/GAALHqzCCnbcLbnULDdblEfBvUXzbGSaw
-         vfbQ==
-X-Gm-Message-State: AOAM533JwfkrdW3qCp4HKBrlyCvfbVnl+3porl+wTvfPQT1aZnEFFt+C
-        R6xayW2PSQBDZI/iBDt+/GRb6E1yRr8Rr0AWjB2F02QG
-X-Google-Smtp-Source: ABdhPJyCby+l6ZVi63IKbukfxKvjhl/3EyTd2nMQvtsiJ3YYTfQjolzylNOe+Otu/6trXR5xLKLWDz+9I1WIK/g2lUc=
-X-Received: by 2002:a05:6402:b4b:: with SMTP id bx11mr21696778edb.286.1595871205077;
- Mon, 27 Jul 2020 10:33:25 -0700 (PDT)
+        id S1731339AbgG0Rff (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 13:35:35 -0400
+Received: from smtp4.emailarray.com ([65.39.216.22]:54928 "EHLO
+        smtp4.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726617AbgG0Rfe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 13:35:34 -0400
+Received: (qmail 59797 invoked by uid 89); 27 Jul 2020 17:35:32 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
+  by smtp4.emailarray.com with SMTP; 27 Jul 2020 17:35:32 -0000
+Date:   Mon, 27 Jul 2020 10:35:28 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        borisp@mellanox.com, david@redhat.com
+Subject: Re: [RFC PATCH v2 15/21] net/tcp: add MSG_NETDMA flag for sendmsg()
+Message-ID: <20200727173528.tfsrweswpyjxlqv6@bsd-mbp.dhcp.thefacebook.com>
+References: <20200727052846.4070247-1-jonathan.lemon@gmail.com>
+ <20200727052846.4070247-16-jonathan.lemon@gmail.com>
+ <CANn89iJ5vyx0WqdKTB3uHaWJrG-3jNXqXs6r7PacSqg0jRsRKA@mail.gmail.com>
+ <20200727155549.gbwosugbugknsneo@bsd-mbp.dhcp.thefacebook.com>
+ <CANn89iKY27R=ryQLohFPWa9dr6R9dMgB-hj+9eJO6H4NqfVKVw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
- <20200715090400.4733-2-calvin.johnson@oss.nxp.com> <1a031e62-1e87-fdc1-b672-e3ccf3530fda@arm.com>
- <20200724133931.GF1472201@lunn.ch> <97973095-5458-8ac2-890c-667f4ea6cd0e@arm.com>
- <20200724191436.GH1594328@lunn.ch>
-In-Reply-To: <20200724191436.GH1594328@lunn.ch>
-From:   Jon Nettleton <jon@solid-run.com>
-Date:   Mon, 27 Jul 2020 19:32:48 +0200
-Message-ID: <CABdtJHtpSGWBZh2A7XA8hMmRetow8XsHBUORLo-hD8Bn+WEmdw@mail.gmail.com>
-Subject: Re: [net-next PATCH v7 1/6] Documentation: ACPI: DSD: Document MDIO PHY
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jeremy Linton <jeremy.linton@arm.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        linux.cj@gmail.com,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iKY27R=ryQLohFPWa9dr6R9dMgB-hj+9eJO6H4NqfVKVw@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 24, 2020 at 9:14 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > Hence my previous comment that we should consider this an escape
-> > hatch rather than the last word in how to describe networking on
-> > ACPI/SBSA platforms.
->
-> One problem i have is that this patch set suggests ACPI can be used to
-> describe complex network hardware. It is opening the door for others
-> to follow and add more ACPI support in networking. How long before it
-> is not considered an escape hatch, but the front door?
->
-> For an example, see
->
-> https://patchwork.ozlabs.org/project/netdev/patch/1595417547-18957-3-git-send-email-vikas.singh@puresoftware.com/
->
-> It is hard to see what the big picture is here. The [0/2] patch is not
-> particularly good. But it makes it clear that people are wanting to
-> add fixed-link PHYs into ACPI. These are pseudo devices, used to make
-> the MAC think it is connected to a PHY when it is not. The MAC still
-> gets informed of link speed, etc via the standard PHYLIB API. They are
-> mostly used for when the Ethernet MAC is directly connected to an
-> Ethernet Switch, at a MAC to MAC level.
->
-> Now i could be wrong, but are Ethernet switches something you expect
-> to see on ACPI/SBSA platforms? Or is this a legitimate use of the
-> escape hatch?
+On Mon, Jul 27, 2020 at 09:09:48AM -0700, Eric Dumazet wrote:
+> On Mon, Jul 27, 2020 at 8:56 AM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+> >
+> > On Mon, Jul 27, 2020 at 08:19:43AM -0700, Eric Dumazet wrote:
+> > > On Mon, Jul 27, 2020 at 12:51 AM Jonathan Lemon
+> > > <jonathan.lemon@gmail.com> wrote:
+> > > >
+> > > > This flag indicates that the attached data is a zero-copy send,
+> > > > and the pages should be retrieved from the netgpu module.  The
+> > > > socket should should already have been attached to a netgpu queue.
+> > > >
+> > > > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> > > > ---
+> > > >  include/linux/socket.h | 1 +
+> > > >  net/ipv4/tcp.c         | 8 ++++++++
+> > > >  2 files changed, 9 insertions(+)
+> > > >
+> > > > diff --git a/include/linux/socket.h b/include/linux/socket.h
+> > > > index 04d2bc97f497..63816cc25dee 100644
+> > > > --- a/include/linux/socket.h
+> > > > +++ b/include/linux/socket.h
+> > > > @@ -310,6 +310,7 @@ struct ucred {
+> > > >                                           */
+> > > >
+> > > >  #define MSG_ZEROCOPY   0x4000000       /* Use user data in kernel path */
+> > > > +#define MSG_NETDMA     0x8000000
+> > > >  #define MSG_FASTOPEN   0x20000000      /* Send data in TCP SYN */
+> > > >  #define MSG_CMSG_CLOEXEC 0x40000000    /* Set close_on_exec for file
+> > > >                                            descriptor received through
+> > > > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > > > index 261c28ccc8f6..340ce319edc9 100644
+> > > > --- a/net/ipv4/tcp.c
+> > > > +++ b/net/ipv4/tcp.c
+> > > > @@ -1214,6 +1214,14 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+> > > >                         uarg->zerocopy = 0;
+> > > >         }
+> > > >
+> > > > +       if (flags & MSG_NETDMA && size && sock_flag(sk, SOCK_ZEROCOPY)) {
+> > > > +               zc = sk->sk_route_caps & NETIF_F_SG;
+> > > > +               if (!zc) {
+> > > > +                       err = -EFAULT;
+> > > > +                       goto out_err;
+> > > > +               }
+> > > > +       }
+> > > >
+> > >
+> > > Sorry, no, we can not allow adding yet another branch into TCP fast
+> > > path for yet another variant of zero copy.
+> >
+> > I'm not in disagreement with that statement, but the existing zerocopy
+> > work makes some assumptions that aren't suitable.  I take it that you'd
+> > rather have things folded together so the old/new code works together?
+> 
+> Exact.  Forcing users to use MSG_NETDMA, yet reusing SOCK_ZEROCOPY is silly.
+> 
+> SOCK_ZEROCOPY has been added to that user space and kernel would agree
+> on MSG_ZEROCOPY being not a nop (as it was on old kernels)
+> 
+> >
+> > Allocating an extra structure for every skbuff isn't ideal in my book.
+> >
+> 
+> We do not allocate a structure for every skbuff. Please look again.
 
-I think with the rise in adoption of Smart-NICs in datacenters there
-will definitely be a lot more crossover between ACPI/SBSA and network
-appliance oriented hardware.
+I'm looking here:
 
--Jon
+    uarg = sock_zerocopy_realloc(sk, size, skb_zcopy(skb));
+
+Doesn't sock_zerocopy_realloc() allocate a new structure if the skb
+doesn't have one already?
+
+
+> > > Overall, I think your patch series desperately tries to add changes in
+> > > TCP stack, while there is yet no proof
+> > > that you have to use TCP transport between the peers.
+> >
+> > The goal is having a reliable transport without resorting to RDMA.
+> 
+> And why should it be TCP ?
+> 
+> Are you dealing with lost packets, retransmits, timers, and al  ?
+
+Yes?  If there was a true lossless medium, RDMA would have taken over by
+now.  Or are you suggesting that the transport protocol reliability
+should be performed in userspace?  (not all the world is QUIC yet)
+-- 
+Jonathan
