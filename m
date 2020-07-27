@@ -2,86 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5942422ECC2
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 15:04:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C856022ECD9
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 15:07:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728552AbgG0NEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 09:04:09 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60194 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728286AbgG0NEJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 09:04:09 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id DFDEAACA9;
-        Mon, 27 Jul 2020 13:04:17 +0000 (UTC)
-Message-ID: <1595855038.13408.27.camel@suse.de>
-Subject: Re: [PATCH v5 net-next 2/5] net: cdc_ether: export
- usbnet_cdc_update_filter
-From:   Oliver Neukum <oneukum@suse.de>
-To:     =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        netdev@vger.kernel.org
-Cc:     linux-usb@vger.kernel.org, wxcafe@wxcafe.net,
-        Miguel =?ISO-8859-1?Q?Rodr=EDguez_P=E9rez?= 
-        <miguel@det.uvigo.gal>, gregkh@linuxfoundation.org
-Date:   Mon, 27 Jul 2020 15:03:58 +0200
-In-Reply-To: <2B227F47-F76D-45EF-85D6-8A5A85AE19A1@mork.no>
-References: <20200715184100.109349-1-bjorn@mork.no>
-         <20200715184100.109349-3-bjorn@mork.no> <1595322008.29149.5.camel@suse.de>
-         <2B227F47-F76D-45EF-85D6-8A5A85AE19A1@mork.no>
+        id S1728654AbgG0NHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 09:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728393AbgG0NHW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 09:07:22 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554C1C061794;
+        Mon, 27 Jul 2020 06:07:22 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id w2so9461115pgg.10;
+        Mon, 27 Jul 2020 06:07:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aU4uOkyeKSlCP6DAw6Cy7Ktbov/Gh5qKQZ6czddo9eY=;
+        b=LMvbgGA04HznqjLaf5szOXCLSh9x11dnwmIwyhStp3Yd6GdkUIoccAW/Isj24QFJWW
+         wdI6Czp8coHdtka/GILmJP2zDVqFW31MkuUJjMDot+6afXCbcCATnr/g8bcFqTBSX97Z
+         VmXwKBzn7yrfC4307jov37Vl263FjWd1ACqRLatKLfxh+znxF+VyON54aaFRAhFZU0Gu
+         WWinM7ylHXnAKlfIOoxvjSmbCCiIY7wFBZ9Ap14yWC5mvPx8tcw+iW+KpDwnhNK1mIIQ
+         WXqG3n8q9+BoLDsALdNMXgiqXpNUbIKGlUWQWZw/or+yikJ3plwPIPd7dNyBGhOkhYq2
+         BSFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aU4uOkyeKSlCP6DAw6Cy7Ktbov/Gh5qKQZ6czddo9eY=;
+        b=LFnEvp7NDRDm9wOKBymHjqZUKGIARzIuFWKVwIh4EW59BZFFcd5VAPJRntDBVMcArZ
+         mng9+8UxT6XRmsU36biW73GcgJIdCftqQqAp79dd2oF6aNyT52uGX76mmwrsm07aoo5f
+         GuCmv1z5FtBOFg4YLSwyzFcdaLkhI0Y3dwHc/TRvWDwKnq0L0Dd4fTNhHmvpswLvMnCD
+         RWPancTfrTGT1bdu2G9qNg86pC6xxmoU0KOzkVVNJ//CBEvO+aJGKzzQISpL5FmXndFn
+         hoLQMMt4H1+e9pGyL1SrpMUq0k76a/dV3GP8x5+wnF5XXAhrU3moZvCadqZ2oBS4yGrS
+         vNWA==
+X-Gm-Message-State: AOAM531SF6ZnPlRqpDpa+of1vpSP8T2ELXhSUx9QtfAfxgQbiKMJeNj4
+        TuGuDuVftGWpsfRH0NgTziooWZ+uL928U5Q7pC8=
+X-Google-Smtp-Source: ABdhPJxCW261IYIacWDsDLoTBan3fG0xkKSa9VYjzETNf7JTLwKKTZElidbIm/RSXmnZDKY/gCXa0PcYgLgpAP0UwfE=
+X-Received: by 2002:a63:a05f:: with SMTP id u31mr19297932pgn.4.1595855241880;
+ Mon, 27 Jul 2020 06:07:21 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200727122242.32337-1-vadym.kochan@plvision.eu> <20200727122242.32337-4-vadym.kochan@plvision.eu>
+In-Reply-To: <20200727122242.32337-4-vadym.kochan@plvision.eu>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 27 Jul 2020 16:07:07 +0300
+Message-ID: <CAHp75Vcaa0-s6FEUw0YqoEDi=uVRcJiDvwA+ye4cNxwkK6eb+g@mail.gmail.com>
+Subject: Re: [net-next v4 3/6] net: marvell: prestera: Add basic devlink support
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mickey Rachamim <mickeyr@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.26.6 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Freitag, den 24.07.2020, 16:18 +0200 schrieb Bjørn Mork:
-> 
-> On July 21, 2020 11:00:08 AM GMT+02:00, Oliver Neukum <oneukum@suse.de> wrote:
-> > Am Mittwoch, den 15.07.2020, 20:40 +0200 schrieb Bjørn Mork:
-> > > 
-> > > @@ -90,6 +90,7 @@ static void usbnet_cdc_update_filter(struct usbnet
-> > 
-> > *dev)
-> > >  			USB_CTRL_SET_TIMEOUT
-> > >  		);
-> > >  }
-> > > +EXPORT_SYMBOL_GPL(usbnet_cdc_update_filter);
-> > 
-> > Hi,
-> > 
-> > this function is pretty primitive. In fact it more or less
-> > is a straight take from the spec. Can this justify the _GPL
-> > version?
-> 
-> Maybe not? I must admit I didn't put much thought into it. 
-> 
-> I will not object to changing it. And you're the boss anyway :-)
+On Mon, Jul 27, 2020 at 3:23 PM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
+>
+> Add very basic support for devlink interface:
+>
+>     - driver name
+>     - fw version
+>     - devlink ports
 
-Well,
+...
 
-it has been applied. I don't care enough to change it unless
-we are violating a policy. I am looking for some ground rules
-on that issue.
+> +static int prestera_dl_info_get(struct devlink *dl,
+> +                               struct devlink_info_req *req,
+> +                               struct netlink_ext_ack *extack)
+> +{
+> +       struct prestera_switch *sw = devlink_priv(dl);
+> +       char buf[16];
 
-Leading us to the thorny issue of binary modules, yes I know.
-Yet up to now it was my understanding that plain EXPORT_SYMBOL
-is the default and EXPORT_SYMBOL_GPL needs a reason.
-Now, I like the GPL as much as everybody else and I will
-not challenge people on their reason if they state it
-and I am willing to assume that there is a reason if the code
-behind the symbol is substantial.
-My job as maintainer is to check things and to ensure some
-consistency. And I am seeing a certain lack of consistency here.
-As I do not want to make developers unhappy I would very much
-appreciate some guide lines I can point at.
+> +       int err = 0;
 
-I really want to preclude some lawyers sending me conflicting
-patches in the future. I fear this coming.
+Redundant assignment. When you got a comment the rule of thumb is to
+check your entire contribution and address where it's applicable.
 
-	Regards
-		Oliver
+> +       err = devlink_info_driver_name_put(req, PRESTERA_DRV_NAME);
+> +       if (err)
+> +               return err;
+> +
+> +       snprintf(buf, sizeof(buf), "%d.%d.%d",
+> +                sw->dev->fw_rev.maj,
+> +                sw->dev->fw_rev.min,
+> +                sw->dev->fw_rev.sub);
+> +
 
+> +       err = devlink_info_version_running_put(req,
+> +                                              DEVLINK_INFO_VERSION_GENERIC_FW,
+> +                                              buf);
+> +       if (err)
+> +               return err;
+> +
+> +       return 0;
+
+return devlink_...
+
+> +}
+
+...
+
+> +       err = devlink_register(dl, sw->dev->dev);
+> +       if (err) {
+> +               dev_warn(sw->dev->dev, "devlink_register failed: %d\n", err);
+> +               return err;
+> +       }
+> +
+> +       return 0;
+
+  if (err)
+    dev_warn(...);
+
+  return err;
+
+-- 
+With Best Regards,
+Andy Shevchenko
