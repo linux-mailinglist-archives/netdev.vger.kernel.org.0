@@ -2,102 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 020D822F4FF
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 18:25:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8205522F501
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 18:25:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729063AbgG0QZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 12:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56556 "EHLO
+        id S1729144AbgG0QZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 12:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728446AbgG0QZZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 12:25:25 -0400
-Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B37C061794;
-        Mon, 27 Jul 2020 09:25:23 -0700 (PDT)
-Received: by mail-oo1-xc43.google.com with SMTP id s190so3250339ooa.13;
-        Mon, 27 Jul 2020 09:25:23 -0700 (PDT)
+        with ESMTP id S1729099AbgG0QZe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 12:25:34 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40AB5C061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 09:25:34 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id x12so4133361qtp.1
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 09:25:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kLEwg/GwaUFP5MTtIx9yELTFjI7/3rn3DIkXhvdqZaU=;
-        b=SL2Gkjqb+X2fjcvF1VHGdaS4g0KaJfv9brxRvotYAOF1r4cxXgKvQvQvss5Th8BGtI
-         BvrBRUT/gBIbrq7cbH/atelEM7n5eli33tySTmotJQEKTO+DN0DwQnpzzWaf4ck8U+ae
-         IdzzufDV5OI+9mPMzdnwrUS98zsYNZ2a2r5QJHSsh/XdlbWYHHPx9mtprdADuemYo5FY
-         ogap3CWrKEO5FJLugFi++ZdTyfU3JVL99dA2tMhXP2DNaU5iB4wkGYGIg+X5H7JhADGV
-         SJmK7HolDBy8mhHbZ1m3kfBMMZJGS/MliDs+suuBCQRPI/OotD8pSsDKpRTi2YLj8ohq
-         LI6Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PPeEYgEOG843lwExn3vH3TdfbeyS+fTudAguCt5Ljfc=;
+        b=PRO6u07orgnA1/PyIOa4/JoSSZOXWfKh8CRDRJlJVtzpWux8LRs9LNMq+pIsiBBPEm
+         1kUINbREWkyETE2Khnx9BKpeM0orUO+B3X4TJja2aL/Zfq5lurVNWgb3uVlQRS+5YhBf
+         7t6SkEOxA2vuNAstMRAnrUihFA3bLS7WtSVZ3g64UwBMwPaEbcbEn+VnW9P8kGC/1LdT
+         JqeC0lmf6EfOayqr+16uXQFljd+aZk4AH/rH3Ki1yzB2YVPUw+Fa5oBwqbkgy+evCkFk
+         eLkjeTV+MCGUadcnNrF5SW92k8VgTNMUXvZEJBiF/45mjNPH/u4BCxK0dzc2VfZckM4v
+         pT/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=kLEwg/GwaUFP5MTtIx9yELTFjI7/3rn3DIkXhvdqZaU=;
-        b=gteji0Kvr85QaN82DXaRK+HpQ3sMqp81sxhsJuO0NK66tWRzPwlxtpPLslQ7NmBpGT
-         3bFzYvTmy5hMVIvfwChyRAyW0idi3LTlzxdew8r5bqJXOWdpTwuOSdKo0rq+VZ/yNDtd
-         hylmDrONYUX3nIhy4mKylSWcl36qAWI5AU6SycnFiT+Bnm4jHBF8ndsteZyxx2nFSnvU
-         uDAL0OOtMw8yXTzvh5/5VllIKfrlvzjuljFiOj2R1xhYgUSp0Rmf7b0m6tYbOx27/8H5
-         ULpewjAMPFGvlPdR+GV2X59XBMqPq03pIS2S3Qr/QGIiwT3GrH2nd9HwPMUKZOSEntCt
-         EKzA==
-X-Gm-Message-State: AOAM532EkkYlv4vr0vFc7DhJ/Gofk58kvJ5jyAEASfbG6GM5Sugd9gh/
-        ATv5hW6dSAwjpaQfWqP1R7Mjl6Ck
-X-Google-Smtp-Source: ABdhPJyNKM4sqOTOSrrgLKu7GyOOBqYh9EpoiC0V0A3UviX3MIkXfMB0DJbeKjOQp9wN+auzOr4t2Q==
-X-Received: by 2002:a4a:ae07:: with SMTP id z7mr20059296oom.25.1595867122954;
-        Mon, 27 Jul 2020 09:25:22 -0700 (PDT)
-Received: from localhost.localdomain (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
-        by smtp.gmail.com with ESMTPSA id g2sm3594103otr.72.2020.07.27.09.25.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jul 2020 09:25:22 -0700 (PDT)
-Subject: Re: [PATCH 2/6] rtlwifi: Remove unnecessary parenthese in rtl_dbg
- uses
-To:     Joe Perches <joe@perches.com>, Pkshih <pkshih@realtek.com>
-Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>
-References: <cover.1595706419.git.joe@perches.com>
- <9b2eaedb7ea123ea766a379459b20a9486d1cd41.1595706420.git.joe@perches.com>
- <1595830034.12227.7.camel@realtek.com>
- <ae9d562ec9ef765dddd1491d4cfb5f6d18f7025f.camel@perches.com>
- <1595840670.17671.4.camel@realtek.com>
- <6e0c07bc3d2f48d4a62a9e270366c536cfe56783.camel@perches.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-Message-ID: <374359f9-8199-f4b9-0596-adc41c8c664f@lwfinger.net>
-Date:   Mon, 27 Jul 2020 11:25:21 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        bh=PPeEYgEOG843lwExn3vH3TdfbeyS+fTudAguCt5Ljfc=;
+        b=M08AqhKoOV6zwTb4OpzzpUA5qw/ZBpVNLQY9wVpJ3eFx/k4R0iJFN51+ZZJvlNl4xZ
+         13/xEew2A5ySpiViwuXU5sUMlDMgRb7Ve76rN/jKFeQmoj/uzHGitiFZRvoD5nR+ZPSN
+         glGFTVfnBiYC8coyiq2w0+AqOeEFSmdc5m9KnsUQEABeVRNrDFf1jB3DS04Z//5aZGJ0
+         QxKrWT2GXSbi6CY1r7qD/Cxw9fK6pUVLmlX1ZQXaR7iuheKCkBb761ekx6Ww4myTFllX
+         tUc00/pDJqyz/sikqI0c6UlClgr3XBnpsokiNmemEeGU1a+KoubmLzDdaOV/3zBeHLwZ
+         zRrA==
+X-Gm-Message-State: AOAM531NaB69PhJYmdTyRIy1yPyUMjAP/leMmoyFpSZYl5FRwXrJEJHe
+        WZvBzl7BBveDOrQ+Q2+N5IbK/PpY
+X-Google-Smtp-Source: ABdhPJzzRmezdxVKSZTZaeIS84Z69q46EOT79BUfsm83rZj/pvfsDI6P/YqFVZRp7a4OHU6EjtUubw==
+X-Received: by 2002:ac8:f73:: with SMTP id l48mr22659020qtk.296.1595867133308;
+        Mon, 27 Jul 2020 09:25:33 -0700 (PDT)
+Received: from tannerlove.nyc.corp.google.com ([2620:0:1003:316:f693:9fff:feea:df57])
+        by smtp.gmail.com with ESMTPSA id o37sm16764529qte.9.2020.07.27.09.25.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jul 2020 09:25:32 -0700 (PDT)
+From:   Tanner Love <tannerlove.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, Tanner Love <tannerlove@google.com>
+Subject: [PATCH net 0/4] selftests/net: Fix clang warnings on powerpc
+Date:   Mon, 27 Jul 2020 12:25:27 -0400
+Message-Id: <20200727162531.4089654-1-tannerlove.kernel@gmail.com>
+X-Mailer: git-send-email 2.28.0.rc0.142.g3c755180ce-goog
 MIME-Version: 1.0
-In-Reply-To: <6e0c07bc3d2f48d4a62a9e270366c536cfe56783.camel@perches.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/27/20 9:52 AM, Joe Perches wrote:
-> On Mon, 2020-07-27 at 09:04 +0000, Pkshih wrote:
->> So, I think you would like to have parenthesis intentionally.
->> If so,
->> test1 ? : (test2 ? :)
->> would be better.
->>
->>
->> If not,
->> test1 ? : test2 ? :
->> may be what you want (without any parenthesis).
-> 
-> Use whatever style you like, it's unimportant to me
-> and it's not worth spending any real time on it.
+From: Tanner Love <tannerlove@google.com>
 
-If you are so busy, why did you jump in with patches that you knew I was already 
-working on? You knew because you critiqued my first submission.
+This is essentially a v2 of http://patchwork.ozlabs.org/project/netdev/patch/20200724181757.2331172-1-tannerlove.kernel@gmail.com/, but it has been split up in order to have only one "Fixes" tag per patch.
 
-@Kalle: Please drop my contributions in the sequence "PATCH v2 00/15] rtlwifi: 
-Change RT_TRACE into rtl_dbg for all drivers".
+Tanner Love (4):
+  selftests/net: rxtimestamp: fix clang issues for target arch PowerPC
+  selftests/net: psock_fanout: fix clang issues for target arch PowerPC
+  selftests/net: so_txtime: fix clang issues for target arch PowerPC
+  selftests/net: tcp_mmap: fix clang warning for target arch PowerPC
 
-Larry
+ tools/testing/selftests/net/psock_fanout.c | 3 ++-
+ tools/testing/selftests/net/rxtimestamp.c  | 3 +--
+ tools/testing/selftests/net/so_txtime.c    | 2 +-
+ tools/testing/selftests/net/tcp_mmap.c     | 6 +++---
+ 4 files changed, 7 insertions(+), 7 deletions(-)
+
+-- 
+2.28.0.rc0.142.g3c755180ce-goog
 
