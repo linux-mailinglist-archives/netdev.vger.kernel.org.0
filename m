@@ -2,81 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E447722EAF1
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:15:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D9E622EB1B
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:22:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726555AbgG0LPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 07:15:42 -0400
-Received: from mx.nohats.ca ([193.110.157.68]:45770 "EHLO mx.nohats.ca"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726269AbgG0LPl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 07:15:41 -0400
-X-Greylist: delayed 488 seconds by postgrey-1.27 at vger.kernel.org; Mon, 27 Jul 2020 07:15:40 EDT
-Received: from localhost (localhost [IPv6:::1])
-        by mx.nohats.ca (Postfix) with ESMTP id 4BFcTX22TqzGD5;
-        Mon, 27 Jul 2020 13:07:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nohats.ca;
-        s=default; t=1595848048;
-        bh=ihM5zlpPUwu5qc+sfphnwTk+/+5A/ctwB4iibx2ctqs=;
-        h=From:Subject:Date:References:Cc:In-Reply-To:To;
-        b=hvTLJL6szI+fhbR7O0d4W38tiyGsnzAr8Sr4nSeNjBLxcyQb3xpC1kgrduyEIFMbP
-         5HJq0KSWtqsuud2Zh9POE31YEaskHV43W/LiVufawGhWTmDjnu8CkBXsEzgJKR3QXZ
-         sJ6CrshfQ0p08ZGvzm+sTTyrjhTn4hjGsXOv3tno=
-X-Virus-Scanned: amavisd-new at mx.nohats.ca
-X-Spam-Flag: NO
-X-Spam-Score: 0.695
-X-Spam-Level: 
-X-Spam-Status: No, score=0.695 tagged_above=0 required=5 tests=[BAYES_00=-0.9,
-        DKIM_ADSP_ALL=0.8, RDNS_NONE=0.793, SPF_HELO_NONE=0.001,
-        SPF_NONE=0.001] autolearn=no autolearn_force=no
-Received: from mx.nohats.ca ([IPv6:::1])
-        by localhost (mx.nohats.ca [IPv6:::1]) (amavisd-new, port 10024)
-        with ESMTP id 1G_vQA4Nj0U2; Mon, 27 Jul 2020 13:07:27 +0200 (CEST)
-Received: from bofh.nohats.ca (unknown [193.110.157.194])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.nohats.ca (Postfix) with ESMTPS;
-        Mon, 27 Jul 2020 13:07:27 +0200 (CEST)
-Received: from [193.110.157.210] (unknown [193.110.157.210])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        by bofh.nohats.ca (Postfix) with ESMTPSA id CEC186029BA5;
-        Mon, 27 Jul 2020 07:07:25 -0400 (EDT)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-From:   Paul Wouters <paul@nohats.ca>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [RFC PATCH ipsec] xfrm: don't pass too short packets to userspace with ESPINUDP encap
-Date:   Mon, 27 Jul 2020 07:07:24 -0400
-Message-Id: <6FEDD2D2-CBA1-41E8-85B8-0180EFB4738E@nohats.ca>
-References: <20200727092819.GY20687@gauss3.secunet.de>
-Cc:     Sabrina Dubroca <sd@queasysnail.net>, netdev@vger.kernel.org,
-        Andrew Cagney <andrew.cagney@gmail.com>,
-        Tobias Brunner <tobias@strongswan.org>
-In-Reply-To: <20200727092819.GY20687@gauss3.secunet.de>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-X-Mailer: iPhone Mail (17F80)
+        id S1727975AbgG0LWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 07:22:32 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:42094 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726475AbgG0LWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 07:22:32 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06RBMQ9D020074;
+        Mon, 27 Jul 2020 06:22:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1595848946;
+        bh=cjOHNqbos8U9QHHdm8NoFhXloyp3FqlATA9mWNMvqIg=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=N4VVSDl1shxZ5LVEH2OP072sDDbtFnOt8bxEszU8isU+UtOJyhNOokNJnr69vEF52
+         x5F6EFWED5WrqfpkqwOnthum9hH2SWwTJ+cjmRFGQ5EOrZ2coNx0fIMoTzIgqGDJqY
+         1Ssk6oh+oZvq+EiXnadHkZ47+IucHwkHuBEOatJQ=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06RBMQdf064228
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 27 Jul 2020 06:22:26 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 27
+ Jul 2020 06:22:26 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Mon, 27 Jul 2020 06:22:26 -0500
+Received: from [10.250.53.226] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06RBMQqf092859;
+        Mon, 27 Jul 2020 06:22:26 -0500
+Subject: Re: [net-next v5 PATCH 0/7] Add PRP driver
+To:     David Miller <davem@davemloft.net>
+CC:     <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-api@vger.kernel.org>,
+        <nsekhar@ti.com>, <grygorii.strashko@ti.com>,
+        <vinicius.gomes@intel.com>
+References: <20200722144022.15746-1-m-karicheri2@ti.com>
+ <7133d5ca-e72b-b406-feb2-21429085c96a@ti.com>
+ <20200724.152136.239820662240192829.davem@davemloft.net>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <d2305d25-eeb9-1377-2209-d89bc10710b8@ti.com>
+Date:   Mon, 27 Jul 2020 07:22:20 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20200724.152136.239820662240192829.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Jul 27, 2020, at 05:28, Steffen Klassert <steffen.klassert@secunet.com> w=
-rote:
->=20
-> =EF=BB=BF
->>=20
->> This patch changes that behavior, so that only properly-formed non-ESP
->> messages are passed to userspace. Messages of 8 bytes or less that
->> don't contain a full non-ESP prefix followed by some data (at least
->> one byte) will be dropped and counted as XfrmInHdrError.
->=20
-> I'm ok with that change. But it affects userspace, so the *swan
-> people have to tell if that's ok for them.
+Dave,
 
-
-Libreswan is okay with this, we actually discussed this with Sabrina as a re=
-sult of the TCP work where she noticed the difference.
-
-Paul=
-
+On 7/24/20 6:21 PM, David Miller wrote:
+> From: Murali Karicheri <m-karicheri2@ti.com>
+> Date: Fri, 24 Jul 2020 08:27:01 -0400
+> 
+>> If there are no more comments, can we consider merging this to
+>> net-next? I could re-base and repost if there is any conflict.
+> 
+> I can't apply them until I next merge net into net-next, and I don't
+> know exactly when that will happen yet.
+> 
+> It'd also be nice to get some review and ACK's on this series
+> meanwhile.
+> 
+OK. Thanks.
+-- 
+Murali Karicheri
+Texas Instruments
