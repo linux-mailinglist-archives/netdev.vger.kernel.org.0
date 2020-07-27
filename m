@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD20422E8CA
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 11:23:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EF1B22E8CD
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 11:23:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727990AbgG0JW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 05:22:56 -0400
-Received: from mga05.intel.com ([192.55.52.43]:22631 "EHLO mga05.intel.com"
+        id S1728028AbgG0JXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 05:23:07 -0400
+Received: from mga09.intel.com ([134.134.136.24]:46540 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727847AbgG0JW4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 05:22:56 -0400
-IronPort-SDR: p5u6qSfsOHVuSe0uEAjFD5kb9IiG1SKg7bnWqigipAl8x1FPtfZOFpYTCAg5CTgkih8gL1keda
- 1AKa/NZFlklA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9694"; a="235843537"
+        id S1727847AbgG0JXG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 05:23:06 -0400
+IronPort-SDR: YFk8xEe34AGUJNu/CbTER0QAjfP0tdP4c7kl1yN156BHeTPGFopnr59IFtqdkcQHQ+E6LZZJE2
+ tJKGjQIMj1Qw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9694"; a="152237658"
 X-IronPort-AV: E=Sophos;i="5.75,402,1589266800"; 
-   d="scan'208";a="235843537"
+   d="scan'208";a="152237658"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 02:22:54 -0700
-IronPort-SDR: vZprshVY3CuE5BhRYOp8kgqTnq0zXhi/sFKu7aVPj49RhvMhBaqctSI+zRfw3aWGE+yt18Tz+A
- tUgz/PGgdruA==
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 02:23:06 -0700
+IronPort-SDR: EADzguSBCVBvXtLtLQokGGRkJcM++W6KAf8Gdrx27SurASfO4wAJymTTIC3hqoX1pc3cFo9Bry
+ S6/mw6GcKLog==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,402,1589266800"; 
-   d="scan'208";a="303393782"
+   d="scan'208";a="303393843"
 Received: from pg-nxl3.altera.com ([10.142.129.93])
-  by orsmga002.jf.intel.com with ESMTP; 27 Jul 2020 02:22:51 -0700
+  by orsmga002.jf.intel.com with ESMTP; 27 Jul 2020 02:23:03 -0700
 From:   "Ooi, Joyce" <joyce.ooi@intel.com>
 To:     Thor Thayer <thor.thayer@linux.intel.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -38,9 +38,9 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         See Chin Liang <chin.liang.see@intel.com>,
         Dinh Nguyen <dinh.nguyen@intel.com>,
         Dalon Westergreen <dalon.westergreen@intel.com>
-Subject: [PATCH v5 02/10] net: eth: altera: set rx and tx ring size before init_dma call
-Date:   Mon, 27 Jul 2020 17:21:49 +0800
-Message-Id: <20200727092157.115937-3-joyce.ooi@intel.com>
+Subject: [PATCH v5 03/10] net: eth: altera: fix altera_dmaops declaration
+Date:   Mon, 27 Jul 2020 17:21:50 +0800
+Message-Id: <20200727092157.115937-4-joyce.ooi@intel.com>
 X-Mailer: git-send-email 2.13.0
 In-Reply-To: <20200727092157.115937-1-joyce.ooi@intel.com>
 References: <20200727092157.115937-1-joyce.ooi@intel.com>
@@ -51,8 +51,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dalon Westergreen <dalon.westergreen@intel.com>
 
-It is more appropriate to set the rx and tx ring size before calling
-the init function for the dma.
+The declaration of struct altera_dmaops does not have
+identifier names.  Add identifier names to confrom with
+required coding styles.
 
 Signed-off-by: Dalon Westergreen <dalon.westergreen@intel.com>
 Signed-off-by: Joyce Ooi <joyce.ooi@intel.com>
@@ -63,33 +64,50 @@ v3: no change
 v4: no change
 v5: no change
 ---
- drivers/net/ethernet/altera/altera_tse_main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/altera/altera_tse.h | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index ec2b36e05c3f..a3749ffdcac9 100644
---- a/drivers/net/ethernet/altera/altera_tse_main.c
-+++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -1154,6 +1154,10 @@ static int tse_open(struct net_device *dev)
- 	int i;
- 	unsigned long int flags;
+diff --git a/drivers/net/ethernet/altera/altera_tse.h b/drivers/net/ethernet/altera/altera_tse.h
+index f17acfb579a0..7d0c98fc103e 100644
+--- a/drivers/net/ethernet/altera/altera_tse.h
++++ b/drivers/net/ethernet/altera/altera_tse.h
+@@ -385,20 +385,22 @@ struct altera_tse_private;
+ struct altera_dmaops {
+ 	int altera_dtype;
+ 	int dmamask;
+-	void (*reset_dma)(struct altera_tse_private *);
+-	void (*enable_txirq)(struct altera_tse_private *);
+-	void (*enable_rxirq)(struct altera_tse_private *);
+-	void (*disable_txirq)(struct altera_tse_private *);
+-	void (*disable_rxirq)(struct altera_tse_private *);
+-	void (*clear_txirq)(struct altera_tse_private *);
+-	void (*clear_rxirq)(struct altera_tse_private *);
+-	int (*tx_buffer)(struct altera_tse_private *, struct tse_buffer *);
+-	u32 (*tx_completions)(struct altera_tse_private *);
+-	void (*add_rx_desc)(struct altera_tse_private *, struct tse_buffer *);
+-	u32 (*get_rx_status)(struct altera_tse_private *);
+-	int (*init_dma)(struct altera_tse_private *);
+-	void (*uninit_dma)(struct altera_tse_private *);
+-	void (*start_rxdma)(struct altera_tse_private *);
++	void (*reset_dma)(struct altera_tse_private *priv);
++	void (*enable_txirq)(struct altera_tse_private *priv);
++	void (*enable_rxirq)(struct altera_tse_private *priv);
++	void (*disable_txirq)(struct altera_tse_private *priv);
++	void (*disable_rxirq)(struct altera_tse_private *priv);
++	void (*clear_txirq)(struct altera_tse_private *priv);
++	void (*clear_rxirq)(struct altera_tse_private *priv);
++	int (*tx_buffer)(struct altera_tse_private *priv,
++			 struct tse_buffer *buffer);
++	u32 (*tx_completions)(struct altera_tse_private *priv);
++	void (*add_rx_desc)(struct altera_tse_private *priv,
++			    struct tse_buffer *buffer);
++	u32 (*get_rx_status)(struct altera_tse_private *priv);
++	int (*init_dma)(struct altera_tse_private *priv);
++	void (*uninit_dma)(struct altera_tse_private *priv);
++	void (*start_rxdma)(struct altera_tse_private *priv);
+ };
  
-+	/* set tx and rx ring size */
-+	priv->rx_ring_size = dma_rx_num;
-+	priv->tx_ring_size = dma_tx_num;
-+
- 	/* Reset and configure TSE MAC and probe associated PHY */
- 	ret = priv->dmaops->init_dma(priv);
- 	if (ret != 0) {
-@@ -1196,8 +1200,6 @@ static int tse_open(struct net_device *dev)
- 	priv->dmaops->reset_dma(priv);
- 
- 	/* Create and initialize the TX/RX descriptors chains. */
--	priv->rx_ring_size = dma_rx_num;
--	priv->tx_ring_size = dma_tx_num;
- 	ret = alloc_init_skbufs(priv);
- 	if (ret) {
- 		netdev_err(dev, "DMA descriptors initialization failed\n");
+ /* This structure is private to each device.
 -- 
 2.13.0
 
