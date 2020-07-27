@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CC5022FC75
+	by mail.lfdr.de (Postfix) with ESMTP id BD13522FC76
 	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 00:46:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728016AbgG0WqN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 27 Jul 2020 18:46:13 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:20886 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727843AbgG0WqL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 18:46:11 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RMiuLb008876
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 15:46:09 -0700
+        id S1728019AbgG0WqQ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 27 Jul 2020 18:46:16 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:27886 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726846AbgG0WqM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 18:46:12 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 06RMhEqm012449
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 15:46:10 -0700
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32gjjes9fj-5
+        by m0001303.ppops.net with ESMTP id 32ggdmhknw-8
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 15:46:09 -0700
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 15:46:10 -0700
 Received: from intmgw003.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
  mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1979.3; Mon, 27 Jul 2020 15:44:53 -0700
 Received: by devvm1828.vll1.facebook.com (Postfix, from userid 172786)
-        id 0B08C3FAB6F81; Mon, 27 Jul 2020 15:44:45 -0700 (PDT)
+        id 0F4593FAB6F83; Mon, 27 Jul 2020 15:44:45 -0700 (PDT)
 Smtp-Origin-Hostprefix: devvm
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 Smtp-Origin-Hostname: devvm1828.vll1.facebook.com
 To:     <netdev@vger.kernel.org>
 CC:     <kernel-team@fb.com>
 Smtp-Origin-Cluster: vll1c12
-Subject: [RFC PATCH v2 20/21] mlx5e: hook up the netgpu functions
-Date:   Mon, 27 Jul 2020 15:44:43 -0700
-Message-ID: <20200727224444.2987641-21-jonathan.lemon@gmail.com>
+Subject: [RFC PATCH v2 21/21] netgpu/nvidia: add Nvidia plugin for netgpu
+Date:   Mon, 27 Jul 2020 15:44:44 -0700
+Message-ID: <20200727224444.2987641-22-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200727224444.2987641-1-jonathan.lemon@gmail.com>
 References: <20200727224444.2987641-1-jonathan.lemon@gmail.com>
@@ -42,11 +42,11 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-27_15:2020-07-27,2020-07-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1034 bulkscore=0
- phishscore=0 spamscore=0 adultscore=0 malwarescore=0 suspectscore=3
- lowpriorityscore=0 priorityscore=1501 impostorscore=0 mlxscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007270153
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ malwarescore=0 adultscore=0 spamscore=0 impostorscore=0 mlxscore=0
+ clxscore=1034 bulkscore=0 lowpriorityscore=0 suspectscore=3
+ priorityscore=1501 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2007270153
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -55,353 +55,476 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jonathan Lemon <bsd@fb.com>
 
-Hook up all the netgpu functions to the mlx5e driver.
+This provides the interface between the netgpu core module and the
+nvidia kernel driver.  This should be built as an external module,
+pointing to the nvidia build.  For example:
+
+export NV_PACKAGE_DIR=/w/nvidia/NVIDIA-Linux-x86_64-440.64
+make -C ${kdir} M=`pwd` O=obj $*
 
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  3 +-
- .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  3 +
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 36 ++++++++++++
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 58 ++++++++++++++++---
- .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 19 ++++++
- .../net/ethernet/mellanox/mlx5/core/en_txrx.c | 16 ++++-
- 6 files changed, 125 insertions(+), 10 deletions(-)
+ drivers/misc/netgpu/nvidia/Kbuild        |   9 +
+ drivers/misc/netgpu/nvidia/Kconfig       |  10 +
+ drivers/misc/netgpu/nvidia/netgpu_cuda.c | 416 +++++++++++++++++++++++
+ 3 files changed, 435 insertions(+)
+ create mode 100644 drivers/misc/netgpu/nvidia/Kbuild
+ create mode 100644 drivers/misc/netgpu/nvidia/Kconfig
+ create mode 100644 drivers/misc/netgpu/nvidia/netgpu_cuda.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index ae555c6be847..f6d63e99a6b9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -297,7 +297,8 @@ struct mlx5e_cq_decomp {
- 
- enum mlx5e_dma_map_type {
- 	MLX5E_DMA_MAP_SINGLE,
--	MLX5E_DMA_MAP_PAGE
-+	MLX5E_DMA_MAP_PAGE,
-+	MLX5E_DMA_MAP_FIXED
- };
- 
- struct mlx5e_sq_dma {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-index cf425a60cddc..eb5dbcbc0f58 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-@@ -253,6 +253,9 @@ mlx5e_tx_dma_unmap(struct device *pdev, struct mlx5e_sq_dma *dma)
- 	case MLX5E_DMA_MAP_PAGE:
- 		dma_unmap_page(pdev, dma->addr, dma->size, DMA_TO_DEVICE);
- 		break;
-+	case MLX5E_DMA_MAP_FIXED:
-+		/* DMA mappings are fixed, or managed elsewhere. */
-+		break;
- 	default:
- 		WARN_ONCE(true, "mlx5e_tx_dma_unmap unknown DMA type!\n");
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index d75f22471357..36afe73faa0e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -62,6 +62,7 @@
- #include "en/xsk/setup.h"
- #include "en/xsk/rx.h"
- #include "en/xsk/tx.h"
-+#include "en/netgpu/setup.h"
- #include "en/hv_vhca_stats.h"
- #include "en/devlink.h"
- #include "lib/mlx5.h"
-@@ -1970,6 +1971,24 @@ mlx5e_xsk_optional_open(struct mlx5e_priv *priv, int ix,
- 	return err;
- }
- 
-+static int
-+mlx5e_netgpu_optional_open(struct mlx5e_priv *priv, int ix,
-+			   struct mlx5e_params *params,
-+			   struct mlx5e_channel_param *cparam,
-+			   struct mlx5e_channel *c)
+diff --git a/drivers/misc/netgpu/nvidia/Kbuild b/drivers/misc/netgpu/nvidia/Kbuild
+new file mode 100644
+index 000000000000..10a3b3156f30
+--- /dev/null
++++ b/drivers/misc/netgpu/nvidia/Kbuild
+@@ -0,0 +1,9 @@
++# SPDX-License-Identifier: GPL-2.0-only
++
++nv_dir = $(NV_PACKAGE_DIR)/kernel
++
++KBUILD_EXTRA_SYMBOLS = $(nv_dir)/Module.symvers
++
++obj-m := netgpu_cuda.o
++
++ccflags-y += -I$(nv_dir)
+diff --git a/drivers/misc/netgpu/nvidia/Kconfig b/drivers/misc/netgpu/nvidia/Kconfig
+new file mode 100644
+index 000000000000..6bb8be158943
+--- /dev/null
++++ b/drivers/misc/netgpu/nvidia/Kconfig
+@@ -0,0 +1,10 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# NetGPU framework
++#
++
++config NETGPU_CUDA
++	tristate "Network/GPU driver for Nvidia"
++	depends on NETGPU && m
++	help
++	  Experimental Network / GPU driver for Nvidia
+diff --git a/drivers/misc/netgpu/nvidia/netgpu_cuda.c b/drivers/misc/netgpu/nvidia/netgpu_cuda.c
+new file mode 100644
+index 000000000000..2cd93dab52ad
+--- /dev/null
++++ b/drivers/misc/netgpu/nvidia/netgpu_cuda.c
+@@ -0,0 +1,416 @@
++#include <linux/types.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/uio.h>
++#include <linux/errno.h>
++#include <linux/netdevice.h>
++#include <linux/pci.h>
++#include <linux/memory.h>
++#include <linux/interval_tree.h>
++
++#include <net/netgpu.h>
++#include "../netgpu_priv.h"
++
++#include "nvidia/nv-p2p.h"
++
++/* nvidia GPU uses 64K pages */
++#define GPU_PAGE_SHIFT		16
++#define GPU_PAGE_SIZE		(1UL << GPU_PAGE_SHIFT)
++#define GPU_PAGE_MASK		(GPU_PAGE_SIZE - 1)
++
++struct netgpu_cuda_region {
++	struct netgpu_region r;				/* must be first */
++	struct rb_root_cached root;
++	struct nvidia_p2p_page_table *gpu_pgtbl;
++};
++
++struct netgpu_cuda_dmamap {
++	struct netgpu_dmamap map;			/* must be first */
++	unsigned pg_shift;
++	unsigned long pg_mask;
++	u64 *dma;
++	struct nvidia_p2p_dma_mapping *gpu_map;
++};
++
++/* page_range represents one contiguous GPU PA region */
++struct netgpu_page_range {
++	unsigned long pfn;
++	struct resource *res;
++	struct interval_tree_node va_node;
++};
++
++static int nvidia_pg_shift[] = {
++	[NVIDIA_P2P_PAGE_SIZE_4KB]   = 12,
++	[NVIDIA_P2P_PAGE_SIZE_64KB]  = 16,
++	[NVIDIA_P2P_PAGE_SIZE_128KB] = 17,
++};
++
++#define node2page_range(itn) \
++	container_of(itn, struct netgpu_page_range, va_node)
++
++#define region_remove_each(root, first, last, itn)			\
++	while ((itn = interval_tree_iter_first(root, first, last)) &&	\
++	       (interval_tree_remove(itn, root), 1))
++
++#define cuda_region_remove_each(r, itn)					\
++	region_remove_each(&cuda_region(r)->root, r->start,		\
++			   r->start + (r->nr_pages << PAGE_SHIFT) - 1,	\
++			   itn)
++
++static inline struct netgpu_cuda_region *
++cuda_region(struct netgpu_region *r)
 +{
-+	struct netgpu_ifq *ifq;
-+	int err = 0;
-+
-+	ifq = mlx5e_netgpu_get_ifq(params, params->xsk, ix);
-+
-+	if (ifq)
-+		err = mlx5e_open_netgpu(priv, params, ifq, c);
-+
-+	return err;
++	return (struct netgpu_cuda_region *)r;
 +}
 +
++static inline struct netgpu_cuda_dmamap *
++cuda_map(struct netgpu_dmamap *map)
++{
++	return (struct netgpu_cuda_dmamap *)map;
++}
 +
- static int mlx5e_open_channel(struct mlx5e_priv *priv, int ix,
- 			      struct mlx5e_params *params,
- 			      struct mlx5e_channel_param *cparam,
-@@ -2017,6 +2036,11 @@ static int mlx5e_open_channel(struct mlx5e_priv *priv, int ix,
- 			goto err_close_queues;
- 	}
- 
-+	/* This opens a second set of shadow queues for netgpu */
-+	err = mlx5e_netgpu_optional_open(priv, ix, params, cparam, c);
-+	if (unlikely(err))
-+		goto err_close_queues;
++static inline struct netgpu_page_range *
++region_find(struct netgpu_region *r, unsigned long start, int count)
++{
++	struct interval_tree_node *itn;
++	unsigned long last;
 +
- 	*cp = c;
- 
- 	return 0;
-@@ -2053,6 +2077,9 @@ static void mlx5e_deactivate_channel(struct mlx5e_channel *c)
- 	if (test_bit(MLX5E_CHANNEL_STATE_XSK, c->state))
- 		mlx5e_deactivate_xsk(c);
- 
-+	if (test_bit(MLX5E_CHANNEL_STATE_NETGPU, c->state))
-+		mlx5e_deactivate_netgpu(c);
++	last = start + count * PAGE_SIZE - 1;
 +
- 	mlx5e_deactivate_rq(&c->rq);
- 	mlx5e_deactivate_icosq(&c->async_icosq);
- 	mlx5e_deactivate_icosq(&c->icosq);
-@@ -2064,6 +2091,10 @@ static void mlx5e_close_channel(struct mlx5e_channel *c)
- {
- 	if (test_bit(MLX5E_CHANNEL_STATE_XSK, c->state))
- 		mlx5e_close_xsk(c);
++	itn = interval_tree_iter_first(&cuda_region(r)->root, start, last);
++	return itn ? node2page_range(itn) : 0;
++}
 +
-+	if (test_bit(MLX5E_CHANNEL_STATE_NETGPU, c->state))
-+		mlx5e_close_netgpu(c);
++static dma_addr_t
++netgpu_cuda_get_dma(struct netgpu_dmamap *map, unsigned long addr)
++{
++	unsigned long base, idx;
 +
- 	mlx5e_close_queues(c);
- 	netif_napi_del(&c->napi);
- 
-@@ -3042,11 +3073,13 @@ void mlx5e_activate_priv_channels(struct mlx5e_priv *priv)
- 	mlx5e_redirect_rqts_to_channels(priv, &priv->channels);
- 
- 	mlx5e_xsk_redirect_rqts_to_channels(priv, &priv->channels);
-+	mlx5e_netgpu_redirect_rqts_to_channels(priv, &priv->channels);
- }
- 
- void mlx5e_deactivate_priv_channels(struct mlx5e_priv *priv)
- {
- 	mlx5e_xsk_redirect_rqts_to_drop(priv, &priv->channels);
-+	mlx5e_netgpu_redirect_rqts_to_drop(priv, &priv->channels);
- 
- 	mlx5e_redirect_rqts_to_drop(priv);
- 
-@@ -4581,6 +4614,9 @@ static int mlx5e_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- 	case XDP_SETUP_XSK_UMEM:
- 		return mlx5e_xsk_setup_umem(dev, xdp->xsk.umem,
- 					    xdp->xsk.queue_id);
-+	case XDP_SETUP_NETGPU:
-+		return mlx5e_netgpu_setup_ifq(dev, xdp->netgpu.ifq,
-+					      &xdp->netgpu.queue_id);
- 	default:
- 		return -EINVAL;
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 74860f3827b1..746fbb417c3a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -50,6 +50,7 @@
- #include "en/xdp.h"
- #include "en/xsk/rx.h"
- #include "en/health.h"
-+#include "en/netgpu/setup.h"
- 
- static inline bool mlx5e_rx_hw_stamp(struct hwtstamp_config *config)
- {
-@@ -266,8 +267,11 @@ static inline int mlx5e_page_alloc(struct mlx5e_rq *rq,
- {
- 	if (rq->umem)
- 		return mlx5e_xsk_page_alloc_umem(rq, dma_info);
--	else
--		return mlx5e_page_alloc_pool(rq, dma_info);
++	base = addr - map->start;
++	idx = base >> cuda_map(map)->pg_shift;
++	return cuda_map(map)->dma[idx] + (base & cuda_map(map)->pg_mask);
++}
 +
-+	if (dma_info->netgpu_source)
-+		return mlx5e_netgpu_get_page(rq, dma_info);
++static int
++netgpu_cuda_get_page(struct netgpu_dmamap *map, unsigned long addr,
++		     struct page **page, dma_addr_t *dma)
++{
++	struct netgpu_page_range *pr;
++	unsigned long idx;
 +
-+	return mlx5e_page_alloc_pool(rq, dma_info);
- }
- 
- void mlx5e_page_dma_unmap(struct mlx5e_rq *rq, struct mlx5e_dma_info *dma_info)
-@@ -279,6 +283,9 @@ void mlx5e_page_release_dynamic(struct mlx5e_rq *rq,
- 				struct mlx5e_dma_info *dma_info,
- 				bool recycle)
- {
-+	if (dma_info->netgpu_source)
-+		return mlx5e_netgpu_put_page(rq, dma_info, recycle);
++	pr = region_find(map->r, addr, 1);
++	if (!pr)
++		return -EFAULT;
++	idx = (addr - pr->va_node.start) >> PAGE_SHIFT;
 +
- 	if (likely(recycle)) {
- 		if (mlx5e_rx_cache_put(rq, dma_info))
- 			return;
-@@ -394,6 +401,9 @@ static int mlx5e_alloc_rx_wqes(struct mlx5e_rq *rq, u16 ix, u8 wqe_bulk)
- 			return -ENOMEM;
- 	}
- 
-+	if (rq->netgpu && !mlx5e_netgpu_avail(rq, wqe_bulk))
++	*page = pfn_to_page(pr->pfn + idx);
++	get_page(*page);
++	*dma = netgpu_cuda_get_dma(map, addr);
++
++	return 0;
++}
++
++static void
++region_get_pages(struct page **pages, unsigned long pfn, int n)
++{
++	struct page *p;
++	int i;
++
++	for (i = 0; i < n; i++) {
++		p = pfn_to_page(pfn + i);
++		get_page(p);
++		pages[i] = p;
++	}
++}
++
++static int
++netgpu_cuda_get_pages(struct netgpu_region *r, struct page **pages,
++		      unsigned long addr, int count)
++{
++	struct netgpu_page_range *pr;
++	unsigned long idx, end;
++	int n;
++
++	pr = region_find(r, addr, count);
++	if (!pr)
++		return -EFAULT;
++
++	idx = (addr - pr->va_node.start) >> PAGE_SHIFT;
++	end = (pr->va_node.last - pr->va_node.start) >> PAGE_SHIFT;
++	n = end - idx + 1;
++	n = min(count, n);
++
++	region_get_pages(pages, pr->pfn + idx, n);
++
++	return n;
++}
++
++static void
++netgpu_cuda_unmap_region(struct netgpu_dmamap *map)
++{
++	struct pci_dev *pdev;
++	int err;
++
++	pdev = cuda_map(map)->gpu_map->pci_dev;
++
++	err = nvidia_p2p_dma_unmap_pages(pdev, cuda_region(map->r)->gpu_pgtbl,
++					 cuda_map(map)->gpu_map);
++	if (err)
++		pr_err("nvidia_p2p_dma_unmap failed: %d\n", err);
++}
++
++static struct netgpu_dmamap *
++netgpu_cuda_map_region(struct netgpu_region *r, struct device *device)
++{
++	struct netgpu_cuda_region *cr = cuda_region(r);
++	struct nvidia_p2p_dma_mapping *gpu_map;
++	struct netgpu_dmamap *map;
++	struct pci_dev *pdev;
++	int err;
++
++	map = kmalloc(sizeof(struct netgpu_cuda_dmamap), GFP_KERNEL);
++	if (!map)
++		return ERR_PTR(-ENOMEM);
++
++	pdev = to_pci_dev(device);
++
++	/*
++	 * takes PA from pgtbl, performs mapping, saves mapping
++	 * dma_mapping holds dma mapped addresses, and pdev.
++	 * mem_info contains pgtbl and mapping list.  mapping is added to list.
++	 * rm_p2p_dma_map_pages() does the work.
++	 */
++	err = nvidia_p2p_dma_map_pages(pdev, cr->gpu_pgtbl, &gpu_map);
++	if (err) {
++		kfree(map);
++		return ERR_PTR(err);
++	}
++
++	cuda_map(map)->gpu_map = gpu_map;
++	cuda_map(map)->dma = gpu_map->dma_addresses;
++	cuda_map(map)->pg_shift = nvidia_pg_shift[gpu_map->page_size_type];
++	cuda_map(map)->pg_mask = (1UL << cuda_map(map)->pg_shift) - 1;
++
++	return map;
++}
++
++static struct resource *
++netgpu_add_pages(int nid, u64 start, u64 end)
++{
++	struct mhp_params params = { .pgprot = PAGE_KERNEL };
++
++	return add_memory_pages(nid, start, end - start, &params);
++}
++
++static void
++netgpu_free_pages(struct resource *res)
++{
++	release_memory_pages(res);
++}
++
++static void
++netgpu_free_page_range(struct netgpu_page_range *pr)
++{
++	unsigned long pfn, pfn_end;
++	struct page *page;
++
++	pfn_end = pr->pfn +
++		  ((pr->va_node.last + 1 - pr->va_node.start) >> PAGE_SHIFT);
++
++	/* XXX verify page count is 2! */
++	for (pfn = pr->pfn; pfn < pfn_end; pfn++) {
++		page = pfn_to_page(pfn);
++		set_page_count(page, 0);
++	}
++	netgpu_free_pages(pr->res);
++	kfree(pr);
++}
++
++static void
++netgpu_cuda_release_pages(struct netgpu_region *r)
++{
++	struct interval_tree_node *va_node;
++
++	cuda_region_remove_each(r, va_node)
++		netgpu_free_page_range(node2page_range(va_node));
++}
++
++static void
++netgpu_init_pages(u64 va, unsigned long pfn_start, unsigned long pfn_end)
++{
++	unsigned long pfn;
++	struct page *page;
++
++	for (pfn = pfn_start; pfn < pfn_end; pfn++) {
++		page = pfn_to_page(pfn);
++		mm_zero_struct_page(page);
++
++		set_page_count(page, 2);	/* matches host logic */
++		page->page_type = 7;		/* XXX differential flag */
++		__SetPageReserved(page);
++
++		SetPagePrivate(page);
++		set_page_private(page, va);
++		va += PAGE_SIZE;
++	}
++}
++
++static int
++netgpu_add_page_range(struct netgpu_region *r, u64 va, u64 start, u64 end)
++{
++	struct netgpu_page_range *pr;
++	struct resource *res;
++
++	pr = kmalloc(sizeof(*pr), GFP_KERNEL);
++	if (!pr)
 +		return -ENOMEM;
 +
- 	for (i = 0; i < wqe_bulk; i++) {
- 		struct mlx5e_rx_wqe_cyc *wqe = mlx5_wq_cyc_get_wqe(wq, ix + i);
- 
-@@ -402,6 +412,9 @@ static int mlx5e_alloc_rx_wqes(struct mlx5e_rq *rq, u16 ix, u8 wqe_bulk)
- 			goto free_wqes;
- 	}
- 
-+	if (rq->netgpu)
-+		mlx5e_netgpu_taken(rq);
-+
- 	return 0;
- 
- free_wqes:
-@@ -416,12 +429,18 @@ mlx5e_add_skb_frag(struct mlx5e_rq *rq, struct sk_buff *skb,
- 		   struct mlx5e_dma_info *di, u32 frag_offset, u32 len,
- 		   unsigned int truesize)
- {
--	dma_sync_single_for_cpu(rq->pdev,
--				di->addr + frag_offset,
--				len, DMA_FROM_DEVICE);
--	page_ref_inc(di->page);
- 	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
- 			di->page, frag_offset, len, truesize);
-+
-+	if (skb->zc_netgpu) {
-+		di->page = NULL;
-+	} else {
-+		page_ref_inc(di->page);
-+
-+		dma_sync_single_for_cpu(rq->pdev,
-+					di->addr + frag_offset,
-+					len, DMA_FROM_DEVICE);
-+	}
- }
- 
- static inline void
-@@ -1152,16 +1171,26 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
- {
- 	struct mlx5e_rq_frag_info *frag_info = &rq->wqe.info.arr[0];
- 	struct mlx5e_wqe_frag_info *head_wi = wi;
--	u16 headlen      = min_t(u32, MLX5E_RX_MAX_HEAD, cqe_bcnt);
-+	bool hd_split	 = rq->netgpu;
-+	u16 header_len	 = hd_split ? TOTAL_HEADERS : MLX5E_RX_MAX_HEAD;
-+	u16 headlen      = min_t(u32, header_len, cqe_bcnt);
- 	u16 frag_headlen = headlen;
- 	u16 byte_cnt     = cqe_bcnt - headlen;
- 	struct sk_buff *skb;
- 
-+	/* RST packets may have short headers (74) and no payload */
-+	if (hd_split && headlen != TOTAL_HEADERS && byte_cnt) {
-+		/* XXX add drop counter */
-+		pr_warn_once("BAD hd_split: headlen %d != %d\n",
-+			     headlen, TOTAL_HEADERS);
-+		return NULL;
++	res = netgpu_add_pages(numa_mem_id(), start, end);
++	if (IS_ERR(res)) {
++		kfree(pr);
++		return PTR_ERR(res);
 +	}
 +
- 	/* XDP is not supported in this configuration, as incoming packets
- 	 * might spread among multiple pages.
- 	 */
- 	skb = napi_alloc_skb(rq->cq.napi,
--			     ALIGN(MLX5E_RX_MAX_HEAD, sizeof(long)));
-+			     ALIGN(header_len, sizeof(long)));
- 	if (unlikely(!skb)) {
- 		rq->stats->buff_alloc_err++;
- 		return NULL;
-@@ -1169,6 +1198,19 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
- 
- 	prefetchw(skb->data);
- 
-+	if (hd_split) {
-+		/* first frag is only headers, should skip this frag and
-+		 * assume that all of the headers already copied to the skb
-+		 * inline data.
-+		 */
-+		frag_info++;
-+		frag_headlen = 0;
-+		wi++;
++	pr->pfn = PHYS_PFN(start);
++	pr->va_node.start = va;
++	pr->va_node.last = va + (end - start) - 1;
++	pr->res = res;
 +
-+		skb->zc_netgpu = 1;
-+		skb_shinfo(skb)->destructor_arg = rq->netgpu;
++	netgpu_init_pages(va, PHYS_PFN(start), PHYS_PFN(end));
++
++	interval_tree_insert(&pr->va_node, &cuda_region(r)->root);
++
++	return 0;
++}
++
++static void
++netgpu_cuda_pgtbl_cb(void *data)
++{
++	struct netgpu_region *r = data;
++
++	/* This is required - nvidia gets unhappy if the page table is
++	 * freed from the page table callback.
++	 */
++	cuda_region(r)->gpu_pgtbl = NULL;
++	netgpu_detach_region(r);
++}
++
++static struct netgpu_region *
++netgpu_cuda_add_region(struct netgpu_mem *mem, const struct iovec *iov)
++{
++	struct nvidia_p2p_page_table *gpu_pgtbl = NULL;
++	u64 va, pa, len, start, end;
++	struct netgpu_region *r;
++	int err, i, gpu_pgsize;
++
++	err = -ENOMEM;
++	r = kzalloc(sizeof(struct netgpu_cuda_region), GFP_KERNEL);
++	if (!r)
++		return ERR_PTR(err);
++
++	start = (u64)iov->iov_base;
++	r->start = round_down(start, GPU_PAGE_SIZE);
++	len = round_up(start - r->start + iov->iov_len, GPU_PAGE_SIZE);
++	r->nr_pages = len >> PAGE_SHIFT;
++
++	r->mem = mem;
++	INIT_LIST_HEAD(&r->ctx_list);
++	INIT_LIST_HEAD(&r->dma_list);
++	spin_lock_init(&r->lock);
++
++	/*
++	 * allocates page table, sets gpu_uuid to owning gpu.
++	 * allocates page array, set PA for each page.
++	 * sets page_size (64K here)
++	 * rm_p2p_get_pages() does the actual work.
++	 */
++	err = nvidia_p2p_get_pages(0, 0, r->start, len, &gpu_pgtbl,
++				   netgpu_cuda_pgtbl_cb, r);
++	if (err)
++		goto out;
++
++	/* gpu pgtbl owns r, will free via netgpu_cuda_pgtbl_cb */
++	cuda_region(r)->gpu_pgtbl = gpu_pgtbl;
++
++	if (!NVIDIA_P2P_PAGE_TABLE_VERSION_COMPATIBLE(gpu_pgtbl)) {
++		pr_err("incompatible page table\n");
++		err = -EINVAL;
++		goto out;
 +	}
 +
- 	while (byte_cnt) {
- 		u16 frag_consumed_bytes =
- 			min_t(u16, frag_info->frag_size - frag_headlen, byte_cnt);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-index da596de3abba..4a5f884771e4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-@@ -39,6 +39,7 @@
- #include "ipoib/ipoib.h"
- #include "en_accel/en_accel.h"
- #include "lib/clock.h"
-+#include "en/netgpu/setup.h"
- 
- static void mlx5e_dma_unmap_wqe_err(struct mlx5e_txqsq *sq, u8 num_dma)
- {
-@@ -207,6 +208,24 @@ mlx5e_txwqe_build_dsegs(struct mlx5e_txqsq *sq, struct sk_buff *skb,
- 		dseg++;
- 	}
- 
-+	if (skb_netdma(skb)) {
-+		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-+			skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-+			int fsz = skb_frag_size(frag);
++	gpu_pgsize = 1UL << nvidia_pg_shift[gpu_pgtbl->page_size];
++	if (r->nr_pages != gpu_pgtbl->entries * gpu_pgsize / PAGE_SIZE) {
++		pr_err("GPU page count %ld != host page count %ld\n",
++		       gpu_pgtbl->entries * gpu_pgsize / PAGE_SIZE,
++		       r->nr_pages);
++		err = -EINVAL;
++		goto out;
++	}
 +
-+			dma_addr = mlx5e_netgpu_get_dma(skb, frag);
++	start = U64_MAX;
++	end = 0;
 +
-+			dseg->addr       = cpu_to_be64(dma_addr);
-+			dseg->lkey       = sq->mkey_be;
-+			dseg->byte_count = cpu_to_be32(fsz);
-+
-+			mlx5e_dma_push(sq, dma_addr, fsz, MLX5E_DMA_MAP_FIXED);
-+			num_dma++;
-+			dseg++;
++	for (i = 0; i < gpu_pgtbl->entries; i++) {
++		pa = gpu_pgtbl->pages[i]->physical_address;
++		if (pa != end) {
++			if (end) {
++				err = netgpu_add_page_range(r, va, start, end);
++				if (err)
++					goto out;
++			}
++			start = pa;
++			va = r->start + i * gpu_pgsize;
 +		}
-+		return num_dma;
++		end = pa + gpu_pgsize;
 +	}
++	err = netgpu_add_page_range(r, va, start, end);
++	if (err)
++		goto out;
 +
- 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
- 		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
- 		int fsz = skb_frag_size(frag);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-index e3dbab2a294c..383289e85b01 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-@@ -122,6 +122,7 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 	struct mlx5e_rq *xskrq = &c->xskrq;
- 	struct mlx5e_rq *rq = &c->rq;
- 	bool xsk_open = test_bit(MLX5E_CHANNEL_STATE_XSK, c->state);
-+	bool netgpu_open = test_bit(MLX5E_CHANNEL_STATE_NETGPU, c->state);
- 	bool aff_change = false;
- 	bool busy_xsk = false;
- 	bool busy = false;
-@@ -139,7 +140,7 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 		busy |= mlx5e_poll_xdpsq_cq(&c->rq_xdpsq.cq);
- 
- 	if (likely(budget)) { /* budget=0 means: don't poll rx rings */
--		if (xsk_open)
-+		if (xsk_open || netgpu_open)
- 			work_done = mlx5e_poll_rx_cq(&xskrq->cq, budget);
- 
- 		if (likely(budget - work_done))
-@@ -159,6 +160,14 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 				mlx5e_post_rx_mpwqes,
- 				mlx5e_post_rx_wqes,
- 				rq);
++	return r;
 +
-+	if (netgpu_open) {
-+		busy_xsk |= INDIRECT_CALL_2(xskrq->post_wqes,
-+					    mlx5e_post_rx_mpwqes,
-+					    mlx5e_post_rx_wqes,
-+					    xskrq);
-+	}
++out:
++	netgpu_cuda_release_pages(r);
++	if (gpu_pgtbl)
++		nvidia_p2p_put_pages(0, 0, r->start, gpu_pgtbl);
++	kfree(r);
 +
- 	if (xsk_open) {
- 		busy |= mlx5e_poll_xdpsq_cq(&xsksq->cq);
- 		busy_xsk |= mlx5e_napi_xsk_post(xsksq, xskrq);
-@@ -192,6 +201,11 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 	mlx5e_cq_arm(&c->async_icosq.cq);
- 	mlx5e_cq_arm(&c->xdpsq.cq);
- 
-+	if (netgpu_open) {
-+		mlx5e_handle_rx_dim(xskrq);
-+		mlx5e_cq_arm(&xskrq->cq);
-+	}
++	return ERR_PTR(err);
++}
 +
- 	if (xsk_open) {
- 		mlx5e_handle_rx_dim(xskrq);
- 		mlx5e_cq_arm(&xsksq->cq);
++static void
++netgpu_cuda_free_region(struct netgpu_mem *mem, struct netgpu_region *r)
++{
++	netgpu_cuda_release_pages(r);
++	if (cuda_region(r)->gpu_pgtbl)
++		nvidia_p2p_put_pages(0, 0, r->start, cuda_region(r)->gpu_pgtbl);
++	kfree(r);
++}
++
++struct netgpu_ops cuda_ops = {
++	.owner		= THIS_MODULE,
++	.memtype	= NETGPU_MEMTYPE_CUDA,
++	.add_region	= netgpu_cuda_add_region,
++	.free_region	= netgpu_cuda_free_region,
++	.map_region	= netgpu_cuda_map_region,
++	.unmap_region	= netgpu_cuda_unmap_region,
++	.get_dma	= netgpu_cuda_get_dma,
++	.get_page	= netgpu_cuda_get_page,
++	.get_pages	= netgpu_cuda_get_pages,
++};
++
++static int __init
++netgpu_cuda_init(void)
++{
++	return netgpu_register(&cuda_ops);
++}
++
++static void __exit
++netgpu_cuda_fini(void)
++{
++	netgpu_unregister(cuda_ops.memtype);
++}
++
++module_init(netgpu_cuda_init);
++module_exit(netgpu_cuda_fini);
++MODULE_LICENSE("GPL v2");
 -- 
 2.24.1
 
