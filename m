@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0600C22E866
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 11:06:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A7B222E86B
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 11:06:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727877AbgG0JGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 05:06:21 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:53760 "EHLO
+        id S1727898AbgG0JGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 05:06:31 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:53776 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727844AbgG0JGS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 05:06:18 -0400
+        with ESMTP id S1727860AbgG0JGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 05:06:19 -0400
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1595840777;
@@ -18,21 +18,21 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bViW/fwyNVYpaLBkhNhKImtxPFkf0fQzR+cUGcCym+4=;
-        b=sDNgB2R5k9MvN/pW40+ZAY4gIP8MoET/O1NbwaAKew1xBudc9HnQHErwZ3eJU8MuKGeNsn
-        B2MtXmeDaefsuOal5zW9x8s874fSb+T1Fc/AIwd0k4o+ezhowBcRpdl7vDENa9QxPbonly
-        e2h9hqrl1i93a3vg1l5NVA0l4kdXgkv3lKOsRfXuALTCwkeAdZcZhBGU0zzfBWMrUSIJvM
-        w6x5SS2TGUrvBtC9nkSybGXg0aL5S4eUjd0yNgNUNz5U9dCBxnNrWyudAU90JMf79VcYmo
-        ofLQ1LqhlmQjUpUp/CC5okSx9XsHT8SaWPZ+Lxw18WQRzDTKsm9RB6JVExoTBQ==
+        bh=JAnPHtSUc1fs2SVKqS8jKOoMEWVQ9SYEz1LHwQt13cI=;
+        b=fa58dvSxsyTv6XMEcjOXhEKFxtzCzH8O1cZN3rZWvVjGyGccvyYiN4q+fLjI4D/RDmaNje
+        28znmyBZcyvAn//0t2TRdK2TPiVFupEsqY3Xdp6N0XurdeVmrPqZ4C3spm0sAHuCetgNCs
+        vB8r2XlHcsqRJ5qaldNLEgAf2UA1ZMOGABhXfXQvY9kZhcpwrOuIa8LCAmt+27AGqwreJ8
+        7m0SlyVLenEKibDnxf3bnQya2PnEXvkkFTbIvu3RdGED8fgvIXk8FU7ft6QiDednlttMp2
+        X6Pq/Nevle/WWI9XTRY3vnh3WkUcDZQ1m1vPm5YgqbkStmAG7jBoj3FheDmqWw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1595840777;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bViW/fwyNVYpaLBkhNhKImtxPFkf0fQzR+cUGcCym+4=;
-        b=LfowtaJ1RFU6/x9WYVcJ1/pM3KikQXjczFKNH+dRrBDsmf2ih1sixXAj/S68AIYl3oWNWn
-        HmbUMqDt61uOv4Bg==
+        bh=JAnPHtSUc1fs2SVKqS8jKOoMEWVQ9SYEz1LHwQt13cI=;
+        b=bYEQCvpuKP18wuin/xbKve4v7fC9F7bbc9/sJnrgJPh1bRt0y6dkltYykylK46dEZOpJa5
+        Pr46HgjqAz9UmpBg==
 To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -47,9 +47,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
         Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v2 5/9] ethernet: ti: am65-cpts: Use generic helper function
-Date:   Mon, 27 Jul 2020 11:05:57 +0200
-Message-Id: <20200727090601.6500-6-kurt@linutronix.de>
+Subject: [PATCH v2 6/9] ethernet: ti: cpts: Use generic helper function
+Date:   Mon, 27 Jul 2020 11:05:58 +0200
+Message-Id: <20200727090601.6500-7-kurt@linutronix.de>
 In-Reply-To: <20200727090601.6500-1-kurt@linutronix.de>
 References: <20200727090601.6500-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -64,20 +64,20 @@ functions were introduced. Use them.
 
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- drivers/net/ethernet/ti/am65-cpts.c | 37 +++++++----------------------
+ drivers/net/ethernet/ti/cpts.c | 37 +++++++++-------------------------
  1 file changed, 9 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
-index c59a289e428c..2548324afa42 100644
---- a/drivers/net/ethernet/ti/am65-cpts.c
-+++ b/drivers/net/ethernet/ti/am65-cpts.c
-@@ -748,42 +748,23 @@ EXPORT_SYMBOL_GPL(am65_cpts_rx_enable);
- static int am65_skb_get_mtype_seqid(struct sk_buff *skb, u32 *mtype_seqid)
+diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
+index 7c55d395de2c..2c5c05620e6e 100644
+--- a/drivers/net/ethernet/ti/cpts.c
++++ b/drivers/net/ethernet/ti/cpts.c
+@@ -446,41 +446,22 @@ static const struct ptp_clock_info cpts_info = {
+ static int cpts_skb_get_mtype_seqid(struct sk_buff *skb, u32 *mtype_seqid)
  {
  	unsigned int ptp_class = ptp_classify_raw(skb);
 -	u8 *msgtype, *data = skb->data;
 -	unsigned int offset = 0;
--	__be16 *seqid;
+-	u16 *seqid;
 +	struct ptp_header *hdr;
 +	u8 msgtype;
 +	u16 seqid;
@@ -114,12 +114,11 @@ index c59a289e428c..2548324afa42 100644
 +	msgtype = ptp_get_msgtype(hdr, ptp_class);
 +	seqid	= be16_to_cpu(hdr->sequence_id);
  
--	seqid = (__be16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
--	*mtype_seqid = (*msgtype << AM65_CPTS_EVENT_1_MESSAGE_TYPE_SHIFT) &
-+	*mtype_seqid  = (msgtype << AM65_CPTS_EVENT_1_MESSAGE_TYPE_SHIFT) &
- 			AM65_CPTS_EVENT_1_MESSAGE_TYPE_MASK;
--	*mtype_seqid |= (ntohs(*seqid) & AM65_CPTS_EVENT_1_SEQUENCE_ID_MASK);
-+	*mtype_seqid |= (seqid & AM65_CPTS_EVENT_1_SEQUENCE_ID_MASK);
+-	seqid = (u16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
+-	*mtype_seqid = (*msgtype & MESSAGE_TYPE_MASK) << MESSAGE_TYPE_SHIFT;
+-	*mtype_seqid |= (ntohs(*seqid) & SEQUENCE_ID_MASK) << SEQUENCE_ID_SHIFT;
++	*mtype_seqid  = (msgtype & MESSAGE_TYPE_MASK) << MESSAGE_TYPE_SHIFT;
++	*mtype_seqid |= (seqid & SEQUENCE_ID_MASK) << SEQUENCE_ID_SHIFT;
  
  	return 1;
  }
