@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4622922FD3B
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:26:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 053A022FD45
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:26:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728583AbgG0XZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 19:25:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36570 "EHLO mail.kernel.org"
+        id S1728726AbgG0X0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 19:26:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36582 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728571AbgG0XZS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 19:25:18 -0400
+        id S1728578AbgG0XZT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 19:25:19 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DD94B208E4;
-        Mon, 27 Jul 2020 23:25:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 27AAD20786;
+        Mon, 27 Jul 2020 23:25:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595892317;
-        bh=eMP58QO9Rlabxhp3ZpKPfysVhjN0uuIbRwVWnL00Zh4=;
+        s=default; t=1595892319;
+        bh=bTEMXvdIvyE2iqBAS9NC+cQYJQ88tOHYymR7wqxovZk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H6unBQStAoKVqj7CLUumZk9Grm5dRPP3F1p2wyPJq0gqa7uRmIIjDdP9v4o+0Ti0A
-         pc6xmD27wjNEY0E3kZr3SDKAq46ce+MNv+twFCjZl1yIzNWKmAXTINYHg9aZ1NR5Yt
-         98agtW5chnpdu6PsTfkBV+g7aVzm8OIy/8XKvbok=
+        b=16ihEelAH6NvLn5+jB5FGafX/mWF2Nz+Q/XM9WTEyELwsCGHy5eK+diHE6RAOCDJd
+         eVARp8lNVP3K62PgQh0H8wvtrbma2nNUXPSEjdZZy0lE/gz7cPQJzknR/HZrGCUo2l
+         yGhcQEOGcPI/+9/vgW+TKEC12Tv35/TlOVuQ6sMY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Laurence Oberman <loberman@redhat.com>,
+Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 2/7] qed: Disable "MFW indication via attention" SPAM every 5 minutes
-Date:   Mon, 27 Jul 2020 19:25:09 -0400
-Message-Id: <20200727232514.718265-2-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 3/7] nfc: s3fwrn5: add missing release on skb in s3fwrn5_recv_frame
+Date:   Mon, 27 Jul 2020 19:25:10 -0400
+Message-Id: <20200727232514.718265-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200727232514.718265-1-sashal@kernel.org>
 References: <20200727232514.718265-1-sashal@kernel.org>
@@ -43,36 +44,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Laurence Oberman <loberman@redhat.com>
+From: Navid Emamdoost <navid.emamdoost@gmail.com>
 
-[ Upstream commit 1d61e21852d3161f234b9656797669fe185c251b ]
+[ Upstream commit 1e8fd3a97f2d83a7197876ceb4f37b4c2b00a0f3 ]
 
-This is likely firmware causing this but its starting to annoy customers.
-Change the message level to verbose to prevent the spam.
-Note that this seems to only show up with ISCSI enabled on the HBA via the
-qedi driver.
+The implementation of s3fwrn5_recv_frame() is supposed to consume skb on
+all execution paths. Release skb before returning -ENODEV.
 
-Signed-off-by: Laurence Oberman <loberman@redhat.com>
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_int.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/nfc/s3fwrn5/core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.c b/drivers/net/ethernet/qlogic/qed/qed_int.c
-index fd19372db2f86..6e1d38041d0ac 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_int.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_int.c
-@@ -2158,7 +2158,8 @@ static int qed_int_attentions(struct qed_hwfn *p_hwfn)
- 			index, attn_bits, attn_acks, asserted_bits,
- 			deasserted_bits, p_sb_attn_sw->known_attn);
- 	} else if (asserted_bits == 0x100) {
--		DP_INFO(p_hwfn, "MFW indication via attention\n");
-+		DP_VERBOSE(p_hwfn, NETIF_MSG_INTR,
-+			   "MFW indication via attention\n");
- 	} else {
- 		DP_VERBOSE(p_hwfn, NETIF_MSG_INTR,
- 			   "MFW indication [deassertion]\n");
+diff --git a/drivers/nfc/s3fwrn5/core.c b/drivers/nfc/s3fwrn5/core.c
+index 9d9c8d57a042d..64b58455e620b 100644
+--- a/drivers/nfc/s3fwrn5/core.c
++++ b/drivers/nfc/s3fwrn5/core.c
+@@ -209,6 +209,7 @@ int s3fwrn5_recv_frame(struct nci_dev *ndev, struct sk_buff *skb,
+ 	case S3FWRN5_MODE_FW:
+ 		return s3fwrn5_fw_recv_frame(ndev, skb);
+ 	default:
++		kfree_skb(skb);
+ 		return -ENODEV;
+ 	}
+ }
 -- 
 2.25.1
 
