@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B922D22FE32
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:55:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5A422FE36
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:57:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbgG0Xzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 19:55:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46234 "EHLO mail.kernel.org"
+        id S1726956AbgG0X4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 19:56:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46572 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726222AbgG0Xz3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 19:55:29 -0400
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+        id S1726171AbgG0X4l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 19:56:41 -0400
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6342B20809;
-        Mon, 27 Jul 2020 23:55:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 21CC820679;
+        Mon, 27 Jul 2020 23:56:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595894128;
-        bh=pHjiLeoU+cX63+bW1MkEcT8iLXwc+EynwUf5ut3ZYrY=;
+        s=default; t=1595894200;
+        bh=pIvFrotDaXLQ53fI6ndW8jI8DT1JK2t5D5sC0WCfGr8=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=U9FV4pir1v6rNVwRzwowB/oJrG0wJnrWZidOTdKkrTJCzAumBp8hLjT1x8r8BMpSd
-         +qc+z5YKwo8lkdi9SuoXvrISkSdzkGTil0omZV9KnZWlMFRFKbCEr4ZW1GzwLQ3g2/
-         92R7ewWlJ9Kv6riE+UqmiJ97RMjhETH1fdy8dCqg=
-Received: by mail-lf1-f41.google.com with SMTP id d2so4353633lfj.1;
-        Mon, 27 Jul 2020 16:55:28 -0700 (PDT)
-X-Gm-Message-State: AOAM533P5X+U+2/JsJbw2N7Xb6WAQnUcAgeInqNKhMeKKcxuPXl79Da4
-        vMpwGbFyurrXTxIMcFbTWalGq7M9n1KfBvtvQaU=
-X-Google-Smtp-Source: ABdhPJwCoNjBOotkD3JErxFWrav0c+OdEiHZY2bWXHIRt1gsDevMf2lrjsu0Kj21lv686rLhe+6k0VH6gY72B5qrUhw=
-X-Received: by 2002:a05:6512:3a5:: with SMTP id v5mr12643913lfp.138.1595894126814;
- Mon, 27 Jul 2020 16:55:26 -0700 (PDT)
+        b=jwF1CbD0GAuxK4wrdhWzcn+JPtunKxSvvFDxv5qAMwsY5AqtVnLIKyzChwRUJk+ET
+         BE14SahExuO3hIHqCFE1pgPACnIuaKaomfxpyf++C4hRYBSDYmaeUauI8Btk74+lqA
+         vCBR5Rtfhgo628/xVYhZZqeuhK8xu8QxK6183ZYw=
+Received: by mail-lj1-f170.google.com with SMTP id x9so19173325ljc.5;
+        Mon, 27 Jul 2020 16:56:40 -0700 (PDT)
+X-Gm-Message-State: AOAM533yHzAPkZCsK4PrudF5qxalH64OMNw9u+wycKBeuDpirpZBcCEC
+        8j56Q9RUACjym5fHkg6F1IxlJt1YMRwV7cgvxeg=
+X-Google-Smtp-Source: ABdhPJzU25QM6X7+NjrWASkQh6IbY/CuZrlfdu20GW08qB6Rm4g8RyXQjMZLEQ/1KX7I6CI0cW0kBqTdI8Zotm1w+nE=
+X-Received: by 2002:a2e:81c2:: with SMTP id s2mr2781767ljg.10.1595894198520;
+ Mon, 27 Jul 2020 16:56:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-9-guro@fb.com>
-In-Reply-To: <20200727184506.2279656-9-guro@fb.com>
+References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-10-guro@fb.com>
+In-Reply-To: <20200727184506.2279656-10-guro@fb.com>
 From:   Song Liu <song@kernel.org>
-Date:   Mon, 27 Jul 2020 16:55:15 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4jUcPD6KPYiFoSRcVucGqry4FdEXs2re0qR00VWL6vug@mail.gmail.com>
-Message-ID: <CAPhsuW4jUcPD6KPYiFoSRcVucGqry4FdEXs2re0qR00VWL6vug@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 08/35] bpf: memcg-based memory accounting for
- lpm_trie maps
+Date:   Mon, 27 Jul 2020 16:56:27 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW5W5TJUEcSH-q3Q2-YmJsPZ2PxvgKcAmYVO0xut3MD+sg@mail.gmail.com>
+Message-ID: <CAPhsuW5W5TJUEcSH-q3Q2-YmJsPZ2PxvgKcAmYVO0xut3MD+sg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 09/35] bpf: memcg-based memory accounting for
+ bpf ringbuffer
 To:     Roman Gushchin <guro@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -53,37 +53,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Jul 27, 2020 at 12:22 PM Roman Gushchin <guro@fb.com> wrote:
 >
-> Include lpm trie and lpm trie node objects into the memcg-based memory
-> accounting.
+> Enable the memcg-based memory accounting for the memory used by
+> the bpf ringbuffer.
 >
 > Signed-off-by: Roman Gushchin <guro@fb.com>
 
 Acked-by: Song Liu <songliubraving@fb.com>
 
 > ---
->  kernel/bpf/lpm_trie.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  kernel/bpf/ringbuf.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
 >
-> diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
-> index 44474bf3ab7a..d85e0fc2cafc 100644
-> --- a/kernel/bpf/lpm_trie.c
-> +++ b/kernel/bpf/lpm_trie.c
-> @@ -282,7 +282,7 @@ static struct lpm_trie_node *lpm_trie_node_alloc(const struct lpm_trie *trie,
->         if (value)
->                 size += trie->map.value_size;
+> diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
+> index 002f8a5c9e51..e8e2c39cbdc9 100644
+> --- a/kernel/bpf/ringbuf.c
+> +++ b/kernel/bpf/ringbuf.c
+> @@ -60,8 +60,8 @@ struct bpf_ringbuf_hdr {
 >
-> -       node = kmalloc_node(size, GFP_ATOMIC | __GFP_NOWARN,
-> +       node = kmalloc_node(size, GFP_ATOMIC | __GFP_NOWARN | __GFP_ACCOUNT,
->                             trie->map.numa_node);
->         if (!node)
->                 return NULL;
-> @@ -557,7 +557,7 @@ static struct bpf_map *trie_alloc(union bpf_attr *attr)
->             attr->value_size > LPM_VAL_SIZE_MAX)
->                 return ERR_PTR(-EINVAL);
+>  static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
+>  {
+> -       const gfp_t flags = GFP_KERNEL | __GFP_RETRY_MAYFAIL | __GFP_NOWARN |
+> -                           __GFP_ZERO;
+> +       const gfp_t flags = GFP_KERNEL_ACCOUNT | __GFP_RETRY_MAYFAIL |
+> +                           __GFP_NOWARN | __GFP_ZERO;
+>         int nr_meta_pages = RINGBUF_PGOFF + RINGBUF_POS_PAGES;
+>         int nr_data_pages = data_sz >> PAGE_SHIFT;
+>         int nr_pages = nr_meta_pages + nr_data_pages;
+> @@ -89,7 +89,8 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
+>          */
+>         array_size = (nr_meta_pages + 2 * nr_data_pages) * sizeof(*pages);
+>         if (array_size > PAGE_SIZE)
+> -               pages = vmalloc_node(array_size, numa_node);
+> +               pages = __vmalloc_node(array_size, 1, GFP_KERNEL_ACCOUNT,
+> +                                      numa_node, __builtin_return_address(0));
+>         else
+>                 pages = kmalloc_node(array_size, flags, numa_node);
+>         if (!pages)
+> @@ -167,7 +168,7 @@ static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
+>                 return ERR_PTR(-E2BIG);
+>  #endif
 >
-> -       trie = kzalloc(sizeof(*trie), GFP_USER | __GFP_NOWARN);
-> +       trie = kzalloc(sizeof(*trie), GFP_USER | __GFP_NOWARN | __GFP_ACCOUNT);
->         if (!trie)
+> -       rb_map = kzalloc(sizeof(*rb_map), GFP_USER);
+> +       rb_map = kzalloc(sizeof(*rb_map), GFP_USER | __GFP_ACCOUNT);
+>         if (!rb_map)
 >                 return ERR_PTR(-ENOMEM);
 >
 > --
