@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5874F22E94E
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 11:41:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 740E222E951
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 11:41:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728159AbgG0Jld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 05:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49790 "EHLO
+        id S1728194AbgG0Jlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 05:41:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726139AbgG0Jlc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 05:41:32 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6240C061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 02:41:32 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id d4so9182885pgk.4
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 02:41:32 -0700 (PDT)
+        with ESMTP id S1728133AbgG0Jlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 05:41:35 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3956C061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 02:41:35 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id j19so9173175pgm.11
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 02:41:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=r1UUDn5VcjX3U/MP5a8tD+y2rWamrmtkrHWVrVHou+E=;
-        b=XzHU33lMhpRdoOLQvzZzvkv3tgmeMLlrdXfH394Q4/RnpTx4dXFfEmkpw+gnqEXBkP
-         I2lgL1H2FCtqZScZQ9uld1mJVEszjJkqa8GiekzOMLYnDAOofqSbibtQjGtI1ajfdrhW
-         M3wIpaVCIRBZx8FUvsN9XMQ3nZAbeRZoXFMI0=
+        bh=XgOjzv1EdV6wnW0ljXZYGfHHCKyd+/XjPnyFswctSok=;
+        b=QpiNSOZP7+J3URbuH0LjgC/ba2rEuSLbih+ZW27qnNwV4/trzSMOqeu4Dhe6zOw8UI
+         /jTbBDTl+9/+OLvkWYbIFyUVCVbjHcRmqz7GVZA8lB1TD3w2beC9ABwndcNh19b9y/sA
+         qd69Lsz9ICVq8UTCChejGJ6yQ3sfCcAJPbCCI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=r1UUDn5VcjX3U/MP5a8tD+y2rWamrmtkrHWVrVHou+E=;
-        b=uYcvN2rDUDm/sPzEKKntyJ7TIwQNiBZpllHCZtVXSDoiV7xrvO8soa1/DOLyGKL7uv
-         6ZElSKDF/9rlBFQHZKlSGeO1EcD/EK02ixWEVwilbfg9BYxwZA5zhXFtp2TIAbzlBqtV
-         PauVEKOtko3v13uer9lWJ0C01PEVTOdosgPZMA2sdo6LfNqiSaCEitYPeQ/5N5hRdsAN
-         RfCQb9GFYtDNu0RiVGDdOZEKMa/hdRi4i1GdRp6raJvuYLVZJbLt683Dzc+fg3U92RGS
-         81ayWvYj60pYwND49nLm2U5riQSRE03IYRDYEhX0zjwyVZztMj1+iBuP1zsk8CGSu0xH
-         KDng==
-X-Gm-Message-State: AOAM530UkL37Fb9JF9C7+eeGDmGIpufQRAAGjAVGY/NrEaqORip0tco9
-        2uUvq7xOnihuVSMTwRbbKuGjjuhUsUs=
-X-Google-Smtp-Source: ABdhPJzedNLPW6W/y2W97ZygYSYIFCPIJ91K2yfLhd+ZiriBnXN788BLKqJ1nzKMOo444LSNPyJ8rw==
-X-Received: by 2002:a63:8c5d:: with SMTP id q29mr18522411pgn.249.1595842892101;
-        Mon, 27 Jul 2020 02:41:32 -0700 (PDT)
+        bh=XgOjzv1EdV6wnW0ljXZYGfHHCKyd+/XjPnyFswctSok=;
+        b=dxJyUjyu5VwwIfUBgMvFHTpYtr2L9Cov3GtT7ArBa/Ma9dVqqMtH3AboS6GNj4xksJ
+         Yb6gzyoUoR+l1XHnNwMIi0xpN0NShO8142Fd0z0uiBvWFiXl50Fv3gX/SuEmyXMPI3q5
+         Rq55rJMwrGBndu1gqh8jYTALkIgYBdJS50adFhGCQoaPep76ycLOK3bSElGhaJjdgP9I
+         Qj8xjWWhgcYVyzo2jChHMn9EGfyNYqjDVWbjm/s808K1wSC2KyOthpOilvY4Pk3LGWHV
+         cFcbZDerT+fOopgpFqigc/6cC4F7swAL3k+jHlpEvHMXEVS2RtKaEa4/24OMgcNSTknc
+         /zGw==
+X-Gm-Message-State: AOAM533lQc1GjX4bMHEzDbTpVCAAc5eHGZxQubpkwabGe2LLCb8EAA+w
+        942xbewH/XTQRQuJmdGYNS+XUg==
+X-Google-Smtp-Source: ABdhPJzNgrfWYmNixj9LU4oHSRzFFwBJT7m+A46u5Scuyekikw6s4jj/WgzZY4/F0w//mQMCTVQqkg==
+X-Received: by 2002:aa7:9186:: with SMTP id x6mr19925440pfa.103.1595842895153;
+        Mon, 27 Jul 2020 02:41:35 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f131sm14560945pgc.14.2020.07.27.02.41.29
+        by smtp.gmail.com with ESMTPSA id f131sm14560945pgc.14.2020.07.27.02.41.32
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Jul 2020 02:41:31 -0700 (PDT)
+        Mon, 27 Jul 2020 02:41:34 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next v2 09/10] bnxt_en: Switch over to use the 64-bit software accumulated counters.
-Date:   Mon, 27 Jul 2020 05:40:44 -0400
-Message-Id: <1595842845-19403-10-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: [PATCH net-next v2 10/10] bnxt_en: Add support for 'ethtool -d'
+Date:   Mon, 27 Jul 2020 05:40:45 -0400
+Message-Id: <1595842845-19403-11-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1595842845-19403-1-git-send-email-michael.chan@broadcom.com>
 References: <1595842845-19403-1-git-send-email-michael.chan@broadcom.com>
@@ -57,247 +58,171 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now we can report all the full 64-bit CPU endian software accumulated
-counters instead of the hw counters, some of which may be less than
-64-bit wide.  Define the necessary macros to access the software
-counters.
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Add support to dump PXP registers and PCIe statistics.
+
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 67 ++++++++++++-----------
- drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  9 +++
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 41 +++++++-------
- 3 files changed, 64 insertions(+), 53 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 32 +++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  5 +++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 55 +++++++++++++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h |  2 +
+ 4 files changed, 94 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index a8e86da..014edd8 100644
+index 014edd8..943345b 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -9791,34 +9791,33 @@ static void bnxt_get_ring_stats(struct bnxt *bp,
- {
- 	int i;
- 
--
- 	for (i = 0; i < bp->cp_nr_rings; i++) {
- 		struct bnxt_napi *bnapi = bp->bnapi[i];
- 		struct bnxt_cp_ring_info *cpr = &bnapi->cp_ring;
--		struct ctx_hw_stats *hw_stats = cpr->stats.hw_stats;
-+		u64 *sw = cpr->stats.sw_stats;
- 
--		stats->rx_packets += le64_to_cpu(hw_stats->rx_ucast_pkts);
--		stats->rx_packets += le64_to_cpu(hw_stats->rx_mcast_pkts);
--		stats->rx_packets += le64_to_cpu(hw_stats->rx_bcast_pkts);
-+		stats->rx_packets += BNXT_GET_RING_STATS64(sw, rx_ucast_pkts);
-+		stats->rx_packets += BNXT_GET_RING_STATS64(sw, rx_mcast_pkts);
-+		stats->rx_packets += BNXT_GET_RING_STATS64(sw, rx_bcast_pkts);
- 
--		stats->tx_packets += le64_to_cpu(hw_stats->tx_ucast_pkts);
--		stats->tx_packets += le64_to_cpu(hw_stats->tx_mcast_pkts);
--		stats->tx_packets += le64_to_cpu(hw_stats->tx_bcast_pkts);
-+		stats->tx_packets += BNXT_GET_RING_STATS64(sw, tx_ucast_pkts);
-+		stats->tx_packets += BNXT_GET_RING_STATS64(sw, tx_mcast_pkts);
-+		stats->tx_packets += BNXT_GET_RING_STATS64(sw, tx_bcast_pkts);
- 
--		stats->rx_bytes += le64_to_cpu(hw_stats->rx_ucast_bytes);
--		stats->rx_bytes += le64_to_cpu(hw_stats->rx_mcast_bytes);
--		stats->rx_bytes += le64_to_cpu(hw_stats->rx_bcast_bytes);
-+		stats->rx_bytes += BNXT_GET_RING_STATS64(sw, rx_ucast_bytes);
-+		stats->rx_bytes += BNXT_GET_RING_STATS64(sw, rx_mcast_bytes);
-+		stats->rx_bytes += BNXT_GET_RING_STATS64(sw, rx_bcast_bytes);
- 
--		stats->tx_bytes += le64_to_cpu(hw_stats->tx_ucast_bytes);
--		stats->tx_bytes += le64_to_cpu(hw_stats->tx_mcast_bytes);
--		stats->tx_bytes += le64_to_cpu(hw_stats->tx_bcast_bytes);
-+		stats->tx_bytes += BNXT_GET_RING_STATS64(sw, tx_ucast_bytes);
-+		stats->tx_bytes += BNXT_GET_RING_STATS64(sw, tx_mcast_bytes);
-+		stats->tx_bytes += BNXT_GET_RING_STATS64(sw, tx_bcast_bytes);
- 
- 		stats->rx_missed_errors +=
--			le64_to_cpu(hw_stats->rx_discard_pkts);
-+			BNXT_GET_RING_STATS64(sw, rx_discard_pkts);
- 
--		stats->multicast += le64_to_cpu(hw_stats->rx_mcast_pkts);
-+		stats->multicast += BNXT_GET_RING_STATS64(sw, rx_mcast_pkts);
- 
--		stats->tx_dropped += le64_to_cpu(hw_stats->tx_error_pkts);
-+		stats->tx_dropped += BNXT_GET_RING_STATS64(sw, tx_error_pkts);
- 	}
+@@ -10220,6 +10220,38 @@ static int bnxt_set_features(struct net_device *dev, netdev_features_t features)
+ 	return rc;
  }
  
-@@ -9856,20 +9855,26 @@ static void bnxt_add_prev_stats(struct bnxt *bp,
- 	bnxt_add_prev_stats(bp, stats);
- 
- 	if (bp->flags & BNXT_FLAG_PORT_STATS) {
--		struct rx_port_stats *rx = bp->port_stats.hw_stats;
--		struct tx_port_stats *tx = bp->port_stats.hw_stats +
--					   BNXT_TX_PORT_STATS_BYTE_OFFSET;
--
--		stats->rx_crc_errors = le64_to_cpu(rx->rx_fcs_err_frames);
--		stats->rx_frame_errors = le64_to_cpu(rx->rx_align_err_frames);
--		stats->rx_length_errors = le64_to_cpu(rx->rx_undrsz_frames) +
--					  le64_to_cpu(rx->rx_ovrsz_frames) +
--					  le64_to_cpu(rx->rx_runt_frames);
--		stats->rx_errors = le64_to_cpu(rx->rx_false_carrier_frames) +
--				   le64_to_cpu(rx->rx_jbr_frames);
--		stats->collisions = le64_to_cpu(tx->tx_total_collisions);
--		stats->tx_fifo_errors = le64_to_cpu(tx->tx_fifo_underruns);
--		stats->tx_errors = le64_to_cpu(tx->tx_err);
-+		u64 *rx = bp->port_stats.sw_stats;
-+		u64 *tx = bp->port_stats.sw_stats +
-+			  BNXT_TX_PORT_STATS_BYTE_OFFSET / 8;
++int bnxt_dbg_hwrm_rd_reg(struct bnxt *bp, u32 reg_off, u16 num_words,
++			 u32 *reg_buf)
++{
++	struct hwrm_dbg_read_direct_output *resp = bp->hwrm_cmd_resp_addr;
++	struct hwrm_dbg_read_direct_input req = {0};
++	__le32 *dbg_reg_buf;
++	dma_addr_t mapping;
++	int rc, i;
 +
-+		stats->rx_crc_errors =
-+			BNXT_GET_RX_PORT_STATS64(rx, rx_fcs_err_frames);
-+		stats->rx_frame_errors =
-+			BNXT_GET_RX_PORT_STATS64(rx, rx_align_err_frames);
-+		stats->rx_length_errors =
-+			BNXT_GET_RX_PORT_STATS64(rx, rx_undrsz_frames) +
-+			BNXT_GET_RX_PORT_STATS64(rx, rx_ovrsz_frames) +
-+			BNXT_GET_RX_PORT_STATS64(rx, rx_runt_frames);
-+		stats->rx_errors =
-+			BNXT_GET_RX_PORT_STATS64(rx, rx_false_carrier_frames) +
-+			BNXT_GET_RX_PORT_STATS64(rx, rx_jbr_frames);
-+		stats->collisions =
-+			BNXT_GET_TX_PORT_STATS64(tx, tx_total_collisions);
-+		stats->tx_fifo_errors =
-+			BNXT_GET_TX_PORT_STATS64(tx, tx_fifo_underruns);
-+		stats->tx_errors = BNXT_GET_TX_PORT_STATS64(tx, tx_err);
- 	}
- 	clear_bit(BNXT_STATE_READ_STATS, &bp->state);
- }
++	dbg_reg_buf = dma_alloc_coherent(&bp->pdev->dev, num_words * 4,
++					 &mapping, GFP_KERNEL);
++	if (!dbg_reg_buf)
++		return -ENOMEM;
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_DBG_READ_DIRECT, -1, -1);
++	req.host_dest_addr = cpu_to_le64(mapping);
++	req.read_addr = cpu_to_le32(reg_off + CHIMP_REG_VIEW_ADDR);
++	req.read_len32 = cpu_to_le32(num_words);
++	mutex_lock(&bp->hwrm_cmd_lock);
++	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++	if (rc || resp->error_code) {
++		rc = -EIO;
++		goto dbg_rd_reg_exit;
++	}
++	for (i = 0; i < num_words; i++)
++		reg_buf[i] = le32_to_cpu(dbg_reg_buf[i]);
++
++dbg_rd_reg_exit:
++	mutex_unlock(&bp->hwrm_cmd_lock);
++	dma_free_coherent(&bp->pdev->dev, num_words * 4, dbg_reg_buf, mapping);
++	return rc;
++}
++
+ static int bnxt_dbg_hwrm_ring_info_get(struct bnxt *bp, u8 ring_type,
+ 				       u32 ring_id, u32 *prod, u32 *cons)
+ {
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 44c7812..0c9b79b 100644
+index 0c9b79b..5a13eb6 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1928,6 +1928,15 @@ struct bnxt {
- 	struct device		*hwmon_dev;
+@@ -1304,6 +1304,9 @@ struct bnxt_test_info {
+ 	char string[BNXT_MAX_TEST][ETH_GSTRING_LEN];
  };
  
-+#define BNXT_GET_RING_STATS64(sw, counter)		\
-+	(*((sw) + offsetof(struct ctx_hw_stats, counter) / 8))
++#define CHIMP_REG_VIEW_ADDR				\
++	((bp->flags & BNXT_FLAG_CHIP_P5) ? 0x80000000 : 0xb1000000)
 +
-+#define BNXT_GET_RX_PORT_STATS64(sw, counter)		\
-+	(*((sw) + offsetof(struct rx_port_stats, counter) / 8))
-+
-+#define BNXT_GET_TX_PORT_STATS64(sw, counter)		\
-+	(*((sw) + offsetof(struct tx_port_stats, counter) / 8))
-+
- #define BNXT_PORT_STATS_SIZE				\
- 	(sizeof(struct rx_port_stats) + sizeof(struct tx_port_stats) + 1024)
- 
+ #define BNXT_GRCPF_REG_CHIMP_COMM		0x0
+ #define BNXT_GRCPF_REG_CHIMP_COMM_TRIGGER	0x100
+ #define BNXT_GRCPF_REG_WINDOW_BASE_OUT		0x400
+@@ -2117,6 +2120,8 @@ int bnxt_hwrm_func_drv_rgtr(struct bnxt *bp, unsigned long *bmap,
+ int bnxt_half_open_nic(struct bnxt *bp);
+ void bnxt_half_close_nic(struct bnxt *bp);
+ int bnxt_close_nic(struct bnxt *, bool, bool);
++int bnxt_dbg_hwrm_rd_reg(struct bnxt *bp, u32 reg_off, u16 num_words,
++			 u32 *reg_buf);
+ void bnxt_fw_exception(struct bnxt *bp);
+ void bnxt_fw_reset(struct bnxt *bp);
+ int bnxt_check_rings(struct bnxt *bp, int tx, int rx, bool sh, int tcs,
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 59ebb2b..ff380d7 100644
+index ff380d7..7fd7997 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -559,20 +559,19 @@ static void bnxt_get_ethtool_stats(struct net_device *dev,
- 	for (i = 0; i < bp->cp_nr_rings; i++) {
- 		struct bnxt_napi *bnapi = bp->bnapi[i];
- 		struct bnxt_cp_ring_info *cpr = &bnapi->cp_ring;
--		struct ctx_hw_stats *hw = cpr->stats.hw_stats;
--		__le64 *hw_stats = cpr->stats.hw_stats;
-+		u64 *sw_stats = cpr->stats.sw_stats;
- 		u64 *sw;
- 		int k;
+@@ -1324,6 +1324,59 @@ static void bnxt_get_drvinfo(struct net_device *dev,
+ 	info->regdump_len = 0;
+ }
  
- 		if (is_rx_ring(bp, i)) {
- 			for (k = 0; k < NUM_RING_RX_HW_STATS; j++, k++)
--				buf[j] = le64_to_cpu(hw_stats[k]);
-+				buf[j] = sw_stats[k];
- 		}
- 		if (is_tx_ring(bp, i)) {
- 			k = NUM_RING_RX_HW_STATS;
- 			for (; k < NUM_RING_RX_HW_STATS + NUM_RING_TX_HW_STATS;
- 			       j++, k++)
--				buf[j] = le64_to_cpu(hw_stats[k]);
-+				buf[j] = sw_stats[k];
- 		}
- 		if (!tpa_stats || !is_rx_ring(bp, i))
- 			goto skip_tpa_ring_stats;
-@@ -580,7 +579,7 @@ static void bnxt_get_ethtool_stats(struct net_device *dev,
- 		k = NUM_RING_RX_HW_STATS + NUM_RING_TX_HW_STATS;
- 		for (; k < NUM_RING_RX_HW_STATS + NUM_RING_TX_HW_STATS +
- 			   tpa_stats; j++, k++)
--			buf[j] = le64_to_cpu(hw_stats[k]);
-+			buf[j] = sw_stats[k];
++static int bnxt_get_regs_len(struct net_device *dev)
++{
++	struct bnxt *bp = netdev_priv(dev);
++	int reg_len;
++
++	reg_len = BNXT_PXP_REG_LEN;
++
++	if (bp->fw_cap & BNXT_FW_CAP_PCIE_STATS_SUPPORTED)
++		reg_len += sizeof(struct pcie_ctx_hw_stats);
++
++	return reg_len;
++}
++
++static void bnxt_get_regs(struct net_device *dev, struct ethtool_regs *regs,
++			  void *_p)
++{
++	struct pcie_ctx_hw_stats *hw_pcie_stats;
++	struct hwrm_pcie_qstats_input req = {0};
++	struct bnxt *bp = netdev_priv(dev);
++	dma_addr_t hw_pcie_stats_addr;
++	int rc;
++
++	regs->version = 0;
++	bnxt_dbg_hwrm_rd_reg(bp, 0, BNXT_PXP_REG_LEN / 4, _p);
++
++	if (!(bp->fw_cap & BNXT_FW_CAP_PCIE_STATS_SUPPORTED))
++		return;
++
++	hw_pcie_stats = dma_alloc_coherent(&bp->pdev->dev,
++					   sizeof(*hw_pcie_stats),
++					   &hw_pcie_stats_addr, GFP_KERNEL);
++	if (!hw_pcie_stats)
++		return;
++
++	regs->version = 1;
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PCIE_QSTATS, -1, -1);
++	req.pcie_stat_size = cpu_to_le16(sizeof(*hw_pcie_stats));
++	req.pcie_stat_host_addr = cpu_to_le64(hw_pcie_stats_addr);
++	mutex_lock(&bp->hwrm_cmd_lock);
++	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++	if (!rc) {
++		__le64 *src = (__le64 *)hw_pcie_stats;
++		u64 *dst = (u64 *)(_p + BNXT_PXP_REG_LEN);
++		int i;
++
++		for (i = 0; i < sizeof(*hw_pcie_stats) / sizeof(__le64); i++)
++			dst[i] = le64_to_cpu(src[i]);
++	}
++	mutex_unlock(&bp->hwrm_cmd_lock);
++	dma_free_coherent(&bp->pdev->dev, sizeof(*hw_pcie_stats), hw_pcie_stats,
++			  hw_pcie_stats_addr);
++}
++
+ static void bnxt_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+ {
+ 	struct bnxt *bp = netdev_priv(dev);
+@@ -3596,6 +3649,8 @@ void bnxt_ethtool_free(struct bnxt *bp)
+ 	.get_pauseparam		= bnxt_get_pauseparam,
+ 	.set_pauseparam		= bnxt_set_pauseparam,
+ 	.get_drvinfo		= bnxt_get_drvinfo,
++	.get_regs_len		= bnxt_get_regs_len,
++	.get_regs		= bnxt_get_regs,
+ 	.get_wol		= bnxt_get_wol,
+ 	.set_wol		= bnxt_set_wol,
+ 	.get_coalesce		= bnxt_get_coalesce,
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+index dddbca1..34f44dd 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+@@ -84,6 +84,8 @@ struct hwrm_dbg_cmn_output {
+ 				  ETH_RESET_PHY | ETH_RESET_RAM)	\
+ 				 << ETH_RESET_SHARED_SHIFT)
  
- skip_tpa_ring_stats:
- 		sw = (u64 *)&cpr->sw_stats.rx;
-@@ -594,9 +593,9 @@ static void bnxt_get_ethtool_stats(struct net_device *dev,
- 			buf[j] = sw[k];
++#define BNXT_PXP_REG_LEN	0x3110
++
+ extern const struct ethtool_ops bnxt_ethtool_ops;
  
- 		bnxt_sw_func_stats[RX_TOTAL_DISCARDS].counter +=
--			le64_to_cpu(hw->rx_discard_pkts);
-+			BNXT_GET_RING_STATS64(sw_stats, rx_discard_pkts);
- 		bnxt_sw_func_stats[TX_TOTAL_DISCARDS].counter +=
--			le64_to_cpu(hw->tx_discard_pkts);
-+			BNXT_GET_RING_STATS64(sw_stats, tx_discard_pkts);
- 	}
- 
- 	for (i = 0; i < BNXT_NUM_SW_FUNC_STATS; i++, j++)
-@@ -604,49 +603,47 @@ static void bnxt_get_ethtool_stats(struct net_device *dev,
- 
- skip_ring_stats:
- 	if (bp->flags & BNXT_FLAG_PORT_STATS) {
--		__le64 *port_stats = bp->port_stats.hw_stats;
-+		u64 *port_stats = bp->port_stats.sw_stats;
- 
--		for (i = 0; i < BNXT_NUM_PORT_STATS; i++, j++) {
--			buf[j] = le64_to_cpu(*(port_stats +
--					       bnxt_port_stats_arr[i].offset));
--		}
-+		for (i = 0; i < BNXT_NUM_PORT_STATS; i++, j++)
-+			buf[j] = *(port_stats + bnxt_port_stats_arr[i].offset);
- 	}
- 	if (bp->flags & BNXT_FLAG_PORT_STATS_EXT) {
--		__le64 *rx_port_stats_ext = bp->rx_port_stats_ext.hw_stats;
--		__le64 *tx_port_stats_ext = bp->tx_port_stats_ext.hw_stats;
-+		u64 *rx_port_stats_ext = bp->rx_port_stats_ext.sw_stats;
-+		u64 *tx_port_stats_ext = bp->tx_port_stats_ext.sw_stats;
- 
- 		for (i = 0; i < bp->fw_rx_stats_ext_size; i++, j++) {
--			buf[j] = le64_to_cpu(*(rx_port_stats_ext +
--					    bnxt_port_stats_ext_arr[i].offset));
-+			buf[j] = *(rx_port_stats_ext +
-+				   bnxt_port_stats_ext_arr[i].offset);
- 		}
- 		for (i = 0; i < bp->fw_tx_stats_ext_size; i++, j++) {
--			buf[j] = le64_to_cpu(*(tx_port_stats_ext +
--					bnxt_tx_port_stats_ext_arr[i].offset));
-+			buf[j] = *(tx_port_stats_ext +
-+				   bnxt_tx_port_stats_ext_arr[i].offset);
- 		}
- 		if (bp->pri2cos_valid) {
- 			for (i = 0; i < 8; i++, j++) {
- 				long n = bnxt_rx_bytes_pri_arr[i].base_off +
- 					 bp->pri2cos_idx[i];
- 
--				buf[j] = le64_to_cpu(*(rx_port_stats_ext + n));
-+				buf[j] = *(rx_port_stats_ext + n);
- 			}
- 			for (i = 0; i < 8; i++, j++) {
- 				long n = bnxt_rx_pkts_pri_arr[i].base_off +
- 					 bp->pri2cos_idx[i];
- 
--				buf[j] = le64_to_cpu(*(rx_port_stats_ext + n));
-+				buf[j] = *(rx_port_stats_ext + n);
- 			}
- 			for (i = 0; i < 8; i++, j++) {
- 				long n = bnxt_tx_bytes_pri_arr[i].base_off +
- 					 bp->pri2cos_idx[i];
- 
--				buf[j] = le64_to_cpu(*(tx_port_stats_ext + n));
-+				buf[j] = *(tx_port_stats_ext + n);
- 			}
- 			for (i = 0; i < 8; i++, j++) {
- 				long n = bnxt_tx_pkts_pri_arr[i].base_off +
- 					 bp->pri2cos_idx[i];
- 
--				buf[j] = le64_to_cpu(*(tx_port_stats_ext + n));
-+				buf[j] = *(tx_port_stats_ext + n);
- 			}
- 		}
- 	}
+ u32 bnxt_get_rxfh_indir_size(struct net_device *dev);
 -- 
 1.8.3.1
 
