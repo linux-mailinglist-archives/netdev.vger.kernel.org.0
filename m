@@ -2,85 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E139B22F8D7
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 21:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83A3E22F8E4
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 21:19:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728724AbgG0TSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 15:18:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55312 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728107AbgG0TSi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 15:18:38 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE87C061794;
-        Mon, 27 Jul 2020 12:18:38 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3C26B12763789;
-        Mon, 27 Jul 2020 12:01:52 -0700 (PDT)
-Date:   Mon, 27 Jul 2020 12:18:36 -0700 (PDT)
-Message-Id: <20200727.121836.2197759951419525125.davem@davemloft.net>
-To:     alobakin@marvell.com
-Cc:     kuba@kernel.org, irusskikh@marvell.com,
-        michal.kalderon@marvell.com, aelior@marvell.com,
-        denis.bolotin@marvell.com, GR-everest-linux-l2@marvell.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dan.carpenter@oracle.com
-Subject: Re: [PATCH net-next] qed: fix the allocation of the chains with an
- external PBL
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200727115133.1631-1-alobakin@marvell.com>
-References: <20200727115133.1631-1-alobakin@marvell.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1728838AbgG0TTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 15:19:15 -0400
+Received: from mga12.intel.com ([192.55.52.136]:58316 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728707AbgG0TTO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 15:19:14 -0400
+IronPort-SDR: A+5ulwWiaWy4gWzLkJ+Y23ujmtpo4Li+wp2g3tBUQmE/dkUN4zkIfq0qWBC93wGVJe7p9MD7gC
+ dXQ4a9t6p5ow==
+X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="130661254"
+X-IronPort-AV: E=Sophos;i="5.75,403,1589266800"; 
+   d="scan'208";a="130661254"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 12:19:14 -0700
+IronPort-SDR: c0RTdc2/aPDL1Knrtaw33gaQXGgmddeYH99UPQVILbwzHJgkmmiSrkf87p5uYLvu47RtBK6/zr
+ XgD8qFlqDp7Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,403,1589266800"; 
+   d="scan'208";a="303572979"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.56.18]) ([10.212.56.18])
+  by orsmga002.jf.intel.com with ESMTP; 27 Jul 2020 12:19:14 -0700
+Subject: Re: Broken link partner advertised reporting in ethtool
+To:     Jamie Gloudon <jamie.gloudon@gmx.fr>, netdev@vger.kernel.org
+References: <20200727154715.GA1901@gmx.fr>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <871802ee-3b9a-87fb-4a16-db570828ef2d@intel.com>
+Date:   Mon, 27 Jul 2020 12:19:13 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.0.1
+MIME-Version: 1.0
+In-Reply-To: <20200727154715.GA1901@gmx.fr>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 27 Jul 2020 12:01:52 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@marvell.com>
-Date: Mon, 27 Jul 2020 14:51:33 +0300
 
-> Dan reports static checker warning:
-> 
-> "The patch 9b6ee3cf95d3: "qed: sanitize PBL chains allocation" from Jul
-> 23, 2020, leads to the following static checker warning:
-> 
-> 	drivers/net/ethernet/qlogic/qed/qed_chain.c:299 qed_chain_alloc_pbl()
-> 	error: uninitialized symbol 'pbl_virt'.
-> 
-> drivers/net/ethernet/qlogic/qed/qed_chain.c
->    249  static int qed_chain_alloc_pbl(struct qed_dev *cdev, struct qed_chain *chain)
->    250  {
->    251          struct device *dev = &cdev->pdev->dev;
->    252          struct addr_tbl_entry *addr_tbl;
->    253          dma_addr_t phys, pbl_phys;
->    254          __le64 *pbl_virt;
->                 ^^^^^^^^^^^^^^^^
-> [...]
->    271          if (chain->b_external_pbl)
->    272                  goto alloc_pages;
->                         ^^^^^^^^^^^^^^^^ uninitialized
-> [...]
->    298                  /* Fill the PBL table with the physical address of the page */
->    299                  pbl_virt[i] = cpu_to_le64(phys);
->                         ^^^^^^^^^^^
-> [...]
-> "
-> 
-> This issue was introduced with commit c3a321b06a80 ("qed: simplify
-> initialization of the chains with an external PBL"), when
-> chain->pbl_sp.table_virt initialization was moved up to
-> qed_chain_init_params().
-> Fix it by initializing pbl_virt with an already filled chain struct field.
-> 
-> Fixes: c3a321b06a80 ("qed: simplify initialization of the chains with an external PBL")
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
 
-Applied, thank you.
+On 7/27/2020 8:47 AM, Jamie Gloudon wrote:
+> Hey,
+> 
+> While having a discussion with Sasha from Intel. I noticed link partner
+> advertised support is broken in ethtool 5.7. Sasha hinted to me, the
+> new API that ethtool is using.
+> 
+> I see the actual cause in dump_peer_modes() in netlink/settings.c, that
+> the mask parameter is set to false for dump_link_modes, dump_pause and
+> bitset_get_bit.
+> 
+> Regards,
+> Jamie Gloudon
+> 
+
+Hi,
+
+Seems like more detail here would be useful. This is about the ethtool
+application.
+
+Answering the following questions would help:
+
+ - what you wanted to achieve;
+
+ - what you did (including what versions of software and the command
+   sequence to reproduce the behavior);
+
+ - what you saw happen;
+
+ - what you expected to see; and
+
+ - how the last two are different.
+
+The mask parameter for dump_link_modes is used to select between
+displaying the mask and the value for a bitset.
+
+According to the source in filling the LINKMODES_PEER, we actually don't
+send a mask at all with this setting, so using true for the mask in
+dump_link_modes here seems like it would be wrong.
+
+It appears that to get link partner settings your driver must fill in
+lp_advertising. If you're referring to an Intel driver, a quick search
+over drivers/net/ethernet/intel shows that only the ice driver currently
+supports reporting this information.
+
+Given this, I am not convinced there is a bug in ethtool.
+
+Thanks,
+Jake
