@@ -2,72 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AEEF22E404
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 04:34:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4447722E401
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 04:33:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727080AbgG0Cdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 22:33:53 -0400
-Received: from smtp25.cstnet.cn ([159.226.251.25]:55864 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726044AbgG0Cdx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Jul 2020 22:33:53 -0400
-Received: from localhost (unknown [159.226.5.99])
-        by APP-05 (Coremail) with SMTP id zQCowABXng4WNh5fUhB3Aw--.24421S2;
-        Mon, 27 Jul 2020 10:04:06 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     amitkarwar@gmail.com, ganapathi.bhat@nxp.com,
-        huxinming820@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Xu Wang <vulab@iscas.ac.cn>
-Subject: [PATCH] mwifiex: 11n_rxreorder: Remove unnecessary cast in kfree()
-Date:   Mon, 27 Jul 2020 02:04:05 +0000
-Message-Id: <20200727020405.8476-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: zQCowABXng4WNh5fUhB3Aw--.24421S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7JrWrKFykZryrGF47JrWxXrb_yoWfCFXEkF
-        W8XF43KrW3Gr1IyF43CF47Zr92yw1rXFyfGwsrtFWft3yvvFW3XFyfurs3XrW5Cw4Fyryk
-        Jr15JFZ8J34xujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbaxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
-        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUtVWrXwAv7VC2z280aVAFwI0_Gr1j6F4UJwAm72CE4IkC6x0Yz7
-        v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF
-        7I0E8cxan2IY04v7MxkIecxEwVAFwVW8JwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7x
-        kEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E
-        67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCw
-        CI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWr
-        Zr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYx
-        BIdaVFxhVjvjDU0xZFpf9x0JUlksgUUUUU=
-X-Originating-IP: [159.226.5.99]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCAEJA18J9hW63AACsS
+        id S1726719AbgG0CdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 22:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726044AbgG0CdX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 22:33:23 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7238C0619D2
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 19:33:22 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (81-175-216-236.bb.dnainternet.fi [81.175.216.236])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 883752A9;
+        Mon, 27 Jul 2020 04:33:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1595817198;
+        bh=BpwMQJZT3f5JKIw+i1X5oyLas85YawWPS5RThF+VZlU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LTu3186X+t+vQEu0c224BXSgV4SwuCCH5hY1Juey4PgwDRp8tJ2WGuqAq9Eg0M48T
+         HpDXFa+wpoaGW+BEjFNuL4T0oqwTfGtY374MGpQ1UKmBqoWaJRtQ91N/9HQKxhi/wV
+         UMxomVB/C7xlwRQuwTp5MJ/IeAbs4OXfE15Hbi+c=
+Date:   Mon, 27 Jul 2020 05:33:10 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Fugang Duan <fugang.duan@nxp.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, cphealy@gmail.com,
+        martin.fuzzey@flowbird.group
+Subject: Re: [RESENT PATCH net--stat 1/1] net: ethernet: fec: Revert "net:
+ ethernet: fec: Replace interrupt driven MDIO with polled IO"
+Message-ID: <20200727023310.GA23988@pendragon.ideasonboard.com>
+References: <1587996484-3504-1-git-send-email-fugang.duan@nxp.com>
+ <20200727012354.GT28704@pendragon.ideasonboard.com>
+ <20200727020631.GW28704@pendragon.ideasonboard.com>
+ <20200727021432.GM1661457@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200727021432.GM1661457@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove unnecassary casts in the argument to kfree.
+Hi Andrew,
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
----
- drivers/net/wireless/marvell/mwifiex/11n_rxreorder.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Mon, Jul 27, 2020 at 04:14:32AM +0200, Andrew Lunn wrote:
+> On Mon, Jul 27, 2020 at 05:06:31AM +0300, Laurent Pinchart wrote:
+> > On Mon, Jul 27, 2020 at 04:24:02AM +0300, Laurent Pinchart wrote:
+> > > On Mon, Apr 27, 2020 at 10:08:04PM +0800, Fugang Duan wrote:
+> > > > This reverts commit 29ae6bd1b0d8a57d7c00ab12cbb949fc41986eef.
+> > > > 
+> > > > The commit breaks ethernet function on i.MX6SX, i.MX7D, i.MX8MM,
+> > > > i.MX8MQ, and i.MX8QXP platforms. Boot yocto system by NFS mounting
+> > > > rootfs will be failed with the commit.
+> > > 
+> > > I'm afraid this commit breaks networking on i.MX7D for me :-( My board
+> > > is configured to boot over NFS root with IP autoconfiguration through
+> > > DHCP. The DHCP request goes out, the reply it sent back by the server,
+> > > but never noticed by the fec driver.
+> > > 
+> > > v5.7 works fine. As 29ae6bd1b0d8a57d7c00ab12cbb949fc41986eef was merged
+> > > during the v5.8 merge window, I suspect something else cropped in
+> > > between 29ae6bd1b0d8a57d7c00ab12cbb949fc41986eef and this patch that
+> > > needs to be reverted too. We're close to v5.8 and it would be annoying
+> > > to see this regression ending up in the released kernel. I can test
+> > > patches, but I'm not familiar enough with the driver (or the networking
+> > > subsystem) to fix the issue myself.
+> > 
+> > If it can be of any help, I've confirmed that, to get the network back
+> > to usable state from v5.8-rc6, I have to revert all patches up to this
+> > one. This is the top of my branch, on top of v5.8-rc6:
+> > 
+> > 5bbe80c9efea Revert "net: ethernet: fec: Revert "net: ethernet: fec: Replace interrupt driven MDIO with polled IO""
+> > 5462896a08c1 Revert "net: ethernet: fec: Replace interrupt driven MDIO with polled IO"
+> > 824a82e2bdfa Revert "net: ethernet: fec: move GPR register offset and bit into DT"
+> > bfe330591cab Revert "net: fec: disable correct clk in the err path of fec_enet_clk_enable"
+> > 109958cad578 Revert "net: ethernet: fec: prevent tx starvation under high rx load"
+> 
+> OK.
+> 
+> What PHY are you using? A Micrel?
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/11n_rxreorder.c b/drivers/net/wireless/marvell/mwifiex/11n_rxreorder.c
-index 0bdafe9f66db..1046b59647f5 100644
---- a/drivers/net/wireless/marvell/mwifiex/11n_rxreorder.c
-+++ b/drivers/net/wireless/marvell/mwifiex/11n_rxreorder.c
-@@ -398,7 +398,7 @@ mwifiex_11n_create_rx_reorder_tbl(struct mwifiex_private *priv, u8 *ta,
- 	new_node->rx_reorder_ptr = kcalloc(win_size, sizeof(void *),
- 					   GFP_KERNEL);
- 	if (!new_node->rx_reorder_ptr) {
--		kfree((u8 *) new_node);
-+		kfree(new_node);
- 		mwifiex_dbg(priv->adapter, ERROR,
- 			    "%s: failed to alloc reorder_ptr\n", __func__);
- 		return;
+KSZ9031RNXIA
+
+> And which DT file?
+
+It's out of tree.
+
+&fec1 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_enet1>;
+        assigned-clocks = <&clks IMX7D_ENET1_TIME_ROOT_SRC>,
+                          <&clks IMX7D_ENET1_TIME_ROOT_CLK>;
+        assigned-clock-parents = <&clks IMX7D_PLL_ENET_MAIN_100M_CLK>;
+        assigned-clock-rates = <0>, <100000000>;
+        phy-mode = "rgmii";
+        phy-handle = <&ethphy0>;
+        phy-reset-gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
+        phy-supply = <&reg_3v3_sw>;
+        fsl,magic-packet;
+        status = "okay";
+
+        mdio {
+                #address-cells = <1>;
+                #size-cells = <0>;
+
+                ethphy0: ethernet-phy@0 {
+                        reg = <1>;
+                };
+
+                ethphy1: ethernet-phy@1 {
+                        reg = <2>;
+                };
+        };
+};
+
+I can provide the full DT if needed. 
+
 -- 
-2.17.1
+Regards,
 
+Laurent Pinchart
