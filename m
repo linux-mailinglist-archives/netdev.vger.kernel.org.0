@@ -2,168 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC69F22F49F
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 18:16:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9555122F4E8
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 18:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731473AbgG0QQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 12:16:53 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:46879 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731402AbgG0QQu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 12:16:50 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 09880da9;
-        Mon, 27 Jul 2020 15:53:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=yZ9s7iESSXllw2jFppVGJgSQSDc=; b=T8Sn3a
-        8QgZwT7OBLiEk39YllHL8AHxegeWoSsgukQldc9TiwR4eHH+81jI/awj0HrXtBrg
-        Y5UPc9Cc5BZJ8GrAprgs5NcK5vubz31d4jsM4x0gMeFEgDrVjUrRX41udJBHMNld
-        d/Bx9892A78N/q/07Gl0nQui+mlF/IAoZIyvrYwHlA6vlD8ytQ/RkS4Lp/JjiVOo
-        r0KIpueIg+d9HaYHBQI6Nj9saKViVpoxMt0rA2Xtk8fEZ2Ajc735rEzlQ3Gn8yTu
-        4eFoXmxypskbeYUzua5Dmfrj+eDOvtFDSR0ScqE+ZC5nUsdiFsBW9DfS1UvXfi+f
-        sWCgYlvemIgM0Wvg==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 0a17c61b (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Mon, 27 Jul 2020 15:53:25 +0000 (UTC)
-Received: by mail-il1-f177.google.com with SMTP id b18so8376992ilo.12;
-        Mon, 27 Jul 2020 09:16:45 -0700 (PDT)
-X-Gm-Message-State: AOAM533rlfDKOj1/MijCyDrrjZl1Y0z0jvOzAJm+qXdBUOMQqOTGi589
-        KPMgNaN1bCfszWgnF/gQXlrFJS0cH133ROVNtAs=
-X-Google-Smtp-Source: ABdhPJxpUhiuwtuwnEaez1P/c+ZU0pwKxKQezmeTGc12hGP8McAl6Imm8qRtlhHrSqvTuhro7sF5xCj0r6Sl8qXVeP8=
-X-Received: by 2002:a92:c804:: with SMTP id v4mr15897355iln.207.1595866604002;
- Mon, 27 Jul 2020 09:16:44 -0700 (PDT)
+        id S1727071AbgG0QUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 12:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726887AbgG0QUf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 12:20:35 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433C9C061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 09:20:35 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id 88so15487939wrh.3
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 09:20:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s66hvz79ScDXNBFQIg99RoUIjiDMzoVc+szzIRjW8yU=;
+        b=WkmsHmIX78vB9eF6Pu8mEaihfm7f/5ydgGt6i0Kjnid5XadE2yO88VAJ+Jz4GsO3RP
+         cczMgmVPsdZUAw8E+EpaUEwKrK6wZyjx2QB3ERMQI0HdhWk64BbpzYbxvUQIjNkrhtmS
+         ZDKReHBCLCuUJ+L2PIJoScZJYPNhcPSbtvmO0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s66hvz79ScDXNBFQIg99RoUIjiDMzoVc+szzIRjW8yU=;
+        b=Y7BwfzOALx39yJn6uWYcOaN6LPv8HGo8WMeXseY3eg5IeAgCcHeUk22Zf+oqW1dn3l
+         6Xx2yU1h/s0Xi53GEMsdigzOzgcmpF+QmoJ0eqDCse1jtRczpAofDtWIOHKm8wqrMxXf
+         auw7Vxeli/Ug4Lh00C7NGPyXSXfOxCKVYlMb7u//hYOwOt6yvBm8108v55LDn7De+N9h
+         mCCUYIMMVf1F/kHGgSiO4aYsPKiXvU6D7709qhDsRQ4SD/7mm3awXAPaBroq8+io68Tr
+         3e3StDsZkdGbOuR7jWwkB9L555ZYgNu0R+hSlIPWfsFHc4qWMoc9THJ2bGahEUpXBKNN
+         yTQg==
+X-Gm-Message-State: AOAM530NKLRjKk1JNyBXwHiQ3Ye64NEnCEphfZbaKLLcTb0rZQj5guYv
+        xcPHhvwJQrcB+jtuySe65T0wkGf3rQ==
+X-Google-Smtp-Source: ABdhPJyVSite1pPGTTftSDTK7l36VHDV4isRe9O0zCSKKB0eZf7aoJv+25qyfCaDRyboBUcN8r/wAA==
+X-Received: by 2002:a05:6000:1288:: with SMTP id f8mr20590161wrx.62.1595866833575;
+        Mon, 27 Jul 2020 09:20:33 -0700 (PDT)
+Received: from localhost.localdomain (82-64-1-127.subs.proxad.net. [82.64.1.127])
+        by smtp.googlemail.com with ESMTPSA id w16sm14657662wrg.95.2020.07.27.09.20.32
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 27 Jul 2020 09:20:32 -0700 (PDT)
+From:   Julien Fortin <julien@cumulusnetworks.com>
+X-Google-Original-From: Julien Fortin
+To:     netdev@vger.kernel.org
+Cc:     roopa@cumulusnetworks.com, dsahern@gmail.com,
+        Julien Fortin <julien@cumulusnetworks.com>
+Subject: [PATCH iproute2-next master v2] bridge: fdb show: fix fdb entry state output (+ add json support)
+Date:   Mon, 27 Jul 2020 18:20:09 +0200
+Message-Id: <20200727162009.7618-1-julien@cumulusnetworks.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20200723060908.50081-1-hch@lst.de> <20200723060908.50081-13-hch@lst.de>
- <20200727150310.GA1632472@zx2c4.com> <20200727150601.GA3447@lst.de>
-In-Reply-To: <20200727150601.GA3447@lst.de>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 27 Jul 2020 18:16:32 +0200
-X-Gmail-Original-Message-ID: <CAHmME9ric=chLJayn7Erve7WBa+qCKn-+Gjri=zqydoY6623aA@mail.gmail.com>
-Message-ID: <CAHmME9ric=chLJayn7Erve7WBa+qCKn-+Gjri=zqydoY6623aA@mail.gmail.com>
-Subject: Re: [PATCH 12/26] netfilter: switch nf_setsockopt to sockptr_t
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-sctp@vger.kernel.org, linux-hams@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-can@vger.kernel.org, dccp@vger.kernel.org,
-        linux-decnet-user@lists.sourceforge.net,
-        linux-wpan@vger.kernel.org, linux-s390@vger.kernel.org,
-        mptcp@lists.01.org, lvs-devel@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-afs@lists.infradead.org,
-        tipc-discussion@lists.sourceforge.net, linux-x25@vger.kernel.org,
-        Kernel Hardening <kernel-hardening@lists.openwall.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 5:06 PM Christoph Hellwig <hch@lst.de> wrote:
->
-> On Mon, Jul 27, 2020 at 05:03:10PM +0200, Jason A. Donenfeld wrote:
-> > Hi Christoph,
-> >
-> > On Thu, Jul 23, 2020 at 08:08:54AM +0200, Christoph Hellwig wrote:
-> > > diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-> > > index da933f99b5d517..42befbf12846c0 100644
-> > > --- a/net/ipv4/ip_sockglue.c
-> > > +++ b/net/ipv4/ip_sockglue.c
-> > > @@ -1422,7 +1422,8 @@ int ip_setsockopt(struct sock *sk, int level,
-> > >                     optname != IP_IPSEC_POLICY &&
-> > >                     optname != IP_XFRM_POLICY &&
-> > >                     !ip_mroute_opt(optname))
-> > > -           err = nf_setsockopt(sk, PF_INET, optname, optval, optlen);
-> > > +           err = nf_setsockopt(sk, PF_INET, optname, USER_SOCKPTR(optval),
-> > > +                               optlen);
-> > >  #endif
-> > >     return err;
-> > >  }
-> > > diff --git a/net/ipv4/netfilter/ip_tables.c b/net/ipv4/netfilter/ip_tables.c
-> > > index 4697d09c98dc3e..f2a9680303d8c0 100644
-> > > --- a/net/ipv4/netfilter/ip_tables.c
-> > > +++ b/net/ipv4/netfilter/ip_tables.c
-> > > @@ -1102,7 +1102,7 @@ __do_replace(struct net *net, const char *name, unsigned int valid_hooks,
-> > >  }
-> > >
-> > >  static int
-> > > -do_replace(struct net *net, const void __user *user, unsigned int len)
-> > > +do_replace(struct net *net, sockptr_t arg, unsigned int len)
-> > >  {
-> > >     int ret;
-> > >     struct ipt_replace tmp;
-> > > @@ -1110,7 +1110,7 @@ do_replace(struct net *net, const void __user *user, unsigned int len)
-> > >     void *loc_cpu_entry;
-> > >     struct ipt_entry *iter;
-> > >
-> > > -   if (copy_from_user(&tmp, user, sizeof(tmp)) != 0)
-> > > +   if (copy_from_sockptr(&tmp, arg, sizeof(tmp)) != 0)
-> > >             return -EFAULT;
-> > >
-> > >     /* overflow check */
-> > > @@ -1126,8 +1126,8 @@ do_replace(struct net *net, const void __user *user, unsigned int len)
-> > >             return -ENOMEM;
-> > >
-> > >     loc_cpu_entry = newinfo->entries;
-> > > -   if (copy_from_user(loc_cpu_entry, user + sizeof(tmp),
-> > > -                      tmp.size) != 0) {
-> > > +   sockptr_advance(arg, sizeof(tmp));
-> > > +   if (copy_from_sockptr(loc_cpu_entry, arg, tmp.size) != 0) {
-> > >             ret = -EFAULT;
-> > >             goto free_newinfo;
-> > >     }
-> >
-> > Something along this path seems to have broken with this patch. An
-> > invocation of `iptables -A INPUT -m length --length 1360 -j DROP` now
-> > fails, with
-> >
-> > nf_setsockopt->do_replace->translate_table->check_entry_size_and_hooks:
-> >   (unsigned char *)e + e->next_offset > limit  ==>  TRUE
-> >
-> > resulting in the whole call chain returning -EINVAL. It bisects back to
-> > this commit. This is on net-next.
->
-> This is another use o sockptr_advance that Ido already found a problem
-> in.  I'm looking into this at the moment..
+From: Julien Fortin <julien@cumulusnetworks.com>
 
-I haven't seen Ido's patch, but it seems clear the issue is that you
-want to call `sockptr_advance(&arg, sizeof(tmp))`, and adjust
-sockptr_advance to take a pointer.
+bridge json fdb show is printing an incorrect / non-machine readable
+value, when using -j (json output) we are expecting machine readable
+data that shouldn't require special handling/parsing.
 
-Slight concern about the whole concept:
+$ bridge -j fdb show | \
+python -c \
+'import sys,json;print(json.dumps(json.loads(sys.stdin.read()),indent=4))'
+[
+    {
+	"master": "br0",
+	"mac": "56:23:28:4f:4f:e5",
+	"flags": [],
+	"ifname": "vx0",
+	"state": "state=0x80"  <<<<<<<<< with the patch: "state": "0x80"
+    }
+]
 
-Things are defined as
+This patch also fixes the non-json output, from:
+    state=0x42
+to:
+    state 0x42
 
-typedef union {
-        void            *kernel;
-        void __user     *user;
-} sockptr_t;
-static inline bool sockptr_is_kernel(sockptr_t sockptr)
-{
-        return (unsigned long)sockptr.kernel >= TASK_SIZE;
-}
+This will only be displayed if the FDB entry has an unknown value.
 
-So what happens if we have some code like:
+Fixes: c7c1a1ef51aea7c ("bridge: colorize output and use JSON print library")
 
-sockptr_t sp;
-init_user_sockptr(&sp, user_controlled_struct.extra_user_ptr);
-sockptr_advance(&sp, user_controlled_struct.some_big_offset);
-copy_to_sockptr(&sp, user_controlled_struct.a_few_bytes,
-sizeof(user_controlled_struct.a_few_bytes));
+Signed-off-by: Julien Fortin <julien@cumulusnetworks.com>
+---
+ bridge/fdb.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-With the user controlling some_big_offset, he can convert the user
-sockptr into a kernel sockptr, causing the subsequent copy_to_sockptr
-to be a vanilla memcpy, after which a security disaster ensues.
+diff --git a/bridge/fdb.c b/bridge/fdb.c
+index d1f8afbe..765f4e51 100644
+--- a/bridge/fdb.c
++++ b/bridge/fdb.c
+@@ -62,7 +62,10 @@ static const char *state_n2a(unsigned int s)
+ 	if (s & NUD_REACHABLE)
+ 		return "";
+ 
+-	sprintf(buf, "state=%#x", s);
++	if (is_json_context())
++		sprintf(buf, "%#x", s);
++	else
++		sprintf(buf, "state %#x", s);
+ 	return buf;
+ }
+ 
+-- 
+2.27.0
 
-Maybe sockptr_advance should have some safety checks and sometimes
-return -EFAULT? Or you should always use the implementation where
-being a kernel address is an explicit bit of sockptr_t, rather than
-being implicit?
