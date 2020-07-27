@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A32CA22F3B2
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 17:19:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB7CE22F3B5
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 17:19:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729363AbgG0PTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 11:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46250 "EHLO
+        id S1730048AbgG0PT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 11:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728297AbgG0PTh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 11:19:37 -0400
+        with ESMTP id S1728297AbgG0PT4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 11:19:56 -0400
 Received: from mail-ua1-x943.google.com (mail-ua1-x943.google.com [IPv6:2607:f8b0:4864:20::943])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F75C061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 08:19:37 -0700 (PDT)
-Received: by mail-ua1-x943.google.com with SMTP id r63so5497832uar.9
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 08:19:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD39C061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 08:19:55 -0700 (PDT)
+Received: by mail-ua1-x943.google.com with SMTP id j21so5504953ual.11
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 08:19:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=EDxI6+unuaO92kJtiTYraiotuz9XLYGTumhWQV0g77c=;
-        b=R5lb6GQvXOIXEhZS+g6hBMlbkczsHjLt52+NSSdISJuIRbfBFYC6oyQIYdLvaDpo6+
-         tUIirH3dPl6yfYQXrWmBgBsAb6q9kCFx2jnhIl/AJoKo85+udxr4t2iRy+m09UP5ZDGM
-         NH4AoEvLgZl0GbFliqbOJwaVMpbjTAlo1Xu4B62vl4bVhV2QYqcHILe8dFvyIq9MHlkm
-         UtN5cgE3KDQ68AXuOOeObwrN3ZbV9RyO6hTh4OcERHQlIMc4CwmnD/+Cj/Jb7wPD4rt4
-         PsNfpCG+dfY0sb0EFXZU8C/lSDEaz4PASvmu/ef54b6ozgjIz5FG0jwzNxjM7x1vEtNJ
-         cmFg==
+        bh=Q4U5zuhIATNnRf0A4WQyT28oybMArFXXEFCl7nS55j8=;
+        b=aSU0p2b6XzobLyIWooJz29y+4PiIAb6qzgBx76qtDDKAO6WGdludj3uNz4nAnlJEoQ
+         mxnKZg6jm7t03bw+UM3kXmZ6pL3pR+uMvwILo2NBPb/51tZ7XoDQciXbKfmmtZHIrRfb
+         Wj70RSrwyBlen8X45eezXa9cb4k/qd/kQjTOyiMEw09lfrzF0fYTQARDZ8w+WcBVkgqC
+         vRMbzCC2kh2SmjUfS12qg0KOkw/wdxF83g8yDIMGwAxr3nSvwdzCaYBqC65uqAHUgzPm
+         ykz5Fafe1nzJrwlvTqb5jy7ffeH94V4zfNGNbE+80f6LTfzIKt3TTQCJS+DpBeeeV5Zg
+         E3cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EDxI6+unuaO92kJtiTYraiotuz9XLYGTumhWQV0g77c=;
-        b=ZSmftNNIyuzOvMhJgL9AGh9Iq5o+HEWbAh0eOFqjDjle9edTwIKaOqnDzbxQMg+PYA
-         oHbsjXuL62o5n2kMSlOFVNggq9SKwIm5DuxPtq7L0rxBN/zi0rDU7M0HJo3xvscpuY4m
-         v+RVchThJeoaTJB82zUPrHgYTd9hHMNCBs9UfrPQPAi+mPS54LuGCRj84FDsLXpqHKtp
-         VWHUfdhAxq7uALF8cF1UQlIDiIqgzleCwTBYC5Iue21T1Qfal7+Obic6fSkmguHXUxlb
-         ECgWLv9GBsNTp3LIoQr5UFCoXwzkPZiA8WmAKKHb58S2NNgm6jdffjFeapOAJFfEj/z3
-         p1Mw==
-X-Gm-Message-State: AOAM531U0PfGs/ONcp9ZuBAaXXXYleIdamLNc/L/RH4V2kAatPF6+8ix
-        BLCFR2C+P9Dh12KQ6RI8Jb3PcR/kiXieeYhy98m7IA==
-X-Google-Smtp-Source: ABdhPJyo574sdke60BsqPHDu+Woo7YGwrO8bownFPxw+4y0ecWQolq+j36sHVlEA2mUIRgfeIwKsx9LQ36P98C4RQBo=
-X-Received: by 2002:ab0:5e01:: with SMTP id z1mr17066020uag.118.1595863176058;
- Mon, 27 Jul 2020 08:19:36 -0700 (PDT)
+        bh=Q4U5zuhIATNnRf0A4WQyT28oybMArFXXEFCl7nS55j8=;
+        b=ainaThWel1JFGuYPfwYhpMNDcc3dFd+u2JB78Kcq8PasVb3w9XAxG3ZTT1OAP5lpwi
+         BJ+kqzzOSIv1iH+vpDH+OVFNzswOm7frCWpdaZd9S5Fo+wbn7WflDHQm66xx+ZUgX++m
+         2WTLSjAiHSdDfPXgvcLD2s8E+gwhJxJI77FczS47aqpuSGQNRgbGAXlCHWja3cU+l4C8
+         gBwZom/bhsrkle3IEm94ODJVLSWIxDrC92r39hKg1XcjtDXrXYqIsxJzjOAtIlrGG+i6
+         yrN0WJ1Hmg/2nCl9TiyR3uWRuZJU2lt027/+kAAJXfWlnqAC06FPGEl5z3FralvHNaJ+
+         H2rA==
+X-Gm-Message-State: AOAM531LLWp1W+g9NaTQbToWlRp7izJ15g5N7YqQShyubwG18NVkyrdG
+        361e1e2G4GxxJ6rxpbtFT5KvKJMwfU6rudYoBp+w1g==
+X-Google-Smtp-Source: ABdhPJwebd9qsFLejcD9fpRNQdeyMd4ou8zrMuggB5bGDqZ4RBQKjP31F4S41A/oYRjA2KF09mml5hsiY1D1lrWyQTQ=
+X-Received: by 2002:ab0:a8a:: with SMTP id d10mr1864953uak.41.1595863194686;
+ Mon, 27 Jul 2020 08:19:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727052846.4070247-1-jonathan.lemon@gmail.com> <20200727052846.4070247-14-jonathan.lemon@gmail.com>
-In-Reply-To: <20200727052846.4070247-14-jonathan.lemon@gmail.com>
+References: <20200727052846.4070247-1-jonathan.lemon@gmail.com> <20200727052846.4070247-16-jonathan.lemon@gmail.com>
+In-Reply-To: <20200727052846.4070247-16-jonathan.lemon@gmail.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 27 Jul 2020 08:19:24 -0700
-Message-ID: <CANn89i+nXhXzxC3C+UY0xAMFeUxZSSD8R5MP2mmttjZa+5-Hxg@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 13/21] net/tcp: Pad TCP options out to a fixed size
- for netgpu
+Date:   Mon, 27 Jul 2020 08:19:43 -0700
+Message-ID: <CANn89iJ5vyx0WqdKTB3uHaWJrG-3jNXqXs6r7PacSqg0jRsRKA@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 15/21] net/tcp: add MSG_NETDMA flag for sendmsg()
 To:     Jonathan Lemon <jonathan.lemon@gmail.com>
 Cc:     netdev <netdev@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
         Christoph Hellwig <hch@lst.de>,
@@ -73,62 +72,48 @@ X-Mailing-List: netdev@vger.kernel.org
 On Mon, Jul 27, 2020 at 12:51 AM Jonathan Lemon
 <jonathan.lemon@gmail.com> wrote:
 >
-> From: Jonathan Lemon <bsd@fb.com>
->
-> The "header splitting" feature used by netgpu doesn't actually parse
-> the incoming packet header.  Instead, it splits the packet at a fixed
-> offset.  In order for this to work, the sender needs to send packets
-> with a fixed header size.
+> This flag indicates that the attached data is a zero-copy send,
+> and the pages should be retrieved from the netgpu module.  The
+> socket should should already have been attached to a netgpu queue.
 >
 > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 > ---
->  net/ipv4/tcp_output.c | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
+>  include/linux/socket.h | 1 +
+>  net/ipv4/tcp.c         | 8 ++++++++
+>  2 files changed, 9 insertions(+)
 >
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index d8f16f6a9b02..e8a74d0f7ad2 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -438,6 +438,7 @@ struct tcp_out_options {
->         u8 ws;                  /* window scale, 0 to disable */
->         u8 num_sack_blocks;     /* number of SACK blocks to include */
->         u8 hash_size;           /* bytes in hash_location */
-> +       u8 pad_size;            /* additional nops for padding */
->         __u8 *hash_location;    /* temporary pointer, overloaded */
->         __u32 tsval, tsecr;     /* need to include OPTION_TS */
->         struct tcp_fastopen_cookie *fastopen_cookie;    /* Fast open cookie */
-> @@ -562,6 +563,17 @@ static void tcp_options_write(__be32 *ptr, struct tcp_sock *tp,
->         smc_options_write(ptr, &options);
+> diff --git a/include/linux/socket.h b/include/linux/socket.h
+> index 04d2bc97f497..63816cc25dee 100644
+> --- a/include/linux/socket.h
+> +++ b/include/linux/socket.h
+> @@ -310,6 +310,7 @@ struct ucred {
+>                                           */
 >
->         mptcp_options_write(ptr, opts);
-> +
-> +#if IS_ENABLED(CONFIG_NETGPU)
-> +       /* pad out options */
-> +       if (opts->pad_size) {
-> +               int len = opts->pad_size;
-> +               u8 *p = (u8 *)ptr;
-> +
-> +               while (len--)
-> +                       *p++ = TCPOPT_NOP;
-> +       }
-> +#endif
->  }
->
->  static void smc_set_option(const struct tcp_sock *tp,
-> @@ -826,6 +838,14 @@ static unsigned int tcp_established_options(struct sock *sk, struct sk_buff *skb
->                         opts->num_sack_blocks * TCPOLEN_SACK_PERBLOCK;
+>  #define MSG_ZEROCOPY   0x4000000       /* Use user data in kernel path */
+> +#define MSG_NETDMA     0x8000000
+>  #define MSG_FASTOPEN   0x20000000      /* Send data in TCP SYN */
+>  #define MSG_CMSG_CLOEXEC 0x40000000    /* Set close_on_exec for file
+>                                            descriptor received through
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 261c28ccc8f6..340ce319edc9 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -1214,6 +1214,14 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+>                         uarg->zerocopy = 0;
 >         }
 >
-> +#if IS_ENABLED(CONFIG_NETGPU)
-> +       /* force padding */
-> +       if (size < 20) {
-> +               opts->pad_size = 20 - size;
-> +               size += opts->pad_size;
+> +       if (flags & MSG_NETDMA && size && sock_flag(sk, SOCK_ZEROCOPY)) {
+> +               zc = sk->sk_route_caps & NETIF_F_SG;
+> +               if (!zc) {
+> +                       err = -EFAULT;
+> +                       goto out_err;
+> +               }
 > +       }
-> +#endif
-> +
+>
 
-This is obviously wrong, as any kernel compiled with CONFIG_NETGPU
-will fail all packetdrill tests suite.
+Sorry, no, we can not allow adding yet another branch into TCP fast
+path for yet another variant of zero copy.
 
-Also the fixed 20 value is not pretty.
+Overall, I think your patch series desperately tries to add changes in
+TCP stack, while there is yet no proof
+that you have to use TCP transport between the peers.
