@@ -2,77 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84AFE22FC13
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 00:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E693722FBFF
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 00:20:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726821AbgG0WXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 18:23:15 -0400
-Received: from mga11.intel.com ([192.55.52.93]:58725 "EHLO mga11.intel.com"
+        id S1726956AbgG0WUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 18:20:07 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58262 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726171AbgG0WXP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 18:23:15 -0400
-IronPort-SDR: xkRFADb0dvweukAjW17Es5Xe1Q0EEBFRtUqPmSbG8cS1w4LnEwJGDDGT68ZpKhvLV+of29goDB
- crbnYKRPUi6A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="148986265"
-X-IronPort-AV: E=Sophos;i="5.75,404,1589266800"; 
-   d="scan'208";a="148986265"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 15:23:15 -0700
-IronPort-SDR: ajTQdtp3nHe4k5c5h3mh08mkr90jRXzVLUCNW7DoNNS8FR4WE+M7491PnnZ0jhEuwlZzAokYOo
- L9APzMB8kGkw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,404,1589266800"; 
-   d="scan'208";a="464219018"
-Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-stp-glorfindel.jf.intel.com) ([10.166.241.33])
-  by orsmga005.jf.intel.com with ESMTP; 27 Jul 2020 15:23:14 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Michal Kubecek <mkubecek@suse.cz>,
-        netdev@vger.kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>
-Subject: [ethtool] ethtool: use "Not reported" when no FEC modes are provided
-Date:   Mon, 27 Jul 2020 15:19:52 -0700
-Message-Id: <20200727221952.6659-1-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.26.2
+        id S1726171AbgG0WUH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 18:20:07 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1k0BTY-007ARg-Du; Tue, 28 Jul 2020 00:20:04 +0200
+Date:   Tue, 28 Jul 2020 00:20:04 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
+Message-ID: <20200727222004.GE1705504@lunn.ch>
+References: <20200727204731.1705418-1-andrew@lunn.ch>
+ <20200727150534.749dac4a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200727150534.749dac4a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When displaying the FEC link modes advertised by the peer, we used the
-string "No" to indicate when nothing was provided. This does not match
-the IOCTL output which indicates "Not reported". It also doesn't match
-the local advertised FEC modes, which also used the "Not reported"
-string.
+On Mon, Jul 27, 2020 at 03:05:34PM -0700, Jakub Kicinski wrote:
+> On Mon, 27 Jul 2020 22:47:28 +0200 Andrew Lunn wrote:
+> > RFC Because it needs 0-day build testing
+> 
+> Looks like allmodconfig falls over on patches 2 and 3.
+> 
+> make[6]: *** No rule to make target 'drivers/net/phy/phy/mscc/mscc_ptp.o', needed by 'drivers/net/phy/phy/mscc/mscc.o'.  Stop.
 
-This is especially confusing for FEC, because the FEC bits include
-a "None" bit which indicates that FEC is definitely not supported. Avoid
-this confusion and match both the local advertised settings display and
-the old IOCTL output by using "Not reported" when FEC settings aren't
-reported.
+Thanks Jakub. My desktop machine takes its time with allmodconfig
+builds.
 
-Reported-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
----
- netlink/settings.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+mscc_ptp.c & mscc_ptp.h got added after my first implementation. When
+i rebased they got left in there old location.
 
-diff --git a/netlink/settings.c b/netlink/settings.c
-index 29557653336e..5616cb2f7b6f 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -473,7 +473,7 @@ static int dump_peer_modes(struct nl_context *nlctx, const struct nlattr *attr)
- 
- 	ret = dump_link_modes(nlctx, attr, true, LM_CLASS_FEC,
- 			      "Link partner advertised FEC modes: ",
--			      " ", "\n", "No");
-+			      " ", "\n", "Not reported");
- 	return ret;
- }
- 
--- 
-2.26.2
+I fixed it, and pushed my branch out. 0-day should run some tests on
+it. Lets see if it finds anything else.
 
+    Andrew
