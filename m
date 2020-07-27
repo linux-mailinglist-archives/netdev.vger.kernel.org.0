@@ -2,197 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FDB822E41F
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 04:53:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AE3422E42D
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 05:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727877AbgG0Cxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 22:53:53 -0400
-Received: from mail-am6eur05on2087.outbound.protection.outlook.com ([40.107.22.87]:17441
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726689AbgG0Cxw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Jul 2020 22:53:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h7rr/U0Z2jpjNDbaze7dq5G8iBdO3Yj1oIT0fwJj9L5Jpv14QNpCq7eTcjLtUUa4ChEFM4XIzBiqqNTdeZaXG+j82l01ELUFoJi0TIJUIsgvvLbxRrEkv1C6hMBqdz5cNZL0sjQOwvCtRpfeD2xixxApfbqler8t37oPSMc2IeDpBvQHkYtWiSDXxBtG6ipKaBlnO7DonkQu2gemSHP1qaUIFZs01owDWsqlVuIGsBDHFl/1RlwDldjmXyLnQzOV53tKATqWPCN3osJvugKlmwXR1pwezzjaHd//xhC4ogk+/LHfqMLPU4fILxr+BRqd7Kr3YT/vajJt7AShM077bg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3hbTk0Uv6fhwrhHrWPinOVzZvVa5lR7P31UWAIkH/lI=;
- b=cvAxZmPLvHLpU5MHIzVuGNOupmTg3pQl1y2kccOTG2oIcM/RRwH5C6fFX4cLFx5boxQcjIXE1sJlhHuAbpEjbkXLAGw02QqcEo80U0NlFsatErpKO6c8JA2MjdjdLdfwIe7lpBaYF6g6ng0tFRsAFnUUn9/HIAhWYuwbMUcsv2mzQJF+NOfve1nKr5ksq49710/kW32ea2UZRdbB6+W7MFXEOqrTIYmaHhw0DQBipsoHqPa8messXcCKqoSu4Xcl8uPTNE0oQGeX8v2hSvic5Y9YXQi6CGXNXzixSV3kFtz1X03V+ww83UuNcv2dSc6JMZDRlk3XBFdSdJeIw9cZVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3hbTk0Uv6fhwrhHrWPinOVzZvVa5lR7P31UWAIkH/lI=;
- b=roFZYq+A51/JGjFO/ZWGzXzk3jJHqRDMtHs0thhuoWXqc+VEe5PPPQ2MXRXiixZp5o97WIvZJrupZjLLYSpy4uTogadj580fdeOJMtghNMiNSstycY/8UBRNSwj+PPA71flhRBTc+4Wl40/zG5zbz88XmGj/nOxLPzzpE0DYnCY=
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- (2603:10a6:209:12::18) by AM5PR04MB3076.eurprd04.prod.outlook.com
- (2603:10a6:206:5::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.22; Mon, 27 Jul
- 2020 02:51:13 +0000
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::75d9:c8cb:c564:d17f]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::75d9:c8cb:c564:d17f%5]) with mapi id 15.20.3216.033; Mon, 27 Jul 2020
- 02:51:13 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Chris Healy <cphealy@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
+        id S1726820AbgG0DBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 23:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44572 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726044AbgG0DBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 23:01:39 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FBDC0619D2
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 20:01:38 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id 140so8168858lfi.5
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 20:01:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JA7ay6HbVK9YvTVVzBYfy6CrLlBGd0hvGBZ5WImuGos=;
+        b=Q4+87R/4andiEvAnxgrkrVPRUXuPK4g8gmVsWha5cEMzd+RHyp51mEOnzI/KBorila
+         ECon42L+Fx6k+sDYSX52JVJ11I4ZUhX8JU1iYmI2DZAe7l7SIc71aj1s2gWJjysLN2X+
+         EpEPn+G6OQhXyATywtQ0gzPjwPQCJLRprNBC3OXgwEUzaUz80shuyd67tKXoHpCLiWSJ
+         XgpxM0HoFoEauEoR25iYUVa6SUgbY0c4ji8UDOMz3Yjwto57ZIAIJaApEU1+VHyq6xMa
+         pn9h193ZeEKA8hYrHwlgxKhoLMIe6NeIutblbpt+/Oom+KpArzMWuxIoA2UxYXLiJ+06
+         8ZKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JA7ay6HbVK9YvTVVzBYfy6CrLlBGd0hvGBZ5WImuGos=;
+        b=BN2+EDmX2hYPtD0/+kienQPSZFVYgXJcjMIlrdz+T7PVqZE6DI80I6X9O8moI7kB29
+         7AB8VRP+xlYNpR7qMWlPx4fepKgBU3CJRyp4Oni5+8k6quZe7UqR/98/XfaefqDVvS5X
+         N4gTEM5VcRDYOHxXoonF2MlA7dNWw7CHjJ55N4zfMu5Flkf+SQc6063xDE8Wh6UWHtM5
+         70kawvnb6r/ICpZFKJZa5p+epgUHBpBMDrhMyl14i7CUsadJGyQp1uHY9J/zOAR55zbk
+         yeQOqCj3Xk+Hdzb2Psvni9Ygx1Gz6Xl3CZpvxtL0ucW/7REa63nGBjtderxSWUdpyAFT
+         MTCQ==
+X-Gm-Message-State: AOAM530jICVWUqZbmJfDjTqghxKslccfytjn2DAnq434ZbSHqYENSGQH
+        gzdo6n/ccu3Ou10v2nsgSnf9Pc8d56VVCGap0i4=
+X-Google-Smtp-Source: ABdhPJxKD3Guyf2FLc1NAUCgwVMxO8i6vJAAQPm6BPXD4cdvQesfFNrAu1F9NNcF6voUyxa1lt0hbitNNsp8WrmNB8c=
+X-Received: by 2002:a19:ec12:: with SMTP id b18mr10720236lfa.52.1595818897417;
+ Sun, 26 Jul 2020 20:01:37 -0700 (PDT)
+MIME-Version: 1.0
+References: <1587996484-3504-1-git-send-email-fugang.duan@nxp.com>
+ <20200727012354.GT28704@pendragon.ideasonboard.com> <20200727020631.GW28704@pendragon.ideasonboard.com>
+ <20200727021432.GM1661457@lunn.ch> <20200727023310.GA23988@pendragon.ideasonboard.com>
+ <CAFXsbZrf11Nj4rzLJfisPr-fFo-+stt-G3-XQ_Mwus_2z0nsAg@mail.gmail.com> <CAFXsbZrysb6SGisEhgXHzj8NZ5o_EjY-rtiqg3gypgr0w-d-dw@mail.gmail.com>
+In-Reply-To: <CAFXsbZrysb6SGisEhgXHzj8NZ5o_EjY-rtiqg3gypgr0w-d-dw@mail.gmail.com>
+From:   Chris Healy <cphealy@gmail.com>
+Date:   Sun, 26 Jul 2020 20:01:25 -0700
+Message-ID: <CAFXsbZpBP_kzsC_dLYezJWo7+dQufoRmaFpJgKJbnn6T=sc5QA@mail.gmail.com>
+Subject: Re: [RESENT PATCH net--stat 1/1] net: ethernet: fec: Revert "net:
+ ethernet: fec: Replace interrupt driven MDIO with polled IO"
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Fugang Duan <fugang.duan@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
         Martin Fuzzey <martin.fuzzey@flowbird.group>
-Subject: RE: [EXT] Re: [RESENT PATCH net--stat 1/1] net: ethernet: fec: Revert
- "net: ethernet: fec: Replace interrupt driven MDIO with polled IO"
-Thread-Topic: [EXT] Re: [RESENT PATCH net--stat 1/1] net: ethernet: fec:
- Revert "net: ethernet: fec: Replace interrupt driven MDIO with polled IO"
-Thread-Index: AQHWHJ35TIhHNJvOOU6ZoGvu1J9lW6kbL/IAgAAL6YCAAAI9AIAABTUAgAAAwICAAAE2gIAAAcxg
-Date:   Mon, 27 Jul 2020 02:51:12 +0000
-Message-ID: <AM6PR0402MB3607509038E7D8F782A305F3FF720@AM6PR0402MB3607.eurprd04.prod.outlook.com>
-References: <1587996484-3504-1-git-send-email-fugang.duan@nxp.com>
- <20200727012354.GT28704@pendragon.ideasonboard.com>
- <20200727020631.GW28704@pendragon.ideasonboard.com>
- <20200727021432.GM1661457@lunn.ch>
- <20200727023310.GA23988@pendragon.ideasonboard.com>
- <CAFXsbZrf11Nj4rzLJfisPr-fFo-+stt-G3-XQ_Mwus_2z0nsAg@mail.gmail.com>
- <CAFXsbZrysb6SGisEhgXHzj8NZ5o_EjY-rtiqg3gypgr0w-d-dw@mail.gmail.com>
-In-Reply-To: <CAFXsbZrysb6SGisEhgXHzj8NZ5o_EjY-rtiqg3gypgr0w-d-dw@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-Mentions: cphealy@gmail.com,laurent.pinchart@ideasonboard.com
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.67]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 3b430fdb-fa11-4180-536c-08d831d7ec9c
-x-ms-traffictypediagnostic: AM5PR04MB3076:
-x-microsoft-antispam-prvs: <AM5PR04MB307658A05B92279CBCD7EB4BFF720@AM5PR04MB3076.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 11bn42/oEWYilXCpts+K83wgYoc2263+Fo7U9KDm9CYrxF5SKmK9DTkQ8Ca8oDFOcW+4VM7pNqJWalyXXpN0uIKqRiEdqZFzZl7nRwC68jUb/cU3nX11MOoIB2ZILwSkf6GyBv6TDAnvTCKwt1uQLPoA4vDCqKpaYBf5Aqd99XdO9titNt3e9uliwv1Ykhf0LPQXLlyD1z9t9MALQ1WgW2wWiJFBIOGP2ciUyFUja3vfqqGbZrL7Cdl83p8a6AtzkD9b7yhfAqEE6cqsKnleJDfrb6mije6hEi/ioAzh9w7lXcKfPCYF2Pu7R0tNAkvwMY0JsYah2P7Z18rsW9LK5SKNDWUpsOKARR394SXM/6bFmnYdX+9ong1zuNiF7S0r
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(396003)(346002)(376002)(136003)(39860400002)(6506007)(53546011)(5660300002)(52536014)(4326008)(2906002)(26005)(83380400001)(55016002)(33656002)(71200400001)(8936002)(66476007)(66556008)(66446008)(64756008)(76116006)(66946007)(9686003)(8676002)(7696005)(54906003)(478600001)(186003)(316002)(86362001)(110136005)(101420200001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: YHpjmLkN+AZnzgbbxLKdVP9XSF5bjQmLo3VfCc0QneTonA2tlqiB4kXjGdnaVnnG9L5+rMOsqpzqXToCsG8vOdfzL/wHu0joaXFmh1qAwUs8By3IVdVweYELUPDqG34118SuaGIQNFmRe4S5mlCamS3dvelkm63MPT0wD/GL+7jzJ5BMgBhYoFl67dllpsbvqDUn71B9wKMjThwl5QmPuiRiWI0Vupo3STgA9unmK3r2FFejBZC61+Nm7dPXoXmwBD5AGI8h8q8iFUGdjfIsBg6iS3QkoDIuJ0q9L1DBYithw++tCz4qBwY+LSpd1stbxzEvN2ZjWcSvvoEzHgb6j/DgJxMfbgGUrIVo3+G6npfodHQYvaNNFu9EdfzUWVyZN362WCU+kL71VRl0TMCMaEZG9VOqhxa1CFXg3717aeQohQNg3bvUwHGxypY5AvO9hZx3pZmrMw3Ot/uUEblcYNpmvV51/udM39de0PdD9iA=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR0402MB3607.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b430fdb-fa11-4180-536c-08d831d7ec9c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jul 2020 02:51:12.8004
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: LDsDqj+l1KodZ5/E3QOwlvftZJ6AS/SFRXjwujD+iQrV7xKPdWhe7ByDSu7kj5vmqmbzeRheh9r4r4GrUW3AQw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR04MB3076
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQ2hyaXMgSGVhbHkgPGNwaGVhbHlAZ21haWwuY29tPiBTZW50OiBNb25kYXksIEp1bHkg
-MjcsIDIwMjAgMTA6NDAgQU0NCj4gQWN0dWFsbHksIEkgd2FzIGEgbGl0dGxlIHF1aWNrIHRvIHNh
-eSBpdCB3ZW50IGZyb20gYnJva2VuIHRvIHdvcmtpbmcuDQo+IA0KPiBXaXRoIG5ldC1uZXh0LCBJ
-J20gZ2V0dGluZyBDUkMgZXJyb3JzIG9uIDEwMCUgb2YgaW5ib3VuZCBwYWNrZXRzLg0KPiBXaXRo
-IGJjZjM0NDBjNmRkNzhiZmU1ODM2ZWMwOTkwZmUzNmQ3YjRiYjdkMjAgcmV2ZXJ0ZWQsIEkgZHJv
-cCBkb3duIHRvIGENCj4gMSUgZXJyb3IgcmF0ZS4NCj4gDQo+IFRoaXMgdmVyeSBtdWNoIGZlZWxz
-IGxpa2UgYSBLU1o5MDMxIFJHTUlJIHRpbWluZyBpc3N1ZSB0byBtZS4uLg0KDQpAQ2hyaXMvQExh
-dXJlbnQsIEkgcnVuIG5ldC1uZXh0IG9uIGlteDdkIHNkYiBib2FyZCB3aXRoIEJDTTU0MjIwIHN3
-aXRjaCBQSFksDQp0aGVyZSBoYXZlIG5vIE5GUyBib290IGlzc3VlLCBubyBjcmMgZXJyb3IgaXNz
-dWUgYnkgcmVjZXZpbmcgMS4xR2lCIGRhdGEuDQoNCn4jIGlmY29uZmlnDQpldGgwICAgICAgTGlu
-ayBlbmNhcDpFdGhlcm5ldCAgSFdhZGRyIDAwOjIwOjMwOjQwOjUwOjAyDQogICAgICAgICAgaW5l
-dCBhZGRyOjEwLjE5Mi4yNDIuMjAyICBCY2FzdDoxMC4xOTIuMjQyLjI1NSAgTWFzazoyNTUuMjU1
-LjI1NS4wDQogICAgICAgICAgaW5ldDYgYWRkcjogZmU4MDo6MjIwOjMwZmY6ZmU0MDo1MDAyLzY0
-IFNjb3BlOkxpbmsNCiAgICAgICAgICBVUCBCUk9BRENBU1QgUlVOTklORyBNVUxUSUNBU1QgIE1U
-VToxNTAwICBNZXRyaWM6MQ0KICAgICAgICAgIFJYIHBhY2tldHM6ODUzODg1IGVycm9yczowIGRy
-b3BwZWQ6MCBvdmVycnVuczowIGZyYW1lOjANCiAgICAgICAgICBUWCBwYWNrZXRzOjIyMzcwIGVy
-cm9yczowIGRyb3BwZWQ6MCBvdmVycnVuczowIGNhcnJpZXI6MA0KICAgICAgICAgIGNvbGxpc2lv
-bnM6MCB0eHF1ZXVlbGVuOjEwMDANCiAgICAgICAgICBSWCBieXRlczoxMjg0NjY2NzM0ICgxLjEg
-R2lCKSAgVFggYnl0ZXM6MzE0NzYxNyAoMy4wIE1pQikNCg0KbG8gICAgICAgIExpbmsgZW5jYXA6
-TG9jYWwgTG9vcGJhY2sNCiAgICAgICAgICBpbmV0IGFkZHI6MTI3LjAuMC4xICBNYXNrOjI1NS4w
-LjAuMA0KICAgICAgICAgIGluZXQ2IGFkZHI6IDo6MS8xMjggU2NvcGU6SG9zdA0KICAgICAgICAg
-IFVQIExPT1BCQUNLIFJVTk5JTkcgIE1UVTo2NTUzNiAgTWV0cmljOjENCiAgICAgICAgICBSWCBw
-YWNrZXRzOjMyMiBlcnJvcnM6MCBkcm9wcGVkOjAgb3ZlcnJ1bnM6MCBmcmFtZTowDQogICAgICAg
-ICAgVFggcGFja2V0czozMjIgZXJyb3JzOjAgZHJvcHBlZDowIG92ZXJydW5zOjAgY2Fycmllcjow
-DQogICAgICAgICAgY29sbGlzaW9uczowIHR4cXVldWVsZW46MTAwMA0KICAgICAgICAgIFJYIGJ5
-dGVzOjI0NDYwICgyMy44IEtpQikgIFRYIGJ5dGVzOjI0NDYwICgyMy44IEtpQikNCg0KfiMgdW5h
-bWUgLXINCjUuOC4wLXJjNi0wMTkxNC1nYTU3MDY2YjFhMDE5DQoNCg0KU28sIHRoZSBpc3N1ZSB5
-b3UgY2F1Z2h0IHJlbGF0ZXMgdG8gTWljcmVsIFBIWSBSR01JSSB0aW1pbmcgaXNzdWUuDQoNCg0K
-DQpSZWdhcmRzLA0KRnVnYW5nDQoNCj4gDQo+IE9uIFN1biwgSnVsIDI2LCAyMDIwIGF0IDc6MzUg
-UE0gQ2hyaXMgSGVhbHkgPGNwaGVhbHlAZ21haWwuY29tPiB3cm90ZToNCj4gPg0KPiA+IEhpIExh
-dXJlbnQsDQo+ID4NCj4gPiBJIGhhdmUgdGhlIGV4YWN0IHNhbWUgY29wcGVyIFBIWS4gIEkganVz
-dCByZXZlcnRlZCBhIHBhdGNoIHNwZWNpZmljIHRvDQo+ID4gdGhpcyBQSFkgYW5kIHdlbnQgZnJv
-bSBicm9rZW4gdG8gd29ya2luZy4gIEdpdmUgdGhpcyBhIHRyeToNCj4gPg0KPiA+IGdpdCByZXZl
-cnQgYmNmMzQ0MGM2ZGQ3OGJmZTU4MzZlYzA5OTBmZTM2ZDdiNGJiN2QyMA0KPiA+DQo+ID4gUmVn
-YXJkcywNCj4gPg0KPiA+IENocmlzDQo+ID4NCj4gPiBPbiBTdW4sIEp1bCAyNiwgMjAyMCBhdCA3
-OjMzIFBNIExhdXJlbnQgUGluY2hhcnQNCj4gPiA8bGF1cmVudC5waW5jaGFydEBpZGVhc29uYm9h
-cmQuY29tPiB3cm90ZToNCj4gPiA+DQo+ID4gPiBIaSBBbmRyZXcsDQo+ID4gPg0KPiA+ID4gT24g
-TW9uLCBKdWwgMjcsIDIwMjAgYXQgMDQ6MTQ6MzJBTSArMDIwMCwgQW5kcmV3IEx1bm4gd3JvdGU6
-DQo+ID4gPiA+IE9uIE1vbiwgSnVsIDI3LCAyMDIwIGF0IDA1OjA2OjMxQU0gKzAzMDAsIExhdXJl
-bnQgUGluY2hhcnQgd3JvdGU6DQo+ID4gPiA+ID4gT24gTW9uLCBKdWwgMjcsIDIwMjAgYXQgMDQ6
-MjQ6MDJBTSArMDMwMCwgTGF1cmVudCBQaW5jaGFydCB3cm90ZToNCj4gPiA+ID4gPiA+IE9uIE1v
-biwgQXByIDI3LCAyMDIwIGF0IDEwOjA4OjA0UE0gKzA4MDAsIEZ1Z2FuZyBEdWFuIHdyb3RlOg0K
-PiA+ID4gPiA+ID4gPiBUaGlzIHJldmVydHMgY29tbWl0IDI5YWU2YmQxYjBkOGE1N2Q3YzAwYWIx
-MmNiYjk0OWZjNDE5ODZlZWYuDQo+ID4gPiA+ID4gPiA+DQo+ID4gPiA+ID4gPiA+IFRoZSBjb21t
-aXQgYnJlYWtzIGV0aGVybmV0IGZ1bmN0aW9uIG9uIGkuTVg2U1gsIGkuTVg3RCwNCj4gPiA+ID4g
-PiA+ID4gaS5NWDhNTSwgaS5NWDhNUSwgYW5kIGkuTVg4UVhQIHBsYXRmb3Jtcy4gQm9vdCB5b2N0
-byBzeXN0ZW0NCj4gPiA+ID4gPiA+ID4gYnkgTkZTIG1vdW50aW5nIHJvb3RmcyB3aWxsIGJlIGZh
-aWxlZCB3aXRoIHRoZSBjb21taXQuDQo+ID4gPiA+ID4gPg0KPiA+ID4gPiA+ID4gSSdtIGFmcmFp
-ZCB0aGlzIGNvbW1pdCBicmVha3MgbmV0d29ya2luZyBvbiBpLk1YN0QgZm9yIG1lIDotKA0KPiA+
-ID4gPiA+ID4gTXkgYm9hcmQgaXMgY29uZmlndXJlZCB0byBib290IG92ZXIgTkZTIHJvb3Qgd2l0
-aCBJUA0KPiA+ID4gPiA+ID4gYXV0b2NvbmZpZ3VyYXRpb24gdGhyb3VnaCBESENQLiBUaGUgREhD
-UCByZXF1ZXN0IGdvZXMgb3V0LCB0aGUNCj4gPiA+ID4gPiA+IHJlcGx5IGl0IHNlbnQgYmFjayBi
-eSB0aGUgc2VydmVyLCBidXQgbmV2ZXIgbm90aWNlZCBieSB0aGUgZmVjIGRyaXZlci4NCj4gPiA+
-ID4gPiA+DQo+ID4gPiA+ID4gPiB2NS43IHdvcmtzIGZpbmUuIEFzIDI5YWU2YmQxYjBkOGE1N2Q3
-YzAwYWIxMmNiYjk0OWZjNDE5ODZlZWYNCj4gPiA+ID4gPiA+IHdhcyBtZXJnZWQgZHVyaW5nIHRo
-ZSB2NS44IG1lcmdlIHdpbmRvdywgSSBzdXNwZWN0IHNvbWV0aGluZw0KPiA+ID4gPiA+ID4gZWxz
-ZSBjcm9wcGVkIGluIGJldHdlZW4NCj4gPiA+ID4gPiA+IDI5YWU2YmQxYjBkOGE1N2Q3YzAwYWIx
-MmNiYjk0OWZjNDE5ODZlZWYgYW5kIHRoaXMgcGF0Y2ggdGhhdA0KPiA+ID4gPiA+ID4gbmVlZHMg
-dG8gYmUgcmV2ZXJ0ZWQgdG9vLiBXZSdyZSBjbG9zZSB0byB2NS44IGFuZCBpdCB3b3VsZCBiZQ0K
-PiA+ID4gPiA+ID4gYW5ub3lpbmcgdG8gc2VlIHRoaXMgcmVncmVzc2lvbiBlbmRpbmcgdXAgaW4g
-dGhlIHJlbGVhc2VkDQo+ID4gPiA+ID4gPiBrZXJuZWwuIEkgY2FuIHRlc3QgcGF0Y2hlcywgYnV0
-IEknbSBub3QgZmFtaWxpYXIgZW5vdWdoIHdpdGgNCj4gPiA+ID4gPiA+IHRoZSBkcml2ZXIgKG9y
-IHRoZSBuZXR3b3JraW5nDQo+ID4gPiA+ID4gPiBzdWJzeXN0ZW0pIHRvIGZpeCB0aGUgaXNzdWUg
-bXlzZWxmLg0KPiA+ID4gPiA+DQo+ID4gPiA+ID4gSWYgaXQgY2FuIGJlIG9mIGFueSBoZWxwLCBJ
-J3ZlIGNvbmZpcm1lZCB0aGF0LCB0byBnZXQgdGhlDQo+ID4gPiA+ID4gbmV0d29yayBiYWNrIHRv
-IHVzYWJsZSBzdGF0ZSBmcm9tIHY1LjgtcmM2LCBJIGhhdmUgdG8gcmV2ZXJ0IGFsbA0KPiA+ID4g
-PiA+IHBhdGNoZXMgdXAgdG8gdGhpcyBvbmUuIFRoaXMgaXMgdGhlIHRvcCBvZiBteSBicmFuY2gs
-IG9uIHRvcCBvZiB2NS44LXJjNjoNCj4gPiA+ID4gPg0KPiA+ID4gPiA+IDViYmU4MGM5ZWZlYSBS
-ZXZlcnQgIm5ldDogZXRoZXJuZXQ6IGZlYzogUmV2ZXJ0ICJuZXQ6IGV0aGVybmV0OiBmZWM6DQo+
-IFJlcGxhY2UgaW50ZXJydXB0IGRyaXZlbiBNRElPIHdpdGggcG9sbGVkIElPIiINCj4gPiA+ID4g
-PiA1NDYyODk2YTA4YzEgUmV2ZXJ0ICJuZXQ6IGV0aGVybmV0OiBmZWM6IFJlcGxhY2UgaW50ZXJy
-dXB0IGRyaXZlbg0KPiBNRElPIHdpdGggcG9sbGVkIElPIg0KPiA+ID4gPiA+IDgyNGE4MmUyYmRm
-YSBSZXZlcnQgIm5ldDogZXRoZXJuZXQ6IGZlYzogbW92ZSBHUFIgcmVnaXN0ZXIgb2Zmc2V0IGFu
-ZA0KPiBiaXQgaW50byBEVCINCj4gPiA+ID4gPiBiZmUzMzA1OTFjYWIgUmV2ZXJ0ICJuZXQ6IGZl
-YzogZGlzYWJsZSBjb3JyZWN0IGNsayBpbiB0aGUgZXJyIHBhdGggb2YNCj4gZmVjX2VuZXRfY2xr
-X2VuYWJsZSINCj4gPiA+ID4gPiAxMDk5NThjYWQ1NzggUmV2ZXJ0ICJuZXQ6IGV0aGVybmV0OiBm
-ZWM6IHByZXZlbnQgdHggc3RhcnZhdGlvbiB1bmRlcg0KPiBoaWdoIHJ4IGxvYWQiDQo+ID4gPiA+
-DQo+ID4gPiA+IE9LLg0KPiA+ID4gPg0KPiA+ID4gPiBXaGF0IFBIWSBhcmUgeW91IHVzaW5nPyBB
-IE1pY3JlbD8NCj4gPiA+DQo+ID4gPiBLU1o5MDMxUk5YSUENCj4gPiA+DQo+ID4gPiA+IEFuZCB3
-aGljaCBEVCBmaWxlPw0KPiA+ID4NCj4gPiA+IEl0J3Mgb3V0IG9mIHRyZWUuDQo+ID4gPg0KPiA+
-ID4gJmZlYzEgew0KPiA+ID4gICAgICAgICBwaW5jdHJsLW5hbWVzID0gImRlZmF1bHQiOw0KPiA+
-ID4gICAgICAgICBwaW5jdHJsLTAgPSA8JnBpbmN0cmxfZW5ldDE+Ow0KPiA+ID4gICAgICAgICBh
-c3NpZ25lZC1jbG9ja3MgPSA8JmNsa3MgSU1YN0RfRU5FVDFfVElNRV9ST09UX1NSQz4sDQo+ID4g
-PiAgICAgICAgICAgICAgICAgICAgICAgICAgIDwmY2xrcyBJTVg3RF9FTkVUMV9USU1FX1JPT1Rf
-Q0xLPjsNCj4gPiA+ICAgICAgICAgYXNzaWduZWQtY2xvY2stcGFyZW50cyA9IDwmY2xrcw0KPiBJ
-TVg3RF9QTExfRU5FVF9NQUlOXzEwME1fQ0xLPjsNCj4gPiA+ICAgICAgICAgYXNzaWduZWQtY2xv
-Y2stcmF0ZXMgPSA8MD4sIDwxMDAwMDAwMDA+Ow0KPiA+ID4gICAgICAgICBwaHktbW9kZSA9ICJy
-Z21paSI7DQo+ID4gPiAgICAgICAgIHBoeS1oYW5kbGUgPSA8JmV0aHBoeTA+Ow0KPiA+ID4gICAg
-ICAgICBwaHktcmVzZXQtZ3Bpb3MgPSA8JmdwaW8xIDEzIEdQSU9fQUNUSVZFX0xPVz47DQo+ID4g
-PiAgICAgICAgIHBoeS1zdXBwbHkgPSA8JnJlZ18zdjNfc3c+Ow0KPiA+ID4gICAgICAgICBmc2ws
-bWFnaWMtcGFja2V0Ow0KPiA+ID4gICAgICAgICBzdGF0dXMgPSAib2theSI7DQo+ID4gPg0KPiA+
-ID4gICAgICAgICBtZGlvIHsNCj4gPiA+ICAgICAgICAgICAgICAgICAjYWRkcmVzcy1jZWxscyA9
-IDwxPjsNCj4gPiA+ICAgICAgICAgICAgICAgICAjc2l6ZS1jZWxscyA9IDwwPjsNCj4gPiA+DQo+
-ID4gPiAgICAgICAgICAgICAgICAgZXRocGh5MDogZXRoZXJuZXQtcGh5QDAgew0KPiA+ID4gICAg
-ICAgICAgICAgICAgICAgICAgICAgcmVnID0gPDE+Ow0KPiA+ID4gICAgICAgICAgICAgICAgIH07
-DQo+ID4gPg0KPiA+ID4gICAgICAgICAgICAgICAgIGV0aHBoeTE6IGV0aGVybmV0LXBoeUAxIHsN
-Cj4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIHJlZyA9IDwyPjsNCj4gPiA+ICAgICAgICAg
-ICAgICAgICB9Ow0KPiA+ID4gICAgICAgICB9Ow0KPiA+ID4gfTsNCj4gPiA+DQo+ID4gPiBJIGNh
-biBwcm92aWRlIHRoZSBmdWxsIERUIGlmIG5lZWRlZC4NCj4gPiA+DQo+ID4gPiAtLQ0KPiA+ID4g
-UmVnYXJkcywNCj4gPiA+DQo+ID4gPiBMYXVyZW50IFBpbmNoYXJ0DQo=
+It appears quite a few boards were affected by this micrel PHY driver change:
+
+2ccb0161a0e9eb06f538557d38987e436fc39b8d
+80bf72598663496d08b3c0231377db6a99d7fd68
+2de00450c0126ec8838f72157577578e85cae5d8
+820f8a870f6575acda1bf7f1a03c701c43ed5d79
+
+I just updated the phy-mode with my board from rgmii to rgmii-id and
+everything started working fine with net-next again:
+
+eth0      Link encap:Ethernet  HWaddr E6:85:48:8F:93:64
+          inet addr:172.16.1.1  Bcast:172.16.255.255  Mask:255.255.0.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:4643690 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:76178 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:2762845502 (2.5 GiB)  TX bytes:5026376 (4.7 MiB)
+
+
+
+On Sun, Jul 26, 2020 at 7:40 PM Chris Healy <cphealy@gmail.com> wrote:
+>
+> Actually, I was a little quick to say it went from broken to working.
+>
+> With net-next, I'm getting CRC errors on 100% of inbound packets.
+> With bcf3440c6dd78bfe5836ec0990fe36d7b4bb7d20 reverted, I drop down to
+> a 1% error rate.
+>
+> This very much feels like a KSZ9031 RGMII timing issue to me...
+>
+> On Sun, Jul 26, 2020 at 7:35 PM Chris Healy <cphealy@gmail.com> wrote:
+> >
+> > Hi Laurent,
+> >
+> > I have the exact same copper PHY.  I just reverted a patch specific to
+> > this PHY and went from broken to working.  Give this a try:
+> >
+> > git revert bcf3440c6dd78bfe5836ec0990fe36d7b4bb7d20
+> >
+> > Regards,
+> >
+> > Chris
+> >
+> > On Sun, Jul 26, 2020 at 7:33 PM Laurent Pinchart
+> > <laurent.pinchart@ideasonboard.com> wrote:
+> > >
+> > > Hi Andrew,
+> > >
+> > > On Mon, Jul 27, 2020 at 04:14:32AM +0200, Andrew Lunn wrote:
+> > > > On Mon, Jul 27, 2020 at 05:06:31AM +0300, Laurent Pinchart wrote:
+> > > > > On Mon, Jul 27, 2020 at 04:24:02AM +0300, Laurent Pinchart wrote:
+> > > > > > On Mon, Apr 27, 2020 at 10:08:04PM +0800, Fugang Duan wrote:
+> > > > > > > This reverts commit 29ae6bd1b0d8a57d7c00ab12cbb949fc41986eef.
+> > > > > > >
+> > > > > > > The commit breaks ethernet function on i.MX6SX, i.MX7D, i.MX8MM,
+> > > > > > > i.MX8MQ, and i.MX8QXP platforms. Boot yocto system by NFS mounting
+> > > > > > > rootfs will be failed with the commit.
+> > > > > >
+> > > > > > I'm afraid this commit breaks networking on i.MX7D for me :-( My board
+> > > > > > is configured to boot over NFS root with IP autoconfiguration through
+> > > > > > DHCP. The DHCP request goes out, the reply it sent back by the server,
+> > > > > > but never noticed by the fec driver.
+> > > > > >
+> > > > > > v5.7 works fine. As 29ae6bd1b0d8a57d7c00ab12cbb949fc41986eef was merged
+> > > > > > during the v5.8 merge window, I suspect something else cropped in
+> > > > > > between 29ae6bd1b0d8a57d7c00ab12cbb949fc41986eef and this patch that
+> > > > > > needs to be reverted too. We're close to v5.8 and it would be annoying
+> > > > > > to see this regression ending up in the released kernel. I can test
+> > > > > > patches, but I'm not familiar enough with the driver (or the networking
+> > > > > > subsystem) to fix the issue myself.
+> > > > >
+> > > > > If it can be of any help, I've confirmed that, to get the network back
+> > > > > to usable state from v5.8-rc6, I have to revert all patches up to this
+> > > > > one. This is the top of my branch, on top of v5.8-rc6:
+> > > > >
+> > > > > 5bbe80c9efea Revert "net: ethernet: fec: Revert "net: ethernet: fec: Replace interrupt driven MDIO with polled IO""
+> > > > > 5462896a08c1 Revert "net: ethernet: fec: Replace interrupt driven MDIO with polled IO"
+> > > > > 824a82e2bdfa Revert "net: ethernet: fec: move GPR register offset and bit into DT"
+> > > > > bfe330591cab Revert "net: fec: disable correct clk in the err path of fec_enet_clk_enable"
+> > > > > 109958cad578 Revert "net: ethernet: fec: prevent tx starvation under high rx load"
+> > > >
+> > > > OK.
+> > > >
+> > > > What PHY are you using? A Micrel?
+> > >
+> > > KSZ9031RNXIA
+> > >
+> > > > And which DT file?
+> > >
+> > > It's out of tree.
+> > >
+> > > &fec1 {
+> > >         pinctrl-names = "default";
+> > >         pinctrl-0 = <&pinctrl_enet1>;
+> > >         assigned-clocks = <&clks IMX7D_ENET1_TIME_ROOT_SRC>,
+> > >                           <&clks IMX7D_ENET1_TIME_ROOT_CLK>;
+> > >         assigned-clock-parents = <&clks IMX7D_PLL_ENET_MAIN_100M_CLK>;
+> > >         assigned-clock-rates = <0>, <100000000>;
+> > >         phy-mode = "rgmii";
+> > >         phy-handle = <&ethphy0>;
+> > >         phy-reset-gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
+> > >         phy-supply = <&reg_3v3_sw>;
+> > >         fsl,magic-packet;
+> > >         status = "okay";
+> > >
+> > >         mdio {
+> > >                 #address-cells = <1>;
+> > >                 #size-cells = <0>;
+> > >
+> > >                 ethphy0: ethernet-phy@0 {
+> > >                         reg = <1>;
+> > >                 };
+> > >
+> > >                 ethphy1: ethernet-phy@1 {
+> > >                         reg = <2>;
+> > >                 };
+> > >         };
+> > > };
+> > >
+> > > I can provide the full DT if needed.
+> > >
+> > > --
+> > > Regards,
+> > >
+> > > Laurent Pinchart
