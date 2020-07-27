@@ -2,85 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3875922F559
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 18:30:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8647C22F56F
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 18:34:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732203AbgG0Qak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 12:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57400 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730408AbgG0Qah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 12:30:37 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB70C061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 09:30:36 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id t6so8315018plo.3
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 09:30:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KUpzsNFAUYUsEYZFksnW8AKVT4wUecVtRHNQYMCJ0g0=;
-        b=vPWFeoZWIHSCp+FRriNRL1G3Gyl+DgVuDTzlzHyXFEpphHl+WN9xArjHy2NscZ6U4t
-         BCiKNqpvOoOqj5jFYN4VyHu9QVmX/njkcUvYrhRpwmgBO95uSpvbC0qgstw75ZMhyQ9L
-         jn8RNXVOZfFHdTAtw+au+nDl5xOADj3GyFtB9mmFpa1Xfx3ZHMxI5vogdoWepF44MXh9
-         iUdBuqasmGut1+enOl7ddCDwQ8AeErNaEHXUiOaRo9bxcX9myixSBrrpqGX1w8/71zlW
-         rwqbROJ616tL4MifariJXKNwxSVLgXRp9JK68pS0nPZBAacBKcy7d1axFQv+vhWc0zG4
-         9DJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KUpzsNFAUYUsEYZFksnW8AKVT4wUecVtRHNQYMCJ0g0=;
-        b=fVAqk99zq4wDwvoSAcvpTg8cihJuH3nWxUcbENUjtMBE5zG0Wp/2k1cOZi/Bf8Nq+/
-         XNvI8rT3CENjZZM59xnTl5R44dcx601OaJF6TLABsjw9gG1DU73R8X8R1SiUnIsAldwI
-         FZ9VYeG5XmqeWcrxL/LsZfxXlD2vJMR+Z6qSvP/JD9ZuaJeFbaDXEn2sopPFONKUgtVX
-         nESMAOCRR0jLW8vT8I7Ti18atLJXRxmrYYxjSyaAqMeCZE+tlxYMVAydHMgMVpBo5SXI
-         C+Dky296sjecVoZzn8Mj1SHCQpQhPbaHhSZ4Ka5+kC41VJrgkTy14iWm5WR08+X3yM0B
-         kANg==
-X-Gm-Message-State: AOAM5316hgmW3c1sAd0pw56IQnK6H6LeuLiAxK9xFIZew0/OkE10d6d2
-        lt4iPEyR0yzN1am3O4LqZjQuAw==
-X-Google-Smtp-Source: ABdhPJz63EHIaG1LRsloWgoIpWgusAQ+Nuzd59ShSTC0Gunx1jis1RU1uliIv0s2QewVFxHxrplyTQ==
-X-Received: by 2002:a17:90b:24a:: with SMTP id fz10mr146816pjb.36.1595867436407;
-        Mon, 27 Jul 2020 09:30:36 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id j36sm15644206pgj.39.2020.07.27.09.30.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2020 09:30:36 -0700 (PDT)
-Date:   Mon, 27 Jul 2020 09:30:27 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Julien Fortin <julien@cumulusnetworks.com>
-Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        dsahern@gmail.com
-Subject: Re: [PATCH iproute2-next master v2] bridge: fdb show: fix fdb entry
- state output (+ add json support)
-Message-ID: <20200727093027.467da3a7@hermes.lan>
-In-Reply-To: <20200727162009.7618-1-julien@cumulusnetworks.com>
-References: <20200727162009.7618-1-julien@cumulusnetworks.com>
+        id S1732282AbgG0Qd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 12:33:59 -0400
+Received: from smtprelay0152.hostedemail.com ([216.40.44.152]:34052 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729315AbgG0Qd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 12:33:59 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 87C41181D3026;
+        Mon, 27 Jul 2020 16:33:58 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3867:3868:3870:3872:3873:3874:4321:5007:6119:6248:7903:8531:10004:10400:10848:11232:11658:11914:12050:12297:12663:12740:12760:12895:13069:13095:13311:13357:13439:14096:14097:14659:14777:21080:21433:21627:21740:30054:30063:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: time94_1817cae26f62
+X-Filterd-Recvd-Size: 2286
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf19.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 27 Jul 2020 16:33:56 +0000 (UTC)
+Message-ID: <f5162c93f70b9f47314eda2403b80816d12ce7e0.camel@perches.com>
+Subject: Re: [PATCH 2/6] rtlwifi: Remove unnecessary parenthese in rtl_dbg
+ uses
+From:   Joe Perches <joe@perches.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Pkshih <pkshih@realtek.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>
+Date:   Mon, 27 Jul 2020 09:33:55 -0700
+In-Reply-To: <374359f9-8199-f4b9-0596-adc41c8c664f@lwfinger.net>
+References: <cover.1595706419.git.joe@perches.com>
+         <9b2eaedb7ea123ea766a379459b20a9486d1cd41.1595706420.git.joe@perches.com>
+         <1595830034.12227.7.camel@realtek.com>
+         <ae9d562ec9ef765dddd1491d4cfb5f6d18f7025f.camel@perches.com>
+         <1595840670.17671.4.camel@realtek.com>
+         <6e0c07bc3d2f48d4a62a9e270366c536cfe56783.camel@perches.com>
+         <374359f9-8199-f4b9-0596-adc41c8c664f@lwfinger.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.3-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Jul 2020 18:20:09 +0200
-Julien Fortin <julien@cumulusnetworks.com> wrote:
+On Mon, 2020-07-27 at 11:25 -0500, Larry Finger wrote:
+> On 7/27/20 9:52 AM, Joe Perches wrote:
+> > On Mon, 2020-07-27 at 09:04 +0000, Pkshih wrote:
+> > > So, I think you would like to have parenthesis intentionally.
+> > > If so,
+> > > test1 ? : (test2 ? :)
+> > > would be better.
+> > > 
+> > > 
+> > > If not,
+> > > test1 ? : test2 ? :
+> > > may be what you want (without any parenthesis).
+> > 
+> > Use whatever style you like, it's unimportant to me
+> > and it's not worth spending any real time on it.
+> 
+> If you are so busy, why did you jump in with patches that you knew I was already 
+> working on? You knew because you critiqued my first submission.
 
-> diff --git a/bridge/fdb.c b/bridge/fdb.c
-> index d1f8afbe..765f4e51 100644
-> --- a/bridge/fdb.c
-> +++ b/bridge/fdb.c
-> @@ -62,7 +62,10 @@ static const char *state_n2a(unsigned int s)
->  	if (s & NUD_REACHABLE)
->  		return "";
->  
-> -	sprintf(buf, "state=%#x", s);
-> +	if (is_json_context())
-> +		sprintf(buf, "%#x", s);
-> +	else
-> +		sprintf(buf, "state %#x", s)
+Because it was over a week and you didn't reply
+to my original message nor did you cc me on any
+changes you made to your patch?
 
-Please keep the "state=%#x" for the non JSON case.
-No need to change output format.
+I can't read every patch I'm not cc'd on.
+
+
