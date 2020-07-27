@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6696922FDDA
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:30:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC50022FDD2
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:30:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727862AbgG0XaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 19:30:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34688 "EHLO mail.kernel.org"
+        id S1727928AbgG0XXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 19:23:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34698 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727111AbgG0XXx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 19:23:53 -0400
+        id S1726171AbgG0XXy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 19:23:54 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6E08720786;
-        Mon, 27 Jul 2020 23:23:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DB95520809;
+        Mon, 27 Jul 2020 23:23:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595892232;
-        bh=LkmYfpO8CCHqVPPYGJEJrOUiJmWXY43q7bamRMNf8qU=;
+        s=default; t=1595892233;
+        bh=Iz5tUY4gfrdU2cdZyw0Xqf8QtUvX+KWg12EojTs4aaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T4RsDY1GBnQiV22D/QoCKi0FThMac9v/FduirBNAMNaDFMorSNWMIJNPK3/UkDzR9
-         qCfl8tYZL/Xy5KKhwI8fAdVu/FpeQ+gCincm9VJ64jjPBoqOrOJ/8+OCfpCyJkeqy4
-         uIjyRPbSDTz1Pn4PPybKg7txsVieMjox5qX4ikKU=
+        b=M3N6lNSPfPorGsO3KDTFGfLGeL/KBUYC9/v4OIt+1+RLs4ASIovRRYSRiSriYKHUx
+         60k1/oSA5gL77Ki20MOFAXwN4Ef+B6a544I9Tt1aoEDfdm9nggKzWpmyYXlR6nqZFn
+         wrf4v/NZ9HRSDqF2J4r4dtMPaSNyVDuuOR4Db15s=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paolo Pisati <paolo.pisati@canonical.com>,
-        David Ahern <dsahern@gmail.com>,
+Cc:     Laurence Oberman <loberman@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 04/25] selftests: fib_nexthop_multiprefix: fix cleanup() netns deletion
-Date:   Mon, 27 Jul 2020 19:23:24 -0400
-Message-Id: <20200727232345.717432-4-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 05/25] qed: Disable "MFW indication via attention" SPAM every 5 minutes
+Date:   Mon, 27 Jul 2020 19:23:25 -0400
+Message-Id: <20200727232345.717432-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200727232345.717432-1-sashal@kernel.org>
 References: <20200727232345.717432-1-sashal@kernel.org>
@@ -45,64 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Pisati <paolo.pisati@canonical.com>
+From: Laurence Oberman <loberman@redhat.com>
 
-[ Upstream commit 651149f60376758a4759f761767965040f9e4464 ]
+[ Upstream commit 1d61e21852d3161f234b9656797669fe185c251b ]
 
-During setup():
-...
-        for ns in h0 r1 h1 h2 h3
-        do
-                create_ns ${ns}
-        done
-...
+This is likely firmware causing this but its starting to annoy customers.
+Change the message level to verbose to prevent the spam.
+Note that this seems to only show up with ISCSI enabled on the HBA via the
+qedi driver.
 
-while in cleanup():
-...
-        for n in h1 r1 h2 h3 h4
-        do
-                ip netns del ${n} 2>/dev/null
-        done
-...
-
-and after removing the stderr redirection in cleanup():
-
-$ sudo ./fib_nexthop_multiprefix.sh
-...
-TEST: IPv4: host 0 to host 3, mtu 1400                              [ OK ]
-TEST: IPv6: host 0 to host 3, mtu 1400                              [ OK ]
-Cannot remove namespace file "/run/netns/h4": No such file or directory
-$ echo $?
-1
-
-and a non-zero return code, make kselftests fail (even if the test
-itself is fine):
-
-...
-not ok 34 selftests: net: fib_nexthop_multiprefix.sh # exit=1
-...
-
-Signed-off-by: Paolo Pisati <paolo.pisati@canonical.com>
-Reviewed-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: Laurence Oberman <loberman@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/fib_nexthop_multiprefix.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_int.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/fib_nexthop_multiprefix.sh b/tools/testing/selftests/net/fib_nexthop_multiprefix.sh
-index 9dc35a16e4159..51df5e305855a 100755
---- a/tools/testing/selftests/net/fib_nexthop_multiprefix.sh
-+++ b/tools/testing/selftests/net/fib_nexthop_multiprefix.sh
-@@ -144,7 +144,7 @@ setup()
- 
- cleanup()
- {
--	for n in h1 r1 h2 h3 h4
-+	for n in h0 r1 h1 h2 h3
- 	do
- 		ip netns del ${n} 2>/dev/null
- 	done
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.c b/drivers/net/ethernet/qlogic/qed/qed_int.c
+index 9f5113639eaf0..4bccaafca8b28 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_int.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_int.c
+@@ -1172,7 +1172,8 @@ static int qed_int_attentions(struct qed_hwfn *p_hwfn)
+ 			index, attn_bits, attn_acks, asserted_bits,
+ 			deasserted_bits, p_sb_attn_sw->known_attn);
+ 	} else if (asserted_bits == 0x100) {
+-		DP_INFO(p_hwfn, "MFW indication via attention\n");
++		DP_VERBOSE(p_hwfn, NETIF_MSG_INTR,
++			   "MFW indication via attention\n");
+ 	} else {
+ 		DP_VERBOSE(p_hwfn, NETIF_MSG_INTR,
+ 			   "MFW indication [deassertion]\n");
 -- 
 2.25.1
 
