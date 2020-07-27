@@ -2,78 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC30E22F981
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 21:50:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AAC822F959
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 21:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729044AbgG0Tul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 15:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726196AbgG0Tuk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 15:50:40 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E1BC061794;
-        Mon, 27 Jul 2020 12:50:40 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id w12so4667245iom.4;
-        Mon, 27 Jul 2020 12:50:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kKPEIvRnGmOIiRW3hkgHDbFWruyoPp9+tzWubRQC29M=;
-        b=eyN6Tfy3dTAC8horMFbjFWcPSq2GlcFnpKV1J/Fdu/CAxMldKyfn3aie6b5gl96tBh
-         y17nXeuS9sKdqESZ0MRUc6kZbyixZUAL/Ml4AcNVbn87nqdFN3JN8i+PSHI0vaSooSZZ
-         ECb90vPwMhJYsJ61kFgedhQko0BeZtphczkSLcU4Rld7mhyVv1nI8PphkEl2RJzUGPW7
-         R1T5W58nmryzh975BfFoJDGfNd1gA8LpbchBLFgLthQgT1b+gqeRKsaaa3o32LHZ/56E
-         cwS1MOyBqeceDVwyHJeR88hLgAaVrRRAmzR9x7oTUVua8dDTLP4CFlIn//ZyOVbETaqZ
-         vBwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kKPEIvRnGmOIiRW3hkgHDbFWruyoPp9+tzWubRQC29M=;
-        b=hCz9Z7WEtzjXwT7y/zlPG4xF35Btf+hJ79VgcxiK1qrlVrwzfQrKiOMfQgMV6ETsec
-         n4YYdJO4uSmyQYzSHmYZihBP/i8yInbX5gAEzOEBdlT3sFTaHwDT+BZb28omqUMA7iOe
-         MNrCY06VTAv/687mQrbzY5iqgUK1f4T+GZ4gfiA3Mj3/LplkOalK0LG4U66+cnPH2Bsn
-         XX5Btdd/gzgwcnWvIq6bTUiMUJrDw16mjiD6wfBhdN1nyPy7KMKUCfH/LKS0mcAKFSn2
-         F2KjTa6tFEDA9Ctayf4FCJYu5iG8TRt5WYOxl6wnyt77WCT9KQJwPqplI1TVRqKij1vr
-         nkiw==
-X-Gm-Message-State: AOAM531+KaxlZz7GnDEVSKCUQVCbpvrQF2oXGx8qoJhNZCOyjVTBSK0I
-        5/A0A3A27/DXqzmW+XxWbgJ5fk7z+8HCgZV+c1s=
-X-Google-Smtp-Source: ABdhPJxIF+iJ26Dsde/xBHkvxdLPkjp3U8eTiaZIMnGo8VgedN0+AUm4284sh3Hvm6sv0wv7SpVS9ASTZ6QB1xOhxhQ=
-X-Received: by 2002:a5d:9b86:: with SMTP id r6mr5734317iom.44.1595879440133;
- Mon, 27 Jul 2020 12:50:40 -0700 (PDT)
+        id S1728840AbgG0TpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 15:45:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40844 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726196AbgG0TpS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 15:45:18 -0400
+Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A189C20672;
+        Mon, 27 Jul 2020 19:45:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595879118;
+        bh=8p/mpBOD8QPWQP7hYQ4q+7NKUEkDaVHRM+uqJ5CVEtY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=vwB3CVZJLOdBJmWAb7lI6QKfZB364JXIg1GW9NEBSecO7u5S8lNvkT0Rw0QR9go4o
+         1NrYuVy4c8N654v52Dh8djZmLqHI9rizTV7EvC8p7zBxjDnKNeWXNkV3sr88qZu/Ni
+         6HyX18T+LESDoPUr6ng+QbwgAAR/Txz2Z+ubhG5E=
+Date:   Mon, 27 Jul 2020 14:51:11 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH][next] ath6kl: Use fallthrough pseudo-keyword
+Message-ID: <20200727195111.GA1603@embeddedor>
 MIME-Version: 1.0
-References: <20200727033810.28883-1-gaurav1086@gmail.com>
-In-Reply-To: <20200727033810.28883-1-gaurav1086@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 27 Jul 2020 12:50:29 -0700
-Message-ID: <CAM_iQpW+Z=y6myMRfkmKuqQpVTLD52vpTB41esJc5zRFW4DK2w@mail.gmail.com>
-Subject: Re: [PATCH] [net/ipv6] ip6_output: Add ipv6_pinfo null check
-To:     Gaurav Singh <gaurav1086@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [IPv4/IPv6]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 26, 2020 at 8:39 PM Gaurav Singh <gaurav1086@gmail.com> wrote:
->
-> ipv6_pinfo is initlialized by inet6_sk() which returns NULL.
+Replace the existing /* fall through */ comments and its variants with
+the new pseudo-keyword macro fallthrough[1].
 
-Why? It only returns NULL for timewait or request sock, but
-I don't see how ip6_autoflowlabel() could be called on these
-sockets. So please explain.
+[1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
 
-> Hence it can cause segmentation fault. Fix this by adding a
-> NULL check.
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/wireless/ath/ath6kl/cfg80211.c | 6 +++---
+ drivers/net/wireless/ath/ath6kl/main.c     | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Which exact call path? Do you have a full stack trace?
+diff --git a/drivers/net/wireless/ath/ath6kl/cfg80211.c b/drivers/net/wireless/ath/ath6kl/cfg80211.c
+index 67f8f2aa7a53..9c83e9a4299b 100644
+--- a/drivers/net/wireless/ath/ath6kl/cfg80211.c
++++ b/drivers/net/wireless/ath/ath6kl/cfg80211.c
+@@ -3897,19 +3897,19 @@ int ath6kl_cfg80211_init(struct ath6kl *ar)
+ 	switch (ar->hw.cap) {
+ 	case WMI_11AN_CAP:
+ 		ht = true;
+-		/* fall through */
++		fallthrough;
+ 	case WMI_11A_CAP:
+ 		band_5gig = true;
+ 		break;
+ 	case WMI_11GN_CAP:
+ 		ht = true;
+-		/* fall through */
++		fallthrough;
+ 	case WMI_11G_CAP:
+ 		band_2gig = true;
+ 		break;
+ 	case WMI_11AGN_CAP:
+ 		ht = true;
+-		/* fall through */
++		fallthrough;
+ 	case WMI_11AG_CAP:
+ 		band_2gig = true;
+ 		band_5gig = true;
+diff --git a/drivers/net/wireless/ath/ath6kl/main.c b/drivers/net/wireless/ath/ath6kl/main.c
+index 5e7ea838a921..210218298e13 100644
+--- a/drivers/net/wireless/ath/ath6kl/main.c
++++ b/drivers/net/wireless/ath/ath6kl/main.c
+@@ -389,7 +389,7 @@ void ath6kl_connect_ap_mode_bss(struct ath6kl_vif *vif, u16 channel)
+ 		if (!ik->valid || ik->key_type != WAPI_CRYPT)
+ 			break;
+ 		/* for WAPI, we need to set the delayed group key, continue: */
+-		/* fall through */
++		fallthrough;
+ 	case WPA_PSK_AUTH:
+ 	case WPA2_PSK_AUTH:
+ 	case (WPA_PSK_AUTH | WPA2_PSK_AUTH):
+-- 
+2.27.0
 
-Thanks.
