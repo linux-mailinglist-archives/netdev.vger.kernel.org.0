@@ -2,77 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8745322F7CA
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 20:34:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35DE622F7EA
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 20:41:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730446AbgG0Seu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 14:34:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58678 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728313AbgG0Set (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 14:34:49 -0400
-Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D553C2073E;
-        Mon, 27 Jul 2020 18:34:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595874889;
-        bh=/6ecmPTwGZh0HJD/tKrVVhgyBKwRvNKRilfFJFLPLRE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Mtb29WVInF00AWMYet9071bMLwMc1bsrSW1JrvwTIsj+RmWjGJl91HIdr22gETFo6
-         s4POcfIJ32hclb45r3qWApFzDHS40NxNG1RuWZr8/3454dwt0cpo7B0BbaUnTp3iR1
-         A0pi0gACHHtUgWLt/ZS7/zi3lnFEH0cr3it5XzNs=
-Date:   Mon, 27 Jul 2020 13:40:42 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Manish Chopra <manishc@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH][next] staging: qlge: Use fallthrough pseudo-keyword
-Message-ID: <20200727184042.GA29074@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1729464AbgG0SlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 14:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727880AbgG0SlV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 14:41:21 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EB0C061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 11:41:21 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4C08011DB3159;
+        Mon, 27 Jul 2020 11:24:36 -0700 (PDT)
+Date:   Mon, 27 Jul 2020 11:41:20 -0700 (PDT)
+Message-Id: <20200727.114120.2086280528297866377.davem@davemloft.net>
+To:     martinvarghesenokia@gmail.com
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, martin.varghese@nokia.com
+Subject: Re: [PATCH net-next] net: Removed the device type check to add
+ mpls support for devices
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1595835559-2797-1-git-send-email-martinvarghesenokia@gmail.com>
+References: <1595835559-2797-1-git-send-email-martinvarghesenokia@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 27 Jul 2020 11:24:36 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the existing /* fall through */ comments and its variants with
-the new pseudo-keyword macro fallthrough[1].
+From: Martin Varghese <martinvarghesenokia@gmail.com>
+Date: Mon, 27 Jul 2020 13:09:19 +0530
 
-[1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
+> From: Martin Varghese <martin.varghese@nokia.com>
+> 
+> MPLS has no dependency with the device type of underlying devices.
+> Hence the device type check to add mpls support for devices can be
+> avoided.
+> 
+> Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
 
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/staging/qlge/qlge_mpi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mpi.c
-index 94d504af84ff..e85c6ab538df 100644
---- a/drivers/staging/qlge/qlge_mpi.c
-+++ b/drivers/staging/qlge/qlge_mpi.c
-@@ -1174,7 +1174,7 @@ void ql_mpi_idc_work(struct work_struct *work)
- 	case MB_CMD_PORT_RESET:
- 	case MB_CMD_STOP_FW:
- 		ql_link_off(qdev);
--		/* Fall through */
-+		fallthrough;
- 	case MB_CMD_SET_PORT_CFG:
- 		/* Signal the resulting link up AEN
- 		 * that the frame routing and mac addr
-@@ -1207,7 +1207,7 @@ void ql_mpi_idc_work(struct work_struct *work)
- 		 */
- 		ql_link_off(qdev);
- 		set_bit(QL_CAM_RT_SET, &qdev->flags);
--		/* Fall through. */
-+		fallthrough;
- 	case MB_CMD_IOP_DVR_START:
- 	case MB_CMD_IOP_FLASH_ACC:
- 	case MB_CMD_IOP_CORE_DUMP_MPI:
--- 
-2.27.0
-
+Applied, thanks for following up on this.
