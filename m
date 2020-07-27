@@ -2,99 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F64622FD32
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:26:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C07D22FE0A
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 01:34:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728629AbgG0XZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 19:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37250 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727982AbgG0XZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 19:25:49 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F681C061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:25:49 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id l17so18843159iok.7
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:25:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ul6OG5AcyM9q1mi7Ptad8xTbwNUTplojUbpuQmVnOns=;
-        b=IPa1kzP5ylvOjB10fuF6IEq885IGogjYVDb9kpeYpNKZVof0od0BcRsCGjG93WvhZF
-         XFpKcVArTG+IOG8IDmCHPzWgzo6h/Ovka5+IOqMCWgsN2K2extLFdRVXmSX5AyVE7Ler
-         oUeIWUZAo9ZSZlboKQK4hUuTzVlX7OzSkMl/4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ul6OG5AcyM9q1mi7Ptad8xTbwNUTplojUbpuQmVnOns=;
-        b=q78KQG+b/bogqZOaKIBmyr/bjAkHJlKFFJgvGYy0BDlcitwuD8+xzJ3vwnXQZRexDm
-         jjCqL/hOq25yYvFHfoEi1VszT4tsN3ScxDXJqLPurQ41IOy3e2wlTBftSyVGygxjHBOw
-         DHfX3RRmJ2qnoM4Sbj2MK7GOsJJQICdcbkfx5ZTWEAAIuNjqGyu0YNfnk1jDhhcNxn0T
-         56JdjkwJjogltdNYLoAo+4q/AJMoQukENITHbVNIqUmPAX37NlvEclgLO7OSCYmE5Szs
-         XiiAzuaWq5iAcu2d+MY6UBro+orw1sxySsYzV9PynkJGod7IMrKGl7yV44B2zgyicIxm
-         YCRA==
-X-Gm-Message-State: AOAM532ggvSSQuBA0qSByrAFt7Yg4tjlN+/U8sJwBwb5OPOzvRkhwZZj
-        ZiTEn3INw9MXwlLvapklf1bsQRuYpYTdi4aoLYWc
-X-Google-Smtp-Source: ABdhPJwxtoIRaMqJXNzMSbASUGjLtcFW/eeOzkWEbrzbg/6KTN3tLOLaoQWh9UCKEqFsoeHfxvtEFrbXlLFRCSNa+ps=
-X-Received: by 2002:a02:840e:: with SMTP id k14mr28736959jah.133.1595892348918;
- Mon, 27 Jul 2020 16:25:48 -0700 (PDT)
+        id S1727121AbgG0Xe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 19:34:26 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17558 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726196AbgG0Xe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 19:34:26 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06RNX4Wi009335
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:34:26 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=JDfgqHEGv/LvNvNKPVciWSLBRPWixDLg/YTu4wwbIk8=;
+ b=qAVFcsf+xYdHPTe/lrLLKUtLQHaFwJw7Pi5XBHNGsyVbcv7sFu52gTlukF8SS1B+xKvm
+ ulXrnVdN1DRXJRicWcT+RVlbrR69CKX3/fQQ3f4k+gE08nT+poPcfPWUKfqzvM/Ur4vV
+ lH1FEwegZe/aXybKPmgGAqA2hX5eCVDYZOg= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 32h4q9f104-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 16:34:26 -0700
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 27 Jul 2020 16:33:52 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id C506F2EC4BAB; Mon, 27 Jul 2020 16:33:48 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] selftests/bpf: add new bpf_iter context structs to fix build on old kernels
+Date:   Mon, 27 Jul 2020 16:33:45 -0700
+Message-ID: <20200727233345.1686358-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20200727162009.7618-1-julien@cumulusnetworks.com> <20200727093027.467da3a7@hermes.lan>
-In-Reply-To: <20200727093027.467da3a7@hermes.lan>
-From:   Julien Fortin <julien@cumulusnetworks.com>
-Date:   Tue, 28 Jul 2020 01:25:38 +0200
-Message-ID: <CAM_1_KxDbSqaUWr4apTs4ydizTiohm7_L=B=0mZxeMX=nNEwzA@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next master v2] bridge: fdb show: fix fdb entry
- state output (+ add json support)
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, Roopa Prabhu <roopa@cumulusnetworks.com>,
-        David Ahern <dsahern@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-27_15:2020-07-27,2020-07-27 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ impostorscore=0 clxscore=1015 lowpriorityscore=0 mlxlogscore=797
+ malwarescore=0 adultscore=0 phishscore=0 mlxscore=0 priorityscore=1501
+ bulkscore=0 suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007270160
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 6:30 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Mon, 27 Jul 2020 18:20:09 +0200
-> Julien Fortin <julien@cumulusnetworks.com> wrote:
->
-> > diff --git a/bridge/fdb.c b/bridge/fdb.c
-> > index d1f8afbe..765f4e51 100644
-> > --- a/bridge/fdb.c
-> > +++ b/bridge/fdb.c
-> > @@ -62,7 +62,10 @@ static const char *state_n2a(unsigned int s)
-> >       if (s & NUD_REACHABLE)
-> >               return "";
-> >
-> > -     sprintf(buf, "state=%#x", s);
-> > +     if (is_json_context())
-> > +             sprintf(buf, "%#x", s);
-> > +     else
-> > +             sprintf(buf, "state %#x", s)
->
-> Please keep the "state=%#x" for the non JSON case.
-> No need to change output format.
+Add bpf_iter__bpf_map_elem and bpf_iter__bpf_sk_storage_map to bpf_iter.h
 
-My v1 patch (see below) kept the "state=" but you asked me to remove
-it and re-submit.
+Cc: Yonghong Song <yhs@fb.com>
+Fixes: 3b1c420bd882 ("selftests/bpf: Add a test for bpf sk_storage_map it=
+erator")
+Fixes: 2a7c2fff7dd6 ("selftests/bpf: Add test for bpf hash map iterators"=
+)
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/testing/selftests/bpf/progs/bpf_iter.h | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/bridge/fdb.c b/bridge/fdb.c
-index d2247e80..198c51d1 100644
---- a/bridge/fdb.c
-+++ b/bridge/fdb.c
-@@ -62,7 +62,10 @@ static const char *state_n2a(unsigned int s)
-        if (s & NUD_REACHABLE)
-                return "";
+diff --git a/tools/testing/selftests/bpf/progs/bpf_iter.h b/tools/testing=
+/selftests/bpf/progs/bpf_iter.h
+index 17db3bac518b..c196280df90d 100644
+--- a/tools/testing/selftests/bpf/progs/bpf_iter.h
++++ b/tools/testing/selftests/bpf/progs/bpf_iter.h
+@@ -11,6 +11,8 @@
+ #define tcp6_sock tcp6_sock___not_used
+ #define bpf_iter__udp bpf_iter__udp___not_used
+ #define udp6_sock udp6_sock___not_used
++#define bpf_iter__bpf_map_elem bpf_iter__bpf_map_elem___not_used
++#define bpf_iter__bpf_sk_storage_map bpf_iter__bpf_sk_storage_map___not_=
+used
+ #include "vmlinux.h"
+ #undef bpf_iter_meta
+ #undef bpf_iter__bpf_map
+@@ -22,6 +24,8 @@
+ #undef tcp6_sock
+ #undef bpf_iter__udp
+ #undef udp6_sock
++#undef bpf_iter__bpf_map_elem
++#undef bpf_iter__bpf_sk_storage_map
+=20
+ struct bpf_iter_meta {
+ 	struct seq_file *seq;
+@@ -78,3 +82,17 @@ struct udp6_sock {
+ 	struct udp_sock	udp;
+ 	struct ipv6_pinfo inet6;
+ } __attribute__((preserve_access_index));
++
++struct bpf_iter__bpf_map_elem {
++	struct bpf_iter_meta *meta;
++	struct bpf_map *map;
++	void *key;
++	void *value;
++};
++
++struct bpf_iter__bpf_sk_storage_map {
++	struct bpf_iter_meta *meta;
++	struct bpf_map *map;
++	struct sock *sk;
++	void *value;
++};
+--=20
+2.24.1
 
--       sprintf(buf, "state=%#x", s);
-+       if (is_json_context())
-+               sprintf(buf, "%#x", s);
-+       else
-+               sprintf(buf, "state=%#x", s);
-        return buf;
- }
