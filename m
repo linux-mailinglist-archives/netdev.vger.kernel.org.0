@@ -2,79 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E79E22F93D
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 21:41:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7C1A22F933
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 21:38:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728214AbgG0Tl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 15:41:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726278AbgG0Tl2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 15:41:28 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535E3C061794;
-        Mon, 27 Jul 2020 12:41:28 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id m8so2796679pfh.3;
-        Mon, 27 Jul 2020 12:41:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=HsP2ETe5pQS8UqrtlgdyGqg7uS6MUHLsMN/+VIpwKyM=;
-        b=cS8CO0k1BkjvF8UX1gXbAH/kZSHdWXyDYCLteyY3XabHYSl9/pWPbnY5dD4nRxStrz
-         gCPOv+QolEyfL6jw/bNqYw9BOG3G2ZbGT0FQKLM9HAnyqGiT8XQkNaNdWwspBOVh+34f
-         SKtsvKGzXVPwsnQ8FhWX1VmGgdPJdfSVhT/FSL2XEuKG9+FCPFZjGUWTR8V2a27g47Ps
-         whNMq9FpAlfeHjPcbJGN+7aRZYkgyZvgmAI7HFgGXPv48lRaSp3lrvhQv0ok2lmJfY5V
-         I2CKM0UdU7SsSTCfvSRdz3/sq5hY6bm+JMlOjYclmdra35BaV9dhT9qU51o0eASO+jTo
-         swxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=HsP2ETe5pQS8UqrtlgdyGqg7uS6MUHLsMN/+VIpwKyM=;
-        b=VadqCHyp5uGNtqfLjxyE5qZh1pllXR7JPKK5s+HIKFxHP0qBby/NysWCCGpX4vl4Ug
-         fA+vepiFqCpOQ1dZRP959/vvTOptQPJ+4H/BXlkbvpU02nL7eFbFDSuTCCvvivfeKOMc
-         8P5advnzXHZi3eT1rBYCb44qqP2uiHzNI/qiq6kNiYy/4njk8zXaHhhhuyWYcxDWsSTl
-         zuBZpvf6BRTXw3aiDvW7zALeqkTi3zMlIHXxtQ0Ns818hV5ebpxaa7sluONZZfNwmmQb
-         sBOkgx6rpH0aJAU/sR3gWLZl9kAoCSC47h/JfX+ogp0jtasYZmO2uyf2r38mTc8L9aGQ
-         r7oA==
-X-Gm-Message-State: AOAM533M/RlJBa1Ss/7CKo/8QmqqICmDDeKxfvaFb7MGIT1KinPaSuL0
-        4SQ9medpe7bX+CUCYj/SHdZLGJ/kNzooYuH5jmI=
-X-Google-Smtp-Source: ABdhPJzWuIVSUuVwZ6a6ME03FyveJQGaX7eCAfeLtRyhfLDX/sJu4H/PsCIx5iSAmmwzDNGOSPucdpsFHQaI0ufIc7U=
-X-Received: by 2002:a65:6707:: with SMTP id u7mr20981952pgf.233.1595878887813;
- Mon, 27 Jul 2020 12:41:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200726110524.151957-1-xie.he.0141@gmail.com>
-In-Reply-To: <20200726110524.151957-1-xie.he.0141@gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Mon, 27 Jul 2020 12:41:16 -0700
-Message-ID: <CAJht_EOAGFkVXsrJefWNMDn_D5HhH+ODkqE03BULyzb_Ma8A5A@mail.gmail.com>
-Subject: Re: [PATCH] drivers/net/wan/lapbether: Use needed_headroom instead of hard_header_len
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        id S1728505AbgG0TiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 15:38:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37998 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728436AbgG0TiX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 15:38:23 -0400
+Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4720220738;
+        Mon, 27 Jul 2020 19:38:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595878703;
+        bh=Wq926jdm0qwwvAC3QIT0XJ7thvtdaun3hyPXfStCGm0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=fxEOeMTuILuZD+uLNj6MiSlImq32eKs+LD3abs1ZtIdaQ+zahdlVncsVBlGsccf8D
+         qyQOjLWhX2JUJB0gwA5QbCqVPF9B//B1hYAHL2jZZeJnDJoWgYrAAniHPpTxffelm5
+         PYTgOxshxEmSeJNG4hgCdgBWC21ClS+dvwtRdtHg=
+Date:   Mon, 27 Jul 2020 14:44:15 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Linux X25 <linux-x25@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH][next] ath11k: Use fallthrough pseudo-keyword
+Message-ID: <20200727194415.GA1275@embeddedor>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Cong Wang,
+Replace the existing /* fall through */ comments and its variants with
+the new pseudo-keyword macro fallthrough[1]. Also, remove unnecessary
+fall-through markings when it is the case.
 
-I'm wishing to change a driver from using "hard_header_len" to using
-"needed_headroom" to declare its needed headroom. I submitted a patch
-and it is decided it needs to be reviewed. I see you participated in
-"hard_header_len vs needed_headroom" discussions in the past. Can you
-help me review this patch? Thanks!
+[1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
 
-The patch is at:
-http://patchwork.ozlabs.org/project/netdev/patch/20200726110524.151957-1-xie.he.0141@gmail.com/
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/wireless/ath/ath11k/core.c  |  2 +-
+ drivers/net/wireless/ath/ath11k/dp.c    |  2 +-
+ drivers/net/wireless/ath/ath11k/dp_rx.c |  3 +--
+ drivers/net/wireless/ath/ath11k/mac.c   | 22 +++++++++++-----------
+ 4 files changed, 14 insertions(+), 15 deletions(-)
 
-In my understanding, hard_header_len should be the length of the header
-created by dev_hard_header. Any additional headroom needed should be
-declared in needed_headroom instead of hard_header_len. I came to this
-conclusion by examining the logic of net/packet/af_packet.c:packet_snd.
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 905cd8beaf28..2fbcb2259fd9 100644
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -706,7 +706,7 @@ static void ath11k_core_restart(struct work_struct *work)
+ 			break;
+ 		case ATH11K_STATE_RESTARTED:
+ 			ar->state = ATH11K_STATE_WEDGED;
+-			/* fall through */
++			fallthrough;
+ 		case ATH11K_STATE_WEDGED:
+ 			ath11k_warn(ab,
+ 				    "device is wedged, will not restart radio %d\n", i);
+diff --git a/drivers/net/wireless/ath/ath11k/dp.c b/drivers/net/wireless/ath/ath11k/dp.c
+index 1d64c3c51ac9..141a046b9269 100644
+--- a/drivers/net/wireless/ath/ath11k/dp.c
++++ b/drivers/net/wireless/ath/ath11k/dp.c
+@@ -159,7 +159,7 @@ int ath11k_dp_srng_setup(struct ath11k_base *ab, struct dp_srng *ring,
+ 			break;
+ 		}
+ 		/* follow through when ring_num >= 3 */
+-		/* fall through */
++		fallthrough;
+ 	case HAL_REO_EXCEPTION:
+ 	case HAL_REO_REINJECT:
+ 	case HAL_REO_CMD:
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index 791d971784ce..97137507a0bd 100644
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -3709,8 +3709,7 @@ static bool ath11k_dp_rx_h_reo_err(struct ath11k *ar, struct sk_buff *msdu,
+ 		 * instead, it is good to drop such packets in mac80211
+ 		 * after incrementing the replay counters.
+ 		 */
+-
+-		/* fall through */
++		fallthrough;
+ 	default:
+ 		/* TODO: Review other errors and process them to mac80211
+ 		 * as appropriate.
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 07d3e031c75a..648eabadc094 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -1138,13 +1138,13 @@ ath11k_peer_assoc_h_vht_limit(u16 tx_mcs_set,
+ 			idx_limit = -1;
+ 
+ 		switch (idx_limit) {
+-		case 0: /* fall through */
+-		case 1: /* fall through */
+-		case 2: /* fall through */
+-		case 3: /* fall through */
+-		case 4: /* fall through */
+-		case 5: /* fall through */
+-		case 6: /* fall through */
++		case 0:
++		case 1:
++		case 2:
++		case 3:
++		case 4:
++		case 5:
++		case 6:
+ 		case 7:
+ 			mcs = IEEE80211_VHT_MCS_SUPPORT_0_7;
+ 			break;
+@@ -1156,7 +1156,7 @@ ath11k_peer_assoc_h_vht_limit(u16 tx_mcs_set,
+ 			break;
+ 		default:
+ 			WARN_ON(1);
+-			/* fall through */
++			fallthrough;
+ 		case -1:
+ 			mcs = IEEE80211_VHT_MCS_NOT_SUPPORTED;
+ 			break;
+@@ -1339,7 +1339,7 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
+ 		arg->peer_he_tx_mcs_set[WMI_HECAP_TXRX_MCS_NSS_IDX_160] = v;
+ 
+ 		arg->peer_he_mcs_count++;
+-		/* fall through */
++		fallthrough;
+ 
+ 	default:
+ 		v = le16_to_cpu(he_cap->he_mcs_nss_supp.rx_mcs_80);
+@@ -2114,7 +2114,7 @@ void __ath11k_mac_scan_finish(struct ath11k *ar)
+ 		} else if (ar->scan.roc_notify) {
+ 			ieee80211_remain_on_channel_expired(ar->hw);
+ 		}
+-		/* fall through */
++		fallthrough;
+ 	case ATH11K_SCAN_STARTING:
+ 		ar->scan.state = ATH11K_SCAN_IDLE;
+ 		ar->scan_channel = NULL;
+@@ -4368,7 +4368,7 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
+ 		break;
+ 	case NL80211_IFTYPE_MESH_POINT:
+ 		arvif->vdev_subtype = WMI_VDEV_SUBTYPE_MESH_11S;
+-		/* fall through */
++		fallthrough;
+ 	case NL80211_IFTYPE_AP:
+ 		arvif->vdev_type = WMI_VDEV_TYPE_AP;
+ 		break;
+-- 
+2.27.0
 
-What do you think?
-
-Thanks!
