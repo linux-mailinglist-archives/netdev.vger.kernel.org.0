@@ -2,104 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E648422EA2F
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 12:41:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 089F522EAB2
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728146AbgG0KlS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 06:41:18 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:59736 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726662AbgG0KlR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 06:41:17 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 62B9D60073;
-        Mon, 27 Jul 2020 10:41:17 +0000 (UTC)
-Received: from us4-mdac16-27.ut7.mdlocal (unknown [10.7.66.59])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 6147D8009B;
-        Mon, 27 Jul 2020 10:41:17 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.35])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E7CC0280050;
-        Mon, 27 Jul 2020 10:41:16 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 79814480081;
-        Mon, 27 Jul 2020 10:41:16 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 27 Jul
- 2020 11:41:07 +0100
-Subject: Re: [PATCH v4 net-next 04/16] sfc: skeleton EF100 PF driver
-To:     kernel test robot <lkp@intel.com>,
-        <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <kbuild-all@lists.01.org>, <netdev@vger.kernel.org>
-References: <b734869c-ee2f-a121-2470-a7d632e1dfbf@solarflare.com>
- <202007250411.qUhQvyZz%lkp@intel.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <0c9d51a0-4583-6f5a-46e3-c27dd4e0315c@solarflare.com>
-Date:   Mon, 27 Jul 2020 11:41:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1728051AbgG0LGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 07:06:03 -0400
+Received: from mail-dm6nam11on2071.outbound.protection.outlook.com ([40.107.223.71]:44641
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728477AbgG0LGB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 07:06:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I8pP8L3UEnGBccQIJruBnSxi4QojAjaLN7oOEqToFVmkX5n9otTyOcXYu6joYysr3aRiJVmfhRzBlgk3flzzmYix0To9LeuvMOHMuSC3Ps9/qListt/IteIgcbl4inHjvAU+DHSDg5edbd95L5rCY+gNu45rFgvwwpsCxPkBbkZq5SdkcecQCoTjGesXqTLz0EnHW4NvmOKLREa/34DcUY+moAWJhUfwF2yBZ1oBBAHEPbFguIBRnBEjvhqqx3YPxlgG20YVAD+J0T7DaDA4xxKwtq0witMygxbOjoIWWLb+Rout3oFdfd+o40cVNPwouhsTisHa0/cZcf+MGz1OuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1A7sHR8uiWBtmOF1hdFHvxyW6wgy3YDB48gZ3sURZhs=;
+ b=aXgAWamQP7kR7ZTCEtxvoj5NOkrE9ao+EYnF9kX13zYaU935NEItj0JDKjMM2O62YVIl1EeCCVENvDkFEaS9gGXn3YzzbUdzAlp5nr6Ua9saC8XlLtGC23lxZHuNNf2WCOoZJzFYKKiDoIiECTgbo8xTRpCyn4TiMkfK1V+CUtGqkqJc3JQa5Bvf5T/Vu8fJB0DUIHPRBAW4v9wYj0WmNrvON8FPXLjD1n1OIvM7EMja8SoLywY4Rde1Ni5BHVsWZAaH30Fwmu0xBY5087Ww/i9qXrtsB5QitCqukfmae38ppjCgJ4xPvuPvbAvfM1RgXMb/mkWaDQqxH9dxe0/g1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1A7sHR8uiWBtmOF1hdFHvxyW6wgy3YDB48gZ3sURZhs=;
+ b=C3bFz2EL+8OeugftTG01Ifd1eu/G7wWlbuyAzNNnMykeRE60xO07e+t2blU30nEdFgphHYCneQk1JYVDRfxhqwy2/8j512GE9uKZLzfTNOnOFt7go0QsMSO13oWMH8pBwvzyhvxL8HQUhiPAtQ7P8NWvUJ2lIUXPEw0dZDAHY2w=
+Authentication-Results: st.com; dkim=none (message not signed)
+ header.d=none;st.com; dmarc=none action=none header.from=synaptics.com;
+Received: from BYAPR03MB3573.namprd03.prod.outlook.com (2603:10b6:a02:ae::15)
+ by BYAPR03MB4198.namprd03.prod.outlook.com (2603:10b6:a03:7e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.21; Mon, 27 Jul
+ 2020 11:05:59 +0000
+Received: from BYAPR03MB3573.namprd03.prod.outlook.com
+ ([fe80::b5cc:ca6b:3c25:a99c]) by BYAPR03MB3573.namprd03.prod.outlook.com
+ ([fe80::b5cc:ca6b:3c25:a99c%4]) with mapi id 15.20.3216.033; Mon, 27 Jul 2020
+ 11:05:59 +0000
+Date:   Mon, 27 Jul 2020 19:01:07 +0800
+From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] net: stmmac: improve WOL
+Message-ID: <20200727190045.36f247cc@xhacker.debian>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TY2PR01CA0012.jpnprd01.prod.outlook.com
+ (2603:1096:404:a::24) To BYAPR03MB3573.namprd03.prod.outlook.com
+ (2603:10b6:a02:ae::15)
 MIME-Version: 1.0
-In-Reply-To: <202007250411.qUhQvyZz%lkp@intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25566.005
-X-TM-AS-Result: No-9.293800-8.000000-10
-X-TMASE-MatchedRID: vEvJ7Rh1lGiczwUwXNyhwjVUc/h8Ki+CABYRpyLYSPrk1kyQDpEj8MWl
-        hj9iHeVp6p2MwhnGDkC/UScO8V00kpt8I5a2mQhNnVTWWiNp+v+NY/pqxovzxR1rVWTdGrE41w8
-        DPX3mEjaMYg2Zw8Pzykib2JaUlOFowrMHbpAUmLlSFqtD2wqeMW4lczE4XkmwNEbJ0Gr9hUIxX1
-        Naq4dzMiFEEdbgC8XE1sAsJSZL0aQ32uiNuPEGTJr5ykm9NtIcNV9S7O+u3Ka9riHHO5UXuBQAr
-        vun+J7W2tmoqiGUvaIx9t8sM0+WvM11iH9zkl9E9Ib/6w+1lWTdXhRKGhNdp44iwAQuovtYSXAV
-        7ymJFIPcJ/RhXvDY5zCBmWgH9MGx5UcZtwNsCrqDGx/OQ1GV8v1vTGBiuZrt1GcRAJRT6PP3FLe
-        ZXNZS4H0jHMQPhEvZ/q0Vdvobx4yqJGvjZGdhh2r0XMTyJrsTlvodiv8TfRaZsftwwIX2T0GH4Z
-        rdgeLgM8yeDlLSf5uwjRySHQdvV2wC+RrNSUxb8B1+fkPI48NcLq4mdz+nRKyCWSW0HzF0amjOS
-        5qVJMM7pyVyc/F9UH7cGd19dSFd
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--9.293800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25566.005
-X-MDID: 1595846477-EOTWoK9Cp1eh
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from xhacker.debian (124.74.246.114) by TY2PR01CA0012.jpnprd01.prod.outlook.com (2603:1096:404:a::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.23 via Frontend Transport; Mon, 27 Jul 2020 11:05:56 +0000
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+X-Originating-IP: [124.74.246.114]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cc3e2fe7-3a40-4d5f-3b01-08d8321d0ad3
+X-MS-TrafficTypeDiagnostic: BYAPR03MB4198:
+X-Microsoft-Antispam-PRVS: <BYAPR03MB4198BAA3936E6CDAE1A4D5B5ED720@BYAPR03MB4198.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jPwKJJfaQ3ukUOMqnMvpbZjLIjAkKjzqmpjfgtXyfbtia37ZUR4uDOjZL67A/h62EBk6Lrz7ys7Mw7w1gJ+7qUH3AsRrl/ovG88Mz/RrL8oLFXaivNcPkjq81HPo3mkPfS8UHZkicakaO6Xn6QI7fCIWj6ZGCWm+HVySXIuRyrggivOJLaMD6nb04TyNzFNJWX/ItWWffuKgdORi0t32GxCgQuh02ICDZnybFS2CsHKFLWdwWbTDrDIg/g5QNu0AVeZCDq4JUZ8nxaWNbxjE+QRn+6OI+IqPgSqwn7lvO9gsxu7TvTMz0WIxxuLQrR8J
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR03MB3573.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39860400002)(366004)(346002)(376002)(396003)(136003)(66946007)(66476007)(66556008)(5660300002)(6506007)(55016002)(86362001)(52116002)(9686003)(4744005)(8676002)(478600001)(110136005)(7696005)(316002)(1076003)(4326008)(16526019)(8936002)(26005)(956004)(83380400001)(2906002)(6666004)(7416002)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: aeQngkP+Aia67IILNklrGXdaycb/knf/efRBWVM97JkEcgy0QtN197Y6T92xzUmdbbfGExGzoA2mjQ8YiG3vkG4WFXNO7SA5lTPb8JuQUwUlHlVppnxIjkxbPR4zgZlzogQMLEM3q9xgkm4VsUhQ61LDoIeSsgLJfBk8jnJMB3ntHv6vLCsvXiVWWT3J9O53UvAoowawL33dE6fanSabtsVjm7IpxHlVj9GhNpDuvyn72+yH5WYV2g2oB0L0HpMMa683HXbMkiOLsvpm3M+ZOni6vUKDnYKOeJN+2WQwTFfsPtqJbG0rCazdBnzLVyyUeyJ7CqzbHHIgeq+QQamibZxUhbFeo94cV+f6imQwQkDpBri467yWDHSTV2aIN0c80dAOfWr+FRNmvU7zwFbvQG2QWDL9eibEIjZlBnlEWFlTqfU3vwGW/AGw7jtc1Qaflc95zWdjxjn37Lox/pkIzT1c3NOeYCPbjMBMqpH8CQQLybYFAIrKSqBztdtjE1zh
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc3e2fe7-3a40-4d5f-3b01-08d8321d0ad3
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR03MB3573.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2020 11:05:59.2849
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jRatiSHMnpA+xtcLLtUb1k/BKAz7JaIA9v02Cv9MVdHj6bi6JTqZZMWR9xBNA45dPTqmCRnFVNpZXf04Z81xwg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR03MB4198
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/07/2020 21:32, kernel test robot wrote:
-> Hi Edward,
->
-> I love your patch! Yet something to improve:
->
-> [auto build test ERROR on net-next/master]
->
-> url:    https://github.com/0day-ci/linux/commits/Edward-Cree/sfc-driver-for-EF100-family-NICs-part-1/20200725-000401
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 1b6687e31a2df9fbdb12d25c1d1d372777bf96a8
-> config: microblaze-randconfig-r021-20200725 (attached as .config)
-> compiler: microblaze-linux-gcc (GCC) 9.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=microblaze 
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All error/warnings (new ones prefixed by >>):
->
->>> drivers/net/ethernet/sfc/siena.c:1021:16: error: '__efx_enqueue_skb' undeclared here (not in a function); did you mean 'efx_enqueue_skb'?
->     1021 |  .tx_enqueue = __efx_enqueue_skb,
->          |                ^~~~~~~~~~~~~~~~~
->          |                efx_enqueue_skb
-Aaaaaargh.
-Apparently INDIRECT_CALLABLE_DECLARE doesn't declare anything #ifndef
- CONFIG_RETPOLINE.  I presumably misunderstood what it was for, and I
- should just declare those prototypes normally, without it.
+Currently, stmmac driver relies on the HW PMT to support WOL. We want
+to support phy based WOL.
 
-Time to spin a v5...
+patch1 is a small improvement to disable WAKE_MAGIC for PMT case if
+no pmt_magic_frame.
+patch2 and patch3 are two prepation patches.
+patch4 implement the phy based WOL
+patch5 tries to save a bit energy if WOL is enabled.
 
--ed
+Jisheng Zhang (5):
+  net: stmmac: Remove WAKE_MAGIC if HW shows no pmt_magic_frame
+  net: stmmac: Move device_can_wakeup() check earlier in set_wol
+  net: stmmac: only call pmt() during suspend/resume if HW enables PMT
+  net: stmmac: Support WOL with phy
+  net: stmmac: speed down the PHY, if WoL used, to save energy
+
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  | 19 ++++++++++++++++---
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 18 +++++++++++++++---
+ 2 files changed, 31 insertions(+), 6 deletions(-)
+
+-- 
+2.28.0.rc0
+
