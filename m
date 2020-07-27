@@ -2,218 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B34022FA4F
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 22:47:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1A3322FAB7
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 22:54:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726976AbgG0Urq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 16:47:46 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58086 "EHLO vps0.lunn.ch"
+        id S1726983AbgG0Uxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 16:53:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36346 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726838AbgG0Urp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 16:47:45 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k0A2A-0079fb-Kc; Mon, 27 Jul 2020 22:47:42 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH RFC net-next 3/3] net: phy: Move and rename mdio-xpcs
-Date:   Mon, 27 Jul 2020 22:47:31 +0200
-Message-Id: <20200727204731.1705418-4-andrew@lunn.ch>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200727204731.1705418-1-andrew@lunn.ch>
-References: <20200727204731.1705418-1-andrew@lunn.ch>
+        id S1726769AbgG0Uxb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 16:53:31 -0400
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EDC9020838;
+        Mon, 27 Jul 2020 20:53:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595883211;
+        bh=a6AU9sf1ZUMXutwnI1/Vf3w0L3i8tw6Su4jyOOk4+Q0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=x6rEsiY8NDPMoUxF1fHtYrbr1ZPeSBT/Mw0OP0+Rh+Cg5lMh40lQqnlr0W8Iz4eKY
+         idEyOwbyHtYsxTDD+SFMA3oysFj3xELxCSoYH5XcJ8q4yKZPUqZ5rrFp8QCQBrK8/X
+         X1/jk0Bn8aeavnLiBzm2NN95ZWm3yXAKrHmUkBs0=
+Received: by mail-lf1-f51.google.com with SMTP id h8so9751826lfp.9;
+        Mon, 27 Jul 2020 13:53:30 -0700 (PDT)
+X-Gm-Message-State: AOAM533MzsB1p7HZ1PgxhimG9wVxCUFXZLhh2oKzfT4RMb/ZR67LwC7S
+        lxEOkwjQgIKfSl83NCxqvZ6M4XXBg+uuKp0XSXQ=
+X-Google-Smtp-Source: ABdhPJyNnQou0xCOihO3lXbU/vFYvhDWPuoM6oxOOcpjRATL+9dcHAhqWM6fz3p5Jg2cX9QiMWwZp48oKJfgeXRq/jI=
+X-Received: by 2002:a19:c501:: with SMTP id w1mr11874138lfe.172.1595883209223;
+ Mon, 27 Jul 2020 13:53:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200724011700.2854734-1-andriin@fb.com> <20200724011700.2854734-2-andriin@fb.com>
+In-Reply-To: <20200724011700.2854734-2-andriin@fb.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 27 Jul 2020 13:53:17 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW68tUDQf7kgB-r5aJFH3Bk_5_b_0eokqjYe9-8YpHX3zg@mail.gmail.com>
+Message-ID: <CAPhsuW68tUDQf7kgB-r5aJFH3Bk_5_b_0eokqjYe9-8YpHX3zg@mail.gmail.com>
+Subject: Re: [PATCH bpf 2/2] selftests/bpf: extend map-in-map selftest to
+ detect memory leaks
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create a subdirectory for PCS drivers. Introduce a new naming
-convention for PCS drivers, in that the files should have the prefix
-pcs-, and the Kconfig symbols should use the PCS_ prefix. This means
-renaming the one such driver that currently exists.
+On Thu, Jul 23, 2020 at 6:17 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Add test validating that all inner maps are released properly after skeleton
+> is destroyed. To ensure determinism, trigger kernel-size synchronize_rcu()
+> before checking map existence by their IDs.
+>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  .../selftests/bpf/prog_tests/btf_map_in_map.c | 104 +++++++++++++++---
+>  1 file changed, 91 insertions(+), 13 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> index f7ee8fa377ad..043e8ffe03d1 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> @@ -5,10 +5,50 @@
+>
+>  #include "test_btf_map_in_map.skel.h"
+>
+> +static int duration;
+> +
+> +int bpf_map_id(struct bpf_map *map)
+Should this return __u32?
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/ethernet/stmicro/stmmac/Kconfig   |  2 +-
- drivers/net/ethernet/stmicro/stmmac/common.h  |  2 +-
- drivers/net/phy/Kconfig                       |  8 ++------
- drivers/net/phy/Makefile                      |  4 +---
- drivers/net/phy/pcs/Kconfig                   | 20 +++++++++++++++++++
- drivers/net/phy/pcs/Makefile                  |  4 ++++
- .../net/phy/{mdio-xpcs.c => pcs/pcs-xpcs.c}   |  2 +-
- include/linux/{mdio-xpcs.h => pcs-xpcs.h}     |  8 ++++----
- 8 files changed, 34 insertions(+), 16 deletions(-)
- create mode 100644 drivers/net/phy/pcs/Kconfig
- create mode 100644 drivers/net/phy/pcs/Makefile
- rename drivers/net/phy/{mdio-xpcs.c => pcs/pcs-xpcs.c} (99%)
- rename include/linux/{mdio-xpcs.h => pcs-xpcs.h} (88%)
+> +{
+> +       struct bpf_map_info info;
+> +       __u32 info_len = sizeof(info);
+> +       int err;
+> +
+> +       memset(&info, 0, info_len);
+> +       err = bpf_obj_get_info_by_fd(bpf_map__fd(map), &info, &info_len);
+> +       if (err)
+> +               return 0;
+> +       return info.id;
+> +}
+> +
+> +int kern_sync_rcu() {
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 9a47c5aec91a..35e8fd6411e2 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -3,7 +3,7 @@ config STMMAC_ETH
- 	tristate "STMicroelectronics Multi-Gigabit Ethernet driver"
- 	depends on HAS_IOMEM && HAS_DMA
- 	select MII
--	select MDIO_XPCS
-+	select PCS_XPCS
- 	select PAGE_POOL
- 	select PHYLINK
- 	select CRC32
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 127f75862962..74dc742c9a3b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -15,7 +15,7 @@
- #include <linux/netdevice.h>
- #include <linux/stmmac.h>
- #include <linux/phy.h>
--#include <linux/mdio-xpcs.h>
-+#include <linux/pcs-xpcs.h>
- #include <linux/module.h>
- #if IS_ENABLED(CONFIG_VLAN_8021Q)
- #define STMMAC_VLAN_TAG_USED
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index a193236fd65a..6ce151b1254d 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -5,12 +5,6 @@
- 
- source "drivers/net/phy/mdio/Kconfig"
- 
--config MDIO_XPCS
--	tristate "Synopsys DesignWare XPCS controller"
--	help
--	  This module provides helper functions for Synopsys DesignWare XPCS
--	  controllers.
--
- config PHYLINK
- 	tristate
- 	depends on NETDEVICES
-@@ -92,6 +86,8 @@ config XILINX_GMII2RGMII
- 
- endif # PHYLIB
- 
-+source "drivers/net/phy/pcs/Kconfig"
-+
- config MICREL_KS8995MA
- 	tristate "Micrel KS8995MA 5-ports 10/100 managed Ethernet switch"
- 	depends on SPI
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index 6bdf04478d34..c5db11f70ccf 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- # Makefile for Linux PHY drivers and MDIO bus drivers
- 
--obj-y				+= phy/ mdio/
-+obj-y				+= phy/ mdio/ pcs/
- 
- libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o \
- 				   linkmode.o
-@@ -27,8 +27,6 @@ obj-$(CONFIG_PHYLINK)		+= phylink.o
- obj-$(CONFIG_PHYLIB)		+= libphy.o
- obj-$(CONFIG_FIXED_PHY)		+= fixed_phy.o
- 
--obj-$(CONFIG_MDIO_XPCS)		+= mdio-xpcs.o
--
- obj-$(CONFIG_NETWORK_PHY_TIMESTAMPING) += mii_timestamper.o
- 
- obj-$(CONFIG_SFP)		+= sfp.o
-diff --git a/drivers/net/phy/pcs/Kconfig b/drivers/net/phy/pcs/Kconfig
-new file mode 100644
-index 000000000000..436b6348f7e8
---- /dev/null
-+++ b/drivers/net/phy/pcs/Kconfig
-@@ -0,0 +1,20 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# PCS driver configuration
-+#
-+# Please keep this file sorted by sting which apears in menuconfig.
-+
-+menuconfig PCS_DEVICE
-+	tristate "PCS device drivers"
-+	help
-+	  PCS devices and driver infrastructure code.
-+
-+if PCS_DEVICE
-+
-+config PCS_XPCS
-+	tristate "Synopsys DesignWare XPCS controller"
-+	help
-+	  This module provides helper functions for Synopsys DesignWare XPCS
-+	  controllers.
-+
-+endif
-diff --git a/drivers/net/phy/pcs/Makefile b/drivers/net/phy/pcs/Makefile
-new file mode 100644
-index 000000000000..f0480afc7157
---- /dev/null
-+++ b/drivers/net/phy/pcs/Makefile
-@@ -0,0 +1,4 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Makefile for Linux PCS drivers
-+
-+obj-$(CONFIG_PCS_XPCS)		+= pcs-xpcs.o
-diff --git a/drivers/net/phy/mdio-xpcs.c b/drivers/net/phy/pcs/pcs-xpcs.c
-similarity index 99%
-rename from drivers/net/phy/mdio-xpcs.c
-rename to drivers/net/phy/pcs/pcs-xpcs.c
-index 0d66a8ba7eb6..2c77b6245279 100644
---- a/drivers/net/phy/mdio-xpcs.c
-+++ b/drivers/net/phy/pcs/pcs-xpcs.c
-@@ -8,7 +8,7 @@
- 
- #include <linux/delay.h>
- #include <linux/mdio.h>
--#include <linux/mdio-xpcs.h>
-+#include <linux/pcs-xpcs.h>
- #include <linux/phylink.h>
- #include <linux/workqueue.h>
- 
-diff --git a/include/linux/mdio-xpcs.h b/include/linux/pcs-xpcs.h
-similarity index 88%
-rename from include/linux/mdio-xpcs.h
-rename to include/linux/pcs-xpcs.h
-index 9a841aa5982d..351c1c9aedc5 100644
---- a/include/linux/mdio-xpcs.h
-+++ b/include/linux/pcs-xpcs.h
-@@ -4,8 +4,8 @@
-  * Synopsys DesignWare XPCS helpers
-  */
- 
--#ifndef __LINUX_MDIO_XPCS_H
--#define __LINUX_MDIO_XPCS_H
-+#ifndef __LINUX_PCS_XPCS_H
-+#define __LINUX_PCS_XPCS_H
- 
- #include <linux/phy.h>
- #include <linux/phylink.h>
-@@ -29,7 +29,7 @@ struct mdio_xpcs_ops {
- 	int (*probe)(struct mdio_xpcs_args *xpcs, phy_interface_t interface);
- };
- 
--#if IS_ENABLED(CONFIG_MDIO_XPCS)
-+#if IS_ENABLED(CONFIG_PCS_XPCS)
- struct mdio_xpcs_ops *mdio_xpcs_get_ops(void);
- #else
- static inline struct mdio_xpcs_ops *mdio_xpcs_get_ops(void)
-@@ -38,4 +38,4 @@ static inline struct mdio_xpcs_ops *mdio_xpcs_get_ops(void)
- }
- #endif
- 
--#endif /* __LINUX_MDIO_XPCS_H */
-+#endif /* __LINUX_PCS_XPCS_H */
--- 
-2.28.0.rc0
+int kern_sync_rcu(void)
+{
+...
 
+A comment for this function would be nice too.
+
+> +       int inner_map_fd, outer_map_fd, err, zero = 0;
+> +
+> +       inner_map_fd = bpf_create_map(BPF_MAP_TYPE_ARRAY, 4, 4, 1, 0);
+> +       if (CHECK(inner_map_fd < 0, "inner_map_create", "failed %d\n", -errno))
+> +               return -1;
+> +
+> +       outer_map_fd = bpf_create_map_in_map(BPF_MAP_TYPE_ARRAY_OF_MAPS, NULL,
+> +                                            sizeof(int), inner_map_fd, 1, 0);
+> +       if (CHECK(outer_map_fd < 0, "outer_map_create", "failed %d\n", -errno)) {
+> +               close(inner_map_fd);
+> +               return -1;
+> +       }
+> +
+> +       err = bpf_map_update_elem(outer_map_fd, &zero, &inner_map_fd, 0);
+> +       if (err)
+> +               err = -errno;
+> +       CHECK(err, "outer_map_update", "failed %d\n", err);
+> +       close(inner_map_fd);
+> +       close(outer_map_fd);
+> +       return err;
+> +}
+> +
+>  void test_btf_map_in_map(void)
+>  {
+> -       int duration = 0, err, key = 0, val;
+> +       int err, key = 0, val, i;
+>         struct test_btf_map_in_map* skel;
+> +       int outer_arr_fd, outer_hash_fd;
+> +       int fd, map1_fd, map2_fd, map1_id, map2_id;
+nit: reverse Christmas tree.
+
+>
+>         skel = test_btf_map_in_map__open_and_load();
+>         if (CHECK(!skel, "skel_open", "failed to open&load skeleton\n"))
+> @@ -18,32 +58,70 @@ void test_btf_map_in_map(void)
+>         if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
+>                 goto cleanup;
+>
+> +       map1_fd = bpf_map__fd(skel->maps.inner_map1);
+> +       map2_fd = bpf_map__fd(skel->maps.inner_map2);
+> +       outer_arr_fd = bpf_map__fd(skel->maps.outer_arr);
+> +       outer_hash_fd = bpf_map__fd(skel->maps.outer_hash);
+> +
+>         /* inner1 = input, inner2 = input + 1 */
+> -       val = bpf_map__fd(skel->maps.inner_map1);
+> -       bpf_map_update_elem(bpf_map__fd(skel->maps.outer_arr), &key, &val, 0);
+> -       val = bpf_map__fd(skel->maps.inner_map2);
+> -       bpf_map_update_elem(bpf_map__fd(skel->maps.outer_hash), &key, &val, 0);
+> +       map1_fd = bpf_map__fd(skel->maps.inner_map1);
+> +       bpf_map_update_elem(outer_arr_fd, &key, &map1_fd, 0);
+> +       map2_fd = bpf_map__fd(skel->maps.inner_map2);
+> +       bpf_map_update_elem(outer_hash_fd, &key, &map2_fd, 0);
+>         skel->bss->input = 1;
+>         usleep(1);
+>
+> -       bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map1), &key, &val);
+> +       bpf_map_lookup_elem(map1_fd, &key, &val);
+>         CHECK(val != 1, "inner1", "got %d != exp %d\n", val, 1);
+> -       bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map2), &key, &val);
+> +       bpf_map_lookup_elem(map2_fd, &key, &val);
+>         CHECK(val != 2, "inner2", "got %d != exp %d\n", val, 2);
+>
+>         /* inner1 = input + 1, inner2 = input */
+> -       val = bpf_map__fd(skel->maps.inner_map2);
+> -       bpf_map_update_elem(bpf_map__fd(skel->maps.outer_arr), &key, &val, 0);
+> -       val = bpf_map__fd(skel->maps.inner_map1);
+> -       bpf_map_update_elem(bpf_map__fd(skel->maps.outer_hash), &key, &val, 0);
+> +       bpf_map_update_elem(outer_arr_fd, &key, &map2_fd, 0);
+> +       bpf_map_update_elem(outer_hash_fd, &key, &map1_fd, 0);
+>         skel->bss->input = 3;
+>         usleep(1);
+>
+> -       bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map1), &key, &val);
+> +       bpf_map_lookup_elem(map1_fd, &key, &val);
+>         CHECK(val != 4, "inner1", "got %d != exp %d\n", val, 4);
+> -       bpf_map_lookup_elem(bpf_map__fd(skel->maps.inner_map2), &key, &val);
+> +       bpf_map_lookup_elem(map2_fd, &key, &val);
+>         CHECK(val != 3, "inner2", "got %d != exp %d\n", val, 3);
+>
+> +       for (i = 0; i < 5; i++) {
+> +               val = i % 2 ? map1_fd : map2_fd;
+> +               err = bpf_map_update_elem(outer_hash_fd, &key, &val, 0);
+> +               if (CHECK_FAIL(err)) {
+> +                       printf("failed to update hash_of_maps on iter #%d\n", i);
+> +                       goto cleanup;
+> +               }
+> +               err = bpf_map_update_elem(outer_arr_fd, &key, &val, 0);
+> +               if (CHECK_FAIL(err)) {
+> +                       printf("failed to update hash_of_maps on iter #%d\n", i);
+> +                       goto cleanup;
+> +               }
+> +       }
+> +
+> +       map1_id = bpf_map_id(skel->maps.inner_map1);
+> +       map2_id = bpf_map_id(skel->maps.inner_map2);
+> +       CHECK(map1_id == 0, "map1_id", "failed to get ID 1\n");
+> +       CHECK(map2_id == 0, "map2_id", "failed to get ID 2\n");
+> +
+> +       test_btf_map_in_map__destroy(skel);
+> +       skel = NULL;
+> +
+> +       CHECK(kern_sync_rcu(), "sync_rcu", "failed\n");
+> +
+> +       fd = bpf_map_get_fd_by_id(map1_id);
+> +       if (CHECK(fd >= 0, "map1_leak", "inner_map1 leaked!\n")) {
+> +               close(fd);
+> +               goto cleanup;
+> +       }
+> +       fd = bpf_map_get_fd_by_id(map2_id);
+> +       if (CHECK(fd >= 0, "map2_leak", "inner_map2 leaked!\n")) {
+> +               close(fd);
+> +               goto cleanup;
+> +       }
+> +
+>  cleanup:
+>         test_btf_map_in_map__destroy(skel);
+>  }
+> --
+> 2.24.1
+>
