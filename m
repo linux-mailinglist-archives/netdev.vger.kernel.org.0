@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29C5D22E474
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 05:30:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F28C22E475
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 05:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726797AbgG0Daa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jul 2020 23:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48994 "EHLO
+        id S1726821AbgG0Dad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jul 2020 23:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726044AbgG0Da3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 23:30:29 -0400
+        with ESMTP id S1726044AbgG0Dac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jul 2020 23:30:32 -0400
 Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41531C0619D2
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 20:30:29 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id t6so8615871pgq.1
-        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 20:30:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E346C0619D2
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 20:30:32 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id w2so8580264pgg.10
+        for <netdev@vger.kernel.org>; Sun, 26 Jul 2020 20:30:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=G1GUxuzgb4Wc63vmvzCFKSCYZ3kP0SARS89j4q/pjnc=;
-        b=hFP+ewC33t7gFRM5U+OwjKsWdKVQIFJ6SdbCgirILCWsXdW0SbBfg44Hmncgtck82M
-         X9F6gGoCT6eiPNQOtAilgqruc59TXMzBWKQhG7T85pRqrjqZ4cs5hvjrYy3fDWCB/jal
-         rHahVLSGz7Q4vFmQb6HFtwEPbqbgJ7M4A0ymM=
+        bh=WFWasp0Hp2d+HXAiFF5Euo9fzBUskqGy/gVdc7jSOD4=;
+        b=djJ1l8q9yc8kn+Foizun8ypkhAm5DNn+xEvQr1tiQWMznUCTEeMnSI+ng5XYKdn4cJ
+         LfbVh+4FaSpFT6ewGAQVfPKjLE5bVdA8dWCoVfjLP2oFDPN0z7CIPpdi+1vAa07iulG+
+         OE1Tody9kVGF8ZTQTfR8FIDO7hZBBXzG+VGXw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=G1GUxuzgb4Wc63vmvzCFKSCYZ3kP0SARS89j4q/pjnc=;
-        b=i8+q9pGhGTHeLdaijFezC5oPtFz8AaQZNO8X3X/b4eMG200kYv2nNK/tcvc2pdEHML
-         WbZ1MqCsJL2F2uM00MLYlTaSMl9K0Zj37PcEB0ak9U/EnYkkWFziK6eBVUwy1Yvt/Xk1
-         M+imKz9RhRuujyt1/dEor+RLPmbOMkuZBeeb9A8ZYEAf0/A5BUikZIdzsz8AESCFPmRa
-         fe0nSQnH4ygc2s8VbxlyyrJwWTtlWn/QHMkE5Qj5Jbq25QnXTkKQ8/h1ppMsESZRv8gX
-         0oTUJNZLbbav8hg6aIrOZ2lR8aTeubRRye5eAC7Swma1hMiACQFEYZ5TuRLvc6EMLnBh
-         F5Ww==
-X-Gm-Message-State: AOAM5307Xvpi8QCqlGtnjpBITcPFoyrFBm386MQ2bvjRxevga8NYKhvU
-        bjjkcRV1iKV5X7YEbreW6ZL8vrk6f5o=
-X-Google-Smtp-Source: ABdhPJyvsmP21HBhQ/newl6ihBlAt4M4VQLyjvs6JKT14F9joKoYnFy5/P4FSL00B9hauX1KnN5PoA==
-X-Received: by 2002:a63:e00c:: with SMTP id e12mr18073768pgh.413.1595820628682;
-        Sun, 26 Jul 2020 20:30:28 -0700 (PDT)
+        bh=WFWasp0Hp2d+HXAiFF5Euo9fzBUskqGy/gVdc7jSOD4=;
+        b=XSMRqSG9qLGymXFX7p5s/PcOETqNmK+oIPwHXmHNFEPqHU9zJ+3MJnKPTjMGjODUsV
+         pfmDWnEIAJ08+TSSdnwNUOkRQkte5OKIRrCuRzYDNUR55072M+jqAXUXhO1quyXP7ghH
+         QEx+PFzOI9aDLwxUOlSYKwx31MWrPDPO3tvSWSTFWHjy3Gik0Aq4HQHTrkLoNolrLzPv
+         Rt1TDif8LAPgIzGxKrisX/QfIw517AHxG93A99Lefwc8frR9P3Vm2bsNlrmoJsqP0+9I
+         cypazeeYWXTGtoXvN2x1i1MSArR9iFA8eaLi6fP9qNPCajYIo7mxXA1/pmTZpW2xYbm6
+         Ig1Q==
+X-Gm-Message-State: AOAM530xsgPwadXHoTczEmO9rVK8FD0qqUt29yCcyndiazkMly7rMk4d
+        NlGCXsov4jaohTsbjmf03gTAtaPZ05w=
+X-Google-Smtp-Source: ABdhPJy+Ftiu+6A2CXs0FyIjTX1kVyj9D6pvtvXipYUVQv2fPkN5dmozTlaFJHK0sq1U/l7/qvAGUQ==
+X-Received: by 2002:a65:60d4:: with SMTP id r20mr17700176pgv.436.1595820631611;
+        Sun, 26 Jul 2020 20:30:31 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id n25sm13504506pff.51.2020.07.26.20.30.26
+        by smtp.gmail.com with ESMTPSA id n25sm13504506pff.51.2020.07.26.20.30.29
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 26 Jul 2020 20:30:28 -0700 (PDT)
+        Sun, 26 Jul 2020 20:30:31 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 05/10] bnxt_en: Allocate additional memory for all statistics blocks.
-Date:   Sun, 26 Jul 2020 23:29:41 -0400
-Message-Id: <1595820586-2203-6-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 06/10] bnxt_en: Retrieve hardware counter masks from firmware if available.
+Date:   Sun, 26 Jul 2020 23:29:42 -0400
+Message-Id: <1595820586-2203-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1595820586-2203-1-git-send-email-michael.chan@broadcom.com>
 References: <1595820586-2203-1-git-send-email-michael.chan@broadcom.com>
@@ -57,115 +57,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some of these DMAed hardware counters are not full 64-bit counters and
-so we need to accumulate them as they overflow.  Allocate copies of these
-DMA statistics memory blocks with the same size for accumulation.  The
-hardware counter widths are also counter specific so we allocate
-memory for masks that correspond to each counter.
+Newer firmware has a new call HWRM_FUNC_QSTATS_EXT to retrieve the
+masks of all ring counters.  Make this call when supported to
+initialize the hardware masks of all ring counters.  If the call
+is not available, assume 48-bit ring counter masks on P5 chips.
 
 Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 29 ++++++++++++++++++++++++-----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h |  2 ++
- 2 files changed, 26 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 64 +++++++++++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index d232618..33dcb98 100644
+index 33dcb98..65d503f 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3705,6 +3705,10 @@ static int bnxt_alloc_hwrm_short_cmd_req(struct bnxt *bp)
- 
- static void bnxt_free_stats_mem(struct bnxt *bp, struct bnxt_stats_mem *stats)
- {
-+	kfree(stats->hw_masks);
-+	stats->hw_masks = NULL;
-+	kfree(stats->sw_stats);
-+	stats->sw_stats = NULL;
- 	if (stats->hw_stats) {
- 		dma_free_coherent(&bp->pdev->dev, stats->len, stats->hw_stats,
- 				  stats->hw_stats_map);
-@@ -3712,7 +3716,8 @@ static void bnxt_free_stats_mem(struct bnxt *bp, struct bnxt_stats_mem *stats)
- 	}
+@@ -3742,6 +3742,69 @@ static int bnxt_alloc_stats_mem(struct bnxt *bp, struct bnxt_stats_mem *stats,
+ 	return -ENOMEM;
  }
  
--static int bnxt_alloc_stats_mem(struct bnxt *bp, struct bnxt_stats_mem *stats)
-+static int bnxt_alloc_stats_mem(struct bnxt *bp, struct bnxt_stats_mem *stats,
-+				bool alloc_masks)
- {
- 	stats->hw_stats = dma_alloc_coherent(&bp->pdev->dev, stats->len,
- 					     &stats->hw_stats_map, GFP_KERNEL);
-@@ -3720,7 +3725,21 @@ static int bnxt_alloc_stats_mem(struct bnxt *bp, struct bnxt_stats_mem *stats)
- 		return -ENOMEM;
- 
- 	memset(stats->hw_stats, 0, stats->len);
++static void bnxt_fill_masks(u64 *mask_arr, u64 mask, int count)
++{
++	int i;
 +
-+	stats->sw_stats = kzalloc(stats->len, GFP_KERNEL);
-+	if (!stats->sw_stats)
-+		goto stats_mem_err;
++	for (i = 0; i < count; i++)
++		mask_arr[i] = mask;
++}
 +
-+	if (alloc_masks) {
-+		stats->hw_masks = kzalloc(stats->len, GFP_KERNEL);
-+		if (!stats->hw_masks)
-+			goto stats_mem_err;
++static void bnxt_copy_hw_masks(u64 *mask_arr, __le64 *hw_mask_arr, int count)
++{
++	int i;
++
++	for (i = 0; i < count; i++)
++		mask_arr[i] = le64_to_cpu(hw_mask_arr[i]);
++}
++
++static int bnxt_hwrm_func_qstat_ext(struct bnxt *bp,
++				    struct bnxt_stats_mem *stats)
++{
++	struct hwrm_func_qstats_ext_output *resp = bp->hwrm_cmd_resp_addr;
++	struct hwrm_func_qstats_ext_input req = {0};
++	__le64 *hw_masks;
++	int rc;
++
++	if (!(bp->fw_cap & BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED) ||
++	    !(bp->flags & BNXT_FLAG_CHIP_P5))
++		return -EOPNOTSUPP;
++
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_QSTATS_EXT, -1, -1);
++	req.flags = FUNC_QSTATS_EXT_REQ_FLAGS_COUNTER_MASK;
++	mutex_lock(&bp->hwrm_cmd_lock);
++	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++	if (rc)
++		goto qstat_exit;
++
++	hw_masks = &resp->rx_ucast_pkts;
++	bnxt_copy_hw_masks(stats->hw_masks, hw_masks, stats->len / 8);
++
++qstat_exit:
++	mutex_unlock(&bp->hwrm_cmd_lock);
++	return rc;
++}
++
++static void bnxt_init_stats(struct bnxt *bp)
++{
++	struct bnxt_napi *bnapi = bp->bnapi[0];
++	struct bnxt_cp_ring_info *cpr;
++	struct bnxt_stats_mem *stats;
++	u64 mask;
++	int rc;
++
++	cpr = &bnapi->cp_ring;
++	stats = &cpr->stats;
++	rc = bnxt_hwrm_func_qstat_ext(bp, stats);
++	if (rc) {
++		if (bp->flags & BNXT_FLAG_CHIP_P5)
++			mask = (1ULL << 48) - 1;
++		else
++			mask = -1ULL;
++		bnxt_fill_masks(stats->hw_masks, mask, stats->len / 8);
 +	}
- 	return 0;
++}
 +
-+stats_mem_err:
-+	bnxt_free_stats_mem(bp, stats);
-+	return -ENOMEM;
- }
- 
  static void bnxt_free_port_stats(struct bnxt *bp)
-@@ -3760,7 +3779,7 @@ static int bnxt_alloc_stats(struct bnxt *bp)
- 		struct bnxt_cp_ring_info *cpr = &bnapi->cp_ring;
- 
- 		cpr->stats.len = size;
--		rc = bnxt_alloc_stats_mem(bp, &cpr->stats);
-+		rc = bnxt_alloc_stats_mem(bp, &cpr->stats, !i);
+ {
+ 	bp->flags &= ~BNXT_FLAG_PORT_STATS;
+@@ -4029,6 +4092,7 @@ static int bnxt_alloc_mem(struct bnxt *bp, bool irq_re_init)
+ 		rc = bnxt_alloc_stats(bp);
  		if (rc)
- 			return rc;
+ 			goto alloc_mem_err;
++		bnxt_init_stats(bp);
  
-@@ -3774,7 +3793,7 @@ static int bnxt_alloc_stats(struct bnxt *bp)
- 		goto alloc_ext_stats;
- 
- 	bp->port_stats.len = BNXT_PORT_STATS_SIZE;
--	rc = bnxt_alloc_stats_mem(bp, &bp->port_stats);
-+	rc = bnxt_alloc_stats_mem(bp, &bp->port_stats, true);
- 	if (rc)
- 		return rc;
- 
-@@ -3790,7 +3809,7 @@ static int bnxt_alloc_stats(struct bnxt *bp)
- 		goto alloc_tx_ext_stats;
- 
- 	bp->rx_port_stats_ext.len = sizeof(struct rx_port_stats_ext);
--	rc = bnxt_alloc_stats_mem(bp, &bp->rx_port_stats_ext);
-+	rc = bnxt_alloc_stats_mem(bp, &bp->rx_port_stats_ext, true);
- 	/* Extended stats are optional */
- 	if (rc)
- 		return 0;
-@@ -3802,7 +3821,7 @@ static int bnxt_alloc_stats(struct bnxt *bp)
- 	if (bp->hwrm_spec_code >= 0x10902 ||
- 	    (bp->fw_cap & BNXT_FW_CAP_EXT_STATS_SUPPORTED)) {
- 		bp->tx_port_stats_ext.len = sizeof(struct tx_port_stats_ext);
--		rc = bnxt_alloc_stats_mem(bp, &bp->tx_port_stats_ext);
-+		rc = bnxt_alloc_stats_mem(bp, &bp->tx_port_stats_ext, true);
- 		/* Extended stats are optional */
+ 		rc = bnxt_alloc_ntp_fltrs(bp);
  		if (rc)
- 			return 0;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 7e9fe1f..69672ec 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -920,6 +920,8 @@ struct bnxt_sw_stats {
- };
- 
- struct bnxt_stats_mem {
-+	u64		*sw_stats;
-+	u64		*hw_masks;
- 	void		*hw_stats;
- 	dma_addr_t	hw_stats_map;
- 	int		len;
 -- 
 1.8.3.1
 
