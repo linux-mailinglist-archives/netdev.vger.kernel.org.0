@@ -2,95 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0139222F677
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:21:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 030F022F69D
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730419AbgG0RVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 13:21:42 -0400
-Received: from foss.arm.com ([217.140.110.172]:48270 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726617AbgG0RVm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 13:21:42 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 89E6A30E;
-        Mon, 27 Jul 2020 10:21:41 -0700 (PDT)
-Received: from bogus (unknown [10.37.12.41])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F27E73F718;
-        Mon, 27 Jul 2020 10:21:38 -0700 (PDT)
-Date:   Mon, 27 Jul 2020 18:21:36 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jeremy Linton <jeremy.linton@arm.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        linux.cj@gmail.com, linux-acpi@vger.kernel.org
-Subject: Re: [net-next PATCH v7 1/6] Documentation: ACPI: DSD: Document MDIO
- PHY
-Message-ID: <20200727172136.GC8003@bogus>
-References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
- <20200715090400.4733-2-calvin.johnson@oss.nxp.com>
- <1a031e62-1e87-fdc1-b672-e3ccf3530fda@arm.com>
- <20200724133931.GF1472201@lunn.ch>
- <97973095-5458-8ac2-890c-667f4ea6cd0e@arm.com>
- <20200724191436.GH1594328@lunn.ch>
+        id S1730880AbgG0R27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 13:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730663AbgG0R27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 13:28:59 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0328FC0619D2;
+        Mon, 27 Jul 2020 10:28:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=CmygioY1skJ3ZoZf02/bumjZmxuivqPuGfV1LmHfRLM=; b=JGlQ42aWhcaZ5SsiR7SUqB/XBc
+        vI7bc74sMOmlxQNI5Nqdl1L6oRbZL/IY60XxkFSpUic2M9GxcY1j5GM3KM66MhO92R6lEbrZIGsQQ
+        yb7PCg4SlEGh6f0nCeB5LtY/E5mz46Na6lneiuHN3g9uXOrDtzEFj2HgdnDK/CEvkeWkbhb1xh04v
+        nVaElu3hkt0eY0RUOUh7aoF2HQSjrCLT0nPpVy5iSw3roqPgazOejDotpK9p1Iu3myGQ3MrD8fpON
+        Sow1035sR/3mLKSuXj0q6jMwlTGSw9EvVtHu8hy9eo7WJOW2NeeKcUjiRcxCTV3+2S+dLGywXjPPn
+        gGKWctDA==;
+Received: from [2601:1c0:6280:3f0::19c2]
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1k06vk-00071Y-VA; Mon, 27 Jul 2020 17:28:55 +0000
+Subject: Re: linux-next: Tree for Jul 27 (kernel/bpf/syscall.o)
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+References: <20200727232346.0106c375@canb.auug.org.au>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <e342e8ce-db29-1603-3fd9-40792a783296@infradead.org>
+Date:   Mon, 27 Jul 2020 10:28:50 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200724191436.GH1594328@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200727232346.0106c375@canb.auug.org.au>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 24, 2020 at 09:14:36PM +0200, Andrew Lunn wrote:
-> > Hence my previous comment that we should consider this an escape
-> > hatch rather than the last word in how to describe networking on
-> > ACPI/SBSA platforms.
->
-> One problem i have is that this patch set suggests ACPI can be used to
-> describe complex network hardware. It is opening the door for others
-> to follow and add more ACPI support in networking. How long before it
-> is not considered an escape hatch, but the front door?
->
+On 7/27/20 6:23 AM, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Changes since 20200724:
+> 
 
-I understand your concerns here. But as I mentioned in other email in
-the same thread, it is very tricky problem to solve as no one is ready
-to take up and maintain these.
+on i386:
+when CONFIG_XPS is not set/enabled:
 
-> For an example, see
->
-> https://patchwork.ozlabs.org/project/netdev/patch/1595417547-18957-3-git-send-email-vikas.singh@puresoftware.com/
->
-> It is hard to see what the big picture is here. The [0/2] patch is not
-> particularly good. But it makes it clear that people are wanting to
-> add fixed-link PHYs into ACPI. These are pseudo devices, used to make
-> the MAC think it is connected to a PHY when it is not. The MAC still
-> gets informed of link speed, etc via the standard PHYLIB API. They are
-> mostly used for when the Ethernet MAC is directly connected to an
-> Ethernet Switch, at a MAC to MAC level.
->
-> Now i could be wrong, but are Ethernet switches something you expect
-> to see on ACPI/SBSA platforms? Or is this a legitimate use of the
-> escape hatch?
->
+ld: kernel/bpf/syscall.o: in function `__do_sys_bpf':
+syscall.c:(.text+0x4482): undefined reference to `bpf_xdp_link_attach'
 
-My guess is that similar products running on other architectures(namely
-x86) might be running ACPI and hence the push to have ACPI on such ARM
-systems. It may weak argument for that and I agree with it. I want to
-think it as legitimate use here but I am well aware and afraid that this
-may become front door instead of escape hatch.
 
-Sorry, I am not helpful at all, but I am just sharing my personal opinion
-on this matter.
-
---
-Regards,
-Sudeep
+-- 
+~Randy
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
