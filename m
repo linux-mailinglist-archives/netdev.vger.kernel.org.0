@@ -2,106 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C422822EB28
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:24:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AED6D22EB53
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 13:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728207AbgG0LYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 07:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37354 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728139AbgG0LYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 07:24:12 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C974C061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 04:24:11 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id a8so11848468edy.1
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 04:24:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=8WExgmjzhkJIIdgRhNcx1DWzg/HnrNSynjBxi/uh2bI=;
-        b=PDt2zaNgpsoJOPHz6lDUOcyEJ3ubM9QOXJ795vKIcgnRxiLhBkaoXQWMwouzkcneWy
-         g7hx0bAik6R1rl9gm0pMgb54kGpA/wCmxAlU+LcUrZ67xGIe5eptlmCJ9AaKcwSr6UB/
-         OzwiwqvNXD/I7LIRk4+DdKdXXgvwUrq6v6bN4ch3tPFN5mN5yPHjG497hosZf34ZsZJ8
-         Isl8JvV1413hKAPlh5zoynb65YRtDNUf7fQLR7DJ7cIESTAQiyI9spNhMXdGmY12sZgt
-         zBAXMYSTYWW61apTLwBZA49xQMgMFIPUorILsKbnuc5H1PR3kZUrYfoE278j5YzFblo4
-         KMHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=8WExgmjzhkJIIdgRhNcx1DWzg/HnrNSynjBxi/uh2bI=;
-        b=TbBDynmfk3fJZdUjw6s+i0VidsXV6mg7CeDdVgy5uiwU8hVwHLtEdPHaZpi0NE//j6
-         iYoh/IJDHTvjmNdqbyY6SFYCJbHsBDoX4IDAN6VHmG9iUtMPmO/P5thgdnv7+5XGVia1
-         7EzNJ5CnDMJIPsyn1Nw2u5l39e5nlzVGYn6I8zc6TCiw7Di4u59PSeKM/mboD0sVEMLG
-         4yXz1OO816qf/PhqnkbvDZsdW19zZw9KgT/IRNiTxyXpHdisqhVWygmxf31Mv8WshYfO
-         Jb4myl8W6q2McC8l60X7OB3004UyrCVrH0W6pfA5g6LvrETHaoGfXlLCHohOuLvDk6Mb
-         VBKA==
-X-Gm-Message-State: AOAM531Y6HEKUPLiceEtU+bS4LDewBXlPZD6FYRZVRVbY79cBAEaT/DN
-        YNBQ167jUg6XnNYG9riLpZCY9FkN1ErNaxcP99s=
-X-Google-Smtp-Source: ABdhPJxb/4clygCvjCiO88XYG/sbJ6RKoH2Z8xrd10Kb85V7ZjADycyDpSdncP2GPDXnJ5FshMib0fbA5Tgo6BLdO9c=
-X-Received: by 2002:a50:9fc9:: with SMTP id c67mr9960008edf.69.1595849049765;
- Mon, 27 Jul 2020 04:24:09 -0700 (PDT)
+        id S1728045AbgG0Li3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 07:38:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49298 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727037AbgG0Li2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 07:38:28 -0400
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D6C832072E;
+        Mon, 27 Jul 2020 11:38:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595849908;
+        bh=uLbTYAh07fv8JZO0YyeUya+9u16JNdr7tPp1pQ4gqYo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=zO7gFLOA17LlgroJllXmWm8YcqAdeP4NTG7mB9v4pP075cnGKv9titYleXePQiaVX
+         J07HCyoLe7QeSH+D5suzf/uXPdQ2C3NMCIvMQrAaxR6HJ5ZPDGdBoOMgsRbYRd36lB
+         AEEtX/k8I1IBrkr3UiqDsvAOjov2r23gFZO83WJw=
+Date:   Mon, 27 Jul 2020 12:38:21 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Jianyong Wu <Jianyong.Wu@arm.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
+        "john.stultz@linaro.org" <john.stultz@linaro.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Mark Rutland <Mark.Rutland@arm.com>,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        Steven Price <Steven.Price@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>,
+        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
+        Wei Chen <Wei.Chen@arm.com>, nd <nd@arm.com>
+Subject: Re: [PATCH v13 2/9] arm/arm64: KVM: Advertise KVM UID to guests via
+ SMCCC
+Message-ID: <20200727113821.GB20437@willie-the-truck>
+References: <20200619130120.40556-1-jianyong.wu@arm.com>
+ <20200619130120.40556-3-jianyong.wu@arm.com>
+ <HE1PR0802MB255577943C260898A6C686ABF4720@HE1PR0802MB2555.eurprd08.prod.outlook.com>
 MIME-Version: 1.0
-Reply-To: evanaprso@gmail.com
-Received: by 2002:a54:2b90:0:0:0:0:0 with HTTP; Mon, 27 Jul 2020 04:24:09
- -0700 (PDT)
-From:   EVANA PRSO <rm2568590@gmail.com>
-Date:   Mon, 27 Jul 2020 13:24:09 +0200
-X-Google-Sender-Auth: GGKkRaxdo0XqH9l5mVosQBXE4ug
-Message-ID: <CADxkk6Upufr_-B3PQs+YRwxShFTnxXYpi8yym6O_qv3gii-NYQ@mail.gmail.com>
-Subject: Please co-operate with me
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <HE1PR0802MB255577943C260898A6C686ABF4720@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-my Dear friend,
+On Mon, Jul 27, 2020 at 03:45:37AM +0000, Jianyong Wu wrote:
+> > From: Will Deacon <will@kernel.org>
+> > 
+> > We can advertise ourselves to guests as KVM and provide a basic features
+> > bitmap for discoverability of future hypervisor services.
+> > 
+> > Cc: Marc Zyngier <maz@kernel.org>
+> > Signed-off-by: Will Deacon <will@kernel.org>
+> > Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+> > ---
+> >  arch/arm64/kvm/hypercalls.c | 29 +++++++++++++++++++----------
+> >  1 file changed, 19 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
+> > index 550dfa3e53cd..db6dce3d0e23 100644
+> > --- a/arch/arm64/kvm/hypercalls.c
+> > +++ b/arch/arm64/kvm/hypercalls.c
+> > @@ -12,13 +12,13 @@
+> >  int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)  {
+> >  	u32 func_id = smccc_get_function(vcpu);
+> > -	long val = SMCCC_RET_NOT_SUPPORTED;
+> > +	u32 val[4] = {SMCCC_RET_NOT_SUPPORTED};
+> 
+> There is a risk as this u32 value will return here and a u64 value will be
+> obtained in guest. For example, The val[0] is initialized as -1 of
+> 0xffffffff and the guest get 0xffffffff then it will be compared with -1
+> of 0xffffffffffffffff Also this problem exists for the transfer of address
+> in u64 type. So the following assignment to "val" should be split into two
+> u32 value and assign to val[0] and val[1] respectively.
+> WDYT?
 
-My Name is Mrs. Anna H. Bruun, from Norway. I know that this message
-will be a surprise to you. Firstly, I am married to Mr. Patrick
-Bruun.A gold merchant who owns a small gold Mine in Syria; He died of
-Cardiovascular Disease in mid-March 2011. During his life time he
-deposited the sum of (=E2=82=AC16.1 Million Euro) sixteen million, one hund=
-red
-thousand Euros in a bank in Ouagadougou the capital city of Burkina
-Faso in West Africa. The deposited money was from the sale of the
-shares, death benefits payment and entitlements of my deceased husband
-by his company. I am sending this message to you praying that it will
-reach you in good health, since I am not in good health condition in
-which I sleep every night without knowing if I may be alive to see the
-next day.
+Yes, I think you're right that this is a bug, but isn't the solution just
+to make that an array of 'long'?
 
- I am suffering from long time cancer and presently i am partially
-suffering from a stroke illness which has become almost impossible for
-me to move around. I am married to my late husband for over 4 years
-before he died and is unfortunately that we don't have a child, my
-doctor confinded in me that i have less chance to live. Having known
-my health condition, I decided to contact you to claim the fund since
-I don't have any relation I grew up from the orphanage home, I have
-decided to donate what I have to you for the support of helping
-Motherless babies/Less privileged/Widows' because I am dying and
-diagnosed of cancer for about 2 years ago. I have been touched by God
-almighty to donate from what I have inherited from my late husband to
-you for good work of God Almighty. I have asked Almighty God to
-forgive me and believe he has, because He is a Merciful God I will be
-going in for an operation surgery soon.
+	long val [4];
 
- This is the reason i need your services to stand as my next of kin or
-an executor to claim the funds for charity purposes. If this money
-remains unclaimed after my death, the bank executives or the
-government will take the money as unclaimed fund and maybe use it for
-selfish and worthless ventures, I need a very honest person who can
-claim this money and use it for Charity works, for orphanages, widows
-and also build schools for less privilege that will be named after my
-late husband and my name; I need your urgent answer to know if you
-will be able to execute this project, and I will give you more
-information on how the fund will be transferred to your bank account.
+That will sign-extend the negative error codes as required, while leaving
+the explicitly unsigned UID constants alone.
 
-
-Thanks,
-Mrs. Evana Prso.
+Will
