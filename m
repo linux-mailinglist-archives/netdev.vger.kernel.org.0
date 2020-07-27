@@ -2,123 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CE0022F6CA
-	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:37:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12C9D22F6E5
+	for <lists+netdev@lfdr.de>; Mon, 27 Jul 2020 19:42:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730313AbgG0Rhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 13:37:31 -0400
-Received: from perceval.ideasonboard.com ([213.167.242.64]:58234 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731344AbgG0Rh3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 13:37:29 -0400
-Received: from pendragon.ideasonboard.com (81-175-216-236.bb.dnainternet.fi [81.175.216.236])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 60EE0556;
-        Mon, 27 Jul 2020 19:37:25 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1595871445;
-        bh=XZ5UmqXA5czY35VWinVmDMvOn/YIwPOlRwwuxlDX1Qo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Agq8rjvPeVHUjYarOnsB0EsZpsyzd1r1GZE/2YAszslrWb+1Bp7yx5CcMw05I7PtN
-         hDbYe+SCgoewcrT5j+w8EjqhaYMoCCsOjFm/mNlZgkBpZ47hLVxQfaTADG60Aykr2h
-         2OeH45VjGmxJtF0z47Z7M3Z14QgIdxXGnteiee8U=
-Date:   Mon, 27 Jul 2020 20:37:17 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Chris Healy <cphealy@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Fugang Duan <fugang.duan@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Martin Fuzzey <martin.fuzzey@flowbird.group>
-Subject: Re: [RESENT PATCH net--stat 1/1] net: ethernet: fec: Revert "net:
- ethernet: fec: Replace interrupt driven MDIO with polled IO"
-Message-ID: <20200727173717.GJ17521@pendragon.ideasonboard.com>
-References: <20200727012354.GT28704@pendragon.ideasonboard.com>
- <20200727020631.GW28704@pendragon.ideasonboard.com>
- <20200727021432.GM1661457@lunn.ch>
- <20200727023310.GA23988@pendragon.ideasonboard.com>
- <CAFXsbZrf11Nj4rzLJfisPr-fFo-+stt-G3-XQ_Mwus_2z0nsAg@mail.gmail.com>
- <CAFXsbZrysb6SGisEhgXHzj8NZ5o_EjY-rtiqg3gypgr0w-d-dw@mail.gmail.com>
- <CAFXsbZpBP_kzsC_dLYezJWo7+dQufoRmaFpJgKJbnn6T=sc5QA@mail.gmail.com>
- <20200727120545.GN1661457@lunn.ch>
- <20200727152434.GF20890@pendragon.ideasonboard.com>
- <CAFXsbZo5ufE0v_dmzQU9oWBeeRj+DKzDoiMj6OjuiER0O7nFfQ@mail.gmail.com>
+        id S1730285AbgG0RmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 13:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40292 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728560AbgG0RmX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 13:42:23 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA81C061794
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 10:42:23 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id a15so9164855ybs.8
+        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 10:42:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=draconx-ca.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=8eTEImJlgOllN2N0LVMVlZdkUWAqoKd8wMgN/KPPGyw=;
+        b=PcQmdoobad+ns7LDo62SRtHFW8CqQRB4OfyM2CsoZ5l2gfI3wUdbpc9Yj4KvkWQZ7N
+         8XdUhqrCIftgytbRI9vziHsjeNts5Uh0BVZAoJRfgAg4KwEgh3NrzyaHezhLeYBHPm4k
+         F9FpyLz33eEJtNjfTrmzoHAu2Kt0lmU+UvpqYdD4nGUjCxAAcNsx/Uutbvv9pyJ6WklG
+         I/dm5avZl3GKTeDD1o7/dnoIBjePWFod0UvfipQJZ89CLhFLxYeAAcmFe7sD77C2yuuo
+         MoF5iah1OaPspUQibfWciLZeqwnZ8uDhkv8mEi6YPGVvRsqjNTvmQael1e32eCGsndnj
+         y85A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=8eTEImJlgOllN2N0LVMVlZdkUWAqoKd8wMgN/KPPGyw=;
+        b=mr7Rqdfnt1DmsiHZzX1kWBW2fGCMJ0lx8eCLMhPGouUWASZNi4TyKzg6oeEn1K3j65
+         dhnIkLhhTaNGD1PTcmPt9TwCz6nLfMifSpL4W8qWtgsDRfQQBkA6Xb55+43dcGcHwOvK
+         NZuEUNZjGpPM6FpDS/biQl8myWrFIeh6MYLixqF0RRHP8m3sx7jZfJqOmk+rIBzFP0My
+         HcjJYJ3cxF+W4sP7Ky2w1lRqWEy2kiZdA+QCNHbIbxxz1ahP2BEUiPuo2N0HOlwn2bY5
+         3SHXcdxNcKY6TuMbe86vFYpQNCExBomeVjAAiq+gIyB91tzkMh0Y37wHf9KgRmJFT0WQ
+         Rl3Q==
+X-Gm-Message-State: AOAM532THBi4ioEENpVnPX3+MNDYrsEUc1KnNjRURoFbTUWGZ/DAuq3v
+        cH0HjAN3kVNx8FFfelccS4bgKh70ixLZzhv5+jYAyTFuEc0=
+X-Google-Smtp-Source: ABdhPJyhgSDpr2FdTbpW7mQoCX8b9rF1eP3wUiwp1GHuEIFPNp42c9HwMG5miSAbYBtkAYUJUXiKKPD+jHA9yuLX72s=
+X-Received: by 2002:a25:b446:: with SMTP id c6mr36564613ybg.279.1595871743002;
+ Mon, 27 Jul 2020 10:42:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAFXsbZo5ufE0v_dmzQU9oWBeeRj+DKzDoiMj6OjuiER0O7nFfQ@mail.gmail.com>
+Received: by 2002:a25:807:0:0:0:0:0 with HTTP; Mon, 27 Jul 2020 10:42:22 -0700 (PDT)
+X-Originating-IP: [24.53.240.163]
+In-Reply-To: <20200727161319.GH794331@ZenIV.linux.org.uk>
+References: <20200723155101.pnezpo574ot4qkzx@atlas.draconx.ca>
+ <20200727160554.GG794331@ZenIV.linux.org.uk> <20200727161319.GH794331@ZenIV.linux.org.uk>
+From:   Nick Bowler <nbowler@draconx.ca>
+Date:   Mon, 27 Jul 2020 13:42:22 -0400
+Message-ID: <CADyTPEx_dppsUK_SdPKfn-1ZgEzYubbe4tBmXSKBBXTFT5cbWA@mail.gmail.com>
+Subject: Re: [PATCH] Re: PROBLEM: cryptsetup fails to unlock drive in 5.8-rc6 (regression)
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Chris,
+On 2020-07-27, Al Viro <viro@zeniv.linux.org.uk> wrote:
+> On Mon, Jul 27, 2020 at 05:05:54PM +0100, Al Viro wrote:
+>> On Thu, Jul 23, 2020 at 11:51:01AM -0400, Nick Bowler wrote:
+>> > After installing Linux 5.8-rc6, it seems cryptsetup can no longer
+>> > open LUKS volumes.  Regardless of the entered passphrase (correct
+>> > or otherwise), the result is a very unhelpful "Keyslot open failed."
+>> > message.
+[...]
+> Oh, fuck...  Please see if the following fixes your reproducer; the braino
+> is, of course, that instead of fetching ucmsg->cmsg_len into ucmlen we read
+> the entire thing into cmsg.  Other uses of ucmlen had been replaced with
+> cmsg.cmsg_len; this one was missed.
+>
+> Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+> ---
+> diff --git a/net/compat.c b/net/compat.c
+> index 5e3041a2c37d..434838bef5f8 100644
+> --- a/net/compat.c
+> +++ b/net/compat.c
+> @@ -202,7 +202,7 @@ int cmsghdr_from_user_compat_to_kern(struct msghdr
+> *kmsg, struct sock *sk,
+>
+>  		/* Advance. */
+>  		kcmsg = (struct cmsghdr *)((char *)kcmsg + tmp);
+> -		ucmsg = cmsg_compat_nxthdr(kmsg, ucmsg, ucmlen);
+> +		ucmsg = cmsg_compat_nxthdr(kmsg, ucmsg, cmsg.cmsg_len);
+>  	}
+>
+>  	/*
 
-On Mon, Jul 27, 2020 at 08:41:23AM -0700, Chris Healy wrote:
-> On Mon, Jul 27, 2020 at 8:24 AM Laurent Pinchart wrote:
-> > On Mon, Jul 27, 2020 at 02:05:45PM +0200, Andrew Lunn wrote:
-> > > On Sun, Jul 26, 2020 at 08:01:25PM -0700, Chris Healy wrote:
-> > > > It appears quite a few boards were affected by this micrel PHY driver change:
-> > > >
-> > > > 2ccb0161a0e9eb06f538557d38987e436fc39b8d
-> > > > 80bf72598663496d08b3c0231377db6a99d7fd68
-> > > > 2de00450c0126ec8838f72157577578e85cae5d8
-> > > > 820f8a870f6575acda1bf7f1a03c701c43ed5d79
-> > > >
-> > > > I just updated the phy-mode with my board from rgmii to rgmii-id and
-> > > > everything started working fine with net-next again:
-> > >
-> > > Hi Chris
-> > >
-> > > Is this a mainline supported board? Do you plan to submit a patch?
-> > >
-> > > Laurent, does the change also work for your board? This is another one
-> > > of those cases were a bug in the PHY driver, not respecting the
-> > > phy-mode, has masked a bug in the device tree, using the wrong
-> > > phy-mode. We had the same issue with the Atheros PHY a while back.
-> >
-> > Yes, setting the phy-mode to rgmii-id fixes the issue.
-> >
-> > Thank you everybody for your quick responses and very useful help !
-> >
-> > On a side note, when the kernel boots, there's a ~10s delay for the
-> > ethernet connection to come up:
-> >
-> > [    4.050754] Micrel KSZ9031 Gigabit PHY 30be0000.ethernet-1:01: attached PHY driver [Micrel KSZ9031 Gigabit PHY] (mii_bus:phy_addr=30be0000.ethernet-1:01, irq=POLL)
-> > [   15.628528] fec 30be0000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
-> > [   15.676961] Sending DHCP requests ., OK
-> > [   15.720925] IP-Config: Got DHCP answer from 192.168.2.47, my address is 192.168.2.210
-> >
-> > The LED on the connected switch confirms this, it lits up synchronously
-> > with the "Link is up" message. It's not an urgent issue, but if someone
-> > had a few pointers on how I could debug that, it would be appreciated.
-> 
-> Here's a few suggestions that could help in learning more:
-> 
-> 1) Review the KSZ9031 HW errata and compare against the PHY driver
-> code.  There's a number of errata that could cause this from my quick
-> review.
+This patch appears to resolve the problem when applied on top of 5.8-rc7.
 
-I'll have a look at that, thanks.
-
-> 2) Based on what I read in the HW errata, try different link partners
-> that utilize different copper PHYs to see if it results in different
-> behaviour.
-
-I have limited available test equipment, but I can give it a try.
-
-> 3) Try setting your autonegotiate advertisement to only advertise
-> 100Mbps and see if this affects the timing.  Obviously this would not
-> be a solution but might help in better understanding the issue.
-
-I've tested this, and the link then comes up in ~2 seconds instead of
-~10. That's clearly an improvement, but I have no idea what it implies
-:-)
-
-[    4.090655] Micrel KSZ9031 Gigabit PHY 30be0000.ethernet-1:01: attached PHY driver [Micrel KSZ9031 Gigabit PHY] (mii_bus:phy_addr=30be0000.ethernet-1:01, irq=POLL)
-[    6.188347] fec 30be0000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
-[    6.236843] Sending DHCP requests ., OK
-[    6.280807] IP-Config: Got DHCP answer from 192.168.2.47, my address is 192.168.2.210
-
--- 
-Regards,
-
-Laurent Pinchart
+Thanks,
+  Nick
