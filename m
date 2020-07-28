@@ -2,102 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACA0E230377
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 09:06:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDDD9230384
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 09:10:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727111AbgG1HGD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 28 Jul 2020 03:06:03 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:57429 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726874AbgG1HGC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 03:06:02 -0400
-Received: from marcel-macbook.fritz.box (p4ff9f430.dip0.t-ipconnect.de [79.249.244.48])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 8AD33CECCC;
-        Tue, 28 Jul 2020 09:16:01 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH] Bluetooth: Fix suspend notifier race
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200727142231.1.I7ebe9eaf684ddb07ae28634cb4d28cf7754641f1@changeid>
-Date:   Tue, 28 Jul 2020 09:05:59 +0200
-Cc:     chromeos-bluetooth-upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <534A8246-5B96-487F-A042-43F717A1CA24@holtmann.org>
-References: <20200727142231.1.I7ebe9eaf684ddb07ae28634cb4d28cf7754641f1@changeid>
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        id S1727045AbgG1HKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 03:10:03 -0400
+Received: from mga05.intel.com ([192.55.52.43]:25782 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726854AbgG1HKD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 03:10:03 -0400
+IronPort-SDR: c3u+/N2oNop15z9bLMfS//Ar4uy6icVqt/boI1zjPilBq2nl4FSc7ofGSAnT6Ks8ZL/8zLn1R8
+ HF7DqFl8va8w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="236024616"
+X-IronPort-AV: E=Sophos;i="5.75,405,1589266800"; 
+   d="scan'208";a="236024616"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2020 00:10:03 -0700
+IronPort-SDR: 33rBTYS3OXQWg8x3yBTwYwZbWTLvohGMkb7I3IDNaU03XwNiQeD14dXf1WDC970839ZyCzxqgj
+ Sbrt4wmv33KQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,405,1589266800"; 
+   d="scan'208";a="322089923"
+Received: from nheyde-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.57.223])
+  by fmsmga002.fm.intel.com with ESMTP; 28 Jul 2020 00:09:57 -0700
+Subject: Re: [PATCH bpf-next v4 05/14] xsk: move queue_id, dev and need_wakeup
+ to buffer pool
+To:     Magnus Karlsson <magnus.karlsson@intel.com>, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, maximmi@mellanox.com
+Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
+        anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
+        maciejromanfijalkowski@gmail.com, cristian.dumitrescu@intel.com
+References: <1595307848-20719-1-git-send-email-magnus.karlsson@intel.com>
+ <1595307848-20719-6-git-send-email-magnus.karlsson@intel.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <00afe3da-0d5e-18fe-b6cb-490faa3dd132@intel.com>
+Date:   Tue, 28 Jul 2020 09:09:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <1595307848-20719-6-git-send-email-magnus.karlsson@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Abhishek,
 
-> Unregister from suspend notifications and cancel suspend preparations
-> before running hci_dev_do_close. Otherwise, the suspend notifier may
-> race with unregister and cause cmd_timeout even after hdev has been
-> freed.
+
+On 2020-07-21 07:03, Magnus Karlsson wrote:
+> Move queue_id, dev, and need_wakeup from the umem to the
+> buffer pool. This so that we in a later commit can share the umem
+> between multiple HW queues. There is one buffer pool per dev and
+> queue id, so these variables should belong to the buffer pool, not
+> the umem. Need_wakeup is also something that is set on a per napi
+> level, so there is usually one per device and queue id. So move
+> this to the buffer pool too.
 > 
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 > ---
-> Hi Marcel,
+>   include/net/xdp_sock.h      |  3 ---
+>   include/net/xsk_buff_pool.h |  4 ++++
+>   net/xdp/xdp_umem.c          | 19 +------------------
+>   net/xdp/xdp_umem.h          |  4 ----
+>   net/xdp/xsk.c               | 40 +++++++++++++++-------------------------
+>   net/xdp/xsk_buff_pool.c     | 39 ++++++++++++++++++++++-----------------
+>   net/xdp/xsk_diag.c          |  4 ++--
+>   7 files changed, 44 insertions(+), 69 deletions(-)
 > 
-> This fixes a race between hci_unregister_dev and the suspend notifier.
-> Without these changes, we encountered the following kernel panic when
-> a USB disconnect (with btusb) occurred on resume:
-> 
-> [  832.578518] Bluetooth: hci_core.c:hci_cmd_timeout() hci0: command 0x0c05 tx timeout
-> [  832.586200] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> [  832.586203] #PF: supervisor read access in kernel mode
-> [  832.586205] #PF: error_code(0x0000) - not-present page
-> [  832.586206] PGD 0 P4D 0
-> [  832.586210] PM: suspend exit
-> [  832.608870] Oops: 0000 [#1] PREEMPT SMP NOPTI
-> [  832.613232] CPU: 3 PID: 10755 Comm: kworker/3:7 Not tainted 5.4.44-04894-g1e9dbb96a161 #1
-> [  832.630036] Workqueue: events hci_cmd_timeout [bluetooth]
-> [  832.630046] RIP: 0010:__queue_work+0xf0/0x374
-> [  832.630051] RSP: 0018:ffff9b5285f1fdf8 EFLAGS: 00010046
-> [  832.674033] RAX: ffff8a97681bac00 RBX: 0000000000000000 RCX: ffff8a976a000600
-> [  832.681162] RDX: 0000000000000000 RSI: 0000000000000009 RDI: ffff8a976a000748
-> [  832.688289] RBP: ffff9b5285f1fe38 R08: 0000000000000000 R09: ffff8a97681bac00
-> [  832.695418] R10: 0000000000000002 R11: ffff8a976a0006d8 R12: ffff8a9745107600
-> [  832.698045] usb 1-6: new full-speed USB device number 119 using xhci_hcd
-> [  832.702547] R13: ffff8a9673658850 R14: 0000000000000040 R15: 000000000000001e
-> [  832.702549] FS:  0000000000000000(0000) GS:ffff8a976af80000(0000) knlGS:0000000000000000
-> [  832.702550] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  832.702550] CR2: 0000000000000000 CR3: 000000010415a000 CR4: 00000000003406e0
-> [  832.702551] Call Trace:
-> [  832.702558]  queue_work_on+0x3f/0x68
-> [  832.702562]  process_one_work+0x1db/0x396
-> [  832.747397]  worker_thread+0x216/0x375
-> [  832.751147]  kthread+0x138/0x140
-> [  832.754377]  ? pr_cont_work+0x58/0x58
-> [  832.758037]  ? kthread_blkcg+0x2e/0x2e
-> [  832.761787]  ret_from_fork+0x22/0x40
-> [  832.846191] ---[ end trace fa93f466da517212 ]---
-> 
-> The suspend notifier handler seemed to be scheduling commands even after
-> it was cleaned up and this was resulting in a panic in cmd_timeout (when
-> it tries to requeue the cmd_timer).
-> 
-> This was tested on 5.4 kernel with a suspend+resume stress test for 500+
-> iterations. I also confirmed that after a usb disconnect, the suspend
-> notifier times out before the USB device is probed again (fixing the
-> original race between the usb_disconnect + probe and the notifier).
+[...]
+>   		}
+> diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+> index 36287d2..436648a 100644
+> --- a/net/xdp/xsk_buff_pool.c
+> +++ b/net/xdp/xsk_buff_pool.c
+> @@ -95,10 +95,9 @@ void xp_set_rxq_info(struct xsk_buff_pool *pool, struct xdp_rxq_info *rxq)
+>   }
+>   EXPORT_SYMBOL(xp_set_rxq_info);
+>   
+> -int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *dev,
+> +int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *netdev,
+>   		  u16 queue_id, u16 flags)
+>   {
+> -	struct xdp_umem *umem = pool->umem;
+>   	bool force_zc, force_copy;
+>   	struct netdev_bpf bpf;
+>   	int err = 0;
+> @@ -111,27 +110,30 @@ int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *dev,
+>   	if (force_zc && force_copy)
+>   		return -EINVAL;
+>   
+> -	if (xsk_get_pool_from_qid(dev, queue_id))
+> +	if (xsk_get_pool_from_qid(netdev, queue_id))
+>   		return -EBUSY;
+>   
+> -	err = xsk_reg_pool_at_qid(dev, pool, queue_id);
+> +	err = xsk_reg_pool_at_qid(netdev, pool, queue_id);
+>   	if (err)
+>   		return err;
+>   
+>   	if (flags & XDP_USE_NEED_WAKEUP) {
+> -		umem->flags |= XDP_UMEM_USES_NEED_WAKEUP;
+> +		pool->uses_need_wakeup = true;
+>   		/* Tx needs to be explicitly woken up the first time.
+>   		 * Also for supporting drivers that do not implement this
+>   		 * feature. They will always have to call sendto().
+>   		 */
+> -		umem->need_wakeup = XDP_WAKEUP_TX;
+> +		pool->cached_need_wakeup = XDP_WAKEUP_TX;
+>   	}
+>   
+> +	dev_hold(netdev);
+> +
 
-Can you please structure the commit message so that the oops is included. It is valuable information Everything after --- is a personal note to the maintainer. And we might want to include a Fixes tag as well.
+You have a reference leak here for the error case.
 
-Regards
 
-Marcel
-
+Björn
