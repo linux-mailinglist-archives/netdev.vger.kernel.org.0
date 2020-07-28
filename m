@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 110D42300BF
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 06:28:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A0F22300C0
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 06:28:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726631AbgG1E2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 00:28:21 -0400
-Received: from mga05.intel.com ([192.55.52.43]:10247 "EHLO mga05.intel.com"
+        id S1726832AbgG1E20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 00:28:26 -0400
+Received: from mga07.intel.com ([134.134.136.100]:1399 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726445AbgG1E2V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 00:28:21 -0400
-IronPort-SDR: seyigC8IYik1TxQhNkz5WWQQT+EIklgRQAw4czchLC8MdnHy2nNGrIVtOqIe7/NHDzR2Alypwj
- S+4B8bAmz42g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="236011083"
+        id S1726817AbgG1E2Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 00:28:25 -0400
+IronPort-SDR: 2E789vOalghDd5bHevEDaQQfMJdUnlahwDYoHKX5dgkX2Ko3kOpVVkO7hZeRYFK2lVtm6bHYT4
+ pdFhS39cptpg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="215678154"
 X-IronPort-AV: E=Sophos;i="5.75,405,1589266800"; 
-   d="scan'208";a="236011083"
+   d="scan'208";a="215678154"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 21:28:16 -0700
-IronPort-SDR: 445jUgAmKHIvxvMgX8xuOXOBNqCr+N+hhnCF9/aDKY6Y833Reyf4Ym4WUhhvk74K6D+Z1/Y9nK
- WO87qDnj3oHg==
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 21:28:25 -0700
+IronPort-SDR: Jqdmku6WntOwZzSyakiBobgqgut2otCDs+LbffnGSTNdChfmmaXXo8H0jvEdux+iqgBvz7Qe5n
+ OW62WYX6cBdQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,405,1589266800"; 
-   d="scan'208";a="290037177"
+   d="scan'208";a="290037195"
 Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.131])
-  by orsmga006.jf.intel.com with ESMTP; 27 Jul 2020 21:28:10 -0700
+  by orsmga006.jf.intel.com with ESMTP; 27 Jul 2020 21:28:17 -0700
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
 To:     jasowang@redhat.com, alex.williamson@redhat.com, mst@redhat.com,
         pbonzini@redhat.com, sean.j.christopherson@intel.com,
@@ -34,9 +34,9 @@ To:     jasowang@redhat.com, alex.williamson@redhat.com, mst@redhat.com,
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, eli@mellanox.com, shahafs@mellanox.com,
         parav@mellanox.com, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V4 1/6] vhost: introduce vhost_vring_call
-Date:   Tue, 28 Jul 2020 12:24:00 +0800
-Message-Id: <20200728042405.17579-2-lingshan.zhu@intel.com>
+Subject: [PATCH V4 2/6] kvm: detect assigned device via irqbypass manager
+Date:   Tue, 28 Jul 2020 12:24:01 +0800
+Message-Id: <20200728042405.17579-3-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.18.4
 In-Reply-To: <20200728042405.17579-1-lingshan.zhu@intel.com>
 References: <20200728042405.17579-1-lingshan.zhu@intel.com>
@@ -45,142 +45,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit introduces struct vhost_vring_call which replaced
-raw struct eventfd_ctx *call_ctx in struct vhost_virtqueue.
-Besides eventfd_ctx, it contains a spin lock and an
-irq_bypass_producer in its structure.
+vDPA devices has dedicated backed hardware like
+passthrough-ed devices. Then it is possible to setup irq
+offloading to vCPU for vDPA devices. Thus this patch tries to
+manipulated assigned device counters by
+kvm_arch_start/end_assignment() in irqbypass manager, so that
+assigned devices could be detected in update_pi_irte()
+
+We will increase/decrease the assigned device counter in kvm/x86.
+Both vDPA and VFIO would go through this code path.
+
+Only X86 uses these counters and kvm_arch_start/end_assignment(),
+so this code path only affect x86 for now.
 
 Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 Suggested-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/vhost/vdpa.c  |  4 ++--
- drivers/vhost/vhost.c | 22 ++++++++++++++++------
- drivers/vhost/vhost.h |  9 ++++++++-
- 3 files changed, 26 insertions(+), 9 deletions(-)
+ arch/x86/kvm/x86.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index a54b60d6623f..df3cf386b0cd 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -96,7 +96,7 @@ static void handle_vq_kick(struct vhost_work *work)
- static irqreturn_t vhost_vdpa_virtqueue_cb(void *private)
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 88c593f83b28..76a2e7fd18c7 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -10630,11 +10630,17 @@ int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
  {
- 	struct vhost_virtqueue *vq = private;
--	struct eventfd_ctx *call_ctx = vq->call_ctx;
-+	struct eventfd_ctx *call_ctx = vq->call_ctx.ctx;
+ 	struct kvm_kernel_irqfd *irqfd =
+ 		container_of(cons, struct kvm_kernel_irqfd, consumer);
++	int ret;
  
- 	if (call_ctx)
- 		eventfd_signal(call_ctx, 1);
-@@ -382,7 +382,7 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
- 		break;
+ 	irqfd->producer = prod;
++	kvm_arch_start_assignment(irqfd->kvm);
++	ret = kvm_x86_ops.update_pi_irte(irqfd->kvm,
++					 prod->irq, irqfd->gsi, 1);
++
++	if (ret)
++		kvm_arch_end_assignment(irqfd->kvm);
  
- 	case VHOST_SET_VRING_CALL:
--		if (vq->call_ctx) {
-+		if (vq->call_ctx.ctx) {
- 			cb.callback = vhost_vdpa_virtqueue_cb;
- 			cb.private = vq;
- 		} else {
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index d7b8df3edffc..9f1a845a9302 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -298,6 +298,13 @@ static void vhost_vq_meta_reset(struct vhost_dev *d)
- 		__vhost_vq_meta_reset(d->vqs[i]);
+-	return kvm_x86_ops.update_pi_irte(irqfd->kvm,
+-					   prod->irq, irqfd->gsi, 1);
++	return ret;
  }
  
-+static void vhost_vring_call_reset(struct vhost_vring_call *call_ctx)
-+{
-+	call_ctx->ctx = NULL;
-+	memset(&call_ctx->producer, 0x0, sizeof(struct irq_bypass_producer));
-+	spin_lock_init(&call_ctx->ctx_lock);
-+}
+ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+@@ -10657,6 +10663,8 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+ 	if (ret)
+ 		printk(KERN_INFO "irq bypass consumer (token %p) unregistration"
+ 		       " fails: %d\n", irqfd->consumer.token, ret);
 +
- static void vhost_vq_reset(struct vhost_dev *dev,
- 			   struct vhost_virtqueue *vq)
- {
-@@ -319,13 +326,13 @@ static void vhost_vq_reset(struct vhost_dev *dev,
- 	vq->log_base = NULL;
- 	vq->error_ctx = NULL;
- 	vq->kick = NULL;
--	vq->call_ctx = NULL;
- 	vq->log_ctx = NULL;
- 	vhost_reset_is_le(vq);
- 	vhost_disable_cross_endian(vq);
- 	vq->busyloop_timeout = 0;
- 	vq->umem = NULL;
- 	vq->iotlb = NULL;
-+	vhost_vring_call_reset(&vq->call_ctx);
- 	__vhost_vq_meta_reset(vq);
++	kvm_arch_end_assignment(irqfd->kvm);
  }
  
-@@ -685,8 +692,8 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
- 			eventfd_ctx_put(dev->vqs[i]->error_ctx);
- 		if (dev->vqs[i]->kick)
- 			fput(dev->vqs[i]->kick);
--		if (dev->vqs[i]->call_ctx)
--			eventfd_ctx_put(dev->vqs[i]->call_ctx);
-+		if (dev->vqs[i]->call_ctx.ctx)
-+			eventfd_ctx_put(dev->vqs[i]->call_ctx.ctx);
- 		vhost_vq_reset(dev, dev->vqs[i]);
- 	}
- 	vhost_dev_free_iovecs(dev);
-@@ -1629,7 +1636,10 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
- 			r = PTR_ERR(ctx);
- 			break;
- 		}
--		swap(ctx, vq->call_ctx);
-+
-+		spin_lock(&vq->call_ctx.ctx_lock);
-+		swap(ctx, vq->call_ctx.ctx);
-+		spin_unlock(&vq->call_ctx.ctx_lock);
- 		break;
- 	case VHOST_SET_VRING_ERR:
- 		if (copy_from_user(&f, argp, sizeof f)) {
-@@ -2440,8 +2450,8 @@ static bool vhost_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
- void vhost_signal(struct vhost_dev *dev, struct vhost_virtqueue *vq)
- {
- 	/* Signal the Guest tell them we used something up. */
--	if (vq->call_ctx && vhost_notify(dev, vq))
--		eventfd_signal(vq->call_ctx, 1);
-+	if (vq->call_ctx.ctx && vhost_notify(dev, vq))
-+		eventfd_signal(vq->call_ctx.ctx, 1);
- }
- EXPORT_SYMBOL_GPL(vhost_signal);
- 
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index c8e96a095d3b..38eb1aa3b68d 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -13,6 +13,7 @@
- #include <linux/virtio_ring.h>
- #include <linux/atomic.h>
- #include <linux/vhost_iotlb.h>
-+#include <linux/irqbypass.h>
- 
- struct vhost_work;
- typedef void (*vhost_work_fn_t)(struct vhost_work *work);
-@@ -60,6 +61,12 @@ enum vhost_uaddr_type {
- 	VHOST_NUM_ADDRS = 3,
- };
- 
-+struct vhost_vring_call {
-+	struct eventfd_ctx *ctx;
-+	struct irq_bypass_producer producer;
-+	spinlock_t ctx_lock;
-+};
-+
- /* The virtqueue structure describes a queue attached to a device. */
- struct vhost_virtqueue {
- 	struct vhost_dev *dev;
-@@ -72,7 +79,7 @@ struct vhost_virtqueue {
- 	vring_used_t __user *used;
- 	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
- 	struct file *kick;
--	struct eventfd_ctx *call_ctx;
-+	struct vhost_vring_call call_ctx;
- 	struct eventfd_ctx *error_ctx;
- 	struct eventfd_ctx *log_ctx;
- 
+ int kvm_arch_update_irqfd_routing(struct kvm *kvm, unsigned int host_irq,
 -- 
 2.18.4
 
