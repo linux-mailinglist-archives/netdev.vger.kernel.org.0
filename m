@@ -2,160 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2572E230E26
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:41:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0809C230E33
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:42:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730998AbgG1PkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 11:40:19 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:59334 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730679AbgG1PkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 11:40:18 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06SFTVK7006415;
-        Tue, 28 Jul 2020 08:39:52 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=pfpt0818; bh=fvVBU0g647CdPCbr5Osxw39x7UgyFS0lbWRfQhNA8lU=;
- b=s2t9+YqtOoa5OaZMhqH1PTpFt2sE3D5TkSQC1/VDyu74op8c9e5qK7b93eogj/xSIo8h
- /Nv8lzuqW1W5g1GgFtZG7qr4mHw5DPoobaB2JUnZYVrIZ9A84g+LpZPEhZYhRvPgLz/d
- o5YvI93gBnJtE1cQXxBMePanljqauBDMu3jp3rw/mVWeIL7GO2zhebaZScF4VtKdiesi
- nvFtoWxIUCS4+ORJ+hrgnSvbbXadzBhujs5V1fG4I3IyefeECiL5tvFVrB45RLE09o3X
- buVMIiRmD+DuTSASHgTrdnH/dp9E316mtt9Banh1aKkpxJFE5cPSd65XfQ3StI1IjoSO /A== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 32gj3qvm0m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jul 2020 08:39:52 -0700
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 28 Jul
- 2020 08:39:51 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.103)
- by SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Tue, 28 Jul 2020 08:39:50 -0700
+        id S1730927AbgG1Pm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 11:42:28 -0400
+Received: from mail-eopbgr130048.outbound.protection.outlook.com ([40.107.13.48]:26358
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730679AbgG1Pm1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 11:42:27 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IrB8eGhv0ZO47cyCTWSWs97Bo3qQJcRuN3y5ZxSIbDlTTS3SigRfBUKzKItchHwUawYdhrAHWp4DsTOxX7irwyvBBXNcrjwnAkfrsWHswi4kHzjmcr69y9yEeSrvAIfHzaNs+LXa/qCZ9trX22AddATrvWXeMMJF0HxJBfCoBogyHdjtdkAOwRMTuxbO5O6WHropAKv9vXWwZ8svZzCtvCl+dBY4aVkeDrOZWI8rYydv8+HKihxoR+OdGPM7jUH9AP3y6ZO0TV9lxaXZIwy9v7mYcxxBVq623fP31xYVfJ5aPH7uwYYzDm3uoGHOhoh4E7mtBjj0ttDB0SdqBbBXtQ==
+ b=M8qvST0ClqwRxBfT2khIf1aQfjsQTq2DWZaPRjgBXjrPjBaSD12Ja7aX4doFk56rlUhNNbj/QTIFx3Z5IPhVzxRrio+d6EGy5vh4FsQiXrZQ18NwAIbCBc5wGQc/j+ds2UtO/lKHbBSZNnyJf60jikbuxaBfBmA7HFXkyNFBPYCGv5gdW2ayOgpZaTDztKhkcU1S0hNyR88x8Ou3qyg3/F6BqiM2UX1fj3utVd/RAO8+Q/wm+B0pcS3FOtOy3+iVnRcnnt5MdRjv9jllF489KG1M9cRlLBu6f5YU+p6H1c8sn918VXTpfTelCG/S+EoiHvqe5/RwqpVnxq40HF+JXg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fvVBU0g647CdPCbr5Osxw39x7UgyFS0lbWRfQhNA8lU=;
- b=dBcFaRGxS676vb7R5CO4qegoLDJbwKnofxtH3D7NRF7/qxT0RfMcs2qt7/SLkCrjRDCPTfCriEvWAZQ0E2W+gyf95uy+5uHYIHxO99lvwp7e4+882TndjuPovHfeTDmVKdXIVsaewMv/81CsxM+WjbPSmlE3IzftAlU6yGqaWQ/48mkmrMUo8mcICFWIs9IYf2vTfeLVKZ/KdC33dLRjJ8nUKj5w228Lu7RRpnLQYOdXzITNFzKiPw6AJwrT1+9gTc/xVoZ9iepy4SbS1bxdDCwUDrRnyZqLfubAJgIa9d90NbfYq54L2wZhXgN9bXJ1LfHY8KnyqWddfciTuRf/Uw==
+ bh=lXFqDidzh1rspFcPrhQVD9Mwynh+mIeLkiTnrED+zt4=;
+ b=CPsGT8x/a+tjC/Js9t7lh+R+GlX+4SKQJQoSfQLN4RynY6su41tOM2QxxW8mR7s66111e+wIggnfFa8gzv1L5mGQWsXSBMr6XlhD7xy58VNFekTNbMnAtwiUWqAFBOW9UtgVOeniNNypHWXGfR4ketnKhSfZk1Wrd/af2lPyaMDAU9oQInkKKE2dILdS79t0oAuyyO64riGYyqrp+KrfWJJVijEB803FJEMLgo1jpxrBMfgCjbHr0MwXJWMN1UFKmoMuQEUp3bYOsHEd5aJ5Zp5fFrUohzMV4mu16nRyOe2mYUXlh8K3fTsV+C8F2ePhGTfqL8VEtufOc3ZAQxiE8g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fvVBU0g647CdPCbr5Osxw39x7UgyFS0lbWRfQhNA8lU=;
- b=CeYtLCXkfb9P8EyAJKCif1g23lvAGCO0v/fAAzHr0EQb/Ue6JaRZKv7fbX72hsSmcIYs3af6CDlXVwAj7GqynaHPu11H5nnEyNHCMNFxqmM1XmvQZ4zrWmJk3zXnAROPaKXYMZ8AAKMkncR/da72AWFVikFFsbguk5rGMmmN58Y=
-Received: from BYAPR18MB2423.namprd18.prod.outlook.com (2603:10b6:a03:132::28)
- by BYAPR18MB2360.namprd18.prod.outlook.com (2603:10b6:a03:12c::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.28; Tue, 28 Jul
- 2020 15:39:49 +0000
-Received: from BYAPR18MB2423.namprd18.prod.outlook.com
- ([fe80::bd3d:c142:5f78:975]) by BYAPR18MB2423.namprd18.prod.outlook.com
- ([fe80::bd3d:c142:5f78:975%7]) with mapi id 15.20.3216.033; Tue, 28 Jul 2020
- 15:39:49 +0000
-From:   Derek Chickles <dchickles@marvell.com>
-To:     "wanghai (M)" <wanghai38@huawei.com>,
-        Joe Perches <joe@perches.com>,
-        Satananda Burla <sburla@marvell.com>,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] liquidio: Remove unneeded cast from memory
- allocation
-Thread-Topic: [PATCH net-next] liquidio: Remove unneeded cast from memory
- allocation
-Thread-Index: AdZk6P1xxM+rVDfISEWynrTkxawr6g==
-Date:   Tue, 28 Jul 2020 15:39:49 +0000
-Message-ID: <BYAPR18MB24230A8301FD9849F9943B9DAC730@BYAPR18MB2423.namprd18.prod.outlook.com>
+ bh=lXFqDidzh1rspFcPrhQVD9Mwynh+mIeLkiTnrED+zt4=;
+ b=RHxmWDalB9F3SiMWlq9ooItkM4dHTqqCMe6rM3Q17eSYOpz/g093Ss3WcYB552lQ6X0eiyqdNvZSzv0tQ9H3qfSYHc23yR/h4jj1LzakjaTyNbohpYhVNBMhiQUm2dRnTbbdAPK77hP3xBXk1U0CM0WV9BXMtuUQvc0Fc2hzl4w=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR04MB5726.eurprd04.prod.outlook.com
+ (2603:10a6:803:e5::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.16; Tue, 28 Jul
+ 2020 15:42:22 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::d4df:67d5:c1f7:fba]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::d4df:67d5:c1f7:fba%4]) with mapi id 15.20.3216.033; Tue, 28 Jul 2020
+ 15:42:22 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>
+CC:     Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: RE: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
+Thread-Topic: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
+Thread-Index: AQHWZFcvtAOghcV2G02sokHxIysjYqkdIC3g
+Date:   Tue, 28 Jul 2020 15:42:22 +0000
+Message-ID: <VI1PR0402MB3871906F6381418258CC7AEBE0730@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+References: <20200727204731.1705418-1-andrew@lunn.ch>
+In-Reply-To: <20200727204731.1705418-1-andrew@lunn.ch>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: huawei.com; dkim=none (message not signed)
- header.d=none;huawei.com; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [2601:646:8d01:7c70:75c5:f7c5:1663:bfbd]
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.95.40]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ba143104-77c6-408f-32ef-08d8330c76bd
-x-ms-traffictypediagnostic: BYAPR18MB2360:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR18MB23603F77E34222C251F0128FAC730@BYAPR18MB2360.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 4228221e-375d-49f1-8ac0-08d8330cd1e4
+x-ms-traffictypediagnostic: VI1PR04MB5726:
+x-microsoft-antispam-prvs: <VI1PR04MB57265C1F5F448682080E31C0E0730@VI1PR04MB5726.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: tNRQ6ATAgyOXaplIsw8qMBW8IjBTLZOS55dCJ95Bcz5feEFN7lsKhdT++cuC/CMluU4YpvZXIj6j5SqDlRbrg0Rdsk+JzSYhncm48cupv/Id2zOEJWjThMxYMTbIJ/PDXmigfrJCbsIGNmC0aCliwU5ekHqyxOkEZ5W90N94Y2UIYDIDDRAURqIAGy9odtmMDPOqd86iDQB8HPD3SeooeDMXx3pdHjc32WzdJQ+tT2nXRPADbyqGVckKC3SG5tvGoWqY6U7rck/Q5r6hf9mPyzoDi+WLL64Lp1jbeR5Oji9kceEYQwouwW5D6z5z28iSdm5zSWXvxacv/a15tdL9pA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR18MB2423.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(376002)(366004)(396003)(136003)(346002)(7696005)(186003)(86362001)(83380400001)(2906002)(8936002)(76116006)(55016002)(54906003)(110136005)(478600001)(9686003)(8676002)(4326008)(71200400001)(66946007)(33656002)(316002)(66476007)(66556008)(64756008)(66446008)(52536014)(5660300002)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 5JLyV05N1K4aPQDoUdIMhvquN/Dc7Fo1wwhrtMPpt6KO9OGI3MyegSGlEK6M3Jr/8ObW3VEibDXQHfswstC0jePDIW/xKhOJL/LXNyOi3S8aLCjrwkQcrky9trdp0UJvpadkTLkn6K41rytsitr3DMrKlASP/UwEZukX910wVe3qfF6MXa4ZYGJeGoyT++Fak1x5IrysCqD/r8BSc4ASqbVwLq2Q9cAY7si3ehmUZ3VMbIFbVHXXGkMOvbYQg63f9TXY71thAe7DtgjaeTxD9oA1BXt08bZd3FpU9dgTQ7QZqEm8uRz5N45Rx2jmbtYDzQUn4U60mgzwz1mNeDsOPBFNHoOJiHCUlFOu3Ms/m+hZByNKLT/DKhTofvx/FPFdYR2TjEOFzplgv3hut3RPpF6GFcVCGl5HEQhHI5+EpyK1FI0XdRezAmZ1+/l4qTgUw47AzftVK3D8MFjEgBDcf8wtGnVvBa9D+XFn6Qve7r+3t5qp+xnsehGfO1lyNZw1a3Lda6FLc6RT44j2vjQMUrN7EPWHdlx3upQDQlUKRSD8euUVeCD5FbIKyDCOC52x
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+x-microsoft-antispam-message-info: BGkt2GWF9ml0nj+fFNTtJcvsiPbqcD3/lpTaBaeWWpeapH/BNExjYjS8S9rTc1qcH7k0/AN6Ob9kUFhrB0ljgj3rhepOdSaiL0B7OJK3WGNs2hcToLaIiS9sgWD5hpf9ZQ+xeWY/YSaZMVU1LHMSzoZm78fzxDEHv9dwZcuM62Ge8lyKoPi16Xu29Zzo0xKsFg0D+WOtlIqim+A54EQPOQ+0jYAw/sBcXRqD0dYcgX2pdGEUppTNGKz06P6HWsIl7spb1zvsfnONqupR4XjiDD+VBai2SnhodmAcbr8GCcYrMCZEGn34n6QhOZO+Y7tcGeIUUD5ZcLab5zURdPbs/w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(366004)(136003)(396003)(376002)(346002)(26005)(186003)(8936002)(8676002)(44832011)(4326008)(7696005)(9686003)(71200400001)(55016002)(6506007)(110136005)(54906003)(316002)(478600001)(33656002)(2906002)(66946007)(66476007)(76116006)(66556008)(52536014)(5660300002)(83380400001)(64756008)(66446008)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: t+o17puJixYwvZR/TAyLvdz86TZlhZlwG0coB1KdjY5QRsAceAFJ9fQ8sIB/ex3VecA6nD6/OpNzmZM9YHyUec7yzH7Xvw1cJ/ixWKsXIE3dZmqhwS9WYHkkYTozUzuDSKsJ4WGSpd/4XiXPAPvP/DXYmnDDMi4uXGLw17cezvlfQlMj3Xd5C+YgpeSzosl9pxx8NpBiJ2cMfFn18NPL9xS9JApbXgeO1ztDk8FVxGaBbw2bVrsNgZaNZc9+UgAGa5hWsGZ7ZRThhQEyV/oy0yQ6cW4QIMDtSGrIyh8B13sovp8jGJdYmuTV6Pd1FHbXFGWMCJp6gQcJANpewNjrB+egz6h/A4xy5J1assfvcM+xK2MEhddRRCllO+OqY9hK3uZWWn3Qhypd9PWEft7mccM4zmywjB3kqFsH2sSKCkbnYtOBe5WospocA2wz7+O7Hn3nLlCyQ2U2nsi9UMsv2QxfME8VNUG3v+E9UD02maNlNEVYpHWon1DaoGh7daCu27f1//PtxVt4NWDhPiwKxBntphmlVKBtw2ZPJCflB7rb8nut/T5qOG3cLOtNZNvFWJjWE0JGbj8ZbM8wJ4NwA+frb0bI+IB3CDGtY6jCHQUsblNS7Bwwj7pHOWjUFgWWuOBsWYzzabjquhZEd18TOA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR18MB2423.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ba143104-77c6-408f-32ef-08d8330c76bd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jul 2020 15:39:49.6630
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4228221e-375d-49f1-8ac0-08d8330cd1e4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jul 2020 15:42:22.5675
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +/PXUuR3HTsf4B/sSEu3/51eTO9wb1UBlE4tnVrPr9Kd8pVVx0pdgfN2wT5lqdGlB49A8u5lCGSQBKY9T2IVZQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR18MB2360
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-28_13:2020-07-28,2020-07-28 signatures=0
+X-MS-Exchange-CrossTenant-userprincipalname: BqMDRud0JSu+Xri35Pa7D6EjyKNJ1/nGCa682ePLPDEeO1aZuT2oSfIlmcMayJTZ+KbNnNod/WSy1PtWPtbPpg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5726
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiB3YW5naGFpIChNKSA8d2FuZ2hhaTM4QGh1YXdlaS5jb20+DQo+IFN1YmplY3Q6IFtF
-WFRdIFJlOiBbUEFUQ0ggbmV0LW5leHRdIGxpcXVpZGlvOiBSZW1vdmUgdW5uZWVkZWQgY2FzdCBm
-cm9tDQo+IG1lbW9yeSBhbGxvY2F0aW9uDQo+IA0KPiDlnKggMjAyMC83LzI4IDE3OjExLCBKb2Ug
-UGVyY2hlcyDlhpnpgZM6DQo+ID4gT24gVHVlLCAyMDIwLTA3LTI4IGF0IDE2OjQyICswODAwLCB3
-YW5naGFpIChNKSB3cm90ZToNCj4gPj4g5ZyoIDIwMjAvNy8yNSA1OjI5LCBKb2UgUGVyY2hlcyDl
-hpnpgZM6DQo+ID4+PiBPbiBGcmksIDIwMjAtMDctMjQgYXQgMjE6MDAgKzA4MDAsIFdhbmcgSGFp
-IHdyb3RlOg0KPiA+Pj4+IFJlbW92ZSBjYXN0aW5nIHRoZSB2YWx1ZXMgcmV0dXJuZWQgYnkgbWVt
-b3J5IGFsbG9jYXRpb24gZnVuY3Rpb24uDQo+ID4+Pj4NCj4gPj4+PiBDb2NjaW5lbGxlIGVtaXRz
-IFdBUk5JTkc6DQo+ID4+Pj4NCj4gPj4+PiAuL2RyaXZlcnMvbmV0L2V0aGVybmV0L2Nhdml1bS9s
-aXF1aWRpby9vY3Rlb25fZGV2aWNlLmM6MTE1NToxNC0zNjoNCj4gV0FSTklORzoNCj4gPj4+PiAg
-ICBjYXN0aW5nIHZhbHVlIHJldHVybmVkIGJ5IG1lbW9yeSBhbGxvY2F0aW9uIGZ1bmN0aW9uIHRv
-IChzdHJ1Y3QNCj4gb2N0ZW9uX2Rpc3BhdGNoICopIGlzIHVzZWxlc3MuDQo+ID4+PiBbXQ0KPiA+
-Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9jYXZpdW0vbGlxdWlkaW8vb2N0
-ZW9uX2RldmljZS5jDQo+ID4+Pj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9jYXZpdW0vbGlxdWlk
-aW8vb2N0ZW9uX2RldmljZS5jDQo+ID4+PiBbXQ0KPiA+Pj4+IEBAIC0xMTUyLDggKzExNTIsNyBA
-QCBvY3Rlb25fcmVnaXN0ZXJfZGlzcGF0Y2hfZm4oc3RydWN0DQo+ID4+Pj4gb2N0ZW9uX2Rldmlj
-ZSAqb2N0LA0KPiA+Pj4+DQo+ID4+Pj4gICAgCQlkZXZfZGJnKCZvY3QtPnBjaV9kZXYtPmRldiwN
-Cj4gPj4+PiAgICAJCQkiQWRkaW5nIG9wY29kZSB0byBkaXNwYXRjaCBsaXN0IGxpbmtlZCBsaXN0
-XG4iKTsNCj4gPj4+PiAtCQlkaXNwYXRjaCA9IChzdHJ1Y3Qgb2N0ZW9uX2Rpc3BhdGNoICopDQo+
-ID4+Pj4gLQkJCSAgIHZtYWxsb2Moc2l6ZW9mKHN0cnVjdCBvY3Rlb25fZGlzcGF0Y2gpKTsNCj4g
-Pj4+PiArCQlkaXNwYXRjaCA9IHZtYWxsb2Moc2l6ZW9mKHN0cnVjdCBvY3Rlb25fZGlzcGF0Y2gp
-KTsNCj4gPj4+IE1vcmUgdGhlIHF1ZXN0aW9uIGlzIHdoeSB0aGlzIGlzIHZtYWxsb2MgYXQgYWxs
-IGFzIHRoZSBzdHJ1Y3R1cmUNCj4gPj4+IHNpemUgaXMgdmVyeSBzbWFsbC4NCj4gPj4+DQo+ID4+
-PiBMaWtlbHkgdGhpcyBzaG91bGQganVzdCBiZSBrbWFsbG9jLg0KPiA+Pj4NCj4gPj4+DQo+ID4+
-IFRoYW5rcyBmb3IgeW91ciBhZHZpY2UuICBJdCBpcyBpbmRlZWQgYmVzdCB0byB1c2Uga21hbGxv
-YyBoZXJlLg0KDQpJIHRoaW5rIHRoYXQgaXMgZmluZSBhcyB3ZWxsLiBXZSBqdXN0IHVzZWQgdm1h
-bGxvYyBzaW5jZSB0aGVyZSBpcyBubyBuZWVkDQpmb3IgYSBwaHlzaWNhbGx5IGNvbnRpZ3VvdXMg
-cGllY2Ugb2YgbWVtb3J5Lg0KDQouLi4NCg0KPiANCj4gQ2FuIGl0IGJlIG1vZGlmaWVkIGxpa2Ug
-dGhpcz8NCj4gDQo+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2Nhdml1bS9saXF1aWRpby9v
-Y3Rlb25fZGV2aWNlLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvY2F2aXVtL2xpcXVp
-ZGlvL29jdGVvbl9kZXZpY2UuYw0KPiBAQCAtMTE1MiwxMSArMTE1Miw4IEBAIG9jdGVvbl9yZWdp
-c3Rlcl9kaXNwYXRjaF9mbihzdHJ1Y3QNCj4gb2N0ZW9uX2RldmljZSAqb2N0LA0KPiANCj4gIMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBkZXZfZGJnKCZvY3QtPnBjaV9kZXYtPmRldiwN
-Cj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgIkFkZGlu
-ZyBvcGNvZGUgdG8gZGlzcGF0Y2ggbGlzdCBsaW5rZWQgbGlzdFxuIik7DQo+IC3CoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIGRpc3BhdGNoID0gKHN0cnVjdCBvY3Rlb25fZGlzcGF0Y2ggKikN
-Cj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHZt
-YWxsb2Moc2l6ZW9mKHN0cnVjdCBvY3Rlb25fZGlzcGF0Y2gpKTsNCj4gK8KgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgZGlzcGF0Y2ggPSBrbWFsbG9jKHNpemVvZihzdHJ1Y3Qgb2N0ZW9uX2Rp
-c3BhdGNoKSwNCj4gR0ZQX0tFUk5FTCk7DQo+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgaWYgKCFkaXNwYXRjaCkgew0KPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgZGV2X2Vycigmb2N0LT5wY2lfZGV2LT5kZXYsDQo+IC3CoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgIk5vIG1lbW9y
-eSB0byBhZGQgZGlzcGF0Y2ggZnVuY3Rpb25cbiIpOw0KPiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gMTsNCj4gIMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCB9DQo+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZGlzcGF0
-Y2gtPm9wY29kZSA9IGNvbWJpbmVkX29wY29kZTsNCg0KTG9va3MgZmluZSB0byBtZS4NCg0KVGhh
-bmtzLA0KRGVyZWsNCg0K
+> Subject: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
+>=20
+> RFC Because it needs 0-day build testing
+>=20
+> The directory drivers/net/phy is getting rather cluttered with the growin=
+g
+> number of MDIO bus drivers and PHY device drivers. We also have one PCS
+> driver and more are expected soon.
+>=20
+> Restructure the directory, moving MDIO bus drivers into /mdio.  PHY drive=
+rs into
+> /phy. The one current PCS driver is moved into /pcs and renamed to give i=
+t the
+> pcs- prefix which we hope will be followed by other PCS drivers.
+>=20
+
+I think that the MAINTAINERS file should also be updated to mention the new
+path to the drivers. Just did a quick grep after 'drivers/net/phy':
+F:      drivers/net/phy/adin.c     =20
+F:      drivers/net/phy/mdio-xgene.c
+F:      drivers/net/phy/           =20
+F:      drivers/net/phy/marvell10g.c
+F:      drivers/net/phy/mdio-mvusb.c
+F:      drivers/net/phy/dp83640*   =20
+F:      drivers/net/phy/phylink.c  =20
+F:      drivers/net/phy/sfp*       =20
+F:      drivers/net/phy/mdio-xpcs.c
+
+Other than that, the new 'drivers/net/phy/phy/' path is somewhat repetitive=
+ but
+unfortunately I do not have another better suggestion.
+
+Ioana
+
+> Andrew Lunn (3):
+>   net: xgene: Move shared header file into include/linux
+>   net: phy: Move into subdirectories
+>   net: phy: Move and rename mdio-xpcs
+>=20
+>  .../net/ethernet/apm/xgene/xgene_enet_main.h  |   2 +-
+>  drivers/net/ethernet/stmicro/stmmac/Kconfig   |   2 +-
+>  drivers/net/ethernet/stmicro/stmmac/common.h  |   2 +-
+>  drivers/net/phy/Kconfig                       | 489 +-----------------
+>  drivers/net/phy/Makefile                      |  79 +--
+>  drivers/net/phy/mdio/Kconfig                  | 226 ++++++++
+>  drivers/net/phy/mdio/Makefile                 |  26 +
+>  drivers/net/phy/{ =3D> mdio}/mdio-aspeed.c      |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-bcm-iproc.c   |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-bcm-unimac.c  |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-bitbang.c     |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-cavium.c      |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-cavium.h      |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-gpio.c        |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-hisi-femac.c  |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-ipq4019.c     |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-ipq8064.c     |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-moxart.c      |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-mscc-miim.c   |   0
+>  .../net/phy/{ =3D> mdio}/mdio-mux-bcm-iproc.c   |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-mux-gpio.c    |   0
+>  .../net/phy/{ =3D> mdio}/mdio-mux-meson-g12a.c  |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-mux-mmioreg.c |   0
+>  .../net/phy/{ =3D> mdio}/mdio-mux-multiplexer.c |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-mux.c         |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-mvusb.c       |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-octeon.c      |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-sun4i.c       |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-thunder.c     |   0
+>  drivers/net/phy/{ =3D> mdio}/mdio-xgene.c       |   2 +-
+>  drivers/net/phy/pcs/Kconfig                   |  20 +
+>  drivers/net/phy/pcs/Makefile                  |   4 +
+>  .../net/phy/{mdio-xpcs.c =3D> pcs/pcs-xpcs.c}   |   2 +-
+>  drivers/net/phy/phy/Kconfig                   | 243 +++++++++
+>  drivers/net/phy/phy/Makefile                  |  50 ++
+>  drivers/net/phy/{ =3D> phy}/adin.c              |   0
+>  drivers/net/phy/{ =3D> phy}/amd.c               |   0
+>  drivers/net/phy/{ =3D> phy}/aquantia.h          |   0
+>  drivers/net/phy/{ =3D> phy}/aquantia_hwmon.c    |   0
+>  drivers/net/phy/{ =3D> phy}/aquantia_main.c     |   0
+>  drivers/net/phy/{ =3D> phy}/at803x.c            |   0
+>  drivers/net/phy/{ =3D> phy}/ax88796b.c          |   0
+>  drivers/net/phy/{ =3D> phy}/bcm-cygnus.c        |   0
+>  drivers/net/phy/{ =3D> phy}/bcm-phy-lib.c       |   0
+>  drivers/net/phy/{ =3D> phy}/bcm-phy-lib.h       |   0
+>  drivers/net/phy/{ =3D> phy}/bcm54140.c          |   0
+>  drivers/net/phy/{ =3D> phy}/bcm63xx.c           |   0
+>  drivers/net/phy/{ =3D> phy}/bcm7xxx.c           |   0
+>  drivers/net/phy/{ =3D> phy}/bcm84881.c          |   0
+>  drivers/net/phy/{ =3D> phy}/bcm87xx.c           |   0
+>  drivers/net/phy/{ =3D> phy}/broadcom.c          |   0
+>  drivers/net/phy/{ =3D> phy}/cicada.c            |   0
+>  drivers/net/phy/{ =3D> phy}/cortina.c           |   0
+>  drivers/net/phy/{ =3D> phy}/davicom.c           |   0
+>  drivers/net/phy/{ =3D> phy}/dp83640.c           |   0
+>  drivers/net/phy/{ =3D> phy}/dp83640_reg.h       |   0
+>  drivers/net/phy/{ =3D> phy}/dp83822.c           |   0
+>  drivers/net/phy/{ =3D> phy}/dp83848.c           |   0
+>  drivers/net/phy/{ =3D> phy}/dp83867.c           |   0
+>  drivers/net/phy/{ =3D> phy}/dp83869.c           |   0
+>  drivers/net/phy/{ =3D> phy}/dp83tc811.c         |   0
+>  drivers/net/phy/{ =3D> phy}/et1011c.c           |   0
+>  drivers/net/phy/{ =3D> phy}/icplus.c            |   0
+>  drivers/net/phy/{ =3D> phy}/intel-xway.c        |   0
+>  drivers/net/phy/{ =3D> phy}/lxt.c               |   0
+>  drivers/net/phy/{ =3D> phy}/marvell.c           |   0
+>  drivers/net/phy/{ =3D> phy}/marvell10g.c        |   0
+>  drivers/net/phy/{ =3D> phy}/meson-gxl.c         |   0
+>  drivers/net/phy/{ =3D> phy}/micrel.c            |   0
+>  drivers/net/phy/{ =3D> phy}/microchip.c         |   0
+>  drivers/net/phy/{ =3D> phy}/microchip_t1.c      |   0
+>  drivers/net/phy/{ =3D> phy}/mscc/Makefile       |   0
+>  drivers/net/phy/{ =3D> phy}/mscc/mscc.h         |   0
+>  .../net/phy/{ =3D> phy}/mscc/mscc_fc_buffer.h   |   0
+>  drivers/net/phy/{ =3D> phy}/mscc/mscc_mac.h     |   0
+>  drivers/net/phy/{ =3D> phy}/mscc/mscc_macsec.c  |   0
+>  drivers/net/phy/{ =3D> phy}/mscc/mscc_macsec.h  |   0
+>  drivers/net/phy/{ =3D> phy}/mscc/mscc_main.c    |   0
+>  drivers/net/phy/{ =3D> phy}/national.c          |   0
+>  drivers/net/phy/{ =3D> phy}/nxp-tja11xx.c       |   0
+>  drivers/net/phy/{ =3D> phy}/qsemi.c             |   0
+>  drivers/net/phy/{ =3D> phy}/realtek.c           |   0
+>  drivers/net/phy/{ =3D> phy}/rockchip.c          |   0
+>  drivers/net/phy/{ =3D> phy}/smsc.c              |   0
+>  drivers/net/phy/{ =3D> phy}/ste10Xp.c           |   0
+>  drivers/net/phy/{ =3D> phy}/teranetics.c        |   0
+>  drivers/net/phy/{ =3D> phy}/uPD60620.c          |   0
+>  drivers/net/phy/{ =3D> phy}/vitesse.c           |   0
+>  .../net/phy =3D> include/linux}/mdio-xgene.h    |   0
+>  include/linux/{mdio-xpcs.h =3D> pcs-xpcs.h}     |   8 +-
+>  90 files changed, 594 insertions(+), 561 deletions(-)  create mode 10064=
+4
+
+(...)
