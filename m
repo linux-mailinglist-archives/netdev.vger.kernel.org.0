@@ -2,129 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 117F0230309
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 08:37:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E80BD230338
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 08:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728063AbgG1GhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 02:37:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
+        id S1727072AbgG1Gqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 02:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727915AbgG1GhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 02:37:01 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153F5C061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 23:37:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=Xotbs3bnrlaJXRD1kfOKxxQHDsaKHdCqD19XhR9SEDQ=; b=v2Q65LuLznvD9L+uKKJU4fmJmY
-        bSwtGe/eTJKBx0XkwANDGzo41cxOui3iNTKGnwfw8VkagK/kTCBesUrMoRNqg0Dm+f9PmArnqYlU8
-        2oCxF8wajVMnypjziZanoGpCU3R+VVICLY2rsZx4h4Wk4ST63GYlGCbCnASQUeCOx6VCIitJ0uf0Q
-        X1SXm5Fp2GA8N0EvHe6GhQfmg0Z4Sswzy03gTQNQs50fl1WJiQEoEgOiz5rTIh0Qb+gwTicuwa9i1
-        jBXqnm/GS8Uc+2YoB/JBKBIOYVr/h2CptKeO0W5hsKsX4EGV8BHMYWOqVmqsAVONI8ZrSspga6LKR
-        OSNx+wuQ==;
-Received: from [2001:4bb8:180:6102:7902:553b:654a:8555] (helo=localhost)
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k0JEN-0006k4-AL; Tue, 28 Jul 2020 06:36:56 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jan Engelhardt <jengelh@inai.de>, Ido Schimmel <idosch@idosch.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        David Laight <David.Laight@ACULAB.COM>, netdev@vger.kernel.org
-Subject: [PATCH 4/4] net: improve the user pointer check in init_user_sockptr
-Date:   Tue, 28 Jul 2020 08:36:43 +0200
-Message-Id: <20200728063643.396100-5-hch@lst.de>
+        with ESMTP id S1726874AbgG1Gqc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 02:46:32 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6364DC061794;
+        Mon, 27 Jul 2020 23:46:32 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id t6so9392941plo.3;
+        Mon, 27 Jul 2020 23:46:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1D5NWd41kMndxnWdrdFPOpE+/nIFfGGDshnUmn2lO8g=;
+        b=vXFr13WQkvzQOxy+9Tcf28GOJVQlAX+oDRZF65S5MzfeRbuiCQD06RwgGt2LYV/wrk
+         BLGniXLJj4iooDz/mfXiy08LmqQYi2VU+//FWRFIO1oj/IIwAFveNj1VBf7YsrQBUgDI
+         HQpFYVJKgdX0X1jpysyl73OHGWQq0V9ZdX6pD2sgqdrud5s8c7ax6Wa45rw/yrzUeuxZ
+         XzEDSlwu0EErRhZXd0Qa5+Yx9c5xsYlNESW6/DyNFAF57jSLuTyeB8UyEWiMXCn6QAny
+         mSi55LduDGyDUzLCHvHZo3yIn9HJTbpFYkj91IwxDlPP1+bpJ+nEYIh+gTr8ITnIDTWD
+         QaSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1D5NWd41kMndxnWdrdFPOpE+/nIFfGGDshnUmn2lO8g=;
+        b=SRd52UaAKzlZDXmc0hdzjOGUMCMihMmeOf51KsBi9+W9JSgwYgYbeGUuQb6M/R6OgV
+         cJQIaCzLTSn+NNVEr2wSFkWydk5b6MlaogbSL8eDPklyQ3pX8YNu4PVa5avpVYPZz4Cv
+         Mw5mntCgrEnuAR927lv+tKXgGSMuqGWCzuEWtOhgh+8stIh8eADtxTXY2phQaTyubu2v
+         jaMBbDqIulaJiRUQ2UuQMnk1gr5vOmna2jGzDSfBIdP9N49J+2EVOmT+97LJHyqEKDHF
+         U6rj31/zy1//UauAoV4Caub5Jg/dA2DLzmt72pRnhWU1G6WPqADZET+bOknA+Of6Qp9Y
+         GONg==
+X-Gm-Message-State: AOAM530KRpPhlFCI7RKXj56/5YfUMPV9G2ZAFsBLhsvVZQZyohm1JJxN
+        4+v4uPKA+6ZXuNF0dLF4FuM=
+X-Google-Smtp-Source: ABdhPJzBifg6rr736i3OxlVnn+10Ym7t9h+YYq0pt/1qEMaBewqCMJfSyXgLtMUzvncQK+A5jjzUKw==
+X-Received: by 2002:a17:90b:23c9:: with SMTP id md9mr3038586pjb.173.1595918791808;
+        Mon, 27 Jul 2020 23:46:31 -0700 (PDT)
+Received: from thinkpad.teksavvy.com ([69.172.171.109])
+        by smtp.gmail.com with ESMTPSA id u73sm17524438pfc.113.2020.07.27.23.46.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jul 2020 23:46:31 -0700 (PDT)
+From:   Rustam Kovhaev <rkovhaev@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Rustam Kovhaev <rkovhaev@gmail.com>, gregkh@linuxfoundation.org,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] usb: hso: check for return value in hso_serial_common_create()
+Date:   Mon, 27 Jul 2020 23:42:17 -0700
+Message-Id: <20200728064214.572158-1-rkovhaev@gmail.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200728063643.396100-1-hch@lst.de>
-References: <20200728063643.396100-1-hch@lst.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure not just the pointer itself but the whole range lies in
-the user address space.  For that pass the length and then use
-the access_ok helper to do the check.
+in case of an error tty_register_device_attr() returns ERR_PTR(),
+add IS_ERR() check
 
-Fixes: 6d04fe15f78a ("net: optimize the sockptr_t for unified kernel/user address spaces")
-Reported-by: David Laight <David.Laight@ACULAB.COM>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reported-and-tested-by: syzbot+67b2bd0e34f952d0321e@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=67b2bd0e34f952d0321e
+Signed-off-by: Rustam Kovhaev <rkovhaev@gmail.com>
 ---
- include/linux/sockptr.h     | 18 ++++++------------
- net/ipv4/bpfilter/sockopt.c |  2 +-
- net/socket.c                |  2 +-
- 3 files changed, 8 insertions(+), 14 deletions(-)
+ drivers/net/usb/hso.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/sockptr.h b/include/linux/sockptr.h
-index 9e6c81d474cba8..96840def9d69cc 100644
---- a/include/linux/sockptr.h
-+++ b/include/linux/sockptr.h
-@@ -27,14 +27,6 @@ static inline sockptr_t KERNEL_SOCKPTR(void *p)
- {
- 	return (sockptr_t) { .kernel = p };
- }
--
--static inline int __must_check init_user_sockptr(sockptr_t *sp, void __user *p)
--{
--	if ((unsigned long)p >= TASK_SIZE)
--		return -EFAULT;
--	sp->user = p;
--	return 0;
--}
- #else /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
- typedef struct {
- 	union {
-@@ -53,14 +45,16 @@ static inline sockptr_t KERNEL_SOCKPTR(void *p)
- {
- 	return (sockptr_t) { .kernel = p, .is_kernel = true };
- }
-+#endif /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index 5f123a8cf68e..d2fdb5430d27 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -2261,12 +2261,14 @@ static int hso_serial_common_create(struct hso_serial *serial, int num_urbs,
  
--static inline int __must_check init_user_sockptr(sockptr_t *sp, void __user *p)
-+static inline int __must_check init_user_sockptr(sockptr_t *sp, void __user *p,
-+		size_t size)
- {
--	sp->user = p;
--	sp->is_kernel = false;
-+	if (!access_ok(p, size))
-+		return -EFAULT;
-+	*sp = (sockptr_t) { .user = p };
+ 	minor = get_free_serial_index();
+ 	if (minor < 0)
+-		goto exit;
++		goto exit2;
+ 
+ 	/* register our minor number */
+ 	serial->parent->dev = tty_port_register_device_attr(&serial->port,
+ 			tty_drv, minor, &serial->parent->interface->dev,
+ 			serial->parent, hso_serial_dev_groups);
++	if (IS_ERR(serial->parent->dev))
++		goto exit2;
+ 
+ 	/* fill in specific data for later use */
+ 	serial->minor = minor;
+@@ -2311,6 +2313,7 @@ static int hso_serial_common_create(struct hso_serial *serial, int num_urbs,
  	return 0;
+ exit:
+ 	hso_serial_tty_unregister(serial);
++exit2:
+ 	hso_serial_common_free(serial);
+ 	return -1;
  }
--#endif /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
- 
- static inline bool sockptr_is_null(sockptr_t sockptr)
- {
-diff --git a/net/ipv4/bpfilter/sockopt.c b/net/ipv4/bpfilter/sockopt.c
-index 94f18d2352d007..8b132c52045973 100644
---- a/net/ipv4/bpfilter/sockopt.c
-+++ b/net/ipv4/bpfilter/sockopt.c
-@@ -65,7 +65,7 @@ int bpfilter_ip_get_sockopt(struct sock *sk, int optname,
- 
- 	if (get_user(len, optlen))
- 		return -EFAULT;
--	err = init_user_sockptr(&optval, user_optval);
-+	err = init_user_sockptr(&optval, user_optval, *optlen);
- 	if (err)
- 		return err;
- 	return bpfilter_mbox_request(sk, optname, optval, len, false);
-diff --git a/net/socket.c b/net/socket.c
-index 94ca4547cd7c53..aff52e81653ce3 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2105,7 +2105,7 @@ int __sys_setsockopt(int fd, int level, int optname, char __user *user_optval,
- 	if (optlen < 0)
- 		return -EINVAL;
- 
--	err = init_user_sockptr(&optval, user_optval);
-+	err = init_user_sockptr(&optval, user_optval, optlen);
- 	if (err)
- 		return err;
- 
 -- 
 2.27.0
 
