@@ -2,95 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8C6723060A
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 11:02:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A424230610
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 11:04:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728316AbgG1JCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 05:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41494 "EHLO
+        id S1728287AbgG1JE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 05:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728258AbgG1JCK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 05:02:10 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51557C061794
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 02:02:10 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id q7so20304862ljm.1
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 02:02:10 -0700 (PDT)
+        with ESMTP id S1728051AbgG1JE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 05:04:26 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F1CC061794
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 02:04:24 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id d14so17914521qke.13
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 02:04:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wsZOcrd8Llh8wTnJq9QorQ7DoQrqNwMZlR5ZdU21/yA=;
-        b=NccA1C2GFlO4CMyWNFdWpPXu75AJo6moC3RVsMe96/7tL2xn0XqD/d/k89ttFVku02
-         fIsGOB5BkNIQdSLHQkTsEjAhZtEZ2MbRgiLiIMERNVjZUcid3GZvM25ioupNML+MhIVZ
-         wb0Xlxzgcxaa9YY4qmHQ7eB8rwayMYapiH/h7z/YvzLMZZM0aaE/nGwtCaij+Toe2T/T
-         NU+b4QLncb84xbMkkE2swWwV6hi0VhfVsgCSpplUdAvMbBP/cLMQT1PqvAPDqwU0v2vT
-         MsuIc/Kmt2uw2KnkgubjsGze5jAaYFpBArk/6bec41XHbEQfxAd79FX3SeaggXPXK+sf
-         2kkQ==
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=TryUnnxlDGueUxiqZDiUOPtuG/P748R3/jPUL83wz7o=;
+        b=NdzhYdr4AdVBzLaNazFJshiwfVHkD75MCtp4IcASC1Cb6Ja4LTkYcpzV2rSEE56j8H
+         I4LUwcUI0pidmLNyogY47eVAXCt/7w77mBVbOjb9TN4S9pyw2UD9wyFHMF2dx0sZp3SQ
+         MNjVQEB1kgksUA3HAuBySHDgq9VeZtHQzSkflhVTndp0WMdEagKfBS/Gl1jFq22zNBYq
+         T1PKR/OoTFWoiYjfO9iXgAkTj0Lu7k8XyVJC5cUsx9bJtirGA+1+GYJKpi9oVgdhsDzX
+         r2qhhOduSmld2PNebp7OXupBdsH4cnPmVYflMv3VwxyTLOFbWfXn/ItpQ1AOJP4izv5A
+         0KFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wsZOcrd8Llh8wTnJq9QorQ7DoQrqNwMZlR5ZdU21/yA=;
-        b=bZyGYHXdVRPMEpWptc2mIWlZjJGYmf4+XYrrxMPl18fiS8lDPeS3L9x19JIyeQR9sg
-         Hen/9XetpRWM7GR3vFTR7b754wg8ysoJdVmMnQw+DQbV/7oCQa04Hfjj5W9asvFNrjCL
-         SIqa2htLBu5J9veFXkSYoX2L1ZfmhfvPfgM7tyDncN7J8LUyqaJruDfJd8vMW0OAw1Lb
-         gCc+oy2LLe9GqAeYCAg/FkIF5hRnbRsgYZOx5g1Rjpi29oc+mXK1PH31tdkNYyCJivs1
-         mfNgaKn0iaNWeTBK8Bo10u80qWv642PR72qHajILPIu0ukOQS8uGSEbdtAtUHo4lqoQV
-         7tiw==
-X-Gm-Message-State: AOAM532Pcq68+Qshbn58Wny25LqdcJ9gTBNfJDaK0DphFaCXh+QrvzIw
-        aOZCkSMq8zYkSCZC9UHq8+EpLKe8E7pC9g==
-X-Google-Smtp-Source: ABdhPJzFKAlx5B5XKcfhaOAPvQQe/PjPkqadMYivqkwyCxlF90GifCX7GK9Hc85yHYtUczNo/+zr/w==
-X-Received: by 2002:a2e:6f19:: with SMTP id k25mr12490016ljc.443.1595926928568;
-        Tue, 28 Jul 2020 02:02:08 -0700 (PDT)
-Received: from xps13.kamstrup.dk ([185.181.22.4])
-        by smtp.googlemail.com with ESMTPSA id h21sm2836352ljk.31.2020.07.28.02.02.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jul 2020 02:02:08 -0700 (PDT)
-From:   Bruno Thomsen <bruno.thomsen@gmail.com>
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Bruno Thomsen <bruno.thomsen@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Fabio Estevam <festevam@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lars Alex Pedersen <laa@kamstrup.com>,
-        Bruno Thomsen <bth@kamstrup.com>
-Subject: [PATCH 2/2] dt-bindings: net: mdio: update reset-delay-us description
-Date:   Tue, 28 Jul 2020 11:02:03 +0200
-Message-Id: <20200728090203.17313-2-bruno.thomsen@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200728090203.17313-1-bruno.thomsen@gmail.com>
-References: <20200728090203.17313-1-bruno.thomsen@gmail.com>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=TryUnnxlDGueUxiqZDiUOPtuG/P748R3/jPUL83wz7o=;
+        b=sNMl9rAijiOMmOW6Dp4Q6Ek+Xidl3vtTDXFfCurtYemJAuGUIAseN+v1RX2CeHiMRg
+         dOvd0UVyGgoUbztX7/kdGZ4XH6axPZtXfaBYnl8iBO0/QgTBxvJ9VJL2lqn4Bdt87A2a
+         UAeLwUQDQPNnbWhhB6ze1reKAD/A339SFYDhsrg6dbn3z2qZNSNfvBha2xzgiQRySXWJ
+         n5fxwBcAfe0139GZmJe2YCbvhBvW5OR8REAOYWt1ZKueN5rRGrpU4UIdsPgo8LQDM4jx
+         EIcMBNBdTd+DTyAPKRRu3DzBtmF45j37f0+TtdWROZttj+Vwl9/7AZptgMlJmESEvO2M
+         iRCQ==
+X-Gm-Message-State: AOAM532qP5kvXeLHm5Gp42OtRgNEGRftCthypwQ+fcw3Homh0GgVeMvU
+        W2bLItnAu+ez0xyWpsaUgNHE15iy1KFyYGA5LZc=
+X-Google-Smtp-Source: ABdhPJw7Orrozjh8PgjxSWwAMEeZ8fqsX3CS1G2b358a7XPqCFFAqB7hw3YparC/TUFGA9r2Tt0FGb7iDk8XyJ42P7Y=
+X-Received: by 2002:a37:614a:: with SMTP id v71mr13820799qkb.31.1595927063973;
+ Tue, 28 Jul 2020 02:04:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:ac8:37c6:0:0:0:0:0 with HTTP; Tue, 28 Jul 2020 02:04:23
+ -0700 (PDT)
+Reply-To: sambosalifou4@gmail.com
+From:   Sambo Salifou <samba.akasi123@gmail.com>
+Date:   Tue, 28 Jul 2020 09:04:23 +0000
+Message-ID: <CACy=jcm6T49YL2-etdwPuepHnHTF75p_bxwbWG+AJAQnUrmBqw@mail.gmail.com>
+Subject: Mail from your friend
+To:     samba.akasi123@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Property is now used for both assert and deassert delay
-so PHYs can be reset before type id auto detection.
+Please lets make joint business
 
-Signed-off-by: Bruno Thomsen <bruno.thomsen@gmail.com>
----
- Documentation/devicetree/bindings/net/mdio.yaml | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/net/mdio.yaml b/Documentation/devicetree/bindings/net/mdio.yaml
-index d6a3bf8550eb..8385960e3b3e 100644
---- a/Documentation/devicetree/bindings/net/mdio.yaml
-+++ b/Documentation/devicetree/bindings/net/mdio.yaml
-@@ -38,6 +38,8 @@ properties:
-       RESET pulse width in microseconds. It applies to all MDIO devices
-       and must therefore be appropriately determined based on all devices
-       requirements (maximum value of all per-device RESET pulse widths).
-+      Additional it also provides a reset deassert delay of the same width
-+      to ensure devices are ready for communication.
- 
-   clock-frequency:
-     description:
--- 
-2.26.2
-
+I am, Dr. Salifou Sambo a bank auditor, I am in-charge of transferring
+out funds for my village, which our village generates from the sales
+of our local mined gold. I have some left over fund in the bank here
+that I alone is aware of, and wants to transfer it out.
+My village that mines gold, has mandated me for sales of our raw Gold,
+and as a bank auditor I help our village to control their funds. I
+want to use this opportunity to look for some one who will provide an
+account to receive the sum of 22.2 million US dollars left in the
+bank, this was realized from gold sold, to be transferred out to our
+foreign account, now it is unknown by our village, This fund has been
+laying for onward transfer to overseas as we transfer out all funds
+sold from our gold, till now this fund is lying in the bank, I have
+all documents concerning the fund, and now I want to use it to
+establish outside my country. So if you are interested, then you will
+provide an account to receive the fund for a joint benefit and
+business and sharing, I will give you 30% of the fund.
+If you are interested in this, with hope you have this quality I
+needed, go ahead and send me your detailed information as stated below
+for us to move forward. I will use your information to edit our bank=E2=80=
+=99s
+computer and your name will appear in our bank file as the existing
+next of kin to the account, then our bank will contact you for the
+release of the fund to you.
+1. Your full name:
+2. Your residence address:
+3. Your age: and sex:
+4. Your passport or identity card:
+5. Your private (mobile) phone:
+6. Your Occupation:
+7 .Your House / Office Address:
+ Please reply as soon as possible for the next step.
+Regards
+Dr. SALIFOU Sambo
