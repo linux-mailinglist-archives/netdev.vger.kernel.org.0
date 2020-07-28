@@ -2,129 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA744230FF5
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:38:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D15BB231007
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:44:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731720AbgG1Qiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 12:38:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731367AbgG1Qis (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 12:38:48 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F31C061794
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 09:38:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=38yhl6z8pLkoujYyYs/iGNy1UHgim84K0vplDqKrRRg=; b=vUJeEAPmVI2lRPiH0UP/VBlNxZ
-        OmlK/KxePCcWzxK7fknk7UJkDOeQiOCeatSRtmFtrZ6+VDUAasyW8KwDKTQRP5ORKA6GdO+hRoTKy
-        aWUwNRCcywtHZYMu64Eqhrz6a2xttEER3usg4WMWqedABjk7iHYIyNLsQMQQuRDG2c3UFdhjypuS/
-        Sof3gnqkkXdGXva+OEuMIxPdRuDmqg5UXlJCQ6rDsgpFpu0750dzqa2hLg1fwi1Vy9haFyXC/tiOm
-        JLKMIDuQ1cIvI+vJ1lyoQWt/OIV0Inf6d09zbapRWAR8hnHituls3K/uXRKDQxP65JFeOni/8njx+
-        gZYusOsA==;
-Received: from [2001:4bb8:180:6102:fd04:50d8:4827:5508] (helo=localhost)
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k0Scl-0007Wq-Ck; Tue, 28 Jul 2020 16:38:43 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jan Engelhardt <jengelh@inai.de>, Ido Schimmel <idosch@idosch.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        David Laight <David.Laight@ACULAB.COM>, netdev@vger.kernel.org
-Subject: [PATCH 4/4] net: improve the user pointer check in init_user_sockptr
-Date:   Tue, 28 Jul 2020 18:38:36 +0200
-Message-Id: <20200728163836.562074-5-hch@lst.de>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200728163836.562074-1-hch@lst.de>
-References: <20200728163836.562074-1-hch@lst.de>
+        id S1731486AbgG1QoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 12:44:00 -0400
+Received: from mga03.intel.com ([134.134.136.65]:40860 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726548AbgG1QoA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 12:44:00 -0400
+IronPort-SDR: aYIfmOwNLnspu+cwPFWw4tSAtHI3OjITTfLE/XxPGKEY/WFyBljtMH4KUsJNK1u6URbRhbyVaD
+ fz1mv46IDxsg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9696"; a="151241941"
+X-IronPort-AV: E=Sophos;i="5.75,406,1589266800"; 
+   d="scan'208";a="151241941"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2020 09:43:58 -0700
+IronPort-SDR: K+XeOAXfUmRMKHtJD04fv2VCeyuciQ/yKEwKCkzRr1Ch2lCU04wwHp8AZumnz9kNs9FQkpwoH0
+ aBsVPY8VLLbA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,406,1589266800"; 
+   d="scan'208";a="434381608"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.32.199]) ([10.212.32.199])
+  by orsmga004.jf.intel.com with ESMTP; 28 Jul 2020 09:43:58 -0700
+Subject: Re: [PATCH net-next RFC 00/13] Add devlink reload level option
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Moshe Shemesh <moshe@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
+ <CAACQVJqNXh0B=oe5W7psiMGc6LzNPujNe2sypWi_SvH5sY=F3Q@mail.gmail.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <a3e20b44-9399-93c1-210f-e3c1172bf60d@intel.com>
+Date:   Tue, 28 Jul 2020 09:43:57 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.0.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <CAACQVJqNXh0B=oe5W7psiMGc6LzNPujNe2sypWi_SvH5sY=F3Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure not just the pointer itself but the whole range lies in
-the user address space.  For that pass the length and then use
-the access_ok helper to do the check.
 
-Fixes: 6d04fe15f78a ("net: optimize the sockptr_t for unified kernel/user address spaces")
-Reported-by: David Laight <David.Laight@ACULAB.COM>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- include/linux/sockptr.h     | 18 ++++++------------
- net/ipv4/bpfilter/sockopt.c |  2 +-
- net/socket.c                |  2 +-
- 3 files changed, 8 insertions(+), 14 deletions(-)
 
-diff --git a/include/linux/sockptr.h b/include/linux/sockptr.h
-index 9e6c81d474cba8..96840def9d69cc 100644
---- a/include/linux/sockptr.h
-+++ b/include/linux/sockptr.h
-@@ -27,14 +27,6 @@ static inline sockptr_t KERNEL_SOCKPTR(void *p)
- {
- 	return (sockptr_t) { .kernel = p };
- }
--
--static inline int __must_check init_user_sockptr(sockptr_t *sp, void __user *p)
--{
--	if ((unsigned long)p >= TASK_SIZE)
--		return -EFAULT;
--	sp->user = p;
--	return 0;
--}
- #else /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
- typedef struct {
- 	union {
-@@ -53,14 +45,16 @@ static inline sockptr_t KERNEL_SOCKPTR(void *p)
- {
- 	return (sockptr_t) { .kernel = p, .is_kernel = true };
- }
-+#endif /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
- 
--static inline int __must_check init_user_sockptr(sockptr_t *sp, void __user *p)
-+static inline int __must_check init_user_sockptr(sockptr_t *sp, void __user *p,
-+		size_t size)
- {
--	sp->user = p;
--	sp->is_kernel = false;
-+	if (!access_ok(p, size))
-+		return -EFAULT;
-+	*sp = (sockptr_t) { .user = p };
- 	return 0;
- }
--#endif /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
- 
- static inline bool sockptr_is_null(sockptr_t sockptr)
- {
-diff --git a/net/ipv4/bpfilter/sockopt.c b/net/ipv4/bpfilter/sockopt.c
-index 94f18d2352d007..545b2640f0194d 100644
---- a/net/ipv4/bpfilter/sockopt.c
-+++ b/net/ipv4/bpfilter/sockopt.c
-@@ -65,7 +65,7 @@ int bpfilter_ip_get_sockopt(struct sock *sk, int optname,
- 
- 	if (get_user(len, optlen))
- 		return -EFAULT;
--	err = init_user_sockptr(&optval, user_optval);
-+	err = init_user_sockptr(&optval, user_optval, len);
- 	if (err)
- 		return err;
- 	return bpfilter_mbox_request(sk, optname, optval, len, false);
-diff --git a/net/socket.c b/net/socket.c
-index 94ca4547cd7c53..aff52e81653ce3 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2105,7 +2105,7 @@ int __sys_setsockopt(int fd, int level, int optname, char __user *user_optval,
- 	if (optlen < 0)
- 		return -EINVAL;
- 
--	err = init_user_sockptr(&optval, user_optval);
-+	err = init_user_sockptr(&optval, user_optval, optlen);
- 	if (err)
- 		return err;
- 
--- 
-2.27.0
+On 7/27/2020 10:25 PM, Vasundhara Volam wrote:
+> On Mon, Jul 27, 2020 at 4:36 PM Moshe Shemesh <moshe@mellanox.com> wrote:
+>>
+>> Introduce new option on devlink reload API to enable the user to select the
+>> reload level required. Complete support for all levels in mlx5.
+>> The following reload levels are supported:
+>>   driver: Driver entities re-instantiation only.
+>>   fw_reset: Firmware reset and driver entities re-instantiation.
+> The Name is a little confusing. I think it should be renamed to
+> fw_live_reset (in which both firmware and driver entities are
+> re-instantiated).  For only fw_reset, the driver should not undergo
+> reset (it requires a driver reload for firmware to undergo reset).
+> 
 
+So, I think the differentiation here is that "live_patch" doesn't reset
+anything.
+
+>>   fw_live_patch: Firmware live patching only.
+> This level is not clear. Is this similar to flashing??
+> 
+> Also I have a basic query. The reload command is split into
+> reload_up/reload_down handlers (Please correct me if this behaviour is
+> changed with this patchset). What if the vendor specific driver does
+> not support up/down and needs only a single handler to fire a firmware
+> reset or firmware live reset command?
+
+In the "reload_down" handler, they would trigger the appropriate reset,
+and quiesce anything that needs to be done. Then on reload up, it would
+restore and bring up anything quiesced in the first stage.
