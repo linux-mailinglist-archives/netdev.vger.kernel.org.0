@@ -2,68 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 757F323103F
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:58:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF203231047
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:59:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731724AbgG1Q6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 12:58:46 -0400
-Received: from mga01.intel.com ([192.55.52.88]:20499 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731494AbgG1Q6q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 12:58:46 -0400
-IronPort-SDR: MFvVakebOPo6s+FCvTdZ1OB1iNoZ8ReSFjsLkrcydsOdAZKUOypUSWNq9HepLrD8x99kfdEfQ1
- hLmpnMIxWf3A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9696"; a="169374490"
-X-IronPort-AV: E=Sophos;i="5.75,406,1589266800"; 
-   d="scan'208";a="169374490"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2020 09:58:46 -0700
-IronPort-SDR: n2mdnwm9qZBU2yBdFmVrsyET2XsR6Ta4Q0+cmFPpqagA0L1Pn127xRWT5b3yqEdBjUWV5Mw3ON
- 6IHyz7XoKr7A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,406,1589266800"; 
-   d="scan'208";a="434386172"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.32.199]) ([10.212.32.199])
-  by orsmga004.jf.intel.com with ESMTP; 28 Jul 2020 09:58:45 -0700
-Subject: Re: [RFC PATCH net-next v2 6/6] devlink: add overwrite mode to flash
- update
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jakub Kicinski <kubakici@wp.pl>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tom Herbert <tom@herbertland.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Danielle Ratson <danieller@mellanox.com>
-References: <20200717183541.797878-1-jacob.e.keller@intel.com>
- <20200717183541.797878-7-jacob.e.keller@intel.com>
- <20200720100953.GB2235@nanopsycho>
- <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200721135356.GB2205@nanopsycho>
- <20200721100406.67c17ce9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200722105139.GA3154@nanopsycho>
- <02874ECE860811409154E81DA85FBB58C8AF3382@fmsmsx101.amr.corp.intel.com>
- <20200726071606.GB2216@nanopsycho>
- <cfbed715-8b01-2f56-bc58-81c7be86b1c3@intel.com>
- <20200728111950.GB2207@nanopsycho>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <a41db4d7-e3f3-ecbb-0876-4ccb7da0339f@intel.com>
-Date:   Tue, 28 Jul 2020 09:58:44 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.0.1
+        id S1731742AbgG1Q72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 12:59:28 -0400
+Received: from mail29.static.mailgun.info ([104.130.122.29]:55227 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731728AbgG1Q71 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 12:59:27 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1595955566; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: Date: Subject: In-Reply-To: References: Cc:
+ To: From: Sender; bh=N8+BlcHePeCs/+hf2+RN1tVqgqYvQtxvpdrZJOj+nmk=; b=S/C6gMjq4Jn6Dnv3P4FmeVm9Dt7XzB2hexzx2T2mLv2dFCaY6N7jovuIxg7lnwV4hoTUWfsM
+ hKGDrYOvSjYeOb5VDL9lhuiZgLOXyC/IR1nEOIyaF5y4fmUdiHP2MfAyTN9C5pIipnqxt6vu
+ OHZJiZ4GRWAqX/8Xpj5o+UwK5Ok=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n19.prod.us-west-2.postgun.com with SMTP id
+ 5f20595f298a38b616c2cc28 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 28 Jul 2020 16:59:11
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id B36EAC433AD; Tue, 28 Jul 2020 16:59:11 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from Pillair (unknown [49.205.240.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: pillair)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6DFAAC433C6;
+        Tue, 28 Jul 2020 16:59:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6DFAAC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=pillair@codeaurora.org
+From:   "Rakesh Pillai" <pillair@codeaurora.org>
+To:     "'David Laight'" <David.Laight@ACULAB.COM>,
+        "'Sebastian Gottschall'" <s.gottschall@dd-wrt.com>,
+        "'Hillf Danton'" <hdanton@sina.com>
+Cc:     "'Andrew Lunn'" <andrew@lunn.ch>, <netdev@vger.kernel.org>,
+        <linux-wireless@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <ath10k@lists.infradead.org>, <dianders@chromium.org>,
+        "'Markus Elfring'" <Markus.Elfring@web.de>, <evgreen@chromium.org>,
+        <kuba@kernel.org>, <johannes@sipsolutions.net>,
+        <davem@davemloft.net>, <kvalo@codeaurora.org>
+References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org> <20200721172514.GT1339445@lunn.ch> <20200725081633.7432-1-hdanton@sina.com> <8359a849-2b8a-c842-a501-c6cb6966e345@dd-wrt.com> <20200725145728.10556-1-hdanton@sina.com> <2664182a-1d03-998d-8eff-8478174a310a@dd-wrt.com> <cb54c2746a3d4ce695e3bda8b576b40e@AcuMS.aculab.com>
+In-Reply-To: <cb54c2746a3d4ce695e3bda8b576b40e@AcuMS.aculab.com>
+Subject: RE: [RFC 0/7] Add support to process rx packets in thread
+Date:   Tue, 28 Jul 2020 22:29:02 +0530
+Message-ID: <001001d66500$69a58970$3cf09c50$@codeaurora.org>
 MIME-Version: 1.0
-In-Reply-To: <20200728111950.GB2207@nanopsycho>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: en-us
+Thread-Index: AQG1Bu1FBYi7G1oVhHY/01uT1gSslwJNiRkqApu6+hkBXSQ6awJoRsl8AqlHfdQCIFt2Taj0MByg
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -71,28 +70,76 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 7/28/2020 4:19 AM, Jiri Pirko wrote:
-> Yes. Documentation is very easy to ignore unfortunatelly. The driver
-> developer has to be tight up by the core code and api, I believe.
-> 
+> -----Original Message-----
+> From: David Laight <David.Laight@ACULAB.COM>
+> Sent: Sunday, July 26, 2020 4:46 PM
+> To: 'Sebastian Gottschall' <s.gottschall@dd-wrt.com>; Hillf Danton
+> <hdanton@sina.com>
+> Cc: Andrew Lunn <andrew@lunn.ch>; Rakesh Pillai =
+<pillair@codeaurora.org>;
+> netdev@vger.kernel.org; linux-wireless@vger.kernel.org; linux-
+> kernel@vger.kernel.org; ath10k@lists.infradead.org;
+> dianders@chromium.org; Markus Elfring <Markus.Elfring@web.de>;
+> evgreen@chromium.org; kuba@kernel.org; johannes@sipsolutions.net;
+> davem@davemloft.net; kvalo@codeaurora.org
+> Subject: RE: [RFC 0/7] Add support to process rx packets in thread
+>=20
+> From: Sebastian Gottschall <s.gottschall@dd-wrt.com>
+> > Sent: 25 July 2020 16:42
+> > >> i agree. i just can say that i tested this patch recently due =
+this
+> > >> discussion here. and it can be changed by sysfs. but it doesnt =
+work for
+> > >> wifi drivers which are mainly using dummy netdev devices. for =
+this i
+> > >> made a small patch to get them working using napi_set_threaded
+> manually
+> > >> hardcoded in the drivers. (see patch bellow)
+>=20
+> > > By CONFIG_THREADED_NAPI, there is no need to consider what you did
+> here
+> > > in the napi core because device drivers know better and are =
+responsible
+> > > for it before calling napi_schedule(n).
+>=20
+> > yeah. but that approach will not work for some cases. some stupid
+> > drivers are using locking context in the napi poll function.
+> > in that case the performance will runto shit. i discovered this with =
+the
+> > mvneta eth driver (marvell) and mt76 tx polling (rx  works)
+> > for mvneta is will cause very high latencies and packet drops. for =
+mt76
+> > it causes packet stop. doesnt work simply (on all cases no crashes)
+> > so the threading will only work for drivers which are compatible =
+with
+> > that approach. it cannot be used as drop in replacement from my =
+point of
+> > view.
+> > its all a question of the driver design
+>=20
+> Why should it make (much) difference whether the napi callbacks (etc)
+> are done in the context of the interrupted process or that of a
+> specific kernel thread.
+> The process flags (or whatever) can even be set so that it appears
+> to be the expected 'softint' context.
+>=20
+> In any case running NAPI from a thread will just show up the next
+> piece of code that runs for ages in softint context.
+> I think I've seen the tail end of memory being freed under rcu
+> finally happening under softint and taking absolutely ages.
+>=20
+> 	David
+>=20
 
-So I'm not sure what the best proposal here is. We do have a list of
-generic components, but given that each piece of HW has different
-elements, it's not always feasible to have fully generic names. Some of
-the names are driver specific.
+Hi All,
 
-I guess we could use some system where components are "registered" when
-loading the devlink, so that they can be verified by the stack when used
-as a parameter for flash update? Perhaps take something like the
-table-driven approach used for infos and extend that into devlink core
-so that drivers basically register a table of the components which
-includes both a function callback that gets the version string as well
-as an indication of whether that component can be updated via flash_update?
+Is the threaded NAPI change posted to kernel ?=20
+Is the conclusion of this discussion that " we cannot use threads for =
+processing packets " ??
 
-I know it would also be useful for ice to have a sort of "pre-info"
-callback that generates a context structure that is passed to each of
-the info callbacks. (that way a single up-front step could be to lookup
-the relevant information, and this is then forwarded to each of the
-formatter functions for each component).
 
-Am I on the right track here or just over-engineering?
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes,
+> MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+
