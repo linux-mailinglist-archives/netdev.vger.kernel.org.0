@@ -2,108 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E36A230E88
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1701230E8C
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:55:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731068AbgG1Py5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 11:54:57 -0400
-Received: from smtprelay0075.hostedemail.com ([216.40.44.75]:33018 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730679AbgG1Py5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 11:54:57 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 18151181D396A;
-        Tue, 28 Jul 2020 15:54:56 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:966:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:1801:2194:2196:2199:2200:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3867:3872:4321:4385:4605:5007:9010:10004:10400:10848:11026:11232:11657:11658:11914:12043:12048:12296:12297:12438:12555:12740:12760:12895:13439:13972:14659:14721:21080:21451:21627:21990:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: seed58_631747d26f6b
-X-Filterd-Recvd-Size: 3298
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf11.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 28 Jul 2020 15:54:51 +0000 (UTC)
-Message-ID: <4299fe666c93018a9a047575e5d68a0bb4dd269f.camel@perches.com>
-Subject: Re: [PATCH net-next] liquidio: Remove unneeded cast from memory
- allocation
-From:   Joe Perches <joe@perches.com>
-To:     "wanghai (M)" <wanghai38@huawei.com>, dchickles@marvell.com,
-        sburla@marvell.com, fmanlunas@marvell.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 28 Jul 2020 08:54:48 -0700
-In-Reply-To: <2996569e-5e1a-db02-2c78-0ee0d572706d@huawei.com>
-References: <20200724130001.71528-1-wanghai38@huawei.com>
-         <2cdef8d442bb5da39aed17bf994a800e768942f7.camel@perches.com>
-         <ac99bed4-dabc-a003-374f-206753f937cb@huawei.com>
-         <bffcc7d513e186734d224bda6afdd55033b451de.camel@perches.com>
-         <2996569e-5e1a-db02-2c78-0ee0d572706d@huawei.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1731200AbgG1PzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 11:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730679AbgG1PzW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 11:55:22 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D408C061794
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 08:55:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=xFwChVEz/enu9hhWEmzhbZ8s3PHLMlzW+0CY3JmoiPw=; b=YmTYv+W5WDaJjubjfYamax4zq
+        QHL6rbaYy/ZroipjWIuyYYUYKBXGuuhRvKUUhMi27ghdpSntoHibX4PhsMCKdhKO4oatePXbkOypu
+        Mq135MFDYkGQThSKaPJd+lOtsOHCorv+xPKIjKknQE0rDwqPnByVR14dfL40HLtHnKf184onROjxk
+        90P5ZTA3hPqlJzI8G4u75X2+1ilkWEgOCBcdH0ktV4tLm2l1JRUOloDpWeeEXUpzS0GRKfb7reJ5h
+        4Kybqi/UJQU/+NrZEhvwYHV9uV95mnJAvo68xY7Ey9y8oQSmYH911vNWsVVSO6ky8OVAXvrHTuHvh
+        GuqgNgPYw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45292)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1k0Rwm-0004S3-Sd; Tue, 28 Jul 2020 16:55:20 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1k0Rwm-0004mp-9b; Tue, 28 Jul 2020 16:55:20 +0100
+Date:   Tue, 28 Jul 2020 16:55:20 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
+Message-ID: <20200728155520.GS1551@shell.armlinux.org.uk>
+References: <20200727204731.1705418-1-andrew@lunn.ch>
+ <VI1PR0402MB3871906F6381418258CC7AEBE0730@VI1PR0402MB3871.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR0402MB3871906F6381418258CC7AEBE0730@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-07-28 at 21:38 +0800, wanghai (M) wrote:
-> Thanks for your explanation. I got it.
+On Tue, Jul 28, 2020 at 03:42:22PM +0000, Ioana Ciornei wrote:
+> > Subject: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
+> > 
+> > RFC Because it needs 0-day build testing
+> > 
+> > The directory drivers/net/phy is getting rather cluttered with the growing
+> > number of MDIO bus drivers and PHY device drivers. We also have one PCS
+> > driver and more are expected soon.
+> > 
+> > Restructure the directory, moving MDIO bus drivers into /mdio.  PHY drivers into
+> > /phy. The one current PCS driver is moved into /pcs and renamed to give it the
+> > pcs- prefix which we hope will be followed by other PCS drivers.
+> > 
 > 
-> Can it be modified like this?
-[]
-> +++ b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-> @@ -1152,11 +1152,8 @@ octeon_register_dispatch_fn(struct octeon_device 
-> *oct,
-> 
->                  dev_dbg(&oct->pci_dev->dev,
->                          "Adding opcode to dispatch list linked list\n");
-> -               dispatch = (struct octeon_dispatch *)
-> -                          vmalloc(sizeof(struct octeon_dispatch));
-> +               dispatch = kmalloc(sizeof(struct octeon_dispatch), 
-> GFP_KERNEL);
->                  if (!dispatch) {
-> -                       dev_err(&oct->pci_dev->dev,
-> -                               "No memory to add dispatch function\n");
->                          return 1;
->                  }
->                  dispatch->opcode = combined_opcode;
+> Other than that, the new 'drivers/net/phy/phy/' path is somewhat repetitive but
+> unfortunately I do not have another better suggestion.
 
-Yes, but the free also needs to be changed.
+There aren't many suitable names.  The options I can think of are:
 
-I think it's:
----
- drivers/net/ethernet/cavium/liquidio/octeon_device.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+drivers	(but is still repetitive, or drv for a shortened version)
+media	(since they're driving media facing PHYs)
+phy	(as already suggested by Andrew)
 
-diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_device.c b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-index 934115d18488..4ee4cb946e1d 100644
---- a/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-+++ b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-@@ -1056,7 +1056,7 @@ void octeon_delete_dispatch_list(struct octeon_device *oct)
- 
- 	list_for_each_safe(temp, tmp2, &freelist) {
- 		list_del(temp);
--		vfree(temp);
-+		kfree(temp);
- 	}
- }
- 
-@@ -1152,13 +1152,10 @@ octeon_register_dispatch_fn(struct octeon_device *oct,
- 
- 		dev_dbg(&oct->pci_dev->dev,
- 			"Adding opcode to dispatch list linked list\n");
--		dispatch = (struct octeon_dispatch *)
--			   vmalloc(sizeof(struct octeon_dispatch));
--		if (!dispatch) {
--			dev_err(&oct->pci_dev->dev,
--				"No memory to add dispatch function\n");
-+		dispatch = kmalloc(sizeof(struct octeon_dispatch), GFP_KERNEL);
-+		if (!dispatch)
- 			return 1;
--		}
-+
- 		dispatch->opcode = combined_opcode;
- 		dispatch->dispatch_fn = fn;
- 		dispatch->arg = fn_arg;
+Nothing really stands out as a good choice.
 
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
