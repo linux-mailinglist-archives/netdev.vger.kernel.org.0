@@ -2,110 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7188F230C99
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 16:41:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA11A230C9F
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 16:42:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730457AbgG1Olj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 10:41:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37482 "EHLO
+        id S1730481AbgG1Omy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 10:42:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730391AbgG1Olj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 10:41:39 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D14C061794;
-        Tue, 28 Jul 2020 07:41:39 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id o1so10005376plk.1;
-        Tue, 28 Jul 2020 07:41:39 -0700 (PDT)
+        with ESMTP id S1727824AbgG1Omx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 10:42:53 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C64E7C061794
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 07:42:53 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id d27so14974579qtg.4
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 07:42:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GF8ZjMhiyVomxf9/l0IfId/LIV7LteGzaaDxWYsxaIU=;
-        b=VoQ7Bq3KPeISrwjwSkLoprGtG+k2Fb7MUT7AlyPhSWF0Rj9fuUds8Wcwl/5SeiiSWn
-         j1GKLVuH4umjRwNSVPjCrQ7gcSyeFxRwwhxCIEBtjp90Na3KaTC0rUHYYy8TrOAgcd1V
-         fMwls5Y4GUZdWaYHlgp1mJmXd/61BUCwxu25UjIWqJos1T7HDB83AfVFh861m8KzEEl7
-         99xmGXtYlrHL71aglulvPMt1wMCUNjdDiImW/ioWlxbyh1yUVs5zk9FUWt9ZW0RFvDD1
-         X/XzvbepYJqrCNjASn7nZE+NOG2b2ahTvCe1w41tXu6EQegWQfKnYtSWGfRhLaN2u1K1
-         XBsw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7YXrW6xlu/YLnX7CP0zyk8YRXkA9rF1jcVRuZgIpjcM=;
+        b=KSfxVp0i7oqe3cw/gxthxJA77v4C9XGrOubNBzE3zEGb8z+EGOSvFdmM60wEht1BAr
+         vWEZkfj+d8UbjTuulEb4wz1tpNbMJeV1etWlBoEZ6pT9t6rP0zbJk7nwIwVX6pGTZU7X
+         2BKgtyxMhKkdO3oqXYEPXbXpCirtLbm/mFxxb068FrjVrhPKV2K4nTBGk8kOQ2r/VJYS
+         y+7RCrcFyTXXa+4ArTW5KlKXOSRrTaCl9zg2HV3mjuEzcxRP4za+ZvRKrBUgLWMZZdbk
+         ES+/f2jUyRZecu5J7rutzarOBt+HtHoqm2K1XFGUzPPhOhbKaXXm43O9GsuMEZQwik4E
+         aSzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GF8ZjMhiyVomxf9/l0IfId/LIV7LteGzaaDxWYsxaIU=;
-        b=Ah3+4XtS2Cm+VVA7edhAGsKPDUfjNOUNDEVTBogGk3GXEPNfaatpLO7hLBt/hK6X5Y
-         QC9jku+XezpLCSTJeaXelJaX0fWmqebJmpTCB85o06of2Arov2RP06OLyfdEPREV8bKS
-         H4mkeci9evuYkRHlamqnqzEiU9zCZlp5CYAOBHzyLCUwpPlmsJaAuyhSXTBCufH644SA
-         BKO4NBo2x00QPvbHGd9gIcmdXdG8FCwsgyELaJtjhg9Rh6EYgeXzouayXKfjifvcceug
-         4AjbwaN+Q2kAVYX5dxdQpzshyAp6/cu/XTuGxS451udfecf3YAzrZHxiAaAHYjG5/T0R
-         +E2A==
-X-Gm-Message-State: AOAM531it19HgdP7zOrQA/acF16MiF7l179LZqDnDF5Y7VtM8sdtOKvU
-        nH0YJVu9rmM7xQeb5Mq/6AUUrLBB
-X-Google-Smtp-Source: ABdhPJxPnbqNFx2R/aZMT//M0oZGvl560sm+VxS32xxVHehpQkXBH7TQA2aiTJIBbOPhRQfIh4eMdw==
-X-Received: by 2002:a17:902:a3c2:: with SMTP id q2mr10268577plb.212.1595947298539;
-        Tue, 28 Jul 2020 07:41:38 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id d65sm18735992pfc.97.2020.07.28.07.41.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jul 2020 07:41:37 -0700 (PDT)
-Subject: Re: [PATCH] [net/ipv6] ip6_output: Add ipv6_pinfo null check
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Gaurav Singh <gaurav1086@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [IPv4/IPv6]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20200727033810.28883-1-gaurav1086@gmail.com>
- <20200728021348.4116-1-gaurav1086@gmail.com>
- <CAM_iQpWbT18cRfDc2f1wVUrS6QpOmPrZwBqaitD7545-itijfg@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <4c4d94e2-e2b4-ee77-6942-f5d747a288e4@gmail.com>
-Date:   Tue, 28 Jul 2020 07:41:36 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7YXrW6xlu/YLnX7CP0zyk8YRXkA9rF1jcVRuZgIpjcM=;
+        b=PyvqhXr/9SZ5NBDHA7jP+XE058krH4B3y4fsiv7NRDAkTSSfLKzdwvlY5n86uaAS1I
+         DqNLaqdoeDnrejxuLmRs9+nJhhVbWXLRxUf3iFQxJeCLz3wPfUP+wSW4cLslph/xlzVb
+         vCQL7WKoo5bBnbA4HQ5Y7V1BIroINBLoZhsYZ2mAPVofFJr0556sujkpi3bojtZfr6ia
+         B2lQJ3ofwUBgF9ZtAs2XWmPOBqyfl/SU+udYF57NdeVt07DOwRL0NFlfBaKEgeQPDzHR
+         VFlQS1YRFUaqF5jOopsfsxjcZ2SS/tjc5j34u1K5c0xOEE4cBaiFa0aE3XO4pBldLO0W
+         BtAg==
+X-Gm-Message-State: AOAM531plx56ZyKsD+QRXSPn78Q28NJrGXMg5wKHy6XlxEtURiOEDtfc
+        WbDogBPyO3b7LaA2SPYAoOs=
+X-Google-Smtp-Source: ABdhPJxXKfUjVQryQj8trbVvhXam4Dl66ifxytdvKb+rIjyU3p69Jdeat2UFOBMz59yZOOgP7bPFDQ==
+X-Received: by 2002:ac8:2a4a:: with SMTP id l10mr27797123qtl.136.1595947372944;
+        Tue, 28 Jul 2020 07:42:52 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:ca23:d22f:1490:8577:8486])
+        by smtp.gmail.com with ESMTPSA id n85sm7745141qkn.80.2020.07.28.07.42.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jul 2020 07:42:52 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 9AF26C0EB8; Tue, 28 Jul 2020 11:42:49 -0300 (-03)
+Date:   Tue, 28 Jul 2020 11:42:49 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Roi Dayan <roid@mellanox.com>
+Cc:     netdev@vger.kernel.org, pablo@netfilter.org,
+        Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
+Subject: Re: [PATCH net 2/2] net/sched: act_ct: Set offload timeout when
+ setting the offload bit
+Message-ID: <20200728144249.GC3398@localhost.localdomain>
+References: <20200728115759.426667-1-roid@mellanox.com>
+ <20200728115759.426667-3-roid@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpWbT18cRfDc2f1wVUrS6QpOmPrZwBqaitD7545-itijfg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200728115759.426667-3-roid@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/27/20 8:12 PM, Cong Wang wrote:
-> On Mon, Jul 27, 2020 at 7:14 PM Gaurav Singh <gaurav1086@gmail.com> wrote:
->>
->> Add return to fix build issue. Haven't reproduced this issue at
->> my end.
->>
->> My hypothesis is this: In function: ip6_xmit(), we have
->> const struct ipv6_pinfo *np = inet6_sk(sk); which returns NULL.
->>
->> Further down the function, there's a check:
->> if (np) hlimit = hp->htop_limit
+On Tue, Jul 28, 2020 at 02:57:59PM +0300, Roi Dayan wrote:
+> On heavily loaded systems the GC can take time to go over all existing
+> conns and reset their timeout. At that time other calls like from
+> nf_conntrack_in() can call of nf_ct_is_expired() and see the conn as
+> expired. To fix this when we set the offload bit we should also reset
+> the timeout instead of counting on GC to finish first iteration over
+> all conns before the initial timeout.
 > 
-> This check exists before git history, at that time 'sk' could be NULL,
-> hence 'np', so it does not mean it is still necessary now.
+> Fixes: 64ff70b80fd4 ("net/sched: act_ct: Offload established connections to flow table")
+> Signed-off-by: Roi Dayan <roid@mellanox.com>
+> Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
+> ---
+>  net/sched/act_ct.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> I looked at all callers of ip6_xmit(), I don't see how it is called with
-> a non-full socket, neither 'sk' could be NULL after
-> commit b30bd282cbf5c46247a279a2e8d2aae027d9f1bf
-> ("[IPV6]: ip6_xmit: remove unnecessary NULL ptr check").
+> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+> index e9f3576cbf71..650c2d78a346 100644
+> --- a/net/sched/act_ct.c
+> +++ b/net/sched/act_ct.c
+> @@ -366,6 +366,8 @@ static void tcf_ct_flow_table_add(struct tcf_ct_flow_table *ct_ft,
+
+Extra context line:
+	err = flow_offload_add(&ct_ft->nf_ft, entry);
+>  	if (err)
+>  		goto err_add;
+>  
+> +	nf_ct_offload_timeout(ct);
+> +
+
+What about adding this to flow_offload_add() instead?
+It is already adjusting the flow_offload timeout there and then it
+also effective for nft.
+
+>  	return;
+>  
+>  err_add:
+> -- 
+> 2.8.4
 > 
-> Thanks.
-> 
-
-
-Agreed.
-
-And again, fact that this patch lacks a Fixes:  tag speaks for itself.
-
-This means the author expects all reviewers to make a deep analysis.
-
-Please bear with us, and add a Fixes: tag so that we can fully understand what was
-the bug origin and why a fix is valid.
