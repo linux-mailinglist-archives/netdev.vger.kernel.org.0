@@ -2,138 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7EBB2300D9
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 06:42:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACCED23010A
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:02:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726581AbgG1Ema (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 00:42:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51196 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726251AbgG1Em3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 00:42:29 -0400
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 64A9621775;
-        Tue, 28 Jul 2020 04:42:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595911348;
-        bh=TVFr4Hno5Uz5lBGZMRwlb/sXPSLZI9gYlrUTg3PyNv8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tFIBmTcqPidPaW1mgM5rsM2re1XqYVcCw79wKN0KlWY2Mo7Z3XOA4D1IgzRcwwTXV
-         yDwVl7e7L7+LhKmdikEYG5Yz0SKWs0sIfqVGb3R7KBlRDrSkouOHA2emVle5NqI5jy
-         OWLcJfSNrmCSPqFGY2jQgvuMf2LqfideuH0/jtS8=
-Received: by mail-lj1-f169.google.com with SMTP id 185so9440784ljj.7;
-        Mon, 27 Jul 2020 21:42:28 -0700 (PDT)
-X-Gm-Message-State: AOAM530oaEewmHZxYSra81OVFMtj+SSrVLI9A06FCsIwr0bMa9KGwPFB
-        N8qZhwep7bQ055ofuI/DgMm1IcJyV7l7uDglwGo=
-X-Google-Smtp-Source: ABdhPJzQBksVgvuZleuJzBaS8edxqJt+GcrUBHwARGnj1dgKoxj6SnxWcM3it4alIzNKUQjYYrdcJpFuwVxwtp587nk=
-X-Received: by 2002:a2e:88c6:: with SMTP id a6mr11563764ljk.27.1595911346668;
- Mon, 27 Jul 2020 21:42:26 -0700 (PDT)
+        id S1726871AbgG1FB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 01:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726497AbgG1FBx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 01:01:53 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA08C0619D2;
+        Mon, 27 Jul 2020 22:01:53 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id x69so17601070qkb.1;
+        Mon, 27 Jul 2020 22:01:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9GiJFplLkrVe2P2djDina8SpQbLhusk7z/UDvkWFSzw=;
+        b=H38VJRXTVFmMsWtckzdw49EBWCoL8eRWZNWhzhvKMupOD7NZsOxI4yB3/HLCcxiBvT
+         D6iDhK1wXiyMRNVdVx7gO5AwiQ+zBrv93qMVbb1IPLzm8gOh7py4SSw8rTMSZ2cHW8wX
+         ryv3pQLsB1ljUVM/haYwTCWBXHEZclJBzfv+RwvA1IuKfOVpSZdnxxK8ytAGuxguLhtS
+         5J5bAW/PjBhAY0gw6bxbnRI+lM6KwIu8EeD6P7MPtFxBClgy+ulQp98a8+AekNBJ3zRT
+         M9JZyV2YeVMQlu31rv3TGN4PVGM9/IkpZQ5+j7bNCyNhm6NDt7Mt/bJ2s8IICuQbZQU2
+         QHnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9GiJFplLkrVe2P2djDina8SpQbLhusk7z/UDvkWFSzw=;
+        b=A2E2U+yRxcl4civ3RtNs1snb9gfdWbNaQ860XoOX4o/J/6Ap5S/DA+D8BWPR5LFaWT
+         puME8t44NBG4IrIYkRrOZ0jMUh9Lk7SYdcmM7L+xNv+eZM/jiMyJmkLnYoYcGthMQf8H
+         fIbixYML7htk92IXJzrbGaepxVtDzCQHsuXciVDSz+ER8Q6ZePOK2hWK1Jar57KhbhDE
+         8qj0ez8kmaopYbV/ELuG7zdzsqNKwGFxE6y0hUWUk9/gM6ABXHI2VCP7UEX2jUxXRQbv
+         04WFAEyIX8bhsB+KgPAHjaJWMDpV1HblP+LZHQIo5tSk9b+n1U5UchxwPts9p7H8yFRQ
+         ztqA==
+X-Gm-Message-State: AOAM533LrtCnFdve4sFM2AwgspBhBj5M6NbkqxYh92+6e3bVCGlyYSyr
+        y39KzakTvdM0FSvWGX494t1q6si02qNU0cPp8rqC8g==
+X-Google-Smtp-Source: ABdhPJwhYpurrebIDrB9Ym/cZeix2EE0A9z8I8H1cpLXDDVplNsGzT/MrgqVKHwMMT+3tH2S0+eBt5pJAH/cNQ/URIM=
+X-Received: by 2002:a37:afc3:: with SMTP id y186mr7074210qke.36.1595912512905;
+ Mon, 27 Jul 2020 22:01:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-2-guro@fb.com>
- <CAPhsuW49mOQYCx77jucJ_NkeYhoSxOZ_cCujBUjgMdJBy3keeg@mail.gmail.com> <20200728000802.GB352883@carbon.DHCP.thefacebook.com>
-In-Reply-To: <20200728000802.GB352883@carbon.DHCP.thefacebook.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 27 Jul 2020 21:42:15 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7v26a74JN=vyMmhTrrEV1Wnx+MMA7bM0xV+hNen6YuEQ@mail.gmail.com>
-Message-ID: <CAPhsuW7v26a74JN=vyMmhTrrEV1Wnx+MMA7bM0xV+hNen6YuEQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 01/35] bpf: memcg-based memory accounting for
- bpf progs
-To:     Roman Gushchin <guro@fb.com>
+References: <20200727233431.4103-1-bimmy.pujari@intel.com>
+In-Reply-To: <20200727233431.4103-1-bimmy.pujari@intel.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 27 Jul 2020 22:01:41 -0700
+Message-ID: <CAEf4BzYMaU14=5bzzasAANJW7w2pNxHZOMDwsDF_btVWvf9ADA@mail.gmail.com>
+Subject: Re: [PATCH] bpf: Add bpf_ktime_get_real_ns
+To:     bimmy.pujari@intel.com
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        mchehab@kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        open list <linux-kernel@vger.kernel.org>
+        Martin Lau <kafai@fb.com>, maze@google.com,
+        ashkan.nikravesh@intel.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 5:08 PM Roman Gushchin <guro@fb.com> wrote:
+On Mon, Jul 27, 2020 at 4:35 PM <bimmy.pujari@intel.com> wrote:
 >
-> On Mon, Jul 27, 2020 at 03:11:42PM -0700, Song Liu wrote:
-> > On Mon, Jul 27, 2020 at 12:20 PM Roman Gushchin <guro@fb.com> wrote:
-> > >
-> > > Include memory used by bpf programs into the memcg-based accounting.
-> > > This includes the memory used by programs itself, auxiliary data
-> > > and statistics.
-> > >
-> > > Signed-off-by: Roman Gushchin <guro@fb.com>
-> > > ---
-> > >  kernel/bpf/core.c | 8 ++++----
-> > >  1 file changed, 4 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> > > index bde93344164d..daab8dcafbd4 100644
-> > > --- a/kernel/bpf/core.c
-> > > +++ b/kernel/bpf/core.c
-> > > @@ -77,7 +77,7 @@ void *bpf_internal_load_pointer_neg_helper(const struct sk_buff *skb, int k, uns
-> > >
-> > >  struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flags)
-> > >  {
-> > > -       gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO | gfp_extra_flags;
-> > > +       gfp_t gfp_flags = GFP_KERNEL_ACCOUNT | __GFP_ZERO | gfp_extra_flags;
-> > >         struct bpf_prog_aux *aux;
-> > >         struct bpf_prog *fp;
-> > >
-> > > @@ -86,7 +86,7 @@ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flag
-> > >         if (fp == NULL)
-> > >                 return NULL;
-> > >
-> > > -       aux = kzalloc(sizeof(*aux), GFP_KERNEL | gfp_extra_flags);
-> > > +       aux = kzalloc(sizeof(*aux), GFP_KERNEL_ACCOUNT | gfp_extra_flags);
-> > >         if (aux == NULL) {
-> > >                 vfree(fp);
-> > >                 return NULL;
-> > > @@ -104,7 +104,7 @@ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flag
-> > >
-> > >  struct bpf_prog *bpf_prog_alloc(unsigned int size, gfp_t gfp_extra_flags)
-> > >  {
-> > > -       gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO | gfp_extra_flags;
-> > > +       gfp_t gfp_flags = GFP_KERNEL_ACCOUNT | __GFP_ZERO | gfp_extra_flags;
-> > >         struct bpf_prog *prog;
-> > >         int cpu;
-> > >
-> > > @@ -217,7 +217,7 @@ void bpf_prog_free_linfo(struct bpf_prog *prog)
-> > >  struct bpf_prog *bpf_prog_realloc(struct bpf_prog *fp_old, unsigned int size,
-> > >                                   gfp_t gfp_extra_flags)
-> > >  {
-> > > -       gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO | gfp_extra_flags;
-> > > +       gfp_t gfp_flags = GFP_KERNEL_ACCOUNT | __GFP_ZERO | gfp_extra_flags;
-> > >         struct bpf_prog *fp;
-> > >         u32 pages, delta;
-> > >         int ret;
-> > > --
+> From: Ashkan Nikravesh <ashkan.nikravesh@intel.com>
 >
-> Hi Song!
+> The existing bpf helper functions to get timestamp return the time
+> elapsed since system boot. This timestamp is not particularly useful
+> where epoch timestamp is required or more than one server is involved
+> and time sync is required. Instead, you want to use CLOCK_REALTIME,
+> which provides epoch timestamp.
+> Hence add bfp_ktime_get_real_ns() based around CLOCK_REALTIME.
 >
-> Thank you for looking into the patchset!
->
-> >
-> > Do we need similar changes in
-> >
-> > bpf_prog_array_copy()
-> > bpf_prog_alloc_jited_linfo()
-> > bpf_prog_clone_create()
-> >
-> > and maybe a few more?
->
-> I've tried to follow the rlimit-based accounting, so those objects which were
-> skipped are mostly skipped now and vice versa. The main reason for that is
-> simple: I don't know many parts of bpf code well enough to decide whether
-> we need accounting or not.
->
-> In general with memcg-based accounting we can easily cover places which were
-> not covered previously: e.g. the memory used by the verifier. But I guess it's
-> better to do it case-by-case.
->
-> But if you're aware of any big objects which should be accounted for sure,
-> please, let me know.
 
-Thanks for the explanation. I think we can do one-to-one migration to
-memcg-based accounting for now.
+This doesn't seem like a good idea. With time-since-boot it's very
+easy to translate timestamp into a real time on the host. Having
+get_real_ns() variant might just encourage people to assume precise
+wall-clock timestamps that can be compared between within or even
+across different hosts. REALCLOCK can jump around, you can get
+duplicate timestamps, timestamps can go back in time, etc. It's just
+not a good way to measure time.
 
-Song
+Also, you mention the need for time sync. It's an extremely hard thing
+to have synchronized time between two different physical hosts, as
+anyone that has dealt with distributed systems will attest. Having
+this helper will just create a dangerous illusion that it is possible
+and will just cause more problems down the road for people.
+
+> Signed-off-by: Ashkan Nikravesh <ashkan.nikravesh@intel.com>
+> Signed-off-by: Bimmy Pujari <bimmy.pujari@intel.com>
+> ---
+>  drivers/media/rc/bpf-lirc.c    |  2 ++
+>  include/linux/bpf.h            |  1 +
+>  include/uapi/linux/bpf.h       |  7 +++++++
+>  kernel/bpf/core.c              |  1 +
+>  kernel/bpf/helpers.c           | 14 ++++++++++++++
+>  kernel/trace/bpf_trace.c       |  2 ++
+>  tools/include/uapi/linux/bpf.h |  7 +++++++
+>  7 files changed, 34 insertions(+)
+
+[...]
