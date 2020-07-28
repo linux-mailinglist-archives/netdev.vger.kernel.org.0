@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 055042305ED
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 10:58:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14FB72305EA
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 10:58:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728421AbgG1I6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 04:58:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40786 "EHLO
+        id S1728414AbgG1I6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 04:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728348AbgG1I5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 04:57:41 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DCAAC0619D4
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 01:57:41 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id p138so796626yba.12
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 01:57:41 -0700 (PDT)
+        with ESMTP id S1728272AbgG1I5n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 04:57:43 -0400
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDCFC0619D2
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 01:57:43 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id q21so6676968qve.5
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 01:57:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=nX/1NZr6qGhnB5fWEWRCVFU3/TmZaNj5LyMINF6iah8=;
-        b=C4tiQ/JT4wpELCImOIwKNla4CWq4rVq7GmsYOkdbWLzvQnBGSN4ijrmKf5muLUqYz8
-         QmG3Ayk33QBbjyPb8paRmHGAXlk/hn8rTu2TrBDgLGf53y3CBIIn3egYYyyp+RfznFcS
-         7w1/DVrHHiSuzQSLMyA19FiSV4WSuMIlXwjMuP7HrY2nnYMhRu/Wa4qxV9Ll8rcKj5YX
-         00SJozfC5ObsHV1GrOM2Nz0HnrTvx0sFZVhLI2JSDo1ZBaZ/EiEvQRhdJXW2zIfhGPbG
-         ZK3CalcCoZpL09BOij3aGTD+Kg+X1MnMthWMyx6FOQjinVuoC35As1iBvJqRZ5zVk561
-         Jh9A==
+        bh=q3XkGvkSp73lf1KyQuDb99nbGEDl/ReSCh9uyduGkdU=;
+        b=qXtWjiaX/X6jEvENfZzMiQ6bR2rwgKrF5oawDZFJvh7JYW6DBI6Q5Leoj87XZUrx1Z
+         6+tP83e7P1y1/U/iBST/jiMqIfqw94WXHOB/tDJL9XsjwP1M7e9L+rPIBNm4/5DFh4H7
+         Q96VMUzyaKqGnMQT+urC/PqUrZg0qEs9KXJ3ZHKQfk375qNKjDrVJNSgQ9F+P+i79MWQ
+         REGmPxyqHZ+W1PgAVmEsDjrwoi/V8XFNH2ZEh9Bh8li641FJxE3mr7VM6sNv4caeqH+D
+         kmIj/EtUe0XInSOR+HaRxRHQj6vvDZvKXIcirg4Qhr/NU9RYMumF5lG20sdyQEgmsYjt
+         Vw4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=nX/1NZr6qGhnB5fWEWRCVFU3/TmZaNj5LyMINF6iah8=;
-        b=VBUtt5QNgZuUIkmi0ipxN7V2jFskzW1oEmZEEYajT6U7wHFfIHWb/Apm0hsJE8tg3g
-         a7aXjGWdBfX7kwOxGzqgM4/HV+JrXmcD4zl4QuLt35PmQi4nMUIY+FqTlyDyjAlDhSeJ
-         PzeAsqBWXeqlpqlLt8qce76bv+bey1bUdXYNJ+Wg3uCfwO/2tdRGIXMOYPdnhjqXyB/Z
-         H5BqaUwlY0ZalcJ5XmyDKQEwD3Dh28Cuk+8uattknIGBj8+WYiZPcx8ufk7fq9Nvr+2g
-         pN0gqsOUoVn4S/hUea7gS3kiTU+n38DQ+uiHnqYYmzoF3ThWGMB4K0SikjCEpekGGoqS
-         WhVw==
-X-Gm-Message-State: AOAM530zqJ/Qv0vIdbDi2OBQ6PAQysng7MUnmbNynbh09Mac26ioY7Q5
-        M0fF9zZroNjK+5UffT68YyWMDN1VssvV
-X-Google-Smtp-Source: ABdhPJx8NSGF6mLTqzK5ekC5JPY7ACRycIrYng7z5LWrxFWN5dAz7vMCOxEpNCM7jbecgVk7PHTKckyA7kiD
-X-Received: by 2002:a25:d745:: with SMTP id o66mr19987184ybg.116.1595926660128;
- Tue, 28 Jul 2020 01:57:40 -0700 (PDT)
-Date:   Tue, 28 Jul 2020 01:57:31 -0700
+        bh=q3XkGvkSp73lf1KyQuDb99nbGEDl/ReSCh9uyduGkdU=;
+        b=Ms/EtUjrHki0PpDWVajDlIcWGWR25QUEjJBH7urVxPqXHdC0CE1JpqTQSaaEKwzDJ6
+         8bv2NLoiHyqJjh5A3S0jVPRTCWeH+XxZ7i1udMFK6P7PcINyPtdDLYbpcRoDaNhFTNUl
+         f8OMOHcUd6tg6SqZ0S6smzqlWtjTn8QoeCMQ6ZpIKn7J6prsWYSzzLWTmvXKNRt9NhAa
+         5srsOMKeiVUlzYVX563J9m1Ph8WKQgO+kx4NimupZVvet1UbKxpcv25DyHHvdpa3mIUT
+         jY6iEDmtQVnPTWF2jiGhMgXjh9VYQrKRIYCQ9o33UYoeuzLu2IwLK+xO++7Cbi2ZegKV
+         EpbQ==
+X-Gm-Message-State: AOAM5338ZzZW47xJsHFUSaBSZ6Qs15YdDllyvhOoTsSEs2BO/KCMKQZ9
+        qUhdD2RHyRnte4BRUr3Sy4DwocVV7s6p
+X-Google-Smtp-Source: ABdhPJx+iEtRDw+ObO5QJWeLCfNTNad7nt4l5nFw31VuVCSw5kTb0RhobnC7LyOnVY3dXLgBgQ+3uho2FoTI
+X-Received: by 2002:a0c:c60b:: with SMTP id v11mr1006575qvi.122.1595926662092;
+ Tue, 28 Jul 2020 01:57:42 -0700 (PDT)
+Date:   Tue, 28 Jul 2020 01:57:32 -0700
 In-Reply-To: <20200728085734.609930-1-irogers@google.com>
-Message-Id: <20200728085734.609930-3-irogers@google.com>
+Message-Id: <20200728085734.609930-4-irogers@google.com>
 Mime-Version: 1.0
 References: <20200728085734.609930-1-irogers@google.com>
 X-Mailer: git-send-email 2.28.0.163.g6104cc2f0b6-goog
-Subject: [PATCH v2 2/5] perf record: Prevent override of attr->sample_period
- for libpfm4 events
+Subject: [PATCH v2 3/5] perf test: Ensure sample_period is set libpfm4 events
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -79,41 +78,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephane Eranian <eranian@google.com>
+Test that a command line option doesn't override the period set on a
+libpfm4 event.
+Without libpfm4 test passes as unsupported.
 
-Before:
-$ perf record -c 10000 --pfm-events=cycles:period=77777
-
-Would yield a cycles event with period=10000, instead of 77777.
-
-This was due to an ordering issue between libpfm4 parsing
-the event string and perf record initializing the event.
-
-This patch fixes the problem by preventing override for
-events with attr->sample_period != 0 by the time
-perf_evsel__config() is invoked. This seems to have been the
-intent of the author.
-
-Signed-off-by: Stephane Eranian <eranian@google.com>
-Reviewed-by: Ian Rogers <irogers@google.com>
+Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- tools/perf/util/evsel.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ tools/perf/tests/attr/README                 | 1 +
+ tools/perf/tests/attr/test-record-pfm-period | 9 +++++++++
+ 2 files changed, 10 insertions(+)
+ create mode 100644 tools/perf/tests/attr/test-record-pfm-period
 
-diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-index 811f538f7d77..8afc24e2ec52 100644
---- a/tools/perf/util/evsel.c
-+++ b/tools/perf/util/evsel.c
-@@ -976,8 +976,7 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
- 	 * We default some events to have a default interval. But keep
- 	 * it a weak assumption overridable by the user.
- 	 */
--	if (!attr->sample_period || (opts->user_freq != UINT_MAX ||
--				     opts->user_interval != ULLONG_MAX)) {
-+	if (!attr->sample_period) {
- 		if (opts->freq) {
- 			attr->freq		= 1;
- 			attr->sample_freq	= opts->freq;
+diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
+index 430024f618f1..6cd408108595 100644
+--- a/tools/perf/tests/attr/README
++++ b/tools/perf/tests/attr/README
+@@ -53,6 +53,7 @@ Following tests are defined (with perf commands):
+   perf record -i kill                           (test-record-no-inherit)
+   perf record -n kill                           (test-record-no-samples)
+   perf record -c 100 -P kill                    (test-record-period)
++  perf record -c 1 --pfm-events=cycles:period=2 (test-record-pfm-period)
+   perf record -R kill                           (test-record-raw)
+   perf stat -e cycles kill                      (test-stat-basic)
+   perf stat kill                                (test-stat-default)
+diff --git a/tools/perf/tests/attr/test-record-pfm-period b/tools/perf/tests/attr/test-record-pfm-period
+new file mode 100644
+index 000000000000..368f5b814094
+--- /dev/null
++++ b/tools/perf/tests/attr/test-record-pfm-period
+@@ -0,0 +1,9 @@
++[config]
++command = record
++args    = --no-bpf-event -c 10000 --pfm-events=cycles:period=77777 kill >/dev/null 2>&1
++ret     = 1
++
++[event:base-record]
++sample_period=77777
++sample_type=7
++freq=0
 -- 
 2.28.0.163.g6104cc2f0b6-goog
 
