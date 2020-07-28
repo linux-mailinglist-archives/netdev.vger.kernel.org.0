@@ -2,95 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A424230610
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 11:04:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87F3E230614
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 11:04:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728287AbgG1JE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 05:04:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728051AbgG1JE0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 05:04:26 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F1CC061794
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 02:04:24 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id d14so17914521qke.13
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 02:04:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=TryUnnxlDGueUxiqZDiUOPtuG/P748R3/jPUL83wz7o=;
-        b=NdzhYdr4AdVBzLaNazFJshiwfVHkD75MCtp4IcASC1Cb6Ja4LTkYcpzV2rSEE56j8H
-         I4LUwcUI0pidmLNyogY47eVAXCt/7w77mBVbOjb9TN4S9pyw2UD9wyFHMF2dx0sZp3SQ
-         MNjVQEB1kgksUA3HAuBySHDgq9VeZtHQzSkflhVTndp0WMdEagKfBS/Gl1jFq22zNBYq
-         T1PKR/OoTFWoiYjfO9iXgAkTj0Lu7k8XyVJC5cUsx9bJtirGA+1+GYJKpi9oVgdhsDzX
-         r2qhhOduSmld2PNebp7OXupBdsH4cnPmVYflMv3VwxyTLOFbWfXn/ItpQ1AOJP4izv5A
-         0KFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=TryUnnxlDGueUxiqZDiUOPtuG/P748R3/jPUL83wz7o=;
-        b=sNMl9rAijiOMmOW6Dp4Q6Ek+Xidl3vtTDXFfCurtYemJAuGUIAseN+v1RX2CeHiMRg
-         dOvd0UVyGgoUbztX7/kdGZ4XH6axPZtXfaBYnl8iBO0/QgTBxvJ9VJL2lqn4Bdt87A2a
-         UAeLwUQDQPNnbWhhB6ze1reKAD/A339SFYDhsrg6dbn3z2qZNSNfvBha2xzgiQRySXWJ
-         n5fxwBcAfe0139GZmJe2YCbvhBvW5OR8REAOYWt1ZKueN5rRGrpU4UIdsPgo8LQDM4jx
-         EIcMBNBdTd+DTyAPKRRu3DzBtmF45j37f0+TtdWROZttj+Vwl9/7AZptgMlJmESEvO2M
-         iRCQ==
-X-Gm-Message-State: AOAM532qP5kvXeLHm5Gp42OtRgNEGRftCthypwQ+fcw3Homh0GgVeMvU
-        W2bLItnAu+ez0xyWpsaUgNHE15iy1KFyYGA5LZc=
-X-Google-Smtp-Source: ABdhPJw7Orrozjh8PgjxSWwAMEeZ8fqsX3CS1G2b358a7XPqCFFAqB7hw3YparC/TUFGA9r2Tt0FGb7iDk8XyJ42P7Y=
-X-Received: by 2002:a37:614a:: with SMTP id v71mr13820799qkb.31.1595927063973;
- Tue, 28 Jul 2020 02:04:23 -0700 (PDT)
+        id S1728365AbgG1JEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 05:04:45 -0400
+Received: from mail-vi1eur05on2060.outbound.protection.outlook.com ([40.107.21.60]:49761
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728051AbgG1JEp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 05:04:45 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Nb5Izy49APrelQwQhwDdjunQFfN9O5rbW1YIsKq7k9HblSBzkWWtg2Nnlg/mtwTT6pd7vzVxar0Iq5ZlP4BKqzTw3p4wi33+OUh1Xc8AE07KLuvxD9hVxQUNprI8vFRDfQ79O4v/BGIlY8B9qD4T3pCOsGHf9PskiM7/02p8dUc6OL52wlMGGpIE78Vz8/cbktjUGUSTRj9sm1aX4OmPfUbsIRCSFT+UP6JazLdCEY7BmjhdIA4xJ/EIjXOYKOla203jiYRwyOPc4CxCwCU7g3IxRCrN9NhA674sQZeSQesW1Y5IBw9ff5Bf4EpUBowe6Jchk26JfrHbRpBuVLVIiw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PwSbCoyT48SY+W2X3hco12Y0BUw0tGELfvsSSILW9fM=;
+ b=hm+wfsexBlcgJoVmEkulnoAbac5g07J7XCa8/dIkEcgoXucj+yHf/roxv64Aff+4v0x6s5gIcBEY9oLZbpyH0i+kHdpdRzePGOIeQwUWp7ygftDFet5oZgInVdQkcQrMnlqu/qt9X+Ia7kkhfu9zgOcRQR4eDXtsuG9wl4gZ4InHZ+Y0nh7TTaNizVihl3/0O7z+qRgW6Wpl+MpkJ8YVwhV9Lc37M+OOn/OFucFGZHvnEPJf5WX+qszug10kdU4MZdvt1gEiKPGn+jEDTU4VlVtvd+BrIWwvhb7disXCN0+GMcYajob3/f9asF/vSIyonq7CHZctP5GtPMyPOkJg9A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PwSbCoyT48SY+W2X3hco12Y0BUw0tGELfvsSSILW9fM=;
+ b=nYc8lh20AgqnNya15OP9cKUSDM9zc2qzuOdWacVqRh74zbWWOfc8e+51eEs5N3voUDVg9Pq+RwB+zY9BEfDLOWPne2QgNKP2dlsUmkVhH5Snk45ldE15HE4WUEciwVPmLRAyNgcjJVpA5r1xG3CUVQfa99Dv+0D/67sQ/1GwCLw=
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=mellanox.com;
+Received: from AM0PR05MB4786.eurprd05.prod.outlook.com (2603:10a6:208:b3::15)
+ by AM0PR05MB6116.eurprd05.prod.outlook.com (2603:10a6:208:130::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.20; Tue, 28 Jul
+ 2020 09:04:41 +0000
+Received: from AM0PR05MB4786.eurprd05.prod.outlook.com
+ ([fe80::9186:8b7:3cf7:7813]) by AM0PR05MB4786.eurprd05.prod.outlook.com
+ ([fe80::9186:8b7:3cf7:7813%7]) with mapi id 15.20.3216.033; Tue, 28 Jul 2020
+ 09:04:41 +0000
+Date:   Tue, 28 Jul 2020 12:04:38 +0300
+From:   Eli Cohen <eli@mellanox.com>
+To:     Zhu Lingshan <lingshan.zhu@intel.com>
+Cc:     jasowang@redhat.com, alex.williamson@redhat.com, mst@redhat.com,
+        pbonzini@redhat.com, sean.j.christopherson@intel.com,
+        wanpengli@tencent.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, kvm@vger.kernel.org, shahafs@mellanox.com,
+        parav@mellanox.com
+Subject: Re: [PATCH V4 4/6] vhost_vdpa: implement IRQ offloading in vhost_vdpa
+Message-ID: <20200728090438.GA21875@nps-server-21.mtl.labs.mlnx>
+References: <20200728042405.17579-1-lingshan.zhu@intel.com>
+ <20200728042405.17579-5-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200728042405.17579-5-lingshan.zhu@intel.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-ClientProxiedBy: AM0PR10CA0059.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::39) To AM0PR05MB4786.eurprd05.prod.outlook.com
+ (2603:10a6:208:b3::15)
 MIME-Version: 1.0
-Received: by 2002:ac8:37c6:0:0:0:0:0 with HTTP; Tue, 28 Jul 2020 02:04:23
- -0700 (PDT)
-Reply-To: sambosalifou4@gmail.com
-From:   Sambo Salifou <samba.akasi123@gmail.com>
-Date:   Tue, 28 Jul 2020 09:04:23 +0000
-Message-ID: <CACy=jcm6T49YL2-etdwPuepHnHTF75p_bxwbWG+AJAQnUrmBqw@mail.gmail.com>
-Subject: Mail from your friend
-To:     samba.akasi123@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from nps-server-21.mtl.labs.mlnx (94.188.199.18) by AM0PR10CA0059.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.23 via Frontend Transport; Tue, 28 Jul 2020 09:04:40 +0000
+X-Originating-IP: [94.188.199.18]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: a8d71944-5193-4780-6d8a-08d832d54355
+X-MS-TrafficTypeDiagnostic: AM0PR05MB6116:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR05MB6116493FE9A159D8CBBD54D1C5730@AM0PR05MB6116.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Akn45LIkWeuZLcHr8c61Gc5GY5h6JszSf19DEc7E2eQsEtrTUuGfKg8PnpR4NCYZlxOPwi3tW9BIEwX3aJtUGsYUSG7lp86d8XScotE9TvUIQfL+A48EOd1Xd3u5CYiBqQPOWHCyjmTbpYGtZ79VP3psL2iCjvzPVZ8l5B/jnANDoxSaID2wqj2KquIsBIw9VvokI4XUqqz6s0lEagPm+T/ZxNPG/4cxvdbXfsKS5iNTKevoSe20EglVIjis8j0QRudyP+YU4mdNMxMekxhQkdqoACvO4s2gS+iz7/4808yPXHurnKKG8uB+bIN2cY4ie+qP7UBHkMf0stW13XGOqg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4786.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(346002)(136003)(376002)(366004)(396003)(83380400001)(6506007)(7696005)(52116002)(86362001)(66556008)(66476007)(4744005)(5660300002)(33656002)(7416002)(66946007)(4326008)(2906002)(1076003)(186003)(6916009)(55016002)(9686003)(478600001)(316002)(107886003)(26005)(956004)(8936002)(8676002)(16526019);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: Z2omUVDN/mCYkPGPl2fdthKrm5ulXuLtMCNokLaWm+dCPnHCSSlgAWfvWip+1oIDvzQKN0CX04bSLbxiwh3Bs7jbvzwP4xeoT6laITtLXKFPxAYjjToeIIyR1Fi1tFOa3nJ3Vv/HfOUnrkiJvwnl2J2KIx+TNZ2fv3EQ0epHl2tkcbFXDpj04P3AJBcKo5BDcpJi8BXJD7Dir+mVIXik7YN18zYqpONqgy5nFOuRgn5NXBEfAHETnKQQtpon8XBTz+xuLsQ668t25gqUwHyDuxclBBWzl25yZsvFckNyD5c3HKgF8bXjXPT36wgkehDcdg3TY6cucnpPx0mtG7yy44syrR5LXU22qo9tK0odGCKB5AsNZbqPH/AdtjWXqfliopstxYsxwVBrqNskk/JbeY+FhprXbL7ZBKmGzG/yY4q7unljqMrn/qail9RD24993b5JDK34s84F1l5X3p1ssJE6jKeTlKInrTdb+hYrPxA=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8d71944-5193-4780-6d8a-08d832d54355
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB4786.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2020 09:04:41.3749
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: G8RE3aVQ08CIERWvHIlogqGbd2blyW5+vLuUchlge0TbfoG5X1E+vbV1KjmIwSEp9Aon9oeJ1PFyHjwMJjXReQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6116
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please lets make joint business
+On Tue, Jul 28, 2020 at 12:24:03PM +0800, Zhu Lingshan wrote:
+>  
+> +static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, int qid)
+> +{
+> +	struct vhost_virtqueue *vq = &v->vqs[qid];
+> +	const struct vdpa_config_ops *ops = v->vdpa->config;
+> +	struct vdpa_device *vdpa = v->vdpa;
+> +	int ret, irq;
+> +
+> +	spin_lock(&vq->call_ctx.ctx_lock);
+> +	irq = ops->get_vq_irq(vdpa, qid);
+> +	if (!vq->call_ctx.ctx || irq == -EINVAL) {
+> +		spin_unlock(&vq->call_ctx.ctx_lock);
+> +		return;
+> +	}
+> +
 
-I am, Dr. Salifou Sambo a bank auditor, I am in-charge of transferring
-out funds for my village, which our village generates from the sales
-of our local mined gold. I have some left over fund in the bank here
-that I alone is aware of, and wants to transfer it out.
-My village that mines gold, has mandated me for sales of our raw Gold,
-and as a bank auditor I help our village to control their funds. I
-want to use this opportunity to look for some one who will provide an
-account to receive the sum of 22.2 million US dollars left in the
-bank, this was realized from gold sold, to be transferred out to our
-foreign account, now it is unknown by our village, This fund has been
-laying for onward transfer to overseas as we transfer out all funds
-sold from our gold, till now this fund is lying in the bank, I have
-all documents concerning the fund, and now I want to use it to
-establish outside my country. So if you are interested, then you will
-provide an account to receive the fund for a joint benefit and
-business and sharing, I will give you 30% of the fund.
-If you are interested in this, with hope you have this quality I
-needed, go ahead and send me your detailed information as stated below
-for us to move forward. I will use your information to edit our bank=E2=80=
-=99s
-computer and your name will appear in our bank file as the existing
-next of kin to the account, then our bank will contact you for the
-release of the fund to you.
-1. Your full name:
-2. Your residence address:
-3. Your age: and sex:
-4. Your passport or identity card:
-5. Your private (mobile) phone:
-6. Your Occupation:
-7 .Your House / Office Address:
- Please reply as soon as possible for the next step.
-Regards
-Dr. SALIFOU Sambo
+If I understand correctly, this will cause these IRQs to be forwarded
+directly to the VCPU, e.g. will be handled by the guest/qemu.
+Does this mean that the host will not handle this interrupt? How does it
+work in case on level triggered interrupts?
+
+In the case of ConnectX, I need to execute some code to acknowledge the
+interrupt.
+
+Can you explain how this should be done?
