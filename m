@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E32D2301B8
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:30:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB8722301BB
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:30:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726407AbgG1F3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 01:29:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42334 "EHLO mail.kernel.org"
+        id S1726862AbgG1Fat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 01:30:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42534 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726245AbgG1F3x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 01:29:53 -0400
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+        id S1726245AbgG1Fas (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 01:30:48 -0400
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0A75120759;
-        Tue, 28 Jul 2020 05:29:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0085A20759;
+        Tue, 28 Jul 2020 05:30:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595914193;
-        bh=NxGOqzNDCiGqo7SqhZy3eBT1mOYiIlD0oSMzOtfXMNM=;
+        s=default; t=1595914248;
+        bh=gBdRHY3hhfymtWLH0XkstzchGZQpmabzhAQ4I9TsFBM=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=nxlYItFLeTyNsqaWkPzykKvJ7xRkqieMF2gcr6i/bqHf2HWL2lOjeb9XOnfJPrGSm
-         SISOcPdiF4ORXZYQmdP1oWFs+SxraKB91kh5gSkxGs80v4Ly0UL6Xin6/FNXAscYo+
-         lIfjPCQSKJawWM5S15qGV5dvuWI+LoriOkJjJ3Do=
-Received: by mail-lj1-f172.google.com with SMTP id f5so19721490ljj.10;
-        Mon, 27 Jul 2020 22:29:52 -0700 (PDT)
-X-Gm-Message-State: AOAM532K5IQGyTUXZh+6zbC9PJVX9d/NRFYqyMjAxARireK8KYvrPXn6
-        in5+5HLVI6zn2BLj8GHIeuJkJahOLO43ov0NNfE=
-X-Google-Smtp-Source: ABdhPJzJQzNwFaJz5OOPawmi78/m/d0Gxsk+lR/hcOh9JFVfFmwJrzO9J9tHHtGcg3MPyAcn9sVDd21DQwQ/Fvg4TOc=
-X-Received: by 2002:a2e:81c2:: with SMTP id s2mr3261614ljg.10.1595914191378;
- Mon, 27 Jul 2020 22:29:51 -0700 (PDT)
+        b=P1WNNLpPb3cs+ClJdI7wYuPqxXAiahL4fPF1oTNP7mzfvH0VaQOuG1ZkDZpPuiLxO
+         EzdcdxoVUHBEAdng1ayEsW3bM1x5HZrlb0mxzwN1ykDGsIOzkDXyGA8Nxv+VmyxQhh
+         80CLXBQaivSLe8VkuP6IMrvO9JItEL/Qi726MDJs=
+Received: by mail-lj1-f169.google.com with SMTP id s16so4516967ljc.8;
+        Mon, 27 Jul 2020 22:30:47 -0700 (PDT)
+X-Gm-Message-State: AOAM530au6S5MK3W8/IwOIu+GOtTJFIste2zvpSd/Pf+uE2hDKAC2wNM
+        DyybHVtFwWm0A+w+UJxlYfXOf/ugZUkeLi9a23Y=
+X-Google-Smtp-Source: ABdhPJwqr+9HGhDkGzGcMpNBfNt4mSJT54CLjVbdqvvXmAmGhUQ4Q46CRg3c2k9ejnLXNu6aWl3vT8oVVVZlgjVM0Bo=
+X-Received: by 2002:a2e:3003:: with SMTP id w3mr11841791ljw.273.1595914246316;
+ Mon, 27 Jul 2020 22:30:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-15-guro@fb.com>
-In-Reply-To: <20200727184506.2279656-15-guro@fb.com>
+References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-16-guro@fb.com>
+In-Reply-To: <20200727184506.2279656-16-guro@fb.com>
 From:   Song Liu <song@kernel.org>
-Date:   Mon, 27 Jul 2020 22:29:40 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW45uYHPjcjc_k2C+DL6P9vxN3+ADNeAXK9Z8CdAbgtvDw@mail.gmail.com>
-Message-ID: <CAPhsuW45uYHPjcjc_k2C+DL6P9vxN3+ADNeAXK9Z8CdAbgtvDw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 14/35] bpf: eliminate rlimit-based memory
- accounting for bpf_struct_ops maps
+Date:   Mon, 27 Jul 2020 22:30:35 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW4-ubo3iz=-0=yQOEkQKFVpkChycUwGBV-gdsgoAOybnw@mail.gmail.com>
+Message-ID: <CAPhsuW4-ubo3iz=-0=yQOEkQKFVpkChycUwGBV-gdsgoAOybnw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 15/35] bpf: eliminate rlimit-based memory
+ accounting for cpumap maps
 To:     Roman Gushchin <guro@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -51,11 +51,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 12:26 PM Roman Gushchin <guro@fb.com> wrote:
+On Mon, Jul 27, 2020 at 12:22 PM Roman Gushchin <guro@fb.com> wrote:
 >
-> Do not use rlimit-based memory accounting for bpf_struct_ops maps.
+> Do not use rlimit-based memory accounting for cpumap maps.
 > It has been replaced with the memcg-based memory accounting.
 >
 > Signed-off-by: Roman Gushchin <guro@fb.com>
 
 Acked-by: Song Liu <songliubraving@fb.com>
+
+> ---
+>  kernel/bpf/cpumap.c | 16 +---------------
+>  1 file changed, 1 insertion(+), 15 deletions(-)
+>
+> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+> index 74ae9fcbe82e..50f3444a3301 100644
+> --- a/kernel/bpf/cpumap.c
+> +++ b/kernel/bpf/cpumap.c
+> @@ -86,8 +86,6 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+>         u32 value_size = attr->value_size;
+>         struct bpf_cpu_map *cmap;
+>         int err = -ENOMEM;
+> -       u64 cost;
+> -       int ret;
+>
+>         if (!bpf_capable())
+>                 return ERR_PTR(-EPERM);
+> @@ -111,26 +109,14 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+>                 goto free_cmap;
+>         }
+>
+> -       /* make sure page count doesn't overflow */
+> -       cost = (u64) cmap->map.max_entries * sizeof(struct bpf_cpu_map_entry *);
+> -
+> -       /* Notice returns -EPERM on if map size is larger than memlock limit */
+> -       ret = bpf_map_charge_init(&cmap->map.memory, cost);
+> -       if (ret) {
+> -               err = ret;
+> -               goto free_cmap;
+> -       }
+> -
+>         /* Alloc array for possible remote "destination" CPUs */
+>         cmap->cpu_map = bpf_map_area_alloc(cmap->map.max_entries *
+>                                            sizeof(struct bpf_cpu_map_entry *),
+>                                            cmap->map.numa_node);
+>         if (!cmap->cpu_map)
+> -               goto free_charge;
+> +               goto free_cmap;
+>
+>         return &cmap->map;
+> -free_charge:
+> -       bpf_map_charge_finish(&cmap->map.memory);
+>  free_cmap:
+>         kfree(cmap);
+>         return ERR_PTR(err);
+> --
+> 2.26.2
+>
