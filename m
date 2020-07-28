@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1638A23130C
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:47:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 321B2231310
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:49:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732978AbgG1TrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56710 "EHLO
+        id S1728133AbgG1Ttf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730048AbgG1TrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:47:15 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F57C061794;
-        Tue, 28 Jul 2020 12:47:15 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id w9so15803229qts.6;
-        Tue, 28 Jul 2020 12:47:15 -0700 (PDT)
+        with ESMTP id S1728021AbgG1Ttf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:49:35 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04006C061794;
+        Tue, 28 Jul 2020 12:49:34 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id l64so13122115qkb.8;
+        Tue, 28 Jul 2020 12:49:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ThwLY3fNICycCY8BtQTgJp/05j62cqHvgz64dBHPh1w=;
-        b=EvSRQaPAOyMtYNEGVgl5dqv17e9x48u/0X3d+0ybr3gsJkmMfH4r4mKTN4nFOWQdcM
-         HSxDrsL1jbId+/kYHmlBNtOMoe0JeRDXYGvbpD1PRN2wt947ogu0DBftOjGF3nEo8etu
-         aI88nxkLEsHSGBIpvd7ngYmNzjfplU/eLLA0iRSPWF8KmGtJa6BAiEGA4/llD36pC7Mx
-         AS7/f0J4/mUIfdPIUL8wHshfdnEEzOqR8awmgp+p5jWMinQHamN/bpUc4YJe+GnhYt8/
-         O9K2AFroAFAAsCINfkQ3LZ6VV8ycr74vbGXRQypJLdYoXnefheeu47tJ8WylLUxGG1KD
-         27Ww==
+        bh=6hj3dMxveOql5730Rx8rp2LmufJVrL75Ha1btaxCU/s=;
+        b=gVe4AmxrCCr/KTcE0NgtTG1QbbbYX1HoMoQ9xEf4yiKDfQ+aBF/KU756+sQh15L3f4
+         nNGXQ6N6cBWuH91FkmEk3qKgiWr8sFMthdVPx/mN7/0F7FE1KZ3btR9Zwq5gbVrLBbwx
+         TSqqN0JJGfcudRMXZoI6p3lFBMCU9mjLMET8ZqV6BYmWvwwMoeDaoDq9owpaHpsjJVq8
+         YUMl7fxLBZCFDYQkWlsRojqFB67apVmCzca/KlZeAKAPRz6ueEFjihX6jKZC+Xh3D/PM
+         0a4xrS0+v08YoW+BrMws4E3h9FyhqqifRAkkCa+u4V1sQhPzUaCrYSEYM6Ub9RVk9gRO
+         kRnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ThwLY3fNICycCY8BtQTgJp/05j62cqHvgz64dBHPh1w=;
-        b=DDHiBTlwXgRKGOJlBuwy8PybyRzdgHm/0CcAYkuMu36kR3+9Yg2IWFEuYV/zJXhp2Q
-         DvxiEr2lJeVtKzZNS6EY794FLZ1Ys9RVBsMSidKrntsddCJMVvIcySpg77WxWMfJvhX5
-         UM7Mdq0HNgX1zhXpKHFJstGVyoboDayLzHqvPp7AciXhR6pqsobJ550DHefKxWuLDZKV
-         PNxLR7PXDj7GppWche/nxMzSb9TmJ8bGgiGfAnqvKBRZQi5VSkAx04dI5NJ3nZQayjuM
-         8OcGT3x5j1l2ddeFUkH2zoZ4t6uCNButdkWkohknBilL9h5GBJR8Udl3WCQry3a69RAV
-         p+fg==
-X-Gm-Message-State: AOAM5323tt0NsOn2dLejdHzXtlo5+5xfLEdf0YwdF7iss2LngCaiN3wi
-        +bUHRGlUWV5b+DKzCWFI4GzZJNbnSHFEvJg1KtI=
-X-Google-Smtp-Source: ABdhPJzKwKDN4Mvv7UiFgY5GopQtuc6vrJLAQ0kblLrfhczBiYUiQ8lZ4ekejgo24kCptxeSC8mVQ9l2MA9+b6+bJwM=
-X-Received: by 2002:ac8:777a:: with SMTP id h26mr28078911qtu.141.1595965634394;
- Tue, 28 Jul 2020 12:47:14 -0700 (PDT)
+        bh=6hj3dMxveOql5730Rx8rp2LmufJVrL75Ha1btaxCU/s=;
+        b=Gy9Cc76wRNsnAoBEEkhRnB+fXNf8NItZXa399iSE7Uitk0bhdSD7bMiiYJIAZTeASL
+         bokLYqBk4mLDyXVFXYNukD7Jwyw+bMP2F6rcxucUzSXr7WccveTzJPWuaMF8Nbh+oC+N
+         h/W+x7tZJZ9PQCVE9VdedABywD6iNPrr0qkZ1OxZGBvAz5l/gFJSp30rwavjBjfXLG43
+         c779NM77uZrb8DTfe/9b3sm/8Jol4f06BOnlCI5/jDVQthZHkfSf7zNFVQGSxI3hAUud
+         RwKA6KUM4RmXdRVDRj7OHqjme3r10BupM9oujeIiRFIEg79pGyn/dRTVlm7EPk7WLTIu
+         6Esw==
+X-Gm-Message-State: AOAM533QezA46FyjGImZ4XhwkayFWm91XagBq+81erg7ZtrOKSddPz+0
+        aJ7gBNJQEi9ABWyK/RD0kKQ3df2+Ss86KgeT428=
+X-Google-Smtp-Source: ABdhPJxOjtfUmD4YxYAqS1jgoiSAicYixqETgO9gEE8raMzfAwEJzf9z0aIGLPFLfndVtwYdDeig+0pPMAdzRU56mHI=
+X-Received: by 2002:a05:620a:4c:: with SMTP id t12mr4096037qkt.449.1595965774136;
+ Tue, 28 Jul 2020 12:49:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200722211223.1055107-1-jolsa@kernel.org> <20200722211223.1055107-10-jolsa@kernel.org>
-In-Reply-To: <20200722211223.1055107-10-jolsa@kernel.org>
+References: <20200722211223.1055107-1-jolsa@kernel.org> <20200722211223.1055107-12-jolsa@kernel.org>
+In-Reply-To: <20200722211223.1055107-12-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 28 Jul 2020 12:47:03 -0700
-Message-ID: <CAEf4BzZ48nhqGhij9qe7Hc_JD6RpZoh-4NnVvqR=V1YN4ff2sA@mail.gmail.com>
-Subject: Re: [PATCH v8 bpf-next 09/13] bpf: Add d_path helper
+Date:   Tue, 28 Jul 2020 12:49:22 -0700
+Message-ID: <CAEf4BzaCPHEK2ir7r9YfwuELoAG4wqBirCNX+iDrf4THvAr+aA@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next 11/13] selftests/bpf: Add verifier test for
+ d_path helper
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -72,99 +73,20 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Jul 22, 2020 at 2:14 PM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Adding d_path helper function that returns full path for
-> given 'struct path' object, which needs to be the kernel
-> BTF 'path' object. The path is returned in buffer provided
-> 'buf' of size 'sz' and is zero terminated.
->
->   bpf_d_path(&file->f_path, buf, size);
->
-> The helper calls directly d_path function, so there's only
-> limited set of function it can be called from. Adding just
-> very modest set for the start.
->
-> Updating also bpf.h tools uapi header and adding 'path' to
-> bpf_helpers_doc.py script.
+> Adding verifier test for attaching tracing program and
+> calling d_path helper from within and testing that it's
+> allowed for dentry_open function and denied for 'd_path'
+> function with appropriate error.
 >
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  include/uapi/linux/bpf.h       | 13 +++++++++
->  kernel/trace/bpf_trace.c       | 48 ++++++++++++++++++++++++++++++++++
->  scripts/bpf_helpers_doc.py     |  2 ++
->  tools/include/uapi/linux/bpf.h | 13 +++++++++
->  4 files changed, 76 insertions(+)
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  tools/testing/selftests/bpf/test_verifier.c   | 19 +++++++++-
+>  tools/testing/selftests/bpf/verifier/d_path.c | 37 +++++++++++++++++++
+>  2 files changed, 55 insertions(+), 1 deletion(-)
+>  create mode 100644 tools/testing/selftests/bpf/verifier/d_path.c
 >
-
-[...]
-
->
-> +BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
-> +{
-> +       char *p = d_path(path, buf, sz - 1);
-> +       int len;
-> +
-> +       if (IS_ERR(p)) {
-> +               len = PTR_ERR(p);
-> +       } else {
-> +               len = strlen(p);
-> +               if (len && p != buf)
-> +                       memmove(buf, p, len);
-
-not sure if it's worth it, but if len == sz - 1 then memmove is not
-necessary. Again, don't know if worth it, as it's probably not going
-to be a common case.
-
-> +               buf[len] = 0;
-> +               /* Include the trailing NUL. */
-> +               len++;
-> +       }
-> +
-> +       return len;
-> +}
-> +
-> +BTF_SET_START(btf_whitelist_d_path)
-> +BTF_ID(func, vfs_truncate)
-> +BTF_ID(func, vfs_fallocate)
-> +BTF_ID(func, dentry_open)
-> +BTF_ID(func, vfs_getattr)
-> +BTF_ID(func, filp_close)
-> +BTF_SET_END(btf_whitelist_d_path)
-
-
-We should probably comply with an updated coding style ([0]) and use
-an allowlist name for this?
-
-  [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=49decddd39e5f6132ccd7d9fdc3d7c470b0061bb
-
-> +
-> +static bool bpf_d_path_allowed(const struct bpf_prog *prog)
-> +{
-> +       return btf_id_set_contains(&btf_whitelist_d_path, prog->aux->attach_btf_id);
-> +}
-> +
-> +BTF_ID_LIST(bpf_d_path_btf_ids)
-> +BTF_ID(struct, path)
-> +
-> +static const struct bpf_func_proto bpf_d_path_proto = {
-> +       .func           = bpf_d_path,
-> +       .gpl_only       = false,
-> +       .ret_type       = RET_INTEGER,
-> +       .arg1_type      = ARG_PTR_TO_BTF_ID,
-> +       .arg2_type      = ARG_PTR_TO_MEM,
-> +       .arg3_type      = ARG_CONST_SIZE,
-
-I feel like we had a discussion about ARG_CONST_SIZE vs
-ARG_CONST_SIZE_OR_ZERO before, maybe on some different thread.
-Basically, this >0 restriction was a major nuisance for
-bpf_perf_event_output() cases, so much that we changed it to _OR_ZERO.
-In practice, while it might never be the case that we have sz == 0
-passed into the function, having to prove this to the verifier is a
-PITA. Unless there is a very strong reason not to, let's mark this as
-ARG_CONST_SIZE_OR_ZERO and handle sz == 0 case as a noop?
-
-> +       .btf_id         = bpf_d_path_btf_ids,
-> +       .allowed        = bpf_d_path_allowed,
-> +};
-> +
 
 [...]
