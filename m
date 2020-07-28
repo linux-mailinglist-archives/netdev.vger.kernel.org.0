@@ -2,250 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28AA1230605
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 11:00:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77C982305F3
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 10:59:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728375AbgG1JAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 05:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726032AbgG1JAM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 05:00:12 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A538DC061794;
-        Tue, 28 Jul 2020 02:00:12 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id t6so11512775pgq.1;
-        Tue, 28 Jul 2020 02:00:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eXWDEkg4433DRZvcoGLFZLwDxOJJX9Wg+/QFW7sV+OE=;
-        b=emxPU/TIzPfj1TTUnuwUbMvATPs5XLnweOqB7/KY0b/Q41TG/uOC57PgMlZ7HE8UPp
-         VzhUlN0h8hJW8SZiX+cuwGOQoOeOm/kBDw/W7lf46h+xL5kcsNgomTpkwhYdovIRlp3f
-         fvGGba+i3cc82fgMGZ3DGf5BnnwD6UyQn8v5iaUgtnu/ULswv2CwuyeY393zna07UOTH
-         E3iT4FvwNUm1bWVWfvRWuD8R4YCTG9E9TU5nbn73oZVZ/+w7YPLc7Cm6Y2bRupbzKyWM
-         bkq7nLfljswYuCP8P1PbXzVG/MJoc9yY+f//Cls2C9IIsYdHvE/2eAdm2R4+KcfwQVl2
-         Q/6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eXWDEkg4433DRZvcoGLFZLwDxOJJX9Wg+/QFW7sV+OE=;
-        b=qK5GtmY+0bf9rWfPR0w8lEIhkuMdZTtB28CiJzEnE4OudCzLR70VV8O3rldlMgbdPr
-         s+QOHsduituE0sL8pE0KOg3GPHh+uVrZ2/il7nlSTm0621qH6JCUk9Re9YPjdakRf9IK
-         3CkzhuCcJCKo6aJzqnDPfFlOznkBE9RFeCL03LUoxdb9nEuL7ybPsgq59k0+hIApsgLg
-         yiANNM2PsHDXB8V7pDlP9NN7nDa3Xb8BF4PbxN+k3qVtkMD62y6Melnriltav7fX/pvK
-         sHlwTYTKbUrzzxr7DmiMCqn/7yRiF4wp3F8d99TD2XbtRgfLGS4dgrWgqZDE+3qYw2rL
-         3Ylw==
-X-Gm-Message-State: AOAM533A0I5Abze7Yoy/ey+SbtVoR6HQPfnR8+DWRlt4RCfYtP0+rTpy
-        bH58K5qyA5rE5YhcNexu+N0=
-X-Google-Smtp-Source: ABdhPJwofzJqI96SNcAW3qc+RKA54AqcQwu88f1RTCsajCDXpWPqPEh74QJSWZ0ijFUX9TKSrful8w==
-X-Received: by 2002:a63:3541:: with SMTP id c62mr833395pga.127.1595926812125;
-        Tue, 28 Jul 2020 02:00:12 -0700 (PDT)
-Received: from varodek.iballbatonwifi.com ([103.105.152.86])
-        by smtp.gmail.com with ESMTPSA id t11sm9306174pfh.35.2020.07.28.02.00.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jul 2020 02:00:11 -0700 (PDT)
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1728441AbgG1I7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 04:59:07 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:64288 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728195AbgG1I7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 04:59:07 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06S8tMnZ022930;
+        Tue, 28 Jul 2020 01:59:05 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=FoGAkKnChF5K0jer7gQvXi1INXEksmEaHYRyP9u4bdU=;
+ b=Jo08mZcFPGJhntBLZ60sIWozDkGfh8HW92A8pNCBYNk9G19k3AZYInv+WIYmpjJvaRcT
+ nGWmMpTcugnQ1JKG0q48+NbFZS5hLuqo9XrtJCgInohtkb2HiSzYFVGNis8ZdXp4gpHi
+ 3jGL21weiuO26yiFpVIV9JzYrao91kuaMt3gVHGJzbQN4J6b8DV6LEppqoyrJmoIsM+k
+ n8q3VV8RxpJMDHMYnxTZUYs23/Dd2Nb6JhQDJbwCb78c3sAA5/R0JKzB8Aaikt46pW3I
+ IvZFXq89+AGuy2vJEXQH/PfbLtsLZyTvhzaFTznFjun+rVchwf8M9M5YQwO3cPhOuLFu dA== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 32gj3qu7cv-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 28 Jul 2020 01:59:05 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 28 Jul
+ 2020 01:59:05 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 28 Jul
+ 2020 01:59:04 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 28 Jul 2020 01:59:04 -0700
+Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.193.54.28])
+        by maili.marvell.com (Postfix) with ESMTP id 22E673F7041;
+        Tue, 28 Jul 2020 01:59:01 -0700 (PDT)
+From:   Igor Russkikh <irusskikh@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH v1] pch_can: use generic power management
-Date:   Tue, 28 Jul 2020 14:27:57 +0530
-Message-Id: <20200728085757.888620-1-vaibhavgupta40@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Ariel Elior <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH v2 net-next 00/11] qed: introduce devlink health support
+Date:   Tue, 28 Jul 2020 11:58:48 +0300
+Message-ID: <20200728085859.899-1-irusskikh@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-28_01:2020-07-28,2020-07-28 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drivers using legacy power management .suspen()/.resume() callbacks
-have to manage PCI states and device's PM states themselves. They also
-need to take care of standard configuration registers.
+This is a followup implementation after series
 
-Switch to generic power management framework using a single
-"struct dev_pm_ops" variable to take the unnecessary load from the driver.
-This also avoids the need for the driver to directly call most of the PCI
-helper functions and device power state control functions, as through
-the generic framework PCI Core takes care of the necessary operations,
-and drivers are required to do only device-specific jobs.
+https://patchwork.ozlabs.org/project/netdev/cover/20200514095727.1361-1-irusskikh@marvell.com/
 
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- drivers/net/can/pch_can.c | 63 +++++++++++++--------------------------
- 1 file changed, 21 insertions(+), 42 deletions(-)
+This is an implementation of devlink health infrastructure.
 
-diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
-index db41dddd5771..ca54a6e1c810 100644
---- a/drivers/net/can/pch_can.c
-+++ b/drivers/net/can/pch_can.c
-@@ -957,8 +957,7 @@ static void pch_can_remove(struct pci_dev *pdev)
- 	free_candev(priv->ndev);
- }
- 
--#ifdef CONFIG_PM
--static void pch_can_set_int_custom(struct pch_can_priv *priv)
-+static void __maybe_unused pch_can_set_int_custom(struct pch_can_priv *priv)
- {
- 	/* Clearing the IE, SIE and EIE bits of Can control register. */
- 	pch_can_bit_clear(&priv->regs->cont, PCH_CTRL_IE_SIE_EIE);
-@@ -969,14 +968,14 @@ static void pch_can_set_int_custom(struct pch_can_priv *priv)
- }
- 
- /* This function retrieves interrupt enabled for the CAN device. */
--static u32 pch_can_get_int_enables(struct pch_can_priv *priv)
-+static u32 __maybe_unused pch_can_get_int_enables(struct pch_can_priv *priv)
- {
- 	/* Obtaining the status of IE, SIE and EIE interrupt bits. */
- 	return (ioread32(&priv->regs->cont) & PCH_CTRL_IE_SIE_EIE) >> 1;
- }
- 
--static u32 pch_can_get_rxtx_ir(struct pch_can_priv *priv, u32 buff_num,
--			       enum pch_ifreg dir)
-+static u32 __maybe_unused pch_can_get_rxtx_ir(struct pch_can_priv *priv,
-+					      u32 buff_num, enum pch_ifreg dir)
- {
- 	u32 ie, enable;
- 
-@@ -997,8 +996,8 @@ static u32 pch_can_get_rxtx_ir(struct pch_can_priv *priv, u32 buff_num,
- 	return enable;
- }
- 
--static void pch_can_set_rx_buffer_link(struct pch_can_priv *priv,
--				       u32 buffer_num, int set)
-+static void __maybe_unused pch_can_set_rx_buffer_link(struct pch_can_priv *priv,
-+						      u32 buffer_num, int set)
- {
- 	iowrite32(PCH_CMASK_RX_TX_GET, &priv->regs->ifregs[0].cmask);
- 	pch_can_rw_msg_obj(&priv->regs->ifregs[0].creq, buffer_num);
-@@ -1013,7 +1012,8 @@ static void pch_can_set_rx_buffer_link(struct pch_can_priv *priv,
- 	pch_can_rw_msg_obj(&priv->regs->ifregs[0].creq, buffer_num);
- }
- 
--static u32 pch_can_get_rx_buffer_link(struct pch_can_priv *priv, u32 buffer_num)
-+static u32 __maybe_unused pch_can_get_rx_buffer_link(struct pch_can_priv *priv,
-+						     u32 buffer_num)
- {
- 	u32 link;
- 
-@@ -1027,20 +1027,19 @@ static u32 pch_can_get_rx_buffer_link(struct pch_can_priv *priv, u32 buffer_num)
- 	return link;
- }
- 
--static int pch_can_get_buffer_status(struct pch_can_priv *priv)
-+static int __maybe_unused pch_can_get_buffer_status(struct pch_can_priv *priv)
- {
- 	return (ioread32(&priv->regs->treq1) & 0xffff) |
- 	       (ioread32(&priv->regs->treq2) << 16);
- }
- 
--static int pch_can_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused pch_can_suspend(struct device *dev_d)
- {
- 	int i;
--	int retval;
- 	u32 buf_stat;	/* Variable for reading the transmit buffer status. */
- 	int counter = PCH_COUNTER_LIMIT;
- 
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct pch_can_priv *priv = netdev_priv(dev);
- 
- 	/* Stop the CAN controller */
-@@ -1058,7 +1057,7 @@ static int pch_can_suspend(struct pci_dev *pdev, pm_message_t state)
- 		udelay(1);
- 	}
- 	if (!counter)
--		dev_err(&pdev->dev, "%s -> Transmission time out.\n", __func__);
-+		dev_err(dev_d, "%s -> Transmission time out.\n", __func__);
- 
- 	/* Save interrupt configuration and then disable them */
- 	priv->int_enables = pch_can_get_int_enables(priv);
-@@ -1081,35 +1080,16 @@ static int pch_can_suspend(struct pci_dev *pdev, pm_message_t state)
- 
- 	/* Disable all Receive buffers */
- 	pch_can_set_rx_all(priv, 0);
--	retval = pci_save_state(pdev);
--	if (retval) {
--		dev_err(&pdev->dev, "pci_save_state failed.\n");
--	} else {
--		pci_enable_wake(pdev, PCI_D3hot, 0);
--		pci_disable_device(pdev);
--		pci_set_power_state(pdev, pci_choose_state(pdev, state));
--	}
- 
--	return retval;
-+	return 0;
- }
- 
--static int pch_can_resume(struct pci_dev *pdev)
-+static int __maybe_unused pch_can_resume(struct device *dev_d)
- {
- 	int i;
--	int retval;
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct pch_can_priv *priv = netdev_priv(dev);
- 
--	pci_set_power_state(pdev, PCI_D0);
--	pci_restore_state(pdev);
--	retval = pci_enable_device(pdev);
--	if (retval) {
--		dev_err(&pdev->dev, "pci_enable_device failed.\n");
--		return retval;
--	}
--
--	pci_enable_wake(pdev, PCI_D3hot, 0);
--
- 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
- 
- 	/* Disabling all interrupts. */
-@@ -1146,12 +1126,8 @@ static int pch_can_resume(struct pci_dev *pdev)
- 	/* Restore Run Mode */
- 	pch_can_set_run_mode(priv, PCH_CAN_RUN);
- 
--	return retval;
-+	return 0;
- }
--#else
--#define pch_can_suspend NULL
--#define pch_can_resume NULL
--#endif
- 
- static int pch_can_get_berr_counter(const struct net_device *dev,
- 				    struct can_berr_counter *bec)
-@@ -1252,13 +1228,16 @@ static int pch_can_probe(struct pci_dev *pdev,
- 	return rc;
- }
- 
-+static SIMPLE_DEV_PM_OPS(pch_can_pm_ops,
-+			 pch_can_suspend,
-+			 pch_can_resume);
-+
- static struct pci_driver pch_can_pci_driver = {
- 	.name = "pch_can",
- 	.id_table = pch_pci_tbl,
- 	.probe = pch_can_probe,
- 	.remove = pch_can_remove,
--	.suspend = pch_can_suspend,
--	.resume = pch_can_resume,
-+	.driver.pm = &pch_can_pm_ops,
- };
- 
- module_pci_driver(pch_can_pci_driver);
+With this we are now able to report HW errors to devlink, and it'll take
+its own actions depending on user configuration to capture and store the
+dump at the bad moment, and to request the driver to recover the device.
+
+So far we do not differentiate global device failures or specific PCI
+function failures. This means that some errors specific to one physical
+function will affect an entire device. This is not yet fully designed
+and verified, will followup in future.
+
+Solution was verified with artificial HW errors generated, existing
+tools for dump analysis could be used.
+
+v2: fix #include issue from kbuild test robot.
+
+Igor Russkikh (11):
+  qed: move out devlink logic into a new file
+  qed/qede: make devlink survive recovery
+  qed: swap param init and publish
+  qed: fix kconfig help entries
+  qed: implement devlink info request
+  qed: health reporter init deinit seq
+  qed: use devlink logic to report errors
+  qed*: make use of devlink recovery infrastructure
+  qed: implement devlink dump
+  qed: align adjacent indent
+  qede: make driver reliable on unload after failures
+
+ drivers/net/ethernet/qlogic/Kconfig           |   5 +-
+ drivers/net/ethernet/qlogic/qed/Makefile      |   1 +
+ drivers/net/ethernet/qlogic/qed/qed.h         |   3 +-
+ drivers/net/ethernet/qlogic/qed/qed_dev.c     |  10 +
+ drivers/net/ethernet/qlogic/qed/qed_devlink.c | 256 ++++++++++++++++++
+ drivers/net/ethernet/qlogic/qed/qed_devlink.h |  20 ++
+ drivers/net/ethernet/qlogic/qed/qed_main.c    | 116 +-------
+ drivers/net/ethernet/qlogic/qede/qede.h       |   2 +
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  35 ++-
+ include/linux/qed/qed_if.h                    |  23 +-
+ 10 files changed, 342 insertions(+), 129 deletions(-)
+ create mode 100644 drivers/net/ethernet/qlogic/qed/qed_devlink.c
+ create mode 100644 drivers/net/ethernet/qlogic/qed/qed_devlink.h
+
 -- 
-2.27.0
+2.17.1
 
