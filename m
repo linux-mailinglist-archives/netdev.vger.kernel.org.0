@@ -2,89 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FB622311D4
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 20:37:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E21D82311DA
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 20:39:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732465AbgG1ShJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 14:37:09 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:55438 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729475AbgG1ShI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 14:37:08 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 94F75205A4;
-        Tue, 28 Jul 2020 20:37:06 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id R75qeuH7M_oU; Tue, 28 Jul 2020 20:37:06 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (201.40.53.10.in-addr.arpa [10.53.40.201])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 152302049A;
-        Tue, 28 Jul 2020 20:37:06 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 28 Jul 2020 20:37:05 +0200
-Received: from moon.secunet.de (172.18.26.121) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Tue, 28 Jul
- 2020 20:37:05 +0200
-Date:   Tue, 28 Jul 2020 20:36:58 +0200
-From:   Antony Antony <antony.antony@secunet.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-CC:     Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        <netdev@vger.kernel.org>,
-        Stephan =?iso-8859-1?Q?M=FCller?= <smueller@chronox.de>,
-        Antony Antony <antony@phenome.org>
-Subject: Re: [PATCH ipsec-next] xfrm: add
- /proc/sys/core/net/xfrm_redact_secret
-Message-ID: <20200728183640.GA32084@moon.secunet.de>
-Reply-To: <antony.antony@secunet.com>
-References: <20200728154342.GA31835@moon.secunet.de>
- <20200728162252.GA3255@gondor.apana.org.au>
+        id S1732471AbgG1Sjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 14:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46248 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729475AbgG1Sju (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 14:39:50 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0201C061794;
+        Tue, 28 Jul 2020 11:39:50 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id x69so19708126qkb.1;
+        Tue, 28 Jul 2020 11:39:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=o/6uYiVxRBLvjte5hmpYmxTDf5OttB8/QGuV4Pd34jo=;
+        b=fr1oZSmqgpJ66N54EakcrzBJsqjtB/2fD7rV9bpszyORd74/XLLk6ivv2oYXStoLgd
+         gInLJ0KuJ9EAYf9ztO4qj2+xiPFU/sMSqL9vwFdDsTy1iDIYAsxUGt9sou0vIxgYeLT3
+         JFvJ7VOSW5k1iRvc3yMbhYUm6nbL+G8Ai22u7In0qIp5QUVsDHLychjT8VGHwM0U0I0D
+         PVTcJczdrSHK+hcCzZBOlUGQRWHe4wPVHcJCqWJu/1FIjkXhRExAtGbAdQeg/uqpM2tw
+         3i/Z6y95WwwZv24kPyQupdkbN9WXQ/qfNuRm+4P9Kc+Fo5+etn7tUTdel8xlyZsEHDXw
+         yxxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=o/6uYiVxRBLvjte5hmpYmxTDf5OttB8/QGuV4Pd34jo=;
+        b=eqtowweEYwtQglbTNjJZKbd53R01+afPHQBVVo24K5J86x+isbPyHFb77aOv+ypwcj
+         +/0YHmv/Ch6mkRg9f9C61UYQsilbGACzPlL5yhxZhoyYD/gpHIqUsRXtgIVUZ5yg3bge
+         8U6IgRh6dcGQHIZcUjndyGfU2leDs7zyy2MvU/0JFd3xTyne6LstDrDlVkcrvWJ3fLdc
+         3g2kVRmaZx6ymTYDdOnz3VTCjFv88EOLztCaWYNCpd4gzMLqvMT5FoF1OFXryiG8SnIS
+         8IZgjD0Fai90t0TfQbvpf8wu7FqOcOncYaB0MyYSSY/+c/gcFjX/oqwQF6QAbeczg6fx
+         7sRg==
+X-Gm-Message-State: AOAM5337gg8JjG0nLMeI9MwFH7/AkhxMpDDjPOPp/SrL80iqxEhPwsPQ
+        JqddppIMKYrPhVW00JR3vjOY74NiRQDEbV3vCS0=
+X-Google-Smtp-Source: ABdhPJyQHKEUOb6+EWdritYo3lOBBI95gbgh2RWPyhg12odwGf2RbbQI/ffowW7yx/gmdzcd182heR+Yn2/IDEHsG+E=
+X-Received: by 2002:a37:afc3:: with SMTP id y186mr10251973qke.36.1595961590033;
+ Tue, 28 Jul 2020 11:39:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200728162252.GA3255@gondor.apana.org.au>
-Organization: secunet
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+References: <159594714197.21431.10113693935099326445.stgit@john-Precision-5820-Tower>
+In-Reply-To: <159594714197.21431.10113693935099326445.stgit@john-Precision-5820-Tower>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 28 Jul 2020 11:39:39 -0700
+Message-ID: <CAEf4BzYVb1NY=GxBCqTWS1e7_+pbOXg3GsM+JXsGNZS30MGyQQ@mail.gmail.com>
+Subject: Re: [bpf-next PATCH] bpf, selftests: use ::1 for localhost in tcp_server.py
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Roman Gushchin <guro@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 29, 2020 at 02:22:52 +1000, Herbert Xu wrote:
-> On Tue, Jul 28, 2020 at 05:47:30PM +0200, Antony Antony wrote:
-> > when enabled, 1, redact XFRM SA secret in the netlink response to
-> > xfrm_get_sa() or dump all sa.
-> > 
-> > e.g
-> > echo 1 > /proc/sys/net/core/xfrm_redact_secret
-> > ip xfrm state
-> > src 172.16.1.200 dst 172.16.1.100
-> > 	proto esp spi 0x00000002 reqid 2 mode tunnel
-> > 	replay-window 0
-> > 	aead rfc4106(gcm(aes)) 0x0000000000000000000000000000000000000000 96
-> > 
-> > the aead secret is redacted.
-> > 
-> > /proc/sys/core/net/xfrm_redact_secret is a toggle.
-> > Once enabled, either at compile or via proc, it can not be disabled.
-> > Redacting secret is a FIPS 140-2 requirement.
-> 
-> Couldn't you use the existing fips_enabled sysctl?
+On Tue, Jul 28, 2020 at 7:40 AM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> Using localhost requires the host to have a /etc/hosts file with that
+> specific line in it. By default my dev box did not, they used
+> ip6-localhost, so the test was failing. To fix remove the need for any
+> /etc/hosts and use ::1.
+>
+> I could just add the line, but this seems easier.
+>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
 
-that could be a step, however, not yet.
+Makes sense.
 
-Libreswan in FIPS mode with xfrm_redact_secret enabled would work fine, however, enabling xfrm_redact_secret would break Strongswan in FIPS mode. We can add this option fips_enabled once Strongswan does not need SA secret, child_sa->update().
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-Also there was interest to able to use xfrm_redact_secret independent of FIPS.
 
-I thik for now it best to be ouside fips_enabled.
+>  tools/testing/selftests/bpf/tcp_client.py |    2 +-
+>  tools/testing/selftests/bpf/tcp_server.py |    2 +-
+>  tools/testing/selftests/bpf/test_netcnt.c |    4 ++--
+>  3 files changed, 4 insertions(+), 4 deletions(-)
+>
 
+[...]
