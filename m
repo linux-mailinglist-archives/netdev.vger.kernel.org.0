@@ -2,308 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B498D230E5B
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:47:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68925230E5C
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:47:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731090AbgG1Prk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 11:47:40 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:52244 "EHLO a.mx.secunet.com"
+        id S1730917AbgG1Prt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 11:47:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52052 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730856AbgG1Prk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 11:47:40 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 05F82205A4;
-        Tue, 28 Jul 2020 17:47:38 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id dasDtBvM1UxI; Tue, 28 Jul 2020 17:47:37 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (201.40.53.10.in-addr.arpa [10.53.40.201])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1730842AbgG1Prt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 11:47:49 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 5C99220590;
-        Tue, 28 Jul 2020 17:47:37 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 28 Jul 2020 17:47:37 +0200
-Received: from moon.secunet.de (172.18.26.121) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Tue, 28 Jul
- 2020 17:47:36 +0200
-Date:   Tue, 28 Jul 2020 17:47:30 +0200
-From:   Antony Antony <antony.antony@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        <netdev@vger.kernel.org>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Stephan =?iso-8859-1?Q?M=FCller?= <smueller@chronox.de>,
-        Antony Antony <antony@phenome.org>
-Subject: [PATCH ipsec-next] xfrm: add /proc/sys/core/net/xfrm_redact_secret
-Message-ID: <20200728154342.GA31835@moon.secunet.de>
-Reply-To: <antony.antony@secunet.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 778682065E;
+        Tue, 28 Jul 2020 15:47:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595951268;
+        bh=OupWXseUQlQcvkUuzQz9fU8bHfZdR+BlUJ5mPXy3q3c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sRkcOHDTdQIFMCji/m271eOdEW9f8YINHCo5V6/RmMkmocNmAbJgGsjjUibjYUaay
+         +S8jkgUFBuNlq1xIRfDEnPwBsyrKxkJlik5oGLOgpg+nXIoz3JdrHklSA9yOKsZVbz
+         8rZ84FA5omZKwoYQudG+PvC0IsOKlmKDeOBKvKeE=
+Date:   Tue, 28 Jul 2020 08:47:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jan Engelhardt <jengelh@inai.de>,
+        Ido Schimmel <idosch@idosch.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        David Laight <David.Laight@ACULAB.COM>, netdev@vger.kernel.org
+Subject: Re: [PATCH 4/4] net: improve the user pointer check in
+ init_user_sockptr
+Message-ID: <20200728084746.06f52878@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200728063643.396100-5-hch@lst.de>
+References: <20200728063643.396100-1-hch@lst.de>
+        <20200728063643.396100-5-hch@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-Organization: secunet
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-when enabled, 1, redact XFRM SA secret in the netlink response to
-xfrm_get_sa() or dump all sa.
+On Tue, 28 Jul 2020 08:36:43 +0200 Christoph Hellwig wrote:
+> Make sure not just the pointer itself but the whole range lies in
+> the user address space.  For that pass the length and then use
+> the access_ok helper to do the check.
+> 
+> Fixes: 6d04fe15f78a ("net: optimize the sockptr_t for unified kernel/user address spaces")
+> Reported-by: David Laight <David.Laight@ACULAB.COM>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-e.g
-echo 1 > /proc/sys/net/core/xfrm_redact_secret
-ip xfrm state
-src 172.16.1.200 dst 172.16.1.100
-	proto esp spi 0x00000002 reqid 2 mode tunnel
-	replay-window 0
-	aead rfc4106(gcm(aes)) 0x0000000000000000000000000000000000000000 96
+> diff --git a/net/ipv4/bpfilter/sockopt.c b/net/ipv4/bpfilter/sockopt.c
+> index 94f18d2352d007..8b132c52045973 100644
+> --- a/net/ipv4/bpfilter/sockopt.c
+> +++ b/net/ipv4/bpfilter/sockopt.c
+> @@ -65,7 +65,7 @@ int bpfilter_ip_get_sockopt(struct sock *sk, int optname,
+>  
+>  	if (get_user(len, optlen))
+>  		return -EFAULT;
+> -	err = init_user_sockptr(&optval, user_optval);
+> +	err = init_user_sockptr(&optval, user_optval, *optlen);
+>  	if (err)
+>  		return err;
+>  	return bpfilter_mbox_request(sk, optname, optval, len, false);
 
-the aead secret is redacted.
+Appears to cause these two new warnings, sadly:
 
-/proc/sys/core/net/xfrm_redact_secret is a toggle.
-Once enabled, either at compile or via proc, it can not be disabled.
-Redacting secret is a FIPS 140-2 requirement.
-
-Cc: Stephan Mueller <smueller@chronox.de>
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
----
- Documentation/networking/xfrm_sysctl.rst |  7 +++
- include/net/netns/xfrm.h                 |  1 +
- net/xfrm/Kconfig                         | 10 ++++
- net/xfrm/xfrm_sysctl.c                   | 20 +++++++
- net/xfrm/xfrm_user.c                     | 76 +++++++++++++++++++++---
- 5 files changed, 105 insertions(+), 9 deletions(-)
-
-diff --git a/Documentation/networking/xfrm_sysctl.rst b/Documentation/networking/xfrm_sysctl.rst
-index 47b9bbdd0179..26432b0ff3ac 100644
---- a/Documentation/networking/xfrm_sysctl.rst
-+++ b/Documentation/networking/xfrm_sysctl.rst
-@@ -9,3 +9,10 @@ XFRM Syscall
- 
- xfrm_acq_expires - INTEGER
- 	default 30 - hard timeout in seconds for acquire requests
-+
-+xfrm_redact_secret - INTEGER
-+	A toggle to redact xfrm SA's secret to userspace.
-+	When true the kernel, netlink message will redact SA secret
-+	to userspace. This is part of FIPS 140-2 requirement.
-+	Once the value is set to true, either at compile or at run time,
-+	it can not be set to false.
-diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
-index 59f45b1e9dac..0ca9328daad4 100644
---- a/include/net/netns/xfrm.h
-+++ b/include/net/netns/xfrm.h
-@@ -64,6 +64,7 @@ struct netns_xfrm {
- 	u32			sysctl_aevent_rseqth;
- 	int			sysctl_larval_drop;
- 	u32			sysctl_acq_expires;
-+	u32			sysctl_redact_secret;
- #ifdef CONFIG_SYSCTL
- 	struct ctl_table_header	*sysctl_hdr;
- #endif
-diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
-index 5b9a5ab48111..270a4e906a15 100644
---- a/net/xfrm/Kconfig
-+++ b/net/xfrm/Kconfig
-@@ -91,6 +91,16 @@ config XFRM_ESP
- 	select CRYPTO_SEQIV
- 	select CRYPTO_SHA256
- 
-+config XFRM_REDACT_SECRET
-+	bool "Redact xfrm SA secret in netlink message"
-+	depends on SYSCTL
-+	default n
-+	help
-+	  Enable XFRM SA secret redact in the netlink message.
-+	  Redacting secret is a FIPS 140-2 requirement.
-+	  Once enabled at compile, the value can not be set to false on
-+	  a running system.
-+
- config XFRM_IPCOMP
- 	tristate
- 	select XFRM_ALGO
-diff --git a/net/xfrm/xfrm_sysctl.c b/net/xfrm/xfrm_sysctl.c
-index 0c6c5ef65f9d..a41aa325a478 100644
---- a/net/xfrm/xfrm_sysctl.c
-+++ b/net/xfrm/xfrm_sysctl.c
-@@ -4,15 +4,25 @@
- #include <net/net_namespace.h>
- #include <net/xfrm.h>
- 
-+#ifdef CONFIG_SYSCTL
-+#ifdef CONFIG_XFRM_REDACT_SECRET
-+#define XFRM_REDACT_SECRET  1
-+#else
-+#define XFRM_REDACT_SECRET  0
-+#endif
-+#endif
-+
- static void __net_init __xfrm_sysctl_init(struct net *net)
- {
- 	net->xfrm.sysctl_aevent_etime = XFRM_AE_ETIME;
- 	net->xfrm.sysctl_aevent_rseqth = XFRM_AE_SEQT_SIZE;
- 	net->xfrm.sysctl_larval_drop = 1;
- 	net->xfrm.sysctl_acq_expires = 30;
-+	net->xfrm.sysctl_redact_secret = XFRM_REDACT_SECRET;
- }
- 
- #ifdef CONFIG_SYSCTL
-+
- static struct ctl_table xfrm_table[] = {
- 	{
- 		.procname	= "xfrm_aevent_etime",
-@@ -38,6 +48,15 @@ static struct ctl_table xfrm_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec
- 	},
-+	{
-+		.procname	= "xfrm_redact_secret",
-+		.maxlen		= sizeof(u32),
-+		.mode		= 0644,
-+		/* only handle a transition from "0" to "1" */
-+		.proc_handler	= proc_dointvec_minmax,
-+		.extra1         = SYSCTL_ONE,
-+		.extra2         = SYSCTL_ONE,
-+	},
- 	{}
- };
- 
-@@ -54,6 +73,7 @@ int __net_init xfrm_sysctl_init(struct net *net)
- 	table[1].data = &net->xfrm.sysctl_aevent_rseqth;
- 	table[2].data = &net->xfrm.sysctl_larval_drop;
- 	table[3].data = &net->xfrm.sysctl_acq_expires;
-+	table[4].data = &net->xfrm.sysctl_redact_secret;
- 
- 	/* Don't export sysctls to unprivileged users */
- 	if (net->user_ns != &init_user_ns)
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index e6cfaa680ef3..a3e89dddea9d 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -848,21 +848,78 @@ static int copy_user_offload(struct xfrm_state_offload *xso, struct sk_buff *skb
- 	return 0;
- }
- 
--static int copy_to_user_auth(struct xfrm_algo_auth *auth, struct sk_buff *skb)
-+static int copy_to_user_auth(u32 redact_secret, struct xfrm_algo_auth *auth,
-+			     struct sk_buff *skb)
- {
- 	struct xfrm_algo *algo;
-+	struct xfrm_algo_auth *ap;
- 	struct nlattr *nla;
- 
- 	nla = nla_reserve(skb, XFRMA_ALG_AUTH,
- 			  sizeof(*algo) + (auth->alg_key_len + 7) / 8);
- 	if (!nla)
- 		return -EMSGSIZE;
--
- 	algo = nla_data(nla);
- 	strncpy(algo->alg_name, auth->alg_name, sizeof(algo->alg_name));
--	memcpy(algo->alg_key, auth->alg_key, (auth->alg_key_len + 7) / 8);
-+
-+	if (redact_secret && auth->alg_key_len)
-+		memset(algo->alg_key, 0, (auth->alg_key_len + 7) / 8);
-+	else
-+		memcpy(algo->alg_key, auth->alg_key,
-+		       (auth->alg_key_len + 7) / 8);
- 	algo->alg_key_len = auth->alg_key_len;
- 
-+	nla = nla_reserve(skb, XFRMA_ALG_AUTH_TRUNC, xfrm_alg_auth_len(auth));
-+	if (!nla)
-+		return -EMSGSIZE;
-+	ap = nla_data(nla);
-+	memcpy(ap, auth, sizeof(struct xfrm_algo_auth));
-+	if (redact_secret)
-+		memset(ap->alg_key, 0, (auth->alg_key_len + 7) / 8);
-+	else
-+		memcpy(ap->alg_key, auth->alg_key,
-+		       (auth->alg_key_len + 7) / 8);
-+	return 0;
-+}
-+
-+static int copy_to_user_aead(u32 redact_secret,
-+			     struct xfrm_algo_aead *aead, struct sk_buff *skb)
-+{
-+	struct nlattr *nla = nla_reserve(skb, XFRMA_ALG_AEAD, aead_len(aead));
-+	struct xfrm_algo_aead *ap;
-+
-+	if (!nla)
-+		return -EMSGSIZE;
-+
-+	ap = nla_data(nla);
-+	memcpy(ap, aead, sizeof(*aead));
-+
-+	if (redact_secret)
-+		memset(ap->alg_key, 0, (aead->alg_key_len + 7) / 8);
-+	else
-+		memcpy(ap->alg_key, aead->alg_key,
-+		       (aead->alg_key_len + 7) / 8);
-+	return 0;
-+}
-+
-+static int copy_to_user_ealg(u32 redact_secret, struct xfrm_algo *ealg,
-+			     struct sk_buff *skb)
-+{
-+	struct xfrm_algo *ap;
-+	struct nlattr *nla = nla_reserve(skb, XFRMA_ALG_CRYPT,
-+					 xfrm_alg_len(ealg));
-+	if (!nla)
-+		return -EMSGSIZE;
-+
-+	ap = nla_data(nla);
-+	memcpy(ap, ealg, sizeof(*ealg));
-+
-+	if (redact_secret)
-+		memset(ap->alg_key, 0, (ealg->alg_key_len + 7) / 8);
-+	else
-+		memcpy(ap->alg_key, ealg->alg_key,
-+		       (ealg->alg_key_len + 7) / 8);
-+
- 	return 0;
- }
- 
-@@ -884,6 +941,7 @@ static int copy_to_user_state_extra(struct xfrm_state *x,
- 				    struct sk_buff *skb)
- {
- 	int ret = 0;
-+	struct net *net = xs_net(x);
- 
- 	copy_to_user_state(x, p);
- 
-@@ -906,20 +964,20 @@ static int copy_to_user_state_extra(struct xfrm_state *x,
- 			goto out;
- 	}
- 	if (x->aead) {
--		ret = nla_put(skb, XFRMA_ALG_AEAD, aead_len(x->aead), x->aead);
-+		ret = copy_to_user_aead(net->xfrm.sysctl_redact_secret,
-+					x->aead, skb);
- 		if (ret)
- 			goto out;
- 	}
- 	if (x->aalg) {
--		ret = copy_to_user_auth(x->aalg, skb);
--		if (!ret)
--			ret = nla_put(skb, XFRMA_ALG_AUTH_TRUNC,
--				      xfrm_alg_auth_len(x->aalg), x->aalg);
-+		ret = copy_to_user_auth(net->xfrm.sysctl_redact_secret,
-+					x->aalg, skb);
- 		if (ret)
- 			goto out;
- 	}
- 	if (x->ealg) {
--		ret = nla_put(skb, XFRMA_ALG_CRYPT, xfrm_alg_len(x->ealg), x->ealg);
-+		ret = copy_to_user_ealg(net->xfrm.sysctl_redact_secret,
-+					x->ealg, skb);
- 		if (ret)
- 			goto out;
- 	}
--- 
-2.20.1
-
+net/ipv4/bpfilter/sockopt.c:68:56: warning: dereference of noderef expression
+net/ipv4/bpfilter/sockopt.c:68:56: warning: dereference of noderef expression
