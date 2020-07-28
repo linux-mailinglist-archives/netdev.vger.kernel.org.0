@@ -2,322 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22E1723123D
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:15:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4F4023123C
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:13:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732617AbgG1TPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:15:15 -0400
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.220]:17209 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728561AbgG1TPP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:15:15 -0400
-X-Greylist: delayed 348 seconds by postgrey-1.27 at vger.kernel.org; Tue, 28 Jul 2020 15:15:12 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1595963711;
-        s=strato-dkim-0002; d=chronox.de;
-        h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=XUUr7VRRoINftMeP06Rutnv9csE5aGgHrwnaN1iS2+g=;
-        b=fFqylUzZ5rb4jePe40czdXiL9CyXktEx6yWtZXZmECsqBlM2CC/h50+rWiKkpm6O/t
-        W7hQqlajjWath9lm6D5l5ltnJeU/O1upMk0v9mV6R5Cb0CWI3gqHuxbRb6UqXeB1LvaU
-        oygdDHCqkImx0jAqUmRlHosjRKCYo0Gst6itQPI4Jl/rcriSXeMIf8gKxyv9ZrwOTutW
-        4oXGsShN8UI8lzKuffwrmGA8a/mE0T0pmkqgaHQS/kCPjxR2+j+oZlDF3qX1iMc3DgBl
-        Gc6LLl+uzjA0ycpQRQPx6L3xMhz3JCzkqyQ0CvNDWSU5BDwwHjKHCfbel4j0zOiofIJh
-        YsSA==
-X-RZG-AUTH: ":P2ERcEykfu11Y98lp/T7+hdri+uKZK8TKWEqNyiHySGSa9k9xmwdNnzGHXPZJ/Sf9P0="
-X-RZG-CLASS-ID: mo00
-Received: from tauon.chronox.de
-        by smtp.strato.de (RZmta 46.10.5 DYNA|AUTH)
-        with ESMTPSA id y0546bw6SJ9B9jg
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Tue, 28 Jul 2020 21:09:11 +0200 (CEST)
-From:   Stephan Mueller <smueller@chronox.de>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        netdev@vger.kernel.org, antony.antony@secunet.com
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Antony Antony <antony@phenome.org>
-Subject: Re: [PATCH ipsec-next] xfrm: add /proc/sys/core/net/xfrm_redact_secret
-Date:   Tue, 28 Jul 2020 21:09:10 +0200
-Message-ID: <3322274.jE0xQCEvom@tauon.chronox.de>
-In-Reply-To: <20200728154342.GA31835@moon.secunet.de>
-References: <20200728154342.GA31835@moon.secunet.de>
+        id S1732597AbgG1TNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:13:06 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54272 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728561AbgG1TNF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:13:05 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06SJCNnm014113;
+        Tue, 28 Jul 2020 12:12:50 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=0wWeh7pIvQO+ky2yX5Mczw6ymU7Zw0Vo06E9mbhiBfA=;
+ b=kTOeJaysCWHdBVAs7YBQS3rK5/pa4jnlnry5WxPvKRufT0iPx7bA3oGO6XY+fppwxCFN
+ FIi4HOHGSPjglpf6tq4KnK1UN8HkWhbEF2kvYXqqveTfASFrxllK2F4jVTpso3C1pj+W
+ XWfoLo1VEtjfL/xbvG/AVNfIlouRzLvPfNk= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 32h4edb6u1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 28 Jul 2020 12:12:50 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 28 Jul 2020 12:12:49 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hfUF9cOi3/AmYROlgJODGf3AFZaDtp4DM9knzMpuw8Tb4OX20GzI5XYL0kdT51q3q6/L4vnNJUm19ymJVnFX1cp4KTrgJOJa66JS0DQ4hes0iRwUD/+1nvAYfE5RRuXehvRhKBF6n9TlN38SvHcFAZ7fAusYabHrPWcSW7tNW2RGQyEj9lzvXZlMrLw2pL5ZdPhGlobau8khqSCYwUzB1wJplnOBT6C5TRJEdsxJWCWpDoHYQ2Fgpr7nOSkY2ZzamUaSHSKpHYM5lxayuowDTqeCZRsaJ3BCvP0IHRmqVnnFwSAb+x9WVuXn1JAbJi0cXx+RlLhoDpJQQkfmtJ3QAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0wWeh7pIvQO+ky2yX5Mczw6ymU7Zw0Vo06E9mbhiBfA=;
+ b=S0ln9tLk/jdA7YhIDHKqZ0stp9D0RNEjbX3aBW/XR4bFcO8aQG75pDMKOQkIn/RjsqbnHbsJGWSy/sSDKhXHnqj1P5e1HGwRhByxCAyZFwYDAUKbdIeL2FTXuntGJ2Ee5ipmJz8VEo+rgy0JW4v6wGmrnPwU+0kPbvNLt8ZUakandq4B/Pfc4GEzci1hl4xQx4kDXbh5+aHmvlDpZ4IfvEpB5H58+UswqYoCOWs1fJlHFx3hZwmRqwtOrlBjazGkv5Ik7bhhFLiNUDHACMJUZgGAzHNlgFslGortnAOXZiGa0OSew4hrN6Ym82WwNPnOJIU20YUBB+VLot2NVsIb/A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0wWeh7pIvQO+ky2yX5Mczw6ymU7Zw0Vo06E9mbhiBfA=;
+ b=agac0icJhTbOUzTwgzmX21q+6hli+5A+ExXqFppeN/QCBMsJ7HOZlZ2gQ1cySrtzyX631y+UCma0Ee3DtifwIT/DpQE3RciPa3TlQQfb3xVMYc9LmGg/PNvkBUZkwKGyZJV/NE1UXrOzPpT/TmS1E3/RCV9m1owmVEnILt9687o=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB3207.namprd15.prod.outlook.com (2603:10b6:a03:101::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.24; Tue, 28 Jul
+ 2020 19:12:48 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3216.033; Tue, 28 Jul 2020
+ 19:12:48 +0000
+Subject: Re: [PATCH][next] bpf: fix swapped arguments in calls to
+ check_buffer_access
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Colin King <colin.king@canonical.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+CC:     <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20200727175411.155179-1-colin.king@canonical.com>
+ <c9ea156a-20fa-5415-0d35-0521e8740ddc@fb.com>
+ <882cd37d-0af2-3412-6bd7-73aa466df23c@iogearbox.net>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <7a0b563a-9853-9d6f-9d3a-0595e701c1b0@fb.com>
+Date:   Tue, 28 Jul 2020 12:12:47 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.10.0
+In-Reply-To: <882cd37d-0af2-3412-6bd7-73aa466df23c@iogearbox.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR05CA0036.namprd05.prod.outlook.com
+ (2603:10b6:a03:c0::49) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c1::1215] (2620:10d:c090:400::5:112f) by BYAPR05CA0036.namprd05.prod.outlook.com (2603:10b6:a03:c0::49) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.10 via Frontend Transport; Tue, 28 Jul 2020 19:12:48 +0000
+X-Originating-IP: [2620:10d:c090:400::5:112f]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9e479f3d-678e-4aae-0169-08d8332a374b
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3207:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB32078FCFB78008AA05C3D9BFD3730@BYAPR15MB3207.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:175;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2KFETicV3fDPILiKbdr3b8QSIdilHCCpa7qib1DTW69R0OWJkyiJSWDOtUcEY2Ph9HQJfk1Dg4U+HlQookP3Oii7FJwbdKshFlmjwFE1GC7/OLbn13UyIfr1kj5No2os9X/IaU/Zg1Gau7epPFgFFYXwNDB2R2lwruDyHnarSecD7IAwxJw4P+LgL6sR6s+Z5z5z5qaDXTnIjGw1GnFxyhaHsHns25T4PkxHBJ2+RragoGEAkHyT8Kp/zzXZZJd4f8q89H4vuHZsYNOyrOKSyytsGwH0dF0L6zQIwMVZGKy7laIxWazNvuybCf/LK/73HIUU/jErseZlWP5Y1fIIPEXQJl6h0t2vpl7mLbgu8G8kqbVVDMf6JOTLxrQR0amv/TZmvemA3tmJxaTyF61tlg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(136003)(396003)(366004)(39860400002)(8936002)(53546011)(316002)(478600001)(2906002)(8676002)(52116002)(6486002)(36756003)(31696002)(4326008)(83380400001)(110136005)(31686004)(86362001)(5660300002)(2616005)(66556008)(66476007)(66946007)(16526019)(186003)(921003)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: jPfVfqg41pxnfqwCyZNSdkaTtz8VBcQvE6Sdzy7siW3chZI0y3dCX2ELwfsZJ5xRbWCipuVIVJLUfRnfikF74W9Rn8V2VFBqu6ok00h2Yk0UgOaaE94NzsInoUr2JsPY0o0xgRiqVXr1rOa6+QNAJsX/hn/GioNhquZigxxhGTro7KotvdhGifGvdy6NvpUH/4N/Y4di9Aans9PV8oKEKwb/sTqjuh+vlcR4jxLXEgC1qg1RFOWN4j8YtmA4gHOCaDFPN+9IzKFRVsynGnXji++HUcLZgAHSnKztrqnTR+lf+GewlGUqvNw9ymMaoiZaX0LkuQSvlgVZqW6jTkD7XoBjqWFgM5kXegpU1cMEJ5Tbeepl96WF7U0SielBkt/CxwBRvc09DpBn4ET0cnK/Mf9YGJlzlwwD4KS00oMlNXude/FNi+QyrUjmFivenDCim70An5UrluUFQD1U41GKh/nja0B8LHQbqnvUgTyP7wm3b89Ey83lH3mDQ2c6syS8zmy1RbBTiB5dUR2dq7FHpA==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e479f3d-678e-4aae-0169-08d8332a374b
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2020 19:12:48.4479
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Aob97dLsPqDlzGZQbL3Ngpr2XtOUdMg1zWkoTQSvOuWI3EM3kz0XpTmRD+ykHJAg
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3207
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-28_16:2020-07-28,2020-07-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ priorityscore=1501 spamscore=0 lowpriorityscore=0 impostorscore=0
+ adultscore=0 bulkscore=0 malwarescore=0 phishscore=0 clxscore=1015
+ suspectscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2007280136
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Dienstag, 28. Juli 2020, 17:47:30 CEST schrieb Antony Antony:
-
-Hi Antony,
-
-> when enabled, 1, redact XFRM SA secret in the netlink response to
-> xfrm_get_sa() or dump all sa.
-> 
-> e.g
-> echo 1 > /proc/sys/net/core/xfrm_redact_secret
-> ip xfrm state
-> src 172.16.1.200 dst 172.16.1.100
-> 	proto esp spi 0x00000002 reqid 2 mode tunnel
-> 	replay-window 0
-> 	aead rfc4106(gcm(aes)) 0x0000000000000000000000000000000000000000 96
-> 
-> the aead secret is redacted.
-> 
-> /proc/sys/core/net/xfrm_redact_secret is a toggle.
-> Once enabled, either at compile or via proc, it can not be disabled.
-> Redacting secret is a FIPS 140-2 requirement.
-> 
-> Cc: Stephan Mueller <smueller@chronox.de>
-> Signed-off-by: Antony Antony <antony.antony@secunet.com>
-> ---
->  Documentation/networking/xfrm_sysctl.rst |  7 +++
->  include/net/netns/xfrm.h                 |  1 +
->  net/xfrm/Kconfig                         | 10 ++++
->  net/xfrm/xfrm_sysctl.c                   | 20 +++++++
->  net/xfrm/xfrm_user.c                     | 76 +++++++++++++++++++++---
->  5 files changed, 105 insertions(+), 9 deletions(-)
-> 
-> diff --git a/Documentation/networking/xfrm_sysctl.rst
-> b/Documentation/networking/xfrm_sysctl.rst index 47b9bbdd0179..26432b0ff3ac
-> 100644
-> --- a/Documentation/networking/xfrm_sysctl.rst
-> +++ b/Documentation/networking/xfrm_sysctl.rst
-> @@ -9,3 +9,10 @@ XFRM Syscall
-> 
->  xfrm_acq_expires - INTEGER
->  	default 30 - hard timeout in seconds for acquire requests
-> +
-> +xfrm_redact_secret - INTEGER
-> +	A toggle to redact xfrm SA's secret to userspace.
-> +	When true the kernel, netlink message will redact SA secret
-> +	to userspace. This is part of FIPS 140-2 requirement.
-> +	Once the value is set to true, either at compile or at run time,
-> +	it can not be set to false.
-> diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
-> index 59f45b1e9dac..0ca9328daad4 100644
-> --- a/include/net/netns/xfrm.h
-> +++ b/include/net/netns/xfrm.h
-> @@ -64,6 +64,7 @@ struct netns_xfrm {
->  	u32			sysctl_aevent_rseqth;
->  	int			sysctl_larval_drop;
->  	u32			sysctl_acq_expires;
-> +	u32			sysctl_redact_secret;
->  #ifdef CONFIG_SYSCTL
->  	struct ctl_table_header	*sysctl_hdr;
->  #endif
-> diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
-> index 5b9a5ab48111..270a4e906a15 100644
-> --- a/net/xfrm/Kconfig
-> +++ b/net/xfrm/Kconfig
-> @@ -91,6 +91,16 @@ config XFRM_ESP
->  	select CRYPTO_SEQIV
->  	select CRYPTO_SHA256
-> 
-> +config XFRM_REDACT_SECRET
-> +	bool "Redact xfrm SA secret in netlink message"
-> +	depends on SYSCTL
-> +	default n
-> +	help
-> +	  Enable XFRM SA secret redact in the netlink message.
-> +	  Redacting secret is a FIPS 140-2 requirement.
-> +	  Once enabled at compile, the value can not be set to false on
-> +	  a running system.
-> +
->  config XFRM_IPCOMP
->  	tristate
->  	select XFRM_ALGO
-> diff --git a/net/xfrm/xfrm_sysctl.c b/net/xfrm/xfrm_sysctl.c
-> index 0c6c5ef65f9d..a41aa325a478 100644
-> --- a/net/xfrm/xfrm_sysctl.c
-> +++ b/net/xfrm/xfrm_sysctl.c
-> @@ -4,15 +4,25 @@
->  #include <net/net_namespace.h>
->  #include <net/xfrm.h>
-> 
-> +#ifdef CONFIG_SYSCTL
-> +#ifdef CONFIG_XFRM_REDACT_SECRET
-> +#define XFRM_REDACT_SECRET  1
-> +#else
-> +#define XFRM_REDACT_SECRET  0
-> +#endif
-> +#endif
-> +
->  static void __net_init __xfrm_sysctl_init(struct net *net)
->  {
->  	net->xfrm.sysctl_aevent_etime = XFRM_AE_ETIME;
->  	net->xfrm.sysctl_aevent_rseqth = XFRM_AE_SEQT_SIZE;
->  	net->xfrm.sysctl_larval_drop = 1;
->  	net->xfrm.sysctl_acq_expires = 30;
-> +	net->xfrm.sysctl_redact_secret = XFRM_REDACT_SECRET;
->  }
-> 
->  #ifdef CONFIG_SYSCTL
-> +
->  static struct ctl_table xfrm_table[] = {
->  	{
->  		.procname	= "xfrm_aevent_etime",
-> @@ -38,6 +48,15 @@ static struct ctl_table xfrm_table[] = {
->  		.mode		= 0644,
->  		.proc_handler	= proc_dointvec
->  	},
-> +	{
-> +		.procname	= "xfrm_redact_secret",
-> +		.maxlen		= sizeof(u32),
-> +		.mode		= 0644,
-> +		/* only handle a transition from "0" to "1" */
-> +		.proc_handler	= proc_dointvec_minmax,
-> +		.extra1         = SYSCTL_ONE,
-> +		.extra2         = SYSCTL_ONE,
-> +	},
->  	{}
->  };
-> 
-> @@ -54,6 +73,7 @@ int __net_init xfrm_sysctl_init(struct net *net)
->  	table[1].data = &net->xfrm.sysctl_aevent_rseqth;
->  	table[2].data = &net->xfrm.sysctl_larval_drop;
->  	table[3].data = &net->xfrm.sysctl_acq_expires;
-> +	table[4].data = &net->xfrm.sysctl_redact_secret;
-> 
->  	/* Don't export sysctls to unprivileged users */
->  	if (net->user_ns != &init_user_ns)
-> diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-> index e6cfaa680ef3..a3e89dddea9d 100644
-> --- a/net/xfrm/xfrm_user.c
-> +++ b/net/xfrm/xfrm_user.c
-> @@ -848,21 +848,78 @@ static int copy_user_offload(struct xfrm_state_offload
-> *xso, struct sk_buff *skb return 0;
->  }
-> 
-> -static int copy_to_user_auth(struct xfrm_algo_auth *auth, struct sk_buff
-> *skb) +static int copy_to_user_auth(u32 redact_secret, struct
-> xfrm_algo_auth *auth, +			     struct sk_buff *skb)
->  {
->  	struct xfrm_algo *algo;
-> +	struct xfrm_algo_auth *ap;
->  	struct nlattr *nla;
-> 
->  	nla = nla_reserve(skb, XFRMA_ALG_AUTH,
->  			  sizeof(*algo) + (auth->alg_key_len + 7) / 8);
->  	if (!nla)
->  		return -EMSGSIZE;
-> -
->  	algo = nla_data(nla);
->  	strncpy(algo->alg_name, auth->alg_name, sizeof(algo->alg_name));
-> -	memcpy(algo->alg_key, auth->alg_key, (auth->alg_key_len + 7) / 8);
-> +
-> +	if (redact_secret && auth->alg_key_len)
-> +		memset(algo->alg_key, 0, (auth->alg_key_len + 7) / 8);
-> +	else
-> +		memcpy(algo->alg_key, auth->alg_key,
-> +		       (auth->alg_key_len + 7) / 8);
->  	algo->alg_key_len = auth->alg_key_len;
-> 
-> +	nla = nla_reserve(skb, XFRMA_ALG_AUTH_TRUNC, xfrm_alg_auth_len(auth));
-> +	if (!nla)
-> +		return -EMSGSIZE;
-> +	ap = nla_data(nla);
-> +	memcpy(ap, auth, sizeof(struct xfrm_algo_auth));
-> +	if (redact_secret)
-
-You test for auth->alg_key_len above. Shouldn't there such a check here too?
-
-> +		memset(ap->alg_key, 0, (auth->alg_key_len + 7) / 8);
-> +	else
-> +		memcpy(ap->alg_key, auth->alg_key,
-> +		       (auth->alg_key_len + 7) / 8);
-> +	return 0;
-> +}
-> +
-> +static int copy_to_user_aead(u32 redact_secret,
-> +			     struct xfrm_algo_aead *aead, struct sk_buff *skb)
-> +{
-> +	struct nlattr *nla = nla_reserve(skb, XFRMA_ALG_AEAD, aead_len(aead));
-> +	struct xfrm_algo_aead *ap;
-> +
-> +	if (!nla)
-> +		return -EMSGSIZE;
-> +
-> +	ap = nla_data(nla);
-> +	memcpy(ap, aead, sizeof(*aead));
-> +
-> +	if (redact_secret)
-
-And here?
-
-> +		memset(ap->alg_key, 0, (aead->alg_key_len + 7) / 8);
-> +	else
-> +		memcpy(ap->alg_key, aead->alg_key,
-> +		       (aead->alg_key_len + 7) / 8);
-> +	return 0;
-> +}
-> +
-> +static int copy_to_user_ealg(u32 redact_secret, struct xfrm_algo *ealg,
-> +			     struct sk_buff *skb)
-> +{
-> +	struct xfrm_algo *ap;
-> +	struct nlattr *nla = nla_reserve(skb, XFRMA_ALG_CRYPT,
-> +					 xfrm_alg_len(ealg));
-> +	if (!nla)
-> +		return -EMSGSIZE;
-> +
-> +	ap = nla_data(nla);
-> +	memcpy(ap, ealg, sizeof(*ealg));
-> +
-> +	if (redact_secret)
-
-Here, too?
-
-> +		memset(ap->alg_key, 0, (ealg->alg_key_len + 7) / 8);
-> +	else
-> +		memcpy(ap->alg_key, ealg->alg_key,
-> +		       (ealg->alg_key_len + 7) / 8);
-> +
->  	return 0;
->  }
-> 
-> @@ -884,6 +941,7 @@ static int copy_to_user_state_extra(struct xfrm_state
-> *x, struct sk_buff *skb)
->  {
->  	int ret = 0;
-> +	struct net *net = xs_net(x);
-> 
->  	copy_to_user_state(x, p);
-> 
-> @@ -906,20 +964,20 @@ static int copy_to_user_state_extra(struct xfrm_state
-> *x, goto out;
->  	}
->  	if (x->aead) {
-> -		ret = nla_put(skb, XFRMA_ALG_AEAD, aead_len(x->aead), x-
->aead);
-> +		ret = copy_to_user_aead(net->xfrm.sysctl_redact_secret,
-> +					x->aead, skb);
->  		if (ret)
->  			goto out;
->  	}
->  	if (x->aalg) {
-> -		ret = copy_to_user_auth(x->aalg, skb);
-> -		if (!ret)
-> -			ret = nla_put(skb, XFRMA_ALG_AUTH_TRUNC,
-> -				      xfrm_alg_auth_len(x->aalg), x->aalg);
-> +		ret = copy_to_user_auth(net->xfrm.sysctl_redact_secret,
-> +					x->aalg, skb);
->  		if (ret)
->  			goto out;
->  	}
->  	if (x->ealg) {
-> -		ret = nla_put(skb, XFRMA_ALG_CRYPT, xfrm_alg_len(x->ealg), x-
->ealg);
-> +		ret = copy_to_user_ealg(net->xfrm.sysctl_redact_secret,
-> +					x->ealg, skb);
->  		if (ret)
->  			goto out;
->  	}
 
 
-Ciao
-Stephan
+On 7/28/20 3:43 AM, Daniel Borkmann wrote:
+> On 7/27/20 11:39 PM, Yonghong Song wrote:
+>> On 7/27/20 10:54 AM, Colin King wrote:
+>>> From: Colin Ian King <colin.king@canonical.com>
+>>>
+>>> There are a couple of arguments of the boolean flag zero_size_allowed
+>>> and the char pointer buf_info when calling to function 
+>>> check_buffer_access
+>>> that are swapped by mistake. Fix these by swapping them to correct
+>>> the argument ordering.
+>>>
+>>> Addresses-Coverity: ("Array compared to 0")
+>>> Fixes: afbf21dce668 ("bpf: Support readonly/readwrite buffers in 
+>>> verifier")
+>>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>>
+>> Thanks for the fix!
+>> Acked-by: Yonghong Song <yhs@fb.com>
+> 
+> Sigh, thanks for the fix Colin, applied! Yonghong, could you follow-up with
+> BPF selftest test cases that exercise these paths? Thx
 
+This will be triggered with a verifier rejection path, e.g., negative 
+offset from the base. I will send a follow-up patch soon.
+
+BTW, using llvm to build the kernel (without this change), the compiler
+actually issues a warning:
+
+-bash-4.4$ make -j100 LLVM=1 && make LLVM=1 vmlinux
+   GEN     Makefile
+...
+   CC      kernel/bpf/verifier.o
+/data/users/yhs/work/net-next/kernel/bpf/verifier.c:3481:18: warning: 
+expression which evaluates to zero treate$
+  as a null pointer constant of type 'const char *' 
+[-Wnon-literal-null-conversion]
+                                           "rdonly", false,
+                                                     ^~~~~
+/data/users/yhs/work/net-next/kernel/bpf/verifier.c:3487:16: warning: 
+expression which evaluates to zero treate$
+  as a null pointer constant of type 'const char *' 
+[-Wnon-literal-null-conversion]
+                                           "rdwr", false,
+                                                   ^~~~~
+2 warnings generated.
+   AR      kernel/bpf/built-in.a
+
+Looks like I need to use LLVM compiler more often...
 
