@@ -2,93 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32725231375
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 22:04:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6D50231378
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 22:07:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728879AbgG1UEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 16:04:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40684 "EHLO mail.kernel.org"
+        id S1728361AbgG1UG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 16:06:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43332 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728050AbgG1UEQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 16:04:16 -0400
-Received: from localhost (mobile-166-175-62-240.mycingular.net [166.175.62.240])
+        id S1728053AbgG1UG4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 16:06:56 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2BEF22065C;
-        Tue, 28 Jul 2020 20:04:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A6A7820656;
+        Tue, 28 Jul 2020 20:06:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595966655;
-        bh=HK9+5a3U0dOMIeI24gLVh05vN2DyqhK9yZq8rvNgwyk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=VbcJ1DiA/1z3TFiwQzadcYJoGqKMQKFyWA1TZUuqLqRlwKX7rO/akEgvZGFokCMRN
-         iLc4KnCOvB22INR4XqzgZ79U+P8DSSsYd91wqgoXQ8UKR2Df3eTCb0c6hwoutzkPkZ
-         ON8qZGEOWQxNKLvHnqbEdOo7ywhzhaXU+mgzxvJ0=
-Date:   Tue, 28 Jul 2020 15:04:13 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Vaibhav Gupta <vaibhavgupta40@gmail.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kevin Curtis <kevin.curtis@farsite.co.uk>,
+        s=default; t=1595966816;
+        bh=sYKqOmMNs+3IuJX+AIxjd9QENNEFZ6DotksaWOwUFJw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=X2yu3iDa12nwXWYvQqNcQCax4XbNVXFFzr803PPOWcQECw2MNU1xec48umfhQEc79
+         r9UK7Ra6T1kkJGTufPFpnLnfoJkosrvgccL2z6taFM5+S9RvLVN0h5CI2RWkEbf8cN
+         l+NFSvzdhCbp0SkpZg5epUKuY5D2kclSVl9tUmCU=
+Date:   Tue, 28 Jul 2020 13:06:53 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, Moshe Shemesh <moshe@mellanox.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v1] farsync: use generic power management
-Message-ID: <20200728200413.GA1857901@bjorn-Precision-5520>
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: Re: [PATCH net-next RFC 01/13] devlink: Add reload level option to
+ devlink reload command
+Message-ID: <20200728130653.7ce2f013@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <d6fbfedd-9022-ff67-23ed-418607beecc2@intel.com>
+References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
+        <1595847753-2234-2-git-send-email-moshe@mellanox.com>
+        <20200727175802.04890dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200728135808.GC2207@nanopsycho>
+        <464add44-3ab1-21b8-3dba-a88202350bb9@intel.com>
+        <20200728114458.762b5396@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <d6fbfedd-9022-ff67-23ed-418607beecc2@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200728042809.91436-1-vaibhavgupta40@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 09:58:10AM +0530, Vaibhav Gupta wrote:
-> The .suspend() and .resume() callbacks are not defined for this driver.
-> Still, their power management structure follows the legacy framework. To
-> bring it under the generic framework, simply remove the binding of
-> callbacks from "struct pci_driver".
-
-FWIW, this commit log is slightly misleading because .suspend and
-.resume are NULL by default, so this patch actually is a complete
-no-op as far as code generation is concerned.
-
-This change is worthwhile because it simplifies the code a little, but
-it doesn't convert the driver from legacy to generic power management.
-This driver doesn't supply a .pm structure, so it doesn't seem to do
-*any* power management.
-
-> Change code indentation from space to tab in "struct pci_driver".
+On Tue, 28 Jul 2020 12:18:30 -0700 Jacob Keller wrote:
+> On 7/28/2020 11:44 AM, Jakub Kicinski wrote:
+> > From user perspective what's important is what the reset achieves (and
+> > perhaps how destructive it is). We can define the reset levels as:
+> > 
+> > $ devlink dev reload pci/0000:82:00.0 net-ns-respawn
+> > $ devlink dev reload pci/0000:82:00.0 driver-param-init
+> > $ devlink dev reload pci/0000:82:00.0 fw-activate
+> > 
+> > combining should be possible when user wants multiple things to happen:
+> > 
+> > $ devlink dev reload pci/0000:82:00.0 fw-activate driver-param-init
 > 
-> Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
-> ---
->  drivers/net/wan/farsync.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
+> Where today "driver-param-init" is the default behavior. But didn't we
+> just say that mlxsw also does the equivalent of fw-activate?
+
+Actually the default should probably be the combination of
+driver-param-init and net-ns-respawn.
+
+My expectations would be that the driver must perform the lowest reset 
+level possible that satisfies the requested functional change. 
+IOW driver may do more, in fact it should be acceptable for the driver
+to always for a full HW reset (unless --live or other constraint is
+specified).
+
+> > We can also add the "reset level" specifier - for the cases where
+> > device is misbehaving:
+> > 
+> > $ devlink dev reload pci/0000:82:00.0 level [driver|fw|hardware]
 > 
-> diff --git a/drivers/net/wan/farsync.c b/drivers/net/wan/farsync.c
-> index 7916efce7188..15dacfde6b83 100644
-> --- a/drivers/net/wan/farsync.c
-> +++ b/drivers/net/wan/farsync.c
-> @@ -2636,12 +2636,10 @@ fst_remove_one(struct pci_dev *pdev)
->  }
->  
->  static struct pci_driver fst_driver = {
-> -        .name		= FST_NAME,
-> -        .id_table	= fst_pci_dev_id,
-> -        .probe		= fst_add_one,
-> -        .remove	= fst_remove_one,
-> -        .suspend	= NULL,
-> -        .resume	= NULL,
-> +	.name		= FST_NAME,
-> +	.id_table	= fst_pci_dev_id,
-> +	.probe		= fst_add_one,
-> +	.remove		= fst_remove_one,
->  };
->  
->  static int __init
-> -- 
-> 2.27.0
+> I guess I don't quite see how level fits in? This is orthogonal to the
+> other settings?
+
+Yup, it is, it's already orthogonal to what reload does today, hence the
+need for the "driver default" hack.
+
+> > But I don't think that we can go from the current reload command
+> > cleanly to just a level reset. The driver-specific default is a bad
+> > smell which indicates we're changing semantics from what user wants 
+> > to what the reset depth is. Our semantics with the patch as it stands
+> > are in fact:
+> >  - if you want to load new params or change netns, don't pass the level
+> >    - the "driver default" workaround dictates the right reset level for
+> >    param init;
+> >  - if you want to activate new firmware - select the reset level you'd
+> >    like from the reset level options.
+> >   
 > 
+> I think I agree, having the "what gets reloaded" as a separate vector
+> makes sense and avoids confusion. For example for ice hardware,
+> "fw-activate" really does mean "Do an EMP reset" rather than just a
+> "device reset" which could be interpreted differently. ice can do
+> function level reset, or core device reset also. Neither of those two
+> resets activates firmware.
+> 
+> Additionally the current function load process in ice doesn't support
+> driver-init at all. That's something I'd like to see happen but is quite
+> a significant refactor for how the driver loads. We need to refactor
+> everything out so that devlink is created early on and factor out
+> load/unload into handlers that can be called by the devlink reload. As I
+> have primarily been focused on flash update I sort of left that for the
+> future because it was a huge task to solve.
+
+Cool! That was what I was concerned about, but I didn't know any
+existing driver already has the problem. "FW reset" is not nearly
+a clear enough operation. We'd end up with drivers differing and 
+users having to refer to vendor documentation to find out which 
+"reset level" maps to what.
+
+I think the components in ethtool-reset try to address the same
+problem, and they have the notion of per-port, and per-device.
+In the modern world we lack the per-host notion, but that's still 
+strictly clearer than the limited API proposed here.
