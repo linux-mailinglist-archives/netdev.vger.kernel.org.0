@@ -2,55 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04CA3230EEE
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:10:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 465F6230F0E
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:18:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731317AbgG1QKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 12:10:25 -0400
-Received: from verein.lst.de ([213.95.11.211]:49018 "EHLO verein.lst.de"
+        id S1731359AbgG1QSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 12:18:18 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60186 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730977AbgG1QKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 12:10:25 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 17F6B68C4E; Tue, 28 Jul 2020 18:10:21 +0200 (CEST)
-Date:   Tue, 28 Jul 2020 18:10:20 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Christoph Hellwig <hch@lst.de>, netdev@vger.kernel.org,
-        kernel-team@fb.com, robin.murphy@arm.com,
-        akpm@linux-foundation.org, davem@davemloft.net, kuba@kernel.org,
-        willemb@google.com, edumazet@google.com,
-        steffen.klassert@secunet.com, saeedm@mellanox.com,
-        maximmi@mellanox.com, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, borisp@mellanox.com, david@redhat.com
-Subject: Re: [RFC PATCH v2 21/21] netgpu/nvidia: add Nvidia plugin for
- netgpu
-Message-ID: <20200728161020.GA18082@lst.de>
-References: <20200727052846.4070247-1-jonathan.lemon@gmail.com> <20200727052846.4070247-22-jonathan.lemon@gmail.com> <20200727073509.GB3917@lst.de> <20200727170003.clx5ytf7vn2emhvl@bsd-mbp.dhcp.thefacebook.com> <20200727182424.GA10178@lst.de> <20200728014812.izihmnon3khzyr32@bsd-mbp.dhcp.thefacebook.com> <20200728064706.GA21377@lst.de> <20200728160508.ip55hzzw34wuwlam@bsd-mbp.dhcp.thefacebook.com>
+        id S1730810AbgG1QSR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 12:18:17 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1k0SIi-007J3m-Gm; Tue, 28 Jul 2020 18:18:00 +0200
+Date:   Tue, 28 Jul 2020 18:18:00 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>, jacek.anaszewski@gmail.com,
+        Dan Murphy <dmurphy@ti.com>,
+        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC leds + net-next v4 1/2] net: phy: add API for LEDs
+ controlled by PHY HW
+Message-ID: <20200728161800.GJ1705504@lunn.ch>
+References: <20200728150530.28827-1-marek.behun@nic.cz>
+ <20200728150530.28827-2-marek.behun@nic.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200728160508.ip55hzzw34wuwlam@bsd-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20200728150530.28827-2-marek.behun@nic.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 09:05:08AM -0700, Jonathan Lemon wrote:
-> On Tue, Jul 28, 2020 at 08:47:06AM +0200, Christoph Hellwig wrote:
-> > On Mon, Jul 27, 2020 at 06:48:12PM -0700, Jonathan Lemon wrote:
-> > > I'm aware that Nvidia code is maintained outside the tree, so this last
-> > > patch may better placed there; I included it here so reviewers can see
-> > > how things work.
-> > 
-> > Sorry dude, but with statements like this you really disqualify yourself
-> > from kernel work.  Please really just go away and stop this crap.  It's
-> > not just your attitude, but also the resulting crap code.
-> 
-> The attitude appears to be on your part, as apparently you have no
-> technical comments to contribute here.
+> +static int of_phy_register_led(struct phy_device *phydev, struct device_node *np)
+> +{
+> +	struct led_init_data init_data = {};
+> +	struct phy_device_led *led;
+> +	u32 reg;
+> +	int ret;
+> +
+> +	ret = of_property_read_u32(np, "reg", &reg);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	led = devm_kzalloc(&phydev->mdio.dev, sizeof(struct phy_device_led), GFP_KERNEL);
+> +	if (!led)
+> +		return -ENOMEM;
+> +
+> +	led->cdev.brightness_set_blocking = phy_led_brightness_set;
+> +	led->cdev.trigger_type = &phy_hw_led_trig_type;
+> +	led->addr = reg;
+> +
+> +	of_property_read_string(np, "linux,default-trigger", &led->cdev.default_trigger);
 
-You are submitting a series just to support a proprietary driver, and
-that is disqualification enough on policy grounds.  And now just stop
-the crap.
+Hi Marek
+
+I think we need one more optional property. If the trigger has been
+set to the PHY hardware trigger, we then should be able to set which
+of the different blink patterns we want the LED to use. I guess most
+users will never actually make use of the sys/class/led interface, if
+the default in device tree is sensible. But that requires DT can fully
+configure the LED.
+
+   Andrew
