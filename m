@@ -2,123 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 918A02301A7
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:22:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C4DB2301A9
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726391AbgG1FV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 01:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35536 "EHLO
+        id S1726497AbgG1FY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 01:24:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726245AbgG1FV6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 01:21:58 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48255C061794
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 22:21:58 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id y206so118pfb.10
-        for <netdev@vger.kernel.org>; Mon, 27 Jul 2020 22:21:58 -0700 (PDT)
+        with ESMTP id S1726245AbgG1FY6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 01:24:58 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B490C061794;
+        Mon, 27 Jul 2020 22:24:57 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id a5so4241746ioa.13;
+        Mon, 27 Jul 2020 22:24:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=R/4X/8k2tJggQ9nVAlbjy5NkMm1E7b7v277SRYF4fgY=;
-        b=gn0EoSFLj5zXHTEeTmdkshjwOQje6BSiEzYT0mfXSznIOcp7VIiV47WricRNy4F11y
-         VosaJNOUAD/kO6MFVEV13V+Spbh5DKi2eUGPvip0qsnSpdGU52G7rQ/VCV+mQZos6NxX
-         rRxzlJFxevsZ45f9seupHg7ngbnA9cUd4djmkBKriJLbDH5MKsW04YQlPlMlEcA4J7o8
-         hYhjEu4tnylQrynlOifhd9Bw4UwiP8M79p9NQyNae5ZpToWCY2QSALdasvj2Cv1gxQD/
-         GXiDAF5NxngmgFSSlXUTEYMEozVg5+xc8/rTy9v+ZfbfrFEVKbCIbdpJ2NH9JikQZ+tr
-         dDyQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bJEzDOwJp0ny5xLDIyqDpHcyByjEwZuqOl/iPSQ9qGE=;
+        b=klax/3Q/dpB3FmxME9JntHGTjDCGdpH6466ptElrE2PHnQuwZIphwo3vWsib87seqI
+         J0Xe6Jv43A2RhMJ8H/QA/K7fl3gV1UyA/0y4ma9dRoapiDNNyXHS+9gboxs0C5fDt3ld
+         9TB+A+ZD9Ac1eEIkM6oNKUW2FBxdVAPAy+S02+q+S0UYbDJrbq+LUJ5mou4Juztm9fcB
+         qiYdfdkgdprfGPdV2E6HDtHnRqC1fhIArD3Kv9jB91MXbkfS/Y5AmoOT65JoiEbnxUbY
+         t/u5xBMdta70CXFySjlFETkrWJu47J62Vy5uKgApf5qpeTXq7ekjouE3l/b+9Snsa5xT
+         44Ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=R/4X/8k2tJggQ9nVAlbjy5NkMm1E7b7v277SRYF4fgY=;
-        b=a6aXFEomgpY8ZYZazYTgzk50v9hCikyJsezK2oj9EmItyK3N0y4pQOsFKieUW5l+hE
-         fVRyKYXwtp/xdhXFoMIP91Xeveb9G+5b0MbUC0DEVnnZ0l6dOZJE9wKEX7cD9aDIvFwG
-         MU7rtDIuB++jHWRaJPlT7Hbt1uAfSW33l6yjgl75eZrew9cYcEMnFBUn6D15Zf/Iplul
-         Z30zySE3do8D+gj+Sg4n3kQQOZVfiPm/+qPDc+yxiHlgnIJura7YLF1SnUF08jAech1w
-         PEfxCJsI9WYkhbZ3di9O+FJ8+xVb4c4QP1RkvZRaw8/1rjyMDN6rg+1iVL0tCdmCQPci
-         ShkQ==
-X-Gm-Message-State: AOAM531riRu3j8V4abwceeKNuc/W8hgClrjOx/7AcIO1UUks6U/5mBUK
-        7jGyFWjoMMxI9j9huQMdgtw=
-X-Google-Smtp-Source: ABdhPJxyyBf9uJ2rX+JLLRx0XgJ401QYvXM2usSLI4psc0JTNrTSsj1UqLY+8o8r/w+5nTo/mPfhCg==
-X-Received: by 2002:a63:144c:: with SMTP id 12mr22761358pgu.189.1595913717575;
-        Mon, 27 Jul 2020 22:21:57 -0700 (PDT)
-Received: from nebula.localdomain (035-132-134-040.res.spectrum.com. [35.132.134.40])
-        by smtp.gmail.com with ESMTPSA id 76sm17180033pfu.139.2020.07.27.22.21.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2020 22:21:57 -0700 (PDT)
-From:   Briana Oursler <briana.oursler@gmail.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Petr Machata <petrm@mellanox.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Stefano Brivio <sbrivio@redhat.com>, netdev@vger.kernel.org,
-        Briana Oursler <briana.oursler@gmail.com>
-Subject: [PATCH iproute2] tc: Add space after format specifier
-Date:   Mon, 27 Jul 2020 22:20:48 -0700
-Message-Id: <20200728052048.7485-1-briana.oursler@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200727164714.6ee94a11@hermes.lan>
-References: <20200727164714.6ee94a11@hermes.lan>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bJEzDOwJp0ny5xLDIyqDpHcyByjEwZuqOl/iPSQ9qGE=;
+        b=Hl9qeKSgOcCUDylf2tpdoG2jZDk5FAC+ogfnSyaEGmBfM7CwSgd0p/hrow0MhF+Fbg
+         xxTPXdGIb1QnmYetG6Be+ZMDIiQn1hWJISJIJ8loQbX+7IXNmIEQdBbNv6IJjjp2L/7K
+         7IWaxocC8C30RedbypS7zbssyBBg/qGcg2khNy+3alWx7fat69ytCoPU4oYwx82ilJiY
+         Sv3j0ugeacmT6rxQV0ZPAXGcHESvFSZcW4nDYIY7s6y7dd5RCL5NYpV7Cq5W0PzwkhIz
+         G9O6VYL49lT+OHUkebXNq13rW2jMJUnipvgPPATXpTUR2PAZd5mQjHWypIwI+8aC80zs
+         ztIg==
+X-Gm-Message-State: AOAM532J/Z7JmDl58GHyAGQdnIB+99wC1f1VVoviYVGmQ21T55nGhbHR
+        YV6Ikd9htVjyP5w4u4sNRl4Ymm/Kji7uFdGCyVQ=
+X-Google-Smtp-Source: ABdhPJyEEkHIl0Pl1r1dF9sKbqOyh25bCIDBP8OfLluN+FyqINvOJcN5T+lcFRe+LysiU2u6oKcwEeCBtpBf/mObMl8=
+X-Received: by 2002:a6b:be81:: with SMTP id o123mr13649143iof.64.1595913896799;
+ Mon, 27 Jul 2020 22:24:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200726110524.151957-1-xie.he.0141@gmail.com> <CAJht_EOAGFkVXsrJefWNMDn_D5HhH+ODkqE03BULyzb_Ma8A5A@mail.gmail.com>
+In-Reply-To: <CAJht_EOAGFkVXsrJefWNMDn_D5HhH+ODkqE03BULyzb_Ma8A5A@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 27 Jul 2020 22:24:45 -0700
+Message-ID: <CAM_iQpV8GDu2U_+4LwSy=uHc6_0FvCx_7ZPCOQ15=hccpaOCig@mail.gmail.com>
+Subject: Re: [PATCH] drivers/net/wan/lapbether: Use needed_headroom instead of hard_header_len
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add space after format specifier in print_string call. Fixes broken
-qdisc tests within tdc testing suite. Per suggestion from Petr Machata,
-remove a space and change spacing in tc/q_event.c to complete the fix.
+Hello,
 
-Tested fix in tdc using:
-./tdc.py -c qdisc
+On Mon, Jul 27, 2020 at 12:41 PM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> Hi Cong Wang,
+>
+> I'm wishing to change a driver from using "hard_header_len" to using
+> "needed_headroom" to declare its needed headroom. I submitted a patch
+> and it is decided it needs to be reviewed. I see you participated in
+> "hard_header_len vs needed_headroom" discussions in the past. Can you
+> help me review this patch? Thanks!
+>
+> The patch is at:
+> http://patchwork.ozlabs.org/project/netdev/patch/20200726110524.151957-1-xie.he.0141@gmail.com/
+>
+> In my understanding, hard_header_len should be the length of the header
+> created by dev_hard_header. Any additional headroom needed should be
+> declared in needed_headroom instead of hard_header_len. I came to this
+> conclusion by examining the logic of net/packet/af_packet.c:packet_snd.
 
-All qdisc RED tests return ok.
+I am not familiar with this WAN driver, but I suggest you to look at
+the following commit, which provides a lot of useful information:
 
-Fixes: d0e450438571("tc: q_red: Add support for
-qevents "mark" and "early_drop")
+commit 9454f7a895b822dd8fb4588fc55fda7c96728869
+Author: Brian Norris <briannorris@chromium.org>
+Date:   Wed Feb 26 16:05:11 2020 -0800
 
-Signed-off-by: Briana Oursler <briana.oursler@gmail.com>
----
- tc/q_red.c     | 4 ++--
- tc/tc_qevent.c | 3 ++-
- 2 files changed, 4 insertions(+), 3 deletions(-)
+    mwifiex: set needed_headroom, not hard_header_len
 
-diff --git a/tc/q_red.c b/tc/q_red.c
-index dfef1bf8..df788f8f 100644
---- a/tc/q_red.c
-+++ b/tc/q_red.c
-@@ -222,12 +222,12 @@ static int red_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 	print_uint(PRINT_JSON, "min", NULL, qopt->qth_min);
- 	print_string(PRINT_FP, NULL, "min %s ", sprint_size(qopt->qth_min, b2));
- 	print_uint(PRINT_JSON, "max", NULL, qopt->qth_max);
--	print_string(PRINT_FP, NULL, "max %s", sprint_size(qopt->qth_max, b3));
-+	print_string(PRINT_FP, NULL, "max %s ", sprint_size(qopt->qth_max, b3));
- 
- 	tc_red_print_flags(qopt->flags);
- 
- 	if (show_details) {
--		print_uint(PRINT_ANY, "ewma", " ewma %u ", qopt->Wlog);
-+		print_uint(PRINT_ANY, "ewma", "ewma %u ", qopt->Wlog);
- 		if (max_P)
- 			print_float(PRINT_ANY, "probability",
- 				    "probability %lg ", max_P / pow(2, 32));
-diff --git a/tc/tc_qevent.c b/tc/tc_qevent.c
-index 2c010fcf..34568070 100644
---- a/tc/tc_qevent.c
-+++ b/tc/tc_qevent.c
-@@ -82,8 +82,9 @@ void qevents_print(struct qevent_util *qevents, FILE *f)
- 			}
- 
- 			open_json_object(NULL);
--			print_string(PRINT_ANY, "kind", " qevent %s", qevents->id);
-+			print_string(PRINT_ANY, "kind", "qevent %s", qevents->id);
- 			qevents->print_qevent(qevents, f);
-+			print_string(PRINT_FP, NULL, "%s", " ");
- 			close_json_object();
- 		}
- 	}
--- 
-2.27.0
+    hard_header_len provides limitations for things like AF_PACKET, such
+    that we don't allow transmitting packets smaller than this.
 
+    needed_headroom provides a suggested minimum headroom for SKBs, so that
+    we can trivally add our headers to the front.
+
+    The latter is the correct field to use in this case, while the former
+    mostly just prevents sending small AF_PACKET frames.
+
+    In any case, mwifiex already does its own bounce buffering [1] if we
+    don't have enough headroom, so hints (not hard limits) are all that are
+    needed.
+
+    This is the essentially the same bug (and fix) that brcmfmac had, fixed
+    in commit cb39288fd6bb ("brcmfmac: use ndev->needed_headroom to reserve
+    additional header space").
+
+    [1] mwifiex_hard_start_xmit():
+            if (skb_headroom(skb) < MWIFIEX_MIN_DATA_HEADER_LEN) {
+            [...]
+                    /* Insufficient skb headroom - allocate a new skb */
+
+Hope this helps.
+
+Thanks.
