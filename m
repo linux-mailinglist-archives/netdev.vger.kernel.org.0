@@ -2,116 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87F3E230614
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 11:04:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D1DE23062F
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 11:11:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728365AbgG1JEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 05:04:45 -0400
-Received: from mail-vi1eur05on2060.outbound.protection.outlook.com ([40.107.21.60]:49761
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S1728306AbgG1JLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 05:11:04 -0400
+Received: from mail-eopbgr10065.outbound.protection.outlook.com ([40.107.1.65]:60054
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728051AbgG1JEp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 05:04:45 -0400
+        id S1727970AbgG1JLD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 05:11:03 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Nb5Izy49APrelQwQhwDdjunQFfN9O5rbW1YIsKq7k9HblSBzkWWtg2Nnlg/mtwTT6pd7vzVxar0Iq5ZlP4BKqzTw3p4wi33+OUh1Xc8AE07KLuvxD9hVxQUNprI8vFRDfQ79O4v/BGIlY8B9qD4T3pCOsGHf9PskiM7/02p8dUc6OL52wlMGGpIE78Vz8/cbktjUGUSTRj9sm1aX4OmPfUbsIRCSFT+UP6JazLdCEY7BmjhdIA4xJ/EIjXOYKOla203jiYRwyOPc4CxCwCU7g3IxRCrN9NhA674sQZeSQesW1Y5IBw9ff5Bf4EpUBowe6Jchk26JfrHbRpBuVLVIiw==
+ b=giELgZwHUwy/q+WK4pYP6jm0ut4lFIlUzsUVrr87AwBOBvL7J9eMI13sFc43aIt9xGd4NWzYn4RKw1acZJPS+AGoLfnN7g/NsQRhEzBZdNIiiKEP5+atOFd5ijSZRN+73AawhaJfCr3M8ITpnCjb8dw3xkjOHP0wrycjhRkE4E66dFf+sdIwnBTg+XK/0leXgtYCaP60xsu/PWXYJdunSwK0ulWlzSPfdm1JWP/vlRfxFXAz+IhzQ9WglBHHLRTMAbLevX1PNbIDMKcU3mG4cXQyb/qiAGBxBPM5kDa+fBzGp4V7P9AKQc6hF94Hw391m7HTzkyS4FdgpyzGQfpF7g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PwSbCoyT48SY+W2X3hco12Y0BUw0tGELfvsSSILW9fM=;
- b=hm+wfsexBlcgJoVmEkulnoAbac5g07J7XCa8/dIkEcgoXucj+yHf/roxv64Aff+4v0x6s5gIcBEY9oLZbpyH0i+kHdpdRzePGOIeQwUWp7ygftDFet5oZgInVdQkcQrMnlqu/qt9X+Ia7kkhfu9zgOcRQR4eDXtsuG9wl4gZ4InHZ+Y0nh7TTaNizVihl3/0O7z+qRgW6Wpl+MpkJ8YVwhV9Lc37M+OOn/OFucFGZHvnEPJf5WX+qszug10kdU4MZdvt1gEiKPGn+jEDTU4VlVtvd+BrIWwvhb7disXCN0+GMcYajob3/f9asF/vSIyonq7CHZctP5GtPMyPOkJg9A==
+ bh=MOnOSy/vJaDGFyLEO7WI06kpxIiR4qJREegKlfST4Os=;
+ b=mTQAJdTN7aGzoTLy9JuqqldEH+/3xY49uQsCJLkVeGQuQW42HMnS8kJ7SRqo4gg/S2+dmd9psPsgyWNxs6yRZ/c+rEEOqcWpIbAmCThCvTxA7Ta+WCQuUH/CUj7DjRjZjs/U0dkjnMmkiA9zPDQ6PZUKwJ1G142NryYuEgG47mOdBqXMXsehu3P3ODvxpM96v7HiNBwLwyPG1Ljbt58kE7dIL3R3usqcx3t6xPRZIiy1AZji2s10slk5VrN6rjdNi2uARoqMtbVqwWA7UHMQcxxMH3dFbcehmBrA5qpj3IQ4W+OlzIM/08wv+ggH969l4JIhyasT3a3A/ruQNLNrdA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PwSbCoyT48SY+W2X3hco12Y0BUw0tGELfvsSSILW9fM=;
- b=nYc8lh20AgqnNya15OP9cKUSDM9zc2qzuOdWacVqRh74zbWWOfc8e+51eEs5N3voUDVg9Pq+RwB+zY9BEfDLOWPne2QgNKP2dlsUmkVhH5Snk45ldE15HE4WUEciwVPmLRAyNgcjJVpA5r1xG3CUVQfa99Dv+0D/67sQ/1GwCLw=
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=mellanox.com;
-Received: from AM0PR05MB4786.eurprd05.prod.outlook.com (2603:10a6:208:b3::15)
- by AM0PR05MB6116.eurprd05.prod.outlook.com (2603:10a6:208:130::16) with
+ bh=MOnOSy/vJaDGFyLEO7WI06kpxIiR4qJREegKlfST4Os=;
+ b=lzur0wbQo6oB5Gh6l2FrRB6GlaYPFpxdVsHU/15k7u6d23cZVCpmHIt4pKL4bOnHxhfozZvxhyjVIrn8ypCjOanQj5G24K2BflVjx2YnUtbLUrgej2BjIJZO77g5szVojcqCwh/vglk+S46HV8y2u0EeulRValAc7Sjbf6fVB24=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB4879.eurprd05.prod.outlook.com (2603:10a6:803:5c::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.20; Tue, 28 Jul
- 2020 09:04:41 +0000
-Received: from AM0PR05MB4786.eurprd05.prod.outlook.com
- ([fe80::9186:8b7:3cf7:7813]) by AM0PR05MB4786.eurprd05.prod.outlook.com
- ([fe80::9186:8b7:3cf7:7813%7]) with mapi id 15.20.3216.033; Tue, 28 Jul 2020
- 09:04:41 +0000
-Date:   Tue, 28 Jul 2020 12:04:38 +0300
-From:   Eli Cohen <eli@mellanox.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     jasowang@redhat.com, alex.williamson@redhat.com, mst@redhat.com,
-        pbonzini@redhat.com, sean.j.christopherson@intel.com,
-        wanpengli@tencent.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, kvm@vger.kernel.org, shahafs@mellanox.com,
-        parav@mellanox.com
-Subject: Re: [PATCH V4 4/6] vhost_vdpa: implement IRQ offloading in vhost_vdpa
-Message-ID: <20200728090438.GA21875@nps-server-21.mtl.labs.mlnx>
-References: <20200728042405.17579-1-lingshan.zhu@intel.com>
- <20200728042405.17579-5-lingshan.zhu@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200728042405.17579-5-lingshan.zhu@intel.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-ClientProxiedBy: AM0PR10CA0059.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:150::39) To AM0PR05MB4786.eurprd05.prod.outlook.com
- (2603:10a6:208:b3::15)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.23; Tue, 28 Jul
+ 2020 09:10:58 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::508a:d074:ad3a:3529]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::508a:d074:ad3a:3529%5]) with mapi id 15.20.3216.034; Tue, 28 Jul 2020
+ 09:10:58 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net 00/12] mlx5 fixes 2020-07-28
+Date:   Tue, 28 Jul 2020 02:10:23 -0700
+Message-Id: <20200728091035.112067-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.26.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY3PR05CA0022.namprd05.prod.outlook.com
+ (2603:10b6:a03:254::27) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from nps-server-21.mtl.labs.mlnx (94.188.199.18) by AM0PR10CA0059.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.23 via Frontend Transport; Tue, 28 Jul 2020 09:04:40 +0000
-X-Originating-IP: [94.188.199.18]
+Received: from smtp.office365.com (73.15.39.150) by BY3PR05CA0022.namprd05.prod.outlook.com (2603:10b6:a03:254::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.9 via Frontend Transport; Tue, 28 Jul 2020 09:10:57 +0000
+X-Mailer: git-send-email 2.26.2
+X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a8d71944-5193-4780-6d8a-08d832d54355
-X-MS-TrafficTypeDiagnostic: AM0PR05MB6116:
+X-MS-Office365-Filtering-Correlation-Id: 085930c5-3690-4a3b-63ef-08d832d6242b
+X-MS-TrafficTypeDiagnostic: VI1PR05MB4879:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR05MB6116493FE9A159D8CBBD54D1C5730@AM0PR05MB6116.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB4879520EA73745470EDB470BBE730@VI1PR05MB4879.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Akn45LIkWeuZLcHr8c61Gc5GY5h6JszSf19DEc7E2eQsEtrTUuGfKg8PnpR4NCYZlxOPwi3tW9BIEwX3aJtUGsYUSG7lp86d8XScotE9TvUIQfL+A48EOd1Xd3u5CYiBqQPOWHCyjmTbpYGtZ79VP3psL2iCjvzPVZ8l5B/jnANDoxSaID2wqj2KquIsBIw9VvokI4XUqqz6s0lEagPm+T/ZxNPG/4cxvdbXfsKS5iNTKevoSe20EglVIjis8j0QRudyP+YU4mdNMxMekxhQkdqoACvO4s2gS+iz7/4808yPXHurnKKG8uB+bIN2cY4ie+qP7UBHkMf0stW13XGOqg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4786.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(346002)(136003)(376002)(366004)(396003)(83380400001)(6506007)(7696005)(52116002)(86362001)(66556008)(66476007)(4744005)(5660300002)(33656002)(7416002)(66946007)(4326008)(2906002)(1076003)(186003)(6916009)(55016002)(9686003)(478600001)(316002)(107886003)(26005)(956004)(8936002)(8676002)(16526019);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Z2omUVDN/mCYkPGPl2fdthKrm5ulXuLtMCNokLaWm+dCPnHCSSlgAWfvWip+1oIDvzQKN0CX04bSLbxiwh3Bs7jbvzwP4xeoT6laITtLXKFPxAYjjToeIIyR1Fi1tFOa3nJ3Vv/HfOUnrkiJvwnl2J2KIx+TNZ2fv3EQ0epHl2tkcbFXDpj04P3AJBcKo5BDcpJi8BXJD7Dir+mVIXik7YN18zYqpONqgy5nFOuRgn5NXBEfAHETnKQQtpon8XBTz+xuLsQ668t25gqUwHyDuxclBBWzl25yZsvFckNyD5c3HKgF8bXjXPT36wgkehDcdg3TY6cucnpPx0mtG7yy44syrR5LXU22qo9tK0odGCKB5AsNZbqPH/AdtjWXqfliopstxYsxwVBrqNskk/JbeY+FhprXbL7ZBKmGzG/yY4q7unljqMrn/qail9RD24993b5JDK34s84F1l5X3p1ssJE6jKeTlKInrTdb+hYrPxA=
+X-Microsoft-Antispam-Message-Info: zwT4Ys0AilSwwteM5ZVKcEYmgERIq5tA4Tcz50iBq4u5lM+NGgqpCum4Uvby9L1pxcm8DL/ua4kKb54KF3RjC7goyeE8UepmNFQXgwIiOCxgJzMmg8wmAEa1VLIsu4kcBAUC+xAitmotSuiFCfUCanCyzEaFyYs3xoK3IuXzhyfT27Nec3cv6knC+1/jaIe1LlJuPMBoFOH+q1rA2jvGBkC8S7Fi4aXRev+2zI6+8epI1aYhTLN5eFnjuOSkz9gtbQVX00ZTAqDV6Gvd5HgQsM5aY8CFlAIRvyZz63YFCcvluFdmVjF959gEI2zJpcwuBBTz2Fpng9zpAtRJDFmhTNeuA18bsk5bd5aU7OYlO507+m/YfCpqLTFOPlBh9HYx
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(366004)(346002)(376002)(136003)(6512007)(1076003)(8676002)(86362001)(8936002)(2906002)(66946007)(66556008)(66476007)(107886003)(16526019)(2616005)(26005)(83380400001)(186003)(36756003)(6666004)(478600001)(956004)(52116002)(6506007)(316002)(5660300002)(4326008)(110136005)(6486002)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 5yz1Lu8vX3fxWbgQRNvSZKpLkhS9ZjfJv2uZz/yvMnNE3o8l4/4u+EFfA529JfaDouT5Glp6PSY/8Lp6axQoN2EdmzRA9l5kL1qFbIqpO153400Ryb/ywfnSdLSg4lGwYjOWqW1+M8L/z0dDsV6VI2WWcE9K8exbMqABYd/rXVawDJdizF9IY692J8O7LQoQwCqTiENmujREPqhdV9yxmPteZo5O44uELLsh5mDJUWJX3fpLwQrFtMxVPGWn60isZvBbIP51jqbJfXWzcSObhTPxRU0+YCsvKuIgzoFdGOTnPCAOdjCNy+1sKEKOv585URJ+QGup/Drekh+VoN7xAcMFh3HGgildGkhZx6MAG/7GGzizETkxQiUIK0N1/mcAc+uVTd8Za0zepUX/Tb50mR/EVH1P3X1JIdFFJSkU8+ti7aM6pNFCBOiC12LMyQqjDzztit5PV8s1iTQpXYtpE7KmotsAdOss8v5djGg3uwQ=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a8d71944-5193-4780-6d8a-08d832d54355
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB4786.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 085930c5-3690-4a3b-63ef-08d832d6242b
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2020 09:04:41.3749
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2020 09:10:58.5765
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: G8RE3aVQ08CIERWvHIlogqGbd2blyW5+vLuUchlge0TbfoG5X1E+vbV1KjmIwSEp9Aon9oeJ1PFyHjwMJjXReQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6116
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7pP1KLynmbEwgumqtRAVUjufjt962OfZCMmM2F7dQVoTJuF/x04un2e2mbA+Magdc+dj06gkKuf7C/CVGNYiNA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4879
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 12:24:03PM +0800, Zhu Lingshan wrote:
->  
-> +static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, int qid)
-> +{
-> +	struct vhost_virtqueue *vq = &v->vqs[qid];
-> +	const struct vdpa_config_ops *ops = v->vdpa->config;
-> +	struct vdpa_device *vdpa = v->vdpa;
-> +	int ret, irq;
-> +
-> +	spin_lock(&vq->call_ctx.ctx_lock);
-> +	irq = ops->get_vq_irq(vdpa, qid);
-> +	if (!vq->call_ctx.ctx || irq == -EINVAL) {
-> +		spin_unlock(&vq->call_ctx.ctx_lock);
-> +		return;
-> +	}
-> +
+Hi Dave,
 
-If I understand correctly, this will cause these IRQs to be forwarded
-directly to the VCPU, e.g. will be handled by the guest/qemu.
-Does this mean that the host will not handle this interrupt? How does it
-work in case on level triggered interrupts?
+This series introduces some fixes to mlx5 driver.
 
-In the case of ConnectX, I need to execute some code to acknowledge the
-interrupt.
+Please pull and let me know if there is any problem.
 
-Can you explain how this should be done?
+Thanks,
+Saeed.
+
+---
+The following changes since commit 181964e619b76ae2e71bcdc6001cf977bec4cf6e:
+
+  fix a braino in cmsghdr_from_user_compat_to_kern() (2020-07-27 13:25:39 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2020-07-28
+
+for you to fetch changes up to 0e231098e2d97879ad5fcf9c217ae836983bc9df:
+
+  net/mlx5e: Fix kernel crash when setting vf VLANID on a VF dev (2020-07-28 02:06:06 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2020-07-28
+
+----------------------------------------------------------------
+Alaa Hleihel (1):
+      net/mlx5e: Fix kernel crash when setting vf VLANID on a VF dev
+
+Aya Levin (1):
+      net/mlx5e: Fix error path of device attach
+
+Eli Cohen (1):
+      net/mlx5e: Hold reference on mirred devices while accessing them
+
+Eran Ben Elisha (3):
+      net/mlx5: Fix a bug of using ptp channel index as pin index
+      net/mlx5: Verify Hardware supports requested ptp function on a given pin
+      net/mlx5: Query PPS pin operational status before registering it
+
+Maor Dickman (1):
+      net/mlx5e: Fix missing cleanup of ethtool steering during rep rx cleanup
+
+Maor Gottlieb (1):
+      net/mlx5: Fix forward to next namespace
+
+Parav Pandit (2):
+      net/mlx5: E-switch, Destroy TSAR when fail to enable the mode
+      net/mlx5: E-switch, Destroy TSAR after reload interface
+
+Raed Salem (1):
+      net/mlx5e: Fix slab-out-of-bounds in mlx5e_rep_is_lag_netdev
+
+Ron Diskin (1):
+      net/mlx5e: Modify uplink state on interface up/down
+
+ .../net/ethernet/mellanox/mlx5/core/en/rep/bond.c  |  7 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 27 +++++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  3 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  8 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  | 27 +++++---
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  2 +
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  | 28 ++------
+ .../net/ethernet/mellanox/mlx5/core/lib/clock.c    | 78 ++++++++++++++++++----
+ include/linux/mlx5/mlx5_ifc.h                      |  1 +
+ 9 files changed, 127 insertions(+), 54 deletions(-)
