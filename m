@@ -2,83 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1701230E8C
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:55:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCE4A230E90
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731200AbgG1PzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 11:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730679AbgG1PzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 11:55:22 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D408C061794
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 08:55:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=xFwChVEz/enu9hhWEmzhbZ8s3PHLMlzW+0CY3JmoiPw=; b=YmTYv+W5WDaJjubjfYamax4zq
-        QHL6rbaYy/ZroipjWIuyYYUYKBXGuuhRvKUUhMi27ghdpSntoHibX4PhsMCKdhKO4oatePXbkOypu
-        Mq135MFDYkGQThSKaPJd+lOtsOHCorv+xPKIjKknQE0rDwqPnByVR14dfL40HLtHnKf184onROjxk
-        90P5ZTA3hPqlJzI8G4u75X2+1ilkWEgOCBcdH0ktV4tLm2l1JRUOloDpWeeEXUpzS0GRKfb7reJ5h
-        4Kybqi/UJQU/+NrZEhvwYHV9uV95mnJAvo68xY7Ey9y8oQSmYH911vNWsVVSO6ky8OVAXvrHTuHvh
-        GuqgNgPYw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45292)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1k0Rwm-0004S3-Sd; Tue, 28 Jul 2020 16:55:20 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1k0Rwm-0004mp-9b; Tue, 28 Jul 2020 16:55:20 +0100
-Date:   Tue, 28 Jul 2020 16:55:20 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
-Message-ID: <20200728155520.GS1551@shell.armlinux.org.uk>
-References: <20200727204731.1705418-1-andrew@lunn.ch>
- <VI1PR0402MB3871906F6381418258CC7AEBE0730@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        id S1731208AbgG1P4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 11:56:11 -0400
+Received: from smtprelay0250.hostedemail.com ([216.40.44.250]:37202 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730963AbgG1P4L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 11:56:11 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id EED4018029122;
+        Tue, 28 Jul 2020 15:56:09 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1537:1561:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3622:3865:3866:3870:3871:3874:4321:5007:10004:10400:10848:11232:11658:11914:12048:12297:12740:12760:12895:13069:13311:13357:13439:14659:21080:21627:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: milk44_171497c26f6b
+X-Filterd-Recvd-Size: 1381
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf12.hostedemail.com (Postfix) with ESMTPA;
+        Tue, 28 Jul 2020 15:56:08 +0000 (UTC)
+Message-ID: <e5d2cb28493050f2df7cedef209288abf103b4f3.camel@perches.com>
+Subject: Re: [PATCH net-next] liquidio: Remove unneeded cast from memory
+ allocation
+From:   Joe Perches <joe@perches.com>
+To:     Derek Chickles <dchickles@marvell.com>,
+        "wanghai (M)" <wanghai38@huawei.com>,
+        Satananda Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Tue, 28 Jul 2020 08:56:07 -0700
+In-Reply-To: <BYAPR18MB24230A8301FD9849F9943B9DAC730@BYAPR18MB2423.namprd18.prod.outlook.com>
+References: <BYAPR18MB24230A8301FD9849F9943B9DAC730@BYAPR18MB2423.namprd18.prod.outlook.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.3-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR0402MB3871906F6381418258CC7AEBE0730@VI1PR0402MB3871.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 03:42:22PM +0000, Ioana Ciornei wrote:
-> > Subject: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
-> > 
-> > RFC Because it needs 0-day build testing
-> > 
-> > The directory drivers/net/phy is getting rather cluttered with the growing
-> > number of MDIO bus drivers and PHY device drivers. We also have one PCS
-> > driver and more are expected soon.
-> > 
-> > Restructure the directory, moving MDIO bus drivers into /mdio.  PHY drivers into
-> > /phy. The one current PCS driver is moved into /pcs and renamed to give it the
-> > pcs- prefix which we hope will be followed by other PCS drivers.
-> > 
-> 
-> Other than that, the new 'drivers/net/phy/phy/' path is somewhat repetitive but
-> unfortunately I do not have another better suggestion.
+On Tue, 2020-07-28 at 15:39 +0000, Derek Chickles wrote:
+> I think that is fine as well. We just used vmalloc since there is no need
+> for a physically contiguous piece of memory.
 
-There aren't many suitable names.  The options I can think of are:
+Do any of the allocs in the driver actually need vmalloc?
 
-drivers	(but is still repetitive, or drv for a shortened version)
-media	(since they're driving media facing PHYs)
-phy	(as already suggested by Andrew)
 
-Nothing really stands out as a good choice.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
