@@ -2,103 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A89BB2311E5
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 20:45:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CCEE2311EA
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 20:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732473AbgG1SpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 14:45:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49998 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729448AbgG1SpA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 14:45:00 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B750820786;
-        Tue, 28 Jul 2020 18:44:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595961900;
-        bh=5tbj+hAVjho60oeEwljnJ+APM3Uveef3Va4ZlUZpzCU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TKLmlgDs50tDV9dXoUSKpyX6mRb1SoCJNEWVZ285hT2zy1H2Bb5Q6GMcNzm3nNFQW
-         h8dxuZVStJ3p0u5sjg84QYm3Uvg1xs9J/ZRdaNUa7fgtV6E7w4BmTFd8jme5mHuxq9
-         Gvh987Ho59sxlnG8Yr/v8SfKSNhsLSYkXXmNNLag=
-Date:   Tue, 28 Jul 2020 11:44:58 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Moshe Shemesh <moshe@mellanox.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: Re: [PATCH net-next RFC 01/13] devlink: Add reload level option to
- devlink reload command
-Message-ID: <20200728114458.762b5396@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <464add44-3ab1-21b8-3dba-a88202350bb9@intel.com>
-References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
-        <1595847753-2234-2-git-send-email-moshe@mellanox.com>
-        <20200727175802.04890dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200728135808.GC2207@nanopsycho>
-        <464add44-3ab1-21b8-3dba-a88202350bb9@intel.com>
+        id S1732480AbgG1SqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 14:46:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729006AbgG1SqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 14:46:03 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECA9C061794
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 11:46:02 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id w9so15643449qts.6
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 11:46:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Jdr1gVzgoBXFB+stTUTeunVZqOgXPnJz20tH+qp5ajw=;
+        b=MFQCx1GKMluY3hy4StyDLrDfypn97t7pcQAX7c+HYjOGfDl+4jEVlsEYXmiSHawzIs
+         oGreHihOlGfmzPgjNROKXyn6AqvmH9IqmQd1i5eUcJkgf9cLfNfYlkoRJdjApwVVAsUQ
+         +xhDoQ1ZDgve6j6NeqYTU0c0r/b3dOWzvrhJo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Jdr1gVzgoBXFB+stTUTeunVZqOgXPnJz20tH+qp5ajw=;
+        b=dLHxqmWhzZp2RqUIJg3m9rWqzMyA2QCFsV5trVO6AjZpkHRH7g8XjFP30jnGf9/Oxt
+         EZ2ntwcs7kG2/q6cku83qpDxdV47MdshNj0/EIo24brK+kIhei/yzBBNJH3QtrV4pnKC
+         MvJYwBqYd69YfB7vhcX/HpbOCKJSkb1BA65EGZ9kCeJrWM50gKJx1o0XH5TnTX+Jf1BT
+         /eH7skh94vk2z4y4BPL+yRXBwuJJquHGk5JL6/+M3XN+eS9/PSsIlD+nr8OKWmp4KjcI
+         Y3OfgmOOn0d+wceqjUpG8V9oPfE7gIpCqZ/hB0iTUY+wyUgzdXEivnmO5yP+xK/oLBJ2
+         q+Vg==
+X-Gm-Message-State: AOAM531GVd/+2PevM95KYMeGpcACqdYnICF+1JiPC+/orWT2KZzDfGQS
+        Ea9XwfZ/4s9144whIKC3uvI9V4XerKM=
+X-Google-Smtp-Source: ABdhPJxwTHymVvQagvH/Rv1ofSjMO6VcxJilrpXL699up+OZD5JH77UX4A5wgu7G/rla+xKuypu3AQ==
+X-Received: by 2002:ac8:318e:: with SMTP id h14mr20078407qte.245.1595961960749;
+        Tue, 28 Jul 2020 11:46:00 -0700 (PDT)
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com. [209.85.160.182])
+        by smtp.gmail.com with ESMTPSA id f4sm18699829qtp.38.2020.07.28.11.45.57
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jul 2020 11:45:58 -0700 (PDT)
+Received: by mail-qt1-f182.google.com with SMTP id w9so15643193qts.6
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 11:45:57 -0700 (PDT)
+X-Received: by 2002:ac8:6758:: with SMTP id n24mr27337056qtp.124.1595961956507;
+ Tue, 28 Jul 2020 11:45:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+References: <MN2PR18MB2637D7C742BC235FE38367F0A09C0@MN2PR18MB2637.namprd18.prod.outlook.com>
+ <1595900652-3842-1-git-send-email-penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <1595900652-3842-1-git-send-email-penguin-kernel@I-love.SAKURA.ne.jp>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Tue, 28 Jul 2020 11:45:45 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXMHt2gq9Hy+iP_BYkWXsSreWdp3_bAfMkNcuqJ3K+-jbQ@mail.gmail.com>
+Message-ID: <CA+ASDXMHt2gq9Hy+iP_BYkWXsSreWdp3_bAfMkNcuqJ3K+-jbQ@mail.gmail.com>
+Subject: Re: [PATCH] mwifiex: don't call del_timer_sync() on uninitialized timer
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Ganapathi Bhat <gbhat@marvell.com>,
+        amit karwar <amitkarwar@gmail.com>, andreyknvl@google.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux USB Mailing List <linux-usb@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Nishant Sarmukadam <nishants@marvell.com>,
+        syzbot+dc4127f950da51639216@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com,
+        syzbot <syzbot+373e6719b49912399d21@syzkaller.appspotmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Jul 2020 09:47:00 -0700 Jacob Keller wrote:
-> On 7/28/2020 6:58 AM, Jiri Pirko wrote:
-> > But this is needed to maintain the existing behaviour which is different
-> > for different drivers.
->=20
-> Which drivers behave differently here?
+Hi,
 
-I think Jiri refers to mlxsw vs mlx5.
+On Mon, Jul 27, 2020 at 6:45 PM Tetsuo Handa
+<penguin-kernel@i-love.sakura.ne.jp> wrote:
+>
+> syzbot is reporting that del_timer_sync() is called from
+> mwifiex_usb_cleanup_tx_aggr() from mwifiex_unregister_dev() without
+> checking timer_setup() from mwifiex_usb_tx_init() was called [1].
+> Since mwifiex_usb_prepare_tx_aggr_skb() is calling del_timer() if
+> is_hold_timer_set == true, use the same condition for del_timer_sync().
+>
+> [1] https://syzkaller.appspot.com/bug?id=fdeef9cf7348be8b8ab5b847f2ed993aba8ea7b6
+>
+> Reported-by: syzbot <syzbot+373e6719b49912399d21@syzkaller.appspotmail.com>
+> Cc: Ganapathi Bhat <gbhat@marvell.com>
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> ---
+> A patch from Ganapathi Bhat ( https://patchwork.kernel.org/patch/10990275/ ) is stalling
+> at https://lore.kernel.org/linux-usb/MN2PR18MB2637D7C742BC235FE38367F0A09C0@MN2PR18MB2637.namprd18.prod.outlook.com/ .
+> syzbot by now got this report for 10000 times. Do we want to go with this simple patch?
 
-mlxsw loads firmware on probe, by default at least. So reloading the
-driver implies a FW reset. NIC drivers OTOH don't generally load FW
-so they didn't reset FW.
+Sorry, that stall is partly my fault, and partly Ganapathi's. It
+doesn't help that it took him 4 months to reply to my questions, so I
+completely lost even the tiny bit of context I had managed to build up
+in my head at initial review time... and so it's still buried in the
+dark corners of my inbox. (I think I'll go archive that now, because
+it really deserves a better sell than it had initially, if Ganapathi
+really wants to land it.)
 
-Now since we're redefining the API from "do a reload so that driverinit
-params are applied" (or "so that all netdevs get spawned in a new
-netns") to "do a reset of depth X" we have to change the paradigm.
+>  drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
+> index 6f3cfde..04a1461 100644
+> --- a/drivers/net/wireless/marvell/mwifiex/usb.c
+> +++ b/drivers/net/wireless/marvell/mwifiex/usb.c
+> @@ -1353,7 +1353,8 @@ static void mwifiex_usb_cleanup_tx_aggr(struct mwifiex_adapter *adapter)
+>                                 skb_dequeue(&port->tx_aggr.aggr_list)))
+>                                 mwifiex_write_data_complete(adapter, skb_tmp,
+>                                                             0, -1);
+> -               del_timer_sync(&port->tx_aggr.timer_cnxt.hold_timer);
+> +               if (port->tx_aggr.timer_cnxt.is_hold_timer_set)
 
-What I was trying to suggest is that we should not have to re-define
-the API like this.
+I believe if we ever actually started aggregation, then the timer can
+be active at this point, and thus, the access to 'is_hold_timer_set'
+is racy.
 
-=46rom user perspective what's important is what the reset achieves (and
-perhaps how destructive it is). We can define the reset levels as:
+This *probably* deserves a better refactor, but in absence of that
+(and a better explanation than Ganapathi gave), I think you at least
+need to hold port->tx_aggr_lock. So perhaps (totally untested):
 
-$ devlink dev reload pci/0000:82:00.0 net-ns-respawn
-$ devlink dev reload pci/0000:82:00.0 driver-param-init
-$ devlink dev reload pci/0000:82:00.0 fw-activate
+  spin_lock_bh(&port->tx_aggr_lock);
+  if (port->tx_aggr.timer_cnxt.is_hold_timer_set) {
+    port->tx_aggr.timer_cnxt.is_hold_timer_set = false;
+    spin_unlock_bh(&port->tx_aggr_lock);
+    /* Timer could still be running, but it can't be restarted at this
+point, so this is safe. */
+    del_timer_sync(&port->tx_aggr.timer_cnxt.hold_timer);
+  } else {
+    spin_unlock_bh(&port->tx_aggr_lock);
+  }
 
-combining should be possible when user wants multiple things to happen:
+Otherwise, I think this is fine:
 
-$ devlink dev reload pci/0000:82:00.0 fw-activate driver-param-init
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+
+I also believe mwifiex_usb_prepare_tx_aggr_skb() needs to stop using
+del_timer() (without the _sync()), because otherwise we might have
+deactivated the timer already but not ensured that it has completely
+finished executing on other CPUs. But that is probably orthogonal to
+the current patch. (Again, so much in this driver needs refactoring.)
+
+Side note: this entire TX aggregation feature for USB has been hidden
+behind the mwifiex.aggr_ctrl module param since its introduction,
+which has always been disabled by default. I wonder whether anybody is
+*really* testing it, or whether it's 100% broken, as with many things
+in this driver...
 
 
-Then we have the use case of a "live reset" which is slightly
-under-defined right now IMHO, but we can extend it as:
+Brian
 
-$ devlink dev reload pci/0000:82:00.0 fw-activate --live
-
-
-We can also add the "reset level" specifier - for the cases where
-device is misbehaving:
-
-$ devlink dev reload pci/0000:82:00.0 level [driver|fw|hardware]
-
-
-But I don't think that we can go from the current reload command
-cleanly to just a level reset. The driver-specific default is a bad
-smell which indicates we're changing semantics from what user wants=20
-to what the reset depth is. Our semantics with the patch as it stands
-are in fact:
- - if you want to load new params or change netns, don't pass the level
-   - the "driver default" workaround dictates the right reset level for
-   param init;
- - if you want to activate new firmware - select the reset level you'd
-   like from the reset level options.
+> +                       del_timer_sync(&port->tx_aggr.timer_cnxt.hold_timer);
+>                 port->tx_aggr.timer_cnxt.is_hold_timer_set = false;
+>                 port->tx_aggr.timer_cnxt.hold_tmo_msecs = 0;
+>         }
+> --
+> 1.8.3.1
+>
