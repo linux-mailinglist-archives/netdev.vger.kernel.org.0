@@ -2,36 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64DB82304E9
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 10:07:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03133230520
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 10:17:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727930AbgG1IHS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 28 Jul 2020 04:07:18 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:49664 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726032AbgG1IHR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 04:07:17 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-122-o5x9Q9SyNzqkeSG6S-qBgw-1; Tue, 28 Jul 2020 09:07:12 +0100
-X-MC-Unique: o5x9Q9SyNzqkeSG6S-qBgw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Tue, 28 Jul 2020 09:07:11 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 28 Jul 2020 09:07:11 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Christoph Hellwig' <hch@lst.de>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
+        id S1728096AbgG1IRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 04:17:48 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:36909 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727916AbgG1IRq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 04:17:46 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 1f508000;
+        Tue, 28 Jul 2020 07:54:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=K4YAt33ilBR3hd1+7JojCPxtvSA=; b=nEjdWp
+        cUQVj0KWRd87puFx0fk1HADPVt/5ckkL0vcSiVAoyePGSTncp+KafcroE0itJJAR
+        hvCKOHIgNqwby+4I13HG5z9ibnxBmqHfVx+jKtrPfvHTnJrmPNg1WsagEKVyYT8s
+        0wLLBcv/NIyWIJ2xwHqa/F7Ekuot/H5qUld6hDSAXP06OIRI6q+V7cdk8Ye2E95N
+        oE2iYHJELOZGqN2H10I58K4qjsUNSGzPFklfgHdPIOfnKUBe2eF7SiuhT2DW4gmx
+        Zlh/4Lwi80eH4MYYZz1R0kvQtczs/XnszWGNGZW6geww/y9D6tsJ0FqJg7QkrUqh
+        r9lHeJJo9aIu1+DA==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d27e76da (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 28 Jul 2020 07:54:16 +0000 (UTC)
+Received: by mail-io1-f54.google.com with SMTP id a5so4613572ioa.13;
+        Tue, 28 Jul 2020 01:17:41 -0700 (PDT)
+X-Gm-Message-State: AOAM5326njdztPe3VkZjU3njFuLXGQOjJ86c1ItnwgBvIww26i5yBNmp
+        mf7+bJPIr4+tDgdochtGaglyFVJWyqL1zhmrfeY=
+X-Google-Smtp-Source: ABdhPJwruWEMSl6lI3SS18Iq/8cGmq7nVWSaRamLRaM9jzUJiajMF+UBN6XkUtAb0UlYhZIkk+zlhZ92oa7Pvf4Iz8s=
+X-Received: by 2002:a05:6638:250f:: with SMTP id v15mr8210865jat.75.1595924260418;
+ Tue, 28 Jul 2020 01:17:40 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200723060908.50081-1-hch@lst.de> <20200723060908.50081-13-hch@lst.de>
+ <20200727150310.GA1632472@zx2c4.com> <20200727150601.GA3447@lst.de>
+ <CAHmME9ric=chLJayn7Erve7WBa+qCKn-+Gjri=zqydoY6623aA@mail.gmail.com>
+ <20200727162357.GA8022@lst.de> <908ed73081cc42d58a5b01e0c97dbe47@AcuMS.aculab.com>
+In-Reply-To: <908ed73081cc42d58a5b01e0c97dbe47@AcuMS.aculab.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 28 Jul 2020 10:17:28 +0200
+X-Gmail-Original-Message-ID: <CAHmME9pUbRmJq1Qcj10eENt15cuQHkiXJNKrUDmmC18n2mLKDA@mail.gmail.com>
+Message-ID: <CAHmME9pUbRmJq1Qcj10eENt15cuQHkiXJNKrUDmmC18n2mLKDA@mail.gmail.com>
+Subject: Re: [PATCH 12/26] netfilter: switch nf_setsockopt to sockptr_t
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Eric Dumazet <edumazet@google.com>,
-        "Linux Crypto Mailing List" <linux-crypto@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
         Netdev <netdev@vger.kernel.org>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
@@ -56,58 +76,47 @@ CC:     "David S. Miller" <davem@davemloft.net>,
         <tipc-discussion@lists.sourceforge.net>,
         "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>,
         Kernel Hardening <kernel-hardening@lists.openwall.com>
-Subject: RE: [PATCH 12/26] netfilter: switch nf_setsockopt to sockptr_t
-Thread-Topic: [PATCH 12/26] netfilter: switch nf_setsockopt to sockptr_t
-Thread-Index: AQHWZDJbUYsuJ1QOc0ujZBN9RDfEqKkcofVA
-Date:   Tue, 28 Jul 2020 08:07:11 +0000
-Message-ID: <908ed73081cc42d58a5b01e0c97dbe47@AcuMS.aculab.com>
-References: <20200723060908.50081-1-hch@lst.de>
- <20200723060908.50081-13-hch@lst.de> <20200727150310.GA1632472@zx2c4.com>
- <20200727150601.GA3447@lst.de>
- <CAHmME9ric=chLJayn7Erve7WBa+qCKn-+Gjri=zqydoY6623aA@mail.gmail.com>
- <20200727162357.GA8022@lst.de>
-In-Reply-To: <20200727162357.GA8022@lst.de>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christoph Hellwig
-> Sent: 27 July 2020 17:24
-> 
-> On Mon, Jul 27, 2020 at 06:16:32PM +0200, Jason A. Donenfeld wrote:
-> > Maybe sockptr_advance should have some safety checks and sometimes
-> > return -EFAULT? Or you should always use the implementation where
-> > being a kernel address is an explicit bit of sockptr_t, rather than
-> > being implicit?
-> 
-> I already have a patch to use access_ok to check the whole range in
-> init_user_sockptr.
+On Tue, Jul 28, 2020 at 10:07 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Christoph Hellwig
+> > Sent: 27 July 2020 17:24
+> >
+> > On Mon, Jul 27, 2020 at 06:16:32PM +0200, Jason A. Donenfeld wrote:
+> > > Maybe sockptr_advance should have some safety checks and sometimes
+> > > return -EFAULT? Or you should always use the implementation where
+> > > being a kernel address is an explicit bit of sockptr_t, rather than
+> > > being implicit?
+> >
+> > I already have a patch to use access_ok to check the whole range in
+> > init_user_sockptr.
+>
+> That doesn't make (much) difference to the code paths that ignore
+> the user-supplied length.
+> OTOH doing the user/kernel check on the base address (not an
+> incremented one) means that the correct copy function is always
+> selected.
 
-That doesn't make (much) difference to the code paths that ignore
-the user-supplied length.
-OTOH doing the user/kernel check on the base address (not an
-incremented one) means that the correct copy function is always
-selected.
+Right, I had the same reaction in reading this, but actually, his code
+gets rid of the sockptr_advance stuff entirely and never mutates, so
+even though my point about attacking those pointers was missed, the
+code does the better thing now -- checking the base address and never
+mutating the pointer. So I think we're good.
 
-Perhaps the functions should all be passed a 'const sockptr_t'.
-The typedef could be made 'const' - requiring non-const items
-explicitly use the union/struct itself.
+>
+> Perhaps the functions should all be passed a 'const sockptr_t'.
+> The typedef could be made 'const' - requiring non-const items
+> explicitly use the union/struct itself.
 
-	David
+I was thinking the same, but just by making the pointers inside the
+struct const. However, making the whole struct const via the typedef
+is a much better idea. That'd probably require changing the signature
+of init_user_sockptr a bit, which would be fine, but indeed I think
+this would be a very positive change.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Jason
