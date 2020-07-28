@@ -2,129 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 315FD2301E1
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:37:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E34A2301DF
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726873AbgG1FhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 01:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726251AbgG1FhW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 01:37:22 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A31EBC061794;
-        Mon, 27 Jul 2020 22:37:22 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id s23so14036660qtq.12;
-        Mon, 27 Jul 2020 22:37:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Z7EWQYD7wy6xCJAzFJ7nXjY1PCd7b/cbV/q3G3Duy1U=;
-        b=t+NKvYabQIvU/bHs2WsL/A56+4mEPwZyGuCuo2EDSpO7Cn1xgAdMW091HIp4X0cdeW
-         VIEiRb/BQ0nAhKJWIXHOgMgBTfOL8Zicv+XDvRfD/8C51MHVvRk7q+aGL64IwS9GACQI
-         jc7rFwTNzHcpyifukhI3hDWXpXauBuu86JnCdLxEtAOnyWJA7o7wfomtIQ10EM8Fs3xM
-         RUUmBSHz0Ula/jnvdWOo9zuYXWfiPdfuOgmok3hEfzfKUlDSG1FGt9QPeuEcwNPE+9YU
-         AX1ZbamMYUepk0RXfjSV8iocfUKnvwl3HWPIF4eAWN8L7q9jT3jtBC9HNOOYVWTJfdIP
-         abcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Z7EWQYD7wy6xCJAzFJ7nXjY1PCd7b/cbV/q3G3Duy1U=;
-        b=jh0uSwbtiJTKLgs/OkfKARjcvQrjdbjQ1ktgi2yE/7K1j1v35wvATILid5omw2aaXx
-         5jOVM1QzED5O6FZ7osLY9bve6aw07s+AzkMksZKE1i0HZqxgpsYc5E86UavyMx6kJVIN
-         11xVrifSLxB4LnPR4I6h3fiVtuxlIJd5W+ClAHcHvkTPZ0k3eiz2s+2btn60N/r8spl4
-         SbNNRf847UpeneI+c54mn1ibQkkJc/axfDORL4Ai0/9NThyEJ9AdQ+aQSyV90JLprU1g
-         oXmmp1nE7mw2apP8JpQk+BEOfMc4+PrZdWKe1DekoiJthuia3htpI8BaZyWedZJChs34
-         I+Tw==
-X-Gm-Message-State: AOAM531IrO2W1fueBuKSJqNpgxtogfgnc9l3aNELM45oZNa0IHeG0IFq
-        H5Z6KNJGdylBNh2Cd/tiQA==
-X-Google-Smtp-Source: ABdhPJweN6bn9NhBF9KiMYU9STaREohK2QHtDH4joic0d2gYLwLSMzbMZq23Ys2LH0vazmtYJv5tNw==
-X-Received: by 2002:aed:3387:: with SMTP id v7mr24245834qtd.318.1595914641882;
-        Mon, 27 Jul 2020 22:37:21 -0700 (PDT)
-Received: from localhost.localdomain (c-76-119-149-155.hsd1.ma.comcast.net. [76.119.149.155])
-        by smtp.gmail.com with ESMTPSA id u42sm20985975qtu.48.2020.07.27.22.37.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2020 22:37:21 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Song Liu <songliubraving@fb.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S1726746AbgG1FhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 01:37:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44190 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726251AbgG1FhV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 01:37:21 -0400
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6CA7C21883;
+        Tue, 28 Jul 2020 05:37:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595914640;
+        bh=5/1hGHRcRs8noQyW4y70zKajX2QRb/KbTYQH/XkqGLo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=AU0TgowGCR0CGpCzEHB+dK+d4zlq0wxcjxrklzhtxM8DoXiTtbye/9bDoyfr3rYw3
+         Cpc1spQE+8O4v5okj/HKLrFf1+69Fh6U+xm8Q6kCcBZbAdu8t8XWKuOnhxt86B5pmp
+         XQl8F+nIPJvQ1s/GB0+WKoPK8RFppmSKjvnQFIGU=
+Received: by mail-lj1-f179.google.com with SMTP id s16so4529907ljc.8;
+        Mon, 27 Jul 2020 22:37:20 -0700 (PDT)
+X-Gm-Message-State: AOAM530iSG+NgNzIIf9/W7o4WuZUVcLJKFMjlTd+TZjxY1n8qTskCNhR
+        PfJ4yq/sLcvIKQ9J8pEvjhqrgKUPFJiyEZ6SGRk=
+X-Google-Smtp-Source: ABdhPJw9Ihhk/7GIolHzsLcYxMM4WNd7zYLn9IMxzaHwG1XeTcrzGpvyiU4MB+PKJp5ng8tFB7HU7flbEtWk1o+l8DI=
+X-Received: by 2002:a2e:7c14:: with SMTP id x20mr11794649ljc.41.1595914638725;
+ Mon, 27 Jul 2020 22:37:18 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-23-guro@fb.com>
+In-Reply-To: <20200727184506.2279656-23-guro@fb.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 27 Jul 2020 22:37:07 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7nHNaf9Cgjwr_3zLVae4yBiLsvd7+tVkpS6EaiGRZ4tA@mail.gmail.com>
+Message-ID: <CAPhsuW7nHNaf9Cgjwr_3zLVae4yBiLsvd7+tVkpS6EaiGRZ4tA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 22/35] bpf: eliminate rlimit-based memory
+ accounting for bpf ringbuffer
+To:     Roman Gushchin <guro@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [Linux-kernel-mentees] [PATCH net v2] xdp: Prevent kernel-infoleak in xsk_getsockopt()
-Date:   Tue, 28 Jul 2020 01:36:04 -0400
-Message-Id: <20200728053604.404631-1-yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200728022859.381819-1-yepeilin.cs@gmail.com>
-References: <20200728022859.381819-1-yepeilin.cs@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Kernel Team <kernel-team@fb.com>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-xsk_getsockopt() is copying uninitialized stack memory to userspace when
-`extra_stats` is `false`. Fix it.
+On Mon, Jul 27, 2020 at 12:22 PM Roman Gushchin <guro@fb.com> wrote:
+>
+> Do not use rlimit-based memory accounting for bpf ringbuffer.
+> It has been replaced with the memcg-based memory accounting.
+>
+> bpf_ringbuf_alloc() can't return anything except ERR_PTR(-ENOMEM)
+> and a valid pointer, so to simplify the code make it return NULL
+> in the first case. This allows to drop a couple of lines in
+> ringbuf_map_alloc() and also makes it look similar to other memory
+> allocating function like kmalloc().
+>
+> Signed-off-by: Roman Gushchin <guro@fb.com>
 
-Fixes: 8aa5a33578e9 ("xsk: Add new statistics")
-Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
----
-Doing `= {};` is sufficient since currently `struct xdp_statistics` is
-defined as follows:
+Acked-by: Song Liu <songliubraving@fb.com>
 
-struct xdp_statistics {
-	__u64 rx_dropped;
-	__u64 rx_invalid_descs;
-	__u64 tx_invalid_descs;
-	__u64 rx_ring_full;
-	__u64 rx_fill_ring_empty_descs;
-	__u64 tx_ring_empty_descs;
-};
-
-When being copied to the userspace, `stats` will not contain any
-uninitialized "holes" between struct fields.
-
-Changes in v2:
-    - Remove the "Cc: stable@vger.kernel.org" tag. (Suggested by Song Liu
-      <songliubraving@fb.com>)
-    - Initialize `stats` by assignment instead of using memset().
-      (Suggested by Song Liu <songliubraving@fb.com>)
-
- net/xdp/xsk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 26e3bba8c204..b2b533eddebf 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -840,7 +840,7 @@ static int xsk_getsockopt(struct socket *sock, int level, int optname,
- 	switch (optname) {
- 	case XDP_STATISTICS:
- 	{
--		struct xdp_statistics stats;
-+		struct xdp_statistics stats = {};
- 		bool extra_stats = true;
- 		size_t stats_size;
- 
--- 
-2.25.1
-
+> ---
+>  kernel/bpf/ringbuf.c | 24 ++++--------------------
+>  1 file changed, 4 insertions(+), 20 deletions(-)
+>
+> diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
+> index e8e2c39cbdc9..e687b798d097 100644
+> --- a/kernel/bpf/ringbuf.c
+> +++ b/kernel/bpf/ringbuf.c
+> @@ -48,7 +48,6 @@ struct bpf_ringbuf {
+>
+>  struct bpf_ringbuf_map {
+>         struct bpf_map map;
+> -       struct bpf_map_memory memory;
+>         struct bpf_ringbuf *rb;
+>  };
+>
+> @@ -135,7 +134,7 @@ static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t data_sz, int numa_node)
+>
+>         rb = bpf_ringbuf_area_alloc(data_sz, numa_node);
+>         if (!rb)
+> -               return ERR_PTR(-ENOMEM);
+> +               return NULL;
+>
+>         spin_lock_init(&rb->spinlock);
+>         init_waitqueue_head(&rb->waitq);
+> @@ -151,8 +150,6 @@ static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t data_sz, int numa_node)
+>  static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
+>  {
+>         struct bpf_ringbuf_map *rb_map;
+> -       u64 cost;
+> -       int err;
+>
+>         if (attr->map_flags & ~RINGBUF_CREATE_FLAG_MASK)
+>                 return ERR_PTR(-EINVAL);
+> @@ -174,26 +171,13 @@ static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
+>
+>         bpf_map_init_from_attr(&rb_map->map, attr);
+>
+> -       cost = sizeof(struct bpf_ringbuf_map) +
+> -              sizeof(struct bpf_ringbuf) +
+> -              attr->max_entries;
+> -       err = bpf_map_charge_init(&rb_map->map.memory, cost);
+> -       if (err)
+> -               goto err_free_map;
+> -
+>         rb_map->rb = bpf_ringbuf_alloc(attr->max_entries, rb_map->map.numa_node);
+> -       if (IS_ERR(rb_map->rb)) {
+> -               err = PTR_ERR(rb_map->rb);
+> -               goto err_uncharge;
+> +       if (!rb_map->rb) {
+> +               kfree(rb_map);
+> +               return ERR_PTR(-ENOMEM);
+>         }
+>
+>         return &rb_map->map;
+> -
+> -err_uncharge:
+> -       bpf_map_charge_finish(&rb_map->map.memory);
+> -err_free_map:
+> -       kfree(rb_map);
+> -       return ERR_PTR(err);
+>  }
+>
+>  static void bpf_ringbuf_free(struct bpf_ringbuf *rb)
+> --
+> 2.26.2
+>
