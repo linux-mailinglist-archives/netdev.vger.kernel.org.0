@@ -2,79 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF516230CAF
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 16:50:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 920FD230D03
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:06:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730514AbgG1OuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 10:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730335AbgG1OuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 10:50:16 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2ABC061794;
-        Tue, 28 Jul 2020 07:50:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=QTqHP6bK9W4RFpKAMBcspR5sA1/+rrn6GZmLT6RFR2o=; b=jF9O5dfqNDC0lWxB7y/eY27PpJ
-        XVJ1Zl6Xh6YxEBwVfJ7AV+OcbuFxqaCPr1o1Ko/I/V8dZfo49zDUPE42Y2plHlxH+MNcoXw+b6trg
-        i03meS7XFWkTrrM2aFbUwNpXUvOWqlIhhrTGN8E5HhfkjKAFYqqmvl/q909D5aPWbgfwoYHog+Sd2
-        q3BlVtdubcUIopYG8CURT7UrAcyiiJITcbWxjyvRpvB/UnvQcJWunC3Fvqx7/a6HmokqaY6/2jeIw
-        VA3uFOYJs0zt9FTLtonZzQK+nCaKyk/DbimLBV/hyzuHT9MR/e4aV72HJunpTlDDbwWzCZxyMJYF9
-        +LNnf8Sw==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k0Qvk-0001Bt-Rh; Tue, 28 Jul 2020 14:50:13 +0000
-Subject: Re: linux-next: Tree for Jul 28 (drivers/net/usb/)
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        Oliver Neukum <oliver@neukum.org>
-References: <20200728215731.00cb56d3@canb.auug.org.au>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <d8e712fa-65c8-f616-3411-a41b88950eba@infradead.org>
-Date:   Tue, 28 Jul 2020 07:50:09 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1730619AbgG1PFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 11:05:35 -0400
+Received: from mail.nic.cz ([217.31.204.67]:44782 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730505AbgG1PFf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 11:05:35 -0400
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTP id 5265013FCD6;
+        Tue, 28 Jul 2020 17:05:32 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1595948732; bh=kzVqBbIS6DtL5EmGEiQ33EnuCsVpzAnrrTPvwFA1C0s=;
+        h=From:To:Date;
+        b=AiEK8xKa6LXajRuPNS6B7WOy58rfYdRs6AN1IbJjU+qr/1D4u4el2lyMEYQdrc48u
+         WhjpUhaEVF+3qX8ReFywkIBNmQuXPf6LgU90rxlZlvoLbO1+RyTWAlgsTtQCzN/jcy
+         wG5KKhOeOltVEy/V9XTRiFv7TyAK5nDKPaBWY3dE=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+To:     netdev@vger.kernel.org
+Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        jacek.anaszewski@gmail.com, Dan Murphy <dmurphy@ti.com>,
+        =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megous@megous.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+Subject: [PATCH RFC leds + net-next v4 0/2] Add support for LEDs on Marvell PHYs
+Date:   Tue, 28 Jul 2020 17:05:28 +0200
+Message-Id: <20200728150530.28827-1-marek.behun@nic.cz>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200728215731.00cb56d3@canb.auug.org.au>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Spam-Status: No, score=0.00
+X-Spamd-Bar: /
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/28/20 4:57 AM, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Changes since 20200727:
-> 
+Hi,
 
-on i386:
+this is v4 of my RFC adding support for LEDs connected to Marvell PHYs.
 
-CONFIG_USB_USBNET=y
-# CONFIG_USB_NET_AX8817X is not set
-CONFIG_USB_NET_AX88179_178A=y
-CONFIG_USB_NET_CDCETHER=m
-CONFIG_USB_NET_CDC_EEM=m
-CONFIG_USB_NET_CDC_NCM=y
-CONFIG_USB_NET_HUAWEI_CDC_NCM=m
-CONFIG_USB_NET_CDC_MBIM=m
+Please note that if you want to test this, you still need to first apply
+the patch adding the LED private triggers support from Pavel's tree.
+https://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/commit/?h=for-next&id=93690cdf3060c61dfce813121d0bfc055e7fa30d
 
-ld: drivers/net/usb/cdc_ncm.o:(.rodata+0x27c): undefined reference to `usbnet_cdc_update_filter'
-ld: drivers/net/usb/cdc_ncm.o:(.rodata+0x2dc): undefined reference to `usbnet_cdc_update_filter'
-ld: drivers/net/usb/cdc_ncm.o:(.rodata+0x33c): undefined reference to `usbnet_cdc_update_filter'
+What I still don't like about this is that the LEDs created by the code
+don't properly support device names. LEDs should have name in format
+"device:color:function", for example "eth0:green:activity".
 
-because 'usbnet_cdc_update_filter' lives in cdc_ether.c, which is being built
-as a loadable module while cdc_ncm.o is builtin.
+The code currently looks for attached netdev for a given PHY, but
+at the time this happens there is no netdev attached, so the LEDs gets
+names without the device part (ie ":green:activity").
 
+This can be addressed in next version by renaming the LED when a netdev
+is attached to the PHY, but first a API for LED device renaming needs to
+be proposed. I am going to try to do that. This would also solve the
+same problem when userspace renames an interface.
+
+And no, I don't want phydev name there.
+
+Changes since v3:
+- addressed some of Andrew's suggestions
+- phy_hw_led_mode.c renamed to phy_led.c
+- the DT reading code is now also generic, moved to phy_led.c and called
+  from phy_probe
+- the function registering the phydev-hw-mode trigger is now called from
+  phy_device.c function phy_init before registering genphy drivers
+- PHY LED functionality now depends on CONFIG_LEDS_TRIGGERS
+
+Changes since v2:
+- to share code with other drivers which may want to also offer PHY HW
+  control of LEDs some of the code was refactored and now resides in
+  phy_hw_led_mode.c. This code is compiled in when config option
+  LED_TRIGGER_PHY_HW is enabled. Drivers wanting to offer PHY HW control
+  of LEDs should depend on this option.
+- the "hw-control" trigger is renamed to "phydev-hw-mode" and is
+  registered by the code in phy_hw_led_mode.c
+- the "hw_control" sysfs file is renamed to "hw_mode"
+- struct phy_driver is extended by three methods to support PHY HW LED
+  control
+- I renamed the various HW control modes offeret by Marvell PHYs to
+  conform to other Linux mode names, for example the "1000/100/10/else"
+  mode was renamed to "1Gbps/100Mbps/10Mbps", or "recv/else" was renamed
+  to "rx" (this is the name of the mode in netdev trigger).
+
+Marek
+
+
+Marek Behún (2):
+  net: phy: add API for LEDs controlled by PHY HW
+  net: phy: marvell: add support for PHY LEDs via LED class
+
+ drivers/net/phy/Kconfig      |   4 +
+ drivers/net/phy/Makefile     |   1 +
+ drivers/net/phy/marvell.c    | 287 +++++++++++++++++++++++++++++++++++
+ drivers/net/phy/phy_device.c |  25 ++-
+ drivers/net/phy/phy_led.c    | 176 +++++++++++++++++++++
+ include/linux/phy.h          |  51 +++++++
+ 6 files changed, 537 insertions(+), 7 deletions(-)
+ create mode 100644 drivers/net/phy/phy_led.c
 
 -- 
-~Randy
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
+2.26.2
+
