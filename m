@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B39702300C5
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 06:28:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E7B52300C6
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 06:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726871AbgG1E2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 00:28:44 -0400
-Received: from mga05.intel.com ([192.55.52.43]:10281 "EHLO mga05.intel.com"
+        id S1726876AbgG1E3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 00:29:03 -0400
+Received: from mga11.intel.com ([192.55.52.93]:29130 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726854AbgG1E2o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 00:28:44 -0400
-IronPort-SDR: 7HGj4vWYy+2TTnofkQULm4lUKFv/aJAnCC8AtTTlEJDPKTnzvFV0wfkzWVpQ3lhlwqIU/xjI6B
- eEyfNT8twB2g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="236011099"
+        id S1726365AbgG1E3D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 00:29:03 -0400
+IronPort-SDR: xZrGroZov5l35HAi5bXlaU1o/CIYvUYImQTWiuYZfP8spg8OuV9D5F8F/EhY2NzAcK4THp2CEp
+ Cjz3vt0wQx5g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="149012929"
 X-IronPort-AV: E=Sophos;i="5.75,405,1589266800"; 
-   d="scan'208";a="236011099"
+   d="scan'208";a="149012929"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 21:28:42 -0700
-IronPort-SDR: DQEtV0Uuq64u3nxApgGRC3gHaxgfOcfv1U8Lxs9a+syeYhReK2nEjzYiz0PrS2DJ82i03yLAaL
- M3XZUk/gWVQA==
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 21:29:02 -0700
+IronPort-SDR: iBWd7/h/A9CxryPpiBFIELakFhEoYnvZV4LX2R50nnvKJVdGG1vwxdq59UQEfz3CMDiQnRkyq8
+ gacVBgd6rOLQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,405,1589266800"; 
-   d="scan'208";a="290037317"
+   d="scan'208";a="290037343"
 Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.131])
-  by orsmga006.jf.intel.com with ESMTP; 27 Jul 2020 21:28:32 -0700
+  by orsmga006.jf.intel.com with ESMTP; 27 Jul 2020 21:28:44 -0700
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
 To:     jasowang@redhat.com, alex.williamson@redhat.com, mst@redhat.com,
         pbonzini@redhat.com, sean.j.christopherson@intel.com,
@@ -34,9 +34,9 @@ To:     jasowang@redhat.com, alex.williamson@redhat.com, mst@redhat.com,
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, eli@mellanox.com, shahafs@mellanox.com,
         parav@mellanox.com, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V4 4/6] vhost_vdpa: implement IRQ offloading in vhost_vdpa
-Date:   Tue, 28 Jul 2020 12:24:03 +0800
-Message-Id: <20200728042405.17579-5-lingshan.zhu@intel.com>
+Subject: [PATCH V4 5/6] ifcvf: implement vdpa_config_ops.get_vq_irq()
+Date:   Tue, 28 Jul 2020 12:24:04 +0800
+Message-Id: <20200728042405.17579-6-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.18.4
 In-Reply-To: <20200728042405.17579-1-lingshan.zhu@intel.com>
 References: <20200728042405.17579-1-lingshan.zhu@intel.com>
@@ -45,169 +45,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch introduce a set of functions for setup/unsetup
-and update irq offloading respectively by register/unregister
-and re-register the irq_bypass_producer.
-
-With these functions, this commit can setup/unsetup
-irq offloading through setting DRIVER_OK/!DRIVER_OK, and
-update irq offloading through SET_VRING_CALL.
+This commit implemented vdpa_config_ops.get_vq_irq() in ifcvf,
+and initialized vq irq to -EINVAL. So that ifcvf can report
+irq number of a vq, or -EINVAL if the vq is not assigned an
+irq number.
 
 Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 Suggested-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/vhost/Kconfig |  1 +
- drivers/vhost/vdpa.c  | 79 ++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 79 insertions(+), 1 deletion(-)
+ drivers/vdpa/ifcvf/ifcvf_main.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-index d3688c6afb87..587fbae06182 100644
---- a/drivers/vhost/Kconfig
-+++ b/drivers/vhost/Kconfig
-@@ -65,6 +65,7 @@ config VHOST_VDPA
- 	tristate "Vhost driver for vDPA-based backend"
- 	depends on EVENTFD
- 	select VHOST
-+	select IRQ_BYPASS_MANAGER
- 	depends on VDPA
- 	help
- 	  This kernel module can be loaded in host kernel to accelerate
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index df3cf386b0cd..1dccced321f8 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -115,6 +115,55 @@ static irqreturn_t vhost_vdpa_config_cb(void *private)
- 	return IRQ_HANDLED;
+diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+index f5a60c14b979..8db530280abe 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_main.c
++++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+@@ -50,8 +50,10 @@ static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
+ 	int i;
+ 
+ 
+-	for (i = 0; i < queues; i++)
++	for (i = 0; i < queues; i++) {
+ 		devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
++		vf->vring[i].irq = -EINVAL;
++	}
+ 
+ 	ifcvf_free_irq_vectors(pdev);
+ }
+@@ -352,6 +354,14 @@ static void ifcvf_vdpa_set_config_cb(struct vdpa_device *vdpa_dev,
+ 	vf->config_cb.private = cb->private;
  }
  
-+static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, int qid)
++static u32  ifcvf_vdpa_get_vq_irq(struct vdpa_device *vdpa_dev,
++				  u16 qid)
 +{
-+	struct vhost_virtqueue *vq = &v->vqs[qid];
-+	const struct vdpa_config_ops *ops = v->vdpa->config;
-+	struct vdpa_device *vdpa = v->vdpa;
-+	int ret, irq;
++	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
 +
-+	spin_lock(&vq->call_ctx.ctx_lock);
-+	irq = ops->get_vq_irq(vdpa, qid);
-+	if (!vq->call_ctx.ctx || irq == -EINVAL) {
-+		spin_unlock(&vq->call_ctx.ctx_lock);
-+		return;
-+	}
-+
-+	vq->call_ctx.producer.token = vq->call_ctx.ctx;
-+	vq->call_ctx.producer.irq = irq;
-+	ret = irq_bypass_register_producer(&vq->call_ctx.producer);
-+	spin_unlock(&vq->call_ctx.ctx_lock);
++	return vf->vring[qid].irq;
 +}
 +
-+static void vhost_vdpa_unsetup_vq_irq(struct vhost_vdpa *v, int qid)
-+{
-+	struct vhost_virtqueue *vq = &v->vqs[qid];
-+
-+	spin_lock(&vq->call_ctx.ctx_lock);
-+	irq_bypass_unregister_producer(&vq->call_ctx.producer);
-+	spin_unlock(&vq->call_ctx.ctx_lock);
-+}
-+
-+static void vhost_vdpa_update_vq_irq(struct vhost_virtqueue *vq)
-+{
-+	spin_lock(&vq->call_ctx.ctx_lock);
-+	/*
-+	 * if it has a non-zero irq, means there is a
-+	 * previsouly registered irq_bypass_producer,
-+	 * we should update it when ctx (its token)
-+	 * changes.
-+	 */
-+	if (!vq->call_ctx.producer.irq) {
-+		spin_unlock(&vq->call_ctx.ctx_lock);
-+		return;
-+	}
-+
-+	irq_bypass_unregister_producer(&vq->call_ctx.producer);
-+	vq->call_ctx.producer.token = vq->call_ctx.ctx;
-+	irq_bypass_register_producer(&vq->call_ctx.producer);
-+	spin_unlock(&vq->call_ctx.ctx_lock);
-+}
-+
- static void vhost_vdpa_reset(struct vhost_vdpa *v)
- {
- 	struct vdpa_device *vdpa = v->vdpa;
-@@ -155,11 +204,15 @@ static long vhost_vdpa_set_status(struct vhost_vdpa *v, u8 __user *statusp)
- {
- 	struct vdpa_device *vdpa = v->vdpa;
- 	const struct vdpa_config_ops *ops = vdpa->config;
--	u8 status;
-+	u8 status, status_old;
-+	int i, nvqs;
+ /*
+  * IFCVF currently does't have on-chip IOMMU, so not
+  * implemented set_map()/dma_map()/dma_unmap()
+@@ -369,6 +379,7 @@ static const struct vdpa_config_ops ifc_vdpa_ops = {
+ 	.get_vq_ready	= ifcvf_vdpa_get_vq_ready,
+ 	.set_vq_num	= ifcvf_vdpa_set_vq_num,
+ 	.set_vq_address	= ifcvf_vdpa_set_vq_address,
++	.get_vq_irq	= ifcvf_vdpa_get_vq_irq,
+ 	.kick_vq	= ifcvf_vdpa_kick_vq,
+ 	.get_generation	= ifcvf_vdpa_get_generation,
+ 	.get_device_id	= ifcvf_vdpa_get_device_id,
+@@ -384,7 +395,7 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	struct device *dev = &pdev->dev;
+ 	struct ifcvf_adapter *adapter;
+ 	struct ifcvf_hw *vf;
+-	int ret;
++	int ret, i;
  
- 	if (copy_from_user(&status, statusp, sizeof(status)))
- 		return -EFAULT;
+ 	ret = pcim_enable_device(pdev);
+ 	if (ret) {
+@@ -441,6 +452,9 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		goto err;
+ 	}
  
-+	status_old = ops->get_status(vdpa);
-+	nvqs = v->nvqs;
++	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++)
++		vf->vring[i].irq = -EINVAL;
 +
- 	/*
- 	 * Userspace shouldn't remove status bits unless reset the
- 	 * status to 0.
-@@ -167,6 +220,15 @@ static long vhost_vdpa_set_status(struct vhost_vdpa *v, u8 __user *statusp)
- 	if (status != 0 && (ops->get_status(vdpa) & ~status) != 0)
- 		return -EINVAL;
- 
-+	/* vq irq is not expected to be changed once DRIVER_OK is set */
-+	if ((status & VIRTIO_CONFIG_S_DRIVER_OK) && !(status_old & VIRTIO_CONFIG_S_DRIVER_OK))
-+		for (i = 0; i < nvqs; i++)
-+			vhost_vdpa_setup_vq_irq(v, i);
-+
-+	if ((status_old & VIRTIO_CONFIG_S_DRIVER_OK) && !(status & VIRTIO_CONFIG_S_DRIVER_OK))
-+		for (i = 0; i < nvqs; i++)
-+			vhost_vdpa_unsetup_vq_irq(v, i);
-+
- 	ops->set_status(vdpa, status);
- 
- 	return 0;
-@@ -332,6 +394,7 @@ static long vhost_vdpa_set_config_call(struct vhost_vdpa *v, u32 __user *argp)
- 
- 	return 0;
- }
-+
- static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
- 				   void __user *argp)
- {
-@@ -390,6 +453,7 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
- 			cb.private = NULL;
- 		}
- 		ops->set_vq_cb(vdpa, idx, &cb);
-+		vhost_vdpa_update_vq_irq(vq);
- 		break;
- 
- 	case VHOST_SET_VRING_NUM:
-@@ -765,6 +829,18 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
- 	return r;
- }
- 
-+static void vhost_vdpa_clean_irq(struct vhost_vdpa *v)
-+{
-+	struct vhost_virtqueue *vq;
-+	int i;
-+
-+	for (i = 0; i < v->nvqs; i++) {
-+		vq = &v->vqs[i];
-+		if (vq->call_ctx.producer.irq)
-+			irq_bypass_unregister_producer(&vq->call_ctx.producer);
-+	}
-+}
-+
- static int vhost_vdpa_release(struct inode *inode, struct file *filep)
- {
- 	struct vhost_vdpa *v = filep->private_data;
-@@ -777,6 +853,7 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
- 	vhost_vdpa_iotlb_free(v);
- 	vhost_vdpa_free_domain(v);
- 	vhost_vdpa_config_put(v);
-+	vhost_vdpa_clean_irq(v);
- 	vhost_dev_cleanup(&v->vdev);
- 	kfree(v->vdev.vqs);
- 	mutex_unlock(&d->mutex);
+ 	ret = vdpa_register_device(&adapter->vdpa);
+ 	if (ret) {
+ 		IFCVF_ERR(pdev, "Failed to register ifcvf to vdpa bus");
 -- 
 2.18.4
 
