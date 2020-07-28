@@ -2,112 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1B112312BF
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:33:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95F2F2312DA
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732813AbgG1Tdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:33:51 -0400
-Received: from mail-eopbgr70048.outbound.protection.outlook.com ([40.107.7.48]:28405
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729646AbgG1Tdv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 15:33:51 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VUZtL2TFp25IYi1B4PSn5sVd9H/oZRPKUk0bBVHuHStBu9hMcBWNkngjnc3W+ZzQyGz0HH0BQ4u9b/kirgNipLar4u0QcStutrzbMUI1KtY/YGujwKB3HwaNNN6MkZaVOpYcVHaSPCb1ZbiEeqF1EF7tVWxPV93Tx8aYBVSsOAJ6zhHKSOdqOIWhWjvrNIQ+bzay5V3HiD8ngmPg+FKubtyIhW0YRihdJpo266d8KbUfUMJc1NF9pvldvHNzceBIPKuPqH9AbkRfoZpHSzk+UN+zXLmpVfa85CDHZlDAmnvUASs8aRXX+5O03WiSBK8kpT1rzfRo9HqeLmpVc1+7aw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NY9j726F5z5uXyQOL745lRI0gTGCzGStWpaNiJx6me0=;
- b=H8Rq/ZpIoyyJO0l3JsDTUNHrvtM4E1+uKlE/rxzqCrBotb8rdbnRrfAUMdawLXkJxVqd1Z5Y9mgnrMWXugnBy7G8Pw8Bz1MaNYgrB18YQWsnteSX/txuNkipzenTQlAdc3TsOlYd3al6Rw47uuKckpVVhd8UXae9bTqRS199czbwQeOBHOXrRE9CBWh4Sz1MLJHYDRbzFyu/iZIQ2c0+mCK8wEY4+lCfMZAzCsL+tszvti3jmMNPaL9pNFcO4SOTcMjORkSkt4EgvB6KtikADQ/FSb0W9W5pSwiX53Qw/kkM23PZrz+QuLrEVledGfx+77Jo3jSH8RmxzjvJrLOOIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NY9j726F5z5uXyQOL745lRI0gTGCzGStWpaNiJx6me0=;
- b=oiyEwLbHQz+ULhZEu0s4+ib9mCHXdrDDN8YJ/ptt0MzKvuXzHWFt56E1ffP5IJcuET40nKqxz6l/QjplEF939qHs2oojImiWlCh+GvIWqL+aUXG4AeNbOYlw2HxiVaG7GnZG36NeRIIRJawk0F8IV2QLOn7Vmv3wkdE1LF2KoWg=
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- (2603:10a6:803:16::14) by VI1PR04MB4511.eurprd04.prod.outlook.com
- (2603:10a6:803:74::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.23; Tue, 28 Jul
- 2020 19:33:46 +0000
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::d4df:67d5:c1f7:fba]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::d4df:67d5:c1f7:fba%4]) with mapi id 15.20.3216.033; Tue, 28 Jul 2020
- 19:33:46 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next 0/2] dpaa2-eth: add reset control for debugfs
- stats
-Thread-Topic: [PATCH net-next 0/2] dpaa2-eth: add reset control for debugfs
- stats
-Thread-Index: AQHWZMQ/vSHK8kqdXUWr2Ggsrx/beKkdWgwAgAAHajA=
-Date:   Tue, 28 Jul 2020 19:33:46 +0000
-Message-ID: <VI1PR0402MB3871C269BF4C0C3EA7CF3B22E0730@VI1PR0402MB3871.eurprd04.prod.outlook.com>
-References: <20200728094812.29002-1-ioana.ciornei@nxp.com>
- <20200728120334.28577106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200728120334.28577106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.95.40]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 0b0af5fc-1966-4a23-80d2-08d8332d256f
-x-ms-traffictypediagnostic: VI1PR04MB4511:
-x-microsoft-antispam-prvs: <VI1PR04MB4511042DEB2B2EE8ABBE03D7E0730@VI1PR04MB4511.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: x/vD+NClWXXVJkvw6UoHAbmjnHmSuG1fb28oZSkZvoy78z0fJLukjbQoBXjK7Nl4Zd7XkwyyKDJGYIm2JTeWs3gFSLwSgOBQ4WJ9fGAiZ1mD1PKO0VwbTXkCMwx7erAsFrkmXa8aPxm1cUMyxJ5TiKqiw3UusiyNuG7apqjugnOOACvnnEC3EYzrDeDVJ6+2Lt8IuA1/Yv9gUWmRqBgZXoQZLqYfQCubB3nMtiiu32ZGHpnA5cWdOGDU2Vykf53Rn682kXgU0UA+Xty8RzH9YC4PMHBvj4miGJRqIpO7L2uM1qNHKXijaBN8BLOJWCVjG/8FDLC2HqdYt/dQoROzlw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(6506007)(7696005)(55016002)(8676002)(498600001)(33656002)(8936002)(44832011)(52536014)(83380400001)(4744005)(2906002)(5660300002)(4326008)(76116006)(54906003)(26005)(71200400001)(186003)(66476007)(66946007)(6916009)(66556008)(9686003)(86362001)(64756008)(66446008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: BD/lh+l2E5xYTMsvkS89cee6oxQi4QkTdd84Vg2bWSQ4lFTnJ8hfSplIoFIYkEuBwRoKTbJrzJNVnQkpDGRjJpsSbuSAzvAbGPzS0Bvpru77r035d/qS8dwOVqemHFQw/vqBCg7pblGhvjfFl7Kh8dclC5s5pofOLrHyQa4h8VPToYEy573NPk4TIrfJXc8Ab5a5+/aRw0jVAnVZxoAhGFAtcdYEmkhbOxFY1cPQjvT20zBX/f8XzUq2XiEGeXUFMEUVJFgduKdh6uOeoxRfp5PaSHc79v9o5Yqp1AV9EJzOi0gzPIUWbZYbHvoZKme3n0k0xCs1V6ps9IL3vWuOmZW3T+v6O3xevCXY3eVq64KkEZ9U9+Zeyo6iCA3k6wyspW9G6JRAaAJNQflY+9voWasmMqzmYKD4ZVNqGzSDPNQf7ZBuMDXP1Ye+fblGTTnd7/F9eztP4Ok0IRip5T4vWsrPNDQ3MI285J0hmY+0g28=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729915AbgG1TjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728927AbgG1TjT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:39:19 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD8BC061794;
+        Tue, 28 Jul 2020 12:39:19 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id v22so9873227qtq.8;
+        Tue, 28 Jul 2020 12:39:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uC2eLVhYt5o2L3EkdXiZ0wHXR6DBNV6ezz2kj48c/z0=;
+        b=KQrhII97xK/IbvNsvrVNdmyWZiavi1gwqjEEqo13uGZMzQxW3KtgJIQkEob1gcK3pB
+         s6FhKZzctjAXZuzjjDpTjDmCSyrv2X2tyIAbNnzNrUjDvavRpXVvEOVVv0BTofhxv3Ip
+         WQSj8E0ByFXGCuHMZsAvTtCQJgp9hKV5yuKE0yDgA4u65wa2ctuA938p64AwBTrkBnww
+         OwbFKbosmf03WNZ2ln9AakAQ75ps1Uyix6TcrDWXDNvM8yxH1rHDcSEcVa1bBu3XPSq9
+         ixaCkH3BhYyhsa9eiAH27OfCOIMWukgVNf4yewaqr24/C+1500ugF/xbUUzFoBQno26F
+         5VRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uC2eLVhYt5o2L3EkdXiZ0wHXR6DBNV6ezz2kj48c/z0=;
+        b=jY1FLh7wKtnr/SQMdtT8/SmmLsnodTo6dTr5ufFeF5xm5mCCvpJmp509vNK6sJY7Ho
+         +iQZwwOaNQQCOa2vrPLSgwOfiHQtmshJcti8fZZC3HL6DT8OLdQQyy69lLCdjhXKD52B
+         M9Lhfnlc8nyZPHBUG9TJDtilDYrhr+hOW38w2jUZDyEDDG9RmF3J/uwdFuO80ws+W3b8
+         LiTzLF47847vZskIRW9V3SVNR0b6FjBAanA+HyC3p6j/gZsbXqvHPMRBDK/XBCkFA6kk
+         jcBBiNHZlYQyLwCE6txEseW1D7DQXBKzV2TkjsxUAowj4x3v/FFSxL2C/4Z530xkiYQU
+         ucTg==
+X-Gm-Message-State: AOAM5327PJ2g08m6bmkUVFvCyUW2EXsAnlhYM1yzhs/owk0cxDbySMF1
+        /iSADKLrlXs7cSAhxGXSzpJoovp63JWTjdN3SsM=
+X-Google-Smtp-Source: ABdhPJxzZR5RCibQkvJ+m1K9hnWd7bVDC9RQwviR6fL5GPboW7oX/JyLWjTp9NyEYFk0eOOROlPca3nSmtk3qA79lK0=
+X-Received: by 2002:aed:2cc5:: with SMTP id g63mr27833340qtd.59.1595965157839;
+ Tue, 28 Jul 2020 12:39:17 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b0af5fc-1966-4a23-80d2-08d8332d256f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jul 2020 19:33:46.6575
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FRNdvSQlWgpgU3WtwSPEvCNco7GWUL/yXi+0iJLIhNv3V/c5uyKBzRs47eRZwW35LGzAzOhkZc2xUhCqGiTaiw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4511
+References: <20200722211223.1055107-1-jolsa@kernel.org> <20200722211223.1055107-9-jolsa@kernel.org>
+In-Reply-To: <20200722211223.1055107-9-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 28 Jul 2020 12:39:06 -0700
+Message-ID: <CAEf4BzbwJ+FXYWOK2k6UZ8X1f-2XQP1rRLFAFO6_OyK2iKv8Eg@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next 08/13] bpf: Add BTF_SET_START/END macros
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH net-next 0/2] dpaa2-eth: add reset control for debugf=
-s stats
->=20
-> On Tue, 28 Jul 2020 12:48:10 +0300 Ioana Ciornei wrote:
-> > This patch set adds debugfs controls for clearing the software and
-> > hardware kept counters.  This is especially useful in the context of
-> > debugging when there is a need for statistics per a run of the test.
->=20
-> No, come on, you know what we're going to say to a debugfs patch like thi=
-s...
->=20
+On Wed, Jul 22, 2020 at 2:13 PM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Adding support to define sorted set of BTF ID values.
+>
+> Following defines sorted set of BTF ID values:
+>
+>   BTF_SET_START(btf_whitelist_d_path)
+>   BTF_ID(func, vfs_truncate)
+>   BTF_ID(func, vfs_fallocate)
+>   BTF_ID(func, dentry_open)
+>   BTF_ID(func, vfs_getattr)
+>   BTF_ID(func, filp_close)
+>   BTF_SET_END(btf_whitelist_d_path)
+>
+> It defines following 'struct btf_id_set' variable to access
+> values and count:
+>
+>   struct btf_id_set btf_whitelist_d_path;
+>
+> Adding 'allowed' callback to struct bpf_func_proto, to allow
+> verifier the check on allowed callers.
+>
+> Adding btf_id_set_contains function, which will be used by
+> allowed callbacks to verify the caller's BTF ID value is
+> within allowed set.
+>
+> Also removing extra '\' in __BTF_ID_LIST macro.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/linux/bpf.h           |  4 ++++
+>  include/linux/btf_ids.h       | 43 ++++++++++++++++++++++++++++++++++-
+>  kernel/bpf/btf.c              | 14 ++++++++++++
+>  kernel/bpf/verifier.c         |  5 ++++
+>  tools/include/linux/btf_ids.h | 43 ++++++++++++++++++++++++++++++++++-
+>  5 files changed, 107 insertions(+), 2 deletions(-)
+>
 
-Eh, I figured it was worth a try since I saw that i40e also supports cleari=
-ng
-the stats through debugfs.
+[...]
 
-> Is there anything dpaa2-specific here?  We should be able to add a common=
- API
-> for this.
+> +#define BTF_SET_START(name)                            \
+> +__BTF_ID_LIST(name, local)                             \
+> +asm(                                                   \
+> +".pushsection " BTF_IDS_SECTION ",\"a\";       \n"     \
+> +".local __BTF_ID__set__" #name ";              \n"     \
+> +"__BTF_ID__set__" #name ":;                    \n"     \
+> +".zero 4                                       \n"     \
+> +".popsection;                                  \n");
+> +
+> +#define BTF_SET_END(name)                              \
+> +asm(                                                   \
+> +".pushsection " BTF_IDS_SECTION ",\"a\";      \n"      \
+> +".size __BTF_ID__set__" #name ", .-" #name "  \n"      \
+> +".popsection;                                 \n");    \
+> +extern struct btf_id_set name;
+> +
+>  #else
 
-No, there is nothing dpaa2-specific. The common API would be in the
-'ethtool --reset' area or do you have anything other in mind?
+This local symbol assumption will probably at some point bite us.
+Yonghong already did global vs static variants for BTF ID list, we'll
+end up doing something like that for sets of BTF IDs as well. Let's do
+this similarly from the get go.
 
-Ioana
+>
+>  #define BTF_ID_LIST(name) static u32 name[5];
+>  #define BTF_ID(prefix, name)
+>  #define BTF_ID_UNUSED
+>  #define BTF_ID_LIST_GLOBAL(name) u32 name[1];
+> +#define BTF_SET_START(name) static struct btf_id_set name = { 0 };
+
+nit: this zero is unnecessary and misleading (it's initialized for
+only the first member of a struct). Just {} is enough.
+
+> +#define BTF_SET_END(name)
+>
+>  #endif /* CONFIG_DEBUG_INFO_BTF */
+>
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 562d4453fad3..06714cdda0a9 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -21,6 +21,8 @@
+>  #include <linux/btf_ids.h>
+>  #include <linux/skmsg.h>
+>  #include <linux/perf_event.h>
+> +#include <linux/bsearch.h>
+> +#include <linux/btf_ids.h>
+>  #include <net/sock.h>
+>
+>  /* BTF (BPF Type Format) is the meta data format which describes
+> @@ -4740,3 +4742,15 @@ u32 btf_id(const struct btf *btf)
+>  {
+>         return btf->id;
+>  }
+> +
+> +static int btf_id_cmp_func(const void *a, const void *b)
+> +{
+> +       const int *pa = a, *pb = b;
+> +
+> +       return *pa - *pb;
+> +}
+> +
+> +bool btf_id_set_contains(struct btf_id_set *set, u32 id)
+> +{
+> +       return bsearch(&id, set->ids, set->cnt, sizeof(int), btf_id_cmp_func) != NULL;
+
+very nit ;) sizeof(__u32)
+
+> +}
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 39922fa07154..49f728c696a9 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -4706,6 +4706,11 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
+>                 return -EINVAL;
+>         }
+>
+
+[...]
