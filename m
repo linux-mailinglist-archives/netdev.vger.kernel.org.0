@@ -2,139 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B6B12305E5
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 10:57:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28AA1230605
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 11:00:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728398AbgG1I5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 04:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40818 "EHLO
+        id S1728375AbgG1JAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 05:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728390AbgG1I5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 04:57:46 -0400
-Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC6EC0619D5
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 01:57:46 -0700 (PDT)
-Received: by mail-qk1-x74a.google.com with SMTP id x190so13477276qke.16
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 01:57:46 -0700 (PDT)
+        with ESMTP id S1726032AbgG1JAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 05:00:12 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A538DC061794;
+        Tue, 28 Jul 2020 02:00:12 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id t6so11512775pgq.1;
+        Tue, 28 Jul 2020 02:00:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=IVtLohkvByKB7JQB020jNAQ7r9C7DnrPnxkFeMwHiBg=;
-        b=ILPx1sD1aeCN5pgPHt6ku/fuzS99/H+/XGMBQBA2hzytqWTNktD8E/6HCP0/yX9i1T
-         2TooIupqnMv5VhTLeb96j+zNbNV5AYkDQ75e2iFi2Wxc7e9y61IOzVd+fjq35qqA8flZ
-         FynkrlFSxEhFhB6tGUZoAk2ARc6Nb0dBs8F0kKJ8dXqKaDXh6d7Wc/Cuu21gWoDAtZP4
-         U/I161H80tGB6kZdUf6csdFJydudxvYVcpYOs+611R+/20uMhTmkFCPPUZ4N/bjsy0BA
-         5denHP9eh6G39bv0dA0RcgHQxuoSfvnN/mb3JHb45F2yruZ+GwTBbBXoRbzdgP6snUP9
-         FRzA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eXWDEkg4433DRZvcoGLFZLwDxOJJX9Wg+/QFW7sV+OE=;
+        b=emxPU/TIzPfj1TTUnuwUbMvATPs5XLnweOqB7/KY0b/Q41TG/uOC57PgMlZ7HE8UPp
+         VzhUlN0h8hJW8SZiX+cuwGOQoOeOm/kBDw/W7lf46h+xL5kcsNgomTpkwhYdovIRlp3f
+         fvGGba+i3cc82fgMGZ3DGf5BnnwD6UyQn8v5iaUgtnu/ULswv2CwuyeY393zna07UOTH
+         E3iT4FvwNUm1bWVWfvRWuD8R4YCTG9E9TU5nbn73oZVZ/+w7YPLc7Cm6Y2bRupbzKyWM
+         bkq7nLfljswYuCP8P1PbXzVG/MJoc9yY+f//Cls2C9IIsYdHvE/2eAdm2R4+KcfwQVl2
+         Q/6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=IVtLohkvByKB7JQB020jNAQ7r9C7DnrPnxkFeMwHiBg=;
-        b=R9XKc+sCmSOG/IhDPsX6UdzlUkbLqsBZZo0Z0STMOsqEHenT6mPjBmO80Mz1HvFOW4
-         vtWV5IMl0JP3KIMTmlPIGGKT4pWwzT5Qsv7n0lVXKXr1ytVHFpcznBwD9rwSpnIVUyM4
-         C+CtOHlz1uQMWcoNzWFbpTZp9wqTrNL591w4kaWXPo0QEqDuRv2TdNKCvaGIKO9g1WJo
-         PBTx3TCdIwBUhMmvMnfg78JcZ0sdwBImFx8E5VLCEcH+0i6WoxHpof15fMSTGqGRoU/L
-         IwLHZ3wJwVtzXPckPCMGOwsrAj8FTkL68Ab5xPXTakZMu3uj2e/4ayALj98d+eeKsz86
-         lKHg==
-X-Gm-Message-State: AOAM531x2ODO2fZP7e2/iNy3WDbxUSVKcd+WQGQoigpl/G5qmSgCRXrn
-        KLUZypqtxRdaVwORbtbzz2gcwD6S8lKf
-X-Google-Smtp-Source: ABdhPJyIgZfHKin1LciLIxcez8jCJhgJc1/oP9abqQ9PyLso35BvRfcms5FT1PFpPfJJHdGFfVZVBuLsMYOD
-X-Received: by 2002:ad4:5912:: with SMTP id ez18mr25041443qvb.24.1595926665680;
- Tue, 28 Jul 2020 01:57:45 -0700 (PDT)
-Date:   Tue, 28 Jul 2020 01:57:34 -0700
-In-Reply-To: <20200728085734.609930-1-irogers@google.com>
-Message-Id: <20200728085734.609930-6-irogers@google.com>
-Mime-Version: 1.0
-References: <20200728085734.609930-1-irogers@google.com>
-X-Mailer: git-send-email 2.28.0.163.g6104cc2f0b6-goog
-Subject: [PATCH v2 5/5] perf test: Leader sampling shouldn't clear sample period
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eXWDEkg4433DRZvcoGLFZLwDxOJJX9Wg+/QFW7sV+OE=;
+        b=qK5GtmY+0bf9rWfPR0w8lEIhkuMdZTtB28CiJzEnE4OudCzLR70VV8O3rldlMgbdPr
+         s+QOHsduituE0sL8pE0KOg3GPHh+uVrZ2/il7nlSTm0621qH6JCUk9Re9YPjdakRf9IK
+         3CkzhuCcJCKo6aJzqnDPfFlOznkBE9RFeCL03LUoxdb9nEuL7ybPsgq59k0+hIApsgLg
+         yiANNM2PsHDXB8V7pDlP9NN7nDa3Xb8BF4PbxN+k3qVtkMD62y6Melnriltav7fX/pvK
+         sHlwTYTKbUrzzxr7DmiMCqn/7yRiF4wp3F8d99TD2XbtRgfLGS4dgrWgqZDE+3qYw2rL
+         3Ylw==
+X-Gm-Message-State: AOAM533A0I5Abze7Yoy/ey+SbtVoR6HQPfnR8+DWRlt4RCfYtP0+rTpy
+        bH58K5qyA5rE5YhcNexu+N0=
+X-Google-Smtp-Source: ABdhPJwofzJqI96SNcAW3qc+RKA54AqcQwu88f1RTCsajCDXpWPqPEh74QJSWZ0ijFUX9TKSrful8w==
+X-Received: by 2002:a63:3541:: with SMTP id c62mr833395pga.127.1595926812125;
+        Tue, 28 Jul 2020 02:00:12 -0700 (PDT)
+Received: from varodek.iballbatonwifi.com ([103.105.152.86])
+        by smtp.gmail.com with ESMTPSA id t11sm9306174pfh.35.2020.07.28.02.00.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jul 2020 02:00:11 -0700 (PDT)
+From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Helgaas <bjorn@helgaas.com>,
+        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: [PATCH v1] pch_can: use generic power management
+Date:   Tue, 28 Jul 2020 14:27:57 +0530
+Message-Id: <20200728085757.888620-1-vaibhavgupta40@gmail.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add test that a sibling with leader sampling doesn't have its period
-cleared.
+Drivers using legacy power management .suspen()/.resume() callbacks
+have to manage PCI states and device's PM states themselves. They also
+need to take care of standard configuration registers.
 
-Signed-off-by: Ian Rogers <irogers@google.com>
+Switch to generic power management framework using a single
+"struct dev_pm_ops" variable to take the unnecessary load from the driver.
+This also avoids the need for the driver to directly call most of the PCI
+helper functions and device power state control functions, as through
+the generic framework PCI Core takes care of the necessary operations,
+and drivers are required to do only device-specific jobs.
+
+Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 ---
- tools/perf/tests/attr/README             |  1 +
- tools/perf/tests/attr/test-record-group2 | 29 ++++++++++++++++++++++++
- 2 files changed, 30 insertions(+)
- create mode 100644 tools/perf/tests/attr/test-record-group2
+ drivers/net/can/pch_can.c | 63 +++++++++++++--------------------------
+ 1 file changed, 21 insertions(+), 42 deletions(-)
 
-diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
-index 6cd408108595..a36f49fb4dbe 100644
---- a/tools/perf/tests/attr/README
-+++ b/tools/perf/tests/attr/README
-@@ -49,6 +49,7 @@ Following tests are defined (with perf commands):
-   perf record --call-graph fp kill              (test-record-graph-fp)
-   perf record --group -e cycles,instructions kill (test-record-group)
-   perf record -e '{cycles,instructions}' kill   (test-record-group1)
-+  perf record -e '{cycles/period=1/,instructions/period=2/}:S' kill (test-record-group2)
-   perf record -D kill                           (test-record-no-delay)
-   perf record -i kill                           (test-record-no-inherit)
-   perf record -n kill                           (test-record-no-samples)
-diff --git a/tools/perf/tests/attr/test-record-group2 b/tools/perf/tests/attr/test-record-group2
-new file mode 100644
-index 000000000000..6b9f8d182ce1
---- /dev/null
-+++ b/tools/perf/tests/attr/test-record-group2
-@@ -0,0 +1,29 @@
-+[config]
-+command = record
-+args    = --no-bpf-event -e '{cycles/period=1234000/,instructions/period=6789000/}:S' kill >/dev/null 2>&1
-+ret     = 1
+diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
+index db41dddd5771..ca54a6e1c810 100644
+--- a/drivers/net/can/pch_can.c
++++ b/drivers/net/can/pch_can.c
+@@ -957,8 +957,7 @@ static void pch_can_remove(struct pci_dev *pdev)
+ 	free_candev(priv->ndev);
+ }
+ 
+-#ifdef CONFIG_PM
+-static void pch_can_set_int_custom(struct pch_can_priv *priv)
++static void __maybe_unused pch_can_set_int_custom(struct pch_can_priv *priv)
+ {
+ 	/* Clearing the IE, SIE and EIE bits of Can control register. */
+ 	pch_can_bit_clear(&priv->regs->cont, PCH_CTRL_IE_SIE_EIE);
+@@ -969,14 +968,14 @@ static void pch_can_set_int_custom(struct pch_can_priv *priv)
+ }
+ 
+ /* This function retrieves interrupt enabled for the CAN device. */
+-static u32 pch_can_get_int_enables(struct pch_can_priv *priv)
++static u32 __maybe_unused pch_can_get_int_enables(struct pch_can_priv *priv)
+ {
+ 	/* Obtaining the status of IE, SIE and EIE interrupt bits. */
+ 	return (ioread32(&priv->regs->cont) & PCH_CTRL_IE_SIE_EIE) >> 1;
+ }
+ 
+-static u32 pch_can_get_rxtx_ir(struct pch_can_priv *priv, u32 buff_num,
+-			       enum pch_ifreg dir)
++static u32 __maybe_unused pch_can_get_rxtx_ir(struct pch_can_priv *priv,
++					      u32 buff_num, enum pch_ifreg dir)
+ {
+ 	u32 ie, enable;
+ 
+@@ -997,8 +996,8 @@ static u32 pch_can_get_rxtx_ir(struct pch_can_priv *priv, u32 buff_num,
+ 	return enable;
+ }
+ 
+-static void pch_can_set_rx_buffer_link(struct pch_can_priv *priv,
+-				       u32 buffer_num, int set)
++static void __maybe_unused pch_can_set_rx_buffer_link(struct pch_can_priv *priv,
++						      u32 buffer_num, int set)
+ {
+ 	iowrite32(PCH_CMASK_RX_TX_GET, &priv->regs->ifregs[0].cmask);
+ 	pch_can_rw_msg_obj(&priv->regs->ifregs[0].creq, buffer_num);
+@@ -1013,7 +1012,8 @@ static void pch_can_set_rx_buffer_link(struct pch_can_priv *priv,
+ 	pch_can_rw_msg_obj(&priv->regs->ifregs[0].creq, buffer_num);
+ }
+ 
+-static u32 pch_can_get_rx_buffer_link(struct pch_can_priv *priv, u32 buffer_num)
++static u32 __maybe_unused pch_can_get_rx_buffer_link(struct pch_can_priv *priv,
++						     u32 buffer_num)
+ {
+ 	u32 link;
+ 
+@@ -1027,20 +1027,19 @@ static u32 pch_can_get_rx_buffer_link(struct pch_can_priv *priv, u32 buffer_num)
+ 	return link;
+ }
+ 
+-static int pch_can_get_buffer_status(struct pch_can_priv *priv)
++static int __maybe_unused pch_can_get_buffer_status(struct pch_can_priv *priv)
+ {
+ 	return (ioread32(&priv->regs->treq1) & 0xffff) |
+ 	       (ioread32(&priv->regs->treq2) << 16);
+ }
+ 
+-static int pch_can_suspend(struct pci_dev *pdev, pm_message_t state)
++static int __maybe_unused pch_can_suspend(struct device *dev_d)
+ {
+ 	int i;
+-	int retval;
+ 	u32 buf_stat;	/* Variable for reading the transmit buffer status. */
+ 	int counter = PCH_COUNTER_LIMIT;
+ 
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(dev_d);
+ 	struct pch_can_priv *priv = netdev_priv(dev);
+ 
+ 	/* Stop the CAN controller */
+@@ -1058,7 +1057,7 @@ static int pch_can_suspend(struct pci_dev *pdev, pm_message_t state)
+ 		udelay(1);
+ 	}
+ 	if (!counter)
+-		dev_err(&pdev->dev, "%s -> Transmission time out.\n", __func__);
++		dev_err(dev_d, "%s -> Transmission time out.\n", __func__);
+ 
+ 	/* Save interrupt configuration and then disable them */
+ 	priv->int_enables = pch_can_get_int_enables(priv);
+@@ -1081,35 +1080,16 @@ static int pch_can_suspend(struct pci_dev *pdev, pm_message_t state)
+ 
+ 	/* Disable all Receive buffers */
+ 	pch_can_set_rx_all(priv, 0);
+-	retval = pci_save_state(pdev);
+-	if (retval) {
+-		dev_err(&pdev->dev, "pci_save_state failed.\n");
+-	} else {
+-		pci_enable_wake(pdev, PCI_D3hot, 0);
+-		pci_disable_device(pdev);
+-		pci_set_power_state(pdev, pci_choose_state(pdev, state));
+-	}
+ 
+-	return retval;
++	return 0;
+ }
+ 
+-static int pch_can_resume(struct pci_dev *pdev)
++static int __maybe_unused pch_can_resume(struct device *dev_d)
+ {
+ 	int i;
+-	int retval;
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(dev_d);
+ 	struct pch_can_priv *priv = netdev_priv(dev);
+ 
+-	pci_set_power_state(pdev, PCI_D0);
+-	pci_restore_state(pdev);
+-	retval = pci_enable_device(pdev);
+-	if (retval) {
+-		dev_err(&pdev->dev, "pci_enable_device failed.\n");
+-		return retval;
+-	}
+-
+-	pci_enable_wake(pdev, PCI_D3hot, 0);
+-
+ 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
+ 
+ 	/* Disabling all interrupts. */
+@@ -1146,12 +1126,8 @@ static int pch_can_resume(struct pci_dev *pdev)
+ 	/* Restore Run Mode */
+ 	pch_can_set_run_mode(priv, PCH_CAN_RUN);
+ 
+-	return retval;
++	return 0;
+ }
+-#else
+-#define pch_can_suspend NULL
+-#define pch_can_resume NULL
+-#endif
+ 
+ static int pch_can_get_berr_counter(const struct net_device *dev,
+ 				    struct can_berr_counter *bec)
+@@ -1252,13 +1228,16 @@ static int pch_can_probe(struct pci_dev *pdev,
+ 	return rc;
+ }
+ 
++static SIMPLE_DEV_PM_OPS(pch_can_pm_ops,
++			 pch_can_suspend,
++			 pch_can_resume);
 +
-+[event-1:base-record]
-+fd=1
-+group_fd=-1
-+config=0|1
-+sample_period=1234000
-+sample_type=87
-+read_format=12
-+inherit=0
-+freq=0
-+
-+[event-2:base-record]
-+fd=2
-+group_fd=1
-+config=0|1
-+sample_period=6789000
-+sample_type=87
-+read_format=12
-+disabled=0
-+inherit=0
-+mmap=0
-+comm=0
-+freq=0
-+enable_on_exec=0
-+task=0
+ static struct pci_driver pch_can_pci_driver = {
+ 	.name = "pch_can",
+ 	.id_table = pch_pci_tbl,
+ 	.probe = pch_can_probe,
+ 	.remove = pch_can_remove,
+-	.suspend = pch_can_suspend,
+-	.resume = pch_can_resume,
++	.driver.pm = &pch_can_pm_ops,
+ };
+ 
+ module_pci_driver(pch_can_pci_driver);
 -- 
-2.28.0.163.g6104cc2f0b6-goog
+2.27.0
 
