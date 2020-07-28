@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A61842303BE
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 09:18:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43B8E2303CB
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 09:19:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727816AbgG1HSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 03:18:25 -0400
-Received: from mga11.intel.com ([192.55.52.93]:46339 "EHLO mga11.intel.com"
+        id S1727918AbgG1HS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 03:18:58 -0400
+Received: from mga07.intel.com ([134.134.136.100]:17242 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727066AbgG1HSZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 03:18:25 -0400
-IronPort-SDR: wTgiqa+CRxU0bVw28u7c0ERPPBzpggA49GIxVZzizgV9R+sL2qnsp7IVotORtAV4waFv1DR4zx
- bDqRvkPfq4rg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="149025915"
+        id S1727877AbgG1HS6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 03:18:58 -0400
+IronPort-SDR: 9+QqGbS8+aFByoCknMWRGdx5/mSWhUU0vGRl6TFqXztlokBHT7c2Ulb1YYesJjzYy6SgjALLMd
+ gi7AjTyt2+5g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="215690863"
 X-IronPort-AV: E=Sophos;i="5.75,405,1589266800"; 
-   d="scan'208";a="149025915"
+   d="scan'208";a="215690863"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2020 00:18:08 -0700
-IronPort-SDR: NXPhH/NU/mQ/5Yum2i5pN7FYXu4DyYKKWl3YkWL5sYcJMcsxwawjES8Kt9kAeffD3rR+wN9Vvt
- 3h/1hYg0AJxQ==
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2020 00:18:53 -0700
+IronPort-SDR: EunS8WH/e+dDiDLFkEoRVofO7DdYWDO0fAu42vKeFxTWgqLvYk4Sm67BPd4Z7n4tBqz6OWD4zI
+ FrxLINJkJHyw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,405,1589266800"; 
-   d="scan'208";a="322093460"
+   d="scan'208";a="322093688"
 Received: from nheyde-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.57.223])
-  by fmsmga002.fm.intel.com with ESMTP; 28 Jul 2020 00:18:04 -0700
-Subject: Re: [PATCH bpf-next v4 12/14] libbpf: support shared umems between
- queues and devices
+  by fmsmga002.fm.intel.com with ESMTP; 28 Jul 2020 00:18:49 -0700
+Subject: Re: [PATCH bpf-next v4 14/14] xsk: documentation for XDP_SHARED_UMEM
+ between queues and netdevs
 To:     Magnus Karlsson <magnus.karlsson@intel.com>, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         jonathan.lemon@gmail.com, maximmi@mellanox.com
@@ -36,14 +36,14 @@ Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
         anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
         maciejromanfijalkowski@gmail.com, cristian.dumitrescu@intel.com
 References: <1595307848-20719-1-git-send-email-magnus.karlsson@intel.com>
- <1595307848-20719-13-git-send-email-magnus.karlsson@intel.com>
+ <1595307848-20719-15-git-send-email-magnus.karlsson@intel.com>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <2f8dbe00-e532-72d2-cf1a-105a9fdcbdc4@intel.com>
-Date:   Tue, 28 Jul 2020 09:18:04 +0200
+Message-ID: <59554482-dc1d-7758-c090-9fada8c66151@intel.com>
+Date:   Tue, 28 Jul 2020 09:18:48 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <1595307848-20719-13-git-send-email-magnus.karlsson@intel.com>
+In-Reply-To: <1595307848-20719-15-git-send-email-magnus.karlsson@intel.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -55,22 +55,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 2020-07-21 07:04, Magnus Karlsson wrote:
-> Add support for shared umems between hardware queues and devices to
-> the AF_XDP part of libbpf. This so that zero-copy can be achieved in
-> applications that want to send and receive packets between HW queues
-> on one device or between different devices/netdevs.
-> 
-> In order to create sockets that share a umem between hardware queues
-> and devices, a new function has been added called
-> xsk_socket__create_shared(). It takes the same arguments as
-> xsk_socket_create() plus references to a fill ring and a completion
-> ring. So for every socket that share a umem, you need to have one more
-> set of fill and completion rings. This in order to maintain the
-> single-producer single-consumer semantics of the rings.
-> 
-> You can create all the sockets via the new xsk_socket__create_shared()
-> call, or create the first one with xsk_socket__create() and the rest
-> with xsk_socket__create_shared(). Both methods work.
+> Add documentation for the XDP_SHARED_UMEM feature when a UMEM is
+> shared between different queues and/or netdevs.
 > 
 > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
@@ -78,735 +64,111 @@ Acked-by: Björn Töpel <bjorn.topel@intel.com>
 
 
 > ---
->   tools/lib/bpf/libbpf.map |   1 +
->   tools/lib/bpf/xsk.c      | 376 ++++++++++++++++++++++++++++++-----------------
->   tools/lib/bpf/xsk.h      |   9 ++
->   3 files changed, 254 insertions(+), 132 deletions(-)
+>   Documentation/networking/af_xdp.rst | 68 +++++++++++++++++++++++++++++++------
+>   1 file changed, 58 insertions(+), 10 deletions(-)
 > 
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 6f0856a..bc06b67 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -291,4 +291,5 @@ LIBBPF_0.1.0 {
->   		bpf_program__set_autoload;
->   		bpf_program__set_sk_lookup;
->   		btf__set_fd;
-> +		xsk_socket__create_shared;
->   } LIBBPF_0.0.9;
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index f7f4efb..86ad4f7 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -20,6 +20,7 @@
->   #include <linux/if_ether.h>
->   #include <linux/if_packet.h>
->   #include <linux/if_xdp.h>
-> +#include <linux/list.h>
->   #include <linux/sockios.h>
->   #include <net/if.h>
->   #include <sys/ioctl.h>
-> @@ -48,26 +49,35 @@
->   #endif
+> diff --git a/Documentation/networking/af_xdp.rst b/Documentation/networking/af_xdp.rst
+> index 5bc55a4..2ccc564 100644
+> --- a/Documentation/networking/af_xdp.rst
+> +++ b/Documentation/networking/af_xdp.rst
+> @@ -258,14 +258,21 @@ socket into zero-copy mode or fail.
+>   XDP_SHARED_UMEM bind flag
+>   -------------------------
 >   
->   struct xsk_umem {
-> -	struct xsk_ring_prod *fill;
-> -	struct xsk_ring_cons *comp;
-> +	struct xsk_ring_prod *fill_save;
-> +	struct xsk_ring_cons *comp_save;
->   	char *umem_area;
->   	struct xsk_umem_config config;
->   	int fd;
->   	int refcount;
-> +	struct list_head ctx_list;
-> +};
+> -This flag enables you to bind multiple sockets to the same UMEM, but
+> -only if they share the same queue id. In this mode, each socket has
+> -their own RX and TX rings, but the UMEM (tied to the fist socket
+> -created) only has a single FILL ring and a single COMPLETION
+> -ring. To use this mode, create the first socket and bind it in the normal
+> -way. Create a second socket and create an RX and a TX ring, or at
+> -least one of them, but no FILL or COMPLETION rings as the ones from
+> -the first socket will be used. In the bind call, set he
+> +This flag enables you to bind multiple sockets to the same UMEM. It
+> +works on the same queue id, between queue ids and between
+> +netdevs/devices. In this mode, each socket has their own RX and TX
+> +rings as usual, but you are going to have one or more FILL and
+> +COMPLETION ring pairs. You have to create one of these pairs per
+> +unique netdev and queue id tuple that you bind to.
 > +
-> +struct xsk_ctx {
-> +	struct xsk_ring_prod *fill;
-> +	struct xsk_ring_cons *comp;
-> +	__u32 queue_id;
-> +	struct xsk_umem *umem;
-> +	int refcount;
-> +	int ifindex;
-> +	struct list_head list;
-> +	int prog_fd;
-> +	int xsks_map_fd;
-> +	char ifname[IFNAMSIZ];
->   };
+> +Starting with the case were we would like to share a UMEM between
+> +sockets bound to the same netdev and queue id. The UMEM (tied to the
+> +fist socket created) will only have a single FILL ring and a single
+> +COMPLETION ring as there is only on unique netdev,queue_id tuple that
+> +we have bound to. To use this mode, create the first socket and bind
+> +it in the normal way. Create a second socket and create an RX and a TX
+> +ring, or at least one of them, but no FILL or COMPLETION rings as the
+> +ones from the first socket will be used. In the bind call, set he
+>   XDP_SHARED_UMEM option and provide the initial socket's fd in the
+>   sxdp_shared_umem_fd field. You can attach an arbitrary number of extra
+>   sockets this way.
+> @@ -305,11 +312,41 @@ concurrently. There are no synchronization primitives in the
+>   libbpf code that protects multiple users at this point in time.
 >   
->   struct xsk_socket {
->   	struct xsk_ring_cons *rx;
->   	struct xsk_ring_prod *tx;
->   	__u64 outstanding_tx;
-> -	struct xsk_umem *umem;
-> +	struct xsk_ctx *ctx;
->   	struct xsk_socket_config config;
->   	int fd;
-> -	int ifindex;
-> -	int prog_fd;
-> -	int xsks_map_fd;
-> -	__u32 queue_id;
-> -	char ifname[IFNAMSIZ];
->   };
+>   Libbpf uses this mode if you create more than one socket tied to the
+> -same umem. However, note that you need to supply the
+> +same UMEM. However, note that you need to supply the
+>   XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD libbpf_flag with the
+>   xsk_socket__create calls and load your own XDP program as there is no
+>   built in one in libbpf that will route the traffic for you.
 >   
->   struct xsk_nl_info {
-> @@ -203,15 +213,73 @@ static int xsk_get_mmap_offsets(int fd, struct xdp_mmap_offsets *off)
->   	return -EINVAL;
->   }
->   
-> +static int xsk_create_umem_rings(struct xsk_umem *umem, int fd,
-> +				 struct xsk_ring_prod *fill,
-> +				 struct xsk_ring_cons *comp)
-> +{
-> +	struct xdp_mmap_offsets off;
-> +	void *map;
-> +	int err;
+> +The second case is when you share a UMEM between sockets that are
+> +bound to different queue ids and/or netdevs. In this case you have to
+> +create one FILL ring and one COMPLETION ring for each unique
+> +netdev,queue_id pair. Let us say you want to create two sockets bound
+> +to two different queue ids on the same netdev. Create the first socket
+> +and bind it in the normal way. Create a second socket and create an RX
+> +and a TX ring, or at least one of them, and then one FILL and
+> +COMPLETION ring for this socket. Then in the bind call, set he
+> +XDP_SHARED_UMEM option and provide the initial socket's fd in the
+> +sxdp_shared_umem_fd field as you registered the UMEM on that
+> +socket. These two sockets will now share one and the same UMEM.
 > +
-> +	err = setsockopt(fd, SOL_XDP, XDP_UMEM_FILL_RING,
-> +			 &umem->config.fill_size,
-> +			 sizeof(umem->config.fill_size));
-> +	if (err)
-> +		return -errno;
+> +There is no need to supply an XDP program like the one in the previous
+> +case where sockets were bound to the same queue id and
+> +device. Instead, use the NIC's packet steering capabilities to steer
+> +the packets to the right queue. In the previous example, there is only
+> +one queue shared among sockets, so the NIC cannot do this steering. It
+> +can only steer between queues.
 > +
-> +	err = setsockopt(fd, SOL_XDP, XDP_UMEM_COMPLETION_RING,
-> +			 &umem->config.comp_size,
-> +			 sizeof(umem->config.comp_size));
-> +	if (err)
-> +		return -errno;
+> +In libbpf, you need to use the xsk_socket__create_shared() API as it
+> +takes a reference to a FILL ring and a COMPLETION ring that will be
+> +created for you and bound to the shared UMEM. You can use this
+> +function for all the sockets you create, or you can use it for the
+> +second and following ones and use xsk_socket__create() for the first
+> +one. Both methods yield the same result.
 > +
-> +	err = xsk_get_mmap_offsets(fd, &off);
-> +	if (err)
-> +		return -errno;
+> +Note that a UMEM can be shared between sockets on the same queue id
+> +and device, as well as between queues on the same device and between
+> +devices at the same time.
 > +
-> +	map = mmap(NULL, off.fr.desc + umem->config.fill_size * sizeof(__u64),
-> +		   PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, fd,
-> +		   XDP_UMEM_PGOFF_FILL_RING);
-> +	if (map == MAP_FAILED)
-> +		return -errno;
+>   XDP_USE_NEED_WAKEUP bind flag
+>   -----------------------------
+>   
+> @@ -364,7 +401,7 @@ resources by only setting up one of them. Both the FILL ring and the
+>   COMPLETION ring are mandatory as you need to have a UMEM tied to your
+>   socket. But if the XDP_SHARED_UMEM flag is used, any socket after the
+>   first one does not have a UMEM and should in that case not have any
+> -FILL or COMPLETION rings created as the ones from the shared umem will
+> +FILL or COMPLETION rings created as the ones from the shared UMEM will
+>   be used. Note, that the rings are single-producer single-consumer, so
+>   do not try to access them from multiple processes at the same
+>   time. See the XDP_SHARED_UMEM section.
+> @@ -567,6 +604,17 @@ A: The short answer is no, that is not supported at the moment. The
+>      switch, or other distribution mechanism, in your NIC to direct
+>      traffic to the correct queue id and socket.
+>   
+> +Q: My packets are sometimes corrupted. What is wrong?
 > +
-> +	fill->mask = umem->config.fill_size - 1;
-> +	fill->size = umem->config.fill_size;
-> +	fill->producer = map + off.fr.producer;
-> +	fill->consumer = map + off.fr.consumer;
-> +	fill->flags = map + off.fr.flags;
-> +	fill->ring = map + off.fr.desc;
-> +	fill->cached_cons = umem->config.fill_size;
+> +A: Care has to be taken not to feed the same buffer in the UMEM into
+> +   more than one ring at the same time. If you for example feed the
+> +   same buffer into the FILL ring and the TX ring at the same time, the
+> +   NIC might receive data into the buffer at the same time it is
+> +   sending it. This will cause some packets to become corrupted. Same
+> +   thing goes for feeding the same buffer into the FILL rings
+> +   belonging to different queue ids or netdevs bound with the
+> +   XDP_SHARED_UMEM flag.
 > +
-> +	map = mmap(NULL, off.cr.desc + umem->config.comp_size * sizeof(__u64),
-> +		   PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, fd,
-> +		   XDP_UMEM_PGOFF_COMPLETION_RING);
-> +	if (map == MAP_FAILED) {
-> +		err = -errno;
-> +		goto out_mmap;
-> +	}
-> +
-> +	comp->mask = umem->config.comp_size - 1;
-> +	comp->size = umem->config.comp_size;
-> +	comp->producer = map + off.cr.producer;
-> +	comp->consumer = map + off.cr.consumer;
-> +	comp->flags = map + off.cr.flags;
-> +	comp->ring = map + off.cr.desc;
-> +
-> +	return 0;
-> +
-> +out_mmap:
-> +	munmap(map, off.fr.desc + umem->config.fill_size * sizeof(__u64));
-> +	return err;
-> +}
-> +
->   int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
->   			    __u64 size, struct xsk_ring_prod *fill,
->   			    struct xsk_ring_cons *comp,
->   			    const struct xsk_umem_config *usr_config)
->   {
-> -	struct xdp_mmap_offsets off;
->   	struct xdp_umem_reg mr;
->   	struct xsk_umem *umem;
-> -	void *map;
->   	int err;
+>   Credits
+>   =======
 >   
->   	if (!umem_area || !umem_ptr || !fill || !comp)
-> @@ -230,6 +298,7 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
->   	}
->   
->   	umem->umem_area = umem_area;
-> +	INIT_LIST_HEAD(&umem->ctx_list);
->   	xsk_set_umem_config(&umem->config, usr_config);
->   
->   	memset(&mr, 0, sizeof(mr));
-> @@ -244,71 +313,16 @@ int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
->   		err = -errno;
->   		goto out_socket;
->   	}
-> -	err = setsockopt(umem->fd, SOL_XDP, XDP_UMEM_FILL_RING,
-> -			 &umem->config.fill_size,
-> -			 sizeof(umem->config.fill_size));
-> -	if (err) {
-> -		err = -errno;
-> -		goto out_socket;
-> -	}
-> -	err = setsockopt(umem->fd, SOL_XDP, XDP_UMEM_COMPLETION_RING,
-> -			 &umem->config.comp_size,
-> -			 sizeof(umem->config.comp_size));
-> -	if (err) {
-> -		err = -errno;
-> -		goto out_socket;
-> -	}
->   
-> -	err = xsk_get_mmap_offsets(umem->fd, &off);
-> -	if (err) {
-> -		err = -errno;
-> -		goto out_socket;
-> -	}
-> -
-> -	map = mmap(NULL, off.fr.desc + umem->config.fill_size * sizeof(__u64),
-> -		   PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, umem->fd,
-> -		   XDP_UMEM_PGOFF_FILL_RING);
-> -	if (map == MAP_FAILED) {
-> -		err = -errno;
-> +	err = xsk_create_umem_rings(umem, umem->fd, fill, comp);
-> +	if (err)
->   		goto out_socket;
-> -	}
-> -
-> -	umem->fill = fill;
-> -	fill->mask = umem->config.fill_size - 1;
-> -	fill->size = umem->config.fill_size;
-> -	fill->producer = map + off.fr.producer;
-> -	fill->consumer = map + off.fr.consumer;
-> -	fill->flags = map + off.fr.flags;
-> -	fill->ring = map + off.fr.desc;
-> -	fill->cached_prod = *fill->producer;
-> -	/* cached_cons is "size" bigger than the real consumer pointer
-> -	 * See xsk_prod_nb_free
-> -	 */
-> -	fill->cached_cons = *fill->consumer + umem->config.fill_size;
-> -
-> -	map = mmap(NULL, off.cr.desc + umem->config.comp_size * sizeof(__u64),
-> -		   PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, umem->fd,
-> -		   XDP_UMEM_PGOFF_COMPLETION_RING);
-> -	if (map == MAP_FAILED) {
-> -		err = -errno;
-> -		goto out_mmap;
-> -	}
-> -
-> -	umem->comp = comp;
-> -	comp->mask = umem->config.comp_size - 1;
-> -	comp->size = umem->config.comp_size;
-> -	comp->producer = map + off.cr.producer;
-> -	comp->consumer = map + off.cr.consumer;
-> -	comp->flags = map + off.cr.flags;
-> -	comp->ring = map + off.cr.desc;
-> -	comp->cached_prod = *comp->producer;
-> -	comp->cached_cons = *comp->consumer;
->   
-> +	umem->fill_save = fill;
-> +	umem->comp_save = comp;
->   	*umem_ptr = umem;
->   	return 0;
->   
-> -out_mmap:
-> -	munmap(map, off.fr.desc + umem->config.fill_size * sizeof(__u64));
->   out_socket:
->   	close(umem->fd);
->   out_umem_alloc:
-> @@ -342,6 +356,7 @@ DEFAULT_VERSION(xsk_umem__create_v0_0_4, xsk_umem__create, LIBBPF_0.0.4)
->   static int xsk_load_xdp_prog(struct xsk_socket *xsk)
->   {
->   	static const int log_buf_size = 16 * 1024;
-> +	struct xsk_ctx *ctx = xsk->ctx;
->   	char log_buf[log_buf_size];
->   	int err, prog_fd;
->   
-> @@ -369,7 +384,7 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
->   		/* *(u32 *)(r10 - 4) = r2 */
->   		BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_2, -4),
->   		/* r1 = xskmap[] */
-> -		BPF_LD_MAP_FD(BPF_REG_1, xsk->xsks_map_fd),
-> +		BPF_LD_MAP_FD(BPF_REG_1, ctx->xsks_map_fd),
->   		/* r3 = XDP_PASS */
->   		BPF_MOV64_IMM(BPF_REG_3, 2),
->   		/* call bpf_redirect_map */
-> @@ -381,7 +396,7 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
->   		/* r2 += -4 */
->   		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -4),
->   		/* r1 = xskmap[] */
-> -		BPF_LD_MAP_FD(BPF_REG_1, xsk->xsks_map_fd),
-> +		BPF_LD_MAP_FD(BPF_REG_1, ctx->xsks_map_fd),
->   		/* call bpf_map_lookup_elem */
->   		BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
->   		/* r1 = r0 */
-> @@ -393,7 +408,7 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
->   		/* r2 = *(u32 *)(r10 - 4) */
->   		BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_10, -4),
->   		/* r1 = xskmap[] */
-> -		BPF_LD_MAP_FD(BPF_REG_1, xsk->xsks_map_fd),
-> +		BPF_LD_MAP_FD(BPF_REG_1, ctx->xsks_map_fd),
->   		/* r3 = 0 */
->   		BPF_MOV64_IMM(BPF_REG_3, 0),
->   		/* call bpf_redirect_map */
-> @@ -411,19 +426,21 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
->   		return prog_fd;
->   	}
->   
-> -	err = bpf_set_link_xdp_fd(xsk->ifindex, prog_fd, xsk->config.xdp_flags);
-> +	err = bpf_set_link_xdp_fd(xsk->ctx->ifindex, prog_fd,
-> +				  xsk->config.xdp_flags);
->   	if (err) {
->   		close(prog_fd);
->   		return err;
->   	}
->   
-> -	xsk->prog_fd = prog_fd;
-> +	ctx->prog_fd = prog_fd;
->   	return 0;
->   }
->   
->   static int xsk_get_max_queues(struct xsk_socket *xsk)
->   {
->   	struct ethtool_channels channels = { .cmd = ETHTOOL_GCHANNELS };
-> +	struct xsk_ctx *ctx = xsk->ctx;
->   	struct ifreq ifr = {};
->   	int fd, err, ret;
->   
-> @@ -432,7 +449,7 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
->   		return -errno;
->   
->   	ifr.ifr_data = (void *)&channels;
-> -	memcpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
-> +	memcpy(ifr.ifr_name, ctx->ifname, IFNAMSIZ - 1);
->   	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
->   	err = ioctl(fd, SIOCETHTOOL, &ifr);
->   	if (err && errno != EOPNOTSUPP) {
-> @@ -460,6 +477,7 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
->   
->   static int xsk_create_bpf_maps(struct xsk_socket *xsk)
->   {
-> +	struct xsk_ctx *ctx = xsk->ctx;
->   	int max_queues;
->   	int fd;
->   
-> @@ -472,15 +490,17 @@ static int xsk_create_bpf_maps(struct xsk_socket *xsk)
->   	if (fd < 0)
->   		return fd;
->   
-> -	xsk->xsks_map_fd = fd;
-> +	ctx->xsks_map_fd = fd;
->   
->   	return 0;
->   }
->   
->   static void xsk_delete_bpf_maps(struct xsk_socket *xsk)
->   {
-> -	bpf_map_delete_elem(xsk->xsks_map_fd, &xsk->queue_id);
-> -	close(xsk->xsks_map_fd);
-> +	struct xsk_ctx *ctx = xsk->ctx;
-> +
-> +	bpf_map_delete_elem(ctx->xsks_map_fd, &ctx->queue_id);
-> +	close(ctx->xsks_map_fd);
->   }
->   
->   static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
-> @@ -488,10 +508,11 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
->   	__u32 i, *map_ids, num_maps, prog_len = sizeof(struct bpf_prog_info);
->   	__u32 map_len = sizeof(struct bpf_map_info);
->   	struct bpf_prog_info prog_info = {};
-> +	struct xsk_ctx *ctx = xsk->ctx;
->   	struct bpf_map_info map_info;
->   	int fd, err;
->   
-> -	err = bpf_obj_get_info_by_fd(xsk->prog_fd, &prog_info, &prog_len);
-> +	err = bpf_obj_get_info_by_fd(ctx->prog_fd, &prog_info, &prog_len);
->   	if (err)
->   		return err;
->   
-> @@ -505,11 +526,11 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
->   	prog_info.nr_map_ids = num_maps;
->   	prog_info.map_ids = (__u64)(unsigned long)map_ids;
->   
-> -	err = bpf_obj_get_info_by_fd(xsk->prog_fd, &prog_info, &prog_len);
-> +	err = bpf_obj_get_info_by_fd(ctx->prog_fd, &prog_info, &prog_len);
->   	if (err)
->   		goto out_map_ids;
->   
-> -	xsk->xsks_map_fd = -1;
-> +	ctx->xsks_map_fd = -1;
->   
->   	for (i = 0; i < prog_info.nr_map_ids; i++) {
->   		fd = bpf_map_get_fd_by_id(map_ids[i]);
-> @@ -523,7 +544,7 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
->   		}
->   
->   		if (!strcmp(map_info.name, "xsks_map")) {
-> -			xsk->xsks_map_fd = fd;
-> +			ctx->xsks_map_fd = fd;
->   			continue;
->   		}
->   
-> @@ -531,7 +552,7 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
->   	}
->   
->   	err = 0;
-> -	if (xsk->xsks_map_fd == -1)
-> +	if (ctx->xsks_map_fd == -1)
->   		err = -ENOENT;
->   
->   out_map_ids:
-> @@ -541,16 +562,19 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
->   
->   static int xsk_set_bpf_maps(struct xsk_socket *xsk)
->   {
-> -	return bpf_map_update_elem(xsk->xsks_map_fd, &xsk->queue_id,
-> +	struct xsk_ctx *ctx = xsk->ctx;
-> +
-> +	return bpf_map_update_elem(ctx->xsks_map_fd, &ctx->queue_id,
->   				   &xsk->fd, 0);
->   }
->   
->   static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
->   {
-> +	struct xsk_ctx *ctx = xsk->ctx;
->   	__u32 prog_id = 0;
->   	int err;
->   
-> -	err = bpf_get_link_xdp_id(xsk->ifindex, &prog_id,
-> +	err = bpf_get_link_xdp_id(ctx->ifindex, &prog_id,
->   				  xsk->config.xdp_flags);
->   	if (err)
->   		return err;
-> @@ -566,12 +590,12 @@ static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
->   			return err;
->   		}
->   	} else {
-> -		xsk->prog_fd = bpf_prog_get_fd_by_id(prog_id);
-> -		if (xsk->prog_fd < 0)
-> +		ctx->prog_fd = bpf_prog_get_fd_by_id(prog_id);
-> +		if (ctx->prog_fd < 0)
->   			return -errno;
->   		err = xsk_lookup_bpf_maps(xsk);
->   		if (err) {
-> -			close(xsk->prog_fd);
-> +			close(ctx->prog_fd);
->   			return err;
->   		}
->   	}
-> @@ -580,25 +604,110 @@ static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
->   		err = xsk_set_bpf_maps(xsk);
->   	if (err) {
->   		xsk_delete_bpf_maps(xsk);
-> -		close(xsk->prog_fd);
-> +		close(ctx->prog_fd);
->   		return err;
->   	}
->   
->   	return 0;
->   }
->   
-> -int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
-> -		       __u32 queue_id, struct xsk_umem *umem,
-> -		       struct xsk_ring_cons *rx, struct xsk_ring_prod *tx,
-> -		       const struct xsk_socket_config *usr_config)
-> +static struct xsk_ctx *xsk_get_ctx(struct xsk_umem *umem, int ifindex,
-> +				   __u32 queue_id)
-> +{
-> +	struct xsk_ctx *ctx;
-> +
-> +	if (list_empty(&umem->ctx_list))
-> +		return NULL;
-> +
-> +	list_for_each_entry(ctx, &umem->ctx_list, list) {
-> +		if (ctx->ifindex == ifindex && ctx->queue_id == queue_id) {
-> +			ctx->refcount++;
-> +			return ctx;
-> +		}
-> +	}
-> +
-> +	return NULL;
-> +}
-> +
-> +static void xsk_put_ctx(struct xsk_ctx *ctx)
-> +{
-> +	struct xsk_umem *umem = ctx->umem;
-> +	struct xdp_mmap_offsets off;
-> +	int err;
-> +
-> +	if (--ctx->refcount == 0) {
-> +		err = xsk_get_mmap_offsets(umem->fd, &off);
-> +		if (!err) {
-> +			munmap(ctx->fill->ring - off.fr.desc,
-> +			       off.fr.desc + umem->config.fill_size *
-> +			       sizeof(__u64));
-> +			munmap(ctx->comp->ring - off.cr.desc,
-> +			       off.cr.desc + umem->config.comp_size *
-> +			       sizeof(__u64));
-> +		}
-> +
-> +		list_del(&ctx->list);
-> +		free(ctx);
-> +	}
-> +}
-> +
-> +static struct xsk_ctx *xsk_create_ctx(struct xsk_socket *xsk,
-> +				      struct xsk_umem *umem, int ifindex,
-> +				      const char *ifname, __u32 queue_id,
-> +				      struct xsk_ring_prod *fill,
-> +				      struct xsk_ring_cons *comp)
-> +{
-> +	struct xsk_ctx *ctx;
-> +	int err;
-> +
-> +	ctx = calloc(1, sizeof(*ctx));
-> +	if (!ctx)
-> +		return NULL;
-> +
-> +	if (!umem->fill_save) {
-> +		err = xsk_create_umem_rings(umem, xsk->fd, fill, comp);
-> +		if (err) {
-> +			free(ctx);
-> +			return NULL;
-> +		}
-> +	} else if (umem->fill_save != fill || umem->comp_save != comp) {
-> +		/* Copy over rings to new structs. */
-> +		memcpy(fill, umem->fill_save, sizeof(*fill));
-> +		memcpy(comp, umem->comp_save, sizeof(*comp));
-> +	}
-> +
-> +	ctx->ifindex = ifindex;
-> +	ctx->refcount = 1;
-> +	ctx->umem = umem;
-> +	ctx->queue_id = queue_id;
-> +	memcpy(ctx->ifname, ifname, IFNAMSIZ - 1);
-> +	ctx->ifname[IFNAMSIZ - 1] = '\0';
-> +
-> +	umem->fill_save = NULL;
-> +	umem->comp_save = NULL;
-> +	ctx->fill = fill;
-> +	ctx->comp = comp;
-> +	list_add(&ctx->list, &umem->ctx_list);
-> +	return ctx;
-> +}
-> +
-> +int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
-> +			      const char *ifname,
-> +			      __u32 queue_id, struct xsk_umem *umem,
-> +			      struct xsk_ring_cons *rx,
-> +			      struct xsk_ring_prod *tx,
-> +			      struct xsk_ring_prod *fill,
-> +			      struct xsk_ring_cons *comp,
-> +			      const struct xsk_socket_config *usr_config)
->   {
->   	void *rx_map = NULL, *tx_map = NULL;
->   	struct sockaddr_xdp sxdp = {};
->   	struct xdp_mmap_offsets off;
->   	struct xsk_socket *xsk;
-> -	int err;
-> +	struct xsk_ctx *ctx;
-> +	int err, ifindex;
->   
-> -	if (!umem || !xsk_ptr || !(rx || tx))
-> +	if (!umem || !xsk_ptr || !(rx || tx) || !fill || !comp)
->   		return -EFAULT;
->   
->   	xsk = calloc(1, sizeof(*xsk));
-> @@ -609,10 +718,10 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
->   	if (err)
->   		goto out_xsk_alloc;
->   
-> -	if (umem->refcount &&
-> -	    !(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
-> -		pr_warn("Error: shared umems not supported by libbpf supplied XDP program.\n");
-> -		err = -EBUSY;
-> +	xsk->outstanding_tx = 0;
-> +	ifindex = if_nametoindex(ifname);
-> +	if (!ifindex) {
-> +		err = -errno;
->   		goto out_xsk_alloc;
->   	}
->   
-> @@ -626,16 +735,16 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
->   		xsk->fd = umem->fd;
->   	}
->   
-> -	xsk->outstanding_tx = 0;
-> -	xsk->queue_id = queue_id;
-> -	xsk->umem = umem;
-> -	xsk->ifindex = if_nametoindex(ifname);
-> -	if (!xsk->ifindex) {
-> -		err = -errno;
-> -		goto out_socket;
-> +	ctx = xsk_get_ctx(umem, ifindex, queue_id);
-> +	if (!ctx) {
-> +		ctx = xsk_create_ctx(xsk, umem, ifindex, ifname, queue_id,
-> +				     fill, comp);
-> +		if (!ctx) {
-> +			err = -ENOMEM;
-> +			goto out_socket;
-> +		}
->   	}
-> -	memcpy(xsk->ifname, ifname, IFNAMSIZ - 1);
-> -	xsk->ifname[IFNAMSIZ - 1] = '\0';
-> +	xsk->ctx = ctx;
->   
->   	if (rx) {
->   		err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
-> @@ -643,7 +752,7 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
->   				 sizeof(xsk->config.rx_size));
->   		if (err) {
->   			err = -errno;
-> -			goto out_socket;
-> +			goto out_put_ctx;
->   		}
->   	}
->   	if (tx) {
-> @@ -652,14 +761,14 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
->   				 sizeof(xsk->config.tx_size));
->   		if (err) {
->   			err = -errno;
-> -			goto out_socket;
-> +			goto out_put_ctx;
->   		}
->   	}
->   
->   	err = xsk_get_mmap_offsets(xsk->fd, &off);
->   	if (err) {
->   		err = -errno;
-> -		goto out_socket;
-> +		goto out_put_ctx;
->   	}
->   
->   	if (rx) {
-> @@ -669,7 +778,7 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
->   			      xsk->fd, XDP_PGOFF_RX_RING);
->   		if (rx_map == MAP_FAILED) {
->   			err = -errno;
-> -			goto out_socket;
-> +			goto out_put_ctx;
->   		}
->   
->   		rx->mask = xsk->config.rx_size - 1;
-> @@ -708,10 +817,10 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
->   	xsk->tx = tx;
->   
->   	sxdp.sxdp_family = PF_XDP;
-> -	sxdp.sxdp_ifindex = xsk->ifindex;
-> -	sxdp.sxdp_queue_id = xsk->queue_id;
-> +	sxdp.sxdp_ifindex = ctx->ifindex;
-> +	sxdp.sxdp_queue_id = ctx->queue_id;
->   	if (umem->refcount > 1) {
-> -		sxdp.sxdp_flags = XDP_SHARED_UMEM;
-> +		sxdp.sxdp_flags |= XDP_SHARED_UMEM;
->   		sxdp.sxdp_shared_umem_fd = umem->fd;
->   	} else {
->   		sxdp.sxdp_flags = xsk->config.bind_flags;
-> @@ -723,7 +832,7 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
->   		goto out_mmap_tx;
->   	}
->   
-> -	xsk->prog_fd = -1;
-> +	ctx->prog_fd = -1;
->   
->   	if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
->   		err = xsk_setup_xdp_prog(xsk);
-> @@ -742,6 +851,8 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
->   	if (rx)
->   		munmap(rx_map, off.rx.desc +
->   		       xsk->config.rx_size * sizeof(struct xdp_desc));
-> +out_put_ctx:
-> +	xsk_put_ctx(ctx);
->   out_socket:
->   	if (--umem->refcount)
->   		close(xsk->fd);
-> @@ -750,25 +861,24 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
->   	return err;
->   }
->   
-> -int xsk_umem__delete(struct xsk_umem *umem)
-> +int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
-> +		       __u32 queue_id, struct xsk_umem *umem,
-> +		       struct xsk_ring_cons *rx, struct xsk_ring_prod *tx,
-> +		       const struct xsk_socket_config *usr_config)
->   {
-> -	struct xdp_mmap_offsets off;
-> -	int err;
-> +	return xsk_socket__create_shared(xsk_ptr, ifname, queue_id, umem,
-> +					 rx, tx, umem->fill_save,
-> +					 umem->comp_save, usr_config);
-> +}
->   
-> +int xsk_umem__delete(struct xsk_umem *umem)
-> +{
->   	if (!umem)
->   		return 0;
->   
->   	if (umem->refcount)
->   		return -EBUSY;
->   
-> -	err = xsk_get_mmap_offsets(umem->fd, &off);
-> -	if (!err) {
-> -		munmap(umem->fill->ring - off.fr.desc,
-> -		       off.fr.desc + umem->config.fill_size * sizeof(__u64));
-> -		munmap(umem->comp->ring - off.cr.desc,
-> -		       off.cr.desc + umem->config.comp_size * sizeof(__u64));
-> -	}
-> -
->   	close(umem->fd);
->   	free(umem);
->   
-> @@ -778,15 +888,16 @@ int xsk_umem__delete(struct xsk_umem *umem)
->   void xsk_socket__delete(struct xsk_socket *xsk)
->   {
->   	size_t desc_sz = sizeof(struct xdp_desc);
-> +	struct xsk_ctx *ctx = xsk->ctx;
->   	struct xdp_mmap_offsets off;
->   	int err;
->   
->   	if (!xsk)
->   		return;
->   
-> -	if (xsk->prog_fd != -1) {
-> +	if (ctx->prog_fd != -1) {
->   		xsk_delete_bpf_maps(xsk);
-> -		close(xsk->prog_fd);
-> +		close(ctx->prog_fd);
->   	}
->   
->   	err = xsk_get_mmap_offsets(xsk->fd, &off);
-> @@ -799,14 +910,15 @@ void xsk_socket__delete(struct xsk_socket *xsk)
->   			munmap(xsk->tx->ring - off.tx.desc,
->   			       off.tx.desc + xsk->config.tx_size * desc_sz);
->   		}
-> -
->   	}
->   
-> -	xsk->umem->refcount--;
-> +	xsk_put_ctx(ctx);
-> +
-> +	ctx->umem->refcount--;
->   	/* Do not close an fd that also has an associated umem connected
->   	 * to it.
->   	 */
-> -	if (xsk->fd != xsk->umem->fd)
-> +	if (xsk->fd != ctx->umem->fd)
->   		close(xsk->fd);
->   	free(xsk);
->   }
-> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-> index 584f682..1069c46 100644
-> --- a/tools/lib/bpf/xsk.h
-> +++ b/tools/lib/bpf/xsk.h
-> @@ -234,6 +234,15 @@ LIBBPF_API int xsk_socket__create(struct xsk_socket **xsk,
->   				  struct xsk_ring_cons *rx,
->   				  struct xsk_ring_prod *tx,
->   				  const struct xsk_socket_config *config);
-> +LIBBPF_API int
-> +xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
-> +			  const char *ifname,
-> +			  __u32 queue_id, struct xsk_umem *umem,
-> +			  struct xsk_ring_cons *rx,
-> +			  struct xsk_ring_prod *tx,
-> +			  struct xsk_ring_prod *fill,
-> +			  struct xsk_ring_cons *comp,
-> +			  const struct xsk_socket_config *config);
->   
->   /* Returns 0 for success and -EBUSY if the umem is still in use. */
->   LIBBPF_API int xsk_umem__delete(struct xsk_umem *umem);
 > 
