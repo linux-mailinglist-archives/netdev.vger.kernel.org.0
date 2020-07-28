@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E34A2301DF
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCF8C2301E6
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:38:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726746AbgG1FhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 01:37:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44190 "EHLO mail.kernel.org"
+        id S1726907AbgG1FiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 01:38:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44498 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726251AbgG1FhV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 01:37:21 -0400
+        id S1726251AbgG1FiM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 01:38:12 -0400
 Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6CA7C21883;
-        Tue, 28 Jul 2020 05:37:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6D07C21883;
+        Tue, 28 Jul 2020 05:38:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595914640;
-        bh=5/1hGHRcRs8noQyW4y70zKajX2QRb/KbTYQH/XkqGLo=;
+        s=default; t=1595914691;
+        bh=zQfvL6mXPDvArmEZLKk1wPWEFI4+SrGpgZSDfVmZNFs=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=AU0TgowGCR0CGpCzEHB+dK+d4zlq0wxcjxrklzhtxM8DoXiTtbye/9bDoyfr3rYw3
-         Cpc1spQE+8O4v5okj/HKLrFf1+69Fh6U+xm8Q6kCcBZbAdu8t8XWKuOnhxt86B5pmp
-         XQl8F+nIPJvQ1s/GB0+WKoPK8RFppmSKjvnQFIGU=
-Received: by mail-lj1-f179.google.com with SMTP id s16so4529907ljc.8;
-        Mon, 27 Jul 2020 22:37:20 -0700 (PDT)
-X-Gm-Message-State: AOAM530iSG+NgNzIIf9/W7o4WuZUVcLJKFMjlTd+TZjxY1n8qTskCNhR
-        PfJ4yq/sLcvIKQ9J8pEvjhqrgKUPFJiyEZ6SGRk=
-X-Google-Smtp-Source: ABdhPJw9Ihhk/7GIolHzsLcYxMM4WNd7zYLn9IMxzaHwG1XeTcrzGpvyiU4MB+PKJp5ng8tFB7HU7flbEtWk1o+l8DI=
-X-Received: by 2002:a2e:7c14:: with SMTP id x20mr11794649ljc.41.1595914638725;
- Mon, 27 Jul 2020 22:37:18 -0700 (PDT)
+        b=Tcuyzm+2cHo8cqzgn5IkjaRedCAa+xOOR37u2+WM4RzbRDE15DgjXIFXKTcAMSwbk
+         0qT5pZkgRi6oftYCYDhCjzLK9BlDa3lZnHMDgLDaWE3w9+7qBgQM7M5DYXsdMOu24y
+         3GadVfWBSnrowvG6sBN+LbnUvEB3ivgJJveMv1t8=
+Received: by mail-lj1-f179.google.com with SMTP id g6so7140451ljn.11;
+        Mon, 27 Jul 2020 22:38:11 -0700 (PDT)
+X-Gm-Message-State: AOAM5329Bnz9KAXPT1LS4BWXV2P9tOQIW4dhm10FozQSDE+AVsAMHzH5
+        6hDFUgwi3gKdLhKlYKiRE0kK9MQV1nKtGNEaYWA=
+X-Google-Smtp-Source: ABdhPJw07JDlW+o4d8dnIhWF8L0WADQia7KOFXNcY2Knuvb+TUQbme9FYRDibTMNoCm7dHODimUOFP9/hEjsjBuC30M=
+X-Received: by 2002:a05:651c:1349:: with SMTP id j9mr4580894ljb.392.1595914689684;
+ Mon, 27 Jul 2020 22:38:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-23-guro@fb.com>
-In-Reply-To: <20200727184506.2279656-23-guro@fb.com>
+References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-24-guro@fb.com>
+In-Reply-To: <20200727184506.2279656-24-guro@fb.com>
 From:   Song Liu <song@kernel.org>
-Date:   Mon, 27 Jul 2020 22:37:07 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7nHNaf9Cgjwr_3zLVae4yBiLsvd7+tVkpS6EaiGRZ4tA@mail.gmail.com>
-Message-ID: <CAPhsuW7nHNaf9Cgjwr_3zLVae4yBiLsvd7+tVkpS6EaiGRZ4tA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 22/35] bpf: eliminate rlimit-based memory
- accounting for bpf ringbuffer
+Date:   Mon, 27 Jul 2020 22:37:58 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW502g1M9oJ2PSMUSwKHrD7UJmbwdBXZxt7KjU0UtAXSrw@mail.gmail.com>
+Message-ID: <CAPhsuW502g1M9oJ2PSMUSwKHrD7UJmbwdBXZxt7KjU0UtAXSrw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 23/35] bpf: eliminate rlimit-based memory
+ accounting for sockmap and sockhash maps
 To:     Roman Gushchin <guro@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -51,85 +51,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 12:22 PM Roman Gushchin <guro@fb.com> wrote:
+On Mon, Jul 27, 2020 at 12:21 PM Roman Gushchin <guro@fb.com> wrote:
 >
-> Do not use rlimit-based memory accounting for bpf ringbuffer.
+> Do not use rlimit-based memory accounting for sockmap and sockhash maps.
 > It has been replaced with the memcg-based memory accounting.
->
-> bpf_ringbuf_alloc() can't return anything except ERR_PTR(-ENOMEM)
-> and a valid pointer, so to simplify the code make it return NULL
-> in the first case. This allows to drop a couple of lines in
-> ringbuf_map_alloc() and also makes it look similar to other memory
-> allocating function like kmalloc().
 >
 > Signed-off-by: Roman Gushchin <guro@fb.com>
 
 Acked-by: Song Liu <songliubraving@fb.com>
 
 > ---
->  kernel/bpf/ringbuf.c | 24 ++++--------------------
->  1 file changed, 4 insertions(+), 20 deletions(-)
+>  net/core/sock_map.c | 33 ++++++---------------------------
+>  1 file changed, 6 insertions(+), 27 deletions(-)
 >
-> diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-> index e8e2c39cbdc9..e687b798d097 100644
-> --- a/kernel/bpf/ringbuf.c
-> +++ b/kernel/bpf/ringbuf.c
-> @@ -48,7 +48,6 @@ struct bpf_ringbuf {
->
->  struct bpf_ringbuf_map {
->         struct bpf_map map;
-> -       struct bpf_map_memory memory;
->         struct bpf_ringbuf *rb;
->  };
->
-> @@ -135,7 +134,7 @@ static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t data_sz, int numa_node)
->
->         rb = bpf_ringbuf_area_alloc(data_sz, numa_node);
->         if (!rb)
-> -               return ERR_PTR(-ENOMEM);
-> +               return NULL;
->
->         spin_lock_init(&rb->spinlock);
->         init_waitqueue_head(&rb->waitq);
-> @@ -151,8 +150,6 @@ static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t data_sz, int numa_node)
->  static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
+> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+> index bc797adca44c..07c90baf8db1 100644
+> --- a/net/core/sock_map.c
+> +++ b/net/core/sock_map.c
+> @@ -26,8 +26,6 @@ struct bpf_stab {
+>  static struct bpf_map *sock_map_alloc(union bpf_attr *attr)
 >  {
->         struct bpf_ringbuf_map *rb_map;
+>         struct bpf_stab *stab;
 > -       u64 cost;
 > -       int err;
 >
->         if (attr->map_flags & ~RINGBUF_CREATE_FLAG_MASK)
->                 return ERR_PTR(-EINVAL);
-> @@ -174,26 +171,13 @@ static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
+>         if (!capable(CAP_NET_ADMIN))
+>                 return ERR_PTR(-EPERM);
+> @@ -45,22 +43,15 @@ static struct bpf_map *sock_map_alloc(union bpf_attr *attr)
+>         bpf_map_init_from_attr(&stab->map, attr);
+>         raw_spin_lock_init(&stab->lock);
 >
->         bpf_map_init_from_attr(&rb_map->map, attr);
->
-> -       cost = sizeof(struct bpf_ringbuf_map) +
-> -              sizeof(struct bpf_ringbuf) +
-> -              attr->max_entries;
-> -       err = bpf_map_charge_init(&rb_map->map.memory, cost);
+> -       /* Make sure page count doesn't overflow. */
+> -       cost = (u64) stab->map.max_entries * sizeof(struct sock *);
+> -       err = bpf_map_charge_init(&stab->map.memory, cost);
 > -       if (err)
-> -               goto err_free_map;
+> -               goto free_stab;
 > -
->         rb_map->rb = bpf_ringbuf_alloc(attr->max_entries, rb_map->map.numa_node);
-> -       if (IS_ERR(rb_map->rb)) {
-> -               err = PTR_ERR(rb_map->rb);
-> -               goto err_uncharge;
-> +       if (!rb_map->rb) {
-> +               kfree(rb_map);
-> +               return ERR_PTR(-ENOMEM);
->         }
->
->         return &rb_map->map;
-> -
-> -err_uncharge:
-> -       bpf_map_charge_finish(&rb_map->map.memory);
-> -err_free_map:
-> -       kfree(rb_map);
+>         stab->sks = bpf_map_area_alloc(stab->map.max_entries *
+>                                        sizeof(struct sock *),
+>                                        stab->map.numa_node);
+> -       if (stab->sks)
+> -               return &stab->map;
+> -       err = -ENOMEM;
+> -       bpf_map_charge_finish(&stab->map.memory);
+> -free_stab:
+> -       kfree(stab);
 > -       return ERR_PTR(err);
+> +       if (!stab->sks) {
+> +               kfree(stab);
+> +               return ERR_PTR(-ENOMEM);
+> +       }
+> +
+> +       return &stab->map;
 >  }
 >
->  static void bpf_ringbuf_free(struct bpf_ringbuf *rb)
+>  int sock_map_get_from_fd(const union bpf_attr *attr, struct bpf_prog *prog)
+> @@ -999,7 +990,6 @@ static struct bpf_map *sock_hash_alloc(union bpf_attr *attr)
+>  {
+>         struct bpf_shtab *htab;
+>         int i, err;
+> -       u64 cost;
+>
+>         if (!capable(CAP_NET_ADMIN))
+>                 return ERR_PTR(-EPERM);
+> @@ -1027,21 +1017,10 @@ static struct bpf_map *sock_hash_alloc(union bpf_attr *attr)
+>                 goto free_htab;
+>         }
+>
+> -       cost = (u64) htab->buckets_num * sizeof(struct bpf_shtab_bucket) +
+> -              (u64) htab->elem_size * htab->map.max_entries;
+> -       if (cost >= U32_MAX - PAGE_SIZE) {
+> -               err = -EINVAL;
+> -               goto free_htab;
+> -       }
+> -       err = bpf_map_charge_init(&htab->map.memory, cost);
+> -       if (err)
+> -               goto free_htab;
+> -
+>         htab->buckets = bpf_map_area_alloc(htab->buckets_num *
+>                                            sizeof(struct bpf_shtab_bucket),
+>                                            htab->map.numa_node);
+>         if (!htab->buckets) {
+> -               bpf_map_charge_finish(&htab->map.memory);
+>                 err = -ENOMEM;
+>                 goto free_htab;
+>         }
 > --
 > 2.26.2
 >
