@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E25FB22FEAB
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 02:58:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2367022FEAD
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 02:59:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726839AbgG1A6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 20:58:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56338 "EHLO mail.kernel.org"
+        id S1726873AbgG1A7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 20:59:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56574 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726139AbgG1A6o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 20:58:44 -0400
+        id S1726139AbgG1A7h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 20:59:37 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F156820809;
-        Tue, 28 Jul 2020 00:58:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1B17820809;
+        Tue, 28 Jul 2020 00:59:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595897924;
-        bh=3yAu5O3paSd/QeeodRmlsjC6aicSe9poTbKk3ohlPLw=;
+        s=default; t=1595897977;
+        bh=TiJ2nFSx8p/oc0Ub+qEvsRg4KkH6dx4FIb4AaU6zuZI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XEaX6DK+yDFqqA4Gc97FtWLhCpZKoubmE0xncy0IrwFQFpg3q68xbPV70GF5KKRbL
-         m/8nwJ3GQV1EKmFgFrvQqhST7kVO3IMzEcYo/PRuHHaYkggn3AVnFzIc1nEDaui/cd
-         LtXQHeQz9VMAL4yt3KOwqrXliAebzleycNddSX0M=
-Date:   Mon, 27 Jul 2020 17:58:42 -0700
+        b=HPgGTKhzVQIqJlZQWf9fKC4GGP9qR0R8UsSCWCT/3EY8DjfyGXgByhvnZKpA4nZdc
+         m7BpwZpRfN8W7w2+7Mbv9KMl5AfhqJx7utGWzEFtvdO3h8NhtuhNfB5eo7fcmUGMoE
+         vwpdHw6XA/woh3W9ihuMpvHSl5WhOqNBk7bk+9yQ=
+Date:   Mon, 27 Jul 2020 17:59:35 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Moshe Shemesh <moshe@mellanox.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jiri Pirko <jiri@mellanox.com>,
         Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC 02/13] devlink: Add reload levels data to
- dev get
-Message-ID: <20200727175842.42d35ee3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1595847753-2234-3-git-send-email-moshe@mellanox.com>
+Subject: Re: [PATCH net-next RFC 09/13] devlink: Add enable_remote_dev_reset
+ generic parameter
+Message-ID: <20200727175935.0785102a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1595847753-2234-10-git-send-email-moshe@mellanox.com>
 References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
-        <1595847753-2234-3-git-send-email-moshe@mellanox.com>
+        <1595847753-2234-10-git-send-email-moshe@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,48 +44,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Jul 2020 14:02:22 +0300 Moshe Shemesh wrote:
-> Expose devlink reload supported levels and driver's default level to the
-> user through devlink dev get command.
-> 
-> Examples:
-> $ devlink dev show
-> pci/0000:82:00.0:
->   reload_levels_info:
->     default_level driver
->     supported_levels:
->       driver fw_reset fw_live_patch
-> pci/0000:82:00.1:
->   reload_levels_info:
->     default_level driver
->     supported_levels:
->       driver fw_reset fw_live_patch
-> 
-> $ devlink dev show -jp
-> {
->     "dev": {
->         "pci/0000:82:00.0": {
->             "reload_levels_info": {
->                 "default_level": "driver",
->                 "supported_levels": [ "driver","fw_reset","fw_live_patch" ]
->             }
->         },
->         "pci/0000:82:00.1": {
->             "reload_levels_info": {
->                 "default_level": "driver",
->                 "supported_levels": [ "driver","fw_reset","fw_live_patch" ]
->             }
->         }
->     }
-> }
+On Mon, 27 Jul 2020 14:02:29 +0300 Moshe Shemesh wrote:
+> The enable_remote_dev_reset devlink param flags that the host admin
+> allows device resets that can be initiated by other hosts. This
+> parameter is useful for setups where a device is shared by different
+> hosts, such as multi-host setup. Once the user set this parameter to
+> false, the driver should NACK any attempt to reset the device while the
+> driver is loaded.
 > 
 > Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
 
-The fact that the driver supports fw_live_patch, does not necessarily
-mean that the currently running FW can be live upgraded to the
-currently flashed one, right? 
+There needs to be a devlink event generated when reset is triggered
+(remotely or not).
 
-This interface does not appear to be optimal for the purpose.
-
-Again, documentation of what can be lost (in terms of configuration and
-features) upon upgrade is missing.
+You're also missing failure reasons. Users need to know if the reset
+request was clearly nacked by some host, not supported, etc. vs
+unexpected failure.
