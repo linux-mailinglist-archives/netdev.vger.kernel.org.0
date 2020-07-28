@@ -2,62 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09EBE230F20
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:23:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09861230F2D
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:26:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731247AbgG1QW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 12:22:58 -0400
-Received: from helcar.hmeau.com ([216.24.177.18]:56116 "EHLO fornost.hmeau.com"
+        id S1731347AbgG1Q0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 12:26:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43994 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730679AbgG1QW6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 12:22:58 -0400
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
-        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1k0SNQ-0000BR-Hm; Wed, 29 Jul 2020 02:22:53 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 29 Jul 2020 02:22:52 +1000
-Date:   Wed, 29 Jul 2020 02:22:52 +1000
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Antony Antony <antony.antony@secunet.com>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        netdev@vger.kernel.org,
-        Stephan =?iso-8859-1?Q?M=FCller?= <smueller@chronox.de>,
-        Antony Antony <antony@phenome.org>
-Subject: Re: [PATCH ipsec-next] xfrm: add
- /proc/sys/core/net/xfrm_redact_secret
-Message-ID: <20200728162252.GA3255@gondor.apana.org.au>
-References: <20200728154342.GA31835@moon.secunet.de>
+        id S1731192AbgG1Q0Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 12:26:16 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5655E20663;
+        Tue, 28 Jul 2020 16:26:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595953575;
+        bh=8e/IpfH0tEGQw4eRgZPxqGN1xvDTdZgV9fdlNOZ6og8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=V+tGZn7u7iHhNApaehm+Ii1gc1McMh/MHLoyFFsy9dWvgCCd15BxjY9uNB9TiDeSP
+         Ly4qXDCEvsM8EW1V7Xaz1wq0jzbcYeFm84ur6UnndE3m6kBc4gamvIYj7tNKAjbdtS
+         IwDw05oGkUlZB2La5VmWtEZkkSs8rhv8JNoUEQZM=
+Date:   Tue, 28 Jul 2020 18:26:08 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [RFC PATCH v2 10/21] netgpu: add network/gpu/host dma module
+Message-ID: <20200728162608.GA4181352@kroah.com>
+References: <20200727224444.2987641-1-jonathan.lemon@gmail.com>
+ <20200727224444.2987641-11-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200728154342.GA31835@moon.secunet.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200727224444.2987641-11-jonathan.lemon@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 05:47:30PM +0200, Antony Antony wrote:
-> when enabled, 1, redact XFRM SA secret in the netlink response to
-> xfrm_get_sa() or dump all sa.
+On Mon, Jul 27, 2020 at 03:44:33PM -0700, Jonathan Lemon wrote:
+> From: Jonathan Lemon <bsd@fb.com>
 > 
-> e.g
-> echo 1 > /proc/sys/net/core/xfrm_redact_secret
-> ip xfrm state
-> src 172.16.1.200 dst 172.16.1.100
-> 	proto esp spi 0x00000002 reqid 2 mode tunnel
-> 	replay-window 0
-> 	aead rfc4106(gcm(aes)) 0x0000000000000000000000000000000000000000 96
+> Netgpu provides a data path for zero-copy sends and receives
+> without having the host CPU touch the data.  Protocol processing
+> is done on the host CPU, while data is DMA'd to and from DMA
+> mapped memory areas.  The initial code provides transfers between
+> (mlx5 / host memory) and (mlx5 / nvidia GPU memory).
 > 
-> the aead secret is redacted.
-> 
-> /proc/sys/core/net/xfrm_redact_secret is a toggle.
-> Once enabled, either at compile or via proc, it can not be disabled.
-> Redacting secret is a FIPS 140-2 requirement.
+> The use case for this module are GPUs used for machine learning,
+> which are located near the NICs, and have a high bandwidth PCI
+> connection between the GPU/NIC.
 
-Couldn't you use the existing fips_enabled sysctl?
+Do we have such a GPU driver in the kernel today?  We can't add new
+apis/interfaces for no in-kernel users, as you well know.
 
-Cheers,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+There's lots of crazyness in this patch, but this is just really odd:
+
+> +#if IS_MODULE(CONFIG_NETGPU)
+> +#define MAYBE_EXPORT_SYMBOL(s)
+> +#else
+> +#define MAYBE_EXPORT_SYMBOL(s)	EXPORT_SYMBOL(s)
+> +#endif
+
+Why is that needed at all?  Why does no one else in the kernel need such
+a thing?
+
+And why EXPORT_SYMBOL() and not EXPORT_SYMBOL_GPL() (I have to ask).
+
+thanks,
+
+greg k-h
