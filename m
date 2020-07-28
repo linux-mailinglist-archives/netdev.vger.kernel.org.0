@@ -2,71 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 465F6230F0E
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:18:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FBE0230F18
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:21:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731359AbgG1QSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 12:18:18 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60186 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730810AbgG1QSR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 12:18:17 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k0SIi-007J3m-Gm; Tue, 28 Jul 2020 18:18:00 +0200
-Date:   Tue, 28 Jul 2020 18:18:00 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        Pavel Machek <pavel@ucw.cz>, jacek.anaszewski@gmail.com,
-        Dan Murphy <dmurphy@ti.com>,
-        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC leds + net-next v4 1/2] net: phy: add API for LEDs
- controlled by PHY HW
-Message-ID: <20200728161800.GJ1705504@lunn.ch>
-References: <20200728150530.28827-1-marek.behun@nic.cz>
- <20200728150530.28827-2-marek.behun@nic.cz>
+        id S1731283AbgG1QVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 12:21:10 -0400
+Received: from smtprelay0242.hostedemail.com ([216.40.44.242]:44968 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730679AbgG1QVK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 12:21:10 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 388CD173086F;
+        Tue, 28 Jul 2020 16:21:09 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1381:1437:1515:1516:1518:1534:1539:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3350:3622:3865:3866:3867:4321:5007:10004:10400:10848:11026:11473:11658:11914:12296:12297:12679:12740:12760:12895:13069:13311:13357:13439:14659:14721:21080:21451:21627:21990:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: soda76_28023fa26f6b
+X-Filterd-Recvd-Size: 1474
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf20.hostedemail.com (Postfix) with ESMTPA;
+        Tue, 28 Jul 2020 16:21:08 +0000 (UTC)
+Message-ID: <169fe729db1ba8529d0c071b39d48091cc77fba2.camel@perches.com>
+Subject: Re: [PATCH 17/29] l2tp: avoid precidence issues in L2TP_SKB_CB macro
+From:   Joe Perches <joe@perches.com>
+To:     Tom Parkin <tparkin@katalix.com>, netdev@vger.kernel.org
+Date:   Tue, 28 Jul 2020 09:21:07 -0700
+In-Reply-To: <20200721173221.4681-18-tparkin@katalix.com>
+References: <20200721173221.4681-1-tparkin@katalix.com>
+         <20200721173221.4681-18-tparkin@katalix.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.3-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200728150530.28827-2-marek.behun@nic.cz>
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int of_phy_register_led(struct phy_device *phydev, struct device_node *np)
-> +{
-> +	struct led_init_data init_data = {};
-> +	struct phy_device_led *led;
-> +	u32 reg;
-> +	int ret;
-> +
-> +	ret = of_property_read_u32(np, "reg", &reg);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	led = devm_kzalloc(&phydev->mdio.dev, sizeof(struct phy_device_led), GFP_KERNEL);
-> +	if (!led)
-> +		return -ENOMEM;
-> +
-> +	led->cdev.brightness_set_blocking = phy_led_brightness_set;
-> +	led->cdev.trigger_type = &phy_hw_led_trig_type;
-> +	led->addr = reg;
-> +
-> +	of_property_read_string(np, "linux,default-trigger", &led->cdev.default_trigger);
+On Tue, 2020-07-21 at 18:32 +0100, Tom Parkin wrote:
+> checkpatch warned about the L2TP_SKB_CB macro's use of its argument: add
+> braces to avoid the problem.
+[]
+> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+[]
+> @@ -93,7 +93,7 @@ struct l2tp_skb_cb {
+>  	unsigned long		expires;
+>  };
+>  
+> -#define L2TP_SKB_CB(skb)	((struct l2tp_skb_cb *)&skb->cb[sizeof(struct inet_skb_parm)])
+> +#define L2TP_SKB_CB(skb)	((struct l2tp_skb_cb *)&(skb)->cb[sizeof(struct inet_skb_parm)])
 
-Hi Marek
+Likely better to use a static inline.
 
-I think we need one more optional property. If the trigger has been
-set to the PHY hardware trigger, we then should be able to set which
-of the different blink patterns we want the LED to use. I guess most
-users will never actually make use of the sys/class/led interface, if
-the default in device tree is sensible. But that requires DT can fully
-configure the LED.
+Something like:
 
-   Andrew
+static inline struct l2tp_skb_cb *L2TP_SKB_SB(struct sk_buff *skb)
+{
+	return &skb->cb[sizeof(struct inet+skb_parm)];
+}
+
+
