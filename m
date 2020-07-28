@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75D7622FF7B
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 04:19:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B143322FF76
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 04:19:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726797AbgG1CTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 22:19:09 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:8281 "EHLO huawei.com"
+        id S1727097AbgG1CTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 22:19:17 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8282 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726247AbgG1CTJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 22:19:09 -0400
+        id S1726357AbgG1CTP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Jul 2020 22:19:15 -0400
 Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 7DAC8F6A8F4BC1AD62CD;
+        by Forcepoint Email with ESMTP id 7887DCF508FBD69A4FE7;
         Tue, 28 Jul 2020 10:19:07 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 28 Jul 2020 10:18:59 +0800
+ 14.3.487.0; Tue, 28 Jul 2020 10:19:00 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
-        Yonglong Liu <liuyonglong@huawei.com>,
+        Jian Shen <shenjian15@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net 2/5] net: hns3: fix a TX timeout issue
-Date:   Tue, 28 Jul 2020 10:16:49 +0800
-Message-ID: <1595902612-12880-3-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net 3/5] net: hns3: add reset check for VF updating port based VLAN
+Date:   Tue, 28 Jul 2020 10:16:50 +0800
+Message-ID: <1595902612-12880-4-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1595902612-12880-1-git-send-email-tanhuazhong@huawei.com>
 References: <1595902612-12880-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,39 +39,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonglong Liu <liuyonglong@huawei.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-When the queue depth and queue parameters are modified, there is
-a low probability that TX timeout occurs. The two operations cause
-the link to be down or up when the watchdog is still working. All
-queues are stopped when the link is down. After the carrier is on,
-all queues are woken up. If the watchdog detects the link between
-the carrier on and wakeup queues, a false TX timeout occurs.
+Currently hclgevf_update_port_base_vlan_info() may be called when
+VF is resetting,  which may cause hns3_nic_net_open() being called
+twice unexpectedly.
 
-So fix this issue by modifying the sequence of carrier on and queue
-wakeup, which is symmetrical to the link down action.
+So fix it by adding a reset check for it, and extend critical
+region for rntl_lock in hclgevf_update_port_base_vlan_info().
 
-Fixes: 76ad4f0ee747 ("net: hns3: Add support of HNS3 Ethernet Driver for hip08 SoC")
-Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+Fixes: 92f11ea177cd ("net: hns3: fix set port based VLAN issue for VF")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 30 +++++++++++++++-------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 3328500..71ed4c5 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -4136,8 +4136,8 @@ static void hns3_link_status_change(struct hnae3_handle *handle, bool linkup)
- 		return;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index a10b022..b8b72ac 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -3439,23 +3439,35 @@ void hclgevf_update_port_base_vlan_info(struct hclgevf_dev *hdev, u16 state,
+ {
+ 	struct hnae3_handle *nic = &hdev->nic;
+ 	struct hclge_vf_to_pf_msg send_msg;
++	int ret;
  
- 	if (linkup) {
--		netif_carrier_on(netdev);
- 		netif_tx_wake_all_queues(netdev);
-+		netif_carrier_on(netdev);
- 		if (netif_msg_link(handle))
- 			netdev_info(netdev, "link up\n");
- 	} else {
+ 	rtnl_lock();
+-	hclgevf_notify_client(hdev, HNAE3_DOWN_CLIENT);
+-	rtnl_unlock();
++
++	if (test_bit(HCLGEVF_STATE_RST_HANDLING, &hdev->state)) {
++		dev_warn(&hdev->pdev->dev,
++			 "is resetting when updating port based vlan info\n");
++		rtnl_unlock();
++		return;
++	}
++
++	ret = hclgevf_notify_client(hdev, HNAE3_DOWN_CLIENT);
++	if (ret) {
++		rtnl_unlock();
++		return;
++	}
+ 
+ 	/* send msg to PF and wait update port based vlan info */
+ 	hclgevf_build_send_msg(&send_msg, HCLGE_MBX_SET_VLAN,
+ 			       HCLGE_MBX_PORT_BASE_VLAN_CFG);
+ 	memcpy(send_msg.data, port_base_vlan_info, data_size);
+-	hclgevf_send_mbx_msg(hdev, &send_msg, false, NULL, 0);
+-
+-	if (state == HNAE3_PORT_BASE_VLAN_DISABLE)
+-		nic->port_base_vlan_state = HNAE3_PORT_BASE_VLAN_DISABLE;
+-	else
+-		nic->port_base_vlan_state = HNAE3_PORT_BASE_VLAN_ENABLE;
++	ret = hclgevf_send_mbx_msg(hdev, &send_msg, false, NULL, 0);
++	if (!ret) {
++		if (state == HNAE3_PORT_BASE_VLAN_DISABLE)
++			nic->port_base_vlan_state = state;
++		else
++			nic->port_base_vlan_state = HNAE3_PORT_BASE_VLAN_ENABLE;
++	}
+ 
+-	rtnl_lock();
+ 	hclgevf_notify_client(hdev, HNAE3_UP_CLIENT);
+ 	rtnl_unlock();
+ }
 -- 
 2.7.4
 
