@@ -2,227 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DD6C22FEB7
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 03:07:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6616922FED4
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 03:21:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726315AbgG1BH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jul 2020 21:07:29 -0400
-Received: from mail-vi1eur05on2063.outbound.protection.outlook.com ([40.107.21.63]:13537
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726139AbgG1BH2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Jul 2020 21:07:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3yGnY3tCA5//GCNAc72cP1ww2KSqx/h6KdDSK9PfS40=;
- b=jwwk/IqUi7ZCRtaRkN/xrY8BklUiLwiaUCYwtB2ygRVgLW01rDTVd7qa3qXCUiissAHViq6ARF/2upSHemJ+uMDOIVqb985xqQqGoN1rI9JhQGOPRfMlDAOez/Si6ziLtevHxxR357zVP8nsY1GxAve2I0Tx5G0CPNT/ax8OYc8=
-Received: from AM6P191CA0090.EURP191.PROD.OUTLOOK.COM (2603:10a6:209:8a::31)
- by DBBPR08MB4537.eurprd08.prod.outlook.com (2603:10a6:10:c5::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.20; Tue, 28 Jul
- 2020 01:07:23 +0000
-Received: from AM5EUR03FT038.eop-EUR03.prod.protection.outlook.com
- (2603:10a6:209:8a:cafe::25) by AM6P191CA0090.outlook.office365.com
- (2603:10a6:209:8a::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.21 via Frontend
- Transport; Tue, 28 Jul 2020 01:07:23 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
- smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
- header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=bestguesspass
- action=none header.from=arm.com;
-Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
- 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
- client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
-Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
- AM5EUR03FT038.mail.protection.outlook.com (10.152.17.118) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3216.10 via Frontend Transport; Tue, 28 Jul 2020 01:07:23 +0000
-Received: ("Tessian outbound 1c27ecaec3d6:v62"); Tue, 28 Jul 2020 01:07:23 +0000
-X-CR-MTA-TID: 64aa7808
-Received: from c4811bf5fe9f.2
-        by 64aa7808-outbound-1.mta.getcheckrecipient.com id 31822CCE-3BBB-4FFE-B661-695E1AE4A30A.1;
-        Tue, 28 Jul 2020 01:07:18 +0000
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com
-    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id c4811bf5fe9f.2
-    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
-    Tue, 28 Jul 2020 01:07:18 +0000
+        id S1726538AbgG1BVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 21:21:16 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:45368 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726139AbgG1BVQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 21:21:16 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06S1Fiaw010327;
+        Mon, 27 Jul 2020 18:21:00 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=ZqpBbPbDUdN7yV1JRrLWblu9oSa79zwX6RGhzut9M18=;
+ b=riaWiyUJn0IeXuZhPL2zNdP4fQ0c2vEd+5hY8ggMb0oCe6ynTm+iWh6EyI02Q74ttW5P
+ Du33sEF66azK/5cGiX59Z//qF4aZSLvhICUXn6NxML5+pM11WSXVx4bvQ145pgzTVCY3
+ 5gsVwr0ANKcthzf6Xzd2RAaxnIh437LhBXE= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 32h50vq7g3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 27 Jul 2020 18:21:00 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 27 Jul 2020 18:20:59 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l9ljKl1hsqJ/xMHHkLe0mZHc/2grsuTAhnVny87jN5r/086Imuc8wYqQX1wZKW4wWOKYD39OilPAkUZumfW/HqAiy1qDPnnwAwLKGurlTUZixPDNYIdtD5Wmi7IMVRWgiIcXvdMSjh57anFOkhhNB7SDyNfkFy+BP2x5jL980nSE3AukJV4zrUeeXWw5f33LMOqPycEUWzNxKk3096QXNdkcAL5wacwo8UgDrxexupGykuUmgvh3q4TWx6vzkkvO0USlQOrZSgAd5rggVSOgT0KYLeoMyMStzMpnhljCg9Qzb2Cn1eoouvLziZtSAZO6aV1nRe0n/IBPnH3JS+jQOw==
+ b=MjckqBXdsPn6fS/8vKJwUyGXnIllRp0F+Za9fuMTctaJ8TLxYrGtpJJry3vipvsgntBpmm9oMIIXl+RBYQ5PnBMxwOU6DLjlS9mcpRhXgMnlg5Cy8BcuoEjKVKQXjy8Im/DHaDTH9GeMZks/ABKZvCTAarFEAXseFF3ReJi4Fmr6948YBN3RV/ZOlMlviRH0D5JGghIQ3cMqPIDWmPzGpFqd86Fm7ZqCqYRed/89Xk/lTxOmXUIaH2BQ+wYuKcBrOaWigzqMEiWpFM0fO3W4qWYiBcNWrLkZV66F/YKIHlEUE+GfTzmcqjAkuYEYRMkIcUY4rNgYWFBPC9PJ3WPGSA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3yGnY3tCA5//GCNAc72cP1ww2KSqx/h6KdDSK9PfS40=;
- b=oAd09pOSpUl4ebyEuhlSRyCVoPib+jfPrr2vP8NjN98EnU156/TC1ZtBij8WvqltdQGFNdhhWvIChKLvdF0e2/wKSmHfTTYqCgt7/Vvh53Y0n09y58v9kuXeIeLDuDwazfDtuTfbWNjV6lG0nkioEL2jCeNJgC1FQ7yaT88QbcRV7pMlcrhTC1inrQ9o0aSnhrE9FhSSb0thhXEkxkn3bn+E+ChKf7NhRm6PNHPHdjW9RyjB7SztvXF1WKjQwbC1GAYrSHWAsi9iINstoV+OPjKsV+ldNBeM8ppRebPPLJXYG107S0h5KwYRMEegt2BnT6op+VvJGc2b41grsPLCFw==
+ bh=ZqpBbPbDUdN7yV1JRrLWblu9oSa79zwX6RGhzut9M18=;
+ b=TI8YKnTr0Oe71Qo1GeliPfRY52tQ3O3aPmlHkk96xwJy1uimZvy7bqkbHGNdZpOFg7wzms1uCJrvIROJO2+8iCqXRdPZ4ei2n/2+u6wkWrz3whbl9ctEdnPcTsdTabXOmfJCbT1BQok8vM8VD95s8FzZOYKHjjPlUy75wgvcn/ZKbbv4rlQh97fv3T2+zsPJfrfbv5xVkeQLo4Plmvc9gfoqKwwZpXrvm19wUT+C4+7n5u4qTFng6ZQBgGw4A0agMzleA2aQylnDDfluPqVBZHVKPak6RD/m8TTxdS5Ml6NRRneLrjCF31d/jBasQIpSl51wgrQeqDR3iZZIgtITqQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3yGnY3tCA5//GCNAc72cP1ww2KSqx/h6KdDSK9PfS40=;
- b=jwwk/IqUi7ZCRtaRkN/xrY8BklUiLwiaUCYwtB2ygRVgLW01rDTVd7qa3qXCUiissAHViq6ARF/2upSHemJ+uMDOIVqb985xqQqGoN1rI9JhQGOPRfMlDAOez/Si6ziLtevHxxR357zVP8nsY1GxAve2I0Tx5G0CPNT/ax8OYc8=
-Received: from HE1PR0802MB2555.eurprd08.prod.outlook.com (2603:10a6:3:e0::7)
- by HE1PR0802MB2554.eurprd08.prod.outlook.com (2603:10a6:3:d7::11) with
+ bh=ZqpBbPbDUdN7yV1JRrLWblu9oSa79zwX6RGhzut9M18=;
+ b=J6HhQb9lc/ZEtwTDFZOWWPj/Ij+8iuXwsKPu3Jyfw+FTL1NfH+ZutTykEshIYJcnfzBxU2EW3l6oWlPpyKaqH6e246UIi1XTd3NHBRUxxqM8YbKO6fGcoXqPME43mp/N6uHhGuCSzb1Klr9xDSs1C8/OTVo08FD1EM4e83P1kY0=
+Authentication-Results: cloudflare.com; dkim=none (message not signed)
+ header.d=none;cloudflare.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2885.namprd15.prod.outlook.com (2603:10b6:a03:f5::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.24; Tue, 28 Jul
- 2020 01:07:14 +0000
-Received: from HE1PR0802MB2555.eurprd08.prod.outlook.com
- ([fe80::9:c111:edc1:d65a]) by HE1PR0802MB2555.eurprd08.prod.outlook.com
- ([fe80::9:c111:edc1:d65a%6]) with mapi id 15.20.3216.033; Tue, 28 Jul 2020
- 01:07:14 +0000
-From:   Jianyong Wu <Jianyong.Wu@arm.com>
-To:     Will Deacon <will@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
-        "john.stultz@linaro.org" <john.stultz@linaro.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        Suzuki Poulose <Suzuki.Poulose@arm.com>,
-        Steven Price <Steven.Price@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>,
-        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
-        Wei Chen <Wei.Chen@arm.com>, nd <nd@arm.com>
-Subject: RE: [PATCH v13 2/9] arm/arm64: KVM: Advertise KVM UID to guests via
- SMCCC
-Thread-Topic: [PATCH v13 2/9] arm/arm64: KVM: Advertise KVM UID to guests via
- SMCCC
-Thread-Index: AQHWRjnTCp2aKUWCLkK9Y7ZKWPQzQKka//qwgACIboCAANxJIA==
-Date:   Tue, 28 Jul 2020 01:07:14 +0000
-Message-ID: <HE1PR0802MB25551F426910F76E95523383F4730@HE1PR0802MB2555.eurprd08.prod.outlook.com>
-References: <20200619130120.40556-1-jianyong.wu@arm.com>
- <20200619130120.40556-3-jianyong.wu@arm.com>
- <HE1PR0802MB255577943C260898A6C686ABF4720@HE1PR0802MB2555.eurprd08.prod.outlook.com>
- <20200727113821.GB20437@willie-the-truck>
-In-Reply-To: <20200727113821.GB20437@willie-the-truck>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ts-tracking-id: 2c2709e5-9248-405e-95a3-96a1b63a0504.1
-x-checkrecipientchecked: true
-Authentication-Results-Original: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=arm.com;
-x-originating-ip: [203.126.0.111]
-x-ms-publictraffictype: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 5c25fac9-92a5-4e51-bff9-08d83292960f
-x-ms-traffictypediagnostic: HE1PR0802MB2554:|DBBPR08MB4537:
-x-ms-exchange-transport-forked: True
-X-Microsoft-Antispam-PRVS: <DBBPR08MB45377165BF55903607F12F23F4730@DBBPR08MB4537.eurprd08.prod.outlook.com>
-x-checkrecipientrouted: true
-nodisclaimer: true
-x-ms-oob-tlc-oobclassifiers: OLM:6430;OLM:6430;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original: AHL81wIJOSyir2m00PCT9y9xNDdjIz51KbLICp9O9BiF/N5ZRflFhwN3N7a7gNpgQDagidwtApFMVVnB97qGTTwmkVo+JAkLd3QnGhxY0h32UE5TUanfrIVzMIbOkjF7Vg2vyiy0lDVdV2Yjg8a2UkohlFrByuYvheH+bp4Zc8IGxIN6x6NqqyhdhtxY00aYy9CpAxVIlWNhIKShhmKfFPtMSoDugiOIrBA/LZDGTo3Z2FGYz3niW/UgC7+eSBzLvhxBlzBhK53ISLUZfGlxpdNdg/FQPcdFlx3zCjZ3wurw9zyW439QWopSgaC/zbbw3feXYae9Q0Mzv+8XahjFow==
-X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2555.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(376002)(346002)(366004)(39860400002)(396003)(55016002)(9686003)(54906003)(316002)(71200400001)(86362001)(8676002)(6916009)(186003)(7696005)(6506007)(33656002)(83380400001)(26005)(478600001)(2906002)(5660300002)(76116006)(52536014)(53546011)(66476007)(66556008)(64756008)(66446008)(8936002)(4326008)(7416002)(66946007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 94HlQIIz6WNdy4B8Lx8VxYdgF4ydylsCuvc6vZP7Van6cZxC9Vg6KBh5p3z+qgpOSB+Q7/2IoUwUtswBlRp4NKRESUhrayTTaLWditzQhgDBbJ7tQ3NYiBOLdVjJWsssGvd7OHT41nTrfcTICVVpyD99uYmGxFMgQluuWSfZrR3c3+f2+minrVvrgMhqzv+iPVNbpbrVTK3MUZrcLb9ELS5lv0/JvaHjZKwON6mOL+c9+XtJ7xnkDqsnoIh5+ZPFq/jFbFeRSZjuzHBHJKeJ6C+Lq+rCcml3f5kupXU8H2VqfpT8wUrJ89de0H0iF2NIDc5o+Xk958hvq+bxMR/iZ0EPzIBih9necqFDxT7Vbji89/24Aq4sVYX9li3bmsE4J11hlBz7IMTa0nZayFKp7AceXfLO0FMi/wMhWNKH1+5WooKjAfU+hIDH1xpsGFcV9tOeS0hxC/951S0O1ex7bGDkWNPBYSoq+sbNxpTie1E=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.20; Tue, 28 Jul
+ 2020 01:20:44 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::d489:8f7f:614e:1b99]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::d489:8f7f:614e:1b99%7]) with mapi id 15.20.3216.033; Tue, 28 Jul 2020
+ 01:20:44 +0000
+Date:   Mon, 27 Jul 2020 18:20:42 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <kernel-team@cloudflare.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Subject: Re: [PATCH bpf-next] udp, bpf: Ignore connections in reuseport group
+ after BPF sk lookup
+Message-ID: <20200728012042.r3gkkeg6ib3r2diy@kafai-mbp>
+References: <20200726120228.1414348-1-jakub@cloudflare.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200726120228.1414348-1-jakub@cloudflare.com>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: BY3PR04CA0024.namprd04.prod.outlook.com
+ (2603:10b6:a03:217::29) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0802MB2554
-Original-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=arm.com;
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: AM5EUR03FT038.eop-EUR03.prod.protection.outlook.com
-X-MS-Office365-Filtering-Correlation-Id-Prvs: f87590a5-58f3-4827-72d1-08d8329290c6
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp (2620:10d:c090:400::5:f626) by BY3PR04CA0024.namprd04.prod.outlook.com (2603:10b6:a03:217::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.20 via Frontend Transport; Tue, 28 Jul 2020 01:20:43 +0000
+X-Originating-IP: [2620:10d:c090:400::5:f626]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 40437e22-9be3-47a8-344b-08d832947314
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2885:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB28856E288EFBE9A52244E5BAD5730@BYAPR15MB2885.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5IVq70FGqxFwk1SNhgYPJlv+/vi8cwQ30BDmVkfw2pKN+FN6+zdSbKORfHd0Nt4xVb6u/ZQDH7WDlXZzzzts69EixV/Wdm3EoQ/Cdo0fe5vvSu46SBBFfVTZrAdITpeoUQjtLg6W7fmR4YRx6DDwcsKhFtT8h5tOCoXB4ohcdllwo1ohUpQCormyZ80peutkwbmfKWreBtMg9QrrjwOjM7qiaY4fX0FfjLcRf3/TeQMN6CeV5cqc81czGEm9FcxMRpxsnL+t1CKvqex8pnFSJ4LcZluYornmuLMzephR8QjpD6YAdzrpyiXAPMGZwUALJ4QRP5IKxydKN35xodiVV59p5hbTvjyEvU3sWLxnERkGTER5Dl38OptiRM7K9il5v8YlXnYy0rMDUGXsreMpcg==
-X-Forefront-Antispam-Report: CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFTY:;SFS:(4636009)(376002)(136003)(346002)(39860400002)(396003)(46966005)(316002)(36906005)(336012)(8676002)(478600001)(82310400002)(4326008)(82740400003)(70586007)(70206006)(450100002)(356005)(2906002)(81166007)(47076004)(26005)(83380400001)(7696005)(5660300002)(86362001)(54906003)(8936002)(53546011)(6862004)(9686003)(55016002)(6506007)(52536014)(33656002)(186003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2020 01:07:23.5994
+X-Microsoft-Antispam-Message-Info: 39KwEv08EmqMI1O0/M9N7W36AC0wCnFZmG7c9i0iVQH/iv7LPTe9SsJxr3MctGMgB/1gpGprA/Gasfzr0BBdNDe4+74HD9h7dflYPHQrvWByS8DtgMfty2mEsZhT7OGNp8/Ong7G6Dc2lG9jAW+AhwN3McInE260Mz2l2KdZLWzEXqb/XinqTCco3WK7gbR1bqvyPQERHJTnvJKMLNrUkeDJTrBdPaJcbf1+7bxHrRH5vWlMcjipMwEIH1xbsUbHrdUOXymt09RAEJccsRktQuOzA1XnKimTuRxQPUm2vR+g4UD24B08jmQQjaMwSVjc
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(396003)(346002)(376002)(39860400002)(366004)(316002)(6916009)(52116002)(4326008)(1076003)(55016002)(8676002)(83380400001)(16526019)(186003)(2906002)(6496006)(9686003)(5660300002)(33716001)(8936002)(66556008)(66946007)(66476007)(478600001)(86362001)(54906003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: hz1ENFkwdLxNsf2npegRUqFXNN4QsEJ4337CqpbKdCSBjQGPfpOqXmXiVxwRLpgMTQmObEq8wro0IHKB+g+p2NO55LE4D4jVuJcLo3cqXODGZS4I09SID0x2kygiSP6vXSaVOvcf1vCfDrWL1QYUSeA8/DL3wbMpy3yxw7CbA36r/9BpKxL3sxfHBbtOsVfc2A8NstWvrxD7yj0Yug1ZhYyAPmLeSZvMoxwOC8hrm495oyBBcp8OdK0qAcxKAMTVReyTz0YpjKtCDO0EjbKwomVTPb00IaWL812otabI8e5s29UNbxI7nw5KKdfnX6WZEk415JAyyvwDOEJJQ7hNlN3zU8XKIbN2kh1fmT/oRo+K75Sj8EFOUpcQ44OZjj0KUALoc3OM5geZoJlI3i6xmm9m5eNBSZZgEPR4C59gHTiUgWckWLlIMe6Nu+wpJdgDkjtSwvrnwxRsGT1IF/h42S70FRIPeR9t1hh2PGmTB+erJltGxz7k9mKBAq/MX9pRoEmfVq/mQlGHfbJzVtG8Bg==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 40437e22-9be3-47a8-344b-08d832947314
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2020 01:20:44.2606
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c25fac9-92a5-4e51-bff9-08d83292960f
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
-X-MS-Exchange-CrossTenant-AuthSource: AM5EUR03FT038.eop-EUR03.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR08MB4537
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dxZyPc3gse2GaCtWOa/FL6sNxX6PruhNza0z5AQRQCJBAPbNCJLTqeinT679XmOc
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2885
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-27_16:2020-07-27,2020-07-27 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ phishscore=0 mlxscore=0 lowpriorityscore=0 spamscore=0 impostorscore=0
+ malwarescore=0 bulkscore=0 mlxlogscore=911 priorityscore=1501 adultscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007280007
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Jul 26, 2020 at 02:02:28PM +0200, Jakub Sitnicki wrote:
+> When BPF sk lookup invokes reuseport handling for the selected socket, it
+> should ignore the fact that reuseport group can contain connected UDP
+> sockets. With BPF sk lookup this is not relevant as we are not scoring
+> sockets to find the best match, which might be a connected UDP socket.
+> 
+> Fix it by unconditionally accepting the socket selected by reuseport.
+> 
+> This fixes the following two failures reported by test_progs.
+> 
+>   # ./test_progs -t sk_lookup
+>   ...
+>   #73/14 UDP IPv4 redir and reuseport with conns:FAIL
+>   ...
+>   #73/20 UDP IPv6 redir and reuseport with conns:FAIL
+>   ...
+> 
+> Fixes: a57066b1a019 ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net")
+> Cc: David S. Miller <davem@davemloft.net>
+> Reported-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>  net/ipv4/udp.c | 2 +-
+>  net/ipv6/udp.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index 7ce31beccfc2..e88efba07551 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -473,7 +473,7 @@ static struct sock *udp4_lookup_run_bpf(struct net *net,
+>  		return sk;
+>  
+>  	reuse_sk = lookup_reuseport(net, sk, skb, saddr, sport, daddr, hnum);
+> -	if (reuse_sk && !reuseport_has_conns(sk, false))
+> +	if (reuse_sk)
+>  		sk = reuse_sk;
+>  	return sk;
+>  }
+> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+> index c394e674f486..29d9691359b9 100644
+> --- a/net/ipv6/udp.c
+> +++ b/net/ipv6/udp.c
+> @@ -208,7 +208,7 @@ static inline struct sock *udp6_lookup_run_bpf(struct net *net,
+>  		return sk;
+>  
+>  	reuse_sk = lookup_reuseport(net, sk, skb, saddr, sport, daddr, hnum);
+> -	if (reuse_sk && !reuseport_has_conns(sk, false))
+> +	if (reuse_sk)
+From __udp[46]_lib_lookup, 
+1. The connected udp is picked by the kernel first.
+   If a 4-tuple-matched connected udp is found.  It should have already
+   been returned there.
 
+2. If kernel cannot find a connected udp, the sk-lookup bpf prog can
+   get a chance to pick another socket (likely bound to a different
+   IP/PORT that the packet is destinated to) by bpf_sk_lookup_assign().
+   However, bpf_sk_lookup_assign() does not allow TCP_ESTABLISHED.
 
-> -----Original Message-----
-> From: Will Deacon <will@kernel.org>
-> Sent: Monday, July 27, 2020 7:38 PM
-> To: Jianyong Wu <Jianyong.Wu@arm.com>
-> Cc: netdev@vger.kernel.org; yangbo.lu@nxp.com; john.stultz@linaro.org;
-> tglx@linutronix.de; pbonzini@redhat.com; sean.j.christopherson@intel.com;
-> maz@kernel.org; richardcochran@gmail.com; Mark Rutland
-> <Mark.Rutland@arm.com>; Suzuki Poulose <Suzuki.Poulose@arm.com>;
-> Steven Price <Steven.Price@arm.com>; linux-kernel@vger.kernel.org; linux-
-> arm-kernel@lists.infradead.org; kvmarm@lists.cs.columbia.edu;
-> kvm@vger.kernel.org; Steve Capper <Steve.Capper@arm.com>; Kaly Xin
-> <Kaly.Xin@arm.com>; Justin He <Justin.He@arm.com>; Wei Chen
-> <Wei.Chen@arm.com>; nd <nd@arm.com>
-> Subject: Re: [PATCH v13 2/9] arm/arm64: KVM: Advertise KVM UID to guests
-> via SMCCC
->=20
-> On Mon, Jul 27, 2020 at 03:45:37AM +0000, Jianyong Wu wrote:
-> > > From: Will Deacon <will@kernel.org>
-> > >
-> > > We can advertise ourselves to guests as KVM and provide a basic
-> > > features bitmap for discoverability of future hypervisor services.
-> > >
-> > > Cc: Marc Zyngier <maz@kernel.org>
-> > > Signed-off-by: Will Deacon <will@kernel.org>
-> > > Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
-> > > ---
-> > >  arch/arm64/kvm/hypercalls.c | 29 +++++++++++++++++++----------
-> > >  1 file changed, 19 insertions(+), 10 deletions(-)
-> > >
-> > > diff --git a/arch/arm64/kvm/hypercalls.c
-> > > b/arch/arm64/kvm/hypercalls.c index 550dfa3e53cd..db6dce3d0e23
-> > > 100644
-> > > --- a/arch/arm64/kvm/hypercalls.c
-> > > +++ b/arch/arm64/kvm/hypercalls.c
-> > > @@ -12,13 +12,13 @@
-> > >  int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)  {
-> > >  	u32 func_id =3D smccc_get_function(vcpu);
-> > > -	long val =3D SMCCC_RET_NOT_SUPPORTED;
-> > > +	u32 val[4] =3D {SMCCC_RET_NOT_SUPPORTED};
-> >
-> > There is a risk as this u32 value will return here and a u64 value
-> > will be obtained in guest. For example, The val[0] is initialized as
-> > -1 of 0xffffffff and the guest get 0xffffffff then it will be compared
-> > with -1 of 0xffffffffffffffff Also this problem exists for the
-> > transfer of address in u64 type. So the following assignment to "val"
-> > should be split into two
-> > u32 value and assign to val[0] and val[1] respectively.
-> > WDYT?
->=20
-> Yes, I think you're right that this is a bug, but isn't the solution just=
- to make
-> that an array of 'long'?
->=20
-> 	long val [4];
->=20
-> That will sign-extend the negative error codes as required, while leaving=
- the
-> explicitly unsigned UID constants alone.
-
-Ok, that's much better. I will fix it at next version.
-
-By the way, I wonder when will you update this patch set. I see someone lik=
-e me
-adopt this patch set as code base and need rebase it every time, so expect =
-your update.
-
-Thanks
-Jianyong=20
->=20
-> Will
+   With the change in this patch, it then allows the reuseport-bpf-prog
+   to pick a connected udp which cannot be found in step (1).  Can you
+   explain a use case for this?
