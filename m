@@ -2,50 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D21502313C7
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 22:22:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB5EF2313D2
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 22:24:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728829AbgG1UWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 16:22:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48368 "EHLO mail.kernel.org"
+        id S1728439AbgG1UYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 16:24:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49546 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728234AbgG1UWy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 16:22:54 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1729063AbgG1UYE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 16:24:04 -0400
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2CB382065E;
-        Tue, 28 Jul 2020 20:22:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CA68E20829;
+        Tue, 28 Jul 2020 20:24:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595967774;
-        bh=/+omfSZLhvK02U5FcKCre386kJT6ulWLVMrAVUiZcW0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lNh4idu73rD2FriV5wXz6P0JNCxKTgPu2NyHg5gCH96Si1a6RK7r0m5IWQOgnBPsL
-         G0wgQbwzxuPuvWVdKbZqtdqc/xlwfO9ejBkPl6XHwwNQwpxGi8mjXk7C/NupUfdQVB
-         iE32XgTVdSMvAGrzn4Is2WUyA5aUvArjVONt7ZWA=
-Date:   Tue, 28 Jul 2020 13:22:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [pull request][net V2 00/11] mlx5 fixes-2020-07-28
-Message-ID: <20200728132252.7364fdf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200728195935.155604-1-saeedm@mellanox.com>
-References: <20200728195935.155604-1-saeedm@mellanox.com>
+        s=default; t=1595967844;
+        bh=5YUBNTR6kYnSRFgnb9uK5M5vzWu1wDoO3UjTjmNNR+E=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Voba7APY6X4jIMHLUPRkvVLxVwLMCE0ussUB7/B3nVeH6eGBzckcdamFuSQiX/zFZ
+         reWh/KAXgwe4/bqTFLJet8T0D6jLM8Gn7LSlzYSTUbJbPyL5H/aQ7noTJg/88Ygcjb
+         7OAArA+zIQEGirQXuDT++t8kQ9cRwuJ0OOsx7u5I=
+Received: by mail-lj1-f182.google.com with SMTP id q7so22608898ljm.1;
+        Tue, 28 Jul 2020 13:24:03 -0700 (PDT)
+X-Gm-Message-State: AOAM5316ycIZl3KtqXe413g5/Rjzkofb9rsXyhEaw+vLgef74sc0huWV
+        zcMZqyPZhM+Y7GIyFOGwGJOjLojt11cadQyNtfc=
+X-Google-Smtp-Source: ABdhPJx7n+jT+T49UfNdqpU6nld4hX9C++G+lHCUWkNG1ItG/NNfosAfqCmmqbchzsagbFzJjB1tDpHV020xHV/MAqU=
+X-Received: by 2002:a2e:88c6:: with SMTP id a6mr13266449ljk.27.1595967842119;
+ Tue, 28 Jul 2020 13:24:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200728190527.110830-1-andriin@fb.com> <416c8ef6-3459-8710-2eb5-870e2c695ceb@infradead.org>
+In-Reply-To: <416c8ef6-3459-8710-2eb5-870e2c695ceb@infradead.org>
+From:   Song Liu <song@kernel.org>
+Date:   Tue, 28 Jul 2020 13:23:51 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW63iuBcMiw0TKRSBH68F7GRC9o4JUC6JLx0ij4WK6KX7w@mail.gmail.com>
+Message-ID: <CAPhsuW63iuBcMiw0TKRSBH68F7GRC9o4JUC6JLx0ij4WK6KX7w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: fix build without CONFIG_NET when using BPF
+ XDP link
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Jul 2020 12:59:24 -0700 Saeed Mahameed wrote:
-> Hi Dave,
-> 
-> This series introduces some fixes to mlx5 driver.
-> v1->v2:
->  - Drop the "Hold reference on mirred devices" patch, until Or's
->    comments are addressed.
->  - Imporve "Modify uplink state" patch commit message per Or's request.
+On Tue, Jul 28, 2020 at 1:08 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> On 7/28/20 12:05 PM, Andrii Nakryiko wrote:
+> > Entire net/core subsystem is not built without CONFIG_NET. linux/netdevice.h
+> > just assumes that it's always there, so the easiest way to fix this is to
+> > conditionally compile out bpf_xdp_link_attach() use in bpf/syscall.c.
+> >
+> > Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> > Fixes: aa8d3a716b59 ("bpf, xdp: Add bpf_link-based XDP attachment API")
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>
+> Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Song Liu <songliubraving@fb.com>
