@@ -2,185 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C63A923144A
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 22:55:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9157423144D
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 22:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729089AbgG1Uzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 16:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39224 "EHLO
+        id S1729151AbgG1U4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 16:56:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728625AbgG1Uzc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 16:55:32 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C778C061794;
-        Tue, 28 Jul 2020 13:55:32 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id c16so5651586ils.8;
-        Tue, 28 Jul 2020 13:55:32 -0700 (PDT)
+        with ESMTP id S1728202AbgG1U4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 16:56:20 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F4EC061794;
+        Tue, 28 Jul 2020 13:56:20 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id l64so13337284qkb.8;
+        Tue, 28 Jul 2020 13:56:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=jjOCWK730xEo0Lq6i4P8RFjqFwjxAE+ePsbqdWti9Ks=;
-        b=rUMJCC1xVFtIj5QgXgMbDXqwHsalfjvtkOknokbGBWLPCig/QyJy/gvYpvq4e0Mz89
-         mi1keXq+Zv8vyWl4hLM5Vq3JRo05XaGZyKaHubHvLOiUUMx7oLSITNSNdtvdDvERVraS
-         XyzHICndumqeeRQvVZVKnBGtSwxU42ruabIi5Tdjr3eQl0lbBIjCAGVwqk8v59uxw4Vy
-         0e/ipEA3knX6MMtvk7jfYwRuGFCmvli9kIMqKUBxEWiRlVNTjtO88zuFYhb+La6yfAb1
-         eAgYMLRYBjxUplTLnWZK5oqtks1py19qGrb3REqgz7uiEbzQYuKh4RVGB63ARiuQKlq8
-         2XMw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xTtHy9/c6ZBsZFsSxoQEUXy91p7zwnAUVyWXvNzOO+k=;
+        b=r0s22kHNXiDC78C9qXsW/tM5+sD0iBs2+BNRNvnK2CVmW8y+Evx2khFkpLf0sNIxA9
+         n0//0TiaYlqezSWKQNfii4zTgk8XNgzIuk/Wxd4y1PwGJkeVXYtTxOkXovhr/OAD83WR
+         0Rtl5zmfSrD3JY5EdMBO3gkBDo3Q3B+tzwJygrJCfgPWyiHD8ip8Plf42pUJyLgiVA45
+         w8ICodSd8LG6wgksKi0UW1p8m3087zTMKaAtFiZ1RdUrnBHCS6n07mJ11iQFeaMsob7E
+         /LVMfQ9ZgfnSykho8Y1EWcSGfFIrC2P0Tu6kAJoeexnr6hC6yOdwYgAUsbdh7gDEIYMU
+         EFrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=jjOCWK730xEo0Lq6i4P8RFjqFwjxAE+ePsbqdWti9Ks=;
-        b=ma94JC56BkaV7KY6cZZHKwUR74mxi4owlJgbFg26cXEFL+H8Htw12Zuivnvbp6wNzQ
-         oV7cIexDzcvWR+ccjRB7hoTk5iNUnJDFhgkVYA78HuoRq4aFaVi0/kxHac8ivCqwAeAL
-         yZ0aGqyYey8dj+nALccWxcJF2eWRdM/Xe3y6lTjoQAZ7TdqGWgfpIt/1dVqvMt1iSsL3
-         6W4fJXYOCZNr2sBQurI35/b6+2iuVM4kct/RgQuxUjg/uhCECD3etawBY6ib2Da3FB8S
-         WzNtZRGL+WX3c22uSUny8LQTnmxs+OzwA2o9YjOiI7dSiKQvI9vlX9r5xt+gfRQhKKcb
-         0Iww==
-X-Gm-Message-State: AOAM531F1YcA750rsGdaqj1QGj0agued9UgmqNO3zHyJVJz+c/Q83t7l
-        Rs048w222SK/SYGchtySV03D8kHn
-X-Google-Smtp-Source: ABdhPJxPXEVSYeQG7c2NHrXU/pIz5soI/eeWAvW5smBNtCW11QOPxePdB5kne/GTI0DpZI40xLXwaQ==
-X-Received: by 2002:a92:db10:: with SMTP id b16mr21339520iln.288.1595969731173;
-        Tue, 28 Jul 2020 13:55:31 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id o64sm10824082ilb.12.2020.07.28.13.55.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jul 2020 13:55:30 -0700 (PDT)
-Date:   Tue, 28 Jul 2020 13:55:22 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Martin KaFai Lau <kafai@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Message-ID: <5f2090bac65ef_2fe92b13c67445b47d@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200728172317.zdgkzfrones6pa54@kafai-mbp>
-References: <159595098028.30613.5464662473747133856.stgit@john-Precision-5820-Tower>
- <159595102637.30613.6373296730696919300.stgit@john-Precision-5820-Tower>
- <20200728172317.zdgkzfrones6pa54@kafai-mbp>
-Subject: Re: [bpf PATCH 1/3] bpf: sock_ops ctx access may stomp registers in
- corner case
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xTtHy9/c6ZBsZFsSxoQEUXy91p7zwnAUVyWXvNzOO+k=;
+        b=uScQzLIJCe1vX2V/QhsW7SbM8evnkkbqKJUqD+KOsuCG7DxG4xNhBrWaHYmuFNBrU0
+         d31OQmC6kZ7kNK3k8oSLUj5Ph14J41Y5u12Ug+hfIhJI0NBqxlUvAL5VMNRUp1xVVwFo
+         tO8S69FPfZlMmuIAEQZ1zXtq3omkwT3kjn00m5xbpjLiMcqKNc1CTkV0vGksQP6gEuFE
+         AR0NzZpSbFmNs0RxW0bUB9g+gq5PiDDMjikY+hP6lQVzjsWU2TCRCki9kZUj/INWYlcR
+         SKQvJj+gxtI05+VV8XolSxGZSW37z+lmmxh7rIrV++32Jv91qTrvvq1MFEXN9dmVaWvC
+         wvRA==
+X-Gm-Message-State: AOAM532fQ3+UGULBCq0shonfUTKj0R51GKRqYKMOm55kj+QPyNpD7F3s
+        uuLogZ5YJOhflAtX/B07YMn47YCI
+X-Google-Smtp-Source: ABdhPJzghDw6XbjmAxhs/3QUFzY7PaXJvyqhSbu/ZALMF+9PzGxMWMdFPWNpEbLquOmMtYLaGd+Atg==
+X-Received: by 2002:a37:ae03:: with SMTP id x3mr25945186qke.313.1595969779390;
+        Tue, 28 Jul 2020 13:56:19 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id x198sm1361969qka.37.2020.07.28.13.56.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jul 2020 13:56:18 -0700 (PDT)
+Subject: Re: [net-next PATCH v7 1/6] Documentation: ACPI: DSD: Document MDIO
+ PHY
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Dan Callaghan <dan.callaghan@opengear.com>
+Cc:     Jeremy Linton <jeremy.linton@arm.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Russell King <linux@armlinux.org.uk>, Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        netdev <netdev@vger.kernel.org>, "linux.cj" <linux.cj@gmail.com>,
+        linux-acpi <linux-acpi@vger.kernel.org>
+References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
+ <20200715090400.4733-2-calvin.johnson@oss.nxp.com>
+ <1a031e62-1e87-fdc1-b672-e3ccf3530fda@arm.com>
+ <20200724133931.GF1472201@lunn.ch>
+ <97973095-5458-8ac2-890c-667f4ea6cd0e@arm.com>
+ <20200724191436.GH1594328@lunn.ch>
+ <1595922651-sup-5323@galangal.danc.bne.opengear.com>
+ <20200728204548.GC1748118@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <7d42152a-2df1-a26c-b619-b804001e0eac@gmail.com>
+Date:   Tue, 28 Jul 2020 13:56:15 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20200728204548.GC1748118@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin KaFai Lau wrote:
-> On Tue, Jul 28, 2020 at 08:43:46AM -0700, John Fastabend wrote:
-> > I had a sockmap program that after doing some refactoring started spewing
-> > this splat at me:
-> > 
-> > [18610.807284] BUG: unable to handle kernel NULL pointer dereference at 0000000000000001
-> > [...]
-> > [18610.807359] Call Trace:
-> > [18610.807370]  ? 0xffffffffc114d0d5
-> > [18610.807382]  __cgroup_bpf_run_filter_sock_ops+0x7d/0xb0
-> > [18610.807391]  tcp_connect+0x895/0xd50
-> > [18610.807400]  tcp_v4_connect+0x465/0x4e0
-> > [18610.807407]  __inet_stream_connect+0xd6/0x3a0
-> > [18610.807412]  ? __inet_stream_connect+0x5/0x3a0
-> > [18610.807417]  inet_stream_connect+0x3b/0x60
-> > [18610.807425]  __sys_connect+0xed/0x120
-> > 
 
-[...]
 
-> > So three additional instructions if dst == src register, but I scanned
-> > my current code base and did not see this pattern anywhere so should
-> > not be a big deal. Further, it seems no one else has hit this or at
-> > least reported it so it must a fairly rare pattern.
-> > 
-> > Fixes: 9b1f3d6e5af29 ("bpf: Refactor sock_ops_convert_ctx_access")
-> I think this issue dated at least back from
-> commit 34d367c59233 ("bpf: Make SOCK_OPS_GET_TCP struct independent")
-> There are a few refactoring since then, so fixing in much older
-> code may not worth it since it is rare?
+On 7/28/2020 1:45 PM, Andrew Lunn wrote:
+> On Tue, Jul 28, 2020 at 06:06:26PM +1000, Dan Callaghan wrote:
+>> Excerpts from Andrew Lunn's message of 2020-07-24 21:14:36 +02:00:
+>>> Now i could be wrong, but are Ethernet switches something you expect
+>>> to see on ACPI/SBSA platforms? Or is this a legitimate use of the
+>>> escape hatch?
+>>
+>> As an extra data point: right now I am working on an x86 embedded 
+>> appliance (ACPI not Device Tree) with 3x integrated Marvell switches. 
+>> I have been watching this patch series with great interest, because 
+>> right now there is no way for me to configure a complex switch topology 
+>> in DSA without Device Tree.
+>>
+>> For the device I am working on, we will have units shipping before these 
+>> questions about how to represent Ethernet switches in ACPI can be 
+>> resolved. So realistically, we will have to actually configure the 
+>> switches using software_node structures supplied by an out-of-tree 
+>> platform driver, or some hackery like that, rather than configuring them 
+>> through ACPI.
+> 
+> Hi Dan
+> 
+> I also have an x86 platform, but with a single switch. For that, i
+> have a platform driver, which instantiates a bit banging MDIO bus, and
+> sets up the switch using platform data. This works, but it is limited
+> to internal Copper only PHYs.
 
-OK I just did a quick git annotate and pulled out the last patch
-there. I didn't go any farther back. The failure is rare and has
-the nice property that it crashes hard always. For example I found
-it by simply running some of our go tests after doing the refactor.
-I guess if it was in some path that doesn't get tested like an
-error case or something you might have an ugly surprise in production.
-I can imagine a case where tracking this down might be difficult.
+At some point I had a dsa2_platform_data implementation which was
+intended to describe more complex switch set-ups and trees, the old code
+is still there for your entertainment:
 
-OTOH the backport wont be automatic past some of those reworks.
+https://github.com/ffainelli/linux/commits/dsa-pdata
 
 > 
-> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> > ---
-> >  net/core/filter.c |   26 ++++++++++++++++++++++++--
-> >  1 file changed, 24 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/net/core/filter.c b/net/core/filter.c
-> > index 29e34551..c50cb80 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -8314,15 +8314,31 @@ static u32 sock_ops_convert_ctx_access(enum bpf_access_type type,
-> >  /* Helper macro for adding read access to tcp_sock or sock fields. */
-> >  #define SOCK_OPS_GET_FIELD(BPF_FIELD, OBJ_FIELD, OBJ)			      \
-> >  	do {								      \
-> > +		int fullsock_reg = si->dst_reg, reg = BPF_REG_9, jmp = 2;     \
-> >  		BUILD_BUG_ON(sizeof_field(OBJ, OBJ_FIELD) >		      \
-> >  			     sizeof_field(struct bpf_sock_ops, BPF_FIELD));   \
-> > +		if (si->dst_reg == reg || si->src_reg == reg)		      \
-> > +			reg--;						      \
-> > +		if (si->dst_reg == reg || si->src_reg == reg)		      \
-> > +			reg--;						      \
-> > +		if (si->dst_reg == si->src_reg) {			      \
-> > +			*insn++ = BPF_STX_MEM(BPF_DW, si->src_reg, reg,	      \
-> > +					  offsetof(struct bpf_sock_ops_kern,  \
-> > +				          temp));			      \
-> Instead of sock_ops->temp, can BPF_REG_AX be used here as a temp?
-> e.g. bpf_convert_shinfo_access() has already used it as a temp also.
-
-Sure I will roll a v2 I agree that rax is a bit nicer. I guess for
-bpf-next we can roll the load over to use rax as well? Once the
-fix is in place I'll take a look it would be nice for consistency.
-
+>> An approach I have been toying with is to port all of DSA to use the 
+>> fwnode_handle abstraction instead of Device Tree nodes, but that is 
+>> obviously a large task, and frankly I was not sure whether such a patch 
+>> series would be welcomed.
 > 
-> Also, it seems the "sk" access in sock_ops_convert_ctx_access() suffers
-> a similar issue.
-
-Good catch. I'll fix it up as well. Maybe with a second patch and test.
-Patches might be a bit verbose but makes it easier to track the bugs
-I think.
-
+> I would actually suggest you look at using DT. We are struggling to
+> get ACPI maintainers involved with really simple things, like the ACPI
+> equivalent of a phandle from the MAC to the PHY. A full DSA binding
+> for Marvell switches is pretty complex, especially if you need SFP
+> support. I expect the ACPI maintainers will actively run away
+> screaming when you make your proposal.
 > 
-> > +			fullsock_reg = reg;				      \
-> > +			jmp+=2;						      \
-> > +		}							      \
-> >  		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(			      \
-> >  						struct bpf_sock_ops_kern,     \
-> >  						is_fullsock),		      \
-> > -				      si->dst_reg, si->src_reg,		      \
-> > +				      fullsock_reg, si->src_reg,	      \
-> >  				      offsetof(struct bpf_sock_ops_kern,      \
-> >  					       is_fullsock));		      \
-> > -		*insn++ = BPF_JMP_IMM(BPF_JEQ, si->dst_reg, 0, 2);	      \
-> > +		*insn++ = BPF_JMP_IMM(BPF_JEQ, fullsock_reg, 0, jmp);	      \
-> > +		if (si->dst_reg == si->src_reg)				      \
-> > +			*insn++ = BPF_LDX_MEM(BPF_DW, reg, si->src_reg,	      \
-> > +				      offsetof(struct bpf_sock_ops_kern,      \
-> > +				      temp));				      \
-> >  		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(			      \
-> >  						struct bpf_sock_ops_kern, sk),\
-> >  				      si->dst_reg, si->src_reg,		      \
-> > @@ -8331,6 +8347,12 @@ static u32 sock_ops_convert_ctx_access(enum bpf_access_type type,
-> >  						       OBJ_FIELD),	      \
-> >  				      si->dst_reg, si->dst_reg,		      \
-> >  				      offsetof(OBJ, OBJ_FIELD));	      \
-> > +		if (si->dst_reg == si->src_reg)	{			      \
-> > +			*insn++ = BPF_JMP_A(1);				      \
-> > +			*insn++ = BPF_LDX_MEM(BPF_DW, reg, si->src_reg,	      \
-> > +				      offsetof(struct bpf_sock_ops_kern,      \
-> > +				      temp));				      \
-> > +		}							      \
-> >  	} while (0)
-> >  
-> >  #define SOCK_OPS_GET_TCP_SOCK_FIELD(FIELD) \
-> > 
+> DT can be used on x86, and i suspect it is a much easier path of least
+> resistance.
+
+And you can easily overlay Device Tree to an existing system by using
+either a full Device Tree overlay (dtbo) or using CONFIG_OF_DYNAMIC and
+creating nodes on the fly.
+-- 
+Florian
