@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0E3D231363
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 22:01:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 444A5231364
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 22:01:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729327AbgG1UAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 16:00:53 -0400
-Received: from mail-eopbgr00064.outbound.protection.outlook.com ([40.107.0.64]:19686
+        id S1729343AbgG1UA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 16:00:57 -0400
+Received: from mail-eopbgr00066.outbound.protection.outlook.com ([40.107.0.66]:1413
         "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729300AbgG1UAv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 16:00:51 -0400
+        id S1729300AbgG1UA4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 16:00:56 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KSoBwI18C88lXTFalYJX67AtDx0l6hyDBC854EOUrYbxmLKblpOsy7vffAeqcyFlNLRB60W5k8EBdtKnkr1aAuJh2Qka8MBDiuakXJvl9cD6WDDxUdoKQwJN+ksSxMRUW3DLr2sBV94jJ3J6aE3oySNbAbngvzGuqr4N6tyZnX9hfO4x+pDlOabGhLGYfOeVqveVupPYgrL1GeLGpuuDClMfdruesulsreMokr+8voX1yRStL+WmKMiZ+kSnRCYJzXLSKs4QG8x1rzzN8r7XW+/JxTqhccFMLYBveozgFTbLZ74M0n9NaQX+00qNgII7YCuXSlmEaCW69Fs/usK1vA==
+ b=hAhKcylsJCsfHdfDF49bPCNliInZsOgGme+MLIgn64jclxfICb/GcUbVDDLOm+SQ+62/ZPpUrnL/EZTqBV3o62IA9+9Lls7uGFHRjqv0qcDDCBXpj7E/lWjCQxvQU1P/n2JtIj0KVsxRmkSYe5AAa6np/VgRsNJblq8DecB/LDx0di3yYkK257Ql4FG2LXpI/wNjwFL/vPWSh8KKH+Y8pvFQl53bvODWi/XKEiGHIJdPCgnNSDJahXGWCqA3gG8x6eSAmrANu1JCaeXQA5OcbveSuAd/BnHYi3TNrYUVsLI5DQViAAq3LhinNLRxRlWepkqnkE0LnR9kQnlhJqgTdA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h57vDBXZzLrgEn6cIlweyy+lp5zjeQjYWgXwka7Q3bI=;
- b=fUwA7gd2sh7gY1PiG1HGJ/hieINYQiJR6FhTLZ7/AMVlo7ycuN/9Z3ocTmAR2QqbyEEcUYSrMkwF5kLKCNySVVjnePFpFx416MwOwJWENSdWqLpJRjKqVTgTX4fVmNaS+yDZpTonRP/s50Ujn3nLUTTMdfbHt/MkKiJrO6X3F5EM7M97ndS9DHNWcFVlWAIACslTKU7pIOgmT/1SEoPAlbX2JIdOlXE66hS4QZD1ufH/yYqS4Vfc2OuoVctN6KxtlIPpOxYh/RR5y7SBLOn/juSEbqMlT6+E3RX2IYHOJextDAKUNCxix7SeD36dCDjeAyRshF3R0uxbriAdjJfibQ==
+ bh=PB6A7BOwlbghfua3HcZpWWj9Vo6t8AgAXCfLrMfdU6M=;
+ b=byKSsi9SWf7X0DAeDaSk1VrUMSQlsPzhrVvz4ceHKbXBskB4bC4O1JomNAIXbUuaeB66MAwk3waNB1mMtGtEVBqw754SRrRZQlM4s4v4NN+iYN5wtK7ds4oeFIVDqym2MR0eHjLrZ3bjED/cUQFPzkrLbnH3Ma/Yv5DvNUioYJJLp4YPU3NrhoR9SdH7KAv/bMHMzNq6C8swRAvAGvopQ4huquGFvGCloUIwrMb5EXZVAqissTA8cGHCQCPEAQQLRi13CIdjMQb7DW9DDlrxlZd98LJXh8kR+I1Qk9+VXQ7RPniw9N8PtTandvxb9TC2kJecwPPek/6fE5OhFq8r/A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h57vDBXZzLrgEn6cIlweyy+lp5zjeQjYWgXwka7Q3bI=;
- b=NciF1jxw+plL7m07WXjvmKR0Mi16ZdjgLrBhZj+aRTFVuxs29HfGmY9S3jVz0b71SAZzmdR5V7Z8xAqvq+mU37/wMnBdMcs2V+v0Y2it9XLXcZxtfW2li1G93g9zCUD3lEYFUlkOY8+0FtrcZgOOPgni1WOwClszcInpTyir6/s=
+ bh=PB6A7BOwlbghfua3HcZpWWj9Vo6t8AgAXCfLrMfdU6M=;
+ b=ho2OAxt8XvWk2Oh9XT9gbVZeSwVBFPScUIprl8HdCjrasl+eNWkv9XXdZWmN7lRO1q5gD5nVlXEzxJBCyOyd7CFxYNwMKBqXlavQMbwT7c1KByth51I6SbJ4K15qaMgwZCCx/xylc9PGV/ukymW3jn+veBfq46KFr5hrPfncLbw=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR0501MB2592.eurprd05.prod.outlook.com (2603:10a6:800:6f::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.20; Tue, 28 Jul
- 2020 20:00:48 +0000
+ 2020 20:00:52 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::508a:d074:ad3a:3529]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::508a:d074:ad3a:3529%5]) with mapi id 15.20.3216.034; Tue, 28 Jul 2020
- 20:00:47 +0000
+ 20:00:51 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Ron Diskin <rondi@mellanox.com>,
+Cc:     netdev@vger.kernel.org, Alaa Hleihel <alaa@mellanox.com>,
         Roi Dayan <roid@mellanox.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net V2 10/11] net/mlx5e: Modify uplink state on interface up/down
-Date:   Tue, 28 Jul 2020 12:59:34 -0700
-Message-Id: <20200728195935.155604-11-saeedm@mellanox.com>
+Subject: [net V2 11/11] net/mlx5e: Fix kernel crash when setting vf VLANID on a VF dev
+Date:   Tue, 28 Jul 2020 12:59:35 -0700
+Message-Id: <20200728195935.155604-12-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200728195935.155604-1-saeedm@mellanox.com>
 References: <20200728195935.155604-1-saeedm@mellanox.com>
@@ -58,198 +58,139 @@ X-ClientProxiedBy: BYAPR07CA0058.namprd07.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR07CA0058.namprd07.prod.outlook.com (2603:10b6:a03:60::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.23 via Frontend Transport; Tue, 28 Jul 2020 20:00:45 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR07CA0058.namprd07.prod.outlook.com (2603:10b6:a03:60::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.23 via Frontend Transport; Tue, 28 Jul 2020 20:00:48 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: f35cd8b9-9419-4969-82f6-08d83330eb10
+X-MS-Office365-Filtering-Correlation-Id: 84305557-ad00-42d7-76f0-08d83330ed38
 X-MS-TrafficTypeDiagnostic: VI1PR0501MB2592:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0501MB25922199A622D1FDDCFF9BC3BE730@VI1PR0501MB2592.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1775;
+X-Microsoft-Antispam-PRVS: <VI1PR0501MB259221BD539CB33B3459D574BE730@VI1PR0501MB2592.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:475;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sQaCiIxceshimF7LzLi0UtJxyrXcmBBXMuH1P1MzvT6CQUuWCY8/2Mpo/thThhZUkMLahNA9PTQKKqdUd2Ly2UmUEcXH2tvOIE94gDXrzMLad/nfaQo8NQoeK+jYruwuKDGvlMKCmau5aYD3ZVyguMwdcDj5RoIwBX56dMny7sauyARZNl9dJF2N06tdWOhVfrE5DgGVNiG5AGtCGA4hCI0VDN2aI6TulKNNMKNwVPV3rw4SAjEzn3quEK2x8yM3chwpBzniMW0rY8HYOoU/k2oPtxVU7KF/RfzZy7eVlGyLmWAItpoguTznNHePekYWprTZYwWq9lHIARAjamaHmzcy/6P2tMHVtz05WiCEZqXEpKb6W9UChwugOVY6rHDY
+X-Microsoft-Antispam-Message-Info: OzDZPycnfHxeJB33Vvrb8buRuxLuQMU3fyBBfTUIgcCjmi1aVD5xHggaa3wOK/nvXTFyRPiELYpu7Nc6LHcRnnycVODSaZF87pEtkum4ZqWFAOc18gOvotAnctzcGZauBCVPMMJfRMQNYXBmKtk6M8wcte6mCjZack61MPxutRk/gGWg4XlNJs5Hd4E+IwAWHPdSIyxT5rSi8KoSh8PydXu+8ScSByJbQ/9sV6ShFDFpNK2Ov+BD4Q3b/f/ley5/ICu2BJv3iAA0Ey0SopNWm9NZAkMpIB3r0IybiOMBljfj8zPwWFP6J1MA+Y9Hwk82salPJibgR77nFtOM/S3zA4gwZo8FLIx0HvBKNSYeraprTjOttmC/6xv5kUYqKWT9
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(186003)(6486002)(8676002)(83380400001)(498600001)(6506007)(54906003)(110136005)(107886003)(86362001)(36756003)(16526019)(26005)(1076003)(66556008)(52116002)(6666004)(66476007)(4326008)(66946007)(956004)(8936002)(2616005)(5660300002)(2906002)(6512007)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: hYwlVOPhBYZzb6lKMQywVB2d3R6N0bNMCJ4b7H/uguAid4ECnBsGleoaZXtKup7cepbT931Lv8wH7YGd3cTbAQ3/Rkll60wx8xJRytIJxC1Mwhtiuw0iPcptiMxFt+b3Qc/jRt15KMPtAH0UR0KGU01AO+JSFIr5cjNFyd6enqEmlaiTm8sDxsKPpkjvr0tCfjVjfaasWR+KxAiln76jDcgpMLOsC/JB5c2ejKpSnkxaDeMK4iYW4eG5tEFaY0gUamnNYbiOT5qHZUy4gI8NPJff7lOtiH56Jauon9sD+Jx00sUC+obbspUvHehuAALLi5rm9Rp87RiLSJV61u1fdWrMRiY4txy8tgWHpGMJwn4Fi++M/Fq8KUzL5ysR0xPW/6+dpHeaKULldfPYVAuyWZp7sC3OmO+gTmrY/5gBxvPWmJZ65EkDDaEvMsZLRUMdcRfK08pthWboykzURgaeFbbu3E2lErvXDRUYpV0hRIk=
+X-MS-Exchange-AntiSpam-MessageData: TMz2UrfqWnmkYimyx9bhyLwFcoOtHcmcBXwEdzHvQ0Lb0F81AHzGUznGsOeZcSgrF4GwCLwWCCpEnAHVapmfeyzjtuhyBpdIPQljzABO1Qn1jOkPBALc+iqSdjFFwEEVRdhybefgLr6PvzlomorVFhZN04TruY2uQRiLYaNrKGqUd2uCzCrx7Hu7/b5LGbH4WT6EmXum/KFVq6op1AN8KbdzfH+r7wXuxTP29qqtzYU/bOkRx8sCGmxOl3hHk6t1qSm1P+IUyrMitqc2YXYInBQq6D54x4N3Bxw0WXOHt8c63RbO2SlJ1O8JGwcsNiTBSOn4tI5Vfdvky4v0c1RaeCiZCljfoasgRBUpAU0ewn6fvTAWxYEoVKtBsaApZH5+P/HELXaLo1wHxhv1XfQ15UKSzF+k/y5xSTea4wBZi3XdVV9wXuYkjwXVhs02WFNUARIUR6RZoOt4OdMW1SGxa8TicRGnQG56idg7CevoK28=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f35cd8b9-9419-4969-82f6-08d83330eb10
+X-MS-Exchange-CrossTenant-Network-Message-Id: 84305557-ad00-42d7-76f0-08d83330ed38
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2020 20:00:47.4248
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2020 20:00:51.6170
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fDNVahwzA2TUrSPu5p6V+l/9PimX37L2AsZ+QBu5B2MKJBGrBgC2cThhmw0Cg+SGwQYYoCnA078qSNojrgJfgw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6X6FSwyWObGKxvjtuyGk/bl7BlVGuxpYQS+ey+w2iZo8E/RAQJE/wmZKCUgi+ojGiGCK0y7IUbxacrpDzjh+5A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2592
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ron Diskin <rondi@mellanox.com>
+From: Alaa Hleihel <alaa@mellanox.com>
 
-When setting the PF interface up/down, notify the firmware to update
-uplink state via MODIFY_VPORT_STATE, when E-Switch is enabled.
+After the cited commit, function 'mlx5_eswitch_set_vport_vlan' started
+to acquire esw->state_lock.
+However, esw is not defined for VF devices, hence attempting to set vf
+VLANID on a VF dev will cause a kernel panic.
 
-This behavior will prevent sending traffic out on uplink port when PF is
-down, such as sending traffic from a VF interface which is still up.
-Currently when calling mlx5e_open/close(), the driver only sends PAOS
-command to notify the firmware to set the physical port state to
-up/down, however, it is not sufficient. When VF is in "auto" state, it
-follows the uplink state, which was not updated on mlx5e_open/close()
-before this patch.
+Fix it by moving up the (redundant) esw validation from function
+'__mlx5_eswitch_set_vport_vlan' since the rest of the callers now have
+and use a valid esw.
 
-When switchdev mode is enabled and uplink representor is first enabled,
-set the uplink port state value back to its FW default "AUTO".
+For example with vf device eth4:
+ # ip link set dev eth4 vf 0 vlan 0
 
-Fixes: 63bfd399de55 ("net/mlx5e: Send PAOS command on interface up/down")
-Signed-off-by: Ron Diskin <rondi@mellanox.com>
+Trace of the panic:
+ [  411.409842] BUG: unable to handle page fault for address: 00000000000011b8
+ [  411.449745] #PF: supervisor read access in kernel mode
+ [  411.452348] #PF: error_code(0x0000) - not-present page
+ [  411.454938] PGD 80000004189c9067 P4D 80000004189c9067 PUD 41899a067 PMD 0
+ [  411.458382] Oops: 0000 [#1] SMP PTI
+ [  411.460268] CPU: 4 PID: 5711 Comm: ip Not tainted 5.8.0-rc4_for_upstream_min_debug_2020_07_08_22_04 #1
+ [  411.462447] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+ [  411.464158] RIP: 0010:__mutex_lock+0x4e/0x940
+ [  411.464928] Code: fd 41 54 49 89 f4 41 52 53 89 d3 48 83 ec 70 44 8b 1d ee 03 b0 01 65 48 8b 04 25 28 00 00 00 48 89 45 c8 31 c0 45 85 db 75 0a <48> 3b 7f 60 0f 85 7e 05 00 00 49 8d 45 68 41 56 41 b8 01 00 00 00
+ [  411.467678] RSP: 0018:ffff88841fcd74b0 EFLAGS: 00010246
+ [  411.468562] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+ [  411.469715] RDX: 0000000000000000 RSI: 0000000000000002 RDI: 0000000000001158
+ [  411.470812] RBP: ffff88841fcd7550 R08: ffffffffa00fa1ce R09: 0000000000000000
+ [  411.471835] R10: ffff88841fcd7570 R11: 0000000000000000 R12: 0000000000000002
+ [  411.472862] R13: 0000000000001158 R14: ffffffffa00fa1ce R15: 0000000000000000
+ [  411.474004] FS:  00007faee7ca6b80(0000) GS:ffff88846fc00000(0000) knlGS:0000000000000000
+ [  411.475237] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ [  411.476129] CR2: 00000000000011b8 CR3: 000000041909c006 CR4: 0000000000360ea0
+ [  411.477260] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ [  411.478340] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ [  411.479332] Call Trace:
+ [  411.479760]  ? __nla_validate_parse.part.6+0x57/0x8f0
+ [  411.482825]  ? mlx5_eswitch_set_vport_vlan+0x3e/0xa0 [mlx5_core]
+ [  411.483804]  mlx5_eswitch_set_vport_vlan+0x3e/0xa0 [mlx5_core]
+ [  411.484733]  mlx5e_set_vf_vlan+0x41/0x50 [mlx5_core]
+ [  411.485545]  do_setlink+0x613/0x1000
+ [  411.486165]  __rtnl_newlink+0x53d/0x8c0
+ [  411.486791]  ? mark_held_locks+0x49/0x70
+ [  411.487429]  ? __lock_acquire+0x8fe/0x1eb0
+ [  411.488085]  ? rcu_read_lock_sched_held+0x52/0x60
+ [  411.488998]  ? kmem_cache_alloc_trace+0x16d/0x2d0
+ [  411.489759]  rtnl_newlink+0x47/0x70
+ [  411.490357]  rtnetlink_rcv_msg+0x24e/0x450
+ [  411.490978]  ? netlink_deliver_tap+0x92/0x3d0
+ [  411.491631]  ? validate_linkmsg+0x330/0x330
+ [  411.492262]  netlink_rcv_skb+0x47/0x110
+ [  411.492852]  netlink_unicast+0x1ac/0x270
+ [  411.493551]  netlink_sendmsg+0x336/0x450
+ [  411.494209]  sock_sendmsg+0x30/0x40
+ [  411.494779]  ____sys_sendmsg+0x1dd/0x1f0
+ [  411.495378]  ? copy_msghdr_from_user+0x5c/0x90
+ [  411.496082]  ___sys_sendmsg+0x87/0xd0
+ [  411.496683]  ? lock_acquire+0xb9/0x3a0
+ [  411.497322]  ? lru_cache_add+0x5/0x170
+ [  411.497944]  ? find_held_lock+0x2d/0x90
+ [  411.498568]  ? handle_mm_fault+0xe46/0x18c0
+ [  411.499205]  ? __sys_sendmsg+0x51/0x90
+ [  411.499784]  __sys_sendmsg+0x51/0x90
+ [  411.500341]  do_syscall_64+0x59/0x2e0
+ [  411.500938]  ? asm_exc_page_fault+0x8/0x30
+ [  411.501609]  ? rcu_read_lock_sched_held+0x52/0x60
+ [  411.502350]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+ [  411.503093] RIP: 0033:0x7faee73b85a7
+ [  411.503654] Code: Bad RIP value.
+
+Fixes: 0e18134f4f9f ("net/mlx5e: Eswitch, use state_lock to synchronize vlan change")
+Signed-off-by: Alaa Hleihel <alaa@mellanox.com>
 Reviewed-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Moshe Shemesh <moshe@mellanox.com>
+Reviewed-by: Vlad Buslov <vladbu@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 25 ++++++++++++++++---
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  2 ++
- .../net/ethernet/mellanox/mlx5/core/eswitch.c | 16 +++++++-----
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |  2 ++
- include/linux/mlx5/mlx5_ifc.h                 |  1 +
- 5 files changed, 37 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 31f9ecae98df9..07fdbea7ea13b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3069,6 +3069,25 @@ void mlx5e_timestamp_init(struct mlx5e_priv *priv)
- 	priv->tstamp.rx_filter = HWTSTAMP_FILTER_NONE;
- }
- 
-+static void mlx5e_modify_admin_state(struct mlx5_core_dev *mdev,
-+				     enum mlx5_port_status state)
-+{
-+	struct mlx5_eswitch *esw = mdev->priv.eswitch;
-+	int vport_admin_state;
-+
-+	mlx5_set_port_admin_status(mdev, state);
-+
-+	if (!MLX5_ESWITCH_MANAGER(mdev) ||  mlx5_eswitch_mode(esw) == MLX5_ESWITCH_OFFLOADS)
-+		return;
-+
-+	if (state == MLX5_PORT_UP)
-+		vport_admin_state = MLX5_VPORT_ADMIN_STATE_AUTO;
-+	else
-+		vport_admin_state = MLX5_VPORT_ADMIN_STATE_DOWN;
-+
-+	mlx5_eswitch_set_vport_state(esw, MLX5_VPORT_UPLINK, vport_admin_state);
-+}
-+
- int mlx5e_open_locked(struct net_device *netdev)
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
-@@ -3101,7 +3120,7 @@ int mlx5e_open(struct net_device *netdev)
- 	mutex_lock(&priv->state_lock);
- 	err = mlx5e_open_locked(netdev);
- 	if (!err)
--		mlx5_set_port_admin_status(priv->mdev, MLX5_PORT_UP);
-+		mlx5e_modify_admin_state(priv->mdev, MLX5_PORT_UP);
- 	mutex_unlock(&priv->state_lock);
- 
- 	return err;
-@@ -3135,7 +3154,7 @@ int mlx5e_close(struct net_device *netdev)
- 		return -ENODEV;
- 
- 	mutex_lock(&priv->state_lock);
--	mlx5_set_port_admin_status(priv->mdev, MLX5_PORT_DOWN);
-+	mlx5e_modify_admin_state(priv->mdev, MLX5_PORT_DOWN);
- 	err = mlx5e_close_locked(netdev);
- 	mutex_unlock(&priv->state_lock);
- 
-@@ -5182,7 +5201,7 @@ static void mlx5e_nic_enable(struct mlx5e_priv *priv)
- 
- 	/* Marking the link as currently not needed by the Driver */
- 	if (!netif_running(netdev))
--		mlx5_set_port_admin_status(mdev, MLX5_PORT_DOWN);
-+		mlx5e_modify_admin_state(mdev, MLX5_PORT_DOWN);
- 
- 	mlx5e_set_netdev_mtu_boundaries(priv);
- 	mlx5e_set_dev_port_mtu(priv);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 8c294ab43f908..9519a61bd8ec5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -1081,6 +1081,8 @@ static void mlx5e_uplink_rep_enable(struct mlx5e_priv *priv)
- 
- 	mlx5e_rep_tc_enable(priv);
- 
-+	mlx5_modify_vport_admin_state(mdev, MLX5_VPORT_STATE_OP_MOD_UPLINK,
-+				      0, 0, MLX5_VPORT_ADMIN_STATE_AUTO);
- 	mlx5_lag_add(mdev, netdev);
- 	priv->events_nb.notifier_call = uplink_rep_async_event;
- 	mlx5_notifier_register(mdev, &priv->events_nb);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-index d9376627584e9..71d01143c4556 100644
+index 71d01143c4556..43005caff09e1 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -1826,6 +1826,8 @@ int mlx5_eswitch_set_vport_state(struct mlx5_eswitch *esw,
- 				 u16 vport, int link_state)
- {
+@@ -1887,8 +1887,6 @@ int __mlx5_eswitch_set_vport_vlan(struct mlx5_eswitch *esw,
  	struct mlx5_vport *evport = mlx5_eswitch_get_vport(esw, vport);
-+	int opmod = MLX5_VPORT_STATE_OP_MOD_ESW_VPORT;
-+	int other_vport = 1;
  	int err = 0;
  
- 	if (!ESW_ALLOWED(esw))
-@@ -1833,15 +1835,17 @@ int mlx5_eswitch_set_vport_state(struct mlx5_eswitch *esw,
+-	if (!ESW_ALLOWED(esw))
+-		return -EPERM;
  	if (IS_ERR(evport))
  		return PTR_ERR(evport);
+ 	if (vlan > 4095 || qos > 7)
+@@ -1916,6 +1914,9 @@ int mlx5_eswitch_set_vport_vlan(struct mlx5_eswitch *esw,
+ 	u8 set_flags = 0;
+ 	int err;
  
-+	if (vport == MLX5_VPORT_UPLINK) {
-+		opmod = MLX5_VPORT_STATE_OP_MOD_UPLINK;
-+		other_vport = 0;
-+		vport = 0;
-+	}
- 	mutex_lock(&esw->state_lock);
++	if (!ESW_ALLOWED(esw))
++		return -EPERM;
++
+ 	if (vlan || qos)
+ 		set_flags = SET_VLAN_STRIP | SET_VLAN_INSERT;
  
--	err = mlx5_modify_vport_admin_state(esw->dev,
--					    MLX5_VPORT_STATE_OP_MOD_ESW_VPORT,
--					    vport, 1, link_state);
-+	err = mlx5_modify_vport_admin_state(esw->dev, opmod, vport, other_vport, link_state);
- 	if (err) {
--		mlx5_core_warn(esw->dev,
--			       "Failed to set vport %d link state, err = %d",
--			       vport, err);
-+		mlx5_core_warn(esw->dev, "Failed to set vport %d link state, opmod = %d, err = %d",
-+			       vport, opmod, err);
- 		goto unlock;
- 	}
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index a5175e98c0b34..5785596f13f5b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -680,6 +680,8 @@ static inline int mlx5_eswitch_enable(struct mlx5_eswitch *esw, int num_vfs) { r
- static inline void mlx5_eswitch_disable(struct mlx5_eswitch *esw, bool clear_vf) {}
- static inline bool mlx5_esw_lag_prereq(struct mlx5_core_dev *dev0, struct mlx5_core_dev *dev1) { return true; }
- static inline bool mlx5_eswitch_is_funcs_handler(struct mlx5_core_dev *dev) { return false; }
-+static inline
-+int mlx5_eswitch_set_vport_state(struct mlx5_eswitch *esw, u16 vport, int link_state) { return 0; }
- static inline const u32 *mlx5_esw_query_functions(struct mlx5_core_dev *dev)
- {
- 	return ERR_PTR(-EOPNOTSUPP);
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 073b79eacc991..1340e02b14ef2 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -4381,6 +4381,7 @@ struct mlx5_ifc_query_vport_state_out_bits {
- enum {
- 	MLX5_VPORT_STATE_OP_MOD_VNIC_VPORT  = 0x0,
- 	MLX5_VPORT_STATE_OP_MOD_ESW_VPORT   = 0x1,
-+	MLX5_VPORT_STATE_OP_MOD_UPLINK      = 0x2,
- };
- 
- struct mlx5_ifc_arm_monitor_counter_in_bits {
 -- 
 2.26.2
 
