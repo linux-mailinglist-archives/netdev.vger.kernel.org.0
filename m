@@ -2,82 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A12F6231334
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:55:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F16B923133C
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:56:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728809AbgG1TzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57994 "EHLO
+        id S1728856AbgG1T4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727824AbgG1TzR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:55:17 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 343C0C061794
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:55:17 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id c6so498804pje.1
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:55:17 -0700 (PDT)
+        with ESMTP id S1728567AbgG1T4O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:56:14 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2D9C061794;
+        Tue, 28 Jul 2020 12:56:13 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id x69so19976040qkb.1;
+        Tue, 28 Jul 2020 12:56:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MdJ9fzkeAvtqLH9LF4xIRvajsjy5CcziOa0+iS6fnDQ=;
-        b=CDu+PLlBYeVCAz9iqRoxdYOl0zhvbSNqhTNpTNFGp3dCaynmv3RjhGLfFi13wrMJNM
-         43ROcR7hMGpDljQgrz5ZQXjpMu+pWFiKh6AsNwY3kZ0oXGOuH/0+wMDFzJTHWjDVCqWy
-         vbvekSaRDedOXevXk/sYLZYhBu1rgMQ2e+o2V4Zr9w2EigRG0tI18HEq2AegGwkrtx1C
-         +XmMW38e+qPFMrXLZIJoLxIycFfy9bwshQsopZO+9gNiFAH4Jj+6vIDJMyKxhv7TM6Rb
-         f6rVdpfJEu+zqC/wTF0jt3tR3eXELP9tdLpK+dIMXV/7xr4lOTz70bzjyzBaJQ4KH4FF
-         WXjQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sJP1AxLMAkAXNjIXT2QYjjZKu+zrqi6ZQ8MjHCkzEQY=;
+        b=bMiViWhcNc8eurQHFF7gEo0b0AE1ZzuplLLnV5578pbu3xdCErqsqSXkkh/v4DGb1L
+         HdYJRQwpE/I1Da6fAQF7gUWTCC/o1BCSopOuClrdVRIs8+yuIPtpNaXES6JWAqCph13F
+         LAgxPty2yO/fFBsmaLVbDssY5XYobj1FP77Q9FZ7YZn6C+kiAZpCaJrznmawf3R3ZMYd
+         g3MjmkpBhT7A+TghSTVG1l1tLRzGa72xNe3IBgWjgPMWhvThtWwj+jAEu9iWL4vw8KDp
+         a1Q1PrbYnG5ttlB456mHM+VIZOb1QeLZsDQ8XifHlFt70DDqxh3e9d8BBHI/st6lM6ce
+         g/4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MdJ9fzkeAvtqLH9LF4xIRvajsjy5CcziOa0+iS6fnDQ=;
-        b=GcS2OV9ISc1n+j1RN6jcIjXKRZpSAE923OaPfJgFJziBCyBAaPhU8SCNWYlvYNw3BF
-         V81m6JovOhHogH20WWEMYyXS+XVmEhA0HOgyuSb3Fekrlq5FI+WxtaqoDfLjgT5FuXmg
-         /mygf4+iEscoUeLjlV38ObSgAHEx+b/pkCB0M6Uq7mGGFLihW2ZJK59u1euHFAgQaWDy
-         FlX9gsngPaPfrHI9Ewq8KryfH+dqNEUoMP3gWbStC0RmoZzVuhavK2Ii36FmsrSsQ1w2
-         sjKo9xa1AMeUqy3segLlDyttxM9g3x7Kd+rL9egnUBouvj3X0DtakNmRR2hLOG6T4toH
-         /1hA==
-X-Gm-Message-State: AOAM530P3GaaX7EdTzc8E3+hglicmnHRfLxfncMgNOEPLJ/9xy8jNI58
-        RdTmzNuJuTOtmdWklMygXRdJXg==
-X-Google-Smtp-Source: ABdhPJyUFoH5uUXzX/ecRZ5COyPt8t4grv6YMvAn3ASeq87yVxKBoaNfGpx1vrKUZAUrgnA3yyqY9g==
-X-Received: by 2002:a17:90a:e96:: with SMTP id 22mr6162237pjx.135.1595966116792;
-        Tue, 28 Jul 2020 12:55:16 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id lr1sm9817pjb.27.2020.07.28.12.55.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jul 2020 12:55:16 -0700 (PDT)
-Date:   Tue, 28 Jul 2020 12:55:13 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     <netdev@vger.kernel.org>, <kernel-team@fb.com>
-Subject: Re: [RFC PATCH v2 00/21] netgpu: networking between NIC and
- GPU/CPU.
-Message-ID: <20200728125513.08ff7cf7@hermes.lan>
-In-Reply-To: <20200727224444.2987641-1-jonathan.lemon@gmail.com>
-References: <20200727224444.2987641-1-jonathan.lemon@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sJP1AxLMAkAXNjIXT2QYjjZKu+zrqi6ZQ8MjHCkzEQY=;
+        b=siqUJ6GEDoE6kO1Ecb85smQaXuzQghUp78scB3id2zdU737Ig4JqtdTK5K4UBj56OR
+         OdPGC9PiHCycnY182aE3DhVTFDhJjGquCD1oenauXemiwUINaOY2ncrmYIJJe5QYeBLD
+         oL+yDABXlcCfG//968U0+xyJJR2qj+8ZJsiEVJI3uN8em1ubNW0dh72xrKNUvvFNPx26
+         BQ6qH6DaT5+yXdMUP4TEz69B2kUCwOAU8xCoUCLRnKZt9V739taPvjflmqcO2FZpLrkS
+         GGAhdfOQG8iJwCfB2tf9miLgiWE32nmek+fxpnW95RXsOjHOUsgJLNCrSInwyOsse1gn
+         13Eg==
+X-Gm-Message-State: AOAM530wspudSNDlQDwWv4QcfxbtlzyKpzUh9GT0tJpWFCnVsrj/C+Ez
+        zbBkDrVjD2+RidjNcuUFtNi0FI90Z5h/gQ5cOZY=
+X-Google-Smtp-Source: ABdhPJy9/2VM5/20ii6Eb2JoyCxvCGwmKSRUDwheKTEL7UC02O04unk0tJDZaR0psmqnovsmUSKQ1VwVq1WvjDipuF8=
+X-Received: by 2002:a37:a655:: with SMTP id p82mr29238102qke.92.1595966173091;
+ Tue, 28 Jul 2020 12:56:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200722211223.1055107-1-jolsa@kernel.org> <20200722211223.1055107-14-jolsa@kernel.org>
+In-Reply-To: <20200722211223.1055107-14-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 28 Jul 2020 12:56:02 -0700
+Message-ID: <CAEf4BzbMNZdiD_hqReei2HKziTTNoWFymE5g7SzvSR7=QdWxrw@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next 13/13] selftests/bpf: Add set test to resolve_btfids
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Jul 2020 15:44:23 -0700
-Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+On Wed, Jul 22, 2020 at 2:15 PM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Adding test to for sets resolve_btfids. We're checking that
+> testing set gets properly resolved and sorted.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  .../selftests/bpf/prog_tests/resolve_btfids.c | 33 +++++++++++++++++++
+>  1 file changed, 33 insertions(+)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
+> index 101785b49f7e..cc90aa244285 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
+> @@ -48,6 +48,15 @@ BTF_ID(struct,  S)
+>  BTF_ID(union,   U)
+>  BTF_ID(func,    func)
+>
+> +BTF_SET_START(test_set)
+> +BTF_ID(typedef, S)
+> +BTF_ID(typedef, T)
+> +BTF_ID(typedef, U)
+> +BTF_ID(struct,  S)
+> +BTF_ID(union,   U)
+> +BTF_ID(func,    func)
+> +BTF_SET_END(test_set)
+> +
+>  static int
+>  __resolve_symbol(struct btf *btf, int type_id)
+>  {
+> @@ -126,5 +135,29 @@ int test_resolve_btfids(void)
+>                 }
+>         }
+>
+> +       /* Check BTF_SET_START(test_set) IDs */
+> +       for (i = 0; i < test_set.cnt && !ret; i++) {
 
-> Current limitations:
->   - mlx5 only, header splitting is at a fixed offset.
->   - currently only TCP protocol delivery is performed.
->   - TX completion notification is planned, but not in this patchset.
->   - not compatible with xsk (re-uses same datastructures)
->   - not compatible with bpf payload inspection
+nit: usual we just do `goto err_out;` instead of complicating exit
+condition in a for loop
 
-This a good summary of why TCP Offload is not a mainstream solution.
-Look back in archives and you will find lots of presentations about
-why TOE sucks.
+> +               bool found = false;
+> +
+> +               for (j = 0; j < ARRAY_SIZE(test_symbols); j++) {
+> +                       if (test_symbols[j].id != test_set.ids[i])
+> +                               continue;
+> +                       found = true;
+> +                       break;
+> +               }
+> +
+> +               ret = CHECK(!found, "id_check",
+> +                           "ID %d for %s not found in test_symbols\n",
+> +                           test_symbols[j].id, test_symbols[j].name);
 
-You also forgot no VRF, no namespaes, no firewall, no containers, no encapsulation.
-It acts as proof that if you cut out everything you can build something faster.
-But not suitable for upstream or production.
+j == ARRAY_SIZE(test_symbols), you probably meant to get
+test_set.ids[i] instead of test_symbol name/id?
+
+> +               if (ret)
+> +                       break;
+> +
+> +               if (i > 0) {
+> +                       ret = CHECK(test_set.ids[i - 1] > test_set.ids[i],
+
+nit: >= would be the invalid condition
+
+> +                                   "sort_check",
+> +                                   "test_set is not sorted\n");
+> +               }
+> +       }
+> +
+>         return ret;
+>  }
+> --
+> 2.25.4
+>
