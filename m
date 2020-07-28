@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 330F52310C4
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 19:20:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A492310C0
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 19:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731990AbgG1RUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 13:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34026 "EHLO
+        id S1731963AbgG1RUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 13:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731779AbgG1RUn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 13:20:43 -0400
+        with ESMTP id S1731684AbgG1RUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 13:20:44 -0400
 Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FFC1C061794
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1F8DC0619D2
         for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 10:20:43 -0700 (PDT)
 Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
         (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 065487D370;
-        Tue, 28 Jul 2020 18:20:41 +0100 (BST)
+        by mail.katalix.com (Postfix) with ESMTPSA id A2AB48AD62;
+        Tue, 28 Jul 2020 18:20:42 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1595956842; bh=q9aEMnMou1IRGNu9SugX10lM7bcimeeNPfB+tWzTGWk=;
+        t=1595956843; bh=M5LA4vzTYvxM3N6AOV1L6m2eeWMbICcA/usVJLSr46w=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:From;
         z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
          rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
-         in@katalix.com>|Subject:=20[PATCH=201/6]=20l2tp:=20don't=20export=
-         20__l2tp_session_unhash|Date:=20Tue,=2028=20Jul=202020=2018:20:28=
-         20+0100|Message-Id:=20<20200728172033.19532-2-tparkin@katalix.com>
-         |In-Reply-To:=20<20200728172033.19532-1-tparkin@katalix.com>|Refer
-         ences:=20<20200728172033.19532-1-tparkin@katalix.com>;
-        b=aeYne14/3ulPm9ZUcLipcRghQFH1JKVcdjRw+c1xLBx+ExB0/zbcPRERKDbNXbXij
-         F/a7U55Ll4IPIBg2TN3OX7wON9x02ks6lxXmL424W7AFZN7EGo8qG7uFZA+4HuT8GI
-         0ZtTzvmfQea0nJ8y9fiTzqfdktXv993ptrnmaYDbpBjkAg1os5ooNiiPNSgBjwG8Xc
-         lD/vh4gB3HGxDfr1ymPEPjzsXDJqYO9OPusJGtb9dQ6byvYvAV6Ep5ecV419AF80O+
-         K0OGhPWzedq8pIU1ZGmW0eU+ZxrxDaLLQ1PfXLGiPuTIGy54DbPpFBx3UCdUiNu+OK
-         Tkp6+raeBLePg==
+         in@katalix.com>|Subject:=20[PATCH=202/6]=20l2tp:=20don't=20export=
+         20tunnel=20and=20session=20free=20functions|Date:=20Tue,=2028=20Ju
+         l=202020=2018:20:29=20+0100|Message-Id:=20<20200728172033.19532-3-
+         tparkin@katalix.com>|In-Reply-To:=20<20200728172033.19532-1-tparki
+         n@katalix.com>|References:=20<20200728172033.19532-1-tparkin@katal
+         ix.com>;
+        b=OQfbLM9PMfZZMb+xOIShYolE23UBAsmf2gfXKg2pdO/a9Xo+AfnssjsvbdNkkqz1C
+         j5kKZV3c1sJM0n1b2MpqHgwrluEH6zPX9bGW4TRYN/CDMCugp61wd32h7NPtceRx3g
+         99/dEdokQBRD+e5nioKSi6Gi+viqq5FPXfdbjNwdi2VlV8Xnq+d8BdKQtCo2LU2rHw
+         nuSs1TRSkoq2i99gRV2If6lEb7O8KuCPn4/SOrIueSUiEnk0U1Ebkik5sMgwAw4X6o
+         27XCycWjukC7y5RrQ02V9UpiQpzNe6lnu69xj4E8Cb8t0zsohjWtR5dq7/1887GTZv
+         5iu9QNP22BbNA==
 From:   Tom Parkin <tparkin@katalix.com>
 To:     netdev@vger.kernel.org
 Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
-Subject: [PATCH 1/6] l2tp: don't export __l2tp_session_unhash
-Date:   Tue, 28 Jul 2020 18:20:28 +0100
-Message-Id: <20200728172033.19532-2-tparkin@katalix.com>
+Subject: [PATCH 2/6] l2tp: don't export tunnel and session free functions
+Date:   Tue, 28 Jul 2020 18:20:29 +0100
+Message-Id: <20200728172033.19532-3-tparkin@katalix.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200728172033.19532-1-tparkin@katalix.com>
 References: <20200728172033.19532-1-tparkin@katalix.com>
@@ -48,124 +49,168 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When __l2tp_session_unhash was first added it was used outside of
-l2tp_core.c, but that's no longer the case.
+Tunnel and session instances are reference counted, and shouldn't be
+directly freed by pseudowire code.
 
-As such, there's no longer a need to export the function.  Make it
-private inside l2tp_core.c, and relocate it to avoid having to declare
-the function prototype in l2tp_core.h.
+Rather than exporting l2tp_tunnel_free and l2tp_session_free, make them
+private to l2tp_core.c, and export the refcount functions instead.
 
-Since the function is no longer used outside l2tp_core.c, remove the
-"__" prefix since we don't need to indicate anything special about its
-expected use to callers.
+In order to do this, the refcount functions cannot be declared as
+inline.  Since the codepaths which take and drop tunnel and session
+references are not directly in the datapath this shouldn't cause
+performance issues.
 
 Signed-off-by: Tom Parkin <tparkin@katalix.com>
 ---
- net/l2tp/l2tp_core.c | 57 ++++++++++++++++++++------------------------
- net/l2tp/l2tp_core.h |  1 -
- 2 files changed, 26 insertions(+), 32 deletions(-)
+ net/l2tp/l2tp_core.c | 60 ++++++++++++++++++++++++++++++--------------
+ net/l2tp/l2tp_core.h | 33 ++++--------------------
+ 2 files changed, 46 insertions(+), 47 deletions(-)
 
 diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index e723828e458b..7f4aef5a58ba 100644
+index 7f4aef5a58ba..f22fe34eb8fc 100644
 --- a/net/l2tp/l2tp_core.c
 +++ b/net/l2tp/l2tp_core.c
-@@ -1180,6 +1180,30 @@ static void l2tp_tunnel_destruct(struct sock *sk)
- 	return;
+@@ -149,12 +149,51 @@ l2tp_session_id_hash(struct l2tp_tunnel *tunnel, u32 session_id)
+ 	return &tunnel->session_hlist[hash_32(session_id, L2TP_HASH_BITS)];
  }
  
-+/* Remove an l2tp session from l2tp_core's hash lists. */
-+static void l2tp_session_unhash(struct l2tp_session *session)
+-void l2tp_tunnel_free(struct l2tp_tunnel *tunnel)
++static void l2tp_tunnel_free(struct l2tp_tunnel *tunnel)
+ {
+ 	sock_put(tunnel->sock);
+ 	/* the tunnel is freed in the socket destructor */
+ }
+-EXPORT_SYMBOL(l2tp_tunnel_free);
++
++static void l2tp_session_free(struct l2tp_session *session)
 +{
 +	struct l2tp_tunnel *tunnel = session->tunnel;
 +
-+	/* Remove the session from core hashes */
 +	if (tunnel) {
-+		/* Remove from the per-tunnel hash */
-+		write_lock_bh(&tunnel->hlist_lock);
-+		hlist_del_init(&session->hlist);
-+		write_unlock_bh(&tunnel->hlist_lock);
-+
-+		/* For L2TPv3 we have a per-net hash: remove from there, too */
-+		if (tunnel->version != L2TP_HDR_VER_2) {
-+			struct l2tp_net *pn = l2tp_pernet(tunnel->l2tp_net);
-+
-+			spin_lock_bh(&pn->l2tp_session_hlist_lock);
-+			hlist_del_init_rcu(&session->global_hlist);
-+			spin_unlock_bh(&pn->l2tp_session_hlist_lock);
-+			synchronize_rcu();
-+		}
++		if (WARN_ON(tunnel->magic != L2TP_TUNNEL_MAGIC))
++			goto out;
++		l2tp_tunnel_dec_refcount(tunnel);
 +	}
++
++out:
++	kfree(session);
 +}
 +
- /* When the tunnel is closed, all the attached sessions need to go too.
-  */
- static void l2tp_tunnel_closeall(struct l2tp_tunnel *tunnel)
-@@ -1209,7 +1233,7 @@ static void l2tp_tunnel_closeall(struct l2tp_tunnel *tunnel)
++void l2tp_tunnel_inc_refcount(struct l2tp_tunnel *tunnel)
++{
++	refcount_inc(&tunnel->ref_count);
++}
++EXPORT_SYMBOL_GPL(l2tp_tunnel_inc_refcount);
++
++void l2tp_tunnel_dec_refcount(struct l2tp_tunnel *tunnel)
++{
++	if (refcount_dec_and_test(&tunnel->ref_count))
++		l2tp_tunnel_free(tunnel);
++}
++EXPORT_SYMBOL_GPL(l2tp_tunnel_dec_refcount);
++
++void l2tp_session_inc_refcount(struct l2tp_session *session)
++{
++	refcount_inc(&session->ref_count);
++}
++EXPORT_SYMBOL_GPL(l2tp_session_inc_refcount);
++
++void l2tp_session_dec_refcount(struct l2tp_session *session)
++{
++	if (refcount_dec_and_test(&session->ref_count))
++		l2tp_session_free(session);
++}
++EXPORT_SYMBOL_GPL(l2tp_session_dec_refcount);
  
- 			write_unlock_bh(&tunnel->hlist_lock);
- 
--			__l2tp_session_unhash(session);
-+			l2tp_session_unhash(session);
- 			l2tp_session_queue_purge(session);
- 
- 			if (session->session_close)
-@@ -1574,35 +1598,6 @@ void l2tp_session_free(struct l2tp_session *session)
+ /* Lookup a tunnel. A new reference is held on the returned tunnel. */
+ struct l2tp_tunnel *l2tp_tunnel_get(const struct net *net, u32 tunnel_id)
+@@ -1581,23 +1620,6 @@ void l2tp_tunnel_delete(struct l2tp_tunnel *tunnel)
  }
- EXPORT_SYMBOL_GPL(l2tp_session_free);
+ EXPORT_SYMBOL_GPL(l2tp_tunnel_delete);
  
--/* Remove an l2tp session from l2tp_core's hash lists.
-- * Provides a tidyup interface for pseudowire code which can't just route all
-- * shutdown via. l2tp_session_delete and a pseudowire-specific session_close
-- * callback.
+-/* Really kill the session.
 - */
--void __l2tp_session_unhash(struct l2tp_session *session)
+-void l2tp_session_free(struct l2tp_session *session)
 -{
 -	struct l2tp_tunnel *tunnel = session->tunnel;
 -
--	/* Remove the session from core hashes */
 -	if (tunnel) {
--		/* Remove from the per-tunnel hash */
--		write_lock_bh(&tunnel->hlist_lock);
--		hlist_del_init(&session->hlist);
--		write_unlock_bh(&tunnel->hlist_lock);
--
--		/* For L2TPv3 we have a per-net hash: remove from there, too */
--		if (tunnel->version != L2TP_HDR_VER_2) {
--			struct l2tp_net *pn = l2tp_pernet(tunnel->l2tp_net);
--
--			spin_lock_bh(&pn->l2tp_session_hlist_lock);
--			hlist_del_init_rcu(&session->global_hlist);
--			spin_unlock_bh(&pn->l2tp_session_hlist_lock);
--			synchronize_rcu();
--		}
+-		if (WARN_ON(tunnel->magic != L2TP_TUNNEL_MAGIC))
+-			goto out;
+-		l2tp_tunnel_dec_refcount(tunnel);
 -	}
+-
+-out:
+-	kfree(session);
 -}
--EXPORT_SYMBOL_GPL(__l2tp_session_unhash);
+-EXPORT_SYMBOL_GPL(l2tp_session_free);
 -
  /* This function is used by the netlink SESSION_DELETE command and by
   * pseudowire modules.
   */
-@@ -1611,7 +1606,7 @@ int l2tp_session_delete(struct l2tp_session *session)
- 	if (test_and_set_bit(0, &session->dead))
- 		return 0;
- 
--	__l2tp_session_unhash(session);
-+	l2tp_session_unhash(session);
- 	l2tp_session_queue_purge(session);
- 	if (session->session_close)
- 		(*session->session_close)(session);
 diff --git a/net/l2tp/l2tp_core.h b/net/l2tp/l2tp_core.h
-index 2d2dd219a176..f6dd74476d13 100644
+index f6dd74476d13..5c49e2762300 100644
 --- a/net/l2tp/l2tp_core.h
 +++ b/net/l2tp/l2tp_core.h
-@@ -201,7 +201,6 @@ struct l2tp_session *l2tp_session_create(int priv_size,
- int l2tp_session_register(struct l2tp_session *session,
+@@ -175,13 +175,16 @@ static inline void *l2tp_session_priv(struct l2tp_session *session)
+ 	return &session->priv[0];
+ }
+ 
++void l2tp_tunnel_inc_refcount(struct l2tp_tunnel *tunnel);
++void l2tp_tunnel_dec_refcount(struct l2tp_tunnel *tunnel);
++void l2tp_session_inc_refcount(struct l2tp_session *session);
++void l2tp_session_dec_refcount(struct l2tp_session *session);
++
+ struct l2tp_tunnel *l2tp_tunnel_get(const struct net *net, u32 tunnel_id);
+ struct l2tp_tunnel *l2tp_tunnel_get_nth(const struct net *net, int nth);
+ struct l2tp_session *l2tp_tunnel_get_session(struct l2tp_tunnel *tunnel,
+ 					     u32 session_id);
+ 
+-void l2tp_tunnel_free(struct l2tp_tunnel *tunnel);
+-
+ struct l2tp_session *l2tp_session_get(const struct net *net, u32 session_id);
+ struct l2tp_session *l2tp_session_get_nth(struct l2tp_tunnel *tunnel, int nth);
+ struct l2tp_session *l2tp_session_get_by_ifname(const struct net *net,
+@@ -202,7 +205,6 @@ int l2tp_session_register(struct l2tp_session *session,
  			  struct l2tp_tunnel *tunnel);
  
--void __l2tp_session_unhash(struct l2tp_session *session);
  int l2tp_session_delete(struct l2tp_session *session);
- void l2tp_session_free(struct l2tp_session *session);
+-void l2tp_session_free(struct l2tp_session *session);
  void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
+ 		      unsigned char *ptr, unsigned char *optr, u16 hdrflags,
+ 		      int length);
+@@ -217,31 +219,6 @@ int l2tp_nl_register_ops(enum l2tp_pwtype pw_type,
+ void l2tp_nl_unregister_ops(enum l2tp_pwtype pw_type);
+ int l2tp_ioctl(struct sock *sk, int cmd, unsigned long arg);
+ 
+-static inline void l2tp_tunnel_inc_refcount(struct l2tp_tunnel *tunnel)
+-{
+-	refcount_inc(&tunnel->ref_count);
+-}
+-
+-static inline void l2tp_tunnel_dec_refcount(struct l2tp_tunnel *tunnel)
+-{
+-	if (refcount_dec_and_test(&tunnel->ref_count))
+-		l2tp_tunnel_free(tunnel);
+-}
+-
+-/* Session reference counts. Incremented when code obtains a reference
+- * to a session.
+- */
+-static inline void l2tp_session_inc_refcount(struct l2tp_session *session)
+-{
+-	refcount_inc(&session->ref_count);
+-}
+-
+-static inline void l2tp_session_dec_refcount(struct l2tp_session *session)
+-{
+-	if (refcount_dec_and_test(&session->ref_count))
+-		l2tp_session_free(session);
+-}
+-
+ static inline int l2tp_get_l2specific_len(struct l2tp_session *session)
+ {
+ 	switch (session->l2specific_type) {
 -- 
 2.17.1
 
