@@ -2,59 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05DAE230228
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:58:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B56823022F
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:59:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726821AbgG1F6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 01:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
+        id S1726963AbgG1F7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 01:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726299AbgG1F6v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 01:58:51 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7573C061794;
-        Mon, 27 Jul 2020 22:58:50 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id m9so8637646qvx.5;
-        Mon, 27 Jul 2020 22:58:50 -0700 (PDT)
+        with ESMTP id S1726821AbgG1F7o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 01:59:44 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED64C061794;
+        Mon, 27 Jul 2020 22:59:44 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id r19so146527qvw.11;
+        Mon, 27 Jul 2020 22:59:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ssMryeMJVP9T50kWPf+kILZA0B0gaRxnc+V0vfhJqmE=;
-        b=WPu4exfP0hJwJ01RuaoTISqQHtYweUT1uR7yRPh4C0Nvh5Vkb0dumm3C6rWycOzyvq
-         B9zfKILgBZQZSnAGvdOmB4tB73zYayjmJbfDixD0aUySMwetn+lDgJl/ANEVo7HrrTF3
-         kRoQUSgzkoGgSPn2AKdLz+wUktDQ1Cs0tJrIiWX2baT9J5hfsX7Z3+ECCFdBeC1WvAHV
-         X/iqw6Nyje4gHJQzqWsDadOOu6DYRa37WoLPTMHkfSUuUFLDnhlZHgXs9JDWwa3Yptwl
-         qXRCcka+zoLyhkwp1Tbos39gjf7XmiWgbQFzWCalZ5HkIA5TK/eL5Mfy44On2Ys+sc8R
-         aVeA==
+        bh=wTdlg95ZXA4TOgFXjgtc+n7E+T+5B9dQx/aSYFnHSfI=;
+        b=i8ALjci8bEtI5Kdl1vA8f/CZ8e3VOIZMgU3kxLr1qUQx6fwap0HFd48p/VQgVtNazW
+         u7Zk0ZtOuHCJtA3gZzhMEpDdMfPPhwFmNjbSfFgmu7LE3hq1FPvlyqEzh86RBBPZ6ryF
+         8FnNOnY6bc37h/U1fgIJXj8RaYJdPz74csFUqBgmgFreU/WUMD3709uchus5jUU1yKJL
+         SOQ/djnxHCUowWA1uLApIYJnJ0elXu/iwTZfw5+UlFPD9PYOX6ZNtIfqRktcOcg425Gf
+         KvvGX6np7Eu6STOjBJiENi8UV2HMw4ogOS+DarcDUrw7AHKPepO9qE6GvtLtNRHtJNqz
+         vQ4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ssMryeMJVP9T50kWPf+kILZA0B0gaRxnc+V0vfhJqmE=;
-        b=LiJiNZaGC/vP+YEx5jW07Omjtd7gsuB75fzI3L23Y2mAy1lsz9jDrR5O/MIn0nTAG5
-         UrhLFyVv3xuB2DBS+OMMGU7VfC3d4A3YXfC2zAXg16GY/lWL2vSVwmJVIHskny0Uc4dR
-         BYWLryo2jMoWKS4hK7KvlcB1llN/VhY4rM3Mk2+fXKNV/z6Lgyk0H37K0C7V0njElRI8
-         UwM7KiIAgwSEnll8tBSVaLbYi38CiYgM0PsqpuFwHfLZHVlb7BNhFT33qrPhdpaAQmhr
-         VkNmv5YuxplwqE688Gl5r8hhvGuRfYawg8CHH6t/2FJOUWFMno414e0WS7CpvraHWJVI
-         K8/g==
-X-Gm-Message-State: AOAM5327icRL8qcURc8xz/tkTByUKEj+/Yu4/MvP9+A4kbwuKIMH1d5p
-        Xd9L2Scj2twgIsa/hEWRxSA5bYEXTE2Gn1ZRJKw=
-X-Google-Smtp-Source: ABdhPJwbTC5eo5pRL/Ir7RRmvDjTFNhJqAk6oxnOY4Z0sDdtyr3P+VAt+d5kMwooF67UrPK3UjvIm3EZzkPqqI5CDFg=
-X-Received: by 2002:a0c:9ae2:: with SMTP id k34mr25134238qvf.247.1595915930082;
- Mon, 27 Jul 2020 22:58:50 -0700 (PDT)
+        bh=wTdlg95ZXA4TOgFXjgtc+n7E+T+5B9dQx/aSYFnHSfI=;
+        b=RVDe+rdxZhsO3gxrNsEcuQWBpjHZ+YFTGHFQkBhnWQADrCon3/fdMkUI//rd8hYmmD
+         8cgHxgL+T5BrbhX074cbhMmk1d+1EpvxeIvV/DYiGbYM9bAQm00ekNYj+jMfHbAgm7Go
+         iww6/w1fnck7iISQ/UeNsEBne7QD79pC/2CnFyjhO3liUOQsNIS4YbOKqdZYYonlHTpF
+         urQzOLTe2W4y7Zpl3B9HGgV43DfjdpfknSgCvL6ogz+bpGku/rkO+xggOkOypWl0lZLQ
+         XlBivuAiFHUXjM6exkWQ6bwvyuKJLJpypxJN8ekB9kmIMTkh+sQeX1OEH6OJin3Uvsyn
+         nD0Q==
+X-Gm-Message-State: AOAM532Vl+oYR23C/5jXD8OC3grM/71nB9Pe2Ca6kuZ/6pNYnvrNWUZ+
+        Vx25ScO5dw+7QSvPpeq6rPzE0i6QtihuUQoG+DY=
+X-Google-Smtp-Source: ABdhPJwn2wespE9XOkqpCWxpA2XpOqLKtNWofAPw5Yo7gt71X+rSI9CSbGmSXYTGORpc53oSaVqf7QUnluPfJRl+veU=
+X-Received: by 2002:ad4:4645:: with SMTP id y5mr26753304qvv.163.1595915983996;
+ Mon, 27 Jul 2020 22:59:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-28-guro@fb.com>
- <CAPhsuW7jWztOVeeiRNBRK4JC_MS41qUSxzEDMywb-6=Don-ndA@mail.gmail.com>
-In-Reply-To: <CAPhsuW7jWztOVeeiRNBRK4JC_MS41qUSxzEDMywb-6=Don-ndA@mail.gmail.com>
+References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-30-guro@fb.com>
+ <CAEf4BzZjbK4W1fmW07tMOJsRGCYNeBd6eqyFE_fSXAK6+0uHhw@mail.gmail.com> <20200727231538.GA352883@carbon.DHCP.thefacebook.com>
+In-Reply-To: <20200727231538.GA352883@carbon.DHCP.thefacebook.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 27 Jul 2020 22:58:39 -0700
-Message-ID: <CAEf4BzaOX_gc8F20xrHxiKFxYbwULK130m1A49rnMoT7T74T3Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 27/35] bpf: eliminate rlimit-based memory
- accounting infra for bpf maps
-To:     Song Liu <song@kernel.org>
-Cc:     Roman Gushchin <guro@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
+Date:   Mon, 27 Jul 2020 22:59:33 -0700
+Message-ID: <CAEf4BzamC4RQrQuAgH1DK-qcW3cKFuBEbYRhVz-8UMU+mbTcvA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 29/35] bpf: libbpf: cleanup RLIMIT_MEMLOCK usage
+To:     Roman Gushchin <guro@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Kernel Team <kernel-team@fb.com>,
@@ -65,33 +63,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 10:47 PM Song Liu <song@kernel.org> wrote:
+On Mon, Jul 27, 2020 at 4:15 PM Roman Gushchin <guro@fb.com> wrote:
 >
-> On Mon, Jul 27, 2020 at 12:26 PM Roman Gushchin <guro@fb.com> wrote:
+> On Mon, Jul 27, 2020 at 03:05:11PM -0700, Andrii Nakryiko wrote:
+> > On Mon, Jul 27, 2020 at 12:21 PM Roman Gushchin <guro@fb.com> wrote:
+> > >
+> > > As bpf is not using memlock rlimit for memory accounting anymore,
+> > > let's remove the related code from libbpf.
+> > >
+> > > Bpf operations can't fail because of exceeding the limit anymore.
+> > >
 > >
-> > Remove rlimit-based accounting infrastructure code, which is not used
-> > anymore.
-> >
-> > Signed-off-by: Roman Gushchin <guro@fb.com>
-> [...]
-> >
-> >  static void bpf_map_put_uref(struct bpf_map *map)
-> > @@ -541,7 +484,7 @@ static void bpf_map_show_fdinfo(struct seq_file *m, struct file *filp)
-> >                    "value_size:\t%u\n"
-> >                    "max_entries:\t%u\n"
-> >                    "map_flags:\t%#x\n"
-> > -                  "memlock:\t%llu\n"
-> > +                  "memlock:\t%llu\n" /* deprecated */
+> > They can't in the newest kernel, but libbpf will keep working and
+> > supporting old kernels for a very long time now. So please don't
+> > remove any of this.
 >
-> I am not sure whether we can deprecate this one.. How difficult is it
-> to keep this statistics?
+> Yeah, good point, agree.
+> So we just can drop this patch from the series, no other changes
+> are needed.
+>
+> >
+> > But it would be nice to add a detection of whether kernel needs a
+> > RLIMIT_MEMLOCK bump or not. Is there some simple and reliable way to
+> > detect this from user-space?
+>
+> Hm, the best idea I can think of is to wait for -EPERM before bumping.
+> We can in theory look for the presence of memory.stat::percpu in cgroupfs,
+> but it's way to cryptic.
 >
 
-It's factually correct now, that BPF map doesn't use any memlock memory, no?
+As I just mentioned on another thread, checking fdinfo's "memlock: 0"
+should be reliable enough, no?
 
-This is actually one way to detect whether RLIMIT_MEMLOCK is necessary
-or not: create a small map, check if it's fdinfo has memlock: 0 or not
-:)
-
-> Thanks,
-> Song
+> Thanks!
