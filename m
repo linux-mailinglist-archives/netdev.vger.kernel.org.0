@@ -2,129 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9798B230F3C
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:28:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E421230F56
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:32:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731402AbgG1Q2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 12:28:36 -0400
-Received: from mail-eopbgr70040.outbound.protection.outlook.com ([40.107.7.40]:6222
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        id S1731470AbgG1Qb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 12:31:57 -0400
+Received: from mail-dm6nam12on2063.outbound.protection.outlook.com ([40.107.243.63]:55424
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731118AbgG1Q2f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 12:28:35 -0400
+        id S1731458AbgG1Qb5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 12:31:57 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aKXkhhtSr7djWKbn49OpfWCVqB2Q/6fTVx0Fs6k3+jSlrPOGxZQslZcTcetkzQZqXEb0s87jkD/xD8UPvc8f73LKF4nORIlhfTKddDLmlsgxxeEpXLVNo4FgqCERwn0WEOi9FqY/U4pyQK4KTq82K8xdrbi2yJc+wURRXwFZ2DR55JY057jfeSRncfg6hVqBeF8vlWPNNKvEM0aJ2Cx3p32k0no62LT8pgPQ1IcRsazzX+EZ7cMRULiFgWiZ7L6AIO5xyANzWIJJu2+4Hy/8bexPEK1SflXzYeDFy4PmebLFxLeD8Ji5h+5Vq+y/yNDAJDRslpMwtgAc2z37s46nAw==
+ b=ZjaICE/3kgImeJVhIBvlhhln3ySfdPbH3nFGiB7fHpQjXog9np4kslxUozTpnrii9xB7i8K1O+dllrMQFShQ+kz7O5KCk6lkkSFg4acKwC5Qp8iLmsE3Y6SdQAShtEFccyAkt4M0v4BK7yIkodFJO+E+nLHQUVWVUDsPzr+5XF0zrLJI60mB3UbDhh+/gl+ZHvabtgqTFaJdEKwTnlIfintNIRlOoN/xym1HahKBXstGdoMRc309PyXre3ov57wPlfRYUe2DNBcE1HkfWMQ87rP1my140EptZXt326wmJGigprRwZcHpAcHliAEA+NdEro02ELfTvqsaCHDIy1Wt5g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=27fuGuOU20C55pw7iRiaciceT0DAn91/SuU0K7RqUw4=;
- b=mKseRgtVOFFgYf+aI/eXhs1/hVQfaA01/bBdrdB+e1hYKU3w35on4YApSEnQYRCsVAkV1h3nNFoNyg2T+PSWHg+SDnSu0YefNzsiaODW+KUM/ldiPCujlp/AaTuzfa+GgC6Oq4/zCW3RPdJFpW1WsphJqLjIOOhj/X9gNKVO1MJWqhqsyakL0Hk9QAMFTgb3mi8hI+z5zgy+o9127T4IhtJG4eVihnGe5VH4cj1xkQbN9F3bV6ieqloxvYIdXucwuVmbyq3kTeId3zrvVEcgqLR/20kq5XzkQ1CiSRjtFtxzmmbjvteFW8SqdR4C0u/qJ/cPDXzci+p1Ngx3717d4w==
+ bh=/+PNPvN2mgSRx6Qcev8P+OPpjySEeEbmHvjVKUqu7is=;
+ b=mttsbbeHB24xSeCsEZT1fVZ+cTg9UhDx0hGrPKumn5BjDJN0IkXAd8F5m7TJDSDmmwcPI1vi2RTlwB6nWWHWqUSedAKMz71eb+tn3g8gNaCtUC1FsuI8pAqkig0TD1dYmq7Opaa5zsp5x3NkCoex3Ky1sYCuQj1E+0gCG8cEWNkQ58iWFpiyw9dh0Sb9tedLlV7dXl7X6NJzwjs+cLkw0MfOgAQBlhPbqTB6usu3Lhxwdx+FFYsaV/5zCVBpaaTgUxArvlsXCMqX40LfQk9R3S3e9zlV5pxGB/Wf+WmEYQIBAFdBi22SrQlF53GfTO4i/gRx96mrUmAYW4WoJSZvEw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=windriversystems.onmicrosoft.com;
+ s=selector2-windriversystems-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=27fuGuOU20C55pw7iRiaciceT0DAn91/SuU0K7RqUw4=;
- b=UbeKgFvl+nS7PZiLjeFjLIe+ppPrStbQandMx7LIQACXCv229eKHpwwi3wHubXE0fK2BioFoU2l9LFNDSHne0lBRM1tBmgi/JPPHhI0mN9l386F/lIEr2GTM9kT2p16WiQvk+hXVfZQIKAR94ZdF+rJnwsRK9tOQtLAq2rX6pXI=
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- (2603:10a6:803:16::14) by VI1PR04MB7197.eurprd04.prod.outlook.com
- (2603:10a6:800:129::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.24; Tue, 28 Jul
- 2020 16:28:31 +0000
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::d4df:67d5:c1f7:fba]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::d4df:67d5:c1f7:fba%4]) with mapi id 15.20.3216.033; Tue, 28 Jul 2020
- 16:28:31 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: RE: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
-Thread-Topic: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
-Thread-Index: AQHWZFcvtAOghcV2G02sokHxIysjYqkdIC3ggAAJrgCAAAT68A==
-Date:   Tue, 28 Jul 2020 16:28:31 +0000
-Message-ID: <VI1PR0402MB38714D71435CC4DF99AE5A20E0730@VI1PR0402MB3871.eurprd04.prod.outlook.com>
-References: <20200727204731.1705418-1-andrew@lunn.ch>
- <VI1PR0402MB3871906F6381418258CC7AEBE0730@VI1PR0402MB3871.eurprd04.prod.outlook.com>
- <20200728160802.GI1705504@lunn.ch>
-In-Reply-To: <20200728160802.GI1705504@lunn.ch>
-Accept-Language: en-US
+ bh=/+PNPvN2mgSRx6Qcev8P+OPpjySEeEbmHvjVKUqu7is=;
+ b=inmBPBfLm+dQBwa7/vye7I12FXKQOb/lt2jhX9TEa+BF2MGbKVhMDfjkwLLBEhygVOVeKJavfJ/OVRHK3tB0/34bx4MrND88OFjBn+ksc15cr9DxbI7yIIJAbAlNyGp+TZ5v2gmFE7WDrV00bwd8MjmJM5lyiaefaGxqPsy6Tvs=
+Authentication-Results: lists.linuxfoundation.org; dkim=none (message not
+ signed) header.d=none;lists.linuxfoundation.org; dmarc=none action=none
+ header.from=windriver.com;
+Received: from DM6PR11MB2603.namprd11.prod.outlook.com (2603:10b6:5:c6::21) by
+ DM5PR11MB1308.namprd11.prod.outlook.com (2603:10b6:3:e::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3216.23; Tue, 28 Jul 2020 16:31:54 +0000
+Received: from DM6PR11MB2603.namprd11.prod.outlook.com
+ ([fe80::b16c:41d1:7e54:1c4e]) by DM6PR11MB2603.namprd11.prod.outlook.com
+ ([fe80::b16c:41d1:7e54:1c4e%6]) with mapi id 15.20.3216.034; Tue, 28 Jul 2020
+ 16:31:54 +0000
+Subject: Re: [PATCH] net: tipc: fix general protection fault in
+ tipc_conn_delete_sub
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        B K Karthik <bkkarthik@pesu.pes.edu>
+Cc:     Jon Maloy <jmaloy@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        tipc-discussion@lists.sourceforge.net,
+        LKML <linux-kernel@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org
+References: <20200727131057.7a3of3hhsld4ng5t@pesu.pes.edu>
+ <20200727132256.GA3933866@kroah.com>
+ <CAAhDqq2N6nTHpz_CNTwh-ZRK-rQO0uUXO41iOouKn690R494Ww@mail.gmail.com>
+ <20200727142416.GA186956@kroah.com>
+From:   Ying Xue <ying.xue@windriver.com>
+Message-ID: <6d6197ba-ce38-09ec-78a1-7feb59cd7a90@windriver.com>
+Date:   Wed, 29 Jul 2020 00:15:25 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20200727142416.GA186956@kroah.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.95.40]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 5918140c-22c9-4fe1-c59d-08d833134468
-x-ms-traffictypediagnostic: VI1PR04MB7197:
-x-microsoft-antispam-prvs: <VI1PR04MB71975924B7E1F46F02E28A09E0730@VI1PR04MB7197.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 78Clofcuf24ObyuU8HWcSevSuvSJ3gfYmKQfnTnhuNcy2+/m9jRtXohT8rnJLKKNchzl65enZnnrdwg1AuSC/xFqpT4A7fvap3j5vkHmEItZuBiosrzZ2wgRt2XMkZxB5tsyFH7GzZfHwdHzToUSs+oa4csABx/tnRWnHmknU65+Dngrnflg/3bARyGFhj7AYpdJbQFdKylSsg6w9r1aYz+83oosJBp6/xGKyqwj6516ecxoYN7NqilcuLRuntVHh8F+VZfX35u7bWhV1dM/Z+qZQ9zRAFx2zS1Ga12P8Lt+DWz3/bjl7KvZvdGCoj1K
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(136003)(346002)(39860400002)(376002)(366004)(316002)(66556008)(64756008)(86362001)(33656002)(9686003)(55016002)(44832011)(52536014)(66476007)(66446008)(54906003)(5660300002)(26005)(71200400001)(8676002)(2906002)(83380400001)(76116006)(7696005)(4326008)(66946007)(8936002)(478600001)(6506007)(6916009)(186003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: rMPBzYJp0vGn/lcWA+KZ6cyvXHtFmj1xp6bcmfa2c65Arj+OlnxpBUadtiVJecuAeXDMTreijYUxz/PL3w7roH48+y61mo9v8iyt5b1r80vzN9QGeglruEQDO6mswaaNSPMQK00J3Jl0M5H4UxLO0wtX9XI8ncgtT9NtGYYPqtDxIIUjhBtHJbsSbLsps1ynbppzFePycwiE33nIts8Rm6PMfvZE15fSSQrRWkTiQI6AmIqrR59UpjB2RqXdbuUBIhNFAzHpcBe5DLKVZ4H8Tyths5qj0YNnSG3G9TrU2MdPjcA0rkkCmc1S/O7K1+gD6QZLnswj46HVhFaVEF6q4FG+b/u8mH31WvIg/I70BN07gRRTUFIYqCqyS6H6ntzpN7LGjUIKQr+iaYjU2vWLcmGv0bpq4lSzqLi2Bvc8W5l3oCjENwAWdZN6zJnnYNXEBUec7oHTf1vBUyu7B1aTO1Qu6IBWW+Gasw3j+/lsyUM=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: HK2PR04CA0075.apcprd04.prod.outlook.com
+ (2603:1096:202:15::19) To DM6PR11MB2603.namprd11.prod.outlook.com
+ (2603:10b6:5:c6::21)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [128.224.155.99] (60.247.85.82) by HK2PR04CA0075.apcprd04.prod.outlook.com (2603:1096:202:15::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.26 via Frontend Transport; Tue, 28 Jul 2020 16:31:50 +0000
+X-Originating-IP: [60.247.85.82]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7c1610d2-7d57-4d9c-820d-08d83313bd05
+X-MS-TrafficTypeDiagnostic: DM5PR11MB1308:
+X-Microsoft-Antispam-PRVS: <DM5PR11MB1308F678E538FEB1DAC715B384730@DM5PR11MB1308.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: K3dkVMIrlle2nViNIvYy/YZn2d6Jk/NyrX830jPjmh1r7AyldZ7CuCK25B3+Lm2aVoCH6zb/fCFLcna9HpZAD4mlnySU3CNCpNwJLKDjXVsgNySiZpvpPW8f+mb0yn7DPtJO1TXIPH+rMJm+TrYuppfgDw97CG+e6GMIlqj3Jq++nPheQPVkjFD4h3XnLAbp1xvpR4/vKi51K6s7E4Cz070q05gtdE3IF2BLsEudbMTeW1UXWE/kVmWGQosS863KtXmFXBQr0UnviL4UxLlVfGuuLOOW10aLQPfBs19FZIUByoliDcL9N0ApYzmi3FiuzBkyJt++4tRA5+oZuKJaH5Kq7KRAeb6fd6OSPv6FkuWmPacoUm6D80ELY2oHf2jQuOUL8IztcIjfQC3fMBZ1kKAnsHWQm2wVjVjkhggxiYw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(366004)(346002)(136003)(39850400004)(376002)(4326008)(7416002)(26005)(52116002)(6486002)(66946007)(186003)(16526019)(31686004)(53546011)(66476007)(5660300002)(66556008)(110136005)(8936002)(6706004)(31696002)(2616005)(86362001)(6666004)(956004)(478600001)(44832011)(2906002)(36756003)(16576012)(316002)(54906003)(8676002)(78286006)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: cAsyHxW7oyfvM9z06l9zOe9w+Td11WlQwxxGrwaCj3twyUx3CgrcFnPiPpYhIC3FWQtLCDf9r130tZpeQ3AQonNgqckCtdov2O5iU/f/Vw5v6nrgAdEE9ElljUsnQfOYZXIv9B0TxTZ0FzAh0D4awb8x3wJaVvB9QQ/ntC1VEdNGW1fitas2eRylPxj0cJGkl1fwSaIAcGD7uXpy24p3t23yHMB0cShJIzHKoCQWN5GvtXk3H4aIBs/wnwhUWOq4jAafuHGi0YM5FGN0PlcM9g/Dr88/jyYUO7v9uYJ3ep+IfQ6amEF+J0jE/0LWYgOvtVNcu9RS5tSJdh0CD2I5+jjQLdbA4LF1Z+eSvh+gqcfMQXWZMu1qOGY62RruiHXb00xqWYUzo4/jG4Yo12+QrXtCvDx0YkcJOC59j1TDVHsoMJhyoZibmN5gyHCCXwpqfTQItSx1l8D5w4WFxr8l2NiwscYMlohQn1m4/zqMGac=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7c1610d2-7d57-4d9c-820d-08d83313bd05
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5918140c-22c9-4fe1-c59d-08d833134468
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jul 2020 16:28:31.6888
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2020 16:31:54.4013
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ardykiZlzsfeKRBhf0Dc3V/5Y+OZ07CD8GGtbkPvEH9UwlZJSrpWwawoznOOhBiiWw5ZWC7m1ZzfHAqr1t045A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7197
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XHwmvmknEscZTXZ0qowsfoFUcKz26uIHd4RnNrXoSJywNfhf9PT4zDf6ZSTFsAN5ffIfZEd13zEBfhfBiEnbjA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1308
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
->=20
-> > I think that the MAINTAINERS file should also be updated to mention
-> > the new path to the drivers. Just did a quick grep after 'drivers/net/p=
-hy':
-> > F:      drivers/net/phy/adin.c
-> > F:      drivers/net/phy/mdio-xgene.c
-> > F:      drivers/net/phy/
-> > F:      drivers/net/phy/marvell10g.c
-> > F:      drivers/net/phy/mdio-mvusb.c
-> > F:      drivers/net/phy/dp83640*
-> > F:      drivers/net/phy/phylink.c
-> > F:      drivers/net/phy/sfp*
-> > F:      drivers/net/phy/mdio-xpcs.c
->=20
-> Hi Ioana
->=20
-> Thanks, I will take care of that.
->=20
-> > Other than that, the new 'drivers/net/phy/phy/' path is somewhat
-> > repetitive but unfortunately I do not have another better suggestion.
->=20
-> Me neither.
->=20
-> I wonder if we are looking at the wrong part of the patch.
-> drivers/net/X/phy/
-> drivers/net/X/mdio/
-> drivers/net/X/pcs/
->=20
-> Question is, what would X be?
->=20
->    Andrew
+On 7/27/20 10:24 PM, Greg KH wrote:
+>>>> diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
+>>>> index 1489cfb941d8..6c8d0c6bb112 100644
+>>>> --- a/net/tipc/topsrv.c
+>>>> +++ b/net/tipc/topsrv.c
+>>>> @@ -255,6 +255,9 @@ static void tipc_conn_send_to_sock(struct tipc_conn *con)
+>>>>       int count = 0;
+>>>>       int ret;
+>>>>
+>>>> +     if (!con->server)
+>>>> +             return -EINVAL;
+>>> What is wrong with looking at the srv local variable instead?
+>>>
+>>> And how is server getting set to NULL and this function still being
+>>> called?
+>> tipc_conn_send_work makes a call to connected() which just returns con
+>> && test_bit(CF_CONNECTED, &con->flags)
+>> maybe we can add this check to the implementation of connection() if
+>> you agree, but I found this solution to be fairly simpler because I'm
+>> not sure where else connected() is being used, and I did not want to
+>> introduce redundant function calls.
+> That's not what I asked here at all
+I agreed with Greg. The key problem is that we need to understand why
+con->server got NULL, otherwise, we probably just hide the issue by
+checking if it's NULL.
 
-It may not be a popular suggestion but can't we take the drivers/net/phy,
-drivers/net/pcs and drivers/net/mdio route?
+The topology server is created in kernel space as an internal TIPC
+server and its life cycle is the same as TIPC network namespace.
+Whenever the topology server accepts a connection from its client, it
+will create a "con" which will be used to talk to the client and the
+topology server instance (ie, "topsrv") will be attached to
+"con->server". In theory, "con" cannot be died before its server, as a
+result, con->server cannot become NULL in tipc_conn_send_to_sock().
 
-Ioana
-
-
-
+So I suspect there is other potential issues which caused this problem,
+for example, the refcount of "con" is not properly taken or put and this
+case is triggered before of use-after-free, or race condition etc.
