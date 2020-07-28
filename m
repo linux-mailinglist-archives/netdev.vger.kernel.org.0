@@ -2,190 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F2F2312DA
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:39:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 185272312E0
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:40:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729915AbgG1TjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55414 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728927AbgG1TjT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:39:19 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD8BC061794;
-        Tue, 28 Jul 2020 12:39:19 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id v22so9873227qtq.8;
-        Tue, 28 Jul 2020 12:39:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uC2eLVhYt5o2L3EkdXiZ0wHXR6DBNV6ezz2kj48c/z0=;
-        b=KQrhII97xK/IbvNsvrVNdmyWZiavi1gwqjEEqo13uGZMzQxW3KtgJIQkEob1gcK3pB
-         s6FhKZzctjAXZuzjjDpTjDmCSyrv2X2tyIAbNnzNrUjDvavRpXVvEOVVv0BTofhxv3Ip
-         WQSj8E0ByFXGCuHMZsAvTtCQJgp9hKV5yuKE0yDgA4u65wa2ctuA938p64AwBTrkBnww
-         OwbFKbosmf03WNZ2ln9AakAQ75ps1Uyix6TcrDWXDNvM8yxH1rHDcSEcVa1bBu3XPSq9
-         ixaCkH3BhYyhsa9eiAH27OfCOIMWukgVNf4yewaqr24/C+1500ugF/xbUUzFoBQno26F
-         5VRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uC2eLVhYt5o2L3EkdXiZ0wHXR6DBNV6ezz2kj48c/z0=;
-        b=jY1FLh7wKtnr/SQMdtT8/SmmLsnodTo6dTr5ufFeF5xm5mCCvpJmp509vNK6sJY7Ho
-         +iQZwwOaNQQCOa2vrPLSgwOfiHQtmshJcti8fZZC3HL6DT8OLdQQyy69lLCdjhXKD52B
-         M9Lhfnlc8nyZPHBUG9TJDtilDYrhr+hOW38w2jUZDyEDDG9RmF3J/uwdFuO80ws+W3b8
-         LiTzLF47847vZskIRW9V3SVNR0b6FjBAanA+HyC3p6j/gZsbXqvHPMRBDK/XBCkFA6kk
-         jcBBiNHZlYQyLwCE6txEseW1D7DQXBKzV2TkjsxUAowj4x3v/FFSxL2C/4Z530xkiYQU
-         ucTg==
-X-Gm-Message-State: AOAM5327PJ2g08m6bmkUVFvCyUW2EXsAnlhYM1yzhs/owk0cxDbySMF1
-        /iSADKLrlXs7cSAhxGXSzpJoovp63JWTjdN3SsM=
-X-Google-Smtp-Source: ABdhPJxzZR5RCibQkvJ+m1K9hnWd7bVDC9RQwviR6fL5GPboW7oX/JyLWjTp9NyEYFk0eOOROlPca3nSmtk3qA79lK0=
-X-Received: by 2002:aed:2cc5:: with SMTP id g63mr27833340qtd.59.1595965157839;
- Tue, 28 Jul 2020 12:39:17 -0700 (PDT)
+        id S1732885AbgG1Tk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:40:29 -0400
+Received: from mail-eopbgr10074.outbound.protection.outlook.com ([40.107.1.74]:20962
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728927AbgG1Tk3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 15:40:29 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X90BWmrBNqBqYRse1p89XyXTWya2gccasVcC/CdPTvbROg7aMt7A2lIZT48eoJQu3VY6hNCCichgk3yJ/OzAot4mxTdbqw4eTbQZzkXpDdeeJhacwLVkJqPFhSdo/hkM/DPmnJR6tdF/kECxrFO5U3jBdAVf5S8anfI8jG2mZ+3LrKaAxzxes4WfiJrALndpyF2DsiQK1ognYLAq8zOXcNRakVPJQPiJOGVTNHMw1FbdIsFO1JlSUjh/fuAYh8YKLkJmqxxCjFXh+rZ+LA59HuojUi4byVGgUBIuTlne1FoJIvc1QSPUhgVBDmmAR+/QB7QUE+KhiksKjxVZ+7cMgQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L9Y/vNJyS9ityHRBgk7dyZWV/Am8R56pUTUazqBnMAA=;
+ b=Fd1jppxwqA5JQi+QRKdlD+JWVqPs9fIfIFmx9WLC2HLXxmcSBy/zDjsSSghBXsXv3HoN1LlIDsm/Ubn1C3ExeAssXuwrZar4EW0P83Ol1GkKrTHAtKG3aMLljBDHmh+R4w1L1QaW8nCWyh9PJvsb1D7Ngl1v2M2K5an8j10bbTDds3h61uDa2GiUeMH1mvQalQa3wBqqIx6t4i7jYmfZOjxjsrokqnOE4Wp1uaYghTa057YgMU3LCwB/yTNOWqWlUfuw73BOoeKw9L3+FAt+1QoMQDhQNnSJmxSEvv7bU0QcqbLnMiJ4l9+vjE+losRqeEHGEmxKeI6rNIbxyvecdw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L9Y/vNJyS9ityHRBgk7dyZWV/Am8R56pUTUazqBnMAA=;
+ b=FMzyH0NseeGXThPXCnL0s9XRzvnZCP9VvoCkB4jQx7odB1/Dv/7iLBc2eX1OkLlO+ct1yMGzKwKUtQ09UVPrv2XEvrwxqExgXV/mXx8cDXIFEQMCXKNfd6aJvmzMORIwfxk89NX+eGAqyb7b7cFoQr+A+gBFlM204/LxAc1klCc=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB6269.eurprd05.prod.outlook.com (2603:10a6:803:56::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.16; Tue, 28 Jul
+ 2020 19:40:24 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::508a:d074:ad3a:3529]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::508a:d074:ad3a:3529%5]) with mapi id 15.20.3216.034; Tue, 28 Jul 2020
+ 19:40:24 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
+        Ron Diskin <rondi@mellanox.com>
+CC:     Roi Dayan <roid@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [net 11/12] net/mlx5e: Modify uplink state on interface up/down
+Thread-Topic: [net 11/12] net/mlx5e: Modify uplink state on interface up/down
+Thread-Index: AQHWZL8Y3/hPTEGIeEa9LOSeFDx+KakcyPSAgACbagA=
+Date:   Tue, 28 Jul 2020 19:40:24 +0000
+Message-ID: <09c0166149c13dba6fdb22ed47f2732444a91fb6.camel@mellanox.com>
+References: <20200728091035.112067-1-saeedm@mellanox.com>
+         <20200728091035.112067-12-saeedm@mellanox.com>
+         <CAJ3xEMg+wW2FFrC3rRQyQbcSJKFf5Lr9EvNYuRQ0JZEDAztw7g@mail.gmail.com>
+In-Reply-To: <CAJ3xEMg+wW2FFrC3rRQyQbcSJKFf5Lr9EvNYuRQ0JZEDAztw7g@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.3 (3.36.3-1.fc32) 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=mellanox.com;
+x-originating-ip: [73.15.39.150]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 30e100f3-0012-44b8-e316-08d8332e127d
+x-ms-traffictypediagnostic: VI1PR05MB6269:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB6269E3F40A55A59F4D5936F2BE730@VI1PR05MB6269.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9MuL/bjMsILxGO7qABYRhU7hSv2LGBnnDXNnlkiux1CBeMuuyuCaFdWJQYOLx05v2LKgnv147BhAM3Hb/t9Pqq83RsfLvIO2zMbh5YVDUO5fD4vcpZtElWK0Zr2F4CW1nnj86ANI1eJ2cj0/x+nkx4RnshuzaIoZlSOjyiteVzgUSgKlvF/WxWA+oai8oV/iOlFSfCyCyV3s1BECbj031cpdaYn6ozy+qvapuHrCXe0AGKdC8o9qrdu7ThnOdnvyPWbhX8XFbMnUdwO1aPkW9JtJAPxICEMJ1COpLFpeAxc3VXStil8kBsP1lsetyIhT
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(8936002)(8676002)(6512007)(4326008)(2616005)(86362001)(26005)(6506007)(53546011)(66946007)(186003)(54906003)(5660300002)(76116006)(66476007)(2906002)(71200400001)(91956017)(83380400001)(66446008)(66556008)(64756008)(498600001)(6486002)(110136005)(6636002)(36756003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: OI8Ae3MEgZ26zAz+1vtFmgN9MGpPV+B6OE2Ow4a56wvOf8kcj/OewoopxK4ZQGDtZAYI6yVLwjaowY3h8+OoaKI4EeWsPL3B/5rFArgMVZLzGD1FsoVwhpzTIUbMgBW2WAnKWPcjcNMpO2qXLn7m7PWIU1K3mGrcN7blPpDcmRXiNdq0V68z5YHQXs4ez+yuZW7TBDRkda/Pys4zUXWTpIPYqkJHq7/hXcl9RUeKfIVz3JNtHfbX58eqVcVPmdiAEFg2hZG4Ty3Cfm/sU5UAtNTMk5Ox5sgea8RWTIOUwCKpwTz3IZZVwQKQvS7y1MD0fbGuisuSzv2HOZ/s66ovl/boc7IahVCxzYqRBXtga9vmG/+mU7A8ST4dkhluiqg8g4dpY5+Rq0txGj+xBNO9K9i3eqMyohnm2HBwksIXWZ0f6A/3q/Q5ex0fjfw+uFNHzxTFk4jNJ8Dj1Wwm93HXfGjvaWyaqJ0vujPrXjSRyMRuP/1Ba4WyvDFGp1QQUMRlHXRP3YJ3VmoLN37X77+Xyqnt3ixGRrRr25SAyjKHeMz9kdRFnV2jig9VieDqdshP6P83JdtntqbbM7zHzEFsBE47HkYfBSESGucn29ki/kw+37Aa9YOOUlPD/tWeJi4H6AguOvw0LAi88hT90WzDYA==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0854F140C380D34FAED0A7031012A800@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200722211223.1055107-1-jolsa@kernel.org> <20200722211223.1055107-9-jolsa@kernel.org>
-In-Reply-To: <20200722211223.1055107-9-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 28 Jul 2020 12:39:06 -0700
-Message-ID: <CAEf4BzbwJ+FXYWOK2k6UZ8X1f-2XQP1rRLFAFO6_OyK2iKv8Eg@mail.gmail.com>
-Subject: Re: [PATCH v8 bpf-next 08/13] bpf: Add BTF_SET_START/END macros
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30e100f3-0012-44b8-e316-08d8332e127d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jul 2020 19:40:24.3559
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NhgM84e6gCU4DzJpprFu1FefKZhB1TBDNp13o+9ANdQ+b69sgzkYiLEQh4yha2s6iQjXB6B7yHPfhUQ48mvsDQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6269
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 22, 2020 at 2:13 PM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Adding support to define sorted set of BTF ID values.
->
-> Following defines sorted set of BTF ID values:
->
->   BTF_SET_START(btf_whitelist_d_path)
->   BTF_ID(func, vfs_truncate)
->   BTF_ID(func, vfs_fallocate)
->   BTF_ID(func, dentry_open)
->   BTF_ID(func, vfs_getattr)
->   BTF_ID(func, filp_close)
->   BTF_SET_END(btf_whitelist_d_path)
->
-> It defines following 'struct btf_id_set' variable to access
-> values and count:
->
->   struct btf_id_set btf_whitelist_d_path;
->
-> Adding 'allowed' callback to struct bpf_func_proto, to allow
-> verifier the check on allowed callers.
->
-> Adding btf_id_set_contains function, which will be used by
-> allowed callbacks to verify the caller's BTF ID value is
-> within allowed set.
->
-> Also removing extra '\' in __BTF_ID_LIST macro.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  include/linux/bpf.h           |  4 ++++
->  include/linux/btf_ids.h       | 43 ++++++++++++++++++++++++++++++++++-
->  kernel/bpf/btf.c              | 14 ++++++++++++
->  kernel/bpf/verifier.c         |  5 ++++
->  tools/include/linux/btf_ids.h | 43 ++++++++++++++++++++++++++++++++++-
->  5 files changed, 107 insertions(+), 2 deletions(-)
->
-
-[...]
-
-> +#define BTF_SET_START(name)                            \
-> +__BTF_ID_LIST(name, local)                             \
-> +asm(                                                   \
-> +".pushsection " BTF_IDS_SECTION ",\"a\";       \n"     \
-> +".local __BTF_ID__set__" #name ";              \n"     \
-> +"__BTF_ID__set__" #name ":;                    \n"     \
-> +".zero 4                                       \n"     \
-> +".popsection;                                  \n");
-> +
-> +#define BTF_SET_END(name)                              \
-> +asm(                                                   \
-> +".pushsection " BTF_IDS_SECTION ",\"a\";      \n"      \
-> +".size __BTF_ID__set__" #name ", .-" #name "  \n"      \
-> +".popsection;                                 \n");    \
-> +extern struct btf_id_set name;
-> +
->  #else
-
-This local symbol assumption will probably at some point bite us.
-Yonghong already did global vs static variants for BTF ID list, we'll
-end up doing something like that for sets of BTF IDs as well. Let's do
-this similarly from the get go.
-
->
->  #define BTF_ID_LIST(name) static u32 name[5];
->  #define BTF_ID(prefix, name)
->  #define BTF_ID_UNUSED
->  #define BTF_ID_LIST_GLOBAL(name) u32 name[1];
-> +#define BTF_SET_START(name) static struct btf_id_set name = { 0 };
-
-nit: this zero is unnecessary and misleading (it's initialized for
-only the first member of a struct). Just {} is enough.
-
-> +#define BTF_SET_END(name)
->
->  #endif /* CONFIG_DEBUG_INFO_BTF */
->
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index 562d4453fad3..06714cdda0a9 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -21,6 +21,8 @@
->  #include <linux/btf_ids.h>
->  #include <linux/skmsg.h>
->  #include <linux/perf_event.h>
-> +#include <linux/bsearch.h>
-> +#include <linux/btf_ids.h>
->  #include <net/sock.h>
->
->  /* BTF (BPF Type Format) is the meta data format which describes
-> @@ -4740,3 +4742,15 @@ u32 btf_id(const struct btf *btf)
->  {
->         return btf->id;
->  }
-> +
-> +static int btf_id_cmp_func(const void *a, const void *b)
-> +{
-> +       const int *pa = a, *pb = b;
-> +
-> +       return *pa - *pb;
-> +}
-> +
-> +bool btf_id_set_contains(struct btf_id_set *set, u32 id)
-> +{
-> +       return bsearch(&id, set->ids, set->cnt, sizeof(int), btf_id_cmp_func) != NULL;
-
-very nit ;) sizeof(__u32)
-
-> +}
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 39922fa07154..49f728c696a9 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -4706,6 +4706,11 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
->                 return -EINVAL;
->         }
->
-
-[...]
+T24gVHVlLCAyMDIwLTA3LTI4IGF0IDEzOjI0ICswMzAwLCBPciBHZXJsaXR6IHdyb3RlOg0KPiBP
+biBUdWUsIEp1bCAyOCwgMjAyMCBhdCAxMjoxNiBQTSBTYWVlZCBNYWhhbWVlZCA8c2FlZWRtQG1l
+bGxhbm94LmNvbT4NCj4gd3JvdGU6DQo+ID4gRnJvbTogUm9uIERpc2tpbiA8cm9uZGlAbWVsbGFu
+b3guY29tPg0KPiA+IA0KPiA+IFdoZW4gc2V0dGluZyB0aGUgUEYgaW50ZXJmYWNlIHVwL2Rvd24s
+IG5vdGlmeSB0aGUgZmlybXdhcmUgdG8NCj4gPiB1cGRhdGUNCj4gPiB1cGxpbmsgc3RhdGUgdmlh
+IE1PRElGWV9WUE9SVF9TVEFURQ0KPiANCj4gSG93IHRoaXMgcmVsYXRlcyB0byBlLXN3aXRjaGlu
+Zz8gdGhlIHBhdGNoIHRvdWNoZXMgdGhlIGUtc3dpdGNoIGNvZGUNCj4gYnV0IEkgZG9uJ3Qgc2Vl
+IG1lbnRpb25pbmcgb2YgdGhhdCBpbiB0aGUgY2hhbmdlLWxvZy4uDQo+IA0KDQpzZWUgYmVsb3cg
+InVwbGluayBwb3J0IiBhbmQgIlZGIiB0aGVzZSB0ZXJtcyBhcmUgb25seSB1c2VkIGluIHdpdGgg
+ZS0NCnN3aXRjaGluZy4uDQoNCj4gPiBUaGlzIGJlaGF2aW9yIHdpbGwgcHJldmVudCBzZW5kaW5n
+IHRyYWZmaWMgb3V0IG9uIHVwbGluayBwb3J0IHdoZW4NCj4gPiBQRiBpcw0KPiA+IGRvd24sIHN1
+Y2ggYXMgc2VuZGluZyB0cmFmZmljIGZyb20gYSBWRiBpbnRlcmZhY2Ugd2hpY2ggaXMgc3RpbGwN
+Cj4gPiB1cC4NCj4gPiBDdXJyZW50bHkgd2hlbiBjYWxsaW5nIG1seDVlX29wZW4vY2xvc2UoKSwg
+dGhlIGRyaXZlciBvbmx5IHNlbmRzDQo+ID4gUEFPUw0KPiA+IGNvbW1hbmQgdG8gbm90aWZ5IHRo
+ZSBmaXJtd2FyZSB0byBzZXQgdGhlIHBoeXNpY2FsIHBvcnQgc3RhdGUgdG8NCj4gPiB1cC9kb3du
+LCBob3dldmVyLCBpdCBpcyBub3Qgc3VmZmljaWVudC4gV2hlbiBWRiBpcyBpbiAiYXV0byIgc3Rh
+dGUsDQo+ID4gaXQNCj4gDQo+ICJhdXRvIiBpcyBuYXN0eSBjb25jZXB0IHRoYXQgYXBwbGllcyBv
+bmx5IHRvIGxlZ2FjeSBtb2RlLiBIb3dldmVyLA0KPiB0aGUgcGF0Y2gNCj4gdG91Y2hlcyB0aGUg
+c3dpdGNoZGV2IG1vZGUgKHJlcHJlc2VudG9ycykgY29kZSwgcGxlYXNlIGV4cGxhaW4uLi4NCj4g
+DQoNCiJBVVRPIiBpcyBhbHNvIG1seDUgY29uY2VwdCB3aGljaCBpcyBkZWZhdWx0IGJ5IEZXLg0K
+DQpQcmlvciB0byB0aGlzIHBhdGNoIHRoZSB1cGxpbmsgc3RhdGUgd2FzIG5ldmVyIHRvdWNoZWQg
+YnkgZHJpdmVyIHNvIG5vdw0KYXMgaXQgY2FuIGJlIG92ZXJ3cml0dGVuIGJ5IHRoZSBQRiBkcml2
+ZXIgb24gbGVnYWN5L3NpbmdsZSBuaWMgbW9kZSwNCndoZW4gc3dpdGNoaW5nIHRvIHN3aXRjaGRl
+diBtb2RlIHdlIG5lZWQgdG8gYnJpbmcgYmFjayB0aGUgRlcgZGVmYXVsdA0KdmFsdWUgIkFVVE8i
+Lg0KDQpXaWxsIGFkZCB0aGlzIHRvIHRoZSBjb21taXQgbWVzc2FnZS4NCg0KPiA+IGZvbGxvd3Mg
+dGhlIHVwbGluayBzdGF0ZSwgd2hpY2ggd2FzIG5vdCB1cGRhdGVkIG9uDQo+ID4gbWx4NWVfb3Bl
+bi9jbG9zZSgpDQo+ID4gYmVmb3JlIHRoaXMgcGF0Y2guDQo+ID4gDQo+ID4gRml4ZXM6IDYzYmZk
+Mzk5ZGU1NSAoIm5ldC9tbHg1ZTogU2VuZCBQQU9TIGNvbW1hbmQgb24gaW50ZXJmYWNlDQo+ID4g
+dXAvZG93biIpDQo+ID4gU2lnbmVkLW9mZi1ieTogUm9uIERpc2tpbiA8cm9uZGlAbWVsbGFub3gu
+Y29tPg0KPiA+IFJldmlld2VkLWJ5OiBSb2kgRGF5YW4gPHJvaWRAbWVsbGFub3guY29tPg0KPiA+
+IFJldmlld2VkLWJ5OiBNb3NoZSBTaGVtZXNoIDxtb3NoZUBtZWxsYW5veC5jb20+DQo=
