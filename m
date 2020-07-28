@@ -2,72 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27338230BFF
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 16:05:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02928230C32
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 16:14:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730309AbgG1OE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 10:04:59 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59892 "EHLO vps0.lunn.ch"
+        id S1730366AbgG1OO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 10:14:26 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59938 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730211AbgG1OE7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 10:04:59 -0400
+        id S1730340AbgG1OO0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 10:14:26 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1k0QDt-007HyX-2D; Tue, 28 Jul 2020 16:04:53 +0200
-Date:   Tue, 28 Jul 2020 16:04:53 +0200
+        id 1k0QMs-007I2f-6T; Tue, 28 Jul 2020 16:14:10 +0200
+Date:   Tue, 28 Jul 2020 16:14:10 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@mellanox.com, vadimp@mellanox.com, popadrian1996@gmail.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next v2 1/2] mlxsw: core: Add ethtool support for
- QSFP-DD transceivers
-Message-ID: <20200728140453.GF1705504@lunn.ch>
-References: <20200728102016.1960193-1-idosch@idosch.org>
- <20200728102016.1960193-2-idosch@idosch.org>
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     linux-mediatek@lists.infradead.org,
+        Landen Chao <landen.chao@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Subject: Re: [PATCH v3] net: ethernet: mtk_eth_soc: fix mtu warning
+Message-ID: <20200728141410.GG1705504@lunn.ch>
+References: <20200728122743.78489-1-frank-w@public-files.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20200728102016.1960193-2-idosch@idosch.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200728122743.78489-1-frank-w@public-files.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 01:20:15PM +0300, Ido Schimmel wrote:
-> From: Vadim Pasternak <vadimp@mellanox.com>
+On Tue, Jul 28, 2020 at 02:27:43PM +0200, Frank Wunderlich wrote:
+> From: Landen Chao <landen.chao@mediatek.com>
 > 
-> The Quad Small Form Factor Pluggable Double Density (QSFP-DD) hardware
-> specification defines a form factor that supports up to 400 Gbps in
-> aggregate over an 8x50-Gbps electrical interface. The QSFP-DD supports
-> both optical and copper interfaces.
+> in recent Kernel-Versions there are warnings about incorrect MTU-Size
+> like these:
 > 
-> Implementation is based on Common Management Interface Specification;
-> Rev 4.0 May 8, 2019. Table 8-2 "Identifier and Status Summary (Lower
-> Page)" from this spec defines "Id and Status" fields located at offsets
-> 00h - 02h. Bit 2 at offset 02h ("Flat_mem") specifies QSFP EEPROM memory
-> mode, which could be "upper memory flat" or "paged". Flat memory mode is
-> coded "1", and indicates that only page 00h is implemented in EEPROM.
-> Paged memory is coded "0" and indicates that pages 00h, 01h, 02h, 10h
-> and 11h are implemented. Pages 10h and 11h are currently not supported
-> by the driver.
+> eth0: mtu greater than device maximum
+> mtk_soc_eth 1b100000.ethernet eth0: error -22 setting MTU to include DSA overhead
 > 
-> "Flat" memory mode is used for the passive copper transceivers. For this
-> type only page 00h (256 bytes) is available. "Paged" memory is used for
-> the optical transceivers. For this type pages 00h (256 bytes), 01h (128
-> bytes) and 02h (128 bytes) are available. Upper page 01h contains static
-> advertising field, while upper page 02h contains the module-defined
-> thresholds and lane-specific monitors.
-> 
-> Extend enumerator 'mlxsw_reg_mcia_eeprom_module_info_id' with additional
-> field 'MLXSW_REG_MCIA_EEPROM_MODULE_INFO_TYPE_ID'. This field is used to
-> indicate for QSFP-DD transceiver type which memory mode is to be used.
-> 
-> Expose 256 bytes buffer for QSFP-DD passive copper transceiver and
-> 512 bytes buffer for optical.
-> 
-> Signed-off-by: Vadim Pasternak <vadimp@mellanox.com>
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> Fixes: bfcb813203e6 ("net: dsa: configure the MTU for switch ports")
+> Fixes: 72579e14a1d3 ("net: dsa: don't fail to probe if we couldn't set the MTU")
+> Fixes: 7a4c53bee332 ("net: report invalid mtu value via netlink extack")
+> Signed-off-by: René van Dorst <opensource@vdorst.com>
+> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
