@@ -2,110 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 138292309D9
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 14:21:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F8E230A05
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 14:29:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729121AbgG1MU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 08:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44014 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728458AbgG1MU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 08:20:57 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E70C061794;
-        Tue, 28 Jul 2020 05:20:54 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id f7so18104990wrw.1;
-        Tue, 28 Jul 2020 05:20:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=tGckZViZqITBAI3FDO/Tnn1YZuHd5jwWQSY9Uj6T4mQ=;
-        b=C+HG3I3feTxibI/VstyFEzM9n687g46g7iSi7eN5cUcuMD+2sBqsTOllUtB7PKngaZ
-         nhFtFyDF6TloVcPFiLFQ8bvSSN1k8p9DrMEnt1oE1lyoKTYrmCVYmtf6HrrtVja5ln0t
-         zzCnh9bzOXP5vv2oj2Y3523FCniSTHhA5S/GxKOETKSmn4sUS3Y3KxO5pMR5Kp/QT9rj
-         +pWXgy35suxKetcSLZyuqLD0z0x5EVHbKYOmwnPzY79HK8blTyU+FQTgDLl1U3tBBzKw
-         RMVBaJu7DF+9tNjAbQZf5NvzOIp7XeT1tGdPYM7art+Re6t1WW1eyb2uVSXtrJ3jIifl
-         ZNvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=tGckZViZqITBAI3FDO/Tnn1YZuHd5jwWQSY9Uj6T4mQ=;
-        b=qeKRhqruW3f0v9Z/OxEJHnEFs56ePMPcyBLm+3kkPrJohD38NL/5Hl0tDYhvzJ0xrA
-         edW41Vlb4CIZECJXmfyF5IpUFbqskrH3GMvuNJox2Ml7oMvGrKhpQXvQDApOPDFOr7lj
-         PpxviUayeA32k48Pd1rDJyVTTqHmBPKITOrNcHrAuJazyIKZF05wlR3UByP6GFsp06Xr
-         2v4gyPhb3ZcrNNhejJpFB5bFeDLvEvn1NwnOo484ITdbR+Ofmc7BJ3DdMfE+YR+CRIjj
-         hj+f4DGEUMDaf7psBGer/KFnnn3kRyq321eAvQRB7JmeXv5usB88J8eAEjYIg3CxjKSK
-         M4tA==
-X-Gm-Message-State: AOAM532SaX8HoAVCtOrz+slifuRnusjvTHfSlCYjBoj9TVwyMcTcTnFh
-        8j686SufT4V2gES9ZeRjcsM=
-X-Google-Smtp-Source: ABdhPJxoQOXWN1PiAi1gcZFqlLd3qbBzOJ2zch5QKJat1ZFDxbzmX3puX4rxb/iXc3VnmQn6IHcjkg==
-X-Received: by 2002:a5d:6452:: with SMTP id d18mr24371165wrw.284.1595938853447;
-        Tue, 28 Jul 2020 05:20:53 -0700 (PDT)
-Received: from ubuntu18_1.cisco.com ([173.38.220.51])
-        by smtp.gmail.com with ESMTPSA id 65sm19279463wre.6.2020.07.28.05.20.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jul 2020 05:20:52 -0700 (PDT)
-From:   Ahmed Abdelsalam <ahabdels@gmail.com>
-To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        andrea.mayer@uniroma2.it, Ahmed Abdelsalam <ahabdels@gmail.com>
-Subject: [net-next] seg6: using DSCP of inner IPv4 packets
-Date:   Tue, 28 Jul 2020 12:20:44 +0000
-Message-Id: <20200728122044.1900-1-ahabdels@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1729573AbgG1M2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 08:28:50 -0400
+Received: from mout.gmx.net ([212.227.15.19]:33613 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728300AbgG1M2u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 08:28:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1595939299;
+        bh=+Xhr2x2VYD1gWTmsb4Uofj+UiBxI7DdvuosyZzVaUM4=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=KFWninAwHludxMxZQsuEzqYoXKBYCcGUd+YU82B6QxqADTgG0ZzR3Izd3f5yyROqS
+         DVFscsUdxRXyCcMEnEZhgBs7sekWgeez0btr08FVEVoy9kh3bWZ8Zfqq5HMWWlhX/I
+         9c5R1xKiSUgUrjjDyRr5JtBcQZcodpHMELOchWJo=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost.localdomain ([80.208.215.239]) by mail.gmx.com
+ (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
+ 1MmlXA-1kScia3yWE-00jsa8; Tue, 28 Jul 2020 14:28:19 +0200
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     linux-mediatek@lists.infradead.org
+Cc:     Landen Chao <landen.chao@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: [PATCH v3] net: ethernet: mtk_eth_soc: fix mtu warning
+Date:   Tue, 28 Jul 2020 14:27:43 +0200
+Message-Id: <20200728122743.78489-1-frank-w@public-files.de>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:sc5b1pOFKi3FLEOULKn4OozLSQed687rhOjKqf+XCSsSamY2PgS
+ 2JzFzyIi+ztuNLr94TkKDcwv0V8CQVVgeRKACmKp1sOgDjY8lWDHTRhJEMdJ/ZdmLtdPzEY
+ cpxqGiswcGavM06bTX+Y0XB7iBhQhFTK5u1HoAKmuv4zSkW3djqLkiVs66c7HgTDaGRA8G4
+ K7il9Y7OEKrorNMSU9CNw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:6AZmNkrR0vY=:/2GNiK7U0djtOSALtwVhUo
+ E4o95iSJIypzT+gKBd6jBwrAaoQaz4NPh+ydoyiRA5XRYp73aNToQ4CTIdCOAZFHPZ84jqiLy
+ NJ4uY4TYfoXNU0uze2bhR8446EZ7sX3Mm0hn2MJHSFjS8xKNigGXiB63k8nIOFuT4F3jYtqLt
+ kCA02I3FIT0j5RFMn+XCTY9PffplsrQT8yCM5xLQRJUxoo2a5rZIvzYenDz9tjUqejaJSYC8K
+ 5LMpCpZmYBsUR8Q0GhE/FM8/UFg+RqGQLWzmrtDBXFpddit4gTISIpZFYlddPeWo7EPXUZHK3
+ 41h2XWcEo4u8E9YSCkQQF9/6oeWbUZ/IxMygADgBbDbhaTtnXxcHcT8xf0/fqOHfsgRjtR3yl
+ VoFYeMk4zt2IPl59t17+KyBf1b657Ejon1XSadfIcL1Xhe2TJGrymbaw1bYCPRAIdhwI2SE11
+ Vj9Z4XkVrec242+SZ1NuiW4eGQjO0Ji2d0stOgqNsYQu5w6V01gmrg7hx2D6k9xN2ooj7aZ2M
+ 9+SGQ9x+QXp4cMI52AhkWpDMDOj8i2LVVjyQ8GrArJiSFJJv0702CbOI2rPl/DDrPI+zbiLL/
+ FH4zO7I/uX2PGnMVUp6qG9nvd1f9xcddW8NhK8ndEpqkfWPWVyAq6IveDxkDe7G6gMF8LwVqx
+ JRP22cnT4V3HI63ZM6f1N5UESv+/ALJV1u2qmZhRv1Zk5HNHzC4ZtKG2zbzRvD2uvMN50MKuh
+ bDn84ONkh7kzG8lI7XSvXdVKch0w2iz4D1jjydW4SssG4suLpia2NWLWnQ/VZeIXT07Tw4hqM
+ B7QCYyn0v/0bBuWLZJJ/qJR0v+n2hqqTqCBtZV82rwxZbTzFcKQr/0YrAbcnFxA2K6ewIf/FF
+ O3McjzbzcLu7tdgUmNdj0DQrygPNbWL0jv/5Nur+z9n9njA1VI7pM6hJgTueVCN4hCP20CzY1
+ CioTt5baNqnqbsny4bWUZlJrBFnt2Y62wKQqoitw+JlxkohUNNcIzpVftkaDFy3dsXSnVMek1
+ dEc/0Gifpkh+MAm14rhp1jrDdzbd2wr4jMnoE2oRaFifjLzJ+RRL9hgpQ6GwLo7vXHLq2QuvV
+ 1pLSuqN1ZZ58QNBRuX5bBlKOQ2WNItFRnayXemW0ol4P+MCBF/xDWRGg85YsF+igQ2mkjwmP8
+ WbAmRyqx7VfAqYTKkjjZQjqvaxiEIELx9vb7CjBM2xATxNxqfjUUOkGOfQKk5KVGLTUJgZoL8
+ RnRK+yzwbJdlI5wj8ej0nI2mwXOi+wlp6q7pK9Q==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows copying the DSCP from inner IPv4 header to the
-outer IPv6 header, when doing SRv6 Encapsulation.
+From: Landen Chao <landen.chao@mediatek.com>
 
-This allows forwarding packet across the SRv6 fabric based on their
-original traffic class.
+in recent Kernel-Versions there are warnings about incorrect MTU-Size
+like these:
 
-Signed-off-by: Ahmed Abdelsalam <ahabdels@gmail.com>
----
- net/ipv6/seg6_iptunnel.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+eth0: mtu greater than device maximum
+mtk_soc_eth 1b100000.ethernet eth0: error -22 setting MTU to include DSA o=
+verhead
 
-diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
-index e0e9f48ab14f..9753d10c4a51 100644
---- a/net/ipv6/seg6_iptunnel.c
-+++ b/net/ipv6/seg6_iptunnel.c
-@@ -110,6 +110,7 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
- 	struct dst_entry *dst = skb_dst(skb);
- 	struct net *net = dev_net(dst->dev);
- 	struct ipv6hdr *hdr, *inner_hdr;
-+	struct iphdr *inner_ipv4_hdr;
- 	struct ipv6_sr_hdr *isrh;
- 	int hdrlen, tot_len, err;
- 	__be32 flowlabel;
-@@ -121,7 +122,11 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
- 	if (unlikely(err))
- 		return err;
- 
--	inner_hdr = ipv6_hdr(skb);
-+	if (skb->protocol == htons(ETH_P_IPV6))
-+		inner_hdr = ipv6_hdr(skb);
-+	else
-+		inner_ipv4_hdr = ip_hdr(skb);
+Fixes: bfcb813203e6 ("net: dsa: configure the MTU for switch ports")
+Fixes: 72579e14a1d3 ("net: dsa: don't fail to probe if we couldn't set the=
+ MTU")
+Fixes: 7a4c53bee332 ("net: report invalid mtu value via netlink extack")
+Signed-off-by: Ren=C3=A9 van Dorst <opensource@vdorst.com>
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+=2D--
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/eth=
+ernet/mediatek/mtk_eth_soc.c
+index 85735d32ecb0..a1c45b39a230 100644
+=2D-- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -2891,6 +2891,8 @@ static int mtk_add_mac(struct mtk_eth *eth, struct d=
+evice_node *np)
+ 	eth->netdev[id]->irq =3D eth->irq[0];
+ 	eth->netdev[id]->dev.of_node =3D np;
+
++	eth->netdev[id]->max_mtu =3D MTK_MAX_RX_LENGTH - MTK_RX_ETH_HLEN;
 +
- 	flowlabel = seg6_make_flowlabel(net, skb, inner_hdr);
- 
- 	skb_push(skb, tot_len);
-@@ -138,6 +143,10 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
- 		ip6_flow_hdr(hdr, ip6_tclass(ip6_flowinfo(inner_hdr)),
- 			     flowlabel);
- 		hdr->hop_limit = inner_hdr->hop_limit;
-+	} else if (skb->protocol == htons(ETH_P_IP)) {
-+		ip6_flow_hdr(hdr, inner_ipv4_hdr->tos, flowlabel);
-+		hdr->hop_limit = inner_ipv4_hdr->ttl;
-+		memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
- 	} else {
- 		ip6_flow_hdr(hdr, 0, flowlabel);
- 		hdr->hop_limit = ip6_dst_hoplimit(skb_dst(skb));
--- 
-2.17.1
+ 	return 0;
+
+ free_netdev:
+=2D-
+2.25.1
 
