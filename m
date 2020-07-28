@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BABC2301CB
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:32:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A552301D2
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:35:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727090AbgG1Fcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 01:32:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43132 "EHLO mail.kernel.org"
+        id S1726445AbgG1Ffd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 01:35:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43472 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726299AbgG1Fct (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 01:32:49 -0400
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+        id S1726245AbgG1Ffd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 01:35:33 -0400
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B160F20829;
-        Tue, 28 Jul 2020 05:32:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6EF0621744;
+        Tue, 28 Jul 2020 05:35:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595914369;
-        bh=7fZc0YPRr1LmxCFj3GVuv6A1HWSBq66zW/yYIQ2J5L4=;
+        s=default; t=1595914532;
+        bh=zx7VWFCJ2PMJ/+Cqt+H06tQgYu2lqiv9yLovQHJzjWc=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=PtA8P4Yoa0OVOGlP0bitg0RsWdZ/LIoDqvRKl28qVvsl98gzzTApb/1M/8ciTXyhi
-         BeWVvw4u4ENtrPrSPr0sNrqTpMr95ECsFIIdik7atAmz7gQBp6Rz/RnKHp/SZ9pZZ/
-         mnVR9gzaB0Lq7z0Kh6j+vg/q3gEjACy3CdMoIZ1k=
-Received: by mail-lf1-f44.google.com with SMTP id i80so10282402lfi.13;
-        Mon, 27 Jul 2020 22:32:48 -0700 (PDT)
-X-Gm-Message-State: AOAM531VjdBqNsprVktMtrDTxKVNBYGkYWBRObUPXXM0EaehYm4TJ+p/
-        QzB9kcuEBmzGeCk0G3ZMdtCInQXBJzvqrpJCjas=
-X-Google-Smtp-Source: ABdhPJztGfV9oT99CGVNx6+aNi1JjL45Huyn8q98Q66k9fJ0t4IRMC6rtA0cZWtyoAOrywThC9RSbd6QaOG1ENKHgkA=
-X-Received: by 2002:ac2:5683:: with SMTP id 3mr13215297lfr.69.1595914367019;
- Mon, 27 Jul 2020 22:32:47 -0700 (PDT)
+        b=EcNitXg0qAG43LHfC4hLtq2qjsXiNcwJ37LNAH2i28lHZQiKtccWWISbiFDTy05B0
+         DxpHe/EqHY4Fh9nQHhfrEQ6BftNnz550fn9s29BLdA7dX48j+F+uwrssFK3Cwu2tZE
+         xfzsVTFU7XC+ANnbiZK1S45s3hacJhEUCZtAV0Ac=
+Received: by mail-lj1-f177.google.com with SMTP id d17so19754172ljl.3;
+        Mon, 27 Jul 2020 22:35:32 -0700 (PDT)
+X-Gm-Message-State: AOAM532Wf0Iwv2Pq8t2aqy6VvObMWZrrY5skadQDuyOZCu5H52ZSIGWE
+        I3IyIabtUJdln29C+gyWR+mUmBXqpSKsjLm4Nwo=
+X-Google-Smtp-Source: ABdhPJzNdIVe4pMmZ2SNpqATz5OzkbzGqNa6+7VuTuASEOw5Ysa7o+rKpcNz69Vw4cj6ppOHaukqWELMwLlCQCzV6U4=
+X-Received: by 2002:a2e:81c2:: with SMTP id s2mr3272036ljg.10.1595914530748;
+ Mon, 27 Jul 2020 22:35:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-20-guro@fb.com>
-In-Reply-To: <20200727184506.2279656-20-guro@fb.com>
+References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-21-guro@fb.com>
+In-Reply-To: <20200727184506.2279656-21-guro@fb.com>
 From:   Song Liu <song@kernel.org>
-Date:   Mon, 27 Jul 2020 22:32:35 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5VxGQfDRVU6hH6xj4qU7p0hpmupvLnpE9fgexdK8D+rQ@mail.gmail.com>
-Message-ID: <CAPhsuW5VxGQfDRVU6hH6xj4qU7p0hpmupvLnpE9fgexdK8D+rQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 19/35] bpf: eliminate rlimit-based memory
- accounting for lpm_trie maps
+Date:   Mon, 27 Jul 2020 22:35:19 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW51GXsn=d8=OmOz3OR9ziK+UG+GBJvFOMtHH2HnN9QBCg@mail.gmail.com>
+Message-ID: <CAPhsuW51GXsn=d8=OmOz3OR9ziK+UG+GBJvFOMtHH2HnN9QBCg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 20/35] bpf: eliminate rlimit-based memory
+ accounting for queue_stack_maps maps
 To:     Roman Gushchin <guro@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -53,7 +53,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Jul 27, 2020 at 12:25 PM Roman Gushchin <guro@fb.com> wrote:
 >
-> Do not use rlimit-based memory accounting for lpm_trie maps.
+> Do not use rlimit-based memory accounting for queue_stack maps.
 > It has been replaced with the memcg-based memory accounting.
 >
 > Signed-off-by: Roman Gushchin <guro@fb.com>
@@ -61,43 +61,47 @@ On Mon, Jul 27, 2020 at 12:25 PM Roman Gushchin <guro@fb.com> wrote:
 Acked-by: Song Liu <songliubraving@fb.com>
 
 > ---
->  kernel/bpf/lpm_trie.c | 13 -------------
->  1 file changed, 13 deletions(-)
+>  kernel/bpf/queue_stack_maps.c | 16 ++++------------
+>  1 file changed, 4 insertions(+), 12 deletions(-)
 >
-> diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
-> index d85e0fc2cafc..c747f0835eb1 100644
-> --- a/kernel/bpf/lpm_trie.c
-> +++ b/kernel/bpf/lpm_trie.c
-> @@ -540,8 +540,6 @@ static int trie_delete_elem(struct bpf_map *map, void *_key)
->  static struct bpf_map *trie_alloc(union bpf_attr *attr)
+> diff --git a/kernel/bpf/queue_stack_maps.c b/kernel/bpf/queue_stack_maps.c
+> index 44184f82916a..92e73c35a34a 100644
+> --- a/kernel/bpf/queue_stack_maps.c
+> +++ b/kernel/bpf/queue_stack_maps.c
+> @@ -66,29 +66,21 @@ static int queue_stack_map_alloc_check(union bpf_attr *attr)
+>
+>  static struct bpf_map *queue_stack_map_alloc(union bpf_attr *attr)
 >  {
->         struct lpm_trie *trie;
-> -       u64 cost = sizeof(*trie), cost_per_node;
-> -       int ret;
+> -       int ret, numa_node = bpf_map_attr_numa_node(attr);
+> -       struct bpf_map_memory mem = {0};
+> +       int numa_node = bpf_map_attr_numa_node(attr);
+>         struct bpf_queue_stack *qs;
+> -       u64 size, queue_size, cost;
+> +       u64 size, queue_size;
 >
->         if (!bpf_capable())
->                 return ERR_PTR(-EPERM);
-> @@ -567,20 +565,9 @@ static struct bpf_map *trie_alloc(union bpf_attr *attr)
->                           offsetof(struct bpf_lpm_trie_key, data);
->         trie->max_prefixlen = trie->data_size * 8;
->
-> -       cost_per_node = sizeof(struct lpm_trie_node) +
-> -                       attr->value_size + trie->data_size;
-> -       cost += (u64) attr->max_entries * cost_per_node;
+>         size = (u64) attr->max_entries + 1;
+> -       cost = queue_size = sizeof(*qs) + size * attr->value_size;
 > -
-> -       ret = bpf_map_charge_init(&trie->map.memory, cost);
-> -       if (ret)
-> -               goto out_err;
-> -
->         spin_lock_init(&trie->lock);
+> -       ret = bpf_map_charge_init(&mem, cost);
+> -       if (ret < 0)
+> -               return ERR_PTR(ret);
+> +       queue_size = sizeof(*qs) + size * attr->value_size;
 >
->         return &trie->map;
-> -out_err:
-> -       kfree(trie);
-> -       return ERR_PTR(ret);
->  }
+>         qs = bpf_map_area_alloc(queue_size, numa_node);
+> -       if (!qs) {
+> -               bpf_map_charge_finish(&mem);
+> +       if (!qs)
+>                 return ERR_PTR(-ENOMEM);
+> -       }
 >
->  static void trie_free(struct bpf_map *map)
+>         memset(qs, 0, sizeof(*qs));
+>
+>         bpf_map_init_from_attr(&qs->map, attr);
+>
+> -       bpf_map_charge_move(&qs->map.memory, &mem);
+>         qs->size = size;
+>
+>         raw_spin_lock_init(&qs->lock);
 > --
 > 2.26.2
 >
