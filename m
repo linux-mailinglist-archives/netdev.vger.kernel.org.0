@@ -2,91 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC667231226
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:05:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4525E23122B
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:07:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732573AbgG1TFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:05:37 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:40982 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728879AbgG1TFh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:05:37 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 06SJ3Ran017406
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:05:36 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=dokCYr0Heq2KU3GFLypgUYG1uu3V7zp2F9pmu0AG1R0=;
- b=M6B/2vwnJVjXZBygU8IfH7XZz3atwX4lECAROYzWk0V2keG7F1XdKkUyaXP5XMyAMkMs
- dR0DuqabhstGTY144mhTS46g4mSQSzJjcQxM0EK1fbR2g7/3tvvaKuQFi37fhgvLI0ZH
- ZaZ43n6I8i6FKNFt2xM7qR9nXH6FUqzP9oQ= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 32ggdmp1mu-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:05:36 -0700
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 28 Jul 2020 12:05:34 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 0C2E42EC4C42; Tue, 28 Jul 2020 12:05:31 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <rdunlap@infradead.org>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] bpf: fix build without CONFIG_NET when using BPF XDP link
-Date:   Tue, 28 Jul 2020 12:05:27 -0700
-Message-ID: <20200728190527.110830-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1729517AbgG1THK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50456 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729168AbgG1THJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:07:09 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CDDCC061794;
+        Tue, 28 Jul 2020 12:07:09 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id 11so19813321qkn.2;
+        Tue, 28 Jul 2020 12:07:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=a4k23v6u+Ynb9I+UZreRULUB5erdIyY4Rw8+D/r4YBg=;
+        b=rzHKu3oiRxCv2rWjVM5ZT2ZfECTv55bKcEn0gOGRiBmvtND8mTEbnNMiLNxSDTS889
+         VTBm52iBupzS6bnS07qgGUIQZJVUZYlZZFijnyrFr2eJl8fe0U+oJFUAU57Jm7FrnbJc
+         iegIINWy6pTqFXKEat61aTh++Ah5z6gstdnrNic4u0Da3dV80oTEsqLB23Y7Kd3PT7CY
+         zgRwvLoi3g1kQZnnrhiiDUBCR2K/moIZYx+Rp4AEvP3eBEVliFOqvDaCUFIfcwQkkNoe
+         Q6noOUBjW1vNKAuq9qGfWIpeJfaaxsPy9lvdUiXnu0eHOVqgXda++KZ9b2aIWQnuB2ur
+         7WTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=a4k23v6u+Ynb9I+UZreRULUB5erdIyY4Rw8+D/r4YBg=;
+        b=hicpyvuE0AvYDtysY6403lxtpdSTYvaIATpewSdtuGvxrcOUzTB1KvumHqZ8PBdLGR
+         KSlx/ctD0UIqh2lhdCuEseRFqCVnd2dd03QwHKuhtoGO0Df0XgW+Dt2dlnZ2Id7Rzg9+
+         lraC1U8nIBEBUaSsU0fUYtVlev+Pl4Gf9RUzq+TOzaWp3xSpA9XEIpIKjfUat6MHdD84
+         QNqBK6azwWOWT+RQbN7qJCxSQvyaK6Al9tAbtpfSwmKMfqIKqOHGYcZlZxfj7ZcJf8HA
+         J73nyp9rMj+EUHXykgqLcK2FLQgVjs7KxXlvZg6lSSbLb1p75UDZa93Yxu8G3AMVxu9m
+         IGOQ==
+X-Gm-Message-State: AOAM532O4UVczxNxnObDsaLM2UyMJwMI6JWHsy4uDCRkQb0COqwRuuNB
+        H1Z2tEHZn4CRYfs9gwvqu+ZcbyDECiZ9xgv2JeQ=
+X-Google-Smtp-Source: ABdhPJynywuwc/59HutV2Wmn/jRKU1gHMVeo7tUzFSE/COhAoW50C/APPJJa6wl5xuMZcvDGkNw4DcUaMD3g9MzD+rA=
+X-Received: by 2002:a05:620a:4c:: with SMTP id t12mr3913142qkt.449.1595963228377;
+ Tue, 28 Jul 2020 12:07:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-28_15:2020-07-28,2020-07-28 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=864
- malwarescore=0 adultscore=0 spamscore=0 impostorscore=0 mlxscore=0
- clxscore=1015 bulkscore=0 lowpriorityscore=0 suspectscore=8
- priorityscore=1501 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2007280135
-X-FB-Internal: deliver
+References: <20200727232346.0106c375@canb.auug.org.au> <e342e8ce-db29-1603-3fd9-40792a783296@infradead.org>
+ <CAEf4BzYD-PiA2cDvD5qRv7hHZ_GTDdKqAm1jfg2ZWBWM_3YO5w@mail.gmail.com> <f5613a75-efcb-93e6-e139-e16b87b373f5@infradead.org>
+In-Reply-To: <f5613a75-efcb-93e6-e139-e16b87b373f5@infradead.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 28 Jul 2020 12:06:57 -0700
+Message-ID: <CAEf4BzbVxJG4WBC10sW7N0OJ9HAZGK4WTCp2GQVF6+UzVSqkrA@mail.gmail.com>
+Subject: Re: linux-next: Tree for Jul 27 (kernel/bpf/syscall.o)
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Entire net/core subsystem is not built without CONFIG_NET. linux/netdevic=
-e.h
-just assumes that it's always there, so the easiest way to fix this is to
-conditionally compile out bpf_xdp_link_attach() use in bpf/syscall.c.
+On Mon, Jul 27, 2020 at 11:01 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> On 7/27/20 10:48 PM, Andrii Nakryiko wrote:
+> > On Mon, Jul 27, 2020 at 11:58 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+> >>
+> >> On 7/27/20 6:23 AM, Stephen Rothwell wrote:
+> >>> Hi all,
+> >>>
+> >>> Changes since 20200724:
+> >>>
+> >>
+> >> on i386:
+> >> when CONFIG_XPS is not set/enabled:
+> >>
+> >> ld: kernel/bpf/syscall.o: in function `__do_sys_bpf':
+> >> syscall.c:(.text+0x4482): undefined reference to `bpf_xdp_link_attach'
+> >>
+> >
+> > I can't repro this on x86-64 with CONFIG_XPS unset. Do you mind
+> > sharing the exact config you've used?
+>
+> No problem. I see this on i386 or x86_64. I am attaching the x86_64
+> randconfig file instead of the i386 one.
+>
+> > I see that kernel/bpf/syscall.c doesn't include linux/netdevice.h
+> > directly, so something must be preventing netdevice.h to eventually
+> > get to bpf/syscall.c, but instead of guessing on the fix, I'd like to
+> > repro it first. Thanks!
+>
+> The build failure was causing me to see lots of builds failing, so I made
+> a simple patch so that I could get past this issue.  My patch follows.
+> Feel free to fix it any way you like.
+>
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Fixes: aa8d3a716b59 ("bpf, xdp: Add bpf_link-based XDP attachment API")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- kernel/bpf/syscall.c | 2 ++
- 1 file changed, 2 insertions(+)
+I was confused for a while by CONFIG_XPS, as nothing really depends on
+it. So it turned out the real dependency is CONFIG_NET, which is also
+unset in your random config. I just sent a fix, thanks for reporting
+and sharing the config!
 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 0e8c88db7e7a..cd3d599e9e90 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -3923,9 +3923,11 @@ static int link_create(union bpf_attr *attr)
- 	case BPF_PROG_TYPE_SK_LOOKUP:
- 		ret =3D netns_bpf_link_create(attr, prog);
- 		break;
-+#ifdef CONFIG_NET
- 	case BPF_PROG_TYPE_XDP:
- 		ret =3D bpf_xdp_link_attach(attr, prog);
- 		break;
-+#endif
- 	default:
- 		ret =3D -EINVAL;
- 	}
---=20
-2.24.1
 
+> Thanks.
+> ---
+> ---
+>  kernel/bpf/syscall.c |    4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> --- mmotm-2020-0727-1818.orig/kernel/bpf/syscall.c
+> +++ mmotm-2020-0727-1818/kernel/bpf/syscall.c
+> @@ -3924,7 +3924,11 @@ static int link_create(union bpf_attr *a
+>                 ret = netns_bpf_link_create(attr, prog);
+>                 break;
+>         case BPF_PROG_TYPE_XDP:
+> +#ifdef CONFIG_XPS
+>                 ret = bpf_xdp_link_attach(attr, prog);
+> +#else
+> +               ret = -EINVAL;
+> +#endif
+>                 break;
+>         default:
+>                 ret = -EINVAL;
+>
