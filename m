@@ -2,139 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6946E231437
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 22:48:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E2FD231432
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 22:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729163AbgG1Uso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 16:48:44 -0400
-Received: from mga04.intel.com ([192.55.52.120]:27383 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728202AbgG1Uso (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 16:48:44 -0400
-IronPort-SDR: iqsLWs4ApEd/U1yiwMvLKzVsRbOvdE3jXgrJxAG0zfQAtALBuK8g7Fd8jJv97YdSaDG8xW8phX
- EtalA+JaLjnA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9696"; a="148771073"
-X-IronPort-AV: E=Sophos;i="5.75,407,1589266800"; 
-   d="scan'208";a="148771073"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2020 13:48:43 -0700
-IronPort-SDR: P3Gs4dJoK4XGGE/GB3W/nd7W3yIV7ThgTCRrmrtBWnvLeB8SZrhyOJfpepK0oW7sMSDr4Si271
- 1DDKq3WO/xCQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,407,1589266800"; 
-   d="scan'208";a="394450700"
-Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
-  by fmsmga001.fm.intel.com with ESMTP; 28 Jul 2020 13:48:42 -0700
-Received: from fmsmsx155.amr.corp.intel.com (10.18.116.71) by
- fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 28 Jul 2020 13:48:41 -0700
-Received: from FMSEDG002.ED.cps.intel.com (10.1.192.134) by
- FMSMSX155.amr.corp.intel.com (10.18.116.71) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 28 Jul 2020 13:48:41 -0700
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.54) by
- edgegateway.intel.com (192.55.55.69) with Microsoft SMTP Server (TLS) id
- 14.3.439.0; Tue, 28 Jul 2020 13:47:34 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mH5uwaienHcJE59CQX04ytmQUb52E/gjSEM4K7NlpVVc8vtSxEPvauGX1HwZ5CCJhA6rTCj5NtOMCKByXJ7TVLmXWcB9awPS7bFVHWGIFKYwaZQEfxEQunlTZ3kOihybXphlkcziTdYc54D8WTW9VoppH7TbmfFNpAEZpwynoWPHOQ5kiIR+4PFbqkOcSD7Hqa24OkB63dp++/JGwJInP52VKVMca7HMwPjseG6Dx5XWbhA/Zv8NmWjG/J38PXmhCALts2ziUkYXhl/PVxlCfsSiee7fH3z6p5mdVmQmio5u9KzImOn3JRqCD1VJEbe4aHZ1BLRCYP9gbPdjyJagkw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vohp+Fl9XSDhTPrs3gsUiCpGSUNw0EuO50oip9HOklg=;
- b=NPf4O409ps8UwQ/S2o/6EDbIFObiwgs2bAlmATqctCeDhGi2tR0xbeXwPjkr6xsdLEFjE3ypG9NAJLarNZil0tzkyQp5WELf7B7skVFy5a5zb9wvxCekrQdULcuw2QFINCA3Z2eC63S7ZFdjGVW5JI0slWoKf15XoeUbzevNXco3LLBmcLr/3Z/75EryFbuDLZg1mpmYIi/1f5xBM2pnD+PfpVAHK/itN+4sxwpcTjddeceGRvNqsBXmTMUgM3cv4Y47PpReXafTXaeekpPkKObWojlXgeL9FnHsq/1JuD8OuMTeD382IJve1ilMnTdPe0HpbcMhMDdTz4mkdNan4g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vohp+Fl9XSDhTPrs3gsUiCpGSUNw0EuO50oip9HOklg=;
- b=l5LLLxG1Et2NoFudMV6oAc1EzBi2vVvoT2DW3Ac4v0tNhZqcKJy82+445BLg9VG0KJwtAuhlzy/kMpJUpvm2TnQPyMB4mb83wb+EgwdKh6sZc+pqsQNr/00Ko55b+lyq1XxF7cxuxpNOYgke7Q/r11HJAiuRPncxMIvYQSZG/4M=
-Received: from DM6PR11MB2890.namprd11.prod.outlook.com (2603:10b6:5:63::20) by
- DM5PR11MB1259.namprd11.prod.outlook.com (2603:10b6:3:15::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3216.20; Tue, 28 Jul 2020 20:47:02 +0000
-Received: from DM6PR11MB2890.namprd11.prod.outlook.com
- ([fe80::65c2:9ac9:2c52:82bd]) by DM6PR11MB2890.namprd11.prod.outlook.com
- ([fe80::65c2:9ac9:2c52:82bd%6]) with mapi id 15.20.3216.033; Tue, 28 Jul 2020
- 20:47:02 +0000
-From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
-To:     Suraj Upadhyay <usuraj35@gmail.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-Subject: RE: [PATCH 2/4] e1000e/ethtool.c : Remove unnecessary usages of
- memset.
-Thread-Topic: [PATCH 2/4] e1000e/ethtool.c : Remove unnecessary usages of
- memset.
-Thread-Index: AQHWWhbVFZZwdE3LXEyF5L1JAYNbVakdjE6g
-Date:   Tue, 28 Jul 2020 20:47:02 +0000
-Message-ID: <DM6PR11MB28908C7DB5F2C1DD58AD132FBC730@DM6PR11MB2890.namprd11.prod.outlook.com>
-References: <20200714194117.GA21460@blackclown>
-In-Reply-To: <20200714194117.GA21460@blackclown>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [97.120.173.209]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a81a6c74-bac9-4d29-2482-08d833376150
-x-ms-traffictypediagnostic: DM5PR11MB1259:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR11MB125969C09DE6285669EBAF2BBC730@DM5PR11MB1259.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:439;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: uYVIDA27KC2fXSqv9dVFHcU/Gf4wyCnyAr2WxvKO3iezLx0xUryAeaBEuvK/W7cjw/Kn/DuF66ImP9aYD+EbfqX5PxchkbwsRr4wzGHrb0++wFpSX+b0WveNWmeM2gPRC27a+qu+cRJwliv6IScQew2a+mj4mQQmolnNrt4EWGB35TF5WJcDQEEYd6wGJs8GL7x5433jdEAEtTYV15SdDcmC8sCwkH7ZTy5DS5Kaq1Oblv7SZkFRhxBPlPahsvOPzTpc8k69C1PUm8hFZKjnriBjxkAdGy10pPGUEh0DfdDxxoRNNLyXQcolE7BmsD6NrfLSZApdXMssnXCNjt6hxg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2890.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(136003)(366004)(376002)(346002)(39860400002)(52536014)(6506007)(53546011)(83380400001)(4744005)(4326008)(8676002)(7696005)(5660300002)(33656002)(86362001)(26005)(478600001)(55016002)(2906002)(76116006)(66946007)(66476007)(64756008)(66556008)(9686003)(66446008)(71200400001)(186003)(8936002)(54906003)(110136005)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: ZWbG776nT++kFdrt6TijhiRjWVBsVf8nflDQezwJi9wo/yfXJRiXs8ljO9l1/AxD2y4zQNiutjMGrANo6arRORmJrjgxO6ZmOjfD8O3nK8Fl+zMg9zTnd7hsY8tzFfk8CXz3ySUQTA6lPQwW4SAMZaNhs6Y+e+DJVwkEc33Vl7L7fB/OLQgmYEaFIqD+QC8nZkYSuI9BFZk/FXY8RxDeyEV6b7hGHqgGeJ4IwaF5e3p0dG96k8562L6mkaCLmfv8Fh7QszoefTCis5YvcmWXe/Djyst1GNdINje5SM8NZW+G5TPAM9igmtLF7mOKqpIynq57qvHLT4pVTp4zDK6U4aKoog74OPHgFdCf+OdBfgix648WITOx3DtCWEI++ImvJuBtOcbMznW70khTkc0IM/qbghs0uhceK8lKX188ZsQ8TNd1/3IypNp/hqidZ26oGIv7NyKHgdjPFCyw+xgbN1qPx9TwAR7Z11MfkonhKGqdDHmaEVfD73pPHQM8p2sX
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729124AbgG1UsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 16:48:08 -0400
+Received: from www62.your-server.de ([213.133.104.62]:58330 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728453AbgG1UsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 16:48:07 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k0WVu-0001NX-Jh; Tue, 28 Jul 2020 22:47:54 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k0WVu-000Eas-C2; Tue, 28 Jul 2020 22:47:54 +0200
+Subject: Re: [PATCH bpf-next v5 15/15] selftests/bpf: Tests for BPF_SK_LOOKUP
+ attach point
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20200717103536.397595-1-jakub@cloudflare.com>
+ <20200717103536.397595-16-jakub@cloudflare.com>
+ <CAEf4BzZHf7838t88Ed3Gzp32UFMq2o2zryL3=hjAL4mELzUC+w@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <891f94a4-1663-0830-516c-348c965844fe@iogearbox.net>
+Date:   Tue, 28 Jul 2020 22:47:53 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2890.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a81a6c74-bac9-4d29-2482-08d833376150
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jul 2020 20:47:02.0895
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nA8dxg+SPWqiBnP5HMniDw6YHe7QjInvFoDb9U88TGJBnB4KrpRcc0a5NI61QAzkraa2D/tyIv0Yu4wGJQhz0g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1259
-X-OriginatorOrg: intel.com
+In-Reply-To: <CAEf4BzZHf7838t88Ed3Gzp32UFMq2o2zryL3=hjAL4mELzUC+w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25887/Tue Jul 28 17:44:20 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Suraj Upadhyay <usuraj35@gmail.com>
-> Sent: Tuesday, July 14, 2020 12:41 PM
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net=
-;
-> kuba@kernel.org
-> Cc: intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; linux-
-> kernel@vger.kernel.org; kernel-janitors@vger.kernel.org
-> Subject: [PATCH 2/4] e1000e/ethtool.c : Remove unnecessary usages of
-> memset.
->=20
-> Replace memsets of 1 byte with simple assignments.
-> Issue found with checkpatch.pl
->=20
-> Signed-off-by: Suraj Upadhyay <usuraj35@gmail.com>
-> ---
->  drivers/net/ethernet/intel/e1000e/ethtool.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+On 7/28/20 10:13 PM, Andrii Nakryiko wrote:
+> On Fri, Jul 17, 2020 at 3:36 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>
+>> Add tests to test_progs that exercise:
+>>
+>>   - attaching/detaching/querying programs to BPF_SK_LOOKUP hook,
+>>   - redirecting socket lookup to a socket selected by BPF program,
+>>   - failing a socket lookup on BPF program's request,
+>>   - error scenarios for selecting a socket from BPF program,
+>>   - accessing BPF program context,
+>>   - attaching and running multiple BPF programs.
+>>
+>> Run log:
+>>
+>>    bash-5.0# ./test_progs -n 70
+>>    #70/1 query lookup prog:OK
+>>    #70/2 TCP IPv4 redir port:OK
+>>    #70/3 TCP IPv4 redir addr:OK
+>>    #70/4 TCP IPv4 redir with reuseport:OK
+>>    #70/5 TCP IPv4 redir skip reuseport:OK
+>>    #70/6 TCP IPv6 redir port:OK
+>>    #70/7 TCP IPv6 redir addr:OK
+>>    #70/8 TCP IPv4->IPv6 redir port:OK
+>>    #70/9 TCP IPv6 redir with reuseport:OK
+>>    #70/10 TCP IPv6 redir skip reuseport:OK
+>>    #70/11 UDP IPv4 redir port:OK
+>>    #70/12 UDP IPv4 redir addr:OK
+>>    #70/13 UDP IPv4 redir with reuseport:OK
+>>    #70/14 UDP IPv4 redir skip reuseport:OK
+>>    #70/15 UDP IPv6 redir port:OK
+>>    #70/16 UDP IPv6 redir addr:OK
+>>    #70/17 UDP IPv4->IPv6 redir port:OK
+>>    #70/18 UDP IPv6 redir and reuseport:OK
+>>    #70/19 UDP IPv6 redir skip reuseport:OK
+>>    #70/20 TCP IPv4 drop on lookup:OK
+>>    #70/21 TCP IPv6 drop on lookup:OK
+>>    #70/22 UDP IPv4 drop on lookup:OK
+>>    #70/23 UDP IPv6 drop on lookup:OK
+>>    #70/24 TCP IPv4 drop on reuseport:OK
+>>    #70/25 TCP IPv6 drop on reuseport:OK
+>>    #70/26 UDP IPv4 drop on reuseport:OK
+>>    #70/27 TCP IPv6 drop on reuseport:OK
+>>    #70/28 sk_assign returns EEXIST:OK
+>>    #70/29 sk_assign honors F_REPLACE:OK
+>>    #70/30 sk_assign accepts NULL socket:OK
+>>    #70/31 access ctx->sk:OK
+>>    #70/32 narrow access to ctx v4:OK
+>>    #70/33 narrow access to ctx v6:OK
+>>    #70/34 sk_assign rejects TCP established:OK
+>>    #70/35 sk_assign rejects UDP connected:OK
+>>    #70/36 multi prog - pass, pass:OK
+>>    #70/37 multi prog - drop, drop:OK
+>>    #70/38 multi prog - pass, drop:OK
+>>    #70/39 multi prog - drop, pass:OK
+>>    #70/40 multi prog - pass, redir:OK
+>>    #70/41 multi prog - redir, pass:OK
+>>    #70/42 multi prog - drop, redir:OK
+>>    #70/43 multi prog - redir, drop:OK
+>>    #70/44 multi prog - redir, redir:OK
+>>    #70 sk_lookup:OK
+>>    Summary: 1/44 PASSED, 0 SKIPPED, 0 FAILED
+>>
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
+>>
+> 
+> Hey Jakub!
+> 
+> We are getting this failure in Travis CI when syncing libbpf [0]:
+> 
+> ```
+> ip: either "local" is duplicate, or "nodad" is garbage
+> 
+> switch_netns:PASS:unshare 0 nsec
+> 
+> switch_netns:FAIL:system failed
+> 
+> (/home/travis/build/libbpf/libbpf/travis-ci/vmtest/bpf-next/tools/testing/selftests/bpf/prog_tests/sk_lookup.c:1310:
+> errno: No such file or directory) system(ip -6 addr add dev lo
+> fd00::1/128 nodad)
+> 
+> #73 sk_lookup:FAIL
+> ```
+
+Jakub, I'm actually seeing a slightly different one on my test machine with sk_lookup:
+
+# ./test_progs -t sk_lookup
+#14 cgroup_skb_sk_lookup:OK
+#73/1 query lookup prog:OK
+#73/2 TCP IPv4 redir port:OK
+#73/3 TCP IPv4 redir addr:OK
+#73/4 TCP IPv4 redir with reuseport:OK
+#73/5 TCP IPv4 redir skip reuseport:OK
+#73/6 TCP IPv6 redir port:OK
+#73/7 TCP IPv6 redir addr:OK
+#73/8 TCP IPv4->IPv6 redir port:OK
+#73/9 TCP IPv6 redir with reuseport:OK
+#73/10 TCP IPv6 redir skip reuseport:OK
+#73/11 UDP IPv4 redir port:OK
+#73/12 UDP IPv4 redir addr:OK
+#73/13 UDP IPv4 redir with reuseport:OK
+attach_lookup_prog:PASS:open 0 nsec
+attach_lookup_prog:PASS:bpf_program__attach_netns 0 nsec
+make_socket:PASS:make_address 0 nsec
+make_socket:PASS:socket 0 nsec
+make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
+make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
+make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
+make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
+make_server:PASS:bind 0 nsec
+make_server:PASS:attach_reuseport 0 nsec
+update_lookup_map:PASS:bpf_map__fd 0 nsec
+update_lookup_map:PASS:bpf_map_update_elem 0 nsec
+make_socket:PASS:make_address 0 nsec
+make_socket:PASS:socket 0 nsec
+make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
+make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
+make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
+make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
+make_server:PASS:bind 0 nsec
+make_server:PASS:attach_reuseport 0 nsec
+update_lookup_map:PASS:bpf_map__fd 0 nsec
+update_lookup_map:PASS:bpf_map_update_elem 0 nsec
+make_socket:PASS:make_address 0 nsec
+make_socket:PASS:socket 0 nsec
+make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
+make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
+make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
+make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
+make_server:PASS:bind 0 nsec
+make_server:PASS:attach_reuseport 0 nsec
+run_lookup_prog:PASS:getsockname 0 nsec
+run_lookup_prog:PASS:connect 0 nsec
+make_socket:PASS:make_address 0 nsec
+make_socket:PASS:socket 0 nsec
+make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
+make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
+make_client:PASS:make_client 0 nsec
+send_byte:PASS:send_byte 0 nsec
+udp_recv_send:FAIL:recvmsg failed
+(/root/bpf-next/tools/testing/selftests/bpf/prog_tests/sk_lookup.c:339: errno: Resource temporarily unavailable) failed to receive
+#73/14 UDP IPv4 redir and reuseport with conns:FAIL
+#73/15 UDP IPv4 redir skip reuseport:OK
+#73/16 UDP IPv6 redir port:OK
+#73/17 UDP IPv6 redir addr:OK
+#73/18 UDP IPv4->IPv6 redir port:OK
+#73/19 UDP IPv6 redir and reuseport:OK
+attach_lookup_prog:PASS:open 0 nsec
+attach_lookup_prog:PASS:bpf_program__attach_netns 0 nsec
+make_socket:PASS:make_address 0 nsec
+make_socket:PASS:socket 0 nsec
+make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
+make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
+make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
+make_server:PASS:setsockopt(IPV6_RECVORIGDSTADDR) 0 nsec
+make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
+make_server:PASS:bind 0 nsec
+make_server:PASS:attach_reuseport 0 nsec
+update_lookup_map:PASS:bpf_map__fd 0 nsec
+update_lookup_map:PASS:bpf_map_update_elem 0 nsec
+make_socket:PASS:make_address 0 nsec
+make_socket:PASS:socket 0 nsec
+make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
+make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
+make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
+make_server:PASS:setsockopt(IPV6_RECVORIGDSTADDR) 0 nsec
+make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
+make_server:PASS:bind 0 nsec
+make_server:PASS:attach_reuseport 0 nsec
+update_lookup_map:PASS:bpf_map__fd 0 nsec
+update_lookup_map:PASS:bpf_map_update_elem 0 nsec
+make_socket:PASS:make_address 0 nsec
+make_socket:PASS:socket 0 nsec
+make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
+make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
+make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
+make_server:PASS:setsockopt(IPV6_RECVORIGDSTADDR) 0 nsec
+make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
+make_server:PASS:bind 0 nsec
+make_server:PASS:attach_reuseport 0 nsec
+run_lookup_prog:PASS:getsockname 0 nsec
+run_lookup_prog:PASS:connect 0 nsec
+make_socket:PASS:make_address 0 nsec
+make_socket:PASS:socket 0 nsec
+make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
+make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
+make_client:PASS:make_client 0 nsec
+send_byte:PASS:send_byte 0 nsec
+udp_recv_send:FAIL:recvmsg failed
+(/root/bpf-next/tools/testing/selftests/bpf/prog_tests/sk_lookup.c:339: errno: Resource temporarily unavailable) failed to receive
+#73/20 UDP IPv6 redir and reuseport with conns:FAIL
+#73/21 UDP IPv6 redir skip reuseport:OK
+#73/22 TCP IPv4 drop on lookup:OK
+#73/23 TCP IPv6 drop on lookup:OK
+#73/24 UDP IPv4 drop on lookup:OK
+#73/25 UDP IPv6 drop on lookup:OK
+#73/26 TCP IPv4 drop on reuseport:OK
+#73/27 TCP IPv6 drop on reuseport:OK
+#73/28 UDP IPv4 drop on reuseport:OK
+#73/29 TCP IPv6 drop on reuseport:OK
+#73/30 sk_assign returns EEXIST:OK
+#73/31 sk_assign honors F_REPLACE:OK
+#73/32 sk_assign accepts NULL socket:OK
+#73/33 access ctx->sk:OK
+#73/34 narrow access to ctx v4:OK
+#73/35 narrow access to ctx v6:OK
+#73/36 sk_assign rejects TCP established:OK
+#73/37 sk_assign rejects UDP connected:OK
+#73/38 multi prog - pass, pass:OK
+#73/39 multi prog - drop, drop:OK
+#73/40 multi prog - pass, drop:OK
+#73/41 multi prog - drop, pass:OK
+#73/42 multi prog - pass, redir:OK
+#73/43 multi prog - redir, pass:OK
+#73/44 multi prog - drop, redir:OK
+#73/45 multi prog - redir, drop:OK
+#73/46 multi prog - redir, redir:OK
+#73 sk_lookup:FAIL
+Summary: 1/44 PASSED, 0 SKIPPED, 3 FAILED
+
+> Can you please help fix it so that it works in a Travis CI environment
+> as well? For now I disabled sk_lookup selftests altogether. You can
+> try to repro it locally by forking https://github.com/libbpf/libbpf
+> and enabling Travis CI for your account. See [1] for the PR that
+> disabled sk_lookup.
+> 
+> 
+>    [0] https://travis-ci.com/github/libbpf/libbpf/jobs/365878309#L5408
+>    [1] https://github.com/libbpf/libbpf/pull/182/commits/78368c2eaed8b0681381fc34d6016c9b5a443be8
+> 
+> 
+> Thanks for your help!
+> 
 
