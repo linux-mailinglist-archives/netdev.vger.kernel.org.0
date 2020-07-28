@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCF8C2301E6
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:38:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C12762301EA
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:38:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726907AbgG1FiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 01:38:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44498 "EHLO mail.kernel.org"
+        id S1726989AbgG1Fid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 01:38:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44704 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726251AbgG1FiM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 01:38:12 -0400
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+        id S1726251AbgG1Fid (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 01:38:33 -0400
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6D07C21883;
-        Tue, 28 Jul 2020 05:38:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 44A4321D95;
+        Tue, 28 Jul 2020 05:38:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595914691;
-        bh=zQfvL6mXPDvArmEZLKk1wPWEFI4+SrGpgZSDfVmZNFs=;
+        s=default; t=1595914712;
+        bh=kudBUbPYRIeiM4+47AqFUj+ZhdDE0WK7VWzk+AsvqF8=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Tcuyzm+2cHo8cqzgn5IkjaRedCAa+xOOR37u2+WM4RzbRDE15DgjXIFXKTcAMSwbk
-         0qT5pZkgRi6oftYCYDhCjzLK9BlDa3lZnHMDgLDaWE3w9+7qBgQM7M5DYXsdMOu24y
-         3GadVfWBSnrowvG6sBN+LbnUvEB3ivgJJveMv1t8=
-Received: by mail-lj1-f179.google.com with SMTP id g6so7140451ljn.11;
-        Mon, 27 Jul 2020 22:38:11 -0700 (PDT)
-X-Gm-Message-State: AOAM5329Bnz9KAXPT1LS4BWXV2P9tOQIW4dhm10FozQSDE+AVsAMHzH5
-        6hDFUgwi3gKdLhKlYKiRE0kK9MQV1nKtGNEaYWA=
-X-Google-Smtp-Source: ABdhPJw07JDlW+o4d8dnIhWF8L0WADQia7KOFXNcY2Knuvb+TUQbme9FYRDibTMNoCm7dHODimUOFP9/hEjsjBuC30M=
-X-Received: by 2002:a05:651c:1349:: with SMTP id j9mr4580894ljb.392.1595914689684;
- Mon, 27 Jul 2020 22:38:09 -0700 (PDT)
+        b=hInOE7+y5Fpi5W4zXMbOEdFfW83PX6I01vR1lHuhWtV+CXX7D9Kjff3zVl3NPo4Ow
+         pO4FKUHUNTaE1+cMw7meKcSf8mlB2lmRP9ZS26X3ji69SxraAAwyfWIDOai5Luwni6
+         FzuXKI2WJo7px1mwHCIMXYyJ7PCYW77eJHDvCHWg=
+Received: by mail-lf1-f47.google.com with SMTP id y18so10286247lfh.11;
+        Mon, 27 Jul 2020 22:38:32 -0700 (PDT)
+X-Gm-Message-State: AOAM532A3U+nYJRL9ZgmB5jxUWVGk8Y9U9YN1d25ANRsbj1ELTqFv4uc
+        UiCMm1MOmjOUYmpYMGyCo+Yj23edkdbTReLzIsE=
+X-Google-Smtp-Source: ABdhPJyrFPzlDFJYgCalqg8Zv+yEzwKXrT9R4Ak9o5L/7YzejJFWLaYAllzlVJsHgsJ72RpZyKcn+mc+OPrltZ28u3E=
+X-Received: by 2002:a19:7710:: with SMTP id s16mr13555854lfc.162.1595914710550;
+ Mon, 27 Jul 2020 22:38:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-24-guro@fb.com>
-In-Reply-To: <20200727184506.2279656-24-guro@fb.com>
+References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-25-guro@fb.com>
+In-Reply-To: <20200727184506.2279656-25-guro@fb.com>
 From:   Song Liu <song@kernel.org>
-Date:   Mon, 27 Jul 2020 22:37:58 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW502g1M9oJ2PSMUSwKHrD7UJmbwdBXZxt7KjU0UtAXSrw@mail.gmail.com>
-Message-ID: <CAPhsuW502g1M9oJ2PSMUSwKHrD7UJmbwdBXZxt7KjU0UtAXSrw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 23/35] bpf: eliminate rlimit-based memory
- accounting for sockmap and sockhash maps
+Date:   Mon, 27 Jul 2020 22:38:19 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW46PNAfmBThianVpWD-w+it107Zn7OtW6SA0sMW4J+cfQ@mail.gmail.com>
+Message-ID: <CAPhsuW46PNAfmBThianVpWD-w+it107Zn7OtW6SA0sMW4J+cfQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 24/35] bpf: eliminate rlimit-based memory
+ accounting for stackmap maps
 To:     Roman Gushchin <guro@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -51,9 +51,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 12:21 PM Roman Gushchin <guro@fb.com> wrote:
+On Mon, Jul 27, 2020 at 12:22 PM Roman Gushchin <guro@fb.com> wrote:
 >
-> Do not use rlimit-based memory accounting for sockmap and sockhash maps.
+> Do not use rlimit-based memory accounting for stackmap maps.
 > It has been replaced with the memcg-based memory accounting.
 >
 > Signed-off-by: Roman Gushchin <guro@fb.com>
@@ -61,81 +61,61 @@ On Mon, Jul 27, 2020 at 12:21 PM Roman Gushchin <guro@fb.com> wrote:
 Acked-by: Song Liu <songliubraving@fb.com>
 
 > ---
->  net/core/sock_map.c | 33 ++++++---------------------------
->  1 file changed, 6 insertions(+), 27 deletions(-)
+>  kernel/bpf/stackmap.c | 16 +++-------------
+>  1 file changed, 3 insertions(+), 13 deletions(-)
 >
-> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-> index bc797adca44c..07c90baf8db1 100644
-> --- a/net/core/sock_map.c
-> +++ b/net/core/sock_map.c
-> @@ -26,8 +26,6 @@ struct bpf_stab {
->  static struct bpf_map *sock_map_alloc(union bpf_attr *attr)
+> diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
+> index 5beb2f8c23da..9ac0f405beef 100644
+> --- a/kernel/bpf/stackmap.c
+> +++ b/kernel/bpf/stackmap.c
+> @@ -90,7 +90,6 @@ static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
 >  {
->         struct bpf_stab *stab;
-> -       u64 cost;
-> -       int err;
+>         u32 value_size = attr->value_size;
+>         struct bpf_stack_map *smap;
+> -       struct bpf_map_memory mem;
+>         u64 cost, n_buckets;
+>         int err;
 >
->         if (!capable(CAP_NET_ADMIN))
->                 return ERR_PTR(-EPERM);
-> @@ -45,22 +43,15 @@ static struct bpf_map *sock_map_alloc(union bpf_attr *attr)
->         bpf_map_init_from_attr(&stab->map, attr);
->         raw_spin_lock_init(&stab->lock);
+> @@ -119,15 +118,9 @@ static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
 >
-> -       /* Make sure page count doesn't overflow. */
-> -       cost = (u64) stab->map.max_entries * sizeof(struct sock *);
-> -       err = bpf_map_charge_init(&stab->map.memory, cost);
+>         cost = n_buckets * sizeof(struct stack_map_bucket *) + sizeof(*smap);
+>         cost += n_buckets * (value_size + sizeof(struct stack_map_bucket));
+> -       err = bpf_map_charge_init(&mem, cost);
 > -       if (err)
-> -               goto free_stab;
+> -               return ERR_PTR(err);
 > -
->         stab->sks = bpf_map_area_alloc(stab->map.max_entries *
->                                        sizeof(struct sock *),
->                                        stab->map.numa_node);
-> -       if (stab->sks)
-> -               return &stab->map;
-> -       err = -ENOMEM;
-> -       bpf_map_charge_finish(&stab->map.memory);
-> -free_stab:
-> -       kfree(stab);
-> -       return ERR_PTR(err);
-> +       if (!stab->sks) {
-> +               kfree(stab);
-> +               return ERR_PTR(-ENOMEM);
-> +       }
-> +
-> +       return &stab->map;
->  }
->
->  int sock_map_get_from_fd(const union bpf_attr *attr, struct bpf_prog *prog)
-> @@ -999,7 +990,6 @@ static struct bpf_map *sock_hash_alloc(union bpf_attr *attr)
->  {
->         struct bpf_shtab *htab;
->         int i, err;
-> -       u64 cost;
->
->         if (!capable(CAP_NET_ADMIN))
->                 return ERR_PTR(-EPERM);
-> @@ -1027,21 +1017,10 @@ static struct bpf_map *sock_hash_alloc(union bpf_attr *attr)
->                 goto free_htab;
->         }
->
-> -       cost = (u64) htab->buckets_num * sizeof(struct bpf_shtab_bucket) +
-> -              (u64) htab->elem_size * htab->map.max_entries;
-> -       if (cost >= U32_MAX - PAGE_SIZE) {
-> -               err = -EINVAL;
-> -               goto free_htab;
+>         smap = bpf_map_area_alloc(cost, bpf_map_attr_numa_node(attr));
+> -       if (!smap) {
+> -               bpf_map_charge_finish(&mem);
+> +       if (!smap)
+>                 return ERR_PTR(-ENOMEM);
 > -       }
-> -       err = bpf_map_charge_init(&htab->map.memory, cost);
-> -       if (err)
-> -               goto free_htab;
+>
+>         bpf_map_init_from_attr(&smap->map, attr);
+>         smap->map.value_size = value_size;
+> @@ -135,20 +128,17 @@ static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
+>
+>         err = get_callchain_buffers(sysctl_perf_event_max_stack);
+>         if (err)
+> -               goto free_charge;
+> +               goto free_smap;
+>
+>         err = prealloc_elems_and_freelist(smap);
+>         if (err)
+>                 goto put_buffers;
+>
+> -       bpf_map_charge_move(&smap->map.memory, &mem);
 > -
->         htab->buckets = bpf_map_area_alloc(htab->buckets_num *
->                                            sizeof(struct bpf_shtab_bucket),
->                                            htab->map.numa_node);
->         if (!htab->buckets) {
-> -               bpf_map_charge_finish(&htab->map.memory);
->                 err = -ENOMEM;
->                 goto free_htab;
->         }
+>         return &smap->map;
+>
+>  put_buffers:
+>         put_callchain_buffers();
+> -free_charge:
+> -       bpf_map_charge_finish(&mem);
+> +free_smap:
+>         bpf_map_area_free(smap);
+>         return ERR_PTR(err);
+>  }
 > --
 > 2.26.2
 >
