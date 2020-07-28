@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FBE0230F18
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09EBE230F20
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731283AbgG1QVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 12:21:10 -0400
-Received: from smtprelay0242.hostedemail.com ([216.40.44.242]:44968 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730679AbgG1QVK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 12:21:10 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 388CD173086F;
-        Tue, 28 Jul 2020 16:21:09 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1381:1437:1515:1516:1518:1534:1539:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3350:3622:3865:3866:3867:4321:5007:10004:10400:10848:11026:11473:11658:11914:12296:12297:12679:12740:12760:12895:13069:13311:13357:13439:14659:14721:21080:21451:21627:21990:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: soda76_28023fa26f6b
-X-Filterd-Recvd-Size: 1474
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf20.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 28 Jul 2020 16:21:08 +0000 (UTC)
-Message-ID: <169fe729db1ba8529d0c071b39d48091cc77fba2.camel@perches.com>
-Subject: Re: [PATCH 17/29] l2tp: avoid precidence issues in L2TP_SKB_CB macro
-From:   Joe Perches <joe@perches.com>
-To:     Tom Parkin <tparkin@katalix.com>, netdev@vger.kernel.org
-Date:   Tue, 28 Jul 2020 09:21:07 -0700
-In-Reply-To: <20200721173221.4681-18-tparkin@katalix.com>
-References: <20200721173221.4681-1-tparkin@katalix.com>
-         <20200721173221.4681-18-tparkin@katalix.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1731247AbgG1QW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 12:22:58 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:56116 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730679AbgG1QW6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 12:22:58 -0400
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1k0SNQ-0000BR-Hm; Wed, 29 Jul 2020 02:22:53 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 29 Jul 2020 02:22:52 +1000
+Date:   Wed, 29 Jul 2020 02:22:52 +1000
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Antony Antony <antony.antony@secunet.com>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        netdev@vger.kernel.org,
+        Stephan =?iso-8859-1?Q?M=FCller?= <smueller@chronox.de>,
+        Antony Antony <antony@phenome.org>
+Subject: Re: [PATCH ipsec-next] xfrm: add
+ /proc/sys/core/net/xfrm_redact_secret
+Message-ID: <20200728162252.GA3255@gondor.apana.org.au>
+References: <20200728154342.GA31835@moon.secunet.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200728154342.GA31835@moon.secunet.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-07-21 at 18:32 +0100, Tom Parkin wrote:
-> checkpatch warned about the L2TP_SKB_CB macro's use of its argument: add
-> braces to avoid the problem.
-[]
-> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-[]
-> @@ -93,7 +93,7 @@ struct l2tp_skb_cb {
->  	unsigned long		expires;
->  };
->  
-> -#define L2TP_SKB_CB(skb)	((struct l2tp_skb_cb *)&skb->cb[sizeof(struct inet_skb_parm)])
-> +#define L2TP_SKB_CB(skb)	((struct l2tp_skb_cb *)&(skb)->cb[sizeof(struct inet_skb_parm)])
+On Tue, Jul 28, 2020 at 05:47:30PM +0200, Antony Antony wrote:
+> when enabled, 1, redact XFRM SA secret in the netlink response to
+> xfrm_get_sa() or dump all sa.
+> 
+> e.g
+> echo 1 > /proc/sys/net/core/xfrm_redact_secret
+> ip xfrm state
+> src 172.16.1.200 dst 172.16.1.100
+> 	proto esp spi 0x00000002 reqid 2 mode tunnel
+> 	replay-window 0
+> 	aead rfc4106(gcm(aes)) 0x0000000000000000000000000000000000000000 96
+> 
+> the aead secret is redacted.
+> 
+> /proc/sys/core/net/xfrm_redact_secret is a toggle.
+> Once enabled, either at compile or via proc, it can not be disabled.
+> Redacting secret is a FIPS 140-2 requirement.
 
-Likely better to use a static inline.
+Couldn't you use the existing fips_enabled sysctl?
 
-Something like:
-
-static inline struct l2tp_skb_cb *L2TP_SKB_SB(struct sk_buff *skb)
-{
-	return &skb->cb[sizeof(struct inet+skb_parm)];
-}
-
-
+Cheers,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
