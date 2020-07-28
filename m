@@ -2,144 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6070C230B7C
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 15:30:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C39D230B8A
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 15:38:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730087AbgG1N36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 09:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729044AbgG1N36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 09:29:58 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34457C061794
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 06:29:58 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595942995;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+wOUERqGNHkXdTw5B95UgJ1wSKNRBrZ7nRvV2DO9x2c=;
-        b=TmlFws/imKX5D+fp+CSucvykfbk0VZR+UbqUiCoQiZckdWHkN0IvFDNmnRUABbUAIFxw1S
-        kzRJZ3fJqrMb3TlG8kDc/MgkVTPY5HUtKMb1cbkncEciPHkUeBQpE4OSwaaQ/BANsiKXu+
-        E6vhGDMuJ1cWPFMxeUg5scUjWLgBpeq+i03a465uwtOExFQ4z36Sd0MbdxDCKB9uGLzfv+
-        CM6lMU6foh3wxqCNbSgpZDAh0vlKdJgHgjRfSriAlWBf6BjTQKkQ8sy+/XEiDc/c/WKtYG
-        yN+0D6VbUJpwyNQW4fUFZI29rd4tpxxQva6mPnNHqA0JbAt1CS1NhjuKNqxSHA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595942995;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+wOUERqGNHkXdTw5B95UgJ1wSKNRBrZ7nRvV2DO9x2c=;
-        b=kkjEK4V2eklV55foOtwiXlvN6bRgCCVMNe+Vy5ZN4kVayL6UVcKcz3o+zagW/0cKTzhK+R
-        jday0SN0LykDBaDA==
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S1730091AbgG1Nh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 09:37:58 -0400
+Received: from mxout03.lancloud.ru ([89.108.73.187]:43812 "EHLO
+        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729986AbgG1Nhz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 09:37:55 -0400
+X-Greylist: delayed 594 seconds by postgrey-1.27 at vger.kernel.org; Tue, 28 Jul 2020 09:37:51 EDT
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru E6499214C034
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+From:   Ildar Kamaletdinov <i.kamaletdinov@omprussia.ru>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>
+CC:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Bluetooth Kernel Mailing List 
+        <linux-bluetooth@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 4/9] mlxsw: spectrum_ptp: Use generic helper function
-In-Reply-To: <87a6zli04l.fsf@mellanox.com>
-References: <20200727090601.6500-1-kurt@linutronix.de> <20200727090601.6500-5-kurt@linutronix.de> <87a6zli04l.fsf@mellanox.com>
-Date:   Tue, 28 Jul 2020 15:29:44 +0200
-Message-ID: <875za7sr7b.fsf@kurt>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH RFC] bluetooth: add support for some old headsets
+Thread-Topic: [PATCH RFC] bluetooth: add support for some old headsets
+Thread-Index: AQHWXG4sjdOYdGBw+0mZjynHmJYWq6kSNhiAgAo864CAAGeiAA==
+Date:   Tue, 28 Jul 2020 13:27:54 +0000
+Message-ID: <d9ebfb9e-5abb-0898-b5e1-0ff55a07d79d@omprussia.ru>
+References: <6f461412-a6c0-aa53-5e74-394e278ee9b1@omprussia.ru>
+ <1834765D-52E6-45B8-9923-778C9182CFA9@holtmann.org>
+ <e9f32310-2728-60a2-adc7-3a7418ce54e3@omprussia.ru>
+ <848144D3-85F9-47F8-8CDA-02457FA7530F@holtmann.org>
+ <0c2a8da1-6071-6597-d0d1-32ce1490aba7@omprussia.ru>
+ <6f271bf7-04ee-c971-9c69-de3f696769ed@omprussia.ru>
+ <97E2381A-219D-46AF-962F-CBCD63B911AD@holtmann.org>
+In-Reply-To: <97E2381A-219D-46AF-962F-CBCD63B911AD@holtmann.org>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [192.168.11.147]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <3B3EF73FAE4B34449100261C10242FD5@lancloud.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-On Mon Jul 27 2020, Petr Machata wrote:
-> So this looks good, and works, but I'm wondering about one thing.
-
-Thanks for testing.
-
->
-> Your code (and evidently most drivers as well) use a different check
-> than mlxsw, namely skb->len + ETH_HLEN < X. When I print_hex_dump()
-> skb_mac_header(skb), skb->len in mlxsw with some test packet, I get e.g.
-> this:
->
->     00000000259a4db7: 01 00 5e 00 01 81 00 02 c9 a4 e4 e1 08 00 45 00  ..=
-^...........E.
->     000000005f29f0eb: 00 48 0d c9 40 00 01 11 c8 59 c0 00 02 01 e0 00  .H=
-..@....Y......
->     00000000f3663e9e: 01 81 01 3f 01 3f 00 34 9f d3 00 02 00 2c 00 00  ..=
-.?.?.4.....,..
->                             ^sp^^ ^dp^^ ^len^ ^cks^       ^len^
->     00000000b3914606: 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02  ..=
-..............
->     000000002e7828ea: c9 ff fe a4 e4 e1 00 01 09 fa 00 00 00 00 00 00  ..=
-..............
->     000000000b98156e: 00 00 00 00 00 00                                ..=
-....
->
-> Both UDP and PTP length fields indicate that the payload ends exactly at
-> the end of the dump. So apparently skb->len contains all the payload
-> bytes, including the Ethernet header.
->
-> Is that the case for other drivers as well? Maybe mlxsw is just missing
-> some SKB magic in the driver.
-
-So I run some tests (on other hardware/drivers) and it seems like that
-the skb->len usually doesn't include the ETH_HLEN. Therefore, it is
-added to the check.
-
-Looking at the driver code:
-
-|static void mlxsw_sp_rx_sample_listener(struct sk_buff *skb, u8 local_port,
-|					void *trap_ctx)
-|{
-|	[...]
-|	/* The sample handler expects skb->data to point to the start of the
-|	 * Ethernet header.
-|	 */
-|	skb_push(skb, ETH_HLEN);
-|	mlxsw_sp_sample_receive(mlxsw_sp, skb, local_port);
-|}
-
-Maybe that's the issue here?
-
-I was also wondering about something else in that driver driver: The
-parsing code allows for ptp v1, but the message type was always fetched
-from offset 0 in the header. Is that indented?
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8gKEgACgkQeSpbgcuY
-8KZd7BAAlJlDzt6cIr6wbgSIT/kavnRQvmojnqsYzu+fK5Hf9SfS8OGuD6LoqoIO
-x+aErzD9dEDBEIIsl9wEiND0lY8Lj3Pmu3hn5cqcYIVttmXRWK55ongqUfc+oI2p
-UniZpEnhCw5p0hNATre5rpRbGBlKhkMvR78KVxJOAh+QO68C+hi5WpvegCNi2kAS
-41QpuuuELka8iAhcUwSL3yYpjd9PxOomp2eCxarkQ5mcwkt9zEfsNTsF14yUffE0
-BJ7pULPGyKy44ddzJckcRAub4BKS+4522B/5oUg7SOrUQBSpg8IJERJv2o2ismFZ
-CZYl8fwHMTBzl8cj8GEGOjLv/x4mXEXAvqJxcO+YfsQNe+81OnFsm+5WSCvFAVj1
-6Shk65hVfabXnqVKOvIJlFkAaG1kj5mbHMCWr4WAdv+ZixaAxxm+BCc+OWEzKvKN
-tu2UBv+mK4CzvNhM9CRjr5vCsxU0CEjuiWwd4Va1jomxqDfYw/EEYR0wM0tA5LD7
-deYcV1z7jk4CqrIyXLsMfxBXuJqw76+4aiKS+9TcWNMc3UEGDW7bP+SC2jyKj2eC
-4r/WQwqHA+m2ZzINN4FTqMLQdpmkwjxwlnp36VS41IvDsyIx840uxoKEHEkxR3rH
-XSe4vJnZSX+4IZaJPdcr0I+cepYm0PyFEbDz7WSec4kZEMi8FwE=
-=smkT
------END PGP SIGNATURE-----
---=-=-=--
+SGVsbG8gZXZlcnlvbmUsDQoNCkxldCBtZSBhZGQgYSBsaXR0bGUgYml0IG1vcmUgZGV0YWlscyBy
+ZWxhdGVkIHRvIHRoaXMgcGF0Y2guDQoNCkFjY29yZGluZyB0byBCbHVldG9vdGggQ29yZSBTcGVj
+aWZpY2F0aW9uIFZvbCAyIHBhcnQgRiBwYWdlIDc3NiBhbmTCoCBCbHVldG9vdGggQ29yZSBTcGVj
+aWZpY2F0aW9uIFZvbDQgUGFydCBFIHBhZ2UgMTk3OCBhZnRlciBgSENJX1NldHVwX1N5bmNocm9u
+b3VzX0Nvbm5lY3Rpb24oKWAgd2FzIHNlbnQgYEhDSV9Db21tYW5kX1N0YXR1cygpYCBtdXN0IGJl
+IHJlY2VpdmVkIGZyb20gQkRSL0VEUiBjb250cm9sbGVyLg0KDQpBY2NvcmRpbmcgdG8gQmx1ZXRv
+b3RoIENvcmUgU3BlY2lmaWNhdGlvbiBWb2wgMiBwYXJ0IEYgcGFnZSAzNjQgSENJX0NvbW1hbmRf
+U3RhdHVzIGRlc2NyaXB0aW9uOg0KDQoiU29tZSBIQ0kgY29tbWFuZHMgbWF5IGdlbmVyYXRlIGVy
+cm9ycyB0aGF0IG5lZWQgdG8gYmUgcmVwb3J0ZWQgdG8gdGhlIEhvc3QsIGJ1dCB0aGVyZSBpcyBp
+bnN1ZmZpY2llbnQgaW5mb3JtYXRpb24gdG8gZGV0ZXJtaW5lIGhvdyB0aGUgY29tbWFuZCB3b3Vs
+ZCBub3JtYWxseSBiZSBwcm9jZXNzZWQuIEluIHRoaXMgY2FzZSwgdHdvIGV2ZW50cyBjYW4gYmUg
+dXNlZCB0byBpbmRpY2F0ZSB0aGlzIHRvIHRoZSBIb3N0LCB0aGUgSENJX0NvbW1hbmRfQ29tcGxl
+dGUgZXZlbnQgYW5kIEhDSV9Db21tYW5kX1N0YXR1cyBldmVudHMuIFdoaWNoIG9mIHRoZSB0d28g
+ZXZlbnRzIGlzIHVzZWQgaXMgaW1wbGVtZW50YXRpb24tZGVwZW5kZW50LiINCg0KTWVkaWF0ZWsn
+cyBpbXBsZW1lbnRhdGlvbiByZXBvcnRzIGVycm9yIGBVbnN1cHBvcnRlZCBMTVAgZmVhdHVyZWAg
+aW4gYEhDSV9Db21tYW5kX1N0YXR1cygpYCBldmVudCAobm90IGluIGBIQ0lfQ29tbWFuZF9Db21w
+bGV0ZSgpYCBldmVudCBhcyBpbiBvdGhlciBpbXBsZW1lbnRhdGlvbnMpLg0KU28gdGhhdCBiZWhh
+dmlvciBpcyBhIGxpdHRsZSBiaXQgb2RkIGJ1dCBkb24ndCBicmVhayBjb21wYXRpYmlsaXR5IHdp
+dGggQmx1ZXRvb3RoIENvcmUgU3BlY2lmaWNhdGlvbi4gQWN0dWFsbHkgTWVkaWF0ZWsncyBCRFIv
+RURSIGNvbnRyb2xsZXIgcmVwb3J0cyBlcnJvciB3aXRob3V0IHRyeWluZyB0byBhY3R1YWxseSBz
+ZXR1cCBjb25uZWN0aW9uIHdpdGggaGVhZHNldC4NCg0KQnV0IGFjY29yZGluZyB0byBIYW5kcy1G
+cmVlIHByb2ZpbGUgc3BlY2lmaWNhdGlvbiAxLjggcC4gMTEzIFN5bmNocm9ub3VzIENvbm5lY3Rp
+b24gSW50ZXJvcGVyYWJpbGl0eSBSZXF1aXJlbWVudHMgQmx1ZXRvb3RoIEhvc3QgTVVTVCB0cnkg
+YWxsIGZlYXR1cmVzIFQxLT5UMi0+UzEtPlMyLT5EMCBvciBEMSBiZWZvcmUgY29uc2lkZXJpbmcg
+Y29ubmVjdGlvbiBhcyBgZmFpbGVkYC4gQW5kIGl0IGlzIHRydWUgaWYgZXJyb3IgaXMgcmVwb3J0
+ZWQgaW4gYEhDSV9Db21tYW5kX0NvbXBsZXRlKClgIGV2ZW50Lg0KRXZlbnR1YWxseSBJZiBlcnJv
+ciBpcyByZXBvcnRlZCBpbiBgSENJX0NvbW1hbmRfU3RhdHVzKClgIGV2ZW50IGNvbm5lY3Rpb24g
+Y29uc2lkZXJlZCBhcyAnZmFpbGVkJyBqdXN0IGFmdGVyIGZpcnN0IGVycm9yIHdoaWNoIGJyZWFr
+cyBjb21wYXRpYmlsaXR5IHdpdGggSEZQIHByb2ZpbGUgc3BlY2lmaWNhdGlvbiB2MS44IGluIExp
+bnV4IEtlcm5lbC4gVGhhdCBsZWFkcyB0byBwcm9ibGVtcyB3aGVuIFNDby9lU0NPIGNvbm5lY3Rp
+b24gY291bGQgbm90IGJlIGVzdGFibGlzaGVkIHdoZW4gdXNpbmcgTWVkaWF0ZWsncyBCRFIvRURS
+IGNvbnRyb2xsZXJzLg0KDQpTbyB0aGF0IHBhdGNoIHNob3VsZCBhZGQgc3VwcG9ydCBmb3IgY29y
+cmVjdCBTQ08vZVNDTyBjb25uZWN0aW9uIGJlaGF2aW9yIHdoZW4gd29yayB3aXRoIGF0IGxlYXN0
+IE1lZGlhdGVrIGNvbnRyb2xsZXJzLiAoYSBsaXR0bGUgYml0IHBlY3VsaWFyIGJlaGF2aW9yIGJ1
+dCBjb21wYXRpYmxlIHdpdGggQmx1ZXRvb3RoIENvcmUgc3BlYykuDQoNCklmIGFueSBvYmplY3Rp
+b25zIG9yIHF1ZXN0aW9ucyBwbGVhc2UgZmlsbCBmcmVlIHRvIGNvbnRhY3QgbWUgb3IgU2VyZ2V5
+IGFueXRpbWUuDQo+IEhpIFNlcmdleSwNCj4NCj4+Pj4+Pj4gVGhlIE1lZGlhVGVrIEJsdWV0b290
+aCBwbGF0Zm9ybSAoTVQ2NjMwIGV0Yy4pIGhhcyBhIHBlY3VsaWFyIGltcGxlbWVudGF0aW9uDQo+
+Pj4+Pj4+IGZvciB0aGUgZVNDTy9TQ08gY29ubmVjdGlvbiB2aWEgQlQvRURSOiB0aGUgaG9zdCBj
+b250cm9sbGVyIHJldHVybnMgZXJyb3INCj4+Pj4+Pj4gY29kZSAweDIwIChMTVAgZmVhdHVyZSBu
+b3Qgc3VwcG9ydGVkKSBmb3IgSENJX1NldHVwX1N5bmNocm9ub3VzX0Nvbm5lY3Rpb24NCj4+Pj4+
+Pj4gKDB4MDAyOCkgY29tbWFuZCB3aXRob3V0IGFjdHVhbGx5IHRyeWluZyB0byBzZXR1cCBjb25u
+ZWN0aW9uIHdpdGggYSByZW1vdGUNCj4+Pj4+Pj4gZGV2aWNlIGluIGNhc2Ugc3VjaCBkZXZpY2Ug
+KGxpa2UgRGlnbWEgQlQtMTQgaGVhZHNldCkgZGlkbid0IGFkdmVydGlzZSBpdHMNCj4+Pj4+Pj4g
+c3VwcG9ydGVkIGZlYXR1cmVzLiAgRXZlbiB0aG91Z2ggdGhpcyBkb2Vzbid0IGJyZWFrIGNvbXBh
+dGliaWxpdHkgd2l0aCB0aGUNCj4+Pj4+Pj4gQmx1ZXRvb3RoIHN0YW5kYXJkIGl0IGJyZWFrcyB0
+aGUgY29tcGF0aWJpbGl0eSB3aXRoIHRoZSBIYW5kcy1GcmVlIFByb2ZpbGUNCj4+Pj4+Pj4gKEhG
+UCkuDQo+Pj4+Pj4+DQo+Pj4+Pj4+IFRoaXMgcGF0Y2ggcmV0dXJucyB0aGUgY29tcGF0aWJpbGl0
+eSB3aXRoIHRoZSBIRlAgcHJvZmlsZSBhbmQgYWN0dWFsbHkNCj4+Pj4+Pj4gdHJpZXMgdG8gY2hl
+Y2sgYWxsIGF2YWlsYWJsZSBjb25uZWN0aW9uIHBhcmFtZXRlcnMgZGVzcGl0ZSBvZiB0aGUgc3Bl
+Y2lmaWMNCj4+Pj4+Pj4gTWVkaWFUZWsgaW1wbGVtZW50YXRpb24uIFdpdGhvdXQgaXQgb25lIHdh
+cyB1bmFibGUgdG8gZXN0YWJsaXNoIGVTQ08vU0NPDQo+Pj4+Pj4+IGNvbm5lY3Rpb24gd2l0aCBz
+b21lIGhlYWRzZXRzLg0KPj4gWy4uLl0NCj4+Pj4+Pj4gU2lnbmVkLW9mZi1ieTogU2VyZ2V5IFNo
+dHlseW92IDxzLnNodHlseW92QG9tcHJ1c3NpYS5ydT4NCj4+Pj4+Pj4NCj4+Pj4+Pj4gLS0tDQo+
+Pj4+Pj4+IFRoaXMgcGF0Y2ggaXMgYWdhaW5zdCB0aGUgJ2JsdWV0b290aC1uZXh0LmdpdCcgcmVw
+by4NCj4+Pj4+Pj4NCj4+Pj4+Pj4gbmV0L2JsdWV0b290aC9oY2lfZXZlbnQuYyB8ICAgIDggKysr
+KysrKysNCj4+Pj4+Pj4gMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKQ0KPj4+Pj4+Pg0K
+Pj4+Pj4+PiBJbmRleDogYmx1ZXRvb3RoLW5leHQvbmV0L2JsdWV0b290aC9oY2lfZXZlbnQuYw0K
+Pj4+Pj4+PiA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09DQo+Pj4+Pj4+IC0tLSBibHVldG9vdGgtbmV4dC5vcmlnL25ldC9i
+bHVldG9vdGgvaGNpX2V2ZW50LmMNCj4+Pj4+Pj4gKysrIGJsdWV0b290aC1uZXh0L25ldC9ibHVl
+dG9vdGgvaGNpX2V2ZW50LmMNCj4+Pj4+Pj4gQEAgLTIxODcsNiArMjE4NywxMyBAQCBzdGF0aWMg
+dm9pZCBoY2lfY3Nfc2V0dXBfc3luY19jb25uKHN0cnVjDQo+Pj4+Pj4+IAlpZiAoYWNsKSB7DQo+
+Pj4+Pj4+IAkJc2NvID0gYWNsLT5saW5rOw0KPj4+Pj4+PiAJCWlmIChzY28pIHsNCj4+Pj4+Pj4g
+KwkJCWlmIChzdGF0dXMgPT0gMHgyMCAmJiAvKiBVbnN1cHBvcnRlZCBMTVAgUGFyYW1ldGVyIHZh
+bHVlICovDQo+Pj4+Pj4+ICsJCQkgICAgc2NvLT5vdXQpIHsNCj4+PiAgICBBY3R1YWxseSwgSSB3
+YXMgZXhwZWN0aW5nIHRoYXQgeW91J2QgdGVsbCBtZSB0byBjcmVhdGUgYSBIQ0kgcXVpcmsgZm9y
+IHRoaXMgc2l0dWF0aW9uLg0KPj4+IEkgaGF2ZSBhIHBhdGNoIGRvaW5nIHRoYXQgYnV0IEkgaGF2
+ZW4ndCBiZWVuIGFibGUgdG8gbG9jYXRlIHRoZSBkcml2ZXIgaW4gd2hpY2ggdG8gc2V0IHRoaXMN
+Cj4+PiBxdWlyayBmbGFnLi4uDQo+PiAgIEFuZCB0aGF0J3Mgbm8gd29uZGVyISBUaGUgQlQgZHJp
+dmVyIHRoYXQgbmVlZHMgdGhpcyBwYXRjaCBpcyBvdXQtb2YtdHJlZSAoYW5kIG5vdCBldmVuIG9w
+ZW4NCj4+IHNvdXJjZSwgaXQgc2VlbXMpIGFzIHdlIGhhdmUgZmluYWxseSBhc2NlcnRhaW5lZCB3
+aXRoIElsZGFyLi4uIElzIHRoZXJlIGFueSBpbnRlcmVzdCBpbiB0aGUNCj4+ICJwcmVwYXJhdG9y
+eSIgcGF0Y2ggdGhhdCBsb3dlcnMgdGhlIGluZGVudGF0aW9uIGxldmVscyBpbiBoY2lfY3Nfc2V0
+dXBfc3luY19jb25uKCk/DQo+IGhvdyBpcyBpdCBwb3NzaWJsZSB0aGF0IHRoZXJlIGlzIGFuIG91
+dC1vZi10cmVlIEJsdWV0b290aCBkcml2ZXIuIFNlZW1zIG9kZC4gTWF5YmUgd2FudCB0byBzdWJt
+aXQgdGhhdCB1cHN0cmVhbSBmaXJzdC4NCj4NCj4gUmVnYXJkcw0KPg0KPiBNYXJjZWwNCj4NCg0K
