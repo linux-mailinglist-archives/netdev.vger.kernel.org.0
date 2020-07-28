@@ -2,133 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2942823124D
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DB32231257
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:19:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732672AbgG1TRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51968 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729133AbgG1TRD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:17:03 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C073C061794;
-        Tue, 28 Jul 2020 12:17:03 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id b79so19785279qkg.9;
-        Tue, 28 Jul 2020 12:17:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gOr8dfaejifYw9jU6Kda38E3nkEbRCrHeHIL/mLht1M=;
-        b=otDe5YRwMr9ZjZkUAfDqHdRBs1piZUTe4CTkYv5N3vMilg+mwSd8u3nh4gsItkTo7x
-         keGv4P2iTlq5DIJzJbBMN4GTDiOMD0OpJh1C2xP3g76mfiKGLMDy95jV6wJvHN/3sJmr
-         mfk8p/IBXfxF+72g5+Qndb/0bmn+YszTDATRnNlgDVDtEaz7a4ax1jGDLrpcj2KFhDlm
-         Q7ydb47hnhDV3tab+g7WDUAhUX+rkiq43CLewaraeGHwV047qEpRBRM8Fy5eKU5uNXeY
-         hK52o5YD5CrotoRkYnlXey5UPBLKr8Mvz0KnkI1keJ43PNod7JGSjVNEwkF+sycxnOUC
-         Udxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gOr8dfaejifYw9jU6Kda38E3nkEbRCrHeHIL/mLht1M=;
-        b=WjsS7K/bShsv4h95+KvPV365kVrv7MvjmNC7TbGWF42ZgvKeMrP3G5Y35opFIxzRX3
-         fjijdVG860/kW0ipkK+Pk/WMrpmmrn3yccI33QpMtDtnQ1hR7vz1LLPDBXd6OmTg6EfV
-         6t6AhI1lJrJkJYnuq/ozEVUHp1vRVfgNfd9as2LwTb5YLtZhtEL5nUa+xJ8lqwNdAlHJ
-         CEFyTm6fG9FdcVsSRMs8enoPXRRvIWxDpUqy657hLzyENFU/LHtU9tWZTH6ZkGuhUm65
-         JOhIu3ScmZ9vQE3/zRZQJYVGhcDg/lXAY6fV/O3famQB02NwALF0F15kXtEcQPyfImjl
-         IjTw==
-X-Gm-Message-State: AOAM53175GuBPsR8Yd0FhMvk8AnZWQ4ni7tBpEEqQAE3fbS9GrN4oLex
-        mn6QcbMVsJxQ71tVdkx/H3dp/QzTuNYKmEfOmAw=
-X-Google-Smtp-Source: ABdhPJwbOmokpEJOP1fIf5cZoIesMV+H3fTQ9slHu7TTfq77cCg4b9LhjmIxLd0pBzSqpXX2DL3NsX7P95qN921rMQ0=
-X-Received: by 2002:a05:620a:4c:: with SMTP id t12mr3962581qkt.449.1595963822395;
- Tue, 28 Jul 2020 12:17:02 -0700 (PDT)
+        id S1732696AbgG1TSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:18:33 -0400
+Received: from mga09.intel.com ([134.134.136.24]:53302 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728751AbgG1TSc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 15:18:32 -0400
+IronPort-SDR: ZZlEO0E+JxFAqsVlcV+OcvCDJn9KaIxf/RDJkrqca1gNVKzTV3u03BsLcwDUoTr7c7oAq2bRZM
+ MeUAY6HRQMdw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9696"; a="152543409"
+X-IronPort-AV: E=Sophos;i="5.75,407,1589266800"; 
+   d="scan'208";a="152543409"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2020 12:18:31 -0700
+IronPort-SDR: A/LWYGtLiV2xMqj0KUz5tLFZ4cw8jmEEYYnpArz/u1f3jU63qCmvONl7hgH20Uj7HbCKKG4IEb
+ 8OjH9NNg4MOA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,407,1589266800"; 
+   d="scan'208";a="434434628"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.32.199]) ([10.212.32.199])
+  by orsmga004.jf.intel.com with ESMTP; 28 Jul 2020 12:18:30 -0700
+Subject: Re: [PATCH net-next RFC 01/13] devlink: Add reload level option to
+ devlink reload command
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jiri Pirko <jiri@resnulli.us>, Moshe Shemesh <moshe@mellanox.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
+ <1595847753-2234-2-git-send-email-moshe@mellanox.com>
+ <20200727175802.04890dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200728135808.GC2207@nanopsycho>
+ <464add44-3ab1-21b8-3dba-a88202350bb9@intel.com>
+ <20200728114458.762b5396@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <d6fbfedd-9022-ff67-23ed-418607beecc2@intel.com>
+Date:   Tue, 28 Jul 2020 12:18:30 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.0.1
 MIME-Version: 1.0
-References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-28-guro@fb.com>
- <CAPhsuW7jWztOVeeiRNBRK4JC_MS41qUSxzEDMywb-6=Don-ndA@mail.gmail.com>
- <CAEf4BzaOX_gc8F20xrHxiKFxYbwULK130m1A49rnMoT7T74T3Q@mail.gmail.com>
- <CAPhsuW5qBxWibkYMAvS0s6yLj-gijHqy9rVxSWCk5Xr+bXqtJg@mail.gmail.com> <20200728190830.GB410810@carbon.DHCP.thefacebook.com>
-In-Reply-To: <20200728190830.GB410810@carbon.DHCP.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 28 Jul 2020 12:16:51 -0700
-Message-ID: <CAEf4BzZuj9d_WT4nJ6c_W4uAnT2_4mBOXCbi1q1w97568rd4eg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 27/35] bpf: eliminate rlimit-based memory
- accounting infra for bpf maps
-To:     Roman Gushchin <guro@fb.com>
-Cc:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200728114458.762b5396@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 12:09 PM Roman Gushchin <guro@fb.com> wrote:
->
-> On Mon, Jul 27, 2020 at 11:06:42PM -0700, Song Liu wrote:
-> > On Mon, Jul 27, 2020 at 10:58 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Mon, Jul 27, 2020 at 10:47 PM Song Liu <song@kernel.org> wrote:
-> > > >
-> > > > On Mon, Jul 27, 2020 at 12:26 PM Roman Gushchin <guro@fb.com> wrote:
-> > > > >
-> > > > > Remove rlimit-based accounting infrastructure code, which is not used
-> > > > > anymore.
-> > > > >
-> > > > > Signed-off-by: Roman Gushchin <guro@fb.com>
-> > > > [...]
-> > > > >
-> > > > >  static void bpf_map_put_uref(struct bpf_map *map)
-> > > > > @@ -541,7 +484,7 @@ static void bpf_map_show_fdinfo(struct seq_file *m, struct file *filp)
-> > > > >                    "value_size:\t%u\n"
-> > > > >                    "max_entries:\t%u\n"
-> > > > >                    "map_flags:\t%#x\n"
-> > > > > -                  "memlock:\t%llu\n"
-> > > > > +                  "memlock:\t%llu\n" /* deprecated */
-> > > >
-> > > > I am not sure whether we can deprecate this one.. How difficult is it
-> > > > to keep this statistics?
-> > > >
-> > >
-> > > It's factually correct now, that BPF map doesn't use any memlock memory, no?
->
-> Right.
->
-> >
-> > I am not sure whether memlock really means memlock for all users... I bet there
-> > are users who use memlock to check total memory used by the map.
->
-> But this is just the part of struct bpf_map, so I agree with Andrii,
-> it's a safe check.
->
-> >
-> > >
-> > > This is actually one way to detect whether RLIMIT_MEMLOCK is necessary
-> > > or not: create a small map, check if it's fdinfo has memlock: 0 or not
-> > > :)
-> >
-> > If we do show memlock=0, this is a good check...
->
-> The only question I have if it's worth checking at all? Bumping the rlimit
-> is a way cheaper operation than creating a temporarily map and checking its
-> properties.
->
 
-for perf and libbpf -- I think it's totally worth it. Bumping
-RLIMIT_MEMLOCK automatically means potentially messing up some other
-parts of the system (e.g., BCC just bumps it to INFINITY allowing to
-over-allocate too much memory, potentially, for unrelated applications
-that do rely on RLIMIT_MEMLOCK). It's one of the reasons why libbpf
-doesn't do it automatically, actually. So knowing when this is not
-necessary, will allow to improve diagnostic messages by libbpf, and
-would just avoid potentially risky operation by perf/BCC/etc.
 
-> So is there any win in comparison to just leaving the userspace code* as it is
-> for now?
->
-> * except runqslower and samples
+On 7/28/2020 11:44 AM, Jakub Kicinski wrote:
+> On Tue, 28 Jul 2020 09:47:00 -0700 Jacob Keller wrote:
+>> On 7/28/2020 6:58 AM, Jiri Pirko wrote:
+>>> But this is needed to maintain the existing behaviour which is different
+>>> for different drivers.
+>>
+>> Which drivers behave differently here?
+> 
+> I think Jiri refers to mlxsw vs mlx5.
+> 
+> mlxsw loads firmware on probe, by default at least. So reloading the
+> driver implies a FW reset. NIC drivers OTOH don't generally load FW
+> so they didn't reset FW.
+> 
+
+Ok.
+
+> Now since we're redefining the API from "do a reload so that driverinit
+> params are applied" (or "so that all netdevs get spawned in a new
+> netns") to "do a reset of depth X" we have to change the paradigm.
+> 
+> What I was trying to suggest is that we should not have to re-define
+> the API like this.
+
+Ok.
+
+> 
+> From user perspective what's important is what the reset achieves (and
+> perhaps how destructive it is). We can define the reset levels as:
+> 
+> $ devlink dev reload pci/0000:82:00.0 net-ns-respawn
+> $ devlink dev reload pci/0000:82:00.0 driver-param-init
+> $ devlink dev reload pci/0000:82:00.0 fw-activate
+> 
+> combining should be possible when user wants multiple things to happen:
+> 
+> $ devlink dev reload pci/0000:82:00.0 fw-activate driver-param-init
+> 
+
+Where today "driver-param-init" is the default behavior. But didn't we
+just say that mlxsw also does the equivalent of fw-activate?
+
+> 
+> Then we have the use case of a "live reset" which is slightly
+> under-defined right now IMHO, but we can extend it as:
+> 
+> $ devlink dev reload pci/0000:82:00.0 fw-activate --live
+> 
+
+Yea, I think live fw patching things aren't quite as defined yet.
+
+> 
+> We can also add the "reset level" specifier - for the cases where
+> device is misbehaving:
+> 
+> $ devlink dev reload pci/0000:82:00.0 level [driver|fw|hardware]
+> 
+
+I guess I don't quite see how level fits in? This is orthogonal to the
+other settings?
+
+> 
+> But I don't think that we can go from the current reload command
+> cleanly to just a level reset. The driver-specific default is a bad
+> smell which indicates we're changing semantics from what user wants 
+> to what the reset depth is. Our semantics with the patch as it stands
+> are in fact:
+>  - if you want to load new params or change netns, don't pass the level
+>    - the "driver default" workaround dictates the right reset level for
+>    param init;
+>  - if you want to activate new firmware - select the reset level you'd
+>    like from the reset level options.
+> 
+
+I think I agree, having the "what gets reloaded" as a separate vector
+makes sense and avoids confusion. For example for ice hardware,
+"fw-activate" really does mean "Do an EMP reset" rather than just a
+"device reset" which could be interpreted differently. ice can do
+function level reset, or core device reset also. Neither of those two
+resets activates firmware.
+
+Additionally the current function load process in ice doesn't support
+driver-init at all. That's something I'd like to see happen but is quite
+a significant refactor for how the driver loads. We need to refactor
+everything out so that devlink is created early on and factor out
+load/unload into handlers that can be called by the devlink reload. As I
+have primarily been focused on flash update I sort of left that for the
+future because it was a huge task to solve.
