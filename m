@@ -2,134 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C39D230B8A
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 15:38:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47E90230B8D
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 15:38:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730091AbgG1Nh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 09:37:58 -0400
-Received: from mxout03.lancloud.ru ([89.108.73.187]:43812 "EHLO
-        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729986AbgG1Nhz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 09:37:55 -0400
-X-Greylist: delayed 594 seconds by postgrey-1.27 at vger.kernel.org; Tue, 28 Jul 2020 09:37:51 EDT
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru E6499214C034
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-From:   Ildar Kamaletdinov <i.kamaletdinov@omprussia.ru>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>
-CC:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Bluetooth Kernel Mailing List 
-        <linux-bluetooth@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC] bluetooth: add support for some old headsets
-Thread-Topic: [PATCH RFC] bluetooth: add support for some old headsets
-Thread-Index: AQHWXG4sjdOYdGBw+0mZjynHmJYWq6kSNhiAgAo864CAAGeiAA==
-Date:   Tue, 28 Jul 2020 13:27:54 +0000
-Message-ID: <d9ebfb9e-5abb-0898-b5e1-0ff55a07d79d@omprussia.ru>
-References: <6f461412-a6c0-aa53-5e74-394e278ee9b1@omprussia.ru>
- <1834765D-52E6-45B8-9923-778C9182CFA9@holtmann.org>
- <e9f32310-2728-60a2-adc7-3a7418ce54e3@omprussia.ru>
- <848144D3-85F9-47F8-8CDA-02457FA7530F@holtmann.org>
- <0c2a8da1-6071-6597-d0d1-32ce1490aba7@omprussia.ru>
- <6f271bf7-04ee-c971-9c69-de3f696769ed@omprussia.ru>
- <97E2381A-219D-46AF-962F-CBCD63B911AD@holtmann.org>
-In-Reply-To: <97E2381A-219D-46AF-962F-CBCD63B911AD@holtmann.org>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [192.168.11.147]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3B3EF73FAE4B34449100261C10242FD5@lancloud.ru>
-Content-Transfer-Encoding: base64
+        id S1730113AbgG1NiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 09:38:22 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:43706 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729950AbgG1NiW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 09:38:22 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 4F7F7B9C77102E9AEC57;
+        Tue, 28 Jul 2020 21:38:19 +0800 (CST)
+Received: from [127.0.0.1] (10.174.179.81) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Tue, 28 Jul 2020
+ 21:38:15 +0800
+Subject: Re: [PATCH net-next] liquidio: Remove unneeded cast from memory
+ allocation
+To:     Joe Perches <joe@perches.com>, <dchickles@marvell.com>,
+        <sburla@marvell.com>, <fmanlunas@marvell.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20200724130001.71528-1-wanghai38@huawei.com>
+ <2cdef8d442bb5da39aed17bf994a800e768942f7.camel@perches.com>
+ <ac99bed4-dabc-a003-374f-206753f937cb@huawei.com>
+ <bffcc7d513e186734d224bda6afdd55033b451de.camel@perches.com>
+From:   "wanghai (M)" <wanghai38@huawei.com>
+Message-ID: <2996569e-5e1a-db02-2c78-0ee0d572706d@huawei.com>
+Date:   Tue, 28 Jul 2020 21:38:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <bffcc7d513e186734d224bda6afdd55033b451de.camel@perches.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.81]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8gZXZlcnlvbmUsDQoNCkxldCBtZSBhZGQgYSBsaXR0bGUgYml0IG1vcmUgZGV0YWlscyBy
-ZWxhdGVkIHRvIHRoaXMgcGF0Y2guDQoNCkFjY29yZGluZyB0byBCbHVldG9vdGggQ29yZSBTcGVj
-aWZpY2F0aW9uIFZvbCAyIHBhcnQgRiBwYWdlIDc3NiBhbmTCoCBCbHVldG9vdGggQ29yZSBTcGVj
-aWZpY2F0aW9uIFZvbDQgUGFydCBFIHBhZ2UgMTk3OCBhZnRlciBgSENJX1NldHVwX1N5bmNocm9u
-b3VzX0Nvbm5lY3Rpb24oKWAgd2FzIHNlbnQgYEhDSV9Db21tYW5kX1N0YXR1cygpYCBtdXN0IGJl
-IHJlY2VpdmVkIGZyb20gQkRSL0VEUiBjb250cm9sbGVyLg0KDQpBY2NvcmRpbmcgdG8gQmx1ZXRv
-b3RoIENvcmUgU3BlY2lmaWNhdGlvbiBWb2wgMiBwYXJ0IEYgcGFnZSAzNjQgSENJX0NvbW1hbmRf
-U3RhdHVzIGRlc2NyaXB0aW9uOg0KDQoiU29tZSBIQ0kgY29tbWFuZHMgbWF5IGdlbmVyYXRlIGVy
-cm9ycyB0aGF0IG5lZWQgdG8gYmUgcmVwb3J0ZWQgdG8gdGhlIEhvc3QsIGJ1dCB0aGVyZSBpcyBp
-bnN1ZmZpY2llbnQgaW5mb3JtYXRpb24gdG8gZGV0ZXJtaW5lIGhvdyB0aGUgY29tbWFuZCB3b3Vs
-ZCBub3JtYWxseSBiZSBwcm9jZXNzZWQuIEluIHRoaXMgY2FzZSwgdHdvIGV2ZW50cyBjYW4gYmUg
-dXNlZCB0byBpbmRpY2F0ZSB0aGlzIHRvIHRoZSBIb3N0LCB0aGUgSENJX0NvbW1hbmRfQ29tcGxl
-dGUgZXZlbnQgYW5kIEhDSV9Db21tYW5kX1N0YXR1cyBldmVudHMuIFdoaWNoIG9mIHRoZSB0d28g
-ZXZlbnRzIGlzIHVzZWQgaXMgaW1wbGVtZW50YXRpb24tZGVwZW5kZW50LiINCg0KTWVkaWF0ZWsn
-cyBpbXBsZW1lbnRhdGlvbiByZXBvcnRzIGVycm9yIGBVbnN1cHBvcnRlZCBMTVAgZmVhdHVyZWAg
-aW4gYEhDSV9Db21tYW5kX1N0YXR1cygpYCBldmVudCAobm90IGluIGBIQ0lfQ29tbWFuZF9Db21w
-bGV0ZSgpYCBldmVudCBhcyBpbiBvdGhlciBpbXBsZW1lbnRhdGlvbnMpLg0KU28gdGhhdCBiZWhh
-dmlvciBpcyBhIGxpdHRsZSBiaXQgb2RkIGJ1dCBkb24ndCBicmVhayBjb21wYXRpYmlsaXR5IHdp
-dGggQmx1ZXRvb3RoIENvcmUgU3BlY2lmaWNhdGlvbi4gQWN0dWFsbHkgTWVkaWF0ZWsncyBCRFIv
-RURSIGNvbnRyb2xsZXIgcmVwb3J0cyBlcnJvciB3aXRob3V0IHRyeWluZyB0byBhY3R1YWxseSBz
-ZXR1cCBjb25uZWN0aW9uIHdpdGggaGVhZHNldC4NCg0KQnV0IGFjY29yZGluZyB0byBIYW5kcy1G
-cmVlIHByb2ZpbGUgc3BlY2lmaWNhdGlvbiAxLjggcC4gMTEzIFN5bmNocm9ub3VzIENvbm5lY3Rp
-b24gSW50ZXJvcGVyYWJpbGl0eSBSZXF1aXJlbWVudHMgQmx1ZXRvb3RoIEhvc3QgTVVTVCB0cnkg
-YWxsIGZlYXR1cmVzIFQxLT5UMi0+UzEtPlMyLT5EMCBvciBEMSBiZWZvcmUgY29uc2lkZXJpbmcg
-Y29ubmVjdGlvbiBhcyBgZmFpbGVkYC4gQW5kIGl0IGlzIHRydWUgaWYgZXJyb3IgaXMgcmVwb3J0
-ZWQgaW4gYEhDSV9Db21tYW5kX0NvbXBsZXRlKClgIGV2ZW50Lg0KRXZlbnR1YWxseSBJZiBlcnJv
-ciBpcyByZXBvcnRlZCBpbiBgSENJX0NvbW1hbmRfU3RhdHVzKClgIGV2ZW50IGNvbm5lY3Rpb24g
-Y29uc2lkZXJlZCBhcyAnZmFpbGVkJyBqdXN0IGFmdGVyIGZpcnN0IGVycm9yIHdoaWNoIGJyZWFr
-cyBjb21wYXRpYmlsaXR5IHdpdGggSEZQIHByb2ZpbGUgc3BlY2lmaWNhdGlvbiB2MS44IGluIExp
-bnV4IEtlcm5lbC4gVGhhdCBsZWFkcyB0byBwcm9ibGVtcyB3aGVuIFNDby9lU0NPIGNvbm5lY3Rp
-b24gY291bGQgbm90IGJlIGVzdGFibGlzaGVkIHdoZW4gdXNpbmcgTWVkaWF0ZWsncyBCRFIvRURS
-IGNvbnRyb2xsZXJzLg0KDQpTbyB0aGF0IHBhdGNoIHNob3VsZCBhZGQgc3VwcG9ydCBmb3IgY29y
-cmVjdCBTQ08vZVNDTyBjb25uZWN0aW9uIGJlaGF2aW9yIHdoZW4gd29yayB3aXRoIGF0IGxlYXN0
-IE1lZGlhdGVrIGNvbnRyb2xsZXJzLiAoYSBsaXR0bGUgYml0IHBlY3VsaWFyIGJlaGF2aW9yIGJ1
-dCBjb21wYXRpYmxlIHdpdGggQmx1ZXRvb3RoIENvcmUgc3BlYykuDQoNCklmIGFueSBvYmplY3Rp
-b25zIG9yIHF1ZXN0aW9ucyBwbGVhc2UgZmlsbCBmcmVlIHRvIGNvbnRhY3QgbWUgb3IgU2VyZ2V5
-IGFueXRpbWUuDQo+IEhpIFNlcmdleSwNCj4NCj4+Pj4+Pj4gVGhlIE1lZGlhVGVrIEJsdWV0b290
-aCBwbGF0Zm9ybSAoTVQ2NjMwIGV0Yy4pIGhhcyBhIHBlY3VsaWFyIGltcGxlbWVudGF0aW9uDQo+
-Pj4+Pj4+IGZvciB0aGUgZVNDTy9TQ08gY29ubmVjdGlvbiB2aWEgQlQvRURSOiB0aGUgaG9zdCBj
-b250cm9sbGVyIHJldHVybnMgZXJyb3INCj4+Pj4+Pj4gY29kZSAweDIwIChMTVAgZmVhdHVyZSBu
-b3Qgc3VwcG9ydGVkKSBmb3IgSENJX1NldHVwX1N5bmNocm9ub3VzX0Nvbm5lY3Rpb24NCj4+Pj4+
-Pj4gKDB4MDAyOCkgY29tbWFuZCB3aXRob3V0IGFjdHVhbGx5IHRyeWluZyB0byBzZXR1cCBjb25u
-ZWN0aW9uIHdpdGggYSByZW1vdGUNCj4+Pj4+Pj4gZGV2aWNlIGluIGNhc2Ugc3VjaCBkZXZpY2Ug
-KGxpa2UgRGlnbWEgQlQtMTQgaGVhZHNldCkgZGlkbid0IGFkdmVydGlzZSBpdHMNCj4+Pj4+Pj4g
-c3VwcG9ydGVkIGZlYXR1cmVzLiAgRXZlbiB0aG91Z2ggdGhpcyBkb2Vzbid0IGJyZWFrIGNvbXBh
-dGliaWxpdHkgd2l0aCB0aGUNCj4+Pj4+Pj4gQmx1ZXRvb3RoIHN0YW5kYXJkIGl0IGJyZWFrcyB0
-aGUgY29tcGF0aWJpbGl0eSB3aXRoIHRoZSBIYW5kcy1GcmVlIFByb2ZpbGUNCj4+Pj4+Pj4gKEhG
-UCkuDQo+Pj4+Pj4+DQo+Pj4+Pj4+IFRoaXMgcGF0Y2ggcmV0dXJucyB0aGUgY29tcGF0aWJpbGl0
-eSB3aXRoIHRoZSBIRlAgcHJvZmlsZSBhbmQgYWN0dWFsbHkNCj4+Pj4+Pj4gdHJpZXMgdG8gY2hl
-Y2sgYWxsIGF2YWlsYWJsZSBjb25uZWN0aW9uIHBhcmFtZXRlcnMgZGVzcGl0ZSBvZiB0aGUgc3Bl
-Y2lmaWMNCj4+Pj4+Pj4gTWVkaWFUZWsgaW1wbGVtZW50YXRpb24uIFdpdGhvdXQgaXQgb25lIHdh
-cyB1bmFibGUgdG8gZXN0YWJsaXNoIGVTQ08vU0NPDQo+Pj4+Pj4+IGNvbm5lY3Rpb24gd2l0aCBz
-b21lIGhlYWRzZXRzLg0KPj4gWy4uLl0NCj4+Pj4+Pj4gU2lnbmVkLW9mZi1ieTogU2VyZ2V5IFNo
-dHlseW92IDxzLnNodHlseW92QG9tcHJ1c3NpYS5ydT4NCj4+Pj4+Pj4NCj4+Pj4+Pj4gLS0tDQo+
-Pj4+Pj4+IFRoaXMgcGF0Y2ggaXMgYWdhaW5zdCB0aGUgJ2JsdWV0b290aC1uZXh0LmdpdCcgcmVw
-by4NCj4+Pj4+Pj4NCj4+Pj4+Pj4gbmV0L2JsdWV0b290aC9oY2lfZXZlbnQuYyB8ICAgIDggKysr
-KysrKysNCj4+Pj4+Pj4gMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKQ0KPj4+Pj4+Pg0K
-Pj4+Pj4+PiBJbmRleDogYmx1ZXRvb3RoLW5leHQvbmV0L2JsdWV0b290aC9oY2lfZXZlbnQuYw0K
-Pj4+Pj4+PiA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09DQo+Pj4+Pj4+IC0tLSBibHVldG9vdGgtbmV4dC5vcmlnL25ldC9i
-bHVldG9vdGgvaGNpX2V2ZW50LmMNCj4+Pj4+Pj4gKysrIGJsdWV0b290aC1uZXh0L25ldC9ibHVl
-dG9vdGgvaGNpX2V2ZW50LmMNCj4+Pj4+Pj4gQEAgLTIxODcsNiArMjE4NywxMyBAQCBzdGF0aWMg
-dm9pZCBoY2lfY3Nfc2V0dXBfc3luY19jb25uKHN0cnVjDQo+Pj4+Pj4+IAlpZiAoYWNsKSB7DQo+
-Pj4+Pj4+IAkJc2NvID0gYWNsLT5saW5rOw0KPj4+Pj4+PiAJCWlmIChzY28pIHsNCj4+Pj4+Pj4g
-KwkJCWlmIChzdGF0dXMgPT0gMHgyMCAmJiAvKiBVbnN1cHBvcnRlZCBMTVAgUGFyYW1ldGVyIHZh
-bHVlICovDQo+Pj4+Pj4+ICsJCQkgICAgc2NvLT5vdXQpIHsNCj4+PiAgICBBY3R1YWxseSwgSSB3
-YXMgZXhwZWN0aW5nIHRoYXQgeW91J2QgdGVsbCBtZSB0byBjcmVhdGUgYSBIQ0kgcXVpcmsgZm9y
-IHRoaXMgc2l0dWF0aW9uLg0KPj4+IEkgaGF2ZSBhIHBhdGNoIGRvaW5nIHRoYXQgYnV0IEkgaGF2
-ZW4ndCBiZWVuIGFibGUgdG8gbG9jYXRlIHRoZSBkcml2ZXIgaW4gd2hpY2ggdG8gc2V0IHRoaXMN
-Cj4+PiBxdWlyayBmbGFnLi4uDQo+PiAgIEFuZCB0aGF0J3Mgbm8gd29uZGVyISBUaGUgQlQgZHJp
-dmVyIHRoYXQgbmVlZHMgdGhpcyBwYXRjaCBpcyBvdXQtb2YtdHJlZSAoYW5kIG5vdCBldmVuIG9w
-ZW4NCj4+IHNvdXJjZSwgaXQgc2VlbXMpIGFzIHdlIGhhdmUgZmluYWxseSBhc2NlcnRhaW5lZCB3
-aXRoIElsZGFyLi4uIElzIHRoZXJlIGFueSBpbnRlcmVzdCBpbiB0aGUNCj4+ICJwcmVwYXJhdG9y
-eSIgcGF0Y2ggdGhhdCBsb3dlcnMgdGhlIGluZGVudGF0aW9uIGxldmVscyBpbiBoY2lfY3Nfc2V0
-dXBfc3luY19jb25uKCk/DQo+IGhvdyBpcyBpdCBwb3NzaWJsZSB0aGF0IHRoZXJlIGlzIGFuIG91
-dC1vZi10cmVlIEJsdWV0b290aCBkcml2ZXIuIFNlZW1zIG9kZC4gTWF5YmUgd2FudCB0byBzdWJt
-aXQgdGhhdCB1cHN0cmVhbSBmaXJzdC4NCj4NCj4gUmVnYXJkcw0KPg0KPiBNYXJjZWwNCj4NCg0K
+
+在 2020/7/28 17:11, Joe Perches 写道:
+> On Tue, 2020-07-28 at 16:42 +0800, wanghai (M) wrote:
+>> 在 2020/7/25 5:29, Joe Perches 写道:
+>>> On Fri, 2020-07-24 at 21:00 +0800, Wang Hai wrote:
+>>>> Remove casting the values returned by memory allocation function.
+>>>>
+>>>> Coccinelle emits WARNING:
+>>>>
+>>>> ./drivers/net/ethernet/cavium/liquidio/octeon_device.c:1155:14-36: WARNING:
+>>>>    casting value returned by memory allocation function to (struct octeon_dispatch *) is useless.
+>>> []
+>>>> diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_device.c b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
+>>> []
+>>>> @@ -1152,8 +1152,7 @@ octeon_register_dispatch_fn(struct octeon_device *oct,
+>>>>    
+>>>>    		dev_dbg(&oct->pci_dev->dev,
+>>>>    			"Adding opcode to dispatch list linked list\n");
+>>>> -		dispatch = (struct octeon_dispatch *)
+>>>> -			   vmalloc(sizeof(struct octeon_dispatch));
+>>>> +		dispatch = vmalloc(sizeof(struct octeon_dispatch));
+>>> More the question is why this is vmalloc at all
+>>> as the structure size is very small.
+>>>
+>>> Likely this should just be kmalloc.
+>>>
+>>>
+>> Thanks for your advice.  It is indeed best to use kmalloc here.
+>>>>    		if (!dispatch) {
+>>>>    			dev_err(&oct->pci_dev->dev,
+>>>>    				"No memory to add dispatch function\n");
+>>> And this dev_err is unnecessary.
+>>>
+>>>
+>> I don't understand why dev_err is not needed here. We can easily know
+>> that an error has occurred here through dev_err
+> Memory allocation failures without __GFP_NOWARN. already
+> do a dump_stack to show the location of the code that
+> could not successfully allocate memory.
+>
+>
+Thanks for your explanation. I got it.
+
+Can it be modified like this?
+
+--- a/drivers/net/ethernet/cavium/liquidio/octeon_device.c
++++ b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
+@@ -1152,11 +1152,8 @@ octeon_register_dispatch_fn(struct octeon_device 
+*oct,
+
+                 dev_dbg(&oct->pci_dev->dev,
+                         "Adding opcode to dispatch list linked list\n");
+-               dispatch = (struct octeon_dispatch *)
+-                          vmalloc(sizeof(struct octeon_dispatch));
++               dispatch = kmalloc(sizeof(struct octeon_dispatch), 
+GFP_KERNEL);
+                 if (!dispatch) {
+-                       dev_err(&oct->pci_dev->dev,
+-                               "No memory to add dispatch function\n");
+                         return 1;
+                 }
+                 dispatch->opcode = combined_opcode;
+
+> .
+>
+
