@@ -2,110 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A66A4231483
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 23:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A315231466
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 23:01:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729335AbgG1VT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 17:19:56 -0400
-Received: from 7.mo179.mail-out.ovh.net ([46.105.61.94]:42644 "EHLO
-        7.mo179.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728149AbgG1VT4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 17:19:56 -0400
-X-Greylist: delayed 12599 seconds by postgrey-1.27 at vger.kernel.org; Tue, 28 Jul 2020 17:19:55 EDT
-Received: from player756.ha.ovh.net (unknown [10.108.42.239])
-        by mo179.mail-out.ovh.net (Postfix) with ESMTP id 04BDA1734F3
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 19:42:46 +0200 (CEST)
-Received: from kaod.org (lns-bzn-46-82-253-208-248.adsl.proxad.net [82.253.208.248])
-        (Authenticated sender: groug@kaod.org)
-        by player756.ha.ovh.net (Postfix) with ESMTPSA id 1FCAC13EFFD15;
-        Tue, 28 Jul 2020 17:42:35 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-97G002e93d7dbd-e9bf-43f9-bbae-e865b5c28c99,96196EA346850768E7E70500A314E772A5EF2CEB) smtp.auth=groug@kaod.org
-Date:   Tue, 28 Jul 2020 19:42:35 +0200
-From:   Greg Kurz <groug@kaod.org>
-To:     Alexey Kardashevskiy <aik@ozlabs.ru>
-Cc:     v9fs-developer@lists.sourceforge.net,
-        Latchesar Ionkov <lucho@ionkov.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dominique Martinet <asmadeus@codewreck.org>
-Subject: Re: [V9fs-developer] [PATCH kernel] 9p/trans_fd: Check file mode at
- opening
-Message-ID: <20200728194235.52660c08@bahia.lan>
-In-Reply-To: <20200728124129.130856-1-aik@ozlabs.ru>
-References: <20200728124129.130856-1-aik@ozlabs.ru>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1729231AbgG1VBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 17:01:24 -0400
+Received: from smtp1.emailarray.com ([65.39.216.14]:54155 "EHLO
+        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728728AbgG1VBX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 17:01:23 -0400
+Received: (qmail 36977 invoked by uid 89); 28 Jul 2020 21:01:21 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
+  by smtp1.emailarray.com with SMTP; 28 Jul 2020 21:01:21 -0000
+Date:   Tue, 28 Jul 2020 14:01:16 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Christoph Hellwig <hch@lst.de>, netdev@vger.kernel.org,
+        kernel-team@fb.com, robin.murphy@arm.com,
+        akpm@linux-foundation.org, davem@davemloft.net, kuba@kernel.org,
+        willemb@google.com, edumazet@google.com,
+        steffen.klassert@secunet.com, saeedm@mellanox.com,
+        maximmi@mellanox.com, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com, borisp@mellanox.com, david@redhat.com
+Subject: Re: [RFC PATCH v2 21/21] netgpu/nvidia: add Nvidia plugin for netgpu
+Message-ID: <20200728210116.56potw45eyptmlc7@bsd-mbp.dhcp.thefacebook.com>
+References: <20200727052846.4070247-1-jonathan.lemon@gmail.com>
+ <20200727052846.4070247-22-jonathan.lemon@gmail.com>
+ <20200727073509.GB3917@lst.de>
+ <20200727170003.clx5ytf7vn2emhvl@bsd-mbp.dhcp.thefacebook.com>
+ <20200727182424.GA10178@lst.de>
+ <20200728014812.izihmnon3khzyr32@bsd-mbp.dhcp.thefacebook.com>
+ <20200728181904.GA138520@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Ovh-Tracer-Id: 7175923058598975989
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduiedriedvgdduudegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepfffhvffukfgjfhfogggtgfesthejredtredtvdenucfhrhhomhepifhrvghgucfmuhhriicuoehgrhhouhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepheekhfdtheegheehjeeludefkefhvdelfedvieehhfekhfdufffhueeuvdfftdfhnecukfhppedtrddtrddtrddtpdekvddrvdehfedrvddtkedrvdegkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphdqohhuthdphhgvlhhopehplhgrhigvrhejheeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepghhrohhugheskhgrohgurdhorhhgpdhrtghpthhtohepnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200728181904.GA138520@nvidia.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexey,
-
-Working on 9p now ?!? ;-)
-
-Cc'ing Dominique Martinet who appears to be the person who takes care of 9p
-these days.
-
-On Tue, 28 Jul 2020 22:41:29 +1000
-Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
-
-> The "fd" transport layer uses 2 file descriptors passed externally
-> and calls kernel_write()/kernel_read() on these. If files were opened
-> without FMODE_WRITE/FMODE_READ, WARN_ON_ONCE() will fire.
+On Tue, Jul 28, 2020 at 03:19:04PM -0300, Jason Gunthorpe wrote:
+> On Mon, Jul 27, 2020 at 06:48:12PM -0700, Jonathan Lemon wrote:
 > 
-> This adds file mode checking in p9_fd_open; this returns -EBADF to
-> preserve the original behavior.
+> > While the current GPU utilized is nvidia, there's nothing in the rest of
+> > the patches specific to Nvidia - an Intel or AMD GPU interface could be
+> > equally workable.
 > 
+> I think that is very misleading.
+> 
+> It looks like this patch, and all the ugly MM stuff, is done the way
+> it is *specifically* to match the clunky nv_p2p interface that only
+> the NVIDIA driver exposes.
 
-So this would cause open() to fail with EBADF, which might look a bit
-weird to userspace since it didn't pass an fd... Is this to have a
-different error than -EIO that is returned when either rfd or wfd
-doesn't point to an open file descriptor ? If yes, why do we care ?
+For /this/ patch [21], this is quite true.  I'm forced to use the nv_p2p
+API if I want to use the hardware that I have.  What's being overlooked
+is that the host mem driver does not do this, nor would another GPU
+if it used p2p_dma.  I'm just providing get_page, put_page, get_dma.
 
-> Found by syzkaller.
+
+> Any approach done in tree, where we can actually modify the GPU
+> driver, would do sane things like have the GPU driver itself create
+> the MEMORY_DEVICE_PCI_P2PDMA pages, use the P2P DMA API framework, use
+> dmabuf for the cross-driver attachment, etc, etc.
+
+So why doesn't Nvidia implement the above in the driver?
+Actually a serious question, not trolling here.
+
+
+> If you are serious about advancing this then the initial patches in a
+> long road must be focused on building up the core kernel
+> infrastructure for P2P DMA to a point where netdev could consume
+> it. There has been a lot of different ideas thrown about on how to do
+> this over the years.
+
+Yes, I'm serious about doing this work, and may not have seen or
+remember all the various ideas I've seen over time.  The netstack
+operates on pages - are you advocating replacing them with sglists?
+
+
+> > I think this is a better patch than all the various implementations of
+> > the protocol stack in the form of RDMA, driver code and device firmware.
 > 
-> Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-> ---
->  net/9p/trans_fd.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-> index 13cd683a658a..62cdfbd01f0a 100644
-> --- a/net/9p/trans_fd.c
-> +++ b/net/9p/trans_fd.c
-> @@ -797,6 +797,7 @@ static int parse_opts(char *params, struct p9_fd_opts *opts)
->  
->  static int p9_fd_open(struct p9_client *client, int rfd, int wfd)
->  {
-> +	bool perm;
->  	struct p9_trans_fd *ts = kzalloc(sizeof(struct p9_trans_fd),
->  					   GFP_KERNEL);
->  	if (!ts)
-> @@ -804,12 +805,16 @@ static int p9_fd_open(struct p9_client *client, int rfd, int wfd)
->  
->  	ts->rd = fget(rfd);
->  	ts->wr = fget(wfd);
-> -	if (!ts->rd || !ts->wr) {
-> +	perm = ts->rd && (ts->rd->f_mode & FMODE_READ) &&
-> +	       ts->wr && (ts->wr->f_mode & FMODE_WRITE);
-> +	if (!ts->rd || !ts->wr || !perm) {
->  		if (ts->rd)
->  			fput(ts->rd);
->  		if (ts->wr)
->  			fput(ts->wr);
->  		kfree(ts);
-> +		if (!perm)
-> +			return -EBADF;
->  		return -EIO;
->  	}
->  
+> Oh? You mean "better" in the sense the header split offload in the NIC
+> is better liked than a full protocol running in the NIC?
+
+Yes.  The NIC firmware should become simpler, not more complicated.
+-- 
+Jonathan
 
