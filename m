@@ -2,135 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61731231272
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:21:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E75B92312A8
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:31:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732792AbgG1TU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52502 "EHLO
+        id S1732832AbgG1Tbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732779AbgG1TU1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:20:27 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06084C0619D4
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:20:26 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id x69so19851997qkb.1
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:20:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zhyOzytz6iJSScUYu7jEGkkpCqwNaUVgSQu0xrNp9O8=;
-        b=A8Y+6VAPvuWH+aIlo7T3reqOGaenGbVa5TK25EuR+Xv8cQA/Fff1cSJaDMvvqB4Zi3
-         2raGYmVfetxeXvomin6cxUkH060tGnbMVCoJVDjRmkcX8PakwJYXsab/ORt/RVFf7c9x
-         YUAvlGkCqNSMpV5UT9aE4MJOi/o35qDqDgii1ZoDhaZVro4ct21uS0xsddH2mk6durIz
-         jvVrDkIpQVjt0ByuCT10Ac5uRTwpCWdRELWiD3rds3NZ5SMhcEg+cFv6cmjvFu4DSZ/X
-         1NyyXN9YqNFdsR5bWOoSHY2KmE9r1+UYAhWRkewTDKX1D4P5NqIgcQry8zksYeG9t0Ng
-         mXvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zhyOzytz6iJSScUYu7jEGkkpCqwNaUVgSQu0xrNp9O8=;
-        b=Ce+deEHYVLw5/rTqVsZZnRx397x2DjcPwbLfREN58irqOGLfgEEnLw3S0/cM1lpVYk
-         nsC4bXmo/xlAaHn1/qHDhzgfQzDQoRQLjdxoW1Ly1iFhS0ds5x11/OJS3CYaklugUPcE
-         zWO3vl7Hf1A4Iifr5vJzW12lS+HjCXHKq6v7b1DxO7dLMHQxXnc6hsvDrDpBSS1R3COu
-         LQdNVFeMoSZvwPryW9QGaoCnW0rlThEZYHlaKs3MAytXAQste0Rnq4xO9k7OgBCBQ7fs
-         hFodO6T17MasdMe1PocWONSaAHljsVY6XKsxfYTXflKCFqSGbTQq10h76KORurfIQUDA
-         +Y5g==
-X-Gm-Message-State: AOAM530JLBPrS4R/zmMnfJl+tebn7glY+42q2LPXu6MY194HhFLSjBV4
-        4XsArdcYzgTe+rXisnCidCNeAH0c
-X-Google-Smtp-Source: ABdhPJzM/zYMt8nbSF9ycNiSr96XmEC8WJLRSjk5e19z9rLQ7YLrQP9x6IrjnNQyBz+cOlITYNbLnQ==
-X-Received: by 2002:a37:9e90:: with SMTP id h138mr21595184qke.176.1595964024989;
-        Tue, 28 Jul 2020 12:20:24 -0700 (PDT)
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
-        by smtp.gmail.com with ESMTPSA id r18sm19007217qtf.62.2020.07.28.12.20.23
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jul 2020 12:20:23 -0700 (PDT)
-Received: by mail-yb1-f181.google.com with SMTP id 2so11187878ybr.13
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:20:23 -0700 (PDT)
-X-Received: by 2002:a25:7453:: with SMTP id p80mr32423482ybc.441.1595964022809;
- Tue, 28 Jul 2020 12:20:22 -0700 (PDT)
+        with ESMTP id S1732813AbgG1Tbf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:31:35 -0400
+Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E2236C0619D2
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:31:34 -0700 (PDT)
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id ED10D8AD62;
+        Tue, 28 Jul 2020 20:31:32 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1595964693; bh=dbMlaK8uIe9xhCRyQE/W+8c0fOIewIKKSWDy/0WCT6U=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Tue,=2028=20Jul=202020=2020:31:32=20+0100|From:=20Tom=20P
+         arkin=20<tparkin@katalix.com>|To:=20Joe=20Perches=20<joe@perches.c
+         om>|Cc:=20netdev@vger.kernel.org|Subject:=20Re:=20[PATCH=2017/29]=
+         20l2tp:=20avoid=20precidence=20issues=20in=20L2TP_SKB_CB=20macro|M
+         essage-ID:=20<20200728193132.GB4582@katalix.com>|References:=20<20
+         200721173221.4681-1-tparkin@katalix.com>=0D=0A=20<20200721173221.4
+         681-18-tparkin@katalix.com>=0D=0A=20<169fe729db1ba8529d0c071b39d48
+         091cc77fba2.camel@perches.com>=0D=0A=20<bd83cd37a477721c0336807ffd
+         2044f19f85f1d3.camel@perches.com>|MIME-Version:=201.0|Content-Disp
+         osition:=20inline|In-Reply-To:=20<bd83cd37a477721c0336807ffd2044f1
+         9f85f1d3.camel@perches.com>;
+        b=gRuUZ5FWlC/5jyc0EvRWMO0nLmqlBzPnbaZP+1mdPwxmt/md4A2Sx87J4jfot0k8K
+         KMsM+Ts+b3s94cOI+xisplb8Z1e3eCROVZlurdwsu7K+0f26n4apaPWV4SYQbmJv2t
+         uAnBMwkxCwXYV9dXo9hI7u8tev8V+wHHQiIZzRkTKOrgqjp+V8uczSvx+9SravPDFY
+         5mG/2i1VYDAO9RpJJmlzdLGg1qS4e1cZIAaS8zPG984FGeX4h/KCB3CBM80ZQlo7ES
+         YnYwVtOvSNXyRHdCq6iRt+PZ5SPBu42Ht7/019R+FZbezdHouQ0Wd8q7p/dI6JvmGR
+         4DRrlpIs8B3qQ==
+Date:   Tue, 28 Jul 2020 20:31:32 +0100
+From:   Tom Parkin <tparkin@katalix.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH 17/29] l2tp: avoid precidence issues in L2TP_SKB_CB macro
+Message-ID: <20200728193132.GB4582@katalix.com>
+References: <20200721173221.4681-1-tparkin@katalix.com>
+ <20200721173221.4681-18-tparkin@katalix.com>
+ <169fe729db1ba8529d0c071b39d48091cc77fba2.camel@perches.com>
+ <bd83cd37a477721c0336807ffd2044f19f85f1d3.camel@perches.com>
 MIME-Version: 1.0
-References: <20200726120228.1414348-1-jakub@cloudflare.com>
- <20200728012042.r3gkkeg6ib3r2diy@kafai-mbp> <87pn8fwskq.fsf@cloudflare.com>
- <20200728163758.2thfltlhsn2nse57@kafai-mbp> <87o8nzwnsy.fsf@cloudflare.com>
-In-Reply-To: <87o8nzwnsy.fsf@cloudflare.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 28 Jul 2020 15:19:47 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfYRL18V7QCg+TXKp8gEcLP6S-jAYpO5HATQW+8Uv4Hhg@mail.gmail.com>
-Message-ID: <CA+FuTSfYRL18V7QCg+TXKp8gEcLP6S-jAYpO5HATQW+8Uv4Hhg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] udp, bpf: Ignore connections in reuseport group
- after BPF sk lookup
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Marek Majkowski <marek@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="8P1HSweYDcXXzwPJ"
+Content-Disposition: inline
+In-Reply-To: <bd83cd37a477721c0336807ffd2044f19f85f1d3.camel@perches.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> >> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-> >> >> index c394e674f486..29d9691359b9 100644
-> >> >> --- a/net/ipv6/udp.c
-> >> >> +++ b/net/ipv6/udp.c
-> >> >> @@ -208,7 +208,7 @@ static inline struct sock *udp6_lookup_run_bpf(struct net *net,
-> >> >>           return sk;
-> >> >>
-> >> >>   reuse_sk = lookup_reuseport(net, sk, skb, saddr, sport, daddr, hnum);
-> >> >> - if (reuse_sk && !reuseport_has_conns(sk, false))
-> >> >> + if (reuse_sk)
-> >> > From __udp[46]_lib_lookup,
-> >> > 1. The connected udp is picked by the kernel first.
-> >> >    If a 4-tuple-matched connected udp is found.  It should have already
-> >> >    been returned there.
-> >> >
-> >> > 2. If kernel cannot find a connected udp, the sk-lookup bpf prog can
-> >> >    get a chance to pick another socket (likely bound to a different
-> >> >    IP/PORT that the packet is destinated to) by bpf_sk_lookup_assign().
-> >> >    However, bpf_sk_lookup_assign() does not allow TCP_ESTABLISHED.
-> >> >
-> >> >    With the change in this patch, it then allows the reuseport-bpf-prog
-> >> >    to pick a connected udp which cannot be found in step (1).  Can you
-> >> >    explain a use case for this?
-> >>
-> >> It is not intentional. It should not allow reuseport to pick a connected
-> >> udp socket to be consistent with what sk-lookup prog can select. Thanks
-> >> for pointing it out.
-> >>
-> >> I've incorrectly assumed that after acdcecc61285 ("udp: correct
-> >> reuseport selection with connected sockets") reuseport returns only
-> >> unconnected udp sockets, but thats not true for bpf reuseport.
-> >>
-> >> So this patch fixes one corner base, but breaks another one.
-> >>
-> >> I'll change the check to the below and respin:
-> >>
-> >> -    if (reuse_sk && !reuseport_has_conns(sk, false))
-> >> +    if (reuse_sk && reuse_sk->sk_state != TCP_ESTABLISHED)
-> > May be disallow TCP_ESTABLISHED in bpf_sk_select_reuseport() instead
-> > so that the bpf reuseport prog can have a more consistent
-> > behavior among sk-lookup and the regular sk-reuseport-select case.
-> > Thought?
->
-> Ah, I see now what you had in mind. If that option is on the table, I'm
-> all for it. Being consistent makes it easier to explain and use.
->
-> In that case, let me make that change in a separate submission. I want
-> to get test coverage in for the three reuseport flavors.
->
-> > From reuseport_select_sock(), it seems the kernel's select_by_hash
-> > also avoids returning established sk.
->
-> Right. CC'ing Willem to check if bpf was left out on purpose or not.
 
-Not on purpose. I considered that this is up to the BPF program.
+--8P1HSweYDcXXzwPJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On  Tue, Jul 28, 2020 at 11:08:45 -0700, Joe Perches wrote:
+> On Tue, 2020-07-28 at 09:21 -0700, Joe Perches wrote:
+> > On Tue, 2020-07-21 at 18:32 +0100, Tom Parkin wrote:
+> > > checkpatch warned about the L2TP_SKB_CB macro's use of its argument: =
+add
+> > > braces to avoid the problem.
+> > []
+> > > diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+> > []
+> > > @@ -93,7 +93,7 @@ struct l2tp_skb_cb {
+> > >  	unsigned long		expires;
+> > >  };
+> > > =20
+> > > -#define L2TP_SKB_CB(skb)	((struct l2tp_skb_cb *)&skb->cb[sizeof(stru=
+ct inet_skb_parm)])
+> > > +#define L2TP_SKB_CB(skb)	((struct l2tp_skb_cb *)&(skb)->cb[sizeof(st=
+ruct inet_skb_parm)])
+> >=20
+> > Likely better to use a static inline.
+> >=20
+> > Something like:
+> >=20
+> > static inline struct l2tp_skb_cb *L2TP_SKB_SB(struct sk_buff *skb)
+> > {
+> > 	return &skb->cb[sizeof(struct inet+skb_parm)];
+> > }
+>=20
+> More precisely:
+> ---
+>  net/l2tp/l2tp_core.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+> index e723828e458b..78ad6d8405c4 100644
+> --- a/net/l2tp/l2tp_core.c
+> +++ b/net/l2tp/l2tp_core.c
+> @@ -93,7 +93,10 @@ struct l2tp_skb_cb {
+>  	unsigned long		expires;
+>  };
+> =20
+> -#define L2TP_SKB_CB(skb)	((struct l2tp_skb_cb *)&(skb)->cb[sizeof(struct=
+ inet_skb_parm)])
+> +static inline struct l2tp_skb_cb *L2TP_SKB_CB(struct sk_buff *skb)
+> +{
+> +	return (struct l2tp_skb_cb *)&skb->cb[sizeof(struct inet_skb_parm)];
+> +}
+> =20
+>  static struct workqueue_struct *l2tp_wq;
+> =20
+>=20
+
+Thanks Joe.  I can see this is better since we get some type checking
+=66rom the compiler for the function argument.
+
+The patchset has been applied already, but I can try to integrate this
+change in the future.
+
+--8P1HSweYDcXXzwPJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl8gfRAACgkQlIwGZQq6
+i9C+2Qf/ZnPcwsKj1g/6f6IQBeDZn9eRriULQCuOW5ZvWsKqBmJPmWSMioGIUIpg
+otJZ18s74HKcBhQjw1xm5hvzYzCmNXFE+GZyTTla7tofkvL+/wLe8zLUOWZltl0l
+Budm93OfWQ7wkD1/E2HBpxicz7TiZZqKO8sxxf8gRrVTA0gMYT/hY2yabjmb6hTN
+PW5FLeA1X0ixtLwxSYEoONdSszd1P4a5jOm6tupilzGb8HnBQZtrgXZqIKiRB8Zk
+IJFapLgbPy5Qm1cnI/65dLMh5puX2wCmmVURFx3OKAHVTw51Qxb/bNPc7sF/8Dv3
+VAhFfbaH8/ZRmM/At1IhaVLlxExmOg==
+=igLa
+-----END PGP SIGNATURE-----
+
+--8P1HSweYDcXXzwPJ--
