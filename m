@@ -2,142 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18A3D230B9C
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 15:41:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F2A7230BE2
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 15:58:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730107AbgG1Nll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 09:41:41 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:34722 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730069AbgG1Nll (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 09:41:41 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1595943698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rdyjzq49qh0o1k2eHrosv/rRh5Wf4b1+KgFekA4u2eU=;
-        b=ArvVGunSApCYmSyxqEc8yoj+V9pKmDYbcoSTA4KKly/Uv56l0fY0ZIwcBNa7stbFeMztW4
-        2bAOQWPIaqPfKgOZFfJgD0uq9+0xCdk/8bcKYYKvGRm/ba8j29mE5XOfgBDorQcU2uvIKJ
-        tWtAKTRwULxi+G2eKjPrWuw+m7WDrlU1IoWImnsya9uGCaZqfHJ0OvJeOXgZtBIRepw9IZ
-        NQlOlx9rP4Kwk1Em9ZCf88HEAuQczdILDU6sMZj4eEZ/ZAyvHDHimJiNnnEEGSarf6kXGi
-        Ba6ySskannPPzJ5oCLAMNboi6FEe+69yLgKuPrhnrcidpM3TDWCzMMSe2SqEhA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1595943698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rdyjzq49qh0o1k2eHrosv/rRh5Wf4b1+KgFekA4u2eU=;
-        b=Ytih5aNv8QLoOhoIkTVjOrUblZ7duenSqs9p3pLHvHC6HwTZxKbktM/Xo7IjP4ZuAOgkZz
-        m2sJ+uTEnO9SYBBA==
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S1730261AbgG1N6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 09:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726764AbgG1N6L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 09:58:11 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60456C061794
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 06:58:11 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id kq25so7798192ejb.3
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 06:58:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ymP2tkbCreL/BF43+tTjYnEHkymNa3rchuw1gYfZEfQ=;
+        b=oMNMtjIME3+WubEoBwV0RCzBSd3w/ZacHV0/MIaMQsDsXKVA+ffHU1K+cCfA0pZe5b
+         8cmaUNwUFDPa7F+Oo47Ool4rApNg3xZ/KLqcmxmWlrP0p4y+H0nRUcngVmvfZw9RVRAO
+         RjQhpeAhr763rKw69pCbpurmWe33driw0NlDRsF5667RjxZ/otWwsk8d9+9jzniz1Gn+
+         oWcKZjScOYxJxQDIBjjkoqrBj+z2yY+8xDZNm1AGXQDBWrYMen1kq16oRSXqq2N6pSn3
+         L7In1AgtUHsWRKlzODuHHfqmgaC7C0JL7ioaTxuQCVTzJ16Ehr5qMN0akImSf7QXATJB
+         oiNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ymP2tkbCreL/BF43+tTjYnEHkymNa3rchuw1gYfZEfQ=;
+        b=N1HpSxITgzJ+x3bHREEtW2358j9ZO3eYETzvI3RVSjBIYkm2c/4kmnlTY/d1hbGEpR
+         lxnsUY5/WMBjj5Ju5RDzgV6EaVW+RFqwJ8YWVgIXgQuqSQejbB6DeNi6MkXo7QDRvyTT
+         Se30lyIKMF9hTGmapvrsREhA3+MkTlpD6HlxGA6TP0+NIQgwIWOrAZwimVKjjSUAsrYf
+         a2C2BvoLROK5KRGpB4ZPA4hu2dz4sH1sBC6eshRpWiFpSyTndgZgBeFt66r2Le9e0D24
+         Jnm2QwJqcxKr9jb6yqir7HfXOmRQGxrkqruvzBfiXXW293UJltrVgLy/gIanSIVy0f9i
+         M1fQ==
+X-Gm-Message-State: AOAM531nPGTMkvmHc0zTtIrvlzDuI7BE0ivcGm3/Pmhe9sAOaIJIirGq
+        L1460LO9UBu5pu0Dq/zc/HP5lA==
+X-Google-Smtp-Source: ABdhPJwroLo223bNqj6sH/j5TpDMw2I5BPQp3H1jydSIXwW/JzjKbhx2qtE45esrYgcxkGyKrhleWQ==
+X-Received: by 2002:a17:906:7f0e:: with SMTP id d14mr1886365ejr.400.1595944690141;
+        Tue, 28 Jul 2020 06:58:10 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id f22sm442617edt.91.2020.07.28.06.58.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jul 2020 06:58:09 -0700 (PDT)
+Date:   Tue, 28 Jul 2020 15:58:08 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Moshe Shemesh <moshe@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 4/9] mlxsw: spectrum_ptp: Use generic helper function
-In-Reply-To: <875za7sr7b.fsf@kurt>
-References: <20200727090601.6500-1-kurt@linutronix.de> <20200727090601.6500-5-kurt@linutronix.de> <87a6zli04l.fsf@mellanox.com> <875za7sr7b.fsf@kurt>
-Date:   Tue, 28 Jul 2020 15:41:37 +0200
-Message-ID: <87365bsqni.fsf@kurt>
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: Re: [PATCH net-next RFC 01/13] devlink: Add reload level option to
+ devlink reload command
+Message-ID: <20200728135808.GC2207@nanopsycho>
+References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
+ <1595847753-2234-2-git-send-email-moshe@mellanox.com>
+ <20200727175802.04890dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200727175802.04890dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-
-On Tue Jul 28 2020, Kurt Kanzenbach wrote:
-> On Mon Jul 27 2020, Petr Machata wrote:
->> So this looks good, and works, but I'm wondering about one thing.
+Tue, Jul 28, 2020 at 02:58:02AM CEST, kuba@kernel.org wrote:
+>On Mon, 27 Jul 2020 14:02:21 +0300 Moshe Shemesh wrote:
+>> Add devlink reload level to allow the user to request a specific reload
+>> level. The level parameter is optional, if not specified then driver's
+>> default reload level is used (backward compatible).
 >
-> Thanks for testing.
+>Please don't leave space for driver-specific behavior. The OS is
+>supposed to abstract device differences away.
+
+But this is needed to maintain the existing behaviour which is different
+for different drivers.
+
+
 >
->>
->> Your code (and evidently most drivers as well) use a different check
->> than mlxsw, namely skb->len + ETH_HLEN < X. When I print_hex_dump()
->> skb_mac_header(skb), skb->len in mlxsw with some test packet, I get e.g.
->> this:
->>
->>     00000000259a4db7: 01 00 5e 00 01 81 00 02 c9 a4 e4 e1 08 00 45 00  ..^...........E.
->>     000000005f29f0eb: 00 48 0d c9 40 00 01 11 c8 59 c0 00 02 01 e0 00  .H..@....Y......
->>     00000000f3663e9e: 01 81 01 3f 01 3f 00 34 9f d3 00 02 00 2c 00 00  ...?.?.4.....,..
->>                             ^sp^^ ^dp^^ ^len^ ^cks^       ^len^
->>     00000000b3914606: 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02  ................
->>     000000002e7828ea: c9 ff fe a4 e4 e1 00 01 09 fa 00 00 00 00 00 00  ................
->>     000000000b98156e: 00 00 00 00 00 00                                ......
->>
->> Both UDP and PTP length fields indicate that the payload ends exactly at
->> the end of the dump. So apparently skb->len contains all the payload
->> bytes, including the Ethernet header.
->>
->> Is that the case for other drivers as well? Maybe mlxsw is just missing
->> some SKB magic in the driver.
+>Previously the purpose of reload was to activate new devlink params
+>(with driverinit cmode), now you want the ability to activate new
+>firmware. Let users specify their intent and their constraints.
 >
-> So I run some tests (on other hardware/drivers) and it seems like that
-> the skb->len usually doesn't include the ETH_HLEN. Therefore, it is
-> added to the check.
+>> Reload levels supported are:
+>> driver: driver entities re-instantiation only.
+>> fw_reset: firmware reset and driver entities re-instantiation.
+>> fw_live_patch: firmware live patching only.
 >
-> Looking at the driver code:
+>I'm concerned live_patch is not first - it's the lowest impact (since
+>it's live). Please make sure you clearly specify the expected behavior
+>for the new API.
 >
-> |static void mlxsw_sp_rx_sample_listener(struct sk_buff *skb, u8 local_port,
-> |					void *trap_ctx)
-> |{
-> |	[...]
-> |	/* The sample handler expects skb->data to point to the start of the
-> |	 * Ethernet header.
-> |	 */
-> |	skb_push(skb, ETH_HLEN);
-> |	mlxsw_sp_sample_receive(mlxsw_sp, skb, local_port);
-> |}
-
-Sorry, that was the wrong function. I meant this one here:
-
-|static void mlxsw_sp_rx_ptp_listener(struct sk_buff *skb, u8 local_port,
-|				     void *trap_ctx)
-|{
-|	[...]
-|	/* The PTP handler expects skb->data to point to the start of the
-|	 * Ethernet header.
-|	 */
-|	skb_push(skb, ETH_HLEN);
-|	mlxsw_sp_ptp_receive(mlxsw_sp, skb, local_port);
-|}
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8gKxEACgkQeSpbgcuY
-8Kbu3g//bQmiBYriOq5mPl+QFMMfIMoKe7iHXBHS1nb0SAlb8xup0kmBP8HBcGaR
-GRlxe/5rJnPp0eo2x1Fz5K0bn85lHmG3L/Yb7zsuzEKB4A7YX9OPCaA5OvSAgJnS
-I5h5yx8zLwfA9tFdEOXoIwtAzj2uzsSayEvOXlqMQv8SwaNTcet6SOAJDqLfU3Te
-NIgY1gGjfCD3lOw+ESbwsqnFxoXi5ZOJachUdqgRqMtiY327mpq6j3yi3PFm19lJ
-m5czbNlod+vy9G8uHlVPzViM2ml+aq2JVZdRUbQi6ep4rTKwBwjeuWlyAV9dViyA
-LWoSxgfLyn3gTWwrA4XMJQB+cQcjznTHLMUS54smUe7iZYWGqZtXW+qEPaJiErEH
-f6/IEbTMS9lw1M2fFXr/xEtcKuVjcucAgOFGRVvwXqfR2PoNPcgweWLAPnCHUtVP
-S1yaCOfLzwIoX5OZz1HjVUc5wGh929JRqnhm0k5RIbn6iTN5XH4auqzz2V8puqEy
-LnRBEC1ZU2oWKnlb/Fx4NENTukgVCOLUejlfQm/DaVB0GrfBvrRKupkjvmcrUuzq
-tNaP4A7DIwbgJfY6urfEvyOKvkqCnpva2NMF0Ot2RnqdiQiRJfiemvygCjjbUBlO
-PXA9SzZhOMoJZqRIY6KAtLXuNJgsQPM6Tp+lRla9LYUgK4qEoP4=
-=P+TX
------END PGP SIGNATURE-----
---=-=-=--
+>The notion of multi-host is key for live patching, so it has to be
+>mentioned.
+>
+>> Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
