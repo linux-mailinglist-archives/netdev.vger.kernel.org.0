@@ -2,90 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2331F2300C7
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 06:29:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 268BB2300CB
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 06:31:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726886AbgG1E3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 00:29:04 -0400
-Received: from mga11.intel.com ([192.55.52.93]:29130 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726757AbgG1E3D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 00:29:03 -0400
-IronPort-SDR: TH4EolS7SDb+QyN4/EyskwpOxxqlEEnts/CfZTh+UzWGH+z1PwSIOcYCgu1DLeRVrm2EDOok5D
- ABWXEoysMyDg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9695"; a="149012930"
-X-IronPort-AV: E=Sophos;i="5.75,405,1589266800"; 
-   d="scan'208";a="149012930"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2020 21:29:03 -0700
-IronPort-SDR: J8eqJtVRdYESO58oiEPppSanX8UBLje4JhyfJoDDzZmzVrOfakrL4H5zODBJsv05d2tn2/us3P
- qK0kk5d7oiLA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,405,1589266800"; 
-   d="scan'208";a="290037382"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.131])
-  by orsmga006.jf.intel.com with ESMTP; 27 Jul 2020 21:28:53 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, alex.williamson@redhat.com, mst@redhat.com,
-        pbonzini@redhat.com, sean.j.christopherson@intel.com,
-        wanpengli@tencent.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, eli@mellanox.com, shahafs@mellanox.com,
-        parav@mellanox.com, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V4 6/6] irqbypass: do not start cons/prod when failed connect
-Date:   Tue, 28 Jul 2020 12:24:05 +0800
-Message-Id: <20200728042405.17579-7-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.18.4
-In-Reply-To: <20200728042405.17579-1-lingshan.zhu@intel.com>
-References: <20200728042405.17579-1-lingshan.zhu@intel.com>
+        id S1726445AbgG1EbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 00:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56048 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726004AbgG1EbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 00:31:21 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD253C061794;
+        Mon, 27 Jul 2020 21:31:21 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id k18so3005011pfp.7;
+        Mon, 27 Jul 2020 21:31:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v+vZ5D4lzefV/m6Wri5yBEiubcUZ9dLbHVAGhnF8Sco=;
+        b=dHFpNLnBI7i7q/GgeRddp2ijwrw3IwVr0tWLgS+N0fmjwKV853MwLy70ChD1bZFUO1
+         wl5wRHC1MgjqvggoTT3AuZo57TTkAr11qpEHEFbTpsHOUWNb6tfx16bX0tp7sRZ3A0J9
+         66dIYDQ6dWJz2IVqGpRng1iNq7TN36GtwWceIsL70xAvFWh12VyD4QLWPhEiBuD3uhZe
+         c6yN0+iQaREWBLptbBivah1QzKhJniHcb0w42gUgyQwwcM/+GtJ3EkYBy02AEiNT1G5c
+         W5IVhAOqoSOkNPkZm1PVZ9LBCVJnf9SYFbDdviBAMqc6BzE/TFCdytDb5k1QNMu7yZb9
+         XmGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v+vZ5D4lzefV/m6Wri5yBEiubcUZ9dLbHVAGhnF8Sco=;
+        b=MKovf2/i+BIrGRViI8UPaXxJdZDHT+Lyqun6ScJh58v3BXtIFQSx+H9tBw/PiecfPd
+         DrWlav4a1XIV7FZfQtnavojkpZST8pyl2O8TPOxC8aZgpZp/+h27hvaXCUELEV0uDgdx
+         GxciixBYsMwKthqOqXHESGCrYe3VuwfpkSw49MlrRX+H/UvjjcwLKvT1JmD1VItjzAw7
+         vACvtJTkM12SWtON8HjgMn7xTCtKfR2YBj9N7dlOsMgejNX7+vH3X9Y26ZSCR7jAyVyg
+         BQ0ljZPsC/MNWIu33pZth7h2mYN15amMoHgLaauokJOy646ai7DbTVK45fxTsUNIdG11
+         9LoQ==
+X-Gm-Message-State: AOAM531I8rtIGY/yaFaHsIZNFduOecinRKu1sZ23HpbAxkZdQ9Yy0zYF
+        O8fnlbS7tMRTZEPCmIGwCR0=
+X-Google-Smtp-Source: ABdhPJxNSKY8nqzWNqUmpduCVcvLv5t3RJfq1EJosoCcXwZzA8Tp2Mh5firF6Od4Bd4KmDGn77+BDQ==
+X-Received: by 2002:a62:e202:: with SMTP id a2mr23719262pfi.8.1595910680994;
+        Mon, 27 Jul 2020 21:31:20 -0700 (PDT)
+Received: from varodek.iballbatonwifi.com ([103.105.152.86])
+        by smtp.gmail.com with ESMTPSA id b82sm16914992pfb.215.2020.07.27.21.31.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jul 2020 21:31:20 -0700 (PDT)
+From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Helgaas <bjorn@helgaas.com>,
+        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kevin Curtis <kevin.curtis@farsite.co.uk>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: [PATCH v1] farsync: use generic power management
+Date:   Tue, 28 Jul 2020 09:58:10 +0530
+Message-Id: <20200728042809.91436-1-vaibhavgupta40@gmail.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If failed to connect, there is no need to start consumer nor
-producer.
+The .suspend() and .resume() callbacks are not defined for this driver.
+Still, their power management structure follows the legacy framework. To
+bring it under the generic framework, simply remove the binding of
+callbacks from "struct pci_driver".
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-Suggested-by: Jason Wang <jasowang@redhat.com>
+Change code indentation from space to tab in "struct pci_driver".
+
+Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 ---
- virt/lib/irqbypass.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/net/wan/farsync.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/virt/lib/irqbypass.c b/virt/lib/irqbypass.c
-index 28fda42e471b..c9bb3957f58a 100644
---- a/virt/lib/irqbypass.c
-+++ b/virt/lib/irqbypass.c
-@@ -40,17 +40,21 @@ static int __connect(struct irq_bypass_producer *prod,
- 	if (prod->add_consumer)
- 		ret = prod->add_consumer(prod, cons);
- 
--	if (!ret) {
--		ret = cons->add_producer(cons, prod);
--		if (ret && prod->del_consumer)
--			prod->del_consumer(prod, cons);
--	}
-+	if (ret)
-+		goto err_add_consumer;
-+
-+	ret = cons->add_producer(cons, prod);
-+	if (ret)
-+		goto err_add_producer;
- 
- 	if (cons->start)
- 		cons->start(cons);
- 	if (prod->start)
- 		prod->start(prod);
--
-+err_add_producer:
-+	if (prod->del_consumer)
-+		prod->del_consumer(prod, cons);
-+err_add_consumer:
- 	return ret;
+diff --git a/drivers/net/wan/farsync.c b/drivers/net/wan/farsync.c
+index 7916efce7188..15dacfde6b83 100644
+--- a/drivers/net/wan/farsync.c
++++ b/drivers/net/wan/farsync.c
+@@ -2636,12 +2636,10 @@ fst_remove_one(struct pci_dev *pdev)
  }
  
+ static struct pci_driver fst_driver = {
+-        .name		= FST_NAME,
+-        .id_table	= fst_pci_dev_id,
+-        .probe		= fst_add_one,
+-        .remove	= fst_remove_one,
+-        .suspend	= NULL,
+-        .resume	= NULL,
++	.name		= FST_NAME,
++	.id_table	= fst_pci_dev_id,
++	.probe		= fst_add_one,
++	.remove		= fst_remove_one,
+ };
+ 
+ static int __init
 -- 
-2.18.4
+2.27.0
 
