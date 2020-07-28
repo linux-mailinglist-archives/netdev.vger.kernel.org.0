@@ -2,132 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 208B32306E2
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 11:48:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 133A423076F
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 12:15:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728459AbgG1Jsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 05:48:33 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:59438 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728368AbgG1Jsa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 05:48:30 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6EEE41A0064;
-        Tue, 28 Jul 2020 11:48:28 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 62EDF1A0054;
-        Tue, 28 Jul 2020 11:48:28 +0200 (CEST)
-Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 3399C20328;
-        Tue, 28 Jul 2020 11:48:28 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 2/2] dpaa2-eth: add reset control for debugfs statistics
-Date:   Tue, 28 Jul 2020 12:48:12 +0300
-Message-Id: <20200728094812.29002-3-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200728094812.29002-1-ioana.ciornei@nxp.com>
-References: <20200728094812.29002-1-ioana.ciornei@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1728704AbgG1KPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 06:15:15 -0400
+Received: from www62.your-server.de ([213.133.104.62]:42900 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728542AbgG1KPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 06:15:15 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k0Mdb-0000Dj-Ue; Tue, 28 Jul 2020 12:15:11 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k0Mdb-000C7q-KL; Tue, 28 Jul 2020 12:15:11 +0200
+Subject: Re: [PATCH v3 bpf-next] fold test_current_pid_tgid_new_ns into
+ test_progs.
+To:     Carlos Neira <cneirabustos@gmail.com>, netdev@vger.kernel.org
+Cc:     yhs@fb.com, ebiederm@xmission.com, brouer@redhat.com,
+        bpf@vger.kernel.org
+References: <20200723015447.42958-1-cneirabustos@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <542a5d08-b497-81df-4621-7372a57b71db@iogearbox.net>
+Date:   Tue, 28 Jul 2020 12:15:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20200723015447.42958-1-cneirabustos@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25886/Mon Jul 27 16:48:28 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Export two debugfs control files through which the user can reset the
-software kept statistics per CPU, per FQ, per channel - reset_stats - as
-well as those kept by HW - reset_mc_stats.
-This is especially useful in the context of debugging when there is a
-need for precise statistics per a run of the test.
+On 7/23/20 3:54 AM, Carlos Neira wrote:
+> Changes from V2:
+>   - Test not creating a new namespace has been included in test_progs.
+>   - Test creating a new pid namespace has been added as a standalone test.
+> 
+> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- .../freescale/dpaa2/dpaa2-eth-debugfs.c       | 64 +++++++++++++++++++
- 1 file changed, 64 insertions(+)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-index 56d9927fbfda..b1264ddb1ed2 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-@@ -170,6 +170,62 @@ static const struct file_operations dpaa2_dbg_ch_ops = {
- 	.release = single_release,
- };
- 
-+static ssize_t dpaa2_dbg_reset_write(struct file *file, const char __user *buf,
-+				     size_t count, loff_t *offset)
-+{
-+	struct dpaa2_eth_priv *priv = file->private_data;
-+	struct dpaa2_eth_drv_stats *percpu_extras;
-+	struct rtnl_link_stats64 *percpu_stats;
-+	struct dpaa2_eth_channel *ch;
-+	struct dpaa2_eth_fq *fq;
-+	int i;
-+
-+	for_each_online_cpu(i) {
-+		percpu_stats = per_cpu_ptr(priv->percpu_stats, i);
-+		memset(percpu_stats, 0, sizeof(*percpu_stats));
-+
-+		percpu_extras = per_cpu_ptr(priv->percpu_extras, i);
-+		memset(percpu_extras, 0, sizeof(*percpu_extras));
-+	}
-+
-+	for (i = 0; i < priv->num_fqs; i++) {
-+		fq = &priv->fq[i];
-+		memset(&fq->stats, 0, sizeof(fq->stats));
-+	}
-+
-+	for (i = 0; i < priv->num_channels; i++) {
-+		ch = priv->channel[i];
-+		memset(&ch->stats, 0, sizeof(ch->stats));
-+	}
-+
-+	return count;
-+}
-+
-+static const struct file_operations dpaa2_dbg_reset_ops = {
-+	.open = simple_open,
-+	.write = dpaa2_dbg_reset_write,
-+};
-+
-+static ssize_t dpaa2_dbg_reset_mc_write(struct file *file,
-+					const char __user *buf,
-+					size_t count, loff_t *offset)
-+{
-+	struct dpaa2_eth_priv *priv = file->private_data;
-+	int err;
-+
-+	err = dpni_reset_statistics(priv->mc_io, 0, priv->mc_token);
-+	if (err)
-+		netdev_err(priv->net_dev,
-+			   "dpni_reset_statistics() failed %d\n", err);
-+
-+	return count;
-+}
-+
-+static const struct file_operations dpaa2_dbg_reset_mc_ops = {
-+	.open = simple_open,
-+	.write = dpaa2_dbg_reset_mc_write,
-+};
-+
- void dpaa2_dbg_add(struct dpaa2_eth_priv *priv)
- {
- 	struct dentry *dir;
-@@ -186,6 +242,14 @@ void dpaa2_dbg_add(struct dpaa2_eth_priv *priv)
- 
- 	/* per-fq stats file */
- 	debugfs_create_file("ch_stats", 0444, dir, priv, &dpaa2_dbg_ch_ops);
-+
-+	/* reset stats */
-+	debugfs_create_file("reset_stats", 0200, dir, priv,
-+			    &dpaa2_dbg_reset_ops);
-+
-+	/* reset MC stats */
-+	debugfs_create_file("reset_mc_stats", 0200, dir, priv,
-+			    &dpaa2_dbg_reset_mc_ops);
- }
- 
- void dpaa2_dbg_remove(struct dpaa2_eth_priv *priv)
--- 
-2.25.1
-
+In your commit message you only have the version change but no proper writeup
+for the patch itself (e.g. what it does & why it's needed). Please fix, thx.
