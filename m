@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CC8C230A59
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 14:38:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E222230A5C
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 14:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729738AbgG1Mht (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 08:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46608 "EHLO
+        id S1729755AbgG1Mif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 08:38:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729334AbgG1Mht (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 08:37:49 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175CDC061794;
-        Tue, 28 Jul 2020 05:37:49 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id t6so9839619plo.3;
-        Tue, 28 Jul 2020 05:37:49 -0700 (PDT)
+        with ESMTP id S1728751AbgG1Mif (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 08:38:35 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 036B3C061794;
+        Tue, 28 Jul 2020 05:38:35 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id i92so2969272pje.0;
+        Tue, 28 Jul 2020 05:38:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
         bh=Fie8IAXWZ8a1f4IBdyXwUsTRAo2+ebUYgUxfo3SFpeA=;
-        b=qHe7dAnwegbl8DFADwHo8PEhSZ+7zbY4GEkjbh4YRgoBOr7ttuUIZd3W/lLbgvLXtH
-         Nmw48d7CCQlwK/k1SgCBId7AiMOZT4EXk0h2LojeErsKRtc6QPNKwLxAhFQd6hR5NDyh
-         9oHwM248bQKXcys1dFKO9l1neCAYAMuaCiwJCWlW/ZkIe96vqwtjeAMSYa2tbq9x3o88
-         BGtALXe6t+2pHo3RJtR9tsUzxejGbCniBGGmlSIs46uPSGgc49ttoIf+wh2we7OmML0/
-         E/BVTKjEZGGX3/hQPfkvDwAN/xv8xFQbuW6LGOAazLbs95E03Y8rFQJ+pEPZpx4h4qn+
-         vIVA==
+        b=SK9b2UYTW6naBrk+5Nf+HITJ8jpZ5nTD3wTAGxb37B+Ugb0+FU9daPv5RE6+KoAdKb
+         A52m+AH2ReoUyWjImEbPFcuuY2un3gyDWbhZU3Z5HR0JGsEiqA1T1CGa3DXHpqaIo+m5
+         Yp/IiDKSzac3d2CIz1SHRkAOmLKJrf3CMXujw+d8OHQk39gqh5ocYCpYCuQkSEEneHAm
+         ziS1+TJqLiFpxeDVfdOszutkDUaX3v79cXpqfpA0wIdmevzMmXOzLcHJUYj7r6EU+272
+         JN0pGtGHdHUj2KWf+0LVVONbMmeHkrR8KXJzTrvsOILhKNNvPF/rp9yAIBgwpsLanTAP
+         6ywQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
         bh=Fie8IAXWZ8a1f4IBdyXwUsTRAo2+ebUYgUxfo3SFpeA=;
-        b=Srm8REEYxDbNUbtn2GW2+NCxmm0I6HMIkk653gBd7B0CkAI5d1ZjgLcQxRTJT6FS6b
-         6UhXcB7vxRYiny1Tb8oqLldRuCCwq2Bd3C8780zkhS2EXt7ppTOFuFr4rPZsy/nRv1Vr
-         ditYw01lLGQ3E1Eyl3AGpFZpzAWS6g50CEDt0WNt3BkvHMr/mFJ2SRrIjf5YgRgv3wwr
-         rkfdT1mi1nHBmxYmZv7K5zyfTVfxscYt9o+jxosWSjBvSZYPE++F+sf8Sb/TpBQxl/qM
-         VS7uGn4JV2MF16KODq9uWFkCMxxzV9S+/OcRoUVddKN3kkXDGBV6yIi1uhxKN1wJCAVt
-         52Ng==
-X-Gm-Message-State: AOAM533rwH4/r90hOa8wVpPp8BWIPpY1UjLV1w3JgL56h8BMfN12slhM
-        6mSZ8wNEJ8Z0Gg0UE5ECvFM=
-X-Google-Smtp-Source: ABdhPJxMwzS10JHnifAZmdNYC8YAZkIcOFzizwBro4Xw8cdcIQLhzKEz7J7HdS2SEjQ2Po+YluXXBg==
-X-Received: by 2002:a17:902:7b90:: with SMTP id w16mr21425536pll.253.1595939868491;
-        Tue, 28 Jul 2020 05:37:48 -0700 (PDT)
+        b=PpRE7Qh/MGStL/wzh9eW9GRvp03r61bxU/vqgNIoaFgS0L8OmGZvHDI6ZquoWy3yP2
+         W8bABLImOFGPPP493mBxtaDfhA/DKkROyRL+1g22tujAl3J1bZaA/R3M1uEinw0TXHEg
+         EumFdq0x5L8Y8LaEv59ZBk77T+i5WJl9FhYye7aRe12wUCfDZTgQ1IuQ5RxWrwNq1xaX
+         qYqSKSeewlpbnC7rshoVeN90+MUkiGnS0+3Zl1VgwvgpD/x2vRpuMQFL8q76ZIucB0Hl
+         8VuUAO3yuJ7Ux9t3AkqgVumHWQ18wPraNG3yASDRR8sYZRB6YgsXuLuZo0CHhUlkJ9g6
+         puGg==
+X-Gm-Message-State: AOAM533mF+K82X6IOGhR+Z4Pv+TYImhSry56YCLVBPrwtzUzHcrztY0i
+        chp4MlHQ6BuFuPkCRvP3fQMw5kNIoBjg2g==
+X-Google-Smtp-Source: ABdhPJwekYhSoj1idJB4yjdyuS66TSlXyc2WtTJj9+6S091YCsU5daM2krAGtIehCsmH7jRufibfUw==
+X-Received: by 2002:a17:90b:30d0:: with SMTP id hi16mr4452970pjb.65.1595939914561;
+        Tue, 28 Jul 2020 05:38:34 -0700 (PDT)
 Received: from gmail.com ([2401:4900:2eef:ca92:3545:4a68:f406:d612])
-        by smtp.gmail.com with ESMTPSA id l134sm18030158pga.50.2020.07.28.05.37.43
+        by smtp.gmail.com with ESMTPSA id t17sm1684380pgu.30.2020.07.28.05.38.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jul 2020 05:37:47 -0700 (PDT)
-Date:   Tue, 28 Jul 2020 18:06:19 +0530
+        Tue, 28 Jul 2020 05:38:33 -0700 (PDT)
+Date:   Tue, 28 Jul 2020 18:07:03 +0530
 From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
 To:     Bjorn Helgaas <helgaas@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>,
@@ -55,17 +55,19 @@ To:     Bjorn Helgaas <helgaas@kernel.org>,
         Vaibhav Gupta <vaibhav.varodek@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Kevin Curtis <kevin.curtis@farsite.co.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org,
         Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v1] farsync: use generic power management
-Message-ID: <20200728123619.GA1331847@gmail.com>
-References: <20200728042809.91436-1-vaibhavgupta40@gmail.com>
+Subject: Re: [PATCH v1] pch_can: use generic power management
+Message-ID: <20200728123703.GB1331847@gmail.com>
+References: <20200728085757.888620-1-vaibhavgupta40@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200728042809.91436-1-vaibhavgupta40@gmail.com>
+In-Reply-To: <20200728085757.888620-1-vaibhavgupta40@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
