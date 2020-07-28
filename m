@@ -2,111 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA1AE230E9A
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22448230EA0
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 18:00:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731160AbgG1P7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 11:59:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49548 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730977AbgG1P7P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 11:59:15 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732D9C061794;
-        Tue, 28 Jul 2020 08:59:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=sCLxp6AUq1KmYBCwLzSeRjYy8jCk/8A7PYbEtgGG+qY=; b=FBdfJX7RXHbQPC7Lt8l5KLv3H
-        5jw/LPb2H4Mg8qL/wp+zku+Lj2h55sF0Y6agIQNJrTBNjuBM9YOt0dEfgsWwBqWZVZPVj/yy7mrgK
-        xaURIu7OaaysamVAf538TZYDzlKIjek98q5EwLJwpAnb5XnhO0tA+qbCsqBVf2rDg4yGWQPNYc79o
-        8EeRnwjSAsDHAgWqCyMhXAMEBJQ+/QqPObuLXw25uaqcWjM9VtAKN9zl04D1Dp9ltFZNmpAx1Od0x
-        DuDxhjZIZG6j4Ee3Rmiuk9h5s+heolj6SGeBoLaIjNjlSGOngJEv4YF1wECBdZ2vOJZgqM4ysAKd0
-        ZPvrb1+JQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45296)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1k0S0S-0004SE-PO; Tue, 28 Jul 2020 16:59:08 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1k0S0O-0004n3-Kl; Tue, 28 Jul 2020 16:59:04 +0100
-Date:   Tue, 28 Jul 2020 16:59:04 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     linux-mediatek@lists.infradead.org,
-        Landen Chao <landen.chao@mediatek.com>, netdev@vger.kernel.org,
-        Sean Wang <sean.wang@mediatek.com>,
-        linux-kernel@vger.kernel.org, Mark Lee <Mark-MC.Lee@mediatek.com>,
-        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        John Crispin <john@phrozen.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org, Felix Fietkau <nbd@nbd.name>
-Subject: Re: [PATCH v3] net: ethernet: mtk_eth_soc: fix mtu warning
-Message-ID: <20200728155904.GT1551@shell.armlinux.org.uk>
-References: <20200728122743.78489-1-frank-w@public-files.de>
+        id S1731203AbgG1P7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 11:59:55 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:45576 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730679AbgG1P7z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 11:59:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1595951993;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FwMDmCLjPgPyIwCwBV+M7ENrQyFWuABUGAGQkmMVDFE=;
+        b=OwSb4dfvPnjGmUZFK+fkyFeNnasx2geBmE9EAppuoOVMk/G9LFbpRTe4CnudLTI8KzmjAy
+        SdudnO2Hjkq19EB3ku34Onx/P04tXMlHStF0B6jKFN0AMBxOCfbbS6HrlzAucVPuR5i0/k
+        qoJW6+92Y4IKSHHRtafUeOMSuLD2NYg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-454-IIO8mskENACISyAGc0c4zQ-1; Tue, 28 Jul 2020 11:59:49 -0400
+X-MC-Unique: IIO8mskENACISyAGc0c4zQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B55CB19200C5;
+        Tue, 28 Jul 2020 15:59:46 +0000 (UTC)
+Received: from krava (unknown [10.40.192.211])
+        by smtp.corp.redhat.com (Postfix) with SMTP id C526F69324;
+        Tue, 28 Jul 2020 15:59:41 +0000 (UTC)
+Date:   Tue, 28 Jul 2020 17:59:40 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v2 2/5] perf record: Prevent override of
+ attr->sample_period for libpfm4 events
+Message-ID: <20200728155940.GC1319041@krava>
+References: <20200728085734.609930-1-irogers@google.com>
+ <20200728085734.609930-3-irogers@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200728122743.78489-1-frank-w@public-files.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200728085734.609930-3-irogers@google.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 02:27:43PM +0200, Frank Wunderlich wrote:
-> From: Landen Chao <landen.chao@mediatek.com>
+On Tue, Jul 28, 2020 at 01:57:31AM -0700, Ian Rogers wrote:
+> From: Stephane Eranian <eranian@google.com>
 > 
-> in recent Kernel-Versions there are warnings about incorrect MTU-Size
-> like these:
-
-Can the above also be fixed for incorrect capitalisation and improper
-hyphernation please?
-
-Thanks.
-
+> Before:
+> $ perf record -c 10000 --pfm-events=cycles:period=77777
 > 
-> eth0: mtu greater than device maximum
-> mtk_soc_eth 1b100000.ethernet eth0: error -22 setting MTU to include DSA overhead
+> Would yield a cycles event with period=10000, instead of 77777.
 > 
-> Fixes: bfcb813203e6 ("net: dsa: configure the MTU for switch ports")
-> Fixes: 72579e14a1d3 ("net: dsa: don't fail to probe if we couldn't set the MTU")
-> Fixes: 7a4c53bee332 ("net: report invalid mtu value via netlink extack")
-> Signed-off-by: René van Dorst <opensource@vdorst.com>
-> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> This was due to an ordering issue between libpfm4 parsing
+> the event string and perf record initializing the event.
+> 
+> This patch fixes the problem by preventing override for
+> events with attr->sample_period != 0 by the time
+> perf_evsel__config() is invoked. This seems to have been the
+> intent of the author.
+> 
+> Signed-off-by: Stephane Eranian <eranian@google.com>
+> Reviewed-by: Ian Rogers <irogers@google.com>
 > ---
->  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  tools/perf/util/evsel.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> index 85735d32ecb0..a1c45b39a230 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> @@ -2891,6 +2891,8 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
->  	eth->netdev[id]->irq = eth->irq[0];
->  	eth->netdev[id]->dev.of_node = np;
-> 
-> +	eth->netdev[id]->max_mtu = MTK_MAX_RX_LENGTH - MTK_RX_ETH_HLEN;
-> +
->  	return 0;
-> 
->  free_netdev:
-> --
-> 2.25.1
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+> index 811f538f7d77..8afc24e2ec52 100644
+> --- a/tools/perf/util/evsel.c
+> +++ b/tools/perf/util/evsel.c
+> @@ -976,8 +976,7 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
+>  	 * We default some events to have a default interval. But keep
+>  	 * it a weak assumption overridable by the user.
+>  	 */
+> -	if (!attr->sample_period || (opts->user_freq != UINT_MAX ||
+> -				     opts->user_interval != ULLONG_MAX)) {
+> +	if (!attr->sample_period) {
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I was wondering why this wouldn't break record/top
+but we take care of the via record_opts__config
+
+as long as 'perf test attr' works it looks ok to me
+
+Acked-by: Jiri Olsa <jolsa@redhat.com>
+
+thanks,
+jirka
+
