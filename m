@@ -2,104 +2,322 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB107231230
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:09:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22E1723123D
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:15:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732596AbgG1TI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:08:57 -0400
-Received: from mga05.intel.com ([192.55.52.43]:43602 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729168AbgG1TIx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 15:08:53 -0400
-IronPort-SDR: REKG0mUg7mfqGNFcxZjwyhz3p/UgaJ0jFqGEsNjqviHRAVG5vbADk2SUvpdGJp2CAbh+BLXu+8
- oaYnLbyUUUVQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9696"; a="236163827"
-X-IronPort-AV: E=Sophos;i="5.75,407,1589266800"; 
-   d="scan'208";a="236163827"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2020 12:08:50 -0700
-IronPort-SDR: nV26MxN66gxRsQO1kbYJht6P5POJQlT+yb3HNJqjsiymeyV07zmU07C8dJanERryv9/ALTn2kx
- na1/gcYDFsmQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,407,1589266800"; 
-   d="scan'208";a="490006246"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga006.fm.intel.com with ESMTP; 28 Jul 2020 12:08:50 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: [net-next 6/6] i40e, xsk: move buffer allocation out of the Rx processing loop
-Date:   Tue, 28 Jul 2020 12:08:42 -0700
-Message-Id: <20200728190842.1284145-7-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200728190842.1284145-1-anthony.l.nguyen@intel.com>
-References: <20200728190842.1284145-1-anthony.l.nguyen@intel.com>
+        id S1732617AbgG1TPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:15:15 -0400
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.220]:17209 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728561AbgG1TPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:15:15 -0400
+X-Greylist: delayed 348 seconds by postgrey-1.27 at vger.kernel.org; Tue, 28 Jul 2020 15:15:12 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1595963711;
+        s=strato-dkim-0002; d=chronox.de;
+        h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=XUUr7VRRoINftMeP06Rutnv9csE5aGgHrwnaN1iS2+g=;
+        b=fFqylUzZ5rb4jePe40czdXiL9CyXktEx6yWtZXZmECsqBlM2CC/h50+rWiKkpm6O/t
+        W7hQqlajjWath9lm6D5l5ltnJeU/O1upMk0v9mV6R5Cb0CWI3gqHuxbRb6UqXeB1LvaU
+        oygdDHCqkImx0jAqUmRlHosjRKCYo0Gst6itQPI4Jl/rcriSXeMIf8gKxyv9ZrwOTutW
+        4oXGsShN8UI8lzKuffwrmGA8a/mE0T0pmkqgaHQS/kCPjxR2+j+oZlDF3qX1iMc3DgBl
+        Gc6LLl+uzjA0ycpQRQPx6L3xMhz3JCzkqyQ0CvNDWSU5BDwwHjKHCfbel4j0zOiofIJh
+        YsSA==
+X-RZG-AUTH: ":P2ERcEykfu11Y98lp/T7+hdri+uKZK8TKWEqNyiHySGSa9k9xmwdNnzGHXPZJ/Sf9P0="
+X-RZG-CLASS-ID: mo00
+Received: from tauon.chronox.de
+        by smtp.strato.de (RZmta 46.10.5 DYNA|AUTH)
+        with ESMTPSA id y0546bw6SJ9B9jg
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Tue, 28 Jul 2020 21:09:11 +0200 (CEST)
+From:   Stephan Mueller <smueller@chronox.de>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        netdev@vger.kernel.org, antony.antony@secunet.com
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Antony Antony <antony@phenome.org>
+Subject: Re: [PATCH ipsec-next] xfrm: add /proc/sys/core/net/xfrm_redact_secret
+Date:   Tue, 28 Jul 2020 21:09:10 +0200
+Message-ID: <3322274.jE0xQCEvom@tauon.chronox.de>
+In-Reply-To: <20200728154342.GA31835@moon.secunet.de>
+References: <20200728154342.GA31835@moon.secunet.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+Am Dienstag, 28. Juli 2020, 17:47:30 CEST schrieb Antony Antony:
 
-Instead of checking in each iteration of the Rx packet processing
-loop, move the allocation out of the loop and do it once for each napi
-activation.
+Hi Antony,
 
-For AF_XDP the rx_drop benchmark was improved by 6%.
+> when enabled, 1, redact XFRM SA secret in the netlink response to
+> xfrm_get_sa() or dump all sa.
+> 
+> e.g
+> echo 1 > /proc/sys/net/core/xfrm_redact_secret
+> ip xfrm state
+> src 172.16.1.200 dst 172.16.1.100
+> 	proto esp spi 0x00000002 reqid 2 mode tunnel
+> 	replay-window 0
+> 	aead rfc4106(gcm(aes)) 0x0000000000000000000000000000000000000000 96
+> 
+> the aead secret is redacted.
+> 
+> /proc/sys/core/net/xfrm_redact_secret is a toggle.
+> Once enabled, either at compile or via proc, it can not be disabled.
+> Redacting secret is a FIPS 140-2 requirement.
+> 
+> Cc: Stephan Mueller <smueller@chronox.de>
+> Signed-off-by: Antony Antony <antony.antony@secunet.com>
+> ---
+>  Documentation/networking/xfrm_sysctl.rst |  7 +++
+>  include/net/netns/xfrm.h                 |  1 +
+>  net/xfrm/Kconfig                         | 10 ++++
+>  net/xfrm/xfrm_sysctl.c                   | 20 +++++++
+>  net/xfrm/xfrm_user.c                     | 76 +++++++++++++++++++++---
+>  5 files changed, 105 insertions(+), 9 deletions(-)
+> 
+> diff --git a/Documentation/networking/xfrm_sysctl.rst
+> b/Documentation/networking/xfrm_sysctl.rst index 47b9bbdd0179..26432b0ff3ac
+> 100644
+> --- a/Documentation/networking/xfrm_sysctl.rst
+> +++ b/Documentation/networking/xfrm_sysctl.rst
+> @@ -9,3 +9,10 @@ XFRM Syscall
+> 
+>  xfrm_acq_expires - INTEGER
+>  	default 30 - hard timeout in seconds for acquire requests
+> +
+> +xfrm_redact_secret - INTEGER
+> +	A toggle to redact xfrm SA's secret to userspace.
+> +	When true the kernel, netlink message will redact SA secret
+> +	to userspace. This is part of FIPS 140-2 requirement.
+> +	Once the value is set to true, either at compile or at run time,
+> +	it can not be set to false.
+> diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
+> index 59f45b1e9dac..0ca9328daad4 100644
+> --- a/include/net/netns/xfrm.h
+> +++ b/include/net/netns/xfrm.h
+> @@ -64,6 +64,7 @@ struct netns_xfrm {
+>  	u32			sysctl_aevent_rseqth;
+>  	int			sysctl_larval_drop;
+>  	u32			sysctl_acq_expires;
+> +	u32			sysctl_redact_secret;
+>  #ifdef CONFIG_SYSCTL
+>  	struct ctl_table_header	*sysctl_hdr;
+>  #endif
+> diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
+> index 5b9a5ab48111..270a4e906a15 100644
+> --- a/net/xfrm/Kconfig
+> +++ b/net/xfrm/Kconfig
+> @@ -91,6 +91,16 @@ config XFRM_ESP
+>  	select CRYPTO_SEQIV
+>  	select CRYPTO_SHA256
+> 
+> +config XFRM_REDACT_SECRET
+> +	bool "Redact xfrm SA secret in netlink message"
+> +	depends on SYSCTL
+> +	default n
+> +	help
+> +	  Enable XFRM SA secret redact in the netlink message.
+> +	  Redacting secret is a FIPS 140-2 requirement.
+> +	  Once enabled at compile, the value can not be set to false on
+> +	  a running system.
+> +
+>  config XFRM_IPCOMP
+>  	tristate
+>  	select XFRM_ALGO
+> diff --git a/net/xfrm/xfrm_sysctl.c b/net/xfrm/xfrm_sysctl.c
+> index 0c6c5ef65f9d..a41aa325a478 100644
+> --- a/net/xfrm/xfrm_sysctl.c
+> +++ b/net/xfrm/xfrm_sysctl.c
+> @@ -4,15 +4,25 @@
+>  #include <net/net_namespace.h>
+>  #include <net/xfrm.h>
+> 
+> +#ifdef CONFIG_SYSCTL
+> +#ifdef CONFIG_XFRM_REDACT_SECRET
+> +#define XFRM_REDACT_SECRET  1
+> +#else
+> +#define XFRM_REDACT_SECRET  0
+> +#endif
+> +#endif
+> +
+>  static void __net_init __xfrm_sysctl_init(struct net *net)
+>  {
+>  	net->xfrm.sysctl_aevent_etime = XFRM_AE_ETIME;
+>  	net->xfrm.sysctl_aevent_rseqth = XFRM_AE_SEQT_SIZE;
+>  	net->xfrm.sysctl_larval_drop = 1;
+>  	net->xfrm.sysctl_acq_expires = 30;
+> +	net->xfrm.sysctl_redact_secret = XFRM_REDACT_SECRET;
+>  }
+> 
+>  #ifdef CONFIG_SYSCTL
+> +
+>  static struct ctl_table xfrm_table[] = {
+>  	{
+>  		.procname	= "xfrm_aevent_etime",
+> @@ -38,6 +48,15 @@ static struct ctl_table xfrm_table[] = {
+>  		.mode		= 0644,
+>  		.proc_handler	= proc_dointvec
+>  	},
+> +	{
+> +		.procname	= "xfrm_redact_secret",
+> +		.maxlen		= sizeof(u32),
+> +		.mode		= 0644,
+> +		/* only handle a transition from "0" to "1" */
+> +		.proc_handler	= proc_dointvec_minmax,
+> +		.extra1         = SYSCTL_ONE,
+> +		.extra2         = SYSCTL_ONE,
+> +	},
+>  	{}
+>  };
+> 
+> @@ -54,6 +73,7 @@ int __net_init xfrm_sysctl_init(struct net *net)
+>  	table[1].data = &net->xfrm.sysctl_aevent_rseqth;
+>  	table[2].data = &net->xfrm.sysctl_larval_drop;
+>  	table[3].data = &net->xfrm.sysctl_acq_expires;
+> +	table[4].data = &net->xfrm.sysctl_redact_secret;
+> 
+>  	/* Don't export sysctls to unprivileged users */
+>  	if (net->user_ns != &init_user_ns)
+> diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+> index e6cfaa680ef3..a3e89dddea9d 100644
+> --- a/net/xfrm/xfrm_user.c
+> +++ b/net/xfrm/xfrm_user.c
+> @@ -848,21 +848,78 @@ static int copy_user_offload(struct xfrm_state_offload
+> *xso, struct sk_buff *skb return 0;
+>  }
+> 
+> -static int copy_to_user_auth(struct xfrm_algo_auth *auth, struct sk_buff
+> *skb) +static int copy_to_user_auth(u32 redact_secret, struct
+> xfrm_algo_auth *auth, +			     struct sk_buff *skb)
+>  {
+>  	struct xfrm_algo *algo;
+> +	struct xfrm_algo_auth *ap;
+>  	struct nlattr *nla;
+> 
+>  	nla = nla_reserve(skb, XFRMA_ALG_AUTH,
+>  			  sizeof(*algo) + (auth->alg_key_len + 7) / 8);
+>  	if (!nla)
+>  		return -EMSGSIZE;
+> -
+>  	algo = nla_data(nla);
+>  	strncpy(algo->alg_name, auth->alg_name, sizeof(algo->alg_name));
+> -	memcpy(algo->alg_key, auth->alg_key, (auth->alg_key_len + 7) / 8);
+> +
+> +	if (redact_secret && auth->alg_key_len)
+> +		memset(algo->alg_key, 0, (auth->alg_key_len + 7) / 8);
+> +	else
+> +		memcpy(algo->alg_key, auth->alg_key,
+> +		       (auth->alg_key_len + 7) / 8);
+>  	algo->alg_key_len = auth->alg_key_len;
+> 
+> +	nla = nla_reserve(skb, XFRMA_ALG_AUTH_TRUNC, xfrm_alg_auth_len(auth));
+> +	if (!nla)
+> +		return -EMSGSIZE;
+> +	ap = nla_data(nla);
+> +	memcpy(ap, auth, sizeof(struct xfrm_algo_auth));
+> +	if (redact_secret)
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+You test for auth->alg_key_len above. Shouldn't there such a check here too?
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index 99f4afdc403d..91aee16fbe72 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -279,8 +279,8 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
- 	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
- 	u16 cleaned_count = I40E_DESC_UNUSED(rx_ring);
- 	unsigned int xdp_res, xdp_xmit = 0;
--	bool failure = false;
- 	struct sk_buff *skb;
-+	bool failure;
- 
- 	while (likely(total_rx_packets < I40E_XSK_CLEAN_RX_BUDGET)) {
- 		union i40e_rx_desc *rx_desc;
-@@ -288,13 +288,6 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
- 		unsigned int size;
- 		u64 qword;
- 
--		if (cleaned_count >= I40E_RX_BUFFER_WRITE) {
--			failure = failure ||
--				  !i40e_alloc_rx_buffers_zc(rx_ring,
--							    cleaned_count);
--			cleaned_count = 0;
--		}
--
- 		rx_desc = I40E_RX_DESC(rx_ring, rx_ring->next_to_clean);
- 		qword = le64_to_cpu(rx_desc->wb.qword1.status_error_len);
- 
-@@ -369,6 +362,9 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
- 		napi_gro_receive(&rx_ring->q_vector->napi, skb);
- 	}
- 
-+	if (cleaned_count >= I40E_RX_BUFFER_WRITE)
-+		failure = !i40e_alloc_rx_buffers_zc(rx_ring, cleaned_count);
-+
- 	i40e_finalize_xdp_rx(rx_ring, xdp_xmit);
- 	i40e_update_rx_stats(rx_ring, total_rx_bytes, total_rx_packets);
- 
--- 
-2.26.2
+> +		memset(ap->alg_key, 0, (auth->alg_key_len + 7) / 8);
+> +	else
+> +		memcpy(ap->alg_key, auth->alg_key,
+> +		       (auth->alg_key_len + 7) / 8);
+> +	return 0;
+> +}
+> +
+> +static int copy_to_user_aead(u32 redact_secret,
+> +			     struct xfrm_algo_aead *aead, struct sk_buff *skb)
+> +{
+> +	struct nlattr *nla = nla_reserve(skb, XFRMA_ALG_AEAD, aead_len(aead));
+> +	struct xfrm_algo_aead *ap;
+> +
+> +	if (!nla)
+> +		return -EMSGSIZE;
+> +
+> +	ap = nla_data(nla);
+> +	memcpy(ap, aead, sizeof(*aead));
+> +
+> +	if (redact_secret)
+
+And here?
+
+> +		memset(ap->alg_key, 0, (aead->alg_key_len + 7) / 8);
+> +	else
+> +		memcpy(ap->alg_key, aead->alg_key,
+> +		       (aead->alg_key_len + 7) / 8);
+> +	return 0;
+> +}
+> +
+> +static int copy_to_user_ealg(u32 redact_secret, struct xfrm_algo *ealg,
+> +			     struct sk_buff *skb)
+> +{
+> +	struct xfrm_algo *ap;
+> +	struct nlattr *nla = nla_reserve(skb, XFRMA_ALG_CRYPT,
+> +					 xfrm_alg_len(ealg));
+> +	if (!nla)
+> +		return -EMSGSIZE;
+> +
+> +	ap = nla_data(nla);
+> +	memcpy(ap, ealg, sizeof(*ealg));
+> +
+> +	if (redact_secret)
+
+Here, too?
+
+> +		memset(ap->alg_key, 0, (ealg->alg_key_len + 7) / 8);
+> +	else
+> +		memcpy(ap->alg_key, ealg->alg_key,
+> +		       (ealg->alg_key_len + 7) / 8);
+> +
+>  	return 0;
+>  }
+> 
+> @@ -884,6 +941,7 @@ static int copy_to_user_state_extra(struct xfrm_state
+> *x, struct sk_buff *skb)
+>  {
+>  	int ret = 0;
+> +	struct net *net = xs_net(x);
+> 
+>  	copy_to_user_state(x, p);
+> 
+> @@ -906,20 +964,20 @@ static int copy_to_user_state_extra(struct xfrm_state
+> *x, goto out;
+>  	}
+>  	if (x->aead) {
+> -		ret = nla_put(skb, XFRMA_ALG_AEAD, aead_len(x->aead), x-
+>aead);
+> +		ret = copy_to_user_aead(net->xfrm.sysctl_redact_secret,
+> +					x->aead, skb);
+>  		if (ret)
+>  			goto out;
+>  	}
+>  	if (x->aalg) {
+> -		ret = copy_to_user_auth(x->aalg, skb);
+> -		if (!ret)
+> -			ret = nla_put(skb, XFRMA_ALG_AUTH_TRUNC,
+> -				      xfrm_alg_auth_len(x->aalg), x->aalg);
+> +		ret = copy_to_user_auth(net->xfrm.sysctl_redact_secret,
+> +					x->aalg, skb);
+>  		if (ret)
+>  			goto out;
+>  	}
+>  	if (x->ealg) {
+> -		ret = nla_put(skb, XFRMA_ALG_CRYPT, xfrm_alg_len(x->ealg), x-
+>ealg);
+> +		ret = copy_to_user_ealg(net->xfrm.sysctl_redact_secret,
+> +					x->ealg, skb);
+>  		if (ret)
+>  			goto out;
+>  	}
+
+
+Ciao
+Stephan
+
 
