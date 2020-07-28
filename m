@@ -2,146 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C6422FFEB
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 05:08:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A928C22FFEC
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 05:08:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726826AbgG1DIA convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 27 Jul 2020 23:08:00 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:40352 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726443AbgG1DIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 23:08:00 -0400
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06S32QDY141305;
-        Mon, 27 Jul 2020 23:07:25 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 32j2pawpaq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 27 Jul 2020 23:07:25 -0400
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 06S32nJZ142839;
-        Mon, 27 Jul 2020 23:07:24 -0400
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 32j2pawp9a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 27 Jul 2020 23:07:24 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06S355bO026407;
-        Tue, 28 Jul 2020 03:07:22 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 32gcy4jx40-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Jul 2020 03:07:22 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06S37J8N31130100
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Jul 2020 03:07:19 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B9FE9A405E;
-        Tue, 28 Jul 2020 03:07:19 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A314FA404D;
-        Tue, 28 Jul 2020 03:07:13 +0000 (GMT)
-Received: from [9.79.218.184] (unknown [9.79.218.184])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 28 Jul 2020 03:07:13 +0000 (GMT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [PATCH] perf record: Set PERF_RECORD_SAMPLE if attr->freq is set.
-From:   Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-In-Reply-To: <20200727065948.12201-1-irogers@google.com>
-Date:   Tue, 28 Jul 2020 08:37:11 +0530
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>,
-        David Sharp <dhsharp@google.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <FC944B00-A77C-48CE-8DD4-188E32DD6DBE@linux.vnet.ibm.com>
-References: <20200727065948.12201-1-irogers@google.com>
-To:     Ian Rogers <irogers@google.com>
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-27_16:2020-07-27,2020-07-27 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
- spamscore=0 impostorscore=0 mlxlogscore=999 clxscore=1011
- priorityscore=1501 mlxscore=0 suspectscore=0 lowpriorityscore=0
- phishscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007280017
+        id S1726825AbgG1DIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jul 2020 23:08:38 -0400
+Received: from smtp1.emailarray.com ([65.39.216.14]:47871 "EHLO
+        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726443AbgG1DIi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jul 2020 23:08:38 -0400
+Received: (qmail 53227 invoked by uid 89); 28 Jul 2020 03:08:36 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
+  by smtp1.emailarray.com with SMTP; 28 Jul 2020 03:08:36 -0000
+Date:   Mon, 27 Jul 2020 20:08:31 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        borisp@mellanox.com, david@redhat.com
+Subject: Re: [RFC PATCH v2 15/21] net/tcp: add MSG_NETDMA flag for sendmsg()
+Message-ID: <20200728030831.vxo6e2ioqkomctuw@bsd-mbp.dhcp.thefacebook.com>
+References: <20200727052846.4070247-1-jonathan.lemon@gmail.com>
+ <20200727052846.4070247-16-jonathan.lemon@gmail.com>
+ <CANn89iJ5vyx0WqdKTB3uHaWJrG-3jNXqXs6r7PacSqg0jRsRKA@mail.gmail.com>
+ <20200727155549.gbwosugbugknsneo@bsd-mbp.dhcp.thefacebook.com>
+ <CANn89iKY27R=ryQLohFPWa9dr6R9dMgB-hj+9eJO6H4NqfVKVw@mail.gmail.com>
+ <20200727173528.tfsrweswpyjxlqv6@bsd-mbp.dhcp.thefacebook.com>
+ <CANn89iKStB8=Exyopi1sufuYhA-rZvYVMOEm9LDgKTLBYiqSmA@mail.gmail.com>
+ <20200728021130.bjrlcj7tzebfxsz3@bsd-mbp.dhcp.thefacebook.com>
+ <CANn89iL=p3pgDpPeWz5rZqGeCdHg=X=hkEPe=mk9TDa=bk7ZRQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iL=p3pgDpPeWz5rZqGeCdHg=X=hkEPe=mk9TDa=bk7ZRQ@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jul 27, 2020 at 07:17:51PM -0700, Eric Dumazet wrote:
+> On Mon, Jul 27, 2020 at 7:11 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+> >
+> > On Mon, Jul 27, 2020 at 10:44:59AM -0700, Eric Dumazet wrote:
+> > > On Mon, Jul 27, 2020 at 10:35 AM Jonathan Lemon
+> > > <jonathan.lemon@gmail.com> wrote:
+> > > >
+> > > > On Mon, Jul 27, 2020 at 09:09:48AM -0700, Eric Dumazet wrote:
+> > > > > On Mon, Jul 27, 2020 at 8:56 AM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+> > > > > >
+> > > > > > On Mon, Jul 27, 2020 at 08:19:43AM -0700, Eric Dumazet wrote:
+> > > > > > > On Mon, Jul 27, 2020 at 12:51 AM Jonathan Lemon
+> > > > > > > <jonathan.lemon@gmail.com> wrote:
+> > > > > > > >
+> > > > > > > > This flag indicates that the attached data is a zero-copy send,
+> > > > > > > > and the pages should be retrieved from the netgpu module.  The
+> > > > > > > > socket should should already have been attached to a netgpu queue.
+> > > > > > > >
+> > > > > > > > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> > > > > > > > ---
+> > > > > > > >  include/linux/socket.h | 1 +
+> > > > > > > >  net/ipv4/tcp.c         | 8 ++++++++
+> > > > > > > >  2 files changed, 9 insertions(+)
+> > > > > > > >
+> > > > > > > > diff --git a/include/linux/socket.h b/include/linux/socket.h
+> > > > > > > > index 04d2bc97f497..63816cc25dee 100644
+> > > > > > > > --- a/include/linux/socket.h
+> > > > > > > > +++ b/include/linux/socket.h
+> > > > > > > > @@ -310,6 +310,7 @@ struct ucred {
+> > > > > > > >                                           */
+> > > > > > > >
+> > > > > > > >  #define MSG_ZEROCOPY   0x4000000       /* Use user data in kernel path */
+> > > > > > > > +#define MSG_NETDMA     0x8000000
+> > > > > > > >  #define MSG_FASTOPEN   0x20000000      /* Send data in TCP SYN */
+> > > > > > > >  #define MSG_CMSG_CLOEXEC 0x40000000    /* Set close_on_exec for file
+> > > > > > > >                                            descriptor received through
+> > > > > > > > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > > > > > > > index 261c28ccc8f6..340ce319edc9 100644
+> > > > > > > > --- a/net/ipv4/tcp.c
+> > > > > > > > +++ b/net/ipv4/tcp.c
+> > > > > > > > @@ -1214,6 +1214,14 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+> > > > > > > >                         uarg->zerocopy = 0;
+> > > > > > > >         }
+> > > > > > > >
+> > > > > > > > +       if (flags & MSG_NETDMA && size && sock_flag(sk, SOCK_ZEROCOPY)) {
+> > > > > > > > +               zc = sk->sk_route_caps & NETIF_F_SG;
+> > > > > > > > +               if (!zc) {
+> > > > > > > > +                       err = -EFAULT;
+> > > > > > > > +                       goto out_err;
+> > > > > > > > +               }
+> > > > > > > > +       }
+> > > > > > > >
+> > > > > > >
+> > > > > > > Sorry, no, we can not allow adding yet another branch into TCP fast
+> > > > > > > path for yet another variant of zero copy.
+> > > > > >
+> > > > > > I'm not in disagreement with that statement, but the existing zerocopy
+> > > > > > work makes some assumptions that aren't suitable.  I take it that you'd
+> > > > > > rather have things folded together so the old/new code works together?
+> > > > >
+> > > > > Exact.  Forcing users to use MSG_NETDMA, yet reusing SOCK_ZEROCOPY is silly.
+> > > > >
+> > > > > SOCK_ZEROCOPY has been added to that user space and kernel would agree
+> > > > > on MSG_ZEROCOPY being not a nop (as it was on old kernels)
+> > > > >
+> > > > > >
+> > > > > > Allocating an extra structure for every skbuff isn't ideal in my book.
+> > > > > >
+> > > > >
+> > > > > We do not allocate a structure for every skbuff. Please look again.
+> > > >
+> > > > I'm looking here:
+> > > >
+> > > >     uarg = sock_zerocopy_realloc(sk, size, skb_zcopy(skb));
+> > > >
+> > > > Doesn't sock_zerocopy_realloc() allocate a new structure if the skb
+> > > > doesn't have one already?
+> > > >
+> > > >
+> > > > > > > Overall, I think your patch series desperately tries to add changes in
+> > > > > > > TCP stack, while there is yet no proof
+> > > > > > > that you have to use TCP transport between the peers.
+> > > > > >
+> > > > > > The goal is having a reliable transport without resorting to RDMA.
+> > > > >
+> > > > > And why should it be TCP ?
+> > > > >
+> > > > > Are you dealing with lost packets, retransmits, timers, and al  ?
+> > > >
+> > > > Yes?  If there was a true lossless medium, RDMA would have taken over by
+> > > > now.  Or are you suggesting that the transport protocol reliability
+> > > > should be performed in userspace?  (not all the world is QUIC yet)
+> > > >
+> > >
+> > > The thing is : this patch series is a monster thing adding stuff that
+> > > is going to impact 100% % of TCP flows,
+> > > even if not used in this NETDMA context.
+> > >
+> > > So you need to convince us you are really desperate to get this in
+> > > upstream linux.
+> > >
+> > > I have implemented TCP RX zero copy without adding a single line in
+> > > standard TCP code.
+> >
+> > That's a bit of an exaggeration, as I see skb_zcopy_*() calls scattered
+> > around the normal TCP code path.  I also haven't changed the normal TCP
+> > path either, other than doing some of the same things as skb_zcopy_*().
+> > (ignoring the ugly moron about padding out the TCP header, which I'll
+> > put under a static_branch_unlikely).
+> 
+> You are mixing TX zerocopy and RX zero copy.  Quite different things.
+> 
+> My claim was about TCP RX zero copy (aka tcp_zerocopy_receive())
+
+I understand that (as I'm implementing both sides).  My equivalent of 
+tcp_zerocopy_receive is netgpu_recv_skb().
+
+In my variant, I don't actually have a real page, it's just a
+placeholder for GPU memory.  So the device driver must obtain the
+destination page [dma address] from the netgpu module, and either
+deliver it to the user, or return it back to netgpu.
+
+The zc_netdma special bit is there to handle the case where the skb is
+freed back to the system - suppose the socket is closed with buffers
+sitting on the RX queue.  The existing zero-copy code does not need this
+because the RX buffers came from system memory in the first place.
 
 
-> On 27-Jul-2020, at 12:29 PM, Ian Rogers <irogers@google.com> wrote:
+> > The thing is, the existing zero copy code is zero-copy to /host/ memory,
+> > which is not the same thing as zero-copy to other memory areas.
 > 
-> From: David Sharp <dhsharp@google.com>
-> 
-> evsel__config() would only set PERF_RECORD_SAMPLE if it set attr->freq
+> You have to really explain what difference it makes, and why current
+> stuff can not be extended.
 
-Hi Ian,
+For RX, the ability to return the 'pages' back to the originator.  For
+TX, making sure the pages are not touched by the host, as this would be
+an immediate kernel panic.  For example, skb_copy_ubufs() is verboten.
 
-Commit message says PERF_RECORD_SAMPLE. But since we are setting period here, it has to say “PERF_SAMPLE_PERIOD” ?
-
-
-Thanks
-Athira 
-
-> from perf record options. When it is set by libpfm events, it would not
-> get set. This changes evsel__config to see if attr->freq is set outside of
-> whether or not it changes attr->freq itself.
-> 
-> Signed-off-by: David Sharp <dhsharp@google.com>
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
-> tools/perf/util/evsel.c | 7 ++++++-
-> 1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-> index ef802f6d40c1..811f538f7d77 100644
-> --- a/tools/perf/util/evsel.c
-> +++ b/tools/perf/util/evsel.c
-> @@ -979,13 +979,18 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
-> 	if (!attr->sample_period || (opts->user_freq != UINT_MAX ||
-> 				     opts->user_interval != ULLONG_MAX)) {
-> 		if (opts->freq) {
-> -			evsel__set_sample_bit(evsel, PERIOD);
-> 			attr->freq		= 1;
-> 			attr->sample_freq	= opts->freq;
-> 		} else {
-> 			attr->sample_period = opts->default_interval;
-> 		}
-> 	}
-> +	/*
-> +	 * If attr->freq was set (here or earlier), ask for period
-> +	 * to be sampled.
-> +	 */
-> +	if (attr->freq)
-> +		evsel__set_sample_bit(evsel, PERIOD);
-> 
-> 	if (opts->no_samples)
-> 		attr->sample_freq = 0;
-> -- 
-> 2.28.0.rc0.142.g3c755180ce-goog
-> 
-> 
-> 
-
+The netgpu and the existing zerocopy code can likely be merged with some
+additional work, but they still have different requirements, and
+different user APIs.
+-- 
+Jonathan
