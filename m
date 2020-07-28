@@ -2,148 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DB32231257
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:19:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61731231272
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:21:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732696AbgG1TSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:18:33 -0400
-Received: from mga09.intel.com ([134.134.136.24]:53302 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728751AbgG1TSc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 15:18:32 -0400
-IronPort-SDR: ZZlEO0E+JxFAqsVlcV+OcvCDJn9KaIxf/RDJkrqca1gNVKzTV3u03BsLcwDUoTr7c7oAq2bRZM
- MeUAY6HRQMdw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9696"; a="152543409"
-X-IronPort-AV: E=Sophos;i="5.75,407,1589266800"; 
-   d="scan'208";a="152543409"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2020 12:18:31 -0700
-IronPort-SDR: A/LWYGtLiV2xMqj0KUz5tLFZ4cw8jmEEYYnpArz/u1f3jU63qCmvONl7hgH20Uj7HbCKKG4IEb
- 8OjH9NNg4MOA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,407,1589266800"; 
-   d="scan'208";a="434434628"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.32.199]) ([10.212.32.199])
-  by orsmga004.jf.intel.com with ESMTP; 28 Jul 2020 12:18:30 -0700
-Subject: Re: [PATCH net-next RFC 01/13] devlink: Add reload level option to
- devlink reload command
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Moshe Shemesh <moshe@mellanox.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
- <1595847753-2234-2-git-send-email-moshe@mellanox.com>
- <20200727175802.04890dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200728135808.GC2207@nanopsycho>
- <464add44-3ab1-21b8-3dba-a88202350bb9@intel.com>
- <20200728114458.762b5396@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <d6fbfedd-9022-ff67-23ed-418607beecc2@intel.com>
-Date:   Tue, 28 Jul 2020 12:18:30 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.0.1
+        id S1732792AbgG1TU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732779AbgG1TU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:20:27 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06084C0619D4
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:20:26 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id x69so19851997qkb.1
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:20:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zhyOzytz6iJSScUYu7jEGkkpCqwNaUVgSQu0xrNp9O8=;
+        b=A8Y+6VAPvuWH+aIlo7T3reqOGaenGbVa5TK25EuR+Xv8cQA/Fff1cSJaDMvvqB4Zi3
+         2raGYmVfetxeXvomin6cxUkH060tGnbMVCoJVDjRmkcX8PakwJYXsab/ORt/RVFf7c9x
+         YUAvlGkCqNSMpV5UT9aE4MJOi/o35qDqDgii1ZoDhaZVro4ct21uS0xsddH2mk6durIz
+         jvVrDkIpQVjt0ByuCT10Ac5uRTwpCWdRELWiD3rds3NZ5SMhcEg+cFv6cmjvFu4DSZ/X
+         1NyyXN9YqNFdsR5bWOoSHY2KmE9r1+UYAhWRkewTDKX1D4P5NqIgcQry8zksYeG9t0Ng
+         mXvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zhyOzytz6iJSScUYu7jEGkkpCqwNaUVgSQu0xrNp9O8=;
+        b=Ce+deEHYVLw5/rTqVsZZnRx397x2DjcPwbLfREN58irqOGLfgEEnLw3S0/cM1lpVYk
+         nsC4bXmo/xlAaHn1/qHDhzgfQzDQoRQLjdxoW1Ly1iFhS0ds5x11/OJS3CYaklugUPcE
+         zWO3vl7Hf1A4Iifr5vJzW12lS+HjCXHKq6v7b1DxO7dLMHQxXnc6hsvDrDpBSS1R3COu
+         LQdNVFeMoSZvwPryW9QGaoCnW0rlThEZYHlaKs3MAytXAQste0Rnq4xO9k7OgBCBQ7fs
+         hFodO6T17MasdMe1PocWONSaAHljsVY6XKsxfYTXflKCFqSGbTQq10h76KORurfIQUDA
+         +Y5g==
+X-Gm-Message-State: AOAM530JLBPrS4R/zmMnfJl+tebn7glY+42q2LPXu6MY194HhFLSjBV4
+        4XsArdcYzgTe+rXisnCidCNeAH0c
+X-Google-Smtp-Source: ABdhPJzM/zYMt8nbSF9ycNiSr96XmEC8WJLRSjk5e19z9rLQ7YLrQP9x6IrjnNQyBz+cOlITYNbLnQ==
+X-Received: by 2002:a37:9e90:: with SMTP id h138mr21595184qke.176.1595964024989;
+        Tue, 28 Jul 2020 12:20:24 -0700 (PDT)
+Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
+        by smtp.gmail.com with ESMTPSA id r18sm19007217qtf.62.2020.07.28.12.20.23
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jul 2020 12:20:23 -0700 (PDT)
+Received: by mail-yb1-f181.google.com with SMTP id 2so11187878ybr.13
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:20:23 -0700 (PDT)
+X-Received: by 2002:a25:7453:: with SMTP id p80mr32423482ybc.441.1595964022809;
+ Tue, 28 Jul 2020 12:20:22 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200728114458.762b5396@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200726120228.1414348-1-jakub@cloudflare.com>
+ <20200728012042.r3gkkeg6ib3r2diy@kafai-mbp> <87pn8fwskq.fsf@cloudflare.com>
+ <20200728163758.2thfltlhsn2nse57@kafai-mbp> <87o8nzwnsy.fsf@cloudflare.com>
+In-Reply-To: <87o8nzwnsy.fsf@cloudflare.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 28 Jul 2020 15:19:47 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfYRL18V7QCg+TXKp8gEcLP6S-jAYpO5HATQW+8Uv4Hhg@mail.gmail.com>
+Message-ID: <CA+FuTSfYRL18V7QCg+TXKp8gEcLP6S-jAYpO5HATQW+8Uv4Hhg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] udp, bpf: Ignore connections in reuseport group
+ after BPF sk lookup
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Marek Majkowski <marek@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> >> >> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+> >> >> index c394e674f486..29d9691359b9 100644
+> >> >> --- a/net/ipv6/udp.c
+> >> >> +++ b/net/ipv6/udp.c
+> >> >> @@ -208,7 +208,7 @@ static inline struct sock *udp6_lookup_run_bpf(struct net *net,
+> >> >>           return sk;
+> >> >>
+> >> >>   reuse_sk = lookup_reuseport(net, sk, skb, saddr, sport, daddr, hnum);
+> >> >> - if (reuse_sk && !reuseport_has_conns(sk, false))
+> >> >> + if (reuse_sk)
+> >> > From __udp[46]_lib_lookup,
+> >> > 1. The connected udp is picked by the kernel first.
+> >> >    If a 4-tuple-matched connected udp is found.  It should have already
+> >> >    been returned there.
+> >> >
+> >> > 2. If kernel cannot find a connected udp, the sk-lookup bpf prog can
+> >> >    get a chance to pick another socket (likely bound to a different
+> >> >    IP/PORT that the packet is destinated to) by bpf_sk_lookup_assign().
+> >> >    However, bpf_sk_lookup_assign() does not allow TCP_ESTABLISHED.
+> >> >
+> >> >    With the change in this patch, it then allows the reuseport-bpf-prog
+> >> >    to pick a connected udp which cannot be found in step (1).  Can you
+> >> >    explain a use case for this?
+> >>
+> >> It is not intentional. It should not allow reuseport to pick a connected
+> >> udp socket to be consistent with what sk-lookup prog can select. Thanks
+> >> for pointing it out.
+> >>
+> >> I've incorrectly assumed that after acdcecc61285 ("udp: correct
+> >> reuseport selection with connected sockets") reuseport returns only
+> >> unconnected udp sockets, but thats not true for bpf reuseport.
+> >>
+> >> So this patch fixes one corner base, but breaks another one.
+> >>
+> >> I'll change the check to the below and respin:
+> >>
+> >> -    if (reuse_sk && !reuseport_has_conns(sk, false))
+> >> +    if (reuse_sk && reuse_sk->sk_state != TCP_ESTABLISHED)
+> > May be disallow TCP_ESTABLISHED in bpf_sk_select_reuseport() instead
+> > so that the bpf reuseport prog can have a more consistent
+> > behavior among sk-lookup and the regular sk-reuseport-select case.
+> > Thought?
+>
+> Ah, I see now what you had in mind. If that option is on the table, I'm
+> all for it. Being consistent makes it easier to explain and use.
+>
+> In that case, let me make that change in a separate submission. I want
+> to get test coverage in for the three reuseport flavors.
+>
+> > From reuseport_select_sock(), it seems the kernel's select_by_hash
+> > also avoids returning established sk.
+>
+> Right. CC'ing Willem to check if bpf was left out on purpose or not.
 
-
-On 7/28/2020 11:44 AM, Jakub Kicinski wrote:
-> On Tue, 28 Jul 2020 09:47:00 -0700 Jacob Keller wrote:
->> On 7/28/2020 6:58 AM, Jiri Pirko wrote:
->>> But this is needed to maintain the existing behaviour which is different
->>> for different drivers.
->>
->> Which drivers behave differently here?
-> 
-> I think Jiri refers to mlxsw vs mlx5.
-> 
-> mlxsw loads firmware on probe, by default at least. So reloading the
-> driver implies a FW reset. NIC drivers OTOH don't generally load FW
-> so they didn't reset FW.
-> 
-
-Ok.
-
-> Now since we're redefining the API from "do a reload so that driverinit
-> params are applied" (or "so that all netdevs get spawned in a new
-> netns") to "do a reset of depth X" we have to change the paradigm.
-> 
-> What I was trying to suggest is that we should not have to re-define
-> the API like this.
-
-Ok.
-
-> 
-> From user perspective what's important is what the reset achieves (and
-> perhaps how destructive it is). We can define the reset levels as:
-> 
-> $ devlink dev reload pci/0000:82:00.0 net-ns-respawn
-> $ devlink dev reload pci/0000:82:00.0 driver-param-init
-> $ devlink dev reload pci/0000:82:00.0 fw-activate
-> 
-> combining should be possible when user wants multiple things to happen:
-> 
-> $ devlink dev reload pci/0000:82:00.0 fw-activate driver-param-init
-> 
-
-Where today "driver-param-init" is the default behavior. But didn't we
-just say that mlxsw also does the equivalent of fw-activate?
-
-> 
-> Then we have the use case of a "live reset" which is slightly
-> under-defined right now IMHO, but we can extend it as:
-> 
-> $ devlink dev reload pci/0000:82:00.0 fw-activate --live
-> 
-
-Yea, I think live fw patching things aren't quite as defined yet.
-
-> 
-> We can also add the "reset level" specifier - for the cases where
-> device is misbehaving:
-> 
-> $ devlink dev reload pci/0000:82:00.0 level [driver|fw|hardware]
-> 
-
-I guess I don't quite see how level fits in? This is orthogonal to the
-other settings?
-
-> 
-> But I don't think that we can go from the current reload command
-> cleanly to just a level reset. The driver-specific default is a bad
-> smell which indicates we're changing semantics from what user wants 
-> to what the reset depth is. Our semantics with the patch as it stands
-> are in fact:
->  - if you want to load new params or change netns, don't pass the level
->    - the "driver default" workaround dictates the right reset level for
->    param init;
->  - if you want to activate new firmware - select the reset level you'd
->    like from the reset level options.
-> 
-
-I think I agree, having the "what gets reloaded" as a separate vector
-makes sense and avoids confusion. For example for ice hardware,
-"fw-activate" really does mean "Do an EMP reset" rather than just a
-"device reset" which could be interpreted differently. ice can do
-function level reset, or core device reset also. Neither of those two
-resets activates firmware.
-
-Additionally the current function load process in ice doesn't support
-driver-init at all. That's something I'd like to see happen but is quite
-a significant refactor for how the driver loads. We need to refactor
-everything out so that devlink is created early on and factor out
-load/unload into handlers that can be called by the devlink reload. As I
-have primarily been focused on flash update I sort of left that for the
-future because it was a huge task to solve.
+Not on purpose. I considered that this is up to the BPF program.
