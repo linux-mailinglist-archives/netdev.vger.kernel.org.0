@@ -2,96 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 731D2230D22
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D1ED230DD5
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 17:30:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730639AbgG1PLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 11:11:30 -0400
-Received: from mail.nic.cz ([217.31.204.67]:46602 "EHLO mail.nic.cz"
+        id S1730931AbgG1Pai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 11:30:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44656 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730499AbgG1PLa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 11:11:30 -0400
-Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTPSA id 7261313FCD6;
-        Tue, 28 Jul 2020 17:11:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1595949088; bh=7uovp5tiRjX0Q63trdBfxs/RHAlmPAqgR0xCiyLf3Cc=;
-        h=Date:From:To;
-        b=aX50kRH0WUaobGgSRxE97ikqg3Uj/nhtXx/hA2vDiK97ShqjTmkjcIGtC6L+hXe5o
-         e3CXHVDS2R3QCYRBnnwOWy0juraKeg/k7aEw2wsprXz0pQepIN5pPdj1rUHiQ/R39K
-         1tXQWpeoWvXe1nmXWD8TsdBaW5cB9Ihs4evn2Vdo=
-Date:   Tue, 28 Jul 2020 17:11:28 +0200
-From:   Marek =?ISO-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-To:     netdev@vger.kernel.org
-Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        jacek.anaszewski@gmail.com, Dan Murphy <dmurphy@ti.com>,
-        =?UTF-8?Q?Ond?= =?UTF-8?Q?=C5=99ej?= Jirman <megous@megous.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC leds + net-next v4 1/2] net: phy: add API for LEDs
- controlled by PHY HW
-Message-ID: <20200728171128.61c7193b@dellmb.labs.office.nic.cz>
-In-Reply-To: <20200728150530.28827-2-marek.behun@nic.cz>
-References: <20200728150530.28827-1-marek.behun@nic.cz>
-        <20200728150530.28827-2-marek.behun@nic.cz>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1730637AbgG1Pah (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 11:30:37 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DA9CD206D4;
+        Tue, 28 Jul 2020 15:30:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595950237;
+        bh=zemweQXddKbLvL5Mw6dvsBIj/JO81g5ivJX6E4yPUpU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DnVfC0myMfSdBeXXDbjcCaDP3MPxQPLx6vreiLqEX55LqEAo4s+RowIkv1f1UgFnO
+         b2w+KMbaMUefDBT0zeahrXDxINTkGktbxbrYtI00pvVQNhnqrbFBNY3Evw88dc8v3/
+         +q9sEXBmwZIevAUfDBhdAbBk/qkOTF97MoHwjXAQ=
+Date:   Tue, 28 Jul 2020 17:30:30 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Markus Elfring <Markus.Elfring@web.de>
+Cc:     Rustam Kovhaev <rkovhaev@gmail.com>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        syzbot+67b2bd0e34f952d0321e@syzkaller.appspotmail.com
+Subject: Re: [PATCH] usb: hso: check for return value in
+ hso_serial_common_create()
+Message-ID: <20200728153030.GB3656785@kroah.com>
+References: <a42328b6-6d45-577f-f605-337b91c19f1a@web.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,URIBL_BLOCKED,
-        USER_IN_WHITELIST shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a42328b6-6d45-577f-f605-337b91c19f1a@web.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Jul 2020 17:05:29 +0200
-Marek Beh=C3=BAn <marek.behun@nic.cz> wrote:
+On Tue, Jul 28, 2020 at 03:19:00PM +0200, Markus Elfring wrote:
+> > in case of an error tty_register_device_attr() returns ERR_PTR(),
+> > add IS_ERR() check
+> 
+> I suggest to improve this change description a bit.
+> 
+> Will the tag “Fixes” become helpful for the commit message?
+> 
+> 
+> …
+> > +++ b/drivers/net/usb/hso.c
+> …
+> > @@ -2311,6 +2313,7 @@  static int hso_serial_common_create(struct hso_serial *serial, int num_urbs,
+> >  	return 0;
+> >  exit:
+> >  	hso_serial_tty_unregister(serial);
+> > +exit2:
+> >  	hso_serial_common_free(serial);
+> >  	return -1;
+> >  }
+> 
+> Can other labels (like “unregister_serial” and “free_serial”) be preferred here?
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/coding-style.rst?id=92ed301919932f777713b9172e525674157e983d#n485
+> 
+> Regards,
+> Markus
 
-> @@ -736,6 +777,16 @@ struct phy_driver {
->  	int (*set_loopback)(struct phy_device *dev, bool enable);
->  	int (*get_sqi)(struct phy_device *dev);
->  	int (*get_sqi_max)(struct phy_device *dev);
-> +
-> +	/* PHY LED support */
-> +	int (*led_init)(struct phy_device *dev, struct
-> phy_device_led *led);
-> +	int (*led_brightness_set)(struct phy_device *dev, struct
-> phy_device_led *led,
-> +				  enum led_brightness brightness);
-> +	const char *(*led_iter_hw_mode)(struct phy_device *dev,
-> struct phy_device_led *led,
-> +					void **	iter);
-> +	int (*led_set_hw_mode)(struct phy_device *dev, struct
-> phy_device_led *led,
-> +			       const char *mode);
-> +	const char *(*led_get_hw_mode)(struct phy_device *dev,
-> struct phy_device_led *led); };
->  #define to_phy_driver(d)
-> container_of(to_mdio_common_driver(d),		\ struct
-> phy_driver, mdiodrv)
+Hi,
 
-The problem here is that the same code will have to be added to DSA
-switch ops structure, which is not OK.
+This is the semi-friendly patch-bot of Greg Kroah-Hartman.
 
-I wanted to put this into struct mdio_driver_common, so that all mdio
-drivers would be able to have HW LEDs connected. But then I remembered
-that not all DSA drivers are connected via MDIO, some are via SPI.
+Markus, you seem to have sent a nonsensical or otherwise pointless
+review comment to a patch submission on a Linux kernel developer mailing
+list.  I strongly suggest that you not do this anymore.  Please do not
+bother developers who are actively working to produce patches and
+features with comments that, in the end, are a waste of time.
 
-So maybe this could instead become part of LED API, instead of phydev
-API. Structure
-  struct hw_controlled_led
-and
-  struct hw_controlled_led_ops
-could be offered by the LED API, which would also register the needed
-trigger.
+Patch submitter, please ignore Markus's suggestion; you do not need to
+follow it at all.  The person/bot/AI that sent it is being ignored by
+almost all Linux kernel maintainers for having a persistent pattern of
+behavior of producing distracting and pointless commentary, and
+inability to adapt to feedback.  Please feel free to also ignore emails
+from them.
 
-struct phydev, struct dsa_switch and other could then just contain
-pointer to struct hw_controlled_led_ops...
+thanks,
 
-Marek
+greg k-h's patch email bot
