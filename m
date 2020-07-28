@@ -2,125 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 185272312E0
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:40:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1638A23130C
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:47:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732885AbgG1Tk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:40:29 -0400
-Received: from mail-eopbgr10074.outbound.protection.outlook.com ([40.107.1.74]:20962
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728927AbgG1Tk3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 15:40:29 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X90BWmrBNqBqYRse1p89XyXTWya2gccasVcC/CdPTvbROg7aMt7A2lIZT48eoJQu3VY6hNCCichgk3yJ/OzAot4mxTdbqw4eTbQZzkXpDdeeJhacwLVkJqPFhSdo/hkM/DPmnJR6tdF/kECxrFO5U3jBdAVf5S8anfI8jG2mZ+3LrKaAxzxes4WfiJrALndpyF2DsiQK1ognYLAq8zOXcNRakVPJQPiJOGVTNHMw1FbdIsFO1JlSUjh/fuAYh8YKLkJmqxxCjFXh+rZ+LA59HuojUi4byVGgUBIuTlne1FoJIvc1QSPUhgVBDmmAR+/QB7QUE+KhiksKjxVZ+7cMgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L9Y/vNJyS9ityHRBgk7dyZWV/Am8R56pUTUazqBnMAA=;
- b=Fd1jppxwqA5JQi+QRKdlD+JWVqPs9fIfIFmx9WLC2HLXxmcSBy/zDjsSSghBXsXv3HoN1LlIDsm/Ubn1C3ExeAssXuwrZar4EW0P83Ol1GkKrTHAtKG3aMLljBDHmh+R4w1L1QaW8nCWyh9PJvsb1D7Ngl1v2M2K5an8j10bbTDds3h61uDa2GiUeMH1mvQalQa3wBqqIx6t4i7jYmfZOjxjsrokqnOE4Wp1uaYghTa057YgMU3LCwB/yTNOWqWlUfuw73BOoeKw9L3+FAt+1QoMQDhQNnSJmxSEvv7bU0QcqbLnMiJ4l9+vjE+losRqeEHGEmxKeI6rNIbxyvecdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L9Y/vNJyS9ityHRBgk7dyZWV/Am8R56pUTUazqBnMAA=;
- b=FMzyH0NseeGXThPXCnL0s9XRzvnZCP9VvoCkB4jQx7odB1/Dv/7iLBc2eX1OkLlO+ct1yMGzKwKUtQ09UVPrv2XEvrwxqExgXV/mXx8cDXIFEQMCXKNfd6aJvmzMORIwfxk89NX+eGAqyb7b7cFoQr+A+gBFlM204/LxAc1klCc=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB6269.eurprd05.prod.outlook.com (2603:10a6:803:56::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.16; Tue, 28 Jul
- 2020 19:40:24 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::508a:d074:ad3a:3529]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::508a:d074:ad3a:3529%5]) with mapi id 15.20.3216.034; Tue, 28 Jul 2020
- 19:40:24 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
-        Ron Diskin <rondi@mellanox.com>
-CC:     Roi Dayan <roid@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [net 11/12] net/mlx5e: Modify uplink state on interface up/down
-Thread-Topic: [net 11/12] net/mlx5e: Modify uplink state on interface up/down
-Thread-Index: AQHWZL8Y3/hPTEGIeEa9LOSeFDx+KakcyPSAgACbagA=
-Date:   Tue, 28 Jul 2020 19:40:24 +0000
-Message-ID: <09c0166149c13dba6fdb22ed47f2732444a91fb6.camel@mellanox.com>
-References: <20200728091035.112067-1-saeedm@mellanox.com>
-         <20200728091035.112067-12-saeedm@mellanox.com>
-         <CAJ3xEMg+wW2FFrC3rRQyQbcSJKFf5Lr9EvNYuRQ0JZEDAztw7g@mail.gmail.com>
-In-Reply-To: <CAJ3xEMg+wW2FFrC3rRQyQbcSJKFf5Lr9EvNYuRQ0JZEDAztw7g@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.3 (3.36.3-1.fc32) 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=mellanox.com;
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 30e100f3-0012-44b8-e316-08d8332e127d
-x-ms-traffictypediagnostic: VI1PR05MB6269:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB6269E3F40A55A59F4D5936F2BE730@VI1PR05MB6269.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9MuL/bjMsILxGO7qABYRhU7hSv2LGBnnDXNnlkiux1CBeMuuyuCaFdWJQYOLx05v2LKgnv147BhAM3Hb/t9Pqq83RsfLvIO2zMbh5YVDUO5fD4vcpZtElWK0Zr2F4CW1nnj86ANI1eJ2cj0/x+nkx4RnshuzaIoZlSOjyiteVzgUSgKlvF/WxWA+oai8oV/iOlFSfCyCyV3s1BECbj031cpdaYn6ozy+qvapuHrCXe0AGKdC8o9qrdu7ThnOdnvyPWbhX8XFbMnUdwO1aPkW9JtJAPxICEMJ1COpLFpeAxc3VXStil8kBsP1lsetyIhT
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(8936002)(8676002)(6512007)(4326008)(2616005)(86362001)(26005)(6506007)(53546011)(66946007)(186003)(54906003)(5660300002)(76116006)(66476007)(2906002)(71200400001)(91956017)(83380400001)(66446008)(66556008)(64756008)(498600001)(6486002)(110136005)(6636002)(36756003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: OI8Ae3MEgZ26zAz+1vtFmgN9MGpPV+B6OE2Ow4a56wvOf8kcj/OewoopxK4ZQGDtZAYI6yVLwjaowY3h8+OoaKI4EeWsPL3B/5rFArgMVZLzGD1FsoVwhpzTIUbMgBW2WAnKWPcjcNMpO2qXLn7m7PWIU1K3mGrcN7blPpDcmRXiNdq0V68z5YHQXs4ez+yuZW7TBDRkda/Pys4zUXWTpIPYqkJHq7/hXcl9RUeKfIVz3JNtHfbX58eqVcVPmdiAEFg2hZG4Ty3Cfm/sU5UAtNTMk5Ox5sgea8RWTIOUwCKpwTz3IZZVwQKQvS7y1MD0fbGuisuSzv2HOZ/s66ovl/boc7IahVCxzYqRBXtga9vmG/+mU7A8ST4dkhluiqg8g4dpY5+Rq0txGj+xBNO9K9i3eqMyohnm2HBwksIXWZ0f6A/3q/Q5ex0fjfw+uFNHzxTFk4jNJ8Dj1Wwm93HXfGjvaWyaqJ0vujPrXjSRyMRuP/1Ba4WyvDFGp1QQUMRlHXRP3YJ3VmoLN37X77+Xyqnt3ixGRrRr25SAyjKHeMz9kdRFnV2jig9VieDqdshP6P83JdtntqbbM7zHzEFsBE47HkYfBSESGucn29ki/kw+37Aa9YOOUlPD/tWeJi4H6AguOvw0LAi88hT90WzDYA==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0854F140C380D34FAED0A7031012A800@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1732978AbgG1TrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:47:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730048AbgG1TrP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:47:15 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F57C061794;
+        Tue, 28 Jul 2020 12:47:15 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id w9so15803229qts.6;
+        Tue, 28 Jul 2020 12:47:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ThwLY3fNICycCY8BtQTgJp/05j62cqHvgz64dBHPh1w=;
+        b=EvSRQaPAOyMtYNEGVgl5dqv17e9x48u/0X3d+0ybr3gsJkmMfH4r4mKTN4nFOWQdcM
+         HSxDrsL1jbId+/kYHmlBNtOMoe0JeRDXYGvbpD1PRN2wt947ogu0DBftOjGF3nEo8etu
+         aI88nxkLEsHSGBIpvd7ngYmNzjfplU/eLLA0iRSPWF8KmGtJa6BAiEGA4/llD36pC7Mx
+         AS7/f0J4/mUIfdPIUL8wHshfdnEEzOqR8awmgp+p5jWMinQHamN/bpUc4YJe+GnhYt8/
+         O9K2AFroAFAAsCINfkQ3LZ6VV8ycr74vbGXRQypJLdYoXnefheeu47tJ8WylLUxGG1KD
+         27Ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ThwLY3fNICycCY8BtQTgJp/05j62cqHvgz64dBHPh1w=;
+        b=DDHiBTlwXgRKGOJlBuwy8PybyRzdgHm/0CcAYkuMu36kR3+9Yg2IWFEuYV/zJXhp2Q
+         DvxiEr2lJeVtKzZNS6EY794FLZ1Ys9RVBsMSidKrntsddCJMVvIcySpg77WxWMfJvhX5
+         UM7Mdq0HNgX1zhXpKHFJstGVyoboDayLzHqvPp7AciXhR6pqsobJ550DHefKxWuLDZKV
+         PNxLR7PXDj7GppWche/nxMzSb9TmJ8bGgiGfAnqvKBRZQi5VSkAx04dI5NJ3nZQayjuM
+         8OcGT3x5j1l2ddeFUkH2zoZ4t6uCNButdkWkohknBilL9h5GBJR8Udl3WCQry3a69RAV
+         p+fg==
+X-Gm-Message-State: AOAM5323tt0NsOn2dLejdHzXtlo5+5xfLEdf0YwdF7iss2LngCaiN3wi
+        +bUHRGlUWV5b+DKzCWFI4GzZJNbnSHFEvJg1KtI=
+X-Google-Smtp-Source: ABdhPJzKwKDN4Mvv7UiFgY5GopQtuc6vrJLAQ0kblLrfhczBiYUiQ8lZ4ekejgo24kCptxeSC8mVQ9l2MA9+b6+bJwM=
+X-Received: by 2002:ac8:777a:: with SMTP id h26mr28078911qtu.141.1595965634394;
+ Tue, 28 Jul 2020 12:47:14 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 30e100f3-0012-44b8-e316-08d8332e127d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jul 2020 19:40:24.3559
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NhgM84e6gCU4DzJpprFu1FefKZhB1TBDNp13o+9ANdQ+b69sgzkYiLEQh4yha2s6iQjXB6B7yHPfhUQ48mvsDQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6269
+References: <20200722211223.1055107-1-jolsa@kernel.org> <20200722211223.1055107-10-jolsa@kernel.org>
+In-Reply-To: <20200722211223.1055107-10-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 28 Jul 2020 12:47:03 -0700
+Message-ID: <CAEf4BzZ48nhqGhij9qe7Hc_JD6RpZoh-4NnVvqR=V1YN4ff2sA@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next 09/13] bpf: Add d_path helper
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDIwLTA3LTI4IGF0IDEzOjI0ICswMzAwLCBPciBHZXJsaXR6IHdyb3RlOg0KPiBP
-biBUdWUsIEp1bCAyOCwgMjAyMCBhdCAxMjoxNiBQTSBTYWVlZCBNYWhhbWVlZCA8c2FlZWRtQG1l
-bGxhbm94LmNvbT4NCj4gd3JvdGU6DQo+ID4gRnJvbTogUm9uIERpc2tpbiA8cm9uZGlAbWVsbGFu
-b3guY29tPg0KPiA+IA0KPiA+IFdoZW4gc2V0dGluZyB0aGUgUEYgaW50ZXJmYWNlIHVwL2Rvd24s
-IG5vdGlmeSB0aGUgZmlybXdhcmUgdG8NCj4gPiB1cGRhdGUNCj4gPiB1cGxpbmsgc3RhdGUgdmlh
-IE1PRElGWV9WUE9SVF9TVEFURQ0KPiANCj4gSG93IHRoaXMgcmVsYXRlcyB0byBlLXN3aXRjaGlu
-Zz8gdGhlIHBhdGNoIHRvdWNoZXMgdGhlIGUtc3dpdGNoIGNvZGUNCj4gYnV0IEkgZG9uJ3Qgc2Vl
-IG1lbnRpb25pbmcgb2YgdGhhdCBpbiB0aGUgY2hhbmdlLWxvZy4uDQo+IA0KDQpzZWUgYmVsb3cg
-InVwbGluayBwb3J0IiBhbmQgIlZGIiB0aGVzZSB0ZXJtcyBhcmUgb25seSB1c2VkIGluIHdpdGgg
-ZS0NCnN3aXRjaGluZy4uDQoNCj4gPiBUaGlzIGJlaGF2aW9yIHdpbGwgcHJldmVudCBzZW5kaW5n
-IHRyYWZmaWMgb3V0IG9uIHVwbGluayBwb3J0IHdoZW4NCj4gPiBQRiBpcw0KPiA+IGRvd24sIHN1
-Y2ggYXMgc2VuZGluZyB0cmFmZmljIGZyb20gYSBWRiBpbnRlcmZhY2Ugd2hpY2ggaXMgc3RpbGwN
-Cj4gPiB1cC4NCj4gPiBDdXJyZW50bHkgd2hlbiBjYWxsaW5nIG1seDVlX29wZW4vY2xvc2UoKSwg
-dGhlIGRyaXZlciBvbmx5IHNlbmRzDQo+ID4gUEFPUw0KPiA+IGNvbW1hbmQgdG8gbm90aWZ5IHRo
-ZSBmaXJtd2FyZSB0byBzZXQgdGhlIHBoeXNpY2FsIHBvcnQgc3RhdGUgdG8NCj4gPiB1cC9kb3du
-LCBob3dldmVyLCBpdCBpcyBub3Qgc3VmZmljaWVudC4gV2hlbiBWRiBpcyBpbiAiYXV0byIgc3Rh
-dGUsDQo+ID4gaXQNCj4gDQo+ICJhdXRvIiBpcyBuYXN0eSBjb25jZXB0IHRoYXQgYXBwbGllcyBv
-bmx5IHRvIGxlZ2FjeSBtb2RlLiBIb3dldmVyLA0KPiB0aGUgcGF0Y2gNCj4gdG91Y2hlcyB0aGUg
-c3dpdGNoZGV2IG1vZGUgKHJlcHJlc2VudG9ycykgY29kZSwgcGxlYXNlIGV4cGxhaW4uLi4NCj4g
-DQoNCiJBVVRPIiBpcyBhbHNvIG1seDUgY29uY2VwdCB3aGljaCBpcyBkZWZhdWx0IGJ5IEZXLg0K
-DQpQcmlvciB0byB0aGlzIHBhdGNoIHRoZSB1cGxpbmsgc3RhdGUgd2FzIG5ldmVyIHRvdWNoZWQg
-YnkgZHJpdmVyIHNvIG5vdw0KYXMgaXQgY2FuIGJlIG92ZXJ3cml0dGVuIGJ5IHRoZSBQRiBkcml2
-ZXIgb24gbGVnYWN5L3NpbmdsZSBuaWMgbW9kZSwNCndoZW4gc3dpdGNoaW5nIHRvIHN3aXRjaGRl
-diBtb2RlIHdlIG5lZWQgdG8gYnJpbmcgYmFjayB0aGUgRlcgZGVmYXVsdA0KdmFsdWUgIkFVVE8i
-Lg0KDQpXaWxsIGFkZCB0aGlzIHRvIHRoZSBjb21taXQgbWVzc2FnZS4NCg0KPiA+IGZvbGxvd3Mg
-dGhlIHVwbGluayBzdGF0ZSwgd2hpY2ggd2FzIG5vdCB1cGRhdGVkIG9uDQo+ID4gbWx4NWVfb3Bl
-bi9jbG9zZSgpDQo+ID4gYmVmb3JlIHRoaXMgcGF0Y2guDQo+ID4gDQo+ID4gRml4ZXM6IDYzYmZk
-Mzk5ZGU1NSAoIm5ldC9tbHg1ZTogU2VuZCBQQU9TIGNvbW1hbmQgb24gaW50ZXJmYWNlDQo+ID4g
-dXAvZG93biIpDQo+ID4gU2lnbmVkLW9mZi1ieTogUm9uIERpc2tpbiA8cm9uZGlAbWVsbGFub3gu
-Y29tPg0KPiA+IFJldmlld2VkLWJ5OiBSb2kgRGF5YW4gPHJvaWRAbWVsbGFub3guY29tPg0KPiA+
-IFJldmlld2VkLWJ5OiBNb3NoZSBTaGVtZXNoIDxtb3NoZUBtZWxsYW5veC5jb20+DQo=
+On Wed, Jul 22, 2020 at 2:14 PM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Adding d_path helper function that returns full path for
+> given 'struct path' object, which needs to be the kernel
+> BTF 'path' object. The path is returned in buffer provided
+> 'buf' of size 'sz' and is zero terminated.
+>
+>   bpf_d_path(&file->f_path, buf, size);
+>
+> The helper calls directly d_path function, so there's only
+> limited set of function it can be called from. Adding just
+> very modest set for the start.
+>
+> Updating also bpf.h tools uapi header and adding 'path' to
+> bpf_helpers_doc.py script.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/uapi/linux/bpf.h       | 13 +++++++++
+>  kernel/trace/bpf_trace.c       | 48 ++++++++++++++++++++++++++++++++++
+>  scripts/bpf_helpers_doc.py     |  2 ++
+>  tools/include/uapi/linux/bpf.h | 13 +++++++++
+>  4 files changed, 76 insertions(+)
+>
+
+[...]
+
+>
+> +BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
+> +{
+> +       char *p = d_path(path, buf, sz - 1);
+> +       int len;
+> +
+> +       if (IS_ERR(p)) {
+> +               len = PTR_ERR(p);
+> +       } else {
+> +               len = strlen(p);
+> +               if (len && p != buf)
+> +                       memmove(buf, p, len);
+
+not sure if it's worth it, but if len == sz - 1 then memmove is not
+necessary. Again, don't know if worth it, as it's probably not going
+to be a common case.
+
+> +               buf[len] = 0;
+> +               /* Include the trailing NUL. */
+> +               len++;
+> +       }
+> +
+> +       return len;
+> +}
+> +
+> +BTF_SET_START(btf_whitelist_d_path)
+> +BTF_ID(func, vfs_truncate)
+> +BTF_ID(func, vfs_fallocate)
+> +BTF_ID(func, dentry_open)
+> +BTF_ID(func, vfs_getattr)
+> +BTF_ID(func, filp_close)
+> +BTF_SET_END(btf_whitelist_d_path)
+
+
+We should probably comply with an updated coding style ([0]) and use
+an allowlist name for this?
+
+  [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=49decddd39e5f6132ccd7d9fdc3d7c470b0061bb
+
+> +
+> +static bool bpf_d_path_allowed(const struct bpf_prog *prog)
+> +{
+> +       return btf_id_set_contains(&btf_whitelist_d_path, prog->aux->attach_btf_id);
+> +}
+> +
+> +BTF_ID_LIST(bpf_d_path_btf_ids)
+> +BTF_ID(struct, path)
+> +
+> +static const struct bpf_func_proto bpf_d_path_proto = {
+> +       .func           = bpf_d_path,
+> +       .gpl_only       = false,
+> +       .ret_type       = RET_INTEGER,
+> +       .arg1_type      = ARG_PTR_TO_BTF_ID,
+> +       .arg2_type      = ARG_PTR_TO_MEM,
+> +       .arg3_type      = ARG_CONST_SIZE,
+
+I feel like we had a discussion about ARG_CONST_SIZE vs
+ARG_CONST_SIZE_OR_ZERO before, maybe on some different thread.
+Basically, this >0 restriction was a major nuisance for
+bpf_perf_event_output() cases, so much that we changed it to _OR_ZERO.
+In practice, while it might never be the case that we have sz == 0
+passed into the function, having to prove this to the verifier is a
+PITA. Unless there is a very strong reason not to, let's mark this as
+ARG_CONST_SIZE_OR_ZERO and handle sz == 0 case as a noop?
+
+> +       .btf_id         = bpf_d_path_btf_ids,
+> +       .allowed        = bpf_d_path_allowed,
+> +};
+> +
+
+[...]
