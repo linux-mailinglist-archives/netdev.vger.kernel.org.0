@@ -2,55 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B56823022F
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 07:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ED0A230233
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 08:00:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726963AbgG1F7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 01:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41346 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726821AbgG1F7o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 01:59:44 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED64C061794;
-        Mon, 27 Jul 2020 22:59:44 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id r19so146527qvw.11;
-        Mon, 27 Jul 2020 22:59:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wTdlg95ZXA4TOgFXjgtc+n7E+T+5B9dQx/aSYFnHSfI=;
-        b=i8ALjci8bEtI5Kdl1vA8f/CZ8e3VOIZMgU3kxLr1qUQx6fwap0HFd48p/VQgVtNazW
-         u7Zk0ZtOuHCJtA3gZzhMEpDdMfPPhwFmNjbSfFgmu7LE3hq1FPvlyqEzh86RBBPZ6ryF
-         8FnNOnY6bc37h/U1fgIJXj8RaYJdPz74csFUqBgmgFreU/WUMD3709uchus5jUU1yKJL
-         SOQ/djnxHCUowWA1uLApIYJnJ0elXu/iwTZfw5+UlFPD9PYOX6ZNtIfqRktcOcg425Gf
-         KvvGX6np7Eu6STOjBJiENi8UV2HMw4ogOS+DarcDUrw7AHKPepO9qE6GvtLtNRHtJNqz
-         vQ4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wTdlg95ZXA4TOgFXjgtc+n7E+T+5B9dQx/aSYFnHSfI=;
-        b=RVDe+rdxZhsO3gxrNsEcuQWBpjHZ+YFTGHFQkBhnWQADrCon3/fdMkUI//rd8hYmmD
-         8cgHxgL+T5BrbhX074cbhMmk1d+1EpvxeIvV/DYiGbYM9bAQm00ekNYj+jMfHbAgm7Go
-         iww6/w1fnck7iISQ/UeNsEBne7QD79pC/2CnFyjhO3liUOQsNIS4YbOKqdZYYonlHTpF
-         urQzOLTe2W4y7Zpl3B9HGgV43DfjdpfknSgCvL6ogz+bpGku/rkO+xggOkOypWl0lZLQ
-         XlBivuAiFHUXjM6exkWQ6bwvyuKJLJpypxJN8ekB9kmIMTkh+sQeX1OEH6OJin3Uvsyn
-         nD0Q==
-X-Gm-Message-State: AOAM532Vl+oYR23C/5jXD8OC3grM/71nB9Pe2Ca6kuZ/6pNYnvrNWUZ+
-        Vx25ScO5dw+7QSvPpeq6rPzE0i6QtihuUQoG+DY=
-X-Google-Smtp-Source: ABdhPJwn2wespE9XOkqpCWxpA2XpOqLKtNWofAPw5Yo7gt71X+rSI9CSbGmSXYTGORpc53oSaVqf7QUnluPfJRl+veU=
-X-Received: by 2002:ad4:4645:: with SMTP id y5mr26753304qvv.163.1595915983996;
- Mon, 27 Jul 2020 22:59:43 -0700 (PDT)
+        id S1727037AbgG1GAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 02:00:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49592 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726299AbgG1GAV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 02:00:21 -0400
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 36CB420658;
+        Tue, 28 Jul 2020 06:00:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1595916021;
+        bh=azSZ1bVmxDJBdKb3nWRp5yqpa8NuzlmguBfvozlPmNE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=HNEXXWnS6O0LFT/ROcZpFKckNs/pLB3ZHS0NH3WIpDzlfG26PvLoE7gTFhEjTDEhA
+         9XY402f7Q4ua6dfuG0RUMjMILEp1mSfr7CIdWeG4xj0OHWArBAXyYz4TGC8yY91rUz
+         SBKxsxo3sNuQYffP8YQ42NNrmaeLyJ0EPKAIF4iA=
+Received: by mail-lj1-f177.google.com with SMTP id q6so19793198ljp.4;
+        Mon, 27 Jul 2020 23:00:21 -0700 (PDT)
+X-Gm-Message-State: AOAM531BqVfB6bjh3J0SvmzTw6D6T6UBz6eyCSUGAFhOp/3Tcins8+u1
+        iiql6odvUJdKb4LPG1UTV+JV8xNEFfarN4ZtF/s=
+X-Google-Smtp-Source: ABdhPJw1qzBRyXlZwNmoPmrg5fMkSCVQiRAj9B38xHZ8RdDz6yX6QOTXm2yJTRE/jN375CHY/LbUvP1TD3MY12/dmgc=
+X-Received: by 2002:a2e:7c14:: with SMTP id x20mr11834077ljc.41.1595916019590;
+ Mon, 27 Jul 2020 23:00:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-30-guro@fb.com>
- <CAEf4BzZjbK4W1fmW07tMOJsRGCYNeBd6eqyFE_fSXAK6+0uHhw@mail.gmail.com> <20200727231538.GA352883@carbon.DHCP.thefacebook.com>
-In-Reply-To: <20200727231538.GA352883@carbon.DHCP.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 27 Jul 2020 22:59:33 -0700
-Message-ID: <CAEf4BzamC4RQrQuAgH1DK-qcW3cKFuBEbYRhVz-8UMU+mbTcvA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 29/35] bpf: libbpf: cleanup RLIMIT_MEMLOCK usage
+References: <20200727184506.2279656-1-guro@fb.com> <20200727184506.2279656-31-guro@fb.com>
+In-Reply-To: <20200727184506.2279656-31-guro@fb.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 27 Jul 2020 23:00:08 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7GANaQBha2-h-yQn0LxwafmQVs_RJ5Wm=tngEAGVNmtg@mail.gmail.com>
+Message-ID: <CAPhsuW7GANaQBha2-h-yQn0LxwafmQVs_RJ5Wm=tngEAGVNmtg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 30/35] bpf: bpftool: do not touch RLIMIT_MEMLOCK
 To:     Roman Gushchin <guro@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -63,36 +50,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 27, 2020 at 4:15 PM Roman Gushchin <guro@fb.com> wrote:
+On Mon, Jul 27, 2020 at 12:21 PM Roman Gushchin <guro@fb.com> wrote:
 >
-> On Mon, Jul 27, 2020 at 03:05:11PM -0700, Andrii Nakryiko wrote:
-> > On Mon, Jul 27, 2020 at 12:21 PM Roman Gushchin <guro@fb.com> wrote:
-> > >
-> > > As bpf is not using memlock rlimit for memory accounting anymore,
-> > > let's remove the related code from libbpf.
-> > >
-> > > Bpf operations can't fail because of exceeding the limit anymore.
-> > >
-> >
-> > They can't in the newest kernel, but libbpf will keep working and
-> > supporting old kernels for a very long time now. So please don't
-> > remove any of this.
+> Since bpf stopped using memlock rlimit to limit the memory usage,
+> there is no more reason for bpftool to alter its own limits.
 >
-> Yeah, good point, agree.
-> So we just can drop this patch from the series, no other changes
-> are needed.
->
-> >
-> > But it would be nice to add a detection of whether kernel needs a
-> > RLIMIT_MEMLOCK bump or not. Is there some simple and reliable way to
-> > detect this from user-space?
->
-> Hm, the best idea I can think of is to wait for -EPERM before bumping.
-> We can in theory look for the presence of memory.stat::percpu in cgroupfs,
-> but it's way to cryptic.
->
+> Signed-off-by: Roman Gushchin <guro@fb.com>
 
-As I just mentioned on another thread, checking fdinfo's "memlock: 0"
-should be reliable enough, no?
+I think we will need feature check for memcg based accounting.
 
-> Thanks!
+Thanks,
+Song
