@@ -2,113 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D281231320
-	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30913231324
+	for <lists+netdev@lfdr.de>; Tue, 28 Jul 2020 21:53:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728371AbgG1Tww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 15:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
+        id S1728583AbgG1TxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 15:53:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728431AbgG1Twv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:52:51 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690A3C0619D2
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:52:51 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id l63so12673578pge.12
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 12:52:51 -0700 (PDT)
+        with ESMTP id S1728495AbgG1TxM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 15:53:12 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75594C061794;
+        Tue, 28 Jul 2020 12:53:12 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id t6so4804923qvw.1;
+        Tue, 28 Jul 2020 12:53:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Lw5Yo6LYMJj0wtDoaefLNGkgc5QTYl1SaK6AazO3v2w=;
-        b=gq6HFa7X7QMj2DalmEMErYJdwibaHGKntgGODdJmOjnvl71XNlf89WdFly/p/8zUsD
-         adf6UQmHbEE2XxscjVPyDBuPLHifM78QvAfOfX0iBq+iwH0lfV4yGvEBEVtksCgn6YyM
-         K7ENcyD3xpKYwQsxBe6eWsKzfX5e3ZKuSjRas=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iFnebe0rsf16Ital1PxCLlm4jXaeU/dlrpfp7jc2lKI=;
+        b=Esld6XUPtN2Lbg5Z/4TOV6+LZ5mFlNKL48bJ0nTchCWPbWO5MtoPHoP4yISyYoN5ry
+         SkqUiGALRhZhKzMgop1e3mWmuOY/fMGRV2ugED5MCmpL4Hts8xxqFkpw59J/w5jDQY/X
+         OzgPPNAWpcIedxUSUgGVjQTkBqDHJVfG8mdvIQ75Hg7ejIhC4NxMEmaVCvnNxzFrNYS+
+         qmdLs19xRiuVqg36OG0dMHaSSoAfzcao5fKA8EYzjrhqqQcHliw0D1V7Zhdg7EGNHwal
+         6Z/FZFvNP5EEQnTb/ZNE2jc4vB2kjt9NJqxMH1FP0ePP3Jq3tP/42cHtZD8rWJk4M4yv
+         wwTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Lw5Yo6LYMJj0wtDoaefLNGkgc5QTYl1SaK6AazO3v2w=;
-        b=gdeqOsBoU+cmEWw10hET03QVjQCSyLytYzaMd5BcJvJO2v2R2UiXcIHXNgbvXczJN5
-         RBz3JszA2HnnSTbJVy0xeQHKz/EmaZizusaOdZ+l+4bsqhKVf56SP447chgzXgkULfXA
-         ZJGx6X6dKqTSEj2fZ4tnW+ODZaMWFQpJa0hQmhI2Bk5HCsMt/hn9unoWFsCRcSzO1XHW
-         OiimNJXW55uiKh7myJhuHqEUO5nRuAQwDC6hE33pKS5A4ysganKezrdDHjLyxNQ+GT8w
-         f+adSghd/FDfQPDHRSqOdQBpCElm0mVnSpTICKuPCAIKktm7Hs/sHVDapV+GEYRPXnqM
-         hTZg==
-X-Gm-Message-State: AOAM532tgs1ygbFpyq3S8Si1gPWxg13bHajG9D/PQVAP2ThP9ZTtCRXX
-        aoYVcK+EKkLIIaRaHsYWwrJBkK2ErwQ=
-X-Google-Smtp-Source: ABdhPJxJqtls1b+2yIeqoQ4yw+g1Ffg2V2qfKF4iRJprNIEuQoawrqtPab00sIL7S6F97Eul4B6+kw==
-X-Received: by 2002:aa7:93c3:: with SMTP id y3mr25907842pff.206.1595965970613;
-        Tue, 28 Jul 2020 12:52:50 -0700 (PDT)
-Received: from google.com ([2620:15c:202:1:8edc:d4ff:fe53:350d])
-        by smtp.gmail.com with ESMTPSA id e8sm8677827pfd.34.2020.07.28.12.52.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jul 2020 12:52:49 -0700 (PDT)
-Date:   Tue, 28 Jul 2020 12:52:46 -0700
-From:   Brian Norris <briannorris@chromium.org>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Subject: Re: [PATCH] drivers/net/wan/lapbether: Use needed_headroom instead
- of hard_header_len
-Message-ID: <20200728195246.GA482576@google.com>
-References: <20200726110524.151957-1-xie.he.0141@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iFnebe0rsf16Ital1PxCLlm4jXaeU/dlrpfp7jc2lKI=;
+        b=XCNH63kR1AgTvjKWAzAmfuTit4yOQ+yc4nDTmUGXJmvpgL8vSr86s98arbLDJC/yQ9
+         568OtnN+RA4wbnDAPJ1oMQlGDGR8rPiYnCeFq3cFqXY4MEd/YamQxCWkVFR/+Y2B6rMx
+         L/gGolFTQokSuFe23ZJeQEhJS6yFToNjdomXcgg7If+6BiiCFFL0SMQEQ18K8HAy1+A0
+         uHcSgL9CZmOXYOvTkWOg/FID7WXWSI0fH3xS+QhjgBluh3yGl8SXd1I6sj6Ef5e1cnxu
+         HUnrfgdKWSJWq8Pv1vR85QDmUf6Zx/S/cZ42BZz2va2/Lv3c5IcrDY5EaJU8vz1KX+sy
+         FFEw==
+X-Gm-Message-State: AOAM530onYpPspXA+oOTr8B7VF5e96UEsHPyuRkHGrnf1Lzx+HgAPflJ
+        8UexggD23dbrOfF4y6mQVBXOqrjKXyxg1KM3PJMEAM1o
+X-Google-Smtp-Source: ABdhPJyDq5uaj6D6ZCVS3p+XxGn9ynGsBLI8WMlr6BftVWZyxlS7orAbrYAbwS4EJU6Bg1L2HM5MwJMaQNrvfpxScqI=
+X-Received: by 2002:a0c:9ae2:: with SMTP id k34mr28168888qvf.247.1595965991704;
+ Tue, 28 Jul 2020 12:53:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200726110524.151957-1-xie.he.0141@gmail.com>
+References: <20200722211223.1055107-1-jolsa@kernel.org> <20200722211223.1055107-13-jolsa@kernel.org>
+In-Reply-To: <20200722211223.1055107-13-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 28 Jul 2020 12:53:00 -0700
+Message-ID: <CAEf4BzYTT23knreKpxPDLeWcLzTVQhtBrRPjrZ+MBpL4ajeavw@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next 12/13] selftests/bpf: Add test for d_path helper
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(Reviewing as requested; I'm not familiar with this driver either, or
-really any WAN driver. It also seems that hard_header_len vs.
-needed_headroom aren't very well documented, and even I can't guarantee
-I understand them completely. So take my thoughts with a grain of salt.)
+On Wed, Jul 22, 2020 at 2:14 PM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Adding test for d_path helper which is pretty much
+> copied from Wenbo Zhang's test for bpf_get_fd_path,
+> which never made it in.
+>
+> The test is doing fstat/close on several fd types,
+> and verifies we got the d_path helper working on
+> kernel probes for vfs_getattr/filp_close functions.
+>
+> Original-patch-by: Wenbo Zhang <ethercflow@gmail.com>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  .../testing/selftests/bpf/prog_tests/d_path.c | 162 ++++++++++++++++++
+>  .../testing/selftests/bpf/progs/test_d_path.c |  64 +++++++
+>  2 files changed, 226 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/d_path.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_d_path.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
+> new file mode 100644
+> index 000000000000..3b8f87fb17d7
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
+> @@ -0,0 +1,162 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#define _GNU_SOURCE
+> +#include <test_progs.h>
+> +#include <sys/stat.h>
+> +#include <linux/sched.h>
+> +#include <sys/syscall.h>
+> +
+> +#define MAX_PATH_LEN           128
+> +#define MAX_FILES              7
+> +#define MAX_EVENT_NUM          16
+> +
+> +#include "test_d_path.skel.h"
+> +
+> +static struct {
+> +       __u32 cnt;
+> +       char paths[MAX_EVENT_NUM][MAX_PATH_LEN];
+> +} src;
+> +
+> +static int set_pathname(int fd, pid_t pid)
+> +{
+> +       char buf[MAX_PATH_LEN];
+> +
+> +       snprintf(buf, MAX_PATH_LEN, "/proc/%d/fd/%d", pid, fd);
+> +       return readlink(buf, src.paths[src.cnt++], MAX_PATH_LEN);
+> +}
+> +
+> +static int trigger_fstat_events(pid_t pid)
+> +{
+> +       int sockfd = -1, procfd = -1, devfd = -1;
+> +       int localfd = -1, indicatorfd = -1;
+> +       int pipefd[2] = { -1, -1 };
+> +       struct stat fileStat;
+> +       int ret = -1;
+> +
+> +       /* unmountable pseudo-filesystems */
+> +       if (CHECK_FAIL(pipe(pipefd) < 0))
+> +               return ret;
+> +       /* unmountable pseudo-filesystems */
+> +       sockfd = socket(AF_INET, SOCK_STREAM, 0);
+> +       if (CHECK_FAIL(sockfd < 0))
+> +               goto out_close;
+> +       /* mountable pseudo-filesystems */
+> +       procfd = open("/proc/self/comm", O_RDONLY);
+> +       if (CHECK_FAIL(procfd < 0))
+> +               goto out_close;
+> +       devfd = open("/dev/urandom", O_RDONLY);
+> +       if (CHECK_FAIL(devfd < 0))
+> +               goto out_close;
+> +       localfd = open("/tmp/d_path_loadgen.txt", O_CREAT | O_RDONLY);
+> +       if (CHECK_FAIL(localfd < 0))
+> +               goto out_close;
+> +       /* bpf_d_path will return path with (deleted) */
+> +       remove("/tmp/d_path_loadgen.txt");
+> +       indicatorfd = open("/tmp/", O_PATH);
+> +       if (CHECK_FAIL(indicatorfd < 0))
+> +               goto out_close;
+> +
+> +       ret = set_pathname(pipefd[0], pid);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto out_close;
+> +       ret = set_pathname(pipefd[1], pid);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto out_close;
+> +       ret = set_pathname(sockfd, pid);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto out_close;
+> +       ret = set_pathname(procfd, pid);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto out_close;
+> +       ret = set_pathname(devfd, pid);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto out_close;
+> +       ret = set_pathname(localfd, pid);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto out_close;
+> +       ret = set_pathname(indicatorfd, pid);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto out_close;
 
-Hi,
+Please use CHECK instead of CHECK_FAIL. Thanks.
 
-On Sun, Jul 26, 2020 at 04:05:24AM -0700, Xie He wrote:
-> In net/packet/af_packet.c, the function packet_snd first reserves a
-> headroom of length (dev->hard_header_len + dev->needed_headroom).
-> Then if the socket is a SOCK_DGRAM socket, it calls dev_hard_header,
-> which calls dev->header_ops->create, to create the link layer header.
-> If the socket is a SOCK_RAW socket, it "un-reserves" a headroom of
-> length (dev->hard_header_len), and assumes the user to provide the
-> appropriate link layer header.
-> 
-> So according to the logic of af_packet.c, dev->hard_header_len should
-> be the length of the header that would be created by
-> dev->header_ops->create.
+> +
+> +       /* triggers vfs_getattr */
+> +       fstat(pipefd[0], &fileStat);
+> +       fstat(pipefd[1], &fileStat);
+> +       fstat(sockfd, &fileStat);
+> +       fstat(procfd, &fileStat);
+> +       fstat(devfd, &fileStat);
+> +       fstat(localfd, &fileStat);
+> +       fstat(indicatorfd, &fileStat);
+> +
+> +out_close:
+> +       /* triggers filp_close */
+> +       close(pipefd[0]);
+> +       close(pipefd[1]);
+> +       close(sockfd);
+> +       close(procfd);
+> +       close(devfd);
+> +       close(localfd);
+> +       close(indicatorfd);
+> +       return ret;
+> +}
+> +
 
-I believe I'm with you up to here, but:
+[...]
 
-> However, this driver doesn't provide dev->header_ops, so logically
-> dev->hard_header_len should be 0.
+> diff --git a/tools/testing/selftests/bpf/progs/test_d_path.c b/tools/testing/selftests/bpf/progs/test_d_path.c
+> new file mode 100644
+> index 000000000000..e02dce614256
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_d_path.c
+> @@ -0,0 +1,64 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include "vmlinux.h"
+> +#include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_tracing.h>
+> +
+> +#define MAX_PATH_LEN           128
+> +#define MAX_EVENT_NUM          16
+> +
+> +pid_t my_pid;
+> +__u32 cnt_stat;
+> +__u32 cnt_close;
+> +char paths_stat[MAX_EVENT_NUM][MAX_PATH_LEN];
+> +char paths_close[MAX_EVENT_NUM][MAX_PATH_LEN];
+> +int rets_stat[MAX_EVENT_NUM];
+> +int rets_close[MAX_EVENT_NUM];
+> +
 
-I'm not clear on this part.
+please zero-initialize all of these, it causes issues on some Clang versions
 
-What's to say you shouldn't be implementing header_ops instead? Note
-that with WiFi drivers, they're exposing themselves as ARPHRD_ETHER, and
-only the Ethernet headers are part of the upper "protocol" headers. So
-my patch deferred to the eth headers.
-
-What is the intention with this X25 protocol? I guess the headers added
-in lapbeth_data_transmit() are supposed to be "invisible", as with this
-note in af_packet.c?
-
-   - if device has no dev->hard_header routine, it adds and removes ll header
-     inside itself. In this case ll header is invisible outside of device,
-     but higher levels still should reserve dev->hard_header_len.
-
-If that's the case, then yes, I believe this patch should be correct.
-
-Brian
-
-> So we should use dev->needed_headroom instead of dev->hard_header_len
-> to request necessary headroom to be allocated.
-> 
-> Signed-off-by: Xie He <xie.he.0141@gmail.com>
+[...]
