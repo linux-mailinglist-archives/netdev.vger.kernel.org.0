@@ -2,87 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB26B231B1C
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 10:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FE63231B21
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 10:22:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728097AbgG2IVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 04:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726476AbgG2IVd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 04:21:33 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3ECDC061794
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 01:21:31 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id f18so20744131wrs.0
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 01:21:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6T88XFHoZwdWNsG0U6QQMdTCzN7l6GijNyTjBnRKzIM=;
-        b=pazJ7rsfIt4mv4lkXVBNaxT4vr7c797y0zfzpipeuXgWr8mStz/bjgqWbS6O0fs8dH
-         +bgwJOtxYYvSkzQnc/hXSAegpEHud/UMnMvLk9SOgcEkh0iX6/QaPqCXevnDNAHr9kmR
-         vanM6GslgIzv2kSQ9z83jXK9ffg6I1PCKvOetI+rakfFE4929eZEOouu+hpztUQtEu3V
-         dA5Z6GsCzW0BZNvHh34erSnNabwQXIvQVWgQnmiIxkPgJX+h1NR+n1rHMYS8uDTh10nQ
-         pjLK0IHNt6cZC18FYY9nbq0GP8nk6+kk0ih3ki4gSGPI19BxFLjTfRkFqo0ahEbm5XXg
-         tiEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6T88XFHoZwdWNsG0U6QQMdTCzN7l6GijNyTjBnRKzIM=;
-        b=qY88zNipDWIyxxIjlHLE3YdQRBtk+hF1REkJr29LS1jxHyjfx3rW7lpPKECfRH4jwf
-         Q+HRoMDzUYr23wdxxLjdtVp/1INxbhEbtX2w7XUNZHrL0aq+vhJ0YiTSeNFd11YoGVLN
-         2SaY68D9F6LHv4wzsrWtu/ORmdCkgs9v+LeYjGQl0qZVmzGdSPgRmI4P1NlQeOcKDbq7
-         69wSErCXZuwtW18wuWwEdQ7ppbEGzQbw/7ZPEWbyI36v7C3AbEpfvMgu/lbtw8BWVNxm
-         tQjVsGJK3k2BnB4lPM91Tmwd5ueiz670NF9WCfNPYbEChSG38p4c1WE1w1dDIq19Xg/I
-         vniQ==
-X-Gm-Message-State: AOAM531BRylfOD4drNRvCAaf2v8Ri7wCjaTQmnSQe5CkneeOdL/GcH2y
-        xk85+j18Glb4x0lsIXyG96C1nw==
-X-Google-Smtp-Source: ABdhPJzLK30A7nRk1zbebASvAWR0eRDz/wmb9O/kVmuOVpo+P4fnLv6g3rkNyifb8Xs1CPQI5KT2rw==
-X-Received: by 2002:adf:fb87:: with SMTP id a7mr28702596wrr.390.1596010890488;
-        Wed, 29 Jul 2020 01:21:30 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id g16sm3650100wrs.88.2020.07.29.01.21.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jul 2020 01:21:29 -0700 (PDT)
-Date:   Wed, 29 Jul 2020 10:21:29 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
-        jiri@mellanox.com, kernel-team@fb.com
-Subject: Re: [PATCH net] devlink: ignore -EOPNOTSUPP errors on dumpit
-Message-ID: <20200729082129.GA2204@nanopsycho>
-References: <20200728231507.426387-1-kuba@kernel.org>
+        id S1728105AbgG2IW1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Jul 2020 04:22:27 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:35093 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726336AbgG2IW1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 04:22:27 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-266-Lc9u-frSMPqs63oowZ_ntQ-1; Wed, 29 Jul 2020 09:22:23 +0100
+X-MC-Unique: Lc9u-frSMPqs63oowZ_ntQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 29 Jul 2020 09:22:22 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 29 Jul 2020 09:22:22 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christoph Hellwig' <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>
+CC:     Jan Engelhardt <jengelh@inai.de>, Ido Schimmel <idosch@idosch.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH 4/4] net: improve the user pointer check in
+ init_user_sockptr
+Thread-Topic: [PATCH 4/4] net: improve the user pointer check in
+ init_user_sockptr
+Thread-Index: AQHWZP2RVAfIUnVwRE6QL/zdEP2h6akeNCoA
+Date:   Wed, 29 Jul 2020 08:22:22 +0000
+Message-ID: <f945879557b24678916f15fbc97150ba@AcuMS.aculab.com>
+References: <20200728163836.562074-1-hch@lst.de>
+ <20200728163836.562074-5-hch@lst.de>
+In-Reply-To: <20200728163836.562074-5-hch@lst.de>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200728231507.426387-1-kuba@kernel.org>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jul 29, 2020 at 01:15:07AM CEST, kuba@kernel.org wrote:
->Number of .dumpit functions try to ignore -EOPNOTSUPP errors.
->Recent change missed that, and started reporting all errors
->but -EMSGSIZE back from dumps. This leads to situation like
->this:
->
->$ devlink dev info
->devlink answers: Operation not supported
->
->Dump should not report an error just because the last device
->to be queried could not provide an answer.
->
->To fix this and avoid similar confusion make sure we clear
->err properly, and not leave it set to an error if we don't
->terminate the iteration.
->
->Fixes: c62c2cfb801b ("net: devlink: don't ignore errors during dumpit")
->Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+From: Christoph Hellwig
+> Sent: 28 July 2020 17:39
+> 
+> Make sure not just the pointer itself but the whole range lies in
+> the user address space.  For that pass the length and then use
+> the access_ok helper to do the check.
 
-Yeah, that makes perfect sense. Thanks for the fix Kuba!
+Now that the address is never changed it is enough to check the
+base address (although this would be slightly safer if sockaddr_t
+were 'const').
+This is especially true given some code paths ignore the length
+(so the length must be checked later - which it will be).
 
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Isn't TASK_SIZE the wrong 'constant'.
+Looks pretty 'heavy' on x86-64.
+You just need something between valid user and valid kernel addresses.
+So (1ull << 63) is fine on x86-64 (and probably all 64bit with
+non-overlapping user/kernel addresses).
+For i386 you need (3ul << 30) - probably also common.
+
+	David
+
+> 
+> Fixes: 6d04fe15f78a ("net: optimize the sockptr_t for unified kernel/user address spaces")
+> Reported-by: David Laight <David.Laight@ACULAB.COM>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  include/linux/sockptr.h     | 18 ++++++------------
+>  net/ipv4/bpfilter/sockopt.c |  2 +-
+>  net/socket.c                |  2 +-
+>  3 files changed, 8 insertions(+), 14 deletions(-)
+> 
+> diff --git a/include/linux/sockptr.h b/include/linux/sockptr.h
+> index 9e6c81d474cba8..96840def9d69cc 100644
+> --- a/include/linux/sockptr.h
+> +++ b/include/linux/sockptr.h
+> @@ -27,14 +27,6 @@ static inline sockptr_t KERNEL_SOCKPTR(void *p)
+>  {
+>  	return (sockptr_t) { .kernel = p };
+>  }
+> -
+> -static inline int __must_check init_user_sockptr(sockptr_t *sp, void __user *p)
+> -{
+> -	if ((unsigned long)p >= TASK_SIZE)
+> -		return -EFAULT;
+> -	sp->user = p;
+> -	return 0;
+> -}
+>  #else /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
+>  typedef struct {
+>  	union {
+> @@ -53,14 +45,16 @@ static inline sockptr_t KERNEL_SOCKPTR(void *p)
+>  {
+>  	return (sockptr_t) { .kernel = p, .is_kernel = true };
+>  }
+> +#endif /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
+> 
+> -static inline int __must_check init_user_sockptr(sockptr_t *sp, void __user *p)
+> +static inline int __must_check init_user_sockptr(sockptr_t *sp, void __user *p,
+> +		size_t size)
+>  {
+> -	sp->user = p;
+> -	sp->is_kernel = false;
+> +	if (!access_ok(p, size))
+> +		return -EFAULT;
+> +	*sp = (sockptr_t) { .user = p };
+>  	return 0;
+>  }
+> -#endif /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
+> 
+>  static inline bool sockptr_is_null(sockptr_t sockptr)
+>  {
+> diff --git a/net/ipv4/bpfilter/sockopt.c b/net/ipv4/bpfilter/sockopt.c
+> index 94f18d2352d007..545b2640f0194d 100644
+> --- a/net/ipv4/bpfilter/sockopt.c
+> +++ b/net/ipv4/bpfilter/sockopt.c
+> @@ -65,7 +65,7 @@ int bpfilter_ip_get_sockopt(struct sock *sk, int optname,
+> 
+>  	if (get_user(len, optlen))
+>  		return -EFAULT;
+> -	err = init_user_sockptr(&optval, user_optval);
+> +	err = init_user_sockptr(&optval, user_optval, len);
+>  	if (err)
+>  		return err;
+>  	return bpfilter_mbox_request(sk, optname, optval, len, false);
+> diff --git a/net/socket.c b/net/socket.c
+> index 94ca4547cd7c53..aff52e81653ce3 100644
+> --- a/net/socket.c
+> +++ b/net/socket.c
+> @@ -2105,7 +2105,7 @@ int __sys_setsockopt(int fd, int level, int optname, char __user *user_optval,
+>  	if (optlen < 0)
+>  		return -EINVAL;
+> 
+> -	err = init_user_sockptr(&optval, user_optval);
+> +	err = init_user_sockptr(&optval, user_optval, optlen);
+>  	if (err)
+>  		return err;
+> 
+> --
+> 2.27.0
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
