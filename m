@@ -2,114 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A423231B14
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 10:20:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB26B231B1C
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 10:21:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728079AbgG2IUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 04:20:17 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:48772 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727844AbgG2IUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 04:20:16 -0400
-Received: by mail-il1-f197.google.com with SMTP id w23so5643756ila.15
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 01:20:16 -0700 (PDT)
+        id S1728097AbgG2IVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 04:21:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726476AbgG2IVd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 04:21:33 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3ECDC061794
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 01:21:31 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id f18so20744131wrs.0
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 01:21:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6T88XFHoZwdWNsG0U6QQMdTCzN7l6GijNyTjBnRKzIM=;
+        b=pazJ7rsfIt4mv4lkXVBNaxT4vr7c797y0zfzpipeuXgWr8mStz/bjgqWbS6O0fs8dH
+         +bgwJOtxYYvSkzQnc/hXSAegpEHud/UMnMvLk9SOgcEkh0iX6/QaPqCXevnDNAHr9kmR
+         vanM6GslgIzv2kSQ9z83jXK9ffg6I1PCKvOetI+rakfFE4929eZEOouu+hpztUQtEu3V
+         dA5Z6GsCzW0BZNvHh34erSnNabwQXIvQVWgQnmiIxkPgJX+h1NR+n1rHMYS8uDTh10nQ
+         pjLK0IHNt6cZC18FYY9nbq0GP8nk6+kk0ih3ki4gSGPI19BxFLjTfRkFqo0ahEbm5XXg
+         tiEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=cl416RZjUF3O9jXjZQ0k7KWHBcYWC7cjCtLUFQMx9CY=;
-        b=UD9qe2p967K3ERwUY2b6ZZbWneeraxsuLUvz64fs0ywzCO/vmuU5xZbSdnpbDzOGkl
-         9//Y0Mjjux3FBT9XA8Hf9zXpH0CZMapt69Lwxuhe86AJdzDZPmnNF492X653VsIeZNmK
-         uwk/kQzy7XEw/UhyIUtnqn1IuNpGqarzfZdjP5q6p/egQJtAFwnWDzu+dHBnMObIqWNB
-         CXS4vyeH5IzQ0FFkjMsI7fdykemohWgtQYRXrclGlbbkzGhSaOPy304NI/Mp/rV/dKrj
-         c5hcGBtLO/dT++aWgDoEc5weBOaMw/bFhMKg64IRuPvvqxVGUJTmNW+jdzueRWfam72i
-         Xn+A==
-X-Gm-Message-State: AOAM5307Y//ni1TkURunNLWkwN187kk5ON+u5+kouCW//zL9XhN1NpgS
-        ND3+EqnlmNPkpaU9X13bGIenrFBLuBhWhAj8arW0zuKYKsHH
-X-Google-Smtp-Source: ABdhPJxL9LdW97OSd1IKs5yaFXouU/Fjr1b85o13NOy0MxxGgoXq2IBV5g08QwJaz1+n03lC8bIroLaMPPMFiHTm61YSOLmmcwN7
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6T88XFHoZwdWNsG0U6QQMdTCzN7l6GijNyTjBnRKzIM=;
+        b=qY88zNipDWIyxxIjlHLE3YdQRBtk+hF1REkJr29LS1jxHyjfx3rW7lpPKECfRH4jwf
+         Q+HRoMDzUYr23wdxxLjdtVp/1INxbhEbtX2w7XUNZHrL0aq+vhJ0YiTSeNFd11YoGVLN
+         2SaY68D9F6LHv4wzsrWtu/ORmdCkgs9v+LeYjGQl0qZVmzGdSPgRmI4P1NlQeOcKDbq7
+         69wSErCXZuwtW18wuWwEdQ7ppbEGzQbw/7ZPEWbyI36v7C3AbEpfvMgu/lbtw8BWVNxm
+         tQjVsGJK3k2BnB4lPM91Tmwd5ueiz670NF9WCfNPYbEChSG38p4c1WE1w1dDIq19Xg/I
+         vniQ==
+X-Gm-Message-State: AOAM531BRylfOD4drNRvCAaf2v8Ri7wCjaTQmnSQe5CkneeOdL/GcH2y
+        xk85+j18Glb4x0lsIXyG96C1nw==
+X-Google-Smtp-Source: ABdhPJzLK30A7nRk1zbebASvAWR0eRDz/wmb9O/kVmuOVpo+P4fnLv6g3rkNyifb8Xs1CPQI5KT2rw==
+X-Received: by 2002:adf:fb87:: with SMTP id a7mr28702596wrr.390.1596010890488;
+        Wed, 29 Jul 2020 01:21:30 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id g16sm3650100wrs.88.2020.07.29.01.21.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jul 2020 01:21:29 -0700 (PDT)
+Date:   Wed, 29 Jul 2020 10:21:29 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
+        jiri@mellanox.com, kernel-team@fb.com
+Subject: Re: [PATCH net] devlink: ignore -EOPNOTSUPP errors on dumpit
+Message-ID: <20200729082129.GA2204@nanopsycho>
+References: <20200728231507.426387-1-kuba@kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:154d:: with SMTP id h13mr33043619iow.210.1596010814962;
- Wed, 29 Jul 2020 01:20:14 -0700 (PDT)
-Date:   Wed, 29 Jul 2020 01:20:14 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000af016405ab903954@google.com>
-Subject: KASAN: vmalloc-out-of-bounds Read in get_counters
-From:   syzbot <syzbot+a450cb4aa95912e62487@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@netfilter.org, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200728231507.426387-1-kuba@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Wed, Jul 29, 2020 at 01:15:07AM CEST, kuba@kernel.org wrote:
+>Number of .dumpit functions try to ignore -EOPNOTSUPP errors.
+>Recent change missed that, and started reporting all errors
+>but -EMSGSIZE back from dumps. This leads to situation like
+>this:
+>
+>$ devlink dev info
+>devlink answers: Operation not supported
+>
+>Dump should not report an error just because the last device
+>to be queried could not provide an answer.
+>
+>To fix this and avoid similar confusion make sure we clear
+>err properly, and not leave it set to an error if we don't
+>terminate the iteration.
+>
+>Fixes: c62c2cfb801b ("net: devlink: don't ignore errors during dumpit")
+>Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-syzbot found the following issue on:
+Yeah, that makes perfect sense. Thanks for the fix Kuba!
 
-HEAD commit:    68845a55 Merge branch 'akpm' into master (patches from And..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13668964900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f87a5e4232fdb267
-dashboard link: https://syzkaller.appspot.com/bug?extid=a450cb4aa95912e62487
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a450cb4aa95912e62487@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in get_counters+0x593/0x610 net/ipv6/netfilter/ip6_tables.c:780
-Read of size 8 at addr ffffc9000528b048 by task syz-executor.1/6968
-
-CPU: 1 PID: 6968 Comm: syz-executor.1 Not tainted 5.8.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0x5/0x436 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
- get_counters+0x593/0x610 net/ipv6/netfilter/ip6_tables.c:780
- do_ip6t_get_ctl+0x516/0x910 net/ipv6/netfilter/ip6_tables.c:821
- nf_sockopt net/netfilter/nf_sockopt.c:104 [inline]
- nf_getsockopt+0x72/0xd0 net/netfilter/nf_sockopt.c:122
- ipv6_getsockopt+0x1bf/0x270 net/ipv6/ipv6_sockglue.c:1468
- tcp_getsockopt+0x86/0xd0 net/ipv4/tcp.c:3893
- __sys_getsockopt+0x14b/0x2e0 net/socket.c:2172
- __do_sys_getsockopt net/socket.c:2187 [inline]
- __se_sys_getsockopt net/socket.c:2184 [inline]
- __x64_sys_getsockopt+0xba/0x150 net/socket.c:2184
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45ee7a
-Code: Bad RIP value.
-RSP: 002b:0000000000c9f618 EFLAGS: 00000212 ORIG_RAX: 0000000000000037
-RAX: ffffffffffffffda RBX: 0000000000c9f640 RCX: 000000000045ee7a
-RDX: 0000000000000041 RSI: 0000000000000029 RDI: 0000000000000003
-RBP: 0000000000744ca0 R08: 0000000000c9f63c R09: 0000000000004000
-R10: 0000000000c9f740 R11: 0000000000000212 R12: 0000000000000003
-R13: 0000000000000000 R14: 0000000000000029 R15: 00000000007445e0
-
-
-Memory state around the buggy address:
- ffffc9000528af00: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
- ffffc9000528af80: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
->ffffc9000528b000: 00 00 00 00 00 00 00 00 f9 f9 f9 f9 f9 f9 f9 f9
-                                              ^
- ffffc9000528b080: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
- ffffc9000528b100: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
