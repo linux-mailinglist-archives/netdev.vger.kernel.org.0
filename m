@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0582E2321B3
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 17:34:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06FE82321FF
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 17:54:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726615AbgG2Peo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 11:34:44 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:30437 "EHLO
+        id S1726799AbgG2Pye (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 11:54:34 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:24244 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726054AbgG2Peo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 11:34:44 -0400
+        with ESMTP id S1726341AbgG2Pyd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 11:54:33 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596036882;
+        s=mimecast20190719; t=1596038071;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=PTGQnYg0KcXp4LmK/hXI4Cd5e+3IE3LiYGTq9nImvGc=;
-        b=P1nf6hTpN7KvGn2yc5a6naQRyxYie7BSA2hePozQFE8jPHkRMHcixJLV7vRwhl9wlrbKUR
-        Xp9PiJJk5psyclX+4cXHoPJ+c5AiU/JLuO471wP9jypKg2jERSewXkeoCmrslZwfFoeb5J
-        51yqAcaap20GgvIfImF+Qfu1NpdE/MU=
+        bh=/J6JS+fMs+vZIrHI2Gt0ra9KaEpOAIgrYgpi5yu3vNU=;
+        b=FgEZlfu3lC1/T07TFpqx5Z7rtxD70MzUNETx/IVG1+5gLkxQ3K1VHeKgnNTeFLBgLa4AEe
+        7YfC9SAdONNFV532U2bj4ZPlYw+flTwFSeydjfFf/f9IwRkyc6RL8OUyTINw19Pr+clH4A
+        CiUx/fZU7QJQGJFKz1fd75ehKrT6nyc=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-502-g8oXH2zeNoOUf3OmdWP5RA-1; Wed, 29 Jul 2020 11:34:38 -0400
-X-MC-Unique: g8oXH2zeNoOUf3OmdWP5RA-1
+ us-mta-340-zuNP3vcPPk-q__0svAmtQg-1; Wed, 29 Jul 2020 11:54:27 -0400
+X-MC-Unique: zuNP3vcPPk-q__0svAmtQg-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 80FA2100AA21;
-        Wed, 29 Jul 2020 15:34:33 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 502221009447;
+        Wed, 29 Jul 2020 15:54:25 +0000 (UTC)
 Received: from krava (unknown [10.40.193.247])
-        by smtp.corp.redhat.com (Postfix) with SMTP id ED1F971906;
-        Wed, 29 Jul 2020 15:34:28 +0000 (UTC)
-Date:   Wed, 29 Jul 2020 17:34:28 +0200
+        by smtp.corp.redhat.com (Postfix) with SMTP id EC53171929;
+        Wed, 29 Jul 2020 15:54:18 +0000 (UTC)
+Date:   Wed, 29 Jul 2020 17:54:18 +0200
 From:   Jiri Olsa <jolsa@redhat.com>
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
@@ -48,108 +48,123 @@ Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Brendan Gregg <bgregg@netflix.com>,
         Florent Revest <revest@chromium.org>,
         Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v8 bpf-next 13/13] selftests/bpf: Add set test to
- resolve_btfids
-Message-ID: <20200729153428.GJ1319041@krava>
+Subject: Re: [PATCH v8 bpf-next 09/13] bpf: Add d_path helper
+Message-ID: <20200729155418.GK1319041@krava>
 References: <20200722211223.1055107-1-jolsa@kernel.org>
- <20200722211223.1055107-14-jolsa@kernel.org>
- <CAEf4BzbMNZdiD_hqReei2HKziTTNoWFymE5g7SzvSR7=QdWxrw@mail.gmail.com>
+ <20200722211223.1055107-10-jolsa@kernel.org>
+ <CAEf4BzZ48nhqGhij9qe7Hc_JD6RpZoh-4NnVvqR=V1YN4ff2sA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzbMNZdiD_hqReei2HKziTTNoWFymE5g7SzvSR7=QdWxrw@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ48nhqGhij9qe7Hc_JD6RpZoh-4NnVvqR=V1YN4ff2sA@mail.gmail.com>
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 12:56:02PM -0700, Andrii Nakryiko wrote:
-> On Wed, Jul 22, 2020 at 2:15 PM Jiri Olsa <jolsa@kernel.org> wrote:
+On Tue, Jul 28, 2020 at 12:47:03PM -0700, Andrii Nakryiko wrote:
+> On Wed, Jul 22, 2020 at 2:14 PM Jiri Olsa <jolsa@kernel.org> wrote:
 > >
-> > Adding test to for sets resolve_btfids. We're checking that
-> > testing set gets properly resolved and sorted.
+> > Adding d_path helper function that returns full path for
+> > given 'struct path' object, which needs to be the kernel
+> > BTF 'path' object. The path is returned in buffer provided
+> > 'buf' of size 'sz' and is zero terminated.
+> >
+> >   bpf_d_path(&file->f_path, buf, size);
+> >
+> > The helper calls directly d_path function, so there's only
+> > limited set of function it can be called from. Adding just
+> > very modest set for the start.
+> >
+> > Updating also bpf.h tools uapi header and adding 'path' to
+> > bpf_helpers_doc.py script.
 > >
 > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > > ---
-> >  .../selftests/bpf/prog_tests/resolve_btfids.c | 33 +++++++++++++++++++
-> >  1 file changed, 33 insertions(+)
+> >  include/uapi/linux/bpf.h       | 13 +++++++++
+> >  kernel/trace/bpf_trace.c       | 48 ++++++++++++++++++++++++++++++++++
+> >  scripts/bpf_helpers_doc.py     |  2 ++
+> >  tools/include/uapi/linux/bpf.h | 13 +++++++++
+> >  4 files changed, 76 insertions(+)
 > >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-> > index 101785b49f7e..cc90aa244285 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-> > @@ -48,6 +48,15 @@ BTF_ID(struct,  S)
-> >  BTF_ID(union,   U)
-> >  BTF_ID(func,    func)
+> 
+> [...]
+> 
 > >
-> > +BTF_SET_START(test_set)
-> > +BTF_ID(typedef, S)
-> > +BTF_ID(typedef, T)
-> > +BTF_ID(typedef, U)
-> > +BTF_ID(struct,  S)
-> > +BTF_ID(union,   U)
-> > +BTF_ID(func,    func)
-> > +BTF_SET_END(test_set)
+> > +BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
+> > +{
+> > +       char *p = d_path(path, buf, sz - 1);
+> > +       int len;
 > > +
-> >  static int
-> >  __resolve_symbol(struct btf *btf, int type_id)
-> >  {
-> > @@ -126,5 +135,29 @@ int test_resolve_btfids(void)
-> >                 }
-> >         }
-> >
-> > +       /* Check BTF_SET_START(test_set) IDs */
-> > +       for (i = 0; i < test_set.cnt && !ret; i++) {
+> > +       if (IS_ERR(p)) {
+> > +               len = PTR_ERR(p);
+> > +       } else {
+> > +               len = strlen(p);
+> > +               if (len && p != buf)
+> > +                       memmove(buf, p, len);
 > 
-> nit: usual we just do `goto err_out;` instead of complicating exit
-> condition in a for loop
+> not sure if it's worth it, but if len == sz - 1 then memmove is not
+> necessary. Again, don't know if worth it, as it's probably not going
+> to be a common case.
 
-ok
+I did not see condition like that for d_path/file_path usage,
+I'll check if such return values are even possible
 
 > 
-> > +               bool found = false;
+> > +               buf[len] = 0;
+> > +               /* Include the trailing NUL. */
+> > +               len++;
+> > +       }
 > > +
-> > +               for (j = 0; j < ARRAY_SIZE(test_symbols); j++) {
-> > +                       if (test_symbols[j].id != test_set.ids[i])
-> > +                               continue;
-> > +                       found = true;
-> > +                       break;
-> > +               }
+> > +       return len;
+> > +}
 > > +
-> > +               ret = CHECK(!found, "id_check",
-> > +                           "ID %d for %s not found in test_symbols\n",
-> > +                           test_symbols[j].id, test_symbols[j].name);
+> > +BTF_SET_START(btf_whitelist_d_path)
+> > +BTF_ID(func, vfs_truncate)
+> > +BTF_ID(func, vfs_fallocate)
+> > +BTF_ID(func, dentry_open)
+> > +BTF_ID(func, vfs_getattr)
+> > +BTF_ID(func, filp_close)
+> > +BTF_SET_END(btf_whitelist_d_path)
 > 
-> j == ARRAY_SIZE(test_symbols), you probably meant to get
-> test_set.ids[i] instead of test_symbol name/id?
+> 
+> We should probably comply with an updated coding style ([0]) and use
+> an allowlist name for this?
+> 
+>   [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=49decddd39e5f6132ccd7d9fdc3d7c470b0061bb
 
-oh yea.. test_set.ids[i] is not found in here
+right, will change
 
 > 
-> > +               if (ret)
-> > +                       break;
 > > +
-> > +               if (i > 0) {
-> > +                       ret = CHECK(test_set.ids[i - 1] > test_set.ids[i],
+> > +static bool bpf_d_path_allowed(const struct bpf_prog *prog)
+> > +{
+> > +       return btf_id_set_contains(&btf_whitelist_d_path, prog->aux->attach_btf_id);
+> > +}
+> > +
+> > +BTF_ID_LIST(bpf_d_path_btf_ids)
+> > +BTF_ID(struct, path)
+> > +
+> > +static const struct bpf_func_proto bpf_d_path_proto = {
+> > +       .func           = bpf_d_path,
+> > +       .gpl_only       = false,
+> > +       .ret_type       = RET_INTEGER,
+> > +       .arg1_type      = ARG_PTR_TO_BTF_ID,
+> > +       .arg2_type      = ARG_PTR_TO_MEM,
+> > +       .arg3_type      = ARG_CONST_SIZE,
 > 
-> nit: >= would be the invalid condition
+> I feel like we had a discussion about ARG_CONST_SIZE vs
+> ARG_CONST_SIZE_OR_ZERO before, maybe on some different thread.
+> Basically, this >0 restriction was a major nuisance for
+> bpf_perf_event_output() cases, so much that we changed it to _OR_ZERO.
+> In practice, while it might never be the case that we have sz == 0
+> passed into the function, having to prove this to the verifier is a
+> PITA. Unless there is a very strong reason not to, let's mark this as
+> ARG_CONST_SIZE_OR_ZERO and handle sz == 0 case as a noop?
 
-yes, we actualy allow for same IDs to appear in the set
+sure, will change
 
 thanks,
 jirka
-
-> 
-> > +                                   "sort_check",
-> > +                                   "test_set is not sorted\n");
-> > +               }
-> > +       }
-> > +
-> >         return ret;
-> >  }
-> > --
-> > 2.25.4
-> >
-> 
 
