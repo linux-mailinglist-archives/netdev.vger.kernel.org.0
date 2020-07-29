@@ -2,90 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07E14232525
+	by mail.lfdr.de (Postfix) with ESMTP id 74014232526
 	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 21:13:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726816AbgG2TN3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Jul 2020 15:13:29 -0400
-Received: from mga01.intel.com ([192.55.52.88]:2252 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726710AbgG2TN3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jul 2020 15:13:29 -0400
-IronPort-SDR: APilKWlAra2BRvFzKRAk5pYx9pOqQ1yAwQ89Ao3M3WQd21Fa+8RxR8qb2RMwT0BfP79ZIeiq+O
- AWe4moDyXe9g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9697"; a="169609180"
-X-IronPort-AV: E=Sophos;i="5.75,411,1589266800"; 
-   d="scan'208";a="169609180"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2020 12:13:29 -0700
-IronPort-SDR: myaKcCtokUJMkzeggkpvAj5yxerRteQIEo9VLaiKhg7BXQhs0cG1Dr2nExr3NPQZHn5rKMBVyK
- g63hxz7RTLnw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,411,1589266800"; 
-   d="scan'208";a="490391579"
-Received: from askotian-mobl2.amr.corp.intel.com (HELO ellie) ([10.212.6.60])
-  by fmsmga006.fm.intel.com with ESMTP; 29 Jul 2020 12:13:28 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     "Zhang\, Qiang" <Qiang.Zhang@windriver.com>,
-        syzbot <syzbot+9f78d5c664a8c33f4cce@syzkaller.appspotmail.com>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "fweisbec\@gmail.com" <fweisbec@gmail.com>,
-        "jhs\@mojatatu.com" <jhs@mojatatu.com>,
-        "jiri\@resnulli.us" <jiri@resnulli.us>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mingo\@kernel.org" <mingo@kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller-bugs\@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        "tglx\@linutronix.de" <tglx@linutronix.de>,
-        "xiyou.wangcong\@gmail.com" <xiyou.wangcong@gmail.com>
-Subject: Re: =?utf-8?B?5Zue5aSNOg==?= INFO: rcu detected stall in
- tc_modify_qdisc
-In-Reply-To: <BYAPR11MB2632784BE3AD9F03C5C95263FF700@BYAPR11MB2632.namprd11.prod.outlook.com>
-References: <0000000000006f179d05ab8e2cf2@google.com> <BYAPR11MB2632784BE3AD9F03C5C95263FF700@BYAPR11MB2632.namprd11.prod.outlook.com>
-Date:   Wed, 29 Jul 2020 12:13:25 -0700
-Message-ID: <87tuxqxhgq.fsf@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+        id S1726846AbgG2TNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 15:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47288 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726838AbgG2TNe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 15:13:34 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560C0C061794
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 12:13:34 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 789171298F3AE;
+        Wed, 29 Jul 2020 11:56:48 -0700 (PDT)
+Date:   Wed, 29 Jul 2020 12:13:32 -0700 (PDT)
+Message-Id: <20200729.121332.1722544892017052313.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        alexander.h.duyck@intel.com, jiri@mellanox.com, mlxsw@mellanox.com,
+        idosch@mellanox.com
+Subject: Re: [PATCH net] ipv4: Silence suspicious RCU usage warning
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200729083713.2051435-1-idosch@idosch.org>
+References: <20200729083713.2051435-1-idosch@idosch.org>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 29 Jul 2020 11:56:48 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Ido Schimmel <idosch@idosch.org>
+Date: Wed, 29 Jul 2020 11:37:13 +0300
 
-"Zhang, Qiang" <Qiang.Zhang@windriver.com> writes:
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> fib_trie_unmerge() is called with RTNL held, but not from an RCU
+> read-side critical section. This leads to the following warning [1] when
+> the FIB alias list in a leaf is traversed with
+> hlist_for_each_entry_rcu().
+> 
+> Since the function is always called with RTNL held and since
+> modification of the list is protected by RTNL, simply use
+> hlist_for_each_entry() and silence the warning.
+> 
+> [1]
+> WARNING: suspicious RCU usage
+> 5.8.0-rc4-custom-01520-gc1f937f3f83b #30 Not tainted
+> -----------------------------
+> net/ipv4/fib_trie.c:1867 RCU-list traversed in non-reader section!!
+ ...
+> Fixes: 0ddcf43d5d4a ("ipv4: FIB Local/MAIN table collapse")
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 
-> ________________________________________
-> 发件人: linux-kernel-owner@vger.kernel.org <linux-kernel-owner@vger.kernel.org> 代表 syzbot <syzbot+9f78d5c664a8c33f4cce@syzkaller.appspotmail.com>
-> 发送时间: 2020年7月29日 13:53
-> 收件人: davem@davemloft.net; fweisbec@gmail.com; jhs@mojatatu.com; jiri@resnulli.us; linux-kernel@vger.kernel.org; mingo@kernel.org; netdev@vger.kernel.org; syzkaller-bugs@googlegroups.com; tglx@linutronix.de; vinicius.gomes@intel.com; xiyou.wangcong@gmail.com
-> 主题: INFO: rcu detected stall in tc_modify_qdisc
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    181964e6 fix a braino in cmsghdr_from_user_compat_to_kern()
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=12925e38900000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=f87a5e4232fdb267
-> dashboard link: https://syzkaller.appspot.com/bug?extid=9f78d5c664a8c33f4cce
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:
-> https://syzkaller.appspot.com/x/repro.syz?x=16587f8c900000
-
-It seems that syzkaller is generating an schedule with too small
-intervals (3ns in this case) which causes a hrtimer busy-loop which
-starves other kernel threads.
-
-We could put some limits on the interval when running in software mode,
-but I don't like this too much, because we are talking about users with
-CAP_NET_ADMIN and they have easier ways to do bad things to the system.
-
-
-Cheers,
--- 
-Vinicius
+Also applied, thanks.
