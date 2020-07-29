@@ -2,117 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB98B231D96
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 13:43:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30080231DB2
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 13:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726859AbgG2LnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 07:43:22 -0400
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:41047 "EHLO
-        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726365AbgG2LnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 07:43:22 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 134894B8;
-        Wed, 29 Jul 2020 07:43:21 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 29 Jul 2020 07:43:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=l38fM3
-        lfQzmFl33A4ZEsdirrgbJNyipF5taLaKCC1rM=; b=jcTXLUVb1txLf2jpLP3OY8
-        Db4Z6hT6lcTSI+mTr+TT9OExa5zTZApMula3YS4z/RebeAxkauljY5hSSFrjSIi6
-        vOtqJPG807XjrSyJlRtyiPexV1f+nbgW3YlMaat4fumoXA6+82mJVoaEgWVe7RFl
-        lrUUe6Vx3IT7NyTqaIyB1WHB5KIl3nRfJmYTjjt7u//8TODwjeAABzCN0HZqCdaT
-        d9AJOuEVwqVtRY7HccI1xnIcKmoq4Bd7WSyOY0EYwh6/3YbmFGxkPZP7cmNsilWT
-        eBid4EyV9xwOEPGLJ0+vjSWXvY5LgSwHrs42ii27XE3OXgjxGEqp6DnOiBX2rDCg
-        ==
-X-ME-Sender: <xms:2GAhXzBIWndntwWHz_5mtMeDYGalSNlTVr1TVP5BFO9rIN38B_P__g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrieeggdegfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necukfhppedutdelrdeihedrudefjedrvdehtdenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:2GAhX5j4gWIR-crCvs52P0QvCy6CIAX1bN2cDBpLqelBc3gmgN1ZrA>
-    <xmx:2GAhX-nAL6r3sAfAJfIOvSz5fwjfeDxmHXTJ4mdIPvUpV5fXMDQ1GQ>
-    <xmx:2GAhX1zlVYfKtjAWW8yialBCarQuduXUYm7KOdThS0-ywfqF3yqUIg>
-    <xmx:2GAhX3Om4zG2k5wlgQjErx8rCx9Tlocs7BxZBMPabaEIAod8fxfYtQ>
-Received: from localhost (bzq-109-65-137-250.red.bezeqint.net [109.65.137.250])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 1474E30600B1;
-        Wed, 29 Jul 2020 07:43:19 -0400 (EDT)
-Date:   Wed, 29 Jul 2020 14:43:17 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Ashutosh Grewal <ashutoshgrewal@gmail.com>, dsahern@gmail.com
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: Bug: ip utility fails to show routes with large # of multipath
- next-hops
-Message-ID: <20200729114317.GA2120829@shredder>
-References: <CAKA6ep+EFNOYY8k8PFP9kf_F5GY+5g8qu_LphEAX6N7iEFTs9Q@mail.gmail.com>
+        id S1726509AbgG2Lyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 07:54:40 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:27138 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726353AbgG2Lyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 07:54:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596023679;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lpsTSYXjeeeVqBmEzFVl5yuK75B5cM9L+lalZA+cwK8=;
+        b=MKJTLbps4F7aPCBRGR7YjuPiX4sX1ezZbpM557W/JGE9DLyujRToosW00rA4UuCbClnhL2
+        T6b3xX4fuoEPYnn7w09cXnv+mrt7+agkrjdG8qS04stGEwacM+FKr8YaVNuSfnQz1Li+rb
+        Lnh2BTBouP4HDy6EyF9LfkfMkYhKIKc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-34-Fd7Tv3aDPPiqvyzxZT_YWQ-1; Wed, 29 Jul 2020 07:54:37 -0400
+X-MC-Unique: Fd7Tv3aDPPiqvyzxZT_YWQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D29E5800460;
+        Wed, 29 Jul 2020 11:54:34 +0000 (UTC)
+Received: from krava (unknown [10.40.193.247])
+        by smtp.corp.redhat.com (Postfix) with SMTP id E4E7775559;
+        Wed, 29 Jul 2020 11:54:30 +0000 (UTC)
+Date:   Wed, 29 Jul 2020 13:54:29 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v8 bpf-next 08/13] bpf: Add BTF_SET_START/END macros
+Message-ID: <20200729115429.GI1319041@krava>
+References: <20200722211223.1055107-1-jolsa@kernel.org>
+ <20200722211223.1055107-9-jolsa@kernel.org>
+ <CAEf4BzbwJ+FXYWOK2k6UZ8X1f-2XQP1rRLFAFO6_OyK2iKv8Eg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKA6ep+EFNOYY8k8PFP9kf_F5GY+5g8qu_LphEAX6N7iEFTs9Q@mail.gmail.com>
+In-Reply-To: <CAEf4BzbwJ+FXYWOK2k6UZ8X1f-2XQP1rRLFAFO6_OyK2iKv8Eg@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 05:52:44PM -0700, Ashutosh Grewal wrote:
-> Hello David and all,
-> 
-> I hope this is the correct way to report a bug.
+On Tue, Jul 28, 2020 at 12:39:06PM -0700, Andrii Nakryiko wrote:
 
-Sure
+SNIP
 
 > 
-> I observed this problem with 256 v4 next-hops or 128 v6 next-hops (or
-> 128 or so # of v4 next-hops with labels).
+> [...]
 > 
-> Here is an example -
+> > +#define BTF_SET_START(name)                            \
+> > +__BTF_ID_LIST(name, local)                             \
+> > +asm(                                                   \
+> > +".pushsection " BTF_IDS_SECTION ",\"a\";       \n"     \
+> > +".local __BTF_ID__set__" #name ";              \n"     \
+> > +"__BTF_ID__set__" #name ":;                    \n"     \
+> > +".zero 4                                       \n"     \
+> > +".popsection;                                  \n");
+> > +
+> > +#define BTF_SET_END(name)                              \
+> > +asm(                                                   \
+> > +".pushsection " BTF_IDS_SECTION ",\"a\";      \n"      \
+> > +".size __BTF_ID__set__" #name ", .-" #name "  \n"      \
+> > +".popsection;                                 \n");    \
+> > +extern struct btf_id_set name;
+> > +
+> >  #else
 > 
-> root@a6be8c892bb7:/# ip route show 2.2.2.2
-> Error: Buffer too small for object.
-> Dump terminated
-> 
-> Kernel details (though I recall running into the same problem on 4.4*
-> kernel as well) -
-> root@ubuntu-vm:/# uname -a
-> Linux ch1 5.4.0-33-generic #37-Ubuntu SMP Thu May 21 12:53:59 UTC 2020
-> x86_64 x86_64 x86_64 GNU/Linux
-> 
-> I think the problem may be to do with the size of the skbuf being
-> allocated as part of servicing the netlink request.
-> 
-> static int netlink_dump(struct sock *sk)
-> {
->   <snip>
-> 
->                 skb = alloc_skb(...)
+> This local symbol assumption will probably at some point bite us.
+> Yonghong already did global vs static variants for BTF ID list, we'll
+> end up doing something like that for sets of BTF IDs as well. Let's do
+> this similarly from the get go.
 
-Yes, I believe you are correct. You will get an skb of size 4K and it
-can't fit the entire RTA_MULTIPATH attribute with all the nested
-nexthops. Since it's a single attribute it cannot be split across
-multiple messages.
-
-Looking at the code, I think a similar problem was already encountered
-with IFLA_VFINFO_LIST. See commit c7ac8679bec9 ("rtnetlink: Compute and
-store minimum ifinfo dump size").
-
-Maybe we can track the maximum number of IPv4/IPv6 nexthops during
-insertion and then consult it to adjust 'min_dump_alloc' for
-RTM_GETROUTE.
-
-It's a bit complicated for IPv6 because you can append nexthops, but I
-believe anyone using so many nexthops is already using RTA_MULTIPATH to
-insert them, so we can simplify.
-
-David, what do you think? You have a better / simpler idea? Maybe one
-day everyone will be using the new nexthop API and this won't be needed
-:)
+sure, will add that
 
 > 
-> Thanks,
-> Ashutosh
+> >
+> >  #define BTF_ID_LIST(name) static u32 name[5];
+> >  #define BTF_ID(prefix, name)
+> >  #define BTF_ID_UNUSED
+> >  #define BTF_ID_LIST_GLOBAL(name) u32 name[1];
+> > +#define BTF_SET_START(name) static struct btf_id_set name = { 0 };
+> 
+> nit: this zero is unnecessary and misleading (it's initialized for
+> only the first member of a struct). Just {} is enough.
+
+ok
+
+> 
+> > +#define BTF_SET_END(name)
+> >
+> >  #endif /* CONFIG_DEBUG_INFO_BTF */
+> >
+> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> > index 562d4453fad3..06714cdda0a9 100644
+> > --- a/kernel/bpf/btf.c
+> > +++ b/kernel/bpf/btf.c
+> > @@ -21,6 +21,8 @@
+> >  #include <linux/btf_ids.h>
+> >  #include <linux/skmsg.h>
+> >  #include <linux/perf_event.h>
+> > +#include <linux/bsearch.h>
+> > +#include <linux/btf_ids.h>
+> >  #include <net/sock.h>
+> >
+> >  /* BTF (BPF Type Format) is the meta data format which describes
+> > @@ -4740,3 +4742,15 @@ u32 btf_id(const struct btf *btf)
+> >  {
+> >         return btf->id;
+> >  }
+> > +
+> > +static int btf_id_cmp_func(const void *a, const void *b)
+> > +{
+> > +       const int *pa = a, *pb = b;
+> > +
+> > +       return *pa - *pb;
+> > +}
+> > +
+> > +bool btf_id_set_contains(struct btf_id_set *set, u32 id)
+> > +{
+> > +       return bsearch(&id, set->ids, set->cnt, sizeof(int), btf_id_cmp_func) != NULL;
+> 
+> very nit ;) sizeof(__u32)
+
+sure ;-)
+
+thanks,
+jirka
+
