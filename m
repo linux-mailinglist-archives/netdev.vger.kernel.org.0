@@ -2,193 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D37D723239E
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 19:44:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B9402323AB
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 19:48:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726990AbgG2RoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 13:44:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
+        id S1726958AbgG2RsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 13:48:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726533AbgG2RoI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 13:44:08 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0209EC061794
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 10:44:08 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id k71so2219995pje.0
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 10:44:07 -0700 (PDT)
+        with ESMTP id S1726385AbgG2RsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 13:48:13 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2A0C061794;
+        Wed, 29 Jul 2020 10:48:13 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id ed14so11267025qvb.2;
+        Wed, 29 Jul 2020 10:48:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UXpbThgoPFMCxaKk+VBIYo315ccTQKqksdF40uLodTU=;
-        b=ZhUPAQ0/pgkB2JzMg0WflUcwiw3qKy0QfewBV1RjpdDZ6lduKOcqCoPVxrYRAf1jau
-         bjY3gRMGVe5DDgGdoJRUgZhCVguJfUPAP0vsKb780ReVHkiBz/zvlZAKIcyr8/lmbcx2
-         c0ytvt7mYAjL5e+XDTUtp+jAOyOiVzY7+smmtrXzNPsMJKbo8rbNAdZVh6c4/BkUExr4
-         ttq+1Zv309PPqDQa6Q6GHaGlGUnRS/2wL2gpF8M//dG3ivJpDYIue8R2xlj6U+LyzVjH
-         ZIuIDIGx6QFSHR61nMiA7KCD3WK8ZNwdPYBg49nWLzRxOFZe8scDtEn0a+CFrrm9jdrt
-         bQEg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KLov+zHRwCIC5dmTzJG4jUY2DEz0vF5YAWPCuEXipCY=;
+        b=Vw4wTblo7xPLb8AX+1v0epllbl48lPuFT40OiUuie6YFtL/leiZoCcDQHoh4CU0yAz
+         y38+K1sdewtCyhgla+hqRJVVQtLdDiNexi69yCXIyevEaxkSyopHQITX1rb7KC+0LsbH
+         3htCk3sq4+JqwSl/xuJYSutVMy1jxgLRj27R748PFC/8Nhdako2CXXWadOQIEPUtYRoS
+         tq+DSGjTiiF3fnlKcbh9cnE9f/g05B3DfRcGWX4Ry2Y3JVZkXd3FbJkdz0NgXUrxWsFe
+         QdFlKPGCj/yZWK4jMsYyF4L++oaZneceEtXyp8g+3THWqOdlsDx9P5SX8wsv9di+4mc6
+         DHQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UXpbThgoPFMCxaKk+VBIYo315ccTQKqksdF40uLodTU=;
-        b=se4+11sBLrneuL5iAaNFoGYelMu3D9ue9VcOcUNGB5V4pIbsnUY4tt+zOPV3Sk0Lg7
-         oqrAcdq4h95tLKCNhwr+HncRPC5nCdmxA30fXlxUrfVLCQww3EFkwabD6f75uK8xlumJ
-         OJNVlGmHABtLIgiUwgxCSu09dzbyUuZF06igeflhP/+OqwHAdDt5HSxi7EPxHk8wi9Jg
-         1ROW86qg+I/X/z7vL+7Ydt3OmO2Q/t9hKOIz1ED3PQZNeg5rmRBTe8uNrtWUP9mPOMtr
-         tRZh4dmH0BXO3rB32U0saxwVAF0aU1cllG99n2CitcLsZHIHazHoBDac+9qOCuJWagwz
-         K8PQ==
-X-Gm-Message-State: AOAM532RNzQ7ZP5FttvXUVmz5EsXUygesQtjvayryYxmR4j78rLIYsam
-        RXtmACLR0HydujDH0PKtlP8=
-X-Google-Smtp-Source: ABdhPJwIGYuzmgrJOQ27NbEukkm+iR5MpfDBmrJtgmZa/IaZn1zROiXSe2WNGb+h2fD2YlNFM79UUA==
-X-Received: by 2002:a17:90a:c398:: with SMTP id h24mr10784453pjt.211.1596044647469;
-        Wed, 29 Jul 2020 10:44:07 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id b13sm3020828pjl.7.2020.07.29.10.44.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jul 2020 10:44:06 -0700 (PDT)
-Subject: Re: [PATCH] net: add support for threaded NAPI polling
-To:     Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Hillf Danton <hdanton@sina.com>
-References: <20200729165058.83984-1-nbd@nbd.name>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <866c7d83-868d-120e-f535-926c4cc9e615@gmail.com>
-Date:   Wed, 29 Jul 2020 10:44:04 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KLov+zHRwCIC5dmTzJG4jUY2DEz0vF5YAWPCuEXipCY=;
+        b=furOzCggikVMiHf/i9OV02zQTKEd4WpCNPjgXdQxbwfqpOJC4DuwN3aT+dnNcNlCUE
+         UmgU/4Zk8clJ5mB7RsarBNFMZ9NK2yDkLQyoX4XUjI/omgH1z2bZd8h/bx/c35DEVzuK
+         dK+l0khr3exsqe2bhfeXN4lwS65Ue25q8uqYJAaA4iE62bHTFuHtYkabkYlJu+QMdbQF
+         2IHSeh6F8p6O5/oqcxDkB7BYjKIHYZ0c2usPdTpWf/LglZw31vLE13VxkoRO/7UsitaC
+         s0tsTypARuXhZnzKRZU/Y0HUbnBx7NvicuP5p5V7JaN5stp94mumfIU0uCHA1soH2kgC
+         vkBA==
+X-Gm-Message-State: AOAM530SV9CpVuwdTuHclX1Et8Rw4MpbHhzLcJPlqdyl0kBoiR2BhnEf
+        pasURzg/fTVICBGsh4kpSv+egENlSjrGmKND5gU=
+X-Google-Smtp-Source: ABdhPJzdYOC78Mao1Zvw7purKveWY01VJjJxxKFefer0drau5rKfTQFnz1rDzot0Em+BMTnuo85l3SOeaNdYkBP54W4=
+X-Received: by 2002:a0c:bf4f:: with SMTP id b15mr31968009qvj.224.1596044892184;
+ Wed, 29 Jul 2020 10:48:12 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200729165058.83984-1-nbd@nbd.name>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200729040913.2815687-1-andriin@fb.com> <20200729040913.2815687-2-andriin@fb.com>
+ <87k0ymwg2b.fsf@cloudflare.com>
+In-Reply-To: <87k0ymwg2b.fsf@cloudflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 29 Jul 2020 10:48:01 -0700
+Message-ID: <CAEf4BzYagTebczsojJJfn0viy07dhRUq3oysezEO_LSYSuwfRQ@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf 2/2] selftests/bpf: extend map-in-map selftest to
+ detect memory leaks
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        linux- stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 29, 2020 at 7:29 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> On Wed, Jul 29, 2020 at 06:09 AM CEST, Andrii Nakryiko wrote:
+> > Add test validating that all inner maps are released properly after skeleton
+> > is destroyed. To ensure determinism, trigger kernel-side synchronize_rcu()
+> > before checking map existence by their IDs.
+> >
+> > Acked-by: Song Liu <songliubraving@fb.com>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  .../selftests/bpf/prog_tests/btf_map_in_map.c | 124 ++++++++++++++++--
+> >  1 file changed, 110 insertions(+), 14 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> > index f7ee8fa377ad..f6eee3fb933c 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+> > @@ -5,10 +5,60 @@
+> >
+> >  #include "test_btf_map_in_map.skel.h"
+> >
+> > +static int duration;
+> > +
+> > +static __u32 bpf_map_id(struct bpf_map *map)
+> > +{
+> > +     struct bpf_map_info info;
+> > +     __u32 info_len = sizeof(info);
+> > +     int err;
+> > +
+> > +     memset(&info, 0, info_len);
+> > +     err = bpf_obj_get_info_by_fd(bpf_map__fd(map), &info, &info_len);
+> > +     if (err)
+> > +             return 0;
+> > +     return info.id;
+> > +}
+> > +
+> > +/*
+> > + * Trigger synchronize_cpu() in kernel.
+>
+> Nit: synchronize_*r*cu().
 
+welp, yeah
 
-On 7/29/20 9:50 AM, Felix Fietkau wrote:
-> For some drivers (especially 802.11 drivers), doing a lot of work in the NAPI
-> poll function does not perform well. Since NAPI poll is bound to the CPU it
-> was scheduled from, we can easily end up with a few very busy CPUs spending
-> most of their time in softirq/ksoftirqd and some idle ones.
-> 
-> Introduce threaded NAPI for such drivers based on a workqueue. The API is the
-> same except for using netif_threaded_napi_add instead of netif_napi_add.
-> 
-> In my tests with mt76 on MT7621 using threaded NAPI + a thread for tx scheduling
-> improves LAN->WLAN bridging throughput by 10-50%. Throughput without threaded
-> NAPI is wildly inconsistent, depending on the CPU that runs the tx scheduling
-> thread.
-> 
-> With threaded NAPI, throughput seems stable and consistent (and higher than
-> the best results I got without it).
-> 
-> Based on a patch by Hillf Danton
-> 
-> Cc: Hillf Danton <hdanton@sina.com>
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> ---
-> Changes since RFC v2:
-> - fix unused but set variable reported by kbuild test robot
-> 
-> Changes since RFC:
-> - disable softirq around threaded poll functions
-> - reuse most parts of napi_poll()
-> - fix re-schedule condition
-> 
->  include/linux/netdevice.h |  23 ++++++
->  net/core/dev.c            | 162 ++++++++++++++++++++++++++------------
->  2 files changed, 133 insertions(+), 52 deletions(-)
-> 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index ac2cd3f49aba..3a39211c7598 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -347,6 +347,7 @@ struct napi_struct {
->  	struct list_head	dev_list;
->  	struct hlist_node	napi_hash_node;
->  	unsigned int		napi_id;
-> +	struct work_struct	work;
->  };
->  
->  enum {
-> @@ -357,6 +358,7 @@ enum {
->  	NAPI_STATE_HASHED,	/* In NAPI hash (busy polling possible) */
->  	NAPI_STATE_NO_BUSY_POLL,/* Do not add in napi_hash, no busy polling */
->  	NAPI_STATE_IN_BUSY_POLL,/* sk_busy_loop() owns this NAPI */
-> +	NAPI_STATE_THREADED,	/* Use threaded NAPI */
->  };
->  
->  enum {
-> @@ -367,6 +369,7 @@ enum {
->  	NAPIF_STATE_HASHED	 = BIT(NAPI_STATE_HASHED),
->  	NAPIF_STATE_NO_BUSY_POLL = BIT(NAPI_STATE_NO_BUSY_POLL),
->  	NAPIF_STATE_IN_BUSY_POLL = BIT(NAPI_STATE_IN_BUSY_POLL),
-> +	NAPIF_STATE_THREADED	 = BIT(NAPI_STATE_THREADED),
->  };
->  
->  enum gro_result {
-> @@ -2315,6 +2318,26 @@ static inline void *netdev_priv(const struct net_device *dev)
->  void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
->  		    int (*poll)(struct napi_struct *, int), int weight);
->  
-> +/**
-> + *	netif_threaded_napi_add - initialize a NAPI context
-> + *	@dev:  network device
-> + *	@napi: NAPI context
-> + *	@poll: polling function
-> + *	@weight: default weight
-> + *
-> + * This variant of netif_napi_add() should be used from drivers using NAPI
-> + * with CPU intensive poll functions.
-> + * This will schedule polling from a high priority workqueue that
-> + */
-> +static inline void netif_threaded_napi_add(struct net_device *dev,
-> +					   struct napi_struct *napi,
-> +					   int (*poll)(struct napi_struct *, int),
-> +					   int weight)
-> +{
-> +	set_bit(NAPI_STATE_THREADED, &napi->state);
-> +	netif_napi_add(dev, napi, poll, weight);
-> +}
-> +
->  /**
->   *	netif_tx_napi_add - initialize a NAPI context
->   *	@dev:  network device
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 19f1abc26fcd..11b027f3a2b9 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -158,6 +158,7 @@ static DEFINE_SPINLOCK(offload_lock);
->  struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
->  struct list_head ptype_all __read_mostly;	/* Taps */
->  static struct list_head offload_base __read_mostly;
-> +static struct workqueue_struct *napi_workq __read_mostly;
->  
->  static int netif_rx_internal(struct sk_buff *skb);
->  static int call_netdevice_notifiers_info(unsigned long val,
-> @@ -6286,6 +6287,11 @@ void __napi_schedule(struct napi_struct *n)
->  {
->  	unsigned long flags;
->  
-> +	if (test_bit(NAPI_STATE_THREADED, &n->state)) {
-> +		queue_work(napi_workq, &n->work);
-> +		return;
-> +	}
-> +
+>
+> > + *
+> > + * ARRAY_OF_MAPS/HASH_OF_MAPS lookup/update operations trigger
+> > + * synchronize_rcu(), if looking up/updating non-NULL element. Use this fact
+> > + * to trigger synchronize_cpu(): create map-in-map, create a trivial ARRAY
+> > + * map, update map-in-map with ARRAY inner map. Then cleanup. At the end, at
+> > + * least one synchronize_rcu() would be called.
+> > + */
+>
+> That's a cool trick. I'm a bit confused by "looking up/updating non-NULL
+> element". It looks like you're updating an element that is NULL/unset in
+> the code below. What am I missing?
 
+I was basically trying to say that it has to be a successful lookup or
+update. For lookup that means looking up non-NULL (existing) entry.
+For update -- setting valid inner map FD.
 
-Where is the corresponding cancel_work_sync() or flush_work() at device dismantle ?
+Not sure fixing this and typo above is worth it to post v5.
 
-Just hoping the thread will eventually run seems optimistic to me.
+>
+> > +static int kern_sync_rcu(void)
+> > +{
+> > +     int inner_map_fd, outer_map_fd, err, zero = 0;
+> > +
+> > +     inner_map_fd = bpf_create_map(BPF_MAP_TYPE_ARRAY, 4, 4, 1, 0);
+> > +     if (CHECK(inner_map_fd < 0, "inner_map_create", "failed %d\n", -errno))
+> > +             return -1;
+> > +
+> > +     outer_map_fd = bpf_create_map_in_map(BPF_MAP_TYPE_ARRAY_OF_MAPS, NULL,
+> > +                                          sizeof(int), inner_map_fd, 1, 0);
+> > +     if (CHECK(outer_map_fd < 0, "outer_map_create", "failed %d\n", -errno)) {
+> > +             close(inner_map_fd);
+> > +             return -1;
+> > +     }
+> > +
+> > +     err = bpf_map_update_elem(outer_map_fd, &zero, &inner_map_fd, 0);
+> > +     if (err)
+> > +             err = -errno;
+> > +     CHECK(err, "outer_map_update", "failed %d\n", err);
+> > +     close(inner_map_fd);
+> > +     close(outer_map_fd);
+> > +     return err;
+> > +}
+> > +
 
+[...]
 
-Quite frankly, I do believe this STATE_THREADED status should be a generic NAPI attribute
-that can be changed dynamically, at admin request, instead of having to change/recompile
-a driver.
-
-
+trimming's good ;)
