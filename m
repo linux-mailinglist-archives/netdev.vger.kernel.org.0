@@ -2,102 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC030231C3E
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 11:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D910231C4A
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 11:49:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbgG2Jkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 05:40:31 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:33607 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726336AbgG2Jka (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 05:40:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596015629;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=k7LhEO6XCqGVUuc17BRfAuaIUsyKpv0HJUC9DTzz2Oc=;
-        b=TBOgzEkJTgQo//lafpsD2+YcX7VTZCWYb3AUeLD+sK5OHWPc+APplrl8iDAH6XtH6Wyr+m
-        AhiHk5H5i+Wddoj+I6qCr2loiVc6PJ+Cu7Sywitrm27vK5zGbhA6/V0izvFqw4VViwEx6g
-        O/8wORLJ8g/o68NCkp6bowfY6djS3gI=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-270-BvkA2al6PM-3e_K-fN-tmQ-1; Wed, 29 Jul 2020 05:40:25 -0400
-X-MC-Unique: BvkA2al6PM-3e_K-fN-tmQ-1
-Received: by mail-wm1-f71.google.com with SMTP id s2so460282wmj.7
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 02:40:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=k7LhEO6XCqGVUuc17BRfAuaIUsyKpv0HJUC9DTzz2Oc=;
-        b=pGVM61NImMnpHAdyjtIy5dtFR4Jc/XY7i1aqavdTM5d+H0kRHOf6c1f388QKHKUk7l
-         rHOuHD3mH/+uU2y1lQpl2xy4ZYnAD9jHd+QH98VfnVsD6ZCtuJnQ93taETKpu1T1eVy8
-         wcpur1kIIFkQawJ2aKODVAhYyvHSEFTWCE9TsN5cccskA1ORqKAwiIJR/c5O7ggsZm+g
-         2jwrymKVLptLHtAbmK7WxXFoadghHOTQPR9S59jFfbNlzyIUabU15h0STFgZAroF3YAe
-         oJEH8w3Vt15IUq8s5/yqRpuXcYKTjHLKrewmvfQiv/BR0X6WA38Q40vCVxhq8/DMk3Nc
-         mwxQ==
-X-Gm-Message-State: AOAM53237DFlZvDkqYDLSxvMtxJFJWzLAoOR7N8Isly4fQ/UM+qAfQI5
-        apIM98mWVrqN5nG/bp2RzHYw97nmXa4+jE5OQet2wOxO6U53HwQVB5hNAA91X8KNAVEX1YKPYqW
-        /Rpuzw7pz23uUNxv6
-X-Received: by 2002:adf:9c8c:: with SMTP id d12mr28254564wre.369.1596015622990;
-        Wed, 29 Jul 2020 02:40:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzSgh6jDxOdFmcD7rlJpBZFVipNvyIVfH2WgoMjLbmLGCkqivl8DMGS+QOpLJ4wheZJRWE1WQ==
-X-Received: by 2002:adf:9c8c:: with SMTP id d12mr28254546wre.369.1596015622705;
-        Wed, 29 Jul 2020 02:40:22 -0700 (PDT)
-Received: from steredhat.lan ([5.180.207.22])
-        by smtp.gmail.com with ESMTPSA id x2sm534205wrg.73.2020.07.29.02.40.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jul 2020 02:40:22 -0700 (PDT)
-Date:   Wed, 29 Jul 2020 11:40:18 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, decui@microsoft.com, jhansen@vmware.com,
-        kuba@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+a61bac2fcc1a7c6623fe@syzkaller.appspotmail.com,
-        stefanha@redhat.com, syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
-Subject: Re: general protection fault in vsock_poll
-Message-ID: <20200729094018.x6rr2jlzh3ne4pgx@steredhat.lan>
-References: <00000000000099052605aafb5923@google.com>
- <00000000000093b5dc05ab90c468@google.com>
+        id S1726480AbgG2Jt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 05:49:26 -0400
+Received: from mail-mw2nam12on2081.outbound.protection.outlook.com ([40.107.244.81]:49728
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726208AbgG2JtZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jul 2020 05:49:25 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kHWG10Z4s+BVam3Whv62ePmi01RSf2pSn1+35Jf3wum8FHetgo3whp7z8Zp2Vxbi0/9lFN/Ur8yD+04/k2w2gCX1970t0ka3ToA2R/hKrKymQL/OZ6zQdH/NHT2ttzeU3uxO53ejHfkC9hFNgMpvPksO5KKMU888ombVgobaYZU4J9+qS5PHN91ecQPUJP0e6O9lUTrJiN/He61RlMjn/yNaLwtYZ2bMHnkrHEOfXx9Tib2FpcAB6nqHMgcPoU6qYDHLxikord14S7uwQOI1MDius35z2IwOxOPHkwUvKRXKet+b/iY+POjb13PZuey17+72al/C0x6yasSIWbks+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y1oODdtWTygAw/5Leu5j//YE2hVfcwPnWGb1ogFhWpQ=;
+ b=TWwaKHYuSG3vphngAHM0mfykPq5hwezOIJ/T5mTPKevMq422skbGPybafXo4evbNeFnjeUPZWg7nmlPAoGE4n7D/6tjASYDH48rIBh047CYKzPPzPo5vgx4uSxY4GX/rCXpPa1DIa4D5lpuM1eAM1gpLQ29GiHNogRTV2fXHojsdyHGsSQljUg2sGO5JlBHYurOOcuXi1zzDAtGXT28TQs9g62P0swMhmXonMeMPx84FQU2o0ZBdBwXlSVf8PUgIeHx7haLlPulbAVU1G0KcvOQQThED/EoJ/wPvV/4vMmwt6cIEMUJgk7QJ254ttb5+ntgg69drLvSAEjnOwlBYhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y1oODdtWTygAw/5Leu5j//YE2hVfcwPnWGb1ogFhWpQ=;
+ b=nfg4/SC0dIngfuXhxxboTKtla1XT+r1Bw5JVuUqGvTLQjgxUGAc23K0Ky726Z0FpT/ziMAU1wul5JwyGXLty1PbEMQBn6LHOj1D5G43AP4UiTHu9sWxtWECqQd6wWkRG6DDp/CFKs44dQrK6LL6U/f+0X90IJddvgpJNPheynJw=
+Authentication-Results: bootlin.com; dkim=none (message not signed)
+ header.d=none;bootlin.com; dmarc=none action=none header.from=synaptics.com;
+Received: from BYAPR03MB3573.namprd03.prod.outlook.com (2603:10b6:a02:ae::15)
+ by BYAPR03MB3638.namprd03.prod.outlook.com (2603:10b6:a02:ab::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.24; Wed, 29 Jul
+ 2020 09:49:24 +0000
+Received: from BYAPR03MB3573.namprd03.prod.outlook.com
+ ([fe80::b5cc:ca6b:3c25:a99c]) by BYAPR03MB3573.namprd03.prod.outlook.com
+ ([fe80::b5cc:ca6b:3c25:a99c%4]) with mapi id 15.20.3216.033; Wed, 29 Jul 2020
+ 09:49:23 +0000
+Date:   Wed, 29 Jul 2020 17:49:09 +0800
+From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2] net: mvneta: fix comment about
+ phylink_speed_down
+Message-ID: <20200729174909.276590fb@xhacker.debian>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TYAPR01CA0122.jpnprd01.prod.outlook.com
+ (2603:1096:404:2d::14) To BYAPR03MB3573.namprd03.prod.outlook.com
+ (2603:10b6:a02:ae::15)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00000000000093b5dc05ab90c468@google.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from xhacker.debian (124.74.246.114) by TYAPR01CA0122.jpnprd01.prod.outlook.com (2603:1096:404:2d::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.16 via Frontend Transport; Wed, 29 Jul 2020 09:49:21 +0000
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+X-Originating-IP: [124.74.246.114]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6607b31f-fde6-44fe-62fa-08d833a4ac73
+X-MS-TrafficTypeDiagnostic: BYAPR03MB3638:
+X-Microsoft-Antispam-PRVS: <BYAPR03MB3638BC3CFD1B1AFEF3347994ED700@BYAPR03MB3638.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1824;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xt7/u2bktzQiX8Ivbgi7JfHq5BIigToCeRBrm5yayejqSOaUKWZOf6sXci20IAydc6l/oWxZSMsPbFwCtlBgzTMklyas+j8XHNmkz2fgz6UFbC45kDAtfFx143jMUHuZ0bYfHAW9xThID5FiGi2kyQ10LBbgCxwMUqU5eUpnY44p97OP9VT/HGbspepIrRL7I/krDxwgLuGAen/IsvXzVharojX6lenqF+Bk2xoqeVAP+GF38HmUySvRmR6ZuW68ds/rTGYW1z/C/AnBsALBeihU5wQap56ZvqrFOukSx56YzTNS0Xf2omxhWiuik7no
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR03MB3573.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39850400004)(396003)(366004)(136003)(346002)(376002)(316002)(110136005)(8936002)(6506007)(2906002)(16526019)(26005)(4326008)(8676002)(186003)(55016002)(9686003)(52116002)(478600001)(7696005)(5660300002)(83380400001)(6666004)(956004)(66476007)(66946007)(4744005)(1076003)(86362001)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: TjlDyGewUkdNQnu77QpvRid5d9P1Znm5JT+bl8gyViR7tGzniUV0ZMm4K790tRoMjn84LJ419q5PPyTr/4vn5kc6XSFbX4og+TDctPmsoTRRO16Fnx+nTFoUViAJIJG7pKwGcA6b31hN3UJJIw/KXf6Tnm+MJWP31bCmYscNGB5/VQU6qDgiLogNDBX6p5TH4CJiVRWXqu7wrXF/hzycqNCRVqFbyJL1JHcWDLK3k1dU6Z0/3g26I7jGDqclBUd2VpnK2ar6Pma4fWLqsudi2s0rm4b67Z7UgopztvyX/+MS+vuZbTACl9crtPzU9/axHQMnmSOotPUArOUlgvYiVG8snta9C1B+bIyTlWO4XizDhXHWRpLOSrcJAgVPcOTBu8AVs/U/e4PB8EUbv+eB4YdWXgBdCsPVk6Xd0Bqex6XZ36zLM9rrYGRQStjw0A+atypU/1djXaKtLi154JroazpCa62RAqFIy4F8TaJKkP4=
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6607b31f-fde6-44fe-62fa-08d833a4ac73
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR03MB3573.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2020 09:49:23.6579
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4L69hHgESqWbrmVLv2oQNu8M31CuaVw0MmtkoCtTWQMzrJQNch8BkqrNJy0br82Q7xk5qcX2qWmJKGQh+z7RTg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR03MB3638
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 29, 2020 at 01:59:05AM -0700, syzbot wrote:
-> syzbot has bisected this issue to:
-> 
-> commit 408624af4c89989117bb2c6517bd50b7708a2fcd
-> Author: Stefano Garzarella <sgarzare@redhat.com>
-> Date:   Tue Dec 10 10:43:06 2019 +0000
-> 
->     vsock: use local transport when it is loaded
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17e6489b100000
-> start commit:   92ed3019 Linux 5.8-rc7
-> git tree:       upstream
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=1416489b100000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1016489b100000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=84f076779e989e69
-> dashboard link: https://syzkaller.appspot.com/bug?extid=a61bac2fcc1a7c6623fe
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15930b64900000
-> 
-> Reported-by: syzbot+a61bac2fcc1a7c6623fe@syzkaller.appspotmail.com
-> Fixes: 408624af4c89 ("vsock: use local transport when it is loaded")
-> 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> 
+mvneta has switched to phylink, so the comment should look
+like "We may have called phylink_speed_down before".
 
-I'll take a look.
+Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+---
+Since v1:
+  - drop patch2 which tries to avoid link flapping when changing mtu
+    I need more time on the change mtu refactoring.
 
-At first glance it seems strange, because if sk_state is TCP_ESTABLISHED,
-the transport shouldn't be NULL, that's why we didn't put the check.
+ drivers/net/ethernet/marvell/mvneta.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Stefano
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 2c9277e73cef..c9b6b0f85bb0 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -3637,7 +3637,7 @@ static void mvneta_start_dev(struct mvneta_port *pp)
+ 
+ 	phylink_start(pp->phylink);
+ 
+-	/* We may have called phy_speed_down before */
++	/* We may have called phylink_speed_down before */
+ 	phylink_speed_up(pp->phylink);
+ 
+ 	netif_tx_start_all_queues(pp->dev);
+-- 
+2.28.0.rc0
 
