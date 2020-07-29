@@ -2,107 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17489231F8E
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 15:48:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9669D231F94
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 15:50:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbgG2NsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 09:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53272 "EHLO
+        id S1726790AbgG2NuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 09:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726054AbgG2NsU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 09:48:20 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D14BC061794
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 06:48:20 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id b14so20490147qkn.4
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 06:48:20 -0700 (PDT)
+        with ESMTP id S1726054AbgG2NuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 09:50:02 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8898EC061794
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 06:50:02 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id m16so11817516pls.5
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 06:50:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tg/Exj8jO7z5z+0AmUdAH027TWx6She5r29BVG8nKUs=;
-        b=n1+Q10dDcXtKPd4kBCsKJ54Dicn0as3/Y2UUJYSJJURFF81DTi9iWXy3iV/42G3gli
-         HuKuQ0Rn1azIm+dCq03CltYQt0Rh0UbEC9CTOqI0k7N3bPpTOc6d+q9ZI5txSQchqEnA
-         zcpL+x5xQSWsCncCZuZDMMlVaZxEzBeM+vSaI6rP+MCJfUpQOoyHIs7CkQzazbKbnwzm
-         bwkDEoyZqDi+SdXzIlbtTd4FDE2r8LywsVStdA34suRVEUw/IgQz71OIZQUYUIYgpOjc
-         t4mNhUlC+J2bmNF+ZEY7osUaVZl/tQ1aWArnoKU7hnOBBK0bC/zztUC6bukRDWx1V6pz
-         uuSw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=q/VNVR3PlpyXGobUaKBeyXjVVsKD4mDYZJ63Zh8bt4M=;
+        b=H4bz89ONrMNv/6RD4lxXgGp8+mnJkgYeaHREoJI1OJBb1K8cvdEqTXrPsXx6g1bLZh
+         jnJRu52t+77lV0Le6SMmSQbNBoLN8RTl2WOaIeyMpMfOPCuN/IF8g8eRbibrB8CguBNI
+         26pXr6wue8bpfokcLS9nJNVeQAsMviVSlRN7MmiGtXfHpNIFGIQNMUSpvL5TE608PcyL
+         mleylK7J2ek2uV2yTEXsUanhH2cN62mXIq4S27Cff1ykkGtFkNDZQKX5cgUiwmJVaPRN
+         hh3Z9E8kPt0/On0RExqSEkdT+sirX/KQ+3+TgCL6pdsDSVC7C8uhd5WrQ/I+Q8Hr1QGG
+         l7pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tg/Exj8jO7z5z+0AmUdAH027TWx6She5r29BVG8nKUs=;
-        b=NdUwty0fvOqRszsKjGtiVvBWwEFDpjCXVB+UtqrkI3DZ+R3sQ5/kguF5aWgejciguH
-         D9Hvxdy2W2Y30OdUhy0IIOdFiGSGHk8g33VrNvMmaKtmorZ8tb821QmUJ6CoSltAwITX
-         5N8cWDCK7+dq92lpyCXTVjYYn5xB9P+W/gUFw3dGfgNFE0nDntg/T966ucws+ibOFgEE
-         FkvYWQu+CtCz4w2Cf7ajFitcIAnOApEz+UBKXNL0f9+xtbsXpgxUGxsBi0U9ewf/TQbl
-         KAt3yJuUj/gwYInCSnFH6Nc7E2cU6fPnt6acK/2wN57NZIXufFbEiY6+OF/sOyAb719e
-         r7TQ==
-X-Gm-Message-State: AOAM530zfcjFnfxj1wSIazHtPVrcZtlBTWqBoVonCfba98lD4Zou0sDx
-        //UBn+MYnMWqIxJn9LKoCuKMAFXu
-X-Google-Smtp-Source: ABdhPJxvvJKv05Lj6QKc0zcCULEenN6p7VmbS2Bb/LfoUv3qKIcrcIpiBtYOqb7s/uBQ6IEXZaT8NQ==
-X-Received: by 2002:a37:8b07:: with SMTP id n7mr30846934qkd.98.1596030498853;
-        Wed, 29 Jul 2020 06:48:18 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id w8sm1612557qka.52.2020.07.29.06.48.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jul 2020 06:48:18 -0700 (PDT)
-Subject: Re: PROBLEM: (DSA/Microchip): 802.1Q-Header lost on KSZ9477-DSA
- ingress without bridge
-To:     "Gaube, Marvin (THSE-TL1)" <Marvin.Gaube@tesat.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <ad09e947263c44c48a1d2c01bcb4d90a@BK99MAIL02.bk.local>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <c531bf92-dd7e-0e69-8307-4c4f37cb2d02@gmail.com>
-Date:   Wed, 29 Jul 2020 06:48:15 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.10.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=q/VNVR3PlpyXGobUaKBeyXjVVsKD4mDYZJ63Zh8bt4M=;
+        b=WP8kpVZyV7lZeTsQuzaf2R7+tzcggK42Dxs+0W+aWhu5W5AZFSdLwYIUbiEJJFvDtz
+         nHLBoNZoT9cZKG0AbEaaJgOba2vSPt90X93vgT+2hiEbr6jGV2JpBWPSHCCg2Q0siVt6
+         NOtAA7/RuFuKZLBUyxrsY+Y6M1furiigV8mdGw3qHVEywwCH6eXEY7nGT+18WSBj3lAj
+         8hWeOGnKo8RFpROXTtwBgjS4aBe7fc06ijvimAce8ttB7VR1smGgkRtO4QZIGhHpwiq3
+         iJDUDNpPr0RFxKRYkqUg3Fdusor3AepcZErp/d7wiYqftxvk2Tif0+t6PzPxrka0V70m
+         9GFA==
+X-Gm-Message-State: AOAM5301IOuoWDc67Qfbg/w56NvOqPZEDbPSV2ptVG38nr0Kc+MR6LgH
+        Zy7sS3lI7/tW6u48COncUbw=
+X-Google-Smtp-Source: ABdhPJzvoDG9fG2hTDIoL0nxSjqK2YQ6QdgZRNEO/3Vctjs551iRZTeCa8uGaoSSX0dguclCZZK9yg==
+X-Received: by 2002:a17:90a:b63:: with SMTP id 90mr10231895pjq.47.1596030602049;
+        Wed, 29 Jul 2020 06:50:02 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id x128sm2440648pfb.120.2020.07.29.06.50.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jul 2020 06:50:01 -0700 (PDT)
+Date:   Wed, 29 Jul 2020 06:49:58 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Petr Machata <petrm@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 4/9] mlxsw: spectrum_ptp: Use generic helper function
+Message-ID: <20200729134958.GC23222@hoboy>
+References: <20200727090601.6500-1-kurt@linutronix.de>
+ <20200727090601.6500-5-kurt@linutronix.de>
+ <87a6zli04l.fsf@mellanox.com>
+ <875za7sr7b.fsf@kurt>
+ <87pn8fgxj3.fsf@mellanox.com>
+ <20200729100257.GX1551@shell.armlinux.org.uk>
+ <87sgdaaa2z.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <ad09e947263c44c48a1d2c01bcb4d90a@BK99MAIL02.bk.local>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87sgdaaa2z.fsf@kurt>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 29, 2020 at 12:29:08PM +0200, Kurt Kanzenbach wrote:
 
-
-On 7/28/2020 11:05 PM, Gaube, Marvin (THSE-TL1) wrote:
-> Summary: 802.1Q-Header lost on KSZ9477-DSA ingress without bridge
-> Keywords: networking, dsa, microchip, 802.1q, vlan
-> Full description:
+> I'll test it and send v3. But before, I've got another question that
+> somebody might have an answer to:
 > 
-> Hello,
-> we're trying to get 802.1Q-Tagged Ethernet Frames through an KSZ9477 DSA-enabled switch without creating a bridge on the kernel side.
-
-Does it work if you have a bridge that is VLAN aware though? If it does,
-this would suggest that the default VLAN behavior without a bridge is
-too restrictive and needs changing.
-
-> Following setup:
-> Switchport 1 <-- KSZ9477 --> eth1 (CPU-Port) <---> lan1
-
-This representation is confusing, is switchport 1 a network device or is
-this meant to be physical switch port number of 1 of the KSZ9477?
-
+> The ptp v1 code always does locate the message type at
 > 
-> No bridge is configured, only the interface directly. Untagged packets are working without problems. The Switch uses the ksz9477-DSA-Driver with Tail-Tagging ("DSA_TAG_PROTO_KSZ9477").
-> When sending packets with 802.1Q-Header (tagged VLAN) into the Switchport, I see them including the 802.1Q-Header on eth1.
-> They also appear on lan1, but with the 802.1Q-Header missing.
-> When I create an VLAN-Interface over lan1 (e.g. lan1.21), nothing arrives there.
-> The other way around, everything works fine: Packets transmitted into lan1.21 are appearing in 802.1Q-VLAN 21 on the Switchport 1.
+>  msgtype = data + offset + OFF_PTP_CONTROL
 > 
-> I assume that is not the intended behavior.
-> I haven't found an obvious reason for this behavior yet, but I suspect the VLAN-Header gets stripped of anywhere around "dsa_switch_rcv" in net/dsa/dsa.c or "ksz9477_rcv" in net/dsa/tag_ksz.c.
+> OFF_PTP_CONTROL is 32. However, looking at the ptp v1 header, the
+> message type is located at offset 20. What am I missing here?
 
-Not sure how though, ksz9477_rcv() only removes the trail tag, this
-should leave any header intact. It seems to me that the switch is
-incorrectly configured and is not VLAN aware at all, nor passing VLAN
-tagged frames through on ingress to CPU when it should.
--- 
-Florian
+
+My source back in the day was the John Eidson book.  In Appendix A it claims
+
+
+                   Table A.1. Common PTP message fields
+
+   Field name                    Purpose
+   --------------------------------------------------------------------
+   messageType                   Identifies message as event or general
+   control                       Indicates the message type, e.g., Sync
+
+
+So I think the code is correct.
+
+Thanks,
+Richard
