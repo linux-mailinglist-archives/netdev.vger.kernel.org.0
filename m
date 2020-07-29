@@ -2,162 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87106232800
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 01:22:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 148F4232806
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 01:24:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728081AbgG2XV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 19:21:56 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:39034 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726876AbgG2XVz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 19:21:55 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06TNDJwv003047
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 16:21:55 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=VxYEzF1fsB2nYOj8u1pjEgmHrr0pYoQxICL8P8tR5xo=;
- b=GYxhcUc6lhbQZPywGWvoXZbO2H/82/8D7ZDJXxjvdeH8dE/2j8mLt72/twdyKqBRrPHx
- Ydn9UooCr66+kBc7nMHjI5y/bhtTGZYBt47AQqzpZZ7enaeact0rL3S3Y/xD/jvkHvRf
- sueCoi9ZDi8eNqST6D5dAFWEJdJgvpvPRG0= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32h4q9ss5r-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 16:21:54 -0700
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 29 Jul 2020 16:21:54 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id BF0762EC4E3D; Wed, 29 Jul 2020 16:21:52 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] libbpf: make destructors more robust by handling ERR_PTR(err) cases
-Date:   Wed, 29 Jul 2020 16:21:48 -0700
-Message-ID: <20200729232148.896125-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1728030AbgG2XYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 19:24:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727072AbgG2XYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 19:24:42 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49EBEC0619D2
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 16:24:42 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id 9so4124652wmj.5
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 16:24:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6Vid/bDwyKAx4BwcecnBtz+573/IH5tF8O95k6nel7Q=;
+        b=wGuLColHUeEnR/+pnRTEHr+CehDViADj2T/7m0JQzD4OJ25qpDd0Frb0QO7pXd+4MU
+         oR8iEDFQravsltjXVqqQgfGLvIkBjls1WV1pB9dSo0qloTLnQ7M9lhTTF905On1xmQcw
+         Z4khFbpFIW+8sEpWGmbWDSYlxTtlEGBHqQL4SvKVGjt8bQWmDVT6vRHpulidLrsrChMg
+         3ON13gdAKqV96e3I7vUrspej3hskaAOvJYiCqEzBik+XeWWcge5IqPz2OBWzl9drgseE
+         RNXiYCZRrSu9tVGJNJgnqSTVe7CBzvV/Tqgxd0DfeQw/mWAj7r6++2taGt2rBI8TOgbj
+         e+2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6Vid/bDwyKAx4BwcecnBtz+573/IH5tF8O95k6nel7Q=;
+        b=ZkkniGYHV6NJ4YaIl+LFtL9zE9Ell3vkSdy1gDUhmDLPCnm0NP1fIxzuVLDsgPKGGs
+         z6wXIEoLCgzf74gfFM3f8D3ehylbwbSuIZ74BcgB4PN8f7YuZBaEa7uAxPgOMOAr4WQt
+         dbNw31rBmrbqIQKsDX4ySB5SInP7UCoyQg2scN1U/0jxxU06o7QgXohEGkIlzx+TFiGK
+         NHGxT2cOC7FFGyux8cntSNeXrIOtFrZI4kw0FcbDBSqLL1kkoJXdaAPVQRb1FhULVmDe
+         9vFZ58chr+UK5kf26hGCWF+zIGwDWl79E3KBt+seuROlnyihA2ccl1/wmbxl/X2E8/tV
+         zZzQ==
+X-Gm-Message-State: AOAM532gLgKK+GMJMYikCGYpkdKaeDNjErtgooqzXVupNyMVuJC6p6Jj
+        LI2+VOFBpKE9Jy/Vl0dI+fMbz1fAT4AppiY9NptfcQ==
+X-Google-Smtp-Source: ABdhPJyOuua7jlIFxpN/h+EHbIiE+S3oPLKPPuDHHT6GbYoawNV8FbDgzCDPHGbBm+BMUS9rJoIcmqcspMYdpR7fDGU=
+X-Received: by 2002:a1c:a9ce:: with SMTP id s197mr10474653wme.58.1596065080650;
+ Wed, 29 Jul 2020 16:24:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-29_17:2020-07-29,2020-07-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- impostorscore=0 clxscore=1015 lowpriorityscore=0 mlxlogscore=999
- malwarescore=0 adultscore=0 phishscore=0 mlxscore=0 priorityscore=1501
- bulkscore=0 suspectscore=25 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2007290158
-X-FB-Internal: deliver
+References: <20200728085734.609930-1-irogers@google.com> <20200728085734.609930-3-irogers@google.com>
+ <20200728155940.GC1319041@krava> <20200728160954.GD1319041@krava>
+In-Reply-To: <20200728160954.GD1319041@krava>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 29 Jul 2020 16:24:28 -0700
+Message-ID: <CAP-5=fVqto0LrwgW6dHQupp7jFA3wToRBonBaXXQW4wwYcTreg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] perf record: Prevent override of
+ attr->sample_period for libpfm4 events
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Most of libbpf "constructors" on failure return ERR_PTR(err) result encod=
-ed as
-a pointer. It's a common mistake to eventually pass such malformed pointe=
-rs
-into xxx__destroy()/xxx__free() "destructors". So instead of fixing up
-clean up code in selftests and user programs, handle such error pointers =
-in
-destructors themselves. This works beautifully for NULL pointers passed t=
-o
-destructors, so might as well just work for error pointers.
+On Tue, Jul 28, 2020 at 9:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Tue, Jul 28, 2020 at 05:59:46PM +0200, Jiri Olsa wrote:
+> > On Tue, Jul 28, 2020 at 01:57:31AM -0700, Ian Rogers wrote:
+> > > From: Stephane Eranian <eranian@google.com>
+> > >
+> > > Before:
+> > > $ perf record -c 10000 --pfm-events=cycles:period=77777
+> > >
+> > > Would yield a cycles event with period=10000, instead of 77777.
+> > >
+> > > This was due to an ordering issue between libpfm4 parsing
+> > > the event string and perf record initializing the event.
+> > >
+> > > This patch fixes the problem by preventing override for
+> > > events with attr->sample_period != 0 by the time
+> > > perf_evsel__config() is invoked. This seems to have been the
+> > > intent of the author.
+> > >
+> > > Signed-off-by: Stephane Eranian <eranian@google.com>
+> > > Reviewed-by: Ian Rogers <irogers@google.com>
+> > > ---
+> > >  tools/perf/util/evsel.c | 3 +--
+> > >  1 file changed, 1 insertion(+), 2 deletions(-)
+> > >
+> > > diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+> > > index 811f538f7d77..8afc24e2ec52 100644
+> > > --- a/tools/perf/util/evsel.c
+> > > +++ b/tools/perf/util/evsel.c
+> > > @@ -976,8 +976,7 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
+> > >      * We default some events to have a default interval. But keep
+> > >      * it a weak assumption overridable by the user.
+> > >      */
+> > > -   if (!attr->sample_period || (opts->user_freq != UINT_MAX ||
+> > > -                                opts->user_interval != ULLONG_MAX)) {
+> > > +   if (!attr->sample_period) {
+> >
+> > I was wondering why this wouldn't break record/top
+> > but we take care of the via record_opts__config
+> >
+> > as long as 'perf test attr' works it looks ok to me
+>
+> hum ;-)
+>
+> [jolsa@krava perf]$ sudo ./perf test 17 -v
+> 17: Setup struct perf_event_attr                          :
+> ...
+> running './tests/attr/test-record-C0'
+> expected sample_period=4000, got 3000
+> FAILED './tests/attr/test-record-C0' - match failure
 
-Suggested-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/btf.c      | 4 ++--
- tools/lib/bpf/btf_dump.c | 2 +-
- tools/lib/bpf/libbpf.c   | 9 ++++-----
- 3 files changed, 7 insertions(+), 8 deletions(-)
+I'm not able to reproduce this. Do you have a build configuration or
+something else to look at? The test doesn't seem obviously connected
+with this patch.
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index c9e760e120dc..ded5b29965f9 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -386,7 +386,7 @@ __s32 btf__find_by_name_kind(const struct btf *btf, c=
-onst char *type_name,
-=20
- void btf__free(struct btf *btf)
- {
--	if (!btf)
-+	if (IS_ERR_OR_NULL(btf))
- 		return;
-=20
- 	if (btf->fd >=3D 0)
-@@ -1025,7 +1025,7 @@ static int btf_ext_parse_hdr(__u8 *data, __u32 data=
-_size)
-=20
- void btf_ext__free(struct btf_ext *btf_ext)
- {
--	if (!btf_ext)
-+	if (IS_ERR_OR_NULL(btf_ext))
- 		return;
- 	free(btf_ext->data);
- 	free(btf_ext);
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index e1c344504cae..cf711168d34a 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -183,7 +183,7 @@ void btf_dump__free(struct btf_dump *d)
- {
- 	int i, cnt;
-=20
--	if (!d)
-+	if (IS_ERR_OR_NULL(d))
- 		return;
-=20
- 	free(d->type_states);
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 54830d603fee..b9f11f854985 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -6504,7 +6504,7 @@ void bpf_object__close(struct bpf_object *obj)
- {
- 	size_t i;
-=20
--	if (!obj)
-+	if (IS_ERR_OR_NULL(obj))
- 		return;
-=20
- 	if (obj->clear_priv)
-@@ -7690,7 +7690,7 @@ int bpf_link__destroy(struct bpf_link *link)
- {
- 	int err =3D 0;
-=20
--	if (!link)
-+	if (IS_ERR_OR_NULL(link))
- 		return 0;
-=20
- 	if (!link->disconnected && link->detach)
-@@ -8502,7 +8502,7 @@ void perf_buffer__free(struct perf_buffer *pb)
- {
- 	int i;
-=20
--	if (!pb)
-+	if (IS_ERR_OR_NULL(pb))
- 		return;
- 	if (pb->cpu_bufs) {
- 		for (i =3D 0; i < pb->cpu_cnt; i++) {
-@@ -9379,8 +9379,7 @@ void bpf_object__detach_skeleton(struct bpf_object_=
-skeleton *s)
- 	for (i =3D 0; i < s->prog_cnt; i++) {
- 		struct bpf_link **link =3D s->progs[i].link;
-=20
--		if (!IS_ERR_OR_NULL(*link))
--			bpf_link__destroy(*link);
-+		bpf_link__destroy(*link);
- 		*link =3D NULL;
- 	}
- }
---=20
-2.24.1
+Thanks,
+Ian
 
+> jirka
+>
+> >
+> > Acked-by: Jiri Olsa <jolsa@redhat.com>
+> >
+> > thanks,
+> > jirka
+>
