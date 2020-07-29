@@ -2,221 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D75AF231BAE
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 10:55:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83DC7231BB0
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 10:57:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbgG2IzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 04:55:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36544 "EHLO
+        id S1726907AbgG2I5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 04:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726548AbgG2IzQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 04:55:16 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE69C0619D2
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 01:55:15 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id k13so12607404lfo.0
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 01:55:15 -0700 (PDT)
+        with ESMTP id S1726476AbgG2I5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 04:57:18 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8DAC061794
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 01:57:18 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id k27so13921746pgm.2
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 01:57:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=8L8D/nK8y1XzW/trlaVpU5smarSVbjSHeNmxrK5S3II=;
-        b=X7CxcoXQhOgWXBbIRkX5wh1u3OPdHWbG5owooIWCbOQpvOrCNr1BOR7MPzREkhsnPI
-         inpcWgj3ya3chKXWYf8v1XMCsyVQhxTagBtOtwmdcwmKIYarP28Uo4kDi1WlSZXFiSIX
-         z4Q/4XQDvNQZPio9Gi45GxE2RYyVYI4x3a0Ns=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IJ5LeaVHy5mQWJEER9wDxn8CpiD4h3uy/GMSnm1xT00=;
+        b=HefZ9yJvvnvOKqX9aOuqhlYZ6wHIemEUR1kmO222RfMyjlhJwDgFpgehE4F6r98j2C
+         a2ep29I/QO4BgbQhSwPvVhMduIs1UjLFl0N6uOEgV85ZDo0XU1+bSBVvLyM/496DM3fS
+         o8rDRBA/cWLpcE25ZP3yPrg9skMC3svRlxmLc+VJ+o3AVtkFOZ0xN5v5wmjIUQRHAEi8
+         k27ePPqVpnvc5NGx4YVQojhLBhbStW6fjJztpc8mhR9D+BL25eEEaWIsEph+MTJvU7i5
+         KczoTmsdaObOtygYj5TTqaMI2rIsrErtIZIWfHeIUxjKLwO8WTve/1dq2BTxswW9VHCJ
+         yx3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=8L8D/nK8y1XzW/trlaVpU5smarSVbjSHeNmxrK5S3II=;
-        b=YEmJM1POK5VXv0rGk/W0+RlI1RztDwRcKImNX1bB9kp6I1sBrK25Z8tOmwNBlGa1Q7
-         EUYvNc8MKV9c/4XCIVljipfFMHrKogkqINjNx/PtFihKP4pCjilwZq2i28PQfbU43zcg
-         8WCKNrxmB9FEUYRr61ZNxDAxtpulurvkHh++ClndUnnA5uo219JibTKMBLh7Fjh318jv
-         vZ4U+BCiZmsiz24yTEma+/oCr6A2cJUmk7mJ5nFKCFfg5+cAMXPHCmsuf/kcydOiTdT1
-         Nhey86V0XtjwezQIdkaqIYNP7S29Kv3Nci0VgPKryzHk9b/vScPNd4IK6zUfWNoXqvkR
-         yPnQ==
-X-Gm-Message-State: AOAM533d1k4Hfr6oxndYVxE3/MIZmibvr0+6+27tFw0S31VIF5FvtQRl
-        juJ5XDf0cPR7y5Wq2Km90cFUDQ==
-X-Google-Smtp-Source: ABdhPJz/Swh+MDJVrvQcHnPCKTylj0XOUN1i6n2MGa66tpDG38V0CT57NYRVsJH9JVCkbOvoMP5Ohg==
-X-Received: by 2002:ac2:58c6:: with SMTP id u6mr16636479lfo.105.1596012913343;
-        Wed, 29 Jul 2020 01:55:13 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id q22sm309834lfc.33.2020.07.29.01.55.12
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IJ5LeaVHy5mQWJEER9wDxn8CpiD4h3uy/GMSnm1xT00=;
+        b=ZxRFWzNTLbYpffI9CJZrPb2nFuOQ5wNF4C1LqM881LYkYgzPpJqA10mTsHfgnGaNCZ
+         WfxxD8ucLOd5HRETMr7IVLM771IwoCRp3A9mlFyEjp0wQScTNnj8ETnvxjYR+OPo10Ad
+         ddxWokqbeMRMYvH7t8qnhEXXZIp/nRCov9AFs9y1rm6r9fJLIVdiP0dBh7jMLOvWvdwJ
+         JF8ouuXan8HRKUeQmd8hn2g0He1ADOEF3m22n+YPiCxGQ2+l0d1ov2+cO7p7rFTWrkwq
+         VvukT8/msJlNimrzOYTE5f7nkNucwEMb3ys4AnXTMZ0oJ5j21H3DHhSLHTxnj5UWMGeC
+         x4mQ==
+X-Gm-Message-State: AOAM530QACw/YrmKhEGHoIpmT+nUimcIVPjuZ6JE94dE+5yHrYfAsLJm
+        SzzVo44ce0HnrcCLwE/hXSCcL7EbB7GIAw==
+X-Google-Smtp-Source: ABdhPJx46sM0v+5WwB2x5qYdjy7a9SlKgvwmLDUhNixid1SiO6xeJIUFu4i/Ow7dIUXBSafbjoOxnw==
+X-Received: by 2002:a63:5004:: with SMTP id e4mr28845685pgb.208.1596013037318;
+        Wed, 29 Jul 2020 01:57:17 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id o11sm1548916pfp.88.2020.07.29.01.57.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jul 2020 01:55:12 -0700 (PDT)
-References: <20200717103536.397595-1-jakub@cloudflare.com> <20200717103536.397595-16-jakub@cloudflare.com> <CAEf4BzZHf7838t88Ed3Gzp32UFMq2o2zryL3=hjAL4mELzUC+w@mail.gmail.com> <891f94a4-1663-0830-516c-348c965844fe@iogearbox.net>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH bpf-next v5 15/15] selftests/bpf: Tests for BPF_SK_LOOKUP attach point
-In-reply-to: <891f94a4-1663-0830-516c-348c965844fe@iogearbox.net>
-Date:   Wed, 29 Jul 2020 10:55:11 +0200
-Message-ID: <87mu3iwvio.fsf@cloudflare.com>
+        Wed, 29 Jul 2020 01:57:16 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     William Tu <u9012063@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] selftests/bpf: add xdpdrv mode for test_xdp_redirect
+Date:   Wed, 29 Jul 2020 16:56:58 +0800
+Message-Id: <20200729085658.403794-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+This patch add xdpdrv mode for test_xdp_redirect.sh since veth has
+support native mode. After update here is the test result:
 
-On Tue, Jul 28, 2020 at 10:47 PM CEST, Daniel Borkmann wrote:
+]# ./test_xdp_redirect.sh
+selftests: test_xdp_redirect xdpgeneric [PASS]
+selftests: test_xdp_redirect xdpdrv [PASS]
 
-[...]
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ .../selftests/bpf/test_xdp_redirect.sh        | 84 ++++++++++++-------
+ 1 file changed, 52 insertions(+), 32 deletions(-)
 
-> Jakub, I'm actually seeing a slightly different one on my test machine with sk_lookup:
->
-> # ./test_progs -t sk_lookup
-> #14 cgroup_skb_sk_lookup:OK
-> #73/1 query lookup prog:OK
-> #73/2 TCP IPv4 redir port:OK
-> #73/3 TCP IPv4 redir addr:OK
-> #73/4 TCP IPv4 redir with reuseport:OK
-> #73/5 TCP IPv4 redir skip reuseport:OK
-> #73/6 TCP IPv6 redir port:OK
-> #73/7 TCP IPv6 redir addr:OK
-> #73/8 TCP IPv4->IPv6 redir port:OK
-> #73/9 TCP IPv6 redir with reuseport:OK
-> #73/10 TCP IPv6 redir skip reuseport:OK
-> #73/11 UDP IPv4 redir port:OK
-> #73/12 UDP IPv4 redir addr:OK
-> #73/13 UDP IPv4 redir with reuseport:OK
-> attach_lookup_prog:PASS:open 0 nsec
-> attach_lookup_prog:PASS:bpf_program__attach_netns 0 nsec
-> make_socket:PASS:make_address 0 nsec
-> make_socket:PASS:socket 0 nsec
-> make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
-> make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
-> make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
-> make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
-> make_server:PASS:bind 0 nsec
-> make_server:PASS:attach_reuseport 0 nsec
-> update_lookup_map:PASS:bpf_map__fd 0 nsec
-> update_lookup_map:PASS:bpf_map_update_elem 0 nsec
-> make_socket:PASS:make_address 0 nsec
-> make_socket:PASS:socket 0 nsec
-> make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
-> make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
-> make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
-> make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
-> make_server:PASS:bind 0 nsec
-> make_server:PASS:attach_reuseport 0 nsec
-> update_lookup_map:PASS:bpf_map__fd 0 nsec
-> update_lookup_map:PASS:bpf_map_update_elem 0 nsec
-> make_socket:PASS:make_address 0 nsec
-> make_socket:PASS:socket 0 nsec
-> make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
-> make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
-> make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
-> make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
-> make_server:PASS:bind 0 nsec
-> make_server:PASS:attach_reuseport 0 nsec
-> run_lookup_prog:PASS:getsockname 0 nsec
-> run_lookup_prog:PASS:connect 0 nsec
-> make_socket:PASS:make_address 0 nsec
-> make_socket:PASS:socket 0 nsec
-> make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
-> make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
-> make_client:PASS:make_client 0 nsec
-> send_byte:PASS:send_byte 0 nsec
-> udp_recv_send:FAIL:recvmsg failed
-> (/root/bpf-next/tools/testing/selftests/bpf/prog_tests/sk_lookup.c:339: errno: Resource temporarily unavailable) failed to receive
-> #73/14 UDP IPv4 redir and reuseport with conns:FAIL
-> #73/15 UDP IPv4 redir skip reuseport:OK
-> #73/16 UDP IPv6 redir port:OK
-> #73/17 UDP IPv6 redir addr:OK
-> #73/18 UDP IPv4->IPv6 redir port:OK
-> #73/19 UDP IPv6 redir and reuseport:OK
-> attach_lookup_prog:PASS:open 0 nsec
-> attach_lookup_prog:PASS:bpf_program__attach_netns 0 nsec
-> make_socket:PASS:make_address 0 nsec
-> make_socket:PASS:socket 0 nsec
-> make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
-> make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
-> make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
-> make_server:PASS:setsockopt(IPV6_RECVORIGDSTADDR) 0 nsec
-> make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
-> make_server:PASS:bind 0 nsec
-> make_server:PASS:attach_reuseport 0 nsec
-> update_lookup_map:PASS:bpf_map__fd 0 nsec
-> update_lookup_map:PASS:bpf_map_update_elem 0 nsec
-> make_socket:PASS:make_address 0 nsec
-> make_socket:PASS:socket 0 nsec
-> make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
-> make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
-> make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
-> make_server:PASS:setsockopt(IPV6_RECVORIGDSTADDR) 0 nsec
-> make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
-> make_server:PASS:bind 0 nsec
-> make_server:PASS:attach_reuseport 0 nsec
-> update_lookup_map:PASS:bpf_map__fd 0 nsec
-> update_lookup_map:PASS:bpf_map_update_elem 0 nsec
-> make_socket:PASS:make_address 0 nsec
-> make_socket:PASS:socket 0 nsec
-> make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
-> make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
-> make_server:PASS:setsockopt(IP_RECVORIGDSTADDR) 0 nsec
-> make_server:PASS:setsockopt(IPV6_RECVORIGDSTADDR) 0 nsec
-> make_server:PASS:setsockopt(SO_REUSEPORT) 0 nsec
-> make_server:PASS:bind 0 nsec
-> make_server:PASS:attach_reuseport 0 nsec
-> run_lookup_prog:PASS:getsockname 0 nsec
-> run_lookup_prog:PASS:connect 0 nsec
-> make_socket:PASS:make_address 0 nsec
-> make_socket:PASS:socket 0 nsec
-> make_socket:PASS:setsockopt(SO_SNDTIMEO) 0 nsec
-> make_socket:PASS:setsockopt(SO_RCVTIMEO) 0 nsec
-> make_client:PASS:make_client 0 nsec
-> send_byte:PASS:send_byte 0 nsec
-> udp_recv_send:FAIL:recvmsg failed
-> (/root/bpf-next/tools/testing/selftests/bpf/prog_tests/sk_lookup.c:339: errno: Resource temporarily unavailable) failed to receive
-> #73/20 UDP IPv6 redir and reuseport with conns:FAIL
-> #73/21 UDP IPv6 redir skip reuseport:OK
-> #73/22 TCP IPv4 drop on lookup:OK
-> #73/23 TCP IPv6 drop on lookup:OK
-> #73/24 UDP IPv4 drop on lookup:OK
-> #73/25 UDP IPv6 drop on lookup:OK
-> #73/26 TCP IPv4 drop on reuseport:OK
-> #73/27 TCP IPv6 drop on reuseport:OK
-> #73/28 UDP IPv4 drop on reuseport:OK
-> #73/29 TCP IPv6 drop on reuseport:OK
-> #73/30 sk_assign returns EEXIST:OK
-> #73/31 sk_assign honors F_REPLACE:OK
-> #73/32 sk_assign accepts NULL socket:OK
-> #73/33 access ctx->sk:OK
-> #73/34 narrow access to ctx v4:OK
-> #73/35 narrow access to ctx v6:OK
-> #73/36 sk_assign rejects TCP established:OK
-> #73/37 sk_assign rejects UDP connected:OK
-> #73/38 multi prog - pass, pass:OK
-> #73/39 multi prog - drop, drop:OK
-> #73/40 multi prog - pass, drop:OK
-> #73/41 multi prog - drop, pass:OK
-> #73/42 multi prog - pass, redir:OK
-> #73/43 multi prog - redir, pass:OK
-> #73/44 multi prog - drop, redir:OK
-> #73/45 multi prog - redir, drop:OK
-> #73/46 multi prog - redir, redir:OK
-> #73 sk_lookup:FAIL
-> Summary: 1/44 PASSED, 0 SKIPPED, 3 FAILED
+diff --git a/tools/testing/selftests/bpf/test_xdp_redirect.sh b/tools/testing/selftests/bpf/test_xdp_redirect.sh
+index c4b17e08d431..dd80f0c84afb 100755
+--- a/tools/testing/selftests/bpf/test_xdp_redirect.sh
++++ b/tools/testing/selftests/bpf/test_xdp_redirect.sh
+@@ -10,52 +10,72 @@
+ #     | xdp forwarding |
+ #     ------------------
+ 
+-cleanup()
++ret=0
++
++setup()
+ {
+-	if [ "$?" = "0" ]; then
+-		echo "selftests: test_xdp_redirect [PASS]";
+-	else
+-		echo "selftests: test_xdp_redirect [FAILED]";
+-	fi
+ 
+-	set +e
++	local xdpmode=$1
++
++	ip netns add ns1
++	ip netns add ns2
++
++	ip link add veth1 index 111 type veth peer name veth11 netns ns1
++	ip link add veth2 index 222 type veth peer name veth22 netns ns2
++
++	ip link set veth1 up
++	ip link set veth2 up
++	ip -n ns1 link set dev veth11 up
++	ip -n ns2 link set dev veth22 up
++
++	ip -n ns1 addr add 10.1.1.11/24 dev veth11
++	ip -n ns2 addr add 10.1.1.22/24 dev veth22
++}
++
++cleanup()
++{
+ 	ip link del veth1 2> /dev/null
+ 	ip link del veth2 2> /dev/null
+ 	ip netns del ns1 2> /dev/null
+ 	ip netns del ns2 2> /dev/null
+ }
+ 
+-ip link set dev lo xdpgeneric off 2>/dev/null > /dev/null
+-if [ $? -ne 0 ];then
+-	echo "selftests: [SKIP] Could not run test without the ip xdpgeneric support"
+-	exit 0
+-fi
+-set -e
+-
+-ip netns add ns1
+-ip netns add ns2
++test_xdp_redirect()
++{
++	local xdpmode=$1
+ 
+-trap cleanup 0 2 3 6 9
++	setup
+ 
+-ip link add veth1 index 111 type veth peer name veth11
+-ip link add veth2 index 222 type veth peer name veth22
++	ip link set dev veth1 $xdpmode off &> /dev/null
++	if [ $? -ne 0 ];then
++		echo "selftests: test_xdp_redirect $xdpmode [SKIP]"
++		return 0
++	fi
+ 
+-ip link set veth11 netns ns1
+-ip link set veth22 netns ns2
++	ip -n ns1 link set veth11 $xdpmode obj xdp_dummy.o sec xdp_dummy &> /dev/null
++	ip -n ns2 link set veth22 $xdpmode obj xdp_dummy.o sec xdp_dummy &> /dev/null
++	ip link set dev veth1 $xdpmode obj test_xdp_redirect.o sec redirect_to_222 &> /dev/null
++	ip link set dev veth2 $xdpmode obj test_xdp_redirect.o sec redirect_to_111 &> /dev/null
+ 
+-ip link set veth1 up
+-ip link set veth2 up
++	ip netns exec ns1 ping -c 1 10.1.1.22 &> /dev/null
++	local ret1=$?
++	ip netns exec ns2 ping -c 1 10.1.1.11 &> /dev/null
++	local ret2=$?
+ 
+-ip netns exec ns1 ip addr add 10.1.1.11/24 dev veth11
+-ip netns exec ns2 ip addr add 10.1.1.22/24 dev veth22
++	if [ $ret1 -eq 0 -a $ret2 -eq 0 ]; then
++		echo "selftests: test_xdp_redirect $xdpmode [PASS]";
++	else
++		ret=1
++		echo "selftests: test_xdp_redirect $xdpmode [FAILED]";
++	fi
+ 
+-ip netns exec ns1 ip link set dev veth11 up
+-ip netns exec ns2 ip link set dev veth22 up
++	cleanup
++}
+ 
+-ip link set dev veth1 xdpgeneric obj test_xdp_redirect.o sec redirect_to_222
+-ip link set dev veth2 xdpgeneric obj test_xdp_redirect.o sec redirect_to_111
++set -e
++trap cleanup 2 3 6 9
+ 
+-ip netns exec ns1 ping -c 1 10.1.1.22
+-ip netns exec ns2 ping -c 1 10.1.1.11
++test_xdp_redirect xdpgeneric
++test_xdp_redirect xdpdrv
+ 
+-exit 0
++exit $ret
+-- 
+2.25.4
 
-This patch addresses the failures:
-
-  https://lore.kernel.org/bpf/20200726120228.1414348-1-jakub@cloudflare.com/
-
-It spawned a discussion on what to do about reuseport bpf returning
-connected udp sockets, and the conclusion was that it would be best to
-change reuseport logic itself if no one is relying on said behavior.
-
-IOW, I belive the fix does the right thing and can be applied as is. We
-get the same reuseport behavior everywhere, that is with regular socket
-lookup and BPF sk lookup, even if that behavior needs to be changed.
-
-[...]
