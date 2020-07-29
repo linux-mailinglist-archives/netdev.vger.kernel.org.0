@@ -2,122 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B972A232869
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 01:54:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A69B232870
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 01:59:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728096AbgG2Xyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 19:54:40 -0400
-Received: from mail.loongson.cn ([114.242.206.163]:54326 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727072AbgG2Xyk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jul 2020 19:54:40 -0400
-Received: from [10.130.0.75] (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx+MUmDCJf0kQCAA--.211S3;
-        Thu, 30 Jul 2020 07:54:15 +0800 (CST)
-Subject: Re: [PATCH bpf-next v2] Documentation/bpf: Use valid and new links in
- index.rst
-To:     Song Liu <song@kernel.org>
-References: <1596028555-32028-1-git-send-email-yangtiezhu@loongson.cn>
- <CAPhsuW5CYF+iiXL8mcLTerFxhUG2i1sTB8+qoFnZRT3K0XXb4w@mail.gmail.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "Tobin C. Harding" <me@tobin.cc>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-Message-ID: <47f0bdaf-4c43-05be-3c94-3b5134402e2f@loongson.cn>
-Date:   Thu, 30 Jul 2020 07:54:14 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
- Thunderbird/45.4.0
+        id S1728122AbgG2X7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 19:59:50 -0400
+Received: from mga11.intel.com ([192.55.52.93]:52930 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727840AbgG2X7u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jul 2020 19:59:50 -0400
+IronPort-SDR: aCygtU7H57cr8DKXFikcb8vewY3RNXb7GsMSvQP8L8PPldUCKHFcTvbqwgElZC6P6qSGH8yBEM
+ qLsJuJk0WiSQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9697"; a="149351961"
+X-IronPort-AV: E=Sophos;i="5.75,412,1589266800"; 
+   d="scan'208";a="149351961"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2020 16:59:49 -0700
+IronPort-SDR: nHQhp1G2jHjFJ6RKOjJdrqRfcLV4g4qvz5XepqyYbBnIiqN2hjD9g/nBFYzyooPNwfxnfMb8q+
+ iZMnVWJ4X4Eg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,412,1589266800"; 
+   d="scan'208";a="304385635"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.162.155]) ([10.212.162.155])
+  by orsmga002.jf.intel.com with ESMTP; 29 Jul 2020 16:59:48 -0700
+Subject: Re: [RFC PATCH net-next v2 6/6] devlink: add overwrite mode to flash
+ update
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tom Herbert <tom@herbertland.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+References: <20200717183541.797878-1-jacob.e.keller@intel.com>
+ <20200717183541.797878-7-jacob.e.keller@intel.com>
+ <20200720100953.GB2235@nanopsycho>
+ <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200721135356.GB2205@nanopsycho>
+ <20200721100406.67c17ce9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200722105139.GA3154@nanopsycho>
+ <02874ECE860811409154E81DA85FBB58C8AF3382@fmsmsx101.amr.corp.intel.com>
+ <20200722095228.2f2c61b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <a0994590-f818-43cd-6c28-0cd628be9602@intel.com>
+ <20200729161603.1aeeb5cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <ac6f072e-e660-8739-d7d2-58cba85d8489@intel.com>
+Date:   Wed, 29 Jul 2020 16:59:48 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.0.1
 MIME-Version: 1.0
-In-Reply-To: <CAPhsuW5CYF+iiXL8mcLTerFxhUG2i1sTB8+qoFnZRT3K0XXb4w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20200729161603.1aeeb5cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf9Dx+MUmDCJf0kQCAA--.211S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7CFWkGw1DAFyrJw1UCFWUtwb_yoW8Zr43pF
-        4rGa1SkFs5tF43Xa97tF47Arya9ayfWF48ua4DJw1rZrn8XF109r1Sgrs0g3W2vryFvFWr
-        Za4SqF90qr1ku3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvEb7Iv0xC_Cr1lb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWxJVW8Jr1l84ACjcxK6I
-        8E87Iv6xkF7I0E14v26r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
-        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r
-        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrwACI402YVCY1x02628vn2kIc2xK
-        xwCYjI0SjxkI62AI1cAE67vIY487MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
-        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
-        b7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
-        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI
-        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
-        evJa73UjIFyTuYvjxU2jXdUUUUU
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/30/2020 05:06 AM, Song Liu wrote:
-> On Wed, Jul 29, 2020 at 6:17 AM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
->> There exists an error "404 Not Found" when I click the html link of
->> "Documentation/networking/filter.rst" in the BPF documentation [1],
->> fix it.
->>
->> Additionally, use the new links about "BPF and XDP Reference Guide"
->> and "bpf(2)" to avoid redirects.
->>
->> [1] https://www.kernel.org/doc/html/latest/bpf/
->>
->> Fixes: d9b9170a2653 ("docs: bpf: Rename README.rst to index.rst")
->> Fixes: cb3f0d56e153 ("docs: networking: convert filter.txt to ReST")
->> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
->> ---
->>
->> v2:
->>    - Fix a typo "clik" to "click" in the commit message, sorry for that
->>
->>   Documentation/bpf/index.rst | 6 +++---
->>   1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/Documentation/bpf/index.rst b/Documentation/bpf/index.rst
->> index 26f4bb3..1b901b4 100644
->> --- a/Documentation/bpf/index.rst
->> +++ b/Documentation/bpf/index.rst
->> @@ -68,7 +68,7 @@ Testing and debugging BPF
->>
->>
->>   .. Links:
->> -.. _Documentation/networking/filter.rst: ../networking/filter.txt
->> +.. _Documentation/networking/filter.rst: ../networking/filter.html
-> This should be filter.rst, no?
 
-Hi Song,
 
-Thanks for your reply.
+On 7/29/2020 4:16 PM, Jakub Kicinski wrote:
+> On Wed, 29 Jul 2020 15:49:05 -0700 Jacob Keller wrote:
+>> The security revision is tied into the management firmware image and
+>> would always be updated when an image is updated, but the minimum
+>> revision is only updated on an explicit request request.
+> 
+> Does it have to be updated during FW flashing? Can't it be a devlink
+> param?
+> 
 
-I use filter.rst first, but it still appears "404 not found" when I click
-this link after "make htmldocs", so I use filter.html finally.
-
-Am I missing something? Is the test method OK?
-Please correct me if I am wrong.
+Oh, right. I'd forgotten about that type of parameter. Makes sense. I'll
+implement the current security revision as a component of flash info (so
+that it can be reported via devlink info, and can't be changed) but the
+minimum should be able to be a parameter just fine.
 
 Thanks,
-Tiezhu
-
->
->>   .. _man-pages: https://www.kernel.org/doc/man-pages/
->> -.. _bpf(2): http://man7.org/linux/man-pages/man2/bpf.2.html
->> -.. _BPF and XDP Reference Guide: http://cilium.readthedocs.io/en/latest/bpf/
->> +.. _bpf(2): https://man7.org/linux/man-pages/man2/bpf.2.html
->> +.. _BPF and XDP Reference Guide: https://docs.cilium.io/en/latest/bpf/
->> --
->> 2.1.0
->>
-
+Jake
