@@ -2,143 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA6D6231AF7
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 10:15:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27AE6231AF9
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 10:15:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbgG2IP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 04:15:27 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:59819 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726336AbgG2IP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 04:15:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596010525;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PUK1vUvNMFJqPqCN7rixVJ6pFpFUJ96T8n6RHgQXYPs=;
-        b=X1FITsKVEgS2LlihBMF2Occd0RyQExKtygDyp2pKKGbhIK6tiAlWebSCMyauNJTJwWC8ui
-        p+wlT+KwbGLu7d5LReqnzaRxSatznV21DjVaYGJsFasP4tY0ccE3yjHWdm3NAX2DbsnwVI
-        FMkbZdy+wk1b9c3HPPLT3mXJsGvBNJE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-308-2fJNoF7XOCOZknvZQcLkdQ-1; Wed, 29 Jul 2020 04:09:13 -0400
-X-MC-Unique: 2fJNoF7XOCOZknvZQcLkdQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 47DF7106B242;
-        Wed, 29 Jul 2020 08:09:12 +0000 (UTC)
-Received: from krava (unknown [10.40.193.247])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AEDED10001B3;
-        Wed, 29 Jul 2020 08:09:06 +0000 (UTC)
-Date:   Wed, 29 Jul 2020 10:09:05 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Eelco Chaudron <echaudro@redhat.com>
-Cc:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, andriin@fb.com,
-        toke@redhat.com
-Subject: Re: fentry/fexit attach to EXT type XDP program does not work
-Message-ID: <20200729080905.GG1319041@krava>
-References: <159162546868.10791.12432342618156330247.stgit@ebuild>
- <42b0c8d3-e855-7531-b01c-a05414360aff@fb.com>
- <88B08061-F85B-454C-9E9D-234154B9F000@redhat.com>
- <20200726122450.GC1175442@krava>
- <5CF6086F-412C-4934-9AC6-4B1821ADDF74@redhat.com>
- <20200727145313.GA1201271@krava>
- <95AF8533-2C7D-4038-AD39-4C81DBF25551@redhat.com>
+        id S1727986AbgG2IPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 04:15:51 -0400
+Received: from mout.gmx.net ([212.227.17.20]:34621 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726476AbgG2IPv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jul 2020 04:15:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1596010525;
+        bh=SEqiVovF7XeGtohoS2GMeFwDMUmZ9pW/KT58etbzx3I=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=XCZiliPRjvI4fnxBMHTK8ktxBj8sm8c/suvC2q8k3NejMEYSicFhklCixPYr8jL/q
+         p1s0lmomB8VJWQ3JsjfhEHquqim7j0pwfdIs7m46HB5x6m66dlD40RnA59WugB/3i0
+         yUz3c1y3zCJnzX1w5V7FO4NHoO2sDc7T7nuYWa4U=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost.localdomain ([185.75.74.240]) by mail.gmx.com
+ (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
+ 1M9Fnj-1k6SfS2l1j-006QTq; Wed, 29 Jul 2020 10:15:25 +0200
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     linux-mediatek@lists.infradead.org
+Cc:     Landen Chao <landen.chao@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH v4] net: ethernet: mtk_eth_soc: fix MTU warnings
+Date:   Wed, 29 Jul 2020 10:15:17 +0200
+Message-Id: <20200729081517.4026-1-frank-w@public-files.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <95AF8533-2C7D-4038-AD39-4C81DBF25551@redhat.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:SIqtPyJoGFptjlcPcxyQb71WF05R8NP7BOYsxZfVn4TevUka2hv
+ 16bkgQRk2SbtWS26redKg5T9xwqZyS6LYPZc4nlqNtdOfjc06O3Jrl08QXrr6YDL/rstb1f
+ l0xWrYmKz/JACy8a9r7NVqZ4c8VThH2ylroN+QjDMqc0cPtmCd+236ZK1kPKzt1RGF4+1GM
+ 8VtrTh/CFp4NgsEdY2c9Q==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:3EloKpSUWt8=:iY6EPOZWtHi/ZM6E34hZlR
+ 2xSfHxvGFSXGxamCo079Z4sANGXK3lUhCJ+AQLOA9MkvmzRmwvhwHYa7aQwcfH0e9CIEipuBg
+ GEngknl+qZuHctfDasmRn3F2KTtOywyAwgqVpmHaqQfpl5hH5ScWJSuxH/cLBr8Ek9Oa7q1Dr
+ +zf0UEgCupZML5LpvsCnOoOS5GSFr6DtYMprSc+h3M2lT3OS+72eOCUmao/yDIUQGjabX38VJ
+ NLuOCcsgyrjfRQHaRWxp6vOx1DKzclBdHJWpY7XZiEGE+c9Fpv0MiuLikJGvI2TQkQ/pgKwTW
+ 6DsrbaD2vLZ4r/Bs7W5mJos+RF4gR1F3tEgzP60BLcw5NNO8wFuEg/MCjmgOoZSC9znRa4Td7
+ hmGscGs/I/zKN8rz5vrjX5gr8oPuusM7Q4NMgafAHuKYjTwu6XhW9wmIM5158VqhhCV8hfpBJ
+ tpFhnqmxS1iwilu+3w6Z2VIQzH2Q/7imS5JXTkEQLngvCpl9LKNYC5kFWYuGfBr5bRjB627Ll
+ ICSqqxd3qGMKuehRy9DSFFdZjI8oc1xeMc5fY9f96LVZw1vtTfdtgppss78XeH+8wOJatIhBY
+ EyhaWfZPkul6GRtgs6sSmQvRmUNyb6bCF7itUbEXGKV7H6NZ2UhBW5JJIeuKqeHNk9QjAHPV3
+ zJPE6xvXUJa3W2HGC0FEuxte//wjUamhgd2gRS92xZn84VuZikNhhROrNKL7f88usifF1aOZQ
+ mjpxid9UwrvBoiODjCQ0iS222hls0dpLDKsTJnPUpJrX84Qgg+pWYZ7KYRyyhQOGfjkzyt9SW
+ mr0nubXYx1GCyzDcmz/XvpVoMwNqgl26092wYHvAYFXXD5ROUMeL31JX06S3XrEM7jhrmdwuB
+ H6E+PBlxWLeu7UWwsvhbLz8sOKJbB2G5VwJhoN6sltjIJPCN/LkRaLQOndWiWMNR629HM6TlS
+ AU+MtZYQvBOD03K5ggKTDgJl7HDa5jaldAJV4oa5mkW2W0Yy/GfPcLhdHLNloMQvQ+7fDrNGy
+ 2PseCo4ehl+PUHN9WgUxctTxE5LDbbn75IfpasO2/Hz7jQ3T9dY9rolYKNKvZGhqSfPPzEQSp
+ bUer4W27aVniiQtPAXaJmXN+BrgcHsTAnhHcaaXXHfXvMYy1OKLDW32vU6UnX7bYWbGrv0guT
+ uKiqi35C9tqTAJypDlFi3T86ksHJAnRFK2rH/CUWZkvaYr1HmyeLb7NvO8aukyh6iXXVcK7UY
+ wMicRZde5dkHaP+DpmOHh5gjVFF86/SJeFQ6cqA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 29, 2020 at 08:23:56AM +0200, Eelco Chaudron wrote:
+From: Landen Chao <landen.chao@mediatek.com>
 
-SNIP
+in recent kernel versions there are warnings about incorrect MTU size
+like these:
 
-> > > > > a patch
-> > > > > that would nice.
-> > > > > You can also send it to me before bpf-next opens and I can verify
-> > > > > it, and
-> > > > > clean up the self-test so it can be included as well.
-> > > > > 
-> > > > 
-> > > > hi,
-> > > > it seems that you cannot exten fentry/fexit programs,
-> > > > but it's possible to attach fentry/fexit to ext program.
-> > > > 
-> > > >    /* Program extensions can extend all program types
-> > > >     * except fentry/fexit. The reason is the following.
-> > > >     * The fentry/fexit programs are used for performance
-> > > >     * analysis, stats and can be attached to any program
-> > > >     * type except themselves. When extension program is
-> > > >     * replacing XDP function it is necessary to allow
-> > > >     * performance analysis of all functions. Both original
-> > > >     * XDP program and its program extension. Hence
-> > > >     * attaching fentry/fexit to BPF_PROG_TYPE_EXT is
-> > > >     * allowed. If extending of fentry/fexit was allowed it
-> > > >     * would be possible to create long call chain
-> > > >     * fentry->extension->fentry->extension beyond
-> > > >     * reasonable stack size. Hence extending fentry is not
-> > > >     * allowed.
-> > > >     */
-> > > > 
-> > > > I changed fexit_bpf2bpf.c test just to do a quick check
-> > > > and it seems to work:
-> > > 
-> > > Hi Jiri this is exactly what I’m trying, however when you do this
-> > > where the
-> > > first argument is a pointer to some context data which you are
-> > > accessing
-> > > it’s failing in the verifier.
-> > > This is a link to the original email, which has a test patch
-> > > attached that
-> > > will show the failure when trying to load/attach the fentry function
-> > > and
-> > > access the context:
-> > > 
-> > > https://lore.kernel.org/bpf/159162546868.10791.12432342618156330247.stgit@ebuild/
-> > 
-> > ok, I tried to trace ext program with __sk_buff argument and I can see
-> > the issue as well.. can't acess the skb argument
-> > 
-> > patch below fixes it for me, I can access the skb pointer and its data
-> > via probe read, like:
-> > 
-> > 	SEC("fexit/new_get_skb_ifindex")
-> > 	int BPF_PROG(fexit_new_get_skb_ifindex, int val, struct __sk_buff *skb,
-> > int var, int ret)
-> > 	{
-> > 		__u32 data;
-> > 		int err;
-> > 
-> > 		bpf_printk("EXIT skb %p", skb);
-> > 		bpf_probe_read_kernel(&data, sizeof(data), &skb->data);
-> > 		bpf_printk("EXIT ret %d, data %p", err, data);
-> > 		return 0;
-> > 	}
-> > 
-> > I think it should fix the xdp_md acess as well
-> 
-> Excellent patch ;) It works with xdp_md as well, and even better it does not
-> require the bpf_probe_read_kernel(), so the test_xdp_bpf2bpf.c code just
-> works.
+eth0: mtu greater than device maximum
+mtk_soc_eth 1b100000.ethernet eth0: error -22 setting MTU to include DSA o=
+verhead
 
-great ;-) will check on xdp_md
+Fixes: bfcb813203e6 ("net: dsa: configure the MTU for switch ports")
+Fixes: 72579e14a1d3 ("net: dsa: don't fail to probe if we couldn't set the=
+ MTU")
+Fixes: 7a4c53bee332 ("net: report invalid mtu value via netlink extack")
+Signed-off-by: Landen Chao <landen.chao@mediatek.com>
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+=2D--
+v3->v4
+  - fix commit-message (hyphernations,capitalisation) as suggested by Russ=
+ell
+  - add Signed-off-by Landen
+  - dropped wrong signed-off from rene (because previous v1/2 was from him=
+)
+=2D--
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> 
-> Are you planning to send the patch upstream?
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/eth=
+ernet/mediatek/mtk_eth_soc.c
+index 85735d32ecb0..a1c45b39a230 100644
+=2D-- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -2891,6 +2891,8 @@ static int mtk_add_mac(struct mtk_eth *eth, struct d=
+evice_node *np)
+ 	eth->netdev[id]->irq =3D eth->irq[0];
+ 	eth->netdev[id]->dev.of_node =3D np;
 
-yep, I'll add some test for that and send it
++	eth->netdev[id]->max_mtu =3D MTK_MAX_RX_LENGTH - MTK_RX_ETH_HLEN;
++
+ 	return 0;
 
-thanks,
-jirka
+ free_netdev:
+=2D-
+2.25.1
 
