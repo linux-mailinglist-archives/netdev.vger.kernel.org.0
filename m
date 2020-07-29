@@ -2,55 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC8B62327E8
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 01:12:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FF9F2327ED
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 01:16:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728017AbgG2XMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 19:12:33 -0400
-Received: from www62.your-server.de ([213.133.104.62]:56496 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727982AbgG2XMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 19:12:33 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k0vFP-0007K5-P6; Thu, 30 Jul 2020 01:12:31 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k0vFP-000MzR-If; Thu, 30 Jul 2020 01:12:31 +0200
-Subject: Re: [PATCH bpf-next] selftests/bpf: don't destroy failed link
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        YiFei Zhu <zhuyifei@google.com>
-References: <20200729045056.3363921-1-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c0562bf8-aad2-3b60-3eb6-eac2bc549c83@iogearbox.net>
-Date:   Thu, 30 Jul 2020 01:12:28 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728219AbgG2XQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 19:16:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48588 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727862AbgG2XQG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jul 2020 19:16:06 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 956012067D;
+        Wed, 29 Jul 2020 23:16:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596064566;
+        bh=HEhksm37C2LqlrQOg8kfMNy1as7m75lwe8lyTzhjhEk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FZS7rxOwXjJzlGHQ0+37DlD3WaH47TsEFD61mZRnRuL0+T26kp0JpEpKKhcbn5kfP
+         84CxyXlafAKypd/9CplDWfmxhz86sXu4lpoQ3PFw5ebboNbQZ4skE+HtxUzO+fDk3z
+         WQyvOILVJo5ekV2VaO5Ryyr4wSSR46jIXZDZH1MM=
+Date:   Wed, 29 Jul 2020 16:16:03 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tom Herbert <tom@herbertland.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+Subject: Re: [RFC PATCH net-next v2 6/6] devlink: add overwrite mode to
+ flash update
+Message-ID: <20200729161603.1aeeb5cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a0994590-f818-43cd-6c28-0cd628be9602@intel.com>
+References: <20200717183541.797878-1-jacob.e.keller@intel.com>
+        <20200717183541.797878-7-jacob.e.keller@intel.com>
+        <20200720100953.GB2235@nanopsycho>
+        <20200720085159.57479106@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200721135356.GB2205@nanopsycho>
+        <20200721100406.67c17ce9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200722105139.GA3154@nanopsycho>
+        <02874ECE860811409154E81DA85FBB58C8AF3382@fmsmsx101.amr.corp.intel.com>
+        <20200722095228.2f2c61b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a0994590-f818-43cd-6c28-0cd628be9602@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200729045056.3363921-1-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25888/Wed Jul 29 16:57:45 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/29/20 6:50 AM, Andrii Nakryiko wrote:
-> Check that link is NULL or proper pointer before invoking bpf_link__destroy().
-> Not doing this causes crash in test_progs, when cg_storage_multi selftest
-> fails.
-> 
-> Cc: YiFei Zhu <zhuyifei@google.com>
-> Fixes: 3573f384014f ("selftests/bpf: Test CGROUP_STORAGE behavior on shared egress + ingress")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On Wed, 29 Jul 2020 15:49:05 -0700 Jacob Keller wrote:
+> The security revision is tied into the management firmware image and
+> would always be updated when an image is updated, but the minimum
+> revision is only updated on an explicit request request.
 
-Applied, thanks!
+Does it have to be updated during FW flashing? Can't it be a devlink
+param?
