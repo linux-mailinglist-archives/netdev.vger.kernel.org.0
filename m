@@ -2,94 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C517231F50
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 15:28:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37E1D231F60
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 15:33:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727026AbgG2N2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 09:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50280 "EHLO
+        id S1726336AbgG2NdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 09:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726449AbgG2N2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 09:28:43 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA7AC061794
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 06:28:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=9ORNiu6AUY2fE+M5i4oJ2jFQrokNliJ5sCBtL7SxZso=; b=N/so8yGNNBqNwCuNekstEglhq
-        22LCjR0cL7KIeVzsrdi7mshxOw2R/JEKotwX5UW/E1ANH01TB8z24dKzirD8085SsrcYcNaHfI5yn
-        /bWL5k0QP2rFqXVfClEpgCHpJ9KWQWZVKuN9XHZxJrzeeQKKrGJjxijNTCVjKBtD31UMYnzKnr75q
-        EYt+1tKpqC4qqsB/tnhTnQd308edYetIL1l+/koRQQsaMQeGr5aEZBuPQwSpnE6ZLS5OSW5BalvnS
-        4IDlHSb8XhmHMI2tH8R3mPPVPgJpdT7am4CeVnKKYUQBWuShsf5CScYvGnbDT8JSHWsWWl5B4R57O
-        JjXC2vHPA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45690)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1k0m8L-0005RW-3w; Wed, 29 Jul 2020 14:28:37 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1k0m8G-0005iJ-QA; Wed, 29 Jul 2020 14:28:32 +0100
-Date:   Wed, 29 Jul 2020 14:28:32 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
-Message-ID: <20200729132832.GA1551@shell.armlinux.org.uk>
-References: <E1jvNlE-0001Y0-47@rmk-PC.armlinux.org.uk>
- <20200729105807.GZ1551@shell.armlinux.org.uk>
- <20200729131932.GA23222@hoboy>
+        with ESMTP id S1726476AbgG2NdN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 09:33:13 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45693C061794
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 06:33:13 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id 88so21653301wrh.3
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 06:33:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=vyos.io; s=google;
+        h=to:from:subject:message-id:date:user-agent:mime-version
+         :content-transfer-encoding:content-language;
+        bh=4fGQqTpD4jDxxktpTOE+SBIE9xEEmfSwqtQ4+O/3wTg=;
+        b=GOoo7vtT6BAh4ppeoUAHpebnEwOuqyJJTysbjJ/3PU0AnMgHPbk/0Nq58+BVR9G+0Q
+         A7lh4t6cbp682jLZhrNQkydYLSQE1xpN8R+B96H3UE8dbLXGwFex5G1UVGYSMPrGGkZC
+         1/qoEYPJj2U5ng8B6aGoZmhKIJ3CojxKaE4e/aWBMYk92C5Sw42JhaS7QKG1BhF3EQI+
+         1gqKICti+Fn8gyNyXXHY5NB/yDK9MSX4UjSdQq9SBUPPoSChr8nHPJzYqDPDFSTYYMP8
+         0DySAfh7NvyYSgMOqW+nJ+RmexAvMM3gqELi99KFdi2aujdqLNwoMgY9GDkruH3SI+yG
+         3wZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
+         :mime-version:content-transfer-encoding:content-language;
+        bh=4fGQqTpD4jDxxktpTOE+SBIE9xEEmfSwqtQ4+O/3wTg=;
+        b=L6+GxocYqvKqKi0RtPZVXdewE8v35P2p77KANL3m5CbsKvUHTjYDZuei29Z6msoBRs
+         CcX2RIC+U34LrvQNRHRBPrYsPHNmRAg9RymY9Q1WeG8fcq8R4yKRYCkAztvSojUwREef
+         RTKG9XEXY+siuOHjXDOoUMm5AWgmDkecZVFMLeJYem3qElJGH5Kg/dVz/a+cTNZkeOct
+         NGHl8NYW5pp3oG7twB6gkiH2vromk6syFjylPKNMm9L7pzGWgBJ6B1R6hZUbTO3ISWaE
+         dd4NTVzeiG5qvMMlNiJz3iSNW8eat6M25F3F8cvMnt3HH4GkGSgE5RSXoX9xUSv9KvUY
+         F73w==
+X-Gm-Message-State: AOAM533H7RF6nFDPVsJEbEc99KwCRTm0yLKu75VCGdF9XCDTVYF0KLWi
+        E+AIFGoxTaMBlLIbfmQSJJKXOhz6CW4=
+X-Google-Smtp-Source: ABdhPJwkTzcbX3eBBcTg8X9nlthoiGuLpmGtkj8KI1MCjVKLo1VYjd8vS/xL2Byk2GC+muomL/PLfw==
+X-Received: by 2002:a5d:6681:: with SMTP id l1mr28368126wru.47.1596029590783;
+        Wed, 29 Jul 2020 06:33:10 -0700 (PDT)
+Received: from [192.168.1.148] ([170.253.52.168])
+        by smtp.gmail.com with ESMTPSA id m14sm5448344wrx.76.2020.07.29.06.33.10
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jul 2020 06:33:10 -0700 (PDT)
+To:     netdev@vger.kernel.org
+From:   Santi <s.lorente@vyos.io>
+Subject: HFSC latency control
+Message-ID: <825c732e-a207-a285-d419-596b173d65a3@vyos.io>
+Date:   Wed, 29 Jul 2020 15:33:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200729131932.GA23222@hoboy>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 29, 2020 at 06:19:32AM -0700, Richard Cochran wrote:
-> On Wed, Jul 29, 2020 at 11:58:07AM +0100, Russell King - ARM Linux admin wrote:
-> > How do we deal with this situation - from what I can see from the
-> > ethtool API, we have to make a choice about which to use.  How do we
-> > make that choice?
-> 
-> Unfortunately the stack does not implement simultaneous MAC + PHY time
-> stamping.  If your board has both, then you make the choice to use the
-> PHY by selecting NETWORK_PHY_TIMESTAMPING at kernel compile time.
+If this is not the correct place to ask these questions, please let me 
+know if you know about any forum, mailing list, IRC channel or wherever 
+HFSC questions could be asked and answered.
 
-Which is more or less what I said in my email.  However, the important
-question about how to select between the two, which is really what I'm
-after, has not been addressed.
+I have read some HFSC theory and some old messages in the archive of 
+this mailing list. I am testing HFSC in my lab. Traffic is correctly 
+shaped but I do not get the expected results regarding latency.
 
-> (Also some MAC drivers do not defer to the PHY properly.  Sometimes
-> you can work around that by de-selecting the MAC's PTP function in the
-> Kconfig if possible, but otherwise you need to patch the MAC driver.)
+tc qdisc add dev eth0 root handle 1: hfsc default 90
+tc class add dev eth0 parent 1:0 classid 1:1 hfsc ls m2 100kbps ul m2 
+100kbps
+tc class add dev eth0 parent 1:1 classid 1:10 hfsc rt m1 50kbps d 100 m2 
+10kbps
+tc class add dev eth0 parent 1:1 classid 1:20 hfsc ls m2 70kbps
+tc class add dev eth0 parent 1:1 classid 1:90 hfsc ls m2 10kbps
+tc filter add dev eth0 protocol ip parent 1:0 prio 1 u32 match ip src 
+192.168.10.0/24 flowid 1:10
+tc filter add dev eth0 protocol ip parent 1:0 prio 1 u32 match ip src 
+192.168.20.0/24 flowid 1:20
 
-... which really doesn't work if you have a board where only some
-network interfaces have a PHY with PTP support, but all have PTP
-support in the MAC.
+I expected to have the lowest latency on packets from 192.168.10.0/24, 
+however they get much more delayed than any other traffic.
 
-If all MACs or the majority of MACs use a common PTP clock, it seems
-to me that you would want to use the MACs rather than the PHY,
-especially if the PHY doesn't offer as good a quality PTP clock as
-is available from the MAC.
+What am I doing wrong?
 
-Randomly patching the kernel is out of the question, for arm based
-systems we want one kernel that works correctly across as many
-platforms as possible, and Kconfig choices to set platform specific
-details are basically unacceptable, let alone patching the kernel to
-make those decisions.
+I would like to have one example where I can see HFSC controls latency. 
+I have seen lots of theory but very few examples, and when I test them 
+in my lab I don't see the expected results regarding latency.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I generate traffic with Ostinato and test latency with ping and qperf.
+
