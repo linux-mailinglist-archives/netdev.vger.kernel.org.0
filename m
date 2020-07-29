@@ -2,129 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FAE32327DB
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 01:05:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 558C52327DD
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 01:06:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728037AbgG2XFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 19:05:43 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:12922 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727115AbgG2XFm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 19:05:42 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06TN2FZf027440
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 16:05:42 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=u8kg52+HzkMY1tEw9AknzS+/BFunFBXL2tILZhwGvX0=;
- b=kKy30RqEGBphnnzbaovwwud8iFeq5GisuirplByv3+MyBueD47uEB6NgiVTUeP50mgPS
- lHL/ObqCGRJ/q4Ny9u8zg4ATJ72tE1MlC9Nz/+nsTCoC2RfseS3/aDTWEP3zjvfF4Qmn
- oziv9VB4kiJjtR62/DJj+eMQwkJEagVVA5E= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32jk9d8cub-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 16:05:41 -0700
-Received: from intmgw004.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 29 Jul 2020 16:05:40 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id DD2982EC4E37; Wed, 29 Jul 2020 16:05:34 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 5/5] tools/bpftool: add documentation and bash-completion for `link detach`
-Date:   Wed, 29 Jul 2020 16:05:20 -0700
-Message-ID: <20200729230520.693207-6-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200729230520.693207-1-andriin@fb.com>
-References: <20200729230520.693207-1-andriin@fb.com>
+        id S1727986AbgG2XGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 19:06:22 -0400
+Received: from www62.your-server.de ([213.133.104.62]:55470 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727083AbgG2XGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 19:06:21 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k0v9O-0006ej-2h; Thu, 30 Jul 2020 01:06:18 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k0v9N-000XNc-Ta; Thu, 30 Jul 2020 01:06:17 +0200
+Subject: Re: [PATCH v4 bpf-next 3/4] bpf: Add kernel module with user mode
+ driver that populates bpffs.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        davem@davemloft.net
+Cc:     torvalds@linux-foundation.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+References: <20200724203830.81531-1-alexei.starovoitov@gmail.com>
+ <20200724203830.81531-4-alexei.starovoitov@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <cbf754f2-714f-1493-09c9-b01cc4c3f70d@iogearbox.net>
+Date:   Thu, 30 Jul 2020 01:06:17 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-29_17:2020-07-29,2020-07-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- clxscore=1015 impostorscore=0 malwarescore=0 mlxscore=0 mlxlogscore=965
- suspectscore=8 adultscore=0 priorityscore=1501 phishscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007290156
-X-FB-Internal: deliver
+In-Reply-To: <20200724203830.81531-4-alexei.starovoitov@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25888/Wed Jul 29 16:57:45 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add info on link detach sub-command to man page. Add detach to bash-compl=
-etion
-as well.
+On 7/24/20 10:38 PM, Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
+> 
+> Add kernel module with user mode driver that populates bpffs with
+> BPF iterators.
+> 
+> $ mount bpffs /my/bpffs/ -t bpf
+> $ ls -la /my/bpffs/
+> total 4
+> drwxrwxrwt  2 root root    0 Jul  2 00:27 .
+> drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
+> -rw-------  1 root root    0 Jul  2 00:27 maps.debug
+> -rw-------  1 root root    0 Jul  2 00:27 progs.debug
+> 
+> The user mode driver will load BPF Type Formats, create BPF maps, populate BPF
+> maps, load two BPF programs, attach them to BPF iterators, and finally send two
+> bpf_link IDs back to the kernel.
+> The kernel will pin two bpf_links into newly mounted bpffs instance under
+> names "progs.debug" and "maps.debug". These two files become human readable.
+> 
+> $ cat /my/bpffs/progs.debug
+>    id name            attached
+>    11 dump_bpf_map    bpf_iter_bpf_map
+>    12 dump_bpf_prog   bpf_iter_bpf_prog
+>    27 test_pkt_access
+>    32 test_main       test_pkt_access test_pkt_access
+>    33 test_subprog1   test_pkt_access_subprog1 test_pkt_access
+>    34 test_subprog2   test_pkt_access_subprog2 test_pkt_access
+>    35 test_subprog3   test_pkt_access_subprog3 test_pkt_access
+>    36 new_get_skb_len get_skb_len test_pkt_access
+>    37 new_get_skb_ifindex get_skb_ifindex test_pkt_access
+>    38 new_get_constant get_constant test_pkt_access
+> 
+> The BPF program dump_bpf_prog() in iterators.bpf.c is printing this data about
+> all BPF programs currently loaded in the system. This information is unstable
+> and will change from kernel to kernel as ".debug" suffix conveys.
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/bpf/bpftool/Documentation/bpftool-link.rst | 8 ++++++++
- tools/bpf/bpftool/bash-completion/bpftool        | 4 ++--
- 2 files changed, 10 insertions(+), 2 deletions(-)
+Looks like this needs one last respin, but either way the module handling looks much
+cleaner now, Ack.
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-link.rst b/tools/bpf=
-/bpftool/Documentation/bpftool-link.rst
-index 38b0949a185b..4a52e7a93339 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-link.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-link.rst
-@@ -21,6 +21,7 @@ LINK COMMANDS
-=20
- |	**bpftool** **link { show | list }** [*LINK*]
- |	**bpftool** **link pin** *LINK* *FILE*
-+|	**bpftool** **link detach *LINK*
- |	**bpftool** **link help**
- |
- |	*LINK* :=3D { **id** *LINK_ID* | **pinned** *FILE* }
-@@ -49,6 +50,13 @@ DESCRIPTION
- 		  contain a dot character ('.'), which is reserved for future
- 		  extensions of *bpffs*.
-=20
-+	**bpftool link detach** *LINK*
-+		  Force-detach link *LINK*. BPF link and its underlying BPF
-+		  program will stay valid, but they will be detached from the
-+		  respective BPF hook and BPF link will transition into
-+		  a defunct state until last open file descriptor for that
-+		  link is closed.
-+
- 	**bpftool link help**
- 		  Print short help message.
-=20
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftoo=
-l/bash-completion/bpftool
-index 257fa310ea2b..f53ed2f1a4aa 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -1122,7 +1122,7 @@ _bpftool()
-             ;;
-         link)
-             case $command in
--                show|list|pin)
-+                show|list|pin|detach)
-                     case $prev in
-                         id)
-                             _bpftool_get_link_ids
-@@ -1139,7 +1139,7 @@ _bpftool()
-                     COMPREPLY=3D( $( compgen -W "$LINK_TYPE" -- "$cur" )=
- )
-                     return 0
-                     ;;
--                pin)
-+                pin|detach)
-                     if [[ $prev =3D=3D "$command" ]]; then
-                         COMPREPLY=3D( $( compgen -W "$LINK_TYPE" -- "$cu=
-r" ) )
-                     else
---=20
-2.24.1
-
+Thanks,
+Daniel
