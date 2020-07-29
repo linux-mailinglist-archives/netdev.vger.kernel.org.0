@@ -2,89 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B4D223195E
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 08:16:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D92C1231964
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 08:18:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbgG2GQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 02:16:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40432 "EHLO
+        id S1726962AbgG2GSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 02:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726286AbgG2GQj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 02:16:39 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99437C061794;
-        Tue, 28 Jul 2020 23:16:39 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id b79so21168899qkg.9;
-        Tue, 28 Jul 2020 23:16:39 -0700 (PDT)
+        with ESMTP id S1726286AbgG2GSC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 02:18:02 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05627C061794
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 23:18:02 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id x9so11953955ybd.4
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 23:18:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=iLtAssgWfIZzqgLiFD3qsZIMSHk6XKt/j5mm7LzbJ6Y=;
-        b=MmXlKQmCgUHDk6M79TCRMNheCcB7vZjsht1k767ehX1N1KE7LUawliBgc1UJU+0rKM
-         EWNXeahcrAY7yEDZolaA7Xqua2cSgJRP+ZoCPS7Qg6EX48m/dqkNu12qB6n6ImIjKckl
-         cZDxA8ytiR+g96o88tgKXFqbHTt+znHzGrq6LqZWDorWhY+9OmYYQhHeLfK90zV5EWM8
-         2Dng5L7HXo6VqsbKw1f1Nkq/ZxwXw3tdB0AovbDYyd3jK0/wgInKg3TvO4YMS2ye4xYT
-         jN8Q1hEVa8z8Q9TcTTdMI7zRNAZqfZm3Qc1bAsRurqUE4UCLModuflEsu20xczAdHBvC
-         XCbA==
+        bh=fRfLmqXm0tbP5GNK88YLMm+eE8sbYKF2zxcwDzt8ySo=;
+        b=I/A5KgLXJD9HPuXzkTi9WClLJlXwBpqRQKh6ApYUyEysFupWBB8ifBZr+O1ub6/2TL
+         ZZ9Yf2fa2NY33qBj3Ur8x3HGXrj/3OZdqRJzp3mAk0o04VXAryljS0vpuFx6qb36nBYV
+         zTVXbrca2m6MRyz5MtSUB/zIbrOzaK6d4gCjv0vLtMIsDxQq8TERFEKbat1OtrHs39ze
+         evLCcHMZtqau5Sp2t/TU1EhDDjGcoGuWPhtBMUucPQefgc9LH6vYfYNaAip4wdMAAdTL
+         3AlGWiQkKcWxaruCSKw/34teNVTjg6ieXQKcFzEvwS+kAa+fT+wFLd1rTrsWEpatK6zZ
+         mFSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=iLtAssgWfIZzqgLiFD3qsZIMSHk6XKt/j5mm7LzbJ6Y=;
-        b=jCkxq5QQk64aW8cD5piwjZPhG3FAZ4FqE8jSfeiNYshEdoEuk2YLNh8vPljkyBVsjt
-         OzHNIf7kShn+o2f+1eH5yO+E1JlUx1tbOia835eyGzcX7K9XSYwBGOQY8KPrlVXSNHlE
-         wQ36q5PaASA1tYbHMdV3B/G51ms3VvKtgyKl+w4+TzYK2ApefawWC/rdcI2w15PoXgKw
-         wzBkwBMYwSsjeqHzl+RDY3Z9pCznuCe4eNh7JKaSdcMwwQg/ypaR+xIX6FjnUASIW4s6
-         ZwoDOqMRsU9wTP0GCaYMeo3l5D4+XznaGRjvlJixWn2yU32W1qXaWNc2lCTAvwdtDUez
-         pDbg==
-X-Gm-Message-State: AOAM531lFRxUQjJQsxKkrGDHzIb+I7KNIo4jDbyFmnoM5ZCSnRmNyNq9
-        baOZ+zHvn1Zn/5dYJbEvZcv3EFmTxHhpUelbsL8=
-X-Google-Smtp-Source: ABdhPJysBKm7v9N4z+wTwwNU6y6+7AEeiul8ro2XUFe5Nu36RtO7Fq/BkE8n7bwc7FT5YWnRQoVS67z6XFapJS4JT2U=
-X-Received: by 2002:a05:620a:4c:: with SMTP id t12mr6180376qkt.449.1596003398816;
- Tue, 28 Jul 2020 23:16:38 -0700 (PDT)
+        bh=fRfLmqXm0tbP5GNK88YLMm+eE8sbYKF2zxcwDzt8ySo=;
+        b=mRRGWxf9ONLXZHDIQeF7sdj0uDKn0dp0NthQCnpr9LvZJD64seofeG/p4SKKkZQUzY
+         C28L+mqNAcMVhEev/Na717ohqVxXFZFBZuywjfv6e7a9ZvvKsYbiQOudwdBEO6Pe7vdN
+         94k3iLluAvsxy4/e3o6krx6o7IVFuzboFPMOgf+5SN3ryqHBcXR6nN0xXjFszAoiBHiR
+         cLFTL82zpnxIqh22g2SR19wTYEINdIWVEXgjoy8LXi7Z7OqDkhpyDZniFbkP7AXpk4VV
+         9oqWfaWo0JYz8Qfj2bmuCSVZ0OOmtx0onaYlxG1P2YJYRVT7m4QYGGHdi+Gz647pzWMQ
+         oW8Q==
+X-Gm-Message-State: AOAM533rBZ3iYMV1/bE4s+LKk+gnXDW9Ya9Pi/qFRWeL3oW08B66V27N
+        aKsXCl+xX11KPygZhlLWKECoGlrRL3di/KkkwsY=
+X-Google-Smtp-Source: ABdhPJwF4P8gBbsJrAm6vdlqe752MZqlv3aSDknhJRaRkFtyO1fuZDhUAvnU/bA/fMNgmCz5VSYihqz3ZDgZPSms5Mo=
+X-Received: by 2002:a25:3bc1:: with SMTP id i184mr37689420yba.97.1596003481073;
+ Tue, 28 Jul 2020 23:18:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200729045056.3363921-1-andriin@fb.com> <CAPhsuW5e5B8AShod0frVaDdDA_5f3xeyd6gr9sTqUSy4YM1pBA@mail.gmail.com>
-In-Reply-To: <CAPhsuW5e5B8AShod0frVaDdDA_5f3xeyd6gr9sTqUSy4YM1pBA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 28 Jul 2020 23:16:27 -0700
-Message-ID: <CAEf4BzY=P0pL5wwBD=w=02ooueJcg4h8SoeZuC2pz86R3s1wnw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: don't destroy failed link
-To:     Song Liu <song@kernel.org>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        YiFei Zhu <zhuyifei@google.com>
+References: <20200728195935.155604-1-saeedm@mellanox.com> <20200728195935.155604-11-saeedm@mellanox.com>
+In-Reply-To: <20200728195935.155604-11-saeedm@mellanox.com>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Wed, 29 Jul 2020 09:17:49 +0300
+Message-ID: <CAJ3xEMgJg5RQROKUjR3tGu+khu80ogtZY=8Q2sJkrej4MCZPAg@mail.gmail.com>
+Subject: Re: [net V2 10/11] net/mlx5e: Modify uplink state on interface up/down
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Ron Diskin <rondi@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 10:47 PM Song Liu <song@kernel.org> wrote:
->
-> On Tue, Jul 28, 2020 at 9:54 PM Andrii Nakryiko <andriin@fb.com> wrote:
-> >
-> > Check that link is NULL or proper pointer before invoking bpf_link__destroy().
-> > Not doing this causes crash in test_progs, when cg_storage_multi selftest
-> > fails.
-> >
-> > Cc: YiFei Zhu <zhuyifei@google.com>
-> > Fixes: 3573f384014f ("selftests/bpf: Test CGROUP_STORAGE behavior on shared egress + ingress")
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->
-> Acked-by: Song Liu <songliubraving@fb.com>
->
-> btw: maybe we can move the IS_ERR() check to bpf_link__destroy()?
+On Tue, Jul 28, 2020 at 11:07 PM Saeed Mahameed <saeedm@mellanox.com> wrote:
+> When setting the PF interface up/down, notify the firmware to update
+> uplink state via MODIFY_VPORT_STATE, when E-Switch is enabled.
+> This behavior will prevent sending traffic out on uplink port when PF is
+> down, such as sending traffic from a VF interface which is still up.
+> Currently when calling mlx5e_open/close(), the driver only sends PAOS
+> command to notify the firmware to set the physical port state to
+> up/down, however, it is not sufficient. When VF is in "auto" state, it
+> follows the uplink state, which was not updated on mlx5e_open/close()
+> before this patch.
 
-Yeah, given how common this mistake seems to be, that wouldn't be a bad idea.
+> When switchdev mode is enabled and uplink representor is first enabled,
+> set the uplink port state value back to its FW default "AUTO".
 
->
-> > ---
-> >  .../bpf/prog_tests/cg_storage_multi.c         | 42 ++++++++++++-------
-> >  1 file changed, 28 insertions(+), 14 deletions(-)
-> >
+So this is not the legacy mode "auto" vf vport state but rather something else?
 
-[...]
+If this is the case what is the semantics of the firmware "auto" state and
+how it related to the switchdev vport representors architecture/behaviour?
+
+
+> Fixes: 63bfd399de55 ("net/mlx5e: Send PAOS command on interface up/down")
