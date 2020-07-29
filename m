@@ -2,116 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27AE6231AF9
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 10:15:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A423231B14
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 10:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727986AbgG2IPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 04:15:51 -0400
-Received: from mout.gmx.net ([212.227.17.20]:34621 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726476AbgG2IPv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jul 2020 04:15:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1596010525;
-        bh=SEqiVovF7XeGtohoS2GMeFwDMUmZ9pW/KT58etbzx3I=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=XCZiliPRjvI4fnxBMHTK8ktxBj8sm8c/suvC2q8k3NejMEYSicFhklCixPYr8jL/q
-         p1s0lmomB8VJWQ3JsjfhEHquqim7j0pwfdIs7m46HB5x6m66dlD40RnA59WugB/3i0
-         yUz3c1y3zCJnzX1w5V7FO4NHoO2sDc7T7nuYWa4U=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost.localdomain ([185.75.74.240]) by mail.gmx.com
- (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
- 1M9Fnj-1k6SfS2l1j-006QTq; Wed, 29 Jul 2020 10:15:25 +0200
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     linux-mediatek@lists.infradead.org
-Cc:     Landen Chao <landen.chao@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH v4] net: ethernet: mtk_eth_soc: fix MTU warnings
-Date:   Wed, 29 Jul 2020 10:15:17 +0200
-Message-Id: <20200729081517.4026-1-frank-w@public-files.de>
-X-Mailer: git-send-email 2.25.1
+        id S1728079AbgG2IUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 04:20:17 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:48772 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727844AbgG2IUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 04:20:16 -0400
+Received: by mail-il1-f197.google.com with SMTP id w23so5643756ila.15
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 01:20:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=cl416RZjUF3O9jXjZQ0k7KWHBcYWC7cjCtLUFQMx9CY=;
+        b=UD9qe2p967K3ERwUY2b6ZZbWneeraxsuLUvz64fs0ywzCO/vmuU5xZbSdnpbDzOGkl
+         9//Y0Mjjux3FBT9XA8Hf9zXpH0CZMapt69Lwxuhe86AJdzDZPmnNF492X653VsIeZNmK
+         uwk/kQzy7XEw/UhyIUtnqn1IuNpGqarzfZdjP5q6p/egQJtAFwnWDzu+dHBnMObIqWNB
+         CXS4vyeH5IzQ0FFkjMsI7fdykemohWgtQYRXrclGlbbkzGhSaOPy304NI/Mp/rV/dKrj
+         c5hcGBtLO/dT++aWgDoEc5weBOaMw/bFhMKg64IRuPvvqxVGUJTmNW+jdzueRWfam72i
+         Xn+A==
+X-Gm-Message-State: AOAM5307Y//ni1TkURunNLWkwN187kk5ON+u5+kouCW//zL9XhN1NpgS
+        ND3+EqnlmNPkpaU9X13bGIenrFBLuBhWhAj8arW0zuKYKsHH
+X-Google-Smtp-Source: ABdhPJxL9LdW97OSd1IKs5yaFXouU/Fjr1b85o13NOy0MxxGgoXq2IBV5g08QwJaz1+n03lC8bIroLaMPPMFiHTm61YSOLmmcwN7
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:SIqtPyJoGFptjlcPcxyQb71WF05R8NP7BOYsxZfVn4TevUka2hv
- 16bkgQRk2SbtWS26redKg5T9xwqZyS6LYPZc4nlqNtdOfjc06O3Jrl08QXrr6YDL/rstb1f
- l0xWrYmKz/JACy8a9r7NVqZ4c8VThH2ylroN+QjDMqc0cPtmCd+236ZK1kPKzt1RGF4+1GM
- 8VtrTh/CFp4NgsEdY2c9Q==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:3EloKpSUWt8=:iY6EPOZWtHi/ZM6E34hZlR
- 2xSfHxvGFSXGxamCo079Z4sANGXK3lUhCJ+AQLOA9MkvmzRmwvhwHYa7aQwcfH0e9CIEipuBg
- GEngknl+qZuHctfDasmRn3F2KTtOywyAwgqVpmHaqQfpl5hH5ScWJSuxH/cLBr8Ek9Oa7q1Dr
- +zf0UEgCupZML5LpvsCnOoOS5GSFr6DtYMprSc+h3M2lT3OS+72eOCUmao/yDIUQGjabX38VJ
- NLuOCcsgyrjfRQHaRWxp6vOx1DKzclBdHJWpY7XZiEGE+c9Fpv0MiuLikJGvI2TQkQ/pgKwTW
- 6DsrbaD2vLZ4r/Bs7W5mJos+RF4gR1F3tEgzP60BLcw5NNO8wFuEg/MCjmgOoZSC9znRa4Td7
- hmGscGs/I/zKN8rz5vrjX5gr8oPuusM7Q4NMgafAHuKYjTwu6XhW9wmIM5158VqhhCV8hfpBJ
- tpFhnqmxS1iwilu+3w6Z2VIQzH2Q/7imS5JXTkEQLngvCpl9LKNYC5kFWYuGfBr5bRjB627Ll
- ICSqqxd3qGMKuehRy9DSFFdZjI8oc1xeMc5fY9f96LVZw1vtTfdtgppss78XeH+8wOJatIhBY
- EyhaWfZPkul6GRtgs6sSmQvRmUNyb6bCF7itUbEXGKV7H6NZ2UhBW5JJIeuKqeHNk9QjAHPV3
- zJPE6xvXUJa3W2HGC0FEuxte//wjUamhgd2gRS92xZn84VuZikNhhROrNKL7f88usifF1aOZQ
- mjpxid9UwrvBoiODjCQ0iS222hls0dpLDKsTJnPUpJrX84Qgg+pWYZ7KYRyyhQOGfjkzyt9SW
- mr0nubXYx1GCyzDcmz/XvpVoMwNqgl26092wYHvAYFXXD5ROUMeL31JX06S3XrEM7jhrmdwuB
- H6E+PBlxWLeu7UWwsvhbLz8sOKJbB2G5VwJhoN6sltjIJPCN/LkRaLQOndWiWMNR629HM6TlS
- AU+MtZYQvBOD03K5ggKTDgJl7HDa5jaldAJV4oa5mkW2W0Yy/GfPcLhdHLNloMQvQ+7fDrNGy
- 2PseCo4ehl+PUHN9WgUxctTxE5LDbbn75IfpasO2/Hz7jQ3T9dY9rolYKNKvZGhqSfPPzEQSp
- bUer4W27aVniiQtPAXaJmXN+BrgcHsTAnhHcaaXXHfXvMYy1OKLDW32vU6UnX7bYWbGrv0guT
- uKiqi35C9tqTAJypDlFi3T86ksHJAnRFK2rH/CUWZkvaYr1HmyeLb7NvO8aukyh6iXXVcK7UY
- wMicRZde5dkHaP+DpmOHh5gjVFF86/SJeFQ6cqA==
+X-Received: by 2002:a05:6602:154d:: with SMTP id h13mr33043619iow.210.1596010814962;
+ Wed, 29 Jul 2020 01:20:14 -0700 (PDT)
+Date:   Wed, 29 Jul 2020 01:20:14 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000af016405ab903954@google.com>
+Subject: KASAN: vmalloc-out-of-bounds Read in get_counters
+From:   syzbot <syzbot+a450cb4aa95912e62487@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Landen Chao <landen.chao@mediatek.com>
+Hello,
 
-in recent kernel versions there are warnings about incorrect MTU size
-like these:
+syzbot found the following issue on:
 
-eth0: mtu greater than device maximum
-mtk_soc_eth 1b100000.ethernet eth0: error -22 setting MTU to include DSA o=
-verhead
+HEAD commit:    68845a55 Merge branch 'akpm' into master (patches from And..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13668964900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f87a5e4232fdb267
+dashboard link: https://syzkaller.appspot.com/bug?extid=a450cb4aa95912e62487
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-Fixes: bfcb813203e6 ("net: dsa: configure the MTU for switch ports")
-Fixes: 72579e14a1d3 ("net: dsa: don't fail to probe if we couldn't set the=
- MTU")
-Fixes: 7a4c53bee332 ("net: report invalid mtu value via netlink extack")
-Signed-off-by: Landen Chao <landen.chao@mediatek.com>
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-=2D--
-v3->v4
-  - fix commit-message (hyphernations,capitalisation) as suggested by Russ=
-ell
-  - add Signed-off-by Landen
-  - dropped wrong signed-off from rene (because previous v1/2 was from him=
-)
-=2D--
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 ++
- 1 file changed, 2 insertions(+)
+Unfortunately, I don't have any reproducer for this issue yet.
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/eth=
-ernet/mediatek/mtk_eth_soc.c
-index 85735d32ecb0..a1c45b39a230 100644
-=2D-- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -2891,6 +2891,8 @@ static int mtk_add_mac(struct mtk_eth *eth, struct d=
-evice_node *np)
- 	eth->netdev[id]->irq =3D eth->irq[0];
- 	eth->netdev[id]->dev.of_node =3D np;
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a450cb4aa95912e62487@syzkaller.appspotmail.com
 
-+	eth->netdev[id]->max_mtu =3D MTK_MAX_RX_LENGTH - MTK_RX_ETH_HLEN;
-+
- 	return 0;
+==================================================================
+BUG: KASAN: vmalloc-out-of-bounds in get_counters+0x593/0x610 net/ipv6/netfilter/ip6_tables.c:780
+Read of size 8 at addr ffffc9000528b048 by task syz-executor.1/6968
 
- free_netdev:
-=2D-
-2.25.1
+CPU: 1 PID: 6968 Comm: syz-executor.1 Not tainted 5.8.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0x5/0x436 mm/kasan/report.c:383
+ __kasan_report mm/kasan/report.c:513 [inline]
+ kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
+ get_counters+0x593/0x610 net/ipv6/netfilter/ip6_tables.c:780
+ do_ip6t_get_ctl+0x516/0x910 net/ipv6/netfilter/ip6_tables.c:821
+ nf_sockopt net/netfilter/nf_sockopt.c:104 [inline]
+ nf_getsockopt+0x72/0xd0 net/netfilter/nf_sockopt.c:122
+ ipv6_getsockopt+0x1bf/0x270 net/ipv6/ipv6_sockglue.c:1468
+ tcp_getsockopt+0x86/0xd0 net/ipv4/tcp.c:3893
+ __sys_getsockopt+0x14b/0x2e0 net/socket.c:2172
+ __do_sys_getsockopt net/socket.c:2187 [inline]
+ __se_sys_getsockopt net/socket.c:2184 [inline]
+ __x64_sys_getsockopt+0xba/0x150 net/socket.c:2184
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45ee7a
+Code: Bad RIP value.
+RSP: 002b:0000000000c9f618 EFLAGS: 00000212 ORIG_RAX: 0000000000000037
+RAX: ffffffffffffffda RBX: 0000000000c9f640 RCX: 000000000045ee7a
+RDX: 0000000000000041 RSI: 0000000000000029 RDI: 0000000000000003
+RBP: 0000000000744ca0 R08: 0000000000c9f63c R09: 0000000000004000
+R10: 0000000000c9f740 R11: 0000000000000212 R12: 0000000000000003
+R13: 0000000000000000 R14: 0000000000000029 R15: 00000000007445e0
 
+
+Memory state around the buggy address:
+ ffffc9000528af00: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+ ffffc9000528af80: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+>ffffc9000528b000: 00 00 00 00 00 00 00 00 f9 f9 f9 f9 f9 f9 f9 f9
+                                              ^
+ ffffc9000528b080: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+ ffffc9000528b100: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+==================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
