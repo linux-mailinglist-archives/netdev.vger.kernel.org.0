@@ -2,107 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F51D2324F0
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 20:55:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C93952324F6
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 20:58:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727823AbgG2SzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 14:55:14 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:57750 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726365AbgG2SzO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 14:55:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596048911;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HP2WV24a7sGcCziuK1Df6/63OJKTSQXyapplnTgZGYw=;
-        b=SY6KRJhUE2xU+NTWyDHogU2oHRbzFNRMRlE/M7hwAUYFU5eNYD1VZ9UUESajsCKXiwPM8G
-        44SaTq379m+11HGAPIWoovFwcpery9Oenw/mF6vYDQQSG8WCe4LIuYNgsRt1BAUaqrycwM
-        MFsfXX13h/1pdt74uTQk2tiwHRr15EI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-301-8gy1ArkENoq9GT5uyYVSFw-1; Wed, 29 Jul 2020 14:55:09 -0400
-X-MC-Unique: 8gy1ArkENoq9GT5uyYVSFw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1727005AbgG2S6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 14:58:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51366 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726365AbgG2S6K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jul 2020 14:58:10 -0400
+Received: from quaco.ghostprotocols.net (unknown [179.97.37.151])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 877AA8005B0;
-        Wed, 29 Jul 2020 18:55:07 +0000 (UTC)
-Received: from krava (unknown [10.40.193.247])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 5E49E100EBA4;
-        Wed, 29 Jul 2020 18:55:01 +0000 (UTC)
-Date:   Wed, 29 Jul 2020 20:55:00 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        by mail.kernel.org (Postfix) with ESMTPSA id D0D402075D;
+        Wed, 29 Jul 2020 18:58:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596049090;
+        bh=Ly9QFQV2PQXXgMS/azzOUT/yG2ADq6EwyCow2scRvBg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=2U/DqMj/VatFQrcdaquXiqVEVRllaRSKTZIpjooW3Umxtp7mqsk+A9HGFXYpdErtk
+         XWL+HYrRDXtnSfCE+TnbrPfmai0E2jTledFm0efWbJvQYyhAaOY5AJrvppJRJuScwL
+         9WH4VuoPf+9T2emZgSDaGqb4gCP3r2eo1cXwboas=
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 049CB40E69; Wed, 29 Jul 2020 15:58:08 -0300 (-03)
+Date:   Wed, 29 Jul 2020 15:58:07 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v8 bpf-next 07/13] bpf: Add btf_struct_ids_match function
-Message-ID: <20200729185500.GN1319041@krava>
-References: <20200722211223.1055107-1-jolsa@kernel.org>
- <20200722211223.1055107-8-jolsa@kernel.org>
- <CAEf4BzacqauEc8=o29EBUsmvTMs3FZ+-Kcc4cSJ9Te4yh5-7qg@mail.gmail.com>
- <20200729160419.GM1319041@krava>
- <CAEf4BzZ26StciUpDas1Mdi1gY_LJChjkUEBvqzuZuhFuAAibLQ@mail.gmail.com>
+        Andi Kleen <ak@linux.intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v2 4/5] perf record: Don't clear event's period if set by
+ a term
+Message-ID: <20200729185807.GD433799@kernel.org>
+References: <20200728085734.609930-1-irogers@google.com>
+ <20200728085734.609930-5-irogers@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzZ26StciUpDas1Mdi1gY_LJChjkUEBvqzuZuhFuAAibLQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+In-Reply-To: <20200728085734.609930-5-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 29, 2020 at 10:51:26AM -0700, Andrii Nakryiko wrote:
-> On Wed, Jul 29, 2020 at 9:04 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > On Tue, Jul 28, 2020 at 04:35:16PM -0700, Andrii Nakryiko wrote:
-> >
-> > SNIP
-> >
-> > > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > > index bae557ff2da8..c981e258fed3 100644
-> > > > --- a/include/linux/bpf.h
-> > > > +++ b/include/linux/bpf.h
-> > > > @@ -1306,6 +1306,8 @@ int btf_struct_access(struct bpf_verifier_log *log,
-> > > >                       const struct btf_type *t, int off, int size,
-> > > >                       enum bpf_access_type atype,
-> > > >                       u32 *next_btf_id);
-> > > > +bool btf_struct_ids_match(struct bpf_verifier_log *log,
-> > > > +                         int off, u32 id, u32 mid);
-> > > >  int btf_resolve_helper_id(struct bpf_verifier_log *log,
-> > > >                           const struct bpf_func_proto *fn, int);
-> > > >
-> > > > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > > > index 1ab5fd5bf992..562d4453fad3 100644
-> > > > --- a/kernel/bpf/btf.c
-> > > > +++ b/kernel/bpf/btf.c
-> > > > @@ -4140,6 +4140,35 @@ int btf_struct_access(struct bpf_verifier_log *log,
-> > > >         return -EINVAL;
-> > > >  }
-> > > >
-> > > > +bool btf_struct_ids_match(struct bpf_verifier_log *log,
-> > > > +                         int off, u32 id, u32 mid)
+Em Tue, Jul 28, 2020 at 01:57:33AM -0700, Ian Rogers escreveu:
+> If events in a group explicitly set a frequency or period with leader
+> sampling, don't disable the samples on those events.
 > 
-> just realized that if id == mid and off == 0, btf_struct_ids_match()
-> will return false. Right now verifier is careful to not call
-> btf_struct_ids_match in such case, but I wonder if it's better to make
-> that (common) case also work?
+> Prior to 5.8:
+> perf record -e '{cycles/period=12345000/,instructions/period=6789000/}:S'
+> would clear the attributes then apply the config terms. In commit
+> 5f34278867b7 leader sampling configuration was moved to after applying the
+> config terms, in the example, making the instructions' event have its period
+> cleared.
+> This change makes it so that sampling is only disabled if configuration
+> terms aren't present.
 
-right, also we should call btf_struct_ids_match when
-IDs are equal and off != 0, which we don't do now
+Adrian, can you take a look at this one?
 
-jirka
+- Arnaldo
+ 
+> Fixes: 5f34278867b7 ("perf evlist: Move leader-sampling configuration")
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/perf/util/record.c | 28 ++++++++++++++++++++--------
+>  1 file changed, 20 insertions(+), 8 deletions(-)
+> 
+> diff --git a/tools/perf/util/record.c b/tools/perf/util/record.c
+> index a4cc11592f6b..01d1c6c613f7 100644
+> --- a/tools/perf/util/record.c
+> +++ b/tools/perf/util/record.c
+> @@ -2,6 +2,7 @@
+>  #include "debug.h"
+>  #include "evlist.h"
+>  #include "evsel.h"
+> +#include "evsel_config.h"
+>  #include "parse-events.h"
+>  #include <errno.h>
+>  #include <limits.h>
+> @@ -38,6 +39,9 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
+>  	struct perf_event_attr *attr = &evsel->core.attr;
+>  	struct evsel *leader = evsel->leader;
+>  	struct evsel *read_sampler;
+> +	struct evsel_config_term *term;
+> +	struct list_head *config_terms = &evsel->config_terms;
+> +	int term_types, freq_mask;
+>  
+>  	if (!leader->sample_read)
+>  		return;
+> @@ -47,16 +51,24 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
+>  	if (evsel == read_sampler)
+>  		return;
+>  
+> +	/* Determine the evsel's config term types. */
+> +	term_types = 0;
+> +	list_for_each_entry(term, config_terms, list) {
+> +		term_types |= 1 << term->type;
+> +	}
+>  	/*
+> -	 * Disable sampling for all group members other than the leader in
+> -	 * case the leader 'leads' the sampling, except when the leader is an
+> -	 * AUX area event, in which case the 2nd event in the group is the one
+> -	 * that 'leads' the sampling.
+> +	 * Disable sampling for all group members except those with explicit
+> +	 * config terms or the leader. In the case of an AUX area event, the 2nd
+> +	 * event in the group is the one that 'leads' the sampling.
+>  	 */
+> -	attr->freq           = 0;
+> -	attr->sample_freq    = 0;
+> -	attr->sample_period  = 0;
+> -	attr->write_backward = 0;
+> +	freq_mask = (1 << EVSEL__CONFIG_TERM_FREQ) | (1 << EVSEL__CONFIG_TERM_PERIOD);
+> +	if ((term_types & freq_mask) == 0) {
+> +		attr->freq           = 0;
+> +		attr->sample_freq    = 0;
+> +		attr->sample_period  = 0;
+> +	}
+> +	if ((term_types & (1 << EVSEL__CONFIG_TERM_OVERWRITE)) == 0)
+> +		attr->write_backward = 0;
+>  
+>  	/*
+>  	 * We don't get a sample for slave events, we make them when delivering
+> -- 
+> 2.28.0.163.g6104cc2f0b6-goog
+> 
 
+-- 
+
+- Arnaldo
