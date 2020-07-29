@@ -2,108 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B782231C13
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 11:27:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BF43231C1E
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 11:31:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728091AbgG2J1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 05:27:35 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:57737 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727979AbgG2J1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 05:27:32 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 92C785C00EE;
-        Wed, 29 Jul 2020 05:27:31 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 29 Jul 2020 05:27:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=rRJmJr1rJ2gjTW2zKG44WiyGHlDoejDq3Wt8jf0qA7w=; b=dLcPW0IH
-        ZnYDBXM6mDfpxX40YI3LRju/ROkh8dx81RmX223qTsV3ApgNVc6Z6y3B0vjbA6Qh
-        QwFe6Rp0zSWlwA6bv1XHH0p5BC44uAvGPr+Eal7AzQJ4/6F54Z79eKSd7ItWyzki
-        U0hPS8BUw63MpzvQBmc3IKcjqiLp57eZ3HuLAVrkoS053R8C14oxVk3r7Bj2e30D
-        /V7K8CfCNvzWllFpZx61V5nJ9qYpIwv9xywALq3LgxoOB6fO6NMVtHVF7G2eVDMx
-        BlPttDyAc3lUoIdM8b38tUZCDHcZpaoSPinthpOPn/UovqDWU6XzY1Ah7f3zJ0Az
-        HJPlqCgHM0lEng==
-X-ME-Sender: <xms:A0EhX-kY10nbP83cX8l43LccjoPGN0hyQWkgfgHu2IGV6ZD7_WRgAg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrieeggdduiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
-    fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieehrddufeejrddvhedt
-    necuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:A0EhX10Nuf3_c5ucXtLFsN3YOL-OGIwV6GamV9OpeOamTJXvopq52g>
-    <xmx:A0EhX8qW6DgLoco0ucxha4HVIdC7Ch3UQhVd94rkAbsZfTGwT6Zcjw>
-    <xmx:A0EhXykcnaW3JpgrDhMfvKi3HdE6XPV9oSlsBK8kUhvOFP80vuLCzg>
-    <xmx:A0EhX5yqAyZVcOLZ355ZETKwRqF1MUwkpugEmhFn-srt3lt4Z79hlQ>
-Received: from shredder.mtl.com (bzq-109-65-137-250.red.bezeqint.net [109.65.137.250])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A8E303280059;
-        Wed, 29 Jul 2020 05:27:29 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        amitc@mellanox.com, alexve@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net 6/6] selftests: ethtool: Fix test when only two speeds are supported
-Date:   Wed, 29 Jul 2020 12:26:48 +0300
-Message-Id: <20200729092648.2055488-7-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200729092648.2055488-1-idosch@idosch.org>
-References: <20200729092648.2055488-1-idosch@idosch.org>
+        id S1727006AbgG2Jby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 05:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726536AbgG2Jbx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 05:31:53 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3291C061794
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 02:31:53 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1596015112;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8B3mdGbWCwi5b7RBCFnp9w7c8RBaH7yHPDCKnZknLS4=;
+        b=fc0SEaOADQvLVhV9GuM+YVYXwZ0Vs9U275jANLizylHFCvOpfaiUJGXxxToeNJf57Bed9w
+        e6lMJ3FdMFybEXOlsHIvBVAfJLhJR3dLiI8m3SjY4aNNO225pG0NfayruKWN2U44HNhCCa
+        zQ5PHm2yT4u9Ursj5KZO1HVlbANe7bVd5YfXJ8yObOLbTm5mfmQDBARCXpX23D/RslKdlR
+        KRT/7ydZBkLYlZLpnJzbf8KUch5LwM3S8Dl23MV+hx7UoTN5s414oXyWNQKx7h4Y314Uj5
+        UXqPkbmYMp0pogQdhzeRQLlOwMXVbG+ne34Yyqv1rdAMqt2BwUxv6fsfw0TBNA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1596015112;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8B3mdGbWCwi5b7RBCFnp9w7c8RBaH7yHPDCKnZknLS4=;
+        b=duuE+PA7atZC/i/EwryAHLHnin3wCvyNdNN32ccEvWpgwXuog88plh7FiEAsWYIixL+4pR
+        Y5yRBNwLOOTYwMDQ==
+To:     David Miller <davem@davemloft.net>
+Cc:     richardcochran@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, kuba@kernel.org, jiri@mellanox.com,
+        idosch@mellanox.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        grygorii.strashko@ti.com, ivan.khoronzhuk@linaro.org,
+        zou_wei@huawei.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 0/9] ptp: Add generic header parsing function
+In-Reply-To: <20200728.174718.450581528353482552.davem@davemloft.net>
+References: <20200727090601.6500-1-kurt@linutronix.de> <20200728.174718.450581528353482552.davem@davemloft.net>
+Date:   Wed, 29 Jul 2020 11:31:51 +0200
+Message-ID: <87y2n2acqg.fsf@kurt>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amitc@mellanox.com>
+--=-=-=
+Content-Type: text/plain
 
-The test case check_highest_speed_is_chosen() configures $h1 to
-advertise a subset of its supported speeds and checks that $h2 chooses
-the highest speed from the subset.
+On Tue Jul 28 2020, David Miller wrote:
+> It looks like some mlxsw et al. issues wrt. which header is expected at
+> skb->data when certain helper functions are invoked need to be resolved
+> still.
 
-To find the common advertised speeds between $h1 and $h2,
-common_speeds_get() is called.
+Yes, the length check needs to be sorted out first. So, please don't
+merge this version.
 
-Currently, the first speed returned from common_speeds_get() is removed
-claiming "h1 does not advertise this speed". The claim is wrong because
-the function is called after $h1 already advertised a subset of speeds.
+Thanks,
+Kurt
 
-In case $h1 supports only two speeds, it will advertise a single speed
-which will be later removed because of previously mentioned bug. This
-results in the test needlessly failing. When more than two speeds are
-supported this is not an issue because the first advertised speed
-is the lowest one.
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Fix this by not removing any speed from the list of commonly advertised
-speeds.
+-----BEGIN PGP SIGNATURE-----
 
-Fixes: 64916b57c0b1 ("selftests: forwarding: Add speed and auto-negotiation test")
-Reported-by: Danielle Ratson <danieller@mellanox.com>
-Signed-off-by: Amit Cohen <amitc@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- tools/testing/selftests/net/forwarding/ethtool.sh | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/tools/testing/selftests/net/forwarding/ethtool.sh b/tools/testing/selftests/net/forwarding/ethtool.sh
-index eb8e2a23bbb4..43a948feed26 100755
---- a/tools/testing/selftests/net/forwarding/ethtool.sh
-+++ b/tools/testing/selftests/net/forwarding/ethtool.sh
-@@ -252,8 +252,6 @@ check_highest_speed_is_chosen()
- 	fi
- 
- 	local -a speeds_arr=($(common_speeds_get $h1 $h2 0 1))
--	# Remove the first speed, h1 does not advertise this speed.
--	unset speeds_arr[0]
- 
- 	max_speed=${speeds_arr[0]}
- 	for current in ${speeds_arr[@]}; do
--- 
-2.26.2
-
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8hQgcACgkQeSpbgcuY
+8KbbfxAAoy0PpKRS/O3EnbqM/q5gfZmPt65AsXIxvBFApJ+tPQ0c4SRUUFbEcQSj
+zuXPwWBiDu7ephpOSkholndOK9GvejdUhNe49nUeU1JZe9ntxCRqhcFL/g1ZsRCM
+U2F8FrBmwNWnE+vbqkJKgUMDDAOXrGi8IjSlQOW+Z+49ZTTfE2cBRbkXH8MTr05A
+BhdS390TmB5z9RWrrSlz0tL5UKIiEgV9gGLHFFEaqN1i7LnF8/4oRbBp/sEuPIwo
+PyytNUctpyXDoCcuznV2+f4lg1glshL+0aQJ4H60q62oLhh7TLDettBrKkV22S7s
+SlahsdqQqETLUAuJf6QBo+TjK8pgMv63tyJfXJlvNZtLnIEPbt+UMUXaZz5EoPn2
+LPdo/qJmdiLsDesgQbq0FwUxQpbxN5wttYk0aykRSzf4uQ8B8ijg1rbELSiv4s5X
+oIICEdLRFQwLCWCUjyU723azSGHURhMF+h76NZhPEGzIeEG3efq9kX8Cb7bgjTOX
+9NI5BMx9fm8pJJDrirQZkv8RqusGq2F7369QU1RZy7mCUnGLnPnV5t6uCbcypZKU
+dpCRpf3TceejjutanyYD2UFgSoCekzst/fvaRY4eNA0sMNTZuHwSFzbl41po8slZ
+aFf4p7lHuLzemMYkg1We22hsJ+hjxE+Ws6hwObr6Y71xvIC56G4=
+=yIkL
+-----END PGP SIGNATURE-----
+--=-=-=--
