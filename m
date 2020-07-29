@@ -2,106 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BE65231751
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 03:42:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F84023175D
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 03:43:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730387AbgG2Bl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 21:41:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55042 "EHLO
+        id S1730542AbgG2Bmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 21:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730117AbgG2Bl5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 21:41:57 -0400
+        with ESMTP id S1730430AbgG2Bmj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 21:42:39 -0400
 Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EDDC061794;
-        Tue, 28 Jul 2020 18:41:56 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id 74so3824099pfx.13;
-        Tue, 28 Jul 2020 18:41:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857D9C0619D2
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 18:42:39 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id 74so3824948pfx.13
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 18:42:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ShpMJE4OIEv6PxHTCcLYNHQznGjFTXHy5yRHP4HI7Go=;
-        b=BClZOK3dAzubCSEkbwRfwnCusyjEcYWZ7pk8/KbxyBcExOrFWxmlvM19CYMKFTYj/w
-         C7sIyeILZs1yEzEVoYrjY2zvprbMcO9Vvjow5oWczQC1JIEi2oZ/bKDVqfReXYasxfjW
-         JaQtvkzKr/3qVnoSxEgL6Ebd8YtCEAbOlqC2D9JxOgpxYIhB2nhH+8zNg87hRGDFWrWe
-         q6GKmziLH6Oe4Hiit/fwwXxYnl0JSCMo8uFehR1mQU9RMgbUVTQ0Z8iup0dPlChQ/Pb3
-         qwGBs/ms5wfED9RjRmE0ZBybq53yewSsNNkLVDGESsXuhPSRQVKY7lI3KDKt79WuYK3v
-         TdQQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2JREyKdWiZay/mV18M1Axh+euiqXpqs5sXmHMc+iAKQ=;
+        b=mv5ftazHEBjQoDdXHQUpaVOF1CD/lzXNM9zfmJde18RJxukAT2Wx8L0bZBp7YGKNbx
+         e9uphKZyPXLxsThr5ua9lbNWsAvEOrbDPDh4SnRUsxEj3KepOa5d2jGbyXpTAdsRCcXu
+         1xfJpH55O0nvsvyiDtieZSWOaXnVXd5BD95m0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ShpMJE4OIEv6PxHTCcLYNHQznGjFTXHy5yRHP4HI7Go=;
-        b=lipN9On+MtpkJn1ljpY8cGWST8NcYGtnr0Xe9Ej5vWdot18RGunoX9K43ENQw7xDGA
-         wPSPGVpjLa3XggUDbawQineWCXaNT9ZfbmEn25gYUTSmbvnupgdcPqXoDEAAUOd7xr3p
-         Dv9tX2vQ8upXjQlt03knuC1hnp+bAA258IOTyDnJFegGEJ1Z4+YXY9NQ1e7PDfqmwg0+
-         /HKkfLGqNmsLmhKTdNwXkl5mfOe0kRYxyQ4E2RJuFICUFuuzmvJwEG/cffY1R+fj91PQ
-         E7Z1VqT2/6rxLqLrSWbOXLhGNXlAvuZ3pGzTHsxF5kB+rdPEGFyDrZ87tFI5rGOtQEDM
-         oE9w==
-X-Gm-Message-State: AOAM530fWpjTwpbnHhL+QxOscWS7drhbL81fmncS+vYmkpg7rJziVdq9
-        aBWfy5Fp7wjVLtlnvC44HO6oMh4OkL0Vf1KzMJc=
-X-Google-Smtp-Source: ABdhPJzRyRPYIzQuluFIPUnCUXJqDzC9f1vexKbcyflvgO7aEhNqaBlnKXxoCBVGQgappFRHb7pbRVGvKerBnMB+f88=
-X-Received: by 2002:aa7:9d0e:: with SMTP id k14mr3291266pfp.162.1595986916147;
- Tue, 28 Jul 2020 18:41:56 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2JREyKdWiZay/mV18M1Axh+euiqXpqs5sXmHMc+iAKQ=;
+        b=dp06P4QjultyxQWo9tmtzT0gKMOFjS0/opTI6lbo/YwJafTId7lWsyXKjOkWLn0GHw
+         lMsk+OAjPmTrw74KgcxyOCCDvW/2PxiAcFPxVRTof+Bzr53j3MkRG17UZHCNE9e8NJWd
+         8e6/jHG/iZzilstw6keycUXobPAD0JT8afEEj/bzcn9kbdNnBabr4BeMkrQ12HFmX7wz
+         FyFN7QK+KXxrxJN8mRLWK1YJOdSrLMZeq6H3LCvf394TS4sQzEPegrCtzJZBJSJS0mAT
+         jwM0GQAswOkt0GWQaqK8KpJjmWGuSxPs1Ll+fUao2C8s4CFDqnU0yHILQqvAKtUC6gD1
+         kmFg==
+X-Gm-Message-State: AOAM532ZtbeOIh1HnausVJB5nwXz3qXmWXSxNtPc6wtjqFsqfljhCNSc
+        jTDKD0MT+4b2oiAQCjEsL9eSwwSA4nM=
+X-Google-Smtp-Source: ABdhPJyCZXaEbxMk/vJPZ4nalToz0Wmy+riDDLOIm88MjiSUydfptFoj2rCEtzKrzaZTiG7rhBHK9g==
+X-Received: by 2002:a63:935c:: with SMTP id w28mr26269597pgm.174.1595986958935;
+        Tue, 28 Jul 2020 18:42:38 -0700 (PDT)
+Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:7220:84ff:fe09:2b94])
+        by smtp.gmail.com with ESMTPSA id e124sm280678pfe.176.2020.07.28.18.42.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jul 2020 18:42:38 -0700 (PDT)
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+To:     marcel@holtmann.org, luiz.dentz@gmail.com
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        linux-bluetooth@vger.kernel.org,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 0/3] Bluetooth: Emit events for suspend/resume
+Date:   Tue, 28 Jul 2020 18:42:22 -0700
+Message-Id: <20200729014225.1842177-1-abhishekpandit@chromium.org>
+X-Mailer: git-send-email 2.28.0.rc0.142.g3c755180ce-goog
 MIME-Version: 1.0
-References: <20200726110524.151957-1-xie.he.0141@gmail.com> <20200728195246.GA482576@google.com>
-In-Reply-To: <20200728195246.GA482576@google.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Tue, 28 Jul 2020 18:41:45 -0700
-Message-ID: <CAJht_EOcRx=J5PiZwsSh+0Yb0=QJFahqxVbeMgFbSxh+cNZLew@mail.gmail.com>
-Subject: Re: [PATCH] drivers/net/wan/lapbether: Use needed_headroom instead of hard_header_len
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank you for your detailed review, Brian!
 
-I guess we have the same understanding on the "hard_header_len vs
-needed_headroom" part. I agree it is not well documented and is also
-confusing to driver developers. I didn't understand it either until I
-looked at af_packet.c.
+Hi Marcel,
 
-On Tue, Jul 28, 2020 at 12:52 PM -0700
-Brian Norris <briannorris@chromium.org> wrote:
->
-> What's to say you shouldn't be implementing header_ops instead? Note
-> that with WiFi drivers, they're exposing themselves as ARPHRD_ETHER, and
-> only the Ethernet headers are part of the upper "protocol" headers. So
-> my patch deferred to the eth headers.
->
-> What is the intention with this X25 protocol? I guess the headers added
-> in lapbeth_data_transmit() are supposed to be "invisible", as with this
-> note in af_packet.c?
->
->    - if device has no dev->hard_header routine, it adds and removes ll header
->      inside itself. In this case ll header is invisible outside of device,
->      but higher levels still should reserve dev->hard_header_len.
->
-> If that's the case, then yes, I believe this patch should be correct.
+This series adds the suspend/resume events suggested in
+https://patchwork.kernel.org/patch/11663455/.
 
-This driver is not intended to be used with IPv4 or IPv6 protocols,
-but is intended to be used with a special "X.25" protocol. That's the
-reason the device type is ARPHRD_X25. I used "grep" in the X.25
-network layer code (net/x25) and I found there's nowhere
-"dev_hard_header" is called. I also used "grep" in all the X.25
-drivers in the kernel (lapbether.c, x25_asy.c, hdlc_x25.c under
-drivers/net/wan) and I found no driver implemented "header_ops". So I
-think the X.25 networking code doesn't expect any header visible
-outside of the device driver, and X.25 drivers should make their
-headers invisible outside of them.
+I have tested it with some userspace changes that monitors the
+controller resumed event to trigger audio device reconnection and
+verified that the events are correctly emitted.
 
-So I think hard_header_len should be 0 for all X.25 drivers, so that
-they can be used correctly with af_packet.c.
+Please take a look.
+Abhishek
 
-I don't know if this sounds plausible to you. If it does, could you
-please let me have your name in a "Reviewed_by" tag. It would be of
-great help to have your support. Thanks!
+
+Abhishek Pandit-Subedi (3):
+  Bluetooth: Add mgmt suspend and resume events
+  Bluetooth: Add suspend reason for device disconnect
+  Bluetooth: Emit controller suspend and resume events
+
+ include/net/bluetooth/hci_core.h |  6 +++
+ include/net/bluetooth/mgmt.h     | 16 +++++++
+ net/bluetooth/hci_core.c         | 26 +++++++++++-
+ net/bluetooth/hci_event.c        | 73 ++++++++++++++++++++++++++++++++
+ net/bluetooth/mgmt.c             | 28 ++++++++++++
+ 5 files changed, 148 insertions(+), 1 deletion(-)
+
+-- 
+2.28.0.rc0.142.g3c755180ce-goog
+
