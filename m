@@ -2,208 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5E0A231ED1
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 14:52:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FD26231ED5
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 14:56:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726650AbgG2Mwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 08:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726353AbgG2Mwy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 08:52:54 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7631CC061794
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 05:52:53 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id z18so17978519wrm.12
-        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 05:52:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=e8818DZ6lHDMXehTjR3d44dzubyYD1NOYlMoafMEU3g=;
-        b=Bs1HXgHDXj93/XPHr+j3fgQau/eHYpaNA0Cfq+0MXaIOOZAWishsOaoySlsixXp/D5
-         x2oqa/dQCPvDx1ZGajIHPKinU6isJbC4/yF+ulPVKARrOjapW0BO6vPvbAhZFw4Gq25j
-         V6oTW37uDxBoIjVrzLJOrrqPptPO3hsHge5LvVL27PqMlHnAxyW3W34qJfX2qx7NnOZ1
-         U08VkZsD/La/Ga6vng42uRBZY6oQldk80dCYw8/wC9JLNSo62YGBUzwGmFzwgzInfeDy
-         taHFCvnugSGeoCNobM0dyqMHV/8SsqaI4DRn7bkuxwfWtz1NIejOVqNYD0cM22K2z9hb
-         udPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=e8818DZ6lHDMXehTjR3d44dzubyYD1NOYlMoafMEU3g=;
-        b=JKWexDFYGrnKf45WVTDo86NXaXaxYUYmFvjm/6LI2zJw3DijEoNfkls05AQR/hnk4s
-         AdMZh22ufIA4Ru8ZumFWfRcBM5mfOdPjYCRwYVv7k95ZBzgkRIpk4qtIAMCZ++HLjici
-         uIVohzrv0LiSAYKGek6VK9+XiybQ7i2DxsEcXZTknH22bdRHUaE2dfpGvJfcZvF7M+t4
-         rXoG2KsSQDeXuvXzcmabZAB7gd4PCLkmTbuel1m5Ly6ZNOe/56CswtH8v8kOptT7DzVk
-         leiRE/o2LFPdC6fbtobnC9c6XdVNe2IagY2w+Ch2Wshiej5ADycq6ZDJMUpuTRC3vDLx
-         XwGQ==
-X-Gm-Message-State: AOAM532thNV9F3jfDiQNunaiM6I2P5kwk+7c7nc7cJNzQsi59hNZW+pq
-        WUSUwQjrQp/EEafN6MgrTjw8cw==
-X-Google-Smtp-Source: ABdhPJzWWz/SruXlvf3vurYRLBZTWG2VwRx8tXa9T+vqEcpMA0NRkws+9o6l2qsSialfOnYJw1PGqA==
-X-Received: by 2002:adf:e98c:: with SMTP id h12mr29032995wrm.3.1596027172177;
-        Wed, 29 Jul 2020 05:52:52 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id p14sm6089955wrx.90.2020.07.29.05.52.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jul 2020 05:52:51 -0700 (PDT)
-Date:   Wed, 29 Jul 2020 14:52:51 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Alexander Lobakin <alobakin@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>
-Subject: Re: [PATCH v3 net-next 05/11] qed: implement devlink info request
-Message-ID: <20200729125251.GD2204@nanopsycho>
-References: <20200729113846.1551-1-irusskikh@marvell.com>
- <20200729113846.1551-6-irusskikh@marvell.com>
+        id S1726872AbgG2M4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 08:56:02 -0400
+Received: from mail-eopbgr130083.outbound.protection.outlook.com ([40.107.13.83]:38542
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726353AbgG2M4B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jul 2020 08:56:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QnqAPsSUqWwxUCSERJd2vf+KvZvWJPBVbET+WAvjkNRm90cls369bVp9VrsI3WUo2bskY4StljfOXFOavq4q1D7N0Tf85RuSQE6tdxwC/iqb+EA9ZBkAjBG1wruFdDX9DN/85cD4ROQBJ9+6v1mXT4nf50/IQBFtImhg2lcuZV7oYQMlig3GGH4NkAIpSvcJSoVF8fFoG3zCHi9nJHmW6mxGqVe02/2s67tzlBYG/2ZQCbBjV1Es+yKDBGnt/mWH6NpvkrkvvaYwXlL/FzguXCNuT0spZQqzsEIZvgtOwn5HHCEiwpZNrOVRjXPebdEB8CeeDlgcg42Cbwvr56o4eg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7cOMW+1+YGX7aAYtmWzQR04pSQxF5ccSQYfz0c7WSIs=;
+ b=DKMBBzkUG+p74ME47FbvTLhEeu/sNxWj7lK6u4c5OTgA0i/jJ2aUKI/89EJrbbLNCI265UFA6quX51jLt8LyeCc+6+cAyDlHKa249QljOXKXS0SWQ3j1cFr7pA1OmkeBUW537ptfmUVu8CCfrYePkT+4smVRXM2BYqILUK2dsmtx6GA6A48sw6E2UrbH4yLYcPVgfKcFRooGq4OqnTHUm6x++yuL1fhmVCCr3q7n5jek1VTFw5duo4ZA8RMeo/PR15m2tk99epYdikwqYDcKq0ker4syLHB4iLS7kzYq4Q6eqdP2r7zCs4aWkkH3Tl/nsqxHSbEmpkw2G7daWNshlw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7cOMW+1+YGX7aAYtmWzQR04pSQxF5ccSQYfz0c7WSIs=;
+ b=GtFUZ3/CPyxr372zw7moZqI/AI/3veSStuYFHk2zOPMUsB9csS2lBmcfk2+N9nfrW2cZADnYkAU6Ac43dhKsUNsi7L3kqjJF+nVKlP5tTUj1NiOM7j0ARmIAwNORR0stqS33/yFFNn+WbVqbAGYcF+UEeUKp0gaPFtbA+/OTr78=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from DB7PR05MB4156.eurprd05.prod.outlook.com (2603:10a6:5:18::21) by
+ DBAPR05MB7031.eurprd05.prod.outlook.com (2603:10a6:10:189::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3216.24; Wed, 29 Jul 2020 12:55:58 +0000
+Received: from DB7PR05MB4156.eurprd05.prod.outlook.com
+ ([fe80::84:f8d2:972:d110]) by DB7PR05MB4156.eurprd05.prod.outlook.com
+ ([fe80::84:f8d2:972:d110%7]) with mapi id 15.20.3216.033; Wed, 29 Jul 2020
+ 12:55:58 +0000
+Subject: Re: [PATCH net 2/2] net/sched: act_ct: Set offload timeout when
+ setting the offload bit
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     netdev@vger.kernel.org, pablo@netfilter.org,
+        Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
+References: <20200728115759.426667-1-roid@mellanox.com>
+ <20200728115759.426667-3-roid@mellanox.com>
+ <20200728144249.GC3398@localhost.localdomain>
+From:   Roi Dayan <roid@mellanox.com>
+Message-ID: <c33a4437-8a7d-10fe-7020-94cec26d5aca@mellanox.com>
+Date:   Wed, 29 Jul 2020 15:55:53 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20200728144249.GC3398@localhost.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM0PR10CA0088.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:15::41) To DB7PR05MB4156.eurprd05.prod.outlook.com
+ (2603:10a6:5:18::21)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200729113846.1551-6-irusskikh@marvell.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.170] (176.231.115.41) by AM0PR10CA0088.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:15::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.17 via Frontend Transport; Wed, 29 Jul 2020 12:55:57 +0000
+X-Originating-IP: [176.231.115.41]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: c92f3612-8217-4e1e-5478-08d833bebd4d
+X-MS-TrafficTypeDiagnostic: DBAPR05MB7031:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DBAPR05MB7031ED634E5F4E1787AC07F1B5700@DBAPR05MB7031.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YWF9zDvu/WJ/J77XUOt+/XQDN0HN5uAlrx8015usqTZsPOWlSRe/UMw6Y8HBBCqGgOYPKi+qjYI+Fg+xWMt5cxY9eTmYZNT/sdns0eLMs2Ru6xFpLAFmIAeYH5f4Cfxl0IgCsYWuO2Fd/XRg6twANi8jSnyZBWiIEROCkx+U+Mhi2PGbqcU9BMsY+x3PPWOOlZM2Rm6FVW7LBMAs+Wv2YqshssDfAtPjK31vodzqpx5AQ5LpIIlATBXBmTGP/mkz5u63Ct6PbEqQO+IMhaLhJFEcInYJXeCFbF8FZA3JyQZjY8aadIiDrr8UT1PxIdAHjRLLjGX6SWUjigiLW/NlUUCGG1Qr7+XmFkbcWBdsSfGMRtNFGR7a2PlrLGGtG6Zu
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR05MB4156.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(366004)(136003)(39860400002)(396003)(31686004)(4326008)(83380400001)(26005)(86362001)(16526019)(186003)(52116002)(478600001)(66476007)(53546011)(8676002)(6916009)(36756003)(66556008)(107886003)(956004)(6666004)(2616005)(5660300002)(8936002)(31696002)(66946007)(2906002)(54906003)(6486002)(16576012)(316002)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 7UiN/aa169OWtiDw2/nKBKuKfpLxGyrA8O4ZX2S/X+SURgyiflFRDLqdjnHQ7HAU4MF3/2cxeb/V3Za9FWyN3SLchAgoqQ4j8XpMIWxiNp7fi9Zhi2sLv3zKyRh/kDIH/Z7IwOTfCU9aipa9QvIC662v/ENNyEMb4HIX1vEgGolcQ65OCdKcgG8kRDz9U3vtI+KMaxgL7uKA9sGVVqYeJIDeag4f8LR3D4Aoz/LcoMvFxpEYavrNGaxFwSNf/DeWA+YhkL13esO2GF6Eg4kDXGM8T+EViDn3kfyZ7lOLGEPQp9bGU+nBVQaxjSgEhuohj40IcJkmkNRviep+8baAt+rspqp5QBcCHXKaSCWX14QeRZ5TRA6voAcTu+PSvPtCdv1pL7aErYkq9eHJIVDGKkhrPRSyvl/u5fRBscaGhLvUBMUvIAfM0eCycabddbkT9XR4UA5T5i+iidEbDIJ68Y0+D/l4b3FqnRUHTgdCkwsblg9y6fvnlsksT1evuNEy
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c92f3612-8217-4e1e-5478-08d833bebd4d
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR05MB4156.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2020 12:55:58.8148
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kDWegmEsLDQ7YSLdFRYOSD/oBacaPD0JcoOicA0kjkFEtcf6ephwJOXkbtylJ8rBdbebWoMJCK3rrdOMm7m7iA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR05MB7031
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jul 29, 2020 at 01:38:40PM CEST, irusskikh@marvell.com wrote:
->Here we return existing fw & mfw versions, we also fetch device's
->serial number.
->
->The base device specific structure (qed_dev_info) was not directly
->available to the base driver before.
->Thus, here we create and store a private copy of this structure
->in qed_dev root object.
->
->Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
->Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
->Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
->---
-> drivers/net/ethernet/qlogic/qed/qed.h         |  1 +
-> drivers/net/ethernet/qlogic/qed/qed_dev.c     | 10 ++++
-> drivers/net/ethernet/qlogic/qed/qed_devlink.c | 52 ++++++++++++++++++-
-> drivers/net/ethernet/qlogic/qed/qed_main.c    |  1 +
-> 4 files changed, 63 insertions(+), 1 deletion(-)
->
->diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
->index b6ce1488abcc..ccd789eeda3e 100644
->--- a/drivers/net/ethernet/qlogic/qed/qed.h
->+++ b/drivers/net/ethernet/qlogic/qed/qed.h
->@@ -807,6 +807,7 @@ struct qed_dev {
-> 	struct qed_llh_info *p_llh_info;
-> 
-> 	/* Linux specific here */
->+	struct qed_dev_info		common_dev_info;
-> 	struct  qede_dev		*edev;
-> 	struct  pci_dev			*pdev;
-> 	u32 flags;
->diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
->index b3c9ebaf2280..377950ce8ea2 100644
->--- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
->+++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
->@@ -4290,6 +4290,16 @@ static int qed_hw_get_nvm_info(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
-> 		__set_bit(QED_DEV_CAP_ROCE,
-> 			  &p_hwfn->hw_info.device_capabilities);
-> 
->+	/* Read device serial number information from shmem */
->+	addr = MCP_REG_SCRATCH + nvm_cfg1_offset +
->+		offsetof(struct nvm_cfg1, glob) +
->+		offsetof(struct nvm_cfg1_glob, serial_number);
->+
->+	p_hwfn->hw_info.part_num[0] = qed_rd(p_hwfn, p_ptt, addr);
->+	p_hwfn->hw_info.part_num[1] = qed_rd(p_hwfn, p_ptt, addr + 4);
->+	p_hwfn->hw_info.part_num[2] = qed_rd(p_hwfn, p_ptt, addr + 8);
->+	p_hwfn->hw_info.part_num[3] = qed_rd(p_hwfn, p_ptt, addr + 12);
-
-for() ?
 
 
->+
-> 	return qed_mcp_fill_shmem_func_info(p_hwfn, p_ptt);
-> }
+On 2020-07-28 5:42 PM, Marcelo Ricardo Leitner wrote:
+> On Tue, Jul 28, 2020 at 02:57:59PM +0300, Roi Dayan wrote:
+>> On heavily loaded systems the GC can take time to go over all existing
+>> conns and reset their timeout. At that time other calls like from
+>> nf_conntrack_in() can call of nf_ct_is_expired() and see the conn as
+>> expired. To fix this when we set the offload bit we should also reset
+>> the timeout instead of counting on GC to finish first iteration over
+>> all conns before the initial timeout.
+>>
+>> Fixes: 64ff70b80fd4 ("net/sched: act_ct: Offload established connections to flow table")
+>> Signed-off-by: Roi Dayan <roid@mellanox.com>
+>> Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
+>> ---
+>>  net/sched/act_ct.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+>> index e9f3576cbf71..650c2d78a346 100644
+>> --- a/net/sched/act_ct.c
+>> +++ b/net/sched/act_ct.c
+>> @@ -366,6 +366,8 @@ static void tcf_ct_flow_table_add(struct tcf_ct_flow_table *ct_ft,
 > 
->diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.c b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
->index 4e3316c6beb6..5bd5528dc409 100644
->--- a/drivers/net/ethernet/qlogic/qed/qed_devlink.c
->+++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
->@@ -45,7 +45,57 @@ static const struct devlink_param qed_devlink_params[] = {
-> 			     qed_dl_param_get, qed_dl_param_set, NULL),
-> };
+> Extra context line:
+> 	err = flow_offload_add(&ct_ft->nf_ft, entry);
+>>  	if (err)
+>>  		goto err_add;
+>>  
+>> +	nf_ct_offload_timeout(ct);
+>> +
 > 
->-static const struct devlink_ops qed_dl_ops;
->+static int qed_devlink_info_get(struct devlink *devlink,
->+				struct devlink_info_req *req,
->+				struct netlink_ext_ack *extack)
->+{
->+	struct qed_devlink *qed_dl = devlink_priv(devlink);
->+	struct qed_dev *cdev = qed_dl->cdev;
->+	struct qed_dev_info *dev_info;
->+	char buf[100];
->+	int err;
->+
->+	dev_info = &cdev->common_dev_info;
->+
->+	err = devlink_info_driver_name_put(req, KBUILD_MODNAME);
->+	if (err)
->+		return err;
->+
->+	memcpy(buf, cdev->hwfns[0].hw_info.part_num, sizeof(cdev->hwfns[0].hw_info.part_num));
->+	buf[sizeof(cdev->hwfns[0].hw_info.part_num)] = 0;
->+
->+	if (buf[0]) {
->+		err = devlink_info_serial_number_put(req, buf);
->+		if (err)
->+			return err;
->+	}
->+
->+	snprintf(buf, sizeof(buf), "%d.%d.%d.%d",
->+		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_3),
->+		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_2),
->+		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_1),
->+		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_0));
->+
->+	err = devlink_info_version_stored_put(req,
->+					      DEVLINK_INFO_VERSION_GENERIC_FW_MGMT, buf);
->+	if (err)
->+		return err;
->+
->+	snprintf(buf, sizeof(buf), "%d.%d.%d.%d",
->+		 dev_info->fw_major,
->+		 dev_info->fw_minor,
->+		 dev_info->fw_rev,
->+		 dev_info->fw_eng);
->+
->+	err = devlink_info_version_running_put(req,
->+					       DEVLINK_INFO_VERSION_GENERIC_FW, buf);
+> What about adding this to flow_offload_add() instead?
+> It is already adjusting the flow_offload timeout there and then it
+> also effective for nft.
+> 
 
-return = devlink...
+As you said, in flow_offload_add() we adjust the flow timeout.
+Here we adjust the conn timeout.
+So it's outside flow_offload_add() which only touch the flow struct.
+I guess it's like conn offload bit is set outside here and for nft.
+What do you think?
 
-
->+
->+	return err;
->+}
->+
->+static const struct devlink_ops qed_dl_ops = {
->+	.info_get = qed_devlink_info_get,
->+};
-> 
-> struct devlink *qed_devlink_register(struct qed_dev *cdev)
-> {
->diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
->index d6f76421379b..d1a559ccf516 100644
->--- a/drivers/net/ethernet/qlogic/qed/qed_main.c
->+++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
->@@ -479,6 +479,7 @@ int qed_fill_dev_info(struct qed_dev *cdev,
-> 	}
-> 
-> 	dev_info->mtu = hw_info->mtu;
->+	cdev->common_dev_info = *dev_info;
-> 
-> 	return 0;
-> }
->-- 
->2.17.1
->
+>>  	return;
+>>  
+>>  err_add:
+>> -- 
+>> 2.8.4
+>>
