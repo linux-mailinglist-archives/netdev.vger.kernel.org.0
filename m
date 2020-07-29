@@ -2,99 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CE2623269C
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 23:07:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E09402326A9
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 23:15:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727061AbgG2VHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 17:07:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37316 "EHLO mail.kernel.org"
+        id S1726710AbgG2VPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 17:15:10 -0400
+Received: from mga12.intel.com ([192.55.52.136]:57127 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726496AbgG2VHL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jul 2020 17:07:11 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ECE8D206D4;
-        Wed, 29 Jul 2020 21:07:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596056830;
-        bh=M/zi3Ba/rJ5poH34D/CQvvQgxq8zobEznQ2SvzhMlik=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=o9KjevY6+Emau0YuzRccD1dHbz/j03rXBXUALm/KBHKG9XUgmdVX5PYD5am8msgca
-         wve3ZCS8VCY93WPI6BIuJODhNPK4rsfUSSarBB64rrzn8p7Zzi/xQAosENePHcsSKl
-         SxNhyWnWW48ncBAbJxiPRQ8JiOZtjr2ZJT3fNfv4=
-Date:   Wed, 29 Jul 2020 14:07:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Moshe Shemesh <moshe@mellanox.com>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: Re: [PATCH net-next RFC 01/13] devlink: Add reload level option to
- devlink reload command
-Message-ID: <20200729140708.5f914c15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <04f00024-758c-bc19-c187-49847c24a5a4@mellanox.com>
-References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
-        <1595847753-2234-2-git-send-email-moshe@mellanox.com>
-        <20200727175802.04890dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200728135808.GC2207@nanopsycho>
-        <464add44-3ab1-21b8-3dba-a88202350bb9@intel.com>
-        <20200728114458.762b5396@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <d6fbfedd-9022-ff67-23ed-418607beecc2@intel.com>
-        <20200728130653.7ce2f013@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <04f00024-758c-bc19-c187-49847c24a5a4@mellanox.com>
+        id S1726535AbgG2VPK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jul 2020 17:15:10 -0400
+IronPort-SDR: +1pfJFiUDuyOajM6bGMtmIY5OMMoxxrmOrbC0l78YDE/P+qP1btNcLE1islznTdCR4sv6tie4t
+ LZ/vfUc6J9HQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9697"; a="131056559"
+X-IronPort-AV: E=Sophos;i="5.75,411,1589266800"; 
+   d="scan'208";a="131056559"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2020 14:15:06 -0700
+IronPort-SDR: z3gUYcQj3D5Q6KNsSCdhkXV9by2K4ElWSwZt8U1jN5acYfYeag7OAO5eMrEH1mT5tpldMksxdM
+ z1jyXQhug0iA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,411,1589266800"; 
+   d="scan'208";a="273990912"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga008.fm.intel.com with ESMTP; 29 Jul 2020 14:15:04 -0700
+Date:   Wed, 29 Jul 2020 23:10:05 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     ast@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com
+Subject: Re: [PATCH v5 bpf-next 4/6] bpf, x64: rework pro/epilogue and
+ tailcall handling in JIT
+Message-ID: <20200729211005.GA2806@ranger.igk.intel.com>
+References: <20200724173557.5764-1-maciej.fijalkowski@intel.com>
+ <20200724173557.5764-5-maciej.fijalkowski@intel.com>
+ <e0c1f8c5-cd73-48eb-7c92-fcf755319173@iogearbox.net>
+ <20200729161044.GA2961@ranger.igk.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200729161044.GA2961@ranger.igk.intel.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Jul 2020 17:54:08 +0300 Moshe Shemesh wrote:
-> On 7/28/2020 11:06 PM, Jakub Kicinski wrote:
-> > On Tue, 28 Jul 2020 12:18:30 -0700 Jacob Keller wrote:  
-> >> On 7/28/2020 11:44 AM, Jakub Kicinski wrote:  
-> >>>  From user perspective what's important is what the reset achieves (and
-> >>> perhaps how destructive it is). We can define the reset levels as:
-> >>>
-> >>> $ devlink dev reload pci/0000:82:00.0 net-ns-respawn
-> >>> $ devlink dev reload pci/0000:82:00.0 driver-param-init
-> >>> $ devlink dev reload pci/0000:82:00.0 fw-activate
-> >>>
-> >>> combining should be possible when user wants multiple things to happen:
-> >>>
-> >>> $ devlink dev reload pci/0000:82:00.0 fw-activate driver-param-init  
-> >> Where today "driver-param-init" is the default behavior. But didn't we
-> >> just say that mlxsw also does the equivalent of fw-activate?  
-> > Actually the default should probably be the combination of
-> > driver-param-init and net-ns-respawn.  
+On Wed, Jul 29, 2020 at 06:10:44PM +0200, Maciej Fijalkowski wrote:
+> On Wed, Jul 29, 2020 at 12:07:52AM +0200, Daniel Borkmann wrote:
+> > On 7/24/20 7:35 PM, Maciej Fijalkowski wrote:
+> > > This commit serves two things:
+> > > 1) it optimizes BPF prologue/epilogue generation
+> > > 2) it makes possible to have tailcalls within BPF subprogram
+> > > 
+> > > Both points are related to each other since without 1), 2) could not be
+> > > achieved.
+> > > 
+> > [...]
+> > > diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+> > > index 6fe6491fa17a..e9d62a60134b 100644
+> > > --- a/kernel/bpf/arraymap.c
+> > > +++ b/kernel/bpf/arraymap.c
+> > > @@ -750,6 +750,7 @@ static void prog_array_map_poke_run(struct bpf_map *map, u32 key,
+> > >   				    struct bpf_prog *old,
+> > >   				    struct bpf_prog *new)
+> > >   {
+> > > +	u8 *old_addr, *new_addr, *old_bypass_addr;
+> > >   	struct prog_poke_elem *elem;
+> > >   	struct bpf_array_aux *aux;
+> > > @@ -800,13 +801,47 @@ static void prog_array_map_poke_run(struct bpf_map *map, u32 key,
+> > >   			if (poke->tail_call.map != map ||
+> > >   			    poke->tail_call.key != key)
+> > >   				continue;
+> > > +			/* protect against un-updated poke descriptors since
+> > > +			 * we could fill them from subprog and the same desc
+> > > +			 * is present on main's program poke tab
+> > > +			 */
+> > > +			if (!poke->tailcall_bypass || !poke->tailcall_target ||
+> > > +			    !poke->bypass_addr)
+> > > +				continue;
+> > 
+> > Thinking more about this, this check here is not sufficient. You basically need this here
+> > given you copy all poke descs over to each of the subprogs in jit_subprogs(). So for those
+> > that weren't handled by the subprog have the above addresses as NULL. But in jit_subprogs()
+> > once we filled out the target addresses for the bpf-in-bpf calls we loop over each subprog
+> > and do the extra/final pass in the JIT to complete the images. However, nothing protects
+> > bpf_tail_call_direct_fixup() as far as I can see from patching at the NULL addr if there is
+> > a target program loaded in the map at the given key. That will most likely blow up and hit
+> > the BUG_ON().
 > 
-> What about the support of these combinations, one device needs to reset 
-> fw to apply the param init, while another device can apply param-init
-> without fw reset, but has to reload the driver for fw-reset.
+> Okay, I agree with this reasoning but must admit that I don't understand
+> when exactly during fixup the target prog for a given key might be already
+> present? Could you shed some light on it? I recall that I was hitting
+> this case in test_verifier kselftest, so maybe I'll dig onto that, but
+> otherwise I didn't stumble upon this.
 > 
-> So the support per driver will be a matrix of combinations ?
-
-Note that there is no driver reload in my examples, driver reload is
-likely not user's goal. Whatever the driver needs to reset to satisfy
-the goal is fair game IMO.
-
-It's already the case that some drivers reset FW for param init and some
-don't and nobody is complaining.
-
-We should treat constraints separate (in this set we have the live
-activation which is a constraint on the reload operation).
-
-> > My expectations would be that the driver must perform the lowest
-> > reset level possible that satisfies the requested functional change.
-> > IOW driver may do more, in fact it should be acceptable for the
-> > driver to always for a full HW reset (unless --live or other
-> > constraint is specified).  
+> > 
+> > Instead of these above workarounds, did you try to go the path to only copy over the poke
+> > descs that are relevant for the individual subprog (but not all the others)?
 > 
-> OK, but some combinations may still not be valid for specific driver 
-> even if it tries lowest level possible.
+> I was able to come up with something today, but I'd like to share it here
+> and discuss whether you think it's correct approach before rushing with
+> another revision.
+> 
+> Generally in fixup_bpf_calls I store the index of tail call insn onto the
+> generated poke descriptor, then in jit_subprogs() I check whether the
+> given poke descriptor belongs to the current subprog by checking if that
+> previously stored absolute index of tail call insn is in the scope of the
+> insns of given subprog. Then the insn->imm needs to be updated with new
+> poke descriptor slot so that while JITing we will be able to grab the
+> proper poke desc - previously it worked because we emulated the main
+> prog's poke tab state onto each subprog.
+> 
+> This way the subprogs actually get only relevant poke descs, but I have a
+> concern about the main prog's poke tab. Shouldn't we pull out the descs
+> that have been copied to the subprog out of the main poke tab?
+> 
+> If yes, then shouldn't the poke tab be converted to a linked list?
 
-Can you give an example?
+Thinking a bit more about this, I think we can just untrack the main
+prog's aux struct from prog array map. If there are subprograms then the
+main prog is treated as subprog 0 and with the logic below every poke desc
+will be propagated properly.
+
+I checked that doing:
+
+	for (i = 0; i < prog->aux->size_poke_tab; i++) {
+		map_ptr = prog->aux->poke_tab[i].tail_call.map;
+
+		map_ptr->ops->map_poke_untrack(map_ptr, prog->aux);
+	}
+
+after the initial JIT subprogs loop works just fine and we can drop the
+cumbersome check from map_poke_run().
+
+wdyt?
+
+> 
+> The patch that I will merge onto the 2/6 if you would say that we can live
+> with this approach, it's on top of this series:
+> 
+> From 57baac74647a4627fe85bb3393365de906070eb1 Mon Sep 17 00:00:00 2001
+> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Date: Wed, 29 Jul 2020 17:51:59 +0200
+> Subject: [PATCH] bpf: propagate only those poke descs that are used in subprog
+> 
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> ---
+>  include/linux/bpf.h   |  1 +
+>  kernel/bpf/verifier.c | 11 ++++++++++-
+>  2 files changed, 11 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 14b796bf35de..74ab8ec2f2d3 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -664,6 +664,7 @@ struct bpf_jit_poke_descriptor {
+>  	bool tailcall_target_stable;
+>  	u8 adj_off;
+>  	u16 reason;
+> +	u32 abs_insn_idx;
+>  };
+>  
+>  /* reg_type info for ctx arguments */
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 3ea769555246..d6402dc05087 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -9971,15 +9971,23 @@ static int jit_subprogs(struct bpf_verifier_env *env)
+>  		func[i]->aux->func_info = prog->aux->func_info;
+>  
+>  		for (j = 0; j < prog->aux->size_poke_tab; j++) {
+> +			u32 abs_insn_idx = prog->aux->poke_tab[j].abs_insn_idx;
+>  			int ret;
+>  
+> +			if (!(abs_insn_idx >= subprog_start &&
+> +			      abs_insn_idx <= subprog_end))
+> +				continue;
+> +
+>  			ret = bpf_jit_add_poke_descriptor(func[i],
+>  							  &prog->aux->poke_tab[j]);
+>  			if (ret < 0) {
+>  				verbose(env, "adding tail call poke descriptor failed\n");
+>  				goto out_free;
+>  			}
+> -			map_ptr = func[i]->aux->poke_tab[j].tail_call.map;
+> +
+> +			func[i]->insnsi[abs_insn_idx - subprog_start].imm = ret + 1;
+> +
+> +			map_ptr = func[i]->aux->poke_tab[ret].tail_call.map;
+>  			ret = map_ptr->ops->map_poke_track(map_ptr, func[i]->aux);
+>  			if (ret < 0) {
+>  				verbose(env, "tracking tail call prog failed\n");
+> @@ -10309,6 +10317,7 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+>  					.reason = BPF_POKE_REASON_TAIL_CALL,
+>  					.tail_call.map = BPF_MAP_PTR(aux->map_ptr_state),
+>  					.tail_call.key = bpf_map_key_immediate(aux),
+> +					.abs_insn_idx = i,
+>  				};
+>  
+>  				ret = bpf_jit_add_poke_descriptor(prog, &desc);
+> -- 
+> 2.20.1
+> 
+> > 
+> > Thanks,
+> > Daniel
