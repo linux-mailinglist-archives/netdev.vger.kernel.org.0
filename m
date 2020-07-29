@@ -2,144 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC5E32317CC
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 04:53:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 040752317E4
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 05:00:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731120AbgG2Cxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 22:53:46 -0400
-Received: from foss.arm.com ([217.140.110.172]:44142 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731052AbgG2Cxq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Jul 2020 22:53:46 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 81CDD31B;
-        Tue, 28 Jul 2020 19:53:45 -0700 (PDT)
-Received: from [192.168.122.166] (unknown [10.119.48.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 007BD3F66E;
-        Tue, 28 Jul 2020 19:53:44 -0700 (PDT)
-Subject: Re: [net-next PATCH v7 1/6] Documentation: ACPI: DSD: Document MDIO
- PHY
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Dan Callaghan <dan.callaghan@opengear.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Russell King <linux@armlinux.org.uk>, Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev <netdev@vger.kernel.org>, "linux.cj" <linux.cj@gmail.com>,
-        linux-acpi <linux-acpi@vger.kernel.org>
-References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
- <20200715090400.4733-2-calvin.johnson@oss.nxp.com>
- <1a031e62-1e87-fdc1-b672-e3ccf3530fda@arm.com>
- <20200724133931.GF1472201@lunn.ch>
- <97973095-5458-8ac2-890c-667f4ea6cd0e@arm.com>
- <20200724191436.GH1594328@lunn.ch>
- <1595922651-sup-5323@galangal.danc.bne.opengear.com>
- <9e63aabf-8993-9ce0-1274-c29d7a5fc267@arm.com>
- <1e4301bf-cbf2-a96b-0b76-611ed08aa39a@gmail.com>
-From:   Jeremy Linton <jeremy.linton@arm.com>
-Message-ID: <f046fa8b-6bac-22c3-0d9f-9afb20877fc9@arm.com>
-Date:   Tue, 28 Jul 2020 21:53:44 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1731164AbgG2DAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 23:00:35 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8847 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728401AbgG2DAf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Jul 2020 23:00:35 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 20DF341D5DD887D6225E;
+        Wed, 29 Jul 2020 11:00:33 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Wed, 29 Jul 2020
+ 11:00:29 +0800
+From:   Lu Wei <luwei32@huawei.com>
+To:     <ulli.kroll@googlemail.com>, <linus.walleij@linaro.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <mirq-linux@rere.qmqm.pl>, <linux-arm-kernel@lists.infradead.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] net: ethernet: fix potential memory leak in gemini_ethernet_port_probe()
+Date:   Wed, 29 Jul 2020 11:46:06 +0800
+Message-ID: <20200729034606.89041-1-luwei32@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <1e4301bf-cbf2-a96b-0b76-611ed08aa39a@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+If some processes in gemini_ethernet_port_probe() fail,
+free_netdev(dev) needs to be called to avoid a memory leak.
 
-On 7/28/20 7:39 PM, Florian Fainelli wrote:
-> On 7/28/2020 3:30 PM, Jeremy Linton wrote:
->> Hi,
->>
->> On 7/28/20 3:06 AM, Dan Callaghan wrote:
->>> Excerpts from Andrew Lunn's message of 2020-07-24 21:14:36 +02:00:
->>>> Now i could be wrong, but are Ethernet switches something you expect
->>>> to see on ACPI/SBSA platforms? Or is this a legitimate use of the
->>>> escape hatch?
->>>
->>> As an extra data point: right now I am working on an x86 embedded
->>> appliance (ACPI not Device Tree) with 3x integrated Marvell switches.
->>> I have been watching this patch series with great interest, because
->>> right now there is no way for me to configure a complex switch topology
->>> in DSA without Device Tree.
->>
->> DSA though, the switch is hung off a normal MAC/MDIO, right? (ignoring
->> whether that NIC/MAC is actually hug off PCIe for the moment).
-> 
-> There is no specific bus, we have memory mapped, MDIO, SPI, I2C swiches
-> all supported within the driver framework right now.
-> 
->>
->> It just has a bunch of phy devices strung out on that single MAC/MDIO.
-> 
-> It has a number of built-in PHYs that typically appear on a MDIO bus,
-> whether that bus is the switch's internal MDIO bus, or another MDIO bus
-> (which could be provided with just two GPIOs) depends on how the switch
-> is connected to its management host.
-> 
-> When the switch is interfaced via MDIO the switch also typically has a
-> MDIO interface called the pseudo-PHY which is how you can actually tap
-> into the control interface of the switch, as opposed to reading its
-> internal PHYs from the MDIO bus.
-> 
->> So in ACPI land it would still have a relationship similar to the one
->> Andrew pointed out with his DT example where the eth0->mdio->phy are all
->> contained in their physical parent. The phy in that case associated with
->> the parent adapter would be the first direct decedent of the mdio, the
->> switch itself could then be represented with another device, with a
->> further string of device/phys representing the devices. (I dislike
->> drawing acsii art, but if this isn't clear I will, its also worthwhile
->> to look at the dpaa2 docs for how the mac/phys work on this device for
->> contrast.).
-> 
-> The eth0->mdio->phy relationship you describe is the simple case that
-> you are well aware of which is say what we have on the Raspberry Pi 4
-> with GENET and the external Broadcom PHY.
-> 
-> For an Ethernet switch connected to an Ethernet MAC, we have 4 different
-> types of objects:
-> 
-> - the Ethernet MAC which sits on its specific bus
-> 
-> - the Ethernet switch which also sits on its specific bus
-> 
-> - the built-in PHYs of the Ethernet switch which sit on whatever
-> bus/interface the switch provides to make them accessible
-> 
-> - the specific bus controller that provides access to the Ethernet switch
-> 
-> and this is a simplification that does not take into account Physical
-> Coding Sublayer devices, pure MDIO devices (with no foot in the Ethernet
-> land such as PCIe, USB3 or SATA PHYs), SFP, SFF and other pluggable modules.
+Fixes: 4d5ae32f5e1e ("net: ethernet: Add a driver for Gemini gigabit ethernet")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Lu Wei <luwei32@huawei.com>
+---
+ drivers/net/ethernet/cortina/gemini.c | 24 +++++++++++++++++++-----
+ 1 file changed, 19 insertions(+), 5 deletions(-)
 
-Which is why I've stayed away from much of the switch discussion. There 
-are a lot of edge cases to fall into, because for whatever reason 
-networking seems to be unique in all this non-enumerable customization 
-vs many other areas of the system. Storage, being an example i'm more 
-familiar with which has very similar problems yet, somehow has managed 
-to avoid much of this, despite having run on fabrics significantly more 
-complex than basic ethernet (including running on a wide range of hot 
-pluggable GBIC/SFP/QSFP/etc media layers).
+diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
+index 8d13ea370db1..5e93a1a570b6 100644
+--- a/drivers/net/ethernet/cortina/gemini.c
++++ b/drivers/net/ethernet/cortina/gemini.c
+@@ -2407,37 +2407,48 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
+ 	dmares = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!dmares) {
+ 		dev_err(dev, "no DMA resource\n");
++		free_netdev(netdev);
+ 		return -ENODEV;
+ 	}
+ 	port->dma_base = devm_ioremap_resource(dev, dmares);
+-	if (IS_ERR(port->dma_base))
++	if (IS_ERR(port->dma_base)) {
++		free_netdev(netdev);
+ 		return PTR_ERR(port->dma_base);
++	}
+ 
+ 	/* GMAC config memory */
+ 	gmacres = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+ 	if (!gmacres) {
+ 		dev_err(dev, "no GMAC resource\n");
++		free_netdev(netdev);
+ 		return -ENODEV;
+ 	}
+ 	port->gmac_base = devm_ioremap_resource(dev, gmacres);
+-	if (IS_ERR(port->gmac_base))
++	if (IS_ERR(port->gmac_base)) {
++		free_netdev(netdev);
+ 		return PTR_ERR(port->gmac_base);
++	}
+ 
+ 	/* Interrupt */
+ 	irq = platform_get_irq(pdev, 0);
+-	if (irq <= 0)
++	if (irq <= 0) {
++		free_netdev(netdev);
+ 		return irq ? irq : -ENODEV;
++	}
+ 	port->irq = irq;
+ 
+ 	/* Clock the port */
+ 	port->pclk = devm_clk_get(dev, "PCLK");
+ 	if (IS_ERR(port->pclk)) {
+ 		dev_err(dev, "no PCLK\n");
++		free_netdev(netdev);
+ 		return PTR_ERR(port->pclk);
+ 	}
+ 	ret = clk_prepare_enable(port->pclk);
+-	if (ret)
++	if (ret) {
++		free_netdev(netdev);
+ 		return ret;
++	}
+ 
+ 	/* Maybe there is a nice ethernet address we should use */
+ 	gemini_port_save_mac_addr(port);
+@@ -2446,6 +2457,7 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
+ 	port->reset = devm_reset_control_get_exclusive(dev, NULL);
+ 	if (IS_ERR(port->reset)) {
+ 		dev_err(dev, "no reset\n");
++		free_netdev(netdev);
+ 		return PTR_ERR(port->reset);
+ 	}
+ 	reset_control_reset(port->reset);
+@@ -2501,8 +2513,10 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
+ 					IRQF_SHARED,
+ 					port_names[port->id],
+ 					port);
+-	if (ret)
++	if (ret) {
++		free_netdev(netdev);
+ 		return ret;
++	}
+ 
+ 	ret = register_netdev(netdev);
+ 	if (!ret) {
+-- 
+2.17.1
 
-ACPI's "problem" here is that its strongly influenced by the "Plug and 
-Play" revolution of the 1990's where the industry went from having 
-humans describing hardware using machine readable languages, to hardware 
-which was enumerable using standard protocols. ACPI's device 
-descriptions are there as a crutch for the remaining non plug an play 
-hardware in the system.
-
-So at a basic level, if your describing hardware in ACPI rather than 
-abstracting it, that is a problem.
-
-
-
-Thanks,
