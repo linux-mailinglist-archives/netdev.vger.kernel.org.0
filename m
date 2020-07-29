@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91C70231C0F
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 11:27:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C221E231C10
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 11:27:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727797AbgG2J1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 05:27:23 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:44697 "EHLO
+        id S1727873AbgG2J10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 05:27:26 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:47277 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726536AbgG2J1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 05:27:22 -0400
+        by vger.kernel.org with ESMTP id S1726536AbgG2J1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 05:27:24 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 500CF5C014B;
-        Wed, 29 Jul 2020 05:27:21 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 57C1C5C017C;
+        Wed, 29 Jul 2020 05:27:23 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 29 Jul 2020 05:27:21 -0400
+  by compute4.internal (MEProxy); Wed, 29 Jul 2020 05:27:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=LF/9TYIkaowQsnxHb/+soUWtuwrFj9CMWn6A2u7AffM=; b=qkd3c5HE
-        1T7WP5018oujhjS19C3kpqgPpWbmWZn9Nm6nbbQ6Qtz1SmIbNd/67WrmfhYo8WI2
-        biHSVHq7IN0Cmq64n9/Vb42oCWMX9ecNQS7LztL7G7CIvZBpojH1hoTB0Mg/jb5n
-        EbToeGqxdyAMffuVuse0UHH9+T93LIJJf/qsRSUYlahnvC1jsjBqaE35XLf6fy6p
-        2Wc7tP2Qce0AT7x91R+xX2j54W84uGh8/coaAdQUGFrUyMBxIB/Nz/q/LsWM8XHD
-        xJHTR00ITHBtkSc8AGrpKKt+ClCflKA0TVTswRF6xsQp3X0TS0c7oSWXHO2wwI7+
-        /FuJ+PoYvUh8Og==
-X-ME-Sender: <xms:-UAhXxpkcrQHRV3PzYWIb88cRmAeYZPshdpGE5nAjNv4HWWs_xBUxQ>
+        fm3; bh=OrELT9f6CLdH7PewWbaH0s3UGz4DwgrgQ/rfd0/v8Xc=; b=jYP6Z7vK
+        1uHtyEJUub21frsIXt6ot0SwBkEjGLUUdxoCMfD5u1aGsCFEE8YbuUzsvOvfaLho
+        co9CHnEwGeBB2hp81LxsjBfGNjHOPZn2jw0DD/u6+0WS1Hqp1iJW8jUJsWE5lfpx
+        8VrIFLM4iRHu8rU3zf+jrsbgVBi9ywjm4ofHJUagjApdEuneZvgBzqP+9f0ezV+8
+        uFVdsCnh0XJxNDdTdQfeTMjb86cK77MRSFVhIhjXodWV42ubIaRM1+NqadHiDvo4
+        Dcu2hdr30gIiaY239awnjddWdW88xOGohNjP8ZeG4aESz2joas6XfPoumUccSfFU
+        5HOzOmlCjWqL1A==
+X-ME-Sender: <xms:-0AhX5dhsmEBbw7deEb1HA_1JF4WJcKPOk1M9ZV-lql_fe1BKQANdw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrieeggdduiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepuddtledrieehrddufeejrddvhedt
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:-UAhXzoXkra2C9oBTIiHji-7HGYUE-uN__xfVzJ1Ld1qjIGUlmGILQ>
-    <xmx:-UAhX-NX6qlTy4pBsNi0G1P0pv-DctTEtcYMSjJNs_pczkJkPYvVzQ>
-    <xmx:-UAhX87J5AfuL4dCij1x9Q0OxmKTm25fJu3r5c8AAnmZkNXoIPfzwg>
-    <xmx:-UAhX-kd6l_6xseaVuaHNiOxNbKRWhdwMSTc-Y5uMY2JqMDtgHBiLQ>
+X-ME-Proxy: <xmx:-0AhX3NTyw1qXrykjvAplXHQ4C3YB6Mitshqkt-M82ADCX9N_ukqAQ>
+    <xmx:-0AhXygy8CsQxhG_sMqZ-qs8jtl313U9zKt_3BfrfAGFD6Q2JuscQg>
+    <xmx:-0AhXy-3GLSk5GJevBFUtyLO-o5rXpZFPaDM13nLnCdd1e9mLJC-hA>
+    <xmx:-0AhX9L0RDeVRSLal6KxgbqOnDVhH4Aomr3MWlV-BoPNYawWKu40pA>
 Received: from shredder.mtl.com (bzq-109-65-137-250.red.bezeqint.net [109.65.137.250])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 54EAE3280063;
-        Wed, 29 Jul 2020 05:27:19 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 674C33280059;
+        Wed, 29 Jul 2020 05:27:21 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         amitc@mellanox.com, alexve@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net 1/6] mlxsw: spectrum_router: Allow programming link-local host routes
-Date:   Wed, 29 Jul 2020 12:26:43 +0300
-Message-Id: <20200729092648.2055488-2-idosch@idosch.org>
+Subject: [PATCH net 2/6] mlxsw: spectrum: Use different trap group for externally routed packets
+Date:   Wed, 29 Jul 2020 12:26:44 +0300
+Message-Id: <20200729092648.2055488-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200729092648.2055488-1-idosch@idosch.org>
 References: <20200729092648.2055488-1-idosch@idosch.org>
@@ -63,44 +63,133 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Cited commit added the ability to program link-local prefix routes to
-the ASIC so that relevant packets are routed and trapped correctly.
+Cited commit mistakenly removed the trap group for externally routed
+packets (e.g., via the management interface) and grouped locally routed
+and externally routed packet traps under the same group, thereby
+subjecting them to the same policer.
 
-However, host routes were not included in the change and thus not
-programmed to the ASIC. This can result in packets being trapped via an
-external route trap instead of a local route trap as in IPv4.
+This can result in problems, for example, when FRR is restarted and
+suddenly all transient traffic is trapped to the CPU because of a
+default route through the management interface. Locally routed packets
+required to re-establish a BGP connection will never reach the CPU and
+the routing tables will not be re-populated.
 
-Fix this by programming all the link-local routes to the ASIC.
+Fix this by using a different trap group for externally routed packets.
 
-Fixes: 10d3757fcb07 ("mlxsw: spectrum_router: Allow programming link-local prefix routes")
+Fixes: 8110668ecd9a ("mlxsw: spectrum_trap: Register layer 3 control traps")
 Reported-by: Alex Veber <alexve@mellanox.com>
 Tested-by: Alex Veber <alexve@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 9 ---------
- 1 file changed, 9 deletions(-)
+ Documentation/networking/devlink/devlink-trap.rst  |  4 ++++
+ drivers/net/ethernet/mellanox/mlxsw/reg.h          |  1 +
+ .../net/ethernet/mellanox/mlxsw/spectrum_trap.c    | 14 +++++++++++---
+ include/net/devlink.h                              |  3 +++
+ net/core/devlink.c                                 |  1 +
+ 5 files changed, 20 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 019ed503aadf..bd4803074776 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -5001,15 +5001,6 @@ static void mlxsw_sp_router_fib4_del(struct mlxsw_sp *mlxsw_sp,
+diff --git a/Documentation/networking/devlink/devlink-trap.rst b/Documentation/networking/devlink/devlink-trap.rst
+index 1e3f3ffee248..2014307fbe63 100644
+--- a/Documentation/networking/devlink/devlink-trap.rst
++++ b/Documentation/networking/devlink/devlink-trap.rst
+@@ -486,6 +486,10 @@ narrow. The description of these groups must be added to the following table:
+      - Contains packet traps for packets that should be locally delivered after
+        routing, but do not match more specific packet traps (e.g.,
+        ``ipv4_bgp``)
++   * - ``external_delivery``
++     - Contains packet traps for packets that should be routed through an
++       external interface (e.g., management interface) that does not belong to
++       the same device (e.g., switch ASIC) as the ingress interface
+    * - ``ipv6``
+      - Contains packet traps for various IPv6 control packets (e.g., Router
+        Advertisements)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index fcb88d4271bf..8ac987c8c8bc 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -5536,6 +5536,7 @@ enum mlxsw_reg_htgt_trap_group {
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_MULTICAST,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_NEIGH_DISCOVERY,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_ROUTER_EXP,
++	MLXSW_REG_HTGT_TRAP_GROUP_SP_EXTERNAL_ROUTE,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_IP2ME,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_DHCP,
+ 	MLXSW_REG_HTGT_TRAP_GROUP_SP_EVENT,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index 157a42c63066..1e38dfe7cf64 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -328,6 +328,9 @@ mlxsw_sp_trap_policer_items_arr[] = {
+ 	{
+ 		.policer = MLXSW_SP_TRAP_POLICER(18, 1024, 128),
+ 	},
++	{
++		.policer = MLXSW_SP_TRAP_POLICER(19, 1024, 512),
++	},
+ };
  
- static bool mlxsw_sp_fib6_rt_should_ignore(const struct fib6_info *rt)
- {
--	/* Packets with link-local destination IP arriving to the router
--	 * are trapped to the CPU, so no need to program specific routes
--	 * for them. Only allow prefix routes (usually one fe80::/64) so
--	 * that packets are trapped for the right reason.
--	 */
--	if ((ipv6_addr_type(&rt->fib6_dst.addr) & IPV6_ADDR_LINKLOCAL) &&
--	    (rt->fib6_flags & (RTF_LOCAL | RTF_ANYCAST)))
--		return true;
--
- 	/* Multicast routes aren't supported, so ignore them. Neighbour
- 	 * Discovery packets are specifically trapped.
- 	 */
+ static const struct mlxsw_sp_trap_group_item mlxsw_sp_trap_group_items_arr[] = {
+@@ -421,6 +424,11 @@ static const struct mlxsw_sp_trap_group_item mlxsw_sp_trap_group_items_arr[] = {
+ 		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_IP2ME,
+ 		.priority = 2,
+ 	},
++	{
++		.group = DEVLINK_TRAP_GROUP_GENERIC(EXTERNAL_DELIVERY, 19),
++		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_EXTERNAL_ROUTE,
++		.priority = 1,
++	},
+ 	{
+ 		.group = DEVLINK_TRAP_GROUP_GENERIC(IPV6, 15),
+ 		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_IPV6,
+@@ -882,11 +890,11 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
+ 		},
+ 	},
+ 	{
+-		.trap = MLXSW_SP_TRAP_CONTROL(EXTERNAL_ROUTE, LOCAL_DELIVERY,
++		.trap = MLXSW_SP_TRAP_CONTROL(EXTERNAL_ROUTE, EXTERNAL_DELIVERY,
+ 					      TRAP),
+ 		.listeners_arr = {
+-			MLXSW_SP_RXL_MARK(RTR_INGRESS0, IP2ME, TRAP_TO_CPU,
+-					  false),
++			MLXSW_SP_RXL_MARK(RTR_INGRESS0, EXTERNAL_ROUTE,
++					  TRAP_TO_CPU, false),
+ 		},
+ 	},
+ 	{
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 1df6dfec26c2..95b0322a2a82 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -718,6 +718,7 @@ enum devlink_trap_group_generic_id {
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_PIM,
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_UC_LB,
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_LOCAL_DELIVERY,
++	DEVLINK_TRAP_GROUP_GENERIC_ID_EXTERNAL_DELIVERY,
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_IPV6,
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_PTP_EVENT,
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_PTP_GENERAL,
+@@ -915,6 +916,8 @@ enum devlink_trap_group_generic_id {
+ 	"uc_loopback"
+ #define DEVLINK_TRAP_GROUP_GENERIC_NAME_LOCAL_DELIVERY \
+ 	"local_delivery"
++#define DEVLINK_TRAP_GROUP_GENERIC_NAME_EXTERNAL_DELIVERY \
++	"external_delivery"
+ #define DEVLINK_TRAP_GROUP_GENERIC_NAME_IPV6 \
+ 	"ipv6"
+ #define DEVLINK_TRAP_GROUP_GENERIC_NAME_PTP_EVENT \
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 2cafbc808b09..dc2b18475956 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -8567,6 +8567,7 @@ static const struct devlink_trap_group devlink_trap_group_generic[] = {
+ 	DEVLINK_TRAP_GROUP(PIM),
+ 	DEVLINK_TRAP_GROUP(UC_LB),
+ 	DEVLINK_TRAP_GROUP(LOCAL_DELIVERY),
++	DEVLINK_TRAP_GROUP(EXTERNAL_DELIVERY),
+ 	DEVLINK_TRAP_GROUP(IPV6),
+ 	DEVLINK_TRAP_GROUP(PTP_EVENT),
+ 	DEVLINK_TRAP_GROUP(PTP_GENERAL),
 -- 
 2.26.2
 
