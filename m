@@ -2,100 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20CF4231CED
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 12:52:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1895231D0C
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 12:58:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726710AbgG2Kv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 06:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
+        id S1726497AbgG2K6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 06:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726449AbgG2Kv5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 06:51:57 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71662C061794;
-        Wed, 29 Jul 2020 03:51:57 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id x5so2296446wmi.2;
-        Wed, 29 Jul 2020 03:51:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MfydqwIyqBHYbsx5YX+ht7t/yzaaahxnXqOFDuf3JO4=;
-        b=d/wwpZmeZ+/LMdotSSAcC7Ni3EYCBWqFxvTfazuOMQ9rwsGTnG8Lz1+adN1ve0+0L2
-         ZCklyYkB5bjphiJLJQW/kOUwBCwCizXZpZtr3DPK1q7u7M1njgB6JKAAXKjsD/vdyvdO
-         ft77u9FQvWvO2bEMvoixTKiVOfK9iPwlr1ItQdDSe1fYnteeY31GmRwRKNScou0WouvB
-         eOBjyin8iwGZfBhdKJEBTLL7yGRfVFh3jL/rsa36h/zPsseiuSphB89h48elDApKQW0g
-         vXXDk/sIBOHxVi/n9re+PswQxEk5AYMsuOlIp5glig8AzQGn5EqmZGivUePVDwGnsy8h
-         mujQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MfydqwIyqBHYbsx5YX+ht7t/yzaaahxnXqOFDuf3JO4=;
-        b=HtJLo/yt0reGT+VOvdsAmPmdBobYhAvZnS3evEXz3ZG1M9i+Qj8STbqulkOOpIUtsM
-         cJ96wLhiYlOpGGId+VgoJuvtjYkT6HGXcLvmA7yI38cqWBTe4UG9qEdqEhLMe3z/OP3r
-         Me8P+QsVwuPMS4xaFLR+2NthMYWmSHCW2hR14feerbgJrBqF0hHj57b1Pjg8R1JuUkZ9
-         /Y0EoOfzVQParbz08KrgXalXb/wkw2uRnHe8FKao9Q229FN1A9Np6jh/SAXAdjnGhb0O
-         pdvCVqSMGtKvqhuN1fS+X6FqG6EVpmh9cDWxjpYt9qGWC4QCo0f/d3WBz1cv2mlHdwwL
-         aUGg==
-X-Gm-Message-State: AOAM531FmMESGGFGFAn7kPm2CTEpaufZxL6XIr72FKiucJT/UYkcEgCz
-        0zFWd9pWVPgXwSFJgrVs+6s=
-X-Google-Smtp-Source: ABdhPJxFD5dqpPgkq3nn8KnWDfcUuF3QzF/XcP2WVwa+ah/rtsjppFnQ0SlZgVGBx/quaeHZekwOpw==
-X-Received: by 2002:a1c:5f41:: with SMTP id t62mr8572734wmb.134.1596019916177;
-        Wed, 29 Jul 2020 03:51:56 -0700 (PDT)
-Received: from stancioi.c.googlers.com.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
-        by smtp.gmail.com with ESMTPSA id z15sm3955697wrn.89.2020.07.29.03.51.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jul 2020 03:51:55 -0700 (PDT)
-From:   Ioana-Ruxandra Stancioi <ioanaruxandra.stancioi@gmail.com>
-To:     david.lebrun@uclouvain.be, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     elver@google.com, glider@google.com,
-        =?UTF-8?q?Ioana-Ruxandra=20St=C4=83ncioi?= <stancioi@google.com>
-Subject: [PATCH] uapi, seg6_iptunnel: Add missing include in seg6_iptunnel.h
-Date:   Wed, 29 Jul 2020 10:49:03 +0000
-Message-Id: <20200729104903.3586064-1-ioanaruxandra.stancioi@gmail.com>
-X-Mailer: git-send-email 2.28.0.rc0.142.g3c755180ce-goog
+        with ESMTP id S1726299AbgG2K6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 06:58:10 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37EAC061794
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 03:58:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=YwHcAo8JtZ8pPTU5tNcYUhAKmdKCD95vxiiMjQq4OJs=; b=NWWsEXP7dYzMqa7tTgE70CU26
+        3aAjrSgaFYKfgpk5wHMWI1DF54sEtQvd3z6AfQS9H7qup1WyPcHAdjFdOgcokY0v0LXKjvYNMd9/P
+        9i5GLPNiW2LEMV/p75vhyWxXEl7XAbL1QWCQXPx3Cw7gsaQbM1gfIxH/k+qN278mORypQNYuMu1ip
+        +x15iHQVxnZQ4oxC+r31SLrLRNNZqa+Gw46iJw8UP2Hq8NYKkWBHPKZQg1HkeUZa7EjK4ZN3lzOsN
+        j6qLwHWjf/7EkWai/iiPtXcupMiDhcySwHexOJXXfWG/MHU1heVT1OTvR8TNhVm/xhJxCBdqUCaeM
+        Pmtc88sFg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45644)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1k0jmh-0005J6-SS; Wed, 29 Jul 2020 11:58:07 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1k0jmh-0005cX-9w; Wed, 29 Jul 2020 11:58:07 +0100
+Date:   Wed, 29 Jul 2020 11:58:07 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+Message-ID: <20200729105807.GZ1551@shell.armlinux.org.uk>
+References: <E1jvNlE-0001Y0-47@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1jvNlE-0001Y0-47@rmk-PC.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ioana-Ruxandra Stăncioi <stancioi@google.com>
+On Tue, Jul 14, 2020 at 05:26:28PM +0100, Russell King wrote:
+> Add PTP basic support for Marvell 88E151x PHYs.  These PHYs support
+> timestamping the egress and ingress of packets, but does not support
+> any packet modification, nor do we support any filtering beyond
+> selecting packets that the hardware recognises as PTP/802.1AS.
 
-Include <linux/ipv6.h> in uapi/linux/seg6_iptunnel.h to fix the
-following linux/seg6_iptunnel.h compilation error:
+A question has come up concerning the selection of PTP timestamping
+sources within a network device.
 
-   invalid application of 'sizeof' to incomplete type 'struct ipv6hdr'
-       head = sizeof(struct ipv6hdr);
-                     ^~~~~~
+I have the situation on a couple of devices where there are multiple
+places that can do PTP timestamping:
 
-This is to allow including this header in places where <linux/ipv6.h>
-has not been included but __KERNEL__ is defined. In the kernel the easy
-workaround is including <linux/ipv6.h>, but the header may also be used
-by code analysis tools.
+- the PHY (slow to access, only event capture which may not be wired,
+   doesn't seem to synchronise well - delay of 58000, frequency changes
+   every second between +/-1500ppb.)
+- the Ethernet MAC (fast to access, supports event capture and trigger
+   generation which also may not be wired, synchronises well, delay of
+   700, frequency changes every second +/- 40ppb.)
 
-Signed-off-by: Ioana-Ruxandra Stăncioi <stancioi@google.com>
----
- include/uapi/linux/seg6_iptunnel.h | 1 +
- 1 file changed, 1 insertion(+)
+How do we deal with this situation - from what I can see from the
+ethtool API, we have to make a choice about which to use.  How do we
+make that choice?
 
-diff --git a/include/uapi/linux/seg6_iptunnel.h b/include/uapi/linux/seg6_iptunnel.h
-index 09fb608a35ec..b904228f463c 100644
---- a/include/uapi/linux/seg6_iptunnel.h
-+++ b/include/uapi/linux/seg6_iptunnel.h
-@@ -38,6 +38,7 @@ enum {
- };
- 
- #ifdef __KERNEL__
-+#include <linux/ipv6.h>
- 
- static inline size_t seg6_lwt_headroom(struct seg6_iptunnel_encap *tuninfo)
- {
+It's not a case of "just implement one" since hardware may have both
+available on a particular ethernet interface or just one available.
+
+Do we need a property to indicate whether we wish to use the PHY
+or MAC PTP stamping, or something more elaborate?
+
 -- 
-2.28.0.rc0.142.g3c755180ce-goog
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
