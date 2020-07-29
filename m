@@ -2,99 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCF80232275
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 18:20:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40050232281
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 18:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726839AbgG2QTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 12:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48730 "EHLO
+        id S1727033AbgG2QWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 12:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726341AbgG2QTz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 12:19:55 -0400
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A9DC061794;
-        Wed, 29 Jul 2020 09:19:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=zio9Bh9ICgviYTF6nfR7YhbLFeITHAHSu/75uYMJHEc=; b=FUxg1DnyxV3hLi0O8KdXdd8NnS
-        M2SlIVh2JcKubTCIjn0LaQVNSFQh99FxEBP9gvNy5oG11Ii726NEatfFO7t3LJDKZU/fvrKZJTCvT
-        nm2WmRWPiUaNqSj8/oofe29BTjEP6SogAlDXdgtZ16jep/CatpCyaFx6JsomSJl8hb4ismEQAwWIb
-        CsNciGZmkk1phn/tMo/81GcfxwuyZIm75RA9tPSK70wxERl6dRBO3OPkjkamIdAdZQ6P4L28dHtXV
-        iiBPR4sQ+EHpgWKRc/gehH35f+25sgQZlNUvj3IbtDKPOqtwG4EGWqbfWoKnzOjexVvwE0EIo9N1E
-        Zk6HE6TA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k0onu-0000ne-S8; Wed, 29 Jul 2020 16:19:43 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 8681C300238;
-        Wed, 29 Jul 2020 18:19:38 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 36F5322066CE6; Wed, 29 Jul 2020 18:19:38 +0200 (CEST)
-Date:   Wed, 29 Jul 2020 18:19:38 +0200
-From:   peterz@infradead.org
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     mingo@kernel.org, will@kernel.org, a.darwish@linutronix.de,
-        tglx@linutronix.de, paulmck@kernel.org, bigeasy@linutronix.de,
-        rostedt@goodmis.org, linux-kernel@vger.kernel.org, corbet@lwn.net,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, viro@zeniv.linux.org.uk,
-        linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH 2/5] seqlock: Fold seqcount_LOCKNAME_t definition
-Message-ID: <20200729161938.GB2678@hirez.programming.kicks-ass.net>
-References: <20200729135249.567415950@infradead.org>
- <20200729140142.347671778@infradead.org>
- <20200729145507.GW23808@casper.infradead.org>
- <20200729153341.GE2638@hirez.programming.kicks-ass.net>
+        with ESMTP id S1726341AbgG2QWt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 12:22:49 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A9AC061794;
+        Wed, 29 Jul 2020 09:22:49 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id t15so16215730iob.3;
+        Wed, 29 Jul 2020 09:22:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=1EqVIb9BsdjO4rYSsZXqgwp+ZVH+Gjm0Lf044F3bu7M=;
+        b=QcbWmzeevs1bU1vWCuHRf1A+ffecp/H8CLVlHKf5bTHUuX/LwxRWj/W5D+WVtUTr70
+         /m61RogQi2vspeDWgA0xsV1njVjJNXc4CriL1FeZPXB8OHks/ojphSIxppEnAkIreX9Y
+         vveRzoSaCxidnd61IgDrPKWtOOibQKaDqtLy4HTWosywVl4Iwqegk3DbCRNPWwx+20kV
+         1AyF7YCMwPYvq/RlHXv7LM5bJ49x4yGHLQEczCbgnLqATNFSzJeY29ElWr8O4l8M6jhS
+         O/+JWra0jgUphXBxX50NUbdC4cpZm/PfAtrhGgxTz5cvhPU1ZqIOhix9dxKhrNVk7iX2
+         2yoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=1EqVIb9BsdjO4rYSsZXqgwp+ZVH+Gjm0Lf044F3bu7M=;
+        b=q1TaS00J/upX/y3vBXjka3NzX1lF1a1xcQmNxvsHZdSWPvy2mXHiw3ghl9nX+nkmBD
+         29ruGE5FgzHjDTO5xhoGarq1DQDrIEo4wXOh9iIIYh1HfdbdBqv35DeUiBx6Qtj8Xh1J
+         966StvySZd+dUkfzx4nzroZmEVZAs9hms3YcERGSVkGkAqF7wknW2FC/6MsJBwMB3ZQx
+         7h3i7W0ghIf6CkhP7LOrOBuDC7DL3LwLDenH9wexqDW0ypqeV2DP3aQi7meRFD1mkwGZ
+         hmTBL8IDiEO9+7ZexT/0n5qssa/DSAccTqy5tkfg6L5vKV224EzVHgnXuPUca1kBwY3F
+         4sRw==
+X-Gm-Message-State: AOAM5321l2tLmH4Vxbsuprph+FcWapy9sIMxQbNwoIQzTjKGYkUd6tdO
+        6eRoJsmrC4xwfKAgX9tWLEQ=
+X-Google-Smtp-Source: ABdhPJx1iVSptKTNIYoa1wPr0j1LIvJ99SMLVQOQkCJ4lch5jlr0AUqRuP6rEOjGdewCO523dmlJIA==
+X-Received: by 2002:a05:6638:27a:: with SMTP id x26mr9155350jaq.43.1596039768749;
+        Wed, 29 Jul 2020 09:22:48 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id n9sm1194576iox.43.2020.07.29.09.22.41
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 Jul 2020 09:22:48 -0700 (PDT)
+Subject: [bpf PATCH v2 0/5] Fix sock_ops field read splat
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     john.fastabend@gmail.com, kafai@fb.com, daniel@iogearbox.net,
+        ast@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Date:   Wed, 29 Jul 2020 09:22:36 -0700
+Message-ID: <159603940602.4454.2991262810036844039.stgit@john-Precision-5820-Tower>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200729153341.GE2638@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 29, 2020 at 05:33:41PM +0200, peterz@infradead.org wrote:
-> On Wed, Jul 29, 2020 at 03:55:07PM +0100, Matthew Wilcox wrote:
-> > On Wed, Jul 29, 2020 at 03:52:51PM +0200, Peter Zijlstra wrote:
-> > > Manual repetition is boring and error prone.
-> > 
-> > Yes, but generated functions are hard to grep for, and I'm pretty sure
-> > that kernel-doc doesn't know how to expand macros into comments that it
-> > can then extract documentation from.
-> > 
-> > I've been thinking about how to cure this (mostly in the context
-> > of page-flags.h).  I don't particularly like the C preprocessor, but
-> > m4 is worse and defining our own preprocessing language seems like a
-> > terrible idea.
-> > 
-> > So I was thinking about moving the current contents of page-flags.h
-> > to include/src/page-flags.h, making linux/page-flags.h depend on
-> > src/page-flags.h and run '$(CPP) -C' to generate it.  I've been a little
-> > busy recently and haven't had time to do more than muse about this, but
-> > I think it might make sense for some of our more heavily macro-templated
-> > header files.
-> 
-> Use ctags and add to scripts/tags.sh.
+Doing some refactoring resulted in a kernel splat when reading sock_ops
+fields.
 
-I'll make the below into a proper patch.
+Patch 1, has the details and proposed fix for sock_ops sk field access.
+
+Patch 2, has the details and proposed fix for reading sock_ops->sk field
+
+Patch 3, Gives a reproducer and test to verify the fix. I used the netcnt
+program to test this because I wanted a splat to be generated which can
+only be done if we have real traffic exercising the code.
+
+Patch 4, Is an optional patch. While doing above I wanted to also verify
+loads were OK. The code looked good, but I wanted some xlated code to
+review as well. It seems like a good idea to add it here or at least
+shouldn't hurt. I could push it into bpf-next if folks want.
+
+Patch 5, Add reproducers for reading scok_ops->sk field.
+
+I split Patch1 and Patch2 into two two patches because they have different
+fixes tags. Seems like this will help with backporting. They could be
+squashed though if folks want.
+
+For selftests I was fairly verbose creating three patches each with the
+associated xlated code to handle each of the three cases. My hope is this
+helps the reader understand issues and review fixes. Its more or less
+how I debugged the issue and created reproducers so it at least helped
+me to have them logically different patches.
 
 ---
 
-diff --git a/scripts/tags.sh b/scripts/tags.sh
-index 4e18ae5282a6..63b21881a873 100755
---- a/scripts/tags.sh
-+++ b/scripts/tags.sh
-@@ -211,6 +211,8 @@ regex_c=(
- 	'/\<DEVICE_ATTR_\(RW\|RO\|WO\)(\([[:alnum:]_]\+\)/dev_attr_\2/'
- 	'/\<DRIVER_ATTR_\(RW\|RO\|WO\)(\([[:alnum:]_]\+\)/driver_attr_\2/'
- 	'/\<\(DEFINE\|DECLARE\)_STATIC_KEY_\(TRUE\|FALSE\)\(\|_RO\)(\([[:alnum:]_]\+\)/\4/'
-+	'/^SEQCOUNT_LOCKTYPE(\([^,]*\),[[:space:]]*\([^,]*\),[^)]*)/seqcount_\2_t/'
-+	'/^SEQCOUNT_LOCKTYPE(\([^,]*\),[[:space:]]*\([^,]*\),[^)]*)/seqcount_\2_init/'
- )
- regex_kconfig=(
- 	'/^[[:blank:]]*\(menu\|\)config[[:blank:]]\+\([[:alnum:]_]\+\)/\2/'
+John Fastabend (5):
+      bpf: sock_ops ctx access may stomp registers in corner case
+      bpf: sock_ops sk access may stomp registers when dst_reg = src_reg
+      bpf, selftests: Add tests for ctx access in sock_ops with single register
+      bpf, selftests: Add tests for sock_ops load with r9,r8.r7 registers
+      bpf, selftests: Add tests to sock_ops for loading sk
+
+
+ net/core/filter.c                                  |   75 +++++++++++++++++---
+ .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |   41 +++++++++++
+ 2 files changed, 103 insertions(+), 13 deletions(-)
+
+--
+Signature
