@@ -2,58 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8E972326B6
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 23:22:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AFDE2326BD
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 23:28:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727016AbgG2VWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 17:22:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39162 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726476AbgG2VWQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jul 2020 17:22:16 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1DAF22068F;
-        Wed, 29 Jul 2020 21:22:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596057736;
-        bh=R/SnA4dy+M9pXvEY2O6moF3uJYjIOkLplQgLwCZ5Olk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=w4w94eACwq+XKCsLMBbuDk21lsKQfSX5lzTsv3u3U/J+lMaxoNv0lSQ8JokzUW/Ak
-         69CQa0WI0zdVDSD/5geJO4JUJa2NSdSINo31GlySTR2MBQ30qfJBf6VVdnrQ0H1OjS
-         MSFpzo8DdUiqrNaUeX0sKtNWJA3CU6XKzrsedgk0=
-Date:   Wed, 29 Jul 2020 14:22:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        jeffrey.t.kirsher@intel.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next 5/6] i40e, xsk: increase budget for AF_XDP path
-Message-ID: <20200729142214.312fd108@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <0439597f-9c1f-a289-edd9-c890baa687da@intel.com>
-References: <20200728190842.1284145-1-anthony.l.nguyen@intel.com>
-        <20200728190842.1284145-6-anthony.l.nguyen@intel.com>
-        <20200728131512.17c41621@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <0439597f-9c1f-a289-edd9-c890baa687da@intel.com>
+        id S1726824AbgG2V2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 17:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726365AbgG2V2e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 17:28:34 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCADC061794;
+        Wed, 29 Jul 2020 14:28:33 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id u185so13755341pfu.1;
+        Wed, 29 Jul 2020 14:28:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=hI/UDvzDKwJxsEwkWoyUq5HDwLFa3gCvalT8b4tfo+A=;
+        b=B6ID/6nhaoNkNEFEeURwR5BuNj8Qg0WgMuALePZQL7c6lRbAuoYQqQ9ql4hICselAG
+         4ltQUG7F1t6IkfD+NaZYvepg+7aK3Am3neCcQiSYlvUTWjfOEU31oEB89uzWAjWEDAa/
+         y81K+8QR7Qb35KWJ1TfsJWIferT7z3dV4Z/d4PQJCQn4SFWFjILcIbzo9/EYYyYJmhGy
+         8VcjaOumCapnmcwgS2FFRZor6+PmXdDGVlALRPRw1bzP3aHqfYKuWcz0ZZ6w4PACjhfZ
+         rrZjReaG4DMo4YnZbXhxe8BdcnC9AMiu9iZNxxX0DhdAU2IbnYyIteru0Gcy/90ri4tg
+         iTiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=hI/UDvzDKwJxsEwkWoyUq5HDwLFa3gCvalT8b4tfo+A=;
+        b=HCNhkKJMOES+FId7eo1/nHZOgtasAVZxOipVkVIsciE+2e+FUwUUGGZ29mMOQRCHJX
+         ZtflH5BchTTcdA9ClVHPA7vW6n/8BlYzpwMjrcEWh7HqYd8Hxv5LPreGu5DdLVxSHGOC
+         AeUPPGP10RmwpM5hbsRuNlomMJ9AuEOTaPyZB+njKwmhaCDkA+dNxeo10s936GxFy3rB
+         9AcZWlCmuY+WtHud1u9lY2J71p7F+gRpFtIUoX+Fvp53QM5cgACmWC7fktcKkcqrDwQB
+         KyfJLW5rX1J+XFz35vNU8HWT7bpv5PYAOku43XFeFZTem8JRBNhHVXZYM9jN3JSX2D9X
+         Mqkg==
+X-Gm-Message-State: AOAM531ErgE3T1R6Ir5J/ahcSLTWq/381ECrOVCdQD4tzN8WW+KV/Qp7
+        16TvWf0bIt/M8JlrwRMq51h8eg6b
+X-Google-Smtp-Source: ABdhPJxRdhyvP1sq/AERRxp442XYXHIylVvaWRHbUhKDK6UERUdYZgsQtdrzCuBzOKxOcrsae//Qcg==
+X-Received: by 2002:a63:3441:: with SMTP id b62mr9972897pga.25.1596058113382;
+        Wed, 29 Jul 2020 14:28:33 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id t19sm3187499pgg.19.2020.07.29.14.28.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jul 2020 14:28:32 -0700 (PDT)
+Date:   Wed, 29 Jul 2020 14:28:30 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     min.li.xe@renesas.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] ptp: ptp_clockmatrix: update to support 4.8.7
+ firmware
+Message-ID: <20200729212830.GA12513@hoboy>
+References: <1595966430-8603-1-git-send-email-min.li.xe@renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1595966430-8603-1-git-send-email-min.li.xe@renesas.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Jul 2020 12:43:46 +0200 Bj=C3=B6rn T=C3=B6pel wrote:
-> > Should this perhaps be a common things that drivers do?
-> >=20
-> > Should we define a "XSK_NAPI_WEIGHT_MULT 4" instead of hard coding the
-> > value in a driver?
->=20
-> Yes, that's a good idea. I can generalize for the AF_XDP paths in the=20
-> other drivers as a follow up!
+On Tue, Jul 28, 2020 at 04:00:30PM -0400, min.li.xe@renesas.com wrote:
+> From: Min Li <min.li.xe@renesas.com>
+> 
+> With 4.8.7 firmware, adjtime can change delta instead of absolute time,
+> which greately increases snap accuracy. PPS alignment doesn't have to
+> be set for every single TOD change. Other minor changes includes:
+> adding more debug logs, increasing snap accuracy for pre 4.8.7 firmware
+> and supporting new tcs2bin format.
+> 
+> Signed-off-by: Min Li <min.li.xe@renesas.com>
 
-I don't like followups 'cause there's no way I can track if everyone
-actually does what I asked them to - but since you're in vacation mode,
-let's say this one's fine as a follow up ;)
+Acked-by: Richard Cochran <richardcochran@gmail.com>
