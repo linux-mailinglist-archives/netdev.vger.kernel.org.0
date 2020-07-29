@@ -2,155 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50361231F25
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 15:20:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9623231F33
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 15:23:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726981AbgG2NUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 09:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
+        id S1727783AbgG2NWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 09:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726385AbgG2NUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 09:20:19 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D1BC061794;
-        Wed, 29 Jul 2020 06:20:17 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id s15so2695900pgc.8;
-        Wed, 29 Jul 2020 06:20:17 -0700 (PDT)
+        with ESMTP id S1727121AbgG2NWu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 09:22:50 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB0DC061794;
+        Wed, 29 Jul 2020 06:22:49 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id k4so11777109pld.12;
+        Wed, 29 Jul 2020 06:22:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ZYFRkxOA0q5WBRDWrqim7U35iiaqRFY/x66SmA6ONb0=;
-        b=kxVl3/dcF2JdHtLMOfUN0Na9f8OJ4RVMTlHO9Wrb8J7P+cua5/RySvsCaK8oB+oj24
-         9r9OqEMWNj6Yyuc/oBeToixlqtt01B65tK+ddizeB/WhcFjCqGjrxm4KbNF5VE6MMyg0
-         lI44gHs/nxooZ71sT6OkqwcCyvLbEp2z4Ube9BaLmkjJNy9sBt220dcZwnlsPdcnA+RP
-         p+3xSbPVEf8Wu2jgPG/dOzL0BlVrvv4lgMFE2+gyU4P8xV7AomiAdETmobvVH5ZylEcz
-         MysdpIPhf6D1tQtqkqRnKL9x8AAZQbwPh7W9Pd09JodaUQri5fJbkI7WfvRXHwi0XJHP
-         v4gA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dZVkEmQto56AmO9M+KODR9+FXiNg4THi2B1DDl0qH74=;
+        b=RWKI0VB42RHJGqcMkvesW4CLvXoeicTe46yk22J3WanwTaBUL4YtE8IKorU9KiKCNN
+         vJyYbYPBBOokZboD5Trd8uT2uAFLLebivVHhMI9pdWYgfa/ZNExmBQZqLPT/MZhfm2eX
+         8uRX8wOQqTPALEFZ1e2rCkbcL5HlR3XEGfJC+BVImp39oPZkbPhABKXht8aaOH93iTdB
+         zxgjEKDcTx9bV2MXWc0cwek+1catpwycUsTk1AUN294kBGM46lfAgtCYe9ejGQYyVLR6
+         ZvCx6XwQehErsZMxDhgDmCECRU4V/QF5yEC8ncrzKpweoK5P/HtJDd8MXfrMiTzUytpC
+         Bm5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ZYFRkxOA0q5WBRDWrqim7U35iiaqRFY/x66SmA6ONb0=;
-        b=SSQxyYhToVpUjT8QYKGsNgL09IVSnIj+BNSIWELddLGyKu1h3rPp1+7iu0/vRC8+C4
-         5EsF8ymoT9tzH1G5WB4TQUh4atdM2MXZ/XO4CiQ9WFdsqpRDuUwiXXwRMIOFdxBzCbug
-         c771B/1XobI0WHVBbAvxdvVXDnXXrcY015Rkonc49dEatNS7MbOQoJNZh+K1v6hdSRjA
-         tF34mVsM3sur0blH/nNuOU2+M9dbMoFgcbLoUyNkUUL9yZ+WZjIYvlIM8DX6hUcZHu6n
-         3W+N2sqIHGE+0S+w1pX340tgxouOPrf+qV+usnAWYKrNXrxdKGsJ3etS0h5esr0GmJuU
-         VYFw==
-X-Gm-Message-State: AOAM533XmSQwSvyQy8xWUAnk/h6vAKLCHSbo7AhKXbdqY9keIp/2osob
-        /2wrZ9adqeMMVN45TCDJ1onWGEmY8m1p1Ceby2pCxg==
-X-Google-Smtp-Source: ABdhPJxbZP1L21iULQLwjYJBt0d5u5s11SXlOBKqaybCIsu44qqVe5nOXQVSm82oM0LgJ8HHnVCgLd9VZPIQ/RAS8uQ=
-X-Received: by 2002:a63:bd49:: with SMTP id d9mr8486276pgp.126.1596028817548;
- Wed, 29 Jul 2020 06:20:17 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dZVkEmQto56AmO9M+KODR9+FXiNg4THi2B1DDl0qH74=;
+        b=lg7Q2cVXIeM3tCEWyRfN3nj+5Y5z1LQCYCaR6k5GfRiSQ6ncb4BqnQCa045wmlfcM6
+         wEtU14h37RJgcyAOn1xO2CfTmsn26tJ1TLpUruTYwFxkDPhsveM/+GG7lr+Rg42iekIa
+         s18lNYSbB7plfL8LKVsSnSgsgEpBfZg4TemCEI7J2P8WfONLWVYr6Sh9610SjrsNNZqN
+         VFUYKzYcc2fR7RyXSZbOaDiP37bADT+jXBqUrobwGmncJKK87t0Js6Ln7LY68dDHNX1W
+         OuhxmENCGIGvRZslN27eCHjQhVHgvsjcqjKNa+0TXz/+f/VQqoJGG0c4Y4kAEQDAY0MW
+         dC1A==
+X-Gm-Message-State: AOAM533uC64hEO7t2ABLZN+4N7CUIy+YH19fywOMjKzYwNRznM2PXbGu
+        FM+PTyu4MNmBUtflPUZtYmM=
+X-Google-Smtp-Source: ABdhPJxn+Kx8ezIh3hRWCXBEAP2NSusIhx5YhewG4epzxBfAUTrNmzqbreB9W9/ynlMFo9omo1skgQ==
+X-Received: by 2002:a17:902:b20a:: with SMTP id t10mr26885947plr.185.1596028969400;
+        Wed, 29 Jul 2020 06:22:49 -0700 (PDT)
+Received: from gmail.com ([103.105.152.86])
+        by smtp.gmail.com with ESMTPSA id r25sm2244428pgv.88.2020.07.29.06.22.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jul 2020 06:22:48 -0700 (PDT)
+Date:   Wed, 29 Jul 2020 18:51:10 +0530
+From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Helgaas <bjorn@helgaas.com>,
+        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kevin Curtis <kevin.curtis@farsite.co.uk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v1] farsync: use generic power management
+Message-ID: <20200729132110.GA605@gmail.com>
+References: <20200729101730.GA215923@gmail.com>
+ <20200729122954.GA1920458@bjorn-Precision-5520>
 MIME-Version: 1.0
-References: <1595307848-20719-1-git-send-email-magnus.karlsson@intel.com>
- <1595307848-20719-6-git-send-email-magnus.karlsson@intel.com> <00afe3da-0d5e-18fe-b6cb-490faa3dd132@intel.com>
-In-Reply-To: <00afe3da-0d5e-18fe-b6cb-490faa3dd132@intel.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 29 Jul 2020 15:20:08 +0200
-Message-ID: <CAJ8uoz1mg-NJ-gNDVrikVp93DC5bU6QN8gzEPpyw36URRtBYxg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 05/14] xsk: move queue_id, dev and need_wakeup
- to buffer pool
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        bpf <bpf@vger.kernel.org>, jeffrey.t.kirsher@intel.com,
-        anthony.l.nguyen@intel.com,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
-        cristian.dumitrescu@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200729122954.GA1920458@bjorn-Precision-5520>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 9:10 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.co=
-m> wrote:
+On Wed, Jul 29, 2020 at 07:29:54AM -0500, Bjorn Helgaas wrote:
+> On Wed, Jul 29, 2020 at 03:47:30PM +0530, Vaibhav Gupta wrote:
+> >
+> > Agreed. Actually, as their presence only causes PCI core to call
+> > pci_legacy_suspend/resume() for them, I thought that after removing
+> > the binding from "struct pci_driver", this driver qualifies to be
+> > grouped under genric framework, so used "use generic power
+> > management" for the heading.
+> > 
+> > I should have written "remove legacy bindning".
+> 
+> This removed the *mention* of fst_driver.suspend and fst_driver.resume,
+> which is important because we want to eventually remove those members
+> completely from struct pci_driver.
+> 
+> But fst_driver.suspend and fst_driver.resume *exist* before and after
+> this patch, and they're initialized to zero before and after this
+> patch.
+> 
+> Since they were zero before, and they're still zero after this patch,
+> the PCI core doesn't call pci_legacy_suspend/resume().  This patch
+> doesn't change that at all.
 >
->
->
-> On 2020-07-21 07:03, Magnus Karlsson wrote:
-> > Move queue_id, dev, and need_wakeup from the umem to the
-> > buffer pool. This so that we in a later commit can share the umem
-> > between multiple HW queues. There is one buffer pool per dev and
-> > queue id, so these variables should belong to the buffer pool, not
-> > the umem. Need_wakeup is also something that is set on a per napi
-> > level, so there is usually one per device and queue id. So move
-> > this to the buffer pool too.
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >   include/net/xdp_sock.h      |  3 ---
-> >   include/net/xsk_buff_pool.h |  4 ++++
-> >   net/xdp/xdp_umem.c          | 19 +------------------
-> >   net/xdp/xdp_umem.h          |  4 ----
-> >   net/xdp/xsk.c               | 40 +++++++++++++++---------------------=
-----
-> >   net/xdp/xsk_buff_pool.c     | 39 ++++++++++++++++++++++--------------=
----
-> >   net/xdp/xsk_diag.c          |  4 ++--
-> >   7 files changed, 44 insertions(+), 69 deletions(-)
-> >
-> [...]
-> >               }
-> > diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-> > index 36287d2..436648a 100644
-> > --- a/net/xdp/xsk_buff_pool.c
-> > +++ b/net/xdp/xsk_buff_pool.c
-> > @@ -95,10 +95,9 @@ void xp_set_rxq_info(struct xsk_buff_pool *pool, str=
-uct xdp_rxq_info *rxq)
-> >   }
-> >   EXPORT_SYMBOL(xp_set_rxq_info);
-> >
-> > -int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *dev,
-> > +int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *netde=
-v,
-> >                 u16 queue_id, u16 flags)
-> >   {
-> > -     struct xdp_umem *umem =3D pool->umem;
-> >       bool force_zc, force_copy;
-> >       struct netdev_bpf bpf;
-> >       int err =3D 0;
-> > @@ -111,27 +110,30 @@ int xp_assign_dev(struct xsk_buff_pool *pool, str=
-uct net_device *dev,
-> >       if (force_zc && force_copy)
-> >               return -EINVAL;
-> >
-> > -     if (xsk_get_pool_from_qid(dev, queue_id))
-> > +     if (xsk_get_pool_from_qid(netdev, queue_id))
-> >               return -EBUSY;
-> >
-> > -     err =3D xsk_reg_pool_at_qid(dev, pool, queue_id);
-> > +     err =3D xsk_reg_pool_at_qid(netdev, pool, queue_id);
-> >       if (err)
-> >               return err;
-> >
-> >       if (flags & XDP_USE_NEED_WAKEUP) {
-> > -             umem->flags |=3D XDP_UMEM_USES_NEED_WAKEUP;
-> > +             pool->uses_need_wakeup =3D true;
-> >               /* Tx needs to be explicitly woken up the first time.
-> >                * Also for supporting drivers that do not implement this
-> >                * feature. They will always have to call sendto().
-> >                */
-> > -             umem->need_wakeup =3D XDP_WAKEUP_TX;
-> > +             pool->cached_need_wakeup =3D XDP_WAKEUP_TX;
-> >       }
-> >
-> > +     dev_hold(netdev);
-> > +
->
-> You have a reference leak here for the error case.
+Got it. Thanks :) 
+> > But David has applied the patch, should I send a v2 or fix to update
+> > message?
+> 
+> No, I don't think David updates patches after he's applied them.  But
+> if the situation comes up again, you'll know how to describe it :)
+> 
+Thanks a lot. :D
 
-Thanks. Will fix.
-
-/Magnus
-
->
-> Bj=C3=B6rn
+Vaibhav Gupta
+> Bjorn
