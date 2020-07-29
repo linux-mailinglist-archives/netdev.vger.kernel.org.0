@@ -2,176 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 847A3232489
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 20:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFB35232490
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 20:24:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726773AbgG2SVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 14:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726336AbgG2SVr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 14:21:47 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1E17C061794;
-        Wed, 29 Jul 2020 11:21:47 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id b2so731996qvp.9;
-        Wed, 29 Jul 2020 11:21:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uC2Yfa9EauSFl+OWvUk9gA/kGn27Q0HFfGT3/E012rQ=;
-        b=NTlMh/A8gTUZMxyYwL/gEdbpPjTNeA/qMBoowZGjv0SH8z5vQwUceiOXR30/dE3Hwm
-         Al5Mv/jjP0XuDqJR8uFiSC2rU8SfGda/K+vfAfwwmQFDYGwM5gh/vNco89k1AG38TAvQ
-         KefjcgPYfj1219rzNxXzIcvwbzbDpbhcuE2adFp5lE92jrmf+xr7+48y1wkZl07XxY5S
-         45hRDnE6uGeK4uV74xwFVrEoEQB0IH33WuuM7XdqYpS6fYLiOGG64qVYOnYBuY94onrO
-         bVSHFbJ4rtgCw6ysZsENRd5LLGRyC4ZfBTT/kv9cv1gTqD/Q+7PYpQHxsCluITswsWDz
-         5nJw==
+        id S1726817AbgG2SYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 14:24:17 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:50236 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726449AbgG2SYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 14:24:17 -0400
+Received: by mail-il1-f200.google.com with SMTP id l17so17232494ilj.17
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 11:24:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uC2Yfa9EauSFl+OWvUk9gA/kGn27Q0HFfGT3/E012rQ=;
-        b=SAuAwagh0K60V7udmol3LZ/UTnz8pvk7JAExh6BGs3baWDsL7vP+xlqrGMGAJXNg9q
-         jkfgtURyJCGEUlPS9fiSlrLmGX3i72sn/1XDbMbZ83OHaiU/NAuLc2LxIzZn7cLf0Kg5
-         ZbpSpysk2vqmmYJ8FWMV2NCY0Xhmd7lWsBPe8TS8rt7uwF1+R3lrrLwuZz8aEnrHkc/H
-         RrBi2bGm2srxcZZov8JU6giRBMqYom4TOyw37FUMLavF1kdCkFqhk2EACO/NVbjtBiul
-         IU61casVA3Zl2ZJ7gXOnXp1zNs89UYTzV3g38ygqroOkr4gXcG2Utm3DNk3E9c7mzdnM
-         FTUg==
-X-Gm-Message-State: AOAM533SFxSLwSVwYnfbPtOScRv6v6vt5D5T/dGZEuJ9hUz5RpIwT8Ll
-        yzTNgYqV5ROwZk/Z1ZR6KbsEWQju2A20I0zM+CI=
-X-Google-Smtp-Source: ABdhPJw+UxmZlckbtiL6nSgupchii/HyIuAX8Lgd/3uEEbCtVOPzQYxRnRJ6mQNyMcyxkAcbDj2SPErkrmxbWbsFmxo=
-X-Received: by 2002:a0c:9ae2:: with SMTP id k34mr32913779qvf.247.1596046906946;
- Wed, 29 Jul 2020 11:21:46 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=IN3u1GDaVYrE0AqJpCcuAghgATliVHxr+eqMDVhObqs=;
+        b=cNNhOP2h3Te/A4I/Qjc5ET0o9VBcYf1fnoSRHFKGtkkGYdBZ6M4LaMT0fbfQAhCyJ0
+         Zk7SzghDpiYjw2Ph1W6UpMqMSRBHNc1X3hX93w/Ax34J8Cll0X9sHh6PVWvHK2LWFk/o
+         tuySwxM4FJfn7FJEQTRz1VK4MuIUYRv3QgV//Pkgfj2fpCUzWefVXgb2wTRvoO3dDP5L
+         BZgz1UW3E+LZ5hMWlEIZ+AGUmMV5gEF1g/4wzgRZCT9HsANVx4aSojjmuodqSyRTZoff
+         RPg+DfoeeFgKjEGWLwhN2jmuPE4RBaYnhz6RBqXGtn4rw05rkjTtfBRTroo+vfPVmiOz
+         Gb6w==
+X-Gm-Message-State: AOAM530ISD5pZLqKcdcIGJkNEfbvFs2RHO2nnI58GbhTumMmilyfzZBe
+        atcn//E1G5AWtLrVNmv+c2xrMTekZKfJs1iO3lBKK4aIYE0t
+X-Google-Smtp-Source: ABdhPJzDdjVeuzNxfsWgoyLwtVyCMDItdjj0F1H43aKdI4WmT5YabaRvgiE9in7nPhgKpLeSwm+qoMqibvGJCGE07Lb1fcBBsxh+
 MIME-Version: 1.0
-References: <20200724203830.81531-1-alexei.starovoitov@gmail.com> <20200724203830.81531-3-alexei.starovoitov@gmail.com>
-In-Reply-To: <20200724203830.81531-3-alexei.starovoitov@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 29 Jul 2020 11:21:35 -0700
-Message-ID: <CAEf4BzaJcAerczLS+nHPX5KpvNjfAB6Ushmy3HFyu5OJbKH9+Q@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 2/4] bpf: Add BPF program and map iterators as
- built-in BPF programs.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
+X-Received: by 2002:a6b:5a04:: with SMTP id o4mr32524747iob.171.1596047055708;
+ Wed, 29 Jul 2020 11:24:15 -0700 (PDT)
+Date:   Wed, 29 Jul 2020 11:24:15 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000cce79b05ab98a99c@google.com>
+Subject: KASAN: use-after-free Write in __alloc_skb (3)
+From:   syzbot <syzbot+7569bc4cd6fad9f1e551@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 24, 2020 at 1:39 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> From: Alexei Starovoitov <ast@kernel.org>
->
-> The program and map iterators work similar to seq_file-s.
-> Once the program is pinned in bpffs it can be read with "cat" tool
-> to print human readable output. In this case about BPF programs and maps.
-> For example:
-> $ cat /sys/fs/bpf/progs.debug
->   id name            attached
->    5 dump_bpf_map    bpf_iter_bpf_map
->    6 dump_bpf_prog   bpf_iter_bpf_prog
-> $ cat /sys/fs/bpf/maps.debug
->   id name            pages
->    3 iterator.rodata     2
->
-> To avoid kernel build dependency on clang 10 separate bpf skeleton generation
-> into manual "make" step and instead check-in generated .skel.h into git.
->
-> Unlike 'bpftool prog show' in-kernel BTF name is used (when available)
-> to print full name of BPF program instead of 16-byte truncated name.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
+Hello,
 
-Tiny bug below, otherwise looks good.
+syzbot found the following issue on:
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+HEAD commit:    68845a55 Merge branch 'akpm' into master (patches from And..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10f85f78900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f87a5e4232fdb267
+dashboard link: https://syzkaller.appspot.com/bug?extid=7569bc4cd6fad9f1e551
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1517668c900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10280564900000
 
+Bisection is inconclusive: the issue happens on the oldest tested release.
 
->  kernel/bpf/preload/iterators/.gitignore       |   2 +
->  kernel/bpf/preload/iterators/Makefile         |  57 +++
->  kernel/bpf/preload/iterators/README           |   4 +
->  kernel/bpf/preload/iterators/iterators.bpf.c  | 118 +++++
->  kernel/bpf/preload/iterators/iterators.skel.h | 411 ++++++++++++++++++
->  5 files changed, 592 insertions(+)
->  create mode 100644 kernel/bpf/preload/iterators/.gitignore
->  create mode 100644 kernel/bpf/preload/iterators/Makefile
->  create mode 100644 kernel/bpf/preload/iterators/README
->  create mode 100644 kernel/bpf/preload/iterators/iterators.bpf.c
->  create mode 100644 kernel/bpf/preload/iterators/iterators.skel.h
->
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13dc473c900000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=103c473c900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17dc473c900000
 
-[...]
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7569bc4cd6fad9f1e551@syzkaller.appspotmail.com
 
-> +
-> +static const char *get_name(struct btf *btf, long btf_id, const char *fallback)
-> +{
-> +       struct btf_type **types, *t;
-> +       unsigned int name_off;
-> +       const char *str;
-> +
-> +       if (!btf)
-> +               return fallback;
-> +       str = btf->strings;
-> +       types = btf->types;
-> +       bpf_probe_read_kernel(&t, sizeof(t), types + btf_id);
-> +       name_off = BPF_CORE_READ(t, name_off);
-> +       if (name_off > btf->hdr.str_len)
+==================================================================
+BUG: KASAN: use-after-free in memset include/linux/string.h:391 [inline]
+BUG: KASAN: use-after-free in __alloc_skb+0x2f6/0x550 net/core/skbuff.c:239
+Write of size 32 at addr ffff8881a7463f40 by task swapper/1/0
 
->= here?
+CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.8.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xae/0x436 mm/kasan/report.c:383
+ __kasan_report mm/kasan/report.c:513 [inline]
+ kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
+ check_memory_region_inline mm/kasan/generic.c:186 [inline]
+ check_memory_region+0x13d/0x180 mm/kasan/generic.c:192
+ memset+0x20/0x40 mm/kasan/common.c:84
+ memset include/linux/string.h:391 [inline]
+ __alloc_skb+0x2f6/0x550 net/core/skbuff.c:239
+ alloc_skb include/linux/skbuff.h:1083 [inline]
+ alloc_skb_with_frags+0x92/0x570 net/core/skbuff.c:5770
+ sock_alloc_send_pskb+0x72a/0x880 net/core/sock.c:2356
+ mld_newpack+0x1e0/0x770 net/ipv6/mcast.c:1606
+ add_grhead+0x265/0x330 net/ipv6/mcast.c:1710
+ add_grec+0xe2c/0x1090 net/ipv6/mcast.c:1841
+ mld_send_cr net/ipv6/mcast.c:1967 [inline]
+ mld_ifc_timer_expire+0x596/0xf10 net/ipv6/mcast.c:2474
+ call_timer_fn+0x1ac/0x760 kernel/time/timer.c:1415
+ expire_timers kernel/time/timer.c:1460 [inline]
+ __run_timers.part.0+0x54c/0xa20 kernel/time/timer.c:1784
+ __run_timers kernel/time/timer.c:1756 [inline]
+ run_timer_softirq+0xae/0x1a0 kernel/time/timer.c:1797
+ __do_softirq+0x34c/0xa60 kernel/softirq.c:292
+ asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:711
+ </IRQ>
+ __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
+ run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
+ do_softirq_own_stack+0x111/0x170 arch/x86/kernel/irq_64.c:77
+ invoke_softirq kernel/softirq.c:387 [inline]
+ __irq_exit_rcu kernel/softirq.c:417 [inline]
+ irq_exit_rcu+0x229/0x270 kernel/softirq.c:429
+ sysvec_apic_timer_interrupt+0x54/0x120 arch/x86/kernel/apic/apic.c:1091
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:585
+RIP: 0010:native_safe_halt+0xe/0x10 arch/x86/include/asm/irqflags.h:61
+Code: ff 4c 89 ef e8 33 c9 ca f9 e9 8e fe ff ff 48 89 df e8 26 c9 ca f9 eb 8a cc cc cc cc e9 07 00 00 00 0f 00 2d 74 5f 60 00 fb f4 <c3> 90 e9 07 00 00 00 0f 00 2d 64 5f 60 00 f4 c3 cc cc 55 53 e8 29
+RSP: 0018:ffffc90000d3fc88 EFLAGS: 00000293
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff8880a9636340 RSI: ffffffff87e85c48 RDI: ffffffff87e85c1e
+RBP: ffff8880a68e7864 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: ffff8880a68e7864
+R13: 1ffff920001a7f9b R14: ffff8880a68e7865 R15: 0000000000000001
+ arch_safe_halt arch/x86/include/asm/paravirt.h:150 [inline]
+ acpi_safe_halt+0x8d/0x110 drivers/acpi/processor_idle.c:111
+ acpi_idle_do_entry+0x15c/0x1b0 drivers/acpi/processor_idle.c:525
+ acpi_idle_enter+0x3f9/0xab0 drivers/acpi/processor_idle.c:651
+ cpuidle_enter_state+0xff/0x960 drivers/cpuidle/cpuidle.c:235
+ cpuidle_enter+0x4a/0xa0 drivers/cpuidle/cpuidle.c:346
+ call_cpuidle kernel/sched/idle.c:126 [inline]
+ cpuidle_idle_call kernel/sched/idle.c:214 [inline]
+ do_idle+0x431/0x6d0 kernel/sched/idle.c:276
+ cpu_startup_entry+0x14/0x20 kernel/sched/idle.c:372
+ start_secondary+0x2b3/0x370 arch/x86/kernel/smpboot.c:268
+ secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:243
 
-> +               return fallback;
-> +       return str + name_off;
-> +}
-> +
-> +SEC("iter/bpf_map")
-> +int dump_bpf_map(struct bpf_iter__bpf_map *ctx)
-> +{
-> +       struct seq_file *seq = ctx->meta->seq;
-> +       __u64 seq_num = ctx->meta->seq_num;
-> +       struct bpf_map *map = ctx->map;
-> +
-> +       if (!map)
-> +               return 0;
-> +
-> +       if (seq_num == 0)
-> +               BPF_SEQ_PRINTF(seq, "  id name             pages\n");
-> +
-> +       BPF_SEQ_PRINTF(seq, "%4u %-16s%6d\n", map->id, map->name, map->memory.pages);
+The buggy address belongs to the page:
+page:ffffea00069d18c0 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0
+flags: 0x57ffe0000000000()
+raw: 057ffe0000000000 ffffea00069d18c8 ffffea00069d18c8 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
 
-map->memory.pages won't be meaningful, once Roman's patches removing
-RLIMIT_MEMLOCK usage land, so might just drop them now
-
-> +       return 0;
-> +}
-> +
-> +SEC("iter/bpf_prog")
-> +int dump_bpf_prog(struct bpf_iter__bpf_prog *ctx)
-> +{
-> +       struct seq_file *seq = ctx->meta->seq;
-> +       __u64 seq_num = ctx->meta->seq_num;
-> +       struct bpf_prog *prog = ctx->prog;
-> +       struct bpf_prog_aux *aux;
-> +
-> +       if (!prog)
-> +               return 0;
-> +
-> +       aux = prog->aux;
-> +       if (seq_num == 0)
-> +               BPF_SEQ_PRINTF(seq, "  id name             attached\n");
-> +
-> +       BPF_SEQ_PRINTF(seq, "%4u %-16s %s %s\n", aux->id,
-> +                      get_name(aux->btf, aux->func_info[0].type_id, aux->name),
-> +                      aux->attach_func_name, aux->linked_prog->aux->name);
-> +       return 0;
-> +}
-> +char LICENSE[] SEC("license") = "GPL";
+Memory state around the buggy address:
+ ffff8881a7463e00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8881a7463e80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff8881a7463f00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                                           ^
+ ffff8881a7463f80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8881a7464000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
 
 
-[...]
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
