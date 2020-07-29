@@ -2,135 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CDBD231C55
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 11:53:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E5B1231C59
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 11:55:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbgG2Jxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 05:53:33 -0400
-Received: from mail-bn7nam10on2076.outbound.protection.outlook.com ([40.107.92.76]:41601
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S1726693AbgG2JzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 05:55:12 -0400
+Received: from mail-eopbgr40069.outbound.protection.outlook.com ([40.107.4.69]:46193
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726054AbgG2Jxd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jul 2020 05:53:33 -0400
+        id S1726054AbgG2JzL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jul 2020 05:55:11 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SeHsqlByvSX8flYRtjBoCJDIsd6yIq/CWPkHrKNXRLHBD/moTbRKtbppEQMyNllxkvrx+gQCuMYlfg1j0XDaS0bKr853dhEUCRPdn5Wyt/yBU6glGzPLzi2twXU6+xKwWi2Oi7OND49t5axWWp+1TrLNjeS7U3Bm+rk/j/Kl96NamWZQ0CG8EU+1qOeAPHn7gSjwEZKUCud4vnlPRj87eqzY6cHSnFwjxTcVDZOxgS9P3kwoZi/AwOd49Sxi8iVRwhHiJLcN9HGBb5IfjEwrxeK1x/dzwdPV3EU8Ke25W/Cby5hPhkznwRA9RJoR73zvwIYq8uF4bcGSItam+ohpPA==
+ b=ReczpOuvxUS7h+tmBwoaf6orhL2dRyR3yv81yqGI3t6mbJ15AT8R0binxHhPYbDTGnx/lttfsYDK/42PePyVL9tO17IkwbxPk/Z5/hFBWrEQM+EMCtMV7UtbpbDjYoekcXa1yrC/8YK4vj/ZTIhMXaBcYPNwjl9vbeil5n7RSKvTghbDY2VcyMsWFmZmzKuQft10fjRnpzp+88IMpb1HWndlQvUUTUv5YRGiwHFEv88/cI0uZ6nOfeWwBV1ZZ+009G57nr7rzQz09F8XSTSMRAfgVSJY8wb3/2UBN+rWsV0NWLGrtY5dkBtRK7ZU7NWb9cB3p4x1wuUh00E1wN7utQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ch/qpkYkYUHew5syPlUqLv6r3azsJvidhvJX3xZNSZM=;
- b=cJ93nBv1fpUWkEQmpiYxOOpVJt3V9rJGOx8w4+dyoAC+eFcsuxjgwswSbSIDtqSuRIWuCH8mXJrnmaeclWbfJtabsmdSoR4YMZ/sHeH3PCGIlpC7MAsdgexif7EwSfU0k6O0mg1wonXLa8AP+2lC2AlpxFu8VyPM9sqM8m/Q4zbCr1OzlVRsCia2NSHsU+FGI863wF9AJDpSD/fyo85sV07m3qivnxAn//yYohIyORcAuzdwqLDFjrMENFZnTiVkdZllxTcHjAZE+PYGUe2MEL8iNSuCqcr7P8utBAPl4TdF8Mrrjv7hgpOCpM5nWjNx8KGLigLnSLpbahcZdZ7WGw==
+ bh=CGpYvGtzhckEzz3B4eCMLc9PZyge4zMFfc1IaWWMCTE=;
+ b=InC2ncQAYzY9l3h/Amrgcy9Q4JhXdKk29jpYfG6at452riMhrLHGFNUFZ/7j1vdRKa6b9XYzPrAHVOeN7eefp3h8+NsX20oVD/rbfakKTShcW6wtUIAPiWS5XFIYXRDEqtjFo5BDwFKrOBw2LgSlVmh1u9bkE02GpwWjuZVFXvSHRw64tNZ9ncv/ZC3JdjpAkEC0YujjEgzdbYjxbm/dMP8oEwcgCk7hvU+ijU5zx2gwlG3gT7Mkt5xw6DK1r/I4oEqsxjm/mXmdFnWPVmz33vUhLBvXi0rJXtt4/8P2xeAFhaLiBR+IyFMz0mBzGPA3q3GRDX1UvE934yQLys1j0g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synaptics.com; dmarc=pass action=none
- header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ch/qpkYkYUHew5syPlUqLv6r3azsJvidhvJX3xZNSZM=;
- b=WLoVAOKIkuvQEB2GVAxiMlyXafs+cdKFXmmscAEGDGbxK/WJSmrxE6zIMz+53Qu1KlVbpIihDx/edBmHIKdvVKdHGJobDPq1UTmbWiWyJ4GSU+GW2xKlA6jZcu4drayka+1bjZYNV2xn/hST4aVmYzyLo60k121S3MSCC1Tw3wA=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none
- header.from=synaptics.com;
-Received: from BYAPR03MB3573.namprd03.prod.outlook.com (2603:10b6:a02:ae::15)
- by SJ0PR03MB5565.namprd03.prod.outlook.com (2603:10b6:a03:27a::8) with
+ bh=CGpYvGtzhckEzz3B4eCMLc9PZyge4zMFfc1IaWWMCTE=;
+ b=CJc+MmKNN+dGdFedDYaGVMdBDajyGgY6y4d5pd8Q+Dj/Ue1L2SlR1sMQbYR7soBzTT6X02K4aegFfTnjR4Vm8ktlD1rBX+6lk7wFlpPQ1JjVZ8vVL6eQzyZvPwrPho9o7K9/eyDJJkRSD+20VFGazvo2l0yFNf6zxhlvkMS66wk=
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=mellanox.com;
+Received: from AM0PR05MB4786.eurprd05.prod.outlook.com (2603:10a6:208:b3::15)
+ by AM0PR0502MB4067.eurprd05.prod.outlook.com (2603:10a6:208:b::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.20; Wed, 29 Jul
- 2020 09:53:30 +0000
-Received: from BYAPR03MB3573.namprd03.prod.outlook.com
- ([fe80::b5cc:ca6b:3c25:a99c]) by BYAPR03MB3573.namprd03.prod.outlook.com
- ([fe80::b5cc:ca6b:3c25:a99c%4]) with mapi id 15.20.3216.033; Wed, 29 Jul 2020
- 09:53:30 +0000
-Date:   Wed, 29 Jul 2020 17:53:12 +0800
-From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     thomas.petazzoni@bootlin.com, kuba@kernel.org,
-        linux@armlinux.org.uk, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-nex 2/2] net: mvneta: Don't speed down the PHY when
- changing mtu
-Message-ID: <20200729175312.6d6370cf@xhacker.debian>
-In-Reply-To: <20200728.175202.598794850221205861.davem@davemloft.net>
-References: <20200727195012.4bcd069d@xhacker.debian>
-        <20200727195314.704dfaed@xhacker.debian>
-        <20200728.175202.598794850221205861.davem@davemloft.net>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TYAPR01CA0058.jpnprd01.prod.outlook.com
- (2603:1096:404:2b::22) To BYAPR03MB3573.namprd03.prod.outlook.com
- (2603:10b6:a02:ae::15)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.27; Wed, 29 Jul
+ 2020 09:55:07 +0000
+Received: from AM0PR05MB4786.eurprd05.prod.outlook.com
+ ([fe80::9186:8b7:3cf7:7813]) by AM0PR05MB4786.eurprd05.prod.outlook.com
+ ([fe80::9186:8b7:3cf7:7813%7]) with mapi id 15.20.3216.033; Wed, 29 Jul 2020
+ 09:55:07 +0000
+Date:   Wed, 29 Jul 2020 12:55:03 +0300
+From:   Eli Cohen <eli@mellanox.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Zhu Lingshan <lingshan.zhu@intel.com>, alex.williamson@redhat.com,
+        mst@redhat.com, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, wanpengli@tencent.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, shahafs@mellanox.com, parav@mellanox.com
+Subject: Re: [PATCH V4 4/6] vhost_vdpa: implement IRQ offloading in vhost_vdpa
+Message-ID: <20200729095503.GD35280@mtl-vdi-166.wap.labs.mlnx>
+References: <20200728042405.17579-1-lingshan.zhu@intel.com>
+ <20200728042405.17579-5-lingshan.zhu@intel.com>
+ <20200728090438.GA21875@nps-server-21.mtl.labs.mlnx>
+ <c87d4a5a-3106-caf2-2bc1-764677218967@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c87d4a5a-3106-caf2-2bc1-764677218967@redhat.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-ClientProxiedBy: AM0P190CA0008.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:208:190::18) To AM0PR05MB4786.eurprd05.prod.outlook.com
+ (2603:10a6:208:b3::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from xhacker.debian (124.74.246.114) by TYAPR01CA0058.jpnprd01.prod.outlook.com (2603:1096:404:2b::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.17 via Frontend Transport; Wed, 29 Jul 2020 09:53:27 +0000
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-X-Originating-IP: [124.74.246.114]
+Received: from mtl-vdi-166.wap.labs.mlnx (94.188.199.18) by AM0P190CA0008.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:190::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.16 via Frontend Transport; Wed, 29 Jul 2020 09:55:06 +0000
+X-Originating-IP: [94.188.199.18]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 26d3307a-2e24-42fd-b853-08d833a53f2e
-X-MS-TrafficTypeDiagnostic: SJ0PR03MB5565:
-X-Microsoft-Antispam-PRVS: <SJ0PR03MB55652D64D9EF5FA7A0825DA1ED700@SJ0PR03MB5565.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:513;
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: aa5288a5-8a86-4a63-b361-08d833a5799f
+X-MS-TrafficTypeDiagnostic: AM0PR0502MB4067:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR0502MB40677B8080171C1108354B40C5700@AM0PR0502MB4067.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eWjIAYznvKZG6iNY163bSXjbPb5mds1H9Dj3To/thiw46L/v9U9WgW4KvE6VMy992bGrh6wC5GM2TvNx82CWpl0tkIR8uJMsmSeFeT8E4NYnY7DwPrKFLZ1P8Yw7eWMF2zXHPXq/N/XCLL4+binMVrAdDh/JHGEBwNvshuFlFoopVbq3pHGshatSrTfkRzM/OahF6D8UWTo6hvFvRY3wTBrzzPOIBoDLLBxANVQrBa9LkuR5mjkVxj9a1DsXM3YUdssZL4AK43BqQ3Dd0PP78Jg8VLM9ZrASmO43QtS7TdaLawB9autAfSWvFd9KKO7t0IGJt3Uep8ZR2mSY9mG6YA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR03MB3573.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(376002)(366004)(396003)(346002)(39850400004)(9686003)(83380400001)(66476007)(6916009)(956004)(86362001)(66556008)(5660300002)(66946007)(8676002)(26005)(55016002)(52116002)(186003)(478600001)(16526019)(2906002)(6666004)(316002)(8936002)(7696005)(6506007)(1076003)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: +q8r83WNqHk73cC+ZcXda14lX6HYMAhyTK5YE/kBcQNQdmj4bC+E9KIoejo6By4WrANu2Yoz+xTcc+IV+UYFTSoskKTxhMetl0E5tkIPRatpuk5LSzeyhaY//j1VSOvYsy3aeVaMTHIISLMYAY99K7GRCMvAs15h36P7kf0/3zxyNp9oW1TAf7PP1zQ/1bzc0aS5VsSzj84maw7G9Yca4DNDJkSCEs94EVKB7eWHURTaLBI4VA5lXBd6KdSkQpVqEK1F6Dj1qUWtp7g+9SO2OyuEmfvrMfvkF7pXyp9TgG4CZQUmVx4msZqZ4j2OaXjV/G2/dh3k66zM8UMq3PnDDZi6qMim2NYS01qpQd62nbf5S2Zl2XG+qeDiw/rtoPl6XDpuZRhsjQJckd2g3kVJ62bR6jB8OyN9PnZBKo+zPqpG3I1tkzTwa9UeGeycCy9/3R9/1JbbekDjrglA2k18CdKDo1tTGgsmoIdkkVSjDV4=
-X-OriginatorOrg: synaptics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 26d3307a-2e24-42fd-b853-08d833a53f2e
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR03MB3573.namprd03.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: vFL925ZRHjon8VPgNEatXTUMyXjFH+8p9t2YTpc1a9WCfnb0rDoBk6fhMSUtp3xmp2J89OfI50ekqQACqzjEiHmM1QKP4YC7jkM2LzwTY5KaEjlEmxG9ofoQgLoo2aS0KkgBNi67c6+4Lyy7AvPee+F02CW2/MDQPUGoMRE2j+lRqa5DNEgmP38jHo3/i6Z2tlnED0eVNN0cGA/RGCZvk7pjoT3G716PKeyc0hPdZ6BRSzXbW2klUAj9cL/bsYI/1HcSgNxv7tMN0dt4d4HfOXSPdYtobAAZweXUWWZWgfXkBWtTq7OZE9vCZWYw57NRpHxR/CHF4q4znOUjaYClJA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4786.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(366004)(136003)(396003)(39860400002)(4326008)(33656002)(8676002)(2906002)(52116002)(7696005)(26005)(186003)(6916009)(316002)(66946007)(7416002)(8936002)(66476007)(66556008)(16526019)(6506007)(86362001)(478600001)(5660300002)(55016002)(9686003)(956004)(6666004)(107886003)(1076003)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: vzVh8eTxi9PWUF9Gkt0Aa5rlKr2R2R3Eca5A6om9i2oJ1tjMzRC9S3Xy6Ob+JrU/5LoQV/1bA1E00oUVFulFtFEGTP6YUPruZWXslBFvO4sgMV+WL0MmTFxlsF6HkEFu3qkHxbDUUSrSqvYZ86d0vI+1EMy+dk1D1zgRKQXln7r0h4AYg5CNR2OwEOJ9Adnah9LM9gkEIW9id4zBDy7xx62WBXpDm0sBhYonSy0Syga4tnCsLg1SID4UB67i0bV35U1YyBziKmoKyQYxsOHnlaTmY4lZL1BR4rm1O6Uo7gN5Q1HSuYu7qG7YN/uSeWMh+hj9xdtBknm8A+6BY86ARxdsVAPJ0+7kK1Gmbj2V3GGy6rVuRJl7aZ0LOjMeCJsxKkcZ/lBgA7XQXxngcQ3zmIHO+fu4SRemEYTplQjyzsRCysWRTykj9/tFkK9Ko3r74LkfqjClE+MXhyoHPSO7sH+xszMOT05dflPT6rkms8E=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa5288a5-8a86-4a63-b361-08d833a5799f
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB4786.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2020 09:53:29.8240
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2020 09:55:07.8283
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0mbzKxlYgTv+t4SYCEVCXESJmowZbFoqCRYPiQS1m0oM+ydhKZXKBa9/C99Qoof+oh3l96xCUCp5bz/LCe86Xg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR03MB5565
+X-MS-Exchange-CrossTenant-UserPrincipalName: e4i6+Iw45njVDqg15o/FYVE/NT66E7ziV1c4/BaIoDlNblZWdxvzCVWXxkI7bD2J7IuFJcqYV+UFcxZz6uc1YA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB4067
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
-
-On Tue, 28 Jul 2020 17:52:02 -0700 (PDT) David Miller wrote:
-
+On Wed, Jul 29, 2020 at 05:21:53PM +0800, Jason Wang wrote:
+> 
+> On 2020/7/28 下午5:04, Eli Cohen wrote:
+> >On Tue, Jul 28, 2020 at 12:24:03PM +0800, Zhu Lingshan wrote:
+> >>+static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, int qid)
+> >>+{
+> >>+	struct vhost_virtqueue *vq = &v->vqs[qid];
+> >>+	const struct vdpa_config_ops *ops = v->vdpa->config;
+> >>+	struct vdpa_device *vdpa = v->vdpa;
+> >>+	int ret, irq;
+> >>+
+> >>+	spin_lock(&vq->call_ctx.ctx_lock);
+> >>+	irq = ops->get_vq_irq(vdpa, qid);
+> >>+	if (!vq->call_ctx.ctx || irq == -EINVAL) {
+> >>+		spin_unlock(&vq->call_ctx.ctx_lock);
+> >>+		return;
+> >>+	}
+> >>+
+> >If I understand correctly, this will cause these IRQs to be forwarded
+> >directly to the VCPU, e.g. will be handled by the guest/qemu.
 > 
 > 
-> > @@ -3651,7 +3651,8 @@ static void mvneta_stop_dev(struct mvneta_port *pp)
+> Yes, if it can bypassed, the interrupt will be delivered to vCPU directly.
+> 
+
+So, usually the network driver knows how to handle interrups for its
+devices. I assume the virtio_net driver at the guest has some default
+processing but what if the underlying hardware device (such as the case
+of vdpa) needs to take some actions? Is there an option to do bounce the
+interrupt back to the vendor specific driver in the host so it can take
+these actions?
+
+> 
+> >Does this mean that the host will not handle this interrupt? How does it
+> >work in case on level triggered interrupts?
+> 
+> 
+> There's no guarantee that the KVM arch code can make sure the irq
+> bypass work for any type of irq. So if they the irq will still need
+> to be handled by host first. This means we should keep the host
+> interrupt handler as a slowpath (fallback).
+> 
 > >
-> >       set_bit(__MVNETA_DOWN, &pp->state);
-> >
-> > -     if (device_may_wakeup(&pp->dev->dev))
-> > +     if (device_may_wakeup(&pp->dev->dev) &&
-> > +         pp->pkt_size == MVNETA_RX_PKT_SIZE(pp->dev->mtu))
-> >               phylink_speed_down(pp->phylink, false);
-> >  
+> >In the case of ConnectX, I need to execute some code to acknowledge the
+> >interrupt.
 > 
-> This is too much for me.
 > 
-> You shouldn't have to shut down the entire device and take it back up
-> again just to change the MTU.
-> 
-> Unfortunately, this is a common pattern in many drivers and it is very
-> dangerous to take this lazy path of just doing "stop/start" around
-> the MTU change.
-> 
-> It means you can't recover from partial failures properly,
-> f.e. recovering from an inability to allocate queue resources for the
-> new MTU.
-> 
-> To solve this properly, you must restructure the MTU change such that
-> is specifically stops the necessary and only the units of the chip
-> necessary to change the MTU.
-> 
-> It should next try to allocate the necessary resources to satisfy the
-> MTU change, keeping the existing resources allocated in case of
-> failure.
-> 
-> Then, only is all resources are successfully allocated, it should
-> commit the MTU change fully and without errors.
-> 
-> Then none of these link flapping issues are even possible.
+> This turns out to be hard for irq bypassing to work. Is it because
+> the irq is shared or what kind of ack you need to do?
 
-Thanks a lot for pointing out the correct direction. Refactoring change
-mtu method needs more time(maybe for linux-5.10 is reasonable), so I
-just drop patch2 in v2.
+I have an EQ which is a queue for events comming from the hardware. This
+EQ can created so it reports only completion events but I still need to
+execute code that roughly tells the device that I saw these event
+records and then arm it again so it can report more interrupts (e.g if
+more packets are received or sent). This is device specific code.
+
+> 
+> Thanks
+> 
+> 
+> >
+> >Can you explain how this should be done?
+> >
+> 
