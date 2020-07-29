@@ -2,95 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C1772318F9
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 07:16:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2142223191E
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 07:31:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbgG2FQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 01:16:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59436 "EHLO
+        id S1726824AbgG2FbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 01:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726203AbgG2FQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 01:16:04 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4982BC061794;
-        Tue, 28 Jul 2020 22:16:04 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id c12so7739873qtn.9;
-        Tue, 28 Jul 2020 22:16:04 -0700 (PDT)
+        with ESMTP id S1726560AbgG2FbD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 01:31:03 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6736C061794
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 22:31:03 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id z3so8102621ilh.3
+        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 22:31:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jX5yf0QJnZjcpEQTYW1U3YX8bndFjPEWG4OkpnNCvzc=;
-        b=dVO1ZJSFkxLJTIAuXW5J160Hlnm1MI3+E1SGJ64dMTiOPBrSVkhjKvMZgj5CJY652N
-         zWryOE7wcXQI/Ok5oR1Au908HPCCtTNAHcGx0/mcAvF5aXHkEikb3Sz9xM6Kt7ek6eMs
-         bcb10GKXncyvAVn8rpSBw28Sg/VCIYt5O0UTnk+ZvB/J2ICHs5DNRmlnwEQVNZlzJ5nC
-         weSBJ/HWVLBZyGCF+ssOIF/zs2LA0iKmimDyjYmlqVDGgdk2HnVnbEnFW6QwIOjmsZyi
-         8wikfD/BrJN41IFPhoSgcIvOmq3cF8usGuecf8138k+4dGczkCLEP/z8YkWV36yjhQSx
-         enaQ==
+        bh=Et7Gk+oJKljNUOrUbGAQumTT+x8ql2dWyipgLq8/2GI=;
+        b=ALm3rPLhiSqHXloqZe+uPT8y62eQszaZ2XdLNAMrXoynlEZa4GLLYGxOmsgZd/FORj
+         fVakKZZcqYuN1kUKzk40aWH5KQmi3dW/N5I9DjqBlP3MYlU1D1qYTlFYt8Ezrurdwx5y
+         nO6Z2e1Zde2Lmh+1ygL/CLCYpcUTaAt3a6KhLCkc/SWYujfjHhgUV8KHGUzQATtjINBC
+         WrnnyxYP6KWKu4fVlTEfTpIc7yS36CB0WM+2Z2kqk4cRoLgbvmG80dniAvcHhx1zL6Mx
+         y+rOUXx40VXtH5w00jZfLDVDM3v8XkY/4j2J3yloJMzineKhH62ZIOGnaKQpxLD7njpD
+         6+4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jX5yf0QJnZjcpEQTYW1U3YX8bndFjPEWG4OkpnNCvzc=;
-        b=md0Su7KMJ0rThlC3OeXFPongKZ9LgLszwKzjtitwDPo+GoRcYWFZVrmzLe27MtaD6L
-         0ss2JeFi5rKzNu12JtDr4fBYyL7sqbbKNeTET5Q/+ELQ55a2HfhTpoAJAkGQk2BIzZEO
-         fmtgvgQx96hntsgSgISVJqkEzMAIRq3uFxCD77AkImiFVUWC2ebxW95/TL5emEbSI3Qe
-         MMD5I29eag9T0t0wZiZFe8RrB8rHfpvhU9UZFdaYDXjolv0rmUldIIKQjNOf08JmmDP9
-         BvRMQf4aLK5yY4vASCmLTdOWcqf+W7w1Y58eNF4Ti98aBcGKW6JgT8r611bu5ctc2Z0r
-         kaSg==
-X-Gm-Message-State: AOAM531li6A26vawS6OJu1ZawwROVh9CpihvUbXDDeVgyDoUddcbT7ft
-        Ylg86FxfgKob3+xIAUTVxMoeV87oebOmHYn4u88=
-X-Google-Smtp-Source: ABdhPJwzQnEaMvnFfVx2AIlbY9Y47+07H/NaFDv0w88PjoOpLmf8l6hNi/nUHza4dBiLkfdkPanHZRlgzoCA0W/InW8=
-X-Received: by 2002:aed:2cc5:: with SMTP id g63mr29614082qtd.59.1595999762284;
- Tue, 28 Jul 2020 22:16:02 -0700 (PDT)
+        bh=Et7Gk+oJKljNUOrUbGAQumTT+x8ql2dWyipgLq8/2GI=;
+        b=tpQokP7A0ZGEQsXv0mw3kODZTWQYR+O0K3EEo27qjitwLSkhBcSofdh+jJLdaqknqj
+         f8qmSkQsVunsMyeATkJJRC28GfDkRtfP2vJio8QZr9h3XjH0zT0tjdLkjv1+spSQAfjO
+         xK+AMk6cFiasYXvIHAMQO9tnm52OP0IFdcWo2LaqCHopJQhM7dPv7RoH7RLACQgZ3cCO
+         PpuNN313KwR5zupmkKUIMwqW0lMpEvO2TvXjF+IIItZw2Zzn5S70JVxXBSG1xccugd5e
+         j7NkO/AJ8Vnb1yCAkbXSMlXcU1E7koseTZleiUDYZiel5Q+0Va4x5M+8jpvuVeGcitpy
+         FmxA==
+X-Gm-Message-State: AOAM533o24As4nteSrEIoe3ZylP9gsr71rGCD83ZAJKkk6W675tKgI0G
+        M+BYtCBUg00MfO90+DlRIS0R4FPA4z17mym/CMzPsQ==
+X-Google-Smtp-Source: ABdhPJxzD8UzjAv+imlR9swtdZ/CebagbB1BILLEeQLk99r2KDclllBXhExc2Ehz9FeeAwbY73tyc2rI6volt1jg38s=
+X-Received: by 2002:a05:6e02:eb3:: with SMTP id u19mr33722390ilj.130.1596000662935;
+ Tue, 28 Jul 2020 22:31:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200727233431.4103-1-bimmy.pujari@intel.com> <CAEf4BzYMaU14=5bzzasAANJW7w2pNxHZOMDwsDF_btVWvf9ADA@mail.gmail.com>
- <CANP3RGd2fKh7qXyWVeqPM8nVKZRtJrJ65apmGF=w9cwXy6TReQ@mail.gmail.com>
- <CAEf4BzaiCZ3rOBc0EXuLUuWh9m5QXv=51Aoyi5OHwb6T11nnjw@mail.gmail.com> <9e9ca486-f6f5-2301-8850-8f53429b160e@gmail.com>
-In-Reply-To: <9e9ca486-f6f5-2301-8850-8f53429b160e@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 28 Jul 2020 22:15:51 -0700
-Message-ID: <CAEf4BzaNyBHOrTrrvua1fe4PTzYvzBtY0oYw63iubgk=K84mrQ@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Add bpf_ktime_get_real_ns
-To:     David Ahern <dsahern@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        bimmy.pujari@intel.com, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, mchehab@kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <20200729045056.3363921-1-andriin@fb.com>
+In-Reply-To: <20200729045056.3363921-1-andriin@fb.com>
+From:   YiFei Zhu <zhuyifei@google.com>
+Date:   Wed, 29 Jul 2020 00:30:52 -0500
+Message-ID: <CAA-VZPnQ36VyK-qEhQXhuyNGBkFqpuM4NMSifix3wfm-CpV=tw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: don't destroy failed link
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, ashkan.nikravesh@intel.com
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>, kernel-team@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 1:57 PM David Ahern <dsahern@gmail.com> wrote:
+On Tue, Jul 28, 2020 at 11:51 PM Andrii Nakryiko <andriin@fb.com> wrote:
 >
-> On 7/28/20 12:28 PM, Andrii Nakryiko wrote:
-> > In some, yes, which also means that in some other they can't. So I'm
-> > still worried about misuses of REALCLOCK, within (internal daemons
-> > within the company) our outside (BCC tools and alike) of data centers.
-> > Especially if people will start using it to measure elapsed time
-> > between events. I'd rather not have to explain over and over again
-> > that REALCLOCK is not for measuring passage of time.
+> Check that link is NULL or proper pointer before invoking bpf_link__destroy().
+> Not doing this causes crash in test_progs, when cg_storage_multi selftest
+> fails.
 >
-> Why is documenting the type of clock and its limitations not sufficient?
-> Users are going to make mistakes and use of gettimeofday to measure time
-> differences is a common one for userspace code. That should not define
-> or limit the ability to correctly and most directly do something in bpf.
+> Cc: YiFei Zhu <zhuyifei@google.com>
+> Fixes: 3573f384014f ("selftests/bpf: Test CGROUP_STORAGE behavior on shared egress + ingress")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  .../bpf/prog_tests/cg_storage_multi.c         | 42 ++++++++++++-------
+>  1 file changed, 28 insertions(+), 14 deletions(-)
 >
-> I have a patch to export local_clock as bpf_ktime_get_fast_ns. It too
-> can be abused given that it has limitations (can not be used across CPUs
-> and does not correlate to any exported clock), but it too has important
-> use cases (twice as fast as bpf_ktime_get_ns and useful for per-cpu
-> delta-time needs).
->
-> Users have to know what they are doing; making mistakes is part of
-> learning. Proper documentation is all you can do.
 
-I don't believe that's all we can do. Designing APIs that are less
-error-prone is at least one way to go about that. One can find plenty
-of examples where well-documented and standardized APIs are
-nevertheless misused regularly. Also, "users read and follow
-documentation" doesn't match my experience, unfortunately.
+Awesome! Thanks for the fix. I did not realize the return was a -errno
+rather than NULL like open_and_load.
