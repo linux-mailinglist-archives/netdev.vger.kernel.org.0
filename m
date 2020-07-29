@@ -2,157 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E5B1231C59
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 11:55:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5FAC231C61
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 11:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726693AbgG2JzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 05:55:12 -0400
-Received: from mail-eopbgr40069.outbound.protection.outlook.com ([40.107.4.69]:46193
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726054AbgG2JzL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jul 2020 05:55:11 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ReczpOuvxUS7h+tmBwoaf6orhL2dRyR3yv81yqGI3t6mbJ15AT8R0binxHhPYbDTGnx/lttfsYDK/42PePyVL9tO17IkwbxPk/Z5/hFBWrEQM+EMCtMV7UtbpbDjYoekcXa1yrC/8YK4vj/ZTIhMXaBcYPNwjl9vbeil5n7RSKvTghbDY2VcyMsWFmZmzKuQft10fjRnpzp+88IMpb1HWndlQvUUTUv5YRGiwHFEv88/cI0uZ6nOfeWwBV1ZZ+009G57nr7rzQz09F8XSTSMRAfgVSJY8wb3/2UBN+rWsV0NWLGrtY5dkBtRK7ZU7NWb9cB3p4x1wuUh00E1wN7utQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CGpYvGtzhckEzz3B4eCMLc9PZyge4zMFfc1IaWWMCTE=;
- b=InC2ncQAYzY9l3h/Amrgcy9Q4JhXdKk29jpYfG6at452riMhrLHGFNUFZ/7j1vdRKa6b9XYzPrAHVOeN7eefp3h8+NsX20oVD/rbfakKTShcW6wtUIAPiWS5XFIYXRDEqtjFo5BDwFKrOBw2LgSlVmh1u9bkE02GpwWjuZVFXvSHRw64tNZ9ncv/ZC3JdjpAkEC0YujjEgzdbYjxbm/dMP8oEwcgCk7hvU+ijU5zx2gwlG3gT7Mkt5xw6DK1r/I4oEqsxjm/mXmdFnWPVmz33vUhLBvXi0rJXtt4/8P2xeAFhaLiBR+IyFMz0mBzGPA3q3GRDX1UvE934yQLys1j0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CGpYvGtzhckEzz3B4eCMLc9PZyge4zMFfc1IaWWMCTE=;
- b=CJc+MmKNN+dGdFedDYaGVMdBDajyGgY6y4d5pd8Q+Dj/Ue1L2SlR1sMQbYR7soBzTT6X02K4aegFfTnjR4Vm8ktlD1rBX+6lk7wFlpPQ1JjVZ8vVL6eQzyZvPwrPho9o7K9/eyDJJkRSD+20VFGazvo2l0yFNf6zxhlvkMS66wk=
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=mellanox.com;
-Received: from AM0PR05MB4786.eurprd05.prod.outlook.com (2603:10a6:208:b3::15)
- by AM0PR0502MB4067.eurprd05.prod.outlook.com (2603:10a6:208:b::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.27; Wed, 29 Jul
- 2020 09:55:07 +0000
-Received: from AM0PR05MB4786.eurprd05.prod.outlook.com
- ([fe80::9186:8b7:3cf7:7813]) by AM0PR05MB4786.eurprd05.prod.outlook.com
- ([fe80::9186:8b7:3cf7:7813%7]) with mapi id 15.20.3216.033; Wed, 29 Jul 2020
- 09:55:07 +0000
-Date:   Wed, 29 Jul 2020 12:55:03 +0300
-From:   Eli Cohen <eli@mellanox.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Zhu Lingshan <lingshan.zhu@intel.com>, alex.williamson@redhat.com,
-        mst@redhat.com, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, wanpengli@tencent.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, shahafs@mellanox.com, parav@mellanox.com
-Subject: Re: [PATCH V4 4/6] vhost_vdpa: implement IRQ offloading in vhost_vdpa
-Message-ID: <20200729095503.GD35280@mtl-vdi-166.wap.labs.mlnx>
-References: <20200728042405.17579-1-lingshan.zhu@intel.com>
- <20200728042405.17579-5-lingshan.zhu@intel.com>
- <20200728090438.GA21875@nps-server-21.mtl.labs.mlnx>
- <c87d4a5a-3106-caf2-2bc1-764677218967@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c87d4a5a-3106-caf2-2bc1-764677218967@redhat.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-ClientProxiedBy: AM0P190CA0008.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:208:190::18) To AM0PR05MB4786.eurprd05.prod.outlook.com
- (2603:10a6:208:b3::15)
+        id S1726496AbgG2J7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 05:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726054AbgG2J7e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 05:59:34 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D061CC061794;
+        Wed, 29 Jul 2020 02:59:34 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a9so1647357pjd.3;
+        Wed, 29 Jul 2020 02:59:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T0Z6YHYdP/kQD0cMS+cNQldOhqY6T8q1pjXPvT/YgO4=;
+        b=rb8/dupyCMFbBH4YZJuE/RPbByMpGQ5LAydsXv+QjPXvhSZxULUuuRV8XlGBj1j99K
+         XFszBCZ2K4ch/ddu2OZLiYmUBUeRhRcbu8a3Yu8TAZA5bE2F4mG5ltCYhNeoIFUJ61ru
+         dbWRev/5xq+8WUIhLulvMFFuSBNToV5Vr8YCCTuPFgOHfGo0l95lBrQH2s6enGdm98ab
+         YadDobj5jWlZYvQI61D7RjMi1YuDBExT4iDSKpotJY0g8mdjfoffFRt437s530RMwJx9
+         8Y+G0QWfDnEINXow8ElKpN8xnB5aVnJhiz6hciPST9mC0ScqccExXerDwCKuLEIQd1Wi
+         BzPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T0Z6YHYdP/kQD0cMS+cNQldOhqY6T8q1pjXPvT/YgO4=;
+        b=eygxYyQgE0rASdBxf8KnqlqVstsmp/NuXP/HkjRa8zEUH2NCB0P3zorEdtFDzOZBVw
+         +RKfOCz9SsGgKil5foI9Qgv812lXlU7pYSYBnZQVTTxPtQgBVN2QrLjIYpH1Pb+I50yT
+         sEPMHONAa2iMIRZNvCQAK44rGZLKY2vkGoCAwhl/jYEl9BtSIz1ZtHkzZgGoCKCq2snx
+         SNL3S+B9cSA98J1Opcfjfc5jFWnQHFU9LZKTPZBLYG6HBYw/az2KSy1EtuN/1+FcmFj6
+         rjIEfMT9d/AyGzAGN+2UVhypMh5o76WSeerE5ypRCdENeE5DbR9Sdj+sxkZoRQIRJZFN
+         Rv1w==
+X-Gm-Message-State: AOAM533zwv7L9L+s2kb9GuacWAAeATXqd3NSgOoURYfrQ4vMfZRaL4kd
+        8ZT60Jw7vkFc+0STQmDDslc=
+X-Google-Smtp-Source: ABdhPJwlUgeMIQUydEFbTDZ99rxEoaivKlj3ebAXEwUBoUc6lmxEGQaE2R4Y9pOgdMTLv9N/en648Q==
+X-Received: by 2002:a17:902:7b92:: with SMTP id w18mr27533925pll.258.1596016773345;
+        Wed, 29 Jul 2020 02:59:33 -0700 (PDT)
+Received: from varodek.iballbatonwifi.com ([103.105.152.86])
+        by smtp.gmail.com with ESMTPSA id i128sm1815776pfe.74.2020.07.29.02.59.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jul 2020 02:59:32 -0700 (PDT)
+From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Helgaas <bjorn@helgaas.com>,
+        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Daniele Venzano <venza@brownhat.org>,
+        Samuel Chessman <chessman@tux.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: [PATCH v1 0/3] net: ethernet: use generic power management
+Date:   Wed, 29 Jul 2020 15:26:57 +0530
+Message-Id: <20200729095700.193150-1-vaibhavgupta40@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mtl-vdi-166.wap.labs.mlnx (94.188.199.18) by AM0P190CA0008.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:190::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.16 via Frontend Transport; Wed, 29 Jul 2020 09:55:06 +0000
-X-Originating-IP: [94.188.199.18]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: aa5288a5-8a86-4a63-b361-08d833a5799f
-X-MS-TrafficTypeDiagnostic: AM0PR0502MB4067:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR0502MB40677B8080171C1108354B40C5700@AM0PR0502MB4067.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vFL925ZRHjon8VPgNEatXTUMyXjFH+8p9t2YTpc1a9WCfnb0rDoBk6fhMSUtp3xmp2J89OfI50ekqQACqzjEiHmM1QKP4YC7jkM2LzwTY5KaEjlEmxG9ofoQgLoo2aS0KkgBNi67c6+4Lyy7AvPee+F02CW2/MDQPUGoMRE2j+lRqa5DNEgmP38jHo3/i6Z2tlnED0eVNN0cGA/RGCZvk7pjoT3G716PKeyc0hPdZ6BRSzXbW2klUAj9cL/bsYI/1HcSgNxv7tMN0dt4d4HfOXSPdYtobAAZweXUWWZWgfXkBWtTq7OZE9vCZWYw57NRpHxR/CHF4q4znOUjaYClJA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4786.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(366004)(136003)(396003)(39860400002)(4326008)(33656002)(8676002)(2906002)(52116002)(7696005)(26005)(186003)(6916009)(316002)(66946007)(7416002)(8936002)(66476007)(66556008)(16526019)(6506007)(86362001)(478600001)(5660300002)(55016002)(9686003)(956004)(6666004)(107886003)(1076003)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: vzVh8eTxi9PWUF9Gkt0Aa5rlKr2R2R3Eca5A6om9i2oJ1tjMzRC9S3Xy6Ob+JrU/5LoQV/1bA1E00oUVFulFtFEGTP6YUPruZWXslBFvO4sgMV+WL0MmTFxlsF6HkEFu3qkHxbDUUSrSqvYZ86d0vI+1EMy+dk1D1zgRKQXln7r0h4AYg5CNR2OwEOJ9Adnah9LM9gkEIW9id4zBDy7xx62WBXpDm0sBhYonSy0Syga4tnCsLg1SID4UB67i0bV35U1YyBziKmoKyQYxsOHnlaTmY4lZL1BR4rm1O6Uo7gN5Q1HSuYu7qG7YN/uSeWMh+hj9xdtBknm8A+6BY86ARxdsVAPJ0+7kK1Gmbj2V3GGy6rVuRJl7aZ0LOjMeCJsxKkcZ/lBgA7XQXxngcQ3zmIHO+fu4SRemEYTplQjyzsRCysWRTykj9/tFkK9Ko3r74LkfqjClE+MXhyoHPSO7sH+xszMOT05dflPT6rkms8E=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa5288a5-8a86-4a63-b361-08d833a5799f
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB4786.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2020 09:55:07.8283
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e4i6+Iw45njVDqg15o/FYVE/NT66E7ziV1c4/BaIoDlNblZWdxvzCVWXxkI7bD2J7IuFJcqYV+UFcxZz6uc1YA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB4067
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 29, 2020 at 05:21:53PM +0800, Jason Wang wrote:
-> 
-> On 2020/7/28 下午5:04, Eli Cohen wrote:
-> >On Tue, Jul 28, 2020 at 12:24:03PM +0800, Zhu Lingshan wrote:
-> >>+static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, int qid)
-> >>+{
-> >>+	struct vhost_virtqueue *vq = &v->vqs[qid];
-> >>+	const struct vdpa_config_ops *ops = v->vdpa->config;
-> >>+	struct vdpa_device *vdpa = v->vdpa;
-> >>+	int ret, irq;
-> >>+
-> >>+	spin_lock(&vq->call_ctx.ctx_lock);
-> >>+	irq = ops->get_vq_irq(vdpa, qid);
-> >>+	if (!vq->call_ctx.ctx || irq == -EINVAL) {
-> >>+		spin_unlock(&vq->call_ctx.ctx_lock);
-> >>+		return;
-> >>+	}
-> >>+
-> >If I understand correctly, this will cause these IRQs to be forwarded
-> >directly to the VCPU, e.g. will be handled by the guest/qemu.
-> 
-> 
-> Yes, if it can bypassed, the interrupt will be delivered to vCPU directly.
-> 
+Linux Kernel Mentee: Remove Legacy Power Management.
 
-So, usually the network driver knows how to handle interrups for its
-devices. I assume the virtio_net driver at the guest has some default
-processing but what if the underlying hardware device (such as the case
-of vdpa) needs to take some actions? Is there an option to do bounce the
-interrupt back to the vendor specific driver in the host so it can take
-these actions?
+The purpose of this patch series is to upgrade power management in net ethernet
+drivers. This has been done by upgrading .suspend() and .resume() callbacks.
 
-> 
-> >Does this mean that the host will not handle this interrupt? How does it
-> >work in case on level triggered interrupts?
-> 
-> 
-> There's no guarantee that the KVM arch code can make sure the irq
-> bypass work for any type of irq. So if they the irq will still need
-> to be handled by host first. This means we should keep the host
-> interrupt handler as a slowpath (fallback).
-> 
-> >
-> >In the case of ConnectX, I need to execute some code to acknowledge the
-> >interrupt.
-> 
-> 
-> This turns out to be hard for irq bypassing to work. Is it because
-> the irq is shared or what kind of ack you need to do?
+The upgrade makes sure that the involvement of PCI Core does not change the
+order of operations executed in a driver. Thus, does not change its behavior.
 
-I have an EQ which is a queue for events comming from the hardware. This
-EQ can created so it reports only completion events but I still need to
-execute code that roughly tells the device that I saw these event
-records and then arm it again so it can report more interrupts (e.g if
-more packets are received or sent). This is device specific code.
+In general, drivers with legacy PM, .suspend() and .resume() make use of PCI
+helper functions like pci_enable/disable_device_mem(), pci_set_power_state(),
+pci_save/restore_state(), pci_enable/disable_device(), etc. to complete
+their job.
 
-> 
-> Thanks
-> 
-> 
-> >
-> >Can you explain how this should be done?
-> >
-> 
+The conversion requires the removal of those function calls, change the
+callbacks' definition accordingly and make use of dev_pm_ops structure.
+
+All patches are compile-tested only.
+
+Test tools:
+    - Compiler: gcc (GCC) 10.1.0
+    - allmodconfig build: make -j$(nproc) W=1 all
+
+Vaibhav Gupta (3):
+  sc92031: use generic power management
+  sis900: use generic power management
+  tlan: use generic power management
+
+ drivers/net/ethernet/silan/sc92031.c | 26 ++++++++---------------
+ drivers/net/ethernet/sis/sis900.c    | 23 +++++++--------------
+ drivers/net/ethernet/ti/tlan.c       | 31 ++++++----------------------
+ 3 files changed, 22 insertions(+), 58 deletions(-)
+
+-- 
+2.27.0
+
