@@ -2,102 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C81B2232694
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 23:06:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D696E23269D
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 23:07:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbgG2VGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 17:06:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37046 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726476AbgG2VGW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jul 2020 17:06:22 -0400
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D29DE2250E;
-        Wed, 29 Jul 2020 21:06:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596056782;
-        bh=ueGCrlTHZf0CRfYXBT+w5ROCnO+gC3NkQFou1ASiPJM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=wnUfZOe1z1bdSDJ03r/muyQ9yir2kK2heQ2UD/DcT1KesUm3lII2Kipm76COhjCG+
-         Zf2AA8WGuUGbs+jGZRAsGfWusJTMCb+nCY0gvjdRjgtY3fISl7SMuy+ezhbu5jH3PU
-         vS1oSSRGq77BR8P2XYCzVlHAZOqRBMNdXqf3qrOc=
-Received: by mail-lf1-f50.google.com with SMTP id b30so13791211lfj.12;
-        Wed, 29 Jul 2020 14:06:21 -0700 (PDT)
-X-Gm-Message-State: AOAM531d6hrV+htt8ZIxnGWs+ULBbzLDD2DL1xFJFEXjafFNMDdY7pld
-        8fCSIKdaVsF2e+UtN988PLQXrMov0Ufxrms0rqo=
-X-Google-Smtp-Source: ABdhPJxyF5POFFPO8i7lMsfFqs9+19XH7Zn+S8Z+XDeZm1y50XRsaVlCP1fr66fhMHfEa4N3Q+fffiPjA55ITMZRyMI=
-X-Received: by 2002:a19:ec12:: with SMTP id b18mr56556lfa.52.1596056780070;
- Wed, 29 Jul 2020 14:06:20 -0700 (PDT)
+        id S1727074AbgG2VHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 17:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727069AbgG2VHd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 17:07:33 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7905C061794
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 14:07:32 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id a19so5551303qvy.3
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 14:07:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZgwzftiYCU2Bm6Kc71hxTC3rIDIRuG8IFbfyknH8uww=;
+        b=SplXiv4glKSmM6f/sgymx7Rc8PBhiMtKg3UKdoLVoT/0R8BBCgFaPmBi4UnNZJ5szk
+         XlxMdvVeUhfbmOePS4ePAkdtHYyA8jH/QvM3v4Tl8Ku2JKpa/Sjyje2qH9RSyudnPAOf
+         Wj52ASgapQ0VdYofY2bdXFB5T3V2c0+5UladSdkru+pAoWqvXeaTEsql5aEnhe41cBJz
+         cHgohprLxo7QRGgOBr13qKmMUm2ziInee9bkJbF9xugKB3XnRmrE+yJHxKMJZW9tbDVZ
+         eY88VOz+pw3+7znWQffWsXhvdSNE9nV9ZyE6VFfDxgjCZNZBvSty5egbKHxIY3uGqUOd
+         p6KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZgwzftiYCU2Bm6Kc71hxTC3rIDIRuG8IFbfyknH8uww=;
+        b=CgVtaXTBQMgjAZxwqBwOuKxSxCzUpG60Vj6VsxsQn6P/QJ9adqhwBOQMJOs7p6stFL
+         dUKVkyUJk93S7zKq64tv33hdapXT7HbR9nguXNLVxq2P+LkSF9tyDNE8u5cKk6s3x1or
+         GVHwOkcUvf4kTzVR0KqKdtAIQwY19TPfZiVRbXlzIfCvhOgt0qeAI5s/ePha26jBkZ+n
+         wNZviC3XJ2k7tj+nlz2iDyZnVbWNQZ9Jphkz9/m27n39mgHwI2ZKxJke+wRmpugGeUwo
+         hRvylRgl2ilWHMcpW/MIi/Y0W2fESFKJ2pRnLwaN7aeV1a9TJNI9V4626oH60kR7a/Mu
+         2BWQ==
+X-Gm-Message-State: AOAM531myoxkB7xQry4q90b7vPicBdUggVMCFadFFvE3sez3ENnz0d0Z
+        a6XlOQmKwyhacSlz6n2SYpomkL6oWDXduPvteRE=
+X-Google-Smtp-Source: ABdhPJzsfKAaNr8JmoLkS63T02laNIgoaHUjiAIrUooNottL/4OCeXWBStYLXniJCQGpuYY0Sw7lxVwoOXJ3WoN1gPo=
+X-Received: by 2002:ad4:4089:: with SMTP id l9mr167253qvp.175.1596056851970;
+ Wed, 29 Jul 2020 14:07:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <1596028555-32028-1-git-send-email-yangtiezhu@loongson.cn>
-In-Reply-To: <1596028555-32028-1-git-send-email-yangtiezhu@loongson.cn>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 29 Jul 2020 14:06:09 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5CYF+iiXL8mcLTerFxhUG2i1sTB8+qoFnZRT3K0XXb4w@mail.gmail.com>
-Message-ID: <CAPhsuW5CYF+iiXL8mcLTerFxhUG2i1sTB8+qoFnZRT3K0XXb4w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] Documentation/bpf: Use valid and new links in index.rst
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <20200729085658.403794-1-liuhangbin@gmail.com> <CAPhsuW6m8P_7Wjuxz64RQDs85Xv530WjtRS=uUgRihdRLf2mfA@mail.gmail.com>
+In-Reply-To: <CAPhsuW6m8P_7Wjuxz64RQDs85Xv530WjtRS=uUgRihdRLf2mfA@mail.gmail.com>
+From:   William Tu <u9012063@gmail.com>
+Date:   Wed, 29 Jul 2020 14:06:54 -0700
+Message-ID: <CALDO+SaL6zNzrdnyyG9Sb6eg2o3T4uPRtedMHMEhjO+R16qf_w@mail.gmail.com>
+Subject: Re: [PATCH net] selftests/bpf: add xdpdrv mode for test_xdp_redirect
+To:     Song Liu <song@kernel.org>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>,
+        Networking <netdev@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "Tobin C. Harding" <me@tobin.cc>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        "David S . Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 29, 2020 at 6:17 AM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
+On Wed, Jul 29, 2020 at 1:59 PM Song Liu <song@kernel.org> wrote:
 >
-> There exists an error "404 Not Found" when I click the html link of
-> "Documentation/networking/filter.rst" in the BPF documentation [1],
-> fix it.
+> On Wed, Jul 29, 2020 at 1:59 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+> >
+> > This patch add xdpdrv mode for test_xdp_redirect.sh since veth has
+> > support native mode. After update here is the test result:
+> >
+> > ]# ./test_xdp_redirect.sh
+> > selftests: test_xdp_redirect xdpgeneric [PASS]
+> > selftests: test_xdp_redirect xdpdrv [PASS]
+> >
+> > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 >
-> Additionally, use the new links about "BPF and XDP Reference Guide"
-> and "bpf(2)" to avoid redirects.
->
-> [1] https://www.kernel.org/doc/html/latest/bpf/
->
-> Fixes: d9b9170a2653 ("docs: bpf: Rename README.rst to index.rst")
-> Fixes: cb3f0d56e153 ("docs: networking: convert filter.txt to ReST")
-> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-> ---
->
-> v2:
->   - Fix a typo "clik" to "click" in the commit message, sorry for that
->
->  Documentation/bpf/index.rst | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/Documentation/bpf/index.rst b/Documentation/bpf/index.rst
-> index 26f4bb3..1b901b4 100644
-> --- a/Documentation/bpf/index.rst
-> +++ b/Documentation/bpf/index.rst
-> @@ -68,7 +68,7 @@ Testing and debugging BPF
->
->
->  .. Links:
-> -.. _Documentation/networking/filter.rst: ../networking/filter.txt
-> +.. _Documentation/networking/filter.rst: ../networking/filter.html
-
-This should be filter.rst, no?
-
->  .. _man-pages: https://www.kernel.org/doc/man-pages/
-> -.. _bpf(2): http://man7.org/linux/man-pages/man2/bpf.2.html
-> -.. _BPF and XDP Reference Guide: http://cilium.readthedocs.io/en/latest/bpf/
-> +.. _bpf(2): https://man7.org/linux/man-pages/man2/bpf.2.html
-> +.. _BPF and XDP Reference Guide: https://docs.cilium.io/en/latest/bpf/
-> --
-> 2.1.0
->
+> Acked-by: Song Liu <songliubraving@fb.com>
+LGTM.
+Acked-by: William Tu <u9012063@gmail.com>
