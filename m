@@ -2,107 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A6F523228E
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 18:24:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BAFA232291
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 18:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727098AbgG2QYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 12:24:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726341AbgG2QYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 12:24:02 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F298C061794;
-        Wed, 29 Jul 2020 09:24:02 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id s21so19913910ilk.5;
-        Wed, 29 Jul 2020 09:24:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=7mspG0WZtlpayxZAvSRWhUtx2g4C/aKYZtflAJKxjDM=;
-        b=BDKgD/rTyQUcgl1kYoXHWOFTkYEjCqGfN5jrA4aQK5VHmnzWchjim4i+FA1ds7nh1K
-         yy3BGW5+y+d5ayzxNJiwYgFHlGnduvNyLPhMHgPGgb2oMMXlr73i/GapqLHWCwZV1al6
-         ki7u/DlriEtzVN05xCf1VSySXc6saWeTpIC5yMN6ZTfJFU8abk4RlhjZf6Pkw/DKi8bB
-         4XVxsqkk5cfcILjmApnMfRtTqlqem6Hg4XOdjnXBu14YEIGNot4Pn66VdnSM1rkvnEGn
-         RGiYcHWMo0M9vluVd/MDkGPv2KUx4aRLwx2LO4d97d1Csd9Jnt9TD/HE8pItgxaK2o2I
-         y1ZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=7mspG0WZtlpayxZAvSRWhUtx2g4C/aKYZtflAJKxjDM=;
-        b=iR/ZYqqrNQpiakyQhnDuY+ehi7/IKItVk50KssmvBjp0cndAjXyLGJLw0hzb0imziV
-         msk8upU4d1/guMa4Z3IR8xBjzQucwPVf+i2G93ukLiJ4NLZbJBJV+eJiGhzFydD2rX7k
-         MxqJcaPhuzBep5yD+lXCpdu5JOERIk/r1QdJZeFm0KKH70xqCWT/HqaUwRe60/HBvtOL
-         8U5aMpHWSc1jzr0mIa4sRSXnTFdJjwneaUKV7gbEOkSiaH/UtAssmiYMoF4Ee8MNL1yV
-         38ALN5i+PoRkn3+LYQ627+gFzY7Spyx84qq9IiC3Tull1zuCQgmOoqnPh5QjoocO1oPJ
-         zY9Q==
-X-Gm-Message-State: AOAM532l6cvHNaK1cSro7RQjLh52W8qAxUhzgvSnUOiOQHM7cYys6j9q
-        WqLHL+4zfmmT3lvNcvumoI8A3DES
-X-Google-Smtp-Source: ABdhPJw39Ny+chYW+mnKIh2DexdzndJqJD1D3dqYWJJStkM7U8gFP12F5EzteZ0izbA1Cd6kGxBkbQ==
-X-Received: by 2002:a92:bb4d:: with SMTP id w74mr21647526ili.161.1596039841674;
-        Wed, 29 Jul 2020 09:24:01 -0700 (PDT)
-Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id m4sm1397646ilj.70.2020.07.29.09.23.55
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 Jul 2020 09:24:01 -0700 (PDT)
-Subject: [bpf PATCH v2 4/5] bpf,
- selftests: Add tests for sock_ops load with r9, r8.r7 registers
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     john.fastabend@gmail.com, kafai@fb.com, daniel@iogearbox.net,
-        ast@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+        id S1727775AbgG2QYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 12:24:14 -0400
+Received: from mga01.intel.com ([192.55.52.88]:44892 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726869AbgG2QYN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jul 2020 12:24:13 -0400
+IronPort-SDR: bWyWxlhvOXUhrm5bB7gpLDfm+dkC7elsruQ53ae2kfVPeWFpqkzLdwUV4uSE+WMOGQ4QMP4so7
+ Eah/jjoNNHiA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9697"; a="169570873"
+X-IronPort-AV: E=Sophos;i="5.75,410,1589266800"; 
+   d="scan'208";a="169570873"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2020 09:24:12 -0700
+IronPort-SDR: RgNRqCQr1dna+B4wG4fDuqxwqNjIZ06SIZxa1OrRwoP/OI6FJa1sjYiW0KoLRgTgJ+npvWsHSj
+ IOYNwlZuP5Aw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,410,1589266800"; 
+   d="scan'208";a="313087543"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by fmsmga004.fm.intel.com with ESMTP; 29 Jul 2020 09:24:11 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        jeffrey.t.kirsher@intel.com
+Subject: [net-next 00/15][pull request] 100GbE Intel Wired LAN Driver Updates 2020-07-29
 Date:   Wed, 29 Jul 2020 09:23:50 -0700
-Message-ID: <159603983037.4454.12599156913109163942.stgit@john-Precision-5820-Tower>
-In-Reply-To: <159603940602.4454.2991262810036844039.stgit@john-Precision-5820-Tower>
-References: <159603940602.4454.2991262810036844039.stgit@john-Precision-5820-Tower>
-User-Agent: StGit/0.17.1-dirty
+Message-Id: <20200729162405.1596435-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Loads in sock_ops case when using high registers requires extra logic to
-ensure the correct temporary value is used. We need to ensure the temp
-register does not use either the src_reg or dst_reg. Lets add an asm
-test to force the logic is triggered.
+This series contains updates to the ice driver only.
 
-The xlated code is here,
+Dave works around LFC settings not being preserved through link events.
+Fixes link issues with GLOBR reset and handling of multiple link events.
 
-  30: (7b) *(u64 *)(r9 +32) = r7
-  31: (61) r7 = *(u32 *)(r9 +28)
-  32: (15) if r7 == 0x0 goto pc+2
-  33: (79) r7 = *(u64 *)(r9 +0)
-  34: (63) *(u32 *)(r7 +916) = r8
-  35: (79) r7 = *(u64 *)(r9 +32)
+Nick restores VF MSI-X after PCI reset.
 
-Notice r9 and r8 are not used for temp registers and r7 is chosen.
+Kiran corrects the error code returned in ice_aq_sw_rules if the rule
+does not exist.
 
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+Paul prevents overwriting of user set descriptors.
 
-diff --git a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-index f8b13682..6420b61 100644
---- a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-+++ b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-@@ -75,6 +75,13 @@ int bpf_testcb(struct bpf_sock_ops *skops)
- 		: [skops] "r"(skops)
- 		:);
- 
-+	asm volatile (
-+		"r9 = %[skops];\n"
-+		"r8 = *(u32 *)(r9 +164);\n"
-+		"*(u32 *)(r9 +164) = r8;\n"
-+		:: [skops] "r"(skops)
-+		: "r9", "r8");
-+
- 	op = (int) skops->op;
- 
- 	update_event_map(op);
+Tarun adds masking before accessing rate limiting profile types and
+corrects queue bandwidth configuration.
+
+Victor modifies Tx queue scheduler distribution to spread more evenly
+across queue group nodes.
+
+Krzysztof sets need_wakeup flag for Tx AF_XDP.
+
+Brett allows VLANs in safe mode.
+
+Marcin cleans up VSIs on probe failure.
+
+Bruce reduces the scope of a variable.
+
+Ben removes a FW workaround.
+
+Tony fixes an unused parameter warning.
+
+The following are changes since commit 490ed0b908d371cd9ab63fc142213e5d02d810ee:
+  Merge branch 'net-stmmac-improve-WOL'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+
+Ben Shelton (1):
+  ice: disable no longer needed workaround for FW logging
+
+Brett Creeley (1):
+  ice: Allow all VLANs in safe mode
+
+Bruce Allan (1):
+  ice: reduce scope of variable
+
+Dave Ertman (3):
+  ice: Implement LFC workaround
+  ice: Fix link broken after GLOBR reset
+  ice: fix link event handling timing
+
+Kiran Patil (1):
+  ice: return correct error code from ice_aq_sw_rules
+
+Krzysztof Kazimierczak (1):
+  ice: need_wakeup flag might not be set for Tx
+
+Marcin Szycik (1):
+  ice: cleanup VSI on probe fail
+
+Nick Nunley (1):
+  ice: restore VF MSI-X state during PCI reset
+
+Paul M Stillwell Jr (1):
+  ice: fix overwriting TX/RX descriptor values when rebuilding VSI
+
+Tarun Singh (2):
+  ice: Add RL profile bit mask check
+  ice: Adjust scheduler default BW weight
+
+Tony Nguyen (1):
+  ice: fix unused parameter warning
+
+Victor Raj (1):
+  ice: distribute Tx queues evenly
+
+ drivers/net/ethernet/intel/ice/ice_common.c   |  48 ++++-
+ drivers/net/ethernet/intel/ice/ice_common.h   |   3 +
+ drivers/net/ethernet/intel/ice/ice_controlq.c |   6 +-
+ drivers/net/ethernet/intel/ice/ice_dcb.c      |  33 ----
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   6 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.h  |  11 ++
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  10 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 185 ++++++++++++++++--
+ drivers/net/ethernet/intel/ice/ice_sched.c    |  66 ++++++-
+ drivers/net/ethernet/intel/ice/ice_switch.c   |   8 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |   4 +-
+ drivers/net/ethernet/intel/ice/ice_type.h     |   2 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |  30 +++
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |   2 +
+ drivers/net/ethernet/intel/ice/ice_xsk.c      |  10 +-
+ 15 files changed, 346 insertions(+), 78 deletions(-)
+
+-- 
+2.26.2
 
