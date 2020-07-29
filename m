@@ -2,137 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D67B8231CD5
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 12:41:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB341231CD7
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 12:43:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726509AbgG2KlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 06:41:13 -0400
-Received: from mail-proxy25223.qiye.163.com ([103.129.252.23]:35217 "EHLO
-        mail-proxy25223.qiye.163.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726299AbgG2KlN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 06:41:13 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 4C41B41841;
-        Wed, 29 Jul 2020 18:41:11 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     xiyou.wangcong@gmail.com, paulb@mellanox.com, roid@mellanox.com
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net] net/sched: act_ct: fix miss set mru for ovs after defrag in act_ct
-Date:   Wed, 29 Jul 2020 18:41:10 +0800
-Message-Id: <1596019270-7437-1-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZHklCQx0fS0JCTxhNVkpOQk1LSkJJTEpIQ09VGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKTFVKS0tZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OCo6DAw6NT5OSjAMH0hJKQ0a
-        GBBPClZVSlVKTkJNS0pCSUxKTk9IVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUhCTEk3Bg++
-X-HM-Tid: 0a739a2966af2086kuqy4c41b41841
+        id S1726536AbgG2Knu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 06:43:50 -0400
+Received: from mga05.intel.com ([192.55.52.43]:10326 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726299AbgG2Knu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Jul 2020 06:43:50 -0400
+IronPort-SDR: hvndTjYz30wp/nAZJbs5qGZsiHlR4HNutc+WAAifgf3ynpHaiKaNfV9bGmcc2qdNZvvBLDBWtI
+ +SiZmxPD4U6w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9696"; a="236257340"
+X-IronPort-AV: E=Sophos;i="5.75,410,1589266800"; 
+   d="scan'208";a="236257340"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2020 03:43:49 -0700
+IronPort-SDR: dM+SJFtb/eQqyzRb9ufHGVNJw+W4iGfiSQNjyUMupB4rNuNQoIstf8VQCf8nyZFFP+rltJFNmS
+ pI2tO/CXULJw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,410,1589266800"; 
+   d="scan'208";a="312977789"
+Received: from abrandl1-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.40.236])
+  by fmsmga004.fm.intel.com with ESMTP; 29 Jul 2020 03:43:47 -0700
+Subject: Re: [net-next 5/6] i40e, xsk: increase budget for AF_XDP path
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, jeffrey.t.kirsher@intel.com,
+        Andrew Bowers <andrewx.bowers@intel.com>
+References: <20200728190842.1284145-1-anthony.l.nguyen@intel.com>
+ <20200728190842.1284145-6-anthony.l.nguyen@intel.com>
+ <20200728131512.17c41621@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <0439597f-9c1f-a289-edd9-c890baa687da@intel.com>
+Date:   Wed, 29 Jul 2020 12:43:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20200728131512.17c41621@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+On 2020-07-28 22:15, Jakub Kicinski wrote:
+> On Tue, 28 Jul 2020 12:08:41 -0700 Tony Nguyen wrote:
+>> diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+>> index 1f2dd591dbf1..99f4afdc403d 100644
+>> --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+>> +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+>> @@ -265,6 +265,8 @@ static void i40e_inc_ntc(struct i40e_ring *rx_ring)
+>>   	rx_ring->next_to_clean = ntc;
+>>   }
+>>   
+>> +#define I40E_XSK_CLEAN_RX_BUDGET 256U
+>> +
+>>   /**
+>>    * i40e_clean_rx_irq_zc - Consumes Rx packets from the hardware ring
+>>    * @rx_ring: Rx ring
+>> @@ -280,7 +282,7 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+>>   	bool failure = false;
+>>   	struct sk_buff *skb;
+>>   
+>> -	while (likely(total_rx_packets < (unsigned int)budget)) {
+>> +	while (likely(total_rx_packets < I40E_XSK_CLEAN_RX_BUDGET)) {
+>>   		union i40e_rx_desc *rx_desc;
+>>   		struct xdp_buff **bi;
+>>   		unsigned int size;
+> 
+> Should this perhaps be a common things that drivers do?
+> 
+> Should we define a "XSK_NAPI_WEIGHT_MULT 4" instead of hard coding the
+> value in a driver?
+>
 
-When openvswitch conntrack offload with act_ct action. Fragment packets
-defrag in the ingress tc act_ct action and miss the next chain. Then the
-packet pass to the openvswitch datapath without the mru. The over
-mtu packet will be dropped in output action in openvswitch for over mtu.
+Yes, that's a good idea. I can generalize for the AF_XDP paths in the 
+other drivers as a follow up!
 
-"kernel: net2: dropped over-mtu packet: 1528 > 1500"
 
-This patch add mru in the tc_skb_ext for adefrag and miss next chain
-situation. And also add mru in the qdisc_skb_cb. The act_ct set the mru
-to the qdisc_skb_cb when the packet defrag. And When the chain miss,
-The mru is set to tc_skb_ext which can be got by ovs datapath.
-
-Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
- include/linux/skbuff.h    | 1 +
- include/net/sch_generic.h | 1 +
- net/openvswitch/flow.c    | 1 +
- net/sched/act_ct.c        | 8 ++++++--
- net/sched/cls_api.c       | 1 +
- 5 files changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 0c0377f..0d842d6 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -283,6 +283,7 @@ struct nf_bridge_info {
-  */
- struct tc_skb_ext {
- 	__u32 chain;
-+	__u16 mru;
- };
- #endif
- 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index c510b03..45401d5 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -384,6 +384,7 @@ struct qdisc_skb_cb {
- 	};
- #define QDISC_CB_PRIV_LEN 20
- 	unsigned char		data[QDISC_CB_PRIV_LEN];
-+	u16			mru;
- };
- 
- typedef void tcf_chain_head_change_t(struct tcf_proto *tp_head, void *priv);
-diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-index 9d375e7..03942c3 100644
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -890,6 +890,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
- 	if (static_branch_unlikely(&tc_recirc_sharing_support)) {
- 		tc_ext = skb_ext_find(skb, TC_SKB_EXT);
- 		key->recirc_id = tc_ext ? tc_ext->chain : 0;
-+		OVS_CB(skb)->mru = tc_ext ? tc_ext->mru : 0;
- 	} else {
- 		key->recirc_id = 0;
- 	}
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 5928efb..69445ab 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -706,8 +706,10 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
- 		if (err && err != -EINPROGRESS)
- 			goto out_free;
- 
--		if (!err)
-+		if (!err) {
- 			*defrag = true;
-+			cb.mru = IPCB(skb)->frag_max_size;
-+		}
- 	} else { /* NFPROTO_IPV6 */
- #if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
- 		enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
-@@ -717,8 +719,10 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
- 		if (err && err != -EINPROGRESS)
- 			goto out_free;
- 
--		if (!err)
-+		if (!err) {
- 			*defrag = true;
-+			cb.mru = IP6CB(skb)->frag_max_size;
-+		}
- #else
- 		err = -EOPNOTSUPP;
- 		goto out_free;
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 4619cb3..eb6acc5 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -1627,6 +1627,7 @@ int tcf_classify_ingress(struct sk_buff *skb,
- 		if (WARN_ON_ONCE(!ext))
- 			return TC_ACT_SHOT;
- 		ext->chain = last_executed_chain;
-+		ext->mru = qdisc_skb_cb(skb)->mru;
- 	}
- 
- 	return ret;
--- 
-1.8.3.1
-
+Cheers,
+Björn (in vacation mode)
