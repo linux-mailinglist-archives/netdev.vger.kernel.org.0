@@ -2,136 +2,470 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AFEB2324C0
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 20:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFA852324C5
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 20:38:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbgG2ShK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jul 2020 14:37:10 -0400
-Received: from mout.web.de ([212.227.15.4]:50271 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726336AbgG2ShK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Jul 2020 14:37:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1596047799;
-        bh=MUCJ3cp+dXeXVH8kcCad+QqTN2WS3m9rEsqklOia9Sw=;
-        h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
-        b=H9OZGTAUEKwqTLTCHDeuWT323sdp9bbAk9TcDj1wpzVoabKCwU7XerkYh7X9pGNnW
-         qdvHVmaETA0BvK0ga2DwmhDoInmYZnbm8qSjJA6hriWamFOog6fA8TuQgBlHTjD0ge
-         XT2WO6Qi+IyXY5fA4LQD6Ll6vzmcx/dKXsS827g8=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.243.175.129]) by smtp.web.de (mrweb004
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lvf5Q-1kqPJi3VN6-017Yha; Wed, 29
- Jul 2020 20:36:39 +0200
-To:     Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>, bpf@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Yuan Zhang <yuanxzhang@fudan.edu.cn>
-Subject: Re: [PATCH] net/mlx5e: fix bpf_prog reference count leaks in
- mlx5e_alloc_rq
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <810e5783-ba95-6d2f-0f89-171dd3b688df@web.de>
-Date:   Wed, 29 Jul 2020 20:36:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727796AbgG2Sin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jul 2020 14:38:43 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:46861 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726476AbgG2Sil (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jul 2020 14:38:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596047918;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6re5OlrFPTBV7kIK6ytDPkCQZnOD6neICf1b/T9keI0=;
+        b=cooRSHzdTtvZA1OzvPKV6ofGNLqnG+/dkB6IjiASsWKSzm2L1XtAWG8H8aVPwwipsrfGxL
+        1BtOEwdTyN0O9kjWuIJ3GJo7tsx0Rcy6Ak5gFw9fR3xX/0iu2e1iNMO4sthqrrXIFHtQEL
+        Y9nSzSTRKunflnZdL3gQECy4jiPcH44=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-83-93L7Wi0-PSWthEgKPNQG8Q-1; Wed, 29 Jul 2020 14:38:35 -0400
+X-MC-Unique: 93L7Wi0-PSWthEgKPNQG8Q-1
+Received: by mail-qt1-f197.google.com with SMTP id k1so2881090qtp.20
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 11:38:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=6re5OlrFPTBV7kIK6ytDPkCQZnOD6neICf1b/T9keI0=;
+        b=CVX0LdpbwmmFlLayb/t3ZoeQohHlbVNQv/dtYao5CZCof1QBdh8RxDFrhg1fzi1x8S
+         T8gFCDD+s3Z/ObezSmvsMP+5ZFrSqneWBmhiuFSjGLD+CTMekVNwz5ZtN4p7xfMN5xdK
+         kaYJ6VaEy7AjC+cMR0arKCK6cen5vfLcawA9DNgE22sQ9vRqmSt1WDkSesRa4jgJG7M3
+         KSep+XSjBDOlHAwl6gtG9euBF0NmjTDyQh1QWdJGX2aZGO54tID1cjEOOzYXvfD3wb3k
+         ySkmBgNbxxdtT1Z929H03EahWKEOU7OaeYTgtKv+qh1TFWvnSqqYkt3hgCZSqWsWp+tK
+         xxCQ==
+X-Gm-Message-State: AOAM533jzCF0G4SoNMyLkxdMD81LJQAUTMC2FCx1Ss+QGyu6ck21YAdJ
+        W4ZIe0RNaEOs/wUf7JI5mOyxoQc2V6ERwQstZj3l9zl0I2t2r3Q9DK5Gq2VEKnxu+8WZjMc8aAR
+        h9IXFG7Pg/mJrYE69wRpUu6RtwZ41J84V
+X-Received: by 2002:a0c:b45b:: with SMTP id e27mr22603581qvf.208.1596047912704;
+        Wed, 29 Jul 2020 11:38:32 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyofEG51c0igQYyymjX+UHatTC2o82o95gmHEvhxepT1dgE4EGZj9duNefPYnQ5l0a6qqeXtun2kV2AdGcBBS0=
+X-Received: by 2002:a0c:b45b:: with SMTP id e27mr22603549qvf.208.1596047912198;
+ Wed, 29 Jul 2020 11:38:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+References: <CAJaqyWefMHPguj8ZGCuccTn0uyKxF9ZTEi2ASLtDSjGNb1Vwsg@mail.gmail.com>
+ <419cc689-adae-7ba4-fe22-577b3986688c@redhat.com> <CAJaqyWedEg9TBkH1MxGP1AecYHD-e-=ugJ6XUN+CWb=rQGf49g@mail.gmail.com>
+ <0a83aa03-8e3c-1271-82f5-4c07931edea3@redhat.com> <CAJaqyWeqF-KjFnXDWXJ2M3Hw3eQeCEE2-7p1KMLmMetMTm22DQ@mail.gmail.com>
+ <20200709133438-mutt-send-email-mst@kernel.org> <7dec8cc2-152c-83f4-aa45-8ef9c6aca56d@redhat.com>
+ <CAJaqyWdLOH2EceTUduKYXCQUUNo1XQ1tLgjYHTBGhtdhBPHn_Q@mail.gmail.com>
+ <20200710015615-mutt-send-email-mst@kernel.org> <CAJaqyWf1skGxrjuT9GLr6dtgd-433y-rCkbtStLHaAs2W2jYXA@mail.gmail.com>
+ <20200720051410-mutt-send-email-mst@kernel.org> <d4e29f0451f7551ee3a408ecfa40de2de2b8aa75.camel@redhat.com>
+ <a7831eac-6db7-f932-85bc-bbd731a89335@redhat.com>
+In-Reply-To: <a7831eac-6db7-f932-85bc-bbd731a89335@redhat.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Wed, 29 Jul 2020 20:37:55 +0200
+Message-ID: <CAJaqyWebQG=sR3Xg3GjHvaA+_6-gXYuYmDW-kBWWacKjTAoMOg@mail.gmail.com>
+Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
+To:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:r0zfwJMed2KL5NZGgiS4wFM4dzmNTm1rUzJDCSPBX2vHNdmwOLt
- UhWmDTXbwzpNDY/J773o/lhmstFXL7brkx2Bescq1b44f7wyyA9yZiQKRMwcZOgT5qrE5Ko
- NjyStIAK/ThC1oNJlKLuERp8ImMSmUcrYe7R9FlvEC4TVeF7jeSoqL+Zqvn+1QnzU5lwCFC
- nFn3WmKRBIIWN7wS7d2rA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:TXoNdttfv98=:aw1/2V2I7mCxFvyd0uv9HZ
- qXVEOGZkCXiZU4HGl8VLjPW3MhcFy4rFRXns3IXpn6xmYYb97cVg8UqL9tfuQss4ueFTsNBvl
- rED4WW7Svc3dTmApH638VKHTGR+an/4M4ttzpl4CMxShothyTBEh1aDkcNE43TUkBKFxDVQKn
- FU6h8gB9AbRHrJRddRdgVootBnCPghV/ZjrzF/48x1IbOVoQV32n62l0cvgwtAwgMj7sZA3rr
- NV2OgXXPXeWfWnmteXfNTJgA7qb75ufyOwMwM/s+Ncn+gjwX/Pa9Z9v9TimZP2ums2GnaHxY0
- S+uxV4l5I5q2ybjGJmqGBT9AUDxj3CLZhqAfPdfThBLX3wKnk17gxgxrWl2WyppTwHJXEM4VP
- sSUxJfXxAyKCws5YT494zs6DzC3tJYNkEaKMvnPDWHL6Y82hMgR7dLYqlN2BRigGPbdhqXS6F
- anmjRpqDCruaFYZHDW3rV8UQ8GhDxLcTn1P3iIO4hG/JkyZYWlMQtzFBl4Du3kD2h7tmi9V5k
- IUr3g7gJWMT1NOzYdZZ84MserVz880Z7xGV1zrearqVWJQQBgd+a8NYWcT3TTvQXakKdDx1fp
- dC8U92elDLHry7jG72J/yluMOhMRfMLHlQzcJE1wA9t9vZCJI+y1UcYdt7xnwaN60YLaP2tRd
- c6xKclgEw8l9oVkwB+sbAdr1DI5ofjfx9Z8wgyzEzmMuIshphePHJixrIUqeWUnxGMKfbg3tQ
- LGcx21fo+W9+0TCaheJLJcwCivkTH3nOgs9YpnYjCZsyKZgPEyU5PXoBTXXecT9h6Pl9p5gkU
- e6MrOxBW1OeSyAyj/sFXlFRGhXSd/zEVA5VPof0pNjvjHklRsMPwty1Vau7gIWUg/77he6c0l
- dIaJ3RJ76R2MLKJo31sl2glVcERNTCGPEZ3GmnKp35vqne0k3WKNaiFpTbVAqIYaP2084lUQN
- w4nQ7mtAqGOlyL49ui1/FmqmFj8K/fOZ+kdWD4OLF4kPBZfU6SdBP/HMJnJkNaWWaLN/9t/SN
- DbohVJhIJT4yXDXe8po1rGPy3+lWdW+1PPFnbtB28P3o6PJrePre/h8jsPRoKE9z9rUJUVpF1
- d7aQDoqh4YH/GZcGz4uC4g+822afBErwCwI7jD/Ag6W9blojH7ydotWRs8vTO8sYLFrVUoN+a
- klO4yIL37wG42xJDQuL0rkz7dsbqYzncqti7IBmLzMgXV9u4+xU27d9ior5AI6iARecj7W01t
- 0Anr5W8nicfm57mqHrcUItTkvSUQ/9+Mu5UHbKw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=E2=80=A6
-> The refcount leak issues take place in two error handling paths.
+On Tue, Jul 21, 2020 at 4:55 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> On 2020/7/20 =E4=B8=8B=E5=8D=887:16, Eugenio P=C3=A9rez wrote:
+> > On Mon, Jul 20, 2020 at 11:27 AM Michael S. Tsirkin <mst@redhat.com> wr=
+ote:
+> >> On Thu, Jul 16, 2020 at 07:16:27PM +0200, Eugenio Perez Martin wrote:
+> >>> On Fri, Jul 10, 2020 at 7:58 AM Michael S. Tsirkin <mst@redhat.com> w=
+rote:
+> >>>> On Fri, Jul 10, 2020 at 07:39:26AM +0200, Eugenio Perez Martin wrote=
+:
+> >>>>>>> How about playing with the batch size? Make it a mod parameter in=
+stead
+> >>>>>>> of the hard coded 64, and measure for all values 1 to 64 ...
+> >>>>>> Right, according to the test result, 64 seems to be too aggressive=
+ in
+> >>>>>> the case of TX.
+> >>>>>>
+> >>>>> Got it, thanks both!
+> >>>> In particular I wonder whether with batch size 1
+> >>>> we get same performance as without batching
+> >>>> (would indicate 64 is too aggressive)
+> >>>> or not (would indicate one of the code changes
+> >>>> affects performance in an unexpected way).
+> >>>>
+> >>>> --
+> >>>> MST
+> >>>>
+> >>> Hi!
+> >>>
+> >>> Varying batch_size as drivers/vhost/net.c:VHOST_NET_BATCH,
+> >> sorry this is not what I meant.
+> >>
+> >> I mean something like this:
+> >>
+> >>
+> >> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+> >> index 0b509be8d7b1..b94680e5721d 100644
+> >> --- a/drivers/vhost/net.c
+> >> +++ b/drivers/vhost/net.c
+> >> @@ -1279,6 +1279,10 @@ static void handle_rx_net(struct vhost_work *wo=
+rk)
+> >>          handle_rx(net);
+> >>   }
+> >>
+> >> +MODULE_PARM_DESC(batch_num, "Number of batched descriptors. (offset f=
+rom 64)");
+> >> +module_param(batch_num, int, 0644);
+> >> +static int batch_num =3D 0;
+> >> +
+> >>   static int vhost_net_open(struct inode *inode, struct file *f)
+> >>   {
+> >>          struct vhost_net *n;
+> >> @@ -1333,7 +1337,7 @@ static int vhost_net_open(struct inode *inode, s=
+truct file *f)
+> >>                  vhost_net_buf_init(&n->vqs[i].rxq);
+> >>          }
+> >>          vhost_dev_init(dev, vqs, VHOST_NET_VQ_MAX,
+> >> -                      UIO_MAXIOV + VHOST_NET_BATCH,
+> >> +                      UIO_MAXIOV + VHOST_NET_BATCH + batch_num,
+> >>                         VHOST_NET_PKT_WEIGHT, VHOST_NET_WEIGHT, true,
+> >>                         NULL);
+> >>
+> >>
+> >> then you can try tweaking batching and playing with mod parameter with=
+out
+> >> recompiling.
+> >>
+> >>
+> >> VHOST_NET_BATCH affects lots of other things.
+> >>
+> > Ok, got it. Since they were aligned from the start, I thought it was a =
+good idea to maintain them in-sync.
+> >
+> >>> and testing
+> >>> the pps as previous mail says. This means that we have either only
+> >>> vhost_net batching (in base testing, like previously to apply this
+> >>> patch) or both batching sizes the same.
+> >>>
+> >>> I've checked that vhost process (and pktgen) goes 100% cpu also.
+> >>>
+> >>> For tx: Batching decrements always the performance, in all cases. Not
+> >>> sure why bufapi made things better the last time.
+> >>>
+> >>> Batching makes improvements until 64 bufs, I see increments of pps bu=
+t like 1%.
+> >>>
+> >>> For rx: Batching always improves performance. It seems that if we
+> >>> batch little, bufapi decreases performance, but beyond 64, bufapi is
+> >>> much better. The bufapi version keeps improving until I set a batchin=
+g
+> >>> of 1024. So I guess it is super good to have a bunch of buffers to
+> >>> receive.
+> >>>
+> >>> Since with this test I cannot disable event_idx or things like that,
+> >>> what would be the next step for testing?
+> >>>
+> >>> Thanks!
+> >>>
+> >>> --
+> >>> Results:
+> >>> # Buf size: 1,16,32,64,128,256,512
+> >>>
+> >>> # Tx
+> >>> # =3D=3D=3D
+> >>> # Base
+> >>> 2293304.308,3396057.769,3540860.615,3636056.077,3332950.846,3694276.1=
+54,3689820
+> >>> # Batch
+> >>> 2286723.857,3307191.643,3400346.571,3452527.786,3460766.857,3431042.5=
+,3440722.286
+> >>> # Batch + Bufapi
+> >>> 2257970.769,3151268.385,3260150.538,3379383.846,3424028.846,3433384.3=
+08,3385635.231,3406554.538
+> >>>
+> >>> # Rx
+> >>> # =3D=3D
+> >>> # pktgen results (pps)
+> >>> 1223275,1668868,1728794,1769261,1808574,1837252,1846436
+> >>> 1456924,1797901,1831234,1868746,1877508,1931598,1936402
+> >>> 1368923,1719716,1794373,1865170,1884803,1916021,1975160
+> >>>
+> >>> # Testpmd pps results
+> >>> 1222698.143,1670604,1731040.6,1769218,1811206,1839308.75,1848478.75
+> >>> 1450140.5,1799985.75,1834089.75,1871290,1880005.5,1934147.25,1939034
+> >>> 1370621,1721858,1796287.75,1866618.5,1885466.5,1918670.75,1976173.5,1=
+988760.75,1978316
+> >>>
+> >>> pktgen was run again for rx with 1024 and 2048 buf size, giving
+> >>> 1988760.75 and 1978316 pps. Testpmd goes the same way.
+> >> Don't really understand what does this data mean.
+> >> Which number of descs is batched for each run?
+> >>
+> > Sorry, I should have explained better. I will expand here, but feel fre=
+e to skip it since we are going to discard the
+> > data anyway. Or to propose a better way to tell them.
+> >
+> > Is a CSV with the values I've obtained, in pps, from pktgen and testpmd=
+. This way is easy to plot them.
+> >
+> > Maybe is easier as tables, if mail readers/gmail does not misalign them=
+.
+> >
 
-Can an other wording be a bit nicer for the commit message?
+Hi!
+
+Posting here the results varying batch_num with the patch MST proposed.
 
 
-> Fix the issue by =E2=80=A6
+> >>> # Tx
+> >>> # =3D=3D=3D
+> > Base: With the previous code, not integrating any patch. testpmd is txo=
+nly mode, tap interface is XDP_DROP everything.
+> > We vary VHOST_NET_BATCH (1, 16, 32, ...). As Jason put in a previous ma=
+il:
+> >
+> > TX: testpmd(txonly) -> virtio-user -> vhost_net -> XDP_DROP on TAP
+> >
+> >
+> >       1     |     16     |     32     |     64     |     128    |    25=
+6     |   512  |
+> > 2293304.308| 3396057.769| 3540860.615| 3636056.077| 3332950.846| 369427=
+6.154| 3689820|
+> >
 
-I suggest to replace this wording by the tag =E2=80=9CFixes=E2=80=9D.
+    -64    |    -63    |    -32    |     0     |     64    |    192    |   =
+ 448
+3493152.154|3495505.462|3494803.692|3492645.692|3501892.154|3496698.846|349=
+5192.462
 
-Regards,
-Markus
+As Michael said, varying VHOST_NET_BATCH affected much more than
+varying only the vhost batch_num. Here we see that to vary batch_size
+does not affect pps, since we still have not applied the batch patch.
+
+However, performance is worse in pps when we set VHOST_NET_BATCH to a
+bigger value. Would this be a good moment to evaluate if we should
+increase it?
+
+> > If we add the batching part of the series, but not the bufapi:
+> >
+> >        1     |     16     |     32     |     64     |     128    |    2=
+56    |     512    |
+> > 2286723.857 | 3307191.643| 3400346.571| 3452527.786| 3460766.857| 34310=
+42.5 | 3440722.286|
+> >
+
+    -64    |  -63  |    -32    |    0    |    64     |    192    |    448
+3403270.286|3420415|3423424.071|3445849.5|3452552.429|3447267.571|3429406.2=
+86
+
+As before, adding the batching patch decreases pps, but by a very
+little factor this time.
+
+This makes me think: Is
+
+> > And if we add the bufapi part, i.e., all the series:
+> >
+> >        1    |     16     |     32     |     64     |     128    |     2=
+56    |     512    |    1024
+> > 2257970.769| 3151268.385| 3260150.538| 3379383.846| 3424028.846| 343338=
+4.308| 3385635.231| 3406554.538
+> >
+
+    -64    |    -63    |    -32    |     0     |    64     |  192  |   448
+3363233.929|3409874.429|3418717.929|3422728.214|3428160.214|3416061|3428423=
+.071
+
+It looks like a small performance decrease again, but by a very tiny factor=
+.
+
+> > For easier treatment, all in the same table:
+> >
+> >       1      |     16      |     32      |      64     |     128     | =
+   256      |   512      |    1024
+> > ------------+-------------+-------------+-------------+-------------+--=
+-----------+------------+------------
+> > 2293304.308 | 3396057.769 | 3540860.615 | 3636056.077 | 3332950.846 | 3=
+694276.154 | 3689820    |
+> > 2286723.857 | 3307191.643 | 3400346.571 | 3452527.786 | 3460766.857 | 3=
+431042.5   | 3440722.286|
+> > 2257970.769 | 3151268.385 | 3260150.538 | 3379383.846 | 3424028.846 | 3=
+433384.308 | 3385635.231| 3406554.538
+> >
+
+    -64    |    -63    |    -32    |     0     |     64    |    192    |   =
+ 448
+3493152.154|3495505.462|3494803.692|3492645.692|3501892.154|3496698.846|349=
+5192.462
+3403270.286|  3420415  |3423424.071| 3445849.5
+|3452552.429|3447267.571|3429406.286
+3363233.929|3409874.429|3418717.929|3422728.214|3428160.214|  3416061
+|3428423.071
+
+> >>> # Rx
+> >>> # =3D=3D
+> > The rx tests are done with pktgen injecting packets in tap interface, a=
+nd testpmd in rxonly forward mode. Again, each
+> > column is a different value of VHOST_NET_BATCH, and each row is base, +=
+batching, and +buf_api:
+> >
+> >>> # pktgen results (pps)
+> > (Didn't record extreme cases like >512 bufs batching)
+> >
+> >     1   |   16   |   32   |   64   |   128  |  256   |   512
+> > -------+--------+--------+--------+--------+--------+--------
+> > 1223275| 1668868| 1728794| 1769261| 1808574| 1837252| 1846436
+> > 1456924| 1797901| 1831234| 1868746| 1877508| 1931598| 1936402
+> > 1368923| 1719716| 1794373| 1865170| 1884803| 1916021| 1975160
+> >
+
+  -64  |  -63  |  -32  |   0   |   64  |  192  |448
+1798545|1785760|1788313|1782499|1784369|1788149|1790630
+1794057|1837997|1865024|1866864|1890044|1877582|1884620
+1804382|1860677|1877419|1885466|1900464|1887813|1896813
+
+Except in the -64 case, buffering and buf_api increase pps rate, more
+as more batching is used.
+
+> >>> # Testpmd pps results
+> >        1     |     16     |     32     |     64    |    128    |    256=
+     |    512     |    1024    |   2048
+> > ------------+------------+------------+-----------+-----------+--------=
+----+------------+------------+---------
+> > 1222698.143 | 1670604    | 1731040.6  | 1769218   | 1811206   | 1839308=
+.75 | 1848478.75 |
+> > 1450140.5   | 1799985.75 | 1834089.75 | 1871290   | 1880005.5 | 1934147=
+.25 | 1939034    |
+> > 1370621     | 1721858    | 1796287.75 | 1866618.5 | 1885466.5 | 1918670=
+.75 | 1976173.5  | 1988760.75 | 1978316
+> >
+
+    -64   |    -63   |    -32   |    0     |    64    |    192   |   448
+1799920   |1786848   |1789520.25|1783995.75|1786184.5 |1790263.75|1793109.2=
+5
+1796374   |1840254   |1867761   |1868076.25|1892006   |1878957.25|1886311
+1805797.25|1862528.75|1879510.75|1888218.5 |1902516.25|1889216.25|1899251.2=
+5
+
+Same as previous.
+
+
+> > The last extreme cases (>512 bufs batched) were recorded just for the b=
+ufapi case.
+> >
+> > Does that make sense now?
+> >
+> > Thanks!
+>
+>
+> I wonder why we saw huge difference between TX and RX pps. Have you used
+> samples/pktgen/XXX for doing the test? Maybe you can paste the perf
+> record result for the pktgen thread + vhost thread.
+>
+
+With the rx base and batch_num=3D0 (i.e., with no modifications):
+Overhead  Command     Shared Object     Symbol
+  14,40%  vhost-3904  [kernel.vmlinux]  [k] copy_user_generic_unrolled
+  12,63%  vhost-3904  [tun]             [k] tun_do_read
+  11,70%  vhost-3904  [vhost_net]       [k] vhost_net_buf_peek
+   9,77%  vhost-3904  [kernel.vmlinux]  [k] _copy_to_iter
+   6,52%  vhost-3904  [vhost_net]       [k] handle_rx
+   6,29%  vhost-3904  [vhost]           [k] vhost_get_vq_desc
+   4,60%  vhost-3904  [kernel.vmlinux]  [k] __check_object_size
+   4,14%  vhost-3904  [kernel.vmlinux]  [k] kmem_cache_free
+   4,06%  vhost-3904  [kernel.vmlinux]  [k] iov_iter_advance
+   3,10%  vhost-3904  [vhost]           [k] translate_desc
+   2,60%  vhost-3904  [kernel.vmlinux]  [k] __virt_addr_valid
+   2,53%  vhost-3904  [kernel.vmlinux]  [k] __slab_free
+   2,16%  vhost-3904  [tun]             [k] tun_recvmsg
+   1,64%  vhost-3904  [kernel.vmlinux]  [k] copy_user_enhanced_fast_string
+   1,31%  vhost-3904  [vhost_iotlb]     [k]
+vhost_iotlb_itree_subtree_search.part.2
+   1,27%  vhost-3904  [kernel.vmlinux]  [k] __skb_datagram_iter
+   1,12%  vhost-3904  [kernel.vmlinux]  [k] page_frag_free
+   0,92%  vhost-3904  [kernel.vmlinux]  [k] skb_release_data
+   0,87%  vhost-3904  [kernel.vmlinux]  [k] skb_copy_datagram_iter
+   0,62%  vhost-3904  [kernel.vmlinux]  [k] simple_copy_to_iter
+   0,60%  vhost-3904  [kernel.vmlinux]  [k] __free_pages_ok
+   0,54%  vhost-3904  [kernel.vmlinux]  [k] skb_release_head_state
+   0,53%  vhost-3904  [vhost]           [k] vhost_exceeds_weight
+   0,53%  vhost-3904  [kernel.vmlinux]  [k] consume_skb
+   0,52%  vhost-3904  [vhost_iotlb]     [k] vhost_iotlb_itree_first
+   0,45%  vhost-3904  [vhost]           [k] vhost_signal
+
+With rx in batch, I have a few unknown symbols, but much less
+copy_user_generic. Not sure why these symbols are unknown, since they
+were recorded using the exact same command. I will try to investigate
+more, but here they are meanwhile.
+
+I suspect the top unknown one will be the "cpoy_user_generic_unrolled":
+  14,06%  vhost-5127  [tun]             [k] tun_do_read
+  12,53%  vhost-5127  [vhost_net]       [k] vhost_net_buf_peek
+   6,80%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff852cde46
+   6,20%  vhost-5127  [vhost_net]       [k] handle_rx
+   5,73%  vhost-5127  [vhost]           [k] fetch_buf
+   3,77%  vhost-5127  [vhost]           [k] vhost_get_vq_desc
+   2,08%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff852cde6e
+   1,82%  vhost-5127  [tun]             [k] tun_recvmsg
+   1,37%  vhost-5127  [vhost]           [k] translate_desc
+   1,34%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff8510b0a8
+   1,32%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff852cdec0
+   0,94%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff85291688
+   0,84%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff852cde49
+   0,79%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff852cde44
+   0,67%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff8529167c
+   0,66%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff852cde5e
+   0,64%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff8510b0b6
+   0,59%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff85291663
+   0,59%  vhost-5127  [vhost_iotlb]     [k]
+vhost_iotlb_itree_subtree_search.part.2
+   0,57%  vhost-5127  [kernel.vmlinux]  [k] 0xffffffff852916c0
+
+For tx, here we have the base, with a lot of
+copy_user_generic/copy_page_from_iter:
+  28,87%  vhost-3095  [kernel.vmlinux]  [k] copy_user_generic_unrolled
+  16,34%  vhost-3095  [kernel.vmlinux]  [k] copy_page_from_iter
+  11,53%  vhost-3095  [vhost_net]       [k] handle_tx_copy
+   7,87%  vhost-3095  [vhost]           [k] vhost_get_vq_desc
+   5,42%  vhost-3095  [vhost]           [k] translate_desc
+   3,47%  vhost-3095  [kernel.vmlinux]  [k] copy_user_enhanced_fast_string
+   3,16%  vhost-3095  [tun]             [k] tun_sendmsg
+   2,72%  vhost-3095  [vhost_net]       [k] get_tx_bufs
+   2,19%  vhost-3095  [vhost_iotlb]     [k]
+vhost_iotlb_itree_subtree_search.part.2
+   1,84%  vhost-3095  [kernel.vmlinux]  [k] iov_iter_advance
+   1,21%  vhost-3095  [tun]             [k] tun_xdp_act.isra.54
+   1,15%  vhost-3095  [kernel.vmlinux]  [k] __netif_receive_skb_core
+   1,10%  vhost-3095  [kernel.vmlinux]  [k] kmem_cache_free
+   1,08%  vhost-3095  [kernel.vmlinux]  [k] __skb_flow_dissect
+   0,93%  vhost-3095  [vhost_iotlb]     [k] vhost_iotlb_itree_first
+   0,79%  vhost-3095  [vhost]           [k] vhost_exceeds_weight
+   0,72%  vhost-3095  [kernel.vmlinux]  [k] copyin
+   0,55%  vhost-3095  [vhost]           [k] vhost_signal
+
+And, again, the batch version with unknown symbols. I expected two of
+them (copy_user_generic/copy_page_from_iter), but only one unknown
+symbol was found.
+  21,40%  vhost-3382  [kernel.vmlinux]  [k] 0xffffffff852cde46
+  11,07%  vhost-3382  [vhost_net]       [k] handle_tx_copy
+   9,91%  vhost-3382  [vhost]           [k] fetch_buf
+   3,81%  vhost-3382  [vhost]           [k] vhost_get_vq_desc
+   3,55%  vhost-3382  [kernel.vmlinux]  [k] 0xffffffff852cde6e
+   3,10%  vhost-3382  [tun]             [k] tun_sendmsg
+   2,64%  vhost-3382  [vhost_net]       [k] get_tx_bufs
+   2,26%  vhost-3382  [vhost]           [k] translate_desc
+
+Do you want different reports? I will try to resolve these unknown
+symbols, and to generate pktgen reports too.
+
+Thanks!
+
+> Thanks
+>
+>
+> >
+>
+
