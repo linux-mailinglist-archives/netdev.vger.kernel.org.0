@@ -2,61 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E498E2316EA
-	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 02:47:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E402F2316F3
+	for <lists+netdev@lfdr.de>; Wed, 29 Jul 2020 02:48:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730849AbgG2ArV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jul 2020 20:47:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46632 "EHLO
+        id S1730953AbgG2Asi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jul 2020 20:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730668AbgG2ArV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 20:47:21 -0400
+        with ESMTP id S1730837AbgG2Asi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jul 2020 20:48:38 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B5FC061794
-        for <netdev@vger.kernel.org>; Tue, 28 Jul 2020 17:47:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66625C061794;
+        Tue, 28 Jul 2020 17:48:38 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 61F0A128D7309;
-        Tue, 28 Jul 2020 17:30:34 -0700 (PDT)
-Date:   Tue, 28 Jul 2020 17:47:18 -0700 (PDT)
-Message-Id: <20200728.174718.450581528353482552.davem@davemloft.net>
-To:     kurt@linutronix.de
-Cc:     richardcochran@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, kuba@kernel.org, jiri@mellanox.com,
-        idosch@mellanox.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        grygorii.strashko@ti.com, ivan.khoronzhuk@linaro.org,
-        zou_wei@huawei.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 0/9] ptp: Add generic header parsing function
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9F6E6128D3F97;
+        Tue, 28 Jul 2020 17:31:52 -0700 (PDT)
+Date:   Tue, 28 Jul 2020 17:48:37 -0700 (PDT)
+Message-Id: <20200728.174837.591128375744536882.davem@davemloft.net>
+To:     Jisheng.Zhang@synaptics.com
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, kuba@kernel.org, mcoquelin.stm32@gmail.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] net: stmmac: improve WOL
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200727090601.6500-1-kurt@linutronix.de>
-References: <20200727090601.6500-1-kurt@linutronix.de>
+In-Reply-To: <20200727190045.36f247cc@xhacker.debian>
+References: <20200727190045.36f247cc@xhacker.debian>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 28 Jul 2020 17:30:34 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 28 Jul 2020 17:31:53 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kurt Kanzenbach <kurt@linutronix.de>
-Date: Mon, 27 Jul 2020 11:05:52 +0200
+From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+Date: Mon, 27 Jul 2020 19:01:07 +0800
 
-> in order to reduce code duplication in the ptp code of DSA, Ethernet and Phy
-> drivers, move the header parsing function to ptp_classify. This way all drivers
-> can share the same implementation. Implemented as discussed [1] [2] [3].
+> Currently, stmmac driver relies on the HW PMT to support WOL. We want
+> to support phy based WOL.
 > 
-> This is version two and contains more driver conversions.
-> 
-> Richard, can you test with your hardware? I'll do the same e.g. on the bbb.
-> 
-> Version 1 can be found here:
-> 
->  * https://lkml.kernel.org/netdev/20200723074946.14253-1-kurt@linutronix.de/
+> patch1 is a small improvement to disable WAKE_MAGIC for PMT case if
+> no pmt_magic_frame.
+> patch2 and patch3 are two prepation patches.
+> patch4 implement the phy based WOL
+> patch5 tries to save a bit energy if WOL is enabled.
 
-It looks like some mlxsw et al. issues wrt. which header is expected at
-skb->data when certain helper functions are invoked need to be resolved
-still.
+Series applied to net-next, thanks.
