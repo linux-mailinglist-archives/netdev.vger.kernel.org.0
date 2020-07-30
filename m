@@ -2,536 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27C0C233462
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 16:29:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7781233472
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 16:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728462AbgG3O3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 10:29:01 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:44792 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726275AbgG3O3A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 10:29:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596119337;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EJbYvEZbLr74LXjQ3oa1E+tDKKvR6TenxCsSZwBVlbM=;
-        b=YALvftxoTRuc4r1m4iIUY869c/We0pxT3Ll216u9LHIN5tASpm6UI4E3lFnpDc23VgqROx
-        BpsxFkCcatsMLN9LcNP710DQD3+pW77iuB5vx7fE9PhLFxlRg3ywH5oHpXUdXdFJxqCl6n
-        lnJiqn1+RArnxf7OJ6uIMa0Y+TkYU3A=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-478-4ZnhNIAJNEijlbyIH21E5A-1; Thu, 30 Jul 2020 10:28:52 -0400
-X-MC-Unique: 4ZnhNIAJNEijlbyIH21E5A-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E6E65107ACCA;
-        Thu, 30 Jul 2020 14:28:50 +0000 (UTC)
-Received: from [10.36.114.39] (ovpn-114-39.ams2.redhat.com [10.36.114.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0064787B0E;
-        Thu, 30 Jul 2020 14:28:48 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Tonghao Zhang" <xiangxia.m.yue@gmail.com>
-Cc:     "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
-        "David Miller" <davem@davemloft.net>,
-        "ovs dev" <dev@openvswitch.org>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Pravin Shelar" <pshelar@ovn.org>,
-        "Florian Westphal" <fw@strlen.de>
-Subject: Re: [PATCH net-next v3 2/2] net: openvswitch: make masks cache size
- configurable
-Date:   Thu, 30 Jul 2020 16:28:47 +0200
-Message-ID: <0D63C15D-BCD7-4B50-AE9C-0286C8B15D05@redhat.com>
-In-Reply-To: <CAMDZJNVMKZvh8mWVa9x86HbHoK+_4h7esdJfkL3grpHm6tBG=w@mail.gmail.com>
-References: <159602912600.937753.3123982828905970322.stgit@ebuild>
- <159602917888.937753.17718463910615059058.stgit@ebuild>
- <CAMDZJNUQeScZXRNe0TnAX08mmF-KHVvdM16AcQnaC8fay8ZH-g@mail.gmail.com>
- <C6B2B758-FF29-4463-8F38-757803D77779@redhat.com>
- <CAMDZJNXPU0mqWabVfQJb2nczcOX8T8i-5n=VrVs4TnDHghOTyw@mail.gmail.com>
- <3E334895-91D5-4FAC-99B0-A0B3B9B547E7@redhat.com>
- <CAMDZJNVMKZvh8mWVa9x86HbHoK+_4h7esdJfkL3grpHm6tBG=w@mail.gmail.com>
+        id S1729448AbgG3Oag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 10:30:36 -0400
+Received: from mail.as201155.net ([185.84.6.188]:25010 "EHLO mail.as201155.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726275AbgG3Oaf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 10:30:35 -0400
+Received: from smtps.newmedia-net.de ([2a05:a1c0:0:de::167]:52622 helo=webmail.newmedia-net.de)
+        by mail.as201155.net with esmtps (TLSv1:DHE-RSA-AES256-SHA:256)
+        (Exim 4.82_1-5b7a7c0-XX)
+        (envelope-from <s.gottschall@dd-wrt.com>)
+        id 1k19Zm-0001wq-2I; Thu, 30 Jul 2020 16:30:30 +0200
+X-CTCH-RefID: str=0001.0A782F23.5F22D986.0081,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=dd-wrt.com; s=mikd;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=T0sd7EsQIUd/MMcMZ9uiR5DKQFLVIhjXkc+q3lvkbMc=;
+        b=s+wXlJ1haCN6sI/MvTOFxpBVHbh6sTIKeqb+55ScjcKXASpG6KZvvbjHtK6p4Xu38GvDr5CNhBmUwPm4z8fneas3Zus8gQ8aaURZsbWhHiaSxkcbFa2oc+1vTfjm1a5dMo7TwxM7ePIAQDd7S919ALvqQNSb3C7eS0c4VlYsdtg=;
+Subject: Re: [PATCH] net: add support for threaded NAPI polling
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org
+Cc:     Hillf Danton <hdanton@sina.com>
+References: <20200729165058.83984-1-nbd@nbd.name>
+ <866c7d83-868d-120e-f535-926c4cc9e615@gmail.com>
+From:   Sebastian Gottschall <s.gottschall@dd-wrt.com>
+Message-ID: <5aa0c26f-d3f1-b33f-a598-e4727d6f10f0@dd-wrt.com>
+Date:   Thu, 30 Jul 2020 16:30:28 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101
+ Thunderbird/79.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <866c7d83-868d-120e-f535-926c4cc9e615@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Received:  from [2a01:7700:8040:300:9ce9:cf1b:d735:dc62]
+        by webmail.newmedia-net.de with esmtpsa (TLSv1:AES128-SHA:128)
+        (Exim 4.72)
+        (envelope-from <s.gottschall@dd-wrt.com>)
+        id 1k19Zm-0001dK-DS; Thu, 30 Jul 2020 16:30:30 +0200
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 30 Jul 2020, at 16:23, Tonghao Zhang wrote:
-
-> On Thu, Jul 30, 2020 at 9:52 PM Eelco Chaudron <echaudro@redhat.com> 
-> wrote:
+Am 29.07.2020 um 19:44 schrieb Eric Dumazet:
+>
+> On 7/29/20 9:50 AM, Felix Fietkau wrote:
+>> For some drivers (especially 802.11 drivers), doing a lot of work in the NAPI
+>> poll function does not perform well. Since NAPI poll is bound to the CPU it
+>> was scheduled from, we can easily end up with a few very busy CPUs spending
+>> most of their time in softirq/ksoftirqd and some idle ones.
 >>
+>> Introduce threaded NAPI for such drivers based on a workqueue. The API is the
+>> same except for using netif_threaded_napi_add instead of netif_napi_add.
 >>
+>> In my tests with mt76 on MT7621 using threaded NAPI + a thread for tx scheduling
+>> improves LAN->WLAN bridging throughput by 10-50%. Throughput without threaded
+>> NAPI is wildly inconsistent, depending on the CPU that runs the tx scheduling
+>> thread.
 >>
->> On 30 Jul 2020, at 15:25, Tonghao Zhang wrote:
+>> With threaded NAPI, throughput seems stable and consistent (and higher than
+>> the best results I got without it).
 >>
->>> On Thu, Jul 30, 2020 at 8:33 PM Eelco Chaudron <echaudro@redhat.com>
->>> wrote:
->>>>
->>>> Thanks Tonghao for the review, see comments inline below!
->>>>
->>>> If I get no more reviews by the end of the week I’ll send out a 
->>>> v4.
->>>>
->>>> //Eelco
->>>>
->>>>
->>>> On 30 Jul 2020, at 7:07, Tonghao Zhang wrote:
->>>>
->>>>> On Wed, Jul 29, 2020 at 9:27 PM Eelco Chaudron 
->>>>> <echaudro@redhat.com>
->>>>> wrote:
->>>>>>
->>>>>> This patch makes the masks cache size configurable, or with
->>>>>> a size of 0, disable it.
->>>>>>
->>>>>> Reviewed-by: Paolo Abeni <pabeni@redhat.com>
->>>>>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->>>>>> ---
->>>>>> Changes in v3:
->>>>>>  - Use is_power_of_2() function
->>>>>>  - Use array_size() function
->>>>>>  - Fix remaining sparse errors
->>>>>>
->>>>>> Changes in v2:
->>>>>>  - Fix sparse warnings
->>>>>>  - Fix netlink policy items reported by Florian Westphal
->>>>>>
->>>>>>  include/uapi/linux/openvswitch.h |    1
->>>>>>  net/openvswitch/datapath.c       |   14 +++++
->>>>>>  net/openvswitch/flow_table.c     |   97
->>>>>> +++++++++++++++++++++++++++++++++-----
->>>>>>  net/openvswitch/flow_table.h     |   10 ++++
->>>>>>  4 files changed, 108 insertions(+), 14 deletions(-)
->>>>>>
->>>>>> diff --git a/include/uapi/linux/openvswitch.h
->>>>>> b/include/uapi/linux/openvswitch.h
->>>>>> index 7cb76e5ca7cf..8300cc29dec8 100644
->>>>>> --- a/include/uapi/linux/openvswitch.h
->>>>>> +++ b/include/uapi/linux/openvswitch.h
->>>>>> @@ -86,6 +86,7 @@ enum ovs_datapath_attr {
->>>>>>         OVS_DP_ATTR_MEGAFLOW_STATS,     /* struct
->>>>>> ovs_dp_megaflow_stats */
->>>>>>         OVS_DP_ATTR_USER_FEATURES,      /* OVS_DP_F_*  */
->>>>>>         OVS_DP_ATTR_PAD,
->>>>>> +       OVS_DP_ATTR_MASKS_CACHE_SIZE,
->>>>>>         __OVS_DP_ATTR_MAX
->>>>>>  };
->>>>>>
->>>>>> diff --git a/net/openvswitch/datapath.c
->>>>>> b/net/openvswitch/datapath.c
->>>>>> index a54df1fe3ec4..114b2ddb8037 100644
->>>>>> --- a/net/openvswitch/datapath.c
->>>>>> +++ b/net/openvswitch/datapath.c
->>>>>> @@ -1498,6 +1498,7 @@ static size_t ovs_dp_cmd_msg_size(void)
->>>>>>         msgsize += nla_total_size_64bit(sizeof(struct
->>>>>> ovs_dp_stats));
->>>>>>         msgsize += nla_total_size_64bit(sizeof(struct
->>>>>> ovs_dp_megaflow_stats));
->>>>>>         msgsize += nla_total_size(sizeof(u32)); /*
->>>>>> OVS_DP_ATTR_USER_FEATURES */
->>>>>> +       msgsize += nla_total_size(sizeof(u32)); /*
->>>>>> OVS_DP_ATTR_MASKS_CACHE_SIZE */
->>>>>>
->>>>>>         return msgsize;
->>>>>>  }
->>>>>> @@ -1535,6 +1536,10 @@ static int ovs_dp_cmd_fill_info(struct
->>>>>> datapath *dp, struct sk_buff *skb,
->>>>>>         if (nla_put_u32(skb, OVS_DP_ATTR_USER_FEATURES,
->>>>>> dp->user_features))
->>>>>>                 goto nla_put_failure;
->>>>>>
->>>>>> +       if (nla_put_u32(skb, OVS_DP_ATTR_MASKS_CACHE_SIZE,
->>>>>> +                       
->>>>>> ovs_flow_tbl_masks_cache_size(&dp->table)))
->>>>>> +               goto nla_put_failure;
->>>>>> +
->>>>>>         genlmsg_end(skb, ovs_header);
->>>>>>         return 0;
->>>>>>
->>>>>> @@ -1599,6 +1604,13 @@ static int ovs_dp_change(struct datapath
->>>>>> *dp,
->>>>>> struct nlattr *a[])
->>>>>>  #endif
->>>>>>         }
->>>>>>
->>>>>> +       if (a[OVS_DP_ATTR_MASKS_CACHE_SIZE]) {
->>>>>> +               u32 cache_size;
->>>>>> +
->>>>>> +               cache_size =
->>>>>> nla_get_u32(a[OVS_DP_ATTR_MASKS_CACHE_SIZE]);
->>>>>> +               ovs_flow_tbl_masks_cache_resize(&dp->table,
->>>>>> cache_size);
->>>>> Do we should return error code, if we can't change the 
->>>>> "mask_cache"
->>>>> size ? for example, -EINVAL, -ENOMEM
->>>>
->>>> Initially, I did not do this due to the fact the new value is
->>>> reported,
->>>> and on failure, the old value is shown.
->>>> However thinking about it again, it makes more sense to return an
->>>> error.
->>>> Will sent a v4 with the following to return:
->>>>
->>>> -
->>>> -void ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32
->>>> size)
->>>> +int ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32
->>>> size)
->>>>   {
->>>>          struct mask_cache *mc = 
->>>> rcu_dereference(table->mask_cache);
->>>>          struct mask_cache *new;
->>>>
->>>>          if (size == mc->cache_size)
->>>> -               return;
->>>> +               return 0;
->>>> +
->>>> +       if (!is_power_of_2(size) && size != 0)
->>>> +               return -EINVAL;
->>> add check as below, and we can remove the check in
->>> tbl_mask_cache_alloc function. That
->>> function will only return NULL, if there is no memory. And we can
->>> comment for tbl_mask_cache_alloc, to indicate that size should be a
->>> power of 2.
->>>  if ((!is_power_of_2(size) && size != 0) ||
->>>            (size * sizeof(struct mask_cache_entry)) >
->>> PCPU_MIN_UNIT_SIZE)
+>> Based on a patch by Hillf Danton
 >>
->> I do not think the extra check hurts as it’s not in any fast path.
-> Hi Eelco.
-> Yes, I agree. Sorry for not being clear. I mean that:
-> if we don't check the "(size * sizeof(struct mask_cache_entry))  >
-> PCPU_MIN_UNIT_SIZE)" in the ovs_flow_tbl_masks_cache_resize.
-> tbl_mask_cache_alloc (ovs_flow_tbl_masks_cache_resize will invoke this
-> function)will return the NULL,
-> ovs_flow_tbl_masks_cache_resize will return -ENOMEM. I guess we should
-> return -EINVAL in that case.
-
-Thanks got it now, will add the additional check, and not remove it from 
-tbl_mask_cache_alloc().
-
->> The comment would easily be missed, especially if someone changes the
->> default value, so I would prefer to keep it as is.
+>> Cc: Hillf Danton <hdanton@sina.com>
+>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+>> ---
+>> Changes since RFC v2:
+>> - fix unused but set variable reported by kbuild test robot
 >>
->>> Thanks Eelco.
->>> Reviewed-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->>>
->>>>          new = tbl_mask_cache_alloc(size);
->>>>          if (!new)
->>>> -               return;
->>>> +               return -ENOMEM;
->>>>
->>>>          rcu_assign_pointer(table->mask_cache, new);
->>>>          call_rcu(&mc->rcu, mask_cache_rcu_cb);
->>>> +
->>>> +       return 0;
->>>>   }
->>>>
->>>>>> +       }
->>>>>> +
->>>>>>         dp->user_features = user_features;
->>>>>>
->>>>>>         if (dp->user_features & OVS_DP_F_TC_RECIRC_SHARING)
->>>>>> @@ -1894,6 +1906,8 @@ static const struct nla_policy
->>>>>> datapath_policy[OVS_DP_ATTR_MAX + 1] = {
->>>>>>         [OVS_DP_ATTR_NAME] = { .type = NLA_NUL_STRING, .len =
->>>>>> IFNAMSIZ - 1 },
->>>>>>         [OVS_DP_ATTR_UPCALL_PID] = { .type = NLA_U32 },
->>>>>>         [OVS_DP_ATTR_USER_FEATURES] = { .type = NLA_U32 },
->>>>>> +       [OVS_DP_ATTR_MASKS_CACHE_SIZE] =  
->>>>>> NLA_POLICY_RANGE(NLA_U32,
->>>>>> 0,
->>>>>> +               PCPU_MIN_UNIT_SIZE / sizeof(struct
->>>>>> mask_cache_entry)),
->>>>>>  };
->>>>>>
->>>>>>  static const struct genl_ops dp_datapath_genl_ops[] = {
->>>>>> diff --git a/net/openvswitch/flow_table.c
->>>>>> b/net/openvswitch/flow_table.c
->>>>>> index a5912ea05352..5280aeeef628 100644
->>>>>> --- a/net/openvswitch/flow_table.c
->>>>>> +++ b/net/openvswitch/flow_table.c
->>>>>> @@ -38,8 +38,8 @@
->>>>>>  #define MASK_ARRAY_SIZE_MIN    16
->>>>>>  #define REHASH_INTERVAL                (10 * 60 * HZ)
->>>>>>
->>>>>> +#define MC_DEFAULT_HASH_ENTRIES        256
->>>>>>  #define MC_HASH_SHIFT          8
->>>>>> -#define MC_HASH_ENTRIES                (1u << MC_HASH_SHIFT)
->>>>>>  #define MC_HASH_SEGS           ((sizeof(uint32_t) * 8) /
->>>>>> MC_HASH_SHIFT)
->>>>>>
->>>>>>  static struct kmem_cache *flow_cache;
->>>>>> @@ -341,15 +341,75 @@ static void flow_mask_remove(struct
->>>>>> flow_table
->>>>>> *tbl, struct sw_flow_mask *mask)
->>>>>>         }
->>>>>>  }
->>>>>>
->>>>>> +static void __mask_cache_destroy(struct mask_cache *mc)
->>>>>> +{
->>>>>> +       if (mc->mask_cache)
->>>>>> +               free_percpu(mc->mask_cache);
->>>>> free_percpu the NULL is safe. we can remove the "if".
->>>>
->>>> Makes sense, will remove the if() check.
->>>>
->>>>>> +       kfree(mc);
->>>>>> +}
->>>>>> +
->>>>>> +static void mask_cache_rcu_cb(struct rcu_head *rcu)
->>>>>> +{
->>>>>> +       struct mask_cache *mc = container_of(rcu, struct
->>>>>> mask_cache,
->>>>>> rcu);
->>>>>> +
->>>>>> +       __mask_cache_destroy(mc);
->>>>>> +}
->>>>>> +
->>>>>> +static struct mask_cache *tbl_mask_cache_alloc(u32 size)
->>>>>> +{
->>>>>> +       struct mask_cache_entry __percpu *cache = NULL;
->>>>>> +       struct mask_cache *new;
->>>>>> +
->>>>>> +       /* Only allow size to be 0, or a power of 2, and does not
->>>>>> exceed
->>>>>> +        * percpu allocation size.
->>>>>> +        */
->>>>>> +       if ((!is_power_of_2(size) && size != 0) ||
->>>>>> +           (size * sizeof(struct mask_cache_entry)) >
->>>>>> PCPU_MIN_UNIT_SIZE)
->>>>>> +               return NULL;
->>>>>> +       new = kzalloc(sizeof(*new), GFP_KERNEL);
->>>>>> +       if (!new)
->>>>>> +               return NULL;
->>>>>> +
->>>>>> +       new->cache_size = size;
->>>>>> +       if (new->cache_size > 0) {
->>>>>> +               cache = __alloc_percpu(array_size(sizeof(struct
->>>>>> mask_cache_entry),
->>>>>> +                                                 
->>>>>> new->cache_size),
->>>>>> +                                      __alignof__(struct
->>>>>> mask_cache_entry));
->>>>>> +               if (!cache) {
->>>>>> +                       kfree(new);
->>>>>> +                       return NULL;
->>>>>> +               }
->>>>>> +       }
->>>>>> +
->>>>>> +       new->mask_cache = cache;
->>>>>> +       return new;
->>>>>> +}
->>>>>> +
->>>>>> +void ovs_flow_tbl_masks_cache_resize(struct flow_table *table, 
->>>>>> u32
->>>>>> size)
->>>>>> +{
->>>>>> +       struct mask_cache *mc = 
->>>>>> rcu_dereference(table->mask_cache);
->>>>>> +       struct mask_cache *new;
->>>>>> +
->>>>>> +       if (size == mc->cache_size)
->>>>>> +               return;
->>>>>> +
->>>>>> +       new = tbl_mask_cache_alloc(size);
->>>>>> +       if (!new)
->>>>>> +               return;
->>>>>> +
->>>>>> +       rcu_assign_pointer(table->mask_cache, new);
->>>>>> +       call_rcu(&mc->rcu, mask_cache_rcu_cb);
->>>>>> +}
->>>>>> +
->>>>>>  int ovs_flow_tbl_init(struct flow_table *table)
->>>>>>  {
->>>>>>         struct table_instance *ti, *ufid_ti;
->>>>>> +       struct mask_cache *mc;
->>>>>>         struct mask_array *ma;
->>>>>>
->>>>>> -       table->mask_cache = __alloc_percpu(sizeof(struct
->>>>>> mask_cache_entry) *
->>>>>> -                                          MC_HASH_ENTRIES,
->>>>>> -                                          __alignof__(struct
->>>>>> mask_cache_entry));
->>>>>> -       if (!table->mask_cache)
->>>>>> +       mc = tbl_mask_cache_alloc(MC_DEFAULT_HASH_ENTRIES);
->>>>>> +       if (!mc)
->>>>>>                 return -ENOMEM;
->>>>>>
->>>>>>         ma = tbl_mask_array_alloc(MASK_ARRAY_SIZE_MIN);
->>>>>> @@ -367,6 +427,7 @@ int ovs_flow_tbl_init(struct flow_table 
->>>>>> *table)
->>>>>>         rcu_assign_pointer(table->ti, ti);
->>>>>>         rcu_assign_pointer(table->ufid_ti, ufid_ti);
->>>>>>         rcu_assign_pointer(table->mask_array, ma);
->>>>>> +       rcu_assign_pointer(table->mask_cache, mc);
->>>>>>         table->last_rehash = jiffies;
->>>>>>         table->count = 0;
->>>>>>         table->ufid_count = 0;
->>>>>> @@ -377,7 +438,7 @@ int ovs_flow_tbl_init(struct flow_table 
->>>>>> *table)
->>>>>>  free_mask_array:
->>>>>>         __mask_array_destroy(ma);
->>>>>>  free_mask_cache:
->>>>>> -       free_percpu(table->mask_cache);
->>>>>> +       __mask_cache_destroy(mc);
->>>>>>         return -ENOMEM;
->>>>>>  }
->>>>>>
->>>>>> @@ -453,9 +514,11 @@ void ovs_flow_tbl_destroy(struct flow_table
->>>>>> *table)
->>>>>>  {
->>>>>>         struct table_instance *ti = 
->>>>>> rcu_dereference_raw(table->ti);
->>>>>>         struct table_instance *ufid_ti =
->>>>>> rcu_dereference_raw(table->ufid_ti);
->>>>>> +       struct mask_cache *mc = 
->>>>>> rcu_dereference(table->mask_cache);
->>>>>> +       struct mask_array *ma =
->>>>>> rcu_dereference_ovsl(table->mask_array);
->>>>>>
->>>>>> -       free_percpu(table->mask_cache);
->>>>>> -       call_rcu(&table->mask_array->rcu, mask_array_rcu_cb);
->>>>>> +       call_rcu(&mc->rcu, mask_cache_rcu_cb);
->>>>>> +       call_rcu(&ma->rcu, mask_array_rcu_cb);
->>>>>>         table_instance_destroy(table, ti, ufid_ti, false);
->>>>>>  }
->>>>>>
->>>>>> @@ -724,6 +787,7 @@ struct sw_flow
->>>>>> *ovs_flow_tbl_lookup_stats(struct
->>>>>> flow_table *tbl,
->>>>>>                                           u32 *n_mask_hit,
->>>>>>                                           u32 *n_cache_hit)
->>>>>>  {
->>>>>> +       struct mask_cache *mc = rcu_dereference(tbl->mask_cache);
->>>>>>         struct mask_array *ma = rcu_dereference(tbl->mask_array);
->>>>>>         struct table_instance *ti = rcu_dereference(tbl->ti);
->>>>>>         struct mask_cache_entry *entries, *ce;
->>>>>> @@ -733,7 +797,7 @@ struct sw_flow
->>>>>> *ovs_flow_tbl_lookup_stats(struct
->>>>>> flow_table *tbl,
->>>>>>
->>>>>>         *n_mask_hit = 0;
->>>>>>         *n_cache_hit = 0;
->>>>>> -       if (unlikely(!skb_hash)) {
->>>>>> +       if (unlikely(!skb_hash || mc->cache_size == 0)) {
->>>>>>                 u32 mask_index = 0;
->>>>>>                 u32 cache = 0;
->>>>>>
->>>>>> @@ -749,11 +813,11 @@ struct sw_flow
->>>>>> *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
->>>>>>
->>>>>>         ce = NULL;
->>>>>>         hash = skb_hash;
->>>>>> -       entries = this_cpu_ptr(tbl->mask_cache);
->>>>>> +       entries = this_cpu_ptr(mc->mask_cache);
->>>>>>
->>>>>>         /* Find the cache entry 'ce' to operate on. */
->>>>>>         for (seg = 0; seg < MC_HASH_SEGS; seg++) {
->>>>>> -               int index = hash & (MC_HASH_ENTRIES - 1);
->>>>>> +               int index = hash & (mc->cache_size - 1);
->>>>>>                 struct mask_cache_entry *e;
->>>>>>
->>>>>>                 e = &entries[index];
->>>>>> @@ -867,6 +931,13 @@ int ovs_flow_tbl_num_masks(const struct
->>>>>> flow_table *table)
->>>>>>         return READ_ONCE(ma->count);
->>>>>>  }
->>>>>>
->>>>>> +u32 ovs_flow_tbl_masks_cache_size(const struct flow_table 
->>>>>> *table)
->>>>>> +{
->>>>>> +       struct mask_cache *mc = 
->>>>>> rcu_dereference(table->mask_cache);
->>>>>> +
->>>>>> +       return READ_ONCE(mc->cache_size);
->>>>>> +}
->>>>>> +
->>>>>>  static struct table_instance *table_instance_expand(struct
->>>>>> table_instance *ti,
->>>>>>                                                     bool ufid)
->>>>>>  {
->>>>>> @@ -1095,8 +1166,8 @@ void ovs_flow_masks_rebalance(struct
->>>>>> flow_table
->>>>>> *table)
->>>>>>         for (i = 0; i < masks_entries; i++) {
->>>>>>                 int index = masks_and_count[i].index;
->>>>>>
->>>>>> -               new->masks[new->count++] =
->>>>>> -                       rcu_dereference_ovsl(ma->masks[index]);
->>>>>> +               if (ovsl_dereference(ma->masks[index]))
->>>>>> +                       new->masks[new->count++] =
->>>>>> ma->masks[index];
->>>>>>         }
->>>>>>
->>>>>>         rcu_assign_pointer(table->mask_array, new);
->>>>>> diff --git a/net/openvswitch/flow_table.h
->>>>>> b/net/openvswitch/flow_table.h
->>>>>> index 325e939371d8..f2dba952db2f 100644
->>>>>> --- a/net/openvswitch/flow_table.h
->>>>>> +++ b/net/openvswitch/flow_table.h
->>>>>> @@ -27,6 +27,12 @@ struct mask_cache_entry {
->>>>>>         u32 mask_index;
->>>>>>  };
->>>>>>
->>>>>> +struct mask_cache {
->>>>>> +       struct rcu_head rcu;
->>>>>> +       u32 cache_size;  /* Must be ^2 value. */
->>>>>> +       struct mask_cache_entry __percpu *mask_cache;
->>>>>> +};
->>>>>> +
->>>>>>  struct mask_count {
->>>>>>         int index;
->>>>>>         u64 counter;
->>>>>> @@ -53,7 +59,7 @@ struct table_instance {
->>>>>>  struct flow_table {
->>>>>>         struct table_instance __rcu *ti;
->>>>>>         struct table_instance __rcu *ufid_ti;
->>>>>> -       struct mask_cache_entry __percpu *mask_cache;
->>>>>> +       struct mask_cache __rcu *mask_cache;
->>>>>>         struct mask_array __rcu *mask_array;
->>>>>>         unsigned long last_rehash;
->>>>>>         unsigned int count;
->>>>>> @@ -77,6 +83,8 @@ int ovs_flow_tbl_insert(struct flow_table 
->>>>>> *table,
->>>>>> struct sw_flow *flow,
->>>>>>                         const struct sw_flow_mask *mask);
->>>>>>  void ovs_flow_tbl_remove(struct flow_table *table, struct 
->>>>>> sw_flow
->>>>>> *flow);
->>>>>>  int  ovs_flow_tbl_num_masks(const struct flow_table *table);
->>>>>> +u32  ovs_flow_tbl_masks_cache_size(const struct flow_table
->>>>>> *table);
->>>>>> +void ovs_flow_tbl_masks_cache_resize(struct flow_table *table, 
->>>>>> u32
->>>>>> size);
->>>>>>  struct sw_flow *ovs_flow_tbl_dump_next(struct table_instance
->>>>>> *table,
->>>>>>                                        u32 *bucket, u32 *idx);
->>>>>>  struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *,
->>>>>>
->>>>>
->>>>>
->>>>> --
->>>>> Best regards, Tonghao
->>>>
->>>
->>>
->>> --
->>> Best regards, Tonghao
+>> Changes since RFC:
+>> - disable softirq around threaded poll functions
+>> - reuse most parts of napi_poll()
+>> - fix re-schedule condition
 >>
+>>   include/linux/netdevice.h |  23 ++++++
+>>   net/core/dev.c            | 162 ++++++++++++++++++++++++++------------
+>>   2 files changed, 133 insertions(+), 52 deletions(-)
+>>
+>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+>> index ac2cd3f49aba..3a39211c7598 100644
+>> --- a/include/linux/netdevice.h
+>> +++ b/include/linux/netdevice.h
+>> @@ -347,6 +347,7 @@ struct napi_struct {
+>>   	struct list_head	dev_list;
+>>   	struct hlist_node	napi_hash_node;
+>>   	unsigned int		napi_id;
+>> +	struct work_struct	work;
+>>   };
+>>   
+>>   enum {
+>> @@ -357,6 +358,7 @@ enum {
+>>   	NAPI_STATE_HASHED,	/* In NAPI hash (busy polling possible) */
+>>   	NAPI_STATE_NO_BUSY_POLL,/* Do not add in napi_hash, no busy polling */
+>>   	NAPI_STATE_IN_BUSY_POLL,/* sk_busy_loop() owns this NAPI */
+>> +	NAPI_STATE_THREADED,	/* Use threaded NAPI */
+>>   };
+>>   
+>>   enum {
+>> @@ -367,6 +369,7 @@ enum {
+>>   	NAPIF_STATE_HASHED	 = BIT(NAPI_STATE_HASHED),
+>>   	NAPIF_STATE_NO_BUSY_POLL = BIT(NAPI_STATE_NO_BUSY_POLL),
+>>   	NAPIF_STATE_IN_BUSY_POLL = BIT(NAPI_STATE_IN_BUSY_POLL),
+>> +	NAPIF_STATE_THREADED	 = BIT(NAPI_STATE_THREADED),
+>>   };
+>>   
+>>   enum gro_result {
+>> @@ -2315,6 +2318,26 @@ static inline void *netdev_priv(const struct net_device *dev)
+>>   void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+>>   		    int (*poll)(struct napi_struct *, int), int weight);
+>>   
+>> +/**
+>> + *	netif_threaded_napi_add - initialize a NAPI context
+>> + *	@dev:  network device
+>> + *	@napi: NAPI context
+>> + *	@poll: polling function
+>> + *	@weight: default weight
+>> + *
+>> + * This variant of netif_napi_add() should be used from drivers using NAPI
+>> + * with CPU intensive poll functions.
+>> + * This will schedule polling from a high priority workqueue that
+>> + */
+>> +static inline void netif_threaded_napi_add(struct net_device *dev,
+>> +					   struct napi_struct *napi,
+>> +					   int (*poll)(struct napi_struct *, int),
+>> +					   int weight)
+>> +{
+>> +	set_bit(NAPI_STATE_THREADED, &napi->state);
+>> +	netif_napi_add(dev, napi, poll, weight);
+>> +}
+>> +
+>>   /**
+>>    *	netif_tx_napi_add - initialize a NAPI context
+>>    *	@dev:  network device
+>> diff --git a/net/core/dev.c b/net/core/dev.c
+>> index 19f1abc26fcd..11b027f3a2b9 100644
+>> --- a/net/core/dev.c
+>> +++ b/net/core/dev.c
+>> @@ -158,6 +158,7 @@ static DEFINE_SPINLOCK(offload_lock);
+>>   struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
+>>   struct list_head ptype_all __read_mostly;	/* Taps */
+>>   static struct list_head offload_base __read_mostly;
+>> +static struct workqueue_struct *napi_workq __read_mostly;
+>>   
+>>   static int netif_rx_internal(struct sk_buff *skb);
+>>   static int call_netdevice_notifiers_info(unsigned long val,
+>> @@ -6286,6 +6287,11 @@ void __napi_schedule(struct napi_struct *n)
+>>   {
+>>   	unsigned long flags;
+>>   
+>> +	if (test_bit(NAPI_STATE_THREADED, &n->state)) {
+>> +		queue_work(napi_workq, &n->work);
+>> +		return;
+>> +	}
+>> +
+>
+> Where is the corresponding cancel_work_sync() or flush_work() at device dismantle ?
+>
+> Just hoping the thread will eventually run seems optimistic to me.
 >
 >
-> --
-> Best regards, Tonghao
-
+> Quite frankly, I do believe this STATE_THREADED status should be a generic NAPI attribute
+> that can be changed dynamically, at admin request, instead of having to change/recompile
+> a driver.
+thats not that easy. wifi devices do use dummy netdev devices. they are 
+not visible to sysfs and other administrative options.
+so changing it would just be possible if a special mac80211 based 
+control would be implemented for these drivers.
+for standard netdev devices it isnt a big thing to implement a 
+administrative control by sysfs (if you are talking about such a feature)
+>
+>
+>
