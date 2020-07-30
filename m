@@ -2,79 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96F952335C0
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 17:43:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD217233603
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 17:50:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729745AbgG3PnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 11:43:01 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:26587 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726275AbgG3PnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 11:43:01 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-247-twbbvnymOjCGJ4ynCSlL6A-1; Thu, 30 Jul 2020 16:42:49 +0100
-X-MC-Unique: twbbvnymOjCGJ4ynCSlL6A-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 30 Jul 2020 16:42:49 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 30 Jul 2020 16:42:49 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Sebastian Gottschall' <s.gottschall@dd-wrt.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Hillf Danton <hdanton@sina.com>
-Subject: RE: [PATCH] net: add support for threaded NAPI polling
-Thread-Topic: [PATCH] net: add support for threaded NAPI polling
-Thread-Index: AQHWZn3/cOW3dLYIQUeXoP7PwfLTPakgQZ9Q
-Date:   Thu, 30 Jul 2020 15:42:49 +0000
-Message-ID: <1743bcaa2dfb4b6393b4d228cf079fe3@AcuMS.aculab.com>
-References: <20200729165058.83984-1-nbd@nbd.name>
- <866c7d83-868d-120e-f535-926c4cc9e615@gmail.com>
- <5aa0c26f-d3f1-b33f-a598-e4727d6f10f0@dd-wrt.com>
-In-Reply-To: <5aa0c26f-d3f1-b33f-a598-e4727d6f10f0@dd-wrt.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1729675AbgG3PuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 11:50:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726275AbgG3PuJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 11:50:09 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9604EC061574
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 08:50:09 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id o1so14534139plk.1
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 08:50:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=7c+YBSQ4Ugv690xaD0MPsrElB1Bf2PgeKqA5lmeDFmQ=;
+        b=J+G1qk/WO+OiU8QVVjrTsaKOLMEk77JroFonEXTlQgXR/IKeVJtj2KcpbQcAYr7Cuv
+         H1uD4f/18ZD5FbimHx6sqWBC4medvctHUiYwKN7aCj0RlhmIFFXrWm/yjWNWdAmoffaL
+         087WokELo9d8N6hPUrkHUc31MU1UbxxjVQvTUvR9VO/vW6sEwgdT3Tjhc0BFs5kZYBeP
+         H3P3EIhSzF9dyDBu6QYt1m/4ttX1zPd1wgTksEie735z7QrB+fMdZ6M+7tzSAEw7ePfC
+         iaWn7Grizk7f41yoJpZj94TTx1LaKPQsCdddwaf1Ft/XciAYMRFOncfGgPvk17dsZzBo
+         Qe9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=7c+YBSQ4Ugv690xaD0MPsrElB1Bf2PgeKqA5lmeDFmQ=;
+        b=Dz7tu+Qi/myvA7zQgqVYYswVKmJcAGQFKOzIlf9SviEPGsWq+s54VQSq4ZgVSVZK5R
+         jTd57ZcaBSUK4218h2B4IY1hd7Gmhsv61IiO6evurd2K/p2z8RB7lBe0Hw7J+rbtuTzD
+         /XLdknVVJhL6QXrIvSG7MtsXjxILD60ZGKklsTFGROOBOs36rYbXRFdIr1HUKfH4uOML
+         YmAAc6Q1xZahMvy9/qyfM6giBHVzJnw41kO8XWDHVsAjN6TqMkBG0XlPKG6YH+iZoVuM
+         I8AWKKXFhGW189E5EB+U/rCvazmJsavS5gqBcW3kKAG2lMX9BmW6xiZ2Gi+nGoaqT3ug
+         sdMQ==
+X-Gm-Message-State: AOAM533k8oM1jF2jyM5o7/rx38P7WRsQSA+Fie+jC03KRWRa59SZYsFE
+        AaC6Dw7CpxOiv8RhRxfwO939sUOP
+X-Google-Smtp-Source: ABdhPJxNsmMp+LD1M/TGjg8ObeqL+lQ89pm7htF+xFHNJcx0eEWCqwnEMt+xiMjR/S63C2DJXuTbJA==
+X-Received: by 2002:a17:90b:808:: with SMTP id bk8mr3591976pjb.63.1596124209194;
+        Thu, 30 Jul 2020 08:50:09 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id x23sm6352380pfi.60.2020.07.30.08.50.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jul 2020 08:50:08 -0700 (PDT)
+Date:   Thu, 30 Jul 2020 08:50:06 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+ [multicast/DSA issues]
+Message-ID: <20200730155006.GA28298@hoboy>
+References: <E1jvNlE-0001Y0-47@rmk-PC.armlinux.org.uk>
+ <20200729105807.GZ1551@shell.armlinux.org.uk>
+ <20200729131932.GA23222@hoboy>
+ <20200730110613.GC1551@shell.armlinux.org.uk>
+ <20200730115419.GX1605@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200730115419.GX1605@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogU2ViYXN0aWFuIEdvdHRzY2hhbGwNCj4gU2VudDogMzAgSnVseSAyMDIwIDE1OjMwDQou
-Li4NCj4gPiBRdWl0ZSBmcmFua2x5LCBJIGRvIGJlbGlldmUgdGhpcyBTVEFURV9USFJFQURFRCBz
-dGF0dXMgc2hvdWxkIGJlIGEgZ2VuZXJpYyBOQVBJIGF0dHJpYnV0ZQ0KPiA+IHRoYXQgY2FuIGJl
-IGNoYW5nZWQgZHluYW1pY2FsbHksIGF0IGFkbWluIHJlcXVlc3QsIGluc3RlYWQgb2YgaGF2aW5n
-IHRvIGNoYW5nZS9yZWNvbXBpbGUNCj4gPiBhIGRyaXZlci4NCg0KPiB0aGF0cyBub3QgdGhhdCBl
-YXN5LiB3aWZpIGRldmljZXMgZG8gdXNlIGR1bW15IG5ldGRldiBkZXZpY2VzLiB0aGV5IGFyZQ0K
-PiBub3QgdmlzaWJsZSB0byBzeXNmcyBhbmQgb3RoZXIgYWRtaW5pc3RyYXRpdmUgb3B0aW9ucy4N
-Cj4gc28gY2hhbmdpbmcgaXQgd291bGQganVzdCBiZSBwb3NzaWJsZSBpZiBhIHNwZWNpYWwgbWFj
-ODAyMTEgYmFzZWQNCj4gY29udHJvbCB3b3VsZCBiZSBpbXBsZW1lbnRlZCBmb3IgdGhlc2UgZHJp
-dmVycy4NCj4gZm9yIHN0YW5kYXJkIG5ldGRldiBkZXZpY2VzIGl0IGlzbnQgYSBiaWcgdGhpbmcg
-dG8gaW1wbGVtZW50IGENCj4gYWRtaW5pc3RyYXRpdmUgY29udHJvbCBieSBzeXNmcyAoaWYgeW91
-IGFyZSB0YWxraW5nIGFib3V0IHN1Y2ggYSBmZWF0dXJlKQ0KDQpJU1RNIHRoYXQgYSBnbG9iYWwg
-ZmxhZyB0aGF0IG1hZGUgYWxsIE5BUEkgY2FsbGJhY2tzIGJlIG1hZGUNCmZyb20gYSB3b3JrZXIg
-dGhyZWFkIHJhdGhlciB0aGFuIHNvZnRpbnQgd291bGQgYmUgbW9yZSBhcHByb3JpYXRlLg0KT3Ig
-ZXZlbiBzb21ldGhpbmcgdGhhdCBtYWRlIHRoZSBzb2Z0aW50IGNhbGxiYWNrcyB0aGVtc2VsdmVz
-DQpvbmx5IHJ1biBhbiBhIHNwZWNpZmljIGhpZ2goaXNoKSBwcmlvcml0eSBrZXJuZWwgdGhyZWFk
-Lg0KDQpXaGlsZSBpdCBtaWdodCBzbG93IGRvd24gc2V0dXBzIHRoYXQgbmVlZCB2ZXJ5IGxvdyBl
-dGhlcm5ldA0KbGF0ZW5jeSBpdCB3aWxsIGhlbHAgdGhvc2UgdGhhdCBkb24ndCB3YW50IGFwcGxp
-Y2F0aW9uIFJUIHRocmVhZHMNCnRvIGJlICdzdG9sZW4nIGJ5IHRoZSBzb2Z0aW50IGNvZGUgd2hp
-bGUgdGhleSBob2xkIGFwcGxpY2F0aW9uDQptdXRleCBvciBhcmUgd2FpdGluZyB0byBiZSB3b2tl
-biBieSBhIGN2Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBC
-cmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdp
-c3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+On Thu, Jul 30, 2020 at 12:54:19PM +0100, Russell King - ARM Linux admin wrote:
+> So, something in the IPv4 layer on ARM64 is silently discarding
+> multicast UDP PTP packets, and I've no idea what... and I'm coming to
+> the conclusion that this is all way too much effort and way too
+> unreliable to be worth spending any more time trying to make work.
 
+I've also seen this on the Marvell switch.  I'm not sure if the root
+cause is in the Linux stack or in the mcast forwarding logic in the
+switch.  Using the Marvell, I can make a layer2 TC or a UDPv4 BC, but
+not a UDPv4 TC.
+
+I haven't had time to dig deeper, and I think many people are happy
+with a layer2 TC as that is called out in the TSN world.
+
+Thanks,
+Richard
