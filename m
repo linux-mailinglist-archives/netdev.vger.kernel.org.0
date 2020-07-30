@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DBDC2336B7
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 18:26:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C738F2336C5
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 18:29:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729903AbgG3Q0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 12:26:35 -0400
-Received: from mail2.protonmail.ch ([185.70.40.22]:58045 "EHLO
-        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726275AbgG3Q0f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 12:26:35 -0400
-Date:   Thu, 30 Jul 2020 16:26:17 +0000
+        id S1728412AbgG3Q3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 12:29:54 -0400
+Received: from mail1.protonmail.ch ([185.70.40.18]:63219 "EHLO
+        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726353AbgG3Q3w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 12:29:52 -0400
+Date:   Thu, 30 Jul 2020 16:29:36 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1596126392; bh=4VfKsqMSgIAjlvStX7Jque18AnWNCZTbZpiyXiqEaxI=;
+        t=1596126588; bh=lhZL6Pg1VacjmIyZabRgO1ohmiqISKl8lk2khLgH1zY=;
         h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=FhJzlXZlKq11kMhH4Y6se2vV9kwMBD3hYJ/fgdVUSz5jZuFLrfH7T7aX8cUiBtO9e
-         FNJEbVb92/V9XWH7MBAfXFRezGXmJwuyvDQfY/J67nkfDwS3rxC+UxEhbs3RgAH3c3
-         +WZ7K9rGXvptUCFODjwng+FuoXGO79nZ0xULHgQN+p9tyIznXyBQmLNEVtPeEGT6JK
-         YdwVYP0SBUAkBcW8KkQcP0pd286mhVr/hj4PrBgP8TClOUp6ainoQyBg2x6OpNWdbk
-         wnpguCFTIg9czGaip6v3TB0wQdWrBNZAPCkFFWF2TviV9S+HQZY4YEKh0BS0O1Nc3K
-         Yb5i9vZF2rUAw==
+        b=fBfc+Z5WK4LT0RIPNlnzsUdqaHb7L4Rwn/1kWFPjFoSs4fggKqBlhfLaArRzDYHTp
+         QxPAzbWFQVgo2VIlBJQZdqgTY6gS5urh/qD/eIAjfpqGMTJqRgKxwc/vWW4fm50i4P
+         RWkN9MG1296BCrQL2zQjoldG9qg1B+w0c+JlBLWHOAaOnMmmsVyCwhNXYOcB4RnD2U
+         V3PYC0QJVG0sv9aQQdZTQkDQilr+NwoFF0rN+t/wDKNG26ZYxySXFMEcktD6gcKGdm
+         t5uD2uwVTn0y29XG4MdKPIHKkhlmxfmfhhLM2Y1AIC2usc9LXQu/tHVmBLFrEn7YKT
+         5eWpl9+NRjJGA==
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 From:   Alexander Lobakin <alobakin@pm.me>
 Cc:     Alexander Lobakin <alobakin@pm.me>,
@@ -29,8 +29,8 @@ Cc:     Alexander Lobakin <alobakin@pm.me>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH v1] qed: Use %pM format specifier for MAC addresses
-Message-ID: <SKiAD0R1iJX4FHbr-_GUICKdDvuTvqrJjcR2CQEpE_-GCYtJq-lLbDeec-WmOCZ6NIxW6rca1CRm-d1tSRUu2zFyAapHAjvmgvI5iN6Zvp8=@pm.me>
+Subject: Re: [PATCH v1] qede: Use %pM format specifier for MAC addresses
+Message-ID: <pXdhhJtDMa8Tr3tB0ugk5KdQcS3D71r1PEgqtPcJ3kBa4P_Yc0xG6HSXW9O1bQB_1FyD4wvS0xiXLiqvUb3OVzDKR9e7lLijB7jf6ZoHfaw=@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -44,68 +44,37 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Date: Thu, 30 Jul 2020 18:59:20 +0300
+Date: Thu, 30 Jul 2020 19:00:57 +0300
 
 > Convert to %pM instead of using custom code.
 >=20
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->  drivers/net/ethernet/qlogic/qed/qed_mcp.c   | 5 ++---
->  drivers/net/ethernet/qlogic/qed/qed_sriov.c | 6 ++----
->  2 files changed, 4 insertions(+), 7 deletions(-)
+>  drivers/net/ethernet/qlogic/qede/qede_main.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 
 Thanks!
 
 Acked-by: Alexander Lobakin <alobakin@pm.me>
 
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethe=
-rnet/qlogic/qed/qed_mcp.c
-> index 988d84564849..5be08f83e0aa 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-> @@ -2518,11 +2518,10 @@ int qed_mcp_fill_shmem_func_info(struct qed_hwfn =
-*p_hwfn,
->  =09}
+> diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/e=
+thernet/qlogic/qede/qede_main.c
+> index 1aaae3203f5a..4250c17940c0 100644
+> --- a/drivers/net/ethernet/qlogic/qede/qede_main.c
+> +++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+> @@ -144,9 +144,7 @@ static int qede_set_vf_mac(struct net_device *ndev, i=
+nt vfidx, u8 *mac)
+>  {
+>  =09struct qede_dev *edev =3D netdev_priv(ndev);
 > =20
->  =09DP_VERBOSE(p_hwfn, (QED_MSG_SP | NETIF_MSG_IFUP),
-> -=09=09   "Read configuration from shmem: pause_on_host %02x protocol %02=
-x BW [%02x - %02x] MAC %02x:%02x:%02x:%02x:%02x:%02x wwn port %llx node %ll=
-x ovlan %04x wol %02x\n",
-> +=09=09   "Read configuration from shmem: pause_on_host %02x protocol %02=
-x BW [%02x - %02x] MAC %pM wwn port %llx node %llx ovlan %04x wol %02x\n",
->  =09=09info->pause_on_host, info->protocol,
->  =09=09info->bandwidth_min, info->bandwidth_max,
-> -=09=09info->mac[0], info->mac[1], info->mac[2],
-> -=09=09info->mac[3], info->mac[4], info->mac[5],
-> +=09=09info->mac,
->  =09=09info->wwn_port, info->wwn_node,
->  =09=09info->ovlan, (u8)p_hwfn->hw_info.b_wol_support);
+> -=09DP_VERBOSE(edev, QED_MSG_IOV,
+> -=09=09   "Setting MAC %02x:%02x:%02x:%02x:%02x:%02x to VF [%d]\n",
+> -=09=09   mac[0], mac[1], mac[2], mac[3], mac[4], mac[5], vfidx);
+> +=09DP_VERBOSE(edev, QED_MSG_IOV, "Setting MAC %pM to VF [%d]\n", mac, vf=
+idx);
 > =20
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/et=
-hernet/qlogic/qed/qed_sriov.c
-> index aa215eeeb4df..9489089706fe 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-> @@ -3276,14 +3276,12 @@ static void qed_iov_vf_mbx_ucast_filter(struct qe=
-d_hwfn *p_hwfn,
-> =20
->  =09DP_VERBOSE(p_hwfn,
->  =09=09   QED_MSG_IOV,
-> -=09=09   "VF[%d]: opcode 0x%02x type 0x%02x [%s %s] [vport 0x%02x] MAC %=
-02x:%02x:%02x:%02x:%02x:%02x, vlan 0x%04x\n",
-> +=09=09   "VF[%d]: opcode 0x%02x type 0x%02x [%s %s] [vport 0x%02x] MAC %=
-pM, vlan 0x%04x\n",
->  =09=09   vf->abs_vf_id, params.opcode, params.type,
->  =09=09   params.is_rx_filter ? "RX" : "",
->  =09=09   params.is_tx_filter ? "TX" : "",
->  =09=09   params.vport_to_add_to,
-> -=09=09   params.mac[0], params.mac[1],
-> -=09=09   params.mac[2], params.mac[3],
-> -=09=09   params.mac[4], params.mac[5], params.vlan);
-> +=09=09   params.mac, params.vlan);
-> =20
->  =09if (!vf->vport_instance) {
->  =09=09DP_VERBOSE(p_hwfn,
+>  =09if (!is_valid_ether_addr(mac)) {
+>  =09=09DP_VERBOSE(edev, QED_MSG_IOV, "MAC address isn't valid\n");
 > --=20
 > 2.27.0
 
