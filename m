@@ -2,66 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6235F2338E7
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:22:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB3B42338EE
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730493AbgG3TV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 15:21:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43830 "EHLO
+        id S1730460AbgG3T0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 15:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730475AbgG3TV7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:21:59 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8A6C061574;
-        Thu, 30 Jul 2020 12:21:58 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id 11so26728297qkn.2;
-        Thu, 30 Jul 2020 12:21:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=agaThPhartfIHs0CEVdT0S0oqKuMNdJA/yYlXtKqgNk=;
-        b=FyRMSHJbJlHdwbK7O7cNCShcgYOjQ/O59qUAUFfx4KS+mcIV0USH78zqh+JpriUN4P
-         zUT87eXfKUEjQk6A+SJdwFOHRQ246AByRhfbIUWJtIIj27EJz78aucu4KRz3Ge6LzRzC
-         5zD16l0ZqNaGBSbPH/V4IJrgHRlSuAgKV8OTIM/GBnQMGBg/No74TCnfKfX5SyySLuzv
-         EmRaQtgF4mDtZBY9cB9aMePCezuNGr27rLbcFhvMIG2t7lwDGfSmTTTJlNoBhDxmxFjP
-         i+u5Y2joONJm3KIpGVfSbUhLHLRNEtA0ZcqI5h/7kSe0/1k0cCmI2ZRfQ5EsUF8Rut2P
-         DtUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=agaThPhartfIHs0CEVdT0S0oqKuMNdJA/yYlXtKqgNk=;
-        b=IAhtleAp1AIn6EjLobIQiyNSWEQ2ALS5a9b96tUQQp8WL3QKMCVu59Fv+gVE6JxMIC
-         7tTPlnTyJpIAQh3DA5At57X3pBKQmYr8cICXRQFBMFwU0tEDevwKaGm/lKcdXLYfMg/b
-         bwqp4SFCfY1hSYrYgPf/R4wkoadgom3GKNrLpbgrf2fKGSGzRmTSAJr6LxufXLLcd096
-         1xb5xxsWfIkvcizshTzEuyftIirZuuEPPRBq9PtoD0lxYceV02cUNAZgdeBGyA907YY/
-         5teN/is0GEjfGJmAH9kDhptZyRpx1vuwOye1M+/0DnsMpg+tvHJnxYj08H+XigzgPOpE
-         OtYg==
-X-Gm-Message-State: AOAM532BZM8J5btHTErDYWFX+TY+PfEBcPPW3D4kjddkHHXElYnkSqMm
-        5MAPZ3IhciVaNXGn8GbEwg==
-X-Google-Smtp-Source: ABdhPJwWCgUMsoFCCaoH1/xFyEBTGW5Q+V6fazGvqkm22JCMJGkInRBxDqiFpodkc6+juDwBXBZwtg==
-X-Received: by 2002:ae9:e507:: with SMTP id w7mr730223qkf.264.1596136918051;
-        Thu, 30 Jul 2020 12:21:58 -0700 (PDT)
-Received: from localhost.localdomain (c-76-119-149-155.hsd1.ma.comcast.net. [76.119.149.155])
-        by smtp.gmail.com with ESMTPSA id c205sm4994572qkg.98.2020.07.30.12.21.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jul 2020 12:21:57 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
-Subject: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak in rds_notify_queue_get()
-Date:   Thu, 30 Jul 2020 15:20:26 -0400
-Message-Id: <20200730192026.110246-1-yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S1726581AbgG3T0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:26:07 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB35C061574
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 12:26:06 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1k1EBo-0003VH-F3; Thu, 30 Jul 2020 21:26:04 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     edumazet@google.com, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net, pabeni@redhat.com
+Subject: [PATCH v2 net-next 0/9] mptcp: add syncookie support
+Date:   Thu, 30 Jul 2020 21:25:49 +0200
+Message-Id: <20200730192558.25697-1-fw@strlen.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -69,57 +32,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rds_notify_queue_get() is potentially copying uninitialized kernel stack
-memory to userspace since the compiler may leave a 4-byte hole at the end
-of `cmsg`.
+Changes in v2:
+- first patch renames req->ts_cookie to req->syncookie instead of
+  removing ts_cookie member.
+- patch to add 'want_cookie' arg to init_req() functions has been dropped.
+  All users of that arg were changed to check 'req->syncookie' instead.
 
-In 2016 we tried to fix this issue by doing `= { 0 };` on `cmsg`, which
-unfortunately does not always initialize that 4-byte hole. Fix it by using
-memset() instead.
+v1 cover letter:
 
-Cc: stable@vger.kernel.org
-Fixes: f037590fff30 ("rds: fix a leak of kernel memory")
-Fixes: bdbe6fbc6a2f ("RDS: recv.c")
-Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
----
-Note: the "real" copy_to_user() happens in put_cmsg(), where
-`cmlen - sizeof(*cm)` equals to `sizeof(cmsg)`.
+When syn-cookies are used the SYN?ACK never contains a MPTCP option,
+because the code path that creates a request socket based on a valid
+cookie ACK lacks the needed changes to construct MPTCP request sockets.
 
-Reference: https://lwn.net/Articles/417989/
+After this series, if SYN carries MP_CAPABLE option, the option is not
+cleared anymore and request socket will be reconstructed using the
+MP_CAPABLE option data that is re-sent with the ACK.
 
-$ pahole -C "rds_rdma_notify" net/rds/recv.o
-struct rds_rdma_notify {
-	__u64                      user_token;           /*     0     8 */
-	__s32                      status;               /*     8     4 */
+This means that no additional state gets encoded into the syn cookie or
+the TCP timestamp.
 
-	/* size: 16, cachelines: 1, members: 2 */
-	/* padding: 4 */
-	/* last cacheline: 16 bytes */
-};
+There are two caveats for SYN-Cookies with MPTCP:
 
- net/rds/recv.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+1. When syn-cookies are used, the server-generated key is not stored.
+The drawback is that the next connection request that comes in before
+the cookie-ACK has a small chance that it will generate the same local_key.
 
-diff --git a/net/rds/recv.c b/net/rds/recv.c
-index c8404971d5ab..aba4afe4dfed 100644
---- a/net/rds/recv.c
-+++ b/net/rds/recv.c
-@@ -450,12 +450,13 @@ static int rds_still_queued(struct rds_sock *rs, struct rds_incoming *inc,
- int rds_notify_queue_get(struct rds_sock *rs, struct msghdr *msghdr)
- {
- 	struct rds_notifier *notifier;
--	struct rds_rdma_notify cmsg = { 0 }; /* fill holes with zero */
-+	struct rds_rdma_notify cmsg;
- 	unsigned int count = 0, max_messages = ~0U;
- 	unsigned long flags;
- 	LIST_HEAD(copy);
- 	int err = 0;
- 
-+	memset(&cmsg, 0, sizeof(cmsg));	/* fill holes with zero */
- 
- 	/* put_cmsg copies to user space and thus may sleep. We can't do this
- 	 * with rs_lock held, so first grab as many notifications as we can stuff
--- 
-2.25.1
+If this happens, the cookie ACK that comes in second will (re)compute the
+token hash and then detects that this is already in use.
+Unlike normal case, where the server will pick a new key value and then
+re-tries, we can't do that because we already committed to the key value
+(it was sent to peer already).
+
+Im this case, MPTCP cannot be used and late TCP fallback happens.
+
+2). SYN packets with a MP_JOIN requests cannot be handled without storing
+    state. This is because the SYN contains a nonce value that is needed to
+    verify the HMAC of the MP_JOIN ACK that completes the three-way
+    handshake.  Also, a local nonce is generated and used in the cookie
+    SYN/ACK.
+
+There are only 2 ways to solve this:
+ a) Do not support JOINs when cookies are in effect.
+ b) Store the nonces somewhere.
+
+The approach chosen here is b).
+Patch 8 adds a fixed-size (1024 entries) state table to store the
+information required to validate the MP_JOIN ACK and re-build the
+request socket.
+
+State gets stored when syn-cookies are active and the token in the JOIN
+request referred to an established MPTCP connection that can also accept
+a new subflow.
+
+State is restored if the ACK cookie is valid, an MP_JOIN option is present
+and the state slot contains valid data from a previous SYN.
+
+After the request socket has been re-build, normal HMAC check is done just
+as without syn cookies.
+
+Largely identical to last RFC, except patch #8 which follows Paolos
+suggestion to use a private table storage area rather than keeping
+request sockets around.  This also means I dropped the patch to remove
+const qualifier from sk_listener pointers.
+
+Florian Westphal (9):
+      tcp: rename request_sock cookie_ts bit to syncookie
+      mptcp: token: move retry to caller
+      mptcp: subflow: split subflow_init_req
+      mptcp: rename and export mptcp_subflow_request_sock_ops
+      mptcp: subflow: add mptcp_subflow_init_cookie_req helper
+      tcp: syncookies: create mptcp request socket for ACK cookies with MPTCP option
+      mptcp: enable JOIN requests even if cookies are in use
+      selftests: mptcp: make 2nd net namespace use tcp syn cookies unconditionally
+      selftests: mptcp: add test cases for mptcp join tests with syn cookies
+
+ drivers/crypto/chelsio/chtls/chtls_cm.c            |   2 +-
+ include/net/mptcp.h                                |  11 ++
+ include/net/request_sock.h                         |   2 +-
+ include/net/tcp.h                                  |   2 +
+ net/ipv4/syncookies.c                              |  44 ++++++-
+ net/ipv4/tcp_input.c                               |   6 +-
+ net/ipv4/tcp_output.c                              |   2 +-
+ net/ipv6/syncookies.c                              |   5 +-
+ net/mptcp/Makefile                                 |   1 +
+ net/mptcp/ctrl.c                                   |   1 +
+ net/mptcp/protocol.h                               |  21 ++++
+ net/mptcp/subflow.c                                | 116 +++++++++++++++---
+ net/mptcp/syncookies.c                             | 132 +++++++++++++++++++++
+ net/mptcp/token.c                                  |  38 ++++--
+ tools/testing/selftests/net/mptcp/mptcp_connect.sh |  47 ++++++++
+ tools/testing/selftests/net/mptcp/mptcp_join.sh    |  66 ++++++++++-
+ 16 files changed, 453 insertions(+), 43 deletions(-)
+ create mode 100644 net/mptcp/syncookies.c
 
