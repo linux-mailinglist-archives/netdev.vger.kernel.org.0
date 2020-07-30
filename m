@@ -2,40 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE2682339BA
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 22:37:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46BD72339BC
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 22:37:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728731AbgG3UhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 16:37:25 -0400
+        id S1730343AbgG3Uh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 16:37:26 -0400
 Received: from mga14.intel.com ([192.55.52.115]:30885 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726838AbgG3UhY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 16:37:24 -0400
-IronPort-SDR: a7IV7tlDhkHBRaD8U0S9tDYjGH1L6r04S9FwohRozgl0zoyQofw7CiZBS6KCQ4/Xq2wFNYA4gJ
- ElwyfJMC7VfQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="150885518"
+        id S1728630AbgG3UhZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 16:37:25 -0400
+IronPort-SDR: Qs271AQmbZR7eKDmPZMnukItDTdk+izVLDqgEgrGfbLXqQfmrALsnR2EDHB9c7szslMyjdz7+X
+ dbCzc+eCFetA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="150885525"
 X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
-   d="scan'208";a="150885518"
+   d="scan'208";a="150885525"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2020 13:37:23 -0700
-IronPort-SDR: MZthjpEzmxj/DcvrGW7pVu9949jMDzgAyOGO9rVA0DgT3C9/KV64hUSgtZ3ZjUOuUM5XmwWtXY
- EU/vkJtn66rw==
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2020 13:37:24 -0700
+IronPort-SDR: 2S8knesL2VTr5rCBvdKPhJISuyC4AykOMkMaJiZwYsqpz1NkWL/WDN9f/az+v+EW18KbQDxEsi
+ QzVtJZUHVMwA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
-   d="scan'208";a="274324242"
+   d="scan'208";a="274324246"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga008.fm.intel.com with ESMTP; 30 Jul 2020 13:37:23 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 30 Jul 2020 13:37:24 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
-        jeffrey.t.kirsher@intel.com
-Subject: [net-next 00/12][pull request] 1GbE Intel Wired LAN Driver Updates 2020-07-30
-Date:   Thu, 30 Jul 2020 13:37:08 -0700
-Message-Id: <20200730203720.3843018-1-anthony.l.nguyen@intel.com>
+        jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: [net-next 01/12] iavf: use generic power management
+Date:   Thu, 30 Jul 2020 13:37:09 -0700
+Message-Id: <20200730203720.3843018-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200730203720.3843018-1-anthony.l.nguyen@intel.com>
+References: <20200730203720.3843018-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -43,64 +46,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to e100, e1000, e1000e, igb, igbvf, ixgbe,
-ixgbevf, iavf, and driver documentation.
+From: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 
-Vaibhav Gupta converts legacy .suspend() and .resume() to generic PM
-callbacks for e100, igbvf, ixgbe, ixgbevf, and iavf.
+With the support of generic PM callbacks, drivers no longer need to use
+legacy .suspend() and .resume() in which they had to maintain PCI states
+changes and device's power state themselves. The required operations are
+done by PCI core.
 
-Suraj Upadhyay replaces 1 byte memsets with assignments for e1000,
-e1000e, igb, and ixgbe.
+PCI drivers are not expected to invoke PCI helper functions like
+pci_save/restore_state(), pci_enable/disable_device(),
+pci_set_power_state(), etc. Their tasks are completed by PCI core itself.
 
-Alexander Klimov replaces http links with https.
+Compile-tested only.
 
-Miaohe Lin replaces uses of memset to clear MAC addresses with
-eth_zero_addr().
+Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 45 ++++++---------------
+ 1 file changed, 12 insertions(+), 33 deletions(-)
 
-The following are changes since commit 41d707b7332f1386642c47eb078110ca368a46f5:
-  fib: fix fib_rules_ops indirect calls wrappers
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
-
-Alexander A. Klimov (1):
-  Documentation: intel: Replace HTTP links with HTTPS ones
-
-Miaohe Lin (2):
-  ixgbe: use eth_zero_addr() to clear mac address
-  igb: use eth_zero_addr() to clear mac address
-
-Suraj Upadhyay (4):
-  e1000: Remove unnecessary usages of memset
-  e1000e: Remove unnecessary usages of memset
-  igb: Remove unnecessary usages of memset
-  ixgbe: Remove unnecessary usages of memset
-
-Vaibhav Gupta (5):
-  iavf: use generic power management
-  igbvf: use generic power management
-  ixgbe: use generic power management
-  ixgbevf: use generic power management
-  e100: use generic power management
-
- .../device_drivers/ethernet/intel/e100.rst    |  4 +-
- .../device_drivers/ethernet/intel/fm10k.rst   |  2 +-
- .../device_drivers/ethernet/intel/iavf.rst    |  2 +-
- .../device_drivers/ethernet/intel/igb.rst     |  2 +-
- .../device_drivers/ethernet/intel/igbvf.rst   |  2 +-
- .../device_drivers/ethernet/intel/ixgb.rst    |  2 +-
- drivers/net/ethernet/intel/e100.c             | 32 +++++-----
- .../net/ethernet/intel/e1000/e1000_ethtool.c  |  4 +-
- drivers/net/ethernet/intel/e1000e/ethtool.c   |  4 +-
- drivers/net/ethernet/intel/iavf/iavf_main.c   | 45 ++++----------
- drivers/net/ethernet/intel/igb/igb_ethtool.c  |  4 +-
- drivers/net/ethernet/intel/igb/igb_main.c     |  4 +-
- drivers/net/ethernet/intel/igbvf/netdev.c     | 37 +++--------
- .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  |  4 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 61 +++++--------------
- .../net/ethernet/intel/ixgbe/ixgbe_sriov.c    |  2 +-
- .../net/ethernet/intel/ixgbevf/ixgbevf_main.c | 44 +++----------
- 17 files changed, 77 insertions(+), 178 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 48c956d90b90..d870343cf689 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -3766,7 +3766,6 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	return err;
+ }
+ 
+-#ifdef CONFIG_PM
+ /**
+  * iavf_suspend - Power management suspend routine
+  * @pdev: PCI device information struct
+@@ -3774,11 +3773,10 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+  *
+  * Called when the system (VM) is entering sleep/suspend.
+  **/
+-static int iavf_suspend(struct pci_dev *pdev, pm_message_t state)
++static int __maybe_unused iavf_suspend(struct device *dev_d)
+ {
+-	struct net_device *netdev = pci_get_drvdata(pdev);
++	struct net_device *netdev = dev_get_drvdata(dev_d);
+ 	struct iavf_adapter *adapter = netdev_priv(netdev);
+-	int retval = 0;
+ 
+ 	netif_device_detach(netdev);
+ 
+@@ -3796,12 +3794,6 @@ static int iavf_suspend(struct pci_dev *pdev, pm_message_t state)
+ 
+ 	clear_bit(__IAVF_IN_CRITICAL_TASK, &adapter->crit_section);
+ 
+-	retval = pci_save_state(pdev);
+-	if (retval)
+-		return retval;
+-
+-	pci_disable_device(pdev);
+-
+ 	return 0;
+ }
+ 
+@@ -3811,24 +3803,13 @@ static int iavf_suspend(struct pci_dev *pdev, pm_message_t state)
+  *
+  * Called when the system (VM) is resumed from sleep/suspend.
+  **/
+-static int iavf_resume(struct pci_dev *pdev)
++static int __maybe_unused iavf_resume(struct device *dev_d)
+ {
++	struct pci_dev *pdev = to_pci_dev(dev_d);
+ 	struct iavf_adapter *adapter = pci_get_drvdata(pdev);
+ 	struct net_device *netdev = adapter->netdev;
+ 	u32 err;
+ 
+-	pci_set_power_state(pdev, PCI_D0);
+-	pci_restore_state(pdev);
+-	/* pci_restore_state clears dev->state_saved so call
+-	 * pci_save_state to restore it.
+-	 */
+-	pci_save_state(pdev);
+-
+-	err = pci_enable_device_mem(pdev);
+-	if (err) {
+-		dev_err(&pdev->dev, "Cannot enable PCI device from suspend.\n");
+-		return err;
+-	}
+ 	pci_set_master(pdev);
+ 
+ 	rtnl_lock();
+@@ -3852,7 +3833,6 @@ static int iavf_resume(struct pci_dev *pdev)
+ 	return err;
+ }
+ 
+-#endif /* CONFIG_PM */
+ /**
+  * iavf_remove - Device Removal Routine
+  * @pdev: PCI device information struct
+@@ -3954,16 +3934,15 @@ static void iavf_remove(struct pci_dev *pdev)
+ 	pci_disable_device(pdev);
+ }
+ 
++static SIMPLE_DEV_PM_OPS(iavf_pm_ops, iavf_suspend, iavf_resume);
++
+ static struct pci_driver iavf_driver = {
+-	.name     = iavf_driver_name,
+-	.id_table = iavf_pci_tbl,
+-	.probe    = iavf_probe,
+-	.remove   = iavf_remove,
+-#ifdef CONFIG_PM
+-	.suspend  = iavf_suspend,
+-	.resume   = iavf_resume,
+-#endif
+-	.shutdown = iavf_shutdown,
++	.name      = iavf_driver_name,
++	.id_table  = iavf_pci_tbl,
++	.probe     = iavf_probe,
++	.remove    = iavf_remove,
++	.driver.pm = &iavf_pm_ops,
++	.shutdown  = iavf_shutdown,
+ };
+ 
+ /**
 -- 
 2.26.2
 
