@@ -2,141 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41F992337D8
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 19:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8367E2337ED
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 19:51:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730202AbgG3RoP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 30 Jul 2020 13:44:15 -0400
-Received: from mga18.intel.com ([134.134.136.126]:2231 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727080AbgG3RoO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 13:44:14 -0400
-IronPort-SDR: 2PqVmivZlOVaOfefTYO7sJ/jLQ4iH9jQmuOrgjkGOv7+ngqXGpug5eYMqG4+hpCs17VSD9ml7d
- 0f1pgn5bqJ4g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="139207403"
-X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
-   d="scan'208";a="139207403"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2020 10:44:13 -0700
-IronPort-SDR: LLE0pIPCWMK2uvzuGWWuf8DNOAp3Rsw1AIjkgDvt7B1Efsz2JLGrSmhBrXmTN+ZIw4CYRLydTX
- 3waYlbdAwzJA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
-   d="scan'208";a="490737568"
-Received: from kyoungil-mobl1.amr.corp.intel.com (HELO ellie) ([10.209.108.110])
-  by fmsmga006.fm.intel.com with ESMTP; 30 Jul 2020 10:44:12 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     "Zhang\, Qiang" <Qiang.Zhang@windriver.com>,
-        syzbot <syzbot+9f78d5c664a8c33f4cce@syzkaller.appspotmail.com>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "fweisbec\@gmail.com" <fweisbec@gmail.com>,
-        "jhs\@mojatatu.com" <jhs@mojatatu.com>,
-        "jiri\@resnulli.us" <jiri@resnulli.us>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mingo\@kernel.org" <mingo@kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller-bugs\@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        "tglx\@linutronix.de" <tglx@linutronix.de>,
-        "xiyou.wangcong\@gmail.com" <xiyou.wangcong@gmail.com>
-Subject: Re: =?utf-8?B?5Zue5aSNOg==?= INFO: rcu detected stall in
- tc_modify_qdisc
-In-Reply-To: <CACT4Y+ZMvaJMiXikYCm-Xym8ddKDY0n-5=kwH7i2Hu-9uJW1kQ@mail.gmail.com>
-References: <0000000000006f179d05ab8e2cf2@google.com> <BYAPR11MB2632784BE3AD9F03C5C95263FF700@BYAPR11MB2632.namprd11.prod.outlook.com> <87tuxqxhgq.fsf@intel.com> <CACT4Y+ZMvaJMiXikYCm-Xym8ddKDY0n-5=kwH7i2Hu-9uJW1kQ@mail.gmail.com>
-Date:   Thu, 30 Jul 2020 10:44:12 -0700
-Message-ID: <87pn8cyk2b.fsf@intel.com>
+        id S1730291AbgG3Rvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 13:51:50 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:38848 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728035AbgG3Rvu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 13:51:50 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06UHor4Y028113;
+        Thu, 30 Jul 2020 10:51:35 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=u/gzrupJC0+mxkmxYXVcbP9aZFsovPBr7F+J81FPEro=;
+ b=CHZnumBsc2/VU5MVUbO2VBGxIwhpb4J7rq9D8Z5wB2FGHtlOKYg95FkIxB1F8nKNAQ1O
+ j8Ii6xKzHMACsQ4Vx/0GQgCsT+rmHqXtHJWt1UQIO9VAej26uKh2Jf6FeHH4Rx4NkMet
+ h6W7WEmUXXysAPGiaygDotR+lPI6y1B1ReE= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 32jp0uukn8-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 30 Jul 2020 10:51:35 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.230) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 30 Jul 2020 10:51:18 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WYfGwthaO4ymA7jIsVZLnMLjqMF+2bTwuz3es8vW3ZbCLjMnUAGTNIr39/F4jLh1Ifer7vwylfjKe8FNpBEtcYQxL7+DH7xOo4RGrFkt+sjdAMubcw8vvK04/HpGtE9VlnmbYPtEvuNJ6r3xVbIR2ZCFHfSczIuhrxXX+kTVXKj8jKeqECCYj7ky8/LqiB/7IbBw7YSCwAtiv4eJOe+wCI1XI8O8aObftLKte6ECVEq5+YYhyGRXRrmxOhfXTZPPmBvwNwDGImUWsv0GSQjBOOUgLL3PaC4EzA/yolyegz3T264theZC6RR7eXCBU+cj//RibtUWiRP22+hEVAnhlg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u/gzrupJC0+mxkmxYXVcbP9aZFsovPBr7F+J81FPEro=;
+ b=HG3x7hTF6i1A8ZRl7WXsTX1GzGigHes68vtyX+GLT6hjomj4RM7Z8uVYsM8Z820FBaq9TTk1z5QJFsYGjrwj9ht3fTqR05KdMIzvFtSkHCBJyzc5BSauZPqbrnoaa0EwsDqjxHj/fNaJds5z9cGfF6EDE3zsBrWcKw+GF4m07U2Q3ZV25e7uZ1ygFUe242PH9+Ym4/z+k8QLhCXW5IydyYdx24BByu/yiA2oLaUX0TWVgqklQj3h9PxzS/URVFpCq2I8rdCt9bSmjL/xQz9Wn+B3cUZn59+6oVOdSpsG/xyLOV0omHZ1x7huyGRwmn28DKGZ2jMHin9T+gsK1gbL2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u/gzrupJC0+mxkmxYXVcbP9aZFsovPBr7F+J81FPEro=;
+ b=FQModLoKUkGgnwhRH547+RNd/ce86WstyCFjYyhxkvzdxftR8IX2n73pIBpYh6x3wLk0Pk+Uhw1QUnpKzolaRBzI9aL6a7EibLkBOOQOXzfKoyUNPEVcyk9Ku6HHUeP6YiHzBJJ/r1j7Lahzb04sRABCWrQJHJh8BzJcK9VZP7g=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB2693.namprd15.prod.outlook.com (2603:10b6:a03:155::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.21; Thu, 30 Jul
+ 2020 17:51:17 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::543:b185:ef4a:7e8]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::543:b185:ef4a:7e8%5]) with mapi id 15.20.3239.020; Thu, 30 Jul 2020
+ 17:51:17 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Kernel Team <Kernel-team@fb.com>,
+        =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH bpf-next 2/5] libbpf: add bpf_link detach APIs
+Thread-Topic: [PATCH bpf-next 2/5] libbpf: add bpf_link detach APIs
+Thread-Index: AQHWZfzZ70qIcOi2KU2m/MoPWxxmVKkgaBEA
+Date:   Thu, 30 Jul 2020 17:51:17 +0000
+Message-ID: <5F019E18-DDF2-4F15-AEE7-41C9A248F124@fb.com>
+References: <20200729230520.693207-1-andriin@fb.com>
+ <20200729230520.693207-3-andriin@fb.com>
+In-Reply-To: <20200729230520.693207-3-andriin@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.80.23.2.2)
+x-originating-ip: [2620:10d:c090:400::5:395d]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f7c82dfb-bb60-4961-780b-08d834b128ec
+x-ms-traffictypediagnostic: BYAPR15MB2693:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB2693CBEF74A4FC53505627BFB3710@BYAPR15MB2693.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:651;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ebEQjE9Lp4LLe5Ru+DzhqG1NIZby7ik5B0FSzabnv+L5rUZNY21t93+6LD9XNRddwVqieiHqEeVXXl8XvLzHWZoyCzGqBP1+rsnnpnE0jIfO5NO4CMuKD+g/+OlFhJIDcAsHdm1OjSW/5u+soHWy34rtCNjSv0ILxSILTW2odmWdyN/bZ9FDB4mliswtXXVXDM+c3e268EumlIz2DfR5G4aKcj7U8vtQrgPk/2UJ88a3W/BA0q+WhUSJKrk264c7J10ebHGzjoqum1vytLxgW9ypiBuYkzp9nfvlzKIfW6F5gSnRPDP82DneBfE5FlO7ZWcByzxFDKpMv+qIH9Sljw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(346002)(39860400002)(136003)(396003)(366004)(66946007)(66476007)(66446008)(64756008)(66556008)(33656002)(6486002)(8936002)(6862004)(54906003)(36756003)(2616005)(76116006)(53546011)(37006003)(4744005)(6506007)(5660300002)(186003)(6636002)(86362001)(8676002)(6512007)(4326008)(2906002)(316002)(71200400001)(478600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: sJyZQ95RBZnz2DsW1JAbjPBx2dujZhB5mEK95xZaloaSBvl9+70vx0UrNuz98DGZJPSUznTvPUjJHzS1oiFgHZ1KM1FUuUss2wpClYGplA5ZWS9wB9nUGZZLzxDQ3T2H0Spd7XGUus7QMjq7U/IeJ7j0wC2r8o+PPltXLgJRII44P8U9Y1vkyXc0WnQoZw+EjIydQojB1Mp86ZWPemeUyf8bJ+r8grrXIjzRSWrg88SgcxcXCoz30r1KPW4Bv0mbzX8j/5kRvfW8gYYVItVnI/hiIp9n/S6cjeKgi+0IGPwOCL29qJgDr+F1FkYRHbETBYnDZf+SxVzDCs24FD0FNeEKPTYqv1efY4uXZ6CoW2O7wxGs3MjKk1x3S+CUMvYi/OQ0UMld+dlcMh0AkH8tdETn6A3nDPewLMS6kT68DK09E8oOkNQFQCPx5CBiUFXaO6T7Sq/nIhPEI+GaM57TqsQNaA0UTibyEAmA6rrj1jMCYZyX8iYHWskAQSDUsCq98YKLd0fI3S6l1p4khpYpIA==
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <C3E69AB0B7E93947BE674344C6FA6426@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f7c82dfb-bb60-4961-780b-08d834b128ec
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jul 2020 17:51:17.2117
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: IEAU5NvEMlKacsekPkHVvPpB+54qp4st5HzAwZyVN+65lK9oZn0Qr0Wkpd8NCbk5BqlHole8NCSINKLWtTS9eQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2693
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-30_13:2020-07-30,2020-07-30 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ mlxscore=0 phishscore=0 priorityscore=1501 suspectscore=0 malwarescore=0
+ mlxlogscore=852 bulkscore=0 adultscore=0 impostorscore=0 spamscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007300127
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Dmitry Vyukov <dvyukov@google.com> writes:
-
-> On Wed, Jul 29, 2020 at 9:13 PM Vinicius Costa Gomes
-> <vinicius.gomes@intel.com> wrote:
->>
->> Hi,
->>
->> "Zhang, Qiang" <Qiang.Zhang@windriver.com> writes:
->>
->> > ________________________________________
->> > 发件人: linux-kernel-owner@vger.kernel.org <linux-kernel-owner@vger.kernel.org> 代表 syzbot <syzbot+9f78d5c664a8c33f4cce@syzkaller.appspotmail.com>
->> > 发送时间: 2020年7月29日 13:53
->> > 收件人: davem@davemloft.net; fweisbec@gmail.com; jhs@mojatatu.com; jiri@resnulli.us; linux-kernel@vger.kernel.org; mingo@kernel.org; netdev@vger.kernel.org; syzkaller-bugs@googlegroups.com; tglx@linutronix.de; vinicius.gomes@intel.com; xiyou.wangcong@gmail.com
->> > 主题: INFO: rcu detected stall in tc_modify_qdisc
->> >
->> > Hello,
->> >
->> > syzbot found the following issue on:
->> >
->> > HEAD commit:    181964e6 fix a braino in cmsghdr_from_user_compat_to_kern()
->> > git tree:       net
->> > console output: https://syzkaller.appspot.com/x/log.txt?x=12925e38900000
->> > kernel config:  https://syzkaller.appspot.com/x/.config?x=f87a5e4232fdb267
->> > dashboard link: https://syzkaller.appspot.com/bug?extid=9f78d5c664a8c33f4cce
->> > compiler:       gcc (GCC) 10.1.0-syz 20200507
->> > syz repro:
->> > https://syzkaller.appspot.com/x/repro.syz?x=16587f8c900000
->>
->> It seems that syzkaller is generating an schedule with too small
->> intervals (3ns in this case) which causes a hrtimer busy-loop which
->> starves other kernel threads.
->>
->> We could put some limits on the interval when running in software mode,
->> but I don't like this too much, because we are talking about users with
->> CAP_NET_ADMIN and they have easier ways to do bad things to the system.
->
-> Hi Vinicius,
->
-> Could you explain why you don't like the argument if it's for CAP_NET_ADMIN?
-> Good code should check arguments regardless I think and it's useful to
-> protect root from, say, programming bugs rather than kill the machine
-> on any bug and misconfiguration. What am I missing?
-
-I admit that I am on the fence on that argument: do not let even root
-crash the system (the point that my code is crashing the system gives
-weight to this side) vs. root has great powers, they need to know what
-they are doing.
-
-The argument that I used to convince myself was: root can easily create
-a bunch of processes and give them the highest priority and do
-effectively the same thing as this issue, so I went with a the "they
-need to know what they are doing side".
-
-A bit more on the specifics here:
-
-  - Using a small interval size, is only a limitation of the taprio
-  software mode, when using hardware offloads (which I think most users
-  do), any interval size (supported by the hardware) can be used;
-
-  - Choosing a good lower limit for this seems kind of hard: something
-  below 1us would never work well, I think, but things 1us < x < 100us
-  will depend on the hardware/kernel config/system load, and this is the
-  range includes "useful" values for many systems.
-
-Perhaps a middle ground would be to impose a limit based on the link
-speed, the interval can never be smaller than the time it takes to send
-the minimum ethernet frame (for 1G links this would be ~480ns, should be
-enough to catch most programming mistakes). I am going to add this and
-see how it looks like.
-
-Sorry for the brain dump :-)
-
->
-> Also are we talking about CAP_NET_ADMIN in a user ns as well
-> (effectively nobody)?
-
-Just checked, we are talking about CAP_NET_ADMIN in user namespace as
-well.
 
 
-Cheers,
--- 
-Vinicius
+> On Jul 29, 2020, at 4:05 PM, Andrii Nakryiko <andriin@fb.com> wrote:
+>=20
+> Add low-level bpf_link_detach() API. Also add higher-level bpf_link__deta=
+ch()
+> one.
+>=20
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+
+Acked-by: Song Liu <songliubraving@fb.com>
+
+> ---
+>=20
+
+[...]
+
+>=20
+> LIBBPF_0.1.0 {
+> 	global:
+> +		bpf_link__detach;
+> +		bpf_link_detach;
+
+I didn't realize capital_letter < '_' < small_letter until just now. :)
+
+> 		bpf_map__ifindex;
+> 		bpf_map__key_size;
+> 		bpf_map__map_flags;
+> --=20
+> 2.24.1
+>=20
+
