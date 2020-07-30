@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD9312339D1
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 22:38:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AAEC2339C5
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 22:37:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730530AbgG3Uhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 16:37:47 -0400
-Received: from mga14.intel.com ([192.55.52.115]:30885 "EHLO mga14.intel.com"
+        id S1730505AbgG3Uhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 16:37:42 -0400
+Received: from mga14.intel.com ([192.55.52.115]:30887 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728745AbgG3Uh0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 16:37:26 -0400
-IronPort-SDR: LEYm9SVyV9VReNT7ElnJVGFmlg1HI4BsoW/lMdrg5ni2cpKX5eqrh70KEjNyV09J1iU7V4XIxY
- M0b+Zy4kq7NQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="150885528"
+        id S1728750AbgG3Uh1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 16:37:27 -0400
+IronPort-SDR: ixvAG4Uyf13yeNBLlNcieI+EkQjqC+w7gIB3fZUAe51zs45vtcT9a7VI+0hp7gBLuyoFz1b1u0
+ 38dx3/PDPeVQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="150885530"
 X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
-   d="scan'208";a="150885528"
+   d="scan'208";a="150885530"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2020 13:37:25 -0700
-IronPort-SDR: IOJ6AXM06kFNyBgrYEDjtFQ/9om5DSFsMN/XWuHu1zq8/sGs3BJL8E4UwSbRbfun4HAlexiXip
- lF60RzeXHGtA==
+IronPort-SDR: UvnlHKLN8jhNIwUtXRyztDopoI5a+2sLZDj1go2Svy5oTmMC9sSnPluRAsxkQgNcojjqD202S7
+ AnY7ODCV95hQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
-   d="scan'208";a="274324255"
+   d="scan'208";a="274324259"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga008.fm.intel.com with ESMTP; 30 Jul 2020 13:37:24 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 30 Jul 2020 13:37:25 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net
 Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: [net-next 04/12] ixgbevf: use generic power management
-Date:   Thu, 30 Jul 2020 13:37:12 -0700
-Message-Id: <20200730203720.3843018-5-anthony.l.nguyen@intel.com>
+        Aaron Brown <aaron.f.brown@intel.com>
+Subject: [net-next 05/12] e100: use generic power management
+Date:   Thu, 30 Jul 2020 13:37:13 -0700
+Message-Id: <20200730203720.3843018-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200730203720.3843018-1-anthony.l.nguyen@intel.com>
 References: <20200730203720.3843018-1-anthony.l.nguyen@intel.com>
@@ -48,117 +48,103 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 
-With legacy PM, drivers themselves were responsible for managing the
-device's power states and takes care of register states.
+With legacy PM hooks, it was the responsibility of a driver to manage PCI
+states and also the device's power state. The generic approach is to let
+PCI core handle the work.
 
-After upgrading to the generic structure, PCI core will take care of
-required tasks and drivers should do only device-specific operations.
+e100_suspend() calls __e100_shutdown() to perform intermediate tasks.
+__e100_shutdown() calls pci_save_state() which is not recommended.
 
-The driver was invoking PCI helper functions like pci_save/restore_state(),
-and pci_enable/disable_device(), which is not recommended.
+e100_suspend() also calls __e100_power_off() which is calling PCI helper
+functions, pci_prepare_to_sleep(), pci_set_power_state(), along with
+pci_wake_from_d3(...,false). Hence, the functin call is removed and wol is
+disabled as earlier using device_wakeup_disable().
 
 Compile-tested only.
 
 Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- .../net/ethernet/intel/ixgbevf/ixgbevf_main.c | 44 +++++--------------
- 1 file changed, 10 insertions(+), 34 deletions(-)
+ drivers/net/ethernet/intel/e100.c | 32 ++++++++++++++-----------------
+ 1 file changed, 14 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-index 6e9a397db583..c3d26cc0cf51 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -4297,13 +4297,10 @@ static int ixgbevf_change_mtu(struct net_device *netdev, int new_mtu)
+diff --git a/drivers/net/ethernet/intel/e100.c b/drivers/net/ethernet/intel/e100.c
+index 91c64f91a835..36da059388dc 100644
+--- a/drivers/net/ethernet/intel/e100.c
++++ b/drivers/net/ethernet/intel/e100.c
+@@ -2993,8 +2993,6 @@ static void __e100_shutdown(struct pci_dev *pdev, bool *enable_wake)
+ 		e100_down(nic);
+ 	netif_device_detach(netdev);
+ 
+-	pci_save_state(pdev);
+-
+ 	if ((nic->flags & wol_magic) | e100_asf(nic)) {
+ 		/* enable reverse auto-negotiation */
+ 		if (nic->phy == phy_82552_v) {
+@@ -3024,24 +3022,22 @@ static int __e100_power_off(struct pci_dev *pdev, bool wake)
  	return 0;
  }
  
--static int ixgbevf_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused ixgbevf_suspend(struct device *dev_d)
+-#ifdef CONFIG_PM
+-static int e100_suspend(struct pci_dev *pdev, pm_message_t state)
++static int __maybe_unused e100_suspend(struct device *dev_d)
+ {
+ 	bool wake;
+-	__e100_shutdown(pdev, &wake);
+-	return __e100_power_off(pdev, wake);
++
++	__e100_shutdown(to_pci_dev(dev_d), &wake);
++
++	device_wakeup_disable(dev_d);
++
++	return 0;
+ }
+ 
+-static int e100_resume(struct pci_dev *pdev)
++static int __maybe_unused e100_resume(struct device *dev_d)
  {
 -	struct net_device *netdev = pci_get_drvdata(pdev);
 +	struct net_device *netdev = dev_get_drvdata(dev_d);
- 	struct ixgbevf_adapter *adapter = netdev_priv(netdev);
--#ifdef CONFIG_PM
--	int retval = 0;
--#endif
+ 	struct nic *nic = netdev_priv(netdev);
  
- 	rtnl_lock();
- 	netif_device_detach(netdev);
-@@ -4314,37 +4311,16 @@ static int ixgbevf_suspend(struct pci_dev *pdev, pm_message_t state)
- 	ixgbevf_clear_interrupt_scheme(adapter);
- 	rtnl_unlock();
+-	pci_set_power_state(pdev, PCI_D0);
+-	pci_restore_state(pdev);
+-	/* ack any pending wake events, disable PME */
+-	pci_enable_wake(pdev, PCI_D0, 0);
+-
+ 	/* disable reverse auto-negotiation */
+ 	if (nic->phy == phy_82552_v) {
+ 		u16 smartspeed = mdio_read(netdev, nic->mii.phy_id,
+@@ -3058,7 +3054,6 @@ static int e100_resume(struct pci_dev *pdev)
  
--#ifdef CONFIG_PM
--	retval = pci_save_state(pdev);
--	if (retval)
--		return retval;
--
--#endif
--	if (!test_and_set_bit(__IXGBEVF_DISABLED, &adapter->state))
--		pci_disable_device(pdev);
--
  	return 0;
  }
- 
--#ifdef CONFIG_PM
--static int ixgbevf_resume(struct pci_dev *pdev)
-+static int __maybe_unused ixgbevf_resume(struct device *dev_d)
- {
-+	struct pci_dev *pdev = to_pci_dev(dev_d);
- 	struct net_device *netdev = pci_get_drvdata(pdev);
- 	struct ixgbevf_adapter *adapter = netdev_priv(netdev);
- 	u32 err;
- 
--	pci_restore_state(pdev);
--	/* pci_restore_state clears dev->state_saved so call
--	 * pci_save_state to restore it.
--	 */
--	pci_save_state(pdev);
--
--	err = pci_enable_device_mem(pdev);
--	if (err) {
--		dev_err(&pdev->dev, "Cannot enable PCI device from suspend\n");
--		return err;
--	}
--
- 	adapter->hw.hw_addr = adapter->io_addr;
- 	smp_mb__before_atomic();
- 	clear_bit(__IXGBEVF_DISABLED, &adapter->state);
-@@ -4365,10 +4341,9 @@ static int ixgbevf_resume(struct pci_dev *pdev)
- 	return err;
- }
- 
 -#endif /* CONFIG_PM */
- static void ixgbevf_shutdown(struct pci_dev *pdev)
- {
--	ixgbevf_suspend(pdev, PMSG_SUSPEND);
-+	ixgbevf_suspend(&pdev->dev);
- }
  
- static void ixgbevf_get_tx_ring_stats(struct rtnl_link_stats64 *stats,
-@@ -4888,16 +4863,17 @@ static const struct pci_error_handlers ixgbevf_err_handler = {
- 	.resume = ixgbevf_io_resume,
+ static void e100_shutdown(struct pci_dev *pdev)
+ {
+@@ -3146,16 +3141,17 @@ static const struct pci_error_handlers e100_err_handler = {
+ 	.resume = e100_io_resume,
  };
  
-+static SIMPLE_DEV_PM_OPS(ixgbevf_pm_ops, ixgbevf_suspend, ixgbevf_resume);
++static SIMPLE_DEV_PM_OPS(e100_pm_ops, e100_suspend, e100_resume);
 +
- static struct pci_driver ixgbevf_driver = {
- 	.name		= ixgbevf_driver_name,
- 	.id_table	= ixgbevf_pci_tbl,
- 	.probe		= ixgbevf_probe,
- 	.remove		= ixgbevf_remove,
+ static struct pci_driver e100_driver = {
+ 	.name =         DRV_NAME,
+ 	.id_table =     e100_id_table,
+ 	.probe =        e100_probe,
+ 	.remove =       e100_remove,
 -#ifdef CONFIG_PM
 +
- 	/* Power Management Hooks */
--	.suspend	= ixgbevf_suspend,
--	.resume		= ixgbevf_resume,
+ 	/* Power Management hooks */
+-	.suspend =      e100_suspend,
+-	.resume =       e100_resume,
 -#endif
-+	.driver.pm	= &ixgbevf_pm_ops,
++	.driver.pm =	&e100_pm_ops,
 +
- 	.shutdown	= ixgbevf_shutdown,
- 	.err_handler	= &ixgbevf_err_handler
+ 	.shutdown =     e100_shutdown,
+ 	.err_handler = &e100_err_handler,
  };
 -- 
 2.26.2
