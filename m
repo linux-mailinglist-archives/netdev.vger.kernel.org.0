@@ -2,37 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4F43232CCB
+	by mail.lfdr.de (Postfix) with ESMTP id 40205232CCA
 	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 10:01:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729015AbgG3IBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 04:01:11 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:48664 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728817AbgG3IA5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 04:00:57 -0400
+        id S1729010AbgG3IBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 04:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51692 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728880AbgG3IA6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 04:00:58 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E5FC061794
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 01:00:57 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1596096055;
+        s=2020; t=1596096056;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bViW/fwyNVYpaLBkhNhKImtxPFkf0fQzR+cUGcCym+4=;
-        b=BXd/cqfgKJzo3e7MZElg9v7KqK/AcuGZYdTz2T9Psl94M1bQJw9q//oUJKiom6vsiVVEEC
-        6svirSoZWy1aS5m1pSGiZEVeZudjYvGicmpIy8NeIC8mvoBHN5oWj9FjYhSD07nKV5DFI4
-        ukFtqIPsXx1GWVYZulv3pLE9IY3BfVoP4NwZbm1oaWi5gactNOm4MXtgJQPrqyg5z5BWQ/
-        KV0207Njgh073XcsbyzOZu4dlsUWIln73a/7Ln4bEbuPvn5BT2Vs98iEK7VYF+vILoEWmc
-        /mrHicHPBmQVTL6ckc+RsDGblqxQWedoNctUkR/EyehPMzj7XDxQzDl9hBV4mw==
+        bh=JAnPHtSUc1fs2SVKqS8jKOoMEWVQ9SYEz1LHwQt13cI=;
+        b=TYjK+b2oe5NnIam5GFM0ISwa3+pw6OYSVICBscKfoF16wVgAFootNXMkzOxN0mzdj8IMFx
+        ZAx6ehVsc+TIXZDTG8R4V1vZ9ggoUwWZvmRCAGteSY3cyxt51/qXL1flXF3BM7us3/cqKQ
+        QPtjfREeZ00q7FWHJqqCR1DGGEtjOghbFPKfGUT1PvE7BAl3DOE63zT7JU/jLY+IMMHGuj
+        REs7nrtyFQMBALG5gwyRJIQig60Z0SCV5qvZQctkU5eNMdFVnC1NBHMMeBzQaonE5VUpWS
+        jEo62cOm+3QGYzt0ObRbIWK3Ok/FRxn8vYDKEsFAc2fXLltAo0uUlaGHWF/kig==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1596096055;
+        s=2020e; t=1596096056;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bViW/fwyNVYpaLBkhNhKImtxPFkf0fQzR+cUGcCym+4=;
-        b=yiMAZ1fCTf8o8VTw3KXarRGwjJYUVxbl5PmT67iGtYt1RMX71Dvh6DFMrTPYozt2fiSwg4
-        GUiDSnduSaymNbDQ==
+        bh=JAnPHtSUc1fs2SVKqS8jKOoMEWVQ9SYEz1LHwQt13cI=;
+        b=F52hRl1YORNL1nQqvxtrvhIxYrI0cJRcC+Fcc9sJld0ZzHQTPcvkBRVCtsKDwHbIMl1pAi
+        e3O9w29QC/ZH7dCg==
 To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -48,9 +51,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
         Petr Machata <petrm@mellanox.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v3 5/9] ethernet: ti: am65-cpts: Use generic helper function
-Date:   Thu, 30 Jul 2020 10:00:44 +0200
-Message-Id: <20200730080048.32553-6-kurt@linutronix.de>
+Subject: [PATCH v3 6/9] ethernet: ti: cpts: Use generic helper function
+Date:   Thu, 30 Jul 2020 10:00:45 +0200
+Message-Id: <20200730080048.32553-7-kurt@linutronix.de>
 In-Reply-To: <20200730080048.32553-1-kurt@linutronix.de>
 References: <20200730080048.32553-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -65,20 +68,20 @@ functions were introduced. Use them.
 
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- drivers/net/ethernet/ti/am65-cpts.c | 37 +++++++----------------------
+ drivers/net/ethernet/ti/cpts.c | 37 +++++++++-------------------------
  1 file changed, 9 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
-index c59a289e428c..2548324afa42 100644
---- a/drivers/net/ethernet/ti/am65-cpts.c
-+++ b/drivers/net/ethernet/ti/am65-cpts.c
-@@ -748,42 +748,23 @@ EXPORT_SYMBOL_GPL(am65_cpts_rx_enable);
- static int am65_skb_get_mtype_seqid(struct sk_buff *skb, u32 *mtype_seqid)
+diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
+index 7c55d395de2c..2c5c05620e6e 100644
+--- a/drivers/net/ethernet/ti/cpts.c
++++ b/drivers/net/ethernet/ti/cpts.c
+@@ -446,41 +446,22 @@ static const struct ptp_clock_info cpts_info = {
+ static int cpts_skb_get_mtype_seqid(struct sk_buff *skb, u32 *mtype_seqid)
  {
  	unsigned int ptp_class = ptp_classify_raw(skb);
 -	u8 *msgtype, *data = skb->data;
 -	unsigned int offset = 0;
--	__be16 *seqid;
+-	u16 *seqid;
 +	struct ptp_header *hdr;
 +	u8 msgtype;
 +	u16 seqid;
@@ -115,12 +118,11 @@ index c59a289e428c..2548324afa42 100644
 +	msgtype = ptp_get_msgtype(hdr, ptp_class);
 +	seqid	= be16_to_cpu(hdr->sequence_id);
  
--	seqid = (__be16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
--	*mtype_seqid = (*msgtype << AM65_CPTS_EVENT_1_MESSAGE_TYPE_SHIFT) &
-+	*mtype_seqid  = (msgtype << AM65_CPTS_EVENT_1_MESSAGE_TYPE_SHIFT) &
- 			AM65_CPTS_EVENT_1_MESSAGE_TYPE_MASK;
--	*mtype_seqid |= (ntohs(*seqid) & AM65_CPTS_EVENT_1_SEQUENCE_ID_MASK);
-+	*mtype_seqid |= (seqid & AM65_CPTS_EVENT_1_SEQUENCE_ID_MASK);
+-	seqid = (u16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
+-	*mtype_seqid = (*msgtype & MESSAGE_TYPE_MASK) << MESSAGE_TYPE_SHIFT;
+-	*mtype_seqid |= (ntohs(*seqid) & SEQUENCE_ID_MASK) << SEQUENCE_ID_SHIFT;
++	*mtype_seqid  = (msgtype & MESSAGE_TYPE_MASK) << MESSAGE_TYPE_SHIFT;
++	*mtype_seqid |= (seqid & SEQUENCE_ID_MASK) << SEQUENCE_ID_SHIFT;
  
  	return 1;
  }
