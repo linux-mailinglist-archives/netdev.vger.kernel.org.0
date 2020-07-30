@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66E632338F1
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:26:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A33B32338F4
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:26:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730508AbgG3T0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 15:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44514 "EHLO
+        id S1730533AbgG3T0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 15:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726581AbgG3T0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:26:18 -0400
+        with ESMTP id S1726581AbgG3T0W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:26:22 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B695FC061574
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 12:26:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAA2C061574
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 12:26:22 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1k1EC1-0003W0-3Q; Thu, 30 Jul 2020 21:26:17 +0200
+        id 1k1EC5-0003WJ-E1; Thu, 30 Jul 2020 21:26:21 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     edumazet@google.com, mathew.j.martineau@linux.intel.com,
         matthieu.baerts@tessares.net, pabeni@redhat.com,
         Florian Westphal <fw@strlen.de>
-Subject: [PATCH v2 net-next 3/9] mptcp: subflow: split subflow_init_req
-Date:   Thu, 30 Jul 2020 21:25:52 +0200
-Message-Id: <20200730192558.25697-4-fw@strlen.de>
+Subject: [PATCH v2 net-next 4/9] mptcp: rename and export mptcp_subflow_request_sock_ops
+Date:   Thu, 30 Jul 2020 21:25:53 +0200
+Message-Id: <20200730192558.25697-5-fw@strlen.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200730192558.25697-1-fw@strlen.de>
 References: <20200730192558.25697-1-fw@strlen.de>
@@ -35,73 +35,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When syncookie support is added, we will need to add a variant of
-subflow_init_req() helper.  It will do almost same thing except
-that it will not compute/add a token to the mptcp token tree.
+syncookie code path needs to create an mptcp request sock.
 
-To avoid excess copy&paste, this commit splits away part of the
-code into a new helper, __subflow_init_req, that can then be re-used
-from the 'no insert' function added in a followup change.
+Prepare for this and add mptcp prefix plus needed export of ops struct.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/mptcp/subflow.c | 32 ++++++++++++++++++++++----------
- 1 file changed, 22 insertions(+), 10 deletions(-)
+ include/net/mptcp.h |  1 +
+ net/mptcp/subflow.c | 11 ++++++-----
+ 2 files changed, 7 insertions(+), 5 deletions(-)
 
+diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+index 02158c257bd4..76eb915bf91c 100644
+--- a/include/net/mptcp.h
++++ b/include/net/mptcp.h
+@@ -58,6 +58,7 @@ struct mptcp_out_options {
+ };
+ 
+ #ifdef CONFIG_MPTCP
++extern struct request_sock_ops mptcp_subflow_request_sock_ops;
+ 
+ void mptcp_init(void);
+ 
 diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 9feb87880d1c..091e305a81c8 100644
+index 091e305a81c8..9b11d2b6ff4d 100644
 --- a/net/mptcp/subflow.c
 +++ b/net/mptcp/subflow.c
-@@ -91,17 +91,9 @@ static struct mptcp_sock *subflow_token_join_request(struct request_sock *req,
- 	return msk;
+@@ -284,7 +284,8 @@ static void subflow_finish_connect(struct sock *sk, const struct sk_buff *skb)
+ 	tcp_done(sk);
  }
  
--static void subflow_init_req(struct request_sock *req,
--			     const struct sock *sk_listener,
--			     struct sk_buff *skb)
-+static int __subflow_init_req(struct request_sock *req, const struct sock *sk_listener)
+-static struct request_sock_ops subflow_request_sock_ops;
++struct request_sock_ops mptcp_subflow_request_sock_ops;
++EXPORT_SYMBOL_GPL(mptcp_subflow_request_sock_ops);
+ static struct tcp_request_sock_ops subflow_request_sock_ipv4_ops;
+ 
+ static int subflow_v4_conn_request(struct sock *sk, struct sk_buff *skb)
+@@ -297,7 +298,7 @@ static int subflow_v4_conn_request(struct sock *sk, struct sk_buff *skb)
+ 	if (skb_rtable(skb)->rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST))
+ 		goto drop;
+ 
+-	return tcp_conn_request(&subflow_request_sock_ops,
++	return tcp_conn_request(&mptcp_subflow_request_sock_ops,
+ 				&subflow_request_sock_ipv4_ops,
+ 				sk, skb);
+ drop:
+@@ -322,7 +323,7 @@ static int subflow_v6_conn_request(struct sock *sk, struct sk_buff *skb)
+ 	if (!ipv6_unicast_destination(skb))
+ 		goto drop;
+ 
+-	return tcp_conn_request(&subflow_request_sock_ops,
++	return tcp_conn_request(&mptcp_subflow_request_sock_ops,
+ 				&subflow_request_sock_ipv6_ops, sk, skb);
+ 
+ drop:
+@@ -1311,8 +1312,8 @@ static int subflow_ops_init(struct request_sock_ops *subflow_ops)
+ 
+ void __init mptcp_subflow_init(void)
  {
--	struct mptcp_subflow_context *listener = mptcp_subflow_ctx(sk_listener);
- 	struct mptcp_subflow_request_sock *subflow_req = mptcp_subflow_rsk(req);
--	struct mptcp_options_received mp_opt;
--
--	pr_debug("subflow_req=%p, listener=%p", subflow_req, listener);
--
--	mptcp_get_options(skb, &mp_opt);
+-	subflow_request_sock_ops = tcp_request_sock_ops;
+-	if (subflow_ops_init(&subflow_request_sock_ops) != 0)
++	mptcp_subflow_request_sock_ops = tcp_request_sock_ops;
++	if (subflow_ops_init(&mptcp_subflow_request_sock_ops) != 0)
+ 		panic("MPTCP: failed to init subflow request sock ops\n");
  
- 	subflow_req->mp_capable = 0;
- 	subflow_req->mp_join = 0;
-@@ -113,9 +105,29 @@ static void subflow_init_req(struct request_sock *req,
- 	 * TCP option space.
- 	 */
- 	if (rcu_access_pointer(tcp_sk(sk_listener)->md5sig_info))
--		return;
-+		return -EINVAL;
- #endif
- 
-+	return 0;
-+}
-+
-+static void subflow_init_req(struct request_sock *req,
-+			     const struct sock *sk_listener,
-+			     struct sk_buff *skb)
-+{
-+	struct mptcp_subflow_context *listener = mptcp_subflow_ctx(sk_listener);
-+	struct mptcp_subflow_request_sock *subflow_req = mptcp_subflow_rsk(req);
-+	struct mptcp_options_received mp_opt;
-+	int ret;
-+
-+	pr_debug("subflow_req=%p, listener=%p", subflow_req, listener);
-+
-+	ret = __subflow_init_req(req, sk_listener);
-+	if (ret)
-+		return;
-+
-+	mptcp_get_options(skb, &mp_opt);
-+
- 	if (mp_opt.mp_capable) {
- 		SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_MPCAPABLEPASSIVE);
- 
+ 	subflow_request_sock_ipv4_ops = tcp_request_sock_ipv4_ops;
 -- 
 2.26.2
 
