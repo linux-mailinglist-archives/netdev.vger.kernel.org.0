@@ -2,67 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E8A32330AC
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 13:00:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9B762330B9
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 13:06:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729171AbgG3LAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 07:00:09 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:8303 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726631AbgG3LAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 07:00:09 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id AAF5379B622294EE9634;
-        Thu, 30 Jul 2020 19:00:06 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Thu, 30 Jul 2020
- 18:59:58 +0800
-From:   linmiaohe <linmiaohe@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@mellanox.com>,
-        <edumazet@google.com>, <ap420073@gmail.com>,
-        <xiyou.wangcong@gmail.com>, <lukas@wunner.de>,
-        <maximmi@mellanox.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] net: Pass NULL to skb_network_protocol() when we don't care about vlan depth
-Date:   Thu, 30 Jul 2020 19:02:36 +0800
-Message-ID: <1596106956-22054-1-git-send-email-linmiaohe@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1726724AbgG3LGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 07:06:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726367AbgG3LGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 07:06:22 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265F4C061794
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 04:06:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=kYVLACyCu5tq8GYC/ZrfewrJhwW2VL5IdvavqD027eE=; b=FdJueyYon+O+q3qCluSAPc5Mg
+        ZBODr/7R2VvC9cQDd43tG5djhj7PCjFecoh1SFIqSq6QVmUctbQpVwwVB+fQhyBSwAD6c3JHgJcXl
+        k3Op4+3sS/X5y9shJN9nspWacYhVrKCnwtHNTGjG1qchauu0z2MgD0TkwDDXN28lROq6zJZcsNW6+
+        +xdNhZn2qcJIZAb98287y/ZBhFQmiJY7OvB2BE6NYa7Q6KR0kg4JLaiMMyuPzNiXQMrhunSVfqVLl
+        F17jP0xGwXC8gZXJU9nQeXXY8s1ix0yNhE/ejPNVbSCKLIbKevfpVzd82CN/V11nME4dQFEhX0DMY
+        pm+Kt3Stw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46070)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1k16O9-0006LI-0O; Thu, 30 Jul 2020 12:06:17 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1k16O6-0006gt-3P; Thu, 30 Jul 2020 12:06:14 +0100
+Date:   Thu, 30 Jul 2020 12:06:14 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+ [multicast/DSA issues]
+Message-ID: <20200730110613.GC1551@shell.armlinux.org.uk>
+References: <E1jvNlE-0001Y0-47@rmk-PC.armlinux.org.uk>
+ <20200729105807.GZ1551@shell.armlinux.org.uk>
+ <20200729131932.GA23222@hoboy>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200729131932.GA23222@hoboy>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+On Wed, Jul 29, 2020 at 06:19:32AM -0700, Richard Cochran wrote:
+> On Wed, Jul 29, 2020 at 11:58:07AM +0100, Russell King - ARM Linux admin wrote:
+> > How do we deal with this situation - from what I can see from the
+> > ethtool API, we have to make a choice about which to use.  How do we
+> > make that choice?
+> 
+> Unfortunately the stack does not implement simultaneous MAC + PHY time
+> stamping.  If your board has both, then you make the choice to use the
+> PHY by selecting NETWORK_PHY_TIMESTAMPING at kernel compile time.
+> 
+> (Also some MAC drivers do not defer to the PHY properly.  Sometimes
+> you can work around that by de-selecting the MAC's PTP function in the
+> Kconfig if possible, but otherwise you need to patch the MAC driver.)
+>  
+> > Do we need a property to indicate whether we wish to use the PHY
+> > or MAC PTP stamping, or something more elaborate?
+> 
+> To do this at run time would require quite some work, I expect.
 
-When we don't care about vlan depth, we could pass NULL instead of the
-address of a unused local variable to skb_network_protocol() as a param.
+Okay, I'm falling into horrible multicast issues with DSA switches
+while trying to test.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- net/core/dev.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Some of my platforms have IP_MULTICAST=y, others have IP_MULTICAST=n.
+This causes some to send IGMP messages when binding to the multicast
+address, others do not.
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 7a774ebf64e2..474da11d18c9 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3448,10 +3448,9 @@ static netdev_features_t net_mpls_features(struct sk_buff *skb,
- static netdev_features_t harmonize_features(struct sk_buff *skb,
- 	netdev_features_t features)
- {
--	int tmp;
- 	__be16 type;
- 
--	type = skb_network_protocol(skb, &tmp);
-+	type = skb_network_protocol(skb, NULL);
- 	features = net_mpls_features(skb, features, type);
- 
- 	if (skb->ip_summed != CHECKSUM_NONE &&
+Those that do cause the DSA switch to add a static database entry
+causing all traffic for that multicast address to be only directed to
+the port(s) that the machine(s) with IP_MULTICAST=y kernels are
+connected to, depriving all IP_MULTICAST=n machines from seeing those
+packets.
+
+Maybe, with modern networking technology, it's about time that the
+kernel configuration help recommended that kernels should be built
+with IP_MULTICAST=y ?
+
 -- 
-2.19.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
