@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0ABD232CC4
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 10:01:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FCE7232CCC
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 10:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728826AbgG3IA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 04:00:56 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:48602 "EHLO
+        id S1729021AbgG3IBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 04:01:16 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:48628 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726287AbgG3IAz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 04:00:55 -0400
+        with ESMTP id S1728795AbgG3IA5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 04:00:57 -0400
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1596096054;
@@ -18,21 +18,21 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1t4y2N6HKjAv6a/LdlcDy0zwrL1j61Kl789tc3VQTG4=;
-        b=XmzTcdCLe+/cRQZ7Q2Vfj5mBalmPZP6IR27wDSWbQ7oAEs367D6NrlQr2nNYIbtiVVZg0W
-        WklkdaBAa1UFvR+9QFgpIpKZGq5+knTKGp5k7q7LAeluvVIxIdnzCLMCjqMS4jgqDVfUyC
-        o+Uqt0poXZrFbSe0jhQ0pyCx512wRdCkic5/ZBanx7VBAh8LbTaXsBBnRoOmvxuL0IWaZk
-        zj8D+L/MjaltzVfUXpxR0zJiSvV+xuUubI0eDwyAumPJcryxhSViZrNTcCiDrwUTLs8fKq
-        l4P/7qd4ImDb+IXiNhMG8a8CFmtYd04YUkwyFUzkr5jyObJF5bnnV95nc+M5KA==
+        bh=i2kXL4jLvZsgWK6ZVbx1j1SeUZGLYcPkHfVgwCo/FwQ=;
+        b=TO/dIdN3NHnUV3WVnOjphGclvy8TRYomPz8P4yToZmMI82j7rxsg/rQSG1wGM6fGIEpxth
+        jFZUhe8DRQ61oxEdu+rQ4hH4q57eY/hmQ5/gyoCipytk4Am04lzpj0r1x29dcmedMg5aBd
+        LNTYT7DvZ0wP0iAu2ZJ4CGReUh5LxJ1wSK6e81SvhhEwpfEq0Tre1Qmq+a3hyTSHT3XJ2T
+        0YWLFJsYAN4gFAH9nAu9nVh+uumvHTNjN9ZE4aGiiPh67ju34LXzOIufVlqGstzwyWMwAC
+        vkdBNklPS6R+Q7fSKdCUxMHvvReUCzXCuaUJ8F2bm1Qd3z+E+JK+3iu8/OOgug==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1596096054;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1t4y2N6HKjAv6a/LdlcDy0zwrL1j61Kl789tc3VQTG4=;
-        b=V/H9UZ8ZSyN1GoOCznaYv7BWWP5YilrlqnZYQTs9I6Nousr4kr6kTCgTEvC7VTJAuHIf+s
-        u+TjM/mBByUEHZBw==
+        bh=i2kXL4jLvZsgWK6ZVbx1j1SeUZGLYcPkHfVgwCo/FwQ=;
+        b=GOIu9ReTPmDSeMzA1nxwoMpH37GIt7jYWHW2woEGgLgvmsAYWfQhm6D9wPP29Q51W7gIl3
+        uHZ2BJ4doa5khPBA==
 To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -48,9 +48,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
         Petr Machata <petrm@mellanox.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v3 2/9] ptp: Add generic ptp message type function
-Date:   Thu, 30 Jul 2020 10:00:41 +0200
-Message-Id: <20200730080048.32553-3-kurt@linutronix.de>
+Subject: [PATCH v3 3/9] net: dsa: mv88e6xxx: Use generic helper function
+Date:   Thu, 30 Jul 2020 10:00:42 +0200
+Message-Id: <20200730080048.32553-4-kurt@linutronix.de>
 In-Reply-To: <20200730080048.32553-1-kurt@linutronix.de>
 References: <20200730080048.32553-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -60,52 +60,137 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The message type is located at different offsets within the ptp header depending
-on the ptp version (v1 or v2). Therefore, drivers which also deal with ptp v1
-have some code for it.
-
-Extract this into a helper function for drivers to be used.
+In order to reduce code duplication between ptp drivers, generic helper
+functions were introduced. Use them.
 
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- include/linux/ptp_classify.h | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/net/dsa/mv88e6xxx/hwtstamp.c | 59 ++++++----------------------
+ 1 file changed, 13 insertions(+), 46 deletions(-)
 
-diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
-index 26fd38a4bd67..f4dd42fddc0c 100644
---- a/include/linux/ptp_classify.h
-+++ b/include/linux/ptp_classify.h
-@@ -90,6 +90,30 @@ unsigned int ptp_classify_raw(const struct sk_buff *skb);
-  */
- struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type);
+diff --git a/drivers/net/dsa/mv88e6xxx/hwtstamp.c b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
+index a4c488b12e8f..094d17a1d037 100644
+--- a/drivers/net/dsa/mv88e6xxx/hwtstamp.c
++++ b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
+@@ -211,49 +211,20 @@ int mv88e6xxx_port_hwtstamp_get(struct dsa_switch *ds, int port,
+ 		-EFAULT : 0;
+ }
  
-+/**
-+ * ptp_get_msgtype - Extract ptp message type from given header
-+ * @hdr: ptp header
-+ * @type: type of the packet (see ptp_classify_raw())
-+ *
-+ * This function returns the message type for a given ptp header. It takes care
-+ * of the different ptp header versions (v1 or v2).
-+ *
-+ * Return: The message type
-+ */
-+static inline u8 ptp_get_msgtype(const struct ptp_header *hdr,
-+				 unsigned int type)
-+{
-+	u8 msgtype;
-+
-+	if (unlikely(type & PTP_CLASS_V1))
-+		/* msg type is located at the control field for ptp v1 */
-+		msgtype = hdr->control;
-+	else
-+		msgtype = hdr->tsmt & 0x0f;
-+
-+	return msgtype;
-+}
-+
- void __init ptp_classifier_init(void);
- #else
- static inline void ptp_classifier_init(void)
+-/* Get the start of the PTP header in this skb */
+-static u8 *parse_ptp_header(struct sk_buff *skb, unsigned int type)
+-{
+-	u8 *data = skb_mac_header(skb);
+-	unsigned int offset = 0;
+-
+-	if (type & PTP_CLASS_VLAN)
+-		offset += VLAN_HLEN;
+-
+-	switch (type & PTP_CLASS_PMASK) {
+-	case PTP_CLASS_IPV4:
+-		offset += ETH_HLEN + IPV4_HLEN(data + offset) + UDP_HLEN;
+-		break;
+-	case PTP_CLASS_IPV6:
+-		offset += ETH_HLEN + IP6_HLEN + UDP_HLEN;
+-		break;
+-	case PTP_CLASS_L2:
+-		offset += ETH_HLEN;
+-		break;
+-	default:
+-		return NULL;
+-	}
+-
+-	/* Ensure that the entire header is present in this packet. */
+-	if (skb->len + ETH_HLEN < offset + 34)
+-		return NULL;
+-
+-	return data + offset;
+-}
+-
+ /* Returns a pointer to the PTP header if the caller should time stamp,
+  * or NULL if the caller should not.
+  */
+-static u8 *mv88e6xxx_should_tstamp(struct mv88e6xxx_chip *chip, int port,
+-				   struct sk_buff *skb, unsigned int type)
++static struct ptp_header *mv88e6xxx_should_tstamp(struct mv88e6xxx_chip *chip,
++						  int port, struct sk_buff *skb,
++						  unsigned int type)
+ {
+ 	struct mv88e6xxx_port_hwtstamp *ps = &chip->port_hwtstamp[port];
+-	u8 *hdr;
++	struct ptp_header *hdr;
+ 
+ 	if (!chip->info->ptp_support)
+ 		return NULL;
+ 
+-	hdr = parse_ptp_header(skb, type);
++	hdr = ptp_parse_header(skb, type);
+ 	if (!hdr)
+ 		return NULL;
+ 
+@@ -275,12 +246,11 @@ static int mv88e6xxx_ts_valid(u16 status)
+ static int seq_match(struct sk_buff *skb, u16 ts_seqid)
+ {
+ 	unsigned int type = SKB_PTP_TYPE(skb);
+-	u8 *hdr = parse_ptp_header(skb, type);
+-	__be16 *seqid;
++	struct ptp_header *hdr;
+ 
+-	seqid = (__be16 *)(hdr + OFF_PTP_SEQUENCE_ID);
++	hdr = ptp_parse_header(skb, type);
+ 
+-	return ts_seqid == ntohs(*seqid);
++	return ts_seqid == ntohs(hdr->sequence_id);
+ }
+ 
+ static void mv88e6xxx_get_rxts(struct mv88e6xxx_chip *chip,
+@@ -357,9 +327,9 @@ static void mv88e6xxx_rxtstamp_work(struct mv88e6xxx_chip *chip,
+ 				   &ps->rx_queue2);
+ }
+ 
+-static int is_pdelay_resp(u8 *msgtype)
++static int is_pdelay_resp(const struct ptp_header *hdr)
+ {
+-	return (*msgtype & 0xf) == 3;
++	return (hdr->tsmt & 0xf) == 3;
+ }
+ 
+ bool mv88e6xxx_port_rxtstamp(struct dsa_switch *ds, int port,
+@@ -367,7 +337,7 @@ bool mv88e6xxx_port_rxtstamp(struct dsa_switch *ds, int port,
+ {
+ 	struct mv88e6xxx_port_hwtstamp *ps;
+ 	struct mv88e6xxx_chip *chip;
+-	u8 *hdr;
++	struct ptp_header *hdr;
+ 
+ 	chip = ds->priv;
+ 	ps = &chip->port_hwtstamp[port];
+@@ -503,8 +473,7 @@ bool mv88e6xxx_port_txtstamp(struct dsa_switch *ds, int port,
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	struct mv88e6xxx_port_hwtstamp *ps = &chip->port_hwtstamp[port];
+-	__be16 *seq_ptr;
+-	u8 *hdr;
++	struct ptp_header *hdr;
+ 
+ 	if (!(skb_shinfo(clone)->tx_flags & SKBTX_HW_TSTAMP))
+ 		return false;
+@@ -513,15 +482,13 @@ bool mv88e6xxx_port_txtstamp(struct dsa_switch *ds, int port,
+ 	if (!hdr)
+ 		return false;
+ 
+-	seq_ptr = (__be16 *)(hdr + OFF_PTP_SEQUENCE_ID);
+-
+ 	if (test_and_set_bit_lock(MV88E6XXX_HWTSTAMP_TX_IN_PROGRESS,
+ 				  &ps->state))
+ 		return false;
+ 
+ 	ps->tx_skb = clone;
+ 	ps->tx_tstamp_start = jiffies;
+-	ps->tx_seq_id = be16_to_cpup(seq_ptr);
++	ps->tx_seq_id = be16_to_cpu(hdr->sequence_id);
+ 
+ 	ptp_schedule_worker(chip->ptp_clock, 0);
+ 	return true;
 -- 
 2.20.1
 
