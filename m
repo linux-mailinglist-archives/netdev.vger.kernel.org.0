@@ -2,147 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71E46233C0E
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 01:20:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D369D233C0F
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 01:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730815AbgG3XUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 19:20:33 -0400
-Received: from mga07.intel.com ([134.134.136.100]:4794 "EHLO mga07.intel.com"
+        id S1730822AbgG3XUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 19:20:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55528 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730802AbgG3XUa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 19:20:30 -0400
-IronPort-SDR: ILLuexjX+VAWeERxAoDvoD/xWPhXjwSucYw2CpqAFYdmpfgui6Tw6krnGUyhgioAuTEldpp5Lz
- xcoWNu9cWKCg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="216166665"
-X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
-   d="scan'208";a="216166665"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2020 16:20:28 -0700
-IronPort-SDR: g5djiArs3KeHEvvChmNpctU3Acn+gfDR3hT/VGi6JqSv8T/uGZNQkSj0upeHKmiN05OhnLtrbN
- 5lN073SAFRCQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
-   d="scan'208";a="395156808"
-Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.33])
-  by fmsmga001.fm.intel.com with ESMTP; 30 Jul 2020 16:20:28 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>
-Subject: [iproute2-next 4/4] devlink: support setting the overwrite mask
-Date:   Thu, 30 Jul 2020 16:20:08 -0700
-Message-Id: <20200730232008.2648488-5-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.28.0.163.g6104cc2f0b60
-In-Reply-To: <20200730232008.2648488-1-jacob.e.keller@intel.com>
-References: <20200730232008.2648488-1-jacob.e.keller@intel.com>
+        id S1730814AbgG3XUc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 19:20:32 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1E9ED2082E;
+        Thu, 30 Jul 2020 23:20:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596151232;
+        bh=qot+g9oi0LsOS1FV9LINIsbMOlE+OOITEXXB5/t+8TA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U7MbYPSNtu9Sf5zyIdc1YDpc7bO603QtAVXfFTph8Mg+wTtby6xpaSQ9Mfm3KdUuD
+         uvbuSQGK+U9NonUxunZDW1NxlRlsOsZ/djaspOYYIlRrLgLPyzmfPo137v43RP+D68
+         x7NeKig+mLdr4akiU+xleP6mXW1dNHstk4YUXWZw=
+Date:   Thu, 30 Jul 2020 16:20:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Martin Varghese <martinvarghesenokia@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jbenc@redhat.com,
+        gnault@redhat.com, Martin Varghese <martin.varghese@nokia.com>
+Subject: Re: [PATCH net] bareudp: Disallow udp port 0.
+Message-ID: <20200730162030.0b5749a8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1596128631-3404-1-git-send-email-martinvarghesenokia@gmail.com>
+References: <1596128631-3404-1-git-send-email-martinvarghesenokia@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for specifying the overwrite sections to allow in the flash
-update command. This is done by adding a new "overwrite" option which
-can take either "settings" or "identifiers" passing the overwrite mode
-multiple times will combine the fields using bitwise-OR.
+On Thu, 30 Jul 2020 22:33:51 +0530 Martin Varghese wrote:
+> From: Martin Varghese <martin.varghese@nokia.com>
+> 
+> Kernel does not support udp destination port 0 on wire. Hence
+> bareudp device with udp destination port 0 must be disallowed.
+> 
+> Fixes: 571912c69f0e ("net: UDP tunnel encapsulation module for tunnelling different protocols like MPLS, IP, NSH etc.")
+> Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+> ---
+>  drivers/net/bareudp.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
+> index 88e7900853db..08b195d32cbe 100644
+> --- a/drivers/net/bareudp.c
+> +++ b/drivers/net/bareudp.c
+> @@ -578,8 +578,13 @@ static int bareudp2info(struct nlattr *data[], struct bareudp_conf *conf,
+>  		return -EINVAL;
+>  	}
+>  
+> -	if (data[IFLA_BAREUDP_PORT])
+> +	if (data[IFLA_BAREUDP_PORT]) {
+>  		conf->port =  nla_get_u16(data[IFLA_BAREUDP_PORT]);
+> +		if (!conf->port) {
+> +			NL_SET_ERR_MSG(extack, "udp port 0 not supported");
+> +			return -EINVAL;
+> +		}
+> +	}
 
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
----
- devlink/devlink.c | 37 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 35 insertions(+), 2 deletions(-)
-
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 7dbe9c7e07a8..a3360a09898b 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -302,6 +302,7 @@ static void ifname_map_free(struct ifname_map *ifname_map)
- #define DL_OPT_TRAP_POLICER_BURST	BIT(36)
- #define DL_OPT_HEALTH_REPORTER_AUTO_DUMP     BIT(37)
- #define DL_OPT_PORT_FUNCTION_HW_ADDR BIT(38)
-+#define DL_OPT_FLASH_OVERWRITE		BIT(39)
- 
- struct dl_opts {
- 	uint64_t present; /* flags of present items */
-@@ -349,6 +350,7 @@ struct dl_opts {
- 	uint64_t trap_policer_burst;
- 	char port_function_hw_addr[MAX_ADDR_LEN];
- 	uint32_t port_function_hw_addr_len;
-+	uint32_t overwrite_mask;
- };
- 
- struct dl {
-@@ -1282,6 +1284,19 @@ eswitch_encap_mode_get(const char *typestr,
- 	return 0;
- }
- 
-+static int flash_overwrite_mask_get(const char *sectionstr, uint32_t *mask)
-+{
-+	if (strcmp(sectionstr, "settings") == 0) {
-+		*mask |= DEVLINK_FLASH_OVERWRITE_SETTINGS;
-+	} else if (strcmp(sectionstr, "identifiers") == 0) {
-+		*mask |= DEVLINK_FLASH_OVERWRITE_IDENTIFIERS;
-+	} else {
-+		pr_err("Unknown overwrite section \"%s\"\n", sectionstr);
-+		return -EINVAL;
-+	}
-+	return 0;
-+}
-+
- static int param_cmode_get(const char *cmodestr,
- 			   enum devlink_param_cmode *cmode)
- {
-@@ -1624,6 +1639,21 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
- 			if (err)
- 				return err;
- 			o_found |= DL_OPT_FLASH_COMPONENT;
-+
-+		} else if (dl_argv_match(dl, "overwrite") &&
-+				(o_all & DL_OPT_FLASH_OVERWRITE)) {
-+			const char *sectionstr;
-+
-+			dl_arg_inc(dl);
-+			err = dl_argv_str(dl, &sectionstr);
-+			if(err)
-+				return err;
-+			err = flash_overwrite_mask_get(sectionstr,
-+							&opts->overwrite_mask);
-+			if (err)
-+				return err;
-+			o_found |= DL_OPT_FLASH_OVERWRITE;
-+
- 		} else if (dl_argv_match(dl, "reporter") &&
- 			   (o_all & DL_OPT_HEALTH_REPORTER_NAME)) {
- 			dl_arg_inc(dl);
-@@ -1851,6 +1881,9 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
- 	if (opts->present & DL_OPT_FLASH_COMPONENT)
- 		mnl_attr_put_strz(nlh, DEVLINK_ATTR_FLASH_UPDATE_COMPONENT,
- 				  opts->flash_component);
-+	if (opts->present & DL_OPT_FLASH_OVERWRITE)
-+		mnl_attr_put_u32(nlh, DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK,
-+				 opts->overwrite_mask);
- 	if (opts->present & DL_OPT_HEALTH_REPORTER_NAME)
- 		mnl_attr_put_strz(nlh, DEVLINK_ATTR_HEALTH_REPORTER_NAME,
- 				  opts->reporter_name);
-@@ -1951,7 +1984,7 @@ static void cmd_dev_help(void)
- 	pr_err("       devlink dev param show [DEV name PARAMETER]\n");
- 	pr_err("       devlink dev reload DEV [ netns { PID | NAME | ID } ]\n");
- 	pr_err("       devlink dev info [ DEV ]\n");
--	pr_err("       devlink dev flash DEV file PATH [ component NAME ]\n");
-+	pr_err("       devlink dev flash DEV file PATH [ component NAME ] [ overwrite SECTION ]\n");
- }
- 
- static bool cmp_arr_last_handle(struct dl *dl, const char *bus_name,
-@@ -3205,7 +3238,7 @@ static int cmd_dev_flash(struct dl *dl)
- 			       NLM_F_REQUEST | NLM_F_ACK);
- 
- 	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE | DL_OPT_FLASH_FILE_NAME,
--				DL_OPT_FLASH_COMPONENT);
-+				DL_OPT_FLASH_COMPONENT | DL_OPT_FLASH_OVERWRITE);
- 	if (err)
- 		return err;
- 
--- 
-2.28.0.163.g6104cc2f0b60
-
+Please use one of the NLA_POLICY_**-ies, probably NLA_POLICY_MIN() ? 
+That's better for documenting, exporting for user space, and will also
+point the user space to the attribute in exack automatically.
