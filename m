@@ -2,99 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2E942338A3
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:04:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D29F32338DE
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:19:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730410AbgG3TEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 15:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
+        id S1730448AbgG3TT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 15:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726544AbgG3TEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:04:12 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B2AC061574;
-        Thu, 30 Jul 2020 12:04:12 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id m200so10837148ybf.10;
-        Thu, 30 Jul 2020 12:04:12 -0700 (PDT)
+        with ESMTP id S1730411AbgG3TT5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:19:57 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16994C061574
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 12:19:57 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id e5so7183563qth.5
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 12:19:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X5HUKfRMrtzs7dcM+5i3OnbYxJs7/ceslheaYcPXAhE=;
-        b=h8BVyPqMQwEw3kG67/klDfqXOtepNjPZC2j3hnwJAz8K2LPFK6eqaYvAeFHD9Gop3G
-         VdqVrAHyPOdRdaoLQ29mn4S1qyRrz5+EQOHi5Na2HeH/PiGQBzlv5B4qZqoOh30GW/G2
-         Kai0Q9hq429/TLmcU5SUdjR8F5aXNWTkW2g/vbuo+I3Id8KmRzcw1URULAxuEPQMaORl
-         /iX2I8LOK/t0oZru7b4tC5bXVxHlZAqeMr+j+P25N8DXqDVZX7Er65r4tIDb915L0/3F
-         cTubq7eLGwJM5LlrOhtkzu8dCvvglpoB8CEL/kbr7BXk5dX0iZAeM+vWF8NZE/MqxIi8
-         1CQQ==
+         :cc:content-transfer-encoding;
+        bh=o8Qcp6UYu/AwRpOfmT/2gGbG6QiB9KOv8ZsebKXGjxA=;
+        b=O71muXcbjS+AQhdrYp3rP/Oq3wA2x0Bshh7svkdi7T5qIqpFrB4DAla8m+jgG139WM
+         mu9h80gMcvvG3REpQ0xWeEBiLAEO9ouc7CHVvNy3LlbUO9w/VzRgVK7O0hesil0/uGPb
+         XM2dhjX4TfvhczKFQNkcZRnOyn93pHQ/sHrDaLahetyY9oeD814+JNlGB9G4410sjJpR
+         KiX4qdCJrtcUnuqbgHH/ZXql47zD/IdwPIth+qPs2VKdWBQp5JRO5u1lWW2ItF4OQ/+W
+         g4LhmLIkvKXHjxy4m37HYkEqJ0cM4kg2xxRFz3anmFWDZky7WUjuZ6xy09UgeL4rxttF
+         pb3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X5HUKfRMrtzs7dcM+5i3OnbYxJs7/ceslheaYcPXAhE=;
-        b=Cmbj/RPphD9HB5Gpf8aH5CgUZku62r6T3UiC8ILauVVUB7vrMqtJGpDYCmZhLtStUp
-         m9rZ6r63SYtbS+XLETh8zag5diH/LMpJ+/kCUug5FyrZHSdAIapW3AJWU9J5u8tzuv3Z
-         bW00RekElYvT8+6L77r62td7f5xFRUbvxl9W7J/nPET+5Ys9MuNOVv50/xCmUMYx75u1
-         NCeEFpPYTpnzh3nTf/GIYKZdIu6J448+F8ClMbwjTjxbd6y5ruXym3V2WBob+MPV+WlO
-         ZBxT+5CLu/hxNQ92veQEkR/yAAIZRyNgYavGOXonktPWbf4aFlLi5ZftrNxxXGlsOUTl
-         TBkw==
-X-Gm-Message-State: AOAM532+SfKaK3smpRMxodJTVIsdz6pZ9GJWbPWCloxOqfvWR35WUVTG
-        68MUV2Q3tquNez7x1HxtjiYlo1s4ykZGcPHGruHmmw==
-X-Google-Smtp-Source: ABdhPJzQMB6Rk7p5PYpdeoUXstHOLW6+Y8s/wuAuqWamheDI9P755t7CPMUZ5/4FiuncC6jfpZbPz4hYpk+1iixkDqY=
-X-Received: by 2002:a25:824a:: with SMTP id d10mr552970ybn.260.1596135851397;
- Thu, 30 Jul 2020 12:04:11 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=o8Qcp6UYu/AwRpOfmT/2gGbG6QiB9KOv8ZsebKXGjxA=;
+        b=nUR+g3C2bg2yDM7fi9o9CyLwztPw6fKW3ZqkDkPqfLuc1vo8TC1Zsa3XskuuWa77iv
+         hU/llukC5PUDSBJ71dfo44ER/3A2CqeWxNawJ4wdSkM7LGRXgjD3d3KI1DOpRHpd37tS
+         wnR3PaM0E1fo5ZZVw7WDw+0+eGPx1p12XpnIhUCC8Ag+DtopcPpwuuzl9Fpyx+TajCvX
+         CgBjn29OA2+gp/7IaVYgxugt3woDnAZ2TbLYbcCFPBh3xVKhf2Ivv9qKGvB5vWmi2Z/L
+         G1SjpSkkGC1MpCaV9K+FoTQ7/yTXJfYTdIW4LxiqSkicjs9uyLd3tgjA2nKWZpbZM5IE
+         PqkQ==
+X-Gm-Message-State: AOAM533SX5FJUYTKpEqbwmZREqH+VLdz31+NsAGFuGfLsabcDcvC2NG7
+        RVl6Z7e1Yk0fJkwuuA41ok4GtDZllfK6Px1uEpW5XQ==
+X-Google-Smtp-Source: ABdhPJxGY+3yiLfWMLQGFR+u0XpEd9XrA00TfNj19g9cW2Ub4rj5e+f6P4RueKWbKrI7OD2cX1nec7UeUiSPprga/hE=
+X-Received: by 2002:ac8:7609:: with SMTP id t9mr210248qtq.158.1596136795878;
+ Thu, 30 Jul 2020 12:19:55 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200729230520.693207-1-andriin@fb.com> <20200729230520.693207-2-andriin@fb.com>
- <E5C327CB-962D-46B9-9816-29169F62C4EF@fb.com>
-In-Reply-To: <E5C327CB-962D-46B9-9816-29169F62C4EF@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 30 Jul 2020 12:03:59 -0700
-Message-ID: <CAEf4BzZsYoBZjsSKgQ-+OYRCa=Xn1EVwmdjGM5FG5oZv7_9vkw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/5] bpf: add support for forced LINK_DETACH command
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+References: <0000000000006f179d05ab8e2cf2@google.com> <BYAPR11MB2632784BE3AD9F03C5C95263FF700@BYAPR11MB2632.namprd11.prod.outlook.com>
+ <87tuxqxhgq.fsf@intel.com> <CACT4Y+ZMvaJMiXikYCm-Xym8ddKDY0n-5=kwH7i2Hu-9uJW1kQ@mail.gmail.com>
+ <87pn8cyk2b.fsf@intel.com>
+In-Reply-To: <87pn8cyk2b.fsf@intel.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 30 Jul 2020 21:19:43 +0200
+Message-ID: <CACT4Y+ZY-JnawN5Tmeh0+EfbsXgcv11QDiE-Lh2t8Cc3L1OEXg@mail.gmail.com>
+Subject: =?UTF-8?B?UmU6IOWbnuWkjTogSU5GTzogcmN1IGRldGVjdGVkIHN0YWxsIGluIHRjX21vZGlmeV9xZA==?=
+        =?UTF-8?B?aXNj?=
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     "Zhang, Qiang" <Qiang.Zhang@windriver.com>,
+        syzbot <syzbot+9f78d5c664a8c33f4cce@syzkaller.appspotmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "fweisbec@gmail.com" <fweisbec@gmail.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 30, 2020 at 10:43 AM Song Liu <songliubraving@fb.com> wrote:
+On Thu, Jul 30, 2020 at 7:44 PM Vinicius Costa Gomes
+<vinicius.gomes@intel.com> wrote:
 >
+> Hi,
 >
+> Dmitry Vyukov <dvyukov@google.com> writes:
 >
-> > On Jul 29, 2020, at 4:05 PM, Andrii Nakryiko <andriin@fb.com> wrote:
+> > On Wed, Jul 29, 2020 at 9:13 PM Vinicius Costa Gomes
+> > <vinicius.gomes@intel.com> wrote:
+> >>
+> >> Hi,
+> >>
+> >> "Zhang, Qiang" <Qiang.Zhang@windriver.com> writes:
+> >>
+> >> > ________________________________________
+> >> > =E5=8F=91=E4=BB=B6=E4=BA=BA: linux-kernel-owner@vger.kernel.org <lin=
+ux-kernel-owner@vger.kernel.org> =E4=BB=A3=E8=A1=A8 syzbot <syzbot+9f78d5c6=
+64a8c33f4cce@syzkaller.appspotmail.com>
+> >> > =E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2020=E5=B9=B47=E6=9C=8829=E6=
+=97=A5 13:53
+> >> > =E6=94=B6=E4=BB=B6=E4=BA=BA: davem@davemloft.net; fweisbec@gmail.com=
+; jhs@mojatatu.com; jiri@resnulli.us; linux-kernel@vger.kernel.org; mingo@k=
+ernel.org; netdev@vger.kernel.org; syzkaller-bugs@googlegroups.com; tglx@li=
+nutronix.de; vinicius.gomes@intel.com; xiyou.wangcong@gmail.com
+> >> > =E4=B8=BB=E9=A2=98: INFO: rcu detected stall in tc_modify_qdisc
+> >> >
+> >> > Hello,
+> >> >
+> >> > syzbot found the following issue on:
+> >> >
+> >> > HEAD commit:    181964e6 fix a braino in cmsghdr_from_user_compat_to=
+_kern()
+> >> > git tree:       net
+> >> > console output: https://syzkaller.appspot.com/x/log.txt?x=3D12925e38=
+900000
+> >> > kernel config:  https://syzkaller.appspot.com/x/.config?x=3Df87a5e42=
+32fdb267
+> >> > dashboard link: https://syzkaller.appspot.com/bug?extid=3D9f78d5c664=
+a8c33f4cce
+> >> > compiler:       gcc (GCC) 10.1.0-syz 20200507
+> >> > syz repro:
+> >> > https://syzkaller.appspot.com/x/repro.syz?x=3D16587f8c900000
+> >>
+> >> It seems that syzkaller is generating an schedule with too small
+> >> intervals (3ns in this case) which causes a hrtimer busy-loop which
+> >> starves other kernel threads.
+> >>
+> >> We could put some limits on the interval when running in software mode=
+,
+> >> but I don't like this too much, because we are talking about users wit=
+h
+> >> CAP_NET_ADMIN and they have easier ways to do bad things to the system=
+.
 > >
-> > Add LINK_DETACH command to force-detach bpf_link without destroying it. It has
-> > the same behavior as auto-detaching of bpf_link due to cgroup dying for
-> > bpf_cgroup_link or net_device being destroyed for bpf_xdp_link. In such case,
-> > bpf_link is still a valid kernel object, but is defuncts and doesn't hold BPF
-> > program attached to corresponding BPF hook. This functionality allows users
-> > with enough access rights to manually force-detach attached bpf_link without
-> > killing respective owner process.
+> > Hi Vinicius,
 > >
-> > This patch implements LINK_DETACH for cgroup, xdp, and netns links, mostly
-> > re-using existing link release handling code.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > Could you explain why you don't like the argument if it's for CAP_NET_A=
+DMIN?
+> > Good code should check arguments regardless I think and it's useful to
+> > protect root from, say, programming bugs rather than kill the machine
+> > on any bug and misconfiguration. What am I missing?
 >
-> The code looks good to me. My only question is, do we need both
-> bpf_link_ops->detach and bpf_link_ops->release?
+> I admit that I am on the fence on that argument: do not let even root
+> crash the system (the point that my code is crashing the system gives
+> weight to this side) vs. root has great powers, they need to know what
+> they are doing.
+>
+> The argument that I used to convince myself was: root can easily create
+> a bunch of processes and give them the highest priority and do
+> effectively the same thing as this issue, so I went with a the "they
+> need to know what they are doing side".
+>
+> A bit more on the specifics here:
+>
+>   - Using a small interval size, is only a limitation of the taprio
+>   software mode, when using hardware offloads (which I think most users
+>   do), any interval size (supported by the hardware) can be used;
+>
+>   - Choosing a good lower limit for this seems kind of hard: something
+>   below 1us would never work well, I think, but things 1us < x < 100us
+>   will depend on the hardware/kernel config/system load, and this is the
+>   range includes "useful" values for many systems.
+>
+> Perhaps a middle ground would be to impose a limit based on the link
+> speed, the interval can never be smaller than the time it takes to send
+> the minimum ethernet frame (for 1G links this would be ~480ns, should be
+> enough to catch most programming mistakes). I am going to add this and
+> see how it looks like.
+>
+> Sorry for the brain dump :-)
+>
+> >
+> > Also are we talking about CAP_NET_ADMIN in a user ns as well
+> > (effectively nobody)?
+>
+> Just checked, we are talking about CAP_NET_ADMIN in user namespace as
+> well.
 
-I think so. release() is mandatory for final clean up, after the last
-FD was closed, so every type of bpf_link has to implement this.
-detach() is optional, though, and potentially can do different things
-than release(). It just so happens right now that three bpf_linkl
-types can re-use release as-is (with minimal change to netns release
-specifically for detach use case). So I think having two is better and
-more flexible.
-
->
-> Thanks,
-> Song
->
-> [...]
+OK, so this is not root/admin, this is just any user.
