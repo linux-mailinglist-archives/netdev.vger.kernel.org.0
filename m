@@ -2,177 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7781233472
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 16:30:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4B29233480
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 16:32:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729448AbgG3Oag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 10:30:36 -0400
-Received: from mail.as201155.net ([185.84.6.188]:25010 "EHLO mail.as201155.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726275AbgG3Oaf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 10:30:35 -0400
-Received: from smtps.newmedia-net.de ([2a05:a1c0:0:de::167]:52622 helo=webmail.newmedia-net.de)
-        by mail.as201155.net with esmtps (TLSv1:DHE-RSA-AES256-SHA:256)
-        (Exim 4.82_1-5b7a7c0-XX)
-        (envelope-from <s.gottschall@dd-wrt.com>)
-        id 1k19Zm-0001wq-2I; Thu, 30 Jul 2020 16:30:30 +0200
-X-CTCH-RefID: str=0001.0A782F23.5F22D986.0081,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=dd-wrt.com; s=mikd;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=T0sd7EsQIUd/MMcMZ9uiR5DKQFLVIhjXkc+q3lvkbMc=;
-        b=s+wXlJ1haCN6sI/MvTOFxpBVHbh6sTIKeqb+55ScjcKXASpG6KZvvbjHtK6p4Xu38GvDr5CNhBmUwPm4z8fneas3Zus8gQ8aaURZsbWhHiaSxkcbFa2oc+1vTfjm1a5dMo7TwxM7ePIAQDd7S919ALvqQNSb3C7eS0c4VlYsdtg=;
-Subject: Re: [PATCH] net: add support for threaded NAPI polling
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org
-Cc:     Hillf Danton <hdanton@sina.com>
-References: <20200729165058.83984-1-nbd@nbd.name>
- <866c7d83-868d-120e-f535-926c4cc9e615@gmail.com>
-From:   Sebastian Gottschall <s.gottschall@dd-wrt.com>
-Message-ID: <5aa0c26f-d3f1-b33f-a598-e4727d6f10f0@dd-wrt.com>
-Date:   Thu, 30 Jul 2020 16:30:28 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101
- Thunderbird/79.0
+        id S1729668AbgG3Obq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 10:31:46 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:45216 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729578AbgG3Obp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 10:31:45 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.64])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 3B8BB600D6;
+        Thu, 30 Jul 2020 14:31:45 +0000 (UTC)
+Received: from us4-mdac16-28.ut7.mdlocal (unknown [10.7.66.60])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 2A181200A4;
+        Thu, 30 Jul 2020 14:31:45 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.175])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A7F6322005B;
+        Thu, 30 Jul 2020 14:31:44 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 427087000A2;
+        Thu, 30 Jul 2020 14:31:44 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 30 Jul
+ 2020 15:31:38 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next 00/12] sfc: driver for EF100 family NICs, part 2
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+Message-ID: <abac4f27-7fac-2bd4-636b-4cfc401603ae@solarflare.com>
+Date:   Thu, 30 Jul 2020 15:31:35 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <866c7d83-868d-120e-f535-926c4cc9e615@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
-X-Received:  from [2a01:7700:8040:300:9ce9:cf1b:d735:dc62]
-        by webmail.newmedia-net.de with esmtpsa (TLSv1:AES128-SHA:128)
-        (Exim 4.72)
-        (envelope-from <s.gottschall@dd-wrt.com>)
-        id 1k19Zm-0001dK-DS; Thu, 30 Jul 2020 16:30:30 +0200
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25572.005
+X-TM-AS-Result: No-1.797600-8.000000-10
+X-TMASE-MatchedRID: ChT4X4IKJLrhp80oBol0K0hwlOfYeSqxqV3VmuIFNEsaV9cxC+J6t/WK
+        GThQ2qZNyZCMukEZBUIv/xyNTHf44VXKKbgrtyh88jbzfqNu/QTr3E41VlKsfS9kwp67RNMuyJN
+        a6DYLgM2XUzspP39qoDS5Jiy15YFyCKGbCJcIygaeAiCmPx4NwLTrdaH1ZWqC1kTfEkyaZdz6C0
+        ePs7A07VgO4hFamrGGX0jTPeVzxFyWyyAzWFpWu3vnIb3QXQEgZOCNEE6eOSV7TLrZ5xlqXijVS
+        WaPuVTTyW87KjGT4olLTBygj1Rtym/jGSEhw1ywfObqGK9JplminaV/dK0aEhK3Vty8oXtk2SsL
+        yY4gH4tVyvbTg/runA==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10-1.797600-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25572.005
+X-MDID: 1596119505-oaWxDsG_Rpb5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series implements the data path and various other functionality
+ for Xilinx/Solarflare EF100 NICs.
 
-Am 29.07.2020 um 19:44 schrieb Eric Dumazet:
->
-> On 7/29/20 9:50 AM, Felix Fietkau wrote:
->> For some drivers (especially 802.11 drivers), doing a lot of work in the NAPI
->> poll function does not perform well. Since NAPI poll is bound to the CPU it
->> was scheduled from, we can easily end up with a few very busy CPUs spending
->> most of their time in softirq/ksoftirqd and some idle ones.
->>
->> Introduce threaded NAPI for such drivers based on a workqueue. The API is the
->> same except for using netif_threaded_napi_add instead of netif_napi_add.
->>
->> In my tests with mt76 on MT7621 using threaded NAPI + a thread for tx scheduling
->> improves LAN->WLAN bridging throughput by 10-50%. Throughput without threaded
->> NAPI is wildly inconsistent, depending on the CPU that runs the tx scheduling
->> thread.
->>
->> With threaded NAPI, throughput seems stable and consistent (and higher than
->> the best results I got without it).
->>
->> Based on a patch by Hillf Danton
->>
->> Cc: Hillf Danton <hdanton@sina.com>
->> Signed-off-by: Felix Fietkau <nbd@nbd.name>
->> ---
->> Changes since RFC v2:
->> - fix unused but set variable reported by kbuild test robot
->>
->> Changes since RFC:
->> - disable softirq around threaded poll functions
->> - reuse most parts of napi_poll()
->> - fix re-schedule condition
->>
->>   include/linux/netdevice.h |  23 ++++++
->>   net/core/dev.c            | 162 ++++++++++++++++++++++++++------------
->>   2 files changed, 133 insertions(+), 52 deletions(-)
->>
->> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
->> index ac2cd3f49aba..3a39211c7598 100644
->> --- a/include/linux/netdevice.h
->> +++ b/include/linux/netdevice.h
->> @@ -347,6 +347,7 @@ struct napi_struct {
->>   	struct list_head	dev_list;
->>   	struct hlist_node	napi_hash_node;
->>   	unsigned int		napi_id;
->> +	struct work_struct	work;
->>   };
->>   
->>   enum {
->> @@ -357,6 +358,7 @@ enum {
->>   	NAPI_STATE_HASHED,	/* In NAPI hash (busy polling possible) */
->>   	NAPI_STATE_NO_BUSY_POLL,/* Do not add in napi_hash, no busy polling */
->>   	NAPI_STATE_IN_BUSY_POLL,/* sk_busy_loop() owns this NAPI */
->> +	NAPI_STATE_THREADED,	/* Use threaded NAPI */
->>   };
->>   
->>   enum {
->> @@ -367,6 +369,7 @@ enum {
->>   	NAPIF_STATE_HASHED	 = BIT(NAPI_STATE_HASHED),
->>   	NAPIF_STATE_NO_BUSY_POLL = BIT(NAPI_STATE_NO_BUSY_POLL),
->>   	NAPIF_STATE_IN_BUSY_POLL = BIT(NAPI_STATE_IN_BUSY_POLL),
->> +	NAPIF_STATE_THREADED	 = BIT(NAPI_STATE_THREADED),
->>   };
->>   
->>   enum gro_result {
->> @@ -2315,6 +2318,26 @@ static inline void *netdev_priv(const struct net_device *dev)
->>   void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
->>   		    int (*poll)(struct napi_struct *, int), int weight);
->>   
->> +/**
->> + *	netif_threaded_napi_add - initialize a NAPI context
->> + *	@dev:  network device
->> + *	@napi: NAPI context
->> + *	@poll: polling function
->> + *	@weight: default weight
->> + *
->> + * This variant of netif_napi_add() should be used from drivers using NAPI
->> + * with CPU intensive poll functions.
->> + * This will schedule polling from a high priority workqueue that
->> + */
->> +static inline void netif_threaded_napi_add(struct net_device *dev,
->> +					   struct napi_struct *napi,
->> +					   int (*poll)(struct napi_struct *, int),
->> +					   int weight)
->> +{
->> +	set_bit(NAPI_STATE_THREADED, &napi->state);
->> +	netif_napi_add(dev, napi, poll, weight);
->> +}
->> +
->>   /**
->>    *	netif_tx_napi_add - initialize a NAPI context
->>    *	@dev:  network device
->> diff --git a/net/core/dev.c b/net/core/dev.c
->> index 19f1abc26fcd..11b027f3a2b9 100644
->> --- a/net/core/dev.c
->> +++ b/net/core/dev.c
->> @@ -158,6 +158,7 @@ static DEFINE_SPINLOCK(offload_lock);
->>   struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
->>   struct list_head ptype_all __read_mostly;	/* Taps */
->>   static struct list_head offload_base __read_mostly;
->> +static struct workqueue_struct *napi_workq __read_mostly;
->>   
->>   static int netif_rx_internal(struct sk_buff *skb);
->>   static int call_netdevice_notifiers_info(unsigned long val,
->> @@ -6286,6 +6287,11 @@ void __napi_schedule(struct napi_struct *n)
->>   {
->>   	unsigned long flags;
->>   
->> +	if (test_bit(NAPI_STATE_THREADED, &n->state)) {
->> +		queue_work(napi_workq, &n->work);
->> +		return;
->> +	}
->> +
->
-> Where is the corresponding cancel_work_sync() or flush_work() at device dismantle ?
->
-> Just hoping the thread will eventually run seems optimistic to me.
->
->
-> Quite frankly, I do believe this STATE_THREADED status should be a generic NAPI attribute
-> that can be changed dynamically, at admin request, instead of having to change/recompile
-> a driver.
-thats not that easy. wifi devices do use dummy netdev devices. they are 
-not visible to sysfs and other administrative options.
-so changing it would just be possible if a special mac80211 based 
-control would be implemented for these drivers.
-for standard netdev devices it isnt a big thing to implement a 
-administrative control by sysfs (if you are talking about such a feature)
->
->
->
+Edward Cree (12):
+  sfc_ef100: check firmware version at start-of-day
+  sfc_ef100: fail the probe if NIC uses unsol_ev credits
+  sfc_ef100: read Design Parameters at probe time
+  sfc_ef100: TX path for EF100 NICs
+  sfc_ef100: RX filter table management and related gubbins
+  sfc_ef100: RX path for EF100
+  sfc_ef100: plumb in fini_dmaq
+  sfc_ef100: statistics gathering
+  sfc_ef100: functions for selftests
+  sfc_ef100: add ethtool ops and miscellaneous ndos
+  sfc_ef100: read pf_index at probe time
+  sfc_ef100: add nic-type for VFs, and bind to them
+
+ drivers/net/ethernet/sfc/Kconfig         |   1 +
+ drivers/net/ethernet/sfc/ef100.c         |   2 +
+ drivers/net/ethernet/sfc/ef100_ethtool.c |  44 ++
+ drivers/net/ethernet/sfc/ef100_netdev.c  |  20 +
+ drivers/net/ethernet/sfc/ef100_nic.c     | 643 +++++++++++++++++++++++
+ drivers/net/ethernet/sfc/ef100_nic.h     |  48 ++
+ drivers/net/ethernet/sfc/ef100_rx.c      | 150 +++++-
+ drivers/net/ethernet/sfc/ef100_rx.h      |   1 +
+ drivers/net/ethernet/sfc/ef100_tx.c      | 368 ++++++++++++-
+ drivers/net/ethernet/sfc/ef100_tx.h      |   4 +
+ drivers/net/ethernet/sfc/net_driver.h    |  21 +
+ drivers/net/ethernet/sfc/tx_common.c     |   1 +
+ 12 files changed, 1291 insertions(+), 12 deletions(-)
+
