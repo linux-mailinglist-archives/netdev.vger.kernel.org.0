@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 771C4233498
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 16:38:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5165523349B
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 16:39:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729635AbgG3Oi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 10:38:29 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:48536 "EHLO
+        id S1729561AbgG3Ojd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 10:39:33 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:55722 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726535AbgG3Oi3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 10:38:29 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 92BB960116;
-        Thu, 30 Jul 2020 14:38:28 +0000 (UTC)
-Received: from us4-mdac16-50.ut7.mdlocal (unknown [10.7.66.17])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 76485800BE;
-        Thu, 30 Jul 2020 14:38:28 +0000 (UTC)
+        by vger.kernel.org with ESMTP id S1726535AbgG3Ojc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 10:39:32 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.61])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id DC9BD60056;
+        Thu, 30 Jul 2020 14:39:30 +0000 (UTC)
+Received: from us4-mdac16-25.ut7.mdlocal (unknown [10.7.65.251])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 25B21801A6;
+        Thu, 30 Jul 2020 14:39:14 +0000 (UTC)
 X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.198])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E5674280050;
-        Thu, 30 Jul 2020 14:38:27 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.33])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9825780094;
+        Thu, 30 Jul 2020 14:39:03 +0000 (UTC)
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 7EBFB80080;
-        Thu, 30 Jul 2020 14:38:27 +0000 (UTC)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CD692A800B9;
+        Thu, 30 Jul 2020 14:39:02 +0000 (UTC)
 Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
  (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 30 Jul
- 2020 15:38:07 +0100
+ 2020 15:38:34 +0100
 From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 07/12] sfc_ef100: plumb in fini_dmaq
+Subject: [PATCH net-next 08/12] sfc_ef100: statistics gathering
 To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>
 References: <abac4f27-7fac-2bd4-636b-4cfc401603ae@solarflare.com>
-Message-ID: <0b730614-a291-735f-9f3d-600846856d4d@solarflare.com>
-Date:   Thu, 30 Jul 2020 15:38:03 +0100
+Message-ID: <aa432cce-7376-129b-dff3-48def9c52945@solarflare.com>
+Date:   Thu, 30 Jul 2020 15:38:32 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -47,40 +47,311 @@ X-Originating-IP: [10.17.20.203]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25572.005
-X-TM-AS-Result: No-1.026700-8.000000-10
-X-TMASE-MatchedRID: K3RCjmPu4DbcQUtYchmLP2XaK3KHx/xpeouvej40T4gd0WOKRkwsh3lo
-        OvA4aBJJrdoLblq9S5ruFC9g00HQc3FnJN0+hJldx5sgyUhLCNswA8NfeYPFBi2QO02vY1BNo8W
-        MkQWv6iUD0yuKrQIMCCAtDqHg/4Qm0C1sQRfQzEHEQdG7H66TyJ8TMnmE+d0ZNcsyxcdDlXNTX/
-        qgGxvQImUkdz9qc70etr5eSN+REiwWtWyVrIrSGTdsqgXbjujpSibg60KmWjXOypgE4O2SwR7Gq
-        TjEMMFQGhBWFwMpQfUlEjOZsGnBpCAkKbrKkYtno6XmhFfKEUTDyDYcE1wXmQ==
+X-TM-AS-Result: No-1.852500-8.000000-10
+X-TMASE-MatchedRID: 5EJ+L1ocBmGWY/h1I6tB9uI50E6g+As0Msovp/h9OdFjLp8Cm8vwFwoe
+        RRhCZWIBnvBWG5GT8Jdw5T4Iaj538mJZXQNDzktSGjzBgnFZvQ6Siza26cvwNFIxScKXZnK0qhy
+        W5ZNFJA5Fleyg8cB7ZnFelCTBDfkGV16ctsfQT/8+NrfDUTEXxD2ZWRUZEDj5f5tFqTvENXu+mF
+        UWJD5GAnV9M9tBZb9b+hmED59HKaEwaD7CCdj96UNsgQWRiIpMo5KBmcJozDbfWY93w59GDgJjL
+        DMzzZnzPaLEIfsP6BlAZ7LaEEV3JnqqAs/pRzaGVnzlQiaE21rdhJoeWdkvzV7OLL/a8shjKJmm
+        yOSQ0ruLUdMGIz6m9OGl87K9Bdw4xB4g7OBWY2x+NQIFduF53zk4wzLIKf/BX1Ahz57P/j5E0vA
+        S+f87pLtrdYL/xU2bj/WhJQN4WWflaM4oGVf1NI0JVVcEm48nUrOQOil6Z+zJrP9MePs1nKPFjJ
+        EFr+olA9Mriq0CDAg9wJeM2pSaRVgXepbcl7r7C6jxpkohyAuukMLk0QN/5Bxtbv36L3L/bgIuk
+        JQFuSwtdkFF9HUGEW1h5jRwdKOnVz6nqIuH/ypbvIFN5TkT0z3T0yr6Od51McKpXuu/1jVAMwW4
+        rY/0WO2hZq8RbsdETdnyMokJ1HTiaosWHm9+bH7cGd19dSFd
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10-1.026700-8.000000
+X-TMASE-Result: 10--1.852500-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25572.005
-X-MDID: 1596119908-vxKu-tjg6WmF
+X-MDID: 1596119945-8nbVy8ylpBGh
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bring down the TX and RX queues at ifdown, so that we can then fini the
- EVQs (otherwise the MC would return EBUSY because they're still in use).
+MAC stats work much the same as on EF10, with a periodic DMA to a region
+ specified via an MCDI.
 
 Signed-off-by: Edward Cree <ecree@solarflare.com>
 ---
- drivers/net/ethernet/sfc/ef100_nic.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/sfc/ef100_netdev.c |   6 +
+ drivers/net/ethernet/sfc/ef100_nic.c    | 168 ++++++++++++++++++++++++
+ drivers/net/ethernet/sfc/ef100_nic.h    |  41 ++++++
+ 3 files changed, 215 insertions(+)
 
+diff --git a/drivers/net/ethernet/sfc/ef100_netdev.c b/drivers/net/ethernet/sfc/ef100_netdev.c
+index 66ffb53e20a8..3ee000944a20 100644
+--- a/drivers/net/ethernet/sfc/ef100_netdev.c
++++ b/drivers/net/ethernet/sfc/ef100_netdev.c
+@@ -87,6 +87,7 @@ static int ef100_net_stop(struct net_device *net_dev)
+ 
+ 	netif_stop_queue(net_dev);
+ 	efx_stop_all(efx);
++	efx_mcdi_mac_fini_stats(efx);
+ 	efx_disable_interrupts(efx);
+ 	efx_clear_interrupt_affinity(efx);
+ 	efx_nic_fini_interrupt(efx);
+@@ -158,6 +159,10 @@ static int ef100_net_open(struct net_device *net_dev)
+ 	 */
+ 	(void) efx_mcdi_poll_reboot(efx);
+ 
++	rc = efx_mcdi_mac_init_stats(efx);
++	if (rc)
++		goto fail;
++
+ 	efx_start_all(efx);
+ 
+ 	/* Link state detection is normally event-driven; we have
+@@ -213,6 +218,7 @@ static const struct net_device_ops ef100_netdev_ops = {
+ 	.ndo_open               = ef100_net_open,
+ 	.ndo_stop               = ef100_net_stop,
+ 	.ndo_start_xmit         = ef100_hard_start_xmit,
++	.ndo_get_stats64        = efx_net_stats,
+ 	.ndo_validate_addr      = eth_validate_addr,
+ 	.ndo_set_rx_mode        = efx_set_rx_mode, /* Lookout */
+ 	.ndo_get_phys_port_id   = efx_get_phys_port_id,
 diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-index 5f4a5fe09c13..73867816196f 100644
+index 73867816196f..424a0a2065e4 100644
 --- a/drivers/net/ethernet/sfc/ef100_nic.c
 +++ b/drivers/net/ethernet/sfc/ef100_nic.c
-@@ -528,6 +528,7 @@ const struct efx_nic_type ef100_pf_nic_type = {
- 	.rx_remove = efx_mcdi_rx_remove,
- 	.rx_write = ef100_rx_write,
- 	.rx_packet = __ef100_rx_packet,
-+	.fini_dmaq = efx_fini_dmaq,
- 	.max_rx_ip_filters = EFX_MCDI_FILTER_TBL_ROWS,
- 	.filter_table_probe = ef100_filter_table_up,
- 	.filter_table_restore = efx_mcdi_filter_table_restore,
+@@ -453,6 +453,169 @@ static int ef100_reset(struct efx_nic *efx, enum reset_type reset_type)
+ 	return rc;
+ }
+ 
++#define EF100_COMMON_STAT_MASK ((1ULL << EF100_STAT_port_tx_bytes) |		\
++				(1ULL << EF100_STAT_port_tx_packets) |		\
++				(1ULL << EF100_STAT_port_tx_pause) |		\
++				(1ULL << EF100_STAT_port_tx_unicast) |		\
++				(1ULL << EF100_STAT_port_tx_multicast) |	\
++				(1ULL << EF100_STAT_port_tx_broadcast) |	\
++				(1ULL << EF100_STAT_port_tx_lt64) |		\
++				(1ULL << EF100_STAT_port_tx_64) |		\
++				(1ULL << EF100_STAT_port_tx_65_to_127) |	\
++				(1ULL << EF100_STAT_port_tx_128_to_255) |	\
++				(1ULL << EF100_STAT_port_tx_256_to_511) |	\
++				(1ULL << EF100_STAT_port_tx_512_to_1023) |	\
++				(1ULL << EF100_STAT_port_tx_1024_to_15xx) |	\
++				(1ULL << EF100_STAT_port_tx_15xx_to_jumbo) |	\
++				(1ULL << EF100_STAT_port_rx_bytes) |		\
++				(1ULL << EF100_STAT_port_rx_packets) |		\
++				(1ULL << EF100_STAT_port_rx_good) |		\
++				(1ULL << EF100_STAT_port_rx_bad) |		\
++				(1ULL << EF100_STAT_port_rx_pause) |		\
++				(1ULL << EF100_STAT_port_rx_unicast) |		\
++				(1ULL << EF100_STAT_port_rx_multicast) |	\
++				(1ULL << EF100_STAT_port_rx_broadcast) |	\
++				(1ULL << EF100_STAT_port_rx_lt64) |		\
++				(1ULL << EF100_STAT_port_rx_64) |		\
++				(1ULL << EF100_STAT_port_rx_65_to_127) |	\
++				(1ULL << EF100_STAT_port_rx_128_to_255) |	\
++				(1ULL << EF100_STAT_port_rx_256_to_511) |	\
++				(1ULL << EF100_STAT_port_rx_512_to_1023) |	\
++				(1ULL << EF100_STAT_port_rx_1024_to_15xx) |	\
++				(1ULL << EF100_STAT_port_rx_15xx_to_jumbo) |	\
++				(1ULL << EF100_STAT_port_rx_gtjumbo) |		\
++				(1ULL << EF100_STAT_port_rx_bad_gtjumbo) |	\
++				(1ULL << EF100_STAT_port_rx_align_error) |	\
++				(1ULL << EF100_STAT_port_rx_length_error) |	\
++				(1ULL << EF100_STAT_port_rx_overflow) |		\
++				(1ULL << EF100_STAT_port_rx_nodesc_drops) |	\
++				(1ULL << GENERIC_STAT_rx_nodesc_trunc) |	\
++				(1ULL << GENERIC_STAT_rx_noskb_drops))
++
++#define EF100_DMA_STAT(ext_name, mcdi_name)			\
++	[EF100_STAT_ ## ext_name] =				\
++	{ #ext_name, 64, 8 * MC_CMD_MAC_ ## mcdi_name }
++
++static const struct efx_hw_stat_desc ef100_stat_desc[EF100_STAT_COUNT] = {
++	EF100_DMA_STAT(port_tx_bytes, TX_BYTES),
++	EF100_DMA_STAT(port_tx_packets, TX_PKTS),
++	EF100_DMA_STAT(port_tx_pause, TX_PAUSE_PKTS),
++	EF100_DMA_STAT(port_tx_unicast, TX_UNICAST_PKTS),
++	EF100_DMA_STAT(port_tx_multicast, TX_MULTICAST_PKTS),
++	EF100_DMA_STAT(port_tx_broadcast, TX_BROADCAST_PKTS),
++	EF100_DMA_STAT(port_tx_lt64, TX_LT64_PKTS),
++	EF100_DMA_STAT(port_tx_64, TX_64_PKTS),
++	EF100_DMA_STAT(port_tx_65_to_127, TX_65_TO_127_PKTS),
++	EF100_DMA_STAT(port_tx_128_to_255, TX_128_TO_255_PKTS),
++	EF100_DMA_STAT(port_tx_256_to_511, TX_256_TO_511_PKTS),
++	EF100_DMA_STAT(port_tx_512_to_1023, TX_512_TO_1023_PKTS),
++	EF100_DMA_STAT(port_tx_1024_to_15xx, TX_1024_TO_15XX_PKTS),
++	EF100_DMA_STAT(port_tx_15xx_to_jumbo, TX_15XX_TO_JUMBO_PKTS),
++	EF100_DMA_STAT(port_rx_bytes, RX_BYTES),
++	EF100_DMA_STAT(port_rx_packets, RX_PKTS),
++	EF100_DMA_STAT(port_rx_good, RX_GOOD_PKTS),
++	EF100_DMA_STAT(port_rx_bad, RX_BAD_FCS_PKTS),
++	EF100_DMA_STAT(port_rx_pause, RX_PAUSE_PKTS),
++	EF100_DMA_STAT(port_rx_unicast, RX_UNICAST_PKTS),
++	EF100_DMA_STAT(port_rx_multicast, RX_MULTICAST_PKTS),
++	EF100_DMA_STAT(port_rx_broadcast, RX_BROADCAST_PKTS),
++	EF100_DMA_STAT(port_rx_lt64, RX_UNDERSIZE_PKTS),
++	EF100_DMA_STAT(port_rx_64, RX_64_PKTS),
++	EF100_DMA_STAT(port_rx_65_to_127, RX_65_TO_127_PKTS),
++	EF100_DMA_STAT(port_rx_128_to_255, RX_128_TO_255_PKTS),
++	EF100_DMA_STAT(port_rx_256_to_511, RX_256_TO_511_PKTS),
++	EF100_DMA_STAT(port_rx_512_to_1023, RX_512_TO_1023_PKTS),
++	EF100_DMA_STAT(port_rx_1024_to_15xx, RX_1024_TO_15XX_PKTS),
++	EF100_DMA_STAT(port_rx_15xx_to_jumbo, RX_15XX_TO_JUMBO_PKTS),
++	EF100_DMA_STAT(port_rx_gtjumbo, RX_GTJUMBO_PKTS),
++	EF100_DMA_STAT(port_rx_bad_gtjumbo, RX_JABBER_PKTS),
++	EF100_DMA_STAT(port_rx_align_error, RX_ALIGN_ERROR_PKTS),
++	EF100_DMA_STAT(port_rx_length_error, RX_LENGTH_ERROR_PKTS),
++	EF100_DMA_STAT(port_rx_overflow, RX_OVERFLOW_PKTS),
++	EF100_DMA_STAT(port_rx_nodesc_drops, RX_NODESC_DROPS),
++	EFX_GENERIC_SW_STAT(rx_nodesc_trunc),
++	EFX_GENERIC_SW_STAT(rx_noskb_drops),
++};
++
++static void ef100_get_stat_mask(struct efx_nic *efx, unsigned long *mask)
++{
++	*mask = EF100_COMMON_STAT_MASK;
++}
++
++static size_t ef100_describe_stats(struct efx_nic *efx, u8 *names)
++{
++	DECLARE_BITMAP(mask, EF100_STAT_COUNT);
++
++	ef100_get_stat_mask(efx, mask);
++	return efx_nic_describe_stats(ef100_stat_desc, EF100_STAT_COUNT,
++				      mask, names);
++}
++
++static size_t ef100_update_stats_common(struct efx_nic *efx, u64 *full_stats,
++					struct rtnl_link_stats64 *core_stats)
++{
++	struct ef100_nic_data *nic_data = efx->nic_data;
++	DECLARE_BITMAP(mask, EF100_STAT_COUNT);
++	size_t stats_count = 0, index;
++	u64 *stats = nic_data->stats;
++
++	ef100_get_stat_mask(efx, mask);
++
++	if (full_stats) {
++		for_each_set_bit(index, mask, EF100_STAT_COUNT) {
++			if (ef100_stat_desc[index].name) {
++				*full_stats++ = stats[index];
++				++stats_count;
++			}
++		}
++	}
++
++	if (!core_stats)
++		return stats_count;
++
++	core_stats->rx_packets = stats[EF100_STAT_port_rx_packets];
++	core_stats->tx_packets = stats[EF100_STAT_port_tx_packets];
++	core_stats->rx_bytes = stats[EF100_STAT_port_rx_bytes];
++	core_stats->tx_bytes = stats[EF100_STAT_port_tx_bytes];
++	core_stats->rx_dropped = stats[EF100_STAT_port_rx_nodesc_drops] +
++				 stats[GENERIC_STAT_rx_nodesc_trunc] +
++				 stats[GENERIC_STAT_rx_noskb_drops];
++	core_stats->multicast = stats[EF100_STAT_port_rx_multicast];
++	core_stats->rx_length_errors =
++			stats[EF100_STAT_port_rx_gtjumbo] +
++			stats[EF100_STAT_port_rx_length_error];
++	core_stats->rx_crc_errors = stats[EF100_STAT_port_rx_bad];
++	core_stats->rx_frame_errors =
++			stats[EF100_STAT_port_rx_align_error];
++	core_stats->rx_fifo_errors = stats[EF100_STAT_port_rx_overflow];
++	core_stats->rx_errors = (core_stats->rx_length_errors +
++				 core_stats->rx_crc_errors +
++				 core_stats->rx_frame_errors);
++
++	return stats_count;
++}
++
++static size_t ef100_update_stats(struct efx_nic *efx,
++				 u64 *full_stats,
++				 struct rtnl_link_stats64 *core_stats)
++{
++	struct ef100_nic_data *nic_data = efx->nic_data;
++	DECLARE_BITMAP(mask, EF100_STAT_COUNT);
++	__le64 *mc_stats = kmalloc(efx->num_mac_stats * sizeof(__le64),
++				   GFP_ATOMIC);
++	u64 *stats = nic_data->stats;
++
++	ef100_get_stat_mask(efx, mask);
++
++	efx_nic_copy_stats(efx, mc_stats);
++	efx_nic_update_stats(ef100_stat_desc, EF100_STAT_COUNT, mask,
++			     stats, mc_stats, false);
++
++	kfree(mc_stats);
++
++	return ef100_update_stats_common(efx, full_stats, core_stats);
++}
++
+ static int efx_ef100_get_phys_port_id(struct efx_nic *efx,
+ 				      struct netdev_phys_item_id *ppid)
+ {
+@@ -555,6 +718,11 @@ const struct efx_nic_type ef100_pf_nic_type = {
+ 	.rx_restore_rss_contexts = efx_mcdi_rx_restore_rss_contexts,
+ 
+ 	.reconfigure_mac = ef100_reconfigure_mac,
++	.describe_stats = ef100_describe_stats,
++	.start_stats = efx_mcdi_mac_start_stats,
++	.update_stats = ef100_update_stats,
++	.pull_stats = efx_mcdi_mac_pull_stats,
++	.stop_stats = efx_mcdi_mac_stop_stats,
+ 
+ 	/* Per-type bar/size configuration not used on ef100. Location of
+ 	 * registers is defined by extended capabilities.
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.h b/drivers/net/ethernet/sfc/ef100_nic.h
+index c8816bc6ae78..7c2d37490074 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.h
++++ b/drivers/net/ethernet/sfc/ef100_nic.h
+@@ -17,6 +17,46 @@ extern const struct efx_nic_type ef100_pf_nic_type;
+ int ef100_probe_pf(struct efx_nic *efx);
+ void ef100_remove(struct efx_nic *efx);
+ 
++enum {
++	EF100_STAT_port_tx_bytes = GENERIC_STAT_COUNT,
++	EF100_STAT_port_tx_packets,
++	EF100_STAT_port_tx_pause,
++	EF100_STAT_port_tx_unicast,
++	EF100_STAT_port_tx_multicast,
++	EF100_STAT_port_tx_broadcast,
++	EF100_STAT_port_tx_lt64,
++	EF100_STAT_port_tx_64,
++	EF100_STAT_port_tx_65_to_127,
++	EF100_STAT_port_tx_128_to_255,
++	EF100_STAT_port_tx_256_to_511,
++	EF100_STAT_port_tx_512_to_1023,
++	EF100_STAT_port_tx_1024_to_15xx,
++	EF100_STAT_port_tx_15xx_to_jumbo,
++	EF100_STAT_port_rx_bytes,
++	EF100_STAT_port_rx_packets,
++	EF100_STAT_port_rx_good,
++	EF100_STAT_port_rx_bad,
++	EF100_STAT_port_rx_pause,
++	EF100_STAT_port_rx_unicast,
++	EF100_STAT_port_rx_multicast,
++	EF100_STAT_port_rx_broadcast,
++	EF100_STAT_port_rx_lt64,
++	EF100_STAT_port_rx_64,
++	EF100_STAT_port_rx_65_to_127,
++	EF100_STAT_port_rx_128_to_255,
++	EF100_STAT_port_rx_256_to_511,
++	EF100_STAT_port_rx_512_to_1023,
++	EF100_STAT_port_rx_1024_to_15xx,
++	EF100_STAT_port_rx_15xx_to_jumbo,
++	EF100_STAT_port_rx_gtjumbo,
++	EF100_STAT_port_rx_bad_gtjumbo,
++	EF100_STAT_port_rx_align_error,
++	EF100_STAT_port_rx_length_error,
++	EF100_STAT_port_rx_overflow,
++	EF100_STAT_port_rx_nodesc_drops,
++	EF100_STAT_COUNT
++};
++
+ struct ef100_nic_data {
+ 	struct efx_nic *efx;
+ 	struct efx_buffer mcdi_buf;
+@@ -26,6 +66,7 @@ struct ef100_nic_data {
+ 	u16 warm_boot_count;
+ 	u8 port_id[ETH_ALEN];
+ 	DECLARE_BITMAP(evq_phases, EFX_MAX_CHANNELS);
++	u64 stats[EF100_STAT_COUNT];
+ 	u16 tso_max_hdr_len;
+ 	u16 tso_max_payload_num_segs;
+ 	u16 tso_max_frames;
 
