@@ -2,107 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6739D23390C
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:30:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF3EF233910
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730521AbgG3TaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 15:30:09 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:34538 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726581AbgG3TaH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:30:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596137407;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=Zo62zBr05G4i/w6uOCrF5bcIwehfjUuSBLT3HlEcuYQ=;
-        b=Ezxbxa9XNbsqgIwto1nIFCZd7eA2QQNfmnF67HzrXSniqzpiI4iI+Ck+Q8bClbt9JQer15
-        VzrtM5Z+Mm5RVXnM5PHw+Ha7YgiYZDYXYMaRd9bPX1GHmEKrfzl+8J47eHNop237+U1HyV
-        wgwC/zeTl4Fc1ULLo24le0uGEcCkh38=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-249-mQ5qaVkdM8SlSjJYLqgsBg-1; Thu, 30 Jul 2020 15:30:04 -0400
-X-MC-Unique: mQ5qaVkdM8SlSjJYLqgsBg-1
-Received: by mail-wr1-f70.google.com with SMTP id r29so3967955wrr.10
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 12:30:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Zo62zBr05G4i/w6uOCrF5bcIwehfjUuSBLT3HlEcuYQ=;
-        b=UE32gKVpPmqfdONlO/xqTDg3C80Mgiv6PNyHP/008HF6fLBv/1FOmwLjS87brSllKP
-         5cMAC0tF6fJlJROHH3jRDJxmTdDa7ZO4hdRzXItoO1X6HFjYTSrLOASJDdyFOl7n2tmM
-         gJCpU3as7ogEfPRGI3w9yndeEqvid4biLmR3Ujbr/eEvykpdb8/EzDFT0FQy6pEaxu7q
-         G71QZvEybtboz/EGJZECwZ+oBke3d3hod63JojGAuUUK7hGK2MKpFM0Fe6kFBGvibw69
-         KWeQnLdfNroFFcpZcWwyoTmEJCArypFDdIl9LuARP/8hc3WW+dTnBQyWYf12eRdha2xb
-         2x9Q==
-X-Gm-Message-State: AOAM5329QbG3IM4CagQRk0plw3oGYbBQ4uyFqC2jLUjLR1EtNADY52qK
-        iQ0nO5fz3J7rSf/qo43lkls7YYhwMgG2VBGME3GZb70iXknR1BU7iS1S5kYuYv/IZ6StBSjfFJt
-        8l1LiXlfoRlEHafGa
-X-Received: by 2002:a5d:538a:: with SMTP id d10mr267398wrv.280.1596137403065;
-        Thu, 30 Jul 2020 12:30:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxM38R/gaJ4B9lHJnwY7CoXgiuKGr1JOva2N2K51sHps4St8QHQsZSys7gU+zLzyFwcYWboVQ==
-X-Received: by 2002:a5d:538a:: with SMTP id d10mr267372wrv.280.1596137402764;
-        Thu, 30 Jul 2020 12:30:02 -0700 (PDT)
-Received: from redhat.com (bzq-79-179-105-63.red.bezeqint.net. [79.179.105.63])
-        by smtp.gmail.com with ESMTPSA id w64sm9081104wmb.26.2020.07.30.12.29.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jul 2020 12:30:01 -0700 (PDT)
-Date:   Thu, 30 Jul 2020 15:29:58 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alexander.h.duyck@linux.intel.com, chenweilong@huawei.com,
-        david@redhat.com, jasowang@redhat.com, mst@redhat.com,
-        rdunlap@infradead.org, stable@vger.kernel.org, wu000273@umn.edu
-Subject: [GIT PULL] virtio, qemu_fw: bugfixes
-Message-ID: <20200730152958-mutt-send-email-mst@kernel.org>
+        id S1730547AbgG3TaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 15:30:15 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:53710 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730497AbgG3TaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:30:14 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06UJR3XR008264;
+        Thu, 30 Jul 2020 19:30:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=MYB52dScwZ/YBoMJOfRh65nbt7ONDs6/VLbB0Qsq0fc=;
+ b=XLRFex85LtNCdTDAA7zB9spn+lHdz8yywS6/YV+AjFb+6CrgVPg02x0RTerQJrzla9lS
+ YSXIlriNxsjKlhe7G0qtfRHMpDROWqBnI3Z/wk3r6RBWlq06lFB3LuB0/Jk19gOXTOhO
+ AwMi+mshxlbtbJjDtSasSEDGGVseGyInn7v2M2HnegKS9hk1IBUX9uOpUxCFDu8RARe6
+ IeyAcq1c4WV6LXPhmjg1pTMiJn2JFAdv73pY1CnrRolipzJv8wNWZJfAPlSY6oGV4xZc
+ 87aJxUk3H0eIN77JwJustCdPW1YHRdW4dH/F/LuFuKjvJ21C+92oV56WUejcvD+vuQLt Pw== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2130.oracle.com with ESMTP id 32hu1jnkuy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 30 Jul 2020 19:30:04 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06UJSgGP119594;
+        Thu, 30 Jul 2020 19:30:03 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 32hu5xbn6c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 30 Jul 2020 19:30:03 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 06UJSh0p119640;
+        Thu, 30 Jul 2020 19:30:03 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 32hu5xbmyp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 30 Jul 2020 19:30:03 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 06UJU19s023130;
+        Thu, 30 Jul 2020 19:30:01 GMT
+Received: from dhcp-10-159-232-234.vpn.oracle.com (/10.159.232.234)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 30 Jul 2020 12:30:01 -0700
+Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
+ in rds_notify_queue_get()
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+References: <20200730192026.110246-1-yepeilin.cs@gmail.com>
+From:   "santosh.shilimkar@oracle.com" <santosh.shilimkar@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <2b21c0e4-2783-74f6-313b-9f6cb17c545a@oracle.com>
+Date:   Thu, 30 Jul 2020 12:29:58 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+In-Reply-To: <20200730192026.110246-1-yepeilin.cs@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9698 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 clxscore=1011
+ malwarescore=0 spamscore=0 suspectscore=0 bulkscore=0 priorityscore=1501
+ phishscore=0 mlxlogscore=999 lowpriorityscore=0 impostorscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2007300134
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 92ed301919932f777713b9172e525674157e983d:
-
-  Linux 5.8-rc7 (2020-07-26 14:14:06 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to a96b0d061d476093cf86ca1c2de06fc57163588d:
-
-  virtio-mem: Fix build error due to improper use 'select' (2020-07-30 11:28:17 -0400)
-
-----------------------------------------------------------------
-virtio, qemu_fw: bugfixes
-
-A couple of last minute bugfixes.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Alexander Duyck (1):
-      virtio-balloon: Document byte ordering of poison_val
-
-Michael S. Tsirkin (2):
-      vhost/scsi: fix up req type endian-ness
-      virtio_balloon: fix up endian-ness for free cmd id
-
-Qiushi Wu (1):
-      firmware: Fix a reference count leak.
-
-Weilong Chen (1):
-      virtio-mem: Fix build error due to improper use 'select'
-
- drivers/firmware/qemu_fw_cfg.c  |  7 ++++---
- drivers/vhost/scsi.c            |  2 +-
- drivers/virtio/Kconfig          |  2 +-
- drivers/virtio/virtio_balloon.c | 11 ++++++++++-
- 4 files changed, 16 insertions(+), 6 deletions(-)
-
+On 7/30/20 12:20 PM, Peilin Ye wrote:
+> rds_notify_queue_get() is potentially copying uninitialized kernel stack
+> memory to userspace since the compiler may leave a 4-byte hole at the end
+> of `cmsg`.
+> 
+> In 2016 we tried to fix this issue by doing `= { 0 };` on `cmsg`, which
+> unfortunately does not always initialize that 4-byte hole. Fix it by using
+> memset() instead.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: f037590fff30 ("rds: fix a leak of kernel memory")
+> Fixes: bdbe6fbc6a2f ("RDS: recv.c")
+> Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
+> ---
+> Note: the "real" copy_to_user() happens in put_cmsg(), where
+> `cmlen - sizeof(*cm)` equals to `sizeof(cmsg)`.
+> 
+> Reference: https://lwn.net/Articles/417989/
+> 
+> $ pahole -C "rds_rdma_notify" net/rds/recv.o
+> struct rds_rdma_notify {
+> 	__u64                      user_token;           /*     0     8 */
+> 	__s32                      status;               /*     8     4 */
+> 
+> 	/* size: 16, cachelines: 1, members: 2 */
+> 	/* padding: 4 */
+> 	/* last cacheline: 16 bytes */
+> };
+> 
+>   net/rds/recv.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+Looks good.
+FWIW,
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
