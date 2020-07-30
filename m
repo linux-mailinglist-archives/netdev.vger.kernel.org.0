@@ -2,104 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B4EF233917
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:32:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64CC5233918
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:32:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730562AbgG3TcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 15:32:05 -0400
-Received: from mx2.suse.de ([195.135.220.15]:47854 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728616AbgG3TcE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 15:32:04 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id EC239AFD4;
-        Thu, 30 Jul 2020 19:32:15 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 40C94604C2; Thu, 30 Jul 2020 21:32:03 +0200 (CEST)
-Date:   Thu, 30 Jul 2020 21:32:03 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: Re: [ethtool v2 2/2] ethtool: use "Not reported" when no FEC modes
- are provided
-Message-ID: <20200730193203.2ou4wz4net47mc6d@lion.mk-sys.cz>
-References: <20200727224937.9185-1-jacob.e.keller@intel.com>
- <20200727224937.9185-2-jacob.e.keller@intel.com>
+        id S1730475AbgG3Tct (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 15:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726853AbgG3Tcs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:32:48 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94654C061574
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 12:32:48 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id u10so5591230plr.7
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 12:32:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=AAt8zgFXQyxsjPv4JL8VqdIponIe0JaRegcmCycE6Qo=;
+        b=IiDTe2c84yrqxwfHi7YsVPBHhSl5DD7o3VhX+ZOg922Tj3+H/xaZjzNdeyBwv6iPZC
+         Vz4Abvjpu9sfcB7B/zWrvKDGKMIrgSxL/1OFW+/om0U2uOxDjEuTqwd/hvhg9IaDVMoc
+         Oj4h4K3Zcww5CaYqOsGdKjx51xb0h65JQkp4nQEutBKQdc1xTOGpRbhka1BlDkfZXRd1
+         IRaO/Pr4P36KzfTPzo/5R/EuvQE80Jnu4ZZqVsyt7//FOLTmudhJxqlhe57w2IMjDzNy
+         1vPMu3ge4BO8Tv1kHrzq4AIvx2zEqfs+1/mjcApkjXRM43JRXVnmloN0vad/OyQ5c8mG
+         /q0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=AAt8zgFXQyxsjPv4JL8VqdIponIe0JaRegcmCycE6Qo=;
+        b=bC5kJ4WKsg3jRDAeJJUyRIXPTb12/e5DXb2UW7Wz8fPXkEUKuOPiTrcj/LEPW70B1W
+         ohtj7m9BUiqycaRVxdk8pF6LCn3vcBXkMgmUR79RYbANRg485laYvHPw7Xj4MfXbhTkZ
+         587Ock4kQPmqI0M/H8zAW6jLQViE8dmL6AGXeOYdICq5VN32Jqh2qJZONiacC6mwOhiT
+         0zZhnZRKjIN2lhZIBeERd7d4nZ1kk5Wnpbtax1Mf0wQDGis3OboY+u4+kiKeBy0RAiIu
+         wYg99yoMsl1WxIZfS4DJTIqjC+sRP+qsC0w2b7GoBF+WEmZBSoDorMgYFDnaipd+rNp/
+         IDqw==
+X-Gm-Message-State: AOAM5329rOkUCDNGJOgG7GRhXtbap+ngztmQoKDrlsM4a7b/4jFJsR54
+        8W4LuInvYIo+2JScoq+V0Rg=
+X-Google-Smtp-Source: ABdhPJxWYorrhFdSskXEJz+W5dTiVVc2YhtNPwL9XlgtCdI0INAGiCSqz3WOtoVvs5k48Srgybt5qA==
+X-Received: by 2002:a05:6a00:2247:: with SMTP id i7mr455519pfu.217.1596137568161;
+        Thu, 30 Jul 2020 12:32:48 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id m24sm2587727pff.45.2020.07.30.12.32.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jul 2020 12:32:47 -0700 (PDT)
+Date:   Thu, 30 Jul 2020 12:32:45 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
+Message-ID: <20200730193245.GB6621@hoboy>
+References: <E1jvNlE-0001Y0-47@rmk-PC.armlinux.org.uk>
+ <20200729105807.GZ1551@shell.armlinux.org.uk>
+ <20200729131932.GA23222@hoboy>
+ <20200729132832.GA1551@shell.armlinux.org.uk>
+ <20200729220748.GW1605@shell.armlinux.org.uk>
+ <20200730155326.GB28298@hoboy>
+ <20200730183800.GD1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="jma2sznfqswt4jt6"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200727224937.9185-2-jacob.e.keller@intel.com>
+In-Reply-To: <20200730183800.GD1551@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jul 30, 2020 at 07:38:00PM +0100, Russell King - ARM Linux admin wrote:
+> What I ended up doing was:
+> 
+>         if (ops->get_ts_info) {
+>                 ret = ops->get_ts_info(dev, info);
+>                 if (ret != -EOPNOTSUPP)
+>                         return ret;
+>         }
+>         if (phy_has_tsinfo(phydev))
+>                 return phy_ts_info(phydev, info);
+> ...
+> 
+> which gives the MAC first refusal.  If the MAC wishes to defer to
+> phylib or the default, it can just return -EOPNOTSUPP.
 
---jma2sznfqswt4jt6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I guess that makes sense.  If someone designs a board that happens to
+have a PHY with unwanted time stamping fcunctionality, then at least
+the MAC time stamping function will work.  If the designers really
+want PHY time stamping, then they are likely to have to patch the MAC
+driver in any case.
 
-On Mon, Jul 27, 2020 at 03:49:37PM -0700, Jacob Keller wrote:
-> When displaying the FEC link modes advertised by the peer, we used the
-> string "No" to indicate when nothing was provided. This does not match
-> the IOCTL output which indicates "Not reported". It also doesn't match
-> the local advertised FEC modes, which also used the "Not reported"
-> string.
->=20
-> This is especially confusing for FEC, because the FEC bits include
-> a "None" bit which indicates that FEC is definitely not supported. Avoid
-> this confusion and match both the local advertised settings display and
-> the old IOCTL output by using "Not reported" when FEC settings aren't
-> reported.
->=20
-> Reported-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+So I'm not against such a change.  It would be important to keep the
+current "PHY-friendly" MAC drivers still friendly, and so they would
+need patching as part of the change.
 
-Applied with
+Thanks,
+Richard
 
-  Fixes: 10cc3ea337d1 ("netlink: partial netlink handler for gset (no optio=
-n)")
-
-Michal
-
-> ---
->  netlink/settings.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/netlink/settings.c b/netlink/settings.c
-> index 66b0d4892cdd..726259d83702 100644
-> --- a/netlink/settings.c
-> +++ b/netlink/settings.c
-> @@ -481,7 +481,7 @@ static int dump_peer_modes(struct nl_context *nlctx, =
-const struct nlattr *attr)
-> =20
->  	ret =3D dump_link_modes(nlctx, attr, false, LM_CLASS_FEC,
->  			      "Link partner advertised FEC modes: ",
-> -			      " ", "\n", "No");
-> +			      " ", "\n", "Not reported");
->  	return ret;
->  }
-> =20
-> --=20
-> 2.26.2
->=20
-
---jma2sznfqswt4jt6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8jIC0ACgkQ538sG/LR
-dpVn4wgArbyS9yek336mhH8KkmkyLpxMvaWMUztNAeiAYZfPEsyoDRp7ZaJyL+N5
-z3Iz1RFDOw581CRfaTdfz4hX6GQ1duKbMVGeOwLZ2MQWtGOzF4tT7CPBGLF6kZzE
-aZ8KO3z+ldmvII5gXRSaHl0aoZnhhlwYsOoFF2a5Uk+36gNABMsnB73IGMGa0GOF
-3atMBy+vvcjXa45+kVimMx7/NLNd7pMucLdX9UxfX9MjWwCGaMk2IhaA6m353idn
-6Hh44ot3XDvOA0v6suEFDcClxwj5igwtAFidn6XFq3UlHaFHqfyLYA+rNjCQpfsQ
-oGdKQsS8B+PI6tSe/p5x5p5vauej1Q==
-=UVt6
------END PGP SIGNATURE-----
-
---jma2sznfqswt4jt6--
