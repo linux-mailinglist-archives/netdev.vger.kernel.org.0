@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8A96233A34
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 22:58:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AE4F233A28
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 22:57:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730582AbgG3U6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 16:58:06 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:59770 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730357AbgG3U6B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 16:58:01 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 06UKvuMX024610
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 13:58:00 -0700
+        id S1730479AbgG3U52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 16:57:28 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:65342 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730024AbgG3U51 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 16:57:27 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06UKrSRj012197
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 13:57:26 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=a6qjB6+whT1EkyTi4BogWxjnrlto85XRXmUBCDkJ3lQ=;
- b=mBNyrlX73TRgvBkG4KAAaFupphhHtWwjwpzcFx4iHru/1hzLDsydGWRA2Lmv29L8J5pj
- 6Q8VXwqoBpk0FQVKD/EcvQPkgExvXRyewTrtVlVvY9EAnbsZ/HviQhyN3tzXJ+uHtzR+
- 9yZh9Hpj8LCSEgwugKl3omLq9k0XWT0OUO8= 
+ bh=HYsb4P4MjGuYj+mkHp/3CnVkBG0HrlF35oWt1RHU0iU=;
+ b=O3KLyecKS30mM1KUfs2HB/1oxGIyFpNhdSiKiN0n+BbHLci2qiwiC6xXHdEI7cTXxnZD
+ kZk1lMg/Vfzwu/9f4VSuTG+ww4mLU2VRiiaRZIJSgWLU6MqvK0HLZ48cbi7rZOpg8Nj0
+ yGnOEaJfrGWQcZnq8yIpVdkxyEORFl0Wiug= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 32m0b1hy7t-7
+        by mx0a-00082601.pphosted.com with ESMTP id 32kxekap52-7
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 13:57:59 -0700
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 13:57:26 -0700
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1979.3; Thu, 30 Jul 2020 13:57:24 -0700
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 86CEC2943DF6; Thu, 30 Jul 2020 13:57:17 -0700 (PDT)
+        id C0AD12943DF6; Thu, 30 Jul 2020 13:57:23 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Martin KaFai Lau <kafai@fb.com>
 Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
@@ -42,9 +42,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Neal Cardwell <ncardwell@google.com>, <netdev@vger.kernel.org>,
         Yuchung Cheng <ycheng@google.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 3/9] tcp: bpf: Add TCP_BPF_RTO_MIN for bpf_setsockopt
-Date:   Thu, 30 Jul 2020 13:57:17 -0700
-Message-ID: <20200730205717.3353237-1-kafai@fb.com>
+Subject: [PATCH v3 bpf-next 4/9] tcp: Add unknown_opt arg to tcp_parse_options
+Date:   Thu, 30 Jul 2020 13:57:23 -0700
+Message-ID: <20200730205723.3353838-1-kafai@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200730205657.3351905-1-kafai@fb.com>
 References: <20200730205657.3351905-1-kafai@fb.com>
@@ -54,128 +54,258 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-30_15:2020-07-30,2020-07-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- suspectscore=13 adultscore=0 clxscore=1015 priorityscore=1501
- mlxlogscore=999 malwarescore=0 lowpriorityscore=0 spamscore=0 mlxscore=0
- bulkscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007300148
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015 bulkscore=0
+ phishscore=0 mlxlogscore=999 priorityscore=1501 lowpriorityscore=0
+ malwarescore=0 adultscore=0 suspectscore=13 mlxscore=0 spamscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007300147
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds bpf_setsockopt(TCP_BPF_RTO_MIN) to allow bpf prog
-to set the min rto of a connection.  It could be used together
-with the earlier patch which has added bpf_setsockopt(TCP_BPF_DELACK_MAX)=
+In the latter patch, the bpf prog only wants to be called to handle
+a header option if that particular header option cannot be handled by
+the kernel.  This unknown option could be written by the peer's bpf-prog.
+It could also be a new standard option that the running kernel does not
+support it while a bpf-prog can handle it.
+
+In a latter patch, the bpf prog will be called from tcp_validate_incoming=
+()
+if there is unknown option and a flag is set in tp->bpf_sock_ops_cb_flags=
 .
 
-A latter selftest patch will communicate the max delay ack in a
-bpf tcp header option and then the receiving side can use
-bpf_setsockopt(TCP_BPF_RTO_MIN) to set a shorter rto.
+Instead of using skb->cb[] in an earlier attempt, this patch
+adds an optional arg "bool *unknown_opt" to tcp_parse_options().
+The bool will be set to true if it has encountered an option
+that the kernel does not recognize.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- include/net/inet_connection_sock.h | 1 +
- include/net/tcp.h                  | 2 +-
- include/uapi/linux/bpf.h           | 1 +
- net/core/filter.c                  | 7 +++++++
- net/ipv4/tcp.c                     | 2 ++
- tools/include/uapi/linux/bpf.h     | 1 +
- 6 files changed, 13 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/cxgb4/cm.c |  2 +-
+ include/net/tcp.h                |  3 ++-
+ net/ipv4/syncookies.c            |  2 +-
+ net/ipv4/tcp_input.c             | 40 +++++++++++++++++++++-----------
+ net/ipv4/tcp_minisocks.c         |  4 ++--
+ net/ipv6/syncookies.c            |  2 +-
+ 6 files changed, 34 insertions(+), 19 deletions(-)
 
-diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connec=
-tion_sock.h
-index 8b6d89ac91cc..d54aa3cc71df 100644
---- a/include/net/inet_connection_sock.h
-+++ b/include/net/inet_connection_sock.h
-@@ -86,6 +86,7 @@ struct inet_connection_sock {
-  	struct timer_list	  icsk_retransmit_timer;
-  	struct timer_list	  icsk_delack_timer;
- 	__u32			  icsk_rto;
-+	__u32                     icsk_rto_min;
- 	__u32                     icsk_delack_max;
- 	__u32			  icsk_pmtu_cookie;
- 	const struct tcp_congestion_ops *icsk_ca_ops;
+diff --git a/drivers/infiniband/hw/cxgb4/cm.c b/drivers/infiniband/hw/cxg=
+b4/cm.c
+index 30e08bcc9afb..dedca6576bb9 100644
+--- a/drivers/infiniband/hw/cxgb4/cm.c
++++ b/drivers/infiniband/hw/cxgb4/cm.c
+@@ -3949,7 +3949,7 @@ static void build_cpl_pass_accept_req(struct sk_buf=
+f *skb, int stid , u8 tos)
+ 	 */
+ 	memset(&tmp_opt, 0, sizeof(tmp_opt));
+ 	tcp_clear_options(&tmp_opt);
+-	tcp_parse_options(&init_net, skb, &tmp_opt, 0, NULL);
++	tcp_parse_options(&init_net, skb, &tmp_opt, 0, NULL, NULL);
+=20
+ 	req =3D __skb_push(skb, sizeof(*req));
+ 	memset(req, 0, sizeof(*req));
 diff --git a/include/net/tcp.h b/include/net/tcp.h
-index e0c35d56091f..895e7aabf136 100644
+index 895e7aabf136..d49d8f1c961a 100644
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -697,7 +697,7 @@ static inline void tcp_fast_path_check(struct sock *s=
-k)
- static inline u32 tcp_rto_min(struct sock *sk)
+@@ -413,7 +413,8 @@ int tcp_mmap(struct file *file, struct socket *sock,
+ #endif
+ void tcp_parse_options(const struct net *net, const struct sk_buff *skb,
+ 		       struct tcp_options_received *opt_rx,
+-		       int estab, struct tcp_fastopen_cookie *foc);
++		       int estab, struct tcp_fastopen_cookie *foc,
++		       bool *unknown_opt);
+ const u8 *tcp_parse_md5sig_option(const struct tcphdr *th);
+=20
+ /*
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index 9a4f6b16c9bc..fd39aed4fcd3 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -313,7 +313,7 @@ struct sock *cookie_v4_check(struct sock *sk, struct =
+sk_buff *skb)
+=20
+ 	/* check for timestamp cookie support */
+ 	memset(&tcp_opt, 0, sizeof(tcp_opt));
+-	tcp_parse_options(sock_net(sk), skb, &tcp_opt, 0, NULL);
++	tcp_parse_options(sock_net(sk), skb, &tcp_opt, 0, NULL, NULL);
+=20
+ 	if (tcp_opt.saw_tstamp && tcp_opt.rcv_tsecr) {
+ 		tsoff =3D secure_tcp_ts_off(sock_net(sk),
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 6c38ca9de17e..d9c878001be2 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3799,7 +3799,7 @@ static void tcp_parse_fastopen_option(int len, cons=
+t unsigned char *cookie,
+ 	foc->exp =3D exp_opt;
+ }
+=20
+-static void smc_parse_options(const struct tcphdr *th,
++static bool smc_parse_options(const struct tcphdr *th,
+ 			      struct tcp_options_received *opt_rx,
+ 			      const unsigned char *ptr,
+ 			      int opsize)
+@@ -3808,10 +3808,13 @@ static void smc_parse_options(const struct tcphdr=
+ *th,
+ 	if (static_branch_unlikely(&tcp_have_smc)) {
+ 		if (th->syn && !(opsize & 1) &&
+ 		    opsize >=3D TCPOLEN_EXP_SMC_BASE &&
+-		    get_unaligned_be32(ptr) =3D=3D TCPOPT_SMC_MAGIC)
++		    get_unaligned_be32(ptr) =3D=3D TCPOPT_SMC_MAGIC) {
+ 			opt_rx->smc_ok =3D 1;
++			return true;
++		}
+ 	}
+ #endif
++	return false;
+ }
+=20
+ /* Try to parse the MSS option from the TCP header. Return 0 on failure,=
+ clamped
+@@ -3864,7 +3867,8 @@ static u16 tcp_parse_mss_option(const struct tcphdr=
+ *th, u16 user_mss)
+ void tcp_parse_options(const struct net *net,
+ 		       const struct sk_buff *skb,
+ 		       struct tcp_options_received *opt_rx, int estab,
+-		       struct tcp_fastopen_cookie *foc)
++		       struct tcp_fastopen_cookie *foc,
++		       bool *unknown_opt)
  {
- 	const struct dst_entry *dst =3D __sk_dst_get(sk);
--	u32 rto_min =3D TCP_RTO_MIN;
-+	u32 rto_min =3D inet_csk(sk)->icsk_rto_min;
-=20
- 	if (dst && dst_metric_locked(dst, RTAX_RTO_MIN))
- 		rto_min =3D dst_metric_rtt(dst, RTAX_RTO_MIN);
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 993060d9ecf2..d77b7df71784 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -4245,6 +4245,7 @@ enum {
- 	TCP_BPF_IW		=3D 1001,	/* Set TCP initial congestion window */
- 	TCP_BPF_SNDCWND_CLAMP	=3D 1002,	/* Set sndcwnd_clamp */
- 	TCP_BPF_DELACK_MAX	=3D 1003, /* Max delay ack in usecs */
-+	TCP_BPF_RTO_MIN		=3D 1004, /* Min delay ack in usecs */
- };
-=20
- struct bpf_perf_event_value {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 969c6b6b98d0..0a1bf520c55d 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4488,6 +4488,13 @@ static int _bpf_setsockopt(struct sock *sk, int le=
-vel, int optname,
- 					return -EINVAL;
- 				inet_csk(sk)->icsk_delack_max =3D timeout;
+ 	const unsigned char *ptr;
+ 	const struct tcphdr *th =3D tcp_hdr(skb);
+@@ -3962,15 +3966,23 @@ void tcp_parse_options(const struct net *net,
+ 				 */
+ 				if (opsize >=3D TCPOLEN_EXP_FASTOPEN_BASE &&
+ 				    get_unaligned_be16(ptr) =3D=3D
+-				    TCPOPT_FASTOPEN_MAGIC)
++				    TCPOPT_FASTOPEN_MAGIC) {
+ 					tcp_parse_fastopen_option(opsize -
+ 						TCPOLEN_EXP_FASTOPEN_BASE,
+ 						ptr + 2, th->syn, foc, true);
+-				else
+-					smc_parse_options(th, opt_rx, ptr,
+-							  opsize);
++					break;
++				}
++
++				if (smc_parse_options(th, opt_rx, ptr, opsize))
++					break;
++
++				if (unknown_opt)
++					*unknown_opt =3D true;
  				break;
-+			case TCP_BPF_RTO_MIN:
-+				timeout =3D usecs_to_jiffies(val);
-+				if (timeout > TCP_RTO_MIN ||
-+				    timeout < TCP_TIMEOUT_MIN)
-+					return -EINVAL;
-+				inet_csk(sk)->icsk_rto_min =3D timeout;
-+				break;
- 			case TCP_SAVE_SYN:
- 				if (val < 0 || val > 1)
- 					ret =3D -EINVAL;
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 10db079cb9e3..98606f94b01b 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -418,6 +418,7 @@ void tcp_init_sock(struct sock *sk)
- 	INIT_LIST_HEAD(&tp->tsorted_sent_queue);
 =20
- 	icsk->icsk_rto =3D TCP_TIMEOUT_INIT;
-+	icsk->icsk_rto_min =3D TCP_RTO_MIN;
- 	icsk->icsk_delack_max =3D TCP_DELACK_MAX;
- 	tp->mdev_us =3D jiffies_to_usecs(TCP_TIMEOUT_INIT);
- 	minmax_reset(&tp->rtt_min, tcp_jiffies32, ~0U);
-@@ -2686,6 +2687,7 @@ int tcp_disconnect(struct sock *sk, int flags)
- 	icsk->icsk_backoff =3D 0;
- 	icsk->icsk_probes_out =3D 0;
- 	icsk->icsk_rto =3D TCP_TIMEOUT_INIT;
-+	icsk->icsk_rto_min =3D TCP_RTO_MIN;
- 	icsk->icsk_delack_max =3D TCP_DELACK_MAX;
- 	tp->snd_ssthresh =3D TCP_INFINITE_SSTHRESH;
- 	tp->snd_cwnd =3D TCP_INIT_CWND;
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bp=
-f.h
-index 993060d9ecf2..d77b7df71784 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -4245,6 +4245,7 @@ enum {
- 	TCP_BPF_IW		=3D 1001,	/* Set TCP initial congestion window */
- 	TCP_BPF_SNDCWND_CLAMP	=3D 1002,	/* Set sndcwnd_clamp */
- 	TCP_BPF_DELACK_MAX	=3D 1003, /* Max delay ack in usecs */
-+	TCP_BPF_RTO_MIN		=3D 1004, /* Min delay ack in usecs */
- };
++			default:
++				if (unknown_opt)
++					*unknown_opt =3D true;
+ 			}
+ 			ptr +=3D opsize-2;
+ 			length -=3D opsize;
+@@ -4003,7 +4015,8 @@ static bool tcp_parse_aligned_timestamp(struct tcp_=
+sock *tp, const struct tcphdr
+  */
+ static bool tcp_fast_parse_options(const struct net *net,
+ 				   const struct sk_buff *skb,
+-				   const struct tcphdr *th, struct tcp_sock *tp)
++				   const struct tcphdr *th, struct tcp_sock *tp,
++				   bool *unknown_opt)
+ {
+ 	/* In the spirit of fast parsing, compare doff directly to constant
+ 	 * values.  Because equality is used, short doff can be ignored here.
+@@ -4017,7 +4030,7 @@ static bool tcp_fast_parse_options(const struct net=
+ *net,
+ 			return true;
+ 	}
 =20
- struct bpf_perf_event_value {
+-	tcp_parse_options(net, skb, &tp->rx_opt, 1, NULL);
++	tcp_parse_options(net, skb, &tp->rx_opt, 1, NULL, unknown_opt);
+ 	if (tp->rx_opt.saw_tstamp && tp->rx_opt.rcv_tsecr)
+ 		tp->rx_opt.rcv_tsecr -=3D tp->tsoffset;
+=20
+@@ -5492,9 +5505,10 @@ static bool tcp_validate_incoming(struct sock *sk,=
+ struct sk_buff *skb,
+ {
+ 	struct tcp_sock *tp =3D tcp_sk(sk);
+ 	bool rst_seq_match =3D false;
++	bool unknown_opt =3D false;
+=20
+ 	/* RFC1323: H1. Apply PAWS check first. */
+-	if (tcp_fast_parse_options(sock_net(sk), skb, th, tp) &&
++	if (tcp_fast_parse_options(sock_net(sk), skb, th, tp, &unknown_opt) &&
+ 	    tp->rx_opt.saw_tstamp &&
+ 	    tcp_paws_discard(sk, skb)) {
+ 		if (!th->rst) {
+@@ -5866,7 +5880,7 @@ static bool tcp_rcv_fastopen_synack(struct sock *sk=
+, struct sk_buff *synack,
+ 		/* Get original SYNACK MSS value if user MSS sets mss_clamp */
+ 		tcp_clear_options(&opt);
+ 		opt.user_mss =3D opt.mss_clamp =3D 0;
+-		tcp_parse_options(sock_net(sk), synack, &opt, 0, NULL);
++		tcp_parse_options(sock_net(sk), synack, &opt, 0, NULL, NULL);
+ 		mss =3D opt.mss_clamp;
+ 	}
+=20
+@@ -5951,7 +5965,7 @@ static int tcp_rcv_synsent_state_process(struct soc=
+k *sk, struct sk_buff *skb,
+ 	int saved_clamp =3D tp->rx_opt.mss_clamp;
+ 	bool fastopen_fail;
+=20
+-	tcp_parse_options(sock_net(sk), skb, &tp->rx_opt, 0, &foc);
++	tcp_parse_options(sock_net(sk), skb, &tp->rx_opt, 0, &foc, NULL);
+ 	if (tp->rx_opt.saw_tstamp && tp->rx_opt.rcv_tsecr)
+ 		tp->rx_opt.rcv_tsecr -=3D tp->tsoffset;
+=20
+@@ -6685,7 +6699,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_o=
+ps,
+ 	tmp_opt.mss_clamp =3D af_ops->mss_clamp;
+ 	tmp_opt.user_mss  =3D tp->rx_opt.user_mss;
+ 	tcp_parse_options(sock_net(sk), skb, &tmp_opt, 0,
+-			  want_cookie ? NULL : &foc);
++			  want_cookie ? NULL : &foc, NULL);
+=20
+ 	if (want_cookie && !tmp_opt.saw_tstamp)
+ 		tcp_clear_options(&tmp_opt);
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index 495dda2449fe..61f9194802c4 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -98,7 +98,7 @@ tcp_timewait_state_process(struct inet_timewait_sock *t=
+w, struct sk_buff *skb,
+=20
+ 	tmp_opt.saw_tstamp =3D 0;
+ 	if (th->doff > (sizeof(*th) >> 2) && tcptw->tw_ts_recent_stamp) {
+-		tcp_parse_options(twsk_net(tw), skb, &tmp_opt, 0, NULL);
++		tcp_parse_options(twsk_net(tw), skb, &tmp_opt, 0, NULL, NULL);
+=20
+ 		if (tmp_opt.saw_tstamp) {
+ 			if (tmp_opt.rcv_tsecr)
+@@ -580,7 +580,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk=
+_buff *skb,
+=20
+ 	tmp_opt.saw_tstamp =3D 0;
+ 	if (th->doff > (sizeof(struct tcphdr)>>2)) {
+-		tcp_parse_options(sock_net(sk), skb, &tmp_opt, 0, NULL);
++		tcp_parse_options(sock_net(sk), skb, &tmp_opt, 0, NULL, NULL);
+=20
+ 		if (tmp_opt.saw_tstamp) {
+ 			tmp_opt.ts_recent =3D req->ts_recent;
+diff --git a/net/ipv6/syncookies.c b/net/ipv6/syncookies.c
+index 13235a012388..f22961a73c2b 100644
+--- a/net/ipv6/syncookies.c
++++ b/net/ipv6/syncookies.c
+@@ -157,7 +157,7 @@ struct sock *cookie_v6_check(struct sock *sk, struct =
+sk_buff *skb)
+=20
+ 	/* check for timestamp cookie support */
+ 	memset(&tcp_opt, 0, sizeof(tcp_opt));
+-	tcp_parse_options(sock_net(sk), skb, &tcp_opt, 0, NULL);
++	tcp_parse_options(sock_net(sk), skb, &tcp_opt, 0, NULL, NULL);
+=20
+ 	if (tcp_opt.saw_tstamp && tcp_opt.rcv_tsecr) {
+ 		tsoff =3D secure_tcpv6_ts_off(sock_net(sk),
 --=20
 2.24.1
 
