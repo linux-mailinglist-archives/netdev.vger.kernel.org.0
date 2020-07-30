@@ -2,43 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC28233766
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 19:09:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C213233776
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 19:15:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730083AbgG3RJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 13:09:46 -0400
-Received: from mga04.intel.com ([192.55.52.120]:53573 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727072AbgG3RJp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 13:09:45 -0400
-IronPort-SDR: kZjhnbVnSsKlFbOX/Sv4KOZIP5N/ZwEIjE7uxlDR0+ILR6EUuVVZAhMCilEuggXXqwlBce4d5l
- GM80S86204yw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="149111765"
-X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
-   d="scan'208";a="149111765"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2020 10:09:44 -0700
-IronPort-SDR: y0nW39Z1i8VKzqXnB6B/8ud7Db11d4wnn/oQAZLWbGbCyWuz1goOt+l/XCBe4nspf7Y/VYUN4A
- YOUs3yaRvHFA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
-   d="scan'208";a="272979243"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga007.fm.intel.com with ESMTP; 30 Jul 2020 10:09:44 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net
-Cc:     Francesco Ruggeri <fruggeri@arista.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
-        Aaron Brown <aaron.f.brown@intel.com>
-Subject: [net 2/2] igb: reinit_locked() should be called with rtnl_lock
-Date:   Thu, 30 Jul 2020 10:09:38 -0700
-Message-Id: <20200730170938.3766899-3-anthony.l.nguyen@intel.com>
+        id S1728459AbgG3RPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 13:15:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52606 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726353AbgG3RPl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 13:15:41 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5A0C061574
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 10:15:41 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1k1C9Z-0002v9-6q; Thu, 30 Jul 2020 19:15:37 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     edumazet@google.com, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net, pabeni@redhat.com
+Subject: [PATCH net-next 00/10] mptcp: add syncookie support
+Date:   Thu, 30 Jul 2020 19:15:19 +0200
+Message-Id: <20200730171529.22582-1-fw@strlen.de>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200730170938.3766899-1-anthony.l.nguyen@intel.com>
-References: <20200730170938.3766899-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -46,87 +32,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Francesco Ruggeri <fruggeri@arista.com>
+When syn-cookies are used the SYN?ACK never contains a MPTCP option,
+because the code path that creates a request socket based on a valid
+cookie ACK lacks the needed changes to construct MPTCP request sockets.
 
-We observed two panics involving races with igb_reset_task.
-The first panic is caused by this race condition:
+After this series, if SYN carries MP_CAPABLE option, the option is not
+cleared anymore and request socket will be reconstructed using the
+MP_CAPABLE option data that is re-sent with the ACK.
 
-	kworker			reboot -f
+This means that no additional state gets encoded into the syn cookie or
+the TCP timestamp.
 
-	igb_reset_task
-	igb_reinit_locked
-	igb_down
-	napi_synchronize
-				__igb_shutdown
-				igb_clear_interrupt_scheme
-				igb_free_q_vectors
-				igb_free_q_vector
-				adapter->q_vector[v_idx] = NULL;
-	napi_disable
-	Panics trying to access
-	adapter->q_vector[v_idx].napi_state
+There are two caveats for SYN-Cookies with MPTCP:
 
-The second panic (a divide error) is caused by this race:
+1. When syn-cookies are used, the server-generated key is not stored.
+The drawback is that the next connection request that comes in before
+the cookie-ACK has a small chance that it will generate the same local_key.
 
-kworker		reboot -f	tx packet
+If this happens, the cookie ACK that comes in second will (re)compute the
+token hash and then detects that this is already in use.
+Unlike normal case, where the server will pick a new key value and then
+re-tries, we can't do that because we already committed to the key value
+(it was sent to peer already).
 
-igb_reset_task
-		__igb_shutdown
-		rtnl_lock()
-		...
-		igb_clear_interrupt_scheme
-		igb_free_q_vectors
-		adapter->num_tx_queues = 0
-		...
-		rtnl_unlock()
-rtnl_lock()
-igb_reinit_locked
-igb_down
-igb_up
-netif_tx_start_all_queues
-				dev_hard_start_xmit
-				igb_xmit_frame
-				igb_tx_queue_mapping
-				Panics on
-				r_idx % adapter->num_tx_queues
+Im this case, MPTCP cannot be used and late TCP fallback happens.
 
-This commit applies to igb_reset_task the same changes that
-were applied to ixgbe in commit 2f90b8657ec9 ("ixgbe: this patch
-adds support for DCB to the kernel and ixgbe driver"),
-commit 8f4c5c9fb87a ("ixgbe: reinit_locked() should be called with
-rtnl_lock") and commit 88adce4ea8f9 ("ixgbe: fix possible race in
-reset subtask").
+2). SYN packets with a MP_JOIN requests cannot be handled without storing
+    state. This is because the SYN contains a nonce value that is needed to
+    verify the HMAC of the MP_JOIN ACK that completes the three-way
+    handshake.  Also, a local nonce is generated and used in the cookie
+    SYN/ACK.
 
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+There are only 2 ways to solve this:
+ a) Do not support JOINs when cookies are in effect.
+ b) Store the nonces somewhere.
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 8bb3db2cbd41..6e5861bfb0fa 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -6224,9 +6224,18 @@ static void igb_reset_task(struct work_struct *work)
- 	struct igb_adapter *adapter;
- 	adapter = container_of(work, struct igb_adapter, reset_task);
- 
-+	rtnl_lock();
-+	/* If we're already down or resetting, just bail */
-+	if (test_bit(__IGB_DOWN, &adapter->state) ||
-+	    test_bit(__IGB_RESETTING, &adapter->state)) {
-+		rtnl_unlock();
-+		return;
-+	}
-+
- 	igb_dump(adapter);
- 	netdev_err(adapter->netdev, "Reset adapter\n");
- 	igb_reinit_locked(adapter);
-+	rtnl_unlock();
- }
- 
- /**
--- 
-2.26.2
+The approach chosen here is b).
+Patch 8 adds a fixed-size (1024 entries) state table to store the
+information required to validate the MP_JOIN ACK and re-build the
+request socket.
+
+State gets stored when syn-cookies are active and the token in the JOIN
+request referred to an established MPTCP connection that can also accept
+a new subflow.
+
+State is restored if the ACK cookie is valid, an MP_JOIN option is present
+and the state slot contains valid data from a previous SYN.
+
+After the request socket has been re-build, normal HMAC check is done just
+as without syn cookies.
+
+Largely identical to last RFC, except patch #8 which follows Paolos
+suggestion to use a private table storage area rather than keeping
+request sockets around.  This also means I dropped the patch to remove
+const qualifier from sk_listener pointers.
+
+Florian Westphal (10):
+      tcp: remove cookie_ts bit from request_sock
+      mptcp: token: move retry to caller
+      mptcp: subflow: split subflow_init_req
+      mptcp: rename and export mptcp_subflow_request_sock_ops
+      tcp: pass want_cookie down to req_init function
+      mptcp: subflow: add mptcp_subflow_init_cookie_req helper
+      tcp: syncookies: create mptcp request socket for ACK cookies with MPTCP option
+      mptcp: enable JOIN requests even if cookies are in use
+      selftests: mptcp: make 2nd net namespace use tcp syn cookies unconditionally
+      selftests: mptcp: add test cases for mptcp join tests with syn cookies
+
+ drivers/crypto/chelsio/chtls/chtls_cm.c            |   1 -
+ include/net/mptcp.h                                |  11 ++
+ include/net/request_sock.h                         |   3 +-
+ include/net/tcp.h                                  |   5 +-
+ net/ipv4/syncookies.c                              |  44 ++++++-
+ net/ipv4/tcp_input.c                               |   7 +-
+ net/ipv4/tcp_ipv4.c                                |   3 +-
+ net/ipv4/tcp_output.c                              |   2 +-
+ net/ipv6/syncookies.c                              |   5 +-
+ net/ipv6/tcp_ipv6.c                                |   3 +-
+ net/mptcp/Makefile                                 |   1 +
+ net/mptcp/ctrl.c                                   |   1 +
+ net/mptcp/protocol.h                               |  21 ++++
+ net/mptcp/subflow.c                                | 131 ++++++++++++++++----
+ net/mptcp/syncookies.c                             | 132 +++++++++++++++++++++
+ net/mptcp/token.c                                  |  38 ++++--
+ tools/testing/selftests/net/mptcp/mptcp_connect.sh |  47 ++++++++
+ tools/testing/selftests/net/mptcp/mptcp_join.sh    |  66 ++++++++++-
+ 18 files changed, 467 insertions(+), 54 deletions(-)
+ create mode 100644 net/mptcp/syncookies.c
 
