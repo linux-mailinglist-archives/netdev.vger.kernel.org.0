@@ -2,83 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 802D7232CC7
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 10:01:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BF74232CD5
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 10:02:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728998AbgG3IBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 04:01:01 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:48736 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728898AbgG3IBA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 04:01:00 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1596096058;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fxs0RuNV0kU+KFLUSNh5ecANfQU4v98Fy8pcIy8R6to=;
-        b=eZb3eT6EakJ+vrErm0piNPuBtusSbsHF5ktAu6oNG4+Fdst8N/syyxCH3uG6GR3t9tvHOh
-        XGivdsQFczY5Fck6ICWoZlJs5m98hEhyKRM5jvLIfNjb9ZZ+Yl02ZfYkmHAC98QKXLcc/q
-        mqCo1HwVDULRDEDzZF6yW6ZBchOyfTsm9TACoXnb2WHv059JP629t6a32z0efT6wUtbrlb
-        5jEpQwjIdg404C76skroLDc8WArOjzg1QPkQBiE/YWAUuw9aME7/+4AkNV3QRUKGQxy0SW
-        HKRVhlZm4pDASRBW4ZxPbSXb46QRHKpuXiO1KOWIwXOhm2ytv1HrIwKdsq97CA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1596096058;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fxs0RuNV0kU+KFLUSNh5ecANfQU4v98Fy8pcIy8R6to=;
-        b=MmfXvXEd9iEpNWs2tTEh/kllddgBDMo8OVYe1fD6WV1vp53QV4b3fFaCYik45fIG9qdqsi
-        WlIm66VdP++u+aCw==
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S1729028AbgG3IC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 04:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51912 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726774AbgG3ICW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 04:02:22 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8417C061794;
+        Thu, 30 Jul 2020 01:02:22 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id a9so3462276pjd.3;
+        Thu, 30 Jul 2020 01:02:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=XCmfqFtBUrWLGb0HRDwnKJuQyG0oIwWAg+A2BuLLHlk=;
+        b=Ni9dtpixzC9T0JSf1dz8WSqnJqMFFOr6aMpkKq7RUF8VMgW6JliqG5FYvO+SjUr0RC
+         jrgYAaQ2ukMMAjW34DThgLXD+Q3NhOfu7tt0H6kG5lCdNjEqU2yBUkxbEp7xBGE61hQ8
+         Q51KOI1vwwm/fFJwiOdcDWp6ssn2nut+QzTXRuny6Vy0kReeTK/tw8EdBqq+dw6OSzXj
+         BDT2LQBtrxDO6psEf8/6zRasJlWUlVvqw3JKT3gmes8ZViJ+2puSPCRSGkXfVMoO76J/
+         xPp2dxWO/fW345mYWUygzMqthWQQNz9E/loJYeGFZzh/xHyAVWGITVnviouF0XVMGPo+
+         q4Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=XCmfqFtBUrWLGb0HRDwnKJuQyG0oIwWAg+A2BuLLHlk=;
+        b=KseAtjvgp5z+RICrPhBZuZOOemur5w3Cc+oXzQlP3enHy2pQH1OKuSVM86cgBzzTw5
+         mmSVNafQVNE8BoBjCwQLOFbYltBJ2yePKy4MJv05xJ4d/W4scRGUL6o88ixbnO+1bDnb
+         DFHdbgEoPucEFqIEIU2wzBtQH20UfSmdd+FFu2hS6ZbF+jLx83T/sHngkJzUNxen43dL
+         om6eI8hyEEb34tdF3MBstnCukRdBqVQj1CpQ66pemyTdg5htEVeo5KaQ/fdn6Lgoe8EP
+         JjwhQ2ispHvZihwYCxuIFWl82VB5dHd3MFErgh3sx9Nfwqsobwci4JMC0hcP1i6ocykI
+         SIeQ==
+X-Gm-Message-State: AOAM531sOAj3HBM6G/TJw/X37FLFFmnAXbB4PL2qTZz6sHZ9VTuzJgDK
+        MVneADHdx/Ll4QpJJfFFF2eFNbtQf4zGfaMigT9gHQhM
+X-Google-Smtp-Source: ABdhPJy0ddlORXpGjQKfME9zoUWY2prLtamhgQ18XGO0AYNnAP3SyIkK4wzxBORjSqX7wRmj4S5RG2ytTbL1az8lNR8=
+X-Received: by 2002:a17:90b:11c4:: with SMTP id gv4mr1944336pjb.198.1596096141675;
+ Thu, 30 Jul 2020 01:02:21 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200730073702.16887-1-xie.he.0141@gmail.com>
+In-Reply-To: <20200730073702.16887-1-xie.he.0141@gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Thu, 30 Jul 2020 01:02:10 -0700
+Message-ID: <CAJht_EO1srhh68DifK61+hpY+zBRU8oOAbJOSpjOqePithc7gw@mail.gmail.com>
+Subject: Re: [PATCH v2] drivers/net/wan/lapbether: Use needed_headroom instead
+ of hard_header_len
+To:     Martin Schiller <ms@dev.tdt.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
-        Petr Machata <petrm@mellanox.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v3 9/9] ptp: Remove unused macro
-Date:   Thu, 30 Jul 2020 10:00:48 +0200
-Message-Id: <20200730080048.32553-10-kurt@linutronix.de>
-In-Reply-To: <20200730080048.32553-1-kurt@linutronix.de>
-References: <20200730080048.32553-1-kurt@linutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The offset for the control field is not needed anymore. Remove it.
+Hi Martin,
 
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- include/linux/ptp_classify.h | 1 -
- 1 file changed, 1 deletion(-)
+I'm currently working on a plan to make all X.25 drivers (lapbether.c,
+x25_asy.c, hdlc_x25.c) to set dev->hard_header_len /
+dev->needed_headroom correctly. So that upper layers no longer need to
+guess how much headroom a X.25 device needs with a constant value (as
+they currently do).
 
-diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
-index f4dd42fddc0c..88408fbb0ab6 100644
---- a/include/linux/ptp_classify.h
-+++ b/include/linux/ptp_classify.h
-@@ -36,7 +36,6 @@
- 
- #define OFF_PTP_SOURCE_UUID	22 /* PTPv1 only */
- #define OFF_PTP_SEQUENCE_ID	30
--#define OFF_PTP_CONTROL		32 /* PTPv1 only */
- 
- /* Below defines should actually be removed at some point in time. */
- #define IP6_HLEN	40
--- 
-2.20.1
+After studying af_packet.c, I found that X.25 drivers needed to set
+needed_headroom to reserve the headroom instead of using
+hard_header_len. Because hard_header_len should be the length of the
+header that would be created by dev_hard_header, and in this case it
+should be 0, according to the logic of af_packet.c.
 
+So my first step is to fix the settings in lapbether.c. Could you
+review this patch and extend your support via a "Reviewed-by" tag? If
+this can be fixed, I'll go on and fix other X.25 drivers. Thanks!
+
+It's very hard to find reviewers for X.25 code because it is
+relatively unmaintained by people. I hope I can do some of the
+maintenance work. I greatly appreciate your support!
