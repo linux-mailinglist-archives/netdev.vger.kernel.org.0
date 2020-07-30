@@ -2,96 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F30F723304D
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 12:24:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 170D7233032
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 12:22:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728996AbgG3KY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 06:24:27 -0400
-Received: from mout.kundenserver.de ([212.227.17.13]:56595 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725892AbgG3KY0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 06:24:26 -0400
-Received: from mail-qk1-f179.google.com ([209.85.222.179]) by
- mrelayeu.kundenserver.de (mreue106 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1MgwBv-1ki5v20u33-00hKLZ for <netdev@vger.kernel.org>; Thu, 30 Jul 2020
- 12:24:25 +0200
-Received: by mail-qk1-f179.google.com with SMTP id h7so25051233qkk.7
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 03:24:24 -0700 (PDT)
-X-Gm-Message-State: AOAM531b4maDAzJHIc/XFPQdw6eTRjYlU/9vqaSp0dhL7cTi7tBiP54q
-        rhDerir/u1yRkJDEPRCCa8sqPJ4IOsv0liN7IwY=
-X-Google-Smtp-Source: ABdhPJwMBHOO0wGxSWIXQQfZTPVK1KUznk5I3GjhMa/5xHDIa88DzjjBZLP4L2//26g0QTkgWKyWIACLSgYYr9b4nOI=
-X-Received: by 2002:a37:9004:: with SMTP id s4mr36804611qkd.286.1596104663212;
- Thu, 30 Jul 2020 03:24:23 -0700 (PDT)
+        id S1726946AbgG3KWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 06:22:16 -0400
+Received: from mail-eopbgr60089.outbound.protection.outlook.com ([40.107.6.89]:38285
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725892AbgG3KWP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 06:22:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bV+0GZmtzjXdgXe9Xp72Rio3nguL7dB6+Pumzm4hvN0Cz0WP+bpGXlyFVRKsH/8mJAfaUwkIPwHLHs+w9osiRQMkvPoLE9JNxvmZgh5drQfPIOhFGjmawfndWHp8FO+auchhKD2BSbD4nY5E8w0lNusfTKB/traNSq9NYeO6buwEH5WDIaZS+gq9JMLwi3c1G38/8sp7RNArjgQkgiU07nO5FnmwaOWvW8XHdebsPVNaxdMRowX9dUR2kYSlfkxKorXiNzAgXlruMRUzwLptN2zvKDi4JB6/K/YMaDOlc3SZh97FLTS2x7b5v3P2Vy1jlFxPdSzTa2I87aRl2v1niA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xhDX0usYKyFSwfHA23XFSDaT8UCERO9Jou2prt5uSwI=;
+ b=DGcSkeZW4pI7tz6i+Z80hCcQlrLbHhthRIRfLw4eid/oCmfAuLfVJVjAZnU/uhykPhbwUOxX725m+BtxnDAZk8OLa3OtOI4r0LWFWhkDwJrL4t3aMp6w+3nFleW/oXcOXh9l2tl6IUmJySyjE78jysqMpS2FVIfJBnFbB12rrNMsJodzvAFduIgN0AZRFhIFVzWtplvXkq/dy06H33ZnIGYQ/mO/PsmXcxvsQMzC/RZhUGyL4goc/k5WU5QvBqSbT1C0KUnfvzVDEVS5LMk04O56SesIqtZnIy2jU3kSonl99Zx6Ytfjn9gWJ9FP66daHAUmoV7Q1IkIgPd/hhJQ5Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xhDX0usYKyFSwfHA23XFSDaT8UCERO9Jou2prt5uSwI=;
+ b=hBfSVUuIbGq2J3AERK28QAli4ID42Z+H/7xXqoIYOBibHg6dSOtICJcJRBy8FLXNUeu9qDHnm15HPQuCDRX8kOVAFfoI0HP8fQlluqbI1uY3/watr5j+RMrc2Bmq70Sxmlt8/qpPkP22OhOijX6crw17aqt0FmQ7xOMrvyl9VKM=
+Authentication-Results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
+Received: from DB7PR04MB5099.eurprd04.prod.outlook.com (2603:10a6:10:18::30)
+ by DB8PR04MB6924.eurprd04.prod.outlook.com (2603:10a6:10:11e::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.16; Thu, 30 Jul
+ 2020 10:22:12 +0000
+Received: from DB7PR04MB5099.eurprd04.prod.outlook.com
+ ([fe80::f801:51e:28:f2a3]) by DB7PR04MB5099.eurprd04.prod.outlook.com
+ ([fe80::f801:51e:28:f2a3%4]) with mapi id 15.20.3239.019; Thu, 30 Jul 2020
+ 10:22:12 +0000
+From:   hongbo.wang@nxp.com
+To:     xiaoliang.yang_1@nxp.com, allan.nielsen@microchip.com,
+        po.liu@nxp.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, vladimir.oltean@nxp.com,
+        leoyang.li@nxp.com, mingkai.hu@nxp.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        davem@davemloft.net, jiri@resnulli.us, idosch@idosch.org,
+        kuba@kernel.org, vinicius.gomes@intel.com,
+        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, ivecera@redhat.com
+Cc:     "hongbo.wang" <hongbo.wang@nxp.com>
+Subject: [PATCH v4 0/2] Add 802.1AD protocol support for dsa switch and ocelot driver
+Date:   Thu, 30 Jul 2020 18:25:03 +0800
+Message-Id: <20200730102505.27039-1-hongbo.wang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SGBP274CA0019.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::31)
+ To DB7PR04MB5099.eurprd04.prod.outlook.com (2603:10a6:10:18::30)
 MIME-Version: 1.0
-References: <20200730080048.32553-1-kurt@linutronix.de> <20200730080048.32553-6-kurt@linutronix.de>
- <9e18a305-fbb9-f4da-cf73-65a16bdceb12@ti.com> <87ime5ny3e.fsf@kurt>
-In-Reply-To: <87ime5ny3e.fsf@kurt>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 30 Jul 2020 12:24:07 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2G7YJqzwrLDnDDO3ZUtNvyBSyun=6NjY3M2KS0Wr1ubg@mail.gmail.com>
-Message-ID: <CAK8P3a2G7YJqzwrLDnDDO3ZUtNvyBSyun=6NjY3M2KS0Wr1ubg@mail.gmail.com>
-Subject: Re: [PATCH v3 5/9] ethernet: ti: am65-cpts: Use generic helper function
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Samuel Zou <zou_wei@huawei.com>,
-        Networking <netdev@vger.kernel.org>,
-        Petr Machata <petrm@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Nu/tRjJl+FsuOdStm1+7v3duIp5c7XM+UOKetiC0452gQbV2NoW
- 2zhO8jzjiRlX7JOvanJdhYJimb4AVwehv1mRS+0kv4htPEj1/0wBlzakNK+wGzIqot7efoY
- nsaiqJklkvc5RKVHZXvZR1KfClVhmdGd18aZDTxv189A3XngmWBo1wiVLlMBbVPopyhUM5B
- pb58427kHsdn17UfoF/Hg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:rbNXKeTh3hc=:9WZOGrPo4O3Ai2uIxjx0xJ
- lUkdR08HPVVjqnwAlX09crKCEd2WL7lxxHjvyfALOdXLXHPcK9ehfZKoL/0AqnqkScNAwXrw9
- KLZaeBA09nAdP5rCK5b8rcAwtYmdoyAfWasC8wzalGEPnkX5yb4KKTSPJRCQKgR/+XQIBDIxT
- iM36ytEDqyPnN3hndtzKoN9T9zz4WTxo19lrXQ5LSyL+tZ3wS9g1oCzkiMRSJtP70Rss0GpDi
- w9tDc/+dElGGOzGIkADU2dnykbEagy01J0jVLOb3Q5c+jgKiRajws/YAwTOo8y3XyjuYFA6N/
- wsK8FglwU7IBsaLaBDqNO6Ejg16zWadz8NumNhjoh+fOBoZXLJUWNzPuB70MPxt4PgJPKTPn6
- zlfL13mA0lRTSpv0GDZ2ZO7W2G2duBv1qCk/Yoryr0nBHhcBUzYygbRfz9roqV28estrew09w
- Yi+1KSZGNXQ2wybZcKQGxCyBqvo4zDrbITSVqUe4JrPwtjHkF8wErFrAFLqqpT1wKOqdaleWs
- HJ2zpO2woEnQR1RYe3I2RzPJudbhKXjsw9Ba/mKjCi4rQ/B9KMyMvGLQvHMvr2kCoIBvLDqVq
- SzyJBYok23kUaUs6FqU1HG68Htk1XhHYPyUo7qt/ooB/o35DNXYSNP5V5LmhrRarq2ss/S6le
- +TzKjeTWro8vT06K2/mFqn6fSAB/1D5yEiANw1Dn/WC0VrxXr04nXrSv8xbhIpW17o4VCHmAi
- IFKcaHWhaXxizhwxRzZzOxJOOdnsyB4GjCCKdQXuc3PX5Z8lzCmUju5Wo2hZnj6kR6dFT7Q5B
- MJ2XYEzRoZfOU0qXDB1cWNDz30+SDOIVj1zjY4zcIexqU5HfL5ypn5gteUgEQjDBRlkT+LIZL
- VOvxq8j40bkrRMkcG2X/Iif/n5RgwmagZIGyaibFnHtrZueKqp21hAHwyXSJiEvyG68NVm8Bk
- 4kCYiVaIdWA3AvGJ7TooZUjCUOdNWj6cbz840qcZ5QBT+M3YUM9dc
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from whb-OptiPlex-790.ap.freescale.net (119.31.174.73) by SGBP274CA0019.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.17 via Frontend Transport; Thu, 30 Jul 2020 10:22:05 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [119.31.174.73]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: c95ad15c-4c97-4618-9111-08d834726c37
+X-MS-TrafficTypeDiagnostic: DB8PR04MB6924:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB8PR04MB6924FBF0F1493DBB07A2533CE1710@DB8PR04MB6924.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: h4z08L5sOZXmoW6x55iy17jmbVa8eOSvYvHm/CE2dkECBJdNVtbJATkyOsIqGUBQw5IQIRUI0poQJaxyjnLvvrSU51tIutSp+4oOiPD23JXxGB4U86ELi51+mmOxPeZNEve7GtC9Vhcwj8VmfdDjH5da57uExFNOctbaYFFJgo0wmc6Aj6bKRYgqE7WOTXt+5RyRSyc7g2PYb5n+mkKB2Pl7ydtLdvAIWT5vZvv3NPILwX3P4msTgRczHS/fkH4JA0dwrGZ+acw7Y2s2dppcWy/2Ea4PVqcKU+rvdR9kk4/7q5jUDuunzcSe1ZZg42CXu3ETm2XlPSkWFPJQTFOCMS70hyaTXYcs2w1W29bGhW4uFe9JN31KrFbkwQZ6PXtl
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5099.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(346002)(376002)(366004)(136003)(396003)(2906002)(83380400001)(36756003)(66476007)(66946007)(4326008)(66556008)(6486002)(7416002)(52116002)(8676002)(316002)(86362001)(6506007)(6512007)(9686003)(1076003)(26005)(2616005)(956004)(478600001)(186003)(5660300002)(8936002)(16526019)(921003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: rng0YGPoGA6CptCVTUacyjKkLgYlCz8kGek+c3VnL2dYJbN2HOoparw953aXFEArWK4aNyIFGbUepq3Be4VijYUnbzJojQIUE+uRyKqoqP65DpSRVJkBRpMxnV7jLYY2No4RDKwN9eWsZlzJi+ZzBX8UbgW/qH/sZat3eixTbaPloa+vQbCra4m1Sd4CjW+eJY9KV/4gqFUkViPMvvHmdYcUHssW+gpCXeWq/i7Ki7DQpf70rF9QPzrDyWXtxvt/Gc20rusp+nMJuNdJ3Y0HKLmxXo/OpR9Mn9qmEE2N7QGwUgLE1vv5AAz8fpAxureZa6ovvzvOuAhQUb/pknHLg6uegP23GxHZ6786BhzeRetrpeOYRmbBJDZocm6DD2rL7xUpfbgBWvLpDxEdZ4Lm/eHKalrE8VghA0qbmABCeu5kqPYwZx+onZEH7yqMR2aSVy1Nl9bWbhVL0NNqjiqmHWzLa+CRcoseH1kWavpLS7sGMHBVNWK3MkE6YPjdk1iJIowDEqHGBYFE1QLyNR1Yk/dets2xe1isACxboOHrgx7x9uCeeNYCXTmsnprE3Tt7f6Xoyk0M90P3TMn/CHf8JVZ6tcIr1sgaCqvwv01u3ZJAzE1TYRPXI925D38YLpUa07FJ57JG96cJWEQGQrnOSg==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c95ad15c-4c97-4618-9111-08d834726c37
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5099.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2020 10:22:12.2080
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ubuhUhWOdBQNZrWLbXy8nKsKmfW05DNN4Gj4VZdvVEidqGgWm3an/qsG6KVl2MpYzSMe7HtEFv5D/6EU9Aosxw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6924
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 30, 2020 at 11:41 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
-> On Thu Jul 30 2020, Grygorii Strashko wrote:
-> > On 30/07/2020 11:00, Kurt Kanzenbach wrote:
-> >> +    msgtype = ptp_get_msgtype(hdr, ptp_class);
-> >> +    seqid   = be16_to_cpu(hdr->sequence_id);
-> >
-> > Is there any reason to not use "ntohs()"?
->
-> This is just my personal preference, because I think it's more
-> readable. Internally ntohs() uses be16_to_cpu(). There's no technical
-> reason for it.
+From: "hongbo.wang" <hongbo.wang@nxp.com>
 
-I think for traditional reasons, code in net/* tends to use ntohs()
-while code in drivers/*  tends to use be16_to_cpu().
+1. the patch 0001* is for setting single port into 802.1AD(QinQ) mode,
+before this patch, the function dsa_slave_vlan_rx_add_vid didn't pass 
+the parameter "proto" to next port level, so switch's port can't get
+parameter "proto"
+  after applying this patch, the following command can be supported:
+  ip link set br0 type bridge vlan_protocol 802.1ad
+  ip link add link swp1 name swp1.100 type vlan protocol 802.1ad id 100
 
-In drivers/net/* the two are used roughly the same, though I guess
-one could make the argument that be16_to_cpu() would be
-more appropriate for data structures exchanged with hardware
-while ntohs() makes sense on data structures sent over the
-network.
+2. the patch 0002* is for setting QinQ related registers in ocelot 
+switch driver, after applying this patch, the switch(VSC99599)'s port can
+enable or disable QinQ mode.
 
-     Arnd
+3. Version log
+v4: 
+a. modify slave.c to support "ip set br0 type bridge vlan_protocol 802.1ad"
+b. modify ocelot.c, if enable QinQ, set VLAN_AWARE_ENA and VLAN_POP_CNT per
+   port when vlan_filter=1
+v3: combine two patches to one post
+
+hongbo.wang (2):
+  net: dsa: Add protocol support for 802.1AD when adding or   deleting
+    vlan for dsa switch port
+  net: dsa: ocelot: Add support for QinQ Operation
+
+ drivers/net/dsa/ocelot/felix.c     | 12 +++++++
+ drivers/net/ethernet/mscc/ocelot.c | 53 +++++++++++++++++++++++++-----
+ include/net/switchdev.h            |  1 +
+ include/soc/mscc/ocelot.h          |  2 ++
+ net/dsa/dsa_priv.h                 |  4 +--
+ net/dsa/port.c                     |  6 ++--
+ net/dsa/slave.c                    | 27 +++++++++++----
+ net/dsa/tag_8021q.c                |  4 +--
+ 8 files changed, 89 insertions(+), 20 deletions(-)
+
+-- 
+2.17.1
+
