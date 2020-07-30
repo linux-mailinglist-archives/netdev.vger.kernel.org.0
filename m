@@ -2,201 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BF782334A4
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 16:41:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E950F2334E3
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 17:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729617AbgG3OlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 10:41:03 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:45064 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726535AbgG3OlC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 10:41:02 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.60])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9807860099;
-        Thu, 30 Jul 2020 14:41:01 +0000 (UTC)
-Received: from us4-mdac16-54.ut7.mdlocal (unknown [10.7.66.25])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 90854200A0;
-        Thu, 30 Jul 2020 14:41:01 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.42])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 0C4B91C0051;
-        Thu, 30 Jul 2020 14:41:01 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9770FA40079;
-        Thu, 30 Jul 2020 14:41:00 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 30 Jul
- 2020 15:40:53 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 12/12] sfc_ef100: add nic-type for VFs, and bind to
- them
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-References: <abac4f27-7fac-2bd4-636b-4cfc401603ae@solarflare.com>
-Message-ID: <2f3ce571-e25d-ba0c-fb0a-3e04383ce6ba@solarflare.com>
-Date:   Thu, 30 Jul 2020 15:40:49 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <abac4f27-7fac-2bd4-636b-4cfc401603ae@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25572.005
-X-TM-AS-Result: No-7.976800-8.000000-10
-X-TMASE-MatchedRID: qjW9V/Hb/oHMdO/aI0cjorsHVDDM5xAP1JP9NndNOkUGmHr1eMxt2UAc
-        6DyoS2rIj6kCfX0Edc4mQHxxqFX9+dJGUnV5uUQk5x61kcWHbRZJaD67iKvY0yJcTqMCib7FOkb
-        /WDfe2OYHtdkqavJrPHQBcSHhv1FA6799S5AV4EYgCPGiZqtI8OHCwRwMNQUWSMg2Oe/b8ExVR4
-        kqiI6BgY9QLvd1dyp55knayZl8+1iRehYFOG64KEhwlOfYeSqxMVx/3ZYby79tfQJzq1p8Jqip1
-        8v0DWYVXK9FoQ/9VZ62ZXRrhevIb+rio6p+t0cn4WAObM1VUqhfAXPuWnqbjwk6S8C293Smt1oy
-        FZpewUdSrEIb6WWZAem8dcFmTYdoRuJGaNfpGiIHtOpEBhWiFlsP0tBwe3qDq012kWtld3xn4/n
-        MWJ1Bm/Pe1KADdXu8PDyxXK7R6Xi8BgGfZhePrQnxCJVNCszYvMRNh9hLjFn5+tteD5RzhR5E67
-        yReou74vM1YF6AJbZFi+KwZZttL42j49Ftap9EOwBXM346/+wreRjpj7B+QIWCGuMRU5pcekHt9
-        44nOmrNgzzOppqI0io9OuiROxhA
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.976800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25572.005
-X-MDID: 1596120061-uKLN2DHyYS68
+        id S1729693AbgG3PBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 11:01:33 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:12820 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726275AbgG3PBa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 11:01:30 -0400
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06UF02rl130557;
+        Thu, 30 Jul 2020 11:01:27 -0400
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 32m0f181gw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Jul 2020 11:01:26 -0400
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06UErMD4023210;
+        Thu, 30 Jul 2020 15:01:25 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma06fra.de.ibm.com with ESMTP id 32jgvpsvx5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Jul 2020 15:01:25 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06UF1Md120578668
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 30 Jul 2020 15:01:22 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 54DE9A4051;
+        Thu, 30 Jul 2020 15:01:22 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0A97BA4053;
+        Thu, 30 Jul 2020 15:01:22 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 30 Jul 2020 15:01:21 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next 0/4] s390/qeth: updates 2020-07-30
+Date:   Thu, 30 Jul 2020 17:01:17 +0200
+Message-Id: <20200730150121.18005-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-30_11:2020-07-30,2020-07-30 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
+ impostorscore=0 spamscore=0 clxscore=1015 mlxlogscore=966 phishscore=0
+ lowpriorityscore=0 suspectscore=0 bulkscore=0 malwarescore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2007300103
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We don't yet have a .sriov_configure() to create them, though.
+Hi Dave & Jakub,
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/ef100.c     |  2 +
- drivers/net/ethernet/sfc/ef100_nic.c | 77 ++++++++++++++++++++++++++++
- drivers/net/ethernet/sfc/ef100_nic.h |  2 +
- 3 files changed, 81 insertions(+)
+please apply the following patch series for qeth to netdev's net-next tree.
 
-diff --git a/drivers/net/ethernet/sfc/ef100.c b/drivers/net/ethernet/sfc/ef100.c
-index de611c0f94e7..9729983f4840 100644
---- a/drivers/net/ethernet/sfc/ef100.c
-+++ b/drivers/net/ethernet/sfc/ef100.c
-@@ -527,6 +527,8 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
- static const struct pci_device_id ef100_pci_table[] = {
- 	{PCI_DEVICE(PCI_VENDOR_ID_XILINX, 0x0100),  /* Riverhead PF */
- 		.driver_data = (unsigned long) &ef100_pf_nic_type },
-+	{PCI_DEVICE(PCI_VENDOR_ID_XILINX, 0x1100),  /* Riverhead VF */
-+		.driver_data = (unsigned long) &ef100_vf_nic_type },
- 	{0}                     /* end of list */
- };
- 
-diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-index 48083ae52db1..de171688c0ae 100644
---- a/drivers/net/ethernet/sfc/ef100_nic.c
-+++ b/drivers/net/ethernet/sfc/ef100_nic.c
-@@ -780,6 +780,78 @@ const struct efx_nic_type ef100_pf_nic_type = {
- 
- };
- 
-+const struct efx_nic_type ef100_vf_nic_type = {
-+	.revision = EFX_REV_EF100,
-+	.is_vf = true,
-+	.probe = ef100_probe_vf,
-+	.offload_features = EF100_OFFLOAD_FEATURES,
-+	.mcdi_max_ver = 2,
-+	.mcdi_request = ef100_mcdi_request,
-+	.mcdi_poll_response = ef100_mcdi_poll_response,
-+	.mcdi_read_response = ef100_mcdi_read_response,
-+	.mcdi_poll_reboot = ef100_mcdi_poll_reboot,
-+	.mcdi_reboot_detected = ef100_mcdi_reboot_detected,
-+	.irq_enable_master = efx_port_dummy_op_void,
-+	.irq_test_generate = efx_ef100_irq_test_generate,
-+	.irq_disable_non_ev = efx_port_dummy_op_void,
-+	.push_irq_moderation = efx_channel_dummy_op_void,
-+	.min_interrupt_mode = EFX_INT_MODE_MSIX,
-+	.map_reset_reason = ef100_map_reset_reason,
-+	.map_reset_flags = ef100_map_reset_flags,
-+	.reset = ef100_reset,
-+	.check_caps = ef100_check_caps,
-+	.ev_probe = ef100_ev_probe,
-+	.ev_init = ef100_ev_init,
-+	.ev_fini = efx_mcdi_ev_fini,
-+	.ev_remove = efx_mcdi_ev_remove,
-+	.irq_handle_msi = ef100_msi_interrupt,
-+	.ev_process = ef100_ev_process,
-+	.ev_read_ack = ef100_ev_read_ack,
-+	.ev_test_generate = efx_ef100_ev_test_generate,
-+	.tx_probe = ef100_tx_probe,
-+	.tx_init = ef100_tx_init,
-+	.tx_write = ef100_tx_write,
-+	.tx_enqueue = ef100_enqueue_skb,
-+	.rx_probe = efx_mcdi_rx_probe,
-+	.rx_init = efx_mcdi_rx_init,
-+	.rx_remove = efx_mcdi_rx_remove,
-+	.rx_write = ef100_rx_write,
-+	.rx_packet = __ef100_rx_packet,
-+	.fini_dmaq = efx_fini_dmaq,
-+	.max_rx_ip_filters = EFX_MCDI_FILTER_TBL_ROWS,
-+	.filter_table_probe = ef100_filter_table_up,
-+	.filter_table_restore = efx_mcdi_filter_table_restore,
-+	.filter_table_remove = ef100_filter_table_down,
-+	.filter_insert = efx_mcdi_filter_insert,
-+	.filter_remove_safe = efx_mcdi_filter_remove_safe,
-+	.filter_get_safe = efx_mcdi_filter_get_safe,
-+	.filter_clear_rx = efx_mcdi_filter_clear_rx,
-+	.filter_count_rx_used = efx_mcdi_filter_count_rx_used,
-+	.filter_get_rx_id_limit = efx_mcdi_filter_get_rx_id_limit,
-+	.filter_get_rx_ids = efx_mcdi_filter_get_rx_ids,
-+	.filter_rfs_expire_one = efx_mcdi_filter_rfs_expire_one,
-+
-+	.rx_prefix_size = ESE_GZ_RX_PKT_PREFIX_LEN,
-+	.rx_hash_offset = ESF_GZ_RX_PREFIX_RSS_HASH_LBN / 8,
-+	.rx_ts_offset = ESF_GZ_RX_PREFIX_PARTIAL_TSTAMP_LBN / 8,
-+	.rx_hash_key_size = 40,
-+	.rx_pull_rss_config = efx_mcdi_rx_pull_rss_config,
-+	.rx_push_rss_config = efx_mcdi_pf_rx_push_rss_config,
-+	.rx_restore_rss_contexts = efx_mcdi_rx_restore_rss_contexts,
-+
-+	.reconfigure_mac = ef100_reconfigure_mac,
-+	.test_nvram = efx_new_mcdi_nvram_test_all,
-+	.describe_stats = ef100_describe_stats,
-+	.start_stats = efx_mcdi_mac_start_stats,
-+	.update_stats = ef100_update_stats,
-+	.pull_stats = efx_mcdi_mac_pull_stats,
-+	.stop_stats = efx_mcdi_mac_stop_stats,
-+
-+	.mem_bar = NULL,
-+	.mem_map_size = NULL,
-+
-+};
-+
- static int compare_versions(const char *a, const char *b)
- {
- 	int a_major, a_minor, a_point, a_patch;
-@@ -1164,6 +1236,11 @@ int ef100_probe_pf(struct efx_nic *efx)
- 	return rc;
- }
- 
-+int ef100_probe_vf(struct efx_nic *efx)
-+{
-+	return ef100_probe_main(efx);
-+}
-+
- void ef100_remove(struct efx_nic *efx)
- {
- 	struct ef100_nic_data *nic_data = efx->nic_data;
-diff --git a/drivers/net/ethernet/sfc/ef100_nic.h b/drivers/net/ethernet/sfc/ef100_nic.h
-index 4a64c9438493..e799688d5264 100644
---- a/drivers/net/ethernet/sfc/ef100_nic.h
-+++ b/drivers/net/ethernet/sfc/ef100_nic.h
-@@ -13,8 +13,10 @@
- #include "nic_common.h"
- 
- extern const struct efx_nic_type ef100_pf_nic_type;
-+extern const struct efx_nic_type ef100_vf_nic_type;
- 
- int ef100_probe_pf(struct efx_nic *efx);
-+int ef100_probe_vf(struct efx_nic *efx);
- void ef100_remove(struct efx_nic *efx);
- 
- enum {
+This primarily brings some modernization to the RX path, laying the
+groundwork for smarter RX refill policies.
+Some of the patches are tagged as fixes, but really target only rare /
+theoretical issues. So given where we are in the release cycle and that we
+touch the main RX path, taking them through net-next seems more appropriate.
+
+Thanks,
+Julian
+
+Julian Wiedmann (4):
+  s390/qeth: tolerate pre-filled RX buffer
+  s390/qeth: integrate RX refill worker with NAPI
+  s390/qeth: don't process empty bridge port events
+  s390/qeth: use all configured RX buffers
+
+ drivers/s390/net/qeth_core.h      |  2 +-
+ drivers/s390/net/qeth_core_main.c | 76 +++++++++++++++++--------------
+ drivers/s390/net/qeth_l2_main.c   |  5 +-
+ drivers/s390/net/qeth_l3_main.c   |  1 -
+ 4 files changed, 48 insertions(+), 36 deletions(-)
+
+-- 
+2.17.1
+
