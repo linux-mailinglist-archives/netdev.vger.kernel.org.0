@@ -2,78 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2950123399C
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 22:17:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE2682339BA
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 22:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730279AbgG3UR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 16:17:26 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28689 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726495AbgG3UR0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 16:17:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596140245;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type;
-        bh=qM3w6Ax2r4WxBSj5VUslAARuud0ZCrC8MlEwdcyfw+Y=;
-        b=Z2MOQLXQG1m0k3ulcDgbrDtZB28m6NVdccQU+8pp537Lk1xFRAnjrNOTOHZTO760a50zYn
-        pNqB8ctarTgIXWfmjHZSWTy9Jgsey7YmReCRXCRY5B2WKMA1BY3QPuZASgJ/olmZ7VYxdW
-        W6s4ZgjKTQErBQcmPE1zkNnpIxQZOzg=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-4-5OnVEdDdMLSCaX5eEoFN4w-1; Thu, 30 Jul 2020 16:16:23 -0400
-X-MC-Unique: 5OnVEdDdMLSCaX5eEoFN4w-1
-Received: by mail-wm1-f70.google.com with SMTP id s4so1584127wmh.1
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 13:16:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=qM3w6Ax2r4WxBSj5VUslAARuud0ZCrC8MlEwdcyfw+Y=;
-        b=Pyil3U7ENM0CK8of0Opb7DYo7v1aGvtZzKStR14n8nPX5NmhdlAvV0D+Lm7N+N/N6i
-         qpqvJkSiUVaghq83z9n/KkgDOQlO4VEc1j83XMmGBIv9kYl1CwN0oqPhyFVWY0IOxtB5
-         t778OyLQvUBQkiZiF9nIskTgJwc7XCpXK5M6I3Lo6j8WCBY0h5fKcPoB+L5kdFecVYgn
-         Hqmp1R+0AdGWtV6Sh+rUJ5bobi0RMnaL77R8OO14xe6k7QYolAKpy1ivTG1Qqht+vDNf
-         mbi5xkUHSNvO/r8LqobepocM5JTic+g30h15VdsftQzL1LrtEXaprQTZuwMWbtKG+yNc
-         8A2w==
-X-Gm-Message-State: AOAM532CQiufXcvDkhaLvBrXnICaJT83YcPpGOoByCFXifbOTE7cDsqS
-        H5Y3uQ7ooI4jdibXHsdu9Wj54JmIAl62/0sCguhAuVUGF6q3TOH1VqBFsMPiODpzuk3Yyfc/oht
-        W3IOS78x8EBdLgpo0
-X-Received: by 2002:a1c:7315:: with SMTP id d21mr757415wmb.108.1596140182502;
-        Thu, 30 Jul 2020 13:16:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyaW4Btw9dZUceS/cij1HeCm0SFI2rEAGOXLL4HOI+53Vk16dXahuaRQktZI/xj2QB69Rhweg==
-X-Received: by 2002:a1c:7315:: with SMTP id d21mr757406wmb.108.1596140182316;
-        Thu, 30 Jul 2020 13:16:22 -0700 (PDT)
-Received: from redhat.com (bzq-79-179-105-63.red.bezeqint.net. [79.179.105.63])
-        by smtp.gmail.com with ESMTPSA id g18sm11747978wru.27.2020.07.30.13.16.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jul 2020 13:16:21 -0700 (PDT)
-Date:   Thu, 30 Jul 2020 16:16:17 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org
-Subject: rcu warnings in tun
-Message-ID: <20200730161536-mutt-send-email-mst@kernel.org>
+        id S1728731AbgG3UhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 16:37:25 -0400
+Received: from mga14.intel.com ([192.55.52.115]:30885 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726838AbgG3UhY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 16:37:24 -0400
+IronPort-SDR: a7IV7tlDhkHBRaD8U0S9tDYjGH1L6r04S9FwohRozgl0zoyQofw7CiZBS6KCQ4/Xq2wFNYA4gJ
+ ElwyfJMC7VfQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="150885518"
+X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
+   d="scan'208";a="150885518"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2020 13:37:23 -0700
+IronPort-SDR: MZthjpEzmxj/DcvrGW7pVu9949jMDzgAyOGO9rVA0DgT3C9/KV64hUSgtZ3ZjUOuUM5XmwWtXY
+ EU/vkJtn66rw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,415,1589266800"; 
+   d="scan'208";a="274324242"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by fmsmga008.fm.intel.com with ESMTP; 30 Jul 2020 13:37:23 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        jeffrey.t.kirsher@intel.com
+Subject: [net-next 00/12][pull request] 1GbE Intel Wired LAN Driver Updates 2020-07-30
+Date:   Thu, 30 Jul 2020 13:37:08 -0700
+Message-Id: <20200730203720.3843018-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Was building tun with sparse the other day, noticed this:
+This series contains updates to e100, e1000, e1000e, igb, igbvf, ixgbe,
+ixgbevf, iavf, and driver documentation.
 
-drivers/net/tun.c:3003:36: warning: incorrect type in argument 2 (different address spaces)
-drivers/net/tun.c:3003:36:    expected struct tun_prog [noderef] __rcu **prog_p
-drivers/net/tun.c:3003:36:    got struct tun_prog **prog_p
-drivers/net/tun.c:3292:42: warning: incorrect type in argument 2 (different address spaces)
-drivers/net/tun.c:3292:42:    expected struct tun_prog **prog_p
-drivers/net/tun.c:3292:42:    got struct tun_prog [noderef] __rcu **
-drivers/net/tun.c:3296:42: warning: incorrect type in argument 2 (different address spaces)
-drivers/net/tun.c:3296:42:    expected struct tun_prog **prog_p
-drivers/net/tun.c:3296:42:    got struct tun_prog [noderef] __rcu **
+Vaibhav Gupta converts legacy .suspend() and .resume() to generic PM
+callbacks for e100, igbvf, ixgbe, ixgbevf, and iavf.
 
-any idea when did these surface?
+Suraj Upadhyay replaces 1 byte memsets with assignments for e1000,
+e1000e, igb, and ixgbe.
+
+Alexander Klimov replaces http links with https.
+
+Miaohe Lin replaces uses of memset to clear MAC addresses with
+eth_zero_addr().
+
+The following are changes since commit 41d707b7332f1386642c47eb078110ca368a46f5:
+  fib: fix fib_rules_ops indirect calls wrappers
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
+
+Alexander A. Klimov (1):
+  Documentation: intel: Replace HTTP links with HTTPS ones
+
+Miaohe Lin (2):
+  ixgbe: use eth_zero_addr() to clear mac address
+  igb: use eth_zero_addr() to clear mac address
+
+Suraj Upadhyay (4):
+  e1000: Remove unnecessary usages of memset
+  e1000e: Remove unnecessary usages of memset
+  igb: Remove unnecessary usages of memset
+  ixgbe: Remove unnecessary usages of memset
+
+Vaibhav Gupta (5):
+  iavf: use generic power management
+  igbvf: use generic power management
+  ixgbe: use generic power management
+  ixgbevf: use generic power management
+  e100: use generic power management
+
+ .../device_drivers/ethernet/intel/e100.rst    |  4 +-
+ .../device_drivers/ethernet/intel/fm10k.rst   |  2 +-
+ .../device_drivers/ethernet/intel/iavf.rst    |  2 +-
+ .../device_drivers/ethernet/intel/igb.rst     |  2 +-
+ .../device_drivers/ethernet/intel/igbvf.rst   |  2 +-
+ .../device_drivers/ethernet/intel/ixgb.rst    |  2 +-
+ drivers/net/ethernet/intel/e100.c             | 32 +++++-----
+ .../net/ethernet/intel/e1000/e1000_ethtool.c  |  4 +-
+ drivers/net/ethernet/intel/e1000e/ethtool.c   |  4 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c   | 45 ++++----------
+ drivers/net/ethernet/intel/igb/igb_ethtool.c  |  4 +-
+ drivers/net/ethernet/intel/igb/igb_main.c     |  4 +-
+ drivers/net/ethernet/intel/igbvf/netdev.c     | 37 +++--------
+ .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  |  4 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 61 +++++--------------
+ .../net/ethernet/intel/ixgbe/ixgbe_sriov.c    |  2 +-
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c | 44 +++----------
+ 17 files changed, 77 insertions(+), 178 deletions(-)
+
 -- 
-MST
+2.26.2
 
