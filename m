@@ -2,93 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2F96232C9B
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 09:30:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F91F232C8B
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 09:29:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728979AbgG3HaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 03:30:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54038 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726194AbgG3HaY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 03:30:24 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 920F12070B;
-        Thu, 30 Jul 2020 07:30:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596094224;
-        bh=obI1cW5B2vkgbR1FTfLccdeC3SAat3jW9yYsILJxDWg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=orK/glA1/hvlkXbeRL/ErCXplRTG2IdEYTZIOuVeFybdLjUDj+ooPomqVXeg43nNx
-         KUv7nvvrlhzi9y8Gv4OlkglG+/K/2Ahej8yLlhBLQBriVuIocrEIT5rGr70LaYanAU
-         Vpzlk51SlSihnn6OD4YaDjfQGoXhb9AAHTM+tzuk=
-Date:   Thu, 30 Jul 2020 09:30:13 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     stable@vger.kernel.org, netdev@vger.kernel.org,
-        madalin.bucur@oss.nxp.com, camelia.groza@nxp.com,
-        joakim.tjernlund@infinera.com, fido_max@inbox.ru,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 stable-5.4.y] Revert "dpaa_eth: fix usage as DSA
- master, try 3"
-Message-ID: <20200730073013.GC4045776@kroah.com>
-References: <20200624124517.3212326-1-olteanv@gmail.com>
+        id S1728724AbgG3H3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 03:29:01 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8301 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728645AbgG3H3A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 03:29:00 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 98FDACF1B7DEE6E0CB59;
+        Thu, 30 Jul 2020 15:28:54 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Thu, 30 Jul 2020
+ 15:28:49 +0800
+From:   Liu Jian <liujian56@huawei.com>
+To:     <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <paulb@mellanox.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH net] net/sched: The error lable position is corrected in ct_init_module
+Date:   Thu, 30 Jul 2020 16:14:28 +0800
+Message-ID: <20200730081428.35904-1-liujian56@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200624124517.3212326-1-olteanv@gmail.com>
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 24, 2020 at 03:45:17PM +0300, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> This reverts commit 40a904b1c2e57b22dd002dfce73688871cb0bac8.
-> 
-> The patch is not wrong, but the Fixes: tag is. It should have been:
-> 
-> 	Fixes: 060ad66f9795 ("dpaa_eth: change DMA device")
-> 
-> which means that it's fixing a commit which was introduced in:
-> 
-> git tag --contains 060ad66f97954
-> v5.5
-> 
-> which then means it should have not been backported to linux-5.4.y,
-> where things _were_ working and now they're not.
-> 
-> Reported-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> Changes in v1:
-> Adjusted the commit message from linux-4.19.y to linux-5.4.y
-> 
-> Changes in v2:
-> Fixed the sha1sum of the reverted commit.
-> 
->  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> index 6683409fbd4a..4b21ae27a9fd 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> @@ -2796,7 +2796,7 @@ static int dpaa_eth_probe(struct platform_device *pdev)
->  	}
->  
->  	/* Do this here, so we can be verbose early */
-> -	SET_NETDEV_DEV(net_dev, dev->parent);
-> +	SET_NETDEV_DEV(net_dev, dev);
->  	dev_set_drvdata(dev, net_dev);
->  
->  	priv = netdev_priv(net_dev);
-> -- 
-> 2.25.1
-> 
+From: liujian <liujian56@huawei.com>
 
-Now queued up, thanks.
+Exchange the positions of the err_tbl_init and err_register labels in
+ct_init_module function.
 
-greg k-h
+Fixes: c34b961a2492 ("net/sched: act_ct: Create nf flow table per zone")
+Signed-off-by: liujian <liujian56@huawei.com>
+---
+ net/sched/act_ct.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 5928efb6449c..6ed1652d1e26 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -1543,10 +1543,10 @@ static int __init ct_init_module(void)
+ 
+ 	return 0;
+ 
+-err_tbl_init:
+-	destroy_workqueue(act_ct_wq);
+ err_register:
+ 	tcf_ct_flow_tables_uninit();
++err_tbl_init:
++	destroy_workqueue(act_ct_wq);
+ 	return err;
+ }
+ 
+-- 
+2.17.1
+
