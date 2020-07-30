@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B0E232C00
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 08:42:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66D52232C18
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 08:51:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728779AbgG3Gmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 02:42:39 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:43904 "EHLO huawei.com"
+        id S1728828AbgG3GvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 02:51:01 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8860 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725892AbgG3Gmi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 02:42:38 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 840B94D43BBC68A5832C;
-        Thu, 30 Jul 2020 14:42:32 +0800 (CST)
-Received: from huawei.com (10.175.104.57) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Thu, 30 Jul 2020
- 14:42:27 +0800
-From:   Li Heng <liheng40@huawei.com>
-To:     <michael.chan@broadcom.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] bnxt_en: Remove superfluous memset()
-Date:   Thu, 30 Jul 2020 14:43:50 +0800
-Message-ID: <1596091430-19486-1-git-send-email-liheng40@huawei.com>
-X-Mailer: git-send-email 2.7.4
+        id S1728760AbgG3Gu7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 02:50:59 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 1369950D6FCD2D5DE4B9;
+        Thu, 30 Jul 2020 14:50:57 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.487.0; Thu, 30 Jul 2020
+ 14:50:50 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <imitsyanko@quantenna.com>, <geomatsi@gmail.com>,
+        <kvalo@codeaurora.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <mst@redhat.com>, <mkarpenko@quantenna.com>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] qtnfmac: Missing platform_device_unregister() on error in qtnf_core_mac_alloc()
+Date:   Thu, 30 Jul 2020 14:49:10 +0800
+Message-ID: <20200730064910.37589-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.175.104.57]
+X-Originating-IP: [10.175.113.133]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes coccicheck warning:
+Add the missing platform_device_unregister() before return from
+qtnf_core_mac_alloc() in the error handling case.
 
-./drivers/net/ethernet/broadcom/bnxt/bnxt.c:3730:19-37: WARNING:
-dma_alloc_coherent use in stats -> hw_stats already zeroes out
-memory,  so memset is not needed
-
-dma_alloc_coherent use in status already zeroes out memory,
-so memset is not needed
-
+Fixes: 616f5701f4ab ("qtnfmac: assign each wiphy to its own virtual platform device")
 Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Li Heng <liheng40@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/wireless/quantenna/qtnfmac/core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 2622d3c..31fb5a2 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3732,8 +3732,6 @@ static int bnxt_alloc_stats_mem(struct bnxt *bp, struct bnxt_stats_mem *stats,
- 	if (!stats->hw_stats)
- 		return -ENOMEM;
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/core.c b/drivers/net/wireless/quantenna/qtnfmac/core.c
+index eea777f8acea..6aafff9d4231 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/core.c
++++ b/drivers/net/wireless/quantenna/qtnfmac/core.c
+@@ -446,8 +446,11 @@ static struct qtnf_wmac *qtnf_core_mac_alloc(struct qtnf_bus *bus,
+ 	}
  
--	memset(stats->hw_stats, 0, stats->len);
--
- 	stats->sw_stats = kzalloc(stats->len, GFP_KERNEL);
- 	if (!stats->sw_stats)
- 		goto stats_mem_err;
+ 	wiphy = qtnf_wiphy_allocate(bus, pdev);
+-	if (!wiphy)
++	if (!wiphy) {
++		if (pdev)
++			platform_device_unregister(pdev);
+ 		return ERR_PTR(-ENOMEM);
++	}
+ 
+ 	mac = wiphy_priv(wiphy);
+ 
 -- 
-2.7.4
+2.17.1
 
