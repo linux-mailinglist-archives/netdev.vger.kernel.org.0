@@ -2,167 +2,449 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 977B123323C
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 14:32:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50122233244
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 14:33:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728008AbgG3Max (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 08:30:53 -0400
-Received: from mail-eopbgr00050.outbound.protection.outlook.com ([40.107.0.50]:9285
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726773AbgG3Maw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 08:30:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CXY2r6T9+DxFRW157yyn+Fx3CCEbifRzhsU4s+4dKWcoibMIqJXTYP5O8+FJZ8fSdvtNNhWnz/2LVmZ80LIXcOXC5sh0/yvVY8ru44XsTeMDQoJzr7lUbeXapVZqSqlC//j5SlPwb6IAkRvOnGbLnuQHSAjJc5UoEXEkgmvs3cziYT2UI8aITfyga2XEXKOY49QrsCQhXe/e/L6Haj+ku63ebas48js0B4MHMVHmuOU6xu3IBZt4x/jKZ314TExXpA8DOtL85/4V+ihtz7RQajl7fhUaOZq40DZV4DEFrTmDAimEnb0t62d3B7So+uRfr4JisGhNLTLVzIB7I9lJ+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1O1qT0XmCGyVzdiP3tfXf7fvI2yLW3Nq+7WHWKEoMD4=;
- b=Z6TYhxcBAvb6ttQfEJIRgSK1S4/Uj0334qNudNf1QgNAafdqFb68xEsQ0XVhEmDAKIcBIpyRf2QFkaqwELFFRA9enmkuUvmzEamZYEBEPx+UPnNwWWsP3QulNgQE2WDDd/cd2OqvbCP2gE//aiYqdfC4r7EG8VQE8gRf2F9YeRp/qMBuwAzqmnWQGBGsCdLAhQEpOUgArACiGqOOyDJXOT/zi9wp4RL9bVRznkBF2sikIttZZZqQNVrYrsJwvOYlcv0xwpMEcPX52d/RftwgJ1E43Zk1QZwn6+pkeghc8Yrw7vTOX1Nuz+CHUcXNNuQIJY29QX2MX8N+1AKExyvlZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1O1qT0XmCGyVzdiP3tfXf7fvI2yLW3Nq+7WHWKEoMD4=;
- b=PMt5ETALI5+Rs3RNlhpJ8fomnXVddaxA1UJ50Q6BeHwmAbYv+0b9mvwEWG+ScwC8jb2L0f375snRO8gTeQcksv5o+SzdmY3usFt45HOadT4Vyqnkz4VpNS7Xaf8SJeeJvhJjsZer32rTsX1WOM4DTKifyldzt7vq0yqqZaM+LaI=
-Authentication-Results: broadcom.com; dkim=none (message not signed)
- header.d=none;broadcom.com; dmarc=none action=none header.from=mellanox.com;
-Received: from DB7PR05MB4298.eurprd05.prod.outlook.com (2603:10a6:5:27::14) by
- DB6PR05MB3174.eurprd05.prod.outlook.com (2603:10a6:6:1e::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3216.28; Thu, 30 Jul 2020 12:30:48 +0000
-Received: from DB7PR05MB4298.eurprd05.prod.outlook.com
- ([fe80::f0bd:dfca:10ef:b3be]) by DB7PR05MB4298.eurprd05.prod.outlook.com
- ([fe80::f0bd:dfca:10ef:b3be%4]) with mapi id 15.20.3216.033; Thu, 30 Jul 2020
- 12:30:48 +0000
-Subject: Re: [PATCH net-next RFC 01/13] devlink: Add reload level option to
- devlink reload command
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
- <1595847753-2234-2-git-send-email-moshe@mellanox.com>
- <20200727175802.04890dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200728135808.GC2207@nanopsycho>
- <464add44-3ab1-21b8-3dba-a88202350bb9@intel.com>
- <20200728114458.762b5396@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <d6fbfedd-9022-ff67-23ed-418607beecc2@intel.com>
- <20200728130653.7ce2f013@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <04f00024-758c-bc19-c187-49847c24a5a4@mellanox.com>
- <20200729140708.5f914c15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Moshe Shemesh <moshe@mellanox.com>
-Message-ID: <3352bd96-d10e-6961-079d-5c913a967513@mellanox.com>
-Date:   Thu, 30 Jul 2020 15:30:45 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20200729140708.5f914c15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: AM0PR10CA0040.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:150::20) To DB7PR05MB4298.eurprd05.prod.outlook.com
- (2603:10a6:5:27::14)
+        id S1727930AbgG3MdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 08:33:23 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:55843 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726615AbgG3MdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 08:33:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596112399;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K2E/cmEiV1f/6sEMWOMGKWEMZu0AtiDofKUismqmDcU=;
+        b=GmXafuHZh76J+kDpUiaNWKE0KxvYBYIA86NO58Bta0LhLwGxc7KTJ+/uc6mhe/Yh5f7oXH
+        lCc97ZTzX6je20YicRdfL21I608KOFl2uYYrRzeCyIolZRNx6Az699eDSzyxc6l3kqMXDM
+        QBFxmtdls1m2S2esl2bxKKSJex/fokc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-287-JlNc5bppPTOOurf6RmOcKA-1; Thu, 30 Jul 2020 08:33:17 -0400
+X-MC-Unique: JlNc5bppPTOOurf6RmOcKA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DA2B4800685;
+        Thu, 30 Jul 2020 12:33:15 +0000 (UTC)
+Received: from [10.36.114.39] (ovpn-114-39.ams2.redhat.com [10.36.114.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C82688A18A;
+        Thu, 30 Jul 2020 12:33:13 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Tonghao Zhang" <xiangxia.m.yue@gmail.com>
+Cc:     "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
+        "David Miller" <davem@davemloft.net>,
+        "ovs dev" <dev@openvswitch.org>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "Pravin Shelar" <pshelar@ovn.org>,
+        "Florian Westphal" <fw@strlen.de>
+Subject: Re: [PATCH net-next v3 2/2] net: openvswitch: make masks cache size
+ configurable
+Date:   Thu, 30 Jul 2020 14:33:12 +0200
+Message-ID: <C6B2B758-FF29-4463-8F38-757803D77779@redhat.com>
+In-Reply-To: <CAMDZJNUQeScZXRNe0TnAX08mmF-KHVvdM16AcQnaC8fay8ZH-g@mail.gmail.com>
+References: <159602912600.937753.3123982828905970322.stgit@ebuild>
+ <159602917888.937753.17718463910615059058.stgit@ebuild>
+ <CAMDZJNUQeScZXRNe0TnAX08mmF-KHVvdM16AcQnaC8fay8ZH-g@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.0.105] (5.102.195.53) by AM0PR10CA0040.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.17 via Frontend Transport; Thu, 30 Jul 2020 12:30:46 +0000
-X-Originating-IP: [5.102.195.53]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 799721ff-94f7-400b-cd0b-08d83484632d
-X-MS-TrafficTypeDiagnostic: DB6PR05MB3174:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB6PR05MB3174907D7F6383B264657C6AD9710@DB6PR05MB3174.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 74EtRrWnxufHkwB9IOWwGcn9pk3BJCk4xpgQgjpdzTRpmb2refS6HZULU/mB3mHUvlEg96pnYncHybMiRMabhJnSYbEHu9U9wBv9uIFkPCcOKushJV1IAJXD0RpxCcH01tJq2vKiTUOoLw8wuYSa0aOcxhLDiJHg0OpPmnX+vj4uYeuiFH2aYW3nsNS79Hh7/FznB01U1Kqc4A4pd88RjGKVuFVRGd+KRq+NGOpgPunZvvcpV8T+3l2oL/5EGuxFOmRdORMZRukIpqVd3IXkGSfhZguoyYT3xgE5TRWdOTRNaqh6riBaTFP8kNgLe0fZ/GKG6n9YLp4kpfCd65+8dJ7bHeyv5A0J7blwSAokL75s7el3OqDBaXwcl5dCGZ28
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR05MB4298.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(396003)(366004)(346002)(376002)(136003)(66476007)(66556008)(6486002)(6916009)(956004)(8936002)(8676002)(2616005)(31696002)(54906003)(4326008)(66946007)(316002)(83380400001)(31686004)(2906002)(478600001)(86362001)(5660300002)(26005)(52116002)(36756003)(16526019)(53546011)(16576012)(186003)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: pdTKXD8T4TD3o3nE/lsA0scOD4rENSBUIoBIu8R6rFrQHUI5Bups9gy/c7aq8vTiPXQHmhwQV1S1HZS8QnWEaP68bKVjDDHhAyXwmFDiLHkL/3biiYY5hKc6VQXt4PSFalqTSXaSxLZo0vkgcfH5Ahlzp/QmQ0OYp8sCHEXnoneNgUFIJ09suxuaFjAv0snNU2vmqDqD5jgtJkeUgIxe8gh9zoNrxlUtoWPhl8xMZ7acBsi7mGodjFI0GDkKGtIUrr6YRTwat8YyX47gDvOF7pFAyeoyHJHBfSirlXRYXVZyxs333mBKfij4pR95ZUYC33jDB4pd9PHtEY6g71PYyoVXTQ1GO9Dc/QmyAIjvw+DlxeUh5WYu5LqZ2ctmTFE7UlvXyn78Suut3+ea3Xy3MUy1sGyM0TDMsjUKatVMTt6cE55hbNPJmRmtoJBc15o/h/tjU6rcSm5nMujoxQiojC41AzgsGMTHp21Rfl/IE6E=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 799721ff-94f7-400b-cd0b-08d83484632d
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR05MB4298.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2020 12:30:47.9177
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qi6YU4wCZPznnbuwCHG4wvirVu8/qdP6FDZqkitxdiv7cmu0uFUxE9oTJwLqc/gtEPYQRO/zoWtIrkH9SmNvWA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR05MB3174
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thanks Tonghao for the review, see comments inline below!
 
-On 7/30/2020 12:07 AM, Jakub Kicinski wrote:
-> On Wed, 29 Jul 2020 17:54:08 +0300 Moshe Shemesh wrote:
->> On 7/28/2020 11:06 PM, Jakub Kicinski wrote:
->>> On Tue, 28 Jul 2020 12:18:30 -0700 Jacob Keller wrote:
->>>> On 7/28/2020 11:44 AM, Jakub Kicinski wrote:
->>>>>   From user perspective what's important is what the reset achieves (and
->>>>> perhaps how destructive it is). We can define the reset levels as:
->>>>>
->>>>> $ devlink dev reload pci/0000:82:00.0 net-ns-respawn
->>>>> $ devlink dev reload pci/0000:82:00.0 driver-param-init
->>>>> $ devlink dev reload pci/0000:82:00.0 fw-activate
->>>>>
->>>>> combining should be possible when user wants multiple things to happen:
->>>>>
->>>>> $ devlink dev reload pci/0000:82:00.0 fw-activate driver-param-init
->>>> Where today "driver-param-init" is the default behavior. But didn't we
->>>> just say that mlxsw also does the equivalent of fw-activate?
->>> Actually the default should probably be the combination of
->>> driver-param-init and net-ns-respawn.
->> What about the support of these combinations, one device needs to reset
->> fw to apply the param init, while another device can apply param-init
->> without fw reset, but has to reload the driver for fw-reset.
+If I get no more reviews by the end of the week I’ll send out a v4.
+
+//Eelco
+
+
+On 30 Jul 2020, at 7:07, Tonghao Zhang wrote:
+
+> On Wed, Jul 29, 2020 at 9:27 PM Eelco Chaudron <echaudro@redhat.com> 
+> wrote:
 >>
->> So the support per driver will be a matrix of combinations ?
-> Note that there is no driver reload in my examples, driver reload is
-> likely not user's goal. Whatever the driver needs to reset to satisfy
-> the goal is fair game IMO.
+>> This patch makes the masks cache size configurable, or with
+>> a size of 0, disable it.
+>>
+>> Reviewed-by: Paolo Abeni <pabeni@redhat.com>
+>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>> ---
+>> Changes in v3:
+>>  - Use is_power_of_2() function
+>>  - Use array_size() function
+>>  - Fix remaining sparse errors
+>>
+>> Changes in v2:
+>>  - Fix sparse warnings
+>>  - Fix netlink policy items reported by Florian Westphal
+>>
+>>  include/uapi/linux/openvswitch.h |    1
+>>  net/openvswitch/datapath.c       |   14 +++++
+>>  net/openvswitch/flow_table.c     |   97 
+>> +++++++++++++++++++++++++++++++++-----
+>>  net/openvswitch/flow_table.h     |   10 ++++
+>>  4 files changed, 108 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/include/uapi/linux/openvswitch.h 
+>> b/include/uapi/linux/openvswitch.h
+>> index 7cb76e5ca7cf..8300cc29dec8 100644
+>> --- a/include/uapi/linux/openvswitch.h
+>> +++ b/include/uapi/linux/openvswitch.h
+>> @@ -86,6 +86,7 @@ enum ovs_datapath_attr {
+>>         OVS_DP_ATTR_MEGAFLOW_STATS,     /* struct 
+>> ovs_dp_megaflow_stats */
+>>         OVS_DP_ATTR_USER_FEATURES,      /* OVS_DP_F_*  */
+>>         OVS_DP_ATTR_PAD,
+>> +       OVS_DP_ATTR_MASKS_CACHE_SIZE,
+>>         __OVS_DP_ATTR_MAX
+>>  };
+>>
+>> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+>> index a54df1fe3ec4..114b2ddb8037 100644
+>> --- a/net/openvswitch/datapath.c
+>> +++ b/net/openvswitch/datapath.c
+>> @@ -1498,6 +1498,7 @@ static size_t ovs_dp_cmd_msg_size(void)
+>>         msgsize += nla_total_size_64bit(sizeof(struct ovs_dp_stats));
+>>         msgsize += nla_total_size_64bit(sizeof(struct 
+>> ovs_dp_megaflow_stats));
+>>         msgsize += nla_total_size(sizeof(u32)); /* 
+>> OVS_DP_ATTR_USER_FEATURES */
+>> +       msgsize += nla_total_size(sizeof(u32)); /* 
+>> OVS_DP_ATTR_MASKS_CACHE_SIZE */
+>>
+>>         return msgsize;
+>>  }
+>> @@ -1535,6 +1536,10 @@ static int ovs_dp_cmd_fill_info(struct 
+>> datapath *dp, struct sk_buff *skb,
+>>         if (nla_put_u32(skb, OVS_DP_ATTR_USER_FEATURES, 
+>> dp->user_features))
+>>                 goto nla_put_failure;
+>>
+>> +       if (nla_put_u32(skb, OVS_DP_ATTR_MASKS_CACHE_SIZE,
+>> +                       ovs_flow_tbl_masks_cache_size(&dp->table)))
+>> +               goto nla_put_failure;
+>> +
+>>         genlmsg_end(skb, ovs_header);
+>>         return 0;
+>>
+>> @@ -1599,6 +1604,13 @@ static int ovs_dp_change(struct datapath *dp, 
+>> struct nlattr *a[])
+>>  #endif
+>>         }
+>>
+>> +       if (a[OVS_DP_ATTR_MASKS_CACHE_SIZE]) {
+>> +               u32 cache_size;
+>> +
+>> +               cache_size = 
+>> nla_get_u32(a[OVS_DP_ATTR_MASKS_CACHE_SIZE]);
+>> +               ovs_flow_tbl_masks_cache_resize(&dp->table, 
+>> cache_size);
+> Do we should return error code, if we can't change the "mask_cache"
+> size ? for example, -EINVAL, -ENOMEM
 
+Initially, I did not do this due to the fact the new value is reported, 
+and on failure, the old value is shown.
+However thinking about it again, it makes more sense to return an error. 
+Will sent a v4 with the following to return:
 
-Actually, driver-param-init (cmode driverinit) implicit driver 
-re-initialization.
+-
+-void ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32 
+size)
++int ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32 size)
+  {
+         struct mask_cache *mc = rcu_dereference(table->mask_cache);
+         struct mask_cache *new;
 
-> It's already the case that some drivers reset FW for param init and some
-> don't and nobody is complaining.
+         if (size == mc->cache_size)
+-               return;
++               return 0;
++
++       if (!is_power_of_2(size) && size != 0)
++               return -EINVAL;
 
+         new = tbl_mask_cache_alloc(size);
+         if (!new)
+-               return;
++               return -ENOMEM;
 
-Right, driver may need more than driver re-initialization for 
-driver-param-init, but I think that driver re-initialization is the 
-minimum for driver-param-init.
+         rcu_assign_pointer(table->mask_cache, new);
+         call_rcu(&mc->rcu, mask_cache_rcu_cb);
++
++       return 0;
+  }
 
-> We should treat constraints separate (in this set we have the live
-> activation which is a constraint on the reload operation).
+>> +       }
+>> +
+>>         dp->user_features = user_features;
+>>
+>>         if (dp->user_features & OVS_DP_F_TC_RECIRC_SHARING)
+>> @@ -1894,6 +1906,8 @@ static const struct nla_policy 
+>> datapath_policy[OVS_DP_ATTR_MAX + 1] = {
+>>         [OVS_DP_ATTR_NAME] = { .type = NLA_NUL_STRING, .len = 
+>> IFNAMSIZ - 1 },
+>>         [OVS_DP_ATTR_UPCALL_PID] = { .type = NLA_U32 },
+>>         [OVS_DP_ATTR_USER_FEATURES] = { .type = NLA_U32 },
+>> +       [OVS_DP_ATTR_MASKS_CACHE_SIZE] =  NLA_POLICY_RANGE(NLA_U32, 
+>> 0,
+>> +               PCPU_MIN_UNIT_SIZE / sizeof(struct 
+>> mask_cache_entry)),
+>>  };
+>>
+>>  static const struct genl_ops dp_datapath_genl_ops[] = {
+>> diff --git a/net/openvswitch/flow_table.c 
+>> b/net/openvswitch/flow_table.c
+>> index a5912ea05352..5280aeeef628 100644
+>> --- a/net/openvswitch/flow_table.c
+>> +++ b/net/openvswitch/flow_table.c
+>> @@ -38,8 +38,8 @@
+>>  #define MASK_ARRAY_SIZE_MIN    16
+>>  #define REHASH_INTERVAL                (10 * 60 * HZ)
+>>
+>> +#define MC_DEFAULT_HASH_ENTRIES        256
+>>  #define MC_HASH_SHIFT          8
+>> -#define MC_HASH_ENTRIES                (1u << MC_HASH_SHIFT)
+>>  #define MC_HASH_SEGS           ((sizeof(uint32_t) * 8) / 
+>> MC_HASH_SHIFT)
+>>
+>>  static struct kmem_cache *flow_cache;
+>> @@ -341,15 +341,75 @@ static void flow_mask_remove(struct flow_table 
+>> *tbl, struct sw_flow_mask *mask)
+>>         }
+>>  }
+>>
+>> +static void __mask_cache_destroy(struct mask_cache *mc)
+>> +{
+>> +       if (mc->mask_cache)
+>> +               free_percpu(mc->mask_cache);
+> free_percpu the NULL is safe. we can remove the "if".
+
+Makes sense, will remove the if() check.
+
+>> +       kfree(mc);
+>> +}
+>> +
+>> +static void mask_cache_rcu_cb(struct rcu_head *rcu)
+>> +{
+>> +       struct mask_cache *mc = container_of(rcu, struct mask_cache, 
+>> rcu);
+>> +
+>> +       __mask_cache_destroy(mc);
+>> +}
+>> +
+>> +static struct mask_cache *tbl_mask_cache_alloc(u32 size)
+>> +{
+>> +       struct mask_cache_entry __percpu *cache = NULL;
+>> +       struct mask_cache *new;
+>> +
+>> +       /* Only allow size to be 0, or a power of 2, and does not 
+>> exceed
+>> +        * percpu allocation size.
+>> +        */
+>> +       if ((!is_power_of_2(size) && size != 0) ||
+>> +           (size * sizeof(struct mask_cache_entry)) > 
+>> PCPU_MIN_UNIT_SIZE)
+>> +               return NULL;
+>> +       new = kzalloc(sizeof(*new), GFP_KERNEL);
+>> +       if (!new)
+>> +               return NULL;
+>> +
+>> +       new->cache_size = size;
+>> +       if (new->cache_size > 0) {
+>> +               cache = __alloc_percpu(array_size(sizeof(struct 
+>> mask_cache_entry),
+>> +                                                 new->cache_size),
+>> +                                      __alignof__(struct 
+>> mask_cache_entry));
+>> +               if (!cache) {
+>> +                       kfree(new);
+>> +                       return NULL;
+>> +               }
+>> +       }
+>> +
+>> +       new->mask_cache = cache;
+>> +       return new;
+>> +}
+>> +
+>> +void ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32 
+>> size)
+>> +{
+>> +       struct mask_cache *mc = rcu_dereference(table->mask_cache);
+>> +       struct mask_cache *new;
+>> +
+>> +       if (size == mc->cache_size)
+>> +               return;
+>> +
+>> +       new = tbl_mask_cache_alloc(size);
+>> +       if (!new)
+>> +               return;
+>> +
+>> +       rcu_assign_pointer(table->mask_cache, new);
+>> +       call_rcu(&mc->rcu, mask_cache_rcu_cb);
+>> +}
+>> +
+>>  int ovs_flow_tbl_init(struct flow_table *table)
+>>  {
+>>         struct table_instance *ti, *ufid_ti;
+>> +       struct mask_cache *mc;
+>>         struct mask_array *ma;
+>>
+>> -       table->mask_cache = __alloc_percpu(sizeof(struct 
+>> mask_cache_entry) *
+>> -                                          MC_HASH_ENTRIES,
+>> -                                          __alignof__(struct 
+>> mask_cache_entry));
+>> -       if (!table->mask_cache)
+>> +       mc = tbl_mask_cache_alloc(MC_DEFAULT_HASH_ENTRIES);
+>> +       if (!mc)
+>>                 return -ENOMEM;
+>>
+>>         ma = tbl_mask_array_alloc(MASK_ARRAY_SIZE_MIN);
+>> @@ -367,6 +427,7 @@ int ovs_flow_tbl_init(struct flow_table *table)
+>>         rcu_assign_pointer(table->ti, ti);
+>>         rcu_assign_pointer(table->ufid_ti, ufid_ti);
+>>         rcu_assign_pointer(table->mask_array, ma);
+>> +       rcu_assign_pointer(table->mask_cache, mc);
+>>         table->last_rehash = jiffies;
+>>         table->count = 0;
+>>         table->ufid_count = 0;
+>> @@ -377,7 +438,7 @@ int ovs_flow_tbl_init(struct flow_table *table)
+>>  free_mask_array:
+>>         __mask_array_destroy(ma);
+>>  free_mask_cache:
+>> -       free_percpu(table->mask_cache);
+>> +       __mask_cache_destroy(mc);
+>>         return -ENOMEM;
+>>  }
+>>
+>> @@ -453,9 +514,11 @@ void ovs_flow_tbl_destroy(struct flow_table 
+>> *table)
+>>  {
+>>         struct table_instance *ti = rcu_dereference_raw(table->ti);
+>>         struct table_instance *ufid_ti = 
+>> rcu_dereference_raw(table->ufid_ti);
+>> +       struct mask_cache *mc = rcu_dereference(table->mask_cache);
+>> +       struct mask_array *ma = 
+>> rcu_dereference_ovsl(table->mask_array);
+>>
+>> -       free_percpu(table->mask_cache);
+>> -       call_rcu(&table->mask_array->rcu, mask_array_rcu_cb);
+>> +       call_rcu(&mc->rcu, mask_cache_rcu_cb);
+>> +       call_rcu(&ma->rcu, mask_array_rcu_cb);
+>>         table_instance_destroy(table, ti, ufid_ti, false);
+>>  }
+>>
+>> @@ -724,6 +787,7 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct 
+>> flow_table *tbl,
+>>                                           u32 *n_mask_hit,
+>>                                           u32 *n_cache_hit)
+>>  {
+>> +       struct mask_cache *mc = rcu_dereference(tbl->mask_cache);
+>>         struct mask_array *ma = rcu_dereference(tbl->mask_array);
+>>         struct table_instance *ti = rcu_dereference(tbl->ti);
+>>         struct mask_cache_entry *entries, *ce;
+>> @@ -733,7 +797,7 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct 
+>> flow_table *tbl,
+>>
+>>         *n_mask_hit = 0;
+>>         *n_cache_hit = 0;
+>> -       if (unlikely(!skb_hash)) {
+>> +       if (unlikely(!skb_hash || mc->cache_size == 0)) {
+>>                 u32 mask_index = 0;
+>>                 u32 cache = 0;
+>>
+>> @@ -749,11 +813,11 @@ struct sw_flow 
+>> *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
+>>
+>>         ce = NULL;
+>>         hash = skb_hash;
+>> -       entries = this_cpu_ptr(tbl->mask_cache);
+>> +       entries = this_cpu_ptr(mc->mask_cache);
+>>
+>>         /* Find the cache entry 'ce' to operate on. */
+>>         for (seg = 0; seg < MC_HASH_SEGS; seg++) {
+>> -               int index = hash & (MC_HASH_ENTRIES - 1);
+>> +               int index = hash & (mc->cache_size - 1);
+>>                 struct mask_cache_entry *e;
+>>
+>>                 e = &entries[index];
+>> @@ -867,6 +931,13 @@ int ovs_flow_tbl_num_masks(const struct 
+>> flow_table *table)
+>>         return READ_ONCE(ma->count);
+>>  }
+>>
+>> +u32 ovs_flow_tbl_masks_cache_size(const struct flow_table *table)
+>> +{
+>> +       struct mask_cache *mc = rcu_dereference(table->mask_cache);
+>> +
+>> +       return READ_ONCE(mc->cache_size);
+>> +}
+>> +
+>>  static struct table_instance *table_instance_expand(struct 
+>> table_instance *ti,
+>>                                                     bool ufid)
+>>  {
+>> @@ -1095,8 +1166,8 @@ void ovs_flow_masks_rebalance(struct flow_table 
+>> *table)
+>>         for (i = 0; i < masks_entries; i++) {
+>>                 int index = masks_and_count[i].index;
+>>
+>> -               new->masks[new->count++] =
+>> -                       rcu_dereference_ovsl(ma->masks[index]);
+>> +               if (ovsl_dereference(ma->masks[index]))
+>> +                       new->masks[new->count++] = ma->masks[index];
+>>         }
+>>
+>>         rcu_assign_pointer(table->mask_array, new);
+>> diff --git a/net/openvswitch/flow_table.h 
+>> b/net/openvswitch/flow_table.h
+>> index 325e939371d8..f2dba952db2f 100644
+>> --- a/net/openvswitch/flow_table.h
+>> +++ b/net/openvswitch/flow_table.h
+>> @@ -27,6 +27,12 @@ struct mask_cache_entry {
+>>         u32 mask_index;
+>>  };
+>>
+>> +struct mask_cache {
+>> +       struct rcu_head rcu;
+>> +       u32 cache_size;  /* Must be ^2 value. */
+>> +       struct mask_cache_entry __percpu *mask_cache;
+>> +};
+>> +
+>>  struct mask_count {
+>>         int index;
+>>         u64 counter;
+>> @@ -53,7 +59,7 @@ struct table_instance {
+>>  struct flow_table {
+>>         struct table_instance __rcu *ti;
+>>         struct table_instance __rcu *ufid_ti;
+>> -       struct mask_cache_entry __percpu *mask_cache;
+>> +       struct mask_cache __rcu *mask_cache;
+>>         struct mask_array __rcu *mask_array;
+>>         unsigned long last_rehash;
+>>         unsigned int count;
+>> @@ -77,6 +83,8 @@ int ovs_flow_tbl_insert(struct flow_table *table, 
+>> struct sw_flow *flow,
+>>                         const struct sw_flow_mask *mask);
+>>  void ovs_flow_tbl_remove(struct flow_table *table, struct sw_flow 
+>> *flow);
+>>  int  ovs_flow_tbl_num_masks(const struct flow_table *table);
+>> +u32  ovs_flow_tbl_masks_cache_size(const struct flow_table *table);
+>> +void ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32 
+>> size);
+>>  struct sw_flow *ovs_flow_tbl_dump_next(struct table_instance *table,
+>>                                        u32 *bucket, u32 *idx);
+>>  struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *,
+>>
 >
->>> My expectations would be that the driver must perform the lowest
->>> reset level possible that satisfies the requested functional change.
->>> IOW driver may do more, in fact it should be acceptable for the
->>> driver to always for a full HW reset (unless --live or other
->>> constraint is specified).
->> OK, but some combinations may still not be valid for specific driver
->> even if it tries lowest level possible.
-> Can you give an example?
-
-
-For example take the combination of fw-live-patch and param-init.
-
-The fw-live-patch needs no re-initialization, while the param-init 
-requires driver re-initialization.
-
-So the only way to do that is to the one command after the other, not 
-really combining.
-
-Other combination, as fw-atcivate and param-init may not be valid for a 
-specific driver as it doesn't support one of them and so can't even run 
-one after the other.
+>
+> -- 
+> Best regards, Tonghao
 
