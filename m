@@ -2,15 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECE4B232CC8
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 10:01:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66434232CC9
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 10:01:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729002AbgG3IBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 04:01:06 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:48628 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728865AbgG3IA7 (ORCPT
+        id S1729006AbgG3IBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 04:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728955AbgG3IA7 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 04:00:59 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B6EC0619D2
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 01:00:59 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1596096057;
@@ -18,21 +21,21 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3KVqULQgDBBQavit3YP1GIzDOmOOSvIFIOOkmVMmyvY=;
-        b=oXQmIQM3J6eo4ywCCZF8Wngo6ITAY9qYM2FRAEVaMA4RV46ZukAhXhuUVeLkzmbKG3zdGJ
-        ffW4+Vm+9fsYIT6RvJrC1yW1B4w2INhtGu5at4GwKzuuKO61Wi5a5SIoy+T7vjmWkkWhLI
-        rHxoCSe3rbxgoUI49KsPoJHdxQH5HBNSH78J/gD0152080wPuC5DuE5FyBhkdEgjUrTpJv
-        E8Dc3muDBQeeehZrECgPtpsHlGzM7bXoWQrHEub35WMhOhLQzqpHK1XmSAtbSbY/g4PlzX
-        bDsNDMxLYDYGSQSNosNW5zDDz5RaNOvp4CaaxVnhBOmtXQB2aL6rAv6hqZkg3A==
+        bh=qCfbcMWraFBRP/yZfPoPLMvG8cwiV1+8wOi/c5uvpMM=;
+        b=V72sSEQ0MPOporyGDJeUOFA7yf4AAw/ycAWNZrJMusI+8Rym9cZQvzSLYzbO0xduUqo82z
+        IMKIfamu9qseFXt0yF2BZ7TvDsjGUXZA3IShIkAXAFMwkunrNBFs6Ibj4CcrOPfcmqGgB1
+        dyPv3j4XgVD7CRngSNR2h60gw0jXjra6ljXEGwakqDSy1vydh9MkuEaZhygszRe89KAVbR
+        zw1vgFms3o5gqlva1LklN3urbLuyzDCzM8uEdOheZUCv9DALSm7G9Fc15kxGEAHHQrE41z
+        S+9i8d1DWF734sHlUk0sWnCByrsx/Jg4De9lpoLWuIT0Y2bqGVOiO/qqjcvGlQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1596096057;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3KVqULQgDBBQavit3YP1GIzDOmOOSvIFIOOkmVMmyvY=;
-        b=CJmpOGGqfhXkQdxrpSImIsjUXV/gaX2FfRC0X55e5azuiGORDAP6Fz/6SZ8UTz21OxP1XP
-        /EXdo9tk+wpK5aBA==
+        bh=qCfbcMWraFBRP/yZfPoPLMvG8cwiV1+8wOi/c5uvpMM=;
+        b=UfHi9qdId2zOnQTMxT86pRHL7mFmJ+CUSb2q6G+TPQI9Ec0YGTk9txHcHhzdeuLHd5Q3pW
+        UrhFaP5owWB6OuBQ==
 To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -48,9 +51,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
         Petr Machata <petrm@mellanox.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v3 7/9] net: phy: dp83640: Use generic helper function
-Date:   Thu, 30 Jul 2020 10:00:46 +0200
-Message-Id: <20200730080048.32553-8-kurt@linutronix.de>
+Subject: [PATCH v3 8/9] ptp: ptp_ines: Use generic helper function
+Date:   Thu, 30 Jul 2020 10:00:47 +0200
+Message-Id: <20200730080048.32553-9-kurt@linutronix.de>
 In-Reply-To: <20200730080048.32553-1-kurt@linutronix.de>
 References: <20200730080048.32553-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -65,31 +68,43 @@ functions were introduced. Use them.
 
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- drivers/net/phy/dp83640.c | 69 +++++++++------------------------------
- 1 file changed, 16 insertions(+), 53 deletions(-)
+ drivers/ptp/ptp_ines.c | 88 ++++++++++++------------------------------
+ 1 file changed, 25 insertions(+), 63 deletions(-)
 
-diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/dp83640.c
-index 50fb7d16b75a..1cd987e3d0f2 100644
---- a/drivers/net/phy/dp83640.c
-+++ b/drivers/net/phy/dp83640.c
-@@ -803,46 +803,28 @@ static int decode_evnt(struct dp83640_private *dp83640,
+diff --git a/drivers/ptp/ptp_ines.c b/drivers/ptp/ptp_ines.c
+index 7711651ff19e..d726c589edda 100644
+--- a/drivers/ptp/ptp_ines.c
++++ b/drivers/ptp/ptp_ines.c
+@@ -93,9 +93,6 @@ MODULE_LICENSE("GPL");
+ #define TC_E2E_PTP_V2		2
+ #define TC_P2P_PTP_V2		3
  
- static int match(struct sk_buff *skb, unsigned int type, struct rxts *rxts)
+-#define OFF_PTP_CLOCK_ID	20
+-#define OFF_PTP_PORT_NUM	28
+-
+ #define PHY_SPEED_10		0
+ #define PHY_SPEED_100		1
+ #define PHY_SPEED_1000		2
+@@ -443,57 +440,41 @@ static void ines_link_state(struct mii_timestamper *mii_ts,
+ static bool ines_match(struct sk_buff *skb, unsigned int ptp_class,
+ 		       struct ines_timestamp *ts, struct device *dev)
  {
--	unsigned int offset = 0;
 -	u8 *msgtype, *data = skb_mac_header(skb);
--	__be16 *seqid;
+-	unsigned int offset = 0;
+-	__be16 *portn, *seqid;
+-	__be64 *clkid;
 +	struct ptp_header *hdr;
++	u16 portn, seqid;
 +	u8 msgtype;
-+	u16 seqid;
- 	u16 hash;
++	u64 clkid;
  
- 	/* check sequenceID, messageType, 12 bit hash of offset 20-29 */
+ 	if (unlikely(ptp_class & PTP_CLASS_V1))
+ 		return false;
  
--	if (type & PTP_CLASS_VLAN)
+-	if (ptp_class & PTP_CLASS_VLAN)
 -		offset += VLAN_HLEN;
 -
--	switch (type & PTP_CLASS_PMASK) {
+-	switch (ptp_class & PTP_CLASS_PMASK) {
 -	case PTP_CLASS_IPV4:
 -		offset += ETH_HLEN + IPV4_HLEN(data + offset) + UDP_HLEN;
 -		break;
@@ -100,45 +115,64 @@ index 50fb7d16b75a..1cd987e3d0f2 100644
 -		offset += ETH_HLEN;
 -		break;
 -	default:
-+	hdr = ptp_parse_header(skb, type);
-+	if (!hdr)
- 		return 0;
+-		return false;
 -	}
- 
+-
 -	if (skb->len + ETH_HLEN < offset + OFF_PTP_SEQUENCE_ID + sizeof(*seqid))
--		return 0;
-+	msgtype = ptp_get_msgtype(hdr, type);
++	hdr = ptp_parse_header(skb, ptp_class);
++	if (!hdr)
+ 		return false;
  
--	if (unlikely(type & PTP_CLASS_V1))
--		msgtype = data + offset + OFF_PTP_CONTROL;
--	else
--		msgtype = data + offset;
--	if (rxts->msgtype != (*msgtype & 0xf))
-+	if (rxts->msgtype != (msgtype & 0xf))
- 		return 0;
- 
+-	msgtype = data + offset;
+-	clkid = (__be64 *)(data + offset + OFF_PTP_CLOCK_ID);
+-	portn = (__be16 *)(data + offset + OFF_PTP_PORT_NUM);
 -	seqid = (__be16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
--	if (rxts->seqid != ntohs(*seqid))
++	msgtype = ptp_get_msgtype(hdr, ptp_class);
++	clkid = be64_to_cpup((__be64 *)&hdr->source_port_identity.clock_identity.id[0]);
++	portn = be16_to_cpu(hdr->source_port_identity.port_number);
 +	seqid = be16_to_cpu(hdr->sequence_id);
-+	if (rxts->seqid != seqid)
- 		return 0;
  
- 	hash = ether_crc(DP83640_PACKET_HASH_LEN,
--			 data + offset + DP83640_PACKET_HASH_OFFSET) >> 20;
-+			 (unsigned char *)&hdr->source_port_identity) >> 20;
- 	if (rxts->hash != hash)
- 		return 0;
+-	if (tag_to_msgtype(ts->tag & 0x7) != (*msgtype & 0xf)) {
++	if (tag_to_msgtype(ts->tag & 0x7) != msgtype) {
+ 		dev_dbg(dev, "msgtype mismatch ts %hhu != skb %hhu\n",
+-			  tag_to_msgtype(ts->tag & 0x7), *msgtype & 0xf);
++			tag_to_msgtype(ts->tag & 0x7), msgtype);
+ 		return false;
+ 	}
+-	if (cpu_to_be64(ts->clkid) != *clkid) {
++	if (ts->clkid != clkid) {
+ 		dev_dbg(dev, "clkid mismatch ts %llx != skb %llx\n",
+-			  cpu_to_be64(ts->clkid), *clkid);
++			ts->clkid, clkid);
+ 		return false;
+ 	}
+-	if (ts->portnum != ntohs(*portn)) {
++	if (ts->portnum != portn) {
+ 		dev_dbg(dev, "portn mismatch ts %hu != skb %hu\n",
+-			  ts->portnum, ntohs(*portn));
++			ts->portnum, portn);
+ 		return false;
+ 	}
+-	if (ts->seqid != ntohs(*seqid)) {
++	if (ts->seqid != seqid) {
+ 		dev_dbg(dev, "seqid mismatch ts %hu != skb %hu\n",
+-			  ts->seqid, ntohs(*seqid));
++			ts->seqid, seqid);
+ 		return false;
+ 	}
  
-@@ -982,35 +964,16 @@ static void decode_status_frame(struct dp83640_private *dp83640,
+@@ -694,35 +675,16 @@ static void ines_txtstamp_work(struct work_struct *work)
  
- static int is_sync(struct sk_buff *skb, int type)
+ static bool is_sync_pdelay_resp(struct sk_buff *skb, int type)
  {
 -	u8 *data = skb->data, *msgtype;
 -	unsigned int offset = 0;
 -
 -	if (type & PTP_CLASS_VLAN)
 -		offset += VLAN_HLEN;
--
++	struct ptp_header *hdr;
++	u8 msgtype;
+ 
 -	switch (type & PTP_CLASS_PMASK) {
 -	case PTP_CLASS_IPV4:
 -		offset += ETH_HLEN + IPV4_HLEN(data + offset) + UDP_HLEN;
@@ -155,22 +189,21 @@ index 50fb7d16b75a..1cd987e3d0f2 100644
 -
 -	if (type & PTP_CLASS_V1)
 -		offset += OFF_PTP_CONTROL;
-+	struct ptp_header *hdr;
-+	u8 msgtype;
- 
+-
 -	if (skb->len < offset + 1)
+-		return 0;
 +	hdr = ptp_parse_header(skb, type);
 +	if (!hdr)
- 		return 0;
++		return false;
  
 -	msgtype = data + offset;
 +	msgtype = ptp_get_msgtype(hdr, type);
  
--	return (*msgtype & 0xf) == 0;
-+	return (msgtype & 0xf) == 0;
- }
- 
- static void dp83640_free_clocks(void)
+-	switch ((*msgtype & 0xf)) {
++	switch ((msgtype & 0xf)) {
+ 	case SYNC:
+ 	case PDELAY_RESP:
+ 		return true;
 -- 
 2.20.1
 
