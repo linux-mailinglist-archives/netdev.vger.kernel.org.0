@@ -2,126 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDE1E233044
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 12:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F30F723304D
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 12:24:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729252AbgG3KXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 06:23:04 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50328 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728795AbgG3KXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 06:23:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596104581;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M55NVo/p4Ki/zb/dZ0gL9E7SRpn8neFKlVQ6d5TPxlA=;
-        b=Xx2T3xa43WG+HttAbYjTg/obEfruY2jbn3UyIL2lzf/jPHXaOC8wQYlHJfYISLPURCGI3y
-        veNPAyBSf2tFL+fZj4YJq1I00eBKpJ22d6onGz+uD3uaozywUmYCXaqseJXbcCUOL0yl9R
-        XizQDE0UIQgzopK91BtSbeyh/ctjyIQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-495-6wiMTaGKO6yT5rox6Fjatg-1; Thu, 30 Jul 2020 06:22:59 -0400
-X-MC-Unique: 6wiMTaGKO6yT5rox6Fjatg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 36662101C8A9;
-        Thu, 30 Jul 2020 10:22:57 +0000 (UTC)
-Received: from krava (unknown [10.40.194.223])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 2453A6179D;
-        Thu, 30 Jul 2020 10:22:53 +0000 (UTC)
-Date:   Thu, 30 Jul 2020 12:22:52 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>
-Subject: Re: [PATCH v8 bpf-next 09/13] bpf: Add d_path helper
-Message-ID: <20200730102252.GR1319041@krava>
-References: <20200722211223.1055107-1-jolsa@kernel.org>
- <20200722211223.1055107-10-jolsa@kernel.org>
- <20200729201117.GA1233513@ZenIV.linux.org.uk>
+        id S1728996AbgG3KY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 06:24:27 -0400
+Received: from mout.kundenserver.de ([212.227.17.13]:56595 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725892AbgG3KY0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 06:24:26 -0400
+Received: from mail-qk1-f179.google.com ([209.85.222.179]) by
+ mrelayeu.kundenserver.de (mreue106 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1MgwBv-1ki5v20u33-00hKLZ for <netdev@vger.kernel.org>; Thu, 30 Jul 2020
+ 12:24:25 +0200
+Received: by mail-qk1-f179.google.com with SMTP id h7so25051233qkk.7
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 03:24:24 -0700 (PDT)
+X-Gm-Message-State: AOAM531b4maDAzJHIc/XFPQdw6eTRjYlU/9vqaSp0dhL7cTi7tBiP54q
+        rhDerir/u1yRkJDEPRCCa8sqPJ4IOsv0liN7IwY=
+X-Google-Smtp-Source: ABdhPJwMBHOO0wGxSWIXQQfZTPVK1KUznk5I3GjhMa/5xHDIa88DzjjBZLP4L2//26g0QTkgWKyWIACLSgYYr9b4nOI=
+X-Received: by 2002:a37:9004:: with SMTP id s4mr36804611qkd.286.1596104663212;
+ Thu, 30 Jul 2020 03:24:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200729201117.GA1233513@ZenIV.linux.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <20200730080048.32553-1-kurt@linutronix.de> <20200730080048.32553-6-kurt@linutronix.de>
+ <9e18a305-fbb9-f4da-cf73-65a16bdceb12@ti.com> <87ime5ny3e.fsf@kurt>
+In-Reply-To: <87ime5ny3e.fsf@kurt>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 30 Jul 2020 12:24:07 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2G7YJqzwrLDnDDO3ZUtNvyBSyun=6NjY3M2KS0Wr1ubg@mail.gmail.com>
+Message-ID: <CAK8P3a2G7YJqzwrLDnDDO3ZUtNvyBSyun=6NjY3M2KS0Wr1ubg@mail.gmail.com>
+Subject: Re: [PATCH v3 5/9] ethernet: ti: am65-cpts: Use generic helper function
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Samuel Zou <zou_wei@huawei.com>,
+        Networking <netdev@vger.kernel.org>,
+        Petr Machata <petrm@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:Nu/tRjJl+FsuOdStm1+7v3duIp5c7XM+UOKetiC0452gQbV2NoW
+ 2zhO8jzjiRlX7JOvanJdhYJimb4AVwehv1mRS+0kv4htPEj1/0wBlzakNK+wGzIqot7efoY
+ nsaiqJklkvc5RKVHZXvZR1KfClVhmdGd18aZDTxv189A3XngmWBo1wiVLlMBbVPopyhUM5B
+ pb58427kHsdn17UfoF/Hg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:rbNXKeTh3hc=:9WZOGrPo4O3Ai2uIxjx0xJ
+ lUkdR08HPVVjqnwAlX09crKCEd2WL7lxxHjvyfALOdXLXHPcK9ehfZKoL/0AqnqkScNAwXrw9
+ KLZaeBA09nAdP5rCK5b8rcAwtYmdoyAfWasC8wzalGEPnkX5yb4KKTSPJRCQKgR/+XQIBDIxT
+ iM36ytEDqyPnN3hndtzKoN9T9zz4WTxo19lrXQ5LSyL+tZ3wS9g1oCzkiMRSJtP70Rss0GpDi
+ w9tDc/+dElGGOzGIkADU2dnykbEagy01J0jVLOb3Q5c+jgKiRajws/YAwTOo8y3XyjuYFA6N/
+ wsK8FglwU7IBsaLaBDqNO6Ejg16zWadz8NumNhjoh+fOBoZXLJUWNzPuB70MPxt4PgJPKTPn6
+ zlfL13mA0lRTSpv0GDZ2ZO7W2G2duBv1qCk/Yoryr0nBHhcBUzYygbRfz9roqV28estrew09w
+ Yi+1KSZGNXQ2wybZcKQGxCyBqvo4zDrbITSVqUe4JrPwtjHkF8wErFrAFLqqpT1wKOqdaleWs
+ HJ2zpO2woEnQR1RYe3I2RzPJudbhKXjsw9Ba/mKjCi4rQ/B9KMyMvGLQvHMvr2kCoIBvLDqVq
+ SzyJBYok23kUaUs6FqU1HG68Htk1XhHYPyUo7qt/ooB/o35DNXYSNP5V5LmhrRarq2ss/S6le
+ +TzKjeTWro8vT06K2/mFqn6fSAB/1D5yEiANw1Dn/WC0VrxXr04nXrSv8xbhIpW17o4VCHmAi
+ IFKcaHWhaXxizhwxRzZzOxJOOdnsyB4GjCCKdQXuc3PX5Z8lzCmUju5Wo2hZnj6kR6dFT7Q5B
+ MJ2XYEzRoZfOU0qXDB1cWNDz30+SDOIVj1zjY4zcIexqU5HfL5ypn5gteUgEQjDBRlkT+LIZL
+ VOvxq8j40bkrRMkcG2X/Iif/n5RgwmagZIGyaibFnHtrZueKqp21hAHwyXSJiEvyG68NVm8Bk
+ 4kCYiVaIdWA3AvGJ7TooZUjCUOdNWj6cbz840qcZ5QBT+M3YUM9dc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 29, 2020 at 09:11:17PM +0100, Al Viro wrote:
-> On Wed, Jul 22, 2020 at 11:12:19PM +0200, Jiri Olsa wrote:
-> 
-> > +BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
-> > +{
-> > +	char *p = d_path(path, buf, sz - 1);
-> > +	int len;
-> > +
-> > +	if (IS_ERR(p)) {
-> > +		len = PTR_ERR(p);
-> > +	} else {
-> > +		len = strlen(p);
-> > +		if (len && p != buf)
-> > +			memmove(buf, p, len);
-> 
-> *blink*
-> What the hell do you need that strlen() for?  d_path() copies into
-> the end of buffer (well, starts there and prepends to it); all you
-> really need is memmove(buf, p, buf + sz - p)
+On Thu, Jul 30, 2020 at 11:41 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
+> On Thu Jul 30 2020, Grygorii Strashko wrote:
+> > On 30/07/2020 11:00, Kurt Kanzenbach wrote:
+> >> +    msgtype = ptp_get_msgtype(hdr, ptp_class);
+> >> +    seqid   = be16_to_cpu(hdr->sequence_id);
+> >
+> > Is there any reason to not use "ntohs()"?
+>
+> This is just my personal preference, because I think it's more
+> readable. Internally ntohs() uses be16_to_cpu(). There's no technical
+> reason for it.
 
-I used the code from some of the other users like
-  backing_dev_show
-  fsg_show_file
+I think for traditional reasons, code in net/* tends to use ntohs()
+while code in drivers/*  tends to use be16_to_cpu().
 
-nice, looks like we could omit strlen call in perf mmap event call as well
+In drivers/net/* the two are used roughly the same, though I guess
+one could make the argument that be16_to_cpu() would be
+more appropriate for data structures exchanged with hardware
+while ntohs() makes sense on data structures sent over the
+network.
 
-> 
-> 
-> > +		buf[len] = 0;
-> 
-> Wait a minute...  Why are you NUL-terminating it separately?
-> You do rely upon having NUL in the damn thing (and d_path() does
-> guarantee it there).  Without that strlen() would've gone into
-> the nasal demon country; you can't call it on non-NUL-terminated
-> array.  So you are guaranteed that p[len] will be '\0'; why bother
-> copying the first len bytes and then separately deal with that
-> NUL?  Just memmove() the fucker and be done with that...
-> 
-> If you are worried about stray NUL in the middle of the returned
-> data... can't happen.  Note the rename_lock use in fs/d_path.c;
-> the names of everything involved are guaranteed to have been
-> stable throughout the copying them into the buffer - if anything
-> were to be renamed while we are doing that, we'd repeat the whole
-> thing (with rename_lock taken exclusive the second time around).
-> 
-> So make it simply
-> 	if (IS_ERR(p))
-> 		return PTR_ERR(p);
-> 	len = buf + sz - p;
-> 	memmove(buf, p, len);
-> 	return len;
-
-ok, will use this
-
-> and be done with that.  BTW, the odds of p == buf are pretty much
-> nil - it would happen only if sz - 1 happened to be the exact length
-> of pathname.
-> 
-
-ok, great
-
-thanks,
-jirka
-
+     Arnd
