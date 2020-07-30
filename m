@@ -2,126 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B9E9233488
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 16:34:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 291F5233487
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 16:34:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729547AbgG3OeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 10:34:08 -0400
-Received: from mail-eopbgr30051.outbound.protection.outlook.com ([40.107.3.51]:36286
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726275AbgG3OeH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729448AbgG3OeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 30 Jul 2020 10:34:07 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=g5KZZPlStvdEqmuyRzTQwCCN5QigTEzjivGKiqsDT3hXvXneZe8RFRMCS8KIWw+ueZZCiNhhDvExOF14V1eZNU0r2qB9kgymq2jN/ubWTMkTxXvDGL/UhwfaPO/2o3F7RWDHWa1Mv04TPMpYeG3ALZNfgb06DNCvKbrUqtUCzI1/j68puM1Xww3PoqQl7kuHQryHOhCs8MRvtpcQNss19Y+OW4dFrYo2sfr/DjvUYDaWyB7q4NhRsNoG13h7H4gTRv+dKwmF+JvH//ll+gVGXfExJtsudBieJGkp1RmAK9JoCDGSBktidGS1xVJpAs4i/FLqIBCDJ33VhG0aUuZhKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0JwTes1Ct+z7zLyOCdv7RA+SexpBbK5lRgcHBo1gWaE=;
- b=XKuNUtd/XteQ+P8Fc8iKqZN8if2a8lrgI8VQf9v4KF/+R/3HRw1EBbuwbS4BOTdYLdwtrx9WbvxZbZdNiDbcpcviFTwQIfe7VO7zUrUneTSpg6w5tMLRsYmzZbHUSUYSYb9GgwA9f7WqZnr+Be8hC7Ocq94DCMbsiyLURKZjtXZ5/XiUokTW/SUYuXGzvYe/aBjUWTRkI2lqO44yg8ppR0/9YRTjiE+TZTVJqOAoMY9RtorIQPUwd0pbGiurEsVxXdRSNDuhvRyzt3CmGv5tS42j6RwKv55BMqq/D1dxTdjQDCaHzBJBKF6kZIbgwf1ZObti9OXfIvLPXSsedXLoEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0JwTes1Ct+z7zLyOCdv7RA+SexpBbK5lRgcHBo1gWaE=;
- b=tEUnAvjt+idc51Ey32hEyPkJBhFdMtWHVfEeyoaMgrmb3b/glzvnrnXQRAz4kmpe++lzRDuXQ45TJeHuLTQsgiGWcDQTardXgXTBBl5vrFpiUChF05x9cP5oHyTsSedWl0pd57TR+MkaT+uneLYSHpkNMIfJYM/U6NpW/pJ20x4=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from AM0PR05MB5010.eurprd05.prod.outlook.com (2603:10a6:208:cd::23)
- by AM0PR05MB4419.eurprd05.prod.outlook.com (2603:10a6:208:5a::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.16; Thu, 30 Jul
- 2020 14:33:59 +0000
-Received: from AM0PR05MB5010.eurprd05.prod.outlook.com
- ([fe80::6926:f23d:f184:4a8c]) by AM0PR05MB5010.eurprd05.prod.outlook.com
- ([fe80::6926:f23d:f184:4a8c%7]) with mapi id 15.20.3239.019; Thu, 30 Jul 2020
- 14:33:59 +0000
-From:   Danielle Ratson <danieller@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, mlxsw@mellanox.com,
-        Danielle Ratson <danieller@mellanox.com>
-Subject: [PATCH iproute2-next v2 2/2] devlink: Expose port split ability
-Date:   Thu, 30 Jul 2020 17:33:18 +0300
-Message-Id: <20200730143318.1203-3-danieller@mellanox.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200730143318.1203-1-danieller@mellanox.com>
-References: <20200730143318.1203-1-danieller@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR01CA0136.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:168::41) To AM0PR05MB5010.eurprd05.prod.outlook.com
- (2603:10a6:208:cd::23)
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:55844 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729477AbgG3OeF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 10:34:05 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.64])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A496560157;
+        Thu, 30 Jul 2020 14:34:04 +0000 (UTC)
+Received: from us4-mdac16-55.ut7.mdlocal (unknown [10.7.66.26])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A2B412009B;
+        Thu, 30 Jul 2020 14:34:04 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.200])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2FFAB22006A;
+        Thu, 30 Jul 2020 14:34:04 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id DCA56800060;
+        Thu, 30 Jul 2020 14:34:03 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 30 Jul
+ 2020 15:33:58 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next 01/12] sfc_ef100: check firmware version at
+ start-of-day
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+References: <abac4f27-7fac-2bd4-636b-4cfc401603ae@solarflare.com>
+Message-ID: <a5cd9e75-1784-bef3-72c3-15efebfd08f6@solarflare.com>
+Date:   Thu, 30 Jul 2020 15:33:56 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-155.mtr.labs.mlnx (94.188.199.2) by AM0PR01CA0136.eurprd01.prod.exchangelabs.com (2603:10a6:208:168::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.18 via Frontend Transport; Thu, 30 Jul 2020 14:33:58 +0000
-X-Mailer: git-send-email 2.20.1
-X-Originating-IP: [94.188.199.2]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 66514fbf-089f-49ea-1075-08d83495990b
-X-MS-TrafficTypeDiagnostic: AM0PR05MB4419:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR05MB4419C3249C611A218ADEC15DD5710@AM0PR05MB4419.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KNX07YS3Gp1Q4Yh67fI55Gd0kfuq9V62mWEc958oSVZoPbBIIiByuY2oN1l39w8JIsCpsKiefUd2Vg32bEteTI6Tkz/9yaMyNzwcbp7q2r/luACRPZLS1vEQJ44qPH9GLesk/pBG3AcrJebiWHT4l6m2AQIe7Mi7RXYDtKS5oeS4mFq9LQbr64tV4crH0JPmj0ywhajGMNZRhwJXkWhlVPzs5uLioIxkQKRlyZaYlLzJ3lYvIfl/8u/viO6CBMlQZHeH7eq3lneFSM35136Qt+xjZ2SGWDIze9sD0QAv/URaJ4ot0tg27VXocG3e6W6E
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB5010.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(366004)(136003)(346002)(39860400002)(2906002)(52116002)(2616005)(5660300002)(1076003)(956004)(16526019)(186003)(4326008)(26005)(6916009)(66476007)(66556008)(6506007)(66946007)(107886003)(6486002)(6666004)(478600001)(8936002)(86362001)(8676002)(6512007)(316002)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: FYR1OgKBux8S/5JvumYVj3tRoHBXZ4IME22D7ID6wbCfQIKtI5jpnoAX4nNYe2ddenRSHN+570hU/yrrGg1qkz/BSWoDWUIsSGcKNHdOVt52BQ15S8aR/deRWAs6+G3OfgnW4sRiPUU+2dN8wOZyAovlGxFZVPW5QJnCQvoZkU5qgSUrY6n+h3sp9dakdrFa3kkX+8Yk9IbxBk/lJXwJi8K0Rs8iSQvJmEp5OqOjoSGPmO1tu7CDdWHv1kzZktVNBZW1QENkOhqHb4qOL9BIL58Mu0lAInRNMUCu45LU9iAAX2fQNtGEzmvMrziou5eBgPVitlkNkl7uVue429IuKv3T8iN/YXlV0RAss7CZUmMoAwHa0pYp+LS+xs2BWlemLs3aVoY5F60TUdTUaYT11krikQTbBV/RPeXAJmm92BwgKmx4N6CWJZpZK3t/M+i968N253k+ion46cynZixOwaLjkbtzFB23cUlUA8DHSa6cb32MCP1ASTS7B6WP89EmjRfu6m00sdsKlBAWR4a9OhCis/e+g0yO4OSekf0Fe8FDK70uGLcFLDwNGS0//Hg/n4x5T4k28ENbLXYLEUd9ka4a+V2lOqJCh2JQTm3M2FfCi+ZDaQNggiy3VgSHe4Ajlok3vUBfW0SdlGAvkBNHiQ==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66514fbf-089f-49ea-1075-08d83495990b
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB5010.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2020 14:33:59.8124
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 94AZULn5VhWwnrJYPBpP5Q+bLzyZkb+/ls/+SUro9AlXbqVzKqXZpUQgiHFArmpKl75bV30S50BhTde8QrzzuQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4419
+In-Reply-To: <abac4f27-7fac-2bd4-636b-4cfc401603ae@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25572.005
+X-TM-AS-Result: No-4.241600-8.000000-10
+X-TMASE-MatchedRID: HGvy3W1xOqYl1ruS1vtrJUmSRRbSc9s3lS5IbQ8u3ToaV9cxC+J6t8iT
+        Wug2C4DNl1M7KT9/aqAnsasxq4/76mJZXQNDzktSGjzBgnFZvQ7+NefZIdSZXEW2O0jPXSPlyKM
+        XhR45RlM81ox4QBrGHcf/eH1BJXalEGrGKgXI3I8ovbifIQL7GvngX/aL8PCN/+uCP2dxbP3CNK
+        ZBYz4NARXS+gzjJyCYKGOt1f2p0PrMPzXfw9h+jp4CIKY/Hg3AtOt1ofVlaoLWRN8STJpl3PoLR
+        4+zsDTt+gmVy5VdZkn05eyXDxC5z63nBrgz8bymFl419byyyWvSHfKcI5IPgrRBY7MmjU8nbCMa
+        P1KjecbZRZn+CljuraOnNRTSeDrlwSq/eMb//Md85uoYr0mmWaKdpX90rRoSErdW3Lyhe2SmzZh
+        Wcml82A==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--4.241600-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25572.005
+X-MDID: 1596119644-L8a8gXrOJeOT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new attribute that indicates the port split ability to devlink port.
+Early in EF100 development there was a different format of event
+ descriptor; if the NIC is somehow running the very old firmware
+ which will use that format, fail the probe.
 
-Expose the attribute to user space as RO value, for example:
-
-$devlink port show swp1
-pci/0000:03:00.0/61: type eth netdev swp1 flavour physical port 1
-splittable false lanes 1
-
-Signed-off-by: Danielle Ratson <danieller@mellanox.com>
+Signed-off-by: Edward Cree <ecree@solarflare.com>
 ---
- devlink/devlink.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/sfc/ef100_nic.c | 40 ++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 39bc1119..a22e931e 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -582,6 +582,7 @@ static const enum mnl_attr_data_type devlink_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_PORT_NETDEV_NAME] = MNL_TYPE_NUL_STRING,
- 	[DEVLINK_ATTR_PORT_IBDEV_NAME] = MNL_TYPE_NUL_STRING,
- 	[DEVLINK_ATTR_PORT_LANES] = MNL_TYPE_U32,
-+	[DEVLINK_ATTR_PORT_SPLITTABLE] = MNL_TYPE_U8,
- 	[DEVLINK_ATTR_SB_INDEX] = MNL_TYPE_U32,
- 	[DEVLINK_ATTR_SB_SIZE] = MNL_TYPE_U32,
- 	[DEVLINK_ATTR_SB_INGRESS_POOL_COUNT] = MNL_TYPE_U16,
-@@ -3424,6 +3425,9 @@ static void pr_out_port(struct dl *dl, struct nlattr **tb)
- 	if (tb[DEVLINK_ATTR_PORT_SPLIT_GROUP])
- 		print_uint(PRINT_ANY, "split_group", " split_group %u",
- 			   mnl_attr_get_u32(tb[DEVLINK_ATTR_PORT_SPLIT_GROUP]));
-+	if (tb[DEVLINK_ATTR_PORT_SPLITTABLE])
-+		print_bool(PRINT_ANY, "splittable", " splittable %s",
-+			   mnl_attr_get_u8(tb[DEVLINK_ATTR_PORT_SPLITTABLE]));
- 	if (tb[DEVLINK_ATTR_PORT_LANES])
- 		print_uint(PRINT_ANY, "lanes", " lanes %u",
- 			   mnl_attr_get_u32(tb[DEVLINK_ATTR_PORT_LANES]));
--- 
-2.20.1
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+index 6a00f2a2dc2b..75131bcf4f1a 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.c
++++ b/drivers/net/ethernet/sfc/ef100_nic.c
+@@ -485,6 +485,36 @@ const struct efx_nic_type ef100_pf_nic_type = {
+ 
+ };
+ 
++static int compare_versions(const char *a, const char *b)
++{
++	int a_major, a_minor, a_point, a_patch;
++	int b_major, b_minor, b_point, b_patch;
++	int a_matched, b_matched;
++
++	a_matched = sscanf(a, "%d.%d.%d.%d", &a_major, &a_minor, &a_point, &a_patch);
++	b_matched = sscanf(b, "%d.%d.%d.%d", &b_major, &b_minor, &b_point, &b_patch);
++
++	if (a_matched == 4 && b_matched != 4)
++		return +1;
++
++	if (a_matched != 4 && b_matched == 4)
++		return -1;
++
++	if (a_matched != 4 && b_matched != 4)
++		return 0;
++
++	if (a_major != b_major)
++		return a_major - b_major;
++
++	if (a_minor != b_minor)
++		return a_minor - b_minor;
++
++	if (a_point != b_point)
++		return a_point - b_point;
++
++	return a_patch - b_patch;
++}
++
+ /*	NIC probe and remove
+  */
+ static int ef100_probe_main(struct efx_nic *efx)
+@@ -492,6 +522,7 @@ static int ef100_probe_main(struct efx_nic *efx)
+ 	unsigned int bar_size = resource_size(&efx->pci_dev->resource[efx->mem_bar]);
+ 	struct net_device *net_dev = efx->net_dev;
+ 	struct ef100_nic_data *nic_data;
++	char fw_version[32];
+ 	int i, rc;
+ 
+ 	if (WARN_ON(bar_size == 0))
+@@ -562,6 +593,15 @@ static int ef100_probe_main(struct efx_nic *efx)
+ 		goto fail;
+ 	efx->port_num = rc;
+ 
++	efx_mcdi_print_fwver(efx, fw_version, sizeof(fw_version));
++	netif_dbg(efx, drv, efx->net_dev, "Firmware version %s\n", fw_version);
++
++	if (compare_versions(fw_version, "1.1.0.1000") < 0) {
++		netif_info(efx, drv, efx->net_dev, "Firmware uses old event descriptors\n");
++		rc = -EINVAL;
++		goto fail;
++	}
++
+ 	rc = ef100_phy_probe(efx);
+ 	if (rc)
+ 		goto fail;
 
