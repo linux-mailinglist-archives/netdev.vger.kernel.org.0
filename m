@@ -2,84 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35A1D233015
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 12:09:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 575FA23301E
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 12:15:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729058AbgG3KJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 06:09:58 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:32926 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726946AbgG3KJ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 06:09:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596103795;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OkLwVoR4eojoQKNFkbEPIflQsN604MO7LrgpXTR0n6s=;
-        b=NxZt+mgWH5LorzDetN3crCGM7Fe0mf/C1xiZfSAC8ygIlaLNrX1fQaBhTJITS9boZ3UVAQ
-        i/qlxYC+s8XtOBHdCnvCWx3J7j26lRJSrxmcCduiMz107F1pNip4tTmAAK3PI9Rgi4hGTV
-        jDh0ZmHN9uSFPnWe9+ozrf8b7fgGJQY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-209-rL9NMs9UM1SqJqYxIqimZg-1; Thu, 30 Jul 2020 06:09:51 -0400
-X-MC-Unique: rL9NMs9UM1SqJqYxIqimZg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 90041102C7ED;
-        Thu, 30 Jul 2020 10:09:49 +0000 (UTC)
-Received: from krava (unknown [10.40.194.223])
-        by smtp.corp.redhat.com (Postfix) with SMTP id C606E87B0A;
-        Thu, 30 Jul 2020 10:09:45 +0000 (UTC)
-Date:   Thu, 30 Jul 2020 12:09:45 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>
-Subject: Re: [PATCH v8 bpf-next 09/13] bpf: Add d_path helper
-Message-ID: <20200730100945.GQ1319041@krava>
-References: <20200722211223.1055107-1-jolsa@kernel.org>
- <20200722211223.1055107-10-jolsa@kernel.org>
- <20200729201740.GB1233513@ZenIV.linux.org.uk>
+        id S1727041AbgG3KP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 06:15:27 -0400
+Received: from mail-db8eur05on2063.outbound.protection.outlook.com ([40.107.20.63]:36785
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726273AbgG3KP0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 06:15:26 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MPNN/eB+F4HRN3pD94u4aFn5aI/RzCUvRuAVHhjiRxlywcqr6I4QInDOqBRk/1kFstCFaUlu/sTXLGxUUIk5OdxOaLSf+KOWQqajm/ossctWubM2PD5qoyxVNm3LN/4KJHSalzVp1L2CEcUIQz5UpNZ45d3EyDcet2DT68cFLNbCU1bxC92igVx7NAyHHTQJVKHStxF0NAoxC9343gaQqEFVcnpgZ7tzRDIKpRnm4IBaZtkdpP0amAQmtcLiwkE3UM0rH2+8V0EBeLfpYe5l0HwIGS/yji7eFiC/hFQKmyKS/5QGMJuY0rNiPncyM318I8ZIv4LPUpz95Uc2NsqkRQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=P8ejcXqfZwb+0AZZDDjpqZv0YVcJg6+J8u9EYxNmunU=;
+ b=Tu2fYYUrgBO1pStZibaXZvPrYBuCjtM4WmAnw/lPsjTYS8wbqvTj6XM+PD76NyEhLSDjW0ooo+bK0FitEB9z6SjrZFiY1PNLuvQaK2Z4S61f+uqezFV+tfZaMqm/KkH+VcNViBEAh47xwhvOlSSU9v7eKXPa4fyfF58NM7Yc1c/ETxeSAb7kQ/mnFWCQG797OnnZqtjPXRJlCjthS4ps5VjakYq3MzgkkEcTcvbIz0Zl+4Sz8j5XkOru12DgzoTCNPL+pvSCK4J1KYaLOt02dmZzdymMOH4pFuBcPCaS8tZjSM410F5e006doZX0YpevX6rdS/Nnw8YnS2qMNiF6qg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=P8ejcXqfZwb+0AZZDDjpqZv0YVcJg6+J8u9EYxNmunU=;
+ b=Vv42/UtU4Talkh0uFBb11wWFkt4tTQHHBBrzhIDzcpNocwbWcQDbicR3qvQz/8TBjx1zeOwPix/CSd40E1fbfZFg8OI/bb5qhyOTaJ3pBBhzpoehTkCHolB0iKRpDuRzcBDwVNa48P6UveLCk06Ly+vk2uqtpx+DW2RUZ6NlHfA=
+Authentication-Results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none
+ header.from=mellanox.com;
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
+ HE1PR0502MB3036.eurprd05.prod.outlook.com (2603:10a6:3:d4::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3239.17; Thu, 30 Jul 2020 10:15:21 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::56c:7b22:6d6e:ed2b]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::56c:7b22:6d6e:ed2b%5]) with mapi id 15.20.3216.034; Thu, 30 Jul 2020
+ 10:15:21 +0000
+References: <20200730080048.32553-1-kurt@linutronix.de> <20200730080048.32553-2-kurt@linutronix.de>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: [PATCH v3 1/9] ptp: Add generic ptp v2 header parsing function
+In-reply-to: <20200730080048.32553-2-kurt@linutronix.de>
+Date:   Thu, 30 Jul 2020 12:15:17 +0200
+Message-ID: <87lfj1gvgq.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR08CA0028.eurprd08.prod.outlook.com
+ (2603:10a6:208:d2::41) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200729201740.GB1233513@ZenIV.linux.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yaviefel (213.220.234.169) by AM0PR08CA0028.eurprd08.prod.outlook.com (2603:10a6:208:d2::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.16 via Frontend Transport; Thu, 30 Jul 2020 10:15:19 +0000
+X-Originating-IP: [213.220.234.169]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: ef6982ba-7b91-4ba6-54a1-08d83471776d
+X-MS-TrafficTypeDiagnostic: HE1PR0502MB3036:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR0502MB303639F21D9C3D2DE370D33CDB710@HE1PR0502MB3036.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lcJqsUBw5m/Ji+1HYE+A+IP3ogD9sRgNwLi0qm0PYhQQT1vEJdruat0c5dE9OR+Xb4ba1adiN3Dsk1ZQKx6QSgHVgJV1683Xp1A6A1bsEewoAVAg02S0azczhmlmyc+NIAzVFcm6OWZzWZZyZtxc1gDv58uNBk5l/7jRFx7EXc0j0Jood0v1IRfXopjweliaMXWXCUiY7eCBRQQGdJb7EGCkBMxcoXT17SuWHRT7D2YtPvAIXiKLIED57wDElfOu4J62Rogy2uHiQzDafwFT4DEoA9P5s2vRY/0z2PChds0ax6fWaM1JSD7qi6JuUXXbNTi7pd3VyfEFwVXORMNE2RzDTxofvkDXi1PkzTEWqCLtY5f3UBoN24UDmgRr60rA
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(376002)(346002)(366004)(136003)(396003)(478600001)(8676002)(52116002)(8936002)(186003)(16526019)(5660300002)(6496006)(316002)(36756003)(7416002)(26005)(54906003)(86362001)(4326008)(2906002)(66476007)(66556008)(956004)(2616005)(6916009)(6486002)(66946007)(41533002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: w1QxfMamm9CievwXdrLVETBrCbdQRoHg9bsuKKyQo5PK67xVk8T22kGzfOPspuvNSLkVYBZzuL7MGC6f0gJsI3F3NiGZ72OmVcm0GlO/+j3Snm44eo9W38CaptsxtZqRkSlga8/5Te+d5zMWOugMAC44+NAHtw+V05KetTV9VHyR8EJRH3EoF9rOy04Qful7IyhUhXOq/qBrQgO8Vz2q9yg6aIyGgCensYR5csQ1ZYvdV9FIY+aurNX3Pu9+3AuouBk9iwyaKIst3CPbjN47LWYiCwVftJAc9iFBwytkWtPh5GvCunHFuHToH9CLRwi/0DYyOqwHWRJB37pHg/qFwgc/x4ui/OmnMEfBxstXFGH6zqqicEpy99nVCKhvCrVxaSDtr+cPVrTfD+HMdW1I5wyqerEDNuv13dRAMWdd8lPmx/gLg6ILeG18qMINtF/x7dw5U9gwXa3t61M33NFZJi4e0Halt4Uz+Aaer9bqq+aH/Budh/tq/JkXzGSpuDq6uGe32s2CwjlZ36lfdpu+v9Uw9XSiizgKW9DHZFKJBq3hGLO1/USkTier/Bj14PnvUJG+ZhbaKuk5tsER2AId9+eepdzjCstoD/nSFNgllT75tVK1043GQ+LgBaTMDcUSg6LwW8Zmug3IMi6ybppTZA==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ef6982ba-7b91-4ba6-54a1-08d83471776d
+X-MS-Exchange-CrossTenant-AuthSource: HE1PR05MB4746.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2020 10:15:21.5066
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rcR5WV+ElInuXXSRR+YeNQaHrcl0mF0nNqwcQOzLBXlqNPacS1LB9sNz9K27bUPX+Um7QmxpgRm0Ucw7I5UZOQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0502MB3036
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 29, 2020 at 09:17:40PM +0100, Al Viro wrote:
-> On Wed, Jul 22, 2020 at 11:12:19PM +0200, Jiri Olsa wrote:
-> 
-> > +BTF_SET_START(btf_whitelist_d_path)
-> > +BTF_ID(func, vfs_truncate)
-> > +BTF_ID(func, vfs_fallocate)
-> > +BTF_ID(func, dentry_open)
-> > +BTF_ID(func, vfs_getattr)
-> > +BTF_ID(func, filp_close)
-> > +BTF_SET_END(btf_whitelist_d_path)
-> 
-> While we are at it, I hope you realize that the names of kernel function
-> are subject to change at zero notice.  If some script breaks since
-> we give e.g. filp_close a something less revolting name, it's Not My
-> Problem(tm)...
 
-even now when we change function name some scripts will stop working,
-so I don't think we are creating new problem in here
+Kurt Kanzenbach <kurt@linutronix.de> writes:
 
-thanks,
-jirka
+> @@ -107,6 +107,37 @@ unsigned int ptp_classify_raw(const struct sk_buff *skb)
+>  }
+>  EXPORT_SYMBOL_GPL(ptp_classify_raw);
+>  
+> +struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type)
+> +{
+> +	u8 *data = skb_mac_header(skb);
+> +	u8 *ptr = data;
+
+One of the "data" and "ptr" variables is superfluous.
+
+> +
+> +	if (type & PTP_CLASS_VLAN)
+> +		ptr += VLAN_HLEN;
+> +
+> +	switch (type & PTP_CLASS_PMASK) {
+> +	case PTP_CLASS_IPV4:
+> +		ptr += IPV4_HLEN(ptr) + UDP_HLEN;
+> +		break;
+> +	case PTP_CLASS_IPV6:
+> +		ptr += IP6_HLEN + UDP_HLEN;
+> +		break;
+> +	case PTP_CLASS_L2:
+> +		break;
+> +	default:
+> +		return NULL;
+> +	}
+> +
+> +	ptr += ETH_HLEN;
+> +
+> +	/* Ensure that the entire header is present in this packet. */
+> +	if (ptr + sizeof(struct ptp_header) > skb->data + skb->len)
+> +		return NULL;
+
+Looks correct.
+
+> +	return (struct ptp_header *)ptr;
+> +}
+> +EXPORT_SYMBOL_GPL(ptp_parse_header);
+> +
+>  void __init ptp_classifier_init(void)
+>  {
+>  	static struct sock_filter ptp_filter[] __initdata = {
 
