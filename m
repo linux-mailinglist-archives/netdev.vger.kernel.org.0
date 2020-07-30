@@ -2,101 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8845233935
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:44:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A12E4233966
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:58:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730550AbgG3Toj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 15:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47354 "EHLO
+        id S1730627AbgG3T6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 15:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726581AbgG3Toj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:44:39 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDF7C061574
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 12:44:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=U5U5IcfGf3U48jrB2+2tkJslfLNYAkamEuHKN39AE4g=; b=PCzlq1qN1bmDpzgPE2Rvy39sJ
-        vjQWCBqeR/iyJ2synlTE0CFwcjMUu6jLhrulkNXfnyS396YjTKbVdEMC2FuQYwE5lJuCxcqYLBbAW
-        zHyk0NawORylfgIhXLtmmEnxEz+Uad0Y1ghK293l/9Q4DHVET1a+dG/3MLsG0FqKsTWlqs+bYXAv9
-        6tDD6+fm4OibghTvi7Crp2lLu3vHABGmlVuVOaAYtUGqCW1CTKwc11o/rz/s/bS3rIynphH5OOk5o
-        k9AnV8oOSeiuqtHyrp6aqh6jjYvxyurfDTufbIJM+h94O7OE4aj7Jacw1XrmoZK4MimF55mFgk3Hi
-        r1L88pmVw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46222)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1k1ETe-0006oJ-BO; Thu, 30 Jul 2020 20:44:30 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1k1ETb-000725-RC; Thu, 30 Jul 2020 20:44:27 +0100
-Date:   Thu, 30 Jul 2020 20:44:27 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S1726838AbgG3T6H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:58:07 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F47C061574
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 12:58:07 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id f7so26030386wrw.1
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 12:58:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bcPqhsvqsE2643w+eIzGN/iXUqPT8svg+jyoJiKV7Ps=;
+        b=SnOYUNHkhe1nmFDQKTTtDH8/iEGWM51J+nKaIY0hZP+gPh73+w26pSQidrPHw5FmeD
+         q831L7MWWoXO5Ebszc68u5poWcySLPwqW/SwWg6WWD1mmkf3weP6/adDDbxPk8L4w9DL
+         nnIILBSRumcoDqSYzcW09bey09QYTLbgUXhi+MwXnEhWyj/syA4dXihwH2/7qgSMwoN3
+         MFIGn1t1OsaSz8lY7fawYbFewOg+b/acf+SBXZ9T+8SuEjVUa6Iv4hXVXRc9dQF4214G
+         8OhbOptSJHLeDF/UX0eRvsQBbIi3whpjsXK7OqMT3S6I0GVNUjMYi5NlYdRQ/LDD009I
+         OE1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bcPqhsvqsE2643w+eIzGN/iXUqPT8svg+jyoJiKV7Ps=;
+        b=oMK2/WmQ9hypsoLxsk7x2/jXkfiZax2z+SKzOYcScXxN/EAAHDDSkT1vvfR2SljulC
+         LWdIR5V4YQOxWx0BOjn4CdRbo9LjvTNLoKTT0CNtnJXMtJgxpnlgYI/j0B8W2iwPD034
+         z/Jb/4wY3pYsBDc1cB6c6r3iWPtdyJb/KnfYhobglfH5DghUVsk7D7neRB0yfG4CTdlF
+         4h202ed8IpiIHfUJZ/hnhtm8emhujfGP8La/Tagt9rdklJBTcnuUka34jSGy2O5+9e/V
+         8EkiSWMQD1QDGCaB+2NrKTrk7L3bdxt55SLz4WTuV6e+GqoCOpKtaIlEvCgFIviUYBu1
+         s2+w==
+X-Gm-Message-State: AOAM530GsFE3UtC2UyoV6iA0G2kRABjNoESEDPHM29erMkflLXnESa8E
+        em+at11cNiH6ZwlZYko+wRUhqaX/9tuXvQ==
+X-Google-Smtp-Source: ABdhPJwLPjdzcxbx9XGcE3Crh1zpkNKql5Rjt47noZMaZFi149M3x9Z6Mv5/VZb0C6bipAvGGYutEQ==
+X-Received: by 2002:adf:f847:: with SMTP id d7mr306940wrq.328.1596139085613;
+        Thu, 30 Jul 2020 12:58:05 -0700 (PDT)
+Received: from xps13.lan (3e6b1cc1.rev.stofanet.dk. [62.107.28.193])
+        by smtp.googlemail.com with ESMTPSA id z6sm11326993wml.41.2020.07.30.12.58.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jul 2020 12:58:05 -0700 (PDT)
+From:   Bruno Thomsen <bruno.thomsen@gmail.com>
+To:     netdev <netdev@vger.kernel.org>
+Cc:     Bruno Thomsen <bruno.thomsen@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Fabio Estevam <festevam@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC net-next] net: phy: add Marvell PHY PTP support
-Message-ID: <20200730194427.GE1551@shell.armlinux.org.uk>
-References: <E1jvNlE-0001Y0-47@rmk-PC.armlinux.org.uk>
- <20200729105807.GZ1551@shell.armlinux.org.uk>
- <20200729131932.GA23222@hoboy>
- <20200729132832.GA1551@shell.armlinux.org.uk>
- <20200729220748.GW1605@shell.armlinux.org.uk>
- <20200730155326.GB28298@hoboy>
- <20200730183800.GD1551@shell.armlinux.org.uk>
- <20200730193245.GB6621@hoboy>
+        Lars Alex Pedersen <laa@kamstrup.com>,
+        Bruno Thomsen <bth@kamstrup.com>
+Subject: [PATCH v2 0/4 net-next] Improve MDIO Ethernet PHY reset
+Date:   Thu, 30 Jul 2020 21:57:45 +0200
+Message-Id: <20200730195749.4922-1-bruno.thomsen@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200730193245.GB6621@hoboy>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 30, 2020 at 12:32:45PM -0700, Richard Cochran wrote:
-> On Thu, Jul 30, 2020 at 07:38:00PM +0100, Russell King - ARM Linux admin wrote:
-> > What I ended up doing was:
-> > 
-> >         if (ops->get_ts_info) {
-> >                 ret = ops->get_ts_info(dev, info);
-> >                 if (ret != -EOPNOTSUPP)
-> >                         return ret;
-> >         }
-> >         if (phy_has_tsinfo(phydev))
-> >                 return phy_ts_info(phydev, info);
-> > ...
-> > 
-> > which gives the MAC first refusal.  If the MAC wishes to defer to
-> > phylib or the default, it can just return -EOPNOTSUPP.
-> 
-> I guess that makes sense.  If someone designs a board that happens to
-> have a PHY with unwanted time stamping fcunctionality, then at least
-> the MAC time stamping function will work.  If the designers really
-> want PHY time stamping, then they are likely to have to patch the MAC
-> driver in any case.
-> 
-> So I'm not against such a change.  It would be important to keep the
-> current "PHY-friendly" MAC drivers still friendly, and so they would
-> need patching as part of the change.
+This patch series is a result of trying to upstream a new device
+tree for a TQMa7D based board[1][2]. Initial this DTS used some
+deprecated PHY reset properties on the FEC device; NXP Ethernet
+MAC also known as Freescale Fast Ethernet Controller.
 
-That would only be necessary if they also provide the get_ts_info
-method.
+When switching from FEC properties[3]:
+"phy-reset-gpios"
+"phy-reset-duration"
+"phy-reset-post-delay"
 
-So, I guess I need to find all drivers that refer to phylink or phylib
-functions, that also implement get_ts_info method and review them.
-I would expect that to be very small, since there's currently little
-point implementing PTP at both the PHY and the MAC for the reason I've
-raised earlier in this thread.
+To MDIO PHY properties[4]:
+"reset-gpios"
+"reset-assert-us"
+"reset-deassert-us"
 
+The result was that no Ethernet PHY device was detected on boot.
+
+This issue could be worked around by disabling PHY type ID auto-
+detection by using "ethernet-phy-id0022.1560" as compatible
+string and not "ethernet-phy-ieee802.3-c22".
+
+Upstreaming a DTS with this workaround was not accepted, so I
+digged into the MDIO reset flow and found that it had a few
+missing parts compared to the deprecated FEC reset function.
+After some more testing and logic analyzer traces it was
+revealed that the failed PHY communication was due to missing
+initial device reset.
+
+I was suggested[5] in a earlier mail thread to use MDIO bus
+reset as that was performed before auto-detection, but current
+device tree binding was limited to reset assert in usec.
+Microchip/Micrel Ethernet PHYs recommended reset circuit[8],
+figure 7-12, is a little "slow" after reset deassert as that
+is left to a RC circuit with a tau of ~100ms; using a 10k PU
+resistor together with a 10uF decoupling capacitor. The diode
+in serie of the reset signal converts the GPIO push-pull output
+into a open-drain output. So a post reset delay in the range
+of 500-1000ms is needed, depending on component tolerances
+and general hardware design margins.
+
+In the first version of this patch series[6] I reused the
+"reset-delay-us" property for reset deassert in usec as that
+would cause 50/50% duty-cycle, but that would always apply.
+The solution in this patch series is to add a new MDIO bus
+property, so post reset delay is optional and configured
+separately.
+
+MDIO bus properties[7]:
+"reset-delay-us"
+"reset-post-delay-us" (new)
+
+I have not marked this with "Fixes:" as no single commit is the
+cause and historically this code has only supported MDIO devices
+that need reset after auto-detection. The patch series also uses
+a new flexible sleep helper function that was introduced in
+5.8-rc1, so the driver uses the optimal sleep function depending
+on value loaded from device tree.
+
+Future work in this area could add new properties on the MDIO
+device, so reset points are configurable, e.g. no reset,
+before/after auto-detection or both.
+
+[1] https://lore.kernel.org/linux-devicetree/20200629114927.17379-2-bruno.thomsen@gmail.com/
+[2] https://lore.kernel.org/linux-devicetree/20200716172611.5349-2-bruno.thomsen@gmail.com/
+[3] https://elixir.bootlin.com/linux/v5.7.8/source/Documentation/devicetree/bindings/net/fsl-fec.txt#L44
+[4] https://elixir.bootlin.com/linux/v5.8-rc4/source/Documentation/devicetree/bindings/net/mdio.yaml#L78
+[5] https://lore.kernel.org/netdev/CAOMZO5DtYDomD8FDCZDwYCSr2AwNT81Ay4==aDxXyBxtyvPiJA@mail.gmail.com/
+[6] https://lore.kernel.org/netdev/20200728090203.17313-1-bruno.thomsen@gmail.com/
+[7] https://elixir.bootlin.com/linux/v5.8-rc4/source/Documentation/devicetree/bindings/net/mdio.yaml#L36
+[8] http://ww1.microchip.com/downloads/en/DeviceDoc/00002202C.pdf
+
+Bruno Thomsen (4):
+  dt-bindings: net: mdio: add reset-post-delay-us property
+  net: mdiobus: use flexible sleeping for reset-delay-us
+  net: mdiobus: add reset-post-delay-us handling
+  net: mdio device: use flexible sleeping in reset function
+
+ Documentation/devicetree/bindings/net/mdio.yaml | 7 +++++++
+ drivers/net/phy/mdio_bus.c                      | 4 +++-
+ drivers/net/phy/mdio_device.c                   | 2 +-
+ drivers/of/of_mdio.c                            | 2 ++
+ include/linux/phy.h                             | 2 ++
+ 5 files changed, 15 insertions(+), 2 deletions(-)
+
+
+base-commit: 490ed0b908d371cd9ab63fc142213e5d02d810ee
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.26.2
+
