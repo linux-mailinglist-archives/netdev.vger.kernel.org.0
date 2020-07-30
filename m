@@ -2,131 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB8F62331AD
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 14:08:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 977B123323C
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 14:32:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726913AbgG3MIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 08:08:49 -0400
-Received: from mail-eopbgr50054.outbound.protection.outlook.com ([40.107.5.54]:58245
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        id S1728008AbgG3Max (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 08:30:53 -0400
+Received: from mail-eopbgr00050.outbound.protection.outlook.com ([40.107.0.50]:9285
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726581AbgG3MIt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 08:08:49 -0400
+        id S1726773AbgG3Maw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 08:30:52 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eVEKRWS+oxWxgJA8uu3EjHRtyruZd/Oz9fvZngtYlZAXjneNfb97zTF98KbxwR+ULnH/mJZ6xUVY0d5UQb7lybj0RwZu3xpYyUT7R8biYhQcEtWUkeH7NgDTIS3FAcw/muWML5DD65zJ7EIC6EXT16VmZ7elrMBUcVHs4Q1s5QSpqj136k0ehjbbRxJlGePbVFBx85V6O2iaB/GVnexkzVcK+223uxK1p6IAXQqbv75A9oY99zmK/VwOQxK3lMuXRSBVAxVObetHH0AQ8D6xRuMd1dOLSbIi9IwySLuVLZoB/AC6GqIPZPVpoaW5qEDwel0almAi6AjLb5HifEdxMw==
+ b=CXY2r6T9+DxFRW157yyn+Fx3CCEbifRzhsU4s+4dKWcoibMIqJXTYP5O8+FJZ8fSdvtNNhWnz/2LVmZ80LIXcOXC5sh0/yvVY8ru44XsTeMDQoJzr7lUbeXapVZqSqlC//j5SlPwb6IAkRvOnGbLnuQHSAjJc5UoEXEkgmvs3cziYT2UI8aITfyga2XEXKOY49QrsCQhXe/e/L6Haj+ku63ebas48js0B4MHMVHmuOU6xu3IBZt4x/jKZ314TExXpA8DOtL85/4V+ihtz7RQajl7fhUaOZq40DZV4DEFrTmDAimEnb0t62d3B7So+uRfr4JisGhNLTLVzIB7I9lJ+g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TyndQYhUpuhPHPETiO1JvwLups7D4f5PlzRN/b4P7tE=;
- b=fg8DnQx9oWCrmu0NBjDf8yu6Lpw/YrSWnayEO0ktspQ/EMHvtFQ3eeSDApbK6T+X/DADud/VfSh/tp8tphPTFQkCs7EtjY/Dh12Iq1ICbw2RYVAFsnOTUCt+6dXoXd4nYXYtnPAxo0ujXtH8VpnwzDSX938+RZneI3bv7ATF0L4++uskcaGQu4ijUrpCxtv71b0LuILq1Ditx/yLFAqUMDR1eWJia8J4EN6pemAvKLNxF6eVFxQjqxY67HouvsNDAjzgKEeD/G6cCC+j64tOb+RV0gQ+mQT6b61fniEJHYjUumZYZ4zcdUXnHuq2EGOLhfxHIFXxalWRCzn0ypowBA==
+ bh=1O1qT0XmCGyVzdiP3tfXf7fvI2yLW3Nq+7WHWKEoMD4=;
+ b=Z6TYhxcBAvb6ttQfEJIRgSK1S4/Uj0334qNudNf1QgNAafdqFb68xEsQ0XVhEmDAKIcBIpyRf2QFkaqwELFFRA9enmkuUvmzEamZYEBEPx+UPnNwWWsP3QulNgQE2WDDd/cd2OqvbCP2gE//aiYqdfC4r7EG8VQE8gRf2F9YeRp/qMBuwAzqmnWQGBGsCdLAhQEpOUgArACiGqOOyDJXOT/zi9wp4RL9bVRznkBF2sikIttZZZqQNVrYrsJwvOYlcv0xwpMEcPX52d/RftwgJ1E43Zk1QZwn6+pkeghc8Yrw7vTOX1Nuz+CHUcXNNuQIJY29QX2MX8N+1AKExyvlZA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TyndQYhUpuhPHPETiO1JvwLups7D4f5PlzRN/b4P7tE=;
- b=CGVnjv4zE0Q18/sMzZGk+oaJk8DogG3kKYF9N7KvUXG1U+UbNwtlV9fdllRJm3rH14i/YGKRJlOLaPY5Gc+m2YHlESbeJ1Nc4GeWFdzQ2nFFCHOpH0NbgXQLQeKq04+RRW1y5SNM0aDCJLEJwMouEPFg5Z13y0BxJ6yh8WFrzBU=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
+ bh=1O1qT0XmCGyVzdiP3tfXf7fvI2yLW3Nq+7WHWKEoMD4=;
+ b=PMt5ETALI5+Rs3RNlhpJ8fomnXVddaxA1UJ50Q6BeHwmAbYv+0b9mvwEWG+ScwC8jb2L0f375snRO8gTeQcksv5o+SzdmY3usFt45HOadT4Vyqnkz4VpNS7Xaf8SJeeJvhJjsZer32rTsX1WOM4DTKifyldzt7vq0yqqZaM+LaI=
+Authentication-Results: broadcom.com; dkim=none (message not signed)
+ header.d=none;broadcom.com; dmarc=none action=none header.from=mellanox.com;
 Received: from DB7PR05MB4298.eurprd05.prod.outlook.com (2603:10a6:5:27::14) by
- DB6PR0501MB2647.eurprd05.prod.outlook.com (2603:10a6:4:81::17) with Microsoft
+ DB6PR05MB3174.eurprd05.prod.outlook.com (2603:10a6:6:1e::13) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3216.24; Thu, 30 Jul 2020 12:08:45 +0000
+ 15.20.3216.28; Thu, 30 Jul 2020 12:30:48 +0000
 Received: from DB7PR05MB4298.eurprd05.prod.outlook.com
  ([fe80::f0bd:dfca:10ef:b3be]) by DB7PR05MB4298.eurprd05.prod.outlook.com
  ([fe80::f0bd:dfca:10ef:b3be%4]) with mapi id 15.20.3216.033; Thu, 30 Jul 2020
- 12:08:45 +0000
-Subject: Re: [PATCH net-next RFC 09/13] devlink: Add enable_remote_dev_reset
- generic parameter
+ 12:30:48 +0000
+Subject: Re: [PATCH net-next RFC 01/13] devlink: Add reload level option to
+ devlink reload command
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
         Jiri Pirko <jiri@mellanox.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
- <1595847753-2234-10-git-send-email-moshe@mellanox.com>
- <20200727175935.0785102a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <5baf2825-a550-f68f-f76e-3a8688aa6ae6@mellanox.com>
- <20200729135707.5fc65fc8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <1595847753-2234-2-git-send-email-moshe@mellanox.com>
+ <20200727175802.04890dd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200728135808.GC2207@nanopsycho>
+ <464add44-3ab1-21b8-3dba-a88202350bb9@intel.com>
+ <20200728114458.762b5396@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <d6fbfedd-9022-ff67-23ed-418607beecc2@intel.com>
+ <20200728130653.7ce2f013@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <04f00024-758c-bc19-c187-49847c24a5a4@mellanox.com>
+ <20200729140708.5f914c15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   Moshe Shemesh <moshe@mellanox.com>
-Message-ID: <f54924e8-eb3f-18ab-a016-276560086a5b@mellanox.com>
-Date:   Thu, 30 Jul 2020 15:08:42 +0300
+Message-ID: <3352bd96-d10e-6961-079d-5c913a967513@mellanox.com>
+Date:   Thu, 30 Jul 2020 15:30:45 +0300
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
-In-Reply-To: <20200729135707.5fc65fc8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200729140708.5f914c15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-X-ClientProxiedBy: AM0PR01CA0174.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:aa::43) To DB7PR05MB4298.eurprd05.prod.outlook.com
+X-ClientProxiedBy: AM0PR10CA0040.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::20) To DB7PR05MB4298.eurprd05.prod.outlook.com
  (2603:10a6:5:27::14)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.0.105] (5.102.195.53) by AM0PR01CA0174.eurprd01.prod.exchangelabs.com (2603:10a6:208:aa::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.17 via Frontend Transport; Thu, 30 Jul 2020 12:08:44 +0000
+Received: from [192.168.0.105] (5.102.195.53) by AM0PR10CA0040.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.17 via Frontend Transport; Thu, 30 Jul 2020 12:30:46 +0000
 X-Originating-IP: [5.102.195.53]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 5caa96b1-72ad-4b82-f40b-08d834814eed
-X-MS-TrafficTypeDiagnostic: DB6PR0501MB2647:
+X-MS-Office365-Filtering-Correlation-Id: 799721ff-94f7-400b-cd0b-08d83484632d
+X-MS-TrafficTypeDiagnostic: DB6PR05MB3174:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB6PR0501MB2647E2104603DF220A675FF2D9710@DB6PR0501MB2647.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
+X-Microsoft-Antispam-PRVS: <DB6PR05MB3174907D7F6383B264657C6AD9710@DB6PR05MB3174.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jb6H4X8yXPHmHsZl10vnRadgSTEjsN6qmWuwpWQi+r3qP+er3GhdPFfROGkTu5CVuQiktRKfZavGSj7evvtdxS9AVXRIVtJg0akbxfNSxScAl2f3+4hYtKe2Hn5u4JCfXniiL66o2QCp9lIhJ4L3W7aCscACR2lYjTOb0MqAEiPBXbGKymoMli1VBpKlpkPal5Cjw6x0dsfQl8dmyPtKtLtljMjA8RFqV+zxZZ8nElNniPSyo6/Gz9BVD6wLrymvEXQwWXeqZFrckwYtHnx251AGokurXE1emnucf2pZsCwRjJkqgd0S8Nc/iNxAYUwInGtwyv4ujMvK7OlGizhLY94T0KEmxlWUhSJwxdP3xKImYaMw6yJR9jvSJacf06EaRibh+FaoPLQURxnR92iAXQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR05MB4298.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(136003)(366004)(376002)(346002)(39860400002)(2906002)(86362001)(66946007)(8676002)(66556008)(16576012)(83380400001)(8936002)(31696002)(316002)(66476007)(54906003)(478600001)(956004)(26005)(186003)(6916009)(52116002)(5660300002)(4326008)(2616005)(6486002)(36756003)(31686004)(53546011)(16526019)(41533002)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: WQKOQKk9MyPgaKDdpQ2e1i2K/lSBtExS9TF8KsdcS4y4c6lkVQbvx9goOZ3tL2my/Xo/y4x+CMBFx9C8g+Vt4OTxVXLxpvbJ112nevJGStLYRiBFYI/xk2IeIpQcTnLsD119f+Y0+6xFeO2RupSxk79Vyr08DUaAER7BR3d2BshNZ6QqqGnNX1d5pihGwukH3wvyCSi/FyDUQWh9bWo27D3zw5gXCPuUimuyztok5sRR4ATtigB80LUk2JRpGJRVOKaLowpgJT46R46k2ciaQLO65g1MeuBgDHLmlCq+V/qOD7vaanDeycuBvhZRwIWYRt7LzF7c6Oo8MFvHnJMnqjU39g39zali30mhnaEtcjlHjKyJLj25SUXURhLh4FYcjAmm9KC9CEseN2XiLj3uBzSC39YFuogXNMSvpuXA3JcTup1D3ZycEu04MIC1xGBa3OBnnIMxmyTFmacmJ2RxsVzkRmduX0WbrCE6bOD42f4=
+X-Microsoft-Antispam-Message-Info: 74EtRrWnxufHkwB9IOWwGcn9pk3BJCk4xpgQgjpdzTRpmb2refS6HZULU/mB3mHUvlEg96pnYncHybMiRMabhJnSYbEHu9U9wBv9uIFkPCcOKushJV1IAJXD0RpxCcH01tJq2vKiTUOoLw8wuYSa0aOcxhLDiJHg0OpPmnX+vj4uYeuiFH2aYW3nsNS79Hh7/FznB01U1Kqc4A4pd88RjGKVuFVRGd+KRq+NGOpgPunZvvcpV8T+3l2oL/5EGuxFOmRdORMZRukIpqVd3IXkGSfhZguoyYT3xgE5TRWdOTRNaqh6riBaTFP8kNgLe0fZ/GKG6n9YLp4kpfCd65+8dJ7bHeyv5A0J7blwSAokL75s7el3OqDBaXwcl5dCGZ28
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR05MB4298.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(396003)(366004)(346002)(376002)(136003)(66476007)(66556008)(6486002)(6916009)(956004)(8936002)(8676002)(2616005)(31696002)(54906003)(4326008)(66946007)(316002)(83380400001)(31686004)(2906002)(478600001)(86362001)(5660300002)(26005)(52116002)(36756003)(16526019)(53546011)(16576012)(186003)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: pdTKXD8T4TD3o3nE/lsA0scOD4rENSBUIoBIu8R6rFrQHUI5Bups9gy/c7aq8vTiPXQHmhwQV1S1HZS8QnWEaP68bKVjDDHhAyXwmFDiLHkL/3biiYY5hKc6VQXt4PSFalqTSXaSxLZo0vkgcfH5Ahlzp/QmQ0OYp8sCHEXnoneNgUFIJ09suxuaFjAv0snNU2vmqDqD5jgtJkeUgIxe8gh9zoNrxlUtoWPhl8xMZ7acBsi7mGodjFI0GDkKGtIUrr6YRTwat8YyX47gDvOF7pFAyeoyHJHBfSirlXRYXVZyxs333mBKfij4pR95ZUYC33jDB4pd9PHtEY6g71PYyoVXTQ1GO9Dc/QmyAIjvw+DlxeUh5WYu5LqZ2ctmTFE7UlvXyn78Suut3+ea3Xy3MUy1sGyM0TDMsjUKatVMTt6cE55hbNPJmRmtoJBc15o/h/tjU6rcSm5nMujoxQiojC41AzgsGMTHp21Rfl/IE6E=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5caa96b1-72ad-4b82-f40b-08d834814eed
+X-MS-Exchange-CrossTenant-Network-Message-Id: 799721ff-94f7-400b-cd0b-08d83484632d
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR05MB4298.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2020 12:08:45.6675
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2020 12:30:47.9177
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EiwHt/2nQoeBiEMI18NLgBpDN77h0ibnYlTtsNkqVfFlM8jaloJNuHSAaSEOrWMsAlmjRNvQqRBgbmF8eHHEuQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2647
+X-MS-Exchange-CrossTenant-UserPrincipalName: qi6YU4wCZPznnbuwCHG4wvirVu8/qdP6FDZqkitxdiv7cmu0uFUxE9oTJwLqc/gtEPYQRO/zoWtIrkH9SmNvWA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR05MB3174
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 7/29/2020 11:57 PM, Jakub Kicinski wrote:
-> On Wed, 29 Jul 2020 17:42:12 +0300 Moshe Shemesh wrote:
->> On 7/28/2020 3:59 AM, Jakub Kicinski wrote:
->>> On Mon, 27 Jul 2020 14:02:29 +0300 Moshe Shemesh wrote:
->>>> The enable_remote_dev_reset devlink param flags that the host admin
->>>> allows device resets that can be initiated by other hosts. This
->>>> parameter is useful for setups where a device is shared by different
->>>> hosts, such as multi-host setup. Once the user set this parameter to
->>>> false, the driver should NACK any attempt to reset the device while the
->>>> driver is loaded.
->>>>
->>>> Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
->>> There needs to be a devlink event generated when reset is triggered
->>> (remotely or not).
->>>
->>> You're also missing failure reasons. Users need to know if the reset
->>> request was clearly nacked by some host, not supported, etc. vs
->>> unexpected failure.
->> I will fix and send extack message to the user accordingly.
-> I'd suggest the reason codes to be somewhat standard.
+On 7/30/2020 12:07 AM, Jakub Kicinski wrote:
+> On Wed, 29 Jul 2020 17:54:08 +0300 Moshe Shemesh wrote:
+>> On 7/28/2020 11:06 PM, Jakub Kicinski wrote:
+>>> On Tue, 28 Jul 2020 12:18:30 -0700 Jacob Keller wrote:
+>>>> On 7/28/2020 11:44 AM, Jakub Kicinski wrote:
+>>>>>   From user perspective what's important is what the reset achieves (and
+>>>>> perhaps how destructive it is). We can define the reset levels as:
+>>>>>
+>>>>> $ devlink dev reload pci/0000:82:00.0 net-ns-respawn
+>>>>> $ devlink dev reload pci/0000:82:00.0 driver-param-init
+>>>>> $ devlink dev reload pci/0000:82:00.0 fw-activate
+>>>>>
+>>>>> combining should be possible when user wants multiple things to happen:
+>>>>>
+>>>>> $ devlink dev reload pci/0000:82:00.0 fw-activate driver-param-init
+>>>> Where today "driver-param-init" is the default behavior. But didn't we
+>>>> just say that mlxsw also does the equivalent of fw-activate?
+>>> Actually the default should probably be the combination of
+>>> driver-param-init and net-ns-respawn.
+>> What about the support of these combinations, one device needs to reset
+>> fw to apply the param init, while another device can apply param-init
+>> without fw reset, but has to reload the driver for fw-reset.
+>>
+>> So the support per driver will be a matrix of combinations ?
+> Note that there is no driver reload in my examples, driver reload is
+> likely not user's goal. Whatever the driver needs to reset to satisfy
+> the goal is fair game IMO.
+
+
+Actually, driver-param-init (cmode driverinit) implicit driver 
+re-initialization.
+
+> It's already the case that some drivers reset FW for param init and some
+> don't and nobody is complaining.
+
+
+Right, driver may need more than driver re-initialization for 
+driver-param-init, but I think that driver re-initialization is the 
+minimum for driver-param-init.
+
+> We should treat constraints separate (in this set we have the live
+> activation which is a constraint on the reload operation).
 >
-> The groups I can think of:
->   - timeout - device did not respond to the reset request
->   - device reject - FW or else has nacked the activation req
->   - host incapable - one of the participating hosts (in MH) is not
->     capable of handling live activation
->   - host denied - one of the participating hosts has NACKed
->   - host timeout - one of the p. hosts did not ack or done the procedure
->     in time (e.g. has not toggled the link)
->   - failed reset - the activation itself had failed
->   - failed reinit - one of p. hosts was not able to cleanly come back up
+>>> My expectations would be that the driver must perform the lowest
+>>> reset level possible that satisfies the requested functional change.
+>>> IOW driver may do more, in fact it should be acceptable for the
+>>> driver to always for a full HW reset (unless --live or other
+>>> constraint is specified).
+>> OK, but some combinations may still not be valid for specific driver
+>> even if it tries lowest level possible.
+> Can you give an example?
 
 
-Sounds good, that seems to cover all options of fw_reset process to fail.
+For example take the combination of fw-live-patch and param-init.
+
+The fw-live-patch needs no re-initialization, while the param-init 
+requires driver re-initialization.
+
+So the only way to do that is to the one command after the other, not 
+really combining.
+
+Other combination, as fw-atcivate and param-init may not be valid for a 
+specific driver as it doesn't support one of them and so can't even run 
+one after the other.
 
