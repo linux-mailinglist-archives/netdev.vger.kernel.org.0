@@ -2,170 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ADDE23389E
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 20:59:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2E942338A3
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:04:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730374AbgG3S7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 14:59:09 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:45344 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726544AbgG3S7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 14:59:07 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06UItvbu017883;
-        Thu, 30 Jul 2020 11:58:59 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=pfpt0818; bh=f/85mI330xncUSXZnB7iX8Sz11ZYFFvvDD93fwD6Be8=;
- b=NL0F+HNNge3z4djmjvRgDdAx3bDpheuQDKDVM84YFmuvy9LYEfXpNjSJWGm92/cKptGr
- Zynh7FyVvGzXKiA+juM5bre0Bl4ZaxxZG76+nykA4Ou++p4cQAjEMlsDqLnumTH4GBzn
- rvVlBFKma/qFHm7D5S5h5+7qr/Betc5ci4g5nqbNyWVBddWDMvtqOFuCHEkRXPq32S8b
- opiPaWbQHYMSPSVTILqW2w45zc42z2dw9IoEvJnV/itgs4fAfXl73VV/PhrZvS9qiYWx
- N8hsAuoTQgOJiXhO3hqYKV6UtI1jXLckbKyYiCy3skB1wHB4zbivu+NtgynzgPvx5mZ5 HA== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 32gj3r7dyq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jul 2020 11:58:59 -0700
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 30 Jul
- 2020 11:58:58 -0700
-Received: from NAM04-BN3-obe.outbound.protection.outlook.com (104.47.46.57) by
- SC-EXCH04.marvell.com (10.93.176.84) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Thu, 30 Jul 2020 11:58:59 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Zd8ueEpGx9jaT2VKp/9LwfISrHuKq9sV4Bx1X66bV+lrJAsG4CiWUPuXU9oWI3bpqVmxERF7rDhd/B8fUU1UksvqhY0MvJ3vQRf5wfqJA2V+US26xyutHnjlCm0YFY2vVsfZLeRFuATW4LLcn9Gclys2Jw4uOkBNXXc9Hbk9xcZNersTmAcqf1qZX34f2BpVoEfBEk2lDlDSXjANoRPB/Ih2jJuU6ljpZERUpxMQLinTC1zvEkCImt6sd13hi4l0QNbU696DKKiB68vUmo1JtpzUIkrynfOEGvwVnyrk0kVQd+FeEMxVvluth9FI2TOxw552oLSMWHQMnane5oKxxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f/85mI330xncUSXZnB7iX8Sz11ZYFFvvDD93fwD6Be8=;
- b=SXeX9B+ym6H4rNP9eqaAS6MW2OYyy5bNnwOAxOztTRzxytncx6oTlD5w416kk2EGrfCN6LGNBw/lhQD/TPgoNclGoo9qtPItPvHxkZtv0K4I95yu6shIwEUXt8+97reTJDivErtAXkvM65OtpRTrW11R0AoTQSk2ftO8B3sjwfVIdv05Ma8nQu9J2UKJ4Nh4QUECv6lZ1oqfACpsRI7Oa9QCv2VjAeO+yg6IvIaqjuecE/qbr7KfLAAv1hJRryy36qhfrePYhf8XoaBmj8Wmuk9TonbUo3e4Xaz9agKy80fIcXQ+xg57uEwd2845CSU6tFZhn6fB7cFfo3qgLYCiZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
+        id S1730410AbgG3TEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 15:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726544AbgG3TEM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:04:12 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B2AC061574;
+        Thu, 30 Jul 2020 12:04:12 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id m200so10837148ybf.10;
+        Thu, 30 Jul 2020 12:04:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f/85mI330xncUSXZnB7iX8Sz11ZYFFvvDD93fwD6Be8=;
- b=W0i8GZniylwnMmmGNMUAewGTZb6Mt+7v3L/cXTXrtzW/tCO+xcjQkvaxiCo6NbxRHu18fDscN2hGI9np87Dj5cqg5UcgGUEBeA+38DK/4HhtXmpbACFGxseeFt2ZylMIyBicMJ381g6IIymElWbD+CrMT6vcMGWvawjHR+T6RBc=
-Received: from BYAPR18MB2423.namprd18.prod.outlook.com (2603:10b6:a03:132::28)
- by BY5PR18MB3204.namprd18.prod.outlook.com (2603:10b6:a03:1a9::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.18; Thu, 30 Jul
- 2020 18:58:57 +0000
-Received: from BYAPR18MB2423.namprd18.prod.outlook.com
- ([fe80::bd3d:c142:5f78:975]) by BYAPR18MB2423.namprd18.prod.outlook.com
- ([fe80::bd3d:c142:5f78:975%7]) with mapi id 15.20.3216.033; Thu, 30 Jul 2020
- 18:58:57 +0000
-From:   Derek Chickles <dchickles@marvell.com>
-To:     Wang Hai <wanghai38@huawei.com>,
-        "joe@perches.com" <joe@perches.com>,
-        Satananda Burla <sburla@marvell.com>,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next] liquidio: Replace vmalloc with kmalloc in
- octeon_register_dispatch_fn()
-Thread-Topic: [PATCH net-next] liquidio: Replace vmalloc with kmalloc in
- octeon_register_dispatch_fn()
-Thread-Index: AdZmo3PCgV7e1b5pSqaLCt95dKIAfw==
-Date:   Thu, 30 Jul 2020 18:58:57 +0000
-Message-ID: <BYAPR18MB2423C7A710232C87229FF90BAC710@BYAPR18MB2423.namprd18.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: huawei.com; dkim=none (message not signed)
- header.d=none;huawei.com; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [2601:646:8d01:7c70:75c5:f7c5:1663:bfbd]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 93a4778e-fec1-4e4d-780b-08d834ba9d05
-x-ms-traffictypediagnostic: BY5PR18MB3204:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BY5PR18MB32040BF22DB02763A0F63FF1AC710@BY5PR18MB3204.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4502;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +PVwu2bzhaPyZqmyMvSDXPHOx4Pgi6qbmnGA4qh0+r082aDdocY/DTUUF7RFR845IJTU14Fm05JEjxsyN7WE297feH8a+aafyhBgNANqkTNJ2QbXObhnlHC0qGWQXrZ+zRnQrWyQ8aPD6XZCIIjAcPy2+EYzsNUStT57HVD14vtTQNweql06PvITzcNRvoStsFiQQm23tGW0PJcxrupJiWlKa3QsD67vNjBu5DH62+HvtKrBz98r+FgYY4xB8ibYRbhVYENz588IvPop8qqoLaIUH/Qm4vGEyGOkLtN+RqsZ6ujIb9IvFPtykVi17ZMPOLU+6ldwXpyqwldBBoqHoA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR18MB2423.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(366004)(376002)(396003)(346002)(136003)(316002)(86362001)(83380400001)(55016002)(9686003)(4326008)(8936002)(71200400001)(110136005)(54906003)(53546011)(6506007)(478600001)(5660300002)(33656002)(2906002)(66476007)(7696005)(186003)(64756008)(66446008)(8676002)(66556008)(66946007)(76116006)(52536014);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: YUp3V0eeraAqBpvw/5dE22JccLye8svPtGkdgd1QRuNsfuEojdHigL2ezsSSPuJf2lu6UsL5nca+p0UUKR61o9HgBWAsu3Dt3yD3L6vAA5HI1tLJMMGxX46/jKpuk+iBD25H8A1LHfx9cfMjV4jztlC85LJ6DSsrBANlEnFgJtIOnoBRopwgh5Za1Z5wa7WT9Mbii7OCd6gmNeB6Nwj7Gn0NzLuyLjDhJkwgi9c2U+CAu64Fzq262JVxU59/pRBZfyO8gylGYL51aKw+BydK0s2e2ryZR+z4smy5Ig6TkPR1c1OzLvMXkDAjx1RUIe2l8ORSDQRNfSDOguB9vKcdkYRPQHyWvTy5nuUO57itHI57Z9XQc79pFDBaUpnd31JaPq3MTh9v71pcPSGb97OGAoDezLbYbESpG1FkgBG+8yWw6obsJzFj/uR5IoPoxx4o6e2O8VpY5YShMNtXqFWTLkDmAoBPMwJHssDp78rvYnEYGzemhn287f1CDDey8K2CHuT4rvDpvGAEJiXZAMRIPNof2I5J74aZooBwE27Tjt6E1VdkpwNvGpbh7S522cSfK0pJEkvDJMsh7yiaTmLvjnn69Bvz/Z5qkUuYi6V3oR0CB2uRGvwRfbfKdfIqk6I4CiLMhjrqNSdK57Oev5zY+N7ZnFuxuEWyXJDYAEAkDRb8f396vylvI0xhEXxkwrdvLC5Ui4/ycEpAjqg8VFhxig==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X5HUKfRMrtzs7dcM+5i3OnbYxJs7/ceslheaYcPXAhE=;
+        b=h8BVyPqMQwEw3kG67/klDfqXOtepNjPZC2j3hnwJAz8K2LPFK6eqaYvAeFHD9Gop3G
+         VdqVrAHyPOdRdaoLQ29mn4S1qyRrz5+EQOHi5Na2HeH/PiGQBzlv5B4qZqoOh30GW/G2
+         Kai0Q9hq429/TLmcU5SUdjR8F5aXNWTkW2g/vbuo+I3Id8KmRzcw1URULAxuEPQMaORl
+         /iX2I8LOK/t0oZru7b4tC5bXVxHlZAqeMr+j+P25N8DXqDVZX7Er65r4tIDb915L0/3F
+         cTubq7eLGwJM5LlrOhtkzu8dCvvglpoB8CEL/kbr7BXk5dX0iZAeM+vWF8NZE/MqxIi8
+         1CQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X5HUKfRMrtzs7dcM+5i3OnbYxJs7/ceslheaYcPXAhE=;
+        b=Cmbj/RPphD9HB5Gpf8aH5CgUZku62r6T3UiC8ILauVVUB7vrMqtJGpDYCmZhLtStUp
+         m9rZ6r63SYtbS+XLETh8zag5diH/LMpJ+/kCUug5FyrZHSdAIapW3AJWU9J5u8tzuv3Z
+         bW00RekElYvT8+6L77r62td7f5xFRUbvxl9W7J/nPET+5Ys9MuNOVv50/xCmUMYx75u1
+         NCeEFpPYTpnzh3nTf/GIYKZdIu6J448+F8ClMbwjTjxbd6y5ruXym3V2WBob+MPV+WlO
+         ZBxT+5CLu/hxNQ92veQEkR/yAAIZRyNgYavGOXonktPWbf4aFlLi5ZftrNxxXGlsOUTl
+         TBkw==
+X-Gm-Message-State: AOAM532+SfKaK3smpRMxodJTVIsdz6pZ9GJWbPWCloxOqfvWR35WUVTG
+        68MUV2Q3tquNez7x1HxtjiYlo1s4ykZGcPHGruHmmw==
+X-Google-Smtp-Source: ABdhPJzQMB6Rk7p5PYpdeoUXstHOLW6+Y8s/wuAuqWamheDI9P755t7CPMUZ5/4FiuncC6jfpZbPz4hYpk+1iixkDqY=
+X-Received: by 2002:a25:824a:: with SMTP id d10mr552970ybn.260.1596135851397;
+ Thu, 30 Jul 2020 12:04:11 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR18MB2423.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 93a4778e-fec1-4e4d-780b-08d834ba9d05
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jul 2020 18:58:57.4378
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Yh7iQ6xxscf9U22SwiWC1S76QpxuFQd7XC/5eXudQSudO+jqRvBM8TAcO1/4a485q07pRyChxOSX3ePhucvFvw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR18MB3204
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-30_14:2020-07-30,2020-07-30 signatures=0
+References: <20200729230520.693207-1-andriin@fb.com> <20200729230520.693207-2-andriin@fb.com>
+ <E5C327CB-962D-46B9-9816-29169F62C4EF@fb.com>
+In-Reply-To: <E5C327CB-962D-46B9-9816-29169F62C4EF@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 30 Jul 2020 12:03:59 -0700
+Message-ID: <CAEf4BzZsYoBZjsSKgQ-+OYRCa=Xn1EVwmdjGM5FG5oZv7_9vkw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/5] bpf: add support for forced LINK_DETACH command
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Wang Hai <wanghai38@huawei.com>
-> Sent: Wednesday, July 29, 2020 11:12 PM
-> To: joe@perches.com; Derek Chickles <dchickles@marvell.com>; Satananda
-> Burla <sburla@marvell.com>; Felix Manlunas <fmanlunas@marvell.com>;
-> davem@davemloft.net; kuba@kernel.org
-> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: [EXT] [PATCH net-next] liquidio: Replace vmalloc with kmalloc in
-> octeon_register_dispatch_fn()
->=20
-> The size of struct octeon_dispatch is too small, it is better to use kmal=
-loc
-> instead of vmalloc.
->=20
-> Suggested-by: Joe Perches <joe@perches.com>
-> Signed-off-by: Wang Hai <wanghai38@huawei.com>
-> ---
->  drivers/net/ethernet/cavium/liquidio/octeon_device.c | 11 ++++-------
->  1 file changed, 4 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-> b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-> index 934115d18488..ac32facaa427 100644
-> --- a/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-> +++ b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-> @@ -1056,7 +1056,7 @@ void octeon_delete_dispatch_list(struct
-> octeon_device *oct)
->=20
->  	list_for_each_safe(temp, tmp2, &freelist) {
->  		list_del(temp);
-> -		vfree(temp);
-> +		kfree(temp);
->  	}
->  }
->=20
-> @@ -1152,13 +1152,10 @@ octeon_register_dispatch_fn(struct
-> octeon_device *oct,
->=20
->  		dev_dbg(&oct->pci_dev->dev,
->  			"Adding opcode to dispatch list linked list\n");
-> -		dispatch =3D (struct octeon_dispatch *)
-> -			   vmalloc(sizeof(struct octeon_dispatch));
-> -		if (!dispatch) {
-> -			dev_err(&oct->pci_dev->dev,
-> -				"No memory to add dispatch function\n");
-> +		dispatch =3D kmalloc(sizeof(*dispatch), GFP_KERNEL);
-> +		if (!dispatch)
->  			return 1;
-> -		}
-> +
->  		dispatch->opcode =3D combined_opcode;
->  		dispatch->dispatch_fn =3D fn;
->  		dispatch->arg =3D fn_arg;
-> --
-> 2.17.1
+On Thu, Jul 30, 2020 at 10:43 AM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Jul 29, 2020, at 4:05 PM, Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > Add LINK_DETACH command to force-detach bpf_link without destroying it. It has
+> > the same behavior as auto-detaching of bpf_link due to cgroup dying for
+> > bpf_cgroup_link or net_device being destroyed for bpf_xdp_link. In such case,
+> > bpf_link is still a valid kernel object, but is defuncts and doesn't hold BPF
+> > program attached to corresponding BPF hook. This functionality allows users
+> > with enough access rights to manually force-detach attached bpf_link without
+> > killing respective owner process.
+> >
+> > This patch implements LINK_DETACH for cgroup, xdp, and netns links, mostly
+> > re-using existing link release handling code.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>
+> The code looks good to me. My only question is, do we need both
+> bpf_link_ops->detach and bpf_link_ops->release?
 
-Looks good.
+I think so. release() is mandatory for final clean up, after the last
+FD was closed, so every type of bpf_link has to implement this.
+detach() is optional, though, and potentially can do different things
+than release(). It just so happens right now that three bpf_linkl
+types can re-use release as-is (with minimal change to netns release
+specifically for detach use case). So I think having two is better and
+more flexible.
 
-Reviewed-by: Derek Chickles <dchickles@marvell.com>
+>
+> Thanks,
+> Song
+>
+> [...]
