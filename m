@@ -2,118 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF3EF233910
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A354233915
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 21:31:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730547AbgG3TaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 15:30:15 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:53710 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730497AbgG3TaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:30:14 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06UJR3XR008264;
-        Thu, 30 Jul 2020 19:30:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=MYB52dScwZ/YBoMJOfRh65nbt7ONDs6/VLbB0Qsq0fc=;
- b=XLRFex85LtNCdTDAA7zB9spn+lHdz8yywS6/YV+AjFb+6CrgVPg02x0RTerQJrzla9lS
- YSXIlriNxsjKlhe7G0qtfRHMpDROWqBnI3Z/wk3r6RBWlq06lFB3LuB0/Jk19gOXTOhO
- AwMi+mshxlbtbJjDtSasSEDGGVseGyInn7v2M2HnegKS9hk1IBUX9uOpUxCFDu8RARe6
- IeyAcq1c4WV6LXPhmjg1pTMiJn2JFAdv73pY1CnrRolipzJv8wNWZJfAPlSY6oGV4xZc
- 87aJxUk3H0eIN77JwJustCdPW1YHRdW4dH/F/LuFuKjvJ21C+92oV56WUejcvD+vuQLt Pw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 32hu1jnkuy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 30 Jul 2020 19:30:04 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06UJSgGP119594;
-        Thu, 30 Jul 2020 19:30:03 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 32hu5xbn6c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 30 Jul 2020 19:30:03 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 06UJSh0p119640;
-        Thu, 30 Jul 2020 19:30:03 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 32hu5xbmyp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 30 Jul 2020 19:30:03 +0000
-Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 06UJU19s023130;
-        Thu, 30 Jul 2020 19:30:01 GMT
-Received: from dhcp-10-159-232-234.vpn.oracle.com (/10.159.232.234)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 30 Jul 2020 12:30:01 -0700
-Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
- in rds_notify_queue_get()
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
-References: <20200730192026.110246-1-yepeilin.cs@gmail.com>
-From:   "santosh.shilimkar@oracle.com" <santosh.shilimkar@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <2b21c0e4-2783-74f6-313b-9f6cb17c545a@oracle.com>
-Date:   Thu, 30 Jul 2020 12:29:58 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        id S1730558AbgG3TbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 15:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45286 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730497AbgG3TbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 15:31:06 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4554DC061574;
+        Thu, 30 Jul 2020 12:31:05 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id v89so791288ybi.8;
+        Thu, 30 Jul 2020 12:31:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5FEEnrZXlSxUHvW2wIVYPb6qoZnfA0638bKW+bX8O9s=;
+        b=Ovi4tUleUwfC3CdzW3DPEwqFMnah+Pxsur0bNb54Q7xoG3zyIOnhZlkCML+aihC6sI
+         XuionKk+FXR0X/17569vkEsvVy2e03xXa/I84IzW83inuhw54d5QtV5HgARK8NvEvrUD
+         sa0gZjcG31iXamLq8l06eSQ5/cNfS8eijRsi0IOeXQScSHq9gtUovlJ6PZ6pYNUVCycp
+         vl35re4171pAxJw0RpoChy6avgyB26a2JMi3aLKguWzbaRmos/FeetW9IzVqLdIWLJyI
+         ogEmdXD+qVwr3QMWPdVBRGUUeZTerfiie3v/a9YtqeC2HL40SFiH7zFaDzHhkFcSSuVs
+         tHyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5FEEnrZXlSxUHvW2wIVYPb6qoZnfA0638bKW+bX8O9s=;
+        b=ob8jypp7eKfOIo/LtUtNF9TolCLjQ24EjWbdy0erYDSLdsSHtjk33EdUMSInCk8Ri4
+         YvKCco62vEN3r3OUuuNq6cjxMJTGd7+IZDSRBG6EVDc6152mmCwulZhWCoyWDZAond6L
+         ddRQeDm7iX6yct9x629dC2FSkco1JZ1Hjemu7jp7nJSHBi2QAVrh9kUtY/gZc8rFaiK9
+         c7nJNim+gO6H+HiD24yzU1HWcxOoyL2cJZ2BHD+BCRoFRvuGYcTrb4zb17okk7K3poWM
+         Fm2Lf1qFrZxajgVmVBesT4ehXy05xykhySb+VYpgt6XCQtOoH9/X+AOWdXEitt/P2TRH
+         WN7A==
+X-Gm-Message-State: AOAM532MAyqDSAaY2Bdb8+/+g7g3bu8QqFdunoNzlzZvudBXlbP0GgB3
+        ithYSXAwJ6zPqDRp7CSn7HYE9iloGx9PN2/xXz0=
+X-Google-Smtp-Source: ABdhPJy5y5SymkBeA9AHUM0LHSlU1xiJSJfYrV04fm873XRmlmkWVjllrwFPD/iVWyU7VI5mpLSDvqpD3JSEsA7hQmI=
+X-Received: by 2002:a25:ba0f:: with SMTP id t15mr617569ybg.459.1596137464532;
+ Thu, 30 Jul 2020 12:31:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200730192026.110246-1-yepeilin.cs@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9698 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 clxscore=1011
- malwarescore=0 spamscore=0 suspectscore=0 bulkscore=0 priorityscore=1501
- phishscore=0 mlxlogscore=999 lowpriorityscore=0 impostorscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007300134
+References: <20200730125325.1869363-1-jakub@cloudflare.com>
+In-Reply-To: <20200730125325.1869363-1-jakub@cloudflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 30 Jul 2020 12:30:53 -0700
+Message-ID: <CAEf4Bzan-B5ZTc6jSf3Dut7frEKq1XhYxg3sTtdKbds+mmmrrQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Omit nodad flag when adding
+ addresses to loopback
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/30/20 12:20 PM, Peilin Ye wrote:
-> rds_notify_queue_get() is potentially copying uninitialized kernel stack
-> memory to userspace since the compiler may leave a 4-byte hole at the end
-> of `cmsg`.
-> 
-> In 2016 we tried to fix this issue by doing `= { 0 };` on `cmsg`, which
-> unfortunately does not always initialize that 4-byte hole. Fix it by using
-> memset() instead.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: f037590fff30 ("rds: fix a leak of kernel memory")
-> Fixes: bdbe6fbc6a2f ("RDS: recv.c")
-> Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
+On Thu, Jul 30, 2020 at 5:53 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> Setting IFA_F_NODAD flag for IPv6 addresses to add to loopback is
+> unnecessary. Duplicate Address Detection does not happen on loopback
+> device.
+>
+> Also, passing 'nodad' flag to 'ip address' breaks libbpf CI, which runs in
+> an environment with BusyBox implementation of 'ip' command, that doesn't
+> understand this flag.
+>
+> Fixes: 0ab5539f8584 ("selftests/bpf: Tests for BPF_SK_LOOKUP attach point")
+> Reported-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 > ---
-> Note: the "real" copy_to_user() happens in put_cmsg(), where
-> `cmlen - sizeof(*cm)` equals to `sizeof(cmsg)`.
-> 
-> Reference: https://lwn.net/Articles/417989/
-> 
-> $ pahole -C "rds_rdma_notify" net/rds/recv.o
-> struct rds_rdma_notify {
-> 	__u64                      user_token;           /*     0     8 */
-> 	__s32                      status;               /*     8     4 */
-> 
-> 	/* size: 16, cachelines: 1, members: 2 */
-> 	/* padding: 4 */
-> 	/* last cacheline: 16 bytes */
-> };
-> 
->   net/rds/recv.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-Looks good.
-FWIW,
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+
+
+This fixes the nodad issue, thanks for quick fix!
+
+Tested-by: Andrii Nakryiko <andrii@fb.com>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+
+But now I see these, which seems like you have a separate fix for, right?
+
+(network_helpers.c:112: errno: Cannot assign requested address) Failed
+to connect to server
+run_lookup_test:FAIL:connect_fd_to_fd unexpected result err -1 errno 99
+#14 cgroup_skb_sk_lookup:FAIL
+
+udp_recv_send:FAIL:recvmsg failed
+(/data/users/andriin/linux/tools/testing/selftests/bpf/prog_tests/sk_lookup.c:339:
+errno: Resource temporarily unavailable) failed to receive
+#73/14 UDP IPv4 redir and reuseport with conns:FAIL
+
+
+>  tools/testing/selftests/bpf/prog_tests/sk_lookup.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/sk_lookup.c b/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
+> index 9bbd2b2b7630..379da6f10ee9 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
+> @@ -1290,8 +1290,8 @@ static void run_tests(struct test_sk_lookup *skel)
+>  static int switch_netns(void)
+>  {
+>         static const char * const setup_script[] = {
+> -               "ip -6 addr add dev lo " EXT_IP6 "/128 nodad",
+> -               "ip -6 addr add dev lo " INT_IP6 "/128 nodad",
+> +               "ip -6 addr add dev lo " EXT_IP6 "/128",
+> +               "ip -6 addr add dev lo " INT_IP6 "/128",
+>                 "ip link set dev lo up",
+>                 NULL,
+>         };
+> --
+> 2.25.4
+>
