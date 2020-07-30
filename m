@@ -2,208 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42527233518
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 17:12:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96F952335C0
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 17:43:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729699AbgG3PMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 11:12:09 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:13347 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729696AbgG3PMI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 11:12:08 -0400
-Received: from localhost (fedora32ganji.blr.asicdesigners.com [10.193.80.135])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 06UFC3RC013794;
-        Thu, 30 Jul 2020 08:12:04 -0700
-From:   Ganji Aravind <ganji.aravind@chelsio.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, vishal@chelsio.com,
-        rahul.lakkireddy@chelsio.com
-Subject: [PATCH net-next] cxgb4: Add support to flash firmware config image
-Date:   Thu, 30 Jul 2020 20:41:38 +0530
-Message-Id: <20200730151138.394115-1-ganji.aravind@chelsio.com>
-X-Mailer: git-send-email 2.26.2
+        id S1729745AbgG3PnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 11:43:01 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:26587 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726275AbgG3PnB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 11:43:01 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-247-twbbvnymOjCGJ4ynCSlL6A-1; Thu, 30 Jul 2020 16:42:49 +0100
+X-MC-Unique: twbbvnymOjCGJ4ynCSlL6A-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 30 Jul 2020 16:42:49 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 30 Jul 2020 16:42:49 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Sebastian Gottschall' <s.gottschall@dd-wrt.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Hillf Danton <hdanton@sina.com>
+Subject: RE: [PATCH] net: add support for threaded NAPI polling
+Thread-Topic: [PATCH] net: add support for threaded NAPI polling
+Thread-Index: AQHWZn3/cOW3dLYIQUeXoP7PwfLTPakgQZ9Q
+Date:   Thu, 30 Jul 2020 15:42:49 +0000
+Message-ID: <1743bcaa2dfb4b6393b4d228cf079fe3@AcuMS.aculab.com>
+References: <20200729165058.83984-1-nbd@nbd.name>
+ <866c7d83-868d-120e-f535-926c4cc9e615@gmail.com>
+ <5aa0c26f-d3f1-b33f-a598-e4727d6f10f0@dd-wrt.com>
+In-Reply-To: <5aa0c26f-d3f1-b33f-a598-e4727d6f10f0@dd-wrt.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update set_flash to flash firmware configuration image
-to flash region.
-
-Signed-off-by: Ganji Aravind <ganji.aravind@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |  3 +-
- .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    | 93 +++++++++++++++++++
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c    | 13 ++-
- 3 files changed, 105 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index adbc0d088070..081f94c539a9 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -143,7 +143,8 @@ enum {
- 	CXGB4_ETHTOOL_FLASH_FW = 1,
- 	CXGB4_ETHTOOL_FLASH_PHY = 2,
- 	CXGB4_ETHTOOL_FLASH_BOOT = 3,
--	CXGB4_ETHTOOL_FLASH_BOOTCFG = 4
-+	CXGB4_ETHTOOL_FLASH_BOOTCFG = 4,
-+	CXGB4_ETHTOOL_FLASH_FWCFG = 5
- };
- 
- struct cxgb4_bootcfg_data {
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-index 12ef9ddd1e54..42e2cf5c33f3 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-@@ -40,6 +40,7 @@ static const char * const flash_region_strings[] = {
- 	"PHY Firmware",
- 	"Boot",
- 	"Boot CFG",
-+	"Firmware CFG",
- };
- 
- static const char stats_strings[][ETH_GSTRING_LEN] = {
-@@ -1351,6 +1352,93 @@ static int cxgb4_ethtool_flash_fw(struct net_device *netdev,
- 	return ret;
- }
- 
-+static const u8 *cxgb4_token_match(const u8 *input, const u8 *token)
-+{
-+	const u8 *token_match;
-+
-+	token_match = strstr(input, token);
-+	if (token_match)
-+		return (token_match + strlen(token));
-+
-+	return NULL;
-+}
-+
-+static u32 cxgb4_compute_fwcfg_csum(const u8 *data, size_t st_size)
-+{
-+	unsigned int n, rem;
-+	const __be32 *uip;
-+	u32 csum;
-+
-+	uip = (const __be32 *)data;
-+	for (csum = 0, n = st_size >> 2; n; n--)
-+		csum += be32_to_cpu(*uip++);
-+
-+	rem = st_size & 0x3;
-+	if (rem) {
-+		union {
-+			char buf[4];
-+			__be32 u;
-+		} last;
-+		char *cp;
-+
-+		last.u = *uip;
-+		for (cp = &last.buf[rem], n = 4 - rem; n; n--)
-+			*cp++ = 0;
-+		csum += be32_to_cpu(last.u);
-+	}
-+
-+	return csum;
-+}
-+
-+static int cxgb4_validate_fwcfg_image(const u8 *data)
-+{
-+	const u8 *fwcfg_fini, *version, *checksum;
-+	u32 calculated_csum = 0;
-+	u8 fw_csum[16] = { 0 };
-+	u8 fw_ver[8] = { 0 };
-+	size_t st_size;
-+
-+	fwcfg_fini = cxgb4_token_match(data, "[fini]\n");
-+	if (!fwcfg_fini)
-+		return -EINVAL;
-+
-+	version = cxgb4_token_match(fwcfg_fini, "version = ");
-+	if (!version)
-+		return -EINVAL;
-+
-+	checksum = cxgb4_token_match(fwcfg_fini, "checksum = ");
-+	if (!checksum)
-+		return -EINVAL;
-+
-+	st_size = fwcfg_fini - data;
-+	calculated_csum = cxgb4_compute_fwcfg_csum(data, st_size);
-+
-+	snprintf(fw_csum, sizeof(fw_csum), "0x%x", calculated_csum);
-+	snprintf(fw_ver, sizeof(fw_ver), "0x%x", PCI_VENDOR_ID_CHELSIO);
-+
-+	if (strncmp(fw_csum, checksum, strlen(fw_csum)) &&
-+	    strncmp(fw_ver, version, strlen(fw_ver)))
-+		return -EPERM;
-+
-+	return 0;
-+}
-+
-+static int cxgb4_ethtool_flash_fwcfg(struct net_device *netdev,
-+				     const u8 *data, u32 size)
-+{
-+	struct adapter *adap = netdev2adap(netdev);
-+	int ret;
-+
-+	ret = cxgb4_validate_fwcfg_image(data);
-+	if (ret) {
-+		dev_err(adap->pdev_dev,
-+			"Firmware config validation error: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return t4_load_cfg(adap, data, size);
-+}
-+
- static int cxgb4_ethtool_flash_region(struct net_device *netdev,
- 				      const u8 *data, u32 size, u32 region)
- {
-@@ -1370,6 +1458,9 @@ static int cxgb4_ethtool_flash_region(struct net_device *netdev,
- 	case CXGB4_ETHTOOL_FLASH_BOOTCFG:
- 		ret = cxgb4_ethtool_flash_bootcfg(netdev, data, size);
- 		break;
-+	case CXGB4_ETHTOOL_FLASH_FWCFG:
-+		ret = cxgb4_ethtool_flash_fwcfg(netdev, data, size);
-+		break;
- 	default:
- 		ret = -EOPNOTSUPP;
- 		break;
-@@ -1448,6 +1539,8 @@ static int cxgb4_ethtool_get_flash_region(const u8 *data, u32 *size)
- 		return CXGB4_ETHTOOL_FLASH_PHY;
- 	if (!cxgb4_validate_bootcfg_image(data, size))
- 		return CXGB4_ETHTOOL_FLASH_BOOTCFG;
-+	if (!cxgb4_validate_fwcfg_image(data))
-+		return CXGB4_ETHTOOL_FLASH_FWCFG;
- 
- 	return -EOPNOTSUPP;
- }
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index 8a56491bb034..bf3eea91a2cc 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -10208,11 +10208,18 @@ int t4_load_cfg(struct adapter *adap, const u8 *cfg_data, unsigned int size)
- 
- 	/* this will write to the flash up to SF_PAGE_SIZE at a time */
- 	for (i = 0; i < size; i += SF_PAGE_SIZE) {
--		if ((size - i) <  SF_PAGE_SIZE)
-+		if ((size - i) <  SF_PAGE_SIZE) {
-+			u8 buf[SF_PAGE_SIZE] = { 0 };
-+			u8 npad;
-+
- 			n = size - i;
--		else
-+			npad = ((n + 4 - 1) & ~3) - n;
-+			memcpy(buf, cfg_data, n);
-+			ret = t4_write_flash(adap, addr, n + npad, buf);
-+		} else {
- 			n = SF_PAGE_SIZE;
--		ret = t4_write_flash(adap, addr, n, cfg_data);
-+			ret = t4_write_flash(adap, addr, n, cfg_data);
-+		}
- 		if (ret)
- 			goto out;
- 
--- 
-2.26.2
+RnJvbTogU2ViYXN0aWFuIEdvdHRzY2hhbGwNCj4gU2VudDogMzAgSnVseSAyMDIwIDE1OjMwDQou
+Li4NCj4gPiBRdWl0ZSBmcmFua2x5LCBJIGRvIGJlbGlldmUgdGhpcyBTVEFURV9USFJFQURFRCBz
+dGF0dXMgc2hvdWxkIGJlIGEgZ2VuZXJpYyBOQVBJIGF0dHJpYnV0ZQ0KPiA+IHRoYXQgY2FuIGJl
+IGNoYW5nZWQgZHluYW1pY2FsbHksIGF0IGFkbWluIHJlcXVlc3QsIGluc3RlYWQgb2YgaGF2aW5n
+IHRvIGNoYW5nZS9yZWNvbXBpbGUNCj4gPiBhIGRyaXZlci4NCg0KPiB0aGF0cyBub3QgdGhhdCBl
+YXN5LiB3aWZpIGRldmljZXMgZG8gdXNlIGR1bW15IG5ldGRldiBkZXZpY2VzLiB0aGV5IGFyZQ0K
+PiBub3QgdmlzaWJsZSB0byBzeXNmcyBhbmQgb3RoZXIgYWRtaW5pc3RyYXRpdmUgb3B0aW9ucy4N
+Cj4gc28gY2hhbmdpbmcgaXQgd291bGQganVzdCBiZSBwb3NzaWJsZSBpZiBhIHNwZWNpYWwgbWFj
+ODAyMTEgYmFzZWQNCj4gY29udHJvbCB3b3VsZCBiZSBpbXBsZW1lbnRlZCBmb3IgdGhlc2UgZHJp
+dmVycy4NCj4gZm9yIHN0YW5kYXJkIG5ldGRldiBkZXZpY2VzIGl0IGlzbnQgYSBiaWcgdGhpbmcg
+dG8gaW1wbGVtZW50IGENCj4gYWRtaW5pc3RyYXRpdmUgY29udHJvbCBieSBzeXNmcyAoaWYgeW91
+IGFyZSB0YWxraW5nIGFib3V0IHN1Y2ggYSBmZWF0dXJlKQ0KDQpJU1RNIHRoYXQgYSBnbG9iYWwg
+ZmxhZyB0aGF0IG1hZGUgYWxsIE5BUEkgY2FsbGJhY2tzIGJlIG1hZGUNCmZyb20gYSB3b3JrZXIg
+dGhyZWFkIHJhdGhlciB0aGFuIHNvZnRpbnQgd291bGQgYmUgbW9yZSBhcHByb3JpYXRlLg0KT3Ig
+ZXZlbiBzb21ldGhpbmcgdGhhdCBtYWRlIHRoZSBzb2Z0aW50IGNhbGxiYWNrcyB0aGVtc2VsdmVz
+DQpvbmx5IHJ1biBhbiBhIHNwZWNpZmljIGhpZ2goaXNoKSBwcmlvcml0eSBrZXJuZWwgdGhyZWFk
+Lg0KDQpXaGlsZSBpdCBtaWdodCBzbG93IGRvd24gc2V0dXBzIHRoYXQgbmVlZCB2ZXJ5IGxvdyBl
+dGhlcm5ldA0KbGF0ZW5jeSBpdCB3aWxsIGhlbHAgdGhvc2UgdGhhdCBkb24ndCB3YW50IGFwcGxp
+Y2F0aW9uIFJUIHRocmVhZHMNCnRvIGJlICdzdG9sZW4nIGJ5IHRoZSBzb2Z0aW50IGNvZGUgd2hp
+bGUgdGhleSBob2xkIGFwcGxpY2F0aW9uDQptdXRleCBvciBhcmUgd2FpdGluZyB0byBiZSB3b2tl
+biBieSBhIGN2Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBC
+cmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdp
+c3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
