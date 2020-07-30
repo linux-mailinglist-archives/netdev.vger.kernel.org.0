@@ -2,166 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 311D2232B8A
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 07:48:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39D86232B97
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 07:58:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728674AbgG3FsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 01:48:12 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:56310 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728195AbgG3FsD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 01:48:03 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id A4A27205AA;
-        Thu, 30 Jul 2020 07:48:01 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 4b7ZJYHWdzQN; Thu, 30 Jul 2020 07:48:01 +0200 (CEST)
-Received: from mail-essen-02.secunet.de (mail-essen-02.secunet.de [10.53.40.205])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 78EE2205E3;
-        Thu, 30 Jul 2020 07:48:00 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Thu, 30 Jul 2020 07:48:00 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Thu, 30 Jul
- 2020 07:47:58 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 7DC2D318468D;
- Thu, 30 Jul 2020 07:41:44 +0200 (CEST)
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     David Miller <davem@davemloft.net>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH 19/19] xfrm: Make the policy hold queue work with VTI.
-Date:   Thu, 30 Jul 2020 07:41:30 +0200
-Message-ID: <20200730054130.16923-20-steffen.klassert@secunet.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200730054130.16923-1-steffen.klassert@secunet.com>
-References: <20200730054130.16923-1-steffen.klassert@secunet.com>
+        id S1728634AbgG3F6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 01:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725892AbgG3F6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 01:58:32 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D268C061794
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 22:58:29 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id j187so24585782qke.11
+        for <netdev@vger.kernel.org>; Wed, 29 Jul 2020 22:58:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=phd6O3yMyVkYT4PFMQTzBGjYeyD6/bbg4aQWWhxqFYo=;
+        b=WRTqr8NyjcdEcUae816dG3ovpNjrpDSMTg0dXIyhE/mr53gMIw8yWWMEgjdVSuJ8Ay
+         WtGWGOGcUySOCgGPo1/ZzVYKWMfr6Bj90xJzmuYR7qmirPuxDNepJmb9EN8xe2xlYGdJ
+         HfgHiGgAHmzwrYeRoR+3zdVGRFDNB/YtQc6eDHJ5DACx1QYkrNkSNAlal1+oVKidrcPv
+         vWx+r51AGp+cAvJVeszU+WdhYL6K/OnDy2yn1/2L0X6lzt0VECPebxcwKLiLKppcK3EU
+         niK2lDDQa8OLLXsvY/y3mTpaeM6k24GwR4QEZRA8yLckuqV3tUFcS4gSWYs/t6I0itj5
+         d+4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=phd6O3yMyVkYT4PFMQTzBGjYeyD6/bbg4aQWWhxqFYo=;
+        b=ZzH60sSLD+Wj+B6g+Ae9t3RyPSV4os0y/B+KR86HpQQXddfIhDsondNxHuJhiAFCYk
+         0KGBZyzKjpHXt3jRzJX5RqwO4yRuxrEpmuy4RtcAGZqQuOZiFsbPN4pFKxeYutrELF6G
+         2DUlLju8NnY/O4sZBWMxLSWyXtwuqrJfzaRcXoMmNKp54h9/BHZoqiMMcUiYYgOH9paR
+         bT/ZA5kkKqX3AkdOH4uf8YbdKKM8DCu+2onT9tlr15NK1KQAgb9/Kcw5JrLTMxY0ZAm1
+         Kk13DwXFdS+U8FDlD4bkFZlSsia0b50vp/PJ6cekOKUCczI9ToM2B1uIq9PlN8/fUHMU
+         3UOA==
+X-Gm-Message-State: AOAM530vLdjy0OFgpU2yx65X52sfClRMrejmmmkjajy9no7HqCzPxXhC
+        NZWiuGVyV2i5xKdBOjTerHxDRvjRFiK5RtbtfiWVVg==
+X-Google-Smtp-Source: ABdhPJx7mC8iIHX6qkV1NeL0SnyK0zXPm9WUW3SQNhvECWDHWYCi8kk4E2uD+DDGyoMQ4L0avHMwQN66ZL6FeyA7A9g=
+X-Received: by 2002:a37:8241:: with SMTP id e62mr37765030qkd.250.1596088708115;
+ Wed, 29 Jul 2020 22:58:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+References: <0000000000006f179d05ab8e2cf2@google.com> <BYAPR11MB2632784BE3AD9F03C5C95263FF700@BYAPR11MB2632.namprd11.prod.outlook.com>
+ <87tuxqxhgq.fsf@intel.com>
+In-Reply-To: <87tuxqxhgq.fsf@intel.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 30 Jul 2020 07:58:16 +0200
+Message-ID: <CACT4Y+ZMvaJMiXikYCm-Xym8ddKDY0n-5=kwH7i2Hu-9uJW1kQ@mail.gmail.com>
+Subject: =?UTF-8?B?UmU6IOWbnuWkjTogSU5GTzogcmN1IGRldGVjdGVkIHN0YWxsIGluIHRjX21vZGlmeV9xZA==?=
+        =?UTF-8?B?aXNj?=
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     "Zhang, Qiang" <Qiang.Zhang@windriver.com>,
+        syzbot <syzbot+9f78d5c664a8c33f4cce@syzkaller.appspotmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "fweisbec@gmail.com" <fweisbec@gmail.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We forgot to support the xfrm policy hold queue when
-VTI was implemented. This patch adds everything we
-need so that we can use the policy hold queue together
-with VTI interfaces.
+On Wed, Jul 29, 2020 at 9:13 PM Vinicius Costa Gomes
+<vinicius.gomes@intel.com> wrote:
+>
+> Hi,
+>
+> "Zhang, Qiang" <Qiang.Zhang@windriver.com> writes:
+>
+> > ________________________________________
+> > =E5=8F=91=E4=BB=B6=E4=BA=BA: linux-kernel-owner@vger.kernel.org <linux-=
+kernel-owner@vger.kernel.org> =E4=BB=A3=E8=A1=A8 syzbot <syzbot+9f78d5c664a=
+8c33f4cce@syzkaller.appspotmail.com>
+> > =E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2020=E5=B9=B47=E6=9C=8829=E6=97=
+=A5 13:53
+> > =E6=94=B6=E4=BB=B6=E4=BA=BA: davem@davemloft.net; fweisbec@gmail.com; j=
+hs@mojatatu.com; jiri@resnulli.us; linux-kernel@vger.kernel.org; mingo@kern=
+el.org; netdev@vger.kernel.org; syzkaller-bugs@googlegroups.com; tglx@linut=
+ronix.de; vinicius.gomes@intel.com; xiyou.wangcong@gmail.com
+> > =E4=B8=BB=E9=A2=98: INFO: rcu detected stall in tc_modify_qdisc
+> >
+> > Hello,
+> >
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    181964e6 fix a braino in cmsghdr_from_user_compat_to_ke=
+rn()
+> > git tree:       net
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=3D12925e38900=
+000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=3Df87a5e4232f=
+db267
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=3D9f78d5c664a8c=
+33f4cce
+> > compiler:       gcc (GCC) 10.1.0-syz 20200507
+> > syz repro:
+> > https://syzkaller.appspot.com/x/repro.syz?x=3D16587f8c900000
+>
+> It seems that syzkaller is generating an schedule with too small
+> intervals (3ns in this case) which causes a hrtimer busy-loop which
+> starves other kernel threads.
+>
+> We could put some limits on the interval when running in software mode,
+> but I don't like this too much, because we are talking about users with
+> CAP_NET_ADMIN and they have easier ways to do bad things to the system.
 
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
----
- net/ipv4/ip_vti.c      |  6 +++++-
- net/ipv6/ip6_vti.c     |  6 +++++-
- net/xfrm/xfrm_policy.c | 11 +++++++++++
- 3 files changed, 21 insertions(+), 2 deletions(-)
+Hi Vinicius,
 
-diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
-index 3e5d54517145..8b962eac9ed8 100644
---- a/net/ipv4/ip_vti.c
-+++ b/net/ipv4/ip_vti.c
-@@ -218,12 +218,15 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
- 	}
- 
- 	dst_hold(dst);
--	dst = xfrm_lookup(tunnel->net, dst, fl, NULL, 0);
-+	dst = xfrm_lookup_route(tunnel->net, dst, fl, NULL, 0);
- 	if (IS_ERR(dst)) {
- 		dev->stats.tx_carrier_errors++;
- 		goto tx_error_icmp;
- 	}
- 
-+	if (dst->flags & DST_XFRM_QUEUE)
-+		goto queued;
-+
- 	if (!vti_state_check(dst->xfrm, parms->iph.daddr, parms->iph.saddr)) {
- 		dev->stats.tx_carrier_errors++;
- 		dst_release(dst);
-@@ -255,6 +258,7 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
- 		goto tx_error;
- 	}
- 
-+queued:
- 	skb_scrub_packet(skb, !net_eq(tunnel->net, dev_net(dev)));
- 	skb_dst_set(skb, dst);
- 	skb->dev = skb_dst(skb)->dev;
-diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
-index 53f12b40528e..f5a4c4a6492b 100644
---- a/net/ipv6/ip6_vti.c
-+++ b/net/ipv6/ip6_vti.c
-@@ -491,13 +491,16 @@ vti6_xmit(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
- 	}
- 
- 	dst_hold(dst);
--	dst = xfrm_lookup(t->net, dst, fl, NULL, 0);
-+	dst = xfrm_lookup_route(t->net, dst, fl, NULL, 0);
- 	if (IS_ERR(dst)) {
- 		err = PTR_ERR(dst);
- 		dst = NULL;
- 		goto tx_err_link_failure;
- 	}
- 
-+	if (dst->flags & DST_XFRM_QUEUE)
-+		goto queued;
-+
- 	x = dst->xfrm;
- 	if (!vti6_state_check(x, &t->parms.raddr, &t->parms.laddr))
- 		goto tx_err_link_failure;
-@@ -533,6 +536,7 @@ vti6_xmit(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
- 		goto tx_err_dst_release;
- 	}
- 
-+queued:
- 	skb_scrub_packet(skb, !net_eq(t->net, dev_net(dev)));
- 	skb_dst_set(skb, dst);
- 	skb->dev = skb_dst(skb)->dev;
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 564aa6492e7c..be150475b28b 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -2758,6 +2758,7 @@ static void xfrm_policy_queue_process(struct timer_list *t)
- 	struct xfrm_policy_queue *pq = &pol->polq;
- 	struct flowi fl;
- 	struct sk_buff_head list;
-+	__u32 skb_mark;
- 
- 	spin_lock(&pq->hold_queue.lock);
- 	skb = skb_peek(&pq->hold_queue);
-@@ -2767,7 +2768,12 @@ static void xfrm_policy_queue_process(struct timer_list *t)
- 	}
- 	dst = skb_dst(skb);
- 	sk = skb->sk;
-+
-+	/* Fixup the mark to support VTI. */
-+	skb_mark = skb->mark;
-+	skb->mark = pol->mark.v;
- 	xfrm_decode_session(skb, &fl, dst->ops->family);
-+	skb->mark = skb_mark;
- 	spin_unlock(&pq->hold_queue.lock);
- 
- 	dst_hold(xfrm_dst_path(dst));
-@@ -2799,7 +2805,12 @@ static void xfrm_policy_queue_process(struct timer_list *t)
- 	while (!skb_queue_empty(&list)) {
- 		skb = __skb_dequeue(&list);
- 
-+		/* Fixup the mark to support VTI. */
-+		skb_mark = skb->mark;
-+		skb->mark = pol->mark.v;
- 		xfrm_decode_session(skb, &fl, skb_dst(skb)->ops->family);
-+		skb->mark = skb_mark;
-+
- 		dst_hold(xfrm_dst_path(skb_dst(skb)));
- 		dst = xfrm_lookup(net, xfrm_dst_path(skb_dst(skb)), &fl, skb->sk, 0);
- 		if (IS_ERR(dst)) {
--- 
-2.17.1
+Could you explain why you don't like the argument if it's for CAP_NET_ADMIN=
+?
+Good code should check arguments regardless I think and it's useful to
+protect root from, say, programming bugs rather than kill the machine
+on any bug and misconfiguration. What am I missing?
 
+Also are we talking about CAP_NET_ADMIN in a user ns as well
+(effectively nobody)?
