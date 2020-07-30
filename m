@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EE9C232C27
+	by mail.lfdr.de (Postfix) with ESMTP id F406D232C28
 	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 08:55:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728903AbgG3Gzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 02:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41700 "EHLO
+        id S1728916AbgG3Gzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 02:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbgG3Gzg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 02:55:36 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F4AC061794;
-        Wed, 29 Jul 2020 23:55:36 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id j19so15991792pgm.11;
-        Wed, 29 Jul 2020 23:55:36 -0700 (PDT)
+        with ESMTP id S1726133AbgG3Gzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 02:55:41 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB24C061794;
+        Wed, 29 Jul 2020 23:55:41 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id j20so14481869pfe.5;
+        Wed, 29 Jul 2020 23:55:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FxW9b/q+4sJNPVzuIBcNVUFU45uGZZ5i5gNq3WgDQXk=;
-        b=V8Ml+Xnk/3Sx7gR5456fsIVmPbCiTzHSXcgcEIj5PZjGhlix6IoZkqR3umOoImk8uq
-         njbzH7HCbMc50IcFtseFfnFD4zoZNoFYNL2Uw0avOkcKtddgmbqhJXn30LX1PKbmw12V
-         47fOXMGVW71YoNh0AEMqOpaMHwH6WOKxJ3OVF2tbvUGj0MtF9HYEECrU1/sWuvyvcySN
-         geePm0m+keM9ES9ExYdTO2KpYUcg8bF5er0Q7Uu5IZPHeulhVqrosdha8hml7f7KUrl4
-         jS7EMAEK0Rd27A2992XeqhoTa4vBBgv+4R+u63QYckmLe0NYuWep1wpAT4QUPYDj7keT
-         kCsQ==
+        bh=/vlI3SS5LvqfdvM+r/BRxyq9xbnF0HtDqy+K6GhzXBQ=;
+        b=IeyTY+OHDs3axg/+m/60sKy64hsxJz6vIgqYhE6Iz6K12qqw/hsugFDau/PBn8WFV3
+         JGQGAcFjBIEXxo0/VcnzQEFRhlWgm9IdPUdmzmwhFizSkecC2hZluT61Uqq6D005neYu
+         +Lhsq4df0bJBHJSrWY0DUvFJa7psUHeAnTY+8W1mCXMlqiPyzTni1n3uwciUA6J9VmUS
+         S6najC8IxhfEx6WzNXnrq4qzFli00UiTBX7CLifCNEf4+81x0tGGDSjxYSye1htoFIDX
+         Hq+hUVgBt0ep49YZHEJlW53pldG9t8pu9wz/EmvEiroJ5SyApHesf2QEC2dFLP1sty74
+         iqzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FxW9b/q+4sJNPVzuIBcNVUFU45uGZZ5i5gNq3WgDQXk=;
-        b=qV0b1L/SgNaWYW8WpARBiVMP8clVvRB6cihjMqXh9Gjb9MpqbrCOGzOydWMILNHxtP
-         wkNRisi9LNYRMQBiUAC6S4XMcGG3kgWgckxhA1Osb2jco/Pw3DvbZ4abJxNh7cJSANGF
-         yaNAiBmCguAtqTyT9tJawWyDH5emE4Q56mSAa5iVch0dEkhpaosPypNJnZcHdTO7kYoI
-         Ons6Wtx8cFWcH3b/ELenYfUE5A4hCk1rxyrkpj58wx9NtF0DbYGKChiVzhGmxxLgM7yk
-         xqrihk6OVYYXbSPR0N7Y+uNx5gTXYxl9AFg47pxinUnYMH8CscyRttx1eZzMFiDYLr04
-         /ATw==
-X-Gm-Message-State: AOAM533yCae9wMYTBysUZtNJhoaYy2B1E+GtCQ6KIer4FJW3DwFWKPnm
-        FLuJuEBsOjNQJ6NRS0xynSQ=
-X-Google-Smtp-Source: ABdhPJxOE5s0tndKBfHkuFL0NM6Oz2rP0sYzx/wQfhvMQgLEEwymbZO6LPqTZTuIeE0DgdO9JtlV4A==
-X-Received: by 2002:a63:cf49:: with SMTP id b9mr31966967pgj.31.1596092136120;
-        Wed, 29 Jul 2020 23:55:36 -0700 (PDT)
+        bh=/vlI3SS5LvqfdvM+r/BRxyq9xbnF0HtDqy+K6GhzXBQ=;
+        b=rAhM24QbbOAmHWN4AcYRBJJCqXjRnbWdW80lPsOiW2/BxyoRPQ0IVRqR2FrNie5/FU
+         eOd/fxMMXGSp0yJx9ZK1iZeoWsW1HyV0Krpt4j/xsD4ZMhe4vOBTnGuuAV0kMddZTwCd
+         DAaioMx+KljeD8+Qo3QMrb+tx3Vubf9XPxKl/QdDNOpBg9bdB/m1nJ3qRIy2ltU7/fB+
+         iMVauL1bgu9tgpIYaof8iRx3YtDfQ2Y0UV5nqoSx+3pyw0lgVb/QhpyhRkon+7pGyFf5
+         jtzpQWxxhCf/L2OUYmeh3/a67X+5Q6930nSHiFBf2CihJ38q409VDkj72W4JLGlXawNt
+         NI9Q==
+X-Gm-Message-State: AOAM530nBJSW1xHhbRM4yrxo4rfiKGLYhEDSmNF6qUZh6Ww0ekpaGiFb
+        XDlrX5UMs4ltjNCB7u+Tu/A=
+X-Google-Smtp-Source: ABdhPJwYGhi+sY/oimQBy5vqYoOm292XvKwZ6vkA9xlHyQ2ck1XAnfc6tDfqNmjF+sYua3WD3W05Cg==
+X-Received: by 2002:a63:f04d:: with SMTP id s13mr27043273pgj.100.1596092141275;
+        Wed, 29 Jul 2020 23:55:41 -0700 (PDT)
 Received: from varodek.iballbatonwifi.com ([103.105.152.86])
-        by smtp.gmail.com with ESMTPSA id v2sm4232299pje.19.2020.07.29.23.55.31
+        by smtp.gmail.com with ESMTPSA id v2sm4232299pje.19.2020.07.29.23.55.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jul 2020 23:55:35 -0700 (PDT)
+        Wed, 29 Jul 2020 23:55:40 -0700 (PDT)
 From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
 To:     Bjorn Helgaas <helgaas@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>,
@@ -61,9 +61,9 @@ Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org,
         Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH v1 2/3] sis900: use generic power management
-Date:   Thu, 30 Jul 2020 12:23:35 +0530
-Message-Id: <20200730065336.198315-3-vaibhavgupta40@gmail.com>
+Subject: [PATCH v1 3/3] tlan: use generic power management
+Date:   Thu, 30 Jul 2020 12:23:36 +0530
+Message-Id: <20200730065336.198315-4-vaibhavgupta40@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200730065336.198315-1-vaibhavgupta40@gmail.com>
 References: <20200730065336.198315-1-vaibhavgupta40@gmail.com>
@@ -87,73 +87,75 @@ and drivers are required to do only device-specific jobs.
 
 Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 ---
- drivers/net/ethernet/sis/sis900.c | 23 +++++++----------------
- 1 file changed, 7 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/ti/tlan.c | 31 ++++++-------------------------
+ 1 file changed, 6 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/sis/sis900.c b/drivers/net/ethernet/sis/sis900.c
-index 81ed7589e33c..2af2c9816dfc 100644
---- a/drivers/net/ethernet/sis/sis900.c
-+++ b/drivers/net/ethernet/sis/sis900.c
-@@ -2493,11 +2493,9 @@ static void sis900_remove(struct pci_dev *pci_dev)
- 	pci_release_regions(pci_dev);
+diff --git a/drivers/net/ethernet/ti/tlan.c b/drivers/net/ethernet/ti/tlan.c
+index 857709828058..c799945a39ef 100644
+--- a/drivers/net/ethernet/ti/tlan.c
++++ b/drivers/net/ethernet/ti/tlan.c
+@@ -345,33 +345,21 @@ static void tlan_stop(struct net_device *dev)
+ 	}
  }
  
 -#ifdef CONFIG_PM
 -
--static int sis900_suspend(struct pci_dev *pci_dev, pm_message_t state)
-+static int __maybe_unused sis900_suspend(struct device *dev)
+-static int tlan_suspend(struct pci_dev *pdev, pm_message_t state)
++static int __maybe_unused tlan_suspend(struct device *dev_d)
  {
--	struct net_device *net_dev = pci_get_drvdata(pci_dev);
-+	struct net_device *net_dev = dev_get_drvdata(dev);
- 	struct sis900_private *sis_priv = netdev_priv(net_dev);
- 	void __iomem *ioaddr = sis_priv->ioaddr;
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(dev_d);
  
-@@ -2510,22 +2508,17 @@ static int sis900_suspend(struct pci_dev *pci_dev, pm_message_t state)
- 	/* Stop the chip's Tx and Rx Status Machine */
- 	sw32(cr, RxDIS | TxDIS | sr32(cr));
+ 	if (netif_running(dev))
+ 		tlan_stop(dev);
  
--	pci_set_power_state(pci_dev, PCI_D3hot);
--	pci_save_state(pci_dev);
+ 	netif_device_detach(dev);
+-	pci_save_state(pdev);
+-	pci_disable_device(pdev);
+-	pci_wake_from_d3(pdev, false);
+-	pci_set_power_state(pdev, PCI_D3hot);
+ 
+ 	return 0;
+ }
+ 
+-static int tlan_resume(struct pci_dev *pdev)
++static int __maybe_unused tlan_resume(struct device *dev_d)
+ {
+-	struct net_device *dev = pci_get_drvdata(pdev);
+-	int rc = pci_enable_device(pdev);
 -
+-	if (rc)
+-		return rc;
+-	pci_restore_state(pdev);
+-	pci_enable_wake(pdev, PCI_D0, 0);
++	struct net_device *dev = dev_get_drvdata(dev_d);
+ 	netif_device_attach(dev);
+ 
+ 	if (netif_running(dev))
+@@ -380,21 +368,14 @@ static int tlan_resume(struct pci_dev *pdev)
  	return 0;
  }
  
--static int sis900_resume(struct pci_dev *pci_dev)
-+static int __maybe_unused sis900_resume(struct device *dev)
- {
--	struct net_device *net_dev = pci_get_drvdata(pci_dev);
-+	struct net_device *net_dev = dev_get_drvdata(dev);
- 	struct sis900_private *sis_priv = netdev_priv(net_dev);
- 	void __iomem *ioaddr = sis_priv->ioaddr;
- 
- 	if(!netif_running(net_dev))
- 		return 0;
--	pci_restore_state(pci_dev);
--	pci_set_power_state(pci_dev, PCI_D0);
- 
- 	sis900_init_rxfilter(net_dev);
- 
-@@ -2549,17 +2542,15 @@ static int sis900_resume(struct pci_dev *pci_dev)
- 
- 	return 0;
- }
+-#else /* CONFIG_PM */
+-
+-#define tlan_suspend   NULL
+-#define tlan_resume    NULL
+-
 -#endif /* CONFIG_PM */
-+
-+static SIMPLE_DEV_PM_OPS(sis900_pm_ops, sis900_suspend, sis900_resume);
+-
++static SIMPLE_DEV_PM_OPS(tlan_pm_ops, tlan_suspend, tlan_resume);
  
- static struct pci_driver sis900_pci_driver = {
- 	.name		= SIS900_MODULE_NAME,
- 	.id_table	= sis900_pci_tbl,
- 	.probe		= sis900_probe,
- 	.remove		= sis900_remove,
--#ifdef CONFIG_PM
--	.suspend	= sis900_suspend,
--	.resume		= sis900_resume,
--#endif /* CONFIG_PM */
-+	.driver.pm	= &sis900_pm_ops,
+ static struct pci_driver tlan_driver = {
+ 	.name		= "tlan",
+ 	.id_table	= tlan_pci_tbl,
+ 	.probe		= tlan_init_one,
+ 	.remove		= tlan_remove_one,
+-	.suspend	= tlan_suspend,
+-	.resume		= tlan_resume,
++	.driver.pm	= &tlan_pm_ops,
  };
  
- static int __init sis900_init_module(void)
+ static int __init tlan_probe(void)
 -- 
 2.27.0
 
