@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6628B232C25
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 08:55:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EE9C232C27
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 08:55:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728889AbgG3Gzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 02:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41682 "EHLO
+        id S1728903AbgG3Gzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 02:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbgG3Gza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 02:55:30 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC8BC061794;
-        Wed, 29 Jul 2020 23:55:30 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id o1so13266056plk.1;
-        Wed, 29 Jul 2020 23:55:30 -0700 (PDT)
+        with ESMTP id S1726133AbgG3Gzg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 02:55:36 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F4AC061794;
+        Wed, 29 Jul 2020 23:55:36 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id j19so15991792pgm.11;
+        Wed, 29 Jul 2020 23:55:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=txXh6bMNLO/zbmwd7UTGY/9gRZdmj9zCt/b5o3lUEMw=;
-        b=MUAoLL1dsW7L9u9qnIArr4QTzJIq5qwdDhtAM6o5gFp+RO0ETWg8PnyJ9mfnjlEBNh
-         eI2FDsI3KO717W1lithr/7wMFwthVMBpcevFOdJeeqzIGxjBHbA/hu5s5gdflBFoNPSv
-         PSBNh+6zfWtv+ALFBEYFI7dHH7XTd0CiRR0gF+9/21CBPkxg+7GRnrofv4bDGN0a+9x7
-         Ls6W55jtVmGvt2L9S1fiyypLe0XnPVkQKkxyeWoH8ytGsC2t0+Hd+HKI1D0hdYtHWs7i
-         G7EUTLQnvrBw6dDO+B/F+gOjMLddfQpwrkBEMRBNXgRgHI5POREhp8+ZPTexGftkhsjn
-         RGWg==
+        bh=FxW9b/q+4sJNPVzuIBcNVUFU45uGZZ5i5gNq3WgDQXk=;
+        b=V8Ml+Xnk/3Sx7gR5456fsIVmPbCiTzHSXcgcEIj5PZjGhlix6IoZkqR3umOoImk8uq
+         njbzH7HCbMc50IcFtseFfnFD4zoZNoFYNL2Uw0avOkcKtddgmbqhJXn30LX1PKbmw12V
+         47fOXMGVW71YoNh0AEMqOpaMHwH6WOKxJ3OVF2tbvUGj0MtF9HYEECrU1/sWuvyvcySN
+         geePm0m+keM9ES9ExYdTO2KpYUcg8bF5er0Q7Uu5IZPHeulhVqrosdha8hml7f7KUrl4
+         jS7EMAEK0Rd27A2992XeqhoTa4vBBgv+4R+u63QYckmLe0NYuWep1wpAT4QUPYDj7keT
+         kCsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=txXh6bMNLO/zbmwd7UTGY/9gRZdmj9zCt/b5o3lUEMw=;
-        b=saXKrkC5EuAPTRPdD3U5caDyrcbb5+r0XXEndcirNo/34AqVDNppsWqX8Y08CEO9V0
-         HdY68guSTYea5Yp0tLduggrxtLgFabreH2mVOq54gdX97HCMu5EsoKdbCfo+QQ/VVqlx
-         W3IDiQ0hs8fVUk81Q618PceZPA1HtZRhiYTXcZ8pkAkdvaLd1+pPOhqjpgRyP0UbTJC6
-         w4rDy/FnbNC3c5A9enFZGwCYYTYSS1d6a/YQaC2zD1iHmwRteh9eACaUvBBmYiRsj/3d
-         GwNNEHeo0TTvos8eTYtXDaeDDEeS72zH40xB2FLtTnDkcccpxGKBp1JNNRdNP71VBw6p
-         jiqw==
-X-Gm-Message-State: AOAM5324M5KKCqzdcsE+XSPmxaVb1IxlZ8Q4zM0AQrAr6Zy2LOllVmDa
-        1HfMcC6ybnn8u9YR3ishJik=
-X-Google-Smtp-Source: ABdhPJzxKjX0bjs+VafLwqQWplTEBD89GEGiSW8R3+5QUtyQzsU1qh9BZjKZJVpDE5JoZtCiCIiFvA==
-X-Received: by 2002:a17:902:8bc6:: with SMTP id r6mr18620760plo.289.1596092130138;
-        Wed, 29 Jul 2020 23:55:30 -0700 (PDT)
+        bh=FxW9b/q+4sJNPVzuIBcNVUFU45uGZZ5i5gNq3WgDQXk=;
+        b=qV0b1L/SgNaWYW8WpARBiVMP8clVvRB6cihjMqXh9Gjb9MpqbrCOGzOydWMILNHxtP
+         wkNRisi9LNYRMQBiUAC6S4XMcGG3kgWgckxhA1Osb2jco/Pw3DvbZ4abJxNh7cJSANGF
+         yaNAiBmCguAtqTyT9tJawWyDH5emE4Q56mSAa5iVch0dEkhpaosPypNJnZcHdTO7kYoI
+         Ons6Wtx8cFWcH3b/ELenYfUE5A4hCk1rxyrkpj58wx9NtF0DbYGKChiVzhGmxxLgM7yk
+         xqrihk6OVYYXbSPR0N7Y+uNx5gTXYxl9AFg47pxinUnYMH8CscyRttx1eZzMFiDYLr04
+         /ATw==
+X-Gm-Message-State: AOAM533yCae9wMYTBysUZtNJhoaYy2B1E+GtCQ6KIer4FJW3DwFWKPnm
+        FLuJuEBsOjNQJ6NRS0xynSQ=
+X-Google-Smtp-Source: ABdhPJxOE5s0tndKBfHkuFL0NM6Oz2rP0sYzx/wQfhvMQgLEEwymbZO6LPqTZTuIeE0DgdO9JtlV4A==
+X-Received: by 2002:a63:cf49:: with SMTP id b9mr31966967pgj.31.1596092136120;
+        Wed, 29 Jul 2020 23:55:36 -0700 (PDT)
 Received: from varodek.iballbatonwifi.com ([103.105.152.86])
-        by smtp.gmail.com with ESMTPSA id v2sm4232299pje.19.2020.07.29.23.55.25
+        by smtp.gmail.com with ESMTPSA id v2sm4232299pje.19.2020.07.29.23.55.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jul 2020 23:55:29 -0700 (PDT)
+        Wed, 29 Jul 2020 23:55:35 -0700 (PDT)
 From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
 To:     Bjorn Helgaas <helgaas@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>,
@@ -61,9 +61,9 @@ Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org,
         Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH v1 1/3] sc92031: use generic power management
-Date:   Thu, 30 Jul 2020 12:23:34 +0530
-Message-Id: <20200730065336.198315-2-vaibhavgupta40@gmail.com>
+Subject: [PATCH v1 2/3] sis900: use generic power management
+Date:   Thu, 30 Jul 2020 12:23:35 +0530
+Message-Id: <20200730065336.198315-3-vaibhavgupta40@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200730065336.198315-1-vaibhavgupta40@gmail.com>
 References: <20200730065336.198315-1-vaibhavgupta40@gmail.com>
@@ -87,83 +87,73 @@ and drivers are required to do only device-specific jobs.
 
 Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 ---
- drivers/net/ethernet/silan/sc92031.c | 26 +++++++++-----------------
- 1 file changed, 9 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/sis/sis900.c | 23 +++++++----------------
+ 1 file changed, 7 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/silan/sc92031.c b/drivers/net/ethernet/silan/sc92031.c
-index cb043eb1bdc1..f94078f8ebe5 100644
---- a/drivers/net/ethernet/silan/sc92031.c
-+++ b/drivers/net/ethernet/silan/sc92031.c
-@@ -1499,15 +1499,13 @@ static void sc92031_remove(struct pci_dev *pdev)
- 	pci_disable_device(pdev);
+diff --git a/drivers/net/ethernet/sis/sis900.c b/drivers/net/ethernet/sis/sis900.c
+index 81ed7589e33c..2af2c9816dfc 100644
+--- a/drivers/net/ethernet/sis/sis900.c
++++ b/drivers/net/ethernet/sis/sis900.c
+@@ -2493,11 +2493,9 @@ static void sis900_remove(struct pci_dev *pci_dev)
+ 	pci_release_regions(pci_dev);
  }
  
--static int sc92031_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused sc92031_suspend(struct device *dev_d)
- {
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct sc92031_priv *priv = netdev_priv(dev);
- 
--	pci_save_state(pdev);
+-#ifdef CONFIG_PM
 -
- 	if (!netif_running(dev))
--		goto out;
-+		return 0;
+-static int sis900_suspend(struct pci_dev *pci_dev, pm_message_t state)
++static int __maybe_unused sis900_suspend(struct device *dev)
+ {
+-	struct net_device *net_dev = pci_get_drvdata(pci_dev);
++	struct net_device *net_dev = dev_get_drvdata(dev);
+ 	struct sis900_private *sis_priv = netdev_priv(net_dev);
+ 	void __iomem *ioaddr = sis_priv->ioaddr;
  
- 	netif_device_detach(dev);
+@@ -2510,22 +2508,17 @@ static int sis900_suspend(struct pci_dev *pci_dev, pm_message_t state)
+ 	/* Stop the chip's Tx and Rx Status Machine */
+ 	sw32(cr, RxDIS | TxDIS | sr32(cr));
  
-@@ -1521,22 +1519,16 @@ static int sc92031_suspend(struct pci_dev *pdev, pm_message_t state)
- 
- 	spin_unlock_bh(&priv->lock);
- 
--out:
--	pci_set_power_state(pdev, pci_choose_state(pdev, state));
+-	pci_set_power_state(pci_dev, PCI_D3hot);
+-	pci_save_state(pci_dev);
 -
  	return 0;
  }
  
--static int sc92031_resume(struct pci_dev *pdev)
-+static int __maybe_unused sc92031_resume(struct device *dev_d)
+-static int sis900_resume(struct pci_dev *pci_dev)
++static int __maybe_unused sis900_resume(struct device *dev)
  {
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct sc92031_priv *priv = netdev_priv(dev);
+-	struct net_device *net_dev = pci_get_drvdata(pci_dev);
++	struct net_device *net_dev = dev_get_drvdata(dev);
+ 	struct sis900_private *sis_priv = netdev_priv(net_dev);
+ 	void __iomem *ioaddr = sis_priv->ioaddr;
  
--	pci_restore_state(pdev);
--	pci_set_power_state(pdev, PCI_D0);
--
- 	if (!netif_running(dev))
--		goto out;
-+		return 0;
+ 	if(!netif_running(net_dev))
+ 		return 0;
+-	pci_restore_state(pci_dev);
+-	pci_set_power_state(pci_dev, PCI_D0);
  
- 	/* Interrupts already disabled by sc92031_suspend */
- 	spin_lock_bh(&priv->lock);
-@@ -1553,7 +1545,6 @@ static int sc92031_resume(struct pci_dev *pdev)
- 	else
- 		netif_tx_disable(dev);
+ 	sis900_init_rxfilter(net_dev);
  
--out:
+@@ -2549,17 +2542,15 @@ static int sis900_resume(struct pci_dev *pci_dev)
+ 
  	return 0;
  }
- 
-@@ -1565,13 +1556,14 @@ static const struct pci_device_id sc92031_pci_device_id_table[] = {
- };
- MODULE_DEVICE_TABLE(pci, sc92031_pci_device_id_table);
- 
-+static SIMPLE_DEV_PM_OPS(sc92031_pm_ops, sc92031_suspend, sc92031_resume);
+-#endif /* CONFIG_PM */
 +
- static struct pci_driver sc92031_pci_driver = {
- 	.name		= SC92031_NAME,
- 	.id_table	= sc92031_pci_device_id_table,
- 	.probe		= sc92031_probe,
- 	.remove		= sc92031_remove,
--	.suspend	= sc92031_suspend,
--	.resume		= sc92031_resume,
-+	.driver.pm	= &sc92031_pm_ops,
++static SIMPLE_DEV_PM_OPS(sis900_pm_ops, sis900_suspend, sis900_resume);
+ 
+ static struct pci_driver sis900_pci_driver = {
+ 	.name		= SIS900_MODULE_NAME,
+ 	.id_table	= sis900_pci_tbl,
+ 	.probe		= sis900_probe,
+ 	.remove		= sis900_remove,
+-#ifdef CONFIG_PM
+-	.suspend	= sis900_suspend,
+-	.resume		= sis900_resume,
+-#endif /* CONFIG_PM */
++	.driver.pm	= &sis900_pm_ops,
  };
  
- module_pci_driver(sc92031_pci_driver);
+ static int __init sis900_init_module(void)
 -- 
 2.27.0
 
