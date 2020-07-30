@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BA0D233778
-	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 19:15:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7137723377A
+	for <lists+netdev@lfdr.de>; Thu, 30 Jul 2020 19:15:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729898AbgG3RPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 13:15:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
+        id S1730146AbgG3RPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 13:15:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730106AbgG3RPo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 13:15:44 -0400
+        with ESMTP id S1730106AbgG3RPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 13:15:48 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF85C061574
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 10:15:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A45C061574
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 10:15:48 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1k1C9e-0002vV-I6; Thu, 30 Jul 2020 19:15:42 +0200
+        id 1k1C9i-0002vp-Nb; Thu, 30 Jul 2020 19:15:46 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     edumazet@google.com, mathew.j.martineau@linux.intel.com,
         matthieu.baerts@tessares.net, pabeni@redhat.com,
         Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 02/10] mptcp: token: move retry to caller
-Date:   Thu, 30 Jul 2020 19:15:21 +0200
-Message-Id: <20200730171529.22582-3-fw@strlen.de>
+Subject: [PATCH net-next 03/10] mptcp: subflow: split subflow_init_req
+Date:   Thu, 30 Jul 2020 19:15:22 +0200
+Message-Id: <20200730171529.22582-4-fw@strlen.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200730171529.22582-1-fw@strlen.de>
 References: <20200730171529.22582-1-fw@strlen.de>
@@ -35,81 +35,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Once syncookie support is added, no state will be stored anymore when the
-syn/ack is generated in syncookie mode.
+When syncookie support is added, we will need to add a variant of
+subflow_init_req() helper.  It will do almost same thing except
+that it will not compute/add a token to the mptcp token tree.
 
-When the ACK comes back, the generated key will be taken from the TCP ACK,
-the token is re-generated and inserted into the token tree.
-
-This means we can't retry with a new key when the token is already taken
-in the syncookie case.
-
-Therefore, move the retry logic to the caller to prepare for syncookie
-support in mptcp.
+To avoid excess copy&paste, this commit splits away part of the
+code into a new helper, __subflow_init_req, that can then be re-used
+from the 'no insert' function added in a followup change.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/mptcp/subflow.c |  9 ++++++++-
- net/mptcp/token.c   | 12 ++++--------
- 2 files changed, 12 insertions(+), 9 deletions(-)
+ net/mptcp/subflow.c | 32 ++++++++++++++++++++++----------
+ 1 file changed, 22 insertions(+), 10 deletions(-)
 
 diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 1c8482bc2ce5..9feb87880d1c 100644
+index 9feb87880d1c..091e305a81c8 100644
 --- a/net/mptcp/subflow.c
 +++ b/net/mptcp/subflow.c
-@@ -126,11 +126,18 @@ static void subflow_init_req(struct request_sock *req,
- 	}
+@@ -91,17 +91,9 @@ static struct mptcp_sock *subflow_token_join_request(struct request_sock *req,
+ 	return msk;
+ }
  
- 	if (mp_opt.mp_capable && listener->request_mptcp) {
--		int err;
-+		int err, retries = 4;
-+
-+again:
-+		do {
-+			get_random_bytes(&subflow_req->local_key, sizeof(subflow_req->local_key));
-+		} while (subflow_req->local_key == 0);
- 
- 		err = mptcp_token_new_request(req);
- 		if (err == 0)
- 			subflow_req->mp_capable = 1;
-+		else if (retries-- > 0)
-+			goto again;
- 
- 		subflow_req->ssn_offset = TCP_SKB_CB(skb)->seq;
- 	} else if (mp_opt.mp_join && listener->request_mptcp) {
-diff --git a/net/mptcp/token.c b/net/mptcp/token.c
-index 97cfc45bcc4f..f82410c54653 100644
---- a/net/mptcp/token.c
-+++ b/net/mptcp/token.c
-@@ -109,14 +109,12 @@ static void mptcp_crypto_key_gen_sha(u64 *key, u32 *token, u64 *idsn)
- int mptcp_token_new_request(struct request_sock *req)
+-static void subflow_init_req(struct request_sock *req,
+-			     const struct sock *sk_listener,
+-			     struct sk_buff *skb)
++static int __subflow_init_req(struct request_sock *req, const struct sock *sk_listener)
  {
+-	struct mptcp_subflow_context *listener = mptcp_subflow_ctx(sk_listener);
  	struct mptcp_subflow_request_sock *subflow_req = mptcp_subflow_rsk(req);
--	int retries = TOKEN_MAX_RETRIES;
- 	struct token_bucket *bucket;
- 	u32 token;
+-	struct mptcp_options_received mp_opt;
+-
+-	pr_debug("subflow_req=%p, listener=%p", subflow_req, listener);
+-
+-	mptcp_get_options(skb, &mp_opt);
  
--again:
--	mptcp_crypto_key_gen_sha(&subflow_req->local_key,
--				 &subflow_req->token,
--				 &subflow_req->idsn);
-+	mptcp_crypto_key_sha(subflow_req->local_key,
-+			     &subflow_req->token,
-+			     &subflow_req->idsn);
- 	pr_debug("req=%p local_key=%llu, token=%u, idsn=%llu\n",
- 		 req, subflow_req->local_key, subflow_req->token,
- 		 subflow_req->idsn);
-@@ -126,9 +124,7 @@ int mptcp_token_new_request(struct request_sock *req)
- 	spin_lock_bh(&bucket->lock);
- 	if (__token_bucket_busy(bucket, token)) {
- 		spin_unlock_bh(&bucket->lock);
--		if (!--retries)
--			return -EBUSY;
--		goto again;
-+		return -EBUSY;
- 	}
+ 	subflow_req->mp_capable = 0;
+ 	subflow_req->mp_join = 0;
+@@ -113,9 +105,29 @@ static void subflow_init_req(struct request_sock *req,
+ 	 * TCP option space.
+ 	 */
+ 	if (rcu_access_pointer(tcp_sk(sk_listener)->md5sig_info))
+-		return;
++		return -EINVAL;
+ #endif
  
- 	hlist_nulls_add_head_rcu(&subflow_req->token_node, &bucket->req_chain);
++	return 0;
++}
++
++static void subflow_init_req(struct request_sock *req,
++			     const struct sock *sk_listener,
++			     struct sk_buff *skb)
++{
++	struct mptcp_subflow_context *listener = mptcp_subflow_ctx(sk_listener);
++	struct mptcp_subflow_request_sock *subflow_req = mptcp_subflow_rsk(req);
++	struct mptcp_options_received mp_opt;
++	int ret;
++
++	pr_debug("subflow_req=%p, listener=%p", subflow_req, listener);
++
++	ret = __subflow_init_req(req, sk_listener);
++	if (ret)
++		return;
++
++	mptcp_get_options(skb, &mp_opt);
++
+ 	if (mp_opt.mp_capable) {
+ 		SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_MPCAPABLEPASSIVE);
+ 
 -- 
 2.26.2
 
