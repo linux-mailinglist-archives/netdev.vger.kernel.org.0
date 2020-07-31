@@ -2,97 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35F6C23464F
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 14:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EEF6234650
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 14:56:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730291AbgGaMzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 08:55:22 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:47510 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728607AbgGaMzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 08:55:22 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 692FB200A0;
-        Fri, 31 Jul 2020 12:55:21 +0000 (UTC)
-Received: from us4-mdac16-31.at1.mdlocal (unknown [10.110.49.215])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 676AB800AD;
-        Fri, 31 Jul 2020 12:55:21 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.12])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 1022D40075;
-        Fri, 31 Jul 2020 12:55:21 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C82E640070;
-        Fri, 31 Jul 2020 12:55:20 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 31 Jul
- 2020 13:55:15 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH v2 net-next 00/11] sfc: driver for EF100 family NICs, part 2
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-Message-ID: <31de2e73-bce7-6c9d-0c20-49b32e2043cc@solarflare.com>
-Date:   Fri, 31 Jul 2020 13:55:05 +0100
+        id S1729896AbgGaM4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 08:56:34 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:35216 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728047AbgGaM4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 08:56:34 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06VCtnL3072864;
+        Fri, 31 Jul 2020 07:55:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1596200149;
+        bh=G0Xwps0ejxflqoHl3XO1DxMChXYTwyfCeHdlWawZgZM=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=hPeub8/uhiPJiPnQexCCq+I8i4yVTdU7I8ltqC8iEggn6U9mhvT18Da2E8lE7EKpR
+         +DC/kbWPdOcwxoByGjY36mroT/Ef/Osl49Noma1LhLLERnxF5LsmKb8XTPZdLTpCzZ
+         U8x2PH2kaQSRehPDIZhzqW6C+YC/sf5pz/Etr28g=
+Received: from DLEE101.ent.ti.com (dlee101.ent.ti.com [157.170.170.31])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06VCtmoh084940
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 31 Jul 2020 07:55:48 -0500
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 31
+ Jul 2020 07:55:48 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 31 Jul 2020 07:55:48 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06VCtf5N125012;
+        Fri, 31 Jul 2020 07:55:44 -0500
+Subject: Re: [PATCH v3 5/9] ethernet: ti: am65-cpts: Use generic helper
+ function
+To:     Kurt Kanzenbach <kurt@linutronix.de>, Arnd Bergmann <arnd@arndb.de>
+CC:     Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Samuel Zou <zou_wei@huawei.com>,
+        Networking <netdev@vger.kernel.org>,
+        Petr Machata <petrm@mellanox.com>
+References: <20200730080048.32553-1-kurt@linutronix.de>
+ <20200730080048.32553-6-kurt@linutronix.de>
+ <9e18a305-fbb9-f4da-cf73-65a16bdceb12@ti.com> <87ime5ny3e.fsf@kurt>
+ <CAK8P3a2G7YJqzwrLDnDDO3ZUtNvyBSyun=6NjY3M2KS0Wr1ubg@mail.gmail.com>
+ <87lfiz29di.fsf@kurt>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <f30d3a4f-6cf3-1d46-397e-baa27b3c8ade@ti.com>
+Date:   Fri, 31 Jul 2020 15:55:39 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
+In-Reply-To: <87lfiz29di.fsf@kurt>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25574.002
-X-TM-AS-Result: No-1.581300-8.000000-10
-X-TMASE-MatchedRID: cznJElmH2WHhp80oBol0K095wQijrwBLAPiR4btCEeYb9oq6FrYQ3Npn
-        xAxinA0S/U1piLvbK8tuidpPpsZ/nwvpfXyH90tsCWlWR223da4r9gVlOIN/6iqvyaxpdQ5ccdQ
-        cKpNhse00Pm9yXkpRHvWbSPEtOJtO9rqf24A6kyu7B1QwzOcQD9ST/TZ3TTpFHWtVZN0asTjSlz
-        ofZX/2b+LzNWBegCW2RYvisGWbbS+No+PRbWqfRK6NVEWSRWybM2sjB5DRnNud8Eyb4trhMX7AP
-        w5hR7I5MlxkOsgbypOtOhGSvjN6zygGGozIA3eknchT1nq76TklCLqScji108vKzKtzgdJ/kERy
-        uRHFgnhSMqc7UpUorBKRsPC6bTvOqrQxXydIwG+qgpxQSEwcOA==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10-1.581300-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25574.002
-X-MDID: 1596200121-C_kDf1KKroz7
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series implements the data path and various other functionality
- for Xilinx/Solarflare EF100 NICs.
 
-Changed from v1:
- * Fixed build errors on CONFIG_RFS_ACCEL=n (patch #5) and 32-bit
-   (patch #8)
- * Dropped patch #10 (ethtool ops) as it's buggy and will need a
-   bigger rework to fix.
 
-Edward Cree (11):
-  sfc_ef100: check firmware version at start-of-day
-  sfc_ef100: fail the probe if NIC uses unsol_ev credits
-  sfc_ef100: read Design Parameters at probe time
-  sfc_ef100: TX path for EF100 NICs
-  sfc_ef100: RX filter table management and related gubbins
-  sfc_ef100: RX path for EF100
-  sfc_ef100: plumb in fini_dmaq
-  sfc_ef100: statistics gathering
-  sfc_ef100: functions for selftests
-  sfc_ef100: read pf_index at probe time
-  sfc_ef100: add nic-type for VFs, and bind to them
+On 31/07/2020 14:48, Kurt Kanzenbach wrote:
+> On Thu Jul 30 2020, Arnd Bergmann wrote:
+>> On Thu, Jul 30, 2020 at 11:41 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
+>>> On Thu Jul 30 2020, Grygorii Strashko wrote:
+>>>> On 30/07/2020 11:00, Kurt Kanzenbach wrote:
+>>>>> +    msgtype = ptp_get_msgtype(hdr, ptp_class);
+>>>>> +    seqid   = be16_to_cpu(hdr->sequence_id);
+>>>>
+>>>> Is there any reason to not use "ntohs()"?
+>>>
+>>> This is just my personal preference, because I think it's more
+>>> readable. Internally ntohs() uses be16_to_cpu(). There's no technical
+>>> reason for it.
+>>
+>> I think for traditional reasons, code in net/* tends to use ntohs()
+>> while code in drivers/*  tends to use be16_to_cpu().
+>>
+>> In drivers/net/* the two are used roughly the same, though I guess
+>> one could make the argument that be16_to_cpu() would be
+>> more appropriate for data structures exchanged with hardware
+>> while ntohs() makes sense on data structures sent over the
+>> network.
+> 
+> I see, makes sense. I could simply keep it the way it was, or?
 
- drivers/net/ethernet/sfc/ef100.c        |   2 +
- drivers/net/ethernet/sfc/ef100_netdev.c |  16 +
- drivers/net/ethernet/sfc/ef100_nic.c    | 643 ++++++++++++++++++++++++
- drivers/net/ethernet/sfc/ef100_nic.h    |  48 ++
- drivers/net/ethernet/sfc/ef100_rx.c     | 150 +++++-
- drivers/net/ethernet/sfc/ef100_rx.h     |   1 +
- drivers/net/ethernet/sfc/ef100_tx.c     | 368 +++++++++++++-
- drivers/net/ethernet/sfc/ef100_tx.h     |   4 +
- drivers/net/ethernet/sfc/net_driver.h   |  21 +
- drivers/net/ethernet/sfc/tx_common.c    |   1 +
- 10 files changed, 1242 insertions(+), 12 deletions(-)
+  I prefer ntohs() as this packet data.
 
+-- 
+Best regards,
+grygorii
