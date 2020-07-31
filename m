@@ -2,101 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 216DD234AB1
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:12:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EA3D234ABA
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:16:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387520AbgGaSM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 14:12:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44578 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730040AbgGaSM2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 14:12:28 -0400
-Received: from lore-desk.redhat.com (unknown [151.48.137.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3A9B32177B;
-        Fri, 31 Jul 2020 18:12:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596219148;
-        bh=JWnoBxsAAWk2LrW6+MS1vaGHu6NRAG6hG2y+Oyp34RA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BeRXFbAF22W7hdIfKYPWKz0ve/YzuVTaDDcBGeb+uRfP1zq5talnGG5mnJCYAm9bq
-         8LJgfRTUZ3CX5oDeMcTxfrSLKSIDp8lUaTmT/4mT1RPIv0N2UwojPkP0e8Ms1a7mHu
-         rakOc7eDNaSFfBJlqOWzFstLW9sx8OnwANs2gD/w=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, lorenzo.bianconi@redhat.com,
-        tom@herbertland.com
-Subject: [PATCH net] net: gre: recompute gre csum for sctp over gre tunnels
-Date:   Fri, 31 Jul 2020 20:12:05 +0200
-Message-Id: <6722d2c4fe1b9b376a277b3f35cdf3eb3345874e.1596218124.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S2387721AbgGaSQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 14:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387704AbgGaSQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 14:16:38 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 287EBC061756
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 11:16:38 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id p1so17812028pls.4
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 11:16:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TDjonBmuUQvyaWYJBgC/o+3/IEmbAX8AfV7I+TtewFc=;
+        b=E4PyFhb0Ar5YqNdxhxX2a8wKFZEu/2ST7bv4QIUoGaSgkHPvdACktcHN8BvF+SCGL8
+         gZJWGBtbJ1MutPmzg/MeNlYSrhO057Pj/J6ehg7IaGuZ0a9DQrTRDkr2F2AUHxyGQHaX
+         o5ShFgfIeLuy7MxsZOrcqX/TEMhQthtAB0JiHr2774RA3qNIALhx8H1uHTP/NC31E9OO
+         1sRdKk8GeU8qWga0AdkgKJ7aVu9Z38Gzq+ONP+rbl/VONE3s6VkbkgrgAE/99YuGzbma
+         qkC31644KiV7Oo89U+xeFBWKkaLzShUKTYXxiZ3dr1g1cvQdGWka9CgJ2SY/P/OpyITQ
+         orEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TDjonBmuUQvyaWYJBgC/o+3/IEmbAX8AfV7I+TtewFc=;
+        b=AyU1KtCpgkc+vQgHJ3Cy9ZCe5evpgqz7WDS3NpcFBm5VRyI4Y+2I497PukMogGjFGF
+         U8LERxGECtikiE2uizRCgzElgQ3pQ8Ev3juEmPWn8La+JJ/ydBKxyj+be+sutcvrpXmC
+         DEaptf5rxyJopeXz/ktl/7L24WldJhA2h+SszSXfD4TlSPo7O6cQpJq36WRAJjoscOti
+         /sV+INuey0Mvp/LJUnHc0fJeWEkRizNN4DaEmZ1tuwEfB2a/Oj6MsGyLUWQuK5zQFveQ
+         UZoI0snEu9bOTPf9hZQiXXEkN6i6Ut2t26+L6UVuBc8vx8k6ur4j3ytUDz7wYiRPFYnw
+         4mJQ==
+X-Gm-Message-State: AOAM532mi/We02uB6cC0Jmpp5L5ns3k5M20bbADGNianqlxkO0MuHejL
+        9b1u4GMCPX4ez7fuIgYnJJK6jQ==
+X-Google-Smtp-Source: ABdhPJy17ACnRhf/sGausTWgDf+SetvtMH9mGnHzTZzE1/rZpZ/uKspET9z1pmDSWMBXKgG8hmfHAg==
+X-Received: by 2002:a17:90b:514:: with SMTP id r20mr5377570pjz.82.1596219397381;
+        Fri, 31 Jul 2020 11:16:37 -0700 (PDT)
+Received: from google.com (56.4.82.34.bc.googleusercontent.com. [34.82.4.56])
+        by smtp.gmail.com with ESMTPSA id a24sm10542844pfg.113.2020.07.31.11.16.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Jul 2020 11:16:36 -0700 (PDT)
+Date:   Fri, 31 Jul 2020 18:16:33 +0000
+From:   William Mcvicker <willmcvicker@google.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     security@kernel.org, Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com
+Subject: Re: [PATCH 1/1] netfilter: nat: add range checks for access to
+ nf_nat_l[34]protos[]
+Message-ID: <20200731181633.GA1209076@google.com>
+References: <20200727175720.4022402-1-willmcvicker@google.com>
+ <20200727175720.4022402-2-willmcvicker@google.com>
+ <20200729214607.GA30831@salvia>
+ <20200731002611.GA1035680@google.com>
+ <20200731175115.GA16982@salvia>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200731175115.GA16982@salvia>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The GRE tunnel can be used to transport traffic that does not rely on a
-Internet checksum (e.g. SCTP). The issue can be triggered creating a GRE
-or GRETAP tunnel and transmitting SCTP traffic ontop of it where CRC
-offload has been disabled. In order to fix the issue we need to
-recompute the GRE csum in gre_gso_segment() not relying on the inner
-checksum.
-The issue is still present when we have the CRC offload enabled.
-In this case we need to disable the CRC offload if we require GRE
-checksum since otherwise skb_checksum() will report a wrong value.
+Hi Pablo,
 
-Fixes: 4749c09c37030 ("gre: Call gso_make_checksum")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- net/ipv4/gre_offload.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+> Note that this code does not exist in the tree anymore. I'm not sure
+> if this problem still exists upstream, this patch does not apply to
+> nf.git. This fix should only go for -stable maintainers.
 
-diff --git a/net/ipv4/gre_offload.c b/net/ipv4/gre_offload.c
-index 2e6d1b7a7bc9..e0a246575887 100644
---- a/net/ipv4/gre_offload.c
-+++ b/net/ipv4/gre_offload.c
-@@ -15,12 +15,12 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
- 				       netdev_features_t features)
- {
- 	int tnl_hlen = skb_inner_mac_header(skb) - skb_transport_header(skb);
-+	bool need_csum, need_recompute_csum, gso_partial;
- 	struct sk_buff *segs = ERR_PTR(-EINVAL);
- 	u16 mac_offset = skb->mac_header;
- 	__be16 protocol = skb->protocol;
- 	u16 mac_len = skb->mac_len;
- 	int gre_offset, outer_hlen;
--	bool need_csum, gso_partial;
- 
- 	if (!skb->encapsulation)
- 		goto out;
-@@ -41,6 +41,7 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
- 	skb->protocol = skb->inner_protocol;
- 
- 	need_csum = !!(skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM);
-+	need_recompute_csum = skb->csum_not_inet;
- 	skb->encap_hdr_csum = need_csum;
- 
- 	features &= skb->dev->hw_enc_features;
-@@ -98,7 +99,15 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
- 		}
- 
- 		*(pcsum + 1) = 0;
--		*pcsum = gso_make_checksum(skb, 0);
-+		if (need_recompute_csum && !skb_is_gso(skb)) {
-+			__wsum csum;
-+
-+			csum = skb_checksum(skb, gre_offset,
-+					    skb->len - gre_offset, 0);
-+			*pcsum = csum_fold(csum);
-+		} else {
-+			*pcsum = gso_make_checksum(skb, 0);
-+		}
- 	} while ((skb = skb->next));
- out:
- 	return segs;
--- 
-2.26.2
+Right, the vulnerability has been fixed by the refactor commit fe2d0020994cd
+("netfilter: nat: remove l4proto->in_range"), but this patch is a part of
+a full re-work of the code and doesn't backport very cleanly to the LTS
+branches. So this fix is only applicable to the 4.19, 4.14, 4.9, and 4.4 LTS
+branches. I missed the -stable email, but will re-add it to this thread with
+the re-worked patch.
 
+Thanks,
+Will
+
+On 07/31/2020, Pablo Neira Ayuso wrote:
+> Hi William,
+> 
+> On Fri, Jul 31, 2020 at 12:26:11AM +0000, William Mcvicker wrote:
+> > Hi Pablo,
+> > 
+> > Yes, I believe this oops is only triggered by userspace when the user
+> > specifically passes in an invalid nf_nat_l3protos index. I'm happy to re-work
+> > the patch to check for this in ctnetlink_create_conntrack().
+> 
+> Great.
+> 
+> Note that this code does not exist in the tree anymore. I'm not sure
+> if this problem still exists upstream, this patch does not apply to
+> nf.git. This fix should only go for -stable maintainers.
+> 
+> > > BTW, do you have a Fixes: tag for this? This will be useful for
+> > > -stable maintainer to pick up this fix.
+> > 
+> > Regarding the Fixes: tag, I don't have one offhand since this bug was reported
+> > to me, but I can search through the code history to find the commit that
+> > exposed this vulnerability.
+> 
+> That would be great.
+> 
+> Thank you.
