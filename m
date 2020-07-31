@@ -2,125 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91C2F2349FB
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 19:15:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B51E0234A29
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 19:19:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733256AbgGaRPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 13:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732710AbgGaRPY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 13:15:24 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78280C061574;
-        Fri, 31 Jul 2020 10:15:24 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id l13so8081220qvt.10;
-        Fri, 31 Jul 2020 10:15:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=f/WAbEOG/tptLifB9LgbWD1+/CHIVuvFFHIVIWW5SbY=;
-        b=kpw9UYVl+IwL1va1X+QsxMLUZdovpBIuRhu0so4e6ZXtvUMYHDmISR0yC6PQmchjr4
-         2Qe+el83U3tB8LkaWW+NhNDv+h9nRVCVVHH9eqG7eDcg8fErviCcMTYmKiFJ9ap42OXx
-         GSmfDUyD0vyvV2POZnyJtUEa1kbwlQtYrFpRBll0K7vHj9k4e6pX0wsi0iQ3VgDp/kLp
-         /9WhId3hAugDy9T5YQqOxMA5Fw0hEuPvCmGN0hO7G1wYpUUpsnCEYcdqWK69u0rqURhK
-         DiuGofmhD/Mbpy8Ikm36/kdZ8GMIkzXbbbmQvLNu8oB4A+BcWeR3BtS5BzdP8w9ZmkVA
-         /peA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=f/WAbEOG/tptLifB9LgbWD1+/CHIVuvFFHIVIWW5SbY=;
-        b=MO9Lnmg9h3jV55GezZ8XFU5ehSAWTRytRoSzuZVxDMEdsPNSMO3+6FQumeF2XILOHt
-         UAEfZcAGZxbAZ3FEpi3MrNPvJBtgE2Mp4Vz6mgzmkRQmLnhD+N24AMa++50XDb7a0k9b
-         z9ZlT6OaJXp/zLVyahi3HdJMAm1SvSG1eNddSEb167ZrYFq2ef22sjQl6QDdZNVBog2f
-         9Zs2aSCicMS0prUOWDSmrCfNKjNr7s1jsi3nKseZrh9BDXL+kZuPOsb1K/EKSE5EPOfs
-         dRWqamCDhNaGIluvbaUxnXUMohB4lLeThWU/05hZaMX5Dz4t9vFO0jahJQPALYCZBax4
-         YmEg==
-X-Gm-Message-State: AOAM533nOkzA5rnFkhVtgykNXA9utDBcmEdeMRPmXQvV/jR4pq5FXU3w
-        fSxFJ8XKvnLMlJfJ9kSnm8cOyT+J
-X-Google-Smtp-Source: ABdhPJy3eLsIh2Na3H7aBZv2hHsVXSY7jYLRnC/yeaZDxYJoBQaUtvOMZap2R4HbBVt2V1QxHUMuIA==
-X-Received: by 2002:a05:6214:1742:: with SMTP id dc2mr5257973qvb.90.1596215723492;
-        Fri, 31 Jul 2020 10:15:23 -0700 (PDT)
-Received: from ?IPv6:2601:284:8202:10b0:c147:b41e:be5e:8b7a? ([2601:284:8202:10b0:c147:b41e:be5e:8b7a])
-        by smtp.googlemail.com with ESMTPSA id x24sm10465749qtj.8.2020.07.31.10.15.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 31 Jul 2020 10:15:22 -0700 (PDT)
-Subject: Re: [RFC PATCH bpf-next 2/3] bpf: Add helper to do forwarding lookups
- in kernel FDB table
-To:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        id S1733236AbgGaRTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 13:19:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40772 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732817AbgGaRTi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 13:19:38 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6645C2074B;
+        Fri, 31 Jul 2020 17:19:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596215978;
+        bh=yxLFBtERe8UngePE6Ae91aGE2Ev7MNPNAO2x8RUFAKY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FJM6T0vbEgq2PNNmTnnc65DNz/A50UbgHexnPy4ZP95gE8ClTSvPshL0drR9tvoqC
+         Luj0SVJLc7CMxudDRUS2o57mBQ75nNh6SFidxxegIkiPaZrRJZtpzWaTW8Rc+03Jfz
+         XCdf00Knp7UBGQTGQpqSCFA9Dz+RfqVPF4vs9i0M=
+Date:   Fri, 31 Jul 2020 19:19:24 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Peilin Ye <yepeilin.cs@gmail.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        bpf@vger.kernel.org
-References: <1596170660-5582-1-git-send-email-komachi.yoshiki@gmail.com>
- <1596170660-5582-3-git-send-email-komachi.yoshiki@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5970d82b-3bb9-c78f-c53a-8a1c95a1fad7@gmail.com>
-Date:   Fri, 31 Jul 2020 11:15:19 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
+ in rds_notify_queue_get()
+Message-ID: <20200731171924.GA2014207@kroah.com>
+References: <20200730192026.110246-1-yepeilin.cs@gmail.com>
+ <20200731045301.GI75549@unreal>
+ <20200731053306.GA466103@kroah.com>
+ <20200731053333.GB466103@kroah.com>
+ <20200731140452.GE24045@ziepe.ca>
+ <20200731142148.GA1718799@kroah.com>
+ <20200731143604.GF24045@ziepe.ca>
 MIME-Version: 1.0
-In-Reply-To: <1596170660-5582-3-git-send-email-komachi.yoshiki@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200731143604.GF24045@ziepe.ca>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/30/20 10:44 PM, Yoshiki Komachi wrote:
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 654c346b7d91..68800d1b8cd5 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -5084,6 +5085,46 @@ static const struct bpf_func_proto bpf_skb_fib_lookup_proto = {
->  	.arg4_type	= ARG_ANYTHING,
->  };
+On Fri, Jul 31, 2020 at 11:36:04AM -0300, Jason Gunthorpe wrote:
+> On Fri, Jul 31, 2020 at 04:21:48PM +0200, Greg Kroah-Hartman wrote:
+> 
+> > > The spec was updated in C11 to require zero'ing padding when doing
+> > > partial initialization of aggregates (eg = {})
+> > > 
+> > > """if it is an aggregate, every member is initialized (recursively)
+> > > according to these rules, and any padding is initialized to zero
+> > > bits;"""
+> > 
+> > But then why does the compilers not do this?
+> 
+> Do you have an example?
+
+At the moment, no, but we have had them in the past due to security
+issues we have had to fix for this.
+
+> > > Considering we have thousands of aggregate initializers it
+> > > seems likely to me Linux also requires a compiler with this C11
+> > > behavior to operate correctly.
+> > 
+> > Note that this is not an "operate correctly" thing, it is a "zero out
+> > stale data in structure paddings so that data will not leak to
+> > userspace" thing.
+> 
+> Yes, not being insecure is "operate correctly", IMHO :)
 >  
-> +#if IS_ENABLED(CONFIG_BRIDGE)
-> +BPF_CALL_4(bpf_xdp_fdb_lookup, struct xdp_buff *, ctx,
-> +	   struct bpf_fdb_lookup *, params, int, plen, u32, flags)
-> +{
-> +	struct net_device *src, *dst;
-> +	struct net *net;
-> +
-> +	if (plen < sizeof(*params))
-> +		return -EINVAL;
+> > > Does this patch actually fix anything? My compiler generates identical
+> > > assembly code in either case.
+> > 
+> > What compiler version?
+> 
+> I tried clang 10 and gcc 9.3 for x86-64.
+> 
+> #include <string.h>
+> 
+> void test(void *out)
+> {
+> 	struct rds_rdma_notify {
+> 		unsigned long user_token;
+> 		unsigned int status;
+> 	} foo = {};
+> 	memcpy(out, &foo, sizeof(foo));
+> }
+> 
+> $ gcc -mno-sse2 -O2 -Wall -std=c99 t.c -S
+> 
+> test:
+> 	endbr64
+> 	movq	$0, (%rdi)
+> 	movq	$0, 8(%rdi)
+> 	ret
+> 
+> Just did this same test with gcc 4.4 and it also gave the same output..
+> 
+> Made it more complex with this:
+> 
+> 	struct rds_rdma_notify {
+> 		unsigned long user_token;
+> 		unsigned char status;
+> 		unsigned long user_token1;
+> 		unsigned char status1;
+> 		unsigned long user_token2;
+> 		unsigned char status2;
+> 		unsigned long user_token3;
+> 		unsigned char status3;
+> 		unsigned long user_token4;
+> 		unsigned char status4;
+> 	} foo;
+> 
+> And still got the same assembly vs memset on gcc 4.4.
+> 
+> I tried for a bit and didn't find a way to get even old gcc 4.4 to not
+> initialize the holes.
 
-I need to look at the details more closely, but on first reading 2
-things caught me eye:
-1. you need to make sure flags is 0 since there are no supported flags
-at the moment, and
+Odd, so it is just the "= {0};" that does not zero out the holes?
 
-> +
-> +	net = dev_net(ctx->rxq->dev);
-> +
-> +	if (is_multicast_ether_addr(params->addr) ||
-> +	    is_broadcast_ether_addr(params->addr))
-> +		return BPF_FDB_LKUP_RET_NOENT;
-> +
-> +	src = dev_get_by_index_rcu(net, params->ifindex);
-> +	if (unlikely(!src))
-> +		return -ENODEV;
-> +
-> +	dst = br_fdb_find_port_xdp(src, params->addr, params->vlan_id);
+thanks,
 
-2. this needs to be done via netdev ops to avoid referencing bridge code
-which can be compiled as a module. I suspect the build robots will id
-this part soon.
-
+greg k-h
