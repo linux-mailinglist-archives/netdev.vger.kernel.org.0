@@ -2,107 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5079B233C86
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 02:25:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E177F233C8D
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 02:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730896AbgGaAZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 20:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34018 "EHLO
+        id S1730948AbgGaA0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 20:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730850AbgGaAYn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 20:24:43 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3875EC061575
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 17:24:43 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id 11so27424226qkn.2
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 17:24:43 -0700 (PDT)
+        with ESMTP id S1730916AbgGaA0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 20:26:16 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2388FC06174A
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 17:26:16 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id ha11so6135301pjb.1
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 17:26:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bCnm2zhl1XL25GtJr/etbA3HQMGW2EG8k+e5UYsAJpw=;
-        b=lJtMgGbhxO85pPQ3zmFyvT81x30eZCJUjTqGcbLx9wGlUYe1jJjdPY6ReHw6gFzteV
-         PGVcl91LOUNhqC6ggzpRMQ6AloWyvYhtERJOjsT7jyjSwQaTtyqF3aHUeBUqvy/VXOBh
-         oblTtIls0ssqkEbpSn4i+FQqshusH5TL4zGs4=
+        d=google.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Z3Lm1sGkWQwPe3NkE6iARE36RcrQ0xDQdl/rL+tDjI0=;
+        b=sOOQDS6l29PwJncVTdlZkzs7X7QSPkZPgnQAmSIwmUOgSvyL2/q0N7p90FYdSW2s8j
+         7CUVCSO8S+NAKPz3nxM6HhwyGHv+sbArXQoh5HbHlu8QYOGJbIQnOYENg9nXxXSjqXmE
+         b/NXnhhTJcnAncLg5glbJ16Gmu7U9R7QCPUgEmu8abMsBqnftD0pBFG9svq8rL0X1x/+
+         8QDgT9u9tf81CyG+A5/tzVxH58yQi4pFayRE1lwYeGvyydlZNXXPSUdjYJIU9bOJ2Y5Q
+         Duxb7LFSRiGHX9usLWXOtYqk0aAF6bIjq1IUM4JvYDAPcBT2UjU0aKEK9VPxeKVm1Hx4
+         PkFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bCnm2zhl1XL25GtJr/etbA3HQMGW2EG8k+e5UYsAJpw=;
-        b=n/gokPEKZeRnqMy12t4+fFmMJvQZ6+7RfANwIUoAxeHkd9DR7MtmU3jPmXtpGv+DRh
-         lOLMIUtrbezwnvE3oOjGymh3i/DRz/WHiKZ7K0vfVrWKXHyn12S8Nj1h2weExPMs6xzN
-         rv/XzjXXH+O2+4yk5uzkg9hIM9kmvcUppbDEQ4DUV2Xp7j5W8UXbVhlM0vaepcAmSBO5
-         TGFH4QH1XsOQ1/QJVJK2lwA867q42k83hynYOHJz/tnh/Q3CgwyCUfQzrkFP9qWt3O3h
-         GXPtV5Yr9xD10AYiX6YUhyti1Rkm63XL/M+WeAA2UJVQWyDsQ96z0zPy4KsvdMKkgGIU
-         1B2A==
-X-Gm-Message-State: AOAM5318IVC7d5cAGZ9tjWnFt2rSdI3nVaFQgq6BammZ2uVw9AunqlQx
-        omMmx6PLUvvSTnlOXhkr8xFvdZCIsEw=
-X-Google-Smtp-Source: ABdhPJyL8nQHq/feRWODL+f6riWUWlIIvckSPKVw6ASKdLUBWFslheoDaEo+8HzSvCwEcQUNggF16g==
-X-Received: by 2002:a37:aa56:: with SMTP id t83mr1744268qke.150.1596155081428;
-        Thu, 30 Jul 2020 17:24:41 -0700 (PDT)
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com. [209.85.222.171])
-        by smtp.gmail.com with ESMTPSA id h144sm5618406qke.83.2020.07.30.17.24.39
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Jul 2020 17:24:40 -0700 (PDT)
-Received: by mail-qk1-f171.google.com with SMTP id j187so27335572qke.11
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 17:24:39 -0700 (PDT)
-X-Received: by 2002:a05:620a:3de:: with SMTP id r30mr1567282qkm.221.1596155079426;
- Thu, 30 Jul 2020 17:24:39 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Z3Lm1sGkWQwPe3NkE6iARE36RcrQ0xDQdl/rL+tDjI0=;
+        b=R4w1Hdxcro4dksDR96PetFp/4vtQQAtgJ7eUizAzlTaxRfkEfMzMeq/XK0aM2rrGSO
+         8BEcd0Iba6m9aUihMNkrgQCik2SDbrEpyLWnDPxns1HreXSohNk2d4FbGhmQEI+R1JO1
+         bw7bBYuf7Qw1x1r0qZJ2D/cA9LpFfQwj/XWWA15HcY5IOEmgnAsKKQJio84RYCIVJNiq
+         fKQl4kDwvgTGxLN7TeG10uyRkStbEmOr+sr2nTQ/0acuD5Xo8+xZ99PKVIiUvIsdkXja
+         nVURp8xeLWZRxJe7RyXL96oAWQm/IuQwF0XVi6YDG0talJ4zb1hzbw/5VxGKsIsRfuU4
+         tBMA==
+X-Gm-Message-State: AOAM53159VrgIsk48Fno0SXQ1UObMzcLozuJwmMMUDm/YCE4GIkj1cT+
+        SlWknLd/X3zDqY3r2Q+OZAStgQ==
+X-Google-Smtp-Source: ABdhPJwcr954AG1gqEdKpM5QuRqbV3+wB5pscU2NtJ0l5WoRi0tIaQ0FwOD7I+WVx/5rp3y/anJJGw==
+X-Received: by 2002:a63:8c5d:: with SMTP id q29mr1238398pgn.249.1596155175408;
+        Thu, 30 Jul 2020 17:26:15 -0700 (PDT)
+Received: from google.com (56.4.82.34.bc.googleusercontent.com. [34.82.4.56])
+        by smtp.gmail.com with ESMTPSA id p19sm7867698pgj.74.2020.07.30.17.26.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jul 2020 17:26:14 -0700 (PDT)
+Date:   Fri, 31 Jul 2020 00:26:11 +0000
+From:   William Mcvicker <willmcvicker@google.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     security@kernel.org, Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com
+Subject: Re: [PATCH 1/1] netfilter: nat: add range checks for access to
+ nf_nat_l[34]protos[]
+Message-ID: <20200731002611.GA1035680@google.com>
+References: <20200727175720.4022402-1-willmcvicker@google.com>
+ <20200727175720.4022402-2-willmcvicker@google.com>
+ <20200729214607.GA30831@salvia>
 MIME-Version: 1.0
-References: <20200726110524.151957-1-xie.he.0141@gmail.com>
- <20200728195246.GA482576@google.com> <CAJht_EOcRx=J5PiZwsSh+0Yb0=QJFahqxVbeMgFbSxh+cNZLew@mail.gmail.com>
-In-Reply-To: <CAJht_EOcRx=J5PiZwsSh+0Yb0=QJFahqxVbeMgFbSxh+cNZLew@mail.gmail.com>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Thu, 30 Jul 2020 17:24:27 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXPRLqq=vxnkF4z8=xvuqOKuuoqifvsNsERWg9uYJrFXgg@mail.gmail.com>
-Message-ID: <CA+ASDXPRLqq=vxnkF4z8=xvuqOKuuoqifvsNsERWg9uYJrFXgg@mail.gmail.com>
-Subject: Re: [PATCH] drivers/net/wan/lapbether: Use needed_headroom instead of hard_header_len
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200729214607.GA30831@salvia>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 6:42 PM Xie He <xie.he.0141@gmail.com> wrote:
-> On Tue, Jul 28, 2020 at 12:52 PM -0700
-> Brian Norris <briannorris@chromium.org> wrote:
-> > What is the intention with this X25 protocol? I guess the headers added
-> > in lapbeth_data_transmit() are supposed to be "invisible", as with this
-> > note in af_packet.c?
-...
-> This driver is not intended to be used with IPv4 or IPv6 protocols,
-> but is intended to be used with a special "X.25" protocol. That's the
-> reason the device type is ARPHRD_X25. I used "grep" in the X.25
-> network layer code (net/x25) and I found there's nowhere
-> "dev_hard_header" is called. I also used "grep" in all the X.25
+Hi Pablo,
 
-That well could just be a bug in net/x25/. But from context, it does
-appear that X.25 does not intend to expose its headers to higher
-layers.
+Yes, I believe this oops is only triggered by userspace when the user
+specifically passes in an invalid nf_nat_l3protos index. I'm happy to re-work
+the patch to check for this in ctnetlink_create_conntrack().
 
-> drivers in the kernel (lapbether.c, x25_asy.c, hdlc_x25.c under
-> drivers/net/wan) and I found no driver implemented "header_ops". So I
-> think the X.25 networking code doesn't expect any header visible
-> outside of the device driver, and X.25 drivers should make their
-> headers invisible outside of them.
->
-> So I think hard_header_len should be 0 for all X.25 drivers, so that
-> they can be used correctly with af_packet.c.
->
-> I don't know if this sounds plausible to you. If it does, could you
-> please let me have your name in a "Reviewed_by" tag. It would be of
-> great help to have your support. Thanks!
+> BTW, do you have a Fixes: tag for this? This will be useful for
+> -stable maintainer to pick up this fix.
 
-Sure, I can do that:
+Regarding the Fixes: tag, I don't have one offhand since this bug was reported
+to me, but I can search through the code history to find the commit that
+exposed this vulnerability.
 
-Reviewed-by: Brian Norris <briannorris@chromium.org>
+Thanks,
+Will
 
-I guess x25 is basically an abandoned project, if you're coming to me for this?
+On 07/29/2020, Pablo Neira Ayuso wrote:
+> Hi Will,
+> 
+> On Mon, Jul 27, 2020 at 05:57:20PM +0000, Will McVicker wrote:
+> > The indexes to the nf_nat_l[34]protos arrays come from userspace. So we
+> > need to make sure that before indexing the arrays, we verify the index
+> > is within the array bounds in order to prevent an OOB memory access.
+> > Here is an example kernel panic on 4.14.180 when userspace passes in an
+> > index greater than NFPROTO_NUMPROTO.
+> > 
+> > Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+> > Modules linked in:...
+> > Process poc (pid: 5614, stack limit = 0x00000000a3933121)
+> > CPU: 4 PID: 5614 Comm: poc Tainted: G S      W  O    4.14.180-g051355490483
+> > Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150 Google Inc. MSM
+> > task: 000000002a3dfffe task.stack: 00000000a3933121
+> > pc : __cfi_check_fail+0x1c/0x24
+> > lr : __cfi_check_fail+0x1c/0x24
+> > ...
+> > Call trace:
+> > __cfi_check_fail+0x1c/0x24
+> > name_to_dev_t+0x0/0x468
+> > nfnetlink_parse_nat_setup+0x234/0x258
+> 
+> If this oops is only triggerable from userspace, I think a sanity
+> check in nfnetlink_parse_nat_setup should suffice to reject
+> unsupported layer 3 and layer 4 protocols.
+> 
+> I mean, in this patch I see more chunks in the packet path, such as
+> nf_nat_l3proto_ipv4 that should never happen. I would just fix the
+> userspace ctnetlink path.
+> 
+> BTW, do you have a Fixes: tag for this? This will be useful for
+> -stable maintainer to pick up this fix.
+> 
+> Thanks.
