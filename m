@@ -2,90 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB1BE233F9B
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 09:00:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42C7B233F9F
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 09:00:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731607AbgGaHA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 03:00:26 -0400
-Received: from mga03.intel.com ([134.134.136.65]:29369 "EHLO mga03.intel.com"
+        id S1731616AbgGaHAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 03:00:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33196 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731565AbgGaHAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 03:00:09 -0400
-IronPort-SDR: 4pamdowrK+Ke7lROdxBxR82m0I4ykIlfRbXe++iTmgkGuwk+L/0LtAgXXyGOmzfE7dLgdx9ECN
- dsfvPgAuGQNA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="151708821"
-X-IronPort-AV: E=Sophos;i="5.75,417,1589266800"; 
-   d="scan'208";a="151708821"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2020 00:00:04 -0700
-IronPort-SDR: NrQsvBYIsgnp9zzEAs4Usmlzpr2E/5ra9bmfQ2bAsUCKVbQlXKqwGtuzwXVerY/kDBOTFEvFJT
- +e6ukkFaGFHQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,417,1589266800"; 
-   d="scan'208";a="273136743"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.131])
-  by fmsmga007.fm.intel.com with ESMTP; 31 Jul 2020 00:00:00 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, alex.williamson@redhat.com, mst@redhat.com,
-        pbonzini@redhat.com, sean.j.christopherson@intel.com,
-        wanpengli@tencent.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, eli@mellanox.com, shahafs@mellanox.com,
-        parav@mellanox.com, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V5 6/6] irqbypass: do not start cons/prod when failed connect
-Date:   Fri, 31 Jul 2020 14:55:33 +0800
-Message-Id: <20200731065533.4144-7-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.18.4
-In-Reply-To: <20200731065533.4144-1-lingshan.zhu@intel.com>
-References: <20200731065533.4144-1-lingshan.zhu@intel.com>
+        id S1731628AbgGaHAe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 03:00:34 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 368BA207F5;
+        Fri, 31 Jul 2020 07:00:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596178833;
+        bh=qjwGoIyl/wBff+iYMlZWx9H6G4svCrkKR/WF1d5EkDQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VNADuhxWnvWY3HlDYEqwJOC2grlnuHBoTybqGmuHW2dHkFl33dnqSNHyLA5NnBiCS
+         SznzbcsXaju719ksD8EHEj9EUzSR87MTzfi9mMLb/2m2jqv6tM+42guU0Am/Iev5Vp
+         UrdN4yUeMTOR1AJlgj+7/HAFxem1vSHfmSmby0m8=
+Date:   Fri, 31 Jul 2020 10:00:30 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peilin Ye <yepeilin.cs@gmail.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "linux-kernel-mentees@lists.linuxfoundation.org" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
+ in rds_notify_queue_get()
+Message-ID: <20200731070030.GJ75549@unreal>
+References: <20200730192026.110246-1-yepeilin.cs@gmail.com>
+ <20200731045301.GI75549@unreal>
+ <20200731053306.GA466103@kroah.com>
+ <20200731053333.GB466103@kroah.com>
+ <CAHp75Vdr2HC_ogNhBCxxGut9=Z6pQMFiA0w-268OQv+5unYOTg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vdr2HC_ogNhBCxxGut9=Z6pQMFiA0w-268OQv+5unYOTg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If failed to connect, there is no need to start consumer nor
-producer.
+On Fri, Jul 31, 2020 at 09:29:27AM +0300, Andy Shevchenko wrote:
+> On Friday, July 31, 2020, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> wrote:
+>
+> > On Fri, Jul 31, 2020 at 07:33:06AM +0200, Greg Kroah-Hartman wrote:
+> > > On Fri, Jul 31, 2020 at 07:53:01AM +0300, Leon Romanovsky wrote:
+> > > > On Thu, Jul 30, 2020 at 03:20:26PM -0400, Peilin Ye wrote:
+> > > > > rds_notify_queue_get() is potentially copying uninitialized kernel
+> > stack
+> > > > > memory to userspace since the compiler may leave a 4-byte hole at
+> > the end
+> > > > > of `cmsg`.
+> > > > >
+> > > > > In 2016 we tried to fix this issue by doing `= { 0 };` on `cmsg`,
+> > which
+> > > > > unfortunately does not always initialize that 4-byte hole. Fix it by
+> > using
+> > > > > memset() instead.
+> > > >
+> > > > Of course, this is the difference between "{ 0 }" and "{}"
+> > initializations.
+> > >
+> > > Really?  Neither will handle structures with holes in it, try it and
+> > > see.
+>
+>
+> {} is a GCC extension, but I never thought it works differently.
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-Suggested-by: Jason Wang <jasowang@redhat.com>
----
- virt/lib/irqbypass.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+Yes, this is GCC extension and kernel relies on them very heavily.
 
-diff --git a/virt/lib/irqbypass.c b/virt/lib/irqbypass.c
-index 28fda42e471b..c9bb3957f58a 100644
---- a/virt/lib/irqbypass.c
-+++ b/virt/lib/irqbypass.c
-@@ -40,17 +40,21 @@ static int __connect(struct irq_bypass_producer *prod,
- 	if (prod->add_consumer)
- 		ret = prod->add_consumer(prod, cons);
- 
--	if (!ret) {
--		ret = cons->add_producer(cons, prod);
--		if (ret && prod->del_consumer)
--			prod->del_consumer(prod, cons);
--	}
-+	if (ret)
-+		goto err_add_consumer;
-+
-+	ret = cons->add_producer(cons, prod);
-+	if (ret)
-+		goto err_add_producer;
- 
- 	if (cons->start)
- 		cons->start(cons);
- 	if (prod->start)
- 		prod->start(prod);
--
-+err_add_producer:
-+	if (prod->del_consumer)
-+		prod->del_consumer(prod, cons);
-+err_add_consumer:
- 	return ret;
- }
- 
--- 
-2.18.4
+Thanks
 
+>
+>
+>
+> >
+> > And if true, where in the C spec does it say that?
+> >
+> > thanks,
+> >
+> > greg k-h
+> >
+>
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
