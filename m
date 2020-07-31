@@ -2,83 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E04CF23407B
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 09:49:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E215123407F
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 09:50:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731808AbgGaHtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 03:49:14 -0400
-Received: from mga05.intel.com ([192.55.52.43]:38361 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731684AbgGaHtN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 03:49:13 -0400
-IronPort-SDR: +rBaEvswEfdptFgd0Xk05kDqDLtxcy7nzJpgGf8vApDnauYK0cQvw+hTa4o/ykRtlESVbI4foT
- 4FcVCZgokx3A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="236608240"
-X-IronPort-AV: E=Sophos;i="5.75,417,1589266800"; 
-   d="scan'208";a="236608240"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2020 00:49:13 -0700
-IronPort-SDR: 9z+o4333UTXOSFImoXh3bcELfU8ctNA9YDwO/2FP+1o4P9mcNTV2pVw2F2SKWy6B6oUTZBzcCU
- qIZIpZT2c1iQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,417,1589266800"; 
-   d="scan'208";a="465544437"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga005.jf.intel.com with ESMTP; 31 Jul 2020 00:49:09 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1k1Pmu-005GWu-OG; Fri, 31 Jul 2020 10:49:08 +0300
-Date:   Fri, 31 Jul 2020 10:49:08 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1] ice: devlink: use %*phD to print small buffer
-Message-ID: <20200731074908.GE3703480@smile.fi.intel.com>
-References: <20200730160451.40810-1-andriy.shevchenko@linux.intel.com>
- <77247fbc-152a-517f-2500-ce761b7afa6a@intel.com>
+        id S1731738AbgGaHuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 03:50:52 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:29620 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731702AbgGaHuw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 03:50:52 -0400
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06V7YKQ5168076;
+        Fri, 31 Jul 2020 03:50:49 -0400
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 32md1yu2ye-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 31 Jul 2020 03:50:48 -0400
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 06V7im39030341;
+        Fri, 31 Jul 2020 07:50:47 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma03fra.de.ibm.com with ESMTP id 32gcr0m9ec-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 31 Jul 2020 07:50:47 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 06V7oipN63045902
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 31 Jul 2020 07:50:44 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1835F4204C;
+        Fri, 31 Jul 2020 07:50:44 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9D4EC4203F;
+        Fri, 31 Jul 2020 07:50:43 +0000 (GMT)
+Received: from [9.145.25.216] (unknown [9.145.25.216])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 31 Jul 2020 07:50:43 +0000 (GMT)
+Subject: Re: [PATCH net-next 4/4] s390/qeth: use all configured RX buffers
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>
+References: <20200730150121.18005-1-jwi@linux.ibm.com>
+ <20200730150121.18005-5-jwi@linux.ibm.com>
+ <20200730163714.7d6a5017@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+Message-ID: <dcc95391-0dea-e7d4-1901-25c00c7a3c60@linux.ibm.com>
+Date:   Fri, 31 Jul 2020 09:50:43 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <77247fbc-152a-517f-2500-ce761b7afa6a@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20200730163714.7d6a5017@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-31_02:2020-07-31,2020-07-31 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ clxscore=1015 priorityscore=1501 malwarescore=0 mlxlogscore=999
+ adultscore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0 suspectscore=2
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007310054
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 30, 2020 at 02:20:46PM -0700, Jacob Keller wrote:
-> On 7/30/2020 9:04 AM, Andy Shevchenko wrote:
-> > Use %*phD format to print small buffer as hex string.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On 31.07.20 01:37, Jakub Kicinski wrote:
+> On Thu, 30 Jul 2020 17:01:21 +0200 Julian Wiedmann wrote:
+>> The (misplaced) comment doesn't make any sense, enforcing an
+>> uninitialized RX buffer won't help with IRQ reduction.
+>>
+>> So make the best use of all available RX buffers.
 > 
-> Ah nice. I swear I looked for a printk format to do this and didn't find
-> one. But it's been there since 2012.. so I guess I just missed it.
-
-commit 31550a16a5d2af859e8a11839e8c6c6c9c92dfa7
-Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Date:   Mon Jul 30 14:40:27 2012 -0700
-
-    vsprintf: add support of '%*ph[CDN]'
-
-Maybe it was just a coincidence :-)
-
-> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+> Often one entry in the ring is left free to make it easy to
+> differentiate between empty and full conditions. 
 > 
-> I also tested this on my system to make sure it gives the same output
-> for the serial value, so I guess also:
+> Is this not the reason here?
 > 
-> Tested-by: Jacob Keller <jacob.e.keller@intel.com>
 
-Thanks!
+Hmm no, the HW architecture works slightly different.
 
--- 
-With Best Regards,
-Andy Shevchenko
+There's no index register that we could query for HW progress,
+each ring entry has an associated state byte that needs to be
+inspected and indicates HW progress (among other things).
 
-
+So this was more likely just a mis-interpretation of how the
+(quirky) IRQ reduction mechanism works in HW, or maybe part of
+a code path that got removed during the NAPI conversion.
