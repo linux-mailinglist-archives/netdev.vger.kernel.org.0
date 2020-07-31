@@ -2,213 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E6723478F
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 16:15:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 888052347A6
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 16:22:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729072AbgGaOPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 10:15:42 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:46414 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728802AbgGaOPl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 10:15:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596204940;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DankDH11Q6vNwTW57OQtB5IPGpcTvQpg8ZnqamXZDWQ=;
-        b=a8mMzz/t1og5tGp0UsKQe7F6+b3DkDNfbZHvAGd3Qn8VR6Ukeccz7jwL1EKNUNU8OVAO/p
-        k1q3/M5ubf+4j2vAETeK5L/ZWW/RD2RNsPQCy0vAbeD2qTIb+dRuGAZfmiEJBFB5SblCIs
-        CCQDNndPadrAwbAHTLam8SFDvLK8RPs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-258-fKjEzFvyNYy-vtdY0432fA-1; Fri, 31 Jul 2020 10:15:33 -0400
-X-MC-Unique: fKjEzFvyNYy-vtdY0432fA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1729107AbgGaOWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 10:22:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33314 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728697AbgGaOWD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 10:22:03 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 646B280BCC3;
-        Fri, 31 Jul 2020 14:15:30 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.90])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D1E2987B1D;
-        Fri, 31 Jul 2020 14:15:21 +0000 (UTC)
-Date:   Fri, 31 Jul 2020 16:15:19 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Yoshiki Komachi <komachi.yoshiki@gmail.com>
-Cc:     brouer@redhat.com, "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
+        by mail.kernel.org (Postfix) with ESMTPSA id DF1D2208E4;
+        Fri, 31 Jul 2020 14:22:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596205322;
+        bh=xOTUdTDtgFUE4tg3a96EHIpYVqLyrjXL2vfmrZmnmXk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A4AXijssIn9cJbmiigc2HnNHygj6LDX7SwRcO35y32gJ28dLyviyTLEowdbRQMFJH
+         BICWi9NGqq7lv+plJy4BfbNlrvKnXbC3cv6D8jG5Iz7ArVn3YkA56UJKbZaespigHT
+         izydEL7WKrOkda8awf2v5WwNko1uMTUmGdcPFhDk=
+Date:   Fri, 31 Jul 2020 16:21:48 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Peilin Ye <yepeilin.cs@gmail.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [RFC PATCH bpf-next 3/3] samples/bpf: Add a simple bridge
- example accelerated with XDP
-Message-ID: <20200731161519.5f413f82@carbon>
-In-Reply-To: <1596170660-5582-4-git-send-email-komachi.yoshiki@gmail.com>
-References: <1596170660-5582-1-git-send-email-komachi.yoshiki@gmail.com>
-        <1596170660-5582-4-git-send-email-komachi.yoshiki@gmail.com>
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
+ in rds_notify_queue_get()
+Message-ID: <20200731142148.GA1718799@kroah.com>
+References: <20200730192026.110246-1-yepeilin.cs@gmail.com>
+ <20200731045301.GI75549@unreal>
+ <20200731053306.GA466103@kroah.com>
+ <20200731053333.GB466103@kroah.com>
+ <20200731140452.GE24045@ziepe.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200731140452.GE24045@ziepe.ca>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jul 31, 2020 at 11:04:52AM -0300, Jason Gunthorpe wrote:
+> On Fri, Jul 31, 2020 at 07:33:33AM +0200, Greg Kroah-Hartman wrote:
+> > On Fri, Jul 31, 2020 at 07:33:06AM +0200, Greg Kroah-Hartman wrote:
+> > > On Fri, Jul 31, 2020 at 07:53:01AM +0300, Leon Romanovsky wrote:
+> > > > On Thu, Jul 30, 2020 at 03:20:26PM -0400, Peilin Ye wrote:
+> > > > > rds_notify_queue_get() is potentially copying uninitialized kernel stack
+> > > > > memory to userspace since the compiler may leave a 4-byte hole at the end
+> > > > > of `cmsg`.
+> > > > >
+> > > > > In 2016 we tried to fix this issue by doing `= { 0 };` on `cmsg`, which
+> > > > > unfortunately does not always initialize that 4-byte hole. Fix it by using
+> > > > > memset() instead.
+> > > > 
+> > > > Of course, this is the difference between "{ 0 }" and "{}" initializations.
+> > > 
+> > > Really?  Neither will handle structures with holes in it, try it and
+> > > see.
+> > 
+> > And if true, where in the C spec does it say that?
+> 
+> The spec was updated in C11 to require zero'ing padding when doing
+> partial initialization of aggregates (eg = {})
+> 
+> """if it is an aggregate, every member is initialized (recursively)
+> according to these rules, and any padding is initialized to zero
+> bits;"""
 
-I really appreciate that you are working on adding this helper.
-Some comments below.
+But then why does the compilers not do this?
 
-On Fri, 31 Jul 2020 13:44:20 +0900
-Yoshiki Komachi <komachi.yoshiki@gmail.com> wrote:
+> The difference between {0} and the {} extension is only that {}
+> reliably triggers partial initialization for all kinds of aggregates,
+> while {0} has a number of edge cases where it can fail to compile.
+> 
+> IIRC gcc has cleared the padding during aggregate initialization for a
+> long time.
 
-> diff --git a/samples/bpf/xdp_bridge_kern.c b/samples/bpf/xdp_bridge_kern.c
-> new file mode 100644
-> index 000000000000..00f802503199
-> --- /dev/null
-> +++ b/samples/bpf/xdp_bridge_kern.c
-> @@ -0,0 +1,129 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2020 NTT Corp. All Rights Reserved.
-> + *
-[...]
-> +
-> +struct {
-> +	__uint(type, BPF_MAP_TYPE_DEVMAP_HASH);
-> +	__uint(key_size, sizeof(int));
-> +	__uint(value_size, sizeof(int));
-> +	__uint(max_entries, 64);
-> +} xdp_tx_ports SEC(".maps");
-> +
-> +static __always_inline int xdp_bridge_proto(struct xdp_md *ctx, u16 br_vlan_proto)
-> +{
-> +	void *data_end = (void *)(long)ctx->data_end;
-> +	void *data = (void *)(long)ctx->data;
-> +	struct bpf_fdb_lookup fdb_lookup_params;
-> +	struct vlan_hdr *vlan_hdr = NULL;
-> +	struct ethhdr *eth = data;
-> +	u16 h_proto;
-> +	u64 nh_off;
-> +	int rc;
-> +
-> +	nh_off = sizeof(*eth);
-> +	if (data + nh_off > data_end)
-> +		return XDP_DROP;
-> +
-> +	__builtin_memset(&fdb_lookup_params, 0, sizeof(fdb_lookup_params));
-> +
-> +	h_proto = eth->h_proto;
-> +
-> +	if (unlikely(ntohs(h_proto) < ETH_P_802_3_MIN))
-> +		return XDP_PASS;
-> +
-> +	/* Handle VLAN tagged packet */
-> +	if (h_proto == br_vlan_proto) {
-> +		vlan_hdr = (void *)eth + nh_off;
-> +		nh_off += sizeof(*vlan_hdr);
-> +		if ((void *)eth + nh_off > data_end)
-> +			return XDP_PASS;
-> +
-> +		fdb_lookup_params.vlan_id = ntohs(vlan_hdr->h_vlan_TCI) &
-> +					VLAN_VID_MASK;
-> +	}
-> +
-> +	/* FIXME: Although Linux bridge provides us with vlan filtering (contains
-> +	 * PVID) at ingress, the feature is currently unsupported in this XDP program.
-> +	 *
-> +	 * Two ideas to realize the vlan filtering are below:
-> +	 *   1. usespace daemon monitors bridge vlan events and notifies XDP programs
-                   ^^
-Typo: usespace -> userspace
+Huh?  Last we checked a few months ago, no, it did not do that.
 
-> +	 *      of them through BPF maps
-> +	 *   2. introduce another bpf helper to retrieve bridge vlan information
+> Considering we have thousands of aggregate initializers it
+> seems likely to me Linux also requires a compiler with this C11
+> behavior to operate correctly.
 
-The comment appears two times time this file.
+Note that this is not an "operate correctly" thing, it is a "zero out
+stale data in structure paddings so that data will not leak to
+userspace" thing.
 
-> +	 *
-> +	 *
-> +	 * FIXME: After the vlan filtering, learning feature is required here, but
-> +	 * it is currently unsupported as well. If another bpf helper for learning
-> +	 * is accepted, the processing could be implemented in the future.
-> +	 */
-> +
-> +	memcpy(&fdb_lookup_params.addr, eth->h_dest, ETH_ALEN);
-> +
-> +	/* Note: This program definitely takes ifindex of ingress interface as
-> +	 * a bridge port. Linux networking devices can be stacked and physical
-> +	 * interfaces are not necessarily slaves of bridges (e.g., bonding or
-> +	 * vlan devices can be slaves of bridges), but stacked bridge ports are
-> +	 * currently unsupported in this program. In such cases, XDP programs
-> +	 * should be attached to a lower device in order to process packets with
-> +	 * higher speed. Then, a new bpf helper to find upper devices will be
-> +	 * required here in the future because they will be registered on FDB
-> +	 * in the kernel.
-> +	 */
-> +	fdb_lookup_params.ifindex = ctx->ingress_ifindex;
-> +
-> +	rc = bpf_fdb_lookup(ctx, &fdb_lookup_params, sizeof(fdb_lookup_params), 0);
-> +	if (rc != BPF_FDB_LKUP_RET_SUCCESS) {
-> +		/* In cases of flooding, XDP_PASS will be returned here */
-> +		return XDP_PASS;
-> +	}
-> +
-> +	/* FIXME: Although Linux bridge provides us with vlan filtering (contains
-> +	 * untagged policy) at egress as well, the feature is currently unsupported
-> +	 * in this XDP program.
-> +	 *
-> +	 * Two ideas to realize the vlan filtering are below:
-> +	 *   1. usespace daemon monitors bridge vlan events and notifies XDP programs
-> +	 *      of them through BPF maps
-> +	 *   2. introduce another bpf helper to retrieve bridge vlan information
-> +	 */
+> Does this patch actually fix anything? My compiler generates identical
+> assembly code in either case.
 
-(2nd time the comment appears)
+What compiler version?
 
-> +
+thanks,
 
-A comment about below bpf_redirect_map() would be good.  Explaining
-that we depend on fallback behavior, to let normal bridge code handle
-other cases (e.g. flood/broadcast). And also that if lookup fails,
-XDP_PASS/fallback also happens.
-
-> +	return bpf_redirect_map(&xdp_tx_ports, fdb_lookup_params.ifindex, XDP_PASS);
-> +}
-> +
-> +SEC("xdp_bridge")
-> +int xdp_bridge_prog(struct xdp_md *ctx)
-> +{
-> +	return xdp_bridge_proto(ctx, 0);
-> +}
-> +
-> +SEC("xdp_8021q_bridge")
-> +int xdp_8021q_bridge_prog(struct xdp_md *ctx)
-> +{
-> +	return xdp_bridge_proto(ctx, htons(ETH_P_8021Q));
-> +}
-> +
-> +SEC("xdp_8021ad_bridge")
-> +int xdp_8021ad_bridge_prog(struct xdp_md *ctx)
-> +{
-> +	return xdp_bridge_proto(ctx, htons(ETH_P_8021AD));
-> +}
-> +
-> +char _license[] SEC("license") = "GPL";
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+greg k-h
