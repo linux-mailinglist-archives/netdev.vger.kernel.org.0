@@ -2,104 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8793D233D36
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 04:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96FD2233D5A
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 04:43:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730846AbgGaChO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 22:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54340 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727039AbgGaChN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 22:37:13 -0400
-Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D97C061574
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 19:37:13 -0700 (PDT)
-Received: by mail-vs1-xe43.google.com with SMTP id j23so8784874vsq.7
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 19:37:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yntLOYPthgAI6aE7mtyDEjpEB11195o3JPL2SOGJFSY=;
-        b=F6fW/7J2UgbJpWOBZIzn572WOtBDygNeDC8J+DXzsdUjmQgXZzwAw1MZAhT0u7Zi6d
-         C2NsJYTEXsLzXzB9DfrtMv0KUK3EDo5HrYcRe8wPOJCLEW6amtbLuhRIqhIEGNYVoOQy
-         I0fpj5mDyE3/Yu0lf1rPrOwCHM38oPX1aALfB9NOO30NP3J2GW0rwg/1j4v1JCuNI1/S
-         qD5FaVn5Mm0e9JWy1vcI3iu3cilIuZfL6t0pnR5sWPEuYVpEpM7Kq0o8SOgrOZQaJjBM
-         8DtxfqeYB90BSFbGwxTdah1Rgs59ELllXnf3JOQKjjAR2VJU6T/D1BDuD5Owqhm0uwkD
-         rlxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yntLOYPthgAI6aE7mtyDEjpEB11195o3JPL2SOGJFSY=;
-        b=WVLKV53OJKt6dc7nvQU1ggdSoCxv0n9HkP9fuv1ojDj0O7BX49hlnc0me663Jt9lY8
-         urJeSRWKai6sI5QJw8m4we/A0Bu/y6gJcLl9qkWXbrSTIavFg9aNR5raJCCXXiqmRFyH
-         fW2eRu7HL+cw1FJ5A2e1y09ZEode/JkAajPIarJlf+yy4cTLcwFoUYPIG6cx6JJLfC4o
-         8PLao0v+GpNngK6fZp3kfLr+cKZ3gsLVZmEGGeo17KgijePOBjLygmpT4fL/M0qsLpBu
-         UAy4m+G1GXdworYsEk8ci8X/kDtYaPlClBy0MiyzlmFeL/0wZXB33ghGd/AzZPjdNhDS
-         4ElA==
-X-Gm-Message-State: AOAM533Tm960gVLHwekqwhTJgIEt9sjltr0L2xt9K34KSMqLKDyTiDtD
-        bq8TIfZDTOsvOBJ322W7015dKbUxzHwNch962m71gw==
-X-Google-Smtp-Source: ABdhPJzq0nSKNv+G0bRObe+GhHdhDvWGn2nAF1dkUA8jM7Aw4lHTnJiFvi5gNjK7qw2+cfg4nC0gKMpi4KCora5Nb1M=
-X-Received: by 2002:a67:2043:: with SMTP id g64mr241141vsg.25.1596163031857;
- Thu, 30 Jul 2020 19:37:11 -0700 (PDT)
+        id S1731293AbgGaCmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 22:42:54 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:22990 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731286AbgGaCmx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 22:42:53 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06V2eZeb015669
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 19:42:52 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=F2tolseWpM+siodrLcDQmpDthwMCbsWv2KzoR8Z14eY=;
+ b=IdiWGRXRUFdFcVyj1O/KWmTvWkvoNTDodTF+ASFrCLtd5O17c4aNSR+bJHfdAiuZvgLu
+ c0WMk8MGSNaaE+KKQgD+Sem6FF6K62WdG58DveGJVc6zi2Q0U7wrbkFS1lMGxxgWebbw
+ ydt3yDqMC6INCZhlylr27yyPGIEJFbPiUAA= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 32m35fa27j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 19:42:52 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 30 Jul 2020 19:42:50 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id AA4482EC4E67; Thu, 30 Jul 2020 19:42:46 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] tools build: propagate build failures from tools/build/Makefile.build
+Date:   Thu, 30 Jul 2020 19:42:44 -0700
+Message-ID: <20200731024244.872574-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20200730234916.2708735-1-jfwang@google.com>
-In-Reply-To: <20200730234916.2708735-1-jfwang@google.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Thu, 30 Jul 2020 22:36:55 -0400
-Message-ID: <CADVnQym04+QQU3WZ+qgSycZ_2TWJGwChN_jN1ZY_t65fxuWL-A@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: apply a floor of 1 for RTT samples from TCP timestamps
-To:     Jianfeng Wang <jfwang@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Kevin Yang <yyd@google.com>, Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-30_19:2020-07-30,2020-07-30 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ spamscore=0 mlxscore=0 bulkscore=0 adultscore=0 mlxlogscore=513
+ impostorscore=0 clxscore=1015 suspectscore=9 phishscore=0
+ lowpriorityscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2007310017
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 30, 2020 at 7:53 PM Jianfeng Wang <jfwang@google.com> wrote:
->
-> For retransmitted packets, TCP needs to resort to using TCP timestamps
-> for computing RTT samples. In the common case where the data and ACK
-> fall in the same 1-millisecond interval, TCP senders with millisecond-
-> granularity TCP timestamps compute a ca_rtt_us of 0. This ca_rtt_us
-> of 0 propagates to rs->rtt_us.
->
-> This value of 0 can cause performance problems for congestion control
-> modules. For example, in BBR, the zero min_rtt sample can bring the
-> min_rtt and BDP estimate down to 0, reduce snd_cwnd and result in a
-> low throughput. It would be hard to mitigate this with filtering in
-> the congestion control module, because the proper floor to apply would
-> depend on the method of RTT sampling (using timestamp options or
-> internally-saved transmission timestamps).
->
-> This fix applies a floor of 1 for the RTT sample delta from TCP
-> timestamps, so that seq_rtt_us, ca_rtt_us, and rs->rtt_us will be at
-> least 1 * (USEC_PER_SEC / TCP_TS_HZ).
->
-> Note that the receiver RTT computation in tcp_rcv_rtt_measure() and
-> min_rtt computation in tcp_update_rtt_min() both already apply a floor
-> of 1 timestamp tick, so this commit makes the code more consistent in
-> avoiding this edge case of a value of 0.
->
-> Signed-off-by: Jianfeng Wang <jfwang@google.com>
-> Signed-off-by: Neal Cardwell <ncardwell@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Acked-by: Kevin Yang <yyd@google.com>
-> Acked-by: Yuchung Cheng <ycheng@google.com>
-> ---
+The '&&' command seems to have a bad effect when $(cmd_$(1)) exits with
+non-zero effect: the command failure is masked (despite `set -e`) and all=
+ but
+the first command of $(dep-cmd) is executed (successfully, as they are mo=
+stly
+printfs), thus overall returning 0 in the end.
 
-One extra note on this patch: IMHO this is a bug fix that is worth
-backporting to stable releases. Normally we would submit a patch like
-this to the net branch, but we submitted this to the net-next branch
-since Eric advised that this was the best approach, given how late it
-is in the v5.8 development cycle.
+This means in practice that despite compilation errors, tools's build Mak=
+efile
+will return success. We see this very reliably with libbpf's Makefile, wh=
+ich
+doesn't get compilation error propagated properly. This in turns causes i=
+ssues
+with selftests build, as well as bpftool and other projects that rely on
+building libbpf.
 
-Apologies that a note to this effect is not in the commit message itself.
+The fix is simple: don't use &&. Given `set -e`, we don't need to chain
+commands with &&. The shell will exit on first failure, giving desired
+behavior and propagating error properly.
 
-best,
-neal
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 275e2d95591e ("tools build: Move dependency copy into function")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+
+I'm sending this against bpf-next tree, given libbpf is affected enough f=
+or me
+to debug this fun problem that no one seemed to notice (or care, at least=
+) in
+almost 5 years. If there is a better kernel tree, please let me know.
+
+ tools/build/Build.include | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tools/build/Build.include b/tools/build/Build.include
+index 9ec01f4454f9..585486e40995 100644
+--- a/tools/build/Build.include
++++ b/tools/build/Build.include
+@@ -74,7 +74,8 @@ dep-cmd =3D $(if $(wildcard $(fixdep)),
+ #                   dependencies in the cmd file
+ if_changed_dep =3D $(if $(strip $(any-prereq) $(arg-check)),         \
+                   @set -e;                                         \
+-                  $(echo-cmd) $(cmd_$(1)) && $(dep-cmd))
++                  $(echo-cmd) $(cmd_$(1));                         \
++                  $(dep-cmd))
+=20
+ # if_changed      - execute command if any prerequisite is newer than
+ #                   target, or command line has changed
+--=20
+2.24.1
+
