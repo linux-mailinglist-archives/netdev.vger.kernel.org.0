@@ -2,130 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAE0623446B
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 13:14:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB2B52344D3
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 13:48:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732638AbgGaLOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 07:14:31 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:44088 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732104AbgGaLOb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 07:14:31 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06VB758g138077;
-        Fri, 31 Jul 2020 11:14:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2020-01-29; bh=RuuosTbYTCr8I08cs/W2a+vgUYd33wv3e8KZbejxVWM=;
- b=K/8KlAFLEUGW81gpFqx4MCbbAEs0r2yk0oc7hMGtcPskWye9ivK9Et+Kl3sVCVoOCwKH
- VzZBhpCak2oMkK2xOBlDfct7jALEHbBdaPCvnyon9+gLGKn4IoxIsq9UoRMAfYFE+xk2
- 25JuLV52B4QK1U2LaqU7ae8pC8eOUcEbLYSXtkSEzd3H9e8w4MToeTeDfZPxNp6yxRIv
- uWjuhjL2bnkfnouFdh0rei/OhY1TxqvSd/n6PdnX8Qmuj1yQEDAucDC8sHCl/GwTZfeJ
- U3njJRO1BpNZ1Rma8Dh7ZAR9Wt/T/8/fAZsOAQOm6nqCDl0HnIa0M+aDo6GjChcI5/dm ZA== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2130.oracle.com with ESMTP id 32hu1jrhve-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 31 Jul 2020 11:14:20 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 06VB8rN8135178;
-        Fri, 31 Jul 2020 11:14:20 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 32hu5yrj6t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 31 Jul 2020 11:14:20 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 06VBEJNF163083;
-        Fri, 31 Jul 2020 11:14:19 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 32hu5yrj69-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 31 Jul 2020 11:14:19 +0000
-Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 06VBEEbe008514;
-        Fri, 31 Jul 2020 11:14:14 GMT
-Received: from dhcp-10-175-172-80.vpn.oracle.com (/10.175.172.80)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 31 Jul 2020 04:14:14 -0700
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
- in rds_notify_queue_get()
-From:   =?utf-8?Q?H=C3=A5kon_Bugge?= <haakon.bugge@oracle.com>
-In-Reply-To: <20200731095943.GI5493@kadam>
-Date:   Fri, 31 Jul 2020 13:14:09 +0200
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Peilin Ye <yepeilin.cs@gmail.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        id S1732895AbgGaLsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 07:48:30 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:57556 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732512AbgGaLs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 07:48:29 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1596196106;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TQ1Tv4NckxQYCKhK0EI+eZojGl6CAXWCJUQbd0mJQj4=;
+        b=GWCKx/fUc95zdYYwQVydFqExSFOHUkTg5+yFtLjyCfsehNT8ql8h0P1WTOqhlrVeyzLexy
+        vr/kU2uYQ/0zNnILMcCU7sHZBIHHoAuAS+DNvpx77IIZoKpVGfOiDbYVYFGNtqGbvfqUll
+        //euFwnU0/7VPWqJLFYzpTluDTi+B+t1EzQS2RCwB/x4cjCpcoD2ZO+/pzffX5ltuFgVSC
+        VsEtiK2PPtbQiLWvjOxuNphcWBIpXpULJBYF/z35LZ34UIBhRzNHebUJvr406KViMWkQGO
+        KXO3WEYEHngO5c5RtMP6AuseESykO0sbNes5XiDOVisNoTq4a5hhSEe2tMS+Lg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1596196106;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TQ1Tv4NckxQYCKhK0EI+eZojGl6CAXWCJUQbd0mJQj4=;
+        b=uB3KbJ6U7COJeSVv43Wf8fukYElxOfT3vbWfEGCKrlutgxAZvdAUi79CT1ceg8CtrM3QRQ
+        VTspLvWkVlEzfjAg==
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        netdev@vger.kernel.org,
-        OFED mailing list <linux-rdma@vger.kernel.org>,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <81B40AF5-EBCA-4628-8CF6-687C12134552@oracle.com>
-References: <20200730192026.110246-1-yepeilin.cs@gmail.com>
- <20200731045301.GI75549@unreal> <20200731095943.GI5493@kadam>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9698 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 clxscore=1011
- malwarescore=0 spamscore=0 suspectscore=3 bulkscore=0 priorityscore=1501
- phishscore=0 mlxlogscore=999 lowpriorityscore=0 impostorscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2007310084
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Samuel Zou <zou_wei@huawei.com>,
+        Networking <netdev@vger.kernel.org>,
+        Petr Machata <petrm@mellanox.com>
+Subject: Re: [PATCH v3 5/9] ethernet: ti: am65-cpts: Use generic helper function
+In-Reply-To: <CAK8P3a2G7YJqzwrLDnDDO3ZUtNvyBSyun=6NjY3M2KS0Wr1ubg@mail.gmail.com>
+References: <20200730080048.32553-1-kurt@linutronix.de> <20200730080048.32553-6-kurt@linutronix.de> <9e18a305-fbb9-f4da-cf73-65a16bdceb12@ti.com> <87ime5ny3e.fsf@kurt> <CAK8P3a2G7YJqzwrLDnDDO3ZUtNvyBSyun=6NjY3M2KS0Wr1ubg@mail.gmail.com>
+Date:   Fri, 31 Jul 2020 13:48:25 +0200
+Message-ID: <87lfiz29di.fsf@kurt>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--=-=-=
+Content-Type: text/plain
 
+On Thu Jul 30 2020, Arnd Bergmann wrote:
+> On Thu, Jul 30, 2020 at 11:41 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
+>> On Thu Jul 30 2020, Grygorii Strashko wrote:
+>> > On 30/07/2020 11:00, Kurt Kanzenbach wrote:
+>> >> +    msgtype = ptp_get_msgtype(hdr, ptp_class);
+>> >> +    seqid   = be16_to_cpu(hdr->sequence_id);
+>> >
+>> > Is there any reason to not use "ntohs()"?
+>>
+>> This is just my personal preference, because I think it's more
+>> readable. Internally ntohs() uses be16_to_cpu(). There's no technical
+>> reason for it.
+>
+> I think for traditional reasons, code in net/* tends to use ntohs()
+> while code in drivers/*  tends to use be16_to_cpu().
+>
+> In drivers/net/* the two are used roughly the same, though I guess
+> one could make the argument that be16_to_cpu() would be
+> more appropriate for data structures exchanged with hardware
+> while ntohs() makes sense on data structures sent over the
+> network.
 
-> On 31 Jul 2020, at 11:59, Dan Carpenter <dan.carpenter@oracle.com> =
-wrote:
->=20
-> On Fri, Jul 31, 2020 at 07:53:01AM +0300, Leon Romanovsky wrote:
->> On Thu, Jul 30, 2020 at 03:20:26PM -0400, Peilin Ye wrote:
->>> rds_notify_queue_get() is potentially copying uninitialized kernel =
-stack
->>> memory to userspace since the compiler may leave a 4-byte hole at =
-the end
->>> of `cmsg`.
->>>=20
->>> In 2016 we tried to fix this issue by doing `=3D { 0 };` on `cmsg`, =
-which
->>> unfortunately does not always initialize that 4-byte hole. Fix it by =
-using
->>> memset() instead.
->>=20
->> Of course, this is the difference between "{ 0 }" and "{}" =
-initializations.
->>=20
->=20
-> No, there is no difference.  Even struct assignments like:
->=20
-> 	foo =3D *bar;
->=20
-> can leave struct holes uninitialized.  Depending on the compiler the
-> assignment can be implemented as a memset() or as a series of struct
-> member assignments.
+I see, makes sense. I could simply keep it the way it was, or?
 
-What about:
+Thanks,
+Kurt
 
-struct rds_rdma_notify {
-	__u64                      user_token;
-	__s32                      status;
-} __attribute__((packed));
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-Thxs, H=C3=A5kon
-
-
-> regards,
-> dan carpenter
->=20
-
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8kBQkACgkQeSpbgcuY
+8KbbYQ//QWCem+UJXTJfrRfjT9qzu7KdXqGGVojU9tsHBPJ56ZIj4tOHVWxsUqqs
+rnIDWUMPuhXBfW0s56XIogtkLa9Spz4Ahx6aoo0T4fou6graPfRh0aNiRe3cj1As
+JkUzaHqJXEvtceVfhJNcS4mEVHlwWKR1e/P7gW2s+RXVwW/oE6eMR3bQdx8eCSk9
+5HEaRpymD1Bv0WjDnyuU3OI4uxVBO/fSBQpys1aSGiJZGOf2fSQe20RxfqmM/OBT
+y6DBsJH6VUp8PVZ1uo79IqkxHYdkxFUaX+u4TEuAEBVi9LQKvp9+aBVhTm2fCZJ4
+qqkshYuEGSg3IQbA8L9w72IZBc9Aio8xqpPdcLUQkvbi9qB3535Ff700edjCsEZV
+UTwgSyCLfHJDJ2Ew5F6DTaOgHH4Bu/Jy8JxC/WmLp5mz/GkWtaEbfMKI+yC2paCM
+TZa9m3PjBatpE72Z4/4szM3WAJul4kJD/f1BAiUgLwDlDyutgV0FIxwEd/UGoZ1Z
+QPpaMV4s+tILsI1y8L0lJE4PAsav10DR633qJJhCocY7f9Tz6a4eYaTpunAtI6fU
+hPS7/rGT4iSgP4WvoPNExV6RRpNSBmge4FRErLd4oOUn85V34wfLtocBLSCOcmfL
+A0zlPNk0fWIAPT1UsmttwLOfivAmnbT4h4t0OT4v0xT5MptvY5E=
+=xEUA
+-----END PGP SIGNATURE-----
+--=-=-=--
