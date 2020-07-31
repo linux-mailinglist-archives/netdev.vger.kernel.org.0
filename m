@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C8B7233E72
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 06:44:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1079233E74
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 06:45:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730157AbgGaEos (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 00:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45622 "EHLO
+        id S1730793AbgGaEpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 00:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726257AbgGaEos (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 00:44:48 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2278AC061574;
-        Thu, 30 Jul 2020 21:44:48 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id w17so16250123ply.11;
-        Thu, 30 Jul 2020 21:44:48 -0700 (PDT)
+        with ESMTP id S1726058AbgGaEpB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 00:45:01 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EB2C061574;
+        Thu, 30 Jul 2020 21:45:01 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id k1so6196654pjt.5;
+        Thu, 30 Jul 2020 21:45:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0m2yM6Cpg0UMGl3JBQ2zB0c8Tu//2IzjG9Zoo6ooaqY=;
-        b=hhzBOePGn+ma9oANopuKPFKyVnWTCROJvTFIWKIg+Xqaq5kTw1qad0OqKUKO0yEBSA
-         XZtE3/VK2wQHKXopvsveJfyJMOmkUhUJHZ8rooShHKA3F9ArTAWFBJGQ1DZdI6j5V1Di
-         Vjt9QY7XhAXpFW67bTCgoR+SUQJ/ikmjbsN3pweNd3qEO+Xjm9IFyo9Lwl+63bMKbw3L
-         cSfs4kU+IifQyXiPn0C2XgvPqF2VTmco5iyGcfR8EOWetXpUYze9fuTzsVq1tM9iJNJv
-         Lv+pC9TKLh4/uJkCHXTDyWGmF72NLPsK2Er4s8Kc4+V7wi0WxOPulBF1EYC3O5U/UbxU
-         gjEw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=WD31emG5AAw62cTFIzmY9OBwp6Qx1m67HwbYW6jOzgE=;
+        b=Fwn4fVpIuOoiY6zQvbpgMCZzaLl4zm5qe1vcnKdKkipMxP8rnrEnNmarXXW2F4251W
+         OuOcoCTWnnG7RJOBGbpCpl7VFICmd6rktak1eV2hL+YKaPj74PK2wemOGPCAIpWTAlsD
+         s9pCQcj2W5ErTSrqlp6pkn2Tzj8EbAA5QIxVNYiew5xpGC2iH87AsfRkSRYAkKoz74cz
+         JfZOIXzscNbFvLquroOiEG8zS9VfZiMt3bywjxx9RcoHr1rwb1k7fw9KDT7x1iR39X7j
+         AFejoRKZvZy90KeIVo/YIjcWN1qGox6/8MUj6yxY+4Lc03xXyALCyh763BLEt+XKYnEO
+         IQEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0m2yM6Cpg0UMGl3JBQ2zB0c8Tu//2IzjG9Zoo6ooaqY=;
-        b=Jfdq01m98jxf6vQglxNGAZzakYdyi4lZ56EwNMK8ux/AWKZ8/Zpb4RobwwuzvHcxkh
-         z1rRTXnvva371IpL1jL6U8mUVCrcU25KP4Yg4FaHzatcT16VvgU9iC5PQ/LYf8KEt0Cj
-         TZq70bIRH5yvx8Kf+mpff2s4eP2MfIpgHrzvE1kCLhUbe73i5QNsI2y9Rc8txY9Ky6KM
-         ri3wpREatBpH00zPz6r64kO6ZhFbKETHZKTNsCd9apMCyup0GfZPw6xG13x9BKj9pQVl
-         Nz6GMATFTdSGPlAXdQ7IdvZdHpMMqKtemg5kUycd/2vAGZ/vtoFeaem9i169+RKvBHNE
-         YE/w==
-X-Gm-Message-State: AOAM531BvH4A0wh3yd7kO0t2xCHtL3wrTp4kd22QK0xSKKq18+a/QCZI
-        RqjGFfrbBK7fnLfofAfZHqkwA2oQ
-X-Google-Smtp-Source: ABdhPJzn0klKnpGXg9duE13S4iK7KOxGO4DDrmWAptlpFD3w+ps0taZ72vn3pQDp97OPm1/XtgYSQg==
-X-Received: by 2002:a62:2ad6:: with SMTP id q205mr2063865pfq.316.1596170687650;
-        Thu, 30 Jul 2020 21:44:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=WD31emG5AAw62cTFIzmY9OBwp6Qx1m67HwbYW6jOzgE=;
+        b=R7/JD3yVo0JFSzvEOOAHVuRTpMHoc9wyhxZmsZSRcQ7v9QxYkU+owaW1H3p9JLIRny
+         MewrqOE2y/H9PTWuUweCLT1xE0yGN2qRyIvUIy0N4ETcC4CCsW01t1ECYAAz88lb5pmz
+         ZqUpBzPeN3BQu1et+4PVdq/E/fRZ1wXSwowgWgIMPl1i3tyWo5NfNfBW2VuFEDNpEQGb
+         0I+XB4DVeUOH5tGwE9kwOWZtCiME8w8kEEHYVRHQlhx46tfT7b9+heNGUPLS8bkA5R86
+         k8hwJFTatOHL7dpFYYDZ48j8gypKqR3yxvMidz/pHiCa6N8HtRwQltw13RRhpH27KddL
+         cV6w==
+X-Gm-Message-State: AOAM530gTWk2dHrRIqyqA4dJjEzqa5GNd4BGk9jKOyHAfnBOvpr8nWQ3
+        DXd5GJXOnFKurMJaWeu4fVQ=
+X-Google-Smtp-Source: ABdhPJxfqbrlJkN0gPj7CdOreSoE9noW2lX2r4E2qd+4uyCDucE/2gd/JByR4Zr9P6JaNWPSgIdLtQ==
+X-Received: by 2002:a63:135b:: with SMTP id 27mr2084276pgt.37.1596170700904;
+        Thu, 30 Jul 2020 21:45:00 -0700 (PDT)
 Received: from dali.ht.sfc.keio.ac.jp (dali.ht.sfc.keio.ac.jp. [133.27.170.2])
-        by smtp.gmail.com with ESMTPSA id x6sm2329573pfd.53.2020.07.30.21.44.43
+        by smtp.gmail.com with ESMTPSA id x6sm2329573pfd.53.2020.07.30.21.44.57
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 Jul 2020 21:44:47 -0700 (PDT)
+        Thu, 30 Jul 2020 21:45:00 -0700 (PDT)
 From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -64,58 +63,100 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
         netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
         bpf@vger.kernel.org
-Subject: [RFC PATCH bpf-next 0/3] Add a new bpf helper for FDB lookup
-Date:   Fri, 31 Jul 2020 13:44:17 +0900
-Message-Id: <1596170660-5582-1-git-send-email-komachi.yoshiki@gmail.com>
+Subject: [RFC PATCH bpf-next 1/3] net/bridge: Add new function to access FDB from XDP programs
+Date:   Fri, 31 Jul 2020 13:44:18 +0900
+Message-Id: <1596170660-5582-2-git-send-email-komachi.yoshiki@gmail.com>
 X-Mailer: git-send-email 1.9.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1596170660-5582-1-git-send-email-komachi.yoshiki@gmail.com>
+References: <1596170660-5582-1-git-send-email-komachi.yoshiki@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds a new bpf helper for doing FDB lookup in the kernel
-tables from XDP programs. This helps users to accelerate Linux bridge
-with XDP.
+This patch adds a function to find the destination port from the
+FDB in the kernel tables, which mainly helps XDP programs to access
+FDB in the kernel via bpf helper. Note that, unlike the existing
+br_fdb_find_port(), this function takes an ingress device as an
+argument.
 
-In the past, XDP generally required users to reimplement their own
-networking functionalities with specific manners of BPF programming
-by themselves, hindering its potential uses. IMO, bpf helpers to
-access networking stacks in kernel help to mitigate the programming
-costs because users reuse mature Linux networking feature more easily.
+The br_fdb_find_port() also enables us to access FDB in the kernel,
+and rcu_read_lock()/rcu_read_unlock() must be called in the function.
+But, these are unnecessary in that cases because XDP programs have
+to call APIs with rcu_read_lock()/rcu_read_unlock(). Thus, proposed
+function could be used without these locks in the function.
 
-The previous commit 87f5fc7e48dd ("bpf: Provide helper to do forwarding
-lookups in kernel FIB table") have already added a bpf helper for access
-FIB in the kernel tables from XDP programs. As a next step, this series
-introduces the API for FDB lookup. In the future, other bpf helpers for
-learning and VLAN filtering will also be required in order to realize
-fast XDP-based bridge although these are not included in this series.
+Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
+---
+ include/linux/if_bridge.h | 11 +++++++++++
+ net/bridge/br_fdb.c       | 25 +++++++++++++++++++++++++
+ 2 files changed, 36 insertions(+)
 
-Patch 1 adds new function for access FDB in the kernel tables via the
-new bpf helper.
-
-Patch 2 adds the bpf helper and 3 adds a sample program.
-
-Yoshiki Komachi (3):
-  net/bridge: Add new function to access FDB from XDP programs
-  bpf: Add helper to do forwarding lookups in kernel FDB table
-  samples/bpf: Add a simple bridge example accelerated with XDP
-
- include/linux/if_bridge.h      |  11 ++
- include/uapi/linux/bpf.h       |  28 ++++
- net/bridge/br_fdb.c            |  25 ++++
- net/core/filter.c              |  45 +++++++
- samples/bpf/Makefile           |   3 +
- samples/bpf/xdp_bridge_kern.c  | 129 ++++++++++++++++++
- samples/bpf/xdp_bridge_user.c  | 239 +++++++++++++++++++++++++++++++++
- scripts/bpf_helpers_doc.py     |   1 +
- tools/include/uapi/linux/bpf.h |  28 ++++
- 9 files changed, 509 insertions(+)
- create mode 100644 samples/bpf/xdp_bridge_kern.c
- create mode 100644 samples/bpf/xdp_bridge_user.c
-
+diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+index 6479a38e52fa..24d72d115d0b 100644
+--- a/include/linux/if_bridge.h
++++ b/include/linux/if_bridge.h
+@@ -127,6 +127,9 @@ static inline int br_vlan_get_info(const struct net_device *dev, u16 vid,
+ struct net_device *br_fdb_find_port(const struct net_device *br_dev,
+ 				    const unsigned char *addr,
+ 				    __u16 vid);
++struct net_device *br_fdb_find_port_xdp(const struct net_device *dev,
++				    const unsigned char *addr,
++				    __u16 vid);
+ void br_fdb_clear_offload(const struct net_device *dev, u16 vid);
+ bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
+ #else
+@@ -138,6 +141,14 @@ br_fdb_find_port(const struct net_device *br_dev,
+ 	return NULL;
+ }
+ 
++static inline struct net_device *
++br_fdb_find_port_xdp(const struct net_device *dev,
++				    const unsigned char *addr,
++				    __u16 vid);
++{
++	return NULL;
++}
++
+ static inline void br_fdb_clear_offload(const struct net_device *dev, u16 vid)
+ {
+ }
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index 9db504baa094..79bc3c2da668 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
+@@ -141,6 +141,31 @@ struct net_device *br_fdb_find_port(const struct net_device *br_dev,
+ }
+ EXPORT_SYMBOL_GPL(br_fdb_find_port);
+ 
++struct net_device *br_fdb_find_port_xdp(const struct net_device *dev,
++				    const unsigned char *addr,
++				    __u16 vid)
++{
++	struct net_bridge_fdb_entry *f;
++	struct net_device *dst = NULL;
++	struct net_bridge *br = NULL;
++	struct net_bridge_port *p;
++
++	p = br_port_get_check_rcu(dev);
++	if (!p)
++		return NULL;
++
++	br = p->br;
++	if (!br)
++		return NULL;
++
++	f = br_fdb_find_rcu(br, addr, vid);
++	if (f && f->dst)
++		dst = f->dst->dev;
++
++	return dst;
++}
++EXPORT_SYMBOL_GPL(br_fdb_find_port_xdp);
++
+ struct net_bridge_fdb_entry *br_fdb_find_rcu(struct net_bridge *br,
+ 					     const unsigned char *addr,
+ 					     __u16 vid)
 -- 
 2.20.1 (Apple Git-117)
 
