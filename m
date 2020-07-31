@@ -2,213 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11A57234B1A
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:32:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C67234B35
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:38:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387794AbgGaScg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 14:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730040AbgGaScg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 14:32:36 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F16C2C061574;
-        Fri, 31 Jul 2020 11:32:35 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id x9so33423986ljc.5;
-        Fri, 31 Jul 2020 11:32:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=z/X7ymWwjbiuttKuTYyJMhSDfwg3TIeBUOgJd6KkalM=;
-        b=AX4AUm3mdEABluzCIEY3WtfZ0tKfRF61z2mag875alovsfWKuMVGE1IuvLAXdiHHNS
-         hCbybzfoIipZwEtjFuypnm8Y+56wmZL/to7xeE9USfDoJ+J5N/E7aPWV+CjQTF+yEYq3
-         MLEC3ZqTUX2/GgiRmbScc28YV9utq41eUmSc92aVDaCA/FG5lNkHYkNrn0dhYZhfZo6t
-         1+HDDrf+DcROAuadG286dLspIWiuAjFe+FpzTr1HE7xA4qZdpn8CcahhffqCIZUmcWqa
-         3Le9aGLbkMjPM2V4BWGnEZ6W1qjninoKDdo78dm4eiQSilN/WSgWi39TWNa1mGcvempG
-         S/vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=z/X7ymWwjbiuttKuTYyJMhSDfwg3TIeBUOgJd6KkalM=;
-        b=M8lZwitybw2b/QMYf5kapXE4WcqzsSvRoI+ssG1Z3CP0Ci8XE09yXBXVqSP8StGdkW
-         4KzwIAmyhlnQtSImpalOaHAECR7xAWyg7UmUhpbzgUlryPThR7IOay2YNBARmqAcBQZu
-         NwCPy9w2EvTE7ZpHEh0A7gYvq1v1q7mvpyaF6fQh0v6ajQrgmQcQEVkMQ2Q8uOtrbKOp
-         8jod9kOGXuaWbm5hSYGUi6/xODid2TxzqQSPBxWmr29TC1UaYgsyQy+OXYZLsPufdtqz
-         k0SvFHz+IytPsAnka+3WztCRcBueHbAa8u892IvYs3J+lxMX310EeSrX5FFUK6bwEo1q
-         bhLQ==
-X-Gm-Message-State: AOAM530vxWQDIMcbIMwphslfdVB5qaUEg9X+VwD7UBGwJcddZiJkk6ZE
-        LRWwCODx3O7FCDfyuJWr/0g=
-X-Google-Smtp-Source: ABdhPJwzh+LluJn2U/eWVgL6CKU6fHX8VJvv3t8EIF+ICEXQ7MIYYp0q9CVuXdPocDJoXstngFLOkg==
-X-Received: by 2002:a2e:9c92:: with SMTP id x18mr2213457lji.70.1596220354441;
-        Fri, 31 Jul 2020 11:32:34 -0700 (PDT)
-Received: from wasted.omprussia.ru ([2a00:1fa0:225:dc3:11c8:9b9e:ad39:92d0])
-        by smtp.gmail.com with ESMTPSA id s2sm1816717ljg.84.2020.07.31.11.32.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 31 Jul 2020 11:32:33 -0700 (PDT)
-Subject: Re: [PATCH v2] ravb: Fixed the problem that rmmod can not be done
-To:     Yuusuke Ashizuka <ashiduka@fujitsu.com>
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-References: <20200730035649.5940-1-ashiduka@fujitsu.com>
- <20200730100151.7490-1-ashiduka@fujitsu.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <0e7d72fe-ea70-612c-7a50-ad1ff905ddf4@gmail.com>
-Date:   Fri, 31 Jul 2020 21:32:32 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S2387852AbgGaSiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 14:38:00 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37364 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387767AbgGaSiA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 14:38:00 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1k1Zum-007jBm-CA; Fri, 31 Jul 2020 20:37:56 +0200
+Date:   Fri, 31 Jul 2020 20:37:56 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Thompson <dthompson@mellanox.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@mellanox.com, Asmaa Mnebhi <asmaa@mellanox.com>
+Subject: Re: [PATCH net-next] Add Mellanox BlueField Gigabit Ethernet driver
+Message-ID: <20200731183756.GF1748118@lunn.ch>
+References: <1596047355-28777-1-git-send-email-dthompson@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20200730100151.7490-1-ashiduka@fujitsu.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1596047355-28777-1-git-send-email-dthompson@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/30/20 1:01 PM, Yuusuke Ashizuka wrote:
+On Wed, Jul 29, 2020 at 02:29:15PM -0400, David Thompson wrote:
 
-   CCing DaveM (as you should have done from the start)...
+Hi David
 
-> ravb is a module driver, but I cannot rmmod it after insmod it.
-> ravb does mdio_init() at the time of probe, and module->refcnt is incremented
-> by alloc_mdio_bitbang() called after that.
-> Therefore, even if ifup is not performed, the driver is in use and rmmod cannot
-> be performed.
-> 
-> $ lsmod
-> Module                  Size  Used by
-
-   Did you also build mdio-bitbang.c as a module? For the in-kernal driver, not
-being able to rmmod the 'ravb' one sounds logical. :-)
-
-> ravb                   40960  1
-> $ rmmod ravb
-> rmmod: ERROR: Module ravb is in use
-> 
-> Fixed to execute mdio_init() at open and free_mdio() at close, thereby rmmod is
-
-    Call ravb_mdio_init() at open and free_mdio_bitbang() at close.
-
-> possible in the ifdown state.
-
-Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
-
-> Signed-off-by: Yuusuke Ashizuka <ashiduka@fujitsu.com>
-
-Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
-
-[...]
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index 99f7aae102ce..df89d09b253e 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -1342,6 +1342,51 @@ static inline int ravb_hook_irq(unsigned int irq, irq_handler_t handler,
->  	return error;
->  }
->  
-> +/* MDIO bus init function */
-> +static int ravb_mdio_init(struct ravb_private *priv)
+> +static void mlxbf_gige_get_pauseparam(struct net_device *netdev,
+> +				      struct ethtool_pauseparam *pause)
 > +{
-> +	struct platform_device *pdev = priv->pdev;
-> +	struct device *dev = &pdev->dev;
-> +	int error;
-> +
-> +	/* Bitbang init */
-> +	priv->mdiobb.ops = &bb_ops;
-> +
-> +	/* MII controller setting */
-> +	priv->mii_bus = alloc_mdio_bitbang(&priv->mdiobb);
-> +	if (!priv->mii_bus)
-> +		return -ENOMEM;
-> +
-> +	/* Hook up MII support for ethtool */
-> +	priv->mii_bus->name = "ravb_mii";
-> +	priv->mii_bus->parent = dev;
-> +	snprintf(priv->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
-> +		 pdev->name, pdev->id);
-> +
-> +	/* Register MDIO bus */
-> +	error = of_mdiobus_register(priv->mii_bus, dev->of_node);
-> +	if (error)
-> +		goto out_free_bus;
-> +
-> +	return 0;
-> +
-> +out_free_bus:
-> +	free_mdio_bitbang(priv->mii_bus);
-> +	return error;
+> +	pause->autoneg = AUTONEG_ENABLE;
+> +	pause->rx_pause = 1;
+> +	pause->tx_pause = 1;
+
+This is incorrect. You say autoneg is supported. So you should be
+returning the result of the autoneg. But what is also wrong is you
+don't appear to be programming the MAC with the result of the autoneg.
+mlxbf_gige_handle_link_change() should be doing this.
+
 > +}
 > +
-> +/* MDIO bus release function */
-> +static int ravb_mdio_release(struct ravb_private *priv)
+> +static int mlxbf_gige_get_link_ksettings(struct net_device *netdev,
+> +					 struct ethtool_link_ksettings *link_ksettings)
 > +{
-> +	/* Unregister mdio bus */
-> +	mdiobus_unregister(priv->mii_bus);
+> +	struct phy_device *phydev = netdev->phydev;
+> +	u32 supported, advertising;
+> +	u32 lp_advertising = 0;
+> +	int status;
+
+phy_ethtool_ksettings_get() and maybe phy_ethtool_ksettings_set().
+
 > +
-> +	/* Free bitbang info */
-> +	free_mdio_bitbang(priv->mii_bus);
+> +	supported = SUPPORTED_TP | SUPPORTED_1000baseT_Full |
+> +		    SUPPORTED_Autoneg | SUPPORTED_Pause;
+> +
+> +	advertising = ADVERTISED_1000baseT_Full | ADVERTISED_Autoneg |
+> +		      ADVERTISED_Pause;
+> +
+> +	status = phy_read(phydev, MII_LPA);
+> +	if (status >= 0)
+> +		lp_advertising = mii_lpa_to_ethtool_lpa_t(status & 0xffff);
+> +
+> +	status = phy_read(phydev, MII_STAT1000);
+> +	if (status >= 0)
+> +		lp_advertising |= mii_stat1000_to_ethtool_lpa_t(status & 0xffff);
+> +
+
+The MAC driver has no business poking around in PHY registers. Call
+into phylib.
+
+> +static void mlxbf_gige_handle_link_change(struct net_device *netdev)
+> +{
+> +	struct mlxbf_gige *priv = netdev_priv(netdev);
+> +	struct phy_device *phydev = netdev->phydev;
+> +	irqreturn_t ret;
+> +
+> +	ret = mlxbf_gige_mdio_handle_phy_interrupt(priv);
+
+You are polling the PHY. I don't see anywhere you link the interrupt
+to phylib.
+
+> +	if (ret != IRQ_HANDLED)
+> +		return;
+> +
+> +	/* print new link status only if the interrupt came from the PHY */
+> +	phy_print_status(phydev);
+> +}
+
+> +static int mlxbf_gige_open(struct net_device *netdev)
+> +{
+> +	struct mlxbf_gige *priv = netdev_priv(netdev);
+> +	struct phy_device *phydev = netdev->phydev;
+> +	u64 int_en;
+> +	int err;
+> +
+> +	mlxbf_gige_cache_stats(priv);
+> +	mlxbf_gige_clean_port(priv);
+> +	mlxbf_gige_rx_init(priv);
+> +	mlxbf_gige_tx_init(priv);
+> +	netif_napi_add(netdev, &priv->napi, mlxbf_gige_poll, NAPI_POLL_WEIGHT);
+> +	napi_enable(&priv->napi);
+> +	netif_start_queue(netdev);
+> +
+> +	err = mlxbf_gige_request_irqs(priv);
+> +	if (err)
+> +		return err;
+> +
+> +	phy_start(phydev);
+> +
+> +	/* Set bits in INT_EN that we care about */
+> +	int_en = MLXBF_GIGE_INT_EN_HW_ACCESS_ERROR |
+> +		 MLXBF_GIGE_INT_EN_TX_CHECKSUM_INPUTS |
+> +		 MLXBF_GIGE_INT_EN_TX_SMALL_FRAME_SIZE |
+> +		 MLXBF_GIGE_INT_EN_TX_PI_CI_EXCEED_WQ_SIZE |
+> +		 MLXBF_GIGE_INT_EN_SW_CONFIG_ERROR |
+> +		 MLXBF_GIGE_INT_EN_SW_ACCESS_ERROR |
+> +		 MLXBF_GIGE_INT_EN_RX_RECEIVE_PACKET;
+> +	writeq(int_en, priv->base + MLXBF_GIGE_INT_EN);
 > +
 > +	return 0;
 > +}
 > +
-[...]
-> @@ -1887,51 +1942,6 @@ static const struct net_device_ops ravb_netdev_ops = {
->  	.ndo_set_features	= ravb_set_features,
->  };
->  
-> -/* MDIO bus init function */
-> -static int ravb_mdio_init(struct ravb_private *priv)
-> -{
-> -	struct platform_device *pdev = priv->pdev;
-> -	struct device *dev = &pdev->dev;
-> -	int error;
-> -
-> -	/* Bitbang init */
-> -	priv->mdiobb.ops = &bb_ops;
-> -
-> -	/* MII controller setting */
-> -	priv->mii_bus = alloc_mdio_bitbang(&priv->mdiobb);
-> -	if (!priv->mii_bus)
-> -		return -ENOMEM;
-> -
-> -	/* Hook up MII support for ethtool */
-> -	priv->mii_bus->name = "ravb_mii";
-> -	priv->mii_bus->parent = dev;
-> -	snprintf(priv->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
-> -		 pdev->name, pdev->id);
-> -
-> -	/* Register MDIO bus */
-> -	error = of_mdiobus_register(priv->mii_bus, dev->of_node);
-> -	if (error)
-> -		goto out_free_bus;
-> -
-> -	return 0;
-> -
-> -out_free_bus:
-> -	free_mdio_bitbang(priv->mii_bus);
-> -	return error;
-> -}
-> -
-> -/* MDIO bus release function */
-> -static int ravb_mdio_release(struct ravb_private *priv)
-> -{
-> -	/* Unregister mdio bus */
-> -	mdiobus_unregister(priv->mii_bus);
-> -
-> -	/* Free bitbang info */
-> -	free_mdio_bitbang(priv->mii_bus);
-> -
-> -	return 0;
-> -}
-> -
+> +static int mlxbf_gige_stop(struct net_device *netdev)
+> +{
+> +	struct mlxbf_gige *priv = netdev_priv(netdev);
+> +
+> +	writeq(0, priv->base + MLXBF_GIGE_INT_EN);
+> +	netif_stop_queue(netdev);
+> +	napi_disable(&priv->napi);
+> +	netif_napi_del(&priv->napi);
+> +	mlxbf_gige_free_irqs(priv);
+> +
+> +	if (netdev->phydev)
+> +		phy_stop(netdev->phydev);
 
-   Dave, would you tolerate the forward declarations here instead (to avoid the function moves, to be later
-done in the net-next tree)?
+In open() you unconditionally start the phy. Do you expect the PHY to
+disappear between open and stop?
 
-[...]
+> +static int mlxbf_gige_probe(struct platform_device *pdev)
+> +{
 
-MBR, Sergei
+> +	phydev = phy_find_first(priv->mdiobus);
+> +	if (!phydev)
+> +		return -EIO;
+
+-ENODEV would seem more appropriate.
+
+	Andrew
