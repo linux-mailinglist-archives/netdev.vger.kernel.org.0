@@ -2,71 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A5F234A97
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:00:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00455234AA3
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:08:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387513AbgGaSAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 14:00:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37784 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729657AbgGaSAK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 14:00:10 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2387661AbgGaSIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 14:08:13 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:54270 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730040AbgGaSIN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 14:08:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596218892;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KkBcthLhdgcdVY5kQ1Abco4F2of49EuasnuDiDQxBXc=;
+        b=eT9Jtu8sz3SMXTiJ0xTc5SBiNSwwDoLbN0sovEblMe46SkfyXU00QGwRULn+jVzQdLgABe
+        4rAy8AmBAR8V39d974IrEspHMbLJYPRyUsYVu6uAPLaTdtB9YAEHKI/3SgVolCzIOWkFtK
+        AUn8ZNODo86eEt9v3dJj91d0pxjrX1k=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-395-678_S1YvMWqUBPfkLBRz_A-1; Fri, 31 Jul 2020 14:08:10 -0400
+X-MC-Unique: 678_S1YvMWqUBPfkLBRz_A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0A1172087C;
-        Fri, 31 Jul 2020 18:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596218410;
-        bh=v3m93NOu2RHKqtGk+BbI7KLEBi/a9BbgDGvJwhfhejw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VZd+Ibd6vIk36uQdfvn/UoO2oSaB46FonfvQfn4rcrXBIpF+CfB2aTrSjfXPCDIsM
-         ji0+Auh0CQwM7aseUcBPZzPHB45+59g4fbRuGVMI1ZEF5X/jD/tQdFGmDkDj5Jyt1D
-         xuuJzvEbLyzP7vz9lRc9npBil7e+jefxq56tzZlw=
-Date:   Fri, 31 Jul 2020 11:00:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ganji Aravind <ganji.aravind@chelsio.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, vishal@chelsio.com,
-        rahul.lakkireddy@chelsio.com
-Subject: Re: [PATCH net-next] cxgb4: Add support to flash firmware config
- image
-Message-ID: <20200731110008.598a8ea7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200731110904.GA1571@chelsio.com>
-References: <20200730151138.394115-1-ganji.aravind@chelsio.com>
-        <20200730162335.6a6aa4cf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200731110904.GA1571@chelsio.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 68AA2800597;
+        Fri, 31 Jul 2020 18:08:08 +0000 (UTC)
+Received: from krava (unknown [10.40.192.26])
+        by smtp.corp.redhat.com (Postfix) with SMTP id A936860BE2;
+        Fri, 31 Jul 2020 18:08:06 +0000 (UTC)
+Date:   Fri, 31 Jul 2020 20:08:05 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        jolsa@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: pull-request: bpf 2020-07-31
+Message-ID: <20200731180805.GA27597@krava>
+References: <20200731135145.15003-1-daniel@iogearbox.net>
+ <20200731152432.GA4296@krava>
+ <03545f38-c01a-faeb-adab-a0a471ff9fc3@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <03545f38-c01a-faeb-adab-a0a471ff9fc3@iogearbox.net>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 31 Jul 2020 16:39:04 +0530 Ganji Aravind wrote:
-> On Thursday, July 07/30/20, 2020 at 16:23:35 -0700, Jakub Kicinski wrote:
-> > On Thu, 30 Jul 2020 20:41:38 +0530 Ganji Aravind wrote:  
-> > > Update set_flash to flash firmware configuration image
-> > > to flash region.  
+On Fri, Jul 31, 2020 at 06:12:48PM +0200, Daniel Borkmann wrote:
+
+SNIP
+
+> > >                  return -EINVAL;
+> > >          return id;
+> > > }
+> > > 
+> > > Let me know if you run into any others issues (CC'ing Jiri Olsa so he's in
+> > > the loop with regards to merge conflict resolution).
 > > 
-> > And the reason why you need to flash some .ini files separately is?  
+> > we'll loose the bpf_log message, but I'm fine with that ;-) looks good
 > 
-> Hi Jakub,
+> Checking again on the fix, even though it was only triggered by syzkaller
+> so far, I think it's also possible if users don't have BTF debug data set
+> in the Kconfig but use a helper that expects it, so agree, lets re-add the
+> log in this case:
 > 
-> The firmware config file contains information on how the firmware
-> should distribute the hardware resources among NIC and
-> Upper Layer Drivers(ULD), like iWARP, crypto, filtering, etc.
+> int btf_resolve_helper_id(struct bpf_verifier_log *log,
+>                           const struct bpf_func_proto *fn, int arg)
+> {
+>         int id;
 > 
-> The firmware image comes with an in-built default config file that
-> distributes resources among the NIC and all the ULDs. However, in
-> some cases, where we don't want to run a particular ULD, or if we
-> want to redistribute the resources, then we'd modify the firmware
-> config file and then firmware will redistribute those resources
-> according to the new configuration. So, if firmware finds this
-> custom config file in flash, it reads this first. Otherwise, it'll
-> continue initializing the adapter with its own in-built default
-> config file.
+>         if (fn->arg_type[arg] != ARG_PTR_TO_BTF_ID)
+>                 return -EINVAL;
+>         if (!btf_vmlinux) {
+>                 bpf_log(log, "btf_vmlinux doesn't exist\n");
+>                 return -EINVAL;
+>         }
+>         id = fn->btf_id[arg];
+>         if (!id || id > btf_vmlinux->nr_types)
+>                 return -EINVAL;
+>         return id;
+> }
 
-Sounds like something devlink could be extended to do.
+ok, looks good
+jirka
 
-Firmware update interface is not for configuration.
