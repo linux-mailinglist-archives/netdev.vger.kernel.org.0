@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CA4A233C99
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 02:39:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BC98233C9B
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 02:39:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730906AbgGaAjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 20:39:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44852 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728086AbgGaAja (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 20:39:30 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 30EAF2074B;
-        Fri, 31 Jul 2020 00:39:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596155970;
-        bh=iroX4p9O4VFY7E6zUDbpOIF0/Eimnn0FRMlZ3dSM06A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uZLfpnGfT1qAPEKsWpSGbVoh2QHv4j3zYI4SfSBdKhh3Dn2c+sjTBYQUtBZKwC41E
-         7L3rbtsuU9JIlUQQZFzOk6tx4nrLjBRs8LKDHgAEVMFr3m32SAaKx8wtdmAk7n/n4H
-         bZzgpjA2/ghoXoE6rWTk0K5VqvimTa1QJs8VYGXE=
-Date:   Thu, 30 Jul 2020 17:39:28 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Danielle Ratson <danieller@mellanox.com>
-Subject: Re: [net-next 0/4] devlink flash update overwrite mask
-Message-ID: <20200730173928.676a7a29@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200730232008.2648488-1-jacob.e.keller@intel.com>
-References: <20200730232008.2648488-1-jacob.e.keller@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1730940AbgGaAji (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 20:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728086AbgGaAjh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 20:39:37 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8FFAC061574;
+        Thu, 30 Jul 2020 17:39:37 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477:9e51:a893:b0fe:602a])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1D2E3126C48C8;
+        Thu, 30 Jul 2020 17:22:51 -0700 (PDT)
+Date:   Thu, 30 Jul 2020 17:39:35 -0700 (PDT)
+Message-Id: <20200730.173935.1057438302921920842.davem@davemloft.net>
+To:     gustavoars@kernel.org
+Cc:     jiri@mellanox.com, idosch@mellanox.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] mlxsw: spectrum_cnt: Use flex_array_size()
+ helper in memcpy()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200729225803.GA15866@embeddedor>
+References: <20200729225803.GA15866@embeddedor>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 30 Jul 2020 17:22:51 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LGTM,
+From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Date: Wed, 29 Jul 2020 17:58:03 -0500
 
-minor suggestions:
- - could you add opt-in support flags to struct devlink_ops, a'la
-   ethtool_ops->supported_coalesce_params so that you don't have to
-   modify all drivers to reject unsupported things?
- - could you split patch 2 into an ice change and a devlink core
-   change?
+> Make use of the flex_array_size() helper to calculate the size of a
+> flexible array member within an enclosing structure.
+> 
+> This helper offers defense-in-depth against potential integer
+> overflows, while at the same time makes it explicitly clear that
+> we are dealing witha flexible array member.
+> 
+> Also, remove unnecessary pointer identifier sub_pool.
+> 
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+
+Applied.
