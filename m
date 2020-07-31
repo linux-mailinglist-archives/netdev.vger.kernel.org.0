@@ -2,90 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90BC3234C15
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 22:19:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28910234C39
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 22:27:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727772AbgGaUTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 16:19:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49954 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727053AbgGaUS7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 16:18:59 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 390A7208E4;
-        Fri, 31 Jul 2020 20:18:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596226739;
-        bh=XkBtbALKKrVNXU2T8XMtfr5y3a31WmhOC+6LIXG7Jis=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GM99/8E6TU+0C7JyU1crOeGmIVCiXxWV/oR+lNleDrk12a+WDOjSQxNC9sIlmVBum
-         HZlzL7rTyjQZg137VmRnYWirZgllalefABGZS0WrHVIPAyup0slk/FkTnewe3u2osy
-         YASBIT0mbSqV873l6wBn1pR01HtYMvd2VMBKhAcM=
-Date:   Fri, 31 Jul 2020 13:18:57 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 03/11] sfc_ef100: read Design Parameters at
- probe time
-Message-ID: <20200731131857.41b0f32a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <48b1fedf-0863-8fab-7f7a-e2df6946b764@solarflare.com>
-References: <31de2e73-bce7-6c9d-0c20-49b32e2043cc@solarflare.com>
-        <48b1fedf-0863-8fab-7f7a-e2df6946b764@solarflare.com>
+        id S1729197AbgGaU1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 16:27:08 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:56476 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727032AbgGaU1H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 16:27:07 -0400
+Received: by mail-il1-f198.google.com with SMTP id w81so22356901ilk.23
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 13:27:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=vsQ0DA/5bvGhTmkbMHk7MzKsMz9FnLBedu0Y4dKMUQk=;
+        b=nbAFhwMfA8vOoqVNtqEnhkz3sT4IduQnD1L/ymQOLirGmDVCSl3fL71xD9e8cAX+aF
+         1CVECrWaOdleA1R1BdpucR1qA4qGi6ha0rqYBnTrCzV66C9M/vqXHYvvGZTqT9XRvAAZ
+         3iSg1u8+cJ5mKhqbt9oCs91cqoiNSskFn6XKh9StCd9EjnqFTc9ZW/iTeUZrzxX/tnAo
+         ZZc1lYzOouEi7taY2L86Ikzqu9YnxAJ3pDonpVqPF3FUP6VcUlTzrYvBjTGbzRBM4FSp
+         kqbFuoFwPXklwMho+QCLkU6D+fByOLle2RsB6d9E6hVQnbviiNNoIAyPU7EfITpM5WEq
+         Lwjw==
+X-Gm-Message-State: AOAM530z+xYdnD8zNhybEo8MXaoBZGTvkQPqkla3UPPEgKGeBtFZg58c
+        P8TIGJ7H3l6WVHqQ+71q4MmvMa/Bwv8Q2YviYFBRNTkVqBIr
+X-Google-Smtp-Source: ABdhPJwscJdmgTVAyN5A0mZcFslfTu4NvgG3c61P7M1Sunc5hbze6ecpT6iF8lTHZO9lbQOYSIomIKIyhyXMYrlqb/aJNkQgzi+J
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a92:8b45:: with SMTP id i66mr5706387ild.19.1596227226917;
+ Fri, 31 Jul 2020 13:27:06 -0700 (PDT)
+Date:   Fri, 31 Jul 2020 13:27:06 -0700
+In-Reply-To: <000000000000c5c9ad05abbfc71b@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d75f8b05abc29c92@google.com>
+Subject: Re: KASAN: slab-out-of-bounds Read in qrtr_endpoint_post (2)
+From:   syzbot <syzbot+1917d778024161609247@syzkaller.appspotmail.com>
+To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 31 Jul 2020 13:58:35 +0100 Edward Cree wrote:
-> +	default:
-> +		/* Host interface says "Drivers should ignore design parameters
-> +		 * that they do not recognise."
-> +		 */
-> +		netif_info(efx, probe, efx->net_dev,
-> +			   "Ignoring unrecognised design parameter %u\n",
-> +			   reader->type);
+syzbot has bisected this issue to:
 
-Is this really important enough to spam the logs with?
+commit e42671084361302141a09284fde9bbc14fdd16bf
+Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Date:   Thu May 7 12:53:06 2020 +0000
 
-> +		return 0;
-> +	}
-> +}
-> +
-> +static int ef100_check_design_params(struct efx_nic *efx)
-> +{
-> +	struct ef100_tlv_state reader = {};
-> +	u32 total_len, offset = 0;
-> +	efx_dword_t reg;
-> +	int rc = 0, i;
-> +	u32 data;
-> +
-> +	efx_readd(efx, &reg, ER_GZ_PARAMS_TLV_LEN);
-> +	total_len = EFX_DWORD_FIELD(reg, EFX_DWORD_0);
-> +	netif_dbg(efx, probe, efx->net_dev, "%u bytes of design parameters\n",
-> +		  total_len);
-> +	while (offset < total_len) {
-> +		efx_readd(efx, &reg, ER_GZ_PARAMS_TLV + offset);
-> +		data = EFX_DWORD_FIELD(reg, EFX_DWORD_0);
-> +		for (i = 0; i < sizeof(data); i++) {
-> +			rc = ef100_tlv_feed(&reader, data);
-> +			/* Got a complete value? */
-> +			if (!rc && reader.state == EF100_TLV_TYPE)
-> +				rc = ef100_process_design_param(efx, &reader);
-> +			if (rc)
-> +				goto out;
-> +			data >>= 8;
-> +			offset++;
-> +		}
-> +	}
+    net: qrtr: Do not depend on ARCH_QCOM
 
-Should you warn if the TLV stream ends half-way through an entry?
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12a8076c900000
+start commit:   83bdc727 random32: remove net_rand_state from the latent e..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=11a8076c900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16a8076c900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e59ee776d5aa8d55
+dashboard link: https://syzkaller.appspot.com/bug?extid=1917d778024161609247
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14ac9b60900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14256c5c900000
 
-> +out:
-> +	return rc;
-> +}
+Reported-by: syzbot+1917d778024161609247@syzkaller.appspotmail.com
+Fixes: e42671084361 ("net: qrtr: Do not depend on ARCH_QCOM")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
