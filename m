@@ -2,123 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D9C0234734
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 15:51:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00335234752
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 16:04:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731750AbgGaNv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 09:51:58 -0400
-Received: from www62.your-server.de ([213.133.104.62]:42674 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730733AbgGaNv5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 09:51:57 -0400
-Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k1VRp-0005M1-Hp; Fri, 31 Jul 2020 15:51:45 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        jolsa@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2020-07-31
-Date:   Fri, 31 Jul 2020 15:51:45 +0200
-Message-Id: <20200731135145.15003-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1732477AbgGaOEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 10:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732408AbgGaOEy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 10:04:54 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8197C06174A
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 07:04:54 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id w9so22968420qts.6
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 07:04:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=781IgXX02TRDkWHahRceQKsFXQSmPskr3l/EDT57Vi4=;
+        b=Q6DR3qA2s07ap18NgbhUz2I65CJAcbZd0GqAm8NJxwCYrMe7KPboFzZXDRIW5lebPB
+         oPAHJk7XUdYIt6eLnbwRK5OsrvSiHbJroVQmKedNKll7+oQTEicW2nHi4Rn6BWyBvJmc
+         lEcbaN7HrczmvO3LYz4q8LcxNGlBJ3tUKlHS8B68jhZ9zFDhvmhI9wnD5QNOETP1shOL
+         79KgAqq62WlRj0VUpG9xstUqwVILBIlJ7fRjPbuyu2hRjsy7UxqmSM7o55hhWvcbtFih
+         IJ29FiOq3N/1C3oFhp4V5OwU8vwRHkhlq6ImCk398H1tIuyiht+hq6GxBMWm63ZYSugB
+         yLJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=781IgXX02TRDkWHahRceQKsFXQSmPskr3l/EDT57Vi4=;
+        b=NQGa7mn7gqS2LxUgqomay1iteTrozlE3cIR56CGgo0XfQ1s2rlII1lw2G890BLnkh2
+         rsBtleUZ0nYsuWw40lz/B64rmP1B/lzEX7P1mv0+vXp9Tbekhxg7K/0Qhz+DVAByf2M9
+         C+zttuPeg9v9gAFrYJHcHPeXIPwqbRrHRfIVmasDrCnxWdSeKBN+OMr+q3jY2XGFZ8tA
+         RhdiOE5KIE1zSvZdkso/QLtvsLUnyw+RB2RnGzpQZOuBzE333VVWGcYwuMK68C7QdE5R
+         egf/2EI2wTozCG21HPpmzVJUrtY79mLBvDVEgn73/eKrl7s2VF2XFK4MH0cuo9HQUcLU
+         SX8g==
+X-Gm-Message-State: AOAM533taqrI7udR+2oCHE4Y8N2InZqC26qcU53RB3KrbDdi8aG6ZCHw
+        1w/XTuEXhLLeC3Hy85GHFXH/o6NGYrJyjA==
+X-Google-Smtp-Source: ABdhPJy1g859VdHLa7g09AW4SpHkI8nxyECHbw18XD+WYQwl6Uwee6XxVPfUS5+iBrmKK+EwP4CFMA==
+X-Received: by 2002:ac8:7383:: with SMTP id t3mr3755232qtp.160.1596204293590;
+        Fri, 31 Jul 2020 07:04:53 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
+        by smtp.gmail.com with ESMTPSA id w27sm8432660qtv.68.2020.07.31.07.04.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Jul 2020 07:04:52 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1k1VeW-001u9f-23; Fri, 31 Jul 2020 11:04:52 -0300
+Date:   Fri, 31 Jul 2020 11:04:52 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Peilin Ye <yepeilin.cs@gmail.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
+ in rds_notify_queue_get()
+Message-ID: <20200731140452.GE24045@ziepe.ca>
+References: <20200730192026.110246-1-yepeilin.cs@gmail.com>
+ <20200731045301.GI75549@unreal>
+ <20200731053306.GA466103@kroah.com>
+ <20200731053333.GB466103@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25889/Thu Jul 30 17:03:53 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200731053333.GB466103@kroah.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Fri, Jul 31, 2020 at 07:33:33AM +0200, Greg Kroah-Hartman wrote:
+> On Fri, Jul 31, 2020 at 07:33:06AM +0200, Greg Kroah-Hartman wrote:
+> > On Fri, Jul 31, 2020 at 07:53:01AM +0300, Leon Romanovsky wrote:
+> > > On Thu, Jul 30, 2020 at 03:20:26PM -0400, Peilin Ye wrote:
+> > > > rds_notify_queue_get() is potentially copying uninitialized kernel stack
+> > > > memory to userspace since the compiler may leave a 4-byte hole at the end
+> > > > of `cmsg`.
+> > > >
+> > > > In 2016 we tried to fix this issue by doing `= { 0 };` on `cmsg`, which
+> > > > unfortunately does not always initialize that 4-byte hole. Fix it by using
+> > > > memset() instead.
+> > > 
+> > > Of course, this is the difference between "{ 0 }" and "{}" initializations.
+> > 
+> > Really?  Neither will handle structures with holes in it, try it and
+> > see.
+> 
+> And if true, where in the C spec does it say that?
 
-The following pull-request contains BPF updates for your *net* tree.
+The spec was updated in C11 to require zero'ing padding when doing
+partial initialization of aggregates (eg = {})
 
-We've added 5 non-merge commits during the last 21 day(s) which contain
-a total of 5 files changed, 126 insertions(+), 18 deletions(-).
+"""if it is an aggregate, every member is initialized (recursively)
+according to these rules, and any padding is initialized to zero
+bits;"""
 
-The main changes are:
+The difference between {0} and the {} extension is only that {}
+reliably triggers partial initialization for all kinds of aggregates,
+while {0} has a number of edge cases where it can fail to compile.
 
-1) Fix a map element leak in HASH_OF_MAPS map type, from Andrii Nakryiko.
+IIRC gcc has cleared the padding during aggregate initialization for a
+long time. Considering we have thousands of aggregate initializers it
+seems likely to me Linux also requires a compiler with this C11
+behavior to operate correctly.
 
-2) Fix a NULL pointer dereference in __btf_resolve_helper_id() when no
-   btf_vmlinux is available, from Peilin Ye.
+Does this patch actually fix anything? My compiler generates identical
+assembly code in either case.
 
-3) Init pos variable in __bpfilter_process_sockopt(), from Christoph Hellwig.
-
-4) Fix a cgroup sockopt verifier test by specifying expected attach type,
-   from Jean-Philippe Brucker.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Note that when net gets merged into net-next later on, there is a small
-merge conflict in kernel/bpf/btf.c between commit 5b801dfb7feb ("bpf: Fix
-NULL pointer dereference in __btf_resolve_helper_id()") from the bpf tree
-and commit 138b9a0511c7 ("bpf: Remove btf_id helpers resolving") from the
-net-next tree.
-
-Resolve as follows: remove the old hunk with the __btf_resolve_helper_id()
-function. Change the btf_resolve_helper_id() so it actually tests for a
-NULL btf_vmlinux and bails out:
-
-int btf_resolve_helper_id(struct bpf_verifier_log *log,
-                          const struct bpf_func_proto *fn, int arg)
-{
-        int id;
-
-        if (fn->arg_type[arg] != ARG_PTR_TO_BTF_ID || !btf_vmlinux)
-                return -EINVAL;
-        id = fn->btf_id[arg];
-        if (!id || id > btf_vmlinux->nr_types)
-                return -EINVAL;
-        return id;
-}
-
-Let me know if you run into any others issues (CC'ing Jiri Olsa so he's in
-the loop with regards to merge conflict resolution).
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Christian Brauner, Jakub Sitnicki, Rodrigo Madera, Song Liu
-
-----------------------------------------------------------------
-
-The following changes since commit c8b1d7436045d3599bae56aef1682813ecccaad7:
-
-  bnxt_en: fix NULL dereference in case SR-IOV configuration fails (2020-07-10 14:20:03 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 4f010246b4087ab931b060481014ec110e6a8a46:
-
-  net/bpfilter: Initialize pos in __bpfilter_process_sockopt (2020-07-31 01:07:32 +0200)
-
-----------------------------------------------------------------
-Andrii Nakryiko (2):
-      bpf: Fix map leak in HASH_OF_MAPS map
-      selftests/bpf: Extend map-in-map selftest to detect memory leaks
-
-Christoph Hellwig (1):
-      net/bpfilter: Initialize pos in __bpfilter_process_sockopt
-
-Jean-Philippe Brucker (1):
-      selftests/bpf: Fix cgroup sockopt verifier test
-
-Peilin Ye (1):
-      bpf: Fix NULL pointer dereference in __btf_resolve_helper_id()
-
- kernel/bpf/btf.c                                   |   5 +
- kernel/bpf/hashtab.c                               |  12 +-
- net/bpfilter/bpfilter_kern.c                       |   2 +-
- .../selftests/bpf/prog_tests/btf_map_in_map.c      | 124 ++++++++++++++++++---
- .../testing/selftests/bpf/verifier/event_output.c  |   1 +
- 5 files changed, 126 insertions(+), 18 deletions(-)
+Jason
