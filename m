@@ -2,105 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9786233ED8
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 07:54:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AFBC233EF4
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 08:17:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731393AbgGaFyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 01:54:45 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:50774 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731301AbgGaFyo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 01:54:44 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06V5sdpq008143;
-        Thu, 30 Jul 2020 22:54:41 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=JGHjrhMBsHNhCBWrKZK++isMYyaed5rD4TMAhx+yJVc=;
- b=gBa3QLZy8vFfSWL5U9DZRITdUtafkNUuE1gkFfh9CbLHrupgSkiTMNFI7brAdeEDmT22
- SHPhyajY3qu+IuBN0TpMbf5nHtgFLSG6nXvM0qgJn7b+QhD/Va519ylOfRA5QZ9SAmFi
- Px0oyiAIDLI+fiHFnR5OkRCEaU2lb9FofEPLyyAI3pfay2ddAxGm70VmCGmplohO96kq
- Ao0lCfcFLlI7550UvCvnG4PhqC5DJaTUepFhYhommuuSYVAOkLB6rpdoJWjyuv5Mzi4+
- bdkJO/MMpB5DUMRqoerpU+9R7rjjMygOh3VGAOVucVM4TjdSpM/LmF29lwRuqEjHR7Wd uQ== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 32jt0t3juj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jul 2020 22:54:41 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 30 Jul
- 2020 22:54:39 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 30 Jul 2020 22:54:40 -0700
-Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.193.54.28])
-        by maili.marvell.com (Postfix) with ESMTP id 2A63F3F703F;
-        Thu, 30 Jul 2020 22:54:36 -0700 (PDT)
-From:   Igor Russkikh <irusskikh@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Denis Bolotin <dbolotin@marvell.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Alexander Lobakin <alobakin@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>
-Subject: [PATCH v4 net-next 10/10] qede: make driver reliable on unload after failures
-Date:   Fri, 31 Jul 2020 08:54:01 +0300
-Message-ID: <20200731055401.940-11-irusskikh@marvell.com>
+        id S1731365AbgGaGQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 02:16:50 -0400
+Received: from foss.arm.com ([217.140.110.172]:50114 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731152AbgGaGQt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 02:16:49 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9CCE41FB;
+        Thu, 30 Jul 2020 23:16:48 -0700 (PDT)
+Received: from net-arm-thunderx2-02.shanghai.arm.com (net-arm-thunderx2-02.shanghai.arm.com [10.169.210.119])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7F0923F66E;
+        Thu, 30 Jul 2020 23:16:45 -0700 (PDT)
+From:   Jianlin Lv <Jianlin.Lv@arm.com>
+To:     bpf@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, yhs@fb.com, Song.Zhu@arm.com,
+        Jianlin.Lv@arm.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH bpf-next] bpf: fix compilation warning of selftests
+Date:   Fri, 31 Jul 2020 14:16:00 +0800
+Message-Id: <20200731061600.18344-1-Jianlin.Lv@arm.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200731055401.940-1-irusskikh@marvell.com>
-References: <20200731055401.940-1-irusskikh@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-31_01:2020-07-30,2020-07-31 signatures=0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case recovery was not successful, netdev still should be
-present. But we should clear cdev if something bad happens
-on recovery.
+Clang compiler version: 12.0.0
+The following warning appears during the selftests/bpf compilation:
 
-We also check cdev for null on dev close. That could be a case
-if recovery was not successful.
+prog_tests/send_signal.c:51:3: warning: ignoring return value of ‘write’,
+declared with attribute warn_unused_result [-Wunused-result]
+   51 |   write(pipe_c2p[1], buf, 1);
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~
+prog_tests/send_signal.c:54:3: warning: ignoring return value of ‘read’,
+declared with attribute warn_unused_result [-Wunused-result]
+   54 |   read(pipe_p2c[0], buf, 1);
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~
+......
 
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
-Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+prog_tests/stacktrace_build_id_nmi.c:13:2: warning: ignoring return value
+of ‘fscanf’,declared with attribute warn_unused_result [-Wunused-resul]
+   13 |  fscanf(f, "%llu", &sample_freq);
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+test_tcpnotify_user.c:133:2: warning:ignoring return value of ‘system’,
+declared with attribute warn_unused_result [-Wunused-result]
+  133 |  system(test_script);
+      |  ^~~~~~~~~~~~~~~~~~~
+test_tcpnotify_user.c:138:2: warning:ignoring return value of ‘system’,
+declared with attribute warn_unused_result [-Wunused-result]
+  138 |  system(test_script);
+      |  ^~~~~~~~~~~~~~~~~~~
+test_tcpnotify_user.c:143:2: warning:ignoring return value of ‘system’,
+declared with attribute warn_unused_result [-Wunused-result]
+  143 |  system(test_script);
+      |  ^~~~~~~~~~~~~~~~~~~
+
+Add code that fix compilation warning about ignoring return value and
+handles any errors; Check return value of library`s API make the code
+more secure.
+
+Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
 ---
- drivers/net/ethernet/qlogic/qede/qede_main.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ .../selftests/bpf/prog_tests/send_signal.c    | 37 ++++++++++++++-----
+ .../bpf/prog_tests/stacktrace_build_id_nmi.c  |  3 +-
+ .../selftests/bpf/test_tcpnotify_user.c       | 15 ++++++--
+ 3 files changed, 41 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index 287e10effb49..01a7bff91d6c 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -1240,7 +1240,10 @@ static int __qede_probe(struct pci_dev *pdev, u32 dp_module, u8 dp_level,
- err4:
- 	qede_rdma_dev_remove(edev, (mode == QEDE_PROBE_RECOVERY));
- err3:
--	free_netdev(edev->ndev);
-+	if (mode != QEDE_PROBE_RECOVERY)
-+		free_netdev(edev->ndev);
-+	else
-+		edev->cdev = NULL;
- err2:
- 	qed_ops->common->slowpath_stop(cdev);
- err1:
-@@ -2475,7 +2478,8 @@ static int qede_close(struct net_device *ndev)
+diff --git a/tools/testing/selftests/bpf/prog_tests/send_signal.c b/tools/testing/selftests/bpf/prog_tests/send_signal.c
+index 504abb7bfb95..7a5272e4e810 100644
+--- a/tools/testing/selftests/bpf/prog_tests/send_signal.c
++++ b/tools/testing/selftests/bpf/prog_tests/send_signal.c
+@@ -48,22 +48,31 @@ static void test_send_signal_common(struct perf_event_attr *attr,
+ 		close(pipe_p2c[1]); /* close write */
  
- 	qede_unload(edev, QEDE_UNLOAD_NORMAL, false);
+ 		/* notify parent signal handler is installed */
+-		write(pipe_c2p[1], buf, 1);
++		if (CHECK_FAIL(write(pipe_c2p[1], buf, 1) != 1)) {
++			perror("Child: write pipe error");
++			goto close_out;
++		}
  
--	edev->ops->common->update_drv_state(edev->cdev, false);
-+	if (edev->cdev)
-+		edev->ops->common->update_drv_state(edev->cdev, false);
+ 		/* make sure parent enabled bpf program to send_signal */
+-		read(pipe_p2c[0], buf, 1);
++		if (CHECK_FAIL(read(pipe_p2c[0], buf, 1) != 1)) {
++			perror("Child: read pipe error");
++			goto close_out;
++		}
  
- 	return 0;
+ 		/* wait a little for signal handler */
+ 		sleep(1);
+ 
+-		if (sigusr1_received)
+-			write(pipe_c2p[1], "2", 1);
+-		else
+-			write(pipe_c2p[1], "0", 1);
++		buf[0] = sigusr1_received ? '2' : '0';
++		if (CHECK_FAIL(write(pipe_c2p[1], buf, 1) != 1)) {
++			perror("Child: write pipe error");
++			goto close_out;
++		}
+ 
+ 		/* wait for parent notification and exit */
+-		read(pipe_p2c[0], buf, 1);
++		if (CHECK_FAIL(read(pipe_p2c[0], buf, 1) != 1))
++			perror("Child: read pipe error");
+ 
++close_out:
+ 		close(pipe_c2p[1]);
+ 		close(pipe_p2c[0]);
+ 		exit(0);
+@@ -99,7 +108,11 @@ static void test_send_signal_common(struct perf_event_attr *attr,
+ 	}
+ 
+ 	/* wait until child signal handler installed */
+-	read(pipe_c2p[0], buf, 1);
++	if (CHECK_FAIL(read(pipe_c2p[0], buf, 1) != 1)) {
++		perror("Parent: read pipe error");
++		goto disable_pmu;
++	}
++
+ 
+ 	/* trigger the bpf send_signal */
+ 	skel->bss->pid = pid;
+@@ -107,7 +120,10 @@ static void test_send_signal_common(struct perf_event_attr *attr,
+ 	skel->bss->signal_thread = signal_thread;
+ 
+ 	/* notify child that bpf program can send_signal now */
+-	write(pipe_p2c[1], buf, 1);
++	if (CHECK_FAIL(write(pipe_p2c[1], buf, 1) != 1)) {
++		perror("Parent: write pipe error");
++		goto disable_pmu;
++	}
+ 
+ 	/* wait for result */
+ 	err = read(pipe_c2p[0], buf, 1);
+@@ -121,7 +137,8 @@ static void test_send_signal_common(struct perf_event_attr *attr,
+ 	CHECK(buf[0] != '2', test_name, "incorrect result\n");
+ 
+ 	/* notify child safe to exit */
+-	write(pipe_p2c[1], buf, 1);
++	if (CHECK_FAIL(write(pipe_p2c[1], buf, 1) != 1))
++		perror("Parent: write pipe error");
+ 
+ disable_pmu:
+ 	close(pmu_fd);
+diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
+index f002e3090d92..a27de3d46e58 100644
+--- a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
++++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
+@@ -10,7 +10,8 @@ static __u64 read_perf_max_sample_freq(void)
+ 	f = fopen("/proc/sys/kernel/perf_event_max_sample_rate", "r");
+ 	if (f == NULL)
+ 		return sample_freq;
+-	fscanf(f, "%llu", &sample_freq);
++	if (CHECK_FAIL(fscanf(f, "%llu", &sample_freq) != 1))
++		perror("Get max sample rate fail, return default value: 5000\n");
+ 	fclose(f);
+ 	return sample_freq;
  }
+diff --git a/tools/testing/selftests/bpf/test_tcpnotify_user.c b/tools/testing/selftests/bpf/test_tcpnotify_user.c
+index f9765ddf0761..869e28c92d73 100644
+--- a/tools/testing/selftests/bpf/test_tcpnotify_user.c
++++ b/tools/testing/selftests/bpf/test_tcpnotify_user.c
+@@ -130,17 +130,26 @@ int main(int argc, char **argv)
+ 	sprintf(test_script,
+ 		"iptables -A INPUT -p tcp --dport %d -j DROP",
+ 		TESTPORT);
+-	system(test_script);
++	if (system(test_script)) {
++		printf("FAILED: execute command: %s\n", test_script);
++		goto err;
++	}
+ 
+ 	sprintf(test_script,
+ 		"nc 127.0.0.1 %d < /etc/passwd > /dev/null 2>&1 ",
+ 		TESTPORT);
+-	system(test_script);
++	if (system(test_script)) {
++		printf("FAILED: execute command: %s\n", test_script);
++		goto err;
++	}
+ 
+ 	sprintf(test_script,
+ 		"iptables -D INPUT -p tcp --dport %d -j DROP",
+ 		TESTPORT);
+-	system(test_script);
++	if (system(test_script)) {
++		printf("FAILED: execute command: %s\n", test_script);
++		goto err;
++	}
+ 
+ 	rv = bpf_map_lookup_elem(bpf_map__fd(global_map), &key, &g);
+ 	if (rv != 0) {
 -- 
 2.17.1
 
