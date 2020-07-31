@@ -2,97 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 486D0234BCA
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 21:55:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D0DF234BDE
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 22:04:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726257AbgGaTzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 15:55:03 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37442 "EHLO vps0.lunn.ch"
+        id S1726645AbgGaUEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 16:04:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46668 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725767AbgGaTzC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 15:55:02 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k1b7K-007jcO-KE; Fri, 31 Jul 2020 21:54:58 +0200
-Date:   Fri, 31 Jul 2020 21:54:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Asmaa Mnebhi <Asmaa@mellanox.com>
-Cc:     David Thompson <dthompson@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>, Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH net-next] Add Mellanox BlueField Gigabit Ethernet driver
-Message-ID: <20200731195458.GA1843538@lunn.ch>
-References: <1596047355-28777-1-git-send-email-dthompson@mellanox.com>
- <20200731174222.GE1748118@lunn.ch>
- <VI1PR05MB4110070900CF42CB3E18983EDA4E0@VI1PR05MB4110.eurprd05.prod.outlook.com>
+        id S1725938AbgGaUEF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 16:04:05 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 04C5121744;
+        Fri, 31 Jul 2020 20:04:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596225844;
+        bh=UFX2Vyq3OqWP/oxaNHNwBoCXVkFDa+R+nGngOe84KXo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mOjkRAw1vzuh2AjUn0E37dHI1+kKkcm+q8ShbnwfTh0UYNAHIe8edVT7oF1nWPxGc
+         wrdHq1cGvVsQse5QxF/F1b0SygPTiN1gvydXlXPpLN0zfTpWYakBVp8pNoJe9kdhS2
+         H2oaGFv7iiQjLrjryv7snYITqQmmI20fJPtKwYfQ=
+Date:   Fri, 31 Jul 2020 13:04:02 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
+        Ariel Elior <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Denis Bolotin <dbolotin@marvell.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Alexander Lobakin <alobakin@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>
+Subject: Re: [PATCH v4 net-next 04/10] qed: implement devlink info request
+Message-ID: <20200731130402.2288f44a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200731055401.940-5-irusskikh@marvell.com>
+References: <20200731055401.940-1-irusskikh@marvell.com>
+        <20200731055401.940-5-irusskikh@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <VI1PR05MB4110070900CF42CB3E18983EDA4E0@VI1PR05MB4110.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 31, 2020 at 06:54:04PM +0000, Asmaa Mnebhi wrote:
+On Fri, 31 Jul 2020 08:53:55 +0300 Igor Russkikh wrote:
+> Here we return existing fw & mfw versions, we also fetch device's
+> serial number.
+> 
+> The base device specific structure (qed_dev_info) was not directly
+> available to the base driver before.
+> Thus, here we create and store a private copy of this structure
+> in qed_dev root object.
 
-Hi Asmaa
+Please include example output of devlink info on you device.
 
-Please don't send HTML obfusticated emails to mailing lists.
-
-> > +static int mlxbf_gige_mdio_read(struct mii_bus *bus, int phy_add, int
-> 
-> > +phy_reg) {
-> 
-> > +         struct mlxbf_gige *priv = bus->priv;
-> 
-> > +         u32 cmd;
-> 
-> > +         u32 ret;
-> 
-> > +
-> 
-> > +         /* If the lock is held by something else, drop the request.
-> 
-> > +         * If the lock is cleared, that means the busy bit was cleared.
-> 
-> > +         */
-> 
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.c b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
+> index a62c47c61edf..57ef2c56c884 100644
+> --- a/drivers/net/ethernet/qlogic/qed/qed_devlink.c
+> +++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
+> @@ -45,7 +45,55 @@ static const struct devlink_param qed_devlink_params[] = {
+>  			     qed_dl_param_get, qed_dl_param_set, NULL),
+>  };
 >  
-> 
-> How can this happen? The mdio core has a mutex which prevents parallel access?
-> 
->  
-> 
-> This is a HW Lock. It is an actual register. So another HW entity can be
-> holding that lock and reading/changing the values in the HW registers.
+> -static const struct devlink_ops qed_dl_ops;
+> +static int qed_devlink_info_get(struct devlink *devlink,
+> +				struct devlink_info_req *req,
+> +				struct netlink_ext_ack *extack)
+> +{
+> +	struct qed_devlink *qed_dl = devlink_priv(devlink);
+> +	struct qed_dev *cdev = qed_dl->cdev;
+> +	struct qed_dev_info *dev_info;
+> +	char buf[100];
+> +	int err;
+> +
+> +	dev_info = &cdev->common_dev_info;
+> +
+> +	err = devlink_info_driver_name_put(req, KBUILD_MODNAME);
+> +	if (err)
+> +		return err;
+> +
+> +	memcpy(buf, cdev->hwfns[0].hw_info.part_num, sizeof(cdev->hwfns[0].hw_info.part_num));
+> +	buf[sizeof(cdev->hwfns[0].hw_info.part_num)] = 0;
 
-You have not explains how that can happen? Is there something in the
-driver i missed which takes a backdoor to read/write MDIO
-transactions?
+Part number != serial number. What's the thing you're reporting here
+actually identifying.
 
-> > +         ret = mlxbf_gige_mdio_poll_bit(priv, MLXBF_GIGE_MDIO_GW_LOCK_MASK);
-> 
-> > +         if (ret)
-> 
-> > +                       return -EBUSY;
-> 
->  
-> 
-> PHY drivers are not going to like that. They are not going to retry. What is
-> likely to happen is that phylib moves into the ERROR state, and the PHY driver
-> grinds to a halt.
-> 
->  
-> 
-> This is a fairly quick HW transaction. So I don’t think it would cause and
-> issue for the PHY drivers. In this case, we use the micrel KSZ9031. We haven’t
-> seen issues.
+> +
+> +	snprintf(buf, sizeof(buf), "%d.%d.%d.%d",
+> +		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_3),
+> +		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_2),
+> +		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_1),
+> +		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_0));
+> +
+> +	err = devlink_info_version_stored_put(req,
+> +					      DEVLINK_INFO_VERSION_GENERIC_FW_MGMT, buf);
+> +	if (err)
+> +		return err;
 
-So you have happy to debug hard to find and reproduce issues when it
-does happen? Or would you like to spend a little bit of time now and
-just prevent it happening at all?
+Assuming MFW means management FW - this looks good.
 
-     Andrew
+> +	snprintf(buf, sizeof(buf), "%d.%d.%d.%d",
+> +		 dev_info->fw_major,
+> +		 dev_info->fw_minor,
+> +		 dev_info->fw_rev,
+> +		 dev_info->fw_eng);
+> +
+> +	return devlink_info_version_running_put(req,
+> +						DEVLINK_INFO_VERSION_GENERIC_FW, buf);
+
+But what's this one?
