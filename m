@@ -2,128 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64D46233FE6
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 09:19:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50C88233FDB
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 09:18:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731610AbgGaHTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 03:19:46 -0400
-Received: from out1.virusfree.cz ([212.24.139.170]:34409 "EHLO
-        out1.virusfree.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731507AbgGaHTp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 03:19:45 -0400
-X-Greylist: delayed 400 seconds by postgrey-1.27 at vger.kernel.org; Fri, 31 Jul 2020 03:19:44 EDT
-Received: (qmail 31601 invoked from network); 31 Jul 2020 09:13:02 +0200
-Received: from out1.virusfree.cz by out1.virusfree.cz
- (VF-Scanner: Clear:RC:0(2001:67c:1591::6):SC:0(-1.8/5.0):CC:0:;
- processed in 0.7 s); 31 Jul 2020 07:13:02 +0000
-X-VF-Scanner-Mail-From: pv@excello.cz
-X-VF-Scanner-Rcpt-To: netdev@vger.kernel.org
-X-VF-Scanner-ID: 20200731071301.723535.31572.out1.virusfree.cz.0
-X-Spam-Status: No, hits=-1.8, required=5.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=excello.cz; h=
-        date:message-id:from:to:subject:reply-to; q=dns/txt; s=default;
-         t=1596179581; bh=LfQoxVq1c3lQhb1EHbrQw4VY4TJ2e9/KfLs7oCHukcs=; b=
-        WmiQwEYgAoYakLWC7YHlOQ96r3/wW/g6MBUGJdn12fGGlz5D6fpbisPC1CZ9fo5S
-        YUZaojMO/X1cfP9XCEELveEDP0/bifCiaJDaLQ0Wqzja7Pu6GSNZRy5bdFrlJwz/
-        tJa+KUZ7IG5AbB+pydNrxe47jDNUQbhm6eN139Q1bfo=
-Received: from posta.excello.cz (2001:67c:1591::6)
-  by out1.virusfree.cz with ESMTPS (TLSv1.3, TLS_AES_256_GCM_SHA384); 31 Jul 2020 09:13:01 +0200
-Received: from atlantis (unknown [IPv6:2001:67c:1590::2c8])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S1731436AbgGaHSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 03:18:14 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:49936 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731634AbgGaHSM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 03:18:12 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 7FD15205F0;
+        Fri, 31 Jul 2020 09:18:10 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id dvLbAEjhFBNK; Fri, 31 Jul 2020 09:18:10 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by posta.excello.cz (Postfix) with ESMTPSA id 002A69DBDFE;
-        Fri, 31 Jul 2020 09:13:00 +0200 (CEST)
-Date:   Fri, 31 Jul 2020 09:12:59 +0200
-From:   Petr =?utf-8?B?VmFuxJtr?= <pv@excello.cz>
-To:     netdev@vger.kernel.org
-Cc:     Petr =?utf-8?B?VmFuxJtr?= <pv@excello.cz>,
-        David Ahern <dsahern@kernel.org>
-Subject: [PATCH iproute2-next] ip-xfrm: add support for oseq-may-wrap extra
- flag
-Message-ID: <20200731071259.GA3192@atlantis>
+        by a.mx.secunet.com (Postfix) with ESMTPS id B6FB720519;
+        Fri, 31 Jul 2020 09:18:09 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Fri, 31 Jul 2020 09:18:09 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Fri, 31 Jul
+ 2020 09:18:08 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 47F693180676;
+ Fri, 31 Jul 2020 09:18:08 +0200 (CEST)
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Miller <davem@davemloft.net>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        <netdev@vger.kernel.org>
+Subject: pull request (net): ipsec 2020-07-31
+Date:   Fri, 31 Jul 2020 09:17:54 +0200
+Message-ID: <20200731071804.29557-1-steffen.klassert@secunet.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200530123912.GA7476@arkam>
+Content-Type: text/plain
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This flag allows to create SA where sequence number can cycle in
-outbound packets if set.
+1) Fix policy matching with mark and mask on userspace interfaces.
+   From Xin Long.
 
-Signed-off-by: Petr Vaněk <pv@excello.cz>
----
- include/uapi/linux/xfrm.h | 1 +
- ip/ipxfrm.c               | 3 +++
- ip/xfrm_state.c           | 4 +++-
- man/man8/ip-xfrm.8        | 2 +-
- 4 files changed, 8 insertions(+), 2 deletions(-)
+2) Several fixes for the new ESP in TCP encapsulation.
+   From Sabrina Dubroca.
 
-diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-index 50450f3f..6dfb3c85 100644
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -387,6 +387,7 @@ struct xfrm_usersa_info {
- };
- 
- #define XFRM_SA_XFLAG_DONT_ENCAP_DSCP	1
-+#define XFRM_SA_XFLAG_OSEQ_MAY_WRAP    2
- 
- struct xfrm_usersa_id {
- 	xfrm_address_t			daddr;
-diff --git a/ip/ipxfrm.c b/ip/ipxfrm.c
-index fec206ab..cac8ba25 100644
---- a/ip/ipxfrm.c
-+++ b/ip/ipxfrm.c
-@@ -953,6 +953,9 @@ void xfrm_state_info_print(struct xfrm_usersa_info *xsinfo,
- 		XFRM_FLAG_PRINT(fp, extra_flags,
- 				XFRM_SA_XFLAG_DONT_ENCAP_DSCP,
- 				"dont-encap-dscp");
-+		XFRM_FLAG_PRINT(fp, extra_flags,
-+				XFRM_SA_XFLAG_OSEQ_MAY_WRAP,
-+				"oseq-may-wrap");
- 		if (extra_flags)
- 			fprintf(fp, "%x", extra_flags);
- 	}
-diff --git a/ip/xfrm_state.c b/ip/xfrm_state.c
-index f4bf3356..ddf784ca 100644
---- a/ip/xfrm_state.c
-+++ b/ip/xfrm_state.c
-@@ -104,7 +104,7 @@ static void usage(void)
- 		"FLAG-LIST := [ FLAG-LIST ] FLAG\n"
- 		"FLAG := noecn | decap-dscp | nopmtudisc | wildrecv | icmp | af-unspec | align4 | esn\n"
- 		"EXTRA-FLAG-LIST := [ EXTRA-FLAG-LIST ] EXTRA-FLAG\n"
--		"EXTRA-FLAG := dont-encap-dscp\n"
-+		"EXTRA-FLAG := dont-encap-dscp | oseq-may-wrap\n"
- 		"SELECTOR := [ src ADDR[/PLEN] ] [ dst ADDR[/PLEN] ] [ dev DEV ] [ UPSPEC ]\n"
- 		"UPSPEC := proto { { tcp | udp | sctp | dccp } [ sport PORT ] [ dport PORT ] |\n"
- 		"                  { icmp | ipv6-icmp | mobility-header } [ type NUMBER ] [ code NUMBER ] |\n"
-@@ -253,6 +253,8 @@ static int xfrm_state_extra_flag_parse(__u32 *extra_flags, int *argcp, char ***a
- 		while (1) {
- 			if (strcmp(*argv, "dont-encap-dscp") == 0)
- 				*extra_flags |= XFRM_SA_XFLAG_DONT_ENCAP_DSCP;
-+			else if (strcmp(*argv, "oseq-may-wrap") == 0)
-+				*extra_flags |= XFRM_SA_XFLAG_OSEQ_MAY_WRAP;
- 			else {
- 				PREV_ARG(); /* back track */
- 				break;
-diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
-index aa28db49..4fa31651 100644
---- a/man/man8/ip-xfrm.8
-+++ b/man/man8/ip-xfrm.8
-@@ -217,7 +217,7 @@ ip-xfrm \- transform configuration
- 
- .ti -8
- .IR EXTRA-FLAG " := "
--.B dont-encap-dscp
-+.BR dont-encap-dscp " | " oseq-may-wrap
- 
- .ti -8
- .BR "ip xfrm policy" " { " add " | " update " }"
--- 
-2.26.2
+3) Fix crash when the hold queue is used. The assumption that
+   xdst->path and dst->child are not a NULL pointer only if dst->xfrm
+   is not a NULL pointer is true with the exception of using the
+   hold queue. Fix this by checking for hold queue usage before
+   dereferencing xdst->path or dst->child.
 
+4) Validate pfkey_dump parameter before sending them.
+   From Mark Salyzyn.
+
+5) Fix the location of the transport header with ESP in UDPv6
+   encapsulation. From Sabrina Dubroca.
+
+Please pull or let me know if there are problems.
+
+Thanks!
+
+The following changes since commit 0275875530f692c725c6f993aced2eca2d6ac50c:
+
+  Merge branch 'Two-phylink-pause-fixes' (2020-06-23 20:53:28 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git master
+
+for you to fetch changes up to 71b59bf482b2dd662774f34108c5b904efa9e02b:
+
+  espintcp: count packets dropped in espintcp_rcv (2020-07-30 06:51:36 +0200)
+
+----------------------------------------------------------------
+Mark Salyzyn (1):
+      af_key: pfkey_dump needs parameter validation
+
+Sabrina Dubroca (7):
+      xfrm: esp6: fix encapsulation header offset computation
+      espintcp: support non-blocking sends
+      espintcp: recv() should return 0 when the peer socket is closed
+      xfrm: policy: fix IPv6-only espintcp compilation
+      xfrm: esp6: fix the location of the transport header with encapsulation
+      espintcp: handle short messages instead of breaking the encap socket
+      espintcp: count packets dropped in espintcp_rcv
+
+Steffen Klassert (2):
+      Merge remote-tracking branch 'origin/testing'
+      xfrm: Fix crash when the hold queue is used.
+
+Xin Long (1):
+      xfrm: policy: match with both mark and mask on user interfaces
+
+ include/net/xfrm.h     | 15 +++++++-----
+ net/ipv6/esp6.c        | 13 ++++++++---
+ net/key/af_key.c       | 11 +++++++--
+ net/xfrm/espintcp.c    | 62 ++++++++++++++++++++++++++++++++++++++------------
+ net/xfrm/xfrm_policy.c | 43 +++++++++++++++-------------------
+ net/xfrm/xfrm_user.c   | 18 +++++++++------
+ 6 files changed, 104 insertions(+), 58 deletions(-)
