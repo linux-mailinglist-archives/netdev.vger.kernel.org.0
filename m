@@ -2,86 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4BFD233CB9
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 03:04:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCC0B233CCE
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 03:11:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730974AbgGaBEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 21:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40210 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728080AbgGaBEr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 21:04:47 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B20C061574;
-        Thu, 30 Jul 2020 17:55:16 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id c10so3088004pjn.1;
-        Thu, 30 Jul 2020 17:55:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J8iGGRIMcGIJb/MfOVjMyzOROeLJmT2jzu/UJuU9MvU=;
-        b=kTDYJMah73Fg+QPTvP5uhTBZ3ul1KmgZTaqpWq7DOJcwvAGT3c0mctPQcF7k5gMaG+
-         2quOgxPsiod+KO0OK6SnFlowjse7oq+iM0WAxSs/Zqg5fz005p6RVQ0jNAa6RkaITP2O
-         UzSQk3IbtESV6RWUTNxB1JjJ1yE57kfBjUNXDFowpA25NCeLYUr+dqdUf5qhlrJnO657
-         5FyCR1WXvna5gCgYpbTICjgPr0tHnSJ4XPZ+T47dzebwtAgyWbPSiQBjZl7QmqOcDHBm
-         xfXp5LJl7cwr+QE/z0qISIkfCdUy3smpPSd3Tt4Wu/HQkyo9MMaKC93EaLZNvYBrd7nd
-         HYQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J8iGGRIMcGIJb/MfOVjMyzOROeLJmT2jzu/UJuU9MvU=;
-        b=BbmbfoiTRq+v0SMdBHQyxil/n/Agu1x3x3Yl9luUjRen33dtz5vL+Mf3UhM+Kn8Eyu
-         0jf/n1JAMBN62+YJt6G3M0Ku2mfkkv3fyuNAYbSQzm7Y30wEZPsLDZjnaFhW9DPtXHdM
-         M7GvOrsoU8ray32XaVNjRIF2GEKRx3DqAmFN8Gkwm5dj/h8I3kudIpp+UfjeEgY09KOs
-         M6FuWeYlluDPx08VTULHw3DoVXP0yHRmU/lDb6icw1BtiUdWhmckXSCLUb5nqFdHn2Ey
-         fNqtrebF+zy3aFn+gGY8yUxOVoZd1wUnzlmCchojZhzGFao9Wdy0ZLcwT/n0MLV2/jXX
-         1Jeg==
-X-Gm-Message-State: AOAM531DxRs6H652truk9HOfrJFbzbzfyOX3WnWknDLnzSJo+GHspfXh
-        qx+dXj2XdHjmZ+LOAXrp1mMQXWC+zlOZqv83ne4=
-X-Google-Smtp-Source: ABdhPJyt0DsBYfQQqNxBjchl2sKZkhNj48U3lZhDOy5d22LJ05RdwMoIoSaoRQ27lVfBSua76BaWr+EhVXJRChcqYnw=
-X-Received: by 2002:a17:902:ff16:: with SMTP id f22mr1560351plj.269.1596156915733;
- Thu, 30 Jul 2020 17:55:15 -0700 (PDT)
+        id S1731036AbgGaBLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 21:11:51 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:3002 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730960AbgGaBLu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 21:11:50 -0400
+Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.56])
+        by Forcepoint Email with ESMTP id 0F5FA83248DB63CA2950;
+        Fri, 31 Jul 2020 08:56:37 +0800 (CST)
+Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
+ DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Fri, 31 Jul 2020 08:56:36 +0800
+Received: from [10.174.61.242] (10.174.61.242) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Fri, 31 Jul 2020 08:56:36 +0800
+Subject: Re: [PATCH net-next v1 1/2] hinic: add generating mailbox random
+ index support
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
+        <chiqijun@huawei.com>
+References: <20200730083716.4613-1-luobin9@huawei.com>
+ <20200730083716.4613-2-luobin9@huawei.com>
+ <20200730092502.4582ac4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "luobin (L)" <luobin9@huawei.com>
+Message-ID: <0dfc0fd6-8ab2-5ba3-98e7-bbd875e03106@huawei.com>
+Date:   Fri, 31 Jul 2020 08:56:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-References: <20200726110524.151957-1-xie.he.0141@gmail.com>
- <20200728195246.GA482576@google.com> <CAJht_EOcRx=J5PiZwsSh+0Yb0=QJFahqxVbeMgFbSxh+cNZLew@mail.gmail.com>
- <CA+ASDXPRLqq=vxnkF4z8=xvuqOKuuoqifvsNsERWg9uYJrFXgg@mail.gmail.com>
-In-Reply-To: <CA+ASDXPRLqq=vxnkF4z8=xvuqOKuuoqifvsNsERWg9uYJrFXgg@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Thu, 30 Jul 2020 17:55:04 -0700
-Message-ID: <CAJht_EMQvNknLFXVBJdb190jg8duD5DZ1c3HcOsUbYFOa6-5TA@mail.gmail.com>
-Subject: Re: [PATCH] drivers/net/wan/lapbether: Use needed_headroom instead of hard_header_len
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200730092502.4582ac4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.61.242]
+X-ClientProxiedBy: dggeme701-chm.china.huawei.com (10.1.199.97) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 30, 2020 at 5:24 PM Brian Norris <briannorris@chromium.org> wrote:
->
-> Sure, I can do that:
->
-> Reviewed-by: Brian Norris <briannorris@chromium.org>
-
-Thank you so much for your review, Brian!
-
-> I guess x25 is basically an abandoned project, if you're coming to me for this?
-
-Yes, it does seem to me that X.25 is unmaintained. I'm submitting
-patches for it because I'm personally interested in X.25 and I want to
-fix things that I find to be having issues. But it's very hard for me
-to do so because it's hard to find reviewers for X.25 code. So I
-really appreciate that you review this patch. Thanks!
-
-I don't know if it is the right thing to continue submitting patches
-for X.25, or we should just keep the code as is. Maybe the kernel
-community can have a discussion some time to decide what to do with
-it.
+On 2020/7/31 0:25, Jakub Kicinski wrote:
+> On Thu, 30 Jul 2020 16:37:15 +0800 Luo bin wrote:
+>> +bool check_vf_mbox_random_id(struct hinic_mbox_func_to_func *func_to_func,
+>> +			     u8 *header)
+> 
+> This set seems to add new W=1 C=1 warnings:
+> 
+> drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c:572:6: warning: no previous prototype for ‘check_vf_mbox_random_id’ [-Wmissing-prototypes]
+>   572 | bool check_vf_mbox_random_id(struct hinic_mbox_func_to_func *func_to_func,
+>       |      ^~~~~~~~~~~~~~~~~~~~~~~
+> 
+> drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c:1352:28: warning: symbol 'hw_cmd_support_vf' was not declared. Should it be static?
+> .
+> 
+Will fix. Thanks for your review.
