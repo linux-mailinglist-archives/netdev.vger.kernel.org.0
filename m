@@ -2,130 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CBF4234B0C
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:29:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11A57234B1A
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:32:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387915AbgGaS2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 14:28:53 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:18382 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387903AbgGaS2u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 14:28:50 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06VIErxr011506
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 11:28:49 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=JgfEaGwNQRVUqJr1ZSWmaVimqm5x282W48cubRvrXek=;
- b=jI+kXod4DW2ig+rcNzGnhg5SEv/8oIdKYTYtujj19TWBbhHllxBtSnB402S6yg/7bFcx
- U2zW+iQQC7E5qqZs9E5Hyh2Fr66evQEFumVvJ5NGlvGtJhJCQSyZMjJRv7opac8WCh0A
- gxcRZyMXE5jBCQiagii0f98we0S2EY4Ny8g= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32m8dybyjj-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 11:28:48 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 31 Jul 2020 11:28:47 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 050E92EC4E02; Fri, 31 Jul 2020 11:28:42 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 5/5] tools/bpftool: add documentation and bash-completion for `link detach`
-Date:   Fri, 31 Jul 2020 11:28:30 -0700
-Message-ID: <20200731182830.286260-6-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200731182830.286260-1-andriin@fb.com>
-References: <20200731182830.286260-1-andriin@fb.com>
+        id S2387794AbgGaScg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 14:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730040AbgGaScg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 14:32:36 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F16C2C061574;
+        Fri, 31 Jul 2020 11:32:35 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id x9so33423986ljc.5;
+        Fri, 31 Jul 2020 11:32:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=z/X7ymWwjbiuttKuTYyJMhSDfwg3TIeBUOgJd6KkalM=;
+        b=AX4AUm3mdEABluzCIEY3WtfZ0tKfRF61z2mag875alovsfWKuMVGE1IuvLAXdiHHNS
+         hCbybzfoIipZwEtjFuypnm8Y+56wmZL/to7xeE9USfDoJ+J5N/E7aPWV+CjQTF+yEYq3
+         MLEC3ZqTUX2/GgiRmbScc28YV9utq41eUmSc92aVDaCA/FG5lNkHYkNrn0dhYZhfZo6t
+         1+HDDrf+DcROAuadG286dLspIWiuAjFe+FpzTr1HE7xA4qZdpn8CcahhffqCIZUmcWqa
+         3Le9aGLbkMjPM2V4BWGnEZ6W1qjninoKDdo78dm4eiQSilN/WSgWi39TWNa1mGcvempG
+         S/vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=z/X7ymWwjbiuttKuTYyJMhSDfwg3TIeBUOgJd6KkalM=;
+        b=M8lZwitybw2b/QMYf5kapXE4WcqzsSvRoI+ssG1Z3CP0Ci8XE09yXBXVqSP8StGdkW
+         4KzwIAmyhlnQtSImpalOaHAECR7xAWyg7UmUhpbzgUlryPThR7IOay2YNBARmqAcBQZu
+         NwCPy9w2EvTE7ZpHEh0A7gYvq1v1q7mvpyaF6fQh0v6ajQrgmQcQEVkMQ2Q8uOtrbKOp
+         8jod9kOGXuaWbm5hSYGUi6/xODid2TxzqQSPBxWmr29TC1UaYgsyQy+OXYZLsPufdtqz
+         k0SvFHz+IytPsAnka+3WztCRcBueHbAa8u892IvYs3J+lxMX310EeSrX5FFUK6bwEo1q
+         bhLQ==
+X-Gm-Message-State: AOAM530vxWQDIMcbIMwphslfdVB5qaUEg9X+VwD7UBGwJcddZiJkk6ZE
+        LRWwCODx3O7FCDfyuJWr/0g=
+X-Google-Smtp-Source: ABdhPJwzh+LluJn2U/eWVgL6CKU6fHX8VJvv3t8EIF+ICEXQ7MIYYp0q9CVuXdPocDJoXstngFLOkg==
+X-Received: by 2002:a2e:9c92:: with SMTP id x18mr2213457lji.70.1596220354441;
+        Fri, 31 Jul 2020 11:32:34 -0700 (PDT)
+Received: from wasted.omprussia.ru ([2a00:1fa0:225:dc3:11c8:9b9e:ad39:92d0])
+        by smtp.gmail.com with ESMTPSA id s2sm1816717ljg.84.2020.07.31.11.32.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 31 Jul 2020 11:32:33 -0700 (PDT)
+Subject: Re: [PATCH v2] ravb: Fixed the problem that rmmod can not be done
+To:     Yuusuke Ashizuka <ashiduka@fujitsu.com>
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+References: <20200730035649.5940-1-ashiduka@fujitsu.com>
+ <20200730100151.7490-1-ashiduka@fujitsu.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <0e7d72fe-ea70-612c-7a50-ad1ff905ddf4@gmail.com>
+Date:   Fri, 31 Jul 2020 21:32:32 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-31_07:2020-07-31,2020-07-31 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- mlxlogscore=985 malwarescore=0 lowpriorityscore=0 impostorscore=0
- adultscore=0 priorityscore=1501 suspectscore=8 spamscore=0 phishscore=0
- clxscore=1015 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007310137
-X-FB-Internal: deliver
+In-Reply-To: <20200730100151.7490-1-ashiduka@fujitsu.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add info on link detach sub-command to man page. Add detach to bash-compl=
-etion
-as well.
+On 7/30/20 1:01 PM, Yuusuke Ashizuka wrote:
 
-Acked-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/bpf/bpftool/Documentation/bpftool-link.rst | 8 ++++++++
- tools/bpf/bpftool/bash-completion/bpftool        | 4 ++--
- 2 files changed, 10 insertions(+), 2 deletions(-)
+   CCing DaveM (as you should have done from the start)...
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-link.rst b/tools/bpf=
-/bpftool/Documentation/bpftool-link.rst
-index 38b0949a185b..4a52e7a93339 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-link.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-link.rst
-@@ -21,6 +21,7 @@ LINK COMMANDS
-=20
- |	**bpftool** **link { show | list }** [*LINK*]
- |	**bpftool** **link pin** *LINK* *FILE*
-+|	**bpftool** **link detach *LINK*
- |	**bpftool** **link help**
- |
- |	*LINK* :=3D { **id** *LINK_ID* | **pinned** *FILE* }
-@@ -49,6 +50,13 @@ DESCRIPTION
- 		  contain a dot character ('.'), which is reserved for future
- 		  extensions of *bpffs*.
-=20
-+	**bpftool link detach** *LINK*
-+		  Force-detach link *LINK*. BPF link and its underlying BPF
-+		  program will stay valid, but they will be detached from the
-+		  respective BPF hook and BPF link will transition into
-+		  a defunct state until last open file descriptor for that
-+		  link is closed.
-+
- 	**bpftool link help**
- 		  Print short help message.
-=20
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftoo=
-l/bash-completion/bpftool
-index 257fa310ea2b..f53ed2f1a4aa 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -1122,7 +1122,7 @@ _bpftool()
-             ;;
-         link)
-             case $command in
--                show|list|pin)
-+                show|list|pin|detach)
-                     case $prev in
-                         id)
-                             _bpftool_get_link_ids
-@@ -1139,7 +1139,7 @@ _bpftool()
-                     COMPREPLY=3D( $( compgen -W "$LINK_TYPE" -- "$cur" )=
- )
-                     return 0
-                     ;;
--                pin)
-+                pin|detach)
-                     if [[ $prev =3D=3D "$command" ]]; then
-                         COMPREPLY=3D( $( compgen -W "$LINK_TYPE" -- "$cu=
-r" ) )
-                     else
---=20
-2.24.1
+> ravb is a module driver, but I cannot rmmod it after insmod it.
+> ravb does mdio_init() at the time of probe, and module->refcnt is incremented
+> by alloc_mdio_bitbang() called after that.
+> Therefore, even if ifup is not performed, the driver is in use and rmmod cannot
+> be performed.
+> 
+> $ lsmod
+> Module                  Size  Used by
 
+   Did you also build mdio-bitbang.c as a module? For the in-kernal driver, not
+being able to rmmod the 'ravb' one sounds logical. :-)
+
+> ravb                   40960  1
+> $ rmmod ravb
+> rmmod: ERROR: Module ravb is in use
+> 
+> Fixed to execute mdio_init() at open and free_mdio() at close, thereby rmmod is
+
+    Call ravb_mdio_init() at open and free_mdio_bitbang() at close.
+
+> possible in the ifdown state.
+
+Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
+
+> Signed-off-by: Yuusuke Ashizuka <ashiduka@fujitsu.com>
+
+Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
+
+[...]
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index 99f7aae102ce..df89d09b253e 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -1342,6 +1342,51 @@ static inline int ravb_hook_irq(unsigned int irq, irq_handler_t handler,
+>  	return error;
+>  }
+>  
+> +/* MDIO bus init function */
+> +static int ravb_mdio_init(struct ravb_private *priv)
+> +{
+> +	struct platform_device *pdev = priv->pdev;
+> +	struct device *dev = &pdev->dev;
+> +	int error;
+> +
+> +	/* Bitbang init */
+> +	priv->mdiobb.ops = &bb_ops;
+> +
+> +	/* MII controller setting */
+> +	priv->mii_bus = alloc_mdio_bitbang(&priv->mdiobb);
+> +	if (!priv->mii_bus)
+> +		return -ENOMEM;
+> +
+> +	/* Hook up MII support for ethtool */
+> +	priv->mii_bus->name = "ravb_mii";
+> +	priv->mii_bus->parent = dev;
+> +	snprintf(priv->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
+> +		 pdev->name, pdev->id);
+> +
+> +	/* Register MDIO bus */
+> +	error = of_mdiobus_register(priv->mii_bus, dev->of_node);
+> +	if (error)
+> +		goto out_free_bus;
+> +
+> +	return 0;
+> +
+> +out_free_bus:
+> +	free_mdio_bitbang(priv->mii_bus);
+> +	return error;
+> +}
+> +
+> +/* MDIO bus release function */
+> +static int ravb_mdio_release(struct ravb_private *priv)
+> +{
+> +	/* Unregister mdio bus */
+> +	mdiobus_unregister(priv->mii_bus);
+> +
+> +	/* Free bitbang info */
+> +	free_mdio_bitbang(priv->mii_bus);
+> +
+> +	return 0;
+> +}
+> +
+[...]
+> @@ -1887,51 +1942,6 @@ static const struct net_device_ops ravb_netdev_ops = {
+>  	.ndo_set_features	= ravb_set_features,
+>  };
+>  
+> -/* MDIO bus init function */
+> -static int ravb_mdio_init(struct ravb_private *priv)
+> -{
+> -	struct platform_device *pdev = priv->pdev;
+> -	struct device *dev = &pdev->dev;
+> -	int error;
+> -
+> -	/* Bitbang init */
+> -	priv->mdiobb.ops = &bb_ops;
+> -
+> -	/* MII controller setting */
+> -	priv->mii_bus = alloc_mdio_bitbang(&priv->mdiobb);
+> -	if (!priv->mii_bus)
+> -		return -ENOMEM;
+> -
+> -	/* Hook up MII support for ethtool */
+> -	priv->mii_bus->name = "ravb_mii";
+> -	priv->mii_bus->parent = dev;
+> -	snprintf(priv->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
+> -		 pdev->name, pdev->id);
+> -
+> -	/* Register MDIO bus */
+> -	error = of_mdiobus_register(priv->mii_bus, dev->of_node);
+> -	if (error)
+> -		goto out_free_bus;
+> -
+> -	return 0;
+> -
+> -out_free_bus:
+> -	free_mdio_bitbang(priv->mii_bus);
+> -	return error;
+> -}
+> -
+> -/* MDIO bus release function */
+> -static int ravb_mdio_release(struct ravb_private *priv)
+> -{
+> -	/* Unregister mdio bus */
+> -	mdiobus_unregister(priv->mii_bus);
+> -
+> -	/* Free bitbang info */
+> -	free_mdio_bitbang(priv->mii_bus);
+> -
+> -	return 0;
+> -}
+> -
+
+   Dave, would you tolerate the forward declarations here instead (to avoid the function moves, to be later
+done in the net-next tree)?
+
+[...]
+
+MBR, Sergei
