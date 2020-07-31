@@ -2,71 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C30E233F6E
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 08:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 710C3233F84
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 08:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731472AbgGaGuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 02:50:14 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:8866 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731365AbgGaGuO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 02:50:14 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 4481D2660323F7D3D8C8;
-        Fri, 31 Jul 2020 14:50:08 +0800 (CST)
-Received: from localhost (10.174.179.108) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.487.0; Fri, 31 Jul 2020
- 14:50:01 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>,
-        <lucien.xin@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] ip_vti: Fix unused variable warning
-Date:   Fri, 31 Jul 2020 14:49:52 +0800
-Message-ID: <20200731064952.36900-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.179.108]
-X-CFilter-Loop: Reflected
+        id S1731510AbgGaG7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 02:59:35 -0400
+Received: from mga09.intel.com ([134.134.136.24]:18704 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731375AbgGaG7f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 02:59:35 -0400
+IronPort-SDR: w0SgzDtTbNskqQ4TIsFvDHAHay80U8YUNAOIW9yb1xeZq+TSrrX0idSl/bRfOeTFl/YbgZGqfO
+ FGB3B59eNUrA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="152949278"
+X-IronPort-AV: E=Sophos;i="5.75,417,1589266800"; 
+   d="scan'208";a="152949278"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2020 23:59:34 -0700
+IronPort-SDR: /4jyOjzC+FucbWMQ8EgA3wqXQDz8RVRD7usqeHG5g1EZ14NtkILCl3OfqskiCSfilK3u2i5TG9
+ 3ZliPQOHK0/Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,417,1589266800"; 
+   d="scan'208";a="273136550"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.131])
+  by fmsmga007.fm.intel.com with ESMTP; 30 Jul 2020 23:59:31 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     jasowang@redhat.com, alex.williamson@redhat.com, mst@redhat.com,
+        pbonzini@redhat.com, sean.j.christopherson@intel.com,
+        wanpengli@tencent.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, eli@mellanox.com, shahafs@mellanox.com,
+        parav@mellanox.com, Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH V5 0/6] IRQ offloading for vDPA
+Date:   Fri, 31 Jul 2020 14:55:27 +0800
+Message-Id: <20200731065533.4144-1-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 2.18.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_INET_XFRM_TUNNEL is set but CONFIG_IPV6 is n,
+This series intends to implement IRQ offloading for
+vhost_vdpa.
 
-net/ipv4/ip_vti.c:493:27: warning: 'vti_ipip6_handler' defined but not used [-Wunused-variable]
+By the feat of irq forwarding facilities like posted
+interrupt on X86, irq bypass can  help deliver
+interrupts to vCPU directly.
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- net/ipv4/ip_vti.c | 2 ++
- 1 file changed, 2 insertions(+)
+vDPA devices have dedicated hardware backends like VFIO
+pass-throughed devices. So it would be possible to setup
+irq offloading(irq bypass) for vDPA devices and gain
+performance improvements.
 
-diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
-index 49daaed89764..f687abb069fa 100644
---- a/net/ipv4/ip_vti.c
-+++ b/net/ipv4/ip_vti.c
-@@ -490,6 +490,7 @@ static struct xfrm_tunnel vti_ipip_handler __read_mostly = {
- 	.priority	=	0,
- };
- 
-+#if IS_ENABLED(CONFIG_IPV6)
- static struct xfrm_tunnel vti_ipip6_handler __read_mostly = {
- 	.handler	=	vti_rcv_tunnel,
- 	.cb_handler	=	vti_rcv_cb,
-@@ -497,6 +498,7 @@ static struct xfrm_tunnel vti_ipip6_handler __read_mostly = {
- 	.priority	=	0,
- };
- #endif
-+#endif
- 
- static int __net_init vti_init_net(struct net *net)
- {
+In my testing, with this feature, we can save 0.1ms
+in a ping between two VFs on average.
+changes from V4:
+(1)in vhost_vdpa, setup irq offloading after config_ops->set_status.
+(2)minor improvements
+
+changes from V3:
+(1)removed vDPA irq allocate/free helpers in vDPA core.
+(2)add a new function get_vq_irq() in struct vdpa_config_ops,
+upper layer driver can use this function to: A. query the
+irq numbner of a vq. B. detect whether a vq is enabled.
+(3)implement get_vq_irq() in ifcvf driver.
+(4)in vhost_vdpa, set_status() will setup irq offloading when
+setting DRIVER_OK, and unsetup when receive !DRIVER_OK.
+(5)minor improvements.
+
+changes from V2:
+(1)rename struct vhost_call_ctx to vhost_vring_call
+(2)add kvm_arch_end_assignment() in del_producer()
+code path
+(3)rename vDPA helpers to vdpa_devm_request_irq()
+and vdpa_devm_free_irq(). Add better comments
+for them.
+(4)better comments for setup_vq_irq() and
+unsetup_vq_irq()
+(5)In vDPA VHOST_SET_VRING_CALL, will call vhost_vdpa_update_vq_irq()
+without checking producer.irq, move this check into
+vhost_vdpa_update_vq_irq(), so that get advantage of the spinlock.
+(6)Add a function vhost_vdpa_clean_irq(), this function will unregister
+the producer of vqs when vhost_vdpa_release(). This is safe
+for control vq.
+(7) minor improvements
+
+changes from V1:
+(1)dropped vfio changes.
+(3)removed KVM_HVAE_IRQ_BYPASS checks
+(4)locking fixes
+(5)simplified vhost_vdpa_updat
+
+Zhu Lingshan (6):
+  vhost: introduce vhost_vring_call
+  kvm: detect assigned device via irqbypass manager
+  vDPA: add get_vq_irq() in vdpa_config_ops
+  vhost_vdpa: implement IRQ offloading in vhost_vdpa
+  ifcvf: implement vdpa_config_ops.get_vq_irq()
+  irqbypass: do not start cons/prod when failed connect
+
+ arch/x86/kvm/x86.c              | 12 ++++-
+ drivers/vdpa/ifcvf/ifcvf_main.c | 18 ++++++-
+ drivers/vhost/Kconfig           |  1 +
+ drivers/vhost/vdpa.c            | 83 +++++++++++++++++++++++++++++++--
+ drivers/vhost/vhost.c           | 22 ++++++---
+ drivers/vhost/vhost.h           |  9 +++-
+ include/linux/vdpa.h            |  6 +++
+ virt/lib/irqbypass.c            | 16 ++++---
+ 8 files changed, 147 insertions(+), 20 deletions(-)
+
 -- 
-2.17.1
-
+2.18.4
 
