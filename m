@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B210234A3A
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 19:27:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E61F234A40
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 19:31:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733055AbgGaR1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 13:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49806 "EHLO
+        id S1733217AbgGaRbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 13:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729944AbgGaR1G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 13:27:06 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D48C061574
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 10:27:06 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id l23so29531068qkk.0
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 10:27:06 -0700 (PDT)
+        with ESMTP id S1732970AbgGaRbZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 13:31:25 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FAEFC061574;
+        Fri, 31 Jul 2020 10:31:24 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id 3so9935732wmi.1;
+        Fri, 31 Jul 2020 10:31:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dMAP5qZPgNkGYL/Es8e27wkRPcvMrbRpgL3nt2uv/U8=;
-        b=DQpUmHoSUZ9Cd93537ypZkM+1dvS3gvkMWCoz3Qx13NPmBpmH4L+gKmanA4eodPVK+
-         J04ciTphvC/32YS6/AsssAWJdCiJyeCIKz5NoES6FsgkNTeTMfBHwpqq/Y0st/RDULz1
-         s90EGRs+oMbXy9wM0GoUZ2naiDEY9gSop5clWt0kv0vvi10hVW8C4NrFvOqm1/nyfGwr
-         VqSlZFKNcLXmFmS3OPykN7Q7FfMF/aurchj96d1DyX+1/jlWq3xFkaX+jAweuOZ3N1oM
-         Ffdz2TlQJTZ6E/1rQ7Nne2iW8IWlgbGeezgGumjp1cbCy0+8cSqHHZTwHyvW2HGy+2Gh
-         Cg/Q==
+        bh=wO4f9oVxrsweCzVrPEPTiBn0n29w9yIsNMekGB68JeI=;
+        b=obajWK+2pCFiEKV/2eMDwzcf7coFlPTQCpnzhLsxXlijhZ8oEvL0eeF1bczkYNKwYU
+         w4N48fL1HDLI50n+/dzVLCSEmzp+sdXX6DmIOPEfoHwIZHgMR8R7bmrEhbtZjzHmYOYD
+         THVj8cb1vUBrmNs9413xDV/JE3xLqw9UNZlOJ52XoEj32enO6PeLN2CogJoYZ9iA/lpO
+         xrN259lT630oT20Z2V8QDzcMPLGQy2PGapeyURfyOW7w3rlUCtOcbpPiZS+SW1COX+qV
+         MINBxQ/ymFo6hLbb0jpuGQ7We+UA2CKQqMw/pJ4RxT1pZj6NJ85+H4wVTLoDCAMSJbc9
+         kbdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=dMAP5qZPgNkGYL/Es8e27wkRPcvMrbRpgL3nt2uv/U8=;
-        b=Z+xWxoPfG/7hCaeRlTZ6puVERF7SP/WIze9N8Rtz0MQ8eG3EZlDF8OtGOtVguUuEQa
-         PWxnknI6LJ/zLQPa8lA/+0NrN019FrbATAyLySU1cjKbhwh2Jj648YjbiQyAbE044nQE
-         SEeBXJZ6F/ckqTveyhvl02H2Pns85Zsl/uXIt8Ti8da0vNFDOVHBNVeLo4DbmeEL+78y
-         m3GhKeKH0bQKsrtRQx5786CPorOhK1wK98Jif+s870HoNyZkzQ4v16V4p8p0ovNJsOQ1
-         dfYrv8I3eXsFmuhHzIb1oPRnKp6xW/Itz1aX8XL2whgsN7NjQvijbeFEt09wIVGaO6iH
-         KSYg==
-X-Gm-Message-State: AOAM533+TW4nnia8FsxBPzaP3WR6IZ41VVecyi0vnwmflBXSGAH4j2Og
-        6I9VYinO4YsX2inIegGT/DX+36B5
-X-Google-Smtp-Source: ABdhPJyrJF8gZ+2Ot8N+3QMSrr1x/JQDSN2YszfLrZbeCASgiu2Qgge4RLDx9HCfx3o3FrCKIodRNg==
-X-Received: by 2002:a37:9b95:: with SMTP id d143mr4875785qke.272.1596216425945;
-        Fri, 31 Jul 2020 10:27:05 -0700 (PDT)
-Received: from ?IPv6:2601:284:8202:10b0:c147:b41e:be5e:8b7a? ([2601:284:8202:10b0:c147:b41e:be5e:8b7a])
-        by smtp.googlemail.com with ESMTPSA id 94sm9869305qtc.88.2020.07.31.10.27.04
+        bh=wO4f9oVxrsweCzVrPEPTiBn0n29w9yIsNMekGB68JeI=;
+        b=lNEFH64dmBedByZvHrFkmlY9/XNksxoS9CC2AekNwIB0wzKd7zazyJw0BqM8vWwiPC
+         boSTOztZF2mUiqefjWD4XgTLrA/kGmuVzruUWhwzGlkqK+jpv0XGsxfa28LvuxRsfc+x
+         zRXlD7/HddbjbXHnjzlZWdbQJOPGjwqB65xLaRNkE8V9Dhz5gi2pREZvzSbfxo0l66Lc
+         AGJLFnfwsMPy2fg6NIs8JB3PqDA0nwz8E1SASAatVXrNTcBQawGrlyvkuAQ4LrZwOovj
+         eDRMrPHI9XCrp8O4jBgiDhAEgRSOnvWVKFqr6JLhVE1PWd1lVKRltuLWg64PVu/oQdQc
+         j9Rg==
+X-Gm-Message-State: AOAM532FkHvbO6tnLBHVyyyX03UNXyVzN89Rfw5V1p64sy03R2wFIige
+        hPDO3PkVb8OqvrchopAAwZiYzPqh
+X-Google-Smtp-Source: ABdhPJzHHTpsN9YodTgSjp2Xan9EQZ1qXY9klsnJ1b5gK4zP6O8x4+C+bkc5hEx2fssF9sPExQ5Ijw==
+X-Received: by 2002:a1c:6007:: with SMTP id u7mr4926216wmb.32.1596216683216;
+        Fri, 31 Jul 2020 10:31:23 -0700 (PDT)
+Received: from [10.55.3.148] ([173.38.220.51])
+        by smtp.gmail.com with ESMTPSA id h23sm12591375wmb.3.2020.07.31.10.31.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 31 Jul 2020 10:27:05 -0700 (PDT)
-Subject: Re: [PATCH net] net: bridge: clear bridge's private skb space on xmit
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        netdev@vger.kernel.org
-Cc:     bridge@lists.linux-foundation.org, roopa@cumulusnetworks.com,
-        davem@davemloft.net
-References: <20200731162616.345380-1-nikolay@cumulusnetworks.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <07823615-29a8-9553-d56b-1beef55a07bc@gmail.com>
-Date:   Fri, 31 Jul 2020 11:27:03 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        Fri, 31 Jul 2020 10:31:22 -0700 (PDT)
+Subject: Re: [net-next] seg6: using DSCP of inner IPv4 packets
+To:     David Miller <davem@davemloft.net>
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        andrea.mayer@uniroma2.it
+References: <20200728122044.1900-1-ahabdels@gmail.com>
+ <20200730.164424.85007408369570229.davem@davemloft.net>
+From:   Ahmed Abdelsalam <ahabdels@gmail.com>
+Message-ID: <64f8d98d-3195-9bb0-858f-18a9625ccf8e@gmail.com>
+Date:   Fri, 31 Jul 2020 19:31:20 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <20200731162616.345380-1-nikolay@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200730.164424.85007408369570229.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -69,37 +70,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/31/20 10:26 AM, Nikolay Aleksandrov wrote:
-> We need to clear all of the bridge private skb variables as they can be
-> stale due to the packet being recirculated through the stack and then
-> transmitted through the bridge device. Similar memset is already done on
-> bridge's input. We've seen cases where proxyarp_replied was 1 on routed
-> multicast packets transmitted through the bridge to ports with neigh
-> suppress which were getting dropped. Same thing can in theory happen with
-> the port isolation bit as well.
-> 
-> Fixes: 821f1b21cabb ("bridge: add new BR_NEIGH_SUPPRESS port flag to suppress arp and nd flood")
-> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> ---
->  net/bridge/br_device.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-> index 8c7b78f8bc23..9a2fb4aa1a10 100644
-> --- a/net/bridge/br_device.c
-> +++ b/net/bridge/br_device.c
-> @@ -36,6 +36,8 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
->  	const unsigned char *dest;
->  	u16 vid = 0;
->  
-> +	memset(skb->cb, 0, sizeof(struct br_input_skb_cb));
-> +
->  	rcu_read_lock();
->  	nf_ops = rcu_dereference(nf_br_ops);
->  	if (nf_ops && nf_ops->br_dev_xmit_hook(skb)) {
-> 
+I will refactor the code of this function and submit a new patch.
+Ahmed
 
-What's the performance hit of doing this on every packet?
-
-Can you just set a flag that tells the code to reset on recirculation?
-Seems like br_input_skb_cb has space for that.
+On 31/07/2020 01:44, David Miller wrote:
+> From: Ahmed Abdelsalam <ahabdels@gmail.com>
+> Date: Tue, 28 Jul 2020 12:20:44 +0000
+> 
+>> This patch allows copying the DSCP from inner IPv4 header to the
+>> outer IPv6 header, when doing SRv6 Encapsulation.
+>>
+>> This allows forwarding packet across the SRv6 fabric based on their
+>> original traffic class.
+>>
+>> Signed-off-by: Ahmed Abdelsalam <ahabdels@gmail.com>
+> 
+> The conditionals in this function are now a mess.
+> 
+>> -	inner_hdr = ipv6_hdr(skb);
+>> +	if (skb->protocol == htons(ETH_P_IPV6))
+>> +		inner_hdr = ipv6_hdr(skb);
+>> +	else
+>> +		inner_ipv4_hdr = ip_hdr(skb);
+>> +
+> 
+> You assume that if skb->protocol is not ipv6 then it is ipv4.
+> 
+>> @@ -138,6 +143,10 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
+>>   		ip6_flow_hdr(hdr, ip6_tclass(ip6_flowinfo(inner_hdr)),
+>>   			     flowlabel);
+>>   		hdr->hop_limit = inner_hdr->hop_limit;
+>> +	} else if (skb->protocol == htons(ETH_P_IP)) {
+>> +		ip6_flow_hdr(hdr, inner_ipv4_hdr->tos, flowlabel);
+>> +		hdr->hop_limit = inner_ipv4_hdr->ttl;
+>> +		memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
+>>   	} else {
+>>   		ip6_flow_hdr(hdr, 0, flowlabel);
+>>   		hdr->hop_limit = ip6_dst_hoplimit(skb_dst(skb));
+> 
+> But this code did not make that assumption at all.
+> 
+> Only one of the two can be correct.
+> 
+> The conditional assignment is also very ugly, you have two pointers
+> conditionally initialized.  The compiler is going to have a hard time
+> figuring out that each pointer is only used in the code path where it
+> is guaranteed to be initialiazed.
+> 
+> And it can't do that, as far as the compiler knows, skb->protocol can
+> change between those two locations.  It MUST assume that can happen if
+> there are any functions calls whatsoever between these two code points.
+> 
+> This function has to be sanitized, with better handling of access to
+> the inner protocol header values, before I am willing to apply this.
+> 
