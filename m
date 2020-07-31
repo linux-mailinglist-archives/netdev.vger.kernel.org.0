@@ -2,127 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36816234C66
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 22:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37841234C7F
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 22:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729062AbgGaUku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 16:40:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728305AbgGaUku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 16:40:50 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8294C061574;
-        Fri, 31 Jul 2020 13:40:49 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id t6so16639450pgq.1;
-        Fri, 31 Jul 2020 13:40:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uD+/m62r6hde+eEk8FbuyWYY9SyQ1g17seylKKn4ScI=;
-        b=iBgR0RQZdQSu15Ft8/oJQoP9cEOetjtrQ2DYEy8vrt9bg0N6ImHfJ5G4tzTnBSDwwV
-         OqbD94zJDNtSkGg8VurDmpRZZflbt1A2soYYurx8/lEFyPjBoc19t6NAM1InEDvaCfDD
-         i3lwVE9CtYG6PWVB9xufUB6hNFhaS5ynuHiAoQx0fqcmH/05Rx4zC5FaJrZ+SRAyTOj8
-         DbP/KmFrtbH6DcbpN6XrBos5uG2gfwn+EMxweqKBhMbAafz9RCUPJTWZmtOvI75LuZQt
-         IKGaO6XFxSLFTq7ti3cUC9nF+2YAvW90OxiYe5434JT0gd0Y1et0acwcpOJY4UpvNaLw
-         heqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uD+/m62r6hde+eEk8FbuyWYY9SyQ1g17seylKKn4ScI=;
-        b=SpN64rYtunS/Ijbl9WWnUffk49Y9MWh3ETInCdj63bXnuocLoRkYdqyfu2nE2BrWYr
-         h2cex8+AtRiqpDRS1cYCkjOsdxIxUwiSMzQKlZBk8GJs8r710fPdrnNrwP6JT08VJoZc
-         wRSedLJpZDoqrs2/PfasTpXqJL8h5kvqYvLxNqrHnkm6O35VJuq9eDjoRQ4BsuFccgSN
-         NGePoLbPk46F9gvgZIc+INudgyiXxEERnpbRy6nG7/vNswhH1XWnDCR4L/eC9O5xGeGV
-         WNcAMfNTWcHBuwqFQfZCo/dMl4AhR8LDusjC+JZUt1ToqGkJtxfeR/nNXg4IEbCsxKP3
-         7ryw==
-X-Gm-Message-State: AOAM5326d4sv9/j8nAvVcigngTa0Rv31tQbpDREg7xZd2S4e0AUDgH0r
-        jh7HVYvAUETcD5ozIrDDns4ERoApVb/UBIoR7iM=
-X-Google-Smtp-Source: ABdhPJxl7UE1bCuoejHmzFxHhSfREEUBQv3M3qrA7myeRvLdF3dKjAz8lup4FLl49cufksfLjIPMbhtCE/TpkQeV/JM=
-X-Received: by 2002:a63:e057:: with SMTP id n23mr5191974pgj.368.1596228049471;
- Fri, 31 Jul 2020 13:40:49 -0700 (PDT)
+        id S1728751AbgGaUui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 16:50:38 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:15760 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727964AbgGaUuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 16:50:37 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06VKnWvN019676
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 13:50:36 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=1kA/f5+h7cCPaASqCb4FTNJhl1XdpmguYU7sgmGcbpU=;
+ b=T4p8KH/f98OpcX4MHpdST8dIZ/GIm05+1c1BI6HW+F3q7u4bDXyQynQQsRVc5JznZV9S
+ 1KVaJHYQdQ0g33o24U1FLblPFzPyfHLNQYaeKFYDDe5ivFrGnZMiSm+AihIKduN9dznU
+ eG5pkpJIWrH2fjdzDiZQwJov69Wn6bwXmz4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 32k7hwdhkd-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 13:50:36 -0700
+Received: from intmgw004.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 31 Jul 2020 13:50:08 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 7992C2EC4E9D; Fri, 31 Jul 2020 13:50:02 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] selftests/bpf: fix spurious test failures in core_retro selftest
+Date:   Fri, 31 Jul 2020 13:49:57 -0700
+Message-ID: <20200731204957.2047119-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20200730073702.16887-1-xie.he.0141@gmail.com> <CAJht_ENjHRExBEHx--xmqnOy1MXY_6F5XZ_exinSfa6xU_XDJg@mail.gmail.com>
- <CA+FuTSf_nuiah6rFy-KC1Taw+Wc4z0G7LzkAm-+Ms4FzYmTPEw@mail.gmail.com>
-In-Reply-To: <CA+FuTSf_nuiah6rFy-KC1Taw+Wc4z0G7LzkAm-+Ms4FzYmTPEw@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Fri, 31 Jul 2020 13:40:38 -0700
-Message-ID: <CAJht_ENYxy4pseOO9gY=0R0bvPPvs4GKrGJOUMx6=LPwBa2+Bg@mail.gmail.com>
-Subject: Re: [PATCH v2] drivers/net/wan/lapbether: Use needed_headroom instead
- of hard_header_len
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Brian Norris <briannorris@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-31_09:2020-07-31,2020-07-31 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
+ priorityscore=1501 mlxlogscore=902 spamscore=0 lowpriorityscore=0
+ malwarescore=0 mlxscore=0 bulkscore=0 phishscore=0 impostorscore=0
+ adultscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007310149
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank you for your thorough review comment!
+core_retro selftest uses BPF program that's triggered on sys_enter
+system-wide, but has no protection from some unrelated process doing sysc=
+all
+while selftest is running. This leads to occasional test failures with
+unexpected PIDs being returned. Fix that by filtering out all processes t=
+hat
+are not test_progs process.
 
-On Fri, Jul 31, 2020 at 7:13 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> Thanks for fixing a kernel panic. The existing line was added recently
-> in commit 9dc829a135fb ("drivers/net/wan/lapbether: Fixed the value of
-> hard_header_len"). I assume a kernel with that commit reverted also
-> panics? It does looks like it would.
+Fixes: fcda189a5133 ("selftests/bpf: Add test relying only on CO-RE and n=
+o recent kernel features")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/testing/selftests/bpf/prog_tests/core_retro.c |  8 ++++++--
+ tools/testing/selftests/bpf/progs/test_core_retro.c | 13 +++++++++++++
+ 2 files changed, 19 insertions(+), 2 deletions(-)
 
-Yes, that commit also fixed kernel panic. But that patch only fixed
-kernel panic when using AF_PACKET/DGRAM sockets. It didn't fix kernel
-panic when using AF_PACKET/RAW sockets. This patch attempts to fix
-kernel panic when using AF_PACKET/RAW sockets, too.
+diff --git a/tools/testing/selftests/bpf/prog_tests/core_retro.c b/tools/=
+testing/selftests/bpf/prog_tests/core_retro.c
+index 78e30d3a23d5..6acb0e94d4d7 100644
+--- a/tools/testing/selftests/bpf/prog_tests/core_retro.c
++++ b/tools/testing/selftests/bpf/prog_tests/core_retro.c
+@@ -6,7 +6,7 @@
+=20
+ void test_core_retro(void)
+ {
+-	int err, zero =3D 0, res, duration =3D 0;
++	int err, zero =3D 0, res, duration =3D 0, my_pid =3D getpid();
+ 	struct test_core_retro *skel;
+=20
+ 	/* load program */
+@@ -14,6 +14,10 @@ void test_core_retro(void)
+ 	if (CHECK(!skel, "skel_load", "skeleton open/load failed\n"))
+ 		goto out_close;
+=20
++	err =3D bpf_map_update_elem(bpf_map__fd(skel->maps.exp_tgid_map), &zero=
+, &my_pid, 0);
++	if (CHECK(err, "map_update", "failed to set expected PID: %d\n", errno)=
+)
++		goto out_close;
++
+ 	/* attach probe */
+ 	err =3D test_core_retro__attach(skel);
+ 	if (CHECK(err, "attach_kprobe", "err %d\n", err))
+@@ -26,7 +30,7 @@ void test_core_retro(void)
+ 	if (CHECK(err, "map_lookup", "failed to lookup result: %d\n", errno))
+ 		goto out_close;
+=20
+-	CHECK(res !=3D getpid(), "pid_check", "got %d !=3D exp %d\n", res, getp=
+id());
++	CHECK(res !=3D my_pid, "pid_check", "got %d !=3D exp %d\n", res, my_pid=
+);
+=20
+ out_close:
+ 	test_core_retro__destroy(skel);
+diff --git a/tools/testing/selftests/bpf/progs/test_core_retro.c b/tools/=
+testing/selftests/bpf/progs/test_core_retro.c
+index 75c60c3c29cf..20861ec2f674 100644
+--- a/tools/testing/selftests/bpf/progs/test_core_retro.c
++++ b/tools/testing/selftests/bpf/progs/test_core_retro.c
+@@ -8,6 +8,13 @@ struct task_struct {
+ 	int tgid;
+ } __attribute__((preserve_access_index));
+=20
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(max_entries, 1);
++	__type(key, int);
++	__type(value, int);
++} exp_tgid_map SEC(".maps");
++
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_ARRAY);
+ 	__uint(max_entries, 1);
+@@ -21,6 +28,12 @@ int handle_sys_enter(void *ctx)
+ 	struct task_struct *task =3D (void *)bpf_get_current_task();
+ 	int tgid =3D BPF_CORE_READ(task, tgid);
+ 	int zero =3D 0;
++	int real_tgid =3D bpf_get_current_pid_tgid() >> 32;
++	int *exp_tgid =3D bpf_map_lookup_elem(&exp_tgid_map, &zero);
++
++	/* only pass through sys_enters from test process */
++	if (!exp_tgid || *exp_tgid !=3D real_tgid)
++		return 0;
+=20
+ 	bpf_map_update_elem(&results, &zero, &tgid, 0);
+=20
+--=20
+2.24.1
 
-> If this driver submits a modified packet to an underlying eth device,
-> it is akin to tunnel drivers. The hard_header_len vs needed_headroom
-> discussion also came up there recently [1]. That discussion points to
-> commit c95b819ad75b ("gre: Use needed_headroom"). So the general
-> approach in this patch is fine. Do note the point about mtu
-> calculations -- but this device just hardcodes a 1000 byte dev->mtu
-> irrespective of underlying ethernet device mtu, so I guess it has
-> bigger issues on that point.
-
-Yes, I didn't consider the issue of mtu calculation. Maybe we need to
-calculate the mtu of this device based on the underlying Ethernet
-device, too.
-
-We may also need to handle the situation where the mtu of the
-underlying Ethernet device changes.
-
-I'm not sure if the mtu of the device can be changed by the user
-without explicit support from the driver. If it can, we may also need
-to set max_mtu and min_mtu properly to prevent the user from setting
-it to invalid values.
-
-> But, packet sockets with SOCK_RAW have to pass a fully formed packet
-> with all the headers the ndo_start_xmit expects, i.e., it should be
-> safe for the device to just pull that many bytes. X25 requires the
-> peculiar one byte pseudo header you mention: lapbeth_xmit
-> unconditionally reads skb->data[0] and then calls skb_pull(skb, 1).
-> This could be considered the device hard header len.
-
-Yes, I agree that we can use hard_header_len (and min_header_len) to
-prevent packets shorter than 1 byte from passing.
-
-But because af_packet.c reserves a header space of needed_headroom for
-RAW sockets, but hard_header_len + needed_headroom for DGRAM sockets,
-it appears to me that af_packet.c expects hard_header_len to be the
-header length created by dev_hard_header. We can, however, set
-hard_header_len to 1 and let dev_hard_header generate a 0-sized
-header, but this makes af_packet.c to reserve an extra unused 1-byte
-header space for DGRAM sockets, and DGRAM sockets will not be
-protected by the 1-byte minimum length check like RAW sockets.
-
-The best solution might be to implement header_ops for X.25 drivers
-and let dev_hard_header create this 1-byte header, so that
-hard_header_len can equal to the header length created by
-dev_hard_header. This might be the best way to fit the logic of
-af_packet.c. But this requires changing the interface of X.25 drivers
-so it might be a big change.
