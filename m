@@ -2,139 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E05423443A
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 12:47:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37526234440
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 12:50:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732487AbgGaKrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 06:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729141AbgGaKrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 06:47:23 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B73C061574
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 03:47:22 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id a15so27547341wrh.10
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 03:47:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=eVcg9NbgirkLFv5qDGy67mb6aJn69HzIYVXBnNnuV+U=;
-        b=EdQSZMohyuryKqaH/XJWFWMgS8gADATW/YZ4N+imqOU7FYEvM4KOZba33ky5ATQHX+
-         r+yQarb8i0EMQis7kmLGCNDdziCRl/T040imB34W0O125fPkw9l691pFS9oufMa8CmN/
-         aZ4e9d4ly+G2ce3uX9J+sNPJ3U0hExt+Jk8W8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=eVcg9NbgirkLFv5qDGy67mb6aJn69HzIYVXBnNnuV+U=;
-        b=fiS3/RbQfxpoJmRpfVHofuEXa5qAsqmQmZ/2JfpEVcbDj1g8R7JmKUSxmdnAd/Tm4o
-         OO9b/hIoe5UryCb+HS0qho+A0Wql1bmm1mVcS6ahaZM9/5qeWbTatwkWb+/YhVo8y6aN
-         7wsP2KOH+4FfcvmD25VbdJs173j0vlsiaPUBW/zDAohi027YJa4HU8uCvwWoED9erKnJ
-         9uZD6czTZnHxoG92BBF1QVlovN6fX5MpPqP225nHag4yKd3t4QWdD2z6lWnw81gAoVfY
-         itcqGh2RJp72cOB00udYFbS7jjC0Q9aq41nACqE/UHdWDOuNr1dchg/Z6VMJbcvfYBJY
-         ju0w==
-X-Gm-Message-State: AOAM532hxe2NhCtKtdsaw5yEkwzxF7RessBKzDzu/z/6xXUdnqaQlRa0
-        10AS7FJZSlgbleYa/4awh4TPB2Uk6q+3hcLJ+dSrNC03RSXlnttgGXZ8J/7kLHY4tqZBrQ1meEg
-        rOvTIBxZgbKEpzoLFAkJN4YfxLnJr4o2zzVGr3f3BluRpiiE6O3Ie+iyMA7VkzPvY6WxSH/TrpP
-        51dK0c
-X-Google-Smtp-Source: ABdhPJyA0/Ei6o4doLf0iirW7EudGL2WJBnesyhySNgTLrpEl0UHhyhCjd67ykHTiauCZreZoy0uIA==
-X-Received: by 2002:adf:f248:: with SMTP id b8mr3155676wrp.247.1596192440595;
-        Fri, 31 Jul 2020 03:47:20 -0700 (PDT)
-Received: from lxhimalayas.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id k4sm14370602wrd.72.2020.07.31.03.47.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2020 03:47:19 -0700 (PDT)
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, davem@davemloft.net,
-        jiri@mellanox.com, kuba@kernel.org, michael.chan@broadcom.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH v3 iproute2-next] devlink: Add board.serial_number to info subcommand.
-Date:   Fri, 31 Jul 2020 03:46:43 -0700
-Message-Id: <20200731104643.35726-1-vasundhara-v.volam@broadcom.com>
-X-Mailer: git-send-email 2.18.4
+        id S1732614AbgGaKt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 06:49:57 -0400
+Received: from mail-eopbgr70048.outbound.protection.outlook.com ([40.107.7.48]:53202
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729141AbgGaKt5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 06:49:57 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B6vt4woiMUwNiv1EQvIC2MlMkEEAbIucbMkyKPfP40N+xlksI5+LEALqXVvu2czEWQUo4JQFpBpfip8nt5yzGkPIJ8Cxw0xY0EW4KgsHcBvM+5zdci6/CYh3DjvcBuc0v9BCPWibY1VvrWDdvI7PRkCl9txeEiiFG3Ub1m125oPV0oxbNhrxW/8GDfNoKTtThLzqSHGOCuOU0RH0y8eQZljIFuGpwPSOanM4TkZmLvKu9ItdmT9hSgbLBZ3br/ou7AxaMgDQbSxuJz+JBHscCtNJN2n2TjBt6NYfF+crhpdN/0LKIMgZmn6V55/ffSSMyhzWQy7s/P0tEsKlLX/xvQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KPS3L9AVmAAjo4PT6gpsY8md4TvbX/qp21y71+KQoY4=;
+ b=mxzduvY3AhYucHQMBnMUFvoP5R+kyE5VwbWK6CQ/qjehepNNaYAqJqhhNhvw5Q5RuJ1xKKpwbHA+7LMh4N9Z+l401iZkZHbAEzKOoUiMPxm8+36L+eXHXcrNBgvXEU/eq7OBFSsU+RKGX7p3+GzGunoUU/Yzs1miBjWwiPXWMunrFOiALtUN3l3SK/i+cKW0gwDSo2PDyZDSc6t2wwwO++EFY50XAt0lgxRMq7UwGc7VraRHLkZ7tz4wRCb3EDz3SHfUBKq3chIkXceoBDr69HTZHX6JiUgzo4RScZNDzFoLmmkQI+12E7EkzGtsFKxQbfqK3yWR4bAhDqdjXlKLxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KPS3L9AVmAAjo4PT6gpsY8md4TvbX/qp21y71+KQoY4=;
+ b=RZC6k3BdXJkcas3hrft4rl2qXhKodagBYG04J28Xd31wML9ABLefy2rzqDcq03X/DBmXaGqZsDlC5U0v5qN5KQlKY/wRh58NRvUpvi5XLmO2oXSIuvPq3OBWTAh0eygY4+G7tQnU3nN/rEXAIr1xlWAgkqVm5Pw6yjNDyPLEIGs=
+Authentication-Results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB5447.eurprd04.prod.outlook.com (2603:10a6:20b:94::20)
+ by AM6PR04MB5943.eurprd04.prod.outlook.com (2603:10a6:20b:99::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.20; Fri, 31 Jul
+ 2020 10:49:53 +0000
+Received: from AM6PR04MB5447.eurprd04.prod.outlook.com
+ ([fe80::e115:af36:613c:5a99]) by AM6PR04MB5447.eurprd04.prod.outlook.com
+ ([fe80::e115:af36:613c:5a99%5]) with mapi id 15.20.3239.019; Fri, 31 Jul 2020
+ 10:49:53 +0000
+From:   Florinel Iordache <florinel.iordache@nxp.com>
+To:     madalin.bucur@nxp.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, Markus.Elfring@web.de
+Cc:     linux-kernel@vger.kernel.org,
+        Florinel Iordache <florinel.iordache@nxp.com>
+Subject: [PATCH net v2 0/5] DPAA FMan driver fixes
+Date:   Fri, 31 Jul 2020 13:49:17 +0300
+Message-Id: <1596192562-7629-1-git-send-email-florinel.iordache@nxp.com>
+X-Mailer: git-send-email 1.9.1
+Reply-to: florinel.iordache@nxp.com
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR04CA0103.eurprd04.prod.outlook.com
+ (2603:10a6:208:be::44) To AM6PR04MB5447.eurprd04.prod.outlook.com
+ (2603:10a6:20b:94::20)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from fsr-ub1464-128.ea.freescale.net (83.217.231.2) by AM0PR04CA0103.eurprd04.prod.outlook.com (2603:10a6:208:be::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3239.16 via Frontend Transport; Fri, 31 Jul 2020 10:49:52 +0000
+X-Mailer: git-send-email 1.9.1
+X-Originating-IP: [83.217.231.2]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: a7764efb-0fae-41d8-4542-08d8353f74de
+X-MS-TrafficTypeDiagnostic: AM6PR04MB5943:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR04MB5943D345510CD1B941591B75FB4E0@AM6PR04MB5943.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HaMmKM4cr6RqTzNRQIkkQTBY7avuqmi2+hPXBGJVz/f6N/SExFRKWfDBrs5Mcr1A4yHQFgoG/0fiLIdja76BLEc7xbeJdI3zfVLR2YfdqiElzfwZnnoCTolkd169V0NgH9Jrp78uOm94LgqtbexGmlK/kIQVijxGA5nGy5rZ1KYJZrWlfuljlfP0AquoPW841ClJFOVf9nelf5o7VmDjvstwGX56i6lefuJ8NN0P+RhHasuya3Jr3tifI+PPcdhmHBic9b7aP4aggmEjj1SGKuwV04co2MQNmNqsRQhWSkdFtXseLLGewVXFG2Pmp8HnrIomywL2hCFrtQR/nolvaw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB5447.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(366004)(376002)(346002)(39860400002)(3450700001)(6666004)(478600001)(83380400001)(36756003)(52116002)(2906002)(4326008)(6486002)(316002)(66946007)(66556008)(6512007)(5660300002)(8676002)(86362001)(8936002)(4744005)(956004)(2616005)(186003)(16526019)(26005)(44832011)(6506007)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: WsZPE3dFJXbWtDjzQJ7auEYSx/lrytDLjfiqdXZrwZffXfka1XoivcZTv14bBUGI3DtGrtwC9VCqdxxbtr8l2lSXIZ1tgZh4qVNGJmXEXw+nIALdhdJBtb8tnumHvN6U0qruEjUMEJbyYXvt+PfpdhaGwwRiXm7JZylyNJtmHoiT5HmzjwdM/7lYm1xG3I19wUnZbM6tzeZ1VIPfLciDc4zENEXApFhJzcbHuCla1uECr+dlWx6XfKxVBozIMG4UXrvRbebiP1ZO81VIuj8wKj71w3k+sEDMVuNZSJKbYy2/icHwP8GIJ55axVXNdjG+4r9NUGfbgs+j/K3ElqPvQPm4IALgmQtvrdTOtN8GpSGGsUknrInfYrTesbLbqWz3Ol0+VUX1Db52UYRzpyW7b2HNLxuSkWlIT5Yg0FEOqFNJ4DFYUqP0kq0ZiA3sQEov+Mkvc2FfZXvDirhPwVa7xSAyZT7odHyYBossM4U2ANsL3b0WeFoU2nm0UUz1RhenbpmTyToQuZFSWwiZw+lpIFontztCJPGvdpiOEmDn6YzyUuVq8SbaBoRftCVxEGKvM1Zh4SatZ5KRi+0gkO3LwaluMUAXRRdC4If8BB/mpa2Q9yMvw+On2k4B0W5NbReLCX1GAV1LbWnZezkkoptcPA==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a7764efb-0fae-41d8-4542-08d8353f74de
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB5447.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2020 10:49:53.4369
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8rW4w0uPQp5qWmIXxGg77eTn6UJX+NShCsi4iILtWsU9lG8BExBvqc7f9ejSI46s1OaFv8vps2oywNge/HOQYuQUVmDkurNZlwggOdTXhzE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5943
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for reading board serial_number to devlink info
-subcommand. Example:
+Here are several fixes for the DPAA FMan driver.
 
-$ devlink dev info pci/0000:af:00.0 -jp
-{
-    "info": {
-        "pci/0000:af:00.0": {
-            "driver": "bnxt_en",
-            "serial_number": "00-10-18-FF-FE-AD-1A-00",
-            "board.serial_number": "433551F+172300000",
-            "versions": {
-                "fixed": {
-                    "board.id": "7339763 Rev 0.",
-                    "asic.id": "16D7",
-                    "asic.rev": "1"
-                },
-                "running": {
-                    "fw": "216.1.216.0",
-                    "fw.psid": "0.0.0",
-                    "fw.mgmt": "216.1.192.0",
-                    "fw.mgmt.api": "1.10.1",
-                    "fw.ncsi": "0.0.0.0",
-                    "fw.roce": "216.1.16.0"
-                }
-            }
-        }
-    }
-}
+v2 changes:
+* corrected patch 4 by removing the line added by mistake
+* used longer fixes tags with the first 12 characters of the SHA-1 ID
 
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
----
-v2: Rebase. Resending the patch as I see this patch didn't make it to
-mailing list.
-v3: Rebase the patch and remove the line from commit message
-"This patch has dependency on updated include/uapi/linux/devlink.h file."
-as the headers are updated.
----
- devlink/devlink.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Florinel Iordache (5):
+  fsl/fman: use 32-bit unsigned integer
+  fsl/fman: fix dereference null return value
+  fsl/fman: fix unreachable code
+  fsl/fman: check dereferencing null pointer
+  fsl/fman: fix eth hash table allocation
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 7dbe9c7e..f4230dac 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -648,6 +648,7 @@ static const enum mnl_attr_data_type devlink_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_REGION_CHUNK_LEN] = MNL_TYPE_U64,
- 	[DEVLINK_ATTR_INFO_DRIVER_NAME] = MNL_TYPE_STRING,
- 	[DEVLINK_ATTR_INFO_SERIAL_NUMBER] = MNL_TYPE_STRING,
-+	[DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER] = MNL_TYPE_STRING,
- 	[DEVLINK_ATTR_INFO_VERSION_FIXED] = MNL_TYPE_NESTED,
- 	[DEVLINK_ATTR_INFO_VERSION_RUNNING] = MNL_TYPE_NESTED,
- 	[DEVLINK_ATTR_INFO_VERSION_STORED] = MNL_TYPE_NESTED,
-@@ -2979,6 +2980,16 @@ static void pr_out_info(struct dl *dl, const struct nlmsghdr *nlh,
- 		print_string(PRINT_ANY, "serial_number", "serial_number %s",
- 			     mnl_attr_get_str(nla_sn));
- 	}
-+
-+	if (tb[DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER]) {
-+		struct nlattr *nla_bsn = tb[DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER];
-+
-+		if (!dl->json_output)
-+			__pr_out_newline();
-+		check_indent_newline(dl);
-+		print_string(PRINT_ANY, "board.serial_number", "board.serial_number %s",
-+			     mnl_attr_get_str(nla_bsn));
-+	}
- 	__pr_out_indent_dec();
- 
- 	if (has_versions) {
-@@ -3014,6 +3025,7 @@ static int cmd_versions_show_cb(const struct nlmsghdr *nlh, void *data)
- 		tb[DEVLINK_ATTR_INFO_VERSION_STORED];
- 	has_info = tb[DEVLINK_ATTR_INFO_DRIVER_NAME] ||
- 		tb[DEVLINK_ATTR_INFO_SERIAL_NUMBER] ||
-+		tb[DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER] ||
- 		has_versions;
- 
- 	if (has_info)
+ drivers/net/ethernet/freescale/fman/fman.c       | 3 +--
+ drivers/net/ethernet/freescale/fman/fman_dtsec.c | 4 ++--
+ drivers/net/ethernet/freescale/fman/fman_mac.h   | 2 +-
+ drivers/net/ethernet/freescale/fman/fman_memac.c | 3 +--
+ drivers/net/ethernet/freescale/fman/fman_port.c  | 9 ++++++++-
+ drivers/net/ethernet/freescale/fman/fman_tgec.c  | 2 +-
+ 6 files changed, 14 insertions(+), 9 deletions(-)
+
 -- 
-2.18.2
+1.9.1
 
