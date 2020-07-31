@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFFD0233D9B
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 05:13:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1E89233D9A
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 05:13:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731316AbgGaDN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 23:13:26 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:37405 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731278AbgGaDNY (ORCPT
+        id S1731312AbgGaDNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 23:13:25 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:57273 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731298AbgGaDNY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 23:13:24 -0400
-Received: by mail-io1-f72.google.com with SMTP id f6so5720312ioa.4
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 20:13:23 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id f21so19939730ioo.23
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 20:13:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=/pC2jX1hCFTSa0XcmmFAvUUMdwWwZxAez1TyfC9ev/c=;
-        b=hAhqQeM53At8jn4Yi/F8Q2ABcfDJeF0/OWjk9gEI0jTS+4KhI7+bUAK0vPv/wzJw/K
-         5Fk25H7sxUBTI5dxpzTbbdfhAe6nfpSeZKHaLWq4m4cWdlAwwOL5uzoqdEqFlFB9lCsU
-         11D5tZoYXB9gO9wztW1O51imSHi2rskjUMVP7n3LXt/1tdaomlFYJ70J4jhELcDorRwW
-         PYthnIsFgGSo5fFvrB+LHuwimSiOOfGFSxtqwqdsrh4Lm71ODIUfpdB10wQMmZxij95D
-         WTCvksptgWYc1sm6UqBKiAvVGH+LXMojTTHJXoxVayD16eNUgfDJUOTqq7kiLwShJ9ur
-         Nksw==
-X-Gm-Message-State: AOAM532uXdWb3Dlssd1dK+OzYxJu7U/d3rwhQ66f9SWrC1xwQno1QmPm
-        2n0K3JQJOASjJpm4LfGNxU07JE+sPBhwvrFwg/sdSz56wf0X
-X-Google-Smtp-Source: ABdhPJw/Ch8WWG2O2qDM/9Jc5exVf6rgoPHKV5c9rE7Zq499OYcDuWvWDwZhuYN+Oj75uDd9AC4/tt54t2GmMmtveNwvxWia5tHP
+        bh=wX4UxClPuPiSj/FUSxb7K5H0GkdpHs3QFxD4LPSNLqA=;
+        b=O1LDTYts7PGDhbm6BlunOpWu/6bsTAmnWWn06NSFPS5bDFJAXSgzYwd3Ts+S99RWB9
+         N0s3n3svWPomb9NGZLeBCHlnhgk81HLEej/JTWYbvqI9ewEh9D6ziUuUZGlaxgjlUiWT
+         0NwmKI/z4/Y9JnSRbRsL3QQ5acrOG1N/xi/q2jYGoKG8ig3GVd7hQK/e+mHITpZS51yp
+         gaK2/jCUg457ZYhn2KLh4xu3sjF+4sFsrWbGMOnadovz5+OUvneDdJuF8pEsZ0ZhA9W9
+         r825oE93GiCM3js6HEgcMOxfIbsoj2cizuUABpvhjrktOgPP44cU3b17PpvPkD79J6QZ
+         vMLA==
+X-Gm-Message-State: AOAM532dhdn9V59qiRs6eHYI6uESWFwXB8gaKMQsVuimr84FjEIGjkuK
+        2Q2rVNOgUVs2/9l4Us8Afa9wEVcSjSKEW3RMgLz4SHwh0zUz
+X-Google-Smtp-Source: ABdhPJwwXeZjCISUCoDvHg+GBVSC0YtBkDu6ONKcAkrSJGzoKHuoinf8LqGYz/vtMMcNSmMI7chfpv+l8rlLTtfpCN5AQvrvvTv3
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:381:: with SMTP id f1mr1631261iov.193.1596165203333;
+X-Received: by 2002:a92:8b11:: with SMTP id i17mr1662247ild.212.1596165203611;
  Thu, 30 Jul 2020 20:13:23 -0700 (PDT)
 Date:   Thu, 30 Jul 2020 20:13:23 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f298fc05abb42b70@google.com>
-Subject: WARNING: ODEBUG bug in cancel_delayed_work
-From:   syzbot <syzbot+338f014a98367a08a114@syzkaller.appspotmail.com>
+Message-ID: <000000000000f6d80505abb42b60@google.com>
+Subject: WARNING in cancel_delayed_work
+From:   syzbot <syzbot+35e70efb794757d7e175@syzkaller.appspotmail.com>
 To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
         linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
         marcel@holtmann.org, netdev@vger.kernel.org,
@@ -49,73 +49,73 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    27a2145d ibmvnic: Fix IRQ mapping disposal in error path
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=14277848900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ca6448d2af2ba351
-dashboard link: https://syzkaller.appspot.com/bug?extid=338f014a98367a08a114
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=168aec04900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11148e5c900000
+HEAD commit:    83bdc727 random32: remove net_rand_state from the latent e..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10479f12900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e59ee776d5aa8d55
+dashboard link: https://syzkaller.appspot.com/bug?extid=35e70efb794757d7e175
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1160faa2900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11816098900000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+338f014a98367a08a114@syzkaller.appspotmail.com
+Reported-by: syzbot+35e70efb794757d7e175@syzkaller.appspotmail.com
 
 ------------[ cut here ]------------
 ODEBUG: assert_init not available (active state 0) object type: timer_list hint: 0x0
-WARNING: CPU: 0 PID: 6858 at lib/debugobjects.c:485 debug_print_object+0x160/0x250 lib/debugobjects.c:485
+WARNING: CPU: 0 PID: 6889 at lib/debugobjects.c:488 debug_print_object lib/debugobjects.c:485 [inline]
+WARNING: CPU: 0 PID: 6889 at lib/debugobjects.c:488 debug_object_assert_init+0x1fa/0x250 lib/debugobjects.c:870
 Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 6858 Comm: syz-executor296 Not tainted 5.8.0-rc6-syzkaller #0
+CPU: 0 PID: 6889 Comm: syz-executor259 Not tainted 5.8.0-rc7-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- panic+0x2e3/0x75c kernel/panic.c:231
- __warn.cold+0x20/0x45 kernel/panic.c:600
- report_bug+0x1bd/0x210 lib/bug.c:198
- handle_bug+0x38/0x90 arch/x86/kernel/traps.c:235
- exc_invalid_op+0x13/0x40 arch/x86/kernel/traps.c:255
+ dump_stack+0x1f0/0x31e lib/dump_stack.c:118
+ panic+0x264/0x7a0 kernel/panic.c:231
+ __warn+0x227/0x250 kernel/panic.c:600
+ report_bug+0x1b1/0x2e0 lib/bug.c:198
+ handle_bug+0x42/0x80 arch/x86/kernel/traps.c:235
+ exc_invalid_op+0x16/0x40 arch/x86/kernel/traps.c:255
  asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:540
-RIP: 0010:debug_print_object+0x160/0x250 lib/debugobjects.c:485
-Code: dd a0 9f 93 88 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 bf 00 00 00 48 8b 14 dd a0 9f 93 88 48 c7 c7 00 95 93 88 e8 b2 ae a9 fd <0f> 0b 83 05 db 0b 14 07 01 48 83 c4 20 5b 5d 41 5c 41 5d c3 48 89
-RSP: 0018:ffffc9000168f578 EFLAGS: 00010082
-RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
-RDX: ffff888096dec4c0 RSI: ffffffff815d4ef7 RDI: fffff520002d1ea1
-RBP: 0000000000000001 R08: 0000000000000001 R09: ffff8880ae620fcb
-R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff89bcc540
-R13: ffffffff81630df0 R14: ffff888095382200 R15: 1ffff920002d1eba
- debug_object_assert_init lib/debugobjects.c:870 [inline]
- debug_object_assert_init+0x1f4/0x2e0 lib/debugobjects.c:841
- debug_timer_assert_init kernel/time/timer.c:736 [inline]
- debug_assert_init kernel/time/timer.c:781 [inline]
- del_timer+0x6d/0x110 kernel/time/timer.c:1207
- try_to_grab_pending kernel/workqueue.c:1249 [inline]
+RIP: 0010:debug_print_object lib/debugobjects.c:485 [inline]
+RIP: 0010:debug_object_assert_init+0x1fa/0x250 lib/debugobjects.c:870
+Code: e8 ab ec 11 fe 4c 8b 45 00 48 c7 c7 0f b7 14 89 48 c7 c6 09 b6 14 89 48 c7 c2 22 30 2c 89 31 c9 49 89 d9 31 c0 e8 16 9e a4 fd <0f> 0b ff 05 02 ca eb 05 48 83 c5 38 48 89 e8 48 c1 e8 03 42 80 3c
+RSP: 0018:ffffc90001477828 EFLAGS: 00010046
+RAX: 8d1db38e33234900 RBX: 0000000000000000 RCX: ffff888091cfe200
+RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
+RBP: ffffffff894edb20 R08: ffffffff815dd389 R09: ffffed1015d041c3
+R10: ffffed1015d041c3 R11: 0000000000000000 R12: dffffc0000000000
+R13: ffff8880a687e200 R14: 0000000000000002 R15: ffffffff8ba2a2a0
+ debug_timer_assert_init kernel/time/timer.c:737 [inline]
+ debug_assert_init kernel/time/timer.c:782 [inline]
+ del_timer+0x2f/0x340 kernel/time/timer.c:1208
+ try_to_grab_pending+0xba/0x9f0 kernel/workqueue.c:1249
  __cancel_work kernel/workqueue.c:3221 [inline]
- cancel_delayed_work+0xe0/0x450 kernel/workqueue.c:3250
+ cancel_delayed_work+0x37/0x2b0 kernel/workqueue.c:3250
  l2cap_clear_timer include/net/bluetooth/l2cap.h:879 [inline]
- l2cap_chan_del+0x541/0x1300 net/bluetooth/l2cap_core.c:661
- l2cap_chan_close+0x118/0xb10 net/bluetooth/l2cap_core.c:824
- l2cap_sock_shutdown+0x3b8/0xe90 net/bluetooth/l2cap_sock.c:1339
- l2cap_sock_release+0x63/0x1d0 net/bluetooth/l2cap_sock.c:1382
- __sock_release+0xcd/0x280 net/socket.c:605
- sock_close+0x18/0x20 net/socket.c:1278
- __fput+0x33c/0x880 fs/file_table.c:281
- task_work_run+0xdd/0x190 kernel/task_work.c:135
+ l2cap_chan_del+0x5bf/0x760 net/bluetooth/l2cap_core.c:661
+ l2cap_chan_close+0x7bf/0xae0 net/bluetooth/l2cap_core.c:824
+ l2cap_sock_shutdown+0x39f/0x700 net/bluetooth/l2cap_sock.c:1339
+ l2cap_sock_release+0x63/0x190 net/bluetooth/l2cap_sock.c:1382
+ __sock_release net/socket.c:605 [inline]
+ sock_close+0xd8/0x260 net/socket.c:1278
+ __fput+0x2f0/0x750 fs/file_table.c:281
+ task_work_run+0x137/0x1c0 kernel/task_work.c:135
  exit_task_work include/linux/task_work.h:25 [inline]
- do_exit+0xb72/0x2a40 kernel/exit.c:805
- do_group_exit+0x125/0x310 kernel/exit.c:903
- get_signal+0x40b/0x1ee0 kernel/signal.c:2743
- do_signal+0x82/0x2520 arch/x86/kernel/signal.c:810
+ do_exit+0x601/0x1f80 kernel/exit.c:805
+ do_group_exit+0x161/0x2d0 kernel/exit.c:903
+ get_signal+0x139b/0x1d30 kernel/signal.c:2743
+ do_signal+0x33/0x610 arch/x86/kernel/signal.c:810
  exit_to_usermode_loop arch/x86/entry/common.c:235 [inline]
- __prepare_exit_to_usermode+0x156/0x1f0 arch/x86/entry/common.c:269
- do_syscall_64+0x6c/0xe0 arch/x86/entry/common.c:393
+ __prepare_exit_to_usermode+0xd7/0x1e0 arch/x86/entry/common.c:269
+ do_syscall_64+0x7f/0xe0 arch/x86/entry/common.c:393
  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 RIP: 0033:0x446d69
 Code: Bad RIP value.
-RSP: 002b:00007ffc69898b98 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+RSP: 002b:00007ffc9b702c28 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
 RAX: fffffffffffffffc RBX: 0000000000000003 RCX: 0000000000446d69
 RDX: 000000000000000e RSI: 0000000020000040 RDI: 0000000000000004
-RBP: 00007ffc69898bd0 R08: 0000000000000000 R09: 00000000000000ff
+RBP: 00007ffc9b702c60 R08: 0000000000000000 R09: 00000000000000ff
 R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000000004
 R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
 Kernel Offset: disabled
