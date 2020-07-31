@@ -2,137 +2,1213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E516A23440E
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 12:25:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86F2923443F
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 12:49:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732431AbgGaKZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 06:25:23 -0400
-Received: from esa12.fujitsucc.c3s2.iphmx.com ([216.71.156.125]:46854 "EHLO
-        esa12.fujitsucc.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731998AbgGaKZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 06:25:23 -0400
-X-Greylist: delayed 428 seconds by postgrey-1.27 at vger.kernel.org; Fri, 31 Jul 2020 06:25:21 EDT
-IronPort-SDR: kGHGB7q+pWJffu9f9p5j5QM5gxqzIZKvbtrDq72w5AG1Q1l/TdimRtJ/RNSqMhwlWleM97gW7y
- KOix8jP8wda8HDMSKvm2AloP4s3oucvlYBjKE/uECx+omFpi37x0Y23GB7KEp5YSKQHgAvmkdJ
- YfpkwG7EV4aFx/ntGfD7z8AMhgBc2GXIYNCGj6vrovD1CjAaydTyDpaBNIcAsFsejDOWwNpQSy
- Zfao1Bjd1MZviWLFbwHUdc1cpnysoM0N4gJZEalRaiXdhrpX59zadH7pbLwFcqcNx6eLnavN0p
- ico=
-X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="16261950"
-X-IronPort-AV: E=Sophos;i="5.75,418,1589209200"; 
-   d="scan'208";a="16261950"
-Received: from mail-ty1jpn01lp2054.outbound.protection.outlook.com (HELO JPN01-TY1-obe.outbound.protection.outlook.com) ([104.47.93.54])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2020 19:18:12 +0900
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kDPogCgwswc0mNknaYXIxR/Uy+9mVMROQfgQ2+sfcEb4zxa9MxpBUYnGAUwun25XH2rOqTHazlRC83F8hPILLXOpc/EJwRDS+SluZErwZqOQuvAeG4Ks3qMbDJETD1dBaJ+3cnHsWL3D5q4V+UV1vrUstE1wupeM0ITU5KuJS7y74DkEqeUkG8qB0YDad1DCMXP1+hVVOAMCktqFDtP1nb0P/Gg3gMd3EICcnZAyfhlzaVvsJpuMQsxWq2ju0bGFLLx1JUUYosjZ1NcfRGNiZDMbqqYd1ByL70HHGEpH4iR3+/lfl5kmKVTeiKXT7dGi9eWr24CiQ6jhIugEvY0Yjw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t/w4FR3QlyrbiYQMboSh//DaSJKCmP1TQXzmdNmpREM=;
- b=jF+Q3/k6l4cOgi2q/eHJ4Q8nA+32M1jBhwNgo+HDF0+w6B/9U2NkiSq1xeyPHq4xKnZhdNeO/9zY+OtI1vG1vVovHZ2EANlxMHEW6sak0PAcaLW/zt4XI6bjlBAq661Gioryik56WtZvBxn6IjLU8nquX9xEQrSa57XVOjTUkRJJ3t9NGI+5l00RzclhOkvvdOjtjXRzCwMCQj0uAjRLG+vEgbyHT5FYiS/VCYDl4e4X35WKpLzAr2hbEdM3KvSpezqXP7ODCmyGde3vdH2rEWRGWxvZka6SLk4mV8Q0lfkTAkQOs72PPOWPBALW4VGKBFFmtCqkQu2XRDrRe1ss0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
+        id S1732599AbgGaKtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 06:49:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729141AbgGaKtW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 06:49:22 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36397C061574
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 03:49:22 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id r12so27523144wrj.13
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 03:49:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=fujitsu.onmicrosoft.com; s=selector2-fujitsu-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t/w4FR3QlyrbiYQMboSh//DaSJKCmP1TQXzmdNmpREM=;
- b=IbLMiNHcobzmpsLZdjCOuqyAe/enUYW4jZWDuknjD8VrJ9SYackIARhE0P/cC6zh2kEd7ySXTBEyM6E+tBACaU0c4NhbFpcaMTr5Wz3WQ/O+HxxsekHfyHH1xUdXeAPblRqa8b+NrOOeKCxNNEtAYyawJdfJqOYzVR82mT47FNQ=
-Received: from OSAPR01MB3844.jpnprd01.prod.outlook.com (2603:1096:604:5d::13)
- by OSBPR01MB1574.jpnprd01.prod.outlook.com (2603:1096:603:1::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.25; Fri, 31 Jul
- 2020 10:18:09 +0000
-Received: from OSAPR01MB3844.jpnprd01.prod.outlook.com
- ([fe80::18a7:bf65:8605:633e]) by OSAPR01MB3844.jpnprd01.prod.outlook.com
- ([fe80::18a7:bf65:8605:633e%5]) with mapi id 15.20.3216.034; Fri, 31 Jul 2020
- 10:18:09 +0000
-From:   "ashiduka@fujitsu.com" <ashiduka@fujitsu.com>
-To:     'Sergei Shtylyov' <sergei.shtylyov@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v2] ravb: Fixed the problem that rmmod can not be done
-Thread-Topic: [PATCH v2] ravb: Fixed the problem that rmmod can not be done
-Thread-Index: AQHWZliVF0gqbKeTM0q7YOFUctSlU6kgSWOAgAEpsHA=
-Date:   Fri, 31 Jul 2020 10:18:09 +0000
-Message-ID: <OSAPR01MB3844C77766155CAB10BE296CDF4E0@OSAPR01MB3844.jpnprd01.prod.outlook.com>
-References: <20200730035649.5940-1-ashiduka@fujitsu.com>
- <20200730100151.7490-1-ashiduka@fujitsu.com>
- <ce81e95d-b3b0-7f1c-8f97-8bdcb23d5a8e@gmail.com>
-In-Reply-To: <ce81e95d-b3b0-7f1c-8f97-8bdcb23d5a8e@gmail.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-securitypolicycheck: OK by SHieldMailChecker v2.6.2
-x-shieldmailcheckerpolicyversion: FJ-ISEC-20181130-VDI-enc
-x-shieldmailcheckermailid: 2bfacab4fb124f7caba5735e9933bd29
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fujitsu.com;
-x-originating-ip: [118.155.224.176]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3d510940-56b8-4100-4447-08d8353b065c
-x-ms-traffictypediagnostic: OSBPR01MB1574:
-x-microsoft-antispam-prvs: <OSBPR01MB15749D9D5045A69EBCA9B9C1DF4E0@OSBPR01MB1574.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Hju5dk3YqcFugEvU3pQvOZe/chq/cCdJUwV9SkD0t+nqnVeDQkcO9+p17A7CgyJECsyVhoDxLqVxRQd/K87Q4VBlr6got4OG51d2N8rF6t28/BJCPLGwImfYrcviV25JDK92EGuox7St+zO5kbiUw0Couaoigv/CvJecKk+PYYe+Bm9ZVnb0c5RyUz2ZbUI1KdhPM+HTYDhX1TzXWcHNAg9tULjVsr8ORumvboFLt+9brWuXTD1WdWBSCHp3uppBfyAZx24NUC7mWiq3Wv4710q/yn+nASpc1CSMF/H7f5U7ntLw5o5jhBxASOWh4edz9pgvEWs2Q9LqfavXnM71arZ0qWxOBrcmjvxG67BOwkUWvGtl1z+OSzH5YpzusLQU
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSAPR01MB3844.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(346002)(366004)(376002)(396003)(39860400002)(9686003)(55016002)(83380400001)(8936002)(54906003)(2906002)(6916009)(5660300002)(316002)(86362001)(71200400001)(76116006)(26005)(64756008)(66556008)(66476007)(85182001)(33656002)(8676002)(66946007)(6506007)(53546011)(7696005)(478600001)(66446008)(52536014)(4326008)(186003)(777600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: FRCI4/oMLSmqdLctG8sjjEs99HtakPwmDqhaAy5r/eBtYvlm/3Vztwnt9J5kIu17Sg+dum8Ix+XP0xGp4zTIT+VAy7OCu9Ef2aY2XyAF5j5pemWm60dAldgNoIovbdq3EKBnmYAOWswrKFh1Z51e6I7Kl9RuED2tKGFQBkzNS0ViJgsK9FdSrFiSekoy2zln1Mbx53j4BXWmEeOBv7FcKPECKK/ypNJvt1Pr1xTr5//wsBrXF9plrwmh8gU22SojG8A/eNRdgZPWXTmFhypjn6ts0j49/URRIBRdSdPiquep0i9V9MwYIHwX77m2RTseGADM8vEzJPhloRvFiXYfG0cySLwxdz0nNT+mIvIi58CC97yiePAk2tPjWShxDxkPs5PWP4N7Vg4jV86ibGh6omtP814uhGKu9CR0QhhaN7KhS14hqOmRV9jC/yM/RqxTj4WFzNt0ncCESdZvQrnpcpmgzYmBo39KRJYyoPqH01s3ON9uZ2+a/ac4gUZ6g0fS
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: fujitsu.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OSAPR01MB3844.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d510940-56b8-4100-4447-08d8353b065c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jul 2020 10:18:09.7718
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: s6HiqY0UILkp6WJ83rHHrpwc353738RmoD2fBTdbjpzvG5tuiwY0HwAMAqEO1NBrvHCksBDZW1606i0XUYx7Iw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB1574
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=a3HbM2DTEvOiUjZK5Pl+uEerMYMI50vP8pc283jx9OM=;
+        b=djzCwmib7oRrg1axnLS+4UCJgD6JYxsyT1mJaqh3GWbi8SyJdbGtb0TS8x6bThCysS
+         h5Au4OWin2P7qYuMDrpyuASbHDiZhDORD+G2TgHdNgu6fgpIffzzgknndOXE8DQUFp1N
+         QjoHIkWGkqKvUA9uLQPSk8VlyNkTppwnRDKgluCD5DvNSHriasXQZCiBG1Poi5qZloYD
+         bW5J+4xRZBr7Lz6Y0ISsvyqQXYOhJ4wCNUKX1Bx2CxUukKeGsllRc/33IEEGtTIozgF0
+         /RojV4ogbnNMlbmdMEkgcn1Ceo9l/GrOV+sSc9Ilma9T2coTJ9PJWvKyhRYT05S0/htX
+         BLxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=a3HbM2DTEvOiUjZK5Pl+uEerMYMI50vP8pc283jx9OM=;
+        b=uOFKa/h9eonV/1iXljnShywLTp9msaOK8NOI/g+qot2OVUNwacvSTkFzT7IeLI5K6Q
+         BK7yUOOGNbWN+x3T/wSGTQ7bpx/llnUEpwB2kFIn+y+lGDd1wCe5RjyuKlV7e9cslVpN
+         1nHLv1pPbrc4HJ5i2wFs/k0jCwlbeLqhoFj5Khbx0R9AnnUFvRE+xP4esFdAZrUZQLiX
+         6TuyNqkN+4lKz3dcNyT+4ykvxW/LJbX+HN5iF+98wkfoJ1dM2lGcb5X2NEBNiMiYZc1W
+         PMbAXAY3Pmy2pNcDLxazA0TsMbwpSiYp1mvCm3hUbJG+OPp/LjksosP7aJMA2N+pnYYl
+         Qpug==
+X-Gm-Message-State: AOAM532kFUFPove8QVVaII9KTTwpGoSfo9xGlI49vxef5J7zZM7PIF7U
+        2bWf3u4iIA7yCwyDGFwgdjFfSzD4vkw=
+X-Google-Smtp-Source: ABdhPJyeuXpodanrUKB/65OGym6FunkMMKCTSvmU1ILW5F55dAxxBq49utYmfWP8xjjdTWirATdkWg==
+X-Received: by 2002:adf:f3cb:: with SMTP id g11mr2932365wrp.268.1596192559259;
+        Fri, 31 Jul 2020 03:49:19 -0700 (PDT)
+Received: from localhost.localdomain ([85.255.234.142])
+        by smtp.googlemail.com with ESMTPSA id p14sm13203443wrg.96.2020.07.31.03.49.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Jul 2020 03:49:18 -0700 (PDT)
+From:   Adrian Pop <popadrian1996@gmail.com>
+Cc:     netdev@vger.kernel.org, linville@tuxdriver.com,
+        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        vadimp@mellanox.com, popadrian1996@gmail.com, mlxsw@mellanox.com,
+        idosch@mellanox.com, andrew@lunn.ch
+Subject: [PATCH] ethtool: Add QSFP-DD support
+Date:   Fri, 31 Jul 2020 11:47:25 +0300
+Message-Id: <20200731084725.7804-1-popadrian1996@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgU2VyZ2VpLA0KDQpJIHVuZGVyc3RhbmQgdGhhdCB0aGUgY29tbWl0IGxvZyBuZWVkcyB0byBi
-ZSBjb3JyZWN0ZWQuDQooU2hpbW9kYS1zYW4ncyBwb2ludCBpcyBhbHNvIGNvcnJlY3QpDQoNCklm
-IHRoZXJlIGlzIGFueXRoaW5nIGVsc2UgdGhhdCBuZWVkcyB0byBiZSBjb3JyZWN0ZWQsIHBsZWFz
-ZSBwb2ludCBpdCBvdXQuDQoNCj4gICAgVGhhdCBzZWVtcyBhIGNvbW1vbiBwYXR0ZXJuLCBpbmxs
-dWRpbmcgdGhlIFJlbmVzYXMgc2hfZXRoDQo+IGRyaXZlci4uLg0KDQpZZXMuDQpJZiBJIGNhbiBn
-ZXQgYW4gUi1DYXIgR2VuMiBib2FyZCwgSSB3aWxsIGFsc28gZml4IHNoX2V0aCBkcml2ZXIuDQoN
-Cj4gICAgTm8sIHRoZSBkcml2ZXIncyByZW1vdmUoKSBtZXRob2QgY2FsbHMgcmF2Yl9tZGlvX3Jl
-bGVhc2UoKSBhbmQNCj4gdGhhdCBvbmUgY2FsbHMNCj4gZnJlZV9tZGlvX2JpdGJhbmcoKSB0aGF0
-IGNhbGxzIG1vZHVsZV9wdXQoKTsgdGhlIGFjdHVhbCByZWFzb24gbGllcw0KPiBzb21ld2VocmUg
-ZGVlcGVyIHRoYW4gdGhpcy4uLg0KDQpOby4NClJ1bm5pbmcgcm1tb2QgY2FsbHMgZGVsZXRlX21v
-ZHVsZSgpIGluIGtlcm5lbC9tb2R1bGUuYyBiZWZvcmUgcmF2Yl9tZGlvX3JlbGVhc2UoKSBpcyBj
-YWxsZWQuDQpkZWxldGVfbW9kdWxlKCkNCiAgIC0+IHRyeV9zdG9wX21vZHVsZSgpDQogICAgIC0+
-IHRyeV9yZWxlYXNlX21vZHVsZV9yZWYoKQ0KSW4gdHJ5X3JlbGVhc2VfbW9kdWxlX3JlZigpLCBj
-aGVjayByZWZjbnQgYW5kIGlmIGl0IGlzIGNvdW50ZWQgdXAsIHJhdmJfbWRpb19yZWxlYXNlKCkg
-aXMgbm90DQpjYWxsZWQgYW5kIHJtbW9kIGlzIHRlcm1pbmF0ZWQuDQoNClRoYW5rcyAmIEJlc3Qg
-UmVnYXJkcywNCll1dXN1a2UgQXNoaXp1a2EgPGFzaGlkdWthQGZ1aml0c3UuY29tPg0KDQo+IC0t
-LS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFNlcmdlaSBTaHR5bHlvdiA8c2VyZ2Vp
-LnNodHlseW92QGdtYWlsLmNvbT4NCj4gU2VudDogRnJpZGF5LCBKdWx5IDMxLCAyMDIwIDE6MDQg
-QU0NCj4gVG86IEFzaGl6dWthLCBZdXVzdWtlL+iKpuWhmiDpm4Tku4sgPGFzaGlkdWthQGZ1aml0
-c3UuY29tPg0KPiBDYzogbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgtcmVuZXNhcy1zb2NA
-dmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjJdIHJhdmI6IEZpeGVkIHRo
-ZSBwcm9ibGVtIHRoYXQgcm1tb2QgY2FuIG5vdA0KPiBiZSBkb25lDQo+IA0KPiBIZWxsbyENCj4g
-DQo+IE9uIDcvMzAvMjAgMTowMSBQTSwgWXV1c3VrZSBBc2hpenVrYSB3cm90ZToNCj4gDQo+ID4g
-cmF2YiBpcyBhIG1vZHVsZSBkcml2ZXIsIGJ1dCBJIGNhbm5vdCBybW1vZCBpdCBhZnRlciBpbnNt
-b2QgaXQuDQo+IA0KPiAgICBNb2R1bGFyLiBBbmQgImluc21vZCdpbmcgaXQiLg0KPiANCj4gPiBy
-YXZiIGRvZXMgbWRpb19pbml0KCkgYXQgdGhlIHRpbWUgb2YgcHJvYmUsIGFuZCBtb2R1bGUtPnJl
-ZmNudA0KPiBpcyBpbmNyZW1lbnRlZA0KPiA+IGJ5IGFsbG9jX21kaW9fYml0YmFuZygpIGNhbGxl
-ZCBhZnRlciB0aGF0Lg0KPiANCj4gICAgVGhhdCBzZWVtcyBhIGNvbW1vbiBwYXR0ZXJuLCBpbmxs
-dWRpbmcgdGhlIFJlbmVzYXMgc2hfZXRoDQo+IGRyaXZlci4uLg0KPiANCj4gPiBUaGVyZWZvcmUs
-IGV2ZW4gaWYgaWZ1cCBpcyBub3QgcGVyZm9ybWVkLCB0aGUgZHJpdmVyIGlzIGluIHVzZQ0KPiBh
-bmQgcm1tb2QgY2Fubm90DQo+ID4gYmUgcGVyZm9ybWVkLg0KPiANCj4gICAgTm8sIHRoZSBkcml2
-ZXIncyByZW1vdmUoKSBtZXRob2QgY2FsbHMgcmF2Yl9tZGlvX3JlbGVhc2UoKSBhbmQNCj4gdGhh
-dCBvbmUgY2FsbHMNCj4gZnJlZV9tZGlvX2JpdGJhbmcoKSB0aGF0IGNhbGxzIG1vZHVsZV9wdXQo
-KTsgdGhlIGFjdHVhbCByZWFzb24gbGllcw0KPiBzb21ld2VocmUgZGVlcGVyDQo+IHRoYW4gdGhp
-cy4uLiBVbmZvcnR1bmF0ZWx5IEkgZG9uJ3QgaGF2ZSB0aGUgYWZmZWN0ZWQgaGFyZHdhcmUNCj4g
-YW55bW9yZS4uLiA6LSgNCj4gDQo+IFsuLi5dDQo+IA0KPiBNQlIsIFNlcmdlaQ0K
+The Common Management Interface Specification (CMIS) for QSFP-DD shares
+some similarities with other form factors such as QSFP or SFP, but due to
+the fact that the module memory map is different, the current ethtool
+version is not able to provide relevant information about an interface.
+
+This patch adds QSFP-DD support to ethtool. The changes are similar to
+the ones already existing in qsfp.c, but customized to use the memory
+addresses and logic as defined in the specifications document.
+
+Page 0x00 (lower and higher memory) are always implemented, so the ethtool
+expects at least 256 bytes if the identifier matches the one for QSFP-DD.
+For optical connected cables, additional pages are usually available (the
+contain module defined  thresholds or lane diagnostic information). In
+this case, ethtool expects to receive 768 bytes in the following format:
+
+    +----------+----------+----------+----------+----------+----------+
+    |   Page   |   Page   |   Page   |   Page   |   Page   |   Page   |
+    |   0x00   |   0x00   |   0x01   |   0x02   |   0x10   |   0x11   |
+    |  (lower) | (higher) | (higher) | (higher) | (higher) | (higher) |
+    |   128B   |   128B   |   128B   |   128B   |   128B   |   128B   |
+    +----------+----------+----------+----------+----------+----------
+
+Several functions from qsfp.c could be reused, so an additional parameter
+was added to each and the functions were moved to sff-common.c.
+
+Signed-off-by: Adrian Pop <popadrian1996@gmail.com>
+Tested-by: Ido Schimmel <idosch@mellanox.com>
+---
+ Makefile.am  |   7 +-
+ qsfp-dd.c    | 561 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ qsfp-dd.h    | 236 ++++++++++++++++++++++
+ qsfp.c       |  60 ++----
+ qsfp.h       |   8 -
+ sff-common.c |  52 +++++
+ sff-common.h |  26 ++-
+ 7 files changed, 894 insertions(+), 56 deletions(-)
+ create mode 100644 qsfp-dd.c
+ create mode 100644 qsfp-dd.h
+
+diff --git a/Makefile.am b/Makefile.am
+index 2abb274..9fd8024 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -17,7 +17,8 @@ ethtool_SOURCES += \
+ 		  smsc911x.c at76c50x-usb.c sfc.c stmmac.c	\
+ 		  sff-common.c sff-common.h sfpid.c sfpdiag.c	\
+ 		  ixgbevf.c tse.c vmxnet3.c qsfp.c qsfp.h fjes.c lan78xx.c \
+-		  igc.c
++		  igc.c \
++		  qsfp-dd.c qsfp-dd.h
+ endif
+ 
+ if ENABLE_BASH_COMPLETION
+@@ -47,12 +48,12 @@ endif
+ 
+ TESTS = test-cmdline
+ check_PROGRAMS = test-cmdline
+-test_cmdline_SOURCES = test-cmdline.c test-common.c $(ethtool_SOURCES) 
++test_cmdline_SOURCES = test-cmdline.c test-common.c $(ethtool_SOURCES)
+ test_cmdline_CFLAGS = -DTEST_ETHTOOL
+ if !ETHTOOL_ENABLE_NETLINK
+ TESTS += test-features
+ check_PROGRAMS += test-features
+-test_features_SOURCES = test-features.c test-common.c $(ethtool_SOURCES) 
++test_features_SOURCES = test-features.c test-common.c $(ethtool_SOURCES)
+ test_features_CFLAGS = -DTEST_ETHTOOL
+ endif
+ 
+diff --git a/qsfp-dd.c b/qsfp-dd.c
+new file mode 100644
+index 0000000..4d533f8
+--- /dev/null
++++ b/qsfp-dd.c
+@@ -0,0 +1,561 @@
++/**
++ * Description:
++ *
++ * This module adds QSFP-DD support to ethtool. The changes are similar to
++ * the ones already existing in qsfp.c, but customized to use the memory
++ * addresses and logic as defined in the specification's document.
++ *
++ * Page 0x00 (lower and higher memory) are always implemented, so the ethtool
++ * expects at least 256 bytes if the identifier matches the one for QSFP-DD.
++ * For optical connected cables, additional pages are usually available (they
++ * contain module defined thresholds or lane diagnostic information). In
++ * this case, ethtool expects to receive 768 bytes in the following format:
++ *
++ *     +----------+----------+----------+----------+----------+----------+
++ *     |   Page   |   Page   |   Page   |   Page   |   Page   |   Page   |
++ *     |   0x00   |   0x00   |   0x01   |   0x02   |   0x10   |   0x11   |
++ *     |  (lower) | (higher) | (higher) | (higher) | (higher) | (higher) |
++ *     |   128b   |   128b   |   128b   |   128b   |   128b   |   128b   |
++ *     +----------+----------+----------+----------+----------+----------+
++ */
++
++#include <stdio.h>
++#include <math.h>
++#include "internal.h"
++#include "sff-common.h"
++#include "qsfp-dd.h"
++
++static void qsfp_dd_show_identifier(const __u8 *id)
++{
++	sff8024_show_identifier(id, QSFP_DD_ID_OFFSET);
++}
++
++static void qsfp_dd_show_connector(const __u8 *id)
++{
++	sff8024_show_connector(id, QSFP_DD_CTOR_OFFSET);
++}
++
++static void qsfp_dd_show_oui(const __u8 *id)
++{
++	sff8024_show_oui(id, QSFP_DD_VENDOR_OUI_OFFSET);
++}
++
++/**
++ * Print the revision compliance. Relevant documents:
++ * [1] CMIS Rev. 3, pag. 45, section 1.7.2.1, Table 18
++ * [2] CMIS Rev. 4, pag. 81, section 8.2.1, Table 8-2
++ */
++static void qsfp_dd_show_rev_compliance(const __u8 *id)
++{
++	__u8 rev = id[QSFP_DD_REV_COMPLIANCE_OFFSET];
++	int major = (rev >> 4) & 0x0F;
++	int minor = rev & 0x0F;
++
++	printf("\t%-41s : Rev. %d.%d\n", "Revision compliance", major, minor);
++}
++
++/**
++ * Print information about the device's power consumption.
++ * Relevant documents:
++ * [1] CMIS Rev. 3, pag. 59, section 1.7.3.9, Table 30
++ * [2] CMIS Rev. 4, pag. 94, section 8.3.9, Table 8-18
++ * [3] QSFP-DD Hardware Rev 5.0, pag. 22, section 4.2.1
++ */
++static void qsfp_dd_show_power_info(const __u8 *id)
++{
++	float max_power = 0.0f;
++	__u8 base_power = 0;
++	__u8 power_class;
++
++	/* Get the power class (first 3 most significat bytes) */
++	power_class = (id[QSFP_DD_PWR_CLASS_OFFSET] >> 5) & 0x07;
++
++	/* Get the base power in multiples of 0.25W */
++	base_power = id[QSFP_DD_PWR_MAX_POWER_OFFSET];
++	max_power = base_power * 0.25f;
++
++	printf("\t%-41s : %d\n", "Power class", power_class + 1);
++	printf("\t%-41s : %.02fW\n", "Max power", max_power);
++}
++
++/**
++ * Print the cable assembly length, for both passive copper and active
++ * optical or electrical cables. The base length (bits 5-0) must be
++ * multiplied with the SMF length multiplier (bits 7-6) to obtain the
++ * correct value. Relevant documents:
++ * [1] CMIS Rev. 3, pag. 59, section 1.7.3.10, Table 31
++ * [2] CMIS Rev. 4, pag. 94, section 8.3.10, Table 8-19
++ */
++static void qsfp_dd_show_cbl_asm_len(const __u8 *id)
++{
++	static const char *fn = "Cable assembly length";
++	float mul = 1.0f;
++	float val = 0.0f;
++
++	/* Check if max length */
++	if (id[QSFP_DD_CBL_ASM_LEN_OFFSET] == QSFP_DD_6300M_MAX_LEN) {
++		printf("\t%-41s : > 6.3km\n", fn);
++		return;
++	}
++
++	/* Get the multiplier from the first two bits */
++	switch (id[QSFP_DD_CBL_ASM_LEN_OFFSET] & QSFP_DD_LEN_MUL_MASK) {
++	case QSFP_DD_MULTIPLIER_00:
++		mul = 0.1f;
++		break;
++	case QSFP_DD_MULTIPLIER_01:
++		mul = 1.0f;
++		break;
++	case QSFP_DD_MULTIPLIER_10:
++		mul = 10.0f;
++		break;
++	case QSFP_DD_MULTIPLIER_11:
++		mul = 100.0f;
++		break;
++	default:
++		break;
++	}
++
++	/* Get base value from first 6 bits and multiply by mul */
++	val = (id[QSFP_DD_CBL_ASM_LEN_OFFSET] & QSFP_DD_LEN_VAL_MASK);
++	val = (float)val * mul;
++	printf("\t%-41s : %0.2fkm\n", fn, val);
++}
++
++/**
++ * Print the length for SMF fiber. The base length (bits 5-0) must be
++ * multiplied with the SMF length multiplier (bits 7-6) to obtain the
++ * correct value. Relevant documents:
++ * [1] CMIS Rev. 3, pag. 63, section 1.7.4.2, Table 39
++ * [2] CMIS Rev. 4, pag. 99, section 8.4.2, Table 8-27
++ */
++static void qsfp_dd_print_smf_cbl_len(const __u8 *id)
++{
++	static const char *fn = "Length (SMF)";
++	float mul = 1.0f;
++	float val = 0.0f;
++
++	/* Get the multiplier from the first two bits */
++	switch (id[QSFP_DD_SMF_LEN_OFFSET] & QSFP_DD_LEN_MUL_MASK) {
++	case QSFP_DD_MULTIPLIER_00:
++		mul = 0.1f;
++		break;
++	case QSFP_DD_MULTIPLIER_01:
++		mul = 1.0f;
++		break;
++	default:
++		break;
++	}
++
++	/* Get base value from first 6 bits and multiply by mul */
++	val = (id[QSFP_DD_SMF_LEN_OFFSET] & QSFP_DD_LEN_VAL_MASK);
++	val = (float)val * mul;
++	printf("\t%-41s : %0.2fkm\n", fn, val);
++}
++
++/**
++ * Print relevant signal integrity control properties. Relevant documents:
++ * [1] CMIS Rev. 3, pag. 71, section 1.7.4.10, Table 46
++ * [2] CMIS Rev. 4, pag. 105, section 8.4.10, Table 8-34
++ */
++static void qsfp_dd_show_sig_integrity(const __u8 *id)
++{
++	/* CDR Bypass control: 2nd bit from each byte */
++	printf("\t%-41s : ", "Tx CDR bypass control");
++	printf("%s\n", YESNO(id[QSFP_DD_SIG_INTEG_TX_OFFSET] & 0x02));
++
++	printf("\t%-41s : ", "Rx CDR bypass control");
++	printf("%s\n", YESNO(id[QSFP_DD_SIG_INTEG_RX_OFFSET] & 0x02));
++
++	/* CDR Implementation: 1st bit from each byte */
++	printf("\t%-41s : ", "Tx CDR");
++	printf("%s\n", YESNO(id[QSFP_DD_SIG_INTEG_TX_OFFSET] & 0x01));
++
++	printf("\t%-41s : ", "Rx CDR");
++	printf("%s\n", YESNO(id[QSFP_DD_SIG_INTEG_RX_OFFSET] & 0x01));
++}
++
++/**
++ * Print relevant media interface technology info. Relevant documents:
++ * [1] CMIS Rev. 3
++ * --> pag. 61, section 1.7.3.14, Table 36
++ * --> pag. 64, section 1.7.4.3, 1.7.4.4
++ * [2] CMIS Rev. 4
++ * --> pag. 97, section 8.3.14, Table 8-24
++ * --> pag. 98, section 8.4, Table 8-25
++ * --> page 100, section 8.4.3, 8.4.4
++ */
++static void qsfp_dd_show_mit_compliance(const __u8 *id)
++{
++	static const char *cc = " (Copper cable,";
++
++	printf("\t%-41s : 0x%02x", "Transmitter technology",
++	       id[QSFP_DD_MEDIA_INTF_TECH_OFFSET]);
++
++	switch (id[QSFP_DD_MEDIA_INTF_TECH_OFFSET]) {
++	case QSFP_DD_850_VCSEL:
++		printf(" (850 nm VCSEL)\n");
++		break;
++	case QSFP_DD_1310_VCSEL:
++		printf(" (1310 nm VCSEL)\n");
++		break;
++	case QSFP_DD_1550_VCSEL:
++		printf(" (1550 nm VCSEL)\n");
++		break;
++	case QSFP_DD_1310_FP:
++		printf(" (1310 nm FP)\n");
++		break;
++	case QSFP_DD_1310_DFB:
++		printf(" (1310 nm DFB)\n");
++		break;
++	case QSFP_DD_1550_DFB:
++		printf(" (1550 nm DFB)\n");
++		break;
++	case QSFP_DD_1310_EML:
++		printf(" (1310 nm EML)\n");
++		break;
++	case QSFP_DD_1550_EML:
++		printf(" (1550 nm EML)\n");
++		break;
++	case QSFP_DD_OTHERS:
++		printf(" (Others/Undefined)\n");
++		break;
++	case QSFP_DD_1490_DFB:
++		printf(" (1490 nm DFB)\n");
++		break;
++	case QSFP_DD_COPPER_UNEQUAL:
++		printf("%s unequalized)\n", cc);
++		break;
++	case QSFP_DD_COPPER_PASS_EQUAL:
++		printf("%s passive equalized)\n", cc);
++		break;
++	case QSFP_DD_COPPER_NF_EQUAL:
++		printf("%s near and far end limiting active equalizers)\n", cc);
++		break;
++	case QSFP_DD_COPPER_F_EQUAL:
++		printf("%s far end limiting active equalizers)\n", cc);
++		break;
++	case QSFP_DD_COPPER_N_EQUAL:
++		printf("%s near end limiting active equalizers)\n", cc);
++		break;
++	case QSFP_DD_COPPER_LINEAR_EQUAL:
++		printf("%s linear active equalizers)\n", cc);
++		break;
++	}
++
++	if (id[QSFP_DD_MEDIA_INTF_TECH_OFFSET] >= QSFP_DD_COPPER_UNEQUAL) {
++		printf("\t%-41s : %udb\n", "Attenuation at 5GHz",
++		       id[QSFP_DD_COPPER_ATT_5GHZ]);
++		printf("\t%-41s : %udb\n", "Attenuation at 7GHz",
++		       id[QSFP_DD_COPPER_ATT_7GHZ]);
++		printf("\t%-41s : %udb\n", "Attenuation at 12.9GHz",
++		       id[QSFP_DD_COPPER_ATT_12P9GHZ]);
++		printf("\t%-41s : %udb\n", "Attenuation at 25.8GHz",
++		       id[QSFP_DD_COPPER_ATT_25P8GHZ]);
++	} else {
++		printf("\t%-41s : %.3lfnm\n", "Laser wavelength",
++		       (((id[QSFP_DD_NOM_WAVELENGTH_MSB] << 8) |
++				id[QSFP_DD_NOM_WAVELENGTH_LSB]) * 0.05));
++		printf("\t%-41s : %.3lfnm\n", "Laser wavelength tolerance",
++		       (((id[QSFP_DD_WAVELENGTH_TOL_MSB] << 8) |
++		       id[QSFP_DD_WAVELENGTH_TOL_LSB]) * 0.005));
++	}
++}
++
++/**
++ * Read the high/low alarms or warnings for a specific channel. This
++ * information is found in the i'th bit of each byte associated with
++ * one of the aforementioned properties. A value greater than zero
++ * means the alarm/warning is turned on.
++ * The values are stored in the qsfp_dd_diags structure, in the rxaw
++ * or txaw array (each element corresponds to an alarm/warning).
++ */
++static void qsfp_dd_read_aw_for_channel(const __u8 *id, int ch, int mode,
++					struct qsfp_dd_diags * const sd)
++{
++	__u8 cmsk = (1 << ch);
++
++	if (mode == QSFP_DD_READ_TX) {
++		sd->txaw[ch][HA] = id[QSFP_DD_TX_HA_OFFSET] & cmsk;
++		sd->txaw[ch][LA] = id[QSFP_DD_TX_LA_OFFSET] & cmsk;
++		sd->txaw[ch][HW] = id[QSFP_DD_TX_HW_OFFSET] & cmsk;
++		sd->txaw[ch][LW] = id[QSFP_DD_TX_LW_OFFSET] & cmsk;
++	} else {
++		sd->rxaw[ch][HA] = id[QSFP_DD_RX_HA_OFFSET] & cmsk;
++		sd->rxaw[ch][LA] = id[QSFP_DD_RX_LA_OFFSET] & cmsk;
++		sd->rxaw[ch][HW] = id[QSFP_DD_RX_HW_OFFSET] & cmsk;
++		sd->rxaw[ch][LW] = id[QSFP_DD_RX_LW_OFFSET] & cmsk;
++	}
++}
++
++/*
++ * 2-byte internal temperature conversions:
++ * First byte is a signed 8-bit integer, which is the temp decimal part
++ * Second byte is a multiple of 1/256th of a degree, which is added to
++ * the dec part.
++ */
++#define OFFSET_TO_TEMP(offset) ((__s16)OFFSET_TO_U16(offset))
++
++/**
++ * Get and parse relevant diagnostic information for the current module.
++ * These are stored for every channel in a qsfp_dd_diags structure.
++ */
++static void
++qsfp_dd_parse_diagnostics(const __u8 *id, struct qsfp_dd_diags *const sd)
++{
++	__u16 rx_power_offset;
++	__u16 tx_power_offset;
++	__u16 tx_bias_offset;
++	__u16 temp_offset;
++	__u16 volt_offset;
++	int i;
++
++	for (i = 0; i < QSFP_DD_MAX_CHANNELS; ++i) {
++		/*
++		 * Add Tx/Rx output/input optical power relevant information.
++		 * To access the info for the ith lane, we have to skip i * 2
++		 * bytes starting from the offset of the first lane for that
++		 * specific channel property.
++		 */
++		tx_bias_offset = QSFP_DD_TX_BIAS_START_OFFSET + (i << 1);
++		rx_power_offset = QSFP_DD_RX_PWR_START_OFFSET + (i << 1);
++		tx_power_offset = QSFP_DD_TX_PWR_START_OFFSET + (i << 1);
++
++		sd->scd[i].bias_cur = OFFSET_TO_U16(tx_bias_offset);
++		sd->scd[i].rx_power = OFFSET_TO_U16(rx_power_offset);
++		sd->scd[i].tx_power = OFFSET_TO_U16(tx_power_offset);
++
++		/* Add alarms/warnings related info */
++		qsfp_dd_read_aw_for_channel(id, i, QSFP_DD_READ_TX, sd);
++		qsfp_dd_read_aw_for_channel(id, i, QSFP_DD_READ_RX, sd);
++	}
++
++	/**
++	 * Gather Module-Level Monitor Thresholds and Lane-specific Monitor
++	 * Thresholds. These values are stored in two bytes (MSB, LSB) in
++	 * the following order: HA, LA, HW, LW, thus we only need the start
++	 * offset for each property.
++	 */
++	for (i = 0; i < 4; ++i) {
++		tx_power_offset = QSFP_DD_TXPW_THRS_START_OFFSET + (i << 1);
++		sd->tx_power[i] = OFFSET_TO_U16(tx_power_offset);
++
++		rx_power_offset = QSFP_DD_RXPW_THRS_START_OFFSET + (i << 1);
++		sd->rx_power[i] = OFFSET_TO_U16(rx_power_offset);
++
++		tx_bias_offset = QSFP_DD_TXBI_THRS_START_OFFSET + (i << 1);
++		sd->bias_cur[i] = OFFSET_TO_U16(tx_bias_offset);
++
++		temp_offset = QSFP_DD_TEMP_THRS_START_OFFSET + (i << 1);
++		sd->sfp_temp[i] = OFFSET_TO_TEMP(temp_offset);
++
++		volt_offset = QSFP_DD_VOLT_THRS_START_OFFSET + (i << 1);
++		sd->sfp_voltage[i] = OFFSET_TO_U16(volt_offset);
++	}
++}
++
++/**
++ * Print the Module-Level Monitor Thresholds and the Lane-specific
++ * Monitor Thresholds. This is the same function as the one in the
++ * sff-common.c file, but is using a struct qsfp_dd_diags as a pa-
++ * rameter.
++ */
++static void qsfp_dd_show_thresholds(const struct qsfp_dd_diags sd)
++{
++	PRINT_BIAS("Laser bias current high alarm threshold",
++		   sd.bias_cur[HA]);
++	PRINT_BIAS("Laser bias current low alarm threshold",
++		   sd.bias_cur[LA]);
++	PRINT_BIAS("Laser bias current high warning threshold",
++		   sd.bias_cur[HW]);
++	PRINT_BIAS("Laser bias current low warning threshold",
++		   sd.bias_cur[LW]);
++
++	PRINT_xX_PWR("Laser output power high alarm threshold",
++		     sd.tx_power[HA]);
++	PRINT_xX_PWR("Laser output power low alarm threshold",
++		     sd.tx_power[LA]);
++	PRINT_xX_PWR("Laser output power high warning threshold",
++		     sd.tx_power[HW]);
++	PRINT_xX_PWR("Laser output power low warning threshold",
++		     sd.tx_power[LW]);
++
++	PRINT_TEMP("Module temperature high alarm threshold",
++		   sd.sfp_temp[HA]);
++	PRINT_TEMP("Module temperature low alarm threshold",
++		   sd.sfp_temp[LA]);
++	PRINT_TEMP("Module temperature high warning threshold",
++		   sd.sfp_temp[HW]);
++	PRINT_TEMP("Module temperature low warning threshold",
++		   sd.sfp_temp[LW]);
++
++	PRINT_VCC("Module voltage high alarm threshold",
++		  sd.sfp_voltage[HA]);
++	PRINT_VCC("Module voltage low alarm threshold",
++		  sd.sfp_voltage[LA]);
++	PRINT_VCC("Module voltage high warning threshold",
++		  sd.sfp_voltage[HW]);
++	PRINT_VCC("Module voltage low warning threshold",
++		  sd.sfp_voltage[LW]);
++
++	PRINT_xX_PWR("Laser rx power high alarm threshold",
++		     sd.rx_power[HA]);
++	PRINT_xX_PWR("Laser rx power low alarm threshold",
++		     sd.rx_power[LA]);
++	PRINT_xX_PWR("Laser rx power high warning threshold",
++		     sd.rx_power[HW]);
++	PRINT_xX_PWR("Laser rx power low warning threshold",
++		     sd.rx_power[LW]);
++}
++
++/**
++ * Print relevant lane specific monitor information for each of
++ * the 8 available channels. Relevant documents:
++ * [1] CMIS Rev. 3:
++ * --> pag. 50, section 1.7.2.4, Table 22
++ * --> pag. 53, section 1.7.2.7, Table 26
++ * --> pag. 76, section 1.7.5.1, Table 50
++ * --> pag. 78, section 1.7.5.2, Table 51
++ * --> pag. 98, section 1.7.7.2, Table 67
++ *
++ * [2] CMIS Rev. 4:
++ * --> pag. 84, section 8.2.4, Table 8-6
++ * --> pag. 89, section 8.2.9, Table 8-12
++ * --> pag. 112, section 8.5.1/2, Table 8-41/42
++ * --> pag. 137, section 8.8.2, Table 8-60/61
++ * --> pag. 140, section 8.8.3, Table 8-62
++ */
++static void qsfp_dd_show_sig_optical_pwr(const __u8 *id, __u32 eeprom_len)
++{
++	static const char * const aw_strings[] = {
++		"%s power high alarm   (Channel %d)",
++		"%s power low alarm    (Channel %d)",
++		"%s power high warning (Channel %d)",
++		"%s power low warning  (Channel %d)"
++	};
++	__u8 module_type = id[QSFP_DD_MODULE_TYPE_OFFSET];
++	char field_desc[QSFP_DD_MAX_DESC_SIZE];
++	struct qsfp_dd_diags sd = { { 0 } };
++	const char *cs = "%s (Channel %d)";
++	int i, j;
++
++	/* Print current temperature & voltage */
++	PRINT_TEMP("Module temperature",
++		   OFFSET_TO_TEMP(QSFP_DD_CURR_TEMP_OFFSET));
++	PRINT_VCC("Module voltage",
++		  OFFSET_TO_U16(QSFP_DD_CURR_CURR_OFFSET));
++
++	/**
++	 * The thresholds and the high/low alarms/warnings are available
++	 * only if an optical interface (MMF/SMF) is present (if this is
++	 * the case, it means that 5 pages are available).
++	 */
++	if (module_type != QSFP_DD_MT_MMF &&
++	    module_type != QSFP_DD_MT_SMF &&
++	    eeprom_len != QSFP_DD_EEPROM_5PAG)
++		return;
++
++	/* Extract the diagnostic variables */
++	qsfp_dd_parse_diagnostics(id, &sd);
++
++	/* Print Tx bias current monitor values */
++	for (i = 0; i < QSFP_DD_MAX_CHANNELS; ++i) {
++		snprintf(field_desc, QSFP_DD_MAX_DESC_SIZE, cs,
++			 "Tx bias current monitor", i + 1);
++		PRINT_BIAS(field_desc, sd.scd[i].bias_cur);
++	}
++
++	/* Print Tx output optical power values */
++	for (i = 0; i < QSFP_DD_MAX_CHANNELS; ++i) {
++		snprintf(field_desc, QSFP_DD_MAX_DESC_SIZE, cs,
++			 "Tx output optical power", i + 1);
++		PRINT_xX_PWR(field_desc, sd.scd[i].tx_power);
++	}
++
++	/* Print Rx output optical power values */
++	for (i = 0; i < QSFP_DD_MAX_CHANNELS; ++i) {
++		snprintf(field_desc, QSFP_DD_MAX_DESC_SIZE, cs,
++			 "Rx input optical power", i + 1);
++		PRINT_xX_PWR(field_desc, sd.scd[i].rx_power);
++	}
++
++	/* Print the Rx alarms/warnings for each channel */
++	for (i = 0; i < QSFP_DD_MAX_CHANNELS; ++i) {
++		for (j = 0; j < 4; ++j) {
++			snprintf(field_desc, QSFP_DD_MAX_DESC_SIZE,
++				 aw_strings[j], "Rx", i + 1);
++			printf("\t%-41s : %s\n", field_desc,
++			       ONOFF(sd.rxaw[i][j]));
++		}
++	}
++
++	/* Print the Tx alarms/warnings for each channel */
++	for (i = 0; i < QSFP_DD_MAX_CHANNELS; ++i) {
++		for (j = 0; j < 4; ++j) {
++			snprintf(field_desc, QSFP_DD_MAX_DESC_SIZE,
++				 aw_strings[j], "Tx", i + 1);
++			printf("\t%-41s : %s\n", field_desc,
++			       ONOFF(sd.rxaw[i][j]));
++		}
++	}
++
++	qsfp_dd_show_thresholds(sd);
++}
++
++/**
++ * Print relevant info about the maximum supported fiber media length
++ * for each type of fiber media at the maximum module-supported bit rate.
++ * Relevant documents:
++ * [1] CMIS Rev. 3, page 64, section 1.7.4.2, Table 39
++ * [2] CMIS Rev. 4, page 99, section 8.4.2, Table 8-27
++ */
++static void qsfp_dd_show_link_len(const __u8 *id)
++{
++	qsfp_dd_print_smf_cbl_len(id);
++	sff_show_value_with_unit(id, QSFP_DD_OM5_LEN_OFFSET,
++				 "Length (OM5)", 2, "m");
++	sff_show_value_with_unit(id, QSFP_DD_OM4_LEN_OFFSET,
++				 "Length (OM4)", 2, "m");
++	sff_show_value_with_unit(id, QSFP_DD_OM3_LEN_OFFSET,
++				 "Length (OM3 50/125um)", 2, "m");
++	sff_show_value_with_unit(id, QSFP_DD_OM2_LEN_OFFSET,
++				 "Length (OM2 50/125um)", 1, "m");
++}
++
++/**
++ * Show relevant information about the vendor. Relevant documents:
++ * [1] CMIS Rev. 3, page 56, section 1.7.3, Table 27
++ * [2] CMIS Rev. 4, page 91, section 8.2, Table 8-15
++ */
++static void qsfp_dd_show_vendor_info(const __u8 *id)
++{
++	sff_show_ascii(id, QSFP_DD_VENDOR_NAME_START_OFFSET,
++		       QSFP_DD_VENDOR_NAME_END_OFFSET, "Vendor name");
++	qsfp_dd_show_oui(id);
++	sff_show_ascii(id, QSFP_DD_VENDOR_PN_START_OFFSET,
++		       QSFP_DD_VENDOR_PN_END_OFFSET, "Vendor PN");
++	sff_show_ascii(id, QSFP_DD_VENDOR_REV_START_OFFSET,
++		       QSFP_DD_VENDOR_REV_END_OFFSET, "Vendor rev");
++	sff_show_ascii(id, QSFP_DD_VENDOR_SN_START_OFFSET,
++		       QSFP_DD_VENDOR_SN_END_OFFSET, "Vendor SN");
++	sff_show_ascii(id, QSFP_DD_DATE_YEAR_OFFSET,
++		       QSFP_DD_DATE_VENDOR_LOT_OFFSET + 1, "Date code");
++
++	if (id[QSFP_DD_CLEI_PRESENT_BYTE] & QSFP_DD_CLEI_PRESENT_MASK)
++		sff_show_ascii(id, QSFP_DD_CLEI_START_OFFSET,
++			       QSFP_DD_CLEI_END_OFFSET, "CLEI code");
++}
++
++void qsfp_dd_show_all(const __u8 *id, __u32 eeprom_len)
++{
++	qsfp_dd_show_identifier(id);
++	qsfp_dd_show_power_info(id);
++	qsfp_dd_show_connector(id);
++	qsfp_dd_show_cbl_asm_len(id);
++	qsfp_dd_show_sig_integrity(id);
++	qsfp_dd_show_mit_compliance(id);
++	qsfp_dd_show_sig_optical_pwr(id, eeprom_len);
++	qsfp_dd_show_link_len(id);
++	qsfp_dd_show_vendor_info(id);
++	qsfp_dd_show_rev_compliance(id);
++}
+diff --git a/qsfp-dd.h b/qsfp-dd.h
+new file mode 100644
+index 0000000..a7a7051
+--- /dev/null
++++ b/qsfp-dd.h
+@@ -0,0 +1,236 @@
++#ifndef QSFP_DD_H__
++#define QSFP_DD_H__
++
++#define QSFP_DD_PAG_SIZE			0x80
++#define QSFP_DD_EEPROM_5PAG			(0x80 * 6)
++#define QSFP_DD_MAX_CHANNELS			0x08
++#define QSFP_DD_MAX_DESC_SIZE			0x2A
++#define QSFP_DD_READ_TX				0x00
++#define QSFP_DD_READ_RX				0x01
++
++/* Struct for the current/power of a channel */
++struct qsfp_dd_channel_diags {
++	__u16 bias_cur;
++	__u16 rx_power;
++	__u16 tx_power;
++};
++
++struct qsfp_dd_diags {
++	/* Voltage in 0.1mV units; the first 4 elements represent
++	 * the high/low alarm, high/low warning and the last one
++	 * represent the current voltage of the module.
++	 */
++	__u16 sfp_voltage[4];
++
++	/**
++	 * Temperature in 16-bit signed 1/256 Celsius; the first 4
++	 * elements represent the high/low alarm, high/low warning
++	 * and the last one represent the current temp of the module.
++	 */
++	__s16 sfp_temp[4];
++
++	/* Tx bias current in 2uA units */
++	__u16 bias_cur[4];
++
++	/* Measured TX Power */
++	__u16 tx_power[4];
++
++	/* Measured RX Power */
++	__u16 rx_power[4];
++
++	/* Rx alarms and warnings */
++	bool rxaw[QSFP_DD_MAX_CHANNELS][4];
++
++	/* Tx alarms and warnings */
++	bool txaw[QSFP_DD_MAX_CHANNELS][4];
++
++	struct qsfp_dd_channel_diags scd[QSFP_DD_MAX_CHANNELS];
++};
++
++#define HA					0
++#define LA					1
++#define HW					2
++#define LW					3
++
++/* Identifier and revision compliance (Page 0) */
++#define	QSFP_DD_ID_OFFSET			0x00
++#define QSFP_DD_REV_COMPLIANCE_OFFSET		0x01
++
++#define QSFP_DD_MODULE_TYPE_OFFSET		0x55
++#define QSFP_DD_MT_MMF				0x01
++#define QSFP_DD_MT_SMF				0x02
++
++/* Module-Level Monitors (Page 0) */
++#define QSFP_DD_CURR_TEMP_OFFSET		0x0E
++#define QSFP_DD_CURR_CURR_OFFSET		0x10
++
++#define QSFP_DD_CTOR_OFFSET			0xCB
++
++/* Vendor related information (Page 0) */
++#define QSFP_DD_VENDOR_NAME_START_OFFSET	0x81
++#define QSFP_DD_VENDOR_NAME_END_OFFSET		0x90
++
++#define QSFP_DD_VENDOR_OUI_OFFSET		0x91
++
++#define QSFP_DD_VENDOR_PN_START_OFFSET		0x94
++#define QSFP_DD_VENDOR_PN_END_OFFSET		0xA3
++
++#define QSFP_DD_VENDOR_REV_START_OFFSET		0xA4
++#define QSFP_DD_VENDOR_REV_END_OFFSET		0xA5
++
++#define QSFP_DD_VENDOR_SN_START_OFFSET		0xA6
++#define QSFP_DD_VENDOR_SN_END_OFFSET		0xB5
++
++#define QSFP_DD_DATE_YEAR_OFFSET		0xB6
++#define QSFP_DD_DATE_VENDOR_LOT_OFFSET		0xBD
++
++/* CLEI Code (Page 0) */
++#define QSFP_DD_CLEI_PRESENT_BYTE		0x02
++#define QSFP_DD_CLEI_PRESENT_MASK		0x20
++#define QSFP_DD_CLEI_START_OFFSET		0xBE
++#define QSFP_DD_CLEI_END_OFFSET			0xC7
++
++/* Cable assembly length */
++#define QSFP_DD_CBL_ASM_LEN_OFFSET		0xCA
++#define QSFP_DD_6300M_MAX_LEN			0xFF
++
++/* Cable length with multiplier */
++#define QSFP_DD_MULTIPLIER_00			0x00
++#define QSFP_DD_MULTIPLIER_01			0x40
++#define QSFP_DD_MULTIPLIER_10			0x80
++#define QSFP_DD_MULTIPLIER_11			0xC0
++#define QSFP_DD_LEN_MUL_MASK			0xC0
++#define QSFP_DD_LEN_VAL_MASK			0x3F
++
++/* Module power characteristics */
++#define QSFP_DD_PWR_CLASS_OFFSET		0xC8
++#define QSFP_DD_PWR_MAX_POWER_OFFSET		0xC9
++#define QSFP_DD_PWR_CLASS_MASK			0xE0
++#define QSFP_DD_PWR_CLASS_1			0x00
++#define QSFP_DD_PWR_CLASS_2			0x01
++#define QSFP_DD_PWR_CLASS_3			0x02
++#define QSFP_DD_PWR_CLASS_4			0x03
++#define QSFP_DD_PWR_CLASS_5			0x04
++#define QSFP_DD_PWR_CLASS_6			0x05
++#define QSFP_DD_PWR_CLASS_7			0x06
++#define QSFP_DD_PWR_CLASS_8			0x07
++
++/* Copper cable attenuation */
++#define QSFP_DD_COPPER_ATT_5GHZ			0xCC
++#define QSFP_DD_COPPER_ATT_7GHZ			0xCD
++#define QSFP_DD_COPPER_ATT_12P9GHZ		0xCE
++#define QSFP_DD_COPPER_ATT_25P8GHZ		0xCF
++
++/* Cable assembly lane */
++#define QSFP_DD_CABLE_ASM_NEAR_END_OFFSET	0xD2
++#define QSFP_DD_CABLE_ASM_FAR_END_OFFSET	0xD3
++
++/* Media interface technology */
++#define QSFP_DD_MEDIA_INTF_TECH_OFFSET		0xD4
++#define QSFP_DD_850_VCSEL			0x00
++#define QSFP_DD_1310_VCSEL			0x01
++#define QSFP_DD_1550_VCSEL			0x02
++#define QSFP_DD_1310_FP				0x03
++#define QSFP_DD_1310_DFB			0x04
++#define QSFP_DD_1550_DFB			0x05
++#define QSFP_DD_1310_EML			0x06
++#define QSFP_DD_1550_EML			0x07
++#define QSFP_DD_OTHERS				0x08
++#define QSFP_DD_1490_DFB			0x09
++#define QSFP_DD_COPPER_UNEQUAL			0x0A
++#define QSFP_DD_COPPER_PASS_EQUAL		0x0B
++#define QSFP_DD_COPPER_NF_EQUAL			0x0C
++#define QSFP_DD_COPPER_F_EQUAL			0x0D
++#define QSFP_DD_COPPER_N_EQUAL			0x0E
++#define QSFP_DD_COPPER_LINEAR_EQUAL		0x0F
++
++/*-----------------------------------------------------------------------
++ * For optical connected cables (the eeprom length is equal to  640 bytes
++ * = QSFP_DD_EEPROM_WITH_OPTICAL), the memory has the following format:
++ * Bytes   0-127: page  0 (lower)
++ * Bytes 128-255: page  0 (higher)
++ * Bytes 256-383: page  1 (higher)
++ * Bytes 384-511: page  2 (higher)
++ * Bytes 512-639: page 16 (higher)
++ * Bytes 640-768: page 17 (higher)
++ *
++ * Since for pages with an index > 0 the lower part is missing from the memory,
++ * but the offset values are still in the [128, 255) range, the real offset in
++ * the eeprom memory must be calculated as following:
++ * RealOffset = PageIndex * 0x80 + LocalOffset
++
++ * The page index is the index of the page, starting from 0: page 0 has index
++ * 1, page 1 has index 1, page 2 has index 2, page 16 has index 3 and page 17
++ * has index 4.
++ */
++
++/*-----------------------------------------------------------------------
++ * Upper Memory Page 0x01: contains advertising fields that define properties
++ * that are unique to active modules and cable assemblies.
++ * RealOffset = 1 * 0x80 + LocalOffset
++ */
++#define PAG01H_OFFSET				(0x01 * 0x80)
++
++/* Supported Link Length (Page 1) */
++#define QSFP_DD_SMF_LEN_OFFSET			(PAG01H_OFFSET + 0x84)
++#define QSFP_DD_OM5_LEN_OFFSET			(PAG01H_OFFSET + 0x85)
++#define QSFP_DD_OM4_LEN_OFFSET			(PAG01H_OFFSET + 0x86)
++#define QSFP_DD_OM3_LEN_OFFSET			(PAG01H_OFFSET + 0x87)
++#define QSFP_DD_OM2_LEN_OFFSET			(PAG01H_OFFSET + 0x88)
++
++/* Wavelength (Page 1) */
++#define QSFP_DD_NOM_WAVELENGTH_MSB		(PAG01H_OFFSET + 0x8A)
++#define QSFP_DD_NOM_WAVELENGTH_LSB		(PAG01H_OFFSET + 0x8B)
++#define QSFP_DD_WAVELENGTH_TOL_MSB		(PAG01H_OFFSET + 0x8C)
++#define QSFP_DD_WAVELENGTH_TOL_LSB		(PAG01H_OFFSET + 0x8D)
++
++/* Signal integrity controls */
++#define QSFP_DD_SIG_INTEG_TX_OFFSET		(PAG01H_OFFSET + 0xA1)
++#define QSFP_DD_SIG_INTEG_RX_OFFSET		(PAG01H_OFFSET + 0xA2)
++
++/*-----------------------------------------------------------------------
++ * Upper Memory Page 0x02: contains module defined threshdolds and lane-
++ * specific monitors.
++ * RealOffset = 2 * 0x80 + LocalOffset
++ */
++#define PAG02H_OFFSET				(0x02 * 0x80)
++#define QSFP_DD_TEMP_THRS_START_OFFSET		(PAG02H_OFFSET + 0x80)
++#define QSFP_DD_VOLT_THRS_START_OFFSET		(PAG02H_OFFSET + 0x88)
++#define QSFP_DD_TXPW_THRS_START_OFFSET		(PAG02H_OFFSET + 0xB0)
++#define QSFP_DD_TXBI_THRS_START_OFFSET		(PAG02H_OFFSET + 0xB8)
++#define QSFP_DD_RXPW_THRS_START_OFFSET		(PAG02H_OFFSET + 0xC0)
++
++/*-----------------------------------------------------------------------
++ * Upper Memory Page 0x10: contains dynamic control bytes.
++ * RealOffset = 3 * 0x80 + LocalOffset
++ */
++#define PAG10H_OFFSET				(0x03 * 0x80)
++
++/*-----------------------------------------------------------------------
++ * Upper Memory Page 0x11: contains lane dynamic status bytes.
++ * RealOffset = 4 * 0x80 + LocalOffset
++ */
++#define PAG11H_OFFSET				(0x04 * 0x80)
++#define QSFP_DD_TX_PWR_START_OFFSET		(PAG11H_OFFSET + 0x9A)
++#define QSFP_DD_TX_BIAS_START_OFFSET		(PAG11H_OFFSET + 0xAA)
++#define QSFP_DD_RX_PWR_START_OFFSET		(PAG11H_OFFSET + 0xBA)
++
++/* HA = High Alarm; LA = Low Alarm
++ * HW = High Warning; LW = Low Warning
++ */
++#define QSFP_DD_TX_HA_OFFSET			(PAG11H_OFFSET + 0x8B)
++#define QSFP_DD_TX_LA_OFFSET			(PAG11H_OFFSET + 0x8C)
++#define QSFP_DD_TX_HW_OFFSET			(PAG11H_OFFSET + 0x8D)
++#define QSFP_DD_TX_LW_OFFSET			(PAG11H_OFFSET + 0x8E)
++
++#define QSFP_DD_RX_HA_OFFSET			(PAG11H_OFFSET + 0x95)
++#define QSFP_DD_RX_LA_OFFSET			(PAG11H_OFFSET + 0x96)
++#define QSFP_DD_RX_HW_OFFSET			(PAG11H_OFFSET + 0x97)
++#define QSFP_DD_RX_LW_OFFSET			(PAG11H_OFFSET + 0x98)
++
++#define YESNO(x) (((x) != 0) ? "Yes" : "No")
++#define ONOFF(x) (((x) != 0) ? "On" : "Off")
++
++void qsfp_dd_show_all(const __u8 *id, __u32 eeprom_len);
++
++#endif /* QSFP_DD_H__ */
+diff --git a/qsfp.c b/qsfp.c
+index a8b69c9..2f740bb 100644
+--- a/qsfp.c
++++ b/qsfp.c
+@@ -58,6 +58,7 @@
+ #include "internal.h"
+ #include "sff-common.h"
+ #include "qsfp.h"
++#include "qsfp-dd.h"
+ 
+ #define MAX_DESC_SIZE	42
+ 
+@@ -579,9 +580,9 @@ static void sff8636_show_rate_identifier(const __u8 *id)
+ 			id[SFF8636_EXT_RS_OFFSET]);
+ }
+ 
+-static void sff8636_show_oui(const __u8 *id)
++static void sff8636_show_oui(const __u8 *id, int id_offset)
+ {
+-	sff8024_show_oui(id, SFF8636_VENDOR_OUI_OFFSET);
++	sff8024_show_oui(id, id_offset);
+ }
+ 
+ static void sff8636_show_wavelength_or_copper_compliance(const __u8 *id)
+@@ -662,38 +663,7 @@ static void sff8636_show_wavelength_or_copper_compliance(const __u8 *id)
+ 
+ static void sff8636_show_revision_compliance(const __u8 *id)
+ {
+-	static const char *pfx =
+-		"\tRevision Compliance                       :";
+-
+-	switch (id[SFF8636_REV_COMPLIANCE_OFFSET]) {
+-	case SFF8636_REV_UNSPECIFIED:
+-		printf("%s Revision not specified\n", pfx);
+-		break;
+-	case SFF8636_REV_8436_48:
+-		printf("%s SFF-8436 Rev 4.8 or earlier\n", pfx);
+-		break;
+-	case SFF8636_REV_8436_8636:
+-		printf("%s SFF-8436 Rev 4.8 or earlier\n", pfx);
+-		break;
+-	case SFF8636_REV_8636_13:
+-		printf("%s SFF-8636 Rev 1.3 or earlier\n", pfx);
+-		break;
+-	case SFF8636_REV_8636_14:
+-		printf("%s SFF-8636 Rev 1.4\n", pfx);
+-		break;
+-	case SFF8636_REV_8636_15:
+-		printf("%s SFF-8636 Rev 1.5\n", pfx);
+-		break;
+-	case SFF8636_REV_8636_20:
+-		printf("%s SFF-8636 Rev 2.0\n", pfx);
+-		break;
+-	case SFF8636_REV_8636_27:
+-		printf("%s SFF-8636 Rev 2.5/2.6/2.7\n", pfx);
+-		break;
+-	default:
+-		printf("%s Unallocated\n", pfx);
+-		break;
+-	}
++	sff_show_revision_compliance(id, SFF8636_REV_COMPLIANCE_OFFSET);
+ }
+ 
+ /*
+@@ -846,10 +816,15 @@ static void sff8636_show_dom(const __u8 *id, __u32 eeprom_len)
+ 
+ 		sff_show_thresholds(sd);
+ 	}
+-
+ }
++
+ void sff8636_show_all(const __u8 *id, __u32 eeprom_len)
+ {
++	if (id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP_DD) {
++		qsfp_dd_show_all(id, eeprom_len);
++		return;
++	}
++
+ 	sff8636_show_identifier(id);
+ 	if ((id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP) ||
+ 		(id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP_PLUS) ||
+@@ -858,6 +833,7 @@ void sff8636_show_all(const __u8 *id, __u32 eeprom_len)
+ 		sff8636_show_connector(id);
+ 		sff8636_show_transceiver(id);
+ 		sff8636_show_encoding(id);
++
+ 		sff_show_value_with_unit(id, SFF8636_BR_NOMINAL_OFFSET,
+ 				"BR, Nominal", 100, "Mbps");
+ 		sff8636_show_rate_identifier(id);
+@@ -872,17 +848,19 @@ void sff8636_show_all(const __u8 *id, __u32 eeprom_len)
+ 		sff_show_value_with_unit(id, SFF8636_CBL_LEN_OFFSET,
+ 			     "Length (Copper or Active cable)", 1, "m");
+ 		sff8636_show_wavelength_or_copper_compliance(id);
++
+ 		sff_show_ascii(id, SFF8636_VENDOR_NAME_START_OFFSET,
+-			       SFF8636_VENDOR_NAME_END_OFFSET, "Vendor name");
+-		sff8636_show_oui(id);
++				SFF8636_VENDOR_NAME_END_OFFSET, "Vendor name");
++		sff8636_show_oui(id, SFF8636_VENDOR_OUI_OFFSET);
+ 		sff_show_ascii(id, SFF8636_VENDOR_PN_START_OFFSET,
+-			       SFF8636_VENDOR_PN_END_OFFSET, "Vendor PN");
++				SFF8636_VENDOR_PN_END_OFFSET, "Vendor PN");
+ 		sff_show_ascii(id, SFF8636_VENDOR_REV_START_OFFSET,
+-			       SFF8636_VENDOR_REV_END_OFFSET, "Vendor rev");
++				SFF8636_VENDOR_REV_END_OFFSET, "Vendor rev");
+ 		sff_show_ascii(id, SFF8636_VENDOR_SN_START_OFFSET,
+-			       SFF8636_VENDOR_SN_END_OFFSET, "Vendor SN");
++				SFF8636_VENDOR_SN_END_OFFSET, "Vendor SN");
+ 		sff_show_ascii(id, SFF8636_DATE_YEAR_OFFSET,
+-			       SFF8636_DATE_VENDOR_LOT_OFFSET + 1, "Date code");
++				SFF8636_DATE_VENDOR_LOT_OFFSET + 1, "Date code");
++
+ 		sff8636_show_revision_compliance(id);
+ 		sff8636_show_dom(id, eeprom_len);
+ 	}
+diff --git a/qsfp.h b/qsfp.h
+index 3215932..9636b0c 100644
+--- a/qsfp.h
++++ b/qsfp.h
+@@ -31,14 +31,6 @@
+ #define	SFF8636_ID_OFFSET	0x00
+ 
+ #define	SFF8636_REV_COMPLIANCE_OFFSET	0x01
+-#define	 SFF8636_REV_UNSPECIFIED		0x00
+-#define	 SFF8636_REV_8436_48			0x01
+-#define	 SFF8636_REV_8436_8636			0x02
+-#define	 SFF8636_REV_8636_13			0x03
+-#define	 SFF8636_REV_8636_14			0x04
+-#define	 SFF8636_REV_8636_15			0x05
+-#define	 SFF8636_REV_8636_20			0x06
+-#define	 SFF8636_REV_8636_27			0x07
+ 
+ #define	SFF8636_STATUS_2_OFFSET	0x02
+ /* Flat Memory:0- Paging, 1- Page 0 only */
+diff --git a/sff-common.c b/sff-common.c
+index 7700cbe..5490b5f 100644
+--- a/sff-common.c
++++ b/sff-common.c
+@@ -46,6 +46,7 @@ void sff_show_ascii(const __u8 *id, unsigned int first_reg,
+ 	printf("\t%-41s : ", name);
+ 	while (first_reg <= last_reg && id[last_reg] == ' ')
+ 		last_reg--;
++
+ 	for (reg = first_reg; reg <= last_reg; reg++) {
+ 		val = id[reg];
+ 		putchar(((val >= 32) && (val <= 126)) ? val : '_');
+@@ -136,6 +137,9 @@ void sff8024_show_identifier(const __u8 *id, int id_offset)
+ 	case SFF8024_ID_MICRO_QSFP:
+ 		printf(" (microQSFP)\n");
+ 		break;
++	case SFF8024_ID_QSFP_DD:
++		printf(" (QSFP-DD Double Density 8X Pluggable Transceiver (INF-8628))\n");
++		break;
+ 	default:
+ 		printf(" (reserved or unknown)\n");
+ 		break;
+@@ -203,6 +207,18 @@ void sff8024_show_connector(const __u8 *id, int ctor_offset)
+ 	case SFF8024_CTOR_MXC_2x16:
+ 		printf(" (MXC 2x16)\n");
+ 		break;
++	case SFF8024_CTOR_CS_OPTICAL:
++		printf(" (CS optical connector)\n");
++		break;
++	case SFF8024_CTOR_CS_OPTICAL_MINI:
++		printf(" (Mini CS optical connector)\n");
++		break;
++	case SFF8024_CTOR_MPO_2X12:
++		printf(" (MPO 2x12)\n");
++		break;
++	case SFF8024_CTOR_MPO_1X16:
++		printf(" (MPO 1x16)\n");
++		break;
+ 	default:
+ 		printf(" (reserved or unknown)\n");
+ 		break;
+@@ -302,3 +318,39 @@ void sff_show_thresholds(struct sff_diags sd)
+ 	PRINT_xX_PWR("Laser rx power low warning threshold",
+ 		     sd.rx_power[LWARN]);
+ }
++
++void sff_show_revision_compliance(const __u8 *id, int rev_offset)
++{
++	static const char *pfx =
++		"\tRevision Compliance                       :";
++
++	switch (id[rev_offset]) {
++	case SFF8636_REV_UNSPECIFIED:
++		printf("%s Revision not specified\n", pfx);
++		break;
++	case SFF8636_REV_8436_48:
++		printf("%s SFF-8436 Rev 4.8 or earlier\n", pfx);
++		break;
++	case SFF8636_REV_8436_8636:
++		printf("%s SFF-8436 Rev 4.8 or earlier\n", pfx);
++		break;
++	case SFF8636_REV_8636_13:
++		printf("%s SFF-8636 Rev 1.3 or earlier\n", pfx);
++		break;
++	case SFF8636_REV_8636_14:
++		printf("%s SFF-8636 Rev 1.4\n", pfx);
++		break;
++	case SFF8636_REV_8636_15:
++		printf("%s SFF-8636 Rev 1.5\n", pfx);
++		break;
++	case SFF8636_REV_8636_20:
++		printf("%s SFF-8636 Rev 2.0\n", pfx);
++		break;
++	case SFF8636_REV_8636_27:
++		printf("%s SFF-8636 Rev 2.5/2.6/2.7\n", pfx);
++		break;
++	default:
++		printf("%s Unallocated\n", pfx);
++		break;
++	}
++}
+diff --git a/sff-common.h b/sff-common.h
+index 5562b4d..0d04851 100644
+--- a/sff-common.h
++++ b/sff-common.h
+@@ -26,7 +26,17 @@
+ #include <stdio.h>
+ #include "internal.h"
+ 
+-#define SFF8024_ID_OFFSET				0x00
++/* Revision compliance */
++#define	 SFF8636_REV_UNSPECIFIED		0x00
++#define	 SFF8636_REV_8436_48			0x01
++#define	 SFF8636_REV_8436_8636			0x02
++#define	 SFF8636_REV_8636_13			0x03
++#define	 SFF8636_REV_8636_14			0x04
++#define	 SFF8636_REV_8636_15			0x05
++#define	 SFF8636_REV_8636_20			0x06
++#define	 SFF8636_REV_8636_27			0x07
++
++#define  SFF8024_ID_OFFSET				0x00
+ #define  SFF8024_ID_UNKNOWN				0x00
+ #define  SFF8024_ID_GBIC				0x01
+ #define  SFF8024_ID_SOLDERED_MODULE		0x02
+@@ -51,7 +61,8 @@
+ #define  SFF8024_ID_HD8X_FANOUT			0x15
+ #define  SFF8024_ID_CDFP_S3				0x16
+ #define  SFF8024_ID_MICRO_QSFP			0x17
+-#define  SFF8024_ID_LAST				SFF8024_ID_MICRO_QSFP
++#define  SFF8024_ID_QSFP_DD				0x18
++#define  SFF8024_ID_LAST				SFF8024_ID_QSFP_DD
+ #define  SFF8024_ID_UNALLOCATED_LAST	0x7F
+ #define  SFF8024_ID_VENDOR_START		0x80
+ #define  SFF8024_ID_VENDOR_LAST			0xFF
+@@ -76,8 +87,14 @@
+ #define  SFF8024_CTOR_RJ45				0x22
+ #define  SFF8024_CTOR_NO_SEPARABLE		0x23
+ #define  SFF8024_CTOR_MXC_2x16			0x24
+-#define  SFF8024_CTOR_LAST				SFF8024_CTOR_MXC_2x16
+-#define  SFF8024_CTOR_UNALLOCATED_LAST	0x7F
++#define  SFF8024_CTOR_CS_OPTICAL		0x25
++#define  SFF8024_CTOR_CS_OPTICAL_MINI		0x26
++#define  SFF8024_CTOR_MPO_2X12		    	0x27
++#define  SFF8024_CTOR_MPO_1X16		    	0x28
++#define  SFF8024_CTOR_LAST			SFF8024_CTOR_MPO_1X16
++
++#define  SFF8024_CTOR_NO_SEP_QSFP_DD 		0x6F
++#define  SFF8024_CTOR_UNALLOCATED_LAST		0x7F
+ #define  SFF8024_CTOR_VENDOR_START		0x80
+ #define  SFF8024_CTOR_VENDOR_LAST		0xFF
+ 
+@@ -185,5 +202,6 @@ void sff8024_show_oui(const __u8 *id, int id_offset);
+ void sff8024_show_identifier(const __u8 *id, int id_offset);
+ void sff8024_show_connector(const __u8 *id, int ctor_offset);
+ void sff8024_show_encoding(const __u8 *id, int encoding_offset, int sff_type);
++void sff_show_revision_compliance(const __u8 *id, int rev_offset);
+ 
+ #endif /* SFF_COMMON_H__ */
+-- 
+2.17.1
+
