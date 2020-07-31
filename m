@@ -2,179 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78426234078
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 09:49:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E04CF23407B
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 09:49:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731795AbgGaHsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 03:48:38 -0400
-Received: from mail-eopbgr80044.outbound.protection.outlook.com ([40.107.8.44]:17294
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731738AbgGaHsh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 03:48:37 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TMg6t9qjcH5EC3gU9ZFg8azk6+jrAs+KqlmYPGcyhaS3XGrxFQlkmdYdmz5cuNl0qlmUrnQk01ew8SNhHaBz3D8LgsA9gZ+9IZBa0MvdFkbElyLvpPrOmFfOMl4md1K237L112gxUoHIMUbSy1Muvj0RxTdqhLqPcHE08DYE5iAxfMcpcP9yx1SekpyJvFKOM6G1YP75mOot5oIVPPbQO303/7scNGYXnwLR1NTfgwbHN8UjapeW1ziLdc+VH8AV61KfTwwxaHHOSPArhavLC1GwBMRp3kbtsaMqhxBhvnpiCpLOXOHRYphQMqlW4WNxq/76ezdwl2Jcmv3iCcFlDA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wXj41I+kmhEnQ3DTOTzgfkE0ubI+vrYEo+gJ+M87KKg=;
- b=OJuls1kmN4u4KxiiRKMaAG4iq2clVOuebDaz5Ua7OfEC/TkhTwZxf+VqlcMIS4T2l1242DV8XrU+qNhJjKkv09CS+Xuuf3J9Hupj6X8b+MfTSC57YXLkGzKIc0VpBDWDIFDySKvE3sXkJk652mImoK//96pvo2AZsplNGaib8s+Ctbh/UKo6sGchO3G7+NMCJqdxnngDQQgCTQB93vDEeGOofNbTeAwSZnrvOy1tds4eDSljj4UD8o6Wv3ulyQ/OPfo7Tdhcocal6CyQ59s/wcWCn15g6G6BeHkAK02eaY6E/dr+3Wb87DbBDsCrBG9el14VuPLN3dyLJBhpNMmHYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wXj41I+kmhEnQ3DTOTzgfkE0ubI+vrYEo+gJ+M87KKg=;
- b=OUGn9+lOu3usjVPoJ9XyPEOb6xVhKjPs6UjHwKQsUWRLo7Nr53MADm4opiLZ+Sh6Csk0wUqSRd+uOFQA1biu37C0GrxbDBXY1lo+xz+fkFzs1BAm8oQ/OfyzBQYzpHsg3RA/cZQOjSZxm7fJ/bYHrOqKE59aPMBkk8DIldxJLF4=
-Received: from AM6PR04MB3976.eurprd04.prod.outlook.com (2603:10a6:209:3f::17)
- by AM6PR04MB5080.eurprd04.prod.outlook.com (2603:10a6:20b:2::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.24; Fri, 31 Jul
- 2020 07:48:34 +0000
-Received: from AM6PR04MB3976.eurprd04.prod.outlook.com
- ([fe80::f5cb:bc18:1991:c31f]) by AM6PR04MB3976.eurprd04.prod.outlook.com
- ([fe80::f5cb:bc18:1991:c31f%2]) with mapi id 15.20.3239.020; Fri, 31 Jul 2020
- 07:48:34 +0000
-From:   Madalin Bucur <madalin.bucur@nxp.com>
-To:     Florinel Iordache <florinel.iordache@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net 4/5] fsl/fman: check dereferencing null pointer
-Thread-Topic: [PATCH net 4/5] fsl/fman: check dereferencing null pointer
-Thread-Index: AQHWZwZeOzBzxxS0S0aifMgnGj4ms6khT8LA
-Date:   Fri, 31 Jul 2020 07:48:34 +0000
-Message-ID: <AM6PR04MB397680E5084359739F2FC08EEC4E0@AM6PR04MB3976.eurprd04.prod.outlook.com>
-References: <1596177969-27645-1-git-send-email-florinel.iordache@nxp.com>
- <1596177969-27645-5-git-send-email-florinel.iordache@nxp.com>
-In-Reply-To: <1596177969-27645-5-git-send-email-florinel.iordache@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [82.76.227.152]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ce190a7f-285f-480c-d21e-08d8352620a2
-x-ms-traffictypediagnostic: AM6PR04MB5080:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR04MB50804514DE2A99D1DF47F6E1EC4E0@AM6PR04MB5080.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2803;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: JDzaa6yVKfqlHbXtZIpW3Yh6q7kKvyhryEpBFzqPxZKRM76MZm6vBfrlTPUdz7Cod4J5yncyWxs58jm94bsBAJkCPO/1Tw5LIEL0Hoi2T7ah6/+uBO2aHtk3tcnIDItfyI86I8bM/Lp+z3dscRxRgjiNSqsDluPrg0lwXzEHxXixh31OeYBvgcbA+Q5JXUmEGnSlbGwZBKksANgsC5Myyd702ABw27yQOCrMAjK4p+HxC9EoGKzCeVl/ebdpNUNXi1m4c8Zoc3vf08K4o3+6PoZR7+mvnXjGWl7EbvQLJmluWvdSWzFes/+Sgr2RwGxfqAroXjxRoX99hD/Kl2oLqw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB3976.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(346002)(366004)(136003)(39860400002)(7696005)(66946007)(8676002)(316002)(186003)(76116006)(26005)(52536014)(66446008)(478600001)(6506007)(53546011)(66476007)(110136005)(64756008)(71200400001)(66556008)(4326008)(8936002)(55016002)(9686003)(5660300002)(2906002)(83380400001)(33656002)(44832011)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: YkywNaQwSpu3pF38lsrk/9o2JTXaZCpMcGSMprudV2vlP88Vi1pQ3t1WC1+Xii1JElGO2gkhZ/U+ihNP3e+gPGRrEIAwjXFirqe4MFmIpf8ofKRsH/Yr/7lVBvhkSzamtHlWjmBTEc1BszRg21VUA4ceeze74VSz1trFPF5qHkSwXVuc3MUkLISuuWWicMnLdmS6ahhBnw1Aw+LUKwh1cT1mxrlAXTw9TurwjelJths/O0AAwVPUs+vl+FDUZNKvfKXCgKdyXMFwb0bZwm0vuTqZ6/Mi11Mad4hIuoE85kcjM6RG2oFOc8DIShBdCrIYAd/cnRAasgSXpiswnUqbhJ8LiAKZAAG9QAhXhN4d06eJHZdKsjPtRkk3mZRQz9cwFRmLhvyAMrurtjY9HvP6rh/k8M3EQ4GCV65B6VPn/Trr8pQVuubdLSrfICeCdC57JBBLyRaqFoPrL0Y4IQAHOl3WqxDnW48RUqioc2hjZ8c=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1731808AbgGaHtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 03:49:14 -0400
+Received: from mga05.intel.com ([192.55.52.43]:38361 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731684AbgGaHtN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 03:49:13 -0400
+IronPort-SDR: +rBaEvswEfdptFgd0Xk05kDqDLtxcy7nzJpgGf8vApDnauYK0cQvw+hTa4o/ykRtlESVbI4foT
+ 4FcVCZgokx3A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="236608240"
+X-IronPort-AV: E=Sophos;i="5.75,417,1589266800"; 
+   d="scan'208";a="236608240"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2020 00:49:13 -0700
+IronPort-SDR: 9z+o4333UTXOSFImoXh3bcELfU8ctNA9YDwO/2FP+1o4P9mcNTV2pVw2F2SKWy6B6oUTZBzcCU
+ qIZIpZT2c1iQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,417,1589266800"; 
+   d="scan'208";a="465544437"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga005.jf.intel.com with ESMTP; 31 Jul 2020 00:49:09 -0700
+Received: from andy by smile with local (Exim 4.94)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1k1Pmu-005GWu-OG; Fri, 31 Jul 2020 10:49:08 +0300
+Date:   Fri, 31 Jul 2020 10:49:08 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan@lists.osuosl.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH v1] ice: devlink: use %*phD to print small buffer
+Message-ID: <20200731074908.GE3703480@smile.fi.intel.com>
+References: <20200730160451.40810-1-andriy.shevchenko@linux.intel.com>
+ <77247fbc-152a-517f-2500-ce761b7afa6a@intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB3976.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce190a7f-285f-480c-d21e-08d8352620a2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jul 2020 07:48:34.4746
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TQ8PUiomkzl/1zrnuUINiPEyYi2AGHYgi5dgQ9f6fV9cppVpKUEo6iMP6YNG6bA0uLZQsrXDtlqRXCJhW/eU5w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5080
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <77247fbc-152a-517f-2500-ce761b7afa6a@intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Florinel Iordache <florinel.iordache@nxp.com>
-> Sent: 31 July 2020 09:46
-> To: Madalin Bucur <madalin.bucur@nxp.com>; davem@davemloft.net;
-> kuba@kernel.org; netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org; Florinel Iordache
-> <florinel.iordache@nxp.com>
-> Subject: [PATCH net 4/5] fsl/fman: check dereferencing null pointer
->=20
-> Add a safe check to avoid dereferencing null pointer
->=20
-> Fixes: 57ba4c9b ("fsl/fman: Add FMan MAC support")
->=20
-> Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
-> ---
->  drivers/net/ethernet/freescale/fman/fman_dtsec.c | 4 ++--
->  drivers/net/ethernet/freescale/fman/fman_memac.c | 3 ++-
->  drivers/net/ethernet/freescale/fman/fman_tgec.c  | 2 +-
->  3 files changed, 5 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/fman/fman_dtsec.c
-> b/drivers/net/ethernet/freescale/fman/fman_dtsec.c
-> index 004c266..bce3c93 100644
-> --- a/drivers/net/ethernet/freescale/fman/fman_dtsec.c
-> +++ b/drivers/net/ethernet/freescale/fman/fman_dtsec.c
-> @@ -1200,7 +1200,7 @@ int dtsec_del_hash_mac_address(struct fman_mac
-> *dtsec, enet_addr_t *eth_addr)
->  		list_for_each(pos,
->  			      &dtsec->multicast_addr_hash->lsts[bucket]) {
->  			hash_entry =3D ETH_HASH_ENTRY_OBJ(pos);
-> -			if (hash_entry->addr =3D=3D addr) {
-> +			if (hash_entry && hash_entry->addr =3D=3D addr) {
->  				list_del_init(&hash_entry->node);
->  				kfree(hash_entry);
->  				break;
-> @@ -1213,7 +1213,7 @@ int dtsec_del_hash_mac_address(struct fman_mac
-> *dtsec, enet_addr_t *eth_addr)
->  		list_for_each(pos,
->  			      &dtsec->unicast_addr_hash->lsts[bucket]) {
->  			hash_entry =3D ETH_HASH_ENTRY_OBJ(pos);
-> -			if (hash_entry->addr =3D=3D addr) {
-> +			if (hash_entry && hash_entry->addr =3D=3D addr) {
->  				list_del_init(&hash_entry->node);
->  				kfree(hash_entry);
->  				break;
-> diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c
-> b/drivers/net/ethernet/freescale/fman/fman_memac.c
-> index bb02b37..52ee982 100644
-> --- a/drivers/net/ethernet/freescale/fman/fman_memac.c
-> +++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
-> @@ -852,6 +852,7 @@ int memac_set_tx_pause_frames(struct fman_mac *memac,
-> u8 priority,
->=20
->  	tmp =3D ioread32be(&regs->command_config);
->  	tmp &=3D ~CMD_CFG_PFC_MODE;
-> +	priority =3D 0;
+On Thu, Jul 30, 2020 at 02:20:46PM -0700, Jacob Keller wrote:
+> On 7/30/2020 9:04 AM, Andy Shevchenko wrote:
+> > Use %*phD format to print small buffer as hex string.
+> > 
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+> Ah nice. I swear I looked for a printk format to do this and didn't find
+> one. But it's been there since 2012.. so I guess I just missed it.
 
-This line seems to be added by mistake.
+commit 31550a16a5d2af859e8a11839e8c6c6c9c92dfa7
+Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date:   Mon Jul 30 14:40:27 2012 -0700
 
->=20
->  	iowrite32be(tmp, &regs->command_config);
->=20
-> @@ -981,7 +982,7 @@ int memac_del_hash_mac_address(struct fman_mac *memac=
-,
-> enet_addr_t *eth_addr)
->=20
->  	list_for_each(pos, &memac->multicast_addr_hash->lsts[hash]) {
->  		hash_entry =3D ETH_HASH_ENTRY_OBJ(pos);
-> -		if (hash_entry->addr =3D=3D addr) {
-> +		if (hash_entry && hash_entry->addr =3D=3D addr) {
->  			list_del_init(&hash_entry->node);
->  			kfree(hash_entry);
->  			break;
-> diff --git a/drivers/net/ethernet/freescale/fman/fman_tgec.c
-> b/drivers/net/ethernet/freescale/fman/fman_tgec.c
-> index 8c7eb87..41946b1 100644
-> --- a/drivers/net/ethernet/freescale/fman/fman_tgec.c
-> +++ b/drivers/net/ethernet/freescale/fman/fman_tgec.c
-> @@ -626,7 +626,7 @@ int tgec_del_hash_mac_address(struct fman_mac *tgec,
-> enet_addr_t *eth_addr)
->=20
->  	list_for_each(pos, &tgec->multicast_addr_hash->lsts[hash]) {
->  		hash_entry =3D ETH_HASH_ENTRY_OBJ(pos);
-> -		if (hash_entry->addr =3D=3D addr) {
-> +		if (hash_entry && hash_entry->addr =3D=3D addr) {
->  			list_del_init(&hash_entry->node);
->  			kfree(hash_entry);
->  			break;
-> --
-> 1.9.1
+    vsprintf: add support of '%*ph[CDN]'
+
+Maybe it was just a coincidence :-)
+
+> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+> 
+> I also tested this on my system to make sure it gives the same output
+> for the serial value, so I guess also:
+> 
+> Tested-by: Jacob Keller <jacob.e.keller@intel.com>
+
+Thanks!
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
