@@ -2,107 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EEF6234650
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 14:56:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 969A2234658
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 14:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729896AbgGaM4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 08:56:34 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:35216 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728047AbgGaM4e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 08:56:34 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 06VCtnL3072864;
-        Fri, 31 Jul 2020 07:55:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1596200149;
-        bh=G0Xwps0ejxflqoHl3XO1DxMChXYTwyfCeHdlWawZgZM=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=hPeub8/uhiPJiPnQexCCq+I8i4yVTdU7I8ltqC8iEggn6U9mhvT18Da2E8lE7EKpR
-         +DC/kbWPdOcwxoByGjY36mroT/Ef/Osl49Noma1LhLLERnxF5LsmKb8XTPZdLTpCzZ
-         U8x2PH2kaQSRehPDIZhzqW6C+YC/sf5pz/Etr28g=
-Received: from DLEE101.ent.ti.com (dlee101.ent.ti.com [157.170.170.31])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 06VCtmoh084940
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 31 Jul 2020 07:55:48 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 31
- Jul 2020 07:55:48 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 31 Jul 2020 07:55:48 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 06VCtf5N125012;
-        Fri, 31 Jul 2020 07:55:44 -0500
-Subject: Re: [PATCH v3 5/9] ethernet: ti: am65-cpts: Use generic helper
- function
-To:     Kurt Kanzenbach <kurt@linutronix.de>, Arnd Bergmann <arnd@arndb.de>
-CC:     Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Samuel Zou <zou_wei@huawei.com>,
-        Networking <netdev@vger.kernel.org>,
-        Petr Machata <petrm@mellanox.com>
-References: <20200730080048.32553-1-kurt@linutronix.de>
- <20200730080048.32553-6-kurt@linutronix.de>
- <9e18a305-fbb9-f4da-cf73-65a16bdceb12@ti.com> <87ime5ny3e.fsf@kurt>
- <CAK8P3a2G7YJqzwrLDnDDO3ZUtNvyBSyun=6NjY3M2KS0Wr1ubg@mail.gmail.com>
- <87lfiz29di.fsf@kurt>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <f30d3a4f-6cf3-1d46-397e-baa27b3c8ade@ti.com>
-Date:   Fri, 31 Jul 2020 15:55:39 +0300
+        id S1730170AbgGaM6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 08:58:11 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:36332 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728047AbgGaM6L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 08:58:11 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4EE18200AD;
+        Fri, 31 Jul 2020 12:58:10 +0000 (UTC)
+Received: from us4-mdac16-13.at1.mdlocal (unknown [10.110.49.195])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4C57F800A3;
+        Fri, 31 Jul 2020 12:58:10 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.48.234])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E462110007C;
+        Fri, 31 Jul 2020 12:58:09 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id ACA2678006E;
+        Fri, 31 Jul 2020 12:58:09 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 31 Jul
+ 2020 13:58:04 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH v2 net-next 01/11] sfc_ef100: check firmware version at
+ start-of-day
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+References: <31de2e73-bce7-6c9d-0c20-49b32e2043cc@solarflare.com>
+Message-ID: <01fb1600-3f84-c1a8-ef02-68e32fb9402d@solarflare.com>
+Date:   Fri, 31 Jul 2020 13:58:01 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <87lfiz29di.fsf@kurt>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+In-Reply-To: <31de2e73-bce7-6c9d-0c20-49b32e2043cc@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25574.002
+X-TM-AS-Result: No-4.241600-8.000000-10
+X-TMASE-MatchedRID: HGvy3W1xOqYl1ruS1vtrJUmSRRbSc9s3lS5IbQ8u3ToaV9cxC+J6t8iT
+        Wug2C4DNl1M7KT9/aqAnsasxq4/76mJZXQNDzktSGjzBgnFZvQ7+NefZIdSZXEW2O0jPXSPlyKM
+        XhR45RlM81ox4QBrGHcf/eH1BJXalEGrGKgXI3I8ovbifIQL7GvngX/aL8PCN/+uCP2dxbP3CNK
+        ZBYz4NARXS+gzjJyCYKGOt1f2p0PrMPzXfw9h+jp4CIKY/Hg3AtOt1ofVlaoLWRN8STJpl3PoLR
+        4+zsDTt+gmVy5VdZkn05eyXDxC5z63nBrgz8bymFl419byyyWvSHfKcI5IPgrRBY7MmjU8nbCMa
+        P1KjecbZRZn+CljuraOnNRTSeDrlwSq/eMb//Md85uoYr0mmWaKdpX90rRoSErdW3Lyhe2SmzZh
+        Wcml82A==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--4.241600-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25574.002
+X-MDID: 1596200290-5lv3U3ZCamWb
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Early in EF100 development there was a different format of event
+ descriptor; if the NIC is somehow running the very old firmware
+ which will use that format, fail the probe.
 
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/ef100_nic.c | 40 ++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-On 31/07/2020 14:48, Kurt Kanzenbach wrote:
-> On Thu Jul 30 2020, Arnd Bergmann wrote:
->> On Thu, Jul 30, 2020 at 11:41 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
->>> On Thu Jul 30 2020, Grygorii Strashko wrote:
->>>> On 30/07/2020 11:00, Kurt Kanzenbach wrote:
->>>>> +    msgtype = ptp_get_msgtype(hdr, ptp_class);
->>>>> +    seqid   = be16_to_cpu(hdr->sequence_id);
->>>>
->>>> Is there any reason to not use "ntohs()"?
->>>
->>> This is just my personal preference, because I think it's more
->>> readable. Internally ntohs() uses be16_to_cpu(). There's no technical
->>> reason for it.
->>
->> I think for traditional reasons, code in net/* tends to use ntohs()
->> while code in drivers/*  tends to use be16_to_cpu().
->>
->> In drivers/net/* the two are used roughly the same, though I guess
->> one could make the argument that be16_to_cpu() would be
->> more appropriate for data structures exchanged with hardware
->> while ntohs() makes sense on data structures sent over the
->> network.
-> 
-> I see, makes sense. I could simply keep it the way it was, or?
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+index 6a00f2a2dc2b..75131bcf4f1a 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.c
++++ b/drivers/net/ethernet/sfc/ef100_nic.c
+@@ -485,6 +485,36 @@ const struct efx_nic_type ef100_pf_nic_type = {
+ 
+ };
+ 
++static int compare_versions(const char *a, const char *b)
++{
++	int a_major, a_minor, a_point, a_patch;
++	int b_major, b_minor, b_point, b_patch;
++	int a_matched, b_matched;
++
++	a_matched = sscanf(a, "%d.%d.%d.%d", &a_major, &a_minor, &a_point, &a_patch);
++	b_matched = sscanf(b, "%d.%d.%d.%d", &b_major, &b_minor, &b_point, &b_patch);
++
++	if (a_matched == 4 && b_matched != 4)
++		return +1;
++
++	if (a_matched != 4 && b_matched == 4)
++		return -1;
++
++	if (a_matched != 4 && b_matched != 4)
++		return 0;
++
++	if (a_major != b_major)
++		return a_major - b_major;
++
++	if (a_minor != b_minor)
++		return a_minor - b_minor;
++
++	if (a_point != b_point)
++		return a_point - b_point;
++
++	return a_patch - b_patch;
++}
++
+ /*	NIC probe and remove
+  */
+ static int ef100_probe_main(struct efx_nic *efx)
+@@ -492,6 +522,7 @@ static int ef100_probe_main(struct efx_nic *efx)
+ 	unsigned int bar_size = resource_size(&efx->pci_dev->resource[efx->mem_bar]);
+ 	struct net_device *net_dev = efx->net_dev;
+ 	struct ef100_nic_data *nic_data;
++	char fw_version[32];
+ 	int i, rc;
+ 
+ 	if (WARN_ON(bar_size == 0))
+@@ -562,6 +593,15 @@ static int ef100_probe_main(struct efx_nic *efx)
+ 		goto fail;
+ 	efx->port_num = rc;
+ 
++	efx_mcdi_print_fwver(efx, fw_version, sizeof(fw_version));
++	netif_dbg(efx, drv, efx->net_dev, "Firmware version %s\n", fw_version);
++
++	if (compare_versions(fw_version, "1.1.0.1000") < 0) {
++		netif_info(efx, drv, efx->net_dev, "Firmware uses old event descriptors\n");
++		rc = -EINVAL;
++		goto fail;
++	}
++
+ 	rc = ef100_phy_probe(efx);
+ 	if (rc)
+ 		goto fail;
 
-  I prefer ntohs() as this packet data.
-
--- 
-Best regards,
-grygorii
