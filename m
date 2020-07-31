@@ -2,487 +2,368 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E337233C5F
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 02:01:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF06F233C78
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 02:09:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730844AbgGaABb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 20:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730767AbgGaAB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 20:01:29 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C9EC061575
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 17:01:28 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id m16so15714919pls.5
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 17:01:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=y07yiMNO5wZtZfZUugP+XqPVby6nrYph/e6s74qNWAo=;
-        b=QPG7hRk1xN6GRR/intzMybQvN/oxkVARYcINNImrqzeIJuFmxpJ15UIxUQFCqDK3O9
-         DZUjZnzaMmUEu1bkVGWR5ATkydj8NWiPViXWREIRcS/53kmm6SNwOxkiy/x8lfjr78ug
-         EvSdEe7OhIku1BKrU3YcEaOB3TESEdRahpccvfw2e8XQFPBbSTpGNMkUpTY6lopASp0Q
-         PYDerFuLWADa6xbGTR4m6r+IbVkfhpvBbuX1UVJVeib5HQ+9Ul8g2i7FbgiTf5IoLbow
-         a0qEKuaZM/JGYeueFloMJ/msynkCwYPX1cNSJ3mwCd5m7ZudEBTGk4hyHkexZlpLiX8a
-         ssPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=y07yiMNO5wZtZfZUugP+XqPVby6nrYph/e6s74qNWAo=;
-        b=EW44Q1EbJfefZu7/fDzhhl0/7n1q9zeoLrXsU2LRotUSQoYG7e3oSutG7EnbQRRFiQ
-         NlNhhcuy+F9OnWHeN2opyF4QoDRZWM7fXs6MaQIwigMnpsKA8P/PavGm474IobBi889b
-         uuhQMXkdStoavgZXsMngDAAyp/jTiDWV87eHTqg39oaDZ7TpiWWdp6TtwFZYUy2ObcvU
-         tRexSl+ZEmUT0Qhf3dW0MVoujBJXA7v1SW13XbWAeynaCkXIE1Ok2VAEonByvezkjgIo
-         U6Q7PfKoJtMUW+9lyoTFI4E+Lg/Sg4dtC2SdeP3tam3+xwKFxq38C6Dkj9WCuCqygAnn
-         h8cw==
-X-Gm-Message-State: AOAM533r/+Q9aQMwssaaaVTATkVBn7oDl/06DuhxkifpIlHuv6hFRJ4w
-        K/i5WB73YLbZeMVphNLyY/By++52HKE=
-X-Google-Smtp-Source: ABdhPJyje7+o4vvx/FvUR04Ejwsf66KoaIfUP7+TdzJhKCjO68NIV8bFRhbFLkwLeUn4vgs93ZCSzQ==
-X-Received: by 2002:a63:5613:: with SMTP id k19mr1275233pgb.424.1596153687831;
-        Thu, 30 Jul 2020 17:01:27 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id a2sm7592436pgf.53.2020.07.30.17.01.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 Jul 2020 17:01:27 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 3/3] ionic: separate interrupt for Tx and Rx
-Date:   Thu, 30 Jul 2020 17:00:58 -0700
-Message-Id: <20200731000058.37344-4-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200731000058.37344-1-snelson@pensando.io>
-References: <20200731000058.37344-1-snelson@pensando.io>
+        id S1730917AbgGaAJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 20:09:06 -0400
+Received: from mga12.intel.com ([192.55.52.136]:31464 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730643AbgGaAJE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 20:09:04 -0400
+IronPort-SDR: QXMFplPfwx6wvd+O0jRmSgN/otPSfYlbHIZhmOdd8zoVYR73LhzIwN4tKTEfv3HI1fa671gHGs
+ R8ZhMmK9NpvQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="131278070"
+X-IronPort-AV: E=Sophos;i="5.75,416,1589266800"; 
+   d="scan'208";a="131278070"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2020 17:08:48 -0700
+IronPort-SDR: PidMeyEWPxsOtKGwP1FyyB9liCjoFTFLC8SRPzYzgQ/Ucen3bHKH2xn97pleWIWJpfB7ippjt4
+ z2MCZSwVIsmw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,416,1589266800"; 
+   d="scan'208";a="435237849"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga004.jf.intel.com with ESMTP; 30 Jul 2020 17:08:45 -0700
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     ast@kernel.org, daniel@iogearbox.net
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH v6 bpf-next 0/6] bpf: tailcalls in BPF subprograms
+Date:   Fri, 31 Jul 2020 02:03:18 +0200
+Message-Id: <20200731000324.2253-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the capability to split the Tx queues onto their own
-interrupts with their own napi contexts.  This gives the
-opportunity for more direct control of Tx interrupt
-handling, such as CPU affinity and interrupt coalescing,
-useful for some traffic loads.
+v5->v6:
+- propagate only those poke descriptors that individual subprogram is
+  actually using (Daniel)
+- drop the cumbersome check if poke desc got filled in map_poke_run()
+- move poke->ip renaming in bpf_jit_add_poke_descriptor() from patch 4
+  to patch 3 to provide bisectability (Daniel)
 
-v2: use ethtool -L, not a vendor specific priv-flag
+v4->v5:
+- simplify the fix from v3/v4 (Daniel)
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- .../ethernet/pensando/ionic/ionic_ethtool.c   | 109 ++++++++++++++----
- .../net/ethernet/pensando/ionic/ionic_lif.c   |  41 +++++--
- .../net/ethernet/pensando/ionic/ionic_lif.h   |   3 +
- .../net/ethernet/pensando/ionic/ionic_txrx.c  |  67 +++++++++++
- .../net/ethernet/pensando/ionic/ionic_txrx.h  |   2 +
- 5 files changed, 195 insertions(+), 27 deletions(-)
+v3->v4:
+- be more careful around the fix from v3
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-index 095561924bdc..3901491bc62c 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-@@ -403,8 +403,7 @@ static int ionic_get_coalesce(struct net_device *netdev,
- {
- 	struct ionic_lif *lif = netdev_priv(netdev);
- 
--	/* Tx uses Rx interrupt */
--	coalesce->tx_coalesce_usecs = lif->rx_coalesce_usecs;
-+	coalesce->tx_coalesce_usecs = lif->tx_coalesce_usecs;
- 	coalesce->rx_coalesce_usecs = lif->rx_coalesce_usecs;
- 
- 	return 0;
-@@ -417,7 +416,8 @@ static int ionic_set_coalesce(struct net_device *netdev,
- 	struct ionic_identity *ident;
- 	struct ionic_qcq *qcq;
- 	unsigned int i;
--	u32 coal;
-+	u32 rx_coal;
-+	u32 tx_coal;
- 
- 	ident = &lif->ionic->ident;
- 	if (ident->dev.intr_coal_div == 0) {
-@@ -426,26 +426,31 @@ static int ionic_set_coalesce(struct net_device *netdev,
- 		return -EIO;
- 	}
- 
--	/* Tx uses Rx interrupt, so only change Rx */
--	if (coalesce->tx_coalesce_usecs != lif->rx_coalesce_usecs) {
-+	/* Tx normally shares Rx interrupt, so only change Rx */
-+	if (!test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state) &&
-+	    coalesce->tx_coalesce_usecs != lif->rx_coalesce_usecs) {
- 		netdev_warn(netdev, "only the rx-usecs can be changed\n");
- 		return -EINVAL;
- 	}
- 
--	/* Convert the usec request to a HW useable value.  If they asked
-+	/* Convert the usec request to a HW usable value.  If they asked
- 	 * for non-zero and it resolved to zero, bump it up
- 	 */
--	coal = ionic_coal_usec_to_hw(lif->ionic, coalesce->rx_coalesce_usecs);
--	if (!coal && coalesce->rx_coalesce_usecs)
--		coal = 1;
--
--	if (coal > IONIC_INTR_CTRL_COAL_MAX)
-+	rx_coal = ionic_coal_usec_to_hw(lif->ionic, coalesce->rx_coalesce_usecs);
-+	if (!rx_coal && coalesce->rx_coalesce_usecs)
-+		rx_coal = 1;
-+	tx_coal = ionic_coal_usec_to_hw(lif->ionic, coalesce->tx_coalesce_usecs);
-+	if (!tx_coal && coalesce->tx_coalesce_usecs)
-+		tx_coal = 1;
-+
-+	if (rx_coal > IONIC_INTR_CTRL_COAL_MAX ||
-+	    tx_coal > IONIC_INTR_CTRL_COAL_MAX)
- 		return -ERANGE;
- 
--	/* Save the new value */
-+	/* Save the new values */
- 	lif->rx_coalesce_usecs = coalesce->rx_coalesce_usecs;
--	if (coal != lif->rx_coalesce_hw) {
--		lif->rx_coalesce_hw = coal;
-+	if (rx_coal != lif->rx_coalesce_hw) {
-+		lif->rx_coalesce_hw = rx_coal;
- 
- 		if (test_bit(IONIC_LIF_F_UP, lif->state)) {
- 			for (i = 0; i < lif->nxqs; i++) {
-@@ -457,6 +462,23 @@ static int ionic_set_coalesce(struct net_device *netdev,
- 		}
- 	}
- 
-+	if (test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state))
-+		lif->tx_coalesce_usecs = coalesce->tx_coalesce_usecs;
-+	else
-+		lif->tx_coalesce_usecs = coalesce->rx_coalesce_usecs;
-+	if (tx_coal != lif->tx_coalesce_hw) {
-+		lif->tx_coalesce_hw = tx_coal;
-+
-+		if (test_bit(IONIC_LIF_F_UP, lif->state)) {
-+			for (i = 0; i < lif->nxqs; i++) {
-+				qcq = lif->txqcqs[i].qcq;
-+				ionic_intr_coal_init(lif->ionic->idev.intr_ctrl,
-+						     qcq->intr.index,
-+						     lif->tx_coalesce_hw);
-+			}
-+		}
-+	}
-+
- 	return 0;
- }
- 
-@@ -510,29 +532,76 @@ static void ionic_get_channels(struct net_device *netdev,
- 
- 	/* report maximum channels */
- 	ch->max_combined = lif->ionic->ntxqs_per_lif;
-+	ch->max_rx = lif->ionic->ntxqs_per_lif / 2;
-+	ch->max_tx = lif->ionic->ntxqs_per_lif / 2;
- 
- 	/* report current channels */
--	ch->combined_count = lif->nxqs;
-+	if (test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state)) {
-+		ch->rx_count = lif->nxqs;
-+		ch->tx_count = lif->nxqs;
-+	} else {
-+		ch->combined_count = lif->nxqs;
-+	}
- }
- 
- static void ionic_set_queuecount(struct ionic_lif *lif, void *arg)
- {
- 	struct ethtool_channels *ch = arg;
- 
--	lif->nxqs = ch->combined_count;
-+	if (ch->combined_count) {
-+		lif->nxqs = ch->combined_count;
-+		if (test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state)) {
-+			clear_bit(IONIC_LIF_F_SPLIT_INTR, lif->state);
-+			lif->tx_coalesce_usecs = lif->rx_coalesce_usecs;
-+			lif->tx_coalesce_hw = lif->rx_coalesce_hw;
-+			netdev_info(lif->netdev, "Sharing queue interrupts\n");
-+		}
-+	} else {
-+		lif->nxqs = ch->rx_count;
-+		if (!test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state)) {
-+			set_bit(IONIC_LIF_F_SPLIT_INTR, lif->state);
-+			netdev_info(lif->netdev, "Splitting queue interrupts\n");
-+		}
-+	}
- }
- 
- static int ionic_set_channels(struct net_device *netdev,
- 			      struct ethtool_channels *ch)
- {
- 	struct ionic_lif *lif = netdev_priv(netdev);
-+	int max_cnt;
- 
--	if (!ch->combined_count || ch->other_count ||
--	    ch->rx_count || ch->tx_count)
-+	if (ch->rx_count != ch->tx_count) {
-+		netdev_info(netdev, "The rx and tx count must be equal\n");
- 		return -EINVAL;
-+	}
- 
--	if (ch->combined_count == lif->nxqs)
--		return 0;
-+	if (ch->combined_count && ch->rx_count) {
-+		netdev_info(netdev, "Use either combined_count or rx/tx_count, not both\n");
-+		return -EINVAL;
-+	}
-+
-+	max_cnt = lif->ionic->ntxqs_per_lif;
-+	if (ch->combined_count) {
-+		if (!test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state) &&
-+		    (ch->combined_count == lif->nxqs)) {
-+			netdev_info(netdev, "No change a\n");
-+			return 0;
-+		}
-+
-+		netdev_info(netdev, "Changing queue count from %d to %d\n",
-+			    lif->nxqs, ch->combined_count);
-+	} else {
-+		max_cnt /= 2;
-+		if (test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state) &&
-+		    (ch->rx_count == lif->nxqs)) {
-+			netdev_info(netdev, "No change b\n");
-+			return 0;
-+		}
-+
-+		netdev_info(netdev, "Changing queue count from %d to %d\n",
-+			    lif->nxqs, ch->rx_count);
-+	}
- 
- 	return ionic_reset_queues(lif, ionic_set_queuecount, ch);
- }
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index b228362363ca..28868d343540 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -616,7 +616,6 @@ static int ionic_lif_txq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
- 			.index = cpu_to_le32(q->index),
- 			.flags = cpu_to_le16(IONIC_QINIT_F_IRQ |
- 					     IONIC_QINIT_F_SG),
--			.intr_index = cpu_to_le16(lif->rxqcqs[q->index].qcq->intr.index),
- 			.pid = cpu_to_le16(q->pid),
- 			.ring_size = ilog2(q->num_descs),
- 			.ring_base = cpu_to_le64(q->base_pa),
-@@ -624,14 +623,22 @@ static int ionic_lif_txq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
- 			.sg_ring_base = cpu_to_le64(q->sg_base_pa),
- 		},
- 	};
-+	unsigned int intr_index;
- 	int err;
- 
-+	if (test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state))
-+		intr_index = qcq->intr.index;
-+	else
-+		intr_index = lif->rxqcqs[q->index].qcq->intr.index;
-+	ctx.cmd.q_init.intr_index = cpu_to_le16(intr_index);
-+
- 	dev_dbg(dev, "txq_init.pid %d\n", ctx.cmd.q_init.pid);
- 	dev_dbg(dev, "txq_init.index %d\n", ctx.cmd.q_init.index);
- 	dev_dbg(dev, "txq_init.ring_base 0x%llx\n", ctx.cmd.q_init.ring_base);
- 	dev_dbg(dev, "txq_init.ring_size %d\n", ctx.cmd.q_init.ring_size);
- 	dev_dbg(dev, "txq_init.flags 0x%x\n", ctx.cmd.q_init.flags);
- 	dev_dbg(dev, "txq_init.ver %d\n", ctx.cmd.q_init.ver);
-+	dev_dbg(dev, "txq_init.intr_index %d\n", ctx.cmd.q_init.intr_index);
- 
- 	q->tail = q->info;
- 	q->head = q->tail;
-@@ -648,6 +655,10 @@ static int ionic_lif_txq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
- 	dev_dbg(dev, "txq->hw_type %d\n", q->hw_type);
- 	dev_dbg(dev, "txq->hw_index %d\n", q->hw_index);
- 
-+	if (test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state))
-+		netif_napi_add(lif->netdev, &qcq->napi, ionic_tx_napi,
-+			       NAPI_POLL_WEIGHT);
-+
- 	qcq->flags |= IONIC_QCQ_F_INITED;
- 
- 	return 0;
-@@ -684,6 +695,7 @@ static int ionic_lif_rxq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
- 	dev_dbg(dev, "rxq_init.ring_size %d\n", ctx.cmd.q_init.ring_size);
- 	dev_dbg(dev, "rxq_init.flags 0x%x\n", ctx.cmd.q_init.flags);
- 	dev_dbg(dev, "rxq_init.ver %d\n", ctx.cmd.q_init.ver);
-+	dev_dbg(dev, "rxq_init.intr_index %d\n", ctx.cmd.q_init.intr_index);
- 
- 	q->tail = q->info;
- 	q->head = q->tail;
-@@ -700,8 +712,12 @@ static int ionic_lif_rxq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
- 	dev_dbg(dev, "rxq->hw_type %d\n", q->hw_type);
- 	dev_dbg(dev, "rxq->hw_index %d\n", q->hw_index);
- 
--	netif_napi_add(lif->netdev, &qcq->napi, ionic_rx_napi,
--		       NAPI_POLL_WEIGHT);
-+	if (test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state))
-+		netif_napi_add(lif->netdev, &qcq->napi, ionic_rx_napi,
-+			       NAPI_POLL_WEIGHT);
-+	else
-+		netif_napi_add(lif->netdev, &qcq->napi, ionic_txrx_napi,
-+			       NAPI_POLL_WEIGHT);
- 
- 	qcq->flags |= IONIC_QCQ_F_INITED;
- 
-@@ -1537,6 +1553,8 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
- 		sg_desc_sz = sizeof(struct ionic_txq_sg_desc);
- 
- 	flags = IONIC_QCQ_F_TX_STATS | IONIC_QCQ_F_SG;
-+	if (test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state))
-+		flags |= IONIC_QCQ_F_INTR;
- 	for (i = 0; i < lif->nxqs; i++) {
- 		err = ionic_qcq_alloc(lif, IONIC_QTYPE_TXQ, i, "tx", flags,
- 				      lif->ntxq_descs,
-@@ -1547,6 +1565,11 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
- 		if (err)
- 			goto err_out;
- 
-+		if (flags & IONIC_QCQ_F_INTR)
-+			ionic_intr_coal_init(lif->ionic->idev.intr_ctrl,
-+					     lif->txqcqs[i].qcq->intr.index,
-+					     lif->tx_coalesce_hw);
-+
- 		lif->txqcqs[i].qcq->stats = lif->txqcqs[i].stats;
- 		ionic_debugfs_add_qcq(lif, lif->txqcqs[i].qcq);
- 	}
-@@ -1562,13 +1585,15 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
- 		if (err)
- 			goto err_out;
- 
--		lif->rxqcqs[i].qcq->stats = lif->rxqcqs[i].stats;
--
- 		ionic_intr_coal_init(lif->ionic->idev.intr_ctrl,
- 				     lif->rxqcqs[i].qcq->intr.index,
- 				     lif->rx_coalesce_hw);
--		ionic_link_qcq_interrupts(lif->rxqcqs[i].qcq,
--					  lif->txqcqs[i].qcq);
-+
-+		if (!test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state))
-+			ionic_link_qcq_interrupts(lif->rxqcqs[i].qcq,
-+						  lif->txqcqs[i].qcq);
-+
-+		lif->rxqcqs[i].qcq->stats = lif->rxqcqs[i].stats;
- 		ionic_debugfs_add_qcq(lif, lif->rxqcqs[i].qcq);
- 	}
- 
-@@ -2069,6 +2094,8 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
- 	lif->rx_coalesce_usecs = IONIC_ITR_COAL_USEC_DEFAULT;
- 	lif->rx_coalesce_hw = ionic_coal_usec_to_hw(lif->ionic,
- 						    lif->rx_coalesce_usecs);
-+	lif->tx_coalesce_usecs = lif->rx_coalesce_usecs;
-+	lif->tx_coalesce_hw = lif->rx_coalesce_hw;
- 
- 	snprintf(lif->name, sizeof(lif->name), "lif%u", index);
- 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index 13f173d83970..1ee3b14c8d50 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -137,6 +137,7 @@ enum ionic_lif_state_flags {
- 	IONIC_LIF_F_UP,
- 	IONIC_LIF_F_LINK_CHECK_REQUESTED,
- 	IONIC_LIF_F_FW_RESET,
-+	IONIC_LIF_F_SPLIT_INTR,
- 
- 	/* leave this as last */
- 	IONIC_LIF_F_STATE_SIZE
-@@ -205,6 +206,8 @@ struct ionic_lif {
- 	struct dentry *dentry;
- 	u32 rx_coalesce_usecs;		/* what the user asked for */
- 	u32 rx_coalesce_hw;		/* what the hw is using */
-+	u32 tx_coalesce_usecs;		/* what the user asked for */
-+	u32 tx_coalesce_hw;		/* what the hw is using */
- 
- 	struct work_struct tx_timeout_work;
- };
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index 766f4595895c..8107d32c2767 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -419,7 +419,74 @@ void ionic_rx_empty(struct ionic_queue *q)
- 	}
- }
- 
-+int ionic_tx_napi(struct napi_struct *napi, int budget)
-+{
-+	struct ionic_qcq *qcq = napi_to_qcq(napi);
-+	struct ionic_cq *cq = napi_to_cq(napi);
-+	struct ionic_dev *idev;
-+	struct ionic_lif *lif;
-+	u32 work_done = 0;
-+	u32 flags = 0;
-+
-+	lif = cq->bound_q->lif;
-+	idev = &lif->ionic->idev;
-+
-+	work_done = ionic_cq_service(cq, budget,
-+				     ionic_tx_service, NULL, NULL);
-+
-+	if (work_done < budget && napi_complete_done(napi, work_done)) {
-+		flags |= IONIC_INTR_CRED_UNMASK;
-+		DEBUG_STATS_INTR_REARM(cq->bound_intr);
-+	}
-+
-+	if (work_done || flags) {
-+		flags |= IONIC_INTR_CRED_RESET_COALESCE;
-+		ionic_intr_credits(idev->intr_ctrl,
-+				   cq->bound_intr->index,
-+				   work_done, flags);
-+	}
-+
-+	DEBUG_STATS_NAPI_POLL(qcq, work_done);
-+
-+	return work_done;
-+}
-+
- int ionic_rx_napi(struct napi_struct *napi, int budget)
-+{
-+	struct ionic_qcq *qcq = napi_to_qcq(napi);
-+	struct ionic_cq *cq = napi_to_cq(napi);
-+	struct ionic_dev *idev;
-+	struct ionic_lif *lif;
-+	u32 work_done = 0;
-+	u32 flags = 0;
-+
-+	lif = cq->bound_q->lif;
-+	idev = &lif->ionic->idev;
-+
-+	work_done = ionic_cq_service(cq, budget,
-+				     ionic_rx_service, NULL, NULL);
-+
-+	if (work_done)
-+		ionic_rx_fill(cq->bound_q);
-+
-+	if (work_done < budget && napi_complete_done(napi, work_done)) {
-+		flags |= IONIC_INTR_CRED_UNMASK;
-+		DEBUG_STATS_INTR_REARM(cq->bound_intr);
-+	}
-+
-+	if (work_done || flags) {
-+		flags |= IONIC_INTR_CRED_RESET_COALESCE;
-+		ionic_intr_credits(idev->intr_ctrl,
-+				   cq->bound_intr->index,
-+				   work_done, flags);
-+	}
-+
-+	DEBUG_STATS_NAPI_POLL(qcq, work_done);
-+
-+	return work_done;
-+}
-+
-+int ionic_txrx_napi(struct napi_struct *napi, int budget)
- {
- 	struct ionic_qcq *qcq = napi_to_qcq(napi);
- 	struct ionic_cq *rxcq = napi_to_cq(napi);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.h b/drivers/net/ethernet/pensando/ionic/ionic_txrx.h
-index 71973e3c35a6..a5883be0413f 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.h
-@@ -11,6 +11,8 @@ void ionic_rx_fill(struct ionic_queue *q);
- void ionic_rx_empty(struct ionic_queue *q);
- void ionic_tx_empty(struct ionic_queue *q);
- int ionic_rx_napi(struct napi_struct *napi, int budget);
-+int ionic_tx_napi(struct napi_struct *napi, int budget);
-+int ionic_txrx_napi(struct napi_struct *napi, int budget);
- netdev_tx_t ionic_start_xmit(struct sk_buff *skb, struct net_device *netdev);
- 
- #endif /* _IONIC_TXRX_H_ */
+v2->v3:
+- call map_poke_untrack() on each previously registered subprog's aux
+  struct to prog array if adding poke descriptor or tracking the aux
+  struct failed (Daniel)
+
+v1->v2:
+- include the rax->rcx conversion in first patch, target prog needs to be
+  placed in rcx in the tailcall indirect routine (Daniel)
+- add error checks to routines that add poke descriptors to subprograms
+  (Daniel)
+- don't allow this optimization when arch is different than x64 and when JIT is
+  disabled (Daniel)
+- pull out the rename of poke desc members onto a separate patch (Daniel)
+- add a new poke member to store the bypass address so that calculation of it
+  won't be necessary
+- avoid the special casing when old and new is null in map_poke_run (Daniel)
+- do not sync RCU when bypass target was not patched (Daniel)
+- do not introduce nop2 instruction to prologue for cBPF programs (Daniel)
+
+RFC->v1:
+- rename poke->ip/poke->ip_aux pair to
+  poke->tailcall_target/poke->tailcall_bypass (Alexei)
+- get rid of x86-specific code in prog_array_map_poke_run (Alexei)
+- use synchronize_rcu in prog_array_map_poke_run so that other CPUs in
+  the middle of execution will finish running the program and will not
+  stumble upon the incorrect state (Alexei)
+- update performance reports
+- rebase
+
+
+Hello,
+
+today bpf2bpf calls and tailcalls exclude each other. This set makes them
+work together.
+
+To give you an overview how this work started, previously I posted RFC
+that was targetted at getting rid of push/pop instructions for callee
+saved registers in x86-64 JIT that are not used by the BPF program.
+Alexei saw a potential that that work could be lifted a bit and
+tailcalls could work with BPF subprograms. More on that in [1], [2].
+
+For previous discussions on RFC version, see [3].
+For v1, see [4]. v2 is in [5], v3 can be ignored.
+v5 - [6].
+
+In [1], Alexei says:
+
+"The prologue will look like:
+nop5
+xor eax,eax  // two new bytes if bpf_tail_call() is used in this
+function
+push rbp
+mov rbp, rsp
+sub rsp, rounded_stack_depth
+push rax // zero init tail_call counter
+variable number of push rbx,r13,r14,r15
+
+Then bpf_tail_call will pop variable number rbx,..
+and final 'pop rax'
+Then 'add rsp, size_of_current_stack_frame'
+jmp to next function and skip over 'nop5; xor eax,eax; push rpb; mov
+rbp, rsp'
+
+This way new function will set its own stack size and will init tail
+call counter with whatever value the parent had.
+
+If next function doesn't use bpf_tail_call it won't have 'xor eax,eax'.
+Instead it would need to have 'nop2' in there."
+
+So basically I gave a shot at that suggestion. Patch 4 has a description
+of implementation.
+
+Quick overview of patches:
+Patch 1 changes BPF retpoline to use %rcx instead of %rax to store
+address of BPF tailcall target program
+Patch 2 propagates poke descriptors from main program to each subprogram
+Patch 3 renames poke->ip to poke->tailcall_target
+Patch 4 is the main dish in this set. It implements new prologue layout
+that was suggested by Alexei and reworks tailcall handling.
+Patch 5 relaxes verifier's restrictions about tailcalls being used with
+BPF subprograms for x64 JIT
+Patch 6 is the new selftest that proves tailcalls can be used from
+within BPF subprogram.
+
+
+-------------------------------------------------------------------
+prog_array_map_poke_run changes:
+
+Before the tailcall and with the new prologue layout, stack need to be
+unwinded and callee saved registers need to be popped. Instructions
+responsible for that are generated, but they should not be executed if
+target program is not present. To address that, new poke target
+'tailcall_bypass' is introduced to poke descriptor that will be used for
+skipping these instructions. This means there are two poke targets for
+handling direct tailcalls. Simplified flow can be presented as three
+sections:
+
+1. skip call or nop (poke->tailcall_bypass)
+2. stack unwind
+3. call tail or nop (poke->tailcall_target)
+
+It would be possible under specific circumstances that one of CPU might
+be in point 2 and point 3 is not yet updated (nop), which would lead to
+problems mentioned in patch 4 commit message, IOW unwind section should
+not be executed if there is no target program.
+
+We can define the following state matrix for that (courtesy of Bjorn):
+A nop, unwind, nop
+B nop, unwind, tail
+C skip, unwind, nop
+D skip, unwind, tail
+
+A is forbidden (lead to incorrectness). The state transitions between
+tailcall install/update/remove will work as follows:
+
+First install tail call f: C->D->B(f)
+ * poke the tailcall, after that get rid of the skip
+Update tail call f to f': B(f)->B(f')
+ * poke the tailcall (poke->tailcall_target) and do NOT touch the
+   poke->tailcall_bypass
+Remove tail call: B(f')->C(f')
+ * poke->tailcall_bypass is poked back to jump, then we wait the RCU
+   grace period so that other programs will finish its execution and
+   after that we are safe to remove the poke->tailcall_target
+Install new tail call (f''): C(f')->D(f'')->B(f'').
+ * same as first step
+
+This way CPU can never be exposed to "unwind, tail" state.
+
+-------------------------------------------------------------------
+Performance impact:
+
+All of this work, as stated in [2], started as a way to speed up AF-XDP
+by dropping the push/pop of unused callee saved registers in prologue
+and epilogue. Impact is positive, 15% of performance gain.
+
+However, it is obvious that it will have a negative impact on BPF
+programs that utilize tailcalls, but we think its volume is acceptable
+for the feature that this set contains.
+
+Below are te numbers from 'perf stat' for two scenarios.
+First scenario is the output of command:
+
+$ sudo perf stat -ddd -r 1024 ./test_progs -t tailcalls
+
+tailcalls kselftest was modified in a following way:
+- only tailcall1 subtest is enabled
+- each of the bpf_prog_test_run() calls got set 'repeat' argument to
+  1000000
+
+Numbers without this set:
+
+ Performance counter stats for './test_progs -t tailcalls' (1024 runs):
+
+            261.68 msec task-clock                #    0.998 CPUs utilized            ( +-  0.12% )
+                 5      context-switches          #    0.017 K/sec                    ( +-  0.54% )
+                 0      cpu-migrations            #    0.000 K/sec                    ( +- 23.37% )
+               113      page-faults               #    0.433 K/sec                    ( +-  0.03% )
+       877,156,850      cycles                    #    3.352 GHz                      ( +-  0.11% )  (30.31%)
+     1,379,322,515      instructions              #    1.57  insn per cycle           ( +-  0.02% )  (38.17%)
+       218,869,567      branches                  #  836.395 M/sec                    ( +-  0.01% )  (38.46%)
+        11,954,183      branch-misses             #    5.46% of all branches          ( +-  0.01% )  (38.74%)
+       283,350,418      L1-dcache-loads           # 1082.805 M/sec                    ( +-  0.01% )  (39.00%)
+           156,323      L1-dcache-load-misses     #    0.06% of all L1-dcache hits    ( +-  0.74% )  (39.05%)
+            37,309      LLC-loads                 #    0.143 M/sec                    ( +-  1.02% )  (31.08%)
+            15,263      LLC-load-misses           #   40.91% of all LL-cache hits     ( +-  0.90% )  (30.95%)
+   <not supported>      L1-icache-loads
+           130,427      L1-icache-load-misses                                         ( +-  0.45% )  (30.80%)
+       285,369,370      dTLB-loads                # 1090.520 M/sec                    ( +-  0.01% )  (30.64%)
+             1,154      dTLB-load-misses          #    0.00% of all dTLB cache hits   ( +-  1.26% )  (30.46%)
+             2,015      iTLB-loads                #    0.008 M/sec                    ( +-  1.12% )  (30.31%)
+               551      iTLB-load-misses          #   27.34% of all iTLB cache hits   ( +-  1.29% )  (30.20%)
+   <not supported>      L1-dcache-prefetches
+   <not supported>      L1-dcache-prefetch-misses
+
+          0.262276 +- 0.000316 seconds time elapsed  ( +-  0.12% )
+
+With:
+
+ Performance counter stats for './test_progs -t tailcalls' (1024 runs):
+
+            362.37 msec task-clock                #    0.671 CPUs utilized            ( +-  0.11% )
+                28      context-switches          #    0.077 K/sec                    ( +-  0.15% )
+                 0      cpu-migrations            #    0.001 K/sec                    ( +-  4.46% )
+               113      page-faults               #    0.313 K/sec                    ( +-  0.03% )
+       895,804,416      cycles                    #    2.472 GHz                      ( +-  0.08% )  (30.50%)
+     1,339,401,398      instructions              #    1.50  insn per cycle           ( +-  0.04% )  (38.29%)
+       302,718,849      branches                  #  835.385 M/sec                    ( +-  0.04% )  (38.39%)
+        11,962,089      branch-misses             #    3.95% of all branches          ( +-  0.05% )  (38.56%)
+       248,044,443      L1-dcache-loads           #  684.505 M/sec                    ( +-  0.03% )  (38.70%)
+           239,882      L1-dcache-load-misses     #    0.10% of all L1-dcache hits    ( +-  0.49% )  (38.69%)
+            76,904      LLC-loads                 #    0.212 M/sec                    ( +-  0.96% )  (30.88%)
+            23,472      LLC-load-misses           #   30.52% of all LL-cache hits     ( +-  0.98% )  (30.85%)
+   <not supported>      L1-icache-loads
+           193,803      L1-icache-load-misses                                         ( +-  0.53% )  (30.81%)
+       249,775,412      dTLB-loads                #  689.282 M/sec                    ( +-  0.04% )  (30.81%)
+             2,176      dTLB-load-misses          #    0.00% of all dTLB cache hits   ( +-  1.53% )  (30.73%)
+             2,914      iTLB-loads                #    0.008 M/sec                    ( +-  1.23% )  (30.59%)
+               978      iTLB-load-misses          #   33.57% of all iTLB cache hits   ( +-  1.29% )  (30.48%)
+   <not supported>      L1-dcache-prefetches
+   <not supported>      L1-dcache-prefetch-misses
+
+          0.540236 +- 0.000454 seconds time elapsed  ( +-  0.08% )
+
+Second conducted measurement was on BPF kselftest flow_dissector that is
+using the progs/bpf_flow.c with 'repeat' argument on
+bpf_prog_test_run_xattr set also to 1000000.
+
+Without:
+
+Performance counter stats for './test_progs -t flow_dissector' (1024 runs):
+
+          1,355.18 msec task-clock                #    0.989 CPUs utilized            ( +-  0.11% )
+                28      context-switches          #    0.021 K/sec                    ( +-  0.49% )
+                 0      cpu-migrations            #    0.000 K/sec                    ( +-  7.86% )
+               125      page-faults               #    0.093 K/sec                    ( +-  0.03% )
+     4,609,228,676      cycles                    #    3.401 GHz                      ( +-  0.03% )  (30.70%)
+     6,735,946,489      instructions              #    1.46  insn per cycle           ( +-  0.01% )  (38.42%)
+     1,130,187,926      branches                  #  833.979 M/sec                    ( +-  0.01% )  (38.47%)
+        29,150,986      branch-misses             #    2.58% of all branches          ( +-  0.01% )  (38.51%)
+     1,737,548,851      L1-dcache-loads           # 1282.158 M/sec                    ( +-  0.01% )  (38.56%)
+           659,851      L1-dcache-load-misses     #    0.04% of all L1-dcache hits    ( +-  0.78% )  (38.56%)
+            71,196      LLC-loads                 #    0.053 M/sec                    ( +-  0.97% )  (30.81%)
+            22,218      LLC-load-misses           #   31.21% of all LL-cache hits     ( +-  0.83% )  (30.79%)
+   <not supported>      L1-icache-loads
+           770,586      L1-icache-load-misses                                         ( +-  0.67% )  (30.77%)
+     1,742,104,224      dTLB-loads                # 1285.520 M/sec                    ( +-  0.01% )  (30.74%)
+             7,060      dTLB-load-misses          #    0.00% of all dTLB cache hits   ( +-  2.08% )  (30.72%)
+             4,282      iTLB-loads                #    0.003 M/sec                    ( +- 16.98% )  (30.70%)
+             1,261      iTLB-load-misses          #   29.46% of all iTLB cache hits   ( +-  7.14% )  (30.68%)
+   <not supported>      L1-dcache-prefetches
+   <not supported>      L1-dcache-prefetch-misses
+
+           1.37087 +- 0.00145 seconds time elapsed  ( +-  0.11% )
+
+With:
+
+ Performance counter stats for './test_progs -t flow_dissector' (1024 runs):
+
+          1,385.56 msec task-clock                #    0.989 CPUs utilized            ( +-  0.06% )
+                28      context-switches          #    0.020 K/sec                    ( +-  0.48% )
+                 0      cpu-migrations            #    0.000 K/sec                    ( +-  7.20% )
+               125      page-faults               #    0.091 K/sec                    ( +-  0.03% )
+     4,642,599,630      cycles                    #    3.351 GHz                      ( +-  0.03% )  (30.69%)
+     6,901,261,616      instructions              #    1.49  insn per cycle           ( +-  0.01% )  (38.41%)
+     1,130,623,950      branches                  #  816.006 M/sec                    ( +-  0.01% )  (38.45%)
+        29,161,215      branch-misses             #    2.58% of all branches          ( +-  0.01% )  (38.50%)
+     1,796,850,740      L1-dcache-loads           # 1296.842 M/sec                    ( +-  0.01% )  (38.55%)
+           673,908      L1-dcache-load-misses     #    0.04% of all L1-dcache hits    ( +-  0.89% )  (38.56%)
+            70,394      LLC-loads                 #    0.051 M/sec                    ( +-  1.08% )  (30.82%)
+            24,575      LLC-load-misses           #   34.91% of all LL-cache hits     ( +-  0.66% )  (30.80%)
+   <not supported>      L1-icache-loads
+           729,421      L1-icache-load-misses                                         ( +-  0.85% )  (30.77%)
+     1,800,871,042      dTLB-loads                # 1299.743 M/sec                    ( +-  0.01% )  (30.75%)
+             6,133      dTLB-load-misses          #    0.00% of all dTLB cache hits   ( +-  2.55% )  (30.73%)
+             1,998      iTLB-loads                #    0.001 M/sec                    ( +-  9.36% )  (30.70%)
+             1,152      iTLB-load-misses          #   57.66% of all iTLB cache hits   ( +-  3.02% )  (30.68%)
+   <not supported>      L1-dcache-prefetches
+   <not supported>      L1-dcache-prefetch-misses
+
+          1.400577 +- 0.000780 seconds time elapsed  ( +-  0.06% )
+
+
+Interesting fact is that I observed the huge iTLB-load-misses counts on
+clean kernel as well:
+
+flow_dissector test:
+             2,613      iTLB-loads                #    0.002 M/sec ( +- 21.90% )  (30.70%)
+            16,483      iTLB-load-misses          #  630.78% of all iTLB cache hits   ( +- 79.63% )  (30.68%)
+tailcalls test:
+             1,996      iTLB-loads                #    0.008 M/sec ( +-  1.08% )  (30.33%)
+             7,272      iTLB-load-misses          #  364.24% of all iTLB cache hits   ( +- 92.01% )  (30.21%)
+
+So probably Alexei's suspicion about get_random_int() doing strange things
+was right.
+
+-------------------------------------------------------------------
+
+Thank you,
+Maciej
+
+[1]: https://lore.kernel.org/bpf/20200517043227.2gpq22ifoq37ogst@ast-mbp.dhcp.thefacebook.com/
+[2]: https://lore.kernel.org/bpf/20200511143912.34086-1-maciej.fijalkowski@intel.com/
+[3]: https://lore.kernel.org/bpf/20200702134930.4717-1-maciej.fijalkowski@intel.com/
+[4]: https://lore.kernel.org/bpf/20200715233634.3868-1-maciej.fijalkowski@intel.com/
+[5]: https://lore.kernel.org/netdev/20200721115321.3099-1-maciej.fijalkowski@intel.com/
+[6]: https://lore.kernel.org/netdev/20200724173557.5764-1-maciej.fijalkowski@intel.com/
+
+Maciej Fijalkowski (6):
+  bpf, x64: use %rcx instead of %rax for tail call retpolines
+  bpf: propagate poke descriptors to subprograms
+  bpf: rename poke descriptor's 'ip' member to 'tailcall_target'
+  bpf, x64: rework pro/epilogue and tailcall handling in JIT
+  bpf: allow for tailcalls in BPF subprograms for x64 JIT
+  selftests: bpf: add dummy prog for bpf2bpf with tailcall
+
+ arch/x86/include/asm/nospec-branch.h          |  16 +-
+ arch/x86/net/bpf_jit_comp.c                   | 249 +++++++++++++-----
+ include/linux/bpf.h                           |   7 +-
+ kernel/bpf/arraymap.c                         |  55 +++-
+ kernel/bpf/core.c                             |   3 +-
+ kernel/bpf/verifier.c                         |  57 +++-
+ .../selftests/bpf/prog_tests/tailcalls.c      |  85 ++++++
+ tools/testing/selftests/bpf/progs/tailcall6.c |  38 +++
+ 8 files changed, 424 insertions(+), 86 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/tailcall6.c
+
 -- 
-2.17.1
+2.20.1
 
