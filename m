@@ -2,149 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3765234AFF
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:28:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 287B0234B01
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387881AbgGaS2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 14:28:14 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:12686 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387854AbgGaS2N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 14:28:13 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1596220092; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=vjQiGVYzJ12zA+igqujOYlOj1OL8iIPU8CB8EiC7eQw=; b=BMJk6ZwOLpO1RAP5evBoJoGtW39x1ZQiBSIdAoGop0yrvOrJHxWbPejDAMhyzmP9XYTbq4m9
- YiPZ9dug1guh/sYYmQozymiYUf6qhb3A5jfocpGkIVngw2i3PfSaLwyZ79Qa5HOJXpVoDe+4
- WBSlmYzvX1mm3tMmUWermciypn8=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 5f2462a2eb556d49a65354bd (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 31 Jul 2020 18:27:46
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id DC2F0C433A0; Fri, 31 Jul 2020 18:27:45 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from pillair-linux.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pillair)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 875B1C433A1;
-        Fri, 31 Jul 2020 18:27:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 875B1C433A1
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=pillair@codeaurora.org
-From:   Rakesh Pillai <pillair@codeaurora.org>
-To:     ath10k@lists.infradead.org
-Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Rakesh Pillai <pillair@codeaurora.org>
-Subject: [PATCH v2 3/3] ath10k: Add debugfs support to enable event history
-Date:   Fri, 31 Jul 2020 23:57:22 +0530
-Message-Id: <1596220042-2778-4-git-send-email-pillair@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1596220042-2778-1-git-send-email-pillair@codeaurora.org>
-References: <1596220042-2778-1-git-send-email-pillair@codeaurora.org>
+        id S2387886AbgGaS2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 14:28:37 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:58346 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387680AbgGaS2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 14:28:37 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06VIFkBd023635
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 11:28:36 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=KqJIq725uq/HnQgvV55bIPsHwEMCXKUIsjnJYCPw/KY=;
+ b=VUKziRaCkW0C976VR373ufk0F457N/CZ1hgiR8/PvuX6nAfrB6iflE9taDrVzuQSvCzo
+ vMr0SpR7EYe4J1lUgoxyqsfcDECO+MNPbwsgeSvHxW5ctdzhPoyN0jsb+CPzH4uelDig
+ tezzZsI0jDXj36JBiAOx/D5XGutD4rRND5k= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 32kcbv3m6h-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 11:28:36 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 31 Jul 2020 11:28:34 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id D16682EC4E02; Fri, 31 Jul 2020 11:28:31 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next 0/5] BPF link force-detach support
+Date:   Fri, 31 Jul 2020 11:28:25 -0700
+Message-ID: <20200731182830.286260-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-31_07:2020-07-31,2020-07-31 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=689
+ bulkscore=0 clxscore=1015 suspectscore=8 phishscore=0 malwarescore=0
+ priorityscore=1501 adultscore=0 spamscore=0 impostorscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2007310137
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the support to enable/disable the recording of
-debug events history.
+This patch set adds new BPF link operation, LINK_DETACH, allowing process=
+es
+with BPF link FD to force-detach it from respective BPF hook, similarly h=
+ow
+BPF link is auto-detached when such BPF hook (e.g., cgroup, net_device, n=
+etns,
+etc) is removed. This facility allows admin to forcefully undo BPF link
+attachment, while process that created BPF link in the first place is lef=
+t
+intact.
 
-The enable/disable of the history from debugfs will
-not make any affect if its not enabled via module
-parameter.
+Once force-detached, BPF link stays valid in the kernel as long as there =
+is at
+least one FD open against it. It goes into defunct state, just like
+auto-detached BPF link.
 
-Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.1-01040-QCAHLSWMTPLZ-1
+bpftool also got `link detach` command to allow triggering this in
+non-programmatic fashion.
 
-Signed-off-by: Rakesh Pillai <pillair@codeaurora.org>
----
- drivers/net/wireless/ath/ath10k/debug.c | 56 +++++++++++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
+v1->v2:
+- improve error reporting in `bpftool link detach` (Song).
 
-diff --git a/drivers/net/wireless/ath/ath10k/debug.c b/drivers/net/wireless/ath/ath10k/debug.c
-index 5d08652..6785fae 100644
---- a/drivers/net/wireless/ath/ath10k/debug.c
-+++ b/drivers/net/wireless/ath/ath10k/debug.c
-@@ -610,6 +610,59 @@ static const struct file_operations fops_simulate_fw_crash = {
- 	.llseek = default_llseek,
- };
- 
-+static ssize_t ath10k_read_history_enable(struct file *file,
-+					  char __user *user_buf,
-+					  size_t count, loff_t *ppos)
-+{
-+	const char buf[] =
-+		"To enable recording of certain event history, write to this file with the enable mask\n"
-+		"BIT(0): Enable Reg Access history\n"
-+		"	- Register write events\n"
-+		"	- Register read events\n"
-+		"BIT(1): Enable CE events history\n"
-+		"	- ATH10K_IRQ_TRIGGER event\n"
-+		"	- ATH10K_NAPI_POLL event\n"
-+		"	- ATH10K_CE_SERVICE event\n"
-+		"	- ATH10K_NAPI_COMPLETE event\n"
-+		"	- ATH10K_NAPI_RESCHED event\n"
-+		"	- ATH10K_IRQ_SUMMARY event\n"
-+		"BIT(2): Enable WMI CMD history\n"
-+		"	- WMI CMD event\n"
-+		"	- WMI CMD TX completion event\n"
-+		"BIT(3): Enable WMI events history\n"
-+		"	- WMI Events event\n";
-+
-+	return simple_read_from_buffer(user_buf, count, ppos, buf, strlen(buf));
-+}
-+
-+static ssize_t ath10k_write_history_enable(struct file *file,
-+					   const char __user *user_buf,
-+					   size_t count, loff_t *ppos)
-+{
-+	u32 history_enable_mask;
-+	int i, ret;
-+
-+	ret = kstrtou32_from_user(user_buf, count, 0, &history_enable_mask);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < ATH10K_HISTORY_MAX; i++)
-+		if (history_enable_mask & BIT(i))
-+			set_bit(i, &ath10k_history_enable_mask);
-+		else
-+			clear_bit(i, &ath10k_history_enable_mask);
-+
-+	return count;
-+}
-+
-+static const struct file_operations fops_history_enable = {
-+	.read = ath10k_read_history_enable,
-+	.write = ath10k_write_history_enable,
-+	.open = simple_open,
-+	.owner = THIS_MODULE,
-+	.llseek = default_llseek,
-+};
-+
- static ssize_t ath10k_read_chip_id(struct file *file, char __user *user_buf,
- 				   size_t count, loff_t *ppos)
- {
-@@ -2658,6 +2711,9 @@ int ath10k_debug_register(struct ath10k *ar)
- 	debugfs_create_file("reset_htt_stats", 0200, ar->debug.debugfs_phy, ar,
- 			    &fops_reset_htt_stats);
- 
-+	debugfs_create_file("history_enable", 0644, ar->debug.debugfs_phy, ar,
-+			    &fops_history_enable);
-+
- 	return 0;
- }
- 
--- 
-2.7.4
+Andrii Nakryiko (5):
+  bpf: add support for forced LINK_DETACH command
+  libbpf: add bpf_link detach APIs
+  selftests/bpf: add link detach tests for cgroup, netns, and xdp
+    bpf_links
+  tools/bpftool: add `link detach` subcommand
+  tools/bpftool: add documentation and bash-completion for `link detach`
+
+ include/linux/bpf.h                           |  1 +
+ include/uapi/linux/bpf.h                      |  5 ++
+ kernel/bpf/cgroup.c                           | 15 +++++-
+ kernel/bpf/net_namespace.c                    |  8 +++
+ kernel/bpf/syscall.c                          | 26 ++++++++++
+ net/core/dev.c                                | 11 +++-
+ .../bpftool/Documentation/bpftool-link.rst    |  8 +++
+ tools/bpf/bpftool/bash-completion/bpftool     |  4 +-
+ tools/bpf/bpftool/link.c                      | 37 +++++++++++++-
+ tools/include/uapi/linux/bpf.h                |  5 ++
+ tools/lib/bpf/bpf.c                           | 10 ++++
+ tools/lib/bpf/bpf.h                           |  2 +
+ tools/lib/bpf/libbpf.c                        |  5 ++
+ tools/lib/bpf/libbpf.h                        |  1 +
+ tools/lib/bpf/libbpf.map                      |  2 +
+ .../selftests/bpf/prog_tests/cgroup_link.c    | 20 +++++++-
+ .../selftests/bpf/prog_tests/sk_lookup.c      | 51 +++++++++----------
+ .../selftests/bpf/prog_tests/xdp_link.c       | 14 +++++
+ tools/testing/selftests/bpf/testing_helpers.c | 14 +++++
+ tools/testing/selftests/bpf/testing_helpers.h |  3 ++
+ 20 files changed, 208 insertions(+), 34 deletions(-)
+
+--=20
+2.24.1
 
