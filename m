@@ -2,149 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A8A6234A6B
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 19:45:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB3F5234A76
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 19:48:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733236AbgGaRpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 13:45:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52570 "EHLO
+        id S2387452AbgGaRsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 13:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729018AbgGaRpG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 13:45:06 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE40DC061574;
-        Fri, 31 Jul 2020 10:45:05 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id h19so33245101ljg.13;
-        Fri, 31 Jul 2020 10:45:05 -0700 (PDT)
+        with ESMTP id S1728758AbgGaRs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 13:48:29 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D749C061574;
+        Fri, 31 Jul 2020 10:48:29 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id p191so421304ybg.0;
+        Fri, 31 Jul 2020 10:48:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qif3gPM+i0kd4n51TWspAAp0VCMEW9fIt4GS0n1sm60=;
-        b=gg3aX+m6V9TMBElSz2Y8AZQ+70XjTLFowfhk9QlSoLeXXvcyUjLlEIjLOkB5fd9cTe
-         G+XzBrvsinyc1AzAMUx+x6NcAztg6iwmPLTdFwYqW5A6zg886z0EP7gB85/onxyuRB+Q
-         Qyf5G/nxmM2ajGKDcvGwo52iZoCDuSwPWFIneV4O9vnF23AARSYrZPCPSks6JikrVL7q
-         vbsKO0gXIpmhGcK25uU40hDRBBs6J9njwkwgknUhW3s8uEz+sgzJPy8R+StMZrtUviit
-         r1IoO5o44OqaZO7qT3AJIWMzpL0xgYvj7OoiW2RRN5gefBYcSPbDNqixAUUsazauMUK3
-         4C4w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7yuTOXkhnjtQaEm9idGZaO/zfXegMB7ywvDDyNQyj/I=;
+        b=Ia2KG8Dg+BQsHF7ZvXuqhVIIBXIEfPHODcfnL2p5ZboFoSn9gTATt5RC0apvua39Hk
+         HdaIBqspB9J4V0exyzKhHQoo5hJcRMKO3jb99ftPqkLACSyTaBO+vU3hGwvRVG0Mkg3O
+         XNcFh05JPS/txkOomOZQ0DqaK6erwgFsy2e5T1w2p562foq96lFZPfZ9oPSgHasLEuaS
+         wAJLELm7a5mQXCzR4L68bqSRsxxXFcnI8mDwBw+9vth3cnfOu27NHeT8vn775fzCw3ku
+         VajG0UgaXUiv0ntVgRB656n01g3b6EkUexByh7gvYQ6yz6rSP48rqTABWFwTKrPk0fBg
+         waoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qif3gPM+i0kd4n51TWspAAp0VCMEW9fIt4GS0n1sm60=;
-        b=C/Lhv+6biZxUItCsasIc1c7ylwFDNzni7tFKpJVe7PmoD+kBbmqAYAHxgWicGXAxFQ
-         oBpOW5Zgpqo9hPPslHV4BvHqGw0NWQDonqRD4Rv7zK5+DLPoW4b3Se7UpBtQ3/lLoXYy
-         zMIbxJMTsM6mJIwD+PUCzJIAGQeUidR4cF3kTn2UT85AMRGOrELO3L6GjLTnNEAHqUQ7
-         DL0xQNn+PlE6p4l0BxxnvtV2Mu+FpRZeArMh3+bpnwDCIfpwYy6am4g3h64px1EwtrJm
-         IfaNDvSZXOBycx5+v4SVW3EEAGvtWV8x+KOQPk7KHy5+NEm1MNsFVuuGoniiwVNjWk2t
-         imaA==
-X-Gm-Message-State: AOAM5301P18dh+PDZ2TBjPro/RbzY9YKn22CcCHBh9JWsal8L9peH7Ch
-        QLk74+ew0pQ7hy09KdnWhtrHMLRV
-X-Google-Smtp-Source: ABdhPJwQzDzwgm9Hh0DSRuGfpROIhbFTc3Gm/wnM89vgURm2Go3AiX/Dh+CS+kFYS8SDjlOMP75wtA==
-X-Received: by 2002:a2e:7c14:: with SMTP id x20mr2300295ljc.41.1596217504038;
-        Fri, 31 Jul 2020 10:45:04 -0700 (PDT)
-Received: from wasted.omprussia.ru ([2a00:1fa0:225:dc3:11c8:9b9e:ad39:92d0])
-        by smtp.gmail.com with ESMTPSA id i21sm2072334lfe.50.2020.07.31.10.45.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 31 Jul 2020 10:45:03 -0700 (PDT)
-Subject: Re: [PATCH v2] ravb: Fixed the problem that rmmod can not be done
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-References: <20200730035649.5940-1-ashiduka@fujitsu.com>
- <20200730100151.7490-1-ashiduka@fujitsu.com>
- <TY2PR01MB36928342A37492E8694A7625D8710@TY2PR01MB3692.jpnprd01.prod.outlook.com>
- <793b7100-9a3a-11fd-f0cd-bf225b958775@gmail.com>
- <TY2PR01MB3692A94CD6479F2976458B0FD84E0@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <97569264-fcf8-58cb-3ce7-9d569ad176e5@gmail.com>
-Date:   Fri, 31 Jul 2020 20:45:02 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7yuTOXkhnjtQaEm9idGZaO/zfXegMB7ywvDDyNQyj/I=;
+        b=F5q9nWq1kHBztZOJ/UJsWomdG5g0vu0/qg6DaQDReYgzZ1J2YFED6kZNZoGuSUafwZ
+         p900L4VJ4t4V6FQteuyycKjshpWGopNivnVepnv9JbS1BvcewNwKvlfVlMgyhiQTdLB+
+         F8luVizEZT315Ir5s4mVmm1xAXUgWo19BkvWI1wOjmf/4jfX7VVKtXn1jpoI9vzV9RYv
+         K+j7eOuZlvK82mknz80JV1zsN4V5JbhbIUMkpb99bXaSIRlwsV7syY2cMtCJuv3ja77Z
+         Y6hyk+5jfs2/ODgJ5k5yOnTcckYIO5sIt9wKaCHkcw9kfOaaAp9isLVEQFlm5w3FM6jX
+         RBjQ==
+X-Gm-Message-State: AOAM532G7FyX1/DHswYiIWIAGJCVf2rY2yj/0z0DwRz5Xw3jtkkRBksu
+        pCegVUYhPyv6xeaQAsCn35WdItUn/JzNHpOKrrE=
+X-Google-Smtp-Source: ABdhPJxIKeLVgVoTxPWDwUwBAi6m9zUbpLSULVkwM/J75oOYyUrhoQQj2Ky9cRsM5qWbNAOu69NDamEetiIgIjzJLpo=
+X-Received: by 2002:a25:d84a:: with SMTP id p71mr8363157ybg.347.1596217708673;
+ Fri, 31 Jul 2020 10:48:28 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <TY2PR01MB3692A94CD6479F2976458B0FD84E0@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1596170660-5582-1-git-send-email-komachi.yoshiki@gmail.com> <1596170660-5582-4-git-send-email-komachi.yoshiki@gmail.com>
+In-Reply-To: <1596170660-5582-4-git-send-email-komachi.yoshiki@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 31 Jul 2020 10:48:18 -0700
+Message-ID: <CAEf4BzaRKhJqFmXJEQy5LOjKx9nkPgAKHa3cesvywy2qqg93YA@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 3/3] samples/bpf: Add a simple bridge example
+ accelerated with XDP
+To:     Yoshiki Komachi <komachi.yoshiki@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        David Ahern <dsahern@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        bridge@lists.linux-foundation.org, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On Thu, Jul 30, 2020 at 9:45 PM Yoshiki Komachi
+<komachi.yoshiki@gmail.com> wrote:
+>
+> This patch adds a simple example of XDP-based bridge with the new
+> bpf_fdb_lookup helper. This program simply forwards packets based
+> on the destination port given by FDB in the kernel. Note that both
+> vlan filtering and learning features are currently unsupported in
+> this example.
+>
+> There is another plan to recreate a userspace application
+> (xdp_bridge_user.c) as a daemon process, which helps to automate
+> not only detection of status changes in bridge port but also
+> handling vlan protocol updates.
+>
+> Note: David Ahern suggested a new bpf helper [1] to get master
+> vlan/bonding devices in XDP programs attached to their slaves
+> when the master vlan/bonding devices are bridge ports. If this
+> idea is accepted and the helper is introduced in the future, we
+> can handle interfaces slaved to vlan/bonding devices in this
+> sample by calling the suggested bpf helper (I guess it can get
+> vlan/bonding ifindex from their slave ifindex). Notice that we
+> don't need to change bpf_fdb_lookup() API to use such a feature,
+> but we just need to modify bpf programs like this sample.
+>
+> [1]: http://vger.kernel.org/lpc-networking2018.html#session-1
+>
+> Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
+> ---
+
+Have you tried using a BPF skeleton for this? It could have saved a
+bunch of mechanical code for your example. Also libbpf supports map
+pinning out of the box now, I wonder if it would just work in your
+case. Also it would be nice if you tried using BPF link-based approach
+for this example, to show how it can be used. Thanks!
 
 
-On 7/31/20 9:43 AM, Yoshihiro Shimoda wrote:
-
->>>> From: Yuusuke Ashizuka, Sent: Thursday, July 30, 2020 7:02 PM
->>>> Subject: [PATCH v2] ravb: Fixed the problem that rmmod can not be done
->>>
->>> Thank you for the patch! I found a similar patch for another driver [1].
->>
->>    It's not the same case -- that driver hadn't had the MDIO release code at all
->> before that patch.
-> 
-> You're correct. I didn't realized it...
-
-   The patch description was somewhat incomplete there...
-
->>> So, we should apply this patch to the ravb driver.
->>
->>    I believe the driver is innocent. :-)
-> 
-> I hope so :)
-
-   Looks like I was wrong in this case. It's very fortunate that the MDIO bitbang
-is not as popular as I thought.
-
-> <snip>
->>>> $ lsmod
->>>> Module                  Size  Used by
->>>> ravb                   40960  1
->>>> $ rmmod ravb
->>>> rmmod: ERROR: Module ravb is in use
->>
->>    Shouldn't the driver core call the remove() method for the affected devices
->> first, before checking the refcount?
-> 
-> In this case, an mii bus of "mdiobb_ops bb_ops" is affected "device" by the ravb driver.
-> And the ravb driver sets the owner of mii bus as THIS_MODULE like below:
-> 
-> static struct mdiobb_ops bb_ops = {
->         .owner = THIS_MODULE,
->         .set_mdc = ravb_set_mdc,
->         .set_mdio_dir = ravb_set_mdio_dir,
->         .set_mdio_data = ravb_set_mdio_data,
->         .get_mdio_data = ravb_get_mdio_data,
-> };
-> 
-> So, I don't think the driver core can call the remove() method for the mii bus
-> because it's a part of the ravb driver...
-
-   And because the MDIO module just doesn't have the usual method! :-)
-(I meant the EtherAVB driver's remove() method, and that one would be called after
-a successful reference count check...)
-
-> By the way, about the mdio-gpio driver, I'm wondering if the mdio-gpio
-> driver cannot be removed by rmmod too. (perhaps, we need "rmmod -f" to remove it.)
-
-   You're on your own here. It's fortunate for this patch that I'm not currently loaded
-at work! :-)
-
->>> By the way, I think you have to send this patch to the following maintainers too:
->>> # We can get it by using scripts/get_maintainers.pl.
->>> David S. Miller <davem@davemloft.net> (maintainer:NETWORKING DRIVERS,commit_signer:8/8=100%)
->>> Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING DRIVERS)
-
-   Not critical, as DaveM uses the patchwork anyway. He started to be CC'ed on netdev patches
-only recently. :-)
+>  samples/bpf/Makefile          |   3 +
+>  samples/bpf/xdp_bridge_kern.c | 129 ++++++++++++++++++
+>  samples/bpf/xdp_bridge_user.c | 239 ++++++++++++++++++++++++++++++++++
+>  3 files changed, 371 insertions(+)
+>  create mode 100644 samples/bpf/xdp_bridge_kern.c
+>  create mode 100644 samples/bpf/xdp_bridge_user.c
+>
 
 [...]
-
-> Best regards,
-> Yoshihiro Shimoda
-
-MBR, Sergei
