@@ -2,89 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DED7B234CAC
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 23:07:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 764B5234CB9
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 23:13:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727975AbgGaVHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 17:07:15 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:10024 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726884AbgGaVHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 17:07:15 -0400
-Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 06VL76vx018712;
-        Fri, 31 Jul 2020 14:07:06 -0700
-From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, vishal@chelsio.com, dt@chelsio.com
-Subject: [PATCH net-next] cxgb4: fix extracting IP addresses in TC-FLOWER rules
-Date:   Sat,  1 Aug 2020 02:23:40 +0530
-Message-Id: <1596228820-25570-1-git-send-email-rahul.lakkireddy@chelsio.com>
-X-Mailer: git-send-email 2.5.3
+        id S1728097AbgGaVMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 17:12:41 -0400
+Received: from www62.your-server.de ([213.133.104.62]:43882 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727053AbgGaVMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 17:12:40 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k1cKK-00049O-GM; Fri, 31 Jul 2020 23:12:28 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k1cKK-000UPi-51; Fri, 31 Jul 2020 23:12:28 +0200
+Subject: Re: [RFC PATCH bpf-next 2/3] bpf: Add helper to do forwarding lookups
+ in kernel FDB table
+To:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        bpf@vger.kernel.org
+References: <1596170660-5582-1-git-send-email-komachi.yoshiki@gmail.com>
+ <1596170660-5582-3-git-send-email-komachi.yoshiki@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <9420fbc2-3139-f23e-fb6b-e3d28b9bee5f@iogearbox.net>
+Date:   Fri, 31 Jul 2020 23:12:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <1596170660-5582-3-git-send-email-komachi.yoshiki@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25890/Fri Jul 31 17:04:57 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit c8729cac2a11 ("cxgb4: add ethtool n-tuple filter insertion")
-has removed checking control key for determining IP address types
-for TC-FLOWER rules, which causes all the rules being inserted to
-hardware to become IPv6 rule type always. So, add back the check
-to select the correct IP address type to extract and hence fix the
-correct rule type being inserted to hardware.
+On 7/31/20 6:44 AM, Yoshiki Komachi wrote:
+> This patch adds a new bpf helper to access FDB in the kernel tables
+> from XDP programs. The helper enables us to find the destination port
+> of master bridge in XDP layer with high speed. If an entry in the
+> tables is successfully found, egress device index will be returned.
+> 
+> In cases of failure, packets will be dropped or forwarded to upper
+> networking stack in the kernel by XDP programs. Multicast and broadcast
+> packets are currently not supported. Thus, these will need to be
+> passed to upper layer on the basis of XDP_PASS action.
+> 
+> The API uses destination MAC and VLAN ID as keys, so XDP programs
+> need to extract these from forwarded packets.
+> 
+> Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
 
-Also, ethtool_rx_flow_key doesn't have any control key and instead
-directly sets the IPv4/IPv6 address keys. So, explicitly set the
-IP address type for ethtool n-tuple filters to reuse the same code.
+Few initial comments below:
 
-Fixes: c8729cac2a11 ("cxgb4: add ethtool n-tuple filter insertion")
-Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
----
- .../ethernet/chelsio/cxgb4/cxgb4_tc_flower.c    | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+> ---
+>   include/uapi/linux/bpf.h       | 28 +++++++++++++++++++++
+>   net/core/filter.c              | 45 ++++++++++++++++++++++++++++++++++
+>   scripts/bpf_helpers_doc.py     |  1 +
+>   tools/include/uapi/linux/bpf.h | 28 +++++++++++++++++++++
+>   4 files changed, 102 insertions(+)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 54d0c886e3ba..f2e729dd1721 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -2149,6 +2149,22 @@ union bpf_attr {
+>    *		* > 0 one of **BPF_FIB_LKUP_RET_** codes explaining why the
+>    *		  packet is not forwarded or needs assist from full stack
+>    *
+> + * long bpf_fdb_lookup(void *ctx, struct bpf_fdb_lookup *params, int plen, u32 flags)
+> + *	Description
+> + *		Do FDB lookup in kernel tables using parameters in *params*.
+> + *		If lookup is successful (ie., FDB lookup finds a destination entry),
+> + *		ifindex is set to the egress device index from the FDB lookup.
+> + *		Both multicast and broadcast packets are currently unsupported
+> + *		in XDP layer.
+> + *
+> + *		*plen* argument is the size of the passed **struct bpf_fdb_lookup**.
+> + *		*ctx* is only **struct xdp_md** for XDP programs.
+> + *
+> + *     Return
+> + *		* < 0 if any input argument is invalid
+> + *		*   0 on success (destination port is found)
+> + *		* > 0 on failure (there is no entry)
+> + *
+>    * long bpf_sock_hash_update(struct bpf_sock_ops *skops, struct bpf_map *map, void *key, u64 flags)
+>    *	Description
+>    *		Add an entry to, or update a sockhash *map* referencing sockets.
+> @@ -3449,6 +3465,7 @@ union bpf_attr {
+>   	FN(get_stack),			\
+>   	FN(skb_load_bytes_relative),	\
+>   	FN(fib_lookup),			\
+> +	FN(fdb_lookup),			\
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
-index 6251444ffa58..f642c1b475c4 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
-@@ -80,6 +80,19 @@ static void cxgb4_process_flow_match(struct net_device *dev,
- 				     struct flow_rule *rule,
- 				     struct ch_filter_specification *fs)
- {
-+	u16 addr_type = 0;
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CONTROL)) {
-+		struct flow_match_control match;
-+
-+		flow_rule_match_control(rule, &match);
-+		addr_type = match.key->addr_type;
-+	} else if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_IPV4_ADDRS)) {
-+		addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-+	} else if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_IPV6_ADDRS)) {
-+		addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
-+	}
-+
- 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
- 		struct flow_match_basic match;
- 		u16 ethtype_key, ethtype_mask;
-@@ -102,7 +115,7 @@ static void cxgb4_process_flow_match(struct net_device *dev,
- 		fs->mask.proto = match.mask->ip_proto;
- 	}
- 
--	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_IPV4_ADDRS)) {
-+	if (addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
- 		struct flow_match_ipv4_addrs match;
- 
- 		flow_rule_match_ipv4_addrs(rule, &match);
-@@ -117,7 +130,7 @@ static void cxgb4_process_flow_match(struct net_device *dev,
- 		memcpy(&fs->nat_fip[0], &match.key->src, sizeof(match.key->src));
- 	}
- 
--	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_IPV6_ADDRS)) {
-+	if (addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
- 		struct flow_match_ipv6_addrs match;
- 
- 		flow_rule_match_ipv6_addrs(rule, &match);
--- 
-2.24.0
+This breaks UAPI. Needs to be added to the very end of the list.
 
+>   	FN(sock_hash_update),		\
+>   	FN(msg_redirect_hash),		\
+>   	FN(sk_redirect_hash),		\
+> @@ -4328,6 +4345,17 @@ struct bpf_fib_lookup {
+>   	__u8	dmac[6];     /* ETH_ALEN */
+>   };
+>   
+> +enum {
+> +	BPF_FDB_LKUP_RET_SUCCESS,      /* lookup successful */
+> +	BPF_FDB_LKUP_RET_NOENT,        /* entry is not found */
+> +};
+> +
+> +struct bpf_fdb_lookup {
+> +	unsigned char addr[6];     /* ETH_ALEN */
+> +	__u16 vlan_id;
+> +	__u32 ifindex;
+> +};
+> +
+>   enum bpf_task_fd_type {
+>   	BPF_FD_TYPE_RAW_TRACEPOINT,	/* tp name */
+>   	BPF_FD_TYPE_TRACEPOINT,		/* tp name */
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 654c346b7d91..68800d1b8cd5 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -45,6 +45,7 @@
+>   #include <linux/filter.h>
+>   #include <linux/ratelimit.h>
+>   #include <linux/seccomp.h>
+> +#include <linux/if_bridge.h>
+>   #include <linux/if_vlan.h>
+>   #include <linux/bpf.h>
+>   #include <linux/btf.h>
+> @@ -5084,6 +5085,46 @@ static const struct bpf_func_proto bpf_skb_fib_lookup_proto = {
+>   	.arg4_type	= ARG_ANYTHING,
+>   };
+>   
+> +#if IS_ENABLED(CONFIG_BRIDGE)
+> +BPF_CALL_4(bpf_xdp_fdb_lookup, struct xdp_buff *, ctx,
+> +	   struct bpf_fdb_lookup *, params, int, plen, u32, flags)
+> +{
+> +	struct net_device *src, *dst;
+> +	struct net *net;
+> +
+> +	if (plen < sizeof(*params))
+> +		return -EINVAL;
+
+Given flags are not used, this needs to reject anything invalid otherwise
+you're not able to extend it in future.
+
+> +	net = dev_net(ctx->rxq->dev);
+> +
+> +	if (is_multicast_ether_addr(params->addr) ||
+> +	    is_broadcast_ether_addr(params->addr))
+> +		return BPF_FDB_LKUP_RET_NOENT;
+> +
+> +	src = dev_get_by_index_rcu(net, params->ifindex);
+> +	if (unlikely(!src))
+> +		return -ENODEV;
+> +
+> +	dst = br_fdb_find_port_xdp(src, params->addr, params->vlan_id);
+> +	if (dst) {
+> +		params->ifindex = dst->ifindex;
+> +		return BPF_FDB_LKUP_RET_SUCCESS;
+> +	}
+
+Currently the helper description says nothing that this is /only/ limited to
+bridges. I think it would be better to also name the helper bpf_br_fdb_lookup()
+as well if so to avoid any confusion.
+
+> +	return BPF_FDB_LKUP_RET_NOENT;
+> +}
+> +
+> +static const struct bpf_func_proto bpf_xdp_fdb_lookup_proto = {
+> +	.func		= bpf_xdp_fdb_lookup,
+> +	.gpl_only	= true,
+> +	.ret_type	= RET_INTEGER,
+> +	.arg1_type      = ARG_PTR_TO_CTX,
+> +	.arg2_type      = ARG_PTR_TO_MEM,
+> +	.arg3_type      = ARG_CONST_SIZE,
+> +	.arg4_type	= ARG_ANYTHING,
+> +};
+> +#endif
+
+This should also have a tc pendant (similar as done in routing lookup helper)
+in case native XDP is not available. This will be useful for those that have
+the same code compilable for both tc/XDP.
+
+>   #if IS_ENABLED(CONFIG_IPV6_SEG6_BPF)
+>   static int bpf_push_seg6_encap(struct sk_buff *skb, u32 type, void *hdr, u32 len)
+>   {
+> @@ -6477,6 +6518,10 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>   		return &bpf_xdp_adjust_tail_proto;
+>   	case BPF_FUNC_fib_lookup:
+>   		return &bpf_xdp_fib_lookup_proto;
+> +#if IS_ENABLED(CONFIG_BRIDGE)
+> +	case BPF_FUNC_fdb_lookup:
+> +		return &bpf_xdp_fdb_lookup_proto;
+> +#endif
+>   #ifdef CONFIG_INET
+>   	case BPF_FUNC_sk_lookup_udp:
+>   		return &bpf_xdp_sk_lookup_udp_proto;
