@@ -2,48 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10026234C00
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 22:12:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54FA7234C08
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 22:15:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727074AbgGaUMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 16:12:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48746 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725767AbgGaUMO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 16:12:14 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 02350208E4;
-        Fri, 31 Jul 2020 20:12:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596226334;
-        bh=EhrrdpqzRlMqderwCUpQuhd4442YcoK1M2tYDp0DwME=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dpffQQNN21UiGm7BEMDF2pyFH//ffzU+6Btr9NmTXB7As7Wbw26U8Xz2Amtgliamf
-         P2wDJLPq2m2dDvbWcNavZ10r7cdwh/HNzVtCHaXYUHDN0S7wXqlr14UDLwr17Ut+Ew
-         4HbgWHSF3Ffa2RTsO7kt6d90+t1Oqium/O04kSYg=
-Date:   Fri, 31 Jul 2020 13:12:12 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Florinel Iordache <florinel.iordache@nxp.com>
-Cc:     madalin.bucur@nxp.com, davem@davemloft.net, netdev@vger.kernel.org,
-        Markus.Elfring@web.de, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2 5/5] fsl/fman: fix eth hash table allocation
-Message-ID: <20200731131212.16a7d2dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1596192562-7629-6-git-send-email-florinel.iordache@nxp.com>
-References: <1596192562-7629-1-git-send-email-florinel.iordache@nxp.com>
-        <1596192562-7629-6-git-send-email-florinel.iordache@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726976AbgGaUPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 16:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47416 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725767AbgGaUPo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 16:15:44 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCCEC061574
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 13:15:44 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id c6so7916601pje.1
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 13:15:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=1w4K2BOI7xp1MDM7cbT9QjKKmNijlmvPgOhDKIVQC+8=;
+        b=SDvtutkI2z7D5e4vetVlitYaO9dWOD/xdkcPlzauvuoWNmeJosylCj47y/kAeBhfkJ
+         lgwCQpFUm20F7uoKXmSurEWhscbiGbpBnb9tk26JhcqMvvFJftNifVGTvmM8Sb+yTuCv
+         7Qw1crU4BkPMuaHua1lK9j3g4chkrc1tVmFCx2inCtyFITWbNUATFfXwuaEPUdKMRz7s
+         q1V/r5kLTzwGsCgYkKM0m9H9uyDmRYR/ZTDo4tYA5TAo8UKVyce3KKB5RZQAJWXor5bZ
+         ehmqghuAwy7J8S1TMZmUJ6ZeZeXfEflcQJ2JrPxZ/gW/2eghV1QQCUFOXchTeP9Y/bAN
+         V+mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=1w4K2BOI7xp1MDM7cbT9QjKKmNijlmvPgOhDKIVQC+8=;
+        b=NxdkxqPRlrK3+vpwKKJsU8SLOB07mFglh03I4LMyDMDh4iODJzYkEgtqefBaHUdP3u
+         4o4GJKwrnSIrAiyum86NLeu3xbYXKsthkAYIgFXBMDS1EjTgS21eRzti2CMJXEXGvoVq
+         vkWa/JXB1vySQWxyXp0ngzXguUOuQb9exmXaavfnyXqqmLrVT8wW05VEoH3tjbNAto7G
+         lhcmSQDU/8O4PovumIb4fdMOE+Bm0GDacpCcQ5DabSUNVe/Wj0iKvgTWJnRJay6cnW3V
+         Tw3ns9zsOMjSU2NwEYEIutWfy+zb3FX6t80uJMRIWqnbu+LackU2a0gG9+mpo72ZUYSQ
+         n9zQ==
+X-Gm-Message-State: AOAM532dRDwrmxmL4RnecojwL8md23o19Q5W/7OuhQVQtYJPStIfx6Sq
+        0+dBc08ypVhCTHpvJI7xohWVd+8q/zY=
+X-Google-Smtp-Source: ABdhPJwihM9BKNWRQvYNhVrGHr4QO4sdCs6IKwiYzzcb7QusYtRk8Tp7mPGPc8jPIY/kr+mAUYX/WQ==
+X-Received: by 2002:a17:90a:3645:: with SMTP id s63mr5627321pjb.30.1596226543705;
+        Fri, 31 Jul 2020 13:15:43 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id h1sm11470513pgn.41.2020.07.31.13.15.42
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 31 Jul 2020 13:15:43 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH v3 net-next 0/3] ionic txrx updates
+Date:   Fri, 31 Jul 2020 13:15:33 -0700
+Message-Id: <20200731201536.18246-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 31 Jul 2020 13:49:22 +0300 Florinel Iordache wrote:
-> Fixes: 57ba4c9b56d8 ("fsl/fman: Add FMan MAC support")
-> 
-> Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
+These are a few patches to do some cleanup in the packet
+handling and give us more flexibility in tuning performance
+by allowing us to put Tx handling on separate interrupts
+when it makes sense for particular traffic loads.
 
-Please repost without the empty lines between these tags.
+v3: simplified queue count change logging, removed unnecessary
+    check for no count change
+v2: dropped the original patch 2 for ringsize change
+    changed the separated tx/rx interrupts to use ethtool -L
+
+Shannon Nelson (3):
+  ionic: use fewer firmware doorbells on rx fill
+  ionic: tx separate servicing
+  ionic: separate interrupt for Tx and Rx
+
+ .../ethernet/pensando/ionic/ionic_ethtool.c   |  96 +++++++--
+ .../net/ethernet/pensando/ionic/ionic_lif.c   |  42 +++-
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |   5 +
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  | 188 ++++++++++++------
+ .../net/ethernet/pensando/ionic/ionic_txrx.h  |   2 +
+ 5 files changed, 240 insertions(+), 93 deletions(-)
+
+-- 
+2.17.1
+
