@@ -2,105 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81A0D233D7B
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 04:50:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B75D6233D8A
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 04:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731168AbgGaCuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 22:50:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56426 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731124AbgGaCuj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 22:50:39 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 779E5C061574
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 19:50:39 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id w17so16030962ply.11
-        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 19:50:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Ny+m1UgdF8UGSvbxW/TgPfxAfKe28vmGxndogRsQZPQ=;
-        b=DklqSlp4yil/x+sWCPJVTAHhkgXK/1P2p64SjA7PA1fmCL39o9VotARMzqTI0fYS2M
-         IuWOdNDJMas6ONH92G5VBufC0PLZQ9xxwEY+bQHmjyRDxKQWrNz2mp4WsNeIFKiK2I7C
-         NbvYXH4nIQaLuvCDiR5khXJjyPZs0hGhbhKT+A4u5VNg8c8j5ehybYiqJP/kbjskA56X
-         CTEBEwW36OHqYZfClOqdPyK83p+rXipgZf4J4x7LX1o0Te+8kkHdgOMQ3Ebyv8aZV4fx
-         7MwedqMJS1FBehlVgI1RW/UPvWAftWENWBMh2yhGGUBHVFkjbC138sZrwkoQIa5Cz+Sh
-         8rOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Ny+m1UgdF8UGSvbxW/TgPfxAfKe28vmGxndogRsQZPQ=;
-        b=TLcuN4svjwgkeIJANLx+KvmAJhqtdXmFOCHuI78RcRlpYWriD63pLu4yIQHe/mDagd
-         MOGq2Uk+NSrghk/iCpVTje8i3fMMGNIIOY/awz3BApVNB8tTuAwhac3UJiqBs7csirnv
-         4nQ0snk96LtPUZc+lh+hWvfXIMpxuexqNHn/A53brPC9p2tGHIgMTH3JXNBKl0j20faA
-         K0FockMZjue+k9ghrY0wkVBFKFU7gYmm0M0tcK+AcrdHFyRFtRZK3YTvPRV33VDXGmNk
-         uHpJSjoccMd9PDfjQM81MVC1ucQ5Ms/6tK4ihTHYcehhjJWqzuKC45mmuLW8UQKWknj+
-         dHbg==
-X-Gm-Message-State: AOAM533FAP2JUA9igFEJKI1BBzntOzvemv/NiblyZ0M86Bhykl9JEfLF
-        ieyAaupmXSxI3FdNN+giLBKCuZdC
-X-Google-Smtp-Source: ABdhPJxaOqQo3s0kX5W5BPt12fyQfzXYnxMq3/v8zHDq2wwZFxp7QWUVqk6hVlAg+bYiVsXMJ6ZI/g==
-X-Received: by 2002:a17:90a:348d:: with SMTP id p13mr1992084pjb.108.1596163838851;
-        Thu, 30 Jul 2020 19:50:38 -0700 (PDT)
-Received: from martin-VirtualBox ([42.109.131.30])
-        by smtp.gmail.com with ESMTPSA id l22sm6878787pjy.31.2020.07.30.19.50.37
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Thu, 30 Jul 2020 19:50:38 -0700 (PDT)
-Date:   Fri, 31 Jul 2020 08:20:34 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jbenc@redhat.com,
-        gnault@redhat.com, Martin Varghese <martin.varghese@nokia.com>
-Subject: Re: [PATCH net] bareudp: Disallow udp port 0.
-Message-ID: <20200731025034.GA2653@martin-VirtualBox>
-References: <1596128631-3404-1-git-send-email-martinvarghesenokia@gmail.com>
- <20200730162030.0b5749a8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1731280AbgGaC7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 22:59:08 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:6724 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731262AbgGaC7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 22:59:08 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f2388ee0000>; Thu, 30 Jul 2020 19:58:54 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Thu, 30 Jul 2020 19:59:07 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Thu, 30 Jul 2020 19:59:07 -0700
+Received: from [10.2.59.182] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 31 Jul
+ 2020 02:59:06 +0000
+Subject: Re: [PATCH net-next] rtnetlink: add support for protodown reason
+To:     David Miller <davem@davemloft.net>, <roopa@cumulusnetworks.com>
+CC:     <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <nikolay@cumulusnetworks.com>
+References: <1595877677-45849-1-git-send-email-roopa@cumulusnetworks.com>
+ <20200730.163820.505646845935151146.davem@davemloft.net>
+From:   Roopa Prabhu <roopa@nvidia.com>
+Message-ID: <344b71b6-82f8-bc7a-235b-6b372415084a@nvidia.com>
+Date:   Thu, 30 Jul 2020 19:59:06 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200730162030.0b5749a8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20200730.163820.505646845935151146.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1596164334; bh=qRpfWkkTuNznGkulpcgf5KeQvHBgGQtqy7IgjsyWOl4=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:Content-Type:
+         Content-Transfer-Encoding:Content-Language:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=k5z2BdMkprDEZJdm3QedYoeqf4/UL0n5Vta0gzBdGVWr4S7ByspVpVU/FdWQ3rUFi
+         3HBY5y5xZF1+B6a5/8ZBkd/EGKqye50MGg5EkuTK8ZSqBZIp9/Vd85SOQqpQzYvncN
+         IlkfwudeJFIxFYuFvHfJRrvZIECxAShP33EiXT+ov5RURnrqG9LTkDWGgGM/axSaCN
+         t6JzL/w725Zit0KmSSJT+5ChFYWhMfqvRM2avXZcNtV18JKPl3TRozBQb+zXMLvI9g
+         W59nrA9OaOQ3fjrKlm2e+xWjU3BdbcEV4Ekt6v0fhkqkqU4oUOqQOQGp74jiW50g+z
+         glYfHnb71nCkg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 30, 2020 at 04:20:30PM -0700, Jakub Kicinski wrote:
-> On Thu, 30 Jul 2020 22:33:51 +0530 Martin Varghese wrote:
-> > From: Martin Varghese <martin.varghese@nokia.com>
-> > 
-> > Kernel does not support udp destination port 0 on wire. Hence
-> > bareudp device with udp destination port 0 must be disallowed.
-> > 
-> > Fixes: 571912c69f0e ("net: UDP tunnel encapsulation module for tunnelling different protocols like MPLS, IP, NSH etc.")
-> > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> > ---
-> >  drivers/net/bareudp.c | 7 ++++++-
-> >  1 file changed, 6 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-> > index 88e7900853db..08b195d32cbe 100644
-> > --- a/drivers/net/bareudp.c
-> > +++ b/drivers/net/bareudp.c
-> > @@ -578,8 +578,13 @@ static int bareudp2info(struct nlattr *data[], struct bareudp_conf *conf,
-> >  		return -EINVAL;
-> >  	}
-> >  
-> > -	if (data[IFLA_BAREUDP_PORT])
-> > +	if (data[IFLA_BAREUDP_PORT]) {
-> >  		conf->port =  nla_get_u16(data[IFLA_BAREUDP_PORT]);
-> > +		if (!conf->port) {
-> > +			NL_SET_ERR_MSG(extack, "udp port 0 not supported");
-> > +			return -EINVAL;
-> > +		}
-> > +	}
-> 
-> Please use one of the NLA_POLICY_**-ies, probably NLA_POLICY_MIN() ? 
-> That's better for documenting, exporting for user space, and will also
-> point the user space to the attribute in exack automatically.
 
-Ok, I will check how to do this way. Thanks for the feedback.
+On 7/30/20 4:38 PM, David Miller wrote:
+> From: Roopa Prabhu <roopa@cumulusnetworks.com>
+> Date: Mon, 27 Jul 2020 12:21:17 -0700
+>
+>> +/**
+>> + *   dev_get_proto_down_reason - returns protodown reason
+>> + *
+>> + *   @dev: device
+>> + */
+>> +u32 dev_get_proto_down_reason(const struct net_device *dev)
+>> +{
+>> +     return dev->proto_down_reason;
+>> +}
+>> +EXPORT_SYMBOL(dev_get_proto_down_reason);
+> This helper is excessive, please remove it and just dereference the
+> netdev member directly.
+>
+> Thank you.
 
-Regards,
-Martin
+
+agree, will send v2. (it was meant to do more than just that initially)
+
+
