@@ -2,66 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC0B233CCE
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 03:11:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A7B6233CD9
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 03:25:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731036AbgGaBLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 21:11:51 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:3002 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730960AbgGaBLu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Jul 2020 21:11:50 -0400
-Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.56])
-        by Forcepoint Email with ESMTP id 0F5FA83248DB63CA2950;
-        Fri, 31 Jul 2020 08:56:37 +0800 (CST)
-Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
- DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Fri, 31 Jul 2020 08:56:36 +0800
-Received: from [10.174.61.242] (10.174.61.242) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Fri, 31 Jul 2020 08:56:36 +0800
-Subject: Re: [PATCH net-next v1 1/2] hinic: add generating mailbox random
- index support
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
-        <chiqijun@huawei.com>
-References: <20200730083716.4613-1-luobin9@huawei.com>
- <20200730083716.4613-2-luobin9@huawei.com>
- <20200730092502.4582ac4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   "luobin (L)" <luobin9@huawei.com>
-Message-ID: <0dfc0fd6-8ab2-5ba3-98e7-bbd875e03106@huawei.com>
-Date:   Fri, 31 Jul 2020 08:56:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1730812AbgGaBZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 21:25:14 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36186 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728080AbgGaBZO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Jul 2020 21:25:14 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1k1JnK-007dxY-Ay; Fri, 31 Jul 2020 03:25:10 +0200
+Date:   Fri, 31 Jul 2020 03:25:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Doug Berger <opendmb@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
+Message-ID: <20200731012510.GD1712415@lunn.ch>
+References: <20200727204731.1705418-1-andrew@lunn.ch>
+ <VI1PR0402MB3871906F6381418258CC7AEBE0730@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+ <20200728160802.GI1705504@lunn.ch>
+ <VI1PR0402MB38714D71435CC4DF99AE5A20E0730@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+ <1c484c7b-1988-20dc-9433-3f322e81280c@gmail.com>
+ <410daead-6956-bb9b-da35-53b93daa6c46@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200730092502.4582ac4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.61.242]
-X-ClientProxiedBy: dggeme701-chm.china.huawei.com (10.1.199.97) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <410daead-6956-bb9b-da35-53b93daa6c46@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/7/31 0:25, Jakub Kicinski wrote:
-> On Thu, 30 Jul 2020 16:37:15 +0800 Luo bin wrote:
->> +bool check_vf_mbox_random_id(struct hinic_mbox_func_to_func *func_to_func,
->> +			     u8 *header)
+On Tue, Jul 28, 2020 at 05:34:44PM -0700, Florian Fainelli wrote:
 > 
-> This set seems to add new W=1 C=1 warnings:
 > 
-> drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c:572:6: warning: no previous prototype for ‘check_vf_mbox_random_id’ [-Wmissing-prototypes]
->   572 | bool check_vf_mbox_random_id(struct hinic_mbox_func_to_func *func_to_func,
->       |      ^~~~~~~~~~~~~~~~~~~~~~~
+> On 7/28/2020 5:28 PM, Doug Berger wrote:
+> > On 7/28/2020 9:28 AM, Ioana Ciornei wrote:
+> >>> Subject: Re: [PATCH RFC net-next 0/3] Restructure drivers/net/phy
+> >>>
+> >>>> I think that the MAINTAINERS file should also be updated to mention
+> >>>> the new path to the drivers. Just did a quick grep after 'drivers/net/phy':
+> >>>> F:      drivers/net/phy/adin.c
+> >>>> F:      drivers/net/phy/mdio-xgene.c
+> >>>> F:      drivers/net/phy/
+> >>>> F:      drivers/net/phy/marvell10g.c
+> >>>> F:      drivers/net/phy/mdio-mvusb.c
+> >>>> F:      drivers/net/phy/dp83640*
+> >>>> F:      drivers/net/phy/phylink.c
+> >>>> F:      drivers/net/phy/sfp*
+> >>>> F:      drivers/net/phy/mdio-xpcs.c
+> >>>
+> >>> Hi Ioana
+> >>>
+> >>> Thanks, I will take care of that.
+> >>>
+> >>>> Other than that, the new 'drivers/net/phy/phy/' path is somewhat
+> >>>> repetitive but unfortunately I do not have another better suggestion.
+> >>>
+> >>> Me neither.
+> >>>
+> >>> I wonder if we are looking at the wrong part of the patch.
+> >>> drivers/net/X/phy/
+> >>> drivers/net/X/mdio/
+> >>> drivers/net/X/pcs/
+> >>>
+> >>> Question is, what would X be?
+> >>>
+> >>>    Andrew
+> >>
+> >> It may not be a popular suggestion but can't we take the drivers/net/phy,
+> >> drivers/net/pcs and drivers/net/mdio route?
 > 
-> drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c:1352:28: warning: symbol 'hw_cmd_support_vf' was not declared. Should it be static?
-> .
-> 
-Will fix. Thanks for your review.
+> +1
+
+O.K. Then let me see what happens to the core code. How easy it is to
+split up, or if it all need to be together, probably still in phy.
+
+      Andrew
