@@ -2,133 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9091F23481E
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 17:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F37E3234833
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 17:08:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731418AbgGaPAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 11:00:18 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52184 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728713AbgGaPAR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 11:00:17 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k1WVy-0003JH-BO; Fri, 31 Jul 2020 17:00:06 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k1WVy-000JZ6-47; Fri, 31 Jul 2020 17:00:06 +0200
-Subject: Re: [PATCH bpf-next] bpf: fix compilation warning of selftests
-To:     Jianlin Lv <Jianlin.Lv@arm.com>, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org, yhs@fb.com,
-        Song.Zhu@arm.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20200731061600.18344-1-Jianlin.Lv@arm.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <6f852dcb-abfc-78f8-69b8-3a5b83606793@iogearbox.net>
-Date:   Fri, 31 Jul 2020 17:00:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1732291AbgGaPIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 11:08:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37060 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728697AbgGaPIb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 11:08:31 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1k1Wdz-007iHg-2n; Fri, 31 Jul 2020 17:08:23 +0200
+Date:   Fri, 31 Jul 2020 17:08:23 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        netdev <netdev@vger.kernel.org>, linux.cj@gmail.com,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Vikas Singh <vikas.singh@puresoftware.com>
+Subject: Re: [net-next PATCH v7 1/6] Documentation: ACPI: DSD: Document MDIO
+ PHY
+Message-ID: <20200731150823.GH1712415@lunn.ch>
+References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
+ <20200715090400.4733-2-calvin.johnson@oss.nxp.com>
+ <1a031e62-1e87-fdc1-b672-e3ccf3530fda@arm.com>
+ <20200724133931.GF1472201@lunn.ch>
+ <97973095-5458-8ac2-890c-667f4ea6cd0e@arm.com>
+ <20200724191436.GH1594328@lunn.ch>
+ <20200727172136.GC8003@bogus>
+ <20200728203437.GB1748118@lunn.ch>
+ <CAJZ5v0i+a+MS+J_auuuMmq25c1HNb7oV2sqQ87WOtfBBQ6MF7w@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200731061600.18344-1-Jianlin.Lv@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25889/Thu Jul 30 17:03:53 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0i+a+MS+J_auuuMmq25c1HNb7oV2sqQ87WOtfBBQ6MF7w@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/31/20 8:16 AM, Jianlin Lv wrote:
-> Clang compiler version: 12.0.0
-> The following warning appears during the selftests/bpf compilation:
+> However, if those properties are never going to be supplied via ACPI
+> on any production systems, the code added in order to be able to
+> process them will turn out to be useless and I don't think anyone
+> wants useless code in the kernel.
 > 
-> prog_tests/send_signal.c:51:3: warning: ignoring return value of ‘write’,
-> declared with attribute warn_unused_result [-Wunused-result]
->     51 |   write(pipe_c2p[1], buf, 1);
->        |   ^~~~~~~~~~~~~~~~~~~~~~~~~~
-> prog_tests/send_signal.c:54:3: warning: ignoring return value of ‘read’,
-> declared with attribute warn_unused_result [-Wunused-result]
->     54 |   read(pipe_p2c[0], buf, 1);
->        |   ^~~~~~~~~~~~~~~~~~~~~~~~~
-> ......
-> 
-> prog_tests/stacktrace_build_id_nmi.c:13:2: warning: ignoring return value
-> of ‘fscanf’,declared with attribute warn_unused_result [-Wunused-resul]
->     13 |  fscanf(f, "%llu", &sample_freq);
->        |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> test_tcpnotify_user.c:133:2: warning:ignoring return value of ‘system’,
-> declared with attribute warn_unused_result [-Wunused-result]
->    133 |  system(test_script);
->        |  ^~~~~~~~~~~~~~~~~~~
-> test_tcpnotify_user.c:138:2: warning:ignoring return value of ‘system’,
-> declared with attribute warn_unused_result [-Wunused-result]
->    138 |  system(test_script);
->        |  ^~~~~~~~~~~~~~~~~~~
-> test_tcpnotify_user.c:143:2: warning:ignoring return value of ‘system’,
-> declared with attribute warn_unused_result [-Wunused-result]
->    143 |  system(test_script);
->        |  ^~~~~~~~~~~~~~~~~~~
-> 
-> Add code that fix compilation warning about ignoring return value and
-> handles any errors; Check return value of library`s API make the code
-> more secure.
-> 
-> Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
+> So the real question is whether or not there will be production
+> systems in which those properties will be supplied via ACPI and I
+> cannot answer that question.
 
-Looks good overall, there is one small bug that slipped in, see below:
+Hi Rafael
 
-[...]
-> diff --git a/tools/testing/selftests/bpf/test_tcpnotify_user.c b/tools/testing/selftests/bpf/test_tcpnotify_user.c
-> index f9765ddf0761..869e28c92d73 100644
-> --- a/tools/testing/selftests/bpf/test_tcpnotify_user.c
-> +++ b/tools/testing/selftests/bpf/test_tcpnotify_user.c
-> @@ -130,17 +130,26 @@ int main(int argc, char **argv)
->   	sprintf(test_script,
->   		"iptables -A INPUT -p tcp --dport %d -j DROP",
->   		TESTPORT);
-> -	system(test_script);
-> +	if (system(test_script)) {
-> +		printf("FAILED: execute command: %s\n", test_script);
-> +		goto err;
-> +	}
->   
->   	sprintf(test_script,
->   		"nc 127.0.0.1 %d < /etc/passwd > /dev/null 2>&1 ",
->   		TESTPORT);
-> -	system(test_script);
-> +	if (system(test_script)) {
-> +		printf("FAILED: execute command: %s\n", test_script);
-> +		goto err;
-> +	}
+I suspect we are going to have a lot of newbie ACPI questions over the
+next few weeks/months as vendors and the PHY maintainers get up to
+speed on all this.
 
-Did you try to run this test case? With the patch here it will fail:
+In the device tree world, we would expect a patch as part of the
+patchset to a device tree file somewhere under arch/*/boot/dts to make
+use of any new property added. We then know it is used.
 
-   # ./test_tcpnotify_user
-   FAILED: execute command: nc 127.0.0.1 12877 < /etc/passwd > /dev/null 2>&1
+How does this work in the ACPI world?  How does somebody show they are
+supplying the property in a production system?
 
-This is because nc returns 1 as exit code and for the test it is actually expected
-to fail given the iptables rule we installed for TESTPORT right above and remove
-again below.
+> Basically, the interested vendors need to agree on how exactly they
+> want ACPI to be used and come up with a specification setting the
+> rules to be followed by the platform firmware on the one side and by
+> the code in the kernel on the other side.
 
-Please adapt this and send a v2, thanks!
+...
 
->   	sprintf(test_script,
->   		"iptables -D INPUT -p tcp --dport %d -j DROP",
->   		TESTPORT);
-> -	system(test_script);
-> +	if (system(test_script)) {
-> +		printf("FAILED: execute command: %s\n", test_script);
-> +		goto err;
-> +	}
->   
->   	rv = bpf_map_lookup_elem(bpf_map__fd(global_map), &key, &g);
->   	if (rv != 0) {
-> 
+> Besides, you really should be asking for a spec the work is based on,
+> IMO, instead of asking for an ACPI maintainer ACK which is not going
+> to be sufficient if the former is missing anyway.
 
+Could you point us towards real world example specs? Giving us a good
+best practice example would likely help us to do this work. And reduce
+the amount of work you need to do keeping the process going in the
+correct direction.
+
+Thanks
+	Andrew
