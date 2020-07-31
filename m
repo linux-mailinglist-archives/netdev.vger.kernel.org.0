@@ -2,136 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B51E0234A29
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 19:19:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B210234A3A
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 19:27:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733236AbgGaRTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 13:19:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40772 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732817AbgGaRTi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 13:19:38 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6645C2074B;
-        Fri, 31 Jul 2020 17:19:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596215978;
-        bh=yxLFBtERe8UngePE6Ae91aGE2Ev7MNPNAO2x8RUFAKY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FJM6T0vbEgq2PNNmTnnc65DNz/A50UbgHexnPy4ZP95gE8ClTSvPshL0drR9tvoqC
-         Luj0SVJLc7CMxudDRUS2o57mBQ75nNh6SFidxxegIkiPaZrRJZtpzWaTW8Rc+03Jfz
-         XCdf00Knp7UBGQTGQpqSCFA9Dz+RfqVPF4vs9i0M=
-Date:   Fri, 31 Jul 2020 19:19:24 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Peilin Ye <yepeilin.cs@gmail.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
-Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
- in rds_notify_queue_get()
-Message-ID: <20200731171924.GA2014207@kroah.com>
-References: <20200730192026.110246-1-yepeilin.cs@gmail.com>
- <20200731045301.GI75549@unreal>
- <20200731053306.GA466103@kroah.com>
- <20200731053333.GB466103@kroah.com>
- <20200731140452.GE24045@ziepe.ca>
- <20200731142148.GA1718799@kroah.com>
- <20200731143604.GF24045@ziepe.ca>
+        id S1733055AbgGaR1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 13:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49806 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729944AbgGaR1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 13:27:06 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D48C061574
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 10:27:06 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id l23so29531068qkk.0
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 10:27:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dMAP5qZPgNkGYL/Es8e27wkRPcvMrbRpgL3nt2uv/U8=;
+        b=DQpUmHoSUZ9Cd93537ypZkM+1dvS3gvkMWCoz3Qx13NPmBpmH4L+gKmanA4eodPVK+
+         J04ciTphvC/32YS6/AsssAWJdCiJyeCIKz5NoES6FsgkNTeTMfBHwpqq/Y0st/RDULz1
+         s90EGRs+oMbXy9wM0GoUZ2naiDEY9gSop5clWt0kv0vvi10hVW8C4NrFvOqm1/nyfGwr
+         VqSlZFKNcLXmFmS3OPykN7Q7FfMF/aurchj96d1DyX+1/jlWq3xFkaX+jAweuOZ3N1oM
+         Ffdz2TlQJTZ6E/1rQ7Nne2iW8IWlgbGeezgGumjp1cbCy0+8cSqHHZTwHyvW2HGy+2Gh
+         Cg/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dMAP5qZPgNkGYL/Es8e27wkRPcvMrbRpgL3nt2uv/U8=;
+        b=Z+xWxoPfG/7hCaeRlTZ6puVERF7SP/WIze9N8Rtz0MQ8eG3EZlDF8OtGOtVguUuEQa
+         PWxnknI6LJ/zLQPa8lA/+0NrN019FrbATAyLySU1cjKbhwh2Jj648YjbiQyAbE044nQE
+         SEeBXJZ6F/ckqTveyhvl02H2Pns85Zsl/uXIt8Ti8da0vNFDOVHBNVeLo4DbmeEL+78y
+         m3GhKeKH0bQKsrtRQx5786CPorOhK1wK98Jif+s870HoNyZkzQ4v16V4p8p0ovNJsOQ1
+         dfYrv8I3eXsFmuhHzIb1oPRnKp6xW/Itz1aX8XL2whgsN7NjQvijbeFEt09wIVGaO6iH
+         KSYg==
+X-Gm-Message-State: AOAM533+TW4nnia8FsxBPzaP3WR6IZ41VVecyi0vnwmflBXSGAH4j2Og
+        6I9VYinO4YsX2inIegGT/DX+36B5
+X-Google-Smtp-Source: ABdhPJyrJF8gZ+2Ot8N+3QMSrr1x/JQDSN2YszfLrZbeCASgiu2Qgge4RLDx9HCfx3o3FrCKIodRNg==
+X-Received: by 2002:a37:9b95:: with SMTP id d143mr4875785qke.272.1596216425945;
+        Fri, 31 Jul 2020 10:27:05 -0700 (PDT)
+Received: from ?IPv6:2601:284:8202:10b0:c147:b41e:be5e:8b7a? ([2601:284:8202:10b0:c147:b41e:be5e:8b7a])
+        by smtp.googlemail.com with ESMTPSA id 94sm9869305qtc.88.2020.07.31.10.27.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 31 Jul 2020 10:27:05 -0700 (PDT)
+Subject: Re: [PATCH net] net: bridge: clear bridge's private skb space on xmit
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        netdev@vger.kernel.org
+Cc:     bridge@lists.linux-foundation.org, roopa@cumulusnetworks.com,
+        davem@davemloft.net
+References: <20200731162616.345380-1-nikolay@cumulusnetworks.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <07823615-29a8-9553-d56b-1beef55a07bc@gmail.com>
+Date:   Fri, 31 Jul 2020 11:27:03 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200731143604.GF24045@ziepe.ca>
+In-Reply-To: <20200731162616.345380-1-nikolay@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 31, 2020 at 11:36:04AM -0300, Jason Gunthorpe wrote:
-> On Fri, Jul 31, 2020 at 04:21:48PM +0200, Greg Kroah-Hartman wrote:
+On 7/31/20 10:26 AM, Nikolay Aleksandrov wrote:
+> We need to clear all of the bridge private skb variables as they can be
+> stale due to the packet being recirculated through the stack and then
+> transmitted through the bridge device. Similar memset is already done on
+> bridge's input. We've seen cases where proxyarp_replied was 1 on routed
+> multicast packets transmitted through the bridge to ports with neigh
+> suppress which were getting dropped. Same thing can in theory happen with
+> the port isolation bit as well.
 > 
-> > > The spec was updated in C11 to require zero'ing padding when doing
-> > > partial initialization of aggregates (eg = {})
-> > > 
-> > > """if it is an aggregate, every member is initialized (recursively)
-> > > according to these rules, and any padding is initialized to zero
-> > > bits;"""
-> > 
-> > But then why does the compilers not do this?
+> Fixes: 821f1b21cabb ("bridge: add new BR_NEIGH_SUPPRESS port flag to suppress arp and nd flood")
+> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+> ---
+>  net/bridge/br_device.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> Do you have an example?
-
-At the moment, no, but we have had them in the past due to security
-issues we have had to fix for this.
-
-> > > Considering we have thousands of aggregate initializers it
-> > > seems likely to me Linux also requires a compiler with this C11
-> > > behavior to operate correctly.
-> > 
-> > Note that this is not an "operate correctly" thing, it is a "zero out
-> > stale data in structure paddings so that data will not leak to
-> > userspace" thing.
-> 
-> Yes, not being insecure is "operate correctly", IMHO :)
+> diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+> index 8c7b78f8bc23..9a2fb4aa1a10 100644
+> --- a/net/bridge/br_device.c
+> +++ b/net/bridge/br_device.c
+> @@ -36,6 +36,8 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
+>  	const unsigned char *dest;
+>  	u16 vid = 0;
 >  
-> > > Does this patch actually fix anything? My compiler generates identical
-> > > assembly code in either case.
-> > 
-> > What compiler version?
+> +	memset(skb->cb, 0, sizeof(struct br_input_skb_cb));
+> +
+>  	rcu_read_lock();
+>  	nf_ops = rcu_dereference(nf_br_ops);
+>  	if (nf_ops && nf_ops->br_dev_xmit_hook(skb)) {
 > 
-> I tried clang 10 and gcc 9.3 for x86-64.
-> 
-> #include <string.h>
-> 
-> void test(void *out)
-> {
-> 	struct rds_rdma_notify {
-> 		unsigned long user_token;
-> 		unsigned int status;
-> 	} foo = {};
-> 	memcpy(out, &foo, sizeof(foo));
-> }
-> 
-> $ gcc -mno-sse2 -O2 -Wall -std=c99 t.c -S
-> 
-> test:
-> 	endbr64
-> 	movq	$0, (%rdi)
-> 	movq	$0, 8(%rdi)
-> 	ret
-> 
-> Just did this same test with gcc 4.4 and it also gave the same output..
-> 
-> Made it more complex with this:
-> 
-> 	struct rds_rdma_notify {
-> 		unsigned long user_token;
-> 		unsigned char status;
-> 		unsigned long user_token1;
-> 		unsigned char status1;
-> 		unsigned long user_token2;
-> 		unsigned char status2;
-> 		unsigned long user_token3;
-> 		unsigned char status3;
-> 		unsigned long user_token4;
-> 		unsigned char status4;
-> 	} foo;
-> 
-> And still got the same assembly vs memset on gcc 4.4.
-> 
-> I tried for a bit and didn't find a way to get even old gcc 4.4 to not
-> initialize the holes.
 
-Odd, so it is just the "= {0};" that does not zero out the holes?
+What's the performance hit of doing this on every packet?
 
-thanks,
-
-greg k-h
+Can you just set a flag that tells the code to reset on recirculation?
+Seems like br_input_skb_cb has space for that.
