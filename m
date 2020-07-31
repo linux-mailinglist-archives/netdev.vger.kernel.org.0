@@ -2,118 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA3D234ABA
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:16:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98B17234AE8
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:27:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387721AbgGaSQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 14:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57382 "EHLO
+        id S2387795AbgGaS1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 14:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387704AbgGaSQi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 14:16:38 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 287EBC061756
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 11:16:38 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id p1so17812028pls.4
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 11:16:38 -0700 (PDT)
+        with ESMTP id S2387781AbgGaS1O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 14:27:14 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33662C06174A
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 11:27:14 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id e5so9636553qth.5
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 11:27:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=ziepe.ca; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=TDjonBmuUQvyaWYJBgC/o+3/IEmbAX8AfV7I+TtewFc=;
-        b=E4PyFhb0Ar5YqNdxhxX2a8wKFZEu/2ST7bv4QIUoGaSgkHPvdACktcHN8BvF+SCGL8
-         gZJWGBtbJ1MutPmzg/MeNlYSrhO057Pj/J6ehg7IaGuZ0a9DQrTRDkr2F2AUHxyGQHaX
-         o5ShFgfIeLuy7MxsZOrcqX/TEMhQthtAB0JiHr2774RA3qNIALhx8H1uHTP/NC31E9OO
-         1sRdKk8GeU8qWga0AdkgKJ7aVu9Z38Gzq+ONP+rbl/VONE3s6VkbkgrgAE/99YuGzbma
-         qkC31644KiV7Oo89U+xeFBWKkaLzShUKTYXxiZ3dr1g1cvQdGWka9CgJ2SY/P/OpyITQ
-         orEg==
+        bh=tV7sc6wflPo/OY3J/lFfg1ZRZlhKID3SNfnVWUEEij0=;
+        b=jirAyMKBcEnHMUKDFUsSmCToGT23RCdr6mO7c82AJACLIFDcftcqtQv7Y0rpjSOAZa
+         0Hh+Gkg0mXocP7OYRjdIhqSzcbiRWDUjAWJRAlUl4vtGGsHuEh74PRbLnc0uSwtOpuy/
+         +u+c664zqSnJ3ocdEv65VSLvGtOu1+TA+Le6rXbzmPjN1kTHwfPSCstj6EusTPHr06Ew
+         tdI/nddtwUQsYmraBl7AGJhzOmKShzGAPGhJiypVRfJbrcIlL6IAyoF6oM05IjxYsHb0
+         HBkqvC6HByoBCfOx3KJBz8HksYdfzNIAYp7926RYYrbyoGblBM7e1pjBe8gPKE4MlaFM
+         CWjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=TDjonBmuUQvyaWYJBgC/o+3/IEmbAX8AfV7I+TtewFc=;
-        b=AyU1KtCpgkc+vQgHJ3Cy9ZCe5evpgqz7WDS3NpcFBm5VRyI4Y+2I497PukMogGjFGF
-         U8LERxGECtikiE2uizRCgzElgQ3pQ8Ev3juEmPWn8La+JJ/ydBKxyj+be+sutcvrpXmC
-         DEaptf5rxyJopeXz/ktl/7L24WldJhA2h+SszSXfD4TlSPo7O6cQpJq36WRAJjoscOti
-         /sV+INuey0Mvp/LJUnHc0fJeWEkRizNN4DaEmZ1tuwEfB2a/Oj6MsGyLUWQuK5zQFveQ
-         UZoI0snEu9bOTPf9hZQiXXEkN6i6Ut2t26+L6UVuBc8vx8k6ur4j3ytUDz7wYiRPFYnw
-         4mJQ==
-X-Gm-Message-State: AOAM532mi/We02uB6cC0Jmpp5L5ns3k5M20bbADGNianqlxkO0MuHejL
-        9b1u4GMCPX4ez7fuIgYnJJK6jQ==
-X-Google-Smtp-Source: ABdhPJy17ACnRhf/sGausTWgDf+SetvtMH9mGnHzTZzE1/rZpZ/uKspET9z1pmDSWMBXKgG8hmfHAg==
-X-Received: by 2002:a17:90b:514:: with SMTP id r20mr5377570pjz.82.1596219397381;
-        Fri, 31 Jul 2020 11:16:37 -0700 (PDT)
-Received: from google.com (56.4.82.34.bc.googleusercontent.com. [34.82.4.56])
-        by smtp.gmail.com with ESMTPSA id a24sm10542844pfg.113.2020.07.31.11.16.36
+        bh=tV7sc6wflPo/OY3J/lFfg1ZRZlhKID3SNfnVWUEEij0=;
+        b=fvhQtt6WkFj5mz9bFAsj4khljEzTibaQin3Chpkgf2bdEpxZQlUjTMoDxcCODaKMES
+         PBpMANWZS7oMy6JYr01NvsZ9EjWry/4k4qnUpnHv+phtn3ZfkX051o7kZPtbkJK392vJ
+         c3vR2WemrnihaMddOtnLaGTozEg6dGIKfsT5lbqby3pCfuiNp8A48gUqsQZppDBQm0li
+         8GG/RUQ1VSe4BjiM9oROMLZmTdVTqZkl1SzH4DTX0Bmg5qjqhdzI6H2Y30nUXcdCmsrR
+         gFQfzniDNyxossKLhyo+QOZpwy//GqxeqlBpXQ/biOLI6IxCKLLqQ32lyaZIg6zeNuiE
+         8MNQ==
+X-Gm-Message-State: AOAM530ONeG/5Zs/24gRKstpy1nqf5y8/wSIxFWjNBiTv8LGwn+/vOAy
+        XzTpOQMEYLIgo1Pg2KIwhBSPkQ==
+X-Google-Smtp-Source: ABdhPJwzQPkhbiQL7KlW31VPxmlTv3PTAEP2UbW2gPotPOEEZgW2ADBjjJCvh6rUtEiaGporHH73jw==
+X-Received: by 2002:ac8:8b3:: with SMTP id v48mr2085093qth.274.1596220033350;
+        Fri, 31 Jul 2020 11:27:13 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
+        by smtp.gmail.com with ESMTPSA id x67sm9513983qke.136.2020.07.31.11.27.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2020 11:16:36 -0700 (PDT)
-Date:   Fri, 31 Jul 2020 18:16:33 +0000
-From:   William Mcvicker <willmcvicker@google.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     security@kernel.org, Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Florian Westphal <fw@strlen.de>,
+        Fri, 31 Jul 2020 11:27:12 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1k1ZkO-002AoB-41; Fri, 31 Jul 2020 15:27:12 -0300
+Date:   Fri, 31 Jul 2020 15:27:12 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Peilin Ye <yepeilin.cs@gmail.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@android.com
-Subject: Re: [PATCH 1/1] netfilter: nat: add range checks for access to
- nf_nat_l[34]protos[]
-Message-ID: <20200731181633.GA1209076@google.com>
-References: <20200727175720.4022402-1-willmcvicker@google.com>
- <20200727175720.4022402-2-willmcvicker@google.com>
- <20200729214607.GA30831@salvia>
- <20200731002611.GA1035680@google.com>
- <20200731175115.GA16982@salvia>
+        Jakub Kicinski <kuba@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
+ in rds_notify_queue_get()
+Message-ID: <20200731182712.GI24045@ziepe.ca>
+References: <20200730192026.110246-1-yepeilin.cs@gmail.com>
+ <20200731045301.GI75549@unreal>
+ <20200731053306.GA466103@kroah.com>
+ <20200731053333.GB466103@kroah.com>
+ <20200731140452.GE24045@ziepe.ca>
+ <20200731142148.GA1718799@kroah.com>
+ <20200731143604.GF24045@ziepe.ca>
+ <20200731171924.GA2014207@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200731175115.GA16982@salvia>
+In-Reply-To: <20200731171924.GA2014207@kroah.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pablo,
+On Fri, Jul 31, 2020 at 07:19:24PM +0200, Greg Kroah-Hartman wrote:
 
-> Note that this code does not exist in the tree anymore. I'm not sure
-> if this problem still exists upstream, this patch does not apply to
-> nf.git. This fix should only go for -stable maintainers.
+> > I tried for a bit and didn't find a way to get even old gcc 4.4 to not
+> > initialize the holes.
+> 
+> Odd, so it is just the "= {0};" that does not zero out the holes?
 
-Right, the vulnerability has been fixed by the refactor commit fe2d0020994cd
-("netfilter: nat: remove l4proto->in_range"), but this patch is a part of
-a full re-work of the code and doesn't backport very cleanly to the LTS
-branches. So this fix is only applicable to the 4.19, 4.14, 4.9, and 4.4 LTS
-branches. I missed the -stable email, but will re-add it to this thread with
-the re-worked patch.
+Nope, it seems to work fine too. I tried a number of situations and I
+could not get the compiler to not zero holes, even back to gcc 4.4
 
-Thanks,
-Will
+It is not just accidental either, take this:
 
-On 07/31/2020, Pablo Neira Ayuso wrote:
-> Hi William,
-> 
-> On Fri, Jul 31, 2020 at 12:26:11AM +0000, William Mcvicker wrote:
-> > Hi Pablo,
-> > 
-> > Yes, I believe this oops is only triggered by userspace when the user
-> > specifically passes in an invalid nf_nat_l3protos index. I'm happy to re-work
-> > the patch to check for this in ctnetlink_create_conntrack().
-> 
-> Great.
-> 
-> Note that this code does not exist in the tree anymore. I'm not sure
-> if this problem still exists upstream, this patch does not apply to
-> nf.git. This fix should only go for -stable maintainers.
-> 
-> > > BTW, do you have a Fixes: tag for this? This will be useful for
-> > > -stable maintainer to pick up this fix.
-> > 
-> > Regarding the Fixes: tag, I don't have one offhand since this bug was reported
-> > to me, but I can search through the code history to find the commit that
-> > exposed this vulnerability.
-> 
-> That would be great.
-> 
-> Thank you.
+	struct rds_rdma_notify {
+		unsigned long user_token;
+		unsigned char status;
+		unsigned long user_token1 __attribute__((aligned(32)));
+	} foo = {0};
+
+Which has quite a big hole, clang generates:
+
+	movq	$0, 56(%rdi)
+	movq	$0, 48(%rdi)
+	movq	$0, 40(%rdi)
+	movq	$0, 32(%rdi)
+	movq	$0, 24(%rdi)
+	movq	$0, 16(%rdi)
+	movq	$0, 8(%rdi)
+	movq	$0, (%rdi)
+
+Deliberate extra instructions to fill both holes. gcc 10 does the
+same, older gcc's do create a rep stosq over the whole thing.
+
+Some fiddling with godbolt shows quite a variety of output, but I
+didn't see anything that looks like a compiler not filling
+padding. Even godbolt's gcc 4.1 filled the padding, which is super old.
+
+In several cases it seems the aggregate initializer produced better
+code than memset, in other cases it didn't
+
+Without an actual example where this doesn't work right it is hard to
+say anything more..
+
+Jason
