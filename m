@@ -2,76 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2538233C6A
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 02:07:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FF25233C82
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 02:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730859AbgGaAHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jul 2020 20:07:47 -0400
-Received: from www62.your-server.de ([213.133.104.62]:46030 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730786AbgGaAHq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 20:07:46 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k1IaM-0007C3-P9; Fri, 31 Jul 2020 02:07:42 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k1IaM-0007Me-IO; Fri, 31 Jul 2020 02:07:42 +0200
-Subject: Re: [PATCH net] net/bpfilter: initialize pos in
- __bpfilter_process_sockopt
-To:     Christian Brauner <christian.brauner@ubuntu.com>,
-        Christoph Hellwig <hch@lst.de>
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Rodrigo Madera <rodrigo.madera@gmail.com>
-References: <20200730160900.187157-1-hch@lst.de>
- <20200730161303.erzgrhqsgc77d4ny@wittgenstein>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <03954b8f-0db7-427b-cfd6-7146da9b5466@iogearbox.net>
-Date:   Fri, 31 Jul 2020 02:07:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730858AbgGaAWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jul 2020 20:22:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33614 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730800AbgGaAWE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jul 2020 20:22:04 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CB5C061574
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 17:22:04 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id r12so24010971ilh.4
+        for <netdev@vger.kernel.org>; Thu, 30 Jul 2020 17:22:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=BCmOrsRHzkRoFFgiioobxbCHDjA8FUTBEoEJwYbkgvo=;
+        b=nedydF34ODObmqe2lcjHCu7QBfRQHXsSwssczh4gIOFoDRecxPH605gWiQB41wo/YZ
+         cr7Mm0CPBxxNJUdASMzxw4l4AurlNkuVccJW7/FBRkapKMWH8E9pqXV/sCOEyoJ6SDQ8
+         MUTgyyLSR/hflp1fs0i7KkcpJ7OeA/75Mt6RkFkiilDaUPGQhNK3cH/VWcvsCeqtiE4/
+         WtT4Rb4DO/v4qOfPXKAF2Kca8+UfkUr2r/NhX+f8scU+Mm7EpxGTGal8BbyGrUGrgDaA
+         VcE8IpmyBZrU1F0YRD4TIZUYdTMyjQwvhI0Z3Hy/BAjcTpjxOqzzv8azIyT9yTz3YYsU
+         lKtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=BCmOrsRHzkRoFFgiioobxbCHDjA8FUTBEoEJwYbkgvo=;
+        b=kBD9y6cwpg5SFUdYviT+8bNPaTz5aRjyUAz27Oig5EXprcY5f3tm5pyEC/Q8p/kUHS
+         2qYSSAqv4l1KLz6gX89YRHsWiYFlPvpuSVtF2a8eG8idpPPCQnnyj6rv9v/Gh4l2/JBu
+         V9aZiw18V2T5y+N0cWQ6izdk6Qfp3sDAxxfopr+uJ5y1KrLdmW4HDsU2M+yK41YbqCht
+         iLxNukvr1aSPK89EHpgPWJ0lrCxKD7kYz7tGwrJ4pCw+2GlK93cZTgN0lwgd2OqAwUlz
+         wHHGI62VqlNb7w3+OqOZZpOJJyLTLpDtqOLHkXyEu7AeRmyz2QDbJppCLui+VoGyq/nR
+         RmbQ==
+X-Gm-Message-State: AOAM533HkXk5LViYeN98/juRh+Qmu502t4JcP4j1S7YGZoqZwrL5tWBl
+        rsEHwKczgnL0Lhmxkl7cBZ7pITiE4ikP8LkfphM=
+X-Google-Smtp-Source: ABdhPJzykBgnh+kvXv0yBMJrC5eJDKsBJHWHchbMlFfgXoGck2WqCsb5+rxb6GXQKHwfjmC3oEuYFwrKLyKbY3PNFfA=
+X-Received: by 2002:a92:6c0b:: with SMTP id h11mr1170369ilc.66.1596154923509;
+ Thu, 30 Jul 2020 17:22:03 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200730161303.erzgrhqsgc77d4ny@wittgenstein>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25889/Thu Jul 30 17:03:53 2020)
+Received: by 2002:a05:6638:138b:0:0:0:0 with HTTP; Thu, 30 Jul 2020 17:22:02
+ -0700 (PDT)
+Reply-To: rsettnik@hotmail.com
+From:   "Mrs.Renate Magdalena Settnik" <aliabula5@gmail.com>
+Date:   Thu, 30 Jul 2020 17:22:02 -0700
+Message-ID: <CABexiLn9QgccmxPvGjj7EvqX3g7C+5iTs321e_fTOg2cCXT9tg@mail.gmail.com>
+Subject: Can you handle this fund?
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/30/20 6:13 PM, Christian Brauner wrote:
-> On Thu, Jul 30, 2020 at 06:09:00PM +0200, Christoph Hellwig wrote:
->> __bpfilter_process_sockopt never initialized the pos variable passed to
->> the pipe write.  This has been mostly harmless in the past as pipes
->> ignore the offset, but the switch to kernel_write no verified the
-> 
-> s/no/now/
-> 
->> position, which can lead to a failure depending on the exact stack
->> initialization patter.  Initialize the variable to zero to make
-> 
-> s/patter/pattern/
-> 
->> rw_verify_area happy.
->>
->> Fixes: 6955a76fbcd5 ("bpfilter: switch to kernel_write")
->> Reported-by: Christian Brauner <christian.brauner@ubuntu.com>
->> Reported-by: Rodrigo Madera <rodrigo.madera@gmail.com>
->> Signed-off-by: Christoph Hellwig <hch@lst.de>
->> Tested-by: Rodrigo Madera <rodrigo.madera@gmail.com>
->> ---
-> 
-> Thanks for tracking this down, Christoph! This fixes the logging issue
-> for me.
-> Tested-by: Christian Brauner <christian.brauner@ubuntu.com>
-> Reviewed-by: Christian Brauner <christian.brauner@ubuntu.com>
+-- 
+My dear Friend and Beloved,
+With warm hearts and joy in the Lord Jesus, i write this mail to you.
+I am Ms Renate Settnik, a German Citizen,but living in Burkina Faso.I
+am a Widow. I am 67 years old,without any child.
 
-Applied to bpf & fixed up the typos in the commit msg, thanks everyone!
+I am a devoted Christian and have the fear of God. I am a
+philantropist and a care-giver. I inherited the sum of 25 million Euro
+from my late husband who was a Crude Oil dealer before he was killed
+during the Burkina Faso Political unrest that happened Four years ago
+in August 2016.
+
+Due to his death, that resulted me to too much stress and tension,
+thereby causing me to contract Paralysis.
+
+What worries me is that i am down with FULL-BODY PARALYSIS. I cannot
+walk, nor stand. I have been bedridden for Three years now.
+
+Since i know that i have very limited time to stay on earth before i
+die according to my Doctors, i have been helping and contributing some
+amounts of money to Orphanage Homes and to Charity Organisations, as
+well as Foundations.
+
+With the help of the Bishop of the Catholic church where i worship, I
+have given donations to over 10 Charity Organisations and Foundations,
+in Africa,Asia, South America, etc.
+
+From findings, your Charity Foundation was listed among the remaining
+to be given donations.
+
+I will be giving you the token sum of 25,000,000.00.Euro
+
+As soon as I recieve your reply I shall give you the contact of the
+Catholic Bishop where you will send him your bank datails and other
+requirements he may need from you .I want you and the church to always
+pray for me.
+
+Get back to me if you are interested and ready to handle this
+transaction for charity work.
+
+Thanks for your cooperation.
+
+Best regards,
+
+Mrs, Renate Settnik.
