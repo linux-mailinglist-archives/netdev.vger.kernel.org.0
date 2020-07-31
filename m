@@ -2,158 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE29C234B4B
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 20:46:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7907234BAD
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 21:39:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387830AbgGaSqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 14:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33778 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387676AbgGaSqn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 14:46:43 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA55C061574;
-        Fri, 31 Jul 2020 11:46:42 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id l4so32294925ejd.13;
-        Fri, 31 Jul 2020 11:46:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=sz9MOHfqUm/VzZqeeY23alhyGQLuDkcW7wbxqGWoV1M=;
-        b=CM2xFMHlxjfyQdEQuDhTiOJ+3q3mIb/9E6KeVgl5Yozy1dW44w7yyITBjJXHHISUL7
-         q0YmvZMp4e3MONv/0taOcVpm37cGCV6/F+dDtbUvP9SCpCdD598noAunkYjmd3NuO5oV
-         yZHzxd7t17KiYAXc0RXaQ7pyZerzBNlEuKA4uAN5aTXz7kTw4NH5ywxJCgKINvYIIrul
-         WTVn5ScWW1klL7nVSLOyBLPDUxSD4Si69Zn4TT/8Olaw7DbssQC1OxRHSMLeU4srXgap
-         /TxxzNRRAZdKq0IO0E+oiBB+alc4u40zkohpMB7YVEwx1F73O/3ww0Hz1yECicM+56+5
-         /1Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=sz9MOHfqUm/VzZqeeY23alhyGQLuDkcW7wbxqGWoV1M=;
-        b=Rb6J0OPjtZEcFAmA5HHXzom3uEKftngB4PRczcagj16f1fStZTOl/Hls2q8OcTKI8h
-         u8UH01jo1ZsWOo9yk2+S8R1/YynU4GS1Osp3qgsKd9pScVyC5Ic1+buDvxFoA3ifhY8q
-         K73vNo69+xZ0M4juBmeCHC7icQihesZF8O8yS3wdJADJ5VfgJsr/vKz9FRi4GuupPYLP
-         1S1evaLgpuPqqhoD0c/T9rFqI0HLobMujBEsChuZ3M73YzGXgMXd/m2scOz8AUWddz3E
-         YZ1JI7HHaV86b9iz189VzsxOo7EaDig7r/B+cctlTfe2htKu1hZTxwaI912razv7BsLY
-         KUdw==
-X-Gm-Message-State: AOAM530UoZF7cThmvYPlV7P4bZQg4MvMTfeWfHve3pR+16MCx/jyb/lm
-        3QfMMqaFCptRz/n76q7Yqz9JIYPU
-X-Google-Smtp-Source: ABdhPJxmPO3NxjzpDtYGENAcEnEYaK/p1EFVJhS3IgeQ023JBs7NKiKfFILr6Wn1xGhEU6mdDF1FCw==
-X-Received: by 2002:a17:906:57c6:: with SMTP id u6mr5140654ejr.331.1596221200768;
-        Fri, 31 Jul 2020 11:46:40 -0700 (PDT)
-Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id sb3sm9959637ejb.113.2020.07.31.11.46.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 31 Jul 2020 11:46:40 -0700 (PDT)
-Subject: Re: [PATCH v2 0/3]
-To:     Rakesh Pillai <pillair@codeaurora.org>, ath10k@lists.infradead.org
-Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org
-References: <1596220042-2778-1-git-send-email-pillair@codeaurora.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <c6c5b3c5-f862-9cee-6863-24f666cc28f5@gmail.com>
-Date:   Fri, 31 Jul 2020 11:46:31 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1725830AbgGaTji (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 15:39:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41598 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725767AbgGaTji (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 15:39:38 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DBBE72076B;
+        Fri, 31 Jul 2020 19:39:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596224378;
+        bh=kcmLfanjdqpjSrohQjeE9D3iHfnpPoAT8Ip5bHqtSHY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=I2KqznqTleZXgK872wtyCDPZ6i2MajWvXBgd3+xqJnC6vG+fOchNngkcwd9jtDl99
+         /QguzJBD77UVTXTH93Ob8r8qFvKlWjoeuvRneGkvzuaRW2AEU72moauE/N102VqTPr
+         k8VMHgbrl2Whkd0/1vZFVqQClQ8eVUoNQa68J8pA=
+Date:   Fri, 31 Jul 2020 12:39:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 04/11] sfc_ef100: TX path for EF100 NICs
+Message-ID: <20200731123936.38680a53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <9776704b-d4b0-7477-42ba-f82ad3d4ec48@solarflare.com>
+References: <31de2e73-bce7-6c9d-0c20-49b32e2043cc@solarflare.com>
+        <9776704b-d4b0-7477-42ba-f82ad3d4ec48@solarflare.com>
 MIME-Version: 1.0
-In-Reply-To: <1596220042-2778-1-git-send-email-pillair@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/31/20 11:27 AM, Rakesh Pillai wrote:
-> The history recording will be compiled only if
-> ATH10K_DEBUG is enabled, and also enabled via
-> the module parameter. Once the history recording
-> is enabled via module parameter, it can be enabled
-> or disabled runtime via debugfs.
+On Fri, 31 Jul 2020 13:59:04 +0100 Edward Cree wrote:
+> +static inline efx_oword_t *ef100_tx_desc(struct efx_tx_queue *tx_queue,
+> +					 unsigned int index)
 
-Why not use trace prints and retrieving them via the function tracer?
-This seems very ad-hoc.
+Does this static inline make any difference?
 
-> 
-> ---
-> Changes from v1:
-> - Add module param and debugfs to enable/disable history recording.
-> 
-> Rakesh Pillai (3):
->   ath10k: Add history for tracking certain events
->   ath10k: Add module param to enable history
->   ath10k: Add debugfs support to enable event history
-> 
->  drivers/net/wireless/ath/ath10k/ce.c      |   1 +
->  drivers/net/wireless/ath/ath10k/core.c    |   3 +
->  drivers/net/wireless/ath/ath10k/core.h    |  82 ++++++++++++
->  drivers/net/wireless/ath/ath10k/debug.c   | 207 ++++++++++++++++++++++++++++++
->  drivers/net/wireless/ath/ath10k/debug.h   |  75 +++++++++++
->  drivers/net/wireless/ath/ath10k/snoc.c    |  15 ++-
->  drivers/net/wireless/ath/ath10k/wmi-tlv.c |   1 +
->  drivers/net/wireless/ath/ath10k/wmi.c     |  10 ++
->  8 files changed, 393 insertions(+), 1 deletion(-)
-> 
+You know the general policy...
 
-
--- 
-Florian
+> +{
+> +	if (likely(tx_queue->txd.buf.addr))
+> +		return ((efx_oword_t *)tx_queue->txd.buf.addr) + index;
+> +	else
+> +		return NULL;
+> +}
