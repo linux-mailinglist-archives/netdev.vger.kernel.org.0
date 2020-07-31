@@ -2,112 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77330234DB3
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 00:43:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74ABB234D9B
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 00:37:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727016AbgGaWnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 18:43:45 -0400
-Received: from mx2.suse.de ([195.135.220.15]:54720 "EHLO mx2.suse.de"
+        id S1726571AbgGaWhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 18:37:33 -0400
+Received: from mga12.intel.com ([192.55.52.136]:34569 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726099AbgGaWnp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 18:43:45 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id C2701AB7D;
-        Fri, 31 Jul 2020 22:43:56 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 63166604C2; Sat,  1 Aug 2020 00:43:42 +0200 (CEST)
-Date:   Fri, 31 Jul 2020 15:54:56 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Gaurav Singh <gaurav1086@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Aya Levin <ayal@mellanox.com>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] [net/ethtool] ethnl_set_linkmodes: remove redundant null
- check
-Message-ID: <20200731135456.gbzznq6x2f5pznx6@carpenter.suse.cz>
-References: <20200731045908.32466-1-gaurav1086@gmail.com>
+        id S1726119AbgGaWhd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 18:37:33 -0400
+IronPort-SDR: mdc61U9yKQ1ds7M/JSebItXNHyGwxdmAVmV3KV/VyqWgF/XyquoLwjg2/eDMI3guO+7QH1e7C7
+ cZKet1WavyUA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9699"; a="131448659"
+X-IronPort-AV: E=Sophos;i="5.75,419,1589266800"; 
+   d="scan'208";a="131448659"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2020 15:37:32 -0700
+IronPort-SDR: 40U6QHsqXUMyCi9LobOLL9klN9PsRbzbFk0pDYt5o2KJOdjcMq4ojejjNWv1WMAbYhlQUDPDkg
+ Qygw5cRwMtjQ==
+X-IronPort-AV: E=Sophos;i="5.75,419,1589266800"; 
+   d="scan'208";a="287330582"
+Received: from nataliet-mobl.amr.corp.intel.com ([10.254.79.31])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2020 15:37:31 -0700
+Date:   Fri, 31 Jul 2020 15:37:31 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@nataliet-mobl.amr.corp.intel.com
+To:     Florian Westphal <fw@strlen.de>
+cc:     netdev@vger.kernel.org, edumazet@google.com,
+        matthieu.baerts@tessares.net, pabeni@redhat.com
+Subject: Re: [PATCH v2 net-next 2/9] mptcp: token: move retry to caller
+In-Reply-To: <20200730192558.25697-3-fw@strlen.de>
+Message-ID: <alpine.OSX.2.23.453.2007311536500.30834@nataliet-mobl.amr.corp.intel.com>
+References: <20200730192558.25697-1-fw@strlen.de> <20200730192558.25697-3-fw@strlen.de>
+User-Agent: Alpine 2.23 (OSX 453 2020-06-18)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ltnqnoysjs5z4x72"
-Content-Disposition: inline
-In-Reply-To: <20200731045908.32466-1-gaurav1086@gmail.com>
-Lines:  66
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 30 Jul 2020, Florian Westphal wrote:
 
---ltnqnoysjs5z4x72
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Jul 31, 2020 at 12:58:44AM -0400, Gaurav Singh wrote:
-> info cannot be NULL here since its being accessed earlier
-> in the function: nlmsg_parse(info->nlhdr...). Remove this
-> redundant NULL check.
-
-This is what the static checker tells you but it could still mean the
-other place is missing the check. The actual reason why this check is
-superfluous is that the function is only used as ->doit() handler which
-is never called with null info.
-
-> Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
-
-The subject should rather start with "ethtool: " (instead of "[net/ethtool]=
- ").
-
-For the change itself:
-
-Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
-
-Michal
-
+> Once syncookie support is added, no state will be stored anymore when the
+> syn/ack is generated in syncookie mode.
+>
+> When the ACK comes back, the generated key will be taken from the TCP ACK,
+> the token is re-generated and inserted into the token tree.
+>
+> This means we can't retry with a new key when the token is already taken
+> in the syncookie case.
+>
+> Therefore, move the retry logic to the caller to prepare for syncookie
+> support in mptcp.
+>
+> Signed-off-by: Florian Westphal <fw@strlen.de>
 > ---
->  net/ethtool/linkmodes.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->=20
-> diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
-> index fd4f3e58c6f6..b595d87fa880 100644
-> --- a/net/ethtool/linkmodes.c
-> +++ b/net/ethtool/linkmodes.c
-> @@ -406,8 +406,7 @@ int ethnl_set_linkmodes(struct sk_buff *skb, struct g=
-enl_info *info)
-> =20
->  	ret =3D __ethtool_get_link_ksettings(dev, &ksettings);
->  	if (ret < 0) {
-> -		if (info)
-> -			GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
-> +		GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
->  		goto out_ops;
->  	}
-> =20
-> --=20
-> 2.17.1
->=20
+> net/mptcp/subflow.c |  9 ++++++++-
+> net/mptcp/token.c   | 12 ++++--------
+> 2 files changed, 12 insertions(+), 9 deletions(-)
 
---ltnqnoysjs5z4x72
-Content-Type: application/pgp-signature; name="signature.asc"
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8kIqYACgkQ538sG/LR
-dpVuQwf/ZIW2LoV7UbsdkhDsyo2zBbjP+Ae033JR/gd0DPSYClAtBvdQIPAPKST1
-5Tz2kJO1peojJcp0G3lr1EDvWzlxeCqkpq3JzN4823O1j/C2GBfRnbQx7fMO5Jj4
-Ejujz+Pxkg/MVs7wgvUCuJswSuOKH9V756ClMo1BqeHwQj7vcEovdOxRQ3g+GPRc
-fnKh+9DO38uWU2B0CSkrwGYeRE2K5toPj0Q2+chdNQGwJJONVUhpB9fxPNPvt3fk
-A/rQrJFLv1VgNdVrw2DhV4/c1Ar9w6rlsKTDuRJg4AUUTfKjsUqW51DIZtgiMFA3
-EA47sXhsxbjb/DCoFkj/101gby8VGQ==
-=NBhY
------END PGP SIGNATURE-----
-
---ltnqnoysjs5z4x72--
-
+--
+Mat Martineau
+Intel
