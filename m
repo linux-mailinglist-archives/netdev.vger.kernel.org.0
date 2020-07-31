@@ -2,68 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7204A23483D
-	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 17:14:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF355234854
+	for <lists+netdev@lfdr.de>; Fri, 31 Jul 2020 17:21:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729258AbgGaPOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 11:14:55 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37086 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727819AbgGaPOz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 11:14:55 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k1Wk8-007iKb-Sq; Fri, 31 Jul 2020 17:14:44 +0200
-Date:   Fri, 31 Jul 2020 17:14:44 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Dan Callaghan <dan.callaghan@opengear.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Russell King <linux@armlinux.org.uk>, Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev <netdev@vger.kernel.org>, "linux.cj" <linux.cj@gmail.com>,
-        linux-acpi <linux-acpi@vger.kernel.org>
-Subject: Re: [net-next PATCH v7 1/6] Documentation: ACPI: DSD: Document MDIO
- PHY
-Message-ID: <20200731151444.GI1712415@lunn.ch>
-References: <20200715090400.4733-1-calvin.johnson@oss.nxp.com>
- <20200715090400.4733-2-calvin.johnson@oss.nxp.com>
- <1a031e62-1e87-fdc1-b672-e3ccf3530fda@arm.com>
- <20200724133931.GF1472201@lunn.ch>
- <97973095-5458-8ac2-890c-667f4ea6cd0e@arm.com>
- <20200724191436.GH1594328@lunn.ch>
- <1595922651-sup-5323@galangal.danc.bne.opengear.com>
- <20200728204548.GC1748118@lunn.ch>
- <7d42152a-2df1-a26c-b619-b804001e0eac@gmail.com>
- <CAHp75VejnW23LEfyEO6Py8=e3_W0YMomk8jQ3JQeHqYcaeDitg@mail.gmail.com>
+        id S1726764AbgGaPVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 11:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726845AbgGaPVT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 11:21:19 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DB8C061574
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 08:21:19 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id u185so14657324pfu.1
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 08:21:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=r9yUJWr+DsoZe8/HsJVl2DgFZEJMVyDiAZSAi5qw7Q4=;
+        b=x24YeAgXZyFfRagzRE8sgdp14WUQvDy2i8CViv6VuYVn6t1qDPcby4xKda5owagGgv
+         /S68RsQ9kn6e04WYGeGlycMO6JOZgz02Z+2k4+DrvgZul3nRlLWvDH89DboHMbySkIZl
+         nfvxdDZ5Mi9ScTVDAudT6AGKz9v8/ePsyp5XOoSDH/vkfEw5XC05hLcyZA4/pkm5wa85
+         98wm4GbofLxp88u1RRH/esHkJbKvezS+gZzak1kePCyvK9K4IoeXSPwra+ZPXaHXz0I8
+         IGgox0IsTvjRXa5Ya6GxiWon1rhiIFbvhquVatdMyfQir4Z9+51pLsOcRjp2ouvCxF0y
+         ROIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=r9yUJWr+DsoZe8/HsJVl2DgFZEJMVyDiAZSAi5qw7Q4=;
+        b=N/j6hYgu9FUDlh7MKVIIsSErBzyZXvbEwjLWbWQRGbg6/NBYl1Zxvq+AaPhv77ziOX
+         ZMhxLS/5noayNzuHSt7rbA+dM9q4DtwF+cHxD8cbch0TtfDXXxsj2xg78GvsgfbbBbAp
+         pObiAbwBMfs18Z3O5a27pV3R+Hda/fmTeIs3HrtbwIAgHNWBXRcIVKPuV1/1GLDICIAY
+         l146azz9mWP6SUSnE04GjtQXtrsICGxrPzCJIJlFJiSwdTotzaDjs/jF++M+5obCdT3s
+         0BqJE1EPGQIECyHrPVbTJXm66D90733Vpr8AeCMwj2N4Cs5Xa9uYe4C/kaCM9lAmXaAv
+         h78g==
+X-Gm-Message-State: AOAM531DZoi90Bzs2yTN5/6+PHoM2saooPRB+ft+QQntfjVMudw6o8Ac
+        9r6Ii1dc85gpA1AOSkE/vKPwuA==
+X-Google-Smtp-Source: ABdhPJwSZUW9rknLyqqpsNbxPpm7eFHjBbI4whzc2jGTNx+4VFGIwE7k4LJmmpcWf14vCpr0/Vxoyg==
+X-Received: by 2002:aa7:9613:: with SMTP id q19mr4373614pfg.9.1596208879316;
+        Fri, 31 Jul 2020 08:21:19 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id gb20sm1203017pjb.29.2020.07.31.08.21.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Jul 2020 08:21:18 -0700 (PDT)
+Date:   Fri, 31 Jul 2020 08:21:15 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Or Gerlitz <gerlitz.or@gmail.com>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>
+Subject: Re: iproute2 DDMMYY versioning - why?
+Message-ID: <20200731082115.5f96a249@hermes.lan>
+In-Reply-To: <CAJ3xEMisQFoFzghnoTC7joD5JxNi95o8T7gR8fW9OkxEbsuaQQ@mail.gmail.com>
+References: <CAJ3xEMhk+EQ_avGSBDB5_Gnj09w3goUJKkxzt8innWvFkTeEVA@mail.gmail.com>
+        <20200728125136.6c5b46e8@hermes.lan>
+        <CAJ3xEMisQFoFzghnoTC7joD5JxNi95o8T7gR8fW9OkxEbsuaQQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VejnW23LEfyEO6Py8=e3_W0YMomk8jQ3JQeHqYcaeDitg@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > DT can be used on x86, and i suspect it is a much easier path of least
-> > > resistance.
-> >
-> > And you can easily overlay Device Tree to an existing system by using
-> > either a full Device Tree overlay (dtbo) or using CONFIG_OF_DYNAMIC and
-> > creating nodes on the fly.
+On Fri, 31 Jul 2020 16:23:06 +0300
+Or Gerlitz <gerlitz.or@gmail.com> wrote:
+
+> On Tue, Jul 28, 2020 at 10:51 PM Stephen Hemminger
+> <stephen@networkplumber.org> wrote:
 > 
-> Why do you need DT on a system that runs without it and Linux has all
-> means to extend to cover a lot of stuff DT provides for other types of
-> firmware nodes?
+> > It is only an historical leftover, because 15 yrs ago that is how Alexy did it  
+> 
+> So how about putting behind the burden created by this historical leftover
+> and moving to use the kernel releases as the emitted version?
 
-As i said, path of least resistance. It is here today, heavily used,
-well understood by lots of network developers, has a very active
-maintainer in the form of Rob Herring, and avoids 'showflakes' as
-Florian likes to call it, so we are all sharing the same code,
-providing a lot of testing and maintenance.
+The only downside to kernel versioning is the distros will think
+"can't use v5.10 because our kernel is still v4.3" and then want
+LTS versions of iproute2 which would create significant resource efforts.
 
-	  Andrew
+Open to changing to kernel versions, it would be trivial to do.
+The tagging and releases are by kernel version.
+The SNAPSHOT.h is autogenerated by a script, that can be changed.
