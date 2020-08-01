@@ -2,82 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B64382350B8
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 08:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F5122350DF
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 09:08:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725890AbgHAGGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 02:06:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
+        id S1728103AbgHAHIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 03:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725275AbgHAGGv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 02:06:51 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59900C06174A
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 23:06:51 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id l17so16910571ilq.13
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 23:06:51 -0700 (PDT)
+        with ESMTP id S1725275AbgHAHIA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 03:08:00 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62153C06174A
+        for <netdev@vger.kernel.org>; Sat,  1 Aug 2020 00:08:00 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id h12so5793325pgf.7
+        for <netdev@vger.kernel.org>; Sat, 01 Aug 2020 00:08:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Lc+KMyIhUWVI5G7cYRRHYkKwizFAx8XHRjl6tJdzvuU=;
-        b=t6vS3gqeAzM3WESInAd6KqAHgasCgzOLgw/oj5xPJRpz+vr14nDpRqQJJJLJV5AsT0
-         vTtB+sQQg2qxxxn5eIQJ3+pcXL/wzyplpc9a77lic6NJTRixRJSwu9X+gk2o2Npyyc7y
-         8gpSL/ItnwE1QAOfVHyzfJrgh3Dd6/9Zf7H+BC6pYDF6/sDb+zjmw4+Nj3r5Ttdpf5pT
-         JXis85C6vqXoIKfzSeBi+37t0OVJ1s3/upCsZZGhMXfeGRZqL/At0AO9M6u9e0WiZiwW
-         WQiZDCipMI+gwLjHd96PgBBF1Ah78R8v380DfwwQdzEE1/Y4o1878Ra7B9CKIctlWq7e
-         3WCQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=Cn2UI312fiYX6zSoChqgK+mTON6P1wJq2sFmk4xDT5Q=;
+        b=HbU2M5ZyeKSlmx+avK9x6U6wZs2pCzFAQYMHAvYSOWoFKcbigXBzqmcqLNjXIBMvWj
+         9DeGLR6OEk3OZXoprp3qs+PIbFvoRYNyosAr5a9H2XAA4kZWMtcFRSRQXd36XKHjZdNW
+         HfueFSwkIlS+Onr2+FmfQZIrv171vfyMOuVWrdmOUhmSgSQ5OSJO/69O8jeokdwxu955
+         Gjn1YrON1GobtBeChjR8h9hprgJiegudNGUumzvoLE/mHMXJ4li2ut5EB5C/UIyuHKWV
+         4Q1r06ln4q/nqtdA0XDWoKdaI4Zlvg7GiBseZjnnEuU9B3jRnmACh72IHmBUabp6DvBT
+         AQ3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Lc+KMyIhUWVI5G7cYRRHYkKwizFAx8XHRjl6tJdzvuU=;
-        b=JMD0+8n2gp36LZaYXXDqhW1vsN/ZiAEwYK0+hVNsMOnt9cjo6yuXUrRQztd9gF5/X7
-         uMS41nEkcIP18E0O+e4ocU62HKI0cvNdWt/evzRz6AQprrBwTIu1pefyq1USjbPJjLXD
-         OxYuQHIM3EfMKxrpk+95d8c7bcePTbrlt87c5sRaf6yl2BYprFpKoRrun62cuBkrB7WH
-         OXPwEjBxA7E4FG78QOX/2PN2RSP56F14i41o6RO17hy5wjdghUDseCJ7N0pQ5eeoVtzV
-         H0CieXBxCz9/owEV9b2YDCDflGQDqsA+9QNJEMeeiB7potHzsDFqYRFhAy1Zn9P693gq
-         zacw==
-X-Gm-Message-State: AOAM532H4K9k5WKOm8y3VpBhixW0Su1RvzjJbvj0wyfuIJY1RFbhNrOI
-        pJ1r/TyStIBmjdpyVf7nD08+p6cfPdcdm7NmEvrkaehm
-X-Google-Smtp-Source: ABdhPJzUTT+fugQuYj2A6pT2sD8jwsHVBK4EHTTc26QePyUuTQp2qy/ehB+o6VA5ok058moAXB5ZTQZvce1Rq77mkpk=
-X-Received: by 2002:a92:c5c1:: with SMTP id s1mr7148287ilt.144.1596262010593;
- Fri, 31 Jul 2020 23:06:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <1596163501-7113-1-git-send-email-wenxu@ucloud.cn>
-In-Reply-To: <1596163501-7113-1-git-send-email-wenxu@ucloud.cn>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 31 Jul 2020 23:06:39 -0700
-Message-ID: <CAM_iQpVLJOOUcLpTp817TihSr-Ax3P0HES5gVSN9sRp=6Bm4mw@mail.gmail.com>
-Subject: Re: [PATCH net v2] net/sched: act_ct: fix miss set mru for ovs after
- defrag in act_ct
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Cn2UI312fiYX6zSoChqgK+mTON6P1wJq2sFmk4xDT5Q=;
+        b=UU+oawKcj5FQ+Kvu94TprwmedQ3CwcU2M633Gd4kKINGJiNnreaIaX4+QeQBkvcfey
+         Fk1p5fBJ2Eeq3QPui3jdvr9Cgod0o3inXFFZUg471IvgYytnq5nx8Pq71SqXNwCEScep
+         /t7PUwfdyd6KiS175XglbPlQqdZh2PiAU/vHhcdbbdB06xnk/kTbDTiswSztpj/0tr0o
+         BFkx9sheTKp6n/0RhjyxKrXiSidto7djkdKTLJ4xYdX6MESw0dJOoiEK3wRcBz7d3Fq6
+         VzO7YAoruDLqL84Lngw71mg0xSxrYjPGPxg9B6hQuOgjejE+ejcLgYr7bUSkEkOyi5ct
+         WTpQ==
+X-Gm-Message-State: AOAM5306naS2rsWFOAYZIY7KH3J4kiB/eQhHYz7amafZ+u1OOX50n6VM
+        jiKTZdA9WxTtddZuJwBh0qA=
+X-Google-Smtp-Source: ABdhPJy7IGamvHHpjHTFmYvvC4wS3/SxwSqG/RwRLW3aCWt5PjXzKJwVVJxAIwU6gZeNN9kRktDKjQ==
+X-Received: by 2002:a63:df03:: with SMTP id u3mr6602567pgg.84.1596265679737;
+        Sat, 01 Aug 2020 00:07:59 -0700 (PDT)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id mj6sm11171926pjb.15.2020.08.01.00.07.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 01 Aug 2020 00:07:58 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     roopa@cumulusnetworks.com, ap420073@gmail.com
+Subject: [PATCH net] vxlan: fix memleak of fdb
+Date:   Sat,  1 Aug 2020 07:07:50 +0000
+Message-Id: <20200801070750.7993-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 30, 2020 at 7:45 PM <wenxu@ucloud.cn> wrote:
->
-> From: wenxu <wenxu@ucloud.cn>
->
-> When openvswitch conntrack offload with act_ct action. Fragment packets
-> defrag in the ingress tc act_ct action and miss the next chain. Then the
-> packet pass to the openvswitch datapath without the mru. The over
-> mtu packet will be dropped in output action in openvswitch for over mtu.
->
-> "kernel: net2: dropped over-mtu packet: 1528 > 1500"
->
-> This patch add mru in the tc_skb_ext for adefrag and miss next chain
-> situation. And also add mru in the qdisc_skb_cb. The act_ct set the mru
-> to the qdisc_skb_cb when the packet defrag. And When the chain miss,
-> The mru is set to tc_skb_ext which can be got by ovs datapath.
->
-> Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
+When vxlan interface is deleted, all fdbs are deleted by vxlan_flush().
+vxlan_flush() flushes fdbs but it doesn't delete fdb, which contains
+all-zeros-mac because it is deleted by vxlan_uninit().
+But vxlan_uninit() deletes only the fdb, which contains both all-zeros-mac
+and default vni.
+So, the fdb, which contains both all-zeros-mac and non-default vni
+will not be deleted.
 
-Reviewed-by: Cong Wang <xiyou.wangcong@gmail.com>
+Test commands:
+    ip link add vxlan0 type vxlan dstport 4789 external
+    ip link set vxlan0 up
+    bridge fdb add to 00:00:00:00:00:00 dst 172.0.0.1 dev vxlan0 via lo \
+	    src_vni 10000 self permanent
+    ip link del vxlan0
 
-Thanks.
+kmemleak reports as follows:
+unreferenced object 0xffff9486b25ced88 (size 96):
+  comm "bridge", pid 2151, jiffies 4294701712 (age 35506.901s)
+  hex dump (first 32 bytes):
+    02 00 00 00 ac 00 00 01 40 00 09 b1 86 94 ff ff  ........@.......
+    46 02 00 00 00 00 00 00 a7 03 00 00 12 b5 6a 6b  F.............jk
+  backtrace:
+    [<00000000c10cf651>] vxlan_fdb_append.part.51+0x3c/0xf0 [vxlan]
+    [<000000006b31a8d9>] vxlan_fdb_create+0x184/0x1a0 [vxlan]
+    [<0000000049399045>] vxlan_fdb_update+0x12f/0x220 [vxlan]
+    [<0000000090b1ef00>] vxlan_fdb_add+0x12a/0x1b0 [vxlan]
+    [<0000000056633c2c>] rtnl_fdb_add+0x187/0x270
+    [<00000000dd5dfb6b>] rtnetlink_rcv_msg+0x264/0x490
+    [<00000000fc44dd54>] netlink_rcv_skb+0x4a/0x110
+    [<00000000dff433e7>] netlink_unicast+0x18e/0x250
+    [<00000000b87fb421>] netlink_sendmsg+0x2e9/0x400
+    [<000000002ed55153>] ____sys_sendmsg+0x237/0x260
+    [<00000000faa51c66>] ___sys_sendmsg+0x88/0xd0
+    [<000000006c3982f1>] __sys_sendmsg+0x4e/0x80
+    [<00000000a8f875d2>] do_syscall_64+0x56/0xe0
+    [<000000003610eefa>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+unreferenced object 0xffff9486b1c40080 (size 128):
+  comm "bridge", pid 2157, jiffies 4294701754 (age 35506.866s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 f8 dc 42 b2 86 94 ff ff  ..........B.....
+    6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+  backtrace:
+    [<00000000a2981b60>] vxlan_fdb_create+0x67/0x1a0 [vxlan]
+    [<0000000049399045>] vxlan_fdb_update+0x12f/0x220 [vxlan]
+    [<0000000090b1ef00>] vxlan_fdb_add+0x12a/0x1b0 [vxlan]
+    [<0000000056633c2c>] rtnl_fdb_add+0x187/0x270
+    [<00000000dd5dfb6b>] rtnetlink_rcv_msg+0x264/0x490
+    [<00000000fc44dd54>] netlink_rcv_skb+0x4a/0x110
+    [<00000000dff433e7>] netlink_unicast+0x18e/0x250
+    [<00000000b87fb421>] netlink_sendmsg+0x2e9/0x400
+    [<000000002ed55153>] ____sys_sendmsg+0x237/0x260
+    [<00000000faa51c66>] ___sys_sendmsg+0x88/0xd0
+    [<000000006c3982f1>] __sys_sendmsg+0x4e/0x80
+    [<00000000a8f875d2>] do_syscall_64+0x56/0xe0
+    [<000000003610eefa>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Fixes: 3ad7a4b141eb ("vxlan: support fdb and learning in COLLECT_METADATA mode")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+ drivers/net/vxlan.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 5efe1e28f270..a7c3939264b0 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -3076,8 +3076,10 @@ static void vxlan_flush(struct vxlan_dev *vxlan, bool do_all)
+ 			if (!do_all && (f->state & (NUD_PERMANENT | NUD_NOARP)))
+ 				continue;
+ 			/* the all_zeros_mac entry is deleted at vxlan_uninit */
+-			if (!is_zero_ether_addr(f->eth_addr))
+-				vxlan_fdb_destroy(vxlan, f, true, true);
++			if (is_zero_ether_addr(f->eth_addr) &&
++			    f->vni == vxlan->cfg.vni)
++				continue;
++			vxlan_fdb_destroy(vxlan, f, true, true);
+ 		}
+ 		spin_unlock_bh(&vxlan->hash_lock[h]);
+ 	}
+-- 
+2.17.1
+
