@@ -2,40 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07D5B23533C
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 18:18:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FB61235349
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 18:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726878AbgHAQSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 12:18:08 -0400
+        id S1726996AbgHAQSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 12:18:09 -0400
 Received: from mga05.intel.com ([192.55.52.43]:19604 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725841AbgHAQSH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 1 Aug 2020 12:18:07 -0400
-IronPort-SDR: CwHmgcvTkfwK2eC3i+9Ru7dL7dj3Oyovk6xa8BRg03l8eoXz1bajTJJt40lYqNrSSMk1fVLwF9
- LULnpozweRVQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9699"; a="236810840"
+        id S1726300AbgHAQSI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 1 Aug 2020 12:18:08 -0400
+IronPort-SDR: dIBuAtc7U9mB/zWPdsPSYGxUN4EJgdbAH/c/M85d+XqpwSGevKyK/riFcJKuCkEGtatfNbmhlr
+ AssnLYOoJFAA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9699"; a="236810842"
 X-IronPort-AV: E=Sophos;i="5.75,422,1589266800"; 
-   d="scan'208";a="236810840"
+   d="scan'208";a="236810842"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2020 09:18:07 -0700
-IronPort-SDR: t7IdeNJuHyYACdlpuRiF5sGEUYYKxB6jjA/YNF1smRQjhjX1BZ+4It9XEo0fcRaPN4Q3wD7O8h
- YN8eu2V6ragw==
+IronPort-SDR: GIoWwSvo3173sZPuNUKLfzRv82y2oJZ2SgyNvxRZnzbrC16OP6ECxwowmKjCkCa78rTK2i0ZII
+ 2mQAIGfSyuVw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,422,1589266800"; 
-   d="scan'208";a="331457686"
+   d="scan'208";a="331457689"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga007.jf.intel.com with ESMTP; 01 Aug 2020 09:18:06 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
-        jeffrey.t.kirsher@intel.com
-Subject: [net-next 00/14][pull request] 100GbE Intel Wired LAN Driver Updates 2020-08-01
-Date:   Sat,  1 Aug 2020 09:17:48 -0700
-Message-Id: <20200801161802.867645-1-anthony.l.nguyen@intel.com>
+        jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
+        Hulk Robot <hulkci@huawei.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: [net-next 01/14] ice: mark PM functions as __maybe_unused
+Date:   Sat,  1 Aug 2020 09:17:49 -0700
+Message-Id: <20200801161802.867645-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200801161802.867645-1-anthony.l.nguyen@intel.com>
+References: <20200801161802.867645-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -43,90 +47,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to the ice driver only.
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-Wei Yongjun marks power management functions with __maybe_unused.
+In certain configurations without power management support, the
+following warnings happen:
 
-Nick disables VLAN pruning in promiscuous mode and renames grst_delay to
-grst_timeout.
+drivers/net/ethernet/intel/ice/ice_main.c:4214:12: warning:
+ 'ice_resume' defined but not used [-Wunused-function]
+ 4214 | static int ice_resume(struct device *dev)
+      |            ^~~~~~~~~~
+drivers/net/ethernet/intel/ice/ice_main.c:4150:12: warning:
+ 'ice_suspend' defined but not used [-Wunused-function]
+ 4150 | static int ice_suspend(struct device *dev)
+      |            ^~~~~~~~~~~
 
-Kiran modifies the check for linearization and corrects the vsi_id mask
-value.
+Mark these functions as __maybe_unused to make it clear to the
+compiler that this is going to happen based on the configuration,
+which is the standard for these types of functions.
 
-Vignesh replaces the use of flow profile locks to RSS profile locks for RSS
-rule removal. Destroys flow profile lock on clearing XLT table and
-clears extraction sequence entries.
+Fixes: 769c500dcc1e ("ice: Add advanced power mgmt for WoL")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Jesse adds some statistics and removes an unreported one.
-
-Brett allows for 2 queue configuration for VFs.
-
-Surabhi adds a check for failed allocation of an extraction sequence
-table.
-
-Tony updates the PTYPE lookup table and makes other trivial fixes.
-
-Victor extends profile ID locks to be held until all references are
-completed.
-
-The following are changes since commit 8f3f330da28ede9d106cd9d5c5ccd6a3e7e9b50b:
-  tun: add missing rcu annotation in tun_set_ebpf()
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
-
-Brett Creeley (1):
-  ice: Allow 2 queue pairs per VF on SR-IOV initialization
-
-Jesse Brandeburg (2):
-  ice: remove page_reuse statistic
-  ice: add useful statistics
-
-Kiran Patil (2):
-  ice: fix the vsi_id mask to be 10 bit for set_rss_lut
-  ice: port fix for chk_linearlize
-
-Nick Nunley (2):
-  ice: rename misleading grst_delay variable
-  ice: Disable VLAN pruning in promiscuous mode
-
-Surabhi Boob (1):
-  ice: Graceful error handling in HW table calloc failure
-
-Tony Nguyen (2):
-  ice: update PTYPE lookup table
-  ice: Misc minor fixes
-
-Victor Raj (1):
-  ice: adjust profile ID map locks
-
-Vignesh Sridhar (2):
-  ice: Fix RSS profile locks
-  ice: Clear and free XLT entries on reset
-
-Wei Yongjun (1):
-  ice: mark PM functions as __maybe_unused
-
- drivers/net/ethernet/intel/ice/ice.h          |   1 +
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   2 +-
- drivers/net/ethernet/intel/ice/ice_common.c   |  15 +-
- drivers/net/ethernet/intel/ice/ice_devlink.c  |   2 +-
- drivers/net/ethernet/intel/ice/ice_ethtool.c  |   4 +
- .../net/ethernet/intel/ice/ice_flex_pipe.c    | 100 +++---
- drivers/net/ethernet/intel/ice/ice_flow.c     |  13 +-
- .../net/ethernet/intel/ice/ice_hw_autogen.h   |   4 +-
- .../net/ethernet/intel/ice/ice_lan_tx_rx.h    | 314 ++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_lib.c      |   7 +
- drivers/net/ethernet/intel/ice/ice_main.c     |  11 +-
- drivers/net/ethernet/intel/ice/ice_sched.c    |   4 +-
- drivers/net/ethernet/intel/ice/ice_txrx.c     |  35 +-
- drivers/net/ethernet/intel/ice/ice_txrx.h     |   2 +-
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c |   7 +-
- drivers/net/ethernet/intel/ice/ice_type.h     |   2 +-
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |   6 +-
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |   1 +
- drivers/net/ethernet/intel/ice/ice_xsk.c      |   2 -
- 19 files changed, 445 insertions(+), 87 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index c0bde24ab344..bd2a2df25def 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4467,7 +4467,7 @@ static int ice_reinit_interrupt_scheme(struct ice_pf *pf)
+  * Power Management callback to quiesce the device and prepare
+  * for D3 transition.
+  */
+-static int ice_suspend(struct device *dev)
++static int __maybe_unused ice_suspend(struct device *dev)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct ice_pf *pf;
+@@ -4531,7 +4531,7 @@ static int ice_suspend(struct device *dev)
+  * ice_resume - PM callback for waking up from D3
+  * @dev: generic device information structure
+  */
+-static int ice_resume(struct device *dev)
++static int __maybe_unused ice_resume(struct device *dev)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	enum ice_reset_req reset_type;
 -- 
 2.26.2
 
