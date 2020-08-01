@@ -2,244 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06242235343
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 18:18:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A396D235365
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 18:33:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727109AbgHAQST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 12:18:19 -0400
-Received: from mga05.intel.com ([192.55.52.43]:19610 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727037AbgHAQSL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 1 Aug 2020 12:18:11 -0400
-IronPort-SDR: CZvighjWh6Q1JiFgUDQVD+YKezUR+ywDoBIXSLnHYVzJjJb2XczWlyWSa5MTVLWv7ebrPqwHm6
- wqvqc3HkzL0A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9699"; a="236810854"
-X-IronPort-AV: E=Sophos;i="5.75,422,1589266800"; 
-   d="scan'208";a="236810854"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2020 09:18:08 -0700
-IronPort-SDR: LEGxremPwvnm+vKDXe/9PNpmZdr+XXhzl6Atv0/qUxj16WPI2zzwgtmjpMFny7Cd4CCOvMXTCr
- RS6V6GrbBT0g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,422,1589266800"; 
-   d="scan'208";a="331457724"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by orsmga007.jf.intel.com with ESMTP; 01 Aug 2020 09:18:07 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        jeffrey.t.kirsher@intel.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: [net-next 14/14] ice: Misc minor fixes
-Date:   Sat,  1 Aug 2020 09:18:02 -0700
-Message-Id: <20200801161802.867645-15-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200801161802.867645-1-anthony.l.nguyen@intel.com>
-References: <20200801161802.867645-1-anthony.l.nguyen@intel.com>
+        id S1727076AbgHAQdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 12:33:07 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:37840 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726934AbgHAQdG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 12:33:06 -0400
+Received: by mail-io1-f69.google.com with SMTP id f6so9022022ioa.4
+        for <netdev@vger.kernel.org>; Sat, 01 Aug 2020 09:33:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=SIdCK8Q+4LKw+jmzrptYCoQd/JoF3mumY50X9Ph/hTE=;
+        b=HeSGN81fLPu2+6q31YYik4ZjKqjL1j7oLM4gDVF6YF9U9aYb+ed0K4neyY0ZppXDV+
+         8zQlxVup2L5tL7/d9PfUPbJrgDQz9PqUJKVtolKGsCqVNheS6eDaobfopNtObOocbn/v
+         jetHXyLS+6uxYpeslOnIRgFJzgnhb70eeLr5j8PO9egbZYS53uIycMG+f6nL2iGe6piA
+         lOUxLZD1aLsvgq6UEGsmLdFF1JySUZE9eikT8wNdAQuPeGot5dEh+hps6s8k1HCJaORC
+         Zot9XwInJEFHeKyYZOyc/cX6L2JRZnmjNTil8dGLyOKKgjqrF0PTS/3+hKSuAhUdrRgW
+         V2hA==
+X-Gm-Message-State: AOAM530C8JeRS244cp6Se5zDzxbTBJIJreZrVPk6BBOFTw1S0DG7lsAu
+        7AwDynpPGeOnj78Trc5K04yD7dz+6LeNyHonNlrrro3l0yXO
+X-Google-Smtp-Source: ABdhPJxr/wL4FBG9BjuUQiXlSC8n5B0989oGaJ3+8JI4slsvtNxiaGVvvNeo1Fc/qvwpgTWkAaur6QYbJbGO5vawji+M3kZenXYs
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6602:1343:: with SMTP id i3mr8889517iov.134.1596299585453;
+ Sat, 01 Aug 2020 09:33:05 -0700 (PDT)
+Date:   Sat, 01 Aug 2020 09:33:05 -0700
+In-Reply-To: <000000000000f298fc05abb42b70@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000bf03f305abd37535@google.com>
+Subject: Re: WARNING: ODEBUG bug in cancel_delayed_work
+From:   syzbot <syzbot+338f014a98367a08a114@syzkaller.appspotmail.com>
+To:     bhumirks@gmail.com, coreteam@netfilter.org, davem@davemloft.net,
+        devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        johan.hedberg@gmail.com, kaber@trash.net, kadlec@blackhole.kfki.hu,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, marcel@holtmann.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a collection of minor fixes including typos, white space, and
-style. No functional changes.
+syzbot has bisected this issue to:
 
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_common.c      | 5 ++---
- drivers/net/ethernet/intel/ice/ice_devlink.c     | 2 +-
- drivers/net/ethernet/intel/ice/ice_flex_pipe.c   | 2 +-
- drivers/net/ethernet/intel/ice/ice_hw_autogen.h  | 4 ++--
- drivers/net/ethernet/intel/ice/ice_sched.c       | 4 ++--
- drivers/net/ethernet/intel/ice/ice_txrx.c        | 7 +++----
- drivers/net/ethernet/intel/ice/ice_type.h        | 2 +-
- drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 4 ++--
- drivers/net/ethernet/intel/ice/ice_xsk.c         | 2 --
- 9 files changed, 14 insertions(+), 18 deletions(-)
+commit 43ff7f53de2294a83dcf84b35de6ffa1ffafae9d
+Author: Bhumika Goyal <bhumirks@gmail.com>
+Date:   Thu Oct 6 18:10:01 2016 +0000
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 8a93fbd6f1be..34abfcea9858 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -1718,8 +1718,7 @@ ice_alloc_hw_res(struct ice_hw *hw, u16 type, u16 num, bool btm, u16 *res)
-  * @num: number of resources
-  * @res: pointer to array that contains the resources to free
-  */
--enum ice_status
--ice_free_hw_res(struct ice_hw *hw, u16 type, u16 num, u16 *res)
-+enum ice_status ice_free_hw_res(struct ice_hw *hw, u16 type, u16 num, u16 *res)
- {
- 	struct ice_aqc_alloc_free_res_elem *buf;
- 	enum ice_status status;
-@@ -2121,7 +2120,7 @@ ice_parse_fdir_dev_caps(struct ice_hw *hw, struct ice_hw_dev_caps *dev_p,
-  * @cap_count: the number of capabilities
-  *
-  * Helper device to parse device (0x000B) capabilities list. For
-- * capabilities shared between device and device, this relies on
-+ * capabilities shared between device and function, this relies on
-  * ice_parse_common_caps.
-  *
-  * Loop through the list of provided capabilities and extract the relevant
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index dbbd8b6f9d1a..111d6bfe4222 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -357,7 +357,7 @@ void ice_devlink_unregister(struct ice_pf *pf)
-  *
-  * Create and register a devlink_port for this PF. Note that although each
-  * physical function is connected to a separate devlink instance, the port
-- * will still be numbered according to the physical function id.
-+ * will still be numbered according to the physical function ID.
-  *
-  * Return: zero on success or an error code on failure.
-  */
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-index 2691dac0e159..b17ae3e20157 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-@@ -644,7 +644,7 @@ static bool ice_bits_max_set(const u8 *mask, u16 size, u16 max)
-  * This function generates a key from a value, a don't care mask and a never
-  * match mask.
-  * upd, dc, and nm are optional parameters, and can be NULL:
-- *	upd == NULL --> udp mask is all 1's (update all bits)
-+ *	upd == NULL --> upd mask is all 1's (update all bits)
-  *	dc == NULL --> dc mask is all 0's (no don't care bits)
-  *	nm == NULL --> nm mask is all 0's (no never match bits)
-  */
-diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-index 92e4abca62a4..90abc8612a6a 100644
---- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-+++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-@@ -57,7 +57,7 @@
- #define PRTDCB_GENS				0x00083020
- #define PRTDCB_GENS_DCBX_STATUS_S		0
- #define PRTDCB_GENS_DCBX_STATUS_M		ICE_M(0x7, 0)
--#define PRTDCB_TUP2TC				0x001D26C0 /* Reset Source: CORER */
-+#define PRTDCB_TUP2TC				0x001D26C0
- #define GL_PREEXT_L2_PMASK0(_i)			(0x0020F0FC + ((_i) * 4))
- #define GL_PREEXT_L2_PMASK1(_i)			(0x0020F108 + ((_i) * 4))
- #define GLFLXP_RXDID_FLX_WRD_0(_i)		(0x0045c800 + ((_i) * 4))
-@@ -362,6 +362,7 @@
- #define GLV_TEPC(_VSI)				(0x00312000 + ((_VSI) * 4))
- #define GLV_UPRCL(_i)				(0x003B2000 + ((_i) * 8))
- #define GLV_UPTCL(_i)				(0x0030A000 + ((_i) * 8))
-+#define PRTRPB_RDPC				0x000AC260
- #define VSIQF_FD_CNT(_VSI)			(0x00464000 + ((_VSI) * 4))
- #define VSIQF_FD_CNT_FD_GCNT_S			0
- #define VSIQF_FD_CNT_FD_GCNT_M			ICE_M(0x3FFF, 0)
-@@ -378,6 +379,5 @@
- #define PFPM_WUS_FW_RST_WK_M			BIT(31)
- #define VFINT_DYN_CTLN(_i)			(0x00003800 + ((_i) * 4))
- #define VFINT_DYN_CTLN_CLEARPBA_M		BIT(1)
--#define PRTRPB_RDPC				0x000AC260
- 
- #endif /* _ICE_HW_AUTOGEN_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
-index 355f727563e4..44a228530253 100644
---- a/drivers/net/ethernet/intel/ice/ice_sched.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sched.c
-@@ -170,7 +170,7 @@ ice_sched_add_node(struct ice_port_info *pi, u8 layer,
- 		return ICE_ERR_PARAM;
- 	}
- 
--	/* query the current node information from FW  before additing it
-+	/* query the current node information from FW before adding it
- 	 * to the SW DB
- 	 */
- 	status = ice_sched_query_elem(hw, le32_to_cpu(info->node_teid), &elem);
-@@ -578,7 +578,7 @@ ice_alloc_lan_q_ctx(struct ice_hw *hw, u16 vsi_handle, u8 tc, u16 new_numqs)
- /**
-  * ice_aq_rl_profile - performs a rate limiting task
-  * @hw: pointer to the HW struct
-- * @opcode:opcode for add, query, or remove profile(s)
-+ * @opcode: opcode for add, query, or remove profile(s)
-  * @num_profiles: the number of profiles
-  * @buf: pointer to buffer
-  * @buf_size: buffer size in bytes
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index 77de8869e7ca..9d0d6b0025cf 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -631,9 +631,8 @@ ice_alloc_mapped_page(struct ice_ring *rx_ring, struct ice_rx_buf *bi)
- 	dma_addr_t dma;
- 
- 	/* since we are recycling buffers we should seldom need to alloc */
--	if (likely(page)) {
-+	if (likely(page))
- 		return true;
--	}
- 
- 	/* alloc new page for storage */
- 	page = dev_alloc_pages(ice_rx_pg_order(rx_ring));
-@@ -1252,12 +1251,12 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
-  * @itr: ITR value to update
-  *
-  * Calculate how big of an increment should be applied to the ITR value passed
-- * in based on wmem_default, SKB overhead, Ethernet overhead, and the current
-+ * in based on wmem_default, SKB overhead, ethernet overhead, and the current
-  * link speed.
-  *
-  * The following is a calculation derived from:
-  *  wmem_default / (size + overhead) = desired_pkts_per_int
-- *  rate / bits_per_byte / (size + Ethernet overhead) = pkt_rate
-+ *  rate / bits_per_byte / (size + ethernet overhead) = pkt_rate
-  *  (desired_pkt_rate / pkt_rate) * usecs_per_sec = ITR value
-  *
-  * Assuming wmem_default is 212992 and overhead is 640 bytes per
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index 1eb83d9b0546..4cdccfadf274 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -321,7 +321,7 @@ struct ice_nvm_info {
- 	u32 flash_size;			/* Size of available flash in bytes */
- 	u8 major_ver;			/* major version of NVM package */
- 	u8 minor_ver;			/* minor version of dev starter */
--	u8 blank_nvm_mode;        /* is NVM empty (no FW present) */
-+	u8 blank_nvm_mode;		/* is NVM empty (no FW present) */
- };
- 
- struct ice_link_default_override_tlv {
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index cfdd820e9a2a..71497776ac62 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -2974,8 +2974,8 @@ static int ice_vc_cfg_qs_msg(struct ice_vf *vf, u8 *msg)
- 		vsi->max_frame = qpi->rxq.max_pkt_size;
- 	}
- 
--	/* VF can request to configure less than allocated queues
--	 * or default allocated queues. So update the VSI with new number
-+	/* VF can request to configure less than allocated queues or default
-+	 * allocated queues. So update the VSI with new number
- 	 */
- 	vsi->num_txq = num_txq;
- 	vsi->num_rxq = num_rxq;
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 87862918bc7a..20ac5fca68c6 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -298,7 +298,6 @@ static void ice_xsk_remove_umem(struct ice_vsi *vsi, u16 qid)
- 	}
- }
- 
--
- /**
-  * ice_xsk_umem_disable - disable a UMEM region
-  * @vsi: Current VSI
-@@ -594,7 +593,6 @@ int ice_clean_rx_irq_zc(struct ice_ring *rx_ring, int budget)
- 		if (!size)
- 			break;
- 
--
- 		rx_buf = &rx_ring->rx_buf[rx_ring->next_to_clean];
- 		rx_buf->xdp->data_end = rx_buf->xdp->data + size;
- 		xsk_buff_dma_sync_for_cpu(rx_buf->xdp);
--- 
-2.26.2
+    Staging: vc04_services: vchiq_arm: Remove unused function remote_event_destroy
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=107c810c900000
+start commit:   d8b9faec Merge tag 'drm-fixes-2020-07-31' of git://anongit..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=127c810c900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=147c810c900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c0cfcf935bcc94d2
+dashboard link: https://syzkaller.appspot.com/bug?extid=338f014a98367a08a114
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1111ad5c900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16565d5c900000
+
+Reported-by: syzbot+338f014a98367a08a114@syzkaller.appspotmail.com
+Fixes: 43ff7f53de22 ("Staging: vc04_services: vchiq_arm: Remove unused function remote_event_destroy")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
