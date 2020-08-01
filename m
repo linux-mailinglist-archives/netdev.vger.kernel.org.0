@@ -2,63 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40DAD235091
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 07:13:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 671ED235099
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 07:24:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726795AbgHAFN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 01:13:27 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:17710 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725781AbgHAFN0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 01:13:26 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1596258805; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: Date: Subject: In-Reply-To: References: Cc:
- To: From: Sender; bh=T9e/VPqBxWYcAm2kaYv+wudjT7WIZcDPMhOlmtz3PkU=; b=cqoUynVX3ElP80hKc0pC5xOR1kK+2d2uKuZ0mFdLWhuZuUHI7gNk3Zk5rlR7GaidpFQQDf6w
- /7ouU2QEeJG2zmgmGbsOy/tg2rLZIIT4zsZAHiqCn8cV6x2qa11wxqTRDzbdeFed32Cchxzs
- boz+4id1ILIFCeNzi5MYSLJfEuk=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n18.prod.us-west-2.postgun.com with SMTP id
- 5f24f9f40825c301ea5b0326 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 01 Aug 2020 05:13:24
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9A495C433CB; Sat,  1 Aug 2020 05:13:24 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from Pillair (unknown [49.205.240.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: pillair)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 92B24C433C6;
-        Sat,  1 Aug 2020 05:13:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 92B24C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=pillair@codeaurora.org
-From:   "Rakesh Pillai" <pillair@codeaurora.org>
-To:     "'Ben Greear'" <greearb@candelatech.com>,
-        <ath10k@lists.infradead.org>
-Cc:     <linux-wireless@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kvalo@codeaurora.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <netdev@vger.kernel.org>
-References: <1596220042-2778-1-git-send-email-pillair@codeaurora.org> <1596220042-2778-2-git-send-email-pillair@codeaurora.org> <bedc5fe0-1904-d045-4a84-0869ee1b0b2e@candelatech.com>
-In-Reply-To: <bedc5fe0-1904-d045-4a84-0869ee1b0b2e@candelatech.com>
-Subject: RE: [PATCH v2 1/3] ath10k: Add history for tracking certain events
-Date:   Sat, 1 Aug 2020 10:43:16 +0530
-Message-ID: <000901d667c2$7a645380$6f2cfa80$@codeaurora.org>
+        id S1726414AbgHAFYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 01:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725275AbgHAFYV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 01:24:21 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41AC5C06174A;
+        Fri, 31 Jul 2020 22:24:21 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id t6so10216311qvw.1;
+        Fri, 31 Jul 2020 22:24:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=V715tYEk/Zgi1im5m3O0h6sZw8JhvDcKruumX1zWpz8=;
+        b=S3BDnKtw74sHJsZcOpaZos1xD9WB0tLnC8q0s5WG790JlXBy3t9hayccMV988frutz
+         dwF0UWXUHCJiaLs1AUqVIdn95KvOtvF6/2sieKi8dj1c0B3K7crDcKHbv2G6by2eemsQ
+         MM9iacf8cYVPw1TjDVzAI+5hAVTSeToCovWVLZB5pRfaGBBYs/FEhm6cY5B9HMUaGLR5
+         pe77E4KUaLS12m7A9OGV4GpqhCNnV3vxeELaB3hCPP7RrunKBkelw6MTegnO75M2opse
+         n/up6mPdKYwPoivWi1DORh3J3dYy56tAagNH8aDF+GgHGv+pJBexFx1VH/9cv1ee0GRs
+         MmmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=V715tYEk/Zgi1im5m3O0h6sZw8JhvDcKruumX1zWpz8=;
+        b=YZw7xjtrCHZM0hYDY7UZ/8aqzIEj9UyZDO8dUBeUUeuFYJpYyZ7IaTka17c5JuR7RP
+         Tr2fgvsEgCN+rsXWRZ76rGy9EwxGa+fUIBv0udGtWz1IPVus5sFo9fx1ErwbQGluls1M
+         PXhdWOFRbNSFdVRqvtPWcqDBTQbng6ncuDl5ZvbBjm4mbCxMI4UPST8tWJvrAIqroLrh
+         BJy4uJM/gGRc0YiMZHPfBQip+PsNVf/rzkNnRrez3PlUWlqhDtZ8+QnVDwsIakcCMPw4
+         mWOdGNeb/8AqLReVdlv2T06xpZO5Ept5nJpTZpwhdVc3llK9hks38L2B3wPhCuElwBOp
+         4Dvg==
+X-Gm-Message-State: AOAM533gvvUfBkSUr26D5FTriP7oVFA7ipzqHbwO+qmxFLGFEISISwVX
+        BWYrsHxAznYWK7uBxEmBw/QHVFqO
+X-Google-Smtp-Source: ABdhPJzRNLzhXovITxrID0ydZoaxo40Nu8MgY+3V/Cb83y7V0UK2Dsvda3IKOy9AlryoMQRxUVmeCg==
+X-Received: by 2002:ad4:4302:: with SMTP id c2mr7155176qvs.246.1596259459939;
+        Fri, 31 Jul 2020 22:24:19 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id u21sm11183516qkk.1.2020.07.31.22.24.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 31 Jul 2020 22:24:19 -0700 (PDT)
+Subject: Re: [PATCH v2 0/3]
+To:     Rakesh Pillai <pillair@codeaurora.org>, ath10k@lists.infradead.org
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+References: <1596220042-2778-1-git-send-email-pillair@codeaurora.org>
+ <c6c5b3c5-f862-9cee-6863-24f666cc28f5@gmail.com>
+ <000701d667c2$0782fe70$1688fb50$@codeaurora.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <e96d720c-5a60-7535-b615-c186bc14b38f@gmail.com>
+Date:   Fri, 31 Jul 2020 22:24:17 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQG33jQ4R3ZVYFu9l+A0slgX59AuwQGE2nscAdPRV4mpRQJXIA==
-Content-Language: en-us
+In-Reply-To: <000701d667c2$0782fe70$1688fb50$@codeaurora.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -66,184 +73,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-> -----Original Message-----
-> From: Ben Greear <greearb@candelatech.com>
-> Sent: Saturday, August 1, 2020 12:08 AM
-> To: Rakesh Pillai <pillair@codeaurora.org>; ath10k@lists.infradead.org
-> Cc: linux-wireless@vger.kernel.org; linux-kernel@vger.kernel.org;
-> kvalo@codeaurora.org; davem@davemloft.net; kuba@kernel.org;
-> netdev@vger.kernel.org
-> Subject: Re: [PATCH v2 1/3] ath10k: Add history for tracking certain =
-events
->=20
-> On 7/31/20 11:27 AM, Rakesh Pillai wrote:
-> > Add history for tracking the below events
-> > - register read
-> > - register write
-> > - IRQ trigger
-> > - NAPI poll
-> > - CE service
-> > - WMI cmd
-> > - WMI event
-> > - WMI tx completion
-> >
-> > This will help in debugging any crash or any
-> > improper behaviour.
-> >
-> > Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.1-01040-QCAHLSWMTPLZ-1
-> >
-> > Signed-off-by: Rakesh Pillai <pillair@codeaurora.org>
-> > ---
-> >   drivers/net/wireless/ath/ath10k/ce.c      |   1 +
-> >   drivers/net/wireless/ath/ath10k/core.h    |  74 +++++++++++++++++
-> >   drivers/net/wireless/ath/ath10k/debug.c   | 133
-> ++++++++++++++++++++++++++++++
-> >   drivers/net/wireless/ath/ath10k/debug.h   |  74 +++++++++++++++++
-> >   drivers/net/wireless/ath/ath10k/snoc.c    |  15 +++-
-> >   drivers/net/wireless/ath/ath10k/wmi-tlv.c |   1 +
-> >   drivers/net/wireless/ath/ath10k/wmi.c     |  10 +++
-> >   7 files changed, 307 insertions(+), 1 deletion(-)
-> >
->=20
-> > +void ath10k_record_wmi_event(struct ath10k *ar, enum
-> ath10k_wmi_type type,
-> > +			     u32 id, unsigned char *data)
-> > +{
-> > +	struct ath10k_wmi_event_entry *entry;
-> > +	u32 idx;
-> > +
-> > +	if (type =3D=3D ATH10K_WMI_EVENT) {
-> > +		if (!ar->wmi_event_history.record)
-> > +			return;
->=20
-> This check above is duplicated below, add it once at top of the method
-> instead.
+On 7/31/2020 10:10 PM, Rakesh Pillai wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Florian Fainelli <f.fainelli@gmail.com>
+>> Sent: Saturday, August 1, 2020 12:17 AM
+>> To: Rakesh Pillai <pillair@codeaurora.org>; ath10k@lists.infradead.org
+>> Cc: linux-wireless@vger.kernel.org; linux-kernel@vger.kernel.org;
+>> kvalo@codeaurora.org; davem@davemloft.net; kuba@kernel.org;
+>> netdev@vger.kernel.org
+>> Subject: Re: [PATCH v2 0/3]
+>>
+>> On 7/31/20 11:27 AM, Rakesh Pillai wrote:
+>>> The history recording will be compiled only if
+>>> ATH10K_DEBUG is enabled, and also enabled via
+>>> the module parameter. Once the history recording
+>>> is enabled via module parameter, it can be enabled
+>>> or disabled runtime via debugfs.
+>>
+>> Why not use trace prints and retrieving them via the function tracer?
+>> This seems very ad-hoc.
+> 
+> Tracing needs to be enabled to capture the events.
+> But these events can be turned on in some kind of a debug build and capture the history to help us debug in case there is a crash.
+> It wont even allocate memory if not enabled via module parameter.
 
-The same function is used to record WMI events and CMD, which are stored =
-in different memory locations.
-Hence the check  " if (type =3D=3D ATH10K_WMI_EVENT) {" is necessary.
-
-
->=20
-> > +
-> > +		spin_lock_bh(&ar->wmi_event_history.hist_lock);
-> > +		idx =3D ath10k_core_get_next_idx(&ar-
-> >reg_access_history.index,
-> > +					       ar-
-> >wmi_event_history.max_entries);
-> > +		spin_unlock_bh(&ar->wmi_event_history.hist_lock);
-> > +		entry =3D &ar->wmi_event_history.record[idx];
-> > +	} else {
-> > +		if (!ar->wmi_cmd_history.record)
-> > +			return;
-> > +
-> > +		spin_lock_bh(&ar->wmi_cmd_history.hist_lock);
-> > +		idx =3D ath10k_core_get_next_idx(&ar-
-> >reg_access_history.index,
-> > +					       ar-
-> >wmi_cmd_history.max_entries);
-> > +		spin_unlock_bh(&ar->wmi_cmd_history.hist_lock);
-> > +		entry =3D &ar->wmi_cmd_history.record[idx];
-> > +	}
-> > +
-> > +	entry->timestamp =3D ath10k_core_get_timestamp();
-> > +	entry->cpu_id =3D smp_processor_id();
-> > +	entry->type =3D type;
-> > +	entry->id =3D id;
-> > +	memcpy(&entry->data, data + 4, ATH10K_WMI_DATA_LEN);
-> > +}
-> > +EXPORT_SYMBOL(ath10k_record_wmi_event);
->=20
-> > @@ -1660,6 +1668,11 @@ static int ath10k_snoc_probe(struct
-> platform_device *pdev)
-> >   	ar->ce_priv =3D &ar_snoc->ce;
-> >   	msa_size =3D drv_data->msa_size;
-> >
-> > +	ath10k_core_reg_access_history_init(ar,
-> ATH10K_REG_ACCESS_HISTORY_MAX);
-> > +	ath10k_core_wmi_event_history_init(ar,
-> ATH10K_WMI_EVENT_HISTORY_MAX);
-> > +	ath10k_core_wmi_cmd_history_init(ar,
-> ATH10K_WMI_CMD_HISTORY_MAX);
-> > +	ath10k_core_ce_event_history_init(ar,
-> ATH10K_CE_EVENT_HISTORY_MAX);
->=20
-> Maybe only enable this once user turns it on?  It sucks up a bit of =
-memory?
-
-
-This memory will be allocated only if the history is enabled via module =
-param, else the function just returns 0.
-
-
->=20
-> > +
-> >   	ath10k_snoc_quirks_init(ar);
-> >
-> >   	ret =3D ath10k_snoc_resource_init(ar);
-> > diff --git a/drivers/net/wireless/ath/ath10k/wmi-tlv.c
-> b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
-> > index 932266d..9df5748 100644
-> > --- a/drivers/net/wireless/ath/ath10k/wmi-tlv.c
-> > +++ b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
-> > @@ -627,6 +627,7 @@ static void ath10k_wmi_tlv_op_rx(struct ath10k =
-*ar,
-> struct sk_buff *skb)
-> >   	if (skb_pull(skb, sizeof(struct wmi_cmd_hdr)) =3D=3D NULL)
-> >   		goto out;
-> >
-> > +	ath10k_record_wmi_event(ar, ATH10K_WMI_EVENT, id, skb->data);
-> >   	trace_ath10k_wmi_event(ar, id, skb->data, skb->len);
-> >
-> >   	consumed =3D ath10k_tm_event_wmi(ar, id, skb);
-> > diff --git a/drivers/net/wireless/ath/ath10k/wmi.c
-> b/drivers/net/wireless/ath/ath10k/wmi.c
-> > index a81a1ab..8ebd05c 100644
-> > --- a/drivers/net/wireless/ath/ath10k/wmi.c
-> > +++ b/drivers/net/wireless/ath/ath10k/wmi.c
-> > @@ -1802,6 +1802,15 @@ struct sk_buff *ath10k_wmi_alloc_skb(struct
-> ath10k *ar, u32 len)
-> >
-> >   static void ath10k_wmi_htc_tx_complete(struct ath10k *ar, struct =
-sk_buff
-> *skb)
-> >   {
-> > +	struct wmi_cmd_hdr *cmd_hdr;
-> > +	enum wmi_tlv_event_id id;
-> > +
-> > +	cmd_hdr =3D (struct wmi_cmd_hdr *)skb->data;
-> > +	id =3D MS(__le32_to_cpu(cmd_hdr->cmd_id),
-> WMI_CMD_HDR_CMD_ID);
-> > +
-> > +	ath10k_record_wmi_event(ar, ATH10K_WMI_TX_COMPL, id,
-> > +				skb->data + sizeof(struct wmi_cmd_hdr));
-> > +
-> >   	dev_kfree_skb(skb);
-> >   }
->=20
-> I think guard the above new code with if (unlikely(ar-
-> >ce_event_history.record)) { ... }
->=20
-> All in all, I think I'd want to compile this out (while leaving other =
-debug
-> compiled
-> in) since it seems this stuff would be rarely used and it adds method =
-calls to
-> hot
-> paths.
->=20
-> That is a decision for Kalle though, so see what he says...
-
-
-Sure let me add this check.
-
-
->=20
-> Thanks,
-> Ben
->=20
->=20
-> --
-> Ben Greear <greearb@candelatech.com>
-> Candela Technologies Inc  http://www.candelatech.com
-
+I would suggest researching what other drivers do and also considering
+the benefits, for someone doing system analysis of plugging into the
+kernel's general tracing mechanism to have all information in the same
+place and just do filtering on the record/report side.
+-- 
+Florian
