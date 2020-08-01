@@ -2,74 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0A8D235490
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 00:57:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77D972354A6
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 01:50:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727898AbgHAW4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 18:56:11 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:45210 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726477AbgHAW4K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 18:56:10 -0400
-Received: by mail-il1-f200.google.com with SMTP id 65so3240965ilb.12
-        for <netdev@vger.kernel.org>; Sat, 01 Aug 2020 15:56:09 -0700 (PDT)
+        id S1727794AbgHAXqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 19:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725883AbgHAXqK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 19:46:10 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B902C06174A
+        for <netdev@vger.kernel.org>; Sat,  1 Aug 2020 16:46:10 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id t23so12526009ljc.3
+        for <netdev@vger.kernel.org>; Sat, 01 Aug 2020 16:46:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZZMOGkwyk+2uEnUplsOHluFyRACy5ZEHgGFqZFevp/I=;
+        b=ELVOJ1KLBrj+PsJAkUsND/KaMhcdbWYA2ubAmUPGagezmMEKvCPdO+jw3XIidJp5LB
+         nKykDgvzoEo2v/DoR5fNqAvq2ENIMiAm/XEqfdIOzM92UHS6R8y6Fx21LKGDobCVNT9t
+         ofUTocgD7MIBWDf/AFebKW9iYUhjbcX3++8dk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=dOzePy5yJodn3MAztJ8MjMszFxBpzjO8+9+k54Plw7U=;
-        b=Yu38vr7R+xYtQEgMFuLnOEUoFCiRThc70NEcFQVJQ7QUwxmRUS/4k9qJ5VAOi3wB5V
-         006xjwMVoMmxJmgwWBs+2I8DLmZlCSvKyA3E1VEGL3KDcT8lyuesA5WEgu5l0NiDDHps
-         i7hriLsPNL4nlRYpaDQTh4t+zbWZFwbU5jNWdOGegzwK7/ibPa7UtasEFDg831/tdNrg
-         PRmVgk8x6drMRcIrfZVHODqgln4bZID2aVNi3eLef+L5318wDHMBCWXvj90VkFOxu+ll
-         t4ula8JjAjb2h2hM91D/mYuwiDx6gp0Yu51fIflxS9tJjj4/eEsvklkviV71pod16HH9
-         RvYg==
-X-Gm-Message-State: AOAM533Rxx+fVKHN5LA2X3whF2HJJqaypedu6sFtt6pGt/gRslLXyLbG
-        hPKLtTPqjIIwxwCyl2jTKyMUElr8hhkmX6YzF8lW9rWlW6pD
-X-Google-Smtp-Source: ABdhPJzoFyfIZQhNRPiFzD4/WN4vVmjC3jcEN/n2QVLjineSWA8YL2dCDfS0uwVot1kHmJxuiejHJRIs+6Vlg9DaPmCCBtbeQtI1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZZMOGkwyk+2uEnUplsOHluFyRACy5ZEHgGFqZFevp/I=;
+        b=Ds51XOXiG0B6n+La+bB9GRbeDEvDE53Z2uq9Gw+2Z/U2ZvXXbSNT4g6JuzGjaO/pdc
+         WaMJ98BvMv81WT6Hw4wnUzVwsEgYld4zMBgmdqEd5jHjxatPaQamzYzHH+rP7TZAmx7q
+         OnqbfHnK30rLVZkgfGjt4NC5i3ofyOdc7p1aQrZFkWMGt2P2CZxs59Ei/Epg4iTzp4e6
+         3a9Q+oLZpwHzx0YjY/tKK46SJja8mTgBq1/vPoyKY5Lap3w30Aint7dba0uBcGtSxlg6
+         g421huniuFyqbjRcZgY2DTkb8vY46PmEIKb2MufZWjSicpa/caF6zyO5PPL8m+mPXyqe
+         0hRg==
+X-Gm-Message-State: AOAM532TUgUAit3hbOGwmL0lWOrYaseS9tnJpFMove6ZOjHbxfvDFp7q
+        P2Foma1roAjoKL/x7W1+NxH2SEjeV3Y=
+X-Google-Smtp-Source: ABdhPJy39Qwf+HjR88fRMwH1Ob8nT1B5F6/ufKS25gZGK/e9beDfGsgYlXmgXwNsqs3se70MFtPkKg==
+X-Received: by 2002:a05:651c:1024:: with SMTP id w4mr2955787ljm.244.1596325568203;
+        Sat, 01 Aug 2020 16:46:08 -0700 (PDT)
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com. [209.85.208.182])
+        by smtp.gmail.com with ESMTPSA id f24sm3136735ljc.99.2020.08.01.16.46.05
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 01 Aug 2020 16:46:06 -0700 (PDT)
+Received: by mail-lj1-f182.google.com with SMTP id t23so12525961ljc.3
+        for <netdev@vger.kernel.org>; Sat, 01 Aug 2020 16:46:05 -0700 (PDT)
+X-Received: by 2002:a2e:2e04:: with SMTP id u4mr313806lju.102.1596325565372;
+ Sat, 01 Aug 2020 16:46:05 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a92:79c4:: with SMTP id u187mr10446904ilc.194.1596322569603;
- Sat, 01 Aug 2020 15:56:09 -0700 (PDT)
-Date:   Sat, 01 Aug 2020 15:56:09 -0700
-In-Reply-To: <0000000000007450a405abd572a8@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b54f9f05abd8cfbb@google.com>
-Subject: Re: WARNING in hci_conn_timeout
-From:   syzbot <syzbot+2446dd3cb07277388db6@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net,
-        devel@driverdev.osuosl.org, forest@alittletooquiet.net,
-        gregkh@linuxfoundation.org, johan.hedberg@gmail.com,
-        kaber@trash.net, kadlec@blackhole.kfki.hu, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        rvarsha016@gmail.com, syzkaller-bugs@googlegroups.com
+References: <20200801.143631.1794965770015082550.davem@davemloft.net>
+In-Reply-To: <20200801.143631.1794965770015082550.davem@davemloft.net>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sat, 1 Aug 2020 16:45:49 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whiwBCM-a=k8bd4_umR2Od6gf7d8Do3ryGAaFneNRGFng@mail.gmail.com>
+Message-ID: <CAHk-=whiwBCM-a=k8bd4_umR2Od6gf7d8Do3ryGAaFneNRGFng@mail.gmail.com>
+Subject: Re: [GIT] Networking
+To:     David Miller <davem@davemloft.net>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Sat, Aug 1, 2020 at 2:36 PM David Miller <davem@davemloft.net> wrote:
+>
+>   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
 
-commit 3d30311c0e4d834c94e6a27d6242a942d6a76b85
-Author: Varsha Rao <rvarsha016@gmail.com>
-Date:   Sun Oct 9 11:13:56 2016 +0000
+How is this wrt an rc8 or a final?
 
-    staging: vt6655: Removes unnecessary blank lines.
+I have another possible small reason to do an rc8 right now. And this
+roughly doubles my current diff.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17023a14900000
-start commit:   7dc6fd0f Merge branch 'i2c/for-current' of git://git.kerne..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=14823a14900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=10823a14900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e59ee776d5aa8d55
-dashboard link: https://syzkaller.appspot.com/bug?extid=2446dd3cb07277388db6
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13f781d4900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=116a0c14900000
+On a very much related note, I really wish you didn't send the
+networking fixes the day before a release is scheduled.
 
-Reported-by: syzbot+2446dd3cb07277388db6@syzkaller.appspotmail.com
-Fixes: 3d30311c0e4d ("staging: vt6655: Removes unnecessary blank lines.")
+If it's really quiet., send them on (say) Wed/Thu. And then on
+Saturday, send a note saying "no, important stuff", hold on. Or say
+"nothing new".
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Because right now the "last-minute network pull request" has become a
+pattern, and I have a very hard time judging whether I should delay a
+release for it.
+
+                 Linus
