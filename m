@@ -2,375 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE28A2353CB
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 19:33:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 785772353F1
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 20:10:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726534AbgHARcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 13:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44704 "EHLO
+        id S1727037AbgHASJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 14:09:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbgHARcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 13:32:39 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13111C06174A
-        for <netdev@vger.kernel.org>; Sat,  1 Aug 2020 10:32:39 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id f5so373595pgg.10
-        for <netdev@vger.kernel.org>; Sat, 01 Aug 2020 10:32:39 -0700 (PDT)
+        with ESMTP id S1726901AbgHASJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 14:09:43 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024C6C06174A
+        for <netdev@vger.kernel.org>; Sat,  1 Aug 2020 11:09:43 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id x20so16905159plm.15
+        for <netdev@vger.kernel.org>; Sat, 01 Aug 2020 11:09:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RXgiF4EJ+OiNWAXkjSU1K6tSaCx/jSwmV+/cTeAKX+Q=;
-        b=ygZfiLXJtJASSb5m3Zo6YWoR13C4zLuakA2hpnh4t2W2g2za6Vbi/wL97jOqYR5XPB
-         KvWENK/MkVLGuPcjLluI5FYRVMCHfz+m/te+LEpd4zMnskVNA4A7koQsGf8sKuPsUIma
-         UKF09D0PQ2F5HoH5a4EH6IVhDpeDM5nVKJDxffI/oAjf7dJ2J7xdJ4G7NbKrV3QcAGFQ
-         7m9i1fxcWWycQZ20T+I8FNRCaghtzJqq9C46BY7ES58wPdnfPZM72u5lAJKXf7eKORrV
-         KnPFdpf7pyAa9D0I2vru72WHLKjdAE+YxZC0xJQlAc8KEVSP+7b6dadbQ6WkmkfyJ71Q
-         2QxQ==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=KBK3iODiHqCfZW9cfD4X0Y+4sS0bjVew+4Qx1E5a8fw=;
+        b=Npllj9n2Q669VxD0v/McKELqdTmGuLlT0ULCUEsQcW69X2g34NXPXQF05paRHixr6V
+         bX70YTowWkT+yAUkFo4BfbmdtLljszspRuDpyhnjhQeyA08dgLlsUnMdRRGRgMG25ffx
+         JZVTGsrYyVVBdh3x43ReVvKzjkpQyLruiRhnb/BEXLDVa5Larg9NLBza85P3A55nZTOK
+         82MLnM4O9eg4Bx8M5eD0BcOpwfFDYUwBwLMhD+8CxcSvvOQhGOlmuQB0O74DxtZDvfDR
+         klNw64Qm1qxWMS36ufDr9m24xrqnPOgzm66J80vuB/DcGNtj6bWEiyNwNBSPNrOupkGa
+         F5jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RXgiF4EJ+OiNWAXkjSU1K6tSaCx/jSwmV+/cTeAKX+Q=;
-        b=cGpz5CAoPy42ynVJNpOMyggKKSa6ZXAEVBAFKH6W1HfD85s6BW+vV8JfIAADC/caIY
-         34RmtKY8XGgQjnfjHOdczp0fyMJ7CyIiMc7RFs81+9j6TPNJmnLCTttMcgJ3udCHQGb0
-         koD8eHUExwVMllOL6mOCbmBO5m5nXjNkjb+bqsMBwZLZAsIFey/11DZbWS1foevbXmyH
-         jxHS2d5c6CEHqpTHZHUKwgEU2Rt0+PMjriqpSUXiPXUvNW90fo95vKEujtDd63zsuEVD
-         WHVCUQLjSLDRVslrhCg2CGaZ3YHs0gkucIpnwRHfEaj72PlAhUrpOy8Hw02crnTkzK1o
-         5kOg==
-X-Gm-Message-State: AOAM5305HJqBSkVEHBQlB58mgcoIEP/i+kWBjSELm/XwXQ+h6F4Jg+qk
-        RfAXRRQoma3kjfi0YZywysj2zpgL7xOqcg==
-X-Google-Smtp-Source: ABdhPJxdKifUZhnjsw8nmsYO2RKBC3rRraGV2NlBGO4klGjebDWrZCZQAY+nEi7mNT2mUoNz7fwupw==
-X-Received: by 2002:a65:524b:: with SMTP id q11mr5454086pgp.372.1596303157709;
-        Sat, 01 Aug 2020 10:32:37 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id m24sm9897702pff.45.2020.08.01.10.32.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Aug 2020 10:32:36 -0700 (PDT)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [RFC] replace SNAPSHOT with auto-generated version
-Date:   Sat,  1 Aug 2020 10:32:35 -0700
-Message-Id: <20200801173235.22434-1-stephen@networkplumber.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <CAJ3xEMhk+EQ_avGSBDB5_Gnj09w3goUJKkxzt8innWvFkTeEVA@mail.gmail.com>
-References: <CAJ3xEMhk+EQ_avGSBDB5_Gnj09w3goUJKkxzt8innWvFkTeEVA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=KBK3iODiHqCfZW9cfD4X0Y+4sS0bjVew+4Qx1E5a8fw=;
+        b=VpHWxLTlNKy9G0uzlW0W7B5KLO+mdTa0K3saFfFUKIwh8YG25QuoB5DsfgC4A7WUsF
+         hyqLUgv2WeiYOpYx8wcIPSOBems10uzldgbMbRfngdAVY0/b7kUT7MudyTbVXqzhnpsY
+         oO4lma+EJrClHoPLqoCsWQEuH4YF/nS8Xc8MA4JX02+oUjwxtgHVcguVgZVlh0QeHujn
+         5m31JgKsFtxAOYs73meLY71f1nuI03DEcOyvDf51v89SxRdqVzcAE28MBwXrhLhYWwIX
+         z4HWm99S+rr4w7LQsUt9s5CQyzmsf9uh/ij5lCzj03TgQAujHrKfrby64JKHWyE57N4e
+         Ga3w==
+X-Gm-Message-State: AOAM530OVtV0aD/VeHpTONUlJHds0Kn9z7B5dFRhK1NpWV1DxuDD1O5/
+        4cclaUzSGWxMRfeRm6l+Agw8h5kH2qt8
+X-Google-Smtp-Source: ABdhPJy5jsU0pIobtxHllnUwJ+xvJEUWnzrK1fYorGZy0IGRzLNd0pSuOijyJ1eJIcTrqpd/Qfzj1BiHFSGa
+X-Received: by 2002:a63:5821:: with SMTP id m33mr8888598pgb.43.1596305381999;
+ Sat, 01 Aug 2020 11:09:41 -0700 (PDT)
+Date:   Sat,  1 Aug 2020 11:09:27 -0700
+Message-Id: <20200801180927.1003340-1-brianvv@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.163.g6104cc2f0b6-goog
+Subject: [PATCH V2 bpf-next] bpf: make __htab_lookup_and_delete_batch faster
+ when map is almost empty
+From:   Brian Vazquez <brianvv@google.com>
+To:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Luigi Rizzo <lrizzo@google.com>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the iproute2 snapshot with a version string which is
-autogenerated as part of the build process using git describe.
+While running some experiments it was observed that map_lookup_batch was 2x
+slower than get_next_key + lookup when the syscall overhead is minimal.
+This was because the map_lookup_batch implementation was more expensive
+traversing empty buckets, this can be really costly when the pre-allocated
+map is too big.
 
-This will also allow seeing if the version of the command
-is built from the same sources is as upstream.
+This patch optimizes the case when the bucket is empty so we can move
+quickly to next bucket.
 
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+The Benchmark was generated using the google/benchmark library[1]. When
+the benckmark is executed the number of iterations is governed by the
+amount of time the benckmarks takes, the number of iterations is at
+least 1 and not more than 1e9, until CPU time(of the entire binary, not
+just the part to measure), is greater than 0.5s. Time and CPU reported
+are the average of a single iteration over the iteration runs.
+
+The experiments to exercise the empty buckets are as follows:
+
+-The map was populated with a single entry to make sure that the syscall
+overhead is not helping the map_batch_lookup.
+-The size of the preallocated map was increased to show the effect of
+traversing empty buckets.
+
+To interpret the results, Benchmark is the name of the experiment where
+the first number correspond to the number of elements in the map, and
+the next one correspond to the size of the pre-allocated map. Time and
+CPU are average and correspond to the time elapsed per iteration and the
+system time consumtion per iteration.
+
+Results:
+
+  Using get_next_key + lookup:
+
+  Benchmark                Time(ns)        CPU(ns)     Iteration
+  ---------------------------------------------------------------
+  BM_DumpHashMap/1/1k          3593           3586         192680
+  BM_DumpHashMap/1/4k          6004           5972         100000
+  BM_DumpHashMap/1/16k        15755          15710          44341
+  BM_DumpHashMap/1/64k        59525          59376          10000
+
+  Using htab_lookup_batch before this patch:
+  Benchmark                Time(ns)        CPU(ns)     Iterations
+  ---------------------------------------------------------------
+  BM_DumpHashMap/1/1k          3933           3927         177978
+  BM_DumpHashMap/1/4k          9192           9177          73951
+  BM_DumpHashMap/1/16k        42011          41970          16789
+  BM_DumpHashMap/1/64k       117895         117661           6135
+
+  Using htab_lookup_batch with this patch:
+  Benchmark                Time(ns)        CPU(ns)     Iterations
+  ---------------------------------------------------------------
+  BM_DumpHashMap/1/1k          2809           2803         249212
+  BM_DumpHashMap/1/4k          5318           5316         100000
+  BM_DumpHashMap/1/16k        14925          14895          47448
+  BM_DumpHashMap/1/64k        58870          58674          10000
+
+[1] https://github.com/google/benchmark.git
+
+Changelog:
+
+v1 -> v2:
+ - Add more information about how to interpret the results
+
+Suggested-by: Luigi Rizzo <lrizzo@google.com>
+Cc: Yonghong Song <yhs@fb.com>
+Signed-off-by: Brian Vazquez <brianvv@google.com>
 ---
-One additional tweak needed will be to put Version.h in the
-tarball for building outside of git.
+ kernel/bpf/hashtab.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
 
- .gitignore        |  1 +
- Makefile          | 10 +++++-----
- bridge/bridge.c   |  2 +-
- devlink/devlink.c |  4 ++--
- genl/genl.c       |  4 ++--
- ip/ip.c           |  4 ++--
- ip/rtmon.c        |  4 ++--
- misc/ifstat.c     |  4 ++--
- misc/nstat.c      |  4 ++--
- misc/rtacct.c     |  4 ++--
- misc/ss.c         |  4 ++--
- rdma/rdma.c       |  6 +++---
- tc/tc.c           |  4 ++--
- 13 files changed, 28 insertions(+), 27 deletions(-)
-
-diff --git a/.gitignore b/.gitignore
-index e5234a3dc948..8c553394453a 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -2,6 +2,7 @@
- Config
- static-syms.h
- config.*
-+include/Version.h
- *.o
- *.a
- *.so
-diff --git a/Makefile b/Makefile
-index 25d05fac952a..61056cf6d7b2 100644
---- a/Makefile
-+++ b/Makefile
-@@ -60,7 +60,7 @@ SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma man
- LIBNETLINK=../lib/libutil.a ../lib/libnetlink.a
- LDLIBS += $(LIBNETLINK)
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 024276787055..b6d28bd6345b 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -1349,7 +1349,6 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 	struct hlist_nulls_head *head;
+ 	struct hlist_nulls_node *n;
+ 	unsigned long flags = 0;
+-	bool locked = false;
+ 	struct htab_elem *l;
+ 	struct bucket *b;
+ 	int ret = 0;
+@@ -1408,19 +1407,19 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 	dst_val = values;
+ 	b = &htab->buckets[batch];
+ 	head = &b->head;
+-	/* do not grab the lock unless need it (bucket_cnt > 0). */
+-	if (locked)
+-		flags = htab_lock_bucket(htab, b);
  
--all: config.mk
-+all: config.mk include/Version.h
- 	@set -e; \
- 	for i in $(SUBDIRS); \
- 	do echo; echo $$i; $(MAKE) $(MFLAGS) -C $$i; done
-@@ -93,9 +93,9 @@ install: all
- 	install -m 0644 bash-completion/devlink $(DESTDIR)$(BASH_COMPDIR)
- 	install -m 0644 include/bpf_elf.h $(DESTDIR)$(HDRDIR)
++	l = hlist_nulls_entry_safe(rcu_dereference_raw(hlist_nulls_first_rcu(head)),
++					struct htab_elem, hash_node);
++	if (!l && (batch + 1 < htab->n_buckets)) {
++		batch++;
++		goto again_nocopy;
++	}
++
++	flags = htab_lock_bucket(htab, b);
+ 	bucket_cnt = 0;
+ 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
+ 		bucket_cnt++;
  
--snapshot:
--	echo "static const char SNAPSHOT[] = \""`date +%y%m%d`"\";" \
--		> include/SNAPSHOT.h
-+include/Version.h:
-+	echo "static const char Version[] = \""`git describe --tags --long`"\";" \
-+		> include/Version.h
+-	if (bucket_cnt && !locked) {
+-		locked = true;
+-		goto again_nocopy;
+-	}
+-
+ 	if (bucket_cnt > (max_count - total)) {
+ 		if (total == 0)
+ 			ret = -ENOSPC;
+@@ -1446,10 +1445,6 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 		goto alloc;
+ 	}
  
- clean:
- 	@for i in $(SUBDIRS) testsuite; \
-@@ -104,7 +104,7 @@ clean:
- clobber:
- 	touch config.mk
- 	$(MAKE) $(MFLAGS) clean
--	rm -f config.mk cscope.*
-+	rm -f config.mk cscope.* include/Version.h
+-	/* Next block is only safe to run if you have grabbed the lock */
+-	if (!locked)
+-		goto next_batch;
+-
+ 	hlist_nulls_for_each_entry_safe(l, n, head, hash_node) {
+ 		memcpy(dst_key, l->key, key_size);
  
- distclean: clobber
+@@ -1492,7 +1487,6 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 	}
  
-diff --git a/bridge/bridge.c b/bridge/bridge.c
-index a50d9d59b4c5..db2984ad7d88 100644
---- a/bridge/bridge.c
-+++ b/bridge/bridge.c
-@@ -12,7 +12,7 @@
- #include <string.h>
- #include <errno.h>
+ 	htab_unlock_bucket(htab, b, flags);
+-	locked = false;
  
--#include "SNAPSHOT.h"
-+#include "Version.h"
- #include "utils.h"
- #include "br_common.h"
- #include "namespace.h"
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 7f83fb746fd6..b558137caa0e 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -34,7 +34,7 @@
- #include <sys/socket.h>
- #include <sys/types.h>
+ 	while (node_to_free) {
+ 		l = node_to_free;
+@@ -1500,7 +1494,6 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 		bpf_lru_push_free(&htab->lru, &l->lru_node);
+ 	}
  
--#include "SNAPSHOT.h"
-+#include "Version.h"
- #include "list.h"
- #include "mnlg.h"
- #include "json_print.h"
-@@ -7606,7 +7606,7 @@ int main(int argc, char **argv)
- 
- 		switch (opt) {
- 		case 'V':
--			printf("devlink utility, iproute2-ss%s\n", SNAPSHOT);
-+			printf("devlink utility, iproute2-%s\n", Version);
- 			ret = EXIT_SUCCESS;
- 			goto dl_free;
- 		case 'f':
-diff --git a/genl/genl.c b/genl/genl.c
-index aba3c13afd34..cf30c7af20f6 100644
---- a/genl/genl.c
-+++ b/genl/genl.c
-@@ -22,7 +22,7 @@
- #include <errno.h>
- #include <linux/netlink.h>
- #include <linux/rtnetlink.h> /* until we put our own header */
--#include "SNAPSHOT.h"
-+#include "Version.h"
- #include "utils.h"
- #include "genl_utils.h"
- 
-@@ -118,7 +118,7 @@ int main(int argc, char **argv)
- 		} else if (matches(argv[1], "-raw") == 0) {
- 			++show_raw;
- 		} else if (matches(argv[1], "-Version") == 0) {
--			printf("genl utility, iproute2-ss%s\n", SNAPSHOT);
-+			printf("genl utility, iproute2-%s\n", Version);
- 			exit(0);
- 		} else if (matches(argv[1], "-help") == 0) {
- 			usage();
-diff --git a/ip/ip.c b/ip/ip.c
-index 4249df0377f9..ac7caa1b0171 100644
---- a/ip/ip.c
-+++ b/ip/ip.c
-@@ -18,7 +18,7 @@
- #include <string.h>
- #include <errno.h>
- 
--#include "SNAPSHOT.h"
-+#include "Version.h"
- #include "utils.h"
- #include "ip_common.h"
- #include "namespace.h"
-@@ -255,7 +255,7 @@ int main(int argc, char **argv)
- 			++timestamp;
- 			++timestamp_short;
- 		} else if (matches(opt, "-Version") == 0) {
--			printf("ip utility, iproute2-ss%s\n", SNAPSHOT);
-+			printf("ip utility, iproute2-%s\n", Version);
- 			exit(0);
- 		} else if (matches(opt, "-force") == 0) {
- 			++force;
-diff --git a/ip/rtmon.c b/ip/rtmon.c
-index bccddedddd17..d42bbd30c0fb 100644
---- a/ip/rtmon.c
-+++ b/ip/rtmon.c
-@@ -19,7 +19,7 @@
- #include <netinet/in.h>
- #include <string.h>
- 
--#include "SNAPSHOT.h"
-+#include "Version.h"
- 
- #include "utils.h"
- #include "libnetlink.h"
-@@ -107,7 +107,7 @@ main(int argc, char **argv)
- 		} else if (strcmp(argv[1], "-0") == 0) {
- 			family = AF_PACKET;
- 		} else if (matches(argv[1], "-Version") == 0) {
--			printf("rtmon utility, iproute2-ss%s\n", SNAPSHOT);
-+			printf("rtmon utility, iproute2-%s\n", Version);
- 			exit(0);
- 		} else if (matches(argv[1], "file") == 0) {
- 			argc--;
-diff --git a/misc/ifstat.c b/misc/ifstat.c
-index 03327af83ae8..abbd10cb9866 100644
---- a/misc/ifstat.c
-+++ b/misc/ifstat.c
-@@ -33,7 +33,7 @@
- 
- #include "libnetlink.h"
- #include "json_writer.h"
--#include "SNAPSHOT.h"
-+#include "Version.h"
- #include "utils.h"
- 
- int dump_zeros;
-@@ -869,7 +869,7 @@ int main(int argc, char *argv[])
- 			break;
- 		case 'v':
- 		case 'V':
--			printf("ifstat utility, iproute2-ss%s\n", SNAPSHOT);
-+			printf("ifstat utility, iproute2-%s\n", Version);
- 			exit(0);
- 		case 'h':
- 		case '?':
-diff --git a/misc/nstat.c b/misc/nstat.c
-index 88f52eaf8c8c..189a2d74602e 100644
---- a/misc/nstat.c
-+++ b/misc/nstat.c
-@@ -29,7 +29,7 @@
- #include <getopt.h>
- 
- #include <json_writer.h>
--#include <SNAPSHOT.h>
-+#include "Version.h"
- #include "utils.h"
- 
- int dump_zeros;
-@@ -621,7 +621,7 @@ int main(int argc, char *argv[])
- 			break;
- 		case 'v':
- 		case 'V':
--			printf("nstat utility, iproute2-ss%s\n", SNAPSHOT);
-+			printf("nstat utility, iproute2-%s\n", Version);
- 			exit(0);
- 		case 'h':
- 		case '?':
-diff --git a/misc/rtacct.c b/misc/rtacct.c
-index c4bb5bc3888c..ec475b9b5bd7 100644
---- a/misc/rtacct.c
-+++ b/misc/rtacct.c
-@@ -30,7 +30,7 @@
- 
- #include "rt_names.h"
- 
--#include <SNAPSHOT.h>
-+#include "Version.h"
- 
- int reset_history;
- int ignore_history;
-@@ -463,7 +463,7 @@ int main(int argc, char *argv[])
- 			break;
- 		case 'v':
- 		case 'V':
--			printf("rtacct utility, iproute2-ss%s\n", SNAPSHOT);
-+			printf("rtacct utility, iproute2-%s\n", Version);
- 			exit(0);
- 		case 'M':
- 			/* Some secret undocumented option, nobody
-diff --git a/misc/ss.c b/misc/ss.c
-index 5aa10e4a715f..08521672a154 100644
---- a/misc/ss.c
-+++ b/misc/ss.c
-@@ -35,7 +35,7 @@
- #include "ll_map.h"
- #include "libnetlink.h"
- #include "namespace.h"
--#include "SNAPSHOT.h"
-+#include "Version.h"
- #include "rt_names.h"
- #include "cg_map.h"
- 
-@@ -5411,7 +5411,7 @@ int main(int argc, char *argv[])
- 			break;
- 		case 'v':
- 		case 'V':
--			printf("ss utility, iproute2-ss%s\n", SNAPSHOT);
-+			printf("ss utility, iproute2-%s\n", Version);
- 			exit(0);
- 		case 'z':
- 			show_sock_ctx++;
-diff --git a/rdma/rdma.c b/rdma/rdma.c
-index 22050555735d..0e7251fe26ef 100644
---- a/rdma/rdma.c
-+++ b/rdma/rdma.c
-@@ -5,7 +5,7 @@
-  */
- 
- #include "rdma.h"
--#include "SNAPSHOT.h"
-+#include "Version.h"
- #include "color.h"
- 
- static void help(char *name)
-@@ -131,8 +131,8 @@ int main(int argc, char **argv)
- 				  long_options, NULL)) >= 0) {
- 		switch (opt) {
- 		case 'V':
--			printf("%s utility, iproute2-ss%s\n",
--			       filename, SNAPSHOT);
-+			printf("%s utility, iproute2-%s\n",
-+			       filename, Version);
- 			return EXIT_SUCCESS;
- 		case 'p':
- 			pretty = 1;
-diff --git a/tc/tc.c b/tc/tc.c
-index b72657ec2e60..31c9030d1ed1 100644
---- a/tc/tc.c
-+++ b/tc/tc.c
-@@ -24,7 +24,7 @@
- #include <string.h>
- #include <errno.h>
- 
--#include "SNAPSHOT.h"
-+#include "Version.h"
- #include "utils.h"
- #include "tc_util.h"
- #include "tc_common.h"
-@@ -299,7 +299,7 @@ int main(int argc, char **argv)
- 		} else if (matches(argv[1], "-graph") == 0) {
- 			show_graph = 1;
- 		} else if (matches(argv[1], "-Version") == 0) {
--			printf("tc utility, iproute2-ss%s\n", SNAPSHOT);
-+			printf("tc utility, iproute2-%s\n", Version);
- 			return 0;
- 		} else if (matches(argv[1], "-iec") == 0) {
- 			++use_iec;
+-next_batch:
+ 	/* If we are not copying data, we can go to next bucket and avoid
+ 	 * unlocking the rcu.
+ 	 */
 -- 
-2.27.0
+2.28.0.163.g6104cc2f0b6-goog
 
