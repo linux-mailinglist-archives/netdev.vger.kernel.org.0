@@ -2,140 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F5122350DF
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 09:08:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D2E72350FD
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 09:19:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728103AbgHAHIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 03:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725275AbgHAHIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 03:08:00 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62153C06174A
-        for <netdev@vger.kernel.org>; Sat,  1 Aug 2020 00:08:00 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id h12so5793325pgf.7
-        for <netdev@vger.kernel.org>; Sat, 01 Aug 2020 00:08:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Cn2UI312fiYX6zSoChqgK+mTON6P1wJq2sFmk4xDT5Q=;
-        b=HbU2M5ZyeKSlmx+avK9x6U6wZs2pCzFAQYMHAvYSOWoFKcbigXBzqmcqLNjXIBMvWj
-         9DeGLR6OEk3OZXoprp3qs+PIbFvoRYNyosAr5a9H2XAA4kZWMtcFRSRQXd36XKHjZdNW
-         HfueFSwkIlS+Onr2+FmfQZIrv171vfyMOuVWrdmOUhmSgSQ5OSJO/69O8jeokdwxu955
-         Gjn1YrON1GobtBeChjR8h9hprgJiegudNGUumzvoLE/mHMXJ4li2ut5EB5C/UIyuHKWV
-         4Q1r06ln4q/nqtdA0XDWoKdaI4Zlvg7GiBseZjnnEuU9B3jRnmACh72IHmBUabp6DvBT
-         AQ3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Cn2UI312fiYX6zSoChqgK+mTON6P1wJq2sFmk4xDT5Q=;
-        b=UU+oawKcj5FQ+Kvu94TprwmedQ3CwcU2M633Gd4kKINGJiNnreaIaX4+QeQBkvcfey
-         Fk1p5fBJ2Eeq3QPui3jdvr9Cgod0o3inXFFZUg471IvgYytnq5nx8Pq71SqXNwCEScep
-         /t7PUwfdyd6KiS175XglbPlQqdZh2PiAU/vHhcdbbdB06xnk/kTbDTiswSztpj/0tr0o
-         BFkx9sheTKp6n/0RhjyxKrXiSidto7djkdKTLJ4xYdX6MESw0dJOoiEK3wRcBz7d3Fq6
-         VzO7YAoruDLqL84Lngw71mg0xSxrYjPGPxg9B6hQuOgjejE+ejcLgYr7bUSkEkOyi5ct
-         WTpQ==
-X-Gm-Message-State: AOAM5306naS2rsWFOAYZIY7KH3J4kiB/eQhHYz7amafZ+u1OOX50n6VM
-        jiKTZdA9WxTtddZuJwBh0qA=
-X-Google-Smtp-Source: ABdhPJy7IGamvHHpjHTFmYvvC4wS3/SxwSqG/RwRLW3aCWt5PjXzKJwVVJxAIwU6gZeNN9kRktDKjQ==
-X-Received: by 2002:a63:df03:: with SMTP id u3mr6602567pgg.84.1596265679737;
-        Sat, 01 Aug 2020 00:07:59 -0700 (PDT)
-Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id mj6sm11171926pjb.15.2020.08.01.00.07.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Aug 2020 00:07:58 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     roopa@cumulusnetworks.com, ap420073@gmail.com
-Subject: [PATCH net] vxlan: fix memleak of fdb
-Date:   Sat,  1 Aug 2020 07:07:50 +0000
-Message-Id: <20200801070750.7993-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728255AbgHAHTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 03:19:11 -0400
+Received: from mga01.intel.com ([192.55.52.88]:34362 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725283AbgHAHTK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 1 Aug 2020 03:19:10 -0400
+IronPort-SDR: +O18yqpXbWZzWCm2FJzuQIq89nn/fnwHoyF2axbVULWQGjxKHD/XKherUFwEd98SlbASju2EhK
+ RpJVfMCDn28A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9699"; a="170018819"
+X-IronPort-AV: E=Sophos;i="5.75,420,1589266800"; 
+   d="scan'208";a="170018819"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2020 00:19:10 -0700
+IronPort-SDR: Zo2derKvn82YH/lYinaB54acmt0x8hQMNm+RRz6vaZU7cPCumIWnSQDDlulX+EYZF52CDRVhYu
+ lxgICzo2g4NA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,420,1589266800"; 
+   d="scan'208";a="491786526"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga005.fm.intel.com with ESMTP; 01 Aug 2020 00:19:08 -0700
+Date:   Sat, 1 Aug 2020 09:13:57 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     ast@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com
+Subject: Re: [PATCH v6 bpf-next 0/6] bpf: tailcalls in BPF subprograms
+Message-ID: <20200801071357.GA19421@ranger.igk.intel.com>
+References: <20200731000324.2253-1-maciej.fijalkowski@intel.com>
+ <fbe6e5ca-65ba-7698-3b8d-1214b5881e88@iogearbox.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fbe6e5ca-65ba-7698-3b8d-1214b5881e88@iogearbox.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When vxlan interface is deleted, all fdbs are deleted by vxlan_flush().
-vxlan_flush() flushes fdbs but it doesn't delete fdb, which contains
-all-zeros-mac because it is deleted by vxlan_uninit().
-But vxlan_uninit() deletes only the fdb, which contains both all-zeros-mac
-and default vni.
-So, the fdb, which contains both all-zeros-mac and non-default vni
-will not be deleted.
+On Sat, Aug 01, 2020 at 03:03:19AM +0200, Daniel Borkmann wrote:
+> On 7/31/20 2:03 AM, Maciej Fijalkowski wrote:
+> > v5->v6:
+> > - propagate only those poke descriptors that individual subprogram is
+> >    actually using (Daniel)
+> > - drop the cumbersome check if poke desc got filled in map_poke_run()
+> > - move poke->ip renaming in bpf_jit_add_poke_descriptor() from patch 4
+> >    to patch 3 to provide bisectability (Daniel)
+> 
+> I did a basic test with Cilium on K8s with this set, spawning a few Pods
+> and checking connectivity & whether we're not crashing since it has bit more
+> elaborate tail call use. So far so good. I was inclined to push the series
+> out, but there is one more issue I noticed and didn't notice earlier when
+> reviewing, and that is overall stack size:
+> 
+> What happens when you create a single program that has nested BPF to BPF
+> calls e.g. either up to the maximum nesting or one call that is using up
+> the max stack size which is then doing another BPF to BPF call that contains
+> the tail call. In the tail call map, you have the same program in there.
+> This means we create a worst case stack from BPF size of max_stack_size *
+> max_tail_call_size, that is, 512*32. So that adds 16k worst case. For x86
+> we have a stack of arch/x86/include/asm/page_64_types.h:
+> 
+>   #define THREAD_SIZE_ORDER       (2 + KASAN_STACK_ORDER)
+>  #define THREAD_SIZE  (PAGE_SIZE << THREAD_SIZE_ORDER)
+> 
+> So we end up with 16k in a typical case. And this will cause kernel stack
+> overflow; I'm at least not seeing where we handle this situation in the
+> set. Hm, need to think more, but maybe this needs tracking of max stack
+> across tail calls to force an upper limit..
 
-Test commands:
-    ip link add vxlan0 type vxlan dstport 4789 external
-    ip link set vxlan0 up
-    bridge fdb add to 00:00:00:00:00:00 dst 172.0.0.1 dev vxlan0 via lo \
-	    src_vni 10000 self permanent
-    ip link del vxlan0
+My knee jerk reaction would be to decrement the allowed max tail calls,
+but not sure if it's an option and if it would help.
 
-kmemleak reports as follows:
-unreferenced object 0xffff9486b25ced88 (size 96):
-  comm "bridge", pid 2151, jiffies 4294701712 (age 35506.901s)
-  hex dump (first 32 bytes):
-    02 00 00 00 ac 00 00 01 40 00 09 b1 86 94 ff ff  ........@.......
-    46 02 00 00 00 00 00 00 a7 03 00 00 12 b5 6a 6b  F.............jk
-  backtrace:
-    [<00000000c10cf651>] vxlan_fdb_append.part.51+0x3c/0xf0 [vxlan]
-    [<000000006b31a8d9>] vxlan_fdb_create+0x184/0x1a0 [vxlan]
-    [<0000000049399045>] vxlan_fdb_update+0x12f/0x220 [vxlan]
-    [<0000000090b1ef00>] vxlan_fdb_add+0x12a/0x1b0 [vxlan]
-    [<0000000056633c2c>] rtnl_fdb_add+0x187/0x270
-    [<00000000dd5dfb6b>] rtnetlink_rcv_msg+0x264/0x490
-    [<00000000fc44dd54>] netlink_rcv_skb+0x4a/0x110
-    [<00000000dff433e7>] netlink_unicast+0x18e/0x250
-    [<00000000b87fb421>] netlink_sendmsg+0x2e9/0x400
-    [<000000002ed55153>] ____sys_sendmsg+0x237/0x260
-    [<00000000faa51c66>] ___sys_sendmsg+0x88/0xd0
-    [<000000006c3982f1>] __sys_sendmsg+0x4e/0x80
-    [<00000000a8f875d2>] do_syscall_64+0x56/0xe0
-    [<000000003610eefa>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-unreferenced object 0xffff9486b1c40080 (size 128):
-  comm "bridge", pid 2157, jiffies 4294701754 (age 35506.866s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 f8 dc 42 b2 86 94 ff ff  ..........B.....
-    6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
-  backtrace:
-    [<00000000a2981b60>] vxlan_fdb_create+0x67/0x1a0 [vxlan]
-    [<0000000049399045>] vxlan_fdb_update+0x12f/0x220 [vxlan]
-    [<0000000090b1ef00>] vxlan_fdb_add+0x12a/0x1b0 [vxlan]
-    [<0000000056633c2c>] rtnl_fdb_add+0x187/0x270
-    [<00000000dd5dfb6b>] rtnetlink_rcv_msg+0x264/0x490
-    [<00000000fc44dd54>] netlink_rcv_skb+0x4a/0x110
-    [<00000000dff433e7>] netlink_unicast+0x18e/0x250
-    [<00000000b87fb421>] netlink_sendmsg+0x2e9/0x400
-    [<000000002ed55153>] ____sys_sendmsg+0x237/0x260
-    [<00000000faa51c66>] ___sys_sendmsg+0x88/0xd0
-    [<000000006c3982f1>] __sys_sendmsg+0x4e/0x80
-    [<00000000a8f875d2>] do_syscall_64+0x56/0xe0
-    [<000000003610eefa>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Otherwise I'm not sure how to pass around the stack size just like we're
+doing it in this set with tail call counter that sits in %rax.
 
-Fixes: 3ad7a4b141eb ("vxlan: support fdb and learning in COLLECT_METADATA mode")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
- drivers/net/vxlan.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 5efe1e28f270..a7c3939264b0 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -3076,8 +3076,10 @@ static void vxlan_flush(struct vxlan_dev *vxlan, bool do_all)
- 			if (!do_all && (f->state & (NUD_PERMANENT | NUD_NOARP)))
- 				continue;
- 			/* the all_zeros_mac entry is deleted at vxlan_uninit */
--			if (!is_zero_ether_addr(f->eth_addr))
--				vxlan_fdb_destroy(vxlan, f, true, true);
-+			if (is_zero_ether_addr(f->eth_addr) &&
-+			    f->vni == vxlan->cfg.vni)
-+				continue;
-+			vxlan_fdb_destroy(vxlan, f, true, true);
- 		}
- 		spin_unlock_bh(&vxlan->hash_lock[h]);
- 	}
--- 
-2.17.1
-
+> 
+> Thanks,
+> Daniel
