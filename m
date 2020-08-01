@@ -2,344 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A6992353B8
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 19:07:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D8AD2353B9
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 19:09:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727877AbgHARGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 13:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40788 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726534AbgHARGt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 13:06:49 -0400
-Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC160C06174A;
-        Sat,  1 Aug 2020 10:06:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
-         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
-        :To:From:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=J21v//+D+WQBwLQxUxtty0MU2gMtN/xicNX0QEA/m18=; b=r/OmJhldn9r6xmhb4m6M4HkrvL
-        4WJzU4a6MjWHJT6K6TwWNuo1vwtXdX6FAhPoYw34bvbbYvJMapnqqsFwxsFDp/9rHnXoy+KB6+l/4
-        wbOXWYOZz3Ri7sGhEj6KR5xd2JifI8lrDum0qus+ZIfvVErO7RAUk9JRNFB1FmPj61ef6tWneByp9
-        Us8bZ9Aph8VPlA4y4rTpfFA6lIIzGtRTC89b7S2mFsZS2oYnmhlT8pDuClRYZWtXO5P3bvQ7U1V8c
-        5mw/WuRJCG/iUMrH1VEY9LRs59qVa1BJ7CW57jSYimEeIRODDh5kKHtdxlNP4xzIjIT7yayMUKCeb
-        UGULvvIw==;
-Received: from noodles by the.earth.li with local (Exim 4.92)
-        (envelope-from <noodles@earth.li>)
-        id 1k1uy6-0006pp-3D; Sat, 01 Aug 2020 18:06:46 +0100
-Date:   Sat, 1 Aug 2020 18:06:46 +0100
-From:   Jonathan McDowell <noodles@earth.li>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Matthew Hagan <mnhagan88@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 2/2] net: dsa: qca8k: Add 802.1q VLAN support
-Message-ID: <ec320e8e5a9691b85ee79f6ef03f1b0b6a562655.1596301468.git.noodles@earth.li>
-References: <20200721171624.GK23489@earth.li>
+        id S1727032AbgHARJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 13:09:45 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:4090 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726494AbgHARJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 13:09:45 -0400
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f25a1ca0000>; Sat, 01 Aug 2020 10:09:31 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Sat, 01 Aug 2020 10:09:44 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Sat, 01 Aug 2020 10:09:44 -0700
+Received: from [10.2.53.233] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sat, 1 Aug
+ 2020 17:09:42 +0000
+Subject: Re: [PATCH net] vxlan: fix memleak of fdb
+To:     Taehee Yoo <ap420073@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     <roopa@cumulusnetworks.com>
+References: <20200801070750.7993-1-ap420073@gmail.com>
+From:   Roopa Prabhu <roopa@nvidia.com>
+Message-ID: <2df4a274-c14e-d9fa-3053-a543feb07a4c@nvidia.com>
+Date:   Sat, 1 Aug 2020 10:09:42 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200721171624.GK23489@earth.li>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200801070750.7993-1-ap420073@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1596301771; bh=s65qmHy45z9kHoyz0lJWLFo8V5sTOvTeOWnkzTdgoro=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:Content-Type:
+         Content-Transfer-Encoding:Content-Language:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=KVIvuDdXdrmabTH4F3+rdEzVgXmrfeWgJVW9R6ryCmIpR7TQ4F7Hdd2v2kzgRfWjv
+         6I/VkYON04PBe3JfpZeMtyS0NhT6N37BmTbmyE1Pjk2Hd73zo/yQyks4QoXeKPAJYL
+         w+tmT1devo9U2kbouXaqhJwxuN5rc8sG/x/bb8ukH3RqPl/bpY27rjCUQpwODfT7rz
+         MdMaPWfZUyR8AsoD76WUUh0vW12T+k8gBvPdQo0NcrIHc4w1ltgwfR9bw2DRtxmUy6
+         KmVtWOvGw3QrBo5z8mmHO1rVG+86AX3Ng3w9Hd14WOt1WjhJoD0BcDz27Irk0x/NW9
+         SxzjqhS6Z36aQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds full 802.1q VLAN support to the qca8k, allowing the use of
-vlan_filtering and more complicated bridging setups than allowed by
-basic port VLAN support.
 
-Tested with a number of untagged ports with separate VLANs and then a
-trunk port with all the VLANs tagged on it.
+On 8/1/20 12:07 AM, Taehee Yoo wrote:
+> External email: Use caution opening links or attachments
+>
+>
+> When vxlan interface is deleted, all fdbs are deleted by vxlan_flush().
+> vxlan_flush() flushes fdbs but it doesn't delete fdb, which contains
+> all-zeros-mac because it is deleted by vxlan_uninit().
+> But vxlan_uninit() deletes only the fdb, which contains both all-zeros-mac
+> and default vni.
+> So, the fdb, which contains both all-zeros-mac and non-default vni
+> will not be deleted.
+>
+> Test commands:
+>      ip link add vxlan0 type vxlan dstport 4789 external
+>      ip link set vxlan0 up
+>      bridge fdb add to 00:00:00:00:00:00 dst 172.0.0.1 dev vxlan0 via lo \
+>              src_vni 10000 self permanent
+>      ip link del vxlan0
+>
+> kmemleak reports as follows:
+> unreferenced object 0xffff9486b25ced88 (size 96):
+>    comm "bridge", pid 2151, jiffies 4294701712 (age 35506.901s)
+>    hex dump (first 32 bytes):
+>      02 00 00 00 ac 00 00 01 40 00 09 b1 86 94 ff ff  ........@.......
+>      46 02 00 00 00 00 00 00 a7 03 00 00 12 b5 6a 6b  F.............jk
+>    backtrace:
+>      [<00000000c10cf651>] vxlan_fdb_append.part.51+0x3c/0xf0 [vxlan]
+>      [<000000006b31a8d9>] vxlan_fdb_create+0x184/0x1a0 [vxlan]
+>      [<0000000049399045>] vxlan_fdb_update+0x12f/0x220 [vxlan]
+>      [<0000000090b1ef00>] vxlan_fdb_add+0x12a/0x1b0 [vxlan]
+>      [<0000000056633c2c>] rtnl_fdb_add+0x187/0x270
+>      [<00000000dd5dfb6b>] rtnetlink_rcv_msg+0x264/0x490
+>      [<00000000fc44dd54>] netlink_rcv_skb+0x4a/0x110
+>      [<00000000dff433e7>] netlink_unicast+0x18e/0x250
+>      [<00000000b87fb421>] netlink_sendmsg+0x2e9/0x400
+>      [<000000002ed55153>] ____sys_sendmsg+0x237/0x260
+>      [<00000000faa51c66>] ___sys_sendmsg+0x88/0xd0
+>      [<000000006c3982f1>] __sys_sendmsg+0x4e/0x80
+>      [<00000000a8f875d2>] do_syscall_64+0x56/0xe0
+>      [<000000003610eefa>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> unreferenced object 0xffff9486b1c40080 (size 128):
+>    comm "bridge", pid 2157, jiffies 4294701754 (age 35506.866s)
+>    hex dump (first 32 bytes):
+>      00 00 00 00 00 00 00 00 f8 dc 42 b2 86 94 ff ff  ..........B.....
+>      6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+>    backtrace:
+>      [<00000000a2981b60>] vxlan_fdb_create+0x67/0x1a0 [vxlan]
+>      [<0000000049399045>] vxlan_fdb_update+0x12f/0x220 [vxlan]
+>      [<0000000090b1ef00>] vxlan_fdb_add+0x12a/0x1b0 [vxlan]
+>      [<0000000056633c2c>] rtnl_fdb_add+0x187/0x270
+>      [<00000000dd5dfb6b>] rtnetlink_rcv_msg+0x264/0x490
+>      [<00000000fc44dd54>] netlink_rcv_skb+0x4a/0x110
+>      [<00000000dff433e7>] netlink_unicast+0x18e/0x250
+>      [<00000000b87fb421>] netlink_sendmsg+0x2e9/0x400
+>      [<000000002ed55153>] ____sys_sendmsg+0x237/0x260
+>      [<00000000faa51c66>] ___sys_sendmsg+0x88/0xd0
+>      [<000000006c3982f1>] __sys_sendmsg+0x4e/0x80
+>      [<00000000a8f875d2>] do_syscall_64+0x56/0xe0
+>      [<000000003610eefa>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>
+> Fixes: 3ad7a4b141eb ("vxlan: support fdb and learning in COLLECT_METADATA mode")
+> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> ---
 
-v3:
-- Pull QCA8K_PORT_VID_DEF changes into separate cleanup patch
-- Reverse Christmas tree notation for variable definitions
-- Use untagged instead of tagged for consistency
-v2:
-- Return sensible errnos on failure rather than -1 (rmk)
-- Style cleanups based on Florian's feedback
-- Silently allow VLAN 0 as device correctly treats this as no tag
+Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
 
-Signed-off-by: Jonathan McDowell <noodles@earth.li>
----
- drivers/net/dsa/qca8k.c | 181 ++++++++++++++++++++++++++++++++++++++++
- drivers/net/dsa/qca8k.h |  27 ++++++
- 2 files changed, 208 insertions(+)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 3ebc4da63074..f1e484477e35 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -408,6 +408,112 @@ qca8k_fdb_flush(struct qca8k_priv *priv)
- 	mutex_unlock(&priv->reg_mutex);
- }
- 
-+static int
-+qca8k_vlan_access(struct qca8k_priv *priv, enum qca8k_vlan_cmd cmd, u16 vid)
-+{
-+	u32 reg;
-+
-+	/* Set the command and VLAN index */
-+	reg = QCA8K_VTU_FUNC1_BUSY;
-+	reg |= cmd;
-+	reg |= vid << QCA8K_VTU_FUNC1_VID_S;
-+
-+	/* Write the function register triggering the table access */
-+	qca8k_write(priv, QCA8K_REG_VTU_FUNC1, reg);
-+
-+	/* wait for completion */
-+	if (qca8k_busy_wait(priv, QCA8K_REG_VTU_FUNC1, QCA8K_VTU_FUNC1_BUSY))
-+		return -ETIMEDOUT;
-+
-+	/* Check for table full violation when adding an entry */
-+	if (cmd == QCA8K_VLAN_LOAD) {
-+		reg = qca8k_read(priv, QCA8K_REG_VTU_FUNC1);
-+		if (reg & QCA8K_VTU_FUNC1_FULL)
-+			return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+qca8k_vlan_add(struct qca8k_priv *priv, u8 port, u16 vid, bool untagged)
-+{
-+	u32 reg;
-+	int ret;
-+
-+	/*
-+	   We do the right thing with VLAN 0 and treat it as untagged while
-+	   preserving the tag on egress.
-+	 */
-+	if (vid == 0)
-+		return 0;
-+
-+	mutex_lock(&priv->reg_mutex);
-+	ret = qca8k_vlan_access(priv, QCA8K_VLAN_READ, vid);
-+	if (ret < 0)
-+		goto out;
-+
-+	reg = qca8k_read(priv, QCA8K_REG_VTU_FUNC0);
-+	reg |= QCA8K_VTU_FUNC0_VALID | QCA8K_VTU_FUNC0_IVL_EN;
-+	reg &= ~(QCA8K_VTU_FUNC0_EG_MODE_MASK << QCA8K_VTU_FUNC0_EG_MODE_S(port));
-+	if (untagged)
-+		reg |= QCA8K_VTU_FUNC0_EG_MODE_UNTAG <<
-+				QCA8K_VTU_FUNC0_EG_MODE_S(port);
-+	else
-+		reg |= QCA8K_VTU_FUNC0_EG_MODE_TAG <<
-+				QCA8K_VTU_FUNC0_EG_MODE_S(port);
-+
-+	qca8k_write(priv, QCA8K_REG_VTU_FUNC0, reg);
-+	ret = qca8k_vlan_access(priv, QCA8K_VLAN_LOAD, vid);
-+
-+out:
-+	mutex_unlock(&priv->reg_mutex);
-+
-+	return ret;
-+}
-+
-+static int
-+qca8k_vlan_del(struct qca8k_priv *priv, u8 port, u16 vid)
-+{
-+	u32 reg, mask;
-+	int ret, i;
-+	bool del;
-+
-+	mutex_lock(&priv->reg_mutex);
-+	ret = qca8k_vlan_access(priv, QCA8K_VLAN_READ, vid);
-+	if (ret < 0)
-+		goto out;
-+
-+	reg = qca8k_read(priv, QCA8K_REG_VTU_FUNC0);
-+	reg &= ~(3 << QCA8K_VTU_FUNC0_EG_MODE_S(port));
-+	reg |= QCA8K_VTU_FUNC0_EG_MODE_NOT <<
-+			QCA8K_VTU_FUNC0_EG_MODE_S(port);
-+
-+	/* Check if we're the last member to be removed */
-+	del = true;
-+	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
-+		mask = QCA8K_VTU_FUNC0_EG_MODE_NOT;
-+		mask <<= QCA8K_VTU_FUNC0_EG_MODE_S(i);
-+
-+		if ((reg & mask) != mask) {
-+			del = false;
-+			break;
-+		}
-+	}
-+
-+	if (del) {
-+		ret = qca8k_vlan_access(priv, QCA8K_VLAN_PURGE, vid);
-+	} else {
-+		qca8k_write(priv, QCA8K_REG_VTU_FUNC0, reg);
-+		ret = qca8k_vlan_access(priv, QCA8K_VLAN_LOAD, vid);
-+	}
-+
-+out:
-+	mutex_unlock(&priv->reg_mutex);
-+
-+	return ret;
-+}
-+
- static void
- qca8k_mib_init(struct qca8k_priv *priv)
- {
-@@ -1187,6 +1293,76 @@ qca8k_port_fdb_dump(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
-+static int
-+qca8k_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering)
-+{
-+	struct qca8k_priv *priv = ds->priv;
-+
-+	if (vlan_filtering) {
-+		qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
-+			  QCA8K_PORT_LOOKUP_VLAN_MODE,
-+			  QCA8K_PORT_LOOKUP_VLAN_MODE_SECURE);
-+	} else {
-+		qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
-+			  QCA8K_PORT_LOOKUP_VLAN_MODE,
-+			  QCA8K_PORT_LOOKUP_VLAN_MODE_NONE);
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+qca8k_port_vlan_prepare(struct dsa_switch *ds, int port,
-+			const struct switchdev_obj_port_vlan *vlan)
-+{
-+	return 0;
-+}
-+
-+static void
-+qca8k_port_vlan_add(struct dsa_switch *ds, int port,
-+		    const struct switchdev_obj_port_vlan *vlan)
-+{
-+	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-+	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
-+	struct qca8k_priv *priv = ds->priv;
-+	int ret = 0;
-+	u16 vid;
-+
-+	for (vid = vlan->vid_begin; vid <= vlan->vid_end && !ret; ++vid)
-+		ret = qca8k_vlan_add(priv, port, vid, untagged);
-+
-+	if (ret)
-+		dev_err(priv->dev, "Failed to add VLAN to port %d (%d)", port, ret);
-+
-+	if (pvid) {
-+		int shift = 16 * (port % 2);
-+
-+		qca8k_rmw(priv, QCA8K_EGRESS_VLAN(port),
-+			  0xfff << shift,
-+			  vlan->vid_end << shift);
-+		qca8k_write(priv, QCA8K_REG_PORT_VLAN_CTRL0(port),
-+			    QCA8K_PORT_VLAN_CVID(vlan->vid_end) |
-+			    QCA8K_PORT_VLAN_SVID(vlan->vid_end));
-+	}
-+}
-+
-+static int
-+qca8k_port_vlan_del(struct dsa_switch *ds, int port,
-+		    const struct switchdev_obj_port_vlan *vlan)
-+{
-+	struct qca8k_priv *priv = ds->priv;
-+	int ret = 0;
-+	u16 vid;
-+
-+	for (vid = vlan->vid_begin; vid <= vlan->vid_end && !ret; ++vid)
-+		ret = qca8k_vlan_del(priv, port, vid);
-+
-+	if (ret)
-+		dev_err(priv->dev, "Failed to delete VLAN from port %d (%d)", port, ret);
-+
-+	return ret;
-+}
-+
- static enum dsa_tag_protocol
- qca8k_get_tag_protocol(struct dsa_switch *ds, int port,
- 		       enum dsa_tag_protocol mp)
-@@ -1212,6 +1388,10 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
- 	.port_fdb_add		= qca8k_port_fdb_add,
- 	.port_fdb_del		= qca8k_port_fdb_del,
- 	.port_fdb_dump		= qca8k_port_fdb_dump,
-+	.port_vlan_filtering	= qca8k_port_vlan_filtering,
-+	.port_vlan_prepare	= qca8k_port_vlan_prepare,
-+	.port_vlan_add		= qca8k_port_vlan_add,
-+	.port_vlan_del		= qca8k_port_vlan_del,
- 	.phylink_validate	= qca8k_phylink_validate,
- 	.phylink_mac_link_state	= qca8k_phylink_mac_link_state,
- 	.phylink_mac_config	= qca8k_phylink_mac_config,
-@@ -1262,6 +1442,7 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 
- 	priv->ds->dev = &mdiodev->dev;
- 	priv->ds->num_ports = QCA8K_NUM_PORTS;
-+	priv->ds->configure_vlan_while_not_filtering = true;
- 	priv->ds->priv = priv;
- 	priv->ops = qca8k_switch_ops;
- 	priv->ds->ops = &priv->ops;
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 92216a52daa5..7ca4b93e0bb5 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -128,6 +128,19 @@
- #define   QCA8K_ATU_FUNC_FULL				BIT(12)
- #define   QCA8K_ATU_FUNC_PORT_M				0xf
- #define   QCA8K_ATU_FUNC_PORT_S				8
-+#define QCA8K_REG_VTU_FUNC0				0x610
-+#define   QCA8K_VTU_FUNC0_VALID				BIT(20)
-+#define   QCA8K_VTU_FUNC0_IVL_EN			BIT(19)
-+#define   QCA8K_VTU_FUNC0_EG_MODE_S(_i)			(4 + (_i) * 2)
-+#define   QCA8K_VTU_FUNC0_EG_MODE_MASK			3
-+#define   QCA8K_VTU_FUNC0_EG_MODE_UNMOD			0
-+#define   QCA8K_VTU_FUNC0_EG_MODE_UNTAG			1
-+#define   QCA8K_VTU_FUNC0_EG_MODE_TAG			2
-+#define   QCA8K_VTU_FUNC0_EG_MODE_NOT			3
-+#define QCA8K_REG_VTU_FUNC1				0x614
-+#define   QCA8K_VTU_FUNC1_BUSY				BIT(31)
-+#define   QCA8K_VTU_FUNC1_VID_S				16
-+#define   QCA8K_VTU_FUNC1_FULL				BIT(4)
- #define QCA8K_REG_GLOBAL_FW_CTRL0			0x620
- #define   QCA8K_GLOBAL_FW_CTRL0_CPU_PORT_EN		BIT(10)
- #define QCA8K_REG_GLOBAL_FW_CTRL1			0x624
-@@ -137,6 +150,11 @@
- #define   QCA8K_GLOBAL_FW_CTRL1_UC_DP_S			0
- #define QCA8K_PORT_LOOKUP_CTRL(_i)			(0x660 + (_i) * 0xc)
- #define   QCA8K_PORT_LOOKUP_MEMBER			GENMASK(6, 0)
-+#define   QCA8K_PORT_LOOKUP_VLAN_MODE			GENMASK(9, 8)
-+#define   QCA8K_PORT_LOOKUP_VLAN_MODE_NONE		(0 << 8)
-+#define   QCA8K_PORT_LOOKUP_VLAN_MODE_FALLBACK		(1 << 8)
-+#define   QCA8K_PORT_LOOKUP_VLAN_MODE_CHECK		(2 << 8)
-+#define   QCA8K_PORT_LOOKUP_VLAN_MODE_SECURE		(3 << 8)
- #define   QCA8K_PORT_LOOKUP_STATE_MASK			GENMASK(18, 16)
- #define   QCA8K_PORT_LOOKUP_STATE_DISABLED		(0 << 16)
- #define   QCA8K_PORT_LOOKUP_STATE_BLOCKING		(1 << 16)
-@@ -180,6 +198,15 @@ enum qca8k_fdb_cmd {
- 	QCA8K_FDB_SEARCH = 7,
- };
- 
-+enum qca8k_vlan_cmd {
-+	QCA8K_VLAN_FLUSH = 1,
-+	QCA8K_VLAN_LOAD = 2,
-+	QCA8K_VLAN_PURGE = 3,
-+	QCA8K_VLAN_REMOVE_PORT = 4,
-+	QCA8K_VLAN_NEXT = 5,
-+	QCA8K_VLAN_READ = 6,
-+};
-+
- struct ar8xxx_port_status {
- 	int enabled;
- };
--- 
-2.20.1
+looks right, thanks
+
 
