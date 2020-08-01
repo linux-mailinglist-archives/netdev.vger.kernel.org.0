@@ -2,121 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AD92235124
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 10:22:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D400235150
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 10:59:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728383AbgHAIWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 04:22:35 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:9338 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725283AbgHAIWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 04:22:34 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0718IqgI004542;
-        Sat, 1 Aug 2020 01:22:31 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0818;
- bh=XqEtR3x1VPexE1EnmCDj+BCx4QraJTnq71uao4TBCjA=;
- b=y6dLE0bte4enUrc9OMnY77g469ErfmbNr0DwanAIHzjjx7fXBBKU1dCc5Ak5+q7GLHKY
- 5C2EEBr2ZoRa2x/wv7hdQqqjJWTDdWE7nuYBTrDlLfjdBZ6Q0MvMbc+ZFaxbb5iqsI3y
- WtaQA2wuwUIxJIhRz1f5hNH+gKGvORR4FboZ7D8bCoeTy0u+roX9dhxH6j0p9pxTr9LA
- EPUvwEWuwIVot1ZdFauSSw1bP+bN2RTYCEpXf/YawxljZw2nOwcD1c7xcUOOQ5ontUYB
- OfDBny8YkIcENOCGwgAAt3nPWQpYRvJFLKS76SLPBL0fBRiMUirunYd21DjkKGeisEDa fw== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 32gj3re3kj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sat, 01 Aug 2020 01:22:31 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 1 Aug
- 2020 01:22:30 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 1 Aug 2020 01:22:30 -0700
-Received: from [10.193.54.28] (NN-LT0019.marvell.com [10.193.54.28])
-        by maili.marvell.com (Postfix) with ESMTP id 040053F703F;
-        Sat,  1 Aug 2020 01:22:26 -0700 (PDT)
-Subject: Re: [PATCH v4 net-next 04/10] qed: implement devlink info request
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        "Ariel Elior" <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        "Denis Bolotin" <dbolotin@marvell.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "Alexander Lobakin" <alobakin@marvell.com>
-References: <20200731055401.940-1-irusskikh@marvell.com>
- <20200731055401.940-5-irusskikh@marvell.com>
- <20200731130402.2288f44a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Igor Russkikh <irusskikh@marvell.com>
-Message-ID: <1a454a82-98a8-d08a-7769-f4dd02658e51@marvell.com>
-Date:   Sat, 1 Aug 2020 11:22:25 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101
- Thunderbird/79.0
+        id S1728643AbgHAI7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 04:59:19 -0400
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:47861 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725876AbgHAI7T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 04:59:19 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01355;MF=wenyang@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0U4O6FF._1596272349;
+Received: from localhost(mailfrom:wenyang@linux.alibaba.com fp:SMTPD_---0U4O6FF._1596272349)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 01 Aug 2020 16:59:15 +0800
+From:   Wen Yang <wenyang@linux.alibaba.com>
+To:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>
+Cc:     Xunlei Pang <xlpang@linux.alibaba.com>,
+        Caspar Zhang <caspar@linux.alibaba.com>,
+        Wen Yang <wenyang@linux.alibaba.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Eric Dumazet <edumazet@google.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Julian Wiedmann <jwi@linux.ibm.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: core: explicitly call linkwatch_fire_event to speed up the startup of network services
+Date:   Sat,  1 Aug 2020 16:58:45 +0800
+Message-Id: <20200801085845.20153-1-wenyang@linux.alibaba.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <20200731130402.2288f44a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-01_07:2020-07-31,2020-08-01 signatures=0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The linkwatch_event work queue runs up to one second later.
+When the MicroVM starts, it takes 300+ms for the ethX flag
+to change from '+UP +LOWER_UP' to '+RUNNING', as follows:
+Jul 20 22:00:47.432552 systemd-networkd[210]: eth0: bringing link up
+...
+Jul 20 22:00:47.446108 systemd-networkd[210]: eth0: flags change: +UP +LOWER_UP
+...
+Jul 20 22:00:47.781463 systemd-networkd[210]: eth0: flags change: +RUNNING
 
->> Thus, here we create and store a private copy of this structure
->> in qed_dev root object.
-> 
-> Please include example output of devlink info on you device.
+Let's manually trigger it here to make the network service start faster.
 
-Hi Jakub, will do. Here is an example:
+After applying this patch, the time consumption of
+systemd-networkd.service was reduced from 366ms to 50ms.
 
-~$ sudo ~/iproute2/devlink/devlink  dev info
-pci/0000:01:00.0:
-  driver qed
-  serial_number REE1915E44552
-  versions:
-      running:
-        fw 8.42.2.0
-      stored:
-        fw.mgmt 8.52.10.0
-pci/0000:01:00.1:
-  driver qed
-  serial_number REE1915E44552
-  versions:
-      running:
-        fw 8.42.2.0
-      stored:
-        fw.mgmt 8.52.10.0
+Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jiri Pirko <jiri@mellanox.com>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: Julian Wiedmann <jwi@linux.ibm.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ net/core/link_watch.c | 3 +++
+ net/core/rtnetlink.c  | 1 +
+ 2 files changed, 4 insertions(+)
 
+diff --git a/net/core/link_watch.c b/net/core/link_watch.c
+index 75431ca..6b9d44b 100644
+--- a/net/core/link_watch.c
++++ b/net/core/link_watch.c
+@@ -98,6 +98,9 @@ static bool linkwatch_urgent_event(struct net_device *dev)
+ 	if (netif_is_lag_port(dev) || netif_is_lag_master(dev))
+ 		return true;
+ 
++	if ((dev->flags & IFF_UP) && dev->operstate == IF_OPER_DOWN)
++		return true;
++
+ 	return netif_carrier_ok(dev) &&	qdisc_tx_changing(dev);
+ }
+ 
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 58c484a..fd0b3b6 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -2604,6 +2604,7 @@ static int do_setlink(const struct sk_buff *skb,
+ 				       extack);
+ 		if (err < 0)
+ 			goto errout;
++		linkwatch_fire_event(dev);
+ 	}
+ 
+ 	if (tb[IFLA_MASTER]) {
+-- 
+1.8.3.1
 
->> +	memcpy(buf, cdev->hwfns[0].hw_info.part_num,
-> sizeof(cdev->hwfns[0].hw_info.part_num));
->> +	buf[sizeof(cdev->hwfns[0].hw_info.part_num)] = 0;
-> 
-> Part number != serial number. What's the thing you're reporting here
-> actually identifying.
-
-From user manual and configuration point of view thats a serial number.
-Existing internal structures name that as part number, double checked
-the documentation - in this hardware manual these two things are the same.
-
-> DEVLINK_INFO_VERSION_GENERIC_FW_MGMT, buf);
->> +	if (err)
->> +		return err;
-> 
-> Assuming MFW means management FW - this looks good.
->> +	return devlink_info_version_running_put(req,
-
-Right,
-
-> DEVLINK_INFO_VERSION_GENERIC_FW, buf);
-> 
-> But what's this one?
-
-This one is a fast path firmware which is being loaded from driver
-dynamically. I can put this explanation to the patch description.
-
-Regards
-  Igor
