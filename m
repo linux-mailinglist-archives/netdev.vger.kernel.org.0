@@ -2,110 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D36A234F61
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 04:11:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A47E234F6F
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 04:27:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728255AbgHACJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 22:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45196 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726794AbgHACJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 22:09:33 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C325C06174A
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 19:09:33 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id x10so21809523ybj.19
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 19:09:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=a52V4Kdhy4rgB5aYktu9ijZu4cJb8Jp2kCo0109Mb1A=;
-        b=BoOu3o9guxB8PhIKD0pKz8HNgp4bPriNfbuaxNzNq+GFUY5w81dxTMMY/e0Jl2ETnd
-         RMlLRWXCOz/RXHzsHec9b4uDS8xpEyL/MbMNqB6YEn+m6Pns2R9t+iVYZFI0M+24jIGd
-         JtHvY/xYnbEzVIB8YNjdnJ4Kk78hUD8G/WGxfi+ffGNBCVjpR40xvFsPbY6veJBoyePg
-         9gqqt2J9cer8tsmPDHqk30RDy8tWwElUpdcVMH3z+c9dR2of9Z9ERe8v0okwFobDfDSV
-         f5Ncj5yGp8ozUn+NRSIYH3nHjejK2R3h5qwavNfwfuAnOiI1WF8WMBAf4OaMMtDL23g0
-         uy8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=a52V4Kdhy4rgB5aYktu9ijZu4cJb8Jp2kCo0109Mb1A=;
-        b=L/jbM2i886WXJLsVvYpbYBTVpNbIWg8/imAd/B9hTLNy2GNQL335GR0jd37fff6aY8
-         cDcRaznr/ze4wnNhDaHpq7BojMymkbRfXTbjPJvs7ihyLwJ39yLEJ8gY+AOXdOFxR1zt
-         ewkJhxlh5bPTCu66KbxTD4rZeJfFE0ohqIT8d1iL/YA6pFPNlopHA7Xo5OhXj+f8hIZT
-         1oj93OJxf3P3ejCOpBDmgIiCIzSHfMfSKM5NGa4zCxvLPeuZAPUTHk0r8eczVHcEIcLS
-         xIdJAM21dSnot7vqyqamj1NNCngCU++Phngh6HbHE5X+I95+ygA+4Uk0WGLRk/jG+aJK
-         M9/A==
-X-Gm-Message-State: AOAM531H3DgLQ0QcJeNudjLoN4Q+J0xIlJq6A+EHAQjx3FOOr9jsiZA1
-        apxl1VNP5qD9V5YLyE3C+6ur5FWD6GglAQ==
-X-Google-Smtp-Source: ABdhPJzwR7ozcjUz7S2lO1HXossFTaxUjhYMa231D1Aef0OGiL3T1I4aYCEC0EQjNkfmMmcV5Np6e46UKR6TCg==
-X-Received: by 2002:a25:38c5:: with SMTP id f188mr10171240yba.132.1596247772383;
- Fri, 31 Jul 2020 19:09:32 -0700 (PDT)
-Date:   Fri, 31 Jul 2020 19:09:29 -0700
-Message-Id: <20200801020929.3000802-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.28.0.163.g6104cc2f0b6-goog
-Subject: [PATCH net-next] tcp: fix build fong CONFIG_MPTCP=n
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Florian Westphal <fw@strlen.de>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728305AbgHAC1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 22:27:54 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:3102 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726888AbgHAC1y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jul 2020 22:27:54 -0400
+Received: from DGGEMM403-HUB.china.huawei.com (unknown [172.30.72.55])
+        by Forcepoint Email with ESMTP id 256A86775E3F101F8845;
+        Sat,  1 Aug 2020 10:27:52 +0800 (CST)
+Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
+ DGGEMM403-HUB.china.huawei.com (10.3.20.211) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Sat, 1 Aug 2020 10:27:51 +0800
+Received: from [10.174.61.242] (10.174.61.242) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Sat, 1 Aug 2020 10:27:51 +0800
+Subject: Re: [PATCH net-next v2 1/2] hinic: add generating mailbox random
+ index support
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
+        <chiqijun@huawei.com>
+References: <20200731015642.17452-1-luobin9@huawei.com>
+ <20200731015642.17452-2-luobin9@huawei.com>
+ <20200731125212.4d58a90a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "luobin (L)" <luobin9@huawei.com>
+Message-ID: <0b5955cc-f552-2264-2a59-971604b7f7a4@huawei.com>
+Date:   Sat, 1 Aug 2020 10:27:50 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
+MIME-Version: 1.0
+In-Reply-To: <20200731125212.4d58a90a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.61.242]
+X-ClientProxiedBy: dggeme704-chm.china.huawei.com (10.1.199.100) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes these errors:
-
-net/ipv4/syncookies.c: In function 'tcp_get_cookie_sock':
-net/ipv4/syncookies.c:216:19: error: 'struct tcp_request_sock' has no
-member named 'drop_req'
-  216 |   if (tcp_rsk(req)->drop_req) {
-      |                   ^~
-net/ipv4/syncookies.c: In function 'cookie_tcp_reqsk_alloc':
-net/ipv4/syncookies.c:289:27: warning: unused variable 'treq'
-[-Wunused-variable]
-  289 |  struct tcp_request_sock *treq;
-      |                           ^~~~
-make[3]: *** [scripts/Makefile.build:280: net/ipv4/syncookies.o] Error 1
-make[3]: *** Waiting for unfinished jobs....
-
-Fixes: 9466a1ccebbe ("mptcp: enable JOIN requests even if cookies are in use")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Florian Westphal <fw@strlen.de>
----
- net/ipv4/syncookies.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
-index 11b20474be8310d7070750a1c7b4013f2fba2f55..f0794f0232bae749244fff35d8b96b1f561a5e87 100644
---- a/net/ipv4/syncookies.c
-+++ b/net/ipv4/syncookies.c
-@@ -213,7 +213,7 @@ struct sock *tcp_get_cookie_sock(struct sock *sk, struct sk_buff *skb,
- 		tcp_sk(child)->tsoffset = tsoff;
- 		sock_rps_save_rxhash(child, skb);
- 
--		if (tcp_rsk(req)->drop_req) {
-+		if (rsk_drop_req(req)) {
- 			refcount_set(&req->rsk_refcnt, 2);
- 			return child;
- 		}
-@@ -286,10 +286,11 @@ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
- 					    struct sock *sk,
- 					    struct sk_buff *skb)
- {
--	struct tcp_request_sock *treq;
- 	struct request_sock *req;
- 
- #ifdef CONFIG_MPTCP
-+	struct tcp_request_sock *treq;
-+
- 	if (sk_is_mptcp(sk))
- 		ops = &mptcp_subflow_request_sock_ops;
- #endif
--- 
-2.28.0.163.g6104cc2f0b6-goog
-
+On 2020/8/1 3:52, Jakub Kicinski wrote:
+> On Fri, 31 Jul 2020 09:56:41 +0800 Luo bin wrote:
+>> add support to generate mailbox random id of VF to ensure that
+>> mailbox messages PF received are from the correct VF.
+>>
+>> Signed-off-by: Luo bin <luobin9@huawei.com>
+> 
+>> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
+>> index 47c93f946b94..c72aa8e8bce8 100644
+>> --- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
+>> +++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
+>> @@ -486,6 +486,111 @@ static void recv_mbox_handler(struct hinic_mbox_func_to_func *func_to_func,
+>>  	kfree(rcv_mbox_temp);
+>>  }
+>>  
+>> +static int set_vf_mbox_random_id(struct hinic_hwdev *hwdev, u16 func_id)
+>> +{
+>> +	struct hinic_mbox_func_to_func *func_to_func = hwdev->func_to_func;
+>> +	struct hinic_set_random_id rand_info = {0};
+>> +	u16 out_size = sizeof(rand_info);
+>> +	struct hinic_pfhwdev *pfhwdev;
+>> +	int ret;
+>> +
+>> +	pfhwdev = container_of(hwdev, struct hinic_pfhwdev, hwdev);
+>> +
+>> +	rand_info.version = HINIC_CMD_VER_FUNC_ID;
+>> +	rand_info.func_idx = func_id;
+>> +	rand_info.vf_in_pf = (u8)(func_id - hinic_glb_pf_vf_offset(hwdev->hwif));
+> 
+> this cast is unnecessary
+> 
+Will fix. Thanks for your review.
+>> +	get_random_bytes(&rand_info.random_id, sizeof(u32));
+> 
+> get_random_u32()
+> 
+Will fix. Thanks for your review.
+>> +
+>> +	func_to_func->vf_mbx_rand_id[func_id] = rand_info.random_id;
+>> +
+>> +	ret = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_COMM,
+>> +				HINIC_MGMT_CMD_SET_VF_RANDOM_ID,
+>> +				&rand_info, sizeof(rand_info),
+>> +				&rand_info, &out_size, HINIC_MGMT_MSG_SYNC);
+>> +	if ((rand_info.status != HINIC_MGMT_CMD_UNSUPPORTED &&
+>> +	     rand_info.status) || !out_size || ret) {
+>> +		dev_err(&hwdev->hwif->pdev->dev, "Set VF random id failed, err: %d, status: 0x%x, out size: 0x%x\n",
+>> +			ret, rand_info.status, out_size);
+>> +		return -EIO;
+>> +	}
+>> +
+>> +	if (rand_info.status == HINIC_MGMT_CMD_UNSUPPORTED)
+>> +		return rand_info.status;
+>> +
+>> +	func_to_func->vf_mbx_old_rand_id[func_id] =
+>> +				func_to_func->vf_mbx_rand_id[func_id];
+>> +
+>> +	return 0;
+>> +}
+> 
+>> +static bool check_vf_mbox_random_id(struct hinic_mbox_func_to_func *func_to_func,
+>> +				    u8 *header)
+>> +{
+>> +	struct hinic_hwdev *hwdev = func_to_func->hwdev;
+>> +	struct hinic_mbox_work *mbox_work = NULL;
+>> +	u64 mbox_header = *((u64 *)header);
+>> +	u16 offset, src;
+>> +	u32 random_id;
+>> +	int vf_in_pf;
+>> +
+>> +	src = HINIC_MBOX_HEADER_GET(mbox_header, SRC_GLB_FUNC_IDX);
+>> +
+>> +	if (IS_PF_OR_PPF_SRC(src) || !func_to_func->support_vf_random)
+>> +		return true;
+>> +
+>> +	if (!HINIC_IS_PPF(hwdev->hwif)) {
+>> +		offset = hinic_glb_pf_vf_offset(hwdev->hwif);
+>> +		vf_in_pf = src - offset;
+>> +
+>> +		if (vf_in_pf < 1 || vf_in_pf > hwdev->nic_cap.max_vf) {
+>> +			dev_warn(&hwdev->hwif->pdev->dev,
+>> +				 "Receive vf id(0x%x) is invalid, vf id should be from 0x%x to 0x%x\n",
+>> +				 src, offset + 1,
+>> +				 hwdev->nic_cap.max_vf + offset);
+>> +			return false;
+>> +		}
+>> +	}
+>> +
+>> +	random_id = be32_to_cpu(*(u32 *)(header + MBOX_SEG_LEN +
+>> +					 MBOX_HEADER_SZ));
+>> +
+>> +	if (random_id == func_to_func->vf_mbx_rand_id[src] ||
+>> +	    random_id == func_to_func->vf_mbx_old_rand_id[src])
+> 
+> What guarantees src < MAX_FUNCTION_NUM ?
+> 
+It has been checked if src >= MAX_FUNCTION_NUM in hinic_mbox_func_aeqe_handler before calling this function.
+>> +		return true;
+>> +
+>> +	dev_warn(&hwdev->hwif->pdev->dev,
+>> +		 "The mailbox random id(0x%x) of func_id(0x%x) doesn't match with pf reservation(0x%x)\n",
+>> +		 random_id, src, func_to_func->vf_mbx_rand_id[src]);
+>> +
+>> +	mbox_work = kzalloc(sizeof(*mbox_work), GFP_KERNEL);
+>> +	if (!mbox_work)
+>> +		return false;
+>> +
+>> +	mbox_work->func_to_func = func_to_func;
+>> +	mbox_work->src_func_idx = src;
+>> +
+>> +	INIT_WORK(&mbox_work->work, update_random_id_work_handler);
+>> +	queue_work(func_to_func->workq, &mbox_work->work);
+>> +
+>> +	return false;
+>> +}
+> 
+>> +int hinic_vf_mbox_random_id_init(struct hinic_hwdev *hwdev)
+>> +{
+>> +	u8 vf_in_pf;
+>> +	int err = 0;
+>> +
+>> +	if (HINIC_IS_VF(hwdev->hwif))
+>> +		return 0;
+>> +
+>> +	for (vf_in_pf = 1; vf_in_pf <= hwdev->nic_cap.max_vf; vf_in_pf++) {
+>> +		err = set_vf_mbox_random_id(hwdev, hinic_glb_pf_vf_offset
+>> +					    (hwdev->hwif) + vf_in_pf);
+> 
+> Parenthesis around hwdev->hwif not necessary
+hwdev->hwif is the parameter of hinic_glb_pf_vf_offset function.
+> 
+>> +		if (err)
+>> +			break;
+>> +	}
+>> +
+>> +	if (err == HINIC_MGMT_CMD_UNSUPPORTED) {
+>> +		hwdev->func_to_func->support_vf_random = false;
+> 
+> So all VFs need to support the feature for it to be used?
+If this feature is not supported by fw, VFs can also be used, so we return success.
+> 
+>> +		err = 0;
+>> +		dev_warn(&hwdev->hwif->pdev->dev, "Mgmt is unsupported to set VF%d random id\n",
+>> +			 vf_in_pf - 1);
+>> +	} else if (!err) {
+>> +		hwdev->func_to_func->support_vf_random = true;
+>> +		dev_info(&hwdev->hwif->pdev->dev, "PF Set VF random id success\n");
+> 
+> Is this info message really necessary?
+I'll remove this info message. Thanks.
+> 
+>> +	}
+> 
+> .
+> 
