@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86D6A23515D
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 11:12:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EABD23515F
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 11:12:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728710AbgHAJLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 05:11:40 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:56580 "EHLO huawei.com"
+        id S1728752AbgHAJMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 05:12:18 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:57224 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725876AbgHAJLk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 1 Aug 2020 05:11:40 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 4A2C6BBC4E29DDDCD8A5;
-        Sat,  1 Aug 2020 17:11:29 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Sat, 1 Aug 2020
- 17:11:18 +0800
+        id S1725876AbgHAJMR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 1 Aug 2020 05:12:17 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id EC0A77F7772C3C6221A6;
+        Sat,  1 Aug 2020 17:12:13 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Sat, 1 Aug 2020
+ 17:12:06 +0800
 From:   linmiaohe <linmiaohe@huawei.com>
 To:     <aelior@marvell.com>, <GR-everest-linux-l2@marvell.com>,
         <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH] net: qede: use eth_zero_addr() to clear mac address
-Date:   Sat, 1 Aug 2020 17:13:54 +0800
-Message-ID: <1596273234-24230-1-git-send-email-linmiaohe@huawei.com>
+Subject: [PATCH] net: qed: use eth_zero_addr() to clear mac address
+Date:   Sat, 1 Aug 2020 17:14:41 +0800
+Message-ID: <1596273281-24277-1-git-send-email-linmiaohe@huawei.com>
 X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -41,24 +41,41 @@ Use eth_zero_addr() to clear mac address instead of memset().
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- drivers/net/ethernet/qlogic/qede/qede_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index 29e285430f99..e1617a67a714 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -2678,8 +2678,8 @@ static void qede_get_generic_tlv_data(void *dev, struct qed_generic_tlvs *data)
- 		data->feat_flags |= QED_TLV_LSO;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+index 20679fd4204b..5015890a2a59 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+@@ -5067,8 +5067,7 @@ static void qed_update_mac_for_vf_trust_change(struct qed_hwfn *hwfn, int vf_id)
+ 			for (i = 0; i < QED_ETH_VF_NUM_MAC_FILTERS; i++) {
+ 				if (ether_addr_equal(vf->shadow_config.macs[i],
+ 						     vf_info->mac)) {
+-					memset(vf->shadow_config.macs[i], 0,
+-					       ETH_ALEN);
++					eth_zero_addr(vf->shadow_config.macs[i]);
+ 					DP_VERBOSE(hwfn, QED_MSG_IOV,
+ 						   "Shadow MAC %pM removed for VF 0x%02x, VF trust mode is ON\n",
+ 						    vf_info->mac, vf_id);
+@@ -5077,7 +5076,7 @@ static void qed_update_mac_for_vf_trust_change(struct qed_hwfn *hwfn, int vf_id)
+ 			}
  
- 	ether_addr_copy(data->mac[0], edev->ndev->dev_addr);
--	memset(data->mac[1], 0, ETH_ALEN);
--	memset(data->mac[2], 0, ETH_ALEN);
-+	eth_zero_addr(data->mac[1]);
-+	eth_zero_addr(data->mac[2]);
- 	/* Copy the first two UC macs */
- 	netif_addr_lock_bh(edev->ndev);
- 	i = 1;
+ 			ether_addr_copy(vf_info->mac, force_mac);
+-			memset(vf_info->forced_mac, 0, ETH_ALEN);
++			eth_zero_addr(vf_info->forced_mac);
+ 			vf->bulletin.p_virt->valid_bitmap &=
+ 					~BIT(MAC_ADDR_FORCED);
+ 			qed_schedule_iov(hwfn, QED_IOV_WQ_BULLETIN_UPDATE_FLAG);
+@@ -5088,7 +5087,7 @@ static void qed_update_mac_for_vf_trust_change(struct qed_hwfn *hwfn, int vf_id)
+ 	if (!vf_info->is_trusted_configured) {
+ 		u8 empty_mac[ETH_ALEN];
+ 
+-		memset(empty_mac, 0, ETH_ALEN);
++		eth_zero_addr(empty_mac);
+ 		for (i = 0; i < QED_ETH_VF_NUM_MAC_FILTERS; i++) {
+ 			if (ether_addr_equal(vf->shadow_config.macs[i],
+ 					     empty_mac)) {
 -- 
 2.19.1
 
