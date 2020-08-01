@@ -2,111 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B886234F55
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 03:51:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C331C234F56
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 03:51:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727813AbgHABu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 21:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42378 "EHLO
+        id S1728152AbgHABvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 21:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726794AbgHABu7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 21:50:59 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBEEC06174A
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 18:50:59 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id AA4F311E58FB8;
-        Fri, 31 Jul 2020 18:34:11 -0700 (PDT)
-Date:   Fri, 31 Jul 2020 18:49:45 -0700 (PDT)
-Message-Id: <20200731.184945.122924084405339233.davem@davemloft.net>
-To:     roopa@cumulusnetworks.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        nikolay@cumulusnetworks.com
-Subject: Re: [PATCH net-next v2] rtnetlink: add support for protodown reason
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1596242041-14347-1-git-send-email-roopa@cumulusnetworks.com>
-References: <1596242041-14347-1-git-send-email-roopa@cumulusnetworks.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 31 Jul 2020 18:34:11 -0700 (PDT)
+        with ESMTP id S1726794AbgHABvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 21:51:07 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7266C06174A
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 18:51:07 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id l17so33479224iok.7
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 18:51:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+o3AgCpxMtrBebaqaOiOmaCLQNjS+75EXg+gA69bYsU=;
+        b=m5bvcn7EulfDu77eMGHEhhmIKynAH4S4cxX1WizkDEQLi7ebAM+WpiZN+c6uEYZxly
+         GwRFJ/Fvk5NrICTMG5fK0s6ch7Y4CpU75iZipXYVBMg7pIy4EJNGH2z5Ge1cd34z17uG
+         FRUjH4pyw47kvtP86xaPq/JTYYLzdx8sU7XAZWawiDWWtJ/JURyoK2LctqLpr2hTqNMr
+         49Jri0jE0PpULcR96YnhCLl59dM4rD2KrPfH1Yh+R7JoZUuD44G6VQ9lSws0aC+6CAtY
+         G34sCt2PzbEVioOZp90v6SZsrlt1HqvtujCEpXsk41fRSdFBu6zGuG5CIr0e3kUz3Lqq
+         kHNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+o3AgCpxMtrBebaqaOiOmaCLQNjS+75EXg+gA69bYsU=;
+        b=okPYM1CDW3rZMB1r+1/xV6l7DPYSr1Y1Gogho6n2KhDNlxg2D6WmWIKka113cHAfHp
+         Mxv7wytJA5t63ZMXJhLudM/aYtnfDkoTzNsBTzR4g40b/2lvlD0ePAIrby5izxSxzUJj
+         2NFnlH2lkhSzrAnY7k2VtH5F4td2psQ3g0WRZ+rjHYKCNdKyvgwohNYSaA9gDmS+HoOJ
+         vXHCxzNFqnvQfysmgWl4YwWT2oD06vkmpc37Z6xvOQAQR+euQKcGlGdfq/WrBbiTMYpu
+         N8dRUOu2UrOPPzeWiqlZfEwGGrXBxGMweNHa77Bshqql1mohUgdaHmyNcR+XpGEIWAaq
+         TmRQ==
+X-Gm-Message-State: AOAM530QIvoml46EDlLozDpb8hzeqpHglF6FriFB9cXCWP9sv7oAyG9i
+        beanp8Re9uvc5oFnuYCzyewUDwfpfqO1YXjWkHgd5/MJpZg=
+X-Google-Smtp-Source: ABdhPJwbSR+A4m9teBh1zvECoKqS+B3QtUiMTHWD/3657cqdFQwYjjKhIdzk+VFNAYb9TpZD5UUEtKm9nOoT+JHG+aI=
+X-Received: by 2002:a5d:8143:: with SMTP id f3mr6224410ioo.157.1596246666557;
+ Fri, 31 Jul 2020 18:51:06 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200730192558.25697-1-fw@strlen.de> <20200730192558.25697-8-fw@strlen.de>
+In-Reply-To: <20200730192558.25697-8-fw@strlen.de>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 31 Jul 2020 18:50:55 -0700
+Message-ID: <CANn89iLwjROZXEx2KQi7JGKFtZxzTWXEN+PfuVb43Gasr-fT3w@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 7/9] mptcp: enable JOIN requests even if
+ cookies are in use
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netdev <netdev@vger.kernel.org>,
+        mathew.j.martineau@linux.intel.com,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roopa Prabhu <roopa@cumulusnetworks.com>
-Date: Fri, 31 Jul 2020 17:34:01 -0700
-
-> From: Roopa Prabhu <roopa@cumulusnetworks.com>
-> 
-> netdev protodown is a mechanism that allows protocols to
-> hold an interface down. It was initially introduced in
-> the kernel to hold links down by a multihoming protocol.
-> There was also an attempt to introduce protodown
-> reason at the time but was rejected. protodown and protodown reason
-> is supported by almost every switching and routing platform.
-> It was ok for a while to live without a protodown reason.
-> But, its become more critical now given more than
-> one protocol may need to keep a link down on a system
-> at the same time. eg: vrrp peer node, port security,
-> multihoming protocol. Its common for Network operators and
-> protocol developers to look for such a reason on a networking
-> box (Its also known as errDisable by most networking operators)
-> 
-> This patch adds support for link protodown reason
-> attribute. There are two ways to maintain protodown
-> reasons.
-> (a) enumerate every possible reason code in kernel
->     - A protocol developer has to make a request and
->       have that appear in a certain kernel version
-> (b) provide the bits in the kernel, and allow user-space
-> (sysadmin or NOS distributions) to manage the bit-to-reasonname
-> map.
-> 	- This makes extending reason codes easier (kind of like
->       the iproute2 table to vrf-name map /etc/iproute2/rt_tables.d/)
-> 
-> This patch takes approach (b).
-> 
-> a few things about the patch:
-> - It treats the protodown reason bits as counter to indicate
-> active protodown users
-> - Since protodown attribute is already an exposed UAPI,
-> the reason is not enforced on a protodown set. Its a no-op
-> if not used.
-> the patch follows the below algorithm:
->   - presence of reason bits set indicates protodown
->     is in use
->   - user can set protodown and protodown reason in a
->     single or multiple setlink operations
->   - setlink operation to clear protodown, will return -EBUSY
->     if there are active protodown reason bits
->   - reason is not included in link dumps if not used
-> 
-> example with patched iproute2:
-> $cat /etc/iproute2/protodown_reasons.d/r.conf
-> 0 mlag
-> 1 evpn
-> 2 vrrp
-> 3 psecurity
-> 
-> $ip link set dev vxlan0 protodown on protodown_reason vrrp on
-> $ip link set dev vxlan0 protodown_reason mlag on
-> $ip link show
-> 14: vxlan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode
-> DEFAULT group default qlen 1000
->     link/ether f6:06:be:17:91:e7 brd ff:ff:ff:ff:ff:ff protodown on <mlag,vrrp>
-> 
-> $ip link set dev vxlan0 protodown_reason mlag off
-> $ip link set dev vxlan0 protodown off protodown_reason vrrp off
-> 
-> Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+On Thu, Jul 30, 2020 at 12:26 PM Florian Westphal <fw@strlen.de> wrote:
+>
+> JOIN requests do not work in syncookie mode -- for HMAC validation, the
+> peers nonce and the mptcp token (to obtain the desired connection socket
+> the join is for) are required, but this information is only present in the
+> initial syn.
+>
+> So either we need to drop all JOIN requests once a listening socket enters
+> syncookie mode, or we need to store enough state to reconstruct the request
+> socket later.
+>
+> This adds a state table (1024 entries) to store the data present in the
+> MP_JOIN syn request and the random nonce used for the cookie syn/ack.
+>
+> When a MP_JOIN ACK passed cookie validation, the table is consulted
+> to rebuild the request socket from it.
+>
+> An alternate approach would be to "cancel" syn-cookie mode and force
+> MP_JOIN to always use a syn queue entry.
+>
+> However, doing so brings the backlog over the configured queue limit.
+>
+> v2: use req->syncookie, not (removed) want_cookie arg
+>
+> Suggested-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Florian Westphal <fw@strlen.de>
 > ---
-> v2 - remove unnecessary helper dev_get_proto_down_reason
->      - move dev->proto_down_reason to use an existing hole in struct net_device
+>  net/ipv4/syncookies.c  |   6 ++
+>  net/mptcp/Makefile     |   1 +
+>  net/mptcp/ctrl.c       |   1 +
+>  net/mptcp/protocol.h   |  20 +++++++
+>  net/mptcp/subflow.c    |  14 +++++
+>  net/mptcp/syncookies.c | 132 +++++++++++++++++++++++++++++++++++++++++
+>  6 files changed, 174 insertions(+)
+>  create mode 100644 net/mptcp/syncookies.c
+>
+> diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+> index 54838ee2e8d4..11b20474be83 100644
+> --- a/net/ipv4/syncookies.c
+> +++ b/net/ipv4/syncookies.c
+> @@ -212,6 +212,12 @@ struct sock *tcp_get_cookie_sock(struct sock *sk, struct sk_buff *skb,
+>                 refcount_set(&req->rsk_refcnt, 1);
+>                 tcp_sk(child)->tsoffset = tsoff;
+>                 sock_rps_save_rxhash(child, skb);
+> +
+> +               if (tcp_rsk(req)->drop_req) {
+> +                       refcount_set(&req->rsk_refcnt, 2);
+> +                       return child;
+> +               }
+> +
 
-Applied, thank you.
+
+Hey, what happened to CONFIG_MPTCP=n ?
+
+net/ipv4/syncookies.c: In function 'tcp_get_cookie_sock':
+net/ipv4/syncookies.c:216:19: error: 'struct tcp_request_sock' has no
+member named 'drop_req'
+  216 |   if (tcp_rsk(req)->drop_req) {
+      |                   ^~
+net/ipv4/syncookies.c: In function 'cookie_tcp_reqsk_alloc':
+net/ipv4/syncookies.c:289:27: warning: unused variable 'treq'
+[-Wunused-variable]
+  289 |  struct tcp_request_sock *treq;
+      |                           ^~~~
+make[3]: *** [scripts/Makefile.build:280: net/ipv4/syncookies.o] Error 1
+make[3]: *** Waiting for unfinished jobs....
