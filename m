@@ -2,128 +2,375 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D8AD2353B9
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 19:09:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE28A2353CB
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 19:33:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727032AbgHARJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 13:09:45 -0400
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:4090 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726494AbgHARJp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 13:09:45 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f25a1ca0000>; Sat, 01 Aug 2020 10:09:31 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Sat, 01 Aug 2020 10:09:44 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Sat, 01 Aug 2020 10:09:44 -0700
-Received: from [10.2.53.233] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sat, 1 Aug
- 2020 17:09:42 +0000
-Subject: Re: [PATCH net] vxlan: fix memleak of fdb
-To:     Taehee Yoo <ap420073@gmail.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <roopa@cumulusnetworks.com>
-References: <20200801070750.7993-1-ap420073@gmail.com>
-From:   Roopa Prabhu <roopa@nvidia.com>
-Message-ID: <2df4a274-c14e-d9fa-3053-a543feb07a4c@nvidia.com>
-Date:   Sat, 1 Aug 2020 10:09:42 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726534AbgHARcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 13:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725883AbgHARcj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 13:32:39 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13111C06174A
+        for <netdev@vger.kernel.org>; Sat,  1 Aug 2020 10:32:39 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id f5so373595pgg.10
+        for <netdev@vger.kernel.org>; Sat, 01 Aug 2020 10:32:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=RXgiF4EJ+OiNWAXkjSU1K6tSaCx/jSwmV+/cTeAKX+Q=;
+        b=ygZfiLXJtJASSb5m3Zo6YWoR13C4zLuakA2hpnh4t2W2g2za6Vbi/wL97jOqYR5XPB
+         KvWENK/MkVLGuPcjLluI5FYRVMCHfz+m/te+LEpd4zMnskVNA4A7koQsGf8sKuPsUIma
+         UKF09D0PQ2F5HoH5a4EH6IVhDpeDM5nVKJDxffI/oAjf7dJ2J7xdJ4G7NbKrV3QcAGFQ
+         7m9i1fxcWWycQZ20T+I8FNRCaghtzJqq9C46BY7ES58wPdnfPZM72u5lAJKXf7eKORrV
+         KnPFdpf7pyAa9D0I2vru72WHLKjdAE+YxZC0xJQlAc8KEVSP+7b6dadbQ6WkmkfyJ71Q
+         2QxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=RXgiF4EJ+OiNWAXkjSU1K6tSaCx/jSwmV+/cTeAKX+Q=;
+        b=cGpz5CAoPy42ynVJNpOMyggKKSa6ZXAEVBAFKH6W1HfD85s6BW+vV8JfIAADC/caIY
+         34RmtKY8XGgQjnfjHOdczp0fyMJ7CyIiMc7RFs81+9j6TPNJmnLCTttMcgJ3udCHQGb0
+         koD8eHUExwVMllOL6mOCbmBO5m5nXjNkjb+bqsMBwZLZAsIFey/11DZbWS1foevbXmyH
+         jxHS2d5c6CEHqpTHZHUKwgEU2Rt0+PMjriqpSUXiPXUvNW90fo95vKEujtDd63zsuEVD
+         WHVCUQLjSLDRVslrhCg2CGaZ3YHs0gkucIpnwRHfEaj72PlAhUrpOy8Hw02crnTkzK1o
+         5kOg==
+X-Gm-Message-State: AOAM5305HJqBSkVEHBQlB58mgcoIEP/i+kWBjSELm/XwXQ+h6F4Jg+qk
+        RfAXRRQoma3kjfi0YZywysj2zpgL7xOqcg==
+X-Google-Smtp-Source: ABdhPJxdKifUZhnjsw8nmsYO2RKBC3rRraGV2NlBGO4klGjebDWrZCZQAY+nEi7mNT2mUoNz7fwupw==
+X-Received: by 2002:a65:524b:: with SMTP id q11mr5454086pgp.372.1596303157709;
+        Sat, 01 Aug 2020 10:32:37 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id m24sm9897702pff.45.2020.08.01.10.32.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 01 Aug 2020 10:32:36 -0700 (PDT)
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>
+Subject: [RFC] replace SNAPSHOT with auto-generated version
+Date:   Sat,  1 Aug 2020 10:32:35 -0700
+Message-Id: <20200801173235.22434-1-stephen@networkplumber.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <CAJ3xEMhk+EQ_avGSBDB5_Gnj09w3goUJKkxzt8innWvFkTeEVA@mail.gmail.com>
+References: <CAJ3xEMhk+EQ_avGSBDB5_Gnj09w3goUJKkxzt8innWvFkTeEVA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200801070750.7993-1-ap420073@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1596301771; bh=s65qmHy45z9kHoyz0lJWLFo8V5sTOvTeOWnkzTdgoro=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:Content-Type:
-         Content-Transfer-Encoding:Content-Language:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=KVIvuDdXdrmabTH4F3+rdEzVgXmrfeWgJVW9R6ryCmIpR7TQ4F7Hdd2v2kzgRfWjv
-         6I/VkYON04PBe3JfpZeMtyS0NhT6N37BmTbmyE1Pjk2Hd73zo/yQyks4QoXeKPAJYL
-         w+tmT1devo9U2kbouXaqhJwxuN5rc8sG/x/bb8ukH3RqPl/bpY27rjCUQpwODfT7rz
-         MdMaPWfZUyR8AsoD76WUUh0vW12T+k8gBvPdQo0NcrIHc4w1ltgwfR9bw2DRtxmUy6
-         KmVtWOvGw3QrBo5z8mmHO1rVG+86AX3Ng3w9Hd14WOt1WjhJoD0BcDz27Irk0x/NW9
-         SxzjqhS6Z36aQ==
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Replace the iproute2 snapshot with a version string which is
+autogenerated as part of the build process using git describe.
 
-On 8/1/20 12:07 AM, Taehee Yoo wrote:
-> External email: Use caution opening links or attachments
->
->
-> When vxlan interface is deleted, all fdbs are deleted by vxlan_flush().
-> vxlan_flush() flushes fdbs but it doesn't delete fdb, which contains
-> all-zeros-mac because it is deleted by vxlan_uninit().
-> But vxlan_uninit() deletes only the fdb, which contains both all-zeros-mac
-> and default vni.
-> So, the fdb, which contains both all-zeros-mac and non-default vni
-> will not be deleted.
->
-> Test commands:
->      ip link add vxlan0 type vxlan dstport 4789 external
->      ip link set vxlan0 up
->      bridge fdb add to 00:00:00:00:00:00 dst 172.0.0.1 dev vxlan0 via lo \
->              src_vni 10000 self permanent
->      ip link del vxlan0
->
-> kmemleak reports as follows:
-> unreferenced object 0xffff9486b25ced88 (size 96):
->    comm "bridge", pid 2151, jiffies 4294701712 (age 35506.901s)
->    hex dump (first 32 bytes):
->      02 00 00 00 ac 00 00 01 40 00 09 b1 86 94 ff ff  ........@.......
->      46 02 00 00 00 00 00 00 a7 03 00 00 12 b5 6a 6b  F.............jk
->    backtrace:
->      [<00000000c10cf651>] vxlan_fdb_append.part.51+0x3c/0xf0 [vxlan]
->      [<000000006b31a8d9>] vxlan_fdb_create+0x184/0x1a0 [vxlan]
->      [<0000000049399045>] vxlan_fdb_update+0x12f/0x220 [vxlan]
->      [<0000000090b1ef00>] vxlan_fdb_add+0x12a/0x1b0 [vxlan]
->      [<0000000056633c2c>] rtnl_fdb_add+0x187/0x270
->      [<00000000dd5dfb6b>] rtnetlink_rcv_msg+0x264/0x490
->      [<00000000fc44dd54>] netlink_rcv_skb+0x4a/0x110
->      [<00000000dff433e7>] netlink_unicast+0x18e/0x250
->      [<00000000b87fb421>] netlink_sendmsg+0x2e9/0x400
->      [<000000002ed55153>] ____sys_sendmsg+0x237/0x260
->      [<00000000faa51c66>] ___sys_sendmsg+0x88/0xd0
->      [<000000006c3982f1>] __sys_sendmsg+0x4e/0x80
->      [<00000000a8f875d2>] do_syscall_64+0x56/0xe0
->      [<000000003610eefa>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> unreferenced object 0xffff9486b1c40080 (size 128):
->    comm "bridge", pid 2157, jiffies 4294701754 (age 35506.866s)
->    hex dump (first 32 bytes):
->      00 00 00 00 00 00 00 00 f8 dc 42 b2 86 94 ff ff  ..........B.....
->      6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
->    backtrace:
->      [<00000000a2981b60>] vxlan_fdb_create+0x67/0x1a0 [vxlan]
->      [<0000000049399045>] vxlan_fdb_update+0x12f/0x220 [vxlan]
->      [<0000000090b1ef00>] vxlan_fdb_add+0x12a/0x1b0 [vxlan]
->      [<0000000056633c2c>] rtnl_fdb_add+0x187/0x270
->      [<00000000dd5dfb6b>] rtnetlink_rcv_msg+0x264/0x490
->      [<00000000fc44dd54>] netlink_rcv_skb+0x4a/0x110
->      [<00000000dff433e7>] netlink_unicast+0x18e/0x250
->      [<00000000b87fb421>] netlink_sendmsg+0x2e9/0x400
->      [<000000002ed55153>] ____sys_sendmsg+0x237/0x260
->      [<00000000faa51c66>] ___sys_sendmsg+0x88/0xd0
->      [<000000006c3982f1>] __sys_sendmsg+0x4e/0x80
->      [<00000000a8f875d2>] do_syscall_64+0x56/0xe0
->      [<000000003610eefa>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
->
-> Fixes: 3ad7a4b141eb ("vxlan: support fdb and learning in COLLECT_METADATA mode")
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-> ---
+This will also allow seeing if the version of the command
+is built from the same sources is as upstream.
 
-Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+---
+One additional tweak needed will be to put Version.h in the
+tarball for building outside of git.
 
+ .gitignore        |  1 +
+ Makefile          | 10 +++++-----
+ bridge/bridge.c   |  2 +-
+ devlink/devlink.c |  4 ++--
+ genl/genl.c       |  4 ++--
+ ip/ip.c           |  4 ++--
+ ip/rtmon.c        |  4 ++--
+ misc/ifstat.c     |  4 ++--
+ misc/nstat.c      |  4 ++--
+ misc/rtacct.c     |  4 ++--
+ misc/ss.c         |  4 ++--
+ rdma/rdma.c       |  6 +++---
+ tc/tc.c           |  4 ++--
+ 13 files changed, 28 insertions(+), 27 deletions(-)
 
-looks right, thanks
-
+diff --git a/.gitignore b/.gitignore
+index e5234a3dc948..8c553394453a 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -2,6 +2,7 @@
+ Config
+ static-syms.h
+ config.*
++include/Version.h
+ *.o
+ *.a
+ *.so
+diff --git a/Makefile b/Makefile
+index 25d05fac952a..61056cf6d7b2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -60,7 +60,7 @@ SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma man
+ LIBNETLINK=../lib/libutil.a ../lib/libnetlink.a
+ LDLIBS += $(LIBNETLINK)
+ 
+-all: config.mk
++all: config.mk include/Version.h
+ 	@set -e; \
+ 	for i in $(SUBDIRS); \
+ 	do echo; echo $$i; $(MAKE) $(MFLAGS) -C $$i; done
+@@ -93,9 +93,9 @@ install: all
+ 	install -m 0644 bash-completion/devlink $(DESTDIR)$(BASH_COMPDIR)
+ 	install -m 0644 include/bpf_elf.h $(DESTDIR)$(HDRDIR)
+ 
+-snapshot:
+-	echo "static const char SNAPSHOT[] = \""`date +%y%m%d`"\";" \
+-		> include/SNAPSHOT.h
++include/Version.h:
++	echo "static const char Version[] = \""`git describe --tags --long`"\";" \
++		> include/Version.h
+ 
+ clean:
+ 	@for i in $(SUBDIRS) testsuite; \
+@@ -104,7 +104,7 @@ clean:
+ clobber:
+ 	touch config.mk
+ 	$(MAKE) $(MFLAGS) clean
+-	rm -f config.mk cscope.*
++	rm -f config.mk cscope.* include/Version.h
+ 
+ distclean: clobber
+ 
+diff --git a/bridge/bridge.c b/bridge/bridge.c
+index a50d9d59b4c5..db2984ad7d88 100644
+--- a/bridge/bridge.c
++++ b/bridge/bridge.c
+@@ -12,7 +12,7 @@
+ #include <string.h>
+ #include <errno.h>
+ 
+-#include "SNAPSHOT.h"
++#include "Version.h"
+ #include "utils.h"
+ #include "br_common.h"
+ #include "namespace.h"
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 7f83fb746fd6..b558137caa0e 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -34,7 +34,7 @@
+ #include <sys/socket.h>
+ #include <sys/types.h>
+ 
+-#include "SNAPSHOT.h"
++#include "Version.h"
+ #include "list.h"
+ #include "mnlg.h"
+ #include "json_print.h"
+@@ -7606,7 +7606,7 @@ int main(int argc, char **argv)
+ 
+ 		switch (opt) {
+ 		case 'V':
+-			printf("devlink utility, iproute2-ss%s\n", SNAPSHOT);
++			printf("devlink utility, iproute2-%s\n", Version);
+ 			ret = EXIT_SUCCESS;
+ 			goto dl_free;
+ 		case 'f':
+diff --git a/genl/genl.c b/genl/genl.c
+index aba3c13afd34..cf30c7af20f6 100644
+--- a/genl/genl.c
++++ b/genl/genl.c
+@@ -22,7 +22,7 @@
+ #include <errno.h>
+ #include <linux/netlink.h>
+ #include <linux/rtnetlink.h> /* until we put our own header */
+-#include "SNAPSHOT.h"
++#include "Version.h"
+ #include "utils.h"
+ #include "genl_utils.h"
+ 
+@@ -118,7 +118,7 @@ int main(int argc, char **argv)
+ 		} else if (matches(argv[1], "-raw") == 0) {
+ 			++show_raw;
+ 		} else if (matches(argv[1], "-Version") == 0) {
+-			printf("genl utility, iproute2-ss%s\n", SNAPSHOT);
++			printf("genl utility, iproute2-%s\n", Version);
+ 			exit(0);
+ 		} else if (matches(argv[1], "-help") == 0) {
+ 			usage();
+diff --git a/ip/ip.c b/ip/ip.c
+index 4249df0377f9..ac7caa1b0171 100644
+--- a/ip/ip.c
++++ b/ip/ip.c
+@@ -18,7 +18,7 @@
+ #include <string.h>
+ #include <errno.h>
+ 
+-#include "SNAPSHOT.h"
++#include "Version.h"
+ #include "utils.h"
+ #include "ip_common.h"
+ #include "namespace.h"
+@@ -255,7 +255,7 @@ int main(int argc, char **argv)
+ 			++timestamp;
+ 			++timestamp_short;
+ 		} else if (matches(opt, "-Version") == 0) {
+-			printf("ip utility, iproute2-ss%s\n", SNAPSHOT);
++			printf("ip utility, iproute2-%s\n", Version);
+ 			exit(0);
+ 		} else if (matches(opt, "-force") == 0) {
+ 			++force;
+diff --git a/ip/rtmon.c b/ip/rtmon.c
+index bccddedddd17..d42bbd30c0fb 100644
+--- a/ip/rtmon.c
++++ b/ip/rtmon.c
+@@ -19,7 +19,7 @@
+ #include <netinet/in.h>
+ #include <string.h>
+ 
+-#include "SNAPSHOT.h"
++#include "Version.h"
+ 
+ #include "utils.h"
+ #include "libnetlink.h"
+@@ -107,7 +107,7 @@ main(int argc, char **argv)
+ 		} else if (strcmp(argv[1], "-0") == 0) {
+ 			family = AF_PACKET;
+ 		} else if (matches(argv[1], "-Version") == 0) {
+-			printf("rtmon utility, iproute2-ss%s\n", SNAPSHOT);
++			printf("rtmon utility, iproute2-%s\n", Version);
+ 			exit(0);
+ 		} else if (matches(argv[1], "file") == 0) {
+ 			argc--;
+diff --git a/misc/ifstat.c b/misc/ifstat.c
+index 03327af83ae8..abbd10cb9866 100644
+--- a/misc/ifstat.c
++++ b/misc/ifstat.c
+@@ -33,7 +33,7 @@
+ 
+ #include "libnetlink.h"
+ #include "json_writer.h"
+-#include "SNAPSHOT.h"
++#include "Version.h"
+ #include "utils.h"
+ 
+ int dump_zeros;
+@@ -869,7 +869,7 @@ int main(int argc, char *argv[])
+ 			break;
+ 		case 'v':
+ 		case 'V':
+-			printf("ifstat utility, iproute2-ss%s\n", SNAPSHOT);
++			printf("ifstat utility, iproute2-%s\n", Version);
+ 			exit(0);
+ 		case 'h':
+ 		case '?':
+diff --git a/misc/nstat.c b/misc/nstat.c
+index 88f52eaf8c8c..189a2d74602e 100644
+--- a/misc/nstat.c
++++ b/misc/nstat.c
+@@ -29,7 +29,7 @@
+ #include <getopt.h>
+ 
+ #include <json_writer.h>
+-#include <SNAPSHOT.h>
++#include "Version.h"
+ #include "utils.h"
+ 
+ int dump_zeros;
+@@ -621,7 +621,7 @@ int main(int argc, char *argv[])
+ 			break;
+ 		case 'v':
+ 		case 'V':
+-			printf("nstat utility, iproute2-ss%s\n", SNAPSHOT);
++			printf("nstat utility, iproute2-%s\n", Version);
+ 			exit(0);
+ 		case 'h':
+ 		case '?':
+diff --git a/misc/rtacct.c b/misc/rtacct.c
+index c4bb5bc3888c..ec475b9b5bd7 100644
+--- a/misc/rtacct.c
++++ b/misc/rtacct.c
+@@ -30,7 +30,7 @@
+ 
+ #include "rt_names.h"
+ 
+-#include <SNAPSHOT.h>
++#include "Version.h"
+ 
+ int reset_history;
+ int ignore_history;
+@@ -463,7 +463,7 @@ int main(int argc, char *argv[])
+ 			break;
+ 		case 'v':
+ 		case 'V':
+-			printf("rtacct utility, iproute2-ss%s\n", SNAPSHOT);
++			printf("rtacct utility, iproute2-%s\n", Version);
+ 			exit(0);
+ 		case 'M':
+ 			/* Some secret undocumented option, nobody
+diff --git a/misc/ss.c b/misc/ss.c
+index 5aa10e4a715f..08521672a154 100644
+--- a/misc/ss.c
++++ b/misc/ss.c
+@@ -35,7 +35,7 @@
+ #include "ll_map.h"
+ #include "libnetlink.h"
+ #include "namespace.h"
+-#include "SNAPSHOT.h"
++#include "Version.h"
+ #include "rt_names.h"
+ #include "cg_map.h"
+ 
+@@ -5411,7 +5411,7 @@ int main(int argc, char *argv[])
+ 			break;
+ 		case 'v':
+ 		case 'V':
+-			printf("ss utility, iproute2-ss%s\n", SNAPSHOT);
++			printf("ss utility, iproute2-%s\n", Version);
+ 			exit(0);
+ 		case 'z':
+ 			show_sock_ctx++;
+diff --git a/rdma/rdma.c b/rdma/rdma.c
+index 22050555735d..0e7251fe26ef 100644
+--- a/rdma/rdma.c
++++ b/rdma/rdma.c
+@@ -5,7 +5,7 @@
+  */
+ 
+ #include "rdma.h"
+-#include "SNAPSHOT.h"
++#include "Version.h"
+ #include "color.h"
+ 
+ static void help(char *name)
+@@ -131,8 +131,8 @@ int main(int argc, char **argv)
+ 				  long_options, NULL)) >= 0) {
+ 		switch (opt) {
+ 		case 'V':
+-			printf("%s utility, iproute2-ss%s\n",
+-			       filename, SNAPSHOT);
++			printf("%s utility, iproute2-%s\n",
++			       filename, Version);
+ 			return EXIT_SUCCESS;
+ 		case 'p':
+ 			pretty = 1;
+diff --git a/tc/tc.c b/tc/tc.c
+index b72657ec2e60..31c9030d1ed1 100644
+--- a/tc/tc.c
++++ b/tc/tc.c
+@@ -24,7 +24,7 @@
+ #include <string.h>
+ #include <errno.h>
+ 
+-#include "SNAPSHOT.h"
++#include "Version.h"
+ #include "utils.h"
+ #include "tc_util.h"
+ #include "tc_common.h"
+@@ -299,7 +299,7 @@ int main(int argc, char **argv)
+ 		} else if (matches(argv[1], "-graph") == 0) {
+ 			show_graph = 1;
+ 		} else if (matches(argv[1], "-Version") == 0) {
+-			printf("tc utility, iproute2-ss%s\n", SNAPSHOT);
++			printf("tc utility, iproute2-%s\n", Version);
+ 			return 0;
+ 		} else if (matches(argv[1], "-iec") == 0) {
+ 			++use_iec;
+-- 
+2.27.0
 
