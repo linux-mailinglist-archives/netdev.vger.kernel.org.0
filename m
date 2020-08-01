@@ -2,188 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 909D2234F50
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 03:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B886234F55
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 03:51:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728234AbgHABru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 21:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41898 "EHLO
+        id S1727813AbgHABu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 21:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727047AbgHABru (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 21:47:50 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF3CC061757
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 18:47:49 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id g8so9879979wmk.3
-        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 18:47:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vJnx156cIb/ocnmEd5ytGaOA79Apq7RDxlvXJ4tSsU4=;
-        b=uHPJ8JTDI5M2xkK0OfVUZ91EQVxWN9DazwFxWTFkpAifi13mVt9bCnKisGvl27mBUC
-         OvFoO0m9UX7sogSIhzYAPwMYSPIjRGt5zHfRme+S+/umFocYOjjZ6tvedl0AcH+sOl3z
-         aKk7Lf0PwIXr/0Ko9KpWw/xp/82CeFEHrKHDiBfuQFzXZa4aYximl0LKOPKR0rJ+N9mR
-         sDdNIsAXRz4PBBWeb4t+bU7xX1+0g8pDHK7nwycuN+CjwIsvIKZV71mQYKII4BhjYrZ1
-         Gm5IJPuhc7Hxx1eAmJvcYpBf9FSF3RLj/kkhrFfgu3pkBAKReMXgrG72QAixGcCBGWSz
-         xIeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vJnx156cIb/ocnmEd5ytGaOA79Apq7RDxlvXJ4tSsU4=;
-        b=j/pQFF9cb2pagJF0+F4tc6eSw9oBXnBdwgrB1Y81dApCyfToP5sOXxW3ZGMOHPrdp/
-         Fzl02AtZvi6gs8Rhy1HGxw1xtxJaBVBI4COt/KNE9iU5RXKBaxDu6rnWwEA7VUZ493Xr
-         rbPRMOcHA4mER/6togHJi+qive67PLKU14TYW3zKv27cD7zI/AXAlX0yjc769dv211xI
-         18SKnytrPHZLOj6j4gGo7wMB9PGA2wGr35oPQseGxIacjoEwpzHHByieG2I1cyHDfBSh
-         mfK21UzDu9ycFkIMBrmzqQtJjnkXnc9OTHak5JPWV5eG1xQOWcNz060YtNavvOTuXXw8
-         m2cw==
-X-Gm-Message-State: AOAM5334+1OW/id2o/epCuCDxBf4Lbq7yxz6Bh3HnrqcL3Aq8wAdr9Ob
-        35q0vA6vaeOfgEoUC0g8JcsxFvV/UjetVMdtE5G6dQ==
-X-Google-Smtp-Source: ABdhPJxNN8XPrym2dtCX5BafY9kl52WklwSBrh4rLPbkpscRMCdHbrC3skywII6y3C2tPoKBJWnof6EfF9rGIng1dxQ=
-X-Received: by 2002:a1c:a9ce:: with SMTP id s197mr5914617wme.58.1596246468111;
- Fri, 31 Jul 2020 18:47:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200722054314.2103880-1-irogers@google.com> <CAEf4BzaBYaFJ3eUinS9nHeykJ0xEbZpwLts33ZDp1PT=bkyjww@mail.gmail.com>
-In-Reply-To: <CAEf4BzaBYaFJ3eUinS9nHeykJ0xEbZpwLts33ZDp1PT=bkyjww@mail.gmail.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Fri, 31 Jul 2020 18:47:36 -0700
-Message-ID: <CAP-5=fXMUWFs6YtQVuxjenCrOmKtKYCqZE3YofwdR=ArDYSwbQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] bpftool btf: Add prefix option to dump C
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S1726794AbgHABu7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 21:50:59 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBEEC06174A
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 18:50:59 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id AA4F311E58FB8;
+        Fri, 31 Jul 2020 18:34:11 -0700 (PDT)
+Date:   Fri, 31 Jul 2020 18:49:45 -0700 (PDT)
+Message-Id: <20200731.184945.122924084405339233.davem@davemloft.net>
+To:     roopa@cumulusnetworks.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        nikolay@cumulusnetworks.com
+Subject: Re: [PATCH net-next v2] rtnetlink: add support for protodown reason
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1596242041-14347-1-git-send-email-roopa@cumulusnetworks.com>
+References: <1596242041-14347-1-git-send-email-roopa@cumulusnetworks.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 31 Jul 2020 18:34:11 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 21, 2020 at 11:58 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Jul 21, 2020 at 10:44 PM Ian Rogers <irogers@google.com> wrote:
-> >
-> > When bpftool dumps types and enum members into a header file for
-> > inclusion the names match those in the original source. If the same
-> > header file needs to be included in the original source and the bpf
-> > program, the names of structs, unions, typedefs and enum members will
-> > have naming collisions.
->
-> vmlinux.h is not really intended to be used from user-space, because
-> it's incompatible with pretty much any other header that declares any
-> type. Ideally we should make this better, but that might require some
-> compiler support. We've been discussing with Yonghong extending Clang
-> with a compile-time check for whether some type is defined or not,
-> which would allow to guard every type and only declare it
-> conditionally, if it's missing. But that's just an idea at this point.
+From: Roopa Prabhu <roopa@cumulusnetworks.com>
+Date: Fri, 31 Jul 2020 17:34:01 -0700
 
-Thanks Andrii! We're not looking at user-space code but the BPF code.
-The prefix idea comes from a way to solve this problem in C++ with
-namespaces:
+> From: Roopa Prabhu <roopa@cumulusnetworks.com>
+> 
+> netdev protodown is a mechanism that allows protocols to
+> hold an interface down. It was initially introduced in
+> the kernel to hold links down by a multihoming protocol.
+> There was also an attempt to introduce protodown
+> reason at the time but was rejected. protodown and protodown reason
+> is supported by almost every switching and routing platform.
+> It was ok for a while to live without a protodown reason.
+> But, its become more critical now given more than
+> one protocol may need to keep a link down on a system
+> at the same time. eg: vrrp peer node, port security,
+> multihoming protocol. Its common for Network operators and
+> protocol developers to look for such a reason on a networking
+> box (Its also known as errDisable by most networking operators)
+> 
+> This patch adds support for link protodown reason
+> attribute. There are two ways to maintain protodown
+> reasons.
+> (a) enumerate every possible reason code in kernel
+>     - A protocol developer has to make a request and
+>       have that appear in a certain kernel version
+> (b) provide the bits in the kernel, and allow user-space
+> (sysadmin or NOS distributions) to manage the bit-to-reasonname
+> map.
+> 	- This makes extending reason codes easier (kind of like
+>       the iproute2 table to vrf-name map /etc/iproute2/rt_tables.d/)
+> 
+> This patch takes approach (b).
+> 
+> a few things about the patch:
+> - It treats the protodown reason bits as counter to indicate
+> active protodown users
+> - Since protodown attribute is already an exposed UAPI,
+> the reason is not enforced on a protodown set. Its a no-op
+> if not used.
+> the patch follows the below algorithm:
+>   - presence of reason bits set indicates protodown
+>     is in use
+>   - user can set protodown and protodown reason in a
+>     single or multiple setlink operations
+>   - setlink operation to clear protodown, will return -EBUSY
+>     if there are active protodown reason bits
+>   - reason is not included in link dumps if not used
+> 
+> example with patched iproute2:
+> $cat /etc/iproute2/protodown_reasons.d/r.conf
+> 0 mlag
+> 1 evpn
+> 2 vrrp
+> 3 psecurity
+> 
+> $ip link set dev vxlan0 protodown on protodown_reason vrrp on
+> $ip link set dev vxlan0 protodown_reason mlag on
+> $ip link show
+> 14: vxlan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode
+> DEFAULT group default qlen 1000
+>     link/ether f6:06:be:17:91:e7 brd ff:ff:ff:ff:ff:ff protodown on <mlag,vrrp>
+> 
+> $ip link set dev vxlan0 protodown_reason mlag off
+> $ip link set dev vxlan0 protodown off protodown_reason vrrp off
+> 
+> Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+> ---
+> v2 - remove unnecessary helper dev_get_proto_down_reason
+>      - move dev->proto_down_reason to use an existing hole in struct net_device
 
-namespace vmlinux {
-#include "vmlinux.h"
-}
-
-As the BPF programs are C code then the prefix acts like the
-namespace. It seems strange to need to extend the language.
-
-> Regardless, vmlinux.h is also very much Clang-specific, and shouldn't
-> work well with GCC. Could you elaborate on the specifics of the use
-> case you have in mind? That could help me see what might be the right
-> solution. Thanks!
-
-So the use-case is similar to btf_iter.h:
-https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/testing/selftests/bpf/progs/bpf_iter.h
-To avoid collisions with somewhat cleaner macro or not games.
-
-Prompted by your concern I was looking into changing bpf_iter.h to use
-a prefix to show what the difference would be like. I also think that
-there may be issues with our kernel and tool set up that may mean that
-the prefix is unnecessary, if I fix something else. Anyway, to give an
-example I needed to build the selftests but this is failing for me.
-What I see is:
-
-$ git clone git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-$ cd bpf-next
-$ make defconfig
-$ cat >>.config <<EOF
-CONFIG_DEBUG_INFO=y
-CONFIG_DEBUG_INFO_BTF=y
-EOF
-$ make -j all
-$ mkdir /tmp/selftests
-$ make O=/tmp/selftests/ TARGETS=bpf kselftest
-...
-  CLANG    /tmp/selftests//kselftest/bpf/tools/build/bpftool/profiler.bpf.o
-skeleton/profiler.bpf.c:18:21: error: invalid application of 'sizeof'
-to an incomplete type 'struct bpf_perf_event_value'
-        __uint(value_size, sizeof(struct bpf_perf_event_value));
-                           ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Checking with bpftool the vmlinux lacks struct bpf_perf_event_value
-but as this is unconditionally defined in bpf.h this seems wrong. Do
-you have any suggestions and getting a working build?
-
-> > To avoid these collisions an approach is to redeclare the header file
-> > types and enum members, which leads to duplication and possible
-> > inconsistencies. Another approach is to use preprocessor macros
-> > to rename conflicting names, but this can be cumbersome if there are
-> > many conflicts.
-> >
-> > This patch adds a prefix option for the dumped names. Use of this option
-> > can avoid name conflicts and compile time errors.
-> >
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  .../bpf/bpftool/Documentation/bpftool-btf.rst |  7 ++++++-
-> >  tools/bpf/bpftool/btf.c                       | 18 ++++++++++++++---
-> >  tools/lib/bpf/btf.h                           |  1 +
-> >  tools/lib/bpf/btf_dump.c                      | 20 +++++++++++++------
-> >  4 files changed, 36 insertions(+), 10 deletions(-)
-> >
->
-> [...]
->
-> > diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-> > index 491c7b41ffdc..fea4baab00bd 100644
-> > --- a/tools/lib/bpf/btf.h
-> > +++ b/tools/lib/bpf/btf.h
-> > @@ -117,6 +117,7 @@ struct btf_dump;
-> >
-> >  struct btf_dump_opts {
-> >         void *ctx;
-> > +       const char *name_prefix;
-> >  };
->
-> BTW, we can't do that, this breaks ABI. btf_dump_opts were added
-> before we understood the problem of backward/forward  compatibility of
-> libbpf APIs, unfortunately.
-
-This could be fixed by adding a "new" API for the parameter, which
-would be unfortunate compared to just amending the existing API. There
-may be solutions that are less duplicative.
-
-Thanks,
-Ian
-
-> >
-> >  typedef void (*btf_dump_printf_fn_t)(void *ctx, const char *fmt, va_list args);
-> > diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-> > index e1c344504cae..baf2b4d82e1e 100644
-> > --- a/tools/lib/bpf/btf_dump.c
-> > +++ b/tools/lib/bpf/btf_dump.c
->
-> [...]
+Applied, thank you.
