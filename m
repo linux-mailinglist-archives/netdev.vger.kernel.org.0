@@ -2,206 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A47E234F6F
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 04:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 685E1234F73
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 04:34:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728305AbgHAC1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Jul 2020 22:27:54 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3102 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726888AbgHAC1y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jul 2020 22:27:54 -0400
-Received: from DGGEMM403-HUB.china.huawei.com (unknown [172.30.72.55])
-        by Forcepoint Email with ESMTP id 256A86775E3F101F8845;
-        Sat,  1 Aug 2020 10:27:52 +0800 (CST)
-Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
- DGGEMM403-HUB.china.huawei.com (10.3.20.211) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Sat, 1 Aug 2020 10:27:51 +0800
-Received: from [10.174.61.242] (10.174.61.242) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Sat, 1 Aug 2020 10:27:51 +0800
-Subject: Re: [PATCH net-next v2 1/2] hinic: add generating mailbox random
- index support
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
-        <chiqijun@huawei.com>
-References: <20200731015642.17452-1-luobin9@huawei.com>
- <20200731015642.17452-2-luobin9@huawei.com>
- <20200731125212.4d58a90a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   "luobin (L)" <luobin9@huawei.com>
-Message-ID: <0b5955cc-f552-2264-2a59-971604b7f7a4@huawei.com>
-Date:   Sat, 1 Aug 2020 10:27:50 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1728356AbgHACdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Jul 2020 22:33:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48878 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728331AbgHACdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Jul 2020 22:33:47 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5E7C06174A
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 19:33:47 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id b79so30625733qkg.9
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 19:33:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wo/sjI8j94LhAs4vx5XNhrSguJuseQ++7dWpkZeVEI8=;
+        b=AS8Q6OA7/AOd3V3yXn/q9HLFUPzItzWKEQnBI8ytvd5Pi8YsJJpT6SdRLf3nG3+iao
+         FkY7F6PVWVp+uGlm8ylb9oH4UGQcZ4b6kZjiZQkSnA3AdwSzhpkSs4o16a3Gjn8MZxbY
+         iQFRtMk75j0esZK824Ca6oDhV9p37Jl7sGe0W7Q6tze/dzB2yJ0u3TY3apwOXh37sT58
+         jDgfp69t/AgsPYYTVe7wGQK37nPkbPmOhFonejcMVmQjnBS0JM3WGQ+jn71L8vKvAWw/
+         rdj5EqyuGIQdFMsNKFNzoqFhFONkEyXSHEpE2IZfLbMUSAdDhaRJ5BVn9nxxooahT4HO
+         Y40g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wo/sjI8j94LhAs4vx5XNhrSguJuseQ++7dWpkZeVEI8=;
+        b=f916nr6NDi0gs07c5MTWoMrrulWBi/UaBB+MQsB77cWALe1naYJHqvLjbmDlMS6crh
+         mMhFUKv7Xs2/E3w4ywhESeEDAyperwZlPeo1+sFNYhRnjWi9yJf+HFde3kgnGV32wqJw
+         GARYApKtgPQjx1CHoN5FHMoyBC9Asxyb+8k2bJOdkMcyKc5+UcHhPfLRPVPaiHN1iWGx
+         tD+cEsC80Bx+pVNOqKWBz0mF4ZBc4fMYOb42tDxga9MYrFwqO9sbau+GBXepVMZAIY/C
+         CdUXxZP3vL36ENvkcssS0SiEftQSupwvZrgCVtkLPkM7YkdnFHWPR0DmKIlKSeTEKFxr
+         QkiQ==
+X-Gm-Message-State: AOAM5313j1bBDaDt8h+8GmhLmAP6hpYAYpk1rWAmPzrpfoX1rGnB/Kqw
+        iZ+RbaABM85mZJmmk6TNp4f36A8K
+X-Google-Smtp-Source: ABdhPJyPUCwpIdOGZh76pLO0FWxcDHQrderzykkPV19OvtMtTwz54X9daYXYUJEik4CSYCHEpxzgwg==
+X-Received: by 2002:a37:614a:: with SMTP id v71mr6924202qkb.31.1596249225744;
+        Fri, 31 Jul 2020 19:33:45 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id t8sm10965154qke.7.2020.07.31.19.33.44
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 31 Jul 2020 19:33:44 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id y134so11953353yby.2
+        for <netdev@vger.kernel.org>; Fri, 31 Jul 2020 19:33:44 -0700 (PDT)
+X-Received: by 2002:a25:3802:: with SMTP id f2mr10438626yba.428.1596249223979;
+ Fri, 31 Jul 2020 19:33:43 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200731125212.4d58a90a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.61.242]
-X-ClientProxiedBy: dggeme704-chm.china.huawei.com (10.1.199.100) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+References: <20200730073702.16887-1-xie.he.0141@gmail.com> <CAJht_ENjHRExBEHx--xmqnOy1MXY_6F5XZ_exinSfa6xU_XDJg@mail.gmail.com>
+ <CA+FuTSf_nuiah6rFy-KC1Taw+Wc4z0G7LzkAm-+Ms4FzYmTPEw@mail.gmail.com> <CAJht_ENYxy4pseOO9gY=0R0bvPPvs4GKrGJOUMx6=LPwBa2+Bg@mail.gmail.com>
+In-Reply-To: <CAJht_ENYxy4pseOO9gY=0R0bvPPvs4GKrGJOUMx6=LPwBa2+Bg@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 31 Jul 2020 22:33:07 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeusqdfkqZihFhTE9vhcL5or6DEh8UffaKM2Px82z6BZQ@mail.gmail.com>
+Message-ID: <CA+FuTSeusqdfkqZihFhTE9vhcL5or6DEh8UffaKM2Px82z6BZQ@mail.gmail.com>
+Subject: Re: [PATCH v2] drivers/net/wan/lapbether: Use needed_headroom instead
+ of hard_header_len
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Brian Norris <briannorris@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/8/1 3:52, Jakub Kicinski wrote:
-> On Fri, 31 Jul 2020 09:56:41 +0800 Luo bin wrote:
->> add support to generate mailbox random id of VF to ensure that
->> mailbox messages PF received are from the correct VF.
->>
->> Signed-off-by: Luo bin <luobin9@huawei.com>
-> 
->> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
->> index 47c93f946b94..c72aa8e8bce8 100644
->> --- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
->> +++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
->> @@ -486,6 +486,111 @@ static void recv_mbox_handler(struct hinic_mbox_func_to_func *func_to_func,
->>  	kfree(rcv_mbox_temp);
->>  }
->>  
->> +static int set_vf_mbox_random_id(struct hinic_hwdev *hwdev, u16 func_id)
->> +{
->> +	struct hinic_mbox_func_to_func *func_to_func = hwdev->func_to_func;
->> +	struct hinic_set_random_id rand_info = {0};
->> +	u16 out_size = sizeof(rand_info);
->> +	struct hinic_pfhwdev *pfhwdev;
->> +	int ret;
->> +
->> +	pfhwdev = container_of(hwdev, struct hinic_pfhwdev, hwdev);
->> +
->> +	rand_info.version = HINIC_CMD_VER_FUNC_ID;
->> +	rand_info.func_idx = func_id;
->> +	rand_info.vf_in_pf = (u8)(func_id - hinic_glb_pf_vf_offset(hwdev->hwif));
-> 
-> this cast is unnecessary
-> 
-Will fix. Thanks for your review.
->> +	get_random_bytes(&rand_info.random_id, sizeof(u32));
-> 
-> get_random_u32()
-> 
-Will fix. Thanks for your review.
->> +
->> +	func_to_func->vf_mbx_rand_id[func_id] = rand_info.random_id;
->> +
->> +	ret = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_COMM,
->> +				HINIC_MGMT_CMD_SET_VF_RANDOM_ID,
->> +				&rand_info, sizeof(rand_info),
->> +				&rand_info, &out_size, HINIC_MGMT_MSG_SYNC);
->> +	if ((rand_info.status != HINIC_MGMT_CMD_UNSUPPORTED &&
->> +	     rand_info.status) || !out_size || ret) {
->> +		dev_err(&hwdev->hwif->pdev->dev, "Set VF random id failed, err: %d, status: 0x%x, out size: 0x%x\n",
->> +			ret, rand_info.status, out_size);
->> +		return -EIO;
->> +	}
->> +
->> +	if (rand_info.status == HINIC_MGMT_CMD_UNSUPPORTED)
->> +		return rand_info.status;
->> +
->> +	func_to_func->vf_mbx_old_rand_id[func_id] =
->> +				func_to_func->vf_mbx_rand_id[func_id];
->> +
->> +	return 0;
->> +}
-> 
->> +static bool check_vf_mbox_random_id(struct hinic_mbox_func_to_func *func_to_func,
->> +				    u8 *header)
->> +{
->> +	struct hinic_hwdev *hwdev = func_to_func->hwdev;
->> +	struct hinic_mbox_work *mbox_work = NULL;
->> +	u64 mbox_header = *((u64 *)header);
->> +	u16 offset, src;
->> +	u32 random_id;
->> +	int vf_in_pf;
->> +
->> +	src = HINIC_MBOX_HEADER_GET(mbox_header, SRC_GLB_FUNC_IDX);
->> +
->> +	if (IS_PF_OR_PPF_SRC(src) || !func_to_func->support_vf_random)
->> +		return true;
->> +
->> +	if (!HINIC_IS_PPF(hwdev->hwif)) {
->> +		offset = hinic_glb_pf_vf_offset(hwdev->hwif);
->> +		vf_in_pf = src - offset;
->> +
->> +		if (vf_in_pf < 1 || vf_in_pf > hwdev->nic_cap.max_vf) {
->> +			dev_warn(&hwdev->hwif->pdev->dev,
->> +				 "Receive vf id(0x%x) is invalid, vf id should be from 0x%x to 0x%x\n",
->> +				 src, offset + 1,
->> +				 hwdev->nic_cap.max_vf + offset);
->> +			return false;
->> +		}
->> +	}
->> +
->> +	random_id = be32_to_cpu(*(u32 *)(header + MBOX_SEG_LEN +
->> +					 MBOX_HEADER_SZ));
->> +
->> +	if (random_id == func_to_func->vf_mbx_rand_id[src] ||
->> +	    random_id == func_to_func->vf_mbx_old_rand_id[src])
-> 
-> What guarantees src < MAX_FUNCTION_NUM ?
-> 
-It has been checked if src >= MAX_FUNCTION_NUM in hinic_mbox_func_aeqe_handler before calling this function.
->> +		return true;
->> +
->> +	dev_warn(&hwdev->hwif->pdev->dev,
->> +		 "The mailbox random id(0x%x) of func_id(0x%x) doesn't match with pf reservation(0x%x)\n",
->> +		 random_id, src, func_to_func->vf_mbx_rand_id[src]);
->> +
->> +	mbox_work = kzalloc(sizeof(*mbox_work), GFP_KERNEL);
->> +	if (!mbox_work)
->> +		return false;
->> +
->> +	mbox_work->func_to_func = func_to_func;
->> +	mbox_work->src_func_idx = src;
->> +
->> +	INIT_WORK(&mbox_work->work, update_random_id_work_handler);
->> +	queue_work(func_to_func->workq, &mbox_work->work);
->> +
->> +	return false;
->> +}
-> 
->> +int hinic_vf_mbox_random_id_init(struct hinic_hwdev *hwdev)
->> +{
->> +	u8 vf_in_pf;
->> +	int err = 0;
->> +
->> +	if (HINIC_IS_VF(hwdev->hwif))
->> +		return 0;
->> +
->> +	for (vf_in_pf = 1; vf_in_pf <= hwdev->nic_cap.max_vf; vf_in_pf++) {
->> +		err = set_vf_mbox_random_id(hwdev, hinic_glb_pf_vf_offset
->> +					    (hwdev->hwif) + vf_in_pf);
-> 
-> Parenthesis around hwdev->hwif not necessary
-hwdev->hwif is the parameter of hinic_glb_pf_vf_offset function.
-> 
->> +		if (err)
->> +			break;
->> +	}
->> +
->> +	if (err == HINIC_MGMT_CMD_UNSUPPORTED) {
->> +		hwdev->func_to_func->support_vf_random = false;
-> 
-> So all VFs need to support the feature for it to be used?
-If this feature is not supported by fw, VFs can also be used, so we return success.
-> 
->> +		err = 0;
->> +		dev_warn(&hwdev->hwif->pdev->dev, "Mgmt is unsupported to set VF%d random id\n",
->> +			 vf_in_pf - 1);
->> +	} else if (!err) {
->> +		hwdev->func_to_func->support_vf_random = true;
->> +		dev_info(&hwdev->hwif->pdev->dev, "PF Set VF random id success\n");
-> 
-> Is this info message really necessary?
-I'll remove this info message. Thanks.
-> 
->> +	}
-> 
-> .
-> 
+On Fri, Jul 31, 2020 at 4:41 PM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> Thank you for your thorough review comment!
+>
+> On Fri, Jul 31, 2020 at 7:13 AM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > Thanks for fixing a kernel panic. The existing line was added recently
+> > in commit 9dc829a135fb ("drivers/net/wan/lapbether: Fixed the value of
+> > hard_header_len"). I assume a kernel with that commit reverted also
+> > panics? It does looks like it would.
+>
+> Yes, that commit also fixed kernel panic. But that patch only fixed
+> kernel panic when using AF_PACKET/DGRAM sockets. It didn't fix kernel
+> panic when using AF_PACKET/RAW sockets. This patch attempts to fix
+> kernel panic when using AF_PACKET/RAW sockets, too.
+
+Ah, okay. That's good to know.
+
+While this protocol is old and seemingly unmaintained, it probably is
+still in use. But the packet interface is not the common datapath. We
+have to be careful not to introduce regressions to that.
+
+> > If this driver submits a modified packet to an underlying eth device,
+> > it is akin to tunnel drivers. The hard_header_len vs needed_headroom
+> > discussion also came up there recently [1]. That discussion points to
+> > commit c95b819ad75b ("gre: Use needed_headroom"). So the general
+> > approach in this patch is fine. Do note the point about mtu
+> > calculations -- but this device just hardcodes a 1000 byte dev->mtu
+> > irrespective of underlying ethernet device mtu, so I guess it has
+> > bigger issues on that point.
+>
+> Yes, I didn't consider the issue of mtu calculation. Maybe we need to
+> calculate the mtu of this device based on the underlying Ethernet
+> device, too.
+>
+> We may also need to handle the situation where the mtu of the
+> underlying Ethernet device changes.
+>
+> I'm not sure if the mtu of the device can be changed by the user
+> without explicit support from the driver. If it can, we may also need
+> to set max_mtu and min_mtu properly to prevent the user from setting
+> it to invalid values.
+
+I suggest to ignore mtu. It is out of scope of this patch, which does
+address an unrelated real kernel panic.
+
+> > But, packet sockets with SOCK_RAW have to pass a fully formed packet
+> > with all the headers the ndo_start_xmit expects, i.e., it should be
+> > safe for the device to just pull that many bytes. X25 requires the
+> > peculiar one byte pseudo header you mention: lapbeth_xmit
+> > unconditionally reads skb->data[0] and then calls skb_pull(skb, 1).
+> > This could be considered the device hard header len.
+>
+> Yes, I agree that we can use hard_header_len (and min_header_len) to
+> prevent packets shorter than 1 byte from passing.
+>
+> But because af_packet.c reserves a header space of needed_headroom for
+> RAW sockets, but hard_header_len + needed_headroom for DGRAM sockets,
+> it appears to me that af_packet.c expects hard_header_len to be the
+> header length created by dev_hard_header. We can, however, set
+> hard_header_len to 1 and let dev_hard_header generate a 0-sized
+> header, but this makes af_packet.c to reserve an extra unused 1-byte
+> header space for DGRAM sockets, and DGRAM sockets will not be
+> protected by the 1-byte minimum length check like RAW sockets.
+
+Good point.
+
+> The best solution might be to implement header_ops for X.25 drivers
+> and let dev_hard_header create this 1-byte header, so that
+> hard_header_len can equal to the header length created by
+> dev_hard_header. This might be the best way to fit the logic of
+> af_packet.c. But this requires changing the interface of X.25 drivers
+> so it might be a big change.
+
+Agreed.
+
+I quickly scanned the main x.25 datapath code. Specifically
+x25_establish_link, x25_terminate_link and x25_send_frame. These all
+write this 1 byte header. It appears to be an in-band communication
+means between the network and data link layer, never actually ending
+up on the wire?
+
+Either lapbeth_xmit has to have a guard against 0 byte packets before
+reading skb->data[0], or packet sockets should not be able to generate
+those (is this actually possible today through PF_PACKET? not sure)
+
+If SOCK_DGRAM has to always select one of the three values (0x00:
+data, 0x01: establish, 0x02: terminate) the first seems most sensible.
+Though if there is no way to establish a connection with
+PF_PACKET/SOCK_DGRAM, that whole interface may still be academic.
+Maybe eventually either 0x00 or 0x01 could be selected based on
+lapb->state.. That however is out of scope of this fix.
+
+Normally a fix should aim to have a Fixes: tag, but all this code
+precedes git history, so that is not feasible here.
