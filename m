@@ -2,135 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4110B235434
-	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 21:46:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C76F0235437
+	for <lists+netdev@lfdr.de>; Sat,  1 Aug 2020 21:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727817AbgHATqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 15:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36830 "EHLO
+        id S1726916AbgHATsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 15:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725939AbgHATqY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 15:46:24 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0BCCC06174A;
-        Sat,  1 Aug 2020 12:46:23 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id ed14so15704056qvb.2;
-        Sat, 01 Aug 2020 12:46:23 -0700 (PDT)
+        with ESMTP id S1725883AbgHATst (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 15:48:49 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D252FC06174A;
+        Sat,  1 Aug 2020 12:48:49 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id g19so6306634plq.0;
+        Sat, 01 Aug 2020 12:48:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ujYsQMCZbecD6bJOJC4Hkc6cL1ixRi2Hw1s2+qYZ8Ac=;
-        b=HIEyUOLPHv84IyjfJfi3d8BatiT6NbFRFo4ij+cTD9CJeCkKTEmiTauwNMEbVi8j5H
-         WUZk8m1BLwfiRWVb/wKvdceJhb+sY6NCjWQVGC56HCCpLqP8zDWFjm4kNyQhRqidxJK/
-         GrbwW9CqiPTw3gwxE4WQTnfvh5FV2F6v/RG3ky/Ehr3oRjhInC6MwSGDAT8Tu7+ySwQB
-         7TPBs+ODPpzT1BgGkvhTYQNjj3SRHZGocz9wc2pyerSBVQd9LsATV+T2rl2ZZV8DS4t6
-         Ad5bWemDX+rR3mc/tjNrx1Skb3x52oGEei/Dj7QD3NQ8w8GxHtqhJ8E/YQtdDX0rIWBJ
-         OVqg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=D/zKsPT50/brRt6TQ94qvPI8VW7jt5RqidXgO91dbKA=;
+        b=cxXfQUbdWAv5Q1PSHtTmYyxr4TWeAH2VpZs7yypxRFxoctSqlLGqImL3/wJeRI12SP
+         9jbrwT1oRJSvTo1cxVm8JCLGKMn7uk5KWjYBnS7pE1IvV9jSsl/xS7XwWXP0Xs1DuIe2
+         wD358QjSfLvbk5nq/ND1+Jen8VIKBNTOMhkVP3314bv+0TAf3+MjWWHSYlDPzUJtf0xC
+         po7jVaP3lakpIkxsnqw9NbhGx56vxinDxhwEWADfqMgdgOek8KHSr2+aCp4Az+ioByS1
+         cYVspwvAEByNv+oC8uBj/CSSh2usnS4RJ6ibkM3z1Ndwt7/xTo3sLq/vLJbsvL4k5iHb
+         gc0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ujYsQMCZbecD6bJOJC4Hkc6cL1ixRi2Hw1s2+qYZ8Ac=;
-        b=HpN+mWIJyZcxs6qyrW+HwJ9rhkc9BcZVwqNgSfWyEx+ioDe847+yQmxiYU6RhChNWg
-         /bzb1aCgCOsUagDWLq18jr+QFOFnmxacevECEOb7sxXECe4JCNpqImQS6df1mLCHIQ3R
-         vsY4WDjRL7ZPJ8EyAjSXY4qr7zYQ1Cx0u8l2ppd1Q9gQxqJcrtiEn3Kk0+b/wfzgbapJ
-         +4fbDH8v6bsnD8LquXC2Ji9bqaoNSNTN5kBQVfg4evroAEdDDVArZQ8KzaNaGwmxj1M6
-         G66r6pJtmHf0nxopRmp1ltKMABFdUc+ZDPpGJda5F+nQ3eK1AwMWdkhASQSxaI8ruO1k
-         hUpQ==
-X-Gm-Message-State: AOAM532wEaNNawhoa2A4TSyHHpERAxlIpPYL+SJBYoSEqQOTxqoSpMNa
-        SgI6hn2GuhmmGKbIKEdbxg==
-X-Google-Smtp-Source: ABdhPJzDVgh81xMg4udcLC8TIzADu8oMa6/Aiz82VsTpmlIIxc01ZpgOmmLKGcMXX1gdukgbZPM0XA==
-X-Received: by 2002:a0c:d7c9:: with SMTP id g9mr10286039qvj.83.1596311183058;
-        Sat, 01 Aug 2020 12:46:23 -0700 (PDT)
-Received: from localhost.localdomain (146-115-88-66.s3894.c3-0.sbo-ubr1.sbo.ma.cable.rcncustomer.com. [146.115.88.66])
-        by smtp.gmail.com with ESMTPSA id q17sm7791343qte.61.2020.08.01.12.46.21
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=D/zKsPT50/brRt6TQ94qvPI8VW7jt5RqidXgO91dbKA=;
+        b=t+XtR1cTQ1RHKU7a5LkbS5YgF/uveafTqtmpa3J3q4vxCpKPtYHGlWaxp7lqjlK5wj
+         PoIMSCKIdT+LOcIYM+99zCJUFTC8xDWlKXkALVw8NJq+EDoAxnbsw1IBigMFGK398C/b
+         vxCccLbuiIwVnUvcMwcpn1969JIyf0ITGyqRyJbwl2aYUu9wF4yprhLbbJ7tx5xnnMZB
+         Ro2lY/f09H9WlWgM+cDLUS1wpoetWwMgAGykXfZ9O4jAiPLhUjGO/kvg8sbXJG4tJXgM
+         JPqsFdPrKqunzrOyp+qNkC1dW8cU9Jx2F9lqWGVeLtsVbyOh8+gFtOq03GDv0GkkO8w8
+         q+0g==
+X-Gm-Message-State: AOAM532BMZuouSMKvd+9jtCom2fogPJCw9/A8Wk+xJAZL9FSXYm6nKq5
+        KDUQaPTldJvhi1k7bY2WfO8=
+X-Google-Smtp-Source: ABdhPJyZmsSRAtwKHUgKvrRVZquGxxpXMiTCw6T+Na+Re7YXxks6NrlDC9q5U48690eyjt3T1ajvjw==
+X-Received: by 2002:a17:90a:5208:: with SMTP id v8mr10250476pjh.29.1596311329344;
+        Sat, 01 Aug 2020 12:48:49 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:65b5])
+        by smtp.gmail.com with ESMTPSA id u66sm14834950pfb.191.2020.08.01.12.48.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Aug 2020 12:46:22 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Ursula Braun <ubraun@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        Hans Wippel <hwippel@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [Linux-kernel-mentees] [PATCH net] net/smc: Prevent kernel-infoleak in __smc_diag_dump()
-Date:   Sat,  1 Aug 2020 15:44:40 -0400
-Message-Id: <20200801194440.246747-1-yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 01 Aug 2020 12:48:48 -0700 (PDT)
+Date:   Sat, 1 Aug 2020 12:48:46 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
+        Christoph Hellwig <hch@lst.de>, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Rodrigo Madera <rodrigo.madera@gmail.com>
+Subject: Re: [PATCH net] net/bpfilter: initialize pos in
+ __bpfilter_process_sockopt
+Message-ID: <20200801194846.dxmvg5fmg67nuhwy@ast-mbp.dhcp.thefacebook.com>
+References: <20200730160900.187157-1-hch@lst.de>
+ <20200730161303.erzgrhqsgc77d4ny@wittgenstein>
+ <03954b8f-0db7-427b-cfd6-7146da9b5466@iogearbox.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <03954b8f-0db7-427b-cfd6-7146da9b5466@iogearbox.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__smc_diag_dump() is potentially copying uninitialized kernel stack memory
-into socket buffers, since the compiler may leave a 4-byte hole near the
-beginning of `struct smcd_diag_dmbinfo`. Fix it by initializing `dinfo`
-with memset().
+On Fri, Jul 31, 2020 at 02:07:42AM +0200, Daniel Borkmann wrote:
+> On 7/30/20 6:13 PM, Christian Brauner wrote:
+> > On Thu, Jul 30, 2020 at 06:09:00PM +0200, Christoph Hellwig wrote:
+> > > __bpfilter_process_sockopt never initialized the pos variable passed to
+> > > the pipe write.  This has been mostly harmless in the past as pipes
+> > > ignore the offset, but the switch to kernel_write no verified the
+> > 
+> > s/no/now/
+> > 
+> > > position, which can lead to a failure depending on the exact stack
+> > > initialization patter.  Initialize the variable to zero to make
+> > 
+> > s/patter/pattern/
+> > 
+> > > rw_verify_area happy.
+> > > 
+> > > Fixes: 6955a76fbcd5 ("bpfilter: switch to kernel_write")
+> > > Reported-by: Christian Brauner <christian.brauner@ubuntu.com>
+> > > Reported-by: Rodrigo Madera <rodrigo.madera@gmail.com>
+> > > Signed-off-by: Christoph Hellwig <hch@lst.de>
+> > > Tested-by: Rodrigo Madera <rodrigo.madera@gmail.com>
+> > > ---
+> > 
+> > Thanks for tracking this down, Christoph! This fixes the logging issue
+> > for me.
+> > Tested-by: Christian Brauner <christian.brauner@ubuntu.com>
+> > Reviewed-by: Christian Brauner <christian.brauner@ubuntu.com>
+> 
+> Applied to bpf & fixed up the typos in the commit msg, thanks everyone!
 
-Cc: stable@vger.kernel.org
-Fixes: 4b1b7d3b30a6 ("net/smc: add SMC-D diag support")
-Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
----
-Reference: https://lwn.net/Articles/417989/
+Daniel,
+why is it necessary in bpf tree?
 
-$ pahole -C "smcd_diag_dmbinfo" net/smc/smc_diag.o
-struct smcd_diag_dmbinfo {
-	__u32                      linkid;               /*     0     4 */
-
-	/* XXX 4 bytes hole, try to pack */
-
-	__u64                      peer_gid __attribute__((__aligned__(8))); /*     8     8 */
-	__u64                      my_gid __attribute__((__aligned__(8))); /*    16     8 */
-	__u64                      token __attribute__((__aligned__(8))); /*    24     8 */
-	__u64                      peer_token __attribute__((__aligned__(8))); /*    32     8 */
-
-	/* size: 40, cachelines: 1, members: 5 */
-	/* sum members: 36, holes: 1, sum holes: 4 */
-	/* forced alignments: 4, forced holes: 1, sum forced holes: 4 */
-	/* last cacheline: 40 bytes */
-} __attribute__((__aligned__(8)));
-$ _
-
- net/smc/smc_diag.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
-
-diff --git a/net/smc/smc_diag.c b/net/smc/smc_diag.c
-index e1f64f4ba236..da9ba6d1679b 100644
---- a/net/smc/smc_diag.c
-+++ b/net/smc/smc_diag.c
-@@ -170,13 +170,15 @@ static int __smc_diag_dump(struct sock *sk, struct sk_buff *skb,
- 	    (req->diag_ext & (1 << (SMC_DIAG_DMBINFO - 1))) &&
- 	    !list_empty(&smc->conn.lgr->list)) {
- 		struct smc_connection *conn = &smc->conn;
--		struct smcd_diag_dmbinfo dinfo = {
--			.linkid = *((u32 *)conn->lgr->id),
--			.peer_gid = conn->lgr->peer_gid,
--			.my_gid = conn->lgr->smcd->local_gid,
--			.token = conn->rmb_desc->token,
--			.peer_token = conn->peer_token
--		};
-+		struct smcd_diag_dmbinfo dinfo;
-+
-+		memset(&dinfo, 0, sizeof(dinfo));
-+
-+		dinfo.linkid = *((u32 *)conn->lgr->id);
-+		dinfo.peer_gid = conn->lgr->peer_gid;
-+		dinfo.my_gid = conn->lgr->smcd->local_gid;
-+		dinfo.token = conn->rmb_desc->token;
-+		dinfo.peer_token = conn->peer_token;
- 
- 		if (nla_put(skb, SMC_DIAG_DMBINFO, sizeof(dinfo), &dinfo) < 0)
- 			goto errout;
--- 
-2.25.1
+I fixed it already in bpf-next in commit a4fa458950b4 ("bpfilter: Initialize pos variable")
+two weeks ago...
 
