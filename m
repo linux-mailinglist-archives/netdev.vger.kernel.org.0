@@ -2,66 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BE04235A70
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:19:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CDCF235A71
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:19:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727932AbgHBUTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 16:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
+        id S1727939AbgHBUTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 16:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727887AbgHBUTD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 16:19:03 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A1EC06174A;
-        Sun,  2 Aug 2020 13:19:02 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id mt12so9820562pjb.4;
-        Sun, 02 Aug 2020 13:19:02 -0700 (PDT)
+        with ESMTP id S1725910AbgHBUTP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 16:19:15 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3B1C06174A
+        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 13:19:15 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id r4so9074679pls.2
+        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 13:19:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/3zJvwzJp0+XQVNWPI/xcJ++7CcvrKHM6OKsI9tGVNM=;
-        b=MnfFiSyN6BdDLnSxX3m9XkgwfSXXm9jUovCFGUpRjmA49FusuBzuSZDKRodBMm0vpR
-         SnNKl+m2CtnFeoqIbs+ld4x2DNhpEVh5FV/W8CnbVRb6wJ2pZFhXvHOaiuRqBLuqYW6Q
-         xkwSPk86hNgHIoYmGJNDsjqhCHyuPI6iYkq0oFnWVW9P1XIMonrTNBxW3bb+89daBL8c
-         q+FC5gsUYMfir7pzdq8eezQWuEvMAvAH1S204jCI+THXAPkaRAg9EdgUUIrE7ghj7fzw
-         DfdWa7jbQdMOsBgwFFELyi5LxwSQeKD3zxNsDSlebyjk75ke+p4xumFVaNBQORR/zUC+
-         SVIg==
+        bh=6W6gscY3FvsT+aPvaJ6FnBOb7P7v6T/gkiPB9tDOYZI=;
+        b=q9fHZDwwPLndBgmDLwU38jcuTDoBGsSghrc9P+AD4UPiiM4C5oXiMJDR22oKi5URyN
+         dIDKEVZTc6fC1Fk2PhPecV+sPCQDeVNCCOnM8NfeBifV673lhV5TVMWbB01kYbi+IrS+
+         FG/R2/E1Q0aCYd/tTDOmnzmTOJHqPbdH3qmowDvIChw+rfmgzAVBlNwooUmi4U5XJwWS
+         FFmsHmRoVyPhNlWKh2yjNTGYl65FAtMP7YJM7Lc5x0QdkSNnIJwYn8KzeFelwg/lXyLR
+         d5MY9L3HH/idr4isozXllqor/6gFRfssCmIheX/cWlEpSiFVfmqfh5BMoPVkpZDgGRvX
+         D+hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=/3zJvwzJp0+XQVNWPI/xcJ++7CcvrKHM6OKsI9tGVNM=;
-        b=V8QgJoxmUj2OsvIoFCAs/GIpo3VWNToUSn3u+Fa6i/CRsweCCGTdcgjwHxLG76ZH5s
-         BboHjEUNq0r09IgxeDaZ7JVJbGosnqrgU5Q6b7L8TXNu12u7Bdc9W3PdFXXK5+nYNdDx
-         i1aK1ZKjM1BJIQhnwHc36uNlyeNcdQD7ezAX08kdlZrntta17iQ5L4b7YYgFf8qZank/
-         jmovvkEVDDquJd191Kkd7qAk7YuLS3q+wEVYxuEfLNFi+ujs5rNiDV/gr0zK1wk6Gs/e
-         dCD4pp2s0QhTokOe293b6RE1m34kfYGCADFTUcpFQitEp2ONFNIMA2W8HVZ8SS161Y/7
-         bNSA==
-X-Gm-Message-State: AOAM530tz6V2bBPumcQ66YH1eChmencjDmxorxmpUi/M5EBauV1DZaeR
-        rartKF/JSvwseQVbsbe69/Q=
-X-Google-Smtp-Source: ABdhPJxyxuDwQpzHloPJ7HSvqoxM/Ymi3io2mSEdqcnT4GafkzAfNQtKG4JEDj4uQuqtvmik5VkX1w==
-X-Received: by 2002:a17:90a:2525:: with SMTP id j34mr15191072pje.208.1596399542523;
-        Sun, 02 Aug 2020 13:19:02 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id x18sm10065138pfm.201.2020.08.02.13.19.01
+        bh=6W6gscY3FvsT+aPvaJ6FnBOb7P7v6T/gkiPB9tDOYZI=;
+        b=EWe7ZVuTUyJmRrikIaZIYfuAtTbaVixYdrH0s60WInvFin+rtHQXNCIG2XbQ7k7n3c
+         br9Y+M8bbPICqSFc15vO+TkFnqoJUgK3UZ0jmkCIGVdTWy5jKr5hR/i9AaBOX3lLVDnq
+         rSYDxMrJDbpMlgo5eVVtfsvBnRcsAWPYDbIi2NDYI11KMnuTvFYQEZh1G4zYjVmClsn6
+         U7ruK/lNYCPqcPvHuHjpH3/uedu8YzpTW/aC65XyMHHhNTE57iw7QtgKGVOrysYTLR/o
+         yI8YIRonF3+qTzJhWR/00fsGiT6sIqCht3fU6biPkfRaVXMfQN7TKI+oLT9R6DW+nuc4
+         HmJA==
+X-Gm-Message-State: AOAM531i9o8MMHgv77rkivXNiXKEGqmz1TH2/yEOIerQz8hBXxWtRFt4
+        TY1pCAlZ2TjdUwO0N9KdDEc=
+X-Google-Smtp-Source: ABdhPJwW0Jqfl+o82E2zyEIbvTlHPbLEtQBBe/A1wZ+VHcJm3wS6cwLm+uSp4xoRRRE8yVAPBrEDmg==
+X-Received: by 2002:a17:90b:4a07:: with SMTP id kk7mr2824992pjb.125.1596399555004;
+        Sun, 02 Aug 2020 13:19:15 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id i196sm17116744pgc.55.2020.08.02.13.19.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Aug 2020 13:19:01 -0700 (PDT)
-Subject: Re: [PATCH bpf-next v4 1/2] bpf: setup socket family and addresses in
- bpf_prog_test_run_skb
-To:     Dmitry Yakunin <zeil@yandex-team.ru>, alexei.starovoitov@gmail.com,
-        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     sdf@google.com
-References: <20200802182638.77377-1-zeil@yandex-team.ru>
- <20200802182638.77377-2-zeil@yandex-team.ru>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <6d96e856-c47f-bdfc-8a6d-8836577e6200@gmail.com>
-Date:   Sun, 2 Aug 2020 13:19:00 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        Sun, 02 Aug 2020 13:19:14 -0700 (PDT)
+Subject: Re: [PATCH v2 4/4 net-next] net: mdio device: use flexible sleeping
+ in reset function
+To:     Bruno Thomsen <bruno.thomsen@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Fabio Estevam <festevam@gmail.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lars Alex Pedersen <laa@kamstrup.com>,
+        Bruno Thomsen <bth@kamstrup.com>
+References: <20200730195749.4922-1-bruno.thomsen@gmail.com>
+ <20200730195749.4922-5-bruno.thomsen@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <4a5f25f4-e7ae-5ab2-6991-4bc6e972b9b7@gmail.com>
+Date:   Sun, 2 Aug 2020 13:19:13 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200802182638.77377-2-zeil@yandex-team.ru>
+In-Reply-To: <20200730195749.4922-5-bruno.thomsen@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,51 +76,16 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 8/2/20 11:26 AM, Dmitry Yakunin wrote:
-> Now it's impossible to test all branches of cgroup_skb bpf program which
-> accesses skb->family and skb->{local,remote}_ip{4,6} fields because they
-> are zeroed during socket allocation. This commit fills socket family and
-> addresses from related fields in constructed skb.
+On 7/30/2020 12:57 PM, Bruno Thomsen wrote:
+> MDIO device reset assert and deassert length was created by
+> usleep_range() but that does not ensure optimal handling of
+> all the different values from device tree properties.
+> By switching to the new flexible sleeping helper function,
+> fsleep(), the correct delay function is called depending on
+> delay length, e.g. udelay(), usleep_range() or msleep().
 > 
-> v2:
->   - fix build without CONFIG_IPV6 (kernel test robot <lkp@intel.com>)
-> 
-> Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
-> ---
->  net/bpf/test_run.c | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-> 
-> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index b03c469..2521b27 100644
-> --- a/net/bpf/test_run.c
-> +++ b/net/bpf/test_run.c
-> @@ -449,6 +449,23 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
->  	skb->protocol = eth_type_trans(skb, current->nsproxy->net_ns->loopback_dev);
->  	skb_reset_network_header(skb);
->  
+> Signed-off-by: Bruno Thomsen <bruno.thomsen@gmail.com>
 
-At this point, there is no guarantee the skb contains these headers.
-
-You will have to add safety checks against skb->len
-
-> +	switch (skb->protocol) {
-> +	case htons(ETH_P_IP):
-> +		sk->sk_family = AF_INET;
-> +		sk->sk_rcv_saddr = ip_hdr(skb)->saddr;
-> +		sk->sk_daddr = ip_hdr(skb)->daddr;
-> +		break;
-> +#if IS_ENABLED(CONFIG_IPV6)
-> +	case htons(ETH_P_IPV6):
-> +		sk->sk_family = AF_INET6;
-> +		sk->sk_v6_rcv_saddr = ipv6_hdr(skb)->saddr;
-> +		sk->sk_v6_daddr = ipv6_hdr(skb)->daddr;
-> +		break;
-> +#endif
-> +	default:
-> +		break;
-> +	}
-> +
->  	if (is_l2)
->  		__skb_push(skb, hh_len);
->  	if (is_direct_pkt_access)
-> 
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
