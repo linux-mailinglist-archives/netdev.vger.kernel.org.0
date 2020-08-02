@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C025235A74
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:21:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B98D3235A76
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:21:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727006AbgHBUVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 16:21:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35064 "EHLO
+        id S1727001AbgHBUVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 16:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726163AbgHBUVI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 16:21:08 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DC6C06174A
-        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 13:21:08 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id l2so10755340pff.0
-        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 13:21:08 -0700 (PDT)
+        with ESMTP id S1726163AbgHBUVr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 16:21:47 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25450C06174A
+        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 13:21:47 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id m8so10232062pfh.3
+        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 13:21:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
         bh=ZG+qVnk5kaIeiYRlgYuRrktNon7ayt1TOhFc5tWmj6g=;
-        b=d9Mw9rIQdrWMle1va1lAxkJkin17+15DiO+P4X9ZzSPZUb5hPywNO4Gal2zGYmGjEl
-         hMU1W6sdZ6xWoTxOMb/bkeN6ArKubp6tvusAVlAIF9cECRs+u3yLL5s5NpMAHHR1V4pw
-         EnP5hNLYn27+gqJiTzNxZl2ed5+ic3ev8MIUz/jXu5E/MExn5tP2hWdQlvZNp1MHzAvK
-         dl6Mwp7Nr0lnikP1Y9zkvaVTqLjzYEmomhH2OnrNgVQUvlZsFX2J4XW4e7e5vOXLQgBy
-         jWnV+KWgrt+5MGEHF0qy/SSU8kZ1uRhBnQdetI/pPSb2BCWgvJeopptztrDr8oZg7Pgg
-         4Z0w==
+        b=XJfeU+l/dUFJsGnzTov8NlubsutC6Kmgu1wCy+pxzD3LeKcFckgZ+MiQfSn7XsqYk9
+         jrsoBsPdOugEn0GdP8ZhmfG6ee0uaARM91+sPhI4f9faluwO9yxx8qzSwZ4FukAXJLNq
+         CekNo0Cmi17b7DTxRCnKGwGggE9EtOI9GhjJymugdLyZAfm+GzeC4E4SlsuVWf/GqmJV
+         /0/iX2nIo3pLd37/00Bz6oGUcgvmoCBciTRe2iWSqiU7/HNfFSiETKpMKv0FRjNkiznn
+         /u162yTsTE5+GduXto5pMXh4pp2WNZFDDkuc65xwY6g45ahN+38LrAj3AWejogg8msvO
+         sKRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
         bh=ZG+qVnk5kaIeiYRlgYuRrktNon7ayt1TOhFc5tWmj6g=;
-        b=rexd0XIirWvduBFQCPYlOG3WTFHLXSYU7Ulvwh2rXbtCzohfcimtO3OzST+m3zyPXg
-         JURea6XeVo6z/rY+/AyUsNfEwUhFXZ9a9k+aRzMeuhuErAjyFDQEjddzr+1ZXZybQi6Q
-         0bMR1O77F3nf05boZerb2NV11rQ36HAKAPgKX45+MMfeXUgWr3yWPvLF6L5RU4eXdyLu
-         k4vszKq+letq0cVfZ/rlppPQV58eGLdRbMvlP2aSBC0LfC0k4ocCSx5Fkvg2yVoD3W4V
-         PXxP6dcHyimCxBWq1jwzaiAoegMl0nbSMtBvl8oekhmK0ZP5ey0RRw3ZQUDGwhwtlYfk
-         pKFA==
-X-Gm-Message-State: AOAM531JqgavrVpEyA9XxsvsSAlbUjSho4I55C4eRDJtLViUdXXpqiIN
-        y2rtww5/VCoTy6Uj/q7civPgP4CZ
-X-Google-Smtp-Source: ABdhPJzCwNbNEpqozRbZc+pvwMWCajCHOaEwBxiwugYocPJ2IPo6eT9bJGBh01Rf92IAdrhvQ4HSAw==
-X-Received: by 2002:aa7:94b5:: with SMTP id a21mr12826850pfl.237.1596399668127;
-        Sun, 02 Aug 2020 13:21:08 -0700 (PDT)
+        b=qW21iCszpDu+wIRzkrqB1uK9KBGriIJ0CcozUIU52TQUg2+P+XZOlPkJFDMbLMFh5b
+         4+tCN2eFmRUlSmjS4NhDAsEXykyH9nk8iDOyQBRkKz4qKELt1ODMCL4we4MfRUne5HxX
+         z7EVbDYux3iBeUzjNzarEkVYyHN5BQTB8VksZd5MnVthibO2i0kLFumNMsmLoMkDgJxr
+         P/QYYbYs0UI+YaEbIngOls1PO3fvaynfVk1ipTJ0+YkhXqChx3U3oDSWTL0igGgxLoSy
+         TnLclQ6y6VW2vzxmMRaKzj08jUBeENflpZlNaQUhm33LeP43P4M4LR/f3RlHKGuuEH01
+         Q+UQ==
+X-Gm-Message-State: AOAM5312ZaFiwl+BOEMWR33JZm3nlKk2g1RRrP84H5SFZYaAg8XQ8Tbo
+        zSDES+JhB8Az2/EdYM46vRg=
+X-Google-Smtp-Source: ABdhPJyOwuTHY9WiDOexAD2GN2Z7odSLIE0x/I4gUoN0Eo4U+eUbCpiKjPGz9YMX3Fao+saSQS9gig==
+X-Received: by 2002:a65:6710:: with SMTP id u16mr11989163pgf.45.1596399706666;
+        Sun, 02 Aug 2020 13:21:46 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id t63sm17519239pfb.210.2020.08.02.13.21.06
+        by smtp.gmail.com with ESMTPSA id w16sm16205612pjd.50.2020.08.02.13.21.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Aug 2020 13:21:07 -0700 (PDT)
-Subject: Re: [PATCH v3 3/9] net: dsa: mv88e6xxx: Use generic helper function
+        Sun, 02 Aug 2020 13:21:45 -0700 (PDT)
+Subject: Re: [PATCH v3 4/9] mlxsw: spectrum_ptp: Use generic helper function
 To:     Kurt Kanzenbach <kurt@linutronix.de>,
         Richard Cochran <richardcochran@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -64,14 +64,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
         Petr Machata <petrm@mellanox.com>
 References: <20200730080048.32553-1-kurt@linutronix.de>
- <20200730080048.32553-4-kurt@linutronix.de>
+ <20200730080048.32553-5-kurt@linutronix.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <725d7f90-a4ff-70fb-b8a1-cd3589087f6a@gmail.com>
-Date:   Sun, 2 Aug 2020 13:21:06 -0700
+Message-ID: <394e3ff2-2ead-b1ba-4d2e-8dec3b11b59c@gmail.com>
+Date:   Sun, 2 Aug 2020 13:21:44 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200730080048.32553-4-kurt@linutronix.de>
+In-Reply-To: <20200730080048.32553-5-kurt@linutronix.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
