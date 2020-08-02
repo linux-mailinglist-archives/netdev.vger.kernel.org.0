@@ -2,147 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC9932359E8
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 20:32:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 840C7235A02
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 20:47:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727834AbgHBScM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 14:32:12 -0400
-Received: from correo.us.es ([193.147.175.20]:45734 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727779AbgHBScL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Aug 2020 14:32:11 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id EF820E4B85
-        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 20:32:09 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E19C4DA789
-        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 20:32:09 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id D7678DA792; Sun,  2 Aug 2020 20:32:09 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 5CF73DA789;
-        Sun,  2 Aug 2020 20:32:07 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sun, 02 Aug 2020 20:32:07 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (120.205.137.78.rev.vodafone.pt [78.137.205.120])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 794964265A2F;
-        Sun,  2 Aug 2020 20:32:06 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 7/7] netfilter: nf_tables: report EEXIST on overlaps
-Date:   Sun,  2 Aug 2020 20:31:48 +0200
-Message-Id: <20200802183149.2808-8-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200802183149.2808-1-pablo@netfilter.org>
-References: <20200802183149.2808-1-pablo@netfilter.org>
+        id S1727880AbgHBSrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 14:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725801AbgHBSrW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 14:47:22 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B30C06174A;
+        Sun,  2 Aug 2020 11:47:22 -0700 (PDT)
+Received: from nazgul.tnic (unknown [78.130.214.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 6060E1EC027B;
+        Sun,  2 Aug 2020 20:47:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1596394040;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=6tNJPljLjNx2x9QEIVJnns37NMBlLLp4EAbpTzGkx/k=;
+        b=km2ppJ9W1lKPkeogNByCZRPPB90pQ77y1xFpzqsz5v2Gw4jUrJuG2BUGC6FlwifBWKp5xA
+        i/pwFuidiFCe1IAhyK7PX67NxCd1gqUPGlQREtpW/WPoHky93LT53Q3Zqf5RRY0CErhAu0
+        8YCnO7sm9NOsIwnrSCtwGhnf6GzAdAw=
+Date:   Sun, 2 Aug 2020 20:46:48 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Saheed Bolarinwa <refactormyself@gmail.com>
+Cc:     trix@redhat.com, helgaas@kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Joerg Roedel <joro@8bytes.org>, bjorn@helgaas.com,
+        skhan@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mtd@lists.infradead.org, iommu@lists.linux-foundation.org,
+        linux-rdma@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-gpio@vger.kernel.org, linux-fpga@vger.kernel.org,
+        linux-edac@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-crypto@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net
+Subject: Re: [RFC PATCH 00/17] Drop uses of pci_read_config_*() return value
+Message-ID: <20200802184648.GA23190@nazgul.tnic>
+References: <20200801112446.149549-1-refactormyself@gmail.com>
+ <20200801125657.GA25391@nazgul.tnic>
+ <b720aa44-895a-203b-e220-ecdb3acd9278@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <b720aa44-895a-203b-e220-ecdb3acd9278@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace EBUSY by EEXIST in the following cases:
+On Sun, Aug 02, 2020 at 07:28:00PM +0200, Saheed Bolarinwa wrote:
+> Because the value ~0 has a meaning to some drivers and only
 
-- If the user adds a chain with a different configuration such as different
-  type, hook and priority.
+No, ~0 means that the PCI read failed. For *every* PCI device I know.
 
-- If the user adds a non-base chain that clashes with an existing basechain.
+Here's me reading from 0xf0 offset of my hostbridge:
 
-- If the user adds a { key : value } mapping element and the key exists
-  but the value differs.
+# setpci -s 00:00.0 0xf0.l
+01000000
 
-- If the device already belongs to an existing flowtable.
+That device doesn't have extended config space, so the last valid byte
+is 0xff. Let's read beyond that:
 
-User describe that this error reporting is confusing:
+# setpci -s 00:00.0 0x100.l
+ffffffff
 
-- https://bugzilla.netfilter.org/show_bug.cgi?id=1176
-- https://bugzilla.netfilter.org/show_bug.cgi?id=1413
+> Again, only the drivers can determine if ~0 is a valid value. This
+> information is not available inside pci_config_read*().
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_tables_api.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+Of course it is.
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index fac552b0179f..6571789989bc 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -2097,7 +2097,7 @@ static int nf_tables_updchain(struct nft_ctx *ctx, u8 genmask, u8 policy,
- 
- 	if (nla[NFTA_CHAIN_HOOK]) {
- 		if (!nft_is_base_chain(chain))
--			return -EBUSY;
-+			return -EEXIST;
- 
- 		err = nft_chain_parse_hook(ctx->net, nla, &hook, ctx->family,
- 					   false);
-@@ -2107,21 +2107,21 @@ static int nf_tables_updchain(struct nft_ctx *ctx, u8 genmask, u8 policy,
- 		basechain = nft_base_chain(chain);
- 		if (basechain->type != hook.type) {
- 			nft_chain_release_hook(&hook);
--			return -EBUSY;
-+			return -EEXIST;
- 		}
- 
- 		if (ctx->family == NFPROTO_NETDEV) {
- 			if (!nft_hook_list_equal(&basechain->hook_list,
- 						 &hook.list)) {
- 				nft_chain_release_hook(&hook);
--				return -EBUSY;
-+				return -EEXIST;
- 			}
- 		} else {
- 			ops = &basechain->ops;
- 			if (ops->hooknum != hook.num ||
- 			    ops->priority != hook.priority) {
- 				nft_chain_release_hook(&hook);
--				return -EBUSY;
-+				return -EEXIST;
- 			}
- 		}
- 		nft_chain_release_hook(&hook);
-@@ -5262,10 +5262,8 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 			if (nft_set_ext_exists(ext, NFT_SET_EXT_DATA) ^
- 			    nft_set_ext_exists(ext2, NFT_SET_EXT_DATA) ||
- 			    nft_set_ext_exists(ext, NFT_SET_EXT_OBJREF) ^
--			    nft_set_ext_exists(ext2, NFT_SET_EXT_OBJREF)) {
--				err = -EBUSY;
-+			    nft_set_ext_exists(ext2, NFT_SET_EXT_OBJREF))
- 				goto err_element_clash;
--			}
- 			if ((nft_set_ext_exists(ext, NFT_SET_EXT_DATA) &&
- 			     nft_set_ext_exists(ext2, NFT_SET_EXT_DATA) &&
- 			     memcmp(nft_set_ext_data(ext),
-@@ -5273,7 +5271,7 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 			    (nft_set_ext_exists(ext, NFT_SET_EXT_OBJREF) &&
- 			     nft_set_ext_exists(ext2, NFT_SET_EXT_OBJREF) &&
- 			     *nft_set_ext_obj(ext) != *nft_set_ext_obj(ext2)))
--				err = -EBUSY;
-+				goto err_element_clash;
- 			else if (!(nlmsg_flags & NLM_F_EXCL))
- 				err = 0;
- 		} else if (err == -ENOTEMPTY) {
-@@ -6423,7 +6421,7 @@ static int nft_register_flowtable_net_hooks(struct net *net,
- 			list_for_each_entry(hook2, &ft->hook_list, list) {
- 				if (hook->ops.dev == hook2->ops.dev &&
- 				    hook->ops.pf == hook2->ops.pf) {
--					err = -EBUSY;
-+					err = -EEXIST;
- 					goto err_unregister_net_hooks;
- 				}
- 			}
+*every* change you've done in 6/17 - this is the only patch I have
+received - checks for == ~0. So that check can just as well be moved
+inside pci_config_read_*().
+
+Here's how one could do it:
+
+#define PCI_OP_READ(size, type, len) \
+int noinline pci_bus_read_config_##size \
+	(struct pci_bus *bus, unsigned int devfn, int pos, type *value)	\
+{									\
+	int res;							\
+	unsigned long flags;						\
+	u32 data = 0;							\
+	if (PCI_##size##_BAD) return PCIBIOS_BAD_REGISTER_NUMBER;	\
+	pci_lock_config(flags);						\
+	res = bus->ops->read(bus, devfn, pos, len, &data);		\
+
+	/* Check we actually read something which is not all 1s.*/
+	if (data == ~0)
+		return PCIBIOS_READ_FAILED;
+
+	*value = (type)data;						\
+	pci_unlock_config(flags);					\
+	return res;							\
+}
+
+Also, I'd prefer a function to *not* return void but return either
+an error or success. In the success case, the @value argument can be
+consumed by the caller and otherwise not.
+
+In any case, that change is a step in the wrong direction and I don't
+like it, sorry.
+
 -- 
-2.20.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
