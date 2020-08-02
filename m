@@ -2,70 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DEF52355D6
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 09:43:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E64752355D9
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 09:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726416AbgHBHnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 03:43:07 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:42715 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725882AbgHBHnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 03:43:06 -0400
-Received: by mail-il1-f199.google.com with SMTP id c12so11677725iln.9
-        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 00:43:06 -0700 (PDT)
+        id S1726358AbgHBHt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 03:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33812 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725880AbgHBHt6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 03:49:58 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF83C061756
+        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 00:49:57 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id k8so12737589wma.2
+        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 00:49:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ygrcvr2pVcE4Pssi2xhoGsnrMUWar3eSBDrbKhPdTA4=;
+        b=srhvhHbFtVzZIJgytVDqFouTKqelYJupQGgfXgM8V6ioJvWRHiQikLj5FSN+Ew6QSz
+         KOgPmJd4X7Q1Ms+XCE+HMjMTKDe542oum2EWk1M6bnAroOPRhNrwUCxnxSTzXLVA5U07
+         aE+hU5ox3wKjbu97uB4vaqw9FiBjQsoT0IhmAAlT87QY3JZ+0xLab0Zp6jSCymJVEw5R
+         X26R1t5E1zr19fElUM23kmp6RSoGa+gzInDnXxeUf9Tw6xqVfb6u5pEfQZyXwJodDFAO
+         8mO5wSV9/gcLhaGmb7o+BDcpFyxXqFuyqsM5X1zOvdQt5mVYTnz1KhW3HYQqaUszKzV9
+         Tu2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=eqE7M2+jLX9Z2b2ijRlZEwnniJaj49l3REpKdM5etlE=;
-        b=G5IzwKpuP+8afxdSQiNs45uBIUl1T87wZLjdHshtrQwmsD+vu72bmXfgy9KMJ+ZuRa
-         /GyrNmbfsEr9Dx0HO1fm88X3EV98MZy7BBAYDlebYG1Lx3VGlBESxZ5blGRaDbLB9cGx
-         ZeERG9e+213D5ZwbrFJfyYCFDN04WFiUF38uMWLV6VqBfvNV0C7h0llZ8cqRgKTZe4z2
-         rSc0VGyakA/Q2nu9iKtmXMwfl2nxMVUNuUgZYObU8SY47Z7fwA+JlFnN+Ac6ozt+Rcxl
-         +src95jIsJ82BtSDRfzKJELqVS2UMyggqNFdJMUUculhNkb1sbGmf9OgcO/7m6am1iio
-         2jdg==
-X-Gm-Message-State: AOAM53216EK5NOdpcDh+fvcGzF0SpB0/w0kNo0uUaqVVi/c9ChuPJXo3
-        1pM2OECK7P7SVDSwZxL5pRGyP8eRoDmNCspxj1N6HOi2/7/y
-X-Google-Smtp-Source: ABdhPJwPGH2yiYhjXOJM0c9EdW/Wpe7YJ1kZV2DXqRnNQjYhM6BG3LXmVT5ZL1XYU6JMC/FZ7hlVZVJTAwLiRQixN1DQMDrTFguA
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ygrcvr2pVcE4Pssi2xhoGsnrMUWar3eSBDrbKhPdTA4=;
+        b=db/PmH96vmYYR+2YyNU6G6ErvGcj8m11acVY8UubnnYUidImRb5xoQLUO+eIbK5QnA
+         fvCy2BFM+D4+773tO++Ydw4ujublOj+XS6xn+6T9LT02F7n+8uW/VUP2jHHKZIK4hXxY
+         rJDyMckCtdhbgTRvo8MMw4dGV90wxoWQYmD5IB2btCDMY8OYoolSdc1FswdYsT9gQtcH
+         sfKAfksafjXItJN0zNBNqkZA2Wqy4LrEasghxXKLQUAQRe8abecsluryYgdHZNPggP7O
+         uUrE7VS6WOZEjcS0HBH3hgX8S2BLhS+yhPWK7Cfwrf6amTrrc6fSyfxBEY0qDy7jrxLj
+         mrZg==
+X-Gm-Message-State: AOAM531LZPVurcWENmg4JQgOwzUJpmoBAU2LlBtRhi0V8l9cZqlyjpoY
+        0QQVWwhiPuT2QQ5P42PA9oOoTQ==
+X-Google-Smtp-Source: ABdhPJwlgi2uT9QxGsIte/MTAulpm12MyyQy962GURP3ppmJ4rCnVPT46enfy8Qic81ndW4b/3xePA==
+X-Received: by 2002:a7b:c258:: with SMTP id b24mr10548082wmj.122.1596354596373;
+        Sun, 02 Aug 2020 00:49:56 -0700 (PDT)
+Received: from debian-brgl.home (lfbn-nic-1-68-20.w2-15.abo.wanadoo.fr. [2.15.159.20])
+        by smtp.gmail.com with ESMTPSA id d14sm19175611wre.44.2020.08.02.00.49.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 Aug 2020 00:49:55 -0700 (PDT)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [net-next PATCH] net: phy: mdio-mvusb: select MDIO_DEVRES in Kconfig
+Date:   Sun,  2 Aug 2020 09:49:53 +0200
+Message-Id: <20200802074953.1529-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.26.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:2647:: with SMTP id n7mr1328983jat.61.1596354185896;
- Sun, 02 Aug 2020 00:43:05 -0700 (PDT)
-Date:   Sun, 02 Aug 2020 00:43:05 -0700
-In-Reply-To: <000000000000ea90600598c9b089@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002fa64705abe02c21@google.com>
-Subject: Re: possible deadlock in __dev_queue_xmit (3)
-From:   syzbot <syzbot+3b165dac15094065651e@syzkaller.appspotmail.com>
-To:     ap420073@gmail.com, davem@davemloft.net, jhs@mojatatu.com,
-        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-commit 1a33e10e4a95cb109ff1145098175df3113313ef
-Author: Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun May 3 05:22:19 2020 +0000
+PHYLIB is not selected by the mvusb driver but it uses mdio devres
+helpers. Explicitly select MDIO_DEVRES in this driver's Kconfig entry.
 
-    net: partially revert dynamic lockdep key changes
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 1814cff26739 ("net: phy: add a Kconfig option for mdio_devres")
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+---
+ drivers/net/phy/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10434970900000
-start commit:   d8b9faec Merge tag 'drm-fixes-2020-07-31' of git://anongit..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=12434970900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=14434970900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c0cfcf935bcc94d2
-dashboard link: https://syzkaller.appspot.com/bug?extid=3b165dac15094065651e
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=163e2c92900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=143f2bb8900000
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index e351d65533aa..7a756e0374fd 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -190,6 +190,7 @@ config MDIO_MSCC_MIIM
+ config MDIO_MVUSB
+ 	tristate "Marvell USB to MDIO Adapter"
+ 	depends on USB
++	select MDIO_DEVRES
+ 	help
+ 	  A USB to MDIO converter present on development boards for
+ 	  Marvell's Link Street family of Ethernet switches.
+-- 
+2.26.1
 
-Reported-by: syzbot+3b165dac15094065651e@syzkaller.appspotmail.com
-Fixes: 1a33e10e4a95 ("net: partially revert dynamic lockdep key changes")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
