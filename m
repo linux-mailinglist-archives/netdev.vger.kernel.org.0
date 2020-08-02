@@ -2,93 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0F823580D
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 17:20:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13B6D23580E
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 17:20:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726925AbgHBPSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 11:18:52 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:31783 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726899AbgHBPSw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 11:18:52 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1596381531; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=lF5CK9APGgA84oCW0O2cjEHYiYVBHxTZBI+qtWD5O9Q=;
- b=U38o+KbpvJOA+hYLPTJd+8kADpotYtT7eGyzyvVJ6EWJwtJfP3+m90HeJCvjggEQSbO02Yl5
- iJiGE4VOH//+Wzwy9TW7QA38Z/hT0OBe3kGdVgE9XIYlIl84C/7guM/xc6yaJt44EB3kzQ94
- rOBXPsQemIxpMWcaF1gRoHkIGic=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-east-1.postgun.com with SMTP id
- 5f26d949798b102968010183 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 02 Aug 2020 15:18:33
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 65606C433CA; Sun,  2 Aug 2020 15:18:32 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 569C5C433C6;
-        Sun,  2 Aug 2020 15:18:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 569C5C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726934AbgHBPS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 11:18:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726899AbgHBPSz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 11:18:55 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC664C06174A
+        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 08:18:54 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id s26so16866614pfm.4
+        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 08:18:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=i9iwRrf2lwDvUhKiNHX4e8D3124Rn0HhgZZ60jUfztc=;
+        b=SpCFyhG1sl1/TTz3xmIL6IyApkITZTT0yZaqu0MWt7PR+uTbp4SMaw0K4k5OX7EmHN
+         oiO9dTUHrxq4Y/OVTO6Gr0Bt7s1oxRaCJ/aL2Hsj3ednJB7GV+LzTW0ocVEmyTYucSI+
+         d5X8Mh75SZy33zHzRq7rIh7u0IxoGlqo0Fq7JdaBIFaTbi+fNDxP7ckFe2WphQGX0PO7
+         1odXWzUjVhz76TT0UeOPDuOwLCKMHdJ05mhDqKZUqVrR3FnIscT0Ne7v7UUqU3vByRne
+         72u2P7mxoeZqG+XuxDhnZavIN9fa6j+EVbROT94qigELIehtY+VIgIcs9kTR6GI4wkVc
+         icrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=i9iwRrf2lwDvUhKiNHX4e8D3124Rn0HhgZZ60jUfztc=;
+        b=NPDUOSurxfPJwnuwzxBVvQiI0zPodzqGb40kWLdU4WwkAsV63Ep6qqe9xNREexnKKp
+         NIpZMLdvMcyoSfSxi6yEDzCiYReyu27H5xHqG+YxxMe5rMc2C/Ci48YHgdtBllwzYCX0
+         rTVdrAD93uz6uAF7hU/sH1UXQvZ/lCcaHuL+2E/xTUgMcH9oeQJHZIYaHqmbvj3o2Egm
+         uUSsPCnaWtLVUGAsoWGvdKnhqTIf9Wa1XCXkAzFBebf1vB90s8swsfjhMZb0FxWOT+hY
+         Qek3p6tt9y1HNeXmPKHgMNX8ATRB3Py/17Z8300m+pD3a1UeJNadDBTeYS10/unqlhOr
+         f2fg==
+X-Gm-Message-State: AOAM5301dwA6ts/+KUj1jhxT5BMzdlzQqs2q1UYMm6eUl1arQdaEqzTj
+        bZxtl7iVXAl1nFc111ZIP/0=
+X-Google-Smtp-Source: ABdhPJxnYAaQLN0O6lSPmXspAwt6vLi6oHbO+q38WAA0+DjlnoNSjc4tzBPiNbSEwW9B7zy89WW+hA==
+X-Received: by 2002:a65:6706:: with SMTP id u6mr11424768pgf.69.1596381534532;
+        Sun, 02 Aug 2020 08:18:54 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id m190sm15611260pfm.89.2020.08.02.08.18.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 Aug 2020 08:18:54 -0700 (PDT)
+Date:   Sun, 2 Aug 2020 08:18:51 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
+        Petr Machata <petrm@mellanox.com>
+Subject: Re: [PATCH v3 3/9] net: dsa: mv88e6xxx: Use generic helper function
+Message-ID: <20200802151851.GC14759@hoboy>
+References: <20200730080048.32553-1-kurt@linutronix.de>
+ <20200730080048.32553-4-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v1] hostap: use generic power management
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200721150547.371763-1-vaibhavgupta40@gmail.com>
-References: <20200721150547.371763-1-vaibhavgupta40@gmail.com>
-To:     Vaibhav Gupta <vaibhavgupta40@gmail.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, Jouni Malinen <j@w1.fi>,
-        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200802151832.65606C433CA@smtp.codeaurora.org>
-Date:   Sun,  2 Aug 2020 15:18:32 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200730080048.32553-4-kurt@linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vaibhav Gupta <vaibhavgupta40@gmail.com> wrote:
-
-> Drivers using legacy power management .suspen()/.resume() callbacks
-> have to manage PCI states and device's PM states themselves. They also
-> need to take care of standard configuration registers.
+On Thu, Jul 30, 2020 at 10:00:42AM +0200, Kurt Kanzenbach wrote:
+> In order to reduce code duplication between ptp drivers, generic helper
+> functions were introduced. Use them.
 > 
-> Switch to generic power management framework using a single
-> "struct dev_pm_ops" variable to take the unnecessary load from the driver.
-> This also avoids the need for the driver to directly call most of the PCI
-> helper functions and device power state control functions as through
-> the generic framework, PCI Core takes care of the necessary operations,
-> and drivers are required to do only device-specific jobs.
-> 
-> Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 
-Patch applied to wireless-drivers-next.git, thanks.
-
-99aaa1aafa5c hostap: use generic power management
-
--- 
-https://patchwork.kernel.org/patch/11675851/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Tested-by: Richard Cochran <richardcochran@gmail.com>
