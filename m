@@ -2,74 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEC8923563D
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 12:11:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59B6A23562F
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 12:09:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727994AbgHBKKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 06:10:30 -0400
-Received: from rdslmr.btconnect.com ([62.239.164.79]:1590 "EHLO
-        mail.btconnect.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726479AbgHBKK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 06:10:29 -0400
-X-Greylist: delayed 446 seconds by postgrey-1.27 at vger.kernel.org; Sun, 02 Aug 2020 06:10:29 EDT
-Received: from mail.btconnect.com (rd11780omr11.iuser.iroot.adidom.com [10.187.89.172])
-        by rd11780slr11.dci.bt.com (MOS 4.4.8-GA)
-        with ESMTP id ASH29774;
-        Sun, 2 Aug 2020 11:01:57 +0100
-Received: (from localhost [127.0.0.1])
-        by rd11780omr11.dci.bt.com (MOS 4.4.8-GA)
-        id PZJ32275;
-        Sun,  2 Aug 2020 11:01:56 +0100 (BST)
-Received: from x590fefe6.dyn.telefonica.de (EHLO User) ([89.15.239.230])
-        by rd11780omr11.dci.bt.com
-        with ESMTP id PZJ31893 (AUTH package@btconnect.com);
-        Sun, 02 Aug 2020 11:01:55 +0100 (BST)
-Reply-To: <johnwoods272@gmail.com>
-From:   "John Woods" <package@btconnect.com>
-Subject: Proposal
-Date:   Sun, 2 Aug 2020 12:01:54 +0200
+        id S1728051AbgHBKI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 06:08:57 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:17602 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726376AbgHBKI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 06:08:57 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 072A19EX003208;
+        Sun, 2 Aug 2020 03:08:52 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=j1sqcAl/MjCahmJUR9UG+78MePj0HH/TnCiyu8tipeE=;
+ b=ymdq4DEVIYEmJVn2UjwP0nFC0QiT4wos78xAlhGIuJ0/8EKwcSkndS6HWgq/WDIvSD+F
+ e2DhSIdhgmJMipu6GrLVtyWM082BPJeT3Dqs8XylYQdb/Zokj0XUorMz+LTjBYH//0bO
+ LDfWBOsrPRq8uj4cix3RJoj7Qy/tpvtgH08B5AC1pgc/O6+stLJoU0YG6db7MfD/kPHp
+ W9RJ3/UHRtxkQt+4wivt3FAyfIqTyF4pnjMfbpS9wo4P6tdAn4wb0hQQqk1+OTHbDmnl
+ BpNny0vGWXvhibRPgEXd3Up5LSaUen9U54CY18Plo4Leu+RIDElX3aWZmLjH7Ckhvigi HA== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 32n8fejkvf-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 02 Aug 2020 03:08:51 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 2 Aug
+ 2020 03:08:50 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 2 Aug
+ 2020 03:08:49 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 2 Aug 2020 03:08:49 -0700
+Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.193.54.28])
+        by maili.marvell.com (Postfix) with ESMTP id 7AE813F703F;
+        Sun,  2 Aug 2020 03:08:46 -0700 (PDT)
+From:   Igor Russkikh <irusskikh@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Denis Bolotin <dbolotin@marvell.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH v5 net-next 00/10] qed: introduce devlink health support
+Date:   Sun, 2 Aug 2020 13:08:24 +0300
+Message-ID: <20200802100834.383-1-irusskikh@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="Windows-1251"
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-X-MSMail-Priority: Normal
-X-Mailer: Microsoft Outlook Express 6.00.2600.0000
-X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
-Message-Id: <202008021001.PZJ31893@rd11780omr11.dci.bt.com>
-X-Mirapoint-IP-Reputation: reputation=Fair-1,
-        source=Queried,
-        refid=tid=0001.0A782F8E.5F268F02.000C,
-        actions=TAG
-X-Junkmail: UCE(52)
-X-Junkmail-Status: score=52/50, host=rd11780omr11.dci.bt.com
-X-Junkmail-Signature-Raw: score=bulk(2),
-        refid=str=0001.0A782F21.5F268F0A.007F,ss=3,sh,re=0.000,recu=0.000,reip=0.000,cl=3,cld=1,fgs=16,
-        ip=89.15.239.230,
-        so=2016-11-06 16:00:04,
-        dmn=2013-03-21 17:37:32,
-        mode=multiengine
-X-Junkmail-IWF: false
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-02_06:2020-07-31,2020-08-02 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Sir, Madam,
- 
+This is a followup implementation after series
 
-Proposal
+https://patchwork.ozlabs.org/project/netdev/cover/20200514095727.1361-1-irusskikh@marvell.com/
 
- 
-I am Mr.John Woods, a Consultant with the Department of Power and Steel here in Spain . I have been contracted by a wealthy individual and serving  government official from somewhere in Africa who is interested in  engaging your services for investment of a large volume of fund (Ten Million Five Hundred Thousand Dollars ) Which he Deposited with a Finance Company here in Spain . You will act as the beneficiary of the fund to carry out the investment of the fund in any business venture you consider lucrative.
+This is an implementation of devlink health infrastructure.
 
-If you are capable of handling any type of investment in your country, Please, get back to me immediately and send your telephone and fax numbers to enable me communicate with you and provide you with further details.
+With this we are now able to report HW errors to devlink, and it'll take
+its own actions depending on user configuration to capture and store the
+dump at the bad moment, and to request the driver to recover the device.
 
-Note that 30% of the fund is your share (Commission) for securing the fund from the security company before the investment of the fund shall be carried out. This is necessary because the investor as a serving government official in his country of origin is eager to transfer ownership of the fund to you because he is not expected in his official capacity to own such huge sum of money.
+So far we do not differentiate global device failures or specific PCI
+function failures. This means that some errors specific to one physical
+function will affect an entire device. This is not yet fully designed
+and verified, will followup in future.
 
-I will appreciate an urgent response from you.
+Solution was verified with artificial HW errors generated, existing
+tools for dump analysis could be used.
 
-Yours faithfully,
+v5: improved patch 4 description
+v4:
+ - commit message and other fixes after Jiri's comments
+ - removed one patch (will send to net)
+v3: fix uninit var usage in patch 11
+v2: fix #include issue from kbuild test robot.
 
-Mr.John Woods
+Igor Russkikh (10):
+  qed: move out devlink logic into a new file
+  qed/qede: make devlink survive recovery
+  qed: fix kconfig help entries
+  qed: implement devlink info request
+  qed: health reporter init deinit seq
+  qed: use devlink logic to report errors
+  qed*: make use of devlink recovery infrastructure
+  qed: implement devlink dump
+  qed: align adjacent indent
+  qede: make driver reliable on unload after failures
+
+ drivers/net/ethernet/qlogic/Kconfig           |   5 +-
+ drivers/net/ethernet/qlogic/qed/Makefile      |   1 +
+ drivers/net/ethernet/qlogic/qed/qed.h         |   3 +-
+ drivers/net/ethernet/qlogic/qed/qed_dev.c     |   9 +
+ drivers/net/ethernet/qlogic/qed/qed_devlink.c | 259 ++++++++++++++++++
+ drivers/net/ethernet/qlogic/qed/qed_devlink.h |  20 ++
+ drivers/net/ethernet/qlogic/qed/qed_main.c    | 116 +-------
+ drivers/net/ethernet/qlogic/qede/qede.h       |   2 +
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  38 ++-
+ include/linux/qed/qed_if.h                    |  23 +-
+ 10 files changed, 347 insertions(+), 129 deletions(-)
+ create mode 100644 drivers/net/ethernet/qlogic/qed/qed_devlink.c
+ create mode 100644 drivers/net/ethernet/qlogic/qed/qed_devlink.h
+
+-- 
+2.17.1
+
