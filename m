@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32342235633
+	by mail.lfdr.de (Postfix) with ESMTP id A9172235634
 	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 12:09:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728111AbgHBKJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 06:09:08 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:16156 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726416AbgHBKJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 06:09:08 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 072A0l3S011680;
-        Sun, 2 Aug 2020 03:09:04 -0700
+        id S1728121AbgHBKJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 06:09:13 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:5026 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726416AbgHBKJM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 06:09:12 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 072A1ALR003235;
+        Sun, 2 Aug 2020 03:09:08 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=qh21KnKlRyr52ng9aGWLu9rcmu2OBwiLhHb5lwXns04=;
- b=wMOXxchko+mpU2oLx5QZX/W1oHnxW9MCKQVkEq8l8B0LeCx13iKmDHjQghrLzN8YVYv8
- yEicc4MYiA3uFD2rMvVkLh9QNd2vzZRz9LZ5hvTNMJbUo3FtO7zkdZZVY8h2mgT+zf0i
- OWbuV6G0NLqve/ZbhBYmfUemvr2+otc2Cba0GskHoYLX8hTmPCAGK924uPw6awpTHIhv
- eFRoBvb2/TTQXlFKryLesHfRkOceRPqFUxKIBAJFrmIfQ5edzHYAYpxYqUZawaVTm7y4
- 9LW3DVrtmREHLU9l3vHvMZRhFPXe3XiQKeX5LCB1BSFxM5mus+J9LvlztsRCKtQGTUIn yA== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 32n6cgb0yu-1
+ content-type; s=pfpt0818; bh=fLBUotQg2N/82875j9aa8lvohnzKH+3ltBv2GckmSLM=;
+ b=jNPcy8R8XpGq2eLfykJPCNWJ19h7jobv4jfZbB3kAmiGLWYhwuEYmy5a8QkzYREMRaIE
+ I2EHibiil4XE2GfHRS0wLDrGCt43MPDzp+UQYWr8dF7OUbAeDzDH9U5q/PYwWR6+MgoA
+ E9nwbcAcWUAtGEqFFpphiTKgrMHblbq0J027Cg7sSju039HVaLpRhamI9BX4EXUl9sMS
+ OMvUM18PIbmcTDFvWoOa0Z1SFfxhokVK71OcggDXnSnNuup59uJSdGr5xf6RZgnoQ263
+ OUbXikKec2DxqyqTfc22nw6BxdI8EK/p/5xegEomGtDmk49OWQrvjxm/H3kYJVnW0ADR 4A== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0b-0016f401.pphosted.com with ESMTP id 32n8fejkwe-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 02 Aug 2020 03:09:04 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 2 Aug
- 2020 03:09:03 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 2 Aug
- 2020 03:09:02 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 2 Aug 2020 03:09:02 -0700
+        Sun, 02 Aug 2020 03:09:08 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 2 Aug
+ 2020 03:09:07 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 2 Aug
+ 2020 03:09:06 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 2 Aug 2020 03:09:06 -0700
 Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.193.54.28])
-        by maili.marvell.com (Postfix) with ESMTP id B183B3F703F;
-        Sun,  2 Aug 2020 03:08:59 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 0A8633F7044;
+        Sun,  2 Aug 2020 03:09:02 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
@@ -49,9 +49,9 @@ CC:     "David S . Miller" <davem@davemloft.net>,
         Igor Russkikh <irusskikh@marvell.com>,
         Alexander Lobakin <alobakin@marvell.com>,
         Michal Kalderon <michal.kalderon@marvell.com>
-Subject: [PATCH v5 net-next 04/10] qed: implement devlink info request
-Date:   Sun, 2 Aug 2020 13:08:28 +0300
-Message-ID: <20200802100834.383-5-irusskikh@marvell.com>
+Subject: [PATCH v5 net-next 05/10] qed: health reporter init deinit seq
+Date:   Sun, 2 Aug 2020 13:08:29 +0300
+Message-ID: <20200802100834.383-6-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200802100834.383-1-irusskikh@marvell.com>
 References: <20200802100834.383-1-irusskikh@marvell.com>
@@ -64,162 +64,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Here we return existing fw & mfw versions, we also fetch device's
-serial number:
+Here we declare health reporter ops (empty for now)
+and register these in qed probe and remove callbacks.
 
-~$ sudo ~/iproute2/devlink/devlink  dev info
-pci/0000:01:00.0:
-  driver qed
-  serial_number REE1915E44552
-  versions:
-      running:
-        fw 8.42.2.0
-      stored:
-        fw.mgmt 8.52.10.0
-pci/0000:01:00.1:
-  driver qed
-  serial_number REE1915E44552
-  versions:
-      running:
-        fw 8.42.2.0
-      stored:
-        fw.mgmt 8.52.10.0
-
-MFW and FW are different firmwares on device.
-Management is a firmware responsible for link configuration and
-various control plane features. Its permanent and resides in NVM.
-
-Running FW (or fastpath FW) is an embedded microprogram implementing
-all the packet processing, offloads, etc. This FW is being loaded
-on each start by the driver from FW binary blob.
-
-The base device specific structure (qed_dev_info) was not directly
-available to the base driver before. Thus, here we create and store
-a private copy of this structure in qed_dev root object to
-access the data.
+This way we get devlink attached to all kind of qed* PCI
+device entities: networking or storage offload entity.
 
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
 Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed.h         |  1 +
- drivers/net/ethernet/qlogic/qed/qed_dev.c     |  9 ++++
- drivers/net/ethernet/qlogic/qed/qed_devlink.c | 50 ++++++++++++++++++-
- drivers/net/ethernet/qlogic/qed/qed_main.c    |  1 +
- 4 files changed, 60 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_devlink.c | 34 +++++++++++++++++++
+ drivers/net/ethernet/qlogic/qed/qed_devlink.h |  3 ++
+ include/linux/qed/qed_if.h                    |  1 +
+ 3 files changed, 38 insertions(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
-index b6ce1488abcc..ccd789eeda3e 100644
---- a/drivers/net/ethernet/qlogic/qed/qed.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed.h
-@@ -807,6 +807,7 @@ struct qed_dev {
- 	struct qed_llh_info *p_llh_info;
- 
- 	/* Linux specific here */
-+	struct qed_dev_info		common_dev_info;
- 	struct  qede_dev		*edev;
- 	struct  pci_dev			*pdev;
- 	u32 flags;
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-index b3c9ebaf2280..00f2d7f13de6 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-@@ -3973,6 +3973,7 @@ static int qed_hw_get_nvm_info(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
- 	struct qed_mcp_link_speed_params *ext_speed;
- 	struct qed_mcp_link_capabilities *p_caps;
- 	struct qed_mcp_link_params *link;
-+	int i;
- 
- 	/* Read global nvm_cfg address */
- 	nvm_cfg_addr = qed_rd(p_hwfn, p_ptt, MISC_REG_GEN_PURP_CR0);
-@@ -4290,6 +4291,14 @@ static int qed_hw_get_nvm_info(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
- 		__set_bit(QED_DEV_CAP_ROCE,
- 			  &p_hwfn->hw_info.device_capabilities);
- 
-+	/* Read device serial number information from shmem */
-+	addr = MCP_REG_SCRATCH + nvm_cfg1_offset +
-+		offsetof(struct nvm_cfg1, glob) +
-+		offsetof(struct nvm_cfg1_glob, serial_number);
-+
-+	for (i = 0; i < 4; i++)
-+		p_hwfn->hw_info.part_num[i] = qed_rd(p_hwfn, p_ptt, addr + i * 4);
-+
- 	return qed_mcp_fill_shmem_func_info(p_hwfn, p_ptt);
- }
- 
 diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.c b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-index a62c47c61edf..57ef2c56c884 100644
+index 57ef2c56c884..8d9150ecb580 100644
 --- a/drivers/net/ethernet/qlogic/qed/qed_devlink.c
 +++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-@@ -45,7 +45,55 @@ static const struct devlink_param qed_devlink_params[] = {
- 			     qed_dl_param_get, qed_dl_param_set, NULL),
+@@ -14,6 +14,36 @@ enum qed_devlink_param_id {
+ 	QED_DEVLINK_PARAM_ID_IWARP_CMT,
  };
  
--static const struct devlink_ops qed_dl_ops;
-+static int qed_devlink_info_get(struct devlink *devlink,
-+				struct devlink_info_req *req,
-+				struct netlink_ext_ack *extack)
++static const struct devlink_health_reporter_ops qed_fw_fatal_reporter_ops = {
++		.name = "fw_fatal",
++};
++
++#define QED_REPORTER_FW_GRACEFUL_PERIOD 1200000
++
++void qed_fw_reporters_create(struct devlink *devlink)
 +{
-+	struct qed_devlink *qed_dl = devlink_priv(devlink);
-+	struct qed_dev *cdev = qed_dl->cdev;
-+	struct qed_dev_info *dev_info;
-+	char buf[100];
-+	int err;
++	struct qed_devlink *dl = devlink_priv(devlink);
 +
-+	dev_info = &cdev->common_dev_info;
-+
-+	err = devlink_info_driver_name_put(req, KBUILD_MODNAME);
-+	if (err)
-+		return err;
-+
-+	memcpy(buf, cdev->hwfns[0].hw_info.part_num, sizeof(cdev->hwfns[0].hw_info.part_num));
-+	buf[sizeof(cdev->hwfns[0].hw_info.part_num)] = 0;
-+
-+	if (buf[0]) {
-+		err = devlink_info_serial_number_put(req, buf);
-+		if (err)
-+			return err;
++	dl->fw_reporter = devlink_health_reporter_create(devlink, &qed_fw_fatal_reporter_ops,
++							 QED_REPORTER_FW_GRACEFUL_PERIOD, dl);
++	if (IS_ERR(dl->fw_reporter)) {
++		DP_NOTICE(dl->cdev, "Failed to create fw reporter, err = %ld\n",
++			  PTR_ERR(dl->fw_reporter));
++		dl->fw_reporter = NULL;
 +	}
-+
-+	snprintf(buf, sizeof(buf), "%d.%d.%d.%d",
-+		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_3),
-+		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_2),
-+		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_1),
-+		 GET_MFW_FIELD(dev_info->mfw_rev, QED_MFW_VERSION_0));
-+
-+	err = devlink_info_version_stored_put(req,
-+					      DEVLINK_INFO_VERSION_GENERIC_FW_MGMT, buf);
-+	if (err)
-+		return err;
-+
-+	snprintf(buf, sizeof(buf), "%d.%d.%d.%d",
-+		 dev_info->fw_major,
-+		 dev_info->fw_minor,
-+		 dev_info->fw_rev,
-+		 dev_info->fw_eng);
-+
-+	return devlink_info_version_running_put(req,
-+						DEVLINK_INFO_VERSION_GENERIC_FW, buf);
 +}
 +
-+static const struct devlink_ops qed_dl_ops = {
-+	.info_get = qed_devlink_info_get,
-+};
- 
- struct devlink *qed_devlink_register(struct qed_dev *cdev)
++void qed_fw_reporters_destroy(struct devlink *devlink)
++{
++	struct qed_devlink *dl = devlink_priv(devlink);
++	struct devlink_health_reporter *rep;
++
++	rep = dl->fw_reporter;
++
++	if (!IS_ERR_OR_NULL(rep))
++		devlink_health_reporter_destroy(rep);
++}
++
+ static int qed_dl_param_get(struct devlink *dl, u32 id,
+ 			    struct devlink_param_gset_ctx *ctx)
  {
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index d6f76421379b..d1a559ccf516 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -479,6 +479,7 @@ int qed_fill_dev_info(struct qed_dev *cdev,
- 	}
+@@ -126,6 +156,8 @@ struct devlink *qed_devlink_register(struct qed_dev *cdev)
+ 	devlink_params_publish(dl);
+ 	cdev->iwarp_cmt = false;
  
- 	dev_info->mtu = hw_info->mtu;
-+	cdev->common_dev_info = *dev_info;
++	qed_fw_reporters_create(dl);
++
+ 	return dl;
  
- 	return 0;
- }
+ err_unregister:
+@@ -142,6 +174,8 @@ void qed_devlink_unregister(struct devlink *devlink)
+ 	if (!devlink)
+ 		return;
+ 
++	qed_fw_reporters_destroy(devlink);
++
+ 	devlink_params_unregister(devlink, qed_devlink_params,
+ 				  ARRAY_SIZE(qed_devlink_params));
+ 
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.h b/drivers/net/ethernet/qlogic/qed/qed_devlink.h
+index c79dc6bfa194..c68ecf778826 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_devlink.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.h
+@@ -12,4 +12,7 @@
+ struct devlink *qed_devlink_register(struct qed_dev *cdev);
+ void qed_devlink_unregister(struct devlink *devlink);
+ 
++void qed_fw_reporters_create(struct devlink *devlink);
++void qed_fw_reporters_destroy(struct devlink *devlink);
++
+ #endif
+diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
+index d8368e1770df..30fe06fe06a0 100644
+--- a/include/linux/qed/qed_if.h
++++ b/include/linux/qed/qed_if.h
+@@ -782,6 +782,7 @@ enum qed_nvm_flash_cmd {
+ 
+ struct qed_devlink {
+ 	struct qed_dev *cdev;
++	struct devlink_health_reporter *fw_reporter;
+ };
+ 
+ struct qed_common_cb_ops {
 -- 
 2.17.1
 
