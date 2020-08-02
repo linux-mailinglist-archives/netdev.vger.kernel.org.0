@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 559252357D8
+	by mail.lfdr.de (Postfix) with ESMTP id C0F4F2357D9
 	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 17:01:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726799AbgHBO73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 10:59:29 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:36483 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726041AbgHBO73 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Aug 2020 10:59:29 -0400
+        id S1726797AbgHBO75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 10:59:57 -0400
+Received: from mail29.static.mailgun.info ([104.130.122.29]:17966 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725951AbgHBO75 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 10:59:57 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1596380368; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1596380397; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=BKtA1y2+cg1n0Oxr+QAJxIgbuRnTbM/9xV3TLuWzV9E=;
- b=EKu52tCC6U0bVgjjyZo7VC7wt5MrQfGq5OXZmPGH0dyd1Y0vNWw//BS1EnGOSZglsqWikb/4
- jEukCk8ookm5HegAxXnt1gJKCpROElUVHyIzX2S1U/mDLivL/d9Lnfbr8GSJDUzLZ0ulFWJE
- 8WvKpib1m9h+gBVyFr1KkGCfP8M=
-X-Mailgun-Sending-Ip: 69.72.43.7
+ Content-Type: Sender; bh=U6gNUw8AiHtfEQJ6ccQRBNs+Stlh4D0vi0UlY1zrQy4=;
+ b=mRD0S8jtGVUCuiHfBIjRhox381bJqD14fpidImOz6qHzQQn/V2PGJpAnR8Lko/BqFR8kVo3D
+ iyI6qnY7yM38Wic4e1d3bP6W6gr7LXdBtu7CAxa4xXV7vfvOFkEpzF5LtOol+97yOCfBJb8g
+ oOYcvIUzpZqYkPaQEfEOJ/aYEIg=
+X-Mailgun-Sending-Ip: 104.130.122.29
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 5f26d4c621feae908b0648e8 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 02 Aug 2020 14:59:18
+ smtp-out-n13.prod.us-west-2.postgun.com with SMTP id
+ 5f26d4ec21feae908b066b8e (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 02 Aug 2020 14:59:56
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 0818CC43395; Sun,  2 Aug 2020 14:59:18 +0000 (UTC)
+        id 48124C433C6; Sun,  2 Aug 2020 14:59:56 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -37,60 +37,172 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 61ABAC433C9;
-        Sun,  2 Aug 2020 14:59:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 61ABAC433C9
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C9A22C433C9;
+        Sun,  2 Aug 2020 14:59:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C9A22C433C9
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v1] prism54: islpci_hotplug: use generic power management
+Subject: Re: [PATCH] prism54: switch from 'pci_' to 'dma_' API
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200721125514.145607-1-vaibhavgupta40@gmail.com>
-References: <20200721125514.145607-1-vaibhavgupta40@gmail.com>
-To:     Vaibhav Gupta <vaibhavgupta40@gmail.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Shuah Khan <skhan@linuxfoundation.org>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
+In-Reply-To: <20200722104534.30760-1-christophe.jaillet@wanadoo.fr>
+References: <20200722104534.30760-1-christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     mcgrof@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200802145918.0818CC43395@smtp.codeaurora.org>
-Date:   Sun,  2 Aug 2020 14:59:18 +0000 (UTC)
+Message-Id: <20200802145956.48124C433C6@smtp.codeaurora.org>
+Date:   Sun,  2 Aug 2020 14:59:56 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vaibhav Gupta <vaibhavgupta40@gmail.com> wrote:
+Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
 
-> Drivers using legacy power management .suspen()/.resume() callbacks
-> have to manage PCI states and device's PM states themselves. They also
-> need to take care of standard configuration registers.
+> The wrappers in include/linux/pci-dma-compat.h should go away.
 > 
-> Switch to generic power management framework using a single
-> "struct dev_pm_ops" variable to take the unnecessary load from the driver.
-> This also avoids the need for the driver to directly call most of the PCI
-> helper functions and device power state control functions as through
-> the generic framework, PCI Core takes care of the necessary operations,
-> and drivers are required to do only device-specific jobs.
+> The patch has been generated with the coccinelle script below and has been
+> hand modified to replace GFP_ with a correct flag.
+> It has been compile tested.
 > 
-> Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+> When memory is allocated in 'islpci_alloc_memory()' (islpci_dev.c),
+> GFP_KERNEL can be used because it is only called from a probe function
+> and no spin_lock is taken in the between.
+> 
+> The call chain is:
+>    prism54_probe                   (probe function, in 'islpci_hotplug.c')
+>       --> islpci_setup             (in 'islpci_dev.c')
+>          --> islpci_alloc_memory   (in 'islpci_dev.c')
+> 
+> @@
+> @@
+> -    PCI_DMA_BIDIRECTIONAL
+> +    DMA_BIDIRECTIONAL
+> 
+> @@
+> @@
+> -    PCI_DMA_TODEVICE
+> +    DMA_TO_DEVICE
+> 
+> @@
+> @@
+> -    PCI_DMA_FROMDEVICE
+> +    DMA_FROM_DEVICE
+> 
+> @@
+> @@
+> -    PCI_DMA_NONE
+> +    DMA_NONE
+> 
+> @@
+> expression e1, e2, e3;
+> @@
+> -    pci_alloc_consistent(e1, e2, e3)
+> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+> 
+> @@
+> expression e1, e2, e3;
+> @@
+> -    pci_zalloc_consistent(e1, e2, e3)
+> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_free_consistent(e1, e2, e3, e4)
+> +    dma_free_coherent(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_map_single(e1, e2, e3, e4)
+> +    dma_map_single(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_single(e1, e2, e3, e4)
+> +    dma_unmap_single(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4, e5;
+> @@
+> -    pci_map_page(e1, e2, e3, e4, e5)
+> +    dma_map_page(&e1->dev, e2, e3, e4, e5)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_page(e1, e2, e3, e4)
+> +    dma_unmap_page(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_map_sg(e1, e2, e3, e4)
+> +    dma_map_sg(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_sg(e1, e2, e3, e4)
+> +    dma_unmap_sg(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
+> +    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_single_for_device(e1, e2, e3, e4)
+> +    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
+> +    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
+> +    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2;
+> @@
+> -    pci_dma_mapping_error(e1, e2)
+> +    dma_mapping_error(&e1->dev, e2)
+> 
+> @@
+> expression e1, e2;
+> @@
+> -    pci_set_dma_mask(e1, e2)
+> +    dma_set_mask(&e1->dev, e2)
+> 
+> @@
+> expression e1, e2;
+> @@
+> -    pci_set_consistent_dma_mask(e1, e2)
+> +    dma_set_coherent_mask(&e1->dev, e2)
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-81cf72b74671 prism54: islpci_hotplug: use generic power management
+84d47961a02c prism54: switch from 'pci_' to 'dma_' API
 
 -- 
-https://patchwork.kernel.org/patch/11675653/
+https://patchwork.kernel.org/patch/11678187/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
