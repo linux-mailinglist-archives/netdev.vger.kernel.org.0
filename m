@@ -2,56 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A6DB23568F
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 13:16:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBBFC2356E2
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 14:22:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728322AbgHBLPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 07:15:51 -0400
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:36431 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728291AbgHBLPt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 07:15:49 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01355;MF=tianjia.zhang@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0U4T1Vgj_1596366944;
-Received: from localhost(mailfrom:tianjia.zhang@linux.alibaba.com fp:SMTPD_---0U4T1Vgj_1596366944)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 02 Aug 2020 19:15:44 +0800
-From:   Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-To:     dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
-        davem@davemloft.net, kuba@kernel.org, ricardo.farrington@cavium.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianjia.zhang@alibaba.com
-Subject: [PATCH] liquidio: Fix wrong return value in cn23xx_get_pf_num()
-Date:   Sun,  2 Aug 2020 19:15:44 +0800
-Message-Id: <20200802111544.5520-1-tianjia.zhang@linux.alibaba.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728249AbgHBMWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 08:22:44 -0400
+Received: from smtp11.smtpout.orange.fr ([80.12.242.133]:44801 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726578AbgHBMWj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 08:22:39 -0400
+Received: from localhost.localdomain ([93.22.148.198])
+        by mwinf5d46 with ME
+        id AcNV230034H42jh03cNV1n; Sun, 02 Aug 2020 14:22:35 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 02 Aug 2020 14:22:35 +0200
+X-ME-IP: 93.22.148.198
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        pillair@codeaurora.org
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] ath10k: Fix the size used in a 'dma_free_coherent()' call in an error handling path
+Date:   Sun,  2 Aug 2020 14:22:27 +0200
+Message-Id: <20200802122227.678637-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On an error exit path, a negative error code should be returned
-instead of a positive return value.
+Update the size used in 'dma_free_coherent()' in order to match the one
+used in the corresponding 'dma_alloc_coherent()'.
 
-Fixes: 0c45d7fe12c7e ("liquidio: fix use of pf in pass-through mode in a virtual machine")
-Cc: Rick Farrington <ricardo.farrington@cavium.com>
-Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Fixes: 1863008369ae ("ath10k: fix shadow register implementation for WCN3990")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/net/ethernet/cavium/liquidio/cn23xx_pf_device.c | 2 +-
+This patch looks obvious to me, but commit 1863008369ae looks also simple.
+So it is surprising that such a "typo" slipped in.
+---
+ drivers/net/wireless/ath/ath10k/ce.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_device.c b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_device.c
-index 43d11c38b38a..4cddd628d41b 100644
---- a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_device.c
-+++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_device.c
-@@ -1167,7 +1167,7 @@ static int cn23xx_get_pf_num(struct octeon_device *oct)
- 		oct->pf_num = ((fdl_bit >> CN23XX_PCIE_SRIOV_FDL_BIT_POS) &
- 			       CN23XX_PCIE_SRIOV_FDL_MASK);
- 	} else {
--		ret = EINVAL;
-+		ret = -EINVAL;
- 
- 		/* Under some virtual environments, extended PCI regs are
- 		 * inaccessible, in which case the above read will have failed.
+diff --git a/drivers/net/wireless/ath/ath10k/ce.c b/drivers/net/wireless/ath/ath10k/ce.c
+index 294fbc1e89ab..e6e0284e4783 100644
+--- a/drivers/net/wireless/ath/ath10k/ce.c
++++ b/drivers/net/wireless/ath/ath10k/ce.c
+@@ -1555,7 +1555,7 @@ ath10k_ce_alloc_src_ring(struct ath10k *ar, unsigned int ce_id,
+ 		ret = ath10k_ce_alloc_shadow_base(ar, src_ring, nentries);
+ 		if (ret) {
+ 			dma_free_coherent(ar->dev,
+-					  (nentries * sizeof(struct ce_desc_64) +
++					  (nentries * sizeof(struct ce_desc) +
+ 					   CE_DESC_RING_ALIGN),
+ 					  src_ring->base_addr_owner_space_unaligned,
+ 					  base_addr);
 -- 
-2.26.2
+2.25.1
 
