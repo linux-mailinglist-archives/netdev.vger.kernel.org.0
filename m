@@ -2,126 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD74F2354F1
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 05:08:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADCF22354F4
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 05:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728014AbgHBDH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Aug 2020 23:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47466 "EHLO
+        id S1727116AbgHBDNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Aug 2020 23:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbgHBDH5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 23:07:57 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4AD5C06174A;
-        Sat,  1 Aug 2020 20:07:57 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id a79so643000pfa.8;
-        Sat, 01 Aug 2020 20:07:57 -0700 (PDT)
+        with ESMTP id S1725883AbgHBDNp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Aug 2020 23:13:45 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1D74C06174A;
+        Sat,  1 Aug 2020 20:13:45 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id t6so18080340pgq.1;
+        Sat, 01 Aug 2020 20:13:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=1j8EZXvJ6xp75+ihAeh4iIkHpaXz+pr5TsFcys/H1Yk=;
-        b=UXYgk6JT1tLyuw3n039g+FdSYwm92nm+sojh0SwSOaYu8YDFKoihftnHKhvNz1Rd0o
-         5WBYYI8T2Oz6ZGJcg6WhrJsccGOzL/fKEOVIptdUExKX/YTPkAydlo9oWnA2osmco9pZ
-         KF1AEekAtuJ4D7kG5kbkV//jlkbNghuJLrymHBKkfvCC5xAvzTzqG5ZPBDipSWieGwBZ
-         w/txhrmUx9pTwuA6moDmF9VTWsf+bVMM8zMYxXHSgmad19tPb1NjUqXoXIeTxVXG7QL2
-         Mx/yQwxux1SCukRxiSbEC3Gz7ItqFLYzNzTVbCOd9fnZhMpFd4UJdtdxbmCTen6NM8ow
-         rr8Q==
+        bh=2ZHHALmUdIOJLrBF4usMUcoF44uSn8V9xs2LGzK8MKc=;
+        b=nLVJo2Dnhj5WVK3GqFsL1lbXhQoMs9kgqHbTliOa7oJYfrzj4LgaOvTXkJXm0dILUw
+         n72JDgY/b1r5v/DlYIGt4MDO31cRTcUuOP1tAvrFd7QJpbgwsv8iCbJzlc230GmZ/Ct/
+         iolFYFw/gEp1GV0Pj0cS3mzj0GYOBVqihs/SDo/H0Zu8H2Tqs+RfkibTBx51+XT3p/cI
+         pP5e9Fnov6+GCEowCPb6jPxCBER2YznBAarZLDCPfrh77mT/nOhF32IWw16FGtvuUqDx
+         995VGf7JG6937tQxTpROZPvA8VlBeOur8ympbB3fgt1z0yrNZjOSERjQOZ8QCvg190xo
+         6RGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=1j8EZXvJ6xp75+ihAeh4iIkHpaXz+pr5TsFcys/H1Yk=;
-        b=TH3NiGRfkgM2irZHR2nsquKQUDSDkfeA87zWOYupVEJuw3aHxQ8iXPpbgSu4W0GgkJ
-         8R7ertd2juKToD8/BLPOZ9ArCt0jU9hF0XS0TT17Z/42cMGy8ZimJ5FocTWk0dpswzSf
-         6rTdck4AkgVj+2abMATW8WSoR7nDYliRcdFEB4YCzpH7jgR+TFvIV//8yY3+4jGFwvzL
-         Sve+7wOIuGrmgryFRmvwO0WVxl1pxi3uPEQQL8w09IAHIcuomhS5OdTfr2P3QyJZ7JUN
-         YRDTeDV4Zhe8I9IteGP7Eb2cBraxguoD/LHNY3t0yoOL/ppHlv/FjNcrj7PyME1h8eXB
-         9kYA==
-X-Gm-Message-State: AOAM5311H/SwI9yndG3YMA2jccbu+hiFPovmgEl2LKl4sRz5nfp96IbN
-        yWEXbVkpiKcGKL17O4eHsF0FBS2r
-X-Google-Smtp-Source: ABdhPJyi5RZdJWEB81cYcVQaDNZtdTx2ihrUqe7MvqbeXEZfa37yBakOCSFYTxpuQZzwnaor05bF4Q==
-X-Received: by 2002:a63:d10a:: with SMTP id k10mr9896815pgg.382.1596337675940;
-        Sat, 01 Aug 2020 20:07:55 -0700 (PDT)
+        bh=2ZHHALmUdIOJLrBF4usMUcoF44uSn8V9xs2LGzK8MKc=;
+        b=RT1AcAjk3ZVm91a5knEzbBeDqN2YL5KIOu7hHHyKfvl9u/Z/r20QrJueLP2Mon2GXg
+         bctFl2rqwZWBEzalaEbe+hkh70szfnBZlY0ZE2ifdnVrLOJ6ysCmWImVVInbgA2COmFW
+         bFtf/lmrzT0qMv+o/j6/HihOcrkK0nzMXwki9QNLJ7L4DGU/gYSFOUwbAeN6vZ+cGYUM
+         YtsGxhDDIkWOxp1b5cmfvxOD9rZgmLKuSqPojFhL4gHqhZb4uriFibPBFrzcwJmGY1UM
+         SnHQbhyH1lYqYE8eJHq6nYIpkrCBInx1twKfOHtJQikwR0NdSOL8IcZfAe4OpLQ3jCio
+         S6SQ==
+X-Gm-Message-State: AOAM531FQW0XUxN7ilOTq+N5dsQfWOWgRpx217boWY5ElzaRtMeIUOcj
+        NpbpJXk+bcVnX7+MKuVK1zA=
+X-Google-Smtp-Source: ABdhPJygrMiHJReiRE6Z3LOL5kMTj88fE9iPEYwOa1RVkwVIZof7IcM+6L9heeA7gtrlcOV3Xhu1yw==
+X-Received: by 2002:a62:347:: with SMTP id 68mr9778779pfd.185.1596338025165;
+        Sat, 01 Aug 2020 20:13:45 -0700 (PDT)
 Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:65b5])
-        by smtp.gmail.com with ESMTPSA id d93sm13997738pjk.44.2020.08.01.20.07.53
+        by smtp.gmail.com with ESMTPSA id o23sm16736729pfd.126.2020.08.01.20.13.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Aug 2020 20:07:54 -0700 (PDT)
-Date:   Sat, 1 Aug 2020 20:07:52 -0700
+        Sat, 01 Aug 2020 20:13:44 -0700 (PDT)
+Date:   Sat, 1 Aug 2020 20:13:42 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com
-Subject: Re: [PATCH v6 bpf-next 0/6] bpf: tailcalls in BPF subprograms
-Message-ID: <20200802030752.bnebgrr6jkl3dgnk@ast-mbp.dhcp.thefacebook.com>
-References: <20200731000324.2253-1-maciej.fijalkowski@intel.com>
- <fbe6e5ca-65ba-7698-3b8d-1214b5881e88@iogearbox.net>
- <20200801071357.GA19421@ranger.igk.intel.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v9 bpf-next 10/14] bpf: Add d_path helper
+Message-ID: <20200802031342.3bfxqo22ezi2zzu4@ast-mbp.dhcp.thefacebook.com>
+References: <20200801170322.75218-1-jolsa@kernel.org>
+ <20200801170322.75218-11-jolsa@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200801071357.GA19421@ranger.igk.intel.com>
+In-Reply-To: <20200801170322.75218-11-jolsa@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 01, 2020 at 09:13:57AM +0200, Maciej Fijalkowski wrote:
-> On Sat, Aug 01, 2020 at 03:03:19AM +0200, Daniel Borkmann wrote:
-> > On 7/31/20 2:03 AM, Maciej Fijalkowski wrote:
-> > > v5->v6:
-> > > - propagate only those poke descriptors that individual subprogram is
-> > >    actually using (Daniel)
-> > > - drop the cumbersome check if poke desc got filled in map_poke_run()
-> > > - move poke->ip renaming in bpf_jit_add_poke_descriptor() from patch 4
-> > >    to patch 3 to provide bisectability (Daniel)
-> > 
-> > I did a basic test with Cilium on K8s with this set, spawning a few Pods
-> > and checking connectivity & whether we're not crashing since it has bit more
-> > elaborate tail call use. So far so good. I was inclined to push the series
-> > out, but there is one more issue I noticed and didn't notice earlier when
-> > reviewing, and that is overall stack size:
-> > 
-> > What happens when you create a single program that has nested BPF to BPF
-> > calls e.g. either up to the maximum nesting or one call that is using up
-> > the max stack size which is then doing another BPF to BPF call that contains
-> > the tail call. In the tail call map, you have the same program in there.
-> > This means we create a worst case stack from BPF size of max_stack_size *
-> > max_tail_call_size, that is, 512*32. So that adds 16k worst case. For x86
-> > we have a stack of arch/x86/include/asm/page_64_types.h:
-> > 
-> >   #define THREAD_SIZE_ORDER       (2 + KASAN_STACK_ORDER)
-> >  #define THREAD_SIZE  (PAGE_SIZE << THREAD_SIZE_ORDER)
-> > 
-> > So we end up with 16k in a typical case. And this will cause kernel stack
-> > overflow; I'm at least not seeing where we handle this situation in the
-
-Not quite. The subprog is always 32 byte stack (from safety pov).
-The real stack (when JITed) can be lower or zero.
-So the max stack is (512 - 32) * 32 = 15360.
-So there is no overflow, but may be a bit too close to comfort.
-Imo the room is ok to land the set and the better enforcement can
-be done as a follow up later, like below idea...
-
-> > set. Hm, need to think more, but maybe this needs tracking of max stack
-> > across tail calls to force an upper limit..
+On Sat, Aug 01, 2020 at 07:03:18PM +0200, Jiri Olsa wrote:
+> Adding d_path helper function that returns full path for
+> given 'struct path' object, which needs to be the kernel
+> BTF 'path' object. The path is returned in buffer provided
+> 'buf' of size 'sz' and is zero terminated.
 > 
-> My knee jerk reaction would be to decrement the allowed max tail calls,
-> but not sure if it's an option and if it would help.
+>   bpf_d_path(&file->f_path, buf, size);
+> 
+> The helper calls directly d_path function, so there's only
+> limited set of function it can be called from. Adding just
+> very modest set for the start.
+> 
+> Updating also bpf.h tools uapi header and adding 'path' to
+> bpf_helpers_doc.py script.
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/uapi/linux/bpf.h       | 13 +++++++++
+>  kernel/trace/bpf_trace.c       | 48 ++++++++++++++++++++++++++++++++++
+>  scripts/bpf_helpers_doc.py     |  2 ++
+>  tools/include/uapi/linux/bpf.h | 13 +++++++++
+>  4 files changed, 76 insertions(+)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index eb5e0c38eb2c..a356ea1357bf 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3389,6 +3389,18 @@ union bpf_attr {
+>   *		A non-negative value equal to or less than *size* on success,
+>   *		or a negative error in case of failure.
+>   *
+> + * int bpf_d_path(struct path *path, char *buf, u32 sz)
 
-How about make the verifier use a lower bound for a function with a tail call ?
-Something like 64 would work.
-subprog_info[idx].stack_depth with tail_call will be >= 64.
-Then the main function will be automatically limited to 512-64 and the worst
-case stack = 14kbyte.
-When the sub prog with tail call is not an empty body (malicious stack
-abuser) then the lower bound won't affect anything.
-A bit annoying that stack_depth will be used by JIT to actually allocate
-that much. Some of it will not be used potentially, but I think it's fine.
-It's much simpler solution than to keep two variables to track stack size.
-Or may be check_max_stack_depth() can be a bit smarter and it can detect
-that subprog is using tail_call without actually hacking stack_depth variable.
-Essentially I'm proposing to tweak this formula:
-depth += round_up(max_t(u32, subprog[idx].stack_depth, 1), 32);
-and replace 1 with 64 for subprogs with tail_call.
+Please make it return 'long'. As you well ware the generated code will be better.
