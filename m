@@ -2,152 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D089239C36
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 23:36:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0574D239C48
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 23:52:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727995AbgHBVgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 17:36:38 -0400
-Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:45172 "EHLO
-        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727979AbgHBVgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 17:36:37 -0400
-Received: from vla1-fdfb804fb3f3.qloud-c.yandex.net (vla1-fdfb804fb3f3.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:3199:0:640:fdfb:804f])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 49FA72E0B02;
-        Mon,  3 Aug 2020 00:36:34 +0300 (MSK)
-Received: from vla5-58875c36c028.qloud-c.yandex.net (vla5-58875c36c028.qloud-c.yandex.net [2a02:6b8:c18:340b:0:640:5887:5c36])
-        by vla1-fdfb804fb3f3.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id iSzER396Iw-aYqibU7n;
-        Mon, 03 Aug 2020 00:36:34 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1596404194; bh=0+K6ekHFGCKpywJPU+f+Df3pWthE/8ooVEOmlxubSu0=;
-        h=In-Reply-To:Message-Id:References:Date:Subject:To:From:Cc;
-        b=mDlZvrqfW3zeKLH99/WqKp2EFY0MwjiTA2UDtOnb96TnO9JW5Lts0G9IwRKS8IMat
-         lhybist38D52rvPyThha+4FvRRXcSpzAtSYMIyWepnpDZ9OiTOSRc2uoiLKcAHfWNQ
-         /+m5T5/5zy7BcMTt65dZBkMsaiiF96kmg0ftJcb0=
-Authentication-Results: vla1-fdfb804fb3f3.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from unknown (unknown [178.154.141.161])
-        by vla5-58875c36c028.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id PUeY1PJp81-aXji7CVd;
-        Mon, 03 Aug 2020 00:36:34 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     sdf@google.com
-Subject: [PATCH bpf-next v5 2/2] bpf: allow to specify ifindex for skb in bpf_prog_test_run_skb
-Date:   Mon,  3 Aug 2020 00:36:31 +0300
-Message-Id: <20200802213631.78937-3-zeil@yandex-team.ru>
-In-Reply-To: <20200802213631.78937-1-zeil@yandex-team.ru>
-References: <20200802213631.78937-1-zeil@yandex-team.ru>
+        id S1727909AbgHBVwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 17:52:06 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:23881 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726988AbgHBVwG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 17:52:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596405124;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=52YrAGsMm86F8tDDrhoSNESMd7vkOsJ5D+tkoIF8gVQ=;
+        b=eBd5rtNv7B5/hNS7r8S0PxMENN4BzxNgvfLRdJPY4cxzWjyT4fAc8K7C3p284xW6Cq/5Rl
+        NWS6tFAfmdglcNcVoWmJUN325cv5csoHb7OjJS3c878Uzk0TI79aP0xsNvVtAmrTKyZjOt
+        ZcR9aeCj4IhVZxQGgVaX2wh7/RMVFTs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-10-dlsyN5QAMcOe1Ak3zhWAQQ-1; Sun, 02 Aug 2020 17:52:00 -0400
+X-MC-Unique: dlsyN5QAMcOe1Ak3zhWAQQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BB3D758;
+        Sun,  2 Aug 2020 21:51:58 +0000 (UTC)
+Received: from krava (unknown [10.40.192.18])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 9B9B210013C1;
+        Sun,  2 Aug 2020 21:51:56 +0000 (UTC)
+Date:   Sun, 2 Aug 2020 23:51:55 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>, Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: Re: [PATCH bpf-next] tools build: propagate build failures from
+ tools/build/Makefile.build
+Message-ID: <20200802215155.GB139381@krava>
+References: <20200731024244.872574-1-andriin@fb.com>
+ <20200802161106.GA127459@krava>
+ <CAEf4Bzb=LBGsORPCh90=PF=WL+rdOKiBf8yDfJNwd8p2AKUK1A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4Bzb=LBGsORPCh90=PF=WL+rdOKiBf8yDfJNwd8p2AKUK1A@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now skb->dev is unconditionally set to the loopback device in current net
-namespace. But if we want to test bpf program which contains code branch
-based on ifindex condition (eg filters out localhost packets) it is useful
-to allow specifying of ifindex from userspace. This patch adds such option
-through ctx_in (__sk_buff) parameter.
+On Sun, Aug 02, 2020 at 11:22:07AM -0700, Andrii Nakryiko wrote:
+> On Sun, Aug 2, 2020 at 9:11 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Thu, Jul 30, 2020 at 07:42:44PM -0700, Andrii Nakryiko wrote:
+> > > The '&&' command seems to have a bad effect when $(cmd_$(1)) exits with
+> > > non-zero effect: the command failure is masked (despite `set -e`) and all but
+> > > the first command of $(dep-cmd) is executed (successfully, as they are mostly
+> > > printfs), thus overall returning 0 in the end.
+> >
+> > nice, thanks for digging into this,
+> > any idea why is the failure masked?
+> 
+> Two things.
+> 
+> 1. In make, assume you have command f = a in one function and g = b; c
+> in another. If you write f && g, you end up with (a && b); c, right?
+> 
+> 2. Try this shell script:
+> 
+> set -ex
+> false && true
+> true
+> 
+> It will return success. It won't execute the first true command, as
+> expected, but won't terminate the shell as you'd expect from set -e.
+> 
+> So basically, having a "logical operator" in a sequence of commands
+> negates the effect of `set -e`. Intuitively I'd expect that from ||,
+> but seems like && does that as well. if [] has similar effect -- any
+> failing command in an if check doesn't trigger an early termination of
+> a script.
 
-Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
----
- net/bpf/test_run.c                               | 22 ++++++++++++++++++++--
- tools/testing/selftests/bpf/prog_tests/skb_ctx.c |  5 +++++
- 2 files changed, 25 insertions(+), 2 deletions(-)
+nice, thanks for explanation
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 8d69295..369ce90 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -327,6 +327,12 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
- 	/* priority is allowed */
- 
- 	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, priority),
-+			   offsetof(struct __sk_buff, ifindex)))
-+		return -EINVAL;
-+
-+	/* ifindex is allowed */
-+
-+	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, ifindex),
- 			   offsetof(struct __sk_buff, cb)))
- 		return -EINVAL;
- 
-@@ -381,6 +387,7 @@ static void convert_skb_to___skb(struct sk_buff *skb, struct __sk_buff *__skb)
- 
- 	__skb->mark = skb->mark;
- 	__skb->priority = skb->priority;
-+	__skb->ifindex = skb->dev->ifindex;
- 	__skb->tstamp = skb->tstamp;
- 	memcpy(__skb->cb, &cb->data, QDISC_CB_PRIV_LEN);
- 	__skb->wire_len = cb->pkt_len;
-@@ -391,6 +398,8 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 			  union bpf_attr __user *uattr)
- {
- 	bool is_l2 = false, is_direct_pkt_access = false;
-+	struct net *net = current->nsproxy->net_ns;
-+	struct net_device *dev = net->loopback_dev;
- 	u32 size = kattr->test.data_size_in;
- 	u32 repeat = kattr->test.repeat;
- 	struct __sk_buff *ctx = NULL;
-@@ -432,7 +441,7 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 		kfree(ctx);
- 		return -ENOMEM;
- 	}
--	sock_net_set(sk, current->nsproxy->net_ns);
-+	sock_net_set(sk, net);
- 	sock_init_data(NULL, sk);
- 
- 	skb = build_skb(data, 0);
-@@ -446,7 +455,14 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 
- 	skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN);
- 	__skb_put(skb, size);
--	skb->protocol = eth_type_trans(skb, current->nsproxy->net_ns->loopback_dev);
-+	if (ctx && ctx->ifindex > 1) {
-+		dev = dev_get_by_index(net, ctx->ifindex);
-+		if (!dev) {
-+			ret = -ENODEV;
-+			goto out;
-+		}
-+	}
-+	skb->protocol = eth_type_trans(skb, dev);
- 	skb_reset_network_header(skb);
- 
- 	switch (skb->protocol) {
-@@ -502,6 +518,8 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 		ret = bpf_ctx_finish(kattr, uattr, ctx,
- 				     sizeof(struct __sk_buff));
- out:
-+	if (dev && dev != net->loopback_dev)
-+		dev_put(dev);
- 	kfree_skb(skb);
- 	bpf_sk_storage_free(sk);
- 	kfree(sk);
-diff --git a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-index 7021b92..25de86a 100644
---- a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-+++ b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-@@ -11,6 +11,7 @@ void test_skb_ctx(void)
- 		.cb[3] = 4,
- 		.cb[4] = 5,
- 		.priority = 6,
-+		.ifindex = 1,
- 		.tstamp = 7,
- 		.wire_len = 100,
- 		.gso_segs = 8,
-@@ -92,6 +93,10 @@ void test_skb_ctx(void)
- 		   "ctx_out_priority",
- 		   "skb->priority == %d, expected %d\n",
- 		   skb.priority, 7);
-+	CHECK_ATTR(skb.ifindex != 1,
-+		   "ctx_out_ifindex",
-+		   "skb->ifindex == %d, expected %d\n",
-+		   skb.ifindex, 1);
- 	CHECK_ATTR(skb.tstamp != 8,
- 		   "ctx_out_tstamp",
- 		   "skb->tstamp == %lld, expected %d\n",
--- 
-2.7.4
+jirka
+
+> 
+> >
+> > Acked-by: Jiri Olsa <jolsa@redhat.com>
+> >
+> > jirka
+> >
+> > >
+> > > This means in practice that despite compilation errors, tools's build Makefile
+> > > will return success. We see this very reliably with libbpf's Makefile, which
+> > > doesn't get compilation error propagated properly. This in turns causes issues
+> > > with selftests build, as well as bpftool and other projects that rely on
+> > > building libbpf.
+> > >
+> > > The fix is simple: don't use &&. Given `set -e`, we don't need to chain
+> > > commands with &&. The shell will exit on first failure, giving desired
+> > > behavior and propagating error properly.
+> > >
+> > > Cc: Jiri Olsa <jolsa@kernel.org>
+> > > Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+> > > Fixes: 275e2d95591e ("tools build: Move dependency copy into function")
+> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > > ---
+> > >
+> > > I'm sending this against bpf-next tree, given libbpf is affected enough for me
+> > > to debug this fun problem that no one seemed to notice (or care, at least) in
+> > > almost 5 years. If there is a better kernel tree, please let me know.
+> > >
+> > >  tools/build/Build.include | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/tools/build/Build.include b/tools/build/Build.include
+> > > index 9ec01f4454f9..585486e40995 100644
+> > > --- a/tools/build/Build.include
+> > > +++ b/tools/build/Build.include
+> > > @@ -74,7 +74,8 @@ dep-cmd = $(if $(wildcard $(fixdep)),
+> > >  #                   dependencies in the cmd file
+> > >  if_changed_dep = $(if $(strip $(any-prereq) $(arg-check)),         \
+> > >                    @set -e;                                         \
+> > > -                  $(echo-cmd) $(cmd_$(1)) && $(dep-cmd))
+> > > +                  $(echo-cmd) $(cmd_$(1));                         \
+> > > +                  $(dep-cmd))
+> > >
+> > >  # if_changed      - execute command if any prerequisite is newer than
+> > >  #                   target, or command line has changed
+> > > --
+> > > 2.24.1
+> > >
+> >
+> 
 
