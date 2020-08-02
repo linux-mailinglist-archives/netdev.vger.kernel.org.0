@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5373235A72
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:20:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1812235A73
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:20:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727828AbgHBUUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 16:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34904 "EHLO
+        id S1726968AbgHBUUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 16:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726482AbgHBUUJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 16:20:09 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50701C06174A
-        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 13:20:09 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id e4so6585328pjd.0
-        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 13:20:09 -0700 (PDT)
+        with ESMTP id S1726163AbgHBUUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 16:20:33 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8636C06174A
+        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 13:20:33 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id s26so17089460pfm.4
+        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 13:20:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=x1cXNZGtJKJruWLZ3Fse1h87uR6E81XSKTHJ3T771XE=;
-        b=pd06gA+wK5Vs+hjAal2fOd9UpkCj5bHluKBqJ6I/ehOBevc6VO8f8IHyVgI4av6/jf
-         MIhOdmwsnLsIzALrqketNqjk5kPP/QzJ6NSbdn4L12AYNg/YirlnNoJltySq8fDFrSzn
-         +Lgg2YPeDG74IOLkJcEYlQv8sGFSTM+BBNOQRKeoMQGGmsAs/2OmOMSRwL/JtWWLc19b
-         arX+ylIgcWp8HxoF9eTrkCKaZKroIhEU/0Fr4WNdtK88F/SSxj8sVq/CgyJmB11qzQyu
-         13cMk9xn29CfH7OjgyzrFdneByfXwdgNnJYIOcQT/7mfORlbeyTWsnBz+/ol8sU1YLtr
-         ojhg==
+        bh=OlhwetCtTtUznZmCCMRGJvmdKz5ekJzDvnyWo4vK2bU=;
+        b=EDxAoqkmWGfjO1zVoYRmphgM+CbLWXhLv0BKKQAeWUZYP8R4mx6gKwsZFAHwp8Uzkz
+         5qdcfIPThZD/rqLg/yYT7fj7LbOOOdJWFtD+J8R2xWgUoaSUyR+y9PIHNqENqrRpcsim
+         X8WCX6rr14j0zqTh3WXuxv/sPyInXPASWqk+HVPWA9vD6K0A9t4EUoG7Qncm+dZBBSIt
+         rZaKUo9yGwVuKdjpkWnr06OXhkp9UqnWufRekAgB+QB/IBmTyx9z0VbQNiNBfeN8TNFw
+         L/vkLUvkMl6UPdExSZvajWTivEBCwsnpcDvEl+1zYRx2S8PZLnZa458MLpX6JrAcut+w
+         lMKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=x1cXNZGtJKJruWLZ3Fse1h87uR6E81XSKTHJ3T771XE=;
-        b=t9JvgkUF5ystPYalwssz4vceg/TiLg1UQLiZtNt87PuE9g8VkSERP9kFq0Wj+3twUT
-         B3bInRwcAAczC4uO6+4PZR2BxUOo5dtzGXx9dIWgVHUYALoJDUaHLZV40JxUVpPcH2AP
-         yU+g3dpPLSzRP0hqqkRUxPnE991OeGBF1OnUlwi8JBzv5bI2bFOycWJhB+GCLmXep/uN
-         Q6OlsERNJwWeDdJNLEBt4e/KHcNfLGKyJTaIr8PTeUyM0smJavcPab+2j8Vw37PFftdD
-         60ErSIgclUwb76+0uHvs6prk7t1dXR6ZUHCbLdRes9gF128y10iQtTgmTgrj5KfilPGB
-         p9Zg==
-X-Gm-Message-State: AOAM532AL89R+vAG2i8Sp5VAVUnqj9sYBWokN3V7e+Nc3fF58GGXAHDz
-        MVeU890HUFl1zzkZEkrxSw8=
-X-Google-Smtp-Source: ABdhPJz9e12E2cGfQmIE1Ak0kgG97oaqo47S8Yt5L6kKNGSVrvM2BMR/wWzd2Xi9xSHyPqQjHfSzPg==
-X-Received: by 2002:a17:902:9a01:: with SMTP id v1mr7651712plp.15.1596399608865;
-        Sun, 02 Aug 2020 13:20:08 -0700 (PDT)
+        bh=OlhwetCtTtUznZmCCMRGJvmdKz5ekJzDvnyWo4vK2bU=;
+        b=lKSFFKqHRkzIpVczTX4Z/OzR3b4K4ChByMh28M9OH3jPzYPNZaRt9djn6DvKSF3TE/
+         C7/Pb5B9gXHmup8vOocN80lsRIm83sigNgVVfux8YnF0icX8yGR7ZpGSSn3RI4uRJJPs
+         9XARSjmzIhYsQZEDLj3KyTmI0jFQ6KVsbLQBrYX7cANn2gNlkcCPinmvM1Z1jqK7D+Ky
+         goHxwhgOLiXmNIg/ts/8hfYvGcyps/6Oljj4eT52uZYYKz7hlu0DuJ9JjxKeLlX1H/In
+         EofeCCAMRnyoGOjF7G5Z27SQiG16LPt5dMGdz4/Tx/CWnipjjxa/7qlM4Qqt2kXxVI/X
+         uZVw==
+X-Gm-Message-State: AOAM530rq3wc0fUq6NizjDEbY+vJnWYly7HvkHni4uY2xbwTtbWT4j09
+        P+ftsddrhC+QtgFY19uWbcA=
+X-Google-Smtp-Source: ABdhPJw5QBtnWkniE6Do5Gj0Ce/t8TtYvVDQPy+GW9y2NkdDsCO/GOaSOwmX8eL8oNaUA7khBArtxg==
+X-Received: by 2002:a62:1c8b:: with SMTP id c133mr13316139pfc.134.1596399633344;
+        Sun, 02 Aug 2020 13:20:33 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id p127sm17233257pfb.17.2020.08.02.13.20.06
+        by smtp.gmail.com with ESMTPSA id 75sm6749276pfx.187.2020.08.02.13.20.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Aug 2020 13:20:08 -0700 (PDT)
-Subject: Re: [PATCH v3 1/9] ptp: Add generic ptp v2 header parsing function
+        Sun, 02 Aug 2020 13:20:32 -0700 (PDT)
+Subject: Re: [PATCH v3 2/9] ptp: Add generic ptp message type function
 To:     Kurt Kanzenbach <kurt@linutronix.de>,
         Richard Cochran <richardcochran@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -62,17 +62,16 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
         Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
-        Petr Machata <petrm@mellanox.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
+        Petr Machata <petrm@mellanox.com>
 References: <20200730080048.32553-1-kurt@linutronix.de>
- <20200730080048.32553-2-kurt@linutronix.de>
+ <20200730080048.32553-3-kurt@linutronix.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <d3ee62c5-6730-aeb1-6cbc-d749b8b0a5b7@gmail.com>
-Date:   Sun, 2 Aug 2020 13:20:06 -0700
+Message-ID: <d20d2e33-67c8-5406-3762-82d9d307fefc@gmail.com>
+Date:   Sun, 2 Aug 2020 13:20:31 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200730080048.32553-2-kurt@linutronix.de>
+In-Reply-To: <20200730080048.32553-3-kurt@linutronix.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -84,14 +83,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 7/30/2020 1:00 AM, Kurt Kanzenbach wrote:
-> Reason: A lot of the ptp drivers - which implement hardware time stamping - need
-> specific fields such as the sequence id from the ptp v2 header. Currently all
-> drivers implement that themselves.
+> The message type is located at different offsets within the ptp header depending
+> on the ptp version (v1 or v2). Therefore, drivers which also deal with ptp v1
+> have some code for it.
 > 
-> Introduce a generic function to retrieve a pointer to the start of the ptp v2
-> header.
+> Extract this into a helper function for drivers to be used.
 > 
-> Suggested-by: Russell King <rmk+kernel@armlinux.org.uk>
 > Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
