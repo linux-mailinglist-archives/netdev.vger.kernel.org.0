@@ -2,89 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66FFE235830
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 17:32:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BFD823583B
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 17:40:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726517AbgHBPch (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 11:32:37 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:50967 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725768AbgHBPch (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Aug 2020 11:32:37 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1596382357; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=9dhliCp6k1QSZP0oAR9bC8A2W1IrtUjwHZIQ0kTdC+o=;
- b=OlAwgZPZCqvfZ01UiPvHnfdmne9+/OPXPQb2x0p0NbxcBn33kAIM+saF5CSursUk9qjZf6tw
- 9UMLqUBs3R7ODpwnmJjsN0imo2zG+Wu9rH0MMtypE2obA3IVBNK6fO0PIiWpmGnUkcu/bLCw
- AWc3cpFCwlF4MvBXgM/O6EeVs9g=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n18.prod.us-west-2.postgun.com with SMTP id
- 5f26dc872dfc1b5cc27cde22 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 02 Aug 2020 15:32:23
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id B3985C43395; Sun,  2 Aug 2020 15:32:23 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2A703C433C9;
-        Sun,  2 Aug 2020 15:32:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2A703C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2] brcmfmac: Set timeout value when configuring power
- save
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200721112302.22718-1-nsaenzjulienne@suse.de>
-References: <20200721112302.22718-1-nsaenzjulienne@suse.de>
-To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Cc:     linux-kernel@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200802153223.B3985C43395@smtp.codeaurora.org>
-Date:   Sun,  2 Aug 2020 15:32:23 +0000 (UTC)
+        id S1726676AbgHBPkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 11:40:03 -0400
+Received: from zg8tmja5ljk3lje4mi4ymjia.icoremail.net ([209.97.182.222]:43227
+        "HELO zg8tmja5ljk3lje4mi4ymjia.icoremail.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with SMTP id S1725768AbgHBPkC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 11:40:02 -0400
+Received: from oslab.tsinghua.edu.cn (unknown [166.111.139.112])
+        by app-2 (Coremail) with SMTP id EAQGZQDHzLg33iZf1FDgAw--.2286S2;
+        Sun, 02 Aug 2020 23:39:39 +0800 (CST)
+From:   Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
+To:     linux-net-drivers@solarflare.com, ecree@solarflare.com,
+        mhabets@solarflare.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
+Subject: [PATCH] net: sfc: fix possible buffer overflow caused by bad DMA value in efx_siena_sriov_vfdi()
+Date:   Sun,  2 Aug 2020 23:39:30 +0800
+Message-Id: <20200802153930.5271-1-baijiaju@tsinghua.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: EAQGZQDHzLg33iZf1FDgAw--.2286S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7AryxWr45Xw4rtr18ZFW7XFb_yoW8ur1fp3
+        9xCa4UuFs7JrWUK3Z0ya18XFy5CayFyFykW34Yyas0vrZ5Zr93CF1kKF15ZrnrJrW8Gr4a
+        krWDXFWUXFs8tr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkv14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW5WwCF
+        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
+        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU3Ma8UUUUU=
+X-CM-SenderInfo: xedlyxhdmxq3pvlqwxlxdovvfxof0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nicolas Saenz Julienne <nsaenzjulienne@suse.de> wrote:
+In efx_siena_sriov_vfdi():
+  req = vf->buf.addr;
 
-> Set the timeout value as per cfg80211's set_power_mgmt() request. If the
-> requested value value is left undefined we set it to 2 seconds, the
-> maximum supported value.
-> 
-> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Because "vf->buf.addr" is mapped to coherent DMA (allocated in
+efx_nic_alloc_buffer()), "req" is also mapped to DMA.
 
-Patch applied to wireless-drivers-next.git, thanks.
+Then "req->op" is accessed in this function:
+  if (req->op < VFDI_OP_LIMIT && vfdi_ops[req->op] != NULL) {
+    rc = vfdi_ops[req->op](vf);
 
-3dc05ffb0443 brcmfmac: Set timeout value when configuring power save
+Because "req" is mapped to DMA, its data can be modified at any time by
+malicious or malfunctioning hardware. In this case, the check 
+"if (req->op < VFDI_OP_LIMIT)" can be passed, and then "req->op" can be
+modified to cause buffer overflow when the driver accesses
+"vfdi_ops[req->op]".
 
+To fix this problem, "req->op" is assigned to a local variable, and then
+the driver accesses this variable instead of "req->op".
+
+Signed-off-by: Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
+---
+ drivers/net/ethernet/sfc/siena_sriov.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/siena_sriov.c b/drivers/net/ethernet/sfc/siena_sriov.c
+index 83dcfcae3d4b..21a8482cbb3b 100644
+--- a/drivers/net/ethernet/sfc/siena_sriov.c
++++ b/drivers/net/ethernet/sfc/siena_sriov.c
+@@ -875,6 +875,7 @@ static void efx_siena_sriov_vfdi(struct work_struct *work)
+ 	struct vfdi_req *req = vf->buf.addr;
+ 	struct efx_memcpy_req copy[2];
+ 	int rc;
++	u32 op = req->op;
+ 
+ 	/* Copy this page into the local address space */
+ 	memset(copy, '\0', sizeof(copy));
+@@ -894,17 +895,17 @@ static void efx_siena_sriov_vfdi(struct work_struct *work)
+ 		return;
+ 	}
+ 
+-	if (req->op < VFDI_OP_LIMIT && vfdi_ops[req->op] != NULL) {
+-		rc = vfdi_ops[req->op](vf);
++	if (op < VFDI_OP_LIMIT && vfdi_ops[op] != NULL) {
++		rc = vfdi_ops[op](vf);
+ 		if (rc == 0) {
+ 			netif_dbg(efx, hw, efx->net_dev,
+ 				  "vfdi request %d from %s ok\n",
+-				  req->op, vf->pci_name);
++				  op, vf->pci_name);
+ 		}
+ 	} else {
+ 		netif_dbg(efx, hw, efx->net_dev,
+ 			  "ERROR: Unrecognised request %d from VF %s addr "
+-			  "%llx\n", req->op, vf->pci_name,
++			  "%llx\n", op, vf->pci_name,
+ 			  (unsigned long long)vf->req_addr);
+ 		rc = VFDI_RC_EOPNOTSUPP;
+ 	}
 -- 
-https://patchwork.kernel.org/patch/11675499/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.17.1
 
