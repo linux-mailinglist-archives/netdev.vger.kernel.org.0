@@ -2,162 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D188235A45
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 21:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 169EC235A4A
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 21:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726985AbgHBTuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 15:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58694 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726364AbgHBTuv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 15:50:51 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A06C06174A;
-        Sun,  2 Aug 2020 12:50:51 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id j20so17068948pfe.5;
-        Sun, 02 Aug 2020 12:50:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B9BYrY99T620aK2jc5HkCpNbc33t/1UkwxGWa0hFtbs=;
-        b=ODggDmsS4CbzPlYSm6/dZcfz6K+93ERd+GcOsML7aNME26dExFXZziMERjT2KwMU+d
-         99jbl6tYo88EkBQV5YqzWL6QJKSjK7hMGenklAnk30W1yLci29kGEMhqfybzTL8cr6Vc
-         ZoRAm7PCva0v0Q26qsIQBjYjoNhCI/ekKOoutnScumQnMwVKwz1hGJkO+M/PMvOoFg3h
-         HLxwSShsOwQAYd55FOG93JUv3MRckVtXMlDw3e5rLCvCPKwlhe6CwlmOl2Bo0l6dDjBE
-         QGH8eO2+FExYSRjf3mOhizKN2kRnRCzHhp8hRgyPSBH0Hxeoan4PsnnzIER9f3kCSS7X
-         IiPg==
+        id S1727796AbgHBT70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 15:59:26 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:35056 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725925AbgHBT70 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 15:59:26 -0400
+Received: by mail-il1-f197.google.com with SMTP id g6so11043101iln.2
+        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 12:59:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B9BYrY99T620aK2jc5HkCpNbc33t/1UkwxGWa0hFtbs=;
-        b=bdl17I8My1SV7TrGwBlhOhcKoJmY1Yl+GNRanSr2JsIisr4Pm2Wnh1zw9ofNenml3h
-         +QxYQB5GPMDzBJtir92xoUZnVK0YraBYps0eNIFOBRLiwOhIOAz252+U3zYExl9Wjne+
-         JndLbUMQC7C2NiU419F3GlrskLeI0bMi4aJ6T+1K2LBvJJnG02/TrpSZe0Zni/D8lTYW
-         s/MRd/LXJCNQ3zq+RhPc53MY4EhY8bxyuntFUVMzffr2CKmDRulgaULkovQiwqERITlc
-         vL1w9tKs7YIjd6q4Fa0HQDg+fgI9qPRHSnQVCXVYYwIMH5Yg4xBZgvmqlHP48CYnyWPZ
-         8CXA==
-X-Gm-Message-State: AOAM533pkdy9PkirRSYDBHRV0u6RLwm7Kq9M8GwV0P0zKBz213A6mdwB
-        5jFrmzQnae0R0c6U6Zafs54=
-X-Google-Smtp-Source: ABdhPJzQLiTKbO0Bx455zrbOP8QWJoW9XzcFMG00gL1yem0uoe1qn1Q0RHnZiUU+gv6jNk6d2VaVMw==
-X-Received: by 2002:a63:c509:: with SMTP id f9mr12096008pgd.144.1596397850910;
-        Sun, 02 Aug 2020 12:50:50 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8880:9ae0:d9e7:bb5e:b692:1567])
-        by smtp.gmail.com with ESMTPSA id d5sm15189190pju.15.2020.08.02.12.50.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Aug 2020 12:50:50 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Brian Norris <briannorris@chromium.org>
-Subject: [net v3] drivers/net/wan/lapbether: Use needed_headroom instead of hard_header_len
-Date:   Sun,  2 Aug 2020 12:50:46 -0700
-Message-Id: <20200802195046.402539-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=F10XM7hC+E3LYcPRivzOjDTSVfMfyhzmJcx4FWkMrXc=;
+        b=gWT9/CNrtfELT/IaFZ3u3/oMqHRa1YAfdVz5HrrhJpm4lef+Dqovr0b9pvFSeWzLBo
+         EWCuCwU8bbmd9zUZGhqSGjL0M00i+Kz+8xE09XrB9U37t4zsdrehtwwCrDdEhaeuzC7K
+         ZyWaPWF19TjSuhuGiN/1JG4wk8OfOKF/uNJ7JZmN5wHWTEEQGUnGteddw9zLJUYlq3aO
+         ZGSwH8tRSm6PhnJuJvl6AeBAxp5P5OBWEifuuyrgJE9QZyTk8Jq8FA0XFIXn/tvGBTdj
+         /JLiwFaHZjIgxc/cXy/2d2Rdi5DRnfjaMiEr2FGuUqRBNK8c19z9fl/3l9mQoJolB8vV
+         Ts9A==
+X-Gm-Message-State: AOAM532xY5CyQxw0LCl9H4f26+9mbnbPhwLYGjnOlz9Ww1I0QTo3GN+o
+        o0fsRMtSJwi6lNML4U2k/ue7aI1p6TTLfSxU3uW7B8jhIVoo
+X-Google-Smtp-Source: ABdhPJzfyholBojvTdXf18niTb+bG+GT/Pvyc0HPQj3ZJQzGGF27xphs6kDRmpgZm2imxrZ3RckHwdO2JIWfbXiCvUf2Hmw/beIP
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a02:84ac:: with SMTP id f41mr12062153jai.56.1596398365555;
+ Sun, 02 Aug 2020 12:59:25 -0700 (PDT)
+Date:   Sun, 02 Aug 2020 12:59:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007fbe6605abea7514@google.com>
+Subject: INFO: task can't die in p9_client_rpc
+From:   syzbot <syzbot+a42aa715d3d32226792a@syzkaller.appspotmail.com>
+To:     asmadeus@codewreck.org, davem@davemloft.net, ericvh@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org, lucho@ionkov.net,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In net/packet/af_packet.c, the function packet_snd first reserves a
-headroom of length (dev->hard_header_len + dev->needed_headroom).
-Then if the socket is a SOCK_DGRAM socket, it calls dev_hard_header,
-which calls dev->header_ops->create, to create the link layer header.
-If the socket is a SOCK_RAW socket, it "un-reserves" a headroom of
-length (dev->hard_header_len), and assumes the user to provide the
-appropriate link layer header.
+Hello,
 
-So according to the logic of af_packet.c, dev->hard_header_len should
-be the length of the header that would be created by
-dev->header_ops->create.
+syzbot found the following issue on:
 
-However, this driver doesn't provide dev->header_ops, so logically
-dev->hard_header_len should be 0.
+HEAD commit:    01830e6c Add linux-next specific files for 20200731
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=176146cc900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2e226b2d1364112c
+dashboard link: https://syzkaller.appspot.com/bug?extid=a42aa715d3d32226792a
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-So we should use dev->needed_headroom instead of dev->hard_header_len
-to request necessary headroom to be allocated.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-This change fixes kernel panic when this driver is used with AF_PACKET
-SOCK_RAW sockets. Call stack when panic:
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a42aa715d3d32226792a@syzkaller.appspotmail.com
 
-[  168.399197] skbuff: skb_under_panic: text:ffffffff819d95fb len:20
-put:14 head:ffff8882704c0a00 data:ffff8882704c09fd tail:0x11 end:0xc0
-dev:veth0
-...
-[  168.399255] Call Trace:
-[  168.399259]  skb_push.cold+0x14/0x24
-[  168.399262]  eth_header+0x2b/0xc0
-[  168.399267]  lapbeth_data_transmit+0x9a/0xb0 [lapbether]
-[  168.399275]  lapb_data_transmit+0x22/0x2c [lapb]
-[  168.399277]  lapb_transmit_buffer+0x71/0xb0 [lapb]
-[  168.399279]  lapb_kick+0xe3/0x1c0 [lapb]
-[  168.399281]  lapb_data_request+0x76/0xc0 [lapb]
-[  168.399283]  lapbeth_xmit+0x56/0x90 [lapbether]
-[  168.399286]  dev_hard_start_xmit+0x91/0x1f0
-[  168.399289]  ? irq_init_percpu_irqstack+0xc0/0x100
-[  168.399291]  __dev_queue_xmit+0x721/0x8e0
-[  168.399295]  ? packet_parse_headers.isra.0+0xd2/0x110
-[  168.399297]  dev_queue_xmit+0x10/0x20
-[  168.399298]  packet_sendmsg+0xbf0/0x19b0
-......
+INFO: task syz-executor.5:24879 can't die for more than 143 seconds.
+syz-executor.5  D25688 24879   7480 0x00004004
+Call Trace:
+ context_switch kernel/sched/core.c:3669 [inline]
+ __schedule+0x8e5/0x21e0 kernel/sched/core.c:4418
+ schedule+0xd0/0x2a0 kernel/sched/core.c:4493
+ p9_client_rpc+0x3b5/0x11f0 net/9p/client.c:757
+ p9_client_flush+0x1f9/0x430 net/9p/client.c:665
+ p9_client_rpc+0xf93/0x11f0 net/9p/client.c:782
+ p9_client_version net/9p/client.c:953 [inline]
+ p9_client_create+0xa8f/0x10c0 net/9p/client.c:1053
+ v9fs_session_init+0x1dd/0x1770 fs/9p/v9fs.c:406
+ v9fs_mount+0x79/0x970 fs/9p/vfs_super.c:124
+ legacy_get_tree+0x105/0x220 fs/fs_context.c:592
+ vfs_get_tree+0x89/0x2f0 fs/super.c:1549
+ do_new_mount fs/namespace.c:2912 [inline]
+ do_mount+0x14f6/0x1e20 fs/namespace.c:3238
+ __do_sys_mount fs/namespace.c:3448 [inline]
+ __se_sys_mount fs/namespace.c:3425 [inline]
+ __x64_sys_mount+0x18f/0x230 fs/namespace.c:3425
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45cc79
+Code: Bad RIP value.
+RSP: 002b:00007f92f26b9c78 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 0000000000020480 RCX: 000000000045cc79
+RDX: 0000000020000100 RSI: 0000000020000040 RDI: 0000000000000000
+RBP: 000000000078bf50 R08: 0000000020000200 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000078bf0c
+R13: 00007fff9a822f9f R14: 00007f92f26ba9c0 R15: 000000000078bf0c
 
-Additional change:
-When sending, check skb->len to ensure the 1-byte pseudo header is
-present before reading it.
+Showing all locks held in the system:
+1 lock held by khungtaskd/1164:
+ #0: ffffffff89c52a80 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:5823
+1 lock held by in:imklog/6729:
+ #0: ffff8880a97c7db0 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:930
 
-Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
+=============================================
+
+
+
 ---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Change from v2:
-Added skb->len check when sending.
-
-Change from v1:
-None
-
----
- drivers/net/wan/lapbether.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index b2868433718f..8a3f7ba36f7e 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -157,6 +157,9 @@ static netdev_tx_t lapbeth_xmit(struct sk_buff *skb,
- 	if (!netif_running(dev))
- 		goto drop;
- 
-+	if (skb->len < 1)
-+		goto drop;
-+
- 	switch (skb->data[0]) {
- 	case X25_IFACE_DATA:
- 		break;
-@@ -305,6 +308,7 @@ static void lapbeth_setup(struct net_device *dev)
- 	dev->netdev_ops	     = &lapbeth_netdev_ops;
- 	dev->needs_free_netdev = true;
- 	dev->type            = ARPHRD_X25;
-+	dev->hard_header_len = 0;
- 	dev->mtu             = 1000;
- 	dev->addr_len        = 0;
- }
-@@ -331,7 +335,8 @@ static int lapbeth_new_device(struct net_device *dev)
- 	 * then this driver prepends a length field of 2 bytes,
- 	 * then the underlying Ethernet device prepends its own header.
- 	 */
--	ndev->hard_header_len = -1 + 3 + 2 + dev->hard_header_len;
-+	ndev->needed_headroom = -1 + 3 + 2 + dev->hard_header_len
-+					   + dev->needed_headroom;
- 
- 	lapbeth = netdev_priv(ndev);
- 	lapbeth->axdev = ndev;
--- 
-2.25.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
