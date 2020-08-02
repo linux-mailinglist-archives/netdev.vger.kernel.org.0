@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D858235A5A
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:18:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 916F8235A5D
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:18:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727053AbgHBUSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 16:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
+        id S1727092AbgHBUSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 16:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725910AbgHBUSZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 16:18:25 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D54C06174A
-        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 13:18:25 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id d4so368984pjx.5
-        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 13:18:25 -0700 (PDT)
+        with ESMTP id S1725910AbgHBUSi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 16:18:38 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D10C06174A;
+        Sun,  2 Aug 2020 13:18:38 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id bh1so6606684plb.12;
+        Sun, 02 Aug 2020 13:18:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dNu/XYP6HDro95lenbTg7qxMzOWRMwaBg/c5gzzjhHw=;
-        b=P3VymAVBQH5vD2fSXLlhCJX6YBgwP31rwZyqiHFAU4BQgxxrT/5A7ck+BQ6vd4GyIC
-         AFFi7gPq7/h3jDgLH+pfkieHn53XdcQ/JErvEd7zzix28c6Rifb7SuLwtiA3yqb2VxeV
-         q8hubn9ONAvW3z7cdd82U8okICMR5bOUpYUVg3pTT4uRliZm87VPf2eC1onZBAwmht4Y
-         nFOHCbK+akqfavp0GJYHBnyaJWg1WmEwi/M65EtIGjrK7Hflcn97D2NxXukQYcQ2G6zc
-         ktXo5Qm5HMrFPqbhGBpqH0/pb3jTFl2BOaFGAGYU5yczKxogBIGr9loA05o/0oPtLCIZ
-         wRIw==
+        bh=+VaeBdZD6BxbTiHiKYuiWDRV4AX+dW31+H1ogDniWgI=;
+        b=Ceeiw+MzYueUeDVdP0aj66GMYW33iLI4ekMXmYv+FHgInpLns+zq/m0PcRS50vHk26
+         ZJqElfQ7gpsFDwrRVA4jieBcPiI00xOX18tcSlqxEIbXQVrfeuzRI8FFVFHmBW98+B3D
+         lYC1KlNpbcjkLY1PcE6+1kJBXj7tY5LYchpqV++tDjNNLtYfRI0OhtvGiLCRHQ2TBlOP
+         C59RqhToVq4pGGZJu7lfAqrgr+Oe/7R2cPqOGb3Px4v2wITByfZODtDhadw8ysqvlNvP
+         O/Gtzqm2KKetS3DO60oHouD8tEgsCBYdLxioy5YIgOEFEtUGvWUCXje85REt7+m2oOq8
+         eHJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=dNu/XYP6HDro95lenbTg7qxMzOWRMwaBg/c5gzzjhHw=;
-        b=puELd8cM8Sz/8wS5TDp57D5CP43irWi5l/zItyDC+PzkIwn8GDgZ8S7Z2U2GQSlHnI
-         kbT99Jqib7nVLBkMq63Tyg3kTEJOAh5IxfY3K7DMJWzVRsjS3OBIxqw++Ta3FVfJFWi5
-         kcsGdEE2r3ELk2w1uXfmApe3Kzhom4Vx40IwAXe80Bq1HJeo7rJzQD+v+Rdw7rf0Ntyb
-         iEouo1SUh6tm/YhgBZgRced51RSlBqWe3ooyW074dudEhv1hRemYnTWBirKYkdFD9Qor
-         K7WZFzUzcWs50j6Qj8NVUAQ5PnxbhlEfdGQid03b6P7MxGT6miwHNx6G2wyEy4KI5Z4I
-         wdHA==
-X-Gm-Message-State: AOAM530ldgDpJV+JTrcVzn26T9HbpeOiFRhMCAgtOr6tBip/qZeh9K/r
-        OHu+CnYZ1zitXzPwEk9Pjsw=
-X-Google-Smtp-Source: ABdhPJw0zweurMQ/DCP3/1UuSve5AWBdZb1jRbrZWf6rBF9NKfF30bqyzRY2HNNaapHhR8GyyAGyyw==
-X-Received: by 2002:a17:90a:2c0d:: with SMTP id m13mr14808844pjd.170.1596399504922;
-        Sun, 02 Aug 2020 13:18:24 -0700 (PDT)
+        bh=+VaeBdZD6BxbTiHiKYuiWDRV4AX+dW31+H1ogDniWgI=;
+        b=A7OGw3S7ePhuc68sd7lKhUG3nTeEK0Pr7yY+yI3zMWnaDTjdRi2JNWGeX6QCk1g5c5
+         yoxnq6UChdRa6mpBAR8yeojIlPbusMlN/lWgF3COPilMbubcdhSdnAIGHTkbyRdujRoX
+         bg3Xp+7IriXeNRgG8+c3WQ3OsG3KFYgIS6o2SmEgvYdRHbWgyXULLr0+K50/FoMEVw4M
+         WgRK5FwDAcbHmgIO22S+5M7GMZgumMXs9DsVnrBVpcHp839+fgZ7hEuyYU0w1V/2CjyW
+         qFZ/0n5HlaZ80sIZPBE1t+k+6Xap+UFrRfupv+pO8/UjPhDv2OchQaIk4pfWdJsvmXmh
+         7Ujw==
+X-Gm-Message-State: AOAM53189TVsPkDNqciDVJP/4uY5nWLfrOJ43D5gRkivE5qIQSCfjTMu
+        Tb10SHugP5uqXxY7ZKBztOM=
+X-Google-Smtp-Source: ABdhPJw/S1fMbFH207iXXnX3cp/cOSEnD+zqvERr2xiGFnu2wILqXwDyaISUCxeO8XSRK/QMUs0pmA==
+X-Received: by 2002:a17:902:7c03:: with SMTP id x3mr11920417pll.178.1596399517819;
+        Sun, 02 Aug 2020 13:18:37 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id u66sm17688462pfb.191.2020.08.02.13.18.23
+        by smtp.gmail.com with ESMTPSA id s185sm13712146pgc.18.2020.08.02.13.18.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Aug 2020 13:18:24 -0700 (PDT)
-Subject: Re: [PATCH v2 3/4 net-next] net: mdiobus: add reset-post-delay-us
- handling
-To:     Bruno Thomsen <bruno.thomsen@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Fabio Estevam <festevam@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Sun, 02 Aug 2020 13:18:36 -0700 (PDT)
+Subject: Re: [net-next PATCH] net: phy: mdio-mvusb: select MDIO_DEVRES in
+ Kconfig
+To:     Bartosz Golaszewski <brgl@bgdev.pl>, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Lars Alex Pedersen <laa@kamstrup.com>,
-        Bruno Thomsen <bth@kamstrup.com>
-References: <20200730195749.4922-1-bruno.thomsen@gmail.com>
- <20200730195749.4922-4-bruno.thomsen@gmail.com>
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        kernel test robot <lkp@intel.com>
+References: <20200802074953.1529-1-brgl@bgdev.pl>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <a45a29c4-7295-5482-b034-2bb911a5d36f@gmail.com>
-Date:   Sun, 2 Aug 2020 13:18:23 -0700
+Message-ID: <a0143110-537d-7344-5b81-8ce656c5e9b7@gmail.com>
+Date:   Sun, 2 Aug 2020 13:18:35 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200730195749.4922-4-bruno.thomsen@gmail.com>
+In-Reply-To: <20200802074953.1529-1-brgl@bgdev.pl>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -76,14 +76,15 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 7/30/2020 12:57 PM, Bruno Thomsen wrote:
-> Load new "reset-post-delay-us" value from MDIO properties,
-> and if configured to a greater then zero delay do a
-> flexible sleeping delay after MDIO bus reset deassert.
-> This allows devices to exit reset state before start
-> bus communication.
+On 8/2/2020 12:49 AM, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 > 
-> Signed-off-by: Bruno Thomsen <bruno.thomsen@gmail.com>
+> PHYLIB is not selected by the mvusb driver but it uses mdio devres
+> helpers. Explicitly select MDIO_DEVRES in this driver's Kconfig entry.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Fixes: 1814cff26739 ("net: phy: add a Kconfig option for mdio_devres")
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
