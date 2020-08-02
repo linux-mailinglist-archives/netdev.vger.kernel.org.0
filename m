@@ -2,91 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A924F235805
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 17:18:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA1F8235807
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 17:18:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726865AbgHBPSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 11:18:10 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:62672 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726517AbgHBPSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 11:18:09 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1596381489; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=vKihmOagz1/Sbz+0RT9b80J6b/3QyMKBydo3NzpUqTQ=;
- b=dQ3EFpx8LaFixyyPYr1hK20PcqyM03y2rX5ElTqMHVhHCnM4wMAaVa/kJQa24p/Wy1IeXzOy
- l8ZFZ4YhwDkURIjEAclHvEisVIrlfYdZo6On/oXwzuPRC+CaYhv/44YY/loH0ZOzRZdbtAv5
- aONDYdE8cGzVbodkXSNSGPMKcUE=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 5f26d920798b10296800c69c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 02 Aug 2020 15:17:52
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E884DC43391; Sun,  2 Aug 2020 15:17:51 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 77466C433C6;
-        Sun,  2 Aug 2020 15:17:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 77466C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726878AbgHBPSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 11:18:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45450 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726517AbgHBPSN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 11:18:13 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C63C06174A
+        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 08:18:13 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id w19so6536061plq.3
+        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 08:18:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=jZBq3WRnEZsKFCeZzVP3yRVu/sggNmqoYBy/PpOEzf0=;
+        b=Dxq1UmrEVS9T8I7V4gSfZZVw2vzIB0Auw2p/xurSdVpQ7e6UUryCS+jHrzDS2xEX6x
+         avzOkUSHBo6ivwRcDIzYQxBA/kbXaot/54Kf3zhRnyuFJ3E/4uduv78UzhQWLqvRl/EL
+         zgtyJMVq3m6cD4FH2HszSkEsEcB90Jk6f+C3UoKTJRZUvb/905QkNDb3MCLzw8Rvve/o
+         WFfY6ha1bXUt26wQBTh+07sjUipP6Gp/+qBs1dAR75zXm8evx6fibBBUT+unzHBS6PD1
+         KcJ24TKXGAXWAvdqDShR3tmwDm0ZPfUcVF5qQ3r9wyGpzDZcYhaIza4HTipJSNUPWIjH
+         +XxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=jZBq3WRnEZsKFCeZzVP3yRVu/sggNmqoYBy/PpOEzf0=;
+        b=N4YcRCThREo6x2rsj5PF9fs5gWljqOCcam8TD8qZqZe8fbQNaIJjLa0mbTFT0bCIjp
+         3XPFSV+tLvZrg969hvc8FklSVokVnW5maw9KZllPBQlfiOKxnQvAcnUEWc1H+jTB/MXL
+         CJTWQZvq4Y2c4X5UvXhB/SvRNi4eKbUCKPHsRn8VY0bnv5c01WWdq2BoW71oa/LI3Xi8
+         RGcJS7x6UJnLxoNZy2QB1Vy/GJpus6be3pOPSdkN3JGbpe4ospo3hQPnf79tVsl1dYur
+         xem9itXX0jxwNS1RLgtn8LvYLE/AVqyfcZLIQbx0eu/ngjoF9ITQaWJdD3MEuCZqb0Bz
+         +qeQ==
+X-Gm-Message-State: AOAM532WSgF+tR8huw+XK7EN2G4Dm12koKnHIyklyYyF2Lx9Lh6cAxe4
+        3a6KO7OAUIUcXCvrkAqm770=
+X-Google-Smtp-Source: ABdhPJw6QybzrRUDYpRU58Ps1jRDQnBDOwhoqjIOwDsgWdjOOCCfF6OiA0dbpHzWFEzcQmZGC/hyBw==
+X-Received: by 2002:a17:90b:684:: with SMTP id m4mr345296pjz.4.1596381492515;
+        Sun, 02 Aug 2020 08:18:12 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id n13sm9427881pjb.20.2020.08.02.08.18.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 Aug 2020 08:18:11 -0700 (PDT)
+Date:   Sun, 2 Aug 2020 08:18:09 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
+        Petr Machata <petrm@mellanox.com>
+Subject: Re: [PATCH v3 2/9] ptp: Add generic ptp message type function
+Message-ID: <20200802151809.GB14759@hoboy>
+References: <20200730080048.32553-1-kurt@linutronix.de>
+ <20200730080048.32553-3-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH for v5.9] b43legacy: Replace HTTP links with HTTPS ones
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200719111124.58167-1-grandmaster@al2klimov.de>
-References: <20200719111124.58167-1-grandmaster@al2klimov.de>
-To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Cc:     Larry.Finger@lwfinger.net, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Alexander A. Klimov" <grandmaster@al2klimov.de>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200802151751.E884DC43391@smtp.codeaurora.org>
-Date:   Sun,  2 Aug 2020 15:17:51 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200730080048.32553-3-kurt@linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Alexander A. Klimov" <grandmaster@al2klimov.de> wrote:
-
-> Rationale:
-> Reduces attack surface on kernel devs opening the links for MITM
-> as HTTPS traffic is much harder to manipulate.
+On Thu, Jul 30, 2020 at 10:00:41AM +0200, Kurt Kanzenbach wrote:
+> The message type is located at different offsets within the ptp header depending
+> on the ptp version (v1 or v2). Therefore, drivers which also deal with ptp v1
+> have some code for it.
 > 
-> Deterministic algorithm:
-> For each file:
->   If not .svg:
->     For each line:
->       If doesn't contain `\bxmlns\b`:
->         For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-> 	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
->             If both the HTTP and HTTPS versions
->             return 200 OK and serve the same content:
->               Replace HTTP with HTTPS.
+> Extract this into a helper function for drivers to be used.
 > 
-> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 
-Patch applied to wireless-drivers-next.git, thanks.
+Reviewed-by: Richard Cochran <richardcochran@gmail.com>
 
-140c6026167b b43legacy: Replace HTTP links with HTTPS ones
+CodingStyle nit below...
 
--- 
-https://patchwork.kernel.org/patch/11672427/
+> ---
+>  include/linux/ptp_classify.h | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+> 
+> diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
+> index 26fd38a4bd67..f4dd42fddc0c 100644
+> --- a/include/linux/ptp_classify.h
+> +++ b/include/linux/ptp_classify.h
+> @@ -90,6 +90,30 @@ unsigned int ptp_classify_raw(const struct sk_buff *skb);
+>   */
+>  struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type);
+>  
+> +/**
+> + * ptp_get_msgtype - Extract ptp message type from given header
+> + * @hdr: ptp header
+> + * @type: type of the packet (see ptp_classify_raw())
+> + *
+> + * This function returns the message type for a given ptp header. It takes care
+> + * of the different ptp header versions (v1 or v2).
+> + *
+> + * Return: The message type
+> + */
+> +static inline u8 ptp_get_msgtype(const struct ptp_header *hdr,
+> +				 unsigned int type)
+> +{
+> +	u8 msgtype;
+> +
+> +	if (unlikely(type & PTP_CLASS_V1))
+> +		/* msg type is located at the control field for ptp v1 */
+> +		msgtype = hdr->control;
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+With the comment, it looks like two statements, and so please use 
 
+	if (...) {
+		/**/
+		...
+	} else {
+		...
+	}
+
+here.
+
+> +	else
+> +		msgtype = hdr->tsmt & 0x0f;
+> +
+> +	return msgtype;
+> +}
+> +
+>  void __init ptp_classifier_init(void);
+>  #else
+>  static inline void ptp_classifier_init(void)
+> -- 
+> 2.20.1
+> 
