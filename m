@@ -2,85 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B04132357F1
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 17:11:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1B962357F5
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 17:13:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbgHBPLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 11:11:54 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:61589 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726034AbgHBPLy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Aug 2020 11:11:54 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1596381113; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=d3a5n4iRdThXJWDctbyZ9DWtTKYv5w4Rf8p1Jxgt3ac=;
- b=qFPwicu+uNWwsssoRCYUr3Ei2tqNmh4a1/6iJpCKc10ZPEdOgWevwJ6Yp0IBduICi22lpN0U
- 7FcMLP23EqojK3DCpYTWz1w2UDPht+CK0WWrVZeCP4Ljnq74Jfkk3l88tK4uTcmhH0D2Q+t7
- wkZG4fAsy/zyEu7t4EzAtzJvGZA=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n08.prod.us-east-1.postgun.com with SMTP id
- 5f26d7b9eecfc978d39a079c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 02 Aug 2020 15:11:53
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D54C9C433C9; Sun,  2 Aug 2020 15:11:51 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C3DBEC433C9;
-        Sun,  2 Aug 2020 15:11:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C3DBEC433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] mt7601u: add missing release on skb in
- mt7601u_mcu_msg_send
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200718052630.11032-1-navid.emamdoost@gmail.com>
-References: <20200718052630.11032-1-navid.emamdoost@gmail.com>
-To:     Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     Jakub Kicinski <kubakici@wp.pl>,
+        id S1726722AbgHBPNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 11:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726150AbgHBPNZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 11:13:25 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB379C06174A
+        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 08:13:24 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id 2so875572pjx.5
+        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 08:13:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=IZaMYz7lhUKFWKtqXtf/xZsCp842yF9PZPlQaVZlAgo=;
+        b=p9QPQZS7dyb3uNVYri9NMgHyKie4TymlrLJ55vfRVcxC4T1BYO8O15AOeqwHWfKCs7
+         hKYJxtB+BraRfPYW6sj6U/Zg2r2u1SLIMSpefDh8EgMGGSEDw1WocjGrz3BeafLcYRJG
+         toqcGsX6A1UfPoWylyOqcJtwW/5y5lpkKr+DZfNci3DVZm3TgYDYYrmR65Auu1w3ZpEE
+         0zrYLeu3nNdgAvE5cWipWYLSRs1G9LhgmEWqZnutH8EO56i3NaRTe1A129Hz3kPGATTp
+         0t6IFcXpp6yliC6+AhkcK3rNcMbBLqhUWc3YrpU0Y+zJHZWfRMbOsvXZcaeR0YFbHLnl
+         +y7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=IZaMYz7lhUKFWKtqXtf/xZsCp842yF9PZPlQaVZlAgo=;
+        b=X+pOsRAeiAsle/VsRiXtusN/XD3TaML3z16s65bpfbN8wMTX5aIuWs7mJMzCAxbGYh
+         86qeI6qSG+Zfhv6zJG7wIr+5TpKFluauPZKLgE/Ox5B3FDcO80tRwTfY1vnBRAF7r+O/
+         iKzPrArY+3w1fI8PD6IbbnKJxfzQ95BwneafHTRDUZho9xi3z2p/+OmIqvavakCD9nE0
+         2zzAB7BF9Ht20nUao/oqbIS1Jea7YjQ6j+QVKDfB6Got4sd3GfFlPVCl/aE+lC4DiyAb
+         c1pYidD1IHWRwuwCijI1pIPpycxwf0mezynK81nOg0wZmceyEoYcg8KO3yJLgxsiQ70H
+         GN8A==
+X-Gm-Message-State: AOAM5306O2nDcAucXUsiCnfyn85hc11ENyqEjlDpRXsSbO1LGhX5nsAI
+        huMPE4sNbBUXxp9Ptp4c/RQ=
+X-Google-Smtp-Source: ABdhPJy3Pnb3HUZVoBJUBk2K0s8dIP6BYaqGxOYinbdjreb8YOngiGGrslfqtsb7xhccztQFCWMimw==
+X-Received: by 2002:a17:902:7585:: with SMTP id j5mr11742449pll.168.1596381204495;
+        Sun, 02 Aug 2020 08:13:24 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id lx16sm16585038pjb.1.2020.08.02.08.13.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 Aug 2020 08:13:23 -0700 (PDT)
+Date:   Sun, 2 Aug 2020 08:13:21 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        emamd001@umn.edu, Navid Emamdoost <navid.emamdoost@gmail.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200802151151.D54C9C433C9@smtp.codeaurora.org>
-Date:   Sun,  2 Aug 2020 15:11:51 +0000 (UTC)
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
+        Petr Machata <petrm@mellanox.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: [PATCH v3 1/9] ptp: Add generic ptp v2 header parsing function
+Message-ID: <20200802151321.GA14759@hoboy>
+References: <20200730080048.32553-1-kurt@linutronix.de>
+ <20200730080048.32553-2-kurt@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200730080048.32553-2-kurt@linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Navid Emamdoost <navid.emamdoost@gmail.com> wrote:
-
-> In the implementation of mt7601u_mcu_msg_send(), skb is supposed to be
-> consumed on all execution paths. Release skb before returning if
-> test_bit() fails.
+On Thu, Jul 30, 2020 at 10:00:40AM +0200, Kurt Kanzenbach wrote:
+> Reason: A lot of the ptp drivers - which implement hardware time stamping - need
+> specific fields such as the sequence id from the ptp v2 header. Currently all
+> drivers implement that themselves.
 > 
-> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-> Acked-by: Jakub Kicinski <kubakici@wp.pl>
+> Introduce a generic function to retrieve a pointer to the start of the ptp v2
+> header.
+> 
+> Suggested-by: Russell King <rmk+kernel@armlinux.org.uk>
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 
-Patch applied to wireless-drivers-next.git, thanks.
-
-880e21490be6 mt7601u: add missing release on skb in mt7601u_mcu_msg_send
-
--- 
-https://patchwork.kernel.org/patch/11671657/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Reviewed-by: Richard Cochran <richardcochran@gmail.com>
