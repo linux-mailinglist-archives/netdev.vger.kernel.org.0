@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA5B3235639
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 12:09:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5278E23563A
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 12:09:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728179AbgHBKJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 06:09:25 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:45002 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728138AbgHBKJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 06:09:24 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 072A19ks003211;
-        Sun, 2 Aug 2020 03:09:20 -0700
+        id S1728189AbgHBKJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 06:09:26 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:59424 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728177AbgHBKJZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 06:09:25 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 072A0Wrm011634;
+        Sun, 2 Aug 2020 03:09:23 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=70KOka8ZRmIfhDNo0R8U+j0PqZMT5R3kmh62LR4phtU=;
- b=UNW9R7Kbn1Yt4zQJ/3L1hXjpnAWqLH/b/iBLtPAAg4Yhes/SbDAbnBg3OTdYRwqRYLUr
- sVDi+DDoX56G5Y0YXDHbSq+5pC1+dBazFP9BB2U+Ng33Jgt5EnDvfDIimh+/3mn2Mkg4
- ueTovuJexNGTSBC8s2SFi/YeCkJVpFL9ivjZjYXRd/gRuhphRiQajv7NHy40pXKBOKc2
- oOiFhvqAqQZAuyDcfzDJXi9lFzJR4HylF86lvw3DnaZtJSoFRtWnxoePCvbYQdwGjRiT
- FEr3Qsno3caEAwPpu+2Mk4fYd75IkSO7wO1jIIUAckvReyfMiFRHDMQBHXGAeO3Oquyy lw== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 32n8fejkxb-1
+ content-type; s=pfpt0818; bh=JGHjrhMBsHNhCBWrKZK++isMYyaed5rD4TMAhx+yJVc=;
+ b=aSgxq0qtJ6XnaB19tjVZH90jkkBXaEzJdLapcXKGicwnp2dncRdFdwi4GtQU3yKtznRY
+ 7MXoVwLcYQGQGVfqqcFRjCtE/V/K1DJWOoiv25v5a+fJqVh25kEhCT+x5taeQ2e3QWU7
+ eBHcLrhG95YbxD6mfaqqFymPty2PyEoypwz2AArmNPHVHZBQehDRu/pOHjgsZpBvwbYK
+ j3J73a9T9n/ixlAZ+4OZ746lSFcmzyIaVRdRpZ4NZv+QLYhE3ALjzCLykYLltyzlwsQI
+ DCJ12vVRoLUN6PyfsvVs32TY12r9kbdL3WpleZzi40SdIVbxos4ATS9+AtoZj678mkmr Bg== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 32n6cgb10j-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 02 Aug 2020 03:09:20 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 2 Aug
- 2020 03:09:19 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 2 Aug 2020 03:09:19 -0700
+        Sun, 02 Aug 2020 03:09:23 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 2 Aug
+ 2020 03:09:22 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 2 Aug 2020 03:09:23 -0700
 Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.193.54.28])
-        by maili.marvell.com (Postfix) with ESMTP id 645833F7045;
-        Sun,  2 Aug 2020 03:09:16 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id DB82E3F703F;
+        Sun,  2 Aug 2020 03:09:19 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
@@ -46,9 +46,9 @@ CC:     "David S . Miller" <davem@davemloft.net>,
         Igor Russkikh <irusskikh@marvell.com>,
         Alexander Lobakin <alobakin@marvell.com>,
         Michal Kalderon <michal.kalderon@marvell.com>
-Subject: [PATCH v5 net-next 09/10] qed: align adjacent indent
-Date:   Sun, 2 Aug 2020 13:08:33 +0300
-Message-ID: <20200802100834.383-10-irusskikh@marvell.com>
+Subject: [PATCH v5 net-next 10/10] qede: make driver reliable on unload after failures
+Date:   Sun, 2 Aug 2020 13:08:34 +0300
+Message-ID: <20200802100834.383-11-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200802100834.383-1-irusskikh@marvell.com>
 References: <20200802100834.383-1-irusskikh@marvell.com>
@@ -61,39 +61,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix indent on some of adjacent declarations.
+In case recovery was not successful, netdev still should be
+present. But we should clear cdev if something bad happens
+on recovery.
+
+We also check cdev for null on dev close. That could be a case
+if recovery was not successful.
 
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
 Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
 ---
- include/linux/qed/qed_if.h | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/qlogic/qede/qede_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
-index 1297726f2b25..b8fb80c9be80 100644
---- a/include/linux/qed/qed_if.h
-+++ b/include/linux/qed/qed_if.h
-@@ -897,14 +897,14 @@ struct qed_common_ops {
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+index 287e10effb49..01a7bff91d6c 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_main.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+@@ -1240,7 +1240,10 @@ static int __qede_probe(struct pci_dev *pdev, u32 dp_module, u8 dp_level,
+ err4:
+ 	qede_rdma_dev_remove(edev, (mode == QEDE_PROBE_RECOVERY));
+ err3:
+-	free_netdev(edev->ndev);
++	if (mode != QEDE_PROBE_RECOVERY)
++		free_netdev(edev->ndev);
++	else
++		edev->cdev = NULL;
+ err2:
+ 	qed_ops->common->slowpath_stop(cdev);
+ err1:
+@@ -2475,7 +2478,8 @@ static int qede_close(struct net_device *ndev)
  
- 	void		(*simd_handler_clean)(struct qed_dev *cdev,
- 					      int index);
--	int (*dbg_grc)(struct qed_dev *cdev,
--		       void *buffer, u32 *num_dumped_bytes);
-+	int		(*dbg_grc)(struct qed_dev *cdev,
-+				   void *buffer, u32 *num_dumped_bytes);
+ 	qede_unload(edev, QEDE_UNLOAD_NORMAL, false);
  
--	int (*dbg_grc_size)(struct qed_dev *cdev);
-+	int		(*dbg_grc_size)(struct qed_dev *cdev);
+-	edev->ops->common->update_drv_state(edev->cdev, false);
++	if (edev->cdev)
++		edev->ops->common->update_drv_state(edev->cdev, false);
  
--	int (*dbg_all_data) (struct qed_dev *cdev, void *buffer);
-+	int		(*dbg_all_data)(struct qed_dev *cdev, void *buffer);
- 
--	int (*dbg_all_data_size) (struct qed_dev *cdev);
-+	int		(*dbg_all_data_size)(struct qed_dev *cdev);
- 
- 	int		(*report_fatal_error)(struct devlink *devlink,
- 					      enum qed_hw_err_type err_type);
+ 	return 0;
+ }
 -- 
 2.17.1
 
