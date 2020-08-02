@@ -2,229 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70D52235794
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 16:28:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D15F2357A8
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 16:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726058AbgHBO2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 10:28:00 -0400
-Received: from mail.as201155.net ([185.84.6.188]:26199 "EHLO mail.as201155.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725853AbgHBO17 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Aug 2020 10:27:59 -0400
-Received: from smtps.newmedia-net.de ([2a05:a1c0:0:de::167]:50820 helo=webmail.newmedia-net.de)
-        by mail.as201155.net with esmtps (TLSv1:DHE-RSA-AES256-SHA:256)
-        (Exim 4.82_1-5b7a7c0-XX)
-        (envelope-from <s.gottschall@dd-wrt.com>)
-        id 1k2Exv-0007qM-0l; Sun, 02 Aug 2020 16:27:55 +0200
-X-CTCH-RefID: str=0001.0A782F1E.5F26CD6B.003E,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=dd-wrt.com; s=mikd;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=k9QIszeOG07gZ4lc+jsv+2w2OuLEzeOKXLjqJ8g7elI=;
-        b=rgMrZtHu7HLEMiREcW0KM8lCeMJp0EKSF7a0HPWFoJqYGp8HTtR7tr/D/28jMdF5k+vf31GXCXgJe8yy5I0ZCXvwBywTlEDMkbq/3+6TerWE9RTPqtwnLI5G2/fc7JNCcwHuikfVk+Dx9wWVu1OlBP20lm3xnq9/13teFz1o+Cs=;
-Subject: Re: [PATCH] net: add support for threaded NAPI polling
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org
-Cc:     Hillf Danton <hdanton@sina.com>
-References: <20200729165058.83984-1-nbd@nbd.name>
- <866c7d83-868d-120e-f535-926c4cc9e615@gmail.com>
- <5aa0c26f-d3f1-b33f-a598-e4727d6f10f0@dd-wrt.com>
- <5eb18175-b5b9-6e4e-2541-7533e21ccb21@gmail.com>
- <e65f8b84-e6f2-7aa0-4920-db44c63b5efc@dd-wrt.com>
- <b88836ef-7db4-9cd5-a36f-e20855de0304@gmail.com>
-From:   Sebastian Gottschall <s.gottschall@dd-wrt.com>
-Message-ID: <f03b59e7-54ac-0db2-afd2-ab415d0f15b0@dd-wrt.com>
-Date:   Sun, 2 Aug 2020 16:27:53 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101
- Thunderbird/79.0
+        id S1725910AbgHBOuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 10:50:05 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:34169 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725820AbgHBOuE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 10:50:04 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 9DB945C00E6;
+        Sun,  2 Aug 2020 10:50:03 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Sun, 02 Aug 2020 10:50:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; bh=y/nYC4p0UxNIRmwsxd+rin2nG9iUGSm1VZkNUIQ31
+        PY=; b=Xa/6oNg7cc97O/VFWJOW4gNn3JXno//0kPCTBIt864tZxeOEWfYNq/Qn1
+        8kScGv7/itbf/sD1cjz0OnFRVPqPSoFCQFyhvTLV37C4IP0wOr0yxsvQq5nuaK93
+        ecFKUWy30lQKOp+a1A8HrcZjGJDuEP6nEERZnBcyqz4uXRbzqZ3jotxN0vrTT3/1
+        m3Ir6WSEd4zSRqS3irYqnJVCWSgATYaknpcxJtgWRi2fczjvavzNlXbOKCkBS8U3
+        hLhrwjEmOXn3ckL5t88ZWCCX1u+Sekk9wvPn2CtJtNiW7Q6uewItlVDIxdcXISWa
+        mic9cDGjVZ/DkGUwTB+kmKePCysJg==
+X-ME-Sender: <xms:mtImX_G9rUHQN3SOK6EmZ7gqG-S34tZGqMUYaihocc2TxHTBZSgaaQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrjedvgdekgecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggugfgjsehtkeertddttdejnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeffgeehueffgfefteduvdfgteekveffjefhgefgffegtdevjeeukeeivddtveeg
+    teenucffohhmrghinheptghumhhulhhushhnvghtfihorhhkshdrtghomhenucfkphepje
+    elrddukedurddvrddujeelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehm
+    rghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:m9ImX8WBwm8v7Heyb4lpi1WZZFA69FqP9mbcBJYEZyvWLm9QzZ3qzA>
+    <xmx:m9ImXxKXZMWq-QVEmcePov19dniC7zDibEjZUMGYn36PLxMfn4XGUQ>
+    <xmx:m9ImX9HqCZG2WLcWBGAxLyVqOXKPB-ycy8hQWH9vylXFBPW2dfr7dQ>
+    <xmx:m9ImX0BI6cJSw1GkylJtf2FkKO-zWvfaAbXfVYzp6b-OMm3eqsPQ6A>
+Received: from localhost (bzq-79-181-2-179.red.bezeqint.net [79.181.2.179])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 472FC3060067;
+        Sun,  2 Aug 2020 10:50:02 -0400 (EDT)
+Date:   Sun, 2 Aug 2020 17:49:59 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Yi Yang =?utf-8?B?KOadqOeHmikt5LqR5pyN5Yqh6ZuG5Zui?= 
+        <yangyi01@inspur.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>
+Subject: Re: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIGNhbiBj?= =?utf-8?Q?urren?=
+ =?utf-8?Q?t?= ECMP implementation support consistent hashing for next hop?
+Message-ID: <20200802144959.GA2483264@shredder>
+References: <4037f805c6f842dcc429224ce28425eb@sslemail.net>
+ <8ff0c684-7d33-c785-94d7-c0e6f8b79d64@gmail.com>
+ <8867a00d26534ed5b84628db1a43017c@inspur.com>
+ <8da839b3-5b5d-b663-7d9c-0bc8351980dd@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <b88836ef-7db4-9cd5-a36f-e20855de0304@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Received:  from [2003:c9:3f22:a900:d0e9:6cc:2c9e:2065]
-        by webmail.newmedia-net.de with esmtpsa (TLSv1:AES128-SHA:128)
-        (Exim 4.72)
-        (envelope-from <s.gottschall@dd-wrt.com>)
-        id 1k2Exu-0000xX-Ui; Sun, 02 Aug 2020 16:27:54 +0200
+In-Reply-To: <8da839b3-5b5d-b663-7d9c-0bc8351980dd@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jun 11, 2020 at 10:36:59PM -0600, David Ahern wrote:
+> On 6/11/20 6:32 PM, Yi Yang (杨燚)-云服务集团 wrote:
+> > David, thank you so much for confirming it can't, I did read your cumulus document before, resilient hashing is ok for next hop remove, but it still has the same issue there if add new next hop. I know most of kernel code in Cumulus Linux has been in upstream kernel, I'm wondering why you didn't push resilient hashing to upstream kernel.
+> > 
+> > I think consistent hashing is must-have for a commercial load balancing solution, otherwise it is basically nonsense , do you Cumulus Linux have consistent hashing solution?
+> > 
+> > Is "- replacing nexthop entries as LB's come and go" ithe stuff https://docs.cumulusnetworks.com/cumulus-linux/Layer-3/Equal-Cost-Multipath-Load-Sharing-Hardware-ECMP/#resilient-hashing is showing? It can't ensure the flow is distributed to the right backend server if a new next hop is added.
+> 
+> I do not believe it is a problem to be solved in the kernel.
+> 
+> If you follow the *intent* of the Cumulus document: what is the maximum
+> number of load balancers you expect to have? 16? 32? 64? Define an ECMP
+> route with that number of nexthops and fill in the weighting that meets
+> your needs. When an LB is added or removed, you decide what the new set
+> of paths is that maintains N-total paths with the distribution that
+> meets your needs.
 
-Am 31.07.2020 um 18:36 schrieb Eric Dumazet:
->
-> On 7/30/20 10:21 AM, Sebastian Gottschall wrote:
->> Am 30.07.2020 um 18:08 schrieb Eric Dumazet:
->>> On 7/30/20 7:30 AM, Sebastian Gottschall wrote:
->>>> Am 29.07.2020 um 19:44 schrieb Eric Dumazet:
->>>>> On 7/29/20 9:50 AM, Felix Fietkau wrote:
->>>>>> For some drivers (especially 802.11 drivers), doing a lot of work in the NAPI
->>>>>> poll function does not perform well. Since NAPI poll is bound to the CPU it
->>>>>> was scheduled from, we can easily end up with a few very busy CPUs spending
->>>>>> most of their time in softirq/ksoftirqd and some idle ones.
->>>>>>
->>>>>> Introduce threaded NAPI for such drivers based on a workqueue. The API is the
->>>>>> same except for using netif_threaded_napi_add instead of netif_napi_add.
->>>>>>
->>>>>> In my tests with mt76 on MT7621 using threaded NAPI + a thread for tx scheduling
->>>>>> improves LAN->WLAN bridging throughput by 10-50%. Throughput without threaded
->>>>>> NAPI is wildly inconsistent, depending on the CPU that runs the tx scheduling
->>>>>> thread.
->>>>>>
->>>>>> With threaded NAPI, throughput seems stable and consistent (and higher than
->>>>>> the best results I got without it).
->>>>>>
->>>>>> Based on a patch by Hillf Danton
->>>>>>
->>>>>> Cc: Hillf Danton <hdanton@sina.com>
->>>>>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
->>>>>> ---
->>>>>> Changes since RFC v2:
->>>>>> - fix unused but set variable reported by kbuild test robot
->>>>>>
->>>>>> Changes since RFC:
->>>>>> - disable softirq around threaded poll functions
->>>>>> - reuse most parts of napi_poll()
->>>>>> - fix re-schedule condition
->>>>>>
->>>>>>     include/linux/netdevice.h |  23 ++++++
->>>>>>     net/core/dev.c            | 162 ++++++++++++++++++++++++++------------
->>>>>>     2 files changed, 133 insertions(+), 52 deletions(-)
->>>>>>
->>>>>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
->>>>>> index ac2cd3f49aba..3a39211c7598 100644
->>>>>> --- a/include/linux/netdevice.h
->>>>>> +++ b/include/linux/netdevice.h
->>>>>> @@ -347,6 +347,7 @@ struct napi_struct {
->>>>>>         struct list_head    dev_list;
->>>>>>         struct hlist_node    napi_hash_node;
->>>>>>         unsigned int        napi_id;
->>>>>> +    struct work_struct    work;
->>>>>>     };
->>>>>>       enum {
->>>>>> @@ -357,6 +358,7 @@ enum {
->>>>>>         NAPI_STATE_HASHED,    /* In NAPI hash (busy polling possible) */
->>>>>>         NAPI_STATE_NO_BUSY_POLL,/* Do not add in napi_hash, no busy polling */
->>>>>>         NAPI_STATE_IN_BUSY_POLL,/* sk_busy_loop() owns this NAPI */
->>>>>> +    NAPI_STATE_THREADED,    /* Use threaded NAPI */
->>>>>>     };
->>>>>>       enum {
->>>>>> @@ -367,6 +369,7 @@ enum {
->>>>>>         NAPIF_STATE_HASHED     = BIT(NAPI_STATE_HASHED),
->>>>>>         NAPIF_STATE_NO_BUSY_POLL = BIT(NAPI_STATE_NO_BUSY_POLL),
->>>>>>         NAPIF_STATE_IN_BUSY_POLL = BIT(NAPI_STATE_IN_BUSY_POLL),
->>>>>> +    NAPIF_STATE_THREADED     = BIT(NAPI_STATE_THREADED),
->>>>>>     };
->>>>>>       enum gro_result {
->>>>>> @@ -2315,6 +2318,26 @@ static inline void *netdev_priv(const struct net_device *dev)
->>>>>>     void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
->>>>>>                 int (*poll)(struct napi_struct *, int), int weight);
->>>>>>     +/**
->>>>>> + *    netif_threaded_napi_add - initialize a NAPI context
->>>>>> + *    @dev:  network device
->>>>>> + *    @napi: NAPI context
->>>>>> + *    @poll: polling function
->>>>>> + *    @weight: default weight
->>>>>> + *
->>>>>> + * This variant of netif_napi_add() should be used from drivers using NAPI
->>>>>> + * with CPU intensive poll functions.
->>>>>> + * This will schedule polling from a high priority workqueue that
->>>>>> + */
->>>>>> +static inline void netif_threaded_napi_add(struct net_device *dev,
->>>>>> +                       struct napi_struct *napi,
->>>>>> +                       int (*poll)(struct napi_struct *, int),
->>>>>> +                       int weight)
->>>>>> +{
->>>>>> +    set_bit(NAPI_STATE_THREADED, &napi->state);
->>>>>> +    netif_napi_add(dev, napi, poll, weight);
->>>>>> +}
->>>>>> +
->>>>>>     /**
->>>>>>      *    netif_tx_napi_add - initialize a NAPI context
->>>>>>      *    @dev:  network device
->>>>>> diff --git a/net/core/dev.c b/net/core/dev.c
->>>>>> index 19f1abc26fcd..11b027f3a2b9 100644
->>>>>> --- a/net/core/dev.c
->>>>>> +++ b/net/core/dev.c
->>>>>> @@ -158,6 +158,7 @@ static DEFINE_SPINLOCK(offload_lock);
->>>>>>     struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
->>>>>>     struct list_head ptype_all __read_mostly;    /* Taps */
->>>>>>     static struct list_head offload_base __read_mostly;
->>>>>> +static struct workqueue_struct *napi_workq __read_mostly;
->>>>>>       static int netif_rx_internal(struct sk_buff *skb);
->>>>>>     static int call_netdevice_notifiers_info(unsigned long val,
->>>>>> @@ -6286,6 +6287,11 @@ void __napi_schedule(struct napi_struct *n)
->>>>>>     {
->>>>>>         unsigned long flags;
->>>>>>     +    if (test_bit(NAPI_STATE_THREADED, &n->state)) {
->>>>>> +        queue_work(napi_workq, &n->work);
->>>>>> +        return;
->>>>>> +    }
->>>>>> +
->>>>> Where is the corresponding cancel_work_sync() or flush_work() at device dismantle ?
->>>>>
->>>>> Just hoping the thread will eventually run seems optimistic to me.
->>>>>
->>>>>
->>>>> Quite frankly, I do believe this STATE_THREADED status should be a generic NAPI attribute
->>>>> that can be changed dynamically, at admin request, instead of having to change/recompile
->>>>> a driver.
->>>> thats not that easy. wifi devices do use dummy netdev devices. they are not visible to sysfs and other administrative options.
->>>> so changing it would just be possible if a special mac80211 based control would be implemented for these drivers.
->>>> for standard netdev devices it isnt a big thing to implement a administrative control by sysfs (if you are talking about such a feature)
->>> We do not want to add code in fast path only for one device. We need something truly generic.
->>>
->>> I am not saying only the admin can chose, it is fine if a driver does not give the choice
->>> and will simply call netif_threaded_napi_add()
->> what could make sense if the feature can be disabled / enabled, but it will only affect drivers using the netif_threaded_napi_add call, but it should not affect drivers
->> using the old api in any way since not all drivers will work with this feature.
->
-> If we provide something in core NAPI stack, we want to make sure we can test/use it with other drivers.
->
-> ethtool, or a /sys/class/net/ethXXX entry could be used.
-but this doesnt work for wifi drivers. since wifi drivers are using 
-dummy netdev devices. we are running in circles here
-i mean a sane way could be also that dummy netdev devices are present in 
-sysfs too which is not the case right now.
-so changing the api, so the driver is forced to set sane virtual dummy 
-netdev name (like the driver name for instance). so it can be accessed 
-by sysfs.
->
-> The argument about not affecting other drivers is misleading, since the patch adds another conditional test in
-> standard NAPI layer.
->
-> Lets keep NAPI generic please.
->
-> Lets make sure syzbot will find bugs without having to attach a specific mac80211 hardware.
-the patch is not mac80211 specific. i  tested it already with network 
-drivers. it is generic.
->
-> Another concern I have with this patch is that we no longer can contain NIC processing is done
-> on a selected set of cpus (as commanded in /proc/irq/XXX/smp_affinity).
-> Or can we ?
-i had this discussion already with felix in a phonecall last week. 
-kthread vs. workq. his oppinion is that workq works more effective than 
-kthread's
-since kthreads required application support for good balancing like 
-irqbalance. personally i have no real oppinion here. the good point on 
-kthreads is
-that i'm able to track the system load per thread with simple process 
-watching. and its possible to force the thread on a specific cpuset.
+I recently started looking into consistent hashing and I wonder if it
+can be done with the new nexthop API while keeping all the logic in user
+space (e.g., FRR).
 
-the good thing on workq is, its more simple to implement and usually 
-more risc free, even if i havent seen any problems with kthreads.
-maybe felix should say something here about this. the background of this 
-patch is simply performance. especially on embedded devices.
-it started with a ath10k patch which was introducing napi threading for 
-a specific chipset which leaded to some research on my side until i found
-a historic napi kthread patch from 2016 which you have denied at that 
-time. i tested that patch and saw heavy performance boost for ath10k.
-which leaded to this workq patch at the end
+The only extension that might be required from the kernel is a new
+nexthop attribute that indicates when a nexthop was last recently used.
+User space can then use it to understand which nexthops to replace when
+a new nexthop is added and when to perform the replacement. In case the
+nexthops are offloaded, it is possible for the driver to periodically
+update the nexthop code about their activity.
 
-see also this discussion here. (you may remember this discussion since 
-you where involved in it)
-https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1142611.html
+Below is a script that demonstrates the concept with the example in the
+Cumulus documentation. I chose to replace the individual nexthops
+instead of creating new ones and then replacing the group.
 
-Sebastian
+It is obviously possible to create larger groups to reduce the impact on
+existing flows when a new nexthop is added.
 
->
->
+WDYT?
+
+```
+#!/bin/bash
+
+### Setup ####
+
+IP="ip -n testns"
+
+ip netns add testns
+
+$IP link add name dummy_a up type dummy
+$IP link add name dummy_b up type dummy
+$IP link add name dummy_c up type dummy
+$IP link add name dummy_d up type dummy
+$IP link add name dummy_e up type dummy
+
+$IP route add 1.1.1.0/24 dev dummy_a
+$IP route add 2.2.2.0/24 dev dummy_b
+$IP route add 3.3.3.0/24 dev dummy_c
+$IP route add 4.4.4.0/24 dev dummy_d
+$IP route add 5.5.5.0/24 dev dummy_e
+
+### Initial nexthop configuration ####
+# According to:
+# https://docs.cumulusnetworks.com/cumulus-linux-42/Layer-3/Equal-Cost-Multipath-Load-Sharing-Hardware-ECMP/#resilient-hash-buckets
+
+$IP nexthop replace id 1 via 1.1.1.1 dev dummy_a
+$IP nexthop replace id 2 via 2.2.2.2 dev dummy_b
+$IP nexthop replace id 3 via 3.3.3.3 dev dummy_c
+$IP nexthop replace id 4 via 4.4.4.4 dev dummy_d
+$IP nexthop replace id 5 via 1.1.1.1 dev dummy_a
+$IP nexthop replace id 6 via 2.2.2.2 dev dummy_b
+$IP nexthop replace id 7 via 3.3.3.3 dev dummy_c
+$IP nexthop replace id 8 via 4.4.4.4 dev dummy_d
+$IP nexthop replace id 9 via 1.1.1.1 dev dummy_a
+$IP nexthop replace id 10 via 2.2.2.2 dev dummy_b
+$IP nexthop replace id 11 via 3.3.3.3 dev dummy_c
+$IP nexthop replace id 12 via 4.4.4.4 dev dummy_d
+$IP nexthop replace id 10000 group 1/2/3/4/5/6/7/8/9/10/11/12
+
+echo
+echo "Initial state:"
+echo
+$IP nexthop show
+
+### Nexthop B is removed ###
+# According to:
+# https://docs.cumulusnetworks.com/cumulus-linux-42/Layer-3/Equal-Cost-Multipath-Load-Sharing-Hardware-ECMP/#remove-next-hops
+
+$IP nexthop replace id 2 via 1.1.1.1 dev dummy_a
+$IP nexthop replace id 6 via 3.3.3.3 dev dummy_c
+$IP nexthop replace id 10 via 4.4.4.4 dev dummy_d
+
+echo
+echo "After nexthop B was removed:"
+echo
+$IP nexthop show
+
+### Initial state restored ####
+
+$IP nexthop replace id 2 via 2.2.2.2 dev dummy_b
+$IP nexthop replace id 6 via 2.2.2.2 dev dummy_b
+$IP nexthop replace id 10 via 2.2.2.2 dev dummy_b
+
+echo
+echo "After intial state was restored:"
+echo
+$IP nexthop show
+
+### Nexthop E is added ####
+# According to:
+# https://docs.cumulusnetworks.com/cumulus-linux-42/Layer-3/Equal-Cost-Multipath-Load-Sharing-Hardware-ECMP/#add-next-hops
+
+# Nexthop 2, 5, 8 are active. Replace in a way that minimizes
+# interruptions.
+$IP nexthop replace id 1 via 2.2.2.2 dev dummy_b
+$IP nexthop replace id 2 via 3.3.3.3 dev dummy_c
+$IP nexthop replace id 3 via 4.4.4.4 dev dummy_d
+$IP nexthop replace id 4 via 5.5.5.5 dev dummy_e
+# Nexthop 5 remains the same
+# Nexthop 6 remains the same
+# Nexthop 7 remains the same
+# Nexthop 8 remains the same
+$IP nexthop replace id 9 via 5.5.5.5 dev dummy_e
+$IP nexthop replace id 10 via 1.1.1.1 dev dummy_a
+$IP nexthop replace id 11 via 2.2.2.2 dev dummy_b
+$IP nexthop replace id 12 via 3.3.3.3 dev dummy_c
+
+echo
+echo "After nexthop E was added:"
+echo
+$IP nexthop show
+
+ip netns del testns
+```
+
+> 
+> I just sent patches for active-backup nexthops that allows an automatic
+> fallback when one is removed to address the redistribution problem, but
+> it still requires userspace to decide what the active-backup pairs are
+> as well as the maximum number of paths.
