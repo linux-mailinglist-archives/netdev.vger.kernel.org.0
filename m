@@ -2,140 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1462D235713
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 15:23:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E076723571E
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 15:30:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728267AbgHBNVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 09:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55940 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727914AbgHBNVp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 09:21:45 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0283C06174A;
-        Sun,  2 Aug 2020 06:21:44 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id kq25so22958946ejb.3;
-        Sun, 02 Aug 2020 06:21:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZUL/yD9zmO6DmcZy6KXxPbVU4U1pO6NSKiKrUZ+bXyM=;
-        b=p4XSCN8yGgZCIhrkkj1rFOVoYL7U2r0/270o3/AEHkM4jDzbO4LGflEOjQYiRZwSdq
-         7nS4D+YvJZvNmZFH6RyZuBI94p8IKHpEYyqBhnHgccFoyEyZwa+GqCceYwdpeDhVNdsi
-         f2pGhzQgfx3GFY0JDG6Kw5VBqTYWcteIz4SemeH+w4jOu5T9tp9pVRrAst7Ihzsw3XPv
-         3mjJELk+XFSCjE+6ZnJRoY0pAgo7yYQdYvjnNB+jFEdOscFgQRe9FBFw+1fKgzAziuf9
-         YBWbVvzMp2KOeYYuEaHBSXdLitmh1N8eotFy0TgUa5QRSCredN765aNtwKjC9AUz1WsH
-         I+aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZUL/yD9zmO6DmcZy6KXxPbVU4U1pO6NSKiKrUZ+bXyM=;
-        b=EGrrjEIgSt7VeHlRb+7Q0FLmyAKZ08hDZ4mAa8TKeldzutEtHwoGYQYYnlqXqGLExG
-         1V4IOJ3qZcZ2znuS2UWvSReqthvTPTwhTNS0PqFeI2+Bzv2Q/fXNNH0W0w0N1LmGKYK5
-         lre4b4/xutM28wdk+gECyuRL5poYJNGPVDCxCCt8QwJdmuUfILFYN6o61FOzTWQ+kRhN
-         sjuxgxJDH0HY2/JM4r7hzmb+LNnURJ0Uw7ANwp9/aPrcQqYzk3mrRU91de66eJYIo/H5
-         AcHRUZJcHlJFlzr2Kg6kFRyBplgIey+8tCCwmDgY4ody3sTKo42zPDD0tFTKY5sKdwU5
-         0bOw==
-X-Gm-Message-State: AOAM530bwSWiRB/h7DeVQR6h1w9y1kig3fkUmfcsgS/yoPUa5wiEPQe+
-        vf7AUFPjSk9XYQej5S79fUY=
-X-Google-Smtp-Source: ABdhPJwtfLVX/r+ZgDfvF/aaiqOf8MaZ5i1jtil/zwBqaXGuAF+t8Ds7ys5dYrEBiJ1waG2tLGonDQ==
-X-Received: by 2002:a17:906:95cb:: with SMTP id n11mr12145750ejy.506.1596374503481;
-        Sun, 02 Aug 2020 06:21:43 -0700 (PDT)
-Received: from skbuf ([188.26.57.97])
-        by smtp.gmail.com with ESMTPSA id q11sm3931651edn.52.2020.08.02.06.21.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Aug 2020 06:21:43 -0700 (PDT)
-Date:   Sun, 2 Aug 2020 16:21:41 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jonathan McDowell <noodles@earth.li>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Matthew Hagan <mnhagan88@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 1/2] net: dsa: qca8k: Add define for port VID
-Message-ID: <20200802132141.qobvb32guc3hx5lk@skbuf>
-References: <20200721171624.GK23489@earth.li>
- <08fd70c48668544408bdb7932ef23e13d1080ad1.1596301468.git.noodles@earth.li>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <08fd70c48668544408bdb7932ef23e13d1080ad1.1596301468.git.noodles@earth.li>
+        id S1728203AbgHBNaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 09:30:22 -0400
+Received: from zg8tmtm5lju5ljm3lje2naaa.icoremail.net ([139.59.37.164]:38745
+        "HELO zg8tmtm5lju5ljm3lje2naaa.icoremail.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with SMTP id S1726578AbgHBNaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 09:30:22 -0400
+X-Greylist: delayed 1139 seconds by postgrey-1.27 at vger.kernel.org; Sun, 02 Aug 2020 09:30:19 EDT
+Received: from oslab.tsinghua.edu.cn (unknown [166.111.139.112])
+        by app-1 (Coremail) with SMTP id DwQGZQDn7MjOvyZfkEDqAw--.5190S2;
+        Sun, 02 Aug 2020 21:29:57 +0800 (CST)
+From:   Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
+To:     chunkeey@googlemail.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
+Subject: [PATCH] p54: avoid accessing the data mapped to streaming DMA
+Date:   Sun,  2 Aug 2020 21:29:49 +0800
+Message-Id: <20200802132949.26788-1-baijiaju@tsinghua.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: DwQGZQDn7MjOvyZfkEDqAw--.5190S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7WF48JFWrZFW8Ww15Cw4fGrg_yoW8ArW5pF
+        Z8Aa47Kr4YvF45W3W0kF4UuF1YyayrA3sF9F4Ykwnakr4kXr1SqFyruFWIkwn0yrs8A3y3
+        Ar1jqr47W3Z0y3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkm14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Xr4l
+        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAK
+        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F
+        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI
+        42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUnpnQUUUUU
+X-CM-SenderInfo: xedlyxhdmxq3pvlqwxlxdovvfxof0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 01, 2020 at 06:05:54PM +0100, Jonathan McDowell wrote:
-> Rather than using a magic value of 1 when configuring the port VIDs add
-> a QCA8K_PORT_VID_DEF define and use that instead. Also fix up the
-> bitmask in the process; the top 4 bits are reserved so this wasn't a
-> problem, but only masking 12 bits is the correct approach.
-> 
-> Signed-off-by: Jonathan McDowell <noodles@earth.li>
-> ---
+In p54p_tx(), skb->data is mapped to streaming DMA on line 337:
+  mapping = pci_map_single(..., skb->data, ...);
 
-Acked-by: Vladimir Oltean <olteanv@gmail.com>
+Then skb->data is accessed on line 349:
+  desc->device_addr = ((struct p54_hdr *)skb->data)->req_id;
 
->  drivers/net/dsa/qca8k.c | 11 ++++++-----
->  drivers/net/dsa/qca8k.h |  2 ++
->  2 files changed, 8 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> index a5566de82853..3ebc4da63074 100644
-> --- a/drivers/net/dsa/qca8k.c
-> +++ b/drivers/net/dsa/qca8k.c
-> @@ -663,10 +663,11 @@ qca8k_setup(struct dsa_switch *ds)
->  			 * default egress vid
->  			 */
->  			qca8k_rmw(priv, QCA8K_EGRESS_VLAN(i),
-> -				  0xffff << shift, 1 << shift);
-> +				  0xfff << shift,
-> +				  QCA8K_PORT_VID_DEF << shift);
->  			qca8k_write(priv, QCA8K_REG_PORT_VLAN_CTRL0(i),
-> -				    QCA8K_PORT_VLAN_CVID(1) |
-> -				    QCA8K_PORT_VLAN_SVID(1));
-> +				    QCA8K_PORT_VLAN_CVID(QCA8K_PORT_VID_DEF) |
-> +				    QCA8K_PORT_VLAN_SVID(QCA8K_PORT_VID_DEF));
->  		}
->  	}
->  
-> @@ -1133,7 +1134,7 @@ qca8k_port_fdb_insert(struct qca8k_priv *priv, const u8 *addr,
->  {
->  	/* Set the vid to the port vlan id if no vid is set */
->  	if (!vid)
-> -		vid = 1;
-> +		vid = QCA8K_PORT_VID_DEF;
->  
->  	return qca8k_fdb_add(priv, addr, port_mask, vid,
->  			     QCA8K_ATU_STATUS_STATIC);
-> @@ -1157,7 +1158,7 @@ qca8k_port_fdb_del(struct dsa_switch *ds, int port,
->  	u16 port_mask = BIT(port);
->  
->  	if (!vid)
-> -		vid = 1;
-> +		vid = QCA8K_PORT_VID_DEF;
->  
->  	return qca8k_fdb_del(priv, addr, port_mask, vid);
->  }
-> diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-> index 31439396401c..92216a52daa5 100644
-> --- a/drivers/net/dsa/qca8k.h
-> +++ b/drivers/net/dsa/qca8k.h
-> @@ -22,6 +22,8 @@
->  
->  #define QCA8K_CPU_PORT					0
->  
-> +#define QCA8K_PORT_VID_DEF				1
-> +
->  /* Global control registers */
->  #define QCA8K_REG_MASK_CTRL				0x000
->  #define   QCA8K_MASK_CTRL_ID_M				0xff
-> -- 
-> 2.20.1
-> 
+This access may cause data inconsistency between CPU cache and hardware.
+
+To fix this problem, ((struct p54_hdr *)skb->data)->req_id is stored in
+a local variable before DMA mapping, and then the driver accesses this
+local variable instead of skb->data.
+
+Signed-off-by: Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
+---
+ drivers/net/wireless/intersil/p54/p54pci.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/intersil/p54/p54pci.c b/drivers/net/wireless/intersil/p54/p54pci.c
+index 80ad0b7eaef4..f8c6027cab6b 100644
+--- a/drivers/net/wireless/intersil/p54/p54pci.c
++++ b/drivers/net/wireless/intersil/p54/p54pci.c
+@@ -329,10 +329,12 @@ static void p54p_tx(struct ieee80211_hw *dev, struct sk_buff *skb)
+ 	struct p54p_desc *desc;
+ 	dma_addr_t mapping;
+ 	u32 idx, i;
++	__le32 device_addr;
+ 
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 	idx = le32_to_cpu(ring_control->host_idx[1]);
+ 	i = idx % ARRAY_SIZE(ring_control->tx_data);
++	device_addr = ((struct p54_hdr *)skb->data)->req_id;
+ 
+ 	mapping = pci_map_single(priv->pdev, skb->data, skb->len,
+ 				 PCI_DMA_TODEVICE);
+@@ -346,7 +348,7 @@ static void p54p_tx(struct ieee80211_hw *dev, struct sk_buff *skb)
+ 
+ 	desc = &ring_control->tx_data[i];
+ 	desc->host_addr = cpu_to_le32(mapping);
+-	desc->device_addr = ((struct p54_hdr *)skb->data)->req_id;
++	desc->device_addr = device_addr;
+ 	desc->len = cpu_to_le16(skb->len);
+ 	desc->flags = 0;
+ 
+-- 
+2.17.1
+
