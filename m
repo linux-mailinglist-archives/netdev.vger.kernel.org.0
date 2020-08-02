@@ -2,76 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E17C239CDD
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 00:45:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68FB7239CE1
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 00:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727843AbgHBWpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 18:45:45 -0400
-Received: from smtprelay0225.hostedemail.com ([216.40.44.225]:40988 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726947AbgHBWpp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 18:45:45 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 198F612E2;
-        Sun,  2 Aug 2020 22:45:44 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1539:1593:1594:1711:1730:1747:1777:1792:2307:2393:2525:2553:2560:2563:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3352:3622:3865:3866:3871:3872:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:5007:6119:6742:7903:9025:10004:10400:10848:11232:11658:11914:12043:12114:12297:12555:12663:12698:12737:12740:12760:12895:13019:13069:13255:13311:13357:13439:14181:14659:14721:21080:21611:21627:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: paint93_0401b7726f98
-X-Filterd-Recvd-Size: 2258
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf11.hostedemail.com (Postfix) with ESMTPA;
-        Sun,  2 Aug 2020 22:45:41 +0000 (UTC)
-Message-ID: <60584f4c0303106b42463ddcfb108ec4a1f0b705.camel@perches.com>
-Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
- in rds_notify_queue_get()
-From:   Joe Perches <joe@perches.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peilin Ye <yepeilin.cs@gmail.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
-Date:   Sun, 02 Aug 2020 15:45:40 -0700
-In-Reply-To: <20200802222843.GP24045@ziepe.ca>
-References: <20200731045301.GI75549@unreal>
-         <20200731053306.GA466103@kroah.com> <20200731053333.GB466103@kroah.com>
-         <20200731140452.GE24045@ziepe.ca> <20200731142148.GA1718799@kroah.com>
-         <20200731143604.GF24045@ziepe.ca> <20200731171924.GA2014207@kroah.com>
-         <20200801053833.GK75549@unreal> <20200802221020.GN24045@ziepe.ca>
-         <fb7ec4d4ed78e6ae7fa6c04abb24d1c00dc2b0f7.camel@perches.com>
-         <20200802222843.GP24045@ziepe.ca>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1726968AbgHBWsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 18:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726841AbgHBWsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 18:48:54 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD8DC06174A;
+        Sun,  2 Aug 2020 15:48:54 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id p3so18875819pgh.3;
+        Sun, 02 Aug 2020 15:48:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=U7VViHsjGekDZtmJigNuVCVgDWbw1OtT+DsWLHj/xLY=;
+        b=pwIsan0Gct33J0tEdHQf3jxaRcDLxqXC8TWUMlt19PIJmTQDPJfFfRfgUB9Jl4RJBU
+         9HJL+tlRsEJO34G9ECu8/htLhT/15zOfqLzeR+8zmc5Em1vlnA4HG3DsOb8gZnm25P40
+         9jSwJc1mDmAgeCrJiGenGrh2ZR3KEC7EdkYsofW2CAmI9GPeIj2beKWTp/WxuddDInZy
+         ppgd95ln5x9SZmzsOD5O01EjCfCllbuobqLvRxm97JQAuPKRp/xZgjcGWTDH82115Bvp
+         isgWZ4z9BuOY+FkbgyxYwJ3ceMmrnS2BEAdO2+ex/w9gcjxY4NPKIJpGuCVBOAyX5Tr4
+         kbnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=U7VViHsjGekDZtmJigNuVCVgDWbw1OtT+DsWLHj/xLY=;
+        b=L5Vfwll6hOU7JY3K7so+x5+3IrOFxKy7yqcybCNyvwlRQj/ZOLlriGkKK/r2RQx2M0
+         jXpEbYgcpFVt4Q5P7geLLXTvwAA5Ta3TXTpFtKB669rEUEca5RXv0yCUFL+vP7kGwEBa
+         m6aWsBSMvGcqk1OdmhC6JGSbrgLHhm4dUxnIEmU2V1VnxoDM0rV6ytMIyrtMxcK/srQ4
+         JIX0nisw9ftXsL1J/Tl1zkuuQfgrPdTpSM/Xh/9fPNpWL/QVPrQPvSuIzT2PGAHBE2L9
+         KNDdkyJRmpGDZ/AgqToo0wRHmoTYSkcGE5lnp+XZROV3rojuJ6yQdncN2TcWE2TMSkAG
+         H0pg==
+X-Gm-Message-State: AOAM531Q8myPl4Bzm7yeWN0Dat/BjVlBP0cZaq/vQzEvVw+dBH/vQAdR
+        2+YsAKakSrMTVSvY3MKlCwg=
+X-Google-Smtp-Source: ABdhPJxsUuPPbdXcqFd4Qb84J7TpcnHx5XZWmXiuR/Z8cF+ifP8XjFQ+2HJWoBsZdN29xb8B+cTiuQ==
+X-Received: by 2002:a63:5d1:: with SMTP id 200mr12753738pgf.59.1596408533487;
+        Sun, 02 Aug 2020 15:48:53 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:65b5])
+        by smtp.gmail.com with ESMTPSA id a7sm10480331pfa.19.2020.08.02.15.48.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 Aug 2020 15:48:52 -0700 (PDT)
+Date:   Sun, 2 Aug 2020 15:48:50 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Dmitry Yakunin <zeil@yandex-team.ru>
+Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        sdf@google.com
+Subject: Re: [PATCH bpf-next v5 1/2] bpf: setup socket family and addresses
+ in bpf_prog_test_run_skb
+Message-ID: <20200802224850.ezn6tmcz4657ia4z@ast-mbp.dhcp.thefacebook.com>
+References: <20200802213631.78937-1-zeil@yandex-team.ru>
+ <20200802213631.78937-2-zeil@yandex-team.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200802213631.78937-2-zeil@yandex-team.ru>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2020-08-02 at 19:28 -0300, Jason Gunthorpe wrote:
-> On Sun, Aug 02, 2020 at 03:23:58PM -0700, Joe Perches wrote:
-> > On Sun, 2020-08-02 at 19:10 -0300, Jason Gunthorpe wrote:
-> > > On Sat, Aug 01, 2020 at 08:38:33AM +0300, Leon Romanovsky wrote:
-> > > 
-> > > > I'm using {} instead of {0} because of this GCC bug.
-> > > > https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53119
-> > > 
-> > > This is why the {} extension exists..
-> > 
-> > There is no guarantee that the gcc struct initialization {}
-> > extension also zeros padding.
+On Mon, Aug 03, 2020 at 12:36:30AM +0300, Dmitry Yakunin wrote:
+> Now it's impossible to test all branches of cgroup_skb bpf program which
+> accesses skb->family and skb->{local,remote}_ip{4,6} fields because they
+> are zeroed during socket allocation. This commit fills socket family and
+> addresses from related fields in constructed skb.
 > 
-> We just went over this. Yes there is, C11 requires it.
+> v2:
+>   - fix build without CONFIG_IPV6 (kernel test robot <lkp@intel.com>)
+> 
+> v3:
+>   - check skb length before access to inet headers (Eric Dumazet)
+> 
+> Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
+> ---
+>  net/bpf/test_run.c | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+> 
+> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> index b03c469..8d69295 100644
+> --- a/net/bpf/test_run.c
+> +++ b/net/bpf/test_run.c
+> @@ -449,6 +449,27 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
+>  	skb->protocol = eth_type_trans(skb, current->nsproxy->net_ns->loopback_dev);
+>  	skb_reset_network_header(skb);
+>  
+> +	switch (skb->protocol) {
+> +	case htons(ETH_P_IP):
+> +		sk->sk_family = AF_INET;
+> +		if (pskb_may_pull(skb, sizeof(struct iphdr))) {
 
-c11 is not c90.  The kernel uses c90.
+skb was just inited with __skb_put(skb, size);
+Looking at pskb_may_pull() messes with my brain too much,
+since it should never go into __pskb_pull_tail path.
+Can you open code the skb->len check instead?
+if (sizeof(struct iphdr) <= skb_headlen(skb)) {
 
-
-
+> +			sk->sk_rcv_saddr = ip_hdr(skb)->saddr;
+> +			sk->sk_daddr = ip_hdr(skb)->daddr;
+> +		}
+> +		break;
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	case htons(ETH_P_IPV6):
+> +		sk->sk_family = AF_INET6;
+> +		if (pskb_may_pull(skb, sizeof(struct ipv6hdr))) {
+> +			sk->sk_v6_rcv_saddr = ipv6_hdr(skb)->saddr;
+> +			sk->sk_v6_daddr = ipv6_hdr(skb)->daddr;
+> +		}
+> +		break;
+> +#endif
+> +	default:
+> +		break;
+> +	}
+> +
+>  	if (is_l2)
+>  		__skb_push(skb, hh_len);
+>  	if (is_direct_pkt_access)
+> -- 
+> 2.7.4
+> 
