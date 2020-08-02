@@ -2,42 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 690A3239BF9
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:49:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 589D0239BFB
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:49:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728003AbgHBUqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 16:46:21 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:38669 "EHLO
+        id S1728019AbgHBUqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 16:46:23 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:43768 "EHLO
         mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726862AbgHBUqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 16:46:20 -0400
-Received: by mail-il1-f199.google.com with SMTP id t79so23722568ild.5
-        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 13:46:19 -0700 (PDT)
+        with ESMTP id S1727986AbgHBUqV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 16:46:21 -0400
+Received: by mail-il1-f199.google.com with SMTP id f131so4965062ilh.10
+        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 13:46:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=gb1bfcM4gWAnNmFB6x9ih5/iUQPdrS6TKSoNqV7OW28=;
-        b=apZgMisT3McaUbqGOsBv4CkBjgzPn34d0qdCM/J7ppg9e8GYIvSaQEBFaj9Y9TP5yQ
-         w0TQ/0lEmUw0jOSWXNH14cQ4AGWkwL1Xvvs6gWyFluoQ7FT+UpJCBeNvPBxHh+cD0YIW
-         k2EQZ/yJb9Y5TeB7Oc4oY7mWE4+/RBMC+PjMn+joupVFQ9y8men4Y0qDHGGw0B+xOD73
-         GSNnz9Z2GnatxLr7P8oIXxCIhh45CWiJR5svpiAw7XRTC4qPC+0wcqTLvKouSYsrJDxk
-         8JjxBH8QGvi8F8Mme1a9vDBuMT4eBGi26Y6jhJEOMTB7znTiNTLcNxH5HsVSi7mCsArX
-         VkCw==
-X-Gm-Message-State: AOAM530NlRxJ31Y08ZN9gJcuBdl891x0H84QFVA7+TU/vcbWIBFkS8uJ
-        yKv48LR/hVRLZSo20V4taY3kQ/+M3T+fh3WOkA2Kng90GvLe
-X-Google-Smtp-Source: ABdhPJz7mj17MBSURQBMv5KS03Lt3OtdtOLBNNjQvilwwvX1G4E5QRCMfbqyg7nZk+NKYsCvDasVLq+D+43TBGEvxDXjyrRQdLdK
+        bh=UR/ZO0hH6TY23jTg0tEYuIZyHB35kzhpcW94c67p/IY=;
+        b=YMwFtS02E7HUoYcZrjs29sUv8m/yyfDcjBG0QP37/uFDMLSpmYrx8dvPCnClbASCxh
+         yB8zECReKTKiLmTklU7CTuIAelrYyD9uxAe+M25N9yUHp0cNui63l5R6gzv6r7Ojo6Ux
+         mhrpo9xIgmTQsFeJqQJrLPRExC5bsE+Mho67MCd3Ye9pLZIk91qxBDzw/ey5K9guBJGi
+         4N2xRbGw1WzFNDNWq3W4NeqiSRrlOHuT6H8L9b3fQJ9behYBhKJwoKZxTosZ3OYag+K5
+         G9BbsFfufeDls2stM/7LsR4Okorq50DnfcmiYxGHf+aq8vt+3jRFSWlgOIogXDnKlMZx
+         xjyQ==
+X-Gm-Message-State: AOAM531UZYJ2ctXNHvIF0PwvZ3xzNbBvKEwPTTiMs5dwGJzK1Zn5ZsNA
+        D2FazAgMAp9sRjZ/k4muZpHnrCkq8jPayT9Jp2PiAbTiak8x
+X-Google-Smtp-Source: ABdhPJz7QroLRzfyvDXIacdc4voPN0fxMrySmyqn0CFftkCfYMBM0YQGazUDxAJijzwoaYNvZzDHqwqhpHTS867zlK7eYtmTskSB
 MIME-Version: 1.0
-X-Received: by 2002:a6b:da0d:: with SMTP id x13mr13949462iob.138.1596401179576;
+X-Received: by 2002:a6b:5d0a:: with SMTP id r10mr13874575iob.186.1596401179781;
  Sun, 02 Aug 2020 13:46:19 -0700 (PDT)
 Date:   Sun, 02 Aug 2020 13:46:19 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003a51d705abeb1d74@google.com>
-Subject: KMSAN: uninit-value in process_adv_report
-From:   syzbot <syzbot+e4244d85e5b777ac4d3d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+Message-ID: <0000000000003d6e8405abeb1da7@google.com>
+Subject: KASAN: use-after-free Read in hci_send_acl
+From:   syzbot <syzbot+98228e7407314d2d4ba2@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
         marcel@holtmann.org, netdev@vger.kernel.org,
         syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
@@ -50,67 +49,101 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    93f54a72 instrumented.h: fix KMSAN support
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=13238a42900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=fa4f3b91169c2501
-dashboard link: https://syzkaller.appspot.com/bug?extid=e4244d85e5b777ac4d3d
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-userspace arch: i386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=108830ec900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12f9336c900000
+HEAD commit:    ac3a0c84 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13482904900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c0cfcf935bcc94d2
+dashboard link: https://syzkaller.appspot.com/bug?extid=98228e7407314d2d4ba2
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=152f1904900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1482dfca900000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e4244d85e5b777ac4d3d@syzkaller.appspotmail.com
+Reported-by: syzbot+98228e7407314d2d4ba2@syzkaller.appspotmail.com
 
-Bluetooth: hci0: unknown advertising packet type: 0x2b
-=====================================================
-BUG: KMSAN: uninit-value in hci_bdaddr_is_rpa include/net/bluetooth/hci_core.h:1486 [inline]
-BUG: KMSAN: uninit-value in process_adv_report+0x781/0x2000 net/bluetooth/hci_event.c:5409
-CPU: 0 PID: 2202 Comm: kworker/u5:0 Not tainted 5.8.0-rc5-syzkaller #0
+==================================================================
+BUG: KASAN: use-after-free in hci_send_acl+0xabe/0xc60 net/bluetooth/hci_core.c:3991
+Read of size 8 at addr ffff8880a6ff8818 by task kworker/u5:2/6855
+
+CPU: 1 PID: 6855 Comm: kworker/u5:2 Not tainted 5.8.0-rc7-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Workqueue: hci0 hci_rx_work
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1df/0x240 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
- hci_bdaddr_is_rpa include/net/bluetooth/hci_core.h:1486 [inline]
- process_adv_report+0x781/0x2000 net/bluetooth/hci_event.c:5409
- hci_le_direct_adv_report_evt net/bluetooth/hci_event.c:5837 [inline]
- hci_le_meta_evt net/bluetooth/hci_event.c:5902 [inline]
- hci_event_packet+0x1d08/0x33ee0 net/bluetooth/hci_event.c:6155
- hci_rx_work+0x95f/0xce0 net/bluetooth/hci_core.c:4705
- process_one_work+0x1540/0x1f30 kernel/workqueue.c:2269
- worker_thread+0xed2/0x23f0 kernel/workqueue.c:2415
- kthread+0x515/0x550 kernel/kthread.c:292
- ret_from_fork+0x22/0x30 arch/x86/entry/entry_64.S:293
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xae/0x436 mm/kasan/report.c:383
+ __kasan_report mm/kasan/report.c:513 [inline]
+ kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
+ hci_send_acl+0xabe/0xc60 net/bluetooth/hci_core.c:3991
+ l2cap_send_cmd+0x6d5/0x8a0 net/bluetooth/l2cap_core.c:949
+ l2cap_send_move_chan_cfm_icid net/bluetooth/l2cap_core.c:4917 [inline]
+ l2cap_move_fail net/bluetooth/l2cap_core.c:5401 [inline]
+ l2cap_move_channel_rsp net/bluetooth/l2cap_core.c:5440 [inline]
+ l2cap_bredr_sig_cmd net/bluetooth/l2cap_core.c:5719 [inline]
+ l2cap_sig_channel net/bluetooth/l2cap_core.c:6418 [inline]
+ l2cap_recv_frame+0x6936/0xae10 net/bluetooth/l2cap_core.c:7660
+ l2cap_recv_acldata+0x7f6/0x8e0 net/bluetooth/l2cap_core.c:8313
+ hci_acldata_packet net/bluetooth/hci_core.c:4520 [inline]
+ hci_rx_work+0x4c7/0xb10 net/bluetooth/hci_core.c:4710
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
 
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
- kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
- kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
- slab_alloc_node mm/slub.c:2839 [inline]
- __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4478
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1083 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:377 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x15b/0x800 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1908 [inline]
- new_sync_write fs/read_write.c:503 [inline]
- vfs_write+0xd98/0x1480 fs/read_write.c:578
- ksys_write+0x267/0x450 fs/read_write.c:631
- __do_sys_write fs/read_write.c:643 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:640
- __ia32_sys_write+0x4a/0x70 fs/read_write.c:640
- do_syscall_32_irqs_on arch/x86/entry/common.c:430 [inline]
- __do_fast_syscall_32+0x2aa/0x400 arch/x86/entry/common.c:477
- do_fast_syscall_32+0x6b/0xd0 arch/x86/entry/common.c:505
- do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:554
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-=====================================================
+Allocated by task 6855:
+ save_stack+0x1b/0x40 mm/kasan/common.c:48
+ set_track mm/kasan/common.c:56 [inline]
+ __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:494
+ kmem_cache_alloc_trace+0x14f/0x2d0 mm/slab.c:3551
+ kmalloc include/linux/slab.h:555 [inline]
+ kzalloc include/linux/slab.h:669 [inline]
+ hci_chan_create+0x9b/0x330 net/bluetooth/hci_conn.c:1692
+ l2cap_conn_add.part.0+0x1e/0xe10 net/bluetooth/l2cap_core.c:7699
+ l2cap_conn_add net/bluetooth/l2cap_core.c:8139 [inline]
+ l2cap_connect_cfm+0x23b/0x1090 net/bluetooth/l2cap_core.c:8097
+ hci_connect_cfm include/net/bluetooth/hci_core.h:1340 [inline]
+ hci_remote_features_evt net/bluetooth/hci_event.c:3210 [inline]
+ hci_event_packet+0x3e01/0x86f5 net/bluetooth/hci_event.c:6061
+ hci_rx_work+0x22e/0xb10 net/bluetooth/hci_core.c:4705
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+
+Freed by task 6855:
+ save_stack+0x1b/0x40 mm/kasan/common.c:48
+ set_track mm/kasan/common.c:56 [inline]
+ kasan_set_free_info mm/kasan/common.c:316 [inline]
+ __kasan_slab_free+0xf5/0x140 mm/kasan/common.c:455
+ __cache_free mm/slab.c:3426 [inline]
+ kfree+0x103/0x2c0 mm/slab.c:3757
+ hci_disconn_loglink_complete_evt net/bluetooth/hci_event.c:4999 [inline]
+ hci_event_packet+0x319a/0x86f5 net/bluetooth/hci_event.c:6188
+ hci_rx_work+0x22e/0xb10 net/bluetooth/hci_core.c:4705
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+
+The buggy address belongs to the object at ffff8880a6ff8800
+ which belongs to the cache kmalloc-128 of size 128
+The buggy address is located 24 bytes inside of
+ 128-byte region [ffff8880a6ff8800, ffff8880a6ff8880)
+The buggy address belongs to the page:
+page:ffffea00029bfe00 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff8880a6ff8c00
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea0002934388 ffff8880aa001540 ffff8880aa000700
+raw: ffff8880a6ff8c00 ffff8880a6ff8000 000000010000000c 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8880a6ff8700: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880a6ff8780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff8880a6ff8800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                            ^
+ ffff8880a6ff8880: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff8880a6ff8900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
 ---
