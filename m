@@ -2,89 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C061A235A59
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:18:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81191235A68
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 22:19:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727006AbgHBUR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 16:17:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725910AbgHBUR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 16:17:56 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D32C06174A
-        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 13:17:56 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id kr4so7896597pjb.2
-        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 13:17:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=izCJhOGIu354j1uF+gtD3v3f21U9NHRh6uNsPAemTPQ=;
-        b=KCVt6soJI6hU2wGvXNaEiX/U1Us6vDvxdwYsh4GWQLJAiaDraOZ62JgSlXYVrMmdb/
-         tDMqFfzGC0IPzi4w+wYjrFpXC18x4GM8ddm/GjWjzbeTrNHlEx043nI2lgPYy0Aud4Dq
-         9aHXFrx8c34i/sGB7DD7Vatvca/FvCZ8RkrI9Xk54ei6JrZ0YxJ+yw1dj4zQy0jhEwzJ
-         dfLyZjI6ZQAPjBbfzw/yXuPFIS6FYVG87v3NBbu1/b+9DgPH35SCmEc5Iqv3jJSlkGv2
-         AtivyQzYAyV9VY+A6h4jCZ2fj3Xl1jiesRSGVmpQczVC6VXIkorEs122NujZeWLT+AGI
-         RTMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=izCJhOGIu354j1uF+gtD3v3f21U9NHRh6uNsPAemTPQ=;
-        b=jN8xuiOjO8I2R5DDC1kUA9ltfr9Fm+kZvDRS+5gx6MNOl0qE/MwCPid7c19pvP3mjl
-         xUTHlvLUGYlHwPMdyRLm6nIi0PsjZ/i/8fo0K20FGPyr8i7xLImIGvJMgszUp2PeCqAs
-         mUsuiqBvQCnTDbZcS9CeOGswp2n25VmlfmF99mf2T9+7NwuZr8XPNqIwLA1Vte61FxES
-         HMrSG8lqdXYx6LxVYuRUryp6ASEqfSQh9uQDjTIcatXgrd017uIe9hz2V+w3lFBdo1x+
-         2yEPhO4AzcmiF6l8u2rCfPuHqGyHm8VS9OkmEnzb+YMEDpXW6AFyBgQqkv2914niKcgw
-         ypIg==
-X-Gm-Message-State: AOAM532EgA4bMhGD3844v/aRCIiESVl0AeVeBW+p+3jRC95rNFrCoY46
-        4qItjIpi4fD+K0Op5SOWAAoMYiJl
-X-Google-Smtp-Source: ABdhPJxjgwHWz3ue/kKRIH/f5d4h5Y0glzXWpQj+tqLUCXT3Iojp3IYn4OuU7/bBAK1Nws5leigwpA==
-X-Received: by 2002:a17:90a:c295:: with SMTP id f21mr13887666pjt.208.1596399475274;
-        Sun, 02 Aug 2020 13:17:55 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id w2sm15463004pjt.19.2020.08.02.13.17.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Aug 2020 13:17:54 -0700 (PDT)
-Subject: Re: [PATCH v2 2/4 net-next] net: mdiobus: use flexible sleeping for
- reset-delay-us
-To:     Bruno Thomsen <bruno.thomsen@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Fabio Estevam <festevam@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lars Alex Pedersen <laa@kamstrup.com>,
-        Bruno Thomsen <bth@kamstrup.com>
-References: <20200730195749.4922-1-bruno.thomsen@gmail.com>
- <20200730195749.4922-3-bruno.thomsen@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <0dd1461e-ef43-767e-bb22-658e4f9f8543@gmail.com>
-Date:   Sun, 2 Aug 2020 13:17:53 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.10.0
+        id S1727893AbgHBUSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 16:18:45 -0400
+Received: from mail.skyhub.de ([5.9.137.197]:58748 "EHLO mail.skyhub.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725910AbgHBUSo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 2 Aug 2020 16:18:44 -0400
+Received: from nazgul.tnic (unknown [78.130.214.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4D2291EC02A8;
+        Sun,  2 Aug 2020 22:18:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1596399520;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=z0K+vlWV9j7wfXLQcUnvdJhwiVrF38RAZueHzdmaci0=;
+        b=IpVr02DQwE3yYwTGqHzkePquczoIuB3CSh4JRazV28rb0yxVyTjgJHeFSYXLscJQCgocj+
+        YjGRmfK2vuZ4xdnOu8V6Bj4srNoX1QpTQVYAD0HdeQama4rhKTHzaxEhs3BC4FYYx+fxXN
+        dZeZiogCz7IvNzoJKsyyZMEOy76rM2w=
+Date:   Sun, 2 Aug 2020 22:18:06 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Saheed Bolarinwa <refactormyself@gmail.com>, trix@redhat.com,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Joerg Roedel <joro@8bytes.org>, bjorn@helgaas.com,
+        skhan@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mtd@lists.infradead.org, iommu@lists.linux-foundation.org,
+        linux-rdma@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-gpio@vger.kernel.org, linux-fpga@vger.kernel.org,
+        linux-edac@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-crypto@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net
+Subject: Re: [RFC PATCH 00/17] Drop uses of pci_read_config_*() return value
+Message-ID: <20200802201806.GA24437@nazgul.tnic>
+References: <20200802184648.GA23190@nazgul.tnic>
+ <20200802191406.GA248232@bjorn-Precision-5520>
 MIME-Version: 1.0
-In-Reply-To: <20200730195749.4922-3-bruno.thomsen@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20200802191406.GA248232@bjorn-Precision-5520>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/30/2020 12:57 PM, Bruno Thomsen wrote:
-> MDIO bus reset pulse width is created by using udelay()
-> and that function might not be optimal depending on
-> device tree value. By switching to the new fsleep() helper
-> the correct delay function is called depending on
-> delay length, e.g. udelay(), usleep_range() or msleep().
+On Sun, Aug 02, 2020 at 02:14:06PM -0500, Bjorn Helgaas wrote:
+> Wait, I'm not convinced yet.  I know that if a PCI read fails, you
+> normally get ~0 data because the host bridge fabricates it to complete
+> the CPU load.
 > 
-> Signed-off-by: Bruno Thomsen <bruno.thomsen@gmail.com>
+> But what guarantees that a PCI config register cannot contain ~0?
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Well, I don't think you can differentiate that case, right?
+
+I guess this is where the driver knowledge comes into play: if the read
+returns ~0, the pci_read_config* should probably return in that case
+something like:
+
+	PCIBIOS_READ_MAYBE_FAILED
+
+to denote it is all 1s and then the caller should be able to determine,
+based on any of domain:bus:slot.func and whatever else the driver knows
+about its hardware, whether the 1s are a valid value or an error.
+Hopefully.
+
+Or something better of which I cannot think of right now...
+
 -- 
-Florian
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
