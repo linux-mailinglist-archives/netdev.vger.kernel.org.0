@@ -2,80 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74BE2235A20
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 21:14:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4302F235A48
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 21:55:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727006AbgHBTOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 15:14:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36902 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725917AbgHBTOJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Aug 2020 15:14:09 -0400
-Received: from localhost (mobile-166-175-186-42.mycingular.net [166.175.186.42])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E9B0F206E9;
-        Sun,  2 Aug 2020 19:14:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596395648;
-        bh=8BmtM5Wz6njp3alR4dE4/v12QyDF8IHMxGR5An5fCEM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=i/jHSvTUizuVlNBRmQdxRNPe6coho/ATL8nGKi/xOmyBYjKmz9+xWg85IsgGxSgIS
-         dL1yfc+oHKYsaeZL0AE3OSX+Y10i5fuMEzdWvutU18j1LA95jrbDgF15+X0v94hhxC
-         1mNVxGQqYc9cBpDxqrC9KNkOyCMbtt1kU/iMoM8s=
-Date:   Sun, 2 Aug 2020 14:14:06 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Saheed Bolarinwa <refactormyself@gmail.com>, trix@redhat.com,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Joerg Roedel <joro@8bytes.org>, bjorn@helgaas.com,
-        skhan@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mtd@lists.infradead.org, iommu@lists.linux-foundation.org,
-        linux-rdma@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-gpio@vger.kernel.org, linux-fpga@vger.kernel.org,
-        linux-edac@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-crypto@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net
-Subject: Re: [RFC PATCH 00/17] Drop uses of pci_read_config_*() return value
-Message-ID: <20200802191406.GA248232@bjorn-Precision-5520>
+        id S1727033AbgHBTxn convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 2 Aug 2020 15:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59126 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726257AbgHBTxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 15:53:43 -0400
+X-Greylist: delayed 710 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 02 Aug 2020 12:53:40 PDT
+Received: from herc.mirbsd.org (herc.mirbsd.org [IPv6:2001:470:1f15:10c:202:b3ff:feb7:54e8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A64DBC06174A
+        for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 12:53:40 -0700 (PDT)
+Received: from herc.mirbsd.org (tg@herc.mirbsd.org [192.168.0.82])
+        by herc.mirbsd.org (8.14.9/8.14.5) with ESMTP id 072JTpZm011316
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
+        Sun, 2 Aug 2020 19:29:53 GMT
+Date:   Sun, 2 Aug 2020 19:29:50 +0000 (UTC)
+From:   Thorsten Glaser <t.glaser@tarent.de>
+X-X-Sender: tg@herc.mirbsd.org
+To:     Ben Hutchings <ben@decadent.org.uk>
+cc:     966459@bugs.debian.org, netdev <netdev@vger.kernel.org>
+Subject: Re: Bug#966459: linux: traffic class socket options (both IPv4/IPv6)
+ inconsistent with docs/standards
+In-Reply-To: <e67190b7de22fff20fb4c5c084307e0b76001248.camel@decadent.org.uk>
+Message-ID: <Pine.BSM.4.64L.2008021919500.2148@herc.mirbsd.org>
+References: <159596111771.2639.6929056987566441726.reportbug@tglase-nb.lan.tarent.de>
+ <e67190b7de22fff20fb4c5c084307e0b76001248.camel@decadent.org.uk>
+Content-Language: de-DE-1901, en-GB
+X-Message-Flag: Your mailer is broken. Get an update at http://www.washington.edu/pine/getpine/pcpine.html for free.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200802184648.GA23190@nazgul.tnic>
+Content-Type: TEXT/PLAIN; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 02, 2020 at 08:46:48PM +0200, Borislav Petkov wrote:
-> On Sun, Aug 02, 2020 at 07:28:00PM +0200, Saheed Bolarinwa wrote:
-> > Because the value ~0 has a meaning to some drivers and only
-> 
-> No, ~0 means that the PCI read failed. For *every* PCI device I know.
+Ben Hutchings dixit:
 
-Wait, I'm not convinced yet.  I know that if a PCI read fails, you
-normally get ~0 data because the host bridge fabricates it to complete
-the CPU load.
+>ip(7) also doesn't document IP_PKTOPIONS.
 
-But what guarantees that a PCI config register cannot contain ~0?
-If there's something about that in the spec I'd love to know where it
-is because it would simplify a lot of things.
+Hmm, I don’t use IP_PKTOPIONS though. I’m not exactly sure I found
+the correct place in the kernel for what I do.
 
-I don't think we should merge any of these patches as-is.  If we *do*
-want to go this direction, we at least need some kind of macro or
-function that tests for ~0 so we have a clue about what's happening
-and can grep for it.
+On the sending side, I use setsockopt with either
+IPPROTO_IP,IP_TOS or IPPROTO_IPV6,IPV6_TCLASS to
+set the default traffic class on outgoing packets.
 
-Bjorn
+On the receiving side I use setsockopt with either
+IPPROTO_IP,IP_RECVTOS or IPPROTO_IPV6,IPV6_RECVTCLASS
+to set up the socket then recvmsg to get a cmsg(3) of
+IPPROTO_IP,IP_TOS/IPPROTO_IPV6,IPV6_TCLASS from which
+I read the traffic class octet.
+
+These are where I believe I found inconsistencies
+between code and documentation.
+
+>Those are two different APIs though: recvmsg() for datagram sockets, vs
+>getsockopt(... IP_PKTOPTIONS ...) for stream sockets.  They obviously
+>ought to be consistent, but mistakes happen.
+
+OK, I’m currently looking at the datagram case only.
+This may change later if there’s enough time.
+
+>I see no point in changing the IPv6 behaviour: it seems to be
+>consistent with itself and with the standard
+
+Not really: if the kernel writes an int and userspace reads
+its first byte, it only works by accident on little endian,
+but not elsewhere.
+
+>so only risks breaking user-space that works today.
+
+Hrm. It risks breaking userspace that reads an int. But the
+RFC clearly says it should read the first byte, not an int.
+
+>But you should know that the highest priority for Linux API
+>compatibility is to avoid breaking currently working user-space.  That
+>means that ugly and inconsistent APIs won't get fixed if it causes a
+>regression for the programs people actually use.  If the API never
+>worked like it was supposed to on some architectures, that's not a
+>regression, and is lower priority.
+
+This is why I just put this up for discussion instead of
+requesting a specific change.
+
+That being said, given that the IPv6 API is *only* documented
+in the RFC and *not* documented in the Linux manpages…
+
+(Perhaps codesearching for IPV6_TCLASS might also help.
+It’s unclear how many users this has…)
+
+
+
+In the end, what I really want, is clear documentation for
+how I should implement the following file that it works on
+Linux, and ideally also other systems implementing the RFC
+API (FreeBSD supposedly does but needs testing):
+
+https://github.com/tarent/ECN-Bits/blob/master/linux-c/lib/ecn.c
+
+Given that there’s no documentation, trying to read the
+coffee grounds from the kernel source, finding it doesn’t
+even match the RFC (which, again, doesn’t match what itojun
+proposed, for some reason), does not instigate trust in the
+things I *think* I’ve found.
+
+bye,
+//mirabilos
+-- 
+tarent solutions GmbH
+Rochusstraße 2-4, D-53123 Bonn • http://www.tarent.de/
+Tel: +49 228 54881-393 • Fax: +49 228 54881-235
+HRB 5168 (AG Bonn) • USt-ID (VAT): DE122264941
+Geschäftsführer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, Alexander Steeg
