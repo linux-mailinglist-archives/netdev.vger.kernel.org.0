@@ -2,202 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 347542357CA
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 16:57:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECD4E2357CE
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 16:58:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726708AbgHBO5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 10:57:51 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:34607 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725853AbgHBO5u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Aug 2020 10:57:50 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1596380269; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=ZOjqGSoWE+lRt82RoqJBfsGT6yPG06YvQ8FfvPleFkI=;
- b=HuWGi6i579G4JSIofDS+4vy8cBroPakYiZjb95cJjJ8+UKAuLvL4cUvLXBKhvZ3vur4F+rSG
- 06EUFOCK206XT6jG7eAGi1PHkRLC5x+dUal3SSR46yF50sRm5q2hJqu9AF73cz+W6cQt8HXM
- MnQSKtjGyjJtzYvvn5RkMpvDfjg=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n20.prod.us-west-2.postgun.com with SMTP id
- 5f26d457710a7a29d511c8a4 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 02 Aug 2020 14:57:27
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 04FFEC433CA; Sun,  2 Aug 2020 14:57:27 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 60C37C433C9;
-        Sun,  2 Aug 2020 14:57:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 60C37C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726722AbgHBO6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 10:58:19 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:40300 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726257AbgHBO6Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 10:58:16 -0400
+Received: by mail-io1-f69.google.com with SMTP id t22so15532633iob.7
+        for <netdev@vger.kernel.org>; Sun, 02 Aug 2020 07:58:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=rP8qFuAIj5PA4GqYTY6invSs7s5chTKGJL4gZOv9MdY=;
+        b=SLRgQ2+B8uqQCUZ8HcYPtew1vU+XCBW4Abot2NOyV8hVUVL9g8D+vu5sxVlKfB7M5N
+         jNo5OA6oqWrYdiXpAUj7TDIqeeBMoIZXd8z8tOsg7AUoMpLjg76RyzAeMkXeaQdXKC4r
+         Sc0O5qATctIW75PLh0km6Le8bOljKoVfhQ4c4ZZX5DaHpBH/9JpYyAPLUHNk+hhrKw+S
+         /mMRtvg655kQtzP7ZdWLmqCvcr/D0ujMovYuK1sgYrpnJSAKGJex5qWLtCLAdbC1XeGy
+         skPFTnQR2zdGBcBguAmnZxgW9iK21l/pEZ6j1oGukpvBzMyP2NKXlWbd7TmSdVekBGNe
+         Qa2w==
+X-Gm-Message-State: AOAM532rY/0srEj5bfLu3h1mRQ4l30y2QX9QOtSuFYKjO8I2y5Z/bslA
+        ov/zA8tRHoYQ9pkM8Ldj18iO455QbpfgCzk15QSRvvtvgdHV
+X-Google-Smtp-Source: ABdhPJx9ALeHovUaCpJtg/QHit8tfWWHnVJ9RsvBsueoJYR9kZOfzHYl19tkkKfuQ3rlXOOSq2JcbkvVksIk0rI4isSp62iyhVn9
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] p54: switch from 'pci_' to 'dma_' API
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200722102707.27486-1-christophe.jaillet@wanadoo.fr>
-References: <20200722102707.27486-1-christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     chunkeey@googlemail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200802145727.04FFEC433CA@smtp.codeaurora.org>
-Date:   Sun,  2 Aug 2020 14:57:27 +0000 (UTC)
+X-Received: by 2002:a92:9116:: with SMTP id t22mr4949412ild.305.1596380295789;
+ Sun, 02 Aug 2020 07:58:15 -0700 (PDT)
+Date:   Sun, 02 Aug 2020 07:58:15 -0700
+In-Reply-To: <0000000000008b9e0705a38afe52@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000075030605abe640e5@google.com>
+Subject: Re: WARNING: refcount bug in do_enable_set
+From:   syzbot <syzbot+2e9900a1e1b3c9c96a77@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, hdanton@sina.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, marcel@holtmann.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
+syzbot has found a reproducer for the following issue on:
 
-> The wrappers in include/linux/pci-dma-compat.h should go away.
-> 
-> The patch has been generated with the coccinelle script below and has been
-> hand modified to replace GFP_ with a correct flag.
-> It has been compile tested.
-> 
-> When memory is allocated in 'p54p_probe()', GFP_KERNEL can be used because
-> it is the probe function and no spin_lock is taken in the between.
-> 
-> 
-> @@
-> @@
-> -    PCI_DMA_BIDIRECTIONAL
-> +    DMA_BIDIRECTIONAL
-> 
-> @@
-> @@
-> -    PCI_DMA_TODEVICE
-> +    DMA_TO_DEVICE
-> 
-> @@
-> @@
-> -    PCI_DMA_FROMDEVICE
-> +    DMA_FROM_DEVICE
-> 
-> @@
-> @@
-> -    PCI_DMA_NONE
-> +    DMA_NONE
-> 
-> @@
-> expression e1, e2, e3;
-> @@
-> -    pci_alloc_consistent(e1, e2, e3)
-> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-> 
-> @@
-> expression e1, e2, e3;
-> @@
-> -    pci_zalloc_consistent(e1, e2, e3)
-> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_free_consistent(e1, e2, e3, e4)
-> +    dma_free_coherent(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_map_single(e1, e2, e3, e4)
-> +    dma_map_single(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_unmap_single(e1, e2, e3, e4)
-> +    dma_unmap_single(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4, e5;
-> @@
-> -    pci_map_page(e1, e2, e3, e4, e5)
-> +    dma_map_page(&e1->dev, e2, e3, e4, e5)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_unmap_page(e1, e2, e3, e4)
-> +    dma_unmap_page(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_map_sg(e1, e2, e3, e4)
-> +    dma_map_sg(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_unmap_sg(e1, e2, e3, e4)
-> +    dma_unmap_sg(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-> +    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-> +    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-> +    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-> +    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2;
-> @@
-> -    pci_dma_mapping_error(e1, e2)
-> +    dma_mapping_error(&e1->dev, e2)
-> 
-> @@
-> expression e1, e2;
-> @@
-> -    pci_set_dma_mask(e1, e2)
-> +    dma_set_mask(&e1->dev, e2)
-> 
-> @@
-> expression e1, e2;
-> @@
-> -    pci_set_consistent_dma_mask(e1, e2)
-> +    dma_set_coherent_mask(&e1->dev, e2)
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+HEAD commit:    ac3a0c84 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1194935c900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e59ee776d5aa8d55
+dashboard link: https://syzkaller.appspot.com/bug?extid=2e9900a1e1b3c9c96a77
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10b7ddca900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=126dcf6c900000
 
-Patch applied to wireless-drivers-next.git, thanks.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+2e9900a1e1b3c9c96a77@syzkaller.appspotmail.com
 
-ba78405ecaac p54: switch from 'pci_' to 'dma_' API
-
--- 
-https://patchwork.kernel.org/patch/11678115/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+------------[ cut here ]------------
+refcount_t: underflow; use-after-free.
+WARNING: CPU: 1 PID: 2540 at lib/refcount.c:28 refcount_warn_saturate+0x15b/0x1a0 lib/refcount.c:28
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 2540 Comm: kworker/1:8 Not tainted 5.8.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events do_enable_set
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1f0/0x31e lib/dump_stack.c:118
+ panic+0x264/0x7a0 kernel/panic.c:231
+ __warn+0x227/0x250 kernel/panic.c:600
+ report_bug+0x1b1/0x2e0 lib/bug.c:198
+ handle_bug+0x42/0x80 arch/x86/kernel/traps.c:235
+ exc_invalid_op+0x16/0x40 arch/x86/kernel/traps.c:255
+ asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:540
+RIP: 0010:refcount_warn_saturate+0x15b/0x1a0 lib/refcount.c:28
+Code: c7 8a af 14 89 31 c0 e8 b3 f2 a8 fd 0f 0b eb 85 e8 2a 32 d7 fd c6 05 a4 d9 eb 05 01 48 c7 c7 b6 af 14 89 31 c0 e8 95 f2 a8 fd <0f> 0b e9 64 ff ff ff e8 09 32 d7 fd c6 05 84 d9 eb 05 01 48 c7 c7
+RSP: 0018:ffffc90007d27c48 EFLAGS: 00010246
+RAX: adb9104953f59b00 RBX: 0000000000000003 RCX: ffff8880a02d0540
+RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
+RBP: 0000000000000003 R08: ffffffff815dd389 R09: ffffed1015d262c0
+R10: ffffed1015d262c0 R11: 0000000000000000 R12: dffffc0000000000
+R13: ffff8880a0259118 R14: dffffc0000000000 R15: ffff8880ae9350c0
+ do_enable_set+0x66e/0x900 net/bluetooth/6lowpan.c:1083
+ process_one_work+0x789/0xfc0 kernel/workqueue.c:2269
+ worker_thread+0xaa4/0x1460 kernel/workqueue.c:2415
+ kthread+0x37e/0x3a0 drivers/block/aoe/aoecmd.c:1234
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
