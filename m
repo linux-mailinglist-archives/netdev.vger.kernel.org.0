@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7AC423594E
-	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 18:46:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E29235950
+	for <lists+netdev@lfdr.de>; Sun,  2 Aug 2020 18:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727768AbgHBQqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 12:46:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39088 "EHLO vps0.lunn.ch"
+        id S1726958AbgHBQro (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 12:47:44 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39098 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725877AbgHBQqv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Aug 2020 12:46:51 -0400
+        id S1725780AbgHBQro (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 2 Aug 2020 12:47:44 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1k2H8M-007wCX-FM; Sun, 02 Aug 2020 18:46:50 +0200
-Date:   Sun, 2 Aug 2020 18:46:50 +0200
+        id 1k2H9C-007wDP-Ja; Sun, 02 Aug 2020 18:47:42 +0200
+Date:   Sun, 2 Aug 2020 18:47:42 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Bruno Thomsen <bruno.thomsen@gmail.com>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -24,26 +24,26 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Lars Alex Pedersen <laa@kamstrup.com>,
         Bruno Thomsen <bth@kamstrup.com>
-Subject: Re: [PATCH v2 2/4 net-next] net: mdiobus: use flexible sleeping for
- reset-delay-us
-Message-ID: <20200802164650.GF1862409@lunn.ch>
+Subject: Re: [PATCH v2 3/4 net-next] net: mdiobus: add reset-post-delay-us
+ handling
+Message-ID: <20200802164742.GG1862409@lunn.ch>
 References: <20200730195749.4922-1-bruno.thomsen@gmail.com>
- <20200730195749.4922-3-bruno.thomsen@gmail.com>
+ <20200730195749.4922-4-bruno.thomsen@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200730195749.4922-3-bruno.thomsen@gmail.com>
+In-Reply-To: <20200730195749.4922-4-bruno.thomsen@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 30, 2020 at 09:57:47PM +0200, Bruno Thomsen wrote:
-> MDIO bus reset pulse width is created by using udelay()
-> and that function might not be optimal depending on
-> device tree value. By switching to the new fsleep() helper
-> the correct delay function is called depending on
-> delay length, e.g. udelay(), usleep_range() or msleep().
+On Thu, Jul 30, 2020 at 09:57:48PM +0200, Bruno Thomsen wrote:
+> Load new "reset-post-delay-us" value from MDIO properties,
+> and if configured to a greater then zero delay do a
+> flexible sleeping delay after MDIO bus reset deassert.
+> This allows devices to exit reset state before start
+> bus communication.
 > 
 > Signed-off-by: Bruno Thomsen <bruno.thomsen@gmail.com>
 
