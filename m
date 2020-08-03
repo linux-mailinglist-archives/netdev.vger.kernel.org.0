@@ -2,79 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C17B23AE5F
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:47:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1935D23AE63
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:47:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728400AbgHCUpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 16:45:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34282 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725863AbgHCUpw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Aug 2020 16:45:52 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728589AbgHCUrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 16:47:08 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:56636 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728515AbgHCUrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 16:47:08 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 90DAE600D8;
+        Mon,  3 Aug 2020 20:47:07 +0000 (UTC)
+Received: from us4-mdac16-75.ut7.mdlocal (unknown [10.7.64.194])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8E8118009B;
+        Mon,  3 Aug 2020 20:47:07 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.30])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 0C32428004D;
+        Mon,  3 Aug 2020 20:47:07 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0C1602086A;
-        Mon,  3 Aug 2020 20:45:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596487552;
-        bh=ewwsrZXrd6GoX4zZrGFLSRzVS3MLfltjGD/S39tlmv8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RP/sNO+SuH3q6wrGWLPiLO2LnX5R3qsG/o6y/KLryUxntYFpc4YUiIVZ+GuzIy2j9
-         YMRgS+IXYoBk3wjlG9/oXr6/+KbuTqm19KghELizftwvJw+iUbAOcq6q5exZVbsm2F
-         tONJUoTPvRZC4olyD0Zh1UlHDEKpBQzrnJ5gSHWg=
-Date:   Mon, 3 Aug 2020 13:45:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Wang, Haiyue" <haiyue.wang@intel.com>
-Cc:     Tom Herbert <tom@herbertland.com>,
-        "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Bowers, AndrewX" <andrewx.bowers@intel.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Lu, Nannan" <nannan.lu@intel.com>,
-        "Liang, Cunming" <cunming.liang@intel.com>
-Subject: Re: [net-next 1/5] ice: add the virtchnl handler for AdminQ command
-Message-ID: <20200803134550.7ec625ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <BN8PR11MB3795FA12407090A2D95F97C6F74D0@BN8PR11MB3795.namprd11.prod.outlook.com>
-References: <20200713174320.3982049-1-anthony.l.nguyen@intel.com>
-        <20200713174320.3982049-2-anthony.l.nguyen@intel.com>
-        <20200713154843.1009890a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BN8PR11MB37954214B9210253FC020BF6F7610@BN8PR11MB3795.namprd11.prod.outlook.com>
-        <20200714112421.06f20c5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BN8PR11MB3795DABBB0D6A1E08585DF45F77E0@BN8PR11MB3795.namprd11.prod.outlook.com>
-        <20200715110331.54db6807@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <8026dce002758d509b310afa330823be0c8191ec.camel@intel.com>
-        <20200722180705.23196cf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CALx6S36K0kES3b7dWmyigpSLgBmU2jf7FfCSYXBFOeBJkbQ+rw@mail.gmail.com>
-        <20200727160406.4d2bc1c8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BN8PR11MB3795FA12407090A2D95F97C6F74D0@BN8PR11MB3795.namprd11.prod.outlook.com>
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A553A10008A;
+        Mon,  3 Aug 2020 20:47:06 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 3 Aug 2020
+ 21:47:00 +0100
+Subject: Re: [PATCH] net: sfc: fix possible buffer overflow caused by bad DMA
+ value in efx_siena_sriov_vfdi()
+To:     Jia-Ju Bai <baijiaju@tsinghua.edu.cn>,
+        <linux-net-drivers@solarflare.com>, <mhabets@solarflare.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20200802153930.5271-1-baijiaju@tsinghua.edu.cn>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <48330670-63d0-dec6-f102-1936d5f05355@solarflare.com>
+Date:   Mon, 3 Aug 2020 21:46:57 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200802153930.5271-1-baijiaju@tsinghua.edu.cn>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25582.002
+X-TM-AS-Result: No-0.311200-8.000000-10
+X-TMASE-MatchedRID: scwq2vQP8OHmLzc6AOD8DfHkpkyUphL9V447DNvw38Z/Z0SyQdcmEKo6
+        hcXA9s6kZz5CP6uFgj54Rs5B8MIvKEIyGZ9D/l2WUPktDdOX0fsR5c83KIxTTpA9cwIW2cWUyJN
+        a6DYLgM2XUzspP39qoBSiTGLfVnzeIeFIFB+CV+wD2WXLXdz+Adi5W7Rf+s6QSQdzZTc1JgLzPv
+        RcNNSOxmOW+f6Bz68/aOpAHcS05Hdk3PL9VnFakZ4CIKY/Hg3AcmfM3DjaQLHZs3HUcS/scCq2r
+        l3dzGQ1SERKX67t9yWwS4uk2JEc8Apmdc+SSQBabq13Wt7q2Z1y6282DgK7ie7hl+IktQoMqBPD
+        FU26PM5eCkHqPzCAfpj9s/3jjT8d2hDLTFmwtpMGxECHxaZMBwbZYBYdvap6SswcLuSaZJZzlLq
+        E1zO6+EMMprcbiest
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--0.311200-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25582.002
+X-MDID: 1596487627-CBdiEFYLbdy0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Aug 2020 10:39:52 +0000 Wang, Haiyue wrote:
-> > In this case, I'm guessing, Intel can reuse RTE flow -> AQ code written
-> > to run on PFs on the special VF.
-> > 
-> > This community has selected switchdev + flower for programming flows.
-> > I believe implementing flower offloads would solve your use case, and
-> > at the same time be most beneficial to the netdev community.  
-> 
-> Jakub,
-> 
-> Thanks, I deep into the switchdev, it is kernel software bridge for hardware
-> offload, and each port is registered with register_netdev. So this solution
-> is not suitable for current case: VF can be assigned to VMs.
+On 02/08/2020 16:39, Jia-Ju Bai wrote:
+> To fix this problem, "req->op" is assigned to a local variable, and then
+> the driver accesses this variable instead of "req->op".
+>
+> Signed-off-by: Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
+Not sure how necessary this is (or even if anyone's still usingSiena
+ SR-IOV, since it needed a specially-patched libvirt to work), but I
+ don't see any reason to refuse.
+> diff --git a/drivers/net/ethernet/sfc/siena_sriov.c b/drivers/net/ethernet/sfc/siena_sriov.c
+> index 83dcfcae3d4b..21a8482cbb3b 100644
+> --- a/drivers/net/ethernet/sfc/siena_sriov.c
+> +++ b/drivers/net/ethernet/sfc/siena_sriov.c
+> @@ -875,6 +875,7 @@ static void efx_siena_sriov_vfdi(struct work_struct *work)
+>  	struct vfdi_req *req = vf->buf.addr;
+>  	struct efx_memcpy_req copy[2];
+>  	int rc;
+> +	u32 op = req->op;
+Could you maybe fix up the xmas here, rather than making it worse?
 
-You may be missing the concept of a representor.
+Also, you didn't specify in your Subject line which tree this is for.
 
-Sridhar from Intel was investigating this, I believe, at some point.
-Perhaps sync with him?
+-ed
