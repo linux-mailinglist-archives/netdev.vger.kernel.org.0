@@ -2,72 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C49E723A2C3
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 12:33:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A00BC23A2C8
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 12:37:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726370AbgHCKdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 06:33:47 -0400
-Received: from correo.us.es ([193.147.175.20]:36018 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725933AbgHCKdr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Aug 2020 06:33:47 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id DF6A29A92D
-        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 12:33:44 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id CF13CDA859
-        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 12:33:44 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id C4BFEDA73F; Mon,  3 Aug 2020 12:33:44 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
-        version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A6FBCDA84F;
-        Mon,  3 Aug 2020 12:33:42 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 03 Aug 2020 12:33:42 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (120.205.137.78.rev.vodafone.pt [78.137.205.120])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 285964265A32;
-        Mon,  3 Aug 2020 12:33:41 +0200 (CEST)
-Date:   Mon, 3 Aug 2020 12:33:39 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Roi Dayan <roid@mellanox.com>
-Cc:     netdev@vger.kernel.org, Paul Blakey <paulb@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>
-Subject: Re: [PATCH net v2 0/2] netfilter: conntrack: Fix CT offload timeout
- on heavily loaded systems
-Message-ID: <20200803103339.GA2903@salvia>
-References: <20200803073305.702079-1-roid@mellanox.com>
+        id S1726239AbgHCKgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 06:36:03 -0400
+Received: from mail-eopbgr1300084.outbound.protection.outlook.com ([40.107.130.84]:59552
+        "EHLO APC01-HK2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725933AbgHCKgC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Aug 2020 06:36:02 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l8vItyVgqp40cv9Q3Ckw49OJlNf1Rc27+0vUXu+fJ+GM4TZC9OPQR+vdaQ2ZeHYwHB6CVs3j9I6ZBw31EoXScIswko25dZAhjnLtORf3T0ZKQpPLxisTWKa0Ks/+cVxaXKSgKh+peS+hp7s1cpC+m3exjFc71ns9j41wufr2Kja3Ha7AC9+2wTysTu+Df9R4exZtJ5MvrRzmI4DNSYaoUD2u/r9kPgGYb7NGCMGHUDfqWjMDhv96XyUz+gcLFxKZrrSh23rJAOuSq/UUE7g0gd0yyZnYPe4cxup1N8oh3NyEh7wnhthqU+9vxRuE7z93efYl+xDvyeG6scFJ74UTtQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SZkwNgfmcjef/yca/RlCvIQYN3lYPy7BVJ+ot9vV1Cc=;
+ b=kU0MZQTOtqf0A4q/URehX/yMK2c+hgM/BwECZSotfBvmoRcCksdOWH01QlKMo051Y5Z9m57+OxMa51HAhfqpvQN9Fx0MuiVNNTy4KQTFVxNyEED+RNjp82n9eswKzVBmes+anRh9RV+qTS0q9bSi23mfyTNWJ+VQAYmFvHk89q2pxXYYtMLQnxqqyIRH0UMVT4g7X2xC1wXjMolJOXYDq9g0vhDnPjRMEvRR4kjI40I09KtuArhM0GOd76Hp9054VOSGuZ2zUwFhZJYaKJsciv83jpmbAEhowi7tPEBpFRwymykwsQm2QWnZa3RoJcx+Rd/Nou2/XRMsBLA1KDSbMg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=quectel.com; dmarc=pass action=none header.from=quectel.com;
+ dkim=pass header.d=quectel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quectel.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SZkwNgfmcjef/yca/RlCvIQYN3lYPy7BVJ+ot9vV1Cc=;
+ b=WsnBe350Dz4qhzJTUc3BxUk3V7hHuPvU2Zv5VSaJ3E83f23t7EZQgqSfhMaOuTvRiuu/WVOIo4Af39o2uFGe/KQ32AQyaTqojb1r57Nw2D8YIMCxMi4WPLJY6cp3KClLfaTkhMsr+4PJMEy3sO+V+NUHw/drOYXCCSE5a9cWEQk=
+Received: from HK2PR06MB3507.apcprd06.prod.outlook.com (2603:1096:202:3e::14)
+ by HK0PR06MB2484.apcprd06.prod.outlook.com (2603:1096:203:67::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.17; Mon, 3 Aug
+ 2020 10:35:55 +0000
+Received: from HK2PR06MB3507.apcprd06.prod.outlook.com
+ ([fe80::4ff:f478:119f:2b80]) by HK2PR06MB3507.apcprd06.prod.outlook.com
+ ([fe80::4ff:f478:119f:2b80%4]) with mapi id 15.20.3239.021; Mon, 3 Aug 2020
+ 10:35:55 +0000
+From:   =?utf-8?B?Q2FybCBZaW4o5q635byg5oiQKQ==?= <carl.yin@quectel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Daniele Palmas <dnlplm@gmail.com>
+CC:     "yzc666@netease.com" <yzc666@netease.com>,
+        =?utf-8?B?QmrDuHJuIE1vcms=?= <bjorn@mork.no>,
+        David Miller <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-usb <linux-usb@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIHFtaV93d2FuOiBzdXBwb3J0IG1vZGlmeSB1c2Ju?=
+ =?utf-8?B?ZXQncyByeF91cmJfc2l6ZQ==?=
+Thread-Topic: [PATCH] qmi_wwan: support modify usbnet's rx_urb_size
+Thread-Index: AQHWaXxXZ2/YHIlNUkWEkIST1EQy/6kmJfoQ
+Date:   Mon, 3 Aug 2020 10:35:55 +0000
+Message-ID: <HK2PR06MB35076F3F908135A7BF3D0C0B864D0@HK2PR06MB3507.apcprd06.prod.outlook.com>
+References: <f6fe733f832adf7d4f6e48aada3df0f8@sslemail.net>
+ <20200803094931.GD635660@kroah.com>
+In-Reply-To: <20200803094931.GD635660@kroah.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: linuxfoundation.org; dkim=none (message not signed)
+ header.d=none;linuxfoundation.org; dmarc=none action=none
+ header.from=quectel.com;
+x-originating-ip: [210.73.58.132]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6eedbf3d-7d07-4422-d17e-08d837990094
+x-ms-traffictypediagnostic: HK0PR06MB2484:
+x-microsoft-antispam-prvs: <HK0PR06MB2484DDF96B4A7972551027B2864D0@HK0PR06MB2484.apcprd06.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HIfoban0bZ1fu6Ajcz90rIFDFJh6JHbV6JXzefqA1IMqleH5B8RRWBsFuVIm+821ORQR/yw207nVehlaiOCGsMSF4imbikKtl23eiahVgdJsofPLX+N99BSNXhJd/zBQe3RlCExRLdeJ8Wdj9hKHFYxNpYm/6Tya20rQe2QdzgMz0r5T3/wWA1UtsQ0g/pYSSFvVJyAZK4d07g76fxv60k3TfG4WhhtjrxEu/drmRIbmM/uJwYaUXyOjKjeFUZ1v/RFqaCcy5cS+xfdtOq0foLbCi8W6rQa4gomPeN9U+O3QjMxOQ6jnmIzuTgsfpvoa
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3507.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(366004)(39860400002)(136003)(376002)(396003)(66946007)(71200400001)(83380400001)(5660300002)(66476007)(316002)(52536014)(54906003)(66556008)(8936002)(85182001)(110136005)(76116006)(86362001)(64756008)(478600001)(224303003)(26005)(7696005)(33656002)(2906002)(55016002)(9686003)(66446008)(186003)(6506007)(4326008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: AlcIlqxCRmUqO6IDypKFZXqMb/Ey+1SyaxcLB4N8JfaBQhcJSQdTI7BKTIiOGWxHLvVTcuQ5oICDUGW2MjfpQMp1cGydENYIWns6egoqrNK7KBlM7nwBNCsgd1bvKq4YnDbXhtO5/8KsEkY5vrXm1NVfc++xd1iAqC0pMe8YzpKgvNUIy35IlBdeh4JDOh0smck9eBj+j8Ztid70QA8ZvsnYOmyv3GnM3ENizig4Br/m6jJF5nzdQ2KZRkIeLFRIfbArGketFkzLYW8LuuDKnVyoYDMkiEUrcqXGO4ACqk0FSCVzltvhtLZ/A/Q6CZdbnvELIzg7QkEGQQvp9HUY1D1P9/TD43VlJdGplZFBAivNNgCi2dM6D16KBOYDQqo4p65X32ylaJrcVRf9JHyLKT+bEg9ihMzcczfSQIQC067i7bMoxScPtUzpstf6S3YZZjl/8KscSVOrM/MS6fbKsyBEKglphccK23Mq07WV81MYgO2bTa96LWT9OO/TbOeisW0pJXULOMIYblFrD01L+302/kQdb19FaNN86aB7L6tZq59Gzt/jnQewsIYYODcyIEVHbdNlW7VXZE+zwlu66BJEhu/1npcJ91iueUrSaV/btusMbQI//ugnrYBYvvszxfGi1Il1V0GXD1RcjqH24Q==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200803073305.702079-1-roid@mellanox.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+X-OriginatorOrg: quectel.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3507.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6eedbf3d-7d07-4422-d17e-08d837990094
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Aug 2020 10:35:55.1642
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 7730d043-e129-480c-b1ba-e5b6a9f476aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: V04lxTDmqt5jDXifczodA5uYVFGljY0xMU95z19r8Y4Tx7II4WnfC0OH4t8IwW6AngdkVfceQtyLyhfvWx3qYA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR06MB2484
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 03, 2020 at 10:33:03AM +0300, Roi Dayan wrote:
-> On heavily loaded systems the GC can take time to go over all existing
-> conns and reset their timeout. At that time other calls like from
-> nf_conntrack_in() can call of nf_ct_is_expired() and see the conn as
-> expired. To fix this when we set the offload bit we should also reset
-> the timeout instead of counting on GC to finish first iteration over
-> all conns before the initial timeout.
-> 
-> First commit is to expose the function that updates the timeout.
-> Second commit is to use it from flow_offload_add().
-
-Series applied to nf.git, thanks.
+SGkgR3JlZzoNCglJIGFtIGNhcmwsIHNvZnR3YXJlIGVuZ2luZWVyIGZyb20gYSBDaGluZXNlIGNv
+bXBhbnkgJyBRdWVjdGVsIFdpcmVsZXNzIFNvbHV0aW9ucyBDby4sIEx0ZCcuDQoJQ2hpbmVzZSBu
+YW1lIGlzIFlpbnpoYW5nY2hlbmcuIFNvIEVuZ2xpc2ggbmFtZSBjYXJsLnlpbi4NCglNeSBjb21w
+YW554oCZcyBwcm9kdWN0cyBhcmUgTFRFLzVHIG1vZHVsZXMgYmFzZSBvbiBRVUFMQ09NTSdzIGNo
+aXBzZXQsIGxpa2UgTURNOTYwNy9NRE05NjQwL1NEWDI0L1NEWDU1Li4uZXRjLg0KDQpPbiAyMDIw
+LTA4LTAz77yMIkdyZWcgS0giIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz4gd3JvdGXvvJoN
+Cj5PbiBNb24sIEF1ZyAwMywgMjAyMCBhdCAxMDoyNjoxOEFNICswMjAwLCBEYW5pZWxlIFBhbG1h
+cyB3cm90ZToNCj4gSGkgR3JlZywNCj4gDQo+IElsIGdpb3JubyBsdW4gMyBhZ28gMjAyMCBhbGxl
+IG9yZSAxMDoxOCBHcmVnIEtIIA0KPiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+IGhhIHNj
+cml0dG86DQo+ID4NCj4gPiBPbiBNb24sIEF1ZyAwMywgMjAyMCBhdCAwMjo1MTowNVBNICswODAw
+LCB5emM2NjZAbmV0ZWFzZS5jb20gd3JvdGU6DQo+ID4gPiBGcm9tOiBjYXJsIDxjYXJsLnlpbkBx
+dWVjdGVsLmNvbT4NCj4gPiA+DQo+ID4gPiAgICAgV2hlbiBRTVVYIGVuYWJsZWQsIHRoZSAnZGwt
+ZGF0YWdyYW0tbWF4LXNpemUnIGNhbiBiZSA0S0IvMTZLQi8zMUtCIGRlcGVuZCBvbiBRVUFMQ09N
+TSdzIGNoaXBzZXRzLg0KPiA+ID4gICAgIFVzZXIgY2FuIHNldCAnZGwtZGF0YWdyYW0tbWF4LXNp
+emUnIGJ5ICdRTUlfV0RBX1NFVF9EQVRBX0ZPUk1BVCcuDQo+ID4gPiAgICAgVGhlIHVzYm5ldCdz
+IHJ4X3VyYl9zaXplIG11c3QgbGFnZXIgdGhhbiBvciBlcXVhbCB0byB0aGUgJ2RsLWRhdGFncmFt
+LW1heC1zaXplJy4NCj4gPiA+ICAgICBUaGlzIHBhdGNoIGFsbG93IHVzZXIgdG8gbW9kaWZ5IHVz
+Ym5ldCdzIHJ4X3VyYl9zaXplIGJ5IG5leHQgY29tbWFuZC4NCj4gPiA+DQo+ID4gPiAgICAgICAg
+ICAgICAgIGVjaG8gNDA5NiA+IC9zeXMvY2xhc3MvbmV0L3d3YW4wL3FtaS9yeF91cmJfc2l6ZQ0K
+PiA+ID4NCj4gPiA+ICAgICAgICAgICAgICAgTmV4dCBjb21tbmRzIHNob3cgaG93IHRvIHNldCBh
+bmQgcXVlcnkgJ2RsLWRhdGFncmFtLW1heC1zaXplJyBieSBxbWljbGkNCj4gPiA+ICAgICAgICAg
+ICAgICAgIyBxbWljbGkgLWQgL2Rldi9jZGMtd2RtMSAtLXdkYS1zZXQtZGF0YS1mb3JtYXQ9Imxp
+bmstbGF5ZXItcHJvdG9jb2w9cmF3LWlwLCB1bC1wcm90b2NvbD1xbWFwLA0KPiA+ID4gICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgZGwtcHJvdG9jb2w9cW1hcCwgZGwtbWF4LWRhdGFncmFt
+cz0zMiwgZGwtZGF0YWdyYW0tbWF4LXNpemU9MzE3NDQsIGVwLXR5cGU9aHN1c2IsIGVwLWlmYWNl
+LW51bWJlcj00Ig0KPiA+ID4gICAgICAgICAgICAgICBbL2Rldi9jZGMtd2RtMV0gU3VjY2Vzc2Z1
+bGx5IHNldCBkYXRhIGZvcm1hdA0KPiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICBRb1MgZmxvdyBoZWFkZXI6IG5vDQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgTGluayBsYXllciBwcm90b2NvbDogJ3Jhdy1pcCcNCj4gPiA+ICAgICAgICAg
+ICAgICAgICAgICAgIFVwbGluayBkYXRhIGFnZ3JlZ2F0aW9uIHByb3RvY29sOiAncW1hcCcNCj4g
+PiA+ICAgICAgICAgICAgICAgICAgICBEb3dubGluayBkYXRhIGFnZ3JlZ2F0aW9uIHByb3RvY29s
+OiAncW1hcCcNCj4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBO
+RFAgc2lnbmF0dXJlOiAnMCcNCj4gPiA+ICAgICAgICAgICAgICAgRG93bmxpbmsgZGF0YSBhZ2dy
+ZWdhdGlvbiBtYXggZGF0YWdyYW1zOiAnMTAnDQo+ID4gPiAgICAgICAgICAgICAgICAgICAgRG93
+bmxpbmsgZGF0YSBhZ2dyZWdhdGlvbiBtYXggc2l6ZTogJzQwOTYnDQo+ID4gPg0KPiA+ID4gICAg
+ICAgICAgICMgcW1pY2xpIC1kIC9kZXYvY2RjLXdkbTEgLS13ZGEtZ2V0LWRhdGEtZm9ybWF0DQo+
+ID4gPiAgICAgICAgICAgICAgIFsvZGV2L2NkYy13ZG0xXSBTdWNjZXNzZnVsbHkgZ290IGRhdGEg
+Zm9ybWF0DQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBRb1MgZmxvdyBo
+ZWFkZXI6IG5vDQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIExpbmsgbGF5ZXIg
+cHJvdG9jb2w6ICdyYXctaXAnDQo+ID4gPiAgICAgICAgICAgICAgICAgVXBsaW5rIGRhdGEgYWdn
+cmVnYXRpb24gcHJvdG9jb2w6ICdxbWFwJw0KPiA+ID4gICAgICAgICAgICAgICBEb3dubGluayBk
+YXRhIGFnZ3JlZ2F0aW9uIHByb3RvY29sOiAncW1hcCcNCj4gPiA+ICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgTkRQIHNpZ25hdHVyZTogJzAnDQo+ID4gPiAgICAgICAgICAgICAg
+IERvd25saW5rIGRhdGEgYWdncmVnYXRpb24gbWF4IGRhdGFncmFtczogJzEwJw0KPiA+ID4gICAg
+ICAgICAgICAgICBEb3dubGluayBkYXRhIGFnZ3JlZ2F0aW9uIG1heCBzaXplOiAnNDA5NicNCj4g
+PiA+DQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBjYXJsIDxjYXJsLnlpbkBxdWVjdGVsLmNvbT4NCj4g
+PiA+IC0tLQ0KPiA+ID4gIGRyaXZlcnMvbmV0L3VzYi9xbWlfd3dhbi5jIHwgMzkgDQo+ID4gPiAr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KPiA+ID4gIDEgZmlsZSBjaGFu
+Z2VkLCAzOSBpbnNlcnRpb25zKCspDQo+ID4gPg0KPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+bmV0L3VzYi9xbWlfd3dhbi5jIA0KPiA+ID4gYi9kcml2ZXJzL25ldC91c2IvcW1pX3d3YW4uYyBp
+bmRleCAwN2M0MmMwNzE5ZjViLi44ZWE1N2ZkOTlhZTQzIA0KPiA+ID4gMTAwNjQ0DQo+ID4gPiAt
+LS0gYS9kcml2ZXJzL25ldC91c2IvcW1pX3d3YW4uYw0KPiA+ID4gKysrIGIvZHJpdmVycy9uZXQv
+dXNiL3FtaV93d2FuLmMNCj4gPiA+IEBAIC00MDAsNiArNDAwLDQ0IEBAIHN0YXRpYyBzc2l6ZV90
+IHJhd19pcF9zdG9yZShzdHJ1Y3QgZGV2aWNlICpkLCAgc3RydWN0IGRldmljZV9hdHRyaWJ1dGUg
+KmF0dHIsIGNvDQo+ID4gPiAgICAgICByZXR1cm4gcmV0Ow0KPiA+ID4gIH0NCj4gPiA+DQo+ID4g
+PiArc3RhdGljIHNzaXplX3QgcnhfdXJiX3NpemVfc2hvdyhzdHJ1Y3QgZGV2aWNlICpkLCBzdHJ1
+Y3QgDQo+ID4gPiArZGV2aWNlX2F0dHJpYnV0ZSAqYXR0ciwgY2hhciAqYnVmKSB7DQo+ID4gPiAr
+ICAgICBzdHJ1Y3QgdXNibmV0ICpkZXYgPSBuZXRkZXZfcHJpdih0b19uZXRfZGV2KGQpKTsNCj4g
+PiA+ICsNCj4gPiA+ICsgICAgIHJldHVybiBzcHJpbnRmKGJ1ZiwgIiV6ZFxuIiwgZGV2LT5yeF91
+cmJfc2l6ZSk7DQo+ID4NCj4gPiBXaHkgZG8geW91IGNhcmUgYWJvdXQgdGhpcz8NCj4gPg0KPiA+
+ID4gK30NCj4gPiA+ICsNCj4gPiA+ICtzdGF0aWMgc3NpemVfdCByeF91cmJfc2l6ZV9zdG9yZShz
+dHJ1Y3QgZGV2aWNlICpkLCAgc3RydWN0IGRldmljZV9hdHRyaWJ1dGUgKmF0dHIsDQo+ID4gPiAr
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29uc3QgY2hhciAqYnVmLCBzaXplX3QgbGVu
+KSB7DQo+ID4gPiArICAgICBzdHJ1Y3QgdXNibmV0ICpkZXYgPSBuZXRkZXZfcHJpdih0b19uZXRf
+ZGV2KGQpKTsNCj4gPiA+ICsgICAgIHUzMiByeF91cmJfc2l6ZTsNCj4gPiA+ICsgICAgIGludCBy
+ZXQ7DQo+ID4gPiArDQo+ID4gPiArICAgICBpZiAoa3N0cnRvdTMyKGJ1ZiwgMCwgJnJ4X3VyYl9z
+aXplKSkNCj4gPiA+ICsgICAgICAgICAgICAgcmV0dXJuIC1FSU5WQUw7DQo+ID4gPiArDQo+ID4g
+PiArICAgICAvKiBubyBjaGFuZ2U/ICovDQo+ID4gPiArICAgICBpZiAocnhfdXJiX3NpemUgPT0g
+ZGV2LT5yeF91cmJfc2l6ZSkNCj4gPiA+ICsgICAgICAgICAgICAgcmV0dXJuIGxlbjsNCj4gPiA+
+ICsNCj4gPiA+ICsgICAgIGlmICghcnRubF90cnlsb2NrKCkpDQo+ID4gPiArICAgICAgICAgICAg
+IHJldHVybiByZXN0YXJ0X3N5c2NhbGwoKTsNCj4gPiA+ICsNCj4gPiA+ICsgICAgIC8qIHdlIGRv
+bid0IHdhbnQgdG8gbW9kaWZ5IGEgcnVubmluZyBuZXRkZXYgKi8NCj4gPiA+ICsgICAgIGlmIChu
+ZXRpZl9ydW5uaW5nKGRldi0+bmV0KSkgew0KPiA+ID4gKyAgICAgICAgICAgICBuZXRkZXZfZXJy
+KGRldi0+bmV0LCAiQ2Fubm90IGNoYW5nZSBhIHJ1bm5pbmcgZGV2aWNlXG4iKTsNCj4gPiA+ICsg
+ICAgICAgICAgICAgcmV0ID0gLUVCVVNZOw0KPiA+ID4gKyAgICAgICAgICAgICBnb3RvIGVycjsN
+Cj4gPiA+ICsgICAgIH0NCj4gPiA+ICsNCj4gPiA+ICsgICAgIGRldi0+cnhfdXJiX3NpemUgPSBy
+eF91cmJfc2l6ZTsNCj4gPiA+ICsgICAgIHJldCA9IGxlbjsNCj4gPiA+ICtlcnI6DQo+ID4gPiAr
+ICAgICBydG5sX3VubG9jaygpOw0KPiA+ID4gKyAgICAgcmV0dXJuIHJldDsNCj4gPiA+ICt9DQo+
+ID4gPiArDQo+ID4gPiAgc3RhdGljIHNzaXplX3QgYWRkX211eF9zaG93KHN0cnVjdCBkZXZpY2Ug
+KmQsIHN0cnVjdCANCj4gPiA+IGRldmljZV9hdHRyaWJ1dGUgKmF0dHIsIGNoYXIgKmJ1ZikgIHsN
+Cj4gPiA+ICAgICAgIHN0cnVjdCBuZXRfZGV2aWNlICpkZXYgPSB0b19uZXRfZGV2KGQpOyBAQCAt
+NTA1LDYgKzU0Myw3IEBAIA0KPiA+ID4gc3RhdGljIERFVklDRV9BVFRSX1JXKGFkZF9tdXgpOyAg
+c3RhdGljIERFVklDRV9BVFRSX1JXKGRlbF9tdXgpOw0KPiA+ID4NCj4gPiA+ICBzdGF0aWMgc3Ry
+dWN0IGF0dHJpYnV0ZSAqcW1pX3d3YW5fc3lzZnNfYXR0cnNbXSA9IHsNCj4gPiA+ICsgICAgICZk
+ZXZfYXR0cl9yeF91cmJfc2l6ZS5hdHRyLA0KPiA+DQo+ID4gWW91IGFkZGVkIGEgZHJpdmVyLXNw
+ZWNpZmljIHN5c2ZzIGZpbGUgYW5kIGRpZCBub3QgZG9jdW1lbnQgaW4gaW4gDQo+ID4gRG9jdW1l
+bnRhdGlvbi9BQkk/ICBUaGF0J3Mgbm90IG9rLCBzb3JyeSwgcGxlYXNlIGZpeCB1cC4NCj4gPg0K
+PiA+IEFjdHVhbGx5LCBubywgdGhpcyBhbGwgc2hvdWxkIGJlIGRvbmUgImF1dG9tYXRpY2FsbHki
+LCBkbyBub3QgY2hhbmdlIA0KPiA+IHRoZSB1cmIgc2l6ZSBvbiB0aGUgZmx5LiAgQ2hhbmdlIGl0
+IGF0IHByb2JlIHRpbWUgYmFzZWQgb24gdGhlIA0KPiA+IGRldmljZSB5b3UgYXJlIHVzaW5nLCBk
+byBub3QgZm9yY2UgdXNlcnNwYWNlIHRvICJrbm93IiB3aGF0IHRvIGRvIA0KPiA+IGhlcmUsIGFz
+IGl0IHdpbGwgbm90IGtub3cgdGhhdCBhdCBhbGwuDQo+ID4NCj4gDQo+IHRoZSBwcm9ibGVtIHdp
+dGggZG9pbmcgYXQgcHJvYmUgdGltZSBpcyB0aGF0IHJ4X3VyYl9zaXplIGlzIG5vdCBmaXhlZCwg
+DQo+IGJ1dCBkZXBlbmRzIG9uIHRoZSBjb25maWd1cmF0aW9uIGRvbmUgYXQgdGhlIHVzZXJzcGFj
+ZSBsZXZlbCB3aXRoIA0KPiBRTUlfV0RBX1NFVF9EQVRBX0ZPUk1BVCwgc28gdGhlIHVzZXJzcGFj
+ZSBrbm93cyB0aGF0Lg0KPiANCj4gV2hlcmUgZG9lcyBRTUlfV0RBX1NFVF9EQVRBX0ZPUk1BVCBj
+b21lIGZyb20/DQo+IA0KDQoJUU1JX1dEQV9TRVRfREFUQV9GT1JNQVQgaXMgZnJvbSBRVUFMTENP
+TSdzIFFNSSBwcm90b2NvbC4NCglMaWtlIFVTQiBORVQgTUJJTSBwcm90b2NvbCwgJyBRTUkgcHJv
+dG9jb2wgJyBhbHNvIGNhbiB0cmFuc2ZlciBtdWx0aXBsZSBJUCBQYWNrZXRzIGluIG9uZSBVUkIu
+DQoJVGhlIGJlbmVmaXQgaXMgcmVkdWNlIFVTQiBpbnRlcnJ1cHRzLCBzbyBjYW4gcmVkdWNlIENQ
+VSBsb2FkaW5nLiANCglRVUFMTENPTSBjYWxsIGl0IGFzIFFNQVAsIGZ1bGwgbmFtZSBpcyBRVUFM
+Q09NTSBNdWx0aXBsZXhpbmcgYW5kIEFnZ3JlZ2F0aW9uLg0KDQoJVGhlIG1lYW5zIG9mICdkbC1k
+YXRhZ3JhbS1tYXgtc2l6ZScgaW4gUU1BUCBpcyAnTWF4aW11bSBzaXplIGluIGJ5dGVzIG9mIGEg
+c2luZ2xlIGFnZ3JlZ2F0ZWQgcGFja2V0IGFsbG93ZWQgb24gZG93bmxpbmsuIg0KCUZvciBleGFt
+cGxlLCBNRE05NjA3IHN1cHBvcnQgdXAgdG8gNEtCLCBTRFgyMCBzdXBwb3J0IHVwIHRvIDE2S0Is
+IFNEWDU1IHN1cHBvcnQgdXAgdG8gMzFLQi4NCglUaGUgICdkbC1kYXRhZ3JhbS1tYXgtc2l6ZScg
+Y2FuIGJ5IHN1cHBvcnQgaXMgZGVwZW5kIHRoZSBjaGlwc2V0Lg0KCUJ1dCB0aGUgdXNlcnNwYWNl
+IGNhbiB1c2UgJyBRTUlfV0RBX1NFVF9EQVRBX0ZPUk1BVCcgdG8gTmVnb3RpYXRlcyBhbiBuZXcg
+c2l6ZShsZXNzIHRoYW4gb3IgZXF1YWwgdG8gJ2RsLWRhdGFncmFtLW1heC1zaXplJykuDQoNCglN
+b3N0IG9mIGNhc2UsIHRoZSB1c2Vyc3BhY2Ugd2lsbCB1c2UgdGhlIG1heCAnZGwtZGF0YWdyYW0t
+bWF4LXNpemUnLCBmb3IgYmVuZWZpdCBvZiAncmVkdWNlIENQVSBsb2RpbmcnLg0KDQo+IEFuZCB0
+aGUgY29tbWl0IGxvZyBzYXlzIHRoYXQgdGhpcyAiZGVwZW5kcyBvbiB0aGUgY2hpcHNldCBiZWlu
+ZyB1c2VkIiwgc28gd2h5IGRvbid0IHlvdSBrbm93IHRoYXQgYXQgcHJvYmUgdGltZSwgZG9lcyB0
+aGUgY2hpcHNldCBjaGFuZ2U/ICA6KQ0KPiANCj4gPiBDdXJyZW50bHkgdGhlcmUncyBhIHdvcmth
+cm91bmQgZm9yIHNldHRpbmcgcnhfdXJiX3NpemUgaS5lLiBjaGFuZ2luZyANCj4gPiB0aGUgbmV0
+d29yayBpbnRlcmZhY2UgTVRVOiB0aGlzIGlzIGZpbmUgZm9yIG1vc3QgdXNlcyB3aXRoIHFtYXAs
+IGJ1dCANCj4gPiB0aGVyZSdzIHRoZSBsaW1pdGF0aW9uIHRoYXQgY2VydGFpbiB2YWx1ZXMgKG11
+bHRpcGxlIG9mIHRoZSBlbmRwb2ludA0KPiA+IHNpemUpIGFyZSBub3QgYWxsb3dlZC4NCj4gDQo+
+IFdoeSBub3QganVzdCBzZXQgaXQgcmVhbGx5IGhpZ2ggdG8gc3RhcnQgd2l0aD8gIFRoYXQgc2hv
+dWxkIG5vdCBhZmZlY3QgYW55IG9sZGVyIGRldmljZXMsIGFzIHRoZSB1cmIgc2l6ZSBkb2VzIG5v
+dCBtYXR0ZXIuICBUaGUgb25seSB0aGluZyBpcyBpZiBpdCBpcyB0b28gc21hbGwgdGhhdCB0aGlu
+Z3MgY2FuIG5vdCBtb3ZlIGFzIGZhc3QgYXMgdGhleSBtaWdodCBiZSBhYmxlIHRvLg0KPiANCglI
+aSBEYW5pZWxlOiBJIGFsc28gdW5kZXJzdGFuZCB0aGUgImxpbWl0YXRpb24iLCBkbyB5b3UgbWVh
+biBuZWVkIHRvIHNlbmQgIlVTQiBaRVJPIGxlbmd0aCBQQUNLRVQnLg0KCSAgVGhlIGZ1bmN0aW9u
+IG9mIE1UVSBpcyBub3Qgc2FtZSBhcyByeF91cmJfc2l6ZSwgZm9yIGV4YW1wbGUgd2UgY2FuIHNl
+dCByeF91cmJfc2l6ZSB0byAzMUtCLCBidXQgTVRVIGlzIHN0aWxsIDE1MDBCLg0KDQo+IHRoYW5r
+cywNCj4gDQo+IGdyZWcgay1oDQo=
