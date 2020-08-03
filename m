@@ -2,70 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8ABE23AE22
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:30:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 098A223AE2D
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:33:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728132AbgHCU3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 16:29:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53204 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726725AbgHCU3w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Aug 2020 16:29:52 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728298AbgHCUap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 16:30:45 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:41292 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726725AbgHCUap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 16:30:45 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B9373200FF;
+        Mon,  3 Aug 2020 20:30:43 +0000 (UTC)
+Received: from us4-mdac16-67.at1.mdlocal (unknown [10.110.49.162])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B7550800AD;
+        Mon,  3 Aug 2020 20:30:43 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.30])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4B28E100072;
+        Mon,  3 Aug 2020 20:30:43 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C2BEC22B45;
-        Mon,  3 Aug 2020 20:29:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596486592;
-        bh=VNXrJoDu2nVwvK5pv8XXLArHar+98PGv944XMa5VqRo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NshCfN2Ba0b2nhmggzG3c76IhGP7zrRQp2Gn+JAqkTnw/o4d1QyNLZbSTu95u+iLa
-         h0eK2KyrS9nt5ONx4JXrbmac/+dsXhcUcyt44OfyAwIiZDl8GJ5sUoE/Lt/pN2WfuT
-         +1r+PeYuxJbTX4fECjsAasPf3/Hldbi+UGG1m75w=
-Date:   Mon, 3 Aug 2020 13:29:49 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     pisa@cmp.felk.cvut.cz
-Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
-        mkl@pengutronix.de, socketcan@hartkopp.net, wg@grandegger.com,
-        davem@davemloft.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        c.emde@osadl.org, armbru@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, martin.jerabek01@gmail.com,
-        ondrej.ille@gmail.com, jnovak@fel.cvut.cz, jara.beran@gmail.com,
-        porazil@pikron.com
-Subject: Re: [PATCH v4 0/6] CTU CAN FD open-source IP core SocketCAN driver,
- PCI, platform integration and documentation
-Message-ID: <20200803132949.64884ff1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <cover.1596408856.git.pisa@cmp.felk.cvut.cz>
-References: <cover.1596408856.git.pisa@cmp.felk.cvut.cz>
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 0EED9140080;
+        Mon,  3 Aug 2020 20:30:43 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 3 Aug 2020
+ 21:30:36 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH v3 net-next 00/11] sfc: driver for EF100 family NICs, part 2
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+Message-ID: <12f836c8-bdd8-a930-a79e-da4227e808d4@solarflare.com>
+Date:   Mon, 3 Aug 2020 21:30:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25582.002
+X-TM-AS-Result: No-2.624000-8.000000-10
+X-TMASE-MatchedRID: MdQd6M758ujhp80oBol0K/LHPaGCgb3t6QiT3SsBfyFUjspoiX02F6bT
+        a68ieFBIG+j22xW0Pjkgk2UlrwLN1BrO9MgKMDqQAZ0lncqeHqEEa8g1x8eqF6tkcxxU6EVIhnO
+        LyflyxrPi5dRj2g5sp/mpjDPjqvkiikLATHHwCKm1u/qNjkzEXHqLr3o+NE+IHdFjikZMLIdcpk
+        b9zUI7BOGgS4rOorYrKqt2FG1/DdBNfs8n85Te8oMbH85DUZXy3QfwsVk0UbsIoUKaF27lxXBVm
+        zs14l2chN2l3rUFqDmIyYozKXXDhkln/eaBodWi6HJUGVq/Y6TMIitkJH+Jly66g3xTtgzmxTbz
+        lFrN+Nr0VwhZAvaKGlrMCKBXF1d6I2VNggMWJCP4LggrmsRgvTwNB+BE7Pnl+rL5VW+ofZc=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10-2.624000-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25582.002
+X-MDID: 1596486643-9lfvc3XFOoWG
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  3 Aug 2020 20:34:48 +0200 pisa@cmp.felk.cvut.cz wrote:
-> From: Pavel Pisa <pisa@cmp.felk.cvut.cz>
-> 
-> This driver adds support for the CTU CAN FD open-source IP core.
-> More documentation and core sources at project page
-> (https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core).
-> The core integration to Xilinx Zynq system as platform driver
-> is available (https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top).
-> Implementation on Intel FPGA based PCI Express board is available
-> from project (https://gitlab.fel.cvut.cz/canbus/pcie-ctu_can_fd).
-> The CTU CAN FD core emulation send for review for QEMU mainline.
-> Development repository for QEMU emulation - ctu-canfd branch of
->   https://gitlab.fel.cvut.cz/canbus/qemu-canbus
-> 
-> More about CAN related projects used and developed at the Faculty
-> of the Electrical Engineering (http://www.fel.cvut.cz/en/)
-> of Czech Technical University (https://www.cvut.cz/en)
-> in Prague at http://canbus.pages.fel.cvut.cz/ .
+This series implements the data path and various other functionality
+ for Xilinx/Solarflare EF100 NICs.
 
-Patches 3 and 4 have warnings when built with W=1 C=1 flags.
+Changed from v2:
+ * Improved error handling of design params (patch #3)
+ * Removed 'inline' from .c file in patch #4
+ * Don't report common stats to ethtool -S (patch #8)
 
-Please also remove the uses of static inline in C sources.
-Those are rarely necessary and hide unused code warnings.
+Changed from v1:
+ * Fixed build errors on CONFIG_RFS_ACCEL=n (patch #5) and 32-bit
+   (patch #8)
+ * Dropped patch #10 (ethtool ops) as it's buggy and will need a
+   bigger rework to fix.
+
+Edward Cree (11):
+  sfc_ef100: check firmware version at start-of-day
+  sfc_ef100: fail the probe if NIC uses unsol_ev credits
+  sfc_ef100: read Design Parameters at probe time
+  sfc_ef100: TX path for EF100 NICs
+  sfc_ef100: RX filter table management and related gubbins
+  sfc_ef100: RX path for EF100
+  sfc_ef100: plumb in fini_dmaq
+  sfc_ef100: statistics gathering
+  sfc_ef100: functions for selftests
+  sfc_ef100: read pf_index at probe time
+  sfc_ef100: add nic-type for VFs, and bind to them
+
+ drivers/net/ethernet/sfc/ef100.c        |   2 +
+ drivers/net/ethernet/sfc/ef100_netdev.c |  16 +
+ drivers/net/ethernet/sfc/ef100_nic.c    | 657 ++++++++++++++++++++++++
+ drivers/net/ethernet/sfc/ef100_nic.h    |  48 ++
+ drivers/net/ethernet/sfc/ef100_rx.c     | 150 +++++-
+ drivers/net/ethernet/sfc/ef100_rx.h     |   1 +
+ drivers/net/ethernet/sfc/ef100_tx.c     | 367 ++++++++++++-
+ drivers/net/ethernet/sfc/ef100_tx.h     |   4 +
+ drivers/net/ethernet/sfc/net_driver.h   |  21 +
+ drivers/net/ethernet/sfc/tx_common.c    |   1 +
+ 10 files changed, 1255 insertions(+), 12 deletions(-)
+
