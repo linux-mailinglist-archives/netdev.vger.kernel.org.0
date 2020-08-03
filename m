@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87FEB23ADEB
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E812823ADE9
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:04:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728815AbgHCUEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728819AbgHCUEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 3 Aug 2020 16:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728714AbgHCUED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 16:04:03 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B61ACC06174A
-        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 13:04:03 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id t6so20698059pgq.1
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 13:04:03 -0700 (PDT)
+        with ESMTP id S1728800AbgHCUEF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 16:04:05 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C80C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 13:04:05 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id e8so20671229pgc.5
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 13:04:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6219eW0CRVUqlw/+reyzl7L8d8bWSx4EXYUvMNU5nBY=;
-        b=tM/fuRuW/udxU6ZYnUqC8Jd4ff8GVmzr+1YW/IUIDcIrePPwAUZH98A+jiMHlIt60T
-         xH9kIBxQEyd6JBoAAa6gepUSc6gYRIlcBt5C0xbxkpr2EVhqC+m4oWN4xVUutd8J3d5i
-         XEeyIQTpihM5VKGPkNxaApgUmJOg6P8YGYaixOfDROf2zUJ4meZ7FveEQcBrcoJhGJW4
-         /sIdvIWlSibS7yM6oEc7SsrqeEHEwh+zmzT8XaCykxSyBaMAJcohDioLd9a/F/FcJdgu
-         OvY4nsku6m3cq1WlNvOR5LyOfNmkdkL19IMliclaqWYEdJVfYMDhjIehnLYCRiheADmc
-         U2ZQ==
+        bh=w3YhjIQaukEPPLH/jNkBUf/vMt37cfb63+G9c5Z5O/k=;
+        b=Mo+zSk4uIxSmEmPk2t1x6aYKKTaLxhIOFmVd6EUr2gfAc7ULE7st8V54SGJGCtzWk/
+         0mPru642TUHRdumqCed1yhdIw08JaDiJYMoryDsTvLVz9kSRz5i2NMk/qq6cw0/NnPVl
+         waSPpm0pkEqgku1zaUu/wT0U2xX0LWXlgxr+NzTPYpT0VHbqv9e+H3iiS54mdCXHxL4b
+         jPSUZOtbyQfIfXWLSEyroNUJqw7nuyGMAU9wELwrguLYi89n8L4qPLQGACO6mr0PV4YS
+         GADGG3ZAaOYmryC6wiZaFDAqWiWO9x9L+MDBYczPNJv36jTlCd/hwKPBfMujzO1joGtW
+         zq0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6219eW0CRVUqlw/+reyzl7L8d8bWSx4EXYUvMNU5nBY=;
-        b=e1k/h9sXUn4g15fahHFxho0oQFtkwInW0KtqiLAOYgg2yH80QYreR0EffuREn4cB0n
-         Xx+sa1IeRuE9aagZgZsfFSJ6nHSdAffDANs9NcNsfTVRse8lEcN1rHYdZW/HF7OrQy+o
-         khAXOSL9zAypFGz5718Lx6JmnzrwSrDLhWbwH0dFbiflknskOpJI2OeHTVXkAsgg9pFy
-         gB4yYudncj8EDRckgg8odORCtrJFWCH2PuRpYwfXk/blZXR0VJE4laP4bPLH2BvHXE90
-         XJCDyv5n6nw7AxDmAk2DPOBFgKjRR7URXdzgi4zX3BWAsvIFMpTF2KhPRh3XI+NQwKcY
-         xyWQ==
-X-Gm-Message-State: AOAM532ERv+wPX4y6FZ74tg44z6NUSKI5MtY5e/lolAFhj4RJMstg48u
-        4xwn4BUC2SybhAqMqzJVVLKbaHpg
-X-Google-Smtp-Source: ABdhPJzZwzIHHr+KJ66KNMIb9+Z2pAlAdqBJoLkIfcE2RSV7vsYBmYKxRNoL4zqnECYxwpINA74CRQ==
-X-Received: by 2002:a63:5049:: with SMTP id q9mr119664pgl.219.1596485042359;
-        Mon, 03 Aug 2020 13:04:02 -0700 (PDT)
+        bh=w3YhjIQaukEPPLH/jNkBUf/vMt37cfb63+G9c5Z5O/k=;
+        b=i43sWVwe5QtwfCOoMPeiRrf4hwUYY+E1aH7WLH+pbdYtM8Ayy1Mtb5HmOm/XhQeJPO
+         0u0SeJnSKLqZX5RLKqKsNXTnn8zp+IBkCC+uZA/JoSDnaKWk/ukWu81gZgiMZkHa6+Mh
+         /shz1A2QSWupT2V9VEQBU3k983Uii+gWSQ7Jg03N/HUt1K3STUcbKZniKXDLbRNGzSRC
+         hG5bjFFO6hKYcMeis5KIkq3WGFRufic1Noxk+jBOTYfbaaYoX+0Yw0gqDZV1X0awb/Yv
+         v+67rLQcvhqKznwMKLHagKKS/o5xK+z+GGdkNi8ZaL6PYwXP9MUEUPeB6uv/MO4cj2zy
+         hWQA==
+X-Gm-Message-State: AOAM530FyJrs1k7XFOsvqDObm79HywAkmE9miu0L281X6LwCuIDqp0s5
+        +ZrpcdvDJ99MfKlq8PV+yRW1Ig3m
+X-Google-Smtp-Source: ABdhPJzaRXBkckWdfsE4UYuvLcxCJPwMFz5gtNSCB+GwGcXYNYIjvhnrAmcLbKPYMVMf91L9/HqWzA==
+X-Received: by 2002:a62:6302:: with SMTP id x2mr17005957pfb.26.1596485044363;
+        Mon, 03 Aug 2020 13:04:04 -0700 (PDT)
 Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id u24sm20017521pfm.211.2020.08.03.13.04.01
+        by smtp.gmail.com with ESMTPSA id u24sm20017521pfm.211.2020.08.03.13.04.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 13:04:01 -0700 (PDT)
+        Mon, 03 Aug 2020 13:04:03 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -54,9 +54,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/5] net: dsa: loop: Move data structures to header
-Date:   Mon,  3 Aug 2020 13:03:52 -0700
-Message-Id: <20200803200354.45062-4-f.fainelli@gmail.com>
+Subject: [PATCH net-next 4/5] net: dsa: loop: Wire-up MTU callbacks
+Date:   Mon,  3 Aug 2020 13:03:53 -0700
+Message-Id: <20200803200354.45062-5-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200803200354.45062-1-f.fainelli@gmail.com>
 References: <20200803200354.45062-1-f.fainelli@gmail.com>
@@ -67,117 +67,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation for adding support for a mockup data path, move the
-driver data structures to include/linux/dsa/loop.h such that we can
-share them between net/dsa/ and drivers/net/dsa/ later on.
+For now we simply store the port MTU into a per-port member.
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/dsa_loop.c | 32 +-----------------------------
- include/linux/dsa/loop.h   | 40 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 41 insertions(+), 31 deletions(-)
- create mode 100644 include/linux/dsa/loop.h
+ drivers/net/dsa/dsa_loop.c | 17 +++++++++++++++++
+ include/linux/dsa/loop.h   |  1 +
+ 2 files changed, 18 insertions(+)
 
 diff --git a/drivers/net/dsa/dsa_loop.c b/drivers/net/dsa/dsa_loop.c
-index 6e97b44c6f3f..ed0b580c9944 100644
+index ed0b580c9944..6a7d661b5a59 100644
 --- a/drivers/net/dsa/dsa_loop.c
 +++ b/drivers/net/dsa/dsa_loop.c
-@@ -14,28 +14,11 @@
- #include <linux/workqueue.h>
- #include <linux/module.h>
- #include <linux/if_bridge.h>
-+#include <linux/dsa/loop.h>
- #include <net/dsa.h>
+@@ -225,6 +225,21 @@ static int dsa_loop_port_vlan_del(struct dsa_switch *ds, int port,
+ 	return 0;
+ }
  
- #include "dsa_loop.h"
- 
--struct dsa_loop_vlan {
--	u16 members;
--	u16 untagged;
--};
--
--struct dsa_loop_mib_entry {
--	char name[ETH_GSTRING_LEN];
--	unsigned long val;
--};
--
--enum dsa_loop_mib_counters {
--	DSA_LOOP_PHY_READ_OK,
--	DSA_LOOP_PHY_READ_ERR,
--	DSA_LOOP_PHY_WRITE_OK,
--	DSA_LOOP_PHY_WRITE_ERR,
--	__DSA_LOOP_CNT_MAX,
--};
--
- static struct dsa_loop_mib_entry dsa_loop_mibs[] = {
- 	[DSA_LOOP_PHY_READ_OK]	= { "phy_read_ok", },
- 	[DSA_LOOP_PHY_READ_ERR]	= { "phy_read_err", },
-@@ -43,19 +26,6 @@ static struct dsa_loop_mib_entry dsa_loop_mibs[] = {
- 	[DSA_LOOP_PHY_WRITE_ERR] = { "phy_write_err", },
++static int dsa_loop_port_change_mtu(struct dsa_switch *ds, int port,
++				    int new_mtu)
++{
++	struct dsa_loop_priv *priv = ds->priv;
++
++	priv->ports[port].mtu = new_mtu;
++
++	return 0;
++}
++
++static int dsa_loop_port_max_mtu(struct dsa_switch *ds, int port)
++{
++	return ETH_MAX_MTU;
++}
++
+ static const struct dsa_switch_ops dsa_loop_driver = {
+ 	.get_tag_protocol	= dsa_loop_get_protocol,
+ 	.setup			= dsa_loop_setup,
+@@ -241,6 +256,8 @@ static const struct dsa_switch_ops dsa_loop_driver = {
+ 	.port_vlan_prepare	= dsa_loop_port_vlan_prepare,
+ 	.port_vlan_add		= dsa_loop_port_vlan_add,
+ 	.port_vlan_del		= dsa_loop_port_vlan_del,
++	.port_change_mtu	= dsa_loop_port_change_mtu,
++	.port_max_mtu		= dsa_loop_port_max_mtu,
  };
  
--struct dsa_loop_port {
--	struct dsa_loop_mib_entry mib[__DSA_LOOP_CNT_MAX];
--	u16 pvid;
--};
--
--struct dsa_loop_priv {
--	struct mii_bus	*bus;
--	unsigned int	port_base;
--	struct dsa_loop_vlan vlans[VLAN_N_VID];
--	struct net_device *netdev;
--	struct dsa_loop_port ports[DSA_MAX_PORTS];
--};
--
- static struct phy_device *phydevs[PHY_MAX_ADDR];
- 
- static enum dsa_tag_protocol dsa_loop_get_protocol(struct dsa_switch *ds,
+ static int dsa_loop_drv_probe(struct mdio_device *mdiodev)
 diff --git a/include/linux/dsa/loop.h b/include/linux/dsa/loop.h
-new file mode 100644
-index 000000000000..bb39401a8056
---- /dev/null
+index bb39401a8056..5a3470bcc8a7 100644
+--- a/include/linux/dsa/loop.h
 +++ b/include/linux/dsa/loop.h
-@@ -0,0 +1,40 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef DSA_LOOP_H
-+#define DSA_LOOP_H
-+
-+#include <linux/types.h>
-+#include <linux/ethtool.h>
-+#include <net/dsa.h>
-+
-+struct dsa_loop_vlan {
-+	u16 members;
-+	u16 untagged;
-+};
-+
-+struct dsa_loop_mib_entry {
-+	char name[ETH_GSTRING_LEN];
-+	unsigned long val;
-+};
-+
-+enum dsa_loop_mib_counters {
-+	DSA_LOOP_PHY_READ_OK,
-+	DSA_LOOP_PHY_READ_ERR,
-+	DSA_LOOP_PHY_WRITE_OK,
-+	DSA_LOOP_PHY_WRITE_ERR,
-+	__DSA_LOOP_CNT_MAX,
-+};
-+
-+struct dsa_loop_port {
-+	struct dsa_loop_mib_entry mib[__DSA_LOOP_CNT_MAX];
-+	u16 pvid;
-+};
-+
-+struct dsa_loop_priv {
-+	struct mii_bus	*bus;
-+	unsigned int	port_base;
-+	struct dsa_loop_vlan vlans[VLAN_N_VID];
-+	struct net_device *netdev;
-+	struct dsa_loop_port ports[DSA_MAX_PORTS];
-+};
-+
-+#endif /* DSA_LOOP_H */
+@@ -27,6 +27,7 @@ enum dsa_loop_mib_counters {
+ struct dsa_loop_port {
+ 	struct dsa_loop_mib_entry mib[__DSA_LOOP_CNT_MAX];
+ 	u16 pvid;
++	int mtu;
+ };
+ 
+ struct dsa_loop_priv {
 -- 
 2.25.1
 
