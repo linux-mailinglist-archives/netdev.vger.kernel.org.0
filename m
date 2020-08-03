@@ -2,74 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45AF623AFD9
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 23:55:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B282023AFE3
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 23:58:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727091AbgHCVzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 17:55:37 -0400
-Received: from www62.your-server.de ([213.133.104.62]:60012 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbgHCVzg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 17:55:36 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k2iQg-0001sR-Pa; Mon, 03 Aug 2020 23:55:34 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k2iQg-000PXH-Jb; Mon, 03 Aug 2020 23:55:34 +0200
-Subject: Re: [PATCH bpf-next v6 0/2] bpf: cgroup skb improvements for
- bpf_prog_test_run
-To:     Dmitry Yakunin <zeil@yandex-team.ru>, alexei.starovoitov@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     eric.dumazet@gmail.com, sdf@google.com
-References: <20200803090545.82046-1-zeil@yandex-team.ru>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <a980acba-03cf-b3c3-7f49-20740bcdeb08@iogearbox.net>
-Date:   Mon, 3 Aug 2020 23:55:33 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20200803090545.82046-1-zeil@yandex-team.ru>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        id S1728854AbgHCV6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 17:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45924 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726239AbgHCV6w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 17:58:52 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84D6C06174A;
+        Mon,  3 Aug 2020 14:58:52 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id DAFDC1276E706;
+        Mon,  3 Aug 2020 14:42:02 -0700 (PDT)
+Date:   Mon, 03 Aug 2020 14:58:43 -0700 (PDT)
+Message-Id: <20200803.145843.2285407129021498421.davem@davemloft.net>
+To:     hongbo.wang@nxp.com
+Cc:     xiaoliang.yang_1@nxp.com, allan.nielsen@microchip.com,
+        po.liu@nxp.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, vladimir.oltean@nxp.com,
+        leoyang.li@nxp.com, mingkai.hu@nxp.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, jiri@resnulli.us,
+        idosch@idosch.org, kuba@kernel.org, vinicius.gomes@intel.com,
+        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, ivecera@redhat.com
+Subject: Re: [PATCH v4 2/2] net: dsa: ocelot: Add support for QinQ Operation
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200730102505.27039-3-hongbo.wang@nxp.com>
+References: <20200730102505.27039-1-hongbo.wang@nxp.com>
+        <20200730102505.27039-3-hongbo.wang@nxp.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25893/Mon Aug  3 17:01:47 2020)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 03 Aug 2020 14:42:03 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/3/20 11:05 AM, Dmitry Yakunin wrote:
-> This patchset contains some improvements for testing cgroup/skb programs
-> through BPF_PROG_TEST_RUN command.
-> 
-> v2:
->    - fix build without CONFIG_CGROUP_BPF (kernel test robot <lkp@intel.com>)
-> 
-> v3:
->    - fix build without CONFIG_IPV6 (kernel test robot <lkp@intel.com>)
-> 
-> v4:
->    - remove cgroup storage related commits for future rework (Daniel Borkmann)
-> 
-> v5:
->    - check skb length before access to inet headers (Eric Dumazet)
-> 
-> v6:
->    - do not use pskb_may_pull() in skb length checking (Alexei Starovoitov)
-> 
-> Dmitry Yakunin (2):
->    bpf: setup socket family and addresses in bpf_prog_test_run_skb
->    bpf: allow to specify ifindex for skb in bpf_prog_test_run_skb
-> 
->   net/bpf/test_run.c                               | 39 ++++++++++++++++++++++--
->   tools/testing/selftests/bpf/prog_tests/skb_ctx.c |  5 +++
->   2 files changed, 42 insertions(+), 2 deletions(-)
-> 
+From: hongbo.wang@nxp.com
+Date: Thu, 30 Jul 2020 18:25:05 +0800
 
-Looks good, applied, thanks!
+> +	if (vlan->proto == ETH_P_8021AD) {
+> +		ocelot->enable_qinq = true;
+> +		ocelot_port->qinq_mode = true;
+> +	}
+ ...
+> +	if (vlan->proto == ETH_P_8021AD) {
+> +		ocelot->enable_qinq = false;
+> +		ocelot_port->qinq_mode = false;
+> +	}
+> +
+
+I don't understand how this can work just by using a boolean to track
+the state.
+
+This won't work properly if you are handling multiple QinQ VLAN entries.
+
+Also, I need Andrew and Florian to review and ACK the DSA layer changes
+that add the protocol value to the device notifier block.
