@@ -2,88 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 298A223A0FD
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 10:26:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DC8723A118
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 10:33:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726224AbgHCI0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 04:26:35 -0400
-Received: from mail-am6eur05on2040.outbound.protection.outlook.com ([40.107.22.40]:31073
+        id S1726130AbgHCIdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 04:33:24 -0400
+Received: from mail-am6eur05on2061.outbound.protection.outlook.com ([40.107.22.61]:37912
         "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725806AbgHCI0e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Aug 2020 04:26:34 -0400
+        id S1725831AbgHCIdY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Aug 2020 04:33:24 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T5+RByLtvjcr5bRdjYRTwzXv9i5iotHunoAF7PtDy8XM+MaFI+Q7/0kXTT7WRoyLJ9GZoGDYHtGfx1t9SPlG6N5cgbJ/iA6aUnNvIUF1Pj6q63ceKy8ZQXySgX2U8f3WvfuOK1iDuCkvAFXt2lnjLKRttKkk98FSDoAlIjHUxVSludmTMykjcpJTUEcTT+zLhvz+GntXBnZacovPnaLKqgNrtuAW4i5z/nHf85UaXeJwjKSm/jYTa6l9TVK55d+Jqv2n0eh3OFvm/EKcpqspJWKuwCxVDh7nsG3u4BMIfeeRVeFNVCXMS+ULSOFAnoNt8BKaK4s7PbXtQ5AlsWKekw==
+ b=Am9O4fNWhxtAhKHY6pVUm4UlU7azjUNlbrPAYM4lscQAsYNWEAjR1U85DUGbXn1dEYfFCELGRYop4M0qNQmoQFDmPchsUhz6STwVnqR3I+yed6Kbs/R1EqKa4oPwIyMjvAbFuMKQhGiLCmfJkzcdF7A8S59PZlw3j4WNK7x6mWsducFbc0LpYmBxCta+2Sgxkq8u9nxiIv96/kuUX48cHjgVtYTjQjc8kw82oBxID8a93FdszfX+qaWVu2nu1fM9aXqE7de540ZABL+O3NyENppWzw2SfREv9Z4QidFQMLJOdkL90vfC4vyXTZWzQ0U+wDjEkNMMUH08dx/rJhLoOw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WXJw+6VdEVlE7mTz5qRxvF08bL5zNpEfBfQPoHnP/Qo=;
- b=IPjtg0kbe4wFjq3lWItWGvUqF+8iimXGB1P9NlaT1eMkxKaqvszLhRNg/BMuXJmUYYhcipYmqSJ9MrLd2xpF/WXskAvl31C6adlGpS59x33JZj1Fgc5TNroOlddS/hCX3k2BbXLRKywyn7gMvZmUzn7lmjECvUeidVt28mTYGSD+zmkwfmqcdAMl6gS7jYhga5fgPtgksoeiFop4U2kF6K53aL2x2glwGzS3Xerh9iXHXt1Xtdu+aGUptOXVRRORq5+ydkpQKSWzOcmIyI8BnrVcsNO7ENZcJru9ZmvblQGN7vfko3Yza6qqZ9aZ8TuQO0QCl62/LximB0e0mb0iXg==
+ bh=Fw1MCfzZhXDNApshyODrv4AhfJfACQzIQP4ZWvFfBHU=;
+ b=Df/9uk4bqjViJfdcT0rhq0hM2RjNfKneZ6W7aRXOlrpBMNZ099p4XMmS2780uYzzAdHFp6wjesEkittZbcaUKhsJ2bZz9yrcp/ZvbBtB67CIlIge9lriVS1qPwBnOuyXlaj2j0eE1BQmKWmrRuRt8NdpL+NljByQWioWIkeQuLzzgc9folOE9DlTQdESpOcBSfeC5t/BzlrGFD+Ic3Ilj8Q2PYAvL+eI6LBqrq5hhHfxvS+oHaOwKF0wGv+6NW45738jOp7+Ls1+Jk0vfDhjitxNPlkmvrza3RGrl7YGgCetcve49qi2eJfrvKBIbZuAevHQ9YWwpZz1fxNCyiU3iQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WXJw+6VdEVlE7mTz5qRxvF08bL5zNpEfBfQPoHnP/Qo=;
- b=PYb1qa1u2UvRsLIXD02wScyqq0Sg7I9EUKxAHo/mXamTqTXUGS89e/2xZ40qmBgPgS64Qn3PIP6IaGzf3971WhcI/73VrQ2mrr+9f5QiRG5MCys8IsFUF2j0bDSNsuxiBPVqApuGKRxcIENKkLl6IWoCPIuT/D8BFYkBbtsQO/A=
+ bh=Fw1MCfzZhXDNApshyODrv4AhfJfACQzIQP4ZWvFfBHU=;
+ b=evefR7iQB9zVVDO3dKJO4qVhuk9RV5zUt5CzxOnQ/RbLF/ZZloUis3cUempxEAUUZL0VTQ8BNve7BsmzaBLruDYC9bGWnqIPlzG6ESzTIs9ngRGIr8XeQS4zquLB56mvRKt/3RpoBRqTd5ZUsWO8WSvtCeWVvEvoN/AzkCHWltU=
 Received: from AM6PR04MB3976.eurprd04.prod.outlook.com (2603:10a6:209:3f::17)
- by AM7PR04MB6776.eurprd04.prod.outlook.com (2603:10a6:20b:103::13) with
+ by AM6PR04MB5077.eurprd04.prod.outlook.com (2603:10a6:20b:a::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.16; Mon, 3 Aug
- 2020 08:26:31 +0000
+ 2020 08:33:19 +0000
 Received: from AM6PR04MB3976.eurprd04.prod.outlook.com
  ([fe80::f5cb:bc18:1991:c31f]) by AM6PR04MB3976.eurprd04.prod.outlook.com
  ([fe80::f5cb:bc18:1991:c31f%2]) with mapi id 15.20.3239.021; Mon, 3 Aug 2020
- 08:26:31 +0000
+ 08:33:19 +0000
 From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-To:     Florinel Iordache <florinel.iordache@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net v3 0/5] DPAA FMan driver fixes
-Thread-Topic: [PATCH net v3 0/5] DPAA FMan driver fixes
-Thread-Index: AQHWaWTTu6rv82yb40iH+bUNSp5ZT6kmDMlQ
-Date:   Mon, 3 Aug 2020 08:26:31 +0000
-Message-ID: <AM6PR04MB39765DF82C41B84D41FBEE5DEC4D0@AM6PR04MB3976.eurprd04.prod.outlook.com>
-References: <1596438454-4895-1-git-send-email-florinel.iordache@nxp.com>
-In-Reply-To: <1596438454-4895-1-git-send-email-florinel.iordache@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     Vikas Singh <vikas.singh@puresoftware.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Calvin Johnson (OSS)" <calvin.johnson@oss.nxp.com>,
+        kuldip dwivedi <kuldip.dwivedi@puresoftware.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Vikas Singh <vikas.singh@nxp.com>
+Subject: RE: [PATCH 2/2] net: phy: Associate device node with fixed PHY
+Thread-Topic: [PATCH 2/2] net: phy: Associate device node with fixed PHY
+Thread-Index: AQHWZNiOdpikt9xf+EiwD7SyrSwWH6kc9FCAgAGkTICAAzz5gIAA15EAgABZCQCAAFwWgIACs+Vw
+Date:   Mon, 3 Aug 2020 08:33:19 +0000
+Message-ID: <AM6PR04MB3976BB0CAB0B4270FF932F62EC4D0@AM6PR04MB3976.eurprd04.prod.outlook.com>
+References: <1595938400-13279-1-git-send-email-vikas.singh@puresoftware.com>
+ <1595938400-13279-3-git-send-email-vikas.singh@puresoftware.com>
+ <20200728130001.GB1712415@lunn.ch>
+ <CADvVLtXVVfU3-U8DYPtDnvGoEK2TOXhpuE=1vz6nnXaFBA8pNA@mail.gmail.com>
+ <20200731153119.GJ1712415@lunn.ch>
+ <CADvVLtUrZDGqwEPO_ApCWK1dELkUEjrH47s1CbYEYOH9XgZMRg@mail.gmail.com>
+ <20200801094132.GH1551@shell.armlinux.org.uk>
+ <20200801151107.GK1712415@lunn.ch>
+In-Reply-To: <20200801151107.GK1712415@lunn.ch>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=oss.nxp.com;
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=oss.nxp.com;
 x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [82.76.227.152]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: e60e4736-7b4c-4243-3360-08d83786ece8
-x-ms-traffictypediagnostic: AM7PR04MB6776:
+x-ms-office365-filtering-correlation-id: 6b1b5774-ce84-4e60-248f-08d83787e075
+x-ms-traffictypediagnostic: AM6PR04MB5077:
 x-ms-exchange-sharedmailbox-routingagent-processed: True
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM7PR04MB677607D21A3D9ADCDD48E358AD4D0@AM7PR04MB6776.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
+x-microsoft-antispam-prvs: <AM6PR04MB5077B0035C10CCAA4A043DC6AD4D0@AM6PR04MB5077.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nIdShuGluIoY1X+BC0gF/Tixi/oG6wA7jc+P/txU986z9Km+4dseVotqTd2Xk8xnxuZ3KzsUEdyFhz65pfDHK76/pMxOVdOlvAOibvYN3JsqiGW9nNybuRXwFZO2t2SD6sMo/073agZ8HOOfQcyf7wpYmf/G+N1W2Oev2IwgfPR/60BUI7FdSXnj/r4F5j9A0fnu+no2BYgfU9kMBXlNLZUcbhEjHqvdBV+8Sc9vKORz1wd3TY0h36SczRbtmyMgo7N8t1/U3JxeW/s9UjHUVGNRMdU7KJ18qrjUIfg1P8FO87iocPOGzmNZwFJki7gooMb2oevafi0BJPh/FjTWjA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB3976.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(39860400002)(346002)(136003)(366004)(396003)(33656002)(316002)(5660300002)(6506007)(71200400001)(53546011)(26005)(110136005)(186003)(2906002)(478600001)(83380400001)(86362001)(76116006)(9686003)(66946007)(8936002)(66556008)(64756008)(55016002)(66476007)(7696005)(52536014)(66446008)(8676002)(4326008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 63YSK+ZcoRxq8NqTHs7dp1BcZE4/kxwPsTQ+Ek3nDsVdc+9GnIf7Mpsiin9ZFTtWhwhYpqu8W/6d780En1g2YigyCKt+xi/t3n62YYsdHeETiVcDTnfs7Gh6ZTtYXD29+dIH4qZZSrhE0AH/MYL+tGXCyQ3JR/y7VwQoUiUljwXWgHFUCaZD+vJmlCRaV7nIoxh3MPUCE1/0ZQzSCsmPSWDycECJlKgDrewZb/vtIAfodMvYxxP9enydD0sGI0uP/uaiWctAhYjMvVOA29WMo9P/W43B+rn+tuW3O3wkYkxwQg+8eZL84vxZW6laZbWjUZF9WYOzNqXyZ8g60x1EoMVLOpH4UOS7hx6uZ4sCoaiIWp3K1dTwhcUSueiO1iIw3BdXPh98RNEl4VP9R6imqygd63IX5j3jqlX2x9p29SiLQk/x30foPk7l5F6r4x7LIRTs43YiiuB4+cEGIBjUAUZA8M7WY7FLksezPiNkliFtgcFdJrblqujSnpmKfLRYtBRmOpHQZCIsCplDlzVt9Za7weY8tBzBOug6bgRKH1MXADk5dbybVRQdjNxVxRLhZtPm43V+iK65tHxgumhECHErUsL3yG1xuNzV62xueUwxujNXCZHJ1tCu6KXk1bUOi2pG4HSv7VPbaqfPokwZ6g==
+x-microsoft-antispam-message-info: Czb23vYg8JVq2mq8L2AnIapG3kazKNRkiEBHFbk5U5gVJ9e3/wWZaCJdXww+3wpqaah25RN1yU8DQDqAsfncSn+WaE+WX/jsnjJuIOur+h0Q7Upv23Y1iBKch/3U1e+YchvS554V2zLOefFQ0O4dvlgd+6w1SIcLjl4pk5Z+zBMWRju3xPsgWbrLF7+XbhffkzyHlBxDWOcvNm7xieeRe8qei9OnLHTx+QOUB9uc9wZt+iTJeJNlEKPSps4HBw29iVdshEmVc+b4By/IW7wsbc92Ed4yn2UWOUv1gZPB9ZDrh0nd1z08hLH71Z0eP7JJ8hSrqs2NSgFtJj2nXCwOKvwoJVKCdLSzHz1VCng9U7sYQdm8qBMe8jfV4zDV1YPUiQd1XJtpmABRw63U+UGmDw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB3976.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(346002)(376002)(136003)(396003)(39860400002)(86362001)(26005)(54906003)(110136005)(71200400001)(33656002)(186003)(9686003)(55016002)(316002)(966005)(5660300002)(4326008)(8936002)(76116006)(8676002)(478600001)(2906002)(7696005)(52536014)(66946007)(83380400001)(66446008)(64756008)(66556008)(66476007)(6506007)(53546011);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: RmwLMcwjf+i/WUJrnc2Vpq4HIGrz5yDH+74ZgOYmXYDVHjlyOERjIeG3rHZNVYFKEu+i/gopOp0y059Hu1q87452gfLRVJu5YHZxlqfOomDhfhpwRK/mNqjqs/yUvaVC2VjNq7ts7TMbOK0TZ+OdmEQejARfNcRbfIjSOXfFcxCI+gunNZHrBxuplTKd/M5JYoUy8RrWZkK+XUlX8i4lRKubuOBwCran6OEtrvFFlBTjhFTYftwO/7IxiQ7+ok97GBx4Vr/asz9L9/V4aEksW8K+H8Z1P6sxqHXJIKSOKwmGGuwrxdFq1+R3y3x8AegqIfSwc/n8shR72RTtB1WAJbC1N5c+6ENU15gH7qkWPNpJeNSxA6WquL0S/t3eofDHMLY4uLBUzJNvlns31BbFtWhhge7oGeVS/VL6cmhKbHWVJegb1lKxMFKRtph3CAtYL8+l+zdwNMdeDNzU1zgCMgqLtzu3+mmyizKeNT7leu/p76+Qy0s4eqOABaRMZYazjKh9FLdeABIpo70W0PhMSr4VszF6q8J4QkTk5NGr7npI09pMzdJ/Vma5D/Wv/TRtYMyK8YewHnX6UuPwWqb1F1Yn4i25JryvMEUAk9Xf6FmTDTHovHVOnZXiWI4jVvALOfO06RVrlGo8QL6bZ3JOdw==
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: oss.nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB3976.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e60e4736-7b4c-4243-3360-08d83786ece8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Aug 2020 08:26:31.1351
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b1b5774-ce84-4e60-248f-08d83787e075
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Aug 2020 08:33:19.7611
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Lvw9nJXtOh6y3rHkgq+/Wa/M5gPJMdAi9yGMnPrhWywUktIczVF3eShdU6CASdCrFXN9yC8eCaW3jLaFKBYymQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6776
+X-MS-Exchange-CrossTenant-userprincipalname: I8WNKjl8U2i1BcKCjt9qN3zGJtOJZ+xlgY4OpDkV2xitOOAVtPnSc6xwoT/Mle9Dbc5qyHFRNULO2rUjN4M90g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5077
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -91,41 +104,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 > -----Original Message-----
 > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
-> Behalf Of Florinel Iordache
-> Sent: 03 August 2020 10:07
-> To: Madalin Bucur <madalin.bucur@nxp.com>; davem@davemloft.net;
-> kuba@kernel.org; netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org; Florinel Iordache
-> <florinel.iordache@nxp.com>
-> Subject: [PATCH net v3 0/5] DPAA FMan driver fixes
+> Behalf Of Andrew Lunn
+> Sent: 01 August 2020 18:11
+> To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+> Cc: Vikas Singh <vikas.singh@puresoftware.com>; f.fainelli@gmail.com;
+> hkallweit1@gmail.com; netdev@vger.kernel.org; Calvin Johnson (OSS)
+> <calvin.johnson@oss.nxp.com>; kuldip dwivedi
+> <kuldip.dwivedi@puresoftware.com>; Madalin Bucur (OSS)
+> <madalin.bucur@oss.nxp.com>; Vikas Singh <vikas.singh@nxp.com>
+> Subject: Re: [PATCH 2/2] net: phy: Associate device node with fixed PHY
 >=20
-> Here are several fixes for the DPAA FMan driver.
+> On Sat, Aug 01, 2020 at 10:41:32AM +0100, Russell King - ARM Linux admin
+> wrote:
+> > On Sat, Aug 01, 2020 at 09:52:52AM +0530, Vikas Singh wrote:
+> > > Hi Andrew,
+> > >
+> > > Please refer to the "fman" node under
+> > > linux/arch/arm64/boot/dts/freescale/fsl-ls1046a-rdb.dts
+> > > I have two 10G ethernet interfaces out of which one is of fixed-link.
+> >
+> > Please do not top post.
+> >
+> > How does XGMII (which is a 10G only interface) work at 1G speed?  Is
+> > what is in DT itself a hack because fixed-phy doesn't support 10G
+> > modes?
 >=20
-> v2 changes:
-> * corrected patch 4 by removing the line added by mistake
-> * used longer fixes tags with the first 12 characters of the SHA-1 ID
->=20
-> v3 changes:
-> * remove the empty line inserted after fixes tag
->=20
-> Florinel Iordache (5):
->   fsl/fman: use 32-bit unsigned integer
->   fsl/fman: fix dereference null return value
->   fsl/fman: fix unreachable code
->   fsl/fman: check dereferencing null pointer
->   fsl/fman: fix eth hash table allocation
->=20
->  drivers/net/ethernet/freescale/fman/fman.c       | 3 +--
->  drivers/net/ethernet/freescale/fman/fman_dtsec.c | 4 ++--
->  drivers/net/ethernet/freescale/fman/fman_mac.h   | 2 +-
->  drivers/net/ethernet/freescale/fman/fman_memac.c | 3 +--
->  drivers/net/ethernet/freescale/fman/fman_port.c  | 9 ++++++++-
->  drivers/net/ethernet/freescale/fman/fman_tgec.c  | 2 +-
->  6 files changed, 14 insertions(+), 9 deletions(-)
->=20
-> --
-> 1.9.1
+> My gut feeling is there is some hack going on here, which is why i'm
+> being persistent at trying to understand what is actually going on
+> here.
 
-For the series,
+Hi Andrew,
 
-Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+That platform used 1G fixed link there since there was no support for
+10G fixed link at the time. PHYlib could have tolerated 10G speed there
+With a one-liner. I understand that PHYLink is working to describe this
+Better, but it was not there at that time. Adding the dependency on
+PHYLink was not desirable as most of the users for the DPAA 1 platforms
+were targeting kernels before the PHYLink introduction (and last I've
+looked, it's still under development, with unstable APIs so we'll
+take a look at this later, when it settles).
+
+> So Vikas, as Russell pointed out, fixed-link is limited to 1G. It
+> seems odd you are running a 10G link at 1G. It is also unclear what
+> you have on the other end of that fixed link? Is it an SFP and you are
+> afraid of the work needed to get phylink working with ACPI? Is it an
+> Ethernet switch, and you are afraid of the work needed to get DSA
+> working with ACPI?
+>=20
+> Looking at
+> https://www.nxp.com/docs/en/quick-reference-guide/LS1046AQRS.pdf
+>=20
+> I see a XFI/2-5G SGMII port connected to a PHY, which i guess is
+>=20
+>        ethernet@f0000 { /* 10GEC1 */
+>                 phy-handle =3D <&aqr106_phy>;
+>                 phy-connection-type =3D "xgmii";
+>         };
+>=20
+> and
+>                 aqr106_phy: ethernet-phy@0 {
+>                         compatible =3D "ethernet-phy-ieee802.3-c45";
+>                         interrupts =3D <0 131 4>;
+>                         reg =3D <0x0>;
+>                 };
+>=20
+> Which leaves an XFI interface connected to a retimer and then to an
+> SFP cage? Is this where you are using fixed-link?
+>=20
+> 	Andrew
