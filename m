@@ -2,85 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D1C923ABC6
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 19:41:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B673B23ABD5
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 19:52:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726744AbgHCRlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 13:41:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34588 "EHLO
+        id S1726693AbgHCRv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 13:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725945AbgHCRln (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 13:41:43 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE87C06174A;
-        Mon,  3 Aug 2020 10:41:43 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id e4so344119pjd.0;
-        Mon, 03 Aug 2020 10:41:43 -0700 (PDT)
+        with ESMTP id S1726007AbgHCRv6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 13:51:58 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B69C06174A;
+        Mon,  3 Aug 2020 10:51:58 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id q16so18345775ybk.6;
+        Mon, 03 Aug 2020 10:51:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ITdLnDICTMXLD69TXhj+jeJHGfxEvBcozE7CtADBcX8=;
-        b=NJmlgUcjeZU/TIrRhV03rLWSzzOEII/yKkk7LwDEjrDhOsSwTXZpt5Ojr/tkHFx1hD
-         THxLDbP9F10pwKIckCtMVZJfEq5W/cK7FWz3L+5FNzmIPANbCGsmrsihOU2n18ULaePM
-         yPgv8hfazlsyPByNtBwLEYxzZevCT9pr5X1GFtvrjDHJjiR7f+IpQ4FuX2MEVsOWD+gY
-         QY4Fc6mbV7ldbwMuqpCo/ioUor+IBSNnyn53xfM/kum3tmC1v5ANjpsstarXkXpWv/z2
-         VYPXHFhsWgLMqikJzi/Pnorc6ku4V4Qf/HFJDa5vfhQhfd8E7ebWrNGrtJFW+eOhSd9a
-         qZXw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=zov5dEZO0T2PVM9hra9gcoUzbtm6KiRFFoKFPBFxRqE=;
+        b=FQykHsAuev6naMHAh6CV8ZiEGjr46SwfUCqaYatf67URcqfvEWNL1jG9SZhNQ4NnVs
+         yRq2rXh3wEVcZPrr/0rU8w6kz0gbvnANfgKNU0bQBiPiXQ4/hvLbY3P4jQszuEljfOOT
+         9kdkMiotnCrfglMWbLSrZ+M5X9Z8D+Q49SRDhJKz8UPqsoIocsxUUApG8uzJjRIS7AIf
+         TIsmOR2LSe+KswDfIkvAi1EISNy/lqwJPt/phE2WSVV1t2xmsZHmh2N9hv5VA2/Le4iA
+         ban6c7euza4/ZTlmEM0r8QtTo6k3QmvYSs3hPmC5IkPxlqVg+K19hHumydGN4/YSA9tR
+         KD5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ITdLnDICTMXLD69TXhj+jeJHGfxEvBcozE7CtADBcX8=;
-        b=kZBH7UBlbzScwjNiQnchf2jc0iHRir4tGVoK6NDOgRUmHwTJxxzSzDPkka5YlJVdI/
-         wS0sDTUDurGEyRDFD/hbrTFY7BdB11he/bHtmvxuXFUFWhhZ2434GWhaKznB7pcsU0hi
-         +0VS1AJK2pbKWqPOzPbuCMywwY2N/F8n29G1avRdgLEhvooLOcYlkMek7lbO0hAVRfNH
-         dzXMHscsFTv0C3nL1ZWZKVNBXpeNeA2nMv+HaQFRd5Eo+UK8T5zbf6atYCmMyz7tWCcI
-         7BVDkWH5dmNJ6z1yFtHLPxDTGSPmJRwtLR1Y0CeXAYZBOFW3Iz1yVTzWw0n8Yle5MbOm
-         dfPQ==
-X-Gm-Message-State: AOAM530NKlNBsXZ32hisjUzDG571TnkhE35qH+xD0AJlY9mRvRiWqOkY
-        mQLEnW9YF1IZrx34etYQkGgIXE9K
-X-Google-Smtp-Source: ABdhPJy1hSl+0vhbsItK151t+5JgI4JzUeDP0ECJib1D1rIFVoFLTr4/ThRt76C7BcrA7rc9NkUDoA==
-X-Received: by 2002:a17:902:ff13:: with SMTP id f19mr16067564plj.326.1596476503272;
-        Mon, 03 Aug 2020 10:41:43 -0700 (PDT)
-Received: from [10.230.30.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id w16sm130929pjd.50.2020.08.03.10.41.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Aug 2020 10:41:42 -0700 (PDT)
-Subject: Re: [PATCH v4 11/11] dt-bindings: net: dsa: document additional
- Microchip KSZ8863/8873 switch
-To:     Michael Grzeschik <m.grzeschik@pengutronix.de>, andrew@lunn.ch
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kernel@pengutronix.de,
-        devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>
-References: <20200803054442.20089-1-m.grzeschik@pengutronix.de>
- <20200803054442.20089-12-m.grzeschik@pengutronix.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <d35c9a72-035d-fcc2-b0ce-a986ce55b78f@gmail.com>
-Date:   Mon, 3 Aug 2020 10:41:36 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=zov5dEZO0T2PVM9hra9gcoUzbtm6KiRFFoKFPBFxRqE=;
+        b=AwS7qrIpJZ8rxDNuu6GYgXF1n+3uMERT0yOGQISNxkMbN/a4CY35O/m7Y+JvkoD/Hy
+         hNg/UnbxJBVK9YgM8Ahhpb+aCjSqEsoBGaH4oi447B1x29fQdFIRJ3NxEkqsYdZ9M1BA
+         k5dzxAEzVxSNRb5HUwB7wnbmuwEZSCsF26QzyXFuBkqYEhR+1NNXJouUpHLwYy8sA7De
+         YaUx3oRj7MZgbDMRmKbsOIhxGz5Cu1605OInkiDBvaC4+kYETetNUgnfgciKkUO1AipX
+         c1Z8apQiWi7teMPaNX+C86yG88FnuodFkaydZ7ppStOLE5rgfyiFZ5J7UkY/ko3VWS2q
+         G3Sg==
+X-Gm-Message-State: AOAM530255kraY/5oJZdQjCXc5ZRonvENJcY67I+RaKzumAe+hCGN54H
+        1dtjXsesXGH9bTBuWgmIuHUr7CF7yboaSbmQD4E=
+X-Google-Smtp-Source: ABdhPJzbga1cip6psgKQPpnbgWWsVwHg+CANLBVKRrv4zd54cIJ5ajVk+DpfgrADTG6uwh13381C1kNRMmh53JM6O1E=
+X-Received: by 2002:a25:9c06:: with SMTP id c6mr27849568ybo.403.1596477117300;
+ Mon, 03 Aug 2020 10:51:57 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200803054442.20089-12-m.grzeschik@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200802222950.34696-1-alexei.starovoitov@gmail.com>
+ <20200802222950.34696-4-alexei.starovoitov@gmail.com> <33d2db5b-3f81-e384-bed8-96f1d7f1d4c7@iogearbox.net>
+ <430839eb-2761-0c1a-4b99-dffb07b9f502@iogearbox.net> <736dc34e-254d-de46-ac91-512029f675e7@iogearbox.net>
+In-Reply-To: <736dc34e-254d-de46-ac91-512029f675e7@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 3 Aug 2020 10:51:46 -0700
+Message-ID: <CAEf4BzY-RHiG+0u1Ug+k0VC01Fqp3BUQ60OenRv+na4fuYRW=Q@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 3/4] bpf: Add kernel module with user mode
+ driver that populates bpffs.
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Aug 3, 2020 at 10:41 AM Daniel Borkmann <daniel@iogearbox.net> wrot=
+e:
+>
+> On 8/3/20 7:34 PM, Daniel Borkmann wrote:
+> > On 8/3/20 7:15 PM, Daniel Borkmann wrote:
+> >> On 8/3/20 12:29 AM, Alexei Starovoitov wrote:
+> >>> From: Alexei Starovoitov <ast@kernel.org>
+> >>>
+> >>> Add kernel module with user mode driver that populates bpffs with
+> >>> BPF iterators.
+> >>>
 
+[...]
 
-On 8/2/2020 10:44 PM, Michael Grzeschik wrote:
-> It is a 3-Port 10/100 Ethernet Switch. One CPU-Port and two
-> Switch-Ports.
-> 
-> Cc: devicetree@vger.kernel.org
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Acked-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+>    CC      kernel/events/ring_buffer.o
+>    CC [U]  kernel/bpf/preload/./../../../tools/lib/bpf/bpf.o
+>    CC [U]  kernel/bpf/preload/./../../../tools/lib/bpf/libbpf.o
+> In file included from kernel/bpf/preload/./../../../tools/lib/bpf/libbpf.=
+c:47:0:
+> ./tools/include/tools/libc_compat.h:11:21: error: static declaration of =
+=E2=80=98reallocarray=E2=80=99 follows non-static declaration
+>   static inline void *reallocarray(void *ptr, size_t nmemb, size_t size)
+>                       ^~~~~~~~~~~~
+> In file included from kernel/bpf/preload/./../../../tools/lib/bpf/libbpf.=
+c:16:0:
+> /usr/include/stdlib.h:558:14: note: previous declaration of =E2=80=98real=
+locarray=E2=80=99 was here
+>   extern void *reallocarray (void *__ptr, size_t __nmemb, size_t __size)
+>                ^~~~~~~~~~~~
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+A bit offtopic. reallocarray and related feature detection causes so
+much hassle, that I'm strongly tempted to just get rid of it in the
+entire libbpf. Or just unconditionally implement libbpf-specific
+reallocarray function. Any objections?
+
+>    CC      kernel/user-return-notifier.o
+> scripts/Makefile.userprogs:43: recipe for target 'kernel/bpf/preload/./..=
+/../../tools/lib/bpf/libbpf.o' failed
+> make[3]: *** [kernel/bpf/preload/./../../../tools/lib/bpf/libbpf.o] Error=
+ 1
+> scripts/Makefile.build:497: recipe for target 'kernel/bpf/preload' failed
+> make[2]: *** [kernel/bpf/preload] Error 2
+> scripts/Makefile.build:497: recipe for target 'kernel/bpf' failed
+> make[1]: *** [kernel/bpf] Error 2
+> make[1]: *** Waiting for unfinished jobs....
+> [...]
