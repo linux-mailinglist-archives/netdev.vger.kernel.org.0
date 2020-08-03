@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E228E239F46
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 07:47:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6021B239F3F
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 07:47:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728329AbgHCFpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 01:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36838 "EHLO
+        id S1728279AbgHCFpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 01:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728167AbgHCFpC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 01:45:02 -0400
+        with ESMTP id S1728194AbgHCFpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 01:45:03 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3662CC06179E
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637ACC0617A4
         for <netdev@vger.kernel.org>; Sun,  2 Aug 2020 22:45:02 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mgr@pengutronix.de>)
-        id 1k2THQ-0005JJ-F6; Mon, 03 Aug 2020 07:45:00 +0200
+        id 1k2THQ-0005JK-QZ; Mon, 03 Aug 2020 07:45:00 +0200
 Received: from mgr by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <mgr@pengutronix.de>)
-        id 1k2THL-0005UK-0p; Mon, 03 Aug 2020 07:44:55 +0200
+        id 1k2THL-0005UN-1I; Mon, 03 Aug 2020 07:44:55 +0200
 From:   Michael Grzeschik <m.grzeschik@pengutronix.de>
 To:     andrew@lunn.ch
 Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, davem@davemloft.net,
         kernel@pengutronix.de
-Subject: [PATCH v4 09/11] net: dsa: microchip: Add Microchip KSZ8863 SMI based driver support
-Date:   Mon,  3 Aug 2020 07:44:40 +0200
-Message-Id: <20200803054442.20089-10-m.grzeschik@pengutronix.de>
+Subject: [PATCH v4 10/11] net: dsa: microchip: Add Microchip KSZ8863 SPI based driver support
+Date:   Mon,  3 Aug 2020 07:44:41 +0200
+Message-Id: <20200803054442.20089-11-m.grzeschik@pengutronix.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200803054442.20089-1-m.grzeschik@pengutronix.de>
 References: <20200803054442.20089-1-m.grzeschik@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
 X-SA-Exim-Mail-From: mgr@pengutronix.de
@@ -45,259 +44,117 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Add KSZ88X3 driver support. We add support for the KXZ88X3 three port
-switches using the Microchip SMI Interface. They are supported using the
-MDIO-Bitbang Interface.
+switches using the SPI Interface.
 
 Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
 
 ---
-v1 -> v2:  - this code was part of previuos patch
-v2 -> v3:  - this code was part of previuos patch
-v3 -> v4:  - moved this glue code so separate patch
-           - fixed locking in regmap and mdio_read/mdio_write
+v1 -> v2: - this glue was not implemented
+v2 -> v3: - this glue was part of previous bigger patch
+v3 -> v4: - this glue was moved to this separate patch
 
- drivers/net/dsa/microchip/Kconfig       |   9 ++
- drivers/net/dsa/microchip/Makefile      |   1 +
- drivers/net/dsa/microchip/ksz8863_smi.c | 204 ++++++++++++++++++++++++
- 3 files changed, 214 insertions(+)
- create mode 100644 drivers/net/dsa/microchip/ksz8863_smi.c
+ drivers/net/dsa/microchip/ksz8795_spi.c | 62 ++++++++++++++++++-------
+ 1 file changed, 45 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/Kconfig b/drivers/net/dsa/microchip/Kconfig
-index 4ec6a47b7f7284f..c5819bd4121cc7c 100644
---- a/drivers/net/dsa/microchip/Kconfig
-+++ b/drivers/net/dsa/microchip/Kconfig
-@@ -40,3 +40,12 @@ config NET_DSA_MICROCHIP_KSZ8795_SPI
+diff --git a/drivers/net/dsa/microchip/ksz8795_spi.c b/drivers/net/dsa/microchip/ksz8795_spi.c
+index 3bab09c46f6a7bd..d13a83c27428cdc 100644
+--- a/drivers/net/dsa/microchip/ksz8795_spi.c
++++ b/drivers/net/dsa/microchip/ksz8795_spi.c
+@@ -14,34 +14,70 @@
+ #include <linux/regmap.h>
+ #include <linux/spi/spi.h>
  
- 	  It is required to use the KSZ8795 switch driver as the only access
- 	  is through SPI.
-+
-+config NET_DSA_MICROCHIP_KSZ8863_SMI
-+	tristate "KSZ series SMI connected switch driver"
-+	depends on NET_DSA_MICROCHIP_KSZ8795
-+	select MDIO_BITBANG
-+	default y
-+	help
-+	  Select to enable support for registering switches configured through
-+	  Microchip SMI. It Supports the KSZ8863 and KSZ8873 Switch.
-diff --git a/drivers/net/dsa/microchip/Makefile b/drivers/net/dsa/microchip/Makefile
-index 929caa81e782ed2..2a03b21a3386f5d 100644
---- a/drivers/net/dsa/microchip/Makefile
-+++ b/drivers/net/dsa/microchip/Makefile
-@@ -5,3 +5,4 @@ obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_I2C)	+= ksz9477_i2c.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_SPI)	+= ksz9477_spi.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8795)		+= ksz8795.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8795_SPI)	+= ksz8795_spi.o
-+obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8863_SMI)	+= ksz8863_smi.o
-diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
-new file mode 100644
-index 000000000000000..fd493441d725284
---- /dev/null
-+++ b/drivers/net/dsa/microchip/ksz8863_smi.c
-@@ -0,0 +1,204 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Microchip KSZ8863 series register access through SMI
-+ *
-+ * Copyright (C) 2019 Pengutronix, Michael Grzeschik <kernel@pengutronix.de>
-+ */
-+
 +#include "ksz8.h"
-+#include "ksz_common.h"
+ #include "ksz_common.h"
+ 
+-#define SPI_ADDR_SHIFT			12
+-#define SPI_ADDR_ALIGN			3
+-#define SPI_TURNAROUND_SHIFT		1
++#define KSZ8795_SPI_ADDR_SHIFT			12
++#define KSZ8795_SPI_ADDR_ALIGN			3
++#define KSZ8795_SPI_TURNAROUND_SHIFT		1
+ 
+-KSZ_REGMAP_TABLE(ksz8795, 16, SPI_ADDR_SHIFT,
+-		 SPI_TURNAROUND_SHIFT, SPI_ADDR_ALIGN);
++#define KSZ8863_SPI_ADDR_SHIFT			8
++#define KSZ8863_SPI_ADDR_ALIGN			8
++#define KSZ8863_SPI_TURNAROUND_SHIFT		0
 +
-+/* Serial Management Interface (SMI) uses the following frame format:
-+ *
-+ *       preamble|start|Read/Write|  PHY   |  REG  |TA|   Data bits      | Idle
-+ *               |frame| OP code  |address |address|  |                  |
-+ * read | 32x1´s | 01  |    00    | 1xRRR  | RRRRR |Z0| 00000000DDDDDDDD |  Z
-+ * write| 32x1´s | 01  |    00    | 0xRRR  | RRRRR |10| xxxxxxxxDDDDDDDD |  Z
-+ *
-+ */
++KSZ_REGMAP_TABLE(ksz8795, 16, KSZ8795_SPI_ADDR_SHIFT,
++		 KSZ8795_SPI_TURNAROUND_SHIFT, KSZ8795_SPI_ADDR_ALIGN);
 +
-+static int ksz8863_mdio_read(void *ctx, const void *reg_buf, size_t reg_len,
-+			     void *val_buf, size_t val_len)
-+{
-+	struct ksz_device *dev = (struct ksz_device *)ctx;
-+	struct ksz8 *ksz8 = dev->priv;
-+	struct mdio_device *mdev = ksz8->priv;
-+	u8 reg = *(u8 *)reg_buf;
-+	u8 *val = val_buf;
-+	int ret = 0;
-+	int i;
++KSZ_REGMAP_TABLE(ksz8863, 16, KSZ8863_SPI_ADDR_SHIFT,
++		 KSZ8863_SPI_TURNAROUND_SHIFT, KSZ8863_SPI_ADDR_ALIGN);
 +
-+	mutex_lock_nested(&mdev->bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	for (i = 0; i < val_len; i++) {
-+		int tmp = reg + i;
-+
-+		ret = __mdiobus_read(mdev->bus, ((tmp & 0xE0) >> 5) |
-+				     BIT(4), tmp);
-+		if (ret < 0)
-+			goto out;
-+
-+		val[i] = ret;
-+	}
-+	ret = 0;
-+
-+ out:
-+	mutex_unlock(&mdev->bus->mdio_lock);
-+
-+	return ret;
-+}
-+
-+static int ksz8863_mdio_write(void *ctx, const void *data, size_t count)
-+{
-+	struct ksz_device *dev = (struct ksz_device *)ctx;
-+	struct ksz8 *ksz8 = dev->priv;
-+	struct mdio_device *mdev = ksz8->priv;
-+	u8 *val = (u8 *)(data + 4);
-+	u32 reg = *(u32 *)data;
-+	int ret = 0;
-+	int i;
-+
-+	mutex_lock_nested(&mdev->bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	for (i = 0; i < (count - 4); i++) {
-+		int tmp = reg + i;
-+
-+		ret = __mdiobus_write(mdev->bus, ((tmp & 0xE0) >> 5),
-+				      tmp, val[i]);
-+		if (ret < 0)
-+			goto out;
-+	}
-+
-+ out:
-+	mutex_unlock(&mdev->bus->mdio_lock);
-+
-+	return ret;
-+}
-+
-+static const struct regmap_bus regmap_smi[] = {
-+	{
-+		.read = ksz8863_mdio_read,
-+		.write = ksz8863_mdio_write,
-+		.max_raw_read = 1,
-+		.max_raw_write = 1,
-+	},
-+	{
-+		.read = ksz8863_mdio_read,
-+		.write = ksz8863_mdio_write,
-+		.val_format_endian_default = REGMAP_ENDIAN_BIG,
-+		.max_raw_read = 2,
-+		.max_raw_write = 2,
-+	},
-+	{
-+		.read = ksz8863_mdio_read,
-+		.write = ksz8863_mdio_write,
-+		.val_format_endian_default = REGMAP_ENDIAN_BIG,
-+		.max_raw_read = 4,
-+		.max_raw_write = 4,
-+	}
++static const struct of_device_id ksz8795_dt_ids[] = {
++	{ .compatible = "microchip,ksz8765", .data = &ksz8795_regmap_config },
++	{ .compatible = "microchip,ksz8794", .data = &ksz8795_regmap_config },
++	{ .compatible = "microchip,ksz8795", .data = &ksz8795_regmap_config },
++	{ .compatible = "microchip,ksz8863", .data = &ksz8863_regmap_config },
++	{ .compatible = "microchip,ksz8873", .data = &ksz8863_regmap_config },
++	{},
 +};
-+
-+static const struct regmap_config ksz8863_regmap_config[] = {
-+	{
-+		.name = "#8",
-+		.reg_bits = 8,
-+		.pad_bits = 24,
-+		.val_bits = 8,
-+		.cache_type = REGCACHE_NONE,
-+		.use_single_read = 1,
-+		.lock = ksz_regmap_lock,
-+		.unlock = ksz_regmap_unlock,
-+	},
-+	{
-+		.name = "#16",
-+		.reg_bits = 8,
-+		.pad_bits = 24,
-+		.val_bits = 16,
-+		.cache_type = REGCACHE_NONE,
-+		.use_single_read = 1,
-+		.lock = ksz_regmap_lock,
-+		.unlock = ksz_regmap_unlock,
-+	},
-+	{
-+		.name = "#32",
-+		.reg_bits = 8,
-+		.pad_bits = 24,
-+		.val_bits = 32,
-+		.cache_type = REGCACHE_NONE,
-+		.use_single_read = 1,
-+		.lock = ksz_regmap_lock,
-+		.unlock = ksz_regmap_unlock,
-+	}
-+};
-+
-+static int ksz8863_smi_probe(struct mdio_device *mdiodev)
-+{
-+	struct regmap_config rc;
-+	struct ksz_device *dev;
++MODULE_DEVICE_TABLE(of, ksz8795_dt_ids);
+ 
+ static int ksz8795_spi_probe(struct spi_device *spi)
+ {
++	const struct regmap_config *regmap_config;
++	const struct of_device_id *match;
++	struct device *ddev = &spi->dev;
 +	struct ksz8 *ksz8;
-+	int ret;
-+	int i;
+ 	struct regmap_config rc;
+ 	struct ksz_device *dev;
+-	int i, ret;
++	int i, ret = 0;
+ 
+-	dev = ksz_switch_alloc(&spi->dev, spi);
++	ksz8 = devm_kzalloc(&spi->dev, sizeof(struct ksz8), GFP_KERNEL);
++	ksz8->priv = spi;
 +
-+	ksz8 = devm_kzalloc(&mdiodev->dev, sizeof(struct ksz8), GFP_KERNEL);
-+	ksz8->priv = mdiodev;
++	dev = ksz_switch_alloc(&spi->dev, ksz8);
+ 	if (!dev)
+ 		return -ENOMEM;
+ 
++	regmap_config = ksz8795_regmap_config;
 +
-+	dev = ksz_switch_alloc(&mdiodev->dev, ksz8);
-+	if (!dev)
-+		return -EINVAL;
++	if (ddev->of_node) {
++		match = of_match_node(ksz8795_dt_ids, ddev->of_node);
++		if (!match)
++			return -ENOTSUPP;
 +
-+	for (i = 0; i < ARRAY_SIZE(ksz8863_regmap_config); i++) {
-+		rc = ksz8863_regmap_config[i];
-+		rc.lock_arg = &dev->regmap_mutex;
-+		dev->regmap[i] = devm_regmap_init(&mdiodev->dev,
-+						  &regmap_smi[i], dev,
-+						  &rc);
-+		if (IS_ERR(dev->regmap[i])) {
-+			ret = PTR_ERR(dev->regmap[i]);
-+			dev_err(&mdiodev->dev,
-+				"Failed to initialize regmap%i: %d\n",
-+				ksz8863_regmap_config[i].val_bits, ret);
-+			return ret;
-+		}
++		if (match->data)
++			regmap_config = match->data;
 +	}
 +
-+	if (mdiodev->dev.platform_data)
-+		dev->pdata = mdiodev->dev.platform_data;
-+
-+	ret = ksz8_switch_register(dev);
-+
-+	/* Main DSA driver may not be started yet. */
-+	if (ret)
-+		return ret;
-+
-+	dev_set_drvdata(&mdiodev->dev, dev);
-+
-+	return 0;
-+}
-+
-+static void ksz8863_smi_remove(struct mdio_device *mdiodev)
-+{
-+	struct ksz_device *dev = dev_get_drvdata(&mdiodev->dev);
-+
-+	if (dev)
-+		ksz_switch_remove(dev);
-+}
-+
-+static const struct of_device_id ksz8863_dt_ids[] = {
-+	{ .compatible = "microchip,ksz8863" },
-+	{ .compatible = "microchip,ksz8873" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, ksz8863_dt_ids);
-+
-+static struct mdio_driver ksz8863_driver = {
-+	.probe	= ksz8863_smi_probe,
-+	.remove	= ksz8863_smi_remove,
-+	.mdiodrv.driver = {
-+		.name	= "ksz8863-switch",
-+		.of_match_table = ksz8863_dt_ids,
-+	},
-+};
-+
-+mdio_module_driver(ksz8863_driver);
-+
-+MODULE_AUTHOR("Michael Grzeschik <m.grzeschik@pengutronix.de>");
-+MODULE_DESCRIPTION("Microchip KSZ8863 SMI Switch driver");
-+MODULE_LICENSE("GPL v2");
+ 	for (i = 0; i < ARRAY_SIZE(ksz8795_regmap_config); i++) {
+-		rc = ksz8795_regmap_config[i];
++		rc = regmap_config[i];
+ 		rc.lock_arg = &dev->regmap_mutex;
+ 		dev->regmap[i] = devm_regmap_init_spi(spi, &rc);
+ 		if (IS_ERR(dev->regmap[i])) {
+ 			ret = PTR_ERR(dev->regmap[i]);
+ 			dev_err(&spi->dev,
+ 				"Failed to initialize regmap%i: %d\n",
+-				ksz8795_regmap_config[i].val_bits, ret);
++				regmap_config[i].val_bits, ret);
+ 			return ret;
+ 		}
+ 	}
+@@ -78,14 +114,6 @@ static void ksz8795_spi_shutdown(struct spi_device *spi)
+ 		dev->dev_ops->shutdown(dev);
+ }
+ 
+-static const struct of_device_id ksz8795_dt_ids[] = {
+-	{ .compatible = "microchip,ksz8765" },
+-	{ .compatible = "microchip,ksz8794" },
+-	{ .compatible = "microchip,ksz8795" },
+-	{},
+-};
+-MODULE_DEVICE_TABLE(of, ksz8795_dt_ids);
+-
+ static struct spi_driver ksz8795_spi_driver = {
+ 	.driver = {
+ 		.name	= "ksz8795-switch",
 -- 
 2.28.0
 
