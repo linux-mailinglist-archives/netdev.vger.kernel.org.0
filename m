@@ -2,85 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29A8123ABFA
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 19:58:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 292C423AC21
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 20:09:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728566AbgHCR6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 13:58:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54774 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726239AbgHCR6e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Aug 2020 13:58:34 -0400
-Received: from gmail.com (unknown [104.132.1.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C4EF122B45;
-        Mon,  3 Aug 2020 17:58:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596477513;
-        bh=8kJJz6W/mGZtko6NJf68mrmroXbObC8q8KfF+PQIH3I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=alKiqgzMUdWV9Mzs5zcN4fyg3p/X5TiiDveOG7C4wnqW94hnWw/lIA0n8psIu+jns
-         45wEDRMAucjA7d/YfdLyisGHnWDlS/xuO/u8HyZOK5FvNd9nD15G0EIkWEm69CMWxp
-         eoz5HgyXVG/XjiCGV7phP6pXr3DcS2mtJWMm8FwQ=
-Date:   Mon, 3 Aug 2020 10:58:32 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     syzbot <syzbot+24ebd650e20bd263ca01@syzkaller.appspotmail.com>,
-        davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: slab-out-of-bounds Read in hci_le_meta_evt
-Message-ID: <20200803175832.GB1644292@gmail.com>
-References: <000000000000a876b805abfa77e0@google.com>
- <20200803171232.GR1551@shell.armlinux.org.uk>
- <20200803172104.GA1644292@gmail.com>
- <20200803173223.GS1551@shell.armlinux.org.uk>
+        id S1727768AbgHCSIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 14:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726130AbgHCSIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 14:08:53 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1570DC06174A;
+        Mon,  3 Aug 2020 11:08:53 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id q16so18372196ybk.6;
+        Mon, 03 Aug 2020 11:08:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=43FIygflrP4nZzCzM391hzVnqu/34/YNK7sTtCa/sIU=;
+        b=Ven5Tnv//6OlbBX0ZnZOzYotpGinzcEgkUuYl49w66Wui2AUjfIOSxyLSBJSqc4K+C
+         oalAwAo7FJ8GEJKN6ju4PcWJ+/YzBv/+Xivsf4Dx56Z/g3IIcGtTVJihQxJTrT+nHpbD
+         qNM1RJPmgiQhzeruMcvKmDm29ChIXmn6BnVthd4fq9uTNKZT2TjvR/iYjXfQGLSBZkEJ
+         n5Ay5cgLrKevxMtwlLw/WWyUpjDQTm5xzWWxYU9b9I0sjKIGE4sSiwRzehl/4AzEDxTQ
+         ohDMREy6GzJkuNH9ryiLF/G1nmnieKOMQq9R8TxX7bOXi9SFl94LLL9i694z59FZffrb
+         mhfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=43FIygflrP4nZzCzM391hzVnqu/34/YNK7sTtCa/sIU=;
+        b=Xk/2tYHg/AeuzOQc8jSSo6qkN8LWVvLMyo+xbVabnzDRTylh6QFPpFzdWd0nWRwmML
+         QgToyoNGZzIcrvW0pi9TOl8jb1F3H6+8A2VrTZPg4vvTGjx8OgRayRy08Za8DX7IgHGB
+         YdfioxyoooqE6D5ca6rtcbzDl/5dwJo5cevYmT8ra7UF9GXGVdKxdcVSKdHh+GXnKBCe
+         yHTSzFI5lYJnvIrqww4XG9DAQnSrSf/RHNb90KWuBFV8NU2G985v8UySV42OjIldkgWD
+         40V4vxEk2Kr6FiozdRbiYWiVzGt3B95gpbDtYRvhOzDJLwAQIo+LL50at6WttgXZ4HGG
+         9XPw==
+X-Gm-Message-State: AOAM530PwL4AyuTCokgj+h+HQ4ZX+vQq/p1PqYUn3Imf7Y52g+cRYg6t
+        J5/X7VpwrhbhzuAVGqlSOSVywqJz4p4UVi1sUwo=
+X-Google-Smtp-Source: ABdhPJw2f5UOFtpKfBmujaqlA3CJko6XTdyPcr6ow+Gfy4eJZ4LEZsH6m92ThODYEcXr/8sCShEeycydghQq7xotsoQ=
+X-Received: by 2002:a25:d84a:: with SMTP id p71mr29271679ybg.347.1596478132146;
+ Mon, 03 Aug 2020 11:08:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200803173223.GS1551@shell.armlinux.org.uk>
+References: <20200802222950.34696-1-alexei.starovoitov@gmail.com>
+ <20200802222950.34696-4-alexei.starovoitov@gmail.com> <33d2db5b-3f81-e384-bed8-96f1d7f1d4c7@iogearbox.net>
+ <430839eb-2761-0c1a-4b99-dffb07b9f502@iogearbox.net> <736dc34e-254d-de46-ac91-512029f675e7@iogearbox.net>
+ <CAEf4BzY-RHiG+0u1Ug+k0VC01Fqp3BUQ60OenRv+na4fuYRW=Q@mail.gmail.com> <181ce3e4-c960-3470-5c08-3e56ea7f28b2@iogearbox.net>
+In-Reply-To: <181ce3e4-c960-3470-5c08-3e56ea7f28b2@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 3 Aug 2020 11:08:40 -0700
+Message-ID: <CAEf4BzZp+uc0n=A9=x3T=5ii2J5x_tu_0ZOYKoUQ-r39GJM3DQ@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 3/4] bpf: Add kernel module with user mode
+ driver that populates bpffs.
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 03, 2020 at 06:32:24PM +0100, Russell King - ARM Linux admin wrote:
-> On Mon, Aug 03, 2020 at 10:21:04AM -0700, Eric Biggers wrote:
-> > On Mon, Aug 03, 2020 at 06:12:33PM +0100, Russell King - ARM Linux admin wrote:
-> > > Dear syzbot,
-> > > 
-> > > Please explain why you are spamming me with all these reports - four so
-> > > far.  I don't understand why you think I should be doing anything with
-> > > these.
-> > > 
-> > > Thanks.
-> > 
-> > syzbot just uses get_maintainer.pl.
-> > 
-> > $ ./scripts/get_maintainer.pl net/bluetooth/hci_event.c
-> > Marcel Holtmann <marcel@holtmann.org> (maintainer:BLUETOOTH SUBSYSTEM)
-> > Johan Hedberg <johan.hedberg@gmail.com> (maintainer:BLUETOOTH SUBSYSTEM)
-> > "David S. Miller" <davem@davemloft.net> (maintainer:NETWORKING [GENERAL])
-> > Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING [GENERAL])
-> > Russell King <linux@armlinux.org.uk> (maintainer:SFF/SFP/SFP+ MODULE SUPPORT)
-> > linux-bluetooth@vger.kernel.org (open list:BLUETOOTH SUBSYSTEM)
-> > netdev@vger.kernel.org (open list:NETWORKING [GENERAL])
-> > linux-kernel@vger.kernel.org (open list)
-> 
-> Ah, and, because the file mentions "phylink" (although it makes no use
-> of the phylink code), get_maintainer spits out my address. Great.
-> 
-> So how do I get get_maintainer to identify patches that are making use
-> of phylink, but avoid this bluetooth code... (that's not a question.)
-> 
+On Mon, Aug 3, 2020 at 10:56 AM Daniel Borkmann <daniel@iogearbox.net> wrot=
+e:
+>
+> On 8/3/20 7:51 PM, Andrii Nakryiko wrote:
+> > On Mon, Aug 3, 2020 at 10:41 AM Daniel Borkmann <daniel@iogearbox.net> =
+wrote:
+> >> On 8/3/20 7:34 PM, Daniel Borkmann wrote:
+> >>> On 8/3/20 7:15 PM, Daniel Borkmann wrote:
+> >>>> On 8/3/20 12:29 AM, Alexei Starovoitov wrote:
+> >>>>> From: Alexei Starovoitov <ast@kernel.org>
+> >>>>>
+> >>>>> Add kernel module with user mode driver that populates bpffs with
+> >>>>> BPF iterators.
+> >>>>>
+> >
+> > [...]
+> >
+> >>     CC      kernel/events/ring_buffer.o
+> >>     CC [U]  kernel/bpf/preload/./../../../tools/lib/bpf/bpf.o
+> >>     CC [U]  kernel/bpf/preload/./../../../tools/lib/bpf/libbpf.o
+> >> In file included from kernel/bpf/preload/./../../../tools/lib/bpf/libb=
+pf.c:47:0:
+> >> ./tools/include/tools/libc_compat.h:11:21: error: static declaration o=
+f =E2=80=98reallocarray=E2=80=99 follows non-static declaration
+> >>    static inline void *reallocarray(void *ptr, size_t nmemb, size_t si=
+ze)
+> >>                        ^~~~~~~~~~~~
+> >> In file included from kernel/bpf/preload/./../../../tools/lib/bpf/libb=
+pf.c:16:0:
+> >> /usr/include/stdlib.h:558:14: note: previous declaration of =E2=80=98r=
+eallocarray=E2=80=99 was here
+> >>    extern void *reallocarray (void *__ptr, size_t __nmemb, size_t __si=
+ze)
+> >>                 ^~~~~~~~~~~~
+> >
+> > A bit offtopic. reallocarray and related feature detection causes so
+> > much hassle, that I'm strongly tempted to just get rid of it in the
+> > entire libbpf. Or just unconditionally implement libbpf-specific
+> > reallocarray function. Any objections?
+>
+> Agree that it's continuously causing pain; no objection from my side to h=
+ave
+> something libbpf-specifc for example (along with a comment on /why/ we're=
+ not
+> reusing it anymore).
 
-I think "K: " (content regex) in MAINTAINERS is best avoided.  This isn't the
-first time that someone has volunteered to maintain all files containing $foo,
-then complained when they receive emails for those files as they requested...
+Sounds good!
 
-If you do really want to use it, can you use a more specific regex?  E.g. a
-regex that matches "#include <linux/phylink.h>" or some specific function(s)?
-
-- Eric
+>
+> >>     CC      kernel/user-return-notifier.o
+> >> scripts/Makefile.userprogs:43: recipe for target 'kernel/bpf/preload/.=
+/../../../tools/lib/bpf/libbpf.o' failed
+> >> make[3]: *** [kernel/bpf/preload/./../../../tools/lib/bpf/libbpf.o] Er=
+ror 1
+> >> scripts/Makefile.build:497: recipe for target 'kernel/bpf/preload' fai=
+led
+> >> make[2]: *** [kernel/bpf/preload] Error 2
+> >> scripts/Makefile.build:497: recipe for target 'kernel/bpf' failed
+> >> make[1]: *** [kernel/bpf] Error 2
+> >> make[1]: *** Waiting for unfinished jobs....
+> >> [...]
