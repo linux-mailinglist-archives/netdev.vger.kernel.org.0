@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B454E23B077
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 00:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32B4A23B080
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 00:51:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728850AbgHCWuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 18:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
+        id S1728971AbgHCWvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 18:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726770AbgHCWuH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 18:50:07 -0400
+        with ESMTP id S1728213AbgHCWvj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 18:51:39 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9474C06174A;
-        Mon,  3 Aug 2020 15:50:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1BB0C06174A;
+        Mon,  3 Aug 2020 15:51:39 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B03F712777A3E;
-        Mon,  3 Aug 2020 15:33:21 -0700 (PDT)
-Date:   Mon, 03 Aug 2020 15:50:06 -0700 (PDT)
-Message-Id: <20200803.155006.503638620106659262.davem@davemloft.net>
-To:     brgl@bgdev.pl
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bgolaszewski@baylibre.com,
-        lkp@intel.com
-Subject: Re: [net-next PATCH] net: phy: mdio-mvusb: select MDIO_DEVRES in
- Kconfig
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1A3F312777F36;
+        Mon,  3 Aug 2020 15:34:54 -0700 (PDT)
+Date:   Mon, 03 Aug 2020 15:51:38 -0700 (PDT)
+Message-Id: <20200803.155138.467790375085778952.davem@davemloft.net>
+To:     baijiaju@tsinghua.edu.cn
+Cc:     3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] atm: eni: avoid accessing the data mapped to streaming
+ DMA
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200802074953.1529-1-brgl@bgdev.pl>
-References: <20200802074953.1529-1-brgl@bgdev.pl>
+In-Reply-To: <20200802091611.24331-1-baijiaju@tsinghua.edu.cn>
+References: <20200802091611.24331-1-baijiaju@tsinghua.edu.cn>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 03 Aug 2020 15:33:22 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 03 Aug 2020 15:34:54 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-Date: Sun,  2 Aug 2020 09:49:53 +0200
+From: Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
+Date: Sun,  2 Aug 2020 17:16:11 +0800
 
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> In do_tx(), skb->data is mapped to streaming DMA on line 1111:
+>   paddr = dma_map_single(...,skb->data,DMA_TO_DEVICE);
 > 
-> PHYLIB is not selected by the mvusb driver but it uses mdio devres
-> helpers. Explicitly select MDIO_DEVRES in this driver's Kconfig entry.
+> Then skb->data is accessed on line 1153:
+>   (skb->data[3] & 0xf)
 > 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: 1814cff26739 ("net: phy: add a Kconfig option for mdio_devres")
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> This access may cause data inconsistency between CPU cache and hardware.
+> 
+> To fix this problem, skb->data[3] is assigned to a local variable before
+> DMA mapping, and then the driver accesses this local variable instead of
+> skb->data[3].
+> 
+> Signed-off-by: Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
 
 Applied.
