@@ -2,122 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F053D23AEBF
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 23:01:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6032D23AF79
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 23:10:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729211AbgHCVAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 17:00:21 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:44912 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729184AbgHCVAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 17:00:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596488419;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=f1A99Kan+ToYvUmOMuODkd0BFkRSjBNq3WkT2nA5570=;
-        b=gHZeL5Hd2nw63XyNbqVuj3wvp94DTv0yXfraT1V05dja0i9ySzXBcRlCAJz3KABgH9iX5U
-        WA/HB/kfRMRPKcsGRC4XmhChd+/axvMcCrSoIWccsfXhO7g5kdWV2F2zrcyNjz9G0edTLG
-        IS49eP4HodBQ48CKtI0vc3/S76tkUY4=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-105-eschLyXoNRe91Mn_i66ARw-1; Mon, 03 Aug 2020 17:00:16 -0400
-X-MC-Unique: eschLyXoNRe91Mn_i66ARw-1
-Received: by mail-qv1-f69.google.com with SMTP id d9so17703778qvl.10
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 14:00:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=f1A99Kan+ToYvUmOMuODkd0BFkRSjBNq3WkT2nA5570=;
-        b=a9aTjOBSNl+NZ7xmknNJj2ehWZN81ekqoNMoANywOhZbtiU9TMg515acB822+bOBly
-         fWhylUpWWn7oB81CMJSY0Tk4rGEArQ9rkLsf3PMqGpRvIuBhYnmF0SRx/E/GSbDa/l0a
-         assFwRffWHSHmbiRIh2Zu3XplpLVxrn0jOGVcXG9/rBfVQP4M/2kwEFn11UYsHRH/FxT
-         HTUfrBf9mA9SIktPsUodo50FbzzMWWLv6RqbcwOFDDwQIE7GHcbnMqoOLLGOAfGTfepH
-         4QaHYsU5dSfq2iWi7sFOfkNTHaM+eiA45/NgrhZ9LCOqxWHJdzQpqjn9q0Z1snvDkpfI
-         1pbQ==
-X-Gm-Message-State: AOAM530aPWSjBK5GtcC++POuP7m5ARGcFKxY3rBeOD/RqzdAyf2r8GlG
-        ygywzisMIOcgHiEx0hPcjSRYkUidqfFjoxIOhTO1+JlPNA5XcQA7psA7Qk1k1hZ2707tRRWHcIj
-        r6vbrcyw44u4+7ljI
-X-Received: by 2002:ae9:f409:: with SMTP id y9mr17081843qkl.383.1596488415783;
-        Mon, 03 Aug 2020 14:00:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyOLsF2kRKHhVMrVuK1ExTkYEV3u00bvHZC77i72ooYLjKbjM4TmW/w7ndizuS2cvXbLFA8ag==
-X-Received: by 2002:ae9:f409:: with SMTP id y9mr17081819qkl.383.1596488415580;
-        Mon, 03 Aug 2020 14:00:15 -0700 (PDT)
-Received: from redhat.com (bzq-79-177-102-128.red.bezeqint.net. [79.177.102.128])
-        by smtp.gmail.com with ESMTPSA id x137sm20654324qkb.47.2020.08.03.14.00.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 14:00:15 -0700 (PDT)
-Date:   Mon, 3 Aug 2020 17:00:11 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v2 20/24] vhost/vdpa: switch to new helpers
-Message-ID: <20200803205814.540410-21-mst@redhat.com>
-References: <20200803205814.540410-1-mst@redhat.com>
+        id S1729041AbgHCVKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 17:10:15 -0400
+Received: from sonic314-20.consmr.mail.ir2.yahoo.com ([77.238.177.146]:33997
+        "EHLO sonic314-20.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728400AbgHCVKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 17:10:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aol.com; s=a2048; t=1596489013; bh=4GgFxXkhC86dj48BmrELV5zlxicqlhhIXyZgiwEolDI=; h=Date:From:Reply-To:Subject:References:From:Subject; b=hGjgq1AMnFKUNJmvA+Amkr//cQqzWElA++Np18Kdail0Z6OOrdpL4XPNC3qlouCpWcMo3NGZHISaGnrkwO1D3Z6rQY8NioGPnKUYlaUoG/AI6bjqBjwjiNesfNp7ry0OacnP4XL+kO91GxuPK5gATwVqtAWVb4iqm0xiGva+z2Z5THyYtz0KvhcIRYbCse2HCgpACrmhtWHTohO8LvA7HXK3YCB8noT4nBTkuA0yW04Wt6xkam7opDR51YQQkuUqANeTtpsMrsyh3WOtmAUivQeeuzZThN2SfO0k46HiAOePIE/B9PdSkQ8yy+At0paxyLEaO/43A54SA7dFpmvdpg==
+X-YMail-OSG: ZjXOTFUVM1lYDrMD70zhLoSGHcZauZ_QRpaS4OxR3Iy8sl0E8Iec.ApiFrm7Di6
+ _YB6l1NjYVyPVwZ78wyrG2zXiFSfg0e4zhZp4mHpLl977HCNEUR8k5Egf360oNQvsVI12GmSEOyu
+ YZJK4tcAeebUwjF8lZl19nhxqsWOJommZKLsVLwq3n5jCnPruwtKaSoLQrYSfVNZd0xZEmAvlgjb
+ lgTOYoM6i2VohEQEv_xQDEzRAb7bNGVJx5pi6BR9U4sD_q7SvXEzYclztCmGbJ5lzn5bQ7A7bMoH
+ VQbYm4xUYSimuIwe1cJ2CEVz_TQPi6oGX70Lo4IE6dcb6fGEBHXHn2Y1P1st_5kPgDIoB04tFmFx
+ xCJATvOpfcoAve9vyovgC7JKJftQvPEUajNneyEFoA9.hf3SpgxaUtC72agYBgMfREpcerRl6SV3
+ MqhbljfxAf1.MiOAVxQiiALh9hSNrXw8s.d69TG9nhnFIa9iHJvy3dNakspBsQEjwqx7R6ZTHUm4
+ I0BHLStthn.MsKSvcG_ZLNRA_RHDENGOSZocWKWf2AUbbOQx8pAjSggmsDUw9QYx7pugZqG8RUXn
+ 01rXQSqf5GNp4FNm0DbrXU4TMA7mpLeN8n73NKU0EMxJVCPr78cFXDDWMDbOP9ljp7Ysa141T4N_
+ SLQuylEiYMwqvYK_IcWVbRrny9PUJeWpeDnzwlK9HDyZorbnpxiFiGmYMYG6OeMoG79ReoJIkO_H
+ oL8yxC837BdztvgkOZW3wiCbNtJF2YQTPmhRRrDE0nATvVkaFk__c.yQcyJYz_OI9M0BbtqQQDRi
+ mfqnwyj98ME2YETAQ8eTMwhLr4OijtNn98I0YfbZH4trt_u.PGOY8_3PQ6SK_wwz7G9A3vB5m7hb
+ UXmxd2rk_eWm861XH2IskHKOr942NZqkYuxV3RoSStCUGrLBBKisbXlqc41ceypT.ymeOvtsW4__
+ GB0OA8PDX0lBMKZgzSxnTExpYHn6Og7wQn8wYCcUw4Ux3xRIIP1uZfOKPizKmPi5oDrOJoY5OKAK
+ dcA5vB6Rx54dU9hvc9PDpMkquITKdiQHb6uqyni5Oc1Gsepez.UEPNkDtEPlSv7GiuXEhWcTtYoT
+ cjOgerl98O5vyz70Brs5vf26MtUqcKPzCd64PRiU.RdA23bSQXTuV0HE_0d8mN6PuSU_P_cTP9bD
+ Z8aTf.nG.ouLwiHa.J6Xqiogt8cku5NcBjWEukeunLAA8V2mgykn2SD47HHdrcN.QWJ7szwqzGaH
+ tfW0ISmMKrmNPLG2vq5Yaxa8O
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic314.consmr.mail.ir2.yahoo.com with HTTP; Mon, 3 Aug 2020 21:10:13 +0000
+Date:   Mon, 3 Aug 2020 21:10:10 +0000 (UTC)
+From:   Zeena Hamad <zeena.hamad121@aol.com>
+Reply-To: zeenahamad@aol.com
+Message-ID: <713931143.16757734.1596489010375@mail.yahoo.com>
+Subject: Hello Dear.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200803205814.540410-1-mst@redhat.com>
-X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
-X-Mutt-Fcc: =sent
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <713931143.16757734.1596489010375.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16271 YMailNodin Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For new helpers handling legacy features to be effective,
-vhost needs to invoke them. Tie them in.
+Hello Dear,
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/vhost/vdpa.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+How are you today, I hope you are doing great. It is my great pleasure
+to contact you and i hope you don't mind, I was just surfing through
+the Internet search when I found your email address, I want to make a
+new and special friend, I hope you don't mind.
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 18869a35d408..3674404688f5 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -118,9 +118,8 @@ static irqreturn_t vhost_vdpa_config_cb(void *private)
- static void vhost_vdpa_reset(struct vhost_vdpa *v)
- {
- 	struct vdpa_device *vdpa = v->vdpa;
--	const struct vdpa_config_ops *ops = vdpa->config;
- 
--	ops->set_status(vdpa, 0);
-+	vdpa_reset(vdpa);
- }
- 
- static long vhost_vdpa_get_device_id(struct vhost_vdpa *v, u8 __user *argp)
-@@ -196,7 +195,6 @@ static long vhost_vdpa_get_config(struct vhost_vdpa *v,
- 				  struct vhost_vdpa_config __user *c)
- {
- 	struct vdpa_device *vdpa = v->vdpa;
--	const struct vdpa_config_ops *ops = vdpa->config;
- 	struct vhost_vdpa_config config;
- 	unsigned long size = offsetof(struct vhost_vdpa_config, buf);
- 	u8 *buf;
-@@ -209,7 +207,7 @@ static long vhost_vdpa_get_config(struct vhost_vdpa *v,
- 	if (!buf)
- 		return -ENOMEM;
- 
--	ops->get_config(vdpa, config.off, buf, config.len);
-+	vdpa_get_config(vdpa, config.off, buf, config.len);
- 
- 	if (copy_to_user(c->buf, buf, config.len)) {
- 		kvfree(buf);
-@@ -282,7 +280,7 @@ static long vhost_vdpa_set_features(struct vhost_vdpa *v, u64 __user *featurep)
- 	if (features & ~vhost_vdpa_features[v->virtio_id])
- 		return -EINVAL;
- 
--	if (ops->set_features(vdpa, features))
-+	if (vdpa_set_features(vdpa, features))
- 		return -EINVAL;
- 
- 	return 0;
--- 
-MST
+My name is Zeena Hamad, I am from the South Sudan but presently
+I live in a mission house in Burkina Faso and I will give you pictures
+and details of me as soon as I hear from you.
 
+Bye
+
+Zeena Hamad
