@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A84023AE7B
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:54:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 081D123AE7C
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:54:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728899AbgHCUyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 16:54:01 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:48680 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728511AbgHCUyA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 16:54:00 -0400
+        id S1727003AbgHCUyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 16:54:04 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:26318 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728631AbgHCUyC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 16:54:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596488037;
+        s=mimecast20190719; t=1596488040;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7wpKeI8k2H3XhbiJ+/fAfR0127d/PWMW1YQ4oCG8/Kk=;
-        b=TX/NZMi0C7jV78i/cAH6+afBBtpG838XBSkyhdJclImu65Y13GcnnPDcE35/e+pDfPBdpD
-        xR47eZY8AM8/1dU67pELTyxKp16wgHNRYjuYAvA5mADYtyipPz7NUftlMgXLspY/E+cVhs
-        DVsFd4cHVBevgHcaZQ0KhpvMtaL/rrk=
+        bh=0/65yfsdqrRVSb63lzQEu+Q3qfUkAneeMSmAc67RlYI=;
+        b=hRmcBltMMTatnBLkGm6DIKxu93SEvCB8+XcueJKjq9M8KbmXQDdU8cy9iJiipJxgC/Z/MN
+        J5/lvWZQUuAhN5dDnlbOuC7m4GouijkhhPN3oBU6Zcv/3lFU0zTswQXMH5+IiyxyhMumGU
+        QCdfbo39jySvUkMAbUYxt1g+SG0nfVY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-51-oanju_KMNtiF91o0z08THA-1; Mon, 03 Aug 2020 16:53:53 -0400
-X-MC-Unique: oanju_KMNtiF91o0z08THA-1
+ us-mta-422-XEruAru-NlafYjqoITqDpg-1; Mon, 03 Aug 2020 16:53:57 -0400
+X-MC-Unique: XEruAru-NlafYjqoITqDpg-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 48E5D59;
-        Mon,  3 Aug 2020 20:53:52 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 842BD1005504;
+        Mon,  3 Aug 2020 20:53:55 +0000 (UTC)
 Received: from epycfail.redhat.com (unknown [10.36.110.53])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CCE1B10013C1;
-        Mon,  3 Aug 2020 20:53:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A5DF710013C1;
+        Mon,  3 Aug 2020 20:53:52 +0000 (UTC)
 From:   Stefano Brivio <sbrivio@redhat.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Florian Westphal <fw@strlen.de>, David Ahern <dsahern@gmail.com>,
@@ -43,9 +43,9 @@ Cc:     Florian Westphal <fw@strlen.de>, David Ahern <dsahern@gmail.com>,
         Roopa Prabhu <roopa@cumulusnetworks.com>,
         Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
         Lourdes Pedrajas <lu@pplo.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 2/6] tunnels: PMTU discovery support for directly bridged IP packets
-Date:   Mon,  3 Aug 2020 22:52:10 +0200
-Message-Id: <c7b3e4800ea02d964bab7dd9f349e0a0720bff2d.1596487323.git.sbrivio@redhat.com>
+Subject: [PATCH net-next 3/6] vxlan: Support for PMTU discovery on directly bridged links
+Date:   Mon,  3 Aug 2020 22:52:11 +0200
+Message-Id: <9c5e81621d9fc94cc1d1f77e177986434ca9564f.1596487323.git.sbrivio@redhat.com>
 In-Reply-To: <cover.1596487323.git.sbrivio@redhat.com>
 References: <cover.1596487323.git.sbrivio@redhat.com>
 MIME-Version: 1.0
@@ -56,418 +56,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's currently possible to bridge Ethernet tunnels carrying IP
-packets directly to external interfaces without assigning them
-addresses and routes on the bridged network itself: this is the case
-for UDP tunnels bridged with a standard bridge or by Open vSwitch.
+If the interface is a bridge or Open vSwitch port, and we can't
+forward a packet because it exceeds the local PMTU estimate,
+trigger an ICMP or ICMPv6 reply to the sender, using the same
+interface to forward it back.
 
-PMTU discovery is currently broken with those configurations, because
-the encapsulation effectively decreases the MTU of the link, and
-while we are able to account for this using PMTU discovery on the
-lower layer, we don't have a way to relay ICMP or ICMPv6 messages
-needed by the sender, because we don't have valid routes to it.
-
-On the other hand, as a tunnel endpoint, we can't fragment packets
-as a general approach: this is for instance clearly forbidden for
-VXLAN by RFC 7348, section 4.3:
-
-   VTEPs MUST NOT fragment VXLAN packets.  Intermediate routers may
-   fragment encapsulated VXLAN packets due to the larger frame size.
-   The destination VTEP MAY silently discard such VXLAN fragments.
-
-The same paragraph recommends that the MTU over the physical network
-accomodates for encapsulations, but this isn't a practical option for
-complex topologies, especially for typical Open vSwitch use cases.
-
-Further, it states that:
-
-   Other techniques like Path MTU discovery (see [RFC1191] and
-   [RFC1981]) MAY be used to address this requirement as well.
-
-Now, PMTU discovery already works for routed interfaces, we get
-route exceptions created by the encapsulation device as they receive
-ICMP Fragmentation Needed and ICMPv6 Packet Too Big messages, and
-we already rebuild those messages with the appropriate MTU and route
-them back to the sender.
-
-Add the missing bits for bridged cases:
-
-- checks in skb_tunnel_check_pmtu() to understand if it's appropriate
-  to trigger a reply according to RFC 1122 section 3.2.2 for ICMP and
-  RFC 4443 section 2.4 for ICMPv6. This function is already called by
-  UDP tunnels
-
-- a new function generating those ICMP or ICMPv6 replies. We can't
-  reuse icmp_send() and icmp6_send() as we don't see the sender as a
-  valid destination. This doesn't need to be generic, as we don't
-  cover any other type of ICMP errors given that we only provide an
-  encapsulation function to the sender
-
-While at it, make the MTU check in skb_tunnel_check_pmtu() accurate:
-we might receive GSO buffers here, and the passed headroom already
-includes the inner MAC length, so we don't have to account for it
-a second time (that would imply three MAC headers on the wire, but
-there are just two).
-
-This issue became visible while bridging IPv6 packets with 4500 bytes
-of payload over GENEVE using IPv4 with a PMTU of 4000. Given the 50
-bytes of encapsulation headroom, we would advertise MTU as 3950, and
-we would reject fragmented IPv6 datagrams of 3958 bytes size on the
-wire. We're exclusively dealing with network MTU here, though, so we
-could get Ethernet frames up to 3964 octets in that case.
-
-Based on earlier patch from Florian Westphal.
+If metadata collection is enabled, reverse destination and source
+addresses, so that Open vSwitch is able to match this packet against
+the existing, reverse flow.
 
 Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
 ---
- drivers/net/bareudp.c     |   5 +-
- drivers/net/geneve.c      |   5 +-
- drivers/net/vxlan.c       |   4 +-
- include/net/dst.h         |  10 ----
- include/net/ip_tunnels.h  |  88 +++++++++++++++++++++++++++
- net/ipv4/ip_tunnel_core.c | 122 ++++++++++++++++++++++++++++++++++++++
- 6 files changed, 218 insertions(+), 16 deletions(-)
+ drivers/net/vxlan.c | 49 +++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 43 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index 44eb2b1d0416..d2560591c4d6 100644
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -308,7 +308,7 @@ static int bareudp_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 		return PTR_ERR(rt);
- 
- 	skb_tunnel_check_pmtu(skb, &rt->dst,
--			      BAREUDP_IPV4_HLEN + info->options_len);
-+			      BAREUDP_IPV4_HLEN + info->options_len, false);
- 
- 	sport = udp_flow_src_port(bareudp->net, skb,
- 				  bareudp->sport_min, USHRT_MAX,
-@@ -369,7 +369,8 @@ static int bareudp6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 	if (IS_ERR(dst))
- 		return PTR_ERR(dst);
- 
--	skb_tunnel_check_pmtu(skb, dst, BAREUDP_IPV6_HLEN + info->options_len);
-+	skb_tunnel_check_pmtu(skb, dst, BAREUDP_IPV6_HLEN + info->options_len,
-+			      false);
- 
- 	sport = udp_flow_src_port(bareudp->net, skb,
- 				  bareudp->sport_min, USHRT_MAX,
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index 017c13acc911..de86b6d82132 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -894,7 +894,7 @@ static int geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 		return PTR_ERR(rt);
- 
- 	skb_tunnel_check_pmtu(skb, &rt->dst,
--			      GENEVE_IPV4_HLEN + info->options_len);
-+			      GENEVE_IPV4_HLEN + info->options_len, false);
- 
- 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
- 	if (geneve->cfg.collect_md) {
-@@ -955,7 +955,8 @@ static int geneve6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 	if (IS_ERR(dst))
- 		return PTR_ERR(dst);
- 
--	skb_tunnel_check_pmtu(skb, dst, GENEVE_IPV6_HLEN + info->options_len);
-+	skb_tunnel_check_pmtu(skb, dst, GENEVE_IPV6_HLEN + info->options_len,
-+			      false);
- 
- 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
- 	if (geneve->cfg.collect_md) {
 diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index a43c97b13924..21ea79f65410 100644
+index 21ea79f65410..88941f26f851 100644
 --- a/drivers/net/vxlan.c
 +++ b/drivers/net/vxlan.c
-@@ -2714,7 +2714,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+@@ -2494,7 +2494,8 @@ static struct dst_entry *vxlan6_get_route(struct vxlan_dev *vxlan,
+ 
+ /* Bypass encapsulation if the destination is local */
+ static void vxlan_encap_bypass(struct sk_buff *skb, struct vxlan_dev *src_vxlan,
+-			       struct vxlan_dev *dst_vxlan, __be32 vni)
++			       struct vxlan_dev *dst_vxlan, __be32 vni,
++			       bool snoop)
+ {
+ 	struct pcpu_sw_netstats *tx_stats, *rx_stats;
+ 	union vxlan_addr loopback;
+@@ -2526,7 +2527,7 @@ static void vxlan_encap_bypass(struct sk_buff *skb, struct vxlan_dev *src_vxlan,
+ 		goto drop;
+ 	}
+ 
+-	if (dst_vxlan->cfg.flags & VXLAN_F_LEARN)
++	if ((dst_vxlan->cfg.flags & VXLAN_F_LEARN) && snoop)
+ 		vxlan_snoop(dev, &loopback, eth_hdr(skb)->h_source, 0, vni);
+ 
+ 	u64_stats_update_begin(&tx_stats->syncp);
+@@ -2575,7 +2576,7 @@ static int encap_bypass_if_local(struct sk_buff *skb, struct net_device *dev,
+ 
+ 			return -ENOENT;
+ 		}
+-		vxlan_encap_bypass(skb, vxlan, dst_vxlan, vni);
++		vxlan_encap_bypass(skb, vxlan, dst_vxlan, vni, true);
+ 		return 1;
+ 	}
+ 
+@@ -2611,7 +2612,8 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 		if (vxlan_addr_any(dst)) {
+ 			if (did_rsc) {
+ 				/* short-circuited back to local bridge */
+-				vxlan_encap_bypass(skb, vxlan, vxlan, default_vni);
++				vxlan_encap_bypass(skb, vxlan, vxlan,
++						   default_vni, true);
+ 				return;
+ 			}
+ 			goto drop;
+@@ -2714,7 +2716,24 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
  		}
  
  		ndst = &rt->dst;
--		skb_tunnel_check_pmtu(skb, ndst, VXLAN_HEADROOM);
-+		skb_tunnel_check_pmtu(skb, ndst, VXLAN_HEADROOM, false);
+-		skb_tunnel_check_pmtu(skb, ndst, VXLAN_HEADROOM, false);
++		err = skb_tunnel_check_pmtu(skb, ndst, VXLAN_HEADROOM,
++					    netif_is_bridge_port(dev) ||
++					    netif_is_ovs_port(dev));
++		if (err < 0) {
++			goto tx_error;
++		} else if (err) {
++			if (info) {
++				struct in_addr src, dst;
++
++				src = remote_ip.sin.sin_addr;
++				dst = local_ip.sin.sin_addr;
++				info->key.u.ipv4.src = src.s_addr;
++				info->key.u.ipv4.dst = dst.s_addr;
++			}
++			vxlan_encap_bypass(skb, vxlan, vxlan, vni, false);
++			dst_release(ndst);
++			goto out_unlock;
++		}
  
  		tos = ip_tunnel_ecn_encap(RT_TOS(tos), old_iph, skb);
  		ttl = ttl ? : ip4_dst_hoplimit(&rt->dst);
-@@ -2754,7 +2754,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+@@ -2754,7 +2773,25 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
  				goto out_unlock;
  		}
  
--		skb_tunnel_check_pmtu(skb, ndst, VXLAN6_HEADROOM);
-+		skb_tunnel_check_pmtu(skb, ndst, VXLAN6_HEADROOM, false);
+-		skb_tunnel_check_pmtu(skb, ndst, VXLAN6_HEADROOM, false);
++		err = skb_tunnel_check_pmtu(skb, ndst, VXLAN6_HEADROOM,
++					    netif_is_bridge_port(dev) ||
++					    netif_is_ovs_port(dev));
++		if (err < 0) {
++			goto tx_error;
++		} else if (err) {
++			if (info) {
++				struct in6_addr src, dst;
++
++				src = remote_ip.sin6.sin6_addr;
++				dst = local_ip.sin6.sin6_addr;
++				info->key.u.ipv6.src = src;
++				info->key.u.ipv6.dst = dst;
++			}
++
++			vxlan_encap_bypass(skb, vxlan, vxlan, vni, false);
++			dst_release(ndst);
++			goto out_unlock;
++		}
  
  		tos = ip_tunnel_ecn_encap(RT_TOS(tos), old_iph, skb);
  		ttl = ttl ? : ip6_dst_hoplimit(ndst);
-diff --git a/include/net/dst.h b/include/net/dst.h
-index 852d8fb36ab7..6ae2e625050d 100644
---- a/include/net/dst.h
-+++ b/include/net/dst.h
-@@ -535,14 +535,4 @@ static inline void skb_dst_update_pmtu_no_confirm(struct sk_buff *skb, u32 mtu)
- 		dst->ops->update_pmtu(dst, NULL, skb, mtu, false);
- }
- 
--static inline void skb_tunnel_check_pmtu(struct sk_buff *skb,
--					 struct dst_entry *encap_dst,
--					 int headroom)
--{
--	u32 encap_mtu = dst_mtu(encap_dst);
--
--	if (skb->len > encap_mtu - headroom)
--		skb_dst_update_pmtu_no_confirm(skb, encap_mtu - headroom);
--}
--
- #endif /* _NET_DST_H */
-diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-index 36025dea7612..b6f1f161a90f 100644
---- a/include/net/ip_tunnels.h
-+++ b/include/net/ip_tunnels.h
-@@ -9,6 +9,7 @@
- #include <linux/types.h>
- #include <linux/u64_stats_sync.h>
- #include <linux/bitops.h>
-+#include <linux/icmp.h>
- 
- #include <net/dsfield.h>
- #include <net/gro_cells.h>
-@@ -17,6 +18,7 @@
- #include <net/rtnetlink.h>
- #include <net/lwtunnel.h>
- #include <net/dst_cache.h>
-+#include <net/ip.h>
- 
- #if IS_ENABLED(CONFIG_IPV6)
- #include <net/ipv6.h>
-@@ -420,6 +422,7 @@ void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
- 		   u8 tos, u8 ttl, __be16 df, bool xnet);
- struct metadata_dst *iptunnel_metadata_reply(struct metadata_dst *md,
- 					     gfp_t flags);
-+int iptunnel_pmtud_build_icmp(struct sk_buff *skb, int mtu);
- 
- int iptunnel_handle_offloads(struct sk_buff *skb, int gso_type_mask);
- 
-@@ -461,6 +464,91 @@ static inline void iptunnel_xmit_stats(struct net_device *dev, int pkt_len)
- 	}
- }
- 
-+/**
-+ * skb_tunnel_check_pmtu() - Check, update PMTU and trigger ICMP reply as needed
-+ * @skb:	Buffer being sent by encapsulation, L2 headers expected
-+ * @encap_dst:	Destination for tunnel encapsulation (outer IP)
-+ * @headroom:	Encapsulation header size, bytes
-+ * @reply:	Build matching ICMP or ICMPv6 message as a result
-+ *
-+ * L2 tunnel implementations that can carry IP and can be directly bridged
-+ * (currently UDP tunnels) can't always rely on IP forwarding paths to handle
-+ * PMTU discovery. In the bridged case, ICMP or ICMPv6 messages need to be built
-+ * based on payload and sent back by the encapsulation itself.
-+ *
-+ * For routable interfaces, we just need to update the PMTU for the destination.
-+ *
-+ * Return: 0 if ICMP error not needed, length if built, negative value on error
-+ */
-+static inline int skb_tunnel_check_pmtu(struct sk_buff *skb,
-+					struct dst_entry *encap_dst,
-+					int headroom, bool reply)
-+{
-+	u32 mtu = dst_mtu(encap_dst) - headroom;
-+
-+	if ((skb_is_gso(skb) && skb_gso_validate_network_len(skb, mtu)) ||
-+	    (!skb_is_gso(skb) && (skb->len - skb_mac_header_len(skb)) <= mtu))
-+		return 0;
-+
-+	skb_dst_update_pmtu_no_confirm(skb, mtu);
-+
-+	if (!reply || skb->pkt_type == PACKET_HOST)
-+		return 0;
-+
-+	if (skb->protocol == htons(ETH_P_IP) && mtu > 576) {
-+		const struct icmphdr *icmph = icmp_hdr(skb);
-+		const struct iphdr *iph = ip_hdr(skb);
-+
-+		if (iph->frag_off != htons(IP_DF) ||
-+		    ipv4_is_lbcast(iph->daddr) ||
-+		    ipv4_is_multicast(iph->daddr) ||
-+		    ipv4_is_zeronet(iph->saddr) ||
-+		    ipv4_is_loopback(iph->saddr) ||
-+		    ipv4_is_lbcast(iph->saddr) ||
-+		    ipv4_is_multicast(iph->saddr) ||
-+		    (iph->protocol == IPPROTO_ICMP && icmp_is_err(icmph->type)))
-+			return 0;
-+
-+		return iptunnel_pmtud_build_icmp(skb, mtu);
-+	}
-+
-+#if IS_ENABLED(CONFIG_IPV6)
-+	if (skb->protocol == htons(ETH_P_IPV6) && mtu > IPV6_MIN_MTU) {
-+		const struct ipv6hdr *ip6h = ipv6_hdr(skb);
-+		int stype = ipv6_addr_type(&ip6h->saddr);
-+		u8 proto = ip6h->nexthdr;
-+		__be16 frag_off;
-+		int offset;
-+
-+		if (stype == IPV6_ADDR_ANY || stype == IPV6_ADDR_MULTICAST ||
-+		    stype == IPV6_ADDR_LOOPBACK)
-+			return 0;
-+
-+		offset = ipv6_skip_exthdr(skb, sizeof(struct ipv6hdr), &proto,
-+					  &frag_off);
-+		if (offset < 0 || (frag_off & htons(~0x7)))
-+			return 0;
-+
-+		if (proto == IPPROTO_ICMPV6) {
-+			struct icmp6hdr *icmp6h;
-+
-+			if (!pskb_may_pull(skb, (skb_network_header(skb) +
-+						 offset + 1 - skb->data)))
-+				return 0;
-+
-+			icmp6h = (struct icmp6hdr *)(skb_network_header(skb) +
-+						     offset);
-+			if (icmpv6_is_err(icmp6h->icmp6_type) ||
-+			    icmp6h->icmp6_type == NDISC_REDIRECT)
-+				return 0;
-+		}
-+
-+		return iptunnel_pmtud_build_icmp(skb, mtu);
-+	}
-+#endif
-+	return 0;
-+}
-+
- static inline void *ip_tunnel_info_opts(struct ip_tunnel_info *info)
- {
- 	return info + 1;
-diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
-index f8b419e2475c..54a3dbf7f512 100644
---- a/net/ipv4/ip_tunnel_core.c
-+++ b/net/ipv4/ip_tunnel_core.c
-@@ -184,6 +184,128 @@ int iptunnel_handle_offloads(struct sk_buff *skb,
- }
- EXPORT_SYMBOL_GPL(iptunnel_handle_offloads);
- 
-+/**
-+ * iptunnel_pmtud_build_icmp() - Build ICMP or ICMPv6 error message for PMTUD
-+ * @skb:	Original packet with L2 header
-+ * @mtu:	MTU value for ICMP or ICMPv6 error
-+ *
-+ * Return: length on success, negative error code if message couldn't be built.
-+ */
-+int iptunnel_pmtud_build_icmp(struct sk_buff *skb, int mtu)
-+{
-+	struct ethhdr eh;
-+	int len, err;
-+
-+	if (skb->protocol == htons(ETH_P_IP))
-+		len = ETH_HLEN + sizeof(struct iphdr);
-+	else if (IS_ENABLED(CONFIG_IPV6) && skb->protocol == htons(ETH_P_IPV6))
-+		len = ETH_HLEN + sizeof(struct ipv6hdr);
-+	else
-+		return 0;
-+
-+	if (!pskb_may_pull(skb, len))
-+		return -EINVAL;
-+
-+	skb_copy_bits(skb, skb_mac_offset(skb), &eh, ETH_HLEN);
-+	pskb_pull(skb, ETH_HLEN);
-+	skb_reset_network_header(skb);
-+
-+	if (skb->protocol == htons(ETH_P_IP)) {
-+		const struct iphdr *iph = ip_hdr(skb);
-+		struct icmphdr *icmph;
-+		struct iphdr *niph;
-+
-+		err = pskb_trim(skb, 576 - sizeof(*niph) - sizeof(*icmph));
-+		if (err)
-+			return err;
-+
-+		len = skb->len + sizeof(*icmph);
-+		err = skb_cow(skb, sizeof(*niph) + sizeof(*icmph) + ETH_HLEN);
-+		if (err)
-+			return err;
-+
-+		icmph = skb_push(skb, sizeof(*icmph));
-+		*icmph = (struct icmphdr) {
-+			.type			= ICMP_DEST_UNREACH,
-+			.code			= ICMP_FRAG_NEEDED,
-+			.checksum		= 0,
-+			.un.frag.__unused	= 0,
-+			.un.frag.mtu		= ntohs(mtu),
-+		};
-+		icmph->checksum = ip_compute_csum(icmph, len);
-+		skb_reset_transport_header(skb);
-+
-+		niph = skb_push(skb, sizeof(*niph));
-+		*niph = (struct iphdr) {
-+			.ihl			= sizeof(*niph) / 4u,
-+			.version 		= 4,
-+			.tos 			= 0,
-+			.tot_len		= htons(len + sizeof(*niph)),
-+			.id			= 0,
-+			.frag_off		= htons(IP_DF),
-+			.ttl			= iph->ttl,
-+			.protocol		= IPPROTO_ICMP,
-+			.saddr			= iph->daddr,
-+			.daddr			= iph->saddr,
-+		};
-+		ip_send_check(niph);
-+	}
-+
-+#if IS_ENABLED(CONFIG_IPV6)
-+	else if (skb->protocol == htons(ETH_P_IPV6)) {
-+		const struct ipv6hdr *ip6h = ipv6_hdr(skb);
-+		struct icmp6hdr *icmp6h;
-+		struct ipv6hdr *nip6h;
-+		__wsum csum;
-+
-+		err = pskb_trim(skb, IPV6_MIN_MTU -
-+				     sizeof(*nip6h) - sizeof(*icmp6h));
-+		if (err)
-+			return err;
-+
-+		len = skb->len + sizeof(*icmp6h);
-+		err = skb_cow(skb, sizeof(*nip6h) + sizeof(*icmp6h) + ETH_HLEN);
-+		if (err)
-+			return err;
-+
-+		icmp6h = skb_push(skb, sizeof(*icmp6h));
-+		*icmp6h = (struct icmp6hdr) {
-+			.icmp6_type		= ICMPV6_PKT_TOOBIG,
-+			.icmp6_code		= 0,
-+			.icmp6_cksum		= 0,
-+			.icmp6_mtu		= htonl(mtu),
-+		};
-+		skb_reset_transport_header(skb);
-+
-+		nip6h = skb_push(skb, sizeof(*nip6h));
-+		*nip6h = (struct ipv6hdr) {
-+			.priority		= 0,
-+			.version		= 6,
-+			.flow_lbl		= { 0 },
-+			.payload_len		= htons(len),
-+			.nexthdr		= IPPROTO_ICMPV6,
-+			.hop_limit		= ip6h->hop_limit,
-+			.saddr			= ip6h->daddr,
-+			.daddr			= ip6h->saddr,
-+		};
-+
-+		csum = csum_partial(icmp6h, len, 0);
-+		icmp6h->icmp6_cksum = csum_ipv6_magic(&nip6h->saddr,
-+						      &nip6h->daddr, len,
-+						      IPPROTO_ICMPV6, csum);
-+	}
-+#endif
-+
-+	skb_reset_network_header(skb);
-+	skb->ip_summed = CHECKSUM_NONE;
-+
-+	eth_header(skb, skb->dev, htons(eh.h_proto), eh.h_source, eh.h_dest, 0);
-+	skb_reset_mac_header(skb);
-+
-+	return skb->len;
-+}
-+EXPORT_SYMBOL(iptunnel_pmtud_build_icmp);
-+
- /* Often modified stats are per cpu, other are shared (netdev->stats) */
- void ip_tunnel_get_stats64(struct net_device *dev,
- 			   struct rtnl_link_stats64 *tot)
 -- 
 2.27.0
 
