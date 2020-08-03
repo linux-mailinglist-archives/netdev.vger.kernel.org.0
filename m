@@ -2,113 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC7D623A1C1
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 11:30:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C053423A1D1
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 11:36:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726125AbgHCJar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 05:30:47 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:20533 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725996AbgHCJaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 05:30:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596447045;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OhB8EQdx0fMFvoZXTeHedNXLUoc0coC/TlC1y0aNOZQ=;
-        b=S8daZlAOJkcJcEc6Zo+loB8/pQ/Smim+JxCcpU7SL8gN59UHQpxSyKoeM+u30yfMSSZfAy
-        tFbvz4te6ZckAruo26zXrj12Kwbwnk19niI2HTVR+uiyqPL0a9DDBwHvEHjveSMPCZsoeD
-        MZT7LrwWPjzNtnmq00uYdrhZKJ0TO4g=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-257-XwO9Sa2JOWSiPtP4zzyQhQ-1; Mon, 03 Aug 2020 05:30:43 -0400
-X-MC-Unique: XwO9Sa2JOWSiPtP4zzyQhQ-1
-Received: by mail-wm1-f69.google.com with SMTP id g72so1095925wme.4
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 02:30:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OhB8EQdx0fMFvoZXTeHedNXLUoc0coC/TlC1y0aNOZQ=;
-        b=P2WziEr/kATp6C+i6o2+Q10OOLePTvaacWs+5p7y5of80CbPGGsntmlmzwSEww73KO
-         umF32sh8yUUmOK0x3aLvxhQ+le8m1kVvuFBfa0mZaFwAF041LvmcVX7cf4kZcq4VJgd5
-         +hkRoujAOCgPDxsJUCTncRetyLQfiMbsda74AHbY2Aac6K2kUlk4VAB4bWj2BC1Ir5Qu
-         yenkkaK2hy2MxVPxfGWyw/iD6zZdFdybZT7KUPXAW6lb2KZQEa0YoPYkOc45EKdd42r0
-         cdDp668X7tp6TYIZF9nSZyiJLo9VplH2J5kUbjkrmh8F4QojBpwytT5bF9DvyMP5oIR4
-         vrPQ==
-X-Gm-Message-State: AOAM531jigoIRRjonBAwvbos+soDdhsItjWfP8+8gJudIGrfyuL/vCfG
-        WDq7NI15U50dO5J9jxyn2k6s0cJO16JI/i8/fm+SVroCmMYcrKKmiC3MV4aJh76ilrmQ81jhBzS
-        8d0+KKa62G1yhBIUr
-X-Received: by 2002:a5d:54ce:: with SMTP id x14mr14201867wrv.52.1596447042352;
-        Mon, 03 Aug 2020 02:30:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx5t/JGrhTrs9V30f+uuTB42hdPQhw6p+yd7+7duVWcpfivIxcP5ZtljGKmkSwtQRkSSQ4LEw==
-X-Received: by 2002:a5d:54ce:: with SMTP id x14mr14201852wrv.52.1596447042196;
-        Mon, 03 Aug 2020 02:30:42 -0700 (PDT)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id 111sm24299272wrc.53.2020.08.03.02.30.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 02:30:41 -0700 (PDT)
-Date:   Mon, 3 Aug 2020 11:30:39 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Petr Machata <pmachata@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>
-Subject: Re: [PATCH net-next 2/2] vxlan: fix getting tos value from DSCP field
-Message-ID: <20200803093039.GB3827@linux.home>
-References: <20200803080217.391850-1-liuhangbin@gmail.com>
- <20200803080217.391850-3-liuhangbin@gmail.com>
+        id S1726167AbgHCJgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 05:36:40 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:36112 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbgHCJgk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 05:36:40 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0739H7gc054959;
+        Mon, 3 Aug 2020 09:36:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=IM7JPKhzENSyYGDL/C7fWaTdj+MTBkjqO/862CoRfz8=;
+ b=IdhZIY/VQCGYYE4ZcaOwrsrMvJ26+J6VKhPX2OIwmRbnNwsfcQrAbj5M5SS8Ge82UApy
+ bnRo4Qxk5O/vAbO2DEOYpdI6EujgzX9f+zAPVG5EKTXzqaT7VxZOXOgDnLSp0eqtwcYT
+ N5xe7zq5KQNYdwXv0D024Zyq/2jDiCP732JoU90stmHNtCP6gIbg6znBT5w54izyJufW
+ Q77/QCZdnSwSxo49Uv3kj32dHtEjY/eO8WzGo5QhEmr0/CyYwd5AVzXDOM1AoJSXVOgO
+ MGgIykhTYK3BiwFicoWZdS4A6HfVXNTYrFEP45DqkMIEZMR7eDyzXgzHGLxAHO1GzRRF wQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2130.oracle.com with ESMTP id 32pdnq0rpm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 03 Aug 2020 09:36:29 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0739X3aW020788;
+        Mon, 3 Aug 2020 09:34:29 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 32p5gqgpfq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 03 Aug 2020 09:34:29 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0739YSQk023748;
+        Mon, 3 Aug 2020 09:34:28 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 32p5gqgpfa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 03 Aug 2020 09:34:28 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0739YOdY020620;
+        Mon, 3 Aug 2020 09:34:24 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 03 Aug 2020 02:34:23 -0700
+Date:   Mon, 3 Aug 2020 12:34:14 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Peilin Ye <yepeilin.cs@gmail.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
+ in rds_notify_queue_get()
+Message-ID: <20200803093414.GL5493@kadam>
+References: <20200731045301.GI75549@unreal>
+ <20200731053306.GA466103@kroah.com>
+ <20200731053333.GB466103@kroah.com>
+ <20200731140452.GE24045@ziepe.ca>
+ <20200731142148.GA1718799@kroah.com>
+ <20200731143604.GF24045@ziepe.ca>
+ <20200731171924.GA2014207@kroah.com>
+ <20200731182712.GI24045@ziepe.ca>
+ <20200801080026.GJ5493@kadam>
+ <20200801144030.GM24045@ziepe.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200803080217.391850-3-liuhangbin@gmail.com>
+In-Reply-To: <20200801144030.GM24045@ziepe.ca>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9701 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 impostorscore=0 mlxscore=0
+ suspectscore=0 clxscore=1015 priorityscore=1501 bulkscore=0 adultscore=0
+ malwarescore=0 phishscore=0 mlxlogscore=999 spamscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2008030068
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 03, 2020 at 04:02:17PM +0800, Hangbin Liu wrote:
-> In commit 71130f29979c ("vxlan: fix tos value before xmit") we strict
-> the vxlan tos value before xmit. But as IP tos field has been obsoleted
-> by RFC2474, and updated by RFC3168 later. We should use new DSCP field,
-> or we will lost the first 3 bits value when xmit.
-> 
-Why sending this patch to net-next? Commit 71130f29979c ("vxlan: fix
-tos value before xmit") broke setups where the high TOS bits were used.
-This needs to be fixed in net (and probably pushed to -stable too).
+Ah, thanks.  We've had a bunch of discussions about these leaks but I
+wasn't aware of this.
 
-> Fixes: 71130f29979c ("vxlan: fix tos value before xmit")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  drivers/net/vxlan.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-> index 77658425db8a..fe051ed0f6db 100644
-> --- a/drivers/net/vxlan.c
-> +++ b/drivers/net/vxlan.c
-> @@ -2722,7 +2722,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
->  		ndst = &rt->dst;
->  		skb_tunnel_check_pmtu(skb, ndst, VXLAN_HEADROOM);
->  
-> -		tos = ip_tunnel_ecn_encap(RT_TOS(tos), old_iph, skb);
-> +		tos = ip_tunnel_ecn_encap(RT_DSCP(tos), old_iph, skb);
->  		ttl = ttl ? : ip4_dst_hoplimit(&rt->dst);
->  		err = vxlan_build_skb(skb, ndst, sizeof(struct iphdr),
->  				      vni, md, flags, udp_sum);
-> @@ -2762,7 +2762,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
->  
->  		skb_tunnel_check_pmtu(skb, ndst, VXLAN6_HEADROOM);
->  
-> -		tos = ip_tunnel_ecn_encap(RT_TOS(tos), old_iph, skb);
-> +		tos = ip_tunnel_ecn_encap(RT_DSCP(tos), old_iph, skb);
->  		ttl = ttl ? : ip6_dst_hoplimit(ndst);
->  		skb_scrub_packet(skb, xnet);
->  		err = vxlan_build_skb(skb, ndst, sizeof(struct ipv6hdr),
-> -- 
-> 2.25.4
-> 
+regards,
+dan carpenter
 
