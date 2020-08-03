@@ -2,72 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DC5D23B138
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 01:49:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 910F723B146
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 01:54:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728431AbgHCXsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 19:48:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34782 "EHLO
+        id S1728419AbgHCXy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 19:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726350AbgHCXsv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 19:48:51 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A3EC06174A
-        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 16:48:51 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id h21so23258080qtp.11
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 16:48:50 -0700 (PDT)
+        with ESMTP id S1726718AbgHCXy3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 19:54:29 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FB7C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 16:54:29 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id d14so36862820qke.13
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 16:54:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1lUy/6vJmc3fh7Wag0sGATdOkMr0aq4lbqrwiN9zESI=;
-        b=ja+uE237rPewIY+yrZ3Qs1PyEHgPkMIdymaFQt0IsjryPL99OrP6/sz94y4drTu98w
-         5PMre3BMkX8e1ho40A/OOTx/Q6bzcJGn/n/+xMrZhodmN/uLpjNVqtWNEFR6yYBfGQ2V
-         UFqV5Ra70MbCcWMV99cSDF9+AoJvKirSIvpgaUyd0z2pzEyRn8q2EUBRB4BEYcng6KMn
-         Oquw/2J7vRu0BAw2lXa7B8NkB/7XEsAnPiq+5WnhAGTjAvayQzzDpfGtZi5ASHkW8Tq0
-         3r5ShUUOG2pyHxHmk+FaMtDu47SdcS1gYd2JrzAbKcSJhxvGDhlYkc9G5Enem21ZEI+c
-         n8nQ==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=Y+C637p46dMrpoubBLpEHDY9asdPwWe9YmjxERDIFis=;
+        b=QBN9M9XAEqyY80FDAhUzVL31+nj/Y3oqhHZdcVBbmUzccOTVKFjpvtrVgDdUqLtlZy
+         I4HnmFTVLwLpK5pvUzIx9gsqKU1TJr2JcWt6XDRbgywtFHywNXoset/KWsnI4ZKnUQW5
+         7H12wU8ZgmyS7P6geKEfcJhvNUSfAfBviMd0AYusMmsfGita9TKzbrW9KnStwALTEgCd
+         UAzQJI1Yh++TciKbYSw56JjOAtX2/fe8j51/Tc5Nfq4KqSlcLgLUQTkuhIf9TFF/WU3j
+         hn5fNyvZIFe00H4L6o95DShrrONODMTjQ1ibctr+WvLjx6TO1GMX0MrPDSfGhp2Ubhaj
+         LqRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=1lUy/6vJmc3fh7Wag0sGATdOkMr0aq4lbqrwiN9zESI=;
-        b=TTd0/MD3xlZUb+SvKRnXb0TlHk2c09HoyOg3npQxv3W4eIZeKuNQtsRgVuzNkyF7Nc
-         iZs8WUZ28cWELc84lszm/Rl379l1fPGaaj1iNC1vvgqMtusIjlkir9CYf0/zs5QdM4xk
-         pp+TFzlkacRnpbYDOyk5spbl0N9E/0eWaKApxOLxUbnsDjky86xl2EpO6vEJ6hdUk5G+
-         l0I89KvWuThxFf53dI86zSSkNK4fwhroKCWagE2RPPCyWYnQI/UuzdgIjA4jUABWQjPz
-         S/7DkOU17JDqTKq3lQD4jC+0kR//UPWsjHKyYgT2J+dTycFsXSMZkd531eraiftgPbBG
-         utsg==
-X-Gm-Message-State: AOAM53253rwYYHZeoenZlTPtPZXSuBGfvnelyvbPs91GOtOhquRItsBL
-        D66NMWaIdv4tNZKoY6XINlTsZZCu
-X-Google-Smtp-Source: ABdhPJzasJTF4uNVMJt1WD9XOzpEbYCwg5TB352th5iUrPpgZCK/x3wdExzxPgMO30WDLW+qRPmxlA==
-X-Received: by 2002:ac8:4815:: with SMTP id g21mr19635505qtq.148.1596498530145;
-        Mon, 03 Aug 2020 16:48:50 -0700 (PDT)
+        bh=Y+C637p46dMrpoubBLpEHDY9asdPwWe9YmjxERDIFis=;
+        b=LQsq65wJQqRPNC1zRjXZsVEpSGhycDZcx309zPF5nn7303Lai7E0mKfgb1yhatA13R
+         FsXakNRcm4R1tCY9EDWfCBdCbX+Eumaf84zcpSj2SuDMJb7ahNW4SwZiJNEwiSOeDd4z
+         gpetryT+GBFc7G4leGCCikB5wyaCWyVTUaMZc7Xf10OPZhnTKVK8RdttkeIGKBDJaBCs
+         Sd/GggFPsJikFZlihY5HOV9Ib37WO2TovcACF3EwiZYdEw2DUkRkMaSCRYnmoPe+6Rtf
+         Nq0ilWvLuYDaiCNxzXuyd5UrIQpsvWyMp18drluHlOLcRFuVA8r7QOkFy4fhqaLHXzWS
+         EnFg==
+X-Gm-Message-State: AOAM533f7VALU1ZjeEdUU2RmFejvSV7xmu4onHcR3T+GZtdQeEEjuieK
+        MdD2m7qormmQ9wapcAXZrb0=
+X-Google-Smtp-Source: ABdhPJzfehZ2wCt0xyer9mVboYAwR8tNF3bIBTmIIiQAmPKJhH8dblSLxD5aOc4RAw0Z0N3sSjgSLw==
+X-Received: by 2002:a05:620a:150f:: with SMTP id i15mr18787655qkk.152.1596498868578;
+        Mon, 03 Aug 2020 16:54:28 -0700 (PDT)
 Received: from ?IPv6:2601:282:803:7700:c16b:8bf3:e3ba:8c79? ([2601:282:803:7700:c16b:8bf3:e3ba:8c79])
-        by smtp.googlemail.com with ESMTPSA id u42sm28002758qtu.48.2020.08.03.16.48.48
+        by smtp.googlemail.com with ESMTPSA id g184sm18344841qkd.51.2020.08.03.16.54.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Aug 2020 16:48:49 -0700 (PDT)
-Subject: Re: [PATCH net-next 3/6] vxlan: Support for PMTU discovery on
- directly bridged links
-To:     Stefano Brivio <sbrivio@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Florian Westphal <fw@strlen.de>, Aaron Conole <aconole@redhat.com>,
-        Numan Siddique <nusiddiq@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Lourdes Pedrajas <lu@pplo.net>, netdev@vger.kernel.org
-References: <cover.1596487323.git.sbrivio@redhat.com>
- <9c5e81621d9fc94cc1d1f77e177986434ca9564f.1596487323.git.sbrivio@redhat.com>
+        Mon, 03 Aug 2020 16:54:28 -0700 (PDT)
+Subject: Re: [iproute2-next v2 5/5] devlink: support setting the overwrite
+ mask
+To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+References: <20200801002159.3300425-1-jacob.e.keller@intel.com>
+ <20200801002159.3300425-6-jacob.e.keller@intel.com>
+ <0bb895a2-e233-0426-3e48-d8422fa5b7cf@gmail.com>
+ <a7a03137-b3f8-de21-2a05-95f019d63309@intel.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2a4836b6-e435-953e-16b2-4dd8177ffeeb@gmail.com>
-Date:   Mon, 3 Aug 2020 17:48:48 -0600
+Message-ID: <b22c5b28-71f4-d9c1-f619-783f601dd653@gmail.com>
+Date:   Mon, 3 Aug 2020 17:54:26 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <9c5e81621d9fc94cc1d1f77e177986434ca9564f.1596487323.git.sbrivio@redhat.com>
+In-Reply-To: <a7a03137-b3f8-de21-2a05-95f019d63309@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -76,10 +71,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/3/20 2:52 PM, Stefano Brivio wrote:
-> +		err = skb_tunnel_check_pmtu(skb, ndst, VXLAN_HEADROOM,
-> +					    netif_is_bridge_port(dev) ||
-> +					    netif_is_ovs_port(dev));
+On 8/3/20 5:30 PM, Jacob Keller wrote:
+> 
+> Slightly unrelated: but the recent change to using a bitfield32 results
+> in a "GENMASK is undefined".. I'm not sure what the proper way to fix
+> this is, since we'd like to still use GENMASK to define the supported
+> bitfields. I guess we need to pull in more headers? Or define something
+> in include/utils.h?
+> 
 
-you have this check in a few places. Maybe a new helper like
-netif_is_any_bridge_port that can check both IFF flags in 1 go.
+I see that include/linux/bits.h has been pulled into the tools directory
+for perf and power tools (ie., works fine in userspace).
+
+iproute2 is GPL so should be good from a licensing perspective to copy
+into iproute2. Stephen: any objections?
