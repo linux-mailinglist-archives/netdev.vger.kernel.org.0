@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5617D23A092
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 10:02:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AB1623A093
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 10:02:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726002AbgHCICh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 04:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58028 "EHLO
+        id S1726041AbgHCICl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 04:02:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725855AbgHCICh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 04:02:37 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712A9C06174A
-        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 01:02:37 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id d188so11672858pfd.2
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 01:02:37 -0700 (PDT)
+        with ESMTP id S1725831AbgHCICk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 04:02:40 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7CCC06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 01:02:40 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id z5so19436032pgb.6
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 01:02:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=opN96iAr4vvu6LcPzkHIbk7cQ+LqOHGzWP9skcQO174=;
-        b=aH+9s1Z5qXSkCwBmFf0XMVvuEVYqXTxVAHJ2I/SAFsg/IJkmDx3qv4668OaK+hJO8c
-         yOwKi04IHS/dGb4KayOW8LkZko202kHidzuTNJ/396A2/rxwS4UYh5nxe62ZNWZGbYVK
-         tFWb+Ahc9gi7ymSFgnIvQdXS8YTNMafS5p/+9/0FTvJDZo0HDNl1dV/tPgus3BaO6n0f
-         tmGZgd7zGRbpERKyguvRRBZPLhxvodjwfbONtuSqzbrtNs/hU001sFnB432zyW5uZblK
-         JZJJ4aJabL3DBaEU0Dr1y5z5+nGKQbbZbhl/qucgaLM5HiF0DDuAsWyEIxDPTdD2GWnw
-         5OgQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=42EvaSqQh+Tu9LJiTYMtyv4cuHOnQdkShbpBwLU27QU=;
+        b=hQ3GLq0IqObdMomDWaPb40OXc+gOEmHwhnG7cVYZIvMnnIZgee2XLVHM/tTzjToAMj
+         c7Z7ncSCD1ungW1qOCcQWrdhMQ77wA+YlooUE+I4J96zo/uingHBilyIX5B5OCeTrZOR
+         6tu7sGrEYeMllPWJNm27//Y8wLRmOsP4NLxkJPPzy51KoFCXVgwgkCz5f3Hln9aj/lj9
+         mqqjou+q3Tb5e/7T8kfGr51FjGnCJlYuoMLtesqTM62Cu41+rt0fFoqPcfDtqOqQ0OjV
+         YWhzBSfbbSbaXHhBI39Rg0zN47hV5GuHT0Nnu0/VoUmLLX0U0ptFZbuo9a7GcNR8af5Y
+         j01A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=opN96iAr4vvu6LcPzkHIbk7cQ+LqOHGzWP9skcQO174=;
-        b=kB6fwOpcPyutfmXoNz/QPsmVRw0BXfJplB17JWI0PSq7sa/MINjWoHZrZ+mluyhS2Y
-         cQ6v+7uu35vG6q8tqflfZ4kCpJ8vJfkSU/Za3wVGPlAG9MTb+8hWKXZuRZHB3DRi6VZ0
-         by4xtlBNwbD5BVkS0leHVr0dlJJInSa7hyT/oZIn0m7PCWfwiAgBdpaQOdDw+ydcFc7j
-         mj7glPVoFqtDEtFZjeMA+OAroGP4xt3aqN/xLEofvgwzcNsxOi4SKcAqPB1Pk2fb4UAt
-         tBvibEjRPKKiVmFAE9KEJSGSj/ZTFZ4ddjLAIAqdrBAPAsFdt095fytxuKN1NRmvMolk
-         AkIQ==
-X-Gm-Message-State: AOAM532632enxK2cLm6OdebcFQwOVtXrAbnZTxqIipunvhCypRy5yFS4
-        EIMFxmpELcAHJeH0j3/LoK2yjz9nKter4A==
-X-Google-Smtp-Source: ABdhPJx9PJGRLd0SoaoYT/0FdASPBRpg++CKjdYlTblTYtRUnGHFPW9mVS/2vKxmEW8LYWJCYmAXBQ==
-X-Received: by 2002:a62:2c48:: with SMTP id s69mr14422593pfs.63.1596441756779;
-        Mon, 03 Aug 2020 01:02:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=42EvaSqQh+Tu9LJiTYMtyv4cuHOnQdkShbpBwLU27QU=;
+        b=lt1iB7XwUwZy0Sxb80HYKglK+EAB0yPFFup8DvOzXmFPSM1ozttnx58Uk38szFHGsh
+         ezUOxCvU+kUwgDjiazQPLwokVzIMCR9e09sb8iNSDWM6cBNCO2gZQ19kV6xwVxRc4woq
+         PAbGA5OsjRp1/PBAfGHTCnuk0BRsLpSEGJgdqHvocy+sN/tqEukAglYRogTxZJgokPRQ
+         Ua5Vc6ZL6sJBALym/IT6Hox+jXdD5ONlQuh/S8s3FIfaT8yd8wHr/MgyJHH/bKuwy8jK
+         ZmkY8QqaLhJ5Yc/kf4WA4PpKsC41S3xUAhy1Csm4n0jSJVKYSmvJq9v2HIUzT1iFL1aQ
+         3RlQ==
+X-Gm-Message-State: AOAM532TMs7iGfy5kiSUApm4WRv74D9H2BXqtu6qAd4vD4DbRyNG0Xtg
+        ZEaViC2AeVJ+vQ5KTXD3u7RQL7N2x9iqAA==
+X-Google-Smtp-Source: ABdhPJz4VC8I0h1XElgnDKyuGVMKumYyT7LcgPjbnUeDKSawTGOmKCbWEL/Ow9ixaVA10jhhE+z6ug==
+X-Received: by 2002:aa7:84d3:: with SMTP id x19mr14410511pfn.49.1596441759882;
+        Mon, 03 Aug 2020 01:02:39 -0700 (PDT)
 Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id a24sm18651674pfg.113.2020.08.03.01.02.33
+        by smtp.gmail.com with ESMTPSA id a24sm18651674pfg.113.2020.08.03.01.02.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 01:02:36 -0700 (PDT)
+        Mon, 03 Aug 2020 01:02:39 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Guillaume Nault <gnault@redhat.com>,
@@ -56,10 +56,12 @@ Cc:     Guillaume Nault <gnault@redhat.com>,
         David Ahern <dsahern@kernel.org>,
         Eelco Chaudron <echaudro@redhat.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net-next 0/2] Add IP_DSCP_MASK and fix vxlan tos value before xmit
-Date:   Mon,  3 Aug 2020 16:02:15 +0800
-Message-Id: <20200803080217.391850-1-liuhangbin@gmail.com>
+Subject: [PATCH net-next 1/2] net: add IP_DSCP_MASK
+Date:   Mon,  3 Aug 2020 16:02:16 +0800
+Message-Id: <20200803080217.391850-2-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20200803080217.391850-1-liuhangbin@gmail.com>
+References: <20200803080217.391850-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -67,24 +69,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set is aim to update the old IP_TOS_MASK to new IP_DSCP_MASK
-as tos value has been obsoleted for a long time. But to make sure we don't
-break any existing behaviour, we can't just replease all IP_TOS_MASK
-to new IP_DSCP_MASK.
+In RFC1349 it defined TOS field like
 
-So let's update it case by case. The first issue we will fix is that vxlan
-is unable to take the first 3 bits from DSCP field before xmit. Use the
-new RT_DSCP() would resolve this.
+       0     1     2     3     4     5     6     7
+    +-----+-----+-----+-----+-----+-----+-----+-----+
+    |   PRECEDENCE    |          TOS          | MBZ |
+    +-----+-----+-----+-----+-----+-----+-----+-----+
 
-Hangbin Liu (2):
-  net: add IP_DSCP_MASK
-  vxlan: fix getting tos value from DSCP field
+But this has been obsoleted by RFC2474, and updated by RFC3168 later.
+Now the DS Field should be like
 
- drivers/net/vxlan.c           | 4 ++--
+       0     1     2     3     4     5     6     7
+    +-----+-----+-----+-----+-----+-----+-----+-----+
+    |          DS FIELD, DSCP           | ECN FIELD |
+    +-----+-----+-----+-----+-----+-----+-----+-----+
+
+      DSCP: differentiated services codepoint
+      ECN:  Explicit Congestion Notification
+
+So the old IPTOS_TOS_MASK 0x1E should be updated. But since
+changed the value will break UAPI, let's add a new value
+IP_DSCP_MASK 0xFC as a replacement.
+
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
  include/uapi/linux/in_route.h | 1 +
  include/uapi/linux/ip.h       | 2 ++
- 3 files changed, 5 insertions(+), 2 deletions(-)
+ 2 files changed, 3 insertions(+)
 
+diff --git a/include/uapi/linux/in_route.h b/include/uapi/linux/in_route.h
+index 0cc2c23b47f8..26ba4efb054d 100644
+--- a/include/uapi/linux/in_route.h
++++ b/include/uapi/linux/in_route.h
+@@ -29,5 +29,6 @@
+ #define RTCF_NAT	(RTCF_DNAT|RTCF_SNAT)
+ 
+ #define RT_TOS(tos)	((tos)&IPTOS_TOS_MASK)
++#define RT_DSCP(tos)	((tos)&IP_DSCP_MASK)
+ 
+ #endif /* _LINUX_IN_ROUTE_H */
+diff --git a/include/uapi/linux/ip.h b/include/uapi/linux/ip.h
+index e42d13b55cf3..62e4169277eb 100644
+--- a/include/uapi/linux/ip.h
++++ b/include/uapi/linux/ip.h
+@@ -22,6 +22,8 @@
+ 
+ #define IPTOS_TOS_MASK		0x1E
+ #define IPTOS_TOS(tos)		((tos)&IPTOS_TOS_MASK)
++#define IP_DSCP_MASK		0xFC
++#define IP_DSCP(tos)		((tos)&IP_DSCP_MASK)
+ #define	IPTOS_LOWDELAY		0x10
+ #define	IPTOS_THROUGHPUT	0x08
+ #define	IPTOS_RELIABILITY	0x04
 -- 
 2.25.4
 
