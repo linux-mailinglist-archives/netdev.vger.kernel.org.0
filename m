@@ -2,54 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D359D23A769
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 15:24:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B9C323A77D
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 15:31:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726630AbgHCNYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 09:24:37 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:46606 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726509AbgHCNYg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 09:24:36 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from roid@mellanox.com)
-        with SMTP; 3 Aug 2020 16:24:34 +0300
-Received: from mtr-vdi-191.wap.labs.mlnx. (mtr-vdi-191.wap.labs.mlnx [10.209.100.28])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 073DOYhR012053;
-        Mon, 3 Aug 2020 16:24:34 +0300
-From:   Roi Dayan <roid@mellanox.com>
+        id S1726881AbgHCNb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 09:31:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40220 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726398AbgHCNb1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Aug 2020 09:31:27 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1k2aYn-0082pS-TP; Mon, 03 Aug 2020 15:31:25 +0200
+Date:   Mon, 3 Aug 2020 15:31:25 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
 To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH ethtool] ethtool.spec: Add bash completion script
-Date:   Mon,  3 Aug 2020 16:23:38 +0300
-Message-Id: <20200803132338.221961-1-roid@mellanox.com>
-X-Mailer: git-send-email 2.8.4
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool 0/7] compiler warnings cleanup, part 1
+Message-ID: <20200803133125.GN1862409@lunn.ch>
+References: <cover.1596451857.git.mkubecek@suse.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1596451857.git.mkubecek@suse.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After the additon of the bash completion script, packaging
-using the default spec file fails for installed but not packaged
-error. so package it.
+On Mon, Aug 03, 2020 at 01:57:03PM +0200, Michal Kubecek wrote:
+> Maciej Żenczykowski recently cleaned up many "unused parameter" compiler
+> warnings but some new occurences appeared since (mostly in netlink code).
 
-Fixes: 9b802643d7bd ("ethtool: Add bash-completion script")
-Signed-off-by: Roi Dayan <roid@mellanox.com>
----
- ethtool.spec.in | 1 +
- 1 file changed, 1 insertion(+)
+Hi Michal
 
-diff --git a/ethtool.spec.in b/ethtool.spec.in
-index 9c01b07abf2b..75f9be6aafa6 100644
---- a/ethtool.spec.in
-+++ b/ethtool.spec.in
-@@ -34,6 +34,7 @@ make install DESTDIR=${RPM_BUILD_ROOT}
- %defattr(-,root,root)
- %{_sbindir}/ethtool
- %{_mandir}/man8/ethtool.8*
-+%{_datadir}/bash-completion/completions/ethtool
- %doc AUTHORS COPYING NEWS README
- 
- 
--- 
-2.8.4
+Could you modify the compiler flags to get gcc to warn about these?
+Otherwise they will just come back again.
 
+	  Andrew
