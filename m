@@ -2,77 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0564239FE5
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 08:57:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96A0E23A036
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 09:23:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727850AbgHCG5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 02:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47810 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726224AbgHCG5C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 02:57:02 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBB4C06174A;
-        Sun,  2 Aug 2020 23:57:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=S81Y7/E/1KRByHOMFTAO1WQMOll7HWoP+pv/fCo/3sI=; b=Imiqwh2wh6gfO95HVgGWdIpJ7R
-        qFqJDaURIpsOiDpUCq2k3ILdHp9/G64PbhflfbfwXUHR3YCqdMM2JIr5p2HV5QlEFNjYcibq1cAwB
-        k5jcDFqNUiYh1ErghhsIpsN5baKyFw50AsjkOnyh0RkcQvG4I/FuQV4i+K4smxUlt0gQ8ZINX4zk1
-        zqYZrKBpxdTsr3nucjd2JPKqfEkufPqh/aFaSwGu2mFtFylC2a36pyZdPfsQXEbP1+7In5Kkj2kTD
-        iIuAdnnH0jCfMh5vNRvgFzTjztCURqfBsmyFjwViAe1IQB++yIvaVvpqhNNNwV/B+lmZFzbHjUNTv
-        QTu3Qcmg==;
-Received: from hch by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k2UOb-0005Zd-6v; Mon, 03 Aug 2020 06:56:29 +0000
-Date:   Mon, 3 Aug 2020 07:56:29 +0100
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Saheed Bolarinwa <refactormyself@gmail.com>, trix@redhat.com,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Joerg Roedel <joro@8bytes.org>, bjorn@helgaas.com,
-        skhan@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mtd@lists.infradead.org, iommu@lists.linux-foundation.org,
-        linux-rdma@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-gpio@vger.kernel.org, linux-fpga@vger.kernel.org,
-        linux-edac@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-crypto@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net
-Subject: Re: [RFC PATCH 00/17] Drop uses of pci_read_config_*() return value
-Message-ID: <20200803065629.GA19534@infradead.org>
-References: <20200802184648.GA23190@nazgul.tnic>
- <20200802191406.GA248232@bjorn-Precision-5520>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200802191406.GA248232@bjorn-Precision-5520>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+        id S1725945AbgHCHXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 03:23:17 -0400
+Received: from mail-177132.yeah.net ([123.58.177.132]:32952 "EHLO
+        mail-177132.yeah.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725270AbgHCHXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 03:23:17 -0400
+X-Greylist: delayed 1881 seconds by postgrey-1.27 at vger.kernel.org; Mon, 03 Aug 2020 03:23:15 EDT
+Received: from localhost.localdomain (unknown [220.180.239.201])
+        by smtp2 (Coremail) with SMTP id C1UQrABnb3vesydfvXCkGA--.40163S2;
+        Mon, 03 Aug 2020 14:51:11 +0800 (CST)
+From:   yzc666@netease.com
+To:     bjorn@mork.no
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, carl <carl.yin@quectel.com>
+Subject: [PATCH]     qmi_wwan: support modify usbnet's rx_urb_size
+Date:   Mon,  3 Aug 2020 14:51:05 +0800
+Message-Id: <20200803065105.8997-1-yzc666@netease.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: C1UQrABnb3vesydfvXCkGA--.40163S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxJF1xWw1xury5uFWDZry7Jrb_yoW5Zr1xpF
+        W3XayrWrWUJrZrWrsxJF4DW3W3Wr1ru34fG3y2gwnYkrnrXwnrta4UJFyYyrZ3KF98CrWY
+        qr4Dta1UGrs8XFJanT9S1TB71UUUUUJqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jFUDJUUUUU=
+X-Originating-IP: [220.180.239.201]
+X-CM-SenderInfo: h12fllmw6qv3phdvvhhfrp/1tbiDR91HFszSoasMQAAsC
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 02, 2020 at 02:14:06PM -0500, Bjorn Helgaas wrote:
-> But what guarantees that a PCI config register cannot contain ~0?
-> If there's something about that in the spec I'd love to know where it
-> is because it would simplify a lot of things.
+From: carl <carl.yin@quectel.com>
 
-There isn't.  An we even have cases like the NVMe controller memory
-buffer and persistent memory region, which are BARs that store
-abritrary values for later retreival, so it can't.  (now those
-features have a major issue with error detection, but that is another
-issue)
+    When QMUX enabled, the 'dl-datagram-max-size' can be 4KB/16KB/31KB depend on QUALCOMM's chipsets.
+    User can set 'dl-datagram-max-size' by 'QMI_WDA_SET_DATA_FORMAT'.
+    The usbnet's rx_urb_size must lager than or equal to the 'dl-datagram-max-size'.
+    This patch allow user to modify usbnet's rx_urb_size by next command.
+
+		echo 4096 > /sys/class/net/wwan0/qmi/rx_urb_size
+
+		Next commnds show how to set and query 'dl-datagram-max-size' by qmicli
+		# qmicli -d /dev/cdc-wdm1 --wda-set-data-format="link-layer-protocol=raw-ip, ul-protocol=qmap,
+				dl-protocol=qmap, dl-max-datagrams=32, dl-datagram-max-size=31744, ep-type=hsusb, ep-iface-number=4"
+		[/dev/cdc-wdm1] Successfully set data format
+		                        QoS flow header: no
+		                    Link layer protocol: 'raw-ip'
+		       Uplink data aggregation protocol: 'qmap'
+		     Downlink data aggregation protocol: 'qmap'
+		                          NDP signature: '0'
+		Downlink data aggregation max datagrams: '10'
+		     Downlink data aggregation max size: '4096'
+
+	    # qmicli -d /dev/cdc-wdm1 --wda-get-data-format
+		[/dev/cdc-wdm1] Successfully got data format
+		                   QoS flow header: no
+		               Link layer protocol: 'raw-ip'
+		  Uplink data aggregation protocol: 'qmap'
+		Downlink data aggregation protocol: 'qmap'
+		                     NDP signature: '0'
+		Downlink data aggregation max datagrams: '10'
+		Downlink data aggregation max size: '4096'
+
+Signed-off-by: carl <carl.yin@quectel.com>
+---
+ drivers/net/usb/qmi_wwan.c | 39 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
+
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 07c42c0719f5b..8ea57fd99ae43 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -400,6 +400,44 @@ static ssize_t raw_ip_store(struct device *d,  struct device_attribute *attr, co
+ 	return ret;
+ }
+ 
++static ssize_t rx_urb_size_show(struct device *d, struct device_attribute *attr, char *buf)
++{
++	struct usbnet *dev = netdev_priv(to_net_dev(d));
++
++	return sprintf(buf, "%zd\n", dev->rx_urb_size);
++}
++
++static ssize_t rx_urb_size_store(struct device *d,  struct device_attribute *attr,
++				 const char *buf, size_t len)
++{
++	struct usbnet *dev = netdev_priv(to_net_dev(d));
++	u32 rx_urb_size;
++	int ret;
++
++	if (kstrtou32(buf, 0, &rx_urb_size))
++		return -EINVAL;
++
++	/* no change? */
++	if (rx_urb_size == dev->rx_urb_size)
++		return len;
++
++	if (!rtnl_trylock())
++		return restart_syscall();
++
++	/* we don't want to modify a running netdev */
++	if (netif_running(dev->net)) {
++		netdev_err(dev->net, "Cannot change a running device\n");
++		ret = -EBUSY;
++		goto err;
++	}
++
++	dev->rx_urb_size = rx_urb_size;
++	ret = len;
++err:
++	rtnl_unlock();
++	return ret;
++}
++
+ static ssize_t add_mux_show(struct device *d, struct device_attribute *attr, char *buf)
+ {
+ 	struct net_device *dev = to_net_dev(d);
+@@ -505,6 +543,7 @@ static DEVICE_ATTR_RW(add_mux);
+ static DEVICE_ATTR_RW(del_mux);
+ 
+ static struct attribute *qmi_wwan_sysfs_attrs[] = {
++	&dev_attr_rx_urb_size.attr,
+ 	&dev_attr_raw_ip.attr,
+ 	&dev_attr_add_mux.attr,
+ 	&dev_attr_del_mux.attr,
+-- 
+2.17.1
+
