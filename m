@@ -2,82 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 710C623A89A
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 16:36:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC91823A8A3
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 16:38:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726757AbgHCOgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 10:36:22 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:46090 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726358AbgHCOgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 10:36:22 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.64])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D6A166007B;
-        Mon,  3 Aug 2020 14:36:21 +0000 (UTC)
-Received: from us4-mdac16-71.ut7.mdlocal (unknown [10.7.64.190])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D46C9200B2;
-        Mon,  3 Aug 2020 14:36:21 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.42])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 5826622008B;
-        Mon,  3 Aug 2020 14:36:21 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id F10D4A40073;
-        Mon,  3 Aug 2020 14:36:20 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 3 Aug 2020
- 15:36:15 +0100
-Subject: Re: [PATCH v2 net-next 04/11] sfc_ef100: TX path for EF100 NICs
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-References: <31de2e73-bce7-6c9d-0c20-49b32e2043cc@solarflare.com>
- <9776704b-d4b0-7477-42ba-f82ad3d4ec48@solarflare.com>
- <20200731123936.38680a53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <4cd2e7e9-a5e4-283e-d4f2-f7f1d3b41669@solarflare.com>
-Date:   Mon, 3 Aug 2020 15:36:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726622AbgHCOiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 10:38:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34400 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726358AbgHCOiY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 10:38:24 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD6B4C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 07:38:23 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id l64so28481133qkb.8
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 07:38:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=eLsoD3nOKroZjTDpbVBx61noxn5TAWz7GUQ4chzXjtA=;
+        b=Bza/QnhIDpTpyDMcJn3ErMwchYpiz90CAF5292YqYnQnTnAKmjrzn2OAhPeLXfXYUs
+         nifiPsG5hX8MnqlAOIPK+ODV9UEryBOp3AxY//SsN8dS8gBdvpAAOZ9EUgulCKj8myar
+         lVbJMONmwIFRXPBnb99ZGuehK4M/uiQ2drQ4V/BdDyoW/alMVCUBeLcoTLso/P0nH9ZK
+         n41g+Aydt3xJYhQY6xpR0gfXV3eRjuGZMkb4LzHkbHg7+SdFahqWMLdfoG7+6curgMKS
+         lMgp9UCBdvGKLcbYU2XP/YySyRemoRSpsU1SNlTWKaszOJqE47u7F0YOpgJEVC5WC7DA
+         Pz7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=eLsoD3nOKroZjTDpbVBx61noxn5TAWz7GUQ4chzXjtA=;
+        b=pqHF93IDowFsxkUHQW/igNnRF4wefW70/TY0WVaOU89At4VyDg/9gZKm7xgWDxpzO4
+         ++LZ+9PV8cHD3Nnv+cJ3pQo47fE/I9uHCwpPQ6x4i4UFm10XlYQk7a5ZzBQYP1N4GCDB
+         Lqq4qt+Fr5EzKesr0zi1CCkIUFO6z5DpqLM2HgvIaghxrircM6HU54gZQA8XrsKcZycB
+         wJwGOS5l1pvSzaKOmmYvefahileZu++kqm/wmeHk6POrazV31NOArIgtSEcFEBWZD0YT
+         VwbZ0BwG/oKzls8MJ1MX2LROaE7G1Q/W1mNj9+FVIDGnvF7daQjn4HaDrIY6ICBH99Dr
+         YuZA==
+X-Gm-Message-State: AOAM531gcUqVi49AEgGnIslpVxA934bTTwEV2Hp6JgKH6eJNKxojLK51
+        8xUaLoam8vs9lenUYtb+Pvc=
+X-Google-Smtp-Source: ABdhPJy+EbsHRKl4wv21kFcbno3Rg+VWmZBsHbudA8Sctx10S6fb3q0pKutPOmAuK1bM5uaDR8bw5g==
+X-Received: by 2002:a05:620a:164b:: with SMTP id c11mr15973714qko.91.1596465503131;
+        Mon, 03 Aug 2020 07:38:23 -0700 (PDT)
+Received: from ?IPv6:2601:284:8202:10b0:989f:23de:f9a0:6da? ([2601:284:8202:10b0:989f:23de:f9a0:6da])
+        by smtp.googlemail.com with ESMTPSA id r6sm21302831qtu.93.2020.08.03.07.38.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Aug 2020 07:38:21 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2 0/2] Expose port attributes
+To:     Danielle Ratson <danieller@mellanox.com>, netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, mlxsw@mellanox.com
+References: <20200730143318.1203-1-danieller@mellanox.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <8e5fd6b1-33e6-2f04-d256-1dabf83b6d4c@gmail.com>
+Date:   Mon, 3 Aug 2020 08:38:20 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200731123936.38680a53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25580.005
-X-TM-AS-Result: No-7.424600-8.000000-10
-X-TMASE-MatchedRID: 7ySqCuYCpfjmLzc6AOD8DfHkpkyUphL9amDMhjMSdnlVZCccrGnfyHjm
-        0APnwZU2oPDBsdLv/Zv8NU6T4XpIugDNPxu11HXjbRZGrsoeW/g0AJe3B5qfBrNgNI2I9bOAjL4
-        B9OUMY3Wng9t5QPCRN4el0gm1sucmSSOWVJeuO1CDGx/OQ1GV8hFMgtPIAD6i+gtHj7OwNO2Ohz
-        Oa6g8KrX8DclAO/Dl/a6flRovitHvL/0Lff1MiTOYILMwne6onLnieqqu9S5g=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.424600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25580.005
-X-MDID: 1596465381-3nxdFfiY-pin
+In-Reply-To: <20200730143318.1203-1-danieller@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/07/2020 20:39, Jakub Kicinski wrote:
-> On Fri, 31 Jul 2020 13:59:04 +0100 Edward Cree wrote:
->> +static inline efx_oword_t *ef100_tx_desc(struct efx_tx_queue *tx_queue,
->> +					 unsigned int index)
-> Does this static inline make any difference?
->
-> You know the general policy...
-Damn, I didn't spot that one.
+On 7/30/20 8:33 AM, Danielle Ratson wrote:
+> Add two new devlink port attributes:
+> - Lanes: indicates the number of port lanes.
+> - Splittable: indicates the port split ability.
+> 
+> Patch 1: Update kernel headers
+> Patch 2: Expose number of lanes
+> 
+> v2: *Update 'devlink_policy' with the new attributes
+> 
+> Danielle Ratson (2):
+>   devlink: Expose number of port lanes
+>   devlink: Expose port split ability
+> 
+>  devlink/devlink.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
 
-Why doesn't checkpatch catch those?  Is it just not smart enough
- to remember whether it's in a .c file or not?  Or do I need to
- pass it some --strict --fascist --annoy-me-harder flags?
-
-Will remove 'inline' in v3, thanks.
-
--ed
+applied to iproute2-next. Thanks,
