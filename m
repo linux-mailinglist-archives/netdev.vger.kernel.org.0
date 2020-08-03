@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F5C623A976
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 17:35:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE8B823A97A
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 17:35:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726807AbgHCPfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 11:35:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43268 "EHLO
+        id S1727044AbgHCPfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 11:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726799AbgHCPfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 11:35:05 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2FCC06174A
-        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 08:35:05 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id f9so2781pju.4
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 08:35:05 -0700 (PDT)
+        with ESMTP id S1726773AbgHCPfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 11:35:14 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5A9C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 08:35:13 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id o5so2031573pgb.2
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 08:35:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=gTtBRSzq0CEtu4NsIES9D/wYZ1FEY+3VPzbHpcqbh0c=;
-        b=Nc6sDRe0CN+YLlPVdxOj+MmjImW+NkkMGG0pMT7PGskUM5lpwh2ij5IQZQDlgFYSeI
-         J0Klgl93aEgZeF/sEuGVeGG/xpwec24qNiFbbSCFPIeqwWOvtfw5KXqyf6QynliQ7bBB
-         fv6+HLK0xPSfZGoGB/u0SgbSHdVuw6iTgbJkZufwbNYqKDBiDzQT86NG+bAXwx+QiHMH
-         qnVkG76zB40Qb4gT2Z4kKES2AFwyzYB9rx2RR8NQteF3Ni7f5dd0tvnmQC0P2K94Vca1
-         ngdZ2vml2YT41tsbGJWYWC5LUHF7avTPnWnI2rzXSuO3/AT0NmRTq6yNsO2XgZpo8856
-         bJ1A==
+        bh=ooDPWHI8SnAX3jgrhf4BmAyC17eA8Oj/wQo48kOxLSo=;
+        b=V9pHvzbNGgqbgtrtbeuVLhCG+0yx2cEEa7YC+247+XufmJdjg6P7EKwWnui5yzQywz
+         vbULA7d8sKNP21bpn8x3XBK9KhTguK8q4lt9/d3MGr8eUQahfULjhxwLNihHR12WC9u3
+         ZRDqdDOKnKospNY9qqGm0cMIc3/op+ViKKlbIH6kMmRePqjIGMuVPRwtafpchCmMiMd2
+         UpG1/SGSD8vnPQcDii0AIRq2iJ7FsnMiJ6Pm+gVi6EAIHV2r0JUMl2FicKizDuTbf9T9
+         Ip4Pj76ybr2ekhpvXKWNsfYbQPqVgYtJUGZK6P44H22PFKBKGpoujyvUE07Z+6JYQmAw
+         xXrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=gTtBRSzq0CEtu4NsIES9D/wYZ1FEY+3VPzbHpcqbh0c=;
-        b=KBZez8iRm0pfQ0dOVBgkXSgXQJjV+t5aGUxEaoLmPKAt4jn08ag9tFM+W+KC5Rqu2B
-         7UNbCt0dMHT/Lf1g2gWEBhzHpwn22aNQ4+3MyVML9ZGqhRIdf/kYX53N0kUp4iVW9GMC
-         uONk2B4QWPkMEwW8cu63/3s+nbxMN6Fe1TyegwDdqHIyRYPCCmCtGd7Pax/RIGhyyOFH
-         ZbE9iuhfBkSgtOxsJy+wuX9yuGeoC7MZVU6vQF91VFKYh28OM0+RMdixdd4HOxZZiwJq
-         5eTLOJ9/jtbJnFWs46HtB9QBtfrNVi9kKmaQniaNN+rXADCYEcjHIkuKNqCU43NTDhvi
-         FFGQ==
-X-Gm-Message-State: AOAM530yTNkrpyYz7RZYPnKooLs9r6T+qmFz//gpU/10YBvMcguOT0w8
-        64cUYbEEKx5EXs0oJAs3qla3he73wLM=
-X-Google-Smtp-Source: ABdhPJxTl5mFRSUmEvpfwgk4mwLzf0nzhnD/ZW7yOC/q4uBg4blE5muJQhVRwvNiuCf2iAxdN6facg==
-X-Received: by 2002:a17:90a:3ac5:: with SMTP id b63mr18524402pjc.3.1596468904571;
-        Mon, 03 Aug 2020 08:35:04 -0700 (PDT)
+        bh=ooDPWHI8SnAX3jgrhf4BmAyC17eA8Oj/wQo48kOxLSo=;
+        b=esIOUnSVgUf2KoApcXuv/zm8kqVekmx2UWgVcXUWssUYJdHum+VnMJLGjapI8csILZ
+         hiGM59CaAJMqvkg+ZD7EB2h3nQm3/LWWROLFr44l3WumI4cGitue011U0uJcss5WJvFr
+         1FRt3C96UFwfOw8GzQe4hhBsmbou4yTx5Zc40PL+L6KyXdqCYP9yPS6vfglFG6mmjPCe
+         xZb/huUuKUBuJZv1pxZZqdL5TbNQM/GQn3s3NX62vGn9Zr/YYTaBdc5ab+pg3T3rADqZ
+         qqSCihSAqvZlTYJYw5lpPUCFLJDhiJIlU5yxXJNDRbqogoLfmViuGL0ERxzi9AKt/Owv
+         5QPw==
+X-Gm-Message-State: AOAM530wUbmen7DUc351Y5ZFwNF68e4OT4FVXarYd1CWnL2tZ2uuvwtD
+        DJQM2goG3TutxC/PsDBKPLgtEteo/7s=
+X-Google-Smtp-Source: ABdhPJyPVqc7an0cVQv705pT1EKMcksIwZOOg1TMM5OTUS3Wt1ys8cLD5zOkKQqGWJnt37miImjwfg==
+X-Received: by 2002:a63:a05f:: with SMTP id u31mr15063576pgn.4.1596468912922;
+        Mon, 03 Aug 2020 08:35:12 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y8sm18599846pjj.17.2020.08.03.08.35.03
+        by smtp.gmail.com with ESMTPSA id y1sm590033pfr.207.2020.08.03.08.35.11
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 03 Aug 2020 08:35:03 -0700 (PDT)
+        Mon, 03 Aug 2020 08:35:12 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>
 Cc:     davem@davemloft.net, Jon Maloy <jon.maloy@ericsson.com>,
@@ -54,12 +54,13 @@ Cc:     davem@davemloft.net, Jon Maloy <jon.maloy@ericsson.com>,
         tipc-discussion@lists.sourceforge.net,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: [PATCH net 1/2] ipv6: add ipv6_dev_find()
-Date:   Mon,  3 Aug 2020 23:34:46 +0800
-Message-Id: <7ba2ca17347249b980731e7a76ba3e24a9e37720.1596468610.git.lucien.xin@gmail.com>
+Subject: [PATCH net 2/2] tipc: set ub->ifindex for local ipv6 address
+Date:   Mon,  3 Aug 2020 23:34:47 +0800
+Message-Id: <1806063a61881feadcbf4372f2683114c61b526a.1596468610.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <cover.1596468610.git.lucien.xin@gmail.com>
+In-Reply-To: <7ba2ca17347249b980731e7a76ba3e24a9e37720.1596468610.git.lucien.xin@gmail.com>
 References: <cover.1596468610.git.lucien.xin@gmail.com>
+ <7ba2ca17347249b980731e7a76ba3e24a9e37720.1596468610.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1596468610.git.lucien.xin@gmail.com>
 References: <cover.1596468610.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
@@ -67,80 +68,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is to add an ip_dev_find like function for ipv6, used to find
-the dev by saddr.
+Without ub->ifindex set for ipv6 address in tipc_udp_enable(),
+ipv6_sock_mc_join() may make the wrong dev join the multicast
+address in enable_mcast(). This causes that tipc links would
+never be created.
 
-It will be used by TIPC protocol. So also export it.
+So fix it by getting the right netdev and setting ub->ifindex,
+as it does for ipv4 address.
 
+Reported-by: Shuang Li <shuali@redhat.com>
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/net/addrconf.h |  2 ++
- net/ipv6/addrconf.c    | 39 +++++++++++++++++++++++++++++++++++++++
- 2 files changed, 41 insertions(+)
+ net/tipc/udp_media.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index 8418b7d..ba3f6c15 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -97,6 +97,8 @@ bool ipv6_chk_custom_prefix(const struct in6_addr *addr,
- 
- int ipv6_chk_prefix(const struct in6_addr *addr, struct net_device *dev);
- 
-+struct net_device *ipv6_dev_find(struct net *net, const struct in6_addr *addr);
+diff --git a/net/tipc/udp_media.c b/net/tipc/udp_media.c
+index 28a283f..9dec596 100644
+--- a/net/tipc/udp_media.c
++++ b/net/tipc/udp_media.c
+@@ -738,6 +738,13 @@ static int tipc_udp_enable(struct net *net, struct tipc_bearer *b,
+ 		b->mtu = b->media->mtu;
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	} else if (local.proto == htons(ETH_P_IPV6)) {
++		struct net_device *dev;
 +
- struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net,
- 				     const struct in6_addr *addr,
- 				     struct net_device *dev, int strict);
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 840bfdb..857d6f9 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -1983,6 +1983,45 @@ int ipv6_chk_prefix(const struct in6_addr *addr, struct net_device *dev)
- }
- EXPORT_SYMBOL(ipv6_chk_prefix);
- 
-+/**
-+ * ipv6_dev_find - find the first device with a given source address.
-+ * @net: the net namespace
-+ * @addr: the source address
-+ *
-+ * The caller should be protected by RCU, or RTNL.
-+ */
-+struct net_device *ipv6_dev_find(struct net *net, const struct in6_addr *addr)
-+{
-+	unsigned int hash = inet6_addr_hash(net, addr);
-+	struct inet6_ifaddr *ifp, *result = NULL;
-+	struct net_device *dev = NULL;
-+
-+	rcu_read_lock();
-+	hlist_for_each_entry_rcu(ifp, &inet6_addr_lst[hash], addr_lst) {
-+		if (net_eq(dev_net(ifp->idev->dev), net) &&
-+		    ipv6_addr_equal(&ifp->addr, addr)) {
-+			result = ifp;
-+			break;
++		dev = ipv6_dev_find(net, &local.ipv6);
++		if (!dev) {
++			err = -ENODEV;
++			goto err;
 +		}
-+	}
-+
-+	if (!result) {
-+		struct rt6_info *rt;
-+
-+		rt = rt6_lookup(net, addr, NULL, 0, NULL, 0);
-+		if (rt) {
-+			dev = rt->dst.dev;
-+			ip6_rt_put(rt);
-+		}
-+	} else {
-+		dev = result->idev->dev;
-+	}
-+	rcu_read_unlock();
-+
-+	return dev;
-+}
-+EXPORT_SYMBOL(ipv6_dev_find);
-+
- struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net, const struct in6_addr *addr,
- 				     struct net_device *dev, int strict)
- {
+ 		udp_conf.family = AF_INET6;
+ 		udp_conf.use_udp6_tx_checksums = true;
+ 		udp_conf.use_udp6_rx_checksums = true;
+@@ -745,6 +752,7 @@ static int tipc_udp_enable(struct net *net, struct tipc_bearer *b,
+ 			udp_conf.local_ip6 = in6addr_any;
+ 		else
+ 			udp_conf.local_ip6 = local.ipv6;
++		ub->ifindex = dev->ifindex;
+ 		b->mtu = 1280;
+ #endif
+ 	} else {
 -- 
 2.1.0
 
