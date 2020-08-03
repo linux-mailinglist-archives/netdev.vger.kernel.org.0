@@ -2,152 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 933D123A18A
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 11:06:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91FF723A18D
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 11:08:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726865AbgHCJGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 05:06:14 -0400
-Received: from forwardcorp1p.mail.yandex.net ([77.88.29.217]:38326 "EHLO
-        forwardcorp1p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725926AbgHCJGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 05:06:06 -0400
-Received: from iva8-d077482f1536.qloud-c.yandex.net (iva8-d077482f1536.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:2f26:0:640:d077:482f])
-        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id DEA692E14FC;
-        Mon,  3 Aug 2020 12:06:03 +0300 (MSK)
-Received: from iva8-88b7aa9dc799.qloud-c.yandex.net (iva8-88b7aa9dc799.qloud-c.yandex.net [2a02:6b8:c0c:77a0:0:640:88b7:aa9d])
-        by iva8-d077482f1536.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id V7kn8eU4FZ-62t8r06x;
-        Mon, 03 Aug 2020 12:06:03 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1596445563; bh=Oo66nsRaElryOZye3EqBLW8xrT36MuCfruXoPKVcSIE=;
-        h=In-Reply-To:Message-Id:References:Date:Subject:To:From:Cc;
-        b=C5PTJHjAH7WEn2JiVq7Dgqxlnt0aab036S0zJCKh/6wPHppVHlq9ve3GuEH2zoC8t
-         IrSmPVpqqXir935Gqax0B2xYwGONTSX+PpofnNl4VAOJsJhNxWigJVSrZGdsCuMMKG
-         kGAKFxnriMgUHjKzEALEtktI8TRYev21DIoL63tE=
-Authentication-Results: iva8-d077482f1536.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from 178.154.163.76-vpn.dhcp.yndx.net (178.154.163.76-vpn.dhcp.yndx.net [178.154.163.76])
-        by iva8-88b7aa9dc799.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id 1ZDFznne1R-62iCIIr9;
-        Mon, 03 Aug 2020 12:06:02 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     eric.dumazet@gmail.com, sdf@google.com
-Subject: [PATCH bpf-next v6 2/2] bpf: allow to specify ifindex for skb in bpf_prog_test_run_skb
-Date:   Mon,  3 Aug 2020 12:05:45 +0300
-Message-Id: <20200803090545.82046-3-zeil@yandex-team.ru>
-In-Reply-To: <20200803090545.82046-1-zeil@yandex-team.ru>
-References: <20200803090545.82046-1-zeil@yandex-team.ru>
+        id S1725971AbgHCJHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 05:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725907AbgHCJHZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 05:07:25 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88715C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 02:07:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=zsvfj6qLQrBY7hWKv0KCz2IN8ZNd15PqKtlWcVCugu4=; b=eRx3/20M4qgQe1uLH2dW8sreR
+        PVqPhiJFx2NI33gZ81heFu4iunNQRbUP2jm8N7MhL8BrOd9S5fOoy65/3KppmVkRktwbGCbntc78p
+        /gLTDM4pF4W87x5BqTJ3fBYvhz6lBD8LZqRAVnMdeqh0OMj6yOM+KqQ0ILrL4YCdIrkbRjSjLoymb
+        kG1hzrYVlYfMso/oVYKBVDzQgzwx1ZPv1/Hf5gdxHxmrjpCag28K+lOexPs2w73YE34DXTzYmAJnK
+        qPXoAfE5UtDvCaOwcUYwqGibxPrg180FKg4JIw2UUZVbozBqpLwLip23VA2NKXVIw1Hkq5HqW64JU
+        LDlsGMknA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47734)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1k2WRB-0001Fe-8G; Mon, 03 Aug 2020 10:07:17 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1k2WRA-0002xW-8X; Mon, 03 Aug 2020 10:07:16 +0100
+Date:   Mon, 3 Aug 2020 10:07:16 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vikas Singh <vikas.singh@puresoftware.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Calvin Johnson (OSS)" <calvin.johnson@oss.nxp.com>,
+        kuldip dwivedi <kuldip.dwivedi@puresoftware.com>,
+        Vikas Singh <vikas.singh@nxp.com>
+Subject: Re: [PATCH 2/2] net: phy: Associate device node with fixed PHY
+Message-ID: <20200803090716.GL1551@shell.armlinux.org.uk>
+References: <1595938400-13279-1-git-send-email-vikas.singh@puresoftware.com>
+ <1595938400-13279-3-git-send-email-vikas.singh@puresoftware.com>
+ <20200728130001.GB1712415@lunn.ch>
+ <CADvVLtXVVfU3-U8DYPtDnvGoEK2TOXhpuE=1vz6nnXaFBA8pNA@mail.gmail.com>
+ <20200731153119.GJ1712415@lunn.ch>
+ <CADvVLtUrZDGqwEPO_ApCWK1dELkUEjrH47s1CbYEYOH9XgZMRg@mail.gmail.com>
+ <20200801094132.GH1551@shell.armlinux.org.uk>
+ <20200801151107.GK1712415@lunn.ch>
+ <AM6PR04MB3976BB0CAB0B4270FF932F62EC4D0@AM6PR04MB3976.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM6PR04MB3976BB0CAB0B4270FF932F62EC4D0@AM6PR04MB3976.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now skb->dev is unconditionally set to the loopback device in current net
-namespace. But if we want to test bpf program which contains code branch
-based on ifindex condition (eg filters out localhost packets) it is useful
-to allow specifying of ifindex from userspace. This patch adds such option
-through ctx_in (__sk_buff) parameter.
+On Mon, Aug 03, 2020 at 08:33:19AM +0000, Madalin Bucur (OSS) wrote:
+> > -----Original Message-----
+> > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
+> > Behalf Of Andrew Lunn
+> > Sent: 01 August 2020 18:11
+> > To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+> > Cc: Vikas Singh <vikas.singh@puresoftware.com>; f.fainelli@gmail.com;
+> > hkallweit1@gmail.com; netdev@vger.kernel.org; Calvin Johnson (OSS)
+> > <calvin.johnson@oss.nxp.com>; kuldip dwivedi
+> > <kuldip.dwivedi@puresoftware.com>; Madalin Bucur (OSS)
+> > <madalin.bucur@oss.nxp.com>; Vikas Singh <vikas.singh@nxp.com>
+> > Subject: Re: [PATCH 2/2] net: phy: Associate device node with fixed PHY
+> > 
+> > On Sat, Aug 01, 2020 at 10:41:32AM +0100, Russell King - ARM Linux admin
+> > wrote:
+> > > On Sat, Aug 01, 2020 at 09:52:52AM +0530, Vikas Singh wrote:
+> > > > Hi Andrew,
+> > > >
+> > > > Please refer to the "fman" node under
+> > > > linux/arch/arm64/boot/dts/freescale/fsl-ls1046a-rdb.dts
+> > > > I have two 10G ethernet interfaces out of which one is of fixed-link.
+> > >
+> > > Please do not top post.
+> > >
+> > > How does XGMII (which is a 10G only interface) work at 1G speed?  Is
+> > > what is in DT itself a hack because fixed-phy doesn't support 10G
+> > > modes?
+> > 
+> > My gut feeling is there is some hack going on here, which is why i'm
+> > being persistent at trying to understand what is actually going on
+> > here.
+> 
+> Hi Andrew,
+> 
+> That platform used 1G fixed link there since there was no support for
+> 10G fixed link at the time. PHYlib could have tolerated 10G speed there
+> With a one-liner.
 
-Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
----
- net/bpf/test_run.c                               | 22 ++++++++++++++++++++--
- tools/testing/selftests/bpf/prog_tests/skb_ctx.c |  5 +++++
- 2 files changed, 25 insertions(+), 2 deletions(-)
+That statement is false.  It is not a "one liner".  fixed-phy exposes
+the settings to userspace as a Clause 22 PHY register set, and the
+Clause 22 register set does not support 10G.  So, a "one liner" would
+just be yet another hack.  Adding Clause 45 PHY emulation support
+would be a huge task.
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 736a596..99eb8c6 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -327,6 +327,12 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
- 	/* priority is allowed */
- 
- 	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, priority),
-+			   offsetof(struct __sk_buff, ifindex)))
-+		return -EINVAL;
-+
-+	/* ifindex is allowed */
-+
-+	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, ifindex),
- 			   offsetof(struct __sk_buff, cb)))
- 		return -EINVAL;
- 
-@@ -381,6 +387,7 @@ static void convert_skb_to___skb(struct sk_buff *skb, struct __sk_buff *__skb)
- 
- 	__skb->mark = skb->mark;
- 	__skb->priority = skb->priority;
-+	__skb->ifindex = skb->dev->ifindex;
- 	__skb->tstamp = skb->tstamp;
- 	memcpy(__skb->cb, &cb->data, QDISC_CB_PRIV_LEN);
- 	__skb->wire_len = cb->pkt_len;
-@@ -391,6 +398,8 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 			  union bpf_attr __user *uattr)
- {
- 	bool is_l2 = false, is_direct_pkt_access = false;
-+	struct net *net = current->nsproxy->net_ns;
-+	struct net_device *dev = net->loopback_dev;
- 	u32 size = kattr->test.data_size_in;
- 	u32 repeat = kattr->test.repeat;
- 	struct __sk_buff *ctx = NULL;
-@@ -432,7 +441,7 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 		kfree(ctx);
- 		return -ENOMEM;
- 	}
--	sock_net_set(sk, current->nsproxy->net_ns);
-+	sock_net_set(sk, net);
- 	sock_init_data(NULL, sk);
- 
- 	skb = build_skb(data, 0);
-@@ -446,7 +455,14 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 
- 	skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN);
- 	__skb_put(skb, size);
--	skb->protocol = eth_type_trans(skb, current->nsproxy->net_ns->loopback_dev);
-+	if (ctx && ctx->ifindex > 1) {
-+		dev = dev_get_by_index(net, ctx->ifindex);
-+		if (!dev) {
-+			ret = -ENODEV;
-+			goto out;
-+		}
-+	}
-+	skb->protocol = eth_type_trans(skb, dev);
- 	skb_reset_network_header(skb);
- 
- 	switch (skb->protocol) {
-@@ -502,6 +518,8 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 		ret = bpf_ctx_finish(kattr, uattr, ctx,
- 				     sizeof(struct __sk_buff));
- out:
-+	if (dev && dev != net->loopback_dev)
-+		dev_put(dev);
- 	kfree_skb(skb);
- 	bpf_sk_storage_free(sk);
- 	kfree(sk);
-diff --git a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-index 7021b92..25de86a 100644
---- a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-+++ b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-@@ -11,6 +11,7 @@ void test_skb_ctx(void)
- 		.cb[3] = 4,
- 		.cb[4] = 5,
- 		.priority = 6,
-+		.ifindex = 1,
- 		.tstamp = 7,
- 		.wire_len = 100,
- 		.gso_segs = 8,
-@@ -92,6 +93,10 @@ void test_skb_ctx(void)
- 		   "ctx_out_priority",
- 		   "skb->priority == %d, expected %d\n",
- 		   skb.priority, 7);
-+	CHECK_ATTR(skb.ifindex != 1,
-+		   "ctx_out_ifindex",
-+		   "skb->ifindex == %d, expected %d\n",
-+		   skb.ifindex, 1);
- 	CHECK_ATTR(skb.tstamp != 8,
- 		   "ctx_out_tstamp",
- 		   "skb->tstamp == %lld, expected %d\n",
+> I understand that PHYLink is working to describe this
+> Better, but it was not there at that time. Adding the dependency on
+> PHYLink was not desirable as most of the users for the DPAA 1 platforms
+> were targeting kernels before the PHYLink introduction (and last I've
+> looked, it's still under development, with unstable APIs so we'll
+> take a look at this later, when it settles).
+
+I think you need to read Documentation/process/stable-api-nonsense.rst
+particularly the section "Stable Kernel Source Interfaces".
+
+phylink is going to be under development for quite some time to come
+as requirements evolve.  For example, when support for QSFP interfaces
+is eventually worked out, I suspect there will need to be some further
+changes to the driver interface.  This is completely normal.
+
+Now, as to the stability of the phylink API to drivers, it has in fact
+been very stable - it has only changed over the course of this year to
+support split PCS, a necessary step for DPAA2 and a few others.  It has
+been around in mainline for two years, and has been around much longer
+than that, and during that time it has been in mainline, the MAC facing
+interface has not changed until recently.
+
+So, I find your claim to be quite unreasonable.
+
 -- 
-2.7.4
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
