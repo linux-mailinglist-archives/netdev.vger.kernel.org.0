@@ -2,86 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0091A23AA5E
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 18:20:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ABBF23AA60
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 18:23:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728335AbgHCQUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 12:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50172 "EHLO
+        id S1728234AbgHCQV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 12:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbgHCQUI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 12:20:08 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C24C06174A
-        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 09:20:08 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id a5so24811143wrm.6
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 09:20:08 -0700 (PDT)
+        with ESMTP id S1726624AbgHCQV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 12:21:58 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76662C061756
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 09:21:58 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id s23so28612805qtq.12
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 09:21:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ksgg+tMZFTuQ5G722MUtO6W4D9Sc6j/9SNDhFMh5on4=;
-        b=i8YhnO6PZwESxmIGionQd/VS50YUzbVXkCPOTbcEfSQmDIP5LNrCb7vWsNW7+6nkN1
-         VZtdAxjOHBYys2CkI+/UEx7L5/7MiPVu8d+FWrmWZTRm398+SbZNelN0NtoI9QXmdzpl
-         xRileGzcpTo8tlOpgHANMPqkah/qQ76fL1nFGPGlhJVm26hFpl0FvWbE4uPSE93Wpi6s
-         ZPo3mr9/rxV6YTejXAtVz+/rXsD7eCTdiuGJayylcLTSmqTFUDBNL0Vt1enCXyUNqW4G
-         lOp0W8olDAlKDvbBlWJBTj81Ae5c7epaPL196lVKpbiYQsWfx7mp31E5AJVD/8Fhk5eH
-         8xWQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JGx/+3R80pqTONt1Ak8Jv0FtZ9RnXmGr5UYQh/nJfgc=;
+        b=oz4WmDl9Oz190893VnZkDCS4wOQS4shbES/m+6CcrPuw3fjI5AZstk82q//PF40BNs
+         4k/NwG7css1MZBhTXvQLh28/2o4aIBgNGfTwdKMMODCiZpc7IpbfzYjsIWIDuyh3BnrX
+         5O2V+Rki7eiEbpxTeoaC2Z4o3CZ2dwh14f07LxmDxYRFHazxX1nh6pJ9Ju4S697eKnBO
+         HpXs3evqkVI1kVv7mfTOrYpMyuxY/jwcftllH0I7E9L3ICCAztypg4i69Mnuejqu8Bta
+         lbFrqBrnWGuY86UlHOb3KsWJ0Ai8TVnVOSVk+jf15UsoCQWwfqJvEtREw/5Z5xS5fZz8
+         QPIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ksgg+tMZFTuQ5G722MUtO6W4D9Sc6j/9SNDhFMh5on4=;
-        b=cMLuVbpoOM5U//U+jlBgcj2ErvZ+4Njvn8a2CwybEVV+VCAzoppjPvWvXHKUpwQFic
-         Ss8wiobs2+HefZ+xA2PTJ1C6MH+I4p1228qtCvgpk7b2mdcr/xNuFraN6O2eh5RqtyZi
-         rxn2hJ91s9hAKESJ4xAZIweF97adifh/yt6rE58zXzmVmG7UVe16tBViy24X3Yio7qsO
-         x3A64gjZVAdXItdea3e2oakpo99OZ7MSlJhlujx95xa4RkM2pjptpbJrw4suNKvzg4e/
-         yDbig3+xoTwAwhyo9kOuIdny8df/rDKbbRKZIAHE6pFz6NQGlvFYtEpIhR8ZDozMUWkU
-         RlVw==
-X-Gm-Message-State: AOAM533OTwmVGh493x4VCcDmQRVXDmhLg+cEJavt7aMPI6DBniN21FF0
-        UNx2FQppl05iB7twL5zk6mZnZtvWc1M=
-X-Google-Smtp-Source: ABdhPJyZjbBI1tqNML4YXYKaUpSC/PBDfQRG8vWGTwPQBIpJkCSfCY5xA/WoZeqCEcBLkJ3/gAsz/w==
-X-Received: by 2002:adf:bbc1:: with SMTP id z1mr15598898wrg.173.1596471607252;
-        Mon, 03 Aug 2020 09:20:07 -0700 (PDT)
-Received: from localhost (ip-89-176-225-97.net.upcbroadband.cz. [89.176.225.97])
-        by smtp.gmail.com with ESMTPSA id f63sm124047wmf.9.2020.08.03.09.20.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 09:20:06 -0700 (PDT)
-Date:   Mon, 3 Aug 2020 18:20:06 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
-Subject: Re: [iproute2-next v2 5/5] devlink: support setting the overwrite
- mask
-Message-ID: <20200803162006.GF2290@nanopsycho>
-References: <20200801002159.3300425-1-jacob.e.keller@intel.com>
- <20200801002159.3300425-6-jacob.e.keller@intel.com>
- <0bb895a2-e233-0426-3e48-d8422fa5b7cf@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JGx/+3R80pqTONt1Ak8Jv0FtZ9RnXmGr5UYQh/nJfgc=;
+        b=K8+c3TFr5xdr0AZJP2e2+HcoXBgXqDnBw0MalseeQe0sQ+z3H8yah4Nye5KhhOLhdy
+         i4tcq/ehFfBDZGJlw2s6TMUqJ41D5LPv8rPD1/avL8iTzsVSkbB6WTL6Y0uVWMNI4k2a
+         LLaIYM9qB9J5hrnB+uOsZ06d8RIl34n8fZR1TrjKAXYIRMLpFsFDjhLj9clPhdC7tXI0
+         6ylgbzh2GS1rX+7C6/UbzTbsrdersU1gm4oYhefz1qgj/AUTFqkk3VxrrKL0nlQ868BL
+         1DQvK7Ew2DMzVZqy7QmpkNPUa97oCEvxFMAF2Sea9s6r1pigSf6skqCGdeWsbgoNl662
+         y1fg==
+X-Gm-Message-State: AOAM531bO2Tbpo92lXbdZRSf369qWAsxBwpOi5mZsI4Vy6G/XXZhnMMV
+        BvwtcYHog0LZ7+Bg7dXBVFB/jDicyePfI64gRppQFg==
+X-Google-Smtp-Source: ABdhPJwmhUXl8lp81qKMfCYBpUmSHgHegrIkkADullzlCmhwtwfwVeVPUVFj8fVYKHdh3v0sBSechMm68DGuSlE+2D4=
+X-Received: by 2002:ac8:110e:: with SMTP id c14mr17167408qtj.71.1596471717331;
+ Mon, 03 Aug 2020 09:21:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0bb895a2-e233-0426-3e48-d8422fa5b7cf@gmail.com>
+References: <20200803131948.41736-1-yuehaibing@huawei.com>
+In-Reply-To: <20200803131948.41736-1-yuehaibing@huawei.com>
+From:   Brian Vazquez <brianvv@google.com>
+Date:   Mon, 3 Aug 2020 09:21:45 -0700
+Message-ID: <CAMzD94TUnEwAtEHk9+87K964vE8sVxGZUVoZS-LjyZJKS+-O4Q@mail.gmail.com>
+Subject: Re: [PATCH net-next] fib: Fix undef compile warning
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Aug 03, 2020 at 05:53:16PM CEST, dsahern@gmail.com wrote:
->On 7/31/20 6:21 PM, Jacob Keller wrote:
->> Add support for specifying the overwrite sections to allow in the flash
->> update command. This is done by adding a new "overwrite" option which
->> can take either "settings" or "identifiers" passing the overwrite mode
->> multiple times will combine the fields using bitwise-OR.
->> 
->> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->> ---
->>  devlink/devlink.c | 37 +++++++++++++++++++++++++++++++++++--
->>  1 file changed, 35 insertions(+), 2 deletions(-)
->> 
+Acked-By: Brian Vazquez <brianvv@google.com>
+
+On Mon, Aug 3, 2020 at 6:20 AM YueHaibing <yuehaibing@huawei.com> wrote:
 >
->5/5? I only see 2 - 4/5 and 5/5. Please re-send against latest
->iproute2-next.
-
-1-3 are kernel.
-
+> net/core/fib_rules.c:26:7: warning: "CONFIG_IP_MULTIPLE_TABLES" is not defined, evaluates to 0 [-Wundef]
+>  #elif CONFIG_IP_MULTIPLE_TABLES
+>        ^~~~~~~~~~~~~~~~~~~~~~~~~
+>
+> Fixes: 8b66a6fd34f5 ("fib: fix another fib_rules_ops indirect call wrapper problem")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  net/core/fib_rules.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
+> index a7a3f500a857..51678a528f85 100644
+> --- a/net/core/fib_rules.c
+> +++ b/net/core/fib_rules.c
+> @@ -23,7 +23,7 @@
+>  #else
+>  #define INDIRECT_CALL_MT(f, f2, f1, ...) INDIRECT_CALL_1(f, f2, __VA_ARGS__)
+>  #endif
+> -#elif CONFIG_IP_MULTIPLE_TABLES
+> +#elif defined(CONFIG_IP_MULTIPLE_TABLES)
+>  #define INDIRECT_CALL_MT(f, f2, f1, ...) INDIRECT_CALL_1(f, f1, __VA_ARGS__)
+>  #else
+>  #define INDIRECT_CALL_MT(f, f2, f1, ...) f(__VA_ARGS__)
+> --
+> 2.17.1
+>
 >
