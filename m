@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1260C23AA48
+	by mail.lfdr.de (Postfix) with ESMTP id 7FB2D23AA49
 	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 18:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728427AbgHCQMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 12:12:48 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:34555 "EHLO
+        id S1728439AbgHCQMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 12:12:51 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:50765 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728360AbgHCQMr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 12:12:47 -0400
+        by vger.kernel.org with ESMTP id S1728360AbgHCQMu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 12:12:50 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 088B65C0138;
-        Mon,  3 Aug 2020 12:12:47 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 4420D5C013B;
+        Mon,  3 Aug 2020 12:12:49 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 03 Aug 2020 12:12:47 -0400
+  by compute4.internal (MEProxy); Mon, 03 Aug 2020 12:12:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=5iYTj7D8CfwsL/vG0QzFu20VltbvrXmk7Lfo4Z1OMJI=; b=CforOCfM
-        COIUtRry8NNZMpoJODdS/okL7mRus4pRcnuUYpQHlw7oUEAarcC49whJss7AEeHB
-        Ry7ZIXkPI9h9EI21J2ZeFNzK4jVjffagWznNroQ80tIi3k89HQGqfI7SGECTi3L2
-        ALpBJf3Zwc/TbXgRnXuG+XTVDa6SWEGunmvGaYnJMfToyIY9zVPCVSzGLPZrRNwO
-        hjM+uvkhZ/HlYr5IWFX3xm/B64592frv4Gy3IX6/qf9YMk2P0LO9ydopzqTG2aUl
-        iXuWEHR2/lyIZxFfEpKSOqY296SSoTst7Jz5yqE7iS/ZRqWOyyInf3KY6CzdBC3H
-        Z8lbuNGKVbxsoQ==
-X-ME-Sender: <xms:fjcoX8JFDTTe6OR-OL-jnQizUfgN4SEJjBzd7ChQIeNZPFoGtNfwkA>
+        fm3; bh=AWqAeFACTLWKz6qUabKDHXroy8JejuuJcP2ufK8OKPI=; b=S0FHMQ46
+        od3FQoLI8qFvdm+4NrjdzFrqw2rmpFqoSP22h9hPncmRTI6ZPO4nHNaaCJIXuxvi
+        DxU45IwoexWhU8OrP+SAiihNN+OXBs30vZHvSnj6k0ujMq5WmH4airrHxyh4Vn+Y
+        nK3Q0a4u3+qP+ggkeATRFETR0L4cROAH7AvYHvCa7/TvVGHXyf5vlE766QAzEoKm
+        +42/WgObGftoceXHrWxI8DCXODmFSu9PpQ5IrSbXGuQvSZWNQ8MiqkSCLyEaRQwe
+        K5DoGtAk/CyWbmNl8SsI/sPUpRn5r1UUufB7KElvp9cGbKO8SKVxr46v3f0G8aGZ
+        1fXex+yYQ7kwiQ==
+X-ME-Sender: <xms:gTcoX_byW1uF8cuRnAIlF0J9dFQ6wpTV8y7CQUpStwkynnaH6BNOrA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrjeeggdelkecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -36,21 +36,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrjeeggdelkecutefuodetggdote
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepjeelrddukedurdeirddvudelnecu
     vehluhhsthgvrhfuihiivgepheenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
     hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:fjcoX8IbIekzh0LtN-1pgs1sbGVgM5MgL_HEQPipMZlkPBVshpATdA>
-    <xmx:fjcoX8t1QcygoG-t6yoeQdNZiUhrM-wNqrVqqPWFCxT93zsHYLtpNg>
-    <xmx:fjcoX5b1uq0AQje6dEdgHdQdGyouzIfKaLqp6CuccxQH75tfmu7JcQ>
-    <xmx:fzcoX_F7uP6J9MzmUbsDRQD1dTPRWTpVbgWH7-SNjs27wmyPb-YgyQ>
+X-ME-Proxy: <xmx:gTcoX-aSLRmDKqNY3OD-5FewEhuKw9Pmou28XarV5x9NdyWtleYicg>
+    <xmx:gTcoXx-IyoEQL2hLgXR0QZSTsxAb4aIJ_knKsAf8in2_OfFev9r4sQ>
+    <xmx:gTcoX1o7_9xJYvqHEXUejAsMaz29dzq4jkjA4YuRyELQmAA_oltpRQ>
+    <xmx:gTcoX9WJyEEsJT3QfP9wMV7NsREh1INkTNw9FcQunlVVLJOqrIs_lg>
 Received: from shredder.mtl.com (bzq-79-181-6-219.red.bezeqint.net [79.181.6.219])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CD1EA306005F;
-        Mon,  3 Aug 2020 12:12:44 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 2F3B1306005F;
+        Mon,  3 Aug 2020 12:12:46 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         petrm@mellanox.com, amitc@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 7/9] mlxsw: spectrum_trap: Add early_drop trap
-Date:   Mon,  3 Aug 2020 19:11:39 +0300
-Message-Id: <20200803161141.2523857-8-idosch@idosch.org>
+Subject: [PATCH net-next 8/9] mlxsw: spectrum_qdisc: Offload action trap for qevents
+Date:   Mon,  3 Aug 2020 19:11:40 +0300
+Message-Id: <20200803161141.2523857-9-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200803161141.2523857-1-idosch@idosch.org>
 References: <20200803161141.2523857-1-idosch@idosch.org>
@@ -61,196 +61,227 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Petr Machata <petrm@mellanox.com>
 
-As previously explained, packets that are dropped due to buffer related
-reasons (e.g., tail drop, early drop) can be mirrored to the CPU port.
-These packets are then trapped with one of the "mirror session" traps
-and their CQE includes the reason for which the packet was mirrored.
-
-Register with devlink a new trap, early_drop, and initialize the
-corresponding Rx listener with the appropriate mirror reason. Return an
-error in case user tries to change the traps' action, as this is not
-supported.
-
-Since Spectrum-1 does not support these traps, the above is only done
-for Spectrum-2 onwards.
+When offloading action trap on a qevent, pass to_dev of NULL to the SPAN
+module to trigger the mirror to the CPU port. Query the buffer drops
+policer and use it for policing of the trapped traffic.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.h    | 13 ++++--
- drivers/net/ethernet/mellanox/mlxsw/reg.h     |  1 +
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 42 +++++++++++++++++++
- 3 files changed, 53 insertions(+), 3 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  7 ++
+ .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 75 +++++++++++++++----
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 26 +++++++
+ 3 files changed, 95 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index 219ce89e629a..11af3308f8cc 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -89,13 +89,15 @@ struct mlxsw_listener {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index b808f6b4d670..f9ba59641b4d 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -984,6 +984,10 @@ struct mlxsw_sp_mall_mirror_entry {
+ 	int span_id;
  };
  
- #define __MLXSW_RXL(_func, _trap_id, _en_action, _is_ctrl, _en_trap_group,	\
--		    _dis_action, _enabled_on_register, _dis_trap_group)		\
-+		    _dis_action, _enabled_on_register, _dis_trap_group,		\
-+		    _mirror_reason)						\
- 	{									\
- 		.trap_id = MLXSW_TRAP_ID_##_trap_id,				\
- 		.rx_listener =							\
- 		{								\
- 			.func = _func,						\
- 			.local_port = MLXSW_PORT_DONT_CARE,			\
-+			.mirror_reason = _mirror_reason,			\
- 			.trap_id = MLXSW_TRAP_ID_##_trap_id,			\
- 		},								\
- 		.en_action = MLXSW_REG_HPKT_ACTION_##_en_action,		\
-@@ -109,12 +111,17 @@ struct mlxsw_listener {
- #define MLXSW_RXL(_func, _trap_id, _en_action, _is_ctrl, _trap_group,		\
- 		  _dis_action)							\
- 	__MLXSW_RXL(_func, _trap_id, _en_action, _is_ctrl, _trap_group,		\
--		    _dis_action, true, _trap_group)
-+		    _dis_action, true, _trap_group, 0)
- 
- #define MLXSW_RXL_DIS(_func, _trap_id, _en_action, _is_ctrl, _en_trap_group,	\
- 		      _dis_action, _dis_trap_group)				\
- 	__MLXSW_RXL(_func, _trap_id, _en_action, _is_ctrl, _en_trap_group,	\
--		    _dis_action, false, _dis_trap_group)
-+		    _dis_action, false, _dis_trap_group, 0)
-+
-+#define MLXSW_RXL_MIRROR(_func, _session_id, _trap_group, _mirror_reason)	\
-+	__MLXSW_RXL(_func, MIRROR_SESSION##_session_id,	TRAP_TO_CPU, false,	\
-+		    _trap_group, TRAP_TO_CPU, true, _trap_group,		\
-+		    _mirror_reason)
- 
- #define MLXSW_EVENTL(_func, _trap_id, _trap_group)				\
- 	{									\
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 28a2576eb783..079b080de7f7 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -5614,6 +5614,7 @@ enum mlxsw_reg_htgt_trap_group {
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_L3_EXCEPTIONS,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_TUNNEL_DISCARDS,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_ACL_DISCARDS,
-+	MLXSW_REG_HTGT_TRAP_GROUP_SP_BUFFER_DISCARDS,
- 
- 	__MLXSW_REG_HTGT_TRAP_GROUP_MAX,
- 	MLXSW_REG_HTGT_TRAP_GROUP_MAX = __MLXSW_REG_HTGT_TRAP_GROUP_MAX - 1
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 93dd88abbe23..16bf154076b3 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -21,6 +21,7 @@ struct mlxsw_sp_trap_group_item {
- 	struct devlink_trap_group group;
- 	u16 hw_group_id;
- 	u8 priority;
-+	u8 fixed_policer:1; /* Whether policer binding can change */
- };
- 
- #define MLXSW_SP_TRAP_LISTENERS_MAX 3
-@@ -28,6 +29,7 @@ struct mlxsw_sp_trap_group_item {
- struct mlxsw_sp_trap_item {
- 	struct devlink_trap trap;
- 	struct mlxsw_listener listeners_arr[MLXSW_SP_TRAP_LISTENERS_MAX];
-+	u8 is_source:1;
- };
- 
- /* All driver-specific traps must be documented in
-@@ -46,6 +48,11 @@ enum {
- 
- #define MLXSW_SP_TRAP_METADATA DEVLINK_TRAP_METADATA_TYPE_F_IN_PORT
- 
-+enum {
-+	/* Packet was early dropped. */
-+	MLXSW_SP_MIRROR_REASON_INGRESS_WRED = 9,
++struct mlxsw_sp_mall_trap_entry {
++	int span_id;
 +};
 +
- static int mlxsw_sp_rx_listener(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
- 				u8 local_port,
- 				struct mlxsw_sp_port *mlxsw_sp_port)
-@@ -222,6 +229,11 @@ static void mlxsw_sp_rx_sample_listener(struct sk_buff *skb, u8 local_port,
- 			     DEVLINK_TRAP_GROUP_GENERIC_ID_##_group_id,	      \
- 			     MLXSW_SP_TRAP_METADATA | (_metadata))
+ struct mlxsw_sp_mall_entry {
+ 	struct list_head list;
+ 	unsigned long cookie;
+@@ -992,6 +996,7 @@ struct mlxsw_sp_mall_entry {
+ 	bool ingress;
+ 	union {
+ 		struct mlxsw_sp_mall_mirror_entry mirror;
++		struct mlxsw_sp_mall_trap_entry trap;
+ 		struct mlxsw_sp_port_sample sample;
+ 	};
+ 	struct rcu_head rcu;
+@@ -1199,6 +1204,8 @@ int
+ mlxsw_sp_trap_policer_counter_get(struct mlxsw_core *mlxsw_core,
+ 				  const struct devlink_trap_policer *policer,
+ 				  u64 *p_drops);
++int mlxsw_sp_trap_group_policer_hw_id_get(struct mlxsw_sp *mlxsw_sp, u16 id,
++					  bool *p_enabled, u16 *p_hw_id);
  
-+#define MLXSW_SP_TRAP_BUFFER_DROP(_id)					      \
-+	DEVLINK_TRAP_GENERIC(DROP, TRAP, _id,				      \
-+			     DEVLINK_TRAP_GROUP_GENERIC_ID_BUFFER_DROPS,      \
-+			     MLXSW_SP_TRAP_METADATA)
+ static inline struct net *mlxsw_sp_net(struct mlxsw_sp *mlxsw_sp)
+ {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+index a5ce1eec5418..964fd444bb10 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+@@ -1289,19 +1289,18 @@ struct mlxsw_sp_qevent_binding {
+ 
+ static LIST_HEAD(mlxsw_sp_qevent_block_cb_list);
+ 
+-static int mlxsw_sp_qevent_mirror_configure(struct mlxsw_sp *mlxsw_sp,
+-					    struct mlxsw_sp_mall_entry *mall_entry,
+-					    struct mlxsw_sp_qevent_binding *qevent_binding)
++static int mlxsw_sp_qevent_span_configure(struct mlxsw_sp *mlxsw_sp,
++					  struct mlxsw_sp_mall_entry *mall_entry,
++					  struct mlxsw_sp_qevent_binding *qevent_binding,
++					  const struct mlxsw_sp_span_agent_parms *agent_parms,
++					  int *p_span_id)
+ {
+ 	struct mlxsw_sp_port *mlxsw_sp_port = qevent_binding->mlxsw_sp_port;
+ 	struct mlxsw_sp_span_trigger_parms trigger_parms = {};
+-	struct mlxsw_sp_span_agent_parms agent_parms = {
+-		.to_dev = mall_entry->mirror.to_dev,
+-	};
+ 	int span_id;
+ 	int err;
+ 
+-	err = mlxsw_sp_span_agent_get(mlxsw_sp, &span_id, &agent_parms);
++	err = mlxsw_sp_span_agent_get(mlxsw_sp, &span_id, agent_parms);
+ 	if (err)
+ 		return err;
+ 
+@@ -1320,7 +1319,7 @@ static int mlxsw_sp_qevent_mirror_configure(struct mlxsw_sp *mlxsw_sp,
+ 	if (err)
+ 		goto err_trigger_enable;
+ 
+-	mall_entry->mirror.span_id = span_id;
++	*p_span_id = span_id;
+ 	return 0;
+ 
+ err_trigger_enable:
+@@ -1333,13 +1332,13 @@ static int mlxsw_sp_qevent_mirror_configure(struct mlxsw_sp *mlxsw_sp,
+ 	return err;
+ }
+ 
+-static void mlxsw_sp_qevent_mirror_deconfigure(struct mlxsw_sp *mlxsw_sp,
+-					       struct mlxsw_sp_mall_entry *mall_entry,
+-					       struct mlxsw_sp_qevent_binding *qevent_binding)
++static void mlxsw_sp_qevent_span_deconfigure(struct mlxsw_sp *mlxsw_sp,
++					     struct mlxsw_sp_qevent_binding *qevent_binding,
++					     int span_id)
+ {
+ 	struct mlxsw_sp_port *mlxsw_sp_port = qevent_binding->mlxsw_sp_port;
+ 	struct mlxsw_sp_span_trigger_parms trigger_parms = {
+-		.span_id = mall_entry->mirror.span_id,
++		.span_id = span_id,
+ 	};
+ 
+ 	mlxsw_sp_span_trigger_disable(mlxsw_sp_port, qevent_binding->span_trigger,
+@@ -1347,7 +1346,51 @@ static void mlxsw_sp_qevent_mirror_deconfigure(struct mlxsw_sp *mlxsw_sp,
+ 	mlxsw_sp_span_agent_unbind(mlxsw_sp, qevent_binding->span_trigger, mlxsw_sp_port,
+ 				   &trigger_parms);
+ 	mlxsw_sp_span_analyzed_port_put(mlxsw_sp_port, true);
+-	mlxsw_sp_span_agent_put(mlxsw_sp, mall_entry->mirror.span_id);
++	mlxsw_sp_span_agent_put(mlxsw_sp, span_id);
++}
 +
- #define MLXSW_SP_TRAP_DRIVER_DROP(_id, _group_id)			      \
- 	DEVLINK_TRAP_DRIVER(DROP, DROP, DEVLINK_MLXSW_TRAP_ID_##_id,	      \
- 			    DEVLINK_MLXSW_TRAP_NAME_##_id,		      \
-@@ -248,6 +260,10 @@ static void mlxsw_sp_rx_sample_listener(struct sk_buff *skb, u8 local_port,
- 		      TRAP_EXCEPTION_TO_CPU, false, SP_##_en_group_id,	      \
- 		      SET_FW_DEFAULT, SP_##_dis_group_id)
- 
-+#define MLXSW_SP_RXL_BUFFER_DISCARD(_mirror_reason)			      \
-+	MLXSW_RXL_MIRROR(mlxsw_sp_rx_drop_listener, 0, SP_BUFFER_DISCARDS,    \
-+			 MLXSW_SP_MIRROR_REASON_##_mirror_reason)
++static int mlxsw_sp_qevent_mirror_configure(struct mlxsw_sp *mlxsw_sp,
++					    struct mlxsw_sp_mall_entry *mall_entry,
++					    struct mlxsw_sp_qevent_binding *qevent_binding)
++{
++	struct mlxsw_sp_span_agent_parms agent_parms = {
++		.to_dev = mall_entry->mirror.to_dev,
++	};
 +
- #define MLXSW_SP_RXL_EXCEPTION(_id, _group_id, _action)			      \
- 	MLXSW_RXL(mlxsw_sp_rx_mark_listener, _id,			      \
- 		   _action, false, SP_##_group_id, SET_FW_DEFAULT)
-@@ -331,6 +347,9 @@ mlxsw_sp_trap_policer_items_arr[] = {
- 	{
- 		.policer = MLXSW_SP_TRAP_POLICER(19, 1024, 512),
- 	},
-+	{
-+		.policer = MLXSW_SP_TRAP_POLICER(20, 10240, 4096),
-+	},
- };
++	return mlxsw_sp_qevent_span_configure(mlxsw_sp, mall_entry, qevent_binding,
++					      &agent_parms, &mall_entry->mirror.span_id);
++}
++
++static void mlxsw_sp_qevent_mirror_deconfigure(struct mlxsw_sp *mlxsw_sp,
++					       struct mlxsw_sp_mall_entry *mall_entry,
++					       struct mlxsw_sp_qevent_binding *qevent_binding)
++{
++	mlxsw_sp_qevent_span_deconfigure(mlxsw_sp, qevent_binding, mall_entry->mirror.span_id);
++}
++
++static int mlxsw_sp_qevent_trap_configure(struct mlxsw_sp *mlxsw_sp,
++					  struct mlxsw_sp_mall_entry *mall_entry,
++					  struct mlxsw_sp_qevent_binding *qevent_binding)
++{
++	struct mlxsw_sp_span_agent_parms agent_parms = {};
++	int err;
++
++	err = mlxsw_sp_trap_group_policer_hw_id_get(mlxsw_sp,
++						    DEVLINK_TRAP_GROUP_GENERIC_ID_BUFFER_DROPS,
++						    &agent_parms.policer_enable,
++						    &agent_parms.policer_id);
++	if (err)
++		return err;
++
++	return mlxsw_sp_qevent_span_configure(mlxsw_sp, mall_entry, qevent_binding,
++					      &agent_parms, &mall_entry->trap.span_id);
++}
++
++static void mlxsw_sp_qevent_trap_deconfigure(struct mlxsw_sp *mlxsw_sp,
++					     struct mlxsw_sp_mall_entry *mall_entry,
++					     struct mlxsw_sp_qevent_binding *qevent_binding)
++{
++	mlxsw_sp_qevent_span_deconfigure(mlxsw_sp, qevent_binding, mall_entry->trap.span_id);
+ }
  
- static const struct mlxsw_sp_trap_group_item mlxsw_sp_trap_group_items_arr[] = {
-@@ -1429,6 +1448,11 @@ int mlxsw_sp_trap_action_set(struct mlxsw_core *mlxsw_core,
- 	if (WARN_ON(!trap_item))
- 		return -EINVAL;
+ static int mlxsw_sp_qevent_entry_configure(struct mlxsw_sp *mlxsw_sp,
+@@ -1357,6 +1400,8 @@ static int mlxsw_sp_qevent_entry_configure(struct mlxsw_sp *mlxsw_sp,
+ 	switch (mall_entry->type) {
+ 	case MLXSW_SP_MALL_ACTION_TYPE_MIRROR:
+ 		return mlxsw_sp_qevent_mirror_configure(mlxsw_sp, mall_entry, qevent_binding);
++	case MLXSW_SP_MALL_ACTION_TYPE_TRAP:
++		return mlxsw_sp_qevent_trap_configure(mlxsw_sp, mall_entry, qevent_binding);
+ 	default:
+ 		/* This should have been validated away. */
+ 		WARN_ON(1);
+@@ -1371,6 +1416,8 @@ static void mlxsw_sp_qevent_entry_deconfigure(struct mlxsw_sp *mlxsw_sp,
+ 	switch (mall_entry->type) {
+ 	case MLXSW_SP_MALL_ACTION_TYPE_MIRROR:
+ 		return mlxsw_sp_qevent_mirror_deconfigure(mlxsw_sp, mall_entry, qevent_binding);
++	case MLXSW_SP_MALL_ACTION_TYPE_TRAP:
++		return mlxsw_sp_qevent_trap_deconfigure(mlxsw_sp, mall_entry, qevent_binding);
+ 	default:
+ 		WARN_ON(1);
+ 		return;
+@@ -1490,6 +1537,8 @@ static int mlxsw_sp_qevent_mall_replace(struct mlxsw_sp *mlxsw_sp,
+ 	if (act->id == FLOW_ACTION_MIRRED) {
+ 		mall_entry->type = MLXSW_SP_MALL_ACTION_TYPE_MIRROR;
+ 		mall_entry->mirror.to_dev = act->dev;
++	} else if (act->id == FLOW_ACTION_TRAP) {
++		mall_entry->type = MLXSW_SP_MALL_ACTION_TYPE_TRAP;
+ 	} else {
+ 		NL_SET_ERR_MSG(f->common.extack, "Unsupported action");
+ 		err = -EOPNOTSUPP;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index 16bf154076b3..2e41c5519c1b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -1675,6 +1675,32 @@ mlxsw_sp_trap_policer_counter_get(struct mlxsw_core *mlxsw_core,
+ 	return 0;
+ }
  
-+	if (trap_item->is_source) {
-+		NL_SET_ERR_MSG_MOD(extack, "Changing the action of source traps is not supported");
-+		return -EOPNOTSUPP;
++int mlxsw_sp_trap_group_policer_hw_id_get(struct mlxsw_sp *mlxsw_sp, u16 id,
++					  bool *p_enabled, u16 *p_hw_id)
++{
++	struct mlxsw_sp_trap_policer_item *pol_item;
++	struct mlxsw_sp_trap_group_item *gr_item;
++	u32 pol_id;
++
++	gr_item = mlxsw_sp_trap_group_item_lookup(mlxsw_sp, id);
++	if (!gr_item)
++		return -ENOENT;
++
++	pol_id = gr_item->group.init_policer_id;
++	if (!pol_id) {
++		*p_enabled = false;
++		return 0;
 +	}
 +
- 	for (i = 0; i < MLXSW_SP_TRAP_LISTENERS_MAX; i++) {
- 		const struct mlxsw_listener *listener;
- 		bool enabled;
-@@ -1470,6 +1494,11 @@ __mlxsw_sp_trap_group_init(struct mlxsw_core *mlxsw_core,
- 	if (WARN_ON(!group_item))
- 		return -EINVAL;
- 
-+	if (group_item->fixed_policer && policer_id != group->init_policer_id) {
-+		NL_SET_ERR_MSG_MOD(extack, "Changing the policer binding of this group is not supported");
-+		return -EOPNOTSUPP;
-+	}
++	pol_item = mlxsw_sp_trap_policer_item_lookup(mlxsw_sp, pol_id);
++	if (WARN_ON(!pol_item))
++		return -ENOENT;
 +
- 	if (policer_id) {
- 		struct mlxsw_sp_trap_policer_item *policer_item;
- 
-@@ -1682,10 +1711,23 @@ const struct mlxsw_sp_trap_ops mlxsw_sp1_trap_ops = {
- 
++	*p_enabled = true;
++	*p_hw_id = pol_item->hw_id;
++	return 0;
++}
++
  static const struct mlxsw_sp_trap_group_item
- mlxsw_sp2_trap_group_items_arr[] = {
-+	{
-+		.group = DEVLINK_TRAP_GROUP_GENERIC(BUFFER_DROPS, 20),
-+		.hw_group_id = MLXSW_REG_HTGT_TRAP_GROUP_SP_BUFFER_DISCARDS,
-+		.priority = 0,
-+		.fixed_policer = true,
-+	},
+ mlxsw_sp1_trap_group_items_arr[] = {
  };
- 
- static const struct mlxsw_sp_trap_item
- mlxsw_sp2_trap_items_arr[] = {
-+	{
-+		.trap = MLXSW_SP_TRAP_BUFFER_DROP(EARLY_DROP),
-+		.listeners_arr = {
-+			MLXSW_SP_RXL_BUFFER_DISCARD(INGRESS_WRED),
-+		},
-+		.is_source = true,
-+	},
- };
- 
- static int
 -- 
 2.26.2
 
