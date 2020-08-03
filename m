@@ -2,114 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27C3523A00E
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 09:09:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC6F823A035
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 09:22:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726497AbgHCHIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 03:08:30 -0400
-Received: from mail-eopbgr150052.outbound.protection.outlook.com ([40.107.15.52]:25506
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        id S1725884AbgHCHWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 03:22:40 -0400
+Received: from mail-eopbgr50072.outbound.protection.outlook.com ([40.107.5.72]:18333
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726279AbgHCHI2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Aug 2020 03:08:28 -0400
+        id S1725270AbgHCHWk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Aug 2020 03:22:40 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ig6Y4S+A8e9yHd52F0Z4PogE3p8I2+FJLF607KxA238jFdDk2kD0gW3MxVPDf3g3Cu/ITwmMJnXW3lH8rKYoIxgwgdM6hdrli1m11vVkEL4xxCJaUI6AE6e7TX3SxyEjkSmtY9LxZooulQOH092U9eRoFRSrNpeP00mPZautvrvWz2ob0OzGq0Vt0ci7hiUV//vtl3cpTgTiGtX46WXtSbk9L0lSAtbkSegykB22+BFUg3D6I8O60zoWELNdbFiX1Jk+GdUC1ewzZzoDzwEqVNEDg/87Ni9Tc9Zn6PgEUSDu3uM1/YzXXxI3G5zcOo5Dp9O0JZ6nBqmRe60nWdQnPA==
+ b=ZFtTb4T9j/hpoZ5uai6ImZxmD198G109yF+XnYMC0D1WHx/4UW6b2FO/861xmBSqKE2c4AiSMb7qzXF/d/Zgoxvh9OMkbZpXO69p7ZgQSjk5vUHMX+jz7XVssEXQ5x4MNI4u5O3giCHBSwcTBQfqc9G21Yt8KbnMZp3kDmAiHLSezhJ7SkoVAldv9vdh/HsQOVIP3i2wlyNguMA6G++tZZiIVuDl+JyC3ZSL7fHZQ6yt6iC11K8vcMF7yi9BXNugw86+J/k9BJkLJmR0wy2EokbV0svjBSUQft9yHuI3X1kNM4Ik27gZlH0uXzwf5/VcieMC8t9xCvN2rJHPKFHakA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uv7Sb1aIddJ4o0o7SJYBx/eg2HRonbYEfVA+c/wT/Lw=;
- b=DgtCPgeyjAJdQCPJTNPQy/5TbMHQFJuJc9w/lxf9j/K2AV+ZoHB/9ko80IDxbr5sxH/7LCkLEJmWldFSCCr8+ckL90i5QfL/M1sKjBCG6PMvfkZzq4nA5R8zZ6AcWueEK7mt16srvU36HgX59NszGV3wMqSXbjSpfXc6CqFNL2xfJbUfs4WbBNxRKVoWVTmMjvb+dIK3mptkwUCZndi7U8/jwyeN7Y2WLIq4Bw5evr9ZNQ7pX8r3aT9Cd50zORX88ItjsTWi3N2pdBh7uO4tBF23F5zD5yTzx50vpufhfVREUnJs2h/iKOjtXanKH9/h6olJze+qAvxmxXsboHdm+g==
+ bh=fqhHSqjFZHAiHyRv9w1GY5it/g/iMwfASPyCwZeHD6c=;
+ b=e3UAdL0x7nF4XRn1xu7chJR6sIMfXThseCvJHrPPM0OluRgBjyuLS+bfpymM1OQtPxXFFO++bySWGSL3ap+BUFqDuxgLvtbZRRnV8wVZWwJXx+45AJ0ToACnQbOds2aOa+o8E/xBle3YqCdsfypVqxqaXQMCvqZ2pYUQpHqKnZ6frzwpEfOkSKLD5JpOh4UqtDyVvHrXhY6cOsfcZONBvpj44mXnXdJEbWgG1LC9zZRRnisMt1kjNvTX5ppXxXGgh/70Ss1Tn9A/CHHYehvbzaLm/3mQAZrYYfFNB0SUqBpCleUj9ikau/c+0GXIX4US3IBYHp1ASTqwYAxEMw4u9A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uv7Sb1aIddJ4o0o7SJYBx/eg2HRonbYEfVA+c/wT/Lw=;
- b=OkLFv+3l4voDVljDivTXvwzj7f4HusS3ghiZPM3UrA5k4bVB7UYeb0TImjN3ylGFqsOFyqULk3lAwCD+Bk5MpKLdiV3FBI4tAiP4D1v4ANBK6hOHGF/tW3FI6Y+83mfHb7Tx2S+wZ7YH8Ot52sRv0ozOpiZUSI/SpuNjxbvR6hk=
-Authentication-Results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB5443.eurprd04.prod.outlook.com (2603:10a6:208:119::33)
- by AM0PR04MB4356.eurprd04.prod.outlook.com (2603:10a6:208:5c::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.21; Mon, 3 Aug
- 2020 07:08:05 +0000
-Received: from AM0PR04MB5443.eurprd04.prod.outlook.com
- ([fe80::f0b7:8439:3b5a:61bd]) by AM0PR04MB5443.eurprd04.prod.outlook.com
- ([fe80::f0b7:8439:3b5a:61bd%7]) with mapi id 15.20.3239.021; Mon, 3 Aug 2020
- 07:08:05 +0000
-From:   Florinel Iordache <florinel.iordache@nxp.com>
-To:     madalin.bucur@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Florinel Iordache <florinel.iordache@nxp.com>
-Subject: [PATCH net v3 5/5] fsl/fman: fix eth hash table allocation
-Date:   Mon,  3 Aug 2020 10:07:34 +0300
-Message-Id: <1596438454-4895-6-git-send-email-florinel.iordache@nxp.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1596438454-4895-1-git-send-email-florinel.iordache@nxp.com>
-References: <1596438454-4895-1-git-send-email-florinel.iordache@nxp.com>
-Reply-to: florinel.iordache@nxp.com
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR07CA0007.eurprd07.prod.outlook.com
- (2603:10a6:208:ac::20) To AM0PR04MB5443.eurprd04.prod.outlook.com
- (2603:10a6:208:119::33)
+ bh=fqhHSqjFZHAiHyRv9w1GY5it/g/iMwfASPyCwZeHD6c=;
+ b=jsDgve5oEgYtWNDr2mqlHHufi2kiD6Mrr5DNpVs14MFX4BBr4eYA3DnHGTEmgpvpDSwbFANnV/qrBX9d/Td3qaSq3CJi9IPYNdZtwHs0xdent//l0vbxWujlRtTa8yLaLfGaUR/RJ4p3LDoYkO9itaUNNd6yJXYNqexr9K9n5To=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from DB7PR05MB4156.eurprd05.prod.outlook.com (2603:10a6:5:18::21) by
+ DB7PR05MB5803.eurprd05.prod.outlook.com (2603:10a6:10:8f::32) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3239.20; Mon, 3 Aug 2020 07:22:36 +0000
+Received: from DB7PR05MB4156.eurprd05.prod.outlook.com
+ ([fe80::84:f8d2:972:d110]) by DB7PR05MB4156.eurprd05.prod.outlook.com
+ ([fe80::84:f8d2:972:d110%7]) with mapi id 15.20.3239.021; Mon, 3 Aug 2020
+ 07:22:35 +0000
+Subject: Re: [PATCH net 2/2] net/sched: act_ct: Set offload timeout when
+ setting the offload bit
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     netdev@vger.kernel.org, pablo@netfilter.org,
+        Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
+References: <20200728115759.426667-1-roid@mellanox.com>
+ <20200728115759.426667-3-roid@mellanox.com>
+ <20200728144249.GC3398@localhost.localdomain>
+ <c33a4437-8a7d-10fe-7020-94cec26d5aca@mellanox.com>
+ <20200729171044.GI3307@localhost.localdomain>
+From:   Roi Dayan <roid@mellanox.com>
+Message-ID: <a865491c-70c9-c87a-9e8e-fd3db380e0a8@mellanox.com>
+Date:   Mon, 3 Aug 2020 10:21:21 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20200729171044.GI3307@localhost.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM0P190CA0028.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:208:190::38) To DB7PR05MB4156.eurprd05.prod.outlook.com
+ (2603:10a6:5:18::21)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from fsr-ub1464-128.ea.freescale.net (83.217.231.2) by AM0PR07CA0007.eurprd07.prod.outlook.com (2603:10a6:208:ac::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3261.13 via Frontend Transport; Mon, 3 Aug 2020 07:08:04 +0000
-X-Mailer: git-send-email 1.9.1
-X-Originating-IP: [83.217.231.2]
+Received: from [192.168.1.170] (176.231.115.41) by AM0P190CA0028.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:190::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.17 via Frontend Transport; Mon, 3 Aug 2020 07:22:34 +0000
+X-Originating-IP: [176.231.115.41]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 62f7b1a0-615c-43da-afcd-08d8377bf7cf
-X-MS-TrafficTypeDiagnostic: AM0PR04MB4356:
+X-MS-Office365-Filtering-Correlation-Id: 50d5c5c6-da0f-4485-55c5-08d8377dfeb3
+X-MS-TrafficTypeDiagnostic: DB7PR05MB5803:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB43565D3FA01CD1BB69BF0078FB4D0@AM0PR04MB4356.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-Microsoft-Antispam-PRVS: <DB7PR05MB58031160534A336A73871FCAB54D0@DB7PR05MB5803.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DK+eYYcB/0VBuDgow0lGWYjJsj4n+JP9glizwsaNRGnREt7ZEE8D/kXlM7iRBULNYLyH1eB1RZ485uIBtI0vc+HaJkrTiJWkyrvGbQtbx7Z3VeTFLWMTyOhCTPrZcj31AS+eMNdmzVmSilaWXd+0+csTGZ4mfjVInuapmlMALCn3rc5OV1EunHS2w9YhPnvTzVKA4k0gf+5aOkLCajJVe6ST5UjhH2DToW2lcw+TGadEk47F00iN/+C7wrYhboCbW1nJQaH7eghij9CJbKbYk9j6qoHW4QD3B5RZOrYzqNvnWPpzsfPMo6UXzGssnyzYz3vN2KGdGeCK16CLasTU0w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5443.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(346002)(376002)(39860400002)(396003)(366004)(956004)(6506007)(52116002)(83380400001)(6512007)(2616005)(316002)(36756003)(66946007)(2906002)(86362001)(6666004)(478600001)(66476007)(66556008)(3450700001)(6486002)(26005)(4326008)(8936002)(5660300002)(186003)(44832011)(8676002)(16526019);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: vG0DFWvc7ldCK7kOTT44UU8tRx3vLMv1QKFJHvk9c//WeFwGcm0uNYpP0WkumuVSpatIFbnutNBWyTnDbtIUyKgKWXb2lflJYjmPrTC1rQkaQyjvAccgJ5Pb5dKXvfP7JIUvYe6Fq1GsMUuWD2YnOb9LuEhJG4NJmGLjvoiZQ1cRJ5Oja0V34kD2XB8xzu9E7P3H6srjBdcdaEjLrAkg8gUGSV+KsPR+gurkFyN1TJ3wLXtAryz89YDdkOSBEWEBRXDrqBNQQtS0fnf0xgoyx7UVYlKVK63EzcvzzYgFoijHzLdRqe94PQ/5XZB0eqgXGozt8q79SmDUQNyxTx+WcHCCGwDDgAcVq5+cw/9idelJqAy8QAXqqHylymmOyX+m5FQ+YFAaaKg/eSQxcCfmgcwEC1R4xPCvayZ4vA5CMsTIBJYJaEve6UOwHfElPkOAhV5UEC/f7R2C4043sj2La1al1ri8ncQFRd3dU8f4DOsDlyanGqThA0+3jDrWttuCrNxCddrEXs65Ep4XhG9GzevrtP1lyK9/mlIyLCpSLmVnErM61M01HZAhO9YH8MRa9ulbYc0hc2/gVDUTJQbQUlzV1Y1a3ro9Kz5v+37/moadCcGjJj8fZtGRme2kDW1CHpAWeovPYikA6zsEC1OwFw==
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62f7b1a0-615c-43da-afcd-08d8377bf7cf
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5443.eurprd04.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: En6lyzBGc24BLHiquOOxDfCfaKTsPxvzYsUTdu0mvnCbwbsksNFD3Ehk4eZgZeW7A1YfuhhRneYzZUTCwJ1voWbmKyBiSJ+nCzklFM9dvh8QlYwkReAafm4oN0wGHWRmGHzp1GLmkojB4y0uZIdMblRd3IkOObMJirLnlTGQwErVl/Ee8Q6h5VN/8M7u6q9Dz2fceCc16YECM+qmxWfT/s0Vg6GbZF+yR3T1jQ4xEaatoM4S85nBeLwFHkwL3SosHbSy5Jon8AbYmPL7q/iMpJfkOWuYVSlTa4Km4qkkIvr7eFkVfDub3CN8/+dUsaU3DHx4zDDwXcs6lQ//mzUnAVkwoJn/T6ORV/DqoZ6sNjO7o6hKWWHkzQE/srufXQyQ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR05MB4156.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(396003)(39860400002)(366004)(136003)(66946007)(31696002)(6486002)(86362001)(6916009)(66556008)(66476007)(53546011)(16576012)(316002)(16526019)(8676002)(186003)(2906002)(26005)(8936002)(36756003)(107886003)(2616005)(956004)(83380400001)(54906003)(52116002)(478600001)(6666004)(31686004)(4326008)(5660300002)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: EDW0vIQd4AxztTqxTa1T+3xVJhtz0ZkV7Rl9eyUzc0C+UPbo6AO1l6zkQTFp3R8SKsncfRq1/x6c/x53OrBhz+bWyAbThE/oPjGrtJx9R5VIUXatN3WDN+RQWg7OF9cHLeIeePDkTZL3+gelD3wk9RtLYDBIzWLh7hADxdh2I/DOLYfgfggsxXKXnRgK2NF9POUN7nrujGLPxNCBXT90VHsG+41HuvOwq5qO6MAQpiO+hb56mLHSvQdV3qyckXVDQqBdih8drfVNUB9lis7uerkgQzkrDDea7zPPtRAqtc6S54+1Xdan5RGW7TBmUgh4wV8S4h73Xx5O5venaBwUTAIMeG+ll2KFzpq0P3UpMrgZgY9/InBzLbI9ZqaatzGlXOYhDDAdDwFZX8CzhIKsqMpvwByQZ1gOwHNf7T82s+8dg/JYZLN6f2HWBeOFFsW4zVkh5j0XJclMZ28LUT9tYnzmMV4VdClJnor0ODQK1wHa7uXkWY/5bQ7fJ6TjSrMwBWsNRqQX6BCd//0ISXhhaAg7MdO51mHlVOfstMQIQy4qynnUHQCef6tphs5I+SvmPQqoiC3TCtWbO7STVhRPIfxU/zfHFPI0zlN/VQxqeawjuuiiJCvp/DX5VgeC4dpUL2D2fkBBr8jbU9jOg9XdlQ==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50d5c5c6-da0f-4485-55c5-08d8377dfeb3
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR05MB4156.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2020 07:08:05.2622
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2020 07:22:35.8789
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HZcxHmXo888SOy++VOgF81akj20pJMQFnGv6RNZL8aj+wLDrFWxznXVT6/3QXnLFh5dXeCTNKRt8regs5oaHJVbESstOBtbMooI/GZknOwk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4356
+X-MS-Exchange-CrossTenant-UserPrincipalName: /zlC8Vvx1HkPCPyeCyZ/wmJiq4W+Zs86d7k/SN70BiYN9TpqYIWzljgvCnNpMiavjIvwYkQ/R6xUkKQeIBRyMA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR05MB5803
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix memory allocation for ethernet address hash table.
-The code was wrongly allocating an array for eth hash table which
-is incorrect because this is the main structure for eth hash table
-(struct eth_hash_t) that contains inside a number of elements.
 
-Fixes: 57ba4c9b56d8 ("fsl/fman: Add FMan MAC support")
-Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
----
- drivers/net/ethernet/freescale/fman/fman_mac.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/fman/fman_mac.h b/drivers/net/ethernet/freescale/fman/fman_mac.h
-index dd6d052..19f327e 100644
---- a/drivers/net/ethernet/freescale/fman/fman_mac.h
-+++ b/drivers/net/ethernet/freescale/fman/fman_mac.h
-@@ -252,7 +252,7 @@ static inline struct eth_hash_t *alloc_hash_table(u16 size)
- 	struct eth_hash_t *hash;
- 
- 	/* Allocate address hash table */
--	hash = kmalloc_array(size, sizeof(struct eth_hash_t *), GFP_KERNEL);
-+	hash = kmalloc(sizeof(*hash), GFP_KERNEL);
- 	if (!hash)
- 		return NULL;
- 
--- 
-1.9.1
+On 2020-07-29 8:10 PM, Marcelo Ricardo Leitner wrote:
+> On Wed, Jul 29, 2020 at 03:55:53PM +0300, Roi Dayan wrote:
+>>
+>>
+>> On 2020-07-28 5:42 PM, Marcelo Ricardo Leitner wrote:
+>>> On Tue, Jul 28, 2020 at 02:57:59PM +0300, Roi Dayan wrote:
+>>>> On heavily loaded systems the GC can take time to go over all existing
+>>>> conns and reset their timeout. At that time other calls like from
+>>>> nf_conntrack_in() can call of nf_ct_is_expired() and see the conn as
+>>>> expired. To fix this when we set the offload bit we should also reset
+>>>> the timeout instead of counting on GC to finish first iteration over
+>>>> all conns before the initial timeout.
+>>>>
+>>>> Fixes: 64ff70b80fd4 ("net/sched: act_ct: Offload established connections to flow table")
+>>>> Signed-off-by: Roi Dayan <roid@mellanox.com>
+>>>> Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
+>>>> ---
+>>>>  net/sched/act_ct.c | 2 ++
+>>>>  1 file changed, 2 insertions(+)
+>>>>
+>>>> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+>>>> index e9f3576cbf71..650c2d78a346 100644
+>>>> --- a/net/sched/act_ct.c
+>>>> +++ b/net/sched/act_ct.c
+>>>> @@ -366,6 +366,8 @@ static void tcf_ct_flow_table_add(struct tcf_ct_flow_table *ct_ft,
+>>>
+>>> Extra context line:
+>>> 	err = flow_offload_add(&ct_ft->nf_ft, entry);
+>>>>  	if (err)
+>>>>  		goto err_add;
+>>>>  
+>>>> +	nf_ct_offload_timeout(ct);
+>>>> +
+>>>
+>>> What about adding this to flow_offload_add() instead?
+>>> It is already adjusting the flow_offload timeout there and then it
+>>> also effective for nft.
+>>>
+>>
+>> As you said, in flow_offload_add() we adjust the flow timeout.
+>> Here we adjust the conn timeout.
+>> So it's outside flow_offload_add() which only touch the flow struct.
+>> I guess it's like conn offload bit is set outside here and for nft.
+> 
+> Right, but
+> 
+>> What do you think?
+> 
+> I don't see why it can't update both. flow_offload_fixup_ct_timeout(),
+> called by flow_offload_del(), is updating ct->timeout already. It
+> looks consistent to me to update it in _add as well then. 
+> 
 
+I don't mind. just add is not consistent with del.
+del also clears the ips_offload_bit but add doesn't add it.
+i'll send v2 with your suggestion.
+
+>>
+>>>>  	return;
+>>>>  
+>>>>  err_add:
+>>>> -- 
+>>>> 2.8.4
+>>>>
