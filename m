@@ -2,71 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37EAD23AB01
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 18:56:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7108A23AB12
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 18:59:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727768AbgHCQ4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 12:56:43 -0400
-Received: from mga11.intel.com ([192.55.52.93]:48924 "EHLO mga11.intel.com"
+        id S1726925AbgHCQ7A convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 3 Aug 2020 12:59:00 -0400
+Received: from lixid.tarent.de ([193.107.123.118]:42749 "EHLO mail.lixid.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726356AbgHCQ4n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Aug 2020 12:56:43 -0400
-IronPort-SDR: xCPB3nTmAnecP5n94u6pQV/Zqnm27yL6JnaePqiUHU2oChZoKFIngxJEg6aSpJ6NunD01hL3Ts
- WnTrh10UiI7Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9702"; a="149960138"
-X-IronPort-AV: E=Sophos;i="5.75,430,1589266800"; 
-   d="scan'208";a="149960138"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2020 09:56:42 -0700
-IronPort-SDR: gCifT/ICpdHURbe8y5mgjFS2zvxSj8Om7cJbJlAtzC37w/HXxFSZqckNtUJdakGEjAEzCTQiO4
- b2fjwdvYKEvw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,430,1589266800"; 
-   d="scan'208";a="366448248"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.196.183]) ([10.212.196.183])
-  by orsmga001.jf.intel.com with ESMTP; 03 Aug 2020 09:56:42 -0700
-Subject: Re: [iproute2-next v2 5/5] devlink: support setting the overwrite
- mask
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-References: <20200801002159.3300425-1-jacob.e.keller@intel.com>
- <20200801002159.3300425-6-jacob.e.keller@intel.com>
- <0bb895a2-e233-0426-3e48-d8422fa5b7cf@gmail.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <c317a649-59f4-82a2-5617-0f6209964b8e@intel.com>
-Date:   Mon, 3 Aug 2020 09:56:41 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.0.1
+        id S1726664AbgHCQ67 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Aug 2020 12:58:59 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.lixid.net (MTA) with ESMTP id 1A7771409DC;
+        Mon,  3 Aug 2020 18:58:56 +0200 (CEST)
+Received: from mail.lixid.net ([127.0.0.1])
+        by localhost (mail.lixid.net [127.0.0.1]) (MFA, port 10024) with LMTP
+        id njBK2RGIzm8H; Mon,  3 Aug 2020 18:58:48 +0200 (CEST)
+Received: from tglase-nb.lan.tarent.de (vpn-172-34-0-14.dynamic.tarent.de [172.34.0.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.lixid.net (MTA) with ESMTPS id 2EF8C14092A;
+        Mon,  3 Aug 2020 18:58:48 +0200 (CEST)
+Received: by tglase-nb.lan.tarent.de (Postfix, from userid 1000)
+        id D8BA95205A6; Mon,  3 Aug 2020 18:58:47 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by tglase-nb.lan.tarent.de (Postfix) with ESMTP id D5DD652028D;
+        Mon,  3 Aug 2020 18:58:47 +0200 (CEST)
+Date:   Mon, 3 Aug 2020 18:58:47 +0200 (CEST)
+From:   Thorsten Glaser <t.glaser@tarent.de>
+X-X-Sender: tglase@tglase-nb.lan.tarent.de
+To:     Ben Hutchings <ben@decadent.org.uk>
+cc:     966459@bugs.debian.org, netdev <netdev@vger.kernel.org>
+Subject: Re: Bug#966459: linux: traffic class socket options (both IPv4/IPv6)
+ inconsistent with docs/standards
+In-Reply-To: <db7d2f4dde6db2af82c880756d76af1b7c1e41e8.camel@decadent.org.uk>
+Message-ID: <alpine.DEB.2.23.453.2008031733520.11571@tglase-nb.lan.tarent.de>
+References: <159596111771.2639.6929056987566441726.reportbug@tglase-nb.lan.tarent.de>   <e67190b7de22fff20fb4c5c084307e0b76001248.camel@decadent.org.uk>   <Pine.BSM.4.64L.2008021919500.2148@herc.mirbsd.org>  <e1beb0b98109d90738e054683f5eb1dd483011dd.camel@decadent.org.uk>
+  <159596111771.2639.6929056987566441726.reportbug@tglase-nb.lan.tarent.de>  <alpine.DEB.2.23.453.2008022243310.15898@tglase-nb.lan.tarent.de> <db7d2f4dde6db2af82c880756d76af1b7c1e41e8.camel@decadent.org.uk>
+User-Agent: Alpine 2.23 (DEB 453 2020-06-18)
+Content-Language: de-DE-1901
 MIME-Version: 1.0
-In-Reply-To: <0bb895a2-e233-0426-3e48-d8422fa5b7cf@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Ben,
 
+> For what it's worth, FreeBSD/Darwin and Windows also put 4 bytes of
+> data in a IPV6_TCLASS cmsg.  So whether or not it's "right", it's
+> consistent between three independent implementations.
 
-On 8/3/2020 8:53 AM, David Ahern wrote:
-> On 7/31/20 6:21 PM, Jacob Keller wrote:
->> Add support for specifying the overwrite sections to allow in the flash
->> update command. This is done by adding a new "overwrite" option which
->> can take either "settings" or "identifiers" passing the overwrite mode
->> multiple times will combine the fields using bitwise-OR.
->>
->> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->> ---
->>  devlink/devlink.c | 37 +++++++++++++++++++++++++++++++++++--
->>  1 file changed, 35 insertions(+), 2 deletions(-)
->>
-> 
-> 5/5? I only see 2 - 4/5 and 5/5. Please re-send against latest
-> iproute2-next.
-> 
+oh, thank you, I don’t have any of these systems around at the
+moment, so checking them was tricky for me.
 
-Sorry for the confusion here. I sent both the iproute2 and net-next
-changes to implement it in the kernel.
+So basically I should read an int in host endianness then (or
+keep the code I currently have that compares byte 0 and 3, using
+the one that’s not 0, if any). Great, thank you!
+
+After some minor porting work, it turns out that the current code
+does work on MidnightBSD (equivalent to FreeBSD 10.4) for IPv6.
+I guess I’ll keep ints then.
+
+bye,
+//mirabilos
+-- 
+15:41⎜<Lo-lan-do:#fusionforge> Somebody write a testsuite for helloworld :-)
