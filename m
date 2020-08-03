@@ -2,143 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B27DA23A06A
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 09:36:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5617D23A092
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 10:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725996AbgHCHgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 03:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53960 "EHLO
+        id S1726002AbgHCICh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 04:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725806AbgHCHgG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 03:36:06 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26699C06174A;
-        Mon,  3 Aug 2020 00:36:06 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id 184so14506492wmb.0;
-        Mon, 03 Aug 2020 00:36:06 -0700 (PDT)
+        with ESMTP id S1725855AbgHCICh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 04:02:37 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712A9C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 01:02:37 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id d188so11672858pfd.2
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 01:02:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=9L/3IwWP9Xr9krQjFNzRXd8uVshnlKbKZCDqBpzNUZ8=;
-        b=FV2iLImcom6TQ9xKVtQ1bZgOdXdP+a+sDQTlBMZr047jcV01QKAs4D5vRM4P2THBPn
-         hYaaXmx3kwhPtGOJpxwC180DzePL2hAj/VI56HenocwKF7LRgHnDyWRQL1iRutL2M/vE
-         4sUqM8wQuYVrZBN2q3I62L3PIy8g9u4AAag7/pPyCb6Ua78qwFW1DvpzWV/A812YFXVZ
-         2uCIQwTZC0rcZgLO4iJ4qhmhtzPeWxb11u5YlR7b5ncTlvp1xQPzzGpbv2uywBsGBYeJ
-         ZZxTRk/xzdq3QedoZfq4mH6qy4K3DQSJEL6OUVFqJBE1kEbKsGwWGBaRccx9XvnQ6j0t
-         TzkQ==
+        bh=opN96iAr4vvu6LcPzkHIbk7cQ+LqOHGzWP9skcQO174=;
+        b=aH+9s1Z5qXSkCwBmFf0XMVvuEVYqXTxVAHJ2I/SAFsg/IJkmDx3qv4668OaK+hJO8c
+         yOwKi04IHS/dGb4KayOW8LkZko202kHidzuTNJ/396A2/rxwS4UYh5nxe62ZNWZGbYVK
+         tFWb+Ahc9gi7ymSFgnIvQdXS8YTNMafS5p/+9/0FTvJDZo0HDNl1dV/tPgus3BaO6n0f
+         tmGZgd7zGRbpERKyguvRRBZPLhxvodjwfbONtuSqzbrtNs/hU001sFnB432zyW5uZblK
+         JZJJ4aJabL3DBaEU0Dr1y5z5+nGKQbbZbhl/qucgaLM5HiF0DDuAsWyEIxDPTdD2GWnw
+         5OgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=9L/3IwWP9Xr9krQjFNzRXd8uVshnlKbKZCDqBpzNUZ8=;
-        b=QNDosCHeycl3n/2++3ohG4SZVXe5Aak6Ob+r+l8/N5qdPzyBBDH++PY/HRMtNZMkGp
-         AFDJ+LyQzq4lXFWfLntwXveA9/IULQAMzwWCbsriNiNvYXJRiTamIJDXwdvndSJp/1iP
-         MmhoQlhpVON+8GA0w3MOPPym5O2crnvC5zecsz+oED13cI4rUVVeo4a/EYMwY2fVnvwI
-         KHOtDInz5W2elkC8f0vnZOb/QamqpvyWfvdKJZRmPz3IDuL3127VC/OgX3ZtBulW0sT1
-         E94QnUl/oJk1YKdJ3bedwL+8g4JKeK5jsULbm8hHi2aZ0FC91aZm54b5M5o/KqN6zA6I
-         VMmA==
-X-Gm-Message-State: AOAM530swIIqVLznEYHlCs2gRjzwVOCiRolPwYEsKFkXLAgwfUGptEQx
-        eDgr8YIlMjbzisCGxX/K1GE=
-X-Google-Smtp-Source: ABdhPJwqhds6U3kbM3p2fgQQ4HyykeRah+uqcyDKETYTvnHGqCGVutZ00yH0qm4N9bTx+C1kuYS70Q==
-X-Received: by 2002:a05:600c:25cc:: with SMTP id 12mr14350985wml.120.1596440164727;
-        Mon, 03 Aug 2020 00:36:04 -0700 (PDT)
-Received: from stancioi.c.googlers.com.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
-        by smtp.gmail.com with ESMTPSA id o2sm22553796wrj.21.2020.08.03.00.36.03
+        bh=opN96iAr4vvu6LcPzkHIbk7cQ+LqOHGzWP9skcQO174=;
+        b=kB6fwOpcPyutfmXoNz/QPsmVRw0BXfJplB17JWI0PSq7sa/MINjWoHZrZ+mluyhS2Y
+         cQ6v+7uu35vG6q8tqflfZ4kCpJ8vJfkSU/Za3wVGPlAG9MTb+8hWKXZuRZHB3DRi6VZ0
+         by4xtlBNwbD5BVkS0leHVr0dlJJInSa7hyT/oZIn0m7PCWfwiAgBdpaQOdDw+ydcFc7j
+         mj7glPVoFqtDEtFZjeMA+OAroGP4xt3aqN/xLEofvgwzcNsxOi4SKcAqPB1Pk2fb4UAt
+         tBvibEjRPKKiVmFAE9KEJSGSj/ZTFZ4ddjLAIAqdrBAPAsFdt095fytxuKN1NRmvMolk
+         AkIQ==
+X-Gm-Message-State: AOAM532632enxK2cLm6OdebcFQwOVtXrAbnZTxqIipunvhCypRy5yFS4
+        EIMFxmpELcAHJeH0j3/LoK2yjz9nKter4A==
+X-Google-Smtp-Source: ABdhPJx9PJGRLd0SoaoYT/0FdASPBRpg++CKjdYlTblTYtRUnGHFPW9mVS/2vKxmEW8LYWJCYmAXBQ==
+X-Received: by 2002:a62:2c48:: with SMTP id s69mr14422593pfs.63.1596441756779;
+        Mon, 03 Aug 2020 01:02:36 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id a24sm18651674pfg.113.2020.08.03.01.02.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 00:36:03 -0700 (PDT)
-From:   Ioana-Ruxandra Stancioi <ioanaruxandra.stancioi@gmail.com>
-To:     david.lebrun@uclouvain.be, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     elver@google.com, glider@google.com,
-        =?UTF-8?q?Ioana-Ruxandra=20St=C4=83ncioi?= <stancioi@google.com>
-Subject: [PATCH v3] seg6_iptunnel: Refactor seg6_lwt_headroom out of uapi header
-Date:   Mon,  3 Aug 2020 07:33:33 +0000
-Message-Id: <20200803073333.1998786-1-ioanaruxandra.stancioi@gmail.com>
-X-Mailer: git-send-email 2.28.0.163.g6104cc2f0b6-goog
+        Mon, 03 Aug 2020 01:02:36 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Guillaume Nault <gnault@redhat.com>,
+        Petr Machata <pmachata@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net-next 0/2] Add IP_DSCP_MASK and fix vxlan tos value before xmit
+Date:   Mon,  3 Aug 2020 16:02:15 +0800
+Message-Id: <20200803080217.391850-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ioana-Ruxandra Stăncioi <stancioi@google.com>
+This patch set is aim to update the old IP_TOS_MASK to new IP_DSCP_MASK
+as tos value has been obsoleted for a long time. But to make sure we don't
+break any existing behaviour, we can't just replease all IP_TOS_MASK
+to new IP_DSCP_MASK.
 
-Refactor the function seg6_lwt_headroom out of the seg6_iptunnel.h uapi
-header, because it is only used in seg6_iptunnel.c. Moreover, it is only
-used in the kernel code, as indicated by the "#ifdef __KERNEL__".
+So let's update it case by case. The first issue we will fix is that vxlan
+is unable to take the first 3 bits from DSCP field before xmit. Use the
+new RT_DSCP() would resolve this.
 
-Suggested-by: David Miller <davem@davemloft.net>
-Signed-off-by: Ioana-Ruxandra Stăncioi <stancioi@google.com>
----
-v3:
-* Apply David's suggestion and remove the inline tag.
----
- include/uapi/linux/seg6_iptunnel.h | 21 ---------------------
- net/ipv6/seg6_iptunnel.c           | 17 +++++++++++++++++
- 2 files changed, 17 insertions(+), 21 deletions(-)
+Hangbin Liu (2):
+  net: add IP_DSCP_MASK
+  vxlan: fix getting tos value from DSCP field
 
-diff --git a/include/uapi/linux/seg6_iptunnel.h b/include/uapi/linux/seg6_iptunnel.h
-index 09fb608a35ec..eb815e0d0ac3 100644
---- a/include/uapi/linux/seg6_iptunnel.h
-+++ b/include/uapi/linux/seg6_iptunnel.h
-@@ -37,25 +37,4 @@ enum {
- 	SEG6_IPTUN_MODE_L2ENCAP,
- };
- 
--#ifdef __KERNEL__
--
--static inline size_t seg6_lwt_headroom(struct seg6_iptunnel_encap *tuninfo)
--{
--	int head = 0;
--
--	switch (tuninfo->mode) {
--	case SEG6_IPTUN_MODE_INLINE:
--		break;
--	case SEG6_IPTUN_MODE_ENCAP:
--		head = sizeof(struct ipv6hdr);
--		break;
--	case SEG6_IPTUN_MODE_L2ENCAP:
--		return 0;
--	}
--
--	return ((tuninfo->srh->hdrlen + 1) << 3) + head;
--}
--
--#endif
--
- #endif
-diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
-index e0e9f48ab14f..897fa59c47de 100644
---- a/net/ipv6/seg6_iptunnel.c
-+++ b/net/ipv6/seg6_iptunnel.c
-@@ -27,6 +27,23 @@
- #include <net/seg6_hmac.h>
- #endif
- 
-+static size_t seg6_lwt_headroom(struct seg6_iptunnel_encap *tuninfo)
-+{
-+	int head = 0;
-+
-+	switch (tuninfo->mode) {
-+	case SEG6_IPTUN_MODE_INLINE:
-+		break;
-+	case SEG6_IPTUN_MODE_ENCAP:
-+		head = sizeof(struct ipv6hdr);
-+		break;
-+	case SEG6_IPTUN_MODE_L2ENCAP:
-+		return 0;
-+	}
-+
-+	return ((tuninfo->srh->hdrlen + 1) << 3) + head;
-+}
-+
- struct seg6_lwt {
- 	struct dst_cache cache;
- 	struct seg6_iptunnel_encap tuninfo[];
+ drivers/net/vxlan.c           | 4 ++--
+ include/uapi/linux/in_route.h | 1 +
+ include/uapi/linux/ip.h       | 2 ++
+ 3 files changed, 5 insertions(+), 2 deletions(-)
+
 -- 
-2.28.0.163.g6104cc2f0b6-goog
+2.25.4
 
