@@ -2,201 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6389823AE4F
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:40:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E80823AE55
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:43:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728480AbgHCUkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 16:40:15 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:40594 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728019AbgHCUkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 16:40:15 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.61])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id E7E49600A9;
-        Mon,  3 Aug 2020 20:40:14 +0000 (UTC)
-Received: from us4-mdac16-59.ut7.mdlocal (unknown [10.7.66.50])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id E4C8C800A4;
-        Mon,  3 Aug 2020 20:40:14 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.174])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 549C780068;
-        Mon,  3 Aug 2020 20:40:14 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E17601C0086;
-        Mon,  3 Aug 2020 20:40:13 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 3 Aug 2020
- 21:40:04 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH v3 net-next 11/11] sfc_ef100: add nic-type for VFs, and bind
- to them
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-References: <12f836c8-bdd8-a930-a79e-da4227e808d4@solarflare.com>
-Message-ID: <56e8d601-1dbd-f49e-369c-6cbed4d896bf@solarflare.com>
-Date:   Mon, 3 Aug 2020 21:40:01 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1728501AbgHCUmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 16:42:54 -0400
+Received: from mail-eopbgr10044.outbound.protection.outlook.com ([40.107.1.44]:21862
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725863AbgHCUmy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Aug 2020 16:42:54 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MCXqPx0QP7CSh1W/nPozOi/YEkt8TiS/WTCExquqTPBflXHA3PMk3kbI7vAGK9OP1K/RFpY78lW8TVivXINbQ/aDSRXUPacKgVwB79wkcVmKguFxEmSf3p/axA7u3wzckKMFpV1VPfYIvT0rXfj6aGh62adaIu4J2Gk9dtpnrgiuuWYK3RK22OBxHkareg9k4FXbRNlK9OILwg5VVXL+97BtPUDNVsn6PpP+Om2OXjoF6efFSs51WlUUm/CPWSbECzP9STLlw+gx4y/XP3o2tK3QjL0AX7O3YeOKRqBpO7dd0BVMutc4sVj/9CoXLiGTpJqylXT9wXMP2prucgUlCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YD79GlbSVD8EzVbGs/w/rZwpTURcqfsNyalgo5XR3PE=;
+ b=P4w3gPwMKl1wI4S7zztO/rsqIl7wHS40ZVXtOSHY1+cuapPzG0q4ELM/3NAe6/hrzSxojWdFRg9oNhP4IeY13nqWc/im9cMAYij8VPg2IeW5GVz35CjmtHX5at012FNFc9Ingcm51UEVxs7g0pwYxbqPiZ869fp0LU+aMWIudFUb+RheSZou3sj1TVdiR2zHJxQjCm2YGVtv246Ed4Sl+g9DG1AyaYY27zsILEMYPXsb7R076J8V1/wF1cla6hyWEoYPM6oMyqTmKaThzR5TZefloEGX4sgigOREp4sl+XqivdbvHr3lu5QKj0Oe+Xi17PnaRzpC5Cy5ku0MWH7Vlg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YD79GlbSVD8EzVbGs/w/rZwpTURcqfsNyalgo5XR3PE=;
+ b=PlMWrq7YvkaVYQoOQqJOcr9wVXKJVSBCAveCvI35hogCcl3inADPcPv0Fpokt2E45zIB4D4zi29XLwVaNyxfoxrjc4mbDhm18Wy/K9LKHbYgbeHbx24x6CShnLe+/pYPylTE4M6X50lE77/SxP8329gjF7gh6m8qF/RmABi/ZP0=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VE1PR05MB7311.eurprd05.prod.outlook.com (2603:10a6:800:1a3::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.21; Mon, 3 Aug
+ 2020 20:42:50 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2dde:902e:3a19:4366]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2dde:902e:3a19:4366%5]) with mapi id 15.20.3239.021; Mon, 3 Aug 2020
+ 20:42:49 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 0/5] Mellanox, mlx5 updates 2020-08-03
+Date:   Mon,  3 Aug 2020 13:41:46 -0700
+Message-Id: <20200803204151.120802-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.26.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY3PR10CA0017.namprd10.prod.outlook.com
+ (2603:10b6:a03:255::22) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
 MIME-Version: 1.0
-In-Reply-To: <12f836c8-bdd8-a930-a79e-da4227e808d4@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25582.002
-X-TM-AS-Result: No-7.976800-8.000000-10
-X-TMASE-MatchedRID: qjW9V/Hb/oHMdO/aI0cjorsHVDDM5xAP1JP9NndNOkUGmHr1eMxt2UAc
-        6DyoS2rIj6kCfX0Edc4mQHxxqFX9+dJGUnV5uUQk5x61kcWHbRZJaD67iKvY0yJcTqMCib7FOkb
-        /WDfe2OYHtdkqavJrPHQBcSHhv1FA6799S5AV4EYgCPGiZqtI8OHCwRwMNQUWSMg2Oe/b8ExVR4
-        kqiI6BgY9QLvd1dyp55knayZl8+1iRehYFOG64KEhwlOfYeSqxMVx/3ZYby79tfQJzq1p8Jqip1
-        8v0DWYVXK9FoQ/9VZ62ZXRrhevIb+rio6p+t0cn4WAObM1VUqhfAXPuWnqbjwk6S8C293Smt1oy
-        FZpewUdSrEIb6WWZAem8dcFmTYdoRuJGaNfpGiIHtOpEBhWiFlsP0tBwe3qDq012kWtld3xn4/n
-        MWJ1Bm/Pe1KADdXu8PDyxXK7R6Xi8BgGfZhePrQnxCJVNCszYvMRNh9hLjFn5+tteD5RzhR5E67
-        yReou74vM1YF6AJbZFi+KwZZttL42j49Ftap9EOwBXM346/+wreRjpj7B+QIWCGuMRU5pcekHt9
-        44nOmrNgzzOppqI0io9OuiROxhA
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.976800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25582.002
-X-MDID: 1596487214-kMBFleEqlhfY
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BY3PR10CA0017.namprd10.prod.outlook.com (2603:10b6:a03:255::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.17 via Frontend Transport; Mon, 3 Aug 2020 20:42:48 +0000
+X-Mailer: git-send-email 2.26.2
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 8eec03d3-3ef0-4580-6448-08d837edc940
+X-MS-TrafficTypeDiagnostic: VE1PR05MB7311:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VE1PR05MB731170CAFBE6ABEA0A012424BE4D0@VE1PR05MB7311.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nG+hsMPZALGCdlYUoTWKy+5xBmIXGIpZU8vFj4L3P6fVuDp/nOg6JcCAaLtWGJvjFl1u7weZ9ee9liuReGf3SjNfOXcbyk6lG5vr7hGXMhvEj66Qx0WVrKv4tjkMrSvVao3WN2RPs8XxdKz6qWFYh8jyjks23pQJo4M1wxrViCYpZZMOYkOgHabkRtIzNlq86yvxNv+Ehc5gaxjNMtp4xGmRVyiF+e6cegy2m1i6QPvRxRDC1u8I0asFR8KI49Jnuk/6IvfZ0uIGXkbaikdqYPhTS0XNxj6ZxFKRA7WpQiFz3i0r07609aiPxiHV6IiT8p7+3tvmXFcmBgI4OuoyoKKU/KgEOHoJY2yt7bd+pP5JdpttblG/fSRgq0M8NvoS
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(376002)(366004)(346002)(39860400002)(956004)(1076003)(478600001)(110136005)(8936002)(5660300002)(2906002)(2616005)(86362001)(316002)(15650500001)(16526019)(66946007)(66476007)(66556008)(6486002)(36756003)(6506007)(26005)(8676002)(107886003)(83380400001)(52116002)(6512007)(4326008)(186003)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 5Q4tvdRh8U7v3hQ/4BX9hVRdYp0TsUyiyTg7ORK96TEnIKw09WfAJGrlK1wQt0zd48nqRTyDLJf8TIZYuL92vbYwThLGyD1345pLG1Dxn1loL56V3cATDA68a0eaXrILNcDKwfTmpaTtr6CoY1R3v16OE/O/oe14i1PGSScsYWaPyK6pPSrxpPi/dl5Mzos7DJFYup7dv6VVbIYAUddFwRWgvQxWkmQ+W327Opgb+qyuIxfcBCSEDcmoMTWEOQ730PrujWxo2psn1rRYUij6/yk8DHqf3OqWQbLv9sNfB3woVQgEQlaDNvRriNFaW4y32p6ZnQJGcv+6XeBWi/qe8LL6xExzJaar3j8Jxxu/6zupOS32tJwaj6FUgAyJQL66CdDupdVnRsnjUd8D6LjtFEAIc3cfNMUFwbpm64ucaQq6gGzQW7NnAXklfPsP/vXesnqZAwS1EvcvQRQasHpZtVnbP2ZWHpBxAAXO3Bf4ZvHtrb2nnWKG+uGyYDgWoDZRnmLDNpT1cD8Pj2g06nUsGffNu+gIw6Z1YGlGe7pCE/+A9R1EtYGhu4FpUznTCiKKXZVdllU4tEqXTB/jdbMZUxmCCJC/ltgqVyBeylForoKxzfsYURrWkx7mUFYXuPsgfbotLYDEyEc8+tFiGnwQPQ==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8eec03d3-3ef0-4580-6448-08d837edc940
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2020 20:42:49.8081
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VJGmLqC/svHE9aVN9fy6uHvUZTx3iKCmz5siVXZoHOs5WlGZ68UW53mZmXlZZjiLR2xb60eF1JuP9M39IjE5wA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR05MB7311
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We don't yet have a .sriov_configure() to create them, though.
+Hi Dave, Jakub
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
+This patchset adds misc updates to mlx5.
+
+Please note there is one non-mlx5 patch from Jakub that adds support
+for static vxlan port configuration in udp tunnel infrastructure.
+
+For more information please see tag log below.
+
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
+
 ---
- drivers/net/ethernet/sfc/ef100.c     |  2 +
- drivers/net/ethernet/sfc/ef100_nic.c | 77 ++++++++++++++++++++++++++++
- drivers/net/ethernet/sfc/ef100_nic.h |  2 +
- 3 files changed, 81 insertions(+)
+The following changes since commit bd0b33b24897ba9ddad221e8ac5b6f0e38a2e004:
 
-diff --git a/drivers/net/ethernet/sfc/ef100.c b/drivers/net/ethernet/sfc/ef100.c
-index de611c0f94e7..9729983f4840 100644
---- a/drivers/net/ethernet/sfc/ef100.c
-+++ b/drivers/net/ethernet/sfc/ef100.c
-@@ -527,6 +527,8 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
- static const struct pci_device_id ef100_pci_table[] = {
- 	{PCI_DEVICE(PCI_VENDOR_ID_XILINX, 0x0100),  /* Riverhead PF */
- 		.driver_data = (unsigned long) &ef100_pf_nic_type },
-+	{PCI_DEVICE(PCI_VENDOR_ID_XILINX, 0x1100),  /* Riverhead VF */
-+		.driver_data = (unsigned long) &ef100_vf_nic_type },
- 	{0}                     /* end of list */
- };
- 
-diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-index 10748efbf98e..8a2126fec078 100644
---- a/drivers/net/ethernet/sfc/ef100_nic.c
-+++ b/drivers/net/ethernet/sfc/ef100_nic.c
-@@ -783,6 +783,78 @@ const struct efx_nic_type ef100_pf_nic_type = {
- 
- };
- 
-+const struct efx_nic_type ef100_vf_nic_type = {
-+	.revision = EFX_REV_EF100,
-+	.is_vf = true,
-+	.probe = ef100_probe_vf,
-+	.offload_features = EF100_OFFLOAD_FEATURES,
-+	.mcdi_max_ver = 2,
-+	.mcdi_request = ef100_mcdi_request,
-+	.mcdi_poll_response = ef100_mcdi_poll_response,
-+	.mcdi_read_response = ef100_mcdi_read_response,
-+	.mcdi_poll_reboot = ef100_mcdi_poll_reboot,
-+	.mcdi_reboot_detected = ef100_mcdi_reboot_detected,
-+	.irq_enable_master = efx_port_dummy_op_void,
-+	.irq_test_generate = efx_ef100_irq_test_generate,
-+	.irq_disable_non_ev = efx_port_dummy_op_void,
-+	.push_irq_moderation = efx_channel_dummy_op_void,
-+	.min_interrupt_mode = EFX_INT_MODE_MSIX,
-+	.map_reset_reason = ef100_map_reset_reason,
-+	.map_reset_flags = ef100_map_reset_flags,
-+	.reset = ef100_reset,
-+	.check_caps = ef100_check_caps,
-+	.ev_probe = ef100_ev_probe,
-+	.ev_init = ef100_ev_init,
-+	.ev_fini = efx_mcdi_ev_fini,
-+	.ev_remove = efx_mcdi_ev_remove,
-+	.irq_handle_msi = ef100_msi_interrupt,
-+	.ev_process = ef100_ev_process,
-+	.ev_read_ack = ef100_ev_read_ack,
-+	.ev_test_generate = efx_ef100_ev_test_generate,
-+	.tx_probe = ef100_tx_probe,
-+	.tx_init = ef100_tx_init,
-+	.tx_write = ef100_tx_write,
-+	.tx_enqueue = ef100_enqueue_skb,
-+	.rx_probe = efx_mcdi_rx_probe,
-+	.rx_init = efx_mcdi_rx_init,
-+	.rx_remove = efx_mcdi_rx_remove,
-+	.rx_write = ef100_rx_write,
-+	.rx_packet = __ef100_rx_packet,
-+	.fini_dmaq = efx_fini_dmaq,
-+	.max_rx_ip_filters = EFX_MCDI_FILTER_TBL_ROWS,
-+	.filter_table_probe = ef100_filter_table_up,
-+	.filter_table_restore = efx_mcdi_filter_table_restore,
-+	.filter_table_remove = ef100_filter_table_down,
-+	.filter_insert = efx_mcdi_filter_insert,
-+	.filter_remove_safe = efx_mcdi_filter_remove_safe,
-+	.filter_get_safe = efx_mcdi_filter_get_safe,
-+	.filter_clear_rx = efx_mcdi_filter_clear_rx,
-+	.filter_count_rx_used = efx_mcdi_filter_count_rx_used,
-+	.filter_get_rx_id_limit = efx_mcdi_filter_get_rx_id_limit,
-+	.filter_get_rx_ids = efx_mcdi_filter_get_rx_ids,
-+	.filter_rfs_expire_one = efx_mcdi_filter_rfs_expire_one,
-+
-+	.rx_prefix_size = ESE_GZ_RX_PKT_PREFIX_LEN,
-+	.rx_hash_offset = ESF_GZ_RX_PREFIX_RSS_HASH_LBN / 8,
-+	.rx_ts_offset = ESF_GZ_RX_PREFIX_PARTIAL_TSTAMP_LBN / 8,
-+	.rx_hash_key_size = 40,
-+	.rx_pull_rss_config = efx_mcdi_rx_pull_rss_config,
-+	.rx_push_rss_config = efx_mcdi_pf_rx_push_rss_config,
-+	.rx_restore_rss_contexts = efx_mcdi_rx_restore_rss_contexts,
-+
-+	.reconfigure_mac = ef100_reconfigure_mac,
-+	.test_nvram = efx_new_mcdi_nvram_test_all,
-+	.describe_stats = ef100_describe_stats,
-+	.start_stats = efx_mcdi_mac_start_stats,
-+	.update_stats = ef100_update_stats,
-+	.pull_stats = efx_mcdi_mac_pull_stats,
-+	.stop_stats = efx_mcdi_mac_stop_stats,
-+
-+	.mem_bar = NULL,
-+	.mem_map_size = NULL,
-+
-+};
-+
- static int compare_versions(const char *a, const char *b)
- {
- 	int a_major, a_minor, a_point, a_patch;
-@@ -1178,6 +1250,11 @@ int ef100_probe_pf(struct efx_nic *efx)
- 	return rc;
- }
- 
-+int ef100_probe_vf(struct efx_nic *efx)
-+{
-+	return ef100_probe_main(efx);
-+}
-+
- void ef100_remove(struct efx_nic *efx)
- {
- 	struct ef100_nic_data *nic_data = efx->nic_data;
-diff --git a/drivers/net/ethernet/sfc/ef100_nic.h b/drivers/net/ethernet/sfc/ef100_nic.h
-index 4a64c9438493..e799688d5264 100644
---- a/drivers/net/ethernet/sfc/ef100_nic.h
-+++ b/drivers/net/ethernet/sfc/ef100_nic.h
-@@ -13,8 +13,10 @@
- #include "nic_common.h"
- 
- extern const struct efx_nic_type ef100_pf_nic_type;
-+extern const struct efx_nic_type ef100_vf_nic_type;
- 
- int ef100_probe_pf(struct efx_nic *efx);
-+int ef100_probe_vf(struct efx_nic *efx);
- void ef100_remove(struct efx_nic *efx);
- 
- enum {
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-08-02 01:02:12 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-08-03
+
+for you to fetch changes up to 6c4e9bcfb48933d533ff975e152757991556294a:
+
+  net/mlx5: Delete extra dump stack that gives nothing (2020-08-03 10:13:58 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2020-08-03
+
+This patchset introduces some updates to mlx5 driver.
+
+1) Jakub converts mlx5 to use the new udp tunnel infrastructure.
+   Starting with a hack to allow drivers to request a static configuration
+   of the default vxlan port, and then a patch that converts mlx5.
+
+2) Parav implements change_carrier ndo for VF eswitch representors,
+   to speedup link state control of representors netdevices.
+
+3) Alex Vesker, makes a simple update to software steering to fix an issue
+   with push vlan action sequence
+
+4) Leon removes a redundant dump stack on error flow.
+
+----------------------------------------------------------------
+Alex Vesker (1):
+      net/mlx5: DR, Change push vlan action sequence
+
+Jakub Kicinski (2):
+      udp_tunnel: add the ability to hard-code IANA VXLAN
+      net/mlx5: convert to new udp_tunnel infrastructure
+
+Leon Romanovsky (1):
+      net/mlx5: Delete extra dump stack that gives nothing
+
+Parav Pandit (1):
+      net/mlx5e: Enable users to change VF/PF representors carrier state
+
+ Documentation/networking/ethtool-netlink.rst       |   3 +
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 121 +++++++--------------
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  29 ++++-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   9 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/vxlan.c    |  64 +++--------
+ .../net/ethernet/mellanox/mlx5/core/lib/vxlan.h    |   5 +
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |  42 +++----
+ include/net/udp_tunnel.h                           |   5 +
+ net/ethtool/tunnels.c                              |  69 ++++++++++--
+ net/ipv4/udp_tunnel_nic.c                          |   7 ++
+ 11 files changed, 188 insertions(+), 171 deletions(-)
