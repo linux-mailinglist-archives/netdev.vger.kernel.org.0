@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AA9B239D35
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 03:25:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDCB6239D3E
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 03:35:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726795AbgHCBZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Aug 2020 21:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
+        id S1726787AbgHCBfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Aug 2020 21:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725820AbgHCBZh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 21:25:37 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20267C06174A;
-        Sun,  2 Aug 2020 18:25:37 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id a34so14314912ybj.9;
-        Sun, 02 Aug 2020 18:25:37 -0700 (PDT)
+        with ESMTP id S1725820AbgHCBfm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Aug 2020 21:35:42 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6073C06174A;
+        Sun,  2 Aug 2020 18:35:41 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id p191so3145679ybg.0;
+        Sun, 02 Aug 2020 18:35:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=j0L86Yd+9MAimRcawUift8DxPuaeuh+GmPB1Nv5raYU=;
-        b=M+H/dAiI4MIKRjR03nEHk4qMz9Bdn3oYS9t9/0xHnzqSEequBb9pwYqn2wY8W+FaLs
-         yKAj7Cg8aze6Y8Q2ypzMSWkDsCU4ir4Mt3CRASxMX6bxDn0rDBe+rsjGjJ6ru8oFLUGn
-         Ptb3G25F0R3C0UaXKEuSQm5WoSh5gBPqq+ZRHKKJSvhaHB4Ay5eo24FR9excm+cRgI5H
-         rN+EbYBLvekVRj37Hiz36y7Naa6qTcbq/PgEPsI5MT6bT1GSf3ksav2Y7QZGpHyhsESa
-         8cB/2Gn5VqYmsTU4QeYpEv6IXOdnal8lpHZoGtdZZBK8cuPZ1sxkmtWy2axmY6RKStu1
-         fW5Q==
+        bh=TFJX5aqRLdRlM8Bylx3w4z6e/d/G1PAJ6qc3UxZLqu8=;
+        b=bLlOT6eqjD2aNsv+GW/hMxQuGGBIBLJfFuMZ+HKQby4NnThk/30/4lM05scS2EFYlC
+         U/zaGZKXpnLB35MK/AmK7OsgcmFzZ3ZvhcPkGxJYGWgPD6+j7xcyLuVzYgQI8X64T7om
+         Q49jbNsRHQY7LQkNRnqKypGFv43DOdQLVv/SQSA+6np8eJFPK2b0scGlX/CyCLjyUSre
+         FkRQUrXt0k/5Rum3emeoJCMMNSHKZOejIkW4YksTe4n5ybrTOMit9xdLdcRY71C1IwGB
+         klXqQPRiXXZ2gbjRqu7eSyE/311gd2zdpMOkPG9lVC51hXeFkTacW8t5Q38pk2pchbU8
+         75Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=j0L86Yd+9MAimRcawUift8DxPuaeuh+GmPB1Nv5raYU=;
-        b=eHMWwCXajm+ZWcFwMICZHllPrdikR25bXWUHl1w2NNPLtQfW0f/Gjn0X6MK0H3blCK
-         PBwC2slYJ+/dfcOW/yJQGwcFFL03NZNeBzwq6i1FnGFdx4pUZ5DEtblaEPU7aRk/1EtG
-         UWvdQuKdhhwCA2AD6DiDrn4wa/sXS5Ba1BduvFSWBE7wipyHjdd4YLXt7N77GZR1GAnS
-         ptqPc0UdtWV5JS/V9EJ3lDV0s2h6SQ3CHYOM02vrmYKlIQaBlzT0tUlIcYxwvw2napZF
-         fe21ltQmV86Bn28q2XPnHAdjZq3cA2Fr22UpqyhOecF28DkgUTfG1zwqZuzBY7N6vYUG
-         hclw==
-X-Gm-Message-State: AOAM533PlmpzPz+THkN73/GIf3Ixaskq4uv/RdVIiyD84M9eewwfrMBO
-        CNZhDYM4l1V3AveNVIaPaco/FP/v43tbxdqQbK4=
-X-Google-Smtp-Source: ABdhPJxdZ8ljaw/WHgbRQV+yefM+u7CzKmKlWik7vSvMWgFOBvKkzMq23mpk/W25QUtQXvroS+AqTb+nr5Mt/4cJWUI=
-X-Received: by 2002:a25:d84a:: with SMTP id p71mr23829591ybg.347.1596417936307;
- Sun, 02 Aug 2020 18:25:36 -0700 (PDT)
+        bh=TFJX5aqRLdRlM8Bylx3w4z6e/d/G1PAJ6qc3UxZLqu8=;
+        b=SSW0K/dte9krKZLWC0GOF9uKc1lioWyKAc0QmkmiiLCwWhp2ctqL6h7tL1niWM43FP
+         K6EF/UX8yaxaxlscLkRZINXxjA6qWdEwcdoAtiHYK1DmFOu7rlJusqSiuNGwoTrZPCOm
+         G6SCEtiC3zPqchXxU19I9MoVEi2CCyT+q89aqgdks2Mjl0ZtwG7RLs4v6gTYihB6oMzH
+         SCBE6YhrAA3stmNABvCoQuzeIUurj9uPnNvi1QqB8787lEztHfd7AZaG1x5vag2O8GDe
+         gLf+e0qRK0LevetCviEpBsmMLhIB5lnDKx1BkOrhb+MYHvZ++ROxd3vZB7h8b47EgDp4
+         269w==
+X-Gm-Message-State: AOAM533AzLzHYhAF3eaghSY2cenHavH/6VB/SrXk08OwG6/hvgrVc43y
+        jDzlO/jiCLEf5BcQTbedskLE3r90BD0khqPecJI=
+X-Google-Smtp-Source: ABdhPJzHYQ0IpV16NmaGb8q/5QzBJs+1x4wZiWgBhvCOx2WvJ8SZ7YesXJ2IH+Dn/28jMewcRLBwXvyRI8MS32Leqwc=
+X-Received: by 2002:a25:ba0f:: with SMTP id t15mr22362497ybg.459.1596418541228;
+ Sun, 02 Aug 2020 18:35:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200802042126.2119783-1-yhs@fb.com> <20200802042126.2119843-1-yhs@fb.com>
-In-Reply-To: <20200802042126.2119843-1-yhs@fb.com>
+References: <20200802042126.2119783-1-yhs@fb.com> <20200802042127.2119901-1-yhs@fb.com>
+In-Reply-To: <20200802042127.2119901-1-yhs@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 2 Aug 2020 18:25:25 -0700
-Message-ID: <CAEf4BzbaRXHpZ5b_6rojnk2dQxLFCOEwtGjNExdg5FEWadF+9g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf: change uapi for bpf iterator map elements
+Date:   Sun, 2 Aug 2020 18:35:30 -0700
+Message-ID: <CAEf4BzaeT1HULBE0dQULSF62Wm6=t49Dc8jjHVJ9Nt1noxeCtQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] libbpf: support new uapi for map element bpf iterator
 To:     Yonghong Song <yhs@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -63,150 +63,87 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Sat, Aug 1, 2020 at 9:22 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> Commit a5cbe05a6673 ("bpf: Implement bpf iterator for
-> map elements") added bpf iterator support for
-> map elements. The map element bpf iterator requires
-> info to identify a particular map. In the above
-> commit, the attr->link_create.target_fd is used
-> to carry map_fd and an enum bpf_iter_link_info
-> is added to uapi to specify the target_fd actually
-> representing a map_fd:
->     enum bpf_iter_link_info {
->         BPF_ITER_LINK_UNSPEC = 0,
->         BPF_ITER_LINK_MAP_FD = 1,
->
->         MAX_BPF_ITER_LINK_INFO,
->     };
->
-> This is an extensible approach as we can grow
-> enumerator for pid, cgroup_id, etc. and we can
-> unionize target_fd for pid, cgroup_id, etc.
-> But in the future, there are chances that
-> more complex customization may happen, e.g.,
-> for tasks, it could be filtered based on
-> both cgroup_id and user_id.
->
-> This patch changed the uapi to have fields
->         __aligned_u64   iter_info;
->         __u32           iter_info_len;
-> for additional iter_info for link_create.
-> The iter_info is defined as
->         union bpf_iter_link_info {
->                 struct {
->                         __u32   map_fd;
->                 } map;
->         };
->
-> So future extension for additional customization
-> will be easier. The bpf_iter_link_info will be
-> passed to target callback to validate and generic
-> bpf_iter framework does not need to deal it any
-> more.
+> Previous commit adjusted kernel uapi for map
+> element bpf iterator. This patch adjusted libbpf API
+> due to uapi change.
 >
 > Signed-off-by: Yonghong Song <yhs@fb.com>
 > ---
->  include/linux/bpf.h            | 10 ++++---
->  include/uapi/linux/bpf.h       | 15 +++++-----
->  kernel/bpf/bpf_iter.c          | 52 +++++++++++++++-------------------
->  kernel/bpf/map_iter.c          | 37 ++++++++++++++++++------
->  kernel/bpf/syscall.c           |  2 +-
->  net/core/bpf_sk_storage.c      | 37 ++++++++++++++++++------
->  tools/include/uapi/linux/bpf.h | 15 +++++-----
->  7 files changed, 104 insertions(+), 64 deletions(-)
+>  tools/lib/bpf/bpf.c    | 4 +++-
+>  tools/lib/bpf/bpf.h    | 5 +++--
+>  tools/lib/bpf/libbpf.c | 7 +++++--
+>  3 files changed, 11 insertions(+), 5 deletions(-)
 >
+> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+> index eab14c97c15d..c75a84398d51 100644
+> --- a/tools/lib/bpf/bpf.c
+> +++ b/tools/lib/bpf/bpf.c
+> @@ -598,7 +598,9 @@ int bpf_link_create(int prog_fd, int target_fd,
+>         attr.link_create.prog_fd = prog_fd;
+>         attr.link_create.target_fd = target_fd;
+>         attr.link_create.attach_type = attach_type;
+> -       attr.link_create.flags = OPTS_GET(opts, flags, 0);
+> +       attr.link_create.iter_info =
+> +               ptr_to_u64(OPTS_GET(opts, iter_info, (void *)0));
+> +       attr.link_create.iter_info_len = OPTS_GET(opts, iter_info_len, 0);
+>
+>         return sys_bpf(BPF_LINK_CREATE, &attr, sizeof(attr));
+>  }
+> diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+> index 28855fd5b5f4..c9895f191305 100644
+> --- a/tools/lib/bpf/bpf.h
+> +++ b/tools/lib/bpf/bpf.h
+> @@ -170,9 +170,10 @@ LIBBPF_API int bpf_prog_detach2(int prog_fd, int attachable_fd,
+>
+>  struct bpf_link_create_opts {
+>         size_t sz; /* size of this struct for forward/backward compatibility */
+> -       __u32 flags;
 
-[...]
+I'd actually keep flags in link_create_ops, as it's part of the kernel
+UAPI anyways, we won't have to add it later. Just pass it through into
+bpf_attr.
 
->  int bpf_iter_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+> +       union bpf_iter_link_info *iter_info;
+> +       __u32 iter_info_len;
+>  };
+> -#define bpf_link_create_opts__last_field flags
+> +#define bpf_link_create_opts__last_field iter_info_len
+>
+>  LIBBPF_API int bpf_link_create(int prog_fd, int target_fd,
+>                                enum bpf_attach_type attach_type,
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 7be04e45d29c..dc8fabf9d30d 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -8298,6 +8298,7 @@ bpf_program__attach_iter(struct bpf_program *prog,
+>                          const struct bpf_iter_attach_opts *opts)
 >  {
-> +       union bpf_iter_link_info __user *ulinfo;
->         struct bpf_link_primer link_primer;
->         struct bpf_iter_target_info *tinfo;
-> -       struct bpf_iter_aux_info aux = {};
+>         DECLARE_LIBBPF_OPTS(bpf_link_create_opts, link_create_opts);
 > +       union bpf_iter_link_info linfo;
->         struct bpf_iter_link *link;
-> -       u32 prog_btf_id, target_fd;
-> +       u32 prog_btf_id, linfo_len;
->         bool existed = false;
-> -       struct bpf_map *map;
->         int err;
+>         char errmsg[STRERR_BUFSIZE];
+>         struct bpf_link *link;
+>         int prog_fd, link_fd;
+> @@ -8307,8 +8308,10 @@ bpf_program__attach_iter(struct bpf_program *prog,
+>                 return ERR_PTR(-EINVAL);
 >
-> +       memset(&linfo, 0, sizeof(union bpf_iter_link_info));
-> +
-> +       ulinfo = u64_to_user_ptr(attr->link_create.iter_info);
-> +       linfo_len = attr->link_create.iter_info_len;
-> +       if (ulinfo && linfo_len) {
+>         if (OPTS_HAS(opts, map_fd)) {
+> -               target_fd = opts->map_fd;
+> -               link_create_opts.flags = BPF_ITER_LINK_MAP_FD;
+> +               memset(&linfo, 0, sizeof(linfo));
+> +               linfo.map.map_fd = opts->map_fd;
+> +               link_create_opts.iter_info = &linfo;
+> +               link_create_opts.iter_info_len = sizeof(linfo);
 
-We probably want to be more strict here: if either pointer or len is
-non-zero, both should be present and valid. Otherwise we can have
-garbage in iter_info, as long as iter_info_len is zero.
+Maybe instead of having map_fd directly in bpf_iter_attach_opts, let's
+just accept bpf_iter_link_info and its len directly from the user?
+Right now kernel UAPI and libbpf API for customizing iterator
+attachment differ. It would be simpler to keep them in sync and we
+won't have to discuss how to evolve bpf_iter_attach_opts as we add
+more customization for different types of iterators. Thoughts?
 
-> +               err = bpf_check_uarg_tail_zero(ulinfo, sizeof(linfo),
-> +                                              linfo_len);
-> +               if (err)
-> +                       return err;
-> +               linfo_len = min_t(u32, linfo_len, sizeof(linfo));
-> +               if (copy_from_user(&linfo, ulinfo, linfo_len))
-> +                       return -EFAULT;
-> +       }
-> +
->         prog_btf_id = prog->aux->attach_btf_id;
->         mutex_lock(&targets_mutex);
->         list_for_each_entry(tinfo, &targets, list) {
-> @@ -411,13 +425,6 @@ int bpf_iter_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
->         if (!existed)
->                 return -ENOENT;
->
-> -       /* Make sure user supplied flags are target expected. */
-> -       target_fd = attr->link_create.target_fd;
-> -       if (attr->link_create.flags != tinfo->reg_info->req_linfo)
-> -               return -EINVAL;
-> -       if (!attr->link_create.flags && target_fd)
-> -               return -EINVAL;
-> -
-
-Please still ensure that no flags are specified.
-
-
->         link = kzalloc(sizeof(*link), GFP_USER | __GFP_NOWARN);
->         if (!link)
->                 return -ENOMEM;
-> @@ -431,28 +438,15 @@ int bpf_iter_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
->                 return err;
 >         }
 >
-
-[...]
-
-> -static int bpf_iter_check_map(struct bpf_prog *prog,
-> -                             struct bpf_iter_aux_info *aux)
-> +static int bpf_iter_attach_map(struct bpf_prog *prog,
-> +                              union bpf_iter_link_info *linfo,
-> +                              struct bpf_iter_aux_info *aux)
->  {
-> -       struct bpf_map *map = aux->map;
-> +       struct bpf_map *map;
-> +       int err = -EINVAL;
+>         prog_fd = bpf_program__fd(prog);
+> --
+> 2.24.1
 >
-> -       if (map->map_type != BPF_MAP_TYPE_SK_STORAGE)
-> +       if (!linfo->map.map_fd)
->                 return -EINVAL;
-
-This could be -EBADF?
-
->
-> -       if (prog->aux->max_rdonly_access > map->value_size)
-> -               return -EACCES;
-> +       map = bpf_map_get_with_uref(linfo->map.map_fd);
-> +       if (IS_ERR(map))
-> +               return PTR_ERR(map);
-> +
-> +       if (map->map_type != BPF_MAP_TYPE_SK_STORAGE)
-> +               goto put_map;
-> +
-> +       if (prog->aux->max_rdonly_access > map->value_size) {
-> +               err = -EACCES;
-> +               goto put_map;
-> +       }
-
-[...]
