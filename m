@@ -2,351 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D9323AC69
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 20:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC8F723AC71
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 20:36:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728730AbgHCSd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 14:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
+        id S1728635AbgHCSg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 14:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727907AbgHCSd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 14:33:27 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9FCAC06174A;
-        Mon,  3 Aug 2020 11:33:26 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id v9so6270704ljk.6;
-        Mon, 03 Aug 2020 11:33:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=YKCFMiXgUprAfOtTAJFluerMVX+Gtd8K9VHkEllzvoQ=;
-        b=tU6CmDxaaFS+gchg1ZgV0zbZrms45MW+M407MKCUjllnktxPZG3c8KUmX/Zqszr5DS
-         ckyXZDNopQsBrVElISuidPHwZLHOiR/oDqNsearT6XNPgLzvbwRPsxrU8NJrQre3CgdV
-         TeNIB4StkgApX4Y5dH4nh/fGuhODUO9tCmpBckOtt2yc8poPKkeqTrw3DkCEnakiswVF
-         zWi/J/aeGRcAJra4Xgu07NtAZFkFtsNWSuoji04TmsTN0D+sS/OKnN1do8GLiu0jX9zR
-         KJND/Axp3nXkv5LHS9KqidpRoVH3QEVKlFmL+gHJ+7b4K/PPpsiPVIgZaFX89OXP6Qj/
-         eRNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YKCFMiXgUprAfOtTAJFluerMVX+Gtd8K9VHkEllzvoQ=;
-        b=etvgTsX98iCaGtcaP/9/rNrARrRRt4tPuY+SuPSYttni6HnJEK6PWyJhXeqVLnlO/y
-         n81WZH0BBjBLFu9SrQyVcTVDgzh6NzWV9Gi3ep6mokLAW9aLkdZrV/cuLLqn+CeLJHVN
-         /v61pvtEyX9FdFCym9Fm6Tg3Br193EputqL8ORaofHhoSRNavIj5ecbRdhAZIM3ZnCRp
-         2bzrkuhwkEIJLS38tSsG1LCc1BEhOOaCRC2LL44sFBM4qU2XcgnS6PIawHoNDcglPZWo
-         Z3KuRNO8XN2FHMl79IbZa8Cb8E8yLKFi+k3+MpbAwA3uL6aYdt4t6kn5dx0CGfQYxMVm
-         e8+g==
-X-Gm-Message-State: AOAM531isjKB8NwIDCzPrCh7Pxh5RUpDtx0WahQjMMFUWFOBAJkyQz32
-        To36tW9TcpE8oU3R1AazQvgXu6OizGQK1jKyBKOd+6C7
-X-Google-Smtp-Source: ABdhPJwCJmzHyGOSMxu1l7JJ2m3B/tHW+tKlkp7tdBMoW+ZufJ3L6rCtFYvb62PkniAcVnfMI42PYaBpzCXSdEuC8GA=
-X-Received: by 2002:a2e:a489:: with SMTP id h9mr8631929lji.121.1596479605091;
- Mon, 03 Aug 2020 11:33:25 -0700 (PDT)
+        with ESMTP id S1726130AbgHCSg0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 14:36:26 -0400
+Received: from relay.felk.cvut.cz (relay.felk.cvut.cz [IPv6:2001:718:2:1611:0:1:0:70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1422CC06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 11:36:24 -0700 (PDT)
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by relay.felk.cvut.cz (8.15.2/8.15.2) with ESMTP id 073IZRSs033255;
+        Mon, 3 Aug 2020 20:35:27 +0200 (CEST)
+        (envelope-from pisa@cmp.felk.cvut.cz)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 073IZR6t003880;
+        Mon, 3 Aug 2020 20:35:27 +0200
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 073IZQDX003878;
+        Mon, 3 Aug 2020 20:35:26 +0200
+From:   pisa@cmp.felk.cvut.cz
+To:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
+        mkl@pengutronix.de, socketcan@hartkopp.net
+Cc:     wg@grandegger.com, davem@davemloft.net, robh+dt@kernel.org,
+        mark.rutland@arm.com, c.emde@osadl.org, armbru@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        martin.jerabek01@gmail.com, ondrej.ille@gmail.com,
+        jnovak@fel.cvut.cz, jara.beran@gmail.com, porazil@pikron.com,
+        Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Subject: [PATCH v4 0/6] CTU CAN FD open-source IP core SocketCAN driver, PCI, platform integration and documentation
+Date:   Mon,  3 Aug 2020 20:34:48 +0200
+Message-Id: <cover.1596408856.git.pisa@cmp.felk.cvut.cz>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20200802222950.34696-1-alexei.starovoitov@gmail.com>
- <20200802222950.34696-4-alexei.starovoitov@gmail.com> <33d2db5b-3f81-e384-bed8-96f1d7f1d4c7@iogearbox.net>
- <430839eb-2761-0c1a-4b99-dffb07b9f502@iogearbox.net> <736dc34e-254d-de46-ac91-512029f675e7@iogearbox.net>
-In-Reply-To: <736dc34e-254d-de46-ac91-512029f675e7@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 3 Aug 2020 11:33:13 -0700
-Message-ID: <CAADnVQ+TRC11LnqMfstZwa-DDBBjL5uJoVgkxP0NkEDxAT2zEQ@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 3/4] bpf: Add kernel module with user mode
- driver that populates bpffs.
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-FELK-MailScanner-Information: 
+X-MailScanner-ID: 073IZRSs033255
+X-FELK-MailScanner: Found to be clean
+X-FELK-MailScanner-SpamCheck: not spam, SpamAssassin (not cached,
+        score=-0.098, required 6, BAYES_00 -0.50, KHOP_HELO_FCRDNS 0.40,
+        SPF_HELO_NONE 0.00, SPF_NONE 0.00)
+X-FELK-MailScanner-From: pisa@cmp.felk.cvut.cz
+X-FELK-MailScanner-Watermark: 1597084535.10885@eQA+8JpdQO/U9XDaVFVRCg
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 3, 2020 at 10:40 AM Daniel Borkmann <daniel@iogearbox.net> wrot=
-e:
->
-> On 8/3/20 7:34 PM, Daniel Borkmann wrote:
-> > On 8/3/20 7:15 PM, Daniel Borkmann wrote:
-> >> On 8/3/20 12:29 AM, Alexei Starovoitov wrote:
-> >>> From: Alexei Starovoitov <ast@kernel.org>
-> >>>
-> >>> Add kernel module with user mode driver that populates bpffs with
-> >>> BPF iterators.
-> >>>
-> >>> $ mount bpffs /my/bpffs/ -t bpf
-> >>> $ ls -la /my/bpffs/
-> >>> total 4
-> >>> drwxrwxrwt  2 root root    0 Jul  2 00:27 .
-> >>> drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
-> >>> -rw-------  1 root root    0 Jul  2 00:27 maps.debug
-> >>> -rw-------  1 root root    0 Jul  2 00:27 progs.debug
-> >>>
-> >>> The user mode driver will load BPF Type Formats, create BPF maps, pop=
-ulate BPF
-> >>> maps, load two BPF programs, attach them to BPF iterators, and finall=
-y send two
-> >>> bpf_link IDs back to the kernel.
-> >>> The kernel will pin two bpf_links into newly mounted bpffs instance u=
-nder
-> >>> names "progs.debug" and "maps.debug". These two files become human re=
-adable.
-> >>>
-> >>> $ cat /my/bpffs/progs.debug
-> >>>    id name            attached
-> >>>    11 dump_bpf_map    bpf_iter_bpf_map
-> >>>    12 dump_bpf_prog   bpf_iter_bpf_prog
-> >>>    27 test_pkt_access
-> >>>    32 test_main       test_pkt_access test_pkt_access
-> >>>    33 test_subprog1   test_pkt_access_subprog1 test_pkt_access
-> >>>    34 test_subprog2   test_pkt_access_subprog2 test_pkt_access
-> >>>    35 test_subprog3   test_pkt_access_subprog3 test_pkt_access
-> >>>    36 new_get_skb_len get_skb_len test_pkt_access
-> >>>    37 new_get_skb_ifindex get_skb_ifindex test_pkt_access
-> >>>    38 new_get_constant get_constant test_pkt_access
-> >>>
-> >>> The BPF program dump_bpf_prog() in iterators.bpf.c is printing this d=
-ata about
-> >>> all BPF programs currently loaded in the system. This information is =
-unstable
-> >>> and will change from kernel to kernel as ".debug" suffix conveys.
-> >>>
-> >>> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> >> [...]
-> >>> diff --git a/kernel/bpf/preload/Kconfig b/kernel/bpf/preload/Kconfig
-> >>> new file mode 100644
-> >>> index 000000000000..b8ba5a9398ed
-> >>> --- /dev/null
-> >>> +++ b/kernel/bpf/preload/Kconfig
-> >>> @@ -0,0 +1,18 @@
-> >>> +# SPDX-License-Identifier: GPL-2.0-only
-> >>> +menuconfig BPF_PRELOAD
-> >>> +    bool "Preload BPF file system with kernel specific program and m=
-ap iterators"
-> >>> +    depends on BPF
-> >>> +    help
-> >>> +      This builds kernel module with several embedded BPF programs t=
-hat are
-> >>> +      pinned into BPF FS mount point as human readable files that ar=
-e
-> >>> +      useful in debugging and introspection of BPF programs and maps=
-.
-> >>> +
-> >>> +if BPF_PRELOAD
-> >>> +config BPF_PRELOAD_UMD
-> >>> +    tristate "bpf_preload kernel module with user mode driver"
-> >>> +    depends on CC_CAN_LINK
-> >>> +    depends on m || CC_CAN_LINK_STATIC
-> >>> +    default m
-> >>> +    help
-> >>> +      This builds bpf_preload kernel module with embedded user mode =
-driver.
-> >>> +endif
-> >> [...]
-> >> When I applied this set locally to run build & selftests I noticed tha=
-t the above
-> >> kconfig will appear in the top-level menuconfig. This is how it looks =
-in menuconfig:
-> >>
-> >>    =E2=94=82 =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
-=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
-=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
-=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
-=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
-=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
-=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
-=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
-=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
-=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
-=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
-=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
-=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
-=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
-=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
-=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
-=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
-=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
-=E2=94=80=E2=94=90 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           Gener=
-al setup  --->                                                             =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                       [*] 64-bi=
-t kernel                                                                   =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           Proce=
-ssor type and features  --->                                               =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           Power=
- management and ACPI options  --->                                         =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           Bus o=
-ptions (PCI etc.)  --->                                                    =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           Binar=
-y Emulations  --->                                                         =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           Firmw=
-are Drivers  --->                                                          =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                       [*] Virtu=
-alization  --->                                                            =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           Gener=
-al architecture-dependent options  --->                                    =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                       [*] Enabl=
-e loadable module support  --->                                            =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                       -*- Enabl=
-e the block layer  --->                                                    =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           IO Sc=
-hedulers  --->                                                             =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                       [ ] Prelo=
-ad BPF file system with kernel specific program and map iterators  ----    =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           Execu=
-table file formats  --->                                                   =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           Memor=
-y Management options  --->                                                 =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                       [*] Netwo=
-rking support  --->                                                        =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           Devic=
-e Drivers  --->                                                            =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           File =
-systems  --->                                                              =
-                         =E2=94=82 =E2=94=82
-> >>    =E2=94=82 =E2=94=82                                           Secur=
-ity options  --->                                                          =
-                         =E2=94=82 =E2=94=82
-> >> [...]
-> >>
-> >> I assume the original intention was to have it under 'general setup' o=
-n a similar level for
-> >> the JIT settings, or is this intentional to have it at this high level=
- next to 'networking
-> >> support' and others?
+From: Pavel Pisa <pisa@cmp.felk.cvut.cz>
 
-I don't remember when last time I did menuconfig.
-How do you propose to move it?
-Any particular suggestion how kconfig suppose to look like?
+This driver adds support for the CTU CAN FD open-source IP core.
+More documentation and core sources at project page
+(https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core).
+The core integration to Xilinx Zynq system as platform driver
+is available (https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top).
+Implementation on Intel FPGA based PCI Express board is available
+from project (https://gitlab.fel.cvut.cz/canbus/pcie-ctu_can_fd).
+The CTU CAN FD core emulation send for review for QEMU mainline.
+Development repository for QEMU emulation - ctu-canfd branch of
+  https://gitlab.fel.cvut.cz/canbus/qemu-canbus
 
-> >
-> > Hm, my config has:
-> >
-> > CONFIG_BPF_PRELOAD=3Dy
-> > CONFIG_BPF_PRELOAD_UMD=3Dy
-> >
-> > I'm getting the following 3 warnings and build error below:
-> >
-> > root@tank:~/bpf-next# make -j8 > /dev/null
-> > arch/x86/hyperv/hv_apic.c: In function =E2=80=98hv_send_ipi_mask_allbut=
-self=E2=80=99:
-> > arch/x86/hyperv/hv_apic.c:236:1: warning: the frame size of 1032 bytes =
-is larger than 1024 bytes [-Wframe-larger-than=3D]
-> >   }
-> >   ^
-> > make[3]: *** No rule to make target 'kernel/bpf/preload/./../../tools/l=
-ib/bpf/bpf.c', needed by 'kernel/bpf/preload/./../../tools/lib/bpf/bpf.o'. =
- Stop.
-> > make[3]: *** Waiting for unfinished jobs....
-> > kernel/bpf/preload/iterators/iterators.c: In function =E2=80=98main=E2=
-=80=99:
-> > kernel/bpf/preload/iterators/iterators.c:50:2: warning: ignoring return=
- value of =E2=80=98dup=E2=80=99, declared with attribute warn_unused_result=
- [-Wunused-result]
-> >    dup(debug_fd);
-> >    ^~~~~~~~~~~~~
-> > kernel/bpf/preload/iterators/iterators.c:53:2: warning: ignoring return=
- value of =E2=80=98read=E2=80=99, declared with attribute warn_unused_resul=
-t [-Wunused-result]
-> >    read(from_kernel, &magic, sizeof(magic));
-> >    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > kernel/bpf/preload/iterators/iterators.c:85:2: warning: ignoring return=
- value of =E2=80=98read=E2=80=99, declared with attribute warn_unused_resul=
-t [-Wunused-result]
-> >    read(from_kernel, &magic, sizeof(magic));
-> >    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > make[2]: *** [kernel/bpf/preload] Error 2
-> > make[1]: *** [kernel/bpf] Error 2
-> > make: *** [kernel] Error 2
-> > make: *** Waiting for unfinished jobs....
-> > [...]
-> >
-> > Have you seen the target error before, what am I missing?
->
-> Looks like the path in this patch is wrong:
->
-> diff --git a/kernel/bpf/preload/Makefile b/kernel/bpf/preload/Makefile
-> index 191d82209842..136c6ca0c196 100644
-> --- a/kernel/bpf/preload/Makefile
-> +++ b/kernel/bpf/preload/Makefile
-> @@ -1,6 +1,6 @@
->   # SPDX-License-Identifier: GPL-2.0
->
-> -LIBBPF :=3D $(srctree)/../../tools/lib/bpf
-> +LIBBPF :=3D $(srctree)/../../../tools/lib/bpf
+More about CAN related projects used and developed at the Faculty
+of the Electrical Engineering (http://www.fel.cvut.cz/en/)
+of Czech Technical University (https://www.cvut.cz/en)
+in Prague at http://canbus.pages.fel.cvut.cz/ .
 
-hmm. that's very odd.
-Are you building in-src-tree ?
-I'm building out-of-src-tree with KBUILD_OUTPUT.
-And two pairs of dots would be correct.
-make V=3D1 kernel/bpf/preload/
-gcc  -m64 -lelf -lz  -o kernel/bpf/preload/bpf_preload_umd
-kernel/bpf/preload/iterators/iterators.o
-kernel/bpf/preload/../../../tools/lib/bpf/bpf.o
+Martin Jerabek (1):
+  can: ctucanfd: add support for CTU CAN FD open-source IP core - bus
+    independent part.
 
-see three pairs above. the first pair comes from $(srctree) somehow.
+Pavel Pisa (5):
+  dt-bindings: vendor-prefix: add prefix for the Czech Technical
+    University in Prague.
+  dt-bindings: net: can: binding for CTU CAN FD open-source IP core.
+  can: ctucanfd: CTU CAN FD open-source IP core - PCI bus support.
+  can: ctucanfd: CTU CAN FD open-source IP core - platform/SoC support.
+  docs: ctucanfd: CTU CAN FD open-source IP core documentation.
 
->   userccflags +=3D -I $(srctree)/tools/include/ -I $(srctree)/tools/inclu=
-de/uapi -I $(LIBBPF) \
->          -I $(srctree)/tools/lib/ \
->          -I $(srctree)/kernel/bpf/preload/iterators/ -Wno-int-conversion =
-\
->
-> With that, I'm now getting the following error:
->
-> root@tank:~/bpf-next# make -j8
->    DESCEND  objtool
->    DESCEND  bpf/resolve_btfids
->    CALL    scripts/atomic/check-atomics.sh
->    CALL    scripts/checksyscalls.sh
->    CHK     include/generated/compile.h
->    CC      kernel/events/core.o
->    CC [U]  kernel/bpf/preload/iterators/iterators.o
-> kernel/bpf/preload/iterators/iterators.c: In function =E2=80=98main=E2=80=
-=99:
-> kernel/bpf/preload/iterators/iterators.c:50:2: warning: ignoring return v=
-alue of =E2=80=98dup=E2=80=99, declared with attribute warn_unused_result [=
--Wunused-result]
->    dup(debug_fd);
->    ^~~~~~~~~~~~~
-> kernel/bpf/preload/iterators/iterators.c:53:2: warning: ignoring return v=
-alue of =E2=80=98read=E2=80=99, declared with attribute warn_unused_result =
-[-Wunused-result]
->    read(from_kernel, &magic, sizeof(magic));
->    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> kernel/bpf/preload/iterators/iterators.c:85:2: warning: ignoring return v=
-alue of =E2=80=98read=E2=80=99, declared with attribute warn_unused_result =
-[-Wunused-result]
->    read(from_kernel, &magic, sizeof(magic));
->    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->    CC      kernel/events/ring_buffer.o
->    CC [U]  kernel/bpf/preload/./../../../tools/lib/bpf/bpf.o
->    CC [U]  kernel/bpf/preload/./../../../tools/lib/bpf/libbpf.o
-> In file included from kernel/bpf/preload/./../../../tools/lib/bpf/libbpf.=
-c:47:0:
-> ./tools/include/tools/libc_compat.h:11:21: error: static declaration of =
-=E2=80=98reallocarray=E2=80=99 follows non-static declaration
->   static inline void *reallocarray(void *ptr, size_t nmemb, size_t size)
->                       ^~~~~~~~~~~~
+The version 4 changes:
+  - changes summary, 169 non-merge commits, 6 driver,
+    32 IP core sources enhancements and fixes, 58 tests
+    in master and about additional 30 iso-testbench
+    preparation branch.
+  - convert device-tree binding documentation to YAML
+  - QEMU model of CTU CAN FD IP core and generic extension
+    of QEMU CAN bus emulation developed by Jan Charvat.
+  - driver tested on QEMU emulated Malta big-endian MIPS
+    platform and big endian-support fixed.
+  - checkpatch from 5.4 kernel used to cleanup driver formatting
+  - header files generated from IP core IP-Xact description
+    updated to include protocol exception (pex) field.
+    Mechanism to set it from the driver is not provided yet.
 
-I saw this in the past when makefile was wrong. I suspect it's related
-to the above issue.
-Could you send me your build script / command line and make version?
+The version 3 changes:
+  - sent at 2019-12-21
+  - adapts device tree bindings documentation according to
+    Rob Herring suggestions.
+  - the driver has been separated to individual modules for core support,
+    PCI bus integration and platform, SoC integration.
+  - the FPGA design has been cleaned up and CAN protocol FSM redesigned
+    by Ondrej Ille (the core redesign has been reason to pause attempts to driver
+    submission)
+  - the work from February 2019 on core, test framework and driver
+    1601 commits in total, 436 commits in the core sources, 144 commits
+    in the driver, 151 documentation, 502 in tests.
+  - not all continuous integration tests updated for latest design version yet
+    https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core/pipelines
+  - Zynq hardware in the loop test show no issues for after driver PCI and platform
+    separation and latest VHDL sources updates.
+  - driver code has been periodically tested on 4.18.5-rt3 and 4.19 long term
+    stable kernels.
+  - test of the patches before submission is run on 5.4 kernel
+  - the core has been integrated by Jaroslav Beran <jara.beran@gmail.com>
+    into Intel FPGA based SoC used in the tester developed for Skoda auto
+    at Department of Measurement, Faculty of Electrical Engineering,
+    Czech Technical University https://meas.fel.cvut.cz/ . He has contributed
+    feedback and fixes to the project.
+
+The version 2 sent at 2019-02-27
+
+The version 1 sent at 2019-02-22
+
+Ondrej Ille has prepared the CTU CAN IP Core sources for new release.
+We are waiting with it for the driver review, our intention
+is to release IP when driver is reviewed and mainlined.
+
+DKMS CTU CAN FD driver build by OpenBuildService to ease integration
+into Debian systems when driver is not provided by the distribution
+
+https://build.opensuse.org/package/show/home:ppisa/ctu_can_fd
+
+Jan Charvat <charvj10@fel.cvut.cz> finished work to extend already
+mainlined QEMU SJA1000 and SocketCAN support to provide even CAN FD
+support and CTU CAN FD core support.
+
+  https://gitlab.fel.cvut.cz/canbus/qemu-canbus/-/tree/ctu-canfd
+
+The patches has been sent for review to QEMU mainlining list.
+
+Thanks in advance to all who help us to deliver the project into public.
+
+Thanks to all colleagues, reviewers and other providing feedback,
+infrastructure and enthusiasm and motivation for open-source work.
+
+Build infrastructure and hardware is provided by
+  Department of Control Engineering,
+  Faculty of Electrical Engineering,
+  Czech Technical University in Prague
+  https://dce.fel.cvut.cz/en
+
+ .../devicetree/bindings/net/can/ctu,ctucanfd.yaml  |   70 ++
+ .../devicetree/bindings/vendor-prefixes.yaml       |    2 +
+ .../device_drivers/ctu/FSM_TXT_Buffer_user.png     |  Bin 0 -> 174807 bytes
+ .../device_drivers/ctu/ctucanfd-driver.rst         |  635 +++++++++++
+ drivers/net/can/Kconfig                            |    1 +
+ drivers/net/can/Makefile                           |    1 +
+ drivers/net/can/ctucanfd/Kconfig                   |   38 +
+ drivers/net/can/ctucanfd/Makefile                  |   13 +
+ drivers/net/can/ctucanfd/ctu_can_fd.c              | 1114 ++++++++++++++++++++
+ drivers/net/can/ctucanfd/ctu_can_fd.h              |   88 ++
+ drivers/net/can/ctucanfd/ctu_can_fd_frame.h        |  190 ++++
+ drivers/net/can/ctucanfd/ctu_can_fd_hw.c           |  781 ++++++++++++++
+ drivers/net/can/ctucanfd/ctu_can_fd_hw.h           |  917 ++++++++++++++++
+ drivers/net/can/ctucanfd/ctu_can_fd_pci.c          |  316 ++++++
+ drivers/net/can/ctucanfd/ctu_can_fd_platform.c     |  145 +++
+ drivers/net/can/ctucanfd/ctu_can_fd_regs.h         |  972 +++++++++++++++++
+ 16 files changed, 5283 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
+ create mode 100644 Documentation/networking/device_drivers/ctu/FSM_TXT_Buffer_user.png
+ create mode 100644 Documentation/networking/device_drivers/ctu/ctucanfd-driver.rst
+ create mode 100644 drivers/net/can/ctucanfd/Kconfig
+ create mode 100644 drivers/net/can/ctucanfd/Makefile
+ create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd.c
+ create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd.h
+ create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_frame.h
+ create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_hw.c
+ create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_hw.h
+ create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_pci.c
+ create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_platform.c
+ create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_regs.h
+
+-- 
+2.11.0
+
