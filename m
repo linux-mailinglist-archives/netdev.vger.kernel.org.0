@@ -2,96 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 503F723A895
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 16:35:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 710C623A89A
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 16:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727121AbgHCOfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 10:35:09 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:55016 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726769AbgHCOfI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 10:35:08 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 073ER8pd179137;
-        Mon, 3 Aug 2020 14:34:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=QxBVs2uAQljrJun7eKn6DO1kz/SnWeQHWgAPkbHPo2o=;
- b=kmreGByM8FHXx2L7JPVqan4er7rqL8bGRhiDYRbJl/U2i+ko6GidBCb3ItbjegERvrQh
- 9Xg0V+Kqt1rZPQZoEPFDZPHUvIdBOt/AkCaC7oJyIt9pmF8kr9Fa3oTLgzjML8UJFHfZ
- NqMuV5CDfVKFUarv7KPFlNWV6I0lqowqRjPRzn01pNSD/5JsA2/JiZhrMBKSEbIdJY3M
- RfvP/U96uUYdElYpQKQh3vKcIDPZ3T11OQzrmWrRhBzOSUcaMgi07xXXGYbFdG0L52HS
- NRFYtxkfwPcMhVlN+WbqYg9x3AYRynY+vxxN0KHj706Ajkbqt+HXJofoNuK7dL8pxh6C aA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 32pdnq234v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 03 Aug 2020 14:34:58 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 073EXfca084641;
-        Mon, 3 Aug 2020 14:34:57 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3030.oracle.com with ESMTP id 32njav1dk0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 03 Aug 2020 14:34:57 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 073EYuj7003994;
-        Mon, 3 Aug 2020 14:34:56 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 03 Aug 2020 07:34:56 -0700
-Date:   Mon, 3 Aug 2020 17:34:48 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net/mlx5: remove erroneous fallthrough
-Message-ID: <20200803143448.GA346925@mwanda>
+        id S1726757AbgHCOgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 10:36:22 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:46090 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726358AbgHCOgW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 10:36:22 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.64])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D6A166007B;
+        Mon,  3 Aug 2020 14:36:21 +0000 (UTC)
+Received: from us4-mdac16-71.ut7.mdlocal (unknown [10.7.64.190])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D46C9200B2;
+        Mon,  3 Aug 2020 14:36:21 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.42])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 5826622008B;
+        Mon,  3 Aug 2020 14:36:21 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id F10D4A40073;
+        Mon,  3 Aug 2020 14:36:20 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 3 Aug 2020
+ 15:36:15 +0100
+Subject: Re: [PATCH v2 net-next 04/11] sfc_ef100: TX path for EF100 NICs
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+References: <31de2e73-bce7-6c9d-0c20-49b32e2043cc@solarflare.com>
+ <9776704b-d4b0-7477-42ba-f82ad3d4ec48@solarflare.com>
+ <20200731123936.38680a53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <4cd2e7e9-a5e4-283e-d4f2-f7f1d3b41669@solarflare.com>
+Date:   Mon, 3 Aug 2020 15:36:11 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9702 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0
- mlxlogscore=999 mlxscore=0 spamscore=0 malwarescore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008030110
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9702 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 impostorscore=0 mlxscore=0
- suspectscore=0 clxscore=1011 priorityscore=1501 bulkscore=0 adultscore=0
- malwarescore=0 phishscore=0 mlxlogscore=999 spamscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2008030109
+In-Reply-To: <20200731123936.38680a53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25580.005
+X-TM-AS-Result: No-7.424600-8.000000-10
+X-TMASE-MatchedRID: 7ySqCuYCpfjmLzc6AOD8DfHkpkyUphL9amDMhjMSdnlVZCccrGnfyHjm
+        0APnwZU2oPDBsdLv/Zv8NU6T4XpIugDNPxu11HXjbRZGrsoeW/g0AJe3B5qfBrNgNI2I9bOAjL4
+        B9OUMY3Wng9t5QPCRN4el0gm1sucmSSOWVJeuO1CDGx/OQ1GV8hFMgtPIAD6i+gtHj7OwNO2Ohz
+        Oa6g8KrX8DclAO/Dl/a6flRovitHvL/0Lff1MiTOYILMwne6onLnieqqu9S5g=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--7.424600-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25580.005
+X-MDID: 1596465381-3nxdFfiY-pin
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This isn't a fall through because it was after a return statement.  The
-fall through annotation leads to a Smatch warning:
+On 31/07/2020 20:39, Jakub Kicinski wrote:
+> On Fri, 31 Jul 2020 13:59:04 +0100 Edward Cree wrote:
+>> +static inline efx_oword_t *ef100_tx_desc(struct efx_tx_queue *tx_queue,
+>> +					 unsigned int index)
+> Does this static inline make any difference?
+>
+> You know the general policy...
+Damn, I didn't spot that one.
 
-    drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c:246
-    mlx5e_ethtool_get_sset_count() warn: ignoring unreachable code.
+Why doesn't checkpatch catch those?  Is it just not smart enough
+ to remember whether it's in a .c file or not?  Or do I need to
+ pass it some --strict --fascist --annoy-me-harder flags?
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c | 1 -
- 1 file changed, 1 deletion(-)
+Will remove 'inline' in v3, thanks.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index 08270987c506..48397a577fcd 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -243,7 +243,6 @@ int mlx5e_ethtool_get_sset_count(struct mlx5e_priv *priv, int sset)
- 		return MLX5E_NUM_PFLAGS;
- 	case ETH_SS_TEST:
- 		return mlx5e_self_test_num(priv);
--		fallthrough;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
--- 
-2.27.0
-
+-ed
