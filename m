@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B4123B0B3
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 01:11:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9977723B0B5
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 01:11:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728959AbgHCXKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 19:10:19 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:48274 "EHLO
+        id S1729057AbgHCXK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 19:10:27 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:31962 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728940AbgHCXKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 19:10:18 -0400
+        by vger.kernel.org with ESMTP id S1727091AbgHCXK0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 19:10:26 -0400
 Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 073Ms7J9008779
-        for <netdev@vger.kernel.org>; Mon, 3 Aug 2020 16:10:17 -0700
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 073Ms1mx008650
+        for <netdev@vger.kernel.org>; Mon, 3 Aug 2020 16:10:26 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=facebook;
- bh=JJiFuMriW/bxE+TS3sUne7N3y04ILjMt7pzcH98rSO0=;
- b=Or+SjmvyEMC9f+/7R+8Ch6G2HEwE9S8RYbST3DG5hy8pX50OYjG89ChZToFRj391Y7GB
- jEWyQtIuXr3+GPuVIeGMsZxuJAu/fTo6LbmL2R97sN/AIWvbl1ePr+FTtNbfVArH1HTn
- Czd+tI43JkeOBsZ6gfMj6yws81spb6JfL/g= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 32nrc9755y-2
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=hHxS2Toao5f/OikYvMZpCy8qVQSg+2tYIfC73UklCUI=;
+ b=K+tzDq0BVNSL4x03rBnmJE67MitbR3LgZg59QJ0WSGiXG+qv72lhxMvwbwPMyU9UxZe2
+ G6vJHUC9t9l8erzCj3OoLqViHvHuQXZ1HmKKuiTaE6fbaJQ8NZdIhUy1jbIXfOaVGojA
+ RW/Iq1AE/zp8e4TREWdjcivbAkvZshq/ZdU= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 32nrc9756d-5
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 16:10:17 -0700
-Received: from intmgw004.03.ash8.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 16:10:26 -0700
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 3 Aug 2020 16:10:16 -0700
+ 15.1.1979.3; Mon, 3 Aug 2020 16:10:23 -0700
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 86E0F2943872; Mon,  3 Aug 2020 16:10:13 -0700 (PDT)
+        id 9E6FB2943872; Mon,  3 Aug 2020 16:10:19 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Martin KaFai Lau <kafai@fb.com>
 Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
@@ -42,18 +42,20 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Neal Cardwell <ncardwell@google.com>, <netdev@vger.kernel.org>,
         Yuchung Cheng <ycheng@google.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [RFC PATCH v4 bpf-next 00/12] BPF TCP header options
-Date:   Mon, 3 Aug 2020 16:10:13 -0700
-Message-ID: <20200803231013.2681560-1-kafai@fb.com>
+Subject: [RFC PATCH v4 bpf-next 01/12] tcp: Use a struct to represent a saved_syn
+Date:   Mon, 3 Aug 2020 16:10:19 -0700
+Message-ID: <20200803231019.2681772-1-kafai@fb.com>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200803231013.2681560-1-kafai@fb.com>
+References: <20200803231013.2681560-1-kafai@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
+Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-08-03_15:2020-08-03,2020-08-03 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 adultscore=0
- mlxlogscore=999 spamscore=0 priorityscore=1501 suspectscore=13
+ mlxlogscore=732 spamscore=0 priorityscore=1501 suspectscore=38
  clxscore=1015 impostorscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0
  malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2006250000 definitions=main-2008030158
@@ -63,146 +65,160 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The earlier effort in BPF-TCP-CC allows the TCP Congestion Control
-algorithm to be written in BPF.  It opens up opportunities to allow
-a faster turnaround time in testing/releasing new congestion control
-ideas to production environment.
+The TCP_SAVE_SYN has both the network header and tcp header.
+The total length of the saved syn packet is currently stored in
+the first 4 bytes (u32) of an array and the actual packet data is
+stored after that.
 
-The same flexibility can be extended to writing TCP header option.
-It is not uncommon that people want to test new TCP header option
-to improve the TCP performance.  Another use case is for data-center
-that has a more controlled environment and has more flexibility in
-putting header options for internal traffic only.
-   =20
-This patch set introduces the necessary BPF logic and API to
-allow bpf program to write and parse header options.
+A later patch will add a bpf helper that allows to get the tcp header
+alone from the saved syn without the network header.  It will be more
+convenient to have a direct offset to a specific header instead of
+re-parsing it.  This requires to separately store the network hdrlen.
+The total header length (i.e. network + tcp) is still needed for the
+current usage in getsockopt.  Although this total length can be obtained
+by looking into the tcphdr and then get the (th->doff << 2), this patch
+chooses to directly store the tcp hdrlen in the second four bytes of
+this newly created "struct saved_syn".  By using a new struct, it can
+give a readable name to each individual header length.
 
-There are also some changes to TCP and they are mostly to provide
-the needed sk and skb info to the bpf program to make decision.
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+---
+ include/linux/tcp.h        |  7 ++++++-
+ include/net/request_sock.h |  8 +++++++-
+ net/core/filter.c          |  4 ++--
+ net/ipv4/tcp.c             |  9 +++++----
+ net/ipv4/tcp_input.c       | 16 +++++++++-------
+ 5 files changed, 29 insertions(+), 15 deletions(-)
 
-Patch 9 is the main patch and has more details on the API and design.
-
-The set includes an example which sends the max delay ack in
-the BPF TCP header option and the receiving side can
-then adjust its RTO accordingly.
-
-v4:
-- Since bpf-next is currently closed, tag the set with RFC to keep the
-  review cadence
-
-- Separate tcp changes in its own patches (5, 6, 7).  It is a bit
-  tricky since most of the tcp changes is to call out the bpf prog to
-  write and parse the header.  The write and parse callout has been
-  modularized into a few bpf_skops_* function in v3.
-
-  This revision (v4) tries to move those bpf_skops_* functions into separ=
-ate
-  TCP patches.  However, they will be half implemented to highlight
-  the changes to the TCP stack, mainly:
-    - when the bpf prog will be called in the TCP stack and
-    - what information needs to pump through the TCP stack to the actual =
-bpf
-      prog callsite.
-
-  The bpf_skops_* functions will be fully implemented in patch 9 together
-  with other bpf pieces.
-
-- Use struct_size() in patch 1 (Eric)
-
-- Add saw_unknown to struct tcp_options_received in patch 4 (Eric)
-
-v3:
-- Add kdoc for tcp_make_synack (Jakub Kicinski)
-- Add BPF_WRITE_HDR_TCP_CURRENT_MSS and BPF_WRITE_HDR_TCP_SYNACK_COOKIE
-  in bpf.h to give a clearer meaning to sock_ops->args[0] when
-  writing header option.
-- Rename BPF_SOCK_OPS_PARSE_UNKWN_HDR_OPT_CB_FLAG
-  to     BPF_SOCK_OPS_PARSE_UNKNOWN_HDR_OPT_CB_FLAG
-
-v2:
-- Instead of limiting the bpf prog to write experimental
-  option (kind:254, magic:0xeB9F), this revision allows the bpf prog to
-  write any TCP header option through the bpf_store_hdr_opt() helper.
-  That will allow different bpf-progs to write its own
-  option and the helper will guarantee there is no duplication.
-
-- Add bpf_load_hdr_opt() helper to search a particular option by kind.
-  Some of the get_syn logic is refactored to bpf_sock_ops_get_syn().
-
-- Since bpf prog is no longer limited to option (254, 0xeB9F),
-  the TCP_SKB_CB(skb)->bpf_hdr_opt_off is no longer needed.
-  Instead, when there is any option kernel cannot recognize,
-  the bpf prog will be called if the
-  BPF_SOCK_OPS_PARSE_UNKWN_HDR_OPT_CB_FLAG is set.
-  [ The "unknown_opt" is learned in tcp_parse_options() in patch 4. ]
-
-- Add BPF_SOCK_OPS_PARSE_ALL_HDR_OPT_CB_FLAG.
-  If this flag is set, the bpf-prog will be called
-  on all tcp packet received at an established sk.
-  It will be useful to ensure a previously written header option is
-  received by the peer.
-  e.g. The latter test is using this on the active-side during syncookie.
-
-- The test_tcp_hdr_options.c is adjusted accordingly
-  to test writing both experimental and regular TCP header option.
-
-- The test_misc_tcp_hdr_options.c is added to mainly
-  test different cases on the new helpers.
- =20
-- Break up the TCP_BPF_RTO_MIN and TCP_BPF_DELACK_MAX into
-  two patches.
-
-- Directly store the tcp_hdrlen in "struct saved_syn" instead of
-  going back to the tcp header to obtain it by "th->doff * 4"
-
-- Add a new optval(=3D=3D2) for setsockopt(TCP_SAVE_SYN) such
-  that it will also store the mac header (patch 9).
-
-Martin KaFai Lau (12):
-  tcp: Use a struct to represent a saved_syn
-  tcp: bpf: Add TCP_BPF_DELACK_MAX setsockopt
-  tcp: bpf: Add TCP_BPF_RTO_MIN for bpf_setsockopt
-  tcp: Add saw_unknown to struct tcp_options_received
-  bpf: tcp: Add bpf_skops_established()
-  bpf: tcp: Add bpf_skops_parse_hdr()
-  bpf: tcp: Add bpf_skops_hdr_opt_len() and bpf_skops_write_hdr_opt()
-  bpf: sock_ops: Change some members of sock_ops_kern from u32 to u8
-  bpf: tcp: Allow bpf prog to write and parse TCP header option
-  bpf: selftests: Add fastopen_connect to network_helpers
-  bpf: selftests: tcp header options
-  tcp: bpf: Optionally store mac header in TCP_SAVE_SYN
-
- include/linux/bpf-cgroup.h                    |  25 +
- include/linux/filter.h                        |   8 +-
- include/linux/tcp.h                           |  20 +-
- include/net/inet_connection_sock.h            |   2 +
- include/net/request_sock.h                    |   9 +-
- include/net/tcp.h                             |  59 +-
- include/uapi/linux/bpf.h                      | 234 ++++++-
- net/core/filter.c                             | 416 ++++++++++-
- net/ipv4/tcp.c                                |  16 +-
- net/ipv4/tcp_fastopen.c                       |   2 +-
- net/ipv4/tcp_input.c                          | 127 +++-
- net/ipv4/tcp_ipv4.c                           |   5 +-
- net/ipv4/tcp_minisocks.c                      |   1 +
- net/ipv4/tcp_output.c                         | 193 ++++-
- net/ipv6/tcp_ipv6.c                           |   5 +-
- tools/include/uapi/linux/bpf.h                | 234 ++++++-
- tools/testing/selftests/bpf/network_helpers.c |  37 +
- tools/testing/selftests/bpf/network_helpers.h |   2 +
- .../bpf/prog_tests/tcp_hdr_options.c          | 629 +++++++++++++++++
- .../bpf/progs/test_misc_tcp_hdr_options.c     | 338 +++++++++
- .../bpf/progs/test_tcp_hdr_options.c          | 657 ++++++++++++++++++
- .../selftests/bpf/test_tcp_hdr_options.h      | 150 ++++
- 22 files changed, 3107 insertions(+), 62 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/tcp_hdr_option=
-s.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_misc_tcp_hdr_o=
-ptions.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_tcp_hdr_option=
-s.c
- create mode 100644 tools/testing/selftests/bpf/test_tcp_hdr_options.h
-
+diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+index 527d668a5275..5528912dc468 100644
+--- a/include/linux/tcp.h
++++ b/include/linux/tcp.h
+@@ -406,7 +406,7 @@ struct tcp_sock {
+ 	 * socket. Used to retransmit SYNACKs etc.
+ 	 */
+ 	struct request_sock __rcu *fastopen_rsk;
+-	u32	*saved_syn;
++	struct saved_syn *saved_syn;
+ };
+=20
+ enum tsq_enum {
+@@ -484,6 +484,11 @@ static inline void tcp_saved_syn_free(struct tcp_soc=
+k *tp)
+ 	tp->saved_syn =3D NULL;
+ }
+=20
++static inline u32 tcp_saved_syn_len(const struct saved_syn *saved_syn)
++{
++	return saved_syn->network_hdrlen + saved_syn->tcp_hdrlen;
++}
++
+ struct sk_buff *tcp_get_timestamping_opt_stats(const struct sock *sk);
+=20
+ static inline u16 tcp_mss_clamp(const struct tcp_sock *tp, u16 mss)
+diff --git a/include/net/request_sock.h b/include/net/request_sock.h
+index cf8b33213bbc..b1b101814ecb 100644
+--- a/include/net/request_sock.h
++++ b/include/net/request_sock.h
+@@ -41,6 +41,12 @@ struct request_sock_ops {
+=20
+ int inet_rtx_syn_ack(const struct sock *parent, struct request_sock *req=
+);
+=20
++struct saved_syn {
++	u32 network_hdrlen;
++	u32 tcp_hdrlen;
++	u8 data[];
++};
++
+ /* struct request_sock - mini sock to represent a connection request
+  */
+ struct request_sock {
+@@ -60,7 +66,7 @@ struct request_sock {
+ 	struct timer_list		rsk_timer;
+ 	const struct request_sock_ops	*rsk_ops;
+ 	struct sock			*sk;
+-	u32				*saved_syn;
++	struct saved_syn		*saved_syn;
+ 	u32				secid;
+ 	u32				peer_secid;
+ };
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 7124f0fe6974..250b5552a148 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -4550,9 +4550,9 @@ static int _bpf_getsockopt(struct sock *sk, int lev=
+el, int optname,
+ 			tp =3D tcp_sk(sk);
+=20
+ 			if (optlen <=3D 0 || !tp->saved_syn ||
+-			    optlen > tp->saved_syn[0])
++			    optlen > tcp_saved_syn_len(tp->saved_syn))
+ 				goto err_clear;
+-			memcpy(optval, tp->saved_syn + 1, optlen);
++			memcpy(optval, tp->saved_syn->data, optlen);
+ 			break;
+ 		default:
+ 			goto err_clear;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 27de9380ed14..8a774b5094e9 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3791,20 +3791,21 @@ static int do_tcp_getsockopt(struct sock *sk, int=
+ level,
+=20
+ 		lock_sock(sk);
+ 		if (tp->saved_syn) {
+-			if (len < tp->saved_syn[0]) {
+-				if (put_user(tp->saved_syn[0], optlen)) {
++			if (len < tcp_saved_syn_len(tp->saved_syn)) {
++				if (put_user(tcp_saved_syn_len(tp->saved_syn),
++					     optlen)) {
+ 					release_sock(sk);
+ 					return -EFAULT;
+ 				}
+ 				release_sock(sk);
+ 				return -EINVAL;
+ 			}
+-			len =3D tp->saved_syn[0];
++			len =3D tcp_saved_syn_len(tp->saved_syn);
+ 			if (put_user(len, optlen)) {
+ 				release_sock(sk);
+ 				return -EFAULT;
+ 			}
+-			if (copy_to_user(optval, tp->saved_syn + 1, len)) {
++			if (copy_to_user(optval, tp->saved_syn->data, len)) {
+ 				release_sock(sk);
+ 				return -EFAULT;
+ 			}
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index a018bafd7bdf..05d0818c3e31 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6598,13 +6598,15 @@ static void tcp_reqsk_record_syn(const struct soc=
+k *sk,
+ {
+ 	if (tcp_sk(sk)->save_syn) {
+ 		u32 len =3D skb_network_header_len(skb) + tcp_hdrlen(skb);
+-		u32 *copy;
+-
+-		copy =3D kmalloc(len + sizeof(u32), GFP_ATOMIC);
+-		if (copy) {
+-			copy[0] =3D len;
+-			memcpy(&copy[1], skb_network_header(skb), len);
+-			req->saved_syn =3D copy;
++		struct saved_syn *saved_syn;
++
++		saved_syn =3D kmalloc(struct_size(saved_syn, data, len),
++				    GFP_ATOMIC);
++		if (saved_syn) {
++			saved_syn->network_hdrlen =3D skb_network_header_len(skb);
++			saved_syn->tcp_hdrlen =3D tcp_hdrlen(skb);
++			memcpy(saved_syn->data, skb_network_header(skb), len);
++			req->saved_syn =3D saved_syn;
+ 		}
+ 	}
+ }
 --=20
 2.24.1
 
