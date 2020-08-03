@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FE1A23ADE8
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:04:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87FEB23ADEB
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:04:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728793AbgHCUEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 16:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56550 "EHLO
+        id S1728815AbgHCUEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 16:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728714AbgHCUEB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 16:04:01 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6763C06174A
-        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 13:04:01 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id q17so21456990pls.9
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 13:04:01 -0700 (PDT)
+        with ESMTP id S1728714AbgHCUED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 16:04:03 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B61ACC06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 13:04:03 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id t6so20698059pgq.1
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 13:04:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YVPszMbwLuPAYUh6gtr8v5TkolvvDU333qnxOlVp1Sg=;
-        b=oBIsRWXRuMFgeiJIimoFC5QisEjNJkhqvL7ikXhCZAuYX8wj+4IGa5hyFweng4+trp
-         oDqGLejN5W/vAWIhzM2kGIQTE3V8wYjtYz6ZLpCFJ68VghsMAgGWLchCMMBSxGNe/J8T
-         wf2zxTomvp0ldgVa/40v3L5b+cIw9z6Po5C6n+7AB9CsAr9PrFqnfKKBas9f94s33HaM
-         IaUpqPzQWvOgWJfdaGBsfjVq1K4LjK3sm71AJ9i8IGv8GmyxuovekPEX5hHyALkeEDEW
-         OjsDDla0yKfNvBSikO8r6HL5GRyoHf6U13novQ8YEVutrxI/d4Tl97YpUKwNYkvuj8Cv
-         6YSA==
+        bh=6219eW0CRVUqlw/+reyzl7L8d8bWSx4EXYUvMNU5nBY=;
+        b=tM/fuRuW/udxU6ZYnUqC8Jd4ff8GVmzr+1YW/IUIDcIrePPwAUZH98A+jiMHlIt60T
+         xH9kIBxQEyd6JBoAAa6gepUSc6gYRIlcBt5C0xbxkpr2EVhqC+m4oWN4xVUutd8J3d5i
+         XEeyIQTpihM5VKGPkNxaApgUmJOg6P8YGYaixOfDROf2zUJ4meZ7FveEQcBrcoJhGJW4
+         /sIdvIWlSibS7yM6oEc7SsrqeEHEwh+zmzT8XaCykxSyBaMAJcohDioLd9a/F/FcJdgu
+         OvY4nsku6m3cq1WlNvOR5LyOfNmkdkL19IMliclaqWYEdJVfYMDhjIehnLYCRiheADmc
+         U2ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YVPszMbwLuPAYUh6gtr8v5TkolvvDU333qnxOlVp1Sg=;
-        b=mBEL8brGNxV6Mcsri0PLQGIceCB73eRA0+Qd0/FEp4iAFKNebjbMt7bKIoQ+HOT1Dw
-         3QcQYtazaaWeWjdBFa0ZqYypwUdP/O90MC31NS8jfkp1PGKJJ1QqqRUJYIuBC1zS0idJ
-         9vD7othgvVYC2Vl/Ip1gKFXBik1VwEtWzm1k2zkabifbKan+d+Vpj/iz1kQ5wCgLSEPF
-         JlDvB3BKUs89GoYvunr6ROAG8dEXkJ0egUGc4dKdT11WHGYtPziFyJGP8z+Jym0ZZ5bs
-         U5Sr8r2FPfiUcxk1j0yjWLe1b68zAlYvwYbaMnTLtR7e2UEkPBAx0JjDohGDqIEXqUQX
-         yZPA==
-X-Gm-Message-State: AOAM53243ZFiHmmNgiSOIqHYCt02CBRJs+HOtVGRsnMGMkABKVPhbsQw
-        I2R0hivfvnUr8eq0DOsp7+kMBONC
-X-Google-Smtp-Source: ABdhPJyUq/ZpvCUE7+MPrdYX430X7MNrrsxF/4EeXlFlQwYpjRQsV0lFtGfI+suD+fhmHxJ5DpvRMA==
-X-Received: by 2002:a17:902:b943:: with SMTP id h3mr16680350pls.38.1596485040924;
-        Mon, 03 Aug 2020 13:04:00 -0700 (PDT)
+        bh=6219eW0CRVUqlw/+reyzl7L8d8bWSx4EXYUvMNU5nBY=;
+        b=e1k/h9sXUn4g15fahHFxho0oQFtkwInW0KtqiLAOYgg2yH80QYreR0EffuREn4cB0n
+         Xx+sa1IeRuE9aagZgZsfFSJ6nHSdAffDANs9NcNsfTVRse8lEcN1rHYdZW/HF7OrQy+o
+         khAXOSL9zAypFGz5718Lx6JmnzrwSrDLhWbwH0dFbiflknskOpJI2OeHTVXkAsgg9pFy
+         gB4yYudncj8EDRckgg8odORCtrJFWCH2PuRpYwfXk/blZXR0VJE4laP4bPLH2BvHXE90
+         XJCDyv5n6nw7AxDmAk2DPOBFgKjRR7URXdzgi4zX3BWAsvIFMpTF2KhPRh3XI+NQwKcY
+         xyWQ==
+X-Gm-Message-State: AOAM532ERv+wPX4y6FZ74tg44z6NUSKI5MtY5e/lolAFhj4RJMstg48u
+        4xwn4BUC2SybhAqMqzJVVLKbaHpg
+X-Google-Smtp-Source: ABdhPJzZwzIHHr+KJ66KNMIb9+Z2pAlAdqBJoLkIfcE2RSV7vsYBmYKxRNoL4zqnECYxwpINA74CRQ==
+X-Received: by 2002:a63:5049:: with SMTP id q9mr119664pgl.219.1596485042359;
+        Mon, 03 Aug 2020 13:04:02 -0700 (PDT)
 Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id u24sm20017521pfm.211.2020.08.03.13.03.59
+        by smtp.gmail.com with ESMTPSA id u24sm20017521pfm.211.2020.08.03.13.04.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 13:04:00 -0700 (PDT)
+        Mon, 03 Aug 2020 13:04:01 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -54,9 +54,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 2/5] net: dsa: loop: Support 4K VLANs
-Date:   Mon,  3 Aug 2020 13:03:51 -0700
-Message-Id: <20200803200354.45062-3-f.fainelli@gmail.com>
+Subject: [PATCH net-next 3/5] net: dsa: loop: Move data structures to header
+Date:   Mon,  3 Aug 2020 13:03:52 -0700
+Message-Id: <20200803200354.45062-4-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200803200354.45062-1-f.fainelli@gmail.com>
 References: <20200803200354.45062-1-f.fainelli@gmail.com>
@@ -67,41 +67,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allocate a 4K array of VLANs instead of limiting ourselves to just 5
-which is arbitrary.
+In preparation for adding support for a mockup data path, move the
+driver data structures to include/linux/dsa/loop.h such that we can
+share them between net/dsa/ and drivers/net/dsa/ later on.
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/dsa_loop.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/dsa/dsa_loop.c | 32 +-----------------------------
+ include/linux/dsa/loop.h   | 40 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+), 31 deletions(-)
+ create mode 100644 include/linux/dsa/loop.h
 
 diff --git a/drivers/net/dsa/dsa_loop.c b/drivers/net/dsa/dsa_loop.c
-index 4a57238cdfd8..6e97b44c6f3f 100644
+index 6e97b44c6f3f..ed0b580c9944 100644
 --- a/drivers/net/dsa/dsa_loop.c
 +++ b/drivers/net/dsa/dsa_loop.c
-@@ -48,12 +48,10 @@ struct dsa_loop_port {
- 	u16 pvid;
- };
+@@ -14,28 +14,11 @@
+ #include <linux/workqueue.h>
+ #include <linux/module.h>
+ #include <linux/if_bridge.h>
++#include <linux/dsa/loop.h>
+ #include <net/dsa.h>
  
--#define DSA_LOOP_VLANS	5
+ #include "dsa_loop.h"
+ 
+-struct dsa_loop_vlan {
+-	u16 members;
+-	u16 untagged;
+-};
 -
- struct dsa_loop_priv {
- 	struct mii_bus	*bus;
- 	unsigned int	port_base;
--	struct dsa_loop_vlan vlans[DSA_LOOP_VLANS];
-+	struct dsa_loop_vlan vlans[VLAN_N_VID];
- 	struct net_device *netdev;
- 	struct dsa_loop_port ports[DSA_MAX_PORTS];
+-struct dsa_loop_mib_entry {
+-	char name[ETH_GSTRING_LEN];
+-	unsigned long val;
+-};
+-
+-enum dsa_loop_mib_counters {
+-	DSA_LOOP_PHY_READ_OK,
+-	DSA_LOOP_PHY_READ_ERR,
+-	DSA_LOOP_PHY_WRITE_OK,
+-	DSA_LOOP_PHY_WRITE_ERR,
+-	__DSA_LOOP_CNT_MAX,
+-};
+-
+ static struct dsa_loop_mib_entry dsa_loop_mibs[] = {
+ 	[DSA_LOOP_PHY_READ_OK]	= { "phy_read_ok", },
+ 	[DSA_LOOP_PHY_READ_ERR]	= { "phy_read_err", },
+@@ -43,19 +26,6 @@ static struct dsa_loop_mib_entry dsa_loop_mibs[] = {
+ 	[DSA_LOOP_PHY_WRITE_ERR] = { "phy_write_err", },
  };
-@@ -191,7 +189,7 @@ dsa_loop_port_vlan_prepare(struct dsa_switch *ds, int port,
- 	/* Just do a sleeping operation to make lockdep checks effective */
- 	mdiobus_read(bus, ps->port_base + port, MII_BMSR);
  
--	if (vlan->vid_end > DSA_LOOP_VLANS)
-+	if (vlan->vid_end > ARRAY_SIZE(ps->vlans))
- 		return -ERANGE;
+-struct dsa_loop_port {
+-	struct dsa_loop_mib_entry mib[__DSA_LOOP_CNT_MAX];
+-	u16 pvid;
+-};
+-
+-struct dsa_loop_priv {
+-	struct mii_bus	*bus;
+-	unsigned int	port_base;
+-	struct dsa_loop_vlan vlans[VLAN_N_VID];
+-	struct net_device *netdev;
+-	struct dsa_loop_port ports[DSA_MAX_PORTS];
+-};
+-
+ static struct phy_device *phydevs[PHY_MAX_ADDR];
  
- 	return 0;
+ static enum dsa_tag_protocol dsa_loop_get_protocol(struct dsa_switch *ds,
+diff --git a/include/linux/dsa/loop.h b/include/linux/dsa/loop.h
+new file mode 100644
+index 000000000000..bb39401a8056
+--- /dev/null
++++ b/include/linux/dsa/loop.h
+@@ -0,0 +1,40 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef DSA_LOOP_H
++#define DSA_LOOP_H
++
++#include <linux/types.h>
++#include <linux/ethtool.h>
++#include <net/dsa.h>
++
++struct dsa_loop_vlan {
++	u16 members;
++	u16 untagged;
++};
++
++struct dsa_loop_mib_entry {
++	char name[ETH_GSTRING_LEN];
++	unsigned long val;
++};
++
++enum dsa_loop_mib_counters {
++	DSA_LOOP_PHY_READ_OK,
++	DSA_LOOP_PHY_READ_ERR,
++	DSA_LOOP_PHY_WRITE_OK,
++	DSA_LOOP_PHY_WRITE_ERR,
++	__DSA_LOOP_CNT_MAX,
++};
++
++struct dsa_loop_port {
++	struct dsa_loop_mib_entry mib[__DSA_LOOP_CNT_MAX];
++	u16 pvid;
++};
++
++struct dsa_loop_priv {
++	struct mii_bus	*bus;
++	unsigned int	port_base;
++	struct dsa_loop_vlan vlans[VLAN_N_VID];
++	struct net_device *netdev;
++	struct dsa_loop_port ports[DSA_MAX_PORTS];
++};
++
++#endif /* DSA_LOOP_H */
 -- 
 2.25.1
 
