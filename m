@@ -2,84 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F1A723A9E9
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 17:53:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2455F23AA3D
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 18:13:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728118AbgHCPxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 11:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728090AbgHCPxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 11:53:20 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432FAC06174A
-        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 08:53:20 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id h21so22161871qtp.11
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 08:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=LueLWi18o8TNnEzdwPUl3xnfCFoirmw1KaO/TC2UH2c=;
-        b=Glfy+unAV7H4ndNMVmB3w5QK5i7A6ZAyzYmRmT1AKvm+ESo0HrKGw7jLKM3NcuLC52
-         xgPmX9erJU44yk84KtSkRTSh4MUopqjcp7ihfMBHY1OMrTr3P12ykK5ew0YPbOHJ3pzF
-         trC58nYKxuAKGumfinuPuOEywiiRKSBxBPPkQgoa3WPLGE75+i3ZeQWd3gAEl0vwwG7+
-         GpGqtr8VLxpfc6ywDQ+CmRGzh++pnwtLMRX5Pnaxhcu4fwvxzUdIOaXZ2dCkSbNQhD/v
-         NCuXY1srf57EAafNFhAgu5vyRgyvaAvMt7v75gHfOK4nmf2HXApPzddJhBPVISkKjuHP
-         a+jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LueLWi18o8TNnEzdwPUl3xnfCFoirmw1KaO/TC2UH2c=;
-        b=I80dmInph5ZBT6IeDle6ZTTpIVyk8z2XBRvG7cKCJZBVt4YMonRGXlf2c7KFKI4bCj
-         BHpUS+SKLfoGOj2gBAfdQjRKoZXLzNC139kMq39fSFNTNagzX8sHgZGe9qPo9oslIYBp
-         kTREqXo/D44YFXl6+QufzChtYKN6kLeuKCufrrCJjS61GlUsQDVrnviXZpeoAVQgcWVG
-         U9uAfHEopFnyJmHkBFcD//RxBqx8E+4us4tGX4Z4O+INzB5Jt9wXyCmJuFojW3wKzQUt
-         RunrZZ/ENKscFOCp5pPX7/yQzraHofEOdclYFCrqXUeD2WaaQBymqIgBe5YV2lH4J6q/
-         ZBVw==
-X-Gm-Message-State: AOAM532n0nwfmT7JO5nE999DsydbK1fzjEfY2d52W9cSr3ZYfs5yDKuD
-        DejZpPoDlf58qBag+2Wr6HtAep+d
-X-Google-Smtp-Source: ABdhPJyH5LVm+k/BCPn8C9RY+atLD/+GIsEp5ugAWL0srlni6GVhgcc4kwNuaO6ynv+EQ2+tb9dnew==
-X-Received: by 2002:ac8:1e0e:: with SMTP id n14mr16937453qtl.109.1596469998253;
-        Mon, 03 Aug 2020 08:53:18 -0700 (PDT)
-Received: from ?IPv6:2601:284:8202:10b0:989f:23de:f9a0:6da? ([2601:284:8202:10b0:989f:23de:f9a0:6da])
-        by smtp.googlemail.com with ESMTPSA id y3sm22794170qtj.55.2020.08.03.08.53.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Aug 2020 08:53:17 -0700 (PDT)
-Subject: Re: [iproute2-next v2 5/5] devlink: support setting the overwrite
- mask
-To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
-References: <20200801002159.3300425-1-jacob.e.keller@intel.com>
- <20200801002159.3300425-6-jacob.e.keller@intel.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0bb895a2-e233-0426-3e48-d8422fa5b7cf@gmail.com>
-Date:   Mon, 3 Aug 2020 09:53:16 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        id S1726970AbgHCQMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 12:12:32 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:43479 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725945AbgHCQMb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 12:12:31 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 937875C00D9;
+        Mon,  3 Aug 2020 12:12:30 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 03 Aug 2020 12:12:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=YESboACVSPCnpuRI6
+        Hv8Bd6HiJCT5Ab4KFWtN3M5vcI=; b=OREic4ZJBzH6fbOs9GoUVNNBupAQnYgo4
+        JV89hMvlkgBmSkwzhAXX1rbcUNPsHTxtyIkMA2SvzumiibsPJAPx5F77Y/z18uob
+        l5yL5pUJHBkXWbcI3tcYjY6tFnEyc2tu9Rax3eKV2leNw+9luQAtFANJ6YJn1jbn
+        e5lRGtwI2E8Zuqy/QXXSRh+t61GFy1UxUXRUZtTGf8E2t/WPlieu71iSwA3pE+No
+        Ij+OAirygfxMW8Zh9goM7U0SDEQNo91AsQQB/wAhuDXHijHNNLVni1TqZvKsO0aF
+        c6x88IYAZo653bm02JaxaXCKxSd5+4PK+YVnzmSI1ALLO9dLfBS3Q==
+X-ME-Sender: <xms:bjcoX1fXdZSqyVIIs9nrA3x1xKAV3OduBtNpzRF5phasvrD_BkIeOQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrjeeggdelkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
+    ffieekgeehveefvdegledvffduhfenucfkphepjeelrddukedurdeirddvudelnecuvehl
+    uhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhse
+    hiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:bjcoXzP2zlNiaOjjGMrFPDHn9O2W-iN_GAOrCfwAqZFzFVmRL3GYzg>
+    <xmx:bjcoX-j9tMiw5vf4ojJqYgGWRIwYGfX_-GYz1fL0pUR4rtCV772KSA>
+    <xmx:bjcoX-_38ZeCdWiQtMJUtuo2Bbs2qA9g34PsdATaYH1cFgl-gPndbQ>
+    <xmx:bjcoX5IbMyxqgFkj-8TR6Rk9QFFXKpa9o-0AImmV1-CTL9siEMcI0w>
+Received: from shredder.mtl.com (bzq-79-181-6-219.red.bezeqint.net [79.181.6.219])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3D0243060272;
+        Mon,  3 Aug 2020 12:12:28 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        petrm@mellanox.com, amitc@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/9] mlxsw: Add support for buffer drop traps
+Date:   Mon,  3 Aug 2020 19:11:32 +0300
+Message-Id: <20200803161141.2523857-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200801002159.3300425-6-jacob.e.keller@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/31/20 6:21 PM, Jacob Keller wrote:
-> Add support for specifying the overwrite sections to allow in the flash
-> update command. This is done by adding a new "overwrite" option which
-> can take either "settings" or "identifiers" passing the overwrite mode
-> multiple times will combine the fields using bitwise-OR.
-> 
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> ---
->  devlink/devlink.c | 37 +++++++++++++++++++++++++++++++++++--
->  1 file changed, 35 insertions(+), 2 deletions(-)
-> 
+From: Ido Schimmel <idosch@mellanox.com>
 
-5/5? I only see 2 - 4/5 and 5/5. Please re-send against latest
-iproute2-next.
+Petr says:
+
+A recent patch set added the ability to mirror buffer related drops
+(e.g., early drops) through a netdev. This patch set adds the ability to
+trap such packets to the local CPU for analysis.
+
+The trapping towards the CPU is configured by using tc-trap action
+instead of tc-mirred as was done when the packets were mirrored through
+a netdev. A future patch set will also add the ability to sample the
+dropped packets using tc-sample action.
+
+The buffer related drop traps are added to devlink, which means that the
+dropped packets can be reported to user space via the kernel's
+drop_monitor module.
+
+Patch set overview:
+
+Patch #1 adds the early_drop trap to devlink
+
+Patch #2 adds extack to a few devlink operations to facilitate better
+error reporting to user space. This is necessary - among other things -
+because the action of buffer drop traps cannot be changed in mlxsw
+
+Patch #3 performs a small refactoring in mlxsw, patch #4 fixes a bug that
+this patchset would trigger.
+
+Patches #5-#6 add the infrastructure required to support different traps
+/ trap groups in mlxsw per-ASIC. This is required because buffer drop
+traps are not supported by Spectrum-1
+
+Patch #7 extends mlxsw to register the early_drop trap
+
+Patch #8 adds the offload logic for the "trap" action at a qevent block.
+
+Patch #9 adds a mlxsw-specific selftest.
+
+Amit Cohen (1):
+  devlink: Add early_drop trap
+
+Ido Schimmel (5):
+  devlink: Pass extack when setting trap's action and group's parameters
+  mlxsw: spectrum_trap: Use 'size_t' for array sizes
+  mlxsw: spectrum_trap: Allow for per-ASIC trap groups initialization
+  mlxsw: spectrum_trap: Allow for per-ASIC traps initialization
+  mlxsw: spectrum_trap: Add early_drop trap
+
+Petr Machata (3):
+  mlxsw: spectrum_span: On policer_id_base_ref_count, use dec_and_test
+  mlxsw: spectrum_qdisc: Offload action trap for qevents
+  selftests: mlxsw: RED: Test offload of trapping on RED qevents
+
+ .../networking/devlink/devlink-trap.rst       |   4 +
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  10 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  19 +-
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |   1 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |   3 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  14 +-
+ .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  |  75 +++++-
+ .../ethernet/mellanox/mlxsw/spectrum_span.c   |   3 +-
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 255 ++++++++++++++++--
+ .../ethernet/mellanox/mlxsw/spectrum_trap.h   |  18 +-
+ drivers/net/netdevsim/dev.c                   |   6 +-
+ include/net/devlink.h                         |   9 +-
+ net/core/devlink.c                            |   9 +-
+ .../drivers/net/mlxsw/sch_red_core.sh         |  35 ++-
+ .../drivers/net/mlxsw/sch_red_ets.sh          |  11 +
+ 15 files changed, 406 insertions(+), 66 deletions(-)
+
+-- 
+2.26.2
 
