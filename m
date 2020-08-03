@@ -2,100 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C883E23ADC3
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 21:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BEF123ADC7
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 21:50:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728604AbgHCTtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 15:49:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728174AbgHCTtc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 15:49:32 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27596C06174A
-        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 12:49:32 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id c16so19519603ejx.12
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 12:49:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jgwyR9nDQLXkF0Y0c5Qvzx5CD7t+6mnBGVVhqC0Q7N8=;
-        b=f3CtAcPmXjjT9EOIk4KHfzQaEfoqGPv2GhVoJDgiimXZ3Ekczg88gGfnpBwegVKb/E
-         BQMbpemktyl/n3SW7ptgpT9SbaY7PLliUwBzzG7/sRpLiZivjB5eIo9bomq6Xu14Kl4L
-         oyLEMCIUQPM2+j2pwsDCM+LKuVquqBM3Ch0kdfluxlId1JGH91w8Ec9lDghfq8IcKwrx
-         KL55jQKPMqZXqFJ2YW7h9SEJ04xv+So8FncnnKflCJWEAPwYNkCy6VYHY1mmU6PAW1D/
-         wVz1nSUL86ZlgFpEZDMGbbiHW+Prr1k4V48mA1oixJyLDf3qFQrtr8POU1Z8fPWVooBp
-         PicA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jgwyR9nDQLXkF0Y0c5Qvzx5CD7t+6mnBGVVhqC0Q7N8=;
-        b=C555+UusXSOpZHLn6vRpFyVF++fj+7ncIqVyWtOn3vVSzMWdtf9Fonb7gCnXYvpqxS
-         kjgcPJ1XI8chj9KQnXNSRrKv6UA7G3OEeVxK+NGaJKBI7Qjm2/QWR/3tm/Hmr9RNcjTI
-         EWyFRayNEuk+12ZRsW7jQcpSgqkYVIpMvjBFaeGGmC1d2bFagID6H36mvBPp1Ki+Z2Wz
-         cUASHs0HPt2wUQ+ClXwq2YScIpPyF38SdeuyUyeJm8EoCAJXAth3NI0u4T6k0qdyJTZ1
-         SSp21ECrIHD9rfPmoaCl/uf28NZEkvyWpWiudf49y2MbjTPhDRdIsdnPTNGR3vhiWXum
-         Kerw==
-X-Gm-Message-State: AOAM531vtiqkgbluq+0bVZstnUT32nSw/ZzIupdbxBYpfDWFCkmRv5sN
-        ZMyAOuyPy4wSCFAW29FQQs4=
-X-Google-Smtp-Source: ABdhPJxO851HxiDyMZCfa4qcOzBvegOTy8MY2AYzc0h39Aht6/icP/xosixDbUeoTgIZg/yX54FudQ==
-X-Received: by 2002:a17:906:cc4d:: with SMTP id mm13mr17650589ejb.191.1596484170827;
-        Mon, 03 Aug 2020 12:49:30 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.57.97])
-        by smtp.gmail.com with ESMTPSA id gl20sm16897584ejb.86.2020.08.03.12.49.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 12:49:30 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
-Cc:     richardcochran@gmail.com, jacob.e.keller@intel.com
-Subject: [PATCH net-next] ptp: only allow phase values lower than 1 period
-Date:   Mon,  3 Aug 2020 22:49:21 +0300
-Message-Id: <20200803194921.603151-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1728493AbgHCTuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 15:50:37 -0400
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:22981 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728146AbgHCTuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 15:50:37 -0400
+Received: from [192.168.1.41] ([92.140.224.28])
+        by mwinf5d06 with ME
+        id B7qZ2300B0dNxE4037qat7; Mon, 03 Aug 2020 21:50:34 +0200
+X-ME-Helo: [192.168.1.41]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 03 Aug 2020 21:50:34 +0200
+X-ME-IP: 92.140.224.28
+Subject: Re: [PATCH] gve: Fix the size used in a 'dma_free_coherent()' call
+To:     Joe Perches <joe@perches.com>, Jakub Kicinski <kuba@kernel.org>
+Cc:     csully@google.com, sagis@google.com, jonolson@google.com,
+        davem@davemloft.net, lrizzo@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Newsgroups: gmane.linux.kernel,gmane.linux.network,gmane.linux.kernel.janitors
+References: <20200802141523.691565-1-christophe.jaillet@wanadoo.fr>
+ <20200803084106.050eb7f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3a25ddc6-adaa-d17d-50f4-8f8ab2ed25eb@wanadoo.fr>
+ <69b4c4838cb743e24a79f81de487ac2e494843ef.camel@perches.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Message-ID: <639bc995-9d51-3cb7-a9d1-9979ecd9c912@wanadoo.fr>
+Date:   Mon, 3 Aug 2020 21:50:33 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
+In-Reply-To: <69b4c4838cb743e24a79f81de487ac2e494843ef.camel@perches.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The way we define the phase (the difference between the time of the
-signal's rising edge, and the closest integer multiple of the period),
-it doesn't make sense to have a phase value larger than 1 period.
+Le 03/08/2020 à 21:35, Joe Perches a écrit :
+> On Mon, 2020-08-03 at 21:19 +0200, Christophe JAILLET wrote:
+>> Le 03/08/2020 à 17:41, Jakub Kicinski a écrit :
+>>> On Sun,  2 Aug 2020 16:15:23 +0200 Christophe JAILLET wrote:
+>>>> Update the size used in 'dma_free_coherent()' in order to match the one
+>>>> used in the corresponding 'dma_alloc_coherent()'.
+>>>>
+>>>> Fixes: 893ce44df5 ("gve: Add basic driver framework for Compute Engine Virtual NIC")
+>>>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>>>
+>>> Fixes tag: Fixes: 893ce44df5 ("gve: Add basic driver framework for Compute Engine Virtual NIC")
+>>> Has these problem(s):
+>>> 	- SHA1 should be at least 12 digits long
+>>> 	  Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
+>>> 	  or later) just making sure it is not set (or set to "auto").
+>>>
+>>
+>> Hi,
+>>
+>> I have git 2.25.1 and core.abbrev is already 12, both in my global
+>> .gitconfig and in the specific .git/gitconfig of my repo.
+>>
+>> I would have expected checkpatch to catch this kind of small issue.
+>> Unless I do something wrong, it doesn't.
+>>
+>> Joe, does it make sense to you and would one of the following patch help?
+> 
+> 18 months ago I sent:
+> 
+> https://lore.kernel.org/lkml/40bfc40958fca6e2cc9b86101153aa0715fac4f7.camel@perches.com/
+> 
+> 
+> 
 
-So deny these settings coming from the user.
+Looks like the same spirit.
+I've not tested, but doesn't the:
+    ($line =~ /(?:\s|^)[0-9a-f]{12,40}(?:[\s"'\(\[]|$)/i &&
+at the top short cut the rest of the regex?
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- drivers/ptp/ptp_chardev.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+I read it as "the line should have something that looks like a commit id 
+of 12+ char to process further".
 
-diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
-index e0e6f85966e1..02fcd5e8b998 100644
---- a/drivers/ptp/ptp_chardev.c
-+++ b/drivers/ptp/ptp_chardev.c
-@@ -218,6 +218,19 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
- 					break;
- 				}
- 			}
-+			if (perout->flags & PTP_PEROUT_PHASE) {
-+				/*
-+				 * The phase should be specified modulo the
-+				 * period, therefore anything larger than 1
-+				 * period is invalid.
-+				 */
-+				if (perout->phase.sec > perout->period.sec ||
-+				    (perout->phase.sec == perout->period.sec &&
-+				     perout->phase.nsec > perout->period.nsec)) {
-+					err = -ERANGE;
-+					break;
-+				}
-+			}
- 		} else if (cmd == PTP_PEROUT_REQUEST) {
- 			req.perout.flags &= PTP_PEROUT_V1_VALID_FLAGS;
- 			req.perout.rsv[0] = 0;
--- 
-2.25.1
+So smaller commit id would not be checked.
+Did I miss something?
 
+
+Basically, my proposal is to replace this 12 by a 5 in order to accept 
+smaller strings before checking if it looks well formatted or not.
+
+CJ
