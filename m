@@ -2,114 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49C5923AFDB
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 23:56:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BFD023AFD6
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 23:54:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728005AbgHCV4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 17:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbgHCV4K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 17:56:10 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F29C06174A;
-        Mon,  3 Aug 2020 14:56:10 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id h7so36631752qkk.7;
-        Mon, 03 Aug 2020 14:56:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bJNY2GB8OkKmcGCaNAJSseuUbRBXSJYrDDnkmcwiQfc=;
-        b=nD4wYT2WIc2tj9H/jyl8+DoslLgGToJrc2t4eV9i5JrbXO0T95qqB1MPxMGuSj2lyq
-         RpZ1UGYajTTkQ5P+CgYElEXe5oM+WgOHsxTS/OH7gy8ISe0vXPSOXXVm9CgcjhxA9Sfb
-         MEkE+vMguvFPvGFonFLZL9RofezVHVYRdnGu0644asVPZKILP9Zs3xOcxEGu9orX9ooz
-         n4nsN2RPy8TJIzZdseSiecjuWCUujo/on2mMizbU8OGeJHpClICj/+qom77/oPlT6zxL
-         1W8BBFZe3Lo60yrjdsbEE4oZSXyveHMw7qGCMBa9JRLuTlksV1znawOW7aAOd/RcZXC0
-         065Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bJNY2GB8OkKmcGCaNAJSseuUbRBXSJYrDDnkmcwiQfc=;
-        b=PU3Zt/Z5QeDEgKsDPMhyHYC7TCVlfWwgB0i3tT26Eq+voveZwx3SvMQL40Lws98Frd
-         lqKnnGwvKRo4e0xskQwoyLWgSFPLJUt3DH8sX8HfGZ/v8aIGIUAa8JIn28udrYN/HYMn
-         J/OX58PF3tDPb6UbmivbKcueyKvqcR3IA6dFBXfYMezxcZ7Ldr9HMqCirtHXYmQuXzFr
-         Qt7oKUi5yI3aVAs37Jpu0bF0PQt3YpsiMvg2DNgwy/Nmy/ucMM7q+NgzdpcHGNWYDbE8
-         LiPmJbWuxsazsU+hMsbfj9r2XI2wG6TkKIB2AfCOZaP3gB6C+SCEubwDI7xbh3385Zhq
-         bDbw==
-X-Gm-Message-State: AOAM530veG8gH/UxGfjbDe7teAQ0fjsjh/0Dn+wDLinNjX6NYCAEXVL0
-        /Sir6lXbhPFjqjqnE5SSnoKhWP4=
-X-Google-Smtp-Source: ABdhPJyjHekKIs/WKgNZM3UHQbuPZU0LBOPLHZ+lUtZsoC/le44kqsTcV/iSi8cYur0EwGVG6yCtXg==
-X-Received: by 2002:a37:a45:: with SMTP id 66mr18731744qkk.435.1596491769093;
-        Mon, 03 Aug 2020 14:56:09 -0700 (PDT)
-Received: from localhost.localdomain ([136.56.89.69])
-        by smtp.gmail.com with ESMTPSA id m17sm24629779qkn.45.2020.08.03.14.56.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 14:56:08 -0700 (PDT)
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     netfilter-devel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Stephen Suryaputra <ssuryaextr@gmail.com>
-Subject: [PATCH nf] netfilter: nf_tables: nft_exthdr: the presence return value should be little-endian
-Date:   Mon,  3 Aug 2020 14:20:01 -0400
-Message-Id: <20200803182001.9243-1-ssuryaextr@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1726986AbgHCVyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 17:54:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52916 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726239AbgHCVyi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Aug 2020 17:54:38 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A58872076E;
+        Mon,  3 Aug 2020 21:54:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596491677;
+        bh=yd35aQLvzKJSlzDsOn7EMwgekmxECDUaArph5a7WwE4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LZcWNwXwc4/GPX1lHadBPrqYnsNFxscQNd6amIvwQTYjRweFb9rJTUd49WV9lMyOS
+         fnFcu9oqp1Nl4x0Ghmxifj6ceJjnBXPe7d60r+r3zA9+kS+bOpO+NeOvEF2A0q5qWg
+         e/W91g15JksbpdInVxd8yFy4eSMiDBFntc354SEI=
+Date:   Mon, 3 Aug 2020 14:54:35 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 03/11] sfc_ef100: read Design Parameters at
+ probe time
+Message-ID: <20200803145435.1e364a1c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <9d248f15-2315-9598-9647-c9b25ab54b94@solarflare.com>
+References: <31de2e73-bce7-6c9d-0c20-49b32e2043cc@solarflare.com>
+        <48b1fedf-0863-8fab-7f7a-e2df6946b764@solarflare.com>
+        <20200731131857.41b0f32a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <9d248f15-2315-9598-9647-c9b25ab54b94@solarflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On big-endian machine, the returned register data when the exthdr is
-present is not being compared correctly because little-endian is
-assumed. The function nft_cmp_fast_mask(), called by nft_cmp_fast_eval()
-and nft_cmp_fast_init(), calls cpu_to_le32().
+On Mon, 3 Aug 2020 15:33:39 +0100 Edward Cree wrote:
+> On 31/07/2020 21:18, Jakub Kicinski wrote:
+> > On Fri, 31 Jul 2020 13:58:35 +0100 Edward Cree wrote: =20
+> >> +	default:
+> >> +		/* Host interface says "Drivers should ignore design parameters
+> >> +		 * that they do not recognise."
+> >> +		 */
+> >> +		netif_info(efx, probe, efx->net_dev,
+> >> +			   "Ignoring unrecognised design parameter %u\n",
+> >> +			   reader->type); =20
+> >=20
+> > Is this really important enough to spam the logs with? =20
+>
+> Well, it implies your NIC (FPGA image) is newer than your driver,
+> =C2=A0and saying things the driver doesn't understand; I feel like that
+> =C2=A0should be recorded somewhere.
 
-The following dump also shows that little endian is assumed:
+There are scenarios in which the driver may legitimately be older
+ - bootloader kernel may not be updated as often as the production one
+ - the driver doesn't actually need the feature, because it's for a
+   different OS / workaround that doesn't apply. So all the kernel
+   would be missing is a patch to ignore the TLV.
 
-$ nft --debug=netlink add rule ip recordroute forward ip option rr exists counter
-ip
-  [ exthdr load ipv4 1b @ 7 + 0 present => reg 1 ]
-  [ cmp eq reg 1 0x01000000 ]
-  [ counter pkts 0 bytes 0 ]
+At scale FW and kernel are also maintained by different teams, not=20
+to mention applications. The FW may very well be newer while the
+application team validates and moves to the latest kernel release.
 
-Lastly, debug print in nft_cmp_fast_init() and nft_cmp_fast_eval() when
-RR option exists in the packet shows that the comparison fails because
-the assumption:
+But since it's just at info level I guess its more of a noise situation
+than an annoyance.
 
-nft_cmp_fast_init:189 priv->sreg=4 desc.len=8 mask=0xff000000 data.data[0]=0x10003e0
-nft_cmp_fast_eval:57 regs->data[priv->sreg=4]=0x1 mask=0xff000000 priv->data=0x1000000
+> Maybe this should be a netif_dbg() instead?=C2=A0 (Or is this a subtle
+> =C2=A0way of telling me "you should implement devlink health"?)
 
-Fixes: dbb5281a1f84 ("netfilter: nf_tables: add support for matching IPv4 options")
-Fixes: c078ca3b0c5b ("netfilter: nft_exthdr: Add support for existence check")
-Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
----
- net/netfilter/nft_exthdr.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/netfilter/nft_exthdr.c b/net/netfilter/nft_exthdr.c
-index 07782836fad6..50e4935585e3 100644
---- a/net/netfilter/nft_exthdr.c
-+++ b/net/netfilter/nft_exthdr.c
-@@ -44,7 +44,7 @@ static void nft_exthdr_ipv6_eval(const struct nft_expr *expr,
- 
- 	err = ipv6_find_hdr(pkt->skb, &offset, priv->type, NULL, NULL);
- 	if (priv->flags & NFT_EXTHDR_F_PRESENT) {
--		*dest = (err >= 0);
-+		*dest = cpu_to_le32(err >= 0);
- 		return;
- 	} else if (err < 0) {
- 		goto err;
-@@ -141,7 +141,7 @@ static void nft_exthdr_ipv4_eval(const struct nft_expr *expr,
- 
- 	err = ipv4_find_option(nft_net(pkt), skb, &offset, priv->type);
- 	if (priv->flags & NFT_EXTHDR_F_PRESENT) {
--		*dest = (err >= 0);
-+		*dest = cpu_to_le32(err >= 0);
- 		return;
- 	} else if (err < 0) {
- 		goto err;
--- 
-2.25.1
-
+Not devlink health.
