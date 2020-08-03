@@ -2,134 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76FC623A7FC
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 16:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A896C23A811
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 16:08:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728039AbgHCOAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 10:00:17 -0400
-Received: from www62.your-server.de ([213.133.104.62]:36412 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726785AbgHCOAR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 10:00:17 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k2b0d-00056W-FE; Mon, 03 Aug 2020 16:00:11 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k2b0d-000U2m-7y; Mon, 03 Aug 2020 16:00:11 +0200
-Subject: Re: [PATCH v6 bpf-next 0/6] bpf: tailcalls in BPF subprograms
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     ast@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        bjorn.topel@intel.com, magnus.karlsson@intel.com
-References: <20200731000324.2253-1-maciej.fijalkowski@intel.com>
- <fbe6e5ca-65ba-7698-3b8d-1214b5881e88@iogearbox.net>
- <20200801071357.GA19421@ranger.igk.intel.com>
- <20200802030752.bnebgrr6jkl3dgnk@ast-mbp.dhcp.thefacebook.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f37dea67-9128-a1a2-beaa-2e74b321504a@iogearbox.net>
-Date:   Mon, 3 Aug 2020 16:00:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20200802030752.bnebgrr6jkl3dgnk@ast-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1728298AbgHCOIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 10:08:23 -0400
+Received: from mail-eopbgr680056.outbound.protection.outlook.com ([40.107.68.56]:58374
+        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726504AbgHCOIW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Aug 2020 10:08:22 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G7Zho4OY44jODuy06qJysGK//+aR1BTvYjnR9iT2ObL6fkb3cUcoiGm0d6rtN3+JQKQQcfqkoe0C2LBkHPwBibYjOgk1gl58vMx57qB66WrbLCySicKczmKoxgctQ55Gy7CdjgZGNdWN2D1/PiXub702JymWhWYkwZquCHeKJyk2tlETqxj4Mw2KF7/mLjHTw8BA/PjnWvhPOBmPTz4EM1tWCMrNI3G8abnFDgIsBHQ4Es/lkrWfzjdUmXU8dqJw3xlMuSHFtdPDVgR9l62ALBvKu7txnm7zMJATOmDAXxPyv2t/3EEdez/gYDoIYZB4jjmNIczTNTlX8Ezx77bnUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9sDfZTRjXLJpILLWS8pmqoDlAcD+cAEQjdLjtD737R0=;
+ b=f1P01DE6hkROhdPn6mtKaFIphymQ8ayxHwjO6yG6klDLTXCzS/cJkv10ag4E1qLhs+JHOIH93TIP/IArR9XfFO9HqB+nbTZQhUwDIitusNFYW9jVMB7NIz347f6zzNWwcI+3vimNrWbenlawEmiFkSXdZ9cO9UruW+CVB1NiJoi328PoscvAML330VfCL2C01AvsY4xnNyuUVh0OthOPAw27afgrjmTidAsh9u/DAeM5+OwzxOXHKcrcXZkigFCAfQmDn8tGgjTzauPMSTtQ/eTjF8jUmkLrMjwa18l7LgQHnE8FOuniXJY2XLaNxNCD+jxf7UzEBfWNc8eszH+V/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=windriversystems.onmicrosoft.com;
+ s=selector2-windriversystems-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9sDfZTRjXLJpILLWS8pmqoDlAcD+cAEQjdLjtD737R0=;
+ b=VCJ4pR80kHVUZXO3milxY59llA1bAv83x6Mc9WDf5fGJsEFkB+X2KF10qIV1WH0Qf1tQOGQrqwtpSGHGo4TPVxDENUdJ4QX1NvxROERSWBIKo1jkRJ49u1BuMqarwrYbezZU0ZxwU26Q5SDzzOvyY/t9jDihO77x8EdXR0cZRXw=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=windriver.com;
+Received: from DM6PR11MB2603.namprd11.prod.outlook.com (2603:10b6:5:c6::21) by
+ DM5PR11MB1305.namprd11.prod.outlook.com (2603:10b6:3:13::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3239.17; Mon, 3 Aug 2020 14:08:19 +0000
+Received: from DM6PR11MB2603.namprd11.prod.outlook.com
+ ([fe80::b16c:41d1:7e54:1c4e]) by DM6PR11MB2603.namprd11.prod.outlook.com
+ ([fe80::b16c:41d1:7e54:1c4e%6]) with mapi id 15.20.3239.021; Mon, 3 Aug 2020
+ 14:08:19 +0000
+Subject: Re: [PATCH net-next] tipc: Use is_broadcast_ether_addr() instead of
+ memcmp()
+To:     Huang Guobin <huangguobin4@huawei.com>, jmaloy@redhat.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+References: <20200803020055.26822-1-huangguobin4@huawei.com>
+From:   Ying Xue <ying.xue@windriver.com>
+Message-ID: <d8491b36-d81b-c2e8-de04-fd1c4a1254ba@windriver.com>
+Date:   Mon, 3 Aug 2020 21:51:45 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20200803020055.26822-1-huangguobin4@huawei.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25892/Sun Aug  2 17:01:36 2020)
+X-ClientProxiedBy: HK2PR03CA0062.apcprd03.prod.outlook.com
+ (2603:1096:202:17::32) To DM6PR11MB2603.namprd11.prod.outlook.com
+ (2603:10b6:5:c6::21)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [128.224.155.99] (60.247.85.82) by HK2PR03CA0062.apcprd03.prod.outlook.com (2603:1096:202:17::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3261.13 via Frontend Transport; Mon, 3 Aug 2020 14:08:16 +0000
+X-Originating-IP: [60.247.85.82]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7613e11e-ee84-4c2e-c4f4-08d837b6ac66
+X-MS-TrafficTypeDiagnostic: DM5PR11MB1305:
+X-Microsoft-Antispam-PRVS: <DM5PR11MB13059D7E7F2CCFE92D88E27F844D0@DM5PR11MB1305.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:534;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: M/bcp17joLOIuDYODlmUkhAXbXPhTXLA0t3JP5lZmaJ8YBkF9hqNRslEYqYcR0pxH+mitrLuwEg4kTx0e4bJI41XkhtuEM5XmkdipU20OdJqeZcBr3c09RZGKXlWzrQVg+B4fyaX6NNJfauDv06PxwFxRuaC2OkyHnnSk77EkDfLaOSJIN/Y7hrtOUS7cXUG6NO+c7D+vD2Cv8TZJc0D1pUm/9ZMVcD7no6DUC3aIK2unY/vf7QPsJfC0dt57jxyLU1ZzZKog4QkYV0FIS2N0BumAwLkzNey9desjoQvuhg4JlQVSHSffPphXEvktpLW66J5vBRCT13Rp56yoVZOJdjVV6U1+yZyUmpyhUM9rgGnIWjB4D70mejkgUpxa9gcimc1pW8q2g/dXeZRhTngFw9lrS9k8HKPpRsal3XIz7Y2LgI/E8mkekrOe94nbatocWAHz3TGmQC4brQPTaRkTNRhOHRDvN+vcjjBE/6WNJU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(346002)(396003)(136003)(376002)(39850400004)(956004)(2616005)(66946007)(66476007)(5660300002)(83380400001)(36756003)(66556008)(6486002)(8936002)(16576012)(44832011)(316002)(52116002)(26005)(6706004)(8676002)(478600001)(2906002)(86362001)(31686004)(6666004)(53546011)(186003)(4326008)(16526019)(31696002)(78286006)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 61x5U3qVlVS0l51hmHhpKtbNPEJJ6aeulq9WBjJO5po48OCspRVR+aNStdnp0yBJdxe7aFIbd9Ze/v2iUuqgn2XCTy+06WVGPS3wTBACMJ6/LVdagQcnOmlVR/ZTIjMt+R0BSkJa2GyhyPSI7lwBUR496/C23KHQzP3PCxoiZORv8HSLimb4D/T7eL06foIc4L5vUTmxBbxpkL/GQikF/jlHYxvWjYrwq1qUsHBHNyWGk+rxAupgLLbZe+4IiRkTO5BETrm3qDcPISgGTy91zuYx04v3KfPSkEndV/eY5v/AoK6wqJGpXNUWT5sJcU3nC3gMXTF8Z61JcGmP17MHUCVU7letdJe3zT41bqWCwDJ7szfpPYBKe70+fDmPo2cLyqL7xXGxtAG43/FJ2xAkz1fE40TLD9PHMqWqaGjIh4E0w4bowgN+BQXahZxcIyW6ovVCLhXsmvKBEs5yT32p7j0THQhuHcmTrkj1SIwoiZPE7A68N6WO5xSNGUrUfNxUPIBtbyPrFiVnPS5Tm/rPhrSvZgXibwoIGmTsZrHA+anltHqnQijXoTPfKlJn2kKnYb5Alhhkm4zd075mlysBQwgUZSsjr8fLILJgT0cZQ14TCSMIC0UNbc+Hk7fAJryUXq7B+Vu1HgU6Lx8+BtPA7A==
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7613e11e-ee84-4c2e-c4f4-08d837b6ac66
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2020 14:08:19.1465
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aMwuPBA5Ay2m6VvPMhi5sqTDdwjTjBBf+XfhjbMosP6p8nXXOhiXTmaUubtSdWz3hZYz2hFE9hmCjOGcng+qSw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1305
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/2/20 5:07 AM, Alexei Starovoitov wrote:
-> On Sat, Aug 01, 2020 at 09:13:57AM +0200, Maciej Fijalkowski wrote:
->> On Sat, Aug 01, 2020 at 03:03:19AM +0200, Daniel Borkmann wrote:
->>> On 7/31/20 2:03 AM, Maciej Fijalkowski wrote:
->>>> v5->v6:
->>>> - propagate only those poke descriptors that individual subprogram is
->>>>     actually using (Daniel)
->>>> - drop the cumbersome check if poke desc got filled in map_poke_run()
->>>> - move poke->ip renaming in bpf_jit_add_poke_descriptor() from patch 4
->>>>     to patch 3 to provide bisectability (Daniel)
->>>
->>> I did a basic test with Cilium on K8s with this set, spawning a few Pods
->>> and checking connectivity & whether we're not crashing since it has bit more
->>> elaborate tail call use. So far so good. I was inclined to push the series
->>> out, but there is one more issue I noticed and didn't notice earlier when
->>> reviewing, and that is overall stack size:
->>>
->>> What happens when you create a single program that has nested BPF to BPF
->>> calls e.g. either up to the maximum nesting or one call that is using up
->>> the max stack size which is then doing another BPF to BPF call that contains
->>> the tail call. In the tail call map, you have the same program in there.
->>> This means we create a worst case stack from BPF size of max_stack_size *
->>> max_tail_call_size, that is, 512*32. So that adds 16k worst case. For x86
->>> we have a stack of arch/x86/include/asm/page_64_types.h:
->>>
->>>    #define THREAD_SIZE_ORDER       (2 + KASAN_STACK_ORDER)
->>>   #define THREAD_SIZE  (PAGE_SIZE << THREAD_SIZE_ORDER)
->>>
->>> So we end up with 16k in a typical case. And this will cause kernel stack
->>> overflow; I'm at least not seeing where we handle this situation in the
+On 8/3/20 10:00 AM, Huang Guobin wrote:
+> Using is_broadcast_ether_addr() instead of directly use
+> memcmp() to determine if the ethernet address is broadcast
+> address.
 > 
-> Not quite. The subprog is always 32 byte stack (from safety pov).
-> The real stack (when JITed) can be lower or zero.
-> So the max stack is (512 - 32) * 32 = 15360.
-> So there is no overflow, but may be a bit too close to comfort.
-
-I did a check with adding `stack_not_used(current)` to various points which
-provides some useful data under CONFIG_DEBUG_STACK_USAGE. From tc ingress side
-I'm getting roughly 13k free stack space which is definitely less than 15k even
-at tc layer. I also checked on sk_filter_trim_cap() on ingress and worst case I
-saw is very close to 12k, so a malicious or by accident a buggy program would be
-able to cause a stack overflow as-is.
-
-> Imo the room is ok to land the set and the better enforcement can
-> be done as a follow up later, like below idea...
+> spatch with a semantic match is used to found this problem.
+> (http://coccinelle.lip6.fr/)
 > 
->>> set. Hm, need to think more, but maybe this needs tracking of max stack
->>> across tail calls to force an upper limit..
->>
->> My knee jerk reaction would be to decrement the allowed max tail calls,
->> but not sure if it's an option and if it would help.
+> Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+
+Acked-by: Ying Xue <ying.xue@windriver.com>
+
+> ---
+>  net/tipc/eth_media.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 > 
-> How about make the verifier use a lower bound for a function with a tail call ?
-> Something like 64 would work.
-> subprog_info[idx].stack_depth with tail_call will be >= 64.
-> Then the main function will be automatically limited to 512-64 and the worst
-> case stack = 14kbyte.
-
-Even 14k is way too close, see above. Some archs that are supported by the kernel
-run under 8k total stack size. In the long run if more archs would support tail
-calls with bpf-to-bpf calls, we might need a per-arch upper cap, but I think in
-this context here an upper total cap on x86 that is 4k should be reasonable, it
-sounds broken to me if more is indeed needed for the vast majority of use cases.
-
-> When the sub prog with tail call is not an empty body (malicious stack
-> abuser) then the lower bound won't affect anything.
-> A bit annoying that stack_depth will be used by JIT to actually allocate
-> that much. Some of it will not be used potentially, but I think it's fine.
-> It's much simpler solution than to keep two variables to track stack size.
-> Or may be check_max_stack_depth() can be a bit smarter and it can detect
-> that subprog is using tail_call without actually hacking stack_depth variable.
-
-+1, I think that would be better, maybe we could have a different cost function
-for the tail call counter itself depending in which call-depth we are, but that
-also requires two vars for tracking (tail call counter, call depth counter), so
-more JIT changes & emitted insns required. :/ Otoh, what if tail call counter
-is limited to 4k and we subtract stack usage instead with a min cost (e.g. 128)
-if progs use less than that? Though the user experience will be really bad in
-this case given these semantics feel less deterministic / hard to debug from
-user PoV.
-
-> Essentially I'm proposing to tweak this formula:
-> depth += round_up(max_t(u32, subprog[idx].stack_depth, 1), 32);
-> and replace 1 with 64 for subprogs with tail_call.
+> diff --git a/net/tipc/eth_media.c b/net/tipc/eth_media.c
+> index 8b0bb600602d..c68019697cfe 100644
+> --- a/net/tipc/eth_media.c
+> +++ b/net/tipc/eth_media.c
+> @@ -62,12 +62,10 @@ static int tipc_eth_raw2addr(struct tipc_bearer *b,
+>  			     struct tipc_media_addr *addr,
+>  			     char *msg)
+>  {
+> -	char bcast_mac[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+> -
+>  	memset(addr, 0, sizeof(*addr));
+>  	ether_addr_copy(addr->value, msg);
+>  	addr->media_id = TIPC_MEDIA_TYPE_ETH;
+> -	addr->broadcast = !memcmp(addr->value, bcast_mac, ETH_ALEN);
+> +	addr->broadcast = is_broadcast_ether_addr(addr->value);
+>  	return 0;
+>  }
+>  
 > 
-
