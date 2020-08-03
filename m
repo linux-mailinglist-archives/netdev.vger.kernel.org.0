@@ -2,92 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79F8F23AC5A
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 20:29:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8208423AC8F
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 20:43:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728699AbgHCS1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 14:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728668AbgHCS13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 14:27:29 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99645C06174A;
-        Mon,  3 Aug 2020 11:27:29 -0700 (PDT)
-Received: from localhost.localdomain (unknown [80.156.89.97])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 9BFCAC260F;
-        Mon,  3 Aug 2020 20:27:24 +0200 (CEST)
-Subject: Re: [PATCH] ieee802154/adf7242: check status of adf7242_read_reg
-To:     trix@redhat.com, michael.hennerich@analog.com,
-        alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        marcel@holtmann.org
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200802142339.21091-1-trix@redhat.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <cb5859ab-e013-2e45-4871-a8e82235e2ab@datenfreihafen.org>
-Date:   Mon, 3 Aug 2020 20:27:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-MIME-Version: 1.0
-In-Reply-To: <20200802142339.21091-1-trix@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1728696AbgHCSnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 14:43:49 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:14327 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728515AbgHCSns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 14:43:48 -0400
+Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 073Ihd3l031430;
+        Mon, 3 Aug 2020 11:43:40 -0700
+From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, vishal@chelsio.com, dt@chelsio.com
+Subject: [PATCH net-next] cxgb4: add TC-MATCHALL IPv6 support
+Date:   Tue,  4 Aug 2020 00:00:08 +0530
+Message-Id: <1596479408-31023-1-git-send-email-rahul.lakkireddy@chelsio.com>
+X-Mailer: git-send-email 2.5.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+Matching IPv6 traffic require allocating their own individual slots
+in TCAM. So, fetch additional slots to insert IPv6 rules. Also, fetch
+the cumulative stats of all the slots occupied by the Matchall rule.
 
-On 02.08.20 16:23, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> Clang static analysis reports this error
-> 
-> adf7242.c:887:6: warning: Assigned value is garbage or undefined
->          len = len_u8;
->              ^ ~~~~~~
-> 
-> len_u8 is set in
->         adf7242_read_reg(lp, 0, &len_u8);
-> 
-> When this call fails, len_u8 is not set.
-> 
-> So check the return code.
-> 
-> Fixes: 7302b9d90117 ("ieee802154/adf7242: Driver for ADF7242 MAC IEEE802154")
-> 
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->   drivers/net/ieee802154/adf7242.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ieee802154/adf7242.c b/drivers/net/ieee802154/adf7242.c
-> index c11f32f644db..7db9cbd0f5de 100644
-> --- a/drivers/net/ieee802154/adf7242.c
-> +++ b/drivers/net/ieee802154/adf7242.c
-> @@ -882,7 +882,9 @@ static int adf7242_rx(struct adf7242_local *lp)
->   	int ret;
->   	u8 lqi, len_u8, *data;
->   
-> -	adf7242_read_reg(lp, 0, &len_u8);
-> +	ret = adf7242_read_reg(lp, 0, &len_u8);
-> +	if (ret)
-> +		return ret;
->   
->   	len = len_u8;
->   
-> 
+Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |   2 +
+ .../chelsio/cxgb4/cxgb4_tc_matchall.c         | 101 +++++++++++++-----
+ .../chelsio/cxgb4/cxgb4_tc_matchall.h         |   5 +-
+ 3 files changed, 82 insertions(+), 26 deletions(-)
 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+index adbc0d088070..9cb8b229c1b3 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+@@ -1438,6 +1438,8 @@ enum {
+ 	NAT_MODE_ALL		/* NAT on entire 4-tuple */
+ };
+ 
++#define CXGB4_FILTER_TYPE_MAX 2
++
+ /* Host shadow copy of ingress filter entry.  This is in host native format
+  * and doesn't match the ordering or bit order, etc. of the hardware of the
+  * firmware command.  The use of bit-field structure elements is purely to
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
+index e377e50c2492..2e309f6673f7 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
+@@ -231,8 +231,26 @@ static void cxgb4_matchall_mirror_free(struct net_device *dev)
+ 	tc_port_matchall->ingress.viid_mirror = 0;
+ }
+ 
+-static int cxgb4_matchall_alloc_filter(struct net_device *dev,
+-				       struct tc_cls_matchall_offload *cls)
++static int cxgb4_matchall_del_filter(struct net_device *dev, u8 filter_type)
++{
++	struct cxgb4_tc_port_matchall *tc_port_matchall;
++	struct port_info *pi = netdev2pinfo(dev);
++	struct adapter *adap = netdev2adap(dev);
++	int ret;
++
++	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
++	ret = cxgb4_del_filter(dev, tc_port_matchall->ingress.tid[filter_type],
++			       &tc_port_matchall->ingress.fs[filter_type]);
++	if (ret)
++		return ret;
++
++	tc_port_matchall->ingress.tid[filter_type] = 0;
++	return 0;
++}
++
++static int cxgb4_matchall_add_filter(struct net_device *dev,
++				     struct tc_cls_matchall_offload *cls,
++				     u8 filter_type)
+ {
+ 	struct netlink_ext_ack *extack = cls->common.extack;
+ 	struct cxgb4_tc_port_matchall *tc_port_matchall;
+@@ -244,28 +262,24 @@ static int cxgb4_matchall_alloc_filter(struct net_device *dev,
+ 	/* Get a free filter entry TID, where we can insert this new
+ 	 * rule. Only insert rule if its prio doesn't conflict with
+ 	 * existing rules.
+-	 *
+-	 * 1 slot is enough to create a wildcard matchall VIID rule.
+ 	 */
+-	fidx = cxgb4_get_free_ftid(dev, PF_INET, false, cls->common.prio);
++	fidx = cxgb4_get_free_ftid(dev, filter_type ? PF_INET6 : PF_INET,
++				   false, cls->common.prio);
+ 	if (fidx < 0) {
+ 		NL_SET_ERR_MSG_MOD(extack,
+ 				   "No free LETCAM index available");
+ 		return -ENOMEM;
+ 	}
+ 
+-	ret = cxgb4_matchall_mirror_alloc(dev, cls);
+-	if (ret)
+-		return ret;
+-
+ 	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
+-	fs = &tc_port_matchall->ingress.fs;
++	fs = &tc_port_matchall->ingress.fs[filter_type];
+ 	memset(fs, 0, sizeof(*fs));
+ 
+ 	if (fidx < adap->tids.nhpftids)
+ 		fs->prio = 1;
+ 	fs->tc_prio = cls->common.prio;
+ 	fs->tc_cookie = cls->cookie;
++	fs->type = filter_type;
+ 	fs->hitcnts = 1;
+ 
+ 	fs->val.pfvf_vld = 1;
+@@ -276,13 +290,39 @@ static int cxgb4_matchall_alloc_filter(struct net_device *dev,
+ 
+ 	ret = cxgb4_set_filter(dev, fidx, fs);
+ 	if (ret)
+-		goto out_free;
++		return ret;
++
++	tc_port_matchall->ingress.tid[filter_type] = fidx;
++	return 0;
++}
++
++static int cxgb4_matchall_alloc_filter(struct net_device *dev,
++				       struct tc_cls_matchall_offload *cls)
++{
++	struct cxgb4_tc_port_matchall *tc_port_matchall;
++	struct port_info *pi = netdev2pinfo(dev);
++	struct adapter *adap = netdev2adap(dev);
++	int ret, i;
++
++	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
++
++	ret = cxgb4_matchall_mirror_alloc(dev, cls);
++	if (ret)
++		return ret;
++
++	for (i = 0; i < CXGB4_FILTER_TYPE_MAX; i++) {
++		ret = cxgb4_matchall_add_filter(dev, cls, i);
++		if (ret)
++			goto out_free;
++	}
+ 
+-	tc_port_matchall->ingress.tid = fidx;
+ 	tc_port_matchall->ingress.state = CXGB4_MATCHALL_STATE_ENABLED;
+ 	return 0;
+ 
+ out_free:
++	while (i-- > 0)
++		cxgb4_matchall_del_filter(dev, i);
++
+ 	cxgb4_matchall_mirror_free(dev);
+ 	return ret;
+ }
+@@ -293,20 +333,21 @@ static int cxgb4_matchall_free_filter(struct net_device *dev)
+ 	struct port_info *pi = netdev2pinfo(dev);
+ 	struct adapter *adap = netdev2adap(dev);
+ 	int ret;
++	u8 i;
+ 
+ 	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
+ 
+-	ret = cxgb4_del_filter(dev, tc_port_matchall->ingress.tid,
+-			       &tc_port_matchall->ingress.fs);
+-	if (ret)
+-		return ret;
++	for (i = 0; i < CXGB4_FILTER_TYPE_MAX; i++) {
++		ret = cxgb4_matchall_del_filter(dev, i);
++		if (ret)
++			return ret;
++	}
+ 
+ 	cxgb4_matchall_mirror_free(dev);
+ 
+ 	tc_port_matchall->ingress.packets = 0;
+ 	tc_port_matchall->ingress.bytes = 0;
+ 	tc_port_matchall->ingress.last_used = 0;
+-	tc_port_matchall->ingress.tid = 0;
+ 	tc_port_matchall->ingress.state = CXGB4_MATCHALL_STATE_DISABLED;
+ 	return 0;
+ }
+@@ -362,8 +403,12 @@ int cxgb4_tc_matchall_destroy(struct net_device *dev,
+ 
+ 	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
+ 	if (ingress) {
++		/* All the filter types of this matchall rule save the
++		 * same cookie. So, checking for the first one is
++		 * enough.
++		 */
+ 		if (cls_matchall->cookie !=
+-		    tc_port_matchall->ingress.fs.tc_cookie)
++		    tc_port_matchall->ingress.fs[0].tc_cookie)
+ 			return -ENOENT;
+ 
+ 		return cxgb4_matchall_free_filter(dev);
+@@ -379,21 +424,29 @@ int cxgb4_tc_matchall_destroy(struct net_device *dev,
+ int cxgb4_tc_matchall_stats(struct net_device *dev,
+ 			    struct tc_cls_matchall_offload *cls_matchall)
+ {
++	u64 tmp_packets, tmp_bytes, packets = 0, bytes = 0;
+ 	struct cxgb4_tc_port_matchall *tc_port_matchall;
++	struct cxgb4_matchall_ingress_entry *ingress;
+ 	struct port_info *pi = netdev2pinfo(dev);
+ 	struct adapter *adap = netdev2adap(dev);
+-	u64 packets, bytes;
+ 	int ret;
++	u8 i;
+ 
+ 	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
+ 	if (tc_port_matchall->ingress.state == CXGB4_MATCHALL_STATE_DISABLED)
+ 		return -ENOENT;
+ 
+-	ret = cxgb4_get_filter_counters(dev, tc_port_matchall->ingress.tid,
+-					&packets, &bytes,
+-					tc_port_matchall->ingress.fs.hash);
+-	if (ret)
+-		return ret;
++	ingress = &tc_port_matchall->ingress;
++	for (i = 0; i < CXGB4_FILTER_TYPE_MAX; i++) {
++		ret = cxgb4_get_filter_counters(dev, ingress->tid[i],
++						&tmp_packets, &tmp_bytes,
++						ingress->fs[i].hash);
++		if (ret)
++			return ret;
++
++		packets += tmp_packets;
++		bytes += tmp_bytes;
++	}
+ 
+ 	if (tc_port_matchall->ingress.packets != packets) {
+ 		flow_stats_update(&cls_matchall->stats,
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.h
+index e264b6e606c4..fe7ec423a4c9 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.h
+@@ -19,8 +19,9 @@ struct cxgb4_matchall_egress_entry {
+ 
+ struct cxgb4_matchall_ingress_entry {
+ 	enum cxgb4_matchall_state state; /* Current MATCHALL offload state */
+-	u32 tid; /* Index to hardware filter entry */
+-	struct ch_filter_specification fs; /* Filter entry */
++	u32 tid[CXGB4_FILTER_TYPE_MAX]; /* Index to hardware filter entries */
++	/* Filter entries */
++	struct ch_filter_specification fs[CXGB4_FILTER_TYPE_MAX];
+ 	u16 viid_mirror; /* Identifier for allocated Mirror VI */
+ 	u64 bytes; /* # of bytes hitting the filter */
+ 	u64 packets; /* # of packets hitting the filter */
+-- 
+2.24.0
 
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
-
-regards
-Stefan Schmidt
