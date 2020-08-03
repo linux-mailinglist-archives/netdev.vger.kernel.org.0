@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FE6A23A006
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 09:09:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCB4023A009
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 09:09:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726011AbgHCHIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 03:08:05 -0400
+        id S1725806AbgHCHIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 03:08:23 -0400
 Received: from mail-db8eur05on2079.outbound.protection.outlook.com ([40.107.20.79]:36160
         "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725270AbgHCHIE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Aug 2020 03:08:04 -0400
+        id S1725831AbgHCHIH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Aug 2020 03:08:07 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NmhPwUOOjRmFnMSFP+N3v/lnGebM7Hu7ZQrEfS2VeLw9Z1QBXnNncfSpI0xMIYl/Sw4ol48Ei358yzlNpc7Ib9+5jqPcUFtqPrW9ZZZLLA+dZ/q1g+rG6RaO26vKw//jj61Mx49Nv2knm3Z07A8rPTHeFTJhLE50NOVG7wbbuRIgngYORHDJBYnMjafBDPBUiLlvz56fZY4kF71AkmAElAbke/92uQ3LgmPam6Oe+PATsFK5RcgQ+BJ/CSmhQXBB1+QTuLzmM87IbxeOXpg7BGW2IqPCJITb0kXI5sE0V1x8ZN/GdnC/om3PwdsBQGg9kxjC0DWgwuYZ0bbXfpJwcw==
+ b=E1P6vsWgtg6wiEf88Ol9Bu/jFWGddkxaodt78oDJYrTa9KdO0/NvY0fILAGmbybbIify874BB2uIeDD5W0j6suQTRXSoVQ+BhiLPHM9PdxCjlKjRIoQYJHKxJc864rcXFHOCWQbh72nfSnFYf7P1i0QHT78I20fCoXnpsEf0lkBIgvpvmCYEUYCBV6EaBxMY0z9RlMJo5639QdsKo+lEHhXQBXirwV488TOCHhzljslWyvqnm3/rU7zUp0KBBIDoNIWGRPsLfLRhTFwZ/hTwB7VzSCz3fkSEsRZD1VSIt6yWK7buaYs6Sihe/PQiQ03OeEUpyhXvCusISaJZceqnXA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0VBu1ce8+z3lTJGHX6uJzot5JCBo57S4F028e6g4wwA=;
- b=dfDsCl0E9X6DeY4haxS6+Aa2nLaJFfvdHsS66dAJ0rLThZIWdiIRTVVI4Ua3yQIxN9JxGE5b3U5JIpmvdwEXknSVPRMgD+sIg+ttLu+c6PMt9xYTEgwClBnhEepQlsa79FuQ3/ncl+S+VqMtya05nmhCtiklGZafcyVySKn877taOHfbiBP6BzmQPDdsAhZAFYcZZgf2Bs2Rj9cW/lXJcsm8q/Z4BTI66MnvAlZ9/tDevr/4R9B1PJXrLvARTslQbNnecSBCUnwZCRZCt5gKKXnhuzgOX8X3wpkHLfPk43YGcs4bRu6OfU79GtnByFANHIwcktblccyZLAVy8VnUqQ==
+ bh=D5EXPTd8jsItq9NYZoNS03BSXePTOwvGcM8pXbUG6zg=;
+ b=E0J/H2ekjzHGQ7rmU7C/pI0kJafyNgiruJ/2mO1hz+yWvF9dexMB4QyWkDZD15fqGjEdbzGyvY21UdchtpDUTRHESqxx5Ua6KyrSCek/Nls3Lx4gL+9rL3ecIvm26nhLVirmgFhijQwwCEJ3IbCfQSr+HPjzpRRpg7GeRPtTJvEKBUTyMBs0iyG4zB52W8XgGG+1fRmex7zZbpcWSNIG7Vg4WzCb2hCDldnnSkcT34cGfIqmkuj3z4R6tLfANurrfa7EAvt/qjB6XQKiAA87RX22HGPeOCr5Vkj6nMuyXk7Dv/rxGWKoVDHNa4lv6ACN6mYwKHMH8REa/vQJm1OT1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0VBu1ce8+z3lTJGHX6uJzot5JCBo57S4F028e6g4wwA=;
- b=lGXoVYbyLDL825M8Kb0gfKmCKjJkXgRkxB8WMl9JyFKOtdT7yzs6mI2MChaD86ilwA8vxMWtrM+UzMAGAqOzAlJoMApXi5riN1BOrHEBJVDSsFdSKO+mb3HKosYve2oNh2eZBByEbVwAwLNce6wsjFNoVkATNJY8rNlB/9hjZ7Y=
+ bh=D5EXPTd8jsItq9NYZoNS03BSXePTOwvGcM8pXbUG6zg=;
+ b=i2HU2cEI89cst8Nm2xwFox9nXndaIUBdaR6k8cINvR12zZKLBfXHLEpfQM+u+u/vlbE9WqSZSEoI+aSerJHQIYB6f92kSSQKN85FCLLmIWn1+kP4iQ+LoiyIManG+1LAno5zcHf0D1qtU8OY7cdtIU2Yi6wuoXVdGQ+ovi+NxRQ=
 Authentication-Results: nxp.com; dkim=none (message not signed)
  header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB5443.eurprd04.prod.outlook.com (2603:10a6:208:119::33)
@@ -42,10 +42,12 @@ To:     madalin.bucur@nxp.com, davem@davemloft.net, kuba@kernel.org,
         netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Florinel Iordache <florinel.iordache@nxp.com>
-Subject: [PATCH net v3 0/5] DPAA FMan driver fixes
-Date:   Mon,  3 Aug 2020 10:07:29 +0300
-Message-Id: <1596438454-4895-1-git-send-email-florinel.iordache@nxp.com>
+Subject: [PATCH net v3 1/5] fsl/fman: use 32-bit unsigned integer
+Date:   Mon,  3 Aug 2020 10:07:30 +0300
+Message-Id: <1596438454-4895-2-git-send-email-florinel.iordache@nxp.com>
 X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1596438454-4895-1-git-send-email-florinel.iordache@nxp.com>
+References: <1596438454-4895-1-git-send-email-florinel.iordache@nxp.com>
 Reply-to: florinel.iordache@nxp.com
 Content-Type: text/plain
 X-ClientProxiedBy: AM0PR07CA0007.eurprd07.prod.outlook.com
@@ -53,61 +55,64 @@ X-ClientProxiedBy: AM0PR07CA0007.eurprd07.prod.outlook.com
  (2603:10a6:208:119::33)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from fsr-ub1464-128.ea.freescale.net (83.217.231.2) by AM0PR07CA0007.eurprd07.prod.outlook.com (2603:10a6:208:ac::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3261.13 via Frontend Transport; Mon, 3 Aug 2020 07:08:01 +0000
+Received: from fsr-ub1464-128.ea.freescale.net (83.217.231.2) by AM0PR07CA0007.eurprd07.prod.outlook.com (2603:10a6:208:ac::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.3261.13 via Frontend Transport; Mon, 3 Aug 2020 07:08:02 +0000
 X-Mailer: git-send-email 1.9.1
 X-Originating-IP: [83.217.231.2]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: b46a67b6-a413-43e6-36fd-08d8377bf5e0
+X-MS-Office365-Filtering-Correlation-Id: 9373fc1e-5a4b-4439-1981-08d8377bf64d
 X-MS-TrafficTypeDiagnostic: AM0PR04MB5233:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB52335C789AD7E38DCDE4831FFB4D0@AM0PR04MB5233.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
+X-Microsoft-Antispam-PRVS: <AM0PR04MB5233C70C56B672E975FC911BFB4D0@AM0PR04MB5233.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jiWQxzTWxNS8L1C78KXz1+UXnOWo/lBgPaGlBJGUZ+x4+/nKCx836hgB2pM6miznaABQm360YoWU9vtapNvmDjJ+hxJ6hDomlp1dUBYsMANiUkIpsp8Y2l1KFV3JuoshSK47RQUfzgdgbi1wQ3kzeUicyDGe5fVVTdEh+XH0DIGBlz47oelT6MaFYMVDemLeU7jmQdxFzeQdRACB49gE3XQ3tfI8SPUqC2K6cp79LkFYFs1UbH0uPZADEh5kktdW9VnTJWVakbUNmzIs9RegKd4xRZM2z7nhNAJuMPNFC9GKL+kKh/ncQplgonXePyE8OYA+WckUn3DsnKNJvm3NSQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5443.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(376002)(346002)(366004)(136003)(316002)(6486002)(52116002)(16526019)(2906002)(8676002)(26005)(4326008)(6506007)(3450700001)(186003)(8936002)(478600001)(44832011)(6512007)(6666004)(83380400001)(66946007)(956004)(4744005)(5660300002)(2616005)(66476007)(36756003)(86362001)(66556008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: mqALyOtwdT02HYagtxOspAGPuEcJoARzavAgjgn5ba7v1X/n82twm4I4IzgzOoKdFawO97UeWLOVzYVZ5IVmtyRhOFgQKiX56DYYE3857qMfa2q6colBRgWd3Elm1zMgaPrGUgCwUKMAUB0g3QOXPZA99L77kIZ1cOLGrTDj2Pe/QvuhUQDp1Srd6PKcam/WC7XhxCKmJ0oc8NCJej0G+vK9TOiaYI5lkrWhogI82v78nnYEEqZpCGUpNgSejFfKGTJeH+Ozjb7OAJJ2OjdgtHCnnwRy2ey4CJCC5TN3DjNV0UvmxHXoSvRyHzrYwNvhJGEg24zGsJv0kjQoPEoxJ14GtWvmrZWTVSmKgq7H8TYR8Q/33qR7oK1OGHfySA9aing2SELK8ou5KvH5mtsuxOoT8PPieFAhMH0heb+LuxklhDLXthKZZpAiNJteou3bghuYQJEV0Q28Bx0KXzkzJe0euGNQyM8GLtJKhnsOOKeonPlOrfUXPKKPO8eW4ntghG0pohrLbuoQPnnBzdGhtB/CCfYIcSaLBLRQFKzZgRiigI9PTMaa0q6rcBlpzuQ0+ufw1Y2HBWjdVAdQfxeiQWxehBJWcWH7wKlOePFa7X4Q0CizO8atywh2GpFvL6KiFrDK01PvdWLuNGnUIYnGkQ==
+X-Microsoft-Antispam-Message-Info: +anoBJC7a4FaSn5ix/lMYptTEtGH8t1QdanNfHO+F0IVoKPP3UMO/MNeJragPjBpgNl7dv7EcTiKsMwPk1s8GdAulxMlGXcPiXlyeTfgxFmE+7ajPTI4PErs7DvQq+oQk3M7v7M0TvGTh63p3olaeB+MWBf8wYZZpr0uhYEo60nahfFp3XC57Hs8bkLlyppb5S+4z5018Cy2DDPgannHpCO5ttpycv7W1XhEIwiu8K3Iegy9+PVi2y3DrU5Lpzj0zN0E38Am+O7y3nVudjGM5g07BC7tnNhXfAKVxg5paa4YWnHi5jlHjxahJNNghmWud55gtgk0YQRYkfsGZNoFgw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5443.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(376002)(346002)(366004)(136003)(316002)(6486002)(52116002)(16526019)(2906002)(8676002)(26005)(4326008)(6506007)(3450700001)(186003)(8936002)(478600001)(44832011)(6512007)(6666004)(83380400001)(66946007)(956004)(5660300002)(2616005)(66476007)(36756003)(86362001)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 47ccfNCe6yHA0EER7pCb1GRkJTYpM1HI/WFP2kM5fJB7leyoKdnoy3U4KxpI7NVcbcQ/WbbpI8UtilcHIEgdxzgjAcPgTxa3DFdTG8cvrioAtfKyz2yIOO+pS/nL+pWVDv8BIQbnTo64fAE2tBRQVTKKyycQiMieC5SUzuU7yjZ86VrAQwOOKJO6YirSP2fXIioewbcr+SfDR7ZOoA0Bhf8ms/u9FrteINE4Q6nmqf4n/RwG8B9/HQUqxAClo/mmTX+8nG8+lDxhq8N0iidLHZJLe+1AIwwKX/P1ZcWtjyVqO2Ih6ANccpEpeeuk3LRYRUfAI6NA6WiUDHWOLmRGM/8WMqKTwIRP+FD4sklnIBqAxCM85PKEL1PNEyQMNTLCWJ+LhsAzyOV1wacseIkEskl2Si61Xh4Vhlv4ukgBle5xZhi1aD3rirmpo8KPa18aREVsRbR/CE9hHkzUCPbkGhF0I9utBN9anTGHvd585S2kyCzivNaWGfYiEJ6T6OzyrJhmG9BSLrfdyRG6/lW4GzTdFt+ZBJ692xklV5XRgF4CAqyktBmVY+fiyIZ12oB/vFEdrjXY5zvJkMRkwdFTY1gl8wXjm5trnuitEq/HiGCep+y/eXHmfXO1DvuDO8k0KOr2Cp3PxzwnopvnJpdZfQ==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b46a67b6-a413-43e6-36fd-08d8377bf5e0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9373fc1e-5a4b-4439-1981-08d8377bf64d
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5443.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2020 07:08:02.0071
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2020 07:08:02.7267
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ncng0z88WcWwkuYGzyrUSgzmWJ5BZjkGbNWVsM3d2kA0BHeh6z2pPjVus0r19T9zKSA8P8rJu5aidWF7pWCaD1IPwURrVOu6SjS7TUBMKt4=
+X-MS-Exchange-CrossTenant-UserPrincipalName: jW1DRvjhhmEImCQDlvdhjlRKiJehzL2Ry9OTvHRWF+unToAj3I7eVJaizteX3rn0pBox9I8S9+Qfls88SMAJm/1CFMzWl70LPls25+ocfGE=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5233
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Here are several fixes for the DPAA FMan driver.
+Potentially overflowing expression (ts_freq << 16 and intgr << 16)
+declared as type u32 (32-bit unsigned) is evaluated using 32-bit
+arithmetic and then used in a context that expects an expression of
+type u64 (64-bit unsigned) which ultimately is used as 16-bit
+unsigned by typecasting to u16. Fixed by using an unsigned 32-bit
+integer since the value is truncated anyway in the end.
 
-v2 changes:
-* corrected patch 4 by removing the line added by mistake
-* used longer fixes tags with the first 12 characters of the SHA-1 ID
+Fixes: 414fd46e7762 ("fsl/fman: Add FMan support")
+Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
+---
+ drivers/net/ethernet/freescale/fman/fman.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-v3 changes:
-* remove the empty line inserted after fixes tag
-
-Florinel Iordache (5):
-  fsl/fman: use 32-bit unsigned integer
-  fsl/fman: fix dereference null return value
-  fsl/fman: fix unreachable code
-  fsl/fman: check dereferencing null pointer
-  fsl/fman: fix eth hash table allocation
-
- drivers/net/ethernet/freescale/fman/fman.c       | 3 +--
- drivers/net/ethernet/freescale/fman/fman_dtsec.c | 4 ++--
- drivers/net/ethernet/freescale/fman/fman_mac.h   | 2 +-
- drivers/net/ethernet/freescale/fman/fman_memac.c | 3 +--
- drivers/net/ethernet/freescale/fman/fman_port.c  | 9 ++++++++-
- drivers/net/ethernet/freescale/fman/fman_tgec.c  | 2 +-
- 6 files changed, 14 insertions(+), 9 deletions(-)
-
+diff --git a/drivers/net/ethernet/freescale/fman/fman.c b/drivers/net/ethernet/freescale/fman/fman.c
+index f151d6e..ef67e85 100644
+--- a/drivers/net/ethernet/freescale/fman/fman.c
++++ b/drivers/net/ethernet/freescale/fman/fman.c
+@@ -1398,8 +1398,7 @@ static void enable_time_stamp(struct fman *fman)
+ {
+ 	struct fman_fpm_regs __iomem *fpm_rg = fman->fpm_regs;
+ 	u16 fm_clk_freq = fman->state->fm_clk_freq;
+-	u32 tmp, intgr, ts_freq;
+-	u64 frac;
++	u32 tmp, intgr, ts_freq, frac;
+ 
+ 	ts_freq = (u32)(1 << fman->state->count1_micro_bit);
+ 	/* configure timestamp so that bit 8 will count 1 microsecond
 -- 
 1.9.1
 
