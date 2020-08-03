@@ -2,58 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A32A23A712
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 14:59:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34D1423A724
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 15:03:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728942AbgHCM5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 08:57:48 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40168 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727083AbgHCM5r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Aug 2020 08:57:47 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k2a2A-0082eD-4S; Mon, 03 Aug 2020 14:57:42 +0200
-Date:   Mon, 3 Aug 2020 14:57:42 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Vikas Singh <vikas.singh@puresoftware.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Calvin Johnson (OSS)" <calvin.johnson@oss.nxp.com>,
-        kuldip dwivedi <kuldip.dwivedi@puresoftware.com>,
-        Vikas Singh <vikas.singh@nxp.com>
-Subject: Re: [PATCH 2/2] net: phy: Associate device node with fixed PHY
-Message-ID: <20200803125742.GK1862409@lunn.ch>
-References: <1595938400-13279-3-git-send-email-vikas.singh@puresoftware.com>
- <20200728130001.GB1712415@lunn.ch>
- <CADvVLtXVVfU3-U8DYPtDnvGoEK2TOXhpuE=1vz6nnXaFBA8pNA@mail.gmail.com>
- <20200731153119.GJ1712415@lunn.ch>
- <CADvVLtUrZDGqwEPO_ApCWK1dELkUEjrH47s1CbYEYOH9XgZMRg@mail.gmail.com>
- <20200801094132.GH1551@shell.armlinux.org.uk>
- <20200801151107.GK1712415@lunn.ch>
- <AM6PR04MB3976BB0CAB0B4270FF932F62EC4D0@AM6PR04MB3976.eurprd04.prod.outlook.com>
- <20200803090716.GL1551@shell.armlinux.org.uk>
- <AM6PR04MB3976284AEC94129D26300485EC4D0@AM6PR04MB3976.eurprd04.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM6PR04MB3976284AEC94129D26300485EC4D0@AM6PR04MB3976.eurprd04.prod.outlook.com>
+        id S1726778AbgHCNDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 09:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbgHCNDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 09:03:00 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD1FC06174A;
+        Mon,  3 Aug 2020 06:03:00 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id f9so11282349pju.4;
+        Mon, 03 Aug 2020 06:03:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=Dk1JpiJy7gpZrrgIE7T6CKQLb01ltccUvx3/3PuXm3g=;
+        b=X1ovxLTvwaJecHoNmWyxVgWLrn6k/NJ5+FA3n+x0Ols/MnQgm7rZdcoW/Q0bns+szC
+         nBE9fGGQhUv+MYz7Oc3OFeDBUoB4Yd0yNYMmlbGZSscKQeZ2E6FvdpEuw0KzAlUSiXQZ
+         BJqfYZC5w/CLngVcS5x1eNbTwv5g0vbLKSZQQjvVMXwAewzXct2SdGklfbqfk9GgTOwk
+         OOhZIXhAsCp1Uz+er9ZTz8aPE16Nv6adQc86xMHameDH3+fxyXdi2p9wIhjeNeTE0RWS
+         IWW73EkWqLql+/5pAFYsJyl3MPdmD4h6udnpoW29X78nRq4rc3oT7g0o7CYgPTiqFrwH
+         4+Qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Dk1JpiJy7gpZrrgIE7T6CKQLb01ltccUvx3/3PuXm3g=;
+        b=CdK6cA/WjL0oGeHj0Nn6fk3t0IMHZxbh3P3Q1bgZKLbN4/M+IMVXHlnGv2CzK/bC/E
+         QuDSh8Zex+D2+apFWh3tJdv1sbWq6N+polwaptfzDEQadR464Ziw5n3Fm0nIvOtIFK8q
+         WtsZdojyKzrWyUJaA1wsZ57KcIm9AIcB/iVYeVshmoIxPGnKjRliYYLHBYdDvZfbtui2
+         Otzm8vssVebHS9wgbLWiGB9vQDPVhjyzQ0Q7HXfJDcVXUvkABwALZzjiSo7+yjOOSYxp
+         YMXit0VfoDyuUf4WAEPqJHKaHKIPJdPVPmZQNMI9Bqxp1qy6xZGJMhrNVAJfye/b2Jls
+         8JvQ==
+X-Gm-Message-State: AOAM53107jOee/CYkLo7OYCkSpIx2Af6+6Ltqzc1FBLyRFciBrJg3SLR
+        1j/+Tb8BuFTZ+fEsgcJBq2Q=
+X-Google-Smtp-Source: ABdhPJyH+xrxtfsr5nzk+q2fBS0ZNABUlFZvIYzjOSI5+eFaBRvkkAuEagqAgax/emM5M3A0ULEhKQ==
+X-Received: by 2002:a17:90a:4701:: with SMTP id h1mr14055276pjg.93.1596459780256;
+        Mon, 03 Aug 2020 06:03:00 -0700 (PDT)
+Received: from localhost ([43.224.245.180])
+        by smtp.gmail.com with ESMTPSA id m24sm15316369pff.45.2020.08.03.06.02.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 03 Aug 2020 06:02:59 -0700 (PDT)
+From:   Geliang Tang <geliangtang@gmail.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
+        mptcp@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] mptcp: use mptcp_for_each_subflow in mptcp_stream_accept
+Date:   Mon,  3 Aug 2020 21:00:44 +0800
+Message-Id: <fe531e58a52eae5aa46dd93d30d623f8862c3d09.1596459430.git.geliangtang@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I see you agree that there were and there will be many changes for a while,
-> It's not a complaint, I know hot it works, it's just a decision based on
-> required effort vs features offered vs user requirements. Lately it's been
-> time consuming to try to fix things in this area.
+Use mptcp_for_each_subflow in mptcp_stream_accept instead of
+open-coding.
 
-So the conclusion to all this that you are unwilling to use the
-correct API for this, which would be phylink, and the SFP code.  So:
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+---
+ net/mptcp/protocol.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-NACK
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index d3fe7296e1c9..400824eabf73 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -2249,7 +2249,7 @@ static int mptcp_stream_accept(struct socket *sock, struct socket *newsock,
+ 		 * This is needed so NOSPACE flag can be set from tcp stack.
+ 		 */
+ 		__mptcp_flush_join_list(msk);
+-		list_for_each_entry(subflow, &msk->conn_list, node) {
++		mptcp_for_each_subflow(msk, subflow) {
+ 			struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+ 
+ 			if (!ssk->sk_socket)
+-- 
+2.17.1
 
-	Andrew
