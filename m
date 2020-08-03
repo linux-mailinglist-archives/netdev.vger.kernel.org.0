@@ -2,128 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 292C423AC21
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 20:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9645F23AC2A
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 20:12:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727768AbgHCSIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 14:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38778 "EHLO
+        id S1727844AbgHCSMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 14:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgHCSIx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 14:08:53 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1570DC06174A;
-        Mon,  3 Aug 2020 11:08:53 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id q16so18372196ybk.6;
-        Mon, 03 Aug 2020 11:08:53 -0700 (PDT)
+        with ESMTP id S1726130AbgHCSMf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 14:12:35 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C143DC06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 11:12:34 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id p20so170009wrf.0
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 11:12:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=43FIygflrP4nZzCzM391hzVnqu/34/YNK7sTtCa/sIU=;
-        b=Ven5Tnv//6OlbBX0ZnZOzYotpGinzcEgkUuYl49w66Wui2AUjfIOSxyLSBJSqc4K+C
-         oalAwAo7FJ8GEJKN6ju4PcWJ+/YzBv/+Xivsf4Dx56Z/g3IIcGtTVJihQxJTrT+nHpbD
-         qNM1RJPmgiQhzeruMcvKmDm29ChIXmn6BnVthd4fq9uTNKZT2TjvR/iYjXfQGLSBZkEJ
-         n5Ay5cgLrKevxMtwlLw/WWyUpjDQTm5xzWWxYU9b9I0sjKIGE4sSiwRzehl/4AzEDxTQ
-         ohDMREy6GzJkuNH9ryiLF/G1nmnieKOMQq9R8TxX7bOXi9SFl94LLL9i694z59FZffrb
-         mhfw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xywtJYSs/n/8TbVUtJERlB/zTNl0yXoLdQXWkQ1bUFE=;
+        b=n0YDMjXtJpztKEHr1Yi7ciqe+GZHb6aYmpAVJbgTWl67e8CX2wJ80Pc1tSsCIwp8/A
+         0GeqRfpRuA4Xw48bXsB6+HmOOLQKup4bScVPQmqsb3TYleYJHzkBwHmtG4cEbFiXSsfv
+         xi/B5EqpqFz8hVc0oo1N4kbHvW/QbvCAA+C67GRWY/YckGc4jkIRKUiKvQ6gT1HcWAao
+         wrl6ZZG7TcL7l7ufXKiYLjhzkh/n35CFZjbPHCXNHr4q0UB6r0gHxCqp3WpDgDsSYnyp
+         U8OfOUKc/4I4+rp8iTTDV21ZNqjFqQ1I3o/Cn8SExJ2+wlyENij4EjuuNezpfum55ndf
+         QYqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=43FIygflrP4nZzCzM391hzVnqu/34/YNK7sTtCa/sIU=;
-        b=Xk/2tYHg/AeuzOQc8jSSo6qkN8LWVvLMyo+xbVabnzDRTylh6QFPpFzdWd0nWRwmML
-         QgToyoNGZzIcrvW0pi9TOl8jb1F3H6+8A2VrTZPg4vvTGjx8OgRayRy08Za8DX7IgHGB
-         YdfioxyoooqE6D5ca6rtcbzDl/5dwJo5cevYmT8ra7UF9GXGVdKxdcVSKdHh+GXnKBCe
-         yHTSzFI5lYJnvIrqww4XG9DAQnSrSf/RHNb90KWuBFV8NU2G985v8UySV42OjIldkgWD
-         40V4vxEk2Kr6FiozdRbiYWiVzGt3B95gpbDtYRvhOzDJLwAQIo+LL50at6WttgXZ4HGG
-         9XPw==
-X-Gm-Message-State: AOAM530PwL4AyuTCokgj+h+HQ4ZX+vQq/p1PqYUn3Imf7Y52g+cRYg6t
-        J5/X7VpwrhbhzuAVGqlSOSVywqJz4p4UVi1sUwo=
-X-Google-Smtp-Source: ABdhPJw2f5UOFtpKfBmujaqlA3CJko6XTdyPcr6ow+Gfy4eJZ4LEZsH6m92ThODYEcXr/8sCShEeycydghQq7xotsoQ=
-X-Received: by 2002:a25:d84a:: with SMTP id p71mr29271679ybg.347.1596478132146;
- Mon, 03 Aug 2020 11:08:52 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xywtJYSs/n/8TbVUtJERlB/zTNl0yXoLdQXWkQ1bUFE=;
+        b=aDkFyYLs7I9qFStHuzGuHXpnEZARR97qjroDkbnwdqmc0EPgSeVA8ioWcmPekCfGF4
+         NSPvEMfnb/hhRBjtbeM5T57rYWD0aCplj8qP5JgvvXD7VWJw7yp3O2HkBcZEYHjG1byq
+         0n7eLuWo5KKeZM0AC+naCBVOhTYQiCmb5mHSYHlj0QzfJ4CxRCUCWnodTGsHhHzsTxPm
+         a8KbL2fzL+I0Qxit5XfkdXRVqYA4uTRsoVsGa/0fgWUiltgwN20Hp555vm0s28XpSZiy
+         4yXLF5ARxcgxIQ9dkKIybqrWX2J2L7nIqcmUfWJWFlbnJCMjMCIi7UMU3gdGuGW8qH33
+         QhnA==
+X-Gm-Message-State: AOAM530HyJ2KzMoTQB7DrPwsxrrGBbDZ9fP43aPNIHQegBIjOQCNSyRL
+        FYPMwut4uW3OA5rB+iChVBrx0cXF
+X-Google-Smtp-Source: ABdhPJx4bdzs3+IYdHSmExPsS6blIt3Ty4g5Si9L19WCCTpwLN+oCf2yZI6CmIwwY5eS8js4vD81QA==
+X-Received: by 2002:adf:9e90:: with SMTP id a16mr17170360wrf.40.1596478353465;
+        Mon, 03 Aug 2020 11:12:33 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id f12sm560451wmc.46.2020.08.03.11.12.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Aug 2020 11:12:32 -0700 (PDT)
+Subject: Re: [PATCH v4 09/11] net: dsa: microchip: Add Microchip KSZ8863 SMI
+ based driver support
+To:     Michael Grzeschik <m.grzeschik@pengutronix.de>, andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kernel@pengutronix.de
+References: <20200803054442.20089-1-m.grzeschik@pengutronix.de>
+ <20200803054442.20089-10-m.grzeschik@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <a1841afd-d5b8-b7f7-a2f1-af94292140fa@gmail.com>
+Date:   Mon, 3 Aug 2020 11:12:30 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20200802222950.34696-1-alexei.starovoitov@gmail.com>
- <20200802222950.34696-4-alexei.starovoitov@gmail.com> <33d2db5b-3f81-e384-bed8-96f1d7f1d4c7@iogearbox.net>
- <430839eb-2761-0c1a-4b99-dffb07b9f502@iogearbox.net> <736dc34e-254d-de46-ac91-512029f675e7@iogearbox.net>
- <CAEf4BzY-RHiG+0u1Ug+k0VC01Fqp3BUQ60OenRv+na4fuYRW=Q@mail.gmail.com> <181ce3e4-c960-3470-5c08-3e56ea7f28b2@iogearbox.net>
-In-Reply-To: <181ce3e4-c960-3470-5c08-3e56ea7f28b2@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 3 Aug 2020 11:08:40 -0700
-Message-ID: <CAEf4BzZp+uc0n=A9=x3T=5ii2J5x_tu_0ZOYKoUQ-r39GJM3DQ@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 3/4] bpf: Add kernel module with user mode
- driver that populates bpffs.
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200803054442.20089-10-m.grzeschik@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 3, 2020 at 10:56 AM Daniel Borkmann <daniel@iogearbox.net> wrot=
-e:
->
-> On 8/3/20 7:51 PM, Andrii Nakryiko wrote:
-> > On Mon, Aug 3, 2020 at 10:41 AM Daniel Borkmann <daniel@iogearbox.net> =
-wrote:
-> >> On 8/3/20 7:34 PM, Daniel Borkmann wrote:
-> >>> On 8/3/20 7:15 PM, Daniel Borkmann wrote:
-> >>>> On 8/3/20 12:29 AM, Alexei Starovoitov wrote:
-> >>>>> From: Alexei Starovoitov <ast@kernel.org>
-> >>>>>
-> >>>>> Add kernel module with user mode driver that populates bpffs with
-> >>>>> BPF iterators.
-> >>>>>
-> >
-> > [...]
-> >
-> >>     CC      kernel/events/ring_buffer.o
-> >>     CC [U]  kernel/bpf/preload/./../../../tools/lib/bpf/bpf.o
-> >>     CC [U]  kernel/bpf/preload/./../../../tools/lib/bpf/libbpf.o
-> >> In file included from kernel/bpf/preload/./../../../tools/lib/bpf/libb=
-pf.c:47:0:
-> >> ./tools/include/tools/libc_compat.h:11:21: error: static declaration o=
-f =E2=80=98reallocarray=E2=80=99 follows non-static declaration
-> >>    static inline void *reallocarray(void *ptr, size_t nmemb, size_t si=
-ze)
-> >>                        ^~~~~~~~~~~~
-> >> In file included from kernel/bpf/preload/./../../../tools/lib/bpf/libb=
-pf.c:16:0:
-> >> /usr/include/stdlib.h:558:14: note: previous declaration of =E2=80=98r=
-eallocarray=E2=80=99 was here
-> >>    extern void *reallocarray (void *__ptr, size_t __nmemb, size_t __si=
-ze)
-> >>                 ^~~~~~~~~~~~
-> >
-> > A bit offtopic. reallocarray and related feature detection causes so
-> > much hassle, that I'm strongly tempted to just get rid of it in the
-> > entire libbpf. Or just unconditionally implement libbpf-specific
-> > reallocarray function. Any objections?
->
-> Agree that it's continuously causing pain; no objection from my side to h=
-ave
-> something libbpf-specifc for example (along with a comment on /why/ we're=
- not
-> reusing it anymore).
 
-Sounds good!
 
->
-> >>     CC      kernel/user-return-notifier.o
-> >> scripts/Makefile.userprogs:43: recipe for target 'kernel/bpf/preload/.=
-/../../../tools/lib/bpf/libbpf.o' failed
-> >> make[3]: *** [kernel/bpf/preload/./../../../tools/lib/bpf/libbpf.o] Er=
-ror 1
-> >> scripts/Makefile.build:497: recipe for target 'kernel/bpf/preload' fai=
-led
-> >> make[2]: *** [kernel/bpf/preload] Error 2
-> >> scripts/Makefile.build:497: recipe for target 'kernel/bpf' failed
-> >> make[1]: *** [kernel/bpf] Error 2
-> >> make[1]: *** Waiting for unfinished jobs....
-> >> [...]
+On 8/2/2020 10:44 PM, Michael Grzeschik wrote:
+> Add KSZ88X3 driver support. We add support for the KXZ88X3 three port
+> switches using the Microchip SMI Interface. They are supported using the
+> MDIO-Bitbang Interface.
+> 
+> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+> 
+
+[snip
+
+> +
+> +config NET_DSA_MICROCHIP_KSZ8863_SMI
+> +	tristate "KSZ series SMI connected switch driver"
+> +	depends on NET_DSA_MICROCHIP_KSZ8795
+> +	select MDIO_BITBANG
+> +	default y
+
+As Randy already identified please remove this.
+
+> +	help
+> +	  Select to enable support for registering switches configured through
+> +	  Microchip SMI. It Supports the KSZ8863 and KSZ8873 Switch.
+> diff --git a/drivers/net/dsa/microchip/Makefile b/drivers/net/dsa/microchip/Makefile
+> index 929caa81e782ed2..2a03b21a3386f5d 100644
+> --- a/drivers/net/dsa/microchip/Makefile
+> +++ b/drivers/net/dsa/microchip/Makefile
+> @@ -5,3 +5,4 @@ obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_I2C)	+= ksz9477_i2c.o
+>  obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_SPI)	+= ksz9477_spi.o
+>  obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8795)		+= ksz8795.o
+>  obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8795_SPI)	+= ksz8795_spi.o
+> +obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8863_SMI)	+= ksz8863_smi.o
+> diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
+> new file mode 100644
+> index 000000000000000..fd493441d725284
+> --- /dev/null
+> +++ b/drivers/net/dsa/microchip/ksz8863_smi.c
+> @@ -0,0 +1,204 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Microchip KSZ8863 series register access through SMI
+> + *
+> + * Copyright (C) 2019 Pengutronix, Michael Grzeschik <kernel@pengutronix.de>
+> + */
+> +
+> +#include "ksz8.h"
+> +#include "ksz_common.h"
+> +
+> +/* Serial Management Interface (SMI) uses the following frame format:
+> + *
+> + *       preamble|start|Read/Write|  PHY   |  REG  |TA|   Data bits      | Idle
+> + *               |frame| OP code  |address |address|  |                  |
+> + * read | 32x1´s | 01  |    00    | 1xRRR  | RRRRR |Z0| 00000000DDDDDDDD |  Z
+> + * write| 32x1´s | 01  |    00    | 0xRRR  | RRRRR |10| xxxxxxxxDDDDDDDD |  Z
+> + *
+> + */
+> +
+> +static int ksz8863_mdio_read(void *ctx, const void *reg_buf, size_t reg_len,
+> +			     void *val_buf, size_t val_len)
+> +{
+> +	struct ksz_device *dev = (struct ksz_device *)ctx;
+
+There is no need to cast a void pointer, can you also make it a const
+void *ctx?
+
+> +	struct ksz8 *ksz8 = dev->priv;
+> +	struct mdio_device *mdev = ksz8->priv;
+> +	u8 reg = *(u8 *)reg_buf;
+> +	u8 *val = val_buf;
+> +	int ret = 0;
+> +	int i;
+> +
+> +	mutex_lock_nested(&mdev->bus->mdio_lock, MDIO_MUTEX_NESTED);
+> +	for (i = 0; i < val_len; i++) {
+> +		int tmp = reg + i;
+
+Humm, how does this work for reg_len >1 with reg being a scalar? Why not
+just use reg[i]?
+
+> +
+> +		ret = __mdiobus_read(mdev->bus, ((tmp & 0xE0) >> 5) |
+> +				     BIT(4), tmp);
+
+Can we provide defines instead of these numbers?
+
+> +		if (ret < 0)
+> +			goto out;
+> +
+> +		val[i] = ret;
+> +	}
+> +	ret = 0;
+> +
+> + out:
+> +	mutex_unlock(&mdev->bus->mdio_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ksz8863_mdio_write(void *ctx, const void *data, size_t count)
+> +{
+> +	struct ksz_device *dev = (struct ksz_device *)ctx;
+
+Likewise, no need to cast here.
+
+> +	struct ksz8 *ksz8 = dev->priv;
+> +	struct mdio_device *mdev = ksz8->priv;
+> +	u8 *val = (u8 *)(data + 4);
+> +	u32 reg = *(u32 *)data;
+
+Humm, are you positive this works for all endian configurations?
+-- 
+Florian
