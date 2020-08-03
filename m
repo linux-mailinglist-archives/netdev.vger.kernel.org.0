@@ -2,83 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB87323AF82
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 23:13:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FF6A23AF96
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 23:20:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729147AbgHCVNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 17:13:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45122 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728750AbgHCVNG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Aug 2020 17:13:06 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 57C9322BF3;
-        Mon,  3 Aug 2020 21:13:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596489186;
-        bh=wrBml3ZlgFAgge4kMgW6wvPJ9wcmxk5NA/oRqTV2P8U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ayCVzn3Ge6kswydHMxffWscRNlnxBLkOWl1TSF12Df2KAUDYOQlVPpDcF8r6AnLIu
-         AFS0MYrHabwGgSwrNGm2R039hJS66+RXPVd2GQ962jevuUBs1CnN7kJgMrglMIbUGf
-         UtUnHuL900SKhzIm6tqWZPHxJEsys/7YvV1VwbVg=
-Date:   Mon, 3 Aug 2020 14:13:04 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-Cc:     Ganji Aravind <ganji.aravind@chelsio.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, vishal@chelsio.com
-Subject: Re: [PATCH net-next] cxgb4: Add support to flash firmware config
- image
-Message-ID: <20200803141304.79a7d05f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200802171221.GA29010@chelsio.com>
-References: <20200730151138.394115-1-ganji.aravind@chelsio.com>
-        <20200730162335.6a6aa4cf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200731110904.GA1571@chelsio.com>
-        <20200731110008.598a8ea7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200731211733.GA25665@chelsio.com>
-        <20200801212202.7e4f3be2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200802171221.GA29010@chelsio.com>
+        id S1726370AbgHCVUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 17:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725863AbgHCVUq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 17:20:46 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1A0C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 14:20:46 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id q128so4209149qkd.2
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 14:20:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=DnLDcVNlztgLgpnnTiQISu6n1EBaqFNTcvhxtYnvSyA=;
+        b=maHyoZjhpvGrsnp/eADMY73RQOvnTbphPO4RSentoIyiYRoT6EDzEvOMpR2UNu+gHK
+         t7g7wEqqrtpL2CUhdAL/a9vnJdrPKkeZPJp1O6qkOar3m8sj+oOq/oI5L1EZuc52g5AL
+         VVN/xf6483IElxFdGPOM1uDoXNY0et/XvCYLTLsO3HaWxi1Z1btuhXFssZi4+m49v5Y2
+         Jm9VsedANBLtFfAL1RN9KHKyi9jgrerFX1chXMLQXVEaBL+wkHeWlaVE0IC9vMnJAXoX
+         iyf+Wu+F/5xo9zk+X06Lz4pfT5rzW4Djh1xHIQQa1CpgrEJCHbkKtADOrLITCheqlkEG
+         Sx5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DnLDcVNlztgLgpnnTiQISu6n1EBaqFNTcvhxtYnvSyA=;
+        b=FTxSOFCQ3xM8HCpe2W1Gq+18zc96T2YKinkivs79YP24Xmll6VzIGdeCvUVW0TObpE
+         +HpYA8gbwWRYxAcUT0fVpPiLiVsvY8cyTU0BKvDHIEWLjNwaSeufV6xQBx0k3/iA644h
+         fwWVdY17hJ36ShO8EiNcPe1ioHqSKwDfu3VPp/WBTe9yoaWvz90xYZBfiVVLjzB7eazS
+         BlfymtY7quyjy1i96eaYOQk1wRMR6G9hGsg1xEV5nsrEjlSXnLxQb//oy3Ox1BIuUUIb
+         yTH0HoCpqnjRGJsft6XDjZx01ut75TH1HVO4/ir0BgK95usoaKTdQHZUl8BAo/UUu8eb
+         CxQg==
+X-Gm-Message-State: AOAM531QJ/2EHU+AaC5drAhkXNs23yG9EHGlWIwvdg620kqT05Z8YPqY
+        U0GWma99vOldGHJ5VfHJ0mMma2ro
+X-Google-Smtp-Source: ABdhPJzVE9E/4PEJCxxagJyqBY2VIl55A67Do8DUtWtYNXbYh/QWv3I7syj780aB29a44ZWCgsL1jA==
+X-Received: by 2002:ae9:de82:: with SMTP id s124mr18373575qkf.438.1596489645898;
+        Mon, 03 Aug 2020 14:20:45 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:c16b:8bf3:e3ba:8c79? ([2601:282:803:7700:c16b:8bf3:e3ba:8c79])
+        by smtp.googlemail.com with ESMTPSA id t187sm20173133qkf.73.2020.08.03.14.20.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Aug 2020 14:20:45 -0700 (PDT)
+Subject: Re: [iproute2-next v2 5/5] devlink: support setting the overwrite
+ mask
+To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
+References: <20200801002159.3300425-1-jacob.e.keller@intel.com>
+ <20200801002159.3300425-6-jacob.e.keller@intel.com>
+ <0bb895a2-e233-0426-3e48-d8422fa5b7cf@gmail.com>
+ <c317a649-59f4-82a2-5617-0f6209964b8e@intel.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <1dfbda13-6e49-ba5f-135e-9a5ced48bb50@gmail.com>
+Date:   Mon, 3 Aug 2020 15:20:44 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <c317a649-59f4-82a2-5617-0f6209964b8e@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2 Aug 2020 22:42:28 +0530 Rahul Lakkireddy wrote:
-> The config file contains very low-level firmware and device specific
-> params and most of them are dependent on the type of Chelsio NIC.
-> The params are mostly device dependent register-value pairs.
-> We don't see users messing around with the params on their own
-> without consultation. The users only need some mechanism to flash
-> the custom config file shared by us on to their adapter. After
-> device restart, the firmware will automatically pick up the flashed
-> config file and redistribute the resources, as per their requested
-> use-case.
-> 
-> We're already foreseeing very long awkward list (more than 50 params)
-> for mapping the config file to devlink-dev params and are hoping this
-> is fine. Here's a sample on how it would look.
-> 
-> hw_sge_reg_1008=0x40800
-> hw_sge_reg_100c=0x22222222
-> hw_sge_reg_10a0=0x01040810
-> hw_tp_reg_7d04=0x00010000
-> hw_tp_reg_7dc0=0x0e2f8849
-> 
-> and so on.
+On 8/3/20 10:56 AM, Jacob Keller wrote:
+> Sorry for the confusion here. I sent both the iproute2 and net-next
+> changes to implement it in the kernel.
 
-I have no details on what you're actually storing in the config, 
-and I don't care what your format is.
-
-If it's a configuration parameter - it needs a proper API.
-
-If it's a low level board param or such - it doesn't need a separate
-flashable partition and can come with the rest of FW.
-
-I know the firmware flashing interface is a lovely, binary, opaque
-interface which vendors love. We'll not entertain this kind of abuse.
-
-Nacked-by: Jakub Kicinski <kuba@kernel.org>
+please re-send the iproute2 patch; I already marked it in patchworks. I
+get sending the patches in 1 go, but kernel and iproute2 patch numbering
+should be separate.
