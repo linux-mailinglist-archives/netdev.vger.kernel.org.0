@@ -2,255 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8208423AC8F
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 20:43:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D7EA23AC65
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 20:33:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728696AbgHCSnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 14:43:49 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:14327 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728515AbgHCSns (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 14:43:48 -0400
-Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 073Ihd3l031430;
-        Mon, 3 Aug 2020 11:43:40 -0700
-From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, vishal@chelsio.com, dt@chelsio.com
-Subject: [PATCH net-next] cxgb4: add TC-MATCHALL IPv6 support
-Date:   Tue,  4 Aug 2020 00:00:08 +0530
-Message-Id: <1596479408-31023-1-git-send-email-rahul.lakkireddy@chelsio.com>
-X-Mailer: git-send-email 2.5.3
+        id S1728672AbgHCScC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 14:32:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726130AbgHCScB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 14:32:01 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A5DC06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 11:32:01 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id t6so455013pjr.0
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 11:32:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4ui5F+JM1N2WnxBRLdBr/CFJ0gbiimaakgSRCQJFDGA=;
+        b=b5PUoiYI40oVvSs9Yndmd1+54fBkVKq6Bgnw7pZAP30rghAufID/G8oiD9ELp+LEaX
+         4HzkQUelGZBS5++Dip9QbdvuuCNenSsUcWvYCN4yCW4hkS+qeIFk+SJrYb6lIA/v4Bbu
+         R0RE4ewZq/1T8fsLZTmdlVmUe0sMUQiG6kaISRkQhKcn7RJRgHO5bphhpCGxL0sHQ2G/
+         6dxrPc9zQJ9ii4+zQvIAAHCzttFkeICGgM6dv+peAUBJkzqd89x1OJBo+tQPc3QKsTMe
+         9liUu5tUEdqAJ2rqztB6sxEdu+s22Wxd5nCUwcpGl4Yt+OzFpSdDE1ieAG6i8AlGHTNJ
+         9v7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4ui5F+JM1N2WnxBRLdBr/CFJ0gbiimaakgSRCQJFDGA=;
+        b=gfogz5Nlh8TZySFCXo1R7JBQk53ebsyUP5nQMi2eoyLzbGLE/fCI/Gdn0wEaDCFMnf
+         UhebwmatWuqhj65L/h8uxxky6X4wMjJPWVNh4Hg5GpCvb446qyx1x5azKvi7EnM2VJGC
+         DGmhypsfJWFXR65Anbv9487YiCIonF4Qb8hkW9MqY7tL/0oHVlUt942POrRXvdwqLyXh
+         gwBbYOp8djkDKuXRbo+lHTVEGMNYT5MzDHfGdsl2aVTveSAfqamB0DgzyVIzKDSeqrQk
+         RIPDbfG6HOyOYJzowh/0TPPvof+HdXStAbnYZvWtwDlumowPg8adXqbBF99wIeCquDV3
+         /7Rw==
+X-Gm-Message-State: AOAM533VOJWn/AQKF4D8/rg3RGy9Giv4UnqrkN8eR+5ljzQnTeSQa7Cs
+        oha/aVs+vzE5upEJ5+dogSU/Vg==
+X-Google-Smtp-Source: ABdhPJyqO4E3MtTng8xXZCJNZqSQXKPh7aaxWwjiaWU82Wl/tGm9FVchKO98CEGl7WYaUUx2Epv+sQ==
+X-Received: by 2002:a17:90a:8545:: with SMTP id a5mr566014pjw.91.1596479520635;
+        Mon, 03 Aug 2020 11:32:00 -0700 (PDT)
+Received: from google.com (56.4.82.34.bc.googleusercontent.com. [34.82.4.56])
+        by smtp.gmail.com with ESMTPSA id e124sm19507562pfe.176.2020.08.03.11.31.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Aug 2020 11:31:59 -0700 (PDT)
+Date:   Mon, 3 Aug 2020 18:31:56 +0000
+From:   William Mcvicker <willmcvicker@google.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     security@kernel.org, Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com, stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] netfilter: nat: add a range check for l3/l4
+ protonum
+Message-ID: <20200803183156.GA3084830@google.com>
+References: <20200727175720.4022402-1-willmcvicker@google.com>
+ <20200727175720.4022402-2-willmcvicker@google.com>
+ <20200729214607.GA30831@salvia>
+ <20200731002611.GA1035680@google.com>
+ <20200731175115.GA16982@salvia>
+ <20200731181633.GA1209076@google.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="pf9I7BMVVzbSWLtt"
+Content-Disposition: inline
+In-Reply-To: <20200731181633.GA1209076@google.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Matching IPv6 traffic require allocating their own individual slots
-in TCAM. So, fetch additional slots to insert IPv6 rules. Also, fetch
-the cumulative stats of all the slots occupied by the Matchall rule.
 
-Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+--pf9I7BMVVzbSWLtt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi,
+
+I have attached the follow up fix that checks for the proto index during
+conntrack creation.
+
+Thanks,
+Will
+
+On 07/31/2020, William Mcvicker wrote:
+> Hi Pablo,
+> 
+> > Note that this code does not exist in the tree anymore. I'm not sure
+> > if this problem still exists upstream, this patch does not apply to
+> > nf.git. This fix should only go for -stable maintainers.
+> 
+> Right, the vulnerability has been fixed by the refactor commit fe2d0020994cd
+> ("netfilter: nat: remove l4proto->in_range"), but this patch is a part of
+> a full re-work of the code and doesn't backport very cleanly to the LTS
+> branches. So this fix is only applicable to the 4.19, 4.14, 4.9, and 4.4 LTS
+> branches. I missed the -stable email, but will re-add it to this thread with
+> the re-worked patch.
+> 
+> Thanks,
+> Will
+> 
+> On 07/31/2020, Pablo Neira Ayuso wrote:
+> > Hi William,
+> > 
+> > On Fri, Jul 31, 2020 at 12:26:11AM +0000, William Mcvicker wrote:
+> > > Hi Pablo,
+> > > 
+> > > Yes, I believe this oops is only triggered by userspace when the user
+> > > specifically passes in an invalid nf_nat_l3protos index. I'm happy to re-work
+> > > the patch to check for this in ctnetlink_create_conntrack().
+> > 
+> > Great.
+> > 
+> > Note that this code does not exist in the tree anymore. I'm not sure
+> > if this problem still exists upstream, this patch does not apply to
+> > nf.git. This fix should only go for -stable maintainers.
+> > 
+> > > > BTW, do you have a Fixes: tag for this? This will be useful for
+> > > > -stable maintainer to pick up this fix.
+> > > 
+> > > Regarding the Fixes: tag, I don't have one offhand since this bug was reported
+> > > to me, but I can search through the code history to find the commit that
+> > > exposed this vulnerability.
+> > 
+> > That would be great.
+> > 
+> > Thank you.
+
+--pf9I7BMVVzbSWLtt
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0001-netfilter-nat-add-a-range-check-for-l3-l4-protonum.patch"
+
+From 2a9d621fa5c225e6aece6b4622a9a816c6fcfa0d Mon Sep 17 00:00:00 2001
+From: Will McVicker <willmcvicker@google.com>
+Date: Fri, 31 Jul 2020 13:10:43 -0700
+Subject: [PATCH] netfilter: nat: add a range check for l3/l4 protonum
+
+The indexes to the nf_nat_l[34]protos arrays come from userspace. So
+check the tuple's family, e.g. l3num, when creating the conntrack in
+order to prevent an OOB memory access during setup.  Here is an example
+kernel panic on 4.14.180 when userspace passes in an index greater than
+NFPROTO_NUMPROTO.
+
+Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+Modules linked in:...
+Process poc (pid: 5614, stack limit = 0x00000000a3933121)
+CPU: 4 PID: 5614 Comm: poc Tainted: G S      W  O    4.14.180-g051355490483
+Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150 Google Inc. MSM
+task: 000000002a3dfffe task.stack: 00000000a3933121
+pc : __cfi_check_fail+0x1c/0x24
+lr : __cfi_check_fail+0x1c/0x24
+...
+Call trace:
+__cfi_check_fail+0x1c/0x24
+name_to_dev_t+0x0/0x468
+nfnetlink_parse_nat_setup+0x234/0x258
+ctnetlink_parse_nat_setup+0x4c/0x228
+ctnetlink_new_conntrack+0x590/0xc40
+nfnetlink_rcv_msg+0x31c/0x4d4
+netlink_rcv_skb+0x100/0x184
+nfnetlink_rcv+0xf4/0x180
+netlink_unicast+0x360/0x770
+netlink_sendmsg+0x5a0/0x6a4
+___sys_sendmsg+0x314/0x46c
+SyS_sendmsg+0xb4/0x108
+el0_svc_naked+0x34/0x38
+
+Fixes: c1d10adb4a521 ("[NETFILTER]: Add ctnetlink port for nf_conntrack")
+Signed-off-by: Will McVicker <willmcvicker@google.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |   2 +
- .../chelsio/cxgb4/cxgb4_tc_matchall.c         | 101 +++++++++++++-----
- .../chelsio/cxgb4/cxgb4_tc_matchall.h         |   5 +-
- 3 files changed, 82 insertions(+), 26 deletions(-)
+ net/netfilter/nf_conntrack_netlink.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index adbc0d088070..9cb8b229c1b3 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -1438,6 +1438,8 @@ enum {
- 	NAT_MODE_ALL		/* NAT on entire 4-tuple */
- };
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index 31fa94064a62..56d310f8b29a 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -1129,6 +1129,8 @@ ctnetlink_parse_tuple(const struct nlattr * const cda[],
+ 	if (!tb[CTA_TUPLE_IP])
+ 		return -EINVAL;
  
-+#define CXGB4_FILTER_TYPE_MAX 2
-+
- /* Host shadow copy of ingress filter entry.  This is in host native format
-  * and doesn't match the ordering or bit order, etc. of the hardware of the
-  * firmware command.  The use of bit-field structure elements is purely to
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
-index e377e50c2492..2e309f6673f7 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
-@@ -231,8 +231,26 @@ static void cxgb4_matchall_mirror_free(struct net_device *dev)
- 	tc_port_matchall->ingress.viid_mirror = 0;
- }
++	if (l3num >= NFPROTO_NUMPROTO)
++		return -EINVAL;
+ 	tuple->src.l3num = l3num;
  
--static int cxgb4_matchall_alloc_filter(struct net_device *dev,
--				       struct tc_cls_matchall_offload *cls)
-+static int cxgb4_matchall_del_filter(struct net_device *dev, u8 filter_type)
-+{
-+	struct cxgb4_tc_port_matchall *tc_port_matchall;
-+	struct port_info *pi = netdev2pinfo(dev);
-+	struct adapter *adap = netdev2adap(dev);
-+	int ret;
-+
-+	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
-+	ret = cxgb4_del_filter(dev, tc_port_matchall->ingress.tid[filter_type],
-+			       &tc_port_matchall->ingress.fs[filter_type]);
-+	if (ret)
-+		return ret;
-+
-+	tc_port_matchall->ingress.tid[filter_type] = 0;
-+	return 0;
-+}
-+
-+static int cxgb4_matchall_add_filter(struct net_device *dev,
-+				     struct tc_cls_matchall_offload *cls,
-+				     u8 filter_type)
- {
- 	struct netlink_ext_ack *extack = cls->common.extack;
- 	struct cxgb4_tc_port_matchall *tc_port_matchall;
-@@ -244,28 +262,24 @@ static int cxgb4_matchall_alloc_filter(struct net_device *dev,
- 	/* Get a free filter entry TID, where we can insert this new
- 	 * rule. Only insert rule if its prio doesn't conflict with
- 	 * existing rules.
--	 *
--	 * 1 slot is enough to create a wildcard matchall VIID rule.
- 	 */
--	fidx = cxgb4_get_free_ftid(dev, PF_INET, false, cls->common.prio);
-+	fidx = cxgb4_get_free_ftid(dev, filter_type ? PF_INET6 : PF_INET,
-+				   false, cls->common.prio);
- 	if (fidx < 0) {
- 		NL_SET_ERR_MSG_MOD(extack,
- 				   "No free LETCAM index available");
- 		return -ENOMEM;
- 	}
- 
--	ret = cxgb4_matchall_mirror_alloc(dev, cls);
--	if (ret)
--		return ret;
--
- 	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
--	fs = &tc_port_matchall->ingress.fs;
-+	fs = &tc_port_matchall->ingress.fs[filter_type];
- 	memset(fs, 0, sizeof(*fs));
- 
- 	if (fidx < adap->tids.nhpftids)
- 		fs->prio = 1;
- 	fs->tc_prio = cls->common.prio;
- 	fs->tc_cookie = cls->cookie;
-+	fs->type = filter_type;
- 	fs->hitcnts = 1;
- 
- 	fs->val.pfvf_vld = 1;
-@@ -276,13 +290,39 @@ static int cxgb4_matchall_alloc_filter(struct net_device *dev,
- 
- 	ret = cxgb4_set_filter(dev, fidx, fs);
- 	if (ret)
--		goto out_free;
-+		return ret;
-+
-+	tc_port_matchall->ingress.tid[filter_type] = fidx;
-+	return 0;
-+}
-+
-+static int cxgb4_matchall_alloc_filter(struct net_device *dev,
-+				       struct tc_cls_matchall_offload *cls)
-+{
-+	struct cxgb4_tc_port_matchall *tc_port_matchall;
-+	struct port_info *pi = netdev2pinfo(dev);
-+	struct adapter *adap = netdev2adap(dev);
-+	int ret, i;
-+
-+	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
-+
-+	ret = cxgb4_matchall_mirror_alloc(dev, cls);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < CXGB4_FILTER_TYPE_MAX; i++) {
-+		ret = cxgb4_matchall_add_filter(dev, cls, i);
-+		if (ret)
-+			goto out_free;
-+	}
- 
--	tc_port_matchall->ingress.tid = fidx;
- 	tc_port_matchall->ingress.state = CXGB4_MATCHALL_STATE_ENABLED;
- 	return 0;
- 
- out_free:
-+	while (i-- > 0)
-+		cxgb4_matchall_del_filter(dev, i);
-+
- 	cxgb4_matchall_mirror_free(dev);
- 	return ret;
- }
-@@ -293,20 +333,21 @@ static int cxgb4_matchall_free_filter(struct net_device *dev)
- 	struct port_info *pi = netdev2pinfo(dev);
- 	struct adapter *adap = netdev2adap(dev);
- 	int ret;
-+	u8 i;
- 
- 	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
- 
--	ret = cxgb4_del_filter(dev, tc_port_matchall->ingress.tid,
--			       &tc_port_matchall->ingress.fs);
--	if (ret)
--		return ret;
-+	for (i = 0; i < CXGB4_FILTER_TYPE_MAX; i++) {
-+		ret = cxgb4_matchall_del_filter(dev, i);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	cxgb4_matchall_mirror_free(dev);
- 
- 	tc_port_matchall->ingress.packets = 0;
- 	tc_port_matchall->ingress.bytes = 0;
- 	tc_port_matchall->ingress.last_used = 0;
--	tc_port_matchall->ingress.tid = 0;
- 	tc_port_matchall->ingress.state = CXGB4_MATCHALL_STATE_DISABLED;
- 	return 0;
- }
-@@ -362,8 +403,12 @@ int cxgb4_tc_matchall_destroy(struct net_device *dev,
- 
- 	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
- 	if (ingress) {
-+		/* All the filter types of this matchall rule save the
-+		 * same cookie. So, checking for the first one is
-+		 * enough.
-+		 */
- 		if (cls_matchall->cookie !=
--		    tc_port_matchall->ingress.fs.tc_cookie)
-+		    tc_port_matchall->ingress.fs[0].tc_cookie)
- 			return -ENOENT;
- 
- 		return cxgb4_matchall_free_filter(dev);
-@@ -379,21 +424,29 @@ int cxgb4_tc_matchall_destroy(struct net_device *dev,
- int cxgb4_tc_matchall_stats(struct net_device *dev,
- 			    struct tc_cls_matchall_offload *cls_matchall)
- {
-+	u64 tmp_packets, tmp_bytes, packets = 0, bytes = 0;
- 	struct cxgb4_tc_port_matchall *tc_port_matchall;
-+	struct cxgb4_matchall_ingress_entry *ingress;
- 	struct port_info *pi = netdev2pinfo(dev);
- 	struct adapter *adap = netdev2adap(dev);
--	u64 packets, bytes;
- 	int ret;
-+	u8 i;
- 
- 	tc_port_matchall = &adap->tc_matchall->port_matchall[pi->port_id];
- 	if (tc_port_matchall->ingress.state == CXGB4_MATCHALL_STATE_DISABLED)
- 		return -ENOENT;
- 
--	ret = cxgb4_get_filter_counters(dev, tc_port_matchall->ingress.tid,
--					&packets, &bytes,
--					tc_port_matchall->ingress.fs.hash);
--	if (ret)
--		return ret;
-+	ingress = &tc_port_matchall->ingress;
-+	for (i = 0; i < CXGB4_FILTER_TYPE_MAX; i++) {
-+		ret = cxgb4_get_filter_counters(dev, ingress->tid[i],
-+						&tmp_packets, &tmp_bytes,
-+						ingress->fs[i].hash);
-+		if (ret)
-+			return ret;
-+
-+		packets += tmp_packets;
-+		bytes += tmp_bytes;
-+	}
- 
- 	if (tc_port_matchall->ingress.packets != packets) {
- 		flow_stats_update(&cls_matchall->stats,
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.h
-index e264b6e606c4..fe7ec423a4c9 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.h
-@@ -19,8 +19,9 @@ struct cxgb4_matchall_egress_entry {
- 
- struct cxgb4_matchall_ingress_entry {
- 	enum cxgb4_matchall_state state; /* Current MATCHALL offload state */
--	u32 tid; /* Index to hardware filter entry */
--	struct ch_filter_specification fs; /* Filter entry */
-+	u32 tid[CXGB4_FILTER_TYPE_MAX]; /* Index to hardware filter entries */
-+	/* Filter entries */
-+	struct ch_filter_specification fs[CXGB4_FILTER_TYPE_MAX];
- 	u16 viid_mirror; /* Identifier for allocated Mirror VI */
- 	u64 bytes; /* # of bytes hitting the filter */
- 	u64 packets; /* # of packets hitting the filter */
+ 	err = ctnetlink_parse_tuple_ip(tb[CTA_TUPLE_IP], tuple);
 -- 
-2.24.0
+2.28.0.163.g6104cc2f0b6-goog
 
+
+--pf9I7BMVVzbSWLtt--
