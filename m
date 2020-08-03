@@ -2,61 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82D2F23AFFF
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 00:11:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3FCB23B006
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 00:12:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728302AbgHCWKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 18:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
+        id S1728606AbgHCWMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 18:12:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgHCWKk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 18:10:40 -0400
+        with ESMTP id S1727959AbgHCWMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 18:12:24 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA6EC06174A;
-        Mon,  3 Aug 2020 15:10:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F253C06174A;
+        Mon,  3 Aug 2020 15:12:24 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 95F0712771D66;
-        Mon,  3 Aug 2020 14:53:53 -0700 (PDT)
-Date:   Mon, 03 Aug 2020 15:10:38 -0700 (PDT)
-Message-Id: <20200803.151038.440269686968773655.davem@davemloft.net>
-To:     yepeilin.cs@gmail.com
-Cc:     pshelar@ovn.org, kuba@kernel.org, dan.carpenter@oracle.com,
-        arnd@arndb.de, gregkh@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        netdev@vger.kernel.org, dev@openvswitch.org,
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 10EC512771D6C;
+        Mon,  3 Aug 2020 14:55:38 -0700 (PDT)
+Date:   Mon, 03 Aug 2020 15:12:22 -0700 (PDT)
+Message-Id: <20200803.151222.446729320721620447.davem@davemloft.net>
+To:     gaurav1086@gmail.com
+Cc:     kuba@kernel.org, mkubecek@suse.cz, f.fainelli@gmail.com,
+        andrew@lunn.ch, linux@rempel-privat.de, yuehaibing@huawei.com,
+        ayal@mellanox.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [Linux-kernel-mentees] [PATCH net] openvswitch: Prevent
- kernel-infoleak in ovs_ct_put_key()
+Subject: Re: [PATCH] [net/ethtool] ethnl_set_linkmodes: remove redundant
+ null check
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200731044838.213975-1-yepeilin.cs@gmail.com>
-References: <20200731044838.213975-1-yepeilin.cs@gmail.com>
+In-Reply-To: <20200731045908.32466-1-gaurav1086@gmail.com>
+References: <20200731045908.32466-1-gaurav1086@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 03 Aug 2020 14:53:54 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 03 Aug 2020 14:55:38 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peilin Ye <yepeilin.cs@gmail.com>
-Date: Fri, 31 Jul 2020 00:48:38 -0400
+From: Gaurav Singh <gaurav1086@gmail.com>
+Date: Fri, 31 Jul 2020 00:58:44 -0400
 
-> ovs_ct_put_key() is potentially copying uninitialized kernel stack memory
-> into socket buffers, since the compiler may leave a 3-byte hole at the end
-> of `struct ovs_key_ct_tuple_ipv4` and `struct ovs_key_ct_tuple_ipv6`. Fix
-> it by initializing `orig` with memset().
+> info cannot be NULL here since its being accessed earlier
+> in the function: nlmsg_parse(info->nlhdr...). Remove this
+> redundant NULL check.
 > 
-> Cc: stable@vger.kernel.org
+> Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
 
-Please don't CC: stable for networking fixes.
-
-> Fixes: 9dd7f8907c37 ("openvswitch: Add original direction conntrack tuple to sw_flow_key.")
-> Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
-
-Applied and queued up for -stable, thank you.
+Applied, thank you.
