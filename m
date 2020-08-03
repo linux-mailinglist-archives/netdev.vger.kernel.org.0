@@ -2,152 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95EEA23A3F5
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 14:18:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33CF923A64C
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 14:46:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726770AbgHCMS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 08:18:27 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:16312 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726130AbgHCMS0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 08:18:26 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 073C3cka095492;
-        Mon, 3 Aug 2020 08:18:17 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 32pd7v8a4n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Aug 2020 08:18:16 -0400
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 073C3hQd095610;
-        Mon, 3 Aug 2020 08:18:16 -0400
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 32pd7v8a3s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Aug 2020 08:18:16 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 073CFsRK000313;
-        Mon, 3 Aug 2020 12:18:13 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 32n01825m0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Aug 2020 12:18:13 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 073CIBNo55705918
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 3 Aug 2020 12:18:11 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3892A4C040;
-        Mon,  3 Aug 2020 12:18:11 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C0DD84C046;
-        Mon,  3 Aug 2020 12:18:10 +0000 (GMT)
-Received: from oc5311105230.ibm.com (unknown [9.145.63.67])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  3 Aug 2020 12:18:10 +0000 (GMT)
-Subject: Re: [Linux-kernel-mentees] [PATCH net] net/smc: Prevent
- kernel-infoleak in __smc_diag_dump()
-To:     Peilin Ye <yepeilin.cs@gmail.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S1728390AbgHCM03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 08:26:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51888 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728373AbgHCM02 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Aug 2020 08:26:28 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 10E72208C7;
+        Mon,  3 Aug 2020 12:26:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596457586;
+        bh=1mhfn0JbiQDfYhpxjOS3Uga4z4btaREdfOD5ayAKZfU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lm6FjZs82Df2cipa0h16uTpR9xQ5E6I9UbQKECAWVvQkSraX9QD7Zq8oTzpe+xt/E
+         z4AcbCyZeLLPhY2sO1XBpjLr/LlWnaY4aM2Hp4h/E2eL+1YryUBXmLcit3SZ63fk7e
+         VST9M4wuFYevaJikdzXkMIqCx2NbndIfzalUPO1M=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
+        =?UTF-8?q?Dieter=20N=C3=BCtzel?= <Dieter@nuetzel-hh.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-References: <20200801194440.246747-1-yepeilin.cs@gmail.com>
-From:   Ursula Braun <ubraun@linux.ibm.com>
-Message-ID: <7f07ed70-25eb-7eee-fac6-cc2226ef01e7@linux.ibm.com>
-Date:   Mon, 3 Aug 2020 14:18:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.7 095/120] iwlwifi: fix crash in iwl_dbg_tlv_alloc_trigger
+Date:   Mon,  3 Aug 2020 14:19:13 +0200
+Message-Id: <20200803121907.541688166@linuxfoundation.org>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200803121902.860751811@linuxfoundation.org>
+References: <20200803121902.860751811@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <20200801194440.246747-1-yepeilin.cs@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-03_10:2020-08-03,2020-08-03 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
- mlxlogscore=999 priorityscore=1501 bulkscore=0 malwarescore=0
- suspectscore=0 clxscore=1011 mlxscore=0 lowpriorityscore=0 impostorscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008030091
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Jiri Slaby <jslaby@suse.cz>
+
+[ Upstream commit ea0cca61d628662e4a1b26c77c7646f9a0257069 ]
+
+The tlv passed to iwl_dbg_tlv_alloc_trigger comes from a loaded firmware
+file. The memory can be marked as read-only as firmware could be
+shared. In anyway, writing to this memory is not expected. So,
+iwl_dbg_tlv_alloc_trigger can crash now:
+
+  BUG: unable to handle page fault for address: ffffae2c01bfa794
+  PF: supervisor write access in kernel mode
+  PF: error_code(0x0003) - permissions violation
+  PGD 107d51067 P4D 107d51067 PUD 107d52067 PMD 659ad2067 PTE 8000000662298161
+  CPU: 2 PID: 161 Comm: kworker/2:1 Not tainted 5.7.0-3.gad96a07-default #1 openSUSE Tumbleweed (unreleased)
+  RIP: 0010:iwl_dbg_tlv_alloc_trigger+0x25/0x60 [iwlwifi]
+  Code: eb f2 0f 1f 00 66 66 66 66 90 83 7e 04 33 48 89 f8 44 8b 46 10 48 89 f7 76 40 41 8d 50 ff 83 fa 19 77 23 8b 56 20 85 d2 75 07 <c7> 46 20 ff ff ff ff 4b 8d 14 40 48 c1 e2 04 48 8d b4 10 00 05 00
+  RSP: 0018:ffffae2c00417ce8 EFLAGS: 00010246
+  RAX: ffff8f0522334018 RBX: ffff8f0522334018 RCX: ffffffffc0fc26c0
+  RDX: 0000000000000000 RSI: ffffae2c01bfa774 RDI: ffffae2c01bfa774
+  RBP: 0000000000000000 R08: 0000000000000004 R09: 0000000000000001
+  R10: 0000000000000034 R11: ffffae2c01bfa77c R12: ffff8f0522334230
+  R13: 0000000001000009 R14: ffff8f0523fdbc00 R15: ffff8f051f395800
+  FS:  0000000000000000(0000) GS:ffff8f0527c80000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: ffffae2c01bfa794 CR3: 0000000389eba000 CR4: 00000000000006e0
+  Call Trace:
+   iwl_dbg_tlv_alloc+0x79/0x120 [iwlwifi]
+   iwl_parse_tlv_firmware.isra.0+0x57d/0x1550 [iwlwifi]
+   iwl_req_fw_callback+0x3f8/0x6a0 [iwlwifi]
+   request_firmware_work_func+0x47/0x90
+   process_one_work+0x1e3/0x3b0
+   worker_thread+0x46/0x340
+   kthread+0x115/0x140
+   ret_from_fork+0x1f/0x40
+
+As can be seen, write bit is not set in the PTE. Read of
+trig->occurrences succeeds in iwl_dbg_tlv_alloc_trigger, but
+trig->occurrences = cpu_to_le32(-1); fails there, obviously.
+
+This is likely because we (at SUSE) use compressed firmware and that is
+marked as RO after decompression (see fw_map_paged_buf).
+
+Fix it by creating a temporary buffer in case we need to change the
+memory.
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Reported-by: Dieter Nützel <Dieter@nuetzel-hh.de>
+Tested-by: Dieter Nützel <Dieter@nuetzel-hh.de>
+Cc: Johannes Berg <johannes.berg@intel.com>
+Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Cc: Luca Coelho <luciano.coelho@intel.com>
+Cc: Intel Linux Wireless <linuxwifi@intel.com>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200612073800.27742-1-jslaby@suse.cz
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+index bf2f00b892140..85b132a77787d 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+@@ -263,6 +263,8 @@ static int iwl_dbg_tlv_alloc_trigger(struct iwl_trans *trans,
+ {
+ 	struct iwl_fw_ini_trigger_tlv *trig = (void *)tlv->data;
+ 	u32 tp = le32_to_cpu(trig->time_point);
++	struct iwl_ucode_tlv *dup = NULL;
++	int ret;
+ 
+ 	if (le32_to_cpu(tlv->length) < sizeof(*trig))
+ 		return -EINVAL;
+@@ -275,10 +277,20 @@ static int iwl_dbg_tlv_alloc_trigger(struct iwl_trans *trans,
+ 		return -EINVAL;
+ 	}
+ 
+-	if (!le32_to_cpu(trig->occurrences))
++	if (!le32_to_cpu(trig->occurrences)) {
++		dup = kmemdup(tlv, sizeof(*tlv) + le32_to_cpu(tlv->length),
++				GFP_KERNEL);
++		if (!dup)
++			return -ENOMEM;
++		trig = (void *)dup->data;
+ 		trig->occurrences = cpu_to_le32(-1);
++		tlv = dup;
++	}
++
++	ret = iwl_dbg_tlv_add(tlv, &trans->dbg.time_point[tp].trig_list);
++	kfree(dup);
+ 
+-	return iwl_dbg_tlv_add(tlv, &trans->dbg.time_point[tp].trig_list);
++	return ret;
+ }
+ 
+ static int (*dbg_tlv_alloc[])(struct iwl_trans *trans,
+-- 
+2.25.1
 
 
-On 8/1/20 9:44 PM, Peilin Ye wrote:
-> __smc_diag_dump() is potentially copying uninitialized kernel stack memory
-> into socket buffers, since the compiler may leave a 4-byte hole near the
-> beginning of `struct smcd_diag_dmbinfo`. Fix it by initializing `dinfo`
-> with memset().
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 4b1b7d3b30a6 ("net/smc: add SMC-D diag support")
-> Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
-> ---
-> Reference: https://lwn.net/Articles/417989/
-> 
-> $ pahole -C "smcd_diag_dmbinfo" net/smc/smc_diag.o
-> struct smcd_diag_dmbinfo {
-> 	__u32                      linkid;               /*     0     4 */
-> 
-> 	/* XXX 4 bytes hole, try to pack */
-> 
-> 	__u64                      peer_gid __attribute__((__aligned__(8))); /*     8     8 */
-> 	__u64                      my_gid __attribute__((__aligned__(8))); /*    16     8 */
-> 	__u64                      token __attribute__((__aligned__(8))); /*    24     8 */
-> 	__u64                      peer_token __attribute__((__aligned__(8))); /*    32     8 */
-> 
-> 	/* size: 40, cachelines: 1, members: 5 */
-> 	/* sum members: 36, holes: 1, sum holes: 4 */
-> 	/* forced alignments: 4, forced holes: 1, sum forced holes: 4 */
-> 	/* last cacheline: 40 bytes */
-> } __attribute__((__aligned__(8)));
-> $ _
-> 
 
-Thanks, patch is added to our local library and will be part of our
-next shipment of smc patches for the net-tree.
-
-Regards, Ursula
-
->  net/smc/smc_diag.c | 16 +++++++++-------
->  1 file changed, 9 insertions(+), 7 deletions(-)
-> 
-> diff --git a/net/smc/smc_diag.c b/net/smc/smc_diag.c
-> index e1f64f4ba236..da9ba6d1679b 100644
-> --- a/net/smc/smc_diag.c
-> +++ b/net/smc/smc_diag.c
-> @@ -170,13 +170,15 @@ static int __smc_diag_dump(struct sock *sk, struct sk_buff *skb,
->  	    (req->diag_ext & (1 << (SMC_DIAG_DMBINFO - 1))) &&
->  	    !list_empty(&smc->conn.lgr->list)) {
->  		struct smc_connection *conn = &smc->conn;
-> -		struct smcd_diag_dmbinfo dinfo = {
-> -			.linkid = *((u32 *)conn->lgr->id),
-> -			.peer_gid = conn->lgr->peer_gid,
-> -			.my_gid = conn->lgr->smcd->local_gid,
-> -			.token = conn->rmb_desc->token,
-> -			.peer_token = conn->peer_token
-> -		};
-> +		struct smcd_diag_dmbinfo dinfo;
-> +
-> +		memset(&dinfo, 0, sizeof(dinfo));
-> +
-> +		dinfo.linkid = *((u32 *)conn->lgr->id);
-> +		dinfo.peer_gid = conn->lgr->peer_gid;
-> +		dinfo.my_gid = conn->lgr->smcd->local_gid;
-> +		dinfo.token = conn->rmb_desc->token;
-> +		dinfo.peer_token = conn->peer_token;
->  
->  		if (nla_put(skb, SMC_DIAG_DMBINFO, sizeof(dinfo), &dinfo) < 0)
->  			goto errout;
-> 
