@@ -2,175 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90F1523ABB5
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 19:34:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BCAB23ABBE
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 19:38:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728373AbgHCReL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 13:34:11 -0400
-Received: from www62.your-server.de ([213.133.104.62]:46874 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726797AbgHCReL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 13:34:11 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k2eLg-0006rP-4R; Mon, 03 Aug 2020 19:34:08 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k2eLf-000F0x-Ub; Mon, 03 Aug 2020 19:34:07 +0200
-Subject: Re: [PATCH v5 bpf-next 3/4] bpf: Add kernel module with user mode
- driver that populates bpffs.
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-References: <20200802222950.34696-1-alexei.starovoitov@gmail.com>
- <20200802222950.34696-4-alexei.starovoitov@gmail.com>
- <33d2db5b-3f81-e384-bed8-96f1d7f1d4c7@iogearbox.net>
-Message-ID: <430839eb-2761-0c1a-4b99-dffb07b9f502@iogearbox.net>
-Date:   Mon, 3 Aug 2020 19:34:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726766AbgHCRin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 13:38:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34120 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726130AbgHCRim (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 13:38:42 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FED3C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 10:38:42 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id s15so8794262pgc.8
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 10:38:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YDxDfS5ZnDP/fSsHSnu3HFOQe81aZhcFJgQH5fQI7KE=;
+        b=a99rN20tVAS41MYHgNEZOPP1kWpE2e3+3H+x3Ny3HMiPdFwv/tlfg4UtTPjEMP/FoU
+         O+i/KfhFOzyWyCIRAjH9OhfF3FOiidExXJSh6v+dJ6y2IjhhBIch1bndLhHLDR4cOvRA
+         u8x5hYwe7tbN/qaocqfoiMz+9LmaJC3dnd+ArNO2mblNoiL+/e4yfJW3hbe7yplYo5wJ
+         885/Gr5PEfWHeKWKioI4hIJPeFdrYcQfQ98JB3Xa8VkZcN3XEdtXmQ6bV33TfNKSa9vj
+         SzhzrwpMJR93QawojURW8GCC1UaC5cnjqHLLhoLnoYnScaVS3rhd7H2xIQYVOPIb1DD9
+         OBqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YDxDfS5ZnDP/fSsHSnu3HFOQe81aZhcFJgQH5fQI7KE=;
+        b=Mv2oVxGOWtmgiQOD5M/piGasO2h52KHI7vNDhJtfSJgK+TF5k6PCqSSOKlSFS8L8de
+         GwcPCATqqbti5pNk9oVymTveMw+ceic+141uSrgJo2zjK5HQWszksCKtxSkpG0eDnZIG
+         IUT1OeEZNF2k4CqMVGdyOnu42zPTZe7T91LyJ/Fi4vbByaD5T9Ur9DILwX5rAC9wKu+a
+         /FziHAJ3ilc2ZjI4VVXEkSmCh69YY19XuC7FhS7k7bvGt8/o9F6W7tTCDq9Vc4Psy8RI
+         e87WXnnqOI6Iqkjx/2qxAt7iwECnXGahlMsh/dP9wA/UR6OefzKhTOFFl/wBiUDoCycg
+         ve+Q==
+X-Gm-Message-State: AOAM533Lpl15lo5CyS44G0Oj7c7MP64GQp/wWPejI/KVjrixzohRyuej
+        8z/ydbtmdZ8PingxrYlpiFnZDPE4
+X-Google-Smtp-Source: ABdhPJwt08gXVshS/q+6GW6Ks1XjOs0EaZOdsw3vVfK7UTIa9yEFhe04eS/iOv8GqIfztZUjZKJDSA==
+X-Received: by 2002:a63:8ec4:: with SMTP id k187mr15577539pge.425.1596476321810;
+        Mon, 03 Aug 2020 10:38:41 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 124sm496592pfb.19.2020.08.03.10.38.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Aug 2020 10:38:41 -0700 (PDT)
+Subject: Re: [PATCH v4 01/11] net: phy: Add support for microchip SMI0 MDIO
+ bus
+To:     Michael Grzeschik <m.grzeschik@pengutronix.de>, andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kernel@pengutronix.de
+References: <20200803054442.20089-1-m.grzeschik@pengutronix.de>
+ <20200803054442.20089-2-m.grzeschik@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <84eda532-c4d9-6847-876d-305a0f59b8dd@gmail.com>
+Date:   Mon, 3 Aug 2020 10:38:35 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <33d2db5b-3f81-e384-bed8-96f1d7f1d4c7@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20200803054442.20089-2-m.grzeschik@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25893/Mon Aug  3 17:01:47 2020)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/3/20 7:15 PM, Daniel Borkmann wrote:
-> On 8/3/20 12:29 AM, Alexei Starovoitov wrote:
->> From: Alexei Starovoitov <ast@kernel.org>
->>
->> Add kernel module with user mode driver that populates bpffs with
->> BPF iterators.
->>
->> $ mount bpffs /my/bpffs/ -t bpf
->> $ ls -la /my/bpffs/
->> total 4
->> drwxrwxrwt  2 root root    0 Jul  2 00:27 .
->> drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
->> -rw-------  1 root root    0 Jul  2 00:27 maps.debug
->> -rw-------  1 root root    0 Jul  2 00:27 progs.debug
->>
->> The user mode driver will load BPF Type Formats, create BPF maps, populate BPF
->> maps, load two BPF programs, attach them to BPF iterators, and finally send two
->> bpf_link IDs back to the kernel.
->> The kernel will pin two bpf_links into newly mounted bpffs instance under
->> names "progs.debug" and "maps.debug". These two files become human readable.
->>
->> $ cat /my/bpffs/progs.debug
->>    id name            attached
->>    11 dump_bpf_map    bpf_iter_bpf_map
->>    12 dump_bpf_prog   bpf_iter_bpf_prog
->>    27 test_pkt_access
->>    32 test_main       test_pkt_access test_pkt_access
->>    33 test_subprog1   test_pkt_access_subprog1 test_pkt_access
->>    34 test_subprog2   test_pkt_access_subprog2 test_pkt_access
->>    35 test_subprog3   test_pkt_access_subprog3 test_pkt_access
->>    36 new_get_skb_len get_skb_len test_pkt_access
->>    37 new_get_skb_ifindex get_skb_ifindex test_pkt_access
->>    38 new_get_constant get_constant test_pkt_access
->>
->> The BPF program dump_bpf_prog() in iterators.bpf.c is printing this data about
->> all BPF programs currently loaded in the system. This information is unstable
->> and will change from kernel to kernel as ".debug" suffix conveys.
->>
->> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> [...]
->> diff --git a/kernel/bpf/preload/Kconfig b/kernel/bpf/preload/Kconfig
->> new file mode 100644
->> index 000000000000..b8ba5a9398ed
->> --- /dev/null
->> +++ b/kernel/bpf/preload/Kconfig
->> @@ -0,0 +1,18 @@
->> +# SPDX-License-Identifier: GPL-2.0-only
->> +menuconfig BPF_PRELOAD
->> +    bool "Preload BPF file system with kernel specific program and map iterators"
->> +    depends on BPF
->> +    help
->> +      This builds kernel module with several embedded BPF programs that are
->> +      pinned into BPF FS mount point as human readable files that are
->> +      useful in debugging and introspection of BPF programs and maps.
->> +
->> +if BPF_PRELOAD
->> +config BPF_PRELOAD_UMD
->> +    tristate "bpf_preload kernel module with user mode driver"
->> +    depends on CC_CAN_LINK
->> +    depends on m || CC_CAN_LINK_STATIC
->> +    default m
->> +    help
->> +      This builds bpf_preload kernel module with embedded user mode driver.
->> +endif
-> [...]
-> When I applied this set locally to run build & selftests I noticed that the above
-> kconfig will appear in the top-level menuconfig. This is how it looks in menuconfig:
+
+
+On 8/2/2020 10:44 PM, Michael Grzeschik wrote:
+> From: Andrew Lunn <andrew@lunn.ch>
 > 
->    │ ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐ │
->    │ │                                           General setup  --->                                                                                      │ │
->    │ │                                       [*] 64-bit kernel                                                                                            │ │
->    │ │                                           Processor type and features  --->                                                                        │ │
->    │ │                                           Power management and ACPI options  --->                                                                  │ │
->    │ │                                           Bus options (PCI etc.)  --->                                                                             │ │
->    │ │                                           Binary Emulations  --->                                                                                  │ │
->    │ │                                           Firmware Drivers  --->                                                                                   │ │
->    │ │                                       [*] Virtualization  --->                                                                                     │ │
->    │ │                                           General architecture-dependent options  --->                                                             │ │
->    │ │                                       [*] Enable loadable module support  --->                                                                     │ │
->    │ │                                       -*- Enable the block layer  --->                                                                             │ │
->    │ │                                           IO Schedulers  --->                                                                                      │ │
->    │ │                                       [ ] Preload BPF file system with kernel specific program and map iterators  ----                             │ │
->    │ │                                           Executable file formats  --->                                                                            │ │
->    │ │                                           Memory Management options  --->                                                                          │ │
->    │ │                                       [*] Networking support  --->                                                                                 │ │
->    │ │                                           Device Drivers  --->                                                                                     │ │
->    │ │                                           File systems  --->                                                                                       │ │
->    │ │                                           Security options  --->                                                                                   │ │
-> [...]
+> SMI0 is a mangled version of MDIO. The main low level difference is
+> the MDIO C22 OP code is always 0, not 0x2 or 0x1 for Read/Write. The
+> read/write information is instead encoded in the PHY address.
 > 
-> I assume the original intention was to have it under 'general setup' on a similar level for
-> the JIT settings, or is this intentional to have it at this high level next to 'networking
-> support' and others?
+> Extend the bit-bang code to allow the op code to be overridden, but
+> default to normal C22 values. Add an extra compatible to the mdio-gpio
+> driver, and when this compatible is present, set the op codes to 0.
+> 
+> A higher level driver, sitting on top of the basic MDIO bus driver can
+> then implement the rest of the microchip SMI0 odderties.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+> 
+> ---
 
-Hm, my config has:
+[snip]
 
-CONFIG_BPF_PRELOAD=y
-CONFIG_BPF_PRELOAD_UMD=y
+> diff --git a/drivers/net/phy/mdio-gpio.c b/drivers/net/phy/mdio-gpio.c
+> index 1b00235d7dc5b56..e8d83cee1bc17e1 100644
+> --- a/drivers/net/phy/mdio-gpio.c
+> +++ b/drivers/net/phy/mdio-gpio.c
+> @@ -132,6 +132,14 @@ static struct mii_bus *mdio_gpio_bus_init(struct device *dev,
+>  		new_bus->phy_ignore_ta_mask = pdata->phy_ignore_ta_mask;
+>  	}
+>  
+> +	if (dev->of_node &&
+> +	    of_device_is_compatible(dev->of_node, "microchip,mdio-smi0")) {
+> +		bitbang->ctrl.op_c22_read = 0;
+> +		bitbang->ctrl.op_c22_write = 0;
+> +	} else {
+> +		bitbang->ctrl.override_op_c22 = 1;
 
-I'm getting the following 3 warnings and build error below:
-
-root@tank:~/bpf-next# make -j8 > /dev/null
-arch/x86/hyperv/hv_apic.c: In function ‘hv_send_ipi_mask_allbutself’:
-arch/x86/hyperv/hv_apic.c:236:1: warning: the frame size of 1032 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-  }
-  ^
-make[3]: *** No rule to make target 'kernel/bpf/preload/./../../tools/lib/bpf/bpf.c', needed by 'kernel/bpf/preload/./../../tools/lib/bpf/bpf.o'.  Stop.
-make[3]: *** Waiting for unfinished jobs....
-kernel/bpf/preload/iterators/iterators.c: In function ‘main’:
-kernel/bpf/preload/iterators/iterators.c:50:2: warning: ignoring return value of ‘dup’, declared with attribute warn_unused_result [-Wunused-result]
-   dup(debug_fd);
-   ^~~~~~~~~~~~~
-kernel/bpf/preload/iterators/iterators.c:53:2: warning: ignoring return value of ‘read’, declared with attribute warn_unused_result [-Wunused-result]
-   read(from_kernel, &magic, sizeof(magic));
-   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-kernel/bpf/preload/iterators/iterators.c:85:2: warning: ignoring return value of ‘read’, declared with attribute warn_unused_result [-Wunused-result]
-   read(from_kernel, &magic, sizeof(magic));
-   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-make[2]: *** [kernel/bpf/preload] Error 2
-make[1]: *** [kernel/bpf] Error 2
-make: *** [kernel] Error 2
-make: *** Waiting for unfinished jobs....
-[...]
-
-Have you seen the target error before, what am I missing?
-
-Thanks,
-Daniel
+Do not you have the logic reversed here? You meant to set
+ctrl.override_op_c22 to 1 *if* your compatibility string is
+microchip,mdio-smi0 to indicate the use of non-standard clause 22 read
+and write opcodes?
+-- 
+Florian
