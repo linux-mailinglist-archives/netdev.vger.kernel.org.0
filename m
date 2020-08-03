@@ -2,161 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECA3723AA4A
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 18:13:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0091A23AA5E
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 18:20:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728450AbgHCQMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 12:12:54 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:58847 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728360AbgHCQMw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 12:12:52 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 7C3BC5C0134;
-        Mon,  3 Aug 2020 12:12:51 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 03 Aug 2020 12:12:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=Gm+FSR9DIf0K2+0SXGQ3NYwBy7gZmCESkyWj9ElaqJw=; b=UnBB7iGk
-        ah5ntlXLL5VwPBVd4Dh3dEJ9Xm/L2ybbsrBOxZ9tL1HL/99SEfCXMw2PLWL0jqX3
-        FKy1NswAm3WXiac0BV7PKcY7/nvsZDdupNBN4K1R4jd7kLwmUG/Fbw21bl4aTVts
-        ngeBGsjI8m18XZPNQJMg9DCLmJPl4oo47jgCWOHdlYHlvPwTKuVjuE2ZZ+S8HUmP
-        Fk+sRw+4iKWTxUgQ7E8S5UER1Vna/Y4CgpAiprGfERez3c0nFo0QGEekdcJrEoeH
-        DIDZO5xW4VWs11TcN0by76//jeLM3ogu69wPFOzAYgb6xRUh5epyxNHOn5tlgJwo
-        AVKHOai94wcmog==
-X-ME-Sender: <xms:gzcoXzDVw10_1_uT_DXwWAb6iMANSeNWD1ffmaHcduYHA_mW0S9c-g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrjeeggdelkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
-    fgtdfftefhledvjefggfehgfevjeekhfenucfkphepjeelrddukedurdeirddvudelnecu
-    vehluhhsthgvrhfuihiivgepkeenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:gzcoX5gBIU6pqDPVypbpIr8QEn79nAxlKAt_btiaP2TKWAJKvbFn_A>
-    <xmx:gzcoX-mV_CquCOsGPAExtGO622nbpmZfSTnbIxTnSPZTwH5SdiTrkg>
-    <xmx:gzcoX1yW6sGti7mmvlS2E0p5aejSgtoF9wBoSsjWTm_j0fwPD5CV_w>
-    <xmx:gzcoX-dZQVUWSCQxonkluVtnhiVcksrNG3j0sSXIFiNpFnoNsiKG5g>
-Received: from shredder.mtl.com (bzq-79-181-6-219.red.bezeqint.net [79.181.6.219])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 77940306005F;
-        Mon,  3 Aug 2020 12:12:49 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        petrm@mellanox.com, amitc@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 9/9] selftests: mlxsw: RED: Test offload of trapping on RED qevents
-Date:   Mon,  3 Aug 2020 19:11:41 +0300
-Message-Id: <20200803161141.2523857-10-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200803161141.2523857-1-idosch@idosch.org>
-References: <20200803161141.2523857-1-idosch@idosch.org>
+        id S1728335AbgHCQUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 12:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50172 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726239AbgHCQUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 12:20:08 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C24C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 09:20:08 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id a5so24811143wrm.6
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 09:20:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ksgg+tMZFTuQ5G722MUtO6W4D9Sc6j/9SNDhFMh5on4=;
+        b=i8YhnO6PZwESxmIGionQd/VS50YUzbVXkCPOTbcEfSQmDIP5LNrCb7vWsNW7+6nkN1
+         VZtdAxjOHBYys2CkI+/UEx7L5/7MiPVu8d+FWrmWZTRm398+SbZNelN0NtoI9QXmdzpl
+         xRileGzcpTo8tlOpgHANMPqkah/qQ76fL1nFGPGlhJVm26hFpl0FvWbE4uPSE93Wpi6s
+         ZPo3mr9/rxV6YTejXAtVz+/rXsD7eCTdiuGJayylcLTSmqTFUDBNL0Vt1enCXyUNqW4G
+         lOp0W8olDAlKDvbBlWJBTj81Ae5c7epaPL196lVKpbiYQsWfx7mp31E5AJVD/8Fhk5eH
+         8xWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ksgg+tMZFTuQ5G722MUtO6W4D9Sc6j/9SNDhFMh5on4=;
+        b=cMLuVbpoOM5U//U+jlBgcj2ErvZ+4Njvn8a2CwybEVV+VCAzoppjPvWvXHKUpwQFic
+         Ss8wiobs2+HefZ+xA2PTJ1C6MH+I4p1228qtCvgpk7b2mdcr/xNuFraN6O2eh5RqtyZi
+         rxn2hJ91s9hAKESJ4xAZIweF97adifh/yt6rE58zXzmVmG7UVe16tBViy24X3Yio7qsO
+         x3A64gjZVAdXItdea3e2oakpo99OZ7MSlJhlujx95xa4RkM2pjptpbJrw4suNKvzg4e/
+         yDbig3+xoTwAwhyo9kOuIdny8df/rDKbbRKZIAHE6pFz6NQGlvFYtEpIhR8ZDozMUWkU
+         RlVw==
+X-Gm-Message-State: AOAM533OTwmVGh493x4VCcDmQRVXDmhLg+cEJavt7aMPI6DBniN21FF0
+        UNx2FQppl05iB7twL5zk6mZnZtvWc1M=
+X-Google-Smtp-Source: ABdhPJyZjbBI1tqNML4YXYKaUpSC/PBDfQRG8vWGTwPQBIpJkCSfCY5xA/WoZeqCEcBLkJ3/gAsz/w==
+X-Received: by 2002:adf:bbc1:: with SMTP id z1mr15598898wrg.173.1596471607252;
+        Mon, 03 Aug 2020 09:20:07 -0700 (PDT)
+Received: from localhost (ip-89-176-225-97.net.upcbroadband.cz. [89.176.225.97])
+        by smtp.gmail.com with ESMTPSA id f63sm124047wmf.9.2020.08.03.09.20.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Aug 2020 09:20:06 -0700 (PDT)
+Date:   Mon, 3 Aug 2020 18:20:06 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
+Subject: Re: [iproute2-next v2 5/5] devlink: support setting the overwrite
+ mask
+Message-ID: <20200803162006.GF2290@nanopsycho>
+References: <20200801002159.3300425-1-jacob.e.keller@intel.com>
+ <20200801002159.3300425-6-jacob.e.keller@intel.com>
+ <0bb895a2-e233-0426-3e48-d8422fa5b7cf@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0bb895a2-e233-0426-3e48-d8422fa5b7cf@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
+Mon, Aug 03, 2020 at 05:53:16PM CEST, dsahern@gmail.com wrote:
+>On 7/31/20 6:21 PM, Jacob Keller wrote:
+>> Add support for specifying the overwrite sections to allow in the flash
+>> update command. This is done by adding a new "overwrite" option which
+>> can take either "settings" or "identifiers" passing the overwrite mode
+>> multiple times will combine the fields using bitwise-OR.
+>> 
+>> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+>> ---
+>>  devlink/devlink.c | 37 +++++++++++++++++++++++++++++++++++--
+>>  1 file changed, 35 insertions(+), 2 deletions(-)
+>> 
+>
+>5/5? I only see 2 - 4/5 and 5/5. Please re-send against latest
+>iproute2-next.
 
-Add a selftest for RED early_drop and mark qevents when a trap action is
-attached at the associated block.
+1-3 are kernel.
 
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- .../drivers/net/mlxsw/sch_red_core.sh         | 35 +++++++++++++++----
- .../drivers/net/mlxsw/sch_red_ets.sh          | 11 ++++++
- 2 files changed, 40 insertions(+), 6 deletions(-)
-
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-index 45042105ead7..517297a14ecf 100644
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-@@ -568,17 +568,12 @@ do_drop_test()
- 	busywait 1100 until_counter_is ">= $((base + 1))" $fetch_counter >/dev/null
- 	check_fail $? "Spurious packets observed without buffer pressure"
- 
--	qevent_rule_uninstall_$subtest
--
- 	# Push to the queue until it's at the limit. The configured limit is
- 	# rounded by the qdisc and then by the driver, so this is the best we
--	# can do to get to the real limit of the system. Do this with the rules
--	# uninstalled so that the inevitable drops don't get counted.
-+	# can do to get to the real limit of the system.
- 	build_backlog $vlan $((3 * limit / 2)) udp >/dev/null
- 
--	qevent_rule_install_$subtest
- 	base=$($fetch_counter)
--
- 	send_packets $vlan udp 11
- 
- 	now=$(busywait 1100 until_counter_is ">= $((base + 10))" $fetch_counter)
-@@ -631,3 +626,31 @@ do_drop_mirror_test()
- 
- 	tc filter del dev $h2 ingress pref 1 handle 101 flower
- }
-+
-+qevent_rule_install_trap()
-+{
-+	tc filter add block 10 pref 1234 handle 102 matchall skip_sw \
-+	   action trap hw_stats disabled
-+}
-+
-+qevent_rule_uninstall_trap()
-+{
-+	tc filter del block 10 pref 1234 handle 102 matchall
-+}
-+
-+qevent_counter_fetch_trap()
-+{
-+	local trap_name=$1; shift
-+
-+	devlink_trap_rx_packets_get "$trap_name"
-+}
-+
-+do_drop_trap_test()
-+{
-+	local vlan=$1; shift
-+	local limit=$1; shift
-+	local trap_name=$1; shift
-+
-+	do_drop_test "$vlan" "$limit" "$trap_name" trap \
-+		     "qevent_counter_fetch_trap $trap_name"
-+}
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-index c8968b041bea..3f007c5f8361 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-@@ -8,6 +8,7 @@ ALL_TESTS="
- 	red_test
- 	mc_backlog_test
- 	red_mirror_test
-+	red_trap_test
- "
- : ${QDISC:=ets}
- source sch_red_core.sh
-@@ -94,6 +95,16 @@ red_mirror_test()
- 	uninstall_qdisc
- }
- 
-+red_trap_test()
-+{
-+	install_qdisc qevent early_drop block 10
-+
-+	do_drop_trap_test 10 $BACKLOG1 early_drop
-+	do_drop_trap_test 11 $BACKLOG2 early_drop
-+
-+	uninstall_qdisc
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
--- 
-2.26.2
-
+>
