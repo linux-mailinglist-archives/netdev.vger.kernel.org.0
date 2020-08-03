@@ -2,51 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E62C223B09F
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 01:01:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8B023B0A8
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 01:03:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729113AbgHCXBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 19:01:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55664 "EHLO
+        id S1729005AbgHCXDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 19:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727991AbgHCXBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 19:01:33 -0400
+        with ESMTP id S1726805AbgHCXDi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 19:03:38 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EA53C06174A;
-        Mon,  3 Aug 2020 16:01:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248C2C06174A;
+        Mon,  3 Aug 2020 16:03:38 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3B6861277918D;
-        Mon,  3 Aug 2020 15:44:47 -0700 (PDT)
-Date:   Mon, 03 Aug 2020 16:01:32 -0700 (PDT)
-Message-Id: <20200803.160132.173649007258760362.davem@davemloft.net>
-To:     christophe.jaillet@wanadoo.fr
-Cc:     kou.ishizaki@toshiba.co.jp, kuba@kernel.org, linas@austin.ibm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: spider_net: Remove a useless memset
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5D4EF12779195;
+        Mon,  3 Aug 2020 15:46:52 -0700 (PDT)
+Date:   Mon, 03 Aug 2020 16:03:36 -0700 (PDT)
+Message-Id: <20200803.160336.2163577709608656066.davem@davemloft.net>
+To:     pablo@netfilter.org
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/7] Netfilter updates for net-next
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200802135348.691046-1-christophe.jaillet@wanadoo.fr>
-References: <20200802135348.691046-1-christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20200802183149.2808-1-pablo@netfilter.org>
+References: <20200802183149.2808-1-pablo@netfilter.org>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 03 Aug 2020 15:44:47 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 03 Aug 2020 15:46:52 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Date: Sun,  2 Aug 2020 15:53:48 +0200
+From: Pablo Neira Ayuso <pablo@netfilter.org>
+Date: Sun,  2 Aug 2020 20:31:41 +0200
 
-> Avoid a memset after a call to 'dma_alloc_coherent()'.
-> This is useless since
-> commit 518a2f1925c3 ("dma-mapping: zero memory returned from dma_alloc_*")
+> 1) UAF in chain binding support from previous batch, from Dan Carpenter.
 > 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> 2) Queue up delayed work to expire connections with no destination,
+>    from Andrew Sy Kim.
+> 
+> 3) Use fallthrough pseudo-keyword, from Gustavo A. R. Silva.
+> 
+> 4) Replace HTTP links with HTTPS, from Alexander A. Klimov.
+> 
+> 5) Remove superfluous null header checks in ip6tables, from
+>    Gaurav Singh.
+> 
+> 6) Add extended netlink error reporting for expression.
+> 
+> 7) Report EEXIST on overlapping chain, set elements and flowtable
+>    devices.
+> 
+> Please, pull these changes from:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
 
-Applied.
+Pulled, thank you.
