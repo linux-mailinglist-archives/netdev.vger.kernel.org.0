@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B90323AFEC
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 00:07:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82D2F23AFFF
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 00:11:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728840AbgHCWFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 18:05:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
+        id S1728302AbgHCWKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 18:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726948AbgHCWFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 18:05:45 -0400
+        with ESMTP id S1726130AbgHCWKk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 18:10:40 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E9EC06174A
-        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 15:05:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA6EC06174A;
+        Mon,  3 Aug 2020 15:10:40 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 050691276EAEA;
-        Mon,  3 Aug 2020 14:48:59 -0700 (PDT)
-Date:   Mon, 03 Aug 2020 15:05:44 -0700 (PDT)
-Message-Id: <20200803.150544.288223634189041379.davem@davemloft.net>
-To:     wenxu@ucloud.cn
-Cc:     xiyou.wangcong@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] net/sched: act_ct: fix miss set mru for ovs
- after defrag in act_ct
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 95F0712771D66;
+        Mon,  3 Aug 2020 14:53:53 -0700 (PDT)
+Date:   Mon, 03 Aug 2020 15:10:38 -0700 (PDT)
+Message-Id: <20200803.151038.440269686968773655.davem@davemloft.net>
+To:     yepeilin.cs@gmail.com
+Cc:     pshelar@ovn.org, kuba@kernel.org, dan.carpenter@oracle.com,
+        arnd@arndb.de, gregkh@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [Linux-kernel-mentees] [PATCH net] openvswitch: Prevent
+ kernel-infoleak in ovs_ct_put_key()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1596163501-7113-1-git-send-email-wenxu@ucloud.cn>
-References: <1596163501-7113-1-git-send-email-wenxu@ucloud.cn>
+In-Reply-To: <20200731044838.213975-1-yepeilin.cs@gmail.com>
+References: <20200731044838.213975-1-yepeilin.cs@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 03 Aug 2020 14:49:00 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 03 Aug 2020 14:53:54 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu@ucloud.cn
-Date: Fri, 31 Jul 2020 10:45:01 +0800
+From: Peilin Ye <yepeilin.cs@gmail.com>
+Date: Fri, 31 Jul 2020 00:48:38 -0400
 
-> From: wenxu <wenxu@ucloud.cn>
+> ovs_ct_put_key() is potentially copying uninitialized kernel stack memory
+> into socket buffers, since the compiler may leave a 3-byte hole at the end
+> of `struct ovs_key_ct_tuple_ipv4` and `struct ovs_key_ct_tuple_ipv6`. Fix
+> it by initializing `orig` with memset().
 > 
-> When openvswitch conntrack offload with act_ct action. Fragment packets
-> defrag in the ingress tc act_ct action and miss the next chain. Then the
-> packet pass to the openvswitch datapath without the mru. The over
-> mtu packet will be dropped in output action in openvswitch for over mtu.
-> 
-> "kernel: net2: dropped over-mtu packet: 1528 > 1500"
-> 
-> This patch add mru in the tc_skb_ext for adefrag and miss next chain
-> situation. And also add mru in the qdisc_skb_cb. The act_ct set the mru
-> to the qdisc_skb_cb when the packet defrag. And When the chain miss,
-> The mru is set to tc_skb_ext which can be got by ovs datapath.
-> 
-> Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> Cc: stable@vger.kernel.org
+
+Please don't CC: stable for networking fixes.
+
+> Fixes: 9dd7f8907c37 ("openvswitch: Add original direction conntrack tuple to sw_flow_key.")
+> Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
 
 Applied and queued up for -stable, thank you.
