@@ -2,94 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8875623A902
-	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 16:57:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2B3423A904
+	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 16:58:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727074AbgHCO4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 10:56:41 -0400
-Received: from www62.your-server.de ([213.133.104.62]:47790 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726773AbgHCO4l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 10:56:41 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k2btE-0001Go-5d; Mon, 03 Aug 2020 16:56:36 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k2btD-0006D4-Us; Mon, 03 Aug 2020 16:56:35 +0200
-Subject: Re: [PATCH net] net/bpfilter: initialize pos in
- __bpfilter_process_sockopt
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
-        Christoph Hellwig <hch@lst.de>, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Rodrigo Madera <rodrigo.madera@gmail.com>
-References: <20200730160900.187157-1-hch@lst.de>
- <20200730161303.erzgrhqsgc77d4ny@wittgenstein>
- <03954b8f-0db7-427b-cfd6-7146da9b5466@iogearbox.net>
- <20200801194846.dxmvg5fmg67nuhwy@ast-mbp.dhcp.thefacebook.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c166831a-d506-3a4e-80ed-f0474079770d@iogearbox.net>
-Date:   Mon, 3 Aug 2020 16:56:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726773AbgHCO6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 10:58:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726189AbgHCO6u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 10:58:50 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B6BC06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 07:58:50 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id 77so3065141qkm.5
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 07:58:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lAyP55RHF0VLvvH4hNQzlLv965GPkKI9hN+PsbFzt0Q=;
+        b=ZsSPsijiFUrjIu4vexkTJ4SmX6+5mV41eAhK0oJjUijaCBdKaovqfCwtCi3R9TwJDe
+         uX0NlasWOfaPW/8HOVALVixU+qWPNUzwhjcDTHcmhTZK/JecQF5ROoVjmJggP1cGdDRr
+         cSgPJQE1E0hFA9De2Hs8Ne9xlXQkfHeHekPzNjtgEO0hZqY7kOiCox8LuiIS33Po9x1a
+         gB6ZyOQAgpfda5RSWl4bZmxj689spjNbAubx4DWedxJuRAz4eIDZMWaFDI0IFAYy+pLq
+         DmZjPL+xjqPlAq1vtlAW++Xtcwn9gFZIZvNTqH6JEvAEB0dTAbR+3HePxCjOx6e4nZKR
+         doPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lAyP55RHF0VLvvH4hNQzlLv965GPkKI9hN+PsbFzt0Q=;
+        b=j8LRAGQx1yefzFHTUFsWvTXVSJbX56CVBxu1jFlsajmJ/pEVDi0uhTP/A3vR+n1fS2
+         1qerzeQcmIX4SK4ZBKJHqh+JH+8gPO8W2TC/9wpADAtjljx0z/PorbLe8cnQOBBvsIMa
+         LPoArV97ojuJ4VRlHDPRH0SymZOjMjqEzezXAtZUFwk2AvqQoUFcma5Wvjg+GoV4sakp
+         XPdjgkQ//soPd6oFPj0Sq1FavbiCZqZddAN7ldu2dHejx9y+TKfjIYsZDowesHH6QhQm
+         iTk+hapDflRoGa8bDVu7IQdw1sdEoRSeuzeK4bQYp1YOMznwer+2vUlP1p58WD6++BlJ
+         GoyA==
+X-Gm-Message-State: AOAM531HbMlexx/GfICAXpYS8Qm6kilVY/B50c9BbNKrirK6CBtT3Smk
+        LLbB1FzQk/d9Fmak0mg4XX8b6zup
+X-Google-Smtp-Source: ABdhPJx9n+YYPoA+IFZWZzJi9Q1DJOAFMhM1vDNf/3aFlfRfJFwXe4YyqYn6Dj5tB+euvIUlBWEWbg==
+X-Received: by 2002:a37:62cc:: with SMTP id w195mr17181202qkb.33.1596466729491;
+        Mon, 03 Aug 2020 07:58:49 -0700 (PDT)
+Received: from ?IPv6:2601:284:8202:10b0:989f:23de:f9a0:6da? ([2601:284:8202:10b0:989f:23de:f9a0:6da])
+        by smtp.googlemail.com with ESMTPSA id a6sm20368104qka.5.2020.08.03.07.58.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Aug 2020 07:58:48 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] ip-xfrm: add support for oseq-may-wrap
+ extra flag
+To:     =?UTF-8?Q?Petr_Van=c4=9bk?= <pv@excello.cz>, netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@kernel.org>
+References: <20200731071259.GA3192@atlantis>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b02dc24a-beb6-f333-7bdf-2339a3a58bb1@gmail.com>
+Date:   Mon, 3 Aug 2020 08:58:47 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200801194846.dxmvg5fmg67nuhwy@ast-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20200731071259.GA3192@atlantis>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25892/Sun Aug  2 17:01:36 2020)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/1/20 9:48 PM, Alexei Starovoitov wrote:
-> On Fri, Jul 31, 2020 at 02:07:42AM +0200, Daniel Borkmann wrote:
->> On 7/30/20 6:13 PM, Christian Brauner wrote:
->>> On Thu, Jul 30, 2020 at 06:09:00PM +0200, Christoph Hellwig wrote:
->>>> __bpfilter_process_sockopt never initialized the pos variable passed to
->>>> the pipe write.  This has been mostly harmless in the past as pipes
->>>> ignore the offset, but the switch to kernel_write no verified the
->>>
->>> s/no/now/
->>>
->>>> position, which can lead to a failure depending on the exact stack
->>>> initialization patter.  Initialize the variable to zero to make
->>>
->>> s/patter/pattern/
->>>
->>>> rw_verify_area happy.
->>>>
->>>> Fixes: 6955a76fbcd5 ("bpfilter: switch to kernel_write")
->>>> Reported-by: Christian Brauner <christian.brauner@ubuntu.com>
->>>> Reported-by: Rodrigo Madera <rodrigo.madera@gmail.com>
->>>> Signed-off-by: Christoph Hellwig <hch@lst.de>
->>>> Tested-by: Rodrigo Madera <rodrigo.madera@gmail.com>
->>>> ---
->>>
->>> Thanks for tracking this down, Christoph! This fixes the logging issue
->>> for me.
->>> Tested-by: Christian Brauner <christian.brauner@ubuntu.com>
->>> Reviewed-by: Christian Brauner <christian.brauner@ubuntu.com>
->>
->> Applied to bpf & fixed up the typos in the commit msg, thanks everyone!
+On 7/31/20 1:12 AM, Petr Vaněk wrote:
+> This flag allows to create SA where sequence number can cycle in
+> outbound packets if set.
 > 
-> Daniel,
-> why is it necessary in bpf tree?
+> Signed-off-by: Petr Vaněk <pv@excello.cz>
+> ---
+>  include/uapi/linux/xfrm.h | 1 +
+>  ip/ipxfrm.c               | 3 +++
+>  ip/xfrm_state.c           | 4 +++-
+>  man/man8/ip-xfrm.8        | 2 +-
+>  4 files changed, 8 insertions(+), 2 deletions(-)
 > 
-> I fixed it already in bpf-next in commit a4fa458950b4 ("bpfilter: Initialize pos variable")
-> two weeks ago...
 
-Several folks reported that with v5.8-rc kernels their console is spammed with
-'bpfilter: write fail' messages [0]. Given this affected the 5.8 release and
-the fix was a one-line change, it felt appropriate to route it there. Why was
-a4fa458950b4 not pushed into bpf tree given it was affected there too? Either
-way, we can undo the double pos assignment upon tree sync..
+applied to iproute2-next
 
-   [0] https://lore.kernel.org/lkml/20200727104636.nuz3u4xb7ba7ue5a@wittgenstein/
