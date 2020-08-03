@@ -2,85 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A89223AE3F
+	by mail.lfdr.de (Postfix) with ESMTP id F353523AE40
 	for <lists+netdev@lfdr.de>; Mon,  3 Aug 2020 22:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728480AbgHCUgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 16:36:53 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:38678 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728005AbgHCUgx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 16:36:53 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.60])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 2408460072;
-        Mon,  3 Aug 2020 20:36:53 +0000 (UTC)
-Received: from us4-mdac16-45.ut7.mdlocal (unknown [10.7.64.27])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 221B22009A;
-        Mon,  3 Aug 2020 20:36:53 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.37])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id B41D71C0059;
-        Mon,  3 Aug 2020 20:36:52 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 6A2A3B4005B;
-        Mon,  3 Aug 2020 20:36:52 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 3 Aug 2020
- 21:36:47 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH v3 net-next 07/11] sfc_ef100: plumb in fini_dmaq
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-References: <12f836c8-bdd8-a930-a79e-da4227e808d4@solarflare.com>
-Message-ID: <e4d4151a-c19c-f6bd-e3cc-451cbb006553@solarflare.com>
-Date:   Mon, 3 Aug 2020 21:36:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1729003AbgHCUg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 16:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33350 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728005AbgHCUg4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 16:36:56 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1AE1C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 13:36:56 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id q128so4090266qkd.2
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 13:36:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+ECIdSivTniC6/GqAYDee/eqfFoiQyRhRAKJ+QSM+W8=;
+        b=kTw28SAqjHAfQP4MZxFMddU47/o9jHAnovFWScZLAc1S8L2ptis+HtPNLXOQgaeJ+q
+         Iyil++z95kXTCw0flr5XyLFxrayJvT3TIt/F65PjDSF++pNu1oEyE3Rjpy6lClk5mxUD
+         R+4xvc1HC0CkDUL1g3ZbQbrdjlIxtgz7ei5jBmHMlQSGV4pbZA3k2BxiWPQWmUzSfiHL
+         dNOApeheLdKqdYQ146w1r2MYrgrCm0SmUALtjHsW1CH3NTnVdip6pbvrI7bCaaPl0c3j
+         FPcVvvKKra7uO8PpcEc6fMeqZhFzvTI3am115CIcDUY3bPUOqWMa+MEUIGu5yO3L0qdL
+         05gQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+ECIdSivTniC6/GqAYDee/eqfFoiQyRhRAKJ+QSM+W8=;
+        b=ONujtUQ1C28CN2ZTSb4TE+OdDh4KdEr83iQc9kZPTySHQG/fJZDAEA6SPtWhyErtAt
+         jM0A9P9XdUrsa0XNup4pZNEBNgfvYFfDozQtoWT6KdMNzgt4jyW/f3KwnSNtY/X/IXfc
+         EHAqIHA6riZqrccBkqCcJCblw7jJ2bMpC2Pc7Ykk7P83/v5iys4Do6qIktVnlDpjFe8+
+         os/iU8qjItXsUdJYQKmRrLp53wQ96zrvjbUthzZPHktDmZAsxCA6Oh5CfJ6HPVAGMxMg
+         bhe67RmUtglDSqv/aMRKj0nnCMAgpqUZ/sET2c59eqLj5fnr04YTS4akqfmorUZXfixi
+         NMCA==
+X-Gm-Message-State: AOAM5328i7UUdnYiVplllxRsbyWrgl5lVkouHJi+Sdl5MbA/oM3v6lGA
+        af7vixItB7nFbRw3JdEh7pE=
+X-Google-Smtp-Source: ABdhPJyYO6OvdHqyFGUAl9khQMF5TNU+RgV1hBr+266PbMDJ5V4O71BaMLpTqYuOqc7iyWq4weL4rA==
+X-Received: by 2002:a37:613:: with SMTP id 19mr17246137qkg.220.1596487015717;
+        Mon, 03 Aug 2020 13:36:55 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id x12sm25188687qta.67.2020.08.03.13.36.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Aug 2020 13:36:55 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/5] net: dsa: loop: Preparatory changes for
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20200803200354.45062-1-f.fainelli@gmail.com>
+ <20200803203357.GE1919070@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <8d8ab871-1d0e-4f6d-70d0-0d8d6dc9d4d2@gmail.com>
+Date:   Mon, 3 Aug 2020 13:36:53 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <12f836c8-bdd8-a930-a79e-da4227e808d4@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
+In-Reply-To: <20200803203357.GE1919070@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25582.002
-X-TM-AS-Result: No-1.026700-8.000000-10
-X-TMASE-MatchedRID: K3RCjmPu4DbcQUtYchmLP2XaK3KHx/xpeouvej40T4gd0WOKRkwsh3lo
-        OvA4aBJJrdoLblq9S5ruFC9g00HQc3FnJN0+hJldx5sgyUhLCNswA8NfeYPFBi2QO02vY1BNo8W
-        MkQWv6iUD0yuKrQIMCCAtDqHg/4Qm0C1sQRfQzEHEQdG7H66TyJ8TMnmE+d0ZNcsyxcdDlXNTX/
-        qgGxvQImUkdz9qc70etr5eSN+REiwJXR5sbLyHrqr+3uDgj71vBzJJEo9UaGjvkzxgsoCJrgEqM
-        xDEb589GhBWFwMpQfUlEjOZsGnBpCAkKbrKkYtno6XmhFfKEUTDyDYcE1wXmQ==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10-1.026700-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25582.002
-X-MDID: 1596487013-xjDE4nKq3Lhx
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bring down the TX and RX queues at ifdown, so that we can then fini the
- EVQs (otherwise the MC would return EBUSY because they're still in use).
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/ef100_nic.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-index bb753856d88f..1953e16b2b96 100644
---- a/drivers/net/ethernet/sfc/ef100_nic.c
-+++ b/drivers/net/ethernet/sfc/ef100_nic.c
-@@ -528,6 +528,7 @@ const struct efx_nic_type ef100_pf_nic_type = {
- 	.rx_remove = efx_mcdi_rx_remove,
- 	.rx_write = ef100_rx_write,
- 	.rx_packet = __ef100_rx_packet,
-+	.fini_dmaq = efx_fini_dmaq,
- 	.max_rx_ip_filters = EFX_MCDI_FILTER_TBL_ROWS,
- 	.filter_table_probe = ef100_filter_table_up,
- 	.filter_table_restore = efx_mcdi_filter_table_restore,
+On 8/3/2020 1:33 PM, Andrew Lunn wrote:
+> On Mon, Aug 03, 2020 at 01:03:49PM -0700, Florian Fainelli wrote:
+>> Hi David,
+>>
+>> These patches are all meant to help pave the way for a 802.1Q data path
+>> added to the mockup driver, making it more useful than just testing for
+>> configuration.
+> 
+> Could you give some more details. I assume the tag driver is going be
+> to more active. At least, that would make sense with the data
+> structure moves.
 
+Still working on a 802.1Q data path that allows to carry VLAN tags from
+the DSA CPU interface (guest side) to a tap (host side) and from there
+you can ping, bridge etc. devices. I am having some problems with the
+responses sent back to the guest which are incorrectly tagged on ingress.
+
+You can see the WIP here:
+https://github.com/ffainelli/linux/commits/dsa-loop-8021q
+-- 
+Florian
