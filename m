@@ -2,108 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBDC023BF8F
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 21:03:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 488EE23BF97
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 21:10:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726774AbgHDTDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 15:03:41 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:60230 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725971AbgHDTDk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 15:03:40 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 074J3bJV079864;
-        Tue, 4 Aug 2020 14:03:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1596567817;
-        bh=yWgCW5KbK2eJHRxDOk+Qm7j4TT2dgASbjS77VQEojpk=;
-        h=Subject:From:To:CC:References:Date:In-Reply-To;
-        b=GDSpGctHznoIJLJ8AtCS193cBxCNteA2yXvdvHGW7InExC5bf9aaOi6GP3w42CYxg
-         YHlOsFGfGCgCYYZqhQqhyY33B5pzDxkNWik/GHCa5ocXLALXTWy4T4OWpdrwGY6vIe
-         bW3j91jJrTxtSND+87VDi7flAFQOhISAkLqxakiw=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 074J3bhs114451
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 4 Aug 2020 14:03:37 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 4 Aug
- 2020 14:03:36 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 4 Aug 2020 14:03:36 -0500
-Received: from [10.250.53.226] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 074J3a0G043881;
-        Tue, 4 Aug 2020 14:03:36 -0500
-Subject: Re: [net-next v5 PATCH 0/7] Add PRP driver
-From:   Murali Karicheri <m-karicheri2@ti.com>
-To:     David Miller <davem@davemloft.net>
-CC:     <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-api@vger.kernel.org>,
-        <nsekhar@ti.com>, <grygorii.strashko@ti.com>,
-        <vinicius.gomes@intel.com>
-References: <20200722144022.15746-1-m-karicheri2@ti.com>
- <20200727.122120.336438917999066726.davem@davemloft.net>
- <fb10c323-d5c2-93d6-9784-51ff632fb3ff@ti.com>
-Message-ID: <15ee164a-5b00-c834-0532-545ac1407989@ti.com>
-Date:   Tue, 4 Aug 2020 15:03:36 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726942AbgHDTKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 15:10:08 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:45947 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726011AbgHDTKI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 15:10:08 -0400
+Received: by mail-il1-f198.google.com with SMTP id 65so9839347ilb.12
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 12:10:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=8DGWtpZeXz6g3gc4QGhBE15iscZLRy4QscvcEIUaaf0=;
+        b=nS15CgmRMD5vcwp3z9CAEUTl/IexmhBV8ie95xltwMBSIFt6Vhlwz2glA7LY3Cb07K
+         TBS98RlV+lMkMY2i6xLw6kZFndTZTUPUlpY1EueV1wwIUHG+UJmihen1QrYW4GDsXNrx
+         N7dIHAc3jamcIfv6100M2Sav3mL59caK7CDvdd14TjzpgICG4x3rDbwWeilb8Kmw2SmL
+         2N6dSpDUkwFlmmCz5KxuZHid4q7CyAwy8YJz0uwnB6JdIoOPvkhRyGIw7lzaSPmbnx/E
+         JN/A2cdk2ySfdhChJ4bcM3FC7ovE6W3DvI8RPjctDXc5T3RKYBNDctKmUEUknxTKL0e+
+         GLSg==
+X-Gm-Message-State: AOAM532dm14A+0dPQc9vKQV3GxnVc8E0Yk6QgWb9fpOa7FCV55pETltJ
+        gxaEDEXvHi+60BTJeuTNDtKPrDCFQy3ZXTTNvOG4vlcGYM3T
+X-Google-Smtp-Source: ABdhPJzIGgmU9Wneouek0XdGIUbP14uLYINaBLupAaVxNQzLpFgOJpeyfs/OdYUytzp5So9OVrIgzT55MOsTBG1WFe6X7kkZah6p
 MIME-Version: 1.0
-In-Reply-To: <fb10c323-d5c2-93d6-9784-51ff632fb3ff@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Received: by 2002:a6b:700d:: with SMTP id l13mr6590268ioc.135.1596568207215;
+ Tue, 04 Aug 2020 12:10:07 -0700 (PDT)
+Date:   Tue, 04 Aug 2020 12:10:07 -0700
+In-Reply-To: <00000000000055881a05ac0f0122@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d9d1aa05ac12001b@google.com>
+Subject: Re: WARNING: suspicious RCU usage in ovs_flow_tbl_destroy
+From:   syzbot <syzbot+c0eb9e7cdde04e4eb4be@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dev@openvswitch.org, echaudro@redhat.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, pshelar@ovn.org,
+        syzkaller-bugs@googlegroups.com, xiangxia.m.yue@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+syzbot has bisected this issue to:
 
-On 7/30/20 9:41 AM, Murali Karicheri wrote:
-> Hi Dave,
-> 
-> On 7/27/20 3:21 PM, David Miller wrote:
->> From: Murali Karicheri <m-karicheri2@ti.com>
->> Date: Wed, 22 Jul 2020 10:40:15 -0400
->>
->>> This series is dependent on the following patches sent out to
->>> netdev list. All (1-3) are already merged to net/master as of
->>> sending this, but not on the net-next master branch. So need
->>> to apply them to net-next before applying this series. v3 of
->>> the iproute2 patches can be merged to work with this series
->>> as there are no updates since then.
->>>
->>> [1] https://marc.info/?l=linux-netdev&m=159526378131542&w=2
->>> [2] https://marc.info/?l=linux-netdev&m=159499772225350&w=2
->>> [3] https://marc.info/?l=linux-netdev&m=159499772425352&w=2
->>>
->>> This series adds support for Parallel Redundancy Protocol (PRP)
->>> in the Linux HSR driver as defined in IEC-62439-3. PRP Uses a
->>> Redundancy Control Trailer (RCT) the format of which is
->>> similar to HSR Tag. This is used for implementing redundancy.
->>   ...
->>
->> Series applied to net-next, thank you.
->>
-> Thanks for applying this series. Just wondering who will
-> pick up the v3 of the iproute2 patch I have posted to go
-> with this.
->May I know who will merge the below series to go with this
-PRP kernel series?
+commit 9bf24f594c6acf676fb8c229f152c21bfb915ddb
+Author: Eelco Chaudron <echaudro@redhat.com>
+Date:   Fri Jul 31 12:21:34 2020 +0000
 
-Thanks
+    net: openvswitch: make masks cache size configurable
 
-Murali
-> https://marc.info/?l=linux-netdev&m=159499933326135&w=2
-> 
-> I will reply to that thread as well.
-> 
-> Thanks
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17461dea900000
+start commit:   2f631133 net: Pass NULL to skb_network_protocol() when we ..
+git tree:       net-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=14c61dea900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10c61dea900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=91a13b78c7dc258d
+dashboard link: https://syzkaller.appspot.com/bug?extid=c0eb9e7cdde04e4eb4be
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=172cd3d4900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11fbd342900000
 
--- 
-Murali Karicheri
-Texas Instruments
+Reported-by: syzbot+c0eb9e7cdde04e4eb4be@syzkaller.appspotmail.com
+Fixes: 9bf24f594c6a ("net: openvswitch: make masks cache size configurable")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
