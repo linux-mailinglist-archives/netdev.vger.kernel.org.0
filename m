@@ -2,149 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03B3323B889
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 12:15:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E056123B8A4
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 12:18:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726432AbgHDKPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 06:15:02 -0400
-Received: from mx2.suse.de ([195.135.220.15]:47576 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725840AbgHDKPC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Aug 2020 06:15:02 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id F2F1CB595;
-        Tue,  4 Aug 2020 10:15:15 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id E8FD06030D; Tue,  4 Aug 2020 12:14:56 +0200 (CEST)
-Date:   Tue, 4 Aug 2020 12:14:56 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Adrian Pop <popadrian1996@gmail.com>
-Cc:     netdev@vger.kernel.org, linville@tuxdriver.com,
-        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        vadimp@mellanox.com, mlxsw@mellanox.com, idosch@mellanox.com,
-        andrew@lunn.ch
-Subject: Re: [PATCH] ethtool: Add QSFP-DD support
-Message-ID: <20200804101456.4cfv4agv6etufi7a@lion.mk-sys.cz>
-References: <20200731084725.7804-1-popadrian1996@gmail.com>
+        id S1728726AbgHDKSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 06:18:17 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:44459 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728734AbgHDKSP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 06:18:15 -0400
+Received: from mail-pj1-f71.google.com ([209.85.216.71])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <po-hsu.lin@canonical.com>)
+        id 1k2u1N-0006ZW-BW
+        for netdev@vger.kernel.org; Tue, 04 Aug 2020 10:18:13 +0000
+Received: by mail-pj1-f71.google.com with SMTP id ck13so1874834pjb.6
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 03:18:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lztI+52PEieuECGw0yo1p950jYaSkaNvNIxQ6AqqJrE=;
+        b=KKEfMnBgYhmVS7ioDRo0YHniH9S7nDl0naVEj2TaKBx2G/7irQEuIAVIBBYnctR2xm
+         YlGYGrploB1QFWtnK2NjkeUoZFNsWRBnfB0qbPL3qzzFUlsW/PD1SOHjcEGm3ww27O/a
+         lDnTDjHYQouh/XcW21SNKU8p3LYcNyKHcWV6v4nhzfhBwSk1K4H8UqwBfcUnqUT7kI/a
+         qg7efUrdXTvTUTaUhRXzO1rI5tO2nR1bbmATsL0k6HIzqk4twoKDgEf2J+ilur5l3Aqa
+         hvd6zUkw2zmFFe4wHPlY9lWBN15RminmRyNTP++74LUEYKZeh8WORdYxSbJPNX5zLbAR
+         TjRQ==
+X-Gm-Message-State: AOAM532NCuOBBO20hsabEUkgWR7gy40fkX9jSkJM4R3871cU2GgFzy5Y
+        QhtlCgNK75vdgkmeBSrXxvEVzptd+6U4JRy7q48/kMpI+DJ81kehJvAdRQnmB8SFHdtL8YyQkBF
+        n9OgA/0GAM3jZQkXMGwjz1ZHii9MKDfE6
+X-Received: by 2002:a63:fe0a:: with SMTP id p10mr18203115pgh.255.1596536292071;
+        Tue, 04 Aug 2020 03:18:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzIHL8sYbPiRAjs0p3Qdwl8e3TgS6Y0hi0jCRXOqp6aBTdO0DvtzFLybPtMSrdBKmAqvym13g==
+X-Received: by 2002:a63:fe0a:: with SMTP id p10mr18203102pgh.255.1596536291745;
+        Tue, 04 Aug 2020 03:18:11 -0700 (PDT)
+Received: from localhost.localdomain (111-71-32-223.emome-ip.hinet.net. [111.71.32.223])
+        by smtp.gmail.com with ESMTPSA id g15sm15578674pfh.70.2020.08.04.03.18.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Aug 2020 03:18:10 -0700 (PDT)
+From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
+To:     davem@davemloft.net, kuba@kernel.org, skhan@linuxfoundation.org
+Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] selftests: rtnetlink: Fix for false-negative return values
+Date:   Tue,  4 Aug 2020 18:18:01 +0800
+Message-Id: <20200804101803.23062-1-po-hsu.lin@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="t4v45t7gagw3pqcr"
-Content-Disposition: inline
-In-Reply-To: <20200731084725.7804-1-popadrian1996@gmail.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patchset will address the false-negative return value issue
+caused by the following:
+  1. The return value "ret" in this script will be reset to 0 from
+     the beginning of each sub-test in rtnetlink.sh, therefore this
+     rtnetlink test will always pass if the last sub-test has passed.
+  2. The test result from two sub-tests in kci_test_encap() were not
+     being processed, thus they will not affect the final test result
+     of this test.
 
---t4v45t7gagw3pqcr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 31, 2020 at 11:47:25AM +0300, Adrian Pop wrote:
-> The Common Management Interface Specification (CMIS) for QSFP-DD shares
-> some similarities with other form factors such as QSFP or SFP, but due to
-> the fact that the module memory map is different, the current ethtool
-> version is not able to provide relevant information about an interface.
->=20
-> This patch adds QSFP-DD support to ethtool. The changes are similar to
-> the ones already existing in qsfp.c, but customized to use the memory
-> addresses and logic as defined in the specifications document.
->=20
-> Page 0x00 (lower and higher memory) are always implemented, so the ethtool
-> expects at least 256 bytes if the identifier matches the one for QSFP-DD.
-> For optical connected cables, additional pages are usually available (the
-> contain module defined  thresholds or lane diagnostic information). In
-> this case, ethtool expects to receive 768 bytes in the following format:
->=20
->     +----------+----------+----------+----------+----------+----------+
->     |   Page   |   Page   |   Page   |   Page   |   Page   |   Page   |
->     |   0x00   |   0x00   |   0x01   |   0x02   |   0x10   |   0x11   |
->     |  (lower) | (higher) | (higher) | (higher) | (higher) | (higher) |
->     |   128B   |   128B   |   128B   |   128B   |   128B   |   128B   |
->     +----------+----------+----------+----------+----------+----------
->=20
-> Several functions from qsfp.c could be reused, so an additional parameter
-> was added to each and the functions were moved to sff-common.c.
->=20
-> Signed-off-by: Adrian Pop <popadrian1996@gmail.com>
-> Tested-by: Ido Schimmel <idosch@mellanox.com>
+Po-Hsu Lin (2):
+  selftests: rtnetlink: correct the final return value for the test
+  selftests: rtnetlink: make kci_test_encap() return sub-test result
 
-AFAICS the kernel counterpart is going to reach mainline in 5.9-rc1
-merge window. Please base your patch on "next" branch or wait until next
-is merged into master after 5.8 release (which should be later today or
-tomorrow).
+ tools/testing/selftests/net/rtnetlink.sh | 68 +++++++++++++++++++++-----------
+ 1 file changed, 46 insertions(+), 22 deletions(-)
 
-> ---
->  Makefile.am  |   7 +-
->  qsfp-dd.c    | 561 +++++++++++++++++++++++++++++++++++++++++++++++++++
->  qsfp-dd.h    | 236 ++++++++++++++++++++++
->  qsfp.c       |  60 ++----
->  qsfp.h       |   8 -
->  sff-common.c |  52 +++++
->  sff-common.h |  26 ++-
->  7 files changed, 894 insertions(+), 56 deletions(-)
->  create mode 100644 qsfp-dd.c
->  create mode 100644 qsfp-dd.h
->=20
-> diff --git a/Makefile.am b/Makefile.am
-> index 2abb274..9fd8024 100644
-> --- a/Makefile.am
-> +++ b/Makefile.am
-> @@ -17,7 +17,8 @@ ethtool_SOURCES +=3D \
->  		  smsc911x.c at76c50x-usb.c sfc.c stmmac.c	\
->  		  sff-common.c sff-common.h sfpid.c sfpdiag.c	\
->  		  ixgbevf.c tse.c vmxnet3.c qsfp.c qsfp.h fjes.c lan78xx.c \
-> -		  igc.c
-> +		  igc.c \
-> +		  qsfp-dd.c qsfp-dd.h
+-- 
+2.7.4
 
-There is no need to start a new line.
-
->  endif
-> =20
->  if ENABLE_BASH_COMPLETION
-> @@ -47,12 +48,12 @@ endif
-> =20
->  TESTS =3D test-cmdline
->  check_PROGRAMS =3D test-cmdline
-> -test_cmdline_SOURCES =3D test-cmdline.c test-common.c $(ethtool_SOURCES)=
-=20
-> +test_cmdline_SOURCES =3D test-cmdline.c test-common.c $(ethtool_SOURCES)
->  test_cmdline_CFLAGS =3D -DTEST_ETHTOOL
->  if !ETHTOOL_ENABLE_NETLINK
->  TESTS +=3D test-features
->  check_PROGRAMS +=3D test-features
-> -test_features_SOURCES =3D test-features.c test-common.c $(ethtool_SOURCE=
-S)=20
-> +test_features_SOURCES =3D test-features.c test-common.c $(ethtool_SOURCE=
-S)
->  test_features_CFLAGS =3D -DTEST_ETHTOOL
->  endif
-> =20
-
-Do not mix unrelated changes like whitespace cleanups with your
-functional changes, it makes it harder to see what the patch is doing.
-Please split the cleanups (there are some more in qsfp.c) into
-a separate patch.
-
-Michal
-
---t4v45t7gagw3pqcr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8pNRsACgkQ538sG/LR
-dpW2GggA0m482JqxL0C2OK2aZHNLWoKzw6Kx7uWgl39Oqzusp3hX/aKZ6LG6PcN2
-01f74kfTn5iYHCmwgtC0fvIQlk/06TOqQieGgXpgb9OMz9AOCuQa02zCQRAL4Bmk
-Hxme9ayESK1rDYinBsXr5UXmBHolLUI1wCHmP0O1XC9QArXaZiKcgp2brtbMfRS2
-NWnNg0qXtm084CsaO8RK9eoYfrD50HJAyqzoorIJWlo1h/qEPytym2IslRWljzPJ
-nC+fz4x0mLsJpVDIPrqlHjbDU40gA78PMyBvUnhAL0MZK/REnPKekODrObLlBUJY
-GSjRGhOdKbgegodN7G2IE2Wm4FZMQw==
-=2ZqQ
------END PGP SIGNATURE-----
-
---t4v45t7gagw3pqcr--
