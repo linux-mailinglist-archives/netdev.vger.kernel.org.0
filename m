@@ -2,108 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0E1923BCBA
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 16:54:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D309523BD3D
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 17:35:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729289AbgHDOyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 10:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726556AbgHDOyd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 10:54:33 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA27C06174A
-        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 07:54:32 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id t18so34457340ilh.2
-        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 07:54:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eI0IoQb54jlb8XjmEDGDSiEuiWMJ5pMoAs41fh5JaPw=;
-        b=DFRtFnmU/34jUD7akRp+y3drCyJs7N3Dfx9+fZj92VhjuVVW9dKttBaJ5DIqDdGeMe
-         K4QCMwRWCb6Tq9he18kK2OhMA1nzhQ8Hisy7lliRLDL9k3VPQfaQCkHcNR4Q9IlZK6si
-         NCTFG3dIbi6WJ32tnld+o7uSXi4ZJQjN5ol4lTNSeudi60xh9gtKkZGMjUpp3B/XdTrM
-         j3lyzs8vb9pFRSuXpeh9xH2ZNi8Dd6jRPvdKr/iK+FC6rnJfMrSWcKxLwImgDXaTHx5R
-         N+E7FaYSxk+iBNS/B3akjAdx8WXxAHOQCEsJJyr/GjuxuSMDFaGTP+VjYOqRMQPUSuDC
-         5gJg==
+        id S1729664AbgHDPfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 11:35:32 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:39417 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729197AbgHDPfc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 11:35:32 -0400
+Received: by mail-io1-f70.google.com with SMTP id v10so285549iot.6
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 08:35:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eI0IoQb54jlb8XjmEDGDSiEuiWMJ5pMoAs41fh5JaPw=;
-        b=B+Oy0Br4GIWnhDdveYKLGPhcB4MGj24jQApAgEX55N6vJ1bzu8ZY1fT8/ZG77nCDBt
-         6O7JCKskxGZTtQxdn7fbvKNro1FJLcF6XfpTFhAM1iX/7iOCtHuwJYFtN/MNRpRd4n2L
-         INkai04f2tbarDzu6gnin+NUQwaWCv2Q2a3daorKWOSshHHhX+5KEGKZSpgqHeYEF06M
-         mRVn1Zs6JnmMY0629BmsCfcWxxzGEkoGAEtNlUQ1MJ5/NPXGkDHlDJP/PdENQFTtnyOr
-         XsylqEpHEqvy9gNy+07DejOVYLnZKT8kMck0gTp8kjySIi/XCHSkRvfv836Mcj0qYJ+Y
-         SsyA==
-X-Gm-Message-State: AOAM5300gEdFX8ORIDjXZ4wX4KFkTjt/4H56tdDeNYkW5ek6ZeoJOl8m
-        GVP8sO7fkYM/cUC8eE3kIPIoxWFfNtlOBoGbbkVemw==
-X-Google-Smtp-Source: ABdhPJxk2vpbp9XouEsBNthzGfdCmrngvI0/0uavkqDvYVC+rJlKVMz7Yy40hn/9grK8durcqEZQu3vxYdRqtWe0xXU=
-X-Received: by 2002:a05:6e02:88:: with SMTP id l8mr5277525ilm.69.1596552869874;
- Tue, 04 Aug 2020 07:54:29 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=0mPnjUUuN3ds2LVQMSGunGLdZdt70gHEdjnpz4HRJfM=;
+        b=YVoAS2kptsQtVGdPJoxANDS4n0h0uhBCklr/eywn8S/ybkos32lV9nBRcPsgt9nK4d
+         NiFGs5tYwOq3Moa7zAfiYqM97z6fV7jXy8BfC7ChNngBKGkVQWLgvpBi5nVEjOq2EfHE
+         V3xkH5JaBnGWbQ4mJFgVi801UUZmSZaS1Yj0PuqWtQBI+QFKQ0YHaNAFre6sj6jJ82fx
+         l0Mc3rJ28ShdV8mbQgTDlT47T+Jp8hXsPZeFuy0YSHLCxwmrGo/lYvzoEsqXl7STSHNG
+         Gu7r+YluIhsocitb0+lyQBLY5q0T2CIhAoXzrjkqdGDwW7jHdHoLCMNbgJVxrp1hxKtR
+         gWwA==
+X-Gm-Message-State: AOAM530ivgu1V+89g8w+StHMJi7Nllzmo+wB09ECa8R4HbXBRTJYy0eW
+        0h+C1Sgl4MbcRsq4FcZ4pKb+s8bvVeA4HVjdo1IxMNfVu9sy
+X-Google-Smtp-Source: ABdhPJwthYKqwD7lg4/N0+Gzk2jLwwTK3ieOdfqC9/iF/tSjNJDptXV9jjCw8IhzYLb6AIAjH9QItWIS8Sdbd6VBN3n8wKDdLnva
 MIME-Version: 1.0
-References: <ad09e947263c44c48a1d2c01bcb4d90a@BK99MAIL02.bk.local>
- <c531bf92-dd7e-0e69-8307-4c4f37cb2d02@gmail.com> <f8465c4b8db649e0bb5463482f9be96e@BK99MAIL02.bk.local>
- <b5ad26fe-e6c3-e771-fb10-77eecae219f6@gmail.com> <020a80686edc48d5810e1dbf884ae497@BK99MAIL02.bk.local>
- <20200804142708.zjos3b6jvqjj7uas@skbuf>
-In-Reply-To: <20200804142708.zjos3b6jvqjj7uas@skbuf>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 4 Aug 2020 07:54:18 -0700
-Message-ID: <CANn89iKD1H9idd-TpHQ-KS7vYHnz+6VhymrgD2cuGAUHgp2Zpg@mail.gmail.com>
-Subject: Re: PROBLEM: (DSA/Microchip): 802.1Q-Header lost on KSZ9477-DSA
- ingress without bridge
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "Gaube, Marvin (THSE-TL1)" <Marvin.Gaube@tesat.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+X-Received: by 2002:a92:85d6:: with SMTP id f205mr5664062ilh.238.1596555330420;
+ Tue, 04 Aug 2020 08:35:30 -0700 (PDT)
+Date:   Tue, 04 Aug 2020 08:35:30 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000055881a05ac0f0122@google.com>
+Subject: WARNING: suspicious RCU usage in ovs_flow_tbl_destroy
+From:   syzbot <syzbot+c0eb9e7cdde04e4eb4be@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dev@openvswitch.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pshelar@ovn.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 4, 2020 at 7:27 AM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Tue, Aug 04, 2020 at 02:14:33PM +0000, Gaube, Marvin (THSE-TL1) wrote:
-> > Hello,
-> > I looked into it deeper, the driver does rxvlan offloading.
-> > By disabling it manually trough ethtool, the behavior becomes as
-> > expected.
-> >
-> > I've taken "net: dsa: sja1105: disable rxvlan offload for the DSA
-> > master" from
-> > (https://lore.kernel.org/netdev/20200512234921.25460-1-olteanv@gmail.com/)
-> > and also applied it to the KSZ9477-Driver, which fixes the problem.
-> > It's probably a workaround, but fixes the VLAN behavior for now. I
-> > would suggest also applying "ds->disable_master_rxvlan = true;" to
-> > KSZ9477 after the mentioned patch is merged.
-> >
-> > Best Regards
-> > Marvin Gaube
-> >
->
-> And I wanted to suggest that, but it seemed too freaky to be what's
-> going on.... But since ksz9477 uses a tail tag, it makes perfect sense.
->
-> My patch is in limbo because Eric, who started zeroing the skb offloaded
-> VLAN data in the first place, hasn't said anything.
+Hello,
 
-I said nothing because I was not aware you were expecting something
-special from me ;)
+syzbot found the following issue on:
 
-I receive hundreds of emails per day.
+HEAD commit:    2f631133 net: Pass NULL to skb_network_protocol() when we ..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=12daae2a900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=91a13b78c7dc258d
+dashboard link: https://syzkaller.appspot.com/bug?extid=c0eb9e7cdde04e4eb4be
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=172cd3d4900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11fbd342900000
 
-My 2013 commit was a bug fix, and hinted that in the future (eg in
-net-next tree) the stop-the-bleed could be refined.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c0eb9e7cdde04e4eb4be@syzkaller.appspotmail.com
 
-+               /* Note: we might in the future use prio bits
-+                * and set skb->priority like in vlan_do_receive()
-+                * For the time being, just ignore Priority Code Point
-+                */
-+               skb->vlan_tci = 0;
+netlink: 'syz-executor399': attribute type 2 has an invalid length.
+=============================
+WARNING: suspicious RCU usage
+5.8.0-rc7-syzkaller #0 Not tainted
+-----------------------------
+net/openvswitch/flow_table.c:521 suspicious rcu_dereference_check() usage!
 
-If you believe this can be done, this is great.
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+1 lock held by syz-executor399/6802:
+ #0: ffffffff8a8319b0 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40 net/netlink/genetlink.c:741
+
+stack backtrace:
+CPU: 0 PID: 6802 Comm: syz-executor399 Not tainted 5.8.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ ovs_flow_tbl_destroy+0x1d6/0x210 net/openvswitch/flow_table.c:521
+ ovs_dp_cmd_new+0x8ca/0xea0 net/openvswitch/datapath.c:1747
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:669 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:714 [inline]
+ genl_rcv_msg+0x61d/0x980 net/netlink/genetlink.c:731
+ netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:742
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:671
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2359
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2413
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2446
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x4402d9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffdfda722f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004402d9
+RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000003
+RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401ae0
+R13: 0000000000401b70 R14: 0000000000000000 R15: 0000000000000000
+
+=============================
+WARNING: suspicious RCU usage
+5.8.0-rc7-syzkaller #0 Not tainted
+-----------------------------
+net/openvswitch/flow_table.c:522 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+1 lock held by syz-executor399/6802:
+ #0: ffffffff8a8319b0 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40 net/netlink/genetlink.c:741
+
+stack backtrace:
+CPU: 0 PID: 6802 Comm: syz-executor399 Not tainted 5.8.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ ovs_flow_tbl_destroy+0x190/0x210 net/openvswitch/flow_table.c:522
+ ovs_dp_cmd_new+0x8ca/0xea0 net/openvswitch/datapath.c:1747
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:669 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:714 [inline]
+ genl_rcv_msg+0x61d/0x980 net/netlink/genetlink.c:731
+ netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:742
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:671
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2359
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2413
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2446
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x4402d9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffdfda722f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004402d9
+RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000003
+RBP: 00000000006ca018 R08: 0000000000000000 R09: 0000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
