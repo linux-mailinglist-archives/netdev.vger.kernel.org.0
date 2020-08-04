@@ -2,91 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8C6B23B1FE
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 02:58:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6AB823B201
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 03:00:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728287AbgHDA6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 20:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726398AbgHDA6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 20:58:04 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA40AC06174A;
-        Mon,  3 Aug 2020 17:58:03 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id t18so32801444ilh.2;
-        Mon, 03 Aug 2020 17:58:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=xuKB4Q6EgWPMUKasTGGb5FbRSxZkSLyN5EO934w53Zk=;
-        b=bgo0q+gJYjZVXoEln9y99JBVWhlncQBFrqrEPhVLx7Zg3jEtRU4dCcGEtx5+n6AbZs
-         9gI0CCX+AbvyVNSVEAqJN7WlWsrqkAC4g1Ywxp0WfwHwiK8iRJsfQFknh179keKXMByI
-         rwdEkyzvh7QqucILse5i9vLAY2SAwLcwQSH5wQjN+R/qgYeI7akOm00KpSAdmU904FMc
-         hNwbtqhrA7y2n+hX4Ufgbv/kIwT91F6k2vipHWW01MWj5efAoLrDQDKxUGIzR5dAxxCi
-         ZNz0KekIv/CIPgIqrDOrp4aKfMsxBqpJl5PQ3HCcyBtTdfddc01+mtJlq4d4k/IFSiiM
-         nEeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=xuKB4Q6EgWPMUKasTGGb5FbRSxZkSLyN5EO934w53Zk=;
-        b=LBWfbIFx1ys5rMs2DR9gP1pRYE3LoRoVHx9/ZZevGmFwmtWHqowbuQvRFuHAYLpTRP
-         4GkJCXKFyIjuk8Jn0yEx8BwHS5r2ofPvT3SgzFlEN9oBVFQNur8XqPdaukMnqZUDbPx+
-         a9+GpZx5OPXEM/JqSA6NR3Xtxn9CuXrhHnCY/n3AJu31c7qOAfafcRx7fR18F9HJ81Vq
-         lSL4uLfB42RzyKK65f+GkYCghodQucv/2yVeP+5pG1fum6F/P0BV/GoPPzxgcha8ituH
-         E7gOooV5g5H9nNJX5OZqEz0YpDAOGoc2bVb5UEfOrPRISiT7Pnd4oon5s2vOnqJoh6Dz
-         Xt4w==
-X-Gm-Message-State: AOAM5301qKxAoJKwidQaAPGRTIwGHmdgco0N7/JmLJH+uh3IcfA8uvF4
-        oIKASdpM2kxc5+pJe9W0qPMJQ+Fj+TU=
-X-Google-Smtp-Source: ABdhPJwXK/wNCWtx+vcfAqcg3vvBsqb4OJf87s3Oy7g5jWvLHKZM14o6KyoO+66JYVRcN0QueYNTrQ==
-X-Received: by 2002:a92:d4cf:: with SMTP id o15mr2307744ilm.25.1596502683382;
-        Mon, 03 Aug 2020 17:58:03 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id j13sm9066676ili.57.2020.08.03.17.58.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 17:58:02 -0700 (PDT)
-Date:   Mon, 03 Aug 2020 17:57:56 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>, kernel-team@fb.com,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Neal Cardwell <ncardwell@google.com>, netdev@vger.kernel.org,
-        Yuchung Cheng <ycheng@google.com>
-Message-ID: <5f28b29440d41_62272b02d7c945b48e@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200803231026.2682120-1-kafai@fb.com>
-References: <20200803231013.2681560-1-kafai@fb.com>
- <20200803231026.2682120-1-kafai@fb.com>
-Subject: RE: [RFC PATCH v4 bpf-next 02/12] tcp: bpf: Add TCP_BPF_DELACK_MAX
- setsockopt
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S1726877AbgHDA6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 20:58:55 -0400
+Received: from smtprelay0007.hostedemail.com ([216.40.44.7]:35118 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726276AbgHDA6z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 20:58:55 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 8E29C181D330D;
+        Tue,  4 Aug 2020 00:58:54 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1801:2393:2553:2559:2562:2828:2902:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3871:3872:3873:3874:4321:4605:5007:7576:7903:8603:10004:10400:10848:10967:11026:11232:11233:11473:11658:11914:12050:12296:12297:12740:12760:12895:13069:13161:13229:13311:13357:13439:14181:14347:14659:14721:21080:21451:21627:21939:30012:30046:30054:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: rat04_10160b926fa2
+X-Filterd-Recvd-Size: 2290
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf12.hostedemail.com (Postfix) with ESMTPA;
+        Tue,  4 Aug 2020 00:58:53 +0000 (UTC)
+Message-ID: <5f7a5ec560775f3c43fdbb6ac93f858d8b5e37f3.camel@perches.com>
+Subject: Re: [PATCH] via-velocity: Add missing KERN_<LEVEL> where needed
+From:   Joe Perches <joe@perches.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     romieu@fr.zoreil.com, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 03 Aug 2020 17:58:52 -0700
+In-Reply-To: <20200803.154248.2020214547846261577.davem@davemloft.net>
+References: <e45d15ad36a0c9a994b5a1136c72518215c99f7a.camel@perches.com>
+         <20200803.154248.2020214547846261577.davem@davemloft.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.3-0ubuntu1 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin KaFai Lau wrote:
-> This change is mostly from an internal patch and adapts it from sysctl
-> config to the bpf_setsockopt setup.
+On Mon, 2020-08-03 at 15:42 -0700, David Miller wrote:
+> From: Joe Perches <joe@perches.com>
+> Date: Sat, 01 Aug 2020 08:51:03 -0700
 > 
-> The bpf_prog can set the max delay ack by using
-> bpf_setsockopt(TCP_BPF_DELACK_MAX).  This max delay ack can be communicated
-> to its peer through bpf header option.  The receiving peer can then use
-> this max delay ack and set a potentially lower rto by using
-> bpf_setsockopt(TCP_BPF_RTO_MIN) which will be introduced
-> in the next patch.
+> > Link status is emitted on multiple lines as it does not use
+> > KERN_CONT.
+> > 
+> > Coalesce the multi-part logging into a single line output and
+> > add missing KERN_<LEVEL> to a couple logging calls.
+> > 
+> > This also reduces object size.
+> > 
+> > Signed-off-by: Joe Perches <joe@perches.com>
 > 
-> Another later selftest patch will also use it like the above to show
-> how to write and parse bpf tcp header option.
+> The real problem is the whole VELOCITY_PRT() private debug log
+> control business this driver is doing.
 > 
-> Reviewed-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> ---
+> It should be using the standard netdev logging level infrastructure.
+> 
+> > +                     VELOCITY_PRT(MSG_LEVEL_INFO, KERN_INFO "set Velocity to forced full mode\n");
+> 
+> You can't tell me that this "KERN_INFO blah blah blah" is really
+> something we should add more of these days, right?
+> 
+> If you're going to improve this driver's logging code please do
+> so by having it use the standard interfaces.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+The existing code is not great and definitely odd.
+
+This is just a bug fix until such time as it's better.
+
+VELOCITY_PRT is not just used for debugging.
+
+The default is output if MSG_LEVEL_INFO and
+there's a control for further output.
+
+This is just fixing Linus' change for KERN_CONT
+uses on separate lines from awhile ago.
+
+It'd be nice if a via maintainer actually fixed it.
+
+
