@@ -2,86 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22FCF23C06A
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 22:02:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44CB523C05F
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 22:02:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726810AbgHDUCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 16:02:53 -0400
-Received: from correo.us.es ([193.147.175.20]:49468 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726360AbgHDUCt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Aug 2020 16:02:49 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 19752DA7FC
-        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 22:02:47 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0ED1DDA722
-        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 22:02:47 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id F3C31DA8F6; Tue,  4 Aug 2020 22:02:46 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id CCEF1DA874;
-        Tue,  4 Aug 2020 22:02:44 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 04 Aug 2020 22:02:44 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (120.205.137.78.rev.vodafone.pt [78.137.205.120])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id ECBAB4265A32;
-        Tue,  4 Aug 2020 22:02:43 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 5/5] netfilter: flowtable: Set offload timeout when adding flow
-Date:   Tue,  4 Aug 2020 22:02:08 +0200
-Message-Id: <20200804200208.18620-6-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200804200208.18620-1-pablo@netfilter.org>
-References: <20200804200208.18620-1-pablo@netfilter.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726090AbgHDUCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 16:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52146 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725999AbgHDUCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 16:02:21 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527E4C06174A
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 13:02:21 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BCAE612880DE9;
+        Tue,  4 Aug 2020 12:45:34 -0700 (PDT)
+Date:   Tue, 04 Aug 2020 13:02:19 -0700 (PDT)
+Message-Id: <20200804.130219.1503615086211769091.davem@davemloft.net>
+To:     sbrivio@redhat.com
+Cc:     fw@strlen.de, dsahern@gmail.com, aconole@redhat.com,
+        nusiddiq@redhat.com, kuba@kernel.org, pshelar@ovn.org,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        lu@pplo.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 0/6] Support PMTU discovery with bridged
+ UDP tunnels
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <cover.1596520062.git.sbrivio@redhat.com>
+References: <cover.1596520062.git.sbrivio@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 04 Aug 2020 12:45:35 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@mellanox.com>
+From: Stefano Brivio <sbrivio@redhat.com>
+Date: Tue,  4 Aug 2020 07:53:41 +0200
 
-On heavily loaded systems the GC can take time to go over all existing
-conns and reset their timeout. At that time other calls like from
-nf_conntrack_in() can call of nf_ct_is_expired() and see the conn as
-expired. To fix this when we set the offload bit we should also reset
-the timeout instead of counting on GC to finish first iteration over
-all conns before the initial timeout.
+> Currently, PMTU discovery for UDP tunnels only works if packets are
+> routed to the encapsulating interfaces, not bridged.
+> 
+> This results from the fact that we generally don't have valid routes
+> to the senders we can use to relay ICMP and ICMPv6 errors, and makes
+> PMTU discovery completely non-functional for VXLAN and GENEVE ports of
+> both regular bridges and Open vSwitch instances.
+> 
+> If the sender is local, and packets are forwarded to the port by a
+> regular bridge, all it takes is to generate a corresponding route
+> exception on the encapsulating device. The bridge then finds the route
+> exception carrying the PMTU value estimate as it forwards frames, and
+> relays ICMP messages back to the socket of the local sender. Patch 1/6
+> fixes this case.
+> 
+> If the sender resides on another node, we actually need to reply to
+> IP and IPv6 packets ourselves and send these ICMP or ICMPv6 errors
+> back, using the same encapsulating device. Patch 2/6, based on an
+> original idea by Florian Westphal, adds the needed functionality,
+> while patches 3/6 and 4/6 add matching support for VXLAN and GENEVE.
+> 
+> Finally, 5/6 and 6/6 introduce selftests for all combinations of
+> inner and outer IP versions, covering both VXLAN and GENEVE, with
+> both regular bridges and Open vSwitch instances.
+> 
+> v2: Add helper to check for any bridge port, skip oif check for PMTU
+>     routes for bridge ports only, split IPv4 and IPv6 helpers and
+>     functions (all suggested by David Ahern)
 
-Fixes: 90964016e5d3 ("netfilter: nf_conntrack: add IPS_OFFLOAD status bit")
-Signed-off-by: Roi Dayan <roid@mellanox.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_flow_table_core.c | 2 ++
- 1 file changed, 2 insertions(+)
+Series applied with the extraneous newline in the selftest changes of
+patch #5 removed.
 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index b1eb5272b379..4f7a567c536e 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -243,6 +243,8 @@ int flow_offload_add(struct nf_flowtable *flow_table, struct flow_offload *flow)
- 		return err;
- 	}
- 
-+	nf_ct_offload_timeout(flow->ct);
-+
- 	if (nf_flowtable_hw_offload(flow_table)) {
- 		__set_bit(NF_FLOW_HW, &flow->flags);
- 		nf_flow_offload_add(flow_table, flow);
--- 
-2.20.1
-
+Thank you.
