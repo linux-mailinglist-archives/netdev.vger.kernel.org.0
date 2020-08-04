@@ -2,112 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEA3E23B7FA
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 11:43:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0982323B843
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 11:57:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726954AbgHDJnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 05:43:14 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:56981 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725832AbgHDJnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 05:43:14 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0BC6B5C0200;
-        Tue,  4 Aug 2020 05:43:13 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 04 Aug 2020 05:43:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm1; bh=cjBmqIM9+5mv2uiP07cYDoPaonT
-        iqBxD1XI04vEZs68=; b=nAtgpS7LWMG6/2CgXZn0XgBEo6SGNf+0Zmx5YLC5lL0
-        bOPCXbcOONVwb9ClrSXuAz3AeQ7R0tfCr5bpkVCfx1du1sPga3uoFh58mpwuoq3J
-        uH7Mss1O/rqWwulrZFXlfkemagThxzbJkm5W4klZRUQUZmlAPKSV/gIPvcWpRdMM
-        f9mVKNsdiopykUjx/QEBrpWhdF2VlIfNoiiFaFqO/BlxwNtL8uTTtKfI20CPGIun
-        Fys7cxmLZ4SbgHuQFDBoYYWK/tz6MW0qCJyeYOWdFNArEeKqy9hKaQua+3vJbCjr
-        VTfkVE5CuSRqzM55v9VxVRDxboR5wfvY2ULpsfOKuKA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=cjBmqI
-        M9+5mv2uiP07cYDoPaonTiqBxD1XI04vEZs68=; b=efU+VnGc/SEcIFLkan12oR
-        6ey8zxF5TlXEi9+e2D9/pdQECvxXRT04hGehE6xKVxJZRdusFuFNswe6JgqCgVO3
-        pN0RwNn2j1yggX3kMx1+BNiX0GKxo3qWTs6MFZD8iCxpXZbAWc3hSFyAKIWjU64N
-        8WPoX7HQzhevn2OuK4eNRTgQLLXXznnYeRpruwSDz8gTSSI0BJQA8P9MbIR/omWV
-        479PXZhxsYdjp5YYTmsVUX+6KZ1IQT9UKoYstHu8cT2alLr0XQ5Vz+IBiVgOiH9j
-        pqygEDDcz5Qx8v3VjtSwzdUpwcwgSPs1JvCN+MnRxxGwPkIFyeDr/tSjJsSdAHLg
-        ==
-X-ME-Sender: <xms:sC0pX5ce8V0YCMHf-IPaCTLG7jEve0j_XrdmaEX0Gs-S_cx03oT1yA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrjeeigddulecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenog
-    fuuhhsphgvtghtffhomhgrihhnucdlgeelmdenucfjughrpeffhffvuffkfhggtggujges
-    thdtredttddtvdenucfhrhhomhepifhrvghgucfmjfcuoehgrhgvgheskhhrohgrhhdrtg
-    homheqnecuggftrfgrthhtvghrnhepfeefteeuhfffleehvddtleejudekiedthfejjedt
-    tdetkefgledtvdejgfeuteefnecuffhomhgrihhnpegrphhpshhpohhtrdgtohhmnecukf
-    hppeekfedrkeeirdekledruddtjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgr
-    mhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
-X-ME-Proxy: <xmx:sC0pX3PMTw5qwCJgqnXtEGgRncmFEn821-QMPRsSO6leY07HjDQdLg>
-    <xmx:sC0pXyi3DfWtNMKPBN0-4DtyG9msFx-6ZXSCNtAfIPOC3vtGnHFabA>
-    <xmx:sC0pXy9YKHdOVX4EnfjJEN-15W-EIbc_Tmp3EvEvTvqGxcACPpid6A>
-    <xmx:sS0pX5hXT-Q3wCBEx5lmxkto-WSQAtmnHhrPn0T6Bui5Rn67LaSLsw>
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2741930600A3;
-        Tue,  4 Aug 2020 05:43:12 -0400 (EDT)
-Date:   Tue, 4 Aug 2020 11:42:53 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Coiby Xu <coiby.xu@gmail.com>
-Cc:     linux-bluetooth@vger.kernel.org,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        syzbot+fadfba6a911f6bf71842@syzkaller.appspotmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [Linux-kernel-mentees] [PATCH] Bluetooth: Initialize the TX
- queue lock when creating struct l2cap_chan in 6LOWPAN
-Message-ID: <20200804094253.GA2667430@kroah.com>
-References: <20200804093937.772961-1-coiby.xu@gmail.com>
+        id S1729375AbgHDJ5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 05:57:04 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:28686 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726844AbgHDJ5E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 05:57:04 -0400
+Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 0749uoPn000757;
+        Tue, 4 Aug 2020 02:56:51 -0700
+Date:   Tue, 4 Aug 2020 15:13:26 +0530
+From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ganji Aravind <ganji.aravind@chelsio.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, vishal@chelsio.com
+Subject: Re: [PATCH net-next] cxgb4: Add support to flash firmware config
+ image
+Message-ID: <20200804094321.GA32270@chelsio.com>
+References: <20200730151138.394115-1-ganji.aravind@chelsio.com>
+ <20200730162335.6a6aa4cf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200731110904.GA1571@chelsio.com>
+ <20200731110008.598a8ea7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200731211733.GA25665@chelsio.com>
+ <20200801212202.7e4f3be2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200802171221.GA29010@chelsio.com>
+ <20200803141304.79a7d05f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200804093937.772961-1-coiby.xu@gmail.com>
+In-Reply-To: <20200803141304.79a7d05f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 04, 2020 at 05:39:37PM +0800, Coiby Xu wrote:
-> When L2CAP channel is destroyed by hci_unregister_dev, it will
-> acquire the spin lock of the (struct l2cap_chan *)->tx_q list to
-> delete all the buffers. But sometimes when hci_unregister_dev is
-> being called, this lock may have not bee initialized. Initialize
-> the TX queue lock when creating struct l2cap_chan in 6LOWPAN to fix
-> this problem.
+On Monday, August 08/03/20, 2020 at 14:13:04 -0700, Jakub Kicinski wrote:
+> On Sun, 2 Aug 2020 22:42:28 +0530 Rahul Lakkireddy wrote:
+> > The config file contains very low-level firmware and device specific
+> > params and most of them are dependent on the type of Chelsio NIC.
+> > The params are mostly device dependent register-value pairs.
+> > We don't see users messing around with the params on their own
+> > without consultation. The users only need some mechanism to flash
+> > the custom config file shared by us on to their adapter. After
+> > device restart, the firmware will automatically pick up the flashed
+> > config file and redistribute the resources, as per their requested
+> > use-case.
+> > 
+> > We're already foreseeing very long awkward list (more than 50 params)
+> > for mapping the config file to devlink-dev params and are hoping this
+> > is fine. Here's a sample on how it would look.
+> > 
+> > hw_sge_reg_1008=0x40800
+> > hw_sge_reg_100c=0x22222222
+> > hw_sge_reg_10a0=0x01040810
+> > hw_tp_reg_7d04=0x00010000
+> > hw_tp_reg_7dc0=0x0e2f8849
+> > 
+> > and so on.
 > 
-> Reported-by: syzbot+fadfba6a911f6bf71842@syzkaller.appspotmail.com
-> Link: https://syzkaller.appspot.com/bug?extid=fadfba6a911f6bf71842
-> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
-> ---
->  net/bluetooth/6lowpan.c | 1 +
->  1 file changed, 1 insertion(+)
+> I have no details on what you're actually storing in the config, 
+> and I don't care what your format is.
 > 
-> diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
-> index bb55d92691b0..713c618a73df 100644
-> --- a/net/bluetooth/6lowpan.c
-> +++ b/net/bluetooth/6lowpan.c
-> @@ -651,6 +651,7 @@ static struct l2cap_chan *chan_create(void)
->  
->  	l2cap_chan_set_defaults(chan);
->  
-> +	skb_queue_head_init(&chan->tx_q);
->  	chan->chan_type = L2CAP_CHAN_CONN_ORIENTED;
->  	chan->mode = L2CAP_MODE_LE_FLOWCTL;
->  	chan->imtu = 1280;
+> If it's a configuration parameter - it needs a proper API.
+> 
+> If it's a low level board param or such - it doesn't need a separate
+> flashable partition and can come with the rest of FW.
+> 
+> I know the firmware flashing interface is a lovely, binary, opaque
+> interface which vendors love. We'll not entertain this kind of abuse.
+> 
+> Nacked-by: Jakub Kicinski <kuba@kernel.org>
 
-Nice, did syzbot verify that this resolves the issue?
+Sure, will drop the patch for now and revisit again, as part of
+devlink or better API.
 
-thanks,
-
-greg k-h
+Thanks,
+Rahul
