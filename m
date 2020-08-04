@@ -2,72 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 370BC23B49B
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 07:53:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2813823B49D
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 07:53:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729113AbgHDFxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 01:53:06 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:47045 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728603AbgHDFxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 01:53:06 -0400
-Received: by mail-io1-f70.google.com with SMTP id n1so15040016ion.13
-        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 22:53:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=BRdtTRPOEaQKBrhbJMVyVg8f+gg0wNhNpfaLQFbDwIc=;
-        b=XVn82etSQGntUrlYmTNSkWXRVmTTZoj9X+EaUua1uzzqGEiypVrl9xEJkT1Ys4x0O8
-         XeBsJPA4Ve6zXHH2z1Ad7skr0O6QoVw06BLvRMM9Phg3rid6tHKr8ot6a0Sp5u72leIA
-         06c0cKXobTiHFBjt7+p5VI5f1Obf2VcDmBYOCMif0WnpcQ4WbDIdTV/gfm52hVqH7nZp
-         /dF0T1U7v1w9XtFN60El0phEOiIXZp4v2e/MmQfuk93Qxwrg+xSmEcBwmIcuNIT3NX0K
-         jhKmDzAqhrObGA5/fGX1UsvPXVn2V67pfdN3UFv6SROhGV4pYPuVycEyp9ZzssdruCo1
-         7tuA==
-X-Gm-Message-State: AOAM532uPWR/HaBK7xv1svBMgB/BcF3lERrXhYLoVrFmBN133rKC3RWk
-        MgY4Zdcy0gDVebprlDKXNxamqeN3KBxaIPPsHMSVIQX0A/x/
-X-Google-Smtp-Source: ABdhPJzEkoMCbnNdFUe97FE5HM517BQ0ax1yAE9KKbwZVWX1mKbnq4Vi7DM1AkTvDXzbANiqrkZroxhk4raf2RYgrw3J8jVZ61+P
+        id S1729813AbgHDFxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 01:53:15 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:46504 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726398AbgHDFxP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Aug 2020 01:53:15 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 3BF3C20569;
+        Tue,  4 Aug 2020 07:53:13 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id wUQIudoOJEBl; Tue,  4 Aug 2020 07:53:11 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 655A3201D5;
+        Tue,  4 Aug 2020 07:53:11 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Tue, 4 Aug 2020 07:53:11 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Tue, 4 Aug 2020
+ 07:53:10 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 7E20831803A0;
+ Tue,  4 Aug 2020 07:53:10 +0200 (CEST)
+Date:   Tue, 4 Aug 2020 07:53:10 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Miller <davem@davemloft.net>
+CC:     <yuehaibing@huawei.com>, <herbert@gondor.apana.org.au>,
+        <kuznet@ms2.inr.ac.ru>, <yoshfuji@linux-ipv6.org>,
+        <kuba@kernel.org>, <lucien.xin@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] ip_vti: Fix unused variable warning
+Message-ID: <20200804055310.GK20687@gauss3.secunet.de>
+References: <20200731064952.36900-1-yuehaibing@huawei.com>
+ <20200803.151349.926022361234213749.davem@davemloft.net>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:e216:: with SMTP id z22mr3305588ioc.97.1596520385235;
- Mon, 03 Aug 2020 22:53:05 -0700 (PDT)
-Date:   Mon, 03 Aug 2020 22:53:05 -0700
-In-Reply-To: <0000000000003d6e8405abeb1da7@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000070529b05ac06deaa@google.com>
-Subject: Re: KASAN: use-after-free Read in hci_send_acl
-From:   syzbot <syzbot+98228e7407314d2d4ba2@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, mareklindner@neomailbox.ch,
-        michael.chan@broadcom.com, netdev@vger.kernel.org,
-        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200803.151349.926022361234213749.davem@davemloft.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Mon, Aug 03, 2020 at 03:13:49PM -0700, David Miller wrote:
+> From: YueHaibing <yuehaibing@huawei.com>
+> Date: Fri, 31 Jul 2020 14:49:52 +0800
+> 
+> > If CONFIG_INET_XFRM_TUNNEL is set but CONFIG_IPV6 is n,
+> > 
+> > net/ipv4/ip_vti.c:493:27: warning: 'vti_ipip6_handler' defined but not used [-Wunused-variable]
+> > 
+> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> 
+> Steffen, please pick this up if you haven't already.
 
-commit 4ffcd582301bd020b1f9d00c55473af305ec19b5
-Author: Michael Chan <michael.chan@broadcom.com>
-Date:   Mon Sep 19 07:58:07 2016 +0000
+I still have this one in my queue, it came in after
+I did the the ipsec-next pull request last week.
+Now the 5.8 release was inbetween, so it should go
+to the ipsec tree. I'm waiting until I can backmerge
+the offending patch into the ipsec tree and apply it
+then.
 
-    bnxt_en: Pad TX packets below 52 bytes.
+Alternatively to speed things up, you can take it
+directly into net-next before you do the pull request
+to Linus. In case you prefer that:
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=167b0f04900000
-start commit:   ac3a0c84 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=157b0f04900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=117b0f04900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c0cfcf935bcc94d2
-dashboard link: https://syzkaller.appspot.com/bug?extid=98228e7407314d2d4ba2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=152f1904900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1482dfca900000
-
-Reported-by: syzbot+98228e7407314d2d4ba2@syzkaller.appspotmail.com
-Fixes: 4ffcd582301b ("bnxt_en: Pad TX packets below 52 bytes.")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
