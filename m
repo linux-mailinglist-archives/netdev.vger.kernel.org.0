@@ -2,150 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6911F23BBB0
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 16:05:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AC1B23BBB6
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 16:06:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727862AbgHDOAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 10:00:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54014 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728678AbgHDN76 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Aug 2020 09:59:58 -0400
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3B99622CBB;
-        Tue,  4 Aug 2020 13:59:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596549597;
-        bh=E2bgygJ6YnJNErdqArQCjl4L6O71EKfdlktswy0gz1g=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=DGtNVHxpYgha4luyk0w0xpEnrv7R//zKbx8zb1YJHkiTQWFS/crqKiEMSJECcuATj
-         0bcA+q58yE9wjutxDhGv1C7TQROA22h52Ozc7M2Sk4dpyE1LJbAlV1jilbDVs3Fcyv
-         Hliv13uS4aMIbjuG/PGyTQl72N07kvywL/WjjzZ0=
-Received: by mail-oi1-f175.google.com with SMTP id v13so19772468oiv.13;
-        Tue, 04 Aug 2020 06:59:57 -0700 (PDT)
-X-Gm-Message-State: AOAM531bcPok7S4qDZ5dd//tRTci5DGErvzYaum4+5ks/UD8kOv1pwQZ
-        WmkdzOakMQKkLA9uuBw2oiHPhRCf82rBZWJnC6w=
-X-Google-Smtp-Source: ABdhPJy9K28J73rqwaw8sqyHjeTCf6xPw5eIPlfZNIJ6/BHFKRwVxOkMx9Cqd12y0xpIlPkFwjkELicwa2sz+O6lD+w=
-X-Received: by 2002:a05:6808:b37:: with SMTP id t23mr3607031oij.174.1596549596400;
- Tue, 04 Aug 2020 06:59:56 -0700 (PDT)
+        id S1728847AbgHDOF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 10:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728708AbgHDOAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 10:00:36 -0400
+Received: from mail-oo1-xc42.google.com (mail-oo1-xc42.google.com [IPv6:2607:f8b0:4864:20::c42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0960C06174A
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 07:00:21 -0700 (PDT)
+Received: by mail-oo1-xc42.google.com with SMTP id j16so3645534ooc.7
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 07:00:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=S51+9DoMEhjVmsWDD9c8ddVLTFqPPFbxVhxAwZGhfKs=;
+        b=HHx16UKsLhS2krUOAJ3yRf+vZ/rLI46EJUVYch3z1H2PiEe6l3g5l0jotOSrWhn5dW
+         5UP1xMzcwMxgO69iKeN+mcyZh562Er8uL19ddFlXardyPFUr2Sbo/kxu3wpNv4Um3chG
+         Cx8Adr/pQFXhQBE06/xni3xS1+CFELUXRfw0qzVYjJ4jNMAr/t2xWpUziCJdn7khOGRh
+         WjF5T7LKY6ZCJdzXg4e02n8+am1wqvw+wDShp+QAc6lKewU4DrY+LJKvY5amnSCa/7fh
+         +wRdpvOjEycG5HszSmLmH6U+pvvctwxMp6jN0VZK9MVl+MknYbOixfxKEC+FxYvIdJ06
+         Km7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=S51+9DoMEhjVmsWDD9c8ddVLTFqPPFbxVhxAwZGhfKs=;
+        b=Vg+DAtYQpaQk43pFQFUknfbN7n0t6+j6CbhGYC1wl5nwzm7FVuyByEw1XfHZ+NHgxI
+         V5hVT1KE38VMTwLJkgIs60GzIun16a7YVOaivO5dhBHEF0wdXcmQ+fW8AGNRDxaXqEqg
+         JmnFBjhKUCN636eRdNn5+t9HCo2YrSXmuqQoEMXShgo3Vk6LnfYiSDP5k/IcXP5tH8ya
+         grNuVCZhWf5kU76trUrzg2PLPUUz8Dg+YlwcdT1o9vfTrIPYQEyP2jSvwAU7dwB9mFkw
+         4QRrlstvUjQiiU4zfZVyQVBz32Li14sYq/X8DbCUNA71d0rd/z49yHzAz14AP+J4W95y
+         Q2Kg==
+X-Gm-Message-State: AOAM531+TbLhtjIPRyLJpTiJdkp0hbLgkJck3yzAHAjxhj3GhIDNi9/J
+        X58pbYf0ymFIKDra4TNw2mHvhxI1
+X-Google-Smtp-Source: ABdhPJxT0YYUxf10NXOQ9wv6RJNvmBbiUzElI4jOXmLAcfG0/VgvfIP4XBp7hrKS2Z+bVinJx579Rw==
+X-Received: by 2002:a4a:9f93:: with SMTP id z19mr18819956ool.58.1596549621134;
+        Tue, 04 Aug 2020 07:00:21 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:14ac:dc81:c028:3eca])
+        by smtp.googlemail.com with ESMTPSA id s6sm3369370otq.75.2020.08.04.07.00.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Aug 2020 07:00:20 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 5/6] selftests: pmtu.sh: Add tests for bridged
+ UDP tunnels
+To:     Stefano Brivio <sbrivio@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Florian Westphal <fw@strlen.de>, Aaron Conole <aconole@redhat.com>,
+        Numan Siddique <nusiddiq@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Lourdes Pedrajas <lu@pplo.net>, netdev@vger.kernel.org
+References: <cover.1596520062.git.sbrivio@redhat.com>
+ <6b2a52ca59d791dfd5547acb62e710e61e646588.1596520062.git.sbrivio@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <baf285cf-5f58-e36d-abf9-32a8414bada7@gmail.com>
+Date:   Tue, 4 Aug 2020 08:00:19 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-References: <20200702101947.682-1-ardb@kernel.org> <20200702101947.682-5-ardb@kernel.org>
- <20200702175022.GA2753@sol.localdomain> <CAMj1kXFen1nickdZab0s8iY7SgauoH56VginEoPdxaAAL2qENw@mail.gmail.com>
- <CAMj1kXG7i1isB9cV57ccaOZhrG3s7x+nKGozzTewuE9uWvX_wg@mail.gmail.com>
- <CAMj1kXGiu5Wr8NAACBUtiJMY8rQAGCTOcQdK1QM6jgH-0Lm=YA@mail.gmail.com> <CAMj1kXHA2R1UDcYROwiLgUQCrOpNWxt-BAP0aBD=3RP4HbcOnA@mail.gmail.com>
-In-Reply-To: <CAMj1kXHA2R1UDcYROwiLgUQCrOpNWxt-BAP0aBD=3RP4HbcOnA@mail.gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 4 Aug 2020 15:59:45 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGrm7EFtRxx3nhE-eDhp11cDzkzow7ZcwRiW3wXBgVQyg@mail.gmail.com>
-Message-ID: <CAMj1kXGrm7EFtRxx3nhE-eDhp11cDzkzow7ZcwRiW3wXBgVQyg@mail.gmail.com>
-Subject: Re: [RFC PATCH 4/7] crypto: remove ARC4 support from the skcipher API
-To:     Eric Biggers <ebiggers@kernel.org>,
-        Denis Kenzior <denkenz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Cc:     linux-wireless@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, devel@driverdev.osuosl.org,
-        linux-nfs@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <6b2a52ca59d791dfd5547acb62e710e61e646588.1596520062.git.sbrivio@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 25 Jul 2020 at 10:06, Ard Biesheuvel <ardb@kernel.org> wrote:
->
-> On Sat, 18 Jul 2020 at 11:18, Ard Biesheuvel <ardb@kernel.org> wrote:
-> >
-> > On Fri, 3 Jul 2020 at 02:04, Ard Biesheuvel <ardb@kernel.org> wrote:
-> > >
-> > > On Thu, 2 Jul 2020 at 20:21, Ard Biesheuvel <ardb@kernel.org> wrote:
-> > > >
-> > > > On Thu, 2 Jul 2020 at 19:50, Eric Biggers <ebiggers@kernel.org> wrote:
-> > > > >
-> > > > > [+linux-wireless, Marcel Holtmann, and Denis Kenzior]
-> > > > >
-> > > > > On Thu, Jul 02, 2020 at 12:19:44PM +0200, Ard Biesheuvel wrote:
-> > > > > > Remove the generic ecb(arc4) skcipher, which is slightly cumbersome from
-> > > > > > a maintenance perspective, since it does not quite behave like other
-> > > > > > skciphers do in terms of key vs IV lifetime. Since we are leaving the
-> > > > > > library interface in place, which is used by the various WEP and TKIP
-> > > > > > implementations we have in the tree, we can safely drop this code now
-> > > > > > it no longer has any users.
-> > > > > >
-> > > > > > Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-> > > > >
-> > > > > Last year there was a discussion where it was mentioned that iwd uses
-> > > > > "ecb(arc4)" via AF_ALG.  So can we really remove it yet?
-> > > > > See https://lkml.kernel.org/r/97BB95F6-4A4C-4984-9EAB-6069E19B4A4F@holtmann.org
-> > > > > Note that the code isn't in "iwd" itself but rather in "libell" which iwd
-> > > > > depends on: https://git.kernel.org/pub/scm/libs/ell/ell.git/
-> > > > >
-> > > > > Apparently it also uses md4 and ecb(des) too.
-> > > > >
-> > > >
-> > > > Ah yes, I remember now :-(
-> > > >
-> > > > > Marcel and Denis, what's your deprecation plan for these obsolete and insecure
-> > > > > algorithms?
-> > > > >
-> > > >
-> > > > Given Denis's statement:
-> > > >
-> > > >   It sounds to me like it was broken and should be fixed.  So our vote /
-> > > >   preference is to have ARC4 fixed to follow the proper semantics.  We
-> > > >   can deal with the kernel behavioral change on our end easily enough;
-> > > >   the required workarounds are the worse evil.
-> > > >
-> > > > I would think that an ABI break is not the end of the world for them,
-> > > > and given how trivial it is to implement RC4 in C, the workaround
-> > > > should be to simply implement RC4 in user space, and not even bother
-> > > > trying to use AF_ALG to get at ecb(arc4)
-> > > >
-> > > > (same applies to md4 and ecb(des) btw)
-> > > >
-> > > > There will always be a long tail of use cases, and at some point, we
-> > > > just have to draw the line and remove obsolete and insecure cruft,
-> > > > especially when it impedes progress on other fronts.
-> > > >
-> > >
-> > > I have ported iwd to Nettle's LGPL 2.1 implementation of ARC4, and the
-> > > diffstat is
-> > >
-> > >  src/crypto.c      | 80 ++++++++++++--------
-> > >  src/main.c        |  8 --
-> > >  unit/test-eapol.c |  3 +-
-> > >  3 files changed, 51 insertions(+), 40 deletions(-)
-> > >
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/ardb/iwd.git/log/?h=arc4-cleanup
-> >
-> > Marcel, Denis,
-> >
-> > Do you have any objections to the ecb(arc4) skcipher being dropped
-> > from the kernel, given the fallback i proposed above (which is a much
-> > better way of doing rc4 in user space anyway)?
-> >
-> > For libell, I would suggest dropping rc4 entirely, once iwd stops
-> > relying on it, as using rc4 for tls is obsolete as well.
->
-> Ping?
+On 8/3/20 11:53 PM, Stefano Brivio wrote:
+> @@ -497,12 +529,19 @@ setup_vxlan_or_geneve() {
+>  	run_cmd ${ns_a} ip link add ${type}_a type ${type} id 1 ${opts_a} remote ${b_addr} ${opts} || return 1
+>  	run_cmd ${ns_b} ip link add ${type}_b type ${type} id 1 ${opts_b} remote ${a_addr} ${opts}
+>  
+> -	run_cmd ${ns_a} ip addr add ${tunnel4_a_addr}/${tunnel4_mask} dev ${type}_a
+> -	run_cmd ${ns_b} ip addr add ${tunnel4_b_addr}/${tunnel4_mask} dev ${type}_b
+> +	if [ -n "${br_if_a}" ]; then
+> +		run_cmd ${ns_a} ip addr add ${tunnel4_a_addr}/${tunnel4_mask} dev ${br_if_a}
+> +		run_cmd ${ns_a} ip addr add ${tunnel6_a_addr}/${tunnel6_mask} dev ${br_if_a}
+> +		run_cmd ${ns_a} ip link set ${type}_a master ${br_if_a}
+> +	else
+> +		run_cmd ${ns_a} ip addr add ${tunnel4_a_addr}/${tunnel4_mask} dev ${type}_a
+> +		run_cmd ${ns_a} ip addr add ${tunnel6_a_addr}/${tunnel6_mask} dev ${type}_a
+> +	fi
+>  
+> -	run_cmd ${ns_a} ip addr add ${tunnel6_a_addr}/${tunnel6_mask} dev ${type}_a
+> +	run_cmd ${ns_b} ip addr add ${tunnel4_b_addr}/${tunnel4_mask} dev ${type}_b
+>  	run_cmd ${ns_b} ip addr add ${tunnel6_b_addr}/${tunnel6_mask} dev ${type}_b
+>  
+> +
 
-Denis was kind enough to take the changes to iwd and libell that
-remove all dependencies on the ecb(arc4) skcipher exposed by the
-kernel, so we can at least deprecate it in the short term, and
-hopefully remove it entirely at a later stage.
+extra newline snuck in
 
-Perhaps we should introduce a Kconfig symbol that needs to be set to
-enable deprecated algorithms? That way, we can work with the distros
-to phase out the old junk that is piling up, but in a way that doesn't
-break people's systems.
+other than that:
+Reviewed-by: David Ahern <dsahern@gmail.com>
+
+
