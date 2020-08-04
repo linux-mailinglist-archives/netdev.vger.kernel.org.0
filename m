@@ -2,262 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 080AB23BD87
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 17:49:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 403F323BD8C
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 17:51:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728811AbgHDPs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 11:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
+        id S1729022AbgHDPuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 11:50:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725864AbgHDPsz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 11:48:55 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED3BC06174A;
-        Tue,  4 Aug 2020 08:48:55 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id kq25so30025502ejb.3;
-        Tue, 04 Aug 2020 08:48:55 -0700 (PDT)
+        with ESMTP id S1726167AbgHDPup (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 11:50:45 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A52EC06174A
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 08:50:45 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id y3so37879732wrl.4
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 08:50:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=aHpL707Nss711rXrUizpThLuemDkqB5ODmR6Us/BMpc=;
-        b=MxG/dpyMaF6vYnVh6cmGFs2sWeiZm+D1y5e+wPKRIQHAckDajxPdgAPQWawbopVVZC
-         731wC5XDRn8ehsL4GKW6TgjYQ3S+Rnl/MRVDB2d3w7KM8hcGjH5s1s49jzGYJLTIfT2L
-         +jPDLE1woC+77z3Pnk4cxhOsNxA+vH1Pvkeaj9Lzu3PXtLlr8kZdtcONi17AkXOqLwoK
-         kY/4EANA3lBd0/8ZRubKxgdaGarZ0XR7g27zO4UGCgJ+g0tI7z99TDlc1U/5U/2CxZSN
-         ktcB8EareRzLEbU+g4P0CLxKgPnsYM4GejeJg954pD5GHK2+ScB3Ye1gWWCT9VFJRoLi
-         mrSw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3+kDmABO3rORHPwyb6sHqLUmmymRS95vgwyEtBMcMyg=;
+        b=JFF7QVQyo4djCeIjI0TZsWKm0xy9hl4F2LYNI76B1IfQ9Q8vvUsqaU7dsKDTseMQkb
+         xoH3l8HVsLIDwOyqUztd/YG4xE+0KTLgSIgLZ6VxD8vsCOEDpzBv6u2DZeu1nfki81Qk
+         eXpBI2cdtpOCpByZO4hPlu0NZYiKnz70NQV9sUY2nN6bw7ZB+Eb/YRSC5emWUNQsDfTR
+         sh+ay9Fs6mffL/888Br7Y4R1l337QjRxMqdLcTroxzmmfAvvMAMAB+P4OH54OtO8i1i4
+         q/e5+KPxclDydu1TzLbOCekbq9Ykx1W8aVtDxHuyPPBGR3p+IZ84jMuMEkaK6pD+/98/
+         vJ0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=aHpL707Nss711rXrUizpThLuemDkqB5ODmR6Us/BMpc=;
-        b=dUVy/YswA3Y04gCrh3T+gSlua22Z4R7PN773/Kch9r0EYBHNtbD9ACkJi0Kmstketo
-         Gu77DP2mQl8vrrISJsToeYfskJfJXdETUJZpSmmCASH+2Bq/wDUf4ykNF3NiVXJMECy5
-         CwkEARdigPvAloqwMdD10bfXwaLIhCFpN4OeEAVPq41ON0W1P385OPCnaxJ9C9I8v6Tl
-         BV886P30w68OUqb5LjL541sjyze/AUIXyzjgrxGwChZ3Jv+cIbm6Mvqr+36HkUoCDVWJ
-         ZFmeCZ5Mf9DVu0XrKr5eHxXsZaqTcfm7/inaf/M8gOQ5XkAm50U3xKftXpsV1uiptU/k
-         Gj1g==
-X-Gm-Message-State: AOAM532qFVkCu/qIUBGwVEySC2f8GQw6kJTRPPl4ND69P7DxKUysReZL
-        GxLQB9pq1RvCQn240iVdAXI=
-X-Google-Smtp-Source: ABdhPJx2ys+HLh3jETOmrP6+gdnOSBsONXpK15a0Qi+Y2ZO5ZSSbKWg6FJqq9i71dQgv/BSsF4LqiQ==
-X-Received: by 2002:a17:907:398:: with SMTP id ss24mr5841408ejb.311.1596556133900;
-        Tue, 04 Aug 2020 08:48:53 -0700 (PDT)
-Received: from localhost.localdomain ([185.200.214.168])
-        by smtp.gmail.com with ESMTPSA id m24sm18686780eje.80.2020.08.04.08.48.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Aug 2020 08:48:53 -0700 (PDT)
-From:   izabela.bakollari@gmail.com
-To:     nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        izabela.bakollari@gmail.com
-Subject: [PATCHv2 net-next--in-reply-to=<20200707171515.110818-1-izabela.bakollari@gmail.com>]  dropwatch: Support monitoring of dropped frames
-Date:   Tue,  4 Aug 2020 17:48:51 +0200
-Message-Id: <20200804154851.44141-1-izabela.bakollari@gmail.com>
-X-Mailer: git-send-email 2.18.4
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3+kDmABO3rORHPwyb6sHqLUmmymRS95vgwyEtBMcMyg=;
+        b=hHlT4+4iJF2VDyuEzSsqzMyNiL+bRxdGBLu2V1+hUt1isyHsUM1ahb1hNyHqDG0clh
+         tJ7o9Wl7BeR2/4nFYxzXecgTLgR0+zyjD/mzVxI/KvuRISHwAphIm15kgyo5N9leOPto
+         6rchBU5b8goeOnhhlNMi1dnfGFx2lUzNSvzbYYGY4TOHlcvJWzy8XTdAbGLjgZixRlA9
+         1MOGt5c2ap3nZPK4qXEWn7D9U9DmtofFrq+ocmmHO32U1axNcZA35PmwFpJ4kgJBlty2
+         suvHISCExi5A5O6mpFQxTxCKC3phJdl+Al1w7QXjpuIDurlW7N/yA2tYzb9Ak3B2po60
+         BslA==
+X-Gm-Message-State: AOAM532nR0p1JGDhFnEkx62Jfa6Kr6n51/5Xk6Imap8fTxuAhG1ZS2CJ
+        W4eKI8BctUsdWqXIPYbE+A5R+IlMXF27GnzyWeMb1A==
+X-Google-Smtp-Source: ABdhPJzl78nlmcwoiguIAxOzKCihxpKfHKYModWH7inw5tJRI0S8DABgAyCXprE34msfJKwMKL62DXsgABNqJDTBYtg=
+X-Received: by 2002:adf:82d5:: with SMTP id 79mr19406166wrc.282.1596556243438;
+ Tue, 04 Aug 2020 08:50:43 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200728085734.609930-1-irogers@google.com> <20200728085734.609930-5-irogers@google.com>
+ <969ef797-59ea-69d0-24b9-33bcdff106a1@intel.com> <CAP-5=fUCnBGX0L0Tt3_gmVnt+hvaouJMx6XFErFKk72+xuw9fw@mail.gmail.com>
+ <86324041-aafb-f556-eda7-6250ba678f24@intel.com>
+In-Reply-To: <86324041-aafb-f556-eda7-6250ba678f24@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 4 Aug 2020 08:50:32 -0700
+Message-ID: <CAP-5=fXfBkXovaK3DuSCnwfsnxqW7ZR8-LigtGATgs4gMpZP9A@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] perf record: Don't clear event's period if set by
+ a term
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Izabela Bakollari <izabela.bakollari@gmail.com>
+On Tue, Aug 4, 2020 at 7:49 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> On 4/08/20 4:33 pm, Ian Rogers wrote:
+> > On Tue, Aug 4, 2020 at 3:08 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+> >>
+> >> On 28/07/20 11:57 am, Ian Rogers wrote:
+> >>> If events in a group explicitly set a frequency or period with leader
+> >>> sampling, don't disable the samples on those events.
+> >>>
+> >>> Prior to 5.8:
+> >>> perf record -e '{cycles/period=12345000/,instructions/period=6789000/}:S'
+> >>
+> >> Might be worth explaining this use-case some more.
+> >> Perhaps add it to the leader sampling documentation for perf-list.
+> >>
+> >>> would clear the attributes then apply the config terms. In commit
+> >>> 5f34278867b7 leader sampling configuration was moved to after applying the
+> >>> config terms, in the example, making the instructions' event have its period
+> >>> cleared.
+> >>> This change makes it so that sampling is only disabled if configuration
+> >>> terms aren't present.
+> >>>
+> >>> Fixes: 5f34278867b7 ("perf evlist: Move leader-sampling configuration")
+> >>> Signed-off-by: Ian Rogers <irogers@google.com>
+> >>> ---
+> >>>  tools/perf/util/record.c | 28 ++++++++++++++++++++--------
+> >>>  1 file changed, 20 insertions(+), 8 deletions(-)
+> >>>
+> >>> diff --git a/tools/perf/util/record.c b/tools/perf/util/record.c
+> >>> index a4cc11592f6b..01d1c6c613f7 100644
+> >>> --- a/tools/perf/util/record.c
+> >>> +++ b/tools/perf/util/record.c
+> >>> @@ -2,6 +2,7 @@
+> >>>  #include "debug.h"
+> >>>  #include "evlist.h"
+> >>>  #include "evsel.h"
+> >>> +#include "evsel_config.h"
+> >>>  #include "parse-events.h"
+> >>>  #include <errno.h>
+> >>>  #include <limits.h>
+> >>> @@ -38,6 +39,9 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
+> >>>       struct perf_event_attr *attr = &evsel->core.attr;
+> >>>       struct evsel *leader = evsel->leader;
+> >>>       struct evsel *read_sampler;
+> >>> +     struct evsel_config_term *term;
+> >>> +     struct list_head *config_terms = &evsel->config_terms;
+> >>> +     int term_types, freq_mask;
+> >>>
+> >>>       if (!leader->sample_read)
+> >>>               return;
+> >>> @@ -47,16 +51,24 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
+> >>>       if (evsel == read_sampler)
+> >>>               return;
+> >>>
+> >>> +     /* Determine the evsel's config term types. */
+> >>> +     term_types = 0;
+> >>> +     list_for_each_entry(term, config_terms, list) {
+> >>> +             term_types |= 1 << term->type;
+> >>> +     }
+> >>>       /*
+> >>> -      * Disable sampling for all group members other than the leader in
+> >>> -      * case the leader 'leads' the sampling, except when the leader is an
+> >>> -      * AUX area event, in which case the 2nd event in the group is the one
+> >>> -      * that 'leads' the sampling.
+> >>> +      * Disable sampling for all group members except those with explicit
+> >>> +      * config terms or the leader. In the case of an AUX area event, the 2nd
+> >>> +      * event in the group is the one that 'leads' the sampling.
+> >>>        */
+> >>> -     attr->freq           = 0;
+> >>> -     attr->sample_freq    = 0;
+> >>> -     attr->sample_period  = 0;
+> >>> -     attr->write_backward = 0;
+> >>> +     freq_mask = (1 << EVSEL__CONFIG_TERM_FREQ) | (1 << EVSEL__CONFIG_TERM_PERIOD);
+> >>> +     if ((term_types & freq_mask) == 0) {
+> >>
+> >> It would be nicer to have a helper e.g.
+> >>
+> >>         if (!evsel__have_config_term(evsel, FREQ) &&
+> >>             !evsel__have_config_term(evsel, PERIOD)) {
+> >
+> > Sure. The point of doing it this way was to avoid repeatedly iterating
+> > over the config term list.
+>
+> But perhaps it is premature optimization
 
-Dropwatch is a utility that monitors dropped frames by having userspace
-record them over the dropwatch protocol over a file. This augument
-allows live monitoring of dropped frames using tools like tcpdump.
+The alternative is more loc. I think we can bike shed on this but it's
+not really changing the substance of the change. I'm keen to try to be
+efficient where we can as we see issues at scale.
 
-With this feature, dropwatch allows two additional commands (start and
-stop interface) which allows the assignment of a net_device to the
-dropwatch protocol. When assinged, dropwatch will clone dropped frames,
-and receive them on the assigned interface, allowing tools like tcpdump
-to monitor for them.
+Thanks,
+Ian
 
-With this feature, create a dummy ethernet interface (ip link add dev
-dummy0 type dummy), assign it to the dropwatch kernel subsystem, by using
-these new commands, and then monitor dropped frames in real time by
-running tcpdump -i dummy0.
-
-Signed-off-by: Izabela Bakollari <izabela.bakollari@gmail.com>
----
-Changes in v2:
-- protect the dummy ethernet interface from being changed by another
-thread/cpu
----
- include/uapi/linux/net_dropmon.h |  3 ++
- net/core/drop_monitor.c          | 84 ++++++++++++++++++++++++++++++++
- 2 files changed, 87 insertions(+)
-
-diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
-index 67e31f329190..e8e861e03a8a 100644
---- a/include/uapi/linux/net_dropmon.h
-+++ b/include/uapi/linux/net_dropmon.h
-@@ -58,6 +58,8 @@ enum {
- 	NET_DM_CMD_CONFIG_NEW,
- 	NET_DM_CMD_STATS_GET,
- 	NET_DM_CMD_STATS_NEW,
-+	NET_DM_CMD_START_IFC,
-+	NET_DM_CMD_STOP_IFC,
- 	_NET_DM_CMD_MAX,
- };
- 
-@@ -93,6 +95,7 @@ enum net_dm_attr {
- 	NET_DM_ATTR_SW_DROPS,			/* flag */
- 	NET_DM_ATTR_HW_DROPS,			/* flag */
- 	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
-+	NET_DM_ATTR_IFNAME,			/* string */
- 
- 	__NET_DM_ATTR_MAX,
- 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index 8e33cec9fc4e..781e69876d2f 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -30,6 +30,7 @@
- #include <net/genetlink.h>
- #include <net/netevent.h>
- #include <net/flow_offload.h>
-+#include <net/sock.h>
- 
- #include <trace/events/skb.h>
- #include <trace/events/napi.h>
-@@ -46,6 +47,7 @@
-  */
- static int trace_state = TRACE_OFF;
- static bool monitor_hw;
-+struct net_device *interface;
- 
- /* net_dm_mutex
-  *
-@@ -54,6 +56,8 @@ static bool monitor_hw;
-  */
- static DEFINE_MUTEX(net_dm_mutex);
- 
-+static DEFINE_SPINLOCK(interface_lock);
-+
- struct net_dm_stats {
- 	u64 dropped;
- 	struct u64_stats_sync syncp;
-@@ -255,6 +259,21 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
- 
- out:
- 	spin_unlock_irqrestore(&data->lock, flags);
-+	spin_lock_irqsave(&interface_lock, flags);
-+	if (interface && interface != skb->dev) {
-+		skb = skb_clone(skb, GFP_ATOMIC);
-+		if (skb) {
-+			skb->dev = interface;
-+			spin_unlock_irqrestore(&interface_lock, flags);
-+			netif_receive_skb(skb);
-+		} else {
-+			spin_unlock_irqrestore(&interface_lock, flags);
-+			pr_err("dropwatch: Not enough memory to clone dropped skb\n");
-+			return;
-+		}
-+	} else {
-+		spin_unlock_irqrestore(&interface_lock, flags);
-+	}
- }
- 
- static void trace_kfree_skb_hit(void *ignore, struct sk_buff *skb, void *location)
-@@ -1315,6 +1334,53 @@ static int net_dm_cmd_trace(struct sk_buff *skb,
- 	return -EOPNOTSUPP;
- }
- 
-+static int net_dm_interface_start(struct net *net, const char *ifname)
-+{
-+	struct net_device *nd = dev_get_by_name(net, ifname);
-+
-+	if (nd)
-+		interface = nd;
-+	else
-+		return -ENODEV;
-+
-+	return 0;
-+}
-+
-+static int net_dm_interface_stop(struct net *net, const char *ifname)
-+{
-+	dev_put(interface);
-+	interface = NULL;
-+
-+	return 0;
-+}
-+
-+static int net_dm_cmd_ifc_trace(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct net *net = sock_net(skb->sk);
-+	char ifname[IFNAMSIZ];
-+
-+	if (net_dm_is_monitoring())
-+		return -EBUSY;
-+
-+	memset(ifname, 0, IFNAMSIZ);
-+	nla_strlcpy(ifname, info->attrs[NET_DM_ATTR_IFNAME], IFNAMSIZ - 1);
-+
-+	switch (info->genlhdr->cmd) {
-+	case NET_DM_CMD_START_IFC:
-+		if (!interface)
-+			return net_dm_interface_start(net, ifname);
-+		else
-+			return -EBUSY;
-+	case NET_DM_CMD_STOP_IFC:
-+		if (interface)
-+			return net_dm_interface_stop(net, interface->name);
-+		else
-+			return -ENODEV;
-+	}
-+
-+	return 0;
-+}
-+
- static int net_dm_config_fill(struct sk_buff *msg, struct genl_info *info)
- {
- 	void *hdr;
-@@ -1503,6 +1569,7 @@ static int dropmon_net_event(struct notifier_block *ev_block,
- 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
- 	struct dm_hw_stat_delta *new_stat = NULL;
- 	struct dm_hw_stat_delta *tmp;
-+	unsigned long flags;
- 
- 	switch (event) {
- 	case NETDEV_REGISTER:
-@@ -1529,6 +1596,12 @@ static int dropmon_net_event(struct notifier_block *ev_block,
- 				}
- 			}
- 		}
-+		spin_lock_irqsave(&interface_lock, flags);
-+		if (interface && interface == dev) {
-+			dev_put(interface);
-+			interface = NULL;
-+		}
-+		spin_unlock_irqrestore(&interface_lock, flags);
- 		mutex_unlock(&net_dm_mutex);
- 		break;
- 	}
-@@ -1543,6 +1616,7 @@ static const struct nla_policy net_dm_nl_policy[NET_DM_ATTR_MAX + 1] = {
- 	[NET_DM_ATTR_QUEUE_LEN] = { .type = NLA_U32 },
- 	[NET_DM_ATTR_SW_DROPS]	= {. type = NLA_FLAG },
- 	[NET_DM_ATTR_HW_DROPS]	= {. type = NLA_FLAG },
-+	[NET_DM_ATTR_IFNAME] = {. type = NLA_STRING, .len = IFNAMSIZ },
- };
- 
- static const struct genl_ops dropmon_ops[] = {
-@@ -1570,6 +1644,16 @@ static const struct genl_ops dropmon_ops[] = {
- 		.cmd = NET_DM_CMD_STATS_GET,
- 		.doit = net_dm_cmd_stats_get,
- 	},
-+	{
-+		.cmd = NET_DM_CMD_START_IFC,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit = net_dm_cmd_ifc_trace,
-+	},
-+	{
-+		.cmd = NET_DM_CMD_STOP_IFC,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit = net_dm_cmd_ifc_trace,
-+	},
- };
- 
- static int net_dm_nl_pre_doit(const struct genl_ops *ops,
--- 
-2.18.4
-
+> >
+> >>> +             attr->freq           = 0;
+> >>> +             attr->sample_freq    = 0;
+> >>> +             attr->sample_period  = 0;
+> >>
+> >> If we are not sampling, then maybe we should also put here:
+> >>
+> >>                 attr->write_backward = 0;
+> >>
+> >>> +     }
+> >>
+> >> Then, if we are sampling this evsel shouldn't the backward setting
+> >> match the leader? e.g.
+> >>
+> >>         if (attr->sample_freq)
+> >>                 attr->write_backward = leader->core.attr.write_backward;
+> >
+> > Perhaps that should be a follow up change? This change is trying to
+> > make the behavior match the previous behavior.
+>
+> Sure
+>
+> >
+> > Thanks,
+> > Ian
+> >
+> >>> +     if ((term_types & (1 << EVSEL__CONFIG_TERM_OVERWRITE)) == 0)
+> >>> +             attr->write_backward = 0;
+> >>>
+> >>>       /*
+> >>>        * We don't get a sample for slave events, we make them when delivering
+> >>>
+> >>
+>
