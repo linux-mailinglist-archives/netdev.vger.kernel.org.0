@@ -2,294 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83DC323B87D
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 12:09:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CA2823B881
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 12:13:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730126AbgHDKJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 06:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45500 "EHLO
+        id S1727060AbgHDKNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 06:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728472AbgHDKJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 06:09:08 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D736C06174A;
-        Tue,  4 Aug 2020 03:09:08 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id m8so13065671pfh.3;
-        Tue, 04 Aug 2020 03:09:08 -0700 (PDT)
+        with ESMTP id S1725924AbgHDKNL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 06:13:11 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F6FC06174A;
+        Tue,  4 Aug 2020 03:13:11 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id o5so3847752pgb.2;
+        Tue, 04 Aug 2020 03:13:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=ZS1hdM2dLsIlb7yqUlnhLDroUWcG6WpXbsGcaYexh7c=;
-        b=qjND6vjWd4BjFopiGLmQ0HNSG0b/WKi8TcjTqCA8sTXu2ZwLUnAgG5h3Qi+MKckJFh
-         O0pUM7YeiazFfT72a4FFL6WV+E0nejo0g8Z6ZqFWho5zV1WnALO1IkfZ3+DiY+gy9eyk
-         vSPm4vxaX+xkJOFyUGnnNhJOnKF5/ZkPN873PS4tDAb0rs9ayOrTy3SXntA9yY6haLnS
-         hEnmVAHdnRE4g5mU1DuUBfqkbFIlu4AMYrFkXK6XlHtyFlO28/PNX8ueUOz/rpnm7BqE
-         s6KjH04ReAw1hp9n+7Beh8pbQe0qz+hlEv2Pvc4+xnuE5IbYnhee3/h8ko0ILSpfFgBF
-         7R0Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VUZ+5uaWO5tygxXuvOm55d3w56P1W5CNtNbPKcozm+o=;
+        b=BbsTPuA4f+c97Mqm4Dhm66f9TB6s3p0y9+fl9la8dSQZ1b2w4EnvmGOkSZBlZVxEQi
+         +mAkU4d3/nigMTMcM7HEC6B7H+1drbyVBb0RJc7P0/JU3g595pcwSRPU7RMk6djLgmZA
+         Tbl1Dvre/iCIBqpldW1K0yGa6l7xkuj3dk/8rQVSOEgOCjCiEwzYUv6gSZQC4P6uwLcL
+         MAq4Fwc9SDNxh0PEm2MTNSNHRODPIBO7AFqc+IkxqPjybdG1dyf5SgMd9VnehbaP8hw/
+         6fhPTL/NW+557guMWBZx68Sjj5L1z4eX5LvEFxXfC2M4t3j/QQl0EdlFy/RAepYcv2r5
+         Edhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=ZS1hdM2dLsIlb7yqUlnhLDroUWcG6WpXbsGcaYexh7c=;
-        b=UVfWyWkpCLpxdVoIgdIdOpuP+Cvqaa9XDmLQLt6KMLQXzWa64Btbf/Aay2G73j9HO2
-         UysnFR0ieXdPwD86diaNZE4RHAvbHeZ16ZflGV+CanzReicmZmrbGiIo8/PwKnge93zb
-         0cWAbbYBR+R2m3eXih1XoT+u4Oy1zK7ee3YULEsf8LbviHIFrRIJGcRFKJHc31fS4Tbn
-         ymEFE6SRRs+mPPyVmMq8ks5TZV1TkcrWzycT58Lqbldu+z0nK6F38fPKzPa6cfyo5wVE
-         4iZuBBC55HFSobsHiWH5QlxISqqs0fGzmNDO5Xgm8UBm57gpUNpJvIepK+hWAOErj4i5
-         NwxA==
-X-Gm-Message-State: AOAM530aQxabjb09WNbZVqNHtQoH7N3lmEuhqXORRiwwl35z4Fhn0W1y
-        K8NCft+bkcd/rIOy8YPZAfo=
-X-Google-Smtp-Source: ABdhPJyO7macKs10pn/OPsdYGb3HDripHE++c+xxQ1rhCPTvjVg9CZ+XWSz1CQTA5vEsG0f4rKluug==
-X-Received: by 2002:aa7:9468:: with SMTP id t8mr19069200pfq.182.1596535747891;
-        Tue, 04 Aug 2020 03:09:07 -0700 (PDT)
-Received: from [192.168.97.34] (p7925058-ipngn38401marunouchi.tokyo.ocn.ne.jp. [122.16.223.58])
-        by smtp.gmail.com with ESMTPSA id b15sm3792610pgk.14.2020.08.04.03.09.01
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Aug 2020 03:09:07 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.15\))
-Subject: Re: [RFC PATCH bpf-next 3/3] samples/bpf: Add a simple bridge example
- accelerated with XDP
-From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
-In-Reply-To: <20200731161519.5f413f82@carbon>
-Date:   Tue, 4 Aug 2020 19:08:59 +0900
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VUZ+5uaWO5tygxXuvOm55d3w56P1W5CNtNbPKcozm+o=;
+        b=fUeeWvd2ZRejQZ1sWQrw256P97RzM4EbMsJVtqowW9H2Y3RFKi9vHSKKHb23bDF0uB
+         A9+EBVVHyz5hqsYSufAFR8NyB+EtgFOBPCGbD4e1tnVvm3XHZbGZF10RpgvGkDQsHxOz
+         1Oz3hA0Tzpf4MNq6qOAvVFDuQVLCQ4/z5FigXLEQPGS8ZLDTSPWdhLosVlSa6IqiDSYw
+         Lo/zglcq0yfNyT+MHLUOaR9hUO0Blua4VIQsPZxdU07TPEG0xpJnp8cmRhhPeHxa22Nm
+         K6o3OmXBTLFoUtO4I52kjqwAqF2IXuf26QDefTApr5mo0FLH9VVu224gRdLi8Kq6SIT9
+         jDpw==
+X-Gm-Message-State: AOAM533szIRmvwyPzx+9BmUbxlyq2ejjP9N7w7ZSMJSVfDp7587711Fv
+        glscVrFiURINRX4SHjreuNY0FwFi+9OydCxjTFY=
+X-Google-Smtp-Source: ABdhPJyKMDJtC/pI434FF62GRZ35Xm2o0EpxfqLH2ESt2EmF/5liRp8UjeIexAeqMr2Xm0lz1ysYmDrSXO5yB3E4XyA=
+X-Received: by 2002:a63:5412:: with SMTP id i18mr19181541pgb.63.1596535990834;
+ Tue, 04 Aug 2020 03:13:10 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200730073702.16887-1-xie.he.0141@gmail.com> <CAJht_EO1srhh68DifK61+hpY+zBRU8oOAbJOSpjOqePithc7gw@mail.gmail.com>
+ <c88c0acc63cbc64383811193c5e1b184@dev.tdt.de> <CA+FuTSeCFn+t55R8G54bFt4i8zP_gOHT7eZ5TeqNmcX5yL3tGw@mail.gmail.com>
+ <CAJht_EOeCpy_SLKk2KXJHBj79VCujUZWiZou_BDfMr+pVWKGPA@mail.gmail.com>
+In-Reply-To: <CAJht_EOeCpy_SLKk2KXJHBj79VCujUZWiZou_BDfMr+pVWKGPA@mail.gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Tue, 4 Aug 2020 03:13:00 -0700
+Message-ID: <CAJht_EN5fRKMHZRtqOgYKZ4wmOZOQcrGnarEPWUxRD31eaftRA@mail.gmail.com>
+Subject: Re: [PATCH v2] drivers/net/wan/lapbether: Use needed_headroom instead
+ of hard_header_len
+To:     Willem de Bruijn <willemb@google.com>
+Cc:     Martin Schiller <ms@dev.tdt.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org, bpf@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <46CD5E66-D554-473A-BE9A-9AC2EF8D16B1@gmail.com>
-References: <1596170660-5582-1-git-send-email-komachi.yoshiki@gmail.com>
- <1596170660-5582-4-git-send-email-komachi.yoshiki@gmail.com>
- <20200731161519.5f413f82@carbon>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-X-Mailer: Apple Mail (2.3445.104.15)
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Aug 4, 2020 at 3:07 AM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> Maybe we could contact <majordomo@vger.kernel.org>. It seems to be the
+> manager of VGER mail lists.
 
-> 2020/07/31 23:15=E3=80=81Jesper Dangaard Brouer =
-<brouer@redhat.com>=E3=81=AE=E3=83=A1=E3=83=BC=E3=83=AB:
->=20
->=20
-> I really appreciate that you are working on adding this helper.
-> Some comments below.
-
-Thanks! Find my response below, please.
-
-> On Fri, 31 Jul 2020 13:44:20 +0900
-> Yoshiki Komachi <komachi.yoshiki@gmail.com> wrote:
->=20
->> diff --git a/samples/bpf/xdp_bridge_kern.c =
-b/samples/bpf/xdp_bridge_kern.c
->> new file mode 100644
->> index 000000000000..00f802503199
->> --- /dev/null
->> +++ b/samples/bpf/xdp_bridge_kern.c
->> @@ -0,0 +1,129 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/* Copyright (c) 2020 NTT Corp. All Rights Reserved.
->> + *
-> [...]
->> +
->> +struct {
->> +	__uint(type, BPF_MAP_TYPE_DEVMAP_HASH);
->> +	__uint(key_size, sizeof(int));
->> +	__uint(value_size, sizeof(int));
->> +	__uint(max_entries, 64);
->> +} xdp_tx_ports SEC(".maps");
->> +
->> +static __always_inline int xdp_bridge_proto(struct xdp_md *ctx, u16 =
-br_vlan_proto)
->> +{
->> +	void *data_end =3D (void *)(long)ctx->data_end;
->> +	void *data =3D (void *)(long)ctx->data;
->> +	struct bpf_fdb_lookup fdb_lookup_params;
->> +	struct vlan_hdr *vlan_hdr =3D NULL;
->> +	struct ethhdr *eth =3D data;
->> +	u16 h_proto;
->> +	u64 nh_off;
->> +	int rc;
->> +
->> +	nh_off =3D sizeof(*eth);
->> +	if (data + nh_off > data_end)
->> +		return XDP_DROP;
->> +
->> +	__builtin_memset(&fdb_lookup_params, 0, =
-sizeof(fdb_lookup_params));
->> +
->> +	h_proto =3D eth->h_proto;
->> +
->> +	if (unlikely(ntohs(h_proto) < ETH_P_802_3_MIN))
->> +		return XDP_PASS;
->> +
->> +	/* Handle VLAN tagged packet */
->> +	if (h_proto =3D=3D br_vlan_proto) {
->> +		vlan_hdr =3D (void *)eth + nh_off;
->> +		nh_off +=3D sizeof(*vlan_hdr);
->> +		if ((void *)eth + nh_off > data_end)
->> +			return XDP_PASS;
->> +
->> +		fdb_lookup_params.vlan_id =3D =
-ntohs(vlan_hdr->h_vlan_TCI) &
->> +					VLAN_VID_MASK;
->> +	}
->> +
->> +	/* FIXME: Although Linux bridge provides us with vlan filtering =
-(contains
->> +	 * PVID) at ingress, the feature is currently unsupported in =
-this XDP program.
->> +	 *
->> +	 * Two ideas to realize the vlan filtering are below:
->> +	 *   1. usespace daemon monitors bridge vlan events and notifies =
-XDP programs
->                   ^^
-> Typo: usespace -> userspace
-
-I will fix this in the next version.
-
->> +	 *      of them through BPF maps
->> +	 *   2. introduce another bpf helper to retrieve bridge vlan =
-information
->=20
-> The comment appears two times time this file.
-
-I was aiming to show future implementation of the vlan filtering at =
-ingress (not egress) to
-be required here by the above comment.
-
->> +	 *
->> +	 *
->> +	 * FIXME: After the vlan filtering, learning feature is required =
-here, but
->> +	 * it is currently unsupported as well. If another bpf helper =
-for learning
->> +	 * is accepted, the processing could be implemented in the =
-future.
->> +	 */
->> +
->> +	memcpy(&fdb_lookup_params.addr, eth->h_dest, ETH_ALEN);
->> +
->> +	/* Note: This program definitely takes ifindex of ingress =
-interface as
->> +	 * a bridge port. Linux networking devices can be stacked and =
-physical
->> +	 * interfaces are not necessarily slaves of bridges (e.g., =
-bonding or
->> +	 * vlan devices can be slaves of bridges), but stacked bridge =
-ports are
->> +	 * currently unsupported in this program. In such cases, XDP =
-programs
->> +	 * should be attached to a lower device in order to process =
-packets with
->> +	 * higher speed. Then, a new bpf helper to find upper devices =
-will be
->> +	 * required here in the future because they will be registered =
-on FDB
->> +	 * in the kernel.
->> +	 */
->> +	fdb_lookup_params.ifindex =3D ctx->ingress_ifindex;
->> +
->> +	rc =3D bpf_fdb_lookup(ctx, &fdb_lookup_params, =
-sizeof(fdb_lookup_params), 0);
->> +	if (rc !=3D BPF_FDB_LKUP_RET_SUCCESS) {
->> +		/* In cases of flooding, XDP_PASS will be returned here =
-*/
->> +		return XDP_PASS;
->> +	}
->> +
->> +	/* FIXME: Although Linux bridge provides us with vlan filtering =
-(contains
->> +	 * untagged policy) at egress as well, the feature is currently =
-unsupported
->> +	 * in this XDP program.
->> +	 *
->> +	 * Two ideas to realize the vlan filtering are below:
->> +	 *   1. usespace daemon monitors bridge vlan events and notifies =
-XDP programs
->> +	 *      of them through BPF maps
->> +	 *   2. introduce another bpf helper to retrieve bridge vlan =
-information
->> +	 */
->=20
-> (2nd time the comment appears)
-
-The 2nd one is marking for future implementation of the egress =
-filtering.
-
-Sorry for confusing you. I will try to remove the redundancy and =
-confusion.
-
->> +
->=20
-> A comment about below bpf_redirect_map() would be good.  Explaining
-> that we depend on fallback behavior, to let normal bridge code handle
-> other cases (e.g. flood/broadcast). And also that if lookup fails,
-> XDP_PASS/fallback also happens.
-
-In this example, flooded packets will be transferred to the upper normal =
-bridge by not the
-bpf_redirect_map() call but the XDP_PASS action as below:
-
-+	rc =3D bpf_fdb_lookup(ctx, &fdb_lookup_params, =
-sizeof(fdb_lookup_params), 0);
-+	if (rc !=3D BPF_FDB_LKUP_RET_SUCCESS) {
-+		/* In cases of flooding, XDP_PASS will be returned here =
-*/
-+		return XDP_PASS;
-+	}
-
-Thus, such a comment should be described as above, IMO.
-
-Thanks & Best regards,
-
->> +	return bpf_redirect_map(&xdp_tx_ports, =
-fdb_lookup_params.ifindex, XDP_PASS);
->> +}
->> +
->> +SEC("xdp_bridge")
->> +int xdp_bridge_prog(struct xdp_md *ctx)
->> +{
->> +	return xdp_bridge_proto(ctx, 0);
->> +}
->> +
->> +SEC("xdp_8021q_bridge")
->> +int xdp_8021q_bridge_prog(struct xdp_md *ctx)
->> +{
->> +	return xdp_bridge_proto(ctx, htons(ETH_P_8021Q));
->> +}
->> +
->> +SEC("xdp_8021ad_bridge")
->> +int xdp_8021ad_bridge_prog(struct xdp_md *ctx)
->> +{
->> +	return xdp_bridge_proto(ctx, htons(ETH_P_8021AD));
->> +}
->> +
->> +char _license[] SEC("license") =3D "GPL";
->=20
->=20
-> --=20
-> Best regards,
->  Jesper Dangaard Brouer
->  MSc.CS, Principal Kernel Engineer at Red Hat
->  LinkedIn: http://www.linkedin.com/in/brouer
->=20
-
-=E2=80=94
-Yoshiki Komachi
-komachi.yoshiki@gmail.com
-
+Oh. No. Majordomo seems to be a robot.
