@@ -2,70 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E929923BB2D
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 15:31:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B614A23BB31
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 15:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726200AbgHDNbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 09:31:23 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:40098 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726198AbgHDNbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 09:31:13 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id EFB1F2008A;
-        Tue,  4 Aug 2020 13:31:12 +0000 (UTC)
-Received: from us4-mdac16-41.at1.mdlocal (unknown [10.110.48.12])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id EDBA6800AC;
-        Tue,  4 Aug 2020 13:31:12 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.108])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 99A2E40076;
-        Tue,  4 Aug 2020 13:31:12 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 519BA14005A;
-        Tue,  4 Aug 2020 13:31:12 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 4 Aug 2020
- 14:31:07 +0100
-Subject: Re: [PATCH v3 net-next 11/11] sfc_ef100: add nic-type for VFs, and
- bind to them
-To:     David Miller <davem@davemloft.net>, <lkp@intel.com>
-CC:     <linux-net-drivers@solarflare.com>, <kbuild-all@lists.01.org>,
-        <netdev@vger.kernel.org>
-References: <56e8d601-1dbd-f49e-369c-6cbed4d896bf@solarflare.com>
- <202008040935.VN2uKoeZ%lkp@intel.com>
- <20200803.183045.2051223193100039727.davem@davemloft.net>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <cea49f2a-d678-665f-5689-3b409e468567@solarflare.com>
-Date:   Tue, 4 Aug 2020 14:31:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726282AbgHDNeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 09:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48806 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725864AbgHDNeB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 09:34:01 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F1FC06174A
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 06:34:00 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id g8so2703405wmk.3
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 06:34:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=J1/mYzIP2hMyjkq4qwIx7vKFLfGV8E9+xnljo9oNBug=;
+        b=g2//3kmYqQevKfe9SCxyV6EZhOfaU+P+Cy9nDkqvNsV+5/24wqAVcu/5670F9bItAF
+         kZ+KpSx8MmOK7MWb1gK9gTffVBJKT3jM2ZYsXwG+DAgcDPTTCOWQuj/I5vNUXZthINh0
+         xHNQzGNUPZHfw/KK7oFFwG2obkokd6owf3M6AJiffKH4bsQYpX+DpisRtrdhYpxeR84P
+         QDR1ZTwEsRgQ+EGJmjqhRRBjqaSsk7rK9/1z0oYSCbxox9ByTlQKYcyRhu4/RhiRuV4T
+         btE6hTKn6Qd1gaziphYJ3e1eH3H7jANcKyBQJXIDcnYdDcwxDRPdrxcXVA8bcUYL69l/
+         VVSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J1/mYzIP2hMyjkq4qwIx7vKFLfGV8E9+xnljo9oNBug=;
+        b=WSU4vJkWv9vsyFA096x3EqlFs3ga92ygs96jauAku6Z7A4hhPDpl20nhIAkoE1IbkW
+         8DY/zzVIg1t0pvSYCXVM98+vKHF2Gb24mCTM5hCM1qqonu+bKfMeiWobNxQijH/5gnWh
+         Z5ARXxD+lt7YI10N8bEwkd2AKMdoT+8vitZJylBt1n769eEfXnC+v4Znn0EvBfk9uxbi
+         /kSEP0u37eqDeI5iX8LZJaj1jwTEcus8DTVGBvDKOtmWU1Ypv/v5g/asMH/7mQMn5z4v
+         r2xfwS1JrVlCjUL0td1daoZFkjDgXLXpOp8ktki3KEtQyURuw5ixisdsEpD/BFaWW95v
+         J9SQ==
+X-Gm-Message-State: AOAM530mpo32uZ0iMeGMcALoS0SevEwjHWn7noDCFW7cMicMWZtEvJ3k
+        Z368Ef4V8Ey/GQ7QbAvIuaEd/tGn3R18pECVkdaU2Q==
+X-Google-Smtp-Source: ABdhPJxAjw5E9Gzy3aeP53ZI+pqeCPa5gfx7N9vxRRtQkTi2sm8CbIjAo67QAvYWwoPiNQ7r1jW389h/z4hP4PYpkxw=
+X-Received: by 2002:a1c:e0c2:: with SMTP id x185mr4073668wmg.124.1596548039304;
+ Tue, 04 Aug 2020 06:33:59 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200803.183045.2051223193100039727.davem@davemloft.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25582.005
-X-TM-AS-Result: No-3.488100-8.000000-10
-X-TMASE-MatchedRID: e/tT8EyIjJTmLzc6AOD8DfHkpkyUphL9ay49w8WASDcFqrxVoN14Onm9
-        LIai61FrNprjl1FQE2bqUwd4lb5Mcr9ZdlL8eonarjgFvJKloAc20PITYKXjDW4KlIF0bhOGec3
-        QM3secWbOre6joOUXs7vGlStDFmNG/GMLJuLcPt+pC8EzG4Zc5apDh3yrmKSbooBB8uyeEuspZK
-        3gOa9uGmJwouYrZN4qaw+fkLqdalN+3BndfXUhXQ==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.488100-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25582.005
-X-MDID: 1596547873-oVE9JHxaJgUf
+References: <20200728085734.609930-1-irogers@google.com> <20200728085734.609930-5-irogers@google.com>
+ <969ef797-59ea-69d0-24b9-33bcdff106a1@intel.com>
+In-Reply-To: <969ef797-59ea-69d0-24b9-33bcdff106a1@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 4 Aug 2020 06:33:47 -0700
+Message-ID: <CAP-5=fUCnBGX0L0Tt3_gmVnt+hvaouJMx6XFErFKk72+xuw9fw@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] perf record: Don't clear event's period if set by
+ a term
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/08/2020 02:30, David Miller wrote:
-> I fixed this in my tree as follows:
-LGTM.  Thanks for fixing, and thanks robot for catching it.
+On Tue, Aug 4, 2020 at 3:08 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> On 28/07/20 11:57 am, Ian Rogers wrote:
+> > If events in a group explicitly set a frequency or period with leader
+> > sampling, don't disable the samples on those events.
+> >
+> > Prior to 5.8:
+> > perf record -e '{cycles/period=12345000/,instructions/period=6789000/}:S'
+>
+> Might be worth explaining this use-case some more.
+> Perhaps add it to the leader sampling documentation for perf-list.
+>
+> > would clear the attributes then apply the config terms. In commit
+> > 5f34278867b7 leader sampling configuration was moved to after applying the
+> > config terms, in the example, making the instructions' event have its period
+> > cleared.
+> > This change makes it so that sampling is only disabled if configuration
+> > terms aren't present.
+> >
+> > Fixes: 5f34278867b7 ("perf evlist: Move leader-sampling configuration")
+> > Signed-off-by: Ian Rogers <irogers@google.com>
+> > ---
+> >  tools/perf/util/record.c | 28 ++++++++++++++++++++--------
+> >  1 file changed, 20 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/tools/perf/util/record.c b/tools/perf/util/record.c
+> > index a4cc11592f6b..01d1c6c613f7 100644
+> > --- a/tools/perf/util/record.c
+> > +++ b/tools/perf/util/record.c
+> > @@ -2,6 +2,7 @@
+> >  #include "debug.h"
+> >  #include "evlist.h"
+> >  #include "evsel.h"
+> > +#include "evsel_config.h"
+> >  #include "parse-events.h"
+> >  #include <errno.h>
+> >  #include <limits.h>
+> > @@ -38,6 +39,9 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
+> >       struct perf_event_attr *attr = &evsel->core.attr;
+> >       struct evsel *leader = evsel->leader;
+> >       struct evsel *read_sampler;
+> > +     struct evsel_config_term *term;
+> > +     struct list_head *config_terms = &evsel->config_terms;
+> > +     int term_types, freq_mask;
+> >
+> >       if (!leader->sample_read)
+> >               return;
+> > @@ -47,16 +51,24 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
+> >       if (evsel == read_sampler)
+> >               return;
+> >
+> > +     /* Determine the evsel's config term types. */
+> > +     term_types = 0;
+> > +     list_for_each_entry(term, config_terms, list) {
+> > +             term_types |= 1 << term->type;
+> > +     }
+> >       /*
+> > -      * Disable sampling for all group members other than the leader in
+> > -      * case the leader 'leads' the sampling, except when the leader is an
+> > -      * AUX area event, in which case the 2nd event in the group is the one
+> > -      * that 'leads' the sampling.
+> > +      * Disable sampling for all group members except those with explicit
+> > +      * config terms or the leader. In the case of an AUX area event, the 2nd
+> > +      * event in the group is the one that 'leads' the sampling.
+> >        */
+> > -     attr->freq           = 0;
+> > -     attr->sample_freq    = 0;
+> > -     attr->sample_period  = 0;
+> > -     attr->write_backward = 0;
+> > +     freq_mask = (1 << EVSEL__CONFIG_TERM_FREQ) | (1 << EVSEL__CONFIG_TERM_PERIOD);
+> > +     if ((term_types & freq_mask) == 0) {
+>
+> It would be nicer to have a helper e.g.
+>
+>         if (!evsel__have_config_term(evsel, FREQ) &&
+>             !evsel__have_config_term(evsel, PERIOD)) {
+
+Sure. The point of doing it this way was to avoid repeatedly iterating
+over the config term list.
+
+> > +             attr->freq           = 0;
+> > +             attr->sample_freq    = 0;
+> > +             attr->sample_period  = 0;
+>
+> If we are not sampling, then maybe we should also put here:
+>
+>                 attr->write_backward = 0;
+>
+> > +     }
+>
+> Then, if we are sampling this evsel shouldn't the backward setting
+> match the leader? e.g.
+>
+>         if (attr->sample_freq)
+>                 attr->write_backward = leader->core.attr.write_backward;
+
+Perhaps that should be a follow up change? This change is trying to
+make the behavior match the previous behavior.
+
+Thanks,
+Ian
+
+> > +     if ((term_types & (1 << EVSEL__CONFIG_TERM_OVERWRITE)) == 0)
+> > +             attr->write_backward = 0;
+> >
+> >       /*
+> >        * We don't get a sample for slave events, we make them when delivering
+> >
+>
