@@ -2,134 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 569DD23C1AF
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 23:45:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0EB823C1C1
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 23:59:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728266AbgHDVo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 17:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727773AbgHDVo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 17:44:58 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F405C06174A
-        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 14:44:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=EshEUfAUhPsxzpygoTOYKta692Kd6ufo8nifhq5xWqU=; b=ty2mWcguWxI2a9luSAY/yqI8A
-        X+6UDHuWcx+s1CWXl6U4H0H8qpZhSJ9iDyBDINueXq5iFhC8XgQxvEhcJHWJx3yG13MLC+Ty+Edk6
-        iOPQ8/KU5MBgD0hyaFXpCpXyNYJpMYfxiumBJtKll6pqgj5NDHZP7hW/yrIqzj3T68jbz0Bj6YCdg
-        +4dT+00qVCsHOnDV5Pf49AnC/HFbHQVcfi2QePsJ3Pqfwn6rx3jgO1QhMwezm/0ztknz2hwV6d45o
-        obXettEqzdGbvU3HcSvwpnEmA8fM2H5WlNNjiTUwrhoHtkDECmpxPq2EzjkVFFG56HuVi+tasZnBq
-        iAh8RljOg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48380)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1k34jr-0002wQ-AA; Tue, 04 Aug 2020 22:44:51 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1k34jo-0004Sh-Q9; Tue, 04 Aug 2020 22:44:48 +0100
-Date:   Tue, 4 Aug 2020 22:44:48 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Petr Machata <petrm@mellanox.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1728355AbgHDV6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 17:58:50 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:37488 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728052AbgHDV6t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 17:58:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596578328;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kBOKJp8w9KZXZuz53OUDNEXh+d4eCdFrJ20ncB3veo8=;
+        b=b1QsIG/QVtQOkn4M7M2iKIg1Sy/sbsnP206MdiKwgyfNFYXcju5UVk4b+4weBgJ6Zp/GP+
+        T6xOutvq4JHM3YrWyhF3/uy/ccKabSeyjaJj9ZHC/x2m2SasDNUvpHaldxYLWuzUv3QsqH
+        xcguSKJHsTUP9++qcGNCqolJP/34+ec=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-375-5AV7SC3ANV6U9ZNH25nRiA-1; Tue, 04 Aug 2020 17:58:39 -0400
+X-MC-Unique: 5AV7SC3ANV6U9ZNH25nRiA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7483E1DE1;
+        Tue,  4 Aug 2020 21:58:36 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-113-133.rdu2.redhat.com [10.10.113.133])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9845272E48;
+        Tue,  4 Aug 2020 21:58:34 +0000 (UTC)
+Date:   Tue, 4 Aug 2020 17:58:32 -0400
+From:   Neil Horman <nhorman@redhat.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     izabela.bakollari@gmail.com, Neil Horman <nhorman@tuxdriver.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 1/9] ptp: Add generic ptp v2 header parsing function
-Message-ID: <20200804214448.GV1551@shell.armlinux.org.uk>
-References: <20200730080048.32553-1-kurt@linutronix.de>
- <20200730080048.32553-2-kurt@linutronix.de>
- <87lfj1gvgq.fsf@mellanox.com>
- <87pn8c0zid.fsf@kurt>
- <09f58c4f-dec5-ebd1-3352-f2e240ddcbe5@ti.com>
- <20200804210759.GU1551@shell.armlinux.org.uk>
- <45130ed9-7429-f1cd-653b-64417d5a93aa@ti.com>
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        David Miller <davem@davemloft.net>
+Subject: Re: [Linux-kernel-mentees] [PATCHv2 net-next] dropwatch: Support
+ monitoring of dropped frames
+Message-ID: <20200804215832.GB72184@localhost.localdomain>
+References: <20200707171515.110818-1-izabela.bakollari@gmail.com>
+ <20200804160908.46193-1-izabela.bakollari@gmail.com>
+ <CAM_iQpV-AfX_=o0=ZhU2QzV_pmyWs8RKV0yyMuxFgwFAPwpnXw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <45130ed9-7429-f1cd-653b-64417d5a93aa@ti.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAM_iQpV-AfX_=o0=ZhU2QzV_pmyWs8RKV0yyMuxFgwFAPwpnXw@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 05, 2020 at 12:34:47AM +0300, Grygorii Strashko wrote:
-> On 05/08/2020 00:07, Russell King - ARM Linux admin wrote:
-> > On Tue, Aug 04, 2020 at 11:56:12PM +0300, Grygorii Strashko wrote:
-> > > 
-> > > 
-> > > On 31/07/2020 13:06, Kurt Kanzenbach wrote:
-> > > > On Thu Jul 30 2020, Petr Machata wrote:
-> > > > > Kurt Kanzenbach <kurt@linutronix.de> writes:
-> > > > > 
-> > > > > > @@ -107,6 +107,37 @@ unsigned int ptp_classify_raw(const struct sk_buff *skb)
-> > > > > >    }
-> > > > > >    EXPORT_SYMBOL_GPL(ptp_classify_raw);
-> > > > > > +struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type)
-> > > > > > +{
-> > > > > > +	u8 *data = skb_mac_header(skb);
-> > > > > > +	u8 *ptr = data;
-> > > > > 
-> > > > > One of the "data" and "ptr" variables is superfluous.
-> > > > 
-> > > > Yeah. Can be shortened to u8 *ptr = skb_mac_header(skb);
-> > > 
-> > > Actually usage of skb_mac_header(skb) breaks CPTS RX time-stamping on
-> > > am571x platform PATCH 6.
-> > > 
-> > > The CPSW RX timestamp requested after full packet put in SKB, but
-> > > before calling eth_type_trans().
-> > > 
-> > > So, skb->data pints on Eth header, but skb_mac_header() return garbage.
-> > > 
-> > > Below diff fixes it for me.
-> > 
-> > However, that's likely to break everyone else.
-> > 
-> > For example, anyone calling this from the mii_timestamper rxtstamp()
-> > method, the skb will have been classified with the MAC header pushed
-> > and restored, so skb->data points at the network header.
-> > 
-> > Your change means that ptp_parse_header() expects the MAC header to
-> > also be pushed.
-> > 
-> > Is it possible to adjust CPTS?
-> > 
-> > Looking at:
-> > drivers/net/ethernet/ti/cpsw.c... yes.
-> > drivers/net/ethernet/ti/cpsw_new.c... yes.
-> > drivers/net/ethernet/ti/netcp_core.c... unclear.
-> > 
-> > If not, maybe cpts should remain unconverted - I don't see any reason
-> > to provide a generic function for one user.
-> > 
+On Tue, Aug 04, 2020 at 02:28:28PM -0700, Cong Wang wrote:
+> On Tue, Aug 4, 2020 at 9:14 AM <izabela.bakollari@gmail.com> wrote:
+> >
+> > From: Izabela Bakollari <izabela.bakollari@gmail.com>
+> >
+> > Dropwatch is a utility that monitors dropped frames by having userspace
+> > record them over the dropwatch protocol over a file. This augument
+> > allows live monitoring of dropped frames using tools like tcpdump.
+> >
+> > With this feature, dropwatch allows two additional commands (start and
+> > stop interface) which allows the assignment of a net_device to the
+> > dropwatch protocol. When assinged, dropwatch will clone dropped frames,
+> > and receive them on the assigned interface, allowing tools like tcpdump
+> > to monitor for them.
+> >
+> > With this feature, create a dummy ethernet interface (ip link add dev
+> > dummy0 type dummy), assign it to the dropwatch kernel subsystem, by using
+> > these new commands, and then monitor dropped frames in real time by
+> > running tcpdump -i dummy0.
 > 
-> Could it be an option to pass "u8 *ptr" instead of "const struct sk_buff *skb" as
-> input parameter to ptp_parse_header()?
+> drop monitor is already able to send dropped packets to user-space,
+> and wireshark already catches up with this feature:
+> 
+> https://code.wireshark.org/review/gitweb?p=wireshark.git;a=commitdiff;h=a94a860c0644ec3b8a129fd243674a2e376ce1c8
+> 
+> So what you propose here seems pretty much a duplicate?
+> 
+I had asked Izabela to implement this feature as an alternative approach to
+doing live capture of dropped packets, as part of the Linux foundation
+mentorship program.  I'm supportive of this additional feature as the added code
+is fairly minimal, and allows for the use of other user space packet monitoring
+tools without additional code changes (i.e. tcpdump/snort/etc can now monitor
+dropped packets without the need to augment those tools with netlink capture
+code.
 
-It needs to read from the buffer, and in order to do that, it needs to
-validate that the buffer contains sufficient data.  So, at minimum it
-needs to be a pointer and size of valid data.
+Best
+Neil 
+> Thanks.
+> _______________________________________________
+> Linux-kernel-mentees mailing list
+> Linux-kernel-mentees@lists.linuxfoundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/linux-kernel-mentees
+> 
 
-I was thinking about suggesting that as a core function, with a wrapper
-for the existing interface.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
