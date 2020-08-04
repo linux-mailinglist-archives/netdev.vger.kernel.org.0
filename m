@@ -2,78 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC3B23BB2B
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 15:28:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E929923BB2D
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 15:31:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726037AbgHDN2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 09:28:34 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:56400 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725811AbgHDN2e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Aug 2020 09:28:34 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 56585A9BC0901C135BB1;
-        Tue,  4 Aug 2020 21:28:24 +0800 (CST)
-Received: from localhost (10.174.179.108) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Tue, 4 Aug 2020
- 21:28:13 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <ioana.ciornei@nxp.com>, <ruxandra.radulescu@nxp.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] dpaa2-eth: Fix passing zero to 'PTR_ERR' warning
-Date:   Tue, 4 Aug 2020 21:26:43 +0800
-Message-ID: <20200804132643.42104-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1726200AbgHDNbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 09:31:23 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:40098 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726198AbgHDNbN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 09:31:13 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id EFB1F2008A;
+        Tue,  4 Aug 2020 13:31:12 +0000 (UTC)
+Received: from us4-mdac16-41.at1.mdlocal (unknown [10.110.48.12])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id EDBA6800AC;
+        Tue,  4 Aug 2020 13:31:12 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.108])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 99A2E40076;
+        Tue,  4 Aug 2020 13:31:12 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 519BA14005A;
+        Tue,  4 Aug 2020 13:31:12 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 4 Aug 2020
+ 14:31:07 +0100
+Subject: Re: [PATCH v3 net-next 11/11] sfc_ef100: add nic-type for VFs, and
+ bind to them
+To:     David Miller <davem@davemloft.net>, <lkp@intel.com>
+CC:     <linux-net-drivers@solarflare.com>, <kbuild-all@lists.01.org>,
+        <netdev@vger.kernel.org>
+References: <56e8d601-1dbd-f49e-369c-6cbed4d896bf@solarflare.com>
+ <202008040935.VN2uKoeZ%lkp@intel.com>
+ <20200803.183045.2051223193100039727.davem@davemloft.net>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <cea49f2a-d678-665f-5689-3b409e468567@solarflare.com>
+Date:   Tue, 4 Aug 2020 14:31:03 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.179.108]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20200803.183045.2051223193100039727.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25582.005
+X-TM-AS-Result: No-3.488100-8.000000-10
+X-TMASE-MatchedRID: e/tT8EyIjJTmLzc6AOD8DfHkpkyUphL9ay49w8WASDcFqrxVoN14Onm9
+        LIai61FrNprjl1FQE2bqUwd4lb5Mcr9ZdlL8eonarjgFvJKloAc20PITYKXjDW4KlIF0bhOGec3
+        QM3secWbOre6joOUXs7vGlStDFmNG/GMLJuLcPt+pC8EzG4Zc5apDh3yrmKSbooBB8uyeEuspZK
+        3gOa9uGmJwouYrZN4qaw+fkLqdalN+3BndfXUhXQ==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--3.488100-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25582.005
+X-MDID: 1596547873-oVE9JHxaJgUf
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix smatch warning:
-
-drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c:2419
- alloc_channel() warn: passing zero to 'ERR_PTR'
-
-setup_dpcon() should return ERR_PTR(err) instead of zero in error
-handling case.
-
-Fixes: d7f5a9d89a55 ("dpaa2-eth: defer probe on object allocate")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 9b4028c0e34c..5f680b953a90 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -2375,7 +2375,7 @@ static struct fsl_mc_device *setup_dpcon(struct dpaa2_eth_priv *priv)
- free:
- 	fsl_mc_object_free(dpcon);
- 
--	return NULL;
-+	return ERR_PTR(err);
- }
- 
- static void free_dpcon(struct dpaa2_eth_priv *priv,
-@@ -2399,8 +2399,8 @@ alloc_channel(struct dpaa2_eth_priv *priv)
- 		return NULL;
- 
- 	channel->dpcon = setup_dpcon(priv);
--	if (IS_ERR_OR_NULL(channel->dpcon)) {
--		err = PTR_ERR_OR_ZERO(channel->dpcon);
-+	if (IS_ERR(channel->dpcon)) {
-+		err = PTR_ERR(channel->dpcon);
- 		goto err_setup;
- 	}
- 
--- 
-2.17.1
-
-
+On 04/08/2020 02:30, David Miller wrote:
+> I fixed this in my tree as follows:
+LGTM.  Thanks for fixing, and thanks robot for catching it.
