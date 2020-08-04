@@ -2,292 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1689923B4AA
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 07:54:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8244523B510
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 08:36:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729877AbgHDFyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 01:54:36 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:51815 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729779AbgHDFyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 01:54:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596520473;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ugRRKm+vFM2ToelgE+5bvprMp2y4ES9ZAfa4svWvPVs=;
-        b=IhVYiVKZNWreVAsq2CQ2OnqffItsNIRqYVBa5mi+uP4nDWBq0nNgkf74GME3WIScsQLghY
-        jv8buRrpUr5kM0pLwuCsdGnAfrZ8eGYTg/H1Wtn0KpmR+KI9jx+ggR/O1UCPOLBJoofO7L
-        QybS51sIpRbD7tSk0gUt8wRSbSd2gzk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-100--1kaBvq-MqSURgmaQ8fsvQ-1; Tue, 04 Aug 2020 01:54:29 -0400
-X-MC-Unique: -1kaBvq-MqSURgmaQ8fsvQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 350641083E81;
-        Tue,  4 Aug 2020 05:54:28 +0000 (UTC)
-Received: from epycfail.redhat.com (unknown [10.36.110.53])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5036010021B3;
-        Tue,  4 Aug 2020 05:54:25 +0000 (UTC)
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Florian Westphal <fw@strlen.de>, David Ahern <dsahern@gmail.com>,
-        Aaron Conole <aconole@redhat.com>,
-        Numan Siddique <nusiddiq@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Lourdes Pedrajas <lu@pplo.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 6/6] selftests: pmtu.sh: Add tests for UDP tunnels handled by Open vSwitch
-Date:   Tue,  4 Aug 2020 07:53:47 +0200
-Message-Id: <c7d5abb94c529e61cfe398e553d602b1ccc9ec3b.1596520062.git.sbrivio@redhat.com>
-In-Reply-To: <cover.1596520062.git.sbrivio@redhat.com>
-References: <cover.1596520062.git.sbrivio@redhat.com>
+        id S1726090AbgHDGgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 02:36:15 -0400
+Received: from mail-eopbgr140073.outbound.protection.outlook.com ([40.107.14.73]:27778
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725300AbgHDGgO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Aug 2020 02:36:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n3OVUlov3Iu8MgVh+PTyOCqrnVTNCqPyNlAhiDtQrdyW1Jepz/gcT3u+CrJxLIpXEsVvYIFLZcFzb2ceSH57ytO9Rhu6yxaJWwUYDrBLqNIqnEPZb70qonb01suu4HCXg5ndfJ7HCF5QLskSwIYMoBq0R3SWopycgBIc07rtJM8KWMeilXhA3ZuwYQdQgCntb/XNgFp0FLBH4Dz/BHxVkv1dMYwmLnoyHTiqYciIDBo4FP8z9pza6J95/X7v18i/P99nw3v1fjYPWafm1qzy0Fx2ODvo/ldN6Hdhqd30I9HGShpnDVn2h+pRifIE2ZoAgNhfRdsuFruzjgAj1tMErA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WBgRgYhXuWUBpjtbOI0hy7g5HoeulDhj+jpR0lmXINk=;
+ b=TG26LZ+SnI85dFeG2ciXb+H/K+2oDp3aGduqTeLzAadaATrMeN2vicDkT+TYsYy89wEIoK1u9lIaT0yBvBhdPlb7UempYDBWbReN6dF+B3NeibU4zdK6EbTjBMOkQN8+fsfkvZLe9KTkDufOdRf4SAdcI5s/F2japZddEIQsJ7MvxQrdN7+M4OywdvQq6oqI8RhiS4K1qIL11QszoZYrIVGqu2CGKeuaE2ZO8CONG6TsUzewrIur5rbAXcK2vzmSdjwnsq8SubRgHBNdLZOHl3ORbshcxNMGNxhp7YnZj/PPmok7IOK0rYq8/jcGQ9YOAU2XD+j0WOJJG2LLQoclgQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WBgRgYhXuWUBpjtbOI0hy7g5HoeulDhj+jpR0lmXINk=;
+ b=b4wVgE0z04+ysZiwJ8cjrwslv65C2RACxHXtdLqjuUn5c0tkhemt1qmHcDvfN6DRUbfOxKiF62SR6VCHn28w/IxH/Sm1LlAT8yw83zPkDoUAJL6fWfsgft0ilVOCGDgtnaVkDfosY8qOXSMprNk9cAEinAhldCkLNy91aWrSmm8=
+Received: from VI1PR04MB5103.eurprd04.prod.outlook.com (2603:10a6:803:51::19)
+ by VE1PR04MB6592.eurprd04.prod.outlook.com (2603:10a6:803:124::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.21; Tue, 4 Aug
+ 2020 06:36:10 +0000
+Received: from VI1PR04MB5103.eurprd04.prod.outlook.com
+ ([fe80::2c2c:20a4:38cd:73c3]) by VI1PR04MB5103.eurprd04.prod.outlook.com
+ ([fe80::2c2c:20a4:38cd:73c3%7]) with mapi id 15.20.3239.022; Tue, 4 Aug 2020
+ 06:36:10 +0000
+From:   Hongbo Wang <hongbo.wang@nxp.com>
+To:     David Miller <davem@davemloft.net>
+CC:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "idosch@idosch.org" <idosch@idosch.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
+        "roopa@cumulusnetworks.com" <roopa@cumulusnetworks.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "ivecera@redhat.com" <ivecera@redhat.com>
+Subject: RE: [EXT] Re: [PATCH v4 2/2] net: dsa: ocelot: Add support for QinQ
+ Operation
+Thread-Topic: [EXT] Re: [PATCH v4 2/2] net: dsa: ocelot: Add support for QinQ
+ Operation
+Thread-Index: AQHWZltTjJoiQZyRB0ahxfHbav3IXakm9cqAgACG/8A=
+Date:   Tue, 4 Aug 2020 06:36:10 +0000
+Message-ID: <VI1PR04MB51039B32C580321D99B8DEE8E14A0@VI1PR04MB5103.eurprd04.prod.outlook.com>
+References: <20200730102505.27039-1-hongbo.wang@nxp.com>
+        <20200730102505.27039-3-hongbo.wang@nxp.com>
+ <20200803.145843.2285407129021498421.davem@davemloft.net>
+In-Reply-To: <20200803.145843.2285407129021498421.davem@davemloft.net>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.73]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 9dc8e492-3ecf-4291-f3a3-08d83840ad06
+x-ms-traffictypediagnostic: VE1PR04MB6592:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VE1PR04MB65925EC42434E4E924BA5811E14A0@VE1PR04MB6592.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: cTukOEO4xRdU7RDvCoDuFCYYbSgRqyg2s4/eFbGWbsdJVyoPcZi+Ub5atCtbPSE/YTbQVTQgSV9yrWh6Z5L5bk5eBwTgjDH66X29GCGMxdMzYwrv3bfuNBDHWx/h19BNtLLmAXMbtLB6NZYT6Hq8CZHsLW2tMr2hz7D4e2I7N3ZYj7BRj39h1B7SMkTNJinCM2oqym/B84hsf0bhih1Mdmbho3H710SzClTZ/sWRZ4n0uYEv4wCgdS3Vo9NGc4TuJTrGpZ++vgIyzHRZGicnQ3iw++ebdI6WTLBy2gfInHK81qNd4xeHAOi2lBG8l4TiFlMWYS/vaJLLHwJIRc1NJg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5103.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(136003)(396003)(39860400002)(376002)(366004)(83380400001)(55016002)(26005)(6506007)(33656002)(5660300002)(7696005)(2906002)(52536014)(6916009)(7416002)(86362001)(9686003)(478600001)(186003)(71200400001)(316002)(66476007)(76116006)(64756008)(66946007)(8936002)(54906003)(8676002)(4326008)(44832011)(66556008)(66446008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: xf+v+lTOY1dCALEwXpyqWT/peRY9rZ88W8zm+JTM1Dgcs98tdrdt9IDsXFEBwRu1/i7/B8ydTOjmhPxepQeWbEessrPQzg5tZtzYTHmMXGce7+ahHBCvdMUpnz33+TUGtQk1c84K55KFAU1Rcasu6yYlFtNyOhmWQ78gyPd4Vh4/+w0dVH4FBZgOhOkb5EcUvVY+vnWYcWfg5VYusGTQjEwyaeehzTbldjksF9YQNLE+BLq+c4U79W8l2gxzMIuG6wwVjMKGBg7NCHSfRFTxCBtdhi9uO0c7MBw14IQGD5M9dnJswl9oKAO+fI/4qKghZoBgtV9/CZKZLP2RMLqLLDETu3H/2k9bJydF0zdAjpZiFCNV+31pkKR4K77UEM1BG+0LVA9988X6OWufP+cXMPNdGQe1+sO8V218DVLrOiKbGQqKovsgIj40umxOOf9NF4Mp9sCrYsMBGoaaEZyyBjrbATykoqNPpLDhVcNuvz8WgAvtLmQ9GAMPDhLUvHQH6qM8zqxseOV1NFaTVyXCOo6O7A53Jx54Z524VxrSG93mtltUm53ayM8Dj1L9hkPcIq0me33upxF8oX/3xg2JkmFLrdbxKIrAdJ12jKezmD8+UzKfvrYZSzgOj0ov4kNZg+KgM0I3TT9tXY7+iais9w==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5103.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9dc8e492-3ecf-4291-f3a3-08d83840ad06
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Aug 2020 06:36:10.2882
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +WF1xHJTG+taBEkXl5oGe9IuQ6+nWGeJT1zbAiwpJxks5RpmJ8McS4FKyo0RUmBn9jVHUU9InyXpBvJFsVsbaw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6592
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The new tests check that IP and IPv6 packets exceeding the local PMTU
-estimate, forwarded by an Open vSwitch instance from another node,
-result in the correct route exceptions being created, and that
-communication with end-to-end fragmentation, over GENEVE and VXLAN
-Open vSwitch ports, is now possible as a result of PMTU discovery.
+> > +     if (vlan->proto =3D=3D ETH_P_8021AD) {
+> > +             ocelot->enable_qinq =3D true;
+> > +             ocelot_port->qinq_mode =3D true;
+> > +     }
+>  ...
+> > +     if (vlan->proto =3D=3D ETH_P_8021AD) {
+> > +             ocelot->enable_qinq =3D false;
+> > +             ocelot_port->qinq_mode =3D false;
+> > +     }
+> > +
+>=20
+> I don't understand how this can work just by using a boolean to track the
+> state.
+>=20
+> This won't work properly if you are handling multiple QinQ VLAN entries.
+>=20
+> Also, I need Andrew and Florian to review and ACK the DSA layer changes t=
+hat
+> add the protocol value to the device notifier block.
 
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
----
-v2: No changes
+Hi David,
+Thanks for reply.
 
- tools/testing/selftests/net/pmtu.sh | 180 ++++++++++++++++++++++++++++
- 1 file changed, 180 insertions(+)
+When setting bridge's VLAN protocol to 802.1AD by the command "ip link set =
+br0 type bridge vlan_protocol 802.1ad", it will call dsa_slave_vlan_rx_add(=
+dev, proto, vid) for every port in the bridge, the parameter vid is port's =
+pvid 1,
+if pvid's proto is 802.1AD, I will enable switch's enable_qinq, and the rel=
+ated port's qinq_mode,
 
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index ee79c26a37dd..5401f6fd615d 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -78,6 +78,26 @@
- #	Same as pmtu_ipv{4,6}_br_vxlan{4,6}_exception, with a GENEVE tunnel
- #	instead.
- #
-+# - pmtu_ipv{4,6}_ovs_vxlan{4,6}_exception
-+#	Set up two namespaces, B, and C, with routing between the init namespace
-+#	and B over R1. A and R2 are unused in these tests. The init namespace
-+#	has a veth connection to C, and is connected to B via a VXLAN endpoint,
-+#	which is handled by Open vSwitch and bridged to C. MTU on the B-R1 link
-+#	is lower than other MTUs.
-+#
-+#	Check that C is able to communicate with B over the VXLAN tunnel, and
-+#	that PMTU exceptions with the correct values are created.
-+#
-+#	                  segment a_r1    segment b_r1            b_r1: 4000
-+#	                .--------------R1--------------.    everything
-+#	   C---veth    init                             B         else: 5000
-+#	        '- ovs                                  |
-+#	            '---- - - - - - VXLAN - - - - - - - '
-+#
-+# - pmtu_ipv{4,6}_ovs_geneve{4,6}_exception
-+#	Same as pmtu_ipv{4,6}_ovs_vxlan{4,6}_exception, with a GENEVE tunnel
-+#	instead.
-+#
- # - pmtu_ipv{4,6}_fou{4,6}_exception
- #	Same as pmtu_ipv4_vxlan4, but using a direct IPv4/IPv6 encapsulation
- #	(FoU) over IPv4/IPv6, instead of VXLAN
-@@ -174,6 +194,14 @@ tests="
- 	pmtu_ipv6_br_geneve4_exception	IPv6, bridged geneve4: PMTU exceptions	1
- 	pmtu_ipv4_br_geneve6_exception	IPv4, bridged geneve6: PMTU exceptions	1
- 	pmtu_ipv6_br_geneve6_exception	IPv6, bridged geneve6: PMTU exceptions	1
-+	pmtu_ipv4_ovs_vxlan4_exception	IPv4, OVS vxlan4: PMTU exceptions	1
-+	pmtu_ipv6_ovs_vxlan4_exception	IPv6, OVS vxlan4: PMTU exceptions	1
-+	pmtu_ipv4_ovs_vxlan6_exception	IPv4, OVS vxlan6: PMTU exceptions	1
-+	pmtu_ipv6_ovs_vxlan6_exception	IPv6, OVS vxlan6: PMTU exceptions	1
-+	pmtu_ipv4_ovs_geneve4_exception	IPv4, OVS geneve4: PMTU exceptions	1
-+	pmtu_ipv6_ovs_geneve4_exception	IPv6, OVS geneve4: PMTU exceptions	1
-+	pmtu_ipv4_ovs_geneve6_exception	IPv4, OVS geneve6: PMTU exceptions	1
-+	pmtu_ipv6_ovs_geneve6_exception	IPv6, OVS geneve6: PMTU exceptions	1
- 	pmtu_ipv4_fou4_exception	IPv4 over fou4: PMTU exceptions		1
- 	pmtu_ipv6_fou4_exception	IPv6 over fou4: PMTU exceptions		1
- 	pmtu_ipv4_fou6_exception	IPv4 over fou6: PMTU exceptions		1
-@@ -699,6 +727,66 @@ setup_bridge() {
- 	run_cmd ${ns_a} ip link set veth_A-C master br0
- }
- 
-+setup_ovs_vxlan_or_geneve() {
-+	type="${1}"
-+	a_addr="${2}"
-+	b_addr="${3}"
-+
-+	if [ "${type}" = "vxlan" ]; then
-+		opts="${opts} ttl 64 dstport 4789"
-+		opts_b="local ${b_addr}"
-+	fi
-+
-+	run_cmd ovs-vsctl add-port ovs_br0 ${type}_a -- \
-+		set interface ${type}_a type=${type} \
-+		options:remote_ip=${b_addr} options:key=1 options:csum=true || return 1
-+
-+	run_cmd ${ns_b} ip link add ${type}_b type ${type} id 1 ${opts_b} remote ${a_addr} ${opts} || return 1
-+
-+	run_cmd ${ns_b} ip addr add ${tunnel4_b_addr}/${tunnel4_mask} dev ${type}_b
-+	run_cmd ${ns_b} ip addr add ${tunnel6_b_addr}/${tunnel6_mask} dev ${type}_b
-+
-+	run_cmd ${ns_b} ip link set ${type}_b up
-+}
-+
-+setup_ovs_geneve4() {
-+	setup_ovs_vxlan_or_geneve geneve ${prefix4}.${a_r1}.1  ${prefix4}.${b_r1}.1
-+}
-+
-+setup_ovs_vxlan4() {
-+	setup_ovs_vxlan_or_geneve vxlan  ${prefix4}.${a_r1}.1  ${prefix4}.${b_r1}.1
-+}
-+
-+setup_ovs_geneve6() {
-+	setup_ovs_vxlan_or_geneve geneve ${prefix6}:${a_r1}::1 ${prefix6}:${b_r1}::1
-+}
-+
-+setup_ovs_vxlan6() {
-+	setup_ovs_vxlan_or_geneve vxlan  ${prefix6}:${a_r1}::1 ${prefix6}:${b_r1}::1
-+}
-+
-+setup_ovs_bridge() {
-+	run_cmd ovs-vsctl add-br ovs_br0 || return 2
-+	run_cmd ip link set ovs_br0 up
-+
-+	run_cmd ${ns_c} ip link add veth_C-A type veth peer name veth_A-C
-+	run_cmd ${ns_c} ip link set veth_A-C netns 1
-+
-+	run_cmd         ip link set veth_A-C up
-+	run_cmd ${ns_c} ip link set veth_C-A up
-+	run_cmd ${ns_c} ip addr add ${veth4_c_addr}/${veth4_mask} dev veth_C-A
-+	run_cmd ${ns_c} ip addr add ${veth6_c_addr}/${veth6_mask} dev veth_C-A
-+	run_cmd ovs-vsctl add-port ovs_br0 veth_A-C
-+
-+	# Move veth_A-R1 to init
-+	run_cmd ${ns_a} ip link set veth_A-R1 netns 1
-+	run_cmd ip addr add ${prefix4}.${a_r1}.1/${veth4_mask} dev veth_A-R1
-+	run_cmd ip addr add ${prefix6}:${a_r1}::1/${veth6_mask} dev veth_A-R1
-+	run_cmd ip link set veth_A-R1 up
-+	run_cmd ip route add ${prefix4}.${b_r1}.1 via ${prefix4}.${a_r1}.2
-+	run_cmd ip route add ${prefix6}:${b_r1}::1 via ${prefix6}:${a_r1}::2
-+}
-+
- setup() {
- 	[ "$(id -u)" -ne 0 ] && echo "  need to run as root" && return $ksft_skip
- 
-@@ -729,6 +817,11 @@ cleanup() {
- 	for n in ${NS_A} ${NS_B} ${NS_C} ${NS_R1} ${NS_R2}; do
- 		ip netns del ${n} 2> /dev/null
- 	done
-+
-+	ip link del veth_A-C			2>/dev/null
-+	ip link del veth_A-R1			2>/dev/null
-+	ovs-vsctl --if-exists del-port vxlan_a	2>/dev/null
-+	ovs-vsctl --if-exists del-br ovs_br0	2>/dev/null
- }
- 
- mtu() {
-@@ -1045,6 +1138,93 @@ test_pmtu_ipv6_br_geneve6_exception() {
- 	test_pmtu_ipvX_over_bridged_vxlanY_or_geneveY_exception geneve 6 6
- }
- 
-+test_pmtu_ipvX_over_ovs_vxlanY_or_geneveY_exception() {
-+	type=${1}
-+	family=${2}
-+	outer_family=${3}
-+	ll_mtu=4000
-+
-+	if [ ${outer_family} -eq 4 ]; then
-+		setup namespaces routing ovs_bridge ovs_${type}4 || return 2
-+		#                      IPv4 header   UDP header   VXLAN/GENEVE header   Ethernet header
-+		exp_mtu=$((${ll_mtu} - 20          - 8          - 8                   - 14))
-+	else
-+		setup namespaces routing ovs_bridge ovs_${type}6 || return 2
-+		#                      IPv6 header   UDP header   VXLAN/GENEVE header   Ethernet header
-+		exp_mtu=$((${ll_mtu} - 40          - 8          - 8                   - 14))
-+	fi
-+
-+	if [ "${type}" = "vxlan" ]; then
-+		tun_a="vxlan_sys_4789"
-+	elif [ "${type}" = "geneve" ]; then
-+		tun_a="genev_sys_6081"
-+	fi
-+
-+	trace ""        "${tun_a}"  "${ns_b}"  ${type}_b \
-+	      ""        veth_A-R1   "${ns_r1}" veth_R1-A \
-+	      "${ns_b}" veth_B-R1   "${ns_r1}" veth_R1-B \
-+	      ""        ovs_br0     ""         veth-A-C  \
-+	      "${ns_c}" veth_C-A
-+
-+	if [ ${family} -eq 4 ]; then
-+		ping=ping
-+		dst=${tunnel4_b_addr}
-+	else
-+		ping=${ping6}
-+		dst=${tunnel6_b_addr}
-+	fi
-+
-+	# Create route exception by exceeding link layer MTU
-+	mtu ""         veth_A-R1 $((${ll_mtu} + 1000))
-+	mtu ""         ovs_br0   $((${ll_mtu} + 1000))
-+	mtu ""         veth_A-C  $((${ll_mtu} + 1000))
-+	mtu "${ns_c}"  veth_C-A  $((${ll_mtu} + 1000))
-+	mtu "${ns_r1}" veth_R1-A $((${ll_mtu} + 1000))
-+	mtu "${ns_b}"  veth_B-R1 ${ll_mtu}
-+	mtu "${ns_r1}" veth_R1-B ${ll_mtu}
-+
-+	mtu ""        ${tun_a}  $((${ll_mtu} + 1000))
-+	mtu "${ns_b}" ${type}_b $((${ll_mtu} + 1000))
-+
-+	run_cmd ${ns_c} ${ping} -q -M want -i 0.1 -c 20 -s $((${ll_mtu} + 500)) ${dst} || return 1
-+
-+	# Check that exceptions were created
-+	pmtu="$(route_get_dst_pmtu_from_exception "${ns_c}" ${dst})"
-+	check_pmtu_value ${exp_mtu} "${pmtu}" "exceeding link layer MTU on Open vSwitch ${type} interface"
-+}
-+
-+test_pmtu_ipv4_ovs_vxlan4_exception() {
-+	test_pmtu_ipvX_over_ovs_vxlanY_or_geneveY_exception vxlan  4 4
-+}
-+
-+test_pmtu_ipv6_ovs_vxlan4_exception() {
-+	test_pmtu_ipvX_over_ovs_vxlanY_or_geneveY_exception vxlan  6 4
-+}
-+
-+test_pmtu_ipv4_ovs_geneve4_exception() {
-+	test_pmtu_ipvX_over_ovs_vxlanY_or_geneveY_exception geneve 4 4
-+}
-+
-+test_pmtu_ipv6_ovs_geneve4_exception() {
-+	test_pmtu_ipvX_over_ovs_vxlanY_or_geneveY_exception geneve 6 4
-+}
-+
-+test_pmtu_ipv4_ovs_vxlan6_exception() {
-+	test_pmtu_ipvX_over_ovs_vxlanY_or_geneveY_exception vxlan  4 6
-+}
-+
-+test_pmtu_ipv6_ovs_vxlan6_exception() {
-+	test_pmtu_ipvX_over_ovs_vxlanY_or_geneveY_exception vxlan  6 6
-+}
-+
-+test_pmtu_ipv4_ovs_geneve6_exception() {
-+	test_pmtu_ipvX_over_ovs_vxlanY_or_geneveY_exception geneve 4 6
-+}
-+
-+test_pmtu_ipv6_ovs_geneve6_exception() {
-+	test_pmtu_ipvX_over_ovs_vxlanY_or_geneveY_exception geneve 6 6
-+}
-+
- test_pmtu_ipvX_over_fouY_or_gueY() {
- 	inner_family=${1}
- 	outer_family=${2}
--- 
-2.27.0
+When there are multiple QinQ VLAN entries, If one VLAN's proto is 802.1AD, =
+I will enable switch and the related port into QinQ mode.
+
+Thanks,
+hongbo
 
