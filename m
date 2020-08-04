@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E03923B8B3
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 12:24:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5887423B8B9
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 12:25:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726386AbgHDKYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 06:24:22 -0400
-Received: from mga01.intel.com ([192.55.52.88]:27856 "EHLO mga01.intel.com"
+        id S1728430AbgHDKZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 06:25:29 -0400
+Received: from mga05.intel.com ([192.55.52.43]:29375 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726041AbgHDKYV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Aug 2020 06:24:21 -0400
-IronPort-SDR: pGgonrDIf3FCYUPilCyJI7mjUfEsSkaP7/R6F6R+TnGNlbz99g2tmII5nZ0DiPTcq0fP9DufuZ
- Jau4IqwTrW6Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9702"; a="170370091"
+        id S1726041AbgHDKZZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Aug 2020 06:25:25 -0400
+IronPort-SDR: B93MxYmO4K3WeJ3o2QVOa8Bdk9By1tAfxEQft+BTVuQy1ki8fi0L3g615Rh2USfv9ysIw+v1S5
+ 6jIQoyyp/DAA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9702"; a="237146609"
 X-IronPort-AV: E=Sophos;i="5.75,433,1589266800"; 
-   d="scan'208";a="170370091"
+   d="scan'208";a="237146609"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2020 03:24:21 -0700
-IronPort-SDR: 86o3INU0VufP9AJUY0ckrtrmVzSO3vgJqrYDM5ELIDtL/cHRB0+ZKUiRCQhpZtJwebCAVpRgJB
- xz0gEKowJIMQ==
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2020 03:25:25 -0700
+IronPort-SDR: /0RVEfgju9VaF9xmo8ygzfV/HOYmfFaIf2GRKeBWFsOMbiohTJlfu1lhlD65XmfvJziaMnydV3
+ Nv3Gendtu4qQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,433,1589266800"; 
-   d="scan'208";a="288512752"
+   d="scan'208";a="330560245"
 Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.131])
-  by orsmga003.jf.intel.com with ESMTP; 04 Aug 2020 03:24:19 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 04 Aug 2020 03:25:23 -0700
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com
+To:     jasowang@redhat.com, mst@redhat.com
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, eli@mellanox.com, shahafs@mellanox.com,
         parav@mellanox.com, Zhu Lingshan <lingshan.zhu@intel.com>
 Subject: [PATCH] vDPA: dont change vq irq after DRIVER_OK
-Date:   Tue,  4 Aug 2020 18:20:21 +0800
-Message-Id: <20200804102021.69917-1-lingshan.zhu@intel.com>
+Date:   Tue,  4 Aug 2020 18:21:23 +0800
+Message-Id: <20200804102123.69978-1-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.18.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
