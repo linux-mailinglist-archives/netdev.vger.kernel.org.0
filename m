@@ -2,96 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CCB923B5E7
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 09:42:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6221723B5ED
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 09:44:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729939AbgHDHmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 03:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726808AbgHDHmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 03:42:11 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A8BC06174A;
-        Tue,  4 Aug 2020 00:42:10 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id f7so36447538wrw.1;
-        Tue, 04 Aug 2020 00:42:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oCXgLsgWbZCbyr3KPP51MnphTqhD3dbi1xLbjo5qgUw=;
-        b=pPBk/pq765sG+BX2ASJVVDKk3hdht1AvcAhGySAHN5qiPg3ZIBcbxpIYB+PzpFwkp7
-         XfXDeA6Io4RxHXDRE7SDx2jcJnsdS+0W64eVBTudh8NsVnAj86kffUvPTaB7oL7FL/iY
-         YiTqM9VGVRWhppFju3BPI+jtEmiMvl6DCCFrbFNFBJA0o/oW3vhcKX3i9JGmIrrwjwfl
-         LUI7Uv2jq/FOkllQGoUZa66Aw9X9YNua6Npv8l5cqOC6QveDgz5ai2BuzOU1IfQ4ZAXG
-         BkMR3TC5P/iqJXsR8lDpXUEFm3topseHo4/qNeIcjCo30wD207pqaFcviHzwCtvgL+f+
-         5XqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oCXgLsgWbZCbyr3KPP51MnphTqhD3dbi1xLbjo5qgUw=;
-        b=AhJR65H6j9j4M3tyrG3cb4eh1Fj3vnBCVltvUjAojz9isQdp2jn6DE+BlEu42qEwHz
-         qhLTguCPx+I5oXAVBqB/k5/N+6hb2B8oFYe4F1tOZkoFbvnJ1y6kx86IyrBkkzMoVi5g
-         ef7EQUmBUWgZrf89aEgNWesL86ede0+HNl3HRJ9eYscCc19mZKghTI2WK1z084guxd91
-         V3tDH6Vvup0rM0p0B9QFRsYrNnQnINc1+1rcQdURYrWeekrDj0Aq18Q85+H89ImdKa/J
-         svpAVSVZOeesYLUjRkRvZ7/iBefGqADaMqocxDNFWkRcWr6Oh4cPDDnJ+khvZ5SIuerC
-         NqZw==
-X-Gm-Message-State: AOAM530VDA3Gl14OaOyBlTIeshKbf9Oh5Ieqszh6CUZAZL+IdbWm68H1
-        XHa5Q2PsR5/Bg6e/zp7ClFc=
-X-Google-Smtp-Source: ABdhPJxBVh6kS4sYJbaFdvCZlDfGQsTPSi7bhe7SM+TPnA1jxSlmGcmB9HNCP3wZpUj5HCOFu649IA==
-X-Received: by 2002:adf:ba05:: with SMTP id o5mr884422wrg.7.1596526929473;
-        Tue, 04 Aug 2020 00:42:09 -0700 (PDT)
-Received: from [10.55.3.148] ([173.38.220.44])
-        by smtp.gmail.com with ESMTPSA id l1sm30748857wrb.12.2020.08.04.00.42.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Aug 2020 00:42:08 -0700 (PDT)
-Subject: Re: [net-next v2] seg6: using DSCP of inner IPv4 packets
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrea.mayer@uniroma2.it
-References: <20200803181417.1320-1-ahabdels@gmail.com>
- <20200803124817.5068e06d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Ahmed Abdelsalam <ahabdels@gmail.com>
-Message-ID: <01738166-f784-09f3-2286-150442ffa237@gmail.com>
-Date:   Tue, 4 Aug 2020 09:42:07 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        id S1729923AbgHDHoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 03:44:18 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:51919 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729874AbgHDHoS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 03:44:18 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id CAAA55C0003;
+        Tue,  4 Aug 2020 03:44:16 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Tue, 04 Aug 2020 03:44:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=+TPlxB
+        1NA9qErTj3O+ohR/v9W1SPgOB1oHZ14rLsSzA=; b=cPJCTGbIAE7E5r29si/g+C
+        2QpKAm2zHa4njNQLFNSYFmag8lg++vAekgiNacO1cgXCA5d62GUB8K76myJ7sGaB
+        iWE4A6n/HjHh30ooGPSFBKQNJYXMqg1AeFXJaXPh9c6+wtUbcZQJTw9E7LUuBBxB
+        iXzWfFwAyD9fKYFyouTp0NHa2Xqh3OfS+wZaJEpMm3P4rb65HCnyaXd9Em6e2xzd
+        7bX/Zz0OgJKtSA59c9oxGgWbFvrcw1iygMbO2bmuuquPCQf8ZjSR8MIgrqoF0vLk
+        nRRr/8Ki7fiDg58x06HqvUQU1a0bwyTWMfPgKNBpD4FhO9i47mAJmRiTqBKgw01g
+        ==
+X-ME-Sender: <xms:0BEpXzAG8HWw8Np3NsUL53PooIm-wx0e0FVLGIrqzyv4Hb_iTAvfNw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrjeehgdduvddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepjeelrddukedurdeirddvudelnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:0BEpX5je93gY053f01bV3XjyO4NzjKpmm_54SwjuS1IWyn0eQAF1qA>
+    <xmx:0BEpX-muBi8DVqBIgohiHWxhPYT11qBnFRUR5_p2svjIF5auU3S_xg>
+    <xmx:0BEpX1w7rZg270z-hSpc0T5j75KCnXzJhEZuGZUzu0knsJldMCAUsQ>
+    <xmx:0BEpX9KNGg9vb3ogD7xYbehWYqqafIwFyKnee2hnyopTUwFkjYPkAw>
+Received: from localhost (bzq-79-181-6-219.red.bezeqint.net [79.181.6.219])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 02413328005E;
+        Tue,  4 Aug 2020 03:44:15 -0400 (EDT)
+Date:   Tue, 4 Aug 2020 10:44:13 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Adrian Pop <popadrian1996@gmail.com>
+Cc:     netdev@vger.kernel.org, linville@tuxdriver.com,
+        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        vadimp@mellanox.com, mlxsw@mellanox.com, idosch@mellanox.com,
+        andrew@lunn.ch
+Subject: Re: [PATCH] ethtool: Add QSFP-DD support
+Message-ID: <20200804074413.GA2534462@shredder>
+References: <20200731084725.7804-1-popadrian1996@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200803124817.5068e06d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200731084725.7804-1-popadrian1996@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The problem was the declaration of tos.
-Fixed and new patch is sent.
+Hi Adrian, thanks again for submitting this patch. I got two comments
+off-list. Sharing them here.
 
-On 03/08/2020 21:48, Jakub Kicinski wrote:
-> On Mon,  3 Aug 2020 18:14:17 +0000 Ahmed Abdelsalam wrote:
->> This patch allows copying the DSCP from inner IPv4 header to the
->> outer IPv6 header, when doing SRv6 Encapsulation.
->>
->> This allows forwarding packet across the SRv6 fabric based on their
->> original traffic class.
->>
->> Signed-off-by: Ahmed Abdelsalam <ahabdels@gmail.com>
-> 
-> Please make sure it builds cleanly with W=1 C=1:
-> 
-> net/ipv6/seg6_iptunnel.c:131:21: warning: incorrect type in assignment (different base types)
-> net/ipv6/seg6_iptunnel.c:131:21:    expected restricted __be32 [usertype] tos
-> net/ipv6/seg6_iptunnel.c:131:21:    got unsigned char
-> net/ipv6/seg6_iptunnel.c:133:21: warning: incorrect type in assignment (different base types)
-> net/ipv6/seg6_iptunnel.c:133:21:    expected restricted __be32 [usertype] tos
-> net/ipv6/seg6_iptunnel.c:133:21:    got unsigned char [usertype] tos
-> net/ipv6/seg6_iptunnel.c:144:27: warning: incorrect type in argument 2 (different base types)
-> net/ipv6/seg6_iptunnel.c:144:27:    expected unsigned int tclass
-> net/ipv6/seg6_iptunnel.c:144:27:    got restricted __be32 [usertype] tos
-> 
+On Fri, Jul 31, 2020 at 11:47:25AM +0300, Adrian Pop wrote:
+> +/**
+> + * Print the cable assembly length, for both passive copper and active
+> + * optical or electrical cables. The base length (bits 5-0) must be
+> + * multiplied with the SMF length multiplier (bits 7-6) to obtain the
+> + * correct value. Relevant documents:
+> + * [1] CMIS Rev. 3, pag. 59, section 1.7.3.10, Table 31
+> + * [2] CMIS Rev. 4, pag. 94, section 8.3.10, Table 8-19
+> + */
+> +static void qsfp_dd_show_cbl_asm_len(const __u8 *id)
+> +{
+> +	static const char *fn = "Cable assembly length";
+> +	float mul = 1.0f;
+> +	float val = 0.0f;
+> +
+> +	/* Check if max length */
+> +	if (id[QSFP_DD_CBL_ASM_LEN_OFFSET] == QSFP_DD_6300M_MAX_LEN) {
+> +		printf("\t%-41s : > 6.3km\n", fn);
+> +		return;
+> +	}
+> +
+> +	/* Get the multiplier from the first two bits */
+> +	switch (id[QSFP_DD_CBL_ASM_LEN_OFFSET] & QSFP_DD_LEN_MUL_MASK) {
+> +	case QSFP_DD_MULTIPLIER_00:
+> +		mul = 0.1f;
+> +		break;
+> +	case QSFP_DD_MULTIPLIER_01:
+> +		mul = 1.0f;
+> +		break;
+> +	case QSFP_DD_MULTIPLIER_10:
+> +		mul = 10.0f;
+> +		break;
+> +	case QSFP_DD_MULTIPLIER_11:
+> +		mul = 100.0f;
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	/* Get base value from first 6 bits and multiply by mul */
+> +	val = (id[QSFP_DD_CBL_ASM_LEN_OFFSET] & QSFP_DD_LEN_VAL_MASK);
+> +	val = (float)val * mul;
+> +	printf("\t%-41s : %0.2fkm\n", fn, val);
+
+Should be:
+
+printf("\t%-41s : %0.2fm\n", fn, val);
+
+Since the specification says "Link length base value in meters".
+
+Before:
+
+        Cable assembly length                     : 0.50km
+
+After:
+
+        Cable assembly length                     : 0.50m
+
+> +}
+
+...
+
+> diff --git a/qsfp-dd.h b/qsfp-dd.h
+> new file mode 100644
+> index 0000000..a7a7051
+> --- /dev/null
+> +++ b/qsfp-dd.h
+> @@ -0,0 +1,236 @@
+> +#ifndef QSFP_DD_H__
+> +#define QSFP_DD_H__
+> +
+> +#define QSFP_DD_PAG_SIZE			0x80
+> +#define QSFP_DD_EEPROM_5PAG			(0x80 * 6)
+> +#define QSFP_DD_MAX_CHANNELS			0x08
+> +#define QSFP_DD_MAX_DESC_SIZE			0x2A
+> +#define QSFP_DD_READ_TX				0x00
+> +#define QSFP_DD_READ_RX				0x01
+> +
+> +/* Struct for the current/power of a channel */
+> +struct qsfp_dd_channel_diags {
+> +	__u16 bias_cur;
+> +	__u16 rx_power;
+> +	__u16 tx_power;
+> +};
+> +
+> +struct qsfp_dd_diags {
+> +	/* Voltage in 0.1mV units; the first 4 elements represent
+> +	 * the high/low alarm, high/low warning and the last one
+> +	 * represent the current voltage of the module.
+> +	 */
+> +	__u16 sfp_voltage[4];
+> +
+> +	/**
+> +	 * Temperature in 16-bit signed 1/256 Celsius; the first 4
+> +	 * elements represent the high/low alarm, high/low warning
+> +	 * and the last one represent the current temp of the module.
+> +	 */
+> +	__s16 sfp_temp[4];
+> +
+> +	/* Tx bias current in 2uA units */
+> +	__u16 bias_cur[4];
+> +
+> +	/* Measured TX Power */
+> +	__u16 tx_power[4];
+> +
+> +	/* Measured RX Power */
+> +	__u16 rx_power[4];
+> +
+> +	/* Rx alarms and warnings */
+> +	bool rxaw[QSFP_DD_MAX_CHANNELS][4];
+> +
+> +	/* Tx alarms and warnings */
+> +	bool txaw[QSFP_DD_MAX_CHANNELS][4];
+> +
+> +	struct qsfp_dd_channel_diags scd[QSFP_DD_MAX_CHANNELS];
+> +};
+> +
+> +#define HA					0
+> +#define LA					1
+> +#define HW					2
+> +#define LW					3
+> +
+> +/* Identifier and revision compliance (Page 0) */
+> +#define	QSFP_DD_ID_OFFSET			0x00
+> +#define QSFP_DD_REV_COMPLIANCE_OFFSET		0x01
+> +
+> +#define QSFP_DD_MODULE_TYPE_OFFSET		0x55
+> +#define QSFP_DD_MT_MMF				0x01
+> +#define QSFP_DD_MT_SMF				0x02
+> +
+> +/* Module-Level Monitors (Page 0) */
+> +#define QSFP_DD_CURR_TEMP_OFFSET		0x0E
+> +#define QSFP_DD_CURR_CURR_OFFSET		0x10
+> +
+> +#define QSFP_DD_CTOR_OFFSET			0xCB
+> +
+> +/* Vendor related information (Page 0) */
+> +#define QSFP_DD_VENDOR_NAME_START_OFFSET	0x81
+> +#define QSFP_DD_VENDOR_NAME_END_OFFSET		0x90
+> +
+> +#define QSFP_DD_VENDOR_OUI_OFFSET		0x91
+> +
+> +#define QSFP_DD_VENDOR_PN_START_OFFSET		0x94
+> +#define QSFP_DD_VENDOR_PN_END_OFFSET		0xA3
+> +
+> +#define QSFP_DD_VENDOR_REV_START_OFFSET		0xA4
+> +#define QSFP_DD_VENDOR_REV_END_OFFSET		0xA5
+> +
+> +#define QSFP_DD_VENDOR_SN_START_OFFSET		0xA6
+> +#define QSFP_DD_VENDOR_SN_END_OFFSET		0xB5
+> +
+> +#define QSFP_DD_DATE_YEAR_OFFSET		0xB6
+> +#define QSFP_DD_DATE_VENDOR_LOT_OFFSET		0xBD
+
+According to the specification (section 8.3.7), the offset is 188, so
+should be 0xBC.
+
+Before:
+
+        Date code                                 : 200507  _
+
+After:
+
+        Date code                                 : 200507
