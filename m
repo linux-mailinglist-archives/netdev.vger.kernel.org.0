@@ -2,93 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44C9E23C231
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 01:23:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28D4623C23C
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 01:38:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726756AbgHDXXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 19:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
+        id S1726788AbgHDXiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 19:38:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725300AbgHDXXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 19:23:40 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683E9C06174A
-        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 16:23:39 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id c6so3474590pje.1
-        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 16:23:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=pfevWhfbpWSsBkNuGa8VfXiWURnK0O9u+cZ3Zi5d7C4=;
-        b=CbRzREfjPuwlqSntdmb8+1XHxwSQlYiZSJQwRf57N21GLNIOCnBmHpl0HLwtFmaRKS
-         5Ak4cpi5PlfWOJrrzj8de3CvVz/LDbfhGHICZ4xF8/JHo5BmsO0MEY6t6eWtDjKIXd3E
-         xZZO8OeOZLBiDd7rLKxlVr86VTTxQZzlj80abfBcWtz6an+M6nMnIyoPz2Y68rEx+H7+
-         5jWsBzgueuVAPX2WGIfw+4qkKS6IBLoD7mFLCdqYSDn6e8/53g82I6OCKHqtkeAf1zGz
-         c3FiWQBqFAG95I6e7lqpI5zvV3CuQPcWpyR1xl/rCB6OuatfHTEPqLkbtfaUjASJycUq
-         I3KA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=pfevWhfbpWSsBkNuGa8VfXiWURnK0O9u+cZ3Zi5d7C4=;
-        b=VPsngXCOZeDtS+nEnfkiBRTzcwPJQ2rUksNq0lNFAdFHVk5ho0EVG/WDaFWtay8BQ/
-         DaTychl5HvuJhQRVJ/F8MchvDv1brdDLKgT6qEemqQGsFp2Ab7aKe7hLCiFazkO4j5zV
-         MTUXtcTIYEVwfgPzXBBbOeoJUraPOdbIJly5qLXJqTBrUdvaUnZ/Xyboit5JTDxAkiSk
-         CTAKVXxitC5sW1eTGbx9q4I0mM7Wm6rz7QegF5JByNhJ2yLs0Ww/oeqXjiq1kceqnw1k
-         EVJ4VLpLWD2viKN2z3Avqcfl77+MCg2P+wriZTuZbr2jvsmxgGB9727spRnKmK7Cn4z/
-         YL3g==
-X-Gm-Message-State: AOAM532ZfdnzLzytVL1v5AGqYND8zu6DEIKZcrS8kAhFKk4Vg3cZm68r
-        dpYBrHsMlXFwRztDvc46NLcPV8fR
-X-Google-Smtp-Source: ABdhPJyBUH6Yunsmzx9yTC4Zezpk3ZCwAB42K23Jae1NsbDBvNGSJbe/rfpOuFF+ujvP2DJeo+RnbQ==
-X-Received: by 2002:a17:90a:d314:: with SMTP id p20mr449426pju.21.1596583418866;
-        Tue, 04 Aug 2020 16:23:38 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id x7sm186458pfc.209.2020.08.04.16.23.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Aug 2020 16:23:38 -0700 (PDT)
-Date:   Tue, 4 Aug 2020 16:23:35 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
+        with ESMTP id S1727003AbgHDXiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 19:38:07 -0400
+X-Greylist: delayed 2107 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 04 Aug 2020 16:38:06 PDT
+Received: from pannekake.samfundet.no (pannekake.samfundet.no [IPv6:2001:67c:29f4::50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14FE1C06174A
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 16:38:06 -0700 (PDT)
+Received: from sesse by pannekake.samfundet.no with local (Exim 4.92)
+        (envelope-from <sesse@samfundet.no>)
+        id 1k35xG-0000MS-OY; Wed, 05 Aug 2020 01:02:46 +0200
+Date:   Wed, 5 Aug 2020 01:02:46 +0200
+From:   "Steinar H. Gunderson" <steinar+kernel@gunderson.no>
 To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        jacob.e.keller@intel.com
-Subject: Re: [PATCH net-next] ptp: only allow phase values lower than 1 period
-Message-ID: <20200804232335.GA27679@hoboy>
-References: <20200803194921.603151-1-olteanv@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "Gaube, Marvin (THSE-TL1)" <Marvin.Gaube@tesat.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: PROBLEM: (DSA/Microchip): 802.1Q-Header lost on KSZ9477-DSA
+ ingress without bridge
+Message-ID: <20200804230246.nrllxp2k2bruckcp@sesse.net>
+References: <20200804142708.zjos3b6jvqjj7uas@skbuf>
+ <CANn89iKD1H9idd-TpHQ-KS7vYHnz+6VhymrgD2cuGAUHgp2Zpg@mail.gmail.com>
+ <20200804192933.pe32dhfkrlspdhot@skbuf>
+ <CANn89iKw+OGo9U9iXf61ELYRo-XzC41uz-tr34KtHcW26C-z8g@mail.gmail.com>
+ <20200804194333.iszq54mhrtcy3hs6@skbuf>
+ <CANn89iKxjxdiMdmFvz6hH-XaH4wNQiweo27cqh=W-gC7UT_OLA@mail.gmail.com>
+ <20200804212421.e2lztrrg4evuk6zd@skbuf>
+ <CANn89iKuVa8-piOf424HyiFZqTHEjFEGa7C5KV4TMWNZyhJzvQ@mail.gmail.com>
+ <20200804223952.je4yacy57vt5qjwk@skbuf>
+ <20200804224430.qt4zc2vihz7zeks6@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200803194921.603151-1-olteanv@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200804224430.qt4zc2vihz7zeks6@skbuf>
+X-Operating-System: Linux 5.8.0-rc1 on a x86_64
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 03, 2020 at 10:49:21PM +0300, Vladimir Oltean wrote:
-> @@ -218,6 +218,19 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
->  					break;
->  				}
->  			}
-> +			if (perout->flags & PTP_PEROUT_PHASE) {
-> +				/*
-> +				 * The phase should be specified modulo the
-> +				 * period, therefore anything larger than 1
-> +				 * period is invalid.
-> +				 */
-> +				if (perout->phase.sec > perout->period.sec ||
-> +				    (perout->phase.sec == perout->period.sec &&
-> +				     perout->phase.nsec > perout->period.nsec)) {
-> +					err = -ERANGE;
-> +					break;
-> +				}
+On Wed, Aug 05, 2020 at 01:44:30AM +0300, Vladimir Oltean wrote:
+>>>> What bug? What repro? You just said you don't have any.
+>>> Ask Steinar ?
+>>> 
+>> Hi Steinar, do you have a reproducer for the bug that Eric fixed in
+>> commit d4b812dea4a2 ("vlan: mask vlan prio bits")?
+> The Google email address from the original report bounces back. Adding
+> another address found by searching for your name on netdev.
 
-So if perout->period={1,0} and perout->phase={1,0} then the phase has
-wrapped 360 degrees back to zero.
+Yeah, I don't work at Google anymore, so sesse@google.com does not exist.
+(Hi, Eric! Hoping you're fine despite the pandemic.)
 
-Shouldn't this code catch that case as well?
+By accident, I'm actually sitting right next to the router in question
+right now. But the setup has changed at least twice since 2013, and it
+doesn't use sit anymore since native IPv6 is where it's at. So no, I don't
+have a reproducer anymore. I also really cannot remember the details;
+I think maybe the outgoing sit device was for 6rd? And the priority tag was
+added by a fairly cheap Zyxel switch that might still be in the loop, but now
+there's tagged VLANs anyway...
 
-So why not test for (perout->phase.nsec >= perout->period.nsec) instead?
+If you want to spend time to try to reproduce this with the old kernel
+(to verify you have a reproducer that you can use to test the bug with),
+this is probably what I'd test: Send untagged packets with 802.1p priority
+set (most cheap managed switches allow you to force that somehow, I believe;
+tcpdump -e will show an 802.1q tag with VLAN 0), try to route them into a sit
+tunnel, and see if they become corrupted or not. That's the only thing I can
+recommend, sorry. I hoard a lot of things, but reproducers for fixed bugs
+from 2013 at my parents' house isn't among them :-)
 
-Thanks,
-Richard
+/* Steinar */
+-- 
+Homepage: https://www.sesse.net/
