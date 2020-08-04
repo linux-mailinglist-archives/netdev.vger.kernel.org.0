@@ -2,94 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FCA123C12E
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 23:07:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DB7B23C131
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 23:08:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726356AbgHDVHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 17:07:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34038 "EHLO
+        id S1726578AbgHDVI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 17:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725863AbgHDVHj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 17:07:39 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 661AEC06174A;
-        Tue,  4 Aug 2020 14:07:39 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id t6so23169717pgq.1;
-        Tue, 04 Aug 2020 14:07:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=X4nVZfpA11bzJ0RFuzyjFl+xrsu2f4zFX7lnVom+av8=;
-        b=mk1qdIp+4HC4+UL/kW+mW8mQ/Rw6yZzVC67WWvZcchMN2DNXgrSKLPgyq7SwpjzKiy
-         3idJOI7eGfzGbfdlHS9/OHRksjqggSH5BgbC+KqkShb6TUiVvbVKpSJ4DsYBV1q17jAK
-         1tcrcc8nVCZuAK2Cl/HHz4Z719deYxa7Zlf8MlJAcYi5Oon3+loWtiQFcbom+LUj4fuY
-         X0hFtAhI8Qr8SREaH5mxG6n5p6omI0oD1NJuXdT1cbBJH2LdcEmngwS2+FWGUlJimBzl
-         7JSf6HHPR3/RKZKnB23QEY3QwcaJSIpLANTxnrGAj9gM6IprU+49bU047/ZLbtJlWS2z
-         usMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=X4nVZfpA11bzJ0RFuzyjFl+xrsu2f4zFX7lnVom+av8=;
-        b=h4uJUu5tjmXcaB1WNkkILkMII4xelUoBA1xeWkReBfxHTPcKfkJHHEO7Uf/d5cvFws
-         2B+UGhNHO8xm0tKXatpAJnSUPNQEVnBjgyif/v1gMGhCFxflS6WAdmmN2OD9F/XdSQbP
-         aVaW8mTiLYmy/ry7Ias8SjJIa5amjCynHxAVTyeBaEPpqDoWNfF0y1TSqm1NByaBFSEc
-         tfGHFiqPtXWjN2CByu15aubWemlmP7xjSOiVE2ifMDuYQZ7+zd5Ed+/B76PXTs/j6hCm
-         tYZWnIpd6PpEWkfW3v++cZ0UhVxcRTjcqIKGD6CWlmrCXxEMvUF3lycPIl7qFH32Ff8Z
-         8gcw==
-X-Gm-Message-State: AOAM532NkGTsnl8IjAEovNcHxTUxN0ZDmeJHaYVAw305jjuAVDtVqaod
-        KlvvItlG223tnic/hJ+gVoI=
-X-Google-Smtp-Source: ABdhPJyl6c6dDxe/VGp11VcyqUQxFYTc3kD/Ll6YHHCa/ElQt3nb70ErxeGejwYrEfJpsjXGN8X83g==
-X-Received: by 2002:a05:6a00:14d0:: with SMTP id w16mr239593pfu.39.1596575258714;
-        Tue, 04 Aug 2020 14:07:38 -0700 (PDT)
-Received: from thinkpad.teksavvy.com (104.36.148.139.aurocloud.com. [104.36.148.139])
-        by smtp.gmail.com with ESMTPSA id t28sm19979675pgn.81.2020.08.04.14.07.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Aug 2020 14:07:38 -0700 (PDT)
-From:   Rustam Kovhaev <rkovhaev@gmail.com>
-To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rustam Kovhaev <rkovhaev@gmail.com>
-Subject: [PATCH] cfg80211: switch from WARN() to pr_warn() in is_user_regdom_saved()
-Date:   Tue,  4 Aug 2020 14:05:46 -0700
-Message-Id: <20200804210546.319249-1-rkovhaev@gmail.com>
-X-Mailer: git-send-email 2.28.0
+        with ESMTP id S1725933AbgHDVI1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 17:08:27 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0581C06174A
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 14:08:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Dq1rwaWlCRCt1IeElSsJ9wmOpfUMxwGGmwbSdrHyFkQ=; b=mS4AMwGOylz174forVeBt9bLB
+        +6moKLDH4E0mzOnWjDJqSHfWlrnFuBf6KgpEqVhDQd+4MnO5eB4EPM/v/GRCvct+OdcNJ16OQ8C7F
+        GrZeRl5ex7M6VPue7lO8qeW1u1frQ/qqROys4nJQHYflx6ADvWIzf46rwiMiwf2/D4e5rTm4AyfAr
+        dW1h1Q1KWOzouxL8tMQebISa8zF6gPtSclI/ucQ65xbrz7UFSz3ukrqPGAF09F+vAqo/U4/IE9Rc9
+        0cRbnNwMNmwhAGVNLmIFupaJ90eQpLKuXhw38K/ek4ag9H3Z9WG9JGI8s3Ehwzz8UOgDdF04UvThC
+        KWNpadTTg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48370)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1k34AG-0002us-46; Tue, 04 Aug 2020 22:08:04 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1k34AB-0004Qc-5U; Tue, 04 Aug 2020 22:07:59 +0100
+Date:   Tue, 4 Aug 2020 22:07:59 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Petr Machata <petrm@mellanox.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 1/9] ptp: Add generic ptp v2 header parsing function
+Message-ID: <20200804210759.GU1551@shell.armlinux.org.uk>
+References: <20200730080048.32553-1-kurt@linutronix.de>
+ <20200730080048.32553-2-kurt@linutronix.de>
+ <87lfj1gvgq.fsf@mellanox.com>
+ <87pn8c0zid.fsf@kurt>
+ <09f58c4f-dec5-ebd1-3352-f2e240ddcbe5@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <09f58c4f-dec5-ebd1-3352-f2e240ddcbe5@ti.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-this warning can be triggered by userspace, so it should not cause a
-panic if panic_on_warn is set
+On Tue, Aug 04, 2020 at 11:56:12PM +0300, Grygorii Strashko wrote:
+> 
+> 
+> On 31/07/2020 13:06, Kurt Kanzenbach wrote:
+> > On Thu Jul 30 2020, Petr Machata wrote:
+> > > Kurt Kanzenbach <kurt@linutronix.de> writes:
+> > > 
+> > > > @@ -107,6 +107,37 @@ unsigned int ptp_classify_raw(const struct sk_buff *skb)
+> > > >   }
+> > > >   EXPORT_SYMBOL_GPL(ptp_classify_raw);
+> > > > +struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type)
+> > > > +{
+> > > > +	u8 *data = skb_mac_header(skb);
+> > > > +	u8 *ptr = data;
+> > > 
+> > > One of the "data" and "ptr" variables is superfluous.
+> > 
+> > Yeah. Can be shortened to u8 *ptr = skb_mac_header(skb);
+> 
+> Actually usage of skb_mac_header(skb) breaks CPTS RX time-stamping on
+> am571x platform PATCH 6.
+> 
+> The CPSW RX timestamp requested after full packet put in SKB, but
+> before calling eth_type_trans().
+> 
+> So, skb->data pints on Eth header, but skb_mac_header() return garbage.
+> 
+> Below diff fixes it for me.
 
-Reported-and-tested-by: syzbot+d451401ffd00a60677ee@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=d451401ffd00a60677ee
-Signed-off-by: Rustam Kovhaev <rkovhaev@gmail.com>
----
- net/wireless/reg.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+However, that's likely to break everyone else.
 
-diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index 0d74a31ef0ab..86355938ae8f 100644
---- a/net/wireless/reg.c
-+++ b/net/wireless/reg.c
-@@ -415,10 +415,10 @@ static bool is_user_regdom_saved(void)
- 		return false;
- 
- 	/* This would indicate a mistake on the design */
--	if (WARN(!is_world_regdom(user_alpha2) && !is_an_alpha2(user_alpha2),
--		 "Unexpected user alpha2: %c%c\n",
--		 user_alpha2[0], user_alpha2[1]))
-+	if (!is_world_regdom(user_alpha2) && !is_an_alpha2(user_alpha2)) {
-+		pr_warn("Unexpected user_alpha2: %c%c\n", user_alpha2[0], user_alpha2[1]);
- 		return false;
-+	}
- 
- 	return true;
- }
+For example, anyone calling this from the mii_timestamper rxtstamp()
+method, the skb will have been classified with the MAC header pushed
+and restored, so skb->data points at the network header.
+
+Your change means that ptp_parse_header() expects the MAC header to
+also be pushed.
+
+Is it possible to adjust CPTS?
+
+Looking at:
+drivers/net/ethernet/ti/cpsw.c... yes.
+drivers/net/ethernet/ti/cpsw_new.c... yes.
+drivers/net/ethernet/ti/netcp_core.c... unclear.
+
+If not, maybe cpts should remain unconverted - I don't see any reason
+to provide a generic function for one user.
+
 -- 
-2.27.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
