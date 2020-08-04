@@ -2,102 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0E6423BE67
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 18:54:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 173D123BE73
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 18:58:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726925AbgHDQyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 12:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51460 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726276AbgHDQyT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 12:54:19 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C429C06174A
-        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 09:54:19 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id z188so12899212pfc.6
-        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 09:54:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lIBT5qjudUsK29vpEQJOo/B1KD0nV5ATHPBKz7mq7Y0=;
-        b=wjX9m02tOsvMFuZIf0UWuhd5YruAIaI1tjou8l+3ZGuXcjmOxjPnkIXBBMzsuWUitY
-         fb50G3SlP+G4F89TF+cKBCc8SromsRXoy0MjnZaZn08HmrH3KC/ITmyY5Nc3f5M5FM1m
-         sT8Nqz20klrPy9wkvZT/vVGGShsAfjAb7rxLvM5EUYr8EuD7hFh0K9T4xYHZaExYHGdO
-         jRfItuMRIpooifNQW5SJPcy0oUpBmHBB+brrt/bwxdtHG0nnZpDhMOI9Wknsh3o6u4e2
-         wdoWf8bSmiN/N2HTY4l3WQJlQbSyIgZpqTQ5pJEFLiAulkjSw8EHfYlhTT33aVqJ1/ZZ
-         HjPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lIBT5qjudUsK29vpEQJOo/B1KD0nV5ATHPBKz7mq7Y0=;
-        b=iiUgVRNwaSN6rJrg4NhqaF2cc3ch5Vsve6v7tfoZQYypLzGHcloiD470FYlZWSDh/b
-         IaOSRPpr6V9VZqEGzBTAjM/a+ttNbny9LK/0x9XiYfzB8Hs7fEfUlP/qgQ1hPEFRvYSc
-         0ddlEmXKFtDJlp03Ntz/DzP83nVA+5l4IyEORBBHEPREFEvs8cIOVTK1ixntbh1usWeO
-         0dy1evbocpIveZmWwHdp/k0lUug9vo8U5rj13/ttbGslv9KzDK2dKVTBETmiP3uGXvyL
-         RvPoxHqyF2lBnWljThtqOIY08gQ1bBFp+SRNMgB0EzhlJY2Xrd2KDdyVzPSU6TO0ym/6
-         L4XA==
-X-Gm-Message-State: AOAM530hpyCUalFu+ofuRb+Dx1GIxPZNTlOF4aNGF8ybtHKQzGXFn+Qk
-        lWi1oGa1Ov57x2bDe9+yjXpEO+J/4in6tg==
-X-Google-Smtp-Source: ABdhPJznoBNhRpgOQQ/90kTXaQKt2vweibXZmq3Ja/kNRJYn92eQhZTRblygUER57JjpxTPoEcXSzA==
-X-Received: by 2002:a63:770f:: with SMTP id s15mr2736494pgc.249.1596560058730;
-        Tue, 04 Aug 2020 09:54:18 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 3sm22331936pfv.109.2020.08.04.09.54.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Aug 2020 09:54:17 -0700 (PDT)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     haiyangz@microsoft.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, wei.liu@kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "Shah, Ashish N" <ashish.n.shah@intel.com>
-Subject: [PATCH] hv_netvsc: do not use VF device if link is down
-Date:   Tue,  4 Aug 2020 09:54:15 -0700
-Message-Id: <20200804165415.7631-1-stephen@networkplumber.org>
-X-Mailer: git-send-email 2.27.0
+        id S1729817AbgHDQ6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 12:58:13 -0400
+Received: from mx2.suse.de ([195.135.220.15]:49218 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726580AbgHDQ57 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Aug 2020 12:57:59 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 0DF33AE2C
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 16:58:13 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id DC27F6030D; Tue,  4 Aug 2020 18:57:56 +0200 (CEST)
+Date:   Tue, 4 Aug 2020 18:57:56 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Subject: ethtool 5.8 released
+Message-ID: <20200804165756.cbwxoev3nuf5gitn@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="anaajtlripj67kys"
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the accelerated networking SRIOV VF device has lost carrier
-use the synthetic network device which is available as backup
-path. This is a rare case since if VF link goes down, normally
-the VMBus device will also loose external connectivity as well.
-But if the communication is between two VM's on the same host
-the VMBus device will still work.
 
-Reported-by: "Shah, Ashish N" <ashish.n.shah@intel.com>
-Fixes: 0c195567a8f6 ("netvsc: transparent VF management")
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
----
- drivers/net/hyperv/netvsc_drv.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+--anaajtlripj67kys
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 6267f706e8ee..0d779bba1b01 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -532,12 +532,13 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
- 	u32 hash;
- 	struct hv_page_buffer pb[MAX_PAGE_BUFFER_COUNT];
- 
--	/* if VF is present and up then redirect packets
--	 * already called with rcu_read_lock_bh
-+	/* If VF is present and up then redirect packets to it.
-+	 * Skip the VF if it is marked down or has no carrier.
-+	 * If netpoll is in uses, then VF can not be used either.
- 	 */
- 	vf_netdev = rcu_dereference_bh(net_device_ctx->vf_netdev);
- 	if (vf_netdev && netif_running(vf_netdev) &&
--	    !netpoll_tx_running(net))
-+	    netif_carrier_ok(vf_netdev) && !netpoll_tx_running(net))
- 		return netvsc_vf_xmit(net, vf_netdev, skb);
- 
- 	/* We will atmost need two pages to describe the rndis
--- 
-2.27.0
+ethtool version 5.8 has been released.
 
+Home page: https://www.kernel.org/pub/software/network/ethtool/
+Download link:
+https://www.kernel.org/pub/software/network/ethtool/ethtool-5.8.tar.xz
+
+Release notes:
+
+	* Feature: more ethtool netlink message format descriptions
+	* Feature: omit test-features if netlink is enabled
+	* Feature: netlink handler for gfeatures (-k)
+	* Feature: netlink handler for sfeatures (-K)
+	* Feature: netlink handler for gprivflags (--show-priv-flags)
+	* Feature: netlink handler for sprivflags (--set-priv-flags)
+	* Feature: netlink handler for gring (-g)
+	* Feature: netlink handler for sring (-G)
+	* Feature: netlink handler for gchannels (-l)
+	* Feature: netlink handler for schannels (-L)
+	* Feature: netlink handler for gcoalesce (-c)
+	* Feature: netlink handler for scoalesce (-C)
+	* Feature: netlink handler for gpause (-a)
+	* Feature: netlink handler for spause (-A)
+	* Feature: netlink handler for geee (--show-eee)
+	* Feature: netlink handler for seee (--set-eee)
+	* Feature: netlink handler for tsinfo (-T)
+	* Feature: master/slave configuration support
+	* Feature: LINKSTATE SQI support
+	* Feature: cable test support
+	* Feature: cable test TDR support
+	* Feature: JSON output for cable test commands
+	* Feature: igc driver support
+	* Feature: support for get/set ethtool_tunable
+	* Feature: dsa: mv88e6xxx: add pretty dump for 88E6352 SERDES
+	* Fix: fix build warnings
+	* Fix: fix nest type grouping in parser
+	* Fix: fix msgbuff_append() helper
+	* Fix: fix unwanted switch fall through in family_info_cb()
+	* Fix: fix netlink error message suppression
+	* Fix: fix netlink bitmasks when sent as NOMASK
+	* Fix: use "Not reported" when no FEC modes are provided
+	* Fix: ioctl: do not pass transceiver value back to kernel
+	* Fix: ethtool.spec: Add bash completion script
+
+Michal
+
+--anaajtlripj67kys
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8pk48ACgkQ538sG/LR
+dpXHqAf/Xmh5rahYFCcXfkTNZl8UOdS7cHAd1idbOUf0QXVluW+vZ8SSkNnZfzuc
+3QA0YIzibTMbRGAmz/QS+X8jkThHFWsEGTX5MPRhmy4dirZWyos0aLTATiXtKuoW
+6XU/aIFPULnQ2ekndfNmnD4c5DpGX5VmVieEe/oEZBLYlhS0CGVx2GnZTdII/SxO
+5cCMp79WTzCzBUpuBISkI6EZKSovsla6/QO1Nj6Qtu2JuUT84RTrpDRGndgRbYMi
+0o4e7dfnoP4ab3BRwTXUWwTzha3kj41+wtREuovyan3mX2pV0wwMoKJcw3j7zSyr
+PMs0d3TMxpisG4dE7erNoGnOUpXOmw==
+=OjYA
+-----END PGP SIGNATURE-----
+
+--anaajtlripj67kys--
