@@ -2,79 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDCB723B1B8
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 02:39:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0E7923B1E6
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 02:51:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727003AbgHDAjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Aug 2020 20:39:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42610 "EHLO
+        id S1728133AbgHDAvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Aug 2020 20:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgHDAjY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 20:39:24 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0203C06174A;
-        Mon,  3 Aug 2020 17:39:24 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id i138so26817554ild.9;
-        Mon, 03 Aug 2020 17:39:24 -0700 (PDT)
+        with ESMTP id S1726766AbgHDAvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Aug 2020 20:51:09 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25CDC061756
+        for <netdev@vger.kernel.org>; Mon,  3 Aug 2020 17:51:08 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id p16so21974610ile.0
+        for <netdev@vger.kernel.org>; Mon, 03 Aug 2020 17:51:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=i7EzZtu1EZzpobatXjZkWfJsiB24K39Oat8YDD/9j4I=;
-        b=YcctNyVLqkU5jqUXEvVSx05zo5Cr+bCDNNKaUB6bhH0KZNjqaB+V9GNys35wB0bc8o
-         L6M9obtGcAe92l9dJ9EGT4zpNQE96k6O2qg+H9+c9h1NK6POg4+cZVO3+9w4PzeTKzMC
-         /CQv1SYhZxfmGT2pRUxrx4LfkGxJiMIHV0L0mxHhb9jccIwWD/nLhec7AM/Gpfg/kmgp
-         0lgvrhQL/dU0pkyAc2+O8wDsYpeOqZ9Mk13sCFZe7V0Ulaq4Dy6CIYvqiIO+sMPMdtie
-         LLw9M92EZqZUucDKDBiSZgEj3OCx6tZ8EbQGR7FTlLFv49zdQOJfqZpqRXiGk5XYGqKP
-         Sjdw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FVYHTG9/w1sACeSgc1h5/Ki3DkFWvo5hFp+R1gPI7EI=;
+        b=QnFoBuZw2lctRlF7jBapcgeWW7MifnN91E0aFgNXsQ5UHbglhQJK5VOiZgmR0F3oe5
+         2fdrb0H5ZbZajP8EiVZCJaLpxfncSN38rayPHmXIYU71TMZkegHkvsmuPrgc7hIDGzQb
+         6CMsURWtoUyZXeQTL93LxnvqHO6lWvC2qcXlEkE0u8Z92k8SxSjMPOl34KpDVxdn6vjp
+         rJoDtBe8yIElIYvCVq70N7YcDc5pakmnamMuoO73jMLujBE8LZEorkcyWer7sQE+/SO4
+         /rhcn7zk+FFBL5lSD1S/wqCXo+42vL4X4xrj0iNT8bQirU4Z3Qrvyx444kddrOfEcnGu
+         c6XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=i7EzZtu1EZzpobatXjZkWfJsiB24K39Oat8YDD/9j4I=;
-        b=hQFzNTxBMBba5FIx2K2XHR9VgnwEB3Y5L1PP1Ra4trkrYXCdyF15pn3ZHi6O1pO4S2
-         IAsD6sH6/dySwF6Uhx9Gp8w7ky0+ffirlyiDSS8XVMSkpqpsljZtpY7PTcF5F1EgoLm5
-         7XzB6n1RCuDxQkI4dE98lMjErY5E4Bivw0UjFX3GV0v4tqVwPNlAHvOv4QbKaG58c8z4
-         8BaqiRln0KAeygqmqSgXJ/wQDh+p3KLZ+R5w6VxygtgOc+RveXwStH7uOGvbnbgdH1JA
-         u9uwglLDahXcc9FJ4JimQpZqcCDwhvD1SPnzEANCXWy289qNIQcnc/pdZIai6co90/Fu
-         MXVw==
-X-Gm-Message-State: AOAM533nOS+QPsMh6ords35beofzrwvi4xnYhAySzPxyHiTcClq0jwRi
-        mI9qUQN3s+Hxt1dy+X/dCp0=
-X-Google-Smtp-Source: ABdhPJzKMFBVE+KqtxOv4aCQWPOFe4JCjuF1ep+L8t+XagLVys77Bq4z0pGVWZbn/pZlD8LwcGdSlQ==
-X-Received: by 2002:a92:1b9d:: with SMTP id f29mr2159478ill.241.1596501564164;
-        Mon, 03 Aug 2020 17:39:24 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id n1sm11430269ilo.68.2020.08.03.17.39.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 17:39:23 -0700 (PDT)
-Date:   Mon, 03 Aug 2020 17:39:16 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com
-Message-ID: <5f28ae345b91b_2a3e2af6c9e325c042@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200803224342.2925543-1-yhs@fb.com>
-References: <20200803224340.2925417-1-yhs@fb.com>
- <20200803224342.2925543-1-yhs@fb.com>
-Subject: RE: [PATCH bpf-next v3 2/2] tools/bpf: support new uapi for map
- element bpf iterator
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FVYHTG9/w1sACeSgc1h5/Ki3DkFWvo5hFp+R1gPI7EI=;
+        b=MdHLjYhn7Yu3PZKZKnZ0ndv73+g+3esdNO5r7nvCQOUbekrhhEuFEEqaOf92f0MKch
+         fgZEIV4LLPd2uxMQQuqtFir2kfZiacv6TSYysTPxVgo5GtYkackeueFUF0gOS+troYHP
+         GoOjGyob5ZaWxG2fkxfE4PZoefofc2ajojVvXxafkZ1s5Ee9WyGiHe4Z4CFpR8TuJPHj
+         gn5f3XOvFxauiqEQ3xh4H0qKldvVLryR6070tE1XAfDzeUmRNHKQKdqIyajSb9dCP59a
+         ZsIHBAESu9KudRmx94cSkFGb+vMNLuPmmTumP+LRV+iTu02f3an53rm3pZmsmejxBvSv
+         /+eQ==
+X-Gm-Message-State: AOAM531GlhTODZhcQoIGlQjLcysIaUFyvJNV9VfVwuOEEV/Xx3WP3YbI
+        oW//FBvi61svFZJEllTiKhNnUBvfiw8+j8ABbTOqdw==
+X-Google-Smtp-Source: ABdhPJx8SqMNWIYmmj4SoVpcYDpD2gLZQlRPvWatIGPGFyczj08/U8IRBcG93CmFDsQ9mkzMdz1Z9lQYBJW5uKUTomg=
+X-Received: by 2002:a92:d781:: with SMTP id d1mr1991499iln.68.1596502267851;
+ Mon, 03 Aug 2020 17:51:07 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200803231013.2681560-1-kafai@fb.com> <20200803231051.2683561-1-kafai@fb.com>
+In-Reply-To: <20200803231051.2683561-1-kafai@fb.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 3 Aug 2020 17:50:56 -0700
+Message-ID: <CANn89iLipQWyGB9WVyK1ub48q31oEe9Pn=9RB_D21vTCs6r_vA@mail.gmail.com>
+Subject: Re: [RFC PATCH v4 bpf-next 06/12] bpf: tcp: Add bpf_skops_parse_hdr()
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team <kernel-team@fb.com>,
+        Lawrence Brakmo <brakmo@fb.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yonghong Song wrote:
-> Previous commit adjusted kernel uapi for map
-> element bpf iterator. This patch adjusted libbpf API
-> due to uapi change. bpftool and bpf_iter selftests
-> are also changed accordingly.
-> 
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
+On Mon, Aug 3, 2020 at 4:10 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> The patch adds a function bpf_skops_parse_hdr().
+> It will call the bpf prog to parse the TCP header received at
+> a tcp_sock that has at least reached the ESTABLISHED state.
+>
+> For the packets received during the 3WHS (SYN, SYNACK and ACK),
+> the received skb will be available to the bpf prog during the callback
+> in bpf_skops_established() introduced in the previous patch and
+> in the bpf_skops_write_hdr_opt() that will be added in the
+> next patch.
+>
+> Calling bpf prog to parse header is controlled by two new flags in
+> tp->bpf_sock_ops_cb_flags:
+> BPF_SOCK_OPS_PARSE_UNKNOWN_HDR_OPT_CB_FLAG and
+> BPF_SOCK_OPS_PARSE_ALL_HDR_OPT_CB_FLAG.
+>
+> When BPF_SOCK_OPS_PARSE_UNKNOWN_HDR_OPT_CB_FLAG is set,
+> the bpf prog will only be called when there is unknown
+> option in the TCP header.
+>
+> When BPF_SOCK_OPS_PARSE_ALL_HDR_OPT_CB_FLAG is set,
+> the bpf prog will be called on all received TCP header.
+>
+> This function is half implemented to highlight the changes in
+> TCP stack.  The actual codes preparing the bpf running context and
+> invoking the bpf prog will be added in the later patch with other
+> necessary bpf pieces.
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
