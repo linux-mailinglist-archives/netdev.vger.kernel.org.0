@@ -2,168 +2,294 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F78623B87B
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 12:08:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83DC323B87D
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 12:09:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730084AbgHDKIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 06:08:38 -0400
-Received: from mga05.intel.com ([192.55.52.43]:27813 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728311AbgHDKIg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Aug 2020 06:08:36 -0400
-IronPort-SDR: YvfCLoP76/WchcUK3mqhku/G18fwOtBbKndIzu9cGfE2Tv9YEVQlIyKxwliQciIsMQyaxGX3S7
- GUoSADAQWhsQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9702"; a="237144713"
-X-IronPort-AV: E=Sophos;i="5.75,433,1589266800"; 
-   d="scan'208";a="237144713"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2020 03:08:36 -0700
-IronPort-SDR: be8eyJZeFVeLLnafcVjQTCVfiLuUnKwBuaLmEDk1u04eTWawCpv5/52FWWS2iMAhRKLRXbDhhy
- lKz17Fe5ktQQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,433,1589266800"; 
-   d="scan'208";a="330557050"
-Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.73]) ([10.237.72.73])
-  by FMSMGA003.fm.intel.com with ESMTP; 04 Aug 2020 03:08:31 -0700
-Subject: Re: [PATCH v2 4/5] perf record: Don't clear event's period if set by
- a term
-To:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
+        id S1730126AbgHDKJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 06:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45500 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728472AbgHDKJI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 06:09:08 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D736C06174A;
+        Tue,  4 Aug 2020 03:09:08 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id m8so13065671pfh.3;
+        Tue, 04 Aug 2020 03:09:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=ZS1hdM2dLsIlb7yqUlnhLDroUWcG6WpXbsGcaYexh7c=;
+        b=qjND6vjWd4BjFopiGLmQ0HNSG0b/WKi8TcjTqCA8sTXu2ZwLUnAgG5h3Qi+MKckJFh
+         O0pUM7YeiazFfT72a4FFL6WV+E0nejo0g8Z6ZqFWho5zV1WnALO1IkfZ3+DiY+gy9eyk
+         vSPm4vxaX+xkJOFyUGnnNhJOnKF5/ZkPN873PS4tDAb0rs9ayOrTy3SXntA9yY6haLnS
+         hEnmVAHdnRE4g5mU1DuUBfqkbFIlu4AMYrFkXK6XlHtyFlO28/PNX8ueUOz/rpnm7BqE
+         s6KjH04ReAw1hp9n+7Beh8pbQe0qz+hlEv2Pvc4+xnuE5IbYnhee3/h8ko0ILSpfFgBF
+         7R0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=ZS1hdM2dLsIlb7yqUlnhLDroUWcG6WpXbsGcaYexh7c=;
+        b=UVfWyWkpCLpxdVoIgdIdOpuP+Cvqaa9XDmLQLt6KMLQXzWa64Btbf/Aay2G73j9HO2
+         UysnFR0ieXdPwD86diaNZE4RHAvbHeZ16ZflGV+CanzReicmZmrbGiIo8/PwKnge93zb
+         0cWAbbYBR+R2m3eXih1XoT+u4Oy1zK7ee3YULEsf8LbviHIFrRIJGcRFKJHc31fS4Tbn
+         ymEFE6SRRs+mPPyVmMq8ks5TZV1TkcrWzycT58Lqbldu+z0nK6F38fPKzPa6cfyo5wVE
+         4iZuBBC55HFSobsHiWH5QlxISqqs0fGzmNDO5Xgm8UBm57gpUNpJvIepK+hWAOErj4i5
+         NwxA==
+X-Gm-Message-State: AOAM530aQxabjb09WNbZVqNHtQoH7N3lmEuhqXORRiwwl35z4Fhn0W1y
+        K8NCft+bkcd/rIOy8YPZAfo=
+X-Google-Smtp-Source: ABdhPJyO7macKs10pn/OPsdYGb3HDripHE++c+xxQ1rhCPTvjVg9CZ+XWSz1CQTA5vEsG0f4rKluug==
+X-Received: by 2002:aa7:9468:: with SMTP id t8mr19069200pfq.182.1596535747891;
+        Tue, 04 Aug 2020 03:09:07 -0700 (PDT)
+Received: from [192.168.97.34] (p7925058-ipngn38401marunouchi.tokyo.ocn.ne.jp. [122.16.223.58])
+        by smtp.gmail.com with ESMTPSA id b15sm3792610pgk.14.2020.08.04.03.09.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 04 Aug 2020 03:09:07 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.15\))
+Subject: Re: [RFC PATCH bpf-next 3/3] samples/bpf: Add a simple bridge example
+ accelerated with XDP
+From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
+In-Reply-To: <20200731161519.5f413f82@carbon>
+Date:   Tue, 4 Aug 2020 19:08:59 +0900
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>
-References: <20200728085734.609930-1-irogers@google.com>
- <20200728085734.609930-5-irogers@google.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Message-ID: <969ef797-59ea-69d0-24b9-33bcdff106a1@intel.com>
-Date:   Tue, 4 Aug 2020 13:08:07 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <20200728085734.609930-5-irogers@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org, bpf@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <46CD5E66-D554-473A-BE9A-9AC2EF8D16B1@gmail.com>
+References: <1596170660-5582-1-git-send-email-komachi.yoshiki@gmail.com>
+ <1596170660-5582-4-git-send-email-komachi.yoshiki@gmail.com>
+ <20200731161519.5f413f82@carbon>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+X-Mailer: Apple Mail (2.3445.104.15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/07/20 11:57 am, Ian Rogers wrote:
-> If events in a group explicitly set a frequency or period with leader
-> sampling, don't disable the samples on those events.
-> 
-> Prior to 5.8:
-> perf record -e '{cycles/period=12345000/,instructions/period=6789000/}:S'
 
-Might be worth explaining this use-case some more.
-Perhaps add it to the leader sampling documentation for perf-list.
+> 2020/07/31 23:15=E3=80=81Jesper Dangaard Brouer =
+<brouer@redhat.com>=E3=81=AE=E3=83=A1=E3=83=BC=E3=83=AB:
+>=20
+>=20
+> I really appreciate that you are working on adding this helper.
+> Some comments below.
 
-> would clear the attributes then apply the config terms. In commit
-> 5f34278867b7 leader sampling configuration was moved to after applying the
-> config terms, in the example, making the instructions' event have its period
-> cleared.
-> This change makes it so that sampling is only disabled if configuration
-> terms aren't present.
-> 
-> Fixes: 5f34278867b7 ("perf evlist: Move leader-sampling configuration")
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/util/record.c | 28 ++++++++++++++++++++--------
->  1 file changed, 20 insertions(+), 8 deletions(-)
-> 
-> diff --git a/tools/perf/util/record.c b/tools/perf/util/record.c
-> index a4cc11592f6b..01d1c6c613f7 100644
-> --- a/tools/perf/util/record.c
-> +++ b/tools/perf/util/record.c
-> @@ -2,6 +2,7 @@
->  #include "debug.h"
->  #include "evlist.h"
->  #include "evsel.h"
-> +#include "evsel_config.h"
->  #include "parse-events.h"
->  #include <errno.h>
->  #include <limits.h>
-> @@ -38,6 +39,9 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
->  	struct perf_event_attr *attr = &evsel->core.attr;
->  	struct evsel *leader = evsel->leader;
->  	struct evsel *read_sampler;
-> +	struct evsel_config_term *term;
-> +	struct list_head *config_terms = &evsel->config_terms;
-> +	int term_types, freq_mask;
->  
->  	if (!leader->sample_read)
->  		return;
-> @@ -47,16 +51,24 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
->  	if (evsel == read_sampler)
->  		return;
->  
-> +	/* Determine the evsel's config term types. */
-> +	term_types = 0;
-> +	list_for_each_entry(term, config_terms, list) {
-> +		term_types |= 1 << term->type;
-> +	}
->  	/*
-> -	 * Disable sampling for all group members other than the leader in
-> -	 * case the leader 'leads' the sampling, except when the leader is an
-> -	 * AUX area event, in which case the 2nd event in the group is the one
-> -	 * that 'leads' the sampling.
-> +	 * Disable sampling for all group members except those with explicit
-> +	 * config terms or the leader. In the case of an AUX area event, the 2nd
-> +	 * event in the group is the one that 'leads' the sampling.
->  	 */
-> -	attr->freq           = 0;
-> -	attr->sample_freq    = 0;
-> -	attr->sample_period  = 0;
-> -	attr->write_backward = 0;
-> +	freq_mask = (1 << EVSEL__CONFIG_TERM_FREQ) | (1 << EVSEL__CONFIG_TERM_PERIOD);
-> +	if ((term_types & freq_mask) == 0) {
+Thanks! Find my response below, please.
 
-It would be nicer to have a helper e.g.
+> On Fri, 31 Jul 2020 13:44:20 +0900
+> Yoshiki Komachi <komachi.yoshiki@gmail.com> wrote:
+>=20
+>> diff --git a/samples/bpf/xdp_bridge_kern.c =
+b/samples/bpf/xdp_bridge_kern.c
+>> new file mode 100644
+>> index 000000000000..00f802503199
+>> --- /dev/null
+>> +++ b/samples/bpf/xdp_bridge_kern.c
+>> @@ -0,0 +1,129 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/* Copyright (c) 2020 NTT Corp. All Rights Reserved.
+>> + *
+> [...]
+>> +
+>> +struct {
+>> +	__uint(type, BPF_MAP_TYPE_DEVMAP_HASH);
+>> +	__uint(key_size, sizeof(int));
+>> +	__uint(value_size, sizeof(int));
+>> +	__uint(max_entries, 64);
+>> +} xdp_tx_ports SEC(".maps");
+>> +
+>> +static __always_inline int xdp_bridge_proto(struct xdp_md *ctx, u16 =
+br_vlan_proto)
+>> +{
+>> +	void *data_end =3D (void *)(long)ctx->data_end;
+>> +	void *data =3D (void *)(long)ctx->data;
+>> +	struct bpf_fdb_lookup fdb_lookup_params;
+>> +	struct vlan_hdr *vlan_hdr =3D NULL;
+>> +	struct ethhdr *eth =3D data;
+>> +	u16 h_proto;
+>> +	u64 nh_off;
+>> +	int rc;
+>> +
+>> +	nh_off =3D sizeof(*eth);
+>> +	if (data + nh_off > data_end)
+>> +		return XDP_DROP;
+>> +
+>> +	__builtin_memset(&fdb_lookup_params, 0, =
+sizeof(fdb_lookup_params));
+>> +
+>> +	h_proto =3D eth->h_proto;
+>> +
+>> +	if (unlikely(ntohs(h_proto) < ETH_P_802_3_MIN))
+>> +		return XDP_PASS;
+>> +
+>> +	/* Handle VLAN tagged packet */
+>> +	if (h_proto =3D=3D br_vlan_proto) {
+>> +		vlan_hdr =3D (void *)eth + nh_off;
+>> +		nh_off +=3D sizeof(*vlan_hdr);
+>> +		if ((void *)eth + nh_off > data_end)
+>> +			return XDP_PASS;
+>> +
+>> +		fdb_lookup_params.vlan_id =3D =
+ntohs(vlan_hdr->h_vlan_TCI) &
+>> +					VLAN_VID_MASK;
+>> +	}
+>> +
+>> +	/* FIXME: Although Linux bridge provides us with vlan filtering =
+(contains
+>> +	 * PVID) at ingress, the feature is currently unsupported in =
+this XDP program.
+>> +	 *
+>> +	 * Two ideas to realize the vlan filtering are below:
+>> +	 *   1. usespace daemon monitors bridge vlan events and notifies =
+XDP programs
+>                   ^^
+> Typo: usespace -> userspace
 
-	if (!evsel__have_config_term(evsel, FREQ) &&
-	    !evsel__have_config_term(evsel, PERIOD)) {
+I will fix this in the next version.
 
-> +		attr->freq           = 0;
-> +		attr->sample_freq    = 0;
-> +		attr->sample_period  = 0;
+>> +	 *      of them through BPF maps
+>> +	 *   2. introduce another bpf helper to retrieve bridge vlan =
+information
+>=20
+> The comment appears two times time this file.
 
-If we are not sampling, then maybe we should also put here:
+I was aiming to show future implementation of the vlan filtering at =
+ingress (not egress) to
+be required here by the above comment.
 
-		attr->write_backward = 0;
+>> +	 *
+>> +	 *
+>> +	 * FIXME: After the vlan filtering, learning feature is required =
+here, but
+>> +	 * it is currently unsupported as well. If another bpf helper =
+for learning
+>> +	 * is accepted, the processing could be implemented in the =
+future.
+>> +	 */
+>> +
+>> +	memcpy(&fdb_lookup_params.addr, eth->h_dest, ETH_ALEN);
+>> +
+>> +	/* Note: This program definitely takes ifindex of ingress =
+interface as
+>> +	 * a bridge port. Linux networking devices can be stacked and =
+physical
+>> +	 * interfaces are not necessarily slaves of bridges (e.g., =
+bonding or
+>> +	 * vlan devices can be slaves of bridges), but stacked bridge =
+ports are
+>> +	 * currently unsupported in this program. In such cases, XDP =
+programs
+>> +	 * should be attached to a lower device in order to process =
+packets with
+>> +	 * higher speed. Then, a new bpf helper to find upper devices =
+will be
+>> +	 * required here in the future because they will be registered =
+on FDB
+>> +	 * in the kernel.
+>> +	 */
+>> +	fdb_lookup_params.ifindex =3D ctx->ingress_ifindex;
+>> +
+>> +	rc =3D bpf_fdb_lookup(ctx, &fdb_lookup_params, =
+sizeof(fdb_lookup_params), 0);
+>> +	if (rc !=3D BPF_FDB_LKUP_RET_SUCCESS) {
+>> +		/* In cases of flooding, XDP_PASS will be returned here =
+*/
+>> +		return XDP_PASS;
+>> +	}
+>> +
+>> +	/* FIXME: Although Linux bridge provides us with vlan filtering =
+(contains
+>> +	 * untagged policy) at egress as well, the feature is currently =
+unsupported
+>> +	 * in this XDP program.
+>> +	 *
+>> +	 * Two ideas to realize the vlan filtering are below:
+>> +	 *   1. usespace daemon monitors bridge vlan events and notifies =
+XDP programs
+>> +	 *      of them through BPF maps
+>> +	 *   2. introduce another bpf helper to retrieve bridge vlan =
+information
+>> +	 */
+>=20
+> (2nd time the comment appears)
 
-> +	}
+The 2nd one is marking for future implementation of the egress =
+filtering.
 
-Then, if we are sampling this evsel shouldn't the backward setting
-match the leader? e.g.
+Sorry for confusing you. I will try to remove the redundancy and =
+confusion.
 
-	if (attr->sample_freq)
-		attr->write_backward = leader->core.attr.write_backward;
+>> +
+>=20
+> A comment about below bpf_redirect_map() would be good.  Explaining
+> that we depend on fallback behavior, to let normal bridge code handle
+> other cases (e.g. flood/broadcast). And also that if lookup fails,
+> XDP_PASS/fallback also happens.
 
+In this example, flooded packets will be transferred to the upper normal =
+bridge by not the
+bpf_redirect_map() call but the XDP_PASS action as below:
 
-> +	if ((term_types & (1 << EVSEL__CONFIG_TERM_OVERWRITE)) == 0)
-> +		attr->write_backward = 0;
->  
->  	/*
->  	 * We don't get a sample for slave events, we make them when delivering
-> 
++	rc =3D bpf_fdb_lookup(ctx, &fdb_lookup_params, =
+sizeof(fdb_lookup_params), 0);
++	if (rc !=3D BPF_FDB_LKUP_RET_SUCCESS) {
++		/* In cases of flooding, XDP_PASS will be returned here =
+*/
++		return XDP_PASS;
++	}
+
+Thus, such a comment should be described as above, IMO.
+
+Thanks & Best regards,
+
+>> +	return bpf_redirect_map(&xdp_tx_ports, =
+fdb_lookup_params.ifindex, XDP_PASS);
+>> +}
+>> +
+>> +SEC("xdp_bridge")
+>> +int xdp_bridge_prog(struct xdp_md *ctx)
+>> +{
+>> +	return xdp_bridge_proto(ctx, 0);
+>> +}
+>> +
+>> +SEC("xdp_8021q_bridge")
+>> +int xdp_8021q_bridge_prog(struct xdp_md *ctx)
+>> +{
+>> +	return xdp_bridge_proto(ctx, htons(ETH_P_8021Q));
+>> +}
+>> +
+>> +SEC("xdp_8021ad_bridge")
+>> +int xdp_8021ad_bridge_prog(struct xdp_md *ctx)
+>> +{
+>> +	return xdp_bridge_proto(ctx, htons(ETH_P_8021AD));
+>> +}
+>> +
+>> +char _license[] SEC("license") =3D "GPL";
+>=20
+>=20
+> --=20
+> Best regards,
+>  Jesper Dangaard Brouer
+>  MSc.CS, Principal Kernel Engineer at Red Hat
+>  LinkedIn: http://www.linkedin.com/in/brouer
+>=20
+
+=E2=80=94
+Yoshiki Komachi
+komachi.yoshiki@gmail.com
 
