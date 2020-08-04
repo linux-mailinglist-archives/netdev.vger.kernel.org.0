@@ -2,114 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44AF823BE29
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 18:32:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B73D823BE3E
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 18:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729632AbgHDQcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 12:32:32 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:49071 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726027AbgHDQcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 12:32:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596558751;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=j9V+gTlssMRevtKd/lBIjqmGOHHv08UaijZNfxpImIc=;
-        b=QbaAsRjQRrFpNZAucxyXu8Hk1BeJZEM1V3FfBnmkwUi40fSUaP6r5oqOGunuk2HquQ6yxC
-        Whv4QY8DtoPvp8aWpSaem7GkNTiq1+rHRxc/Y+DheZs1Gb24mXActSeAIXmRy1oTu6tJHA
-        lWG/0r2WW/VAC9m8VAkMax1KD8Pkgng=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-438-EBmKu7AiPXulOTPglffOXA-1; Tue, 04 Aug 2020 12:32:29 -0400
-X-MC-Unique: EBmKu7AiPXulOTPglffOXA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ED74C1800D42;
-        Tue,  4 Aug 2020 16:32:27 +0000 (UTC)
-Received: from linux.fritz.box.com (ovpn-114-132.ams2.redhat.com [10.36.114.132])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4C4F072E48;
-        Tue,  4 Aug 2020 16:32:26 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org,
-        Nicolas Rybowski <nicolas.rybowski@tessares.net>
-Subject: [PATCH net] mptcp: be careful on subflow creation
-Date:   Tue,  4 Aug 2020 18:31:06 +0200
-Message-Id: <61e82de664dffde9ff445ed6f776d6809b198693.1596558566.git.pabeni@redhat.com>
+        id S1729760AbgHDQij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 12:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729147AbgHDQia (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 12:38:30 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795FCC06174A;
+        Tue,  4 Aug 2020 09:38:29 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id b2so8744083qvp.9;
+        Tue, 04 Aug 2020 09:38:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vo5CBTxynn6OI5pj/G92x3kgRqO2haV0tH8JKjkkGxQ=;
+        b=oPBAZ1Z3XEyeMcetYb7Hx3O9tLIzSyyi8YhxQA6FdZhng8kx1xUqv9tA7B9boO8J7P
+         VXnDbsEQez/axS9w1hh4b/eqyz3POAh41TfA+BwlKRv3WgWytKqvm8n8+shZPYOQZDuJ
+         UclNz7ckC9ZO4k9GyZZNnRAKYqprvlLyDXAEwaMd4+SmEA8NazA2u0SNYKvmea+UXG0V
+         Jbzj2QstWPkCiopdbE0hH9usXr8qw83QwIPwE5l7mYr2xvyciDObuWH3CQCbYV6I5haR
+         agr+y0wcg4BsN2EG3LdQgbQZ9VOjC5eMWYUxjgsQCUFVC7z8v1h0Zxn4mV+Zqy305Q7B
+         t4gw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vo5CBTxynn6OI5pj/G92x3kgRqO2haV0tH8JKjkkGxQ=;
+        b=ggFV2+tkogXBkquD9ePMaIE5FlBVtpEw/6AEdOlHgVC9JSeNdeWCbwQORqKOi3ISGR
+         yT9y9RoAqszaVGx+jhietDbudJk1lqzf2CU7aYi+Gg0YiQ8ryoLkVIzwuOQa0pc4+0Hu
+         mambCSQSlL4uzGGJsV8MwZCo8tCjNFoXaVp4iMUORhIROTC8+k4DmHDTczIegr//me5G
+         4NyXaNscpSHj0D3eioMrqkUuvU6PuqmH9a46ad7TY/nIUt1wbNmAMl4p1skP8e7CYVZ1
+         2PmXpxpUBBIO4ITFKRUW+h2UfAIKkVTylxwfu0exGmB3eI5xlsIeqGS+YuDD1A6oc3EY
+         Uv0w==
+X-Gm-Message-State: AOAM530CN5CNU3JLikNQKSYBeYuG5U0G4DBLcc6CelQC6radw6NgEJV8
+        EIgTEkpjQc4CIc+ns75Q0VA=
+X-Google-Smtp-Source: ABdhPJyTA3Hqz8Ea0WQ/6iDDJL3/EzVtXGW5gXKjTsk8vuaDOwsjhwZoQ3QcP50gwug572g+AXsemA==
+X-Received: by 2002:ad4:470f:: with SMTP id k15mr22795613qvz.216.1596559106978;
+        Tue, 04 Aug 2020 09:38:26 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id f31sm26567863qte.35.2020.08.04.09.38.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Aug 2020 09:38:26 -0700 (PDT)
+Subject: Re: [EXT] Re: [PATCH v4 2/2] net: dsa: ocelot: Add support for QinQ
+ Operation
+To:     Hongbo Wang <hongbo.wang@nxp.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "idosch@idosch.org" <idosch@idosch.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
+        "roopa@cumulusnetworks.com" <roopa@cumulusnetworks.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "ivecera@redhat.com" <ivecera@redhat.com>
+References: <20200730102505.27039-1-hongbo.wang@nxp.com>
+ <20200730102505.27039-3-hongbo.wang@nxp.com>
+ <20200803.145843.2285407129021498421.davem@davemloft.net>
+ <VI1PR04MB51039B32C580321D99B8DEE8E14A0@VI1PR04MB5103.eurprd04.prod.outlook.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <2906dc1e-fe37-e9d8-984d-2630549f0462@gmail.com>
+Date:   Tue, 4 Aug 2020 09:38:21 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <VI1PR04MB51039B32C580321D99B8DEE8E14A0@VI1PR04MB5103.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nicolas reported the following oops:
 
-[ 1521.392541] BUG: kernel NULL pointer dereference, address: 00000000000000c0
-[ 1521.394189] #PF: supervisor read access in kernel mode
-[ 1521.395376] #PF: error_code(0x0000) - not-present page
-[ 1521.396607] PGD 0 P4D 0
-[ 1521.397156] Oops: 0000 [#1] SMP PTI
-[ 1521.398020] CPU: 0 PID: 22986 Comm: kworker/0:2 Not tainted 5.8.0-rc4+ #109
-[ 1521.399618] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-[ 1521.401728] Workqueue: events mptcp_worker
-[ 1521.402651] RIP: 0010:mptcp_subflow_create_socket+0xf1/0x1c0
-[ 1521.403954] Code: 24 08 89 44 24 04 48 8b 7a 18 e8 2a 48 d4 ff 8b 44 24 04 85 c0 75 7a 48 8b 8b 78 02 00 00 48 8b 54 24 08 48 8d bb 80 00 00 00 <48> 8b 89 c0 00 00 00 48 89 8a c0 00 00 00 48 8b 8b 78 02 00 00 8b
-[ 1521.408201] RSP: 0000:ffffabc4002d3c60 EFLAGS: 00010246
-[ 1521.409433] RAX: 0000000000000000 RBX: ffffa0b9ad8c9a00 RCX: 0000000000000000
-[ 1521.411096] RDX: ffffa0b9ae78a300 RSI: 00000000fffffe01 RDI: ffffa0b9ad8c9a80
-[ 1521.412734] RBP: ffffa0b9adff2e80 R08: ffffa0b9af02d640 R09: ffffa0b9ad923a00
-[ 1521.414333] R10: ffffabc4007139f8 R11: fefefefefefefeff R12: ffffabc4002d3cb0
-[ 1521.415918] R13: ffffa0b9ad91fa58 R14: ffffa0b9ad8c9f9c R15: 0000000000000000
-[ 1521.417592] FS:  0000000000000000(0000) GS:ffffa0b9af000000(0000) knlGS:0000000000000000
-[ 1521.419490] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1521.420839] CR2: 00000000000000c0 CR3: 000000002951e006 CR4: 0000000000160ef0
-[ 1521.422511] Call Trace:
-[ 1521.423103]  __mptcp_subflow_connect+0x94/0x1f0
-[ 1521.425376]  mptcp_pm_create_subflow_or_signal_addr+0x200/0x2a0
-[ 1521.426736]  mptcp_worker+0x31b/0x390
-[ 1521.431324]  process_one_work+0x1fc/0x3f0
-[ 1521.432268]  worker_thread+0x2d/0x3b0
-[ 1521.434197]  kthread+0x117/0x130
-[ 1521.435783]  ret_from_fork+0x22/0x30
 
-on some unconventional configuration.
+On 8/3/2020 11:36 PM, Hongbo Wang wrote:
+>>> +     if (vlan->proto == ETH_P_8021AD) {
+>>> +             ocelot->enable_qinq = true;
+>>> +             ocelot_port->qinq_mode = true;
+>>> +     }
+>>  ...
+>>> +     if (vlan->proto == ETH_P_8021AD) {
+>>> +             ocelot->enable_qinq = false;
+>>> +             ocelot_port->qinq_mode = false;
+>>> +     }
+>>> +
+>>
+>> I don't understand how this can work just by using a boolean to track the
+>> state.
+>>
+>> This won't work properly if you are handling multiple QinQ VLAN entries.
+>>
+>> Also, I need Andrew and Florian to review and ACK the DSA layer changes that
+>> add the protocol value to the device notifier block.
+> 
+> Hi David,
+> Thanks for reply.
+> 
+> When setting bridge's VLAN protocol to 802.1AD by the command "ip link set br0 type bridge vlan_protocol 802.1ad", it will call dsa_slave_vlan_rx_add(dev, proto, vid) for every port in the bridge, the parameter vid is port's pvid 1,
+> if pvid's proto is 802.1AD, I will enable switch's enable_qinq, and the related port's qinq_mode,
+> 
+> When there are multiple QinQ VLAN entries, If one VLAN's proto is 802.1AD, I will enable switch and the related port into QinQ mode.
 
-The MPTCP protocol is trying to create a subflow for an
-unaccepted server socket. That is allowed by the RFC, even
-if subflow creation will likely fail.
-Unaccepted sockets have still a NULL sk_socket field,
-avoid the issue by failing earlier.
-
-Reported-and-tested-by: Nicolas Rybowski <nicolas.rybowski@tessares.net>
-Fixes: 7d14b0d2b9b3 ("mptcp: set correct vfs info for subflows")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/subflow.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 3838a0b3a21f..3c31a8160f19 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1032,6 +1032,12 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
- 	struct socket *sf;
- 	int err;
- 
-+	/* un-accepted server sockets can reach here - on bad configuration
-+	 * bail early to avoid greater trouble later
-+	 */
-+	if (unlikely(!sk->sk_socket))
-+		return -EINVAL;
-+
- 	err = sock_create_kern(net, sk->sk_family, SOCK_STREAM, IPPROTO_TCP,
- 			       &sf);
- 	if (err)
+The enabling appears fine, the problem is the disabling, the first
+802.1AD VLAN entry that gets deleted will lead to the port and switch no
+longer being in QinQ mode, and this does not look intended.
 -- 
-2.26.2
-
+Florian
