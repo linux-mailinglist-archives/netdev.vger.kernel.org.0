@@ -2,149 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 434EE23BA98
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 14:44:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DBB723BAD8
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 15:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728256AbgHDMnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 08:43:51 -0400
-Received: from host-88-217-225-28.customer.m-online.net ([88.217.225.28]:56536
-        "EHLO mail.dev.tdt.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726210AbgHDMnu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 08:43:50 -0400
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 94668200F9;
-        Tue,  4 Aug 2020 12:43:46 +0000 (UTC)
+        id S1728295AbgHDNBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 09:01:32 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:49592 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726514AbgHDNBH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 09:01:07 -0400
+Received: by mail-io1-f71.google.com with SMTP id 189so4885772iov.16
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 06:01:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=06+82rKMp3PGXLDD6Ap7gC365MaLMsLGY5Rl6STa3zE=;
+        b=n71SEQpM0z5w4k2lw8zOdAo888jtiy/0pnKp50j5KAPARyoswjWhVF+S3wdzOyaR6B
+         49eXR9nJE/F4zUTqwFcrTFHUQ9qSBOSyxo8RkyAFB5FaIs8/lniVVojNzCFL5cDpqW2p
+         E51jrk3P90cFvPabtmmfKah4ZNLfZRzp0xmKkOoFuyKEcsgIGzE8vx7G1TGTj8811nwJ
+         w4ZxyOotSHPfft9LDTLv5Qpu0L+021c9VTClytDP9IQ7YgaNF2Qn3WuRpITe6fR1AwTl
+         SOYl9ZHglQ2fC/8Gt5wj5Vf/tDxaKVIUcBVnb+RIIuBKa5jWhOxdlkLpal42SKLdl3nL
+         DoPw==
+X-Gm-Message-State: AOAM531+cuI9/5uJCvjNbO/2I4dIjCj+unuvkRKmGa0kSW9OPvdAnjmM
+        T6x7KUSJ/Wwy7AH/E1stPLnykFNi6r+XTZAxFN+C5vCjR9xd
+X-Google-Smtp-Source: ABdhPJysIn/3rq8mJzFBZcPdgkiq5Vci73yhB6VXvAfDq6syCOUZWs4ErkDjGmgAWbCV304S/arGJe8W97c4vCtTU2PHRCJr/z6K
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 04 Aug 2020 14:43:46 +0200
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Brian Norris <briannorris@chromium.org>,
-        netdev-owner@vger.kernel.org
-Subject: Re: [net v3] drivers/net/wan/lapbether: Use needed_headroom instead
- of hard_header_len
-Organization: TDT AG
-In-Reply-To: <20200802195046.402539-1-xie.he.0141@gmail.com>
-References: <20200802195046.402539-1-xie.he.0141@gmail.com>
-Message-ID: <d02996f90f64d55d5c5e349560bfde46@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.1.5
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-Received: by 2002:a05:6e02:d51:: with SMTP id h17mr4320234ilj.155.1596546066783;
+ Tue, 04 Aug 2020 06:01:06 -0700 (PDT)
+Date:   Tue, 04 Aug 2020 06:01:06 -0700
+In-Reply-To: <000000000000a7eb5e05abeb197d@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000002da68705ac0cd9ab@google.com>
+Subject: Re: general protection fault in hci_event_packet
+From:   syzbot <syzbot+0bef568258653cff272f@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, geert@linux-m68k.org, javier@osg.samsung.com,
+        johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, marcel@holtmann.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-08-02 21:50, Xie He wrote:
-> In net/packet/af_packet.c, the function packet_snd first reserves a
-> headroom of length (dev->hard_header_len + dev->needed_headroom).
-> Then if the socket is a SOCK_DGRAM socket, it calls dev_hard_header,
-> which calls dev->header_ops->create, to create the link layer header.
-> If the socket is a SOCK_RAW socket, it "un-reserves" a headroom of
-> length (dev->hard_header_len), and assumes the user to provide the
-> appropriate link layer header.
-> 
-> So according to the logic of af_packet.c, dev->hard_header_len should
-> be the length of the header that would be created by
-> dev->header_ops->create.
-> 
-> However, this driver doesn't provide dev->header_ops, so logically
-> dev->hard_header_len should be 0.
-> 
-> So we should use dev->needed_headroom instead of dev->hard_header_len
-> to request necessary headroom to be allocated.
+syzbot has bisected this issue to:
 
-I'm not an expert in the field, but after reading the commit message and
-the previous comments, I'd say that makes sense.
+commit 941992d2944789641470626e9336d663236b1d28
+Author: Javier Martinez Canillas <javier@osg.samsung.com>
+Date:   Mon Sep 12 14:03:34 2016 +0000
 
-> 
-> This change fixes kernel panic when this driver is used with AF_PACKET
-> SOCK_RAW sockets. Call stack when panic:
-> 
-> [  168.399197] skbuff: skb_under_panic: text:ffffffff819d95fb len:20
-> put:14 head:ffff8882704c0a00 data:ffff8882704c09fd tail:0x11 end:0xc0
-> dev:veth0
-> ...
-> [  168.399255] Call Trace:
-> [  168.399259]  skb_push.cold+0x14/0x24
-> [  168.399262]  eth_header+0x2b/0xc0
-> [  168.399267]  lapbeth_data_transmit+0x9a/0xb0 [lapbether]
-> [  168.399275]  lapb_data_transmit+0x22/0x2c [lapb]
-> [  168.399277]  lapb_transmit_buffer+0x71/0xb0 [lapb]
-> [  168.399279]  lapb_kick+0xe3/0x1c0 [lapb]
-> [  168.399281]  lapb_data_request+0x76/0xc0 [lapb]
-> [  168.399283]  lapbeth_xmit+0x56/0x90 [lapbether]
-> [  168.399286]  dev_hard_start_xmit+0x91/0x1f0
-> [  168.399289]  ? irq_init_percpu_irqstack+0xc0/0x100
-> [  168.399291]  __dev_queue_xmit+0x721/0x8e0
-> [  168.399295]  ? packet_parse_headers.isra.0+0xd2/0x110
-> [  168.399297]  dev_queue_xmit+0x10/0x20
-> [  168.399298]  packet_sendmsg+0xbf0/0x19b0
-> ......
+    ethernet: amd: use IS_ENABLED() instead of checking for built-in or module
 
-Shouldn't this kernel panic be intercepted by a skb_cow() before the
-skb_push() in lapbeth_data_transmit()?
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=155180c2900000
+start commit:   bcf87687 Linux 5.8
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=175180c2900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=135180c2900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4b489d75d0c8859d
+dashboard link: https://syzkaller.appspot.com/bug?extid=0bef568258653cff272f
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1043af04900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12ca1dea900000
 
-> 
-> Additional change:
-> When sending, check skb->len to ensure the 1-byte pseudo header is
-> present before reading it.
-> 
-> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> Cc: Brian Norris <briannorris@chromium.org>
-> Signed-off-by: Xie He <xie.he.0141@gmail.com>
-> ---
-> 
-> Change from v2:
-> Added skb->len check when sending.
-> 
-> Change from v1:
-> None
-> 
-> ---
->  drivers/net/wan/lapbether.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-> index b2868433718f..8a3f7ba36f7e 100644
-> --- a/drivers/net/wan/lapbether.c
-> +++ b/drivers/net/wan/lapbether.c
-> @@ -157,6 +157,9 @@ static netdev_tx_t lapbeth_xmit(struct sk_buff 
-> *skb,
->  	if (!netif_running(dev))
->  		goto drop;
-> 
-> +	if (skb->len < 1)
-> +		goto drop;
-> +
->  	switch (skb->data[0]) {
->  	case X25_IFACE_DATA:
->  		break;
-> @@ -305,6 +308,7 @@ static void lapbeth_setup(struct net_device *dev)
->  	dev->netdev_ops	     = &lapbeth_netdev_ops;
->  	dev->needs_free_netdev = true;
->  	dev->type            = ARPHRD_X25;
-> +	dev->hard_header_len = 0;
->  	dev->mtu             = 1000;
->  	dev->addr_len        = 0;
->  }
-> @@ -331,7 +335,8 @@ static int lapbeth_new_device(struct net_device 
-> *dev)
->  	 * then this driver prepends a length field of 2 bytes,
->  	 * then the underlying Ethernet device prepends its own header.
->  	 */
-> -	ndev->hard_header_len = -1 + 3 + 2 + dev->hard_header_len;
-> +	ndev->needed_headroom = -1 + 3 + 2 + dev->hard_header_len
-> +					   + dev->needed_headroom;
-> 
->  	lapbeth = netdev_priv(ndev);
->  	lapbeth->axdev = ndev;
+Reported-by: syzbot+0bef568258653cff272f@syzkaller.appspotmail.com
+Fixes: 941992d29447 ("ethernet: amd: use IS_ENABLED() instead of checking for built-in or module")
 
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
