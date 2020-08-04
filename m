@@ -2,119 +2,258 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1818E23B709
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 10:49:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A84F23B712
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 10:52:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729994AbgHDItZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 04:49:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52000 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726233AbgHDItZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Aug 2020 04:49:25 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1730021AbgHDIwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 04:52:14 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:41314 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729936AbgHDIwO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 04:52:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596531132;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UqjEJLolPmGHNe5yaOt/yfSsQ1bGdkSL/AwXQ/PFIg4=;
+        b=FKGndC5zDHxI1Vgu8IADbk9pJWHdyQ+hHHBTUCMQAdp6GCNeyiwpwxjT6f/0RqQZzEoysS
+        FjlUdB97t76kd/JJKgL9MpEN2AYCArDUl4JsHKYe8lXCwy9p6xB8V6lZwUWHyiMhXCIJ6M
+        PQIyx/KvOA4Ml21RZt7tCjvGubZoJQg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-149-OEkxtpFKOnqa8QMMyG6L9w-1; Tue, 04 Aug 2020 04:52:10 -0400
+X-MC-Unique: OEkxtpFKOnqa8QMMyG6L9w-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2832322CA1;
-        Tue,  4 Aug 2020 08:49:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596530964;
-        bh=wh+3TwBOK1o2Vk+lCmU6y6QIvoOEds+ttEJv+0CIeas=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RgXfTFZIiiDR+8x+bx2sFsUiWUepouue0D2lCy3zdkio4D8nBxov/GKCw5OQxxq9F
-         5TMQjLXqOIRaysLnqczGwUgzeAj3C2VWiPOb2ho8svabNPfzShVlsDHJRy1U/5z758
-         PUGU3anv3N6NdFwlWdDqZV8wUxOFlZWri79ddLI4=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Mark Zhang <markz@mellanox.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Ido Kalir <idok@mellanox.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: [PATCH iproute2-next 3/3] rdma: Document the new "pid" criteria for auto mode
-Date:   Tue,  4 Aug 2020 11:49:09 +0300
-Message-Id: <20200804084909.604846-4-leon@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200804084909.604846-1-leon@kernel.org>
-References: <20200804084909.604846-1-leon@kernel.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BEA7E8014D7;
+        Tue,  4 Aug 2020 08:52:08 +0000 (UTC)
+Received: from [10.72.13.197] (ovpn-13-197.pek2.redhat.com [10.72.13.197])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 966FF5C5B7;
+        Tue,  4 Aug 2020 08:51:45 +0000 (UTC)
+Subject: Re: [PATCH V5 4/6] vhost_vdpa: implement IRQ offloading in vhost_vdpa
+To:     Zhu Lingshan <lingshan.zhu@intel.com>, alex.williamson@redhat.com,
+        mst@redhat.com, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, wanpengli@tencent.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, eli@mellanox.com, shahafs@mellanox.com,
+        parav@mellanox.com
+References: <20200731065533.4144-1-lingshan.zhu@intel.com>
+ <20200731065533.4144-5-lingshan.zhu@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <5212669d-6e7b-21cb-6e25-1837d70624b2@redhat.com>
+Date:   Tue, 4 Aug 2020 16:51:43 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20200731065533.4144-5-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Zhang <markz@mellanox.com>
 
-Document the new supported criteria of auto mode. Examples:
-$ rdma statistic qp set link mlx5_2/1 auto pid on
-$ rdma statistic qp set link mlx5_2/1 auto pid,type on
+On 2020/7/31 下午2:55, Zhu Lingshan wrote:
+> This patch introduce a set of functions for setup/unsetup
+> and update irq offloading respectively by register/unregister
+> and re-register the irq_bypass_producer.
+>
+> With these functions, this commit can setup/unsetup
+> irq offloading through setting DRIVER_OK/!DRIVER_OK, and
+> update irq offloading through SET_VRING_CALL.
+>
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> Suggested-by: Jason Wang <jasowang@redhat.com>
+> ---
+>   drivers/vhost/Kconfig |  1 +
+>   drivers/vhost/vdpa.c  | 79 ++++++++++++++++++++++++++++++++++++++++++-
+>   2 files changed, 79 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+> index d3688c6afb87..587fbae06182 100644
+> --- a/drivers/vhost/Kconfig
+> +++ b/drivers/vhost/Kconfig
+> @@ -65,6 +65,7 @@ config VHOST_VDPA
+>   	tristate "Vhost driver for vDPA-based backend"
+>   	depends on EVENTFD
+>   	select VHOST
+> +	select IRQ_BYPASS_MANAGER
+>   	depends on VDPA
+>   	help
+>   	  This kernel module can be loaded in host kernel to accelerate
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index df3cf386b0cd..278ea2f00172 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -115,6 +115,55 @@ static irqreturn_t vhost_vdpa_config_cb(void *private)
+>   	return IRQ_HANDLED;
+>   }
+>   
+> +static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
+> +{
+> +	struct vhost_virtqueue *vq = &v->vqs[qid];
+> +	const struct vdpa_config_ops *ops = v->vdpa->config;
+> +	struct vdpa_device *vdpa = v->vdpa;
+> +	int ret, irq;
+> +
+> +	spin_lock(&vq->call_ctx.ctx_lock);
+> +	irq = ops->get_vq_irq(vdpa, qid);
+> +	if (!vq->call_ctx.ctx || irq < 0) {
+> +		spin_unlock(&vq->call_ctx.ctx_lock);
+> +		return;
+> +	}
+> +
+> +	vq->call_ctx.producer.token = vq->call_ctx.ctx;
+> +	vq->call_ctx.producer.irq = irq;
+> +	ret = irq_bypass_register_producer(&vq->call_ctx.producer);
+> +	spin_unlock(&vq->call_ctx.ctx_lock);
+> +}
+> +
+> +static void vhost_vdpa_unsetup_vq_irq(struct vhost_vdpa *v, u16 qid)
+> +{
+> +	struct vhost_virtqueue *vq = &v->vqs[qid];
+> +
+> +	spin_lock(&vq->call_ctx.ctx_lock);
+> +	irq_bypass_unregister_producer(&vq->call_ctx.producer);
 
-Signed-off-by: Mark Zhang <markz@mellanox.com>
-Reviewed-by: Ido Kalir <idok@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- man/man8/rdma-statistic.8 | 23 +++++++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
 
-diff --git a/man/man8/rdma-statistic.8 b/man/man8/rdma-statistic.8
-index 7de495c9..7160bcdf 100644
---- a/man/man8/rdma-statistic.8
-+++ b/man/man8/rdma-statistic.8
-@@ -68,11 +68,11 @@ rdma-statistic \- RDMA statistic counter configuration
- 
- .ti -8
- .IR CRITERIA " := "
--.RB "{ " type " }"
-+.RB "{ " type " | " pid " }"
- 
- .ti -8
- .IR FILTER_NAME " := "
--.RB "{ " cntn " | " lqpn " | " pid " }"
-+.RB "{ " cntn " | " lqpn " | " pid " | " qp-type " }"
- 
- .SH "DESCRIPTION"
- .SS rdma statistic [object] show - Queries the specified RDMA device for RDMA and driver-specific statistics. Show the default hw counters if object is not specified
-@@ -88,7 +88,7 @@ rdma-statistic \- RDMA statistic counter configuration
- - specifies a filter to show only the results matching it.
- 
- .SS rdma statistic <object> set - configure counter statistic auto-mode for a specific device/port
--In auto mode all objects belong to one category are bind automatically to a single counter set. Not applicable for MR's.
-+In auto mode all objects belong to one category are bind automatically to a single counter set. The "off" is global for all auto modes together. Not applicable for MR's.
- 
- .SS rdma statistic <object> bind - manually bind an object (e.g., a qp) with a counter
- When bound the statistics of this object are available in this counter. Not applicable for MR's.
-@@ -127,6 +127,11 @@ rdma statistic qp show link mlx5_2 pid 30489
- Shows the state of all qp counters of specified RDMA port and belonging to pid 30489
- .RE
- .PP
-+rdma statistic qp show link mlx5_2 qp-type UD
-+.RS 4
-+Shows the state of all qp counters of specified RDMA port and with QP type UD
-+.RE
-+.PP
- rdma statistic qp mode
- .RS 4
- List current counter mode on all devices
-@@ -139,7 +144,17 @@ List current counter mode of device mlx5_2 port 1
- .PP
- rdma statistic qp set link mlx5_2/1 auto type on
- .RS 4
--On device mlx5_2 port 1, for each new QP bind it with a counter automatically. Per counter for QPs with same qp type in each process. Currently only "type" is supported.
-+On device mlx5_2 port 1, for each new user QP bind it with a counter automatically. Per counter for QPs with same qp type.
-+.RE
-+.PP
-+rdma statistic qp set link mlx5_2/1 auto pid on
-+.RS 4
-+On device mlx5_2 port 1, for each new user QP bind it with a counter automatically. Per counter for QPs with same pid.
-+.RE
-+.PP
-+rdma statistic qp set link mlx5_2/1 auto pid,type on
-+.RS 4
-+On device mlx5_2 port 1, for each new user QP bind it with a counter automatically. Per counter for QPs with same pid and same type.
- .RE
- .PP
- rdma statistic qp set link mlx5_2/1 auto off
--- 
-2.26.2
+Any reason for not checking vq->call_ctx.producer.irq as below here?
+
+
+> +	spin_unlock(&vq->call_ctx.ctx_lock);
+> +}
+> +
+> +static void vhost_vdpa_update_vq_irq(struct vhost_virtqueue *vq)
+> +{
+> +	spin_lock(&vq->call_ctx.ctx_lock);
+> +	/*
+> +	 * if it has a non-zero irq, means there is a
+> +	 * previsouly registered irq_bypass_producer,
+> +	 * we should update it when ctx (its token)
+> +	 * changes.
+> +	 */
+> +	if (!vq->call_ctx.producer.irq) {
+> +		spin_unlock(&vq->call_ctx.ctx_lock);
+> +		return;
+> +	}
+> +
+> +	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+> +	vq->call_ctx.producer.token = vq->call_ctx.ctx;
+> +	irq_bypass_register_producer(&vq->call_ctx.producer);
+> +	spin_unlock(&vq->call_ctx.ctx_lock);
+> +}
+
+
+I think setup_irq() and update_irq() could be unified with the following 
+logic:
+
+irq_bypass_unregister_producer(&vq->call_ctx.producer);
+irq = ops->get_vq_irq(vdpa, qid);
+     if (!vq->call_ctx.ctx || irq < 0) {
+         spin_unlock(&vq->call_ctx.ctx_lock);
+         return;
+     }
+
+vq->call_ctx.producer.token = vq->call_ctx.ctx;
+vq->call_ctx.producer.irq = irq;
+ret = irq_bypass_register_producer(&vq->call_ctx.producer);
+
+> +
+>   static void vhost_vdpa_reset(struct vhost_vdpa *v)
+>   {
+>   	struct vdpa_device *vdpa = v->vdpa;
+> @@ -155,11 +204,15 @@ static long vhost_vdpa_set_status(struct vhost_vdpa *v, u8 __user *statusp)
+>   {
+>   	struct vdpa_device *vdpa = v->vdpa;
+>   	const struct vdpa_config_ops *ops = vdpa->config;
+> -	u8 status;
+> +	u8 status, status_old;
+> +	int nvqs = v->nvqs;
+> +	u16 i;
+>   
+>   	if (copy_from_user(&status, statusp, sizeof(status)))
+>   		return -EFAULT;
+>   
+> +	status_old = ops->get_status(vdpa);
+> +
+>   	/*
+>   	 * Userspace shouldn't remove status bits unless reset the
+>   	 * status to 0.
+> @@ -169,6 +222,15 @@ static long vhost_vdpa_set_status(struct vhost_vdpa *v, u8 __user *statusp)
+>   
+>   	ops->set_status(vdpa, status);
+>   
+> +	/* vq irq is not expected to be changed once DRIVER_OK is set */
+
+
+Let's move this comment to the get_vq_irq bus operation.
+
+
+> +	if ((status & VIRTIO_CONFIG_S_DRIVER_OK) && !(status_old & VIRTIO_CONFIG_S_DRIVER_OK))
+> +		for (i = 0; i < nvqs; i++)
+> +			vhost_vdpa_setup_vq_irq(v, i);
+> +
+> +	if ((status_old & VIRTIO_CONFIG_S_DRIVER_OK) && !(status & VIRTIO_CONFIG_S_DRIVER_OK))
+> +		for (i = 0; i < nvqs; i++)
+> +			vhost_vdpa_unsetup_vq_irq(v, i);
+> +
+>   	return 0;
+>   }
+>   
+> @@ -332,6 +394,7 @@ static long vhost_vdpa_set_config_call(struct vhost_vdpa *v, u32 __user *argp)
+>   
+>   	return 0;
+>   }
+> +
+>   static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+>   				   void __user *argp)
+>   {
+> @@ -390,6 +453,7 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+>   			cb.private = NULL;
+>   		}
+>   		ops->set_vq_cb(vdpa, idx, &cb);
+> +		vhost_vdpa_update_vq_irq(vq);
+>   		break;
+>   
+>   	case VHOST_SET_VRING_NUM:
+> @@ -765,6 +829,18 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+>   	return r;
+>   }
+>   
+> +static void vhost_vdpa_clean_irq(struct vhost_vdpa *v)
+> +{
+> +	struct vhost_virtqueue *vq;
+> +	int i;
+> +
+> +	for (i = 0; i < v->nvqs; i++) {
+> +		vq = &v->vqs[i];
+> +		if (vq->call_ctx.producer.irq)
+> +			irq_bypass_unregister_producer(&vq->call_ctx.producer);
+> +	}
+> +}
+
+
+Why not using vhost_vdpa_unsetup_vq_irq()?
+
+Thanks
+
+
+> +
+>   static int vhost_vdpa_release(struct inode *inode, struct file *filep)
+>   {
+>   	struct vhost_vdpa *v = filep->private_data;
+> @@ -777,6 +853,7 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
+>   	vhost_vdpa_iotlb_free(v);
+>   	vhost_vdpa_free_domain(v);
+>   	vhost_vdpa_config_put(v);
+> +	vhost_vdpa_clean_irq(v);
+>   	vhost_dev_cleanup(&v->vdev);
+>   	kfree(v->vdev.vqs);
+>   	mutex_unlock(&d->mutex);
 
