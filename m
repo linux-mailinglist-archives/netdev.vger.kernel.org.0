@@ -2,148 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5800723B983
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 13:28:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A42923B9A7
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 13:37:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729705AbgHDL15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 07:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57630 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725811AbgHDL14 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 07:27:56 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2673C06174A;
-        Tue,  4 Aug 2020 04:27:56 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id l60so1794055pjb.3;
-        Tue, 04 Aug 2020 04:27:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=XtwssimjTTniuQl7LijmcNMg2apAbM55NqsMay8jLHo=;
-        b=A9fr5HFU3lf8zSg+CMCJqO5u+Rhus37sWFZBf/pso+4kMD9Fv+1sdUpvwYClICy0zM
-         /rfOHlQ7Y+7inApqU6w6O+j3zte0QSP7uQIdg6ZHeooAVfgStadr/Ntiza7mYYTmKCWo
-         S4MwxfjfeD9U5bmSvg51VEw+aIKInU9YwTNnK8VrKbKCBF2xrqiJFvaviOoSPorKtxr3
-         IcKc/BRbvVxzdS8u7KPEEBDS23ecJKXSG9/nlpw0uTU5iK0spuTOn2Y0HL+tx4j2hmqB
-         4a1XHahqhwx9a2DXP4/u6RS1d9rkOrdIixjgYntLANqgwWWHFSq0T+ZpYhTW/ppGp5GW
-         6IUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=XtwssimjTTniuQl7LijmcNMg2apAbM55NqsMay8jLHo=;
-        b=qYc/jRz+XdKdPH8sK7lw0lsOoQZ4fJ9aOaqMJjvHP3ghjZcNfOLPRV9GgEz4QlnRMg
-         mbUtZuR/dciXfDOUAqcCGZHzvDf0yaXsRzgifw4boIhySAwpDla/6k31WShbl3jqhOvL
-         tRsTbj87NM+EmQkMjiZSBRNX949IJj2dPx0cJ4V8V2UdCfawrc5mKrVKYAUrE0Xt932x
-         LwSSDRRJIpZrF41u6GiUh/STsP7oMaPmRsu1M2tBHFdpBlzXqM88wXq9s1NBfMtUn6vs
-         FMAWu2d/qBeOGkKowzMSV9HYnBNZwQYVzR+71cU4jyKjxN3fHhJuMBxkJHiCCnTS2Rks
-         ipyA==
-X-Gm-Message-State: AOAM5323hWE8hgVRfyrzO2SIt3ayu3wXryepdNdouPLaLO6GDKnwN6Du
-        xw/+GAMwIa6c73k8or5Sscc=
-X-Google-Smtp-Source: ABdhPJwsfFZK8aQeNW4ZbNv7QRfGEMuHZOB7C8ZEo5CdZNGJGZVbDMyxLfPFSk4iwVWkMzsEvSRkGw==
-X-Received: by 2002:a17:90a:e2cb:: with SMTP id fr11mr3903893pjb.236.1596540476311;
-        Tue, 04 Aug 2020 04:27:56 -0700 (PDT)
-Received: from [192.168.97.34] (p7925058-ipngn38401marunouchi.tokyo.ocn.ne.jp. [122.16.223.58])
-        by smtp.gmail.com with ESMTPSA id bt10sm2162713pjb.39.2020.08.04.04.27.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Aug 2020 04:27:55 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.15\))
-Subject: Re: [RFC PATCH bpf-next 2/3] bpf: Add helper to do forwarding lookups
- in kernel FDB table
-From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
-In-Reply-To: <5970d82b-3bb9-c78f-c53a-8a1c95a1fad7@gmail.com>
-Date:   Tue, 4 Aug 2020 20:27:47 +0900
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org, bpf@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <F99B20F3-4F88-4AFC-9DF8-B32EFD417785@gmail.com>
-References: <1596170660-5582-1-git-send-email-komachi.yoshiki@gmail.com>
- <1596170660-5582-3-git-send-email-komachi.yoshiki@gmail.com>
- <5970d82b-3bb9-c78f-c53a-8a1c95a1fad7@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-X-Mailer: Apple Mail (2.3445.104.15)
+        id S1730144AbgHDLhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 07:37:20 -0400
+Received: from correo.us.es ([193.147.175.20]:57976 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727792AbgHDLhT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Aug 2020 07:37:19 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id CB2F6F2DEB
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 13:37:17 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id BD034DA852
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 13:37:17 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id A6AC3DA7B6; Tue,  4 Aug 2020 13:37:17 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 76A96DA73D;
+        Tue,  4 Aug 2020 13:37:15 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 04 Aug 2020 13:37:15 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [213.143.49.65])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id EF7F042EE38E;
+        Tue,  4 Aug 2020 13:37:14 +0200 (CEST)
+Date:   Tue, 4 Aug 2020 13:37:11 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     William Mcvicker <willmcvicker@google.com>
+Cc:     security@kernel.org, Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com, stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] netfilter: nat: add a range check for l3/l4
+ protonum
+Message-ID: <20200804113711.GA20988@salvia>
+References: <20200727175720.4022402-1-willmcvicker@google.com>
+ <20200727175720.4022402-2-willmcvicker@google.com>
+ <20200729214607.GA30831@salvia>
+ <20200731002611.GA1035680@google.com>
+ <20200731175115.GA16982@salvia>
+ <20200731181633.GA1209076@google.com>
+ <20200803183156.GA3084830@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200803183156.GA3084830@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-> 2020/08/01 2:15=E3=80=81David Ahern <dsahern@gmail.com>=E3=81=AE=E3=83=A1=
-=E3=83=BC=E3=83=AB:
->=20
-> On 7/30/20 10:44 PM, Yoshiki Komachi wrote:
->> diff --git a/net/core/filter.c b/net/core/filter.c
->> index 654c346b7d91..68800d1b8cd5 100644
->> --- a/net/core/filter.c
->> +++ b/net/core/filter.c
->> @@ -5084,6 +5085,46 @@ static const struct bpf_func_proto =
-bpf_skb_fib_lookup_proto =3D {
->> 	.arg4_type	=3D ARG_ANYTHING,
->> };
->>=20
->> +#if IS_ENABLED(CONFIG_BRIDGE)
->> +BPF_CALL_4(bpf_xdp_fdb_lookup, struct xdp_buff *, ctx,
->> +	   struct bpf_fdb_lookup *, params, int, plen, u32, flags)
->> +{
->> +	struct net_device *src, *dst;
->> +	struct net *net;
->> +
->> +	if (plen < sizeof(*params))
->> +		return -EINVAL;
->=20
-> I need to look at the details more closely, but on first reading 2
-> things caught me eye:
-> 1. you need to make sure flags is 0 since there are no supported flags
-> at the moment, and
+This patch is much smaller and if you confirm this is address the
+issue, then this is awesome.
 
-Thanks for your initial comments!
+On Mon, Aug 03, 2020 at 06:31:56PM +0000, William Mcvicker wrote:
+[...]
+> diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+> index 31fa94064a62..56d310f8b29a 100644
+> --- a/net/netfilter/nf_conntrack_netlink.c
+> +++ b/net/netfilter/nf_conntrack_netlink.c
+> @@ -1129,6 +1129,8 @@ ctnetlink_parse_tuple(const struct nlattr * const cda[],
+>  	if (!tb[CTA_TUPLE_IP])
+>  		return -EINVAL;
+>  
+> +	if (l3num >= NFPROTO_NUMPROTO)
+> +		return -EINVAL;
 
-I will make sure whether this flag is required or not.
+l3num can only be either NFPROTO_IPV4 or NFPROTO_IPV6.
 
->> +
->> +	net =3D dev_net(ctx->rxq->dev);
->> +
->> +	if (is_multicast_ether_addr(params->addr) ||
->> +	    is_broadcast_ether_addr(params->addr))
->> +		return BPF_FDB_LKUP_RET_NOENT;
->> +
->> +	src =3D dev_get_by_index_rcu(net, params->ifindex);
->> +	if (unlikely(!src))
->> +		return -ENODEV;
->> +
->> +	dst =3D br_fdb_find_port_xdp(src, params->addr, =
-params->vlan_id);
->=20
-> 2. this needs to be done via netdev ops to avoid referencing bridge =
-code
-> which can be compiled as a module. I suspect the build robots will id
-> this part soon.
+Other than that, bail out with EOPNOTSUPP.
 
-I guess that no build errors will occur because the API is allowed when
-CONFIG_BRIDGE is enabled.
-
-I successfully build my kernel applying this patch, and I don=E2=80=99t =
-receive any
-messages from build robots for now.
-
-Thanks & Best regards,
-
-
-=E2=80=94
-Yoshiki Komachi
-komachi.yoshiki@gmail.com
-
+Thank you.
