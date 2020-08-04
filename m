@@ -2,192 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4526823BBD4
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 16:14:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0231423BC1A
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 16:27:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728560AbgHDOOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 10:14:54 -0400
-Received: from tmail.tesat.de ([62.156.180.249]:25293 "EHLO tmail.tesat.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726948AbgHDOOv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Aug 2020 10:14:51 -0400
-Received: from bk99pgp.bk.local (unknown [10.62.64.217]) by tmail.tesat.de with smtp
-        (TLS: TLSv1/SSLv3,256bits,ECDHE-RSA-AES256-GCM-SHA384)
-         id 0632_0014_a3f542b0_d617_4c91_90ba_6095395d50cb;
-        Tue, 04 Aug 2020 16:14:33 +0200
-Received: from bk99pgp.bk.local (localhost [127.0.0.1])
-        by bk99pgp.bk.local (Postfix) with ESMTP id 269D818E082;
-        Tue,  4 Aug 2020 16:14:34 +0200 (CEST)
-Received: from BK99MAIL01.bk.local (autodiscover.tesat.com [10.62.64.168])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by bk99pgp.bk.local (Postfix) with ESMTPS id 1156118E059;
-        Tue,  4 Aug 2020 16:14:34 +0200 (CEST)
-Received: from BK99MAIL02.bk.local (10.62.64.169) by BK99MAIL01.bk.local
- (10.62.64.168) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 4 Aug
- 2020 16:14:33 +0200
-Received: from BK99MAIL02.bk.local ([fe80::8824:afc:c78e:5807]) by
- BK99MAIL02.bk.local ([fe80::8824:afc:c78e:5807%13]) with mapi id
- 15.00.1497.006; Tue, 4 Aug 2020 16:14:33 +0200
-From:   "Gaube, Marvin (THSE-TL1)" <Marvin.Gaube@tesat.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
+        id S1729240AbgHDO1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 10:27:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729217AbgHDO1O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 10:27:14 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16441C06174A
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 07:27:12 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id m20so20533897eds.2
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 07:27:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RxbJzF7IYY/Xus1T8XnEygfwwXnPKxY8WWK9ypkUQv0=;
+        b=NLJHhZqiI6A6vYzAolV8/RYp6HeJDLhToe/j/KKPtl/s05Sf1RLO3Pc16sergqyscL
+         EbR/gzhww+vHwGkD4PBP0GH9k6454hOJwgl5x3xOOTPdvNsR2Hkk5s1sap16bdMeaAz8
+         PZxNFlyfps0BzA7KbkJPv4KRWhSfCIlZUso9slcvlDYhTEq5OUiGpOIyk7f3Byg//wLV
+         EGAFrQO3K8OaNTPm3gY50yOuGX+kvdrRCSLTg9n19miPIK+zBs2wagnMhcBZDWwwoWEc
+         IwATxN2WRjkUceXKp20+5T08cj8/ywvsOgnKnlgCZeI/fuilc5P4jY8pq5ZeraMcwoAr
+         diRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RxbJzF7IYY/Xus1T8XnEygfwwXnPKxY8WWK9ypkUQv0=;
+        b=ou/mquZII/5oOzz/FN036KePLA73RVS57t9f+T5eeR8MY9chDmsamGlrqz2BLV1Vie
+         91xE291S5cVPg26WhLoPwfIqaOiauHDYCSwoYbfmpSSqwoLsXYIwhW2uXBc/oy3Gfikn
+         r2dKuqWEmmlZC2nhPXF8UzaPQ6/ePIDnIboKDc1aW9hvWIes8hh5Zlu/eYa6JOiAb/no
+         ohOcfzvyGW1TLBcIddgIP1WJu45YGdI9GUN6jsYYjXpzOe5kmGRDeudMocJHT22PERng
+         5HcgbPO+gfkveViCtDeftht3Dav8JPxcN8q02hDBXdbqB2cgVl1Az6vVPyGh0Vxj6xwS
+         /kqg==
+X-Gm-Message-State: AOAM530TrJkiVFd4qPZsofUg/6MGfh4sN/Mr0SIQL3STzqUucpqnXwjm
+        qZ4r6SQVzQ3jyvknWr6VH68=
+X-Google-Smtp-Source: ABdhPJz2Es/x2oSDSEVzKz1dEPPm9rbETwXg0bpYZPFpl7yha7+dZG5YtKy360s7bCiYTDez0Bl2wA==
+X-Received: by 2002:aa7:cb56:: with SMTP id w22mr20305024edt.96.1596551230823;
+        Tue, 04 Aug 2020 07:27:10 -0700 (PDT)
+Received: from skbuf ([188.26.57.97])
+        by smtp.gmail.com with ESMTPSA id q7sm18635436ejo.22.2020.08.04.07.27.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Aug 2020 07:27:10 -0700 (PDT)
+Date:   Tue, 4 Aug 2020 17:27:08 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Gaube, Marvin (THSE-TL1)" <Marvin.Gaube@tesat.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: AW: AW: PROBLEM: (DSA/Microchip): 802.1Q-Header lost on KSZ9477-DSA
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        edumazet@google.com
+Subject: Re: PROBLEM: (DSA/Microchip): 802.1Q-Header lost on KSZ9477-DSA
  ingress without bridge
-Thread-Topic: AW: PROBLEM: (DSA/Microchip): 802.1Q-Header lost on KSZ9477-DSA
- ingress without bridge
-Thread-Index: AdZlacdvzNLFV3z/TlWeuthNKZ0yRAANF1SAAASu9YD//+9kgP/+qvkg//VQ4KA=
-Date:   Tue, 4 Aug 2020 14:14:33 +0000
-Message-ID: <020a80686edc48d5810e1dbf884ae497@BK99MAIL02.bk.local>
+Message-ID: <20200804142708.zjos3b6jvqjj7uas@skbuf>
 References: <ad09e947263c44c48a1d2c01bcb4d90a@BK99MAIL02.bk.local>
  <c531bf92-dd7e-0e69-8307-4c4f37cb2d02@gmail.com>
  <f8465c4b8db649e0bb5463482f9be96e@BK99MAIL02.bk.local>
- <b5ad26fe-e6c3-e771-fb10-77eecae219f6@gmail.com> 
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.62.151.200]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <b5ad26fe-e6c3-e771-fb10-77eecae219f6@gmail.com>
+ <020a80686edc48d5810e1dbf884ae497@BK99MAIL02.bk.local>
 MIME-Version: 1.0
-X-TBoneOriginalFrom: "Gaube, Marvin (THSE-TL1)" <Marvin.Gaube@tesat.de>
-X-TBoneOriginalTo: Florian Fainelli <f.fainelli@gmail.com>, Woojung Huh
-        <woojung.huh@microchip.com>, Microchip Linux Driver Support
-        <UNGLinuxDriver@microchip.com>
-X-TBoneOriginalCC: "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-X-TBoneDomainSigned: false
-X-TBoneMailStatus: PLAIN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <020a80686edc48d5810e1dbf884ae497@BK99MAIL02.bk.local>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sDQpJIGxvb2tlZCBpbnRvIGl0IGRlZXBlciwgdGhlIGRyaXZlciBkb2VzIHJ4dmxhbiBv
-ZmZsb2FkaW5nLiANCkJ5IGRpc2FibGluZyBpdCBtYW51YWxseSB0cm91Z2ggZXRodG9vbCwgdGhl
-IGJlaGF2aW9yIGJlY29tZXMgYXMgZXhwZWN0ZWQuDQoNCkkndmUgdGFrZW4gIm5ldDogZHNhOiBz
-amExMTA1OiBkaXNhYmxlIHJ4dmxhbiBvZmZsb2FkIGZvciB0aGUgRFNBIG1hc3RlciIgZnJvbSAo
-aHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbmV0ZGV2LzIwMjAwNTEyMjM0OTIxLjI1NDYwLTEtb2x0
-ZWFudkBnbWFpbC5jb20vKSBhbmQgYWxzbyBhcHBsaWVkIGl0IHRvIHRoZSBLU1o5NDc3LURyaXZl
-ciwgd2hpY2ggZml4ZXMgdGhlIHByb2JsZW0uDQpJdCdzIHByb2JhYmx5IGEgd29ya2Fyb3VuZCwg
-YnV0IGZpeGVzIHRoZSBWTEFOIGJlaGF2aW9yIGZvciBub3cuIEkgd291bGQgc3VnZ2VzdCBhbHNv
-IGFwcGx5aW5nICJkcy0+ZGlzYWJsZV9tYXN0ZXJfcnh2bGFuID0gdHJ1ZTsiIHRvIEtTWjk0Nzcg
-YWZ0ZXIgdGhlIG1lbnRpb25lZCBwYXRjaCBpcyBtZXJnZWQuDQoNCkJlc3QgUmVnYXJkcw0KTWFy
-dmluIEdhdWJlDQoNCi0tLS0tVXJzcHLDvG5nbGljaGUgTmFjaHJpY2h0LS0tLS0NClZvbjogR2F1
-YmUsIE1hcnZpbiAoVEhTRS1UTDEpIA0KR2VzZW5kZXQ6IERvbm5lcnN0YWcsIDMwLiBKdWxpIDIw
-MjAgMTE6MzUNCkFuOiAnRmxvcmlhbiBGYWluZWxsaScgPGYuZmFpbmVsbGlAZ21haWwuY29tPjsg
-V29vanVuZyBIdWggPHdvb2p1bmcuaHVoQG1pY3JvY2hpcC5jb20+OyBNaWNyb2NoaXAgTGludXgg
-RHJpdmVyIFN1cHBvcnQgPFVOR0xpbnV4RHJpdmVyQG1pY3JvY2hpcC5jb20+DQpDYzogbmV0ZGV2
-QHZnZXIua2VybmVsLm9yZw0KQmV0cmVmZjogQVc6IEFXOiBQUk9CTEVNOiAoRFNBL01pY3JvY2hp
-cCk6IDgwMi4xUS1IZWFkZXIgbG9zdCBvbiBLU1o5NDc3LURTQSBpbmdyZXNzIHdpdGhvdXQgYnJp
-ZGdlDQoNCkhlbGxvLA0KdGhlIGZvbGxvd2luZyB3YXMgdGVzdGVkOg0KDQppcCBsaW5rIGFkZCBu
-YW1lIGJyMCB0eXBlIGJyaWRnZQ0KZWNobyAxID4vc3lzL2NsYXNzL25ldC9icjAvYnJpZGdlL3Zs
-YW5fZmlsdGVyaW5nDQppcCBsaW5rIHNldCBkZXYgbGFuMSBtYXN0ZXIgYnIwDQppcCBsaW5rIHNl
-dCBkZXYgbGFuMSB1cA0KaXAgbGluayBzZXQgZGV2IGJyMCB1cA0KYnJpZGdlIHZsYW4gc2hvdw0K
-PiBwb3J0ICAgICAgICAgICAgICB2bGFuLWlkICANCj4gbGFuMSAgICAgICAgICAgICAgMSBQVklE
-IEVncmVzcyBVbnRhZ2dlZA0KPiBicjAgICAgICAgICAgICAgICAxIFBWSUQgRWdyZXNzIFVudGFn
-Z2VkDQp0Y3BkdW1wIC1pIGJyMCAtZQ0KPiBkZToxYzo4NzooLi4pIChvdWkgVW5rbm93bikgPiAz
-MzozMzowMDowMTowMDowNiAob3VpIFVua25vd24pLCBldGhlcnR5cGUgSVB2NiAoMHg4NmRkKSwg
-bGVuZ3RoIDMwOCAuLi4NCmJyaWRnZSB2bGFuIGRlbCBkZXYgbGFuMSB2aWQgMQ0KYnJpZGdlIHZs
-YW4gYWRkIGRldiBsYW4xIHZpZCAyMSB0YWdnZWQNCmJyaWRnZSB2bGFuIHNob3cNCj4gcG9ydCAg
-ICAgICAgICAgICAgdmxhbi1pZCAgDQo+IGxhbjEgICAgICAgICAgICAgIDIxDQo+IGJyMCAgICAg
-ICAgICAgICAgIDEgUFZJRCBFZ3Jlc3MgVW50YWdnZWQNCnRjcGR1bXAgLWkgYnIwIC1lDQo+IE5v
-dGhpbmcuIFRoZSBmcmFtZXMgd2l0aCBWTEFOIDIxIGluZ3Jlc3Mgc2hvdWxkIGFwcGVhciBoZXJl
-DQpicmlkZ2UgdmxhbiBkZWwgZGV2IGxhbjEgdmlkIDIxDQpicmlkZ2UgdmxhbiBhZGQgZGV2IGxh
-bjEgdmlkIDI1IHB2aWQNCmJyaWRnZSB2bGFuIHNob3cNCj4gcG9ydCAgICAgICAgICAgICAgdmxh
-bi1pZCAgDQo+IGxhbjEgICAgICAgICAgICAgIDI1IFBWSUQNCj4gYnIwICAgICAgICAgICAgICAg
-MSBQVklEIEVncmVzcyBVbnRhZ2dlZA0KdGNwZHVtcCAtaSBicjAgLWUNCj4gZGU6MWM6ODc6KC4u
-KSAob3VpIFVua25vd24pID4gMzM6MzM6MDA6MDE6MDA6MDYgKG91aSBVbmtub3duKSwgZXRoZXJ0
-eXBlIDgwMi4xUSAoMHg4MTAwKSwgbGVuZ3RoIDMxMjogdmxhbiAyNSwgcCAwLCBldGhlcnR5cGUg
-SVB2NiAuLi4NCg0KV2hlbiBJIHRjcGR1bXAgb250byBldGgxLCBJIHNlZSB0aGUgcGFja2V0cyB3
-aXRoIDB4ODEwMCB2aWQgMjEgYWxsIHRoZSB0aW1lLg0KDQpUaGUgTUFDIGRyaXZlciBpcyBmcmVl
-c2NhbGUvZmVjIG9uIGlteDdkIChjb21wYXRpYmxlIHN0cmluZyBpbiBkZXZpY2UgdHJlZTogImZz
-bCxpbXg3ZC1mZWNmc2wsaW14NnN4LWZlYyIpLiANCkl0IHNlZW1zLCB0aGF0IGl0IG5vdCBzZXRz
-IE5FVElGX0ZfSFdfVkxBTl9DVEFHX0ZJTFRFUi4NCg0KQmVzdCBSZWdhcmRzDQpNYXJ2aW4gR2F1
-YmUNCg0KLS0tLS1VcnNwcsO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KVm9uOiBGbG9yaWFuIEZh
-aW5lbGxpIDxmLmZhaW5lbGxpQGdtYWlsLmNvbT4gDQpHZXNlbmRldDogTWl0dHdvY2gsIDI5LiBK
-dWxpIDIwMjAgMTc6MDMNCkFuOiBHYXViZSwgTWFydmluIChUSFNFLVRMMSkgPE1hcnZpbi5HYXVi
-ZUB0ZXNhdC5kZT47IFdvb2p1bmcgSHVoIDx3b29qdW5nLmh1aEBtaWNyb2NoaXAuY29tPjsgTWlj
-cm9jaGlwIExpbnV4IERyaXZlciBTdXBwb3J0IDxVTkdMaW51eERyaXZlckBtaWNyb2NoaXAuY29t
-Pg0KQ2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCkJldHJlZmY6IFJlOiBBVzogUFJPQkxFTTog
-KERTQS9NaWNyb2NoaXApOiA4MDIuMVEtSGVhZGVyIGxvc3Qgb24gS1NaOTQ3Ny1EU0EgaW5ncmVz
-cyB3aXRob3V0IGJyaWRnZQ0KDQoNCg0KT24gNy8yOS8yMDIwIDc6NDkgQU0sIEdhdWJlLCBNYXJ2
-aW4gKFRIU0UtVEwxKSB3cm90ZToNCj4gSGVsbG8sDQo+IEkganVzdCB0cmllZCBhIFZMQU4tZW5h
-YmxlZCBicmlkZ2UuDQo+IEFsbCBpbmdyZXNzIHBhY2tldHMgZGVmaW5pdGVseSBoYXZlIHRoZSA4
-MDIuMXEtVGFnIG9uIENQVSBpbmdyZXNzLCBkb3VibGUtY2hlY2tlZCB0aGF0LiBUcmllZCBhZ2Fp
-biB3aXRoIFZMQU4yMS1UYWdnZWQgZnJhbWVzIGNvbWluZyBpbiB0aGUgcGh5c2ljYWwgcG9ydC4N
-Cj4gSXQgc2VlbXMgdGhhdCB0aGUgYnJpZGdlIGFsc28gaGFuZGxlcyBhbGwgcGFja2V0cyBmcm9t
-IGxhbjEgYXMgdW50YWdnZWQuIFdoZW4gSSBhZGQgbGFuMSB0byB0aGUgYnJpZGdlLCB0aGUgZm9s
-bG93aW5nIGhhcHBlbnM6DQo+IA0KPiBJZiBsYW4xIGhhcyAob25seSkgVkxBTiAyMSB0YWdnZWQg
-b24gdGhlIGJyaWRnZSwgbm8gcGFja2V0IGFwcGVhcnMuDQo+IEFzIHNvb24gYXMgSSBhZGQgYW4g
-dW50YWdnZWQvcHZpZCBWTEFOIHRvIGxhbjEgb24gdGhlIGJyaWRnZSwgYWxsIHBhY2tldHMgYXBw
-ZWFyIG9uIHRoZSBicmlkZ2Ugd2l0aCB3aGljaGV2ZXIgVkxBTiBJIGFkZGVkLg0KPiBJIGNoZWNr
-ZWQgc2ltdWx0YW5lb3VzbHkgd2l0aCB0aGUgQ1BVIEluZ3Jlc3MtUG9ydCAoZXRoMSksIHRoZSBz
-YW1lIHBhY2tldHMgaGFkIEV0aGVydHlwZSA4MTAwIHdpdGggVkxBTiAyMSB3aGVuIHRoZXkgZW50
-ZXJlZCBDUFUuDQoNCkNhbiB5b3Ugc2hhcmUgdGhlIGNvbW1hbmRzIHlvdSB1c2UgdG8gc2V0LXVw
-IHlvdXIgYnJpZGdlIHdpdGggVkxBTiBmaWx0ZXJpbmcgYW5kIFZMQU4yMSBhZGRlZCB0byB0aGUg
-VkxBTiBkYXRhYmFzZSBvZiB0aGUgYnJpZGdlIGZvciBsYW4xPw0KDQo+IA0KPiBXaXRoIFN3aXRj
-aHBvcnQgMSwgdGhlIHBoeXNpY2FsIHN3aXRjaCBwb3J0IG9mIHRoZSBLU1ogaXMgbWVhbnQuDQoN
-Ck9LLg0KDQo+IA0KPiBBYm91dCB0aGUgbGFzdCB0aGluZzogVkxBTiB0YWdnZWQgZnJhbWVzIGFy
-ZSBkZWZpbml0aXZlbHkgcGFzc2VkIHRvIHRoZSBDUFUuDQo+IElmIEkgInRjcGR1bXAgLXh4IiBv
-bnRvIGV0aDEsIEkgc2VlIGZvciBleGFtcGxlICIoMTIgYnl0ZSBNQUMpIDgxMDAgMDAxNSA4NmRk
-IChJUHY2LVBheWxvYWQpIi4gVGhlIHRhaWwgdGFnIGlzIGFsc28gdmlzaWJsZS4NCj4gRXhhY3Rs
-eSB0aGUgc2FtZSBmcmFtZSBhcHBlYXJzIG9uIGxhbjEgYXMgIigxMiBieXRlIE1BQykgODZkZCAo
-SVB2Ni1QYXlsb2FkKSIsIHNvIHRoZSA4MDIuMXEtSGVhZGVyIGlzIHByZXNlbnQgb24gQ1BVIGlu
-Z3Jlc3MuDQo+IFRoZXJlZm9yZSB0aGUgVkxBTiB0YWcgcHJvYmFibHkgaXMgbG9zdCBiZXR3ZWVu
-IGV0aDEgKEluZ3Jlc3MpIGFuZCB0aGUgcmVzcGVjdGl2ZSBEU0EtSW50ZXJmYWNlLCBhbmQgaXMg
-bm90IGZpbHRlcmVkIG9uIHRoZSBLU1o5NDc3Lg0KDQpXaGF0IEV0aGVybmV0IGNvbnRyb2xsZXIg
-ZHJpdmVyIGlzIGV0aDEsIGRvZXMgaXQgc3VwcG9ydCBWTEFOIHJlY2VpdmUgZmlsdGVyIChORVRJ
-Rl9GX0hXX1ZMQU5fQ1RBR19GSUxURVIpPw0KDQo+IA0KPiBCZXN0IFJlZ2FyZHMNCj4gTWFydmlu
-IEdhdWJlDQo+IA0KPiAtLS0tLVVyc3Byw7xuZ2xpY2hlIE5hY2hyaWNodC0tLS0tDQo+IFZvbjog
-RmxvcmlhbiBGYWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+DQo+IEdlc2VuZGV0OiBNaXR0
-d29jaCwgMjkuIEp1bGkgMjAyMCAxNTo0OA0KPiBBbjogR2F1YmUsIE1hcnZpbiAoVEhTRS1UTDEp
-IDxNYXJ2aW4uR2F1YmVAdGVzYXQuZGU+OyBXb29qdW5nIEh1aCANCj4gPHdvb2p1bmcuaHVoQG1p
-Y3JvY2hpcC5jb20+OyBNaWNyb2NoaXAgTGludXggRHJpdmVyIFN1cHBvcnQgDQo+IDxVTkdMaW51
-eERyaXZlckBtaWNyb2NoaXAuY29tPg0KPiBDYzogbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBC
-ZXRyZWZmOiBSZTogUFJPQkxFTTogKERTQS9NaWNyb2NoaXApOiA4MDIuMVEtSGVhZGVyIGxvc3Qg
-b24gDQo+IEtTWjk0NzctRFNBIGluZ3Jlc3Mgd2l0aG91dCBicmlkZ2UNCj4gDQo+IA0KPiANCj4g
-T24gNy8yOC8yMDIwIDExOjA1IFBNLCBHYXViZSwgTWFydmluIChUSFNFLVRMMSkgd3JvdGU6DQo+
-PiBTdW1tYXJ5OiA4MDIuMVEtSGVhZGVyIGxvc3Qgb24gS1NaOTQ3Ny1EU0EgaW5ncmVzcyB3aXRo
-b3V0IGJyaWRnZQ0KPj4gS2V5d29yZHM6IG5ldHdvcmtpbmcsIGRzYSwgbWljcm9jaGlwLCA4MDIu
-MXEsIHZsYW4gRnVsbCBkZXNjcmlwdGlvbjoNCj4+DQo+PiBIZWxsbywNCj4+IHdlJ3JlIHRyeWlu
-ZyB0byBnZXQgODAyLjFRLVRhZ2dlZCBFdGhlcm5ldCBGcmFtZXMgdGhyb3VnaCBhbiBLU1o5NDc3
-IERTQS1lbmFibGVkIHN3aXRjaCB3aXRob3V0IGNyZWF0aW5nIGEgYnJpZGdlIG9uIHRoZSBrZXJu
-ZWwgc2lkZS4NCj4gDQo+IERvZXMgaXQgd29yayBpZiB5b3UgaGF2ZSBhIGJyaWRnZSB0aGF0IGlz
-IFZMQU4gYXdhcmUgdGhvdWdoPyBJZiBpdCBkb2VzLCB0aGlzIHdvdWxkIHN1Z2dlc3QgdGhhdCB0
-aGUgZGVmYXVsdCBWTEFOIGJlaGF2aW9yIHdpdGhvdXQgYSBicmlkZ2UgaXMgdG9vIHJlc3RyaWN0
-aXZlIGFuZCBuZWVkcyBjaGFuZ2luZy4NCj4gDQo+PiBGb2xsb3dpbmcgc2V0dXA6DQo+PiBTd2l0
-Y2hwb3J0IDEgPC0tIEtTWjk0NzcgLS0+IGV0aDEgKENQVS1Qb3J0KSA8LS0tPiBsYW4xDQo+IA0K
-PiBUaGlzIHJlcHJlc2VudGF0aW9uIGlzIGNvbmZ1c2luZywgaXMgc3dpdGNocG9ydCAxIGEgbmV0
-d29yayBkZXZpY2Ugb3IgaXMgdGhpcyBtZWFudCB0byBiZSBwaHlzaWNhbCBzd2l0Y2ggcG9ydCBu
-dW1iZXIgb2YgMSBvZiB0aGUgS1NaOTQ3Nz8NCj4gDQo+Pg0KPj4gTm8gYnJpZGdlIGlzIGNvbmZp
-Z3VyZWQsIG9ubHkgdGhlIGludGVyZmFjZSBkaXJlY3RseS4gVW50YWdnZWQgcGFja2V0cyBhcmUg
-d29ya2luZyB3aXRob3V0IHByb2JsZW1zLiBUaGUgU3dpdGNoIHVzZXMgdGhlIGtzejk0NzctRFNB
-LURyaXZlciB3aXRoIFRhaWwtVGFnZ2luZyAoIkRTQV9UQUdfUFJPVE9fS1NaOTQ3NyIpLg0KPj4g
-V2hlbiBzZW5kaW5nIHBhY2tldHMgd2l0aCA4MDIuMVEtSGVhZGVyICh0YWdnZWQgVkxBTikgaW50
-byB0aGUgU3dpdGNocG9ydCwgSSBzZWUgdGhlbSBpbmNsdWRpbmcgdGhlIDgwMi4xUS1IZWFkZXIg
-b24gZXRoMS4NCj4+IFRoZXkgYWxzbyBhcHBlYXIgb24gbGFuMSwgYnV0IHdpdGggdGhlIDgwMi4x
-US1IZWFkZXIgbWlzc2luZy4NCj4+IFdoZW4gSSBjcmVhdGUgYW4gVkxBTi1JbnRlcmZhY2Ugb3Zl
-ciBsYW4xIChlLmcuIGxhbjEuMjEpLCBub3RoaW5nIGFycml2ZXMgdGhlcmUuDQo+PiBUaGUgb3Ro
-ZXIgd2F5IGFyb3VuZCwgZXZlcnl0aGluZyB3b3JrcyBmaW5lOiBQYWNrZXRzIHRyYW5zbWl0dGVk
-IGludG8gbGFuMS4yMSBhcmUgYXBwZWFyaW5nIGluIDgwMi4xUS1WTEFOIDIxIG9uIHRoZSBTd2l0
-Y2hwb3J0IDEuDQo+Pg0KPj4gSSBhc3N1bWUgdGhhdCBpcyBub3QgdGhlIGludGVuZGVkIGJlaGF2
-aW9yLg0KPj4gSSBoYXZlbid0IGZvdW5kIGFuIG9idmlvdXMgcmVhc29uIGZvciB0aGlzIGJlaGF2
-aW9yIHlldCwgYnV0IEkgc3VzcGVjdCB0aGUgVkxBTi1IZWFkZXIgZ2V0cyBzdHJpcHBlZCBvZiBh
-bnl3aGVyZSBhcm91bmQgImRzYV9zd2l0Y2hfcmN2IiBpbiBuZXQvZHNhL2RzYS5jIG9yICJrc3o5
-NDc3X3JjdiIgaW4gbmV0L2RzYS90YWdfa3N6LmMuDQo+IA0KPiBOb3Qgc3VyZSBob3cgdGhvdWdo
-LCBrc3o5NDc3X3JjdigpIG9ubHkgcmVtb3ZlcyB0aGUgdHJhaWwgdGFnLCB0aGlzIHNob3VsZCBs
-ZWF2ZSBhbnkgaGVhZGVyIGludGFjdC4gSXQgc2VlbXMgdG8gbWUgdGhhdCB0aGUgc3dpdGNoIGlz
-IGluY29ycmVjdGx5IGNvbmZpZ3VyZWQgYW5kIGlzIG5vdCBWTEFOIGF3YXJlIGF0IGFsbCwgbm9y
-IHBhc3NpbmcgVkxBTiB0YWdnZWQgZnJhbWVzIHRocm91Z2ggb24gaW5ncmVzcyB0byBDUFUgd2hl
-biBpdCBzaG91bGQuDQo+IC0tDQo+IEZsb3JpYW4NCj4gDQo+IF9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fDQo+IA0KPiBUZXNhdC1TcGFjZWNvbSBHbWJIICYgQ28uIEtHDQo+IFNpdHo6
-IEJhY2tuYW5nOyBSZWdpc3RlcmdlcmljaHQ6IEFtdHNnZXJpY2h0IFN0dXR0Z2FydCBIUkEgMjcw
-OTc3IA0KPiBQZXJzb2VubGljaCBoYWZ0ZW5kZXIgR2VzZWxsc2NoYWZ0ZXI6IFRlc2F0LVNwYWNl
-Y29tIA0KPiBHZXNjaGFlZnRzZnVlaHJ1bmdzIEdtYkg7DQo+IFNpdHo6IEJhY2tuYW5nOyBSZWdp
-c3RlcmdlcmljaHQ6IEFtdHNnZXJpY2h0IFN0dXR0Z2FydCBIUkIgMjcxNjU4Ow0KPiBHZXNjaGFl
-ZnRzZnVlaHJ1bmc6IERyLiBNYXJjIFN0ZWNrbGluZywgS2Vyc3RpbiBCYXNjaGUsIFJhbGYgDQo+
-IFppbW1lcm1hbm4NCj4gDQo+IFtiYW5uZXJdDQo+IA0KDQotLQ0KRmxvcmlhbg0K
+On Tue, Aug 04, 2020 at 02:14:33PM +0000, Gaube, Marvin (THSE-TL1) wrote:
+> Hello,
+> I looked into it deeper, the driver does rxvlan offloading. 
+> By disabling it manually trough ethtool, the behavior becomes as
+> expected.
+> 
+> I've taken "net: dsa: sja1105: disable rxvlan offload for the DSA
+> master" from
+> (https://lore.kernel.org/netdev/20200512234921.25460-1-olteanv@gmail.com/)
+> and also applied it to the KSZ9477-Driver, which fixes the problem.
+> It's probably a workaround, but fixes the VLAN behavior for now. I
+> would suggest also applying "ds->disable_master_rxvlan = true;" to
+> KSZ9477 after the mentioned patch is merged.
+> 
+> Best Regards
+> Marvin Gaube
+> 
+
+And I wanted to suggest that, but it seemed too freaky to be what's
+going on.... But since ksz9477 uses a tail tag, it makes perfect sense.
+
+My patch is in limbo because Eric, who started zeroing the skb offloaded
+VLAN data in the first place, hasn't said anything.
+
+Thanks,
+-Vladimir
