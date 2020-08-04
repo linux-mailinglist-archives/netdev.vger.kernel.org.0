@@ -2,188 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B614A23BB31
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 15:34:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DA3F23BB7B
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 15:54:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726282AbgHDNeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 09:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48806 "EHLO
+        id S1728560AbgHDNyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 09:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725864AbgHDNeB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 09:34:01 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F1FC06174A
-        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 06:34:00 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id g8so2703405wmk.3
-        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 06:34:00 -0700 (PDT)
+        with ESMTP id S1728387AbgHDNyi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 09:54:38 -0400
+Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749C9C06174A
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 06:54:38 -0700 (PDT)
+Received: by mail-oo1-xc43.google.com with SMTP id x6so1301831ooe.8
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 06:54:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J1/mYzIP2hMyjkq4qwIx7vKFLfGV8E9+xnljo9oNBug=;
-        b=g2//3kmYqQevKfe9SCxyV6EZhOfaU+P+Cy9nDkqvNsV+5/24wqAVcu/5670F9bItAF
-         kZ+KpSx8MmOK7MWb1gK9gTffVBJKT3jM2ZYsXwG+DAgcDPTTCOWQuj/I5vNUXZthINh0
-         xHNQzGNUPZHfw/KK7oFFwG2obkokd6owf3M6AJiffKH4bsQYpX+DpisRtrdhYpxeR84P
-         QDR1ZTwEsRgQ+EGJmjqhRRBjqaSsk7rK9/1z0oYSCbxox9ByTlQKYcyRhu4/RhiRuV4T
-         btE6hTKn6Qd1gaziphYJ3e1eH3H7jANcKyBQJXIDcnYdDcwxDRPdrxcXVA8bcUYL69l/
-         VVSA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SbFLau90VkmFykCWcM/p7pD/+rZRK0y6hRKnU2wBXXk=;
+        b=HuHB3pxEdCwtAMXyLiqThHxQXZLYJqKO3G5RVETgtmXGLmYOCsAgK2BaKq6G2d764w
+         p4q5qu0u2MrK8bsVKbXUKLF7ZZGy+zXreKOFI/mtBiYutrbZZ4jgM3Ytu5zFq+ANR5ed
+         9Zww4IEqoUaCNDB73pk7ey7vvT4DiNXP70r3AFs41HHqHRJ02SSu8unIruUzuT69QckD
+         ZP/K5FfZdsxDVkmiU1x7KAmJmTpTwElpCZIBxn8Skc1y0Aq/1MEv4siShghhOQIJN4yr
+         MFhjklU5jCkrwbQOGf8gGjHgKkdDCkPVxl93HLgY4unpNq88G0SPEwq4R0hpyhiLwMA3
+         4Jtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J1/mYzIP2hMyjkq4qwIx7vKFLfGV8E9+xnljo9oNBug=;
-        b=WSU4vJkWv9vsyFA096x3EqlFs3ga92ygs96jauAku6Z7A4hhPDpl20nhIAkoE1IbkW
-         8DY/zzVIg1t0pvSYCXVM98+vKHF2Gb24mCTM5hCM1qqonu+bKfMeiWobNxQijH/5gnWh
-         Z5ARXxD+lt7YI10N8bEwkd2AKMdoT+8vitZJylBt1n769eEfXnC+v4Znn0EvBfk9uxbi
-         /kSEP0u37eqDeI5iX8LZJaj1jwTEcus8DTVGBvDKOtmWU1Ypv/v5g/asMH/7mQMn5z4v
-         r2xfwS1JrVlCjUL0td1daoZFkjDgXLXpOp8ktki3KEtQyURuw5ixisdsEpD/BFaWW95v
-         J9SQ==
-X-Gm-Message-State: AOAM530mpo32uZ0iMeGMcALoS0SevEwjHWn7noDCFW7cMicMWZtEvJ3k
-        Z368Ef4V8Ey/GQ7QbAvIuaEd/tGn3R18pECVkdaU2Q==
-X-Google-Smtp-Source: ABdhPJxAjw5E9Gzy3aeP53ZI+pqeCPa5gfx7N9vxRRtQkTi2sm8CbIjAo67QAvYWwoPiNQ7r1jW389h/z4hP4PYpkxw=
-X-Received: by 2002:a1c:e0c2:: with SMTP id x185mr4073668wmg.124.1596548039304;
- Tue, 04 Aug 2020 06:33:59 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SbFLau90VkmFykCWcM/p7pD/+rZRK0y6hRKnU2wBXXk=;
+        b=T0k+/mlJrmdb3G/UpMkWr3r3rGE79CKwROj7JTdwQCjUOzHuft3W87zbo8aKokAnEl
+         GLk9XxhqfSnrr/58TYFHkZ9dFLDztAWobENMocyrEAMwRFKUuxC2ZP7N/f0KmBCPgJg2
+         qIUojM7mm8/1mv20xt9ww/77FqIKWGsXSMx5arwqChy655dka4cun2wvsMz992iEmN0i
+         wpXy3/sR0ovhhUukjDEPembdg9eKR1u56sACxrEgl0WtZ+hkI6DGnQd8Cv6YGPyfS8m5
+         5GN38weIO3tuG0/O8yZfUp2ylUwlfvtbwr/CtqmZg09kaxm23LwvYJ2BJpY8rUh7rWU6
+         T0zw==
+X-Gm-Message-State: AOAM533rDRMcZbnmjePK6HT3h3T52Ag8AogUFMI3bFBAOxdxO75FlLCh
+        xW5U2p9/fg8f8uyW4A0lNhZbSajt
+X-Google-Smtp-Source: ABdhPJy5VBMttANJqc60TNXab4/2yE6xcIQCldaF8IZAjt0qiTMWEDFu6CsCPmROlLVhu8c5E2ID7g==
+X-Received: by 2002:a4a:e70a:: with SMTP id y10mr11749237oou.44.1596549277540;
+        Tue, 04 Aug 2020 06:54:37 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:14ac:dc81:c028:3eca])
+        by smtp.googlemail.com with ESMTPSA id t21sm1080186ooc.43.2020.08.04.06.54.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Aug 2020 06:54:37 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 1/6] ipv4: route: Ignore output interface in
+ FIB lookup for PMTU route
+To:     Stefano Brivio <sbrivio@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Florian Westphal <fw@strlen.de>, Aaron Conole <aconole@redhat.com>,
+        Numan Siddique <nusiddiq@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Lourdes Pedrajas <lu@pplo.net>, netdev@vger.kernel.org
+References: <cover.1596520062.git.sbrivio@redhat.com>
+ <ec94f1f590e6cb57d128ce10e4306e589544944d.1596520062.git.sbrivio@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <702d24b9-0186-15bb-b6dc-c4ec5118d446@gmail.com>
+Date:   Tue, 4 Aug 2020 07:54:36 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-References: <20200728085734.609930-1-irogers@google.com> <20200728085734.609930-5-irogers@google.com>
- <969ef797-59ea-69d0-24b9-33bcdff106a1@intel.com>
-In-Reply-To: <969ef797-59ea-69d0-24b9-33bcdff106a1@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 4 Aug 2020 06:33:47 -0700
-Message-ID: <CAP-5=fUCnBGX0L0Tt3_gmVnt+hvaouJMx6XFErFKk72+xuw9fw@mail.gmail.com>
-Subject: Re: [PATCH v2 4/5] perf record: Don't clear event's period if set by
- a term
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <ec94f1f590e6cb57d128ce10e4306e589544944d.1596520062.git.sbrivio@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 4, 2020 at 3:08 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> On 28/07/20 11:57 am, Ian Rogers wrote:
-> > If events in a group explicitly set a frequency or period with leader
-> > sampling, don't disable the samples on those events.
-> >
-> > Prior to 5.8:
-> > perf record -e '{cycles/period=12345000/,instructions/period=6789000/}:S'
->
-> Might be worth explaining this use-case some more.
-> Perhaps add it to the leader sampling documentation for perf-list.
->
-> > would clear the attributes then apply the config terms. In commit
-> > 5f34278867b7 leader sampling configuration was moved to after applying the
-> > config terms, in the example, making the instructions' event have its period
-> > cleared.
-> > This change makes it so that sampling is only disabled if configuration
-> > terms aren't present.
-> >
-> > Fixes: 5f34278867b7 ("perf evlist: Move leader-sampling configuration")
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  tools/perf/util/record.c | 28 ++++++++++++++++++++--------
-> >  1 file changed, 20 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/tools/perf/util/record.c b/tools/perf/util/record.c
-> > index a4cc11592f6b..01d1c6c613f7 100644
-> > --- a/tools/perf/util/record.c
-> > +++ b/tools/perf/util/record.c
-> > @@ -2,6 +2,7 @@
-> >  #include "debug.h"
-> >  #include "evlist.h"
-> >  #include "evsel.h"
-> > +#include "evsel_config.h"
-> >  #include "parse-events.h"
-> >  #include <errno.h>
-> >  #include <limits.h>
-> > @@ -38,6 +39,9 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
-> >       struct perf_event_attr *attr = &evsel->core.attr;
-> >       struct evsel *leader = evsel->leader;
-> >       struct evsel *read_sampler;
-> > +     struct evsel_config_term *term;
-> > +     struct list_head *config_terms = &evsel->config_terms;
-> > +     int term_types, freq_mask;
-> >
-> >       if (!leader->sample_read)
-> >               return;
-> > @@ -47,16 +51,24 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
-> >       if (evsel == read_sampler)
-> >               return;
-> >
-> > +     /* Determine the evsel's config term types. */
-> > +     term_types = 0;
-> > +     list_for_each_entry(term, config_terms, list) {
-> > +             term_types |= 1 << term->type;
-> > +     }
-> >       /*
-> > -      * Disable sampling for all group members other than the leader in
-> > -      * case the leader 'leads' the sampling, except when the leader is an
-> > -      * AUX area event, in which case the 2nd event in the group is the one
-> > -      * that 'leads' the sampling.
-> > +      * Disable sampling for all group members except those with explicit
-> > +      * config terms or the leader. In the case of an AUX area event, the 2nd
-> > +      * event in the group is the one that 'leads' the sampling.
-> >        */
-> > -     attr->freq           = 0;
-> > -     attr->sample_freq    = 0;
-> > -     attr->sample_period  = 0;
-> > -     attr->write_backward = 0;
-> > +     freq_mask = (1 << EVSEL__CONFIG_TERM_FREQ) | (1 << EVSEL__CONFIG_TERM_PERIOD);
-> > +     if ((term_types & freq_mask) == 0) {
->
-> It would be nicer to have a helper e.g.
->
->         if (!evsel__have_config_term(evsel, FREQ) &&
->             !evsel__have_config_term(evsel, PERIOD)) {
+On 8/3/20 11:53 PM, Stefano Brivio wrote:
+> Currently, processes sending traffic to a local bridge with an
+> encapsulation device as a port don't get ICMP errors if they exceed
+> the PMTU of the encapsulated link.
+> 
+> David Ahern suggested this as a hack, but it actually looks like
+> the correct solution: when we update the PMTU for a given destination
+> by means of updating or creating a route exception, the encapsulation
+> might trigger this because of PMTU discovery happening either on the
+> encapsulation device itself, or its lower layer. This happens on
+> bridged encapsulations only.
+> 
+> The output interface shouldn't matter, because we already have a
+> valid destination. Drop the output interface restriction from the
+> associated route lookup.
+> 
+> For UDP tunnels, we will now have a route exception created for the
+> encapsulation itself, with a MTU value reflecting its headroom, which
+> allows a bridge forwarding IP packets originated locally to deliver
+> errors back to the sending socket.
+> 
+> The behaviour is now consistent with IPv6 and verified with selftests
+> pmtu_ipv{4,6}_br_{geneve,vxlan}{4,6}_exception introduced later in
+> this series.
+> 
+> v2:
+> - reset output interface only for bridge ports (David Ahern)
+> - add and use netif_is_any_bridge_port() helper (David Ahern)
+> 
+> Suggested-by: David Ahern <dsahern@gmail.com>
+> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+> ---
+>  include/linux/netdevice.h | 5 +++++
+>  net/ipv4/route.c          | 5 +++++
+>  2 files changed, 10 insertions(+)
+> 
 
-Sure. The point of doing it this way was to avoid repeatedly iterating
-over the config term list.
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
-> > +             attr->freq           = 0;
-> > +             attr->sample_freq    = 0;
-> > +             attr->sample_period  = 0;
->
-> If we are not sampling, then maybe we should also put here:
->
->                 attr->write_backward = 0;
->
-> > +     }
->
-> Then, if we are sampling this evsel shouldn't the backward setting
-> match the leader? e.g.
->
->         if (attr->sample_freq)
->                 attr->write_backward = leader->core.attr.write_backward;
 
-Perhaps that should be a follow up change? This change is trying to
-make the behavior match the previous behavior.
-
-Thanks,
-Ian
-
-> > +     if ((term_types & (1 << EVSEL__CONFIG_TERM_OVERWRITE)) == 0)
-> > +             attr->write_backward = 0;
-> >
-> >       /*
-> >        * We don't get a sample for slave events, we make them when delivering
-> >
->
