@@ -2,81 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2813823B49D
-	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 07:53:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AED523B49F
+	for <lists+netdev@lfdr.de>; Tue,  4 Aug 2020 07:53:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729813AbgHDFxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 01:53:15 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:46504 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726398AbgHDFxP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Aug 2020 01:53:15 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 3BF3C20569;
-        Tue,  4 Aug 2020 07:53:13 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id wUQIudoOJEBl; Tue,  4 Aug 2020 07:53:11 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        id S1729822AbgHDFx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 01:53:27 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:59030 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726398AbgHDFx1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 01:53:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596520405;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YI+1k9eGqpOp0GG0X9yNOQ1AabHPoPPkLGBmxoPjbx0=;
+        b=TjY7Blry/AblTeNKVc4/oD3pIp0bQiVXCLriN/kFCqfQq0FBXmF7+1Pd+XkOgZzY5ISm2Z
+        efou5Bk3Lu2Ph/a4Xw9CljpBH2vW632XTgPXUH10Vfs3+Py2IXt+/cQK4sfcYMTsLwgp9v
+        EIVncMhRFPhcTz2D6QNULQngVuiDlwg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-88-YCsEdWvzNza9aGEeLC6rWg-1; Tue, 04 Aug 2020 01:53:24 -0400
+X-MC-Unique: YCsEdWvzNza9aGEeLC6rWg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 655A3201D5;
-        Tue,  4 Aug 2020 07:53:11 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Tue, 4 Aug 2020 07:53:11 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Tue, 4 Aug 2020
- 07:53:10 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 7E20831803A0;
- Tue,  4 Aug 2020 07:53:10 +0200 (CEST)
-Date:   Tue, 4 Aug 2020 07:53:10 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     David Miller <davem@davemloft.net>
-CC:     <yuehaibing@huawei.com>, <herbert@gondor.apana.org.au>,
-        <kuznet@ms2.inr.ac.ru>, <yoshfuji@linux-ipv6.org>,
-        <kuba@kernel.org>, <lucien.xin@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] ip_vti: Fix unused variable warning
-Message-ID: <20200804055310.GK20687@gauss3.secunet.de>
-References: <20200731064952.36900-1-yuehaibing@huawei.com>
- <20200803.151349.926022361234213749.davem@davemloft.net>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C925B1083E80;
+        Tue,  4 Aug 2020 05:53:22 +0000 (UTC)
+Received: from elisabeth (unknown [10.36.110.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A268B71769;
+        Tue,  4 Aug 2020 05:53:19 +0000 (UTC)
+Date:   Tue, 4 Aug 2020 07:53:14 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Florian Westphal <fw@strlen.de>,
+        Aaron Conole <aconole@redhat.com>,
+        Numan Siddique <nusiddiq@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Lourdes Pedrajas <lu@pplo.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/6] tunnels: PMTU discovery support for
+ directly bridged IP packets
+Message-ID: <20200804075314.3a45558d@elisabeth>
+In-Reply-To: <b6978999-4f05-5e87-2964-bec444221cf5@gmail.com>
+References: <cover.1596487323.git.sbrivio@redhat.com>
+        <c7b3e4800ea02d964bab7dd9f349e0a0720bff2d.1596487323.git.sbrivio@redhat.com>
+        <b6978999-4f05-5e87-2964-bec444221cf5@gmail.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200803.151349.926022361234213749.davem@davemloft.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 03, 2020 at 03:13:49PM -0700, David Miller wrote:
-> From: YueHaibing <yuehaibing@huawei.com>
-> Date: Fri, 31 Jul 2020 14:49:52 +0800
+On Mon, 3 Aug 2020 17:44:16 -0600
+David Ahern <dsahern@gmail.com> wrote:
+
+> On 8/3/20 2:52 PM, Stefano Brivio wrote:
+> > @@ -461,6 +464,91 @@ static inline void iptunnel_xmit_stats(struct net_device *dev, int pkt_len)
+> > [...]
+> >
+> > +static inline int skb_tunnel_check_pmtu(struct sk_buff *skb,
+> > +					struct dst_entry *encap_dst,
+> > +					int headroom, bool reply)  
 > 
-> > If CONFIG_INET_XFRM_TUNNEL is set but CONFIG_IPV6 is n,
-> > 
-> > net/ipv4/ip_vti.c:493:27: warning: 'vti_ipip6_handler' defined but not used [-Wunused-variable]
-> > 
-> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> Given its size, this is probably better as a function. I believe it can
+> go into net/ipv4/ip_tunnel_core.c like you have iptunnel_pmtud_build_icmp.
+
+Right, moved in v2.
+
+> > [...]
+> > +	if (skb->protocol == htons(ETH_P_IP) && mtu > 576) {  
 > 
-> Steffen, please pick this up if you haven't already.
+> I am surprised the 576 does not have an existing macro.
 
-I still have this one in my queue, it came in after
-I did the the ipsec-next pull request last week.
-Now the 5.8 release was inbetween, so it should go
-to the ipsec tree. I'm waiting until I can backmerge
-the offending patch into the ipsec tree and apply it
-then.
+I guess that comes from how RFC 791 picks this "512 plus something
+reasonable" value. I'll think of a name and propose as a later patch,
+it's used in a number of places.
 
-Alternatively to speed things up, you can take it
-directly into net-next before you do the pull request
-to Linus. In case you prefer that:
+> > [...]
+> > +		return iptunnel_pmtud_build_icmp(skb, mtu);
+> > +	}
+> > +#endif  
+> 
+> separate v4 and v6 code into helpers based on skb->protocol; the mtu
+> check then becomes part of the version specific helpers.
 
-Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
+Done.
+
+> > +EXPORT_SYMBOL(iptunnel_pmtud_build_icmp);  
+> 
+> I think separate v4 and v6 versions would be more readable; the
+> duplication is mostly skb manipulation.
+
+Yes, way more readable, changed in v2.
+
+-- 
+Stefano
+
