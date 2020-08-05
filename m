@@ -2,58 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E288523D02F
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:31:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BF0A23D13A
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:58:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728524AbgHETbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 15:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728951AbgHETbG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 15:31:06 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC004C061575;
-        Wed,  5 Aug 2020 12:31:05 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2DB3A152F10F1;
-        Wed,  5 Aug 2020 12:14:19 -0700 (PDT)
-Date:   Wed, 05 Aug 2020 12:31:03 -0700 (PDT)
-Message-Id: <20200805.123103.464522080473075661.davem@davemloft.net>
-To:     sbrivio@redhat.com
-Cc:     sfr@canb.auug.org.au, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        heiko.carstens@de.ibm.com, xiyou.wangcong@gmail.com
-Subject: Re: [PATCH RESEND net-next] ip_tunnel_core: Fix build for archs
- without _HAVE_ARCH_IPV6_CSUM
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200805153931.50a3d518@redhat.com>
-References: <20200805153931.50a3d518@redhat.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 05 Aug 2020 12:14:19 -0700 (PDT)
+        id S1729432AbgHET6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 15:58:09 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:39428 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726217AbgHET6H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Aug 2020 15:58:07 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 075JcO2H017992;
+        Wed, 5 Aug 2020 21:38:24 +0200
+Date:   Wed, 5 Aug 2020 21:38:24 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Marc Plumb <lkml.mplumb@gmail.com>
+Cc:     tytso@mit.edu, netdev@vger.kernel.org, aksecurity@gmail.com,
+        torvalds@linux-foundation.org, edumazet@google.com,
+        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
+        tglx@linutronix.de, peterz@infradead.org, stable@vger.kernel.org
+Subject: Re: Flaw in "random32: update the net random state on interrupt and
+ activity"
+Message-ID: <20200805193824.GA17981@1wt.eu>
+References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
+ <20200805024941.GA17301@1wt.eu>
+ <20200805153432.GE497249@mit.edu>
+ <c200297c-85a5-dd50-9497-6fcf7f07b727@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c200297c-85a5-dd50-9497-6fcf7f07b727@gmail.com>
+User-Agent: Mutt/1.6.1 (2016-04-27)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefano Brivio <sbrivio@redhat.com>
-Date: Wed, 5 Aug 2020 15:39:31 +0200
+Hi Mark,
 
-> On architectures defining _HAVE_ARCH_IPV6_CSUM, we get
-> csum_ipv6_magic() defined by means of arch checksum.h headers. On
-> other architectures, we actually need to include net/ip6_checksum.h
-> to be able to use it.
-> 
-> Without this include, building with defconfig breaks at least for
-> s390.
-> 
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Fixes: 4cb47a8644cc ("tunnels: PMTU discovery support for directly bridged IP packets")
-> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+On Wed, Aug 05, 2020 at 09:06:40AM -0700, Marc Plumb wrote:
+> Just because you or I don't have a working exploit doesn't mean that someone
+> else isn't more clever.
 
-Applied, thank you.
+I agree on the principle, but it can be said from many things, including
+our respective inability to factor large numbers for example. But for
+sure we do need to be careful, and actually picking only some limited
+parts of the fast pool (which are only used to update the input pool
+and are only made of low-difficulty stuff like instruction pointers,
+jiffies and TSC values) is probably not going to disclose an extremely
+well guarded secret.
+
+> The fundamental question is: Why is this attack on net_rand_state problem?
+> It's Working as Designed. Why is it a major enough problem to risk harming
+> cryptographically important functions?
+
+It's not *that* major an issue (in my personal opinion) but the current
+net_rand_state is easy enough to guess so that an observer may reduce
+the difficulty to build certain attacks (using known source ports for
+example). The goal of this change (and the one in update_process_times())
+is to disturb the net_rand_state a little bit so that external observations
+turn from "this must be that" to "this may be this or maybe that", which
+is sufficient to limit the ability to reliably guess a state and reduce
+the cost of an attack.
+
+Another approach involving the replacement of the algorithm was considered
+but we were working with -stable in mind, trying to limit the backporting
+difficulty (and it revealed a circular dependency nightmare that had been
+sleeping there for years), and making the changes easier to check (which
+is precisely what you're doing).
+
+> Do you remember how you resisted making dev/urandom fast for large reads for
+> a long time to punish stupid uses of the interface? In this case anyone who
+> is using net_rand_state assuming it is a CPRNG should stop doing that. Don't
+> enable stupidity in the kernel.
+> 
+> This whole thing is making the fundamental mistake of all amateur
+> cryptographers of trying to create your own cryptographic primitive. You're
+> trying to invent a secure stream cipher. Either don't try to make
+> net_rand_state secure, or use a known secure primitive.
+
+We're not trying to invent any stream cipher or whatever, just making
+use of a few bits that are never exposed alone as-is to internal nor
+external states, to slightly disturb another state that otherwise only
+changes once a minute so that there's no more a 100% chance of guessing
+a 16-bit port after seeing a few packets. I mean, I'm pretty sure that
+even stealing three or four bits only from there would be quite enough
+to defeat the attack given that Amit only recovers a few bits per packet.
+
+For me the right longterm solution will be to replace the easily guessable
+LFSR. But given the build breakage we got by just adding one include, I
+can only guess what we'll see when trying to do more in this area :-/
+
+Regards,
+Willy
