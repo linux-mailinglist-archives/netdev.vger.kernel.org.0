@@ -2,116 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA98723D2B4
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 22:15:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2558023D23A
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 22:10:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729897AbgHEUPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 16:15:18 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:37828 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726472AbgHEQUM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:20:12 -0400
-Received: by mail-io1-f71.google.com with SMTP id f6so17759565ioa.4
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 09:20:11 -0700 (PDT)
+        id S1727893AbgHEUKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 16:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726422AbgHEQ2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:28:42 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C47AC008699
+        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 09:28:38 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id w17so25521402ply.11
+        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 09:28:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A43ByyyVzbSptwNygct83mi3n2DzKWgXvNfPebKl6yg=;
+        b=Vhtt0A1Lb+45MJ+Wh1Mnd/6dAyl5W8x4OJgHYPrxVIsTEvhXGbgFbuLoVs9PSI6FVb
+         4+koDTinZDAnktM3XmWYW7oHe5byoeDqkyO3ubwkG+KfRrbD2WMJH0qKf4zNdJGVO8xx
+         /e+WkeJsW8Oiw8Oedhof48VQhF5C8NcxQC8V7xQa+zd9BKfaXQOlnpPjApEQoPPIPADl
+         thisXlmYHDhe2M9jishy6oQJKDq11jKExdFuyCVrsIf0fGx3Nrk9iwaKa1IrCGV07MB8
+         jCflwrMAOiNIa8bWrrpkDC6KlBXWRewwszJNRIvUcfK9Dvz2VLM9OGf6oxYKWsMATv8U
+         OmBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=gf59HPMENV3tGrAXq5hE5QTaFPtfjI08GkK5Z/pVw18=;
-        b=mDuXyOUQcwK1nXw7IlnIB/+Y2KH2SKVBglr4lqHXnTuzoUX+yvNnZo1OIM7yGTrWKn
-         7oj9rKfQCwve5tjJW1KfJF/PSUHtHDqoKWLRooFYdCgh12O31D2xu+Rz2hkhSlAL5wFy
-         8LYKz6Oq9Fa2RIC6Mox5eYWqstwjKyXtKLVGUSR0j3LtOeA6aZEOkKhDWnxHcK7u4ICN
-         5CJJCjJSUEXjhvUODF0K8ABhZPFpvcNyC8WJFuHZq0q8+Oo3Wg609fsu4TJX7BFyeArs
-         adBBz8R26e7lXEHjSMHUHpzV29hxUaHWrXCmLELlUReKrnHqld8nbd7l042FyQeNs7OX
-         vNNA==
-X-Gm-Message-State: AOAM5326k2m7uur12yXegcNKJuJ+4O8AusKZ/k2I3dlFQvr8eahmPKM8
-        B8eoeWObiBnGltn42B5k97Lii++r2NJop6Fctbhbbmf+P6EV
-X-Google-Smtp-Source: ABdhPJxl0BPdl6oM/s7HLtGwzvDPhEYlmelG5KgJF5rbDcL7n1B3Q6UoxJACGDSfOLK8hC/Y8LQyi/I8pkm2k0uNJ6e3zo992gYj
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A43ByyyVzbSptwNygct83mi3n2DzKWgXvNfPebKl6yg=;
+        b=MuVHGiLOnncEZvJP4gWHw7jIb6VdC0eTqiHk5x5tk0UbWfeu9LSSpv1MppzDOhmUi8
+         owr5mmpFPE8bwZUltRGGm63YHFKRtCQk/NP00ZcLYZ6khHt+ni1FpGFz4stmm2nh7JrI
+         bKFQNkd14qPKDaUjOFIn+o7gx4PFcLhoyNtx65xIJW49ZHZRcPeoh9j/H6BEuHHfEAbu
+         51vVzRt4dn3gspBB/fMJF9Fn8AJPpmUQsrNu6oPwYLJhkTOKPx2VaEP+GSi/QH1X6MfT
+         k5Enqv5HDJ3Ihy7yizbyEKJ8sDK8rtfnnorTXtqsGhqYJma8mLZsTto2YABofKX0cYtU
+         6UKQ==
+X-Gm-Message-State: AOAM5333p23fAVudjKF9rYQSHkX+ooeFvlQt08ZaOdaWkZTjP0bZjSTP
+        PdDDKg3BMEmXBoswF+wCEWRomQ==
+X-Google-Smtp-Source: ABdhPJz8Xblx/0gqLzz6ZElpaAiPlDeIUeBjMLlCp2hzlHJxhui/0ePgefixV57yu+dDZ6yxbRkDVQ==
+X-Received: by 2002:a17:90a:4502:: with SMTP id u2mr3822075pjg.187.1596644918065;
+        Wed, 05 Aug 2020 09:28:38 -0700 (PDT)
+Received: from localhost.localdomain ([103.136.220.70])
+        by smtp.gmail.com with ESMTPSA id 12sm3953119pfn.173.2020.08.05.09.28.29
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 05 Aug 2020 09:28:37 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     rostedt@goodmis.org, naveen.n.rao@linux.ibm.com,
+        anil.s.keshavamurthy@intel.com, davem@davemloft.net,
+        mhiramat@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        sfr@canb.auug.org.au, mingo@kernel.org, akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Subject: [PATCH v2] kprobes: fix NULL pointer dereference at kprobe_ftrace_handler
+Date:   Thu,  6 Aug 2020 00:27:13 +0800
+Message-Id: <20200805162713.16386-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.21.0 (Apple Git-122)
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9a86:: with SMTP id c6mr4183230iom.27.1596643761561;
- Wed, 05 Aug 2020 09:09:21 -0700 (PDT)
-Date:   Wed, 05 Aug 2020 09:09:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003da5f105ac239832@google.com>
-Subject: general protection fault in bt_accept_unlink
-From:   syzbot <syzbot+a9c8613ce9eafbd86441@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+We found a case of kernel panic on our server. The stack trace is as
+follows(omit some irrelevant information):
 
-syzbot found the following issue on:
+  BUG: kernel NULL pointer dereference, address: 0000000000000080
+  RIP: 0010:kprobe_ftrace_handler+0x5e/0xe0
+  RSP: 0018:ffffb512c6550998 EFLAGS: 00010282
+  RAX: 0000000000000000 RBX: ffff8e9d16eea018 RCX: 0000000000000000
+  RDX: ffffffffbe1179c0 RSI: ffffffffc0535564 RDI: ffffffffc0534ec0
+  RBP: ffffffffc0534ec1 R08: ffff8e9d1bbb0f00 R09: 0000000000000004
+  R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+  R13: ffff8e9d1f797060 R14: 000000000000bacc R15: ffff8e9ce13eca00
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 0000000000000080 CR3: 00000008453d0005 CR4: 00000000003606e0
+  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  Call Trace:
+   <IRQ>
+   ftrace_ops_assist_func+0x56/0xe0
+   ftrace_call+0x5/0x34
+   tcpa_statistic_send+0x5/0x130 [ttcp_engine]
 
-HEAD commit:    ac3a0c84 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=1639b284900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c0cfcf935bcc94d2
-dashboard link: https://syzkaller.appspot.com/bug?extid=a9c8613ce9eafbd86441
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+The tcpa_statistic_send is the function being kprobed. After analysis,
+the root cause is that the fourth parameter regs of kprobe_ftrace_handler
+is NULL. Why regs is NULL? We use the crash tool to analyze the kdump.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+  crash> dis tcpa_statistic_send -r
+         <tcpa_statistic_send>: callq 0xffffffffbd8018c0 <ftrace_caller>
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a9c8613ce9eafbd86441@syzkaller.appspotmail.com
+The tcpa_statistic_send calls ftrace_caller instead of ftrace_regs_caller.
+So it is reasonable that the fourth parameter regs of kprobe_ftrace_handler
+is NULL. In theory, we should call the ftrace_regs_caller instead of the
+ftrace_caller. After in-depth analysis, we found a reproducible path.
 
-general protection fault, probably for non-canonical address 0xf777682000003777: 0000 [#1] PREEMPT SMP KASAN
-KASAN: maybe wild-memory-access in range [0xbbbb61000001bbb8-0xbbbb61000001bbbf]
-CPU: 0 PID: 9028 Comm: kworker/0:6 Not tainted 5.8.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events l2cap_chan_timeout
-RIP: 0010:__list_del_entry_valid+0x81/0xef lib/list_debug.c:51
-Code: 0f 84 df 00 00 00 48 b8 22 01 00 00 00 00 ad de 49 39 c4 0f 84 e0 00 00 00 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1 ea 03 <80> 3c 02 00 75 51 49 8b 14 24 48 39 ea 0f 85 97 00 00 00 49 8d 7d
-RSP: 0018:ffffc900091afb18 EFLAGS: 00010a06
-RAX: dffffc0000000000 RBX: ffff8880a71664b8 RCX: ffffffff8724984f
-RDX: 17776c2000003777 RSI: ffffffff8717d437 RDI: ffff8880a71664c0
-RBP: ffff8880a71664b8 R08: 0000000000000001 R09: ffff8880a7166067
-R10: 0000000000000009 R11: 00000000000ccae8 R12: bbbb61000001bbbb
-R13: bb60000000bbbbbb R14: 00000060000000bb R15: 0000000000000005
-FS:  0000000000000000(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000ca8660 CR3: 000000009115f000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __list_del_entry include/linux/list.h:132 [inline]
- list_del_init include/linux/list.h:204 [inline]
- bt_accept_unlink+0x26/0x280 net/bluetooth/af_bluetooth.c:187
- l2cap_sock_teardown_cb+0x197/0x400 net/bluetooth/l2cap_sock.c:1544
- l2cap_chan_del+0xad/0x1300 net/bluetooth/l2cap_core.c:618
- l2cap_chan_close+0x118/0xb10 net/bluetooth/l2cap_core.c:824
- l2cap_chan_timeout+0x173/0x450 net/bluetooth/l2cap_core.c:436
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:291
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
-Modules linked in:
----[ end trace 89227449b8393688 ]---
-RIP: 0010:__list_del_entry_valid+0x81/0xef lib/list_debug.c:51
-Code: 0f 84 df 00 00 00 48 b8 22 01 00 00 00 00 ad de 49 39 c4 0f 84 e0 00 00 00 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1 ea 03 <80> 3c 02 00 75 51 49 8b 14 24 48 39 ea 0f 85 97 00 00 00 49 8d 7d
-RSP: 0018:ffffc900091afb18 EFLAGS: 00010a06
-RAX: dffffc0000000000 RBX: ffff8880a71664b8 RCX: ffffffff8724984f
-RDX: 17776c2000003777 RSI: ffffffff8717d437 RDI: ffff8880a71664c0
-RBP: ffff8880a71664b8 R08: 0000000000000001 R09: ffff8880a7166067
-R10: 0000000000000009 R11: 00000000000ccae8 R12: bbbb61000001bbbb
-R13: bb60000000bbbbbb R14: 00000060000000bb R15: 0000000000000005
-FS:  0000000000000000(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000ca8660 CR3: 000000009d89f000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  Writing a simple kernel module which starts a periodic timer. The
+  timer's handler is named 'kprobe_test_timer_handler'. The module
+  name is kprobe_test.ko.
 
+  1) insmod kprobe_test.ko
+  2) bpftrace -e 'kretprobe:kprobe_test_timer_handler {}'
+  3) echo 0 > /proc/sys/kernel/ftrace_enabled
+  4) rmmod kprobe_test
+  5) stop step 2) kprobe
+  6) insmod kprobe_test.ko
+  7) bpftrace -e 'kretprobe:kprobe_test_timer_handler {}'
 
+We mark the kprobe as GONE but not disarm the kprobe in the step 4).
+The step 5) also do not disarm the kprobe when unregister kprobe. So
+we do not remove the ip from the filter. In this case, when the module
+loads again in the step 6), we will replace the code to ftrace_caller
+via the ftrace_module_enable(). When we register kprobe again, we will
+not replace ftrace_caller to ftrace_regs_caller because the ftrace is
+disabled in the step 3). So the step 7) will trigger kernel panic. Fix
+this problem by disarming the kprobe when the module is going away.
+
+Fixes: ae6aa16fdc16 ("kprobes: introduce ftrace based optimization")
+Acked-by: Song Liu <songliubraving@fb.com>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+changelogs in v2:
+ 1) fix compiler warning for !CONFIG_KPROBES_ON_FTRACE.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+ kernel/kprobes.c | 24 +++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/kprobes.c b/kernel/kprobes.c
+index 146c648eb943..d36e2b017588 100644
+--- a/kernel/kprobes.c
++++ b/kernel/kprobes.c
+@@ -1114,9 +1114,20 @@ static int disarm_kprobe_ftrace(struct kprobe *p)
+ 		ipmodify ? &kprobe_ipmodify_enabled : &kprobe_ftrace_enabled);
+ }
+ #else	/* !CONFIG_KPROBES_ON_FTRACE */
+-#define prepare_kprobe(p)	arch_prepare_kprobe(p)
+-#define arm_kprobe_ftrace(p)	(-ENODEV)
+-#define disarm_kprobe_ftrace(p)	(-ENODEV)
++static inline int prepare_kprobe(struct kprobe *p)
++{
++	return arch_prepare_kprobe(p);
++}
++
++static inline int arm_kprobe_ftrace(struct kprobe *p)
++{
++	return -ENODEV;
++}
++
++static inline int disarm_kprobe_ftrace(struct kprobe *p)
++{
++	return -ENODEV;
++}
+ #endif
+ 
+ /* Arm a kprobe with text_mutex */
+@@ -2148,6 +2159,13 @@ static void kill_kprobe(struct kprobe *p)
+ 	 * the original probed function (which will be freed soon) any more.
+ 	 */
+ 	arch_remove_kprobe(p);
++
++	/*
++	 * The module is going away. We should disarm the kprobe which
++	 * is using ftrace.
++	 */
++	if (kprobe_ftrace(p))
++		disarm_kprobe_ftrace(p);
+ }
+ 
+ /* Disable one kprobe */
+-- 
+2.11.0
+
