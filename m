@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9977B23C5A2
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 08:17:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0070423C5A5
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 08:17:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727878AbgHEGRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 02:17:25 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:48593 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727008AbgHEGRX (ORCPT
+        id S1727961AbgHEGRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 02:17:30 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:46558 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727783AbgHEGRX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 02:17:23 -0400
-Received: by mail-il1-f200.google.com with SMTP id x4so734958ilk.15
-        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 23:17:22 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id n1so17621370ion.13
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 23:17:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=6PDC0ZVEJqL6K1HxTwRQQLH2RS/QaggDpUtN9JPJU64=;
-        b=g/cpcjC7qmNnBTqo/G6SuXVuKzLD+ig5niHXQB1jBUdFdlEcosOqIeTNbiJnDGtQqo
-         ikXV+jYQKDKi3j0geNTX+FLdtFvPQtJWiWQeVtVD4vhI9k2bce48zL1pC3EgrEcWMJ8C
-         8r/YG4EbUGIlR0PIvIgrFmGt2mZyklvpev1rlSzepcC/Na1hoLWGZV4u6uo/r9K9JHfW
-         eukQS/c9HnWU6g+dY9lSMXMtedIT712cAR0SZCp3bo4UygqwQwRH8lnIOCzRKtb2EL7P
-         G80wLJrLfJdI35xHHnaIqQGX+XK57W/B5iGvin3OYff1o+efACJHHeTLmZONKh9fE4Cc
-         kC5g==
-X-Gm-Message-State: AOAM533rL61GrzM1937RhA7f1gaZf3y8xJcdPhg96WMvn0P2IPCmtgp3
-        xpjJkmMiBk7YrmIaJsvx8leNeub6lWC1jYFh0Dr0GUpKi5N6
-X-Google-Smtp-Source: ABdhPJxAm7AKtMYNvwony85dtePeDXVrt4L3/rrzInP8PLHq8OPLMBeeKIdDJBPgT0guK5HrMi08lmHeMR7qRZ4nh/zIQlGyvqif
+        bh=di6vgA1QwvKcuaK4zAt5UtCoArB7tUveaatpD9fjTvM=;
+        b=QbWThdD9jY17MzL3DTLyVxB84j/JeAsFXfjj5tkcOKC54UelbziCGDGlymKu6M5AyM
+         5R23dcnyZzVuZujYO47+nFsdqzykiwi2DTfyIvLF07Av6MKsQAL9erESu98chBnAFgZV
+         EldjmSnp/W/xk2cO8cK3onMpv2Ooo5TR218d8b7redByYrUlqHACq0Lf/j4dUqIaUlnE
+         UhCG+hQh7DHD+xEN73owwXMiUIhcrnS00WBpJnfdpsPpWLrdWMrkrpNLM52GCn9jVNXZ
+         uRHCWqlRn4n9y2ubI7ty83U19fki/uTb1ypgD/AtNdHdwgozWBGoLDrLNo37m1HMSEBd
+         CGWQ==
+X-Gm-Message-State: AOAM5318nAyFaTztIIiKFjnEFAfD7wTbKwsZSv9YWZBhVdDd+AtUG4Hy
+        PdGd12EKPEaHxAqkkbyaC4HVcQOPg9g4g0HcrriOUx/uZOc4
+X-Google-Smtp-Source: ABdhPJw7CeR8FScCQjTke99M/QZIjT4CWXzYncIR8c+ldAl42UTk0q7UGzeqpI+NBgeN3NmNaEMNkenJVSxmswwfEb6X1QBIHAn5
 MIME-Version: 1.0
-X-Received: by 2002:a92:c52e:: with SMTP id m14mr2448392ili.205.1596608242510;
+X-Received: by 2002:a05:6638:1313:: with SMTP id r19mr2355385jad.60.1596608242876;
  Tue, 04 Aug 2020 23:17:22 -0700 (PDT)
 Date:   Tue, 04 Aug 2020 23:17:22 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000023efa305ac1b5309@google.com>
-Subject: WARNING: refcount bug in l2cap_global_chan_by_psm
-From:   syzbot <syzbot+39ad9f042519082fcec9@syzkaller.appspotmail.com>
+Message-ID: <00000000000029856f05ac1b5335@google.com>
+Subject: WARNING: locking bug in hci_dev_reset
+From:   syzbot <syzbot+f456fc1d58a1f67c401f@syzkaller.appspotmail.com>
 To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
         linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
         marcel@holtmann.org, netdev@vger.kernel.org,
@@ -49,55 +49,69 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    c0842fbc random32: move the pseudo-random 32-bit definitio..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=142980c2900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=76cacb0fe58c4a1e
-dashboard link: https://syzkaller.appspot.com/bug?extid=39ad9f042519082fcec9
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1100fc58900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13a9d662900000
+HEAD commit:    ac3a0c84 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=10887792900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c0cfcf935bcc94d2
+dashboard link: https://syzkaller.appspot.com/bug?extid=f456fc1d58a1f67c401f
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=123baf04900000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+39ad9f042519082fcec9@syzkaller.appspotmail.com
+Reported-by: syzbot+f456fc1d58a1f67c401f@syzkaller.appspotmail.com
 
 ------------[ cut here ]------------
-refcount_t: addition on 0; use-after-free.
-WARNING: CPU: 1 PID: 6830 at lib/refcount.c:25 refcount_warn_saturate+0x13d/0x1a0 lib/refcount.c:25
+DEBUG_LOCKS_WARN_ON(1)
+WARNING: CPU: 0 PID: 22435 at kernel/locking/lockdep.c:183 hlock_class kernel/locking/lockdep.c:183 [inline]
+WARNING: CPU: 0 PID: 22435 at kernel/locking/lockdep.c:183 hlock_class kernel/locking/lockdep.c:172 [inline]
+WARNING: CPU: 0 PID: 22435 at kernel/locking/lockdep.c:183 check_wait_context kernel/locking/lockdep.c:4054 [inline]
+WARNING: CPU: 0 PID: 22435 at kernel/locking/lockdep.c:183 __lock_acquire+0x1629/0x56e0 kernel/locking/lockdep.c:4330
 Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 6830 Comm: kworker/u5:2 Not tainted 5.8.0-syzkaller #0
+CPU: 0 PID: 22435 Comm: syz-executor.2 Not tainted 5.8.0-rc7-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1f0/0x31e lib/dump_stack.c:118
- panic+0x264/0x7a0 kernel/panic.c:231
- __warn+0x227/0x250 kernel/panic.c:600
- report_bug+0x1b1/0x2e0 lib/bug.c:198
- handle_bug+0x42/0x80 arch/x86/kernel/traps.c:235
- exc_invalid_op+0x16/0x40 arch/x86/kernel/traps.c:255
- asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:547
-RIP: 0010:refcount_warn_saturate+0x13d/0x1a0 lib/refcount.c:25
-Code: c7 c3 ca 14 89 31 c0 e8 41 c0 a9 fd 0f 0b eb a3 e8 f8 0a d8 fd c6 05 38 a8 ec 05 01 48 c7 c7 fa ca 14 89 31 c0 e8 23 c0 a9 fd <0f> 0b eb 85 e8 da 0a d8 fd c6 05 1b a8 ec 05 01 48 c7 c7 26 cb 14
-RSP: 0018:ffffc90001607a70 EFLAGS: 00010246
-RAX: 94a8124281310300 RBX: 0000000000000002 RCX: ffff888092562280
-RDX: 0000000000000000 RSI: 0000000080000001 RDI: 0000000000000000
-RBP: 0000000000000002 R08: ffffffff815e07c9 R09: ffffed1015d262c0
-R10: ffffed1015d262c0 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: ffff8880a948e018 R15: 0000000000000001
- refcount_add include/linux/refcount.h:206 [inline]
- refcount_inc include/linux/refcount.h:241 [inline]
- kref_get include/linux/kref.h:45 [inline]
- l2cap_chan_hold net/bluetooth/l2cap_core.c:495 [inline]
- l2cap_global_chan_by_psm+0x4aa/0x4e0 net/bluetooth/l2cap_core.c:1978
- l2cap_conless_channel net/bluetooth/l2cap_core.c:7596 [inline]
- l2cap_recv_frame+0x530/0x8f10 net/bluetooth/l2cap_core.c:7666
- hci_acldata_packet net/bluetooth/hci_core.c:4520 [inline]
- hci_rx_work+0x7d7/0x9c0 net/bluetooth/hci_core.c:4710
- process_one_work+0x789/0xfc0 kernel/workqueue.c:2269
- worker_thread+0xaa4/0x1460 kernel/workqueue.c:2415
- kthread+0x37e/0x3a0 drivers/block/aoe/aoecmd.c:1234
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:231
+ __warn.cold+0x20/0x45 kernel/panic.c:600
+ report_bug+0x1bd/0x210 lib/bug.c:198
+ handle_bug+0x38/0x90 arch/x86/kernel/traps.c:235
+ exc_invalid_op+0x13/0x40 arch/x86/kernel/traps.c:255
+ asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:540
+RIP: 0010:hlock_class kernel/locking/lockdep.c:183 [inline]
+RIP: 0010:hlock_class kernel/locking/lockdep.c:172 [inline]
+RIP: 0010:check_wait_context kernel/locking/lockdep.c:4054 [inline]
+RIP: 0010:__lock_acquire+0x1629/0x56e0 kernel/locking/lockdep.c:4330
+Code: 08 84 d2 0f 85 bd 35 00 00 8b 35 a2 a2 55 09 85 f6 0f 85 cc fa ff ff 48 c7 c6 20 b0 4b 88 48 c7 c7 20 ab 4b 88 e8 b9 44 eb ff <0f> 0b e9 b2 fa ff ff e8 3b a0 8e 06 85 c0 0f 84 ed fa ff ff 48 c7
+RSP: 0018:ffffc90002a17810 EFLAGS: 00010086
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
+RDX: ffff8880949044c0 RSI: ffffffff815d4ef7 RDI: fffff52000542ef4
+RBP: ffff888094904db8 R08: 0000000000000000 R09: ffffffff89bb5c23
+R10: 0000000000000aea R11: 0000000000000001 R12: ffff8880949044c0
+R13: 00000000000006d9 R14: ffff88809487c138 R15: 0000000000040000
+ lock_acquire+0x1f1/0xad0 kernel/locking/lockdep.c:4959
+ flush_workqueue+0x110/0x13e0 kernel/workqueue.c:2780
+ drain_workqueue+0x1a5/0x3c0 kernel/workqueue.c:2945
+ hci_dev_do_reset net/bluetooth/hci_core.c:1864 [inline]
+ hci_dev_reset+0x23e/0x450 net/bluetooth/hci_core.c:1907
+ hci_sock_ioctl+0x510/0x800 net/bluetooth/hci_sock.c:1036
+ sock_do_ioctl+0xcb/0x2d0 net/socket.c:1048
+ sock_ioctl+0x3b8/0x730 net/socket.c:1199
+ vfs_ioctl fs/ioctl.c:48 [inline]
+ ksys_ioctl+0x11a/0x180 fs/ioctl.c:753
+ __do_sys_ioctl fs/ioctl.c:762 [inline]
+ __se_sys_ioctl fs/ioctl.c:760 [inline]
+ __x64_sys_ioctl+0x6f/0xb0 fs/ioctl.c:760
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:384
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45cce9
+Code: 2d b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb b5 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fab01629c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 000000000001d300 RCX: 000000000045cce9
+RDX: 0000000000000000 RSI: 00000000400448cb RDI: 0000000000000006
+RBP: 000000000078c120 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000078c0ec
+R13: 00007ffc2d1075ff R14: 00007fab0162a9c0 R15: 000000000078c0ec
 Kernel Offset: disabled
 Rebooting in 86400 seconds..
 
