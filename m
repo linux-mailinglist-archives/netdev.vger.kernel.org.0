@@ -2,129 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2285523C771
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 10:11:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B07123C764
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 10:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728314AbgHEIJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 04:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728226AbgHEIHY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 04:07:24 -0400
-Received: from mail-ua1-x942.google.com (mail-ua1-x942.google.com [IPv6:2607:f8b0:4864:20::942])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61A0C06179E
-        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 01:07:23 -0700 (PDT)
-Received: by mail-ua1-x942.google.com with SMTP id p27so9351268uaa.12
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 01:07:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H0nOFFF7hzc6dw8TmhAOGzyrKIPGf5iLMCTuLYuw0u4=;
-        b=SPNRDUgdSDQlK5tqqIU4NcO4Laf7h6KZOhYv7nAV/kYD7hmyqmT/G00JE4LmRs3N54
-         uQpwTCU1s+SbL0Kbqlns5LWQ+tbXmteqBTgtQYSBsmekDKE5eCLjvth/Tr7fuIFPBs3R
-         NRf/Ne1J9uPNH825RyxPoTL9RQkaRMYB+Mk3awoR+70zFSOva7Tu8e1KglvZ0cuDsNd1
-         nOKvqqn1RDqm5ZutMWgwgZeUri7lqzd0biqY1+X+nDRytnsKlLTieF5hIHN1HNDij/1s
-         HOp/DYpDv9CNrpYCEJt6MKUvVhTP/9UgcCVMn6oQtDGJqdNW6xA58AkW3hDIq1wMghtN
-         BwkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H0nOFFF7hzc6dw8TmhAOGzyrKIPGf5iLMCTuLYuw0u4=;
-        b=MczgTskSeDEtrOtdf2hS6m/USIw3+dkxYxY/4k8LDk78zIA6hNKAv2ME8Q0gJYnkot
-         x1ghdzTfQ6Yb9YqHjAKUEcV8mvqqx3QtsmHb9h8g2N5veLozqmEpsJdHL6hlgdX1x4Y9
-         8TPX9KxfQBj38rQO9OBxsa5bq/7E6qb4KELwtnzhvLAittlNC/3zjjYIG64Kd1xOs2OW
-         cI6q2B0uLjehTS/j1Gn2X6i/dg9Kw7hnJfksewSAIpWiuBHM1/Lp6QZjAKy70v+JQe16
-         wwjvwBVvw8E4R2LnLypMp9edKxtkYJgTuMv97PQtzsLBHS+Ug5UeBsT/X+JpiaWgkXwt
-         EJUw==
-X-Gm-Message-State: AOAM533WBKzDszD3zQFarvXRmr02QwfnekM5mvuRWW7UgDMHbyAotA12
-        Mt3zhTHt1L0K5DWfCeQaF0ZhjUOv
-X-Google-Smtp-Source: ABdhPJy7fpNUq35tLYin0uYVyfwez510jot6Wddu88T4lkVlvIhKJQrjGio9UFQ4gk9RQg2X43okfg==
-X-Received: by 2002:ab0:37d3:: with SMTP id e19mr1183500uav.64.1596614841807;
-        Wed, 05 Aug 2020 01:07:21 -0700 (PDT)
-Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com. [209.85.217.42])
-        by smtp.gmail.com with ESMTPSA id p192sm219394vsd.23.2020.08.05.01.07.18
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Aug 2020 01:07:19 -0700 (PDT)
-Received: by mail-vs1-f42.google.com with SMTP id i129so4835284vsi.3
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 01:07:18 -0700 (PDT)
-X-Received: by 2002:a67:f5ce:: with SMTP id t14mr1105046vso.240.1596614838401;
- Wed, 05 Aug 2020 01:07:18 -0700 (PDT)
+        id S1728255AbgHEIHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 04:07:43 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:29868 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728126AbgHEIHL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 04:07:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596614829;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=U+P5AqxVwLdPgRW/WZrpuWJB7Ff2u+rvbxrrV1P3Ilw=;
+        b=cCNLnzQDPscHAf4NqaOq+XcXeXEylPuKh6G0m+6G60nomiH5NBWH+JcciQ12W8SfpQ+qoT
+        VASDF9sKagapz1qSkkvlBPJosyOGC+7JKnauj7ediVcB5D1N1CJ25KTJxlSmzz8F1wnhyt
+        1fpSh1cj7/iDBf85LIjo9zkCKhb/H6c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-162-waLDMApFPg6rO-lpbdax3w-1; Wed, 05 Aug 2020 04:07:07 -0400
+X-MC-Unique: waLDMApFPg6rO-lpbdax3w-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AB6D3100AA25;
+        Wed,  5 Aug 2020 08:07:02 +0000 (UTC)
+Received: from [10.72.12.225] (ovpn-12-225.pek2.redhat.com [10.72.12.225])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E196C19C4F;
+        Wed,  5 Aug 2020 08:06:51 +0000 (UTC)
+Subject: Re: [PATCH V5 4/6] vhost_vdpa: implement IRQ offloading in vhost_vdpa
+To:     Zhu Lingshan <lingshan.zhu@intel.com>, alex.williamson@redhat.com,
+        mst@redhat.com, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, wanpengli@tencent.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, eli@mellanox.com, shahafs@mellanox.com,
+        parav@mellanox.com
+References: <20200731065533.4144-1-lingshan.zhu@intel.com>
+ <20200731065533.4144-5-lingshan.zhu@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <4c711720-b4ff-6f09-61cb-2d305daa69c8@redhat.com>
+Date:   Wed, 5 Aug 2020 16:06:50 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20200804123012.378750-1-colin.king@canonical.com> <b99004ea-cd9d-bec3-5f9f-82dcb00a6284@gmail.com>
-In-Reply-To: <b99004ea-cd9d-bec3-5f9f-82dcb00a6284@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 5 Aug 2020 10:06:41 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSd9K+s1rXUFpb_RWEC-uAgwU1Vz44zaUPaZK0cfsX4kwA@mail.gmail.com>
-Message-ID: <CA+FuTSd9K+s1rXUFpb_RWEC-uAgwU1Vz44zaUPaZK0cfsX4kwA@mail.gmail.com>
-Subject: Re: [PATCH] selftests/net: skip msg_zerocopy test if we have less
- than 4 CPUs
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Colin King <colin.king@canonical.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Shuah Khan <shuah@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, kernel-janitors@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200731065533.4144-5-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 5, 2020 at 2:54 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 8/4/20 5:30 AM, Colin King wrote:
-> > From: Colin Ian King <colin.king@canonical.com>
-> >
-> > The current test will exit with a failure if it cannot set affinity on
-> > specific CPUs which is problematic when running this on single CPU
-> > systems. Add a check for the number of CPUs and skip the test if
-> > the CPU requirement is not met.
-> >
-> > Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> > ---
-> >  tools/testing/selftests/net/msg_zerocopy.sh | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> >
-> > diff --git a/tools/testing/selftests/net/msg_zerocopy.sh b/tools/testing/selftests/net/msg_zerocopy.sh
-> > index 825ffec85cea..97bc527e1297 100755
-> > --- a/tools/testing/selftests/net/msg_zerocopy.sh
-> > +++ b/tools/testing/selftests/net/msg_zerocopy.sh
-> > @@ -21,6 +21,11 @@ readonly DADDR6='fd::2'
-> >
-> >  readonly path_sysctl_mem="net.core.optmem_max"
-> >
-> > +if [[ $(nproc) -lt 4 ]]; then
-> > +     echo "SKIP: test requires at least 4 CPUs"
-> > +     exit 4
-> > +fi
-> > +
-> >  # No arguments: automated test
-> >  if [[ "$#" -eq "0" ]]; then
-> >       $0 4 tcp -t 1
-> >
->
-> Test explicitly uses CPU 2 and 3, right ?
->
-> nproc could be 500, yet cpu 2 or 3 could be offline
->
-> # cat /sys/devices/system/cpu/cpu3/online
-> 0
-> # echo $(nproc)
-> 71
 
-The cpu affinity is only set to bring some stability across runs.
+On 2020/7/31 下午2:55, Zhu Lingshan wrote:
+> +static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
+> +{
+> +	struct vhost_virtqueue *vq = &v->vqs[qid];
+> +	const struct vdpa_config_ops *ops = v->vdpa->config;
+> +	struct vdpa_device *vdpa = v->vdpa;
+> +	int ret, irq;
+> +
+> +	spin_lock(&vq->call_ctx.ctx_lock);
+> +	irq = ops->get_vq_irq(vdpa, qid);
 
-The test does not actually verify that a run with zerocopy is some
-factor faster than without, as that factor is hard to choose across
-all platforms. As a result the automated run mainly gives code coverage.
 
-It's preferable to always run. And on sched_setaffinity failure log a
-message about possible jitter and continue. I can send that patch, if
-the approach sounds good.
+Btw, this assumes that get_vq_irq is mandatory. This looks wrong since 
+there's no guarantee that the vDPA device driver can see irq. And this 
+break vdpa simulator.
+
+Let's add a check and make it optional by document this assumption in 
+the vdpa.h.
+
+Thanks
+
+
+> +	if (!vq->call_ctx.ctx || irq < 0) {
+> +		spin_unlock(&vq->call_ctx.ctx_lock);
+> +		return;
+> +	}
+> +
+
