@@ -2,77 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AAD023C285
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 02:12:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8370C23C293
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 02:24:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728233AbgHEAMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 20:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727920AbgHEAMF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 20:12:05 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84B0CC06174A
-        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 17:12:05 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id di22so24006899edb.12
-        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 17:12:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=To2yhbXWe/noZ+COhMz78hScmYZu/wsBpod+qzeIci4=;
-        b=Awk+RGmeP9g6mCrYN0f7qchQcNsb5hm7sBpV0Rv4dnlIATuDL5/Ql1unrKIuB2Ptq/
-         dq0Z6TxJvxhCF6iA5vDSeDF9nu2+NrzW61+ihlYPFe68bOIe2uX8delcx0hcwNPGmI/N
-         9VgfuKDLX0b0+W3Ds2XU4LNC/ILtUWJmMQzzRR+/I+LfYFGGtugyecG4/kB0alOHMPCh
-         goez1SVU5q2BEft90SpCiTmeCQ6g4YMm3PHY1KBo7MhTqrWPPvDtyDrcCkFz/ayxEWAm
-         GSRN77Ly5V7OBAnJJgGJzHlz6JJ0Ukr+Kuk6y3d6jQnb9EP3Q1sgCoW4by/mU0+LEAK1
-         UXpw==
+        id S1726472AbgHEAYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 20:24:07 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:35281 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725921AbgHEAYG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 20:24:06 -0400
+Received: by mail-il1-f197.google.com with SMTP id g6so16764320iln.2
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 17:24:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=To2yhbXWe/noZ+COhMz78hScmYZu/wsBpod+qzeIci4=;
-        b=iHiOlaR/18KjjUXrzx4N8pGzXOPka8cxumiQn1PcOGHv7xFpq+Aq/Lxqn4PpcbQAer
-         lTR4UzTMg2gLbQWFjEAoVDnKmFwJKoXoqCzcBgZ11ZZlVeB22BUZMoqAussnedeseSpg
-         iLUtphn50YUK1RmCoWvFKgwNypFtdySQgVTcnx7eoHdN1zHyEfevH4X7VBh0xJQ/vD+g
-         IoXS0Fay4++oI7ueFwQdw+X2VF/S+szYs5Nxe76g2kE75Q79Y9re7SWA/uuLHy7QpHfZ
-         otGhyAZN6lUFN8kn43uwtMRT2W38fakeYZ3LuBZ0Jy1aG72reOo7MHh/InQOQgGQAGuZ
-         GVMQ==
-X-Gm-Message-State: AOAM531Q8mTue7NbprbG656qcQNkplle3RP1Kg/ApZSNuYju3xqExfoZ
-        rPbWTFCFV+fi3RIEsUgq1e8=
-X-Google-Smtp-Source: ABdhPJzGmGo4hVgp4N/WY3nd7t9HzRMJ+JwJopq0ualvFPzKUXHIONHyah7lUi4K93XC24ONCR48RA==
-X-Received: by 2002:a50:f10c:: with SMTP id w12mr430898edl.202.1596586323504;
-        Tue, 04 Aug 2020 17:12:03 -0700 (PDT)
-Received: from skbuf ([188.26.57.97])
-        by smtp.gmail.com with ESMTPSA id m6sm310349ejq.85.2020.08.04.17.12.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Aug 2020 17:12:03 -0700 (PDT)
-Date:   Wed, 5 Aug 2020 03:12:01 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        richardcochran@gmail.com
-Subject: Re: [PATCH v2 net-next] ptp: only allow phase values lower than 1
- period
-Message-ID: <20200805001201.v7idope4zidyi6st@skbuf>
-References: <20200804234308.1303022-1-olteanv@gmail.com>
- <cc1465fd-2696-f73b-85c2-7f6132f6623d@intel.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=YcEYobWe0gtmbwSjs0eeDwSC4BGhccPAeLKXxasmpXw=;
+        b=sZiSVioT9HGQ7P61Wj++mMVvMW0Rrxsz65jR1fs0Zoa2LCf/KKZmDGSXfl4rk2rTZo
+         D9ajV2BvoCTds1ml9HN17AJwS8inIC6FrnDh82gWjaSyINzkMog7cwl0Yy2vaYFxVLwE
+         uCgO9cEux1PfRRofF3369wooske4Tsh0FXOaZwoB72fWhAOBmHbg6HJ2mCZKe25yB0WQ
+         EL0LOS++5tjrVWvooAGhTZweqkAVL76rwVnOda1Hy9bww+4dR0VFv4bdX0tC8u8CRbOk
+         XgFoGU5wzZ/nakE04pnTo5/3gg2MuGmGSZUYftAl5zzTro6+hKOkutjfVCVu04mkk013
+         cLMg==
+X-Gm-Message-State: AOAM530uezBT1A1W3IsyNv1FgQuJuspI1OkkHTTJfCYG3Nz2F3A7nFGb
+        LGNi3LvgU0xwDzoKIrCSoP9RGplxgX+Nnk2VfVFXPQbzdbzQ
+X-Google-Smtp-Source: ABdhPJwuZalmKeWO+pHiPWSqqtn5gfgs4D6jBqCQuwsKDkM2LSlSrPL+ZsNuPLhlwiwWkpFQK5ByESHxEN/Ub93XP1IFRfUCg0KC
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cc1465fd-2696-f73b-85c2-7f6132f6623d@intel.com>
+X-Received: by 2002:a05:6638:1649:: with SMTP id a9mr979747jat.115.1596587045563;
+ Tue, 04 Aug 2020 17:24:05 -0700 (PDT)
+Date:   Tue, 04 Aug 2020 17:24:05 -0700
+In-Reply-To: <0000000000006d871805ac0f2416@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b4484105ac16639c@google.com>
+Subject: Re: WARNING: suspicious RCU usage in ovs_flow_tbl_masks_cache_size
+From:   syzbot <syzbot+f612c02823acb02ff9bc@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dev@openvswitch.org, echaudro@redhat.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, pshelar@ovn.org,
+        syzkaller-bugs@googlegroups.com, xiangxia.m.yue@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 04, 2020 at 05:04:47PM -0700, Jacob Keller wrote:
-> 
-> A nit: this could read "therefore anything equal or larger than 1 period
-> is invalid"? a number modulo itself is 0, right? and we use ">=" below
-> as well now.
-> 
+syzbot has bisected this issue to:
 
-Thanks, I've corrected that too, now.
+commit 9bf24f594c6acf676fb8c229f152c21bfb915ddb
+Author: Eelco Chaudron <echaudro@redhat.com>
+Date:   Fri Jul 31 12:21:34 2020 +0000
 
--Vladimir
+    net: openvswitch: make masks cache size configurable
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=110e06dc900000
+start commit:   2f631133 net: Pass NULL to skb_network_protocol() when we ..
+git tree:       net-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=130e06dc900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=150e06dc900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=91a13b78c7dc258d
+dashboard link: https://syzkaller.appspot.com/bug?extid=f612c02823acb02ff9bc
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e8430a900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=123549fc900000
+
+Reported-by: syzbot+f612c02823acb02ff9bc@syzkaller.appspotmail.com
+Fixes: 9bf24f594c6a ("net: openvswitch: make masks cache size configurable")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
