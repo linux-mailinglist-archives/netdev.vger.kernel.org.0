@@ -2,142 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B62E723C807
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 10:45:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E151E23C805
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 10:44:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728042AbgHEIpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 04:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727808AbgHEIpH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 04:45:07 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5768FC061757
-        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 01:45:07 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id a1so573352vsp.4
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 01:45:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o5bGfUkI0TnoG29U72+wYqyFdj5RODR1Ju6c+jix9G0=;
-        b=kf0kPEaVVqjO+tibXO/BrYddVQyTvWLUZ/24XavuNmMYdFT6EOU3UN6FYcxjZH3qwW
-         1NbL1hXeQvxv2HC+PZC40EULkvoRbTkdfu79/p4gZo3AqKSYl/VdcCXLKnTF0O8CDUik
-         M8vI9JmDpxfYcDW8JwkO/EsjsgLg1exmXaBS4VAWQdLepewlrOqU0uqSvBzuO4oav4ZR
-         /KZl/mgrSgkP1i0KZ8pZieCtdscu2Mbt/6Olxe8dZTpGEJmQiS5iiTUKlUXMwpH0BkQj
-         0KouMItchhDfWeLk4CZlydh7yomaBu6t4nqtICtNGC+uhuVoorrA29jAEIlONK9OAL2T
-         fIvg==
+        id S1726846AbgHEIof (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 04:44:35 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:41863 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725868AbgHEIoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 04:44:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596617072;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fhhymBT52dbtmC7E9vyh3NbHhcoDPj2MtP/Yl5ytDXw=;
+        b=bwEb1wA2Q2qw5iNqvauIfJiIF7Wd4YZEuQyuy+o54Hd2foLKpYm+mTRKQ2KdzNqXC837T3
+        qs+ezro57vheh4cGBhP5xb9nvqwRSSbm3AUS2WKfxLGuEfZCltKsMo4SBrEEDZKKl87joz
+        /LdbVpV2CWCHas6vn/Dw4K9ZXYaxbqo=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-349-7jqZldJqNZi9CeZAunDsWQ-1; Wed, 05 Aug 2020 04:44:31 -0400
+X-MC-Unique: 7jqZldJqNZi9CeZAunDsWQ-1
+Received: by mail-wr1-f72.google.com with SMTP id b13so10613408wrq.19
+        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 01:44:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o5bGfUkI0TnoG29U72+wYqyFdj5RODR1Ju6c+jix9G0=;
-        b=JI28k4MvnVXfhJ5XZ7YdqE4pHXLNk9j3Dr/04YxxS+oDXB0MqF+MAB3CgR2/izseQc
-         /HMbLISLMj+UcicNL8nPESzIbQT6oxEgBCadTKeuc9NN/9fQXlgU4ugnFJ8zchCZm19A
-         iuFxCfxVuZ54ZPaCHb/x8xkD5ExZVwdM3MqZ8e4qk0scgdWsVU8OCVWqu1tGzkHmU4hP
-         tnavHpH0cx0e6hVGEiQaRV3PZyAGqGrVEFHrhnhaMyeU2iRoydYeAkgmEWUI3hdb+5FS
-         SG1kdN+couldjnenkbbPjCZOFFTeikpfRCf4Lt5BEIysm9g7sed0s34e4AngjDksh5Kf
-         lT5A==
-X-Gm-Message-State: AOAM530sCOdrjURp4uv327nbjHQwkkST87Yeijij36PJCiQDlM6fI+rY
-        oKtvb4rWnejoqAz4rTSzGnY1yEa7hWE=
-X-Google-Smtp-Source: ABdhPJyjnkVSN8bnmIDjsePNqAtuFV8oAddc2cmsmcVHgupwvdwk0+KJHVPk8RqFdj1zpCfYbXbF/Q==
-X-Received: by 2002:a05:6102:30ba:: with SMTP id y26mr1075103vsd.122.1596617105698;
-        Wed, 05 Aug 2020 01:45:05 -0700 (PDT)
-Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com. [209.85.222.43])
-        by smtp.gmail.com with ESMTPSA id m139sm266008vke.28.2020.08.05.01.45.04
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Aug 2020 01:45:04 -0700 (PDT)
-Received: by mail-ua1-f43.google.com with SMTP id y17so7528763uaq.6
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 01:45:04 -0700 (PDT)
-X-Received: by 2002:ab0:242:: with SMTP id 60mr1283334uas.37.1596617104040;
- Wed, 05 Aug 2020 01:45:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200804123012.378750-1-colin.king@canonical.com>
- <b99004ea-cd9d-bec3-5f9f-82dcb00a6284@gmail.com> <CA+FuTSd9K+s1rXUFpb_RWEC-uAgwU1Vz44zaUPaZK0cfsX4kwA@mail.gmail.com>
- <fc66cf3c-b4be-f098-3a2b-aef36b90835d@canonical.com>
-In-Reply-To: <fc66cf3c-b4be-f098-3a2b-aef36b90835d@canonical.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fhhymBT52dbtmC7E9vyh3NbHhcoDPj2MtP/Yl5ytDXw=;
+        b=GTDwsgGgNMZ9zp62PBtFJKq76jLnp0FRX3iQxN6ZyCukNM45EOG9df5sCD2mZOSZe7
+         lDNsU3M1aIguQcbA9gkyOyxAkAMNqfU4IP1kRDFqroC5farJ5EEnNJp8rAKJlunmIRDM
+         Zn1OBSvSI7FlKNr+CRhfv/5XPTEAHYvWkTOYzYbuHzutwP3zFWurp5qf+Cvz6AZEEq5N
+         6ZHODHvpQUsZmNWSNYJNTkL3LRggPuAOF7BvJKVz4W2Iyb6uOQbA0s7HY1V9EtVYfapY
+         n9SdztE15rbkRRrD2QTGeUWhn5lcmOaJCpeW+n4AkcK2ieaci+ZNVh6ezpT7zjK26Zbq
+         RQYw==
+X-Gm-Message-State: AOAM533aYWpG32bb7aAYft14JI/Y0oYL1S0RQugqAppWV9hMmFMX4XjH
+        2tXuFV9s4AmNsZKqWmTMLgbmzUmz3CFcCIYm9yTIiP6hyqgZ+4oCElwGv3pDb+8wKRDa/Oz372v
+        WAZhDpEDw0ZaPYR+M
+X-Received: by 2002:a5d:6a8b:: with SMTP id s11mr1774621wru.222.1596617069795;
+        Wed, 05 Aug 2020 01:44:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxbhaEHT7XWY3F99iUCvr5nNuN4YlYWAkKqq9oNQJZhKhTSSlTdH9Gvv7nZcNTK6HH6ZWmqUA==
+X-Received: by 2002:a5d:6a8b:: with SMTP id s11mr1774610wru.222.1596617069621;
+        Wed, 05 Aug 2020 01:44:29 -0700 (PDT)
+Received: from pc-2.home (2a01cb058d688e004215272ec6f01a3e.ipv6.abo.wanadoo.fr. [2a01:cb05:8d68:8e00:4215:272e:c6f0:1a3e])
+        by smtp.gmail.com with ESMTPSA id t189sm1830512wmf.47.2020.08.05.01.44.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Aug 2020 01:44:28 -0700 (PDT)
 Date:   Wed, 5 Aug 2020 10:44:27 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSfVOPiiBi2AcyiyNHoOpbKg4dPWCNvjg=-UuP+GA2c5FA@mail.gmail.com>
-Message-ID: <CA+FuTSfVOPiiBi2AcyiyNHoOpbKg4dPWCNvjg=-UuP+GA2c5FA@mail.gmail.com>
-Subject: Re: [PATCH] selftests/net: skip msg_zerocopy test if we have less
- than 4 CPUs
-To:     Colin Ian King <colin.king@canonical.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Petr Machata <pmachata@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Shuah Khan <shuah@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, kernel-janitors@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        David Ahern <dsahern@kernel.org>,
+        Andreas Karis <akaris@redhat.com>
+Subject: Re: [PATCH net] Revert "vxlan: fix tos value before xmit"
+Message-ID: <20200805084427.GC11547@pc-2.home>
+References: <20200805024131.2091206-1-liuhangbin@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200805024131.2091206-1-liuhangbin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 5, 2020 at 10:22 AM Colin Ian King <colin.king@canonical.com> wrote:
->
-> On 05/08/2020 09:06, Willem de Bruijn wrote:
-> > On Wed, Aug 5, 2020 at 2:54 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >>
-> >>
-> >>
-> >> On 8/4/20 5:30 AM, Colin King wrote:
-> >>> From: Colin Ian King <colin.king@canonical.com>
-> >>>
-> >>> The current test will exit with a failure if it cannot set affinity on
-> >>> specific CPUs which is problematic when running this on single CPU
-> >>> systems. Add a check for the number of CPUs and skip the test if
-> >>> the CPU requirement is not met.
-> >>>
-> >>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> >>> ---
-> >>>  tools/testing/selftests/net/msg_zerocopy.sh | 5 +++++
-> >>>  1 file changed, 5 insertions(+)
-> >>>
-> >>> diff --git a/tools/testing/selftests/net/msg_zerocopy.sh b/tools/testing/selftests/net/msg_zerocopy.sh
-> >>> index 825ffec85cea..97bc527e1297 100755
-> >>> --- a/tools/testing/selftests/net/msg_zerocopy.sh
-> >>> +++ b/tools/testing/selftests/net/msg_zerocopy.sh
-> >>> @@ -21,6 +21,11 @@ readonly DADDR6='fd::2'
-> >>>
-> >>>  readonly path_sysctl_mem="net.core.optmem_max"
-> >>>
-> >>> +if [[ $(nproc) -lt 4 ]]; then
-> >>> +     echo "SKIP: test requires at least 4 CPUs"
-> >>> +     exit 4
-> >>> +fi
-> >>> +
-> >>>  # No arguments: automated test
-> >>>  if [[ "$#" -eq "0" ]]; then
-> >>>       $0 4 tcp -t 1
-> >>>
-> >>
-> >> Test explicitly uses CPU 2 and 3, right ?
-> >>
-> >> nproc could be 500, yet cpu 2 or 3 could be offline
-> >>
-> >> # cat /sys/devices/system/cpu/cpu3/online
-> >> 0
-> >> # echo $(nproc)
-> >> 71
-> >
-> > The cpu affinity is only set to bring some stability across runs.
-> >
-> > The test does not actually verify that a run with zerocopy is some
-> > factor faster than without, as that factor is hard to choose across
-> > all platforms. As a result the automated run mainly gives code coverage.
-> >
-> > It's preferable to always run. And on sched_setaffinity failure log a
-> > message about possible jitter and continue. I can send that patch, if
-> > the approach sounds good.
-> >
-> That's sounds preferable to my bad fix for sure :-)
+On Wed, Aug 05, 2020 at 10:41:31AM +0800, Hangbin Liu wrote:
+> This reverts commit 71130f29979c7c7956b040673e6b9d5643003176.
+> 
+> In commit 71130f29979c ("vxlan: fix tos value before xmit") we want to
+> make sure the tos value are filtered by RT_TOS() based on RFC1349.
+> 
+>        0     1     2     3     4     5     6     7
+>     +-----+-----+-----+-----+-----+-----+-----+-----+
+>     |   PRECEDENCE    |          TOS          | MBZ |
+>     +-----+-----+-----+-----+-----+-----+-----+-----+
+> 
+> But RFC1349 has been obsoleted by RFC2474. The new DSCP field defined like
+> 
+>        0     1     2     3     4     5     6     7
+>     +-----+-----+-----+-----+-----+-----+-----+-----+
+>     |          DS FIELD, DSCP           | ECN FIELD |
+>     +-----+-----+-----+-----+-----+-----+-----+-----+
+> 
+> So with
+> 
+> IPTOS_TOS_MASK          0x1E
+> RT_TOS(tos)		((tos)&IPTOS_TOS_MASK)
+> 
+> the first 3 bits DSCP info will get lost.
+> 
+> To take all the DSCP info in xmit, we should revert the patch and just push
+> all tos bits to ip_tunnel_ecn_encap(), which will handling ECN field later.
+> 
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-Certainly not a bad fix! Thanks for addressing the issue. Alternative
-approach at
+I guess an explicit
+Fixes: 71130f29979c ("vxlan: fix tos value before xmit").
+tag would help the -stable maintainers.
 
-http://patchwork.ozlabs.org/project/netdev/patch/20200805084045.1549492-1-willemdebruijn.kernel@gmail.com/
+Apart from that,
+Acked-by: Guillaume Nault <gnault@redhat.com>
+
