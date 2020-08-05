@@ -2,97 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E6B123CF36
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:17:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 859FE23CFDB
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:26:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727816AbgHETQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 15:16:58 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:39361 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729140AbgHESA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 14:00:28 -0400
-Received: from mail-pj1-f70.google.com ([209.85.216.70])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1k3HXC-00086E-9p
-        for netdev@vger.kernel.org; Wed, 05 Aug 2020 11:24:38 +0000
-Received: by mail-pj1-f70.google.com with SMTP id lk11so4668238pjb.0
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 04:24:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=lF9ALM9gRuD9sB/pHsvqa0BtUHkbcECALGd1yP2+BEE=;
-        b=JrbIObIEnnRsTwt2z7f97O6ncqQA184gBA84VrbAMqIlY61zVaS3z6Sp2Dt4ESiWnX
-         rSiNi9nb9RtjXgF3QxBGHijpbM3gVwK1l+7DMKEH6qra67eqwLskapTaOhs7yecNEFIi
-         QbX65TqrTv6S13noGDkUF5qmNz1vTBLq0pk3SygLUln+GO8EJ7vzzCVnKocstFO4GGh4
-         Xk2puiXbtu91F4+UFvk+z77EeBuXDdo1R8ocABJn0dPXbsMBYBJRv5WD9BGfbTwg95OZ
-         Ka8hB43XEViuDr+I4iyV/DAuk4eEhzNaHaj8Av/V4pV/NhpIgyeM0lLEm/T5Kot6M07Z
-         FQfQ==
-X-Gm-Message-State: AOAM530wabuLFNRdsPORx6RSJgcAQduDdbP8TzGZIDwCrMAedh1ywK1q
-        +Ge1RVcQbMe5MU/VoaZI6hbXo6KuzMWer3lGd+anCD/UH+ggpaH1GtltgPdwRDXFPp/+wg0/zQW
-        R4JJGizMIdtEEA8Ji8nUgcMsuefo+YT99vw==
-X-Received: by 2002:aa7:9a4c:: with SMTP id x12mr2894371pfj.307.1596626676926;
-        Wed, 05 Aug 2020 04:24:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzJvZXSuRgwTlY5y0En/vjiU7lqcs7sM2JL0qxNrQv5cxET1ZLz6FnSZD2pMhacVp3VGxyXoA==
-X-Received: by 2002:aa7:9a4c:: with SMTP id x12mr2894345pfj.307.1596626676533;
-        Wed, 05 Aug 2020 04:24:36 -0700 (PDT)
-Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net. [220.133.187.190])
-        by smtp.gmail.com with ESMTPSA id i11sm2613913pjv.30.2020.08.05.04.24.34
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Aug 2020 04:24:35 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [PATCH] rtw88: 8821c: Add RFE 2 support
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-In-Reply-To: <c0c336d806584361992d4b52665fbb82@realtek.com>
-Date:   Wed, 5 Aug 2020 19:24:32 +0800
-Cc:     "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:REALTEK WIRELESS DRIVER (rtw88)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Andy Huang <tehuang@realtek.com>
-Content-Transfer-Encoding: 7bit
-Message-Id: <9330BBA5-158B-49F1-8B7C-C2733F358AC1@canonical.com>
-References: <20200805084559.30092-1-kai.heng.feng@canonical.com>
- <c0c336d806584361992d4b52665fbb82@realtek.com>
-To:     Tony Chuang <yhchuang@realtek.com>
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
+        id S1726927AbgHETZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 15:25:59 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:43894 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728624AbgHERO5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Aug 2020 13:14:57 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1k3JFE-008NAi-1O; Wed, 05 Aug 2020 15:14:12 +0200
+Date:   Wed, 5 Aug 2020 15:14:12 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ilia Lin <ilia.lin@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, ilial@codeaurora.org,
+        kuba@kernel.org, jiri@mellanox.com, edumazet@google.com,
+        ap420073@gmail.com, xiyou.wangcong@gmail.com, maximmi@mellanox.com,
+        netdev@vger.kernel.org, open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: dev: Add API to check net_dev readiness
+Message-ID: <20200805131412.GA1960434@lunn.ch>
+References: <1595792274-28580-1-git-send-email-ilial@codeaurora.org>
+ <20200726194528.GC1661457@lunn.ch>
+ <20200727.103233.2024296985848607297.davem@davemloft.net>
+ <CA+5LGR1KwePssqhCkZ6qT_W87fO2o1XPze53mJwjkTWtphiWrA@mail.gmail.com>
+ <20200804192435.GG1919070@lunn.ch>
+ <CA+5LGR32kKvaeDnb4qpGS_f=t-U4dDCYpnVy7R9zgAQCJW6jtA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+5LGR32kKvaeDnb4qpGS_f=t-U4dDCYpnVy7R9zgAQCJW6jtA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tony,
+> > Well, until the user of this new API is ready, we will not accept the
+> > patch.
+> OK, but once we submit the change in the driver, is it good to go?
 
-> On Aug 5, 2020, at 19:18, Tony Chuang <yhchuang@realtek.com> wrote:
-> 
->> 8821CE with RFE 2 isn't supported:
->> [   12.404834] rtw_8821ce 0000:02:00.0: rfe 2 isn't supported
->> [   12.404937] rtw_8821ce 0000:02:00.0: failed to setup chip efuse info
->> [   12.404939] rtw_8821ce 0000:02:00.0: failed to setup chip information
->> 
-> 
-> NACK
-> 
-> The RFE type 2 should be working with some additional fixes.
-> Did you tested connecting to AP with BT paired?
+No. You really do need to explain why it is needed, and why it is
+safe.
 
-No, I only tested WiFi.
+> > You also need to explain "For HW performance reasons". Why is this
+> > driver special that it can do things which no over driver does?
+> There are very strict KPI requirements. E.g. automotive rear mirror
+> must be online 3 sec since boot.
 
-> The antenna configuration is different with RFE type 0.
-> I will ask someone else to fix them.
-> Then the RFE type 2 modules can be supported.
+Which does not explain why this driver is special. What you really
+should be thinking about is having the required drivers for this use
+case built in, and the rest as modules. Get your time critical parts
+running, and then load the rest of the driver moduless and kick off
+additional user space in a second phase.
 
-Good to know that, I'll be patient and wait for a real fix.
+You are breaking all sorts of assumptions by loading network drivers
+before the stack is ready. You need to expect all sorts of nasty bugs.
+If this was just in your vendor kernel, we would not care too much, it
+is your problem to solve. But by doing this in mainline, you are
+setting a precedent for others to do it as well. And then we really do
+need to care about the broken assumptions. I doubt we are ready to
+allow this.
 
-Kai-Heng
-
-> 
-> Yen-Hsuan
-
+      Andrew
