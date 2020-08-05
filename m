@@ -2,94 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2697923CC2A
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 18:27:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 505D923CC51
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 18:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727035AbgHEQ1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 12:27:44 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:55745 "EHLO mail.zx2c4.com"
+        id S1727865AbgHEQho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 12:37:44 -0400
+Received: from mx2.suse.de ([195.135.220.15]:58320 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726974AbgHEQZe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Aug 2020 12:25:34 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 565f5627;
-        Wed, 5 Aug 2020 16:00:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=wQFKIPFU1F/Wy4pWSc/VF213f2A=; b=bSL763
-        Pe22/Yrf1UnS1/o3vmN/dvQ3cqpXsG0YhJmq0myiBvUbP8C+B7nyfMRHtoZco3jQ
-        XgxK6oNyirnRJSytWcRd2+Um5KW679E5JJg9CyB4kfMl8lvfuTPQUvbS/mxwIgjq
-        1fFbTGBHjTGguQ97k1uplFs1y6iaIRgNO1ruETUoNzR6dEdi4yl9zfRuukuX/EkX
-        5blpRTY5EMgE7MuC2/ihlzH1/aaTOpY+/X1NDGr3k6Kyy1ZO9QQsJkhAWoKVBqS0
-        6s54a96eJcOclCdCYlFswS1uyKuJiG6bWjQDAa51xtYoHqapM5whiB/mAlK8EcN/
-        tsYeY7beOGEzcBYg==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id da8a7e5c (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Wed, 5 Aug 2020 16:00:35 +0000 (UTC)
-Received: by mail-il1-f178.google.com with SMTP id t18so37903088ilh.2;
-        Wed, 05 Aug 2020 09:25:06 -0700 (PDT)
-X-Gm-Message-State: AOAM531G5mNd4FAaKv8Li6Qmq62kFeWxKbBhZ+iWtNoPOlfb/z0DGNoo
-        IDrmtapn41WePLjMqPAnX/CD1R+K25UvytOrXZc=
-X-Google-Smtp-Source: ABdhPJypmSLlzD3Asg+78LEL2bY8dQDr5phM3gWy+pMD+r8LcO15NQML6LeKqYo5Y6nNLW5pyMx0r7EbORxmhhDylXs=
-X-Received: by 2002:a92:ce12:: with SMTP id b18mr4821887ilo.207.1596644704701;
- Wed, 05 Aug 2020 09:25:04 -0700 (PDT)
+        id S1727115AbgHEQfg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Aug 2020 12:35:36 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 77372B698;
+        Wed,  5 Aug 2020 11:03:47 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id BD5856075E; Wed,  5 Aug 2020 13:03:30 +0200 (CEST)
+Date:   Wed, 5 Aug 2020 13:03:30 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Lars Wendler <polynomial-c@gentoo.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: ethtool-5.8: test-driver uses bashisms
+Message-ID: <20200805110330.hb2lgm6vxdwlxnlw@lion.mk-sys.cz>
+References: <20200805084606.0593491a@abudhabi.paradoxon.rec>
 MIME-Version: 1.0
-References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
- <20200805024941.GA17301@1wt.eu> <20200805153432.GE497249@mit.edu>
-In-Reply-To: <20200805153432.GE497249@mit.edu>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 5 Aug 2020 18:24:53 +0200
-X-Gmail-Original-Message-ID: <CAHmME9qu-gUvZ1HJB8x4aWOsayRY_nKUu0S49Wx6UU-O4SQn=Q@mail.gmail.com>
-Message-ID: <CAHmME9qu-gUvZ1HJB8x4aWOsayRY_nKUu0S49Wx6UU-O4SQn=Q@mail.gmail.com>
-Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
-To:     "Theodore Ts'o" <tytso@mit.edu>
-Cc:     Willy Tarreau <w@1wt.eu>, Marc Plumb <lkml.mplumb@gmail.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Amit Klein <aksecurity@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="cqcgl2ipqqahjkdy"
+Content-Disposition: inline
+In-Reply-To: <20200805084606.0593491a@abudhabi.paradoxon.rec>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 5, 2020 at 6:07 PM <tytso@mit.edu> wrote:
-> That being said, it certainly is a certificational / theoretical
-> weakness
 
-random.c is filled with super suspicious things that are probably only
-correct by accident, or only correct in practice, but in theory it's
-just such a mess. Stupid example if I'm remembering correctly: you
-fill the sha1 IV with input from rdrand; if rdrand is borked or
-backdoored or whatever, then the security of sha1 there reduces to
-shacal1, which isn't totally broken, far from it actually, so we're
-fine there, but you can't help but look at that and say "ugh." I'll
-rewrite that eventually. Anyway, having another "certificational
-weakness", as you put it, that isn't a practical one would be par for
-the course with random.c
+--cqcgl2ipqqahjkdy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> , and if the bright boys and girls at Fort Meade did figure
-> out a way to exploit this, they are very much unlikely to share it at
-> an open Crypto conference.  So replacing LFSR-based PRnG with
-> something stronger which didn't release any bits from the fast_pool
-> would certainly be desireable, and I look forward to seeing what Willy
-> has in mind.
+On Wed, Aug 05, 2020 at 08:46:06AM +0200, Lars Wendler wrote:
+> Hi Michal,
+>=20
+> I hope you are the right person to reach out for this matter.
+>=20
+> Running the test-driver script from ethtool-5.8 release with /bin/dash
+> results in an endless loop that constantly emits the following two
+> lines:
+>=20
+>   ./test-driver: 62: [: --test-name: unexpected operator
+>   ./test-driver: 78: [[: not found
+>=20
+> This is because the script contains two bashisms which make the while
+> loop to never exit when the script is not being run with a shell that
+> knows about these bash extensions.
+>=20
+> The attached patch fixes this.
 
-This disaster is partially my fault. I was going to make
-get_random_u{32,64} fast enough that we could get rid of the fake rng
-stuff, and then Covid things got weird and I haven't gotten refocused
-on that yet. Andy started that, and I was supposed to pick up his work
-and complete it, but I dropped the ball. I kept meaning to get back to
-that, but I'd get discouraged every time I saw Willy sending more
-messages about improving the fake rng stuff with more fake rng stuff.
-But, seems like it's time for me to step on the pedal a bit and get
-that working. So hopefully we'll be able to get rid of the code in
-question here, and use a good rng everywhere. I'll send an update on
-that if I get it working.
+This is really unfortunate. The problem is that this script is not part
+of ethtool codebase, it is copied from automake installation instead.
+In this case, the script using [[...]] comes from automake 1.15 (which
+I have on my development system).
 
+AFAICS automake 1.16 has a newer version of test-driver script and the
+main difference is the use of [...] tests instead of [[...]]. I'll
+update automake on my development machine and open a bug to backport the
+change to openSUSE Leap 15.2 package to prevent repeating this problem.
 
-Jason
+Michal
+
+--cqcgl2ipqqahjkdy
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8qkfsACgkQ538sG/LR
+dpWeKQf/Q5OahQXew6kFg8WzrLb57+HLcCwVPwWBQtfsTMr+ID2bAb/7m29QSnMT
+d6mhG1pQ+Fw7qoFZbCtl2+AyYmumE2LS6RbS1uhrsllyaDC3hXdWTILdHL77e92D
+uXQAx8wTNByIulUtuskbN4sCN3rdhTkiPhQOlpXLiVP6b3dGEKAgxSuiILi0J5Eg
+yxRah7hvNRCTTfnhmXiv/ei9uyrPa56G0O6yHfhayhihBfBLvWW9EffVXgEoI7y9
+999D2354rsVJTepzimMR5odvbnSBbOhjvKPR3xIWvKid60kxxngd892S4LGrYTYd
+X04tddPdK0FC5xSJ0yyZVanK23Eo+w==
+=0ph/
+-----END PGP SIGNATURE-----
+
+--cqcgl2ipqqahjkdy--
