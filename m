@@ -2,87 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E30823C2D9
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 03:05:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0F6B23C2E3
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 03:11:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727005AbgHEBCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 21:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726584AbgHEBCi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 21:02:38 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A4B6C06174A
-        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 18:02:38 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id i10so10947972ljn.2
-        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 18:02:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hs9W9L5qpq2R+TvR0kUnYEwJzpiFvPtYd1/wFxmYVBk=;
-        b=Kx953I5bRL4bVidV0oKIvBtGTnSGPKxsodb54W6hxL4/CYqPdJIljl56vxXkep72Xw
-         P4OD/p48jGd/W5M33jhVmYcuxxZzj6WiWMVm0LupsFNF3jz6B9bRa1+GqGb/FOKNdNoz
-         61DOhhRiURE/XsRaMXMf4VljeWPfXRfMzqvNU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hs9W9L5qpq2R+TvR0kUnYEwJzpiFvPtYd1/wFxmYVBk=;
-        b=Iwbf7BdMuvKOwxDIIBEBbzXdP/fX1yK3RFLcCruu8oSBLY4aFy9RfpKw5eFZkUve+o
-         1uZgEXEqDULk8xfRV80/p+MaM3NcZZUuJDULH0mN5vPK80ZVeBkB5BTtJhcj97aLlItJ
-         pxjLnvD4nc2+8F3ay23zboOGsBoG/OSXsgEuHJ8pnBINTwdCqLH1K1RWQS/YerhY3WvF
-         Mo6CU3hlnFx5G8zDFEGDaKh4+MJNtIgr1RtfO+xIXubA4oZhv4eEcV3rLdMfBcprgBYX
-         1rrYH/zv6GEJew9n0u8xwYYe2vx3djweQBtFufr2vkBHx/BqURcli9P0we2rtq/BmPXz
-         QOpg==
-X-Gm-Message-State: AOAM530BAhZZ9WTuBekam2NkhE7I/ge5skz/xFjopuFnOtDN45qOILk9
-        gQ2YnleIMhUlIDa/DuQ+zWJC5nUo10E=
-X-Google-Smtp-Source: ABdhPJw/sdn1gt8TjM+1V8kV9F5tZdgwsF9ktI+oSOMfSxZt1AzbHZnyPK1DEmfBII5b4SKDMyR8iQ==
-X-Received: by 2002:a2e:8e9a:: with SMTP id z26mr188877ljk.271.1596589356014;
-        Tue, 04 Aug 2020 18:02:36 -0700 (PDT)
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
-        by smtp.gmail.com with ESMTPSA id e69sm311894lfd.21.2020.08.04.18.02.34
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Aug 2020 18:02:35 -0700 (PDT)
-Received: by mail-lj1-f169.google.com with SMTP id v12so15389495ljc.10
-        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 18:02:34 -0700 (PDT)
-X-Received: by 2002:a2e:545:: with SMTP id 66mr210542ljf.285.1596589354467;
- Tue, 04 Aug 2020 18:02:34 -0700 (PDT)
+        id S1726831AbgHEBGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 21:06:34 -0400
+Received: from mga05.intel.com ([192.55.52.43]:60920 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725863AbgHEBGd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Aug 2020 21:06:33 -0400
+IronPort-SDR: VSSNC1xwLMkNRnOtNiqr7ZvDDScB2VSKiNAfkrLUgZa92Ld4pFiwt007r+8rtMCuZK53PrP94K
+ wWqFCvmdXuFA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9703"; a="237301182"
+X-IronPort-AV: E=Sophos;i="5.75,435,1589266800"; 
+   d="scan'208";a="237301182"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2020 18:06:30 -0700
+IronPort-SDR: 0wwP7CGdAgpW5r+K4MNNn3No6ezPrBf0/MCwf831ufWI5lOehTVDxtC5jXdETdyCAw+TO3hejn
+ C3egRNboyT5A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,435,1589266800"; 
+   d="scan'208";a="315561608"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga004.fm.intel.com with ESMTP; 04 Aug 2020 18:06:30 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 4 Aug 2020 18:06:29 -0700
+Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 4 Aug 2020 18:06:29 -0700
+Received: from FMSEDG001.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Tue, 4 Aug 2020 18:06:29 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.173)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server (TLS) id
+ 14.3.439.0; Tue, 4 Aug 2020 18:06:21 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iIXs1sOFXoR6xBxnzKH7t5a8iNHQU+ulqhqPIzbCqhYnj3OrLAgiYVQngJESsX94jHwz1pp8J3QuVHAEnXit9OG337AoBKAmCyYs/5+YB3vByi+7LaqpUBZAQjbq6oYUBCZhJmxzJMFSlZbRUbZIHhJBpp6Tz8jq7hW8D0r4x+uJ+H37IrgD3/+1P5H9Otae3MYCdFbAq8YdweCqpp5CF01XauGqY5b16Vx2UQcP4XvrmbhpwO9ZqdlScml+0N/OIdda8HCZ2pa8mA/qHuVqNIi8LeUKKuWLP4LB4e/jDPVRyBzB6fG6jGcU+pMHxP4dPe2LUF5Ja6jMUx29KQiI3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LIq74zv+gr4uLEdgtTHLmujgW1798JDIIWmNcdLs6e8=;
+ b=ebC12Q39kGIIJCmGkuOCpRCHiQ97QbRQTqGKxAvJKxfyJGe4uE6wXpQNrl3wKGo/wyPMIe4OzGLjb9/vCNkXZ7q/nCr74oFi2o0+r8586xFFsN24CKMtcCtHmWxupsouSNSyXQavWNl/S3NnOcHv98DJMJBz/4Tf/Q5TuatEfQ05IebxYm/UmHDqJqDOFBu/+drhAFjObmnMJgDA2lqV9/hMOi+cKdyw4mPYMyiO8lwhUs9KUlO6QRVPSXiV/lzm7+govOucKTkc51O112F4cLCvNPApI0tc3ADoFfL/j8zxFM9cxUZ3rcVs2B7ZJQH2aohN5tgLsPztlmc9XSzEWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LIq74zv+gr4uLEdgtTHLmujgW1798JDIIWmNcdLs6e8=;
+ b=nBSOBLWwUQ58kq5dzXjhQgTp4so6OA7eNHM73C1k6BdQf3oAjM11Z+CH6POxVf76v1HVWKvwiILI1KeMnJbKRdzRyxRcLHmRTm10OOIcQQHXSaiWFnF33evhbsUr1bHZAquqeswqmQeYY+3Y4e25TAlZxR8+KeY/5cxj93pqfiY=
+Received: from BN8PR11MB3795.namprd11.prod.outlook.com (2603:10b6:408:82::31)
+ by BN6PR1101MB2260.namprd11.prod.outlook.com (2603:10b6:405:53::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.20; Wed, 5 Aug
+ 2020 01:06:12 +0000
+Received: from BN8PR11MB3795.namprd11.prod.outlook.com
+ ([fe80::dd0f:7f49:bc5f:2fde]) by BN8PR11MB3795.namprd11.prod.outlook.com
+ ([fe80::dd0f:7f49:bc5f:2fde%5]) with mapi id 15.20.3239.022; Wed, 5 Aug 2020
+ 01:06:12 +0000
+From:   "Wang, Haiyue" <haiyue.wang@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Tom Herbert <tom@herbertland.com>,
+        "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Bowers, AndrewX" <andrewx.bowers@intel.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Lu, Nannan" <nannan.lu@intel.com>,
+        "Liang, Cunming" <cunming.liang@intel.com>
+Subject: RE: [net-next 1/5] ice: add the virtchnl handler for AdminQ command
+Thread-Topic: [net-next 1/5] ice: add the virtchnl handler for AdminQ command
+Thread-Index: AQHWWT0ppkWffu3OB0+1aq0Sup42gakGHQqAgAAk/NCAASN8gIAAbxpwgAEdaICAC25lgIAACEWAgAQpEoCAA5A6AIAKLx7ggACqkgCAAdqXwA==
+Date:   Wed, 5 Aug 2020 01:06:12 +0000
+Message-ID: <BN8PR11MB37951AC65BFBDF0E9BFBF86FF74B0@BN8PR11MB3795.namprd11.prod.outlook.com>
+References: <20200713174320.3982049-1-anthony.l.nguyen@intel.com>
+        <20200713174320.3982049-2-anthony.l.nguyen@intel.com>
+        <20200713154843.1009890a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BN8PR11MB37954214B9210253FC020BF6F7610@BN8PR11MB3795.namprd11.prod.outlook.com>
+        <20200714112421.06f20c5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BN8PR11MB3795DABBB0D6A1E08585DF45F77E0@BN8PR11MB3795.namprd11.prod.outlook.com>
+        <20200715110331.54db6807@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <8026dce002758d509b310afa330823be0c8191ec.camel@intel.com>
+        <20200722180705.23196cf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CALx6S36K0kES3b7dWmyigpSLgBmU2jf7FfCSYXBFOeBJkbQ+rw@mail.gmail.com>
+        <20200727160406.4d2bc1c8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BN8PR11MB3795FA12407090A2D95F97C6F74D0@BN8PR11MB3795.namprd11.prod.outlook.com>
+ <20200803134550.7ec625ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200803134550.7ec625ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.55.46.46]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3fd7874a-6ed5-4f3e-e32d-08d838dbbef6
+x-ms-traffictypediagnostic: BN6PR1101MB2260:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN6PR1101MB2260D3A0CDA403B8E335A6CBF74B0@BN6PR1101MB2260.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: X8eUJ8hYrNsUlMb1y4oZl46mM5MmzyMFfIGUR9idaujEyeB09e/opQJV/qpWCRZKfcwL7AdwhHGcDjuo0172fy9aw3PTCe89Sl5qBMC62Ym3y04D+U17nd9uaSQNCg5ajzR1KAlTirEKuYa1HqlDbh1YkszIivnHj5JY2oa1ZEpOsrROIKzlvSS7iaeTr+Af5ac8N1Diq8RN9rQ8ODaV/23F4O9bDkzjN72jYEJHN9ejv4Of7if4Emm143KZjrDEuccFFhUJNsRyo+7dRBozcbghZfjrxjZLdX027YLGRWcf0Zyq64waK4ZoHj+vuFftL/j0BLP118aQjfaHxJCKqA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR11MB3795.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(376002)(136003)(346002)(366004)(52536014)(107886003)(76116006)(478600001)(2906002)(66476007)(8936002)(8676002)(66946007)(53546011)(7696005)(6506007)(83380400001)(66556008)(64756008)(66446008)(26005)(71200400001)(54906003)(33656002)(86362001)(9686003)(186003)(6916009)(4326008)(5660300002)(55016002)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: 8pkyLzg/KmZj7U6CT0l1YUm+v9Tk1UU74WNpqyWl6OoyETqOuxOXyrs12ewup1mS3V+7sJaQSeGHm1fnxUX9XlkFH2y3gSZea4qGAHONr344HraIaGnKRfjWrcSuwQBcfVT5hY0s2XWABH/h1M4zsN2+FRQhpHeQvcbh5BzsqZ/hbFhk26WJIWCGkT4+bnP6ipMckbgQ6lZHZtBKtacPfrEJM2f5xbpS8BCvoKNIHLBuDuN6xcSPjLIEv5A5TDAICMclQOAbXL8EDf3NVcJ1E58KuvQG1ZOjv/L0AfStCYXj0YprsCMAUPQEww1hdstHWpAtMCn2otTOhujfaNgbpKjJiUh+7U/ZERzVUE/b2WJBGFb2vUGRhbMGz1dr2ZOOinzoKdbbDLkY7bWvtA9NdSndosSkcWgl4DrN7YMgPffi3By/DPvFLYxuKKyYpo13aSrjoQkOtc4cMjDj99ZRE2Z3EZh7h72ZEVgDOcdVmkd+1mmCJluLMONK/iYxH9VoDlYPhekP8W9KdvP1iyx/vXN0bi0L9ugk++YZZFCj/kvnzmRVc6TlICptezp27CEe406D4ZbHZmY6cFuSV7N4RllcjfuvzdgmevwhvSmxPiAYGxSXK9O55At33n7/k5s4jjTMufHgi8YVEJ8EnO9ZpA==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
-In-Reply-To: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 4 Aug 2020 18:02:18 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiKiE1RvJ9mRYg5y94eC5RVmw+GHmy9B9zHZkZo0w0sNA@mail.gmail.com>
-Message-ID: <CAHk-=wiKiE1RvJ9mRYg5y94eC5RVmw+GHmy9B9zHZkZo0w0sNA@mail.gmail.com>
-Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
-To:     Marc Plumb <lkml.mplumb@gmail.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>, Willy Tarreau <w@1wt.eu>,
-        Netdev <netdev@vger.kernel.org>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andrew Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR11MB3795.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3fd7874a-6ed5-4f3e-e32d-08d838dbbef6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Aug 2020 01:06:12.3370
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bDdcFhTVWDIHXB89zWE2gtlP4Ix6Ul1NM2tm0ImS+G8A/gPyEUMJYRva5/cSCUHbARFysdOYyeeF5o5TuvtWeQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1101MB2260
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 4, 2020 at 5:52 PM Marc Plumb <lkml.mplumb@gmail.com> wrote:
->
-> TL;DR This change takes the seed data from get_random_bytes and broadcasts it to the network, thereby destroying the security of dev/random. This change needs to be reverted and redesigned.
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Tuesday, August 4, 2020 04:46
+> To: Wang, Haiyue <haiyue.wang@intel.com>
+> Cc: Tom Herbert <tom@herbertland.com>; Venkataramanan, Anirudh <anirudh.v=
+enkataramanan@intel.com>;
+> davem@davemloft.net; nhorman@redhat.com; sassmann@redhat.com; Bowers, And=
+rewX
+> <andrewx.bowers@intel.com>; Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.c=
+om>; netdev@vger.kernel.org;
+> Nguyen, Anthony L <anthony.l.nguyen@intel.com>; Lu, Nannan <nannan.lu@int=
+el.com>; Liang, Cunming
+> <cunming.liang@intel.com>
+> Subject: Re: [net-next 1/5] ice: add the virtchnl handler for AdminQ comm=
+and
+>=20
+> On Mon, 3 Aug 2020 10:39:52 +0000 Wang, Haiyue wrote:
+> > > In this case, I'm guessing, Intel can reuse RTE flow -> AQ code writt=
+en
+> > > to run on PFs on the special VF.
+> > >
+> > > This community has selected switchdev + flower for programming flows.
+> > > I believe implementing flower offloads would solve your use case, and
+> > > at the same time be most beneficial to the netdev community.
+> >
+> > Jakub,
+> >
+> > Thanks, I deep into the switchdev, it is kernel software bridge for har=
+dware
+> > offload, and each port is registered with register_netdev. So this solu=
+tion
+> > is not suitable for current case: VF can be assigned to VMs.
+>=20
+> You may be missing the concept of a representor.
+>=20
 
-This was discussed.,
-
-It's theoretical, not practical.
-
-The patch improves real security, and the fake "but in theory" kind is
-meaningless and people should stop that kind of behavior.
-
-                Linus
+I found the concept, thanks, missed it!
