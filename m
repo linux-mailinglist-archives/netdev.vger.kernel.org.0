@@ -2,135 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 780FE23CC14
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 18:23:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2697923CC2A
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 18:27:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726796AbgHEQWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 12:22:52 -0400
-Received: from mail-pf1-f197.google.com ([209.85.210.197]:50185 "EHLO
-        mail-pf1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbgHEQUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:20:02 -0400
-Received: by mail-pf1-f197.google.com with SMTP id 127so10091716pfx.17
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 09:19:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=avna9i89Ds5+HlHIO0jP2gsy42y6k6d4i5A6G0eC9Zg=;
-        b=fTjhAqm1QW6o80ztM3Qix2gonIRfMfxyuP9X4K+nXlKbrfLKY/qqX/kCnLmJDLBxaM
-         VYF/plLnXuJPZCRCEcgsfH9YZJM1vAzX87285XmNY9kJk+CwVUQRJQofQH470ekxkSRs
-         mle7FlAR9l5Ul/sAjr97yfs4fqtLxciv9usHFzq34f2t8fsUNZGPnlP4sFc09oEDwiIE
-         jTJaoJFm4h2nxsOjTGxNJdQA2m1wk21HTDCxeNhPmdZNDwTxqc8FDTfTqk83MEcVxpH9
-         48AGafwXD8by7CGP00iV2Skp4k8JO7WOpjm3d6BnHvRfItJJmBlDDcI23MP/G7Zl2yu2
-         NxXg==
-X-Gm-Message-State: AOAM532ov6o83ilY+vwiuEDrpCY6qzGHH0/hoISg42jibkIyo+TwnPsV
-        PQpJnvzvUAG649/QjNg5lRBRPVPVJhg/9IRtJKpNfUcE+tFx
-X-Google-Smtp-Source: ABdhPJyx4yEzfPaYCDRlqOY3SOtYmFn8sbh8/x3+5nlNm2RDYZA9WGMYMn0ZKb0xJk3/Mq74bCnR7H5fZMI1spSxNxHREkmBWCcD
+        id S1727035AbgHEQ1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 12:27:44 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:55745 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726974AbgHEQZe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Aug 2020 12:25:34 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 565f5627;
+        Wed, 5 Aug 2020 16:00:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=wQFKIPFU1F/Wy4pWSc/VF213f2A=; b=bSL763
+        Pe22/Yrf1UnS1/o3vmN/dvQ3cqpXsG0YhJmq0myiBvUbP8C+B7nyfMRHtoZco3jQ
+        XgxK6oNyirnRJSytWcRd2+Um5KW679E5JJg9CyB4kfMl8lvfuTPQUvbS/mxwIgjq
+        1fFbTGBHjTGguQ97k1uplFs1y6iaIRgNO1ruETUoNzR6dEdi4yl9zfRuukuX/EkX
+        5blpRTY5EMgE7MuC2/ihlzH1/aaTOpY+/X1NDGr3k6Kyy1ZO9QQsJkhAWoKVBqS0
+        6s54a96eJcOclCdCYlFswS1uyKuJiG6bWjQDAa51xtYoHqapM5whiB/mAlK8EcN/
+        tsYeY7beOGEzcBYg==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id da8a7e5c (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Wed, 5 Aug 2020 16:00:35 +0000 (UTC)
+Received: by mail-il1-f178.google.com with SMTP id t18so37903088ilh.2;
+        Wed, 05 Aug 2020 09:25:06 -0700 (PDT)
+X-Gm-Message-State: AOAM531G5mNd4FAaKv8Li6Qmq62kFeWxKbBhZ+iWtNoPOlfb/z0DGNoo
+        IDrmtapn41WePLjMqPAnX/CD1R+K25UvytOrXZc=
+X-Google-Smtp-Source: ABdhPJypmSLlzD3Asg+78LEL2bY8dQDr5phM3gWy+pMD+r8LcO15NQML6LeKqYo5Y6nNLW5pyMx0r7EbORxmhhDylXs=
+X-Received: by 2002:a92:ce12:: with SMTP id b18mr4821887ilo.207.1596644704701;
+ Wed, 05 Aug 2020 09:25:04 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:24c2:: with SMTP id h2mr4088770ioe.198.1596643761947;
- Wed, 05 Aug 2020 09:09:21 -0700 (PDT)
-Date:   Wed, 05 Aug 2020 09:09:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000438c6705ac23983f@google.com>
-Subject: BUG: unable to handle kernel paging request in lock_sock_nested
-From:   syzbot <syzbot+3ea58ce4ad976e46ca65@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
+ <20200805024941.GA17301@1wt.eu> <20200805153432.GE497249@mit.edu>
+In-Reply-To: <20200805153432.GE497249@mit.edu>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 5 Aug 2020 18:24:53 +0200
+X-Gmail-Original-Message-ID: <CAHmME9qu-gUvZ1HJB8x4aWOsayRY_nKUu0S49Wx6UU-O4SQn=Q@mail.gmail.com>
+Message-ID: <CAHmME9qu-gUvZ1HJB8x4aWOsayRY_nKUu0S49Wx6UU-O4SQn=Q@mail.gmail.com>
+Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
+To:     "Theodore Ts'o" <tytso@mit.edu>
+Cc:     Willy Tarreau <w@1wt.eu>, Marc Plumb <lkml.mplumb@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Amit Klein <aksecurity@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrew Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        stable <stable@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Aug 5, 2020 at 6:07 PM <tytso@mit.edu> wrote:
+> That being said, it certainly is a certificational / theoretical
+> weakness
 
-syzbot found the following issue on:
+random.c is filled with super suspicious things that are probably only
+correct by accident, or only correct in practice, but in theory it's
+just such a mess. Stupid example if I'm remembering correctly: you
+fill the sha1 IV with input from rdrand; if rdrand is borked or
+backdoored or whatever, then the security of sha1 there reduces to
+shacal1, which isn't totally broken, far from it actually, so we're
+fine there, but you can't help but look at that and say "ugh." I'll
+rewrite that eventually. Anyway, having another "certificational
+weakness", as you put it, that isn't a practical one would be par for
+the course with random.c
 
-HEAD commit:    ac3a0c84 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=141a4c1a900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c0cfcf935bcc94d2
-dashboard link: https://syzkaller.appspot.com/bug?extid=3ea58ce4ad976e46ca65
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+> , and if the bright boys and girls at Fort Meade did figure
+> out a way to exploit this, they are very much unlikely to share it at
+> an open Crypto conference.  So replacing LFSR-based PRnG with
+> something stronger which didn't release any bits from the fast_pool
+> would certainly be desireable, and I look forward to seeing what Willy
+> has in mind.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+3ea58ce4ad976e46ca65@syzkaller.appspotmail.com
-
-BUG: unable to handle page fault for address: fffffbfff32980d2
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 21ffe5067 P4D 21ffe5067 PUD 21ffe4067 PMD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 19427 Comm: kworker/0:15 Not tainted 5.8.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events l2cap_chan_timeout
-RIP: 0010:bytes_is_nonzero mm/kasan/generic.c:91 [inline]
-RIP: 0010:memory_is_nonzero mm/kasan/generic.c:108 [inline]
-RIP: 0010:memory_is_poisoned_n mm/kasan/generic.c:134 [inline]
-RIP: 0010:memory_is_poisoned mm/kasan/generic.c:165 [inline]
-RIP: 0010:check_memory_region_inline mm/kasan/generic.c:183 [inline]
-RIP: 0010:check_memory_region+0xdb/0x180 mm/kasan/generic.c:192
-Code: 80 38 00 74 f2 48 89 c2 b8 01 00 00 00 48 85 d2 75 56 5b 5d 41 5c c3 48 85 d2 74 5e 48 01 ea eb 09 48 83 c0 01 48 39 d0 74 50 <80> 38 00 74 f2 eb d4 41 bc 08 00 00 00 48 89 ea 45 29 dc 4d 8d 1c
-RSP: 0018:ffffc90001ed78c0 EFLAGS: 00010082
-RAX: fffffbfff32980d2 RBX: fffffbfff32980d3 RCX: ffffffff8159b005
-RDX: fffffbfff32980d3 RSI: 0000000000000008 RDI: ffffffff994c0690
-RBP: fffffbfff32980d2 R08: 0000000000000000 R09: ffffffff994c0697
-R10: fffffbfff32980d2 R11: 0000000000000000 R12: ffff88806a3fc380
-R13: ffff88806a3fcd12 R14: 0000000000000000 R15: ffff88806a3fcc50
-FS:  0000000000000000(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffffbfff32980d2 CR3: 000000009cb24000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- instrument_atomic_read include/linux/instrumented.h:56 [inline]
- test_bit include/asm-generic/bitops/instrumented-non-atomic.h:110 [inline]
- __lock_acquire+0x1025/0x56e0 kernel/locking/lockdep.c:4350
- lock_acquire+0x1f1/0xad0 kernel/locking/lockdep.c:4959
- __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
- _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
- spin_lock_bh include/linux/spinlock.h:358 [inline]
- lock_sock_nested+0x3b/0x110 net/core/sock.c:3049
- l2cap_sock_teardown_cb+0x88/0x400 net/bluetooth/l2cap_sock.c:1520
- l2cap_chan_del+0xad/0x1300 net/bluetooth/l2cap_core.c:618
- l2cap_chan_close+0x118/0xb10 net/bluetooth/l2cap_core.c:824
- l2cap_chan_timeout+0x173/0x450 net/bluetooth/l2cap_core.c:436
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:291
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
-Modules linked in:
-CR2: fffffbfff32980d2
----[ end trace 74995b61ea36495b ]---
-RIP: 0010:bytes_is_nonzero mm/kasan/generic.c:91 [inline]
-RIP: 0010:memory_is_nonzero mm/kasan/generic.c:108 [inline]
-RIP: 0010:memory_is_poisoned_n mm/kasan/generic.c:134 [inline]
-RIP: 0010:memory_is_poisoned mm/kasan/generic.c:165 [inline]
-RIP: 0010:check_memory_region_inline mm/kasan/generic.c:183 [inline]
-RIP: 0010:check_memory_region+0xdb/0x180 mm/kasan/generic.c:192
-Code: 80 38 00 74 f2 48 89 c2 b8 01 00 00 00 48 85 d2 75 56 5b 5d 41 5c c3 48 85 d2 74 5e 48 01 ea eb 09 48 83 c0 01 48 39 d0 74 50 <80> 38 00 74 f2 eb d4 41 bc 08 00 00 00 48 89 ea 45 29 dc 4d 8d 1c
-RSP: 0018:ffffc90001ed78c0 EFLAGS: 00010082
-RAX: fffffbfff32980d2 RBX: fffffbfff32980d3 RCX: ffffffff8159b005
-RDX: fffffbfff32980d3 RSI: 0000000000000008 RDI: ffffffff994c0690
-RBP: fffffbfff32980d2 R08: 0000000000000000 R09: ffffffff994c0697
-R10: fffffbfff32980d2 R11: 0000000000000000 R12: ffff88806a3fc380
-R13: ffff88806a3fcd12 R14: 0000000000000000 R15: ffff88806a3fcc50
-FS:  0000000000000000(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffffbfff32980d2 CR3: 000000009cb24000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+This disaster is partially my fault. I was going to make
+get_random_u{32,64} fast enough that we could get rid of the fake rng
+stuff, and then Covid things got weird and I haven't gotten refocused
+on that yet. Andy started that, and I was supposed to pick up his work
+and complete it, but I dropped the ball. I kept meaning to get back to
+that, but I'd get discouraged every time I saw Willy sending more
+messages about improving the fake rng stuff with more fake rng stuff.
+But, seems like it's time for me to step on the pedal a bit and get
+that working. So hopefully we'll be able to get rid of the code in
+question here, and use a good rng everywhere. I'll send an update on
+that if I get it working.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Jason
