@@ -2,75 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4C0123C6F3
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 09:31:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2285523C771
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 10:11:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726604AbgHEHbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 03:31:12 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:37055 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726207AbgHEHbJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 03:31:09 -0400
-Received: by mail-io1-f70.google.com with SMTP id f6so16790026ioa.4
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 00:31:08 -0700 (PDT)
+        id S1728314AbgHEIJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 04:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728226AbgHEIHY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 04:07:24 -0400
+Received: from mail-ua1-x942.google.com (mail-ua1-x942.google.com [IPv6:2607:f8b0:4864:20::942])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61A0C06179E
+        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 01:07:23 -0700 (PDT)
+Received: by mail-ua1-x942.google.com with SMTP id p27so9351268uaa.12
+        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 01:07:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H0nOFFF7hzc6dw8TmhAOGzyrKIPGf5iLMCTuLYuw0u4=;
+        b=SPNRDUgdSDQlK5tqqIU4NcO4Laf7h6KZOhYv7nAV/kYD7hmyqmT/G00JE4LmRs3N54
+         uQpwTCU1s+SbL0Kbqlns5LWQ+tbXmteqBTgtQYSBsmekDKE5eCLjvth/Tr7fuIFPBs3R
+         NRf/Ne1J9uPNH825RyxPoTL9RQkaRMYB+Mk3awoR+70zFSOva7Tu8e1KglvZ0cuDsNd1
+         nOKvqqn1RDqm5ZutMWgwgZeUri7lqzd0biqY1+X+nDRytnsKlLTieF5hIHN1HNDij/1s
+         HOp/DYpDv9CNrpYCEJt6MKUvVhTP/9UgcCVMn6oQtDGJqdNW6xA58AkW3hDIq1wMghtN
+         BwkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=UAjlV35CqUYg8Wq8iE9joWFodTfiF9zQm++Jk44fcSY=;
-        b=EDyRbimd20G4sR9s5WCrzx8kQFq1o05qct6/0rQwukFPzVCWIqSZvumRB0m0D1q2PT
-         LO8Woib9tvSRnxHczjuIppxnK7sXlwg9gYl6EqGO6bpf48LCzltWhQIUSVPZrt4eceUZ
-         DRpqcF67DsUrGESj+soUC6jezO7D2nSD0QIqnnZA8eXlOIM5rdHhRA8DAT/w0pY0IpT4
-         O56PIHueE28raITAXTfz9vGPRIhAlhHilmDKbtn4tuNQh+jaU9HL+qRbCC5TkXmOeWHK
-         HEPXcTrkArI649MufrRTzOcEO+4bxrRCsTLXvk0xLUajxSghBfIYyJxpd7N/m983qQl3
-         wzXQ==
-X-Gm-Message-State: AOAM531VK3YhtDNcxVAGeOMzousQP/NoZe0nJQ88dg6c83iZKsZD2grV
-        CBtshkoYWzGg8msp7QuM0yfuNDfVyv2/Kk8+CeBEuDEcV4lY
-X-Google-Smtp-Source: ABdhPJydINKXG6kk6Rt5Q7YptVJc6WU2HIGHbqBbyEup0nCj4eB/muV9ogT+bIQJk1+5SdRMqrFrePgB51/EIuvRRPKG7IPv2d9A
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=H0nOFFF7hzc6dw8TmhAOGzyrKIPGf5iLMCTuLYuw0u4=;
+        b=MczgTskSeDEtrOtdf2hS6m/USIw3+dkxYxY/4k8LDk78zIA6hNKAv2ME8Q0gJYnkot
+         x1ghdzTfQ6Yb9YqHjAKUEcV8mvqqx3QtsmHb9h8g2N5veLozqmEpsJdHL6hlgdX1x4Y9
+         8TPX9KxfQBj38rQO9OBxsa5bq/7E6qb4KELwtnzhvLAittlNC/3zjjYIG64Kd1xOs2OW
+         cI6q2B0uLjehTS/j1Gn2X6i/dg9Kw7hnJfksewSAIpWiuBHM1/Lp6QZjAKy70v+JQe16
+         wwjvwBVvw8E4R2LnLypMp9edKxtkYJgTuMv97PQtzsLBHS+Ug5UeBsT/X+JpiaWgkXwt
+         EJUw==
+X-Gm-Message-State: AOAM533WBKzDszD3zQFarvXRmr02QwfnekM5mvuRWW7UgDMHbyAotA12
+        Mt3zhTHt1L0K5DWfCeQaF0ZhjUOv
+X-Google-Smtp-Source: ABdhPJy7fpNUq35tLYin0uYVyfwez510jot6Wddu88T4lkVlvIhKJQrjGio9UFQ4gk9RQg2X43okfg==
+X-Received: by 2002:ab0:37d3:: with SMTP id e19mr1183500uav.64.1596614841807;
+        Wed, 05 Aug 2020 01:07:21 -0700 (PDT)
+Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com. [209.85.217.42])
+        by smtp.gmail.com with ESMTPSA id p192sm219394vsd.23.2020.08.05.01.07.18
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Aug 2020 01:07:19 -0700 (PDT)
+Received: by mail-vs1-f42.google.com with SMTP id i129so4835284vsi.3
+        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 01:07:18 -0700 (PDT)
+X-Received: by 2002:a67:f5ce:: with SMTP id t14mr1105046vso.240.1596614838401;
+ Wed, 05 Aug 2020 01:07:18 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a92:1b5b:: with SMTP id b88mr2679375ilb.104.1596612668103;
- Wed, 05 Aug 2020 00:31:08 -0700 (PDT)
-Date:   Wed, 05 Aug 2020 00:31:08 -0700
-In-Reply-To: <000000000000a39e4905abeb193f@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ed214e05ac1c5ae8@google.com>
-Subject: Re: general protection fault in hci_phy_link_complete_evt
-From:   syzbot <syzbot+18e38290a2a263b31aa0@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, johan.hedberg@gmail.com,
-        johannes.berg@intel.com, johannes@sipsolutions.net,
-        kuba@kernel.org, kvalo@codeaurora.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux@armlinux.org.uk,
-        marcel@holtmann.org, mareklindner@neomailbox.ch,
-        netdev@vger.kernel.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
+References: <20200804123012.378750-1-colin.king@canonical.com> <b99004ea-cd9d-bec3-5f9f-82dcb00a6284@gmail.com>
+In-Reply-To: <b99004ea-cd9d-bec3-5f9f-82dcb00a6284@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 5 Aug 2020 10:06:41 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSd9K+s1rXUFpb_RWEC-uAgwU1Vz44zaUPaZK0cfsX4kwA@mail.gmail.com>
+Message-ID: <CA+FuTSd9K+s1rXUFpb_RWEC-uAgwU1Vz44zaUPaZK0cfsX4kwA@mail.gmail.com>
+Subject: Re: [PATCH] selftests/net: skip msg_zerocopy test if we have less
+ than 4 CPUs
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Colin King <colin.king@canonical.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, kernel-janitors@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Wed, Aug 5, 2020 at 2:54 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 8/4/20 5:30 AM, Colin King wrote:
+> > From: Colin Ian King <colin.king@canonical.com>
+> >
+> > The current test will exit with a failure if it cannot set affinity on
+> > specific CPUs which is problematic when running this on single CPU
+> > systems. Add a check for the number of CPUs and skip the test if
+> > the CPU requirement is not met.
+> >
+> > Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> > ---
+> >  tools/testing/selftests/net/msg_zerocopy.sh | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> >
+> > diff --git a/tools/testing/selftests/net/msg_zerocopy.sh b/tools/testing/selftests/net/msg_zerocopy.sh
+> > index 825ffec85cea..97bc527e1297 100755
+> > --- a/tools/testing/selftests/net/msg_zerocopy.sh
+> > +++ b/tools/testing/selftests/net/msg_zerocopy.sh
+> > @@ -21,6 +21,11 @@ readonly DADDR6='fd::2'
+> >
+> >  readonly path_sysctl_mem="net.core.optmem_max"
+> >
+> > +if [[ $(nproc) -lt 4 ]]; then
+> > +     echo "SKIP: test requires at least 4 CPUs"
+> > +     exit 4
+> > +fi
+> > +
+> >  # No arguments: automated test
+> >  if [[ "$#" -eq "0" ]]; then
+> >       $0 4 tcp -t 1
+> >
+>
+> Test explicitly uses CPU 2 and 3, right ?
+>
+> nproc could be 500, yet cpu 2 or 3 could be offline
+>
+> # cat /sys/devices/system/cpu/cpu3/online
+> 0
+> # echo $(nproc)
+> 71
 
-commit b59abfbed638037f3b51eeb73266892cd2df177f
-Author: Johannes Berg <johannes.berg@intel.com>
-Date:   Thu Sep 15 13:30:03 2016 +0000
+The cpu affinity is only set to bring some stability across runs.
 
-    mac80211_hwsim: statically initialize hwsim_radios list
+The test does not actually verify that a run with zerocopy is some
+factor faster than without, as that factor is hard to choose across
+all platforms. As a result the automated run mainly gives code coverage.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15dd5f98900000
-start commit:   c0842fbc random32: move the pseudo-random 32-bit definitio..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=17dd5f98900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13dd5f98900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cf567e8c7428377e
-dashboard link: https://syzkaller.appspot.com/bug?extid=18e38290a2a263b31aa0
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17e4e094900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1143e7ca900000
-
-Reported-by: syzbot+18e38290a2a263b31aa0@syzkaller.appspotmail.com
-Fixes: b59abfbed638 ("mac80211_hwsim: statically initialize hwsim_radios list")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+It's preferable to always run. And on sched_setaffinity failure log a
+message about possible jitter and continue. I can send that patch, if
+the approach sounds good.
