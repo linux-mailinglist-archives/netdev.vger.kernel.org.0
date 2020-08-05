@@ -2,110 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E13923CC85
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 18:50:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 600B123CC64
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 18:42:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728160AbgHEQuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 12:50:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
+        id S1727955AbgHEQmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 12:42:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728078AbgHEQsi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:48:38 -0400
-Received: from magratgarlick.emantor.de (magratgarlick.emantor.de [IPv6:2a01:4f8:c17:c88::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614ADC034606;
-        Wed,  5 Aug 2020 05:40:10 -0700 (PDT)
-Received: by magratgarlick.emantor.de (Postfix, from userid 114)
-        id 19DFB10D018; Wed,  5 Aug 2020 14:25:27 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on
-        magratgarlick.emantor.de
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.2
-Received: from localhost (200116b828fb3e0270a11fb9006029e2.dip.versatel-1u1.de [IPv6:2001:16b8:28fb:3e02:70a1:1fb9:60:29e2])
-        by magratgarlick.emantor.de (Postfix) with ESMTPSA id 241C910D014;
-        Wed,  5 Aug 2020 14:25:24 +0200 (CEST)
-From:   Rouven Czerwinski <r.czerwinski@pengutronix.de>
-To:     Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Rouven Czerwinski <r.czerwinski@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] net: tls: add compat for get/setsockopt
-Date:   Wed,  5 Aug 2020 14:25:02 +0200
-Message-Id: <20200805122501.4856-1-r.czerwinski@pengutronix.de>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S1727826AbgHEQkH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:40:07 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEECC034616;
+        Wed,  5 Aug 2020 05:31:32 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4BM9wD3YVbz9sPB;
+        Wed,  5 Aug 2020 22:31:24 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1596630685;
+        bh=j8w8EuBO1+cpbq1KuEU666Od/hNNRqCbcp1rNpt5oEw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=pLUXTHxN42q9ByPuE33ruB4nmahaXsszt8bpAIpPTfA6RA1vO3vbs/fHmKQ+Hon7N
+         Rafklf5W/B5SmRE6vzqx9F2Y7PsQwz4/mIPgrol71jEPN6wJrmRmjra7ujp74MvY+2
+         qZShvYTEL+37aiR7F4zoRwfN+OHIdBjBMY8EkLhBMBIXxI4WJMysVIQYXHugBfP8vJ
+         zHllSfM+6WcZadDDNLzl2oopZTBVZcVRYkV+QjeIsJ1Z0esXc6Z26NdfLOx+WxUDvr
+         DpLa2OG6x8bvZ3ZagFq/OnaM6lTv4npM9iU2hiqUDcF3JlSAyQPYiP472j3D3/3uhY
+         ZPMww51D7nJLA==
+Date:   Wed, 5 Aug 2020 22:31:21 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        <heiko.carstens@de.ibm.com>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20200805223121.7dec86de@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/iGNImgk4v6HDXIvgTQwoqbm";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If compat_{s,g}etsockopt for TLS are not implemented, the TLS layer will
-never be called on a system where CONFIG_COMPAT is enabled and userspace
-is 32bit. Implement both to support CONFIG_COMPAT.
+--Sig_/iGNImgk4v6HDXIvgTQwoqbm
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Rouven Czerwinski <r.czerwinski@pengutronix.de>
----
- net/tls/tls_main.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+Hi all,
 
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index ec10041c6b7d..92c5893fe692 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -450,6 +450,18 @@ static int tls_getsockopt(struct sock *sk, int level, int optname,
- 	return do_tls_getsockopt(sk, optname, optval, optlen);
- }
- 
-+static int tls_compat_getsockopt(struct sock *sk, int level, int optname,
-+				 char __user *optval, int __user *optlen)
-+{
-+	struct tls_context *ctx = tls_get_ctx(sk);
-+
-+	if (level != SOL_TLS)
-+		return ctx->sk_proto->compat_getsockopt(sk, level, optname,
-+							optval, optlen);
-+
-+	return do_tls_getsockopt(sk, optname, optval, optlen);
-+}
-+
- static int do_tls_setsockopt_conf(struct sock *sk, char __user *optval,
- 				  unsigned int optlen, int tx)
- {
-@@ -611,6 +623,18 @@ static int tls_setsockopt(struct sock *sk, int level, int optname,
- 	return do_tls_setsockopt(sk, optname, optval, optlen);
- }
- 
-+static int tls_compat_setsockopt(struct sock *sk, int level, int optname,
-+				 char __user *optval, unsigned int optlen)
-+{
-+	struct tls_context *ctx = tls_get_ctx(sk);
-+
-+	if (level != SOL_TLS)
-+		return ctx->sk_proto->compat_setsockopt(sk, level, optname,
-+							optval, optlen);
-+
-+	return do_tls_setsockopt(sk, optname, optval, optlen);
-+}
-+
- struct tls_context *tls_ctx_create(struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
-@@ -660,6 +684,10 @@ static void build_protos(struct proto prot[TLS_NUM_CONFIG][TLS_NUM_CONFIG],
- 	prot[TLS_BASE][TLS_BASE].setsockopt	= tls_setsockopt;
- 	prot[TLS_BASE][TLS_BASE].getsockopt	= tls_getsockopt;
- 	prot[TLS_BASE][TLS_BASE].close		= tls_sk_proto_close;
-+#ifdef CONFIG_COMPAT
-+	prot[TLS_BASE][TLS_BASE].compat_setsockopt	= tls_compat_setsockopt;
-+	prot[TLS_BASE][TLS_BASE].compat_getsockopt	= tls_compat_getsockopt;
-+#endif
- 
- 	prot[TLS_SW][TLS_BASE] = prot[TLS_BASE][TLS_BASE];
- 	prot[TLS_SW][TLS_BASE].sendmsg		= tls_sw_sendmsg;
--- 
-2.27.0
+After merging the net-next tree, today's linux-next build (s390 defconfig)
+failed like this:
 
+net/ipv4/ip_tunnel_core.c:335:2: error: implicit declaration of function 'c=
+sum_ipv6_magic' [-Werror=3Dimplicit-function-declaration]
+
+Caused by commit
+
+  4cb47a8644cc ("tunnels: PMTU discovery support for directly bridged IP pa=
+ckets")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/iGNImgk4v6HDXIvgTQwoqbm
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8qppkACgkQAVBC80lX
+0Gz4Hgf5AcOL3mJwLlnnFj7+zFUXWc6JxU8HniK9p2KGwMa5ISQE9lbmSUVTOXoC
+ssxig80+QPKSO4XASSwEcB7RzdfkdE/phan/zxIKirQlPFlbaOlSb209yzGsyZLe
+WaMCkuMIdPcT7Fi8clOk+yjwyujx7FTfxDcayUqphOmMMb+CxKKcqnXhe7Fv0sPc
+25na5ErrG9A02+zS25XzE/KCielqumhgKfEyDmJDH7kZvQJrNlG8h8zof8juLIww
+7o5UdQt9VIzVwlBy7FKZo9Pu0tltbL6tSm0DXtO5tRwYbd7Qub6QeZig34u0rtfB
+zEMFJTpJriTcP3EHxbpo3vP4AVTn7g==
+=216g
+-----END PGP SIGNATURE-----
+
+--Sig_/iGNImgk4v6HDXIvgTQwoqbm--
