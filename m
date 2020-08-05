@@ -2,118 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C19023CF32
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:16:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40DC323CEEF
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:10:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728458AbgHETQT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 15:16:19 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:41728 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729147AbgHESAo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 14:00:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596650443;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=x7wUh8ZexL7KK6TXDeSUui6HhK29BUIFxrtlXH2p+X0=;
-        b=SKz9B1GlNf9IKnblEJG5H6kYKB/hw4Rb7MTecmctgYHXtZOWP3QMy97gR5IJcMYd6Lbjxs
-        p5kC7okKB350BC9M8uEQswe2lqP6O+hiBQpO6o/ry7cCo6qByGzzsNYS/FVeX/KZpErJFu
-        U0CX2VMZpc1AusNZOyA3/ZDgL/jN9Ww=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-227-KBeJp0gSNJmafExVxB_dFw-1; Wed, 05 Aug 2020 14:00:41 -0400
-X-MC-Unique: KBeJp0gSNJmafExVxB_dFw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EC23F8CE800;
-        Wed,  5 Aug 2020 18:00:38 +0000 (UTC)
-Received: from krava (unknown [10.40.192.11])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 9C46770105;
-        Wed,  5 Aug 2020 18:00:35 +0000 (UTC)
-Date:   Wed, 5 Aug 2020 20:00:34 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v9 bpf-next 13/14] selftests/bpf: Add test for d_path
- helper
-Message-ID: <20200805180034.GE319954@krava>
-References: <20200801170322.75218-1-jolsa@kernel.org>
- <20200801170322.75218-14-jolsa@kernel.org>
- <CAEf4BzYq5jhTPZRiRzDmi_92qg+0vwobmkyLEqB50mrG_39BeQ@mail.gmail.com>
+        id S1728296AbgHETKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 15:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729153AbgHESfv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 14:35:51 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11512C06174A
+        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 11:28:51 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id c6so3131637ilo.13
+        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 11:28:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b++LoBh3fWjC+WaLkOK5I3Hi48SN1RsxpQ3n0PRz/HQ=;
+        b=Xaoc8TN2ZmUlzCGCghnDLv4nNleHfXfNEaMQid39KOyg+3R8DRldq/PaVNPd7ajxIL
+         mdwNozoIes10Oatdmb5F+1aeiR7sh20bw+2/vyr+nn409M1IuyCBTmvvZim1CHK/mDqp
+         H00tATHpQooJryyIm6CSAARfOQ/LoVk7no2BYJ5khWT9qXB68PFPT52S9LqvgjsHXEr4
+         8pf0L0gYBY7mlZpuFjSeUdlj98SHH4R3mOfsjRPLhlhDwERiE56szJN+L60n/kSj20LR
+         VkDmDyqnCKWGCtP3eC/uEsvwROZ3nBhEsg1DW9P6vSm3EGavhzTtkDqRTWwuDYXPyZkP
+         KhgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b++LoBh3fWjC+WaLkOK5I3Hi48SN1RsxpQ3n0PRz/HQ=;
+        b=TyFDFpbwGERIcAX42uev26bEzCzNdYGgY1TqnL/n6v50E29hSfhqrBOPLKAFbgszrk
+         yYz9GsuYRxg2XBDifmrlsQknAnyIJ6z+wprQd3fY4DoWedRGDy11jYe8KPWBV58JZQWo
+         p9gQuDuoipMfC+kJIjy4Qfs++RlOcqV05uNpzDfknP507Rm9PcBS8D7Zj9Lgwi3beunz
+         g4RHKSRg2nAFKYeEv1dW+2eRw6LljV78e9Gmi+wn5oKe1NLWZUhVGXqK9f9VkK0r77Ip
+         29f8Aiw+CLWI5DBddo7dGMFdVj+/4ZYUpG/rfJtavq4hkyuehY0en4YTl1gZMa9orRSR
+         KVJQ==
+X-Gm-Message-State: AOAM531ZCd2XY+uDYuyyP7msg30RnYCzg6WvpgM8NsfosLDWAYel7yKo
+        j8FyQKOqjbYdy4ogV8VyGPe5KHcNOf1bAZNVXOc=
+X-Google-Smtp-Source: ABdhPJz5JbXzDpXdhGsWVoO0N+kWCAdcueNKaO4a/WB9lerE8J61/vA5cndXbbMfyjiHJxWmcevFlhbh/ac++0YXCmU=
+X-Received: by 2002:a92:9f9a:: with SMTP id z26mr5107596ilk.277.1596652127314;
+ Wed, 05 Aug 2020 11:28:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYq5jhTPZRiRzDmi_92qg+0vwobmkyLEqB50mrG_39BeQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <CAFbJv-4yACz4Zzj50JxeU-ovnKMQP_Lo-1tk2jRuOJEs0Up6MQ@mail.gmail.com>
+ <20200805094553.69c2c91f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200805094553.69c2c91f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   satish dhote <sdhote926@gmail.com>
+Date:   Wed, 5 Aug 2020 23:58:36 +0530
+Message-ID: <CAFbJv-4vf7j_z+eSnyWm3FD1OJBZJYRJwaon_1cisFMMxFHftg@mail.gmail.com>
+Subject: Re: Question about TC filter
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        jhs@mojatatu.com, daniel@iogearbox.net
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 04, 2020 at 11:40:05PM -0700, Andrii Nakryiko wrote:
+Hi Jakub,
 
-SNIP
+Thanks for your response. Below are the OS and Kernel version I'm using.
 
-> > +SEC("fentry/vfs_getattr")
-> > +int BPF_PROG(prog_stat, struct path *path, struct kstat *stat,
-> > +            __u32 request_mask, unsigned int query_flags)
-> > +{
-> > +       pid_t pid = bpf_get_current_pid_tgid() >> 32;
-> > +       int ret;
-> > +
-> > +       if (pid != my_pid)
-> > +               return 0;
-> > +
-> > +       if (cnt_stat >= MAX_FILES)
-> > +               return 0;
-> > +       ret = bpf_d_path(path, paths_stat[cnt_stat], MAX_PATH_LEN);
-> > +
-> > +       /* We need to recheck cnt_stat for verifier. */
-> > +       if (cnt_stat >= MAX_FILES)
-> > +               return 0;
-> > +       rets_stat[cnt_stat] = ret;
-> > +
-> > +       cnt_stat++;
-> > +       return 0;
-> > +}
-> > +
-> > +SEC("fentry/filp_close")
-> > +int BPF_PROG(prog_close, struct file *file, void *id)
-> > +{
-> > +       pid_t pid = bpf_get_current_pid_tgid() >> 32;
-> > +       int ret;
-> > +
-> > +       if (pid != my_pid)
-> > +               return 0;
-> > +
-> > +       if (cnt_close >= MAX_FILES)
-> > +               return 0;
-> > +       ret = bpf_d_path(&file->f_path,
-> > +                        paths_close[cnt_close], MAX_PATH_LEN);
-> > +
-> > +       /* We need to recheck cnt_stat for verifier. */
-> 
-> you need to do it because you are re-reading a global variable; if you
-> stored cnt_close in a local variable, then did >= MAX_FILES check
-> once, you probably could have avoided this duplication. Same for
-> another instance above.
+OS: Ubuntu 20.04.1 LTS
+Kernel Version: 5.4.0-42-generic
 
-I see, nice.. I'll update both comments
+Thanks
+Satish
 
-thanks,
-jirka
-
+On Wed, Aug 5, 2020 at 10:15 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 5 Aug 2020 11:08:08 +0530 satish dhote wrote:
+> > Hi Team,
+> >
+> > I have a question regarding tc filter behavior. I tried to look
+> > for the answer over the web and netdev FAQ but didn't get the
+> > answer. Hence I'm looking for your help.
+> >
+> > I added ingress qdisc for interface enp0s25 and then configured the
+> > tc filter as shown below, but after adding filters I realize that
+> > rule is reflected as a result of both ingress and egress filter
+> > command?  Is this the expected behaviour? or a bug? Why should the
+> > same filter be reflected in both ingress and egress path?
+> >
+> > I understand that policy is always configured for ingress traffic,
+> > so I believe that filters should not be reflected with egress.
+> > Behaviour is same when I offloaded ovs flow to the tc software
+> > datapath.
+>
+> I feel like this was discussed and perhaps fixed by:
+>
+> a7df4870d79b ("net_sched: fix tcm_parent in tc filter dump")
+>
+> What's your kernel version?
