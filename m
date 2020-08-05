@@ -2,83 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7727123CBF0
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 18:07:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E20123CBF2
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 18:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgHEQEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 12:04:01 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:20760 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726202AbgHEPsi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 11:48:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596642331;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=2rdWMsfVYoLVMGMuU1zSO9y5DV7npaEchPj2O2QlCzs=;
-        b=gqstTDtoesNQpmIXXrmaVyp1fjVXg9pB5CuuWcQrCkV5M57coYkYX0MisWG8xrv6zUm76Y
-        KMdDB3I4PugRZrBe79JUB4o0ZGSag3tb+up3l2V4SiiopX/FWB2XYWJ3XvuT0m28UQ5ZBR
-        hXv7qG8iOnwoKf+y8HADzfyRlhvQ69E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-358-TzVqO_I0MwqTgX4ANH4PbQ-1; Wed, 05 Aug 2020 09:18:39 -0400
-X-MC-Unique: TzVqO_I0MwqTgX4ANH4PbQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DB70091270;
-        Wed,  5 Aug 2020 13:18:37 +0000 (UTC)
-Received: from epycfail.redhat.com (unknown [10.36.110.53])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DCBC5380;
-        Wed,  5 Aug 2020 13:18:35 +0000 (UTC)
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        heiko.carstens@de.ibm.com, Cong Wang <xiyou.wangcong@gmail.com>
-Subject: [PATCH net-next] ip_tunnel_core: Fix build for archs without _HAVE_ARCH_IPV6_CSUM
-Date:   Wed,  5 Aug 2020 15:18:21 +0200
-Message-Id: <a85e9878716c2904488d56335320b7131613e94c.1596633316.git.sbrivio@redhat.com>
+        id S1726799AbgHEQDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 12:03:35 -0400
+Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:46760 "EHLO
+        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725920AbgHEPti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 11:49:38 -0400
+Received: from callcc.thunk.org (pool-96-230-252-158.bstnma.fios.verizon.net [96.230.252.158])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 075FYWoS027613
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 5 Aug 2020 11:34:33 -0400
+Received: by callcc.thunk.org (Postfix, from userid 15806)
+        id 9720B420263; Wed,  5 Aug 2020 11:34:32 -0400 (EDT)
+Date:   Wed, 5 Aug 2020 11:34:32 -0400
+From:   tytso@mit.edu
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Marc Plumb <lkml.mplumb@gmail.com>, netdev@vger.kernel.org,
+        aksecurity@gmail.com, torvalds@linux-foundation.org,
+        edumazet@google.com, Jason@zx2c4.com, luto@kernel.org,
+        keescook@chromium.org, tglx@linutronix.de, peterz@infradead.org,
+        stable@vger.kernel.org
+Subject: Re: Flaw in "random32: update the net random state on interrupt and
+ activity"
+Message-ID: <20200805153432.GE497249@mit.edu>
+References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
+ <20200805024941.GA17301@1wt.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200805024941.GA17301@1wt.eu>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On architectures defining _HAVE_ARCH_IPV6_CSUM, we get
-csum_ipv6_magic() defined by means of arch checksum.h headers. On
-other architectures, we actually need to include net/ip6_checksum.h
-to be able to use it.
+On Wed, Aug 05, 2020 at 04:49:41AM +0200, Willy Tarreau wrote:
+> 
+> Not only was this obviously not the goal, but I'd be particularly
+> interested in seeing this reality demonstrated, considering that
+> the whole 128 bits of fast_pool together count as a single bit of
+> entropy, and that as such, even if you were able to figure the
+> value of the 32 bits leaked to net_rand_state, you'd still have to
+> guess the 96 other bits for each single entropy bit :-/
 
-Without this include, building with defconfig breaks at least for
-s390.
+Not only that, you'd have to figure out which 32-bits in the fast_pool
+actually had gotten leaked to the net_rand_state.
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Fixes: 4cb47a8644cc ("tunnels: PMTU discovery support for directly bridged IP packets")
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
----
-I'm submitting this for net-next despite the fact it's closed, as
-the offending code isn't merged to net.git yet. Should I rather
-submit this to... linux-next?
+I agree with Willy that I'd love to see an exploit since it would
+probably give a lot of insights.  Maybe at a Crypto rump session once
+it's safe to have those sorts of things again.  :-)
 
- net/ipv4/ip_tunnel_core.c | 1 +
- 1 file changed, 1 insertion(+)
+That being said, it certainly is a certificational / theoretical
+weakness, and if the bright boys and girls at Fort Meade did figure
+out a way to exploit this, they are very much unlikely to share it at
+an open Crypto conference.  So replacing LFSR-based PRnG with
+something stronger which didn't release any bits from the fast_pool
+would certainly be desireable, and I look forward to seeing what Willy
+has in mind.
 
-diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
-index 9ddee2a0c66d..75c6013ff9a4 100644
---- a/net/ipv4/ip_tunnel_core.c
-+++ b/net/ipv4/ip_tunnel_core.c
-@@ -25,6 +25,7 @@
- #include <net/protocol.h>
- #include <net/ip_tunnels.h>
- #include <net/ip6_tunnel.h>
-+#include <net/ip6_checksum.h>
- #include <net/arp.h>
- #include <net/checksum.h>
- #include <net/dsfield.h>
--- 
-2.27.0
+Cheers,
 
+					- Ted
