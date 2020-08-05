@@ -2,202 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 512A223C7A7
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 10:21:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A85DB23C7AD
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 10:22:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726459AbgHEIVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 04:21:13 -0400
-Received: from mail-db8eur05on2084.outbound.protection.outlook.com ([40.107.20.84]:42976
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725809AbgHEIVI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Aug 2020 04:21:08 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Buu7KJvxI7A8vwKnpphIW5XGTqwbbl9eChVhSVt5ZmCQhsuMr/ifO6S1w7QRBd5VeeQdEQFLS+Gl9T1fBzBrMNrlsrSrCXxdbYP1mg3EM4J6VmImGHjYIPiJspzWU9fVbV2w1qvOx8yhfrKwziNn3fli2r7hWR35hsAIrio+vpLeB6s7jLmjZSGDaD7SvPVCGlpobKK58T9v6ovnh199XB6Gv6pXUIsvhjf5qpNRxfk3W1Qse+F/y9MXHfgNstjc3y+AshVFJaPQmeXqo5WeD9RLaG6kw9JqUSjnNj58ntjnmUCm3qW+Qea2A/FWPr7TTBIjMOb+atf++7mN1RswLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WhtXOVRZifAylnfOyAj2L1SQ4ehEIMRLvdz801PqGZ4=;
- b=ASZQfwfaLAGIiGNT2JAVOD52GIIMrhQ54AMaPGlQ4Miw6eNwSO4QIc0TTlTUvm5qWt/OReiAmxKS9Zm1ytqB6pfa/X3+PPskKV9BoyWAB0lx6ul2vRCNLckWUjbnyjlqhrS57w/wtkJpAHnMwn38juLv3erx5Jrrbsk01EDhpMgxFz/m3gvV4mMrmOVXH1Gha9bb8UnxTfIf/FMd/NXE+O5YxmiOInT03wcb71+yQhqM8030nI1Y2pjwcb4c1/8UGCkjyXrpo3WFzdAW6vRM8gAPHgV8/cqvHIbwFL2ll5m0x5dYG9Zl1Lp8qH6M6Ggw3iJbi1eV2PK5qWq4ZiCmOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WhtXOVRZifAylnfOyAj2L1SQ4ehEIMRLvdz801PqGZ4=;
- b=emx0Gget31BqsOr4rbdZYCsrC4uMMrcjXJ8uSPKAlbw0ogymVzJNeN8Td7uf+JJ5jOOiZmyTfjycsSmgubW/9B+tSbXM6eLROb3L4NTsSK47AVSpR9Y/cE5THt/dNI8PtPqbHia3WswJ1npBQITxS+PdNaKV1CKct0TRJXSfWz4=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from AM0PR05MB4290.eurprd05.prod.outlook.com (2603:10a6:208:63::16)
- by AM0PR05MB5987.eurprd05.prod.outlook.com (2603:10a6:208:130::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3261.15; Wed, 5 Aug
- 2020 08:21:03 +0000
-Received: from AM0PR05MB4290.eurprd05.prod.outlook.com
- ([fe80::21b3:2006:95aa:7a1f]) by AM0PR05MB4290.eurprd05.prod.outlook.com
- ([fe80::21b3:2006:95aa:7a1f%3]) with mapi id 15.20.3261.018; Wed, 5 Aug 2020
- 08:21:03 +0000
-Subject: Re: [PATCH net-next RFC 00/13] Add devlink reload level option
-To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
- <CAACQVJqNXh0B=oe5W7psiMGc6LzNPujNe2sypWi_SvH5sY=F3Q@mail.gmail.com>
- <a3e20b44-9399-93c1-210f-e3c1172bf60d@intel.com>
- <CAACQVJo+bAr_k=LjgdTKbOxFEkpbYAsaWbkSDjUepgO7_XQfNA@mail.gmail.com>
- <7a9c315f-fa29-7bd5-31be-3748b8841b29@mellanox.com>
- <CAACQVJpZZPfiWszZ36E0Awuo2Ad1w5=4C1rgG=d4qPiWVP609Q@mail.gmail.com>
- <7fd63d16-f9fa-9d55-0b30-fe190d0fb1cb@mellanox.com>
- <CAACQVJqXa-8v4TU+M1DWA2Tfv3ayrAobiH9Fajd=5MCgsfAA6A@mail.gmail.com>
- <da0e4997-73d7-9f3c-d877-f2d3bcc718b9@mellanox.com>
- <CAACQVJofS2B3y40H=QxBzNaccsa+gNnSqfmoATyML_S686ykfw@mail.gmail.com>
-From:   Moshe Shemesh <moshe@mellanox.com>
-Message-ID: <da7a2f2d-3ff5-0cd1-f166-79d7355f3df0@mellanox.com>
-Date:   Wed, 5 Aug 2020 11:20:59 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+        id S1727968AbgHEIWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 04:22:37 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:50637 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725963AbgHEIWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 04:22:31 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1k3Egt-0007IJ-Di; Wed, 05 Aug 2020 08:22:27 +0000
+Subject: Re: [PATCH] selftests/net: skip msg_zerocopy test if we have less
+ than 4 CPUs
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, kernel-janitors@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20200804123012.378750-1-colin.king@canonical.com>
+ <b99004ea-cd9d-bec3-5f9f-82dcb00a6284@gmail.com>
+ <CA+FuTSd9K+s1rXUFpb_RWEC-uAgwU1Vz44zaUPaZK0cfsX4kwA@mail.gmail.com>
+From:   Colin Ian King <colin.king@canonical.com>
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <fc66cf3c-b4be-f098-3a2b-aef36b90835d@canonical.com>
+Date:   Wed, 5 Aug 2020 09:22:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
-In-Reply-To: <CAACQVJofS2B3y40H=QxBzNaccsa+gNnSqfmoATyML_S686ykfw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: FR2P281CA0011.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::21) To AM0PR05MB4290.eurprd05.prod.outlook.com
- (2603:10a6:208:63::16)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.0.105] (31.210.180.3) by FR2P281CA0011.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:a::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3261.13 via Frontend Transport; Wed, 5 Aug 2020 08:21:02 +0000
-X-Originating-IP: [31.210.180.3]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a1c799ae-bf62-4db6-d28e-08d839187e08
-X-MS-TrafficTypeDiagnostic: AM0PR05MB5987:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR05MB5987C1A9CFBE77863B72DF58D94B0@AM0PR05MB5987.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xcEBMhib/B5BZx3KqCZuktqYGlcLFUF/+jqNoFl483DCi+xQVEgSGWgxjaTKcbjpH42ddV7dYqacZSfAKo4H6c7VVnTCNqRZbpChL6vfo2lolUT00BJiXADEkw4LsjmWDv+qkoA4/OWKmtsYenaQRyMxPYYeWjhCHSG8Kb0NO2bRmFw6adrueEsbcO4kkJVD/aoKWPQjoSYq7lOeYGFuk7vYn37eOhNXgXLjkQd8Po/rt8dtH9u0WssA0E0TdZ+kZiFQB65NMRTwnAMgPM+jhqByw7F7sfhiysU7f1j0n1SNGjVmEotpupLRDf+MwOuN+sh9frQc+jwZ2sv8y+hXtm1TVSecNzYYnOEDbIorXs+m3RJZd0tkyV+VvuvKbCgF
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4290.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(366004)(346002)(396003)(376002)(956004)(2906002)(54906003)(2616005)(26005)(83380400001)(186003)(53546011)(6916009)(86362001)(31696002)(16526019)(316002)(16576012)(6486002)(31686004)(66476007)(66556008)(8936002)(4326008)(478600001)(52116002)(66946007)(8676002)(6666004)(36756003)(5660300002)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: o4A7L6DGHar6dWcTWA+N1olseQ4w3n66ucyUIsgUqYCoylssnNNbIUDYWXU/f9nul0XopOPSviqN2nNfr2NFpVqcQsk5TIjRMZsLqs3+81n2ydqqDhNy1n0CsYMs7+DzI3yK8D8PV/tCns2ZVhufXLh4P9IkBmdc/aKF7QhzST0euoyw51d5SAbV0l5VxzgRxQNLq0ZeugF7LeQgCeTRK/IfTNS/5qYHozkPf6ZyC2PepnnXngARKx6wHu7E8+tRW0TvzLEZGc2syz37zXAvfQToNUgczHzOWfARk1N9p/rfmQLmr76u0WLtzaEUBu0WtDtbA8KO9/5BHIeF9pIBM0pMdZYtwokilj9nI8jsOW95H1Z58spVVNQ3Eeu4QcX66xQP0z5kKbFoyLABYVG+U0LtEBxFudh/YRGAOt5GpZTqkqiyd1ED7bEtDm5quzdy40V6YGl5QcMW0tyZXOJc6Aqygp24jLHZJVAkCWbDbJYTO6+UMRbJmJAWXwCLiccE8U/JFeys+unV2+Wxsbh7yH4rpKAL7/l83qN5p2FYs+yvQ9pnTN02hnbff3QO1w4d/iesQgSjtMTcfEeBjhyg4QK6AxyeJgsq5Ry/cHWuGydaLus3cF5V6mc+YRIEwLuHmyrrTAHv6cbbNMp+Jns2UQ==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1c799ae-bf62-4db6-d28e-08d839187e08
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB4290.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2020 08:21:03.1539
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FyTUCNp+0pcVgLOBXPzxUl35BlXPqAXpZOZDe3PQ/ktzRqFRRnVLKkOcveJnLlVwmAV/tUnVAU+ArY8PGe4QoQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5987
+In-Reply-To: <CA+FuTSd9K+s1rXUFpb_RWEC-uAgwU1Vz44zaUPaZK0cfsX4kwA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 8/5/2020 9:55 AM, Vasundhara Volam wrote:
-> On Wed, Aug 5, 2020 at 12:02 PM Moshe Shemesh <moshe@mellanox.com> wrote:
+On 05/08/2020 09:06, Willem de Bruijn wrote:
+> On Wed, Aug 5, 2020 at 2:54 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >>
->> On 8/4/2020 1:13 PM, Vasundhara Volam wrote:
->>> On Mon, Aug 3, 2020 at 7:23 PM Moshe Shemesh <moshe@mellanox.com> wrote:
->>>> On 8/3/2020 3:47 PM, Vasundhara Volam wrote:
->>>>> On Mon, Aug 3, 2020 at 5:47 PM Moshe Shemesh <moshe@mellanox.com> wrote:
->>>>>> On 8/3/2020 1:24 PM, Vasundhara Volam wrote:
->>>>>>> On Tue, Jul 28, 2020 at 10:13 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
->>>>>>>> On 7/27/2020 10:25 PM, Vasundhara Volam wrote:
->>>>>>>>> On Mon, Jul 27, 2020 at 4:36 PM Moshe Shemesh <moshe@mellanox.com> wrote:
->>>>>>>>>> Introduce new option on devlink reload API to enable the user to select the
->>>>>>>>>> reload level required. Complete support for all levels in mlx5.
->>>>>>>>>> The following reload levels are supported:
->>>>>>>>>>       driver: Driver entities re-instantiation only.
->>>>>>>>>>       fw_reset: Firmware reset and driver entities re-instantiation.
->>>>>>>>> The Name is a little confusing. I think it should be renamed to
->>>>>>>>> fw_live_reset (in which both firmware and driver entities are
->>>>>>>>> re-instantiated).  For only fw_reset, the driver should not undergo
->>>>>>>>> reset (it requires a driver reload for firmware to undergo reset).
->>>>>>>>>
->>>>>>>> So, I think the differentiation here is that "live_patch" doesn't reset
->>>>>>>> anything.
->>>>>>> This seems similar to flashing the firmware and does not reset anything.
->>>>>> The live patch is activating fw change without reset.
->>>>>>
->>>>>> It is not suitable for any fw change but fw gaps which don't require reset.
->>>>>>
->>>>>> I can query the fw to check if the pending image change is suitable or
->>>>>> require fw reset.
->>>>> Okay.
->>>>>>>>>>       fw_live_patch: Firmware live patching only.
->>>>>>>>> This level is not clear. Is this similar to flashing??
->>>>>>>>>
->>>>>>>>> Also I have a basic query. The reload command is split into
->>>>>>>>> reload_up/reload_down handlers (Please correct me if this behaviour is
->>>>>>>>> changed with this patchset). What if the vendor specific driver does
->>>>>>>>> not support up/down and needs only a single handler to fire a firmware
->>>>>>>>> reset or firmware live reset command?
->>>>>>>> In the "reload_down" handler, they would trigger the appropriate reset,
->>>>>>>> and quiesce anything that needs to be done. Then on reload up, it would
->>>>>>>> restore and bring up anything quiesced in the first stage.
->>>>>>> Yes, I got the "reload_down" and "reload_up". Similar to the device
->>>>>>> "remove" and "re-probe" respectively.
->>>>>>>
->>>>>>> But our requirement is a similar "ethtool reset" command, where
->>>>>>> ethtool calls a single callback in driver and driver just sends a
->>>>>>> firmware command for doing the reset. Once firmware receives the
->>>>>>> command, it will initiate the reset of driver and firmware entities
->>>>>>> asynchronously.
->>>>>> It is similar to mlx5 case here for fw_reset. The driver triggers the fw
->>>>>> command to reset and all PFs drivers gets events to handle and do
->>>>>> re-initialization.  To fit it to the devlink reload_down and reload_up,
->>>>>> I wait for the event handler to complete and it stops at driver unload
->>>>>> to have the driver up by devlink reload_up. See patch 8 in this patchset.
->>>>>>
->>>>> Yes, I see reload_down is triggering the reset. In our driver, after
->>>>> triggering the reset through a firmware command, reset is done in
->>>>> another context as the driver initiates the reset only after receiving
->>>>> an ASYNC event from the firmware.
->>>> Same here.
->>>>
->>>>> Probably, we have to use reload_down() to send firmware command to
->>>>> trigger reset and do nothing in reload_up.
->>>> I had that in previous version, but its wrong to use devlink reload this
->>>> way, so I added wait with timeout for the event handling to complete
->>>> before unload_down function ends. See mlx5_fw_wait_fw_reset_done(). Also
->>>> the event handler stops before load back to have that done by devlink
->>>> reload_up.
->>> But "devlink dev reload" will be invoked by the user only on a single
->>> dev handler and all function drivers will be re-instantiated upon the
->>> ASYNC event. reload_down and reload_up are invoked only the function
->>> which the user invoked.
->>>
->>> Take an example of a 2-port (PF0 and PF1) adapter on a single host and
->>> with some VFs loaded on the device. User invokes "devlink dev reload"
->>> on PF0, ASYNC event is received on 2 PFs and VFs for reset. All the
->>> function drivers will be re-instantiated including PF0.
->>>
->>> If we wait for some time in reload_down() of PF0 and then call load in
->>> reload_up(), this code will be different from other function drivers.
 >>
->> I see your point here, but the user run devlink reload command on one
->> PF, in this case of fw-reset it will influence other PFs, but that's a
->> result of the fw-reset, the user if asked for params change or namespace
->> change that was for this PF.
-> Right, if any driver is implementing only fw-reset have to leave
-> reload_up as an empty function.
+>>
+>> On 8/4/20 5:30 AM, Colin King wrote:
+>>> From: Colin Ian King <colin.king@canonical.com>
+>>>
+>>> The current test will exit with a failure if it cannot set affinity on
+>>> specific CPUs which is problematic when running this on single CPU
+>>> systems. Add a check for the number of CPUs and skip the test if
+>>> the CPU requirement is not met.
+>>>
+>>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>>> ---
+>>>  tools/testing/selftests/net/msg_zerocopy.sh | 5 +++++
+>>>  1 file changed, 5 insertions(+)
+>>>
+>>> diff --git a/tools/testing/selftests/net/msg_zerocopy.sh b/tools/testing/selftests/net/msg_zerocopy.sh
+>>> index 825ffec85cea..97bc527e1297 100755
+>>> --- a/tools/testing/selftests/net/msg_zerocopy.sh
+>>> +++ b/tools/testing/selftests/net/msg_zerocopy.sh
+>>> @@ -21,6 +21,11 @@ readonly DADDR6='fd::2'
+>>>
+>>>  readonly path_sysctl_mem="net.core.optmem_max"
+>>>
+>>> +if [[ $(nproc) -lt 4 ]]; then
+>>> +     echo "SKIP: test requires at least 4 CPUs"
+>>> +     exit 4
+>>> +fi
+>>> +
+>>>  # No arguments: automated test
+>>>  if [[ "$#" -eq "0" ]]; then
+>>>       $0 4 tcp -t 1
+>>>
+>>
+>> Test explicitly uses CPU 2 and 3, right ?
+>>
+>> nproc could be 500, yet cpu 2 or 3 could be offline
+>>
+>> # cat /sys/devices/system/cpu/cpu3/online
+>> 0
+>> # echo $(nproc)
+>> 71
+> 
+> The cpu affinity is only set to bring some stability across runs.
+> 
+> The test does not actually verify that a run with zerocopy is some
+> factor faster than without, as that factor is hard to choose across
+> all platforms. As a result the automated run mainly gives code coverage.
+> 
+> It's preferable to always run. And on sched_setaffinity failure log a
+> message about possible jitter and continue. I can send that patch, if
+> the approach sounds good.
+> 
+That's sounds preferable to my bad fix for sure :-)
 
-
-No, its not only up the driver. The netns option is implemented by 
-devlink and its running between reload_down and reload_up.
-
->>>>>     And returning from reload
->>>>> does not mean that reset is complete as it is done in another context
->>>>> and the driver notifies the health reporter once the reset is
->>>>> complete. devlink framework may have to allow drivers to implement
->>>>> reload_down only to look more clean or call reload_up only if the
->>>>> driver notifies the devlink once reset is completed from another
->>>>> context. Please suggest.
+Colin
