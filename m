@@ -2,126 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FFF223C597
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 08:13:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7CD323C59C
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 08:16:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726627AbgHEGNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 02:13:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
+        id S1726418AbgHEGQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 02:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725920AbgHEGNB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 02:13:01 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 619F4C06174A;
-        Tue,  4 Aug 2020 23:13:01 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id e187so10892185ybc.5;
-        Tue, 04 Aug 2020 23:13:01 -0700 (PDT)
+        with ESMTP id S1725920AbgHEGQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 02:16:54 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF840C06174A
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 23:16:53 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id l4so45013793ejd.13
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 23:16:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9iXihjRFVPg2A7GpZV7d5YBUlfuYnief6L8DzAwhNQU=;
-        b=n6Y2H2WWmCMbfqbcljcDHEqK1L+Ew6tQnJwT1yINtKYqsk2lozkArB54gZVRfb4Lqp
-         BX+JkfGswldenIkYA4ZtPlHkBCoH/4Pcd8mqKuw1nTvhtvV/cQdj8k7s9C4WYr8sj6zS
-         JHbi/dIzy+GxYIh0+vrA/VoJtqY7KZx9jYXck+pwuEFVZidIB5vaVHoBL0kEA1aOUTym
-         goZZ92Axo07KJrviU+TVyCEv4nC+RSqJqxisK55gfii+FZrBAY9kvW32DTdPedzYAvRk
-         x/Ldn89C1dvXZGK8AXOwfsLhNQ0jKnXEiuTCAfwvfKnOvU3ZIcz+ZT8c0u6YUj4fA1kA
-         Gz/Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=y9STU8eBxXfNE6Av0kO8QI7kPDY/r38ynfn1dPE1Q78=;
+        b=G1++EdkpqHWLqsLcJHmcrB6amz7oO09FzhjlJuDhdJ8jZ3994Ks/9JxoqW8SrOQOEn
+         o19HF75ABxz6PQHb5JofptAMSDuOQlaWnYmH+Pgv/KcUua5qhipVOQJYPwnucz/HWWBy
+         xHpXxPU/YV9jYlpyuMmug3tdZadY7NJIEbWBvcZOyO4KJ3YkkIE6/ANnOGk6WLZiJ/zy
+         8ulpEPM29IgNevqSpo2s8SB3y3WMxbH1HAFtGM1VJ6S45JSEFXo884scQTbQIo0RBJSg
+         Y0dDpxskyfGgoAJq8sgAPBqGi81LiWEo4dY13nPlHMycIaI1f1X/KYJavWDGmg6A5N8O
+         DvmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9iXihjRFVPg2A7GpZV7d5YBUlfuYnief6L8DzAwhNQU=;
-        b=WVYPQmeEy1oNUTiC9jtW0yqO5AyigiMA+HGSv56D+oMYPmyrE2fHBTz40fZTc1Cjhw
-         c4QZTfGjLRHk+ANZQrlwgpSu9QgY2hpJqV6CJ1S89iDbNoP4R/hize0AebInytk7UmYD
-         pFkNPFn6ks/56bW7uKHivlJMQbTCVgbXOpiNqlv/aUA12nylXpBYdC8OeQAwPwrbxCxe
-         JlNSZs0rI6ORt4M0M/O5C8iLJx5tgllRbQ5Y+ibKuBaRAbi2v24zSa/jh+8uksFHJsfB
-         g6Bb/KSR5zO3f3RP05mk06K7osSBpBK9G7PXVOGetVsTLqZPBPKZiDsUbhuv7oHq1xRe
-         YGQQ==
-X-Gm-Message-State: AOAM530onvrawmvh9uJd0Oxv4+Ruf0Ax8DDO5XkZzUOx61QVXcwYqmNe
-        s5368ompeQwjz4LLWPV6UmWo/gPHvat3X3svyTM=
-X-Google-Smtp-Source: ABdhPJxTcYVEbJrxK9CDw9YdYiRjgtL8ctcMiDxLOHWTnUuVYoW6JtMFG5/PxsWXYdlpbC0npmNhUuqOKLj1uEZjskA=
-X-Received: by 2002:a25:d84a:: with SMTP id p71mr2582970ybg.347.1596607980723;
- Tue, 04 Aug 2020 23:13:00 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=y9STU8eBxXfNE6Av0kO8QI7kPDY/r38ynfn1dPE1Q78=;
+        b=pj/aVK/JFSvAdOdnEdh3HwDDJgzdO/WscY3VZ/BGjrn/XHb+OUVZUxUce6MBDHvn2j
+         RoRg3kGdIg9bm7c2PbBgSU4mKD4FoKj9hHHpWg4QlHDjQU3BPw6AtaexOw3emBnT7B3g
+         Kf7gQY95peH/2IQKBB8rfi9VbxhWRh3F2nGnvG1P+jSJIg1uMjCdSUGYl5CI6WMIpOq3
+         8o8uQ9CRWENDeM0yn13aIba+8ffrE71csJTRdLu+fSkmEtM7MRfFq4Ki8XGftiQaByJG
+         9HOyIBrKD6fxAQ0DiTqvZWfzJiCMfh01pmsnrM3iU82DAsH/Zj1SC/8gVBKnuMCmcMes
+         usVA==
+X-Gm-Message-State: AOAM530J64LZeBcexKZYgQCvM9k5A/qggBlKMsZxU/RUznR1NHeS5Jau
+        fBVFM5uS6MlprrTiwW4BYkJRyZuM3zc=
+X-Google-Smtp-Source: ABdhPJxDZWA+cGv/WrlMQ7VTmgSdwUhfLKf1+SHIpruP2nTPDPSZfr29KBKOdC0R7pbLE5hnIQ+c2w==
+X-Received: by 2002:a17:906:29d5:: with SMTP id y21mr1587585eje.131.1596608212169;
+        Tue, 04 Aug 2020 23:16:52 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:5daf:b7bc:eb5e:fc5a? (p200300ea8f2357005dafb7bceb5efc5a.dip0.t-ipconnect.de. [2003:ea:8f23:5700:5daf:b7bc:eb5e:fc5a])
+        by smtp.googlemail.com with ESMTPSA id q3sm752452edc.88.2020.08.04.23.16.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Aug 2020 23:16:51 -0700 (PDT)
+Subject: Re: The card speed limited to 100 Mb/s
+To:     jsbien@mimuw.edu.pl
+Cc:     netdev@vger.kernel.org
+References: <86sgd2g2vo.fsf@mimuw.edu.pl> <86wo2eo05x.fsf@mimuw.edu.pl>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <198814f6-ddc8-0be4-4df2-d255a133971a@gmail.com>
+Date:   Wed, 5 Aug 2020 08:16:43 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-References: <20200801170322.75218-1-jolsa@kernel.org> <20200801170322.75218-7-jolsa@kernel.org>
-In-Reply-To: <20200801170322.75218-7-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 4 Aug 2020 23:12:49 -0700
-Message-ID: <CAEf4BzYtO+ELTpBVwWmWRkmgOCmCnCWU6iZzYjfNRHvb7rgEJg@mail.gmail.com>
-Subject: Re: [PATCH v9 bpf-next 06/14] bpf: Remove recursion call in btf_struct_access
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <86wo2eo05x.fsf@mimuw.edu.pl>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 1, 2020 at 10:04 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Andrii suggested we can simply jump to again label
-> instead of making recursion call.
->
-> Suggested-by: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  kernel/bpf/btf.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
->
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index bc05a24f7361..0f995038b589 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -3931,14 +3931,13 @@ int btf_struct_access(struct bpf_verifier_log *log,
->                 /* Only allow structure for now, can be relaxed for
->                  * other types later.
->                  */
-> -               elem_type = btf_type_skip_modifiers(btf_vmlinux,
-> -                                                   array_elem->type, NULL);
-> -               if (!btf_type_is_struct(elem_type))
-> +               t = btf_type_skip_modifiers(btf_vmlinux, array_elem->type,
-> +                                           NULL);
-> +               if (!btf_type_is_struct(t))
->                         goto error;
->
-> -               off = (off - moff) % elem_type->size;
-> -               return btf_struct_access(log, elem_type, off, size, atype,
-> -                                        next_btf_id);
-> +               off = (off - moff) % t->size;
-> +               goto again;
+On 04.08.2020 18:17, Janusz S. Bień wrote:
+> 
+> I apologize for a false alarm - the cable had to be replaced.
+> 
+It wouldn't have been a question for the kernel community anyway
+because it's about a out-of-tree vendor driver.
+And the 150MB/s - 300MB/s obviously refer to WiFi.
 
-Transformation looks good, thanks. So:
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+> Regards
+> 
+> Janusz
+> 
+> On Tue, Aug 04 2020 at 11:46 +02, Janusz S. Bień wrote:
+>> Hi!
+>>
+>> I follow the instruction from the README.Debian file in
+>> r8168-dkms_8.048.03-1_all.deb.
+>>
+>> This is a HP laptop connected to a 150 Mb/s. The HP service claims the
+>> card should be working with the speed up to 300 Mb/s. Both tests and
+>> Setting show the speed of 100 Mb/s only. For videoconferences the
+>> difference can be quite essential.
+>>
+>> Best regards
+>>
+>> Janusz
+>>
+>> root@debian:~# lshw -class network -short
+>> H/W path               Device     Class          Description
+>> ============================================================
+>> /0/100/2.2/0           enp2s0     network        RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller
+>> /0/100/2.4/0                      network        Realtek Semiconductor Co., Ltd.
+>> /2                     docker0    network        Ethernet interface
+>> root@debian:~# ethtool -i enp2s0 
+>> driver: r8168
+>> version: 8.046.00-NAPI
+>> firmware-version: 
+>> expansion-rom-version: 
+>> bus-info: 0000:02:00.0
+>> supports-statistics: yes
+>> supports-test: no
+>> supports-eeprom-access: no
+>> supports-register-dump: yes
+>> supports-priv-flags: no
+> 
 
-But this '% t->size' makes me wonder what will happen when we have an
-array of zero-sized structs or multi-dimensional arrays with
-dimensions of size 0... I.e.:
-
-struct {} arr[123];
-
-or
-
-int arr[0][0]0];
-
-We should probably be more careful with division here.
-
->
->  error:
->                 bpf_log(log, "access beyond struct %s at off %u size %u\n",
-> --
-> 2.25.4
->
