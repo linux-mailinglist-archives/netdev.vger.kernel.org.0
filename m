@@ -2,131 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C4B923D0BF
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:52:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77A0523D0DE
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:54:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729459AbgHETwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 15:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
+        id S1728242AbgHETxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 15:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726859AbgHEQu6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:50:58 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD862C0A8891
-        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 06:55:33 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id c6so2302310ilo.13
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 06:55:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=T0iHC5DzypW6poy3NDVtNkEOvm1za2UqY6n/ov5xw0A=;
-        b=DAhkOvAYaZ9UtoECfWC2gAqYzdQdZu4/OTZhHotTaCMraihBeTETAb2o+tdVB+R9c/
-         fgruEjKoM8VG+YdsLo4GUZF8VaCggzTi5h3uToTV2f2Sv1hwOpZ5HvtTKuXa2Y1A6q3O
-         zX5fNDo98uB0Sok2zX9/YQGJMJ6y+B1u0vCnk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=T0iHC5DzypW6poy3NDVtNkEOvm1za2UqY6n/ov5xw0A=;
-        b=e5buSuKoYbuHGV0ZN77saZXKU/vcOwQBnB6NS4z2cPaQ3Afa8yiyWQg2gXGb/FApOu
-         ZCSvMu2Ej7O1OB+AwedyD8xQWpQVTE/lu+y0fjDvoO+m41PpcR8wNJvRKkwqak2Pd+0E
-         J/HM8BB6K+Jfrb7/JjAIWjNwV2ECw5Lp6XTXFZ5eBna9UILXBmt7D8B+caT7tXZHEiMb
-         w/FUfMIRPVltJ2T+zfEKSyThEr9YMEJL8iYzqVLT4DbXiaHIGXVWFA7MnXgOAaOiqETU
-         glFu/TOi6xpL7RRGcxPLh+mE8578qB6ItgvqhUoM7kk2jf+cfXYGnr7X1Ud9CjdqXFQj
-         XqSw==
-X-Gm-Message-State: AOAM531Z3R6pTXzwmb2sZ6ifcl1qyZ5AJijyW3T4Lo6VqgH1kU6+e3lX
-        86dBjj9Fws3jNs11apisRFH0ZQ==
-X-Google-Smtp-Source: ABdhPJygRlU9l3OctXlmAVj+p1MKYQ+VT9ZvU9QPRbxWDqUzC6q+bEae4dy82QDhDGDE28iGtnJLqA==
-X-Received: by 2002:a92:c14d:: with SMTP id b13mr3548606ilh.269.1596635733090;
-        Wed, 05 Aug 2020 06:55:33 -0700 (PDT)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id c2sm1073796iow.6.2020.08.05.06.55.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Aug 2020 06:55:32 -0700 (PDT)
-Subject: Re: [PATCH] soc: qmi: allow user to set handle wq to hiprio
-To:     =?UTF-8?B?546L5paH6JmO?= <wenhu.wang@vivo.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     elder@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        kvalo@codeaurora.org, agross@kernel.org, ohad@wizery.com,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
-        ath11k@lists.infradead.org, netdev@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        srinivas.kandagatla@linaro.org, sibis@codeaurora.org
-References: <ADUAnwD8DVByMMSsrG-r3Kri.3.1596374087585.Hmail.wenhu.wang@vivo.com>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <5c6123f2-1a65-8615-9d5d-3bb1d25818b2@ieee.org>
-Date:   Wed, 5 Aug 2020 08:55:30 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        with ESMTP id S1727057AbgHEQtp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:49:45 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E16C0A889D
+        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 07:03:12 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1596635887;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pZAMFZECISVC+f1/HqoixYfgzBWRZz9pXR9Mug3P4/k=;
+        b=OyXZKv8OIjocIvNCUhPtRDTFqONnmekMQPdug5xCC5gtxfSXxVynwnT3rjywb1En1lNrye
+        ne8uIUQa551DH9eDQdBKyQ6hnh6I71o+NSJS4mAtSqWyOW/TmZOm+gcBSOYiIlsWBesm6q
+        rZs5as/I7tl0Ac1SqiDqjQNhxyrAbvjSRcdQZ7VzUsKCiml3LLoCY1hnEaS5urhzEO3eDp
+        PWH3yd002gSPc1GswW6eN1vcrPCjhE5mQsi5snnQ5nURY5luhrHpALm1l3Ufx7NUl2if8U
+        uooZandw14xpXvMk5pvWo2yEyT6e0Bn+vTTLRqshUC7Ka279cYKImy7jjLg48w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1596635887;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pZAMFZECISVC+f1/HqoixYfgzBWRZz9pXR9Mug3P4/k=;
+        b=tSC0X5lHpPdkrD03x/xzs2TnA+aAfbeRwOb7gebLhuo1ivk5IgoQm7Y8hWkQoJR1/8gPTz
+        LLDdDDYJbzRRG+DQ==
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Petr Machata <petrm@mellanox.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 1/9] ptp: Add generic ptp v2 header parsing function
+In-Reply-To: <4d9aeb50-e8df-369a-7e3d-87ff9ba86079@ti.com>
+References: <20200730080048.32553-1-kurt@linutronix.de> <20200730080048.32553-2-kurt@linutronix.de> <87lfj1gvgq.fsf@mellanox.com> <87pn8c0zid.fsf@kurt> <09f58c4f-dec5-ebd1-3352-f2e240ddcbe5@ti.com> <20200804210759.GU1551@shell.armlinux.org.uk> <45130ed9-7429-f1cd-653b-64417d5a93aa@ti.com> <20200804214448.GV1551@shell.armlinux.org.uk> <8f1945a4-33a2-5576-2948-aee5141f83f6@ti.com> <20200804231429.GW1551@shell.armlinux.org.uk> <875z9x1lvn.fsf@kurt> <4d9aeb50-e8df-369a-7e3d-87ff9ba86079@ti.com>
+Date:   Wed, 05 Aug 2020 15:57:53 +0200
+Message-ID: <87bljpnqji.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <ADUAnwD8DVByMMSsrG-r3Kri.3.1596374087585.Hmail.wenhu.wang@vivo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/2/20 8:14 AM, 王文虎 wrote:
-> 
->>> Currently the qmi_handle is initialized single threaded and strictly
->>> ordered with the active set to 1. This is pretty simple and safe but
->>> sometimes ineffency. So it is better to allow user to decide whether
->>> a high priority workqueue should be used.
->>
->> Can you please describe a scenario where this is needed/desired and
->> perhaps also comment on why this is not always desired?
->>
-> 
-> Well, one scenario is that when the AP wants to check the status of the
-> subsystems and the whole QMI data path. It first sends out an indication
-> which asks the subsystems to report their status. After the subsystems send
-> responses to the AP, the responses then are queued on the workqueue of
-> the QMI handler. Actually the AP is configured to do the check in a specific
-> interval regularly. And it check the report counts within a specific delay after
-> it sends out the related indication. When the AP has been under a heavy
-> load for long, the reports are queue their without CPU resource to update
-> the report counts within the specific delay. As a result, the thread that checks
-> the report counts takes it misleadingly that the QMI data path or the subsystems
-> are crashed.
-> 
-> The patch can really resolve the problem mentioned abolve.
+--=-=-=
+Content-Type: text/plain
 
-Is it your intention to submit code that actually does what you describe
-above?  If so, then (as David said) you should propose this change at
-the time it will be needed--which is at the time you send that new
-code out for review.
+On Wed Aug 05 2020, Grygorii Strashko wrote:
+> I really do not want touch netcp, sry.
+> There are other internal code based on this even if there is only one hooks in LKML now.
+> + my comment above.
 
-Even in that case, I don't believe using a high priority workqueue
-would guarantee the improved behavior you think this would provide.
+OK, I see. The use of lists makes more sense now.
 
-In case it wasn't clear already, this change won't be accepted
-at this time (despite your explanation above).
+>
+> I'll try use skb_reset_mac_header(skb);
+> As spectrum does:
+>   	skb_reset_mac_header(skb);
+> 	mlxsw_sp1_ptp_got_packet(mlxsw_sp, skb, local_port, true);
+>
+> if doesn't help PATCH 6 is to drop.
 
-						-Alex
+So, only patch 6 is to drop or 5 as well? Anyhow, I'll wait for your
+test results. Thanks!
 
-> 
-> For narmal situations, it is enough to just use normal priority QMI workqueue.
-> 
->> Regards,
->> Bjorn
->>
->>>
->>> Signed-off-by: Wang Wenhu <wenhu.wang@vivo.com>
->>> ---
->>>  drivers/net/ipa/ipa_qmi.c             | 4 ++--
->>>  drivers/net/wireless/ath/ath10k/qmi.c | 2 +-
->>>  drivers/net/wireless/ath/ath11k/qmi.c | 2 +-
->>>  drivers/remoteproc/qcom_sysmon.c      | 2 +-
->>>  drivers/slimbus/qcom-ngd-ctrl.c       | 4 ++--
->>>  drivers/soc/qcom/pdr_interface.c      | 4 ++--
->>>  drivers/soc/qcom/qmi_interface.c      | 9 +++++++--
->>>  include/linux/soc/qcom/qmi.h          | 3 ++-
->>>  samples/qmi/qmi_sample_client.c       | 4 ++--
->>>  9 files changed, 20 insertions(+), 14 deletions(-)
-> 
+Thanks,
+Kurt
 
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8quuEACgkQeSpbgcuY
+8KYdAQ//ehbHAz67yBuU/W69T8zgbPrwOw1L1dBaYdSXz+D2cBQtqQy9FFa5Nhro
+Oexn7FxptUJQH20KjvtokHztH0XG6XOQu/VRTa0qRBgSF39f/HCGT9tNRfz77AWG
+S/UYDVmV9FCyMcsXyLIhA5RORkYiDr9C99pdLijGOCFdjBkJIF9AH6Vtr7scuCOl
+aHFeJcgsqzglOsziqvqEybg8iH2dKEMGnyztgPJP2fSl2A1TmqgBtnJbcCbM1grw
+LzhlxTCW4dNQyD1Iqi38yUOw2UNCFZamJfmfXbiC95PqxhPzsVAgvWsBjs7B4V6B
+pPuS/4829qeqYK6SnXGORgnixWhx8UfybeEW/QI0wvd5W+h47tvCYS4IjhGUuvCf
+JZffSl4zFMpt79uGA7KgTXSL3RPZPtBd8bWRBhhw0tTLezsg4u66AWqR671Tvx8t
+s4GRIe4LIzZU+yQj6BdJoth9sM5Q3YEU8LwKP2742nX4yuKnZYAlaeAqEwUKTjqP
+87yeGG1Qdf/DZoS6zguoU0G5O9oD6tHPYbr3y1f94c+3VFMeti8WVkxXx2qGZJ3D
+fC7pKVcQZ6/lzmQMNQsY6KRJ/Bwih1pcUkHQipoFjFIWnIAhSooYhIpOvypN/5WY
+NVYmEQNU/D1ZecXhXU1DdwyjAqoEl2ggGBROG+2YS9wzTS2aIfw=
+=Z2rm
+-----END PGP SIGNATURE-----
+--=-=-=--
