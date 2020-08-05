@@ -2,106 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A643523C2C2
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 02:48:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEDF223C2C6
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 02:54:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726584AbgHEAsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 20:48:07 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:46110 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726210AbgHEAsH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 20:48:07 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0750jNLI029513
-        for <netdev@vger.kernel.org>; Tue, 4 Aug 2020 17:48:06 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=9YmiKWZC16HxfLQD28dGK/D+AbLfaoErcxHiHLvI3V8=;
- b=EC0D33O1V0L0rYoE+mMea6okInQrUTNlwj6gER+EhEykpqQGW8kT+kghsZuQgYj1A+1P
- ke20vkVPzv3hDZCrkCTWC6SR+HVSyWVBM86jpQQsMomMLazQbqInU0NPobBk6DE2t1Zq
- TSgGfVylHXSMKJ6ttP5kFK3jAQ117SWOjiA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32n81jqjqa-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 17:48:06 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 4 Aug 2020 17:48:04 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 792D62EC5301; Tue,  4 Aug 2020 17:47:59 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] selftests/bpf: prevent runqslower from racing on building bpftool
-Date:   Tue, 4 Aug 2020 17:47:57 -0700
-Message-ID: <20200805004757.2960750-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726707AbgHEAyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 20:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40450 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725864AbgHEAyW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 20:54:22 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F23C06174A;
+        Tue,  4 Aug 2020 17:54:21 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id l60so3565533pjb.3;
+        Tue, 04 Aug 2020 17:54:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BxG05DrFE72MOSGeh/nY3ptdaEd7/gUavlyqDnB6i8I=;
+        b=AowsasC1tnaoLsPE+JXPouJvv4SWJ8rby3ouB/3Lk3rA6Ad+K4X8QYIoew3qNP/CSH
+         c01KUTKd9ezV2iy1zV1NvrhEdyPZekjBx8GYYtTfk+302Q6BSur1QzeIu/6s/vzuUj2w
+         GyLbD/ZMYB+4YUy8w1l7ntsOL4B1s1am4vLLrJ3qBO/KKYS6e7GBJ1cGksgRp3ngMGiW
+         TP6XDk5wcK8Gu7WAaagVhn0mihANBOdE9ay1OWO+dS8k0RkSeBaYRBLug1+b0USPh2XN
+         WZaxI5XzWcODT3Sp8zBhnuigBT94g4om8oaax00jUWa/bFmW6y6GuOuKHl4q5iLOWD+E
+         wHGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BxG05DrFE72MOSGeh/nY3ptdaEd7/gUavlyqDnB6i8I=;
+        b=gOJtqrarJaJrvwkhPtIA+F0dmy1OFPs++jAkz38DlX2biULwRm4uc1i3yK4dy+qdT/
+         kd2SJ6jxwqSBFCOnPpnzGhhMvXkfn9bPjIBWpokVT98GcIp5/YrMFGkrkaiJ+5rruxdm
+         D7JrUqLo9UIBhan2ncdrPniXRzQOBOl31FPD3Z7IW9ar1bzOk3twMRWFtiKYWNnI4xLg
+         k4LqrZxuxq0uPgfHkvb69oHUej6c/eKBCm0Qx3q6HOwkIT1uwEd/PzJ4u1apPL7L1jHZ
+         77oqrWrY+B301WlbWzHq7z8jG4h/bzAxhBiVlbUvxJfAy8+DVOJcQvXcbcDkzmo5XfeI
+         5HRA==
+X-Gm-Message-State: AOAM530XqK8tUmG4e6CbWr1qMnyqtdFD82Md//NCbjAgrAMlZ80hDekX
+        1n9FJehjVvRebislRSM6KgujBWgi
+X-Google-Smtp-Source: ABdhPJxr0UjlZMG0OjFUlayZYLfycyN2ymZAc4EBOQ7kJ4SMuC8oXoDn0GJiozFWRN8ChOO0WI3cDg==
+X-Received: by 2002:a17:902:bd01:: with SMTP id p1mr843670pls.25.1596588861126;
+        Tue, 04 Aug 2020 17:54:21 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id s61sm397343pjb.57.2020.08.04.17.54.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Aug 2020 17:54:20 -0700 (PDT)
+Subject: Re: [PATCH] selftests/net: skip msg_zerocopy test if we have less
+ than 4 CPUs
+To:     Colin King <colin.king@canonical.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200804123012.378750-1-colin.king@canonical.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <b99004ea-cd9d-bec3-5f9f-82dcb00a6284@gmail.com>
+Date:   Tue, 4 Aug 2020 17:54:18 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-04_04:2020-08-03,2020-08-04 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- impostorscore=0 spamscore=0 suspectscore=8 lowpriorityscore=0 phishscore=0
- bulkscore=0 malwarescore=0 mlxscore=0 priorityscore=1501 mlxlogscore=543
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008050005
-X-FB-Internal: deliver
+In-Reply-To: <20200804123012.378750-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-runqslower's Makefile is building/installing bpftool into
-$(OUTPUT)/sbin/bpftool, which coincides with $(DEFAULT_BPFTOOL). In pract=
-ice
-this means that often when building selftests from scratch (after `make
-clean`), selftests are racing with runqslower to simultaneously build bpf=
-tool
-and one of the two processes fail due to file being busy. Prevent this ra=
-ce by
-explicitly order-depending on $(BPFTOOL_DEFAULT).
 
-Fixes: a2c9652f751e ("selftests: Refactor build to remove tools/lib/bpf f=
-rom include path")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/Makefile | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
-ts/bpf/Makefile
-index e7a8cf83ba48..48425f9251b5 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -142,7 +142,9 @@ VMLINUX_BTF_PATHS ?=3D $(if $(O),$(O)/vmlinux)				\
- 		     /boot/vmlinux-$(shell uname -r)
- VMLINUX_BTF ?=3D $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS)))=
-)
-=20
--$(OUTPUT)/runqslower: $(BPFOBJ)
-+DEFAULT_BPFTOOL :=3D $(SCRATCH_DIR)/sbin/bpftool
-+
-+$(OUTPUT)/runqslower: $(BPFOBJ) | $(DEFAULT_BPFTOOL)
- 	$(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/runqslower	\
- 		    OUTPUT=3D$(SCRATCH_DIR)/ VMLINUX_BTF=3D$(VMLINUX_BTF)   \
- 		    BPFOBJ=3D$(BPFOBJ) BPF_INCLUDE=3D$(INCLUDE_DIR) &&	\
-@@ -164,7 +166,6 @@ $(OUTPUT)/test_netcnt: cgroup_helpers.c
- $(OUTPUT)/test_sock_fields: cgroup_helpers.c
- $(OUTPUT)/test_sysctl: cgroup_helpers.c
-=20
--DEFAULT_BPFTOOL :=3D $(SCRATCH_DIR)/sbin/bpftool
- BPFTOOL ?=3D $(DEFAULT_BPFTOOL)
- $(DEFAULT_BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefi=
-le)    \
- 		    $(BPFOBJ) | $(BUILD_DIR)/bpftool
---=20
-2.24.1
+On 8/4/20 5:30 AM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> The current test will exit with a failure if it cannot set affinity on
+> specific CPUs which is problematic when running this on single CPU
+> systems. Add a check for the number of CPUs and skip the test if
+> the CPU requirement is not met.
+> 
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>  tools/testing/selftests/net/msg_zerocopy.sh | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/net/msg_zerocopy.sh b/tools/testing/selftests/net/msg_zerocopy.sh
+> index 825ffec85cea..97bc527e1297 100755
+> --- a/tools/testing/selftests/net/msg_zerocopy.sh
+> +++ b/tools/testing/selftests/net/msg_zerocopy.sh
+> @@ -21,6 +21,11 @@ readonly DADDR6='fd::2'
+>  
+>  readonly path_sysctl_mem="net.core.optmem_max"
+>  
+> +if [[ $(nproc) -lt 4 ]]; then
+> +	echo "SKIP: test requires at least 4 CPUs"
+> +	exit 4
+> +fi
+> +
+>  # No arguments: automated test
+>  if [[ "$#" -eq "0" ]]; then
+>  	$0 4 tcp -t 1
+> 
 
+Test explicitly uses CPU 2 and 3, right ?
+
+nproc could be 500, yet cpu 2 or 3 could be offline
+
+# cat /sys/devices/system/cpu/cpu3/online
+0
+# echo $(nproc)
+71
