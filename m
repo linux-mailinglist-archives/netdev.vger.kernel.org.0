@@ -2,94 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36A0523D3C8
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 00:06:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74F5023D3CC
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 00:09:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726180AbgHEWGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 18:06:36 -0400
-Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:55809 "EHLO
-        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725830AbgHEWGg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 18:06:36 -0400
-Received: from callcc.thunk.org (pool-96-230-252-158.bstnma.fios.verizon.net [96.230.252.158])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 075M5ouk012945
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 5 Aug 2020 18:05:51 -0400
-Received: by callcc.thunk.org (Postfix, from userid 15806)
-        id 5A870420263; Wed,  5 Aug 2020 18:05:50 -0400 (EDT)
-Date:   Wed, 5 Aug 2020 18:05:50 -0400
-From:   tytso@mit.edu
-To:     Marc Plumb <lkml.mplumb@gmail.com>
-Cc:     Willy Tarreau <w@1wt.eu>, netdev@vger.kernel.org,
-        aksecurity@gmail.com, torvalds@linux-foundation.org,
-        edumazet@google.com, Jason@zx2c4.com, luto@kernel.org,
-        keescook@chromium.org, tglx@linutronix.de, peterz@infradead.org,
-        stable@vger.kernel.org
-Subject: Re: Flaw in "random32: update the net random state on interrupt and
- activity"
-Message-ID: <20200805220550.GA785826@mit.edu>
-References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
- <20200805024941.GA17301@1wt.eu>
- <20200805153432.GE497249@mit.edu>
- <c200297c-85a5-dd50-9497-6fcf7f07b727@gmail.com>
+        id S1726511AbgHEWJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 18:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726013AbgHEWJU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 18:09:20 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3C3C061575;
+        Wed,  5 Aug 2020 15:09:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=SBHrjyLZMwHHEwy1XJ0fg8T/SoluE+ttqZKDd2I3toA=; b=soXwZXHhjkb4m97fY0jjWEy2L
+        zwf1lqPIm3S4bC1kdSkIu1dWH2U9mBJUsdTLE8NzeIoTzUPSiYtQV/6D8K2o2kmkr1Q9TyLZOL1Cl
+        Jl87to4yZcvFMu+ByfmHUdCtz2Y94u7C3jPbGHN4dfuQOQZdVq4vHouzcyZ6jqL0CzgAWK/dt1N6H
+        6s2f+jDLLA5QfHonrKHQmnWlqTZdQ53Bc6cLgLEc8zU/WmELdw7sMAFaA+ZpOHgiJoX5QNX6LAwwT
+        RRBhqCOrsSouqf50jVavsZtbjXEZqkFVn7wQ2wf8vd7PkEIJh6SJ0pe1L/880bsEXTWc29elYoQyT
+        a6eJZCbXg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48806)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1k3Rb4-0003y7-BF; Wed, 05 Aug 2020 23:09:18 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1k3Rb3-0005Ut-QK; Wed, 05 Aug 2020 23:09:17 +0100
+Date:   Wed, 5 Aug 2020 23:09:17 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Joe Perches <joe@perches.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH] MAINTAINERS: update phylink/sfp keyword matching
+Message-ID: <20200805220917.GZ1551@shell.armlinux.org.uk>
+References: <E1k3KUx-0000da-In@rmk-PC.armlinux.org.uk>
+ <CAHk-=whbLwN9GEVVt=7eYhPYk0t0Wh1xeuNEDD+xmQxBFjAQJA@mail.gmail.com>
+ <20200805182250.GX1551@shell.armlinux.org.uk>
+ <957f48692a2f0bc4df2d83068073c4822da30eef.camel@perches.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c200297c-85a5-dd50-9497-6fcf7f07b727@gmail.com>
+In-Reply-To: <957f48692a2f0bc4df2d83068073c4822da30eef.camel@perches.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 05, 2020 at 09:06:40AM -0700, Marc Plumb wrote:
-> Isn't get_random_u32 the function you wrote to do that? If this needs to be
-> cryptographically secure, that's an existing option that's safe.
+On Wed, Aug 05, 2020 at 11:47:38AM -0700, Joe Perches wrote:
+> On Wed, 2020-08-05 at 19:22 +0100, Russell King - ARM Linux admin wrote:
+> > On Wed, Aug 05, 2020 at 11:11:28AM -0700, Linus Torvalds wrote:
+> > > On Wed, Aug 5, 2020 at 7:34 AM Russell King <rmk+kernel@armlinux.org.uk> wrote:
+> > > > Is this something you're willing to merge directly please?
+> > > 
+> > > Done.
+> > > 
+> > > That said:
+> > > 
+> > > > -K:     phylink
+> > > > +K:     phylink\.h|struct\s+phylink|\.phylink|>phylink_|phylink_(autoneg|clear|connect|create|destroy|disconnect|ethtool|helper|mac|mii|of|set|start|stop|test|validate)
+> > > 
+> > > That's a very awkward pattern. I wonder if there could be better ways
+> > > to express this (ie "only apply this pattern to these files" kind of
+> > > thing)
+> > 
+> > Yes, it's extremely awkward - I spent much of the morning with perl
+> > testing it out on the drivers/ subtree.
 > 
-> The fundamental question is: Why is this attack on net_rand_state problem?
-> It's Working as Designed. Why is it a major enough problem to risk harming
-> cryptographically important functions?
+> There are a lot of phylink_<foo> in the kernel.
+> Are those really the only uses you want to watch?
 
-I haven't looked at the users of net_rand_state, but historically, the
-networking subsystem has a expressed a (perceived?) need for *very* fast
-mostly-random-but-if-doens't-have-to-be-perfect-numbers-our-benchmarks-
-are-way-more-important numbers.   As in, if there are extra cache line
-misses, our benchmarks would suffer and that's not acceptable.
+It is sufficient; as I said, I've spent a morning running this:
 
-One of the problems here is that it's not sufficient for the average case
-to be fast, but once in every N operations, we need to do something that
-requires Real Crypto, and so that Nth time, there would be an extra lag
-and that would be the end of the world (at least as far as networking
-benchmarks are concerned, anyway).   So in other words, it's not enough for
-the average time to run get_random_u32() to be fast, they care about the 95th or
-99th percentile number of get_random_u32() to be fast as well.
+#!/usr/bin/perl
+$re = 'phylink\.h|struct\s+phylink|\.phylink|>phylink_|phylink_(autoneg|clear|connect|create|destroy|disconnect|ethtool|helper|mac|mii|of|set|start|stop|test|validate)';
+foreach $f (@ARGV) {
+        open F, $f;
+        $l = 1;
+        while (<F>) {
+                chomp;
+                print "$f:$l: $_\n" if /$re/;
+                $l++;
+        }
+        close F;
+}
 
-An example of this would be for TCP sequence number generation; it's
-not *really* something that needs to be secure, and if we rekey the
-RNG every 5 minutes, so long as the best case attack takes at most,
-say, an hour, if the worst the attacker can do is to be able to carry
-out an man-in-the-middle attack without being physically in between
-the source and the destination --- well, if you *really* cared about
-security the TCP connection would be protected using TLS anyway.  See
-RFC 1948 (later updated by RFC 6528) for an argument along these
-lines.
+through:
 
-> This whole thing is making the fundamental mistake of all amateur
-> cryptographers of trying to create your own cryptographic primitive. You're
-> trying to invent a secure stream cipher. Either don't try to make
-> net_rand_state secure, or use a known secure primitive.
+$ find drivers -type f -print0 | xargs -0 ./check.pl | diff -u pl-ref.out - |less
 
-Well, technically it's not supposed to be a secure cryptographic
-primitive.  net_rand_state is used in the call prandom_u32(), so the
-only supposed guarantee is PSEUDO random.
+where pl-ref.out is the original K: matching of just "phylink" and
+looking at the differences to ensure I'm excluding just stuff that
+doesn't concern me, while getting a high hit rate on the stuff
+that I do want.
 
-That being said, a quick "get grep prandom_u32" shows that there are a
-*huge* number of uses of prandom_u32() and whether they are all
-appropriate uses of prandom_u32(), or kernel developers are using it
-because "I haz a ne3D for spE3d" but in fact it's for a security
-critical application is a pretty terrifying question.  If we start
-seeing CVE's getting filed caused by inappropriate uses of
-prandom_u32, to be honest, it won't surprise me.
+Now, I'm not saying that there isn't a better way, but this is not
+something I want to spend days on.  So I got something that works
+for me, and that's what I've sent Linus.
 
-						- Ted
+Going through your list...
+
+>       4 phylink_add
+
+Not sure what this is.  Doesn't seem to be anything to do with what
+I maintain.
+
+>       7 phylink_an_mode_str
+
+static function.
+
+>       4 phylink_apply_manual_flow
+
+static function.
+
+>       3 phylink_attach_phy
+
+static function.
+
+>      26 phylink_autoneg_inband
+
+This one public and included.
+
+>       4 phylink_bringup_phy
+
+static function.
+
+>       3 phylink_change_inband_advert
+
+static function.
+
+>       6 phylink_clear
+
+This one public and included.
+
+>       4 phylink_complete
+>       2 phylink_complete_evt
+
+Nothing to do with phylink.
+
+>     145 phylink_config
+
+Included.
+
+>       3 phylink_connect
+>       8 phylink_connect_phy
+
+Both included under one.
+
+>      39 phylink_create
+
+Included.
+
+>      10 phylink_dbg
+
+static function.
+
+... shall I go on?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
