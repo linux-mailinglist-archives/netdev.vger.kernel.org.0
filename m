@@ -2,73 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8F823C875
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 11:01:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35F3023C8BB
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 11:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728062AbgHEJAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 05:00:51 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:23249 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726191AbgHEJAs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 05:00:48 -0400
+        id S1728397AbgHEJLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 05:11:21 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:53249 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728324AbgHEJLE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 05:11:04 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596618046;
+        s=mimecast20190719; t=1596618661;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZSDQ7oldb8iII0VqxQ1pyiHwiNqGB3oUlAZtt9Ry2qQ=;
-        b=URuVsqaWt1BW+gLdupfsfzDX2ty4iH046RGOcyvfib3oCrJVD6L7zZdIiXmWtbUXwoXroQ
-        NFuVrhvX5IYea6n43lLnQtHrZ0C7fp7U2fZVAPuUz3MT+pg+EGoXuRtZfkRYFt+yiWZ2P1
-        ZhGYZdBY4x0cCNjPA1rFkGOHLCOhb+0=
+        bh=5uXm2AcpYhJR4gZmB61tzeHXm44+3sXMc+22nlq5ahw=;
+        b=evvDGOegnwoTjcVUIwa/yY936QCe4GgqD9SU8Xnm7seEjq4avYX0UPfw48jH8PSbeSqbzZ
+        2vIjAsTwXvdYt8WYKCkUK6h86bcwO4GYi1zsVvHDCne+c9GhAq6xdboY03pWmNbk4lYBMT
+        OBOVElyv5w+i00O8nWQ3zo93VagovE8=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-276-iK3VVNtWMhWCex7zMWHdBg-1; Wed, 05 Aug 2020 05:00:43 -0400
-X-MC-Unique: iK3VVNtWMhWCex7zMWHdBg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-8-rYCFWsglP4W5Lujczq97oA-1; Wed, 05 Aug 2020 05:10:57 -0400
+X-MC-Unique: rYCFWsglP4W5Lujczq97oA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 610091005504;
-        Wed,  5 Aug 2020 09:00:41 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CADB1102C7ED;
+        Wed,  5 Aug 2020 09:10:55 +0000 (UTC)
 Received: from ovpn-114-157.ams2.redhat.com (ovpn-114-157.ams2.redhat.com [10.36.114.157])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D8D0771797;
-        Wed,  5 Aug 2020 09:00:38 +0000 (UTC)
-Message-ID: <62165f6af630ec134713a7fa2c136ec60a67d2f2.camel@redhat.com>
-Subject: Re: [PATCH] net: openvswitch: silence suspicious RCU usage warning
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 32CBC72E4F;
+        Wed,  5 Aug 2020 09:10:53 +0000 (UTC)
+Message-ID: <e197f22c62d4f1b78cee4f8a2a9b55a6bc807ede.camel@redhat.com>
+Subject: Re: [PATCH net] mptcp: be careful on subflow creation
 From:   Paolo Abeni <pabeni@redhat.com>
-To:     xiangxia.m.yue@gmail.com, davem@davemloft.net, echaudro@redhat.com,
-        kuba@kernel.org, pshelar@ovn.org, syzkaller-bugs@googlegroups.com
-Cc:     dev@openvswitch.org, linux-kernel@vger.kernel.org,
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>,
         netdev@vger.kernel.org
-Date:   Wed, 05 Aug 2020 11:00:37 +0200
-In-Reply-To: <20200805071911.64101-1-xiangxia.m.yue@gmail.com>
-References: <20200805071911.64101-1-xiangxia.m.yue@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org,
+        Nicolas Rybowski <nicolas.rybowski@tessares.net>
+Date:   Wed, 05 Aug 2020 11:10:52 +0200
+In-Reply-To: <4f2a74b9-d728-fa76-7b0f-f70c256077ee@tessares.net>
+References: <61e82de664dffde9ff445ed6f776d6809b198693.1596558566.git.pabeni@redhat.com>
+         <4f2a74b9-d728-fa76-7b0f-f70c256077ee@tessares.net>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.36.4 (3.36.4-1.fc32) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-08-05 at 15:19 +0800, xiangxia.m.yue@gmail.com wrote:
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Tue, 2020-08-04 at 21:25 +0200, Matthieu Baerts wrote:
+> Hi Paolo,
 > 
-> ovs_flow_tbl_destroy always is called from RCU callback
-> or error path. It is no need to check if rcu_read_lock
-> or lockdep_ovsl_is_held was held.
+> On 04/08/2020 18:31, Paolo Abeni wrote:
+> > Nicolas reported the following oops:
 > 
-> ovs_dp_cmd_fill_info always is called with ovs_mutex,
-> So use the rcu_dereference_ovsl instead of rcu_dereference
-> in ovs_flow_tbl_masks_cache_size.
+> (...)
 > 
-> Fixes: 9bf24f594c6a ("net: openvswitch: make masks cache size configurable")
-> Cc: Eelco Chaudron <echaudro@redhat.com>
-> Reported-by: syzbot+c0eb9e7cdde04e4eb4be@syzkaller.appspotmail.com
-> Reported-by: syzbot+f612c02823acb02ff9bc@syzkaller.appspotmail.com
-> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > on some unconventional configuration.
+> > 
+> > The MPTCP protocol is trying to create a subflow for an
+> > unaccepted server socket. That is allowed by the RFC, even
+> > if subflow creation will likely fail.
+> > Unaccepted sockets have still a NULL sk_socket field,
+> > avoid the issue by failing earlier.
+> > 
+> > Reported-and-tested-by: Nicolas Rybowski <nicolas.rybowski@tessares.net>
+> > Fixes: 7d14b0d2b9b3 ("mptcp: set correct vfs info for subflows")
+> 
+> Thank you for the patch, the addition in the code looks very good to me!
+> 
+> But are you sure the commit you mention introduces the issue you fix here?
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+AFAICS, the oops can be observed only with the mentioned commit - which
+unconditioanlly de-reference a NULL sk->sk_socket. [try to] create a
+subflow on server unaccepted socket is not a bug per-se, so I would not
+send the fix to older trees.
+
+Thanks,
+
+Paolo
 
