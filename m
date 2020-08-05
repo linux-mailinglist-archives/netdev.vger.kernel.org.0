@@ -2,125 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CE9223C38B
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 04:42:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7120423C3B3
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 04:50:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726027AbgHEClu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 22:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725864AbgHEClu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 22:41:50 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDE8C06174A
-        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 19:41:49 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id p3so23590656pgh.3
-        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 19:41:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QDmcTZDWeuwdWXnrOH109Y/AHlw1vgjhG/nuvuK0Q64=;
-        b=Dsxx5vPMMpDepAwHxm/D2H2NTrw52TPNOD2td+k9ur8zIp65OjMtJ08fYnZD3D17oC
-         QO4iQpXuEFSBBzhWCfQ23Mpjp7kkDd4XbZOJgHtgGbWJ9VM8q8sod13RCzu3QeeJePJz
-         Oz0HS7ERQQV3YQtKmnaIP2ZtsArQLCcTBV5n4e9uESFsJ505xYzR7tQNbZTCPkO/zDE/
-         ZRVyMLLnOpP4O4ffkTPyI0HBhGOCW3RTJqw37DsMAiYBoU+Q0KJjHXv8CEw4wIuhFRH+
-         Pxdi/ocNSUOs8XPBvxU41gF0PwLLHEYNCsDk/0Aqfy23ewalDFmW6UewGgTQawBViT+D
-         sLJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QDmcTZDWeuwdWXnrOH109Y/AHlw1vgjhG/nuvuK0Q64=;
-        b=raV6tH6uUKy3LnkNncjOKH+SMNPsZhFOQeF/VZGXtG2AuY5vQ8lVwvhY1T5vVWDq40
-         zogebtPHvBL5n7Z6wOe5/JrdBun+NgN4m089NWLcNZhN/8Fv/DTCBVWoJXaNE4hRbuyP
-         pxPz1fSFtw58LGFAGB36wPG21XZR0CLlKD1+LFADjLyoNVBKNZHlcwiRAdwU8+wtPeIl
-         FTFe9LOVGvs6TwVtQ9Amm40L6NQ2wXxeMbRzPSPA25u3D+/6T18+twnI/cotYmMJbqNb
-         9X6txdrhjSrHG0I37EUQtZaeoO3deiMXsS5e71rEuWv2LbVri7AbwLU9atJnGzUvXCM3
-         /EHg==
-X-Gm-Message-State: AOAM533uelsdHxt3+GCrEjBx+vb/VpXXjABOXZlavDkrren6wQuHKiaL
-        4TuEwQm6oFYQwuyxsw4lahaPl+9S0nGPJw==
-X-Google-Smtp-Source: ABdhPJxRQZk+uB2d4JqffHmZ8o2cexJlONvh3mnxsy+D5IN5L5RIqIBOxaMFDJdKAjrIlsFOqXOeXA==
-X-Received: by 2002:a63:1962:: with SMTP id 34mr1102970pgz.411.1596595308941;
-        Tue, 04 Aug 2020 19:41:48 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id u2sm640868pjg.35.2020.08.04.19.41.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Aug 2020 19:41:48 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Guillaume Nault <gnault@redhat.com>,
-        Petr Machata <pmachata@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        David Ahern <dsahern@kernel.org>,
-        Andreas Karis <akaris@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] Revert "vxlan: fix tos value before xmit"
-Date:   Wed,  5 Aug 2020 10:41:31 +0800
-Message-Id: <20200805024131.2091206-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.25.4
+        id S1727873AbgHECt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 22:49:56 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:39399 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725950AbgHECt4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Aug 2020 22:49:56 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 0752nfDC017394;
+        Wed, 5 Aug 2020 04:49:41 +0200
+Date:   Wed, 5 Aug 2020 04:49:41 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Marc Plumb <lkml.mplumb@gmail.com>
+Cc:     tytso@mit.edu, netdev@vger.kernel.org, aksecurity@gmail.com,
+        torvalds@linux-foundation.org, edumazet@google.com,
+        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
+        tglx@linutronix.de, peterz@infradead.org, stable@vger.kernel.org
+Subject: Re: Flaw in "random32: update the net random state on interrupt and
+ activity"
+Message-ID: <20200805024941.GA17301@1wt.eu>
+References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
+User-Agent: Mutt/1.6.1 (2016-04-27)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 71130f29979c7c7956b040673e6b9d5643003176.
+Hi Marc,
 
-In commit 71130f29979c ("vxlan: fix tos value before xmit") we want to
-make sure the tos value are filtered by RT_TOS() based on RFC1349.
+On Tue, Aug 04, 2020 at 05:52:36PM -0700, Marc Plumb wrote:
+> Seeding two PRNGs with the same entropy causes two problems. The minor one
+> is that you're double counting entropy. The major one is that anyone who can
+> determine the state of one PRNG can determine the state of the other.
+> 
+> The net_rand_state PRNG is effectively a 113 bit LFSR, so anyone who can see
+> any 113 bits of output can determine the complete internal state.
+> 
+> The output of the net_rand_state PRNG is used to determine how data is sent
+> to the network, so the output is effectively broadcast to anyone watching
+> network traffic. Therefore anyone watching the network traffic can determine
+> the seed data being fed to the net_rand_state PRNG.
 
-       0     1     2     3     4     5     6     7
-    +-----+-----+-----+-----+-----+-----+-----+-----+
-    |   PRECEDENCE    |          TOS          | MBZ |
-    +-----+-----+-----+-----+-----+-----+-----+-----+
+The problem this patch is trying to work around is that the reporter
+(Amit) was able to determine the entire net_rand_state after observing
+a certain number of packets due to this trivial LFSR and the fact that
+its internal state between two reseedings only depends on the number
+of calls to read it. (please note that regarding this point I'll
+propose a patch to replace that PRNG to stop directly exposing the
+internal state to the network).
 
-But RFC1349 has been obsoleted by RFC2474. The new DSCP field defined like
+If you look closer at the patch, you'll see that in one interrupt
+the patch only uses any 32 out of the 128 bits of fast_pool to
+update only 32 bits of the net_rand_state. As such, the sequence
+observed on the network also depends on the remaining bits of
+net_rand_state, while the 96 other bits of the fast_pool are not
+exposed there.
 
-       0     1     2     3     4     5     6     7
-    +-----+-----+-----+-----+-----+-----+-----+-----+
-    |          DS FIELD, DSCP           | ECN FIELD |
-    +-----+-----+-----+-----+-----+-----+-----+-----+
+> Since this is the same
+> seed data being fed to get_random_bytes, it allows an attacker to determine
+> the state and there output of /dev/random. I sincerely hope that this was
+> not the intended goal. :)
 
-So with
+Not only was this obviously not the goal, but I'd be particularly
+interested in seeing this reality demonstrated, considering that
+the whole 128 bits of fast_pool together count as a single bit of
+entropy, and that as such, even if you were able to figure the
+value of the 32 bits leaked to net_rand_state, you'd still have to
+guess the 96 other bits for each single entropy bit :-/
 
-IPTOS_TOS_MASK          0x1E
-RT_TOS(tos)		((tos)&IPTOS_TOS_MASK)
-
-the first 3 bits DSCP info will get lost.
-
-To take all the DSCP info in xmit, we should revert the patch and just push
-all tos bits to ip_tunnel_ecn_encap(), which will handling ECN field later.
-
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- drivers/net/vxlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index a7c3939264b0..35a7d409d8d3 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -2722,7 +2722,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 		ndst = &rt->dst;
- 		skb_tunnel_check_pmtu(skb, ndst, VXLAN_HEADROOM);
- 
--		tos = ip_tunnel_ecn_encap(RT_TOS(tos), old_iph, skb);
-+		tos = ip_tunnel_ecn_encap(tos, old_iph, skb);
- 		ttl = ttl ? : ip4_dst_hoplimit(&rt->dst);
- 		err = vxlan_build_skb(skb, ndst, sizeof(struct iphdr),
- 				      vni, md, flags, udp_sum);
-@@ -2762,7 +2762,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 
- 		skb_tunnel_check_pmtu(skb, ndst, VXLAN6_HEADROOM);
- 
--		tos = ip_tunnel_ecn_encap(RT_TOS(tos), old_iph, skb);
-+		tos = ip_tunnel_ecn_encap(tos, old_iph, skb);
- 		ttl = ttl ? : ip6_dst_hoplimit(ndst);
- 		skb_scrub_packet(skb, xnet);
- 		err = vxlan_build_skb(skb, ndst, sizeof(struct ipv6hdr),
--- 
-2.25.4
-
+Regards,
+Willy
