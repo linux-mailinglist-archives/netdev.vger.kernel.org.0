@@ -2,63 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD31423D049
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:47:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E288523D02F
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:31:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728848AbgHETbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 15:31:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33076 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728295AbgHERIR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Aug 2020 13:08:17 -0400
-Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2AA6A22D00;
-        Wed,  5 Aug 2020 17:08:09 +0000 (UTC)
-Date:   Wed, 5 Aug 2020 13:08:07 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     naveen.n.rao@linux.ibm.com, anil.s.keshavamurthy@intel.com,
-        davem@davemloft.net, mhiramat@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, andriin@fb.com, john.fastabend@gmail.com,
-        kpsingh@chromium.org, sfr@canb.auug.org.au, mingo@kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Chengming Zhou <zhouchengming@bytedance.com>
-Subject: Re: [External] Re: [PATCH v2] kprobes: fix NULL pointer dereference
- at kprobe_ftrace_handler
-Message-ID: <20200805130807.268cc1a8@oasis.local.home>
-In-Reply-To: <CAMZfGtW2LJTUB6OaixF-V0tVPXt5kEzVvUvOSbO551r0vvZGbg@mail.gmail.com>
-References: <20200805162713.16386-1-songmuchun@bytedance.com>
-        <20200805125056.1dfe74b5@oasis.local.home>
-        <CAMZfGtW2LJTUB6OaixF-V0tVPXt5kEzVvUvOSbO551r0vvZGbg@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1728524AbgHETbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 15:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728951AbgHETbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 15:31:06 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC004C061575;
+        Wed,  5 Aug 2020 12:31:05 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2DB3A152F10F1;
+        Wed,  5 Aug 2020 12:14:19 -0700 (PDT)
+Date:   Wed, 05 Aug 2020 12:31:03 -0700 (PDT)
+Message-Id: <20200805.123103.464522080473075661.davem@davemloft.net>
+To:     sbrivio@redhat.com
+Cc:     sfr@canb.auug.org.au, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        heiko.carstens@de.ibm.com, xiyou.wangcong@gmail.com
+Subject: Re: [PATCH RESEND net-next] ip_tunnel_core: Fix build for archs
+ without _HAVE_ARCH_IPV6_CSUM
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200805153931.50a3d518@redhat.com>
+References: <20200805153931.50a3d518@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 05 Aug 2020 12:14:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 6 Aug 2020 00:59:41 +0800
-Muchun Song <songmuchun@bytedance.com> wrote:
+From: Stefano Brivio <sbrivio@redhat.com>
+Date: Wed, 5 Aug 2020 15:39:31 +0200
 
-> > The original patch has already been pulled into the queue and tested.
-> > Please make a new patch that adds this update, as if your original
-> > patch has already been accepted.  
+> On architectures defining _HAVE_ARCH_IPV6_CSUM, we get
+> csum_ipv6_magic() defined by means of arch checksum.h headers. On
+> other architectures, we actually need to include net/ip6_checksum.h
+> to be able to use it.
 > 
-> Will do, thanks!
+> Without this include, building with defconfig breaks at least for
+> s390.
+> 
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Fixes: 4cb47a8644cc ("tunnels: PMTU discovery support for directly bridged IP packets")
+> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
 
-Also, if you can, add the following:
-
-Link: https://lore.kernel.org/r/20200805142136.0331f7ea@canb.auug.org.au
-
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Fixes: 0cb2f1372baa ("kprobes: Fix NULL pointer dereference at kprobe_ftrace_handler")
-
-It's no big deal if you don't, because I will ;-)
-
--- Steve
+Applied, thank you.
