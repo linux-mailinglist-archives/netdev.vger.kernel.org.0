@@ -2,131 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB16D23D415
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 01:04:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95E9C23D418
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 01:07:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726305AbgHEXD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 19:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbgHEXD4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 19:03:56 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0EC7C061574
-        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 16:03:55 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id j19so25623654pgm.11
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 16:03:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
-        h=content-transfer-encoding:mime-version:subject:from:in-reply-to:cc
-         :date:message-id:references:to;
-        bh=uLBYUTnw9Z+74Aj4SR5Qjaxb4nMHXf9QCuupJPejSUc=;
-        b=g+hrT99ZtYzguhFzzkZ4UR5OiG5nV7TPkFPrKp4hoI45WLAVypnJsCBSaHmqvf3Je+
-         SVEcomvCFFdlIbAsb4RIhJv53ZMr6GaL1PBk0f/Jh8vZlfpsYls0J/uufLtAx3Tj1hTB
-         VyOwo5m7gALv1CzVeTIvUqt7YTcVWOscyTx6KhJLxJcIHwIfm4AOE3UrqVbsn+e+yvmK
-         Tq8geHbroBgMPEy6Uyc2aMzN9CqRieE6LsJBNjzFa2wGT+XKIQTbSyGFir4UVD4/GZum
-         hMxJiR4JH+RM235vcBAN21860fGWD5D5N8UXnG3uyPLXMLLIniR17gyoFJodhFgD+Twe
-         HUJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:mime-version:subject
-         :from:in-reply-to:cc:date:message-id:references:to;
-        bh=uLBYUTnw9Z+74Aj4SR5Qjaxb4nMHXf9QCuupJPejSUc=;
-        b=sjR/0dHYw/+W5V/ZHPMFfEFJZIprilPiYUVQxpWN0WLyWpxA7w++7qE7JYV8YGpHMa
-         yhVLY/rIIMXnYBT8gsLV+b+wKnH1YM1m5u/Xqz6ZIg3SKqj/X0uWWWbrglXPuZ1+N58+
-         Xv+vG5fHKeVkQp0skUUFunP4N2veAKE+ZsMQeV1RZJSNmp6QTLWJTJRwP4RPhtHZnzuj
-         Dwu3J0bhmGF86HjBG/L0wRAAx1dX+1Z6tj76JDgi9ySPtQwfybr+/mpYgnfM0qmfFKPM
-         eivlrRuS3rLd9Rgyco78vuSSvYPmHWdhmeuBEsev9Oi/blw9ctpujaK+M969Koht5Kex
-         PI+A==
-X-Gm-Message-State: AOAM530no5VHPPELHmX7i1jhNSK6B1GkHJvIQeijyujU1lKmqgMLVHSq
-        puYyZtFcec/Nq3LDSQtsp9aS5Q==
-X-Google-Smtp-Source: ABdhPJy0cWmM7VcSKZcB6RJLl2odCIeq1tlznOYQIVXKJ/MNA6YEiJdiR6e/aTbUOlh3Q2kjt8TZSg==
-X-Received: by 2002:a63:4714:: with SMTP id u20mr4999261pga.104.1596668634635;
-        Wed, 05 Aug 2020 16:03:54 -0700 (PDT)
-Received: from [192.168.0.248] (c-67-180-165-146.hsd1.ca.comcast.net. [67.180.165.146])
-        by smtp.gmail.com with ESMTPSA id e26sm4439271pfj.197.2020.08.05.16.03.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Aug 2020 16:03:53 -0700 (PDT)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (1.0)
-Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
-From:   Andy Lutomirski <luto@amacapital.net>
-In-Reply-To: <20200805220550.GA785826@mit.edu>
-Cc:     Marc Plumb <lkml.mplumb@gmail.com>, Willy Tarreau <w@1wt.eu>,
-        netdev@vger.kernel.org, aksecurity@gmail.com,
-        torvalds@linux-foundation.org, edumazet@google.com,
-        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
-        tglx@linutronix.de, peterz@infradead.org, stable@vger.kernel.org
-Date:   Wed, 5 Aug 2020 16:03:52 -0700
-Message-Id: <4FAC5E1F-870F-47E3-BBE8-6172FDA15738@amacapital.net>
-References: <20200805220550.GA785826@mit.edu>
-To:     tytso@mit.edu
-X-Mailer: iPhone Mail (17G68)
+        id S1726630AbgHEXHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 19:07:18 -0400
+Received: from smtprelay0164.hostedemail.com ([216.40.44.164]:33822 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726542AbgHEXHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 19:07:10 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 8FA8418224D8E;
+        Wed,  5 Aug 2020 23:07:06 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:421:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:1981:2194:2199:2393:2553:2559:2562:2734:2828:3138:3139:3140:3141:3142:3165:3354:3622:3865:3866:3867:3870:3871:3872:3873:3874:4321:5007:6119:6120:7514:7903:9038:10004:10400:10450:10455:10848:11232:11658:11914:12043:12294:12296:12297:12346:12679:12740:12760:12895:13439:14093:14096:14097:14181:14659:14721:19904:19999:21080:21212:21433:21451:21627:21939:30012:30054:30056:30060:30070:30089:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: guide34_2308aad26fb2
+X-Filterd-Recvd-Size: 3797
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf13.hostedemail.com (Postfix) with ESMTPA;
+        Wed,  5 Aug 2020 23:07:05 +0000 (UTC)
+Message-ID: <8a091297aef4ebb44a65ab1c683caae006acf76a.camel@perches.com>
+Subject: Re: [PATCH] MAINTAINERS: update phylink/sfp keyword matching
+From:   Joe Perches <joe@perches.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Date:   Wed, 05 Aug 2020 16:07:04 -0700
+In-Reply-To: <20200805220917.GZ1551@shell.armlinux.org.uk>
+References: <E1k3KUx-0000da-In@rmk-PC.armlinux.org.uk>
+         <CAHk-=whbLwN9GEVVt=7eYhPYk0t0Wh1xeuNEDD+xmQxBFjAQJA@mail.gmail.com>
+         <20200805182250.GX1551@shell.armlinux.org.uk>
+         <957f48692a2f0bc4df2d83068073c4822da30eef.camel@perches.com>
+         <20200805220917.GZ1551@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.3-0ubuntu1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 2020-08-05 at 23:09 +0100, Russell King - ARM Linux admin wrote:
+> On Wed, Aug 05, 2020 at 11:47:38AM -0700, Joe Perches wrote:
+> > On Wed, 2020-08-05 at 19:22 +0100, Russell King - ARM Linux admin wrote:
+> > > On Wed, Aug 05, 2020 at 11:11:28AM -0700, Linus Torvalds wrote:
+> > > > On Wed, Aug 5, 2020 at 7:34 AM Russell King <rmk+kernel@armlinux.org.uk> wrote:
+> > > > > Is this something you're willing to merge directly please?
+> > > > 
+> > > > Done.
+> > > > 
+> > > > That said:
+> > > > 
+> > > > > -K:     phylink
+> > > > > +K:     phylink\.h|struct\s+phylink|\.phylink|>phylink_|phylink_(autoneg|clear|connect|create|destroy|disconnect|ethtool|helper|mac|mii|of|set|start|stop|test|validate)
+> > > > 
+> > > > That's a very awkward pattern. I wonder if there could be better ways
+> > > > to express this (ie "only apply this pattern to these files" kind of
+> > > > thing)
+> > > 
+> > > Yes, it's extremely awkward - I spent much of the morning with perl
+> > > testing it out on the drivers/ subtree.
+> > 
+> > There are a lot of phylink_<foo> in the kernel.
+> > Are those really the only uses you want to watch?
+> 
+> It is sufficient; as I said, I've spent a morning running this:
 
->> On Aug 5, 2020, at 3:06 PM, tytso@mit.edu wrote:
->>=20
->> =EF=BB=BFOn Wed, Aug 05, 2020 at 09:06:40AM -0700, Marc Plumb wrote:
->> Isn't get_random_u32 the function you wrote to do that? If this needs to b=
-e
->> cryptographically secure, that's an existing option that's safe.
->> The fundamental question is: Why is this attack on net_rand_state problem=
-?
->> It's Working as Designed. Why is it a major enough problem to risk harmin=
-g
->> cryptographically important functions?
->=20
-> I haven't looked at the users of net_rand_state, but historically, the
-> networking subsystem has a expressed a (perceived?) need for *very* fast
-> mostly-random-but-if-doens't-have-to-be-perfect-numbers-our-benchmarks-
-> are-way-more-important numbers.   As in, if there are extra cache line
-> misses, our benchmarks would suffer and that's not acceptable.
->=20
-> One of the problems here is that it's not sufficient for the average case
-> to be fast, but once in every N operations, we need to do something that
-> requires Real Crypto, and so that Nth time, there would be an extra lag
-> and that would be the end of the world (at least as far as networking
-> benchmarks are concerned, anyway).
+Cool for you, I was just asking.
 
-I respectfully disagree with the supposed network people :). I=E2=80=99m wor=
-king, slowly, on a patch set to make this genuinely fast. =20
+How you determine what functions you're interested in
+is up to you.
 
->  So in other words, it's not enough for
-> the average time to run get_random_u32() to be fast, they care about the 9=
-5th or
-> 99th percentile number of get_random_u32() to be fast as well.
->=20
-> An example of this would be for TCP sequence number generation; it's
-> not *really* something that needs to be secure, and if we rekey the
-> RNG every 5 minutes, so long as the best case attack takes at most,
-> say, an hour, if the worst the attacker can do is to be able to carry
-> out an man-in-the-middle attack without being physically in between
-> the source and the destination --- well, if you *really* cared about
-> security the TCP connection would be protected using TLS anyway.  See
-> RFC 1948 (later updated by RFC 6528) for an argument along these
-> lines.
->=20
->> This whole thing is making the fundamental mistake of all amateur
->> cryptographers of trying to create your own cryptographic primitive. You'=
-re
->> trying to invent a secure stream cipher. Either don't try to make
->> net_rand_state secure, or use a known secure primitive.
->=20
-> Well, technically it's not supposed to be a secure cryptographic
-> primitive.  net_rand_state is used in the call prandom_u32(), so the
-> only supposed guarantee is PSEUDO random.
->=20
-> That being said, a quick "get grep prandom_u32" shows that there are a
-> *huge* number of uses of prandom_u32() and whether they are all
-> appropriate uses of prandom_u32(), or kernel developers are using it
-> because "I haz a ne3D for spE3d" but in fact it's for a security
-> critical application is a pretty terrifying question.  If we start
-> seeing CVE's getting filed caused by inappropriate uses of
-> prandom_u32, to be honest, it won't surprise me.
->=20
->                       - Ted
+Another mechanism might have been something like:
+
+$ git grep -Poh '(?:static\s+inline|EXPORT_SYMBOL).*phylink_[a-z]+' | \ 
+  grep -Poh 'phylink_[a-z]+' | sort | uniq
+
+Maybe something that could be made generic in get_maintainer
+for people maintaining specific EXPORT_SYMBOL(foo) blocks.
+
+Maybe another letter/look could be added to MAINTAINERS like:
+
+E:	symbol_regex
+
+as another similar mechanism for keywords but just for data
+or functions marked as exported symbols.
+
+For example, that E: might help minimize xdp matches as xdp
+is used by many other bits of code that aren't express data
+path uses.
+
+MAINTAINERS-XDP (eXpress Data Path)
+MAINTAINERS-M:  Alexei Starovoitov <ast@kernel.org>
+MAINTAINERS-M:  Daniel Borkmann <daniel@iogearbox.net>
+MAINTAINERS-M:  David S. Miller <davem@davemloft.net>
+MAINTAINERS-M:  Jakub Kicinski <kuba@kernel.org>
+MAINTAINERS-M:  Jesper Dangaard Brouer <hawk@kernel.org>
+MAINTAINERS-M:  John Fastabend <john.fastabend@gmail.com>
+MAINTAINERS-L:  netdev@vger.kernel.org
+MAINTAINERS-L:  bpf@vger.kernel.org
+MAINTAINERS-S:  Supported
+MAINTAINERS-F:  include/net/xdp.h
+MAINTAINERS-F:  include/trace/events/xdp.h
+MAINTAINERS-F:  kernel/bpf/cpumap.c
+MAINTAINERS-F:  kernel/bpf/devmap.c
+MAINTAINERS-F:  net/core/xdp.c
+MAINTAINERS-N:  xdp
+MAINTAINERS:K:  xdp
+
+
