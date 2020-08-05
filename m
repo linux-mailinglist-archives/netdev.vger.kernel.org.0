@@ -2,142 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F5B023D1BB
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 22:05:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FF6F23D268
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 22:13:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728975AbgHEUFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 16:05:42 -0400
-Received: from mail-pj1-f70.google.com ([209.85.216.70]:43523 "EHLO
-        mail-pj1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727112AbgHEQff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:35:35 -0400
-Received: by mail-pj1-f70.google.com with SMTP id l22so4971243pjt.8
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 09:35:34 -0700 (PDT)
+        id S1729801AbgHEUMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 16:12:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42984 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726967AbgHEQZe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:25:34 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB76BC001FD8;
+        Wed,  5 Aug 2020 09:06:42 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id ha11so4534981pjb.1;
+        Wed, 05 Aug 2020 09:06:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=1RReklN1OPJpOK3bhmxMYu557e7Ck1zwMR174u24Gts=;
+        b=miECZ0VUhnkDWKgpR7g4zVBeoskcQebacNidqzj4zB7QOgqCaml+GUsmNa9FOdOeXa
+         nvDVpqdsf/zUQcwfZwxPkukiMwVFiTlnewicGAa1KL0xw75VyS7yxS3RTTZ76hr/DiQK
+         YEmnTd/PAEbdI0OrqBnjML4YFSf7hhM2yMnB33QHozrOpufHKsFOAvLPWEPWfb8N8776
+         24gEhh8zJA4F37xG1dOu0k01CSTA6tuq+3OkPy+MOOeL4OhfwF/S6JgMCCMMVbGu9MPj
+         3ElUrHnp9TYTcdEwMkYCCdkBMziqYyLL4gieIbiuTmTygYlsvtfMVK6xau2GNQC7jyzX
+         gnRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=vD/veeEc05bcXlG0e+JSfe9O59TwwwUvH3Hr6H/SIyA=;
-        b=hJYLcYa8BxceRw2OXTZbc4VJuYdAWDyRBu1XgLt0korWPF37aNvoQ8xRm0kE2pOIO+
-         fh4LN6BBE29piFc+NOFtyGKXZ2EG4xyEQTNDxQFMczxrMOcc0rRnDGutP45vLiPCN5WO
-         ToaK7hE2z1K9d5d/TmUAzzKP1AEzKJsWdXiXfJyOeZAVJUmrDvjoF/OkFciuHTMszkz7
-         6WAloYXh5FbMdmUeBUdm4Ipemr00cFMltffPrzr6t9hmfWnLr6atemBAz/5c98UZj69L
-         sEgR+rprFKlMxywCumjad5JFkmA7shDW1pazJl3pqYrWu5avb1f48HKbRJGRhHLeIpxT
-         tOWA==
-X-Gm-Message-State: AOAM5308DYe/P9XkdCpHajs4tIT1NwmWVDdVNLWmas0maBu7LiAtH0mD
-        63LBot3Bn3ow5jGJ9UQulU2uk44L67V+q1jX0wjTsxnNOLVM
-X-Google-Smtp-Source: ABdhPJyCIyEAmTjH3mqmhkj1F6rTlvWQHvwfZk6hoXyQVk34+x2BOvU/JDLR5tpGpsL3ZeWGnfdbt0fxmuRIfqVtucp3aBL6viaF
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=1RReklN1OPJpOK3bhmxMYu557e7Ck1zwMR174u24Gts=;
+        b=e4NwZGpm6eTXDtzdKefv2sYfUE5YgcGigGntY+lovByA7ubVUj2diw6S3tL1hnScWK
+         u+LrNfXgFhERQ2e/q5uMKzkNnEf8PZnOTxhgRmqpP2xcPnafev5BearUELyB0APEdnyn
+         yVD8KwfLsjN4CQCzYUwXcPaMpsI2/Eh2CRe9uBdGwh2v/lF7+HZxYngitVMQGWe5czR9
+         E488467zYGSWUX/rO33h2P6edeCdFAPmbJOJh6P9gAJp9xu3EJWdlsEow7dpXok77goY
+         DVvxPAMgjPQ8nOAOME2RbA+GLRIBsjcAzfzS0J5fGUo16qfgYBu74WBkTgFiW81KIXWi
+         UIGg==
+X-Gm-Message-State: AOAM531FixRaGxeB4EI6kK7dKwW0gKqNnRGRjyHsPnB7hfTZ3G9l+hhp
+        PHjv0IhW8bxbYB3D4jZkIh2mI3kCs4xEfw==
+X-Google-Smtp-Source: ABdhPJxnNGdZknsTEHZjJqACTiGobhg9BdrTrfAiNjdJBgikBsQ5M1G1ExL3Y5UmBh/pYl0NBRzSnw==
+X-Received: by 2002:a17:90a:25a9:: with SMTP id k38mr3985688pje.103.1596643602002;
+        Wed, 05 Aug 2020 09:06:42 -0700 (PDT)
+Received: from ?IPv6:2001:569:7bc3:ce00:a4b2:4936:f0f6:3eff? (node-1w7jr9qsv51tb41p80xpg7667.ipv6.telus.net. [2001:569:7bc3:ce00:a4b2:4936:f0f6:3eff])
+        by smtp.gmail.com with ESMTPSA id 22sm3855920pfh.157.2020.08.05.09.06.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Aug 2020 09:06:41 -0700 (PDT)
+Subject: Re: Flaw in "random32: update the net random state on interrupt and
+ activity"
+To:     tytso@mit.edu, Willy Tarreau <w@1wt.eu>
+Cc:     netdev@vger.kernel.org, aksecurity@gmail.com,
+        torvalds@linux-foundation.org, edumazet@google.com,
+        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
+        tglx@linutronix.de, peterz@infradead.org, stable@vger.kernel.org
+References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
+ <20200805024941.GA17301@1wt.eu> <20200805153432.GE497249@mit.edu>
+From:   Marc Plumb <lkml.mplumb@gmail.com>
+Message-ID: <c200297c-85a5-dd50-9497-6fcf7f07b727@gmail.com>
+Date:   Wed, 5 Aug 2020 09:06:40 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:dcc6:: with SMTP id b6mr4591063ilr.147.1596642980561;
- Wed, 05 Aug 2020 08:56:20 -0700 (PDT)
-Date:   Wed, 05 Aug 2020 08:56:20 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b087a705ac2369dd@google.com>
-Subject: INFO: trying to register non-static key in l2cap_chan_del
-From:   syzbot <syzbot+abfc0f5e668d4099af73@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200805153432.GE497249@mit.edu>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Ted,
 
-syzbot found the following issue on:
+On 2020-08-05 8:34 a.m., tytso@mit.edu wrote:
+> On Wed, Aug 05, 2020 at 04:49:41AM +0200, Willy Tarreau wrote:
+>> Not only was this obviously not the goal, but I'd be particularly
+>> interested in seeing this reality demonstrated, considering that
+>> the whole 128 bits of fast_pool together count as a single bit of
+>> entropy, and that as such, even if you were able to figure the
+>> value of the 32 bits leaked to net_rand_state, you'd still have to
+>> guess the 96 other bits for each single entropy bit :-/
+> Not only that, you'd have to figure out which 32-bits in the fast_pool
+> actually had gotten leaked to the net_rand_state.
 
-HEAD commit:    442489c2 Merge tag 'timers-core-2020-08-04' of git://git.k..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15aa9494900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=669b4bedb6478222
-dashboard link: https://syzkaller.appspot.com/bug?extid=abfc0f5e668d4099af73
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+That's 2 bits which are already inputs to the fast_pool, so it doesn't 
+even make a brute force any more difficult.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+> I agree with Willy that I'd love to see an exploit since it would
+> probably give a lot of insights.  Maybe at a Crypto rump session once
+> it's safe to have those sorts of things again.  :-)
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+abfc0f5e668d4099af73@syzkaller.appspotmail.com
+Just because you or I don't have a working exploit doesn't mean that 
+someone else isn't more clever. It pays to be paranoid about 
+cryptographic primitives and there is nothing more important than the 
+entropy pool.
 
-INFO: trying to register non-static key.
-the code is fine but needs lockdep annotation.
-turning off the locking correctness validator.
-CPU: 1 PID: 27 Comm: kworker/1:1 Not tainted 5.8.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events l2cap_chan_timeout
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- assign_lock_key kernel/locking/lockdep.c:894 [inline]
- register_lock_class+0x157d/0x1630 kernel/locking/lockdep.c:1206
- __lock_acquire+0xf9/0x5640 kernel/locking/lockdep.c:4305
- lock_acquire+0x1f1/0xad0 kernel/locking/lockdep.c:5005
- __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
- _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
- spin_lock_bh include/linux/spinlock.h:359 [inline]
- lock_sock_nested+0x3b/0x110 net/core/sock.c:3070
- l2cap_sock_teardown_cb+0x88/0x400 net/bluetooth/l2cap_sock.c:1520
- l2cap_chan_del+0xad/0x1300 net/bluetooth/l2cap_core.c:618
- l2cap_chan_close+0x118/0xb10 net/bluetooth/l2cap_core.c:824
- l2cap_chan_timeout+0x173/0x450 net/bluetooth/l2cap_core.c:436
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
-BUG: kernel NULL pointer dereference, address: 0000000000000000
-#PF: supervisor instruction fetch in kernel mode
-#PF: error_code(0x0010) - not-present page
-PGD 32376067 P4D 32376067 PUD 9356f067 PMD 0 
-Oops: 0010 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 27 Comm: kworker/1:1 Not tainted 5.8.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events l2cap_chan_timeout
-RIP: 0010:0x0
-Code: Bad RIP value.
-RSP: 0018:ffffc90000e17b60 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: ffff88808d94c000 RCX: ffffffff8723aa4f
-RDX: 1ffff11005e48c8c RSI: ffffffff8723ac9c RDI: ffff88802f246000
-RBP: 0000000000000005 R08: 0000000000000001 R09: ffff88802f246067
-R10: 0000000000000009 R11: 0000000000000001 R12: 000000000000006f
-R13: ffff88802f246000 R14: 0000000000000000 R15: 0000000000000005
-FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffffffffd6 CR3: 0000000094fa9000 CR4: 00000000001426e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- l2cap_sock_teardown_cb+0x374/0x400 net/bluetooth/l2cap_sock.c:1547
- l2cap_chan_del+0xad/0x1300 net/bluetooth/l2cap_core.c:618
- l2cap_chan_close+0x118/0xb10 net/bluetooth/l2cap_core.c:824
- l2cap_chan_timeout+0x173/0x450 net/bluetooth/l2cap_core.c:436
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
-Modules linked in:
-CR2: 0000000000000000
----[ end trace 661471e896caece1 ]---
-RIP: 0010:0x0
-Code: Bad RIP value.
-RSP: 0018:ffffc90000e17b60 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: ffff88808d94c000 RCX: ffffffff8723aa4f
-RDX: 1ffff11005e48c8c RSI: ffffffff8723ac9c RDI: ffff88802f246000
-RBP: 0000000000000005 R08: 0000000000000001 R09: ffff88802f246067
-R10: 0000000000000009 R11: 0000000000000001 R12: 000000000000006f
-R13: ffff88802f246000 R14: 0000000000000000 R15: 0000000000000005
-FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffffffffd6 CR3: 0000000094fa9000 CR4: 00000000001426e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> So replacing LFSR-based PRnG with
+> something stronger which didn't release any bits from the fast_pool
+> would certainly be desireable, and I look forward to seeing what Willy
+> has in mind.
+
+Isn't get_random_u32 the function you wrote to do that? If this needs to 
+be cryptographically secure, that's an existing option that's safe.
+
+The fundamental question is: Why is this attack on net_rand_state 
+problem? It's Working as Designed. Why is it a major enough problem to 
+risk harming cryptographically important functions?
+
+Do you remember how you resisted making dev/urandom fast for large reads 
+for a long time to punish stupid uses of the interface? In this case 
+anyone who is using net_rand_state assuming it is a CPRNG should stop 
+doing that. Don't enable stupidity in the kernel.
+
+This whole thing is making the fundamental mistake of all amateur 
+cryptographers of trying to create your own cryptographic primitive. 
+You're trying to invent a secure stream cipher. Either don't try to make 
+net_rand_state secure, or use a known secure primitive.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Thanks,
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Marc
+
+
