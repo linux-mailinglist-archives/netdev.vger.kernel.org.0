@@ -2,316 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8919823C388
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 04:36:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CE9223C38B
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 04:42:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727023AbgHECgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 22:36:49 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:49496 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725864AbgHECgs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 22:36:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596595006;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Mv+IgYdF2ofh8SkfRX3qZDgNJapRh/N/CL4N4SLs0Gk=;
-        b=MjF/wVf2kNE8aKjmWlB2h4HYChWuvhNNBGeNFAk9hamAlTnABLJkYeviiXqpfmEpWVEtuN
-        N8eyZd1Mvo78x1per2Tet7fi5i6/xJ1DdYCCL17AVp/2Os6aDB6c6RfwrgfxjdvbBZRur9
-        dv8qzu/4tXb9YifWHbbXczuhRDQxtMI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-394-HoKy9UQnPWS7sUavt5ztvg-1; Tue, 04 Aug 2020 22:36:42 -0400
-X-MC-Unique: HoKy9UQnPWS7sUavt5ztvg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 01E02805721;
-        Wed,  5 Aug 2020 02:36:41 +0000 (UTC)
-Received: from [10.72.13.71] (ovpn-13-71.pek2.redhat.com [10.72.13.71])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F34D328559;
-        Wed,  5 Aug 2020 02:36:28 +0000 (UTC)
-Subject: Re: [PATCH V5 4/6] vhost_vdpa: implement IRQ offloading in vhost_vdpa
-To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>,
-        alex.williamson@redhat.com, mst@redhat.com, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, wanpengli@tencent.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, eli@mellanox.com, shahafs@mellanox.com,
-        parav@mellanox.com
-References: <20200731065533.4144-1-lingshan.zhu@intel.com>
- <20200731065533.4144-5-lingshan.zhu@intel.com>
- <5212669d-6e7b-21cb-6e25-1837d70624b2@redhat.com>
- <ae5385dc-6637-c5a3-b00a-02f66bb9a85f@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <80272f12-aeb2-e4b2-013e-bedefa1f23e9@redhat.com>
-Date:   Wed, 5 Aug 2020 10:36:27 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726027AbgHEClu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 22:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725864AbgHEClu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 22:41:50 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDE8C06174A
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 19:41:49 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id p3so23590656pgh.3
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 19:41:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QDmcTZDWeuwdWXnrOH109Y/AHlw1vgjhG/nuvuK0Q64=;
+        b=Dsxx5vPMMpDepAwHxm/D2H2NTrw52TPNOD2td+k9ur8zIp65OjMtJ08fYnZD3D17oC
+         QO4iQpXuEFSBBzhWCfQ23Mpjp7kkDd4XbZOJgHtgGbWJ9VM8q8sod13RCzu3QeeJePJz
+         Oz0HS7ERQQV3YQtKmnaIP2ZtsArQLCcTBV5n4e9uESFsJ505xYzR7tQNbZTCPkO/zDE/
+         ZRVyMLLnOpP4O4ffkTPyI0HBhGOCW3RTJqw37DsMAiYBoU+Q0KJjHXv8CEw4wIuhFRH+
+         Pxdi/ocNSUOs8XPBvxU41gF0PwLLHEYNCsDk/0Aqfy23ewalDFmW6UewGgTQawBViT+D
+         sLJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QDmcTZDWeuwdWXnrOH109Y/AHlw1vgjhG/nuvuK0Q64=;
+        b=raV6tH6uUKy3LnkNncjOKH+SMNPsZhFOQeF/VZGXtG2AuY5vQ8lVwvhY1T5vVWDq40
+         zogebtPHvBL5n7Z6wOe5/JrdBun+NgN4m089NWLcNZhN/8Fv/DTCBVWoJXaNE4hRbuyP
+         pxPz1fSFtw58LGFAGB36wPG21XZR0CLlKD1+LFADjLyoNVBKNZHlcwiRAdwU8+wtPeIl
+         FTFe9LOVGvs6TwVtQ9Amm40L6NQ2wXxeMbRzPSPA25u3D+/6T18+twnI/cotYmMJbqNb
+         9X6txdrhjSrHG0I37EUQtZaeoO3deiMXsS5e71rEuWv2LbVri7AbwLU9atJnGzUvXCM3
+         /EHg==
+X-Gm-Message-State: AOAM533uelsdHxt3+GCrEjBx+vb/VpXXjABOXZlavDkrren6wQuHKiaL
+        4TuEwQm6oFYQwuyxsw4lahaPl+9S0nGPJw==
+X-Google-Smtp-Source: ABdhPJxRQZk+uB2d4JqffHmZ8o2cexJlONvh3mnxsy+D5IN5L5RIqIBOxaMFDJdKAjrIlsFOqXOeXA==
+X-Received: by 2002:a63:1962:: with SMTP id 34mr1102970pgz.411.1596595308941;
+        Tue, 04 Aug 2020 19:41:48 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id u2sm640868pjg.35.2020.08.04.19.41.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Aug 2020 19:41:48 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Guillaume Nault <gnault@redhat.com>,
+        Petr Machata <pmachata@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        David Ahern <dsahern@kernel.org>,
+        Andreas Karis <akaris@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] Revert "vxlan: fix tos value before xmit"
+Date:   Wed,  5 Aug 2020 10:41:31 +0800
+Message-Id: <20200805024131.2091206-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-In-Reply-To: <ae5385dc-6637-c5a3-b00a-02f66bb9a85f@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This reverts commit 71130f29979c7c7956b040673e6b9d5643003176.
 
-On 2020/8/4 下午5:31, Zhu, Lingshan wrote:
->
->
-> On 8/4/2020 4:51 PM, Jason Wang wrote:
->>
->> On 2020/7/31 下午2:55, Zhu Lingshan wrote:
->>> This patch introduce a set of functions for setup/unsetup
->>> and update irq offloading respectively by register/unregister
->>> and re-register the irq_bypass_producer.
->>>
->>> With these functions, this commit can setup/unsetup
->>> irq offloading through setting DRIVER_OK/!DRIVER_OK, and
->>> update irq offloading through SET_VRING_CALL.
->>>
->>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>> Suggested-by: Jason Wang <jasowang@redhat.com>
->>> ---
->>>   drivers/vhost/Kconfig |  1 +
->>>   drivers/vhost/vdpa.c  | 79 
->>> ++++++++++++++++++++++++++++++++++++++++++-
->>>   2 files changed, 79 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
->>> index d3688c6afb87..587fbae06182 100644
->>> --- a/drivers/vhost/Kconfig
->>> +++ b/drivers/vhost/Kconfig
->>> @@ -65,6 +65,7 @@ config VHOST_VDPA
->>>       tristate "Vhost driver for vDPA-based backend"
->>>       depends on EVENTFD
->>>       select VHOST
->>> +    select IRQ_BYPASS_MANAGER
->>>       depends on VDPA
->>>       help
->>>         This kernel module can be loaded in host kernel to accelerate
->>> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
->>> index df3cf386b0cd..278ea2f00172 100644
->>> --- a/drivers/vhost/vdpa.c
->>> +++ b/drivers/vhost/vdpa.c
->>> @@ -115,6 +115,55 @@ static irqreturn_t vhost_vdpa_config_cb(void 
->>> *private)
->>>       return IRQ_HANDLED;
->>>   }
->>>   +static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
->>> +{
->>> +    struct vhost_virtqueue *vq = &v->vqs[qid];
->>> +    const struct vdpa_config_ops *ops = v->vdpa->config;
->>> +    struct vdpa_device *vdpa = v->vdpa;
->>> +    int ret, irq;
->>> +
->>> +    spin_lock(&vq->call_ctx.ctx_lock);
->>> +    irq = ops->get_vq_irq(vdpa, qid);
->>> +    if (!vq->call_ctx.ctx || irq < 0) {
->>> +        spin_unlock(&vq->call_ctx.ctx_lock);
->>> +        return;
->>> +    }
->>> +
->>> +    vq->call_ctx.producer.token = vq->call_ctx.ctx;
->>> +    vq->call_ctx.producer.irq = irq;
->>> +    ret = irq_bypass_register_producer(&vq->call_ctx.producer);
->>> +    spin_unlock(&vq->call_ctx.ctx_lock);
->>> +}
->>> +
->>> +static void vhost_vdpa_unsetup_vq_irq(struct vhost_vdpa *v, u16 qid)
->>> +{
->>> +    struct vhost_virtqueue *vq = &v->vqs[qid];
->>> +
->>> +    spin_lock(&vq->call_ctx.ctx_lock);
->>> + irq_bypass_unregister_producer(&vq->call_ctx.producer);
->>
->>
->> Any reason for not checking vq->call_ctx.producer.irq as below here?
-> we only need ctx as a token to unregister vq from irq bypass manager, if vq->call_ctx.producer.irq is 0, means it is a unused or disabled vq,
+In commit 71130f29979c ("vxlan: fix tos value before xmit") we want to
+make sure the tos value are filtered by RT_TOS() based on RFC1349.
 
+       0     1     2     3     4     5     6     7
+    +-----+-----+-----+-----+-----+-----+-----+-----+
+    |   PRECEDENCE    |          TOS          | MBZ |
+    +-----+-----+-----+-----+-----+-----+-----+-----+
 
-This is not how the code is wrote? See above you only check whether irq 
-is negative, irq 0 seems acceptable.
+But RFC1349 has been obsoleted by RFC2474. The new DSCP field defined like
 
-+    spin_lock(&vq->call_ctx.ctx_lock);
-+    irq = ops->get_vq_irq(vdpa, qid);
-+    if (!vq->call_ctx.ctx || irq < 0) {
-+        spin_unlock(&vq->call_ctx.ctx_lock);
-+        return;
-+    }
-+
-+    vq->call_ctx.producer.token = vq->call_ctx.ctx;
-+    vq->call_ctx.producer.irq = irq;
-+    ret = irq_bypass_register_producer(&vq->call_ctx.producer);
-+    spin_unlock(&vq->call_ctx.ctx_lock);
+       0     1     2     3     4     5     6     7
+    +-----+-----+-----+-----+-----+-----+-----+-----+
+    |          DS FIELD, DSCP           | ECN FIELD |
+    +-----+-----+-----+-----+-----+-----+-----+-----+
 
+So with
 
-> no harm if we
-> perform an unregister on it.
->>
->>
->>> + spin_unlock(&vq->call_ctx.ctx_lock);
->>> +}
->>> +
->>> +static void vhost_vdpa_update_vq_irq(struct vhost_virtqueue *vq)
->>> +{
->>> +    spin_lock(&vq->call_ctx.ctx_lock);
->>> +    /*
->>> +     * if it has a non-zero irq, means there is a
->>> +     * previsouly registered irq_bypass_producer,
->>> +     * we should update it when ctx (its token)
->>> +     * changes.
->>> +     */
->>> +    if (!vq->call_ctx.producer.irq) {
->>> +        spin_unlock(&vq->call_ctx.ctx_lock);
->>> +        return;
->>> +    }
->>> +
->>> + irq_bypass_unregister_producer(&vq->call_ctx.producer);
->>> +    vq->call_ctx.producer.token = vq->call_ctx.ctx;
->>> + irq_bypass_register_producer(&vq->call_ctx.producer);
->>> +    spin_unlock(&vq->call_ctx.ctx_lock);
->>> +}
->>
->>
->> I think setup_irq() and update_irq() could be unified with the 
->> following logic:
->>
->> irq_bypass_unregister_producer(&vq->call_ctx.producer);
->> irq = ops->get_vq_irq(vdpa, qid);
->>     if (!vq->call_ctx.ctx || irq < 0) {
->>         spin_unlock(&vq->call_ctx.ctx_lock);
->>         return;
->>     }
->>
->> vq->call_ctx.producer.token = vq->call_ctx.ctx;
->> vq->call_ctx.producer.irq = irq;
->> ret = irq_bypass_register_producer(&vq->call_ctx.producer);
-> Yes, this code piece can do both register and update. Though it's rare to call undate_irq(), however
-> setup_irq() is very likely to be called for every vq, so this may cause several rounds of useless irq_bypass_unregister_producer().
+IPTOS_TOS_MASK          0x1E
+RT_TOS(tos)		((tos)&IPTOS_TOS_MASK)
 
+the first 3 bits DSCP info will get lost.
 
-I'm not sure I get this but do you have a case for this?
+To take all the DSCP info in xmit, we should revert the patch and just push
+all tos bits to ip_tunnel_ecn_encap(), which will handling ECN field later.
 
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ drivers/net/vxlan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> is it worth for simplify the code?
-
-
-Less code(bug).
-
-
->>
->>> +
->>>   static void vhost_vdpa_reset(struct vhost_vdpa *v)
->>>   {
->>>       struct vdpa_device *vdpa = v->vdpa;
->>> @@ -155,11 +204,15 @@ static long vhost_vdpa_set_status(struct 
->>> vhost_vdpa *v, u8 __user *statusp)
->>>   {
->>>       struct vdpa_device *vdpa = v->vdpa;
->>>       const struct vdpa_config_ops *ops = vdpa->config;
->>> -    u8 status;
->>> +    u8 status, status_old;
->>> +    int nvqs = v->nvqs;
->>> +    u16 i;
->>>         if (copy_from_user(&status, statusp, sizeof(status)))
->>>           return -EFAULT;
->>>   +    status_old = ops->get_status(vdpa);
->>> +
->>>       /*
->>>        * Userspace shouldn't remove status bits unless reset the
->>>        * status to 0.
->>> @@ -169,6 +222,15 @@ static long vhost_vdpa_set_status(struct 
->>> vhost_vdpa *v, u8 __user *statusp)
->>>         ops->set_status(vdpa, status);
->>>   +    /* vq irq is not expected to be changed once DRIVER_OK is set */
->>
->>
->> Let's move this comment to the get_vq_irq bus operation.
-> OK, can do!
->>
->>
->>> +    if ((status & VIRTIO_CONFIG_S_DRIVER_OK) && !(status_old & 
->>> VIRTIO_CONFIG_S_DRIVER_OK))
->>> +        for (i = 0; i < nvqs; i++)
->>> +            vhost_vdpa_setup_vq_irq(v, i);
->>> +
->>> +    if ((status_old & VIRTIO_CONFIG_S_DRIVER_OK) && !(status & 
->>> VIRTIO_CONFIG_S_DRIVER_OK))
->>> +        for (i = 0; i < nvqs; i++)
->>> +            vhost_vdpa_unsetup_vq_irq(v, i);
->>> +
->>>       return 0;
->>>   }
->>>   @@ -332,6 +394,7 @@ static long vhost_vdpa_set_config_call(struct 
->>> vhost_vdpa *v, u32 __user *argp)
->>>         return 0;
->>>   }
->>> +
->>>   static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned 
->>> int cmd,
->>>                      void __user *argp)
->>>   {
->>> @@ -390,6 +453,7 @@ static long vhost_vdpa_vring_ioctl(struct 
->>> vhost_vdpa *v, unsigned int cmd,
->>>               cb.private = NULL;
->>>           }
->>>           ops->set_vq_cb(vdpa, idx, &cb);
->>> +        vhost_vdpa_update_vq_irq(vq);
->>>           break;
->>>         case VHOST_SET_VRING_NUM:
->>> @@ -765,6 +829,18 @@ static int vhost_vdpa_open(struct inode *inode, 
->>> struct file *filep)
->>>       return r;
->>>   }
->>>   +static void vhost_vdpa_clean_irq(struct vhost_vdpa *v)
->>> +{
->>> +    struct vhost_virtqueue *vq;
->>> +    int i;
->>> +
->>> +    for (i = 0; i < v->nvqs; i++) {
->>> +        vq = &v->vqs[i];
->>> +        if (vq->call_ctx.producer.irq)
->>> + irq_bypass_unregister_producer(&vq->call_ctx.producer);
->>> +    }
->>> +}
->>
->>
->> Why not using vhost_vdpa_unsetup_vq_irq()?
-> IMHO, in this cleanup phase, the device is almost dead, user space won't change ctx anymore, so I think we don't need to check ctx or irq,
-
-
-But you check irq here? For ctx, irq_bypass_unregister_producer() can do 
-the check instead of us.
-
-Thanks
-
-
->   can just unregister it.
->
-> Thanks!
->>
->> Thanks
->>
->>
->>> +
->>>   static int vhost_vdpa_release(struct inode *inode, struct file 
->>> *filep)
->>>   {
->>>       struct vhost_vdpa *v = filep->private_data;
->>> @@ -777,6 +853,7 @@ static int vhost_vdpa_release(struct inode 
->>> *inode, struct file *filep)
->>>       vhost_vdpa_iotlb_free(v);
->>>       vhost_vdpa_free_domain(v);
->>>       vhost_vdpa_config_put(v);
->>> +    vhost_vdpa_clean_irq(v);
->>>       vhost_dev_cleanup(&v->vdev);
->>>       kfree(v->vdev.vqs);
->>>       mutex_unlock(&d->mutex);
->>
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index a7c3939264b0..35a7d409d8d3 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -2722,7 +2722,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 		ndst = &rt->dst;
+ 		skb_tunnel_check_pmtu(skb, ndst, VXLAN_HEADROOM);
+ 
+-		tos = ip_tunnel_ecn_encap(RT_TOS(tos), old_iph, skb);
++		tos = ip_tunnel_ecn_encap(tos, old_iph, skb);
+ 		ttl = ttl ? : ip4_dst_hoplimit(&rt->dst);
+ 		err = vxlan_build_skb(skb, ndst, sizeof(struct iphdr),
+ 				      vni, md, flags, udp_sum);
+@@ -2762,7 +2762,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 
+ 		skb_tunnel_check_pmtu(skb, ndst, VXLAN6_HEADROOM);
+ 
+-		tos = ip_tunnel_ecn_encap(RT_TOS(tos), old_iph, skb);
++		tos = ip_tunnel_ecn_encap(tos, old_iph, skb);
+ 		ttl = ttl ? : ip6_dst_hoplimit(ndst);
+ 		skb_scrub_packet(skb, xnet);
+ 		err = vxlan_build_skb(skb, ndst, sizeof(struct ipv6hdr),
+-- 
+2.25.4
 
