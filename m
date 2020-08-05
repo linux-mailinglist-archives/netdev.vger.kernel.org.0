@@ -2,93 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1421223D052
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:47:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD31423D049
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:47:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729134AbgHETre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 15:47:34 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:23207 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728441AbgHERDW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 13:03:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596646995;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aqjcjFj0cLfrtaKdyRnzSHGUtnIcD/6QjX80vbdnnDs=;
-        b=i3EmGrMkaEYumeiOORyoM/7Lfr9A6oDgsIgn9K5bX5/Nd2DOk307e9T25itqaKeW8O+5DF
-        /ZzRBidD1ejtMKVItSfx7tzrPIiCCMsSzM3WauEASCfcjlgmmOczrQQljMZSqj7HbMBY1R
-        SIuy4dJiFyAVx7AA2U/l5VDXmgMZyy8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-48-v1Ut0-vMMlKQmdlxYzNI4g-1; Wed, 05 Aug 2020 13:03:04 -0400
-X-MC-Unique: v1Ut0-vMMlKQmdlxYzNI4g-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1728848AbgHETbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 15:31:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33076 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728295AbgHERIR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Aug 2020 13:08:17 -0400
+Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5AA368F53CF;
-        Wed,  5 Aug 2020 17:02:48 +0000 (UTC)
-Received: from elisabeth (unknown [10.36.110.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 488217B910;
-        Wed,  5 Aug 2020 17:02:41 +0000 (UTC)
-Date:   Wed, 5 Aug 2020 19:02:34 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     linux-riscv@lists.infradead.org,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        David Ahern <dsahern@gmail.com>,
-        Aaron Conole <aconole@redhat.com>,
-        Numan Siddique <nusiddiq@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Lourdes Pedrajas <lu@pplo.net>,
-        Netdev <netdev@vger.kernel.org>, paul.walmsley@sifive.com,
-        palmer@dabbelt.com, aou@eecs.berkeley.edu,
-        lkft-triage@lists.linaro.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH net-next v2 2/6] tunnels: PMTU discovery support for
- directly bridged IP packets
-Message-ID: <20200805190234.1d95dccd@elisabeth>
-In-Reply-To: <CA+G9fYsJdoQieVr6=e09nYAvpAjnay5XSmJ3WkZHgMdzJRUYEw@mail.gmail.com>
-References: <cover.1596520062.git.sbrivio@redhat.com>
-        <83e5876f589b0071638630dd93fbe0fa6b1b257c.1596520062.git.sbrivio@redhat.com>
-        <CA+G9fYsJdoQieVr6=e09nYAvpAjnay5XSmJ3WkZHgMdzJRUYEw@mail.gmail.com>
-Organization: Red Hat
+        by mail.kernel.org (Postfix) with ESMTPSA id 2AA6A22D00;
+        Wed,  5 Aug 2020 17:08:09 +0000 (UTC)
+Date:   Wed, 5 Aug 2020 13:08:07 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     naveen.n.rao@linux.ibm.com, anil.s.keshavamurthy@intel.com,
+        davem@davemloft.net, mhiramat@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, andriin@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org, sfr@canb.auug.org.au, mingo@kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Chengming Zhou <zhouchengming@bytedance.com>
+Subject: Re: [External] Re: [PATCH v2] kprobes: fix NULL pointer dereference
+ at kprobe_ftrace_handler
+Message-ID: <20200805130807.268cc1a8@oasis.local.home>
+In-Reply-To: <CAMZfGtW2LJTUB6OaixF-V0tVPXt5kEzVvUvOSbO551r0vvZGbg@mail.gmail.com>
+References: <20200805162713.16386-1-songmuchun@bytedance.com>
+        <20200805125056.1dfe74b5@oasis.local.home>
+        <CAMZfGtW2LJTUB6OaixF-V0tVPXt5kEzVvUvOSbO551r0vvZGbg@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Naresh,
+On Thu, 6 Aug 2020 00:59:41 +0800
+Muchun Song <songmuchun@bytedance.com> wrote:
 
-On Wed, 5 Aug 2020 22:24:03 +0530
-Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
-
-> On Tue, 4 Aug 2020 at 11:24, Stefano Brivio <sbrivio@redhat.com> wrote:
-> >
-> > +       icmp6h->icmp6_cksum = csum_ipv6_magic(&nip6h->saddr, &nip6h->daddr, len,
-> > +                                             IPPROTO_ICMPV6, csum);
+> > The original patch has already been pulled into the queue and tested.
+> > Please make a new patch that adds this update, as if your original
+> > patch has already been accepted.  
 > 
-> Linux next build breaks for riscv architecture defconfig build.
+> Will do, thanks!
 
-Yes, sorry for that. Stephen Rothwell already reported this for s390
-defconfig and I sent a patch some hours ago:
+Also, if you can, add the following:
 
-	https://patchwork.ozlabs.org/project/netdev/patch/a85e9878716c2904488d56335320b7131613e94c.1596633316.git.sbrivio@redhat.com/
+Link: https://lore.kernel.org/r/20200805142136.0331f7ea@canb.auug.org.au
 
-Thanks for reporting this though!
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Fixes: 0cb2f1372baa ("kprobes: Fix NULL pointer dereference at kprobe_ftrace_handler")
 
--- 
-Stefano
+It's no big deal if you don't, because I will ;-)
 
+-- Steve
