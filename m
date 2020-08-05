@@ -2,181 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2558023D23A
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 22:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42C4623D1E8
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 22:07:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727893AbgHEUKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 16:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43534 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726422AbgHEQ2m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:28:42 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C47AC008699
-        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 09:28:38 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id w17so25521402ply.11
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 09:28:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=A43ByyyVzbSptwNygct83mi3n2DzKWgXvNfPebKl6yg=;
-        b=Vhtt0A1Lb+45MJ+Wh1Mnd/6dAyl5W8x4OJgHYPrxVIsTEvhXGbgFbuLoVs9PSI6FVb
-         4+koDTinZDAnktM3XmWYW7oHe5byoeDqkyO3ubwkG+KfRrbD2WMJH0qKf4zNdJGVO8xx
-         /e+WkeJsW8Oiw8Oedhof48VQhF5C8NcxQC8V7xQa+zd9BKfaXQOlnpPjApEQoPPIPADl
-         thisXlmYHDhe2M9jishy6oQJKDq11jKExdFuyCVrsIf0fGx3Nrk9iwaKa1IrCGV07MB8
-         jCflwrMAOiNIa8bWrrpkDC6KlBXWRewwszJNRIvUcfK9Dvz2VLM9OGf6oxYKWsMATv8U
-         OmBA==
+        id S1729823AbgHEUHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 16:07:24 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:37434 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726862AbgHEQdI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:33:08 -0400
+Received: by mail-io1-f70.google.com with SMTP id f6so17783514ioa.4
+        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 09:33:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=A43ByyyVzbSptwNygct83mi3n2DzKWgXvNfPebKl6yg=;
-        b=MuVHGiLOnncEZvJP4gWHw7jIb6VdC0eTqiHk5x5tk0UbWfeu9LSSpv1MppzDOhmUi8
-         owr5mmpFPE8bwZUltRGGm63YHFKRtCQk/NP00ZcLYZ6khHt+ni1FpGFz4stmm2nh7JrI
-         bKFQNkd14qPKDaUjOFIn+o7gx4PFcLhoyNtx65xIJW49ZHZRcPeoh9j/H6BEuHHfEAbu
-         51vVzRt4dn3gspBB/fMJF9Fn8AJPpmUQsrNu6oPwYLJhkTOKPx2VaEP+GSi/QH1X6MfT
-         k5Enqv5HDJ3Ihy7yizbyEKJ8sDK8rtfnnorTXtqsGhqYJma8mLZsTto2YABofKX0cYtU
-         6UKQ==
-X-Gm-Message-State: AOAM5333p23fAVudjKF9rYQSHkX+ooeFvlQt08ZaOdaWkZTjP0bZjSTP
-        PdDDKg3BMEmXBoswF+wCEWRomQ==
-X-Google-Smtp-Source: ABdhPJz8Xblx/0gqLzz6ZElpaAiPlDeIUeBjMLlCp2hzlHJxhui/0ePgefixV57yu+dDZ6yxbRkDVQ==
-X-Received: by 2002:a17:90a:4502:: with SMTP id u2mr3822075pjg.187.1596644918065;
-        Wed, 05 Aug 2020 09:28:38 -0700 (PDT)
-Received: from localhost.localdomain ([103.136.220.70])
-        by smtp.gmail.com with ESMTPSA id 12sm3953119pfn.173.2020.08.05.09.28.29
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Aug 2020 09:28:37 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     rostedt@goodmis.org, naveen.n.rao@linux.ibm.com,
-        anil.s.keshavamurthy@intel.com, davem@davemloft.net,
-        mhiramat@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        sfr@canb.auug.org.au, mingo@kernel.org, akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH v2] kprobes: fix NULL pointer dereference at kprobe_ftrace_handler
-Date:   Thu,  6 Aug 2020 00:27:13 +0800
-Message-Id: <20200805162713.16386-1-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.21.0 (Apple Git-122)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=xdDF8KAwPeDbsdN5hACSBVSNt3eeL93Vn3ZE06PW0ws=;
+        b=lLPrkf0ijCeBYmxsRfF4Mf5AbEaScjCfROPN1P3ooznoqW1dUHRS2TmRXNaPPQmSTl
+         kIjnsw5OUT1XPkyRCyXM1dGSGwYKBBdA0jtuX3sZzFDFTpTNUZ1KnFepSx3sslOFLuk+
+         ESRZryxpOWzVKKyiigtNcNcdTfKFWFzPrcM7UjBADjhTkCeiLmazulSCUNCg4R/8Wu/N
+         LPwKeuoar2zjziMohizjEKlnQRTfNKivDW06MaKVOzr2WPDZHp4D1IMluKTiCHfyt0Nz
+         dng0OWSV8QfM+SAwTjo21czhyfum6bOS1aNxIW3w8H0EPWsqzuyDD7CL93oRyfLSHszz
+         /BRw==
+X-Gm-Message-State: AOAM533igLeKeSxXXcNYOq42f+oaaLcvHwwZm66ApcF1nvXGLaGaSaOd
+        8vrmr7yJMwqGpXHxDMV5TObELI8gLqD3kNdO/kU0PDRFqxjM
+X-Google-Smtp-Source: ABdhPJx1bzir56joK2ABAxtH0sKqUYFQk87L5ebinbPqcd6dHIycZoH3GBn4mZAYZSuRbVEjVUHzKuZ7t4g9wSnDVEVr5CKihhk0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:ba06:: with SMTP id k6mr4243404iof.101.1596645187111;
+ Wed, 05 Aug 2020 09:33:07 -0700 (PDT)
+Date:   Wed, 05 Aug 2020 09:33:07 -0700
+In-Reply-To: <00000000000023efa305ac1b5309@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000035d35105ac23ed6d@google.com>
+Subject: Re: WARNING: refcount bug in l2cap_global_chan_by_psm
+From:   syzbot <syzbot+39ad9f042519082fcec9@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, edubezval@gmail.com,
+        johan.hedberg@gmail.com, kaber@trash.net, kadlec@blackhole.kfki.hu,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        marcel@holtmann.org, mchehab@kernel.org, mchehab@s-opensource.com,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We found a case of kernel panic on our server. The stack trace is as
-follows(omit some irrelevant information):
+syzbot has bisected this issue to:
 
-  BUG: kernel NULL pointer dereference, address: 0000000000000080
-  RIP: 0010:kprobe_ftrace_handler+0x5e/0xe0
-  RSP: 0018:ffffb512c6550998 EFLAGS: 00010282
-  RAX: 0000000000000000 RBX: ffff8e9d16eea018 RCX: 0000000000000000
-  RDX: ffffffffbe1179c0 RSI: ffffffffc0535564 RDI: ffffffffc0534ec0
-  RBP: ffffffffc0534ec1 R08: ffff8e9d1bbb0f00 R09: 0000000000000004
-  R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-  R13: ffff8e9d1f797060 R14: 000000000000bacc R15: ffff8e9ce13eca00
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 0000000000000080 CR3: 00000008453d0005 CR4: 00000000003606e0
-  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-  Call Trace:
-   <IRQ>
-   ftrace_ops_assist_func+0x56/0xe0
-   ftrace_call+0x5/0x34
-   tcpa_statistic_send+0x5/0x130 [ttcp_engine]
+commit 3c1e300966d7edc380e405b3ab70b6e3c813a121
+Author: Mauro Carvalho Chehab <mchehab@s-opensource.com>
+Date:   Tue Oct 18 19:44:12 2016 +0000
 
-The tcpa_statistic_send is the function being kprobed. After analysis,
-the root cause is that the fourth parameter regs of kprobe_ftrace_handler
-is NULL. Why regs is NULL? We use the crash tool to analyze the kdump.
+    [media] si4713: don't break long lines
 
-  crash> dis tcpa_statistic_send -r
-         <tcpa_statistic_send>: callq 0xffffffffbd8018c0 <ftrace_caller>
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=108f4002900000
+start commit:   c0842fbc random32: move the pseudo-random 32-bit definitio..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=128f4002900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=148f4002900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=76cacb0fe58c4a1e
+dashboard link: https://syzkaller.appspot.com/bug?extid=39ad9f042519082fcec9
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14491b04900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1188e392900000
 
-The tcpa_statistic_send calls ftrace_caller instead of ftrace_regs_caller.
-So it is reasonable that the fourth parameter regs of kprobe_ftrace_handler
-is NULL. In theory, we should call the ftrace_regs_caller instead of the
-ftrace_caller. After in-depth analysis, we found a reproducible path.
+Reported-by: syzbot+39ad9f042519082fcec9@syzkaller.appspotmail.com
+Fixes: 3c1e300966d7 ("[media] si4713: don't break long lines")
 
-  Writing a simple kernel module which starts a periodic timer. The
-  timer's handler is named 'kprobe_test_timer_handler'. The module
-  name is kprobe_test.ko.
-
-  1) insmod kprobe_test.ko
-  2) bpftrace -e 'kretprobe:kprobe_test_timer_handler {}'
-  3) echo 0 > /proc/sys/kernel/ftrace_enabled
-  4) rmmod kprobe_test
-  5) stop step 2) kprobe
-  6) insmod kprobe_test.ko
-  7) bpftrace -e 'kretprobe:kprobe_test_timer_handler {}'
-
-We mark the kprobe as GONE but not disarm the kprobe in the step 4).
-The step 5) also do not disarm the kprobe when unregister kprobe. So
-we do not remove the ip from the filter. In this case, when the module
-loads again in the step 6), we will replace the code to ftrace_caller
-via the ftrace_module_enable(). When we register kprobe again, we will
-not replace ftrace_caller to ftrace_regs_caller because the ftrace is
-disabled in the step 3). So the step 7) will trigger kernel panic. Fix
-this problem by disarming the kprobe when the module is going away.
-
-Fixes: ae6aa16fdc16 ("kprobes: introduce ftrace based optimization")
-Acked-by: Song Liu <songliubraving@fb.com>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
----
-changelogs in v2:
- 1) fix compiler warning for !CONFIG_KPROBES_ON_FTRACE.
-
- kernel/kprobes.c | 24 +++++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index 146c648eb943..d36e2b017588 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1114,9 +1114,20 @@ static int disarm_kprobe_ftrace(struct kprobe *p)
- 		ipmodify ? &kprobe_ipmodify_enabled : &kprobe_ftrace_enabled);
- }
- #else	/* !CONFIG_KPROBES_ON_FTRACE */
--#define prepare_kprobe(p)	arch_prepare_kprobe(p)
--#define arm_kprobe_ftrace(p)	(-ENODEV)
--#define disarm_kprobe_ftrace(p)	(-ENODEV)
-+static inline int prepare_kprobe(struct kprobe *p)
-+{
-+	return arch_prepare_kprobe(p);
-+}
-+
-+static inline int arm_kprobe_ftrace(struct kprobe *p)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline int disarm_kprobe_ftrace(struct kprobe *p)
-+{
-+	return -ENODEV;
-+}
- #endif
- 
- /* Arm a kprobe with text_mutex */
-@@ -2148,6 +2159,13 @@ static void kill_kprobe(struct kprobe *p)
- 	 * the original probed function (which will be freed soon) any more.
- 	 */
- 	arch_remove_kprobe(p);
-+
-+	/*
-+	 * The module is going away. We should disarm the kprobe which
-+	 * is using ftrace.
-+	 */
-+	if (kprobe_ftrace(p))
-+		disarm_kprobe_ftrace(p);
- }
- 
- /* Disable one kprobe */
--- 
-2.11.0
-
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
