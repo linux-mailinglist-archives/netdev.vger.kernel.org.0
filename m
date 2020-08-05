@@ -2,120 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E578723D355
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 22:59:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FF1123D357
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 23:01:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727783AbgHEU7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 16:59:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57992 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725920AbgHEU7m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 16:59:42 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044D1C061575
-        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 13:59:42 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id l4so47852770ejd.13
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 13:59:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AjdPp5HfnZVGenP9lTHrdK9u1iI0kLOkTgaBNwCu1fk=;
-        b=WPk9Toq1zctR5cl5+5VKgtNzzHgRmBDJ+ou76I4k2dQrrjlmm3azSB4BIBEl9Bj7lC
-         RBkZFJv+vONuoBrTJFAtPYWQluc6GbGfYbkSlrWOOZO1q0biDdBC0/YRs6WqVWW+zVLV
-         fj9HEeb5sFQnPkzDXvxMo85WKX9zFjHHWAwNBtEk0OPX2MX4z1dpU/iznpxzHJpmZAbm
-         gVC9+ldei8YfGaKz3nSZJtdKHqr3JaK6QPyc3Xfv7sPL4/sIgE87e/8M+6s3tPfvMgge
-         siWRrImMX6n3dlZTTd8dbXgJTu6b4xCQ6KIUyiiCq15gCIC+eHrw5HiXrJf3Q8PB0y8t
-         HJ4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AjdPp5HfnZVGenP9lTHrdK9u1iI0kLOkTgaBNwCu1fk=;
-        b=mxzkpSdAIpwsXBueQtmCwx9DSfulpGO5cPzf9dFoWG1S+nVxohp50KG4EuzDOB6fwM
-         fbORPfK6xvpVunRDWjnAm9VlMeweAcNA4nLHuow/74v6gOWxKN2J3PCfbeSZUpdosEBV
-         MxUKRlMpk2aihD3XJwFL3FaFRTqn5ofEkmEfDrjJARBfRRDrLy2Hhe4Njt+tNiYz5iFV
-         L1Qg/jNKkbI5FZ0/adbHnK0AssRmqFPzgO01qIkLtAFPGBzo+zCxVkbuZ+vgIc0H24nT
-         SGeEUkDGXcdeufO8xTlLR34Ura5cfEwAnETbpf/nTgS10vkImZ7bPogIZVFjoDo/siVo
-         Tg1Q==
-X-Gm-Message-State: AOAM532VU6hIj796VvGsrR/m7ha9Kk7VwC8SE0EeBycQdB3xdx6aLoXb
-        eFrKk9jOgE4AV+QriNLDi0Cn3wf7
-X-Google-Smtp-Source: ABdhPJx+O4NLGxzYc3MWzhgSp42ao4PGb8kqfUjkNggkciSZeLFrhm3SeKWdEFqqbOHAvR8n6HKV+Q==
-X-Received: by 2002:a17:906:b08:: with SMTP id u8mr1175994ejg.401.1596661180712;
-        Wed, 05 Aug 2020 13:59:40 -0700 (PDT)
-Received: from skbuf ([188.26.57.97])
-        by smtp.gmail.com with ESMTPSA id y26sm2112813edu.96.2020.08.05.13.59.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Aug 2020 13:59:40 -0700 (PDT)
-Date:   Wed, 5 Aug 2020 23:59:38 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com
-Subject: Re: [PATCH net-next] net: dsa: sja1105: use detected device id
- instead of DT one on mismatch
-Message-ID: <20200805205938.2d2bhrkyeu3lgioe@skbuf>
-References: <20200803164823.414772-1-olteanv@gmail.com>
- <20200804.155950.60471933904505919.davem@davemloft.net>
- <3d3de571-fcd3-7885-628a-432980d4999d@gmail.com>
+        id S1726422AbgHEVBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 17:01:21 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:55877 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725920AbgHEVBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 17:01:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596661278;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AwlhS9A6gXAAkqCmgiXaqnLD4HXkSIN9WLGrUCy1lAs=;
+        b=M2M5h65OKDAnwsNW31i/es0xpGuBLEoRdU4jk2c2c4gGPywF1bE+gtWUrBMXA4NX2t7x1w
+        Mu6/5K20XG1HDFgobHzHmnlP7nwoqVvMFjWCIsAh20nyLSgTM8jOC2Dms3WTds/DEsBQgr
+        1DSX2ag0WI7Qkbms6Y19IP+zCnQuiGU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-75-NwTBjdllMtOzSlQa0ra2Nw-1; Wed, 05 Aug 2020 17:01:14 -0400
+X-MC-Unique: NwTBjdllMtOzSlQa0ra2Nw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 51BC1100AA22;
+        Wed,  5 Aug 2020 21:01:12 +0000 (UTC)
+Received: from krava (unknown [10.40.192.11])
+        by smtp.corp.redhat.com (Postfix) with SMTP id A597A5F9DB;
+        Wed,  5 Aug 2020 21:01:07 +0000 (UTC)
+Date:   Wed, 5 Aug 2020 23:01:01 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v9 bpf-next 10/14] bpf: Add d_path helper
+Message-ID: <20200805210101.GF319954@krava>
+References: <20200801170322.75218-1-jolsa@kernel.org>
+ <20200801170322.75218-11-jolsa@kernel.org>
+ <CAEf4BzY5b8GhoovkKZgT4YSUUW=GPZBU0Qjg4eqeHNjoPHCMTw@mail.gmail.com>
+ <20200805175850.GD319954@krava>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3d3de571-fcd3-7885-628a-432980d4999d@gmail.com>
+In-Reply-To: <20200805175850.GD319954@krava>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 04, 2020 at 08:01:46PM -0700, Florian Fainelli wrote:
-> On 8/4/2020 3:59 PM, David Miller wrote:
-> > From: Vladimir Oltean <olteanv@gmail.com>
-> > Date: Mon,  3 Aug 2020 19:48:23 +0300
+On Wed, Aug 05, 2020 at 07:58:54PM +0200, Jiri Olsa wrote:
+> On Tue, Aug 04, 2020 at 11:35:53PM -0700, Andrii Nakryiko wrote:
+> > On Sat, Aug 1, 2020 at 10:04 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > >
+> > > Adding d_path helper function that returns full path for
+> > > given 'struct path' object, which needs to be the kernel
+> > > BTF 'path' object. The path is returned in buffer provided
+> > > 'buf' of size 'sz' and is zero terminated.
+> > >
+> > >   bpf_d_path(&file->f_path, buf, size);
+> > >
+> > > The helper calls directly d_path function, so there's only
+> > > limited set of function it can be called from. Adding just
+> > > very modest set for the start.
+> > >
+> > > Updating also bpf.h tools uapi header and adding 'path' to
+> > > bpf_helpers_doc.py script.
+> > >
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
+> > >  include/uapi/linux/bpf.h       | 13 +++++++++
+> > >  kernel/trace/bpf_trace.c       | 48 ++++++++++++++++++++++++++++++++++
+> > >  scripts/bpf_helpers_doc.py     |  2 ++
+> > >  tools/include/uapi/linux/bpf.h | 13 +++++++++
+> > >  4 files changed, 76 insertions(+)
+> > >
+> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > index eb5e0c38eb2c..a356ea1357bf 100644
+> > > --- a/include/uapi/linux/bpf.h
+> > > +++ b/include/uapi/linux/bpf.h
+> > > @@ -3389,6 +3389,18 @@ union bpf_attr {
+> > >   *             A non-negative value equal to or less than *size* on success,
+> > >   *             or a negative error in case of failure.
+> > >   *
+> > > + * int bpf_d_path(struct path *path, char *buf, u32 sz)
 > > 
-> >> Although we can detect the chip revision 100% at runtime, it is useful
-> >> to specify it in the device tree compatible string too, because
-> >> otherwise there would be no way to assess the correctness of device tree
-> >> bindings statically, without booting a board (only some switch versions
-> >> have internal RGMII delays and/or an SGMII port).
-> >>
-> >> But for testing the P/Q/R/S support, what I have is a reworked board
-> >> with the SJA1105T replaced by a pin-compatible SJA1105Q, and I don't
-> >> want to keep a separate device tree blob just for this one-off board.
-> >> Since just the chip has been replaced, its RGMII delay setup is
-> >> inherently the same (meaning: delays added by the PHY on the slave
-> >> ports, and by PCB traces on the fixed-link CPU port).
-> >>
-> >> For this board, I'd rather have the driver shout at me, but go ahead and
-> >> use what it found even if it doesn't match what it's been told is there.
-> >>
-> >> [    2.970826] sja1105 spi0.1: Device tree specifies chip SJA1105T but found SJA1105Q, please fix it!
-> >> [    2.980010] sja1105 spi0.1: Probed switch chip: SJA1105Q
-> >> [    3.005082] sja1105 spi0.1: Enabled switch tagging
-> >>
-> >> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> > 
-> > Andrew/Florian, do we really want to set a precedence for doing this
-> > kind of fallback in our drivers?
-> 
-> Not a big fan of it, and the justification is a little bit weak IMHO,
-> especially since one could argue that the boot agent providing the FDT
-> could do that check and present an appropriate compatible string to the
-> kernel.
+> > nit: probably would be good to do `const struct path *` here, even if
+> > we don't do const-ification properly in all helpers.
 
-I'll admit I'm not a huge fan either, but what you're suggesting is
-basically to move the whole problem one level lower (somebody would
-still have to be aware about the device id mismatch). I _was_ going to
-eventually patch the U-Boot driver to adapt to the real device id too,
-but only for its own use of networking. I am an even smaller fan of
-having to do a fdt fixup from U-Boot, then I'd have to rely on that
-always being there to do its job properly.
+hum, for this I need to update scripts/bpf_helpers_doc.py and it looks
+like it's not ready for const struct yet:
 
-I've been using this board with a local fdt blob for more than one year
-now, but it's inconvenient for me to have custom tftp commands for this
-one board only. I hope I'm not setting for a behavior that might be
-abused, tbh I don't really see how. At the end of the day though, I
-don't see why the driver would have to be as punishing as to refuse to
-probe when it can, warning is more than enough.
+  CLNG-LLC [test_maps] get_cgroup_id_kern.o
+In file included from progs/test_lwt_ip_encap.c:7:
+In file included from /home/jolsa/linux/tools/testing/selftests/bpf/tools/include/bpf/bpf_helpers.h:11:
+/home/jolsa/linux/tools/testing/selftests/bpf/tools/include/bpf/bpf_helper_defs.h:32:1: warning: 'const' ignored on this declaration [-Wmissing-declarations]
+const struct path;
+^
 
-Thanks,
--Vladimir
+would it be ok as a follow up change? I'll need to check
+on bpf_helpers_doc.py script first
+
+jirka
+
