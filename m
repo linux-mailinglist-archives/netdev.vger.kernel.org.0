@@ -2,80 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7120423C3B3
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 04:50:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BAB623C3CF
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 05:02:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727873AbgHECt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 22:49:56 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:39399 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725950AbgHECt4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Aug 2020 22:49:56 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 0752nfDC017394;
-        Wed, 5 Aug 2020 04:49:41 +0200
-Date:   Wed, 5 Aug 2020 04:49:41 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Marc Plumb <lkml.mplumb@gmail.com>
-Cc:     tytso@mit.edu, netdev@vger.kernel.org, aksecurity@gmail.com,
-        torvalds@linux-foundation.org, edumazet@google.com,
-        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
-        tglx@linutronix.de, peterz@infradead.org, stable@vger.kernel.org
-Subject: Re: Flaw in "random32: update the net random state on interrupt and
- activity"
-Message-ID: <20200805024941.GA17301@1wt.eu>
-References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
+        id S1727801AbgHEDBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 23:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725904AbgHEDBx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 23:01:53 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3D5C06174A
+        for <netdev@vger.kernel.org>; Tue,  4 Aug 2020 20:01:52 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id x6so8426247pgx.12
+        for <netdev@vger.kernel.org>; Tue, 04 Aug 2020 20:01:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LFVHvYPB5yfNOKAKwPYCA41L66u/+hsymfnshvTbxXQ=;
+        b=LOcneMRZf0GagR5iH5b7KHMTCb+u3inHnHuOArCNmvCB/m8rPdo2taTyr1u91J9/eZ
+         gyIh8lplxif71q86kQ8C2DxNm+hm9D5NYR6J8Dz1VuuFvwaFCyzk3CT0hJfPAMUEO0Hr
+         yCUMXtBR8DjFJJJUXmZIfN6nGALDKpj1rzegCRZyns+szVlIT2ieazFXuC7HlSMDqeVw
+         Iksqbym/nLQQi9NXqBkjuHeEzDZHlP2/9+TkpL78ZwOQrHBPyRP8tWSZZ31jQKEayQYo
+         L91oBqxl6HHcDhYSDWC1bXYKZyf1Yw9LU1fwDs4Ln0fS9C4JBPd/kcF2tTlrx6wOoD6Q
+         6vkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LFVHvYPB5yfNOKAKwPYCA41L66u/+hsymfnshvTbxXQ=;
+        b=HzuDezJtmoLxA8K6VTLZC92ZpER72o8ZQvGtltAoFDhI9NZTR4TKONXBbfPHRMu7QP
+         rLCVSure2bTvrq/2QkE621L1NVrNGmvYL/bZX8nWS9dEzjAX9wq73bGXhxsnw4OZ7HRE
+         wn7cvEvBYwbKWZlTE+kWVxJGZ0rd5pSER50b+qz0tRYuN+ZKc4xYe2RqylBxlXRYjI4g
+         v5siUdXHi0PAgl0X+yAAsDeHKWpPGyfjD2acDNu1bAtKewDcz/0xNRVY+01VCLUUCgnO
+         XbBQJ8u4aVxQu67fhBR7ImXVCLENDoHC4c9oVJQ8rdCOW5TnImWZW/QknITgVU3KKUMS
+         XRGg==
+X-Gm-Message-State: AOAM533pMGrFcnbe3+aUKImcX0DQcfGRR0bP0vrsytZRePLaQ4uUHJ08
+        MvXOeCFd1zKutghaR76x06HxXjHq
+X-Google-Smtp-Source: ABdhPJzogC7joXzV3ICUNtvP+epeVjwsUHe6m0nFD1CnddTEWV1ZK+SAaxREmG1/1XpxNRTAfNUKtw==
+X-Received: by 2002:a62:ee03:: with SMTP id e3mr1254237pfi.10.1596596511986;
+        Tue, 04 Aug 2020 20:01:51 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id g8sm779136pgr.70.2020.08.04.20.01.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Aug 2020 20:01:51 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: dsa: sja1105: use detected device id
+ instead of DT one on mismatch
+To:     David Miller <davem@davemloft.net>, olteanv@gmail.com
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com
+References: <20200803164823.414772-1-olteanv@gmail.com>
+ <20200804.155950.60471933904505919.davem@davemloft.net>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <3d3de571-fcd3-7885-628a-432980d4999d@gmail.com>
+Date:   Tue, 4 Aug 2020 20:01:46 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+In-Reply-To: <20200804.155950.60471933904505919.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
 
-On Tue, Aug 04, 2020 at 05:52:36PM -0700, Marc Plumb wrote:
-> Seeding two PRNGs with the same entropy causes two problems. The minor one
-> is that you're double counting entropy. The major one is that anyone who can
-> determine the state of one PRNG can determine the state of the other.
+
+On 8/4/2020 3:59 PM, David Miller wrote:
+> From: Vladimir Oltean <olteanv@gmail.com>
+> Date: Mon,  3 Aug 2020 19:48:23 +0300
 > 
-> The net_rand_state PRNG is effectively a 113 bit LFSR, so anyone who can see
-> any 113 bits of output can determine the complete internal state.
+>> Although we can detect the chip revision 100% at runtime, it is useful
+>> to specify it in the device tree compatible string too, because
+>> otherwise there would be no way to assess the correctness of device tree
+>> bindings statically, without booting a board (only some switch versions
+>> have internal RGMII delays and/or an SGMII port).
+>>
+>> But for testing the P/Q/R/S support, what I have is a reworked board
+>> with the SJA1105T replaced by a pin-compatible SJA1105Q, and I don't
+>> want to keep a separate device tree blob just for this one-off board.
+>> Since just the chip has been replaced, its RGMII delay setup is
+>> inherently the same (meaning: delays added by the PHY on the slave
+>> ports, and by PCB traces on the fixed-link CPU port).
+>>
+>> For this board, I'd rather have the driver shout at me, but go ahead and
+>> use what it found even if it doesn't match what it's been told is there.
+>>
+>> [    2.970826] sja1105 spi0.1: Device tree specifies chip SJA1105T but found SJA1105Q, please fix it!
+>> [    2.980010] sja1105 spi0.1: Probed switch chip: SJA1105Q
+>> [    3.005082] sja1105 spi0.1: Enabled switch tagging
+>>
+>> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 > 
-> The output of the net_rand_state PRNG is used to determine how data is sent
-> to the network, so the output is effectively broadcast to anyone watching
-> network traffic. Therefore anyone watching the network traffic can determine
-> the seed data being fed to the net_rand_state PRNG.
+> Andrew/Florian, do we really want to set a precedence for doing this
+> kind of fallback in our drivers?
 
-The problem this patch is trying to work around is that the reporter
-(Amit) was able to determine the entire net_rand_state after observing
-a certain number of packets due to this trivial LFSR and the fact that
-its internal state between two reseedings only depends on the number
-of calls to read it. (please note that regarding this point I'll
-propose a patch to replace that PRNG to stop directly exposing the
-internal state to the network).
+Not a big fan of it, and the justification is a little bit weak IMHO,
+especially since one could argue that the boot agent providing the FDT
+could do that check and present an appropriate compatible string to the
+kernel.
 
-If you look closer at the patch, you'll see that in one interrupt
-the patch only uses any 32 out of the 128 bits of fast_pool to
-update only 32 bits of the net_rand_state. As such, the sequence
-observed on the network also depends on the remaining bits of
-net_rand_state, while the 96 other bits of the fast_pool are not
-exposed there.
+That said, there is nothing obviously wrong about this proposal and at
+the end of the day, what people care about is that the right model gets
+picked up, whether that happens solely via compatibility strings or run
+time detection can be left to the discretion of the driver.
 
-> Since this is the same
-> seed data being fed to get_random_bytes, it allows an attacker to determine
-> the state and there output of /dev/random. I sincerely hope that this was
-> not the intended goal. :)
-
-Not only was this obviously not the goal, but I'd be particularly
-interested in seeing this reality demonstrated, considering that
-the whole 128 bits of fast_pool together count as a single bit of
-entropy, and that as such, even if you were able to figure the
-value of the 32 bits leaked to net_rand_state, you'd still have to
-guess the 96 other bits for each single entropy bit :-/
-
-Regards,
-Willy
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
