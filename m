@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82AA923D0BC
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:52:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A507523D0C1
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:53:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729447AbgHETwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 15:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
+        id S1729432AbgHETwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 15:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728105AbgHEQvZ (ORCPT
+        with ESMTP id S1728174AbgHEQvZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:51:25 -0400
 Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A650CC0A88AD;
-        Wed,  5 Aug 2020 07:04:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2DAC0A88B0;
+        Wed,  5 Aug 2020 07:04:21 -0700 (PDT)
 Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.94)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1k3K1i-00GoxW-PB; Wed, 05 Aug 2020 16:04:18 +0200
+        id 1k3K1j-00GoxW-2W; Wed, 05 Aug 2020 16:04:19 +0200
 From:   Johannes Berg <johannes@sipsolutions.net>
 To:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>
-Subject: [RFC 3/4] netlink: make NLA_BINARY validation more flexible
-Date:   Wed,  5 Aug 2020 16:03:23 +0200
-Message-Id: <20200805154803.7f2a96db39e5.Ieb6502e26920e731a04d414245a28254519a26d8@changeid>
+Subject: [RFC 4/4] nl80211: use NLA_POLICY_RANGE(NLA_BINARY, ...) for a few attributes
+Date:   Wed,  5 Aug 2020 16:03:24 +0200
+Message-Id: <20200805154803.e858a2edcead.I9d948d59870e521febcd79bb4a986b1de1dca47b@changeid>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200805140324.72855-1-johannes@sipsolutions.net>
 References: <20200805140324.72855-1-johannes@sipsolutions.net>
@@ -36,391 +36,103 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-Add range validation for NLA_BINARY, allowing validation of any
-combination of combination minimum or maximum lengths, using the
-existing NLA_POLICY_RANGE()/NLA_POLICY_FULL_RANGE() macros, just
-like for integers where the value is checked.
-
-Also make NLA_POLICY_EXACT_LEN(), NLA_POLICY_EXACT_LEN_WARN()
-and NLA_POLICY_MIN_LEN() special cases of this, removing the old
-types NLA_EXACT_LEN and NLA_MIN_LEN.
-
-This allows us to save some code where both minimum and maximum
-lengths are requires, currently the policy only allows maximum
-(NLA_BINARY), minimum (NLA_MIN_LEN) or exact (NLA_EXACT_LEN), so
-a range of lengths cannot be accepted and must be checked by the
-code that consumes the attributes later.
-
-Also, this allows advertising the correct ranges in the policy
-export to userspace. Here, NLA_MIN_LEN and NLA_EXACT_LEN already
-were special cases of NLA_BINARY with min and min/max length
-respectively.
+We have a few attributes with minimum and maximum lengths that are
+not the same, use the new feature of being able to specify both in
+the policy to validate them, removing code and allowing this to be
+advertised to userspace in the policy export.
 
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 ---
- include/net/netlink.h | 58 +++++++++++++++++++++++--------------------
- lib/nlattr.c          | 57 ++++++++++++++++++++++++++----------------
- net/netlink/policy.c  | 32 ++++++++++++++----------
- 3 files changed, 86 insertions(+), 61 deletions(-)
+ net/wireless/nl80211.c | 36 ++++++++++++++----------------------
+ 1 file changed, 14 insertions(+), 22 deletions(-)
 
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index c0411f14fb53..fdd317f8fde4 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -181,8 +181,6 @@ enum {
- 	NLA_S64,
- 	NLA_BITFIELD32,
- 	NLA_REJECT,
--	NLA_EXACT_LEN,
--	NLA_MIN_LEN,
- 	__NLA_TYPE_MAX,
- };
- 
-@@ -199,11 +197,11 @@ struct netlink_range_validation_signed {
- enum nla_policy_validation {
- 	NLA_VALIDATE_NONE,
- 	NLA_VALIDATE_RANGE,
-+	NLA_VALIDATE_RANGE_WARN_TOO_LONG,
- 	NLA_VALIDATE_MIN,
- 	NLA_VALIDATE_MAX,
- 	NLA_VALIDATE_RANGE_PTR,
- 	NLA_VALIDATE_FUNCTION,
--	NLA_VALIDATE_WARN_TOO_LONG,
- };
- 
- /**
-@@ -222,7 +220,7 @@ enum nla_policy_validation {
-  *    NLA_NUL_STRING       Maximum length of string (excluding NUL)
-  *    NLA_FLAG             Unused
-  *    NLA_BINARY           Maximum length of attribute payload
-- *    NLA_MIN_LEN          Minimum length of attribute payload
-+ *                         (but see also below with the validation type)
-  *    NLA_NESTED,
-  *    NLA_NESTED_ARRAY     Length verification is done by checking len of
-  *                         nested header (or empty); len field is used if
-@@ -237,11 +235,6 @@ enum nla_policy_validation {
-  *                         just like "All other"
-  *    NLA_BITFIELD32       Unused
-  *    NLA_REJECT           Unused
-- *    NLA_EXACT_LEN        Attribute should have exactly this length, otherwise
-- *                         it is rejected or warned about, the latter happening
-- *                         if and only if the `validation_type' is set to
-- *                         NLA_VALIDATE_WARN_TOO_LONG.
-- *    NLA_MIN_LEN          Minimum length of attribute payload
-  *    All other            Minimum length of attribute payload
-  *
-  * Meaning of validation union:
-@@ -296,6 +289,11 @@ enum nla_policy_validation {
-  *                         pointer to a struct netlink_range_validation_signed
-  *                         that indicates the min/max values.
-  *                         Use NLA_POLICY_FULL_RANGE_SIGNED().
-+ *
-+ *    NLA_BINARY           If the validation type is like the ones for integers
-+ *                         above, then the min/max length (not value like for
-+ *                         integers) of the attribute is enforced.
-+ *
-  *    All other            Unused - but note that it's a union
-  *
-  * Meaning of `validate' field, use via NLA_POLICY_VALIDATE_FN:
-@@ -309,7 +307,7 @@ enum nla_policy_validation {
-  * static const struct nla_policy my_policy[ATTR_MAX+1] = {
-  * 	[ATTR_FOO] = { .type = NLA_U16 },
-  *	[ATTR_BAR] = { .type = NLA_STRING, .len = BARSIZ },
-- *	[ATTR_BAZ] = { .type = NLA_EXACT_LEN, .len = sizeof(struct mystruct) },
-+ *	[ATTR_BAZ] = NLA_POLICY_EXACT_LEN(sizeof(struct mystruct)),
-  *	[ATTR_GOO] = NLA_POLICY_BITFIELD32(myvalidflags),
-  * };
-  */
-@@ -335,9 +333,10 @@ struct nla_policy {
- 		 * nesting validation starts here.
- 		 *
- 		 * Additionally, it means that NLA_UNSPEC is actually NLA_REJECT
--		 * for any types >= this, so need to use NLA_MIN_LEN to get the
--		 * previous pure { .len = xyz } behaviour. The advantage of this
--		 * is that types not specified in the policy will be rejected.
-+		 * for any types >= this, so need to use NLA_POLICY_MIN_LEN() to
-+		 * get the previous pure { .len = xyz } behaviour. The advantage
-+		 * of this is that types not specified in the policy will be
-+		 * rejected.
- 		 *
- 		 * For completely new families it should be set to 1 so that the
- 		 * validation is enforced for all attributes. For existing ones
-@@ -349,12 +348,6 @@ struct nla_policy {
- 	};
- };
- 
--#define NLA_POLICY_EXACT_LEN(_len)	{ .type = NLA_EXACT_LEN, .len = _len }
--#define NLA_POLICY_EXACT_LEN_WARN(_len) \
--	{ .type = NLA_EXACT_LEN, .len = _len, \
--	  .validation_type = NLA_VALIDATE_WARN_TOO_LONG, }
--#define NLA_POLICY_MIN_LEN(_len)	{ .type = NLA_MIN_LEN, .len = _len }
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 076e3e96c809..e91d5bcb0f8b 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -574,14 +574,20 @@ static const struct nla_policy nl80211_policy[NUM_NL80211_ATTR] = {
+ 	[NL80211_ATTR_CSA_C_OFF_BEACON] = { .type = NLA_BINARY },
+ 	[NL80211_ATTR_CSA_C_OFF_PRESP] = { .type = NLA_BINARY },
+ 	[NL80211_ATTR_STA_SUPPORTED_CHANNELS] = NLA_POLICY_MIN_LEN(2),
+-	[NL80211_ATTR_STA_SUPPORTED_OPER_CLASSES] = { .type = NLA_BINARY },
++	/*
++	 * The value of the Length field of the Supported Operating
++	 * Classes element is between 2 and 253.
++	 */
++	[NL80211_ATTR_STA_SUPPORTED_OPER_CLASSES] =
++		NLA_POLICY_RANGE(NLA_BINARY, 2, 253),
+ 	[NL80211_ATTR_HANDLE_DFS] = { .type = NLA_FLAG },
+ 	[NL80211_ATTR_OPMODE_NOTIF] = { .type = NLA_U8 },
+ 	[NL80211_ATTR_VENDOR_ID] = { .type = NLA_U32 },
+ 	[NL80211_ATTR_VENDOR_SUBCMD] = { .type = NLA_U32 },
+ 	[NL80211_ATTR_VENDOR_DATA] = { .type = NLA_BINARY },
+-	[NL80211_ATTR_QOS_MAP] = { .type = NLA_BINARY,
+-				   .len = IEEE80211_QOS_MAP_LEN_MAX },
++	[NL80211_ATTR_QOS_MAP] = NLA_POLICY_RANGE(NLA_BINARY,
++						  IEEE80211_QOS_MAP_LEN_MIN,
++						  IEEE80211_QOS_MAP_LEN_MAX),
+ 	[NL80211_ATTR_MAC_HINT] = NLA_POLICY_EXACT_LEN_WARN(ETH_ALEN),
+ 	[NL80211_ATTR_WIPHY_FREQ_HINT] = { .type = NLA_U32 },
+ 	[NL80211_ATTR_TDLS_PEER_CAPABILITY] = { .type = NLA_U32 },
+@@ -636,9 +642,10 @@ static const struct nla_policy nl80211_policy[NUM_NL80211_ATTR] = {
+ 	[NL80211_ATTR_TXQ_LIMIT] = { .type = NLA_U32 },
+ 	[NL80211_ATTR_TXQ_MEMORY_LIMIT] = { .type = NLA_U32 },
+ 	[NL80211_ATTR_TXQ_QUANTUM] = { .type = NLA_U32 },
+-	[NL80211_ATTR_HE_CAPABILITY] = { .type = NLA_BINARY,
+-					 .len = NL80211_HE_MAX_CAPABILITY_LEN },
 -
- #define NLA_POLICY_ETH_ADDR		NLA_POLICY_EXACT_LEN(ETH_ALEN)
- #define NLA_POLICY_ETH_ADDR_COMPAT	NLA_POLICY_EXACT_LEN_WARN(ETH_ALEN)
- 
-@@ -370,19 +363,21 @@ struct nla_policy {
- 	{ .type = NLA_BITFIELD32, .bitfield32_valid = valid }
- 
- #define __NLA_ENSURE(condition) BUILD_BUG_ON_ZERO(!(condition))
--#define NLA_ENSURE_UINT_TYPE(tp)			\
-+#define NLA_ENSURE_UINT_OR_BINARY_TYPE(tp)		\
- 	(__NLA_ENSURE(tp == NLA_U8 || tp == NLA_U16 ||	\
- 		      tp == NLA_U32 || tp == NLA_U64 ||	\
--		      tp == NLA_MSECS) + tp)
-+		      tp == NLA_MSECS ||		\
-+		      tp == NLA_BINARY) + tp)
- #define NLA_ENSURE_SINT_TYPE(tp)			\
- 	(__NLA_ENSURE(tp == NLA_S8 || tp == NLA_S16  ||	\
- 		      tp == NLA_S32 || tp == NLA_S64) + tp)
--#define NLA_ENSURE_INT_TYPE(tp)				\
-+#define NLA_ENSURE_INT_OR_BINARY_TYPE(tp)		\
- 	(__NLA_ENSURE(tp == NLA_S8 || tp == NLA_U8 ||	\
- 		      tp == NLA_S16 || tp == NLA_U16 ||	\
- 		      tp == NLA_S32 || tp == NLA_U32 ||	\
- 		      tp == NLA_S64 || tp == NLA_U64 ||	\
--		      tp == NLA_MSECS) + tp)
-+		      tp == NLA_MSECS ||		\
-+		      tp == NLA_BINARY) + tp)
- #define NLA_ENSURE_NO_VALIDATION_PTR(tp)		\
- 	(__NLA_ENSURE(tp != NLA_BITFIELD32 &&		\
- 		      tp != NLA_REJECT &&		\
-@@ -390,14 +385,14 @@ struct nla_policy {
- 		      tp != NLA_NESTED_ARRAY) + tp)
- 
- #define NLA_POLICY_RANGE(tp, _min, _max) {		\
--	.type = NLA_ENSURE_INT_TYPE(tp),		\
-+	.type = NLA_ENSURE_INT_OR_BINARY_TYPE(tp),	\
- 	.validation_type = NLA_VALIDATE_RANGE,		\
- 	.min = _min,					\
- 	.max = _max					\
- }
- 
- #define NLA_POLICY_FULL_RANGE(tp, _range) {		\
--	.type = NLA_ENSURE_UINT_TYPE(tp),		\
-+	.type = NLA_ENSURE_UINT_OR_BINARY_TYPE(tp),	\
- 	.validation_type = NLA_VALIDATE_RANGE_PTR,	\
- 	.range = _range,				\
- }
-@@ -409,13 +404,13 @@ struct nla_policy {
- }
- 
- #define NLA_POLICY_MIN(tp, _min) {			\
--	.type = NLA_ENSURE_INT_TYPE(tp),		\
-+	.type = NLA_ENSURE_INT_OR_BINARY_TYPE(tp),	\
- 	.validation_type = NLA_VALIDATE_MIN,		\
- 	.min = _min,					\
- }
- 
- #define NLA_POLICY_MAX(tp, _max) {			\
--	.type = NLA_ENSURE_INT_TYPE(tp),		\
-+	.type = NLA_ENSURE_INT_OR_BINARY_TYPE(tp),	\
- 	.validation_type = NLA_VALIDATE_MAX,		\
- 	.max = _max,					\
- }
-@@ -427,6 +422,15 @@ struct nla_policy {
- 	.len = __VA_ARGS__ + 0,				\
- }
- 
-+#define NLA_POLICY_EXACT_LEN(_len)	NLA_POLICY_RANGE(NLA_BINARY, _len, _len)
-+#define NLA_POLICY_EXACT_LEN_WARN(_len) {			\
-+	.type = NLA_BINARY,					\
-+	.validation_type = NLA_VALIDATE_RANGE_WARN_TOO_LONG,	\
-+	.min = _len,						\
-+	.max = _len						\
-+}
-+#define NLA_POLICY_MIN_LEN(_len)	NLA_POLICY_MIN(NLA_BINARY, _len)
-+
- /**
-  * struct nl_info - netlink source information
-  * @nlh: Netlink message header of original request
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index bc5b5cf608c4..07d48234d7c7 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -124,6 +124,7 @@ void nla_get_range_unsigned(const struct nla_policy *pt,
- 		range->max = U8_MAX;
- 		break;
- 	case NLA_U16:
-+	case NLA_BINARY:
- 		range->max = U16_MAX;
- 		break;
- 	case NLA_U32:
-@@ -140,6 +141,7 @@ void nla_get_range_unsigned(const struct nla_policy *pt,
- 
- 	switch (pt->validation_type) {
- 	case NLA_VALIDATE_RANGE:
-+	case NLA_VALIDATE_RANGE_WARN_TOO_LONG:
- 		range->min = pt->min;
- 		range->max = pt->max;
- 		break;
-@@ -157,9 +159,10 @@ void nla_get_range_unsigned(const struct nla_policy *pt,
++	[NL80211_ATTR_HE_CAPABILITY] =
++		NLA_POLICY_RANGE(NLA_BINARY,
++				 NL80211_HE_MIN_CAPABILITY_LEN,
++				 NL80211_HE_MAX_CAPABILITY_LEN),
+ 	[NL80211_ATTR_FTM_RESPONDER] =
+ 		NLA_POLICY_NESTED(nl80211_ftm_responder_policy),
+ 	[NL80211_ATTR_TIMEOUT] = NLA_POLICY_MIN(NLA_U32, 1),
+@@ -5851,13 +5858,6 @@ static int nl80211_parse_sta_channel_info(struct genl_info *info,
+ 		 nla_data(info->attrs[NL80211_ATTR_STA_SUPPORTED_OPER_CLASSES]);
+ 		params->supported_oper_classes_len =
+ 		  nla_len(info->attrs[NL80211_ATTR_STA_SUPPORTED_OPER_CLASSES]);
+-		/*
+-		 * The value of the Length field of the Supported Operating
+-		 * Classes element is between 2 and 253.
+-		 */
+-		if (params->supported_oper_classes_len < 2 ||
+-		    params->supported_oper_classes_len > 253)
+-			return -EINVAL;
  	}
+ 	return 0;
  }
- 
--static int nla_validate_int_range_unsigned(const struct nla_policy *pt,
--					   const struct nlattr *nla,
--					   struct netlink_ext_ack *extack)
-+static int nla_validate_range_unsigned(const struct nla_policy *pt,
-+				       const struct nlattr *nla,
-+				       struct netlink_ext_ack *extack,
-+				       unsigned int validate)
- {
- 	struct netlink_range_validation range;
- 	u64 value;
-@@ -178,15 +181,36 @@ static int nla_validate_int_range_unsigned(const struct nla_policy *pt,
- 	case NLA_MSECS:
- 		value = nla_get_u64(nla);
- 		break;
-+	case NLA_BINARY:
-+		value = nla_len(nla);
-+		break;
- 	default:
- 		return -EINVAL;
+@@ -5880,9 +5880,6 @@ static int nl80211_set_station_tdls(struct genl_info *info,
+ 			nla_data(info->attrs[NL80211_ATTR_HE_CAPABILITY]);
+ 		params->he_capa_len =
+ 			nla_len(info->attrs[NL80211_ATTR_HE_CAPABILITY]);
+-
+-		if (params->he_capa_len < NL80211_HE_MIN_CAPABILITY_LEN)
+-			return -EINVAL;
  	}
  
- 	nla_get_range_unsigned(pt, &range);
- 
-+	if (pt->validation_type == NLA_VALIDATE_RANGE_WARN_TOO_LONG &&
-+	    pt->type == NLA_BINARY && value > range.max) {
-+		pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
-+				    current->comm, pt->type);
-+		if (validate & NL_VALIDATE_STRICT_ATTRS) {
-+			NL_SET_ERR_MSG_ATTR(extack, nla,
-+					    "invalid attribute length");
-+			return -EINVAL;
-+		}
-+	}
-+
- 	if (value < range.min || value > range.max) {
--		NL_SET_ERR_MSG_ATTR(extack, nla,
--				    "integer out of range");
-+		bool binary = pt->type == NLA_BINARY;
-+
-+		if (binary)
-+			NL_SET_ERR_MSG_ATTR(extack, nla,
-+					    "binary attribute size out of range");
-+		else
-+			NL_SET_ERR_MSG_ATTR(extack, nla,
-+					    "integer out of range");
-+
- 		return -ERANGE;
+ 	err = nl80211_parse_sta_channel_info(info, params);
+@@ -6141,10 +6138,6 @@ static int nl80211_new_station(struct sk_buff *skb, struct genl_info *info)
+ 			nla_data(info->attrs[NL80211_ATTR_HE_CAPABILITY]);
+ 		params.he_capa_len =
+ 			nla_len(info->attrs[NL80211_ATTR_HE_CAPABILITY]);
+-
+-		/* max len is validated in nla policy */
+-		if (params.he_capa_len < NL80211_HE_MIN_CAPABILITY_LEN)
+-			return -EINVAL;
  	}
  
-@@ -274,7 +298,8 @@ static int nla_validate_int_range_signed(const struct nla_policy *pt,
+ 	if (info->attrs[NL80211_ATTR_HE_6GHZ_CAPABILITY])
+@@ -13540,8 +13533,7 @@ static int nl80211_set_qos_map(struct sk_buff *skb,
+ 		pos = nla_data(info->attrs[NL80211_ATTR_QOS_MAP]);
+ 		len = nla_len(info->attrs[NL80211_ATTR_QOS_MAP]);
  
- static int nla_validate_int_range(const struct nla_policy *pt,
- 				  const struct nlattr *nla,
--				  struct netlink_ext_ack *extack)
-+				  struct netlink_ext_ack *extack,
-+				  unsigned int validate)
- {
- 	switch (pt->type) {
- 	case NLA_U8:
-@@ -282,7 +307,8 @@ static int nla_validate_int_range(const struct nla_policy *pt,
- 	case NLA_U32:
- 	case NLA_U64:
- 	case NLA_MSECS:
--		return nla_validate_int_range_unsigned(pt, nla, extack);
-+	case NLA_BINARY:
-+		return nla_validate_range_unsigned(pt, nla, extack, validate);
- 	case NLA_S8:
- 	case NLA_S16:
- 	case NLA_S32:
-@@ -313,10 +339,7 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 
- 	BUG_ON(pt->type > NLA_TYPE_MAX);
- 
--	if ((nla_attr_len[pt->type] && attrlen != nla_attr_len[pt->type]) ||
--	    (pt->type == NLA_EXACT_LEN &&
--	     pt->validation_type == NLA_VALIDATE_WARN_TOO_LONG &&
--	     attrlen != pt->len)) {
-+	if (nla_attr_len[pt->type] && attrlen != nla_attr_len[pt->type]) {
- 		pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
- 				    current->comm, type);
- 		if (validate & NL_VALIDATE_STRICT_ATTRS) {
-@@ -449,19 +472,10 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 					    "Unsupported attribute");
+-		if (len % 2 || len < IEEE80211_QOS_MAP_LEN_MIN ||
+-		    len > IEEE80211_QOS_MAP_LEN_MAX)
++		if (len % 2)
  			return -EINVAL;
- 		}
--		/* fall through */
--	case NLA_MIN_LEN:
- 		if (attrlen < pt->len)
- 			goto out_err;
- 		break;
  
--	case NLA_EXACT_LEN:
--		if (pt->validation_type != NLA_VALIDATE_WARN_TOO_LONG) {
--			if (attrlen != pt->len)
--				goto out_err;
--			break;
--		}
--		/* fall through */
- 	default:
- 		if (pt->len)
- 			minlen = pt->len;
-@@ -479,9 +493,10 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 		break;
- 	case NLA_VALIDATE_RANGE_PTR:
- 	case NLA_VALIDATE_RANGE:
-+	case NLA_VALIDATE_RANGE_WARN_TOO_LONG:
- 	case NLA_VALIDATE_MIN:
- 	case NLA_VALIDATE_MAX:
--		err = nla_validate_int_range(pt, nla, extack);
-+		err = nla_validate_int_range(pt, nla, extack, validate);
- 		if (err)
- 			return err;
- 		break;
-diff --git a/net/netlink/policy.c b/net/netlink/policy.c
-index f6491853c797..46c11c9c212a 100644
---- a/net/netlink/policy.c
-+++ b/net/netlink/policy.c
-@@ -251,12 +251,6 @@ int netlink_policy_dump_write(struct sk_buff *skb, unsigned long _state)
- 				pt->bitfield32_valid))
- 			goto nla_put_failure;
- 		break;
--	case NLA_EXACT_LEN:
--		type = NL_ATTR_TYPE_BINARY;
--		if (nla_put_u32(skb, NL_POLICY_TYPE_ATTR_MIN_LENGTH, pt->len) ||
--		    nla_put_u32(skb, NL_POLICY_TYPE_ATTR_MAX_LENGTH, pt->len))
--			goto nla_put_failure;
--		break;
- 	case NLA_STRING:
- 	case NLA_NUL_STRING:
- 	case NLA_BINARY:
-@@ -266,14 +260,26 @@ int netlink_policy_dump_write(struct sk_buff *skb, unsigned long _state)
- 			type = NL_ATTR_TYPE_NUL_STRING;
- 		else
- 			type = NL_ATTR_TYPE_BINARY;
--		if (pt->len && nla_put_u32(skb, NL_POLICY_TYPE_ATTR_MAX_LENGTH,
--					   pt->len))
--			goto nla_put_failure;
--		break;
--	case NLA_MIN_LEN:
--		type = NL_ATTR_TYPE_BINARY;
--		if (nla_put_u32(skb, NL_POLICY_TYPE_ATTR_MIN_LENGTH, pt->len))
-+
-+		if (pt->validation_type != NLA_VALIDATE_NONE) {
-+			struct netlink_range_validation range;
-+
-+			nla_get_range_unsigned(pt, &range);
-+
-+			if (range.min &&
-+			    nla_put_u32(skb, NL_POLICY_TYPE_ATTR_MIN_LENGTH,
-+					range.min))
-+				goto nla_put_failure;
-+
-+			if (range.max < U16_MAX &&
-+			    nla_put_u32(skb, NL_POLICY_TYPE_ATTR_MAX_LENGTH,
-+					range.max))
-+				goto nla_put_failure;
-+		} else if (pt->len &&
-+			   nla_put_u32(skb, NL_POLICY_TYPE_ATTR_MAX_LENGTH,
-+				       pt->len)) {
- 			goto nla_put_failure;
-+		}
- 		break;
- 	case NLA_FLAG:
- 		type = NL_ATTR_TYPE_FLAG;
+ 		qos_map = kzalloc(sizeof(struct cfg80211_qos_map), GFP_KERNEL);
 -- 
 2.26.2
 
