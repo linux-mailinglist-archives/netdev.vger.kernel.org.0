@@ -2,130 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADC3823CF59
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:20:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A106E23CF3B
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:17:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728621AbgHETTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 15:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728849AbgHER5u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 13:57:50 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC67C061575;
-        Wed,  5 Aug 2020 10:56:42 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id v89so10014357ybi.8;
-        Wed, 05 Aug 2020 10:56:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=li1hE9tF4it7VfRmrQee8o6JUSjiVegDf8MI6ZEx7Xw=;
-        b=VRGtmUGAWQDDkaTOsTmd9lNenNetoywtXI7HdQOOcsYrutySs+ol6ML0Z5mC8hGUCb
-         KSMEhswVQo13kTKOSWxuNm8lLyxp2KhNKBHTGJQRNNoLvxtGK9Et+iXpeQ/JrdlNNviw
-         xB+HZm4D3SQI76qe7TUwFRtnT93f4+jAT4bxO4xQVy+g4cK/HXfTanmG15XG/D4+LPhK
-         jDKZCmUsSH6LhEhez8cm0ONUz3ns1lxQGvrufJR+y9btO0A6wWKTtowEpL02k99C/iXx
-         35svsGvqq+bq5qbjca1p7V99jdmR5bOAN2dtD0oMbwQsfoQU/piZ+E9VW+WK87APsVxV
-         I1qQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=li1hE9tF4it7VfRmrQee8o6JUSjiVegDf8MI6ZEx7Xw=;
-        b=gryqoJf/LtjfnFAsJ4ofMNBSTAjWtT1qed9uWG9K43/qVhPfTwB6ow4aYX3T/N0RVQ
-         iv7jtaLDb3rWK2JgCC3xFrglpA3/HHjp5fBCtPJULXQJ1qcWe7MTF/ga4kBz8ttwurxE
-         G52oqM5WqGNKmtOihs9fk8MJ52CC3JRzqpn7mIJ0OeknVPPpM+5KMxTxeqKJDssG+D+y
-         RC1GnY+O7ApFabh152/GbekoP//c4ggxdImprDcXUFFsthdmWT/0WB1trl5OZp4NR9bR
-         2oFxylLq0EvrkrchV5j3q5I69SnaiMGefW9PVOFWf54m1UDId7Zv1RfynHjevf+YFTTa
-         dutQ==
-X-Gm-Message-State: AOAM5332CJfjEdLYwLV4IUrj0hqlIu5XOurdP2fU5EYZjvShkD5w3ZUk
-        0Hnq/taSVC5AkvmkHa2NVqNT2fpRjSrU6yPSVhs=
-X-Google-Smtp-Source: ABdhPJxPByyNb7ICLni4pJ6BsJD+EnvzFEbpCnvzZnfR60EZfc/fsAHIWGHssLiBJNHBNUN1hd8RlUQMqwOlM7mahTU=
-X-Received: by 2002:a25:824a:: with SMTP id d10mr6810040ybn.260.1596650201303;
- Wed, 05 Aug 2020 10:56:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200801084721.1812607-1-songliubraving@fb.com>
- <20200801084721.1812607-6-songliubraving@fb.com> <CAEf4BzaP4TGF7kcmZRAKsy=oWPpFA6sUGFkctpGz-fPp+YuSOQ@mail.gmail.com>
- <DDCD362E-21D3-46BF-90A6-8F3221CBB54E@fb.com> <CAEf4BzY5RYMM6w8wn3qEB3AsuKWv-TMaD5NVFj=YqbCW4DLjqA@mail.gmail.com>
- <7384B583-EE19-4045-AC72-B6FE87C187DD@fb.com> <CAEf4BzaiJnCu14AWougmxH80msGdOp4S8ZNmAiexMmtwUM_2Xg@mail.gmail.com>
- <AF9D0E8C-0AA5-4BE4-90F4-946FABAB63FD@fb.com> <20200805171639.tsqjmifd7eb3htou@ast-mbp.dhcp.thefacebook.com>
- <CAEf4BzYFfAubxo1QY6Axth=gwS9DfzwRkvnYLspfk9tLia0LPg@mail.gmail.com> <20200805174552.56q6eauad7glyzgm@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200805174552.56q6eauad7glyzgm@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 5 Aug 2020 10:56:30 -0700
-Message-ID: <CAEf4BzYUTvjAJ4uvYxBbbO7Vjh+K++F0HJe8mJ09RdhOeLeZGQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/5] selftests/bpf: add benchmark for uprobe vs. user_prog
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Song Liu <songliubraving@fb.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1728629AbgHER7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 13:59:50 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:60104 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728856AbgHER6r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 13:58:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596650326;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=P4GwPGZ/qA7/1Etd6zeUZoWHTvIjf2vNyQGUeZrsaF4=;
+        b=iqHpIW2Lppm7D7Jla9dGQSpOR10PhvzSWrcz3BoXs2z2e58ga8ctJ6fZ3K38WYULkuK6EF
+        mQdwLlUt4IZBQ61wiZ6NVH02+XgbLNTYARWdGl4tq3QmaUzKQJw4YgD3fQnTxCn+oGJgze
+        a2ao10oNQ4BEzq9xtCBaoDoYgl07FLI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-490-kUmyyq7uMuSzYrSO1dv1WQ-1; Wed, 05 Aug 2020 13:57:01 -0400
+X-MC-Unique: kUmyyq7uMuSzYrSO1dv1WQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B0063A3485D;
+        Wed,  5 Aug 2020 17:56:56 +0000 (UTC)
+Received: from krava (unknown [10.40.192.11])
+        by smtp.corp.redhat.com (Postfix) with SMTP id C4F2F1024879;
+        Wed,  5 Aug 2020 17:56:52 +0000 (UTC)
+Date:   Wed, 5 Aug 2020 19:56:51 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Xu <dlxu@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v9 bpf-next 08/14] bpf: Add btf_struct_ids_match function
+Message-ID: <20200805175651.GC319954@krava>
+References: <20200801170322.75218-1-jolsa@kernel.org>
+ <20200801170322.75218-9-jolsa@kernel.org>
+ <CAEf4BzaWGZT-6h8axOupzQ6Z2UiCakgv+v284PuXDZ6_VF5M9Q@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzaWGZT-6h8axOupzQ6Z2UiCakgv+v284PuXDZ6_VF5M9Q@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 5, 2020 at 10:45 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Aug 05, 2020 at 10:27:28AM -0700, Andrii Nakryiko wrote:
-> > On Wed, Aug 5, 2020 at 10:16 AM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Wed, Aug 05, 2020 at 04:47:30AM +0000, Song Liu wrote:
-> > > >
-> > > > Being able to trigger BPF program on a different CPU could enable many
-> > > > use cases and optimizations. The use case I am looking at is to access
-> > > > perf_event and percpu maps on the target CPU. For example:
-> > > >       0. trigger the program
-> > > >       1. read perf_event on cpu x;
-> > > >       2. (optional) check which process is running on cpu x;
-> > > >       3. add perf_event value to percpu map(s) on cpu x.
-> > >
-> > > If the whole thing is about doing the above then I don't understand why new
-> > > prog type is needed. Can prog_test_run support existing BPF_PROG_TYPE_KPROBE?
-> > > "enable many use cases" sounds vague. I don't think folks reading
-> > > the patches can guess those "use cases".
-> > > "Testing existing kprobe bpf progs" would sound more convincing to me.
-> >
-> > Was just about to propose the same :) I wonder if generic test_run()
-> > capability to trigger test programs of whatever supported type on a
-> > specified CPU through IPI can be added. That way you can even use the
-> > XDP program to do what Song seems to need.
-> >
-> > TRACEPOINTs might also be a good fit here, given it seems simpler to
-> > let users specify custom tracepoint data for test_run(). Having the
-> > ability to unit-test KPROBE and TRACEPOINT, however rudimentary, is
-> > already a big win.
-> >
-> > > If the test_run framework can be extended to trigger kprobe with correct pt_regs.
-> > > As part of it test_run would trigger on a given cpu with $ip pointing
-> > > to some test fuction in test_run.c. For local test_run the stack trace
-> > > would include bpf syscall chain. For IPI the stack trace would include
-> > > the corresponding kernel pieces where top is our special test function.
-> > > Sort of like pseudo kprobe where there is no actual kprobe logic,
-> > > since kprobe prog doesn't care about mechanism. It needs correct
-> > > pt_regs only as input context.
-> > > The kprobe prog output (return value) has special meaning though,
-> > > so may be kprobe prog type is not a good fit.
-> >
-> > It does? I don't remember returning 1 from KPROBE changing anything. I
-> > thought it's only the special bpf_override_return() that can influence
-> > the kernel function return result.
->
-> See comment in trace_call_bpf().
-> And logic to handle it in kprobe_perf_func() for kprobes.
-> and in perf_trace_run_bpf_submit() for tracepoints.
-> It's historical and Song actually discovered an issue with such behavior.
-> I don't remember whether we've concluded on the solution.
+On Tue, Aug 04, 2020 at 11:27:55PM -0700, Andrii Nakryiko wrote:
 
-Oh, thanks for pointers. Never realized there is more going on with
-those. I guess return 1; is not advised then, as it causes extra
-overhead.
+SNIP
+
+> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> > index 7bacc2f56061..ba05b15ad599 100644
+> > --- a/kernel/bpf/btf.c
+> > +++ b/kernel/bpf/btf.c
+> > @@ -4160,6 +4160,37 @@ int btf_struct_access(struct bpf_verifier_log *log,
+> >         return -EINVAL;
+> >  }
+> >
+> > +bool btf_struct_ids_match(struct bpf_verifier_log *log,
+> > +                         int off, u32 id, u32 need_type_id)
+> > +{
+> > +       const struct btf_type *type;
+> > +       int err;
+> > +
+> > +       /* Are we already done? */
+> > +       if (need_type_id == id && off == 0)
+> > +               return true;
+> > +
+> > +again:
+> > +       type = btf_type_by_id(btf_vmlinux, id);
+> > +       if (!type)
+> > +               return false;
+> > +       err = btf_struct_walk(log, type, off, 1, &id);
+> 
+> nit: this size=1 looks a bit artificial, seems like btf_struct_walk()
+> will work with size==0 just as well, no?
+
+right, it will work the same for 0 ... not sure why I put
+originaly 1 byte for size.. probably got mixed up by some
+condition in btf_struct_walk that I thought 0 wouldn't pass,
+but it should work, I'll change it, it's less tricky
+
+> 
+> > +       if (err != WALK_STRUCT)
+> > +               return false;
+> > +
+> > +       /* We found nested struct object. If it matches
+> > +        * the requested ID, we're done. Otherwise let's
+> > +        * continue the search with offset 0 in the new
+> > +        * type.
+> > +        */
+> > +       if (need_type_id != id) {
+> > +               off = 0;
+> > +               goto again;
+> > +       }
+> > +
+> > +       return true;
+> > +}
+> > +
+> >  int btf_resolve_helper_id(struct bpf_verifier_log *log,
+> >                           const struct bpf_func_proto *fn, int arg)
+> >  {
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index b6ccfce3bf4c..bb6ca19f282d 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -3960,16 +3960,21 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+> >                                 goto err_type;
+> >                 }
+> >         } else if (arg_type == ARG_PTR_TO_BTF_ID) {
+> > +               bool ids_match = false;
+> > +
+> >                 expected_type = PTR_TO_BTF_ID;
+> >                 if (type != expected_type)
+> >                         goto err_type;
+> >                 if (!fn->check_btf_id) {
+> > -                       if (reg->btf_id != meta->btf_id) {
+> > -                               verbose(env, "Helper has type %s got %s in R%d\n",
+> > -                                       kernel_type_name(meta->btf_id),
+> > -                                       kernel_type_name(reg->btf_id), regno);
+> > -
+> > -                               return -EACCES;
+> > +                       if (reg->btf_id != meta->btf_id || reg->off) {
+> 
+> Will it ever succeed if reg->btf_id == meta->btf_id, but reg->off > 0?
+> That would require recursively nested type, which is not possible,
+> right? Or what am I missing? Is it just a simplification of the error
+> handling path?
+
+ok, I wanted to cover all possible cases, but did not realized this
+one is not possible ;-) will revert it to previous version
+
+thanks,
+jirka
+
