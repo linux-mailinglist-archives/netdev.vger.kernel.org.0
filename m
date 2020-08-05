@@ -2,140 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AE3123C368
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 04:20:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6501023C384
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 04:33:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726981AbgHECUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 22:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726799AbgHECUl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 22:20:41 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD38C06174A;
-        Tue,  4 Aug 2020 19:20:41 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id r4so13786904pls.2;
-        Tue, 04 Aug 2020 19:20:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=g8eUQla4V3zNZzC+L9iZCFLLZwaiqDieY5utNjnYvAs=;
-        b=mZdoJl85HT4OrfTGDlTMz0L5y82FQ9JQViVW7bxrhVWu26orZO4kfs1AvjuQNIxHnw
-         ZCqCTQzgyWEmHBw7V5alRDkaxGIlwwpn6JAJkrrB5APqNDlTYwujplFM9QNmVg+ER9y5
-         xdrhPqXljGRphnMppEKkDGe49xOEPhczi12XkypEZB+OnMLXfCF1RrqNgFmal5d937JB
-         U41dJS1nSc62dSerofptL/c0Q/+OOEmc4UWoPbf+ak/K5nDmiDI9aSPI5aWs7lHisAfk
-         y1FVmW5oEB3NGTTWX7R5lbALA1/YM8njU1/CpgfZJaG5P9MtoWDVdG+nnoWtERSNPX22
-         r0CQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=g8eUQla4V3zNZzC+L9iZCFLLZwaiqDieY5utNjnYvAs=;
-        b=fWBV1hdne9/B+lJ99XOQ2w/nH8HHDMkWIPC9Z3/Wvkef3oHbiqxGp076TnNlBhTsdd
-         CHbj/gxr26xh4GwZB9r4JPm1lt4A8lZ9ALI0oG8ApUoaH3kmxl7do+U6t2O2/LntV7N0
-         hOTYzPwg5Q+jvHov0t6Abne1Gsz1RXiX2l8cerPLtXI2uOjR1LJjpgBUCs5jApW7zZhQ
-         3Be6T0/hXa/MphOASWfv9xSylmdeqp5mVc/1AU9Q4LT4q1gRQMk7JiHkS9lNItepiwcB
-         hx5KL8Otd2eceZ1TDg2W0REW9Geq/RsZ6ZmBQPo2iXSBsfj4xjYh2cQVpj1XFgb+ydg6
-         dO3Q==
-X-Gm-Message-State: AOAM5338VTV7azQ7CzPDjp3RY07xIwiPz+sjf51jW6rbbYiSBgdXM7NB
-        gMzuAXtFVOpUsmuW45FGxGg=
-X-Google-Smtp-Source: ABdhPJyZhHFt0TWFlppILOWrF+qqnC5oX2XJS58aLf352JieE6ua3tIzEhNefjrQ6ly0izoY/nJ74Q==
-X-Received: by 2002:a17:902:30d:: with SMTP id 13mr965711pld.251.1596594040773;
-        Tue, 04 Aug 2020 19:20:40 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id h24sm608317pgi.85.2020.08.04.19.20.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Aug 2020 19:20:40 -0700 (PDT)
-Date:   Wed, 5 Aug 2020 10:20:29 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, gnault@redhat.com, pmachata@gmail.com,
-        roopa@cumulusnetworks.com, dsahern@kernel.org, akaris@redhat.com,
-        stable@vger.kernel.org
-Subject: Re: [PATCHv2 net 2/2] vxlan: fix getting tos value from DSCP field
-Message-ID: <20200805022029.GM2531@dhcp-12-153.nay.redhat.com>
-References: <20200803080217.391850-1-liuhangbin@gmail.com>
- <20200804014312.549760-1-liuhangbin@gmail.com>
- <20200804014312.549760-3-liuhangbin@gmail.com>
- <20200804.124756.115062893076378926.davem@davemloft.net>
+        id S1726130AbgHECc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Aug 2020 22:32:59 -0400
+Received: from mail-am6eur05on2065.outbound.protection.outlook.com ([40.107.22.65]:62273
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725864AbgHECc7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Aug 2020 22:32:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a8fit8cQ3vRQ2neQaei2cOtT/z9yuiQmtjOeqNKm43m7+sXys85xDxFXWto71mjLpaZbXcmv1JxhtBJz3nWrvu+yvYFpOfR5MqLYmlnZ04j68LjjY6A5iyGspW1YaNeWxTLNi+TnSqW4spRchUpFCr4WQp03vBLjiehmc2z510IXGPGKUWbwrtx4cdF+QJ/5NUQpnb6PSUkf3P+xjlv8TLZz1mRxxwPdFLkSKQf3PIde3X5ePCqVUWWv+HmtE7a+moCXqdmBNvXiwVP3+i3hWZnCFY348rHq2FndiTP/CaMnTcRWbhe5htzwwo4lwxQUBpyucHlfUJ8VqMKdbJtYMg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=R+T6m1nCYaJz02jrGu3wwvzSLLRE2tbOImJW8ixg3g8=;
+ b=GRMlCfLqqG9KS5T2qW8Z+OqRI5cf9VoedAwQyTzZGVfElyc9vEunR9ou8PpjSyvMqUbxb+cp8M235QTB4mVxvS0zP0rr9K909lh9E4cRd/WEqGwZamIWVRrzRG+Yf42/vGJzcmFHpnaRyIGBH5qYbcS3bccMqh/w9wmKtwaONak7BrBz3tAu6NHbKITvCLWKo7wVm0B/tJncUlvW3+enIU/i3mu+hKJlZJQgIEL/MXOcJ4U608ejWmOSPMsDB7JwsSFTrkvLvIlaE/vnpRz1VCnSgW9ejjQQZBv1Jken55aEWkEXjX/Wd3fPa0CyajHMDWrqx5cNySmdfyAb2rdzJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=R+T6m1nCYaJz02jrGu3wwvzSLLRE2tbOImJW8ixg3g8=;
+ b=eDzxX2YVJGPv6mTu+ofhBgPOxmQGJKAMvSZ7kBYzmCZL+EjeDofli71ISqsFiJ6nk0SZirpekYq6nYjNXc2Tg8bGBqwhPRoU0MIZdWzO6oU4rz+7q8gmn0Y+dTBMbmodMTC8731pCIRXzDonebBBVsiJNfDpjgRvZBR5omBWcxA=
+Received: from VI1PR04MB5103.eurprd04.prod.outlook.com (2603:10a6:803:51::19)
+ by VI1PR04MB7103.eurprd04.prod.outlook.com (2603:10a6:800:123::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.20; Wed, 5 Aug
+ 2020 02:32:54 +0000
+Received: from VI1PR04MB5103.eurprd04.prod.outlook.com
+ ([fe80::2c2c:20a4:38cd:73c3]) by VI1PR04MB5103.eurprd04.prod.outlook.com
+ ([fe80::2c2c:20a4:38cd:73c3%7]) with mapi id 15.20.3261.016; Wed, 5 Aug 2020
+ 02:32:54 +0000
+From:   Hongbo Wang <hongbo.wang@nxp.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>
+CC:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "idosch@idosch.org" <idosch@idosch.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
+        "roopa@cumulusnetworks.com" <roopa@cumulusnetworks.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "ivecera@redhat.com" <ivecera@redhat.com>
+Subject: RE: [EXT] Re: [PATCH v4 2/2] net: dsa: ocelot: Add support for QinQ
+ Operation
+Thread-Topic: [EXT] Re: [PATCH v4 2/2] net: dsa: ocelot: Add support for QinQ
+ Operation
+Thread-Index: AQHWZltTjJoiQZyRB0ahxfHbav3IXakm9cqAgACG/8CAALHUgIAApDFw
+Date:   Wed, 5 Aug 2020 02:32:54 +0000
+Message-ID: <VI1PR04MB5103D05A76BE5A0F8D76F131E14B0@VI1PR04MB5103.eurprd04.prod.outlook.com>
+References: <20200730102505.27039-1-hongbo.wang@nxp.com>
+ <20200730102505.27039-3-hongbo.wang@nxp.com>
+ <20200803.145843.2285407129021498421.davem@davemloft.net>
+ <VI1PR04MB51039B32C580321D99B8DEE8E14A0@VI1PR04MB5103.eurprd04.prod.outlook.com>
+ <2906dc1e-fe37-e9d8-984d-2630549f0462@gmail.com>
+In-Reply-To: <2906dc1e-fe37-e9d8-984d-2630549f0462@gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.73]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: d38a82ac-e711-40e4-8f85-08d838e7dba9
+x-ms-traffictypediagnostic: VI1PR04MB7103:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB7103C524E7FB47734468DBA2E14B0@VI1PR04MB7103.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: pjUU1V8pUkt97XY/nY235+D95wjRy2njT0k7cbtIWo4wIhZtU/pYdb7y5Ew1y7O8NT+tlwv9i/rrhuh/RkDUJ3bwwnDOqglwgZnVj6WPMaYZ54ntCqsAKVkpuHID+s9WIlnH/0KAPCDrDjY0j8NHWftMnBYuv9HtM23DgdHNSk/4AXY1di1/TC7H6gYYut/eVULZXJfz1e5GkqK9ons/R41eLLpBI+YeS9wGfSSd5QHWPP6ra3Yf5+EjpbKt6Q9QAHqG0/X5KxjOWD14IrdAYbyczjGgTYxoI6VeNUGoiQYxOlf45hLNC1V00w5EqVYT9KXrDdsPVymoejvRiOMzBA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5103.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(136003)(39860400002)(396003)(366004)(346002)(26005)(8676002)(52536014)(55016002)(9686003)(66556008)(66446008)(66476007)(33656002)(76116006)(8936002)(2906002)(186003)(66946007)(64756008)(4326008)(86362001)(110136005)(83380400001)(44832011)(316002)(478600001)(5660300002)(7696005)(7416002)(6506007)(54906003)(53546011)(71200400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: vJHUT9KRa9Qh4N+q0S8s1XpM7SIwMTWIVhdu/oCDJ98/X/nfrX0lrq91wr5NltUGKmToTlLI/KGKLKekWXtLXVzIlTIV8vAj+vC0Vl0w9mWtb3xnuL5YzoKrJUQpYjzIiEGeA3GptQP+9cz7YGrLm9cGXz5pBDp9ahnTVuNKzX/mMIByme52mLK3MoAwRTnxbtuL61d0l3bpnVFjdrRFShmFmKbjHTKieYCcy23cohXZQNRSrHYo363Q26TwUyUtgWGHdM50BF5VCtFloo4qobDnyWm53Z1rH8CASQyqCjvKiTdsR/yKfeVa39wzeE9WjmnkJsYg0QFqgiNV7F5qni/hx18lT4hqa+nPcOMkn5C7E+DXU0s+8w7iPNezGy6IF9bdzgu5mOyBj7EBmsPhu7bXuN4VoCOf3+mo93vwmhifNahBKu8FI8m4AHnMfXcbgEi+Fw+GvfkyWDU8zH6rqZxrUpLVNd42pORKP1Yg7Av93xXKg9AgyYg5G9iu/luiRFISnGABdkN5qcCb1I5HhuyM4MVQC5Fspum8DuqPpA71imq5LGu5qEnhb5v70llGdgvy647d0ylehQ6tgtck9J0MNbdIifU3OP9oIxjn56huYMzmHbPStGQJWYsH3ZzBTFun0XizoGKYmoxSLk6X7Q==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200804.124756.115062893076378926.davem@davemloft.net>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5103.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d38a82ac-e711-40e4-8f85-08d838e7dba9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Aug 2020 02:32:54.5129
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: XSzRdrIhZaXQX/q6bpeu7foYDyjXFgInt9aMC/eu0mD78rvkCta0y7vSp0M5qAoRemRhjLT/5pzZ6vbqt7zUUQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7103
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 04, 2020 at 12:47:56PM -0700, David Miller wrote:
-> From: Hangbin Liu <liuhangbin@gmail.com>
-> Date: Tue,  4 Aug 2020 09:43:12 +0800
-> 
-> > In commit 71130f29979c ("vxlan: fix tos value before xmit") we strict
-> > the vxlan tos value before xmit. But as IP tos field has been obsoleted
-> > by RFC2474, and updated by RFC3168 later. We should use new DSCP field,
-> > or we will lost the first 3 bits value when xmit.
-> > 
-> > Fixes: 71130f29979c ("vxlan: fix tos value before xmit")
-> > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> 
-> Looking at the Fixes: tag commit more closely, it doesn't make much
-> sense at all to me and I think the fix is that the Fixes: commit
-> should be reverted.
-
-Hi David,
-
-Both this patch and the Fixes: commit are not aim to fix the ECN bits.
-ECN bits are handled by ip_tunnel_ecn_encap() correctly.
-
-The Fixes: commit and this patch are aim to fix the TOS/DSCP field, just
-as the commit subject said.
-
-In my first patch "net: add IP_DSCP_MASK", as I said, the current
-RT_TOS()/IPTOS_TOS_MASK will ignore the first 3 bits in IP header
-based on RFC1349.
-
-       0     1     2     3     4     5     6     7
-    +-----+-----+-----+-----+-----+-----+-----+-----+
-    |   PRECEDENCE    |          TOS          | MBZ |
-    +-----+-----+-----+-----+-----+-----+-----+-----+
-
-While in RFC3168 we defined DSCP field like
-
-       0     1     2     3     4     5     6     7
-    +-----+-----+-----+-----+-----+-----+-----+-----+
-    |          DS FIELD, DSCP           | ECN FIELD |
-    +-----+-----+-----+-----+-----+-----+-----+-----+
-
-So if a user defined the IP DSCP/TOS field like 1111 1100, with
-RT_TOS(tos) we will got tos 0001 1100, but based on RFC3168, we
-should send the header with DSCP 1111 1100. That's why I add
-RT_DSCP() in my first patch.
-
-> 
-> If you pass the raw TOS into ip_tunnel_ecn_encap(), then that has the
-> same exact effect as your patch series here.  The ECN encap routines
-> will clear the ECN bits before potentially incorporating the ECN value
-> from the inner header etc.  The clearing of the ECN bits done by your
-> RT_DSCP() helper is completely unnecessary, the ECN helpers do the
-> right thing.  So effectively the RT_DSCP() isn't changing the tos
-> value at all.
-
-Yes, you are right. RT_DSCP() doesn't change the tos value in this case.
-I will revert the Fixes: commit.
-
-While RT_DSCP() is still needed in other place, I will re-post a new patch
-set for that issue.
-
-> 
-> I also think that your commit messages are lacking, as you fail
-> (especially in the Fixes: commit) to show exactly where things go
-> wrong.  It's always good to give example code paths and show what
-> happens to the TOS and/or ECN values in these places, what part of
-> that transformation you feel is incorrect, and what exactly you
-> believe the correct transformation to be.
-
-Thanks, I will try add more info in later patches.
-
-Hangbin
+PiBDYXV0aW9uOiBFWFQgRW1haWwNCj4gDQo+IE9uIDgvMy8yMDIwIDExOjM2IFBNLCBIb25nYm8g
+V2FuZyB3cm90ZToNCj4gPj4+ICsgICAgIGlmICh2bGFuLT5wcm90byA9PSBFVEhfUF84MDIxQUQp
+IHsNCj4gPj4+ICsgICAgICAgICAgICAgb2NlbG90LT5lbmFibGVfcWlucSA9IHRydWU7DQo+ID4+
+PiArICAgICAgICAgICAgIG9jZWxvdF9wb3J0LT5xaW5xX21vZGUgPSB0cnVlOw0KPiA+Pj4gKyAg
+ICAgfQ0KPiA+PiAgLi4uDQo+ID4+PiArICAgICBpZiAodmxhbi0+cHJvdG8gPT0gRVRIX1BfODAy
+MUFEKSB7DQo+ID4+PiArICAgICAgICAgICAgIG9jZWxvdC0+ZW5hYmxlX3FpbnEgPSBmYWxzZTsN
+Cj4gPj4+ICsgICAgICAgICAgICAgb2NlbG90X3BvcnQtPnFpbnFfbW9kZSA9IGZhbHNlOw0KPiA+
+Pj4gKyAgICAgfQ0KPiA+Pj4gKw0KPiA+Pg0KPiA+PiBJIGRvbid0IHVuZGVyc3RhbmQgaG93IHRo
+aXMgY2FuIHdvcmsganVzdCBieSB1c2luZyBhIGJvb2xlYW4gdG8gdHJhY2sNCj4gPj4gdGhlIHN0
+YXRlLg0KPiA+Pg0KPiA+PiBUaGlzIHdvbid0IHdvcmsgcHJvcGVybHkgaWYgeW91IGFyZSBoYW5k
+bGluZyBtdWx0aXBsZSBRaW5RIFZMQU4gZW50cmllcy4NCj4gPj4NCj4gPj4gQWxzbywgSSBuZWVk
+IEFuZHJldyBhbmQgRmxvcmlhbiB0byByZXZpZXcgYW5kIEFDSyB0aGUgRFNBIGxheWVyDQo+ID4+
+IGNoYW5nZXMgdGhhdCBhZGQgdGhlIHByb3RvY29sIHZhbHVlIHRvIHRoZSBkZXZpY2Ugbm90aWZp
+ZXIgYmxvY2suDQo+ID4NCj4gPiBIaSBEYXZpZCwNCj4gPiBUaGFua3MgZm9yIHJlcGx5Lg0KPiA+
+DQo+ID4gV2hlbiBzZXR0aW5nIGJyaWRnZSdzIFZMQU4gcHJvdG9jb2wgdG8gODAyLjFBRCBieSB0
+aGUgY29tbWFuZCAiaXAgbGluaw0KPiA+IHNldCBicjAgdHlwZSBicmlkZ2Ugdmxhbl9wcm90b2Nv
+bCA4MDIuMWFkIiwgaXQgd2lsbCBjYWxsDQo+ID4gZHNhX3NsYXZlX3ZsYW5fcnhfYWRkKGRldiwg
+cHJvdG8sIHZpZCkgZm9yIGV2ZXJ5IHBvcnQgaW4gdGhlIGJyaWRnZSwNCj4gPiB0aGUgcGFyYW1l
+dGVyIHZpZCBpcyBwb3J0J3MgcHZpZCAxLCBpZiBwdmlkJ3MgcHJvdG8gaXMgODAyLjFBRCwgSSB3
+aWxsDQo+ID4gZW5hYmxlIHN3aXRjaCdzIGVuYWJsZV9xaW5xLCBhbmQgdGhlIHJlbGF0ZWQgcG9y
+dCdzIHFpbnFfbW9kZSwNCj4gPg0KPiA+IFdoZW4gdGhlcmUgYXJlIG11bHRpcGxlIFFpblEgVkxB
+TiBlbnRyaWVzLCBJZiBvbmUgVkxBTidzIHByb3RvIGlzIDgwMi4xQUQsDQo+IEkgd2lsbCBlbmFi
+bGUgc3dpdGNoIGFuZCB0aGUgcmVsYXRlZCBwb3J0IGludG8gUWluUSBtb2RlLg0KPiANCj4gVGhl
+IGVuYWJsaW5nIGFwcGVhcnMgZmluZSwgdGhlIHByb2JsZW0gaXMgdGhlIGRpc2FibGluZywgdGhl
+IGZpcnN0IDgwMi4xQUQgVkxBTg0KPiBlbnRyeSB0aGF0IGdldHMgZGVsZXRlZCB3aWxsIGxlYWQg
+dG8gdGhlIHBvcnQgYW5kIHN3aXRjaCBubyBsb25nZXIgYmVpbmcgaW4gUWluUQ0KPiBtb2RlLCBh
+bmQgdGhpcyBkb2VzIG5vdCBsb29rIGludGVuZGVkLg0KPiAtLQ0KPiBGbG9yaWFuDQoNClRoYW5r
+cywgRmxvcmlhbg0KDQpJIHdpbGwgYWRkIHJlZmVyZW5jZSBjb3VudGVyLg0KV2hlbiBkZWxldGlu
+ZyBWTEFOIGVudHJ5LCBvbmx5IGlmIHRoZSBjb3VudGVyIGlzIHplcm8sIEkgd2lsbCBzZXQgdGhl
+IHN3aXRjaCB0byBleGl0IFFpblEgbW9kZS4NCg0KaG9uZ2JvDQoNCg==
