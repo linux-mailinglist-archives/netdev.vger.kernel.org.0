@@ -2,204 +2,446 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC40523C439
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 05:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C58D23C443
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 06:06:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726305AbgHED7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Aug 2020 23:59:44 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:4418 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725904AbgHED7m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Aug 2020 23:59:42 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0753xPkp012006;
-        Tue, 4 Aug 2020 20:59:26 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=p/Duiods2BS/Vc6ISTdJQimTmp2nKYEznLIsIHGXDGs=;
- b=b2SyfvtX4W3k0uQGGLQBYa+OObTFoV2rIKxEi4FUHseHRvtPuifZmIsn8TU6Sq9gIaf3
- n5VQG9S2dK37D35hIk7R53GiNwyQDMx4crd9XzqX9KtBM/7xjn4Fd71LBvFr/d6JtR7i
- +3Hc9OYsw8qaQ76syULsTSAdpQDA6wPoyfY= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0089730.ppops.net with ESMTP id 32n81yg6xk-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 04 Aug 2020 20:59:26 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 4 Aug 2020 20:59:17 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Varg3wynbhuqe9jVe5Q24jNv2X86hPD19GQmCko06HFKFANP1Cft5JjQqAg3JiVExRcR+ijPEHnYaQCE+LZFLMek/uchLWjT3f0/ynBbDCrSIfBYl2qYenCg/eGI5vYoM83ri0g+6qp8j0zwbO96wjgiWPKFFwf9Kr3uyTZVyqO2IpSxK4k1Rskyb6erIKVKqn1nIAzF23UIuA66dBHZERvGY8XPF/szyNfQMV0sPyRVTvpkeJHDXU92cWZUXHZ4SE5JWgXmeZPfk8Q0CuaRHTHNDJ5oNmQzX3g8+ks9bVI6OBzfj2/QT/EVg4mb1JHdYGihDV8gwascLln/+ZvzgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p/Duiods2BS/Vc6ISTdJQimTmp2nKYEznLIsIHGXDGs=;
- b=QHrj3ZVu1ado4hhrULR0M6Z7hhxDU+7Impm/K7BEMZ18JGywWsvTzMQggD3QCyBt+aO0wWRzeyZkVrwDk+2TVd9ZGWmfzMHEPxNt5n0+GeYg3Yj7Ep8PwkpnOZH1ywD/vmc3+BMbxn4xUFPlbX4lTdqw0cgQzyD+5sLFYzVG9dblDQYoZFg55y4886ofRVrXjmMOk0ogEIPdGcJcCQGe4rdUiFuMtIqYwxY+Xah/BdgIg2eDk3trnLqiPKBDDh1e6AM7YIH6ImcxvKwfepDjGeJSFZgkd5jV3h8gGR/egf/gO22XNVh6fjuugffk7K0Py6d07YkEMYzUIMziw8UfSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p/Duiods2BS/Vc6ISTdJQimTmp2nKYEznLIsIHGXDGs=;
- b=cd4jdlyOMpV3nLr/RVsK4mv3PkDWzoX+sNyWI5Ydcl9A7JpzHYyuN8a0zUZUDYTF5CXVqnMVeRjkLytQ/P0z6kUZ9E333GLwRUbr6ddaZeDcXob8YBizIeE8nFWZaJfK24LqUjHBzRvUXwtso3juVx9aVcpJoQwLl87W9gCvnNg=
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB3304.namprd15.prod.outlook.com (2603:10b6:a03:10a::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.20; Wed, 5 Aug
- 2020 03:59:13 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::543:b185:ef4a:7e8]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::543:b185:ef4a:7e8%5]) with mapi id 15.20.3239.022; Wed, 5 Aug 2020
- 03:59:13 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     open list <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Xu <dlxu@fb.com>
-Subject: Re: [PATCH bpf-next 2/5] libbpf: support BPF_PROG_TYPE_USER programs
-Thread-Topic: [PATCH bpf-next 2/5] libbpf: support BPF_PROG_TYPE_USER programs
-Thread-Index: AQHWZ+C4tQwFkmvi20aNhPcONSrEz6klnl6AgAGMFwCAAZgFAIAAJ1IA
-Date:   Wed, 5 Aug 2020 03:59:13 +0000
-Message-ID: <5BC1D7AD-32C1-4CDC-BA99-F4DABE61EEA3@fb.com>
-References: <20200801084721.1812607-1-songliubraving@fb.com>
- <20200801084721.1812607-3-songliubraving@fb.com>
- <CAEf4BzYp4gO1P+OrY7hGyQjdia3BuSu4DX2_z=UF6RfGNa+gkQ@mail.gmail.com>
- <9C1285C1-ECD6-46BD-BA95-3E9E81C00EF0@fb.com>
- <CAEf4BzYojfFiMn6VeUkxUsdSTdFK0A4MzKQxhCCp_OowkseznQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzYojfFiMn6VeUkxUsdSTdFK0A4MzKQxhCCp_OowkseznQ@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.80.23.2.2)
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [2620:10d:c090:400::5:8f7]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 364af8d9-ee68-4070-9d2e-08d838f3ea71
-x-ms-traffictypediagnostic: BYAPR15MB3304:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB3304882C9EC34BE545E765E1B34B0@BYAPR15MB3304.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WhMNdsMz7xpz+LH6/lmG79zTy4uW2Oixbef/C0ppWCBVroNCLFyLFDwONaJbnE0dbeLclXuNHodt56qHsg2tszGW/4m44uYF4MNeIBP0Fk7JC/ZcMeLtGun8KwFPCWZ98/mWlwTZREpkqEARb9iyC0o17MQtGodqVhAZOV9w4TNqI4dkCUCyi8tPYzWncL/C4kyMz2YZcT4hMZl5M/KV5I2ppTKbJjNvKLRlqEaOdGwffwx+4p75HcqScvjPDKroZLBakMcRQLCKShnAIlAtTI2GQvxldb9ezstQAyh+5Q4M0ukpYn2Kr8/lhjrtk92n+nVJMzZhEI5i3MS+zd5VotjUuJbZXiVvD0oR/pDblYonMfieCvVnTB0oDIg+oZSO
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(366004)(396003)(136003)(39860400002)(316002)(4326008)(186003)(2616005)(54906003)(8676002)(36756003)(86362001)(8936002)(6486002)(83380400001)(6512007)(478600001)(71200400001)(66556008)(33656002)(6916009)(64756008)(2906002)(66476007)(66446008)(76116006)(5660300002)(53546011)(6506007)(66946007)(21314003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: 32kRozHzKHvYaltuBJoS7O4TbL6InB3Maz8QHzLx1IyYs4mKxuGu6py0mW5dRtj2jUMZCmuhb4xLtnlTnPg6BWkmYgI6hyNppvbuuvvyWbZS8kNaTJIaKuSthRDb81sKH5iPN+p1WkfdHVKcIzU8cC0FZBo31cZPSlShs4HhCtESIbhLrvTCwIAvLY9fAZXUjiVnv8dUndsUiohDyT6ojU1dRDolJoEkmcsbAEcWjG6rYkGgutElMj8eGk6SrN2HYNDBTHQfG1dZ/NTczA7lTbiUbml5M5Bf8MxY9NHMBA6anLoFQhN5y+pr9fijc0zDekRZDHJSoZatApLg/Svrq2+duKwP427Q2C9WEHjyum0IkxGAHKBjLZEu8zAZ5Bdx4Zt5dv4Q8GRr4pvQjfQPZmEr+aGg+oUMW4lwIH4TPM0w5L3wRTvoxOTjyo4EY+Faf7mFXGYk5pxe9OaYTYCBXzAlP/lAd9V6yEMYX+qjEk8BG004Bun3RFvzRzfgtt6UCrLYEEbHp0IKcKwDPxOfRjwZFH9nMykSLR2oaMwoJev/PrYCPOki0yO1GdFXYnrS3aJqBiEoJUgVYGvID0oLhqMNULtnoXgPVGyvSm3zIrC4XNK3fflWgVXL5lIDG54PXcjJ9BeSMeYAF+TXcwaCd9DVrpo6K6Jgj1j120owYOM=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <807257139EBEDF4199E1EB2BD2128796@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1725985AbgHEEGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 00:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725372AbgHEEGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 00:06:01 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26654C06174A;
+        Tue,  4 Aug 2020 21:06:01 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4BLyj0401Mz9sPB;
+        Wed,  5 Aug 2020 14:05:56 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1596600357;
+        bh=GpgbwQXZmeiYJy97ZWjT5MryUwjEDQ5gqr8sk5LSK60=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NhEk0Zn0C1qHo0AWejTe457aN0+6RsJSrr9JY1fadCePdhfVNuqcraKdeJVwKwmFX
+         P9jv4Hu+5xvFr02hhe0yi9g64uqlfiFkS+X31rUmbNFnH93MmMdg8A+L68dE146meg
+         CjhccJ9xlK2GkzFkAvupLBiZ377Hk/CcCM34wqLIcY137pvueEyRk6wGtQUmj5NWuC
+         jFyoRMgrqSlMeCtxFAOscCuk/F7rZqMJALtCaHPhACQPvjqGHze2tfeSU6Xr8VA5Od
+         O/J5t+5vGxOdQAjGinZbAea4+oTnH61Mh5TBQsgHUXJJRkZJP9o8Xnc2KELZKU7BAN
+         ZVS9RmH8681tw==
+Date:   Wed, 5 Aug 2020 14:05:55 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: linux-next: manual merge of the kspp tree with the net-next
+ tree
+Message-ID: <20200805140555.010a492d@canb.auug.org.au>
+In-Reply-To: <20200727192721.53af345a@canb.auug.org.au>
+References: <20200727192721.53af345a@canb.auug.org.au>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 364af8d9-ee68-4070-9d2e-08d838f3ea71
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Aug 2020 03:59:13.4108
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iSUCFO2Mwd1tGr30BctY4CGlhacpNIu8izloVbatHErLI71NcivvSkOmDYs00R/V2uHGWMthUpl1lhLedf+S8A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3304
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-05_03:2020-08-03,2020-08-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- phishscore=0 priorityscore=1501 mlxlogscore=999 bulkscore=0 suspectscore=0
- impostorscore=0 adultscore=0 clxscore=1015 mlxscore=0 spamscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008050035
-X-FB-Internal: deliver
+Content-Type: multipart/signed; boundary="Sig_/NPRKE=Tjro8ngV3LGe.1Lyv";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/NPRKE=Tjro8ngV3LGe.1Lyv
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-> On Aug 4, 2020, at 6:38 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> w=
-rote:
+On Mon, 27 Jul 2020 19:27:21 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> Today's linux-next merge of the kspp tree got a conflict in:
 >=20
-> On Mon, Aug 3, 2020 at 6:18 PM Song Liu <songliubraving@fb.com> wrote:
->>=20
->>=20
->>=20
->>> On Aug 2, 2020, at 6:40 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
- wrote:
->>>=20
->>> On Sat, Aug 1, 2020 at 1:50 AM Song Liu <songliubraving@fb.com> wrote:
->>>>=20
->>=20
->> [...]
->>=20
->>>=20
->>>> };
->>>>=20
->>>> LIBBPF_API int bpf_prog_test_run_xattr(struct bpf_prog_test_run_attr *=
-test_attr);
->>>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
->>>> index b9f11f854985b..9ce175a486214 100644
->>>> --- a/tools/lib/bpf/libbpf.c
->>>> +++ b/tools/lib/bpf/libbpf.c
->>>> @@ -6922,6 +6922,7 @@ static const struct bpf_sec_def section_defs[] =
-=3D {
->>>>       BPF_PROG_SEC("lwt_out",                 BPF_PROG_TYPE_LWT_OUT),
->>>>       BPF_PROG_SEC("lwt_xmit",                BPF_PROG_TYPE_LWT_XMIT),
->>>>       BPF_PROG_SEC("lwt_seg6local",           BPF_PROG_TYPE_LWT_SEG6LO=
-CAL),
->>>> +       BPF_PROG_SEC("user",                    BPF_PROG_TYPE_USER),
->>>=20
->>> let's do "user/" for consistency with most other prog types (and nice
->>> separation between prog type and custom user name)
->>=20
->> About "user" vs. "user/", I still think "user" is better.
->>=20
->> Unlike kprobe and tracepoint, user prog doesn't use the part after "/".
->> This is similar to "perf_event" for BPF_PROG_TYPE_PERF_EVENT, "xdl" for
->> BPF_PROG_TYPE_XDP, etc. If we specify "user" here, "user/" and "user/xxx=
-"
->> would also work. However, if we specify "user/" here, programs that used
->> "user" by accident will fail to load, with a message like:
->>=20
->>        libbpf: failed to load program 'user'
->>=20
->> which is confusing.
+>   net/ipv6/ip6_flowlabel.c
 >=20
-> xdp, perf_event and a bunch of others don't enforce it, that's true,
-> they are a bit of a legacy,
+> between commit:
+>=20
+>   ff6a4cf214ef ("net/ipv6: split up ipv6_flowlabel_opt")
+>=20
+> from the net-next tree and commit:
+>=20
+>   3f649ab728cd ("treewide: Remove uninitialized_var() usage")
+>=20
+> from the kspp tree.
+>=20
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+>=20
+> diff --cc net/ipv6/ip6_flowlabel.c
+> index 215b6f5e733e,73bb047e6037..000000000000
+> --- a/net/ipv6/ip6_flowlabel.c
+> +++ b/net/ipv6/ip6_flowlabel.c
+> @@@ -534,184 -533,181 +534,184 @@@ int ipv6_flowlabel_opt_get(struct sock=
+=20
+>   	return -ENOENT;
+>   }
+>  =20
+>  -int ipv6_flowlabel_opt(struct sock *sk, char __user *optval, int optlen)
+>  +#define socklist_dereference(__sflp) \
+>  +	rcu_dereference_protected(__sflp, lockdep_is_held(&ip6_sk_fl_lock))
+>  +
+>  +static int ipv6_flowlabel_put(struct sock *sk, struct in6_flowlabel_req=
+ *freq)
+>   {
+>  -	int err;
+>  -	struct net *net =3D sock_net(sk);
+>   	struct ipv6_pinfo *np =3D inet6_sk(sk);
+>  -	struct in6_flowlabel_req freq;
+>  -	struct ipv6_fl_socklist *sfl1 =3D NULL;
+>  -	struct ipv6_fl_socklist *sfl;
+>   	struct ipv6_fl_socklist __rcu **sflp;
+>  -	struct ip6_flowlabel *fl, *fl1 =3D NULL;
+>  +	struct ipv6_fl_socklist *sfl;
+>  =20
+>  +	if (freq->flr_flags & IPV6_FL_F_REFLECT) {
+>  +		if (sk->sk_protocol !=3D IPPROTO_TCP)
+>  +			return -ENOPROTOOPT;
+>  +		if (!np->repflow)
+>  +			return -ESRCH;
+>  +		np->flow_label =3D 0;
+>  +		np->repflow =3D 0;
+>  +		return 0;
+>  +	}
+>  =20
+>  -	if (optlen < sizeof(freq))
+>  -		return -EINVAL;
+>  +	spin_lock_bh(&ip6_sk_fl_lock);
+>  +	for (sflp =3D &np->ipv6_fl_list;
+>  +	     (sfl =3D socklist_dereference(*sflp)) !=3D NULL;
+>  +	     sflp =3D &sfl->next) {
+>  +		if (sfl->fl->label =3D=3D freq->flr_label)
+>  +			goto found;
+>  +	}
+>  +	spin_unlock_bh(&ip6_sk_fl_lock);
+>  +	return -ESRCH;
+>  +found:
+>  +	if (freq->flr_label =3D=3D (np->flow_label & IPV6_FLOWLABEL_MASK))
+>  +		np->flow_label &=3D ~IPV6_FLOWLABEL_MASK;
+>  +	*sflp =3D sfl->next;
+>  +	spin_unlock_bh(&ip6_sk_fl_lock);
+>  +	fl_release(sfl->fl);
+>  +	kfree_rcu(sfl, rcu);
+>  +	return 0;
+>  +}
+>  =20
+>  -	if (copy_from_user(&freq, optval, sizeof(freq)))
+>  -		return -EFAULT;
+>  +static int ipv6_flowlabel_renew(struct sock *sk, struct in6_flowlabel_r=
+eq *freq)
+>  +{
+>  +	struct ipv6_pinfo *np =3D inet6_sk(sk);
+>  +	struct net *net =3D sock_net(sk);
+>  +	struct ipv6_fl_socklist *sfl;
+>  +	int err;
+>  =20
+>  -	switch (freq.flr_action) {
+>  -	case IPV6_FL_A_PUT:
+>  -		if (freq.flr_flags & IPV6_FL_F_REFLECT) {
+>  -			if (sk->sk_protocol !=3D IPPROTO_TCP)
+>  -				return -ENOPROTOOPT;
+>  -			if (!np->repflow)
+>  -				return -ESRCH;
+>  -			np->flow_label =3D 0;
+>  -			np->repflow =3D 0;
+>  -			return 0;
+>  -		}
+>  -		spin_lock_bh(&ip6_sk_fl_lock);
+>  -		for (sflp =3D &np->ipv6_fl_list;
+>  -		     (sfl =3D rcu_dereference_protected(*sflp,
+>  -						      lockdep_is_held(&ip6_sk_fl_lock))) !=3D NULL;
+>  -		     sflp =3D &sfl->next) {
+>  -			if (sfl->fl->label =3D=3D freq.flr_label) {
+>  -				if (freq.flr_label =3D=3D (np->flow_label&IPV6_FLOWLABEL_MASK))
+>  -					np->flow_label &=3D ~IPV6_FLOWLABEL_MASK;
+>  -				*sflp =3D sfl->next;
+>  -				spin_unlock_bh(&ip6_sk_fl_lock);
+>  -				fl_release(sfl->fl);
+>  -				kfree_rcu(sfl, rcu);
+>  -				return 0;
+>  -			}
+>  +	rcu_read_lock_bh();
+>  +	for_each_sk_fl_rcu(np, sfl) {
+>  +		if (sfl->fl->label =3D=3D freq->flr_label) {
+>  +			err =3D fl6_renew(sfl->fl, freq->flr_linger,
+>  +					freq->flr_expires);
+>  +			rcu_read_unlock_bh();
+>  +			return err;
+>   		}
+>  -		spin_unlock_bh(&ip6_sk_fl_lock);
+>  -		return -ESRCH;
+>  +	}
+>  +	rcu_read_unlock_bh();
+>  =20
+>  -	case IPV6_FL_A_RENEW:
+>  -		rcu_read_lock_bh();
+>  -		for_each_sk_fl_rcu(np, sfl) {
+>  -			if (sfl->fl->label =3D=3D freq.flr_label) {
+>  -				err =3D fl6_renew(sfl->fl, freq.flr_linger, freq.flr_expires);
+>  -				rcu_read_unlock_bh();
+>  -				return err;
+>  -			}
+>  -		}
+>  -		rcu_read_unlock_bh();
+>  +	if (freq->flr_share =3D=3D IPV6_FL_S_NONE &&
+>  +	    ns_capable(net->user_ns, CAP_NET_ADMIN)) {
+>  +		struct ip6_flowlabel *fl =3D fl_lookup(net, freq->flr_label);
+>  =20
+>  -		if (freq.flr_share =3D=3D IPV6_FL_S_NONE &&
+>  -		    ns_capable(net->user_ns, CAP_NET_ADMIN)) {
+>  -			fl =3D fl_lookup(net, freq.flr_label);
+>  -			if (fl) {
+>  -				err =3D fl6_renew(fl, freq.flr_linger, freq.flr_expires);
+>  -				fl_release(fl);
+>  -				return err;
+>  -			}
+>  +		if (fl) {
+>  +			err =3D fl6_renew(fl, freq->flr_linger,
+>  +					freq->flr_expires);
+>  +			fl_release(fl);
+>  +			return err;
+>   		}
+>  -		return -ESRCH;
+>  -
+>  -	case IPV6_FL_A_GET:
+>  -		if (freq.flr_flags & IPV6_FL_F_REFLECT) {
+>  -			struct net *net =3D sock_net(sk);
+>  -			if (net->ipv6.sysctl.flowlabel_consistency) {
+>  -				net_info_ratelimited("Can not set IPV6_FL_F_REFLECT if flowlabel_co=
+nsistency sysctl is enable\n");
+>  -				return -EPERM;
+>  -			}
+>  +	}
+>  +	return -ESRCH;
+>  +}
+>  =20
+>  -			if (sk->sk_protocol !=3D IPPROTO_TCP)
+>  -				return -ENOPROTOOPT;
+>  +static int ipv6_flowlabel_get(struct sock *sk, struct in6_flowlabel_req=
+ *freq,
+>  +		sockptr_t optval, int optlen)
+>  +{
+>  +	struct ipv6_fl_socklist *sfl, *sfl1 =3D NULL;
+>  +	struct ip6_flowlabel *fl, *fl1 =3D NULL;
+>  +	struct ipv6_pinfo *np =3D inet6_sk(sk);
+>  +	struct net *net =3D sock_net(sk);
+> - 	int uninitialized_var(err);
+> ++	int err;
+>  =20
+>  -			np->repflow =3D 1;
+>  -			return 0;
+>  +	if (freq->flr_flags & IPV6_FL_F_REFLECT) {
+>  +		if (net->ipv6.sysctl.flowlabel_consistency) {
+>  +			net_info_ratelimited("Can not set IPV6_FL_F_REFLECT if flowlabel_con=
+sistency sysctl is enable\n");
+>  +			return -EPERM;
+>   		}
+>  =20
+>  -		if (freq.flr_label & ~IPV6_FLOWLABEL_MASK)
+>  -			return -EINVAL;
+>  +		if (sk->sk_protocol !=3D IPPROTO_TCP)
+>  +			return -ENOPROTOOPT;
+>  +		np->repflow =3D 1;
+>  +		return 0;
+>  +	}
+>  =20
+>  -		if (net->ipv6.sysctl.flowlabel_state_ranges &&
+>  -		    (freq.flr_label & IPV6_FLOWLABEL_STATELESS_FLAG))
+>  -			return -ERANGE;
+>  +	if (freq->flr_label & ~IPV6_FLOWLABEL_MASK)
+>  +		return -EINVAL;
+>  +	if (net->ipv6.sysctl.flowlabel_state_ranges &&
+>  +	    (freq->flr_label & IPV6_FLOWLABEL_STATELESS_FLAG))
+>  +		return -ERANGE;
+>  =20
+>  -		fl =3D fl_create(net, sk, &freq, optval, optlen, &err);
+>  -		if (!fl)
+>  -			return err;
+>  -		sfl1 =3D kmalloc(sizeof(*sfl1), GFP_KERNEL);
+>  +	fl =3D fl_create(net, sk, freq, optval, optlen, &err);
+>  +	if (!fl)
+>  +		return err;
+>  =20
+>  -		if (freq.flr_label) {
+>  -			err =3D -EEXIST;
+>  -			rcu_read_lock_bh();
+>  -			for_each_sk_fl_rcu(np, sfl) {
+>  -				if (sfl->fl->label =3D=3D freq.flr_label) {
+>  -					if (freq.flr_flags&IPV6_FL_F_EXCL) {
+>  -						rcu_read_unlock_bh();
+>  -						goto done;
+>  -					}
+>  -					fl1 =3D sfl->fl;
+>  -					if (!atomic_inc_not_zero(&fl1->users))
+>  -						fl1 =3D NULL;
+>  -					break;
+>  +	sfl1 =3D kmalloc(sizeof(*sfl1), GFP_KERNEL);
+>  +
+>  +	if (freq->flr_label) {
+>  +		err =3D -EEXIST;
+>  +		rcu_read_lock_bh();
+>  +		for_each_sk_fl_rcu(np, sfl) {
+>  +			if (sfl->fl->label =3D=3D freq->flr_label) {
+>  +				if (freq->flr_flags & IPV6_FL_F_EXCL) {
+>  +					rcu_read_unlock_bh();
+>  +					goto done;
+>   				}
+>  +				fl1 =3D sfl->fl;
+>  +				if (!atomic_inc_not_zero(&fl1->users))
+>  +					fl1 =3D NULL;
+>  +				break;
+>   			}
+>  -			rcu_read_unlock_bh();
+>  +		}
+>  +		rcu_read_unlock_bh();
+>  =20
+>  -			if (!fl1)
+>  -				fl1 =3D fl_lookup(net, freq.flr_label);
+>  -			if (fl1) {
+>  +		if (!fl1)
+>  +			fl1 =3D fl_lookup(net, freq->flr_label);
+>  +		if (fl1) {
+>   recheck:
+>  -				err =3D -EEXIST;
+>  -				if (freq.flr_flags&IPV6_FL_F_EXCL)
+>  -					goto release;
+>  -				err =3D -EPERM;
+>  -				if (fl1->share =3D=3D IPV6_FL_S_EXCL ||
+>  -				    fl1->share !=3D fl->share ||
+>  -				    ((fl1->share =3D=3D IPV6_FL_S_PROCESS) &&
+>  -				     (fl1->owner.pid !=3D fl->owner.pid)) ||
+>  -				    ((fl1->share =3D=3D IPV6_FL_S_USER) &&
+>  -				     !uid_eq(fl1->owner.uid, fl->owner.uid)))
+>  -					goto release;
+>  -
+>  -				err =3D -ENOMEM;
+>  -				if (!sfl1)
+>  -					goto release;
+>  -				if (fl->linger > fl1->linger)
+>  -					fl1->linger =3D fl->linger;
+>  -				if ((long)(fl->expires - fl1->expires) > 0)
+>  -					fl1->expires =3D fl->expires;
+>  -				fl_link(np, sfl1, fl1);
+>  -				fl_free(fl);
+>  -				return 0;
+>  +			err =3D -EEXIST;
+>  +			if (freq->flr_flags&IPV6_FL_F_EXCL)
+>  +				goto release;
+>  +			err =3D -EPERM;
+>  +			if (fl1->share =3D=3D IPV6_FL_S_EXCL ||
+>  +			    fl1->share !=3D fl->share ||
+>  +			    ((fl1->share =3D=3D IPV6_FL_S_PROCESS) &&
+>  +			     (fl1->owner.pid !=3D fl->owner.pid)) ||
+>  +			    ((fl1->share =3D=3D IPV6_FL_S_USER) &&
+>  +			     !uid_eq(fl1->owner.uid, fl->owner.uid)))
+>  +				goto release;
+>  +
+>  +			err =3D -ENOMEM;
+>  +			if (!sfl1)
+>  +				goto release;
+>  +			if (fl->linger > fl1->linger)
+>  +				fl1->linger =3D fl->linger;
+>  +			if ((long)(fl->expires - fl1->expires) > 0)
+>  +				fl1->expires =3D fl->expires;
+>  +			fl_link(np, sfl1, fl1);
+>  +			fl_free(fl);
+>  +			return 0;
+>  =20
+>   release:
+>  -				fl_release(fl1);
+>  -				goto done;
+>  -			}
+>  -		}
+>  -		err =3D -ENOENT;
+>  -		if (!(freq.flr_flags&IPV6_FL_F_CREATE))
+>  +			fl_release(fl1);
+>   			goto done;
+>  +		}
+>  +	}
+>  +	err =3D -ENOENT;
+>  +	if (!(freq->flr_flags & IPV6_FL_F_CREATE))
+>  +		goto done;
+>  =20
+>  -		err =3D -ENOMEM;
+>  -		if (!sfl1)
+>  -			goto done;
+>  +	err =3D -ENOMEM;
+>  +	if (!sfl1)
+>  +		goto done;
+>  =20
+>  -		err =3D mem_check(sk);
+>  -		if (err !=3D 0)
+>  -			goto done;
+>  +	err =3D mem_check(sk);
+>  +	if (err !=3D 0)
+>  +		goto done;
+>  =20
+>  -		fl1 =3D fl_intern(net, fl, freq.flr_label);
+>  -		if (fl1)
+>  -			goto recheck;
+>  +	fl1 =3D fl_intern(net, fl, freq->flr_label);
+>  +	if (fl1)
+>  +		goto recheck;
+>  =20
+>  -		if (!freq.flr_label) {
+>  -			if (copy_to_user(&((struct in6_flowlabel_req __user *) optval)->flr_=
+label,
+>  -					 &fl->label, sizeof(fl->label))) {
+>  -				/* Intentionally ignore fault. */
+>  -			}
+>  +	if (!freq->flr_label) {
+>  +		sockptr_advance(optval,
+>  +				offsetof(struct in6_flowlabel_req, flr_label));
+>  +		if (copy_to_sockptr(optval, &fl->label, sizeof(fl->label))) {
+>  +			/* Intentionally ignore fault. */
+>   		}
+>  -
+>  -		fl_link(np, sfl1, fl);
+>  -		return 0;
+>  -
+>  -	default:
+>  -		return -EINVAL;
+>   	}
+>  =20
+>  +	fl_link(np, sfl1, fl);
+>  +	return 0;
+>   done:
+>   	fl_free(fl);
+>   	kfree(sfl1);
 
-I don't see w/o "/" is a legacy thing. BPF_PROG_TYPE_STRUCT_OPS just uses
-"struct_ops".=20
+This is now a conflict between the net-next tree and Linus' tree.
 
-> unfortunately. But all the recent ones do,
-> and we explicitly did that for xdp_dev/xdp_cpu, for instance.
-> Specifying just "user" in the spec would allow something nonsensical
-> like "userargh", for instance, due to this being treated as a prefix.
-> There is no harm to require users to do "user/my_prog", though.
+--=20
+Cheers,
+Stephen Rothwell
 
-I don't see why allowing "userargh" is a problem. Failing "user" is=20
-more confusing. We can probably improve that by a hint like:
+--Sig_/NPRKE=Tjro8ngV3LGe.1Lyv
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-    libbpf: failed to load program 'user', do you mean "user/"?
+-----BEGIN PGP SIGNATURE-----
 
-But it is pretty silly. "user/something_never_used" also looks weird.
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8qMCMACgkQAVBC80lX
+0GzzoQf+P3Edms8HPZRTSHABUwgbl5i7qWBamhyR8FOXpVrrKh+nA1koySoll9NH
+P8vcXun5XMZIBUyiQpD/92g4tO/YwgnGpsIIzOd7NA/L6IxWHm3mY6XnOq3p09qD
+i743w1MFAwvOLYgSV3BGoFJ2CZkVu6R/5OBfkIer70fJ4gDimU7BkBNRSpQDXGzy
+ALc+kyCzA0yyTRX6Dq1+b3hCy0HAGxYku9hMwfs2Q6bVQ4LmuaG7RAov5zsl9MtN
+AFlxfa/O2iXVLniaEsccEWgTIwAG9Jc1jPj0+CpCuSo50xj4FYcvC89F9DXVUyL5
+bo2qBB9O5cNONvGznOeyFbjmiDGELQ==
+=2N1k
+-----END PGP SIGNATURE-----
 
-> Alternatively, we could introduce a new convention in the spec,
-> something like "user?", which would accept either "user" or
-> "user/something", but not "user/" nor "userblah". We can try that as
-> well.
-
-Again, I don't really understand why allowing "userblah" is a problem.=20
-We already have "xdp", "xdp_devmap/", and "xdp_cpumap/", they all work=20
-fine so far.=20
-
-Thanks,
-Song=
+--Sig_/NPRKE=Tjro8ngV3LGe.1Lyv--
