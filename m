@@ -2,84 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F360823CF90
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:22:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB20D23CF7E
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 21:21:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729045AbgHETWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 15:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55420 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728958AbgHERlo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 13:41:44 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A27C008696;
-        Wed,  5 Aug 2020 07:34:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=gd1cvJcf7uborbbKx0aO1kHmrhM0AMk3ZC07sorW0mo=; b=DviZDtxx2MHlNyWGdaIVddIrjV
-        7sJq9PcnuQ4ZdiSVXe1EAuAlrE0jvzCn7CK8//Wq1vSfIkN1vGuKV473qQp451A+CsMXa7cmLdq8i
-        EKx+j5bAPfmngqlFK7fdD44UxDgf+cyAy3yJljPRuaUamb2Wu75O5ibPQuDI7JnWiwKP1459ADvbq
-        yCCSB3ey+lYFK+fUvUdESznHyu583fr2rv2dCmR/8VSGohwFQzjHR0RrUzCtkWqtw7Nwg9ZA9Xm2j
-        j2eG9/eRe+UXPbBeVvjqaa5PvHi/EuSjSmsA6ss3gtsTILcA/4P+AFdKF1DqosTFRnLlktoG0mwQX
-        9WIV39tQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:53382 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1k3KUx-0003br-SU; Wed, 05 Aug 2020 15:34:31 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1k3KUx-0000da-In; Wed, 05 Aug 2020 15:34:31 +0100
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH] MAINTAINERS: update phylink/sfp keyword matching
+        id S1728885AbgHETV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 15:21:26 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:61112 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728929AbgHERmr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 13:42:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1596649366; x=1628185366;
+  h=date:from:to:cc:message-id:references:mime-version:
+   in-reply-to:subject;
+  bh=lNEkMbYi0vdrAauS7Kx1F2bZJKjVMy/W93IpO/fQsUY=;
+  b=QLWP0f4m1iXMxE7WwpXelDNbJnoNpF+g0+s6zbmV6NzsvnU9VULdxkeI
+   gY9/qb9cgZPYou8CeQkx/eJVolTOG/oZ7NyXiJT+rDnyjMXLfW03bDpfT
+   KqB676qf2oJz5gqmTw4a4slQHYINimnhvUdLlAyixXdcL2ljd5cHg23Bh
+   E=;
+IronPort-SDR: 9ySw8fWle7MttK7suY4BIhxnPpUpw/OAAJafe5LAcUtSaR7nXlHuY3JimXe5qJR44ypaJ2YRoP
+ 96gheUehfPyA==
+X-IronPort-AV: E=Sophos;i="5.75,438,1589241600"; 
+   d="scan'208";a="57653120"
+Subject: Re: [PATCH v2 01/11] xen/manage: keep track of the on-going suspend mode
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-579b7f5b.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 05 Aug 2020 17:42:44 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2c-579b7f5b.us-west-2.amazon.com (Postfix) with ESMTPS id C5250A2967;
+        Wed,  5 Aug 2020 17:42:42 +0000 (UTC)
+Received: from EX13D08UEB001.ant.amazon.com (10.43.60.245) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 5 Aug 2020 17:42:20 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
+ EX13D08UEB001.ant.amazon.com (10.43.60.245) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 5 Aug 2020 17:42:20 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Wed, 5 Aug 2020 17:42:19 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id D027740865; Wed,  5 Aug 2020 17:42:19 +0000 (UTC)
+Date:   Wed, 5 Aug 2020 17:42:19 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>
+CC:     Stefano Stabellini <sstabellini@kernel.org>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <bp@alien8.de>, <hpa@zytor.com>,
+        <x86@kernel.org>, <jgross@suse.com>, <linux-pm@vger.kernel.org>,
+        <linux-mm@kvack.org>, <kamatam@amazon.com>,
+        <konrad.wilk@oracle.com>, <roger.pau@citrix.com>,
+        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
+        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
+        <eduval@amazon.com>, <sblbir@amazon.com>,
+        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dwmw@amazon.co.uk>, <benh@kernel.crashing.org>
+Message-ID: <20200805174219.GA16105@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <alpine.DEB.2.21.2007211640500.17562@sstabellini-ThinkPad-T480s>
+ <20200722180229.GA32316@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <alpine.DEB.2.21.2007221645430.17562@sstabellini-ThinkPad-T480s>
+ <20200723225745.GB32316@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <alpine.DEB.2.21.2007241431280.17562@sstabellini-ThinkPad-T480s>
+ <66a9b838-70ed-0807-9260-f2c31343a081@oracle.com>
+ <20200730230634.GA17221@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <53b577a3-6af9-5587-7e47-485be38b3653@oracle.com>
+ <20200804234201.GA23820@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <50d0dbe1-533e-792a-6916-8c72d623064a@oracle.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1k3KUx-0000da-In@rmk-PC.armlinux.org.uk>
-Date:   Wed, 05 Aug 2020 15:34:31 +0100
+In-Reply-To: <50d0dbe1-533e-792a-6916-8c72d623064a@oracle.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has revealed that the "phylink" keyword exists in non-phylink
-related contexts in the bluetooth stack. To avoid receiving
-inappropriate notifications, change the keyword matching regexp to
-something which avoids this, while still allowing changes to networking
-drivers that make use of phylink to be detected.
-
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
-Linus,
-
-Is this something you're willing to merge directly please?
-
-Thanks.
-
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 4e2698cc7e23..3b11a8b84129 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15431,7 +15431,7 @@ F:	drivers/net/phy/phylink.c
- F:	drivers/net/phy/sfp*
- F:	include/linux/phylink.h
- F:	include/linux/sfp.h
--K:	phylink
-+K:	phylink\.h|struct\s+phylink|\.phylink|>phylink_|phylink_(autoneg|clear|connect|create|destroy|disconnect|ethtool|helper|mac|mii|of|set|start|stop|test|validate)
- 
- SGI GRU DRIVER
- M:	Dimitri Sivanich <sivanich@sgi.com>
--- 
-2.20.1
-
+On Wed, Aug 05, 2020 at 09:31:13AM -0400, Boris Ostrovsky wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> 
+> 
+> 
+> On 8/4/20 7:42 PM, Anchal Agarwal wrote:
+> >
+> > I think this could be done. PM_HIBERNATION_PREPARE could return -ENOTSUPP
+> > for arm and pvh dom0 when the notifier call chain is invoked for this case
+> > in hibernate(). This will then be an empty notifier just for checking two
+> > usecases.
+> > Also, for pvh dom0, the earlier code didn't register any notifier,
+> > with this approach you are suggesting setup the notifier for hvm/pvh dom0 and
+> > arm but fail during notifier call chain during PM_HIBERNATION_PREPARE ?
+> 
+> 
+> Right.
+> 
+> 
+> (Although the earlier code did register the notifier:
+> xen_setup_pm_notifier() would return an error for !xen_hvm_domain() and
+> PVH *is* an HVM domain, so registration would actually happen)
+>
+Yes you are right. My bad, what I meant with "earlier code" was whatever we
+discussed w.r.t to removing the notifier all together, it won't be registered for
+pvh dom0.
+Anyways got the point :)
+> 
+> >
+> > I think still getting rid of suspend mode that was earlier a part of this
+> > notifier is a good idea as it seems redundant as you pointed out earlier.
+> 
+> 
+> Yes.
+> 
+> 
+> -boris
+Thanks,
+Anchal
+> 
+> 
