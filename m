@@ -2,87 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 600B123CC64
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 18:42:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C595823CC48
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 18:36:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727955AbgHEQmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 12:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727826AbgHEQkH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:40:07 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEECC034616;
-        Wed,  5 Aug 2020 05:31:32 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S1726985AbgHEQfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 12:35:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58211 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726212AbgHEQeE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 12:34:04 -0400
+X-Greylist: delayed 3568 seconds by postgrey-1.27 at vger.kernel.org; Wed, 05 Aug 2020 12:34:03 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596645204;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Htm2JdguJ9wMbfUtNGIDXZzv/Zt05ES7M0m8GbVzmRI=;
+        b=JAUdHdF/fDY1A50JnDQwEM0VzANv7U9xYZ9A0uvsG2GLheyO256JBQ+maGFEcieLhiOkUb
+        iRs9D6aTcb70+gI367qJoAh5R6JUZ9+yWQKmyianiQK84WDM5LE80XYKObaIZl49mP1dtn
+        Ze07Y1vHq6OVrtYRMevMF2RZNnuCpMI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-432-bSMZvbQQPtmbHwA5KYU1wQ-1; Wed, 05 Aug 2020 09:06:35 -0400
+X-MC-Unique: bSMZvbQQPtmbHwA5KYU1wQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4BM9wD3YVbz9sPB;
-        Wed,  5 Aug 2020 22:31:24 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1596630685;
-        bh=j8w8EuBO1+cpbq1KuEU666Od/hNNRqCbcp1rNpt5oEw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=pLUXTHxN42q9ByPuE33ruB4nmahaXsszt8bpAIpPTfA6RA1vO3vbs/fHmKQ+Hon7N
-         Rafklf5W/B5SmRE6vzqx9F2Y7PsQwz4/mIPgrol71jEPN6wJrmRmjra7ujp74MvY+2
-         qZShvYTEL+37aiR7F4zoRwfN+OHIdBjBMY8EkLhBMBIXxI4WJMysVIQYXHugBfP8vJ
-         zHllSfM+6WcZadDDNLzl2oopZTBVZcVRYkV+QjeIsJ1Z0esXc6Z26NdfLOx+WxUDvr
-         DpLa2OG6x8bvZ3ZagFq/OnaM6lTv4npM9iU2hiqUDcF3JlSAyQPYiP472j3D3/3uhY
-         ZPMww51D7nJLA==
-Date:   Wed, 5 Aug 2020 22:31:21 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Stefano Brivio <sbrivio@redhat.com>,
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BFAEB80183C;
+        Wed,  5 Aug 2020 13:06:33 +0000 (UTC)
+Received: from localhost (unknown [10.36.110.53])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5F7537B900;
+        Wed,  5 Aug 2020 13:06:31 +0000 (UTC)
+Date:   Wed, 5 Aug 2020 15:06:27 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
         <heiko.carstens@de.ibm.com>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20200805223121.7dec86de@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Message-ID: <20200805150627.3351fe24@redhat.com>
+In-Reply-To: <20200805223121.7dec86de@canb.auug.org.au>
+References: <20200805223121.7dec86de@canb.auug.org.au>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/iGNImgk4v6HDXIvgTQwoqbm";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/iGNImgk4v6HDXIvgTQwoqbm
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Wed, 5 Aug 2020 22:31:21 +1000
+Stephen Rothwell <sfr@canb.auug.org.au> wrote:
 
-Hi all,
+> Hi all,
+> 
+> After merging the net-next tree, today's linux-next build (s390 defconfig)
+> failed like this:
+> 
+> net/ipv4/ip_tunnel_core.c:335:2: error: implicit declaration of function 'csum_ipv6_magic' [-Werror=implicit-function-declaration]
+> 
+> Caused by commit
+> 
+>   4cb47a8644cc ("tunnels: PMTU discovery support for directly bridged IP packets")
 
-After merging the net-next tree, today's linux-next build (s390 defconfig)
-failed like this:
+Ouch, sorry for that.
 
-net/ipv4/ip_tunnel_core.c:335:2: error: implicit declaration of function 'c=
-sum_ipv6_magic' [-Werror=3Dimplicit-function-declaration]
+I'm getting a few of them by the way:
 
-Caused by commit
+---
+net/core/skbuff.o: In function `skb_checksum_setup_ipv6':
+/home/sbrivio/net-next/net/core/skbuff.c:4980: undefined reference to `csum_ipv6_magic'
+net/core/netpoll.o: In function `netpoll_send_udp':
+/home/sbrivio/net-next/net/core/netpoll.c:419: undefined reference to `csum_ipv6_magic'
+net/netfilter/utils.o: In function `nf_ip6_checksum':
+/home/sbrivio/net-next/net/netfilter/utils.c:74: undefined reference to `csum_ipv6_magic'
+/home/sbrivio/net-next/net/netfilter/utils.c:84: undefined reference to `csum_ipv6_magic'
+net/netfilter/utils.o: In function `nf_ip6_checksum_partial':
+/home/sbrivio/net-next/net/netfilter/utils.c:112: undefined reference to `csum_ipv6_magic'
+net/ipv4/ip_tunnel_core.o:/home/sbrivio/net-next/net/ipv4/ip_tunnel_core.c:335: more undefined references to `csum_ipv6_magic' follow
+---
 
-  4cb47a8644cc ("tunnels: PMTU discovery support for directly bridged IP pa=
-ckets")
+...checking how it should be fixed now.
 
---=20
-Cheers,
-Stephen Rothwell
+Heiko, by the way, do we want to provide a s390 version similar to the
+existing csum_partial() implementation in
+arch/s390/include/asm/checksum.h right away? Otherwise, I'll just take
+care of the ifdeffery.
 
---Sig_/iGNImgk4v6HDXIvgTQwoqbm
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+-- 
+Stefano
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl8qppkACgkQAVBC80lX
-0Gz4Hgf5AcOL3mJwLlnnFj7+zFUXWc6JxU8HniK9p2KGwMa5ISQE9lbmSUVTOXoC
-ssxig80+QPKSO4XASSwEcB7RzdfkdE/phan/zxIKirQlPFlbaOlSb209yzGsyZLe
-WaMCkuMIdPcT7Fi8clOk+yjwyujx7FTfxDcayUqphOmMMb+CxKKcqnXhe7Fv0sPc
-25na5ErrG9A02+zS25XzE/KCielqumhgKfEyDmJDH7kZvQJrNlG8h8zof8juLIww
-7o5UdQt9VIzVwlBy7FKZo9Pu0tltbL6tSm0DXtO5tRwYbd7Qub6QeZig34u0rtfB
-zEMFJTpJriTcP3EHxbpo3vP4AVTn7g==
-=216g
------END PGP SIGNATURE-----
-
---Sig_/iGNImgk4v6HDXIvgTQwoqbm--
