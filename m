@@ -2,96 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD43923C861
-	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 10:57:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A8F823C875
+	for <lists+netdev@lfdr.de>; Wed,  5 Aug 2020 11:01:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728322AbgHEI5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 04:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725920AbgHEI5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 04:57:37 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 951B4C06174A;
-        Wed,  5 Aug 2020 01:57:37 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id k18so15074708pfp.7;
-        Wed, 05 Aug 2020 01:57:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=F2G3w7PdTgr3TT96rVAastMovHHJc9pKaM/XEhVPHIc=;
-        b=qjYkgIBsi3VeBxcNODR6vDZxrHBGq6NjsSowDj5uEUYV6aQyVYIAk7vM+6NzQQDjzT
-         bL43TetMosI4QztLIdp0e60upbdgIM7BqmBBnTK+dEKqmfFHaWBKQZMJDMxUuHgWFBYL
-         EYM3ocF7pw6xS3/g0rzpg4sHywbtF+pqCxsSIuWyisZrjxctfCrC+Ql3KMZz0CCHOD/L
-         Jc1kFSwba4BtPxMZ0QDpkPf5qOZIjxbYgj9SsZtc28E6mKoqf+9JwU9uepktmoMtA6q0
-         n6FntkDYwfjbTYTzt63cOKUYS2c5QPQh5g4SbJkjftBX8NyH0OVuGUiJgCIAAFIL4iMO
-         0qOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=F2G3w7PdTgr3TT96rVAastMovHHJc9pKaM/XEhVPHIc=;
-        b=FcDC7zhPeXQTSsLR/He8/YUAFwvGaCiMoBHls3v5UykNDo8O3C0IITvbzzE6jAD6RD
-         qHqhAYeHzxLLg2tL0IRyDvPuDknDR481Hx5H2qftfqMZzjPair06wqSaBdh3Zp6CMNhb
-         at/YNrwcGzBOlHaLApSMrxw4knI2n0v9JOARCEUjVxrYjQ7ZFr59flzvmNraKwP51kn8
-         UcxayFFxqHMNdBtryI2sz99qyGYPaPWxiMgElzYvw4gAozIeard/ah5J/Qx8hCUIWHQ8
-         x73488pl0Dkv77LOc/SehqEft+aQ3KMPozlcPpp7PZWO37lmzWQHkwgO+CiOTUx0t8oi
-         GcUg==
-X-Gm-Message-State: AOAM532puYG6PSz8saytqjKcpCpJXPE5xZqH431ZWRsVfO3nqem/tawI
-        6M6Radj0MZekX3LN61gOD6y/id2udflwZ3Bg9lQ=
-X-Google-Smtp-Source: ABdhPJw7v5YUx5vRtVvvk1t/7SUWnOJK9xyezUOg5gl2BcGx6Hhd8wy1DMrsehyT71PANUYovH3skpUzdxoofC9wwDM=
-X-Received: by 2002:aa7:9314:: with SMTP id 20mr2244876pfj.65.1596617857186;
- Wed, 05 Aug 2020 01:57:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200802195046.402539-1-xie.he.0141@gmail.com>
- <d02996f90f64d55d5c5e349560bfde46@dev.tdt.de> <CAJht_ENuzbyYesYtP0703xgRwRBTY9SySe3oXLEtkyL_H_yTSQ@mail.gmail.com>
- <9975370f14b8ddeafc8dec7bc6c0878a@dev.tdt.de>
-In-Reply-To: <9975370f14b8ddeafc8dec7bc6c0878a@dev.tdt.de>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Wed, 5 Aug 2020 01:57:25 -0700
-Message-ID: <CAJht_EMf5i1qykEP6sZjLBcPAN9u9oQoZ34dfJ68Z5XL6rKuDQ@mail.gmail.com>
-Subject: Re: [net v3] drivers/net/wan/lapbether: Use needed_headroom instead
- of hard_header_len
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Brian Norris <briannorris@chromium.org>,
-        netdev-owner@vger.kernel.org
+        id S1728062AbgHEJAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 05:00:51 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:23249 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726191AbgHEJAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 05:00:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596618046;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZSDQ7oldb8iII0VqxQ1pyiHwiNqGB3oUlAZtt9Ry2qQ=;
+        b=URuVsqaWt1BW+gLdupfsfzDX2ty4iH046RGOcyvfib3oCrJVD6L7zZdIiXmWtbUXwoXroQ
+        NFuVrhvX5IYea6n43lLnQtHrZ0C7fp7U2fZVAPuUz3MT+pg+EGoXuRtZfkRYFt+yiWZ2P1
+        ZhGYZdBY4x0cCNjPA1rFkGOHLCOhb+0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-276-iK3VVNtWMhWCex7zMWHdBg-1; Wed, 05 Aug 2020 05:00:43 -0400
+X-MC-Unique: iK3VVNtWMhWCex7zMWHdBg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 610091005504;
+        Wed,  5 Aug 2020 09:00:41 +0000 (UTC)
+Received: from ovpn-114-157.ams2.redhat.com (ovpn-114-157.ams2.redhat.com [10.36.114.157])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D8D0771797;
+        Wed,  5 Aug 2020 09:00:38 +0000 (UTC)
+Message-ID: <62165f6af630ec134713a7fa2c136ec60a67d2f2.camel@redhat.com>
+Subject: Re: [PATCH] net: openvswitch: silence suspicious RCU usage warning
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     xiangxia.m.yue@gmail.com, davem@davemloft.net, echaudro@redhat.com,
+        kuba@kernel.org, pshelar@ovn.org, syzkaller-bugs@googlegroups.com
+Cc:     dev@openvswitch.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Date:   Wed, 05 Aug 2020 11:00:37 +0200
+In-Reply-To: <20200805071911.64101-1-xiangxia.m.yue@gmail.com>
+References: <20200805071911.64101-1-xiangxia.m.yue@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.4 (3.36.4-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 4, 2020 at 10:23 PM Martin Schiller <ms@dev.tdt.de> wrote:
->
-> > Adding skb_cow before these skb_push calls would indeed help
-> > preventing kernel panics, but that might not be the essential issue
-> > here, and it might also prevent us from discovering the real issue. (I
-> > guess this is also the reason skb_cow is not included in skb_push
-> > itself.)
->
-> Well, you are right that the panic is "useful" to discover the real
-> problem. But on the other hand, if it is possible to prevent a panic, I
-> think we should do so. Maybe with adding a warning, when skb_cow() needs
-> to reallocate memory.
->
-> But this is getting a little bit off topic. For this patch I can say:
->
-> LGTM.
->
-> Reviewed-by: Martin Schiller <ms@dev.tdt.de>
+On Wed, 2020-08-05 at 15:19 +0800, xiangxia.m.yue@gmail.com wrote:
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> 
+> ovs_flow_tbl_destroy always is called from RCU callback
+> or error path. It is no need to check if rcu_read_lock
+> or lockdep_ovsl_is_held was held.
+> 
+> ovs_dp_cmd_fill_info always is called with ovs_mutex,
+> So use the rcu_dereference_ovsl instead of rcu_dereference
+> in ovs_flow_tbl_masks_cache_size.
+> 
+> Fixes: 9bf24f594c6a ("net: openvswitch: make masks cache size configurable")
+> Cc: Eelco Chaudron <echaudro@redhat.com>
+> Reported-by: syzbot+c0eb9e7cdde04e4eb4be@syzkaller.appspotmail.com
+> Reported-by: syzbot+f612c02823acb02ff9bc@syzkaller.appspotmail.com
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Thank you so much!
+Acked-by: Paolo Abeni <pabeni@redhat.com>
 
-Yes, it might be better to use skb_cow with a warning so that we can
-prevent kernel panic while still being able to discover the problem.
-If we want to do this, there are 2 more places in addition to
-lapbeth_data_transmit that need to be guarded with skb_cow:
-lapb_send_iframe and lapb_transmit_buffer in net/lapb/lapb_out.c.
-Maybe we can address this in a separate patch.
