@@ -2,346 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B52BE23E361
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 23:04:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9771923E379
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 23:20:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726398AbgHFVEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 17:04:45 -0400
-Received: from smtp11.smtpout.orange.fr ([80.12.242.133]:49389 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725272AbgHFVEj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 17:04:39 -0400
-Received: from localhost.localdomain ([93.22.37.174])
-        by mwinf5d46 with ME
-        id CM4Z230063lSDvh03M4ZCJ; Thu, 06 Aug 2020 23:04:35 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 06 Aug 2020 23:04:35 +0200
-X-ME-IP: 93.22.37.174
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        yuehaibing@huawei.com, vaibhavgupta40@gmail.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] adm8211: switch from 'pci_' to 'dma_' API
-Date:   Thu,  6 Aug 2020 23:04:31 +0200
-Message-Id: <20200806210431.736050-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        id S1726350AbgHFVUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 17:20:44 -0400
+Received: from agw4.byu.edu ([128.187.16.188]:45220 "EHLO agw4.byu.edu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725783AbgHFVUo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Aug 2020 17:20:44 -0400
+X-Greylist: delayed 574 seconds by postgrey-1.27 at vger.kernel.org; Thu, 06 Aug 2020 17:20:43 EDT
+Received: from cangw3.byu.edu (cangw3.byu.edu [10.18.21.143])
+        by agw4.byu.edu (Postfix) with ESMTPS id 31CDE1A374;
+        Thu,  6 Aug 2020 15:11:09 -0600 (MDT)
+Received: from mail2.fsl.byu.edu (mail2.rc.byu.edu [128.187.49.32])
+        by cangw3.byu.edu (8.15.2/8.15.2/Debian-8) with ESMTPS id 076LB4BE023942
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 6 Aug 2020 15:11:06 -0600
+Received: from [192.168.124.133] (v-pool-133.rc.byu.edu [192.168.124.133])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail2.fsl.byu.edu (Postfix) with ESMTPSA id CC5353F2D9;
+        Thu,  6 Aug 2020 15:11:04 -0600 (MDT)
+From:   Ryan Cox <ryan_cox@byu.edu>
+Subject: Severe performance regression in "net: macsec: preserve ingress frame
+ ordering"
+To:     netdev@vger.kernel.org, davem@davemloft.net, sd@queasysnail.net,
+        scott@scottdial.com
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>
+Message-ID: <1b0cec71-d084-8153-2ba4-72ce71abeb65@byu.edu>
+Date:   Thu, 6 Aug 2020 15:11:04 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.1.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Bayes-Prob: 0.0001 (Score -1, tokens from: Outbound, byu-edu:default, base:default, @@RPTN)
+X-Spam-Score: -1.00 () [Hold at 5.00] Bayes(0.0001:-1.0)
+X-CanIt-Geo: ip=128.187.49.32; country=US; region=Utah; city=Provo; latitude=40.2329; longitude=-111.6688; http://maps.google.com/maps?q=40.2329,-111.6688&z=6
+X-CanItPRO-Stream: byu-edu:Outbound (inherits from byu-edu:default,base:default)
+X-Canit-Stats-ID: 0a3clb5U4 - e81743dca71f - 20200806
+X-Scanned-By: CanIt (www . roaringpenguin . com)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+Hello,
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
+I have found two performance issues with MACsec on 10 Gb/s links (tested 
+on Intel and Broadcom NICs):
+1)  MACsec with encryption is much faster than MACsec without encryption 
+(9.8 vs 7.4 Gb/s) until 5.7, where both have poor performance
+2)  5.7 introduced a severe performance impact for MACsec with and 
+without encryption at commit ab046a5d4be4c90a3952a0eae75617b49c0cb01b
 
-When memory is allocated in 'adm8211_alloc_rings()', GFP_KERNEL can be used
-because it is called only from the probe function and no lock is acquired.
-Moreover, GFP_KERNEL is already used just a few lines above in a kmalloc.
+I haven't been able to look at issue #1 yet (and I don't know where to 
+start) since I got sidetracked looking at issue #2.
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
+This email is about issue #2, which results in the following in my test 
+setup:
+* MACsec with encryption drops from 9.81 Gb/s to 1.00 Gb/s or sometimes 
+worse
+* MACsec without encryption drops from 7.40 Gb/s to 1.80 Gb/s
 
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
+I have tested a number of configurations.  These tests were performed on 
+the following hardware:
+* dual Intel Xeon E5-2680 v4 @ 2.40GHz, 14 cores each
+* Intel 82599ES 10 GbE NIC
+* ixgbe driver, version 5.1.0-k
 
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
+I also tested on the following hardware in a more limited fashion, but 
+the results were consistent:
+* dual Intel Xeon E5-2670 v3 @ 2.30GHz, 12 cores each
+* Broadcom BCM57810 10 GbE NIC
+* bnx2x driver, 1.713.36-0
 
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
+Only one 10 Gb/s link was populated (i.e. no port-channel).  The MTU for 
+the network is 9000, with a resulting MACsec MTU of 8968.  All tests 
+were performed with only one switch in between the servers.
 
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+I tested three scenarios.  The tests were run on servers that are booted 
+with NFS root from an identical image.  The only difference was the 
+kernel.  A script was run to create the three scenarios and run the 
+benchmarks, so the setups are identical across tests.
 
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+The scenarios all involved iperf3 tests of these conditions:
+1) no MACsec
+2) MACsec without encryption
+3) MACsec with encryption
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
+The MACsec setup was done as follows:
+ip link add link em1 ms1 type macsec sci 1234 encrypt on  #or omitting 
+the "encrypt on" for specific tests
+ip macsec add ms1 tx sa 0 pn 1234 on key 01 $(printf %032d 1234)
+ip macsec add ms1 rx sci 1234
+ip macsec add ms1 rx sci 1234 sa 0 pn 1234 on key 01 $(printf %032d 1234)
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
+That results in `ip macsec show` like this:
+6: ms1: protect on validate strict sc off sa off encrypt on send_sci on 
+end_station off scb off replay off
+     cipher suite: GCM-AES-128, using ICV length 16
+     TXSC: 0000000000001234 on SA 0
+         0: PN 599345, state on, key 01000000000000000000000000000000
+     RXSC: 0000000000001234, state on
+         0: PN 5076769, state on, key 01000000000000000000000000000000
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
+I tested a number of kernels (all 64 bit) including:
+* 4.18.0-193.13.2.el8_2 (RHEL 8)
+* 5.6.7-1.el8.elrepo (ELRepo)
+* 5.7.11-1.el8.elrepo (ELRepo)
+* 5.7 at tag v5.7.11 (I compiled)
+* 5.7 at tag v5.7.11 with ab046a5d4be4c90a3952a0eae75617b49c0cb01b 
+reverted (I compiled)
 
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
+I did test 4.18 <-> 5.7 (bi-directional) and both directions resulted in 
+poor performance.  Other than that, each test was between two servers of 
+the same kernel version.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
+CONFIG_CRYPTO_AES_NI_INTEL=y is set in all kernels.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
+4.18 and 5.6 kernels both have very similar performance characteristics:
+* 9.89 Gb/s with no macsec at all
+* 7.40 Gb/s with macsec WITHOUT encryption  <--- not sure why, but 
+turning OFF encryption slowed things down
+* 9.81 Gb/s with macsec WITH encryption
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
+With 5.7 I get:
+* 9.90 Gb/s with no macsec at all
+* 1.80 Gb/s with macsec WITHOUT encryption
+* 1.00 Gb/s (sometimes, but often less) with macsec WITH encryption
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+With 5.7 but with ab046a5d4be4c90a3952a0eae75617b49c0cb01b reverted, I get:
+* 9.90 Gb/s with no macsec at all
+* 7.33 Gb/s with macsec WITHOUT encryption
+* 9.83 Gb/s with macsec WITH encryption
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+On tests where performance is bad (including macsec without encryption), 
+iperf3 is at 100% CPU usage.  I was able to run it under `perf record`on 
+iperf3 in a number of the tests but, unfortunately, I have had trouble 
+compiling perf for my own 5.7 compilations (definitely PEBKAC).  If it 
+would be useful I can work on fixing the perf compilation issues.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+For 5.7.11-1.el8.elrepo (which has the issue) I get the following top 10 
+items in `perf report`:
+* MACsec without encryption - iperf3 instance running as server 
+(receives data)
+     29.92%  iperf3   [kernel.kallsyms]  [k] copy_user_enhanced_fast_string
+      6.48%  iperf3   [kernel.kallsyms]  [k] do_syscall_64
+      2.92%  iperf3   [kernel.kallsyms]  [k] syscall_return_via_sysret
+      2.37%  iperf3   [kernel.kallsyms]  [k] entry_SYSCALL_64
+      2.32%  iperf3   [kernel.kallsyms]  [k] __skb_datagram_iter
+      2.26%  iperf3   [kernel.kallsyms]  [k] __free_pages_ok
+      2.09%  iperf3   [kernel.kallsyms]  [k] tcp_poll
+      1.75%  iperf3   [kernel.kallsyms]  [k] do_select
+      1.48%  iperf3   [kernel.kallsyms]  [k] free_one_page
+      1.44%  iperf3   [kernel.kallsyms]  [k] kmem_cache_free
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+* MACsec without encryption - iperf3 instance running as client (sends data)
+     83.63%  iperf3   [kernel.kallsyms]  [k] gf128mul_4k_lle
+      3.46%  iperf3   [kernel.kallsyms]  [k] ghash_update
+      1.48%  iperf3   [kernel.kallsyms]  [k] copy_user_enhanced_fast_string
+      1.18%  iperf3   [kernel.kallsyms]  [k] memcpy_erms
+      1.17%  iperf3   [kernel.kallsyms]  [k] do_csum
+      0.50%  iperf3   [kernel.kallsyms]  [k] _raw_spin_lock
+      0.44%  iperf3   [kernel.kallsyms]  [k] __copy_skb_header
+      0.36%  iperf3   [kernel.kallsyms]  [k] get_page_from_freelist
+      0.23%  iperf3   [kernel.kallsyms]  [k] ixgbe_xmit_frame_ring
+      0.22%  iperf3   [kernel.kallsyms]  [k] skb_segment
 
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
+* MACsec with encryption - iperf3 instance running as server (receives data)
+     15.66%  iperf3   [kernel.kallsyms]  [k] copy_user_enhanced_fast_string
+      9.52%  iperf3   [kernel.kallsyms]  [k] do_syscall_64
+      3.76%  iperf3   [kernel.kallsyms]  [k] syscall_return_via_sysret
+      3.28%  iperf3   [kernel.kallsyms]  [k] entry_SYSCALL_64
+      3.22%  iperf3   [kernel.kallsyms]  [k] do_select
+      2.71%  iperf3   [kernel.kallsyms]  [k] tcp_poll
+      1.84%  iperf3   [kernel.kallsyms]  [k] tcp_recvmsg
+      1.59%  iperf3   [kernel.kallsyms]  [k] sock_poll
+      1.38%  iperf3   [kernel.kallsyms]  [k] __skb_datagram_iter
+      1.37%  iperf3   [kernel.kallsyms]  [k] __free_pages_ok
 
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
+* MACsec with encryption - iperf3 instance running as client (sends data)
+     43.95%  iperf3   [kernel.kallsyms]  [k] gf128mul_4k_lle
+     17.48%  iperf3   [kernel.kallsyms]  [k] _aesni_enc1
+      9.42%  iperf3   [kernel.kallsyms]  [k] kernel_fpu_begin
+      7.75%  iperf3   [kernel.kallsyms]  [k] __crypto_xor
+      3.18%  iperf3   [kernel.kallsyms]  [k] crypto_ctr_crypt
+      2.67%  iperf3   [kernel.kallsyms]  [k] crypto_inc
+      2.30%  iperf3   [kernel.kallsyms]  [k] aesni_encrypt
+      2.05%  iperf3   [kernel.kallsyms]  [k] aesni_enc
+      1.87%  iperf3   [kernel.kallsyms]  [k] ghash_update
+      1.03%  iperf3   [kernel.kallsyms]  [k] kernel_fpu_end
 
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
+Here is `ethtool -k em1` in case that is helpful:
+Features for em1:
+rx-checksumming: on
+tx-checksumming: on
+         tx-checksum-ipv4: off [fixed]
+         tx-checksum-ip-generic: on
+         tx-checksum-ipv6: off [fixed]
+         tx-checksum-fcoe-crc: on [fixed]
+         tx-checksum-sctp: on
+scatter-gather: on
+         tx-scatter-gather: on
+         tx-scatter-gather-fraglist: off [fixed]
+tcp-segmentation-offload: on
+         tx-tcp-segmentation: on
+         tx-tcp-ecn-segmentation: off [fixed]
+         tx-tcp-mangleid-segmentation: off
+         tx-tcp6-segmentation: on
+generic-segmentation-offload: on
+generic-receive-offload: on
+large-receive-offload: off
+rx-vlan-offload: on
+tx-vlan-offload: on
+ntuple-filters: off
+receive-hashing: on
+highdma: on [fixed]
+rx-vlan-filter: on
+vlan-challenged: off [fixed]
+tx-lockless: off [fixed]
+netns-local: off [fixed]
+tx-gso-robust: off [fixed]
+tx-fcoe-segmentation: on [fixed]
+tx-gre-segmentation: on
+tx-gre-csum-segmentation: on
+tx-ipxip4-segmentation: on
+tx-ipxip6-segmentation: on
+tx-udp_tnl-segmentation: on
+tx-udp_tnl-csum-segmentation: on
+tx-gso-partial: on
+tx-tunnel-remcsum-segmentation: off [fixed]
+tx-sctp-segmentation: off [fixed]
+tx-esp-segmentation: on
+tx-udp-segmentation: on
+tx-gso-list: off [fixed]
+fcoe-mtu: off [fixed]
+tx-nocache-copy: off
+loopback: off [fixed]
+rx-fcs: off [fixed]
+rx-all: off
+tx-vlan-stag-hw-insert: off [fixed]
+rx-vlan-stag-hw-parse: off [fixed]
+rx-vlan-stag-filter: off [fixed]
+l2-fwd-offload: off
+hw-tc-offload: off
+esp-hw-offload: on
+esp-tx-csum-hw-offload: on
+rx-udp_tunnel-port-offload: on
+tls-hw-tx-offload: off [fixed]
+tls-hw-rx-offload: off [fixed]
+rx-gro-hw: off [fixed]
+tls-hw-record: off [fixed]
+rx-gro-list: off
+macsec-hw-offload: off [fixed]
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/wireless/admtek/adm8211.c | 83 +++++++++++++--------------
- 1 file changed, 40 insertions(+), 43 deletions(-)
+I have lots of logs that I can provide if needed.
 
-diff --git a/drivers/net/wireless/admtek/adm8211.c b/drivers/net/wireless/admtek/adm8211.c
-index 22f9f2f8af10..5cf2045fadef 100644
---- a/drivers/net/wireless/admtek/adm8211.c
-+++ b/drivers/net/wireless/admtek/adm8211.c
-@@ -324,8 +324,8 @@ static void adm8211_interrupt_tci(struct ieee80211_hw *dev)
- 
- 		/* TODO: check TDES0_STATUS_TUF and TDES0_STATUS_TRO */
- 
--		pci_unmap_single(priv->pdev, info->mapping,
--				 info->skb->len, PCI_DMA_TODEVICE);
-+		dma_unmap_single(&priv->pdev->dev, info->mapping,
-+				 info->skb->len, DMA_TO_DEVICE);
- 
- 		ieee80211_tx_info_clear_status(txi);
- 
-@@ -382,35 +382,34 @@ static void adm8211_interrupt_rci(struct ieee80211_hw *dev)
- 		} else if (pktlen < RX_COPY_BREAK) {
- 			skb = dev_alloc_skb(pktlen);
- 			if (skb) {
--				pci_dma_sync_single_for_cpu(
--					priv->pdev,
--					priv->rx_buffers[entry].mapping,
--					pktlen, PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_cpu(&priv->pdev->dev,
-+							priv->rx_buffers[entry].mapping,
-+							pktlen,
-+							DMA_FROM_DEVICE);
- 				skb_put_data(skb,
- 					     skb_tail_pointer(priv->rx_buffers[entry].skb),
- 					     pktlen);
--				pci_dma_sync_single_for_device(
--					priv->pdev,
--					priv->rx_buffers[entry].mapping,
--					RX_PKT_SIZE, PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_device(&priv->pdev->dev,
-+							   priv->rx_buffers[entry].mapping,
-+							   RX_PKT_SIZE,
-+							   DMA_FROM_DEVICE);
- 			}
- 		} else {
- 			newskb = dev_alloc_skb(RX_PKT_SIZE);
- 			if (newskb) {
- 				skb = priv->rx_buffers[entry].skb;
- 				skb_put(skb, pktlen);
--				pci_unmap_single(
--					priv->pdev,
--					priv->rx_buffers[entry].mapping,
--					RX_PKT_SIZE, PCI_DMA_FROMDEVICE);
-+				dma_unmap_single(&priv->pdev->dev,
-+						 priv->rx_buffers[entry].mapping,
-+						 RX_PKT_SIZE, DMA_FROM_DEVICE);
- 				priv->rx_buffers[entry].skb = newskb;
- 				priv->rx_buffers[entry].mapping =
--					pci_map_single(priv->pdev,
-+					dma_map_single(&priv->pdev->dev,
- 						       skb_tail_pointer(newskb),
- 						       RX_PKT_SIZE,
--						       PCI_DMA_FROMDEVICE);
--				if (pci_dma_mapping_error(priv->pdev,
--					   priv->rx_buffers[entry].mapping)) {
-+						       DMA_FROM_DEVICE);
-+				if (dma_mapping_error(&priv->pdev->dev,
-+						      priv->rx_buffers[entry].mapping)) {
- 					priv->rx_buffers[entry].skb = NULL;
- 					dev_kfree_skb(newskb);
- 					skb = NULL;
-@@ -1449,11 +1448,11 @@ static int adm8211_init_rings(struct ieee80211_hw *dev)
- 		rx_info->skb = dev_alloc_skb(RX_PKT_SIZE);
- 		if (rx_info->skb == NULL)
- 			break;
--		rx_info->mapping = pci_map_single(priv->pdev,
-+		rx_info->mapping = dma_map_single(&priv->pdev->dev,
- 						  skb_tail_pointer(rx_info->skb),
- 						  RX_PKT_SIZE,
--						  PCI_DMA_FROMDEVICE);
--		if (pci_dma_mapping_error(priv->pdev, rx_info->mapping)) {
-+						  DMA_FROM_DEVICE);
-+		if (dma_mapping_error(&priv->pdev->dev, rx_info->mapping)) {
- 			dev_kfree_skb(rx_info->skb);
- 			rx_info->skb = NULL;
- 			break;
-@@ -1490,10 +1489,9 @@ static void adm8211_free_rings(struct ieee80211_hw *dev)
- 		if (!priv->rx_buffers[i].skb)
- 			continue;
- 
--		pci_unmap_single(
--			priv->pdev,
--			priv->rx_buffers[i].mapping,
--			RX_PKT_SIZE, PCI_DMA_FROMDEVICE);
-+		dma_unmap_single(&priv->pdev->dev,
-+				 priv->rx_buffers[i].mapping, RX_PKT_SIZE,
-+				 DMA_FROM_DEVICE);
- 
- 		dev_kfree_skb(priv->rx_buffers[i].skb);
- 	}
-@@ -1502,10 +1500,9 @@ static void adm8211_free_rings(struct ieee80211_hw *dev)
- 		if (!priv->tx_buffers[i].skb)
- 			continue;
- 
--		pci_unmap_single(priv->pdev,
-+		dma_unmap_single(&priv->pdev->dev,
- 				 priv->tx_buffers[i].mapping,
--				 priv->tx_buffers[i].skb->len,
--				 PCI_DMA_TODEVICE);
-+				 priv->tx_buffers[i].skb->len, DMA_TO_DEVICE);
- 
- 		dev_kfree_skb(priv->tx_buffers[i].skb);
- 	}
-@@ -1632,9 +1629,9 @@ static int adm8211_tx_raw(struct ieee80211_hw *dev, struct sk_buff *skb,
- 	unsigned int entry;
- 	u32 flag;
- 
--	mapping = pci_map_single(priv->pdev, skb->data, skb->len,
--				 PCI_DMA_TODEVICE);
--	if (pci_dma_mapping_error(priv->pdev, mapping))
-+	mapping = dma_map_single(&priv->pdev->dev, skb->data, skb->len,
-+				 DMA_TO_DEVICE);
-+	if (dma_mapping_error(&priv->pdev->dev, mapping))
- 		return -ENOMEM;
- 
- 	spin_lock_irqsave(&priv->lock, flags);
-@@ -1745,8 +1742,8 @@ static int adm8211_alloc_rings(struct ieee80211_hw *dev)
- 	/* Allocate TX/RX descriptors */
- 	ring_size = sizeof(struct adm8211_desc) * priv->rx_ring_size +
- 		    sizeof(struct adm8211_desc) * priv->tx_ring_size;
--	priv->rx_ring = pci_alloc_consistent(priv->pdev, ring_size,
--					     &priv->rx_ring_dma);
-+	priv->rx_ring = dma_alloc_coherent(&priv->pdev->dev, ring_size,
-+					   &priv->rx_ring_dma, GFP_KERNEL);
- 
- 	if (!priv->rx_ring) {
- 		kfree(priv->rx_buffers);
-@@ -1818,8 +1815,8 @@ static int adm8211_probe(struct pci_dev *pdev,
- 		return err; /* someone else grabbed it? don't disable it */
- 	}
- 
--	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) ||
--	    pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32))) {
-+	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32)) ||
-+	    dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32))) {
- 		printk(KERN_ERR "%s (adm8211): No suitable DMA available\n",
- 		       pci_name(pdev));
- 		goto err_free_reg;
-@@ -1929,10 +1926,10 @@ static int adm8211_probe(struct pci_dev *pdev,
- 	kfree(priv->eeprom);
- 
-  err_free_desc:
--	pci_free_consistent(pdev,
--			    sizeof(struct adm8211_desc) * priv->rx_ring_size +
--			    sizeof(struct adm8211_desc) * priv->tx_ring_size,
--			    priv->rx_ring, priv->rx_ring_dma);
-+	dma_free_coherent(&pdev->dev,
-+			  sizeof(struct adm8211_desc) * priv->rx_ring_size +
-+			  sizeof(struct adm8211_desc) * priv->tx_ring_size,
-+			  priv->rx_ring, priv->rx_ring_dma);
- 	kfree(priv->rx_buffers);
- 
-  err_iounmap:
-@@ -1962,10 +1959,10 @@ static void adm8211_remove(struct pci_dev *pdev)
- 
- 	priv = dev->priv;
- 
--	pci_free_consistent(pdev,
--			    sizeof(struct adm8211_desc) * priv->rx_ring_size +
--			    sizeof(struct adm8211_desc) * priv->tx_ring_size,
--			    priv->rx_ring, priv->rx_ring_dma);
-+	dma_free_coherent(&pdev->dev,
-+			  sizeof(struct adm8211_desc) * priv->rx_ring_size +
-+			  sizeof(struct adm8211_desc) * priv->tx_ring_size,
-+			  priv->rx_ring, priv->rx_ring_dma);
- 
- 	kfree(priv->rx_buffers);
- 	kfree(priv->eeprom);
--- 
-2.25.1
+I thank Antoine Tenart for suggesting tests for this issue and for 
+narrowing down which commits to check.
 
+Thanks,
+Ryan
