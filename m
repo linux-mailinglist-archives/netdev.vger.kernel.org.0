@@ -2,182 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0394923D81A
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 10:43:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 630CD23D856
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 11:09:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728669AbgHFIne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 04:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727768AbgHFInc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 04:43:32 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A450C061574
-        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 01:43:32 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id r2so38091408wrs.8
-        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 01:43:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=urzeHCcm6K9XhQ4DTjdXcMx1gCVB7hAPwo7rpbCj1hk=;
-        b=opxlIC9v+wiIQhTSQcaMlTQDE58v57GGFz5A9bGSDE2PHbr09FH8+H62WZnlT0VDx4
-         E5fbsLO472fTJ7Es/Br8A1yyfwmn6OD+69yPkwZtQGbtYEOurK1B+rk5nfqsNZm3lFsU
-         vI+/PUEK2idY7rmFk5yB0TCV/3LjYMamJknRk4A6RLGbLnjjMKF96TJYgYzvcp+OnK9g
-         Q0jYmTzSiUUyWfTTd5FshgaA89QSggb3Dhehe1FOYZeczmnEdlncWzUnubHMFdkx7Fg0
-         /QqJRei+Q1ymQ/iXGcQUskLtrboDtA16ar+0Z/nVI8l5ludqLLfCYbNMUP1ODzltjb5l
-         K47w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=urzeHCcm6K9XhQ4DTjdXcMx1gCVB7hAPwo7rpbCj1hk=;
-        b=WJM3Iu5yowPG0gjEmqOk+Tz9QQwa8IwKz+Ha92aqWmgstrZP5iacaBU2zFpnDs2HD9
-         aGKTPY8c7aReUuNOEoH2fyqHP7/R7aOU5Pjzq7C7nS6bQGz0Vuzuk66nnBems/eDWk7J
-         d6h9E907yvA62EKorh2zD51dRbCsu4esyZKZW9pyWrSUHpjU6vTgsAbCIx1IfHBT/g+2
-         utesXfkk9OrgzVVGEor4cl4waCl98BCtzi+/U9Ip2vgpya9XE58S8cKt3lFVk42Ojsff
-         PHSzKMKJ62pGWkrqvAMGPaTMFvkSMQSQH/dKaVvofaFxsHM1StnsULYqzPhJThv143IX
-         40RQ==
-X-Gm-Message-State: AOAM5336IR271vXmrRyr8Yp+oSbx7/NjgBjnSDnDEFHiN2/Cp5wpP82F
-        the2Pw85YOzRNTIIW5IpXqegO610NATETPanCKA=
-X-Google-Smtp-Source: ABdhPJy+7NNjOh33qMpG+sJTalrTxVeTAX8ySPJHWaNIj1LwpcaBtrJAHB02ZesjX107wd6HK3Sck0DHwv6a40Ulzao=
-X-Received: by 2002:adf:df89:: with SMTP id z9mr6373067wrl.395.1596703410648;
- Thu, 06 Aug 2020 01:43:30 -0700 (PDT)
+        id S1728981AbgHFJJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 05:09:05 -0400
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:60683 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728489AbgHFJJF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 05:09:05 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R311e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e07425;MF=wenyang@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0U4ud9kI_1596704940;
+Received: from IT-C02W23QPG8WN.local(mailfrom:wenyang@linux.alibaba.com fp:SMTPD_---0U4ud9kI_1596704940)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 06 Aug 2020 17:09:01 +0800
+Subject: Re: [PATCH] net: core: explicitly call linkwatch_fire_event to speed
+ up the startup of network services
+To:     David Miller <davem@davemloft.net>
+Cc:     kuba@kernel.org, xlpang@linux.alibaba.com,
+        caspar@linux.alibaba.com, andrew@lunn.ch, edumazet@google.com,
+        jiri@mellanox.com, leon@kernel.org, jwi@linux.ibm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200801085845.20153-1-wenyang@linux.alibaba.com>
+ <20200804.155831.644663742975051162.davem@davemloft.net>
+From:   Wen Yang <wenyang@linux.alibaba.com>
+Message-ID: <41107812-01ba-169e-2f18-69cecec94d8d@linux.alibaba.com>
+Date:   Thu, 6 Aug 2020 17:09:00 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.1.0
 MIME-Version: 1.0
-References: <cover.1596468610.git.lucien.xin@gmail.com> <7ba2ca17347249b980731e7a76ba3e24a9e37720.1596468610.git.lucien.xin@gmail.com>
- <CAPA1RqCz=h-RBu-md1rJ5WLWsr9LLqO8bK9D=q6_vzYMz7564A@mail.gmail.com>
-In-Reply-To: <CAPA1RqCz=h-RBu-md1rJ5WLWsr9LLqO8bK9D=q6_vzYMz7564A@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 6 Aug 2020 16:55:15 +0800
-Message-ID: <CADvbK_dSnrBkw_hJV8LVCEs9D-WB+h2QC3JghLCxVwV5PW9YYA@mail.gmail.com>
-Subject: Re: [PATCH net 1/2] ipv6: add ipv6_dev_find()
-To:     Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com>,
-        David Ahern <dsahern@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
-        Jon Maloy <jon.maloy@ericsson.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        tipc-discussion@lists.sourceforge.net,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200804.155831.644663742975051162.davem@davemloft.net>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 6, 2020 at 10:50 AM Hideaki Yoshifuji
-<hideaki.yoshifuji@miraclelinux.com> wrote:
->
-> Hi,
->
-> 2020=E5=B9=B48=E6=9C=884=E6=97=A5(=E7=81=AB) 0:35 Xin Long <lucien.xin@gm=
-ail.com>:
-> >
-> > This is to add an ip_dev_find like function for ipv6, used to find
-> > the dev by saddr.
-> >
-> > It will be used by TIPC protocol. So also export it.
-> >
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > ---
-> >  include/net/addrconf.h |  2 ++
-> >  net/ipv6/addrconf.c    | 39 +++++++++++++++++++++++++++++++++++++++
-> >  2 files changed, 41 insertions(+)
-> >
-> > diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-> > index 8418b7d..ba3f6c15 100644
-> > --- a/include/net/addrconf.h
-> > +++ b/include/net/addrconf.h
-> > @@ -97,6 +97,8 @@ bool ipv6_chk_custom_prefix(const struct in6_addr *ad=
-dr,
-> >
-> >  int ipv6_chk_prefix(const struct in6_addr *addr, struct net_device *de=
-v);
-> >
-> > +struct net_device *ipv6_dev_find(struct net *net, const struct in6_add=
-r *addr);
-> > +
->
-> How do we handle link-local addresses?
-This is what "if (!result)" branch meant to do:
 
-+       if (!result) {
-+               struct rt6_info *rt;
+
+ÔÚ 2020/8/5 ÉÏÎç6:58, David Miller Ð´µÀ:
+> From: Wen Yang <wenyang@linux.alibaba.com>
+> Date: Sat,  1 Aug 2020 16:58:45 +0800
+> 
+>> diff --git a/net/core/link_watch.c b/net/core/link_watch.c
+>> index 75431ca..6b9d44b 100644
+>> --- a/net/core/link_watch.c
+>> +++ b/net/core/link_watch.c
+>> @@ -98,6 +98,9 @@ static bool linkwatch_urgent_event(struct net_device *dev)
+>>   	if (netif_is_lag_port(dev) || netif_is_lag_master(dev))
+>>   		return true;
+>>   
+>> +	if ((dev->flags & IFF_UP) && dev->operstate == IF_OPER_DOWN)
+>> +		return true;
+>> +
+>>   	return netif_carrier_ok(dev) &&	qdisc_tx_changing(dev);
+>>   }
+>>   
+> 
+> You're bypassing explicitly the logic here:
+> 
+> 	/*
+> 	 * Limit the number of linkwatch events to one
+> 	 * per second so that a runaway driver does not
+> 	 * cause a storm of messages on the netlink
+> 	 * socket.  This limit does not apply to up events
+> 	 * while the device qdisc is down.
+> 	 */
+> 	if (!urgent_only)
+> 		linkwatch_nextevent = jiffies + HZ;
+> 	/* Limit wrap-around effect on delay. */
+> 	else if (time_after(linkwatch_nextevent, jiffies + HZ))
+> 		linkwatch_nextevent = jiffies;
+> 
+> Something about this isn't right.  We need to analyze what you are seeing,
+> what device you are using, and what systemd is doing to figure out what
+> the right place for the fix.
+> 
+> Thank you.
+> 
+
+Thank you very much for your comments.
+We are using virtio_net and the environment is a microvm similar to 
+firecracker.
+
+Let's briefly explain.
+net_device->operstate is assigned through linkwatch_event, and the call 
+stack is as follows:
+process_one_work
+-> linkwatch_event
+  -> __linkwatch_run_queue
+   -> linkwatch_do_dev
+    -> rfc2863_policy
+     -> default_operstate
+
+During the machine startup process, net_device->operstate has the 
+following two-step state changes:
+
+STEP A: virtnet_probe detects the network card and triggers the 
+execution of linkwatch_fire_event.
+Since linkwatch_nextevent is initialized to 0, linkwatch_work will run.
+And since net_device->state is 6 (__LINK_STATE_PRESENT | 
+__LINK_STATE_NOCARRIER), net_device->operstate will be changed from 
+IF_OPER_UNKNOWN to IF_OPER_DOWN:
+eth0 operstate:0 (IF_OPER_UNKNOWN) -> operstate:2 (IF_OPER_DOWN)
+
+virtnet_probe then executes netif_carrier_on to update 
+net_device->state, it will be changed from ¡®__LINK_STATE_PRESENT | 
+__LINK_STATE_NOCARRIER¡¯ to __LINK_STATE_PRESENT:
+eth0 state: 6 (__LINK_STATE_PRESENT | __LINK_STATE_NOCARRIER) -> 2 
+(__LINK_STATE_PRESENT)
+
+STEP B: One second later (because linkwatch_nextevent = jiffies + HZ), 
+linkwatch_work is executed again.
+At this time, since net_device->state is __LINK_STATE_PRESENT, so the 
+net_device->operstate will be changed from IF_OPER_DOWN to IF_OPER_UP:
+eth0 operstate:2 (IF_OPER_DOWN) -> operstate:6 (IF_OPER_UP)
+
+
+The above state change can be completed within 2 seconds.
+Generally, the machine will load the initramfs first, and do some 
+initialization in the initramfs, which takes some time; then switch_root 
+to the system disk and continue the initialization, which will also take 
+some time, and finally start the systemd-networkd service, bringing 
+link, etc.,
+In this way, the linkwatch_work work queue has enough time to run twice, 
+and the state of net_device->operstate is already IF_OPER_UP,
+So bringing link up quickly returns the following information:
+Aug 06 16:35:55.966121 iZuf6h1kfgutxc3el68z2lZ systemd-networkd[580]: 
+eth0: bringing link up
+...
+Aug 06 16:35:55.990461 iZuf6h1kfgutxc3el68z2lZ systemd-networkd[580]: 
+eth0: flags change: +UP +LOWER_UP +RUNNING
+
+But we are now using MicroVM, which requires extreme speed to start, 
+bypassing the initramfs and directly booting the trimmed system on the disk.
+systemd-networkd starts in less than 1 second after booting. the STEP B 
+has not been run yet, so it will wait for several hundred milliseconds 
+here, as follows:
+Jul 20 22:00:47.432552 systemd-networkd[210]: eth0: bringing link up
+...
+Jul 20 22:00:47.446108 systemd-networkd[210]: eth0: flags change: +UP 
++LOWER_UP
+...
+Jul 20 22:00:47.781463 systemd-networkd[210]: eth0: flags change: +RUNNING
+
+
+Note: dhcp pays attention to IFF_RUNNING status, we may refer to:
+https://www.kernel.org/doc/Documentation/networking/operstates.txt
+
+A routing daemon or dhcp client just needs to care for IFF_RUNNING or
+waiting for operstate to go IF_OPER_UP/IF_OPER_UNKNOWN before
+considering the interface / querying a DHCP address.
+
+Finally, the STEP B above only updates the value of operstate based on 
+the known state (operstate/state) on the net_device, without any 
+hardware interaction involved, so it is not very reasonable to wait for 
+1 second there.
+
+By adding:
++	if ((dev->flags & IFF_UP) && dev->operstate == IF_OPER_DOWN)
++		return true;
 +
-+               rt =3D rt6_lookup(net, addr, NULL, 0, NULL, 0);
-+               if (rt) {
-+                       dev =3D rt->dst.dev;
-+                       ip6_rt_put(rt);
-+               }
-+       } else {
-+               dev =3D result->idev->dev;
-+       }
+We hope to improve the linkwatch_urgent_event function a bit.
 
-Thanks.
+Hope to get more of your advice and guidance.
 
->
-> --yoshfuji
->
-> >  struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net,
-> >                                      const struct in6_addr *addr,
-> >                                      struct net_device *dev, int strict=
-);
-> > diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> > index 840bfdb..857d6f9 100644
-> > --- a/net/ipv6/addrconf.c
-> > +++ b/net/ipv6/addrconf.c
-> > @@ -1983,6 +1983,45 @@ int ipv6_chk_prefix(const struct in6_addr *addr,=
- struct net_device *dev)
-> >  }
-> >  EXPORT_SYMBOL(ipv6_chk_prefix);
-> >
-> > +/**
-> > + * ipv6_dev_find - find the first device with a given source address.
-> > + * @net: the net namespace
-> > + * @addr: the source address
-> > + *
-> > + * The caller should be protected by RCU, or RTNL.
-> > + */
-> > +struct net_device *ipv6_dev_find(struct net *net, const struct in6_add=
-r *addr)
-> > +{
-> > +       unsigned int hash =3D inet6_addr_hash(net, addr);
-> > +       struct inet6_ifaddr *ifp, *result =3D NULL;
-> > +       struct net_device *dev =3D NULL;
-> > +
-> > +       rcu_read_lock();
-> > +       hlist_for_each_entry_rcu(ifp, &inet6_addr_lst[hash], addr_lst) =
-{
-> > +               if (net_eq(dev_net(ifp->idev->dev), net) &&
-> > +                   ipv6_addr_equal(&ifp->addr, addr)) {
-> > +                       result =3D ifp;
-> > +                       break;
-> > +               }
-> > +       }
-> > +
-> > +       if (!result) {
-> > +               struct rt6_info *rt;
-> > +
-> > +               rt =3D rt6_lookup(net, addr, NULL, 0, NULL, 0);
-> > +               if (rt) {
-> > +                       dev =3D rt->dst.dev;
-> > +                       ip6_rt_put(rt);
-> > +               }
-> > +       } else {
-> > +               dev =3D result->idev->dev;
-> > +       }
-> > +       rcu_read_unlock();
-> > +
-> > +       return dev;
-> > +}
-> > +EXPORT_SYMBOL(ipv6_dev_find);
-> > +
-> >  struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net, const struct in6=
-_addr *addr,
-> >                                      struct net_device *dev, int strict=
-)
-> >  {
-> > --
-> > 2.1.0
-> >
+Best wishes,
+Wen
