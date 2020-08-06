@@ -2,431 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B30123D8F8
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 11:56:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E6D123D958
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 12:44:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729228AbgHFJ4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 05:56:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35880 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729002AbgHFJ4K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 05:56:10 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F70AC061757
-        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 02:56:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject
-        :Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=eMgMjGnvmJcgbhcZGr6ZdYeUVYnMrS6iGRahWAhDHls=; b=AowEDFek8xFkPPR31IF3Lf7BRo
-        UxuQ2DDrtKRFmajO+8w0o8ZwDtQkOaGVAAugQ70mDJDBWcvA14KYwU/C3sz9STo6d5YF2U8M3rLhC
-        8znNgnJH5ud+dPxeumneY9HWjPdxZwxRXKqV7vHIqliYm2/acnRcPANUFxQGCzhNXSsc=;
-Received: from p54ae996c.dip0.t-ipconnect.de ([84.174.153.108] helo=localhost.localdomain)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_CBC_SHA1:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1k3cd2-0002zt-PD; Thu, 06 Aug 2020 11:56:04 +0200
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Hillf Danton <hdanton@sina.com>
-Subject: [PATCH v2] net: add support for threaded NAPI polling
-Date:   Thu,  6 Aug 2020 11:55:58 +0200
-Message-Id: <20200806095558.82780-1-nbd@nbd.name>
-X-Mailer: git-send-email 2.28.0
+        id S1729324AbgHFKoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 06:44:14 -0400
+Received: from foss.arm.com ([217.140.110.172]:42238 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729392AbgHFKnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Aug 2020 06:43:16 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B01D3113E;
+        Thu,  6 Aug 2020 03:43:15 -0700 (PDT)
+Received: from net-arm-thunderx2-02.shanghai.arm.com (net-arm-thunderx2-02.shanghai.arm.com [10.169.210.119])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 94F403F9AB;
+        Thu,  6 Aug 2020 03:43:12 -0700 (PDT)
+From:   Jianlin Lv <Jianlin.Lv@arm.com>
+To:     bpf@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, yhs@fb.com, Song.Zhu@arm.com,
+        Jianlin.Lv@arm.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH bpf-next v2] bpf: fix compilation warning of selftests
+Date:   Thu,  6 Aug 2020 18:42:24 +0800
+Message-Id: <20200806104224.95306-1-Jianlin.Lv@arm.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200731061600.18344-1-Jianlin.Lv@arm.com>
+References: <20200731061600.18344-1-Jianlin.Lv@arm.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For some drivers (especially 802.11 drivers), doing a lot of work in the NAPI
-poll function does not perform well. Since NAPI poll is bound to the CPU it
-was scheduled from, we can easily end up with a few very busy CPUs spending
-most of their time in softirq/ksoftirqd and some idle ones.
+Clang compiler version: 12.0.0
+The following warning appears during the selftests/bpf compilation:
 
-Introduce threaded NAPI for such drivers based on a workqueue. The API is the
-same except for using netif_threaded_napi_add instead of netif_napi_add.
+prog_tests/send_signal.c:51:3: warning: ignoring return value of ‘write’,
+declared with attribute warn_unused_result [-Wunused-result]
+   51 |   write(pipe_c2p[1], buf, 1);
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~
+prog_tests/send_signal.c:54:3: warning: ignoring return value of ‘read’,
+declared with attribute warn_unused_result [-Wunused-result]
+   54 |   read(pipe_p2c[0], buf, 1);
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~
+......
 
-In my tests with mt76 on MT7621 using threaded NAPI + a thread for tx scheduling
-improves LAN->WLAN bridging throughput by 10-50%. Throughput without threaded
-NAPI is wildly inconsistent, depending on the CPU that runs the tx scheduling
-thread.
+prog_tests/stacktrace_build_id_nmi.c:13:2: warning: ignoring return value
+of ‘fscanf’,declared with attribute warn_unused_result [-Wunused-resul]
+   13 |  fscanf(f, "%llu", &sample_freq);
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-With threaded NAPI, throughput seems stable and consistent (and higher than
-the best results I got without it).
+test_tcpnotify_user.c:133:2: warning:ignoring return value of ‘system’,
+declared with attribute warn_unused_result [-Wunused-result]
+  133 |  system(test_script);
+      |  ^~~~~~~~~~~~~~~~~~~
+test_tcpnotify_user.c:138:2: warning:ignoring return value of ‘system’,
+declared with attribute warn_unused_result [-Wunused-result]
+  138 |  system(test_script);
+      |  ^~~~~~~~~~~~~~~~~~~
+test_tcpnotify_user.c:143:2: warning:ignoring return value of ‘system’,
+declared with attribute warn_unused_result [-Wunused-result]
+  143 |  system(test_script);
+      |  ^~~~~~~~~~~~~~~~~~~
 
-Based on a patch by Hillf Danton
+Add code that fix compilation warning about ignoring return value and
+handles any errors; Check return value of library`s API make the code
+more secure.
 
-Cc: Hillf Danton <hdanton@sina.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
 ---
-Changes since PATCH v1:
-- use WQ_SYSFS to make workqueue configurable from user space
-- cancel work in netif_napi_del
-- add a sysfs file to enable/disable threaded NAPI for a netdev
+v2:
+- replease CHECK_FAIL by CHECK
+- fix test_tcpnotify_user failed issue
+---
+ .../selftests/bpf/prog_tests/send_signal.c     | 18 ++++++++----------
+ .../bpf/prog_tests/stacktrace_build_id_nmi.c   |  4 +++-
+ .../selftests/bpf/test_tcpnotify_user.c        | 13 ++++++++++---
+ 3 files changed, 21 insertions(+), 14 deletions(-)
 
-Changes since RFC v2:
-- fix unused but set variable reported by kbuild test robot
-
-Changes since RFC:
-- disable softirq around threaded poll functions
-- reuse most parts of napi_poll()
-- fix re-schedule condition
-
- include/linux/netdevice.h |  23 ++++++
- net/core/dev.c            | 163 ++++++++++++++++++++++++++------------
- net/core/net-sysfs.c      |  42 ++++++++++
- 3 files changed, 176 insertions(+), 52 deletions(-)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ac2cd3f49aba..3a39211c7598 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -347,6 +347,7 @@ struct napi_struct {
- 	struct list_head	dev_list;
- 	struct hlist_node	napi_hash_node;
- 	unsigned int		napi_id;
-+	struct work_struct	work;
- };
+diff --git a/tools/testing/selftests/bpf/prog_tests/send_signal.c b/tools/testing/selftests/bpf/prog_tests/send_signal.c
+index 504abb7bfb95..7043e6ded0e6 100644
+--- a/tools/testing/selftests/bpf/prog_tests/send_signal.c
++++ b/tools/testing/selftests/bpf/prog_tests/send_signal.c
+@@ -48,21 +48,19 @@ static void test_send_signal_common(struct perf_event_attr *attr,
+ 		close(pipe_p2c[1]); /* close write */
  
- enum {
-@@ -357,6 +358,7 @@ enum {
- 	NAPI_STATE_HASHED,	/* In NAPI hash (busy polling possible) */
- 	NAPI_STATE_NO_BUSY_POLL,/* Do not add in napi_hash, no busy polling */
- 	NAPI_STATE_IN_BUSY_POLL,/* sk_busy_loop() owns this NAPI */
-+	NAPI_STATE_THREADED,	/* Use threaded NAPI */
- };
+ 		/* notify parent signal handler is installed */
+-		write(pipe_c2p[1], buf, 1);
++		CHECK(write(pipe_c2p[1], buf, 1) != 1, "pipe_write", "err %d\n", -errno);
  
- enum {
-@@ -367,6 +369,7 @@ enum {
- 	NAPIF_STATE_HASHED	 = BIT(NAPI_STATE_HASHED),
- 	NAPIF_STATE_NO_BUSY_POLL = BIT(NAPI_STATE_NO_BUSY_POLL),
- 	NAPIF_STATE_IN_BUSY_POLL = BIT(NAPI_STATE_IN_BUSY_POLL),
-+	NAPIF_STATE_THREADED	 = BIT(NAPI_STATE_THREADED),
- };
+ 		/* make sure parent enabled bpf program to send_signal */
+-		read(pipe_p2c[0], buf, 1);
++		CHECK(read(pipe_p2c[0], buf, 1) != 1, "pipe_read", "err %d\n", -errno);
  
- enum gro_result {
-@@ -2315,6 +2318,26 @@ static inline void *netdev_priv(const struct net_device *dev)
- void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
- 		    int (*poll)(struct napi_struct *, int), int weight);
+ 		/* wait a little for signal handler */
+ 		sleep(1);
  
-+/**
-+ *	netif_threaded_napi_add - initialize a NAPI context
-+ *	@dev:  network device
-+ *	@napi: NAPI context
-+ *	@poll: polling function
-+ *	@weight: default weight
-+ *
-+ * This variant of netif_napi_add() should be used from drivers using NAPI
-+ * with CPU intensive poll functions.
-+ * This will schedule polling from a high priority workqueue that
-+ */
-+static inline void netif_threaded_napi_add(struct net_device *dev,
-+					   struct napi_struct *napi,
-+					   int (*poll)(struct napi_struct *, int),
-+					   int weight)
-+{
-+	set_bit(NAPI_STATE_THREADED, &napi->state);
-+	netif_napi_add(dev, napi, poll, weight);
-+}
-+
- /**
-  *	netif_tx_napi_add - initialize a NAPI context
-  *	@dev:  network device
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 19f1abc26fcd..4b0dbea68a09 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -158,6 +158,7 @@ static DEFINE_SPINLOCK(offload_lock);
- struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
- struct list_head ptype_all __read_mostly;	/* Taps */
- static struct list_head offload_base __read_mostly;
-+static struct workqueue_struct *napi_workq __read_mostly;
+-		if (sigusr1_received)
+-			write(pipe_c2p[1], "2", 1);
+-		else
+-			write(pipe_c2p[1], "0", 1);
++		buf[0] = sigusr1_received ? '2' : '0';
++		CHECK(write(pipe_c2p[1], buf, 1) != 1, "pipe_write", "err %d\n", -errno);
  
- static int netif_rx_internal(struct sk_buff *skb);
- static int call_netdevice_notifiers_info(unsigned long val,
-@@ -6286,6 +6287,11 @@ void __napi_schedule(struct napi_struct *n)
- {
- 	unsigned long flags;
+ 		/* wait for parent notification and exit */
+-		read(pipe_p2c[0], buf, 1);
++		CHECK(read(pipe_p2c[0], buf, 1) != 1, "pipe_read", "err %d\n", -errno);
  
-+	if (test_bit(NAPI_STATE_THREADED, &n->state)) {
-+		queue_work(napi_workq, &n->work);
-+		return;
-+	}
-+
- 	local_irq_save(flags);
- 	____napi_schedule(this_cpu_ptr(&softnet_data), n);
- 	local_irq_restore(flags);
-@@ -6333,6 +6339,11 @@ EXPORT_SYMBOL(napi_schedule_prep);
-  */
- void __napi_schedule_irqoff(struct napi_struct *n)
- {
-+	if (test_bit(NAPI_STATE_THREADED, &n->state)) {
-+		queue_work(napi_workq, &n->work);
-+		return;
-+	}
-+
- 	____napi_schedule(this_cpu_ptr(&softnet_data), n);
- }
- EXPORT_SYMBOL(__napi_schedule_irqoff);
-@@ -6601,6 +6612,95 @@ static void init_gro_hash(struct napi_struct *napi)
- 	napi->gro_bitmask = 0;
- }
- 
-+static int __napi_poll(struct napi_struct *n, bool *repoll)
-+{
-+	int work, weight;
-+
-+	weight = n->weight;
-+
-+	/* This NAPI_STATE_SCHED test is for avoiding a race
-+	 * with netpoll's poll_napi().  Only the entity which
-+	 * obtains the lock and sees NAPI_STATE_SCHED set will
-+	 * actually make the ->poll() call.  Therefore we avoid
-+	 * accidentally calling ->poll() when NAPI is not scheduled.
-+	 */
-+	work = 0;
-+	if (test_bit(NAPI_STATE_SCHED, &n->state)) {
-+		work = n->poll(n, weight);
-+		trace_napi_poll(n, work, weight);
-+	}
-+
-+	if (unlikely(work > weight))
-+		pr_err_once("NAPI poll function %pS returned %d, exceeding its budget of %d.\n",
-+			    n->poll, work, weight);
-+
-+	if (likely(work < weight))
-+		return work;
-+
-+	/* Drivers must not modify the NAPI state if they
-+	 * consume the entire weight.  In such cases this code
-+	 * still "owns" the NAPI instance and therefore can
-+	 * move the instance around on the list at-will.
-+	 */
-+	if (unlikely(napi_disable_pending(n))) {
-+		napi_complete(n);
-+		return work;
-+	}
-+
-+	if (n->gro_bitmask) {
-+		/* flush too old packets
-+		 * If HZ < 1000, flush all packets.
-+		 */
-+		napi_gro_flush(n, HZ >= 1000);
-+	}
-+
-+	gro_normal_list(n);
-+
-+	/* Some drivers may have called napi_schedule
-+	 * prior to exhausting their budget.
-+	 */
-+	if (unlikely(!list_empty(&n->poll_list))) {
-+		pr_warn_once("%s: Budget exhausted after napi rescheduled\n",
-+			     n->dev ? n->dev->name : "backlog");
-+		return work;
-+	}
-+
-+	*repoll = true;
-+
-+	return work;
-+}
-+
-+static void napi_workfn(struct work_struct *work)
-+{
-+	struct napi_struct *n = container_of(work, struct napi_struct, work);
-+	void *have;
-+
-+	for (;;) {
-+		bool repoll = false;
-+
-+		local_bh_disable();
-+
-+		have = netpoll_poll_lock(n);
-+		__napi_poll(n, &repoll);
-+		netpoll_poll_unlock(have);
-+
-+		local_bh_enable();
-+
-+		if (!repoll)
-+			return;
-+
-+		if (!need_resched())
-+			continue;
-+
-+		/*
-+		 * have to pay for the latency of task switch even if
-+		 * napi is scheduled
-+		 */
-+		queue_work(napi_workq, work);
-+		return;
-+	}
-+}
-+
- void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
- 		    int (*poll)(struct napi_struct *, int), int weight)
- {
-@@ -6621,6 +6721,7 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
- #ifdef CONFIG_NETPOLL
- 	napi->poll_owner = -1;
- #endif
-+	INIT_WORK(&napi->work, napi_workfn);
- 	set_bit(NAPI_STATE_SCHED, &napi->state);
- 	napi_hash_add(napi);
- }
-@@ -6659,6 +6760,7 @@ static void flush_gro_hash(struct napi_struct *napi)
- void netif_napi_del(struct napi_struct *napi)
- {
- 	might_sleep();
-+	cancel_work_sync(&napi->work);
- 	if (napi_hash_del(napi))
- 		synchronize_net();
- 	list_del_init(&napi->dev_list);
-@@ -6671,65 +6773,18 @@ EXPORT_SYMBOL(netif_napi_del);
- 
- static int napi_poll(struct napi_struct *n, struct list_head *repoll)
- {
-+	bool do_repoll = false;
- 	void *have;
--	int work, weight;
-+	int work;
- 
- 	list_del_init(&n->poll_list);
- 
- 	have = netpoll_poll_lock(n);
- 
--	weight = n->weight;
--
--	/* This NAPI_STATE_SCHED test is for avoiding a race
--	 * with netpoll's poll_napi().  Only the entity which
--	 * obtains the lock and sees NAPI_STATE_SCHED set will
--	 * actually make the ->poll() call.  Therefore we avoid
--	 * accidentally calling ->poll() when NAPI is not scheduled.
--	 */
--	work = 0;
--	if (test_bit(NAPI_STATE_SCHED, &n->state)) {
--		work = n->poll(n, weight);
--		trace_napi_poll(n, work, weight);
--	}
--
--	if (unlikely(work > weight))
--		pr_err_once("NAPI poll function %pS returned %d, exceeding its budget of %d.\n",
--			    n->poll, work, weight);
--
--	if (likely(work < weight))
--		goto out_unlock;
--
--	/* Drivers must not modify the NAPI state if they
--	 * consume the entire weight.  In such cases this code
--	 * still "owns" the NAPI instance and therefore can
--	 * move the instance around on the list at-will.
--	 */
--	if (unlikely(napi_disable_pending(n))) {
--		napi_complete(n);
--		goto out_unlock;
--	}
--
--	if (n->gro_bitmask) {
--		/* flush too old packets
--		 * If HZ < 1000, flush all packets.
--		 */
--		napi_gro_flush(n, HZ >= 1000);
--	}
--
--	gro_normal_list(n);
--
--	/* Some drivers may have called napi_schedule
--	 * prior to exhausting their budget.
--	 */
--	if (unlikely(!list_empty(&n->poll_list))) {
--		pr_warn_once("%s: Budget exhausted after napi rescheduled\n",
--			     n->dev ? n->dev->name : "backlog");
--		goto out_unlock;
--	}
--
--	list_add_tail(&n->poll_list, repoll);
-+	work = __napi_poll(n, &do_repoll);
-+	if (do_repoll)
-+		list_add_tail(&n->poll_list, repoll);
- 
--out_unlock:
- 	netpoll_poll_unlock(have);
- 
- 	return work;
-@@ -10676,6 +10731,10 @@ static int __init net_dev_init(void)
- 		sd->backlog.weight = weight_p;
+ 		close(pipe_c2p[1]);
+ 		close(pipe_p2c[0]);
+@@ -99,7 +97,7 @@ static void test_send_signal_common(struct perf_event_attr *attr,
  	}
  
-+	napi_workq = alloc_workqueue("napi_workq", WQ_UNBOUND | WQ_HIGHPRI,
-+				     WQ_UNBOUND_MAX_ACTIVE | WQ_SYSFS);
-+	BUG_ON(!napi_workq);
-+
- 	dev_boot_phase = 0;
+ 	/* wait until child signal handler installed */
+-	read(pipe_c2p[0], buf, 1);
++	CHECK(read(pipe_c2p[0], buf, 1) != 1, "pipe_read", "err %d\n", -errno);
  
- 	/* The loopback device is special if any other network devices
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index e353b822bb15..99233e86f4c5 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -471,6 +471,47 @@ static ssize_t proto_down_store(struct device *dev,
- }
- NETDEVICE_SHOW_RW(proto_down, fmt_dec);
+ 	/* trigger the bpf send_signal */
+ 	skel->bss->pid = pid;
+@@ -107,7 +105,7 @@ static void test_send_signal_common(struct perf_event_attr *attr,
+ 	skel->bss->signal_thread = signal_thread;
  
-+static int change_napi_threaded(struct net_device *dev, unsigned long val)
-+{
-+	struct napi_struct *napi;
-+
-+	if (list_empty(&dev->napi_list))
-+		return -EOPNOTSUPP;
-+
-+	list_for_each_entry(napi, &dev->napi_list, dev_list) {
-+		if (val)
-+			set_bit(NAPI_STATE_THREADED, &napi->state);
-+		else
-+			clear_bit(NAPI_STATE_THREADED, &napi->state);
-+	}
-+
-+	return 0;
-+}
-+
-+static ssize_t napi_threaded_store(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf, size_t len)
-+{
-+	return netdev_store(dev, attr, buf, len, change_napi_threaded);
-+}
-+
-+static ssize_t napi_threaded_show(struct device *dev,
-+				  struct device_attribute *attr,
-+				  char *buf)
-+{
-+	struct net_device *netdev = to_net_dev(dev);
-+	struct napi_struct *napi;
-+	bool enabled = false;
-+
-+	list_for_each_entry(napi, &netdev->napi_list, dev_list) {
-+		if (test_bit(NAPI_STATE_THREADED, &napi->state))
-+			enabled = true;
-+	}
-+
-+	return sprintf(buf, fmt_dec, enabled);
-+}
-+DEVICE_ATTR_RW(napi_threaded);
-+
- static ssize_t phys_port_id_show(struct device *dev,
- 				 struct device_attribute *attr, char *buf)
+ 	/* notify child that bpf program can send_signal now */
+-	write(pipe_p2c[1], buf, 1);
++	CHECK(write(pipe_p2c[1], buf, 1) != 1, "pipe_write", "err %d\n", -errno);
+ 
+ 	/* wait for result */
+ 	err = read(pipe_c2p[0], buf, 1);
+@@ -121,7 +119,7 @@ static void test_send_signal_common(struct perf_event_attr *attr,
+ 	CHECK(buf[0] != '2', test_name, "incorrect result\n");
+ 
+ 	/* notify child safe to exit */
+-	write(pipe_p2c[1], buf, 1);
++	CHECK(write(pipe_p2c[1], buf, 1) != 1, "pipe_write", "err %d\n", -errno);
+ 
+ disable_pmu:
+ 	close(pmu_fd);
+diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
+index f002e3090d92..11a769e18f5d 100644
+--- a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
++++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
+@@ -6,11 +6,13 @@ static __u64 read_perf_max_sample_freq(void)
  {
-@@ -563,6 +604,7 @@ static struct attribute *net_class_attrs[] __ro_after_init = {
- 	&dev_attr_tx_queue_len.attr,
- 	&dev_attr_gro_flush_timeout.attr,
- 	&dev_attr_napi_defer_hard_irqs.attr,
-+	&dev_attr_napi_threaded.attr,
- 	&dev_attr_phys_port_id.attr,
- 	&dev_attr_phys_port_name.attr,
- 	&dev_attr_phys_switch_id.attr,
+ 	__u64 sample_freq = 5000; /* fallback to 5000 on error */
+ 	FILE *f;
++	__u32 duration = 0;
+ 
+ 	f = fopen("/proc/sys/kernel/perf_event_max_sample_rate", "r");
+ 	if (f == NULL)
+ 		return sample_freq;
+-	fscanf(f, "%llu", &sample_freq);
++	CHECK(fscanf(f, "%llu", &sample_freq) != 1, "Get max sample rate",
++		  "return default value: 5000,err %d\n", -errno);
+ 	fclose(f);
+ 	return sample_freq;
+ }
+diff --git a/tools/testing/selftests/bpf/test_tcpnotify_user.c b/tools/testing/selftests/bpf/test_tcpnotify_user.c
+index 8549b31716ab..73da7fe8c152 100644
+--- a/tools/testing/selftests/bpf/test_tcpnotify_user.c
++++ b/tools/testing/selftests/bpf/test_tcpnotify_user.c
+@@ -124,17 +124,24 @@ int main(int argc, char **argv)
+ 	sprintf(test_script,
+ 		"iptables -A INPUT -p tcp --dport %d -j DROP",
+ 		TESTPORT);
+-	system(test_script);
++	if (system(test_script)) {
++		printf("FAILED: execute command: %s, err %d\n", test_script, -errno);
++		goto err;
++	}
+ 
+ 	sprintf(test_script,
+ 		"nc 127.0.0.1 %d < /etc/passwd > /dev/null 2>&1 ",
+ 		TESTPORT);
+-	system(test_script);
++	if (system(test_script))
++		printf("execute command: %s, err %d\n", test_script, -errno);
+ 
+ 	sprintf(test_script,
+ 		"iptables -D INPUT -p tcp --dport %d -j DROP",
+ 		TESTPORT);
+-	system(test_script);
++	if (system(test_script)) {
++		printf("FAILED: execute command: %s, err %d\n", test_script, -errno);
++		goto err;
++	}
+ 
+ 	rv = bpf_map_lookup_elem(bpf_map__fd(global_map), &key, &g);
+ 	if (rv != 0) {
 -- 
-2.28.0
+2.17.1
 
