@@ -2,99 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AEFE23DF1B
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:38:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EA3923DF79
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:48:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730660AbgHFRg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 13:36:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50344 "EHLO
+        id S1730438AbgHFRsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 13:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729802AbgHFRfI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 13:35:08 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7F9C008699
-        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 08:18:04 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id r4so41399871wrx.9
-        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 08:18:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=jkRzw9X+EX3L+3zQqU4QCdPigGYnW5BHQWzwy20q+e8=;
-        b=lphGR91Dylgt3QFHlqAdaFIzGY6qh//uTdh3Gt8Q4UNgsvc4vDubJq09lowrjCsZ0m
-         xO2ionmQp76zgqqgYilsGk6vpH4Y4K3NEkjQx2n08cRupiMTN3GqmLPynPhogb+tK46T
-         jmiRmWn0GxL5MgMeHlyifd9xXkxLl+9VpEji7YVXY0pGK61DzdVZk6MREGput6660kEv
-         xqgvecPaDHPD+W1sB+qdUWHtJMNvsMVwbeUjEgpzFCqVc4A3bq16lUvyrqOA9VdschWB
-         HsklC/TdtZbiZbmcw6e84F37nvZ2D0Ivy250/fRjYhc5rc+ZtevOBHAmUWa/iHv7k5ZU
-         Taig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=jkRzw9X+EX3L+3zQqU4QCdPigGYnW5BHQWzwy20q+e8=;
-        b=N0uXeJGEXUawsp09a6rCGEGE22peNlOx3RtSDubYKlPzUbTnSouxPUfX0ueiwJX75Y
-         leJonRb1gZrqc8Uom3CVemGUVlHUawiEypyZt41yJ1zOx75O6CSIkYqIf/m2oINQRnfU
-         hAdzUy3Gz9iSklbls/fzK7zB8Mzr5FjzT4nv1dS3xsSebrhBz2FAGECZnKIl5QAAaQqS
-         QXNkcVD9ClU2oM6PqUYMMKcHXgC9qqjrkE5D4ytM5W3OJOcIdRPWG9QrTszEBBhk/NQX
-         GppFQl39JaGX6oRbc7kZOPC++Go49ltp7zdvKnMOFUG7SklT5H6G/Iz1iE7Oxs8SHZmO
-         XF1w==
-X-Gm-Message-State: AOAM530DliVIRqmL/wF70i2btFv+sY/UMeGoMBR4Ql3D4LGDxuMf/He4
-        hJxvcrw6sd1aVvxpRlXYI8Z1a66e9VSoyU5tsCg=
-X-Google-Smtp-Source: ABdhPJyD2z7f4Yny3OFxURxZZtM4wNQMzzb9nZPaM0QjOw5421qzw6E7SjrXdEo/61+ecBvMmPdkw/kMRDWoOIWBSUQ=
-X-Received: by 2002:adf:9487:: with SMTP id 7mr7551172wrr.133.1596727083242;
- Thu, 06 Aug 2020 08:18:03 -0700 (PDT)
+        with ESMTP id S1728960AbgHFQfr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:35:47 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4ABC00216B
+        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 09:10:54 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1k3iTS-00046v-3l; Thu, 06 Aug 2020 18:10:34 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1k3iTL-0002vh-8h; Thu, 06 Aug 2020 18:10:27 +0200
+Date:   Thu, 6 Aug 2020 18:10:27 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     robin@protonic.nl, linux@rempel-privat.de, kernel@pengutronix.de,
+        socketcan@hartkopp.net, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org
+Subject: Re: [PATCH net 0/4] support multipacket broadcast message
+Message-ID: <20200806161027.py5ged3a23xpmxgi@pengutronix.de>
+References: <1596599425-5534-1-git-send-email-zhangchangzhong@huawei.com>
 MIME-Version: 1.0
-Received: by 2002:adf:94c6:0:0:0:0:0 with HTTP; Thu, 6 Aug 2020 08:18:02 -0700 (PDT)
-Reply-To: mrs.sophia202@list.ru
-From:   "Mrs. Sophia Robin" <mrs.aishamuammar.gaddafi@gmail.com>
-Date:   Thu, 6 Aug 2020 08:18:02 -0700
-Message-ID: <CAKDKtgz-UU_Bbz0mkLq5nA3BU6FmBBtU1sJpWnUg7ccNr7sDRA@mail.gmail.com>
-Subject: Hello My Dearest
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="q2ffmggcds5tcngt"
+Content-Disposition: inline
+In-Reply-To: <1596599425-5534-1-git-send-email-zhangchangzhong@huawei.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 17:56:06 up 265 days,  7:14, 243 users,  load average: 0.06, 0.07,
+ 0.01
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello My Dearest
 
-Please I appeal to you to exercise a little patience and read through
-my mail carefully, I am contacting you personally for investment
-assistance and a long term business relationship in your Country.
+--q2ffmggcds5tcngt
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I am Mrs. Sophia Robin a citizen of the united state of America; I
-work in HSBC Bank in Milan Italy as a Telex Manager charge of wire
-transfer and online banking department.
+Hello,
 
-I am contacting you for an important and  urgent business transaction,
-I  want the bank to transfer the money left by Dr. Cheng Chao,  A
-Chinese  Politicians who  died, March 17th 2020 without any trace of
-his family member,  he used our bank to launder money overseas through
-the help of their Political advisers. And most of the funds which they
-transferred out of the shores of China were gold and oil money that
-was supposed to have been used to develop the continent.
+Thank you for your patches! Currently I'm busy, but I'll take a look at it =
+as
+soon possible.
 
-Can you invest this money and also help the poor? The amount value at
-($15.5million Dollars), left in his account still unclaimed, if you
-know that you are capable to invest this fund into any  profitable
-business in your country kindly send me your details information as
-listed below to enable me draft you an application form of claim along
-with the deposit certificate which you are going to fill with your
-bank account detail necessary and contact the HSBC Bank in Italy  for
-immediate transfer of the Amounted sum into your bank account direct.
+btw. can you tell me about more of your use case/work. I would like to
+have some feedback about this stack. You can write a personal message,
+if it is not for public.
 
-Percentage share will be 60, for me/ 40, for you.
+On Wed, Aug 05, 2020 at 11:50:21AM +0800, Zhang Changzhong wrote:
+> Zhang Changzhong (4):
+>   can: j1939: fix support for multipacket broadcast message
+>   can: j1939: cancel rxtimer on multipacket broadcast session complete
+>   can: j1939: abort multipacket broadcast session when timeout occurs
+>   can: j1939: add rxtimer for multipacket broadcast session
+>=20
+>  net/can/j1939/transport.c | 48 +++++++++++++++++++++++++++++++++++------=
+------
+>  1 file changed, 36 insertions(+), 12 deletions(-)
 
-(1) Your full name..................................................
-(2) Your address....................................................
-(3) Your Nationality.................................................
-(4) Your Age / Sex.....................................................
-(5) Your Occupation............................................
-(6) Your marital status......................................
-(7) Your direct telephone number..................
-(8) your ID Card.......................................
+Regards,
+Oleksij
 
-Thanks with my best regards.
-Mrs. Sophia Robin
-Telex / Online Banking Manager
-Milan Italy  (H.S.B.C)
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--q2ffmggcds5tcngt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl8sK24ACgkQ4omh9DUa
+UbNKXw//YcVYtmARpdPi2H/KsMzVUNKAtJAJv/VLjfu4gMt7LKyUfwSAoTNQMgBF
+rY5RMh3hoRlSY0lZnuGf+L1IRdfioOOzN1ljiUHW49t2oJdbE3KvOQjAHRd7HkdD
+8THLbi2QZtP6bl6VtJP4kX6dUV1Y9mkQNlAClA24WbntnHJ3UmTE9200ZyAFf1zQ
+bmo7j/TtQCcYZla4rewSh8/nwEySFkMV0+9afm2ihD9M6Vqly9nCGx8LKbbZJXHt
+yAW4N82ZZcLmEz7tDf/kUemY5TVogSCZc8XxzZb8iaO+vlhdkpZpa/+WzHR78t4A
+2wHHB8jLq5M8te3DzEZ0e+lnGE7nLOeTB8Xk0TAifArMkj+8JLTeFuopuvYaNGQh
+L5BSG8iml24+WndixVtA7R4Fax4lvnUCgBTni3SJiwz55dBzKTOB/ZmJcyshMPKG
+91bP/sUZ9nGROlWVw+Ehhi8rJSZAKhG1qdBkfxmxQCVxK4TS7AsuHMUOwHp3jVMb
+1dMlDZ30AjTf9ITcFsLW0stGAUjJQJ/TR2vqCdn/ubTPzV7yAOFxCPAyz0dIx79w
+0bPnOmapDKSYViCGxyJ0oSmDqpm1GjWtKnw0gueQLprQ1ObMJyN4R5Io0kdJ0dGS
+4WBfpecsE9CN0fuAwBAt/nKCOUPWSPN6r3+lbQWYOa8PQonF6Cg=
+=IVdX
+-----END PGP SIGNATURE-----
+
+--q2ffmggcds5tcngt--
