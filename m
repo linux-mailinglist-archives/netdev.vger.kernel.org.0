@@ -2,328 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1518423E30C
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 22:19:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0524023E30F
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 22:20:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726750AbgHFUTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 16:19:51 -0400
-Received: from smtp11.smtpout.orange.fr ([80.12.242.133]:21249 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726769AbgHFUTt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 16:19:49 -0400
-Received: from localhost.localdomain ([93.22.37.174])
-        by mwinf5d46 with ME
-        id CLKd230023lSDvh03LKdnk; Thu, 06 Aug 2020 22:19:47 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 06 Aug 2020 22:19:47 +0200
-X-ME-IP: 93.22.37.174
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     davem@davemloft.net, kuba@kernel.org, snelson@pensando.io,
-        mhabets@solarflare.com, vaibhavgupta40@gmail.com, mst@redhat.com,
-        mkubecek@suse.cz
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] epic100: switch from 'pci_' to 'dma_' API
-Date:   Thu,  6 Aug 2020 22:19:35 +0200
-Message-Id: <20200806201935.733641-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        id S1726933AbgHFUUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 16:20:22 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:36526 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726382AbgHFUUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 16:20:22 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 076KJqPn085323;
+        Thu, 6 Aug 2020 15:19:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1596745192;
+        bh=ZUrVIV9a/HB6pdfYWlnxoyCs4L1mTouSCTB1BHdWEwE=;
+        h=Subject:To:References:From:Date:In-Reply-To;
+        b=FcxToDvSFg82La4qIiBDrzEoU622ni3NoRCndwjCBW7eMDK/jLFosVY08NMlWChAY
+         t/Mjryolm2Zgto/ZxVb2pvO99xXlnUxJDYJ40QGj7vH9r2G3kYSBf43fyG/Ozik9mv
+         /anuIAGHUyfaBiqhqL0sHAL63mkYk57/8FIzgdq8=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 076KJqsr020504
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 6 Aug 2020 15:19:52 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 6 Aug
+ 2020 15:19:52 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 6 Aug 2020 15:19:51 -0500
+Received: from [10.250.53.226] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 076KJp1M112395;
+        Thu, 6 Aug 2020 15:19:51 -0500
+Subject: Re: [net-next iproute2 PATCH v3 1/2] iplink: hsr: add support for
+ creating PRP device similar to HSR
+To:     David Ahern <dsahern@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-api@vger.kernel.org>,
+        <nsekhar@ti.com>, <grygorii.strashko@ti.com>,
+        <vinicius.gomes@intel.com>, <stephen@networkplumber.org>,
+        <kuznet@ms2.inr.ac.ru>
+References: <20200717152205.826-1-m-karicheri2@ti.com>
+ <e6ac459e-b81c-48ee-d82c-36a533e2aa29@ti.com>
+ <6632128c-1c4b-4538-81a9-48dd752c8ab3@gmail.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <9bc91459-73f1-df6e-176a-b078a7cc309f@ti.com>
+Date:   Thu, 6 Aug 2020 16:19:46 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <6632128c-1c4b-4538-81a9-48dd752c8ab3@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
-
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
-
-When memory is allocated in 'epic_init_one()', GFP_KERNEL can be used
-because it is a probe function and no lock is acquired.
 
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
-
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/ethernet/smsc/epic100.c | 71 +++++++++++++++++------------
- 1 file changed, 42 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/net/ethernet/smsc/epic100.c b/drivers/net/ethernet/smsc/epic100.c
-index d950b312c418..51cd7dca91cd 100644
---- a/drivers/net/ethernet/smsc/epic100.c
-+++ b/drivers/net/ethernet/smsc/epic100.c
-@@ -374,13 +374,15 @@ static int epic_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	ep->mii.phy_id_mask = 0x1f;
- 	ep->mii.reg_num_mask = 0x1f;
- 
--	ring_space = pci_alloc_consistent(pdev, TX_TOTAL_SIZE, &ring_dma);
-+	ring_space = dma_alloc_coherent(&pdev->dev, TX_TOTAL_SIZE, &ring_dma,
-+					GFP_KERNEL);
- 	if (!ring_space)
- 		goto err_out_iounmap;
- 	ep->tx_ring = ring_space;
- 	ep->tx_ring_dma = ring_dma;
- 
--	ring_space = pci_alloc_consistent(pdev, RX_TOTAL_SIZE, &ring_dma);
-+	ring_space = dma_alloc_coherent(&pdev->dev, RX_TOTAL_SIZE, &ring_dma,
-+					GFP_KERNEL);
- 	if (!ring_space)
- 		goto err_out_unmap_tx;
- 	ep->rx_ring = ring_space;
-@@ -493,9 +495,11 @@ static int epic_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	return ret;
- 
- err_out_unmap_rx:
--	pci_free_consistent(pdev, RX_TOTAL_SIZE, ep->rx_ring, ep->rx_ring_dma);
-+	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, ep->rx_ring,
-+			  ep->rx_ring_dma);
- err_out_unmap_tx:
--	pci_free_consistent(pdev, TX_TOTAL_SIZE, ep->tx_ring, ep->tx_ring_dma);
-+	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, ep->tx_ring,
-+			  ep->tx_ring_dma);
- err_out_iounmap:
- 	pci_iounmap(pdev, ioaddr);
- err_out_free_netdev:
-@@ -918,8 +922,10 @@ static void epic_init_ring(struct net_device *dev)
- 		if (skb == NULL)
- 			break;
- 		skb_reserve(skb, 2);	/* 16 byte align the IP header. */
--		ep->rx_ring[i].bufaddr = pci_map_single(ep->pci_dev,
--			skb->data, ep->rx_buf_sz, PCI_DMA_FROMDEVICE);
-+		ep->rx_ring[i].bufaddr = dma_map_single(&ep->pci_dev->dev,
-+							skb->data,
-+							ep->rx_buf_sz,
-+							DMA_FROM_DEVICE);
- 		ep->rx_ring[i].rxstatus = DescOwn;
- 	}
- 	ep->dirty_rx = (unsigned int)(i - RX_RING_SIZE);
-@@ -955,8 +961,9 @@ static netdev_tx_t epic_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	entry = ep->cur_tx % TX_RING_SIZE;
- 
- 	ep->tx_skbuff[entry] = skb;
--	ep->tx_ring[entry].bufaddr = pci_map_single(ep->pci_dev, skb->data,
--		 			            skb->len, PCI_DMA_TODEVICE);
-+	ep->tx_ring[entry].bufaddr = dma_map_single(&ep->pci_dev->dev,
-+						    skb->data, skb->len,
-+						    DMA_TO_DEVICE);
- 	if (free_count < TX_QUEUE_LEN/2) {/* Typical path */
- 		ctrl_word = 0x100000; /* No interrupt */
- 	} else if (free_count == TX_QUEUE_LEN/2) {
-@@ -1036,8 +1043,9 @@ static void epic_tx(struct net_device *dev, struct epic_private *ep)
- 
- 		/* Free the original skb. */
- 		skb = ep->tx_skbuff[entry];
--		pci_unmap_single(ep->pci_dev, ep->tx_ring[entry].bufaddr,
--				 skb->len, PCI_DMA_TODEVICE);
-+		dma_unmap_single(&ep->pci_dev->dev,
-+				 ep->tx_ring[entry].bufaddr, skb->len,
-+				 DMA_TO_DEVICE);
- 		dev_consume_skb_irq(skb);
- 		ep->tx_skbuff[entry] = NULL;
- 	}
-@@ -1178,20 +1186,21 @@ static int epic_rx(struct net_device *dev, int budget)
- 			if (pkt_len < rx_copybreak &&
- 			    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
- 				skb_reserve(skb, 2);	/* 16 byte align the IP header */
--				pci_dma_sync_single_for_cpu(ep->pci_dev,
--							    ep->rx_ring[entry].bufaddr,
--							    ep->rx_buf_sz,
--							    PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_cpu(&ep->pci_dev->dev,
-+							ep->rx_ring[entry].bufaddr,
-+							ep->rx_buf_sz,
-+							DMA_FROM_DEVICE);
- 				skb_copy_to_linear_data(skb, ep->rx_skbuff[entry]->data, pkt_len);
- 				skb_put(skb, pkt_len);
--				pci_dma_sync_single_for_device(ep->pci_dev,
--							       ep->rx_ring[entry].bufaddr,
--							       ep->rx_buf_sz,
--							       PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_device(&ep->pci_dev->dev,
-+							   ep->rx_ring[entry].bufaddr,
-+							   ep->rx_buf_sz,
-+							   DMA_FROM_DEVICE);
- 			} else {
--				pci_unmap_single(ep->pci_dev,
--					ep->rx_ring[entry].bufaddr,
--					ep->rx_buf_sz, PCI_DMA_FROMDEVICE);
-+				dma_unmap_single(&ep->pci_dev->dev,
-+						 ep->rx_ring[entry].bufaddr,
-+						 ep->rx_buf_sz,
-+						 DMA_FROM_DEVICE);
- 				skb_put(skb = ep->rx_skbuff[entry], pkt_len);
- 				ep->rx_skbuff[entry] = NULL;
- 			}
-@@ -1213,8 +1222,10 @@ static int epic_rx(struct net_device *dev, int budget)
- 			if (skb == NULL)
- 				break;
- 			skb_reserve(skb, 2);	/* Align IP on 16 byte boundaries */
--			ep->rx_ring[entry].bufaddr = pci_map_single(ep->pci_dev,
--				skb->data, ep->rx_buf_sz, PCI_DMA_FROMDEVICE);
-+			ep->rx_ring[entry].bufaddr = dma_map_single(&ep->pci_dev->dev,
-+								    skb->data,
-+								    ep->rx_buf_sz,
-+								    DMA_FROM_DEVICE);
- 			work_done++;
- 		}
- 		/* AV: shouldn't we add a barrier here? */
-@@ -1294,8 +1305,8 @@ static int epic_close(struct net_device *dev)
- 		ep->rx_ring[i].rxstatus = 0;		/* Not owned by Epic chip. */
- 		ep->rx_ring[i].buflength = 0;
- 		if (skb) {
--			pci_unmap_single(pdev, ep->rx_ring[i].bufaddr,
--					 ep->rx_buf_sz, PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&pdev->dev, ep->rx_ring[i].bufaddr,
-+					 ep->rx_buf_sz, DMA_FROM_DEVICE);
- 			dev_kfree_skb(skb);
- 		}
- 		ep->rx_ring[i].bufaddr = 0xBADF00D0; /* An invalid address. */
-@@ -1305,8 +1316,8 @@ static int epic_close(struct net_device *dev)
- 		ep->tx_skbuff[i] = NULL;
- 		if (!skb)
- 			continue;
--		pci_unmap_single(pdev, ep->tx_ring[i].bufaddr, skb->len,
--				 PCI_DMA_TODEVICE);
-+		dma_unmap_single(&pdev->dev, ep->tx_ring[i].bufaddr, skb->len,
-+				 DMA_TO_DEVICE);
- 		dev_kfree_skb(skb);
- 	}
- 
-@@ -1502,8 +1513,10 @@ static void epic_remove_one(struct pci_dev *pdev)
- 	struct net_device *dev = pci_get_drvdata(pdev);
- 	struct epic_private *ep = netdev_priv(dev);
- 
--	pci_free_consistent(pdev, TX_TOTAL_SIZE, ep->tx_ring, ep->tx_ring_dma);
--	pci_free_consistent(pdev, RX_TOTAL_SIZE, ep->rx_ring, ep->rx_ring_dma);
-+	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, ep->tx_ring,
-+			  ep->tx_ring_dma);
-+	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, ep->rx_ring,
-+			  ep->rx_ring_dma);
- 	unregister_netdev(dev);
- 	pci_iounmap(pdev, ep->ioaddr);
- 	pci_release_regions(pdev);
+On 8/6/20 1:12 PM, David Ahern wrote:
+> On 8/6/20 10:04 AM, Murali Karicheri wrote:
+>> that the maintainers are different than the netdev maintainers. My bad.
+>> The PRP driver support in kernel is merged by Dave to net-next and this
+>> iproute2 change has to go with it. So please review and apply this if it
+>> looks good. The kernel part merged is at
+> 
+> there was a long delay between iproute2 and commit to net-next. You need
+> to re-send the iproute2 patches.
+> 
+OK. Will do. Thanks
 -- 
-2.25.1
-
+Murali Karicheri
+Texas Instruments
