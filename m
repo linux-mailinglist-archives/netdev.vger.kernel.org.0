@@ -2,118 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF01A23DF50
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:45:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8F0523DEC4
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:32:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729934AbgHFR3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 13:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44832 "EHLO
+        id S1730431AbgHFR3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 13:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729889AbgHFRAI (ORCPT
+        with ESMTP id S1729920AbgHFRAI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 13:00:08 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1802C034600
-        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 05:32:07 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id a26so24316742ejc.2
-        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 05:32:07 -0700 (PDT)
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E586BC0A54D8
+        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 07:03:30 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id d14so44974874qke.13
+        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 07:03:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SBUeg6ZgfiBHlBkgCw/YPENtqIybhDV/THXpJy1l8Ak=;
-        b=E5ZH4bpBOUNIObWXCgJBPo0fRnChPgetEBnLT1TtXjqiV+wGDSaMnkFJ3f9qcXcv5C
-         /xtMPo552QhFx2AbPNwgFuiWczZs671hm+Y3fIx50EZHhk+C8+tueK+lc5LggNith+WZ
-         cbEd48HrUUD29sjHcORxdcSp/AJy+c2/lJQU0frs2bzofLtPulrC9FCMgdx5kT8NeQvm
-         aJfWEOXfbLTcn5h5+XMjyGWFp7S2i9LQ5Fbg2GDaVGpjvuxPL7eedVVIEEjrMjzAlbGI
-         ykpo+LgjwzrhCjwWnHtVog37xoaLj+uks00l99NHcpHg/m+VN8EDwtlJFKd3uXUduf//
-         K0oA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zFDwDBzVOvC/lxRFjXpwovm8YIXyFJtKM1I6qJj3qug=;
+        b=f2h0koFrG7/UlwbP9AO7/RpyOr+Ur3pezD046bN6ldCGDaxwXJhkJXw9oOdUwbTzQ7
+         G+uvRIpA4nbsNJEXc46qgH/KTDQJQjfDha5mmguNxQOkSMXn36wqLkdlxySot/v+NIgx
+         oE65l+nOpNEvT8DnHCowdbAHd+BFVLzsRMUfnvKNoyotIDjuaQxHp6zHFOqZM3i7vO/B
+         oTXF/QxNBDbEXetfCXulL5cG+uhcS0AznCWAdiI+AyP2V1gkV15CRXdIpHN6rFYYqkfH
+         weCb22YaIrVERRdne0HAgvTGU24toN22nqet3kBZDVHtudl9UMksDKlhtqyQ0wZwO4AI
+         WCnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=SBUeg6ZgfiBHlBkgCw/YPENtqIybhDV/THXpJy1l8Ak=;
-        b=YSTfZ88EaUaEF06LIIiDBW6iadGK4AO3z+qAQJJZuCMYiyvQtisTqiOqtKi5ccfe50
-         l0sema5C2aNc4uYiWajN1YIAO3Tvl2Z0H4DRFqUFwaWtoo4eYLs8BemD2CaedGZY9VFl
-         NPHXhVlkGbthFDborZ12eNc9n2Hjc2O2CXN2SIbCBxlHsd4VHqo6Dkl9l1gBywiCc9ov
-         /Hsv96KmNnQLFBMY4WiXrdgCElsVaApc0UWr/pkG4Gu8IjwZOn1iVjZtObNVzZXSoTRL
-         7P2FWYu5Ok82Wul/5zffmb5rIRbD3m4svpl1pjHNytflYXIZGDO1J5PCndtd+1I+y/Jf
-         91rw==
-X-Gm-Message-State: AOAM530Ac6h045k6N4fYzePSVVb9cB+oVulwjVmdlI4puLZ5PVei4juA
-        MV/Lunj0+HFlP5BzGzcXg9mVHw==
-X-Google-Smtp-Source: ABdhPJyhhBpJwzxhDnBKBjHz1AevD4rapS/DwSsy6qNYU48uAH6pkx9QlBz57JKuB5fl8Su5P+B/ZQ==
-X-Received: by 2002:a17:906:3685:: with SMTP id a5mr3915681ejc.298.1596717124401;
-        Thu, 06 Aug 2020 05:32:04 -0700 (PDT)
-Received: from tim.froidcoeur.net (ptr-7tznw15pracyli75x11.18120a2.ip6.access.telenet.be. [2a02:1811:50e:f0f0:d05d:939:f42b:f575])
-        by smtp.gmail.com with ESMTPSA id c5sm3695778ejb.103.2020.08.06.05.32.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Aug 2020 05:32:03 -0700 (PDT)
-From:   Tim Froidcoeur <tim.froidcoeur@tessares.net>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        bh=zFDwDBzVOvC/lxRFjXpwovm8YIXyFJtKM1I6qJj3qug=;
+        b=mUx7uoIRUoLkXnGw1OG4qeHBovHzAyiknw+o48iVzL8AH9JX7DmOiY08Ibk7ldRVxp
+         kXA2Ec8awi2fSSSvdHT0OmThZljgE1eSNiUYdm01yDe1HYl5I82w/QNC+JdIi5RGoWi7
+         WEOn8TVzq+cdrLisJxCHzdjbxeIhgrf9Q6h2IX7z0ZN6HAmvqBJo5OQKDa+Yv4MAne0C
+         GooItQeu3dCD9rYyurnqyX0P6BuLcrEMAtqTO+azN1k8FhfKhgENC7liUUbD0AgKrGcb
+         8t0KQhdwTUpxUT/1P032hE3Fo8Gr2/uG8xAvsXCt2PfAmj4nqYS8IEz10l1q3DAKkRp3
+         tQBw==
+X-Gm-Message-State: AOAM532+zoWQFYdHed/aVIGgbmxmxTSW2Zre6uBy0+/DHMzYBh1rm93u
+        OW1PPlGOa9CeCQQkMNMww9A=
+X-Google-Smtp-Source: ABdhPJwtJLxSyqNPTdzADA0S/orOLTcuhxnkxfKui+/rZVX4fYSSCXzXoSq9zr6lr5OMPD0OCJOwVg==
+X-Received: by 2002:a05:620a:22c5:: with SMTP id o5mr8424138qki.72.1596722603700;
+        Thu, 06 Aug 2020 07:03:23 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:342a:71d2:a3e6:c7be? ([2601:282:803:7700:342a:71d2:a3e6:c7be])
+        by smtp.googlemail.com with ESMTPSA id e4sm5046978qts.57.2020.08.06.07.03.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Aug 2020 07:03:22 -0700 (PDT)
+Subject: Re: [PATCH net 1/2] ipv6: add ipv6_dev_find()
+To:     Xin Long <lucien.xin@gmail.com>,
+        Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
+        Jon Maloy <jon.maloy@ericsson.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        tipc-discussion@lists.sourceforge.net,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Patrick McHardy <kaber@trash.net>,
-        KOVACS Krisztian <hidden@balabit.hu>
-Cc:     Tim Froidcoeur <tim.froidcoeur@tessares.net>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v3 0/2] net: initialize fastreuse on inet_inherit_port
-Date:   Thu,  6 Aug 2020 14:30:21 +0200
-Message-Id: <20200806123024.585212-1-tim.froidcoeur@tessares.net>
-X-Mailer: git-send-email 2.25.1
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+References: <cover.1596468610.git.lucien.xin@gmail.com>
+ <7ba2ca17347249b980731e7a76ba3e24a9e37720.1596468610.git.lucien.xin@gmail.com>
+ <CAPA1RqCz=h-RBu-md1rJ5WLWsr9LLqO8bK9D=q6_vzYMz7564A@mail.gmail.com>
+ <CADvbK_dSnrBkw_hJV8LVCEs9D-WB+h2QC3JghLCxVwV5PW9YYA@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <1f510387-b612-6cb4-8ee6-ff52f6ff6796@gmail.com>
+Date:   Thu, 6 Aug 2020 08:03:20 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
+In-Reply-To: <CADvbK_dSnrBkw_hJV8LVCEs9D-WB+h2QC3JghLCxVwV5PW9YYA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the case of TPROXY, bind_conflict optimizations for SO_REUSEADDR or
-SO_REUSEPORT are broken, possibly resulting in O(n) instead of O(1) bind
-behaviour or in the incorrect reuse of a bind.
+On 8/6/20 2:55 AM, Xin Long wrote:
+> On Thu, Aug 6, 2020 at 10:50 AM Hideaki Yoshifuji
+> <hideaki.yoshifuji@miraclelinux.com> wrote:
+>>
+>> Hi,
+>>
+>> 2020年8月4日(火) 0:35 Xin Long <lucien.xin@gmail.com>:
+>>>
+>>> This is to add an ip_dev_find like function for ipv6, used to find
+>>> the dev by saddr.
+>>>
+>>> It will be used by TIPC protocol. So also export it.
+>>>
+>>> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+>>> ---
+>>>  include/net/addrconf.h |  2 ++
+>>>  net/ipv6/addrconf.c    | 39 +++++++++++++++++++++++++++++++++++++++
+>>>  2 files changed, 41 insertions(+)
+>>>
+>>> diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+>>> index 8418b7d..ba3f6c15 100644
+>>> --- a/include/net/addrconf.h
+>>> +++ b/include/net/addrconf.h
+>>> @@ -97,6 +97,8 @@ bool ipv6_chk_custom_prefix(const struct in6_addr *addr,
+>>>
+>>>  int ipv6_chk_prefix(const struct in6_addr *addr, struct net_device *dev);
+>>>
+>>> +struct net_device *ipv6_dev_find(struct net *net, const struct in6_addr *addr);
+>>> +
+>>
+>> How do we handle link-local addresses?
+> This is what "if (!result)" branch meant to do:
+> 
+> +       if (!result) {
+> +               struct rt6_info *rt;
+> +
+> +               rt = rt6_lookup(net, addr, NULL, 0, NULL, 0);
+> +               if (rt) {
+> +                       dev = rt->dst.dev;
+> +                       ip6_rt_put(rt);
+> +               }
+> +       } else {
+> +               dev = result->idev->dev;
+> +       }
+> 
 
-the kernel keeps track for each bind_bucket if all sockets in the
-bind_bucket support SO_REUSEADDR or SO_REUSEPORT in two fastreuse flags.
-These flags allow skipping the costly bind_conflict check when possible
-(meaning when all sockets have the proper SO_REUSE option).
+the stated purpose of this function is to find the netdevice to which an
+address is attached. A route lookup should not be needed. Walking the
+address hash list finds the address and hence the netdev or it does not.
 
-For every socket added to a bind_bucket, these flags need to be updated.
-As soon as a socket that does not support reuse is added, the flag is
-set to false and will never go back to true, unless the bind_bucket is
-deleted.
-
-Note that there is no mechanism to re-evaluate these flags when a socket
-is removed (this might make sense when removing a socket that would not
-allow reuse; this leaves room for a future patch).
-
-For this optimization to work, it is mandatory that these flags are
-properly initialized and updated.
-
-When a child socket is created from a listen socket in
-__inet_inherit_port, the TPROXY case could create a new bind bucket
-without properly initializing these flags, thus preventing the
-optimization to work. Alternatively, a socket not allowing reuse could
-be added to an existing bind bucket without updating the flags, causing
-bind_conflict to never be called as it should.
-
-Patch 1/2 refactors the fastreuse update code in inet_csk_get_port into a
-small helper function, making the actual fix tiny and easier to understand. 
-
-Patch 2/2 calls this new helper when __inet_inherit_port decides to create
-a new bind_bucket or use a different bind_bucket than the one of the listen
-socket.
-
-v3: - remove company disclaimer from automatic signature
-v2: - remove unnecessary cast 
-
-Tim Froidcoeur (2):
-  net: refactor bind_bucket fastreuse into helper
-  net: initialize fastreuse on inet_inherit_port
-
- include/net/inet_connection_sock.h |  4 ++
- net/ipv4/inet_connection_sock.c    | 97 ++++++++++++++++--------------
- net/ipv4/inet_hashtables.c         |  1 +
- 3 files changed, 58 insertions(+), 44 deletions(-)
-
--- 
-2.25.1
 
