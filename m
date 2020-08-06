@@ -2,89 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1431923DC42
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 18:48:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C26423DD0E
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 18:59:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729506AbgHFQsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 12:48:08 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:39918 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728288AbgHFQmu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:42:50 -0400
-Received: by mail-io1-f65.google.com with SMTP id z6so50313543iow.6;
-        Thu, 06 Aug 2020 09:42:29 -0700 (PDT)
+        id S1729806AbgHFQ7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 12:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41666 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728976AbgHFQkk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:40:40 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E40C0A8936
+        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 08:05:01 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id k18so17875022pfp.7
+        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 08:05:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9LGh6aG0DgsF81oiNMA4nsr14X/GrQw1MnhxCFp9lAc=;
+        b=js1AQAOzT+yCV7GsAr1END9zFUZcP6094bE6mKe2EjTl4MXPQJGBeBXvo3QJagWpiZ
+         m7WEL4J2aaNdz/ZMv2Va88qERvnrku8uZg7R2fJ9fgYi9kEjplVxiiik8prCaLReh7WF
+         b/i9BUcNe7t9fB+mFl3YekPMvJq6Nak1Y+EAZt8rylNULmmynh/uAtIOM6pJVbU2hpEF
+         WqlDEzKbtN/R5muFvnwBf95jbX8kATNlwmsS9Kk/dHTnu9/2L/jbHcrkG7+PFx0mQiYZ
+         levZb1zlVZyNRGHPAsh8jN+zhWX/Ne4xKytIvtSmvgcp8DiNBLMYt4QMjORcgmvopIlx
+         LsPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Xm0fEuCIzwDzQykroFSnT+aLdkyYmWsu6Ftt9JukdD8=;
-        b=pQJ5Wbk0onBVVfm9KbkO0nmaavZycrP8XIUYtq43nQTVhrVaoIj+HDrpXaQeHZoj59
-         bNGNwgQnjRvBDVB/vPd0DsKWMA1sfz2rPl5hAU8wwG+FozqCsYo5t6auZZmEqQJVG2Mh
-         /xn53eG5weFyiy3aFt7BcE6R5TgqTEFj2EdR5jSMimAxO8Lx0LgSWY/ZDfj9ItB+8pGk
-         kLmKTY4CqlgBxFS59tfv9jMQGLq3KrnNAD77oiUFLKD863sr+Lr0UH5FAd0CAgAhkGpW
-         vX0cWACmID12vfpA3D69yKou7Nnb2gE/F6Ew0H2+5tZbjba0LjR4QBgG1jSf3kmWOAhI
-         hjHQ==
-X-Gm-Message-State: AOAM530Kbs0aPqTvXwfU4E/hDBIMWRR2hASQtLdH+SGIeDHupjYJifa3
-        akdjR06qiDIpvz3F5Uhx4JO9CxY=
-X-Google-Smtp-Source: ABdhPJyjT8GHER76WNSFqjmQvUAzAjClMjTAIIg56K2M86QwRA9rbhDENI7nQUMj/Vpq8VKa/Li+pA==
-X-Received: by 2002:a92:1589:: with SMTP id 9mr11145233ilv.234.1596725235912;
-        Thu, 06 Aug 2020 07:47:15 -0700 (PDT)
-Received: from xps15 ([64.188.179.252])
-        by smtp.gmail.com with ESMTPSA id s74sm4198158ilb.44.2020.08.06.07.47.14
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9LGh6aG0DgsF81oiNMA4nsr14X/GrQw1MnhxCFp9lAc=;
+        b=caSVDsj/OXhc79CxhXvfNAh5AZywkah4UUZ6ff4fQ/H49rCa6x7tzrEmOWgG/l64ax
+         YQ/R5BNyzxtvZ6IwfClbJocKd26hstHWqDJiTl9SBleuLq9NVP/SG2/FYLlHJC+E3/wT
+         vyO0/qfacn+FaRm3dKz8+uxWeFIVobpyczWrDnkXLdaCvpL3Fk+/zoymbOJk/ntWO5SB
+         YeXyJlg+MC5ga+IxeuOJzoxOUZBp63FeDQ27JDKNS7OVLOGf6X0lHsMPcY03TGeU0P+d
+         5GGci+0+LN2jM5a2DjlotJuErY9QMaAcB4fv3UULr+q7mw+qqLdjFTN25Sr0nR+mf+Py
+         lWZg==
+X-Gm-Message-State: AOAM533+Q63xdVOBa2yGymfUzWpN0VPfyoZuu/crffORbGlfgHGFrk/D
+        OrvlRfxH5NgsHoSJvujXHOGlMrwXTSg=
+X-Google-Smtp-Source: ABdhPJwAEEXxACKE4+NG+0aQlCVAyN1m+lye5CSzx2mdrND7qncjiP/WLwROs5FqkLD3inaOdwyzvw==
+X-Received: by 2002:a63:31c6:: with SMTP id x189mr7543879pgx.182.1596726300151;
+        Thu, 06 Aug 2020 08:05:00 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id w82sm8822755pff.7.2020.08.06.08.04.59
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Aug 2020 07:47:15 -0700 (PDT)
-Received: (nullmailer pid 834882 invoked by uid 1000);
-        Thu, 06 Aug 2020 14:47:13 -0000
-Date:   Thu, 6 Aug 2020 08:47:13 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Pavel Machek <pavel@ucw.cz>, pisa@cmp.felk.cvut.cz
-Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
-        mkl@pengutronix.de, socketcan@hartkopp.net, wg@grandegger.com,
-        davem@davemloft.net, mark.rutland@arm.com, c.emde@osadl.org,
-        armbru@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, martin.jerabek01@gmail.com,
-        ondrej.ille@gmail.com, jnovak@fel.cvut.cz, jara.beran@gmail.com,
-        porazil@pikron.com
-Subject: Re: [PATCH v4 2/6] dt-bindings: net: can: binding for CTU CAN FD
- open-source IP core.
-Message-ID: <20200806144713.GA829771@bogus>
-References: <cover.1596408856.git.pisa@cmp.felk.cvut.cz>
- <701442883f2b439637ff84544745725bdee7bcf8.1596408856.git.pisa@cmp.felk.cvut.cz>
- <20200804091817.yuf6s26bclehpwwi@duo.ucw.cz>
- <20200804092021.yd3wisz3g2ed6ioe@duo.ucw.cz>
+        Thu, 06 Aug 2020 08:04:59 -0700 (PDT)
+Date:   Thu, 6 Aug 2020 08:04:52 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 208833] New: applying HFSC causes soft lockup (probably
+ related to pppoe)
+Message-ID: <20200806080452.0693f8b2@hermes.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200804092021.yd3wisz3g2ed6ioe@duo.ucw.cz>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 04, 2020 at 11:20:21AM +0200, Pavel Machek wrote:
-> On Tue 2020-08-04 11:18:17, Pavel Machek wrote:
-> > Hi!
-> > 
-> > > The commit text again to make checkpatch happy.
-> > 
-> > ?
-> > 
-> > 
-> > > +    oneOf:
-> > > +      - items:
-> > > +          - const: ctu,ctucanfd
-> > > +          - const: ctu,canfd-2
-> > > +      - const: ctu,ctucanfd
-> > 
-> > For consistency, can we have ctu,canfd-1, ctu,canfd-2?
-> 
-> Make it ctu,ctucanfd-1, ctu,ctucanfd-2... to make it consistent with
-> the file names.
 
-If you are going to do version numbers, please define where they come 
-from. Hopefully some tag of the h/w IP version...
 
-Better yet, put version numbers in the h/w registers itself and you 
-don't need different compatibles.
+Begin forwarded message:
 
-Rob
+Date: Thu, 06 Aug 2020 13:22:36 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 208833] New: applying HFSC causes soft lockup (probably related to pppoe)
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=208833
+
+            Bug ID: 208833
+           Summary: applying HFSC causes soft lockup (probably related to
+                    pppoe)
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.7
+          Hardware: x86-64
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: valahanovich@tut.by
+        Regression: No
+
+Created attachment 290795
+  --> https://bugzilla.kernel.org/attachment.cgi?id=290795&action=edit  
+example of my regular tc script
+
+Applying and reapplying HFSC qdisc to interface with heavy load often causes
+soft lockup (in random processes, in short time after applying qdisc).
+
+Stack trace was somewhat uninformative and hard to get. I mostly observe this
+with torrent client on PPPOE client interface when run attached script several
+times.
+
+Will attach dmesg as soon as i will be able to reliably get it.
+I tried to bisect bug, but stopped at some old kernel that won't even boot with
+my config. So the problem could be old but unnoticed.
+
+-- 
+You are receiving this mail because:
+You are the assignee for the bug.
