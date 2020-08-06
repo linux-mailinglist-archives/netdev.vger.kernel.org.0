@@ -2,77 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F103A23DC23
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 18:47:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8031A23DC1B
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 18:46:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729369AbgHFQqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 12:46:44 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:50762 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729240AbgHFQpl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:45:41 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1k3ijY-0003ET-2S; Thu, 06 Aug 2020 16:27:12 +0000
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Subject: re: net: dsa: sja1105: use detected device id instead of DT one on
- mismatch
-Message-ID: <60d2d8f9-1376-2047-b958-7bdbbde1538e@canonical.com>
-Date:   Thu, 6 Aug 2020 17:27:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1729310AbgHFQqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 12:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42594 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729189AbgHFQp4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:45:56 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA1C6C0A3BD0
+        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 09:45:55 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id l64so38726451qkb.8
+        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 09:45:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=oDmsv2V6FvhJ5ZJsgyOmePovP7IYl5Yo5ORIf3cwSkY=;
+        b=subWDPPloDIbCUjaO2jVl+li2uBNcORqHylgyArQ0NkXVSa8IegTAnE3xGiYG74ttr
+         O0znyk+OiMGNZ8gJt8YXP5hrae4M34rXvLlq1j+4qDUymBfgsnLcdb9uUUqqzlR0mg2d
+         ucU06KhLH2UsrwQnliroxEhj7AA9pcXdvTDsH74h73F8faVlxzbIzhzFP2lv45JLj2tW
+         kVsoya3FyCN5OGpOa3+bLHzaJTp9ZvF0opddS1hdcE0AtbT6TR/tunCAOJ7Gwx6kzFel
+         WjtNJqpzaR4eVdACIldInoKzqw5IkQtaoiFgqaEXhatuTYFEfJ1hncKctDVHV0oWbRon
+         DIWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oDmsv2V6FvhJ5ZJsgyOmePovP7IYl5Yo5ORIf3cwSkY=;
+        b=Y13dobsvLk/v+4BHsf4ooIfuo/+o++c6dJxmM6wVa4Srw1+Wxp7/ik74fELQJGxSCL
+         bmvmEHdvHj8k3c9wxJWMZWLc+etUQB4MwpDHmNlS9ZvYV8qjQlZSBfdKZ9YFqDKNK/wQ
+         9nIUDJyJKHNu0ftQSaWJ1hmaYxGWfXVqL2RpNax5hUtHaUCfxxgOJCH1boKr1wqUoNgT
+         uikVqIBjsRooaJc8mWu9UBtL3yY7FXJTWo/hAg1BHkShfG5g+7Ejc9/LFCXVB4UCnKDi
+         +3vJtVUOz54rrwbeQlNcst+nsNGoMRIqfeqB7fXF7Y5jyDQlrOKmH6gfutGkpWOg7A21
+         IA8Q==
+X-Gm-Message-State: AOAM5333COfon7VRocjkQM+qJ0yfdiPZf291oc3a9JI4JlB8IMDjNwPe
+        DTCwnHdu2ZHBkxIFBMaNde4=
+X-Google-Smtp-Source: ABdhPJxAmVeROza3hEPN9GPpr6mkPQxBjmMAGLGhKIGs3tzm6pMjJ53D/Z6NkG9JqannNOcDJz5S+A==
+X-Received: by 2002:a05:620a:1594:: with SMTP id d20mr8383133qkk.242.1596732355117;
+        Thu, 06 Aug 2020 09:45:55 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:7c83:3cd:b611:a456? ([2601:282:803:7700:7c83:3cd:b611:a456])
+        by smtp.googlemail.com with ESMTPSA id 78sm4630575qke.81.2020.08.06.09.45.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Aug 2020 09:45:54 -0700 (PDT)
+Subject: =?UTF-8?B?UmU6IOetlOWkjTogW1BBVENIXSBjYW4gY3VycmVudCBFQ01QIGltcGxl?=
+ =?UTF-8?Q?mentation_support_consistent_hashing_for_next_hop=3f?=
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     =?UTF-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
+        <yangyi01@inspur.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>
+References: <4037f805c6f842dcc429224ce28425eb@sslemail.net>
+ <8ff0c684-7d33-c785-94d7-c0e6f8b79d64@gmail.com>
+ <8867a00d26534ed5b84628db1a43017c@inspur.com>
+ <8da839b3-5b5d-b663-7d9c-0bc8351980dd@gmail.com>
+ <20200802144959.GA2483264@shredder>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <3c965294-fe7d-3893-e9d9-3354ff508731@gmail.com>
+Date:   Thu, 6 Aug 2020 10:45:52 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
+In-Reply-To: <20200802144959.GA2483264@shredder>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -81,30 +75,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 8/2/20 8:49 AM, Ido Schimmel wrote:
+> On Thu, Jun 11, 2020 at 10:36:59PM -0600, David Ahern wrote:
+>> On 6/11/20 6:32 PM, Yi Yang (杨燚)-云服务集团 wrote:
+>>> David, thank you so much for confirming it can't, I did read your cumulus document before, resilient hashing is ok for next hop remove, but it still has the same issue there if add new next hop. I know most of kernel code in Cumulus Linux has been in upstream kernel, I'm wondering why you didn't push resilient hashing to upstream kernel.
+>>>
+>>> I think consistent hashing is must-have for a commercial load balancing solution, otherwise it is basically nonsense , do you Cumulus Linux have consistent hashing solution?
+>>>
+>>> Is "- replacing nexthop entries as LB's come and go" ithe stuff https://docs.cumulusnetworks.com/cumulus-linux/Layer-3/Equal-Cost-Multipath-Load-Sharing-Hardware-ECMP/#resilient-hashing is showing? It can't ensure the flow is distributed to the right backend server if a new next hop is added.
+>>
+>> I do not believe it is a problem to be solved in the kernel.
+>>
+>> If you follow the *intent* of the Cumulus document: what is the maximum
+>> number of load balancers you expect to have? 16? 32? 64? Define an ECMP
+>> route with that number of nexthops and fill in the weighting that meets
+>> your needs. When an LB is added or removed, you decide what the new set
+>> of paths is that maintains N-total paths with the distribution that
+>> meets your needs.
+> 
+> I recently started looking into consistent hashing and I wonder if it
+> can be done with the new nexthop API while keeping all the logic in user
+> space (e.g., FRR).
+> 
+> The only extension that might be required from the kernel is a new
+> nexthop attribute that indicates when a nexthop was last recently used.
 
-Static analysis with Coverity has detected a potential issue with the
-following commit:
+The only potential problem that comes to mind is that a nexthop can be
+used by multiple prefixes.
 
-commit 0b0e299720bb99428892a23ecbd2b4b7f61ccf6d
-Author: Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon Aug 3 19:48:23 2020 +0300
+But, I'm not sure I follow what the last recently used indicator gives
+you for maintaining flows as a group is updated.
 
-    net: dsa: sja1105: use detected device id instead of DT one on mismatch
+> User space can then use it to understand which nexthops to replace when
+> a new nexthop is added and when to perform the replacement. In case the
+> nexthops are offloaded, it is possible for the driver to periodically
+> update the nexthop code about their activity.
+> 
+> Below is a script that demonstrates the concept with the example in the
+> Cumulus documentation. I chose to replace the individual nexthops
+> instead of creating new ones and then replacing the group.
 
-The analysis is as follows:
+That is one of the features ... a group points to individual nexthops
+and those can be atomically updated without affecting the group.
 
-Array compared against 0 (NO_EFFECT)array_null: Comparing an array to
-null is not useful: match->compatible, since the test will always
-evaluate as true.
+> 
+> It is obviously possible to create larger groups to reduce the impact on
+> existing flows when a new nexthop is added.
+> 
+> WDYT?
 
-    Was match->compatible formerly declared as a pointer?
+This is inline with my earlier responses, and your script shows an
+example of how to manage it. Combine it with the active-backup patch set
+and you handle device events too (avoid disrupting size of the group on
+device events).
 
-3418        for (match = sja1105_dt_ids; match->compatible; match++) {
-3419                const struct sja1105_info *info = match->data;
-3420
-
-I'm not sure what the original intention was, so I was unable to fix
-this hence I'm sending this report as I think it needs addressing.
-
-Colin
