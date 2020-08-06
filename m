@@ -2,259 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B46BA23E269
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 21:42:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C043423E2A7
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 21:57:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726190AbgHFTmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 15:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725272AbgHFTmc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 15:42:32 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC20C061574
-        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 12:42:31 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id 184so10796362wmb.0
-        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 12:42:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=B55at2MY1UjEpBI5B3pKYwGObqRHcFxLkRJnPd4G/eY=;
-        b=N/UqYwRmic2bK4NJHIjfDFDV+Lf3mVfv9AF3Uo7z7iDy53LTwHfiS6RFqu2VtVU8PI
-         uKMrmL+/u+PN+q8J4iIZfzYuEaNe0LXRw65UJcAX/ub5ulMmVHyigT+750VclFT8izxz
-         RRp1Dx3mXO/5wvmFyJJ+foU3tMqQhg/DGOrdFPO1Tt6OtX8/HFBM/cE/NcnjfUv2szja
-         PFA5zLxZkqpITkvIWp7IBsLU/fSK2/GXChRT+ua69J70VGxkf9yGtz+k7yWVHPyPvtVK
-         VSdqWRrfcFp7OVnAwmYPCYji0C5avFJJ4Vnp9+tV142HaenW1H0hVIzuCbkY3hWlgnGI
-         sdmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=B55at2MY1UjEpBI5B3pKYwGObqRHcFxLkRJnPd4G/eY=;
-        b=VvV1+AUubGc3eHeLBgTexi3HuVId9QH2EbFvcIr7taOpeiRxOebZOp9sdtGiR5jCZg
-         wpCCgbeFz6JrjaWvjkVL2U/lgJp91A7zP4iVFts2LS4J6CnXG2Fmdil6Z9sVw60K4m7U
-         yDGvireNnTmfinpW38O5z1IJwHqwjPZlNAPql3Hn76+017JXGv/fq9IjO+FcbuFV8HLs
-         8luknzqAppR/UMod5ZeEZt2cC4gDNlpEcLLXwV2qNIJ6YqoECnJVgXQq5/1QOTqoadxK
-         XKJJt5CjiqrpwZ38GJBKB8OuevZbFsbBZDVCBLEYop3EHw2+hdZYje8h78n+e4oIOQEJ
-         plcg==
-X-Gm-Message-State: AOAM533Z7tA11dvw/jk/9jLu7yyOwXHBggsaiv+ChZlo3qlcb9fz5p/I
-        O9/fkSsSo9FVWao7FC5OWObJXcOCdjSCvWdF6XIIkQ==
-X-Google-Smtp-Source: ABdhPJwzWVRb6byUg3/HQnV2RSCF4tv0H295OIb3Oxg+mlzPWInjOchl4Uf7y98iDT8AC4m/C62jSLLrBqZxxMRdxmc=
-X-Received: by 2002:a1c:e0c2:: with SMTP id x185mr9242643wmg.124.1596742950142;
- Thu, 06 Aug 2020 12:42:30 -0700 (PDT)
+        id S1726386AbgHFT5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 15:57:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58988 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725875AbgHFT5K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Aug 2020 15:57:10 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 21AE52173E;
+        Thu,  6 Aug 2020 19:57:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596743830;
+        bh=XrYVZ3oqFm3D2f9WTdPjLr5x/qcgqkiOD1BzVfZIgT4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MNJslydKZ9YNIhU1w6SL5+DqIj2cQDuWHcclyQfcJZPfeCx19ROm0ISmLnMO0jRRa
+         Mj9BEW5d03ObOODRqzNqmE89sOMNctPywm97Ds+9rv0zEEIkC0/6+vQK3R+XB3OytQ
+         V3/XgW5gOUYHY2nP8mqrHeiwAJJv8i/y0UL4mjLY=
+Date:   Thu, 6 Aug 2020 12:57:08 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org,
+        Hillf Danton <hdanton@sina.com>
+Subject: Re: [PATCH v2] net: add support for threaded NAPI polling
+Message-ID: <20200806125708.6492ebfe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <2ce6de8b-f520-3f09-746a-caf2ecab428a@gmail.com>
+References: <20200806095558.82780-1-nbd@nbd.name>
+        <20200806115511.6774e922@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <2ce6de8b-f520-3f09-746a-caf2ecab428a@gmail.com>
 MIME-Version: 1.0
-References: <20200722054314.2103880-1-irogers@google.com> <CAEf4BzaBYaFJ3eUinS9nHeykJ0xEbZpwLts33ZDp1PT=bkyjww@mail.gmail.com>
- <CAP-5=fXMUWFs6YtQVuxjenCrOmKtKYCqZE3YofwdR=ArDYSwbQ@mail.gmail.com>
- <CAEf4BzYiY30de5qmiKeazG4ewyziXtdhHFFH4vjp1wi4iAXqiw@mail.gmail.com> <CAEf4BzZ_67M6nJZFL73ANYYARiErmv9aiYygw8JwJW4qyWGNog@mail.gmail.com>
-In-Reply-To: <CAEf4BzZ_67M6nJZFL73ANYYARiErmv9aiYygw8JwJW4qyWGNog@mail.gmail.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Thu, 6 Aug 2020 12:42:17 -0700
-Message-ID: <CAP-5=fWUsQ2c=Rm_QL1uo8zBZzx0JtqArnMXCEC7-u3xRsHLdQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] bpftool btf: Add prefix option to dump C
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 6, 2020 at 10:58 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Fri, Jul 31, 2020 at 8:47 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Fri, Jul 31, 2020 at 6:47 PM Ian Rogers <irogers@google.com> wrote:
-> > >
-> > > On Tue, Jul 21, 2020 at 11:58 PM Andrii Nakryiko
-> > > <andrii.nakryiko@gmail.com> wrote:
-> > > >
-> > > > On Tue, Jul 21, 2020 at 10:44 PM Ian Rogers <irogers@google.com> wrote:
-> > > > >
-> > > > > When bpftool dumps types and enum members into a header file for
-> > > > > inclusion the names match those in the original source. If the same
-> > > > > header file needs to be included in the original source and the bpf
-> > > > > program, the names of structs, unions, typedefs and enum members will
-> > > > > have naming collisions.
-> > > >
-> > > > vmlinux.h is not really intended to be used from user-space, because
-> > > > it's incompatible with pretty much any other header that declares any
-> > > > type. Ideally we should make this better, but that might require some
-> > > > compiler support. We've been discussing with Yonghong extending Clang
-> > > > with a compile-time check for whether some type is defined or not,
-> > > > which would allow to guard every type and only declare it
-> > > > conditionally, if it's missing. But that's just an idea at this point.
-> > >
-> > > Thanks Andrii! We're not looking at user-space code but the BPF code.
-> > > The prefix idea comes from a way to solve this problem in C++ with
-> > > namespaces:
-> > >
-> > > namespace vmlinux {
-> > > #include "vmlinux.h"
-> > > }
-> > >
-> > > As the BPF programs are C code then the prefix acts like the
-> > > namespace. It seems strange to need to extend the language.
-> >
-> > This is a classic case of jumping to designing a solution without
-> > discussing a real problem first :)
-> >
-> > You don't need to use any of the kernel headers together with
-> > vmlinux.h (and it won't work as well), because vmlinux.h is supposed
-> > to have all the **used** types from the kernel. So BPF programs only
-> > include vmlinux.h and few libbpf-provided headers with helpers. Which
-> > is why I assumed that you are trying to use it from user-space. But
-> > see below on what went wrong.
-> >
-> > >
-> > > > Regardless, vmlinux.h is also very much Clang-specific, and shouldn't
-> > > > work well with GCC. Could you elaborate on the specifics of the use
-> > > > case you have in mind? That could help me see what might be the right
-> > > > solution. Thanks!
-> > >
-> > > So the use-case is similar to btf_iter.h:
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/testing/selftests/bpf/progs/bpf_iter.h
-> > > To avoid collisions with somewhat cleaner macro or not games.
-> > >
-> > > Prompted by your concern I was looking into changing bpf_iter.h to use
-> > > a prefix to show what the difference would be like. I also think that
-> > > there may be issues with our kernel and tool set up that may mean that
-> > > the prefix is unnecessary, if I fix something else. Anyway, to give an
-> > > example I needed to build the selftests but this is failing for me.
-> > > What I see is:
-> > >
-> > > $ git clone git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-> > > $ cd bpf-next
-> > > $ make defconfig
-> > > $ cat >>.config <<EOF
-> > > CONFIG_DEBUG_INFO=y
-> > > CONFIG_DEBUG_INFO_BTF=y
-> > > EOF
-> > > $ make -j all
-> > > $ mkdir /tmp/selftests
-> > > $ make O=/tmp/selftests/ TARGETS=bpf kselftest
-> > > ...
-> > >   CLANG    /tmp/selftests//kselftest/bpf/tools/build/bpftool/profiler.bpf.o
-> > > skeleton/profiler.bpf.c:18:21: error: invalid application of 'sizeof'
-> > > to an incomplete type 'struct bpf_perf_event_value'
-> > >         __uint(value_size, sizeof(struct bpf_perf_event_value));
-> > >                            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > >
-> > > Checking with bpftool the vmlinux lacks struct bpf_perf_event_value
-> > > but as this is unconditionally defined in bpf.h this seems wrong. Do
-> > > you have any suggestions and getting a working build?
-> >
-> > It is unconditionally defined in bpf.h, but unless kernel code really
-> > uses that type for something, compiler won't generate DWARF
-> > information for that type, which subsequently won't get into BTF.
-> > Adding CONFIG_DEBUG_INFO_BTF=y ensures you get BTF type info
-> > generated, but only for subsystems that were compiled into vmlinux
-> > according to your kernel config.
-> >
-> > In this case, default config doesn't enable CONFIG_BPF_EVENTS, which
-> > is a requirement to compile kernel/trace/bpf_trace.c, which in turn
-> > uses struct bpf_perf_event_value in the helper signature.
-> >
-> > So the solution in your case would be to use a slightly richer kernel
-> > config, which enables more of the BPF subsystem. You can check
-> > selftests/bpf/config for a list of options we typically enable to run
-> > of selftests, for instance.
-> >
->
-> So we've discussed this and related issues today at BPF office hours
-> and few more thoughts occurred to me after I left the call.
+On Thu, 6 Aug 2020 12:25:08 -0700 Eric Dumazet wrote:
+> On 8/6/20 11:55 AM, Jakub Kicinski wrote:
+> > I'm still trying to wrap my head around this.
+> > 
+> > Am I understanding correctly that you have one IRQ and multiple NAPI
+> > instances?
+> > 
+> > Are we not going to end up with pretty terrible cache locality here if
+> > the scheduler starts to throw rx and tx completions around to random
+> > CPUs?
+> > 
+> > I understand that implementing separate kthreads would be more LoC, but
+> > we do have ksoftirqs already... maybe we should make the NAPI ->
+> > ksoftirq mapping more flexible, and improve the logic which decides to
+> > load ksoftirq rather than make $current() pay?
+> > 
+> > Sorry for being slow.
+> 
+> Issue with ksoftirqd is that
+> - it is bound to a cpu
 
-Thanks for the follow-up. I need to add the office hours to my schedule.
+Do you envision the scheduler balancing or work stealing being
+advantageous in some configurations?
 
-> You don't really have to use vmlinux.h, if it's inconvenient. Unless
-> you want to use some internal kernel type that's not available in
-> kernel-headers. Otherwise feel free to use normal kernel header
-> includes and don't use vmlinux.h. If you are using BPF_CORE_READ(),
-> any type is automatically CO-RE-relocatable, even if they come from
-> #include <linux/whatever.h>. If you need to use direct memory accesses
-> with programs like fentry/fexit, then adding:
->
-> #pragma clang attribute push (__attribute__((preserve_access_index)),
-> apply_to = record)
->
-> before you include any headers would make types in those headers
-> automatically CO-RE-relocatable even for direct memory accesses. So
-> this is just something to keep in mind.
->
->
-> But the way we've been handling this was like this.
->
-> On BPF program side:
->
-> #include "vmlinux.h"
-> #include "my_custom_types.h"
->
-> ...
->
->
-> On user-space program side:
->
-> #include <stdint.h> /* and whatever else is needed */
-> #include "my_custom_types.h"
->
-> Then in my_custom_types.h you just assume all the needed types are
-> defined (in either vmlinux.h or in user-space header includes):
->
->
-> struct my_struct {
->     uint64_t whatever;
-> };
->
-> So far worked fine. It still sucks you can't include some of the
-> kernel headers to get some useful macro, but to solve that we'd need
-> Clang extension to check that some type X is already defined, as we
-> discussed in the call.
->
-> Hope this helps a bit.
+I was guessing that for compute workloads having ksoftirq bound will
+actually make things more predictable/stable.
 
-Thanks, I was scratching around for examples because I was using a
-kernel that wasn't providing me even the values present in bpf.h. I
-looked at the bpf selftests as hopeful best practice, but that's where
-I saw the use of macros to move definitions out of the way:
- https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/testing/selftests/bpf/progs/bpf_iter.h
-This felt like my point of pain, so perhaps that code needs to carry a
-warning. Using #define to rename types, as in that file, doesn't scale
-for something like bpf.h and so this patch - which is intended to feel
-like a use of namespaces. There are related style issues (from the
-#define renaming) in Google's build system because of the use of
-modules [1] where this kind of "textual" use of headers is considered
-an issue.
+For pure routers (where we expect multiple cores to reach 100% just
+doing packet forwarding) as long as there is an API to re-balance NAPIs
+to cores - a simple specialized user space daemon would probably do a
+better job as it can consult packet drop metrics etc.
 
-I'm wondering, following this conversation whether there is some tech
-debt cleanup that could be done. For example, on the perf side I found
-that BPF errors were being swallowed:
-https://lore.kernel.org/lkml/20200707211449.3868944-1-irogers@google.com/
-Perf is defining its own bpf.h:
-https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/perf/include/bpf/bpf.h
-and perhaps that needs to be rethought to be more aligned with CO-RE
-and vmlinux.h.
-It would be nice if selftests could do a better job of building
-dependencies with the necessary config requirements. There's a lot of
-feeling around to make these things work, which seems less than ideal.
+Obviously I have no data to back up these claims..
 
-Thanks,
-Ian
+> - Its nice value is 0, meaning that user threads can sometime compete too much with it.
 
-[1] https://clang.llvm.org/docs/Modules.html
+True, I thought we could assume user level tuning.
 
-> [...]
+> - It handles all kinds of softirqs, so messing with it might hurt some other layer.
+
+Right, I have no data on how much this hurts in practice.
+
+> Note that the patch is using a dedicate work queue. It is going to be not practical
+> in case you need to handle two different NIC, and want separate pools for each of them.
+> 
+> Ideally, having one kthread per queue would be nice, but then there is more plumbing
+> work to let these kthreads being visible in a convenient way (/sys/class/net/ethX/queues/..../kthread)
+
+Is context switching cost negligible?
+
+ksoftirq-like thread replicates all the NAPI budget-level mixing we
+already do today.
