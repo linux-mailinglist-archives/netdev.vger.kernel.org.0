@@ -2,110 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86C2C23E101
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 20:42:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98FB223E0C6
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 20:39:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729592AbgHFSjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 14:39:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53992 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728212AbgHFS34 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Aug 2020 14:29:56 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A68B1221E2;
-        Thu,  6 Aug 2020 18:25:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596738333;
-        bh=44fEtW2caAEFXbE7fawJjZxMVIwDcVHgxMSMWD9dt9I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pGb2mHgQfkiIS0YL5xHX/68+l4GHFu4EJCbRNO3qHj0hAlJLmlRvBiVSWp1v2pdZR
-         s5dCjtvXrxDYZ2889wT/B88/eE9EVkBWx+mX692WZH7x29D/Ti8kEE7SCRIhEsVa1Z
-         BY2BtiaRGKiNprz+j2KZ/gP7yVosJq1OrmKft654=
-Date:   Thu, 6 Aug 2020 11:25:30 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Moshe Shemesh <moshe@mellanox.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: Re: [PATCH net-next RFC 01/13] devlink: Add reload level option to
- devlink reload command
-Message-ID: <20200806112530.0588b3ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200805110258.GA2169@nanopsycho>
-References: <20200728130653.7ce2f013@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <04f00024-758c-bc19-c187-49847c24a5a4@mellanox.com>
-        <20200729140708.5f914c15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3352bd96-d10e-6961-079d-5c913a967513@mellanox.com>
-        <20200730161101.48f42c5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <0f2467fd-ee2e-1a51-f9c1-02f8a579d542@mellanox.com>
-        <20200803141442.GB2290@nanopsycho>
-        <20200803135703.16967635@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200804100418.GA2210@nanopsycho>
-        <20200804133946.7246514e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200805110258.GA2169@nanopsycho>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1729819AbgHFSiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 14:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728105AbgHFSfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 14:35:16 -0400
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC97C061756
+        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 11:26:18 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id y30so7933355qvy.9
+        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 11:26:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=h6CKdCAZ7nexLhptlfsLTSjR9JI36kIOk0ydm+WNJwQ=;
+        b=evTkLWKyKJUcisp3sGIXFUzGQr/MOZpzg42XmX/3wYkt6nypVuYzShvTK0BAaORJcN
+         skrZLkEOZmUKhikjELX5tIRaLtV5dVzTT4+dB7ozAsswSyUPpsBmWaSKaFXoF8jw0Opf
+         Gka0cHPFf5G49l6q1E/kFeyrD/qGGn/fK9VyYAdI48jUIijXp2fqVgQXDet8ei6F88l/
+         syitSbcg8CD5FDsOAukvj7xwgTY1Hmg5JRAHEJl6IzUJwZbcGb8igqHaIl0nWeksDwC+
+         YJThB36usPn0UHVK6wI4g/eAeKklr+FvpM9LmgDcOKUX2yNA8KtL7qt20xRZ6YoHFYN2
+         3ppQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=h6CKdCAZ7nexLhptlfsLTSjR9JI36kIOk0ydm+WNJwQ=;
+        b=NPSoi58B6ilzSuA1yZ5sV7maS1QVHmUeVWRTRJ2K9vGzk44JSNgPkqvpQc2i7e0fd9
+         3XAmb24eCHT9ZKqOQy5eysrGCCobfexw7TJ0PsSEPSzzvE3GvyGCEcCBd5HL8/6O0hmc
+         HsaBkvcEhT1HWXWIlfgmovo5w/QjofYgu26Eels8c41HKeV0Z8pGuuujtXdamjbkxw8o
+         1o4pbq+Swqm/mCnLMNrkdmIMEkGe14/KNR0xNZlnQLwgDBQlue/JOswQMF7v9zXVceGP
+         VbFaOyictoyojBX7RScBWCjDL59BowguoIxpPE5vGbfZYY1knUeKzM5bWITp1aN9KI5F
+         UsZQ==
+X-Gm-Message-State: AOAM532Ldj3l0fqzLe3dC+tg3R4O8kXnWS9qWDAtoGvPhmjnQCxMkqQk
+        ZQjeWciw8Uu3FpN7pc4RGcn3/j6rD92cY6R1+sE3yXbfEGSWA72j9IUWFC+gqs/bgCc9i9q2ckh
+        YIg5p20pfAW8zI3YnqrSHUzVXjtKZj+BWqhAuVe0BkEIQ/vpn8dEW0w==
+X-Google-Smtp-Source: ABdhPJz1Fv5DIBVnHlfSBLv3sf2vQ9E+wLoBoKa8WwHCPB8AYq6Gsk70z9kID5J4BihogzMQjDcFH14=
+X-Received: by 2002:a0c:f4d3:: with SMTP id o19mr10564858qvm.204.1596738373936;
+ Thu, 06 Aug 2020 11:26:13 -0700 (PDT)
+Date:   Thu,  6 Aug 2020 11:26:12 -0700
+Message-Id: <20200806182612.1390883-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.236.gb10cc79966-goog
+Subject: [PATCH bpf] bpf: remove inline from bpf_do_trace_printk
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 5 Aug 2020 13:02:58 +0200 Jiri Pirko wrote:
-> Tue, Aug 04, 2020 at 10:39:46PM CEST, kuba@kernel.org wrote:
-> >AFAIU the per-driver default is needed because we went too low 
-> >level with what the action constitutes. We need maintain the higher
-> >level actions.
-> >
-> >The user clearly did not care if FW was reset during devlink reload
-> >before this set, so what has changed? The objective user has is to  
-> 
-> Well for mlxsw, the user is used to this flow:
-> devlink dev flash - flash new fw
-> devlink dev reload - new fw is activated and reset and driver instances
-> are re-created.
+I get the following error during compilation on my side:
+kernel/trace/bpf_trace.c: In function 'bpf_do_trace_printk':
+kernel/trace/bpf_trace.c:386:34: error: function 'bpf_do_trace_printk' can never be inlined because it uses variable argument lists
+ static inline __printf(1, 0) int bpf_do_trace_printk(const char *fmt, ...)
+                                  ^
 
-Ugh, if the current behavior already implies fw-activation for some
-drivers then the default has to probably be "do all the things" :S
+Fixes: ac5a72ea5c89 ("bpf: Use dedicated bpf_trace_printk event instead of trace_printk()")
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ kernel/trace/bpf_trace.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> >activate their config / FW / move to different net ns. 
-> >
-> >Reloading the driver or resetting FW is a low level detail which
-> >achieves different things for different implementations. So it's 
-> >not a suitable abstraction -> IOW we need the driver default.  
-> 
-> I'm confused. So you think we need the driver default?
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index cb91ef902cc4..a8d4f253ed77 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -383,7 +383,7 @@ static DEFINE_RAW_SPINLOCK(trace_printk_lock);
+ 
+ #define BPF_TRACE_PRINTK_SIZE   1024
+ 
+-static inline __printf(1, 0) int bpf_do_trace_printk(const char *fmt, ...)
++static __printf(1, 0) int bpf_do_trace_printk(const char *fmt, ...)
+ {
+ 	static char buf[BPF_TRACE_PRINTK_SIZE];
+ 	unsigned long flags;
+-- 
+2.28.0.236.gb10cc79966-goog
 
-No, I'm talking about the state of this patch set. _In this patchset_ 
-we need a driver default because of the unsuitable abstraction.
-
-Better design would not require it.
-
-> >The work flow for the user is:
-> >
-> >0. download fw to /lib/firmware
-> >1. devlink flash $dev $fw
-> >2. if live activation is enabled
-> >   yes - devlink reload $dev $live-activate
-> >   no - report machine has to be drained for reboot
-> >
-> >fw-reset can't be $live-activate, because as Jake said fw-reset does
-> >not activate the new image for Intel. So will we end up per-driver
-> >defaults in the kernel space, and user space maintaining a mapping from  
-> 
-> Well, that is what what is Moshe's proposal. Per-driver kernel default..
-> I'm not sure what we are arguing about then :/
-
-The fact that if I do a pure "driver reload" it will active new
-firmware for mlxsw but not for mlx5. In this patchset for mlx5 I need
-driver reload fw-reset. And for Intel there is no suitable option.
-
-> >a driver to what a "level" of reset implies.
-> >
-> >I hope this makes things crystal clear. Please explain what problems
-> >you're seeing and extensions you're expecting. A list of user scenarios
-> >you foresee would be v. useful.  
