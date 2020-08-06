@@ -2,85 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58AD223DFF6
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:56:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79F5623DF7F
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:48:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729938AbgHFRzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 13:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39230 "EHLO
+        id S1729266AbgHFRsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 13:48:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728127AbgHFQ2v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:28:51 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A82C002146;
-        Thu,  6 Aug 2020 09:27:14 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id 2so41360884qkf.10;
-        Thu, 06 Aug 2020 09:27:14 -0700 (PDT)
+        with ESMTP id S1728621AbgHFQfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:35:48 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446AAC0A8938
+        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 09:35:43 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id t6so6880202pjr.0
+        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 09:35:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=225Ec0jRi2rAkWfglvmB14+Xf1LKuW7KGiY8EdguzPY=;
-        b=gCn6dHyyEFOLso4hE2aDVTi8b0kiyhxz8nA2XSaJIXeoE6rVRgBiscAdsxsnI3WRUE
-         KcUSEcVt4bm4xzu3GXLEwyrGKte8Axr+quDfcNUO3IBUQOwiyMABPj3u5WJl8t3BXaYl
-         JzREWGGAlr3cz/1PVS2HOxoTvjJnILxTewac1S0zOSxmPI5z8iBm18OofZIufsh/gQEo
-         imKv8pmp8su5Tza5u8hS++MWlC2HXBBpV4wRMvTY+3KhZXVVZjcq/L+Y1Gqb9oCUQa84
-         dvbPOgyAU5u1ZFi13egxlSEOz4pvyl9d0lCIH6otgnRk4PqYIjtNZPPrTMW1ADpGneXd
-         QLJw==
+        h=from:to:cc:subject:date:message-id;
+        bh=LrfpxJapN5Whw362ysmueBnYm5S5mysz/IRV5u6I9Y8=;
+        b=avlI4+lvHofTYV5vpnliFiRfSLNIm2iVCYWVvOrni23HNL8qeHXLccOpmmIdRVE65z
+         RMVfxoUrxk1G1M8F/ytQ2Q6P/z1VDZigmPdi9uMQjpXDUeusPUGT8pn/JLOyPhVoulRo
+         W7nF94T/8SpPUN2Psi7pGV0R0hmeery1bB5b8K91IWKvuLCX+mnSX5ugDmIvn5Fodshn
+         EQ4jQl534GKfgmCmcqlE8iwdCpzyPBcigg2+BZmMVaIuBNE7wgJfXvdJyRD48L2Lj1d5
+         DG6yg9jtFwZ6zDaWyKUeRSjqXHKyMEaRtJ/NZtz2JxL19F/rfVKXmVJRHmW4BWZ2BA8V
+         RUAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=225Ec0jRi2rAkWfglvmB14+Xf1LKuW7KGiY8EdguzPY=;
-        b=dteynfkMBHVniA2WbF0E41oKD0gh223h90M0t2g4nY07ntVGTVrYL85ddrT2T0bOyB
-         YliyBhzzXUAtNStVRv2eI/9PpcoTxqKGbtEPUgzHfcU1CtdWlbYZLUEGQhmGAt77obfO
-         VEx9ONEj2EEt2N7hP42wMAOzriSSe11xmG6Fxbkk7Ilxy48M8TE4gSrgBeTGgBiPZ6kJ
-         ylnmOCkYPMvdR0iruYx7VgA/Ri85qsLrwVEDs1CuzXo4XXXS1PHvt13SmrkVMn0drUEf
-         MfXYnm5xMgA49d+xYhTiC5rWJbm5NZBpBw7rniV+zjbDyOj9M9E6joK67zpO3jEJkQNL
-         EqDA==
-X-Gm-Message-State: AOAM531LN/cmskacD1khPn6OiZAwX9r15GPxH10ZUayWihH4TgcENCmZ
-        ZP6Yw8KT4hulwntcg/1Hyc71BSrE
-X-Google-Smtp-Source: ABdhPJywwDUyEWOTJnzS8mTGAzMp0JNB0OzHvugpIl013ZNxAihGlVDlV6rMjCjkt7Bcu9dTLxS1sQ==
-X-Received: by 2002:a37:714:: with SMTP id 20mr9698368qkh.367.1596731233528;
-        Thu, 06 Aug 2020 09:27:13 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:7c83:3cd:b611:a456? ([2601:282:803:7700:7c83:3cd:b611:a456])
-        by smtp.googlemail.com with ESMTPSA id v14sm5077731qto.81.2020.08.06.09.27.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Aug 2020 09:27:12 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 0/3] Global per-type support for QP counters
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Ido Kalir <idok@mellanox.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Mark Zhang <markz@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-References: <20200804084909.604846-1-leon@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f571ff0c-6bd4-3192-1c88-7957d94a5a45@gmail.com>
-Date:   Thu, 6 Aug 2020 10:27:11 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
-MIME-Version: 1.0
-In-Reply-To: <20200804084909.604846-1-leon@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=LrfpxJapN5Whw362ysmueBnYm5S5mysz/IRV5u6I9Y8=;
+        b=lvaS7jVG791WbWPtfcmQSS4oEt9L08Zy/UXAW46awdruQCsCj+ZJ1R2x0NEmQ6neIv
+         2Cegc0xyLG0Nm15lPdRuspyQ70F3vAIEDrwX9d1PqUNUPIg+cSlX2vrfjzGg8u6VQlTz
+         nHaYQOLv7YcH2WhnFhETnwRGkOvfdExRIvmr4K4e4CzvsydDLYQCrI6e2QGPtfc+LCh5
+         UOtFDmPakQYg3UUSj50b+dgHTTcIi57D2Bo0HMhXdRr4pBkDBeLuw4SrLmkeKJOP0R8c
+         5H7/BVTqr2CYdKNRcLpc5MiBiuXzJvF80bm/YRE2Rb7w9OLdIvdtYajn+pWubq4xafXP
+         6I3g==
+X-Gm-Message-State: AOAM530js41c9gkb2QKmf1JXswArKPe15OtKzQG/0HwWhvGi3nxx1Itm
+        Ug/QPhW1fYBXezSzFeh6Y3A=
+X-Google-Smtp-Source: ABdhPJy57RT0i4aYAfiiZVRNPywS0KgTFsEsd+Lt1QU7eVyIJzg0UXhnhNwJpqWQe7JiL7jK5UoqtQ==
+X-Received: by 2002:a17:90a:e381:: with SMTP id b1mr9048082pjz.218.1596731742654;
+        Thu, 06 Aug 2020 09:35:42 -0700 (PDT)
+Received: from hyd1358.caveonetworks.com ([115.113.156.2])
+        by smtp.googlemail.com with ESMTPSA id g15sm9071839pfh.70.2020.08.06.09.35.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 06 Aug 2020 09:35:42 -0700 (PDT)
+From:   sundeep.lkml@gmail.com
+To:     davem@davemloft.net, kuba@kernel.org, richardcochran@gmail.com,
+        netdev@vger.kernel.org, sgoutham@marvell.com
+Cc:     Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [PATCH v5 net-next 0/3] Add PTP support for Octeontx2
+Date:   Thu,  6 Aug 2020 22:05:28 +0530
+Message-Id: <1596731731-31581-1-git-send-email-sundeep.lkml@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/4/20 2:49 AM, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
-> 
-> Changelog:
->  * Update first patch to latest rdma_netlink.h file.
->  * Drop RFC, the kernel part was accepted.
-> https://lore.kernel.org/linux-rdma/20200726112011.75905-1-leon@kernel.org
-> 
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-applied to iproute2-next
+Hi,
+
+This patchset adds PTP support for Octeontx2 platform.
+PTP is an independent coprocessor block from which
+CGX block fetches timestamp and prepends it to the
+packet before sending to NIX block. Patches are as
+follows:
+
+Patch 1: Patch to enable/disable packet timstamping
+         in CGX upon mailbox request. It also adjusts
+         packet parser (NPC) for the 8 bytes timestamp
+         appearing before the packet.
+
+Patch 2: Patch adding PTP pci driver which configures
+         the PTP block and hooks up to RVU AF driver.
+         It also exposes a mailbox call to adjust PTP
+         hardware clock.
+
+Patch 3: Patch adding PTP clock driver for PF netdev.
+
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Acked-by: Jakub Kicinski <kuba@kernel.org>
+
+v5:
+ As suggested by David separated the fix (adding rtnl lock/unlock)
+ and submitted to net.
+ https://www.spinics.net/lists/netdev/msg669617.html
+v4:
+ Added rtnl_lock/unlock in otx2_reset to protect against
+ network stack ndo_open and close calls
+ Added NULL check after ptp_clock_register in otx2_ptp.c
+v3:
+ Fixed sparse error in otx2_txrx.c
+ Removed static inlines in otx2_txrx.c
+v2:
+ Fixed kernel build robot reported error by
+ adding timecounter.h to otx2_common.h
+
+Aleksey Makarov (2):
+  octeontx2-af: Add support for Marvell PTP coprocessor
+  octeontx2-pf: Add support for PTP clock
+
+Zyta Szpak (1):
+  octeontx2-af: Support to enable/disable HW timestamping
+
+ drivers/net/ethernet/marvell/octeontx2/af/Makefile |   2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c    |  29 +++
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |   4 +
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  21 ++
+ drivers/net/ethernet/marvell/octeontx2/af/ptp.c    | 244 +++++++++++++++++++++
+ drivers/net/ethernet/marvell/octeontx2/af/ptp.h    |  22 ++
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  29 ++-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   5 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  54 +++++
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |  52 +++++
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    |  27 +++
+ .../net/ethernet/marvell/octeontx2/nic/Makefile    |   3 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |   7 +
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  19 ++
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  28 +++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 168 +++++++++++++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_ptp.c  | 209 ++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_ptp.h  |  13 ++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  87 +++++++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   1 +
+ 20 files changed, 1014 insertions(+), 10 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/ptp.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/ptp.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.h
+
+-- 
+2.7.4
 
