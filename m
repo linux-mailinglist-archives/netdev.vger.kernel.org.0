@@ -2,74 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A1F823D7AF
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 09:49:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F92423D7C2
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 09:56:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728841AbgHFHtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 03:49:23 -0400
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:48151 "EHLO
-        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728829AbgHFHtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 03:49:19 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id A746F1029;
-        Thu,  6 Aug 2020 03:49:13 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 06 Aug 2020 03:49:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=q7DxaO
-        PJVaS8LWtXNtIORn1WxTk8Oijh/Ce2HabIUXc=; b=SF0bxCFnNaM/7Jt5VxZ09r
-        8URVNapfCPI52RE9SzuHaAtEgWpHaBhwb+eu6R+KX6VniUMCLo4uuENLfIj1Lj54
-        In7DSiZ6Gqzj/35LaCxk2qDcRnLckbAeVyF3ATZHkX1om6lSkd4YjT6GkTk0/J7V
-        4bMzKLoEoYuBEYtOuvYqQ3gHMtzCeBJhLQToUHrcCc8BP8RblgH7wqS34W9zbhzy
-        8kMHy5lFinfULI2HTTb4Fs8ytEyG2V3TtRr8lXL0jteZZjEjXPC/o4CCf+h5g/Us
-        lZDdihwY4i2QOvxOdZm+rsP08IxQonaXbUIxbcyfeqYFeCA5iXf2n4LrN4RuxgcA
-        ==
-X-ME-Sender: <xms:-LUrX_9dbwqkPJX6H2xwvZKP4myOnaseYq4W4eIqkbW9RuBTZoGW0Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrjeelgdduvdejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
-    dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnheptdffkeekfeduffevgeeujeffjefhte
-    fgueeugfevtdeiheduueeukefhudehleetnecukfhppeejledrudekuddriedrvdduleen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
-    gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:-LUrX7s76JCy8LO70WyXMgD8fYFYLUy34se266KoDnRtUHQdVzP8Jw>
-    <xmx:-LUrX9DIT4qzlco1TMWtFE_x8hY6_bgNm3hx2ONoyNVzTdB4o9QD6A>
-    <xmx:-LUrX7fMBlchmtXJutgvXQBv3AOJ-fh_QNps5hbLMzPz09qxNPk1YA>
-    <xmx:-bUrX-srDJmt6jk4zxXaz54isYxRDyDkXIE1jskr6Hq_Mq0SYspYtA>
-Received: from localhost (bzq-79-181-6-219.red.bezeqint.net [79.181.6.219])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6962930600B4;
-        Thu,  6 Aug 2020 03:49:12 -0400 (EDT)
-Date:   Thu, 6 Aug 2020 10:49:09 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Swarm NameRedacted <thesw4rm@pm.me>
-Cc:     netdev@vger.kernel.org
-Subject: Re: Packet not rerouting via different bridge interface after
- modifying destination IP in TC ingress hook
-Message-ID: <20200806074909.GA2624653@shredder>
-References: <20200805081951.4iznjdgudulitamc@chillin-at-nou.localdomain>
- <20200805133922.GB1960434@lunn.ch>
- <20200805201204.vsnav57fmgqkkpxf@chillin-at-nou.localdomain>
- <20200806063336.GA2621096@shredder>
- <20200806070011.fmqvd4hekpehx425@chillin-at-nou.localdomain>
+        id S1728334AbgHFH4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 03:56:24 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:56462 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727006AbgHFH4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 03:56:19 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1596700577;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oxcPCOsVLRgnK8paFoLXrTRYnlgDIKkJ0vlNmxVeJus=;
+        b=TnE7SWjtF48lxgl5bhgi+lGeBZ+O3H4tB0WRy84SXJ/UXeVQpLoSKF0DWZVKejvbPukEY5
+        uzu5OwZIdy2pJTe+7jGLzy5smhfI+5ybZZO9+jJp/LMbsLQAfDTez98Xc5Q5UGpN9jPJlm
+        viHHaSwq1FNzgpswmN6DurjLIH4+gONcthDh6tdDURSNgox05npDbmdPpm43lmauo2B1lu
+        eIHDBKNwLkafd2+OnU3JwZJp1nmjyRKqycpRntsnjU9EejHMwWHL83pYns8ABbgWd6YLRG
+        VdC12cfsZIeY0ZMQbpRI7Qm1yy3LoOrV5rgN9+h6Mm7dxy7oIgkuaSafM9ekBw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1596700577;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oxcPCOsVLRgnK8paFoLXrTRYnlgDIKkJ0vlNmxVeJus=;
+        b=TNYS64vbQjTZ8Lp4PYXJ5vnIEq9MFQH24giySrtCtPzrx+ROdyfIqdPot0U0X0sg7q60mF
+        UeYxgMJmjcNjeZDA==
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Petr Machata <petrm@mellanox.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 1/9] ptp: Add generic ptp v2 header parsing function
+In-Reply-To: <292391c2-e59c-7c53-6bdd-164d9f3fd867@ti.com>
+References: <20200730080048.32553-1-kurt@linutronix.de> <20200730080048.32553-2-kurt@linutronix.de> <87lfj1gvgq.fsf@mellanox.com> <87pn8c0zid.fsf@kurt> <09f58c4f-dec5-ebd1-3352-f2e240ddcbe5@ti.com> <20200804210759.GU1551@shell.armlinux.org.uk> <45130ed9-7429-f1cd-653b-64417d5a93aa@ti.com> <20200804214448.GV1551@shell.armlinux.org.uk> <8f1945a4-33a2-5576-2948-aee5141f83f6@ti.com> <20200804231429.GW1551@shell.armlinux.org.uk> <875z9x1lvn.fsf@kurt> <4d9aeb50-e8df-369a-7e3d-87ff9ba86079@ti.com> <87bljpnqji.fsf@kurt> <292391c2-e59c-7c53-6bdd-164d9f3fd867@ti.com>
+Date:   Thu, 06 Aug 2020 09:56:05 +0200
+Message-ID: <874kpg8ay2.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200806070011.fmqvd4hekpehx425@chillin-at-nou.localdomain>
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 06, 2020 at 07:00:15AM +0000, Swarm NameRedacted wrote:
-> Not sure this applies. There's no NAT since everything is on the same
-> subnet. 
+--=-=-=
+Content-Type: text/plain
 
-IIUC, packet is received on eth0, you then change the DMAC to SMAC on
-ingress (among other things) and then packet continues to the bridge.
-The bridge checks the DMAC and sees that the packet is supposed to be
-forwarded out of eth0. Since it's also the ingress interface the packet
-is dropped. To overcome this you need to enable hairpin.
+On Wed Aug 05 2020, Grygorii Strashko wrote:
+> On 05/08/2020 16:57, Kurt Kanzenbach wrote:
+>> So, only patch 6 is to drop or 5 as well? Anyhow, I'll wait for your
+>> test results. Thanks!
+>
+> Patch 5 not affected as all RX packet have timestamp and it's coming different way.
+> TX not affected as skb come to .xmit() properly initialized.
+
+OK.
+
+>
+> As I've just replied for patch 6 - skb_reset_mac_header() helps.
+
+OK. I'll add it. Thanks for testing and fixing it.
+
+>
+> Rhetorical question - is below check really required?
+> Bad packets (short, crc) expected to be discarded by HW
+>
+> 	/* Ensure that the entire header is present in this packet. */
+> 	if (ptr + sizeof(struct ptp_header) > skb->data + skb->len)
+> 		return NULL;
+
+Even if it's a rhetorical question - Can we rely on the fact that too
+short packets (or bad) are discarded? All driver instances I've changed
+in this series do the length check somehow.
+
+>
+>
+> And I'd like to ask you to update ptp_parse_header() documentation
+> with description of expected SKB state for this function to work.
+
+Yes, I've wanted to do that anyway.
+
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8rt5UACgkQeSpbgcuY
+8Kb5ERAAvBwonm2Faij5go3anEM1aVYo2HBlWIMbWnT4AKOaXYuJieTbRrfs7Skw
+8FGl99t+KOjMevZq7GZwaIRDy6CoqBJm8VFpn6aN28Erh6AKykwz7Qpqy5tIWQQx
+BLNepz9hqiLVmad01WGn1AxL0h1pKEvmRQMGmMPOvUhZMXHQXuY7AGSFle/oYdJ4
+yM0YGLq1ihR+xEQdDuxq2Np8mt/GS+Am9kBZ3bk8xy02Vp0pjuiey8kRDsLZiYeE
+CXtTs9V9crGCSqhWbdiGyGhQOEfKJ7W04+Y/Mn9O1c2lM8teB0SdXniKFE3318Wr
+6ruzh6d/KcGIgB2PYgUMgAA0E+uuL0sY6N1x6P3vYSvMbDnab31pc+b60hG77QC+
+RMbpIK8f+eYaD2f4FqNYATNpoDPazCUf0aDlThTcEuuxiun8bH/qKXwe2+qiIx4g
+2+VSgA7fyY5oDKJep8sLaHQdGD3J+JWxtZD080XnpaVDcYD/lNsx4vmh3l/WcE4m
+ASYDO8a8pmZhyiv0WUoBPP4hk5+idfZLEQC8+A4fOsx2uArgKOEMnlWWgnbq5IM9
+wJVJDv7keitX3gAOpgWTmiMre3FyZWqKZ7Sh8aT/1RJU8P43VePSemly39P017Iz
+pnZYNqTlTrOtHIagajdpIefMy/Zi+1dpoP7+CDZ3247fOBwzA2k=
+=2MWq
+-----END PGP SIGNATURE-----
+--=-=-=--
