@@ -2,129 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6417123DF9C
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:51:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59A4D23E003
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:58:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729079AbgHFRvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 13:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
+        id S1728190AbgHFR60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 13:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729705AbgHFRuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 13:50:11 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57736C061574;
-        Thu,  6 Aug 2020 10:50:11 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id x2so5977925ybf.12;
-        Thu, 06 Aug 2020 10:50:11 -0700 (PDT)
+        with ESMTP id S1728021AbgHFR6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 13:58:25 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73275C061574;
+        Thu,  6 Aug 2020 10:58:25 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id m200so22002427ybf.10;
+        Thu, 06 Aug 2020 10:58:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=8UHleMBazRSAjivcnBja6O0vBcnfRU+sD5hTA4lBxyY=;
-        b=YnJkR9pRs626Ju4veJYXUiX5afJoPSBg5sIPIEMGAOgLhc80HG5rxk2zvUjcIwsDVS
-         g9ACFt6aJZwRbynC8TmhWvmOrdN32RMPufBHZZX9gN9vXsIWB0zB09LWsD2b2rl8MjiD
-         ZDgUZDfSt+ufXX3QSjkaWjdX2L9VsSmTxb0qlAIv7N7FL1tCQ6E1TxA8dUlILwFJDRpM
-         ssZpO0jS9B+6YgU5meGSrUzFPvvIqKRz068O99R0AXV8lPX1dOAlf2Mrae/mnp0Dd6ie
-         XB76i4NnndknEtW1u/DLvFM8WmSwdtdIzsg8+AevQvQS+uu1eTqlcJag69F+K5w3nLv+
-         BsXA==
+        bh=38zt7R0RJPvUtymX3Nw4Froxt2V5VzBCbTJwdCMITjk=;
+        b=JqOUSExpWEr6MrFaSCly9Ovija/fz43XDW+gr6PI61X+B+JCPytJ2Vf1F9JIMC7LuV
+         t7EG7svIbvbImejCECaNF0WFsDqeEaBI8FZLkOA4kechvVj2051f6rhhB5xk3iIaSM2F
+         qYK8KCMLC6dNC0Tfl6UL8+lfIKSER1HbggNtkRJmBZdFbHfchW1bj2qfa9PLbR/q0I5a
+         zdje0Orjx+M8gmCTn0POcb7PLabdLmbaSAF3CtQ5qikd0OzNB9IwRYIiJYLKSrqnfw7z
+         uuLv0PUSZrw5TxyVDFCVyRVXR6zSHQP6tZ4e19lTYqrHa41MutsJkkPJ4gf/2bfvdJbZ
+         Nd/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=8UHleMBazRSAjivcnBja6O0vBcnfRU+sD5hTA4lBxyY=;
-        b=XQcsl65HxmeiKQjLgd9qguJzV8TQJV1Vbw9zAZaDmV96ATEFYgyXtw+VK3SxmvzpD0
-         AiR6J9TMLCThCAB52v7wcnmwpGQd8fia6UfDMsVa0AJgLjMMCbSZjE1Apfplgmvop/+o
-         X5SUXvaE3H0c+ZkC5s4JBUvS+8uSlZamgkwoDRUMM6IlMRhTvlqfLnAlecPRGAquMiHD
-         FCk+hMidXHmxQrvWIFj4Rr9JQHMP/gI3pPC8fbEOnxocB6bhRRahIw7LonVxjDCvSyih
-         fKgd6WYL6oxszqdcA50IyxWksfUXsudjIbMeGdEMu7+S90VQ8k369qko1Pq8PSXSGP4s
-         Y7Ag==
-X-Gm-Message-State: AOAM532EYRTSB9+UQIG6bXISkfGRRqjCcxsSQUEvc0IavwMVjYnXqOwU
-        Q3bI7RBhnalS8PTGNDvOGnyYmetQQY72ZPRNYcY=
-X-Google-Smtp-Source: ABdhPJzu9faZnv6CZX9Pq7ZInAP6XXIGsSVCif9fCygrKzUM1zf1RwiOEk6tQbAnzFH9/gPca6kL1AN+eQ/SExOOWtk=
-X-Received: by 2002:a25:ba0f:: with SMTP id t15mr14688825ybg.459.1596736210259;
- Thu, 06 Aug 2020 10:50:10 -0700 (PDT)
+        bh=38zt7R0RJPvUtymX3Nw4Froxt2V5VzBCbTJwdCMITjk=;
+        b=K0/fjFvLtQcIT+ZGB9G7Nib41xduzR+TRp7PwE9dKRtl9DZjtp287ryAL8LjKe2cbw
+         qX4TEW/Fj+dZBcYh2P/T6f6KVIUYUBkxy/mSqxp2hpuCHSs4huVqoCz/5j6gygtz8UBT
+         p8ch8haGeJvZb/k/6QX+guurkY1gmoJMiAB2p1JowMNS7kHYOeG9N4g1yOniTGv2t/jB
+         6zKv3JpBuSRQskTEFPOvoW1GAR4NSXJin6tfBNqtRQxikoIVHluOPZVgcSfoGoHrnkmw
+         yULdASGrANLAyvldw06GbfiGEgbR5nUhcaSbRSiAqUyVzqdJ82xqbHGLhYSV33Bc8l8D
+         gwrw==
+X-Gm-Message-State: AOAM53183e0cowIqhH2+4iaeYB/ru9gtVGr2bHKgCwNwGKvMMpHMVHU3
+        PCfMW7v0ciKFZ3gxgQwwe2ppb8zGzUUcy0zETB4=
+X-Google-Smtp-Source: ABdhPJz355Ybf7YZoM14a0jlC2NgBFxprVG+YySjYZNVzQuSWG8GFbt/H3f/xBFH7oB6PrZTgeImqQGI4NkzBYFnW3k=
+X-Received: by 2002:a25:84cd:: with SMTP id x13mr14685208ybm.425.1596736702777;
+ Thu, 06 Aug 2020 10:58:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200802013219.864880-1-andriin@fb.com> <20200806173931.GJ71359@kernel.org>
-In-Reply-To: <20200806173931.GJ71359@kernel.org>
+References: <20200722054314.2103880-1-irogers@google.com> <CAEf4BzaBYaFJ3eUinS9nHeykJ0xEbZpwLts33ZDp1PT=bkyjww@mail.gmail.com>
+ <CAP-5=fXMUWFs6YtQVuxjenCrOmKtKYCqZE3YofwdR=ArDYSwbQ@mail.gmail.com> <CAEf4BzYiY30de5qmiKeazG4ewyziXtdhHFFH4vjp1wi4iAXqiw@mail.gmail.com>
+In-Reply-To: <CAEf4BzYiY30de5qmiKeazG4ewyziXtdhHFFH4vjp1wi4iAXqiw@mail.gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 6 Aug 2020 10:49:59 -0700
-Message-ID: <CAEf4BzbQTg7ct0+JpSFY2rQ4H8j6vScb0z_wJ-PeFqDzS=aE7Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] Add generic and raw BTF parsing APIs to libbpf
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
+Date:   Thu, 6 Aug 2020 10:58:12 -0700
+Message-ID: <CAEf4BzZ_67M6nJZFL73ANYYARiErmv9aiYygw8JwJW4qyWGNog@mail.gmail.com>
+Subject: Re: [RFC PATCH] bpftool btf: Add prefix option to dump C
+To:     Ian Rogers <irogers@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 6, 2020 at 10:39 AM Arnaldo Carvalho de Melo
-<arnaldo.melo@gmail.com> wrote:
+On Fri, Jul 31, 2020 at 8:47 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> Em Sat, Aug 01, 2020 at 06:32:16PM -0700, Andrii Nakryiko escreveu:
-> > It's pretty common for applications to want to parse raw (binary) BTF data
-> > from file, as opposed to parsing it from ELF sections. It's also pretty common
-> > for tools to not care whether given file is ELF or raw BTF format. This patch
-> > series exposes internal raw BTF parsing API and adds generic variant of BTF
-> > parsing, which will efficiently determine the format of a given fail and will
-> > parse BTF appropriately.
+> On Fri, Jul 31, 2020 at 6:47 PM Ian Rogers <irogers@google.com> wrote:
 > >
-> > Patches #2 and #3 removes re-implementations of such APIs from bpftool and
-> > resolve_btfids tools.
+> > On Tue, Jul 21, 2020 at 11:58 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Tue, Jul 21, 2020 at 10:44 PM Ian Rogers <irogers@google.com> wrote:
+> > > >
+> > > > When bpftool dumps types and enum members into a header file for
+> > > > inclusion the names match those in the original source. If the same
+> > > > header file needs to be included in the original source and the bpf
+> > > > program, the names of structs, unions, typedefs and enum members will
+> > > > have naming collisions.
+> > >
+> > > vmlinux.h is not really intended to be used from user-space, because
+> > > it's incompatible with pretty much any other header that declares any
+> > > type. Ideally we should make this better, but that might require some
+> > > compiler support. We've been discussing with Yonghong extending Clang
+> > > with a compile-time check for whether some type is defined or not,
+> > > which would allow to guard every type and only declare it
+> > > conditionally, if it's missing. But that's just an idea at this point.
 > >
-> > Andrii Nakryiko (3):
-> >   libbpf: add btf__parse_raw() and generic btf__parse() APIs
-> >   tools/bpftool: use libbpf's btf__parse() API for parsing BTF from file
-> >   tools/resolve_btfids: use libbpf's btf__parse() API
+> > Thanks Andrii! We're not looking at user-space code but the BPF code.
+> > The prefix idea comes from a way to solve this problem in C++ with
+> > namespaces:
+> >
+> > namespace vmlinux {
+> > #include "vmlinux.h"
+> > }
+> >
+> > As the BPF programs are C code then the prefix acts like the
+> > namespace. It seems strange to need to extend the language.
 >
-> I haven't checked which of the patches, or some in other series caused
-> this on Clear Linux:
+> This is a classic case of jumping to designing a solution without
+> discussing a real problem first :)
 >
->   21 clearlinux:latest             : FAIL gcc (Clear Linux OS for Intel Architecture) 10.2.1 20200723 releases/gcc-10.2.0-3-g677b80db41, clang ver
-> sion 10.0.1
+> You don't need to use any of the kernel headers together with
+> vmlinux.h (and it won't work as well), because vmlinux.h is supposed
+> to have all the **used** types from the kernel. So BPF programs only
+> include vmlinux.h and few libbpf-provided headers with helpers. Which
+> is why I assumed that you are trying to use it from user-space. But
+> see below on what went wrong.
 >
->   gcc (Clear Linux OS for Intel Architecture) 10.2.1 20200723 releases/gcc-10.2.0-3-g677b80db41
+> >
+> > > Regardless, vmlinux.h is also very much Clang-specific, and shouldn't
+> > > work well with GCC. Could you elaborate on the specifics of the use
+> > > case you have in mind? That could help me see what might be the right
+> > > solution. Thanks!
+> >
+> > So the use-case is similar to btf_iter.h:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/testing/selftests/bpf/progs/bpf_iter.h
+> > To avoid collisions with somewhat cleaner macro or not games.
+> >
+> > Prompted by your concern I was looking into changing bpf_iter.h to use
+> > a prefix to show what the difference would be like. I also think that
+> > there may be issues with our kernel and tool set up that may mean that
+> > the prefix is unnecessary, if I fix something else. Anyway, to give an
+> > example I needed to build the selftests but this is failing for me.
+> > What I see is:
+> >
+> > $ git clone git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+> > $ cd bpf-next
+> > $ make defconfig
+> > $ cat >>.config <<EOF
+> > CONFIG_DEBUG_INFO=y
+> > CONFIG_DEBUG_INFO_BTF=y
+> > EOF
+> > $ make -j all
+> > $ mkdir /tmp/selftests
+> > $ make O=/tmp/selftests/ TARGETS=bpf kselftest
+> > ...
+> >   CLANG    /tmp/selftests//kselftest/bpf/tools/build/bpftool/profiler.bpf.o
+> > skeleton/profiler.bpf.c:18:21: error: invalid application of 'sizeof'
+> > to an incomplete type 'struct bpf_perf_event_value'
+> >         __uint(value_size, sizeof(struct bpf_perf_event_value));
+> >                            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >
+> > Checking with bpftool the vmlinux lacks struct bpf_perf_event_value
+> > but as this is unconditionally defined in bpf.h this seems wrong. Do
+> > you have any suggestions and getting a working build?
 >
->   btf.c: In function 'btf__parse_raw':
->   btf.c:625:28: error: 'btf' may be used uninitialized in this function [-Werror=maybe-uninitialized]
->     625 |  return err ? ERR_PTR(err) : btf;
->         |         ~~~~~~~~~~~~~~~~~~~^~~~~
+> It is unconditionally defined in bpf.h, but unless kernel code really
+> uses that type for something, compiler won't generate DWARF
+> information for that type, which subsequently won't get into BTF.
+> Adding CONFIG_DEBUG_INFO_BTF=y ensures you get BTF type info
+> generated, but only for subsystems that were compiled into vmlinux
+> according to your kernel config.
+>
+> In this case, default config doesn't enable CONFIG_BPF_EVENTS, which
+> is a requirement to compile kernel/trace/bpf_trace.c, which in turn
+> uses struct bpf_perf_event_value in the helper signature.
+>
+> So the solution in your case would be to use a slightly richer kernel
+> config, which enables more of the BPF subsystem. You can check
+> selftests/bpf/config for a list of options we typically enable to run
+> of selftests, for instance.
 >
 
-Yeah, fixed in https://patchwork.ozlabs.org/project/netdev/patch/20200805223359.32109-1-danieltimlee@gmail.com/
+So we've discussed this and related issues today at BPF office hours
+and few more thoughts occurred to me after I left the call.
 
-> This is what I have:
->
-> [acme@quaco perf]$ git log -10 --oneline tools/lib/bpf
-> 94a1fedd63ed libbpf: Add btf__parse_raw() and generic btf__parse() APIs
-> 2e49527e5248 libbpf: Add bpf_link detach APIs
-> 1acf8f90ea7e libbpf: Fix register in PT_REGS MIPS macros
-> 50450fc716c1 libbpf: Make destructors more robust by handling ERR_PTR(err) cases
-> dc8698cac7aa libbpf: Add support for BPF XDP link
-> d4b4dd6ce770 libbpf: Print hint when PERF_EVENT_IOC_SET_BPF returns -EPROTO
-> cd31039a7347 tools/libbpf: Add support for bpf map element iterator
-> da7a35062bcc libbpf bpf_helpers: Use __builtin_offsetof for offsetof
-> 499dd29d90bb libbpf: Add support for SK_LOOKUP program type
-> 4be556cf5aef libbpf: Add SEC name for xdp programs attached to CPUMAP
-> [acme@quaco perf]$
->
-> >  tools/bpf/bpftool/btf.c             |  54 +------------
-> >  tools/bpf/resolve_btfids/.gitignore |   4 +
-> >  tools/bpf/resolve_btfids/main.c     |  58 +-------------
-> >  tools/lib/bpf/btf.c                 | 114 +++++++++++++++++++---------
-> >  tools/lib/bpf/btf.h                 |   5 +-
-> >  tools/lib/bpf/libbpf.map            |   2 +
-> >  6 files changed, 89 insertions(+), 148 deletions(-)
-> >  create mode 100644 tools/bpf/resolve_btfids/.gitignore
-> >
-> > --
-> > 2.24.1
-> >
->
-> --
->
-> - Arnaldo
+You don't really have to use vmlinux.h, if it's inconvenient. Unless
+you want to use some internal kernel type that's not available in
+kernel-headers. Otherwise feel free to use normal kernel header
+includes and don't use vmlinux.h. If you are using BPF_CORE_READ(),
+any type is automatically CO-RE-relocatable, even if they come from
+#include <linux/whatever.h>. If you need to use direct memory accesses
+with programs like fentry/fexit, then adding:
+
+#pragma clang attribute push (__attribute__((preserve_access_index)),
+apply_to = record)
+
+before you include any headers would make types in those headers
+automatically CO-RE-relocatable even for direct memory accesses. So
+this is just something to keep in mind.
+
+
+But the way we've been handling this was like this.
+
+On BPF program side:
+
+#include "vmlinux.h"
+#include "my_custom_types.h"
+
+...
+
+
+On user-space program side:
+
+#include <stdint.h> /* and whatever else is needed */
+#include "my_custom_types.h"
+
+Then in my_custom_types.h you just assume all the needed types are
+defined (in either vmlinux.h or in user-space header includes):
+
+
+struct my_struct {
+    uint64_t whatever;
+};
+
+So far worked fine. It still sucks you can't include some of the
+kernel headers to get some useful macro, but to solve that we'd need
+Clang extension to check that some type X is already defined, as we
+discussed in the call.
+
+Hope this helps a bit.
+
+
+
+[...]
