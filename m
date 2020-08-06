@@ -2,92 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8BBB23E4BD
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 01:48:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F4423E4C0
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 01:48:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726205AbgHFXsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 19:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
+        id S1726232AbgHFXsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 19:48:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725272AbgHFXsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 19:48:18 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00575C061574;
-        Thu,  6 Aug 2020 16:48:17 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id v4so262709ljd.0;
-        Thu, 06 Aug 2020 16:48:17 -0700 (PDT)
+        with ESMTP id S1725272AbgHFXsj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 19:48:39 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E534FC061574;
+        Thu,  6 Aug 2020 16:48:38 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id q16so56222ybk.6;
+        Thu, 06 Aug 2020 16:48:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ROLgdGiet2JRzTM+E/daiaLAaAuchSq9OXMl0UQnk+k=;
-        b=nYZUv7wV1jHMIjk9VuCGu7ew5bqyDt35IE4l8ct1rix0+WGq/kGKzZJoaXPStNCdqI
-         tL/6+VXaASZkkX8QxJsYXaTF2NtCCpgTx6f3NkXGpghbcRae1c3l5yaz011ZIMCQJclP
-         g7I0JHInvNZDBy1SNVE2TNHV5AISL9ZlPl9L/mOJwFlHmFWITJ8JmktEY5TfAW1X/Fjk
-         ZN97e/1Lno4HL3nmLUW6Rgy0gM/9E6zJNJ2QIVVggo/LF0/FkFzhVEcjNdfR5fGusVfM
-         /Xwly7dEF6hqBz6HsNKo5ipR0AAQFud7nny4W7pq/j1CYKYLZgp9RXzW1Nsqw2GBcMjd
-         0fqw==
+        bh=tPB4LQVsdG8CBfEwgKpmNDeAiLlxqdByOFFXNmufjps=;
+        b=NxHD3B9jiJs2Z27ohDZpMNEHOhMVQNFXiMnx7jQgtke0OdlDNSQA3hS9vR9vueL57W
+         TQZ3C6WYbde6ZApQKfALNjX0T66G7nHof6OIh92VVMg8DEoeUjdeeJ23hRZQb91JQbgY
+         WX595xeo3rNGQ4jO8FTWJ14rt7w5pzsT89bUCgziPLYsc7quxIksLuTAv1iSFJHJkrtl
+         9bXrQgRrdnV4tzexrDTxO4CQ+f8aEcHv2QXi0LP7zmWiFRzmARYj7ZaQXm7Px40uNIsR
+         i9sQEllP2WBk4gWfOmInwEmV5EIfhRu5PPsOcCidt1m2DER60ZidQn8qvLgRyqHQS02f
+         KXbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ROLgdGiet2JRzTM+E/daiaLAaAuchSq9OXMl0UQnk+k=;
-        b=pPl9pWeeLpYeI0jGr07eB4wesykkl+yJASetM2L+y1vcLFAkW6W2BoY8qDA/UKYY0X
-         kePHAipQBIRnm5r2wofJaENT5zc8POYvw5j/ediHoMjJDkX8LTvKXLHsrsEtTParYFaM
-         UifVXULrczWBWiGAxG7yWX68paYGvY3tuG2s/1UzOCt88Jb3/+lDsexoJlGKPE6FO4ze
-         mdjBAlAbr4qDpJZ+Y7yc1ZOjlJtODpnxnD4CvdX4aevwrSEH53pp37NYCcO4nq9gXgN7
-         419YL4SGwiBUELzans54Z3IqsFNvQwtaglPSJvlvdYyqne9ObhMimLQR5vBsdmxlFCIo
-         CqNA==
-X-Gm-Message-State: AOAM5321+OyYGubg99OpUxRaJwz8WuaSOB7dcnvKC36FubyQptnPBstC
-        4OjGdh2/b4OFQBJ6a41Vq3m07vQgYi8MVMk/KBxxGw==
-X-Google-Smtp-Source: ABdhPJzxfnZbmoTJ2q3CZPv8Uh5nB+ooivEaDzn1xvAuI/Hf875586Oj7BAmugCvS4iEHAnPPIHJ3aDgO4dxFGn4etk=
-X-Received: by 2002:a2e:8e28:: with SMTP id r8mr4526466ljk.290.1596757695646;
- Thu, 06 Aug 2020 16:48:15 -0700 (PDT)
+        bh=tPB4LQVsdG8CBfEwgKpmNDeAiLlxqdByOFFXNmufjps=;
+        b=qVcKGUnsBL6os13YQWZaofdjnbQaF1g56BviUSxTzYbwEeS6Vk+Rm74xx1vhCTL5wM
+         hj3oSfWwdVmXSSnN7eM4qqdB7cjqR01O/3s1aAhzwQJjQ6LmiRbXdB8LCToLFBumxQqN
+         PttggmT7aGmVB138JOf7R6DMEED01OFwcviClRz783ZBZUgkUSygQynfYsaKwR1OCBBc
+         vwLCXw6eBLPqsiRlK7DSZgKFXRnlXY7hoJgeYUtYh3yv9E3haNfQNPVJk/Gwx3PvbKGi
+         HK7KjQ222e0mumcQ5CspD1ADcXiPu/bQnFtUqWMW4ZpTX5NUMGRal4MB5Sb+Q3uvv9vZ
+         BIxA==
+X-Gm-Message-State: AOAM532KPu2/Gr0uyUnwqM2E4eZYA7eJuL79T5bB/S0CH+iNRZnvv6ii
+        QU499J2njUnMxLD9B+K1k/aXYg7RkjYrmpuDXFUmTlGC
+X-Google-Smtp-Source: ABdhPJyu5JgD0xSWGP66tBmDNnQTzGPpDX1l5c8D54ucbHG57/RDMbl3uq2kkGyeA4vxdbLoZ+4Ygv1tVUr8eAeI7S0=
+X-Received: by 2002:a25:37c8:: with SMTP id e191mr14942254yba.230.1596757718152;
+ Thu, 06 Aug 2020 16:48:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200805223359.32109-1-danieltimlee@gmail.com> <5f2ba174c65a7_291f2b27e574e5b81@john-XPS-13-9370.notmuch>
-In-Reply-To: <5f2ba174c65a7_291f2b27e574e5b81@john-XPS-13-9370.notmuch>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 6 Aug 2020 16:48:04 -0700
-Message-ID: <CAADnVQLohzfYs7RLFt09aG6QqC8HVO2CgzJ08jyoUybJt10bDg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbf: fix uninitialized pointer at btf__parse_raw()
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     "Daniel T. Lee" <danieltimlee@gmail.com>,
+References: <20200804182409.1512434-1-andriin@fb.com> <20200804182409.1512434-8-andriin@fb.com>
+ <20200806223033.m5fe4cppxz5t3n54@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200806223033.m5fe4cppxz5t3n54@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 6 Aug 2020 16:48:27 -0700
+Message-ID: <CAEf4BzaSc=Q9mNhV_UpCKAk5RPQ-AssB4VrmvVy=2a83a5bL9Q@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 7/9] selftests/bpf: add CO-RE relo test for TYPE_ID_LOCAL/TYPE_ID_TARGET
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 5, 2020 at 11:22 PM John Fastabend <john.fastabend@gmail.com> wrote:
+On Thu, Aug 6, 2020 at 3:30 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Daniel T. Lee wrote:
-> > Recently, from commit 94a1fedd63ed ("libbpf: Add btf__parse_raw() and
-> > generic btf__parse() APIs"), new API has been added to libbpf that
-> > allows to parse BTF from raw data file (btf__parse_raw()).
-> >
-> > The commit derives build failure of samples/bpf due to improper access
-> > of uninitialized pointer at btf_parse_raw().
-> >
-> >     btf.c: In function btf__parse_raw:
-> >     btf.c:625:28: error: btf may be used uninitialized in this function
-> >       625 |  return err ? ERR_PTR(err) : btf;
-> >           |         ~~~~~~~~~~~~~~~~~~~^~~~~
-> >
-> > This commit fixes the build failure of samples/bpf by adding code of
-> > initializing btf pointer as NULL.
-> >
-> > Fixes: 94a1fedd63ed ("libbpf: Add btf__parse_raw() and generic btf__parse() APIs")
-> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> > ---
+> On Tue, Aug 04, 2020 at 11:24:07AM -0700, Andrii Nakryiko wrote:
+> > +
+> > +SEC("raw_tracepoint/sys_enter")
+> > +int test_core_type_id(void *ctx)
+> > +{
+> > +     struct core_reloc_type_id_output *out = (void *)&data.out;
+> > +
+> > +     out->local_anon_struct = bpf_core_type_id_local(struct { int marker_field; });
+> > +     out->local_anon_union = bpf_core_type_id_local(union { int marker_field; });
+> > +     out->local_anon_enum = bpf_core_type_id_local(enum { MARKER_ENUM_VAL = 123 });
+> > +     out->local_anon_func_proto_ptr = bpf_core_type_id_local(_Bool(*)(int));
+> > +     out->local_anon_void_ptr = bpf_core_type_id_local(void *);
+> > +     out->local_anon_arr = bpf_core_type_id_local(_Bool[47]);
+> > +
+> > +     out->local_struct = bpf_core_type_id_local(struct a_struct);
+> > +     out->local_union = bpf_core_type_id_local(union a_union);
+> > +     out->local_enum = bpf_core_type_id_local(enum an_enum);
+> > +     out->local_int = bpf_core_type_id_local(int);
+> > +     out->local_struct_typedef = bpf_core_type_id_local(named_struct_typedef);
+> > +     out->local_func_proto_typedef = bpf_core_type_id_local(func_proto_typedef);
+> > +     out->local_arr_typedef = bpf_core_type_id_local(arr_typedef);
+> > +
+> > +     out->targ_struct = bpf_core_type_id_kernel(struct a_struct);
+> > +     out->targ_union = bpf_core_type_id_kernel(union a_union);
+> > +     out->targ_enum = bpf_core_type_id_kernel(enum an_enum);
+> > +     out->targ_int = bpf_core_type_id_kernel(int);
+> > +     out->targ_struct_typedef = bpf_core_type_id_kernel(named_struct_typedef);
+> > +     out->targ_func_proto_typedef = bpf_core_type_id_kernel(func_proto_typedef);
+> > +     out->targ_arr_typedef = bpf_core_type_id_kernel(arr_typedef);
 >
-> Unless errno is zero this should be ok in practice, but I guess compiler
-> wont know that.
->
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
+> bpf_core_type_id_kernel() returns btf_id of the type in vmlinux BTF or zero,
+> so what is the point of above tests? All targ_* will be zero.
+> Should the test find a type that actually exists in the kernel?
+> What am I missing?
 
-Applied. Thanks
+Probably, that for almost all core_reloc tests, "kernel BTF" comes
+from specially-crafted BTFs, like btf__core_reloc_type_id*.c for this
+set of tests. Only one core_reloc sub-test actually loads real kernel
+BTF, for all others we have a "controlled environment" set up.
+
+But on another note. I opted to make all type-based relocations to
+return 0 if target type is not found, but now I'm thinking that maybe
+for TYPE_SIZE and TYPE_ID_KERNEL we should fail them, just like
+field-based ones, if type is not found. Makes it harder to miss that
+something changed in the new kernel version. WDYT?
