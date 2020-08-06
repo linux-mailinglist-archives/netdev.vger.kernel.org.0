@@ -2,131 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FCD323E3ED
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 00:21:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EA5923E405
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 00:30:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726394AbgHFWVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 18:21:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38130 "EHLO
+        id S1726128AbgHFWai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 18:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726167AbgHFWVc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 18:21:32 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54080C061574;
-        Thu,  6 Aug 2020 15:21:32 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id p1so111079pls.4;
-        Thu, 06 Aug 2020 15:21:32 -0700 (PDT)
+        with ESMTP id S1725947AbgHFWah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 18:30:37 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EA6C061574;
+        Thu,  6 Aug 2020 15:30:37 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id u128so594910pfb.6;
+        Thu, 06 Aug 2020 15:30:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=t1TN4T3jQ2jrlk3a/d7SaKfk2DJyftZUv6bXnlt6NPQ=;
-        b=GyumodkGmYKsGSwVnzxjXGz3Hc6dDp/7EX3r4spkycDyPVNN0ciFP2qEtF0XPhrBf4
-         +cCI0OWrH6x101NHuYUTOaXPwuCecyhxfEvjJRna72hDnNI+bib+8AzwceW3eJdE75Gn
-         SeIJKEi14my/hEJw+qU/KCE5RSHazXH9KHIfKLNltLm7ADcruE5/tGFOBJjd/g0Mnrl5
-         TD9+5yjblEpGaVz4M1LHrXLmcdWRpP5c2NV1JaW3i6df06bY03MlPUl3EghFXAFM5iLk
-         Ox9KU5vu5QYQH83zkF+ICm8Q2r+16LLLSd84hY8z6dVmhZCgoIg7vDd5Gd8rg9nvzxvN
-         9EXA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KnnJya1ORtSHjl6qbhImfMS9/fnJjTPTj+DIW8mJNx0=;
+        b=qGHiQxdxuQPcaNxo10vg79iKeWKFKHYkJyAnKe36hOhqyM2DevGwpeBm6rbz+5iliq
+         um9Iaeo/0Wacd5A2ZIO7+3HZvutXACFL0B/xzUywGIDvuZyFg9s8lZaAUdhLDwYiXzj1
+         MDyPO4j3xSfKpTjb7wExJDIiFSQgt+fo0R5nCqEUGqWwz/yGY41LY6w+q8tUQICJrwxF
+         QC1ubBV9YFAkzgiL0YAhsADnkqQ6x9Vc6hHw93L/flWoUPtG3I2rD8G4TJlf4xjvXNA8
+         kY8I1+TBijz6nCLYJaV9aGA62dh6Wswz9wnzykIAD8HkaJJ9+iXcD7awy9JnupJE23uW
+         mOMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=t1TN4T3jQ2jrlk3a/d7SaKfk2DJyftZUv6bXnlt6NPQ=;
-        b=e1lzyzb0IUfIRzudWXCJ1cnSbrZG3OU8EoVQ0p+kJDkZ1tnLXS6o966fc2KdC6EHeL
-         3SrIF0a5mXVw76vBuseFHDBVjkkqkjlSiZ4ovEVfQAjHNwieeA9kQTFnWW2rC5ZbPf9O
-         XCVz7HUemkpVnapitCxqsMEN6h+Q28m+bBbKFOppxvOEkVHfUzGS1ldj+fNmo5m0qPl1
-         ED2axOJ1D3LUxfVoNB0CC1/auI0H9efPJaH6IlviqbYNd5RQTwLOmmWz2ftkLDDCIrhJ
-         Wdyw2sb/kvUexW2wviff3HtcudiqYhWO/eNEvVHcZJMxGZcVkKXQc7LPLka0fe1Ye8m0
-         FC6w==
-X-Gm-Message-State: AOAM533QHJUjqnXMz8lHoCE9mfaVnnvTe76eDAuB5RQDhG7tKwWbhiP6
-        q6J7leABOdw2O3ozloO5s2k=
-X-Google-Smtp-Source: ABdhPJwdY4ryrXf97t2P6yPCseaEpoaitTdHlZtd60UHAYlnINemi0RFvJHHjsz9ZaSHJyy7n+NjVw==
-X-Received: by 2002:a17:902:45:: with SMTP id 63mr9766294pla.179.1596752491350;
-        Thu, 06 Aug 2020 15:21:31 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id w82sm9912017pff.7.2020.08.06.15.21.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Aug 2020 15:21:30 -0700 (PDT)
-Subject: Re: [PATCH 25/26] net: pass a sockptr_t into ->setsockopt
-To:     Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-sctp@vger.kernel.org, linux-hams@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-can@vger.kernel.org, dccp@vger.kernel.org,
-        linux-decnet-user@lists.sourceforge.net,
-        linux-wpan@vger.kernel.org, linux-s390@vger.kernel.org,
-        mptcp@lists.01.org, lvs-devel@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-afs@lists.infradead.org,
-        tipc-discussion@lists.sourceforge.net, linux-x25@vger.kernel.org,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-References: <20200723060908.50081-1-hch@lst.de>
- <20200723060908.50081-26-hch@lst.de>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <6357942b-0b6e-1901-7dce-e308c9fac347@gmail.com>
-Date:   Thu, 6 Aug 2020 15:21:25 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KnnJya1ORtSHjl6qbhImfMS9/fnJjTPTj+DIW8mJNx0=;
+        b=VBdoqYBk7abpfLRpjqbKJgcxUIRwJMiBY2GdCD8vrZkoNXHm8G6HXUC4L+Dr3X2pOc
+         Tnse+JX11m41ZPHPqda86CQ/jz9SStRs2hFckpzVCYjGWInBJA0CmxVjwIYRr7Kc6++Y
+         6/IdJyR3cSy1DlezkkdacBLpE6/T4XpO0KWdhMtewm7Li9OM5MYhlqscA0HT+8w3nCAB
+         g8G8fyUhQloTGOAUim76EKDgCGo+/C3EbegCM5jzfm3MGpFutmrGAnxB23SImi7ODPuk
+         zEZ3rh93yxbHw8ZbV8lm3Nc21wfSOMoQmEtxw2YyoIxy4SptgF8qwkGWfEToDxEsFY3d
+         XU7A==
+X-Gm-Message-State: AOAM5334+Aa+ItQO8F6zJyQpAFpGBF8aVos+DT4LQhvKaJP/117rL76S
+        aKDDDYD8X55z6jQLAZvf7sY=
+X-Google-Smtp-Source: ABdhPJyQQbM+5WhBnZs4tZngJ2DkitApFkhScuJU5+9mATofajDRZXbJCONRF0YABzrkeOXefveHtQ==
+X-Received: by 2002:a65:5c47:: with SMTP id v7mr8883750pgr.56.1596753037005;
+        Thu, 06 Aug 2020 15:30:37 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:2a06])
+        by smtp.gmail.com with ESMTPSA id lk16sm8129439pjb.13.2020.08.06.15.30.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Aug 2020 15:30:36 -0700 (PDT)
+Date:   Thu, 6 Aug 2020 15:30:33 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [RFC PATCH bpf-next 7/9] selftests/bpf: add CO-RE relo test for
+ TYPE_ID_LOCAL/TYPE_ID_TARGET
+Message-ID: <20200806223033.m5fe4cppxz5t3n54@ast-mbp.dhcp.thefacebook.com>
+References: <20200804182409.1512434-1-andriin@fb.com>
+ <20200804182409.1512434-8-andriin@fb.com>
 MIME-Version: 1.0
-In-Reply-To: <20200723060908.50081-26-hch@lst.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200804182409.1512434-8-andriin@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Aug 04, 2020 at 11:24:07AM -0700, Andrii Nakryiko wrote:
+> +
+> +SEC("raw_tracepoint/sys_enter")
+> +int test_core_type_id(void *ctx)
+> +{
+> +	struct core_reloc_type_id_output *out = (void *)&data.out;
+> +
+> +	out->local_anon_struct = bpf_core_type_id_local(struct { int marker_field; });
+> +	out->local_anon_union = bpf_core_type_id_local(union { int marker_field; });
+> +	out->local_anon_enum = bpf_core_type_id_local(enum { MARKER_ENUM_VAL = 123 });
+> +	out->local_anon_func_proto_ptr = bpf_core_type_id_local(_Bool(*)(int));
+> +	out->local_anon_void_ptr = bpf_core_type_id_local(void *);
+> +	out->local_anon_arr = bpf_core_type_id_local(_Bool[47]);
+> +
+> +	out->local_struct = bpf_core_type_id_local(struct a_struct);
+> +	out->local_union = bpf_core_type_id_local(union a_union);
+> +	out->local_enum = bpf_core_type_id_local(enum an_enum);
+> +	out->local_int = bpf_core_type_id_local(int);
+> +	out->local_struct_typedef = bpf_core_type_id_local(named_struct_typedef);
+> +	out->local_func_proto_typedef = bpf_core_type_id_local(func_proto_typedef);
+> +	out->local_arr_typedef = bpf_core_type_id_local(arr_typedef);
+> +
+> +	out->targ_struct = bpf_core_type_id_kernel(struct a_struct);
+> +	out->targ_union = bpf_core_type_id_kernel(union a_union);
+> +	out->targ_enum = bpf_core_type_id_kernel(enum an_enum);
+> +	out->targ_int = bpf_core_type_id_kernel(int);
+> +	out->targ_struct_typedef = bpf_core_type_id_kernel(named_struct_typedef);
+> +	out->targ_func_proto_typedef = bpf_core_type_id_kernel(func_proto_typedef);
+> +	out->targ_arr_typedef = bpf_core_type_id_kernel(arr_typedef);
 
-
-On 7/22/20 11:09 PM, Christoph Hellwig wrote:
-> Rework the remaining setsockopt code to pass a sockptr_t instead of a
-> plain user pointer.  This removes the last remaining set_fs(KERNEL_DS)
-> outside of architecture specific code.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Acked-by: Stefan Schmidt <stefan@datenfreihafen.org> [ieee802154]
-> ---
-
-
-...
-
-> diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-> index 594e01ad670aa6..874f01cd7aec42 100644
-> --- a/net/ipv6/raw.c
-> +++ b/net/ipv6/raw.c
-> @@ -972,13 +972,13 @@ static int rawv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
->  }
->  
-
-...
-
->  static int do_rawv6_setsockopt(struct sock *sk, int level, int optname,
-> -			    char __user *optval, unsigned int optlen)
-> +			       sockptr_t optval, unsigned int optlen)
->  {
->  	struct raw6_sock *rp = raw6_sk(sk);
->  	int val;
->  
-> -	if (get_user(val, (int __user *)optval))
-> +	if (copy_from_sockptr(&val, optval, sizeof(val)))
->  		return -EFAULT;
->  
-
-converting get_user(...)   to  copy_from_sockptr(...) really assumed the optlen
-has been validated to be >= sizeof(int) earlier.
-
-Which is not always the case, for example here.
-
-User application can fool us passing optlen=0, and a user pointer of exactly TASK_SIZE-1
-
-
+bpf_core_type_id_kernel() returns btf_id of the type in vmlinux BTF or zero,
+so what is the point of above tests? All targ_* will be zero.
+Should the test find a type that actually exists in the kernel?
+What am I missing?
