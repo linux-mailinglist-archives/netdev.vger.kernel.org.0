@@ -2,77 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0D2623E14C
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 20:43:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9B2323E143
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 20:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729332AbgHFSmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 14:42:37 -0400
-Received: from mga12.intel.com ([192.55.52.136]:27886 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728048AbgHFSUB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Aug 2020 14:20:01 -0400
-IronPort-SDR: noAHKqFJIQV3sD5SUhb4a/r8pkm8jihDVMMa6s+aJI6nF3YNTFBlYfyQiehKjbdDCO8GePPCv3
- g+192+pulvQQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9705"; a="132448828"
-X-IronPort-AV: E=Sophos;i="5.75,441,1589266800"; 
-   d="scan'208";a="132448828"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2020 11:18:28 -0700
-IronPort-SDR: exZ+VA/4rPSrLhgnrM0hOuqyMMY99Ay6UL5nlXad7g94VaZuIZ5HNAbkEidoLHlkkDTLQl3E+w
- Eo/pXnnAf8fg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,441,1589266800"; 
-   d="scan'208";a="316248781"
-Received: from lkp-server02.sh.intel.com (HELO 37a337f97289) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 06 Aug 2020 11:18:26 -0700
-Received: from kbuild by 37a337f97289 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1k3kTB-0001fc-MR; Thu, 06 Aug 2020 18:18:25 +0000
-Date:   Fri, 7 Aug 2020 02:18:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Song Liu <songliubraving@fb.com>, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, ast@kernel.org, daniel@iogearbox.net,
-        kernel-team@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org,
-        brouer@redhat.com, dlxu@fb.com
-Subject: [RFC PATCH] bpf: user_verifier_ops can be static
-Message-ID: <20200806181814.GA5058@26715c783541>
-References: <20200801084721.1812607-2-songliubraving@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200801084721.1812607-2-songliubraving@fb.com>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1728597AbgHFSm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 14:42:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728306AbgHFSWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 14:22:52 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9559C061756
+        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 11:22:12 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id a6so6620921pjd.1
+        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 11:22:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=eZGw4D0hFAb3nEJ/BxXu4ur7Q7JmFu4sgP7DPLUaQCk=;
+        b=Seomrp3G9pyZOfFPTaf3c0hryPLPKNktWbwPc7/XzFqO4Ig83A0Hbg4KzVZihOLtbZ
+         0uAlVSAhkEyAPBIcTl2vJoziIH1i5rGKotUov4MgTVsoppdOV5tcpRGlrM218eBHpF8q
+         LwXgdcFzuyf2m+vumEMsJRygBzT9w53SGgq4XUJL4y83yqLivrKAZ/3BQ+6uBm9AdHu7
+         Jad78mxBaAjslErtp/Pe+hOXUYk+aQ45weABCiZr6w+JMG4VTm+poz4mlenU2KZgvBUC
+         e0bTN0m+U+6iFFS9n3j71l5+ww/daNROUYp7iQ+HkHwbT3JRAXlkbg6Ptqds5B5rMVO/
+         EE3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=eZGw4D0hFAb3nEJ/BxXu4ur7Q7JmFu4sgP7DPLUaQCk=;
+        b=faT0h7qoi7I7flMWh4zHtv6KaiuVzBsnS2MPh/KObmYcRCqgVDB6C0Cco6BdSX3tDO
+         v2ziNR1OLbVwaDt0noIABzTY/TnUMyRKqy+PkkmPMYJRIGSJPdSh7hd8j81Th/xrj/mV
+         tPsQxN59Kuls21ZI/uQ+f48iyfczciovI9DhpxsNBMbeuUYiZ0rXWJ+yltMKhW/a5c/x
+         3/CRQcPQHpr3KL0ZEX3JFJIda/93kRqpPUY0Q8494xvNKcVwhnl0/CrK3vrFtmGNOgcl
+         NT6h+IhHANMs5dSvwaIY7EigmNaHY8BN3EjCbLWDHQGu21J8EZS0mbEYQE96Lauhlu/m
+         RLpw==
+X-Gm-Message-State: AOAM532G9eg7ICNP9XlUMR930aVrSVYOGRC384lG7bK4FEgO4ftc7EVM
+        q7J4QPEElWqUJnKl/N0CEyyRtXVaEiRAEWMVZf125siI1jnXYWxnXNNgaVaWcPf8nn4r49mu7W6
+        apPg9RUyEodKKSuHJj1ZqPbKvAjYPEvO9Y9FgVEzwI90bdr3TB6L1bA==
+X-Google-Smtp-Source: ABdhPJzjYl3T67ANMsiVXYbzueltnnaExCsuaDVgnrJUvxLnfoaP562t4Cjb8+NmROC3jGusa63+2Zs=
+X-Received: by 2002:a17:90a:f014:: with SMTP id bt20mr1601886pjb.0.1596738131438;
+ Thu, 06 Aug 2020 11:22:11 -0700 (PDT)
+Date:   Thu, 6 Aug 2020 11:22:09 -0700
+In-Reply-To: <20200806155225.637202-1-sdf@google.com>
+Message-Id: <20200806182209.GG184844@google.com>
+Mime-Version: 1.0
+References: <20200806155225.637202-1-sdf@google.com>
+Subject: Re: [PATCH bpf] bpf: add missing return to resolve_btfids
+From:   sdf@google.com
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 08/06, Stanislav Fomichev wrote:
+> int sets_patch(struct object *obj) doesn't have a 'return 0' at the end.
 
-Signed-off-by: kernel test robot <lkp@intel.com>
----
- bpf_trace.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>   tools/bpf/resolve_btfids/main.c | 1 +
+>   1 file changed, 1 insertion(+)
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index cbe789bc1b986..4b8f380694a10 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1852,12 +1852,12 @@ user_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 	}
- }
- 
--const struct bpf_verifier_ops user_verifier_ops = {
-+static const struct bpf_verifier_ops user_verifier_ops = {
- 	.get_func_proto		= user_prog_func_proto,
- 	.is_valid_access	= user_prog_is_valid_access,
- };
- 
--const struct bpf_prog_ops user_prog_ops = {
-+static const struct bpf_prog_ops user_prog_ops = {
- 	.test_run	= bpf_prog_test_run_user,
- };
- 
+> diff --git a/tools/bpf/resolve_btfids/main.c  
+> b/tools/bpf/resolve_btfids/main.c
+> index 52d883325a23..4d9ecb975862 100644
+> --- a/tools/bpf/resolve_btfids/main.c
+> +++ b/tools/bpf/resolve_btfids/main.c
+> @@ -566,6 +566,7 @@ static int sets_patch(struct object *obj)
+
+>   		next = rb_next(next);
+>   	}
+> +	return 0;
+>   }
+
+>   static int symbols_patch(struct object *obj)
+> --
+> 2.28.0.236.gb10cc79966-goog
+
+Sorry, forgot:
+
+Fixes: fbbb68de80a4 ("bpf: Add resolve_btfids tool to resolve BTF IDs in  
+ELF object")
