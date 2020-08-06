@@ -2,112 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EA3923DF79
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:48:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58AD223DFF6
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:56:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730438AbgHFRsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 13:48:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
+        id S1729938AbgHFRzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 13:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728960AbgHFQfr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:35:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4ABC00216B
-        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 09:10:54 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1k3iTS-00046v-3l; Thu, 06 Aug 2020 18:10:34 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1k3iTL-0002vh-8h; Thu, 06 Aug 2020 18:10:27 +0200
-Date:   Thu, 6 Aug 2020 18:10:27 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     robin@protonic.nl, linux@rempel-privat.de, kernel@pengutronix.de,
-        socketcan@hartkopp.net, mkl@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org
-Subject: Re: [PATCH net 0/4] support multipacket broadcast message
-Message-ID: <20200806161027.py5ged3a23xpmxgi@pengutronix.de>
-References: <1596599425-5534-1-git-send-email-zhangchangzhong@huawei.com>
+        with ESMTP id S1728127AbgHFQ2v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:28:51 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A82C002146;
+        Thu,  6 Aug 2020 09:27:14 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id 2so41360884qkf.10;
+        Thu, 06 Aug 2020 09:27:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=225Ec0jRi2rAkWfglvmB14+Xf1LKuW7KGiY8EdguzPY=;
+        b=gCn6dHyyEFOLso4hE2aDVTi8b0kiyhxz8nA2XSaJIXeoE6rVRgBiscAdsxsnI3WRUE
+         KcUSEcVt4bm4xzu3GXLEwyrGKte8Axr+quDfcNUO3IBUQOwiyMABPj3u5WJl8t3BXaYl
+         JzREWGGAlr3cz/1PVS2HOxoTvjJnILxTewac1S0zOSxmPI5z8iBm18OofZIufsh/gQEo
+         imKv8pmp8su5Tza5u8hS++MWlC2HXBBpV4wRMvTY+3KhZXVVZjcq/L+Y1Gqb9oCUQa84
+         dvbPOgyAU5u1ZFi13egxlSEOz4pvyl9d0lCIH6otgnRk4PqYIjtNZPPrTMW1ADpGneXd
+         QLJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=225Ec0jRi2rAkWfglvmB14+Xf1LKuW7KGiY8EdguzPY=;
+        b=dteynfkMBHVniA2WbF0E41oKD0gh223h90M0t2g4nY07ntVGTVrYL85ddrT2T0bOyB
+         YliyBhzzXUAtNStVRv2eI/9PpcoTxqKGbtEPUgzHfcU1CtdWlbYZLUEGQhmGAt77obfO
+         VEx9ONEj2EEt2N7hP42wMAOzriSSe11xmG6Fxbkk7Ilxy48M8TE4gSrgBeTGgBiPZ6kJ
+         ylnmOCkYPMvdR0iruYx7VgA/Ri85qsLrwVEDs1CuzXo4XXXS1PHvt13SmrkVMn0drUEf
+         MfXYnm5xMgA49d+xYhTiC5rWJbm5NZBpBw7rniV+zjbDyOj9M9E6joK67zpO3jEJkQNL
+         EqDA==
+X-Gm-Message-State: AOAM531LN/cmskacD1khPn6OiZAwX9r15GPxH10ZUayWihH4TgcENCmZ
+        ZP6Yw8KT4hulwntcg/1Hyc71BSrE
+X-Google-Smtp-Source: ABdhPJywwDUyEWOTJnzS8mTGAzMp0JNB0OzHvugpIl013ZNxAihGlVDlV6rMjCjkt7Bcu9dTLxS1sQ==
+X-Received: by 2002:a37:714:: with SMTP id 20mr9698368qkh.367.1596731233528;
+        Thu, 06 Aug 2020 09:27:13 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:7c83:3cd:b611:a456? ([2601:282:803:7700:7c83:3cd:b611:a456])
+        by smtp.googlemail.com with ESMTPSA id v14sm5077731qto.81.2020.08.06.09.27.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Aug 2020 09:27:12 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next 0/3] Global per-type support for QP counters
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Ido Kalir <idok@mellanox.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Mark Zhang <markz@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+References: <20200804084909.604846-1-leon@kernel.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f571ff0c-6bd4-3192-1c88-7957d94a5a45@gmail.com>
+Date:   Thu, 6 Aug 2020 10:27:11 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="q2ffmggcds5tcngt"
-Content-Disposition: inline
-In-Reply-To: <1596599425-5534-1-git-send-email-zhangchangzhong@huawei.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 17:56:06 up 265 days,  7:14, 243 users,  load average: 0.06, 0.07,
- 0.01
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20200804084909.604846-1-leon@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8/4/20 2:49 AM, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
+> 
+> Changelog:
+>  * Update first patch to latest rdma_netlink.h file.
+>  * Drop RFC, the kernel part was accepted.
+> https://lore.kernel.org/linux-rdma/20200726112011.75905-1-leon@kernel.org
+> 
 
---q2ffmggcds5tcngt
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+applied to iproute2-next
 
-Hello,
-
-Thank you for your patches! Currently I'm busy, but I'll take a look at it =
-as
-soon possible.
-
-btw. can you tell me about more of your use case/work. I would like to
-have some feedback about this stack. You can write a personal message,
-if it is not for public.
-
-On Wed, Aug 05, 2020 at 11:50:21AM +0800, Zhang Changzhong wrote:
-> Zhang Changzhong (4):
->   can: j1939: fix support for multipacket broadcast message
->   can: j1939: cancel rxtimer on multipacket broadcast session complete
->   can: j1939: abort multipacket broadcast session when timeout occurs
->   can: j1939: add rxtimer for multipacket broadcast session
->=20
->  net/can/j1939/transport.c | 48 +++++++++++++++++++++++++++++++++++------=
-------
->  1 file changed, 36 insertions(+), 12 deletions(-)
-
-Regards,
-Oleksij
-
---=20
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---q2ffmggcds5tcngt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl8sK24ACgkQ4omh9DUa
-UbNKXw//YcVYtmARpdPi2H/KsMzVUNKAtJAJv/VLjfu4gMt7LKyUfwSAoTNQMgBF
-rY5RMh3hoRlSY0lZnuGf+L1IRdfioOOzN1ljiUHW49t2oJdbE3KvOQjAHRd7HkdD
-8THLbi2QZtP6bl6VtJP4kX6dUV1Y9mkQNlAClA24WbntnHJ3UmTE9200ZyAFf1zQ
-bmo7j/TtQCcYZla4rewSh8/nwEySFkMV0+9afm2ihD9M6Vqly9nCGx8LKbbZJXHt
-yAW4N82ZZcLmEz7tDf/kUemY5TVogSCZc8XxzZb8iaO+vlhdkpZpa/+WzHR78t4A
-2wHHB8jLq5M8te3DzEZ0e+lnGE7nLOeTB8Xk0TAifArMkj+8JLTeFuopuvYaNGQh
-L5BSG8iml24+WndixVtA7R4Fax4lvnUCgBTni3SJiwz55dBzKTOB/ZmJcyshMPKG
-91bP/sUZ9nGROlWVw+Ehhi8rJSZAKhG1qdBkfxmxQCVxK4TS7AsuHMUOwHp3jVMb
-1dMlDZ30AjTf9ITcFsLW0stGAUjJQJ/TR2vqCdn/ubTPzV7yAOFxCPAyz0dIx79w
-0bPnOmapDKSYViCGxyJ0oSmDqpm1GjWtKnw0gueQLprQ1ObMJyN4R5Io0kdJ0dGS
-4WBfpecsE9CN0fuAwBAt/nKCOUPWSPN6r3+lbQWYOa8PQonF6Cg=
-=IVdX
------END PGP SIGNATURE-----
-
---q2ffmggcds5tcngt--
