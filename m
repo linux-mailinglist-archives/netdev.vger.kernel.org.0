@@ -2,196 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E6D123D958
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 12:44:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F2F123DA35
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 14:15:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729324AbgHFKoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 06:44:14 -0400
-Received: from foss.arm.com ([217.140.110.172]:42238 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729392AbgHFKnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Aug 2020 06:43:16 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B01D3113E;
-        Thu,  6 Aug 2020 03:43:15 -0700 (PDT)
-Received: from net-arm-thunderx2-02.shanghai.arm.com (net-arm-thunderx2-02.shanghai.arm.com [10.169.210.119])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 94F403F9AB;
-        Thu,  6 Aug 2020 03:43:12 -0700 (PDT)
-From:   Jianlin Lv <Jianlin.Lv@arm.com>
-To:     bpf@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, yhs@fb.com, Song.Zhu@arm.com,
-        Jianlin.Lv@arm.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH bpf-next v2] bpf: fix compilation warning of selftests
-Date:   Thu,  6 Aug 2020 18:42:24 +0800
-Message-Id: <20200806104224.95306-1-Jianlin.Lv@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200731061600.18344-1-Jianlin.Lv@arm.com>
-References: <20200731061600.18344-1-Jianlin.Lv@arm.com>
+        id S1728674AbgHFMJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 08:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727796AbgHFLRA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 07:17:00 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B092C0617AA
+        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 04:06:46 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id m20so25357969eds.2
+        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 04:06:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=S/X2S8Un72gBHPqjEBeUbRT6khumFRMEJ0GKnYWhQoU=;
+        b=ZQmX2XOG51SZPQLT9CoMa3NRtTFzhOTfEl/HndyrmJ+5KOoCEzpzgAKbfksi1pDrgR
+         J8OcaKxOL8iiZiWypX7BiJ7ZAQlJ7+snk+f10xB/Iyhw+3YDrIBXMlCYYSPTXcYrW3ag
+         CdXnh8Y9ClcWRbAfbrNLSMKnqZf65CNXESYNM5rXyzz2t6iOaAr1f0JAW8itoGpEqLt2
+         yAPUGnk6bT+31I9WRdTAzRctxNu80WZiYZh5z4I3JXdBJT7syuUJba8V0Vl67sWTEwJG
+         1quus6OfKfIXUxvE6YKGwbWPqRpa3IW8I0TjosZ3w3qY2LVtiDeQ7OkcQ6YBnavx+ZIo
+         /bLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=S/X2S8Un72gBHPqjEBeUbRT6khumFRMEJ0GKnYWhQoU=;
+        b=mJCT5U+xozeF5StxYEm9dL83BVasll9tMGhMQPmcsk38lvUgVQjjUvbCjZWQzy+pyQ
+         KW1Ox7biq+KXnMqri38pNqXe5E8HYyg7v9YWVm3iMYFhooNiBxP/1xKfvK5yFwbXFcR5
+         XCOCm9ZkR7Bzc01Cp1DDAJ2/TOEISl28WeMqEkX+PwsMoJHI8JbkrZe+p+0/xFi9rhUD
+         pwtUd3QZYEu7FNz9+XSDFhNgkNu7nVgQJ2oGQT8WBPeNpqvFeHAV3143yWnhDUGWNLCW
+         cG9nhH0YlOviYkXLjOXJsp20D7QAS7BILfQHm3JQaijpTw49sT2wHLhqaob9JDezUapG
+         gJWA==
+X-Gm-Message-State: AOAM533rqLCvE3jzwVaX4g9YCqrcxj+es2+fJPHJIWM+a05KSOC6IrD0
+        f4jyTMCe4gJ/5IgDboodxBb39NTUpQfwDEQaFT1fciR1S1N+KIzw71cCwsntClccRNhr1FiBO7g
+        xragPBOfAbcrfh3w=
+X-Google-Smtp-Source: ABdhPJy3G6d4eB2KPic/Jx2xZphGvOf7yTyGdw/FaCqjMdrsgXqO8sB7/mWx+z08+SMJ8SK5WtqviQ==
+X-Received: by 2002:aa7:ccd5:: with SMTP id y21mr3402579edt.91.1596712004954;
+        Thu, 06 Aug 2020 04:06:44 -0700 (PDT)
+Received: from tim.froidcoeur.net (ptr-7tznw15pracyli75x11.18120a2.ip6.access.telenet.be. [2a02:1811:50e:f0f0:d05d:939:f42b:f575])
+        by smtp.gmail.com with ESMTPSA id v13sm3597682edl.9.2020.08.06.04.06.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Aug 2020 04:06:44 -0700 (PDT)
+From:   Tim Froidcoeur <tim.froidcoeur@tessares.net>
+To:     tim.froidcoeur@tessares.net,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc:     matthieu.baerts@tessares.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net v2 1/2] net: refactor bind_bucket fastreuse into helper
+Date:   Thu,  6 Aug 2020 13:06:30 +0200
+Message-Id: <20200806110631.475855-2-tim.froidcoeur@tessares.net>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200806110631.475855-1-tim.froidcoeur@tessares.net>
+References: <20200806110631.475855-1-tim.froidcoeur@tessares.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang compiler version: 12.0.0
-The following warning appears during the selftests/bpf compilation:
+Refactor the fastreuse update code in inet_csk_get_port into a small
+helper function that can be called from other places.
 
-prog_tests/send_signal.c:51:3: warning: ignoring return value of ‘write’,
-declared with attribute warn_unused_result [-Wunused-result]
-   51 |   write(pipe_c2p[1], buf, 1);
-      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~
-prog_tests/send_signal.c:54:3: warning: ignoring return value of ‘read’,
-declared with attribute warn_unused_result [-Wunused-result]
-   54 |   read(pipe_p2c[0], buf, 1);
-      |   ^~~~~~~~~~~~~~~~~~~~~~~~~
-......
-
-prog_tests/stacktrace_build_id_nmi.c:13:2: warning: ignoring return value
-of ‘fscanf’,declared with attribute warn_unused_result [-Wunused-resul]
-   13 |  fscanf(f, "%llu", &sample_freq);
-      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-test_tcpnotify_user.c:133:2: warning:ignoring return value of ‘system’,
-declared with attribute warn_unused_result [-Wunused-result]
-  133 |  system(test_script);
-      |  ^~~~~~~~~~~~~~~~~~~
-test_tcpnotify_user.c:138:2: warning:ignoring return value of ‘system’,
-declared with attribute warn_unused_result [-Wunused-result]
-  138 |  system(test_script);
-      |  ^~~~~~~~~~~~~~~~~~~
-test_tcpnotify_user.c:143:2: warning:ignoring return value of ‘system’,
-declared with attribute warn_unused_result [-Wunused-result]
-  143 |  system(test_script);
-      |  ^~~~~~~~~~~~~~~~~~~
-
-Add code that fix compilation warning about ignoring return value and
-handles any errors; Check return value of library`s API make the code
-more secure.
-
-Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
+Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Tim Froidcoeur <tim.froidcoeur@tessares.net>
 ---
-v2:
-- replease CHECK_FAIL by CHECK
-- fix test_tcpnotify_user failed issue
----
- .../selftests/bpf/prog_tests/send_signal.c     | 18 ++++++++----------
- .../bpf/prog_tests/stacktrace_build_id_nmi.c   |  4 +++-
- .../selftests/bpf/test_tcpnotify_user.c        | 13 ++++++++++---
- 3 files changed, 21 insertions(+), 14 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/send_signal.c b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-index 504abb7bfb95..7043e6ded0e6 100644
---- a/tools/testing/selftests/bpf/prog_tests/send_signal.c
-+++ b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-@@ -48,21 +48,19 @@ static void test_send_signal_common(struct perf_event_attr *attr,
- 		close(pipe_p2c[1]); /* close write */
+Notes:
+    - remove unnecessary cast (Matt)
+
+ include/net/inet_connection_sock.h |  4 ++
+ net/ipv4/inet_connection_sock.c    | 97 ++++++++++++++++--------------
+ 2 files changed, 57 insertions(+), 44 deletions(-)
+
+diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+index e5b388f5fa20..1d59bf55bb4d 100644
+--- a/include/net/inet_connection_sock.h
++++ b/include/net/inet_connection_sock.h
+@@ -316,6 +316,10 @@ int inet_csk_compat_getsockopt(struct sock *sk, int level, int optname,
+ int inet_csk_compat_setsockopt(struct sock *sk, int level, int optname,
+ 			       char __user *optval, unsigned int optlen);
  
- 		/* notify parent signal handler is installed */
--		write(pipe_c2p[1], buf, 1);
-+		CHECK(write(pipe_c2p[1], buf, 1) != 1, "pipe_write", "err %d\n", -errno);
++/* update the fast reuse flag when adding a socket */
++void inet_csk_update_fastreuse(struct inet_bind_bucket *tb,
++			       struct sock *sk);
++
+ struct dst_entry *inet_csk_update_pmtu(struct sock *sk, u32 mtu);
  
- 		/* make sure parent enabled bpf program to send_signal */
--		read(pipe_p2c[0], buf, 1);
-+		CHECK(read(pipe_p2c[0], buf, 1) != 1, "pipe_read", "err %d\n", -errno);
- 
- 		/* wait a little for signal handler */
- 		sleep(1);
- 
--		if (sigusr1_received)
--			write(pipe_c2p[1], "2", 1);
--		else
--			write(pipe_c2p[1], "0", 1);
-+		buf[0] = sigusr1_received ? '2' : '0';
-+		CHECK(write(pipe_c2p[1], buf, 1) != 1, "pipe_write", "err %d\n", -errno);
- 
- 		/* wait for parent notification and exit */
--		read(pipe_p2c[0], buf, 1);
-+		CHECK(read(pipe_p2c[0], buf, 1) != 1, "pipe_read", "err %d\n", -errno);
- 
- 		close(pipe_c2p[1]);
- 		close(pipe_p2c[0]);
-@@ -99,7 +97,7 @@ static void test_send_signal_common(struct perf_event_attr *attr,
- 	}
- 
- 	/* wait until child signal handler installed */
--	read(pipe_c2p[0], buf, 1);
-+	CHECK(read(pipe_c2p[0], buf, 1) != 1, "pipe_read", "err %d\n", -errno);
- 
- 	/* trigger the bpf send_signal */
- 	skel->bss->pid = pid;
-@@ -107,7 +105,7 @@ static void test_send_signal_common(struct perf_event_attr *attr,
- 	skel->bss->signal_thread = signal_thread;
- 
- 	/* notify child that bpf program can send_signal now */
--	write(pipe_p2c[1], buf, 1);
-+	CHECK(write(pipe_p2c[1], buf, 1) != 1, "pipe_write", "err %d\n", -errno);
- 
- 	/* wait for result */
- 	err = read(pipe_c2p[0], buf, 1);
-@@ -121,7 +119,7 @@ static void test_send_signal_common(struct perf_event_attr *attr,
- 	CHECK(buf[0] != '2', test_name, "incorrect result\n");
- 
- 	/* notify child safe to exit */
--	write(pipe_p2c[1], buf, 1);
-+	CHECK(write(pipe_p2c[1], buf, 1) != 1, "pipe_write", "err %d\n", -errno);
- 
- disable_pmu:
- 	close(pmu_fd);
-diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
-index f002e3090d92..11a769e18f5d 100644
---- a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
-+++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
-@@ -6,11 +6,13 @@ static __u64 read_perf_max_sample_freq(void)
- {
- 	__u64 sample_freq = 5000; /* fallback to 5000 on error */
- 	FILE *f;
-+	__u32 duration = 0;
- 
- 	f = fopen("/proc/sys/kernel/perf_event_max_sample_rate", "r");
- 	if (f == NULL)
- 		return sample_freq;
--	fscanf(f, "%llu", &sample_freq);
-+	CHECK(fscanf(f, "%llu", &sample_freq) != 1, "Get max sample rate",
-+		  "return default value: 5000,err %d\n", -errno);
- 	fclose(f);
- 	return sample_freq;
+ #define TCP_PINGPONG_THRESH	3
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index afaf582a5aa9..a1be020bde8e 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -296,6 +296,57 @@ static inline int sk_reuseport_match(struct inet_bind_bucket *tb,
+ 				    ipv6_only_sock(sk), true, false);
  }
-diff --git a/tools/testing/selftests/bpf/test_tcpnotify_user.c b/tools/testing/selftests/bpf/test_tcpnotify_user.c
-index 8549b31716ab..73da7fe8c152 100644
---- a/tools/testing/selftests/bpf/test_tcpnotify_user.c
-+++ b/tools/testing/selftests/bpf/test_tcpnotify_user.c
-@@ -124,17 +124,24 @@ int main(int argc, char **argv)
- 	sprintf(test_script,
- 		"iptables -A INPUT -p tcp --dport %d -j DROP",
- 		TESTPORT);
--	system(test_script);
-+	if (system(test_script)) {
-+		printf("FAILED: execute command: %s, err %d\n", test_script, -errno);
-+		goto err;
+ 
++void inet_csk_update_fastreuse(struct inet_bind_bucket *tb,
++			       struct sock *sk)
++{
++	kuid_t uid = sock_i_uid(sk);
++	bool reuse = sk->sk_reuse && sk->sk_state != TCP_LISTEN;
++
++	if (hlist_empty(&tb->owners)) {
++		tb->fastreuse = reuse;
++		if (sk->sk_reuseport) {
++			tb->fastreuseport = FASTREUSEPORT_ANY;
++			tb->fastuid = uid;
++			tb->fast_rcv_saddr = sk->sk_rcv_saddr;
++			tb->fast_ipv6_only = ipv6_only_sock(sk);
++			tb->fast_sk_family = sk->sk_family;
++#if IS_ENABLED(CONFIG_IPV6)
++			tb->fast_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
++#endif
++		} else {
++			tb->fastreuseport = 0;
++		}
++	} else {
++		if (!reuse)
++			tb->fastreuse = 0;
++		if (sk->sk_reuseport) {
++			/* We didn't match or we don't have fastreuseport set on
++			 * the tb, but we have sk_reuseport set on this socket
++			 * and we know that there are no bind conflicts with
++			 * this socket in this tb, so reset our tb's reuseport
++			 * settings so that any subsequent sockets that match
++			 * our current socket will be put on the fast path.
++			 *
++			 * If we reset we need to set FASTREUSEPORT_STRICT so we
++			 * do extra checking for all subsequent sk_reuseport
++			 * socks.
++			 */
++			if (!sk_reuseport_match(tb, sk)) {
++				tb->fastreuseport = FASTREUSEPORT_STRICT;
++				tb->fastuid = uid;
++				tb->fast_rcv_saddr = sk->sk_rcv_saddr;
++				tb->fast_ipv6_only = ipv6_only_sock(sk);
++				tb->fast_sk_family = sk->sk_family;
++#if IS_ENABLED(CONFIG_IPV6)
++				tb->fast_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
++#endif
++			}
++		} else {
++			tb->fastreuseport = 0;
++		}
 +	}
++}
++
+ /* Obtain a reference to a local port for the given sock,
+  * if snum is zero it means select any available local port.
+  * We try to allocate an odd port (and leave even ports for connect())
+@@ -308,7 +359,6 @@ int inet_csk_get_port(struct sock *sk, unsigned short snum)
+ 	struct inet_bind_hashbucket *head;
+ 	struct net *net = sock_net(sk);
+ 	struct inet_bind_bucket *tb = NULL;
+-	kuid_t uid = sock_i_uid(sk);
+ 	int l3mdev;
  
- 	sprintf(test_script,
- 		"nc 127.0.0.1 %d < /etc/passwd > /dev/null 2>&1 ",
- 		TESTPORT);
--	system(test_script);
-+	if (system(test_script))
-+		printf("execute command: %s, err %d\n", test_script, -errno);
- 
- 	sprintf(test_script,
- 		"iptables -D INPUT -p tcp --dport %d -j DROP",
- 		TESTPORT);
--	system(test_script);
-+	if (system(test_script)) {
-+		printf("FAILED: execute command: %s, err %d\n", test_script, -errno);
-+		goto err;
-+	}
- 
- 	rv = bpf_map_lookup_elem(bpf_map__fd(global_map), &key, &g);
- 	if (rv != 0) {
+ 	l3mdev = inet_sk_bound_l3mdev(sk);
+@@ -345,49 +395,8 @@ int inet_csk_get_port(struct sock *sk, unsigned short snum)
+ 			goto fail_unlock;
+ 	}
+ success:
+-	if (hlist_empty(&tb->owners)) {
+-		tb->fastreuse = reuse;
+-		if (sk->sk_reuseport) {
+-			tb->fastreuseport = FASTREUSEPORT_ANY;
+-			tb->fastuid = uid;
+-			tb->fast_rcv_saddr = sk->sk_rcv_saddr;
+-			tb->fast_ipv6_only = ipv6_only_sock(sk);
+-			tb->fast_sk_family = sk->sk_family;
+-#if IS_ENABLED(CONFIG_IPV6)
+-			tb->fast_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
+-#endif
+-		} else {
+-			tb->fastreuseport = 0;
+-		}
+-	} else {
+-		if (!reuse)
+-			tb->fastreuse = 0;
+-		if (sk->sk_reuseport) {
+-			/* We didn't match or we don't have fastreuseport set on
+-			 * the tb, but we have sk_reuseport set on this socket
+-			 * and we know that there are no bind conflicts with
+-			 * this socket in this tb, so reset our tb's reuseport
+-			 * settings so that any subsequent sockets that match
+-			 * our current socket will be put on the fast path.
+-			 *
+-			 * If we reset we need to set FASTREUSEPORT_STRICT so we
+-			 * do extra checking for all subsequent sk_reuseport
+-			 * socks.
+-			 */
+-			if (!sk_reuseport_match(tb, sk)) {
+-				tb->fastreuseport = FASTREUSEPORT_STRICT;
+-				tb->fastuid = uid;
+-				tb->fast_rcv_saddr = sk->sk_rcv_saddr;
+-				tb->fast_ipv6_only = ipv6_only_sock(sk);
+-				tb->fast_sk_family = sk->sk_family;
+-#if IS_ENABLED(CONFIG_IPV6)
+-				tb->fast_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
+-#endif
+-			}
+-		} else {
+-			tb->fastreuseport = 0;
+-		}
+-	}
++	inet_csk_update_fastreuse(tb, sk);
++
+ 	if (!inet_csk(sk)->icsk_bind_hash)
+ 		inet_bind_hash(sk, tb, port);
+ 	WARN_ON(inet_csk(sk)->icsk_bind_hash != tb);
 -- 
-2.17.1
+2.25.1
+
+
+-- 
+
+
+Disclaimer: https://www.tessares.net/mail-disclaimer/ 
+<https://www.tessares.net/mail-disclaimer/>
+
 
