@@ -2,80 +2,304 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0524023E30F
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 22:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E054423E324
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 22:27:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbgHFUUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 16:20:22 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:36526 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726382AbgHFUUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 16:20:22 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 076KJqPn085323;
-        Thu, 6 Aug 2020 15:19:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1596745192;
-        bh=ZUrVIV9a/HB6pdfYWlnxoyCs4L1mTouSCTB1BHdWEwE=;
-        h=Subject:To:References:From:Date:In-Reply-To;
-        b=FcxToDvSFg82La4qIiBDrzEoU622ni3NoRCndwjCBW7eMDK/jLFosVY08NMlWChAY
-         t/Mjryolm2Zgto/ZxVb2pvO99xXlnUxJDYJ40QGj7vH9r2G3kYSBf43fyG/Ozik9mv
-         /anuIAGHUyfaBiqhqL0sHAL63mkYk57/8FIzgdq8=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 076KJqsr020504
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 6 Aug 2020 15:19:52 -0500
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 6 Aug
- 2020 15:19:52 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 6 Aug 2020 15:19:51 -0500
-Received: from [10.250.53.226] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 076KJp1M112395;
-        Thu, 6 Aug 2020 15:19:51 -0500
-Subject: Re: [net-next iproute2 PATCH v3 1/2] iplink: hsr: add support for
- creating PRP device similar to HSR
-To:     David Ahern <dsahern@gmail.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-api@vger.kernel.org>,
-        <nsekhar@ti.com>, <grygorii.strashko@ti.com>,
-        <vinicius.gomes@intel.com>, <stephen@networkplumber.org>,
-        <kuznet@ms2.inr.ac.ru>
-References: <20200717152205.826-1-m-karicheri2@ti.com>
- <e6ac459e-b81c-48ee-d82c-36a533e2aa29@ti.com>
- <6632128c-1c4b-4538-81a9-48dd752c8ab3@gmail.com>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <9bc91459-73f1-df6e-176a-b078a7cc309f@ti.com>
-Date:   Thu, 6 Aug 2020 16:19:46 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726190AbgHFU13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 16:27:29 -0400
+Received: from smtp11.smtpout.orange.fr ([80.12.242.133]:35874 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725817AbgHFU12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 16:27:28 -0400
+Received: from localhost.localdomain ([93.22.37.174])
+        by mwinf5d46 with ME
+        id CLTR230083lSDvh03LTR5x; Thu, 06 Aug 2020 22:27:26 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 06 Aug 2020 22:27:26 +0200
+X-ME-IP: 93.22.37.174
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     davem@davemloft.net, kuba@kernel.org, steve.glendinning@shawell.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] smsc9420: switch from 'pci_' to 'dma_' API
+Date:   Thu,  6 Aug 2020 22:27:23 +0200
+Message-Id: <20200806202723.734581-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <6632128c-1c4b-4538-81a9-48dd752c8ab3@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The wrappers in include/linux/pci-dma-compat.h should go away.
+
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
+
+When memory is allocated in 'smsc9420_probe()', GFP_KERNEL can be used
+because it is a probe function and no lock is acquired.
+
+While at it, rewrite the size passed to 'dma_alloc_coherent()' the same way
+as the one passed to 'dma_free_coherent()'. This form is less verbose:
+   sizeof(struct smsc9420_dma_desc) * RX_RING_SIZE +
+   sizeof(struct smsc9420_dma_desc) * TX_RING_SIZE,
+vs
+   sizeof(struct smsc9420_dma_desc) * (RX_RING_SIZE + TX_RING_SIZE)
 
 
-On 8/6/20 1:12 PM, David Ahern wrote:
-> On 8/6/20 10:04 AM, Murali Karicheri wrote:
->> that the maintainers are different than the netdev maintainers. My bad.
->> The PRP driver support in kernel is merged by Dave to net-next and this
->> iproute2 change has to go with it. So please review and apply this if it
->> looks good. The kernel part merged is at
-> 
-> there was a long delay between iproute2 and commit to net-next. You need
-> to re-send the iproute2 patches.
-> 
-OK. Will do. Thanks
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/ethernet/smsc/smsc9420.c | 51 +++++++++++++++-------------
+ 1 file changed, 28 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/net/ethernet/smsc/smsc9420.c b/drivers/net/ethernet/smsc/smsc9420.c
+index 42bef04d65ba..68969549a5c7 100644
+--- a/drivers/net/ethernet/smsc/smsc9420.c
++++ b/drivers/net/ethernet/smsc/smsc9420.c
+@@ -497,8 +497,9 @@ static void smsc9420_free_tx_ring(struct smsc9420_pdata *pd)
+ 
+ 		if (skb) {
+ 			BUG_ON(!pd->tx_buffers[i].mapping);
+-			pci_unmap_single(pd->pdev, pd->tx_buffers[i].mapping,
+-					 skb->len, PCI_DMA_TODEVICE);
++			dma_unmap_single(&pd->pdev->dev,
++					 pd->tx_buffers[i].mapping, skb->len,
++					 DMA_TO_DEVICE);
+ 			dev_kfree_skb_any(skb);
+ 		}
+ 
+@@ -530,8 +531,9 @@ static void smsc9420_free_rx_ring(struct smsc9420_pdata *pd)
+ 			dev_kfree_skb_any(pd->rx_buffers[i].skb);
+ 
+ 		if (pd->rx_buffers[i].mapping)
+-			pci_unmap_single(pd->pdev, pd->rx_buffers[i].mapping,
+-				PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
++			dma_unmap_single(&pd->pdev->dev,
++					 pd->rx_buffers[i].mapping,
++					 PKT_BUF_SZ, DMA_FROM_DEVICE);
+ 
+ 		pd->rx_ring[i].status = 0;
+ 		pd->rx_ring[i].length = 0;
+@@ -749,8 +751,8 @@ static void smsc9420_rx_handoff(struct smsc9420_pdata *pd, const int index,
+ 	dev->stats.rx_packets++;
+ 	dev->stats.rx_bytes += packet_length;
+ 
+-	pci_unmap_single(pd->pdev, pd->rx_buffers[index].mapping,
+-		PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
++	dma_unmap_single(&pd->pdev->dev, pd->rx_buffers[index].mapping,
++			 PKT_BUF_SZ, DMA_FROM_DEVICE);
+ 	pd->rx_buffers[index].mapping = 0;
+ 
+ 	skb = pd->rx_buffers[index].skb;
+@@ -782,9 +784,9 @@ static int smsc9420_alloc_rx_buffer(struct smsc9420_pdata *pd, int index)
+ 	if (unlikely(!skb))
+ 		return -ENOMEM;
+ 
+-	mapping = pci_map_single(pd->pdev, skb_tail_pointer(skb),
+-				 PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
+-	if (pci_dma_mapping_error(pd->pdev, mapping)) {
++	mapping = dma_map_single(&pd->pdev->dev, skb_tail_pointer(skb),
++				 PKT_BUF_SZ, DMA_FROM_DEVICE);
++	if (dma_mapping_error(&pd->pdev->dev, mapping)) {
+ 		dev_kfree_skb_any(skb);
+ 		netif_warn(pd, rx_err, pd->dev, "pci_map_single failed!\n");
+ 		return -ENOMEM;
+@@ -901,8 +903,10 @@ static void smsc9420_complete_tx(struct net_device *dev)
+ 		BUG_ON(!pd->tx_buffers[index].skb);
+ 		BUG_ON(!pd->tx_buffers[index].mapping);
+ 
+-		pci_unmap_single(pd->pdev, pd->tx_buffers[index].mapping,
+-			pd->tx_buffers[index].skb->len, PCI_DMA_TODEVICE);
++		dma_unmap_single(&pd->pdev->dev,
++				 pd->tx_buffers[index].mapping,
++				 pd->tx_buffers[index].skb->len,
++				 DMA_TO_DEVICE);
+ 		pd->tx_buffers[index].mapping = 0;
+ 
+ 		dev_kfree_skb_any(pd->tx_buffers[index].skb);
+@@ -932,9 +936,9 @@ static netdev_tx_t smsc9420_hard_start_xmit(struct sk_buff *skb,
+ 	BUG_ON(pd->tx_buffers[index].skb);
+ 	BUG_ON(pd->tx_buffers[index].mapping);
+ 
+-	mapping = pci_map_single(pd->pdev, skb->data,
+-				 skb->len, PCI_DMA_TODEVICE);
+-	if (pci_dma_mapping_error(pd->pdev, mapping)) {
++	mapping = dma_map_single(&pd->pdev->dev, skb->data, skb->len,
++				 DMA_TO_DEVICE);
++	if (dma_mapping_error(&pd->pdev->dev, mapping)) {
+ 		netif_warn(pd, tx_err, pd->dev,
+ 			   "pci_map_single failed, dropping packet\n");
+ 		return NETDEV_TX_BUSY;
+@@ -1522,7 +1526,7 @@ smsc9420_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		goto out_free_netdev_2;
+ 	}
+ 
+-	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
++	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
+ 		netdev_err(dev, "No usable DMA configuration, aborting\n");
+ 		goto out_free_regions_3;
+ 	}
+@@ -1540,10 +1544,9 @@ smsc9420_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	pd = netdev_priv(dev);
+ 
+ 	/* pci descriptors are created in the PCI consistent area */
+-	pd->rx_ring = pci_alloc_consistent(pdev,
+-		sizeof(struct smsc9420_dma_desc) * RX_RING_SIZE +
+-		sizeof(struct smsc9420_dma_desc) * TX_RING_SIZE,
+-		&pd->rx_dma_addr);
++	pd->rx_ring = dma_alloc_coherent(&pdev->dev,
++		sizeof(struct smsc9420_dma_desc) * (RX_RING_SIZE + TX_RING_SIZE),
++		&pd->rx_dma_addr, GFP_KERNEL);
+ 
+ 	if (!pd->rx_ring)
+ 		goto out_free_io_4;
+@@ -1599,8 +1602,9 @@ smsc9420_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	return 0;
+ 
+ out_free_dmadesc_5:
+-	pci_free_consistent(pdev, sizeof(struct smsc9420_dma_desc) *
+-		(RX_RING_SIZE + TX_RING_SIZE), pd->rx_ring, pd->rx_dma_addr);
++	dma_free_coherent(&pdev->dev,
++			  sizeof(struct smsc9420_dma_desc) * (RX_RING_SIZE + TX_RING_SIZE),
++			  pd->rx_ring, pd->rx_dma_addr);
+ out_free_io_4:
+ 	iounmap(virt_addr - LAN9420_CPSR_ENDIAN_OFFSET);
+ out_free_regions_3:
+@@ -1632,8 +1636,9 @@ static void smsc9420_remove(struct pci_dev *pdev)
+ 	BUG_ON(!pd->tx_ring);
+ 	BUG_ON(!pd->rx_ring);
+ 
+-	pci_free_consistent(pdev, sizeof(struct smsc9420_dma_desc) *
+-		(RX_RING_SIZE + TX_RING_SIZE), pd->rx_ring, pd->rx_dma_addr);
++	dma_free_coherent(&pdev->dev,
++			  sizeof(struct smsc9420_dma_desc) * (RX_RING_SIZE + TX_RING_SIZE),
++			  pd->rx_ring, pd->rx_dma_addr);
+ 
+ 	iounmap(pd->ioaddr - LAN9420_CPSR_ENDIAN_OFFSET);
+ 	pci_release_regions(pdev);
 -- 
-Murali Karicheri
-Texas Instruments
+2.25.1
+
