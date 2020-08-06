@@ -2,99 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EAFA23DC00
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 18:43:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F103A23DC23
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 18:47:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729064AbgHFQmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 12:42:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729001AbgHFQkm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:40:42 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAB8C0086BC;
-        Thu,  6 Aug 2020 08:39:20 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id v4so42602271ljd.0;
-        Thu, 06 Aug 2020 08:39:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=q5PIhTZ1k5FdG3NQbW/iiFuxA5Ifg1yNdI35SxS/Xwk=;
-        b=qQGNBo6Ekik496p3/E13FqX0TMGK+7zedJcS9ukf6cmLtwnbAEhkXjXAbK7OHp5zjo
-         /XPHpmUDEPKy8Iw38Q08tzeWDCaC/9ImokMgBOM+HRYwWv7ZdCjDiz8LibmRTeqN4BGD
-         JYVlGgw/o3m3yuE14VtimRONafHPNADq7EkerpnxevEdfxQeHc2PP7JjDLlCHQ13vrnZ
-         KIHN9/EjGf8fGNMsFBINqWmX6eJQUzr/h6XUcXnp9MgkyRAVehdfwdEajwjRkwwmiXeN
-         uIiLMRZHyORk0e/nZ3sGaGObKos2UnoDouX31w8j6vQu2L+u3UpoBNuTxfY3hRic4Ny0
-         xb0A==
-X-Gm-Message-State: AOAM532XMv2iAljFtCbUMxAO+hbXbHoRKx+D9JZ/GYsb22XvWAsyqRd6
-        N6YkizC2wXu/GqsLTevUGxQ=
-X-Google-Smtp-Source: ABdhPJxkmm9iVoirzrxeN4OhGBs4mKGRNymtq+vksvikDKFhl16Z12DTSOySIPWDzecAwwEXojdHKg==
-X-Received: by 2002:a2e:9196:: with SMTP id f22mr4160854ljg.435.1596728358635;
-        Thu, 06 Aug 2020 08:39:18 -0700 (PDT)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id v26sm2554919lji.65.2020.08.06.08.39.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Aug 2020 08:39:17 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@xi.terra>)
-        id 1k3hzE-0003Cf-Up; Thu, 06 Aug 2020 17:39:21 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
+        id S1729369AbgHFQqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 12:46:44 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:50762 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729240AbgHFQpl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:45:41 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1k3ijY-0003ET-2S; Thu, 06 Aug 2020 16:27:12 +0000
+To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
-Subject: [PATCH net] net: phy: fix memory leak in device-create error path
-Date:   Thu,  6 Aug 2020 17:37:53 +0200
-Message-Id: <20200806153753.12247-1-johan@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Colin Ian King <colin.king@canonical.com>
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Subject: re: net: dsa: sja1105: use detected device id instead of DT one on
+ mismatch
+Message-ID: <60d2d8f9-1376-2047-b958-7bdbbde1538e@canonical.com>
+Date:   Thu, 6 Aug 2020 17:27:11 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A recent commit introduced a late error path in phy_device_create()
-which fails to release the device name allocated by dev_set_name().
+Hi,
 
-Fixes: 13d0ab6750b2 ("net: phy: check return code when requesting PHY driver module")
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/net/phy/phy_device.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Static analysis with Coverity has detected a potential issue with the
+following commit:
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 1b9523595839..57d44648c8dd 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -615,7 +615,9 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
- 	if (c45_ids)
- 		dev->c45_ids = *c45_ids;
- 	dev->irq = bus->irq[addr];
-+
- 	dev_set_name(&mdiodev->dev, PHY_ID_FMT, bus->id, addr);
-+	device_initialize(&mdiodev->dev);
- 
- 	dev->state = PHY_DOWN;
- 
-@@ -649,10 +651,8 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
- 		ret = phy_request_driver_module(dev, phy_id);
- 	}
- 
--	if (!ret) {
--		device_initialize(&mdiodev->dev);
--	} else {
--		kfree(dev);
-+	if (ret) {
-+		put_device(&mdiodev->dev);
- 		dev = ERR_PTR(ret);
- 	}
- 
--- 
-2.26.2
+commit 0b0e299720bb99428892a23ecbd2b4b7f61ccf6d
+Author: Vladimir Oltean <olteanv@gmail.com>
+Date:   Mon Aug 3 19:48:23 2020 +0300
 
+    net: dsa: sja1105: use detected device id instead of DT one on mismatch
+
+The analysis is as follows:
+
+Array compared against 0 (NO_EFFECT)array_null: Comparing an array to
+null is not useful: match->compatible, since the test will always
+evaluate as true.
+
+    Was match->compatible formerly declared as a pointer?
+
+3418        for (match = sja1105_dt_ids; match->compatible; match++) {
+3419                const struct sja1105_info *info = match->data;
+3420
+
+I'm not sure what the original intention was, so I was unable to fix
+this hence I'm sending this report as I think it needs addressing.
+
+Colin
