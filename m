@@ -2,121 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7A7323E10C
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 20:42:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3804523E061
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 20:32:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729822AbgHFSkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 14:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727868AbgHFS3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 14:29:55 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4F9C0617A9
-        for <netdev@vger.kernel.org>; Thu,  6 Aug 2020 11:29:52 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id v65so14751661ybv.9
-        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 11:29:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=+IG/dxdpIhFOg5NsrzFXy6SAE8mZFW/9Sk3pQFlLR/4=;
-        b=aqhdeEeYxs4pIJ7U2ovDFyNnuGPXWzRfKQ10Xub61whpV9tbm2cil6TFTO/f1I0asV
-         Jkm5iEj3REOVhxGYnDQDW9Vyad2O2p91LMVYkD1fdaXSuu2OvPO9WG1VrOWStwcbxXzZ
-         AaMCgi88DzldY8DzC5b/E6Xr0eTQvkemByeALsUT2qQW/ovsBZbfkzt0qb0t6wGDSK8q
-         zeV8thFiYRKXT51DfC+CnEFhs9Z1fgeEX3Ea+a0ZEJIREVYuNOhIIE4s+d4oHfAL0TLI
-         7ppVzqf6bPuxq8Et9E+O1VG9H8UtDwzlOIysJD97bqAaoJhaTLuPtKTLJaTeFyY4k/2J
-         2+qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=+IG/dxdpIhFOg5NsrzFXy6SAE8mZFW/9Sk3pQFlLR/4=;
-        b=t7gKHqZ4TP8CIP7ZlFtoBWWIKBqS47BUNoNCmGxDyptZBEstH3mTaLnpsvziHx8toR
-         rsUSwQT2BG7s1mkCaKUmeXGlp3ooOaevNPEg6V+2z7z+wun87zgGjcIDsDqblUP5xWar
-         CHz0uoU3DCgc8ABTXhcK4yXUz5+2IkAtsonpBOIlc/nJFBaFSlMJLQ6FhbDFG6cbu1sS
-         rrQ0r7s3q2Hl1oVunSZhMaYwY/CXPtUJNJPPcB4aUtHMXGpyB3WZzcDnxa3aptD9IgCW
-         QhZ3WefDWW1XLZFdYy1oI1li9ASHC9HtNok9doJUHBtONpgD1hxGv+LofV+I+Q/Z84Ut
-         FOgw==
-X-Gm-Message-State: AOAM531Uv7vEsKQaiw94lVwKtXppRbRhhr6/W8rC1T7daTusDZaAPG5Q
-        QBijvxoB+u7689WCfXgoM5VravVDmPFr1aSRqZQ=
-X-Google-Smtp-Source: ABdhPJwZABlBX0pahoVpPDOus1FAsJYKYjfJy30hapIE6fqPyT+k2q2xJ16rKioJ7N6yL6pFeQR2DssnVu/ZwHHkgC0=
-X-Received: by 2002:a25:f30c:: with SMTP id c12mr15528680ybs.471.1596738591183;
- Thu, 06 Aug 2020 11:29:51 -0700 (PDT)
-Date:   Thu,  6 Aug 2020 11:29:39 -0700
-Message-Id: <20200806182940.720057-1-ndesaulniers@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.28.0.163.g6104cc2f0b6-goog
-Subject: [PATCH net resend] bitfield.h: don't compile-time validate _val in FIELD_FIT
-From:   Nick Desaulniers <ndesaulniers@google.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     Sami Tolvanen <samitolvanen@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, stable@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alex Elder <elder@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1728057AbgHFScT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 14:32:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55754 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728437AbgHFSbM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Aug 2020 14:31:12 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EE27E221E3;
+        Thu,  6 Aug 2020 18:30:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596738630;
+        bh=0j/Gs+HBIfouG9/zhyHY47+RDgMJzkzUWkX/o6OMrro=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=I+OXd6pPB0yUX7nf+Xu+8HYNDCXGzahILClI6a/xnXVm2yFkVypzmMi0jgo6k4KB8
+         eyAC++GbawumtRkuQ5JAY0yk4r6DEPb8zZpgDKPLe5xbFORRxFXru59lgOabQCrufM
+         g1RnGbbbLaU6CieM3JvArku0QjxQwVa0+LXDrqtE=
+Date:   Thu, 6 Aug 2020 11:30:26 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Qingyu Li <ieatmuttonchuan@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nfc: enforce CAP_NET_RAW for raw sockets When creating
+ a raw AF_NFC socket, CAP_NET_RAW needs to be checked first.
+Message-ID: <20200806113026.64b7f755@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200806022808.GA17066@oppo>
+References: <20200806022808.GA17066@oppo>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+On Thu, 6 Aug 2020 10:28:08 +0800 Qingyu Li wrote:
 
-When ur_load_imm_any() is inlined into jeq_imm(), it's possible for the
-compiler to deduce a case where _val can only have the value of -1 at
-compile time. Specifically,
+Commit message is required. Perhaps shorten the subject and put more
+info here.
 
-/* struct bpf_insn: _s32 imm */
-u64 imm = insn->imm; /* sign extend */
-if (imm >> 32) { /* non-zero only if insn->imm is negative */
-  /* inlined from ur_load_imm_any */
-  u32 __imm = imm >> 32; /* therefore, always 0xffffffff */
-  if (__builtin_constant_p(__imm) && __imm > 255)
-    compiletime_assert_XXX()
+> Signed-off-by: Qingyu Li <ieatmuttonchuan@gmail.com>
+> ---
+>  net/nfc/rawsock.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/nfc/rawsock.c b/net/nfc/rawsock.c
+> index ba5ffd3badd3..c1302b689a98 100644
+> --- a/net/nfc/rawsock.c
+> +++ b/net/nfc/rawsock.c
+> @@ -332,8 +332,11 @@ static int rawsock_create(struct net *net, struct socket *sock,
+>  	if ((sock->type != SOCK_SEQPACKET) && (sock->type != SOCK_RAW))
+>  		return -ESOCKTNOSUPPORT;
+> 
+> -	if (sock->type == SOCK_RAW)
+> +	if (sock->type == SOCK_RAW){
+> +		if (!capable(CAP_NET_RAW))
+> +			return -EPERM;
+>  		sock->ops = &rawsock_raw_ops;
+> +	}
 
-This can result in tripping a BUILD_BUG_ON() in __BF_FIELD_CHECK() that
-checks that a given value is representable in one byte (interpreted as
-unsigned).
+please run checkpatch.pl --strict and fix the issues.
 
-FIELD_FIT() should return true or false at runtime for whether a value
-can fit for not. Don't break the build over a value that's too large for
-the mask. We'd prefer to keep the inlining and compiler optimizations
-though we know this case will always return false.
-
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/kernel-hardening/CAK7LNASvb0UDJ0U5wkYYRzTAdnEs64HjXpEUL7d=V0CXiAXcNw@mail.gmail.com/
-Reported-by: Masahiro Yamada <masahiroy@kernel.org>
-Debugged-by: Sami Tolvanen <samitolvanen@google.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-Acked-by: Alex Elder <elder@linaro.org>
----
-Note: resent patch 1/2 as per Jakub on
-https://lore.kernel.org/netdev/20200708230402.1644819-1-ndesaulniers@google.com/
-
- include/linux/bitfield.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
-index 48ea093ff04c..4e035aca6f7e 100644
---- a/include/linux/bitfield.h
-+++ b/include/linux/bitfield.h
-@@ -77,7 +77,7 @@
-  */
- #define FIELD_FIT(_mask, _val)						\
- 	({								\
--		__BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_FIT: ");	\
-+		__BF_FIELD_CHECK(_mask, 0ULL, 0ULL, "FIELD_FIT: ");	\
- 		!((((typeof(_mask))_val) << __bf_shf(_mask)) & ~(_mask)); \
- 	})
- 
--- 
-2.27.0.383.g050319c2ae-goog
+>  	else
+>  		sock->ops = &rawsock_ops;
+> 
+> 
+> 
 
