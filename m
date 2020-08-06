@@ -2,159 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD0B723D597
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 04:50:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82A9C23D598
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 04:52:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726197AbgHFCux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 22:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55502 "EHLO
+        id S1726490AbgHFCwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 22:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725999AbgHFCuv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 22:50:51 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8BAC061574
-        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 19:50:51 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id e16so4524883ilc.12
-        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 19:50:51 -0700 (PDT)
+        with ESMTP id S1725999AbgHFCwx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 22:52:53 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3E4C061574
+        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 19:52:52 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id y206so13839365pfb.10
+        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 19:52:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=miraclelinux-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Ba5a8RMGW+dH7ZI7DCohfRAlEqw3Gq1l9IgmeX/1T54=;
-        b=RsQ7vm+/eS1OWeHqF7FpP0o0QgIUQTBZLL7a27Iqk4sn489tmiSOssWQhKOPa9gReZ
-         wIO5eMAZTOtOAqMhOEBomtXc/TxzX3/HAo/nFcWeH951Z7/LFbQYAKderCUHo+rlz8oE
-         INENxzqfyaOGFlAtJAmALOklo1fvJ8UcgYW1/ovKd1k5WZyfaexqCSh5E+CVeA2s/3UV
-         hjgBKJSxIh6mjwn3Z6dmgjzCmru3evZ/QXoZcdT4lIEU4W631MSrgWk9Y7TNTY0DEXzU
-         4ytuh6anAAE+ulZypGH/k5+2nMtxUJhMR+XRTayZkP/gk8qNFcyAuMre2Tus5tYRhID+
-         ixrQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IJMAOHeQNoaDd0uyAglEK8aSh2Ec1gYdeIGp//guHiw=;
+        b=ZcYMMTnWKbG2LU++wybm2P0JdkldmGfhZiC8I5T8syYYJx8+KoSC31NYiZ4cUQDhjn
+         XZNsZjJIBJnSoGvDydS/LFgEv2XCxLptr0/HbO7sq+rMwJ6etH1X3D+4+sscM9p21O8T
+         WZZ/VuBUjumxlb6EFYmm7eH/8eWaEhV8JvFBQrX+w7kLatY0/KS36PICmvc6HRYuuI52
+         SA7vagHEpnJlolzJ3goy7emJW/vFRlPZVoFjuJ1XMH09I+N/d3z0EVH8e9vj5GeAqyl0
+         unRr9W4TI7pwP00SYB6Utv/W9gKpqpBDMj4XRchoLbeuEnuHwRtUyDgyNjM8hotCwsLj
+         ay5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Ba5a8RMGW+dH7ZI7DCohfRAlEqw3Gq1l9IgmeX/1T54=;
-        b=t5KJvXSh7L+LQ4HYnu2O0ce2Vdo11EJjmTIi6EraIYIYyq0mAVi2BBX/F1TecWzIDa
-         PkX/TBt38MPSJpNzMF5HzaOswfgyERSndBXEZyJp3+fbAr+lU+3PkUmIWua5NnAnQLhG
-         YUahwUvEtzs8CgpvQPr2BvufCdLFrjDMl4ztse/zkp/xJaDnFCNiFcdnjdWhN7/nvIXN
-         XgR22ORROOMWIWa6AZKDivGHcRQ++XxPLkYXJXv1wrogsU635H5tyDs1PBgk4NpDWyi+
-         xbPa4tb6UPSGqhw1hiVfAGLllctJ4JFWK7EZ1pZmlrHZtEsWrIPb5kGNU4Ge+baujgqk
-         919w==
-X-Gm-Message-State: AOAM532sHH+8+uXJwuQvU3/yUMpphHVn3Uxt8V9JFGnMttx2NWlmKQ20
-        4ZcptK/74geW/DjKAlnCqKJfdJ0VY21Tn+mXaSduQA==
-X-Google-Smtp-Source: ABdhPJwHK7pIr50Jj5ekKwMoUoJfRm0KJLKA9SDlhqNZQRn8yah4970DwuiNCBv3pS2V4LNICqKcb6geOIcKTAi0rmw=
-X-Received: by 2002:a05:6e02:c1:: with SMTP id r1mr7447055ilq.34.1596682249109;
- Wed, 05 Aug 2020 19:50:49 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IJMAOHeQNoaDd0uyAglEK8aSh2Ec1gYdeIGp//guHiw=;
+        b=PkX+W9gQfrNm+l50sh/qyOp+aZx2750MmZC8rak+sZ1zwvjazff30zV4aXSmPmIEAE
+         zPMQ/9T9hP7Qdmv40YVX3pFZF0kaO8vOukaHM/kHaGpkad5cvmEUbxTS0Uyu3aqdCqhJ
+         ahMU64atuK1lUUR8nYYQWbrrAYX9fDK0/cFj6LCh1DDxnZujImwBvqugg2hCAWn0h48E
+         Wj0e5eMnmIM20oZlix8ZVty8SllcNt/UYtX5eTVnckb50AAyMx5fAHUDa3q9IkD05Ijg
+         bnYSvknj6pVueD3S2ApeoXOcncpdS75V2jYpnf9lrUnutBqbYBnD76D5b8ZtcajHVu6q
+         wzIw==
+X-Gm-Message-State: AOAM530rK5if/UwTpbYJ2RCyd3ncxa8MhZEEXpT8g9SGLHit8fQvJFKL
+        w7Ns5PsOd57vbp/4+QwCo/Q=
+X-Google-Smtp-Source: ABdhPJyMN2RyklzbTiIOup1YSIezfIPUIpHJptCVfA2aeCLv42/D38XvdmUyWzmZoMhH4em0DDLr0g==
+X-Received: by 2002:aa7:9a4c:: with SMTP id x12mr6280147pfj.307.1596682372051;
+        Wed, 05 Aug 2020 19:52:52 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id t17sm4998669pgu.30.2020.08.05.19.52.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Aug 2020 19:52:51 -0700 (PDT)
+Date:   Thu, 6 Aug 2020 10:52:41 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     gnault@redhat.com, netdev@vger.kernel.org, pmachata@gmail.com,
+        roopa@cumulusnetworks.com, dsahern@kernel.org, akaris@redhat.com
+Subject: Re: [PATCH net] Revert "vxlan: fix tos value before xmit"
+Message-ID: <20200806025241.GO2531@dhcp-12-153.nay.redhat.com>
+References: <20200805024131.2091206-1-liuhangbin@gmail.com>
+ <20200805084427.GC11547@pc-2.home>
+ <20200805101807.GN2531@dhcp-12-153.nay.redhat.com>
+ <20200805.121110.1918790855908756881.davem@davemloft.net>
 MIME-Version: 1.0
-References: <cover.1596468610.git.lucien.xin@gmail.com> <7ba2ca17347249b980731e7a76ba3e24a9e37720.1596468610.git.lucien.xin@gmail.com>
-In-Reply-To: <7ba2ca17347249b980731e7a76ba3e24a9e37720.1596468610.git.lucien.xin@gmail.com>
-From:   Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com>
-Date:   Thu, 6 Aug 2020 11:49:56 +0900
-Message-ID: <CAPA1RqCz=h-RBu-md1rJ5WLWsr9LLqO8bK9D=q6_vzYMz7564A@mail.gmail.com>
-Subject: Re: [PATCH net 1/2] ipv6: add ipv6_dev_find()
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        Jon Maloy <jon.maloy@ericsson.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        tipc-discussion@lists.sourceforge.net,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200805.121110.1918790855908756881.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Wed, Aug 05, 2020 at 12:11:10PM -0700, David Miller wrote:
+> From: Hangbin Liu <liuhangbin@gmail.com>
+> Date: Wed, 5 Aug 2020 18:18:07 +0800
+> 
+> > Should I re-post the patch with Fixes flag?
+> 
+> No, I took care the Fixes tag and queued this up for -stable.
 
-2020=E5=B9=B48=E6=9C=884=E6=97=A5(=E7=81=AB) 0:35 Xin Long <lucien.xin@gmai=
-l.com>:
->
-> This is to add an ip_dev_find like function for ipv6, used to find
-> the dev by saddr.
->
-> It will be used by TIPC protocol. So also export it.
->
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
->  include/net/addrconf.h |  2 ++
->  net/ipv6/addrconf.c    | 39 +++++++++++++++++++++++++++++++++++++++
->  2 files changed, 41 insertions(+)
->
-> diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-> index 8418b7d..ba3f6c15 100644
-> --- a/include/net/addrconf.h
-> +++ b/include/net/addrconf.h
-> @@ -97,6 +97,8 @@ bool ipv6_chk_custom_prefix(const struct in6_addr *addr=
-,
->
->  int ipv6_chk_prefix(const struct in6_addr *addr, struct net_device *dev)=
-;
->
-> +struct net_device *ipv6_dev_find(struct net *net, const struct in6_addr =
-*addr);
-> +
+Thanks
 
-How do we handle link-local addresses?
+> 
+> But you do need to explain what kind of testing you even did on this
+> change we are reverting.  Did you make this change purely on
+> theoretical grounds and a code audit?
+> 
+> Because it is clear now that this commit broke things and did not fix
+> anything at all.
+> 
+> Please explain.
 
---yoshfuji
+Yes, I do have a bug report about this and did testing before post the patch.
+But the test script is long and the reason for the issue is very clear(3 bits
+of DSCP are omitted). So I only explained the theory in the commit message.
 
->  struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net,
->                                      const struct in6_addr *addr,
->                                      struct net_device *dev, int strict);
-> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> index 840bfdb..857d6f9 100644
-> --- a/net/ipv6/addrconf.c
-> +++ b/net/ipv6/addrconf.c
-> @@ -1983,6 +1983,45 @@ int ipv6_chk_prefix(const struct in6_addr *addr, s=
-truct net_device *dev)
->  }
->  EXPORT_SYMBOL(ipv6_chk_prefix);
->
-> +/**
-> + * ipv6_dev_find - find the first device with a given source address.
-> + * @net: the net namespace
-> + * @addr: the source address
-> + *
-> + * The caller should be protected by RCU, or RTNL.
-> + */
-> +struct net_device *ipv6_dev_find(struct net *net, const struct in6_addr =
-*addr)
-> +{
-> +       unsigned int hash =3D inet6_addr_hash(net, addr);
-> +       struct inet6_ifaddr *ifp, *result =3D NULL;
-> +       struct net_device *dev =3D NULL;
-> +
-> +       rcu_read_lock();
-> +       hlist_for_each_entry_rcu(ifp, &inet6_addr_lst[hash], addr_lst) {
-> +               if (net_eq(dev_net(ifp->idev->dev), net) &&
-> +                   ipv6_addr_equal(&ifp->addr, addr)) {
-> +                       result =3D ifp;
-> +                       break;
-> +               }
-> +       }
-> +
-> +       if (!result) {
-> +               struct rt6_info *rt;
-> +
-> +               rt =3D rt6_lookup(net, addr, NULL, 0, NULL, 0);
-> +               if (rt) {
-> +                       dev =3D rt->dst.dev;
-> +                       ip6_rt_put(rt);
-> +               }
-> +       } else {
-> +               dev =3D result->idev->dev;
-> +       }
-> +       rcu_read_unlock();
-> +
-> +       return dev;
-> +}
-> +EXPORT_SYMBOL(ipv6_dev_find);
-> +
->  struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net, const struct in6_a=
-ddr *addr,
->                                      struct net_device *dev, int strict)
->  {
-> --
-> 2.1.0
->
+The rough steps are setting vxlan tunnel on OVS. set inner packet tos to
+1011 1010 (0xba) and outer vxlan to 1111 1100(0xfc). The outer packet's tos
+should be 0xfe at latest as it inherit the inner ECN bit. But with RT_TOS(tos)
+We actually got tos 0x1e as the first 3 bits are omitted.
+
+Now here is detailed testing steps:
+
+1. On Host A (which has commit 71130f29979c "vxlan: fix tos value before
+xmit"):
+
+# cat ovs.sh
+#!/bin/bash
+remoteip=192.168.1.207
+ip link set eth1 up
+ip addr add 192.168.1.156/24 dev eth1
+
+systemctl restart openvswitch
+ovs-vsctl --may-exist add-br br-int -- set Bridge br-int datapath_type=system -- br-set-external-id br-int bridge-id br-int
+ovs-vsctl add-port br-int vxlan0 -- set interface vxlan0 type=vxlan options:remote_ip=$remoteip
+ip netns add private
+ip link add name veth-host type veth peer name veth-guest
+ovs-vsctl add-port br-int veth-host
+ip link set dev veth-guest netns private
+ip link set dev veth-host up
+ip -n private link set dev veth-guest up
+ip -n private link set dev lo up
+ip -n private a a dev veth-guest 192.168.123.1/24
+ovs-vsctl set interface vxlan0 options:tos=0xfc
+
+2. On Host B (which has reverted commit 71130f29979c)
+
+# cat ovs.sh
+#!/bin/bash
+remoteip=192.168.1.156
+
+ip link set eth1 up
+ip addr add 192.168.1.207/24 dev eth1
+
+systemctl restart openvswitch
+ovs-vsctl --may-exist add-br br-int -- set Bridge br-int datapath_type=system -- br-set-external-id br-int bridge-id br-int
+ovs-vsctl add-port br-int vxlan0 -- set interface vxlan0 type=vxlan options:remote_ip=$remoteip
+ip netns add private
+ip link add name veth-host type veth peer name veth-guest
+ovs-vsctl add-port br-int veth-host
+ip link set dev veth-guest netns private
+ip link set dev veth-host up
+ip -n private link set dev veth-guest up
+ip -n private link set dev lo up
+ip -n private a a dev veth-guest 192.168.123.2/24
+ovs-vsctl set interface vxlan0 options:tos=0xfc
+
+
+3. On Host A, ping host B
+# ip netns exec private ping 192.168.123.2 -c1 -W1 -Q 0xba
+
+4. Capture the packets from Host B
+# tcpdump -i eth1 -nn -l -vvv
+22:34:37.663803 IP (tos 0x1e,ECT(0), ttl 64, id 63743, offset 0, flags [DF], proto UDP (17), length 134)
+    192.168.1.156.55502 > 192.168.1.207.4789: [no cksum] VXLAN, flags [I] (0x08), vni 0
+
+	^^ you can see the tos value is 0x1e from Host A
+IP (tos 0xba,ECT(0), ttl 64, id 37413, offset 0, flags [DF], proto ICMP (1), length 84)
+    192.168.123.1 > 192.168.123.2: ICMP echo request, id 22930, seq 1, length 64
+
+22:34:37.664624 IP (tos 0xfe,ECT(0), ttl 64, id 8233, offset 0, flags [DF], proto UDP (17), length 134)
+    192.168.1.207.47657 > 192.168.1.156.4789: [no cksum] VXLAN, flags [I] (0x08), vni 0
+
+        ^^ From Host B it's 0xfe
+IP (tos 0xba,ECT(0), ttl 64, id 42030, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.123.2 > 192.168.123.1: ICMP echo reply, id 22930, seq 1, length 64
+^C
+
+Thanks
+Hangbin
