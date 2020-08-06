@@ -2,123 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8A5523D57F
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 04:34:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD0B723D597
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 04:50:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726150AbgHFCeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Aug 2020 22:34:01 -0400
-Received: from esa8.fujitsucc.c3s2.iphmx.com ([68.232.159.88]:30466 "EHLO
-        esa8.fujitsucc.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725999AbgHFCd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 22:33:59 -0400
-X-Greylist: delayed 429 seconds by postgrey-1.27 at vger.kernel.org; Wed, 05 Aug 2020 22:33:58 EDT
-IronPort-SDR: NC2A5MvsphO1tdQ+xt2YUSxaofJfqPllqFcGEIVj8Ksc08dA5Kw2Pv6+GWLSGa6hHxs9OZwt13
- 3u6wYEN3q8bn0q2+JRycAJA7ttVG2F51FOi0C9mOS27AP13jKEmm0LecN3oQYbNPYmZaersNMK
- R2zQvceOtcugv/4ERIpdAvy7gFOj/CdcalrXRBoBhzGiunjjiMM93JiXHqLKFkz6dURDKiggBZ
- dfHNVgwvbkZuMHghcbLhTVsFehiiV68s01cJ+tOsPTJXHcdCop194qS7+WYyHdufW23DLeyuHR
- xxA=
-X-IronPort-AV: E=McAfee;i="6000,8403,9704"; a="16495925"
-X-IronPort-AV: E=Sophos;i="5.75,440,1589209200"; 
-   d="scan'208";a="16495925"
-Received: from mail-ty1jpn01lp2052.outbound.protection.outlook.com (HELO JPN01-TY1-obe.outbound.protection.outlook.com) ([104.47.93.52])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2020 11:26:42 +0900
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fFeWMVAOAeIAVuZtoUnSsBa5rGWeFF/LJ1voVKRW9xbTHt+VdsRvOGIvX4lMKtWur0M1brcaVR0YvDWmse0ldKO1Uz+TY96NSgrFMCjp5dNpE4E0vZ2BA9Dp06SnE5QylQZ+NxFgZdZN9zxY0iVPk1osU0K4L973rkXdEQ6AFmZ87pk5Xl8uCyeASpyS9+HAAd4OoV9aVn2VVYXoTs6usmaceRrK9VWZko1eYhqoifXRru9VT0vFSpZVGubRckbGSSnEqVtEKZRr7qgcVDll3OP0VjxNrnTU9hBw/CAZyGT3qDLhriClHu3mhla6DXh68R5G9/Zq3kikCfR/yCKtAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CGc/Lm5UYWho7u7j5uS60DGaN3vOdSRDkaWnzmlKZLc=;
- b=muJwOGnnNJRquGiHJS161HfPIYNTF8b5wV8oFrEyDm+DPOTr4i8+wjNKVItPsk+14LZ9sjiOV4Trz6LS79ZA4BuRC9YzYGA1NvpViluGgc32xmIYxfdHA93pM698HmDXXXSx50SJIqo97nee9wLMlfrEhgO8vJvU2sfs4jlKeTxmuhGtY1tCsjNIBCcM65eSfSZkcGY4iGmglqquXHVgoSv3D6xk7ehaaLl1W/IlgfP3+67aorxcX/LHkA8YGxxJswmWkU4cerDq/oSy6CudWuXYj8qihvtMGq1XWLs7Hnv1/AHC0zf+0FYk2yPv+vlXXhVTBZtxpmfIwKSBu0ouFA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
+        id S1726197AbgHFCux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Aug 2020 22:50:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725999AbgHFCuv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Aug 2020 22:50:51 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8BAC061574
+        for <netdev@vger.kernel.org>; Wed,  5 Aug 2020 19:50:51 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id e16so4524883ilc.12
+        for <netdev@vger.kernel.org>; Wed, 05 Aug 2020 19:50:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=fujitsu.onmicrosoft.com; s=selector2-fujitsu-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CGc/Lm5UYWho7u7j5uS60DGaN3vOdSRDkaWnzmlKZLc=;
- b=n6RiQMBuftftK0fbE23jjBYqCB4EWD/h3qUr4G0XeK2AH8EpaIh0jj8M6CLorbCEgM4hG70VQpVYrvJ685pfL6rgOqvurcJxu0i9rUv09LdYT7oYCFEtgmhGXJe2ZeGy/o3Q+b1fzDJilofrBcoobfQnEuq9OsmgbAFBSNAywnY=
-Received: from OSAPR01MB3844.jpnprd01.prod.outlook.com (2603:1096:604:5d::13)
- by OSBPR01MB1574.jpnprd01.prod.outlook.com (2603:1096:603:1::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.21; Thu, 6 Aug
- 2020 02:26:36 +0000
-Received: from OSAPR01MB3844.jpnprd01.prod.outlook.com
- ([fe80::d4d3:eba6:7557:dab6]) by OSAPR01MB3844.jpnprd01.prod.outlook.com
- ([fe80::d4d3:eba6:7557:dab6%5]) with mapi id 15.20.3239.022; Thu, 6 Aug 2020
- 02:26:36 +0000
-From:   "ashiduka@fujitsu.com" <ashiduka@fujitsu.com>
-To:     'Sergei Shtylyov' <sergei.shtylyov@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: RE: [PATCH v2] ravb: Fixed the problem that rmmod can not be done
-Thread-Topic: [PATCH v2] ravb: Fixed the problem that rmmod can not be done
-Thread-Index: AQHWZliVF0gqbKeTM0q7YOFUctSlU6kgSWOAgAEpsHCAAG+FAIAEB8Ug
-Date:   Thu, 6 Aug 2020 02:26:36 +0000
-Message-ID: <OSAPR01MB384475DE7B02563005FCF67CDF480@OSAPR01MB3844.jpnprd01.prod.outlook.com>
-References: <20200730035649.5940-1-ashiduka@fujitsu.com>
- <20200730100151.7490-1-ashiduka@fujitsu.com>
- <ce81e95d-b3b0-7f1c-8f97-8bdcb23d5a8e@gmail.com>
- <OSAPR01MB3844C77766155CAB10BE296CDF4E0@OSAPR01MB3844.jpnprd01.prod.outlook.com>
- <32d3b998-322b-7c0a-b14a-41ca66dc601a@gmail.com>
-In-Reply-To: <32d3b998-322b-7c0a-b14a-41ca66dc601a@gmail.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-securitypolicycheck: OK by SHieldMailChecker v2.6.2
-x-shieldmailcheckerpolicyversion: FJ-ISEC-20181130-VDI-enc
-x-shieldmailcheckermailid: 26cd4b64ae534207be5656c31801da05
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fujitsu.com;
-x-originating-ip: [118.155.224.182]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: aba36aea-0edb-4781-5f7b-08d839b02489
-x-ms-traffictypediagnostic: OSBPR01MB1574:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <OSBPR01MB15748F2DC2BD95B261A74B10DF480@OSBPR01MB1574.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DplxOZ5BPKcKetAyHxTW/a3RSYaMGDDd6DLxScfHqhLnaatSgXNhJ/xJKiGE28FGGI0KmrCuW0opYGjTltm+tu5tBrYFWJTIEThXoys0WJFn3klxK8u17O3i3NFf4tTV2ynGj3UhCQf22EJqEoURB7xcI7CIb4JRma8ieBkItPGeklx/qp6k5ozd6Rv3zXRgF31v+9TThlxb0r27+EeFkwKIzuYhMzxy2OuxnY/R5mY08wp9UYtEeoI7RjuWLHedXbZnNaWzZZLQyk3hytM1eIYETUXhrmnOQfVrniVHbwDt5MMjMGYLQQCMCF1mn6Y0FKGXkCPe9PRf1AxqPT/ZVxvOZAtaFvM2ORALaSshgjfjPq4EB37PHu0B6Mo66wag
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSAPR01MB3844.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(136003)(39860400002)(366004)(346002)(86362001)(71200400001)(4744005)(5660300002)(2906002)(478600001)(8936002)(52536014)(54906003)(85182001)(316002)(66946007)(6916009)(66476007)(66446008)(64756008)(66556008)(6506007)(26005)(76116006)(4326008)(33656002)(83380400001)(7696005)(8676002)(55016002)(186003)(9686003)(777600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: GkGL6vAQkXMKP7Uca1zc7YAKi1eeX7cytaCZMv7WY/RDb5vqZVmWPIhju4N0BWiPPWfN8UFi48VjDIJXlAEE8KhW1YBpWQnbFG9QV2+qGMlDwRvfvddRVyTu5MbCazfcEEmJ+jJn3pflKQ5+hHjtqHncfQZLKl7g9URqgPkxYAL4j7DkZfx51F2cOBFuGTUFWfwrHd7ISjC0HrAEkycGqUUjJyKBsNkB2jhxlRVR0gtsuF8W7KRUDTF1/kvCW1Day74rXVMozmPAjpwrhJ0Mdm34OLzNJz+DVwZQk9NYCq4UDUPlzjIwMIGSj8KNysP8dBNhOrGrBz2IB5b/Mpa8esotvVgbUuyCc3MpLyhP0sOFaU2JsSyxrVTIPVyBlahhpoTuG+iu8z24duuBv8B0OJhfYFSxw8oXuM/DbiTZLvfw89cL7XoEOKlwjJ8/wgEC0sMPi/50Xl8ihLAGnmzcFKkaxArOClgqrXWDHAmnB/SZnwzyVpEGC+PXryUxeIidaR8AKcp9pAKvxzu23BB5E7RFXWWK/dl+1d1DX2LsB8Hq8RF/VkM7rl/LztOCk8XOvHM9ba6gAQMkOoF8xiLp6mWeULYJk3hbQ88hmVlOFGRz88q5npw1b+6uuHnMIOabR0MfPjQGVBtQG+iN13E81Q==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=miraclelinux-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Ba5a8RMGW+dH7ZI7DCohfRAlEqw3Gq1l9IgmeX/1T54=;
+        b=RsQ7vm+/eS1OWeHqF7FpP0o0QgIUQTBZLL7a27Iqk4sn489tmiSOssWQhKOPa9gReZ
+         wIO5eMAZTOtOAqMhOEBomtXc/TxzX3/HAo/nFcWeH951Z7/LFbQYAKderCUHo+rlz8oE
+         INENxzqfyaOGFlAtJAmALOklo1fvJ8UcgYW1/ovKd1k5WZyfaexqCSh5E+CVeA2s/3UV
+         hjgBKJSxIh6mjwn3Z6dmgjzCmru3evZ/QXoZcdT4lIEU4W631MSrgWk9Y7TNTY0DEXzU
+         4ytuh6anAAE+ulZypGH/k5+2nMtxUJhMR+XRTayZkP/gk8qNFcyAuMre2Tus5tYRhID+
+         ixrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Ba5a8RMGW+dH7ZI7DCohfRAlEqw3Gq1l9IgmeX/1T54=;
+        b=t5KJvXSh7L+LQ4HYnu2O0ce2Vdo11EJjmTIi6EraIYIYyq0mAVi2BBX/F1TecWzIDa
+         PkX/TBt38MPSJpNzMF5HzaOswfgyERSndBXEZyJp3+fbAr+lU+3PkUmIWua5NnAnQLhG
+         YUahwUvEtzs8CgpvQPr2BvufCdLFrjDMl4ztse/zkp/xJaDnFCNiFcdnjdWhN7/nvIXN
+         XgR22ORROOMWIWa6AZKDivGHcRQ++XxPLkYXJXv1wrogsU635H5tyDs1PBgk4NpDWyi+
+         xbPa4tb6UPSGqhw1hiVfAGLllctJ4JFWK7EZ1pZmlrHZtEsWrIPb5kGNU4Ge+baujgqk
+         919w==
+X-Gm-Message-State: AOAM532sHH+8+uXJwuQvU3/yUMpphHVn3Uxt8V9JFGnMttx2NWlmKQ20
+        4ZcptK/74geW/DjKAlnCqKJfdJ0VY21Tn+mXaSduQA==
+X-Google-Smtp-Source: ABdhPJwHK7pIr50Jj5ekKwMoUoJfRm0KJLKA9SDlhqNZQRn8yah4970DwuiNCBv3pS2V4LNICqKcb6geOIcKTAi0rmw=
+X-Received: by 2002:a05:6e02:c1:: with SMTP id r1mr7447055ilq.34.1596682249109;
+ Wed, 05 Aug 2020 19:50:49 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: fujitsu.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OSAPR01MB3844.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aba36aea-0edb-4781-5f7b-08d839b02489
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Aug 2020 02:26:36.2375
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 98b94yEdEDlDcA6kO1iJiLuxvAaXxDs+G0nNHOVyCtRi0Hw8zH8cN4IeK8f4W7QIgVMbb6SK22TruyBVGM5d7g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB1574
+References: <cover.1596468610.git.lucien.xin@gmail.com> <7ba2ca17347249b980731e7a76ba3e24a9e37720.1596468610.git.lucien.xin@gmail.com>
+In-Reply-To: <7ba2ca17347249b980731e7a76ba3e24a9e37720.1596468610.git.lucien.xin@gmail.com>
+From:   Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com>
+Date:   Thu, 6 Aug 2020 11:49:56 +0900
+Message-ID: <CAPA1RqCz=h-RBu-md1rJ5WLWsr9LLqO8bK9D=q6_vzYMz7564A@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] ipv6: add ipv6_dev_find()
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        Jon Maloy <jon.maloy@ericsson.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        tipc-discussion@lists.sourceforge.net,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgU2VyZ2VpLA0KDQo+ICAgIFRoZSBzdWJqZWN0IGFsc28gY291bGQgYmUgbW9yZSBjb25jaXNl
-Li4uDQoNCkknbGwgdGhpbmsgYWJvdXQgaXQuIFRoYW5rIHlvdSENCg0KPiAgICAgTm90IGF0IGFs
-bCBzbyBjb21tb24gYXMgSSB0aG91Z2h0ISBPbmx5IDQgZHJpdmVycyB1c2UgbWRpby1iaXRiYW5n
-LA0KPiAyIG9mIHRoZW0gYXJlIGZvciB0aGUgUmVuZXNhcyBTb0NzLi4uDQoNClllcy4NCg0KPiAg
-ICAgRG8geXVvIGhhdmUgUi1DYXIgVjNIIGF0IGhhbmQsIGJ5IGNoYW5jZT8gSXQgZG9lcyBoYXZl
-IGEgR0V0aGVyDQo+IGNvbnRyb2xlciB1c2VkIGZvciBib290aW5nIHVwLi4uDQoNCkknbSBzb3Jy
-eS4gSSBkb24ndCBoYXZlIGl0Lg0KVGhlcmUgaXMgYSBTSUxLIGJvYXJkIG9mIFItQ2FyIEdlbjIg
-aW4gdGhlIG9mZmljZSB3aGVyZSBJIHdvcmsuDQpCdXQgSSBjYW4ndCBnbyB0byB0aGUgb2ZmaWNl
-IG5vdyBiZWNhdXNlIG9mIHRoZSBDT1ZJRC0xOSBwcm9ibGVtLiANCklmIEkgY2FuIGdvIHRvIHRo
-ZSBvZmZpY2UsIEknbGwgYnJpbmcgaG9tZSB0aGUgU0lMSyBib2FyZC4NCg0KPiBXZWxsLCBkdWUg
-dG8gdXN1YWxseSB1c2luZyBORlMgdGhlIEV0aGVyQVZCIChhbmQgRXRoZXIgdG9vKSBkcml2ZXIg
-aXMNCj4gcHJvYmFibHkgYWx3YXlzYnVpbHQgaW4ta2VybmVsLi4uDQoNClllcy4gSSB0aGluayBz
-bywgdG9vLg0KU2luY2UgaXQgaXMgbmVjZXNzYXJ5IHRvIHJlZHVjZSB0aGUgSW1hZ2Ugc2l6ZSBm
-b3IgZW1iZWRkZWQgdXNlLCBJIGZvdW5kDQp0aGlzIHByb2JsZW0gd2hlbiBjaGFuZ2luZyB0byBh
-IG1vZHVsZSBhbmQgdGVzdGluZy4NCg0KPiAgICBUcmltIHlvdXIgbWVzc2FnZXMgYWZ0ZXIgeW91
-ciBnb29kYnllLiBUaGF0IG9yaWdpbmFsIG1lc3NhZ2Ugc3R1ZmYNCj4gdHlwaWNhbGx5IGlzbid0
-IHRvbGVyYXRlZCBpbiB0aGUgTGludXggbWFpbGluZyBsaXN0cywgbmVhcmx5IHRoZSBzYW1lIGFz
-DQo+IHRvcC1wb3N0aW5nLi4uDQoNCk9LLiBUaGFua3MuDQoNClRoYW5rcyAmIEJlc3QgUmVnYXJk
-cywNCll1dXN1a2UgQXNoaXp1a2EgPGFzaGlkdWthQGZ1aml0c3UuY29tPg0K
+Hi,
+
+2020=E5=B9=B48=E6=9C=884=E6=97=A5(=E7=81=AB) 0:35 Xin Long <lucien.xin@gmai=
+l.com>:
+>
+> This is to add an ip_dev_find like function for ipv6, used to find
+> the dev by saddr.
+>
+> It will be used by TIPC protocol. So also export it.
+>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  include/net/addrconf.h |  2 ++
+>  net/ipv6/addrconf.c    | 39 +++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 41 insertions(+)
+>
+> diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+> index 8418b7d..ba3f6c15 100644
+> --- a/include/net/addrconf.h
+> +++ b/include/net/addrconf.h
+> @@ -97,6 +97,8 @@ bool ipv6_chk_custom_prefix(const struct in6_addr *addr=
+,
+>
+>  int ipv6_chk_prefix(const struct in6_addr *addr, struct net_device *dev)=
+;
+>
+> +struct net_device *ipv6_dev_find(struct net *net, const struct in6_addr =
+*addr);
+> +
+
+How do we handle link-local addresses?
+
+--yoshfuji
+
+>  struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net,
+>                                      const struct in6_addr *addr,
+>                                      struct net_device *dev, int strict);
+> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+> index 840bfdb..857d6f9 100644
+> --- a/net/ipv6/addrconf.c
+> +++ b/net/ipv6/addrconf.c
+> @@ -1983,6 +1983,45 @@ int ipv6_chk_prefix(const struct in6_addr *addr, s=
+truct net_device *dev)
+>  }
+>  EXPORT_SYMBOL(ipv6_chk_prefix);
+>
+> +/**
+> + * ipv6_dev_find - find the first device with a given source address.
+> + * @net: the net namespace
+> + * @addr: the source address
+> + *
+> + * The caller should be protected by RCU, or RTNL.
+> + */
+> +struct net_device *ipv6_dev_find(struct net *net, const struct in6_addr =
+*addr)
+> +{
+> +       unsigned int hash =3D inet6_addr_hash(net, addr);
+> +       struct inet6_ifaddr *ifp, *result =3D NULL;
+> +       struct net_device *dev =3D NULL;
+> +
+> +       rcu_read_lock();
+> +       hlist_for_each_entry_rcu(ifp, &inet6_addr_lst[hash], addr_lst) {
+> +               if (net_eq(dev_net(ifp->idev->dev), net) &&
+> +                   ipv6_addr_equal(&ifp->addr, addr)) {
+> +                       result =3D ifp;
+> +                       break;
+> +               }
+> +       }
+> +
+> +       if (!result) {
+> +               struct rt6_info *rt;
+> +
+> +               rt =3D rt6_lookup(net, addr, NULL, 0, NULL, 0);
+> +               if (rt) {
+> +                       dev =3D rt->dst.dev;
+> +                       ip6_rt_put(rt);
+> +               }
+> +       } else {
+> +               dev =3D result->idev->dev;
+> +       }
+> +       rcu_read_unlock();
+> +
+> +       return dev;
+> +}
+> +EXPORT_SYMBOL(ipv6_dev_find);
+> +
+>  struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net, const struct in6_a=
+ddr *addr,
+>                                      struct net_device *dev, int strict)
+>  {
+> --
+> 2.1.0
+>
