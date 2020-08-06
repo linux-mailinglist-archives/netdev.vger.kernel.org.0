@@ -2,73 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3CD623E18B
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 20:55:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74C1723E19F
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 21:01:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726965AbgHFSzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 14:55:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40526 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725272AbgHFSzN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Aug 2020 14:55:13 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D4FA6206A2;
-        Thu,  6 Aug 2020 18:55:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596740114;
-        bh=DtdBmO/qxCQOdPUNsgftzN8R4iy9ce5fBEY+o4umB4w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=q8JOFhBmXomisJOslFjUrz9PfB//cIVLHdux1jbhZMntwYN1xj8KIN0iUEwucD13x
-         EOJJF+/m4jHr1LAwQ1C9uBPBWNMraANt4+TipmY2R8xCMqF9efkNo0ZeLjntQ0RdC7
-         MgyB2yLWNIw67sZ78CA6B0wYl95cWKcNW8+lYnqo=
-Date:   Thu, 6 Aug 2020 11:55:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        Hillf Danton <hdanton@sina.com>
-Subject: Re: [PATCH v2] net: add support for threaded NAPI polling
-Message-ID: <20200806115511.6774e922@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200806095558.82780-1-nbd@nbd.name>
-References: <20200806095558.82780-1-nbd@nbd.name>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1727081AbgHFTBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 15:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35480 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725272AbgHFTBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 15:01:15 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A70C061574;
+        Thu,  6 Aug 2020 12:01:15 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1AA8211DB3163;
+        Thu,  6 Aug 2020 11:44:21 -0700 (PDT)
+Date:   Thu, 06 Aug 2020 12:01:03 -0700 (PDT)
+Message-Id: <20200806.120103.1200684111953914586.davem@davemloft.net>
+To:     luobin9@huawei.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        luoxianjun@huawei.com, yin.yinshi@huawei.com,
+        cloud.wangxiaoyun@huawei.com, chiqijun@huawei.com
+Subject: Re: [PATCH net-next] hinic: fix strncpy output truncated compile
+ warnings
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200806074830.1375-1-luobin9@huawei.com>
+References: <20200806074830.1375-1-luobin9@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 06 Aug 2020 11:44:21 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  6 Aug 2020 11:55:58 +0200 Felix Fietkau wrote:
-> For some drivers (especially 802.11 drivers), doing a lot of work in the NAPI
-> poll function does not perform well. Since NAPI poll is bound to the CPU it
-> was scheduled from, we can easily end up with a few very busy CPUs spending
-> most of their time in softirq/ksoftirqd and some idle ones.
-> 
-> Introduce threaded NAPI for such drivers based on a workqueue. The API is the
-> same except for using netif_threaded_napi_add instead of netif_napi_add.
-> 
-> In my tests with mt76 on MT7621 using threaded NAPI + a thread for tx scheduling
-> improves LAN->WLAN bridging throughput by 10-50%. Throughput without threaded
-> NAPI is wildly inconsistent, depending on the CPU that runs the tx scheduling
-> thread.
-> 
-> With threaded NAPI, throughput seems stable and consistent (and higher than
-> the best results I got without it).
+From: Luo bin <luobin9@huawei.com>
+Date: Thu, 6 Aug 2020 15:48:30 +0800
 
-I'm still trying to wrap my head around this.
+> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+> index c6adc776f3c8..1dc948c07b94 100644
+> --- a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+> +++ b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+> @@ -342,9 +342,9 @@ static int chip_fault_show(struct devlink_fmsg *fmsg,
+>  
+>  	level = event->event.chip.err_level;
+>  	if (level < FAULT_LEVEL_MAX)
+> -		strncpy(level_str, fault_level[level], strlen(fault_level[level]));
+> +		strncpy(level_str, fault_level[level], strlen(fault_level[level]) + 1);
+>  	else
+> -		strncpy(level_str, "Unknown", strlen("Unknown"));
+> +		strncpy(level_str, "Unknown", sizeof(level_str));
+>  
+>  	if (level == FAULT_LEVEL_SERIOUS_FLR) {
 
-Am I understanding correctly that you have one IRQ and multiple NAPI
-instances?
+Please fix these cases consistently, either use the strlen()+1 pattern
+or the "sizeof(destination)" one.
 
-Are we not going to end up with pretty terrible cache locality here if
-the scheduler starts to throw rx and tx completions around to random
-CPUs?
-
-I understand that implementing separate kthreads would be more LoC, but
-we do have ksoftirqs already... maybe we should make the NAPI ->
-ksoftirq mapping more flexible, and improve the logic which decides to
-load ksoftirq rather than make $current() pay?
-
-Sorry for being slow.
+Probably sizeof(destination) is best.
