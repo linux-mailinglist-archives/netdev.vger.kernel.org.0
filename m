@@ -2,176 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79C5E23DD17
-	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:00:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32F1323DD6D
+	for <lists+netdev@lfdr.de>; Thu,  6 Aug 2020 19:10:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729068AbgHFRAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 13:00:08 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:56960 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728862AbgHFQ75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 12:59:57 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 076G4WnY125708;
-        Thu, 6 Aug 2020 11:04:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1596729872;
-        bh=ICIS9Sht6UPt8BwrkTEtZAjurj+RzuPZfxYhonfMTBQ=;
-        h=Subject:From:To:References:Date:In-Reply-To;
-        b=feCyacuHlGAmRnLqHVxvPEvYz5TuNd62e1X9qchvYdNPXPm1YsfrgvItZOT22bvr8
-         qPPvJGxytrFr2M7mfhnmFrtTECc+vvuaFW5dvbv2ijNkUQFDmnFQIZjl62D2aYqPSU
-         teu2V9VGS6RX5ZX+gxIC2d0R/vfpy3j77ee5j9uA=
-Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 076G4Wqw111227
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 6 Aug 2020 11:04:32 -0500
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 6 Aug
- 2020 11:04:32 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 6 Aug 2020 11:04:32 -0500
-Received: from [10.250.53.226] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 076G4V8G043252;
-        Thu, 6 Aug 2020 11:04:31 -0500
-Subject: Re: [net-next iproute2 PATCH v3 1/2] iplink: hsr: add support for
- creating PRP device similar to HSR
-From:   Murali Karicheri <m-karicheri2@ti.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-api@vger.kernel.org>,
-        <nsekhar@ti.com>, <grygorii.strashko@ti.com>,
-        <vinicius.gomes@intel.com>, <stephen@networkplumber.org>,
-        <kuznet@ms2.inr.ac.ru>
-References: <20200717152205.826-1-m-karicheri2@ti.com>
-Message-ID: <e6ac459e-b81c-48ee-d82c-36a533e2aa29@ti.com>
-Date:   Thu, 6 Aug 2020 12:04:31 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1730170AbgHFRJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 13:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730029AbgHFRGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 13:06:01 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C80EC0A3BD0;
+        Thu,  6 Aug 2020 10:00:28 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id 2so41464103qkf.10;
+        Thu, 06 Aug 2020 10:00:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1Z5fSMAgfU80dT8D8hmuYu346Oxtx8DJQl6whGIjWhw=;
+        b=Os3fgVnJ6scXpj5/EgxXOxGBSpATTMOfUmm03Cec1/fiQgpB9j138nicy3/BghB2Zl
+         dNDMlGxmMpCu7eC73KpiVbkhCQL6x2IuV9bN24sicJ/SBchboHxOjw3T8+zUZ1tW5ZZr
+         Qgykli1ZUhQaEXca1VLv6c/Y8bZJExU5tEnSCXdDfrMgHfW8ugZdUXGNrqcJCokt9eox
+         k+UAPtuAdqHtKQhCDYRcwMH+mCBNeLVX2LPGuAZkXw6PF5ige3jNg8DUVZHxDpzVRhRa
+         JYZpU94c3ZKgd8ILNPJRWCcQCheE1Dv8lAvPdViMqqU+VWuBSo6Qzm0uOfvQfJqt+H9s
+         NbLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1Z5fSMAgfU80dT8D8hmuYu346Oxtx8DJQl6whGIjWhw=;
+        b=EZIJFnOBOooYVEaJor2z+/7NPfV3bYWZhOFn+mT7xQuV7G/H/XiUun9ctYwglVE1IH
+         wan9vuTtnJQkBluK8oNiHMAZmvTcXsO6aNXTJOJS+51R0Na/JqosXr4EtuOgdZbYGbVO
+         kET1tdxevk39wAvtUqxFl7neEsKaBlskhzhMeUQ8C1QjuTDU50vaSxmKykrafLLAP1UV
+         P66hjqWXlr3LLYGhM/A+u68C/P+HzB+cYy+J2jfOklcbKZkEKJVRQbJmW91CCDMTRaM8
+         MZXB8TXSJDxUSTSZdN57YD0K8Y3zgQllVvs883awJMYSCc0an6xkbRIzjHEJQpX4YNeb
+         LW1w==
+X-Gm-Message-State: AOAM531xuuHf7MYkyuLqyaD0xx1rsvgjf512B2ubw5is3HBamcyS5rVI
+        9cGULELGOCgYNQh3ry//LE76a/wG
+X-Google-Smtp-Source: ABdhPJwS8XEe4hwORTMLv+asnKNIB0/3Z3hbF6JNKH4+0bzy8ImZQfKV5yV86CKSqU60CbT1mJZBlQ==
+X-Received: by 2002:a05:620a:20ca:: with SMTP id f10mr9352219qka.0.1596733227427;
+        Thu, 06 Aug 2020 10:00:27 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:7c83:3cd:b611:a456? ([2601:282:803:7700:7c83:3cd:b611:a456])
+        by smtp.googlemail.com with ESMTPSA id a21sm4222575qkg.54.2020.08.06.10.00.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Aug 2020 10:00:26 -0700 (PDT)
+Subject: Re: [RFC PATCH 1/3] selftests: Add VRF icmp error route lookup test
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        David Ahern <dsa@cumulusnetworks.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Michael Jeanson <mjeanson@efficios.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20200729211248.10146-1-mathieu.desnoyers@efficios.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <42cb74c8-9391-cf4c-9e57-7a1d464f8706@gmail.com>
+Date:   Thu, 6 Aug 2020 11:00:24 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200717152205.826-1-m-karicheri2@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <20200729211248.10146-1-mathieu.desnoyers@efficios.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephen, Alexey,
-
-On 7/17/20 11:22 AM, Murali Karicheri wrote:
-> This patch enhances the iplink command to add a proto parameters to
-> create PRP device/interface similar to HSR. Both protocols are
-> quite similar and requires a pair of Ethernet interfaces. So re-use
-> the existing HSR iplink command to create PRP device/interface as
-> well. Use proto parameter to differentiate the two protocols.
+On 7/29/20 3:12 PM, Mathieu Desnoyers wrote:
+> From: Michael Jeanson <mjeanson@efficios.com>
 > 
-> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+> The objective is to check that the incoming vrf routing table is selected
+> to send an ICMP error back to the source when the ttl of a packet reaches 1
+> while it is forwarded between different vrfs.
+> 
+> The first test sends a ping with a ttl of 1 from h1 to h2 and parses the
+> output of the command to check that a ttl expired error is received.
+> 
+> [This may be flaky, I'm open to suggestions of a more robust approch.]
+> 
+> The second test runs traceroute from h1 to h2 and parses the output to check
+> for a hop on r1.
+> 
+> Signed-off-by: Michael Jeanson <mjeanson@efficios.com>
+> Cc: David Ahern <dsa@cumulusnetworks.com>
+
+Update the address to dsahern@kernel.org
+
+
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: netdev@vger.kernel.org
 > ---
->   dependent on the series "[net-next PATCH v3 0/7] Add PRP driver"
->   include/uapi/linux/if_link.h | 12 +++++++++++-
->   ip/iplink_hsr.c              | 19 +++++++++++++++++--
->   2 files changed, 28 insertions(+), 3 deletions(-)
+>  tools/testing/selftests/net/Makefile          |   1 +
+>  .../selftests/net/vrf_icmp_error_route.sh     | 461 ++++++++++++++++++
+>  2 files changed, 462 insertions(+)
+>  create mode 100755 tools/testing/selftests/net/vrf_icmp_error_route.sh
 > 
-> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-> index a8901a39a345..fa2e3f642deb 100644
-> --- a/include/uapi/linux/if_link.h
-> +++ b/include/uapi/linux/if_link.h
-> @@ -904,7 +904,14 @@ enum {
->   #define IFLA_IPOIB_MAX (__IFLA_IPOIB_MAX - 1)
->   
->   
-> -/* HSR section */
-> +/* HSR/PRP section, both uses same interface */
-> +
-> +/* Different redundancy protocols for hsr device */
-> +enum {
-> +	HSR_PROTOCOL_HSR,
-> +	HSR_PROTOCOL_PRP,
-> +	HSR_PROTOCOL_MAX,
-> +};
->   
->   enum {
->   	IFLA_HSR_UNSPEC,
-> @@ -914,6 +921,9 @@ enum {
->   	IFLA_HSR_SUPERVISION_ADDR,	/* Supervision frame multicast addr */
->   	IFLA_HSR_SEQ_NR,
->   	IFLA_HSR_VERSION,		/* HSR version */
-> +	IFLA_HSR_PROTOCOL,		/* Indicate different protocol than
-> +					 * HSR. For example PRP.
-> +					 */
->   	__IFLA_HSR_MAX,
->   };
->   
-> diff --git a/ip/iplink_hsr.c b/ip/iplink_hsr.c
-> index 7d9167d4e6a3..6ea138a23cbc 100644
-> --- a/ip/iplink_hsr.c
-> +++ b/ip/iplink_hsr.c
-> @@ -25,7 +25,7 @@ static void print_usage(FILE *f)
->   {
->   	fprintf(f,
->   		"Usage:\tip link add name NAME type hsr slave1 SLAVE1-IF slave2 SLAVE2-IF\n"
-> -		"\t[ supervision ADDR-BYTE ] [version VERSION]\n"
-> +		"\t[ supervision ADDR-BYTE ] [version VERSION] [proto PROTOCOL]\n"
->   		"\n"
->   		"NAME\n"
->   		"	name of new hsr device (e.g. hsr0)\n"
-> @@ -35,7 +35,9 @@ static void print_usage(FILE *f)
->   		"	0-255; the last byte of the multicast address used for HSR supervision\n"
->   		"	frames (default = 0)\n"
->   		"VERSION\n"
-> -		"	0,1; the protocol version to be used. (default = 0)\n");
-> +		"	0,1; the protocol version to be used. (default = 0)\n"
-> +		"PROTOCOL\n"
-> +		"	0 - HSR, 1 - PRP. (default = 0 - HSR)\n");
->   }
->   
->   static void usage(void)
-> @@ -49,6 +51,7 @@ static int hsr_parse_opt(struct link_util *lu, int argc, char **argv,
->   	int ifindex;
->   	unsigned char multicast_spec;
->   	unsigned char protocol_version;
-> +	unsigned char protocol = HSR_PROTOCOL_HSR;
->   
->   	while (argc > 0) {
->   		if (matches(*argv, "supervision") == 0) {
-> @@ -64,6 +67,13 @@ static int hsr_parse_opt(struct link_util *lu, int argc, char **argv,
->   				invarg("version is invalid", *argv);
->   			addattr_l(n, 1024, IFLA_HSR_VERSION,
->   				  &protocol_version, 1);
-> +		} else if (matches(*argv, "proto") == 0) {
-> +			NEXT_ARG();
-> +			if (!(get_u8(&protocol, *argv, 0) == HSR_PROTOCOL_HSR ||
-> +			      get_u8(&protocol, *argv, 0) == HSR_PROTOCOL_PRP))
-> +				invarg("protocol is invalid", *argv);
-> +			addattr_l(n, 1024, IFLA_HSR_PROTOCOL,
-> +				  &protocol, 1);
->   		} else if (matches(*argv, "slave1") == 0) {
->   			NEXT_ARG();
->   			ifindex = ll_name_to_index(*argv);
-> @@ -140,6 +150,11 @@ static void hsr_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
->   					 RTA_PAYLOAD(tb[IFLA_HSR_SUPERVISION_ADDR]),
->   					 ARPHRD_VOID,
->   					 b1, sizeof(b1)));
-> +	if (tb[IFLA_HSR_PROTOCOL])
-> +		print_int(PRINT_ANY,
-> +			  "proto",
-> +			  "proto %d ",
-> +			  rta_getattr_u8(tb[IFLA_HSR_PROTOCOL]));
->   }
->   
->   static void hsr_print_help(struct link_util *lu, int argc, char **argv,
-> Sorry, I missed you in my email on this patch set as I didn't realize
-that the maintainers are different than the netdev maintainers. My bad.
-The PRP driver support in kernel is merged by Dave to net-next and this
-iproute2 change has to go with it. So please review and apply this if it
-looks good. The kernel part merged is at
 
-https://www.spinics.net/lists/linux-api/msg42615.html
-
--- 
-Murali Karicheri
-Texas Instruments
+Test seems fine to me. you copied icmp_redirect.sh which is fine but
+please clean up comments and functions not needed for this test.
