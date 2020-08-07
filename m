@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D7F623F383
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 22:05:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AC7323F387
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 22:05:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726202AbgHGUFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 16:05:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40566 "EHLO
+        id S1726676AbgHGUFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 16:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725893AbgHGUFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 16:05:32 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88298C061756;
-        Fri,  7 Aug 2020 13:05:32 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id p191so1629689ybg.0;
-        Fri, 07 Aug 2020 13:05:32 -0700 (PDT)
+        with ESMTP id S1725893AbgHGUFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 16:05:52 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4EDC061756;
+        Fri,  7 Aug 2020 13:05:51 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id i10so1225751ybt.11;
+        Fri, 07 Aug 2020 13:05:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=q4noCA9RAAsMH4q5HZV1We0qpM7uKQjjCZuvnQKwVDo=;
-        b=T3i8jdWip67Yqbp8tLov+9gK+TYCzCAZYJR4n0d8dEF6TzumKfYnaEp58l5HxDIZdo
-         chhT++vj0wsmGcyY3ilaCc+SoL+aSB5wlRCPK7XQKQzzTOSz6sOrpAd/uDMwDatwcdGN
-         kX4SBqGY6uixgAg9Litz802IcAC6hKNabCSiAtAv545IWmmZU3jJivFd3DmPXdRAqFpk
-         eTCEfsqBZDCfX0ugH2dTh1h4ZSgTaK13lJjcjUdaXFO7rfv762If/8MzeJd/6AmLGkX+
-         u4nBHhU2vFjlSfz03At/6pHatmxZJ1OySXkr68ILE202aRRY5CB2vbbRTFM3GdUi+4KT
-         8B9A==
+        bh=Ncbu8GlkrfQWK2n5gVnzismSL3yMTaNqCxTEP8/0epg=;
+        b=qxy15ynXpnAPdDS5Fcijz4xkzKbe8NjiPOvFk7Uf+ui4oBF5K55Tc0ewlX4IaigoUT
+         mvnGfIL2DSNtNPN7E6t4tkdNn8rJoEQh/1WIRZPf7K2HpluLq3Ov8/MMtz8adsq/rNDF
+         y7ekqod4dAGaEvlTqO/SMJWHD+teDOVheam8yHm1H9dLpic3DyLT+DbYGa2dDZfREnup
+         9fiePYblB4rMMOJcTdc6dPEGEOEUbhOHk6jd5Ojuj3sI6p7fzjBz/aNLp3hvB2ymOjE+
+         wRpiLdHdl5LmEgUSnfkwerWE41RMeAQ9G710gK1CKMi7B9GKX8hQefCng5PBuvzZFJzN
+         /4Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=q4noCA9RAAsMH4q5HZV1We0qpM7uKQjjCZuvnQKwVDo=;
-        b=BwcE0oT6tM1CYDAXgmQC0fE7RnkWhYJlZaZ+Deam3SJ4BpkWGlaUgO1IXfmyZM+oHv
-         vdJeu4QtPJAzNbuTjsgNNWoIbAa0MDPrJ7g/u6c/rl/I/GgIZzJJTsaVLgJIE9qTQrgj
-         CvQ16aJ79PAl3hA0hGaeoII08rI7W5cH+5jHksSYBJEAQP9grozAUNUKvVGf88G5lZPX
-         oHXXoGhS3Dpvn+GKAi6juRab4nbXcn5mzcb8xZQAVwZKhRnsAN+zZjVoEvZEu/RTn2n3
-         9jSAOKL7tD9TvYQLe7RCYsYS9afgVr4SpXuwwthfjZpT8chjL13n2tQl9nJbqvl4Ct0k
-         exdQ==
-X-Gm-Message-State: AOAM530YOPv4DVxSAvpCUoY75bTPs45WaAPSgNmm+ijLIM0twm0UUC1x
-        WFkIS88Txlt+t4DMOZd84BsKOPK472hYlkE7tmU=
-X-Google-Smtp-Source: ABdhPJxGNyH9JWuKppzTxjpUThFMGESg6zod/zlyrlIfJg/bvLQUFVG31Czx20hRqcIg4LbCdOONrbh9tWbs/QycZIY=
-X-Received: by 2002:a5b:44d:: with SMTP id s13mr22998924ybp.403.1596830731869;
- Fri, 07 Aug 2020 13:05:31 -0700 (PDT)
+        bh=Ncbu8GlkrfQWK2n5gVnzismSL3yMTaNqCxTEP8/0epg=;
+        b=DaEa5323EQKcABS2Zx/P6Lr67DY+SH54XnEp80DwLdf43TZvy6YZu9vxj+0+kqSzvV
+         sfoPtoqewhuJaYK0RCkusPPc+2iGpMHW8LZqE8pLpYu5cMlruLrgvGu9yUL5Aw4XvNNS
+         W3cWJ4XtAK5OSLSmnj+gmk9TVfoe1JR08AQfUFeHOtDsuFZCNmv1Jk0uRifJF/rW/xs5
+         tedf4s6lpC2N4cCo2EyVY50DxTeYb8x6iOO81J/aw9KqjNeVYj0Fh9G2taQ3VLIIUw9l
+         mJ3Nkwm82M/UAx73rFeG3//FXweOdoH663RxBAnvZL/yN6c+aAWg/8Zq3dvM4Zh1yzU4
+         eEDg==
+X-Gm-Message-State: AOAM533JU2Sb5nMjfRuM1S/j2K+a4ZFAQn3eBLdUhWJW1Ace+lS7VFwn
+        h08XIa7+Z1lwQCqeRlC7IlVX0Eb0iAmPfNoeqlM=
+X-Google-Smtp-Source: ABdhPJyqvSdJ+b/A1NODSqslyyWSfORo1YYQK5Fr9QnNh1dYMb53Gew/ki+d5mlcFFJIGCxMWDbqJpyrfORmo6qulok=
+X-Received: by 2002:a25:37c8:: with SMTP id e191mr20087865yba.230.1596830751130;
+ Fri, 07 Aug 2020 13:05:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200807094559.571260-1-jolsa@kernel.org> <20200807094559.571260-11-jolsa@kernel.org>
-In-Reply-To: <20200807094559.571260-11-jolsa@kernel.org>
+References: <20200807094559.571260-1-jolsa@kernel.org> <20200807094559.571260-12-jolsa@kernel.org>
+In-Reply-To: <20200807094559.571260-12-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 7 Aug 2020 13:05:21 -0700
-Message-ID: <CAEf4BzaQOPYO3JYyJ3HKGWHdpKC7N-oKMPmOxnke8nXbZ2va9Q@mail.gmail.com>
-Subject: Re: [PATCH v10 bpf-next 10/14] bpf: Add d_path helper
+Date:   Fri, 7 Aug 2020 13:05:40 -0700
+Message-ID: <CAEf4BzZdTnyB2jqSfrBYiqc30H+QT5sv_cpogwEScjiRPCr7qA@mail.gmail.com>
+Subject: Re: [PATCH v10 bpf-next 11/14] bpf: Update .BTF_ids section in
+ btf.rst with sets info
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -70,32 +71,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 7, 2020 at 2:48 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Fri, Aug 7, 2020 at 2:47 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Adding d_path helper function that returns full path for
-> given 'struct path' object, which needs to be the kernel
-> BTF 'path' object. The path is returned in buffer provided
-> 'buf' of size 'sz' and is zero terminated.
->
->   bpf_d_path(&file->f_path, buf, size);
->
-> The helper calls directly d_path function, so there's only
-> limited set of function it can be called from. Adding just
-> very modest set for the start.
->
-> Updating also bpf.h tools uapi header and adding 'path' to
-> bpf_helpers_doc.py script.
+> Updating btf.rst doc with info about BTF_SET_START/END macros.
 >
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
->  include/uapi/linux/bpf.h       | 13 +++++++++
->  kernel/trace/bpf_trace.c       | 48 ++++++++++++++++++++++++++++++++++
->  scripts/bpf_helpers_doc.py     |  2 ++
->  tools/include/uapi/linux/bpf.h | 13 +++++++++
->  4 files changed, 76 insertions(+)
+>  Documentation/bpf/btf.rst | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
 >
 
 [...]
