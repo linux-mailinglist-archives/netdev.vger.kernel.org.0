@@ -2,96 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 326E323E79B
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 09:16:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6B2C23E7C9
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 09:20:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726619AbgHGHQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 03:16:31 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:41361 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726428AbgHGHQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 03:16:24 -0400
-Received: by mail-io1-f72.google.com with SMTP id e12so981496ioc.8
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 00:16:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=OO3Q8CrVHRBuOi/YH4CBh0Wwl12/N/j2vjuXZ553ypI=;
-        b=OrBFJm6yj8S5phRdXjn/7CBqqW1dWNorljAR7JuoR8bD5hO+y2myQItl8xNrZpgvYV
-         7f2sC7BvbzEXlShmS330IFDUT/CmDjO/lWAxzKP/TFkAvvM4r6zSqZxfoAm1UlYeznCr
-         C+H/RvD//I4a4mj+a3nBt2gXQIJJRmgAANscTxCR1cNdDsTvjvNVGPM23qM0JaYAQ/iM
-         5cJQzowL4tAvztDjT+dI9Qcf03Y50cc/Ai4ZxJ60zGoTlVEotpaIYTTIrGPsGwuwxg4C
-         bex5w9rEkwgA1ioM0mQa9Kk/5RLInJGGn/vW9bc7+Ro31agf9FmfA277lGDJZ3MjFH3I
-         MFBA==
-X-Gm-Message-State: AOAM533WoXN67sd4Of+2jTzcmSr8XJlVHOP9GtW21Nt1DMJMX9UJu4T7
-        0sSGOvTzqtTijge5NnLehzTrbk+uxGKjNpjZyw4+n0ktbbDj
-X-Google-Smtp-Source: ABdhPJwEIVuxGhXN9XBU+72Oqwehxi/aQnjzwAa7mc9utApu36Le+7G9OqhYyrqGjB5wKOnma3Rh22T/vpSIEhtceZUEhd14Nbal
+        id S1726699AbgHGHT5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 03:19:57 -0400
+Received: from verein.lst.de ([213.95.11.211]:52834 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725805AbgHGHT5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Aug 2020 03:19:57 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 889B368D0E; Fri,  7 Aug 2020 09:19:54 +0200 (CEST)
+Date:   Fri, 7 Aug 2020 09:19:54 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     John Stultz <john.stultz@linaro.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Christoph Hellwig <hch@lst.de>,
+        David Miller <davem@davemloft.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Todd Kjos <tkjos@google.com>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [GIT] Networking
+Message-ID: <20200807071954.GA2086@lst.de>
+References: <20200805.185559.1225246192723680518.davem@davemloft.net> <CANcMJZA1pSz8T9gkRtwYHy_vVfoMj35Wd-+qqxQBg+GRaXS0_Q@mail.gmail.com> <011a0a3b-74ac-fa61-2a04-73cb9897e8e8@gmail.com> <CALAqxLVDyTygzoktGK+aYnT2dQdOTPFAD=P=Kr1x+TmLuUC=NA@mail.gmail.com> <CALAqxLWKGfoPya3u9pbvZcbMAhjXKmYvp8b6L7hpk4bNWyt7sQ@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:9116:: with SMTP id t22mr3026831ild.305.1596784583029;
- Fri, 07 Aug 2020 00:16:23 -0700 (PDT)
-Date:   Fri, 07 Aug 2020 00:16:23 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000dabdc805ac4461b5@google.com>
-Subject: INFO: trying to register non-static key in l2cap_chan_close
-From:   syzbot <syzbot+3ae233f384d5b0aaa9e0@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALAqxLWKGfoPya3u9pbvZcbMAhjXKmYvp8b6L7hpk4bNWyt7sQ@mail.gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Aug 06, 2020 at 11:23:34PM -0700, John Stultz wrote:
+> So I've finally rebase-bisected it down to:
+>   a31edb2059ed ("net: improve the user pointer check in init_user_sockptr")
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a31edb2059ed4e498f9aa8230c734b59d0ad797a
+> 
+> And reverting that from linus/HEAD (at least from this morning) seems
+> to avoid it.
+> 
+> Seems like it is just adding extra checks on the data passed, so maybe
+> existing trouble from a different driver is the issue here, but it's
+> not really clear from the crash what might be wrong.
+> 
+> Suggestions would be greatly appreciated!
 
-syzbot found the following issue on:
+I think the sockpt optimization is just a little to clever for its
+own sake, as also chown by the other issue pointed out by Eric.
 
-HEAD commit:    01830e6c Add linux-next specific files for 20200731
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=171e3dc6900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2e226b2d1364112c
-dashboard link: https://syzkaller.appspot.com/bug?extid=3ae233f384d5b0aaa9e0
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15e18fec900000
+Can you try this revert that just goes back to the "boring" normal
+version for everyone?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+3ae233f384d5b0aaa9e0@syzkaller.appspotmail.com
-
-INFO: trying to register non-static key.
-the code is fine but needs lockdep annotation.
-turning off the locking correctness validator.
-CPU: 0 PID: 6982 Comm: kworker/0:1 Not tainted 5.8.0-rc7-next-20200731-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events l2cap_chan_timeout
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- assign_lock_key kernel/locking/lockdep.c:894 [inline]
- register_lock_class+0x157d/0x1630 kernel/locking/lockdep.c:1206
- __lock_acquire+0xf9/0x5640 kernel/locking/lockdep.c:4303
- lock_acquire+0x1f1/0xad0 kernel/locking/lockdep.c:5003
- __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
- _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
- spin_lock_bh include/linux/spinlock.h:359 [inline]
- lock_sock_nested+0x3b/0x110 net/core/sock.c:3048
- l2cap_sock_teardown_cb+0x88/0x400 net/bluetooth/l2cap_sock.c:1520
- l2cap_chan_close+0x2cc/0xb10 net/bluetooth/l2cap_core.c:832
- l2cap_chan_timeout+0x173/0x450 net/bluetooth/l2cap_core.c:436
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/include/linux/sockptr.h b/include/linux/sockptr.h
+index 96840def9d69cc..ea193414298b7f 100644
+--- a/include/linux/sockptr.h
++++ b/include/linux/sockptr.h
+@@ -8,26 +8,9 @@
+ #ifndef _LINUX_SOCKPTR_H
+ #define _LINUX_SOCKPTR_H
+ 
+-#include <linux/compiler.h>
+ #include <linux/slab.h>
+ #include <linux/uaccess.h>
+ 
+-#ifdef CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+-typedef union {
+-	void		*kernel;
+-	void __user	*user;
+-} sockptr_t;
+-
+-static inline bool sockptr_is_kernel(sockptr_t sockptr)
+-{
+-	return (unsigned long)sockptr.kernel >= TASK_SIZE;
+-}
+-
+-static inline sockptr_t KERNEL_SOCKPTR(void *p)
+-{
+-	return (sockptr_t) { .kernel = p };
+-}
+-#else /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
+ typedef struct {
+ 	union {
+ 		void		*kernel;
+@@ -45,15 +28,10 @@ static inline sockptr_t KERNEL_SOCKPTR(void *p)
+ {
+ 	return (sockptr_t) { .kernel = p, .is_kernel = true };
+ }
+-#endif /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
+ 
+-static inline int __must_check init_user_sockptr(sockptr_t *sp, void __user *p,
+-		size_t size)
++static inline sockptr_t USER_SOCKPTR(void __user *p)
+ {
+-	if (!access_ok(p, size))
+-		return -EFAULT;
+-	*sp = (sockptr_t) { .user = p };
+-	return 0;
++	return (sockptr_t) { .user = p };
+ }
+ 
+ static inline bool sockptr_is_null(sockptr_t sockptr)
+diff --git a/net/ipv4/bpfilter/sockopt.c b/net/ipv4/bpfilter/sockopt.c
+index 545b2640f0194d..1b34cb9a7708ec 100644
+--- a/net/ipv4/bpfilter/sockopt.c
++++ b/net/ipv4/bpfilter/sockopt.c
+@@ -57,18 +57,16 @@ int bpfilter_ip_set_sockopt(struct sock *sk, int optname, sockptr_t optval,
+ 	return bpfilter_mbox_request(sk, optname, optval, optlen, true);
+ }
+ 
+-int bpfilter_ip_get_sockopt(struct sock *sk, int optname,
+-			    char __user *user_optval, int __user *optlen)
++int bpfilter_ip_get_sockopt(struct sock *sk, int optname, char __user *optval,
++			    int __user *optlen)
+ {
+-	sockptr_t optval;
+-	int err, len;
++	int len;
+ 
+ 	if (get_user(len, optlen))
+ 		return -EFAULT;
+-	err = init_user_sockptr(&optval, user_optval, len);
+-	if (err)
+-		return err;
+-	return bpfilter_mbox_request(sk, optname, optval, len, false);
++
++	return bpfilter_mbox_request(sk, optname, USER_SOCKPTR(optval), len,
++				     false);
+ }
+ 
+ static int __init bpfilter_sockopt_init(void)
+diff --git a/net/socket.c b/net/socket.c
+index aff52e81653ce3..e44b8ac47f6f46 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -2097,7 +2097,7 @@ static bool sock_use_custom_sol_socket(const struct socket *sock)
+ int __sys_setsockopt(int fd, int level, int optname, char __user *user_optval,
+ 		int optlen)
+ {
+-	sockptr_t optval;
++	sockptr_t optval = USER_SOCKPTR(user_optval);
+ 	char *kernel_optval = NULL;
+ 	int err, fput_needed;
+ 	struct socket *sock;
+@@ -2105,10 +2105,6 @@ int __sys_setsockopt(int fd, int level, int optname, char __user *user_optval,
+ 	if (optlen < 0)
+ 		return -EINVAL;
+ 
+-	err = init_user_sockptr(&optval, user_optval, optlen);
+-	if (err)
+-		return err;
+-
+ 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
+ 	if (!sock)
+ 		return err;
