@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 229A123F4DE
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 00:28:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A88123F4E5
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 00:31:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726130AbgHGW2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 18:28:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34300 "EHLO
+        id S1726126AbgHGWbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 18:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726015AbgHGW2c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 18:28:32 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9267EC061756
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 15:28:32 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id v22so2481805qtq.8
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 15:28:32 -0700 (PDT)
+        with ESMTP id S1726015AbgHGWbi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 18:31:38 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC802C061756
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 15:31:37 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id b25so2508397qto.2
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 15:31:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=XjQ5+ec5MYtlLJLt3USEKI0cC6g/e5jslemIh/CkmWA=;
-        b=Iqfb+PR/8N0LzASwekj8K2Y1BX1Bd4TplqqDECdQBx7n2itbA2vcj6QNczKeFFY/Os
-         wvMMvkNscIDY+5WxwDrteXkjYv8JyoO1iS42XZF0IzuVokzmdsKDagBwC0zUsQaJ3HoC
-         6pdQJ4R886aFgCXr0jxO4h8WpnmQ8HEM5e784o+MxwptdkDJsaqdZzjreUsEWSTogq5b
-         QSqfv9o0GLwT8cURgx8zaCbb3Xsoj6zlgRnX3qHenxp28CfC4U00+48oa9GtTuK7sxB3
-         2Bt5aXQq4nAQl9OechUInNBG1glgEmNDEeGdqq9Ni1n/c/rU21uSlxW5U6iu05GmmkSp
-         yHOQ==
+        bh=yZ2zAuIlKqsdRAy3Buw2UTitczlkMHV5b4wy5ExPRJc=;
+        b=cOMf9TMRktQ2vpk/bVL8sqoTCx4wk5Qy8OYDFCzjmyYOc5o7C/GvuBhxfy6qcO9rLI
+         HHi8TKVpIttEEfy1UEImN/Qi/9i0igqxaQp7xzDVkoztQqmtPtJRoUL47ybHy9L5Auia
+         1pXbT9yrxCLl6n92wc/JeyActf0nJNE9cYtwS4mMCGxjJG63VXHW4bUzWkD/kD6j0SJm
+         i4yV6ucUn35PWRmv3LGdlovTS/3aya9hT/KcJWn0yB0UYnW01+YKtpK4c4TQYIXLW/bk
+         TD6i6LfJebV/vZydAex9AjDgujqLmgDqUFIQ2CFO9JT1tFnXY8ZzuAyMF+3TQxwyXtGW
+         ZDAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=XjQ5+ec5MYtlLJLt3USEKI0cC6g/e5jslemIh/CkmWA=;
-        b=mFp1+4CiMEYdWAh8QlA+nY8isyQL2vZJj6UBy+LZxyOfxm+ND+SA35/1j2PYu0LaOQ
-         iszkDlYSXzy/kvDVbtPEN7DCHADfRHQs3HzfYaHZD4wgvJXnWZB5ppc1Fic94S6Lp5ji
-         siBZ5FYCWAmh8WlmN82e627gBGaNIp5wT0Tu6oe+k7ji7tbNKdI974HnRxMuAOFtxG4y
-         KMLwTcaOX70jFBROC6zRSvbEuryv5zEuyoVphVbXyr3DZVcGjIYRomBscDOvrar7xeNU
-         +0afmJYwdz6w2pY8Ld13p1PZIhKBVkHdkjrXAnR7g/eYWVI0zFB73g+CJB6DvMH0CqwN
-         656Q==
-X-Gm-Message-State: AOAM532tJG7fqsAuqEESEDZqqtvKWGFaHiLcWlU9KmeeJtq5WKfuQTmf
-        FRPOwMXEWZVL5WWbwOP8KWXeM6DJy4Y=
-X-Google-Smtp-Source: ABdhPJzzQHQexL74yK0sULozx8E60/bVZSlUGTS5O/o4NiaPz91pyR0MsehIzbOcePzaMS6vjb0G+A==
-X-Received: by 2002:aed:2986:: with SMTP id o6mr16480298qtd.105.1596839311538;
-        Fri, 07 Aug 2020 15:28:31 -0700 (PDT)
+        bh=yZ2zAuIlKqsdRAy3Buw2UTitczlkMHV5b4wy5ExPRJc=;
+        b=mzVQFebKkjBCq8upWaGayC+zWpmRGJu6tKrkP8QloAG7hcbbaymhcdW7HSfQCcB2rA
+         Iv0nSRzLBlpoGez7cA4YXqi7wpSzKHHfVqtABmhwdFDr3MeCfKAjDYPRgrvr1+zPLpZh
+         V2KO+A83ha/KAZj+JsiYXBJ//ccInYz7fJQ6Q8lT4zmni/oucuUSQ5VwolDkdw1CqKSS
+         KagKwxg+otUxEtg36vclY4Qmcm4mQYgitLFNunNMlskwGmgDC7RpmBDrlimFYnS8MZUo
+         xEWC6xEfhb6s4CmzG6d6StD5p99ycXtoEczZZC9YaogLI5I9aEqq53VXwsdTlKK28ARw
+         95tQ==
+X-Gm-Message-State: AOAM530/STGzZ7ickxAk57DHC91jnAgR3wDDoo0JC2lXi9/gyEgPxM33
+        j5uEIBtadgaxubsOpjzzAd2T0w==
+X-Google-Smtp-Source: ABdhPJxxW9a7Z4VUVBGDppu9pTnfvWVdTYCnOw+bon1wr8lNVh99TpBSaIJComxIcqdCladtz9EGBQ==
+X-Received: by 2002:ac8:3a84:: with SMTP id x4mr15197788qte.361.1596839496942;
+        Fri, 07 Aug 2020 15:31:36 -0700 (PDT)
 Received: from localhost.localdomain (bras-base-kntaon1617w-grc-06-184-148-45-213.dsl.bell.ca. [184.148.45.213])
-        by smtp.gmail.com with ESMTPSA id 15sm7619903qkm.112.2020.08.07.15.28.30
+        by smtp.gmail.com with ESMTPSA id s184sm8117017qkf.50.2020.08.07.15.31.36
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 07 Aug 2020 15:28:30 -0700 (PDT)
+        Fri, 07 Aug 2020 15:31:36 -0700 (PDT)
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
 X-Google-Original-From: Jamal Hadi Salim <jhs@emojatatu.com>
-To:     davem@davemloft.net
+To:     stephen@networkplumber.org, dsahern@gmail.com
 Cc:     netdev@vger.kernel.org, jiri@resnulli.us, xiyou.wangcong@gmail.com,
-        lariel@mellanox.com, Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: [PATCH net-next 1/1] net/sched: Introduce skb hash classifier
-Date:   Fri,  7 Aug 2020 18:28:16 -0400
-Message-Id: <20200807222816.18026-1-jhs@emojatatu.com>
+        lariel@mellanox.com, Jamal Hadi Salim <hadi@mojatatu.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: [PATCH iproute2 1/1] tc: introduce skbhash classifier
+Date:   Fri,  7 Aug 2020 18:31:10 -0400
+Message-Id: <20200807223110.24857-1-jhs@emojatatu.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -63,15 +64,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jamal Hadi Salim <jhs@mojatatu.com>
+From: Jamal Hadi Salim <hadi@mojatatu.com>
 
-his classifier, in the same spirit as the tc skb mark classifier,
-provides a generic (fast lookup) approach to filter on the hash value
-and optional mask.
+This classifier - in the same spirit as the tc skb mark classifier - provides
+a generic (fast lookup) approach to filter on the hash value and optional
+mask.
 
-like skb->mark, skb->hash could be set by multiple entities in the
-datapath including but not limited to hardware offloaded classification
-policies, hardware RSS (which already sets it today), XDP, ebpf programs
+like skb->mark, skb->hash could be set by multiple entities in the datapath
+including but not limited to hardware offloaded classification policies,
+hardware RSS (which already sets it today), XDP, ebpf programs
 and even by other tc actions like skbedit and IFE.
 
 Example use:
@@ -80,7 +81,7 @@ $TC qdisc add  dev $DEV1 ingress
 ... offloaded to hardware using flower ...
 $TC filter add dev $DEV1 ingress protocol ip prio 1 flower hash 0x1f/0xff skip_sw flowid 1:1 \
 action ok
-... and when it shows up in s/w tagged from hardware...
+... and when it shows up in s/w tagged from hardware, do something funky...
 $TC filter add dev $DEV1 parent ffff: protocol ip prio 2 handle 0x11/0xff skbhash flowid 1:11 \
 action mirred egress redirect dev $DEV2
 $TC filter add dev $DEV1 parent ffff: protocol ip prio 3 handle 0x12 skbhash flowid 1:12 \
@@ -88,18 +89,17 @@ action mirred egress redirect dev $DEV3
 
 Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
 ---
- include/uapi/linux/pkt_cls.h |  13 ++
- net/sched/Kconfig            |  10 +
- net/sched/Makefile           |   1 +
- net/sched/cls_skbhash.c      | 441 +++++++++++++++++++++++++++++++++++
- 4 files changed, 465 insertions(+)
- create mode 100644 net/sched/cls_skbhash.c
+ include/uapi/linux/pkt_cls.h |  13 ++++
+ tc/Makefile                  |   1 +
+ tc/f_skbhash.c               | 140 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 154 insertions(+)
+ create mode 100644 tc/f_skbhash.c
 
 diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index ee95f42fb0ec..804cc326c2ce 100644
+index 7576209d..da22bf87 100644
 --- a/include/uapi/linux/pkt_cls.h
 +++ b/include/uapi/linux/pkt_cls.h
-@@ -770,4 +770,17 @@ enum {
+@@ -767,4 +767,17 @@ enum {
  	TCF_EM_OPND_LT
  };
  
@@ -117,486 +117,164 @@ index ee95f42fb0ec..804cc326c2ce 100644
 +#define TCA_SKBHASH_MAX (__TCA_SKBHASH_MAX - 1)
 +
  #endif
-diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-index a3b37d88800e..aed2c74466e6 100644
---- a/net/sched/Kconfig
-+++ b/net/sched/Kconfig
-@@ -640,6 +640,16 @@ config NET_CLS_MATCHALL
- 	  To compile this code as a module, choose M here: the module will
- 	  be called cls_matchall.
- 
-+config NET_CLS_SKBHASH
-+	tristate "skb->hash classifier"
-+	select NET_CLS
-+	---help---
-+	  If you say Y here, you will be able to classify packets
-+	  according to the skb->hash value
-+
-+	  To compile this code as a module, choose M here: the
-+	  module will be called cls_skbhash.
-+
- config NET_EMATCH
- 	bool "Extended Matches"
- 	select NET_CLS
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index 66bbf9a98f9e..cbffba3b1fa1 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -68,6 +68,7 @@ obj-$(CONFIG_NET_SCH_TAPRIO)	+= sch_taprio.o
- obj-$(CONFIG_NET_CLS_U32)	+= cls_u32.o
- obj-$(CONFIG_NET_CLS_ROUTE4)	+= cls_route.o
- obj-$(CONFIG_NET_CLS_FW)	+= cls_fw.o
-+obj-$(CONFIG_NET_CLS_SKBHASH)	+= cls_skbhash.o
- obj-$(CONFIG_NET_CLS_RSVP)	+= cls_rsvp.o
- obj-$(CONFIG_NET_CLS_TCINDEX)	+= cls_tcindex.o
- obj-$(CONFIG_NET_CLS_RSVP6)	+= cls_rsvp6.o
-diff --git a/net/sched/cls_skbhash.c b/net/sched/cls_skbhash.c
+diff --git a/tc/Makefile b/tc/Makefile
+index 79c9c1dd..8c78f922 100644
+--- a/tc/Makefile
++++ b/tc/Makefile
+@@ -29,6 +29,7 @@ TCMODULES += f_bpf.o
+ TCMODULES += f_flow.o
+ TCMODULES += f_cgroup.o
+ TCMODULES += f_flower.o
++TCMODULES += f_skbhash.o
+ TCMODULES += q_dsmark.o
+ TCMODULES += q_gred.o
+ TCMODULES += f_tcindex.o
+diff --git a/tc/f_skbhash.c b/tc/f_skbhash.c
 new file mode 100644
-index 000000000000..e523a1ce2fc5
+index 00000000..b2537acd
 --- /dev/null
-+++ b/net/sched/cls_skbhash.c
-@@ -0,0 +1,441 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
++++ b/tc/f_skbhash.c
+@@ -0,0 +1,140 @@
 +/*
-+ * net/sched/cls_skbhash.c	TC Classifier for skb->hash
++ * f_skbhash.c		SKBHASH filter.
++ *
++ *		This program is free software; you can redistribute it and/or
++ *		modify it under the terms of the GNU General Public License
++ *		as published by the Free Software Foundation; either version
++ *		2 of the License, or (at your option) any later version.
 + *
 + * Authors:	J Hadi Salim <jhs@mojatatu.com>
 + *
 + */
 +
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+#include <linux/kernel.h>
-+#include <linux/string.h>
-+#include <linux/errno.h>
-+#include <linux/skbuff.h>
-+#include <net/netlink.h>
-+#include <net/act_api.h>
-+#include <net/pkt_cls.h>
-+#include <net/sch_generic.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <fcntl.h>
++#include <sys/socket.h>
++#include <netinet/in.h>
++#include <arpa/inet.h>
++#include <string.h>
++#include <linux/if.h> /* IFNAMSIZ */
++#include "utils.h"
++#include "tc_util.h"
 +
-+#define SKBHASH_HTSIZE 256
-+
-+struct skbhash_head {
-+	struct rcu_head		rcu;
-+	u32			mask;
-+	struct skbhash_filter __rcu	*ht[SKBHASH_HTSIZE];
-+};
-+
-+struct skbhash_filter {
-+	struct skbhash_filter __rcu	*next;
-+	u32			id;
-+	struct tcf_result	res;
-+	struct tcf_exts		exts;
-+	struct tcf_proto	*tp;
-+	struct rcu_work		rwork;
-+};
-+
-+static u32 skbhash_hash(u32 handle)
++static void explain(void)
 +{
-+	handle ^= (handle >> 16);
-+	handle ^= (handle >> 8);
-+	return handle % SKBHASH_HTSIZE;
++	fprintf(stderr,
++		"Usage: ... skbhash [ classid CLASSID ] [ indev DEV ] [ action ACTION_SPEC ]\n"
++		"	CLASSID := Push matching packets to the class identified by CLASSID with format X:Y\n"
++		"		CLASSID is parsed as hexadecimal input.\n"
++		"	ACTION_SPEC := Apply an action on matching packets.\n"
++		"	NOTE: handle is represented as HANDLE[/SKBHASHMASK].\n"
++		"		SKBHASHMASK is 0xffffffff by default.\n");
 +}
 +
-+static int skbhash_classify(struct sk_buff *skb, const struct tcf_proto *tp,
-+			    struct tcf_result *res)
++static int skbhash_parse_opt(struct filter_util *qu, char *handle, int argc,
++			     char **argv, struct nlmsghdr *n)
 +{
-+	struct skbhash_head *head = rcu_dereference_bh(tp->root);
-+	struct skbhash_filter *f;
-+	int r;
-+	u32 id = skb->hash;
++	struct tcmsg *t = NLMSG_DATA(n);
++	struct rtattr *tail;
++	__u32 mask = 0;
++	int mask_set = 0;
 +
-+	if (head != NULL) {
-+		id &= head->mask;
++	if (handle) {
++		char *slash;
 +
-+		for (f = rcu_dereference_bh(head->ht[skbhash_hash(id)]); f;
-+		     f = rcu_dereference_bh(f->next)) {
-+			if (f->id == id) {
-+				*res = f->res;
-+				r = tcf_exts_exec(skb, &f->exts, res);
-+				if (r < 0)
-+					continue;
-+
-+				return r;
++		if ((slash = strchr(handle, '/')) != NULL)
++			*slash = '\0';
++		if (get_u32(&t->tcm_handle, handle, 0)) {
++			fprintf(stderr, "Illegal \"handle\"\n");
++			return -1;
++		}
++		if (slash) {
++			if (get_u32(&mask, slash+1, 0)) {
++				fprintf(stderr, "Illegal \"handle\" mask\n");
++				return -1;
 +			}
-+		}
-+	} else {
-+		struct Qdisc *q = tcf_block_q(tp->chain->block);
-+
-+		/* Legacy method: classify the packet using its skb hash. */
-+		if (id && (TC_H_MAJ(id) == 0 ||
-+			   !(TC_H_MAJ(id ^ q->handle)))) {
-+			res->classid = id;
-+			res->class = 0;
-+			return 0;
++			mask_set = 1;
 +		}
 +	}
 +
-+	return -1;
-+}
++	if (argc == 0)
++		return 0;
 +
-+static void *skbhash_get(struct tcf_proto *tp, u32 handle)
-+{
-+	struct skbhash_head *head = rtnl_dereference(tp->root);
-+	struct skbhash_filter *f;
++	tail = addattr_nest(n, 4096, TCA_OPTIONS);
 +
-+	if (head == NULL)
-+		return NULL;
++	if (mask_set)
++		addattr32(n, MAX_MSG, TCA_SKBHASH_MASK, mask);
 +
-+	f = rtnl_dereference(head->ht[skbhash_hash(handle)]);
-+	for (; f; f = rtnl_dereference(f->next)) {
-+		if (f->id == handle)
-+			return f;
++	while (argc > 0) {
++		if (matches(*argv, "classid") == 0 ||
++		    matches(*argv, "flowid") == 0) {
++			unsigned int handle;
++
++			NEXT_ARG();
++			if (get_tc_classid(&handle, *argv)) {
++				fprintf(stderr, "Illegal \"classid\"\n");
++				return -1;
++			}
++			addattr_l(n, 4096, TCA_SKBHASH_CLASSID, &handle, 4);
++		} else if (matches(*argv, "action") == 0) {
++			NEXT_ARG();
++			if (parse_action(&argc, &argv, TCA_SKBHASH_ACT, n)) {
++				fprintf(stderr, "Illegal skbhash \"action\"\n");
++				return -1;
++			}
++			continue;
++		} else if (strcmp(*argv, "help") == 0) {
++			explain();
++			return -1;
++		} else {
++			fprintf(stderr, "What is \"%s\"?\n", *argv);
++			explain();
++			return -1;
++		}
++		argc--; argv++;
 +	}
-+	return NULL;
-+}
-+
-+static int skbhash_init(struct tcf_proto *tp)
-+{
-+	/* We don't allocate skbhash_head here, because in the old method
-+	 * we don't need it at all.
-+	 */
++	addattr_nest_end(n, tail);
 +	return 0;
 +}
 +
-+static void __skbhash_delete_filter(struct skbhash_filter *f)
++static int skbhash_print_opt(struct filter_util *qu, FILE *f,
++			     struct rtattr *opt, __u32 handle)
 +{
-+	tcf_exts_destroy(&f->exts);
-+	tcf_exts_put_net(&f->exts);
-+	kfree(f);
-+}
++	struct rtattr *tb[TCA_SKBHASH_MAX+1];
 +
-+static void skbhash_delete_filter_work(struct work_struct *work)
-+{
-+	struct skbhash_filter *f = container_of(to_rcu_work(work),
-+					   struct skbhash_filter,
-+					   rwork);
-+	rtnl_lock();
-+	__skbhash_delete_filter(f);
-+	rtnl_unlock();
-+}
++	if (opt == NULL)
++		return 0;
 +
-+static void skbhash_destroy(struct tcf_proto *tp, bool rtnl_held,
-+			    struct netlink_ext_ack *extack)
-+{
-+	struct skbhash_head *head = rtnl_dereference(tp->root);
-+	struct skbhash_filter *f;
-+	int h;
++	parse_rtattr_nested(tb, TCA_SKBHASH_MAX, opt);
 +
-+	if (head == NULL)
-+		return;
++	if (handle || tb[TCA_SKBHASH_MASK]) {
++		__u32 mark = 0, mask = 0;
 +
-+	for (h = 0; h < SKBHASH_HTSIZE; h++) {
-+		while ((f = rtnl_dereference(head->ht[h])) != NULL) {
-+			RCU_INIT_POINTER(head->ht[h],
-+					 rtnl_dereference(f->next));
-+			tcf_unbind_filter(tp, &f->res);
-+			if (tcf_exts_get_net(&f->exts))
-+				tcf_queue_work(&f->rwork,
-+					       skbhash_delete_filter_work);
-+			else
-+				__skbhash_delete_filter(f);
-+		}
++		if (handle)
++			mark = handle;
++		if (tb[TCA_SKBHASH_MASK] &&
++		    (mask = rta_getattr_u32(tb[TCA_SKBHASH_MASK])) != 0xFFFFFFFF)
++			fprintf(f, "handle 0x%x/0x%x ", mark, mask);
++		else
++			fprintf(f, "handle 0x%x ", handle);
 +	}
-+	kfree_rcu(head, rcu);
-+}
-+
-+static int skbhash_delete(struct tcf_proto *tp, void *arg, bool *last,
-+			  bool rtnl_held, struct netlink_ext_ack *extack)
-+{
-+	struct skbhash_head *head = rtnl_dereference(tp->root);
-+	struct skbhash_filter *f = arg;
-+	struct skbhash_filter __rcu **fp;
-+	struct skbhash_filter *pfp;
-+	int ret = -EINVAL;
-+	int h;
-+
-+	if (head == NULL || f == NULL)
-+		goto out;
-+
-+	fp = &head->ht[skbhash_hash(f->id)];
-+
-+	for (pfp = rtnl_dereference(*fp); pfp;
-+	     fp = &pfp->next, pfp = rtnl_dereference(*fp)) {
-+		if (pfp == f) {
-+			RCU_INIT_POINTER(*fp, rtnl_dereference(f->next));
-+			tcf_unbind_filter(tp, &f->res);
-+			tcf_exts_get_net(&f->exts);
-+			tcf_queue_work(&f->rwork, skbhash_delete_filter_work);
-+			ret = 0;
-+			break;
-+		}
-+	}
-+
-+	*last = true;
-+	for (h = 0; h < SKBHASH_HTSIZE; h++) {
-+		if (rcu_access_pointer(head->ht[h])) {
-+			*last = false;
-+			break;
-+		}
-+	}
-+
-+out:
-+	return ret;
-+}
-+
-+static const struct nla_policy skbhash_policy[TCA_SKBHASH_MAX + 1] = {
-+	[TCA_SKBHASH_CLASSID]	= { .type = NLA_U32 },
-+	[TCA_SKBHASH_MASK]	= { .type = NLA_U32 },
-+};
-+
-+static int skbhash_set_parms(struct net *net, struct tcf_proto *tp,
-+			     struct skbhash_filter *f, struct nlattr **tb,
-+			     struct nlattr **tca, unsigned long base,
-+			     bool ovr, struct netlink_ext_ack *extack)
-+{
-+	struct skbhash_head *head = rtnl_dereference(tp->root);
-+	u32 mask;
-+	int err;
-+
-+	err = tcf_exts_validate(net, tp, tb, tca[TCA_RATE], &f->exts, ovr,
-+				true, extack);
-+	if (err < 0)
-+		return err;
 +
 +	if (tb[TCA_SKBHASH_CLASSID]) {
-+		f->res.classid = nla_get_u32(tb[TCA_SKBHASH_CLASSID]);
-+		tcf_bind_filter(tp, &f->res, base);
++		SPRINT_BUF(b1);
++		fprintf(f, "classid %s ", sprint_tc_classid(rta_getattr_u32(tb[TCA_SKBHASH_CLASSID]), b1));
 +	}
 +
-+	err = -EINVAL;
-+	if (tb[TCA_SKBHASH_MASK]) {
-+		mask = nla_get_u32(tb[TCA_SKBHASH_MASK]);
-+		if (mask != head->mask)
-+			return err;
-+	} else if (head->mask != 0xFFFFFFFF)
-+		return err;
-+
++	if (tb[TCA_SKBHASH_ACT]) {
++		fprintf(f, "\n");
++		tc_print_action(f, tb[TCA_SKBHASH_ACT], 0);
++	}
 +	return 0;
 +}
 +
-+static int skbhash_change(struct net *net, struct sk_buff *in_skb,
-+			  struct tcf_proto *tp, unsigned long base, u32 handle,
-+			  struct nlattr **tca, void **arg, bool ovr,
-+			  bool rtnl_held, struct netlink_ext_ack *extack)
-+{
-+	struct skbhash_head *head = rtnl_dereference(tp->root);
-+	struct skbhash_filter *f = *arg;
-+	struct nlattr *opt = tca[TCA_OPTIONS];
-+	struct nlattr *tb[TCA_SKBHASH_MAX + 1];
-+	int err;
-+
-+	if (!opt)
-+		return handle ? -EINVAL : 0; /* Succeed if it is old method. */
-+
-+	err = nla_parse_nested_deprecated(tb, TCA_SKBHASH_MAX, opt,
-+					  skbhash_policy, NULL);
-+	if (err < 0)
-+		return err;
-+
-+	if (f) {
-+		struct skbhash_filter *pfp, *fnew;
-+		struct skbhash_filter __rcu **fp;
-+
-+		if (f->id != handle && handle)
-+			return -EINVAL;
-+
-+		fnew = kzalloc(sizeof(struct skbhash_filter), GFP_KERNEL);
-+		if (!fnew)
-+			return -ENOBUFS;
-+
-+		fnew->id = f->id;
-+		fnew->res = f->res;
-+		fnew->tp = f->tp;
-+
-+		err = tcf_exts_init(&fnew->exts, net, TCA_SKBHASH_ACT,
-+				    TCA_SKBHASH_POLICE);
-+		if (err < 0) {
-+			kfree(fnew);
-+			return err;
-+		}
-+
-+		err = skbhash_set_parms(net, tp, fnew, tb, tca, base, ovr,
-+					extack);
-+		if (err < 0) {
-+			tcf_exts_destroy(&fnew->exts);
-+			kfree(fnew);
-+			return err;
-+		}
-+
-+		fp = &head->ht[skbhash_hash(fnew->id)];
-+		for (pfp = rtnl_dereference(*fp); pfp;
-+		     fp = &pfp->next, pfp = rtnl_dereference(*fp))
-+			if (pfp == f)
-+				break;
-+
-+		RCU_INIT_POINTER(fnew->next, rtnl_dereference(pfp->next));
-+		rcu_assign_pointer(*fp, fnew);
-+		tcf_unbind_filter(tp, &f->res);
-+		tcf_exts_get_net(&f->exts);
-+		tcf_queue_work(&f->rwork, skbhash_delete_filter_work);
-+
-+		*arg = fnew;
-+		return err;
-+	}
-+
-+	if (!handle)
-+		return -EINVAL;
-+
-+	if (!head) {
-+		u32 mask = 0xFFFFFFFF;
-+
-+		if (tb[TCA_SKBHASH_MASK])
-+			mask = nla_get_u32(tb[TCA_SKBHASH_MASK]);
-+
-+		head = kzalloc(sizeof(*head), GFP_KERNEL);
-+		if (!head)
-+			return -ENOBUFS;
-+		head->mask = mask;
-+
-+		rcu_assign_pointer(tp->root, head);
-+	}
-+
-+	f = kzalloc(sizeof(struct skbhash_filter), GFP_KERNEL);
-+	if (f == NULL)
-+		return -ENOBUFS;
-+
-+	err = tcf_exts_init(&f->exts, net, TCA_SKBHASH_ACT, TCA_SKBHASH_POLICE);
-+	if (err < 0)
-+		goto errout;
-+	f->id = handle;
-+	f->tp = tp;
-+
-+	err = skbhash_set_parms(net, tp, f, tb, tca, base, ovr, extack);
-+	if (err < 0)
-+		goto errout;
-+
-+	RCU_INIT_POINTER(f->next, head->ht[skbhash_hash(handle)]);
-+	rcu_assign_pointer(head->ht[skbhash_hash(handle)], f);
-+
-+	*arg = f;
-+	return 0;
-+
-+errout:
-+	tcf_exts_destroy(&f->exts);
-+	kfree(f);
-+	return err;
-+}
-+
-+static void skbhash_walk(struct tcf_proto *tp, struct tcf_walker *arg,
-+			 bool rtnl_held)
-+{
-+	struct skbhash_head *head = rtnl_dereference(tp->root);
-+	int h;
-+
-+	if (head == NULL)
-+		arg->stop = 1;
-+
-+	if (arg->stop)
-+		return;
-+
-+	for (h = 0; h < SKBHASH_HTSIZE; h++) {
-+		struct skbhash_filter *f;
-+
-+		for (f = rtnl_dereference(head->ht[h]); f;
-+		     f = rtnl_dereference(f->next)) {
-+			if (arg->count < arg->skip) {
-+				arg->count++;
-+				continue;
-+			}
-+			if (arg->fn(tp, f, arg) < 0) {
-+				arg->stop = 1;
-+				return;
-+			}
-+			arg->count++;
-+		}
-+	}
-+}
-+
-+static int skbhash_dump(struct net *net, struct tcf_proto *tp, void *fh,
-+			struct sk_buff *skb, struct tcmsg *t, bool rtnl_held)
-+{
-+	struct skbhash_head *head = rtnl_dereference(tp->root);
-+	struct skbhash_filter *f = fh;
-+	struct nlattr *nest;
-+
-+	if (f == NULL)
-+		return skb->len;
-+
-+	t->tcm_handle = f->id;
-+
-+	if (!f->res.classid && !tcf_exts_has_actions(&f->exts))
-+		return skb->len;
-+
-+	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
-+	if (nest == NULL)
-+		goto nla_put_failure;
-+
-+	if (f->res.classid &&
-+	    nla_put_u32(skb, TCA_SKBHASH_CLASSID, f->res.classid))
-+		goto nla_put_failure;
-+
-+	if (head->mask != 0xFFFFFFFF &&
-+	    nla_put_u32(skb, TCA_SKBHASH_MASK, head->mask))
-+		goto nla_put_failure;
-+
-+	if (tcf_exts_dump(skb, &f->exts) < 0)
-+		goto nla_put_failure;
-+
-+	nla_nest_end(skb, nest);
-+
-+	if (tcf_exts_dump_stats(skb, &f->exts) < 0)
-+		goto nla_put_failure;
-+
-+	return skb->len;
-+
-+nla_put_failure:
-+	nla_nest_cancel(skb, nest);
-+	return -1;
-+}
-+
-+static void skbhash_bind_class(void *fh, u32 classid, unsigned long cl, void *q,
-+			       unsigned long base)
-+{
-+	struct skbhash_filter *f = fh;
-+
-+	if (f && f->res.classid == classid) {
-+		if (cl)
-+			__tcf_bind_filter(q, &f->res, base);
-+		else
-+			__tcf_unbind_filter(q, &f->res);
-+	}
-+}
-+
-+static struct tcf_proto_ops cls_skbhash_ops __read_mostly = {
-+	.kind		=	"skbhash",
-+	.classify	=	skbhash_classify,
-+	.init		=	skbhash_init,
-+	.destroy	=	skbhash_destroy,
-+	.get		=	skbhash_get,
-+	.change		=	skbhash_change,
-+	.delete		=	skbhash_delete,
-+	.walk		=	skbhash_walk,
-+	.dump		=	skbhash_dump,
-+	.bind_class	=	skbhash_bind_class,
-+	.owner		=	THIS_MODULE,
++struct filter_util skbhash_filter_util = {
++	.id = "skbhash",
++	.parse_fopt = skbhash_parse_opt,
++	.print_fopt = skbhash_print_opt,
 +};
-+
-+static int __init init_skbhash(void)
-+{
-+	return register_tcf_proto_ops(&cls_skbhash_ops);
-+}
-+
-+static void __exit exit_skbhash(void)
-+{
-+	unregister_tcf_proto_ops(&cls_skbhash_ops);
-+}
-+
-+module_init(init_skbhash)
-+module_exit(exit_skbhash)
-+MODULE_LICENSE("GPL");
 -- 
 2.20.1
 
