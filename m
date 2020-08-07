@@ -2,114 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAB1C23F305
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 21:22:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 790C523F30F
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 21:31:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726149AbgHGTV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 15:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725893AbgHGTV6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 15:21:58 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A201BC061756
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 12:21:57 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id v9so3344831ljk.6
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 12:21:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LynYp/ZpJ14OAYJsMgQc6rG+L/NKMgH+nC37/Tn8Bm4=;
-        b=PDf9UcXYjmlTI6m7JmuWWsZDrtoqlci4FCKfseclkM3rjAal3aRMQpXU/E+x9SVwnQ
-         z1QMt+xFD73skmEvIRFBRaJr0JUq+I/A+KStfoSqQHDQrqGFrIIgnX8YIsEE1AuCTmbz
-         acDSBR/w236eXQ2oEtEqjqEmfmBNlbAQ4zaIQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LynYp/ZpJ14OAYJsMgQc6rG+L/NKMgH+nC37/Tn8Bm4=;
-        b=V05kGd9vh0O4CczI26B9taf4glsFwvuALtL4FCZw62dWfUHFB4wpXhASnqBQ66kcZM
-         5d/XhlL7vizEtu+xmxf915/nWwZc2w7vJVNsf+ma1W2A+Hts6CKOO5F0IDhfpGThz71e
-         bDZ1ZPr4hKvM8WxZJlU1ATto6cX2qr4O947Qbl5fy7H9cW0jXqcfkXu17WGdUoLH71WC
-         EiPQG4ESHs1fPyykvfeJSC3JD/rvKfmv/k5xql4qumhkdxKxbgA/LcACeX5Wqae++KYW
-         EB5p3pZW2Rx8B7BuHB5i0k88zjjaIx1k37TruzQMwOyr6hwLmGtm1d/0rUEIMKtjrWbt
-         WDjg==
-X-Gm-Message-State: AOAM530bp2/D7Sss9fUNTQMc/TxwMSuvOVEDr3NkUyCvjWmT+MLw2W1+
-        jLbCs5tjg/8mNb8ANuqNa13adZSfrjqRbw==
-X-Google-Smtp-Source: ABdhPJwa+2Zfl97CK7cITcsjddG7OQ/p6Qf7MVLrVcZbrbmtTT/3Q4ERx/LaRrOY59z+9Z3kYvnB0Q==
-X-Received: by 2002:a2e:3802:: with SMTP id f2mr6056946lja.212.1596828114867;
-        Fri, 07 Aug 2020 12:21:54 -0700 (PDT)
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
-        by smtp.gmail.com with ESMTPSA id h6sm4588685lfc.84.2020.08.07.12.21.52
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Aug 2020 12:21:53 -0700 (PDT)
-Received: by mail-lf1-f53.google.com with SMTP id v15so1553533lfg.6
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 12:21:52 -0700 (PDT)
-X-Received: by 2002:a19:c206:: with SMTP id l6mr6982421lfc.152.1596828112235;
- Fri, 07 Aug 2020 12:21:52 -0700 (PDT)
+        id S1726386AbgHGTbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 15:31:38 -0400
+Received: from mailrelay110.isp.belgacom.be ([195.238.20.137]:57815 "EHLO
+        mailrelay110.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725893AbgHGTbg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 15:31:36 -0400
+IronPort-SDR: 1fyfjNk7TYh21MnooOaHM1kLQxRmr0IVJ7A7BlV4g0PWoDOGvC8XN9SL1+2z3btx+xdbm3uS1g
+ JSDcBoiWM+a9CAfT0oQ+6QpcOH1qEZnRJz+4MvHLGsBfs4mpDkhsGTfE6qLi1soXu9GO+CsghI
+ VYQTiFmiYt4F5rvxd+PrTltxnMHUp/iKMcDtaZ/kZHj4yrZ4pirwD6hrxhlETB0AliSP9tVebK
+ ZdDMTG/aaj+QS//ZfVUmRgo6Qex/6aiRcFm/2HQKJNtA5MZeLysl5a1BKN3Z24vaMul7MV/Y2Z
+ o30=
+X-Belgacom-Dynamic: yes
+IronPort-PHdr: =?us-ascii?q?9a23=3A4BqUPhfX+sSMa0wGZ4kGovmIlGMj4u6mDksu8p?=
+ =?us-ascii?q?Mizoh2WeGdxc24ZBGN2/xhgRfzUJnB7Loc0qyK6v6mCTZLuM3a+Fk5M7V0Hy?=
+ =?us-ascii?q?cfjssXmwFySOWkMmbcaMDQUiohAc5ZX0Vk9XzoeWJcGcL5ekGA6ibqtW1aFR?=
+ =?us-ascii?q?rwLxd6KfroEYDOkcu3y/qy+5rOaAlUmTaxe7x/IAi3oAnLtcQan4RuJrs/xx?=
+ =?us-ascii?q?bHv3BFZ/lYyWR0KFyJgh3y/N2w/Jlt8yRRv/Iu6ctNWrjkcqo7ULJVEi0oP3?=
+ =?us-ascii?q?g668P3uxbDSxCP5mYHXWUNjhVIGQnF4wrkUZr3ryD3q/By2CiePc3xULA0RT?=
+ =?us-ascii?q?Gv5LplRRP0lCsKMSMy/WfKgcJyka1bugqsqRxhzYDJbo+bN/1wcazSc94BWW?=
+ =?us-ascii?q?ZMXdxcWzBbD4+gc4cCCfcKM+ZCr4n6olsDtRuwChO3C+Pu0DBIgGL9060g0+?=
+ =?us-ascii?q?s/DA7JwhYgH9MSv3TXsd74M6kSXvquw6nG1jjDdPBW2Df76IfWbhAtu+qDUq?=
+ =?us-ascii?q?xpfMfX1EIgGB/LgE+Kpoz5IzOayP4Ns26D4ud9W++jl24ppg5wrzWhyMoihY?=
+ =?us-ascii?q?rEi4MWx1zY8Sh0w5o5KNK4RkNlbtCoDJlduj2EOoZyQs4vQGBltDs7x7AJvZ?=
+ =?us-ascii?q?O2ejUBxpogxx7acfOHco6I7wrlVOmPPTd4inNleLajhxms60is0Ov8Vsey3V?=
+ =?us-ascii?q?1XrSRFisHBu3QQ2xDJ98SKSeVx8l281TuO1w3f8PxILEEymKHGMZAu2KQwmY?=
+ =?us-ascii?q?AWsUnbGy/2n1j5g7GOe0U//+io9/znYrL7pp+AL4N0ih/xMqApmsGnBeQ4NR?=
+ =?us-ascii?q?QBUHKf+eS8073j5lH5TK9Ojv0xjqbWqpTaKtkcpq68GQBV04Aj5w6+Dzegzt?=
+ =?us-ascii?q?sYgWEKIVZYdB6dkoTkOE/CLOrlAfq+g1mgiipnyvHeMr3kGJrNL3zDkLn7fb?=
+ =?us-ascii?q?Z67k5R0AQzwspE6JJaEbwBO/HzW0/3tNPGEh81KRe7zPj/BNVnyoweQX6PAr?=
+ =?us-ascii?q?OeMK7KqV+H/PkgI+2LZIIOvjbyNeQl5/DvjX89hV8SY7Op0YEQaHCiEfRsO1?=
+ =?us-ascii?q?+Zbmb0gtcdDWcKuRIzTO/wh1KfVT5ceWq9Urk65j4lFIKmA4bDRoSxgLOfxi?=
+ =?us-ascii?q?e3BJpWZnpJClqUC3fna52EW+sQaCKVOsJhnDIFWKO6S489zxGusBH1y7x9Iu?=
+ =?us-ascii?q?XJ5CISrYjj28Rt5+3PiREy8iR5D8KD3GGRQWF0n2cIRyMo06BluEBy10mM0b?=
+ =?us-ascii?q?ZmjPxcDtFT+fxJXRkgNZLGzOx1FcryWgTfcdeNUlqmRc+mAT4pRNIr39AOe1?=
+ =?us-ascii?q?p9G8mljh3bwyWqBKUVmKKXBJMq6K3c2mP8J8BjxHba2qkhjl0mQtdROm28nK?=
+ =?us-ascii?q?J/8BLTB4HRmUWDi6mqbbgc3DLK9Gqby2qBol1YXxNuXqXbRn0feETWosrj5k?=
+ =?us-ascii?q?/YTL+hF64nMg1fxs6GMKdKbcfpjVpeTvf5JNvee36xm3u3BRuQyLODdpHle2?=
+ =?us-ascii?q?sG0SXGC0gFkwYT8miaNQQkHSiuvTGWMDs7DVvlZ0TE9+RipnK/UkIuiQaQYA?=
+ =?us-ascii?q?kp1LO5/hMerfqRV/0S2q4JomEmsTowVFii98nKEd6NoUxtcfZye9Q4tXlO32?=
+ =?us-ascii?q?PQsURTJJGsIrpjjV1WJwp+tU3GzBZmDIhc18In+iB5hDFuIL6VhQsSPwiT2o?=
+ =?us-ascii?q?r9b+Xa?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2AEBQDUqy1f/xCltltgHgEBCxIMR4R?=
+ =?us-ascii?q?cVF+NNZIskXoLAQEBAQEBAQEBJw0BAgQBAYRMgjklOBMCAwEBAQMCBQEBBgE?=
+ =?us-ascii?q?BAQEBAQUEAYYPRYI3IoNRASMjgT8SgyYBglcptnCEEIUigUCBOIgfhQqBQT+?=
+ =?us-ascii?q?BEYNOijQEjz0jpkKCbIMLhFl9kSYPIaANkiuhQ4F6TSAYgyQJRxkNnGhCMDc?=
+ =?us-ascii?q?CBggBAQMJVwE9AZANAQE?=
+X-IPAS-Result: =?us-ascii?q?A2AEBQDUqy1f/xCltltgHgEBCxIMR4RcVF+NNZIskXoLA?=
+ =?us-ascii?q?QEBAQEBAQEBJw0BAgQBAYRMgjklOBMCAwEBAQMCBQEBBgEBAQEBAQUEAYYPR?=
+ =?us-ascii?q?YI3IoNRASMjgT8SgyYBglcptnCEEIUigUCBOIgfhQqBQT+BEYNOijQEjz0jp?=
+ =?us-ascii?q?kKCbIMLhFl9kSYPIaANkiuhQ4F6TSAYgyQJRxkNnGhCMDcCBggBAQMJVwE9A?=
+ =?us-ascii?q?ZANAQE?=
+Received: from 16.165-182-91.adsl-dyn.isp.belgacom.be (HELO localhost.localdomain) ([91.182.165.16])
+  by relay.skynet.be with ESMTP; 07 Aug 2020 21:31:24 +0200
+From:   Fabian Frederick <fabf@skynet.be>
+To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Fabian Frederick <fabf@skynet.be>
+Subject: [PATCH 1/3 linux-next] selftests: netfilter: add checktool function
+Date:   Fri,  7 Aug 2020 21:31:11 +0200
+Message-Id: <20200807193111.12625-1-fabf@skynet.be>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <CAHk-=wj4p3wCZpD2QU-d_RPTAsGiAUWHMiiVUv6N3qxx4w9f7A@mail.gmail.com>
- <940D743C-4FDD-43B5-A129-840CFEBBD2F7@amacapital.net>
-In-Reply-To: <940D743C-4FDD-43B5-A129-840CFEBBD2F7@amacapital.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 7 Aug 2020 12:21:36 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whf+_rWROqPUMr=Do0n1ADhkEeEFL0tY+M60TJZtdrq2A@mail.gmail.com>
-Message-ID: <CAHk-=whf+_rWROqPUMr=Do0n1ADhkEeEFL0tY+M60TJZtdrq2A@mail.gmail.com>
-Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
-To:     Andy Lutomirski <luto@amacapital.net>
-Cc:     Willy Tarreau <w@1wt.eu>, Marc Plumb <lkml.mplumb@gmail.com>,
-        "Theodore Ts'o" <tytso@mit.edu>, Netdev <netdev@vger.kernel.org>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andrew Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 7, 2020 at 12:08 PM Andy Lutomirski <luto@amacapital.net> wrote:
->
-> > On Aug 7, 2020, at 11:10 AM, Linus Torvalds <torvalds@linux-foundation.org> wrote:
-> >
-> >
-> > I tried something very much like that in user space to just see how
-> > many cycles it ended up being.
-> >
-> > I made a "just raw ChaCha20", and it was already much too slow for
-> > what some of the networking people claim to want.
->
-> Do you remember the numbers?
+avoid repeating the same test for different toolcheck
 
-Sorry, no. I wrote a hacky thing in user space, and threw it away.
+Signed-off-by: Fabian Frederick <fabf@skynet.be>
+---
+ .../selftests/netfilter/nft_flowtable.sh      | 33 +++++++------------
+ 1 file changed, 11 insertions(+), 22 deletions(-)
 
-> Certainly a full ChaCha20 per random number is too much, but AFAICT the network folks want 16 or 32 bits at a time, which is 1/16 or 1/8 of a ChaCha20.
+diff --git a/tools/testing/selftests/netfilter/nft_flowtable.sh b/tools/testing/selftests/netfilter/nft_flowtable.sh
+index d3e0809ab3681..68a183753c6c3 100755
+--- a/tools/testing/selftests/netfilter/nft_flowtable.sh
++++ b/tools/testing/selftests/netfilter/nft_flowtable.sh
+@@ -21,29 +21,18 @@ ns2out=""
+ 
+ log_netns=$(sysctl -n net.netfilter.nf_log_all_netns)
+ 
+-nft --version > /dev/null 2>&1
+-if [ $? -ne 0 ];then
+-	echo "SKIP: Could not run test without nft tool"
+-	exit $ksft_skip
+-fi
+-
+-ip -Version > /dev/null 2>&1
+-if [ $? -ne 0 ];then
+-	echo "SKIP: Could not run test without ip tool"
+-	exit $ksft_skip
+-fi
+-
+-which nc > /dev/null 2>&1
+-if [ $? -ne 0 ];then
+-	echo "SKIP: Could not run test without nc (netcat)"
+-	exit $ksft_skip
+-fi
++checktool (){
++	$1 > /dev/null 2>&1
++	if [ $? -ne 0 ];then
++		echo "SKIP: Could not $2"
++		exit $ksft_skip
++	fi
++}
+ 
+-ip netns add nsr1
+-if [ $? -ne 0 ];then
+-	echo "SKIP: Could not create net namespace"
+-	exit $ksft_skip
+-fi
++checktool "nft --version" "run test without nft tool"
++checktool "ip -Version" "run test without ip tool"
++checktool "which nc" "run test without nc (netcat)"
++checktool "ip netns add nsr1" "create net namespace"
+ 
+ ip netns add ns1
+ ip netns add ns2
+-- 
+2.27.0
 
-That's what I did (well, I did just the 32-bit one), basically
-emulating percpu accesses for incrementing the offset (I didn't
-actually *do* percpu accesses, I just did a single-threaded run and
-used globals, but wrote it with wrappers so that it would look like it
-might work).
-
-> DJB claims 4 cycles per byte on Core 2
-
-I took the reference C implementation as-is, and just compiled it with
-O2, so my numbers may not be what some heavily optimized case does.
-
-But it was way more than that, even when amortizing for "only need to
-do it every 8 cases". I think the 4 cycles/byte might be some "zero
-branch mispredicts" case when you've fully unrolled the thing, but
-then you'll be taking I$ misses out of the wazoo, since by definition
-this won't be in your L1 I$ at all (only called every 8 times).
-
-Sure, it might look ok on microbenchmarks where it does stay hot the
-cache all the time, but that's not realistic. I
-
-               Linus
