@@ -2,126 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98ACB23EEB4
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 16:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DA0723EEBE
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 16:10:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726656AbgHGOIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 10:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726250AbgHGOAI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 10:00:08 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB80C061575;
-        Fri,  7 Aug 2020 06:59:26 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id u128so1042121pfb.6;
-        Fri, 07 Aug 2020 06:59:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KkgC/IfZgfpRrHJateeuAuB7TNckjX9ScGM6wvRUKgI=;
-        b=gDMavG5S3kcl1rHlmaIoh4h3AYKDs61EYZN8cDWB74dcRQJBQd0+pzoVYEOzovxZ6h
-         eJWijr6Xw5aNrN6uqIKECi/C3CMLum49xD4ayGZU5SCqKI5EIhok9ewLtPGgHhEd19uT
-         /EYlh//DysbcBPh9myNWMQzxHPisMLRScDsNeoOsup5vA4gWdGhGu8be8vzbdTD8VZaS
-         TVS6/qccykmKkXJN8moBVApR9dpm8+L+Ifu5XZwHri5sFP3sqGK5xxLy+2p6JmvH7M+9
-         0IBgfEunDLgdwJAg64hXWLJ3rTkUD542IaGzrBdHgqq/MtvSXsQAdXcgy5CbwBggVq2/
-         FgMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KkgC/IfZgfpRrHJateeuAuB7TNckjX9ScGM6wvRUKgI=;
-        b=OsPnzlh2Y5QffI1aJDF3jvTqAqErGnS3arYXuqTSYhEhrhieykS7544+GjusuVO0ZG
-         J0bt7bXrBW1jaG9m2r392qjWcFH/7ZdbajlXUqGMtct9SpgBeqGb25XcRy/2mc0vz1OV
-         OXo/udPbhZiHU3sYbaCTxU2XdqqD1YDtC5VKgXrycsNLn+NjyWYh28qxEEwccm0oauJH
-         H2GAOdu1MMJuahDM4cmzMssXGXTDRy2g5JLp1XjNg5N36S4sRXq3QVyw632AoB4Mv8mZ
-         TPBjreU4XIjlQBGpGvqRI31H3tDmTkxn31JV3VPcub03Y5NSt0RBRvJrJRhMPTf2bQ/6
-         8hgA==
-X-Gm-Message-State: AOAM5316x3pKKHeQkf8jueZfTIkw2Zu7vqSZ19VgMzIoimen3CRO9iSg
-        MFsyXnHEPSxgh3KIZHUM4H3Er3WTtuBjLg==
-X-Google-Smtp-Source: ABdhPJz4Wsqd8oawH81Y8HKewsfkWQhSxRPY2Ov5elBmaChRBM6h41G4JBnG2tm9eAT+qNWOK3v2Lw==
-X-Received: by 2002:aa7:8a4d:: with SMTP id n13mr14406135pfa.143.1596808765226;
-        Fri, 07 Aug 2020 06:59:25 -0700 (PDT)
-Received: from localhost ([2001:e42:102:1532:160:16:113:140])
-        by smtp.gmail.com with ESMTPSA id u15sm11212157pju.42.2020.08.07.06.59.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2020 06:59:24 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-To:     linux-bluetooth@vger.kernel.org
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
-        syzkaller-bugs@googlegroups.com,
-        syzbot+305a91e025a73e4fd6ce@syzkaller.appspotmail.com,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] Bluetooth: Delete both L2CAP connction and HCI channel when completing destroying logical link in AMP
-Date:   Fri,  7 Aug 2020 21:59:17 +0800
-Message-Id: <20200807135918.1177869-1-coiby.xu@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S1726386AbgHGOKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 10:10:24 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:48430 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725893AbgHGOKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 10:10:23 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 077EAFXQ026269;
+        Fri, 7 Aug 2020 07:10:15 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=9l8GI0v0BTOsB/VnoX64y9gXiuPeQbQGwJsVjk2zR4c=;
+ b=XXapOBhB++f2J9LBGwAiCS5tmw6TyHt/mT5clFHgAqdN1uCgYs62tho41pZbSLcdqqKm
+ bwyH1YXzvdAA3rxD4zT7YNQWMggbDyiYXBEimr1FuB9CulFHTatR1aeu+q+dMJsWuILl
+ 29t+2+VEkz7MEDIErqYHmkUhCJiVLTab0babf1AvuYIuK4qa7vnk74kCsBoynP1+EUl1
+ QKJp+mm9JgzkKBDYkM/4Q60qZYhedgFLlYe31E7J5bxTXMur+VLhcBMvo2wO9FfdQenS
+ q7cmVAh//dRqgWxqkUAuI/dGP/rKwYjaI6jBafp6bB0GSbqSPyhE0OUzOVwsUX2f2wVW 5w== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0b-0016f401.pphosted.com with ESMTP id 32s3c992jt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 07 Aug 2020 07:10:15 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 7 Aug
+ 2020 07:10:10 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 7 Aug 2020 07:10:10 -0700
+Received: from hyd1schalla-dt.caveonetworks.com.com (hyd1schalla-dt.marvell.com [10.29.8.39])
+        by maili.marvell.com (Postfix) with ESMTP id 493B73F7043;
+        Fri,  7 Aug 2020 07:10:07 -0700 (PDT)
+From:   Srujana Challa <schalla@marvell.com>
+To:     <herbert@gondor.apana.org.au>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <schandran@marvell.com>,
+        <pathreya@marvell.com>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
+        Srujana Challa <schalla@marvell.com>
+Subject: [PATCH v2 0/3] Add Support for Marvell OcteonTX2 Cryptographic
+Date:   Fri, 7 Aug 2020 19:39:17 +0530
+Message-ID: <1596809360-12597-1-git-send-email-schalla@marvell.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-07_09:2020-08-06,2020-08-07 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When destroying a logical link (HCI_EV_DISCONN_LOGICAL_LINK_COMPLETE) in
-AMP, L2CAP connection (struct l2cap_conn) should be deleted together with
-HCI channel (struct hci_chan). Otherwise HCI channel will be deleted twice
-when unregistering a HCI device.
+The following series adds support for Marvell Cryptographic Acceleration
+Unit(CPT) on OcteonTX2 CN96XX SoC.
+This series is tested with CRYPTO_EXTRA_TESTS enabled and
+CRYPTO_DISABLE_TESTS disabled.
 
-`static void l2cap_conn_del(struct hci_conn *hcon, int err)` could
-achieve this purpose. Make it a public function.
+Changes since v1:
+ * Moved Makefile changes from patch4 to patch2 and patch3.
 
-Reported-and-tested-by: syzbot+305a91e025a73e4fd6ce@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=305a91e025a73e4fd6ce
-Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
----
- include/net/bluetooth/l2cap.h | 1 +
- net/bluetooth/amp.c           | 2 +-
- net/bluetooth/l2cap_core.c    | 2 +-
- 3 files changed, 3 insertions(+), 2 deletions(-)
+Srujana Challa (3):
+  octeontx2-af: add support to manage the CPT unit
+  drivers: crypto: add support for OCTEONTX2 CPT engine
+  drivers: crypto: add the Virtual Function driver for OcteonTX2 CPT
 
-diff --git a/include/net/bluetooth/l2cap.h b/include/net/bluetooth/l2cap.h
-index 8f1e6a7a2df8..8508a433d6ac 100644
---- a/include/net/bluetooth/l2cap.h
-+++ b/include/net/bluetooth/l2cap.h
-@@ -988,6 +988,7 @@ void __l2cap_chan_add(struct l2cap_conn *conn, struct l2cap_chan *chan);
- typedef void (*l2cap_chan_func_t)(struct l2cap_chan *chan, void *data);
- void l2cap_chan_list(struct l2cap_conn *conn, l2cap_chan_func_t func,
- 		     void *data);
-+void l2cap_conn_del(struct hci_conn *hcon, int err);
- void l2cap_chan_del(struct l2cap_chan *chan, int err);
- void l2cap_send_conn_req(struct l2cap_chan *chan);
- void l2cap_move_start(struct l2cap_chan *chan);
-diff --git a/net/bluetooth/amp.c b/net/bluetooth/amp.c
-index 9c711f0dfae3..cee02f009cef 100644
---- a/net/bluetooth/amp.c
-+++ b/net/bluetooth/amp.c
-@@ -584,5 +584,5 @@ void amp_destroy_logical_link(struct hci_chan *hchan, u8 reason)
- {
- 	BT_DBG("hchan %p", hchan);
+ drivers/crypto/marvell/Kconfig                     |   17 +
+ drivers/crypto/marvell/Makefile                    |    1 +
+ drivers/crypto/marvell/octeontx2/Makefile          |   10 +
+ drivers/crypto/marvell/octeontx2/otx2_cpt_common.h |   53 +
+ .../crypto/marvell/octeontx2/otx2_cpt_hw_types.h   |  572 ++++++
+ .../marvell/octeontx2/otx2_cpt_mbox_common.c       |  286 +++
+ .../marvell/octeontx2/otx2_cpt_mbox_common.h       |  100 +
+ drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h |  202 ++
+ drivers/crypto/marvell/octeontx2/otx2_cptlf.h      |  370 ++++
+ drivers/crypto/marvell/octeontx2/otx2_cptlf_main.c |  964 +++++++++
+ drivers/crypto/marvell/octeontx2/otx2_cptpf.h      |   79 +
+ drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c |  599 ++++++
+ drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c |  694 +++++++
+ .../crypto/marvell/octeontx2/otx2_cptpf_ucode.c    | 2173 ++++++++++++++++++++
+ .../crypto/marvell/octeontx2/otx2_cptpf_ucode.h    |  180 ++
+ drivers/crypto/marvell/octeontx2/otx2_cptvf.h      |   29 +
+ drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c | 1708 +++++++++++++++
+ drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h |  172 ++
+ drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c |  229 +++
+ drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c |  189 ++
+ .../crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c   |  536 +++++
+ drivers/net/ethernet/marvell/octeontx2/af/Makefile |    2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |   85 +
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |    2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |    7 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_cpt.c    |  343 +++
+ .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    |  342 +++
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |   76 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    |   65 +-
+ 29 files changed, 10077 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/crypto/marvell/octeontx2/Makefile
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_common.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_mbox_common.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptlf.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptlf_main.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
 
--	hci_chan_del(hchan);
-+	l2cap_conn_del(hchan->conn, bt_to_errno(reason));
- }
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index fe913a5c754a..38f60fb9b515 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1851,7 +1851,7 @@ static void l2cap_unregister_all_users(struct l2cap_conn *conn)
- 	}
- }
-
--static void l2cap_conn_del(struct hci_conn *hcon, int err)
-+void l2cap_conn_del(struct hci_conn *hcon, int err)
- {
- 	struct l2cap_conn *conn = hcon->l2cap_data;
- 	struct l2cap_chan *chan, *l;
---
-2.27.0
+-- 
+1.9.1
 
