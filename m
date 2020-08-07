@@ -2,111 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 842D323F36E
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 21:59:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 950E923F381
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 22:04:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726066AbgHGT7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 15:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
+        id S1726392AbgHGUEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 16:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbgHGT7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 15:59:50 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88468C061756;
-        Fri,  7 Aug 2020 12:59:50 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id m34so1467825pgl.11;
-        Fri, 07 Aug 2020 12:59:50 -0700 (PDT)
+        with ESMTP id S1725893AbgHGUEi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 16:04:38 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C720C061756;
+        Fri,  7 Aug 2020 13:04:38 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id q16so1618442ybk.6;
+        Fri, 07 Aug 2020 13:04:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=N/pR4E/qxL/wX5EPUnI0iXLQMzb1rGW2L4MNHM92qQs=;
-        b=tUUUFweRmJX05czmFHLxX721d9zsb1gXF110pU621p40LpIxFPioiAYZjoyN4p/wCO
-         Liu0o+oWpFgYGL4dO8QZKRoZLFTJtkEv3Vh3kRB/wuPsyBHDCROmIs/YMAQI+4diIIId
-         cTWYG3ZQ8KwkszA/t7UyezT6KO1+H4RfL2R/YHnQadj2HtcL5YliUbq9ORyLBZ7eCKoR
-         /IIZSLBqahSC9yilTYMlfyxtw4XTStPcOBzca9wp8R+W8uli+KmDbqWh2xIjo3lQsQpg
-         r+e+i9bAHFrmTm9uLEvz6GTWmPRWXVDUR3rJ1I254+jflk6J1NgANziDhMdz2etTSLus
-         ZZQA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LrvLhMssASMs+wooD3CADrbL9kN/4ex8UC2yN+vfgeY=;
+        b=aZ6TU4r5XR5eG5CySDeyM8k8lhkRguODa+u2IMK8aKSEucPJnBZm4D4kVM89n7Qj6X
+         WeDKIXLompGy55Ca7FmtrOCc5KnDzhGQppMnhI7AKgxZxNk0LqwYaxSAEoSaao9y7cyk
+         2m2v3SvfW7zKTts+JjfrcIwVtSHCEQEWHK2EiENQAonY18KIP0oLanODk8VvX2cbTBMu
+         btAQIs8X/9hDSo2kZnBIwi70RQnP6ixMXk3U87/c0N9pkeQ2/YyN+rAlyr2g263TPZV1
+         Tst3aNxsEIK4osIF9xgUd9YYfUp5LO31qOTT7p6K1bUkVBRpUkkV/KmMjZMPIwi9jFND
+         lXZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=N/pR4E/qxL/wX5EPUnI0iXLQMzb1rGW2L4MNHM92qQs=;
-        b=h9ikPGHsnn52ZrHtcTIQ8BvERzO+gEWBFUOJQ1RSgKC3Z3YVjHE6bfGM4Ocxqv16b5
-         DkTjc2EmtfNtzGwgaIl3kZ6cCFX1bCbg6uFdZ2yWOsTCYLbGzaiQTi0032aYdP3ssKXg
-         ZpxP1N1KVAM7g0PxpSC44seocVyfTjEkKjGQDpUkp9rTzKMSRKz0kQZySR/ymim8bJEG
-         et9m6bmflZu2VUGuNMIya+UtWbnZ70SpZV867Gnr3Hcm+MZllKaEQZ7bdXnVjZrz9+Ah
-         sQK/c9kDuuGzHJd6KPc2V/HoalDZ+uKg0LwnzA2+9/ghkoHnHRM3oBKCJ37wb4aNj1yX
-         QdhA==
-X-Gm-Message-State: AOAM5331DPmZ/EmA/pZC1o7xf23/aDk4XY9wbYNeuN8xnDAkAkqGmCtl
-        L56UldJgn1lksiTepCy9lAnwseBB9MU=
-X-Google-Smtp-Source: ABdhPJwH3ZKURa/Oxkq+1I5NslHa0VDnIJQYTAthwAXZXWxhVsHt0LoUrlc1DWVBet1ljID0Xirrkg==
-X-Received: by 2002:a63:6fcd:: with SMTP id k196mr13612067pgc.251.1596830389727;
-        Fri, 07 Aug 2020 12:59:49 -0700 (PDT)
-Received: from ?IPv6:2001:569:7bc3:ce00:a4b2:4936:f0f6:3eff? (node-1w7jr9qsv51tb41p80xpg7667.ipv6.telus.net. [2001:569:7bc3:ce00:a4b2:4936:f0f6:3eff])
-        by smtp.gmail.com with ESMTPSA id w70sm13708811pfc.98.2020.08.07.12.59.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Aug 2020 12:59:49 -0700 (PDT)
-Subject: Re: Flaw in "random32: update the net random state on interrupt and
- activity"
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     tytso@mit.edu, netdev@vger.kernel.org, aksecurity@gmail.com,
-        torvalds@linux-foundation.org, edumazet@google.com,
-        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
-        tglx@linutronix.de, peterz@infradead.org, stable@vger.kernel.org
-References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
- <20200805024941.GA17301@1wt.eu> <20200805153432.GE497249@mit.edu>
- <c200297c-85a5-dd50-9497-6fcf7f07b727@gmail.com>
- <20200805193824.GA17981@1wt.eu>
- <344f15dd-a324-fe44-54d4-c87719283e35@gmail.com>
- <20200806063035.GC18515@1wt.eu>
- <50b046ee-d449-8e6c-1267-f4060b527c06@gmail.com>
- <20200807070316.GA6357@1wt.eu>
- <a1833e06-1ce5-9a2b-f518-92e7c6b47d4f@gmail.com>
- <20200807174302.GA6740@1wt.eu>
-From:   Marc Plumb <lkml.mplumb@gmail.com>
-Message-ID: <9148811b-64f9-a18c-ddeb-b1ff4b34890e@gmail.com>
-Date:   Fri, 7 Aug 2020 12:59:48 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LrvLhMssASMs+wooD3CADrbL9kN/4ex8UC2yN+vfgeY=;
+        b=FZOEna5xSlL5K3KPv3CZznlD5DVNCgkzI2Df5gLh+iUeJkb9Xo7uGEpCQKo5890eWJ
+         Kv3W1+sYqyFHDRMT28HCJyPGXAhZz4yfVg66E3mwYKRdJftaxPAlsNEU50kPUUNliZA9
+         p+9NBklNpYKLV36ULnpwdP9kxs75jrSSBaeTbT/A8x/XASDmtO4ITIy4EXSE/7QUoABE
+         sI5YQi6fQ3IBAcGd7r3O8CetctrVdP8EUWXat1x1yhiPs2p8oRTgYTejp0chvZqpBNff
+         pKwOnSjBen9daLGHMDUubg/A44h7mmVAwYY7qrOuMNBezf8SPKVFNJHgJ2t3QjyQjhS1
+         a8eQ==
+X-Gm-Message-State: AOAM533ZWlz4+DA7n/ruHOjX671HoiVKRjGUdcXd+9DWRApu9R9irb8a
+        irzJkdGCcxofNFZGDkHeVRz5pPILydbJ2d18lpw=
+X-Google-Smtp-Source: ABdhPJxnnAhSu1vfEANXpPHAoPErhwfZg49kF6OHxU2h15gLHPY4Fc9GTj5oI+cQsQqgrW1K+/qzGKSuNs9QAuPV4dI=
+X-Received: by 2002:a25:d84a:: with SMTP id p71mr24086935ybg.347.1596830677695;
+ Fri, 07 Aug 2020 13:04:37 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200807174302.GA6740@1wt.eu>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20200807094559.571260-1-jolsa@kernel.org> <20200807094559.571260-9-jolsa@kernel.org>
+In-Reply-To: <20200807094559.571260-9-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 7 Aug 2020 13:04:26 -0700
+Message-ID: <CAEf4BzY8vE8k9c5fBB+3mcEpxOWc38dWBK8ji2aRpHM79nra_Q@mail.gmail.com>
+Subject: Re: [PATCH v10 bpf-next 08/14] bpf: Add btf_struct_ids_match function
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020-08-07 10:43 a.m., Willy Tarreau wrote:
+On Fri, Aug 7, 2020 at 2:47 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
->> Which means that it's 2^32 effort to brute force this (which Amit called "no
->> biggie for modern machines"). If the noise is the raw sample data with only
->> a few bits of entropy, then it's even easier to brute force.
-> Don't you forget to multiply by another 2^32 for X being folded onto itself ?
-> Because you have 2^32 possible values of X which will give you a single 32-bit
-> output value for a given noise value.
+> Adding btf_struct_ids_match function to check if given address provided
+> by BTF object + offset is also address of another nested BTF object.
+>
+> This allows to pass an argument to helper, which is defined via parent
+> BTF object + offset, like for bpf_d_path (added in following changes):
+>
+>   SEC("fentry/filp_close")
+>   int BPF_PROG(prog_close, struct file *file, void *id)
+>   {
+>     ...
+>     ret = bpf_d_path(&file->f_path, ...
+>
+> The first bpf_d_path argument is hold by verifier as BTF file object
+> plus offset of f_path member.
+>
+> The btf_struct_ids_match function will walk the struct file object and
+> check if there's nested struct path object on the given offset.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/linux/bpf.h   |  2 ++
+>  kernel/bpf/btf.c      | 31 +++++++++++++++++++++++++++++++
+>  kernel/bpf/verifier.c | 18 ++++++++++++------
+>  3 files changed, 45 insertions(+), 6 deletions(-)
+>
 
-If I can figure the state out once, then the only new input is the 
-noise, so that's the only part I have to brute force. Throwing the noise 
-in makes it more difficult to get that state once, but once I have it 
-then this type of reseeding doesn't help.
+[...]
 
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index b6ccfce3bf4c..041d151be15b 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -3960,16 +3960,21 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+>                                 goto err_type;
+>                 }
+>         } else if (arg_type == ARG_PTR_TO_BTF_ID) {
+> +               bool ids_match = false;
+> +
+>                 expected_type = PTR_TO_BTF_ID;
+>                 if (type != expected_type)
+>                         goto err_type;
+>                 if (!fn->check_btf_id) {
+>                         if (reg->btf_id != meta->btf_id) {
+> -                               verbose(env, "Helper has type %s got %s in R%d\n",
+> -                                       kernel_type_name(meta->btf_id),
+> -                                       kernel_type_name(reg->btf_id), regno);
+> -
+> -                               return -EACCES;
+> +                               ids_match = btf_struct_ids_match(&env->log, reg->off, reg->btf_id,
+> +                                                                meta->btf_id);
+> +                               if (!ids_match) {
+> +                                       verbose(env, "Helper has type %s got %s in R%d\n",
+> +                                               kernel_type_name(meta->btf_id),
+> +                                               kernel_type_name(reg->btf_id), regno);
+> +                                       return -EACCES;
+> +                               }
+>                         }
+>                 } else if (!fn->check_btf_id(reg->btf_id, arg)) {
 
->> Is there a hard instruction budget for this, or it is
->> just "fast enough to not hurt the network benchmarks" (i.e. if Dave Miller
->> screams)?
-> It's not just Davem. I too am concerned about wasting CPU cycles in fast
-> path especially in the network code. A few half-percent gains are hardly
-> won once in a while in this area and in some infrastructures they matter.
-> Not much but they do.
+Put this on a wishlist for now. I don't think we should expect
+fb->check_btf_id() to do btf_struct_ids_match() internally, so to
+support this, we'd have to call fb->check_btf_id() inside the loop
+while doing WALK_STRUCT struct. But let's not change all this in this
+patch set, it's involved enough already.
 
-That's why I was asking. I don't have the same experience as you for 
-what acceptable is. I think it might be possible to do a decent CPRNG 
-(that's at least had some cryptanalys of it) with ~20 instructions per 
-word, but if that's not fast enough then I'll think about other options.
+>                         verbose(env, "Helper does not support %s in R%d\n",
+> @@ -3977,7 +3982,8 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+>
+>                         return -EACCES;
+>                 }
+> -               if (!tnum_is_const(reg->var_off) || reg->var_off.value || reg->off) {
+> +               if (!ids_match &&
+> +                   (!tnum_is_const(reg->var_off) || reg->var_off.value || reg->off)) {
 
-Marc
+Isn't this still wrong? if ids_match, but reg->var_off is non-zero,
+that's still bad, right?
+ids_match just "mitigates" reg->off check, so should be something like this:
+
+if ((reg->off && !ids_match) || !tnum_is_const(reg->var_off) ||
+reg->var_off.value)
+ ... then bad ...
+
+>                         verbose(env, "R%d is a pointer to in-kernel struct with non-zero offset\n",
+>                                 regno);
+>                         return -EACCES;
+> --
+> 2.25.4
+>
