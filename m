@@ -2,236 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F0B823F00D
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 17:34:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3148923F01A
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 17:41:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726078AbgHGPew (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 11:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726058AbgHGPev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 11:34:51 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FE5C061756
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 08:34:51 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id d4so1062333pjx.5
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 08:34:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eUpvaTqUYrMyWZbq7tEdgtH3MVmHdB0HgoG8WDALDBM=;
-        b=SFUMdHPuxJWzqAFnhlqsMHXUfSjOjAs0uo5jOVUMuZ6bOjgcWWObFA+yRtDH2fAMp4
-         O63YLoyUtrPBWII4L9a0V+lzqmMN+ID/BxxjTo9HY1tN3s5Gsvc5HI45knDs2SGOiWwK
-         b0U3bzMM6e7l0K8zsRcpTKqfu2ckWLunoZ0ArZ8Ex5lgJehpDOhWieCPFr8Gu3csA8pX
-         PFxWdkMF8fCvBQqHTTGkKvWgzl5foCpMIy0udSV35C4+KSL/eqHmNH2RBJVNXM3w5L3S
-         Zuf4TnzTQ+3I5a17oeTZ1CfBbPEujNN7gR9cSsEjcpH49AWtr3Zwc5ghJ2HqYZhT+vKB
-         meoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eUpvaTqUYrMyWZbq7tEdgtH3MVmHdB0HgoG8WDALDBM=;
-        b=GXYlScI+LK6rZsgD5YxZJU9ImCiOFNm+gjvLEHiq1xChInz81mPuP36LtOQNrMheRX
-         eMhk8f40LZptLA3qEoUt6tb9182sbiHigNyOWRgBqcC5rJNQ58PlTvx/2uJ06Z1QnBj4
-         Mu8eKeMSFlBCJ9om4qgWQ12c1QSB/mPA2V0Wdhnk19z35li/0/OCp+/q3djR+pev4id1
-         G7N3lDXXQK8RJqAwPjl05sar9HcitChQXBXGlsHPK8Ny+cjHKfLyH62rYIypljAX8WAf
-         y+FvzsjDm4gVHBTYCFu+rl6bnnA8tIRdCDzow61PjhYZvsZkYC0C7swLjwg69xoM7mXM
-         HULw==
-X-Gm-Message-State: AOAM532+tp7BEc9mlv0aLa7EcKpbPJviYt3xc9yJIyE+QLDm9mme6Sno
-        e9HGcgyzHdHsVdjluOAYndTx+ZpS3KI=
-X-Google-Smtp-Source: ABdhPJxuhMk1GWnhaUoesqQtXG9y60lpvzi5KSPBrQfMJ/gqRvn0CVhuxPuhzH4uCZGbehdZgeJzhg==
-X-Received: by 2002:a17:90a:ff07:: with SMTP id ce7mr14158985pjb.192.1596814488852;
-        Fri, 07 Aug 2020 08:34:48 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id m23sm10951416pgv.43.2020.08.07.08.34.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2020 08:34:48 -0700 (PDT)
-Date:   Fri, 7 Aug 2020 08:34:40 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org, linux-kernel@vg
-Subject: [ANNOUNCE] iproute2 5.8
-Message-ID: <20200807083440.55f5deb2@hermes.lan>
+        id S1726542AbgHGPlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 11:41:07 -0400
+Received: from mx.wizbit.be ([87.237.14.2]:58032 "EHLO mx.wizbit.be"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725893AbgHGPlG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Aug 2020 11:41:06 -0400
+Received: from [87.237.14.4] (87-237-14-7.powered-by.benesol.be [87.237.14.7])
+        by wizbit.localdomain (Postfix) with ESMTP id 9CA206003;
+        Fri,  7 Aug 2020 17:41:05 +0200 (CEST)
+Message-ID: <5F2D7615.6090802@mail.wizbit.be>
+Date:   Fri, 07 Aug 2020 17:41:09 +0200
+From:   Bram Yvakh <bram-yvahk@mail.wizbit.be>
+User-Agent: Thunderbird 2.0.0.24 (Windows/20100228)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+To:     sd@queasysnail.net
+CC:     netdev@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>, xmu@redhat.com
+Subject: Re: [PATCH ipsec] xfrmi: drop ignore_df check before updating pmtu
+References: <70e7c2a65afed5de117dbc16082def459bd39d93.1596531053.git.sd@queasysnail.net> <5F295578.4040004@mail.wizbit.be> <20200807144701.GC906370@bistromath.localdomain>
+In-Reply-To: <20200807144701.GC906370@bistromath.localdomain>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Time for a new version of iproute2 to go with the 5.8 kernel.
-There are couple of administrative changes that long term downloaders
-will notice. First it that iproute2 is now maintained on the "main"
-branch. There are parallel copies (both updated) on kernel.org
-and github.
 
-If you use github, you will get the right default branch;
-if you use kernel.org you will get the WRONG default branch.
-Kernel.org still does not have an way to change the name of the
-default branch. The "master" branch is dead and will be
-removed once kernel.org is fixed. If you have an existing
-iproute2 git repo either or clone a new copy or
-see one of many tutorials on renaming the master branch.
+On 7/08/2020 16:47, Sabrina Dubroca wrote:
+> 2020-08-04, 14:32:56 +0200, Bram Yvakh wrote:
+>   
+>> On 4/08/2020 11:37, Sabrina Dubroca wrote:
+>>     
+>>> diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+>>> index b615729812e5..ade2eba863b3 100644
+>>> --- a/net/xfrm/xfrm_interface.c
+>>> +++ b/net/xfrm/xfrm_interface.c
+>>> @@ -292,7 +292,7 @@ xfrmi_xmit2(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
+>>>  	}
+>>>  
+>>>  	mtu = dst_mtu(dst);
+>>> -	if (!skb->ignore_df && skb->len > mtu) {
+>>> +	if (skb->len > mtu) {
+>>>       
+[snip]
 
-The other change is that the former date based internal
-versioning (snapshot) is replaced by the regular version numbering
-which corresponds to the kernel version. Iproute2
-carries its own sanitized version of the kernel headers so the
-current code will build and run on older kernel releases.
-
-It is recommended to always use the latest iproute2.
-Do not treat iproute2 like perf and require matching packages.
-The latest code will always run on older kernels (and vice versa);
-this is possible because of the kernel API/ABI guarantees.
-Except for rare cases, iproute2 does not do maintenance releases
-and there is no long term stable version.
-
-Download:
-    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.8.0.tar.gz
-
-Repository for current release
-    https://github.com/shemminger/iproute2.git
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
-
-And future release (net-next):
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
-
-Thanks for all the contributions.
-
-Report problems (or enhancements) to the netdev@vger.kernel.org mailing list.
+>
+> Yeah, it's the most simple xfrmi setup possible (directly connected by
+> a veth),
+Thanks, that gives me something to experiment with;
+Could you you share what kernel your testing with? (i.e. what
+tree/branch/sha)
+> and just run ping on it. ping sets DF, we want an exception
+> to be created, but this test prevents it.
+>   
+As I said dropping the test currently doesn't make sense to me.
+I would expect that the 'ignore_df' flag is not set on the device, and
+if it's set then I would expect things to work.
 
 
-Alexander Aring (1):
-      lwtunnel: add support for rpl segment routing
+> The packet ends up being dropped in xfrm_output_one because of the mtu
+> check in xfrm4_tunnel_check_size.
+>   
+That's the bit that does not (yet) make senes to me..
+Looking at net-next/master (bfdd5aaa54b0a44d9df550fe4c9db7e1470a11b8)
 
-Andrea Claudi (1):
-      ip address: remove useless include
+||
 
-Anton Danilov (3):
-      tc: improve the qdisc show command
-      misc: make the pattern matching case-insensitive
-      bridge: fdb: the 'dynamic' option in the show/get commands
+	static int xfrm4_tunnel_check_size(struct sk_buff *skb)
+	{
+		int mtu, ret = 0;
+	
+		if (IPCB(skb)->flags & IPSKB_XFRM_TUNNEL_SIZE)
+			goto out;
+	
+		if (!(ip_hdr(skb)->frag_off & htons(IP_DF)) || skb->ignore_df)
+			goto out;
+	
+		mtu = dst_mtu(skb_dst(skb));
+		if ((!skb_is_gso(skb) && skb->len > mtu) ||
+		    (skb_is_gso(skb) &&
+		     !skb_gso_validate_network_len(skb, ip_skb_dst_mtu(skb->sk, skb)))) {
+			skb->protocol = htons(ETH_P_IP);
+	
+			if (skb->sk)
+				xfrm_local_error(skb, mtu);
+			else
+				icmp_send(skb, ICMP_DEST_UNREACH,
+					  ICMP_FRAG_NEEDED, htonl(mtu));
+			ret = -EMSGSIZE;
+		}
+	out:
+		return ret;
+	}
 
-Bjarni Ingi Gislason (5):
-      libnetlink.3: display section numbers in roman font, not boldface
-      man8/bridge.8: fix misuse of two-fonts macros
-      devlink.8: Use a single-font macro for a single argument
-      devlink-dev.8: use a single-font macro for one argument
-      devlint-health.8: use a single-font macro for a single argument
+*If* skb->ignore_df is set then it *skips* the mtu check.
 
-David Ahern (4):
-      Update kernel headers and import mptcp.h
-      Update kernel headers
-      Import rpl.h and rpl_iptunnel.h uapi headers
-      Update kernel headers and import tc_gate.h
+In other words: 'xfrm4_tunnel_check_size' only cares about the mtu if ignore_df isn't set.
+The original code in 'xfrmi_xmit2': only checks the mtu if ignore_df isn't set. (-> looks consistent)
 
-Davide Caratti (2):
-      ss: allow dumping MPTCP subflow information
-      tc: full JSON support for 'bpf' filter
+With your patch: 'xfrmi_xmit2' now always checks the mtu whereas 'xfrm4_tunnel_check_size' only checks it when ignore_df isn't set.
 
-Dmitry Yakunin (4):
-      ss: introduce cgroup2 cache and helper functions
-      ss: add support for cgroup v2 information and filtering
-      ss: add checks for bc filter support
-      lib: fix checking of returned file handle size for cgroup
-
-Eran Ben Elisha (1):
-      devlink: Add devlink health auto_dump command support
-
-Eyal Birger (2):
-      ip xfrm: update man page on setting/printing XFRMA_IF_ID in states/policies
-      ip xfrm: policy: support policies with IF_ID in get/delete/deleteall
-
-Guillaume Nault (3):
-      ip link: initial support for bareudp devices
-      tc: flower: support multiple MPLS LSE match
-      testsuite: Add tests for bareudp tunnels
-
-Hoang Huu Le (1):
-      tipc: fixed a compile warning in tipc/link.c
-
-Ian K. Coolidge (2):
-      iproute2: ip addr: Organize flag properties structurally
-      iproute2: ip addr: Add support for setting 'optimistic'
-
-Ido Schimmel (3):
-      devlink: Add 'control' trap type
-      devlink: Add 'mirror' trap action
-      devlink: Document zero policer identifier
-
-Jakub Kicinski (1):
-      devlink: support kernel-side snapshot id allocation
-
-Jamie Gloudon (1):
-      tc/m_estimator: Print proper value for estimator interval in raw.
-
-Julien Fortin (2):
-      bridge: fdb get: add missing json init (new_json_obj)
-      bridge: fdb show: fix fdb entry state output for json context
-
-Louis Peens (1):
-      devlink: add 'disk' to 'fw_load_policy' string validation
-
-Maciej Fijalkowski (1):
-      tc: mqprio: reject queues count/offset pair count higher than num_tc
-
-Mark Starovoytov (2):
-      macsec: add support for MAC offload
-      macsec: add support for specifying offload at link add time
-
-Matthieu Baerts (1):
-      mptcp: show all endpoints when no ID is specified
-
-Paolo Abeni (3):
-      add support for mptcp netlink interface
-      man: mptcp man page
-      man: ip.8: add reference to mptcp man-page
-
-Petr Machata (1):
-      tc: pedit: Support JSON dumping
-
-Po Liu (2):
-      iproute2-next:tc:action: add a gate control action
-      iproute2-next: add gate action man page
-
-Roi Dayan (1):
-      ip address: Fix loop initial declarations are only allowed in C99
-
-Roman Mashak (1):
-      tc: report time an action was first used
-
-Sorah Fukumori (1):
-      ip fou: respect preferred_family for IPv6
-
-Stephen Hemminger (11):
-      uapi: update headers
-      devlink: update include files
-      uapi: update to magic.h
-      man/tc: remove obsolete reference to ipchains
-      uapi: update bpf.h
-      iplink_bareudp: use common include syntax
-      rtacct: drop unused header
-      genl: use <> for system includes
-      uapi: update bpf.h
-      replace SNAPSHOT with auto-generated version string
-      lnstat: use same version as iproute2
-
-Tony Ambardar (1):
-      configure: support ipset version 7 with kernel version 5
-
-Tuong Lien (1):
-      tipc: enable printing of broadcast rcv link stats
-
-William Tu (1):
-      erspan: Add type I version 0 support.
-
-Xin Long (7):
-      iproute_lwtunnel: add options support for geneve metadata
-      iproute_lwtunnel: add options support for vxlan metadata
-      iproute_lwtunnel: add options support for erspan metadata
-      tc: m_tunnel_key: add options support for vxlan
-      tc: m_tunnel_key: add options support for erpsan
-      tc: f_flower: add options support for vxlan
-      tc: f_flower: add options support for erspan
 
