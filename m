@@ -2,118 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3646F23E9F3
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 11:18:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6C9F23EA51
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 11:26:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726915AbgHGJSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 05:18:15 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:60575 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726932AbgHGJSI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 05:18:08 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-126-koqkZgaFNyeZIHOyATR4EA-1; Fri, 07 Aug 2020 10:18:04 +0100
-X-MC-Unique: koqkZgaFNyeZIHOyATR4EA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 7 Aug 2020 10:18:03 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 7 Aug 2020 10:18:03 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Eric Dumazet' <eric.dumazet@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        id S1727062AbgHGJ0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 05:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726851AbgHGJ0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 05:26:19 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC03DC061574
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 02:26:18 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id q75so1264087iod.1
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 02:26:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=miraclelinux-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=YmwBZHu96k734pkgaSori9Me7crrhXz7Nayey0uT6m0=;
+        b=rs1Bfu9nD1QxRHCA0LV+9+gcpcltg087KlRg8nFBXG2+bSDDu+MlgV17Ms84atGy1G
+         Y3WP+QM78nnD3onhBTbg8wP/Kw8qjrYqR3iHLsqnvpn78t1dgohLVVtA7XinNUwlwMR3
+         oNJrb0125ttAgOmy9JKYoPVe2IMsORq8NDRlUVzTIJs4KqmxMaa/W3Gb+MwA6Cy4js3/
+         bMksqf7eMhyYgGMUd3UGKvsYa8Q8U0e6GVJxxZR276MElr2EAOFZAr2g7Nx5gH56cnxq
+         9c7lV6tYPKjREP0iDbILX0H9DFXt+pvx0KNHIPZ/fopXxTibWiNkZs3pgH0JfmS59Lh9
+         mdSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=YmwBZHu96k734pkgaSori9Me7crrhXz7Nayey0uT6m0=;
+        b=RGfqt60FkGbj+cU1KB19SHzwhE0mEZ9S59qze8za+Tqvfnk+brviTjv4ypqKyJEWgL
+         eD+H5cYk0zyU4B8S+xO8qPootkTw6kOkUszOEmHgg6vUFzng+uyFUB48p5uikc2ulCya
+         ew3p8FUYo43cOa+ak4GFEbWWiuxXiOyHhyjpsaavKuvTfxmjCt4/ctsUXTGWHWuDHCzx
+         QFrALJvzDmLV6Z90DZQydWv7LTbEaWX8Nu8epzfzWgnc/5wmiIlQx7oIV92rzJcPL2er
+         btNYEsJArHak3JM55Jun3ioQrjQ5ExGV+EUK6RquMw0sfSXFya4pCQhAAkcWr/5TqMJp
+         nl/Q==
+X-Gm-Message-State: AOAM532xA7Vlj2NfvcGUnElp6hpaN/ARkeeElZQLfjJH0fxs6MBlmgo7
+        qOrkriowTJu1xSd/utOF5bdkuHt+NiE0n4laJ1ceJQ==
+X-Google-Smtp-Source: ABdhPJwPinl0nxm69uud/aSZ0ZrX7+T5AEz9pu2s0ulXplxeyE1Bk7gt8P/rt/pr8KSn4UsKhj7N2FoP6GT8Lo3/cJU=
+X-Received: by 2002:a05:6638:1690:: with SMTP id f16mr3785589jat.91.1596792378138;
+ Fri, 07 Aug 2020 02:26:18 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1596468610.git.lucien.xin@gmail.com> <7ba2ca17347249b980731e7a76ba3e24a9e37720.1596468610.git.lucien.xin@gmail.com>
+ <CAPA1RqCz=h-RBu-md1rJ5WLWsr9LLqO8bK9D=q6_vzYMz7564A@mail.gmail.com>
+ <CADvbK_dSnrBkw_hJV8LVCEs9D-WB+h2QC3JghLCxVwV5PW9YYA@mail.gmail.com> <1f510387-b612-6cb4-8ee6-ff52f6ff6796@gmail.com>
+In-Reply-To: <1f510387-b612-6cb4-8ee6-ff52f6ff6796@gmail.com>
+From:   Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com>
+Date:   Fri, 7 Aug 2020 18:25:20 +0900
+Message-ID: <CAPA1RqAFkQG-LBTcj80nt4CbWnE7ni+wgCBJU3-up7ROoR9-3w@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] ipv6: add ipv6_dev_find()
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        davem <davem@davemloft.net>, Jon Maloy <jon.maloy@ericsson.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        tipc-discussion@lists.sourceforge.net,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <edumazet@google.com>
-CC:     "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "linux-hams@vger.kernel.org" <linux-hams@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "dccp@vger.kernel.org" <dccp@vger.kernel.org>,
-        "linux-decnet-user@lists.sourceforge.net" 
-        <linux-decnet-user@lists.sourceforge.net>,
-        "linux-wpan@vger.kernel.org" <linux-wpan@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "mptcp@lists.01.org" <mptcp@lists.01.org>,
-        "lvs-devel@vger.kernel.org" <lvs-devel@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: RE: [PATCH 25/26] net: pass a sockptr_t into ->setsockopt
-Thread-Topic: [PATCH 25/26] net: pass a sockptr_t into ->setsockopt
-Thread-Index: AQHWbD/ze4VO5Mh7NUG6O93LfP2Gq6ksXaow
-Date:   Fri, 7 Aug 2020 09:18:03 +0000
-Message-ID: <f21589f1262640b09ca27ed20f8e6790@AcuMS.aculab.com>
-References: <20200723060908.50081-1-hch@lst.de>
- <20200723060908.50081-26-hch@lst.de>
- <6357942b-0b6e-1901-7dce-e308c9fac347@gmail.com>
-In-Reply-To: <6357942b-0b6e-1901-7dce-e308c9fac347@gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+        Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRXJpYyBEdW1hemV0DQo+IFNlbnQ6IDA2IEF1Z3VzdCAyMDIwIDIzOjIxDQo+IA0KPiBP
-biA3LzIyLzIwIDExOjA5IFBNLCBDaHJpc3RvcGggSGVsbHdpZyB3cm90ZToNCj4gPiBSZXdvcmsg
-dGhlIHJlbWFpbmluZyBzZXRzb2Nrb3B0IGNvZGUgdG8gcGFzcyBhIHNvY2twdHJfdCBpbnN0ZWFk
-IG9mIGENCj4gPiBwbGFpbiB1c2VyIHBvaW50ZXIuICBUaGlzIHJlbW92ZXMgdGhlIGxhc3QgcmVt
-YWluaW5nIHNldF9mcyhLRVJORUxfRFMpDQo+ID4gb3V0c2lkZSBvZiBhcmNoaXRlY3R1cmUgc3Bl
-Y2lmaWMgY29kZS4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IENocmlzdG9waCBIZWxsd2lnIDxo
-Y2hAbHN0LmRlPg0KPiA+IEFja2VkLWJ5OiBTdGVmYW4gU2NobWlkdCA8c3RlZmFuQGRhdGVuZnJl
-aWhhZmVuLm9yZz4gW2llZWU4MDIxNTRdDQo+ID4gLS0tDQo+IA0KPiANCj4gLi4uDQo+IA0KPiA+
-IGRpZmYgLS1naXQgYS9uZXQvaXB2Ni9yYXcuYyBiL25ldC9pcHY2L3Jhdy5jDQo+ID4gaW5kZXgg
-NTk0ZTAxYWQ2NzBhYTYuLjg3NGYwMWNkN2FlYzQyIDEwMDY0NA0KPiA+IC0tLSBhL25ldC9pcHY2
-L3Jhdy5jDQo+ID4gKysrIGIvbmV0L2lwdjYvcmF3LmMNCj4gPiBAQCAtOTcyLDEzICs5NzIsMTMg
-QEAgc3RhdGljIGludCByYXd2Nl9zZW5kbXNnKHN0cnVjdCBzb2NrICpzaywgc3RydWN0IG1zZ2hk
-ciAqbXNnLCBzaXplX3QgbGVuKQ0KPiA+ICB9DQo+ID4NCj4gDQo+IC4uLg0KPiANCj4gPiAgc3Rh
-dGljIGludCBkb19yYXd2Nl9zZXRzb2Nrb3B0KHN0cnVjdCBzb2NrICpzaywgaW50IGxldmVsLCBp
-bnQgb3B0bmFtZSwNCj4gPiAtCQkJICAgIGNoYXIgX191c2VyICpvcHR2YWwsIHVuc2lnbmVkIGlu
-dCBvcHRsZW4pDQo+ID4gKwkJCSAgICAgICBzb2NrcHRyX3Qgb3B0dmFsLCB1bnNpZ25lZCBpbnQg
-b3B0bGVuKQ0KPiA+ICB7DQo+ID4gIAlzdHJ1Y3QgcmF3Nl9zb2NrICpycCA9IHJhdzZfc2soc2sp
-Ow0KPiA+ICAJaW50IHZhbDsNCj4gPg0KPiA+IC0JaWYgKGdldF91c2VyKHZhbCwgKGludCBfX3Vz
-ZXIgKilvcHR2YWwpKQ0KPiA+ICsJaWYgKGNvcHlfZnJvbV9zb2NrcHRyKCZ2YWwsIG9wdHZhbCwg
-c2l6ZW9mKHZhbCkpKQ0KPiA+ICAJCXJldHVybiAtRUZBVUxUOw0KPiA+DQo+IA0KPiBjb252ZXJ0
-aW5nIGdldF91c2VyKC4uLikgICB0byAgY29weV9mcm9tX3NvY2twdHIoLi4uKSByZWFsbHkgYXNz
-dW1lZCB0aGUgb3B0bGVuDQo+IGhhcyBiZWVuIHZhbGlkYXRlZCB0byBiZSA+PSBzaXplb2YoaW50
-KSBlYXJsaWVyLg0KPiANCj4gV2hpY2ggaXMgbm90IGFsd2F5cyB0aGUgY2FzZSwgZm9yIGV4YW1w
-bGUgaGVyZS4NCj4gDQo+IFVzZXIgYXBwbGljYXRpb24gY2FuIGZvb2wgdXMgcGFzc2luZyBvcHRs
-ZW49MCwgYW5kIGEgdXNlciBwb2ludGVyIG9mIGV4YWN0bHkgVEFTS19TSVpFLTENCg0KV29uJ3Qg
-dGhlIHVzZXIgcG9pbnRlciBmb3JjZSBjb3B5X2Zyb21fc29ja3B0cigpIHRvIGNhbGwNCmNvcHlf
-ZnJvbV91c2VyKCkgd2hpY2ggd2lsbCB0aGVuIGRvIGFjY2Vzc19vaygpIG9uIHRoZSBlbnRpcmUN
-CnJhbmdlIGFuZCBzbyByZXR1cm4gLUVGQVVMVC4NCg0KVGhlIG9ubHkgcHJvYmxlbXMgYXJpc2Ug
-aWYgdGhlIGtlcm5lbCBjb2RlIGFkZHMgYW4gb2Zmc2V0IHRvIHRoZQ0KdXNlciBhZGRyZXNzLg0K
-QW5kIHRoZSBsYXRlciBwYXRjaCBhZGRlZCBhbiBvZmZzZXQgdG8gdGhlIGNvcHkgZnVuY3Rpb25z
-Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJv
-YWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24g
-Tm86IDEzOTczODYgKFdhbGVzKQ0K
+Hi,
 
+2020=E5=B9=B48=E6=9C=886=E6=97=A5(=E6=9C=A8) 23:03 David Ahern <dsahern@gma=
+il.com>:
+>
+> On 8/6/20 2:55 AM, Xin Long wrote:
+> > On Thu, Aug 6, 2020 at 10:50 AM Hideaki Yoshifuji
+> > <hideaki.yoshifuji@miraclelinux.com> wrote:
+> >>
+> >> Hi,
+> >>
+> >> 2020=E5=B9=B48=E6=9C=884=E6=97=A5(=E7=81=AB) 0:35 Xin Long <lucien.xin=
+@gmail.com>:
+> >>>
+> >>> This is to add an ip_dev_find like function for ipv6, used to find
+> >>> the dev by saddr.
+> >>>
+> >>> It will be used by TIPC protocol. So also export it.
+> >>>
+> >>> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> >>> ---
+> >>>  include/net/addrconf.h |  2 ++
+> >>>  net/ipv6/addrconf.c    | 39 +++++++++++++++++++++++++++++++++++++++
+> >>>  2 files changed, 41 insertions(+)
+> >>>
+> >>> diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+> >>> index 8418b7d..ba3f6c15 100644
+> >>> --- a/include/net/addrconf.h
+> >>> +++ b/include/net/addrconf.h
+> >>> @@ -97,6 +97,8 @@ bool ipv6_chk_custom_prefix(const struct in6_addr *=
+addr,
+> >>>
+> >>>  int ipv6_chk_prefix(const struct in6_addr *addr, struct net_device *=
+dev);
+> >>>
+> >>> +struct net_device *ipv6_dev_find(struct net *net, const struct in6_a=
+ddr *addr);
+> >>> +
+> >>
+> >> How do we handle link-local addresses?
+> > This is what "if (!result)" branch meant to do:
+> >
+> > +       if (!result) {
+> > +               struct rt6_info *rt;
+> > +
+> > +               rt =3D rt6_lookup(net, addr, NULL, 0, NULL, 0);
+> > +               if (rt) {
+> > +                       dev =3D rt->dst.dev;
+> > +                       ip6_rt_put(rt);
+> > +               }
+> > +       } else {
+> > +               dev =3D result->idev->dev;
+> > +       }
+> >
+>
+> the stated purpose of this function is to find the netdevice to which an
+> address is attached. A route lookup should not be needed. Walking the
+> address hash list finds the address and hence the netdev or it does not.
+>
+>
+
+User supplied scope id which should be set for link-local addresses
+in TIPC_NLA_UDP_LOCAL attribute must be honored when we
+check the address.
+
+ipv6_chk_addr() can check if the address and supplied ifindex is a valid
+local address.  Or introduce an extra ifindex argument to ipv6_dev_find().
+
+--yoshfuji
