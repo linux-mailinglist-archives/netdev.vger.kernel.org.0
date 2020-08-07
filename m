@@ -2,192 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C5A823F022
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 17:44:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89BB023F06F
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 18:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbgHGPow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 11:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57078 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725893AbgHGPow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 11:44:52 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004AAC061756
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 08:44:51 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id w9so1584650qts.6
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 08:44:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=i9MI5WD8QXnjwjuOwIRxNvj1haqFzCmN75Kmzvm18do=;
-        b=gnFd/jdXqPNQAkoY1IVtql7gLqMDkKHn+otTkgo04QmwvI1xjhTAfYROY//6ad5Q9a
-         vfZfpzoVPkiY5+sKKjplCjjNd+C6BUjiBcLDWMOseT8UvONQD/KTYA+GZPxDG/rKJm0k
-         qfo6bLDvggkIxNJWHk6fE6snMn2I/+UnamqAlCxGHiiRsmpqfnb+VQHR3xWMLkFZpjv+
-         61/d/0wzFVGo7vKg3W7tybpE37u4GJaDWsd2HvB2oxoUjOkv22vQxPaSC+Sw6hDMmfU3
-         j2Xs9qP65GhJu23jJt0y18p6me7v/GjKqDydt0fbqby9lz30Sh5ydmpUHdQkfcA/1iK0
-         PfrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=i9MI5WD8QXnjwjuOwIRxNvj1haqFzCmN75Kmzvm18do=;
-        b=AHqAl9Me8uj9xE/fJcl2RKFmX/+gheYgcm/1+dVNqbjwjpl2qr8WVeoriKGbd+cixE
-         grEPQXDjBlt0wkE7MQs+QHoTYgrQo/8ILnQ4OlFDca4zBHRDKUJKsdA9/fGVBez9Sx5F
-         gjoSBUH3E4ZWYEF7KlNiMHyzDP5zBVJbeS3kJ54PIGviXXw0vGKBzih3c5xrSbyvFvl7
-         QuHuzWAKFEaSRVoBHd8wJJr6OemQdBlO9vb3vPbv+jB0Kr8XkssOCLoZE4di2OsKI54X
-         2DDt+ciQewY5anZlYWyQQcj41AZD/p1xPz2q3AC0uyFoj0gNrJbZ5C7wrnPKzIqcf5mV
-         6XYg==
-X-Gm-Message-State: AOAM532Lb53KIUC6aWxpWysesXHSRFcKYs7nqOaJ32evtgby5REe3TYX
-        EH+y1X5pQbFVy7Q+ciSVJdB4+jqAdck=
-X-Google-Smtp-Source: ABdhPJzyhhLDXQ+uob/lqGbz3nEeD8rcljSyQarX85FmfnziSQANQo4v9BvYa02xshpodaI+rfuu+w==
-X-Received: by 2002:aed:2041:: with SMTP id 59mr15036220qta.225.1596815090989;
-        Fri, 07 Aug 2020 08:44:50 -0700 (PDT)
-Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-06-184-148-45-213.dsl.bell.ca. [184.148.45.213])
-        by smtp.googlemail.com with ESMTPSA id t127sm7401322qkc.100.2020.08.07.08.44.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Aug 2020 08:44:50 -0700 (PDT)
-Subject: Re: rcu build on bug
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <bccd2311-79fa-9d88-3c10-067c2438574d@mojatatu.com>
-Message-ID: <a98e1686-6212-45b2-8ede-7c7357999d6d@mojatatu.com>
-Date:   Fri, 7 Aug 2020 11:44:49 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1726648AbgHGQEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 12:04:53 -0400
+Received: from pbmsgap02.intersil.com ([192.157.179.202]:54166 "EHLO
+        pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725893AbgHGQEu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 12:04:50 -0400
+Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
+        by pbmsgap02.intersil.com (8.16.0.27/8.16.0.27) with SMTP id 077FrjIF003016;
+        Fri, 7 Aug 2020 11:56:21 -0400
+Received: from pbmxdp03.intersil.corp (pbmxdp03.pb.intersil.com [132.158.200.224])
+        by pbmsgap02.intersil.com with ESMTP id 32n2jctr6h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 07 Aug 2020 11:56:21 -0400
+Received: from pbmxdp03.intersil.corp (132.158.200.224) by
+ pbmxdp03.intersil.corp (132.158.200.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.1979.3; Fri, 7 Aug 2020 11:56:20 -0400
+Received: from localhost (132.158.202.109) by pbmxdp03.intersil.corp
+ (132.158.200.224) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Fri, 7 Aug 2020 11:56:19 -0400
+From:   <min.li.xe@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH net 1/4] ptp: ptp_idt82p33: update to support adjphase
+Date:   Fri, 7 Aug 2020 11:55:55 -0400
+Message-ID: <1596815755-10994-1-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-In-Reply-To: <bccd2311-79fa-9d88-3c10-067c2438574d@mojatatu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-07_12:2020-08-06,2020-08-07 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 suspectscore=4 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-2006250000 definitions=main-2008070110
+X-Proofpoint-Spam-Reason: mlx
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-More clarification - this:
+From: Min Li <min.li.xe@renesas.com>
 
+Add adjphase support for idt82p33xxx synchronization management unit.
+Also fix n_per_out to the actual number of outputs.
+
+Changes since v1:
+- Break into small changes
+
+Signed-off-by: Min Li <min.li.xe@renesas.com>
 ---
-diff --git a/net/sched/cls_fw.c b/net/sched/cls_fw.c
-index ec945294626a..06510c8c8281 100644
---- a/net/sched/cls_fw.c
-+++ b/net/sched/cls_fw.c
-@@ -22,12 +22,12 @@
-  #include <net/pkt_cls.h>
-  #include <net/sch_generic.h>
+ drivers/ptp/ptp_idt82p33.c | 48 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 47 insertions(+), 1 deletion(-)
 
--#define HTSIZE 256
-+#define HTSIZE 4096
-
-  struct fw_head {
-+       struct rcu_head         rcu;
-         u32                     mask;
-         struct fw_filter __rcu  *ht[HTSIZE];
--       struct rcu_head         rcu;
-  };
-----
-
-Does not fix it..
-
-
-cheers,
-jamal
-
-On 2020-08-07 11:16 a.m., Jamal Hadi Salim wrote:
-> 
-> Made this small change:
-> 
-> ------
-> diff --git a/net/sched/cls_fw.c b/net/sched/cls_fw.c
-> index ec945294626a..75d43ed10cd8 100644
-> --- a/net/sched/cls_fw.c
-> +++ b/net/sched/cls_fw.c
-> @@ -22,7 +22,7 @@
->   #include <net/pkt_cls.h>
->   #include <net/sch_generic.h>
-> 
-> -#define HTSIZE 256
-> +#define HTSIZE 4096
-> 
->   struct fw_head {
->          u32                     mask;
-> ---------
-> 
-> Generated compile errors as follows:
-> 
-> ------------
->    DESCEND  objtool
->    CALL    scripts/atomic/check-atomics.sh
->    CALL    scripts/checksyscalls.sh
->    CHK     include/generated/compile.h
->    CC      net/sched/cls_fw.o
-> In file included from ./include/linux/export.h:43:0,
->                   from ./include/linux/linkage.h:7,
->                   from ./include/linux/kernel.h:8,
->                   from ./include/linux/list.h:9,
->                   from ./include/linux/module.h:12,
->                   from net/sched/cls_fw.c:13:
-> net/sched/cls_fw.c: In function ‘fw_destroy’:
-> ./include/linux/compiler.h:392:38: error: call to 
-> ‘__compiletime_assert_415’ declared with attribute error: BUILD_BUG_ON 
-> failed: !__is_kfree_rcu_offset(__builtin_offsetof(typeof(*(head)), rcu))
->    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->                                        ^
-> ./include/linux/compiler.h:373:4: note: in definition of macro 
-> ‘__compiletime_assert’
->      prefix ## suffix();    \
->      ^~~~~~
-> ./include/linux/compiler.h:392:2: note: in expansion of macro 
-> ‘_compiletime_assert’
->    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->    ^~~~~~~~~~~~~~~~~~~
-> ./include/linux/build_bug.h:39:37: note: in expansion of macro 
-> ‘compiletime_assert’
->   #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->                                       ^~~~~~~~~~~~~~~~~~
-> ./include/linux/build_bug.h:50:2: note: in expansion of macro 
-> ‘BUILD_BUG_ON_MSG’
->    BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->    ^~~~~~~~~~~~~~~~
-> ./include/linux/rcupdate.h:840:3: note: in expansion of macro 
-> ‘BUILD_BUG_ON’
->     BUILD_BUG_ON(!__is_kfree_rcu_offset(offset)); \
->     ^~~~~~~~~~~~
-> ./include/linux/rcupdate.h:875:3: note: in expansion of macro ‘__kfree_rcu’
->     __kfree_rcu(&((___p)->rhf), offsetof(typeof(*(ptr)), rhf)); \
->     ^~~~~~~~~~~
-> net/sched/cls_fw.c:151:2: note: in expansion of macro ‘kfree_rcu’
->    kfree_rcu(head, rcu);
->    ^~~~~~~~~
-> scripts/Makefile.build:280: recipe for target 'net/sched/cls_fw.o' failed
-> make[2]: *** [net/sched/cls_fw.o] Error 1
-> scripts/Makefile.build:497: recipe for target 'net/sched' failed
-> make[1]: *** [net/sched] Error 2
-> Makefile:1771: recipe for target 'net' failed
-> make: *** [net] Error 2
-> make: *** Waiting for unfinished jobs....
-> 
-> ----------------
-> 
-> Gets fixed if i reduce the hash buckets of course.
-> Looking at include/linux/rcupdate.h I see:
-> 
-> ------
-> /*
->   * Does the specified offset indicate that the corresponding rcu_head
->   * structure can be handled by kfree_rcu()?
->   */
-> #define __is_kfree_rcu_offset(offset) ((offset) < 4096)
-> 
-> ------
-> 
-> I am guessing the hash table got too large.
-> Smells like hard coded expectation?
-> 
-> How to fix?
-> 
-> cheers,
-> jamal
+diff --git a/drivers/ptp/ptp_idt82p33.c b/drivers/ptp/ptp_idt82p33.c
+index 179f6c4..bd1fbcd 100644
+--- a/drivers/ptp/ptp_idt82p33.c
++++ b/drivers/ptp/ptp_idt82p33.c
+@@ -674,6 +674,51 @@ static int idt82p33_enable(struct ptp_clock_info *ptp,
+ 	return err;
+ }
+ 
++static int idt82p33_adjwritephase(struct ptp_clock_info *ptp, s32 offsetNs)
++{
++	struct idt82p33_channel *channel =
++		container_of(ptp, struct idt82p33_channel, caps);
++	struct idt82p33 *idt82p33 = channel->idt82p33;
++	s64 offsetInFs;
++	s64 offsetRegVal;
++	u8 val[4] = {0};
++	int err;
++
++	offsetInFs = (s64)(-offsetNs) * 1000000;
++
++	if (offsetInFs > WRITE_PHASE_OFFSET_LIMIT)
++		offsetInFs = WRITE_PHASE_OFFSET_LIMIT;
++	else if (offsetInFs < -WRITE_PHASE_OFFSET_LIMIT)
++		offsetInFs = -WRITE_PHASE_OFFSET_LIMIT;
++
++	/* Convert from phaseOffsetInFs to register value */
++	offsetRegVal = ((offsetInFs * 1000) / IDT_T0DPLL_PHASE_RESOL);
++
++	val[0] = offsetRegVal & 0xFF;
++	val[1] = (offsetRegVal >> 8) & 0xFF;
++	val[2] = (offsetRegVal >> 16) & 0xFF;
++	val[3] = (offsetRegVal >> 24) & 0x1F;
++	val[3] |= PH_OFFSET_EN;
++
++	mutex_lock(&idt82p33->reg_lock);
++
++	err = idt82p33_dpll_set_mode(channel, PLL_MODE_WPH);
++	if (err) {
++		dev_err(&idt82p33->client->dev,
++			"Failed at line %d in func %s!\n",
++			__LINE__,
++			__func__);
++		goto out;
++	}
++
++	err = idt82p33_write(idt82p33, channel->dpll_phase_cnfg, val,
++			     sizeof(val));
++
++out:
++	mutex_unlock(&idt82p33->reg_lock);
++	return err;
++}
++
+ static int idt82p33_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ {
+ 	struct idt82p33_channel *channel =
+@@ -784,6 +829,8 @@ static void idt82p33_caps_init(struct ptp_clock_info *caps)
+ {
+ 	caps->owner = THIS_MODULE;
+ 	caps->max_adj = 92000;
++	caps->n_per_out = 11;
++	caps->adjphase = idt82p33_adjwritephase;
+ 	caps->adjfine = idt82p33_adjfine;
+ 	caps->adjtime = idt82p33_adjtime;
+ 	caps->gettime64 = idt82p33_gettime;
+@@ -810,7 +857,6 @@ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
+ 	idt82p33_caps_init(&channel->caps);
+ 	snprintf(channel->caps.name, sizeof(channel->caps.name),
+ 		 "IDT 82P33 PLL%u", index);
+-	channel->caps.n_per_out = hweight8(channel->output_mask);
+ 
+ 	err = idt82p33_dpll_set_mode(channel, PLL_MODE_DCO);
+ 	if (err)
+-- 
+2.7.4
 
