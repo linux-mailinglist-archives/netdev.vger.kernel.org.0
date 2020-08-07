@@ -2,106 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 511A523F36A
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 21:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 842D323F36E
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 21:59:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726664AbgHGT50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 15:57:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        id S1726066AbgHGT7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 15:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727982AbgHGT5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 15:57:20 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF3EC061A27
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 12:57:20 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id v12so3421089ljc.10
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 12:57:20 -0700 (PDT)
+        with ESMTP id S1725970AbgHGT7u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 15:59:50 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88468C061756;
+        Fri,  7 Aug 2020 12:59:50 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id m34so1467825pgl.11;
+        Fri, 07 Aug 2020 12:59:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LT9fXEVxD8v7QkyLZvL1Rm7ltKej7kPnvBESreG7Qak=;
-        b=R8kmtmqrmhxaBq5InMpqrHoOAtLk7n/JJZ1ZzXPvCJw9u0WjEnyJnnsoogXK0t8ewh
-         fRaTpoRxnQ1ruaQNFl9XYjVbJC3v8FGcOhHW98nF9P7m3Lc72yCjwF7xyy6BMahDSuCR
-         y3unTDv4ZLPkpf97nZIwQmDsr/KM5bVaK8kFM=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=N/pR4E/qxL/wX5EPUnI0iXLQMzb1rGW2L4MNHM92qQs=;
+        b=tUUUFweRmJX05czmFHLxX721d9zsb1gXF110pU621p40LpIxFPioiAYZjoyN4p/wCO
+         Liu0o+oWpFgYGL4dO8QZKRoZLFTJtkEv3Vh3kRB/wuPsyBHDCROmIs/YMAQI+4diIIId
+         cTWYG3ZQ8KwkszA/t7UyezT6KO1+H4RfL2R/YHnQadj2HtcL5YliUbq9ORyLBZ7eCKoR
+         /IIZSLBqahSC9yilTYMlfyxtw4XTStPcOBzca9wp8R+W8uli+KmDbqWh2xIjo3lQsQpg
+         r+e+i9bAHFrmTm9uLEvz6GTWmPRWXVDUR3rJ1I254+jflk6J1NgANziDhMdz2etTSLus
+         ZZQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LT9fXEVxD8v7QkyLZvL1Rm7ltKej7kPnvBESreG7Qak=;
-        b=MWTHMMTgrz3Ih8sIxyN+Sfb3L5ByvQex3EcJ4Mx5tZ7CQnrcqA4Aq7cAcffAw7Nokv
-         XbxJBnUQA7ZxI1nmIBo8ISKZtpoA+lRZf7P/XLuhFENUnNSMbEBwe9IuG0ZaNCS4zyu/
-         FDUb7fqzPbNheMaheYz3IGQTNMeArdDFirRotwhkT5+/hZoTzF8MnhNGeLIKOF5kwO55
-         jSaq9iYVUQEH7NrryOiShGMwRgGafacFXLw1GXlLnuGXBBnO3BaIo/JKekBXPTz2KW0/
-         Mc25Efd2yT5Sd8llLa57RyIUvn8wyhJgE/YzomXTat7Gn+Fupr01J2MIjKbFRJgGMp+Z
-         Iyaw==
-X-Gm-Message-State: AOAM5339bq0Htxllx1YM7a3boeH2HUDTxUjdxsu6Pu638wd/ZsZCVvBl
-        87ZAl+OYupWx+EFBz/TMfq65ciAMBrGcpQ==
-X-Google-Smtp-Source: ABdhPJxs4j9WOhv8E5gq3qAUzV+H3wUm6ybpdi+RVk0Q9AJDGYbi13yCMrX8X1ArNMp0EfKpBvFQKQ==
-X-Received: by 2002:a05:651c:106a:: with SMTP id y10mr6970002ljm.296.1596830236016;
-        Fri, 07 Aug 2020 12:57:16 -0700 (PDT)
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com. [209.85.167.48])
-        by smtp.gmail.com with ESMTPSA id d5sm4181591ljc.80.2020.08.07.12.57.14
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=N/pR4E/qxL/wX5EPUnI0iXLQMzb1rGW2L4MNHM92qQs=;
+        b=h9ikPGHsnn52ZrHtcTIQ8BvERzO+gEWBFUOJQ1RSgKC3Z3YVjHE6bfGM4Ocxqv16b5
+         DkTjc2EmtfNtzGwgaIl3kZ6cCFX1bCbg6uFdZ2yWOsTCYLbGzaiQTi0032aYdP3ssKXg
+         ZpxP1N1KVAM7g0PxpSC44seocVyfTjEkKjGQDpUkp9rTzKMSRKz0kQZySR/ymim8bJEG
+         et9m6bmflZu2VUGuNMIya+UtWbnZ70SpZV867Gnr3Hcm+MZllKaEQZ7bdXnVjZrz9+Ah
+         sQK/c9kDuuGzHJd6KPc2V/HoalDZ+uKg0LwnzA2+9/ghkoHnHRM3oBKCJ37wb4aNj1yX
+         QdhA==
+X-Gm-Message-State: AOAM5331DPmZ/EmA/pZC1o7xf23/aDk4XY9wbYNeuN8xnDAkAkqGmCtl
+        L56UldJgn1lksiTepCy9lAnwseBB9MU=
+X-Google-Smtp-Source: ABdhPJwH3ZKURa/Oxkq+1I5NslHa0VDnIJQYTAthwAXZXWxhVsHt0LoUrlc1DWVBet1ljID0Xirrkg==
+X-Received: by 2002:a63:6fcd:: with SMTP id k196mr13612067pgc.251.1596830389727;
+        Fri, 07 Aug 2020 12:59:49 -0700 (PDT)
+Received: from ?IPv6:2001:569:7bc3:ce00:a4b2:4936:f0f6:3eff? (node-1w7jr9qsv51tb41p80xpg7667.ipv6.telus.net. [2001:569:7bc3:ce00:a4b2:4936:f0f6:3eff])
+        by smtp.gmail.com with ESMTPSA id w70sm13708811pfc.98.2020.08.07.12.59.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Aug 2020 12:57:14 -0700 (PDT)
-Received: by mail-lf1-f48.google.com with SMTP id k13so1609516lfo.0
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 12:57:14 -0700 (PDT)
-X-Received: by 2002:a05:6512:241:: with SMTP id b1mr7164028lfo.125.1596830233869;
- Fri, 07 Aug 2020 12:57:13 -0700 (PDT)
+        Fri, 07 Aug 2020 12:59:49 -0700 (PDT)
+Subject: Re: Flaw in "random32: update the net random state on interrupt and
+ activity"
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     tytso@mit.edu, netdev@vger.kernel.org, aksecurity@gmail.com,
+        torvalds@linux-foundation.org, edumazet@google.com,
+        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
+        tglx@linutronix.de, peterz@infradead.org, stable@vger.kernel.org
+References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
+ <20200805024941.GA17301@1wt.eu> <20200805153432.GE497249@mit.edu>
+ <c200297c-85a5-dd50-9497-6fcf7f07b727@gmail.com>
+ <20200805193824.GA17981@1wt.eu>
+ <344f15dd-a324-fe44-54d4-c87719283e35@gmail.com>
+ <20200806063035.GC18515@1wt.eu>
+ <50b046ee-d449-8e6c-1267-f4060b527c06@gmail.com>
+ <20200807070316.GA6357@1wt.eu>
+ <a1833e06-1ce5-9a2b-f518-92e7c6b47d4f@gmail.com>
+ <20200807174302.GA6740@1wt.eu>
+From:   Marc Plumb <lkml.mplumb@gmail.com>
+Message-ID: <9148811b-64f9-a18c-ddeb-b1ff4b34890e@gmail.com>
+Date:   Fri, 7 Aug 2020 12:59:48 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <CAHk-=whf+_rWROqPUMr=Do0n1ADhkEeEFL0tY+M60TJZtdrq2A@mail.gmail.com>
- <BF4C5741-7433-4E96-B856-B25B049C9E49@amacapital.net>
-In-Reply-To: <BF4C5741-7433-4E96-B856-B25B049C9E49@amacapital.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 7 Aug 2020 12:56:57 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whPgKZRfK_Kfo6Oo+Aek-Z_U_Dxv9Y3HuNuHb5t=jLbcA@mail.gmail.com>
-Message-ID: <CAHk-=whPgKZRfK_Kfo6Oo+Aek-Z_U_Dxv9Y3HuNuHb5t=jLbcA@mail.gmail.com>
-Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
-To:     Andy Lutomirski <luto@amacapital.net>
-Cc:     Willy Tarreau <w@1wt.eu>, Marc Plumb <lkml.mplumb@gmail.com>,
-        "Theodore Ts'o" <tytso@mit.edu>, Netdev <netdev@vger.kernel.org>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andrew Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200807174302.GA6740@1wt.eu>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 7, 2020 at 12:33 PM Andy Lutomirski <luto@amacapital.net> wrote:
+
+On 2020-08-07 10:43 a.m., Willy Tarreau wrote:
 >
-> No one said we have to do only one ChaCha20 block per slow path hit.
+>> Which means that it's 2^32 effort to brute force this (which Amit called "no
+>> biggie for modern machines"). If the noise is the raw sample data with only
+>> a few bits of entropy, then it's even easier to brute force.
+> Don't you forget to multiply by another 2^32 for X being folded onto itself ?
+> Because you have 2^32 possible values of X which will give you a single 32-bit
+> output value for a given noise value.
 
-Sure, doing more might be better for amortizing the cost.
+If I can figure the state out once, then the only new input is the 
+noise, so that's the only part I have to brute force. Throwing the noise 
+in makes it more difficult to get that state once, but once I have it 
+then this type of reseeding doesn't help.
 
-But you have to be very careful about latency spikes. I would be
-*really* nervous about doing a whole page at a time, when this is
-called from routines that literally expect it to be less than 50
-cycles.
 
-So I would seriously suggest you look at a much smaller buffer. Maybe
-not a single block, but definitely not multiple kB either.
+>> Is there a hard instruction budget for this, or it is
+>> just "fast enough to not hurt the network benchmarks" (i.e. if Dave Miller
+>> screams)?
+> It's not just Davem. I too am concerned about wasting CPU cycles in fast
+> path especially in the network code. A few half-percent gains are hardly
+> won once in a while in this area and in some infrastructures they matter.
+> Not much but they do.
 
-Maybe something like 2 cachelines might be ok, but there's a reason
-the current code only works with 16 bytes (or whatever) and only does
-simple operations with no looping.
+That's why I was asking. I don't have the same experience as you for 
+what acceptable is. I think it might be possible to do a decent CPRNG 
+(that's at least had some cryptanalys of it) with ~20 instructions per 
+word, but if that's not fast enough then I'll think about other options.
 
-That's why I think you might look at a single double-round ChaCha20
-instead. Maybe do it for two blocks - by the time you wrap around,
-you'll have done more than a full ChaCaa20.
-
-That would imnsho *much* better than doing some big block, and have
-huge latency spikes and flush a large portion of your L1 when they
-happen. Nasty nasty behavior.
-
-I really think the whole "we can amortize it with bigger blocks" is
-complete and utter garbage. It's classic "benchmarketing" crap.
-
-             Linus
+Marc
