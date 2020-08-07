@@ -2,87 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CECE823EA76
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 11:36:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 972EE23EAA2
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 11:42:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727823AbgHGJgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 05:36:46 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:9352 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726382AbgHGJgq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Aug 2020 05:36:46 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 43F3866F4F5373A0D409;
-        Fri,  7 Aug 2020 17:36:44 +0800 (CST)
-Received: from [10.174.179.72] (10.174.179.72) by
- DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 7 Aug 2020 17:36:39 +0800
-Subject: Re: [PATCH net 0/4] support multipacket broadcast message
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-CC:     <robin@protonic.nl>, <linux@rempel-privat.de>,
-        <kernel@pengutronix.de>, <socketcan@hartkopp.net>,
-        <mkl@pengutronix.de>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-can@vger.kernel.org>
-References: <1596599425-5534-1-git-send-email-zhangchangzhong@huawei.com>
- <20200806161027.py5ged3a23xpmxgi@pengutronix.de>
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-Message-ID: <24c3daa5-8243-0b80-9f4c-aa5883cb75da@huawei.com>
-Date:   Fri, 7 Aug 2020 17:36:38 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1727792AbgHGJmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 05:42:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726382AbgHGJmu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 05:42:50 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87A5C061574
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 02:42:49 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id 3so1244283wmi.1
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 02:42:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5juPhLU+H4JaoeKCbinA/+bVYUkZ9Go2t3xfDKEiaSE=;
+        b=PS+YsVZjAszmaNqZruaBMYez4s4zsHbm6Rg9hkcG5c/mGwKMaybsv+wZkvtR/yFR3w
+         xdL+sLAbQH9XSrjxcsBD3P/gXtXNQcBTNTsTh/I9aGLhMY2k8rvY0GSgGblnbDC/a4gh
+         ssRWpNWaBmkrLLdeH828d66FtH39WkilqI/fU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5juPhLU+H4JaoeKCbinA/+bVYUkZ9Go2t3xfDKEiaSE=;
+        b=OJXcg+HuyQXx1PrgNzO7wlyAsyw8PMUxol0Oy6JT33uJugf4+Ve+BjBa0P5cBgCRuB
+         hpuqpY+ZrddJXyRuDOXnTuntJCFUA1iP+Eh2iP0UhcB3M8h1gMiqAd7l98YQq7QF99sE
+         h7fP3gqKEemxwODlQWcb/4BJOP4/PUNRO66Yy38mfpzYeZtSC6U4kgKqe3SQoV05iMb2
+         BLIA7izBdYgDsKkeuheFZGSZt//QX87c7LfOU+oDOWM5SFt7RlGw0CcEpBgnnV8X3RtH
+         yU2mkZzCmazTprh/+boafRqHaJVcGdLTf94rwzQrXFZRh1/5N50qBdCi2eJ7G7ukxWhV
+         YAng==
+X-Gm-Message-State: AOAM531rJmwl3ZsuA1YFt7V2fYURCJqD930EY1II0yWmg85qjddfP6Fl
+        Zt5qOWcEBR4gVrJt0IHW0qQO+9ZPRfkSKPXqcF0udQ==
+X-Google-Smtp-Source: ABdhPJzaoiavitVpRXHug7knKfFC7wo4ZeSgnUYzB1EnjOZPQP9yguuWaSFjI82GWGfvu/OfTq4IHSEy+dyeYiKR/OU=
+X-Received: by 2002:a7b:c0c8:: with SMTP id s8mr12404856wmh.4.1596793368233;
+ Fri, 07 Aug 2020 02:42:48 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200806161027.py5ged3a23xpmxgi@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.72]
-X-CFilter-Loop: Reflected
+References: <20200801170322.75218-1-jolsa@kernel.org> <20200801170322.75218-11-jolsa@kernel.org>
+ <CACYkzJ57H391Xe20iGyHPkLWDumAcMuRu_oqV0ZzBPUOZBqNvA@mail.gmail.com> <20200807083528.GA561444@krava>
+In-Reply-To: <20200807083528.GA561444@krava>
+From:   KP Singh <kpsingh@chromium.org>
+Date:   Fri, 7 Aug 2020 11:42:35 +0200
+Message-ID: <CACYkzJ5vRuC8s_s=k7i0sYSrM333Xty7s0dAz0zMXyb2bow3AQ@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 10/14] bpf: Add d_path helper
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+On Fri, Aug 7, 2020 at 10:35 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Fri, Aug 07, 2020 at 02:31:52AM +0200, KP Singh wrote:
+> > On Sat, Aug 1, 2020 at 7:04 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> > >
+> > > Adding d_path helper function that returns full path for
+> >
+> > [...]
+> >
+> > > +}
+> > > +
+> > > +BTF_SET_START(btf_allowlist_d_path)
+> > > +BTF_ID(func, vfs_truncate)
+> > > +BTF_ID(func, vfs_fallocate)
+> > > +BTF_ID(func, dentry_open)
+> > > +BTF_ID(func, vfs_getattr)
+> > > +BTF_ID(func, filp_close)
+> > > +BTF_SET_END(btf_allowlist_d_path)
+> > > +
+> >
+> > > +static bool bpf_d_path_allowed(const struct bpf_prog *prog)
+> > > +{
+> > > +       return btf_id_set_contains(&btf_allowlist_d_path, prog->aux->attach_btf_id);
+> > > +}
+> >
+> > Can we allow it for LSM programs too?
+>
+> yes, that's why I used struct bpf_prog as argument, so we could reach the
 
-We have tested this j1939 stack according to SAE J1939-21. It works fine for
-most cases, but when we test multipacket broadcast message function we found
-the receiver can't receive those packets.
+Thanks for adding the bpf_prog argument.
 
-You can reproduce on CAN bus or vcan, for vcan case use cangw to connect vcan0
-and vcan1:
-sudo cangw -A -s vcan0 -d vcan1 -e
-sudo cangw -A -s vcan1 -d vcan0 -e
+> program type.. but I was hoping we could do that in follow up patchset,
 
-To reproduce it use following commands:
-testj1939 -B -r vcan1:0x90 &
-testj1939 -B -s20 vcan0:0x80 :,0x12300
+Sure. We can do it in a follow-up patch.
 
-Besides, candump receives correct packets while testj1939 receives nothing.
+- KP
 
-Regards,
-Zhang Changzhong
-
-On 2020/8/7 0:10, Oleksij Rempel wrote:
-> Hello,
-> 
-> Thank you for your patches! Currently I'm busy, but I'll take a look at it as
-> soon possible.
-> 
-> btw. can you tell me about more of your use case/work. I would like to
-> have some feedback about this stack. You can write a personal message,
-> if it is not for public.
-> 
-> On Wed, Aug 05, 2020 at 11:50:21AM +0800, Zhang Changzhong wrote:
->> Zhang Changzhong (4):
->>   can: j1939: fix support for multipacket broadcast message
->>   can: j1939: cancel rxtimer on multipacket broadcast session complete
->>   can: j1939: abort multipacket broadcast session when timeout occurs
->>   can: j1939: add rxtimer for multipacket broadcast session
->>
->>  net/can/j1939/transport.c | 48 +++++++++++++++++++++++++++++++++++------------
->>  1 file changed, 36 insertions(+), 12 deletions(-)
-> 
-> Regards,
-> Oleksij
-> 
+> because I assume there might be still some discussion about that?
+>
+> I plan to post new version today
+>
+> jirka
+>
+> >
+> > - KP
+> >
+> > > +
+> > > +BTF_ID_LIST(bpf_d_path_btf_ids)
+> > > +BTF_ID(struct, path)
+> > > +
+> >
+> > [...]
+> >
+> > >
+> > >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> > > --
+> > > 2.25.4
+> > >
+> >
+>
