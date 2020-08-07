@@ -2,100 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CF1623F51E
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 01:11:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD06D23F530
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 01:21:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726149AbgHGXL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 19:11:56 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:39531 "EHLO 1wt.eu"
+        id S1726238AbgHGXV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 19:21:56 -0400
+Received: from agw3.byu.edu ([128.187.16.187]:37038 "EHLO agw3.byu.edu"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726045AbgHGXL4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Aug 2020 19:11:56 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 077NBfSc006872;
-        Sat, 8 Aug 2020 01:11:41 +0200
-Date:   Sat, 8 Aug 2020 01:11:41 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Marc Plumb <lkml.mplumb@gmail.com>
-Cc:     tytso@mit.edu, netdev@vger.kernel.org, aksecurity@gmail.com,
-        torvalds@linux-foundation.org, edumazet@google.com,
-        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
-        tglx@linutronix.de, peterz@infradead.org, stable@vger.kernel.org
-Subject: Re: Flaw in "random32: update the net random state on interrupt and
- activity"
-Message-ID: <20200807231141.GA6867@1wt.eu>
-References: <20200805193824.GA17981@1wt.eu>
- <344f15dd-a324-fe44-54d4-c87719283e35@gmail.com>
- <20200806063035.GC18515@1wt.eu>
- <50b046ee-d449-8e6c-1267-f4060b527c06@gmail.com>
- <20200807070316.GA6357@1wt.eu>
- <a1833e06-1ce5-9a2b-f518-92e7c6b47d4f@gmail.com>
- <20200807174302.GA6740@1wt.eu>
- <9148811b-64f9-a18c-ddeb-b1ff4b34890e@gmail.com>
- <20200807221913.GA6846@1wt.eu>
- <9ae4be33-fdeb-b882-d705-bccfacda1c4e@gmail.com>
+        id S1726096AbgHGXV4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Aug 2020 19:21:56 -0400
+Received: from cangw2.byu.edu (cangw2.byu.edu [10.18.21.142])
+        by agw3.byu.edu (Postfix) with ESMTPS id 020131EF06;
+        Fri,  7 Aug 2020 17:21:55 -0600 (MDT)
+Received: from mail2.fsl.byu.edu (mail2.rc.byu.edu [128.187.49.32])
+        by cangw2.byu.edu (8.15.2/8.15.2/Debian-8) with ESMTPS id 077NLpSW014780
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 7 Aug 2020 17:21:52 -0600
+Received: from [192.168.124.133] (v-pool-133.rc.byu.edu [192.168.124.133])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail2.fsl.byu.edu (Postfix) with ESMTPSA id 9352E3F2D9;
+        Fri,  7 Aug 2020 17:21:51 -0600 (MDT)
+Subject: Re: Severe performance regression in "net: macsec: preserve ingress
+ frame ordering"
+To:     Scott Dial <scott@scottdial.com>
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, sd@queasysnail.net
+References: <1b0cec71-d084-8153-2ba4-72ce71abeb65@byu.edu>
+ <a335c8eb-0450-1274-d1bf-3908dcd9b251@scottdial.com>
+From:   Ryan Cox <ryan_cox@byu.edu>
+Message-ID: <57885356-da3a-aef9-64b4-84eb126f216c@byu.edu>
+Date:   Fri, 7 Aug 2020 17:21:51 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.1.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9ae4be33-fdeb-b882-d705-bccfacda1c4e@gmail.com>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+In-Reply-To: <a335c8eb-0450-1274-d1bf-3908dcd9b251@scottdial.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Bayes-Prob: 0.0001 (Score -1, tokens from: Outbound, byu-edu:default, base:default, @@RPTN)
+X-Spam-Score: -1.00 () [Hold at 5.00] Bayes(0.0001:-1.0)
+X-CanIt-Geo: ip=128.187.49.32; country=US; region=Utah; city=Provo; latitude=40.2329; longitude=-111.6688; http://maps.google.com/maps?q=40.2329,-111.6688&z=6
+X-CanItPRO-Stream: byu-edu:Outbound (inherits from byu-edu:default,base:default)
+X-Canit-Stats-ID: 093cLlP7n - d30eb6a69564 - 20200807
+X-Scanned-By: CanIt (www . roaringpenguin . com)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 07, 2020 at 03:45:48PM -0700, Marc Plumb wrote:
-> Willy,
-> 
-> 
-> On 2020-08-07 3:19 p.m., Willy Tarreau wrote:
-> > On Fri, Aug 07, 2020 at 12:59:48PM -0700, Marc Plumb wrote:
-> > > 
-> > > If I can figure the state out once,
-> > Yes but how do you take that as granted ? This state doesn't appear
-> > without its noise counterpart,
-> 
-> Amit has shown attacks that can deduce the full internal state from 4-5
-> packets with a weak PRNG. If the noise is added less often than that, an
-> attacker can figure out the entire state at which point the partial
-> reseeding doesn't help. If the noise is added more often than that, and it's
-> raw timing events, then it's only adding a few bits of entropy so its easy
-> to guess (and it weakens dev/random). If the noise is added more often, and
-> it's from the output of a CPRNG, then we have all the performance/latency
-> problems from the CPRNG itself, so we might as well use it directly.
+On 8/6/20 9:48 PM, Scott Dial wrote:
+> The aes-aesni driver is smart enough to use the FPU if it's not busy and
+> fallback to the CPU otherwise. Unfortunately, the ghash-clmulni driver
+> does not have that kind of logic in it and only provides an async version,
+> so we are forced to use the ghash-generic implementation, which is a pure
+> CPU implementation. The ideal would be for aesni_intel to provide a
+> synchronous version of gcm(aes) that fell back to the CPU if the FPU is
+> busy.
 
-His attacks is based on the fact that internal state bits leak as-is.
-So it is possible to collect them and perform the inverse operation to
-reconstruct the input.
+I don't know how the AES-NI support works, but I did see your specific 
+mention of aesni_intel and figured I should mention that this does also 
+affect AMD. I just got access to AMD nodes (2 x EPYC 7302) with a 
+Mellanox 10 GbE NIC.  I did the same test and it had a similar 
+performance pattern.  I doubt this means much but I figured I should 
+mention it.
 
-Here the output is made by mixing two input bits with two noise bits
-and produce one single output bit. So for each output bit you see,
-you don't have just one possible input bit, but 16 possibilities.
-That's 128 bits of internal changing states that once combined result
-in 32 bits. For each 32-bit output you still have 2^96 possible
-internal (x,noise) states producing it. And that's without counting
-on the 64-bit seed that you still don't know but can be deduced from
-two guessed 128 bit states (assuming that can be brute-forced at all,
-of course).
+> I don't know if the crypto maintainers would be open to such a change, but
+> if the choice was between reverting and patching the crypto code, then I
+> would work on patching the crypto code.
 
-For sure there are plenty of number theories allowing you to
-significantly reduce the space you need to work on to brute-force
-this but it will definitely remain above 2^32 attempts for each
-iteration, which is the floor you have without the noise part,
-while the whole internal state will be reseeded every minute
-anyway.
+I can't opine on anything crypto-related since it is extremely way 
+outside of my area of expertise, though it is helpful to hear what is 
+going on.
 
-I mean, I'm not trying to sell this thing, I'm just trying to defend
-that we use a reasonable tool for a reasonable protection level. And
-yes, probably that 15 years from now, someone will say "hey look, I
-can brute-force this thing in less than a minute on my 1024-core 39th
-gen core i7 machine with 2^60 operations per second, why don't we use
-our CPU's native 10 picosecond AES1024 instruction instead ?" and we'll
-say "well, it's an old story and it's probably about time to change it
-again".
+> In any case, you didn't report how many packets arrived out of order, which
+> was the issue being addressed by my change. It would be helpful to get
+> the output of "ip -s macsec show" and specifically the InPktsDelayed
+> counter. Did iperf3 report out-of-order packets with the patch reverted?
+> Otherwise, if this is the only process running on your test servers,
+> then you may not be generating any contention for the FPU, which is the
+> source of the out-of-order issue. Maybe you could run prime95 to busy
+> the FPU to see the issue that I was seeing.
 
-I don't see anything wrong with evolving this way, matching concrete
-needs more than pure theory.
+I ran some tests again on the same servers as before with the Intel 
+NICs.  I tested with prime95 running on 27 of the 28 cores in *each* 
+server simultaneously (allowing iperf3 to use a core on each) throughout 
+the entire test.  This was using 5.7.11 with 
+ab046a5d4be4c90a3952a0eae75617b49c0cb01b reverted, so pre-5.7 performance.
 
-Regards,
-Willy
+MACsec interfaces are deleted and recreated before each test, so 
+counters are always fresh.
+
+== MACSEC WITHOUT ENCRYPTION ==
+
+* Server1:
+18: ms1: protect on validate strict sc off sa off encrypt off send_sci 
+on end_station off scb off replay off
+     cipher suite: GCM-AES-128, using ICV length 16
+     TXSC: 0000000000001234 on SA 0
+     stats: OutPktsUntagged InPktsUntagged OutPktsTooLong InPktsNoTag 
+InPktsBadTag InPktsUnknownSCI InPktsNoSCI InPktsOverrun
+                          0              0              0 
+1123            0                0           1             0
+     stats: OutPktsProtected OutPktsEncrypted OutOctetsProtected 
+OutOctetsEncrypted
+                     3798421                0 30889802591                  0
+         0: PN 3799655, state on, key 01000000000000000000000000000000
+     stats: OutPktsProtected OutPktsEncrypted
+                     3798421                0
+     RXSC: 0000000000001234, state on
+     stats: InOctetsValidated InOctetsDecrypted InPktsUnchecked 
+InPktsDelayed InPktsOK InPktsInvalid InPktsLate InPktsNotValid 
+InPktsNotUsingSA InPktsUnusedSA
+                  30042694872                 0 0           218  
+3675170             0          0 0                0              0
+         0: PN 3676633, state on, key 01000000000000000000000000000000
+     stats: InPktsOK InPktsInvalid InPktsNotValid InPktsNotUsingSA 
+InPktsUnusedSA
+             3675170             0              0 0              0
+
+*Server2:
+18: ms1: protect on validate strict sc off sa off encrypt off send_sci 
+on end_station off scb off replay off
+     cipher suite: GCM-AES-128, using ICV length 16
+     TXSC: 0000000000001234 on SA 0
+     stats: OutPktsUntagged InPktsUntagged OutPktsTooLong InPktsNoTag 
+InPktsBadTag InPktsUnknownSCI InPktsNoSCI InPktsOverrun
+                          0              0              0 
+1227            0                0           1             0
+     stats: OutPktsProtected OutPktsEncrypted OutOctetsProtected 
+OutOctetsEncrypted
+                     3675399                0 30042696158                  0
+         0: PN 3676633, state on, key 01000000000000000000000000000000
+     stats: OutPktsProtected OutPktsEncrypted
+                     3675399                0
+     RXSC: 0000000000001234, state on
+     stats: InOctetsValidated InOctetsDecrypted InPktsUnchecked 
+InPktsDelayed InPktsOK InPktsInvalid InPktsLate InPktsNotValid 
+InPktsNotUsingSA InPktsUnusedSA
+                  30889801305                 0 0             0  
+3798410             0          0 0                0              0
+         0: PN 3799655, state on, key 01000000000000000000000000000000
+     stats: InPktsOK InPktsInvalid InPktsNotValid InPktsNotUsingSA 
+InPktsUnusedSA
+             3798410             0              0 0              0
+
+
+InPktsDelayed was 218 for Server1 and 0 for Server2.
+
+== MACSEC WITH ENCRYPTION ==
+
+I got the following *with* encryption (macsec interface deleted and 
+recreated before the test, so counters are fresh):
+*Server1:
+19: ms1: protect on validate strict sc off sa off encrypt on send_sci on 
+end_station off scb off replay off
+     cipher suite: GCM-AES-128, using ICV length 16
+     TXSC: 0000000000001234 on SA 0
+     stats: OutPktsUntagged InPktsUntagged OutPktsTooLong InPktsNoTag 
+InPktsBadTag InPktsUnknownSCI InPktsNoSCI InPktsOverrun
+                          0              0              0 
+1397            0                0           0             0
+     stats: OutPktsProtected OutPktsEncrypted OutOctetsProtected 
+OutOctetsEncrypted
+                           0          5560714 0        46931594623
+         0: PN 5561948, state on, key 01000000000000000000000000000000
+     stats: OutPktsProtected OutPktsEncrypted
+                           0          5560714
+     RXSC: 0000000000001234, state on
+     stats: InOctetsValidated InOctetsDecrypted InPktsUnchecked 
+InPktsDelayed InPktsOK InPktsInvalid InPktsLate InPktsNotValid 
+InPktsNotUsingSA InPktsUnusedSA
+                            0       45977049585 0          3771  
+5417843             0          0 0                0              0
+         0: PN 5422860, state on, key 01000000000000000000000000000000
+     stats: InPktsOK InPktsInvalid InPktsNotValid InPktsNotUsingSA 
+InPktsUnusedSA
+             5417843             0              0 0              0
+
+*Server2:
+19: ms1: protect on validate strict sc off sa off encrypt on send_sci on 
+end_station off scb off replay off
+     cipher suite: GCM-AES-128, using ICV length 16
+     TXSC: 0000000000001234 on SA 0
+     stats: OutPktsUntagged InPktsUntagged OutPktsTooLong InPktsNoTag 
+InPktsBadTag InPktsUnknownSCI InPktsNoSCI InPktsOverrun
+                          0              0              0 
+1490            0                0           0             0
+     stats: OutPktsProtected OutPktsEncrypted OutOctetsProtected 
+OutOctetsEncrypted
+                           0          5421626 0        45977059885
+         0: PN 5422860, state on, key 01000000000000000000000000000000
+     stats: OutPktsProtected OutPktsEncrypted
+                           0          5421626
+     RXSC: 0000000000001234, state on
+     stats: InOctetsValidated InOctetsDecrypted InPktsUnchecked 
+InPktsDelayed InPktsOK InPktsInvalid InPktsLate InPktsNotValid 
+InPktsNotUsingSA InPktsUnusedSA
+                            0       46931106683 0           109  
+5560541             0          0 0                0              0
+         0: PN 5561948, state on, key 01000000000000000000000000000000
+     stats: InPktsOK InPktsInvalid InPktsNotValid InPktsNotUsingSA 
+InPktsUnusedSA
+             5560541             0              0 0              0
+
+
+InPktsDelayed was 3771 for Server1 and 109 for Server2.
+
+
+The performance numbers were:
+* 9.87 Gb/s without macsec
+* 6.00 Gb/s with macsec WITHOUT encryption
+* 9.19 Gb/s with macsec WITH encryption
+
+iperf3 retransmits were:
+* 27 without macsec
+* 1211 with macsec WITHOUT encryption
+* 721 with macsec WITH encryption
+
+
+Thanks for the reply and for the background on this.
+
+Ryan
