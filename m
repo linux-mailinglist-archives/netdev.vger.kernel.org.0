@@ -2,36 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B68923E9C0
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 11:07:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FB7723E9D5
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 11:11:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727892AbgHGJG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 05:06:58 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:35376 "EHLO
+        id S1727081AbgHGJLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 05:11:23 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:35850 "EHLO
         jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726788AbgHGJG6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 05:06:58 -0400
+        with ESMTP id S1726721AbgHGJLW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 05:11:22 -0400
 Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id AE7051C0BD9; Fri,  7 Aug 2020 11:06:53 +0200 (CEST)
-Date:   Fri, 7 Aug 2020 11:06:53 +0200
+        id F0F901C0BD9; Fri,  7 Aug 2020 11:11:19 +0200 (CEST)
+Date:   Fri, 7 Aug 2020 11:11:19 +0200
 From:   Pavel Machek <pavel@ucw.cz>
-To:     Marek =?utf-8?B?QmVow7pu?= <marek.behun@nic.cz>
-Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        jacek.anaszewski@gmail.com, Dan Murphy <dmurphy@ti.com>,
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marek Behun <marek.behun@nic.cz>, netdev@vger.kernel.org,
+        linux-leds@vger.kernel.org, jacek.anaszewski@gmail.com,
+        Dan Murphy <dmurphy@ti.com>,
         =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
         Russell King <linux@armlinux.org.uk>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Gregory Clement <gregory.clement@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC leds + net-next v4 0/2] Add support for LEDs on
- Marvell PHYs
-Message-ID: <20200807090653.ihnt2arywqtpdzjg@duo.ucw.cz>
-References: <20200728150530.28827-1-marek.behun@nic.cz>
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC leds + net-next v3 2/2] net: phy: marvell: add
+ support for PHY LEDs via LED class
+Message-ID: <20200807091119.b7vcdk4fxz7le3zp@duo.ucw.cz>
+References: <20200724164603.29148-1-marek.behun@nic.cz>
+ <20200724164603.29148-3-marek.behun@nic.cz>
+ <20200725172318.GK1472201@lunn.ch>
+ <20200725200224.3f03c041@nic.cz>
+ <20200725184846.GO1472201@lunn.ch>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="tuqlwx4lnotoz6lx"
+        protocol="application/pgp-signature"; boundary="deiezzmxyvff7ovy"
 Content-Disposition: inline
-In-Reply-To: <20200728150530.28827-1-marek.behun@nic.cz>
+In-Reply-To: <20200725184846.GO1472201@lunn.ch>
 User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -39,38 +44,51 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---tuqlwx4lnotoz6lx
+--deiezzmxyvff7ovy
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi!
+On Sat 2020-07-25 20:48:46, Andrew Lunn wrote:
+> > > > +#if 0
+> > > > +	/* LED_COLOR_ID_MULTI is not yet merged in Linus' tree */
+> > > > +	/* TODO: Support DUAL MODE */
+> > > > +	if (color =3D=3D LED_COLOR_ID_MULTI) {
+> > > > +		phydev_warn(phydev, "node %pOF: This driver does not yet support=
+ multicolor LEDs\n",
+> > > > +			    np);
+> > > > +		return -ENOTSUPP;
+> > > > +	}
+> > > > +#endif =20
+> > >=20
+> > > Code getting committed should not be using #if 0. Is the needed code
+> > > in the LED tree? Do we want to consider a stable branch of the LED
+> > > tree which DaveM can pull into net-next? Or do you want to wait until
+> > > the next merge cycle?
+> >=20
+> > That's why this is RFC. But yes, I would like to have this merged for
+> > 5.9, so maybe we should ask Dave. Is this common? Do we also need to
+> > tell Pavel or how does this work?
+>=20
+> The Pavel needs to create a stable branch. DaveM then merges that
+> branch into net-next. Your patches can then be merged. When Linus
+> pulls the two branches, led and net-next, git sees the exact same
+> patches twice, and simply drops them from the second pull request.
+>=20
+> So you need to ask Pavel and DaveM if they are willing to do this.
 
-> this is v4 of my RFC adding support for LEDs connected to Marvell PHYs.
->=20
-> Please note that if you want to test this, you still need to first apply
-> the patch adding the LED private triggers support from Pavel's tree.
-> https://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/comm=
-it/?h=3Dfor-next&id=3D93690cdf3060c61dfce813121d0bfc055e7fa30d
->=20
-> What I still don't like about this is that the LEDs created by the code
-> don't properly support device names. LEDs should have name in format
-> "device:color:function", for example "eth0:green:activity".
->=20
-> The code currently looks for attached netdev for a given PHY, but
-> at the time this happens there is no netdev attached, so the LEDs gets
-> names without the device part (ie ":green:activity").
->=20
-> This can be addressed in next version by renaming the LED when a netdev
-> is attached to the PHY, but first a API for LED device renaming needs to
-> be proposed. I am going to try to do that. This would also solve the
-> same problem when userspace renames an interface.
->=20
-> And no, I don't want phydev name there.
+Multicolor should be upstream now, so I believe this is no longer
+required?
 
-Ummm. Can we get little more explanation on that? I fear that LED
-device renaming will be tricky and phydev would work around that
-nicely.
+> > I also want this code to be generalized somehow so that it can be
+> > reused. The problem is that I want to have support for DUAL mode, which
+> > is Marvell specific, and a DUAL LED needs to be defined in device tree.
+>=20
+> It sounds like you first need to teach the LED core about dual LEDs
+> and triggers which affect two LEDs..
+
+Umm. Yes, triggers for controlling both intensity and hue will be
+interesting. Suggestions welcome.
 
 Best regards,
 								Pavel
@@ -79,14 +97,14 @@ Best regards,
 (cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
 g.html
 
---tuqlwx4lnotoz6lx
+--deiezzmxyvff7ovy
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iF0EARECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCXy0ZrQAKCRAw5/Bqldv6
-8o/UAJ9nvd57fgnTIHmdYW/OH4c5swwXJQCguYTbyQen7XuCNSviqkB7ZxmHeYs=
-=WH64
+iF0EARECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCXy0atwAKCRAw5/Bqldv6
+8hAmAKCvo/m/bATu/BHcZE9ByZbwMU7WUQCfecdgdfdiv5MBWfUc08dUT8HNswk=
+=5G/j
 -----END PGP SIGNATURE-----
 
---tuqlwx4lnotoz6lx--
+--deiezzmxyvff7ovy--
