@@ -2,148 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 562AA23F1F0
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 19:30:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38E5A23F216
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 19:43:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726233AbgHGRaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 13:30:55 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:58087 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726058AbgHGRaz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 13:30:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596821453;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=+N5fdgs+uhYlRTgonDxBbLny5jQj7lMBNfhd4oFnrSo=;
-        b=BCLzCPl5b7pNSvKPDZNAaBk+lbePiBtp877432p9t2UAjgVzOWWYmXVLnykRFmGkMfvkT2
-        Cm7pFM2wArqH/n2YPU1kn2dkZmOrInR8L4dsR6DdSsXFJZG5xHL0rnL1IfUE7bddIJRwtb
-        etXcMNXkGKgp68RHOgYOnx48SsRN4w4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-172-GR4slS27N3OhfGngYGMwpQ-1; Fri, 07 Aug 2020 13:30:50 -0400
-X-MC-Unique: GR4slS27N3OhfGngYGMwpQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5D034106B253;
-        Fri,  7 Aug 2020 17:30:48 +0000 (UTC)
-Received: from krava (unknown [10.40.193.136])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 4AF49712DB;
-        Fri,  7 Aug 2020 17:30:46 +0000 (UTC)
-Date:   Fri, 7 Aug 2020 19:30:45 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Andrii Nakryiko <andriin@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [RFC] bpf: verifier check for dead branch
-Message-ID: <20200807173045.GC561444@krava>
+        id S1727023AbgHGRnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 13:43:17 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:39500 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725893AbgHGRnR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Aug 2020 13:43:17 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 077Hh2fs006746;
+        Fri, 7 Aug 2020 19:43:02 +0200
+Date:   Fri, 7 Aug 2020 19:43:02 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Marc Plumb <lkml.mplumb@gmail.com>
+Cc:     tytso@mit.edu, netdev@vger.kernel.org, aksecurity@gmail.com,
+        torvalds@linux-foundation.org, edumazet@google.com,
+        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
+        tglx@linutronix.de, peterz@infradead.org, stable@vger.kernel.org
+Subject: Re: Flaw in "random32: update the net random state on interrupt and
+ activity"
+Message-ID: <20200807174302.GA6740@1wt.eu>
+References: <9f74230f-ba4d-2e19-5751-79dc2ab59877@gmail.com>
+ <20200805024941.GA17301@1wt.eu>
+ <20200805153432.GE497249@mit.edu>
+ <c200297c-85a5-dd50-9497-6fcf7f07b727@gmail.com>
+ <20200805193824.GA17981@1wt.eu>
+ <344f15dd-a324-fe44-54d4-c87719283e35@gmail.com>
+ <20200806063035.GC18515@1wt.eu>
+ <50b046ee-d449-8e6c-1267-f4060b527c06@gmail.com>
+ <20200807070316.GA6357@1wt.eu>
+ <a1833e06-1ce5-9a2b-f518-92e7c6b47d4f@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <a1833e06-1ce5-9a2b-f518-92e7c6b47d4f@gmail.com>
+User-Agent: Mutt/1.6.1 (2016-04-27)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi,
-we have a customer facing some odd verifier fails on following
-sk_skb program:
+On Fri, Aug 07, 2020 at 09:52:14AM -0700, Marc Plumb wrote:
+> On 2020-08-07 12:03 a.m., Willy Tarreau wrote:
+> 
+> > Just to give a heads up on this, here's what I'm having pending regarding
+> > MSWS:
+> > 
+> >    struct rnd_state {
+> >          uint64_t x, w;
+> >          uint64_t seed;
+> >          uint64_t noise;
+> >    };
+> > 
+> >    uint32_t msws32(struct rnd_state *state)
+> >    {
+> >          uint64_t x;
+> > 
+> >          x  = state->w += state->seed;
+> >          x += state->x * state->x;
+> >          x  = state->x = (x >> 32) | (x << 32);
+> >          x -= state->noise++;
+> >          return x ^ (x >> 32);
+> >    }
+> 
+> A few comments:
+> 
+> This is still another non-cryptographic PRNG.
 
-   0. r2 = *(u32 *)(r1 + data_end)
-   1. r4 = *(u32 *)(r1 + data)
-   2. r3 = r4
-   3. r3 += 42
-   4. r1 = 0
-   5. if r3 > r2 goto 8
-   6. r4 += 14
-   7. r1 = r4
-   8. if r3 > r2 goto 10
-   9. r2 = *(u8 *)(r1 + 9)
-  10. r0 = 0
-  11. exit
+Absolutely. During some discussions regarding the possibility of using
+CSPRNGs, orders around hundreds of CPU cycles were mentioned for them,
+which can definitely be a huge waste of precious resources for some
+workloads, possibly causing the addition of a few percent extra machines
+in certain environments just to keep the average load under a certain
+threshold. And the worst there is that such workloads would exactly be
+the ones absolutely not affected by the theorical attacks regarding
+predictability :-/
 
-The code checks if the skb data is big enough (5) and if it is,
-it prepares pointer in r1 (7), then there's again size check (8)
-and finally data load from r1 (9).
+> An LFSR can pass PractRand (if
+> you do a tweak to get around the specific linear complexity test for LFSRs).
 
-It's and odd code, but apparently this is something that can
-get produced by clang.
+OK.
 
-I made selftest out of it and it fails to load with:
+> On a 64-bit machine it should be fast: 4 adds, 1 multiply, 1 rotate, 1
+> shift, 1 xor
+> 
+> This will be much slower on 32-bit machines, if that's still a concern
 
-  # test_verifier -v 267
-  #267/p dead path check FAIL
-  Failed to load prog 'Success'!
-  0: (61) r2 = *(u32 *)(r1 +80)
-  1: (61) r4 = *(u32 *)(r1 +76)
-  2: (bf) r3 = r4
-  3: (07) r3 += 42
-  4: (b7) r1 = 0
-  5: (2d) if r3 > r2 goto pc+2
+Yep, that's something I'm totally aware of and one reason I wanted to
+have a public discussion about this. My personal view on this is that
+a 64-bit multiply will always be cheaper than a crypto operation and
+that the environments where picking a source port or accepting a
+connection matters that much are not those running on such low-end
+machines, so that's very likely an acceptable tradeoff.
 
-  from 5 to 8: R1_w=inv0 R2_w=pkt_end(id=0,off=0,imm=0) R3_w=pkt(id=0,off=42,r=0,imm=0) R4_w=pkt(id=0,off=0,r=0,imm=0) R10=fp0
-  8: (2d) if r3 > r2 goto pc+1
-   R1_w=inv0 R2_w=pkt_end(id=0,off=0,imm=0) R3_w=pkt(id=0,off=42,r=42,imm=0) R4_w=pkt(id=0,off=0,r=42,imm=0) R10=fp0
-  9: (69) r2 = *(u16 *)(r1 +9)
-  R1 invalid mem access 'inv'
-  processed 15 insns (limit 1000000) max_states_per_insn 0 total_states 1 peak_states 1 mark_read 0
+> As long as the noise is the output of a CPRNG, this doesn't hurt the
+> security of dev/dandom.
+> 
+> The noise is more like effective 32-bits since you're xoring the low and
+> high half of the noise together (ignoring the minor details of carry bits).
 
-The verifier does not seem to take into account that code can't
-ever reach instruction 9 if the size check fails and r1 will be
-always valid when size check succeeds.
+Definitely. The purpose of this noise in fact is more to complicate the
+reconstruction of the internal state in case a large number of samples
+is used, precisely due to these carry bits that propagate solely depending
+on the noise value itself, and the uncertainty about when it changes and
+from what to what.
 
-My guess is that verifier does not have such check, but I'm still
-scratching on the surface of it, so I could be totally wrong and
-missing something.. before I dive in I was wondering you guys
-could help me out with some insights or suggestions.
+> Which means that it's 2^32 effort to brute force this (which Amit called "no
+> biggie for modern machines"). If the noise is the raw sample data with only
+> a few bits of entropy, then it's even easier to brute force.
 
-thanks,
-jirka
+Don't you forget to multiply by another 2^32 for X being folded onto itself ?
+Because you have 2^32 possible values of X which will give you a single 32-bit
+output value for a given noise value.
 
+> Given the uses of this, I think we really should look into a CPRNG for this
+> and then completely reseed it periodically. The problem is finding one
+> that's fast enough.
 
----
- .../testing/selftests/bpf/verifier/ctx_skb.c  | 21 +++++++++++++++++++
- 1 file changed, 21 insertions(+)
+That was precisely the problem that drove me to propose something like
+this. And all these cycles wasted everywhere just to protect a 16-bit
+source port on a mostly idle machine seem quite overkill to me.
 
-diff --git a/tools/testing/selftests/bpf/verifier/ctx_skb.c b/tools/testing/selftests/bpf/verifier/ctx_skb.c
-index 2e16b8e268f2..54578f1fb662 100644
---- a/tools/testing/selftests/bpf/verifier/ctx_skb.c
-+++ b/tools/testing/selftests/bpf/verifier/ctx_skb.c
-@@ -346,6 +346,27 @@
- 	.result = ACCEPT,
- 	.prog_type = BPF_PROG_TYPE_SK_SKB,
- },
-+{
-+	"dead path check",
-+	.insns = {
-+	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,		//  0. r2 = *(u32 *)(r1 + data_end)
-+		    offsetof(struct __sk_buff, data_end)),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1,		//  1. r4 = *(u32 *)(r1 + data)
-+		    offsetof(struct __sk_buff, data)),
-+	BPF_MOV64_REG(BPF_REG_3, BPF_REG_4),			//  2. r3 = r4
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, 42),			//  3. r3 += 42
-+	BPF_MOV64_IMM(BPF_REG_1, 0),				//  4. r1 = 0
-+	BPF_JMP_REG(BPF_JGT, BPF_REG_3, BPF_REG_2, 2),		//  5. if r3 > r2 goto 8
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_4, 14),			//  6. r4 += 14
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_4),			//  7. r1 = r4
-+	BPF_JMP_REG(BPF_JGT, BPF_REG_3, BPF_REG_2, 1),		//  8. if r3 > r2 goto 10
-+	BPF_LDX_MEM(BPF_H, BPF_REG_2, BPF_REG_1, 9),		//  9. r2 = *(u8 *)(r1 + 9)
-+	BPF_MOV64_IMM(BPF_REG_0, 0),				// 10. r0 = 0
-+	BPF_EXIT_INSN(),					// 11. exit
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_SK_SKB,
-+},
- {
- 	"overlapping checks for direct packet access SK_SKB",
- 	.insns = {
--- 
-2.25.4
+> Is there a hard instruction budget for this, or it is
+> just "fast enough to not hurt the network benchmarks" (i.e. if Dave Miller
+> screams)?
 
+It's not just Davem. I too am concerned about wasting CPU cycles in fast
+path especially in the network code. A few half-percent gains are hardly
+won once in a while in this area and in some infrastructures they matter.
+Not much but they do.
+
+Willy
