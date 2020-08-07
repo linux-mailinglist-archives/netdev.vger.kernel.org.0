@@ -2,124 +2,272 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F5023E5D6
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 04:26:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AF0C23E64B
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 05:31:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726579AbgHGC0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Aug 2020 22:26:42 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:51193 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726191AbgHGC02 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 22:26:28 -0400
-Received: by mail-io1-f70.google.com with SMTP id k5so509146ion.17
-        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 19:26:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=yHSo/kuS5ZP8bar2nScAn5lqkwqHBJnis2OUjlmiGf8=;
-        b=pmgA3zuYOb+FroJvOGMjtOWlKqvv+CZfKnpkMK5qKT3ZDF9EexrgPMYC6EwCV1+MnX
-         wyoWYM/ksB2Mqt2cPRDe8WDq79S+N5i0T072zzN8niBTuq/SVttMobTXhcwxAOGZ+bFG
-         SF1Vdpdypmaw942n4WW9y/V5Ha1cX0RVVPAjRkSGSyFjUGx+xbj9uEoKAiFNbGCNDA2e
-         kHsa54BhrjDDlu0xf5yWvtGoKdvUaYcUWK73A8vo0H4FbQ0pzDZ6olTe07QJPJo9AXoP
-         PJBujs/1KoJ4HJehhj6prjaP5dhlS2tLgRgCxpv7Kl1g/onMyPIOJumEZmCY1/wW5Jti
-         +cKg==
-X-Gm-Message-State: AOAM533UJLZKVGOVITmOdznMTF+Ty36HpTze8EYJlsUccy3Mjes1NABH
-        mpNrqcQbgu0ax5XcB64Zh3RGvyS+bIaJ2QtZ6zMJQMhaiR5w
-X-Google-Smtp-Source: ABdhPJzWqZlpXxseUdPBQtg4h5n7fncG9tig9ZWsF3MR1GAU9dFy4z0l4sIfNL+g6FoISGc69bCA7oL5MMsm3vF5TUDs1Qt2wrPD
+        id S1726205AbgHGDbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Aug 2020 23:31:09 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:47370 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726038AbgHGDbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Aug 2020 23:31:09 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0773S6O0008601
+        for <netdev@vger.kernel.org>; Thu, 6 Aug 2020 20:31:08 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=3jZJMPewx0JxZNRtokBU5E795eEura2mx2OWg38mnYg=;
+ b=lQJf0bd5aiOEeBDY67kxzpDkbgjUKvt53CIz1NrX9CFEGEu1L9YBkhH6XyDh3+MaMC6z
+ sj/He723jZZmppknvKxHFl8wOy4kE21TVgrS7MMGqtBu3nirUabvhiPD8d04FDPrKlqI
+ qGvJHzGQ2rd84oogQe3hdxoOlwLxR8uAsM8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 32qy47gkew-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 06 Aug 2020 20:31:08 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 6 Aug 2020 20:31:07 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id C603B2EC53DE; Thu,  6 Aug 2020 20:31:02 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] selftests/bpf: fix silent Makefile output
+Date:   Thu, 6 Aug 2020 20:30:57 -0700
+Message-ID: <20200807033058.848677-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:981d:: with SMTP id l29mr2298152ili.178.1596767186248;
- Thu, 06 Aug 2020 19:26:26 -0700 (PDT)
-Date:   Thu, 06 Aug 2020 19:26:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ece9db05ac4054e8@google.com>
-Subject: WARNING in compat_do_ebt_get_ctl
-From:   syzbot <syzbot+5accb5c62faa1d346480@syzkaller.appspotmail.com>
-To:     bridge@lists.linux-foundation.org, coreteam@netfilter.org,
-        davem@davemloft.net, fw@strlen.de, kadlec@netfilter.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        nikolay@cumulusnetworks.com, pablo@netfilter.org,
-        roopa@cumulusnetworks.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-07_01:2020-08-06,2020-08-07 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
+ bulkscore=0 lowpriorityscore=0 priorityscore=1501 phishscore=0 spamscore=0
+ suspectscore=9 mlxlogscore=999 malwarescore=0 clxscore=1015
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008070025
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+99aacebecb75 ("selftests: do not use .ONESHELL") removed .ONESHELL, which
+changes how Makefile "silences" multi-command target recipes. selftests/b=
+pf's
+Makefile relied (a somewhat unknowingly) on .ONESHELL behavior of silenci=
+ng
+all commands within the recipe if the first command contains @ symbol.
+Removing .ONESHELL exposed this hack.
 
-syzbot found the following issue on:
+This patch fixes the issue by explicitly silencing each command with $(Q)=
+.
 
-HEAD commit:    47ec5303 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=17e92e76900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7c06047f622c5724
-dashboard link: https://syzkaller.appspot.com/bug?extid=5accb5c62faa1d346480
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-userspace arch: i386
+Also explicitly define fallback rule for building *.o from *.c, instead o=
+f
+relying on non-silent inherited rule. This was causing a non-silent outpu=
+t for
+bench.o object file.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5accb5c62faa1d346480@syzkaller.appspotmail.com
-
-WARNING: CPU: 0 PID: 783 at include/linux/thread_info.h:134 copy_overflow include/linux/thread_info.h:134 [inline]
-WARNING: CPU: 0 PID: 783 at include/linux/thread_info.h:134 check_copy_size include/linux/thread_info.h:143 [inline]
-WARNING: CPU: 0 PID: 783 at include/linux/thread_info.h:134 copy_to_user include/linux/uaccess.h:151 [inline]
-WARNING: CPU: 0 PID: 783 at include/linux/thread_info.h:134 compat_do_ebt_get_ctl+0x47e/0x500 net/bridge/netfilter/ebtables.c:2270
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 783 Comm: syz-executor.2 Not tainted 5.8.0-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- panic+0x2e3/0x75c kernel/panic.c:231
- __warn.cold+0x20/0x45 kernel/panic.c:600
- report_bug+0x1bd/0x210 lib/bug.c:198
- handle_bug+0x38/0x90 arch/x86/kernel/traps.c:235
- exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:255
- asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
-RIP: 0010:copy_overflow include/linux/thread_info.h:134 [inline]
-RIP: 0010:check_copy_size include/linux/thread_info.h:143 [inline]
-RIP: 0010:copy_to_user include/linux/uaccess.h:151 [inline]
-RIP: 0010:compat_do_ebt_get_ctl+0x47e/0x500 net/bridge/netfilter/ebtables.c:2270
-Code: ba fd ff ff 4c 89 f7 e8 a0 11 a4 fa e9 ad fd ff ff e8 06 0f 64 fa 4c 89 e2 be 50 00 00 00 48 c7 c7 00 4e 0e 89 e8 64 20 35 fa <0f> 0b e9 dc fd ff ff 41 bc f2 ff ff ff e9 4f fe ff ff e8 7b 11 a4
-RSP: 0018:ffffc900047b7ae8 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: 1ffff920008f6f5e RCX: 0000000000000000
-RDX: 0000000000040000 RSI: ffffffff815d8eb7 RDI: fffff520008f6f4f
-RBP: ffffffff8a8f3460 R08: 0000000000000001 R09: ffff88802ce31927
-R10: 0000000000000000 R11: 0000000033383754 R12: 000000000000ffab
-R13: 0000000020000100 R14: ffffc900047b7d80 R15: ffffc900047b7b20
- do_ebt_get_ctl+0x2b4/0x790 net/bridge/netfilter/ebtables.c:2317
- nf_getsockopt+0x72/0xd0 net/netfilter/nf_sockopt.c:116
- ip_getsockopt net/ipv4/ip_sockglue.c:1778 [inline]
- ip_getsockopt+0x164/0x1c0 net/ipv4/ip_sockglue.c:1757
- raw_getsockopt+0x1a1/0x1d0 net/ipv4/raw.c:876
- __sys_getsockopt+0x219/0x4c0 net/socket.c:2179
- __do_sys_getsockopt net/socket.c:2194 [inline]
- __se_sys_getsockopt net/socket.c:2191 [inline]
- __ia32_sys_getsockopt+0xb9/0x150 net/socket.c:2191
- do_syscall_32_irqs_on arch/x86/entry/common.c:84 [inline]
- __do_fast_syscall_32+0x57/0x80 arch/x86/entry/common.c:126
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:149
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-RIP: 0023:0xf7f24569
-Code: c4 01 10 03 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 eb 0d 90 90 90 90 90 90 90 90 90 90 90 90
-RSP: 002b:00000000f551e0bc EFLAGS: 00000296 ORIG_RAX: 000000000000016d
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000000000
-RDX: 0000000000000082 RSI: 0000000020000100 RDI: 0000000020000180
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
+Fixes: 92f7440ecc93 ("selftests/bpf: More succinct Makefile output")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ tools/testing/selftests/bpf/Makefile | 48 +++++++++++++++-------------
+ 1 file changed, 26 insertions(+), 22 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
+ts/bpf/Makefile
+index 48425f9251b5..a83b5827532f 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -102,7 +102,7 @@ endif
+ OVERRIDE_TARGETS :=3D 1
+ override define CLEAN
+ 	$(call msg,CLEAN)
+-	$(RM) -r $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES)=
+ $(EXTRA_CLEAN)
++	$(Q)$(RM) -r $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FI=
+LES) $(EXTRA_CLEAN)
+ endef
+=20
+ include ../lib.mk
+@@ -123,17 +123,21 @@ $(notdir $(TEST_GEN_PROGS)						\
+ 	 $(TEST_GEN_PROGS_EXTENDED)					\
+ 	 $(TEST_CUSTOM_PROGS)): %: $(OUTPUT)/% ;
+=20
++$(OUTPUT)/%.o: %.c
++	$(call msg,CC,,$@)
++	$(Q)$(CC) $(CFLAGS) -c $(filter %.c,$^) $(LDLIBS) -o $@
++
+ $(OUTPUT)/%:%.c
+ 	$(call msg,BINARY,,$@)
+-	$(LINK.c) $^ $(LDLIBS) -o $@
++	$(Q)$(LINK.c) $^ $(LDLIBS) -o $@
+=20
+ $(OUTPUT)/urandom_read: urandom_read.c
+ 	$(call msg,BINARY,,$@)
+-	$(CC) $(LDFLAGS) -o $@ $< $(LDLIBS) -Wl,--build-id
++	$(Q)$(CC) $(LDFLAGS) -o $@ $< $(LDLIBS) -Wl,--build-id
+=20
+ $(OUTPUT)/test_stub.o: test_stub.c $(BPFOBJ)
+ 	$(call msg,CC,,$@)
+-	$(CC) -c $(CFLAGS) -o $@ $<
++	$(Q)$(CC) -c $(CFLAGS) -o $@ $<
+=20
+ VMLINUX_BTF_PATHS ?=3D $(if $(O),$(O)/vmlinux)				\
+ 		     $(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux)	\
+@@ -181,15 +185,15 @@ $(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Ma=
+kefile)		       \
+=20
+ $(BUILD_DIR)/libbpf $(BUILD_DIR)/bpftool $(BUILD_DIR)/resolve_btfids $(I=
+NCLUDE_DIR):
+ 	$(call msg,MKDIR,,$@)
+-	mkdir -p $@
++	$(Q)mkdir -p $@
+=20
+ $(INCLUDE_DIR)/vmlinux.h: $(VMLINUX_BTF) | $(BPFTOOL) $(INCLUDE_DIR)
+ ifeq ($(VMLINUX_H),)
+ 	$(call msg,GEN,,$@)
+-	$(BPFTOOL) btf dump file $(VMLINUX_BTF) format c > $@
++	$(Q)$(BPFTOOL) btf dump file $(VMLINUX_BTF) format c > $@
+ else
+ 	$(call msg,CP,,$@)
+-	cp "$(VMLINUX_H)" $@
++	$(Q)cp "$(VMLINUX_H)" $@
+ endif
+=20
+ $(RESOLVE_BTFIDS): $(BPFOBJ) | $(BUILD_DIR)/resolve_btfids	\
+@@ -238,28 +242,28 @@ $(OUTPUT)/flow_dissector_load.o: flow_dissector_loa=
+d.h
+ # $4 - LDFLAGS
+ define CLANG_BPF_BUILD_RULE
+ 	$(call msg,CLNG-LLC,$(TRUNNER_BINARY),$2)
+-	($(CLANG) $3 -O2 -target bpf -emit-llvm				\
++	$(Q)($(CLANG) $3 -O2 -target bpf -emit-llvm			\
+ 		-c $1 -o - || echo "BPF obj compilation failed") | 	\
+ 	$(LLC) -mattr=3Ddwarfris -march=3Dbpf -mcpu=3Dv3 $4 -filetype=3Dobj -o =
+$2
+ endef
+ # Similar to CLANG_BPF_BUILD_RULE, but with disabled alu32
+ define CLANG_NOALU32_BPF_BUILD_RULE
+ 	$(call msg,CLNG-LLC,$(TRUNNER_BINARY),$2)
+-	($(CLANG) $3 -O2 -target bpf -emit-llvm				\
++	$(Q)($(CLANG) $3 -O2 -target bpf -emit-llvm			\
+ 		-c $1 -o - || echo "BPF obj compilation failed") | 	\
+ 	$(LLC) -march=3Dbpf -mcpu=3Dv2 $4 -filetype=3Dobj -o $2
+ endef
+ # Similar to CLANG_BPF_BUILD_RULE, but using native Clang and bpf LLC
+ define CLANG_NATIVE_BPF_BUILD_RULE
+ 	$(call msg,CLNG-BPF,$(TRUNNER_BINARY),$2)
+-	($(CLANG) $3 -O2 -emit-llvm					\
++	$(Q)($(CLANG) $3 -O2 -emit-llvm					\
+ 		-c $1 -o - || echo "BPF obj compilation failed") | 	\
+ 	$(LLC) -march=3Dbpf -mcpu=3Dv3 $4 -filetype=3Dobj -o $2
+ endef
+ # Build BPF object using GCC
+ define GCC_BPF_BUILD_RULE
+ 	$(call msg,GCC-BPF,$(TRUNNER_BINARY),$2)
+-	$(BPF_GCC) $3 $4 -O2 -c $1 -o $2
++	$(Q)$(BPF_GCC) $3 $4 -O2 -c $1 -o $2
+ endef
+=20
+ SKEL_BLACKLIST :=3D btf__% test_pinning_invalid.c test_sk_assign.c
+@@ -301,7 +305,7 @@ ifeq ($($(TRUNNER_OUTPUT)-dir),)
+ $(TRUNNER_OUTPUT)-dir :=3D y
+ $(TRUNNER_OUTPUT):
+ 	$$(call msg,MKDIR,,$$@)
+-	mkdir -p $$@
++	$(Q)mkdir -p $$@
+ endif
+=20
+ # ensure we set up BPF objects generation rule just once for a given
+@@ -321,7 +325,7 @@ $(TRUNNER_BPF_SKELS): $(TRUNNER_OUTPUT)/%.skel.h:			\
+ 		      $(TRUNNER_OUTPUT)/%.o				\
+ 		      | $(BPFTOOL) $(TRUNNER_OUTPUT)
+ 	$$(call msg,GEN-SKEL,$(TRUNNER_BINARY),$$@)
+-	$$(BPFTOOL) gen skeleton $$< > $$@
++	$(Q)$$(BPFTOOL) gen skeleton $$< > $$@
+ endif
+=20
+ # ensure we set up tests.h header generation rule just once
+@@ -345,7 +349,7 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
+ 		      $(TRUNNER_BPF_SKELS)				\
+ 		      $$(BPFOBJ) | $(TRUNNER_OUTPUT)
+ 	$$(call msg,TEST-OBJ,$(TRUNNER_BINARY),$$@)
+-	cd $$(@D) && $$(CC) -I. $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F=
+)
++	$(Q)cd $$(@D) && $$(CC) -I. $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $=
+$(@F)
+=20
+ $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
+ 		       %.c						\
+@@ -353,13 +357,13 @@ $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
+ 		       $(TRUNNER_TESTS_HDR)				\
+ 		       $$(BPFOBJ) | $(TRUNNER_OUTPUT)
+ 	$$(call msg,EXT-OBJ,$(TRUNNER_BINARY),$$@)
+-	$$(CC) $$(CFLAGS) -c $$< $$(LDLIBS) -o $$@
++	$(Q)$$(CC) $$(CFLAGS) -c $$< $$(LDLIBS) -o $$@
+=20
+ # only copy extra resources if in flavored build
+ $(TRUNNER_BINARY)-extras: $(TRUNNER_EXTRA_FILES) | $(TRUNNER_OUTPUT)
+ ifneq ($2,)
+ 	$$(call msg,EXT-COPY,$(TRUNNER_BINARY),$(TRUNNER_EXTRA_FILES))
+-	cp -a $$^ $(TRUNNER_OUTPUT)/
++	$(Q)cp -a $$^ $(TRUNNER_OUTPUT)/
+ endif
+=20
+ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
+@@ -367,8 +371,8 @@ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
+ 			     $(RESOLVE_BTFIDS)				\
+ 			     | $(TRUNNER_BINARY)-extras
+ 	$$(call msg,BINARY,,$$@)
+-	$$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
+-	$(RESOLVE_BTFIDS) --no-fail --btf btf_data.o $$@
++	$(Q)$$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
++	$(Q)$(RESOLVE_BTFIDS) --no-fail --btf btf_data.o $$@
+=20
+ endef
+=20
+@@ -421,17 +425,17 @@ verifier/tests.h: verifier/*.c
+ 		) > verifier/tests.h)
+ $(OUTPUT)/test_verifier: test_verifier.c verifier/tests.h $(BPFOBJ) | $(=
+OUTPUT)
+ 	$(call msg,BINARY,,$@)
+-	$(CC) $(CFLAGS) $(filter %.a %.o %.c,$^) $(LDLIBS) -o $@
++	$(Q)$(CC) $(CFLAGS) $(filter %.a %.o %.c,$^) $(LDLIBS) -o $@
+=20
+ # Make sure we are able to include and link libbpf against c++.
+ $(OUTPUT)/test_cpp: test_cpp.cpp $(OUTPUT)/test_core_extern.skel.h $(BPF=
+OBJ)
+ 	$(call msg,CXX,,$@)
+-	$(CXX) $(CFLAGS) $^ $(LDLIBS) -o $@
++	$(Q)$(CXX) $(CFLAGS) $^ $(LDLIBS) -o $@
+=20
+ # Benchmark runner
+ $(OUTPUT)/bench_%.o: benchs/bench_%.c bench.h
+ 	$(call msg,CC,,$@)
+-	$(CC) $(CFLAGS) -c $(filter %.c,$^) $(LDLIBS) -o $@
++	$(Q)$(CC) $(CFLAGS) -c $(filter %.c,$^) $(LDLIBS) -o $@
+ $(OUTPUT)/bench_rename.o: $(OUTPUT)/test_overhead.skel.h
+ $(OUTPUT)/bench_trigger.o: $(OUTPUT)/trigger_bench.skel.h
+ $(OUTPUT)/bench_ringbufs.o: $(OUTPUT)/ringbuf_bench.skel.h \
+@@ -444,7 +448,7 @@ $(OUTPUT)/bench: $(OUTPUT)/bench.o $(OUTPUT)/testing_=
+helpers.o \
+ 		 $(OUTPUT)/bench_trigger.o \
+ 		 $(OUTPUT)/bench_ringbufs.o
+ 	$(call msg,BINARY,,$@)
+-	$(CC) $(LDFLAGS) -o $@ $(filter %.a %.o,$^) $(LDLIBS)
++	$(Q)$(CC) $(LDFLAGS) -o $@ $(filter %.a %.o,$^) $(LDLIBS)
+=20
+ EXTRA_CLEAN :=3D $(TEST_CUSTOM_PROGS) $(SCRATCH_DIR)			\
+ 	prog_tests/tests.h map_tests/tests.h verifier/tests.h		\
+--=20
+2.24.1
+
