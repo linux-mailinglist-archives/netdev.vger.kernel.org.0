@@ -2,106 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 022FC23F314
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 21:32:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F6823F31A
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 21:33:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726574AbgHGTce (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 15:32:34 -0400
-Received: from mailrelay110.isp.belgacom.be ([195.238.20.137]:57908 "EHLO
-        mailrelay110.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725893AbgHGTce (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 15:32:34 -0400
-IronPort-SDR: V7AeIIJajMKV4ffn7ai1WZh4wGwVr3S6XxuFEUdpd/hcVCppxJWoEGlocw5gdFcvmvC9eayo0/
- QekAqwLNr4+wgQ/Q1vZbdk3akSiZdK68n3EEahz4Xm7HfOhq8wfWrFtpXcZcGBqs+XtwDm7P/k
- WYOwZ86a7xAleMquu7e5WdJTXOkJj3A/WC7QAeUhywTE8YuC6y20yy1lL/x8+X+C8sprmVgQYe
- 9dSgG4JytyWiO7FtoYqwuI/Akhb3/1mCfxCk+yDgvlGmznWFVfXhf7FK0ixtWp5iM33S41bCA9
- LSE=
-X-Belgacom-Dynamic: yes
-IronPort-PHdr: =?us-ascii?q?9a23=3Aa++VPRUwr8ttB8CAwF3kgbweHsjV8LGtZVwlr6?=
- =?us-ascii?q?E/grcLSJyIuqrYZRWBvqdThVPEFb/W9+hDw7KP9fy5BypQu93Y6ytKWacPfi?=
- =?us-ascii?q?dNsd8RkQ0kDZzNImzAB9muURYHGt9fXkRu5XCxPBsdMs//Y1rPvi/6tmZKSV?=
- =?us-ascii?q?3wOgVvO+v6BJPZgdip2OCu4Z3TZBhDiCagbb9oIxi6sATcutMVjId8Jao91x?=
- =?us-ascii?q?XEr3VVcOlK2G1kIk6ekQzh7cmq5p5j9CpQu/Ml98FeVKjxYro1Q79FAjk4Km?=
- =?us-ascii?q?45/MLkuwXNQguJ/XscT34ZkgFUDAjf7RH1RYn+vy3nvedgwiaaPMn2TbcpWT?=
- =?us-ascii?q?S+6qpgVRHlhDsbOzM/7WrajNF7gqBGrxK7vxFxw5DabpybOvR9ea3SctwUSH?=
- =?us-ascii?q?FdUstSTSFNHpmxY5cTA+cHIO1Wr5P9p1wLrRamBQejHvjgyj5SiX/wwKY00/?=
- =?us-ascii?q?4hHh/b0wM+BdIOsWjbrNboP6oVX+C61rLHzTvYYvNN2jf86I7IfQ49of2WRr?=
- =?us-ascii?q?1/b9PcxE8yHAzKklues5bqPy+J1usTqWib6fJtW+yshmMjqw98oziiytkih4?=
- =?us-ascii?q?fJm48Z1k3I+Tl4zYg6KtO1VUB2bMC5HZZQtSyXKYR4Tt8sTW9nvCs0yr0ItY?=
- =?us-ascii?q?C/cSUM1Z8pxAbfZuSDfoSV+B7vSeWcLSliiH54eb+yhwy+/VWhx+D6S8K6yk?=
- =?us-ascii?q?xFrjBfndnJrn0N0hvT5dWZRfZl5Ueh3CqP1xjU6uFZPUA4jarbJIAlwr43jp?=
- =?us-ascii?q?cTtUPDETPsl0XyjK+WcV4k+vSy5+TjZbXpuoWTN4tphQH5N6QhgM2/AeIgPg?=
- =?us-ascii?q?gPWWiU5/i82aXn8EHkWrlGk/47nrfDvJzHJMkWprS1DxJU34o77hawFTam0N?=
- =?us-ascii?q?AWnXkdK1JFfQqKj4bzNF7VLvD1Fuy/g1eskTdt2f/GIqftDY7TIXTbirfuYa?=
- =?us-ascii?q?5961JAyAo01d1f/4hbBaoFIPL0QULxssLXDgM3Mwy1x+bnFMty1pkEVWKIGK?=
- =?us-ascii?q?+ZP7vYsUWU6eI3P+mMeIgVtS7+K/c/+vHuiWE2lkMGcKmvw5QXdH64HvViI0?=
- =?us-ascii?q?WFf3XsmM0NEWAQvgoxVObqkkGNUSZPZ3auWKIx/j87CYy9AIfYWoCtmriB0z?=
- =?us-ascii?q?m9HpFMe29JFEiGEW30eIWcR/cMdCWSL9dnkjMaSbihRY4h1RWytADk0bprN/?=
- =?us-ascii?q?fb9TMGtZ390Nh4/PPTlR4s+jxuFcid0H+CT3tynmwWQz86xqd/oVZyyl2by6?=
- =?us-ascii?q?h3n+RYFcBP5/NOSgo1KZncz/ZkBNDuRA3OZNKJRU2gQtq4HTExQNMxw9sSY0?=
- =?us-ascii?q?ljAdWulBfD3zClA7UNjbyEGIQ08r7A33j2P8t9zWjJ1LU8gFY4XMtCLnOmhq?=
- =?us-ascii?q?Fh+AjJHYLJkFuWl7ysdasC2C7B7mCDzXCBvEtASg5/Tb3FXWwDZkvRtdn56F?=
- =?us-ascii?q?nNQKSgCbk8KQtBys6DKq1UZd31l1lJX+nsa5ziZDepkm20Aj6Oy6+CbY72dn?=
- =?us-ascii?q?9b2z/STAAHmgwX8H2uMwUiCCalv2/ESjt0GhanbVzE6vVkrH69CEM5nC+QaE?=
- =?us-ascii?q?g0+bO/+xcTzdKGRv8exLMPu291pTx+En6m3MPQBsbGrQc3L/YUWs80/FoSjT?=
- =?us-ascii?q?GRjAd6JJH1d60=3D?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2AqBADUqy1f/xCltltgHQEBAQEJARI?=
- =?us-ascii?q?BBQUBR4FDgxlUX401kiyRegsBAQEBAQEBAQEnDQECBAEBhEyCOSU4EwIDAQE?=
- =?us-ascii?q?BAwIFAQEGAQEBAQEBBQQBhg9Fgjcig0YLASMjgT8SgyYBglcptj0zhBCFIoF?=
- =?us-ascii?q?AgTiIH4UKgUE/hF+KNASPPaZlgmyDC4RZfZEmDyGgDY1lhEahQ4F6TSAYgyQ?=
- =?us-ascii?q?JRxkNjisXjiZCMDcCBggBAQMJVwE9AZANAQE?=
-X-IPAS-Result: =?us-ascii?q?A2AqBADUqy1f/xCltltgHQEBAQEJARIBBQUBR4FDgxlUX?=
- =?us-ascii?q?401kiyRegsBAQEBAQEBAQEnDQECBAEBhEyCOSU4EwIDAQEBAwIFAQEGAQEBA?=
- =?us-ascii?q?QEBBQQBhg9Fgjcig0YLASMjgT8SgyYBglcptj0zhBCFIoFAgTiIH4UKgUE/h?=
- =?us-ascii?q?F+KNASPPaZlgmyDC4RZfZEmDyGgDY1lhEahQ4F6TSAYgyQJRxkNjisXjiZCM?=
- =?us-ascii?q?DcCBggBAQMJVwE9AZANAQE?=
-Received: from 16.165-182-91.adsl-dyn.isp.belgacom.be (HELO localhost.localdomain) ([91.182.165.16])
-  by relay.skynet.be with ESMTP; 07 Aug 2020 21:32:32 +0200
-From:   Fabian Frederick <fabf@skynet.be>
-To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Fabian Frederick <fabf@skynet.be>
-Subject: [PATCH 3/3 linux-next] selftests: netfilter: kill running process only
-Date:   Fri,  7 Aug 2020 21:32:20 +0200
-Message-Id: <20200807193220.12735-1-fabf@skynet.be>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726733AbgHGTdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 15:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35676 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726045AbgHGTdg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 15:33:36 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE66C061756
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 12:33:36 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id d4so1425572pjx.5
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 12:33:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:from:mime-version:subject:date:message-id
+         :references:cc:in-reply-to:to;
+        bh=Fe3n4VKi5pnRtKW300kvfqgX0VVWYhsFPHjehF7XRBE=;
+        b=SMyQBWpI+mFMexUmvNUQ28U0pv88RirS8gjAfM49Uoh1VeLhRMEj+Pw5CjTQrZl/jP
+         JqNoQgH1b5XtWnBkkyn7npXU2rdHlMhHXwXhnkR2iqgOJ/f8Zj7b2vcHcMX+gAAP+79U
+         YtuqK/upQCc+AU6mqIPKaBzRSi/HN+dSTUoQWoayMGgO/kw8OaL6IY5ZrbyICGxy13zY
+         BD9y44/sfeZRxATKzbPF6qBzZb7DsQCHvWlahjeKxDQXZEli0oa3DyNlFpGXCYcp/g6V
+         Yq3Moi0FzBVpvZOwqQnniWK+UhsgVD/0L6FTsEgBLN2Zv9vwt4taM4Mlu3T3Xtr95428
+         DvQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:content-transfer-encoding:from:mime-version
+         :subject:date:message-id:references:cc:in-reply-to:to;
+        bh=Fe3n4VKi5pnRtKW300kvfqgX0VVWYhsFPHjehF7XRBE=;
+        b=m+CHPdVS8celGSpu0KxXbrMaYC6DKy3GryZTEajOJMN3UCKyMYALLJTPFERmQgpxAE
+         ZQTwJfXmbYovSHPX+q8dpiULiA1ZiR2BMeZSFIl6Z0JtlrJ/kQUkw3SNSy+CsjkN/XvY
+         aS8VgFbAfEpV4G9h9OEjTmbbG8ypeHXZc4LtKrXOTCHqRyRZFutDdIpmnzVnX3RokSWe
+         Jn+bziEOjBkAvqjZ8AGuAWH3fAAtosf7TTCYwhn1XhKcrN3vPyBqs0PR9HEyvVRppBnt
+         4zZ9xv6D6uXoQJUDVFuuNUlzmR8b1MugNPC0RNhixE/hFL1hHm3CDi7B3FWqOqa6Qvpv
+         l3ZQ==
+X-Gm-Message-State: AOAM533vVFAIwFgWWzzASZc76MsclrR5oKqshdSgqxd4+YTMAsqfTtK4
+        qW3kpN33BOW/gqHoIFFUPb2rJdVWSoQ=
+X-Google-Smtp-Source: ABdhPJzRVqrlSAkjcool3cxdgTtmDIV9HWgXynw2vZLeHB8tQBAN8NsSacGsykGS8/IoYPQPIgRoQw==
+X-Received: by 2002:a17:902:9042:: with SMTP id w2mr14304485plz.9.1596828815729;
+        Fri, 07 Aug 2020 12:33:35 -0700 (PDT)
+Received: from ?IPv6:2601:646:c200:1ef2:431:59:d011:24a4? ([2601:646:c200:1ef2:431:59:d011:24a4])
+        by smtp.gmail.com with ESMTPSA id o192sm15611184pfg.81.2020.08.07.12.33.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Aug 2020 12:33:34 -0700 (PDT)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+From:   Andy Lutomirski <luto@amacapital.net>
+Mime-Version: 1.0 (1.0)
+Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
+Date:   Fri, 7 Aug 2020 12:33:33 -0700
+Message-Id: <BF4C5741-7433-4E96-B856-B25B049C9E49@amacapital.net>
+References: <CAHk-=whf+_rWROqPUMr=Do0n1ADhkEeEFL0tY+M60TJZtdrq2A@mail.gmail.com>
+Cc:     Willy Tarreau <w@1wt.eu>, Marc Plumb <lkml.mplumb@gmail.com>,
+        Theodore Ts'o <tytso@mit.edu>, Netdev <netdev@vger.kernel.org>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Andrew Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        stable <stable@vger.kernel.org>
+In-Reply-To: <CAHk-=whf+_rWROqPUMr=Do0n1ADhkEeEFL0tY+M60TJZtdrq2A@mail.gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+X-Mailer: iPhone Mail (17G68)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoid noise like the following:
-nft_flowtable.sh: line 250: kill: (4691) - No such process
 
-Signed-off-by: Fabian Frederick <fabf@skynet.be>
----
- tools/testing/selftests/netfilter/nft_flowtable.sh | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/netfilter/nft_flowtable.sh b/tools/testing/selftests/netfilter/nft_flowtable.sh
-index e98cac6f8bfdd..a47d1d8322104 100755
---- a/tools/testing/selftests/netfilter/nft_flowtable.sh
-+++ b/tools/testing/selftests/netfilter/nft_flowtable.sh
-@@ -250,8 +250,14 @@ test_tcp_forwarding_ip()
- 
- 	sleep 3
- 
--	kill $lpid
--	kill $cpid
-+	if ps -p $lpid > /dev/null;then
-+		kill $lpid
-+	fi
-+
-+	if ps -p $cpid > /dev/null;then
-+		kill $cpid
-+	fi
-+
- 	wait
- 
- 	check_transfer "$ns1in" "$ns2out" "ns1 -> ns2"
--- 
-2.27.0
+> On Aug 7, 2020, at 12:21 PM, Linus Torvalds <torvalds@linux-foundation.org=
+> wrote:
+>=20
+> =EF=BB=BFOn Fri, Aug 7, 2020 at 12:08 PM Andy Lutomirski <luto@amacapital.=
+net> wrote:
+>> 4 cycles per byte on Core 2
+>=20
+> I took the reference C implementation as-is, and just compiled it with
+> O2, so my numbers may not be what some heavily optimized case does.
+>=20
+> But it was way more than that, even when amortizing for "only need to
+> do it every 8 cases". I think the 4 cycles/byte might be some "zero
+> branch mispredicts" case when you've fully unrolled the thing, but
+> then you'll be taking I$ misses out of the wazoo, since by definition
+> this won't be in your L1 I$ at all (only called every 8 times).
+>=20
+> Sure, it might look ok on microbenchmarks where it does stay hot the
+> cache all the time, but that's not realistic. I
 
+No one said we have to do only one ChaCha20 block per slow path hit.  In fac=
+t, the more we reduce the number of rounds, the more time we spend on I$ mis=
+ses, branch mispredictions, etc, so reducing rounds may be barking up the wr=
+ong tree entirely.  We probably don=E2=80=99t want to have more than one pag=
+e=20
+
+I wonder if AES-NI adds any value here.  AES-CTR is almost a drop-in replace=
+ment for ChaCha20, and maybe the performance for a cache-cold short run is b=
+etter.=
