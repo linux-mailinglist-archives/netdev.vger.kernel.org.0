@@ -2,97 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A1EE23F4D1
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 00:19:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70F7223F4D3
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 00:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726224AbgHGWTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 18:19:32 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:39522 "EHLO 1wt.eu"
+        id S1726238AbgHGWUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 18:20:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52416 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726045AbgHGWTc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Aug 2020 18:19:32 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 077MJDvK006853;
-        Sat, 8 Aug 2020 00:19:13 +0200
-Date:   Sat, 8 Aug 2020 00:19:13 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Marc Plumb <lkml.mplumb@gmail.com>
-Cc:     tytso@mit.edu, netdev@vger.kernel.org, aksecurity@gmail.com,
-        torvalds@linux-foundation.org, edumazet@google.com,
-        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
-        tglx@linutronix.de, peterz@infradead.org, stable@vger.kernel.org
-Subject: Re: Flaw in "random32: update the net random state on interrupt and
- activity"
-Message-ID: <20200807221913.GA6846@1wt.eu>
-References: <20200805153432.GE497249@mit.edu>
- <c200297c-85a5-dd50-9497-6fcf7f07b727@gmail.com>
- <20200805193824.GA17981@1wt.eu>
- <344f15dd-a324-fe44-54d4-c87719283e35@gmail.com>
- <20200806063035.GC18515@1wt.eu>
- <50b046ee-d449-8e6c-1267-f4060b527c06@gmail.com>
- <20200807070316.GA6357@1wt.eu>
- <a1833e06-1ce5-9a2b-f518-92e7c6b47d4f@gmail.com>
- <20200807174302.GA6740@1wt.eu>
- <9148811b-64f9-a18c-ddeb-b1ff4b34890e@gmail.com>
+        id S1726045AbgHGWUQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Aug 2020 18:20:16 -0400
+Received: from paulmck-ThinkPad-P72.home (unknown [50.45.173.55])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C31622177B;
+        Fri,  7 Aug 2020 22:20:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596838815;
+        bh=Fm5/4RuQm0wDj6D+otx5tHEIW5qEfI5jVQNjzwNCMso=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=YUZZuOLAoeOlhwxJVG96PwhK+uS+rsTVcfzF+TYi8vINVqkBuOJ1VQTBF++3dGeAw
+         3e3RH0CyKUQoSd4/Wyi8A6Si+KF9RW+Xdyb6iLTCrxZb014o2I8dKP3gPrfhgwveBq
+         wKlfhiBO0WnS3mhkN54yeOIClqirC+CGeHh1dygM=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id A05043522BB6; Fri,  7 Aug 2020 15:20:15 -0700 (PDT)
+Date:   Fri, 7 Aug 2020 15:20:15 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     Johan =?iso-8859-1?B?S2729nM=?= <jknoos@google.com>,
+        Gregory Rose <gvrose8192@gmail.com>, bugs@openvswitch.org,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
+        rcu <rcu@vger.kernel.org>
+Subject: Re: [ovs-discuss] Double free in recent kernels after memleak fix
+Message-ID: <20200807222015.GZ4295@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <CA+Sh73MJhqs7PBk6OV2AhzVjYvE1foUQUnwP5DwWR44LHZRZ9w@mail.gmail.com>
+ <58be64c5-9ae4-95ff-629e-f55e47ff020b@gmail.com>
+ <CA+Sh73NeNr+UNZYDfD1nHUXCY-P8mT1vJdm0cEY4MPwo_0PtzQ@mail.gmail.com>
+ <CAEXW_YSSL5+_DjtrYpFp35kGrem782nBF6HuVbgWJ_H3=jeX4A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <9148811b-64f9-a18c-ddeb-b1ff4b34890e@gmail.com>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEXW_YSSL5+_DjtrYpFp35kGrem782nBF6HuVbgWJ_H3=jeX4A@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 07, 2020 at 12:59:48PM -0700, Marc Plumb wrote:
+On Fri, Aug 07, 2020 at 04:47:56PM -0400, Joel Fernandes wrote:
+> Hi,
+> Adding more of us working on RCU as well. Johan from another team at
+> Google discovered a likely issue in openswitch, details below:
 > 
-> On 2020-08-07 10:43 a.m., Willy Tarreau wrote:
-> > 
-> > > Which means that it's 2^32 effort to brute force this (which Amit called "no
-> > > biggie for modern machines"). If the noise is the raw sample data with only
-> > > a few bits of entropy, then it's even easier to brute force.
-> > Don't you forget to multiply by another 2^32 for X being folded onto itself ?
-> > Because you have 2^32 possible values of X which will give you a single 32-bit
-> > output value for a given noise value.
+> On Fri, Aug 7, 2020 at 11:32 AM Johan Knöös <jknoos@google.com> wrote:
+> >
+> > On Tue, Aug 4, 2020 at 8:52 AM Gregory Rose <gvrose8192@gmail.com> wrote:
+> > >
+> > >
+> > >
+> > > On 8/3/2020 12:01 PM, Johan Knöös via discuss wrote:
+> > > > Hi Open vSwitch contributors,
+> > > >
+> > > > We have found openvswitch is causing double-freeing of memory. The
+> > > > issue was not present in kernel version 5.5.17 but is present in
+> > > > 5.6.14 and newer kernels.
+> > > >
+> > > > After reverting the RCU commits below for debugging, enabling
+> > > > slub_debug, lockdep, and KASAN, we see the warnings at the end of this
+> > > > email in the kernel log (the last one shows the double-free). When I
+> > > > revert 50b0e61b32ee890a75b4377d5fbe770a86d6a4c1 ("net: openvswitch:
+> > > > fix possible memleak on destroy flow-table"), the symptoms disappear.
+> > > > While I have a reliable way to reproduce the issue, I unfortunately
+> > > > don't yet have a process that's amenable to sharing. Please take a
+> > > > look.
+> > > >
+> > > > 189a6883dcf7 rcu: Remove kfree_call_rcu_nobatch()
+> > > > 77a40f97030b rcu: Remove kfree_rcu() special casing and lazy-callback handling
+> > > > e99637becb2e rcu: Add support for debug_objects debugging for kfree_rcu()
+> > > > 0392bebebf26 rcu: Add multiple in-flight batches of kfree_rcu() work
+> > > > 569d767087ef rcu: Make kfree_rcu() use a non-atomic ->monitor_todo
+> > > > a35d16905efc rcu: Add basic support for kfree_rcu() batching
 > 
-> If I can figure the state out once,
+> Note that these reverts were only for testing the same code, because
+> he was testing 2 different kernel versions. One of them did not have
+> this set. So I asked him to revert. There's no known bug in the
+> reverted code itself. But somehow these patches do make it harder for
+> him to reproduce the issue.
 
-Yes but how do you take that as granted ? This state doesn't appear
-without its noise counterpart, so taking as a prerequisite that you may
-guess one separately obviously indicates that you then just have to
-deduce the other, but the point of mixing precisely is that we do not
-expose individual parts.
+Perhaps they adjust timing?
 
-This way of thinking is often what results in extreme solutions to be
-designed, which are far away from the reality of the field of application,
-and result in unacceptable costs that make people turn to other solutions.
-Do you think it makes me happy to see people waste their time reimplementing
-alternate userland TCP stacks that are supposedly "way faster" by getting
-rid of all the useless (to them) stuff that was forced on them at the cost
-of performance ? And it makes me even less happy when they ask me why I'm
-not spending more time trying to adopt them. The reality is that this time
-could be better spent optimizing our stack to be sure that costs are added
-where they are relevant, and not just to make sure that when we align 7
-conditions starting with "imagine that I could guess that", the 8th could
-be guessed as well, except that none of these can really be guessed outside
-of a lab :-/
+> > > > Thanks,
+> > > > Johan Knöös
+> > >
+> > > Let's add the author of the patch you reverted and the Linux netdev
+> > > mailing list.
+> > >
+> > > - Greg
+> >
+> > I found we also sometimes get warnings from
+> > https://elixir.bootlin.com/linux/v5.5.17/source/kernel/rcu/tree.c#L2239
+> > under similar conditions even on kernel 5.5.17, which I believe may be
+> > related. However, it's much rarer and I don't have a reliable way of
+> > reproducing it. Perhaps 50b0e61b32ee890a75b4377d5fbe770a86d6a4c1 only
+> > increases the frequency of a pre-existing bug.
+> 
+> This is interesting, because I saw kbuild warn me recently [1] about
+> it as well. Though, I was actually intentionally messing with the
+> segcblist. I plan to debug it next week, but the warning itself is
+> unlikely to be caused by my patch IMHO (since it is slightly
+> orthogonal to what I changed).
+> 
+> [1] https://lore.kernel.org/lkml/20200720005334.GC19262@shao2-debian/
+> 
+> But then again, I have not heard reports of this warning firing. Paul,
+> has this come to your radar recently?
 
-> then the only new input is the noise, so
-> that's the only part I have to brute force. Throwing the noise in makes it
-> more difficult to get that state once, but once I have it then this type of
-> reseeding doesn't help.
+I have not seen any recent WARNs in rcu_do_batch().  I am guessing that
+this is one of the last two in that function?
 
-> I think it might be possible to do a decent CPRNG (that's at
-> least had some cryptanalys of it) with ~20 instructions per word, but if
-> that's not fast enough then I'll think about other options.
+If so, have you tried using CONFIG_DEBUG_OBJECTS_RCU_HEAD=y?  That Kconfig
+option is designed to help locate double frees via RCU.
 
-I think that around 20 instructions for a hash would definitely be nice
-(but please be aware that we're speaking about RISC-like instructions,
-not SIMD instructions). And also please be careful not to count only
-with amortized performance that's only good to show nice openssl
-benchmarks, because if that's 1280 instructions for 256 bits that
-result in 20 instructions per 32-bit word, it's not the same anymore
-at all!
-
-Regards,
-Willy
+							Thanx, Paul
