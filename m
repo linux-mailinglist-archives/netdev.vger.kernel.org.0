@@ -2,183 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8C0A23F45D
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 23:30:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8B4E23F49F
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 23:52:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727956AbgHGVa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 17:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
+        id S1726078AbgHGVwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 17:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727807AbgHGV3s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 17:29:48 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64EBC061D7C
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 14:29:45 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id e30so2796700pfj.0
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 14:29:45 -0700 (PDT)
+        with ESMTP id S1726015AbgHGVwR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 17:52:17 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E5CBC061756
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 14:52:17 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id t4so3007152iln.1
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 14:52:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1TZQegrBgPNN+SZZCsJyOP7eFX7H3/9/2zydOordKRU=;
-        b=ieZHYo04XCdbBogCHiXjbZeFR1bV303kMQGvEtUCo3MyCZv4PiQWUZOtUp5UOdsJms
-         OBTC87r+1D0ws9FbjFeU+TDngcJIVQp/zIa7cOyLrT+Kfwkksir2bzMZMZM71wB478Ek
-         KoeuqdI4fr1vD4oXtX+BT3zcMk4kACaAfsSllWPfE1XV9+yGzGNku5ufgoJtirVr8ZaS
-         pKG4jrzoRlV6GzhJsAabu9U1sMqMRLkG8XujccP5ELANmH4hQZEIMJBKDEnHRH+KpJy8
-         hSiEyisrJRZ8PcdacCUH3tpzWxbzlRwGl7dvUMXeAkWcUTPXKhKYFM0reJax5bPpfGFV
-         iRkQ==
+        bh=KwJhJkRkVep7Pv+VF6AFA8zMHTfejBP0YvxNMgM3PU8=;
+        b=BCTM/Q63NQPzdviFOqJWsRLXkUJwa2CNVbORKA19Bog3XfH7KvkR2l5QRJZHgxi1se
+         P95rkrYVFWFf/asGt/6vlhWaBEBhSSrt2x279iMdhUIaisTrBfN9oaYvyVMXHI8v5MsX
+         zxfxP62Y94HYo6U4MAt9nCwTlmejgJ+nlDzYOOC8GaFEayk68fdEwOAnX10BIyoWfHcP
+         Bb0nlQHW9rhW4wstYEn4AvQB16j2VRSrr4NEn/1Yjj40VJGD3ENBc+ino1QmTQB/bU8v
+         +vn9rP38wh7jDUWOUq4285hx7S9OkGNI1NxfK50p0vOm1A0lG1TWghbJXkoqvEpuj/pL
+         hCIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=1TZQegrBgPNN+SZZCsJyOP7eFX7H3/9/2zydOordKRU=;
-        b=KqIWekkOsO/Fw9H44f3Zn2tox6WGpN25vnSAXRAzYaLYXDW4eB9ro72BgY5DX1JCVR
-         VyhStQcTyz7BcZL2MSv8DQ0/yaiUwXfvGi54QWQzfeRnR4xc6YYTYHn+juJPkp/fhb69
-         1r48nCunxQLMnlZpRzdR6jIBjs7lOSX7zBKFCVR6nfvaUORLiObU8PRiCmf5psdbWnSt
-         hLWAw2yiqtKlMUOXRlhJOvuM5Vp0+KFFNTnhN2gnbfJnlJzlURKiODOHJmetOXbmUmqt
-         liE1Nb5rph87Cvo86FlRNFeQMZArIj1dhnHk2jRbTw/yCl9esaKfZWlUTpKxPpyXD4zX
-         zrVw==
-X-Gm-Message-State: AOAM532P1JMzTFNZzHitL1Aq4U7zoN0+SmVjwHKKMvrWq9i2dr72oew2
-        9tL+N8fEijoO0tRTsHyq9ZEYIRsFz3E=
-X-Google-Smtp-Source: ABdhPJz+2C/PgoKritkxy8QCsvDLemjrofpIEPFwkhIfTB+Eqa7wlcLaV2OWCQg+F4nEAB7Hu1Xv9XgPH0tp
-X-Received: by 2002:a17:90b:1254:: with SMTP id gx20mr16269548pjb.117.1596835785342;
- Fri, 07 Aug 2020 14:29:45 -0700 (PDT)
-Date:   Fri,  7 Aug 2020 14:29:15 -0700
-In-Reply-To: <20200807212916.2883031-1-jwadams@google.com>
-Message-Id: <20200807212916.2883031-7-jwadams@google.com>
-Mime-Version: 1.0
-References: <20200807212916.2883031-1-jwadams@google.com>
-X-Mailer: git-send-email 2.28.0.236.gb10cc79966-goog
-Subject: [RFC PATCH 6/7] core/metricfs: expose x86-specific irq information
- through metricfs
-From:   Jonathan Adams <jwadams@google.com>
-To:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jim Mattson <jmattson@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Jonathan Adams <jwadams@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KwJhJkRkVep7Pv+VF6AFA8zMHTfejBP0YvxNMgM3PU8=;
+        b=fmdMoshhc/NT3BieoeFAoW+itke1tUM8G0JEOCUPGuJwmJfQDi6ervved5Nz07Zezq
+         b4vIgKFvMdwsxxLyvseF0yxstl5i4q+n7MWy1uwsRsoAlCZqZyCSiShi2GNNfO7vVxXh
+         CtTuW64dC5wLX6VzHg1XJEgUsSDHGUQIKj+BR1w53F4WZBVja5YHU2oq3T5rDTTVJ6tc
+         ILpv3UgdeiZB9hJGzx8U0M3fwb+YU/yEiqLLBF3OJuZuh6c3CL0HgQZt/YKqv0DfrfEt
+         LPseFpRmSR0FkZqtQBp+95ko0z9JTHkHNVLhkFywv+akIF5B5SAUVWv1tFOmOoVZEKGp
+         9iLg==
+X-Gm-Message-State: AOAM530CdSPUNVQA6gN+e+GV9f6y5xe8ATY42o0+yXmdEhiJL8fbxiXd
+        Uq5hPR06H6Hk3lmS3dG6GW7bozdoZvwP5k1ZpyE=
+X-Google-Smtp-Source: ABdhPJxgW87WTAaOKPgjrtVBtnewi83UbZPHC603EfifCn7+cIVisy+5mrbVTErcUPbYTqmNlQT+nyu14UpiQ4MLu/o=
+X-Received: by 2002:a92:9116:: with SMTP id t22mr6363832ild.305.1596837136463;
+ Fri, 07 Aug 2020 14:52:16 -0700 (PDT)
+MIME-Version: 1.0
+References: <CA+Sh73MJhqs7PBk6OV2AhzVjYvE1foUQUnwP5DwWR44LHZRZ9w@mail.gmail.com>
+ <58be64c5-9ae4-95ff-629e-f55e47ff020b@gmail.com> <CA+Sh73NeNr+UNZYDfD1nHUXCY-P8mT1vJdm0cEY4MPwo_0PtzQ@mail.gmail.com>
+In-Reply-To: <CA+Sh73NeNr+UNZYDfD1nHUXCY-P8mT1vJdm0cEY4MPwo_0PtzQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 7 Aug 2020 14:52:04 -0700
+Message-ID: <CAM_iQpVAAanutBPXL366kUEbY9Q9LKDFtB32_LkStM0wcuW11w@mail.gmail.com>
+Subject: Re: [ovs-discuss] Double free in recent kernels after memleak fix
+To:     =?UTF-8?B?Sm9oYW4gS27DtsO2cw==?= <jknoos@google.com>
+Cc:     Gregory Rose <gvrose8192@gmail.com>, bugs <bugs@openvswitch.org>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Netdev <netdev@vger.kernel.org>, joel@joelfernandes.org
+Content-Type: multipart/mixed; boundary="00000000000048a33e05ac509e65"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add metricfs support for displaying percpu irq counters for x86.
-The top directory is /sys/kernel/debug/metricfs/irq_x86.
-Then there is a subdirectory for each x86-specific irq counter.
-For example:
+--00000000000048a33e05ac509e65
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-    cat /sys/kernel/debug/metricfs/irq_x86/TLB/values
+On Fri, Aug 7, 2020 at 8:33 AM Johan Kn=C3=B6=C3=B6s <jknoos@google.com> wr=
+ote:
+>
+> On Tue, Aug 4, 2020 at 8:52 AM Gregory Rose <gvrose8192@gmail.com> wrote:
+> >
+> >
+> >
+> > On 8/3/2020 12:01 PM, Johan Kn=C3=B6=C3=B6s via discuss wrote:
+> > > Hi Open vSwitch contributors,
+> > >
+> > > We have found openvswitch is causing double-freeing of memory. The
+> > > issue was not present in kernel version 5.5.17 but is present in
+> > > 5.6.14 and newer kernels.
+> > >
+> > > After reverting the RCU commits below for debugging, enabling
+> > > slub_debug, lockdep, and KASAN, we see the warnings at the end of thi=
+s
+> > > email in the kernel log (the last one shows the double-free). When I
+> > > revert 50b0e61b32ee890a75b4377d5fbe770a86d6a4c1 ("net: openvswitch:
+> > > fix possible memleak on destroy flow-table"), the symptoms disappear.
+> > > While I have a reliable way to reproduce the issue, I unfortunately
+> > > don't yet have a process that's amenable to sharing. Please take a
+> > > look.
+> > >
+> > > 189a6883dcf7 rcu: Remove kfree_call_rcu_nobatch()
+> > > 77a40f97030b rcu: Remove kfree_rcu() special casing and lazy-callback=
+ handling
+> > > e99637becb2e rcu: Add support for debug_objects debugging for kfree_r=
+cu()
+> > > 0392bebebf26 rcu: Add multiple in-flight batches of kfree_rcu() work
+> > > 569d767087ef rcu: Make kfree_rcu() use a non-atomic ->monitor_todo
+> > > a35d16905efc rcu: Add basic support for kfree_rcu() batching
+> > >
+> > > Thanks,
+> > > Johan Kn=C3=B6=C3=B6s
+> >
+> > Let's add the author of the patch you reverted and the Linux netdev
+> > mailing list.
+> >
+> > - Greg
+>
+> I found we also sometimes get warnings from
+> https://elixir.bootlin.com/linux/v5.5.17/source/kernel/rcu/tree.c#L2239
+> under similar conditions even on kernel 5.5.17, which I believe may be
+> related. However, it's much rarer and I don't have a reliable way of
+> reproducing it. Perhaps 50b0e61b32ee890a75b4377d5fbe770a86d6a4c1 only
+> increases the frequency of a pre-existing bug.
 
-Signed-off-by: Jonathan Adams <jwadams@google.com>
+It seems clear we have a double free on table->mask_array when
+the reallocation is triggered on the destroy path.
 
----
+Are you able to test the attached patch (compile tested only)?
+Also note: it is generated against the latest net tree, it may not be
+applied cleanly to any earlier stable release.
 
-jwadams@google.com: rebased to 5.8-pre6
-	This is work originally done by another engineer at
-	google, who would rather not have their name associated with
-	this patchset. They're okay with me sending it under my name.
----
- arch/x86/kernel/irq.c | 80 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 80 insertions(+)
+Thanks!
 
-diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
-index 181060247e3c..ffacbbc4066c 100644
---- a/arch/x86/kernel/irq.c
-+++ b/arch/x86/kernel/irq.c
-@@ -12,6 +12,7 @@
- #include <linux/delay.h>
- #include <linux/export.h>
- #include <linux/irq.h>
-+#include <linux/metricfs.h>
- 
- #include <asm/irq_stack.h>
- #include <asm/apic.h>
-@@ -374,3 +375,82 @@ void fixup_irqs(void)
- 	}
- }
- #endif
-+
-+#ifdef CONFIG_METRICFS
-+#define METRICFS_ITEM(name, field, desc) \
-+static void \
-+metricfs_##name(struct metric_emitter *e, int cpu) \
-+{ \
-+	int64_t v = irq_stats(cpu)->field; \
-+	METRIC_EMIT_PERCPU_INT(e, cpu, v); \
-+} \
-+METRIC_EXPORT_PERCPU_COUNTER(name, desc, metricfs_##name)
-+
-+METRICFS_ITEM(NMI, __nmi_count, "Non-maskable interrupts");
-+#ifdef CONFIG_X86_LOCAL_APIC
-+METRICFS_ITEM(LOC, apic_timer_irqs, "Local timer interrupts");
-+METRICFS_ITEM(SPU, irq_spurious_count, "Spurious interrupts");
-+METRICFS_ITEM(PMI, apic_perf_irqs, "Performance monitoring interrupts");
-+METRICFS_ITEM(IWI, apic_irq_work_irqs, "IRQ work interrupts");
-+METRICFS_ITEM(RTR, icr_read_retry_count, "APIC ICR read retries");
-+#endif
-+METRICFS_ITEM(PLT, x86_platform_ipis, "Platform interrupts");
-+#ifdef CONFIG_SMP
-+METRICFS_ITEM(RES, irq_resched_count, "Rescheduling interrupts");
-+METRICFS_ITEM(CAL, irq_call_count, "Function call interrupts");
-+METRICFS_ITEM(TLB, irq_tlb_count, "TLB shootdowns");
-+#endif
-+#ifdef CONFIG_X86_THERMAL_VECTOR
-+METRICFS_ITEM(TRM, irq_thermal_count, "Thermal event interrupts");
-+#endif
-+#ifdef CONFIG_X86_MCE_THRESHOLD
-+METRICFS_ITEM(THR, irq_threshold_count, "Threshold APIC interrupts");
-+#endif
-+#ifdef CONFIG_X86_MCE_AMD
-+METRICFS_ITEM(DFR, irq_deferred_error_count, "Deferred Error APIC interrupts");
-+#endif
-+#ifdef CONFIG_HAVE_KVM
-+METRICFS_ITEM(PIN, kvm_posted_intr_ipis, "Posted-interrupt notification event");
-+METRICFS_ITEM(PIW, kvm_posted_intr_wakeup_ipis,
-+	"Posted-interrupt wakeup event");
-+#endif
-+
-+static int __init init_irq_metricfs(void)
-+{
-+	struct metricfs_subsys *subsys;
-+
-+	subsys = metricfs_create_subsys("irq_x86", NULL);
-+
-+	metric_init_NMI(subsys);
-+#ifdef CONFIG_X86_LOCAL_APIC
-+	metric_init_LOC(subsys);
-+	metric_init_SPU(subsys);
-+	metric_init_PMI(subsys);
-+	metric_init_IWI(subsys);
-+	metric_init_RTR(subsys);
-+#endif
-+	metric_init_PLT(subsys);
-+#ifdef CONFIG_SMP
-+	metric_init_RES(subsys);
-+	metric_init_CAL(subsys);
-+	metric_init_TLB(subsys);
-+#endif
-+#ifdef CONFIG_X86_THERMAL_VECTOR
-+	metric_init_TRM(subsys);
-+#endif
-+#ifdef CONFIG_X86_MCE_THRESHOLD
-+	metric_init_THR(subsys);
-+#endif
-+#ifdef CONFIG_X86_MCE_AMD
-+	metric_init_DFR(subsys);
-+#endif
-+#ifdef CONFIG_HAVE_KVM
-+	metric_init_PIN(subsys);
-+	metric_init_PIW(subsys);
-+#endif
-+
-+	return 0;
-+}
-+module_init(init_irq_metricfs);
-+
-+#endif
--- 
-2.28.0.236.gb10cc79966-goog
+--00000000000048a33e05ac509e65
+Content-Type: text/x-patch; charset="US-ASCII"; name="openvswitch.diff"
+Content-Disposition: attachment; filename="openvswitch.diff"
+Content-Transfer-Encoding: base64
+Content-ID: <f_kdkrkrbl0>
+X-Attachment-Id: f_kdkrkrbl0
 
+ZGlmZiAtLWdpdCBhL25ldC9vcGVudnN3aXRjaC9mbG93X3RhYmxlLmMgYi9uZXQvb3BlbnZzd2l0
+Y2gvZmxvd190YWJsZS5jCmluZGV4IDhjMTI2NzVjYmI2Ny4uY2M3ODU5ZGI0NDVhIDEwMDY0NAot
+LS0gYS9uZXQvb3BlbnZzd2l0Y2gvZmxvd190YWJsZS5jCisrKyBiL25ldC9vcGVudnN3aXRjaC9m
+bG93X3RhYmxlLmMKQEAgLTI5NCw3ICsyOTQsNyBAQCBzdGF0aWMgaW50IHRibF9tYXNrX2FycmF5
+X2FkZF9tYXNrKHN0cnVjdCBmbG93X3RhYmxlICp0YmwsCiB9CiAKIHN0YXRpYyB2b2lkIHRibF9t
+YXNrX2FycmF5X2RlbF9tYXNrKHN0cnVjdCBmbG93X3RhYmxlICp0YmwsCi0JCQkJICAgIHN0cnVj
+dCBzd19mbG93X21hc2sgKm1hc2spCisJCQkJICAgIHN0cnVjdCBzd19mbG93X21hc2sgKm1hc2ss
+IGJvb2wgZGVzdHJveSkKIHsKIAlzdHJ1Y3QgbWFza19hcnJheSAqbWEgPSBvdnNsX2RlcmVmZXJl
+bmNlKHRibC0+bWFza19hcnJheSk7CiAJaW50IGksIG1hX2NvdW50ID0gUkVBRF9PTkNFKG1hLT5j
+b3VudCk7CkBAIC0zMTQsNiArMzE0LDExIEBAIHN0YXRpYyB2b2lkIHRibF9tYXNrX2FycmF5X2Rl
+bF9tYXNrKHN0cnVjdCBmbG93X3RhYmxlICp0YmwsCiAJcmN1X2Fzc2lnbl9wb2ludGVyKG1hLT5t
+YXNrc1tpXSwgbWEtPm1hc2tzW21hX2NvdW50IC0xXSk7CiAJUkNVX0lOSVRfUE9JTlRFUihtYS0+
+bWFza3NbbWFfY291bnQgLTFdLCBOVUxMKTsKIAorCWlmIChkZXN0cm95KSB7CisJCWtmcmVlKG1h
+c2spOworCQlyZXR1cm47CisJfQorCiAJa2ZyZWVfcmN1KG1hc2ssIHJjdSk7CiAKIAkvKiBTaHJp
+bmsgdGhlIG1hc2sgYXJyYXkgaWYgbmVjZXNzYXJ5LiAqLwpAQCAtMzI2LDcgKzMzMSw4IEBAIHN0
+YXRpYyB2b2lkIHRibF9tYXNrX2FycmF5X2RlbF9tYXNrKHN0cnVjdCBmbG93X3RhYmxlICp0Ymws
+CiB9CiAKIC8qIFJlbW92ZSAnbWFzaycgZnJvbSB0aGUgbWFzayBsaXN0LCBpZiBpdCBpcyBub3Qg
+bmVlZGVkIGFueSBtb3JlLiAqLwotc3RhdGljIHZvaWQgZmxvd19tYXNrX3JlbW92ZShzdHJ1Y3Qg
+Zmxvd190YWJsZSAqdGJsLCBzdHJ1Y3Qgc3dfZmxvd19tYXNrICptYXNrKQorc3RhdGljIHZvaWQg
+Zmxvd19tYXNrX3JlbW92ZShzdHJ1Y3QgZmxvd190YWJsZSAqdGJsLCBzdHJ1Y3Qgc3dfZmxvd19t
+YXNrICptYXNrLAorCQkJICAgICBib29sIGRlc3Ryb3kpCiB7CiAJaWYgKG1hc2spIHsKIAkJLyog
+b3ZzLWxvY2sgaXMgcmVxdWlyZWQgdG8gcHJvdGVjdCBtYXNrLXJlZmNvdW50IGFuZApAQCAtMzM3
+LDcgKzM0Myw3IEBAIHN0YXRpYyB2b2lkIGZsb3dfbWFza19yZW1vdmUoc3RydWN0IGZsb3dfdGFi
+bGUgKnRibCwgc3RydWN0IHN3X2Zsb3dfbWFzayAqbWFzaykKIAkJbWFzay0+cmVmX2NvdW50LS07
+CiAKIAkJaWYgKCFtYXNrLT5yZWZfY291bnQpCi0JCQl0YmxfbWFza19hcnJheV9kZWxfbWFzayh0
+YmwsIG1hc2spOworCQkJdGJsX21hc2tfYXJyYXlfZGVsX21hc2sodGJsLCBtYXNrLCBkZXN0cm95
+KTsKIAl9CiB9CiAKQEAgLTQ3MCw3ICs0NzYsNyBAQCBzdGF0aWMgdm9pZCB0YWJsZV9pbnN0YW5j
+ZV9mbG93X2ZyZWUoc3RydWN0IGZsb3dfdGFibGUgKnRhYmxlLAogCQkJdGFibGUtPnVmaWRfY291
+bnQtLTsKIAl9CiAKLQlmbG93X21hc2tfcmVtb3ZlKHRhYmxlLCBmbG93LT5tYXNrKTsKKwlmbG93
+X21hc2tfcmVtb3ZlKHRhYmxlLCBmbG93LT5tYXNrLCAhY291bnQpOwogfQogCiBzdGF0aWMgdm9p
+ZCB0YWJsZV9pbnN0YW5jZV9kZXN0cm95KHN0cnVjdCBmbG93X3RhYmxlICp0YWJsZSwKQEAgLTUy
+MSw5ICs1MjcsOSBAQCB2b2lkIG92c19mbG93X3RibF9kZXN0cm95KHN0cnVjdCBmbG93X3RhYmxl
+ICp0YWJsZSkKIAlzdHJ1Y3QgbWFza19jYWNoZSAqbWMgPSByY3VfZGVyZWZlcmVuY2VfcmF3KHRh
+YmxlLT5tYXNrX2NhY2hlKTsKIAlzdHJ1Y3QgbWFza19hcnJheSAqbWEgPSByY3VfZGVyZWZlcmVu
+Y2VfcmF3KHRhYmxlLT5tYXNrX2FycmF5KTsKIAorCXRhYmxlX2luc3RhbmNlX2Rlc3Ryb3kodGFi
+bGUsIHRpLCB1ZmlkX3RpLCBmYWxzZSk7CiAJY2FsbF9yY3UoJm1jLT5yY3UsIG1hc2tfY2FjaGVf
+cmN1X2NiKTsKIAljYWxsX3JjdSgmbWEtPnJjdSwgbWFza19hcnJheV9yY3VfY2IpOwotCXRhYmxl
+X2luc3RhbmNlX2Rlc3Ryb3kodGFibGUsIHRpLCB1ZmlkX3RpLCBmYWxzZSk7CiB9CiAKIHN0cnVj
+dCBzd19mbG93ICpvdnNfZmxvd190YmxfZHVtcF9uZXh0KHN0cnVjdCB0YWJsZV9pbnN0YW5jZSAq
+dGksCg==
+--00000000000048a33e05ac509e65--
