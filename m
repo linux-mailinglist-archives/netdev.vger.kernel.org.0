@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 950E923F381
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 22:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D7F623F383
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 22:05:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726392AbgHGUEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 16:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40426 "EHLO
+        id S1726202AbgHGUFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 16:05:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725893AbgHGUEi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 16:04:38 -0400
+        with ESMTP id S1725893AbgHGUFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 16:05:32 -0400
 Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C720C061756;
-        Fri,  7 Aug 2020 13:04:38 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id q16so1618442ybk.6;
-        Fri, 07 Aug 2020 13:04:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88298C061756;
+        Fri,  7 Aug 2020 13:05:32 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id p191so1629689ybg.0;
+        Fri, 07 Aug 2020 13:05:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LrvLhMssASMs+wooD3CADrbL9kN/4ex8UC2yN+vfgeY=;
-        b=aZ6TU4r5XR5eG5CySDeyM8k8lhkRguODa+u2IMK8aKSEucPJnBZm4D4kVM89n7Qj6X
-         WeDKIXLompGy55Ca7FmtrOCc5KnDzhGQppMnhI7AKgxZxNk0LqwYaxSAEoSaao9y7cyk
-         2m2v3SvfW7zKTts+JjfrcIwVtSHCEQEWHK2EiENQAonY18KIP0oLanODk8VvX2cbTBMu
-         btAQIs8X/9hDSo2kZnBIwi70RQnP6ixMXk3U87/c0N9pkeQ2/YyN+rAlyr2g263TPZV1
-         Tst3aNxsEIK4osIF9xgUd9YYfUp5LO31qOTT7p6K1bUkVBRpUkkV/KmMjZMPIwi9jFND
-         lXZA==
+        bh=q4noCA9RAAsMH4q5HZV1We0qpM7uKQjjCZuvnQKwVDo=;
+        b=T3i8jdWip67Yqbp8tLov+9gK+TYCzCAZYJR4n0d8dEF6TzumKfYnaEp58l5HxDIZdo
+         chhT++vj0wsmGcyY3ilaCc+SoL+aSB5wlRCPK7XQKQzzTOSz6sOrpAd/uDMwDatwcdGN
+         kX4SBqGY6uixgAg9Litz802IcAC6hKNabCSiAtAv545IWmmZU3jJivFd3DmPXdRAqFpk
+         eTCEfsqBZDCfX0ugH2dTh1h4ZSgTaK13lJjcjUdaXFO7rfv762If/8MzeJd/6AmLGkX+
+         u4nBHhU2vFjlSfz03At/6pHatmxZJ1OySXkr68ILE202aRRY5CB2vbbRTFM3GdUi+4KT
+         8B9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LrvLhMssASMs+wooD3CADrbL9kN/4ex8UC2yN+vfgeY=;
-        b=FZOEna5xSlL5K3KPv3CZznlD5DVNCgkzI2Df5gLh+iUeJkb9Xo7uGEpCQKo5890eWJ
-         Kv3W1+sYqyFHDRMT28HCJyPGXAhZz4yfVg66E3mwYKRdJftaxPAlsNEU50kPUUNliZA9
-         p+9NBklNpYKLV36ULnpwdP9kxs75jrSSBaeTbT/A8x/XASDmtO4ITIy4EXSE/7QUoABE
-         sI5YQi6fQ3IBAcGd7r3O8CetctrVdP8EUWXat1x1yhiPs2p8oRTgYTejp0chvZqpBNff
-         pKwOnSjBen9daLGHMDUubg/A44h7mmVAwYY7qrOuMNBezf8SPKVFNJHgJ2t3QjyQjhS1
-         a8eQ==
-X-Gm-Message-State: AOAM533ZWlz4+DA7n/ruHOjX671HoiVKRjGUdcXd+9DWRApu9R9irb8a
-        irzJkdGCcxofNFZGDkHeVRz5pPILydbJ2d18lpw=
-X-Google-Smtp-Source: ABdhPJxnnAhSu1vfEANXpPHAoPErhwfZg49kF6OHxU2h15gLHPY4Fc9GTj5oI+cQsQqgrW1K+/qzGKSuNs9QAuPV4dI=
-X-Received: by 2002:a25:d84a:: with SMTP id p71mr24086935ybg.347.1596830677695;
- Fri, 07 Aug 2020 13:04:37 -0700 (PDT)
+        bh=q4noCA9RAAsMH4q5HZV1We0qpM7uKQjjCZuvnQKwVDo=;
+        b=BwcE0oT6tM1CYDAXgmQC0fE7RnkWhYJlZaZ+Deam3SJ4BpkWGlaUgO1IXfmyZM+oHv
+         vdJeu4QtPJAzNbuTjsgNNWoIbAa0MDPrJ7g/u6c/rl/I/GgIZzJJTsaVLgJIE9qTQrgj
+         CvQ16aJ79PAl3hA0hGaeoII08rI7W5cH+5jHksSYBJEAQP9grozAUNUKvVGf88G5lZPX
+         oHXXoGhS3Dpvn+GKAi6juRab4nbXcn5mzcb8xZQAVwZKhRnsAN+zZjVoEvZEu/RTn2n3
+         9jSAOKL7tD9TvYQLe7RCYsYS9afgVr4SpXuwwthfjZpT8chjL13n2tQl9nJbqvl4Ct0k
+         exdQ==
+X-Gm-Message-State: AOAM530YOPv4DVxSAvpCUoY75bTPs45WaAPSgNmm+ijLIM0twm0UUC1x
+        WFkIS88Txlt+t4DMOZd84BsKOPK472hYlkE7tmU=
+X-Google-Smtp-Source: ABdhPJxGNyH9JWuKppzTxjpUThFMGESg6zod/zlyrlIfJg/bvLQUFVG31Czx20hRqcIg4LbCdOONrbh9tWbs/QycZIY=
+X-Received: by 2002:a5b:44d:: with SMTP id s13mr22998924ybp.403.1596830731869;
+ Fri, 07 Aug 2020 13:05:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200807094559.571260-1-jolsa@kernel.org> <20200807094559.571260-9-jolsa@kernel.org>
-In-Reply-To: <20200807094559.571260-9-jolsa@kernel.org>
+References: <20200807094559.571260-1-jolsa@kernel.org> <20200807094559.571260-11-jolsa@kernel.org>
+In-Reply-To: <20200807094559.571260-11-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 7 Aug 2020 13:04:26 -0700
-Message-ID: <CAEf4BzY8vE8k9c5fBB+3mcEpxOWc38dWBK8ji2aRpHM79nra_Q@mail.gmail.com>
-Subject: Re: [PATCH v10 bpf-next 08/14] bpf: Add btf_struct_ids_match function
+Date:   Fri, 7 Aug 2020 13:05:21 -0700
+Message-ID: <CAEf4BzaQOPYO3JYyJ3HKGWHdpKC7N-oKMPmOxnke8nXbZ2va9Q@mail.gmail.com>
+Subject: Re: [PATCH v10 bpf-next 10/14] bpf: Add d_path helper
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -70,93 +70,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 7, 2020 at 2:47 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Fri, Aug 7, 2020 at 2:48 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Adding btf_struct_ids_match function to check if given address provided
-> by BTF object + offset is also address of another nested BTF object.
+> Adding d_path helper function that returns full path for
+> given 'struct path' object, which needs to be the kernel
+> BTF 'path' object. The path is returned in buffer provided
+> 'buf' of size 'sz' and is zero terminated.
 >
-> This allows to pass an argument to helper, which is defined via parent
-> BTF object + offset, like for bpf_d_path (added in following changes):
+>   bpf_d_path(&file->f_path, buf, size);
 >
->   SEC("fentry/filp_close")
->   int BPF_PROG(prog_close, struct file *file, void *id)
->   {
->     ...
->     ret = bpf_d_path(&file->f_path, ...
+> The helper calls directly d_path function, so there's only
+> limited set of function it can be called from. Adding just
+> very modest set for the start.
 >
-> The first bpf_d_path argument is hold by verifier as BTF file object
-> plus offset of f_path member.
->
-> The btf_struct_ids_match function will walk the struct file object and
-> check if there's nested struct path object on the given offset.
+> Updating also bpf.h tools uapi header and adding 'path' to
+> bpf_helpers_doc.py script.
 >
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  include/linux/bpf.h   |  2 ++
->  kernel/bpf/btf.c      | 31 +++++++++++++++++++++++++++++++
->  kernel/bpf/verifier.c | 18 ++++++++++++------
->  3 files changed, 45 insertions(+), 6 deletions(-)
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  include/uapi/linux/bpf.h       | 13 +++++++++
+>  kernel/trace/bpf_trace.c       | 48 ++++++++++++++++++++++++++++++++++
+>  scripts/bpf_helpers_doc.py     |  2 ++
+>  tools/include/uapi/linux/bpf.h | 13 +++++++++
+>  4 files changed, 76 insertions(+)
 >
 
 [...]
-
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index b6ccfce3bf4c..041d151be15b 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -3960,16 +3960,21 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
->                                 goto err_type;
->                 }
->         } else if (arg_type == ARG_PTR_TO_BTF_ID) {
-> +               bool ids_match = false;
-> +
->                 expected_type = PTR_TO_BTF_ID;
->                 if (type != expected_type)
->                         goto err_type;
->                 if (!fn->check_btf_id) {
->                         if (reg->btf_id != meta->btf_id) {
-> -                               verbose(env, "Helper has type %s got %s in R%d\n",
-> -                                       kernel_type_name(meta->btf_id),
-> -                                       kernel_type_name(reg->btf_id), regno);
-> -
-> -                               return -EACCES;
-> +                               ids_match = btf_struct_ids_match(&env->log, reg->off, reg->btf_id,
-> +                                                                meta->btf_id);
-> +                               if (!ids_match) {
-> +                                       verbose(env, "Helper has type %s got %s in R%d\n",
-> +                                               kernel_type_name(meta->btf_id),
-> +                                               kernel_type_name(reg->btf_id), regno);
-> +                                       return -EACCES;
-> +                               }
->                         }
->                 } else if (!fn->check_btf_id(reg->btf_id, arg)) {
-
-Put this on a wishlist for now. I don't think we should expect
-fb->check_btf_id() to do btf_struct_ids_match() internally, so to
-support this, we'd have to call fb->check_btf_id() inside the loop
-while doing WALK_STRUCT struct. But let's not change all this in this
-patch set, it's involved enough already.
-
->                         verbose(env, "Helper does not support %s in R%d\n",
-> @@ -3977,7 +3982,8 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
->
->                         return -EACCES;
->                 }
-> -               if (!tnum_is_const(reg->var_off) || reg->var_off.value || reg->off) {
-> +               if (!ids_match &&
-> +                   (!tnum_is_const(reg->var_off) || reg->var_off.value || reg->off)) {
-
-Isn't this still wrong? if ids_match, but reg->var_off is non-zero,
-that's still bad, right?
-ids_match just "mitigates" reg->off check, so should be something like this:
-
-if ((reg->off && !ids_match) || !tnum_is_const(reg->var_off) ||
-reg->var_off.value)
- ... then bad ...
-
->                         verbose(env, "R%d is a pointer to in-kernel struct with non-zero offset\n",
->                                 regno);
->                         return -EACCES;
-> --
-> 2.25.4
->
