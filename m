@@ -2,70 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 790C523F30F
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 21:31:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B54E423F311
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 21:32:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726386AbgHGTbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 15:31:38 -0400
-Received: from mailrelay110.isp.belgacom.be ([195.238.20.137]:57815 "EHLO
+        id S1726428AbgHGTcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 15:32:06 -0400
+Received: from mailrelay110.isp.belgacom.be ([195.238.20.137]:57873 "EHLO
         mailrelay110.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725893AbgHGTbg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 15:31:36 -0400
-IronPort-SDR: 1fyfjNk7TYh21MnooOaHM1kLQxRmr0IVJ7A7BlV4g0PWoDOGvC8XN9SL1+2z3btx+xdbm3uS1g
- JSDcBoiWM+a9CAfT0oQ+6QpcOH1qEZnRJz+4MvHLGsBfs4mpDkhsGTfE6qLi1soXu9GO+CsghI
- VYQTiFmiYt4F5rvxd+PrTltxnMHUp/iKMcDtaZ/kZHj4yrZ4pirwD6hrxhlETB0AliSP9tVebK
- ZdDMTG/aaj+QS//ZfVUmRgo6Qex/6aiRcFm/2HQKJNtA5MZeLysl5a1BKN3Z24vaMul7MV/Y2Z
- o30=
+        by vger.kernel.org with ESMTP id S1725893AbgHGTcG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 15:32:06 -0400
+IronPort-SDR: EKkHPZmFIQsR2DeSxGORNFwOAvV6Cqsba2MVemjr7NDO1g79M4jg6ZJ06fdDyG81ctz7TbHd67
+ iIsja1UyDQ7XhHcWpYj/lGYGcdo/ajqAWzEfHeRAnG4k5Ei2NgjHNCE9RWJCvsZ8I3VsmF+VgW
+ y54ln5Zh6/IwRm2zSItliz0sz8b3fpRmRbtgtnsAFtg5vMMZqOEZraTvxpb+0lJJLvjYkGCJeq
+ ckZVxvc19rwJusVJKHw7qOJnvYG8K02WWL9RxlvXrLO/br+tzs250ZxBJi0AcacZrrXGyAer5g
+ 3ZU=
 X-Belgacom-Dynamic: yes
-IronPort-PHdr: =?us-ascii?q?9a23=3A4BqUPhfX+sSMa0wGZ4kGovmIlGMj4u6mDksu8p?=
- =?us-ascii?q?Mizoh2WeGdxc24ZBGN2/xhgRfzUJnB7Loc0qyK6v6mCTZLuM3a+Fk5M7V0Hy?=
- =?us-ascii?q?cfjssXmwFySOWkMmbcaMDQUiohAc5ZX0Vk9XzoeWJcGcL5ekGA6ibqtW1aFR?=
- =?us-ascii?q?rwLxd6KfroEYDOkcu3y/qy+5rOaAlUmTaxe7x/IAi3oAnLtcQan4RuJrs/xx?=
- =?us-ascii?q?bHv3BFZ/lYyWR0KFyJgh3y/N2w/Jlt8yRRv/Iu6ctNWrjkcqo7ULJVEi0oP3?=
- =?us-ascii?q?g668P3uxbDSxCP5mYHXWUNjhVIGQnF4wrkUZr3ryD3q/By2CiePc3xULA0RT?=
- =?us-ascii?q?Gv5LplRRP0lCsKMSMy/WfKgcJyka1bugqsqRxhzYDJbo+bN/1wcazSc94BWW?=
- =?us-ascii?q?ZMXdxcWzBbD4+gc4cCCfcKM+ZCr4n6olsDtRuwChO3C+Pu0DBIgGL9060g0+?=
- =?us-ascii?q?s/DA7JwhYgH9MSv3TXsd74M6kSXvquw6nG1jjDdPBW2Df76IfWbhAtu+qDUq?=
- =?us-ascii?q?xpfMfX1EIgGB/LgE+Kpoz5IzOayP4Ns26D4ud9W++jl24ppg5wrzWhyMoihY?=
- =?us-ascii?q?rEi4MWx1zY8Sh0w5o5KNK4RkNlbtCoDJlduj2EOoZyQs4vQGBltDs7x7AJvZ?=
- =?us-ascii?q?O2ejUBxpogxx7acfOHco6I7wrlVOmPPTd4inNleLajhxms60is0Ov8Vsey3V?=
- =?us-ascii?q?1XrSRFisHBu3QQ2xDJ98SKSeVx8l281TuO1w3f8PxILEEymKHGMZAu2KQwmY?=
- =?us-ascii?q?AWsUnbGy/2n1j5g7GOe0U//+io9/znYrL7pp+AL4N0ih/xMqApmsGnBeQ4NR?=
- =?us-ascii?q?QBUHKf+eS8073j5lH5TK9Ojv0xjqbWqpTaKtkcpq68GQBV04Aj5w6+Dzegzt?=
- =?us-ascii?q?sYgWEKIVZYdB6dkoTkOE/CLOrlAfq+g1mgiipnyvHeMr3kGJrNL3zDkLn7fb?=
- =?us-ascii?q?Z67k5R0AQzwspE6JJaEbwBO/HzW0/3tNPGEh81KRe7zPj/BNVnyoweQX6PAr?=
- =?us-ascii?q?OeMK7KqV+H/PkgI+2LZIIOvjbyNeQl5/DvjX89hV8SY7Op0YEQaHCiEfRsO1?=
- =?us-ascii?q?+Zbmb0gtcdDWcKuRIzTO/wh1KfVT5ceWq9Urk65j4lFIKmA4bDRoSxgLOfxi?=
- =?us-ascii?q?e3BJpWZnpJClqUC3fna52EW+sQaCKVOsJhnDIFWKO6S489zxGusBH1y7x9Iu?=
- =?us-ascii?q?XJ5CISrYjj28Rt5+3PiREy8iR5D8KD3GGRQWF0n2cIRyMo06BluEBy10mM0b?=
- =?us-ascii?q?ZmjPxcDtFT+fxJXRkgNZLGzOx1FcryWgTfcdeNUlqmRc+mAT4pRNIr39AOe1?=
- =?us-ascii?q?p9G8mljh3bwyWqBKUVmKKXBJMq6K3c2mP8J8BjxHba2qkhjl0mQtdROm28nK?=
- =?us-ascii?q?J/8BLTB4HRmUWDi6mqbbgc3DLK9Gqby2qBol1YXxNuXqXbRn0feETWosrj5k?=
- =?us-ascii?q?/YTL+hF64nMg1fxs6GMKdKbcfpjVpeTvf5JNvee36xm3u3BRuQyLODdpHle2?=
- =?us-ascii?q?sG0SXGC0gFkwYT8miaNQQkHSiuvTGWMDs7DVvlZ0TE9+RipnK/UkIuiQaQYA?=
- =?us-ascii?q?kp1LO5/hMerfqRV/0S2q4JomEmsTowVFii98nKEd6NoUxtcfZye9Q4tXlO32?=
- =?us-ascii?q?PQsURTJJGsIrpjjV1WJwp+tU3GzBZmDIhc18In+iB5hDFuIL6VhQsSPwiT2o?=
- =?us-ascii?q?r9b+Xa?=
+IronPort-PHdr: =?us-ascii?q?9a23=3A4JqgLxzU5lRYuJfXCy+O+j09IxM/srCxBDY+r6?=
+ =?us-ascii?q?Qd0usQKfad9pjvdHbS+e9qxAeQG9mCtbQU0aGP6PuocFdDyK7JiGoFfp1IWk?=
+ =?us-ascii?q?1NouQttCtkPvS4D1bmJuXhdS0wEZcKflZk+3amLRodQ56mNBXdrXKo8DEdBA?=
+ =?us-ascii?q?j0OxZrKeTpAI7SiNm82/yv95HJbAhEmTuwbalxIRmoogndq8cbjIV/Iast1x?=
+ =?us-ascii?q?XFpWdFdf5Lzm1yP1KTmBj85sa0/JF99ilbpuws+c1dX6jkZqo0VbNXAigoPG?=
+ =?us-ascii?q?Az/83rqALMTRCT6XsGU2UZiQRHDg7Y5xznRJjxsy/6tu1g2CmGOMD9UL45VS?=
+ =?us-ascii?q?i+46ptVRTljjoMOTwk/2HNksF+jLxVrg+vqRJ8xIDbb46bOeFicq7eZ94WWX?=
+ =?us-ascii?q?BMUtpNWyFHH4iyb5EPD+0EPetAr4fyvUABrRqkCgmqGejhyiVIiWHr0qIkye?=
+ =?us-ascii?q?QhEB3J3A89FN8JvnTbts76NKkJXOCuz6nJzTPDYO1K2Tvn84fHbAksrPeRVr?=
+ =?us-ascii?q?1/bcTf01MgFx/ZjlqOs4zlOSuY2OoOvmWf7+RtVOKih3Appg9xvzWj2toghp?=
+ =?us-ascii?q?XIi4waxV7J6Ct0zZgoKNC4SkN2f9GqHIdeuS+VM4Z4QsMsT39stSs817YIuo?=
+ =?us-ascii?q?a7cTAOxZg63RLTdv+Kf5aS7h7+VeucIS10iG9kdb+5mh2861KvyvfmWcmxyF?=
+ =?us-ascii?q?tKqy1FncTSuX0VzBzT79SHSuN6/ke8xTaDzwDT5f9AIUAzjafbL5khzaIqmZ?=
+ =?us-ascii?q?oXsUTDGTT2mFnsgK+ScUUr5vKn6+D6bbXho5+TLY50igfmPqQvnMywH/g4Px?=
+ =?us-ascii?q?AKUmSG4+iwyb7u8VPjTLlXj/A7krPVvI3bKMgDo662GQ5V0oIt6xalCDem1c?=
+ =?us-ascii?q?wVnXcdI11edhKKlJPpO1LOIfD+E/i/n06gnyx1yPzeJL3uHo3NLmTfkLfmZb?=
+ =?us-ascii?q?t981RTxxE3zdBY/J9UDK8OIO79Wk/wsNzYEgE2Mxauz+bgEtV92ZsUWXiTDa?=
+ =?us-ascii?q?+BLKPSrViI6/osI+aWeYAVvCjyJOQ+6v7ok3A5hVEdfait3ZsLdn+4BO5qI0?=
+ =?us-ascii?q?KDYXrjmt0BC3sFvhIiTOz2j12PSTBTZnipUqIn+jE7EoamApnFRoy3nbOOwj?=
+ =?us-ascii?q?+xHodKaWBeFlCMDXDoep2CW/gSdCKSLM5hkjgYVbe/UY8tzAyhuxHky7V5Ku?=
+ =?us-ascii?q?rZ4TMYtZ3929hv/eHTlg899SZyD8uD12GBVWZ0nnkHRzUuxqBwvVR9ykuf0a?=
+ =?us-ascii?q?h/m/FXCdtT5+lXXQcmK5HT1el6Bsv0Wg3fYteJRlemQtG6AT4vVNI92dgOY1?=
+ =?us-ascii?q?xyG9+6lBDMwzKqA6MJl7yMHJE09LzT32TsKMlj1XbLz7chj1Y4TctVL2Gmhb?=
+ =?us-ascii?q?Bw9xLVB4HXl0WVjaGqdb4T3CTV7meM0XKOvF1EUA53SajFU2oQaVDYrdni/U?=
+ =?us-ascii?q?PCTL+vCbI5PQtd08KNMbVFOZXVigBeTf3nP/zYbn6/mmOsCAzOwamDKMLpcm?=
+ =?us-ascii?q?kZ0S71DkUYnQEX4Xuccw8kCWPprX32FyB0EV/pJU/hosdkr3buYEY+zgiMJ2?=
+ =?us-ascii?q?N72ra44B8ehrTIRfoZ0JofuzYnpikyFlvrjIGeMMaJuwc0JPYUWtg6+loSjW?=
+ =?us-ascii?q?8=3D?=
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2AEBQDUqy1f/xCltltgHgEBCxIMR4R?=
- =?us-ascii?q?cVF+NNZIskXoLAQEBAQEBAQEBJw0BAgQBAYRMgjklOBMCAwEBAQMCBQEBBgE?=
- =?us-ascii?q?BAQEBAQUEAYYPRYI3IoNRASMjgT8SgyYBglcptnCEEIUigUCBOIgfhQqBQT+?=
- =?us-ascii?q?BEYNOijQEjz0jpkKCbIMLhFl9kSYPIaANkiuhQ4F6TSAYgyQJRxkNnGhCMDc?=
- =?us-ascii?q?CBggBAQMJVwE9AZANAQE?=
-X-IPAS-Result: =?us-ascii?q?A2AEBQDUqy1f/xCltltgHgEBCxIMR4RcVF+NNZIskXoLA?=
- =?us-ascii?q?QEBAQEBAQEBJw0BAgQBAYRMgjklOBMCAwEBAQMCBQEBBgEBAQEBAQUEAYYPR?=
- =?us-ascii?q?YI3IoNRASMjgT8SgyYBglcptnCEEIUigUCBOIgfhQqBQT+BEYNOijQEjz0jp?=
- =?us-ascii?q?kKCbIMLhFl9kSYPIaANkiuhQ4F6TSAYgyQJRxkNnGhCMDcCBggBAQMJVwE9A?=
- =?us-ascii?q?ZANAQE?=
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2ArBADUqy1f/xCltltgHQEBAQEJARI?=
+ =?us-ascii?q?BBQUBR4FDgxlUX401kiyRegsBAQEBAQEBAQEnDQECBAEBhEyCOSU4EwIDAQE?=
+ =?us-ascii?q?BAwIFAQEGAQEBAQEBBQQBhg9Fgjcig0YLASMjgT8JCYMmAYJXKbY9M4QQhSK?=
+ =?us-ascii?q?BQIE4iB+FCoFBP4ERg06EH4YVBLYigmyDC4RZfZEmDyGgDZIroUOBek0gGIM?=
+ =?us-ascii?q?kCUcZDZxoQjA3AgYIAQEDCVcBPQGPLl8BAQ?=
+X-IPAS-Result: =?us-ascii?q?A2ArBADUqy1f/xCltltgHQEBAQEJARIBBQUBR4FDgxlUX?=
+ =?us-ascii?q?401kiyRegsBAQEBAQEBAQEnDQECBAEBhEyCOSU4EwIDAQEBAwIFAQEGAQEBA?=
+ =?us-ascii?q?QEBBQQBhg9Fgjcig0YLASMjgT8JCYMmAYJXKbY9M4QQhSKBQIE4iB+FCoFBP?=
+ =?us-ascii?q?4ERg06EH4YVBLYigmyDC4RZfZEmDyGgDZIroUOBek0gGIMkCUcZDZxoQjA3A?=
+ =?us-ascii?q?gYIAQEDCVcBPQGPLl8BAQ?=
 Received: from 16.165-182-91.adsl-dyn.isp.belgacom.be (HELO localhost.localdomain) ([91.182.165.16])
-  by relay.skynet.be with ESMTP; 07 Aug 2020 21:31:24 +0200
+  by relay.skynet.be with ESMTP; 07 Aug 2020 21:32:04 +0200
 From:   Fabian Frederick <fabf@skynet.be>
 To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de
 Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org, Fabian Frederick <fabf@skynet.be>
-Subject: [PATCH 1/3 linux-next] selftests: netfilter: add checktool function
-Date:   Fri,  7 Aug 2020 21:31:11 +0200
-Message-Id: <20200807193111.12625-1-fabf@skynet.be>
+Subject: [PATCH 2/3 linux-next] selftests: netfilter: add MTU arguments to flowtables
+Date:   Fri,  7 Aug 2020 21:31:50 +0200
+Message-Id: <20200807193150.12684-1-fabf@skynet.be>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -74,58 +73,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-avoid repeating the same test for different toolcheck
+Add some documentation, default values defined in original
+script and Originator/Link/Responder arguments
+using getopts like in tools/power/cpupower/bench/cpufreq-bench_plot.sh
 
 Signed-off-by: Fabian Frederick <fabf@skynet.be>
 ---
- .../selftests/netfilter/nft_flowtable.sh      | 33 +++++++------------
- 1 file changed, 11 insertions(+), 22 deletions(-)
+ .../selftests/netfilter/nft_flowtable.sh      | 30 +++++++++++++++----
+ 1 file changed, 24 insertions(+), 6 deletions(-)
 
 diff --git a/tools/testing/selftests/netfilter/nft_flowtable.sh b/tools/testing/selftests/netfilter/nft_flowtable.sh
-index d3e0809ab3681..68a183753c6c3 100755
+index 68a183753c6c3..e98cac6f8bfdd 100755
 --- a/tools/testing/selftests/netfilter/nft_flowtable.sh
 +++ b/tools/testing/selftests/netfilter/nft_flowtable.sh
-@@ -21,29 +21,18 @@ ns2out=""
+@@ -2,13 +2,18 @@
+ # SPDX-License-Identifier: GPL-2.0
+ #
+ # This tests basic flowtable functionality.
+-# Creates following topology:
++# Creates following default topology:
+ #
+ # Originator (MTU 9000) <-Router1-> MTU 1500 <-Router2-> Responder (MTU 2000)
+ # Router1 is the one doing flow offloading, Router2 has no special
+ # purpose other than having a link that is smaller than either Originator
+ # and responder, i.e. TCPMSS announced values are too large and will still
+ # result in fragmentation and/or PMTU discovery.
++#
++# You can check with different Orgininator/Link/Responder MTU eg:
++# sh nft_flowtable.sh -o1000 -l500 -r100
++#
++
  
- log_netns=$(sysctl -n net.netfilter.nf_log_all_netns)
+ # Kselftest framework requirement - SKIP code is 4.
+ ksft_skip=4
+@@ -78,11 +83,24 @@ ip -net nsr2 addr add dead:2::1/64 dev veth1
+ # ns2 is going via nsr2 with a smaller mtu, so that TCPMSS announced by both peers
+ # is NOT the lowest link mtu.
  
--nft --version > /dev/null 2>&1
--if [ $? -ne 0 ];then
--	echo "SKIP: Could not run test without nft tool"
--	exit $ksft_skip
--fi
--
--ip -Version > /dev/null 2>&1
--if [ $? -ne 0 ];then
--	echo "SKIP: Could not run test without ip tool"
--	exit $ksft_skip
--fi
--
--which nc > /dev/null 2>&1
--if [ $? -ne 0 ];then
--	echo "SKIP: Could not run test without nc (netcat)"
--	exit $ksft_skip
--fi
-+checktool (){
-+	$1 > /dev/null 2>&1
-+	if [ $? -ne 0 ];then
-+		echo "SKIP: Could not $2"
-+		exit $ksft_skip
-+	fi
-+}
+-ip -net nsr1 link set veth0 mtu 9000
+-ip -net ns1 link set eth0 mtu 9000
++omtu=9000
++lmtu=1500
++rmtu=2000
++
++while getopts "o:l:r:" o
++do
++	case $o in
++		o) omtu=$OPTARG;;
++		l) lmtu=$OPTARG;;
++		r) rmtu=$OPTARG;;
++	esac
++done
++
++ip -net nsr1 link set veth0 mtu $omtu
++ip -net ns1 link set eth0 mtu $omtu
  
--ip netns add nsr1
--if [ $? -ne 0 ];then
--	echo "SKIP: Could not create net namespace"
--	exit $ksft_skip
--fi
-+checktool "nft --version" "run test without nft tool"
-+checktool "ip -Version" "run test without ip tool"
-+checktool "which nc" "run test without nc (netcat)"
-+checktool "ip netns add nsr1" "create net namespace"
+-ip -net nsr2 link set veth1 mtu 2000
+-ip -net ns2 link set eth0 mtu 2000
++ip -net nsr2 link set veth1 mtu $rmtu
++ip -net ns2 link set eth0 mtu $rmtu
  
- ip netns add ns1
- ip netns add ns2
+ # transfer-net between nsr1 and nsr2.
+ # these addresses are not used for connections.
+@@ -136,7 +154,7 @@ table inet filter {
+       # as PMTUd is off.
+       # This rule is deleted for the last test, when we expect PMTUd
+       # to kick in and ensure all packets meet mtu requirements.
+-      meta length gt 1500 accept comment something-to-grep-for
++      meta length gt $lmtu accept comment something-to-grep-for
+ 
+       # next line blocks connection w.o. working offload.
+       # we only do this for reverse dir, because we expect packets to
 -- 
 2.27.0
 
