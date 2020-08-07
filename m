@@ -2,140 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E1F823EFBC
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 17:03:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0134223EFDD
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 17:16:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726205AbgHGPDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 11:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50758 "EHLO
+        id S1726076AbgHGPQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 11:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726067AbgHGPDo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 11:03:44 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82C5C061756
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 08:03:43 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id d19so1014023pgl.10
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 08:03:43 -0700 (PDT)
+        with ESMTP id S1725993AbgHGPQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 11:16:17 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11EA9C061756
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 08:16:17 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id e5so1512364qth.5
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 08:16:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qR5hMo6nGGMQINCTQxm63tRZFYzEEptzzm9cFhtklBI=;
-        b=eEEqYIF+iwv+VXv0uJMIc1FI7hPWUh7j042hW9kZdW28CY1emjrLA3CbP7HN9phQQ2
-         rK0MtGQhTacAbUy45blfLZ00bhdU0UnHB4yXLplM5PphKkIFW9LLCe9VOtJbGO8mf0l9
-         90V+/XLpdqThgVR4trthPswC15o/kXs9DXVj49Kvafj1fNprHsfiJmPVxyQoQq4Q54W6
-         gkE15plDgk9+tKgBv4JsxoaUB7wsjqcqYaFkBqJBEPeQ06BVA5eiPh/aC7fMFdXLH3Tv
-         dRhlTXQUF6Q3G0nMweSMHkTyQE5sO9gqPUnhdEQj4LwbXvHAOn3xzUyjGPIiHyxCaH3p
-         FviQ==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=VKTFLicl6xwpBXqd/t2kPesay6+ziGfwGcxr8GUT7jc=;
+        b=HRkXh04ZIlT2QraAFZTl6QfQQW1rkt/XoVa+q7B/9kiD6cmahefid0Fw67WnCaNYUA
+         ilqZU62wMaDgjmC4oc4362glWTRiYxZPn0bBt4YpoJAn7VDQTcfkAFE6Tg/zePNsGhWR
+         Z+DXedE7uYSkWpscEwdRf9EkGh+SA74YKohrWoGNtDNWb8cmMufN8XqEt7FDq4thmh6r
+         Vp6K+JR2JPUvwWjDMQXERBUrKQoJz9whtU+xbHL8r7xzPker8h8TfL+6X+ky8j7HhHXl
+         MECFvfFJjYe5HRkCz6Nl6IrfONAJY+w1SgR1MChxM2NIQ2JTHZ2GcDVNJZhUjJKUV3Bq
+         37/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qR5hMo6nGGMQINCTQxm63tRZFYzEEptzzm9cFhtklBI=;
-        b=RUUu9QMXEJqazy1BCdxnh5fPGhUg9/AeTj1Qi43/x8pg9Uv1MeOXSnmuAoBXUFyzpx
-         hkmNlaYG2JFJvrY71fM9CeDwXF9h1A8Kr0bg0KDegwdw+lCG3rX2r6kN/hsRXrDvPCrs
-         QwXXHwYOj3MIWK6R0TP53yh4AmIiBdeYKwZNcu21bsv5hQp4WbTR9XDL62xRD/ozppmx
-         LQ0mutlc64vCynLpFKDG7ScahAv1Dur8tLi4Nad6glOMN4rsj+HT5yzv0Pmi55UqLXyu
-         Ohnhh8G46mNKRYCq8IauHom06bzLoRAvZ2oahSpgwplL9dnAvXQ2ZcJEryB0xVoHKk3k
-         uS6A==
-X-Gm-Message-State: AOAM531uHV5QQdlmtnIj8/ZdqFIncYN2vvtbkOy4Nhx0k+0RtFLDWjje
-        6sV7p1alZO5vgLxNcJ41Z2y606hYPoE=
-X-Google-Smtp-Source: ABdhPJyVajiuTpKS4Got3Wy4WZQFgHZban/OaotDRQULuLHsNbJoaeuG0IXUv7OjmYlmqOAyyIT3cw==
-X-Received: by 2002:a65:6381:: with SMTP id h1mr12374547pgv.0.1596812620939;
-        Fri, 07 Aug 2020 08:03:40 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id g12sm12342946pfb.190.2020.08.07.08.03.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2020 08:03:40 -0700 (PDT)
-Date:   Fri, 7 Aug 2020 08:03:32 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: rtnl_trylock() versus SCHED_FIFO lockup
-Message-ID: <20200807080332.3d31231d@hermes.lan>
-In-Reply-To: <29a82363-411c-6f2b-9f55-97482504e453@prevas.dk>
-References: <b6eca125-351c-27c5-c34b-08c611ac2511@prevas.dk>
-        <20200805163425.6c13ef11@hermes.lan>
-        <191e0da8-178f-5f91-3d37-9b7cefb61352@prevas.dk>
-        <2a6edf25-b12b-c500-ad33-c0ec9e60cde9@cumulusnetworks.com>
-        <20200806203922.3d687bf2@hermes.lan>
-        <29a82363-411c-6f2b-9f55-97482504e453@prevas.dk>
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=VKTFLicl6xwpBXqd/t2kPesay6+ziGfwGcxr8GUT7jc=;
+        b=WZ6Kdu000PNvJRY08QEz+uDiHomHkDbsdCBgs7jDXBlIL0aHCf3TEs7WwBsgFE5fOX
+         xj/eQGtWLxw9nbvtgYtHsXLxQSB4hAKUGgwXGSB+WLzgr4DlaEHGmiTBzC5XCx25eU6o
+         PabubQS+Amlbxxp1BLFM7r2yEsU3Rol/0gymB6xcWbvDvQfDWnYjJkGzxGO0cB1Y9AX1
+         +v7SPumEV3b6rCqAGdmrK22wtrYxQf1PoT2VePBZ//Bex1AukKqw2gBFLPHwFkzNBbUE
+         FS2NhedSGGki7RTCR2YiRezB0+Fb8k/FrrIiRGOIOLslseIsJlDLFy7B6CvER/NevQ3p
+         Pk0g==
+X-Gm-Message-State: AOAM530HxLYjiHKCQaEpkY7At9vzZpYjh1XLjNfhGpaBQMZWDI/8mfCg
+        v42INeMMJMMRmrRGwxOmIQ3aH50ARMg=
+X-Google-Smtp-Source: ABdhPJxXTY6etxHTH7XFW7OR3v4AVE3iZ0cIUVKLS686H8zoVqHjH5C8Hp8FmZdT1nJVvVjgvwYeBQ==
+X-Received: by 2002:ac8:71d6:: with SMTP id i22mr14418420qtp.371.1596813375260;
+        Fri, 07 Aug 2020 08:16:15 -0700 (PDT)
+Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-06-184-148-45-213.dsl.bell.ca. [184.148.45.213])
+        by smtp.googlemail.com with ESMTPSA id d26sm8168287qtc.51.2020.08.07.08.16.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Aug 2020 08:16:14 -0700 (PDT)
+To:     Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: rcu build on bug
+Message-ID: <bccd2311-79fa-9d88-3c10-067c2438574d@mojatatu.com>
+Date:   Fri, 7 Aug 2020 11:16:13 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 7 Aug 2020 10:03:59 +0200
-Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
 
-> On 07/08/2020 05.39, Stephen Hemminger wrote:
-> > On Thu, 6 Aug 2020 12:46:43 +0300
-> > Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
-> >   
-> >> On 06/08/2020 12:17, Rasmus Villemoes wrote:  
-> >>> On 06/08/2020 01.34, Stephen Hemminger wrote:    
-> >>>> On Wed, 5 Aug 2020 16:25:23 +0200  
-> 
-> >>
-> >> Hi Rasmus,
-> >> I haven't tested anything but git history (and some grepping) points to deadlocks when
-> >> sysfs entries are being changed under rtnl.
-> >> For example check: af38f2989572704a846a5577b5ab3b1e2885cbfb and 336ca57c3b4e2b58ea3273e6d978ab3dfa387b4c
-> >> This is a common usage pattern throughout net/, the bridge is not the only case and there are more
-> >> commits which talk about deadlocks.
-> >> Again I haven't verified anything but it seems on device delete (w/ rtnl held) -> sysfs delete
-> >> would wait for current readers, but current readers might be stuck waiting on rtnl and we can deadlock.
-> >>  
-> > 
-> > I was referring to AB BA lock inversion problems.  
-> 
-> Ah, so lock inversion, not priority inversion.
-> 
-> > 
-> > Yes the trylock goes back to:
-> > 
-> > commit af38f2989572704a846a5577b5ab3b1e2885cbfb
-> > Author: Eric W. Biederman <ebiederm@xmission.com>
-> > Date:   Wed May 13 17:00:41 2009 +0000
-> > 
-> >     net: Fix bridgeing sysfs handling of rtnl_lock
-> >     
-> >     Holding rtnl_lock when we are unregistering the sysfs files can
-> >     deadlock if we unconditionally take rtnl_lock in a sysfs file.  So fix
-> >     it with the now familiar patter of: rtnl_trylock and syscall_restart()
-> >     
-> >     Signed-off-by: Eric W. Biederman <ebiederm@aristanetworks.com>
-> >     Signed-off-by: David S. Miller <davem@davemloft.net>
-> > 
-> > 
-> > The problem is that the unregister of netdevice happens under rtnl and
-> > this unregister path has to remove sysfs and other objects.
-> > So those objects have to have conditional locking.  
-> I see. And the reason the "trylock, unwind all the way back to syscall
-> entry and start over" works is that we then go through
-> 
-> kernfs_fop_write()
-> 	mutex_lock(&of->mutex);
-> 	if (!kernfs_get_active(of->kn)) {
-> 		mutex_unlock(&of->mutex);
-> 		len = -ENODEV;
-> 		goto out_free;
-> 	}
-> 
-> which makes the write fail with ENODEV if the sysfs node has already
-> been marked for removal.
-> 
-> If I'm reading the code correctly, doing "ip link set dev foobar type
-> bridge fdb_flush" is equivalent to writing to that sysfs file, except
-> the former ends up doing an unconditional rtnl_lock() and thus won't
-> have the livelocking issue.
-> 
-> Thanks,
-> Rasmus
+Made this small change:
 
-ip commands use netlink, and netlink doesn't have the problem because
-it doesn't go through a filesystem API.
+------
+diff --git a/net/sched/cls_fw.c b/net/sched/cls_fw.c
+index ec945294626a..75d43ed10cd8 100644
+--- a/net/sched/cls_fw.c
++++ b/net/sched/cls_fw.c
+@@ -22,7 +22,7 @@
+  #include <net/pkt_cls.h>
+  #include <net/sch_generic.h>
+
+-#define HTSIZE 256
++#define HTSIZE 4096
+
+  struct fw_head {
+         u32                     mask;
+---------
+
+Generated compile errors as follows:
+
+------------
+   DESCEND  objtool
+   CALL    scripts/atomic/check-atomics.sh
+   CALL    scripts/checksyscalls.sh
+   CHK     include/generated/compile.h
+   CC      net/sched/cls_fw.o
+In file included from ./include/linux/export.h:43:0,
+                  from ./include/linux/linkage.h:7,
+                  from ./include/linux/kernel.h:8,
+                  from ./include/linux/list.h:9,
+                  from ./include/linux/module.h:12,
+                  from net/sched/cls_fw.c:13:
+net/sched/cls_fw.c: In function ‘fw_destroy’:
+./include/linux/compiler.h:392:38: error: call to 
+‘__compiletime_assert_415’ declared with attribute error: BUILD_BUG_ON 
+failed: !__is_kfree_rcu_offset(__builtin_offsetof(typeof(*(head)), rcu))
+   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+                                       ^
+./include/linux/compiler.h:373:4: note: in definition of macro 
+‘__compiletime_assert’
+     prefix ## suffix();    \
+     ^~~~~~
+./include/linux/compiler.h:392:2: note: in expansion of macro 
+‘_compiletime_assert’
+   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+   ^~~~~~~~~~~~~~~~~~~
+./include/linux/build_bug.h:39:37: note: in expansion of macro 
+‘compiletime_assert’
+  #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+                                      ^~~~~~~~~~~~~~~~~~
+./include/linux/build_bug.h:50:2: note: in expansion of macro 
+‘BUILD_BUG_ON_MSG’
+   BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
+   ^~~~~~~~~~~~~~~~
+./include/linux/rcupdate.h:840:3: note: in expansion of macro ‘BUILD_BUG_ON’
+    BUILD_BUG_ON(!__is_kfree_rcu_offset(offset)); \
+    ^~~~~~~~~~~~
+./include/linux/rcupdate.h:875:3: note: in expansion of macro ‘__kfree_rcu’
+    __kfree_rcu(&((___p)->rhf), offsetof(typeof(*(ptr)), rhf)); \
+    ^~~~~~~~~~~
+net/sched/cls_fw.c:151:2: note: in expansion of macro ‘kfree_rcu’
+   kfree_rcu(head, rcu);
+   ^~~~~~~~~
+scripts/Makefile.build:280: recipe for target 'net/sched/cls_fw.o' failed
+make[2]: *** [net/sched/cls_fw.o] Error 1
+scripts/Makefile.build:497: recipe for target 'net/sched' failed
+make[1]: *** [net/sched] Error 2
+Makefile:1771: recipe for target 'net' failed
+make: *** [net] Error 2
+make: *** Waiting for unfinished jobs....
+
+----------------
+
+Gets fixed if i reduce the hash buckets of course.
+Looking at include/linux/rcupdate.h I see:
+
+------
+/*
+  * Does the specified offset indicate that the corresponding rcu_head
+  * structure can be handled by kfree_rcu()?
+  */
+#define __is_kfree_rcu_offset(offset) ((offset) < 4096)
+
+------
+
+I am guessing the hash table got too large.
+Smells like hard coded expectation?
+
+How to fix?
+
+cheers,
+jamal
