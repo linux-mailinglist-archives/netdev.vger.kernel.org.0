@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 266A323F459
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 23:30:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8C0A23F45D
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 23:30:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727984AbgHGVa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 17:30:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53482 "EHLO
+        id S1727956AbgHGVa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 17:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727797AbgHGV3r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 17:29:47 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32C0BC061A84
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 14:29:44 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id y9so3233634ybp.8
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 14:29:44 -0700 (PDT)
+        with ESMTP id S1727807AbgHGV3s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 17:29:48 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64EBC061D7C
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 14:29:45 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id e30so2796700pfj.0
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 14:29:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=iVslrzv4xFzBXNEn359Z/Whm6d2iMTLeHC3W31lAdWA=;
-        b=PMRwb4NmL4IuF15MfQo+H9K6Qn15ZHpQlFswnPN/N1ayXiu4uDc5kMokYO7brGLnRA
-         34RvfsEoemKACz3SSygAzLYTNbPPn+yIpaRuSfUJO3w/L09IMlBjOoCkem7/IpMbKm91
-         3tnCRlvu1GYumA3TL/IePEohcsP++2ix3zFqbldToEgq6dgZMV4QKsaTJNHgQklhmjho
-         RiYMb0G9JJB5PuWtxMP2x+5xImZ7zwdyFPtjEb+0+uDgMjrZjvWSbKKrc2w0PINSFFvQ
-         2uMQCw5nkyPclDnu8N0xl4fHSznqCH2Buiusi1bTDSmqxwryDPA95mriJfyN/ApwQxy2
-         NuDw==
+        bh=1TZQegrBgPNN+SZZCsJyOP7eFX7H3/9/2zydOordKRU=;
+        b=ieZHYo04XCdbBogCHiXjbZeFR1bV303kMQGvEtUCo3MyCZv4PiQWUZOtUp5UOdsJms
+         OBTC87r+1D0ws9FbjFeU+TDngcJIVQp/zIa7cOyLrT+Kfwkksir2bzMZMZM71wB478Ek
+         KoeuqdI4fr1vD4oXtX+BT3zcMk4kACaAfsSllWPfE1XV9+yGzGNku5ufgoJtirVr8ZaS
+         pKG4jrzoRlV6GzhJsAabu9U1sMqMRLkG8XujccP5ELANmH4hQZEIMJBKDEnHRH+KpJy8
+         hSiEyisrJRZ8PcdacCUH3tpzWxbzlRwGl7dvUMXeAkWcUTPXKhKYFM0reJax5bPpfGFV
+         iRkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=iVslrzv4xFzBXNEn359Z/Whm6d2iMTLeHC3W31lAdWA=;
-        b=bI4FTCscKELoTvtMjvCrzCgrNovfpSrvvJzuW3kXI7BFQ9q1Pj/7AzSMOSdzJ2vl8o
-         3aCLyDeRH5zJHEhSo7g7kWJkHqM8EvnjoEJK+XKPMjrJLmRzspXmauKX9OClIOKp+DTV
-         RuOl7e6JJZCw8nI27J6PJyO0RwFSDbCTk4OOF0j57eD1XiBWcZe+3Qt+pUg7losQU7+D
-         /vw/jszeBX8/qjaWzJFXogxX0UsUlB7pXYU+PffZOq23u6COAl5bFJk5VjCgZnWM1ODt
-         CNvGIsXeH6rPWern2kW8spiqo3ba2bkADJl4ZQmL+aI1k9p3CD3arhpzZnSpaT5Lv/h5
-         aZhQ==
-X-Gm-Message-State: AOAM532wtxNoE/PhVY4CQExZ2V2lW8XytnYA2VCl7Z8rsI49jQpNYKaO
-        hPdT5UAIbcjXXxToW2sDRhwYN1Ftg4Q=
-X-Google-Smtp-Source: ABdhPJxcSm5w8AA6P4+MwGuTbTjPOW9Gn09XxR/9hjwAMXQFwA18Lv9fE2jFeD1Vp1hTVPD0RBmh1mdiBy15
-X-Received: by 2002:a25:37c8:: with SMTP id e191mr20472648yba.230.1596835783402;
- Fri, 07 Aug 2020 14:29:43 -0700 (PDT)
-Date:   Fri,  7 Aug 2020 14:29:14 -0700
+        bh=1TZQegrBgPNN+SZZCsJyOP7eFX7H3/9/2zydOordKRU=;
+        b=KqIWekkOsO/Fw9H44f3Zn2tox6WGpN25vnSAXRAzYaLYXDW4eB9ro72BgY5DX1JCVR
+         VyhStQcTyz7BcZL2MSv8DQ0/yaiUwXfvGi54QWQzfeRnR4xc6YYTYHn+juJPkp/fhb69
+         1r48nCunxQLMnlZpRzdR6jIBjs7lOSX7zBKFCVR6nfvaUORLiObU8PRiCmf5psdbWnSt
+         hLWAw2yiqtKlMUOXRlhJOvuM5Vp0+KFFNTnhN2gnbfJnlJzlURKiODOHJmetOXbmUmqt
+         liE1Nb5rph87Cvo86FlRNFeQMZArIj1dhnHk2jRbTw/yCl9esaKfZWlUTpKxPpyXD4zX
+         zrVw==
+X-Gm-Message-State: AOAM532P1JMzTFNZzHitL1Aq4U7zoN0+SmVjwHKKMvrWq9i2dr72oew2
+        9tL+N8fEijoO0tRTsHyq9ZEYIRsFz3E=
+X-Google-Smtp-Source: ABdhPJz+2C/PgoKritkxy8QCsvDLemjrofpIEPFwkhIfTB+Eqa7wlcLaV2OWCQg+F4nEAB7Hu1Xv9XgPH0tp
+X-Received: by 2002:a17:90b:1254:: with SMTP id gx20mr16269548pjb.117.1596835785342;
+ Fri, 07 Aug 2020 14:29:45 -0700 (PDT)
+Date:   Fri,  7 Aug 2020 14:29:15 -0700
 In-Reply-To: <20200807212916.2883031-1-jwadams@google.com>
-Message-Id: <20200807212916.2883031-6-jwadams@google.com>
+Message-Id: <20200807212916.2883031-7-jwadams@google.com>
 Mime-Version: 1.0
 References: <20200807212916.2883031-1-jwadams@google.com>
 X-Mailer: git-send-email 2.28.0.236.gb10cc79966-goog
-Subject: [RFC PATCH 5/7] core/metricfs: expose scheduler stat information
+Subject: [RFC PATCH 6/7] core/metricfs: expose x86-specific irq information
  through metricfs
 From:   Jonathan Adams <jwadams@google.com>
 To:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
@@ -65,12 +65,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add metricfs support for displaying percpu scheduler counters.
-The top directory is /sys/kernel/debug/metricfs/stat (analogous
-to /proc/stat).  Then there is a subdirectory for each scheduler
-stat.  For example:
+Add metricfs support for displaying percpu irq counters for x86.
+The top directory is /sys/kernel/debug/metricfs/irq_x86.
+Then there is a subdirectory for each x86-specific irq counter.
+For example:
 
-    cat /sys/kernel/debug/metricfs/stat/user/values
+    cat /sys/kernel/debug/metricfs/irq_x86/TLB/values
 
 Signed-off-by: Jonathan Adams <jwadams@google.com>
 
@@ -78,82 +78,105 @@ Signed-off-by: Jonathan Adams <jwadams@google.com>
 
 jwadams@google.com: rebased to 5.8-pre6
 	This is work originally done by another engineer at
-	google, who would rather not have their name associated with this
-	patchset. They're okay with me sending it under my name.
+	google, who would rather not have their name associated with
+	this patchset. They're okay with me sending it under my name.
 ---
- fs/proc/stat.c | 57 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 57 insertions(+)
+ arch/x86/kernel/irq.c | 80 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 80 insertions(+)
 
-diff --git a/fs/proc/stat.c b/fs/proc/stat.c
-index 46b3293015fe..deb378507b0b 100644
---- a/fs/proc/stat.c
-+++ b/fs/proc/stat.c
-@@ -13,6 +13,7 @@
- #include <linux/irqnr.h>
- #include <linux/sched/cputime.h>
- #include <linux/tick.h>
+diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+index 181060247e3c..ffacbbc4066c 100644
+--- a/arch/x86/kernel/irq.c
++++ b/arch/x86/kernel/irq.c
+@@ -12,6 +12,7 @@
+ #include <linux/delay.h>
+ #include <linux/export.h>
+ #include <linux/irq.h>
 +#include <linux/metricfs.h>
  
- #ifndef arch_irq_stat_cpu
- #define arch_irq_stat_cpu(cpu) 0
-@@ -237,3 +238,59 @@ static int __init proc_stat_init(void)
- 	return 0;
+ #include <asm/irq_stack.h>
+ #include <asm/apic.h>
+@@ -374,3 +375,82 @@ void fixup_irqs(void)
+ 	}
  }
- fs_initcall(proc_stat_init);
+ #endif
 +
 +#ifdef CONFIG_METRICFS
 +#define METRICFS_ITEM(name, field, desc) \
 +static void \
 +metricfs_##name(struct metric_emitter *e, int cpu) \
 +{ \
-+	int64_t v = kcpustat_field(&kcpustat_cpu(cpu), field, cpu); \
++	int64_t v = irq_stats(cpu)->field; \
 +	METRIC_EMIT_PERCPU_INT(e, cpu, v); \
 +} \
 +METRIC_EXPORT_PERCPU_COUNTER(name, desc, metricfs_##name)
 +
-+#define METRICFS_FUNC_ITEM(name, func, desc) \
-+static void \
-+metricfs_##name(struct metric_emitter *e, int cpu) \
-+{ \
-+	struct kernel_cpustat cpustat; \
-+	int64_t v; \
-+	kcpustat_cpu_fetch(&cpustat, cpu); \
-+	v = func(&cpustat, cpu); \
-+	METRIC_EMIT_PERCPU_INT(e, cpu, v); \
-+} \
-+METRIC_EXPORT_PERCPU_COUNTER(name, desc, metricfs_##name)
++METRICFS_ITEM(NMI, __nmi_count, "Non-maskable interrupts");
++#ifdef CONFIG_X86_LOCAL_APIC
++METRICFS_ITEM(LOC, apic_timer_irqs, "Local timer interrupts");
++METRICFS_ITEM(SPU, irq_spurious_count, "Spurious interrupts");
++METRICFS_ITEM(PMI, apic_perf_irqs, "Performance monitoring interrupts");
++METRICFS_ITEM(IWI, apic_irq_work_irqs, "IRQ work interrupts");
++METRICFS_ITEM(RTR, icr_read_retry_count, "APIC ICR read retries");
++#endif
++METRICFS_ITEM(PLT, x86_platform_ipis, "Platform interrupts");
++#ifdef CONFIG_SMP
++METRICFS_ITEM(RES, irq_resched_count, "Rescheduling interrupts");
++METRICFS_ITEM(CAL, irq_call_count, "Function call interrupts");
++METRICFS_ITEM(TLB, irq_tlb_count, "TLB shootdowns");
++#endif
++#ifdef CONFIG_X86_THERMAL_VECTOR
++METRICFS_ITEM(TRM, irq_thermal_count, "Thermal event interrupts");
++#endif
++#ifdef CONFIG_X86_MCE_THRESHOLD
++METRICFS_ITEM(THR, irq_threshold_count, "Threshold APIC interrupts");
++#endif
++#ifdef CONFIG_X86_MCE_AMD
++METRICFS_ITEM(DFR, irq_deferred_error_count, "Deferred Error APIC interrupts");
++#endif
++#ifdef CONFIG_HAVE_KVM
++METRICFS_ITEM(PIN, kvm_posted_intr_ipis, "Posted-interrupt notification event");
++METRICFS_ITEM(PIW, kvm_posted_intr_wakeup_ipis,
++	"Posted-interrupt wakeup event");
++#endif
 +
-+METRICFS_ITEM(user, CPUTIME_USER, "time in user mode (nsec)");
-+METRICFS_ITEM(nice, CPUTIME_NICE, "time in user mode niced (nsec)");
-+METRICFS_ITEM(system, CPUTIME_SYSTEM, "time in system calls (nsec)");
-+METRICFS_ITEM(irq, CPUTIME_IRQ, "time in interrupts (nsec)");
-+METRICFS_ITEM(softirq, CPUTIME_SOFTIRQ, "time in softirqs (nsec)");
-+METRICFS_ITEM(steal, CPUTIME_STEAL, "time in involuntary wait (nsec)");
-+METRICFS_ITEM(guest, CPUTIME_GUEST, "time in guest mode (nsec)");
-+METRICFS_ITEM(guest_nice, CPUTIME_GUEST_NICE,
-+	"time in guest mode niced (nsec)");
-+METRICFS_FUNC_ITEM(idle, get_idle_time, "time in idle (nsec)");
-+METRICFS_FUNC_ITEM(iowait, get_iowait_time, "time in iowait (nsec)");
-+
-+static int __init init_stat_metricfs(void)
++static int __init init_irq_metricfs(void)
 +{
 +	struct metricfs_subsys *subsys;
 +
-+	subsys = metricfs_create_subsys("stat", NULL);
-+	metric_init_user(subsys);
-+	metric_init_nice(subsys);
-+	metric_init_system(subsys);
-+	metric_init_irq(subsys);
-+	metric_init_softirq(subsys);
-+	metric_init_steal(subsys);
-+	metric_init_guest(subsys);
-+	metric_init_guest_nice(subsys);
-+	metric_init_idle(subsys);
-+	metric_init_iowait(subsys);
++	subsys = metricfs_create_subsys("irq_x86", NULL);
++
++	metric_init_NMI(subsys);
++#ifdef CONFIG_X86_LOCAL_APIC
++	metric_init_LOC(subsys);
++	metric_init_SPU(subsys);
++	metric_init_PMI(subsys);
++	metric_init_IWI(subsys);
++	metric_init_RTR(subsys);
++#endif
++	metric_init_PLT(subsys);
++#ifdef CONFIG_SMP
++	metric_init_RES(subsys);
++	metric_init_CAL(subsys);
++	metric_init_TLB(subsys);
++#endif
++#ifdef CONFIG_X86_THERMAL_VECTOR
++	metric_init_TRM(subsys);
++#endif
++#ifdef CONFIG_X86_MCE_THRESHOLD
++	metric_init_THR(subsys);
++#endif
++#ifdef CONFIG_X86_MCE_AMD
++	metric_init_DFR(subsys);
++#endif
++#ifdef CONFIG_HAVE_KVM
++	metric_init_PIN(subsys);
++	metric_init_PIW(subsys);
++#endif
 +
 +	return 0;
 +}
-+module_init(init_stat_metricfs);
++module_init(init_irq_metricfs);
 +
 +#endif
 -- 
