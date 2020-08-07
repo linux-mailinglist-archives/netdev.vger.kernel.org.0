@@ -2,113 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2D4523E8FD
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 10:35:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B68923E9C0
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 11:07:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbgHGIfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 04:35:38 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:36581 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726511AbgHGIfi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 04:35:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596789336;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PjQsyo972jBXB2/eilIUlzA8PEGVZAXBOaZf9znBbfs=;
-        b=KYt2vRqUytAx3z/141DYuAJuf8hQPf0Pora95k5KdOpI8D+6iJQuhBY15Uru50146MpNf+
-        /1v/wsSNwROAUrNybhQhyct73E/ewKMGIuc61StCxkI9ya1yl9bxsmN77Mm5SW3mb+Dsyy
-        j/invvUfbofE8mrhqWG6r84M/KUL3Jc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-24-fOdHQlw-OOeqEvKVGIC9tA-1; Fri, 07 Aug 2020 04:35:34 -0400
-X-MC-Unique: fOdHQlw-OOeqEvKVGIC9tA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2C43F58;
-        Fri,  7 Aug 2020 08:35:32 +0000 (UTC)
-Received: from krava (unknown [10.40.194.188])
-        by smtp.corp.redhat.com (Postfix) with SMTP id EFAAD65C88;
-        Fri,  7 Aug 2020 08:35:28 +0000 (UTC)
-Date:   Fri, 7 Aug 2020 10:35:28 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     KP Singh <kpsingh@chromium.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v9 bpf-next 10/14] bpf: Add d_path helper
-Message-ID: <20200807083528.GA561444@krava>
-References: <20200801170322.75218-1-jolsa@kernel.org>
- <20200801170322.75218-11-jolsa@kernel.org>
- <CACYkzJ57H391Xe20iGyHPkLWDumAcMuRu_oqV0ZzBPUOZBqNvA@mail.gmail.com>
+        id S1727892AbgHGJG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 05:06:58 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:35376 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726788AbgHGJG6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 05:06:58 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id AE7051C0BD9; Fri,  7 Aug 2020 11:06:53 +0200 (CEST)
+Date:   Fri, 7 Aug 2020 11:06:53 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Marek =?utf-8?B?QmVow7pu?= <marek.behun@nic.cz>
+Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
+        jacek.anaszewski@gmail.com, Dan Murphy <dmurphy@ti.com>,
+        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC leds + net-next v4 0/2] Add support for LEDs on
+ Marvell PHYs
+Message-ID: <20200807090653.ihnt2arywqtpdzjg@duo.ucw.cz>
+References: <20200728150530.28827-1-marek.behun@nic.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="tuqlwx4lnotoz6lx"
 Content-Disposition: inline
-In-Reply-To: <CACYkzJ57H391Xe20iGyHPkLWDumAcMuRu_oqV0ZzBPUOZBqNvA@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <20200728150530.28827-1-marek.behun@nic.cz>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 07, 2020 at 02:31:52AM +0200, KP Singh wrote:
-> On Sat, Aug 1, 2020 at 7:04 PM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > Adding d_path helper function that returns full path for
-> 
-> [...]
-> 
-> > +}
-> > +
-> > +BTF_SET_START(btf_allowlist_d_path)
-> > +BTF_ID(func, vfs_truncate)
-> > +BTF_ID(func, vfs_fallocate)
-> > +BTF_ID(func, dentry_open)
-> > +BTF_ID(func, vfs_getattr)
-> > +BTF_ID(func, filp_close)
-> > +BTF_SET_END(btf_allowlist_d_path)
-> > +
-> 
-> > +static bool bpf_d_path_allowed(const struct bpf_prog *prog)
-> > +{
-> > +       return btf_id_set_contains(&btf_allowlist_d_path, prog->aux->attach_btf_id);
-> > +}
-> 
-> Can we allow it for LSM programs too?
 
-yes, that's why I used struct bpf_prog as argument, so we could reach the
-program type.. but I was hoping we could do that in follow up patchset,
-because I assume there might be still some discussion about that?
+--tuqlwx4lnotoz6lx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I plan to post new version today
+Hi!
 
-jirka
+> this is v4 of my RFC adding support for LEDs connected to Marvell PHYs.
+>=20
+> Please note that if you want to test this, you still need to first apply
+> the patch adding the LED private triggers support from Pavel's tree.
+> https://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/comm=
+it/?h=3Dfor-next&id=3D93690cdf3060c61dfce813121d0bfc055e7fa30d
+>=20
+> What I still don't like about this is that the LEDs created by the code
+> don't properly support device names. LEDs should have name in format
+> "device:color:function", for example "eth0:green:activity".
+>=20
+> The code currently looks for attached netdev for a given PHY, but
+> at the time this happens there is no netdev attached, so the LEDs gets
+> names without the device part (ie ":green:activity").
+>=20
+> This can be addressed in next version by renaming the LED when a netdev
+> is attached to the PHY, but first a API for LED device renaming needs to
+> be proposed. I am going to try to do that. This would also solve the
+> same problem when userspace renames an interface.
+>=20
+> And no, I don't want phydev name there.
 
-> 
-> - KP
-> 
-> > +
-> > +BTF_ID_LIST(bpf_d_path_btf_ids)
-> > +BTF_ID(struct, path)
-> > +
-> 
-> [...]
-> 
-> >
-> >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> > --
-> > 2.25.4
-> >
-> 
+Ummm. Can we get little more explanation on that? I fear that LED
+device renaming will be tricky and phydev would work around that
+nicely.
 
+Best regards,
+								Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--tuqlwx4lnotoz6lx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EARECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCXy0ZrQAKCRAw5/Bqldv6
+8o/UAJ9nvd57fgnTIHmdYW/OH4c5swwXJQCguYTbyQen7XuCNSviqkB7ZxmHeYs=
+=WH64
+-----END PGP SIGNATURE-----
+
+--tuqlwx4lnotoz6lx--
