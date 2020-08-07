@@ -2,140 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFBD023F50A
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 00:54:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0221023F51B
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 01:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726166AbgHGWy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 18:54:57 -0400
-Received: from www62.your-server.de ([213.133.104.62]:54772 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726015AbgHGWy5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 18:54:57 -0400
-Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1k4BG9-0004Ko-57; Sat, 08 Aug 2020 00:54:45 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2020-08-08
-Date:   Sat,  8 Aug 2020 00:54:44 +0200
-Message-Id: <20200807225444.6302-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1726198AbgHGXFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 19:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726066AbgHGXFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 19:05:49 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421B8C061757
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 16:05:49 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id r4so3010254wrx.9
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 16:05:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=qErUDeFm8T3iarG3Vx1bCv71tfEovrViLZBYkKZrTGo=;
+        b=g6bV/kLG6MH5flIrt2yp5ymYMBgvwyuYCyb62eKGIKqU2fNZbgcIs90nbi7QOgPSh+
+         tWgQhv183+GChWgqR6ewTA0KuiiPjHTBZBV3jjckVs6PK2ax4ekk2lPpGzZUdZ86oquG
+         M6KKBSLRy8Rs8neqi2iArawBEhcKghgRuYWUoCxIo1mjD06NfpXAyALHg15kUReE+4G4
+         F2i+HGjwowY4NDSDqRDh0VjOcvNK0lo9NH7fQVIaP9dcyLsavIw4Ft8UubCjV6mc7zr1
+         TVfDuP+qgyiWmO5oQlei1vvPU1yvMtOMbrqOPCv5a5Mud0HAtb1vXP6xe3E2zyaAt6Ym
+         P8YA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=qErUDeFm8T3iarG3Vx1bCv71tfEovrViLZBYkKZrTGo=;
+        b=O/MtDt1RIs4v87+923dnUHYYOravkIqBlIBN3Ty0SioFlH8NWcGlQorc1UBvNJ2huD
+         LzU6iHxN9dTWKvUhmxb5Z10bBJaDE8l/VpTmTpXeMZcJLy+m8CL6fzjxRBGjUCaFPID7
+         auXaOlGHUK838GXidZvn2/lj/5jSI07U9WVyKs0np1ZmHpT5vrLjy12CKMSh+LGTZYGw
+         Rihonll+x/GLZtFW20NBLAJgEr9Wwz5koFek0w+FT6ZqV+4OMZGAO4DpRJCygEXCAVRg
+         8w+VGSZ3eRqLIniyi0HbzTi4tjbTqao4Pbvy1EzO6bvAbzR1t0UWIvFt58PW5c2D+u46
+         aNCQ==
+X-Gm-Message-State: AOAM5314uBQdfJWhXTG27bJ7Sj9jFm+alUz4bOcC4cRnxtBXjl2zlyF2
+        9ymT4AhMf0FiJuu/2RHdWJ9FcpaVJ/iWH6VvxWPN
+X-Google-Smtp-Source: ABdhPJzJtEEvpg6OzdSL+10Wp1Juq7Hf/WV20LzG+/QpHUP5sbgvLYD+rthmh0roq3U8esmv9893HeKoUwGGxlfL/FE=
+X-Received: by 2002:a5d:42c2:: with SMTP id t2mr13853698wrr.396.1596841547635;
+ Fri, 07 Aug 2020 16:05:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25897/Fri Aug  7 14:45:59 2020)
+References: <CA+Sh73MJhqs7PBk6OV2AhzVjYvE1foUQUnwP5DwWR44LHZRZ9w@mail.gmail.com>
+ <58be64c5-9ae4-95ff-629e-f55e47ff020b@gmail.com> <CA+Sh73NeNr+UNZYDfD1nHUXCY-P8mT1vJdm0cEY4MPwo_0PtzQ@mail.gmail.com>
+ <CAEXW_YSSL5+_DjtrYpFp35kGrem782nBF6HuVbgWJ_H3=jeX4A@mail.gmail.com> <20200807222015.GZ4295@paulmck-ThinkPad-P72>
+In-Reply-To: <20200807222015.GZ4295@paulmck-ThinkPad-P72>
+From:   =?UTF-8?B?Sm9oYW4gS27DtsO2cw==?= <jknoos@google.com>
+Date:   Fri, 7 Aug 2020 16:05:36 -0700
+Message-ID: <CA+Sh73O25w4ktkvnxTpjckX857C7ACqZmrSLyM-NgowADpt-yA@mail.gmail.com>
+Subject: Re: [ovs-discuss] Double free in recent kernels after memleak fix
+To:     paulmck@kernel.org
+Cc:     Joel Fernandes <joel@joelfernandes.org>,
+        Gregory Rose <gvrose8192@gmail.com>, bugs@openvswitch.org,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
+        rcu <rcu@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Fri, Aug 7, 2020 at 3:20 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+>
+> On Fri, Aug 07, 2020 at 04:47:56PM -0400, Joel Fernandes wrote:
+> > Hi,
+> > Adding more of us working on RCU as well. Johan from another team at
+> > Google discovered a likely issue in openswitch, details below:
+> >
+> > On Fri, Aug 7, 2020 at 11:32 AM Johan Kn=C3=B6=C3=B6s <jknoos@google.co=
+m> wrote:
+> > >
+> > > On Tue, Aug 4, 2020 at 8:52 AM Gregory Rose <gvrose8192@gmail.com> wr=
+ote:
+> > > >
+> > > >
+> > > >
+> > > > On 8/3/2020 12:01 PM, Johan Kn=C3=B6=C3=B6s via discuss wrote:
+> > > > > Hi Open vSwitch contributors,
+> > > > >
+> > > > > We have found openvswitch is causing double-freeing of memory. Th=
+e
+> > > > > issue was not present in kernel version 5.5.17 but is present in
+> > > > > 5.6.14 and newer kernels.
+> > > > >
+> > > > > After reverting the RCU commits below for debugging, enabling
+> > > > > slub_debug, lockdep, and KASAN, we see the warnings at the end of=
+ this
+> > > > > email in the kernel log (the last one shows the double-free). Whe=
+n I
+> > > > > revert 50b0e61b32ee890a75b4377d5fbe770a86d6a4c1 ("net: openvswitc=
+h:
+> > > > > fix possible memleak on destroy flow-table"), the symptoms disapp=
+ear.
+> > > > > While I have a reliable way to reproduce the issue, I unfortunate=
+ly
+> > > > > don't yet have a process that's amenable to sharing. Please take =
+a
+> > > > > look.
+> > > > >
+> > > > > 189a6883dcf7 rcu: Remove kfree_call_rcu_nobatch()
+> > > > > 77a40f97030b rcu: Remove kfree_rcu() special casing and lazy-call=
+back handling
+> > > > > e99637becb2e rcu: Add support for debug_objects debugging for kfr=
+ee_rcu()
+> > > > > 0392bebebf26 rcu: Add multiple in-flight batches of kfree_rcu() w=
+ork
+> > > > > 569d767087ef rcu: Make kfree_rcu() use a non-atomic ->monitor_tod=
+o
+> > > > > a35d16905efc rcu: Add basic support for kfree_rcu() batching
+> >
+> > Note that these reverts were only for testing the same code, because
+> > he was testing 2 different kernel versions. One of them did not have
+> > this set. So I asked him to revert. There's no known bug in the
+> > reverted code itself. But somehow these patches do make it harder for
+> > him to reproduce the issue.
 
-The following pull-request contains BPF updates for your *net* tree.
+I'm not certain the frequency of the issue changes with and without
+these commits on 5.6.14, but at least the symptoms/definition of the
+issue changes. To clarify, this is what I've observed with different
+kernels:
+* 5.6.14:  "kernel BUG at mm/slub.c:304!". Easily reproducible.
+* 5.6.14 with the above RCU commits reverted: the warnings reported in
+my original email. Easily reproducible.
+* 5.6.14 with the above RCU commits reverted and
+50b0e61b32ee890a75b4377d5fbe770a86d6a4c1 reverted: no warnings
+observed (the frequency might be the same as on 5.5.17).
+* 5.5.17: warning at kernel/rcu/tree.c#L2239. Difficult to reproduce.
+Maybe a different root cause.
 
-We've added 11 non-merge commits during the last 2 day(s) which contain
-a total of 24 files changed, 216 insertions(+), 135 deletions(-).
-
-The main changes are:
-
-1) Fix UAPI for BPF map iterator before it gets frozen to allow for more
-   extensions/customization in future, from Yonghong Song.
-
-2) Fix selftests build to undo verbose build output, from Andrii Nakryiko.
-
-3) Fix inlining compilation error on bpf_do_trace_printk() due to variable
-   argument lists, from Stanislav Fomichev.
-
-4) Fix an uninitialized pointer warning at btf__parse_raw() in libbpf,
-   from Daniel T. Lee.
-
-5) Fix several compilation warnings in selftests with regards to ignoring
-   return value, from Jianlin Lv.
-
-6) Fix interruptions by switching off timeout for BPF tests, from Jiri Benc.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Andrii Nakryiko, John Fastabend
-
-----------------------------------------------------------------
-
-The following changes since commit 8912fd6a61d7474ea9b43be93f136034d28868d5:
-
-  net: hns3: fix spelling mistake "could'nt" -> "couldn't" (2020-08-06 12:05:40 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to b8c1a3090741f349322ad855d2b66d6e9752a60d:
-
-  bpf: Delete repeated words in comments (2020-08-07 18:57:24 +0200)
-
-----------------------------------------------------------------
-Alan Maguire (1):
-      bpf, doc: Remove references to warning message when using bpf_trace_printk()
-
-Alexei Starovoitov (1):
-      Merge branch 'bpf_iter-uapi-fix'
-
-Andrii Nakryiko (2):
-      selftests/bpf: Prevent runqslower from racing on building bpftool
-      selftests/bpf: Fix silent Makefile output
-
-Daniel T. Lee (1):
-      libbf: Fix uninitialized pointer at btf__parse_raw()
-
-Jianlin Lv (1):
-      bpf: Fix compilation warning of selftests
-
-Jiri Benc (1):
-      selftests: bpf: Switch off timeout
-
-Randy Dunlap (1):
-      bpf: Delete repeated words in comments
-
-Stanislav Fomichev (2):
-      bpf: Add missing return to resolve_btfids
-      bpf: Remove inline from bpf_do_trace_printk
-
-Yonghong Song (2):
-      bpf: Change uapi for bpf iterator map elements
-      tools/bpf: Support new uapi for map element bpf iterator
-
- Documentation/bpf/bpf_design_QA.rst                | 11 ----
- include/linux/bpf.h                                | 10 ++--
- include/uapi/linux/bpf.h                           | 15 +++---
- kernel/bpf/bpf_iter.c                              | 58 +++++++++++-----------
- kernel/bpf/core.c                                  |  2 +-
- kernel/bpf/map_iter.c                              | 37 +++++++++++---
- kernel/bpf/syscall.c                               |  2 +-
- kernel/bpf/verifier.c                              |  2 +-
- kernel/trace/bpf_trace.c                           |  2 +-
- net/core/bpf_sk_storage.c                          | 37 +++++++++++---
- tools/bpf/bpftool/iter.c                           |  9 ++--
- tools/bpf/resolve_btfids/main.c                    |  1 +
- tools/include/uapi/linux/bpf.h                     | 15 +++---
- tools/lib/bpf/bpf.c                                |  3 ++
- tools/lib/bpf/bpf.h                                |  5 +-
- tools/lib/bpf/btf.c                                |  2 +-
- tools/lib/bpf/libbpf.c                             |  6 +--
- tools/lib/bpf/libbpf.h                             |  5 +-
- tools/testing/selftests/bpf/Makefile               | 53 +++++++++++---------
- tools/testing/selftests/bpf/prog_tests/bpf_iter.c  | 40 ++++++++++++---
- .../testing/selftests/bpf/prog_tests/send_signal.c | 18 +++----
- .../bpf/prog_tests/stacktrace_build_id_nmi.c       |  4 +-
- tools/testing/selftests/bpf/settings               |  1 +
- tools/testing/selftests/bpf/test_tcpnotify_user.c  | 13 +++--
- 24 files changed, 216 insertions(+), 135 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/settings
+> Perhaps they adjust timing?
