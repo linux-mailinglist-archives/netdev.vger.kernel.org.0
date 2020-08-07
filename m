@@ -2,50 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 251AB23F463
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 23:31:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3404823F465
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 23:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726891AbgHGV3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 17:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53442 "EHLO
+        id S1727965AbgHGVaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 17:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727019AbgHGV3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 17:29:35 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C71C061756
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 14:29:35 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id d26so4357941yba.20
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 14:29:35 -0700 (PDT)
+        with ESMTP id S1727101AbgHGV3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 17:29:41 -0400
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63928C061757
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 14:29:41 -0700 (PDT)
+Received: by mail-qk1-x74a.google.com with SMTP id v188so2386371qkb.17
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 14:29:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=2Epbq3zd+57RV+c5a3tR14Y8EZnVI9kXEnkZqe3uwAA=;
-        b=W4JL+gkPyvYfdfwk6ydvYnTnosTt4pvJ7tL6kLXU+WUTb6rftiPRdMePYrbZabnBTD
-         +ISkyoN5LHfFW3Z6CwOyFJX0djyFH2uNFR35eVqx4/Y/Qi47Gs+4ceJ48kzO4YJo7Gux
-         deL3jBPiYpM3y+EqgYB+N5By3UQ0F55MxwqLYjl/Awc3revSFDBw4yahIaJqx+SGgXOg
-         vquf/jHyOotjcNWthbAW3uUC7wpRsVMjWeVPbcdTZppHRp2GfKlamKeJ1xDUvV2FIBM8
-         PYK8Tlv+XXASS++2PpJDsFc0cd4D+NzUwhVxDOepLelhsNX9Zlr+hx87Y8ZZOIZF3C1g
-         i+rw==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=Xwhl6oTAS7prpbXCRZdZshg5xz57JrEbZ056Cu9NiLQ=;
+        b=FbP0RxUpuIXc9TPHeycYqgrsWHy+edJZOunO3xzH9xgd3XMesTsydOHKMec+qxUJFA
+         FlXnrJi21QCaDcqgirJGJT0eBkQ0v3Vq6LIzdTyTYf6I4CV8iPofNCGuawph3tfsMnfh
+         rVST9SGjyClH8eIIJqualzLP+dJgXyLWWuF3VRTq6ejnpWajSiynlSZz5Y285bh+tnSW
+         ZxEvaLhRHfrOvoRGHyx1uzFMrik/lFM8Yi0f5EOQG7sM80OuBBVAKF1eI2Nt5evM5J/V
+         ZSfJtPKRCyz4Ary7BmVgPJgTRfuuh+/bHoAJlAFzxb/0O1Zu489t0ofM9yH0JSH6UL05
+         9KPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=2Epbq3zd+57RV+c5a3tR14Y8EZnVI9kXEnkZqe3uwAA=;
-        b=RLFNkQhVoSXBf36QFB9hbXWdhaWsogERw1lJue3I/yAqm/3dftQQhCtmmIWq/5Hznb
-         1pcJqAwxKOp/qnAZ8VUFgID87TjKQ82LcHEXCwb5RWPrSWGia04kVlfdAIxVc/IxGoO9
-         Dl0Wk7Yrdct4OrLD4Mt16zBU0fKUONCPbu2RWPDycfbm7UxP5mMAI2LpuL41QIWka+9F
-         EHWZKrgu+zm7TFronAbyBlLPkufMrJg3GotmkuqEcVPoXSaCmM3QVId8m3uK8xVz4BNf
-         85yHoaLbAASMhwkAbX6flg7zGk8GUOezjVkATXV/Ltq/2L2NgQhtZwzDLeftmFDkyXpU
-         D4+g==
-X-Gm-Message-State: AOAM530ujZlvzUbXPIVnXF4SnbtqfCiv2GYa/bzeRsHDIRWjDcGnch7w
-        tQOaCGMOfhzeL9mani4bE6H2mMwu23E=
-X-Google-Smtp-Source: ABdhPJwpYiGEXI6N/WmSc1sNe+MKpn0dLtZLyveRHzfSP1IyYqPUCszF3totD/1mcAxmqwETOm6E5qQykQ85
-X-Received: by 2002:a25:d709:: with SMTP id o9mr21697023ybg.392.1596835774334;
- Fri, 07 Aug 2020 14:29:34 -0700 (PDT)
-Date:   Fri,  7 Aug 2020 14:29:09 -0700
-Message-Id: <20200807212916.2883031-1-jwadams@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=Xwhl6oTAS7prpbXCRZdZshg5xz57JrEbZ056Cu9NiLQ=;
+        b=it+aY2LuIPkLR+Ckefq5gldtoUI2G7t8HeJcRF1wI7/CJO7VHrTEqa/x8pbipTWPoe
+         ngcfVhVrZgieiyJ1Kv2O7Mg1ii95Dh/MQH2S5INEx3AdivmFylD/joXwNlcYSHdcRaLx
+         NfkwoLY5NImzwoGh01+MlY9v9m/GZXfhCR0sYMbn+9EMolvt4Azb+Fn5/68wpWyuCJ2C
+         xPopzrk4YBgJ+hMfn11amseLtpAfWZXAyBo/JTYYrY4qy8nIXw42xcfpp9QonCon8hJs
+         M2OC3tUw2TPRNGFeZ28U8VC+XZ3hGSklxyS4o9PmPYMjgxhFnNZstjC4g+Ek9lA5+Cyi
+         +j0Q==
+X-Gm-Message-State: AOAM533K6/53xsrTssshrjkmTWZ5dScxpKB3uJ4/7DoTomWvW6VGr91z
+        SLA8tU1CMA8l9+6XrkddYbqC6X7HvFw=
+X-Google-Smtp-Source: ABdhPJyLLX7R17IOCOR3CY0ZoHgSxM9yzJvgcbYl6HaF+KCt80M13Jn4ki0ErUlYpRFS5LWuyydOwJIuc87a
+X-Received: by 2002:ad4:5502:: with SMTP id az2mr16402089qvb.148.1596835779896;
+ Fri, 07 Aug 2020 14:29:39 -0700 (PDT)
+Date:   Fri,  7 Aug 2020 14:29:12 -0700
+In-Reply-To: <20200807212916.2883031-1-jwadams@google.com>
+Message-Id: <20200807212916.2883031-4-jwadams@google.com>
 Mime-Version: 1.0
+References: <20200807212916.2883031-1-jwadams@google.com>
 X-Mailer: git-send-email 2.28.0.236.gb10cc79966-goog
-Subject: [RFC PATCH 0/7] metricfs metric file system and examples
+Subject: [RFC PATCH 3/7] core/metricfs: metric for kernel warnings
 From:   Jonathan Adams <jwadams@google.com>
 To:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
 Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
@@ -60,157 +64,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[resending to widen the CC lists per rdunlap@infradead.org's suggestion
-original posting to lkml here: https://lkml.org/lkml/2020/8/5/1009]
+Count kernel warnings by function name of the caller.
 
-To try to restart the discussion of kernel statistics started by the
-statsfs patchsets (https://lkml.org/lkml/2020/5/26/332), I wanted
-to share the following set of patches which are Google's 'metricfs'
-implementation and some example uses.  Google has been using metricfs
-internally since 2012 as a way to export various statistics to our
-telemetry systems (similar to OpenTelemetry), and we have over 200
-statistics exported on a typical machine.
+Each time WARN() is called, which includes WARN_ON(), increment a counter
+in a 256-entry hash table. The table key is the entry point of the calling
+function, which is found using kallsyms.
 
-These patches have been cleaned up and modernized v.s. the versions
-in production; I've included notes under the fold in the patches.
-They're based on v5.8-rc6.
+We store the name of the function in the table (because it may be a
+module address); reporting the metric just walks the table and prints
+the values.
 
-The statistics live under debugfs, in a tree rooted at:
+The "warnings" metric is cumulative.
 
-	/sys/kernel/debug/metricfs
+Signed-off-by: Jonathan Adams <jwadams@google.com>
 
-Each metric is a directory, with four files in it.  For example, the '
-core/metricfs: Create metricfs, standardized files under debugfs.' patch
-includes a simple 'metricfs_presence' metric, whose files look like:
-/sys/kernel/debug/metricfs:
- metricfs_presence/annotations
-  DESCRIPTION A\ basic\ presence\ metric.
- metricfs_presence/fields
-  value
-  int
- metricfs_presence/values
-  1
- metricfs_presence/version
-  1
+---
 
-(The "version" field always says '1', and is kind of vestigial)
+jwadams@google.com: rebased to 5.8-rc6, removed google-isms,
+	added lockdep_assert_held(), NMI handling, ..._unknown*_counts
+	and locking in warn_tbl_fn(); renamed warn_metric... to
+	warn_tbl...
 
-An example of a more complicated stat is the networking stats.
-For example, the tx_bytes stat looks like:
+	The original work was done in 2012 by an engineer no longer
+	at Google.
+---
+ kernel/panic.c | 131 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 131 insertions(+)
 
-net/dev/stats/tx_bytes/annotations
-  DESCRIPTION net\ device\ transmited\ bytes\ count
-  CUMULATIVE
-net/dev/stats/tx_bytes/fields
-  interface value
-  str int
-net/dev/stats/tx_bytes/values
-  lo 4394430608
-  eth0 33353183843
-  eth1 16228847091
-net/dev/stats/tx_bytes/version
-  1
-
-The per-cpu statistics show up in the schedulat stat info and x86
-IRQ counts.  For example:
-
-stat/user/annotations
-  DESCRIPTION time\ in\ user\ mode\ (nsec)
-  CUMULATIVE
-stat/user/fields
-  cpu value
-  int int
-stat/user/values
-  0 1183486517734
-  1 1038284237228
-  ...
-stat/user/version
-  1
-
-The full set of example metrics I've included are:
-
-core/metricfs: Create metricfs, standardized files under debugfs.
-  metricfs_presence
-core/metricfs: metric for kernel warnings
-  warnings/values
-core/metricfs: expose scheduler stat information through metricfs
-  stat/*
-net-metricfs: Export /proc/net/dev via metricfs.
-  net/dev/stats/[tr]x_*
-core/metricfs: expose x86-specific irq information through metricfs
-  irq_x86/*
-
-The general approach is called out in kernel/metricfs.c:
-
-The kernel provides:
-  - A description of the metric
-  - The subsystem for the metric (NULL is ok)
-  - Type information about the metric, and
-  - A callback function which supplies metric values.
-
-Limitations:
-  - "values" files are at MOST 64K. We truncate the file at that point.
-  - The list of fields and types is at most 1K.
-  - Metrics may have at most 2 fields.
-
-Best Practices:
-  - Emit the most important data first! Once the 64K per-metric buffer
-    is full, the emit* functions won't do anything.
-  - In userspace, open(), read(), and close() the file quickly! The kernel
-    allocation for the metric is alive as long as the file is open. This
-    permits users to seek around the contents of the file, while
-    permitting an atomic view of the data.
-
-Note that since the callbacks are called and the data is generated at
-file open() time, the relative consistency is only between members of
-a given metric; the rx_bytes stat for every network interface will
-be read at almost the same time, but if you want to get rx_bytes
-and rx_packets, there could be a bunch of slew between the two file
-opens.  (So this doesn't entirely address Andrew Lunn's comments in
-https://lkml.org/lkml/2020/5/26/490)
-
-This also doesn't address one of the basic parts of the statsfs work:
-moving the statistics out of debugfs to avoid lockdown interactions.
-
-Google has found a lot of value in having a generic interface for adding
-these kinds of statistics with reasonably low overhead (reading them
-is O(number of statistics), not number of objects in each statistic).
-There are definitely warts in the interface, but does the basic approach
-make sense to folks?
-
-Thanks,
-- Jonathan
-
-Jonathan Adams (5):
-  core/metricfs: add support for percpu metricfs files
-  core/metricfs: metric for kernel warnings
-  core/metricfs: expose softirq information through metricfs
-  core/metricfs: expose scheduler stat information through metricfs
-  core/metricfs: expose x86-specific irq information through metricfs
-
-Justin TerAvest (1):
-  core/metricfs: Create metricfs, standardized files under debugfs.
-
-Laurent Chavey (1):
-  net-metricfs: Export /proc/net/dev via metricfs.
-
- arch/x86/kernel/irq.c      |  80 ++++
- fs/proc/stat.c             |  57 +++
- include/linux/metricfs.h   | 131 +++++++
- kernel/Makefile            |   2 +
- kernel/metricfs.c          | 775 +++++++++++++++++++++++++++++++++++++
- kernel/metricfs_examples.c | 151 ++++++++
- kernel/panic.c             | 131 +++++++
- kernel/softirq.c           |  45 +++
- lib/Kconfig.debug          |  18 +
- net/core/Makefile          |   1 +
- net/core/net_metricfs.c    | 194 ++++++++++
- 11 files changed, 1585 insertions(+)
- create mode 100644 include/linux/metricfs.h
- create mode 100644 kernel/metricfs.c
- create mode 100644 kernel/metricfs_examples.c
- create mode 100644 net/core/net_metricfs.c
-
+diff --git a/kernel/panic.c b/kernel/panic.c
+index e2157ca387c8..c019b41ab387 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -31,6 +31,9 @@
+ #include <linux/bug.h>
+ #include <linux/ratelimit.h>
+ #include <linux/debugfs.h>
++#include <linux/utsname.h>
++#include <linux/hash.h>
++#include <linux/metricfs.h>
+ #include <asm/sections.h>
+ 
+ #define PANIC_TIMER_STEP 100
+@@ -568,6 +571,133 @@ void oops_exit(void)
+ 	kmsg_dump(KMSG_DUMP_OOPS);
+ }
+ 
++#ifdef CONFIG_METRICFS
++
++/*
++ * Hash table from function address to count of WARNs called within that
++ * function.
++ * So far this is an add-only hash table (ie, entries never removed), so some
++ * simplifying assumptions are made.
++ */
++#define WARN_TBL_BITS (8)
++#define WARN_TBL_SIZE (1<<WARN_TBL_BITS)
++static struct {
++	void *function;
++	int count;
++	char function_name[KSYM_NAME_LEN];
++} warn_tbl[WARN_TBL_SIZE];
++
++static DEFINE_SPINLOCK(warn_tbl_lock);
++static atomic_t warn_tbl_unknown_lookup_count = ATOMIC_INIT(0);
++static atomic_t warn_tbl_unknown_nmi_count = ATOMIC_INIT(0);
++static int warn_tbl_unknown_count;
++
++/*
++ * Find the entry corresponding to the given function address.
++ * Insert a new entry if one doesn't exist yet.
++ * Returns -1 if the hash table is full.
++ */
++static int tbl_find(void *caller_function)
++{
++	int entry, start_entry;
++
++	lockdep_assert_held(&warn_tbl_lock);
++
++	start_entry = hash_ptr(caller_function, WARN_TBL_BITS);
++	entry = start_entry;
++	do {
++		if (warn_tbl[entry].function == caller_function)
++			return entry;
++		if (warn_tbl[entry].function == NULL) {
++			if (!kallsyms_lookup((unsigned long)caller_function,
++					NULL, NULL, NULL,
++					warn_tbl[entry].function_name))
++				return -1;
++			warn_tbl[entry].function = caller_function;
++			return entry;
++		}
++		entry = (entry + 1) % (WARN_TBL_SIZE);
++	} while (entry != start_entry);
++
++	return -1;
++}
++
++static void tbl_increment(void *caller)
++{
++	void *caller_function;
++	unsigned long caller_offset;
++	unsigned long flags;
++	int entry;
++
++	if (!kallsyms_lookup_size_offset(
++			(unsigned long)caller, NULL, &caller_offset)) {
++		atomic_inc(&warn_tbl_unknown_lookup_count);
++		return;
++	}
++	/* use function entrypoint */
++	caller_function = caller - caller_offset;
++
++	if (in_nmi()) {
++		if (!spin_trylock_irqsave(&warn_tbl_lock, flags)) {
++			atomic_inc(&warn_tbl_unknown_nmi_count);
++			return;
++		}
++	} else {
++		spin_lock_irqsave(&warn_tbl_lock, flags);
++	}
++	entry = tbl_find(caller_function);
++	if (entry >= 0)
++		warn_tbl[entry].count++;
++	else
++		warn_tbl_unknown_count++;
++
++	spin_unlock_irqrestore(&warn_tbl_lock, flags);
++}
++
++/*
++ * Export the hash table to metricfs.
++ */
++static void warn_tbl_fn(struct metric_emitter *e)
++{
++	int i;
++	unsigned long flags;
++	int unknown_count = READ_ONCE(warn_tbl_unknown_count) +
++		atomic_read(&warn_tbl_unknown_nmi_count) +
++		atomic_read(&warn_tbl_unknown_lookup_count);
++
++	if (unknown_count != 0)
++		METRIC_EMIT_INT(e, unknown_count, "(unknown)", NULL);
++
++	spin_lock_irqsave(&warn_tbl_lock, flags);
++	for (i = 0; i < WARN_TBL_SIZE; i++) {
++		unsigned long fn = (unsigned long)warn_tbl[i].function;
++		const char *function_name = warn_tbl[i].function_name;
++		int count = warn_tbl[i].count;
++
++		if (!fn)
++			continue;
++
++		// function_name[] is constant once function is non-NULL
++		spin_unlock_irqrestore(&warn_tbl_lock, flags);
++		METRIC_EMIT_INT(e, count, function_name, NULL);
++		spin_lock_irqsave(&warn_tbl_lock, flags);
++	}
++	spin_unlock_irqrestore(&warn_tbl_lock, flags);
++}
++METRIC_EXPORT_COUNTER(warnings, "Count of calls to WARN().",
++		      "function", NULL, warn_tbl_fn);
++
++static int __init metricfs_panic_init(void)
++{
++	metric_init_warnings(NULL);
++	return 0;
++}
++late_initcall(metricfs_panic_init);
++
++#else  /* CONFIG_METRICFS */
++inline void tbl_increment(void *caller) {}
++#endif
++
+ struct warn_args {
+ 	const char *fmt;
+ 	va_list args;
+@@ -576,6 +706,7 @@ struct warn_args {
+ void __warn(const char *file, int line, void *caller, unsigned taint,
+ 	    struct pt_regs *regs, struct warn_args *args)
+ {
++	tbl_increment(caller);
+ 	disable_trace_on_warning();
+ 
+ 	if (file)
 -- 
 2.28.0.236.gb10cc79966-goog
 
