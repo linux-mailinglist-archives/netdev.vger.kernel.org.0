@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31CD223EC10
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 13:13:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0BCF23EC03
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 13:11:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728353AbgHGLLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 07:11:40 -0400
+        id S1728338AbgHGLLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 07:11:47 -0400
 Received: from mail-am6eur05on2045.outbound.protection.outlook.com ([40.107.22.45]:38465
         "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728323AbgHGLLc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Aug 2020 07:11:32 -0400
+        id S1728282AbgHGLLl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Aug 2020 07:11:41 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e489ZBcFCSgR3z635ZDB4T1Y+8pr4q/5WM25rC61p04gyocmpiL9N8c/OXI6QlaOBTSNZkjKaGOan8gAfueGdVvZHFJ1SSV1PWYbU2sHq3liM9YMneSfVrwT2oiEweHUOLaZocOyPycCKVezKsham8mwk1sGLPv27cvwPrgSQk5ZY5TKkfY+CpktP4N6VFohKm/zl2UyXKPR4y9UxRSks8mxwm9V3fwfVdtW7ZvoSclGL3YwBoCju68N6DSVpolnMWDlmnhz1zYKvgzY5Yhr41RGA8MMY52//KNW4dWvhrhyxCgtIFi+Pdbl0JOun3V5vAR+IieL1xxJitfPWEVBGA==
+ b=N6E/O5eVZ4Nor3l4mqpMsdCCistvpDdsgcx2OcquJuwhkci24Q/5TjQTfTxRb+P2dRc0Hi/SeSkZtCu13f/d89eOYL61FFtLtvWP+YoRcvVN9Yl/RvXg1vf6pwDnqD0b3cbnnjIAomVIxRXZuzqIXY+s0WxmXTOHTXnGOJqtKeeUXLbucrc3f9XFe/Mg2/vxZDGaOmtv3Wg4nQ7vzTuz38lMPawHndzjzaGSjzlghM7SxHeDYrrEbeCXxV7D7JIdkParQENd2QsHKoP3EDQzZxXpctF6CPSEq0EncrLJOvieqClH+AfHTsZpWfvnjqdITsOzUUpelR3F9OvVbC6o3A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W2yAjuZa2uQw63XxMXocak9tjYXybGZNOIWyRZp5124=;
- b=g5KQZ9twCCSela+ySo4r4+mjbtfzyqwhxLtfi9gtyWFMBo1vlpDvV+oHf/XHHrs3JWjdnkcB8/yasx8zaC5e7aiK/1E6oO89/ySxlupUS3e2iM6F6xSyVUTJJ9x+V2NZQO3yffoEzwfqQ6yQVUpqDfhcqZUc9l80TBKTNT750TqG+CwhBh2Xb8Z5N7pb9DgmY7c8OTSsPesfy+W0GzUKZbrRQhFukEaRs5+EdxmHljtvxtZFgEHncXq/hKe6kawkKZJYD7wvaapMyWnGXt41QyEx42mrEeyfiJpnKMoHmN0W0GfUeI5HIF/nTe8dY6PpBUI1hPEsJAK7Eg8R7fc0rw==
+ bh=+/GzhHuePm5IiAiULZNl0s5SFMXqSfpf1woYQbyHmvI=;
+ b=J2dXZWPuo40hF8Ozq/MlBdnAdnEjMCtRFYsHRLEciYvZYMHyIuCShrE0zWs+prL2mnr8rGAyUa7hMJzkjSS9GneRqnQ/VyjZ0nB2TGu8LQ/KNQ7aOs6g2eaXm/Vw3WzGcK0LcjJunjT12yfAXqhhQawtjN5n7fKyFF708Etuj4A1MQ2J0pLMKaCzOrqPAEXFDqrGsdKvk7l2Ihb1bWCUSEPAw9qujo8oI1FsyBJNvxTV50COkpN+QpmOAD1hKgC/3d6Cy9mDb3GVM58+2gO8c3JrwBXKfitREyqZprvZ+XgvXx554MPZZip6sONWiacCBETQ9V+uWfcuXV1GNJTejg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W2yAjuZa2uQw63XxMXocak9tjYXybGZNOIWyRZp5124=;
- b=Goy587KJdXFX7Kz0uip6u0vJf3DlKzwkeFBmrc0dPH4Li9E3Uwel6zPV6h4yg3Wzr5ArD6cdxbqY7R58u5caTAMIeoz8BECxQruZ+wGcWy+K6nDy7c9XeaCga4iywTzT2KDgHaIqMXTD5Kr+xAMwx+KTl7hgDkH15Wql2nIO2ms=
+ bh=+/GzhHuePm5IiAiULZNl0s5SFMXqSfpf1woYQbyHmvI=;
+ b=mA1ODnaSyjqYodJyQHpcGZuQ9LFdbWzAZhLA8sO7PuybeMU5ydA3cktg36TpsJ5zh42M7ixWklbt9MwrudVNN7WOcZtBvJNPFpYFlXSCFR0qW2WJk9oEe6AdvQJEpOPQUwILQsEzrDPDnHJsiirxNaDaBBcBnz2p11TLoISUTkY=
 Authentication-Results: nxp.com; dkim=none (message not signed)
  header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5103.eurprd04.prod.outlook.com (2603:10a6:803:51::19)
  by VI1PR04MB5725.eurprd04.prod.outlook.com (2603:10a6:803:e3::28) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3261.15; Fri, 7 Aug
- 2020 11:11:23 +0000
+ 2020 11:11:31 +0000
 Received: from VI1PR04MB5103.eurprd04.prod.outlook.com
  ([fe80::2c2c:20a4:38cd:73c3]) by VI1PR04MB5103.eurprd04.prod.outlook.com
  ([fe80::2c2c:20a4:38cd:73c3%7]) with mapi id 15.20.3261.020; Fri, 7 Aug 2020
- 11:11:23 +0000
+ 11:11:31 +0000
 From:   hongbo.wang@nxp.com
 To:     xiaoliang.yang_1@nxp.com, allan.nielsen@microchip.com,
         po.liu@nxp.com, claudiu.manoil@nxp.com,
@@ -50,9 +50,9 @@ To:     xiaoliang.yang_1@nxp.com, allan.nielsen@microchip.com,
         horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
         UNGLinuxDriver@microchip.com, ivecera@redhat.com
 Cc:     "hongbo.wang" <hongbo.wang@nxp.com>
-Subject: [PATCH v5 1/2] net: dsa: Add protocol support for 802.1AD when adding or  deleting vlan for dsa switch port
-Date:   Fri,  7 Aug 2020 19:13:48 +0800
-Message-Id: <20200807111349.20649-2-hongbo.wang@nxp.com>
+Subject: [PATCH v5 2/2] net: dsa: ocelot: Add support for QinQ Operation
+Date:   Fri,  7 Aug 2020 19:13:49 +0800
+Message-Id: <20200807111349.20649-3-hongbo.wang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200807111349.20649-1-hongbo.wang@nxp.com>
 References: <20200807111349.20649-1-hongbo.wang@nxp.com>
@@ -62,31 +62,31 @@ X-ClientProxiedBy: SG2PR06CA0218.apcprd06.prod.outlook.com
  (2603:10a6:803:51::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from whb-OptiPlex-790.ap.freescale.net (119.31.174.73) by SG2PR06CA0218.apcprd06.prod.outlook.com (2603:1096:4:68::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3261.19 via Frontend Transport; Fri, 7 Aug 2020 11:11:16 +0000
+Received: from whb-OptiPlex-790.ap.freescale.net (119.31.174.73) by SG2PR06CA0218.apcprd06.prod.outlook.com (2603:1096:4:68::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3261.19 via Frontend Transport; Fri, 7 Aug 2020 11:11:24 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [119.31.174.73]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: be2e0f0b-314a-414c-c235-08d83ac29ea3
+X-MS-Office365-Filtering-Correlation-Id: 47cf1010-51b3-464c-75e3-08d83ac2a333
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5725:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB57258C716D1C14A3107E8889E1490@VI1PR04MB5725.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3173;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB57259F5DA8BA8029D948EACBE1490@VI1PR04MB5725.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hJdmUiu7ByOzKXmKyrgpMJ8TdvnC4f76jWABbrZKA2LVAsscq3rGEojb2j03tcy/VvAzMDJvzGOpPoPiUQ117l72SpyezJEoMKJ6FJUYY+A6FJ6qd8C1BV/+p1jOpoND5fioclL6LRH83EGzQbLlGpcJnAhvplHRNugfywBwSpR7uJXfR8BM0QVLauAsYG1r67JGKOwuhOPlk54jQDM5QM0/9xQCTKM2os9DV+YvLiFs1wr7MXvLuFADx0zuPO4o0mFkZsduI5veZqkcf6aaZTms6lG4PXan0RabJ4BdwJUrPphE1aVVTRGAS8KtfmmBI07YW4H6NiwYnfMmle55F6L9TE1Gnm+6HwWijp0wJqBGZN4zvAnK282AT6JdneY+
+X-Microsoft-Antispam-Message-Info: V1K81abGPJTLXg5Ctdo6efv4tcMHtCftP2fir0EHwj1b1dSMXvfkyz1WzFTnem101poOkcwRdUxbcehD5ReId/qE0Mbd+frZ7F54SA4fPzNH/xZ2s6zwMlxivq7kHq6QWNNIBOQWzo0tN1vABtWI8bFGpb4h1JMELT+ynZt7sgO1laK/3YP7iFv3hAYdEgcWQiAOyA6cyLWc+TfrixkO+SgvD8/jQSgPkRFXClP/+GmYpJ+xKZrKuKFjb8n6MsOgNRmKx2zwBHzLj3X13VaXRXuqd0aU95OhnNifxOxU4SSQc+lzIzzdYTXXDFl10jW4JLDJZM/8oK3OuwL+LNco+udbq+hWfyxQi9HPEUAhKrjTpOE9GW0SPIUzE6LcNRmx
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5103.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(376002)(346002)(396003)(366004)(956004)(4326008)(2616005)(7416002)(5660300002)(6512007)(9686003)(8936002)(8676002)(6486002)(2906002)(478600001)(52116002)(26005)(66946007)(6506007)(316002)(16526019)(36756003)(186003)(6666004)(1076003)(86362001)(83380400001)(66476007)(66556008)(921003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: anIvO7aMyZ6ATZ0qItObvaQLHeY12/D90p6Ih+V+Egd/DlijRkDkv7XJOa6MuvhKTxDqiLFWcxfAwFbyPRk2P4jjOVXAikPCa/6XVfyH2H44xFecTTxPPMR4DGbcUPXv93yh/iXoLSxDxoU9qU6pIPLcCHFrsyCvund804ZaTyMz3EHv8B/q+saCi1c+i6uaCTAbwdgCjjjKYQBH/34zjDQcMaCVNyNnE4jTk4wNtOIbmfRAMASAdMwsIrt9Y3dRXbbXHI4Q+bvTqZJdnL20IC3hi1CudjRI+ZsnIdI5gtvXXiGypmHeJaoFidHJTgwyJw/A9YhnZTx6/ZwfWFKGXjdzTChoV8xNh4Y+9jzGcM+Wqimm/aak74Zw/oBCLWu0J+dCN1V67kQrEnsSMUfVJrxCByeFr2BwZF1jhVAGaiY4m7FwMvkZR6wBQ56R6TsPvax38PnCmhi9yNcmggLu6FPjD8T/OJ+t+X85u6q3nNRDsHbmhX5jXMFeF4GtZvvkYlR3dSqV26TB/pIbgyEiAhP6y8d/4gXXAHxjBKPEuCVcxoJOybvdSGZuzjFiNOpK4VsVAmG+L1T7UVSnBzrsZa4yLzW6sELWUKgy8zEwa3ea1brjImBM3jFpvZKVoSpb2cWGwFl9p9TOQuNsSUr6ig==
+X-MS-Exchange-AntiSpam-MessageData: 2HI+/GGiWFsOORsIRwl7R5PhFiTk3EShSQ+I7bVwVf1csj/fYtTh3DjR5JWEwbY/oqc/cDzGN4aKl07ggI1yT1PO/ogRzkVrAgYpWyT+6DFnOrB2NHM/2T4QBSiJ2SFjz1n7Du+Sm22BNIw+VTg+emzJghs95Y3Wl8bbo+6w6JYblOYzQWW6w9f/5QDznQTXgr1xzvNMv7+gkx6SNgxqhSxJT1rVofg/uSY3zC+pD/LoDtO7ExwsNKFEGOd+F5AXFBMivdNWIroVM7Vi2/PvnyZiZYjf8BP9z9kmBELGeYabJFxGV5qQEQhPPo0D8dWUEoGo+kppiN8QvVl8aFbB5+1xe9NXDbVTnMAnKiMxUXze4OKwnAgu544G5ZrqFWW5/ZWy9bYTwNHZqAhDOTYhELwwAC+lstogd8vl0tOY2loqZRQhGjF6k41BJodP1jNHs88NIE0PyzmpTwpbvXnz86V7vAn5Py6wsmNdj+rCO8WczP6TqofDkeCYDKiIjJsZ5G3FupM9dXFAVOS+HOISIEauLvreMMpT3S5K/uzVNzX3VlN8kIXYqLeLRKfsYpXLtlYqvXNdNO5/TeaDbzPHsFE4+23Nij0DrFf0hwz/eNmchK0px+7Vcpizg0N/7/d2ntXsC2ERk7wXWDfegvPzjw==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: be2e0f0b-314a-414c-c235-08d83ac29ea3
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47cf1010-51b3-464c-75e3-08d83ac2a333
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5103.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Aug 2020 11:11:23.7051
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Aug 2020 11:11:31.1968
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xjieFUyZaBoh6WhfQQdixlBQmt7G1Nt4q3+vdjbNIqj/+G2vIuBivfSlHLLoWGHRgIzkcH9hEBfbh9zYM8sKiQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: sHwpKpm1eAK+gh0bXekWnDfbHO9dmdhHAFU0VNONmeB3TQ95O9t+uOsTxfbhMUBMOXuu3qHY8YJG17gSOyjn/A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5725
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -95,257 +95,336 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "hongbo.wang" <hongbo.wang@nxp.com>
 
-the following command will be supported:
+This feature can be test in the following case:
+Customer <-----> swp0  <-----> swp1 <-----> ISP
 
-Set bridge's vlan protocol:
-    ip link set br0 type bridge vlan_protocol 802.1ad
-Add VLAN:
-    ip link add link swp1 name swp1.100 type vlan protocol 802.1ad id 100
-Delete VLAN:
-    ip link del link swp1 name swp1.100
+Customer will send and receive packets with single VLAN tag(CTAG),
+ISP will send and receive packets with double VLAN tag(STAG and CTAG).
+This refers to "4.3.3 Provider Bridges and Q-in-Q Operation" in
+VSC99599_1_00_TS.pdf.
+
+The related test commands:
+1.
+devlink dev param set pci/0000:00:00.5 name qinq_port_bitmap \
+value 2 cmode runtime
+
+ip link add dev br0 type bridge vlan_protocol 802.1ad
+ip link set dev swp0 master br0
+ip link set dev swp1 master br0
+
+2.
+ip link set dev br0 type bridge vlan_filtering 1
+bridge vlan add dev swp0 vid 100 pvid
+bridge vlan add dev swp1 vid 100
+Result:
+Customer(tpid:8100 vid:111) -> swp0 -> swp1 -> ISP(STAG \
+                tpid:88A8 vid:100, CTAG tpid:8100 vid:111)
+
+3.
+bridge vlan del dev swp0 vid 1 pvid
+bridge vlan add dev swp0 vid 100 pvid untagged
+Result:
+ISP(tpid:88A8 vid:100 tpid:8100 vid:222) -> swp1 -> swp0 ->\
+		Customer(tpid:8100 vid:222)
 
 Signed-off-by: hongbo.wang <hongbo.wang@nxp.com>
 ---
- include/net/switchdev.h   |  1 +
- net/bridge/br_switchdev.c | 22 ++++++++++++++++
- net/dsa/dsa_priv.h        |  4 +--
- net/dsa/port.c            |  6 +++--
- net/dsa/slave.c           | 53 ++++++++++++++++++++++++++-------------
- net/dsa/tag_8021q.c       |  4 +--
- 6 files changed, 66 insertions(+), 24 deletions(-)
+ drivers/net/dsa/ocelot/felix.c     | 124 +++++++++++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot.c |  40 ++++++++--
+ include/soc/mscc/ocelot.h          |   4 +
+ 3 files changed, 162 insertions(+), 6 deletions(-)
 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index ff2246914301..7594ea82879f 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -97,6 +97,7 @@ struct switchdev_obj_port_vlan {
- 	u16 flags;
- 	u16 vid_begin;
- 	u16 vid_end;
-+	u16 proto;
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index c69d9592a2b7..f9d50af4be65 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -147,9 +147,26 @@ static void felix_vlan_add(struct dsa_switch *ds, int port,
+ 				vid, port, err);
+ 			return;
+ 		}
++
++		if (vlan->proto == ETH_P_8021AD) {
++			if (!ocelot->qinq_enable) {
++				ocelot->qinq_enable = true;
++				kref_init(&ocelot->qinq_refcount);
++			} else {
++				kref_get(&ocelot->qinq_refcount);
++			}
++		}
+ 	}
+ }
+ 
++static void felix_vlan_qinq_release(struct kref *ref)
++{
++	struct ocelot *ocelot;
++
++	ocelot = container_of(ref, struct ocelot, qinq_refcount);
++	ocelot->qinq_enable = false;
++}
++
+ static int felix_vlan_del(struct dsa_switch *ds, int port,
+ 			  const struct switchdev_obj_port_vlan *vlan)
+ {
+@@ -164,7 +181,11 @@ static int felix_vlan_del(struct dsa_switch *ds, int port,
+ 				vid, port, err);
+ 			return err;
+ 		}
++
++		if (ocelot->qinq_enable && vlan->proto == ETH_P_8021AD)
++			kref_put(&ocelot->qinq_refcount, felix_vlan_qinq_release);
+ 	}
++
+ 	return 0;
+ }
+ 
+@@ -172,9 +193,13 @@ static int felix_port_enable(struct dsa_switch *ds, int port,
+ 			     struct phy_device *phy)
+ {
+ 	struct ocelot *ocelot = ds->priv;
++	struct net_device *slave;
+ 
+ 	ocelot_port_enable(ocelot, port, phy);
+ 
++	slave = dsa_to_port(ds, port)->slave;
++	slave->features |= NETIF_F_HW_VLAN_STAG_FILTER;
++
+ 	return 0;
+ }
+ 
+@@ -568,6 +593,97 @@ static struct ptp_clock_info ocelot_ptp_clock_info = {
+ 	.enable		= ocelot_ptp_enable,
  };
  
- #define SWITCHDEV_OBJ_PORT_VLAN(OBJ) \
-diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-index 015209bf44aa..bcfa00d6d5eb 100644
---- a/net/bridge/br_switchdev.c
-+++ b/net/bridge/br_switchdev.c
-@@ -146,6 +146,26 @@ br_switchdev_fdb_notify(const struct net_bridge_fdb_entry *fdb, int type)
- 	}
- }
- 
-+static u16 br_switchdev_get_bridge_vlan_proto(struct net_device *dev)
++static int felix_qinq_port_bitmap_get(struct dsa_switch *ds, u32 *bitmap)
 +{
-+	u16 vlan_proto = ETH_P_8021Q;
-+	struct net_device *br = NULL;
-+	struct net_bridge_port *p;
++	struct ocelot *ocelot = ds->priv;
++	struct ocelot_port *ocelot_port;
++	int port;
 +
-+	if (netif_is_bridge_master(dev)) {
-+		br = dev;
-+	} else if (netif_is_bridge_port(dev)) {
-+		p = br_port_get_rcu(dev);
-+		if (p && p->br)
-+			br = p->br->dev;
++	*bitmap = 0;
++	for (port = 0; port < ds->num_ports; port++) {
++		ocelot_port = ocelot->ports[port];
++		if (ocelot_port->qinq_mode)
++			*bitmap |= 0x01 << port;
 +	}
 +
-+	if (br)
-+		br_vlan_get_proto(br, &vlan_proto);
-+
-+	return vlan_proto;
++	return 0;
 +}
 +
- int br_switchdev_port_vlan_add(struct net_device *dev, u16 vid, u16 flags,
- 			       struct netlink_ext_ack *extack)
- {
-@@ -157,6 +177,7 @@ int br_switchdev_port_vlan_add(struct net_device *dev, u16 vid, u16 flags,
- 		.vid_end = vid,
- 	};
- 
-+	v.proto = br_switchdev_get_bridge_vlan_proto(dev);
- 	return switchdev_port_obj_add(dev, &v.obj, extack);
- }
- 
-@@ -169,5 +190,6 @@ int br_switchdev_port_vlan_del(struct net_device *dev, u16 vid)
- 		.vid_end = vid,
- 	};
- 
-+	v.proto = br_switchdev_get_bridge_vlan_proto(dev);
- 	return switchdev_port_obj_del(dev, &v.obj);
- }
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 1653e3377cb3..52685b9875e5 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -164,8 +164,8 @@ int dsa_port_vlan_add(struct dsa_port *dp,
- 		      struct switchdev_trans *trans);
- int dsa_port_vlan_del(struct dsa_port *dp,
- 		      const struct switchdev_obj_port_vlan *vlan);
--int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags);
--int dsa_port_vid_del(struct dsa_port *dp, u16 vid);
-+int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 proto, u16 flags);
-+int dsa_port_vid_del(struct dsa_port *dp, u16 vid, u16 proto);
- int dsa_port_link_register_of(struct dsa_port *dp);
- void dsa_port_link_unregister_of(struct dsa_port *dp);
- extern const struct phylink_mac_ops dsa_port_phylink_mac_ops;
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index e23ece229c7e..c98bbac3980a 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -433,13 +433,14 @@ int dsa_port_vlan_del(struct dsa_port *dp,
- 	return dsa_port_notify(dp, DSA_NOTIFIER_VLAN_DEL, &info);
- }
- 
--int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags)
-+int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 proto, u16 flags)
- {
- 	struct switchdev_obj_port_vlan vlan = {
- 		.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
- 		.flags = flags,
- 		.vid_begin = vid,
- 		.vid_end = vid,
-+		.proto = proto,
- 	};
- 	struct switchdev_trans trans;
- 	int err;
-@@ -454,12 +455,13 @@ int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags)
- }
- EXPORT_SYMBOL(dsa_port_vid_add);
- 
--int dsa_port_vid_del(struct dsa_port *dp, u16 vid)
-+int dsa_port_vid_del(struct dsa_port *dp, u16 vid, u16 proto)
- {
- 	struct switchdev_obj_port_vlan vlan = {
- 		.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
- 		.vid_begin = vid,
- 		.vid_end = vid,
-+		.proto = proto,
- 	};
- 
- 	return dsa_port_vlan_del(dp, &vlan);
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 41d60eeefdbd..f01deda00492 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -328,6 +328,7 @@ static int dsa_slave_vlan_add(struct net_device *dev,
- 	 * it doesn't make sense to program a PVID, so clear this flag.
- 	 */
- 	vlan.flags &= ~BRIDGE_VLAN_INFO_PVID;
-+	vlan.proto = ETH_P_8021Q;
- 
- 	err = dsa_port_vlan_add(dp->cpu_dp, &vlan, trans);
- 	if (err)
-@@ -1229,11 +1230,38 @@ static int dsa_slave_get_ts_info(struct net_device *dev,
- 	return ds->ops->get_ts_info(ds, p->dp->index, ts);
- }
- 
-+static bool dsa_slave_skip_vlan_configuration(struct dsa_port *dp,
-+					      u16 vlan_proto, u16 vid)
++static int felix_qinq_port_bitmap_set(struct dsa_switch *ds, u32 bitmap)
 +{
-+	struct bridge_vlan_info info;
-+	bool change_proto = false;
-+	u16 br_proto = 0;
-+	int ret;
++	struct ocelot *ocelot = ds->priv;
++	struct ocelot_port *ocelot_port;
++	int port;
 +
-+	/* when changing bridge's vlan protocol, it will change bridge
-+	 * port's protocol firstly, then set bridge's protocol. if it's
-+	 * changing vlan protocol, should not return -EBUSY.
-+	 */
-+	ret = br_vlan_get_proto(dp->bridge_dev, &br_proto);
-+	if (ret == 0 && br_proto != vlan_proto)
-+		change_proto = true;
++	for (port = 0; port < ds->num_ports; port++) {
++		ocelot_port = ocelot->ports[port];
++		if (bitmap & (0x01 << port))
++			ocelot_port->qinq_mode = true;
++		else
++			ocelot_port->qinq_mode = false;
++	}
 +
-+	/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
-+	 * device, respectively the VID is not found, returning
-+	 * 0 means success, which is a failure for us here.
-+	 */
-+	ret = br_vlan_get_info(dp->bridge_dev, vid, &info);
-+	if (ret == 0 && !change_proto)
-+		return true;
-+	else
-+		return false;
++	return 0;
 +}
 +
- static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- 				     u16 vid)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
--	struct bridge_vlan_info info;
-+	u16 vlan_proto = ntohs(proto);
- 	int ret;
- 
- 	/* Check for a possible bridge VLAN entry now since there is no
-@@ -1243,20 +1271,15 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- 		if (dsa_port_skip_vlan_configuration(dp))
- 			return 0;
- 
--		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
--		 * device, respectively the VID is not found, returning
--		 * 0 means success, which is a failure for us here.
--		 */
--		ret = br_vlan_get_info(dp->bridge_dev, vid, &info);
--		if (ret == 0)
-+		if (dsa_slave_skip_vlan_configuration(dp, vlan_proto, vid))
- 			return -EBUSY;
- 	}
- 
--	ret = dsa_port_vid_add(dp, vid, 0);
-+	ret = dsa_port_vid_add(dp, vid, vlan_proto, 0);
- 	if (ret)
- 		return ret;
- 
--	ret = dsa_port_vid_add(dp->cpu_dp, vid, 0);
-+	ret = dsa_port_vid_add(dp->cpu_dp, vid, ETH_P_8021Q, 0);
- 	if (ret)
- 		return ret;
- 
-@@ -1267,8 +1290,7 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 				      u16 vid)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
--	struct bridge_vlan_info info;
--	int ret;
-+	u16 vlan_proto = ntohs(proto);
- 
- 	/* Check for a possible bridge VLAN entry now since there is no
- 	 * need to emulate the switchdev prepare + commit phase.
-@@ -1277,19 +1299,14 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 		if (dsa_port_skip_vlan_configuration(dp))
- 			return 0;
- 
--		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
--		 * device, respectively the VID is not found, returning
--		 * 0 means success, which is a failure for us here.
--		 */
--		ret = br_vlan_get_info(dp->bridge_dev, vid, &info);
--		if (ret == 0)
-+		if (dsa_slave_skip_vlan_configuration(dp, vlan_proto, vid))
- 			return -EBUSY;
- 	}
- 
- 	/* Do not deprogram the CPU port as it may be shared with other user
- 	 * ports which can be members of this VLAN as well.
++enum felix_devlink_param_id {
++	FELIX_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
++	FELIX_DEVLINK_PARAM_ID_QINQ_PORT_BITMAP,
++};
++
++static int felix_devlink_param_get(struct dsa_switch *ds, u32 id,
++				   struct devlink_param_gset_ctx *ctx)
++{
++	int err;
++
++	switch (id) {
++	case FELIX_DEVLINK_PARAM_ID_QINQ_PORT_BITMAP:
++		err = felix_qinq_port_bitmap_get(ds, &ctx->val.vu32);
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
++	}
++
++	return err;
++}
++
++static int felix_devlink_param_set(struct dsa_switch *ds, u32 id,
++				   struct devlink_param_gset_ctx *ctx)
++{
++	int err;
++
++	switch (id) {
++	case FELIX_DEVLINK_PARAM_ID_QINQ_PORT_BITMAP:
++		err = felix_qinq_port_bitmap_set(ds, ctx->val.vu32);
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
++	}
++
++	return err;
++}
++
++static const struct devlink_param felix_devlink_params[] = {
++	DSA_DEVLINK_PARAM_DRIVER(FELIX_DEVLINK_PARAM_ID_QINQ_PORT_BITMAP,
++				 "qinq_port_bitmap",
++				 DEVLINK_PARAM_TYPE_U32,
++				 BIT(DEVLINK_PARAM_CMODE_RUNTIME)),
++};
++
++static int felix_setup_devlink_params(struct dsa_switch *ds)
++{
++	return dsa_devlink_params_register(ds, felix_devlink_params,
++					   ARRAY_SIZE(felix_devlink_params));
++}
++
++static void felix_teardown_devlink_params(struct dsa_switch *ds)
++{
++	dsa_devlink_params_unregister(ds, felix_devlink_params,
++				      ARRAY_SIZE(felix_devlink_params));
++}
++
+ /* Hardware initialization done here so that we can allocate structures with
+  * devm without fear of dsa_register_switch returning -EPROBE_DEFER and causing
+  * us to allocate structures twice (leak memory) and map PCI memory twice
+@@ -632,6 +748,10 @@ static int felix_setup(struct dsa_switch *ds)
  	 */
--	return dsa_port_vid_del(dp, vid);
-+	return dsa_port_vid_del(dp, vid, vlan_proto);
+ 	ds->pcs_poll = true;
+ 
++	err = felix_setup_devlink_params(ds);
++	if (err < 0)
++		return err;
++
+ 	return 0;
  }
  
- struct dsa_hw_port {
-diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-index 780b2a15ac9b..4c93988e61a3 100644
---- a/net/dsa/tag_8021q.c
-+++ b/net/dsa/tag_8021q.c
-@@ -152,9 +152,9 @@ static int dsa_8021q_vid_apply(struct dsa_switch *ds, int port, u16 vid,
- 	struct dsa_port *dp = dsa_to_port(ds, port);
+@@ -643,6 +763,8 @@ static void felix_teardown(struct dsa_switch *ds)
+ 	if (felix->info->mdio_bus_free)
+ 		felix->info->mdio_bus_free(ocelot);
  
- 	if (enabled)
--		return dsa_port_vid_add(dp, vid, flags);
-+		return dsa_port_vid_add(dp, vid, ETH_P_8021Q, flags);
++	felix_teardown_devlink_params(ds);
++
+ 	ocelot_deinit_timestamp(ocelot);
+ 	/* stop workqueue thread */
+ 	ocelot_deinit(ocelot);
+@@ -817,6 +939,8 @@ const struct dsa_switch_ops felix_switch_ops = {
+ 	.cls_flower_del		= felix_cls_flower_del,
+ 	.cls_flower_stats	= felix_cls_flower_stats,
+ 	.port_setup_tc          = felix_port_setup_tc,
++	.devlink_param_get	= felix_devlink_param_get,
++	.devlink_param_set	= felix_devlink_param_set,
+ };
  
--	return dsa_port_vid_del(dp, vid);
-+	return dsa_port_vid_del(dp, vid, ETH_P_8021Q);
- }
+ static int __init felix_init(void)
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 867c680f5917..073c08989e21 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -143,6 +143,8 @@ static int ocelot_port_set_native_vlan(struct ocelot *ocelot, int port,
+ 				       u16 vid)
+ {
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	u32 port_tpid = 0;
++	u32 tag_tpid = 0;
+ 	u32 val = 0;
  
- /* RX VLAN tagging (left) and TX VLAN tagging (right) setup shown for a single
+ 	if (ocelot_port->vid != vid) {
+@@ -156,8 +158,14 @@ static int ocelot_port_set_native_vlan(struct ocelot *ocelot, int port,
+ 		ocelot_port->vid = vid;
+ 	}
+ 
+-	ocelot_rmw_gix(ocelot, REW_PORT_VLAN_CFG_PORT_VID(vid),
+-		       REW_PORT_VLAN_CFG_PORT_VID_M,
++	if (ocelot->qinq_enable && ocelot_port->qinq_mode)
++		port_tpid = REW_PORT_VLAN_CFG_PORT_TPID(ETH_P_8021AD);
++	else
++		port_tpid = REW_PORT_VLAN_CFG_PORT_TPID(ETH_P_8021Q);
++
++	ocelot_rmw_gix(ocelot, REW_PORT_VLAN_CFG_PORT_VID(vid) | port_tpid,
++		       REW_PORT_VLAN_CFG_PORT_VID_M |
++		       REW_PORT_VLAN_CFG_PORT_TPID_M,
+ 		       REW_PORT_VLAN_CFG, port);
+ 
+ 	if (ocelot_port->vlan_aware && !ocelot_port->vid)
+@@ -180,12 +188,19 @@ static int ocelot_port_set_native_vlan(struct ocelot *ocelot, int port,
+ 		else
+ 			/* Tag all frames */
+ 			val = REW_TAG_CFG_TAG_CFG(3);
++
++		if (ocelot->qinq_enable && ocelot_port->qinq_mode)
++			tag_tpid = REW_TAG_CFG_TAG_TPID_CFG(1);
++		else
++			tag_tpid = REW_TAG_CFG_TAG_TPID_CFG(0);
+ 	} else {
+ 		/* Port tagging disabled. */
+ 		val = REW_TAG_CFG_TAG_CFG(0);
++		tag_tpid = REW_TAG_CFG_TAG_TPID_CFG(0);
+ 	}
+-	ocelot_rmw_gix(ocelot, val,
+-		       REW_TAG_CFG_TAG_CFG_M,
++
++	ocelot_rmw_gix(ocelot, val | tag_tpid,
++		       REW_TAG_CFG_TAG_CFG_M | REW_TAG_CFG_TAG_TPID_CFG_M,
+ 		       REW_TAG_CFG, port);
+ 
+ 	return 0;
+@@ -204,6 +219,15 @@ void ocelot_port_vlan_filtering(struct ocelot *ocelot, int port,
+ 		      ANA_PORT_VLAN_CFG_VLAN_POP_CNT(1);
+ 	else
+ 		val = 0;
++
++	/* if switch is enabled for QinQ, the port for LAN should set
++	 * VLAN_CFG.VLAN_POP_CNT=0 && VLAN_CFG.VLAN_AWARE_ENA=0.
++	 * the port for MAN should set VLAN_CFG.VLAN_POP_CNT=1 &&
++	 * VLAN_CFG.VLAN_AWARE_ENA=1. referring to 4.3.3 in VSC9959_1_00_TS.pdf
++	 */
++	if (ocelot->qinq_enable && !ocelot_port->qinq_mode)
++		val = 0;
++
+ 	ocelot_rmw_gix(ocelot, val,
+ 		       ANA_PORT_VLAN_CFG_VLAN_AWARE_ENA |
+ 		       ANA_PORT_VLAN_CFG_VLAN_POP_CNT_M,
+@@ -217,10 +241,14 @@ EXPORT_SYMBOL(ocelot_port_vlan_filtering);
+ static void ocelot_port_set_pvid(struct ocelot *ocelot, int port, u16 pvid)
+ {
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	u32 tag_type = 0;
++
++	if (ocelot->qinq_enable && ocelot_port->qinq_mode)
++		tag_type = ANA_PORT_VLAN_CFG_VLAN_TAG_TYPE;
+ 
+ 	ocelot_rmw_gix(ocelot,
+-		       ANA_PORT_VLAN_CFG_VLAN_VID(pvid),
+-		       ANA_PORT_VLAN_CFG_VLAN_VID_M,
++		       ANA_PORT_VLAN_CFG_VLAN_VID(pvid) | tag_type,
++		       ANA_PORT_VLAN_CFG_VLAN_VID_M | tag_type,
+ 		       ANA_PORT_VLAN_CFG, port);
+ 
+ 	ocelot_port->pvid = pvid;
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index da369b12005f..8d0f9f9ec0b2 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -556,6 +556,7 @@ struct ocelot_port {
+ 	struct regmap			*target;
+ 
+ 	bool				vlan_aware;
++	bool				qinq_mode;
+ 
+ 	/* Ingress default VLAN (pvid) */
+ 	u16				pvid;
+@@ -632,6 +633,9 @@ struct ocelot {
+ 	/* Protects the PTP clock */
+ 	spinlock_t			ptp_clock_lock;
+ 	struct ptp_pin_desc		ptp_pins[OCELOT_PTP_PINS_NUM];
++
++	bool				qinq_enable;
++	struct kref			qinq_refcount;
+ };
+ 
+ struct ocelot_policer {
 -- 
 2.17.1
 
