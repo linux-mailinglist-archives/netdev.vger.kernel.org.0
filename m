@@ -2,114 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FA7423ED50
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 14:27:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A33723EDCA
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 15:13:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728470AbgHGM15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 08:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55042 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727783AbgHGM15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 08:27:57 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0AA0C061574
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 05:27:56 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=localhost)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <r.czerwinski@pengutronix.de>)
-        id 1k41TV-0006hW-30; Fri, 07 Aug 2020 14:27:53 +0200
-Message-ID: <f088c78e335653c8e07d6f304b5995602ee7398f.camel@pengutronix.de>
-Subject: Re: [PATCH v2 net-next] net/tls: allow MSG_CMSG_COMPAT in sendmsg
-From:   Rouven Czerwinski <r.czerwinski@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Pooja Trivedi <poojatrivedi@gmail.com>
-Cc:     Aviad Yehezkel <aviadye@mellanox.com>,
-        Boris Pismenny <borisp@mellanox.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        "David S. Miller" <davem@davemloft.net>
-Date:   Fri, 07 Aug 2020 14:27:48 +0200
-In-Reply-To: <b55718ad4e675ed9a9c3eb1c5d952945f8b20c7a.camel@pengutronix.de>
-References: <20200806064906.14421-1-r.czerwinski@pengutronix.de>
-         <20200806114657.42f1ce8c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <b55718ad4e675ed9a9c3eb1c5d952945f8b20c7a.camel@pengutronix.de>
-Organization: Pengutronix e.K.
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.4 
+        id S1726210AbgHGNNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 09:13:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58736 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725815AbgHGNNL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Aug 2020 09:13:11 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5077F221E2;
+        Fri,  7 Aug 2020 13:13:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596805990;
+        bh=RIROhGCUr6NfNZISR9NQfCWS8Ha9p5SdQ9TURZQvdCE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=0FO90bdO6KMgNNPYC5unU8kW23VZcvv0qZiXLzMRtq/EIGVuKxkE31J3KUpFyerys
+         TgprBZL/lMT43rGUKLf4CqL/Ng77OEg02Rq3M0BSD5MfvFodS5jQXh3IBMqnGeDZaN
+         52TUuviux1KmHWP+1Z71F2PqFUfikXg79I/dlHFk=
+Date:   Fri, 7 Aug 2020 15:13:23 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        netdev@vger.kernel.org, Roi Dayan <roid@mellanox.com>
+Subject: Re: [PATCH 4.19] net/mlx5e: Don't support phys switch id if not in
+ switchdev mode
+Message-ID: <20200807131323.GA664450@kroah.com>
+References: <20200807020542.636290-1-saeedm@mellanox.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: r.czerwinski@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200807020542.636290-1-saeedm@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-08-07 at 10:26 +0200, Rouven Czerwinski wrote:
-> On Thu, 2020-08-06 at 11:46 -0700, Jakub Kicinski wrote:
-> > On Thu,  6 Aug 2020 08:49:06 +0200 Rouven Czerwinski wrote:
-> > > Trying to use ktls on a system with 32-bit userspace and 64-bit
-> > > kernel
-> > > results in a EOPNOTSUPP message during sendmsg:
-> > > 
-> > >   setsockopt(3, SOL_TLS, TLS_TX, …, 40) = 0
-> > >   sendmsg(3, …, msg_flags=0}, 0) = -1 EOPNOTSUPP (Operation not
-> > > supported)
-> > > 
-> > > The tls_sw implementation does strict flag checking and does not
-> > > allow
-> > > the MSG_CMSG_COMPAT flag, which is set if the message comes in
-> > > through
-> > > the compat syscall.
-> > > 
-> > > This patch adds MSG_CMSG_COMPAT to the flag check to allow the
-> > > usage of
-> > > the TLS SW implementation on systems using the compat syscall
-> > > path.
-> > > 
-> > > Note that the same check is present in the sendmsg path for the
-> > > TLS
-> > > device implementation, however the flag hasn't been added there
-> > > for
-> > > lack
-> > > of testing hardware.
-> > > 
-> > > Signed-off-by: Rouven Czerwinski <r.czerwinski@pengutronix.de>
-> > 
-> > I don't know much about the compat stuff, I trust our cmsg handling
-> > is
-> > fine?
-> > 
-> > Just to be sure - did you run tools/testing/selftests/net/tls ?
+On Thu, Aug 06, 2020 at 07:05:42PM -0700, Saeed Mahameed wrote:
+> From: Roi Dayan <roid@mellanox.com>
 > 
-> After some pains to get this to correctly compile I have two failing
-> tests, both for multi_chunk_sendfile:
+> Support for phys switch id ndo added for representors and if
+> we do not have representors there is no need to support it.
+> Since each port return different switch id supporting this
+> block support for creating bond over PFs and attaching to bridge
+> in legacy mode.
 > 
-> root@192:~ /usr/lib/kselftest/net/tls
-> [==========] Running 93 tests from 4 test cases.
-> …
-> [ RUN      ] tls.12.multi_chunk_sendfile
-> multi_chunk_sendfile: Test terminated by timeout
-> [     FAIL ] tls.12.multi_chunk_sendfile
-> …
-> [ RUN      ] tls.13.multi_chunk_sendfile
-> multi_chunk_sendfile: Test terminated by timeout
-> [     FAIL ] tls.13.multi_chunk_sendfile
-> …
-> [==========] 91 / 93 tests passed.
-> [  FAILED  ]
+> This bug doesn't exist upstream as the code got refactored and the
+> netdev api is totally different.
+> 
+> Fixes: cb67b832921c ("net/mlx5e: Introduce SRIOV VF representors")
+> Signed-off-by: Roi Dayan <roid@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> ---
+> Hi Greg,
+> 
+> Sorry for submitting a non upstream patch, but this bug is
+> bothering some users on 4.19-stable kernels and it doesn't exist
+> upstream, so i hope you are ok with backporting this one liner patch.
 
-I just tested on my x86_64 workstation and these specific tests fail
-there too, do they only work on 5.8? They were added in 5.8, but I am
-running 5.7.11 here. It looks like these failures are not
-MSG_CMSG_COMPAT related.
+Also queued up to 4.9.y and 4.14.y.
 
-Pooja Trivedi do you have an idea?
+thanks,
 
-Regards,
-Rouven
-
+greg k-h
