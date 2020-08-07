@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C797423F067
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 18:03:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B05A023F05E
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 18:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbgHGQDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 12:03:40 -0400
-Received: from pbmsgap02.intersil.com ([192.157.179.202]:54030 "EHLO
+        id S1726013AbgHGQBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 12:01:41 -0400
+Received: from pbmsgap02.intersil.com ([192.157.179.202]:53882 "EHLO
         pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725815AbgHGQDk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 12:03:40 -0400
+        with ESMTP id S1725815AbgHGQBk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 12:01:40 -0400
+X-Greylist: delayed 317 seconds by postgrey-1.27 at vger.kernel.org; Fri, 07 Aug 2020 12:01:39 EDT
 Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
-        by pbmsgap02.intersil.com (8.16.0.27/8.16.0.27) with SMTP id 077FvuCQ005868;
-        Fri, 7 Aug 2020 11:57:56 -0400
+        by pbmsgap02.intersil.com (8.16.0.27/8.16.0.27) with SMTP id 077FvuCS005868;
+        Fri, 7 Aug 2020 11:58:28 -0400
 Received: from pbmxdp03.intersil.corp (pbmxdp03.pb.intersil.com [132.158.200.224])
-        by pbmsgap02.intersil.com with ESMTP id 32n2jctr6y-1
+        by pbmsgap02.intersil.com with ESMTP id 32n2jctr77-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 07 Aug 2020 11:57:56 -0400
-Received: from pbmxdp02.intersil.corp (132.158.200.223) by
+        Fri, 07 Aug 2020 11:58:27 -0400
+Received: from pbmxdp03.intersil.corp (132.158.200.224) by
  pbmxdp03.intersil.corp (132.158.200.224) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.1979.3; Fri, 7 Aug 2020 11:57:54 -0400
-Received: from localhost (132.158.202.109) by pbmxdp02.intersil.corp
- (132.158.200.223) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Fri, 7 Aug 2020 11:57:54 -0400
+ 15.1.1979.3; Fri, 7 Aug 2020 11:58:26 -0400
+Received: from localhost (132.158.202.109) by pbmxdp03.intersil.corp
+ (132.158.200.224) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Fri, 7 Aug 2020 11:58:26 -0400
 From:   <min.li.xe@renesas.com>
 To:     <richardcochran@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Min Li <min.li.xe@renesas.com>
-Subject: [PATCH net 2/4] ptp: ptp_idt82p33: add more debug logs
-Date:   Fri, 7 Aug 2020 11:57:48 -0400
-Message-ID: <1596815868-11045-1-git-send-email-min.li.xe@renesas.com>
+Subject: [PATCH net 3/4] ptp: ptp_idt82p33: use do_aux_work for delay work
+Date:   Fri, 7 Aug 2020 11:58:05 -0400
+Message-ID: <1596815885-11094-1-git-send-email-min.li.xe@renesas.com>
 X-Mailer: git-send-email 2.7.4
 X-TM-AS-MML: disable
 MIME-Version: 1.0
@@ -50,204 +51,105 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Min Li <min.li.xe@renesas.com>
 
+Instead of declaring its own delay_work, use ptp_clock provided do_aux_work
+to configure sync_tod.
+
 Signed-off-by: Min Li <min.li.xe@renesas.com>
 ---
- drivers/ptp/ptp_idt82p33.c | 88 +++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 79 insertions(+), 9 deletions(-)
+ drivers/ptp/ptp_idt82p33.c | 24 ++++++++++++------------
+ drivers/ptp/ptp_idt82p33.h |  2 --
+ 2 files changed, 12 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/ptp/ptp_idt82p33.c b/drivers/ptp/ptp_idt82p33.c
-index bd1fbcd..189bb81 100644
+index 189bb81..2d62aed 100644
 --- a/drivers/ptp/ptp_idt82p33.c
 +++ b/drivers/ptp/ptp_idt82p33.c
-@@ -86,6 +86,7 @@ static int idt82p33_xfer(struct idt82p33 *idt82p33,
- 	struct i2c_client *client = idt82p33->client;
- 	struct i2c_msg msg[2];
- 	int cnt;
-+	char *fmt = "i2c_transfer failed at %d in %s for %s, at addr: %04X!\n";
+@@ -531,8 +531,8 @@ static int idt82p33_sync_tod(struct idt82p33_channel *channel, bool enable)
  
- 	msg[0].addr = client->addr;
- 	msg[0].flags = 0;
-@@ -99,7 +100,12 @@ static int idt82p33_xfer(struct idt82p33 *idt82p33,
+ 	if (enable == channel->sync_tod_on) {
+ 		if (enable && sync_tod_timeout) {
+-			mod_delayed_work(system_wq, &channel->sync_tod_work,
+-					 sync_tod_timeout * HZ);
++			ptp_schedule_worker(channel->ptp_clock,
++					    sync_tod_timeout * HZ);
+ 		}
+ 		return 0;
+ 	}
+@@ -555,24 +555,27 @@ static int idt82p33_sync_tod(struct idt82p33_channel *channel, bool enable)
+ 	channel->sync_tod_on = enable;
  
- 	cnt = i2c_transfer(client->adapter, msg, 2);
- 	if (cnt < 0) {
--		dev_err(&client->dev, "i2c_transfer returned %d\n", cnt);
-+		dev_err(&client->dev,
-+			fmt,
-+			__LINE__,
-+			__func__,
-+			write ? "write" : "read",
-+			(u8) regaddr);
- 		return cnt;
- 	} else if (cnt != 2) {
- 		dev_err(&client->dev,
-@@ -448,8 +454,13 @@ static int idt82p33_measure_tod_write_overhead(struct idt82p33_channel *channel)
- 
- 	err = idt82p33_measure_settime_gettime_gap_overhead(channel, &gap_ns);
- 
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
- 
- 	err = idt82p33_measure_one_byte_write_overhead(channel,
- 						       &one_byte_write_ns);
-@@ -613,13 +624,23 @@ static int idt82p33_enable_tod(struct idt82p33_channel *channel)
- 
- 	err = idt82p33_pps_enable(channel, false);
- 
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
- 
- 	err = idt82p33_measure_tod_write_overhead(channel);
- 
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
- 
- 	err = _idt82p33_settime(channel, &ts);
- 
-@@ -728,6 +749,11 @@ static int idt82p33_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- 
- 	mutex_lock(&idt82p33->reg_lock);
- 	err = _idt82p33_adjfine(channel, scaled_ppm);
-+	if (err)
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 	mutex_unlock(&idt82p33->reg_lock);
- 
- 	return err;
-@@ -751,10 +777,19 @@ static int idt82p33_adjtime(struct ptp_clock_info *ptp, s64 delta_ns)
- 
- 	if (err) {
- 		mutex_unlock(&idt82p33->reg_lock);
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
+ 	if (enable && sync_tod_timeout) {
+-		mod_delayed_work(system_wq, &channel->sync_tod_work,
+-				 sync_tod_timeout * HZ);
++		ptp_schedule_worker(channel->ptp_clock,
++				    sync_tod_timeout * HZ);
  	}
  
- 	err = idt82p33_sync_tod(channel, true);
-+	if (err)
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
+ 	return 0;
+ }
  
- 	mutex_unlock(&idt82p33->reg_lock);
- 
-@@ -770,6 +805,11 @@ static int idt82p33_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
- 
- 	mutex_lock(&idt82p33->reg_lock);
- 	err = _idt82p33_gettime(channel, ts);
-+	if (err)
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 	mutex_unlock(&idt82p33->reg_lock);
- 
- 	return err;
-@@ -785,6 +825,11 @@ static int idt82p33_settime(struct ptp_clock_info *ptp,
+-static void idt82p33_sync_tod_work_handler(struct work_struct *work)
++static long idt82p33_sync_tod_work_handler(struct ptp_clock_info *ptp)
+ {
+ 	struct idt82p33_channel *channel =
+-		container_of(work, struct idt82p33_channel, sync_tod_work.work);
++			container_of(ptp, struct idt82p33_channel, caps);
+ 	struct idt82p33 *idt82p33 = channel->idt82p33;
++	int ret;
  
  	mutex_lock(&idt82p33->reg_lock);
- 	err = _idt82p33_settime(channel, ts);
-+	if (err)
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
+ 
+-	(void)idt82p33_sync_tod(channel, false);
++	ret = idt82p33_sync_tod(channel, false);
+ 
  	mutex_unlock(&idt82p33->reg_lock);
++
++	return ret;
+ }
  
- 	return err;
-@@ -849,8 +894,13 @@ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
- 	channel = &idt82p33->channel[index];
+ static int idt82p33_pps_enable(struct idt82p33_channel *channel, bool enable)
+@@ -659,10 +662,8 @@ static void idt82p33_ptp_clock_unregister_all(struct idt82p33 *idt82p33)
  
- 	err = idt82p33_channel_init(channel, index);
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
+ 		channel = &idt82p33->channel[i];
  
- 	channel->idt82p33 = idt82p33;
+-		if (channel->ptp_clock) {
++		if (channel->ptp_clock)
+ 			ptp_clock_unregister(channel->ptp_clock);
+-			cancel_delayed_work_sync(&channel->sync_tod_work);
+-		}
+ 	}
+ }
  
-@@ -859,12 +909,22 @@ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
- 		 "IDT 82P33 PLL%u", index);
+@@ -862,8 +863,6 @@ static int idt82p33_channel_init(struct idt82p33_channel *channel, int index)
+ 		return -EINVAL;
+ 	}
  
- 	err = idt82p33_dpll_set_mode(channel, PLL_MODE_DCO);
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
+-	INIT_DELAYED_WORK(&channel->sync_tod_work,
+-			  idt82p33_sync_tod_work_handler);
+ 	channel->sync_tod_on = false;
+ 	channel->current_freq_ppb = 0;
  
- 	err = idt82p33_enable_tod(channel);
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
+@@ -881,6 +880,7 @@ static void idt82p33_caps_init(struct ptp_clock_info *caps)
+ 	caps->gettime64 = idt82p33_gettime;
+ 	caps->settime64 = idt82p33_settime;
+ 	caps->enable = idt82p33_enable;
++	caps->do_aux_work = idt82p33_sync_tod_work_handler;
+ }
  
- 	channel->ptp_clock = ptp_clock_register(&channel->caps, NULL);
- 
-@@ -896,8 +956,13 @@ static int idt82p33_load_firmware(struct idt82p33 *idt82p33)
- 
- 	err = request_firmware(&fw, FW_FILENAME, &idt82p33->client->dev);
- 
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
- 
- 	dev_dbg(&idt82p33->client->dev, "firmware size %zu bytes\n", fw->size);
- 
-@@ -981,8 +1046,13 @@ static int idt82p33_probe(struct i2c_client *client,
- 		for (i = 0; i < MAX_PHC_PLL; i++) {
- 			if (idt82p33->pll_mask & (1 << i)) {
- 				err = idt82p33_enable_channel(idt82p33, i);
--				if (err)
-+				if (err) {
-+					dev_err(&idt82p33->client->dev,
-+						"Failed at %d in func %s!\n",
-+						__LINE__,
-+						__func__);
- 					break;
-+				}
- 			}
- 		}
- 	} else {
+ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
+diff --git a/drivers/ptp/ptp_idt82p33.h b/drivers/ptp/ptp_idt82p33.h
+index 9d46966..1dcd2c0 100644
+--- a/drivers/ptp/ptp_idt82p33.h
++++ b/drivers/ptp/ptp_idt82p33.h
+@@ -119,8 +119,6 @@ struct idt82p33_channel {
+ 	struct ptp_clock	*ptp_clock;
+ 	struct idt82p33	*idt82p33;
+ 	enum pll_mode	pll_mode;
+-	/* task to turn off SYNC_TOD bit after pps sync */
+-	struct delayed_work	sync_tod_work;
+ 	bool			sync_tod_on;
+ 	s32			current_freq_ppb;
+ 	u8			output_mask;
 -- 
 2.7.4
 
