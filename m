@@ -2,87 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9A9723EE39
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 15:30:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D351623EE5C
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 15:39:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbgHGN3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 09:29:49 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46492 "EHLO vps0.lunn.ch"
+        id S1726191AbgHGNj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 09:39:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34924 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726167AbgHGN3q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Aug 2020 09:29:46 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k42Qy-008cGq-FF; Fri, 07 Aug 2020 15:29:20 +0200
-Date:   Fri, 7 Aug 2020 15:29:20 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>,
-        netdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        jacek.anaszewski@gmail.com, Dan Murphy <dmurphy@ti.com>,
-        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC leds + net-next v4 0/2] Add support for LEDs on
- Marvell PHYs
-Message-ID: <20200807132920.GB2028541@lunn.ch>
-References: <20200728150530.28827-1-marek.behun@nic.cz>
- <20200807090653.ihnt2arywqtpdzjg@duo.ucw.cz>
+        id S1725970AbgHGNjT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Aug 2020 09:39:19 -0400
+Received: from [10.20.23.223] (unknown [12.97.180.36])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C614520866;
+        Fri,  7 Aug 2020 13:39:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596807559;
+        bh=djVAZ8bgNnDd5s20tDbtmbbCi6mAMF/eFolBBmMjS/4=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=M2t8KqC8r0URtDNpW9FSWMTYh/AqHEhN8JK9uqdfkyd61X7sFgA6WeVL9bX34Bf77
+         l80ZFYD73auUDGxQSXdi5NS03vbp3/IVW2FGapuluwwl45VS2XFJGRnUE9PdzTZKL6
+         2HjUIkDnNrxmao+96kag6Vd8PXuTAVDCR25wvCmM=
+Subject: Re: [PATCH net] net: qcom/emac: Fix missing clk_disable_unprepare()
+ in error path of emac_probe
+To:     "wanghai (M)" <wanghai38@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20200806140647.43099-1-wanghai38@huawei.com>
+ <87f41175-689e-f198-aaf6-9b9f04449ed8@kernel.org>
+ <df1bad2e-2a6a-ff70-9b91-f18df20aaec8@huawei.com>
+From:   Timur Tabi <timur@kernel.org>
+Message-ID: <9ec9b9ab-48d9-9d38-8f58-27e2556c141a@kernel.org>
+Date:   Fri, 7 Aug 2020 08:38:48 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200807090653.ihnt2arywqtpdzjg@duo.ucw.cz>
+In-Reply-To: <df1bad2e-2a6a-ff70-9b91-f18df20aaec8@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > And no, I don't want phydev name there.
+On 8/6/20 8:54 PM, wanghai (M) wrote:
+> Thanks for your suggestion. May I fix it like this?
 > 
-> Ummm. Can we get little more explanation on that? I fear that LED
-> device renaming will be tricky and phydev would work around that
-> nicely.
+Yes, this is what I had in mind.  Thanks.
 
-Hi Pavel
-
-The phydev name is not particularly nice:
-
-!mdio-mux!mdio@1!switch@0!mdio:00
-!mdio-mux!mdio@1!switch@0!mdio:01
-!mdio-mux!mdio@1!switch@0!mdio:02
-!mdio-mux!mdio@2!switch@0!mdio:00
-!mdio-mux!mdio@2!switch@0!mdio:01
-!mdio-mux!mdio@2!switch@0!mdio:02
-!mdio-mux!mdio@4!switch@0!mdio:00
-!mdio-mux!mdio@4!switch@0!mdio:01
-!mdio-mux!mdio@4!switch@0!mdio:02
-400d0000.ethernet-1:00
-400d0000.ethernet-1:01
-fixed-0:00
-
-The interface name are:
-
-1: lo:
-2: eth0:
-3: eth1:
-4: lan0@eth1:
-5: lan1@eth1:
-6: lan2@eth1:
-7: lan3@eth1:
-8: lan4@eth1:
-9: lan5@eth1:
-10: lan6@eth1:
-11: lan7@eth1:
-12: lan8@eth1:
-13: optical3@eth1:
-14: optical4@eth1:
-
-You could make a good guess at matching to two together, but it is
-error prone. Phys are low level things which the user is not really
-involved in. They interact with interface names. ethtool, ip, etc, all
-use interface names. In fact, i don't know of any tool which uses
-phydev names.
-
-	 Andrew
+Acked-by: Timur Tabi <timur@kernel.org>
