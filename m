@@ -2,41 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04B1923F199
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 19:02:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBE3823F19E
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 19:02:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726094AbgHGRCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 13:02:08 -0400
-Received: from www62.your-server.de ([213.133.104.62]:42212 "EHLO
+        id S1726479AbgHGRCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 13:02:53 -0400
+Received: from www62.your-server.de ([213.133.104.62]:42398 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725993AbgHGRCH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 13:02:07 -0400
+        with ESMTP id S1725934AbgHGRCv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 13:02:51 -0400
 Received: from sslproxy06.your-server.de ([78.46.172.3])
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1k45ki-0005qO-RL; Fri, 07 Aug 2020 19:01:56 +0200
+        id 1k45lZ-00060w-Q4; Fri, 07 Aug 2020 19:02:49 +0200
 Received: from [178.196.57.75] (helo=pc-9.home)
         by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1k45ki-000S11-H3; Fri, 07 Aug 2020 19:01:56 +0200
-Subject: Re: [PATCH bpf] bpf: doc: remove references to warning message when
- using bpf_trace_printk()
-To:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        rostedt@goodmis.org, linux-doc@vger.kernel.org, corbet@lwn.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1596801029-32395-1-git-send-email-alan.maguire@oracle.com>
+        id 1k45lZ-000UTI-KH; Fri, 07 Aug 2020 19:02:49 +0200
+Subject: Re: [PATCH bpf] selftests/bpf: fix silent Makefile output
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
+References: <20200807033058.848677-1-andriin@fb.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <007a231f-6352-9784-bce1-417d6572b423@iogearbox.net>
-Date:   Fri, 7 Aug 2020 19:01:55 +0200
+Message-ID: <717ce941-5f80-dcfa-6c75-1fd230bc67a2@iogearbox.net>
+Date:   Fri, 7 Aug 2020 19:02:49 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <1596801029-32395-1-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <20200807033058.848677-1-andriin@fb.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -47,13 +43,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/7/20 1:50 PM, Alan Maguire wrote:
-> The BPF helper bpf_trace_printk() no longer uses trace_printk();
-> it is now triggers a dedicated trace event.  Hence the described
-> warning is no longer present, so remove the discussion of it as
-> it may confuse people.
+On 8/7/20 5:30 AM, Andrii Nakryiko wrote:
+> 99aacebecb75 ("selftests: do not use .ONESHELL") removed .ONESHELL, which
+> changes how Makefile "silences" multi-command target recipes. selftests/bpf's
+> Makefile relied (a somewhat unknowingly) on .ONESHELL behavior of silencing
+> all commands within the recipe if the first command contains @ symbol.
+> Removing .ONESHELL exposed this hack.
 > 
-> Fixes: ac5a72ea5c89 ("bpf: Use dedicated bpf_trace_printk event instead of trace_printk()")
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+> This patch fixes the issue by explicitly silencing each command with $(Q).
+> 
+> Also explicitly define fallback rule for building *.o from *.c, instead of
+> relying on non-silent inherited rule. This was causing a non-silent output for
+> bench.o object file.
+> 
+> Fixes: 92f7440ecc93 ("selftests/bpf: More succinct Makefile output")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Applied, thanks!
+Looks good, applied thanks!
