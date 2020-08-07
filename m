@@ -2,154 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 233D023E87B
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 10:04:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6330E23E88B
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 10:06:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbgHGIEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 04:04:06 -0400
-Received: from mail-db8eur05on2108.outbound.protection.outlook.com ([40.107.20.108]:23136
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725805AbgHGIEF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Aug 2020 04:04:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hd/Iy1mldcqukiNmT7Dn/gt90PL+yW1i7aMK2AH8BOp3CGfZKRH5fj+xi6gZ4RiSZC7ubwxF5Y4OvHdQwc82+WyTtSfYrqSeI65Gt8lhsUrJaR+YMYveKMy0IVPDEeNaCCq+ukK+2AIWe1ZbeUKGpap+KYLeRERLSthgye3FSA+WdcrMJ3Nd4NnUPxDi/Fw702w/VYD55b2UawmrI43ECjSb/B3CL8A/LJw1ABaH+S3lTo8UNDhTNk/wE+aaiXo1ohSiOsoRIONFS5mCAwhRd1HlM7MMxZpWMVQg8yDRkadHPDra0E9FZ4JfoqI36uBMjHSVZlf69MvqwqacwN+Ytw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AbcNxCLoviyz3Mb+GBXRlC5cJS24wfjH6/e9R080MFY=;
- b=j4ZHn9EeSDhjyE1O4OaZ61GTFoVLotCGjxj6zXlpf/YxPwVSQorzSIURFOvlluHPPcEnbHM5y5ES5rrv6dU3mELbXSCrznmbhinnGUP1d3aqhIvtAxKyhAaDiLh/K6bcUyD9hl2cdCtsP/iGuqXAE7S+L5LLOPMuH4XdlYc6VnnTHsDcYyXrI9rTEzfS+tQNk6SvBL72qUiDPMIkzVZzPG53hY0t2yV4c/3/4RcN9w4mEwoh4YR/YIlKfmNr6vfRc9DoyILoK/rPGj/x8qWovZ0MKBpCPoKZZIZkSXZH6pqQqF13xIYg6DABOVxN77avKRi541h+NhqkC0O9FNRzLA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
- dkim=pass header.d=prevas.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AbcNxCLoviyz3Mb+GBXRlC5cJS24wfjH6/e9R080MFY=;
- b=c68FtCKI0QW0/zcmNjwJRVMZHeIYVO+JKVzPesg4onuGykmIAE1lg3Lgu2sldKvL1jEnO7cIo8lpvvW6u1/c0YfPrmdN8QxC/lq1fhOwacz/q4jyVsCty4f3Bwr3g3mkFdB5hCy2RtAjUSktx/+loWWnl7DXLHZ3UXmAdrta5c8=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=prevas.dk;
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
- by AM0PR10MB2674.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:12a::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3261.20; Fri, 7 Aug
- 2020 08:04:01 +0000
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::3cfb:a3e6:dfc0:37ec]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::3cfb:a3e6:dfc0:37ec%3]) with mapi id 15.20.3261.018; Fri, 7 Aug 2020
- 08:04:01 +0000
-Subject: Re: rtnl_trylock() versus SCHED_FIFO lockup
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Cc:     Network Development <netdev@vger.kernel.org>
-References: <b6eca125-351c-27c5-c34b-08c611ac2511@prevas.dk>
- <20200805163425.6c13ef11@hermes.lan>
- <191e0da8-178f-5f91-3d37-9b7cefb61352@prevas.dk>
- <2a6edf25-b12b-c500-ad33-c0ec9e60cde9@cumulusnetworks.com>
- <20200806203922.3d687bf2@hermes.lan>
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Message-ID: <29a82363-411c-6f2b-9f55-97482504e453@prevas.dk>
-Date:   Fri, 7 Aug 2020 10:03:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20200806203922.3d687bf2@hermes.lan>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM0PR10CA0012.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:17c::22) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:3f::10)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [172.16.11.132] (81.216.59.226) by AM0PR10CA0012.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:17c::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3261.19 via Frontend Transport; Fri, 7 Aug 2020 08:04:00 +0000
-X-Originating-IP: [81.216.59.226]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8c5a18f7-85a1-4582-729a-08d83aa8719e
-X-MS-TrafficTypeDiagnostic: AM0PR10MB2674:
-X-Microsoft-Antispam-PRVS: <AM0PR10MB26745E98A287636338D47A2893490@AM0PR10MB2674.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jSs8Y+9jsQYeDhcJrI352qJRAq8BU9rGxF072xLy1X0d8QfciNslxbIErC5ZF2sN+bWgCswkCPBshYQ8Cqe7dS8oBcwE5pIx/rTToiDby9v5l4Dy0A4NJhTMJJv5GUjDx9KmhD3EpVv8kV82P9lDRbC6veCwERgucXY9DCPS/hvkRM0K+0D58gW0QpkRUKxSgdJRtvjov7o92A4QlhKc2HPXdfweGdZDBgZEqlbi3excfwEpYq6RPRC+dEIM8C6aJsq1Xw5IVDx7myKS+3iIiPnNDLqDrgm6sFaA3k74cnepH666fjpO/04RWrvAPMcw1AxP4PWz4+bmU23cVh0+qBjEyBWi3Ngs1gi+kclsHbwaQOJljju2tjGHTPJt3Ruv
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(39840400004)(396003)(366004)(376002)(346002)(136003)(83380400001)(31696002)(31686004)(2616005)(956004)(86362001)(44832011)(2906002)(26005)(16576012)(110136005)(8676002)(66946007)(4326008)(66556008)(66476007)(8936002)(8976002)(36756003)(186003)(16526019)(5660300002)(53546011)(52116002)(6486002)(316002)(508600001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: sB3NXcEJ5PpegRsvhzhZ5/UK+47WekLySDXHNygw6MUGvu/hSHnF8u7emOCBgkFwENweZLod5EVgW4tArUDlvkeCpzDH9YGdjEMPw0lkJ8YOos6hRAOuW2aTeM2xx/9rrNOHBEI36Qts+cwM1eFk8QY957qL1IWuw/ZgZQ/HUk/HXdfHEh8+DwpcuDbKN5fwJr7KIP/8mi4h6o8LQwZWrvPzNtk1d/LrXrnZthqSGTAO7iO78F/AKk6NK1tBtbDIzNPQqb527WKxXFiANYbzwhp36LNEr8iUW463cGGODxST25nubyFlj+BLHPGcejBILLOymcWj0U1JxtzBi/D0K8QhonQ+HcVbQ7mYBMz0p5UWzYgLGLh5hN4nPG+XLHqmWeFen80f8sVD7ZCkPTo7c3jVaRqAexxbX+a2QVsqoOvvD0Puuximbb8q4wF6oiRj7qjWBbVCNjhQNCI+UIwr/o1YBo8ua4+zEgfvQ92RDWE8kcz+oMoOAlJrszm0HpYA2oKwlUCfANQWCinfgadNZOz1TND0ViMT9eSdMAPJXGsh09hew+Ry4fgMUSIkGultUrEiei2pMUGyWR+vjlByhOKavtvJjAK7ipx5Fhm7+YHIqRaGzEHZzPLWTrI6adsJzBtORKg2sj04QM0Qeucs5g==
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8c5a18f7-85a1-4582-729a-08d83aa8719e
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Aug 2020 08:04:01.1249
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PaAZtLDfeop880dxptJaT54/kVugPSs/E0eV1mdGJ4R54diO6tQ4tyKFJLQAjWS+QzRjDAfQuTil6IpWA3PAbDkHGl7dPevYcXYe+b832h0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB2674
+        id S1726935AbgHGIGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 04:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725805AbgHGIGt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 04:06:49 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094A7C061574;
+        Fri,  7 Aug 2020 01:06:48 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id r4so708840pls.2;
+        Fri, 07 Aug 2020 01:06:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=4XLPHo6ufXjqCRDRX6dlamDg8saN7x8jg/SbIqu516I=;
+        b=fNAJf5Jqo/OU8MSnbks8APaPlFcPTPed8hIm+RF5uEP0MVlFRE51bceB9XUr97PQOy
+         t6JhhXMLqUxUYPRhiV5Yk1xKUw8Ize2YilArRhUK6PbX1zZxbzxL7mGxtkTUFatf3xll
+         KoUvM2lP7agOvM+akXjePCzMdgYg/X+PlOlZdn5eDXtURGPCItCgGqfuIlBTNuDfJj3D
+         7TnsxcrRYWps8jln59GtRWMo2qM6VyQ3yARXqFDFYvVUg6OCWZiUVYueGX8WkkjGLkoE
+         YDa3/nZKhZx3hCu8N6Xb+GIvHiJU4EuLktAM83d5WbjLPv6M4CELkaqtZp66hsIXbo3S
+         szYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=4XLPHo6ufXjqCRDRX6dlamDg8saN7x8jg/SbIqu516I=;
+        b=NCAYE6lSxKBRLO6zOv5J6mkTdGQdXNlbC6HeZNbfRbquge0jT4BGShEqZ7SdK21zc7
+         lwsQ6MKft24vPucFHTsvErlXKCWyjOkNgNeVuyfnkevXzcwieVb0odAbDytnHUx0RMEt
+         xZiYKi34lmI7Fs9kL4W8AST8Njj/JWzpZjnDwUs9DSNicAB2ATUU32D8rvuVPme1okHL
+         vYep5nhdAw859gfosG4mcpwyK4TDFsoHRM0kCV2a7vqQdcu4BLbvHb3thhp0QLfBy0ID
+         4c9V3cNz0SS34mmC32fZqLcCISwdXEy73JRW4A/BjtTieGh5fOVpu1crp5yX2K3yoKDp
+         jMfQ==
+X-Gm-Message-State: AOAM533sCNv332pGFJ7Pejd1eeneV50V8NOzpLxUKgl/UE9whwyNZaUt
+        Kg7CDneQWxz/Z4h2FX4Htgc=
+X-Google-Smtp-Source: ABdhPJxui7Oprix2e/G48+E3w+lKpjo8L5GpoGRIpjJb1/SpBdQvuTty/P4PmydhlX0r3jPrBRzFkg==
+X-Received: by 2002:a17:902:9f85:: with SMTP id g5mr11035469plq.13.1596787608321;
+        Fri, 07 Aug 2020 01:06:48 -0700 (PDT)
+Received: from [192.168.97.34] (p7925058-ipngn38401marunouchi.tokyo.ocn.ne.jp. [122.16.223.58])
+        by smtp.gmail.com with ESMTPSA id b13sm11307575pgd.36.2020.08.07.01.06.43
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 07 Aug 2020 01:06:47 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.15\))
+Subject: Re: [RFC PATCH bpf-next 2/3] bpf: Add helper to do forwarding lookups
+ in kernel FDB table
+From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
+In-Reply-To: <e92455ce-3a3f-7c52-1388-da40e8ceefd0@gmail.com>
+Date:   Fri, 7 Aug 2020 17:06:41 +0900
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org, bpf@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <3B486A33-7A46-436A-A563-80F842A16F23@gmail.com>
+References: <1596170660-5582-1-git-send-email-komachi.yoshiki@gmail.com>
+ <1596170660-5582-3-git-send-email-komachi.yoshiki@gmail.com>
+ <5970d82b-3bb9-c78f-c53a-8a1c95a1fad7@gmail.com>
+ <F99B20F3-4F88-4AFC-9DF8-B32EFD417785@gmail.com>
+ <e92455ce-3a3f-7c52-1388-da40e8ceefd0@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+X-Mailer: Apple Mail (2.3445.104.15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/08/2020 05.39, Stephen Hemminger wrote:
-> On Thu, 6 Aug 2020 12:46:43 +0300
-> Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
-> 
->> On 06/08/2020 12:17, Rasmus Villemoes wrote:
->>> On 06/08/2020 01.34, Stephen Hemminger wrote:  
->>>> On Wed, 5 Aug 2020 16:25:23 +0200
 
->>
->> Hi Rasmus,
->> I haven't tested anything but git history (and some grepping) points to deadlocks when
->> sysfs entries are being changed under rtnl.
->> For example check: af38f2989572704a846a5577b5ab3b1e2885cbfb and 336ca57c3b4e2b58ea3273e6d978ab3dfa387b4c
->> This is a common usage pattern throughout net/, the bridge is not the only case and there are more
->> commits which talk about deadlocks.
->> Again I haven't verified anything but it seems on device delete (w/ rtnl held) -> sysfs delete
->> would wait for current readers, but current readers might be stuck waiting on rtnl and we can deadlock.
->>
-> 
-> I was referring to AB BA lock inversion problems.
+> 2020/08/06 1:38=E3=80=81David Ahern <dsahern@gmail.com>=E3=81=AE=E3=83=A1=
+=E3=83=BC=E3=83=AB:
+>=20
+> On 8/4/20 5:27 AM, Yoshiki Komachi wrote:
+>>=20
+>> I guess that no build errors will occur because the API is allowed =
+when
+>> CONFIG_BRIDGE is enabled.
+>>=20
+>> I successfully build my kernel applying this patch, and I don=E2=80=99t=
+ receive any
+>> messages from build robots for now.
+>=20
+> If CONFIG_BRIDGE is a module, build should fail: filter.c is built-in
+> trying to access a symbol from module.
 
-Ah, so lock inversion, not priority inversion.
+When I tried building my kernel with CONFIG_BRIDGE set as a module, I =
+got
+the following error as you pointed out:
 
-> 
-> Yes the trylock goes back to:
-> 
-> commit af38f2989572704a846a5577b5ab3b1e2885cbfb
-> Author: Eric W. Biederman <ebiederm@xmission.com>
-> Date:   Wed May 13 17:00:41 2009 +0000
-> 
->     net: Fix bridgeing sysfs handling of rtnl_lock
->     
->     Holding rtnl_lock when we are unregistering the sysfs files can
->     deadlock if we unconditionally take rtnl_lock in a sysfs file.  So fix
->     it with the now familiar patter of: rtnl_trylock and syscall_restart()
->     
->     Signed-off-by: Eric W. Biederman <ebiederm@aristanetworks.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
-> 
-> 
-> The problem is that the unregister of netdevice happens under rtnl and
-> this unregister path has to remove sysfs and other objects.
-> So those objects have to have conditional locking.
-I see. And the reason the "trylock, unwind all the way back to syscall
-entry and start over" works is that we then go through
+    ld: net/core/filter.o: in function `____bpf_xdp_fdb_lookup':
+    /root/bpf-next/net/core/filter.c:5108: undefined reference to =
+`br_fdb_find_port_xdp'
 
-kernfs_fop_write()
-	mutex_lock(&of->mutex);
-	if (!kernfs_get_active(of->kn)) {
-		mutex_unlock(&of->mutex);
-		len = -ENODEV;
-		goto out_free;
-	}
+It may be necessary to fix it to support kernels built with =
+CONFIG_BRIDGE set
+as a mfodule, so let me make sure if it should be called via netdev ops =
+to get
+destination port in a bridge again.
 
-which makes the write fail with ENODEV if the sysfs node has already
-been marked for removal.
+Thanks & Best regards,
 
-If I'm reading the code correctly, doing "ip link set dev foobar type
-bridge fdb_flush" is equivalent to writing to that sysfs file, except
-the former ends up doing an unconditional rtnl_lock() and thus won't
-have the livelocking issue.
 
-Thanks,
-Rasmus
+=E2=80=94
+Yoshiki Komachi
+komachi.yoshiki@gmail.com
+
