@@ -2,54 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1AE123F453
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 23:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 251AB23F463
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 23:31:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727902AbgHGVaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 17:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53518 "EHLO
+        id S1726891AbgHGV3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 17:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727820AbgHGV3s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 17:29:48 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6A5C061756
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 14:29:48 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id lx6so2493480pjb.9
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 14:29:48 -0700 (PDT)
+        with ESMTP id S1727019AbgHGV3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 17:29:35 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C71C061756
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 14:29:35 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id d26so4357941yba.20
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 14:29:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=LfxCPN/4iZPLCZVOVhzdLvyoPvK+axLJbpywb7N3FLc=;
-        b=VIBg3oqpKZQpugF58zmKqStuZ5KBBnpMO9QTOrnjznu3Umo3cQqhRuUY+u1Vo1ME8f
-         dVB/ezp2eLRF/M1OihMCsccbSEBWLB9GxfwdGRwkeIFuRPo3roBkeWAbbHEB4ZB7JSsC
-         viG7KdWxZ5LfFPd7WviOf0CtToGYdrRn2CboKmRkbG0ygI1tVLIDSQGcH7+bhLyAnT2O
-         9Kabzp4Oe4O8CXOa2yf4LfK75nVvxwpPciAU+kWlaIW8O6j4Wb9Bgv/JZBDZa2phCJHm
-         z0MHMOm+P+Gzyeec/BJx3I+Sgas6eGPW+bIJKumLJwFOhgIW+slujH5jW0XT1TKk8HRl
-         v/Nw==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=2Epbq3zd+57RV+c5a3tR14Y8EZnVI9kXEnkZqe3uwAA=;
+        b=W4JL+gkPyvYfdfwk6ydvYnTnosTt4pvJ7tL6kLXU+WUTb6rftiPRdMePYrbZabnBTD
+         +ISkyoN5LHfFW3Z6CwOyFJX0djyFH2uNFR35eVqx4/Y/Qi47Gs+4ceJ48kzO4YJo7Gux
+         deL3jBPiYpM3y+EqgYB+N5By3UQ0F55MxwqLYjl/Awc3revSFDBw4yahIaJqx+SGgXOg
+         vquf/jHyOotjcNWthbAW3uUC7wpRsVMjWeVPbcdTZppHRp2GfKlamKeJ1xDUvV2FIBM8
+         PYK8Tlv+XXASS++2PpJDsFc0cd4D+NzUwhVxDOepLelhsNX9Zlr+hx87Y8ZZOIZF3C1g
+         i+rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=LfxCPN/4iZPLCZVOVhzdLvyoPvK+axLJbpywb7N3FLc=;
-        b=UXRZkcmYe4uetTrYlxw1g97xUQfKzD6F/5u/NuynM915V5wgXLn8oCG3sZ4BwtjO8/
-         x1zHyZODbGsnG8qbQ7oMgXXw3Hd0JODi47SgCPJNOd5MmLg2fBdcdGevMZpAglXyyZUk
-         7H0NICWvgCW4URkxrid6a/skTAfd5p9wKqC7xLrejaPi/ulVmzbOTomPqlTsshLOzSIW
-         uRWVZL6q0sDBBNltSAe4Yp/O148LxuJabQKbrJsD3tZZ5gYlMYfdiD9qoX9HbSPfcFSr
-         EJTPSLqpYN1xGjpgtfbl+/2LdI6p71tvfKjIrC9w+QialVGWgONQRldxshcwlZP7Ve0H
-         WKJg==
-X-Gm-Message-State: AOAM530FZ22Blf8kNBNDGdlHLNqOcnWn1nWTSas/n6brKNUjKNJ+s8wz
-        YirvUjAYRReOdstkzHWUXS/poYKUHcw=
-X-Google-Smtp-Source: ABdhPJyoavtOmq/7H4LPduK/k9+4umyJYh/qUDlGhNEQwJMHeb8u/v/EJaYmce8YVr9gCjxz+YCKFwc8o4TE
-X-Received: by 2002:a17:90a:1a13:: with SMTP id 19mr14039860pjk.167.1596835787619;
- Fri, 07 Aug 2020 14:29:47 -0700 (PDT)
-Date:   Fri,  7 Aug 2020 14:29:16 -0700
-In-Reply-To: <20200807212916.2883031-1-jwadams@google.com>
-Message-Id: <20200807212916.2883031-8-jwadams@google.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=2Epbq3zd+57RV+c5a3tR14Y8EZnVI9kXEnkZqe3uwAA=;
+        b=RLFNkQhVoSXBf36QFB9hbXWdhaWsogERw1lJue3I/yAqm/3dftQQhCtmmIWq/5Hznb
+         1pcJqAwxKOp/qnAZ8VUFgID87TjKQ82LcHEXCwb5RWPrSWGia04kVlfdAIxVc/IxGoO9
+         Dl0Wk7Yrdct4OrLD4Mt16zBU0fKUONCPbu2RWPDycfbm7UxP5mMAI2LpuL41QIWka+9F
+         EHWZKrgu+zm7TFronAbyBlLPkufMrJg3GotmkuqEcVPoXSaCmM3QVId8m3uK8xVz4BNf
+         85yHoaLbAASMhwkAbX6flg7zGk8GUOezjVkATXV/Ltq/2L2NgQhtZwzDLeftmFDkyXpU
+         D4+g==
+X-Gm-Message-State: AOAM530ujZlvzUbXPIVnXF4SnbtqfCiv2GYa/bzeRsHDIRWjDcGnch7w
+        tQOaCGMOfhzeL9mani4bE6H2mMwu23E=
+X-Google-Smtp-Source: ABdhPJwpYiGEXI6N/WmSc1sNe+MKpn0dLtZLyveRHzfSP1IyYqPUCszF3totD/1mcAxmqwETOm6E5qQykQ85
+X-Received: by 2002:a25:d709:: with SMTP id o9mr21697023ybg.392.1596835774334;
+ Fri, 07 Aug 2020 14:29:34 -0700 (PDT)
+Date:   Fri,  7 Aug 2020 14:29:09 -0700
+Message-Id: <20200807212916.2883031-1-jwadams@google.com>
 Mime-Version: 1.0
-References: <20200807212916.2883031-1-jwadams@google.com>
 X-Mailer: git-send-email 2.28.0.236.gb10cc79966-goog
-Subject: [RFC PATCH 7/7] net-metricfs: Export /proc/net/dev via metricfs.
+Subject: [RFC PATCH 0/7] metricfs metric file system and examples
 From:   Jonathan Adams <jwadams@google.com>
 To:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
 Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
@@ -57,244 +53,164 @@ Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
         Greg KH <gregkh@linuxfoundation.org>,
         Jim Mattson <jmattson@google.com>,
         David Rientjes <rientjes@google.com>,
-        Jonathan Adams <jwadams@google.com>,
-        Laurent Chavey <chavey@google.com>
+        Jonathan Adams <jwadams@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Laurent Chavey <chavey@google.com>
+[resending to widen the CC lists per rdunlap@infradead.org's suggestion
+original posting to lkml here: https://lkml.org/lkml/2020/8/5/1009]
 
-Export /proc/net/dev statistics via metricfs.
+To try to restart the discussion of kernel statistics started by the
+statsfs patchsets (https://lkml.org/lkml/2020/5/26/332), I wanted
+to share the following set of patches which are Google's 'metricfs'
+implementation and some example uses.  Google has been using metricfs
+internally since 2012 as a way to export various statistics to our
+telemetry systems (similar to OpenTelemetry), and we have over 200
+statistics exported on a typical machine.
 
-The implementation reports all the devices that are in the same
-network namespace as the process reading metricfs.
+These patches have been cleaned up and modernized v.s. the versions
+in production; I've included notes under the fold in the patches.
+They're based on v5.8-rc6.
 
-The implementation does not report devices across network namespaces
+The statistics live under debugfs, in a tree rooted at:
 
-Signed-off-by: Laurent Chavey <chavey@google.com>
-[jwadams@google.com: ported code to 5.8-pre6, cleaned up googleisms ]
-Signed-off-by: Jonathan Adams <jwadams@google.com>
----
- net/core/Makefile       |   1 +
- net/core/net_metricfs.c | 194 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 195 insertions(+)
+	/sys/kernel/debug/metricfs
+
+Each metric is a directory, with four files in it.  For example, the '
+core/metricfs: Create metricfs, standardized files under debugfs.' patch
+includes a simple 'metricfs_presence' metric, whose files look like:
+/sys/kernel/debug/metricfs:
+ metricfs_presence/annotations
+  DESCRIPTION A\ basic\ presence\ metric.
+ metricfs_presence/fields
+  value
+  int
+ metricfs_presence/values
+  1
+ metricfs_presence/version
+  1
+
+(The "version" field always says '1', and is kind of vestigial)
+
+An example of a more complicated stat is the networking stats.
+For example, the tx_bytes stat looks like:
+
+net/dev/stats/tx_bytes/annotations
+  DESCRIPTION net\ device\ transmited\ bytes\ count
+  CUMULATIVE
+net/dev/stats/tx_bytes/fields
+  interface value
+  str int
+net/dev/stats/tx_bytes/values
+  lo 4394430608
+  eth0 33353183843
+  eth1 16228847091
+net/dev/stats/tx_bytes/version
+  1
+
+The per-cpu statistics show up in the schedulat stat info and x86
+IRQ counts.  For example:
+
+stat/user/annotations
+  DESCRIPTION time\ in\ user\ mode\ (nsec)
+  CUMULATIVE
+stat/user/fields
+  cpu value
+  int int
+stat/user/values
+  0 1183486517734
+  1 1038284237228
+  ...
+stat/user/version
+  1
+
+The full set of example metrics I've included are:
+
+core/metricfs: Create metricfs, standardized files under debugfs.
+  metricfs_presence
+core/metricfs: metric for kernel warnings
+  warnings/values
+core/metricfs: expose scheduler stat information through metricfs
+  stat/*
+net-metricfs: Export /proc/net/dev via metricfs.
+  net/dev/stats/[tr]x_*
+core/metricfs: expose x86-specific irq information through metricfs
+  irq_x86/*
+
+The general approach is called out in kernel/metricfs.c:
+
+The kernel provides:
+  - A description of the metric
+  - The subsystem for the metric (NULL is ok)
+  - Type information about the metric, and
+  - A callback function which supplies metric values.
+
+Limitations:
+  - "values" files are at MOST 64K. We truncate the file at that point.
+  - The list of fields and types is at most 1K.
+  - Metrics may have at most 2 fields.
+
+Best Practices:
+  - Emit the most important data first! Once the 64K per-metric buffer
+    is full, the emit* functions won't do anything.
+  - In userspace, open(), read(), and close() the file quickly! The kernel
+    allocation for the metric is alive as long as the file is open. This
+    permits users to seek around the contents of the file, while
+    permitting an atomic view of the data.
+
+Note that since the callbacks are called and the data is generated at
+file open() time, the relative consistency is only between members of
+a given metric; the rx_bytes stat for every network interface will
+be read at almost the same time, but if you want to get rx_bytes
+and rx_packets, there could be a bunch of slew between the two file
+opens.  (So this doesn't entirely address Andrew Lunn's comments in
+https://lkml.org/lkml/2020/5/26/490)
+
+This also doesn't address one of the basic parts of the statsfs work:
+moving the statistics out of debugfs to avoid lockdown interactions.
+
+Google has found a lot of value in having a generic interface for adding
+these kinds of statistics with reasonably low overhead (reading them
+is O(number of statistics), not number of objects in each statistic).
+There are definitely warts in the interface, but does the basic approach
+make sense to folks?
+
+Thanks,
+- Jonathan
+
+Jonathan Adams (5):
+  core/metricfs: add support for percpu metricfs files
+  core/metricfs: metric for kernel warnings
+  core/metricfs: expose softirq information through metricfs
+  core/metricfs: expose scheduler stat information through metricfs
+  core/metricfs: expose x86-specific irq information through metricfs
+
+Justin TerAvest (1):
+  core/metricfs: Create metricfs, standardized files under debugfs.
+
+Laurent Chavey (1):
+  net-metricfs: Export /proc/net/dev via metricfs.
+
+ arch/x86/kernel/irq.c      |  80 ++++
+ fs/proc/stat.c             |  57 +++
+ include/linux/metricfs.h   | 131 +++++++
+ kernel/Makefile            |   2 +
+ kernel/metricfs.c          | 775 +++++++++++++++++++++++++++++++++++++
+ kernel/metricfs_examples.c | 151 ++++++++
+ kernel/panic.c             | 131 +++++++
+ kernel/softirq.c           |  45 +++
+ lib/Kconfig.debug          |  18 +
+ net/core/Makefile          |   1 +
+ net/core/net_metricfs.c    | 194 ++++++++++
+ 11 files changed, 1585 insertions(+)
+ create mode 100644 include/linux/metricfs.h
+ create mode 100644 kernel/metricfs.c
+ create mode 100644 kernel/metricfs_examples.c
  create mode 100644 net/core/net_metricfs.c
 
-diff --git a/net/core/Makefile b/net/core/Makefile
-index 3e2c378e5f31..7647380b9679 100644
---- a/net/core/Makefile
-+++ b/net/core/Makefile
-@@ -27,6 +27,7 @@ obj-$(CONFIG_NET_PTP_CLASSIFY) += ptp_classifier.o
- obj-$(CONFIG_CGROUP_NET_PRIO) += netprio_cgroup.o
- obj-$(CONFIG_CGROUP_NET_CLASSID) += netclassid_cgroup.o
- obj-$(CONFIG_LWTUNNEL) += lwtunnel.o
-+obj-$(CONFIG_METRICFS) += net_metricfs.o
- obj-$(CONFIG_LWTUNNEL_BPF) += lwt_bpf.o
- obj-$(CONFIG_BPF_STREAM_PARSER) += sock_map.o
- obj-$(CONFIG_DST_CACHE) += dst_cache.o
-diff --git a/net/core/net_metricfs.c b/net/core/net_metricfs.c
-new file mode 100644
-index 000000000000..82f0f797b0b0
---- /dev/null
-+++ b/net/core/net_metricfs.c
-@@ -0,0 +1,194 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* net_metricfs: Exports network counters using metricfs.
-+ */
-+#include <linux/init.h>
-+#include <linux/kernel.h>
-+#include <linux/metricfs.h>
-+#include <linux/netdevice.h>
-+#include <linux/nsproxy.h>
-+#include <linux/rcupdate.h>
-+#include <linux/stddef.h>
-+#include <linux/types.h>
-+#include <net/net_namespace.h>
-+
-+struct metric_def {
-+	struct metric *metric;
-+	size_t off;
-+	char *name;
-+	char *desc;
-+};
-+
-+/* If needed, we could export this via a function for other /net users */
-+static struct metricfs_subsys *net_root_subsys;
-+static struct metricfs_subsys *dev_subsys;
-+static struct metricfs_subsys *dev_stats_subsys;
-+
-+static struct metric_def metric_def[] = {
-+	{NULL, offsetof(struct rtnl_link_stats64, rx_bytes),
-+	 "rx_bytes", "net device received bytes count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, rx_packets),
-+	 "rx_packets", "net device received packets count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, rx_errors),
-+	 "rx_errors", "net device received errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, rx_dropped),
-+	 "rx_dropped", "net device dropped packets count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, rx_missed_errors),
-+	 "rx_missed_errors",  "net device missed errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, rx_fifo_errors),
-+	 "rx_fifo_errors", "net device fifo errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, rx_length_errors),
-+	 "rx_length_errors", "net device length errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, rx_over_errors),
-+	 "rx_over_errors", "net device received overflow errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, rx_crc_errors),
-+	 "rx_crc_errors", "net device received crc errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, rx_frame_errors),
-+	 "rx_frame_errors", "net device received frame errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, rx_compressed),
-+	 "rx_compressed", "net device received compressed packet count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, multicast),
-+	 "rx_multicast", "net device received multicast packet count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, tx_bytes),
-+	 "tx_bytes", "net device transmited bytes count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, tx_packets),
-+	 "tx_packets", "net device transmited packets count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, tx_errors),
-+	 "tx_errors", "net device transmited errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, tx_dropped),
-+	 "tx_dropped", "net device transmited packet drop count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, tx_fifo_errors),
-+	 "tx_fifo_errors", "net device transmit fifo errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, collisions),
-+	 "tx_collision", "net device transmit collisions count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, tx_carrier_errors),
-+	 "tx_carrier_errors", "net device transmit carrier errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, tx_aborted_errors),
-+	 "tx_aborted_errors", "net device transmit aborted errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, tx_window_errors),
-+	 "tx_window_errors", "net device transmit window errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, tx_heartbeat_errors),
-+	 "tx_heartbeat_errors", "net device transmit heartbeat errors count"},
-+	{NULL, offsetof(struct rtnl_link_stats64, tx_compressed),
-+	 "tx_compressed_errors", "net device transmit compressed count"},
-+};
-+
-+static __init int init_net_subsys(void)
-+{
-+	net_root_subsys = metricfs_create_subsys("net", NULL);
-+	if (!net_root_subsys) {
-+		WARN_ONCE(1, "Net metricfs root not created.");
-+		return -1;
-+	}
-+	return 0;
-+}
-+
-+late_initcall(init_net_subsys);
-+
-+static void dev_stats_emit(struct metric_emitter *e,
-+			   struct net_device *dev,
-+			   struct metric_def *metricd)
-+{
-+	struct rtnl_link_stats64 temp;
-+	const struct rtnl_link_stats64 *stats = dev_get_stats(dev, &temp);
-+
-+	if (stats) {
-+		__u8 *ptr = (((__u8 *)stats) + metricd->off);
-+
-+		METRIC_EMIT_INT(e, *(__u64 *)ptr, dev->name, NULL);
-+	}
-+}
-+
-+/* metricfs export function */
-+static void dev_stats_fn(struct metric_emitter *e, void *parm)
-+{
-+	struct net_device *dev;
-+	struct net *net;
-+	struct nsproxy *nsproxy = current->nsproxy;
-+
-+	rcu_read_lock();
-+	for_each_net_rcu(net) {
-+		/* skip namespaces not associated with the caller */
-+		if (nsproxy->net_ns != net)
-+			continue;
-+		for_each_netdev_rcu(net, dev) {
-+			dev_stats_emit(e, dev, (struct metric_def *)parm);
-+		}
-+	}
-+	rcu_read_unlock();
-+}
-+
-+static void clean_dev_stats_subsys(void)
-+{
-+	int x;
-+	int metric_count = sizeof(metric_def) / sizeof(struct metric_def);
-+
-+	for (x = 0; x < metric_count; x++) {
-+		if (metric_def[x].metric) {
-+			metric_unregister(metric_def[x].metric);
-+			metric_def[x].metric = NULL;
-+		}
-+	}
-+	if (dev_stats_subsys)
-+		metricfs_destroy_subsys(dev_stats_subsys);
-+	if (dev_subsys)
-+		metricfs_destroy_subsys(dev_subsys);
-+	dev_stats_subsys = NULL;
-+	dev_subsys = NULL;
-+}
-+
-+static int __init init_dev_stats_subsys(void)
-+{
-+	int x;
-+	int metric_count = sizeof(metric_def) / sizeof(struct metric_def);
-+
-+	dev_subsys = NULL;
-+	dev_stats_subsys = NULL;
-+	if (!net_root_subsys) {
-+		WARN_ONCE(1, "Net metricfs root not initialized.");
-+		goto error;
-+	}
-+	dev_subsys =
-+		metricfs_create_subsys("dev", net_root_subsys);
-+	if (!dev_subsys) {
-+		WARN_ONCE(1, "Net metricfs dev not created.");
-+		goto error;
-+	}
-+	dev_stats_subsys =
-+		metricfs_create_subsys("stats", dev_subsys);
-+	if (!dev_stats_subsys) {
-+		WARN_ONCE(1, "Dev metricfs stats not created.");
-+		goto error;
-+	}
-+
-+	/* initialize each of the metrics */
-+	for (x = 0; x < metric_count; x++) {
-+		metric_def[x].metric =
-+			metric_register_parm(metric_def[x].name,
-+					     dev_stats_subsys,
-+					     metric_def[x].desc,
-+					     "interface",
-+					     NULL,
-+					     dev_stats_fn,
-+					     (void *)&metric_def[x],
-+					     false,
-+					     true,  /* this is a counter */
-+					     THIS_MODULE);
-+		if (!metric_def[x].metric) {
-+			WARN_ONCE(1, "Dev metricfs stats %s not registered.",
-+				  metric_def[x].name);
-+			goto error;
-+		}
-+	}
-+	return 0;
-+error:
-+	clean_dev_stats_subsys();
-+	return -1;
-+}
-+
-+/* need to wait for metricfs and net metricfs root to be initialized */
-+late_initcall_sync(init_dev_stats_subsys);
-+
-+static void __exit dev_stats_exit(void)
-+{
-+	clean_dev_stats_subsys();
-+}
 -- 
 2.28.0.236.gb10cc79966-goog
 
