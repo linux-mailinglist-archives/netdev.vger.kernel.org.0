@@ -2,61 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FBB923F2F8
-	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 21:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAB1C23F305
+	for <lists+netdev@lfdr.de>; Fri,  7 Aug 2020 21:22:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726375AbgHGTId (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 15:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
+        id S1726149AbgHGTV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 15:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726344AbgHGTId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 15:08:33 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB78EC061757
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 12:08:32 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id 2so1361326pjx.5
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 12:08:32 -0700 (PDT)
+        with ESMTP id S1725893AbgHGTV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 15:21:58 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A201BC061756
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 12:21:57 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id v9so3344831ljk.6
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 12:21:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
-        h=content-transfer-encoding:from:mime-version:subject:date:message-id
-         :references:cc:in-reply-to:to;
-        bh=FBUcKSFFHXVM2zlsMD6DE1aiFK2VINTd6Vk4iTZMejM=;
-        b=dis+r40effbdQgReX9NDOGfY+a6TNUFbGqBOuGct0BdMfZaNHXH2q5I3LrgefhJtKM
-         0c4o9S8/8TQTVP00P/wX8a4ylpk7SsYUL1KoB0T6f5vhPFFH9EeKX3Vg/iRPmoLrGhOp
-         G6Yp5Lf81NfuOHOg5GybHqfnYqrRc+chJEvorUlkaxeJvh7j7WgHK0zgSOZzhTQCx1DY
-         r47x45lF1CxnlfxXHdsNfX/9iF5VJkAFUahj3zkLH0KpWe0DfApj9dR9ePymviO5fpp7
-         kePMqNW1AKUSlx+e04mLzIXwowlXQpW6RAebg6FGbIolxACEIiaknSQM4fzlnfaGxRvy
-         US/A==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LynYp/ZpJ14OAYJsMgQc6rG+L/NKMgH+nC37/Tn8Bm4=;
+        b=PDf9UcXYjmlTI6m7JmuWWsZDrtoqlci4FCKfseclkM3rjAal3aRMQpXU/E+x9SVwnQ
+         z1QMt+xFD73skmEvIRFBRaJr0JUq+I/A+KStfoSqQHDQrqGFrIIgnX8YIsEE1AuCTmbz
+         acDSBR/w236eXQ2oEtEqjqEmfmBNlbAQ4zaIQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:from:mime-version
-         :subject:date:message-id:references:cc:in-reply-to:to;
-        bh=FBUcKSFFHXVM2zlsMD6DE1aiFK2VINTd6Vk4iTZMejM=;
-        b=kP3PXeA4SMefoVRLI9PTIaQPXZeZdhQ1mC90xAfb2ztd2WxcHwERQnIj2tATn846V4
-         rFVjkmOug/J8okjdTd9Iq7ldh3ediGFimfaw2s/WS1TOs2SXN1y3x+qAXCaQCHjz208S
-         0SS6LBby5sd9AtvICjDtxiX0Jn6LvuzMprrs9xXRkmNoCqouiWaC4zng12tFSROL8x6K
-         otMGxzs0PI7C5XaWzABvdMJ5qHunMMGvTfOgeHe/90umy31ptIjtlPWSkX8j9W9CH8I5
-         ADmndx6/DTp55DLqdAYeUEQPJ5I67C+e3Zi7MzbUMkgpGqLpkPdkeQ2/hOM7vLfNSr7t
-         /N3w==
-X-Gm-Message-State: AOAM5307gq7zpZBX7+b/ClI5/5cUuBwALpivrbkf6abEZnh6gnL3RKPP
-        5z3yeIkK6ih+sjZHFr9VyeuX+V/5Cww=
-X-Google-Smtp-Source: ABdhPJwGkBcqMhaAxKihlsaJymF2LKhZQfPjDrEJ7ct7QDI7431NUkQcjjATYy3Hn+QF8tARUvyG0g==
-X-Received: by 2002:a17:90a:1546:: with SMTP id y6mr6040347pja.93.1596827310430;
-        Fri, 07 Aug 2020 12:08:30 -0700 (PDT)
-Received: from ?IPv6:2601:646:c200:1ef2:431:59:d011:24a4? ([2601:646:c200:1ef2:431:59:d011:24a4])
-        by smtp.gmail.com with ESMTPSA id z3sm10799123pgk.49.2020.08.07.12.08.28
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LynYp/ZpJ14OAYJsMgQc6rG+L/NKMgH+nC37/Tn8Bm4=;
+        b=V05kGd9vh0O4CczI26B9taf4glsFwvuALtL4FCZw62dWfUHFB4wpXhASnqBQ66kcZM
+         5d/XhlL7vizEtu+xmxf915/nWwZc2w7vJVNsf+ma1W2A+Hts6CKOO5F0IDhfpGThz71e
+         bDZ1ZPr4hKvM8WxZJlU1ATto6cX2qr4O947Qbl5fy7H9cW0jXqcfkXu17WGdUoLH71WC
+         EiPQG4ESHs1fPyykvfeJSC3JD/rvKfmv/k5xql4qumhkdxKxbgA/LcACeX5Wqae++KYW
+         EB5p3pZW2Rx8B7BuHB5i0k88zjjaIx1k37TruzQMwOyr6hwLmGtm1d/0rUEIMKtjrWbt
+         WDjg==
+X-Gm-Message-State: AOAM530bp2/D7Sss9fUNTQMc/TxwMSuvOVEDr3NkUyCvjWmT+MLw2W1+
+        jLbCs5tjg/8mNb8ANuqNa13adZSfrjqRbw==
+X-Google-Smtp-Source: ABdhPJwa+2Zfl97CK7cITcsjddG7OQ/p6Qf7MVLrVcZbrbmtTT/3Q4ERx/LaRrOY59z+9Z3kYvnB0Q==
+X-Received: by 2002:a2e:3802:: with SMTP id f2mr6056946lja.212.1596828114867;
+        Fri, 07 Aug 2020 12:21:54 -0700 (PDT)
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
+        by smtp.gmail.com with ESMTPSA id h6sm4588685lfc.84.2020.08.07.12.21.52
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Aug 2020 12:08:29 -0700 (PDT)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-From:   Andy Lutomirski <luto@amacapital.net>
-Mime-Version: 1.0 (1.0)
-Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
-Date:   Fri, 7 Aug 2020 12:08:27 -0700
-Message-Id: <940D743C-4FDD-43B5-A129-840CFEBBD2F7@amacapital.net>
+        Fri, 07 Aug 2020 12:21:53 -0700 (PDT)
+Received: by mail-lf1-f53.google.com with SMTP id v15so1553533lfg.6
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 12:21:52 -0700 (PDT)
+X-Received: by 2002:a19:c206:: with SMTP id l6mr6982421lfc.152.1596828112235;
+ Fri, 07 Aug 2020 12:21:52 -0700 (PDT)
+MIME-Version: 1.0
 References: <CAHk-=wj4p3wCZpD2QU-d_RPTAsGiAUWHMiiVUv6N3qxx4w9f7A@mail.gmail.com>
+ <940D743C-4FDD-43B5-A129-840CFEBBD2F7@amacapital.net>
+In-Reply-To: <940D743C-4FDD-43B5-A129-840CFEBBD2F7@amacapital.net>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 7 Aug 2020 12:21:36 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whf+_rWROqPUMr=Do0n1ADhkEeEFL0tY+M60TJZtdrq2A@mail.gmail.com>
+Message-ID: <CAHk-=whf+_rWROqPUMr=Do0n1ADhkEeEFL0tY+M60TJZtdrq2A@mail.gmail.com>
+Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
+To:     Andy Lutomirski <luto@amacapital.net>
 Cc:     Willy Tarreau <w@1wt.eu>, Marc Plumb <lkml.mplumb@gmail.com>,
-        Theodore Ts'o <tytso@mit.edu>, Netdev <netdev@vger.kernel.org>,
+        "Theodore Ts'o" <tytso@mit.edu>, Netdev <netdev@vger.kernel.org>,
         Amit Klein <aksecurity@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>,
@@ -65,52 +69,47 @@ Cc:     Willy Tarreau <w@1wt.eu>, Marc Plumb <lkml.mplumb@gmail.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
         stable <stable@vger.kernel.org>
-In-Reply-To: <CAHk-=wj4p3wCZpD2QU-d_RPTAsGiAUWHMiiVUv6N3qxx4w9f7A@mail.gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-X-Mailer: iPhone Mail (17G68)
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Aug 7, 2020 at 12:08 PM Andy Lutomirski <luto@amacapital.net> wrote:
+>
+> > On Aug 7, 2020, at 11:10 AM, Linus Torvalds <torvalds@linux-foundation.org> wrote:
+> >
+> >
+> > I tried something very much like that in user space to just see how
+> > many cycles it ended up being.
+> >
+> > I made a "just raw ChaCha20", and it was already much too slow for
+> > what some of the networking people claim to want.
+>
+> Do you remember the numbers?
 
+Sorry, no. I wrote a hacky thing in user space, and threw it away.
 
-> On Aug 7, 2020, at 11:10 AM, Linus Torvalds <torvalds@linux-foundation.org=
-> wrote:
->=20
-> =EF=BB=BFOn Fri, Aug 7, 2020 at 10:55 AM Andy Lutomirski <luto@amacapital.=
-net> wrote:
->>=20
->> I think the real random.c can run plenty fast. It=E2=80=99s ChaCha20 plus=
- ludicrous overhead right now.
->=20
-> I doubt it.
->=20
-> I tried something very much like that in user space to just see how
-> many cycles it ended up being.
->=20
-> I made a "just raw ChaCha20", and it was already much too slow for
-> what some of the networking people claim to want.
+> Certainly a full ChaCha20 per random number is too much, but AFAICT the network folks want 16 or 32 bits at a time, which is 1/16 or 1/8 of a ChaCha20.
 
-Do you remember the numbers?
+That's what I did (well, I did just the 32-bit one), basically
+emulating percpu accesses for incrementing the offset (I didn't
+actually *do* percpu accesses, I just did a single-threaded run and
+used globals, but wrote it with wrappers so that it would look like it
+might work).
 
-Certainly a full ChaCha20 per random number is too much, but AFAICT the netw=
-ork folks want 16 or 32 bits at a time, which is 1/16 or 1/8 of a ChaCha20. D=
-JB claims 4 cycles per byte on Core 2, and it had better be faster now, alth=
-ough we can=E2=80=99t usefully use XMM regs, so I don=E2=80=99t know the rea=
-l timings.
+> DJB claims 4 cycles per byte on Core 2
 
-But with the current code, the actual crypto will be lost in the noise.  Tha=
-t=E2=80=99s what I=E2=80=99m trying to fix.
->=20
-> Now, what *might* be acceptable is to not do ChaCha20, but simply do a
-> single double-round of it.
+I took the reference C implementation as-is, and just compiled it with
+O2, so my numbers may not be what some heavily optimized case does.
 
-We can certainly have a parallel RNG seeded by the main RNG that runs fewer r=
-ounds. I=E2=80=99ll do that if benchmarks say I=E2=80=99m still too slow.
+But it was way more than that, even when amortizing for "only need to
+do it every 8 cases". I think the 4 cycles/byte might be some "zero
+branch mispredicts" case when you've fully unrolled the thing, but
+then you'll be taking I$ misses out of the wazoo, since by definition
+this won't be in your L1 I$ at all (only called every 8 times).
 
-All of this is trivial except the locking. If I=E2=80=99m writing this code,=
- I personally refuse to use  the =E2=80=9Craces just make it more random=E2=80=
-=9D strategy. I=E2=80=99m going to do it without data races, and this will t=
-ake a bit of work.
+Sure, it might look ok on microbenchmarks where it does stay hot the
+cache all the time, but that's not realistic. I
 
+               Linus
