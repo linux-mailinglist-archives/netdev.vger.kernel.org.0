@@ -2,91 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 302F823F899
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 21:18:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD71123F8A7
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 21:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726392AbgHHTSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Aug 2020 15:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55872 "EHLO
+        id S1726399AbgHHTte (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Aug 2020 15:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726212AbgHHTSk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Aug 2020 15:18:40 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D217C061756
-        for <netdev@vger.kernel.org>; Sat,  8 Aug 2020 12:18:40 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1k4UMN-0002T8-NW; Sat, 08 Aug 2020 21:18:27 +0200
-Date:   Sat, 8 Aug 2020 21:18:27 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     George Spelvin <lkml@sdf.org>, netdev@vger.kernel.org,
-        aksecurity@gmail.com, torvalds@linux-foundation.org,
-        edumazet@google.com, Jason@zx2c4.com, luto@kernel.org,
-        keescook@chromium.org, tglx@linutronix.de, peterz@infradead.org,
-        tytso@mit.edu, lkml.mplumb@gmail.com, stephen@networkplumber.org
-Subject: Re: Flaw in "random32: update the net random state on interrupt and
- activity"
-Message-ID: <20200808191827.GA19310@breakpoint.cc>
-References: <20200808152628.GA27941@SDF.ORG>
- <20200808174451.GA7429@1wt.eu>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200808174451.GA7429@1wt.eu>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        with ESMTP id S1726242AbgHHTte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Aug 2020 15:49:34 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00559C061756
+        for <netdev@vger.kernel.org>; Sat,  8 Aug 2020 12:49:33 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id c10so7450644pjn.1
+        for <netdev@vger.kernel.org>; Sat, 08 Aug 2020 12:49:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:from:mime-version:subject:date:message-id
+         :references:cc:in-reply-to:to;
+        bh=lRah3f4ZJxya/lq5T/gQ0Av6zsw0I59Oe0BSHHsVeS0=;
+        b=fjU/t4DAZUeQJszsb9aXJUa7943dBGuhIeXXaici94bxRv1uJU4DA4OrGsels+A2nC
+         8z9DDJu9O3orLR6C4cDLskjdn7o8Jz4fMdDqWGZJI6+fVPVd0gciFyrNC++tTppL2ov9
+         zbTqp9iHjsSd2Gj9J5xOHn49GUYrHgScjHLWeZtQycFjQnkCtR9nGpuIXkIglLo8n1Oi
+         AevchnQMbsJKGP9BsDi4uBE0Hc5+Sa/M7s1ORJXQQxqd4/2xLWTobEXdyW/bHe/DAxFr
+         ib5mxZH0MejD8csTtEJS5DqvyOjYmUOaj9HroOiKhuk+GfWRUnOxa7CG9R6DX5ox5Kh0
+         96Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:content-transfer-encoding:from:mime-version
+         :subject:date:message-id:references:cc:in-reply-to:to;
+        bh=lRah3f4ZJxya/lq5T/gQ0Av6zsw0I59Oe0BSHHsVeS0=;
+        b=VsYjQnjiyL21W+32iGbptUInxjYwMCjr905l3VqbW7wQwVUkBzCb8JSCxXumC89oHk
+         S+iiMnx5szgKnbGLS7E3nJccsIvrQni9J4I0hrQHhkj6GRvDl3GnD5YVj38EsXCH54qa
+         gKJXaPsuHqKWJk+EGSTjiGE+JOdZlrb1r74kN3yX1/UGMjUrerjuqkZeArE9GtQhAYbX
+         QvDxqfg4GpBRn21Hf+7Gm7OYGXTOFumjgYDsWhN3iy4cFG4yMpOjUB3yPTImssBMNVFS
+         t+E5OX7KwDB6jNnzD1J5AJxjF3aKfVshdiHk9ASRXe+IV/xOVNcDQhlZc3z6CFEosJj9
+         LMyA==
+X-Gm-Message-State: AOAM533MUsC5wt+KHlKZUJ8w+qnvurSGsuxFeKAa/D7s8j6oGutsvXQS
+        DstEpOqCm9M52BrAxO5YLqMhJQ==
+X-Google-Smtp-Source: ABdhPJxz/hIoBNNCpQcNStHCa9tyIz5cLYZ4va9tUepynuySgTy/N6TNJZUadsUFxl8gJscqB74X7w==
+X-Received: by 2002:a17:902:ac87:: with SMTP id h7mr18541561plr.238.1596916173245;
+        Sat, 08 Aug 2020 12:49:33 -0700 (PDT)
+Received: from ?IPv6:2600:1010:b06c:4273:8c0a:a3e2:67f6:6db4? ([2600:1010:b06c:4273:8c0a:a3e2:67f6:6db4])
+        by smtp.gmail.com with ESMTPSA id a16sm17960867pfr.45.2020.08.08.12.49.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 08 Aug 2020 12:49:32 -0700 (PDT)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+From:   Andy Lutomirski <luto@amacapital.net>
+Mime-Version: 1.0 (1.0)
+Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
+Date:   Sat, 8 Aug 2020 12:49:30 -0700
+Message-Id: <A92CFD64-176B-4DC2-9BF2-257F4EBBE901@amacapital.net>
+References: <20200808190343.GB27941@SDF.ORG>
+Cc:     netdev@vger.kernel.org, w@1wt.eu, aksecurity@gmail.com,
+        torvalds@linux-foundation.org, edumazet@google.com,
+        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
+        tglx@linutronix.de, peterz@infradead.org, tytso@mit.edu,
+        lkml.mplumb@gmail.com, stephen@networkplumber.org
+In-Reply-To: <20200808190343.GB27941@SDF.ORG>
+To:     George Spelvin <lkml@sdf.org>
+X-Mailer: iPhone Mail (17G68)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Willy Tarreau <w@1wt.eu> wrote:
-> diff --git a/include/linux/random.h b/include/linux/random.h
-> index 9ab7443bd91b..9e22973b207c 100644
-> --- a/include/linux/random.h
-> +++ b/include/linux/random.h
-> @@ -12,6 +12,7 @@
->  #include <linux/list.h>
->  #include <linux/once.h>
->  #include <asm/percpu.h>
-> +#include <linux/siphash.h>
->  
->  #include <uapi/linux/random.h>
->  
-> @@ -117,7 +118,8 @@ void prandom_seed(u32 seed);
->  void prandom_reseed_late(void);
->  
->  struct rnd_state {
-> -	__u32 s1, s2, s3, s4;
-> +	siphash_key_t key;
-> +	uint64_t counter;
->  };
 
-Does the siphash_key really need to be percpu?
-The counter is different of course.
-Alternative would be to siphash a few prandom_u32 results
-if the extra u64 is too much storage.
+> On Aug 8, 2020, at 12:03 PM, George Spelvin <lkml@sdf.org> wrote:
+>=20
+> =EF=BB=BFOn Sat, Aug 08, 2020 at 10:07:51AM -0700, Andy Lutomirski wrote:
+>>>   - Cryptographically strong ChaCha, batched
+>>>   - Cryptographically strong ChaCha, with anti-backtracking.
+>>=20
+>> I think we should just anti-backtrack everything.  With the "fast key=20
+>> erasure" construction, already implemented in my patchset for the=20
+>> buffered bytes, this is extremely fast.
+>=20
+> The problem is that this is really *amorized* key erasure, and
+> requires large buffers to amortize the cost down to a reasonable
+> level.
+>=20
+> E,g, if using 256-bit (32-byte) keys, 5% overhead would require generating=
 
->  DECLARE_PER_CPU(struct rnd_state, net_rand_state);
-> @@ -161,12 +163,14 @@ static inline u32 __seed(u32 x, u32 m)
->   */
->  static inline void prandom_seed_state(struct rnd_state *state, u64 seed)
->  {
-> +#if 0
->  	u32 i = (seed >> 32) ^ (seed << 10) ^ seed;
->  
->  	state->s1 = __seed(i,   2U);
->  	state->s2 = __seed(i,   8U);
->  	state->s3 = __seed(i,  16U);
->  	state->s4 = __seed(i, 128U);
-> +#endif
->  }
-[..]
+> 640 bytes at a time.
+>=20
+> Are we okay with ~1K per core for this?  Which we might have to
+> throw away occasionally to incorporate fresh seed material?
 
-Can't we keep prandom_u32 as-is...?  Most of the usage, esp. in the
-packet schedulers, is fine.
+I don=E2=80=99t care about throwing this stuff away. My plan (not quite impl=
+emented yet) is to have a percpu RNG stream and to never to anything resembl=
+ing mixing anything in. The stream is periodically discarded and reinitializ=
+ed from the global =E2=80=9Cprimary=E2=80=9D pool instead.  The primary pool=
+ has a global lock. We do some vaguely clever trickery to arrange for all th=
+e percpu pools to reseed from the primary pool at different times.
 
-I'd much rather have a prandom_u32_hashed() or whatever for
-those cases where some bits might leak to the outside and then convert
-those prandom_u32 users over to the siphashed version.
+Meanwhile the primary pool gets reseeded by the input pool on a schedule for=
+ catastrophic reseeding.
+
+5% overhead to make a fresh ChaCha20 key each time sounds totally fine to me=
+. The real issue is that the bigger we make this thing, the bigger the laten=
+cy spike each time we run it.
+
+Do we really need 256 bits of key erasure?  I suppose if we only replace hal=
+f the key each time, we=E2=80=99re just asking for some cryptographer to run=
+ the numbers on a break-one-of-many attack and come up with something vaguel=
+y alarming.
+
+I wonder if we get good performance by spreading out the work. We could, for=
+ example, have a 320 byte output buffer that get_random_bytes() uses and a 3=
+20+32 byte =E2=80=9Cnext=E2=80=9D buffer that is generated as the output buf=
+fer is used. When we finish the output buffer, the first 320 bytes of the ne=
+xt buffer becomes the current buffer and the extra 32 bytes becomes the new k=
+ey (or nonce).  This will have lower worst case latency, but it will hit the=
+ cache lines more often, potentially hurting throughout.
 
