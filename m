@@ -2,70 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2F5F23F5F1
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 04:53:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD87923F62E
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 05:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726212AbgHHC31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 22:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42882 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726191AbgHHC30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 22:29:26 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 653CCC061756
-        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 19:29:26 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id cq28so2387571edb.10
-        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 19:29:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:mime-version:content-transfer-encoding
-         :content-description:subject:to:from:date:reply-to;
-        bh=KZxomOrCfGKcRdij0ymf/g952wNhDs42ReaqHNdRcCA=;
-        b=dbX2e4VUEbmoX2OrsktVqryngcJJ9dPuA76dLEVfBPHGd4elBR218aB02xTA/XB/NO
-         ycYUdi9jykXJtYauU8F/vnwFbHtnNBWLf/v1Dgq5y9NsYdSqV+33rAmWKGNWpUFTwVVA
-         l3yerlesGnLswRXOm/1sn9aLyDsIOOZxTnJjpsIJTJ+w3AJ2jLSB4SWhPhfOTmtBHBw3
-         avDNCi+pt3lvRyowu+0S1LxYIp1Z6rFW21peT3AON2NQhK98lKFZvjgqqYNj3cTOj4tA
-         DKvigGDbmZsqjIkYA+IRjv9haQu6RSb0/2j5qiA4yYSJ9UQOp93ylaXRNm7CNnAO5qZe
-         /OGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:mime-version
-         :content-transfer-encoding:content-description:subject:to:from:date
-         :reply-to;
-        bh=KZxomOrCfGKcRdij0ymf/g952wNhDs42ReaqHNdRcCA=;
-        b=BsD25Qwzoa90mXUcAeXU3ksy+oxXn3X4ZUIBlFre7k4H+2xoSDpfN7kvRgI/7teExf
-         j0GLUqvp5XUZatNPjewXqR/0T0jtwFqpjm5dBorymgjhO+EArH/Fz11+IvFRaaTNMWzl
-         0M0Q9/e6WZvUiTpz91KjBHzujN1CNP6KWwZoL07rbJ7XWZfRCSzGpBzc1RC//pZK/82q
-         ADx54ONE0OgXgYVPBa00h/U8z6SdNt62ol306mzv2/+i+X+nwLXvIDB5F0iAIgwPrd5L
-         P9FQdFoNKJRekbliVAyakqHBL3djblNhjrDYpiEceQDv7vZZ276NjqITEhsVc5GrcSFE
-         tWVw==
-X-Gm-Message-State: AOAM530Xw/M1KenHE0jj3pKX3rTkHQN+HYsPjvD4UWw4QLcYncDn3ELX
-        Ia7sXyeD5vhvig+LcajeR1M=
-X-Google-Smtp-Source: ABdhPJzWyTcXCMTIts8tg3I/M//4rhEgylaRKuaO9fnFMtnqQyonKEhfmTS95Ai8ltuyq6DfYLi8Qw==
-X-Received: by 2002:a05:6402:1504:: with SMTP id f4mr11850090edw.163.1596853764968;
-        Fri, 07 Aug 2020 19:29:24 -0700 (PDT)
-Received: from [192.168.0.112] ([196.171.10.162])
-        by smtp.gmail.com with ESMTPSA id le20sm7047865ejb.96.2020.08.07.19.29.19
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Fri, 07 Aug 2020 19:29:23 -0700 (PDT)
-Message-ID: <5f2e0e03.1c69fb81.484da.39e8@mx.google.com>
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1726400AbgHHDgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 23:36:46 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:48584 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726200AbgHHDgq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Aug 2020 23:36:46 -0400
+Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.54])
+        by Forcepoint Email with ESMTP id 01C9FE04D439560D1802;
+        Sat,  8 Aug 2020 11:36:44 +0800 (CST)
+Received: from [10.174.61.242] (10.174.61.242) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Sat, 8 Aug 2020 11:36:43 +0800
+Subject: Re: [PATCH net-next v1] hinic: fix strncpy output truncated compile
+ warnings
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "luoxianjun@huawei.com" <luoxianjun@huawei.com>,
+        "yin.yinshi@huawei.com" <yin.yinshi@huawei.com>,
+        "cloud.wangxiaoyun@huawei.com" <cloud.wangxiaoyun@huawei.com>,
+        "chiqijun@huawei.com" <chiqijun@huawei.com>
+References: <20200807020914.3123-1-luobin9@huawei.com>
+ <e7a4fcf12a4e4d179e2fae8ffb44f992@AcuMS.aculab.com>
+From:   "luobin (L)" <luobin9@huawei.com>
+Message-ID: <b886a6ff-8ed8-c857-f190-e99f8f735e02@huawei.com>
+Date:   Sat, 8 Aug 2020 11:36:42 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Hello
-To:     Recipients <tineraphael36@gmail.com>
-From:   "Jennifer" <tineraphael36@gmail.com>
-Date:   Sat, 08 Aug 2020 02:29:09 +0000
-Reply-To: jenniferalex026@gmail.com
+In-Reply-To: <e7a4fcf12a4e4d179e2fae8ffb44f992@AcuMS.aculab.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.61.242]
+X-ClientProxiedBy: dggeme715-chm.china.huawei.com (10.1.199.111) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
-My name is Jenifer Alex
-Please reply, so that we can know more better =
-
-and share photos,
-Thank you.
+On 2020/8/7 17:32, David Laight wrote:
+> From: Luo bin
+>> Sent: 07 August 2020 03:09
+>>
+>> fix the compile warnings of 'strncpy' output truncated before
+>> terminating nul copying N bytes from a string of the same length
+>>
+>> Signed-off-by: Luo bin <luobin9@huawei.com>
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> ---
+>> V0~V1:
+>> - use the strlen()+1 pattern consistently
+>>
+>>  drivers/net/ethernet/huawei/hinic/hinic_devlink.c | 8 ++++----
+>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+>> b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+>> index c6adc776f3c8..1ec88ebf81d6 100644
+>> --- a/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+>> +++ b/drivers/net/ethernet/huawei/hinic/hinic_devlink.c
+>> @@ -342,9 +342,9 @@ static int chip_fault_show(struct devlink_fmsg *fmsg,
+>>
+>>  	level = event->event.chip.err_level;
+>>  	if (level < FAULT_LEVEL_MAX)
+>> -		strncpy(level_str, fault_level[level], strlen(fault_level[level]));
+>> +		strncpy(level_str, fault_level[level], strlen(fault_level[level]) + 1);
+> 
+> Have you even considered what that code is actually doing?
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+> 
+> .
+> 
+I'm sorry that I haven't got what you mean and I haven't found any defects in that code. Can you explain more to me?
