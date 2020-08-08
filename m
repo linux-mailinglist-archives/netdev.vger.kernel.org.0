@@ -2,225 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD06D23F530
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 01:21:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33B3B23F56F
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 02:20:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726238AbgHGXV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Aug 2020 19:21:56 -0400
-Received: from agw3.byu.edu ([128.187.16.187]:37038 "EHLO agw3.byu.edu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726096AbgHGXV4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Aug 2020 19:21:56 -0400
-Received: from cangw2.byu.edu (cangw2.byu.edu [10.18.21.142])
-        by agw3.byu.edu (Postfix) with ESMTPS id 020131EF06;
-        Fri,  7 Aug 2020 17:21:55 -0600 (MDT)
-Received: from mail2.fsl.byu.edu (mail2.rc.byu.edu [128.187.49.32])
-        by cangw2.byu.edu (8.15.2/8.15.2/Debian-8) with ESMTPS id 077NLpSW014780
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 7 Aug 2020 17:21:52 -0600
-Received: from [192.168.124.133] (v-pool-133.rc.byu.edu [192.168.124.133])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail2.fsl.byu.edu (Postfix) with ESMTPSA id 9352E3F2D9;
-        Fri,  7 Aug 2020 17:21:51 -0600 (MDT)
-Subject: Re: Severe performance regression in "net: macsec: preserve ingress
- frame ordering"
-To:     Scott Dial <scott@scottdial.com>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, sd@queasysnail.net
-References: <1b0cec71-d084-8153-2ba4-72ce71abeb65@byu.edu>
- <a335c8eb-0450-1274-d1bf-3908dcd9b251@scottdial.com>
-From:   Ryan Cox <ryan_cox@byu.edu>
-Message-ID: <57885356-da3a-aef9-64b4-84eb126f216c@byu.edu>
-Date:   Fri, 7 Aug 2020 17:21:51 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.1.0
+        id S1726392AbgHHAUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Aug 2020 20:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726338AbgHHAUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Aug 2020 20:20:10 -0400
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90BA1C061A28
+        for <netdev@vger.kernel.org>; Fri,  7 Aug 2020 17:02:27 -0700 (PDT)
+Received: by mail-ot1-x344.google.com with SMTP id r21so2920310ota.10
+        for <netdev@vger.kernel.org>; Fri, 07 Aug 2020 17:02:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5V4fSeXIIf10FVBMF3ZwZcNjvm3OCHIjH9V8C29Y8lQ=;
+        b=raa038CaUF9eWBraNH4WEyPuTHJSK6iOiV7k6AYrMeNgIhzFx6ZewrZSuo5lrAVEdK
+         9bOtaWtNfF07d9UEYUqPA6aNkM20agULeekqUYoS5Qe3Z22dBLbZuaZdwc0zac2dFT8n
+         N3xMKrgLDJwJrCyj4e9MYB3+ZJJ1gVbN1ypxreVVkfRzZh9Lwqwz7wDfTV0KYta5fshZ
+         OdIZMeVdyM0/ehI67+Kizp9fRZugyLsg7B4FbHuK8BMDqZEVUpWK0PH5DX68JkBYxfMs
+         aOpiQcc5HKPaKOyUagtLwMCbgtum4v9yvrQ01rY6uf9g56CM5kjZ1vx+55Z+jpg2jETd
+         tMrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5V4fSeXIIf10FVBMF3ZwZcNjvm3OCHIjH9V8C29Y8lQ=;
+        b=BAexhg4CVK2p/IUiwnFDpYfmZ2d5dCsrgbVgrwBuhiLUsd0Rh8C21SZfQ9SYnwWSd9
+         9CwHZaNinwz+7K+FLuKWWhIFw6pU43rkxZNkKEHefytXM9G76u7yzcocnJrO9FZZgJ4A
+         RQKwcuXJCpBjI8/auj7cSoiKLYVDFmp4MRbA6qT5cO3FmDYTFhAnC36XiMJiVad3jvA6
+         APDhFRF37aN9BYTFctSGEbGckXGxjizCCwyRkZhxWw/xA3aPZTOIWnjBZjzrWpQOUdqx
+         O8+c3R8SXwH5rgDx0pRH8NP/9MlegTs83j8Pag7CwCBaTcV7nKVopXU3jS6L2lG7SB9t
+         9Bdw==
+X-Gm-Message-State: AOAM530mt8lvJZYELrNMNlnZlltpqPNP0jPiOTblYMkwXKwmf4futDLG
+        Jc0gin0EXf6Cr+gP+EegLXjGiqnDQYZHR/DwPnUpSg==
+X-Google-Smtp-Source: ABdhPJyt2wG3ZDTNWblVENQs5ccUnTXPuZbzbj0BnXWicp6XtJM28SQrhwmJ/s4VEOh4n6cv6N5dnVLVJsMlDVkrD+Y=
+X-Received: by 2002:a05:6830:237b:: with SMTP id r27mr13338417oth.352.1596844946630;
+ Fri, 07 Aug 2020 17:02:26 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <a335c8eb-0450-1274-d1bf-3908dcd9b251@scottdial.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Bayes-Prob: 0.0001 (Score -1, tokens from: Outbound, byu-edu:default, base:default, @@RPTN)
-X-Spam-Score: -1.00 () [Hold at 5.00] Bayes(0.0001:-1.0)
-X-CanIt-Geo: ip=128.187.49.32; country=US; region=Utah; city=Provo; latitude=40.2329; longitude=-111.6688; http://maps.google.com/maps?q=40.2329,-111.6688&z=6
-X-CanItPRO-Stream: byu-edu:Outbound (inherits from byu-edu:default,base:default)
-X-Canit-Stats-ID: 093cLlP7n - d30eb6a69564 - 20200807
-X-Scanned-By: CanIt (www . roaringpenguin . com)
+References: <20200709182642.1773477-1-keescook@chromium.org>
+ <20200709182642.1773477-4-keescook@chromium.org> <CANcMJZAcDAG7Dq7vo=M-SZwujj+BOKMh7wKvywHq+tEX3GDbBQ@mail.gmail.com>
+ <202008071516.83432C389@keescook>
+In-Reply-To: <202008071516.83432C389@keescook>
+From:   John Stultz <john.stultz@linaro.org>
+Date:   Fri, 7 Aug 2020 17:02:15 -0700
+Message-ID: <CALAqxLXqjEN0S+eGeFA_obaunBK_+xqKbQtdQj1w+wegz-6U5w@mail.gmail.com>
+Subject: Re: [PATCH v7 3/9] net/scm: Regularize compat handling of scm_detach_fds()
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Sargun Dhillon <sargun@sargun.me>,
+        Christian Brauner <christian@brauner.io>,
+        Tycho Andersen <tycho@tycho.ws>,
+        David Laight <David.Laight@aculab.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        containers@lists.linux-foundation.org,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Amit Pundir <amit.pundir@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/6/20 9:48 PM, Scott Dial wrote:
-> The aes-aesni driver is smart enough to use the FPU if it's not busy and
-> fallback to the CPU otherwise. Unfortunately, the ghash-clmulni driver
-> does not have that kind of logic in it and only provides an async version,
-> so we are forced to use the ghash-generic implementation, which is a pure
-> CPU implementation. The ideal would be for aesni_intel to provide a
-> synchronous version of gcm(aes) that fell back to the CPU if the FPU is
-> busy.
+On Fri, Aug 7, 2020 at 3:18 PM Kees Cook <keescook@chromium.org> wrote:
+>
+> On Fri, Aug 07, 2020 at 01:29:24PM -0700, John Stultz wrote:
+> > On Thu, Jul 9, 2020 at 11:28 AM Kees Cook <keescook@chromium.org> wrote:
+> > >
+> > > Duplicate the cleanups from commit 2618d530dd8b ("net/scm: cleanup
+> > > scm_detach_fds") into the compat code.
+> > >
+> > > Replace open-coded __receive_sock() with a call to the helper.
+> > >
+> > > Move the check added in commit 1f466e1f15cf ("net: cleanly handle kernel
+> > > vs user buffers for ->msg_control") to before the compat call, even
+> > > though it should be impossible for an in-kernel call to also be compat.
+> > >
+> > > Correct the int "flags" argument to unsigned int to match fd_install()
+> > > and similar APIs.
+> > >
+> > > Regularize any remaining differences, including a whitespace issue,
+> > > a checkpatch warning, and add the check from commit 6900317f5eff ("net,
+> > > scm: fix PaX detected msg_controllen overflow in scm_detach_fds") which
+> > > fixed an overflow unique to 64-bit. To avoid confusion when comparing
+> > > the compat handler to the native handler, just include the same check
+> > > in the compat handler.
+> > >
+> > > Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+> > > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > > ---
+> >
+> > Hey Kees,
+> >   So during the merge window (while chasing a few other regressions),
+> > I noticed occasionally my Dragonboard 845c running AOSP having trouble
+> > with the web browser crashing or other apps hanging, and I've bisected
+> > the issue down to this change.
+> >
+> > Unfortunately it doesn't revert cleanly so I can't validate reverting
+> > it sorts things against linus/HEAD.  Anyway, I wanted to check and see
+> > if you had any other reports of similar or any ideas what might be
+> > going wrong?
+>
+> Hi; Yes, sorry for the trouble. I had a typo in a refactor of
+> SCM_RIGHTS. I suspect it'll be fixed by this:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1fa2c0a0c814fbae0eb3e79a510765225570d043
+>
+> Can you verify Linus's latest tree works for you? If not, there might be
+> something else hiding in the corners...
 
-I don't know how the AES-NI support works, but I did see your specific 
-mention of aesni_intel and figured I should mention that this does also 
-affect AMD. I just got access to AMD nodes (2 x EPYC 7302) with a 
-Mellanox 10 GbE NIC.  I did the same test and it had a similar 
-performance pattern.  I doubt this means much but I figured I should 
-mention it.
+Thanks so much! Yes, I just updated to Linus' latest and the issue has
+disappeared!
 
-> I don't know if the crypto maintainers would be open to such a change, but
-> if the choice was between reverting and patching the crypto code, then I
-> would work on patching the crypto code.
-
-I can't opine on anything crypto-related since it is extremely way 
-outside of my area of expertise, though it is helpful to hear what is 
-going on.
-
-> In any case, you didn't report how many packets arrived out of order, which
-> was the issue being addressed by my change. It would be helpful to get
-> the output of "ip -s macsec show" and specifically the InPktsDelayed
-> counter. Did iperf3 report out-of-order packets with the patch reverted?
-> Otherwise, if this is the only process running on your test servers,
-> then you may not be generating any contention for the FPU, which is the
-> source of the out-of-order issue. Maybe you could run prime95 to busy
-> the FPU to see the issue that I was seeing.
-
-I ran some tests again on the same servers as before with the Intel 
-NICs.  I tested with prime95 running on 27 of the 28 cores in *each* 
-server simultaneously (allowing iperf3 to use a core on each) throughout 
-the entire test.  This was using 5.7.11 with 
-ab046a5d4be4c90a3952a0eae75617b49c0cb01b reverted, so pre-5.7 performance.
-
-MACsec interfaces are deleted and recreated before each test, so 
-counters are always fresh.
-
-== MACSEC WITHOUT ENCRYPTION ==
-
-* Server1:
-18: ms1: protect on validate strict sc off sa off encrypt off send_sci 
-on end_station off scb off replay off
-     cipher suite: GCM-AES-128, using ICV length 16
-     TXSC: 0000000000001234 on SA 0
-     stats: OutPktsUntagged InPktsUntagged OutPktsTooLong InPktsNoTag 
-InPktsBadTag InPktsUnknownSCI InPktsNoSCI InPktsOverrun
-                          0              0              0 
-1123            0                0           1             0
-     stats: OutPktsProtected OutPktsEncrypted OutOctetsProtected 
-OutOctetsEncrypted
-                     3798421                0 30889802591                  0
-         0: PN 3799655, state on, key 01000000000000000000000000000000
-     stats: OutPktsProtected OutPktsEncrypted
-                     3798421                0
-     RXSC: 0000000000001234, state on
-     stats: InOctetsValidated InOctetsDecrypted InPktsUnchecked 
-InPktsDelayed InPktsOK InPktsInvalid InPktsLate InPktsNotValid 
-InPktsNotUsingSA InPktsUnusedSA
-                  30042694872                 0 0           218  
-3675170             0          0 0                0              0
-         0: PN 3676633, state on, key 01000000000000000000000000000000
-     stats: InPktsOK InPktsInvalid InPktsNotValid InPktsNotUsingSA 
-InPktsUnusedSA
-             3675170             0              0 0              0
-
-*Server2:
-18: ms1: protect on validate strict sc off sa off encrypt off send_sci 
-on end_station off scb off replay off
-     cipher suite: GCM-AES-128, using ICV length 16
-     TXSC: 0000000000001234 on SA 0
-     stats: OutPktsUntagged InPktsUntagged OutPktsTooLong InPktsNoTag 
-InPktsBadTag InPktsUnknownSCI InPktsNoSCI InPktsOverrun
-                          0              0              0 
-1227            0                0           1             0
-     stats: OutPktsProtected OutPktsEncrypted OutOctetsProtected 
-OutOctetsEncrypted
-                     3675399                0 30042696158                  0
-         0: PN 3676633, state on, key 01000000000000000000000000000000
-     stats: OutPktsProtected OutPktsEncrypted
-                     3675399                0
-     RXSC: 0000000000001234, state on
-     stats: InOctetsValidated InOctetsDecrypted InPktsUnchecked 
-InPktsDelayed InPktsOK InPktsInvalid InPktsLate InPktsNotValid 
-InPktsNotUsingSA InPktsUnusedSA
-                  30889801305                 0 0             0  
-3798410             0          0 0                0              0
-         0: PN 3799655, state on, key 01000000000000000000000000000000
-     stats: InPktsOK InPktsInvalid InPktsNotValid InPktsNotUsingSA 
-InPktsUnusedSA
-             3798410             0              0 0              0
-
-
-InPktsDelayed was 218 for Server1 and 0 for Server2.
-
-== MACSEC WITH ENCRYPTION ==
-
-I got the following *with* encryption (macsec interface deleted and 
-recreated before the test, so counters are fresh):
-*Server1:
-19: ms1: protect on validate strict sc off sa off encrypt on send_sci on 
-end_station off scb off replay off
-     cipher suite: GCM-AES-128, using ICV length 16
-     TXSC: 0000000000001234 on SA 0
-     stats: OutPktsUntagged InPktsUntagged OutPktsTooLong InPktsNoTag 
-InPktsBadTag InPktsUnknownSCI InPktsNoSCI InPktsOverrun
-                          0              0              0 
-1397            0                0           0             0
-     stats: OutPktsProtected OutPktsEncrypted OutOctetsProtected 
-OutOctetsEncrypted
-                           0          5560714 0        46931594623
-         0: PN 5561948, state on, key 01000000000000000000000000000000
-     stats: OutPktsProtected OutPktsEncrypted
-                           0          5560714
-     RXSC: 0000000000001234, state on
-     stats: InOctetsValidated InOctetsDecrypted InPktsUnchecked 
-InPktsDelayed InPktsOK InPktsInvalid InPktsLate InPktsNotValid 
-InPktsNotUsingSA InPktsUnusedSA
-                            0       45977049585 0          3771  
-5417843             0          0 0                0              0
-         0: PN 5422860, state on, key 01000000000000000000000000000000
-     stats: InPktsOK InPktsInvalid InPktsNotValid InPktsNotUsingSA 
-InPktsUnusedSA
-             5417843             0              0 0              0
-
-*Server2:
-19: ms1: protect on validate strict sc off sa off encrypt on send_sci on 
-end_station off scb off replay off
-     cipher suite: GCM-AES-128, using ICV length 16
-     TXSC: 0000000000001234 on SA 0
-     stats: OutPktsUntagged InPktsUntagged OutPktsTooLong InPktsNoTag 
-InPktsBadTag InPktsUnknownSCI InPktsNoSCI InPktsOverrun
-                          0              0              0 
-1490            0                0           0             0
-     stats: OutPktsProtected OutPktsEncrypted OutOctetsProtected 
-OutOctetsEncrypted
-                           0          5421626 0        45977059885
-         0: PN 5422860, state on, key 01000000000000000000000000000000
-     stats: OutPktsProtected OutPktsEncrypted
-                           0          5421626
-     RXSC: 0000000000001234, state on
-     stats: InOctetsValidated InOctetsDecrypted InPktsUnchecked 
-InPktsDelayed InPktsOK InPktsInvalid InPktsLate InPktsNotValid 
-InPktsNotUsingSA InPktsUnusedSA
-                            0       46931106683 0           109  
-5560541             0          0 0                0              0
-         0: PN 5561948, state on, key 01000000000000000000000000000000
-     stats: InPktsOK InPktsInvalid InPktsNotValid InPktsNotUsingSA 
-InPktsUnusedSA
-             5560541             0              0 0              0
-
-
-InPktsDelayed was 3771 for Server1 and 109 for Server2.
-
-
-The performance numbers were:
-* 9.87 Gb/s without macsec
-* 6.00 Gb/s with macsec WITHOUT encryption
-* 9.19 Gb/s with macsec WITH encryption
-
-iperf3 retransmits were:
-* 27 without macsec
-* 1211 with macsec WITHOUT encryption
-* 721 with macsec WITH encryption
-
-
-Thanks for the reply and for the background on this.
-
-Ryan
+thanks again!
+-john
