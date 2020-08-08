@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38C9F23F9AE
-	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 01:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB0AC23FAEA
+	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 01:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727831AbgHHXhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Aug 2020 19:37:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49964 "EHLO mail.kernel.org"
+        id S1728909AbgHHXp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Aug 2020 19:45:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52538 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725950AbgHHXhF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Aug 2020 19:37:05 -0400
+        id S1726688AbgHHXic (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Aug 2020 19:38:32 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A6367207FB;
-        Sat,  8 Aug 2020 23:37:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6F6E7207BB;
+        Sat,  8 Aug 2020 23:38:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596929824;
-        bh=UCGiZ204cxB9dbRnXHlFZB9TQWCCrxb35jvAi/jUETw=;
+        s=default; t=1596929912;
+        bh=/UEqwzic9EGyYzOQJVauOsfUX8Ho4axU58aHeAfs0dI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wbJe7HAXu6Bl3aPU/Pau1GNgGg0KgeuxrSoxjZTWMVZUyoTeZ5FTe21V0hMiUU2aI
-         y7QGf1wQCgnNxILxlLt2PyDB4O2kiISM9/jmTCjl6G7hTc0NFI7Zot8ho5gaQGKOgt
-         /5Tv/psAX9+RGa/+8pBetd2tjPMm82iLfz6Q6zic=
+        b=O7o68cShqio1gGgw4l4d5fCj6JQjYapgoJXO/Z+R7Jki8gamlXMAAriO88V8aHZqA
+         vNJEIlqOzayTMHUoyLtYIuqBN0cgkqJwBpb3D67HkDNGrLoQ8sKCPZ8gIpoIiLkh6M
+         4W6wdZ7DM2Eu8hsL+SAOENZmDpWF3hp0YZGcLd9g=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>, Sasha Levin <sashal@kernel.org>,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.8 57/72] seccomp: Fix ioctl number for SECCOMP_IOCTL_NOTIF_ID_VALID
-Date:   Sat,  8 Aug 2020 19:35:26 -0400
-Message-Id: <20200808233542.3617339-57-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.7 49/58] seccomp: Fix ioctl number for SECCOMP_IOCTL_NOTIF_ID_VALID
+Date:   Sat,  8 Aug 2020 19:37:15 -0400
+Message-Id: <20200808233724.3618168-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200808233542.3617339-1-sashal@kernel.org>
-References: <20200808233542.3617339-1-sashal@kernel.org>
+In-Reply-To: <20200808233724.3618168-1-sashal@kernel.org>
+References: <20200808233724.3618168-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -75,7 +75,7 @@ index c1735455bc536..965290f7dcc28 100644
 +
  #endif /* _UAPI_LINUX_SECCOMP_H */
 diff --git a/kernel/seccomp.c b/kernel/seccomp.c
-index d653d8426de90..c461ba9925136 100644
+index 55a6184f59903..63e283c4c58eb 100644
 --- a/kernel/seccomp.c
 +++ b/kernel/seccomp.c
 @@ -42,6 +42,14 @@
@@ -102,7 +102,7 @@ index d653d8426de90..c461ba9925136 100644
  		return seccomp_notify_id_valid(filter, buf);
  	default:
 diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
-index 252140a525531..ccf276e138829 100644
+index c0aa46ce14f6c..c84c7b50331c6 100644
 --- a/tools/testing/selftests/seccomp/seccomp_bpf.c
 +++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
 @@ -180,7 +180,7 @@ struct seccomp_metadata {
