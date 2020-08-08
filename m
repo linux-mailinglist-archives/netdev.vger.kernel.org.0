@@ -2,66 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF31B23F81A
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 17:56:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CAA723F81E
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 17:59:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726346AbgHHP4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Aug 2020 11:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53242 "EHLO
+        id S1726426AbgHHP7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Aug 2020 11:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726238AbgHHP4I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Aug 2020 11:56:08 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC0E0C061756;
-        Sat,  8 Aug 2020 08:56:07 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id z18so3981151otk.6;
-        Sat, 08 Aug 2020 08:56:07 -0700 (PDT)
+        with ESMTP id S1726242AbgHHP7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Aug 2020 11:59:40 -0400
+Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A7CC061756;
+        Sat,  8 Aug 2020 08:59:40 -0700 (PDT)
+Received: by mail-oi1-x241.google.com with SMTP id j7so4870843oij.9;
+        Sat, 08 Aug 2020 08:59:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=taQVmt3q+KyxOZvgQSQZhABom8lU0tR+qr1/r1Bt7kY=;
-        b=gsjMH45s+DOPfq+U2WbHrRS7XqStzA4bsr2SKII26MM+no7XC7FQOcQfad8Wz+BRBm
-         g3vpMRceYwbJFWeCc+FAHqD3CF6jDGs5vph+AVKzkE6EjMEcL/iv1nDENvBZiYDYX3ps
-         2FIGWNVb2p9WCWBlkbh1baGlgDSLvSBNCNlQcDwxahXUjN76cJ4Psjm6Z5lje8xwgDNS
-         /gdHstXAtYMARvn8WFxnBrK93gtAjysb17WE+tXAmb5u0DPyGPQyrNTZvqq4mTH0sywU
-         A9ZxraJCfRQANXh1GriTdbTnWsjphfaEqJRy1uAH/IloEKbW0eUpwrbJAffH6QKlrcA0
-         2BpQ==
+        bh=7dfDkqe0MohgZmH8uj4bGL4bJvNG2hnoF5m4hePOOcw=;
+        b=P24hH7Czrfi8mHom3UkoX8dd+bd6tG762PbSgVCnjlHykp4xlqR6xJFmV/5x2/wYSO
+         eNYzMDglpolZLyilCmOvuGWGHLw2wcsvi9E2GhKZU64yyoS/QYdp3Z5+Pm/fjiwICn4U
+         SmMSih8lnl8PjKaFJnKf8fV0NbQ+NlAyhETCEpRMnE2GvMWt8AOtxbGL9p57Npb4VTAf
+         ZfQ2G0fciNlm6vBNrNUmQWnfvIr48pb0mJxKJwKnuQRg5HnVP8rDq0hMNaUs2e7DTNFF
+         y+hlLnpJ9x86ttnUEL6P4n8GkfYYdS+4+VFTKJkUSlQad64dzqyuD5kI7u6OuqcDEgY1
+         BWjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=taQVmt3q+KyxOZvgQSQZhABom8lU0tR+qr1/r1Bt7kY=;
-        b=rXX23OcSsMgNoV0AMF2x+IOWC1a/a1uuhudM4U74pOf+QkqLd6B9u5kPuZNXAVQjK8
-         6zu5Hk6cQWp4AJB2vVCu4xK/0p0U+iN3SVJfGRQ0eWTjgUDyOSDuqV32DMqNY6pgGZqD
-         xzRVzZFGYrVt1slCc/9BSNs4InpgPuS+cM7khluZcUGTwYMFIs0EaNg7cLByNPzn5owW
-         TCRKjO9qYppgOIaHDys4ga9EVDtpKLu6qwUaE7uH9PoEt+YK+oeGsi1Fb0M7HIDxqfJK
-         V4nijwWmOrXJiDOX+cgDXpUZXUY4zuWlmAKlnk38jngQ8s+zh6SnAOYoOKdA+cA+5xil
-         apTg==
-X-Gm-Message-State: AOAM5322c0ZvEz/khtuOrFlFNkiTa4AelIrnjT2MrarqKY8OEkMjhIny
-        5DedB+D9Gqdm+j+U1IomWiY=
-X-Google-Smtp-Source: ABdhPJxC3sjpn1v8lb8QU9aaBh/IbDrpWNl+VFgf0LxpicT+nn8QfOTcgKpGYuT9OGE4/JC51BAj6Q==
-X-Received: by 2002:a05:6830:1d3:: with SMTP id r19mr15371323ota.27.1596902167303;
-        Sat, 08 Aug 2020 08:56:07 -0700 (PDT)
+        bh=7dfDkqe0MohgZmH8uj4bGL4bJvNG2hnoF5m4hePOOcw=;
+        b=VCyya8d712XHkePFmjUxfV5cCN00Uhl48R3BMHFSIjFqfiFxfALWJE0m6s11T3QjTn
+         egr94nSbc28A3zf0Nsro/uDYcRv3c6G7ocS2LKKoLnjG0q8G95QR26Kk5mBgqQcapa1Q
+         2yq8rLs3dR0RgDiUBQyEZ2qjabJmEL2XDBYS5TS2yCd2/mLTTBTdPv6DtEkuuDzB6Dsl
+         L0H+eIg1OuP6hqVqy0XZJUBUPM3/KYd+W9BjUowFRiARLZa6TioVj28dNHjq0Tgiw7vP
+         bnN1horZCrEKlsypOTpmkIuwLjjlN4RT+W63uSVf/xEsETmUvBBqsRF0+2EAKaxH7cVl
+         X//A==
+X-Gm-Message-State: AOAM530107+EeuyLw4UNkTKdqFmWmMpwPguBocyqSvJEiaESTdM6/HOM
+        azNH0Ku5atsxZ6EOmTMuFog=
+X-Google-Smtp-Source: ABdhPJymGhqPMQv0DitcITw4drSE2nmsiPaqGWl4u+UiEKPwMQO6DERlcaNl0E0OHtW6j9oT+0b5ow==
+X-Received: by 2002:aca:5489:: with SMTP id i131mr16232449oib.157.1596902379287;
+        Sat, 08 Aug 2020 08:59:39 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:2d6d:708e:ac93:f86b])
-        by smtp.googlemail.com with ESMTPSA id v21sm1532760oou.29.2020.08.08.08.56.05
+        by smtp.googlemail.com with ESMTPSA id e18sm1646009oiy.52.2020.08.08.08.59.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 08 Aug 2020 08:56:06 -0700 (PDT)
-Subject: Re: [PATCH] xdp: ensure initialization of txq in xdp_buff
-To:     Paul Hollinsky <phollinsky@holtechnik.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, andriin@fb.com,
-        ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@chromium.org, songliubraving@fb.com, yhs@fb.com
-References: <20200808071600.1999613-1-phollinsky@holtechnik.com>
+        Sat, 08 Aug 2020 08:59:38 -0700 (PDT)
+Subject: Re: [RFC PATCH 0/7] metricfs metric file system and examples
+To:     Andrew Lunn <andrew@lunn.ch>, Jonathan Adams <jwadams@google.com>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        netdev@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jim Mattson <jmattson@google.com>,
+        David Rientjes <rientjes@google.com>
+References: <20200807212916.2883031-1-jwadams@google.com>
+ <20200808020617.GD2028541@lunn.ch>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7cb5fff6-3fa4-3caa-ca57-040cd77d5c24@gmail.com>
-Date:   Sat, 8 Aug 2020 09:56:02 -0600
+Message-ID: <191cb2fc-387a-006e-62fd-177096ac480e@gmail.com>
+Date:   Sat, 8 Aug 2020 09:59:34 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200808071600.1999613-1-phollinsky@holtechnik.com>
+In-Reply-To: <20200808020617.GD2028541@lunn.ch>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,34 +73,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/8/20 1:16 AM, Paul Hollinsky wrote:
-> xdp->txq was uninitialized and could be used from within a bpf program.
+On 8/7/20 8:06 PM, Andrew Lunn wrote:
+> So i personally don't think netdev statistics is a good idea, i doubt
+> it scales.
 
-The verifier prevents access to txq except by programs of type
-BPF_XDP_DEVMAP and those can not be run via xdp generic. ie., generic
-can not access txq.
-
-
-> 
-> https://syzkaller.appspot.com/bug?id=a6e53f8e9044ea456ea1636be970518ae6ba7f62
-> 
-> Signed-off-by: Paul Hollinsky <phollinsky@holtechnik.com>
-> ---
->  net/core/dev.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 7df6c9617321..12be8fef8b7e 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4649,6 +4649,8 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  	rxqueue = netif_get_rxqueue(skb);
->  	xdp->rxq = &rxqueue->xdp_rxq;
->  
-> +	xdp->txq = NULL;
-> +
->  	act = bpf_prog_run_xdp(xdp_prog, xdp);
->  
->  	/* check if bpf_xdp_adjust_head was used */
-> 
-
++1
