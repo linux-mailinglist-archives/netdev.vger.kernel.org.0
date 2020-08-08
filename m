@@ -2,25 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6273723F8CA
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 22:47:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E31AE23F8CB
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 22:48:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726469AbgHHUrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Aug 2020 16:47:47 -0400
-Received: from mx.sdf.org ([205.166.94.24]:55009 "EHLO mx.sdf.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726069AbgHHUrr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Aug 2020 16:47:47 -0400
-Received: from sdf.org (IDENT:lkml@sdf.org [205.166.94.16])
-        by mx.sdf.org (8.15.2/8.14.5) with ESMTPS id 078KlUKH010985
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits) verified NO);
-        Sat, 8 Aug 2020 20:47:30 GMT
-Received: (from lkml@localhost)
-        by sdf.org (8.15.2/8.12.8/Submit) id 078KlTZ7022030;
-        Sat, 8 Aug 2020 20:47:29 GMT
-Date:   Sat, 8 Aug 2020 20:47:29 +0000
-From:   George Spelvin <lkml@SDF.ORG>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
+        id S1726481AbgHHUsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Aug 2020 16:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41262 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726069AbgHHUsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Aug 2020 16:48:10 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16229C061756
+        for <netdev@vger.kernel.org>; Sat,  8 Aug 2020 13:48:09 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id i19so2765911lfj.8
+        for <netdev@vger.kernel.org>; Sat, 08 Aug 2020 13:48:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CiZLddQIxJOKky65wgscY6f1yEBwf6vf15egbeCHIho=;
+        b=IWrVw6JbJfmA3YzWKBYBdvyHAIOh2WLoX3nrDXi++/s27zJg+fkFAvZs7iG+JbKD5j
+         UMs1FfbddFvoR1vr4pYS8hHSaGQ1tGZJdJkYAlYyqXaGI199GGeJnEqq4u9mBs1MC2+i
+         80+aFCxYp4c2zlCnnIz8JnWj8lSfTQyu55k20=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CiZLddQIxJOKky65wgscY6f1yEBwf6vf15egbeCHIho=;
+        b=oYtOjQPmbpXRXwovn5N4quLxqok2cVfvn5ltgxz8j9Tk/sPbIswcthqVJ5G1yTSTnc
+         OA5q98GdSzKEkcjNcKMO34BAowro+nZiIUWMfFysQYcZXrkoZjh4Llun//SL83LAZpm9
+         1K9ODH5MeGCd7gLSK+xx8PuLtTGevM8KwJSHfMQJvBeB8NTMXA+Fq8gzryrnXDBN5C+a
+         kURj7u+NutrcVILPP0kVcPKMYj88QQLzQvCG7TDSQEA30B8pPdLM8KrMbZ6iW4cMO4ND
+         qOZqQwfDwcl/67lLsy4AYJ7X8Ni4tM4mWrmjSTQ11ZeUofdwDbV59YF9RHXOrpNWx/V3
+         Oxbg==
+X-Gm-Message-State: AOAM533PAEJef73+rC/XQ/WqqtRDdDdzX4W5j1Z6rOgvgZKEXXbYLZ11
+        1XLzKrgti3lylRAYqdch0HB52oF24DQ=
+X-Google-Smtp-Source: ABdhPJwtrlK7IPEvRV2XKipYXAPhrbQnNccy3XcavTW8uuaIV+Dd8wnojD8eiYv4BYttwNv8T/kHBg==
+X-Received: by 2002:a19:428c:: with SMTP id p134mr9439936lfa.70.1596919687376;
+        Sat, 08 Aug 2020 13:48:07 -0700 (PDT)
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com. [209.85.208.173])
+        by smtp.gmail.com with ESMTPSA id s22sm5564307lji.122.2020.08.08.13.48.06
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 08 Aug 2020 13:48:06 -0700 (PDT)
+Received: by mail-lj1-f173.google.com with SMTP id t6so5684679ljk.9
+        for <netdev@vger.kernel.org>; Sat, 08 Aug 2020 13:48:06 -0700 (PDT)
+X-Received: by 2002:a2e:b008:: with SMTP id y8mr7911781ljk.421.1596919685994;
+ Sat, 08 Aug 2020 13:48:05 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200808152628.GA27941@SDF.ORG> <20200808174451.GA7429@1wt.eu> <20200808200818.GC27941@SDF.ORG>
+In-Reply-To: <20200808200818.GC27941@SDF.ORG>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sat, 8 Aug 2020 13:47:49 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wh2qG7Brjn=54RV-8sDtWuZmWqokYCSvzUt+sF7ESb-TQ@mail.gmail.com>
+Message-ID: <CAHk-=wh2qG7Brjn=54RV-8sDtWuZmWqokYCSvzUt+sF7ESb-TQ@mail.gmail.com>
+Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
+To:     George Spelvin <lkml@sdf.org>
 Cc:     Willy Tarreau <w@1wt.eu>, Netdev <netdev@vger.kernel.org>,
         Amit Klein <aksecurity@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
@@ -32,61 +69,72 @@ Cc:     Willy Tarreau <w@1wt.eu>, Netdev <netdev@vger.kernel.org>,
         "Theodore Ts'o" <tytso@mit.edu>,
         Marc Plumb <lkml.mplumb@gmail.com>,
         Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: Flaw in "random32: update the net random state on interrupt and
- activity"
-Message-ID: <20200808204729.GD27941@SDF.ORG>
-References: <20200808152628.GA27941@SDF.ORG>
- <20200808174451.GA7429@1wt.eu>
- <CAHk-=wjeRgAoKXo-oPOjLTppYOo5ZpXFG7h6meQz6-tP0gQuNg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjeRgAoKXo-oPOjLTppYOo5ZpXFG7h6meQz6-tP0gQuNg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 08, 2020 at 11:19:01AM -0700, Linus Torvalds wrote:
-> If siphash is a good enough hash to make the pseudo-random state hard
-> to guess, then it's also a good enough hash to hide the small part of
-> the fast-pool we mix in.
+On Sat, Aug 8, 2020 at 1:08 PM George Spelvin <lkml@sdf.org> wrote:
+>
+> So assuming that once per interrupt equals "often" is completely false.
 
-No!
+That's not what people are assuming.
 
-No, no, a thousand times no.
+They are assuming it's "unpredictable".
 
-I *just* finished explaining, using dribs and drabs of entropy allows an 
-*information theoretical attack* which *no* crypto can prevent.
+Guys, look up the real and true meaning of "random" some day.
 
-The drip-feed design of the current patch is a catastrophic antifeature
-which must be anethametized.
+Guess what? It at no point says "secure hash".
 
-You could replace SipHash with a random function, the platonic ideal
-to which all other cryptographic functions are compared, and you'd
-still have a hole.
+> Not to mention that the generators are per-CPU, and the CPU gnerating the
+> random numbers might not be the one getting what few interrupts there are.
+> (It's quite common in networking applications to bind network interrupts
+> and application logic to separate CPUs.)
 
-The fact that *nothing* can fix bad seeding is the entire reason
-/dev/random exists in the first place.
+.. which is exactly why the commit that introduced this _also_ does
+things from timer interrupts.
 
+And yes. We know.Timer interrupts are turned off when there's nothing going on.
 
-*Second*, I have no intention of using full SipHash.  I'm spending
-all of that security margin making it as fast as possible, leaving
-just enough to discourage the original attack.
+But the sending side - if it's not responding to an interrupt -
+explicitly does have something going on, so you actually end up having
+timer interrupts.
 
-As you just pointed out, half-MD4 (still used in fs/ext4/hash.c) is quite 
-enough to discourage attack if used appropriately.
+And yes, both IP and the TSC are "predictable". In theory. Not in
+reality, and particularly not remotely.
 
-If you go and *vastly* increase the value of a successful attack, 
-letting an attacker at long-lived high-value keys, I have to put all
-that margin back.
+And again, we knew - and discussed - interrupts coalescing and not
+happening under load.
 
-(Not to mention, even full SipHash only offers 128-bit security in the 
-first place!  Shall I go and delete AES-256 and SHA2-512, since we've 
-decided the Linux kernel is capped at 128-bit security?)
+And again - that's a completely specious and pointless argument.
 
-It's not even remotely difficult: use the *output* of random.c.  
-Making that safe is what all that code is for.
+If you can put a machine under such load that it goes into polling
+mode _and_ you also control _all_ the network traffic to such an
+extent that other actors don't matter, and you get all the data out
+and can analyze it to the point of trying to figure out what the prng
+internal buffers are, you are basically already on the same network
+and are controlling the machine.
 
-(It costs some cycles, but SipHash's strength lets you go long 
-enough between reseeds that it amorizes to insignificance.)
+It's not an interesting attack, in other words.
+
+I repeat: reality matters. Your theoretical arguments are irrelevant,
+because they simply don't even apply.
+
+Btw, don't get me wrong - I think we can improve on the actual hashing
+on the prng too. But I'm not backing down on the whole "we need noise
+too, and the noise is actually more important".
+
+> This whole bit of logic just seems ridiculously fragile to me.
+
+No, what is fragile is assuming that you can have a random number
+generator that is an analyzable secure hash, and then expecting that
+to be high-performance and unpredictable.
+
+We can do both. I'm _hoping_ people can come up with a
+high-performance hash that is better than what we have. But there was
+absolutely nothing going on for months after the last report, and even
+with a better high-performance hash, I will absolutely refuse to get
+rid of the noise factor.
+
+           Linus
