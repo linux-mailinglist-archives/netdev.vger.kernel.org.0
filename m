@@ -2,50 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B419423F926
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 23:29:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A04C23F94F
+	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 00:28:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726386AbgHHV33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Aug 2020 17:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47564 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726200AbgHHV33 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Aug 2020 17:29:29 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2600FC061756;
-        Sat,  8 Aug 2020 14:29:29 -0700 (PDT)
-Received: from localhost (50-47-102-2.evrt.wa.frontiernet.net [50.47.102.2])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7C956127362A5;
-        Sat,  8 Aug 2020 14:12:42 -0700 (PDT)
-Date:   Sat, 08 Aug 2020 14:29:26 -0700 (PDT)
-Message-Id: <20200808.142926.883053326455909981.davem@davemloft.net>
-To:     linmiaohe@huawei.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: Convert to use the fallthrough macro
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1596874990-22437-1-git-send-email-linmiaohe@huawei.com>
-References: <1596874990-22437-1-git-send-email-linmiaohe@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 08 Aug 2020 14:12:43 -0700 (PDT)
+        id S1726058AbgHHW2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Aug 2020 18:28:15 -0400
+Received: from mx.sdf.org ([205.166.94.24]:64293 "EHLO mx.sdf.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726009AbgHHW2P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Aug 2020 18:28:15 -0400
+Received: from sdf.org (IDENT:lkml@sdf.org [205.166.94.16])
+        by mx.sdf.org (8.15.2/8.14.5) with ESMTPS id 078MRrWo002980
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits) verified NO);
+        Sat, 8 Aug 2020 22:27:53 GMT
+Received: (from lkml@localhost)
+        by sdf.org (8.15.2/8.12.8/Submit) id 078MRqY8015003;
+        Sat, 8 Aug 2020 22:27:52 GMT
+Date:   Sat, 8 Aug 2020 22:27:52 +0000
+From:   George Spelvin <lkml@SDF.ORG>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Willy Tarreau <w@1wt.eu>, Netdev <netdev@vger.kernel.org>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Andrew Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Marc Plumb <lkml.mplumb@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: Flaw in "random32: update the net random state on interrupt and
+ activity"
+Message-ID: <20200808222752.GG27941@SDF.ORG>
+References: <20200808152628.GA27941@SDF.ORG>
+ <20200808174451.GA7429@1wt.eu>
+ <CAHk-=wjeRgAoKXo-oPOjLTppYOo5ZpXFG7h6meQz6-tP0gQuNg@mail.gmail.com>
+ <20200808204729.GD27941@SDF.ORG>
+ <CAHk-=whU-3rEAY551DeDsuVsZgLXyq37JX1kCvDzQFnuKzUXew@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whU-3rEAY551DeDsuVsZgLXyq37JX1kCvDzQFnuKzUXew@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: linmiaohe <linmiaohe@huawei.com>
-Date: Sat, 8 Aug 2020 16:23:10 +0800
-
-> From: Miaohe Lin <linmiaohe@huawei.com>
+On Sat, Aug 08, 2020 at 01:52:37PM -0700, Linus Torvalds wrote:
+> On Sat, Aug 8, 2020 at 1:47 PM George Spelvin <lkml@sdf.org> wrote:
+>> I *just* finished explaining, using dribs and drabs of entropy allows an
+>> *information theoretical attack* which *no* crypto can prevent.
 > 
-> Convert the uses of fallthrough comments to fallthrough macro.
+> The key word here being "theoretical".
 > 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> The other key word is "reality".
+> 
+> We will have to agree to disagree. I don't _care_ about the
+> theoretical holes. I care about the real ones.
 
-Applied.
+It's not a theoretical hole, it's a very real one.  Other than the cycles 
+to do the brute-force part, it's not even all that complicated.  The 
+theory part is that it's impossible to patch.
+
+*If* you do the stupid thing.  WHICH YOU COULD JUST STOP DOING.
+
+> We plugged a real one. Deal with it.
+
+The explain it to me.  What is that actual *problem*?  Nobody's described 
+one, so I've been guessing.  What is this *monumentally stupid* abuse of 
+/dev/random allegedly fixing?
+
+If you're not an idiot, explain.
+
+Because right now you sound like one.  There's a simple and easy fix which 
+I've described and will get back to implementing as soon as I've finished 
+yelling at you.  What, FFS, is your objection to considering it?
+
+I'm trying to implement a solution that satisfies everyone's requirements 
+*including* the absence of catastrophic security holes.  If there's some 
+requirement I'm not satisfying, please tell me.  Just please don't say "I 
+prefer doing the stupid thing to changing my mind."  I hear enough of that 
+on the news.
+
+I can deal with it *personally* by patching it out of my private kernels, 
+but I'd really rather it doesn't get deployed to a billion devices before 
+someone exploits it.
