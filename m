@@ -2,351 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B356923F87D
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 20:41:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8E6623F880
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 20:46:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726468AbgHHSlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Aug 2020 14:41:01 -0400
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:41231 "EHLO
-        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726232AbgHHSlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Aug 2020 14:41:00 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 6F02F15CF;
-        Sat,  8 Aug 2020 14:40:59 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Sat, 08 Aug 2020 14:40:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=+6w2JwjCivTuz6fKrVJb/sI5CRJTJHFV60T1jOZTF
-        sw=; b=WQhrrmFG/dnzhYxIe92BS6fP7FOcTrc9tgEQeXyU23F9A9umIFXiY9TAe
-        V5Y6dWJK61FRgzTRP2eIt7q8S01vTFwNlipXck+xcIFrojH0PP6aPamMlKD6CbT6
-        VVvfwLAMFS7zgfNpKa6DwlgmCK3OqMPhKK/0GR9XKBIjKWwfzXf5yJhSuY3yWDTP
-        cqVUYCUj2TdFkelXB5oAnv9EkrSbDvQaz+ZdZv5wWxsvMoocOM0y8Npj3r/hPbPm
-        pHjg3re6BypAzh1fNG+LrUELKtMdSNY0+P0slcUUs20W2b22ph0g3zmcs+JWZb1R
-        2JtEy24fkaiTT2HIfNwjx4ORoJqwA==
-X-ME-Sender: <xms:uvEuX-OThXbnEe9WGOrLYaEsEFdO36lCAldEaHK-OacK-PbVG6hjDg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrkeeggddutdeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjgesthekredttddtjeenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepffegheeufffgfeetuddvgfetkeevffejhfeggfffgedtveejueekiedvtdev
-    geetnecuffhomhgrihhnpegtuhhmuhhluhhsnhgvthifohhrkhhsrdgtohhmnecukfhppe
-    ejledrudekvddrieefrdegvdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
-    mhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:uvEuX88F-PBGVX1zAeUogNDVP7txTS53b_YcdcVL31EIzPpMKkgY0g>
-    <xmx:uvEuX1TLBkPzBTWqW1rxgGlm4jO8YSzfSfn_g5SvoCuIS8J61uBEfw>
-    <xmx:uvEuX-t25TK8LMKVI0ML-Ub5Se3TZNf1WeahHmAXdU150hjkuu4S_A>
-    <xmx:u_EuX4qDQ_PuJQpvjTFJX27acEun-Ja6W-hlHrDAlvEh-91irdkUmg>
-Received: from localhost (bzq-79-182-63-42.red.bezeqint.net [79.182.63.42])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 238B0306005F;
-        Sat,  8 Aug 2020 14:40:58 -0400 (EDT)
-Date:   Sat, 8 Aug 2020 21:40:50 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Yi Yang =?utf-8?B?KOadqOeHmikt5LqR5pyN5Yqh6ZuG5Zui?= 
-        <yangyi01@inspur.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>
-Subject: Re: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIGNhbiBj?= =?utf-8?Q?urren?=
- =?utf-8?Q?t?= ECMP implementation support consistent hashing for next hop?
-Message-ID: <20200808184050.GA2801845@shredder>
-References: <4037f805c6f842dcc429224ce28425eb@sslemail.net>
- <8ff0c684-7d33-c785-94d7-c0e6f8b79d64@gmail.com>
- <8867a00d26534ed5b84628db1a43017c@inspur.com>
- <8da839b3-5b5d-b663-7d9c-0bc8351980dd@gmail.com>
- <20200802144959.GA2483264@shredder>
- <3c965294-fe7d-3893-e9d9-3354ff508731@gmail.com>
+        id S1726492AbgHHSq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Aug 2020 14:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726232AbgHHSqZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Aug 2020 14:46:25 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEAAC061756
+        for <netdev@vger.kernel.org>; Sat,  8 Aug 2020 11:46:24 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id d6so5420431ejr.5
+        for <netdev@vger.kernel.org>; Sat, 08 Aug 2020 11:46:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=jOXDu9SlBmCidK+pytWuqMzjKUtQ47NPeS1CryxgtcA=;
+        b=uTa4Z0q3FtuS8TMevIcT6y2L4zwl7CbwT7H+AMLFM8w2TviNKYw0lULyfUXIU0VtTy
+         7FyzC0MJM4rP+lHltx4M3P+nvmsfS8G6gnxR2fF6IAGHH19q/a1sH5NSoadhB4eJ+IaS
+         cUQwEmP3plJaCsy2lBdVYCEP28Pi74DgyQSVA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=jOXDu9SlBmCidK+pytWuqMzjKUtQ47NPeS1CryxgtcA=;
+        b=tO3DgY6GAQhgGaaUWkOfoDVoVno2vRoQcWXNN61IYHBxaaU6vtvjOZ9vGjGxM80zC9
+         HW6CV8Pjg2GjvKG6i96JPKYxzNbMtay/7VJmN9dYEOLjLpJqZDLzwXszUeEy/xRZY/2D
+         A+9vGMtFgO7e6Yvad6udzYbIuhw0UYdkvYk1kphNLqRfQBvehhy9sExHdsU8fL50ZLnz
+         JlOYVPbCUQ94Kc+jzEzoS1Hq0GAYbWIlA6fSr/TmDdKA5Ptx/k7yRe3Lx66XWC+PR5rH
+         1l93YhsKFVJOAxu06rvzqE8t/3Vpbm0kzV4kxbZdAgwjGvmwrUyEH+jIhSk+KlfLLAha
+         GrQw==
+X-Gm-Message-State: AOAM532AuJHNsY8Hwb2bn5kGpWaa+B1c6NW4D0fO+GBFhuQ/mVQqheQX
+        ukrkaqImEUS/5lH9jV6/QrTChHjYlRA=
+X-Google-Smtp-Source: ABdhPJyIhrirp+mhF72d/SQWNFeglyQ4M+5ZA/ZZlyr1jaKCcD0TykiC97iM6OYJCfOAQL9lc9tTMQ==
+X-Received: by 2002:a17:906:3850:: with SMTP id w16mr15637492ejc.205.1596912383282;
+        Sat, 08 Aug 2020 11:46:23 -0700 (PDT)
+Received: from cloudflare.com (user-5-173-160-125.play-internet.pl. [5.173.160.125])
+        by smtp.gmail.com with ESMTPSA id y7sm9080305ejd.73.2020.08.08.11.46.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Aug 2020 11:46:22 -0700 (PDT)
+References: <20200807223846.4190917-1-sdf@google.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net
+Subject: Re: [PATCH bpf] selftests/bpf: fix v4_to_v6 in sk_lookup
+In-reply-to: <20200807223846.4190917-1-sdf@google.com>
+Date:   Sat, 08 Aug 2020 20:46:20 +0200
+Message-ID: <87zh756kn7.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3c965294-fe7d-3893-e9d9-3354ff508731@gmail.com>
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 06, 2020 at 10:45:52AM -0600, David Ahern wrote:
-> On 8/2/20 8:49 AM, Ido Schimmel wrote:
-> > On Thu, Jun 11, 2020 at 10:36:59PM -0600, David Ahern wrote:
-> >> On 6/11/20 6:32 PM, Yi Yang (杨燚)-云服务集团 wrote:
-> >>> David, thank you so much for confirming it can't, I did read your cumulus document before, resilient hashing is ok for next hop remove, but it still has the same issue there if add new next hop. I know most of kernel code in Cumulus Linux has been in upstream kernel, I'm wondering why you didn't push resilient hashing to upstream kernel.
-> >>>
-> >>> I think consistent hashing is must-have for a commercial load balancing solution, otherwise it is basically nonsense , do you Cumulus Linux have consistent hashing solution?
-> >>>
-> >>> Is "- replacing nexthop entries as LB's come and go" ithe stuff https://docs.cumulusnetworks.com/cumulus-linux/Layer-3/Equal-Cost-Multipath-Load-Sharing-Hardware-ECMP/#resilient-hashing is showing? It can't ensure the flow is distributed to the right backend server if a new next hop is added.
-> >>
-> >> I do not believe it is a problem to be solved in the kernel.
-> >>
-> >> If you follow the *intent* of the Cumulus document: what is the maximum
-> >> number of load balancers you expect to have? 16? 32? 64? Define an ECMP
-> >> route with that number of nexthops and fill in the weighting that meets
-> >> your needs. When an LB is added or removed, you decide what the new set
-> >> of paths is that maintains N-total paths with the distribution that
-> >> meets your needs.
-> > 
-> > I recently started looking into consistent hashing and I wonder if it
-> > can be done with the new nexthop API while keeping all the logic in user
-> > space (e.g., FRR).
-> > 
-> > The only extension that might be required from the kernel is a new
-> > nexthop attribute that indicates when a nexthop was last recently used.
-> 
-> The only potential problem that comes to mind is that a nexthop can be
-> used by multiple prefixes.
+On Sat, Aug 08, 2020 at 12:38 AM CEST, Stanislav Fomichev wrote:
+> I'm getting some garbage in bytes 8 and 9 when doing conversion
+> from sockaddr_in to sockaddr_in6 (leftover from AF_INET?).
+> Let's explicitly clear the higher bytes.
+>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/sk_lookup.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/sk_lookup.c b/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
+> index c571584c00f5..9ff0412e1fd3 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
+> @@ -309,6 +309,7 @@ static void v4_to_v6(struct sockaddr_storage *ss)
+>  	v6->sin6_addr.s6_addr[10] = 0xff;
+>  	v6->sin6_addr.s6_addr[11] = 0xff;
+>  	memcpy(&v6->sin6_addr.s6_addr[12], &v4.sin_addr.s_addr, 4);
+> +	memset(&v6->sin6_addr.s6_addr[0], 0, 10);
+>  }
+>
+>  static int udp_recv_send(int server_fd)
 
-Yes. The key point is that for resilient hashing a nexthop ID no longer
-represents a logical nexthop (dev + gw), but rather a hash bucket. User
-space determines how many buckets there are in a group (e.g., 256) and
-how logical nexthops are assigned to them.
+That was badly written. Sorry about that. And thanks for the fix.
 
-> 
-> But, I'm not sure I follow what the last recently used indicator gives
-> you for maintaining flows as a group is updated.
+I'd even zero out the whole thing:
 
-When adding a nexthop to a group the goal is to do it in a way that
-minimizes the impact on existing flows. Therefore, you want to avoid
-assigning the nexthop to buckets that are active. After a certain time
-of bucket inactivity user space can "safely" perform the replacement.
-See description of this knob in Cumulus documentation:
+        memset(v6, 0, sizeof(*v6));
 
-```
-resilient_hash_active_timer: A timer that protects TCP sessions from being
-disrupted while attempting to populate new next hops. You specify the number of
-seconds when at least one hash bucket consistently sees no traffic before
-Cumulus Linux rebalances the flows; the default is 120 seconds. If any one
-bucket is idle; that is, it sees no traffic for the defined period, the next
-new flow utilizes that bucket and flows to the new link. Thus, if the network
-is experiencing a large number of flows or very consistent or persistent flows,
-there may not be any buckets remaining idle for a consistent 120 second period,
-and the imbalance remains until that timer has been met. If a new link is
-brought up and added back to a group during this time, traffic does not get
-allocated to utilize it until a bucket qualifies as empty, meaning it has been
-idle for 120 seconds. This is when a rebalance can occur.
-```
+... because right now IPv4 address is left as sin6_flowinfo.  I can
+follow up with that change, unless you'd like to roll a v2.
 
-Currently, user space does not have this activity information.
-
-I'm saying "safely" because by the time user space decides to perform
-the replacement it is possible that the bucket became active again. In
-this case it is possible for the kernel / hardware to reject the
-replacement. How such an atomic replacement is communicated to the
-kernel will determine how the activity information should be exposed.
-
-Option 1:
-
-A new nexthop flag (RTNH_F_ACTIVE ?). For example:
-
-id 1 via 2.2.2.2 dev dummy_b scope link active
-
-User space can periodically query the kernel and clear the activity. For
-example:
-
-ip nexthop list_clear
-
-To communicate an atomic replacement:
-
-ip nexthop replace atomic id 3 via 2.2.2.2 dev dummy_b
-
-Option 2:
-
-Add a new 'used' attribute that encodes time since the bucket was last
-used. For example:
-
-ip -s nexthop show id 1
-id 1 via 2.2.2.2 dev dummy_b scope link used 5
-
-User space will cache it and use it to perform an atomic replacement:
-
-ip nexthop replace used 5 id 3 via 2.2.2.2 dev dummy_b
-
-The kernel will compare its current used time with the value specified
-by user space. If current value is smaller, reject the replacement.
-
-> 
-> > User space can then use it to understand which nexthops to replace when
-> > a new nexthop is added and when to perform the replacement. In case the
-> > nexthops are offloaded, it is possible for the driver to periodically
-> > update the nexthop code about their activity.
-> > 
-> > Below is a script that demonstrates the concept with the example in the
-> > Cumulus documentation. I chose to replace the individual nexthops
-> > instead of creating new ones and then replacing the group.
-> 
-> That is one of the features ... a group points to individual nexthops
-> and those can be atomically updated without affecting the group.
-> 
-> > 
-> > It is obviously possible to create larger groups to reduce the impact on
-> > existing flows when a new nexthop is added.
-> > 
-> > WDYT?
-> 
-> This is inline with my earlier responses, and your script shows an
-> example of how to manage it. Combine it with the active-backup patch set
-> and you handle device events too (avoid disrupting size of the group on
-> device events).
-
-Yes, correct. I rebased your active-backup patches on top of net-next,
-salvaged the iproute2 patches from your github and updated the example
-script:
-
-```
-#!/bin/bash
-
-### Setup ####
-
-IP="ip -n testns"
-
-ip netns add testns
-
-$IP link add name dummy_a up type dummy
-$IP link add name dummy_b up type dummy
-$IP link add name dummy_c up type dummy
-$IP link add name dummy_d up type dummy
-$IP link add name dummy_e up type dummy
-
-$IP route add 1.1.1.0/24 dev dummy_a
-$IP route add 2.2.2.0/24 dev dummy_b
-$IP route add 3.3.3.0/24 dev dummy_c
-$IP route add 4.4.4.0/24 dev dummy_d
-$IP route add 5.5.5.0/24 dev dummy_e
-
-### Initial nexthop configuration ####
-# According to:
-# https://docs.cumulusnetworks.com/cumulus-linux-42/Layer-3/Equal-Cost-Multipath-Load-Sharing-Hardware-ECMP/#resilient-hash-buckets
-
-# First sub-group
-
-$IP nexthop replace id 1 via 1.1.1.1 dev dummy_a
-$IP nexthop replace id 2 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 101 group 1/2 active-backup
-
-$IP nexthop replace id 3 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 4 via 1.1.1.1 dev dummy_a
-$IP nexthop replace id 102 group 3/4 active-backup
-
-$IP nexthop replace id 5 via 3.3.3.3 dev dummy_c
-$IP nexthop replace id 6 via 1.1.1.1 dev dummy_a
-$IP nexthop replace id 103 group 5/6 active-backup
-
-$IP nexthop replace id 7 via 4.4.4.4 dev dummy_d
-$IP nexthop replace id 8 via 1.1.1.1 dev dummy_a
-$IP nexthop replace id 104 group 7/8 active-backup
-
-# Second sub-group
-
-$IP nexthop replace id 9 via 1.1.1.1 dev dummy_a
-$IP nexthop replace id 10 via 3.3.3.3 dev dummy_c
-$IP nexthop replace id 105 group 9/10 active-backup
-
-$IP nexthop replace id 11 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 12 via 3.3.3.3 dev dummy_c
-$IP nexthop replace id 106 group 11/12 active-backup
-
-$IP nexthop replace id 13 via 3.3.3.3 dev dummy_c
-$IP nexthop replace id 14 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 107 group 13/14 active-backup
-
-$IP nexthop replace id 15 via 4.4.4.4 dev dummy_d
-$IP nexthop replace id 16 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 108 group 15/16 active-backup
-
-# Third sub-group
-
-$IP nexthop replace id 17 via 1.1.1.1 dev dummy_a
-$IP nexthop replace id 18 via 4.4.4.4 dev dummy_d
-$IP nexthop replace id 109 group 17/18 active-backup
-
-$IP nexthop replace id 19 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 20 via 4.4.4.4 dev dummy_d
-$IP nexthop replace id 110 group 19/20 active-backup
-
-$IP nexthop replace id 21 via 3.3.3.3 dev dummy_c
-$IP nexthop replace id 22 via 4.4.4.4 dev dummy_d
-$IP nexthop replace id 111 group 21/22 active-backup
-
-$IP nexthop replace id 23 via 4.4.4.4 dev dummy_d
-$IP nexthop replace id 24 via 3.3.3.3 dev dummy_c
-$IP nexthop replace id 112 group 23/24 active-backup
-
-$IP nexthop replace id 10001 \
-	group 101/102/103/104/105/106/107/108/109/110/111/112
-
-echo
-echo "Initial state:"
-echo
-$IP nexthop show
-
-### Nexthop B is removed ###
-# According to:
-# https://docs.cumulusnetworks.com/cumulus-linux-42/Layer-3/Equal-Cost-Multipath-Load-Sharing-Hardware-ECMP/#remove-next-hops
-
-$IP link set dev dummy_b carrier off
-
-echo
-echo "After nexthop B was removed:"
-echo
-$IP nexthop show
-
-### Initial state restored ####
-
-$IP link set dev dummy_b carrier on
-
-$IP nexthop replace id 2 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 101 group 1/2 active-backup
-
-$IP nexthop replace id 3 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 102 group 3/4 active-backup
-
-$IP nexthop replace id 11 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 106 group 11/12 active-backup
-
-$IP nexthop replace id 14 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 107 group 13/14 active-backup
-
-$IP nexthop replace id 16 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 108 group 15/16 active-backup
-
-# Third sub-group
-
-$IP nexthop replace id 19 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 110 group 19/20 active-backup
-
-$IP nexthop replace id 23 via 4.4.4.4 dev dummy_d
-$IP nexthop replace id 112 group 23/24 active-backup
-
-echo
-echo "After intial state was restored:"
-echo
-$IP nexthop show
-
-### Nexthop E is added ####
-# According to:
-# https://docs.cumulusnetworks.com/cumulus-linux-42/Layer-3/Equal-Cost-Multipath-Load-Sharing-Hardware-ECMP/#add-next-hops
-
-# Nexthop 3, 9, 15 are active. Replace in a way that minimizes interruptions.
-$IP nexthop replace id 1 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 3 via 3.3.3.3 dev dummy_c
-$IP nexthop replace id 5 via 4.4.4.4 dev dummy_d
-$IP nexthop replace id 7 via 5.5.5.5 dev dummy_e
-# Nexthop 9 remains the same
-# Nexthop 11 remains the same
-# Nexthop 13 remains the same
-# Nexthop 15 remains the same
-$IP nexthop replace id 17 via 5.5.5.5 dev dummy_e
-$IP nexthop replace id 19 via 1.1.1.1 dev dummy_a
-$IP nexthop replace id 21 via 2.2.2.2 dev dummy_b
-$IP nexthop replace id 23 via 3.3.3.3 dev dummy_c
-
-echo
-echo "After nexthop E was added:"
-echo
-$IP nexthop show
-
-ip netns del testns
-```
+Fixes: 0ab5539f8584 ("selftests/bpf: Tests for BPF_SK_LOOKUP attach point")
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
