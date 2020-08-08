@@ -2,96 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8E6623F880
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 20:46:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9749D23F882
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 20:54:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726492AbgHHSq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Aug 2020 14:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50916 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726232AbgHHSqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Aug 2020 14:46:25 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEAAC061756
-        for <netdev@vger.kernel.org>; Sat,  8 Aug 2020 11:46:24 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id d6so5420431ejr.5
-        for <netdev@vger.kernel.org>; Sat, 08 Aug 2020 11:46:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=jOXDu9SlBmCidK+pytWuqMzjKUtQ47NPeS1CryxgtcA=;
-        b=uTa4Z0q3FtuS8TMevIcT6y2L4zwl7CbwT7H+AMLFM8w2TviNKYw0lULyfUXIU0VtTy
-         7FyzC0MJM4rP+lHltx4M3P+nvmsfS8G6gnxR2fF6IAGHH19q/a1sH5NSoadhB4eJ+IaS
-         cUQwEmP3plJaCsy2lBdVYCEP28Pi74DgyQSVA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=jOXDu9SlBmCidK+pytWuqMzjKUtQ47NPeS1CryxgtcA=;
-        b=tO3DgY6GAQhgGaaUWkOfoDVoVno2vRoQcWXNN61IYHBxaaU6vtvjOZ9vGjGxM80zC9
-         HW6CV8Pjg2GjvKG6i96JPKYxzNbMtay/7VJmN9dYEOLjLpJqZDLzwXszUeEy/xRZY/2D
-         A+9vGMtFgO7e6Yvad6udzYbIuhw0UYdkvYk1kphNLqRfQBvehhy9sExHdsU8fL50ZLnz
-         JlOYVPbCUQ94Kc+jzEzoS1Hq0GAYbWIlA6fSr/TmDdKA5Ptx/k7yRe3Lx66XWC+PR5rH
-         1l93YhsKFVJOAxu06rvzqE8t/3Vpbm0kzV4kxbZdAgwjGvmwrUyEH+jIhSk+KlfLLAha
-         GrQw==
-X-Gm-Message-State: AOAM532AuJHNsY8Hwb2bn5kGpWaa+B1c6NW4D0fO+GBFhuQ/mVQqheQX
-        ukrkaqImEUS/5lH9jV6/QrTChHjYlRA=
-X-Google-Smtp-Source: ABdhPJyIhrirp+mhF72d/SQWNFeglyQ4M+5ZA/ZZlyr1jaKCcD0TykiC97iM6OYJCfOAQL9lc9tTMQ==
-X-Received: by 2002:a17:906:3850:: with SMTP id w16mr15637492ejc.205.1596912383282;
-        Sat, 08 Aug 2020 11:46:23 -0700 (PDT)
-Received: from cloudflare.com (user-5-173-160-125.play-internet.pl. [5.173.160.125])
-        by smtp.gmail.com with ESMTPSA id y7sm9080305ejd.73.2020.08.08.11.46.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Aug 2020 11:46:22 -0700 (PDT)
-References: <20200807223846.4190917-1-sdf@google.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net
-Subject: Re: [PATCH bpf] selftests/bpf: fix v4_to_v6 in sk_lookup
-In-reply-to: <20200807223846.4190917-1-sdf@google.com>
-Date:   Sat, 08 Aug 2020 20:46:20 +0200
-Message-ID: <87zh756kn7.fsf@cloudflare.com>
+        id S1726517AbgHHSyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Aug 2020 14:54:02 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:39572 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726307AbgHHSyB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Aug 2020 14:54:01 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 078IrgGu007509;
+        Sat, 8 Aug 2020 20:53:42 +0200
+Date:   Sat, 8 Aug 2020 20:53:42 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     George Spelvin <lkml@sdf.org>, Netdev <netdev@vger.kernel.org>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Andrew Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Marc Plumb <lkml.mplumb@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: Flaw in "random32: update the net random state on interrupt and
+ activity"
+Message-ID: <20200808185342.GA7499@1wt.eu>
+References: <20200808152628.GA27941@SDF.ORG>
+ <20200808174451.GA7429@1wt.eu>
+ <CAHk-=wjeRgAoKXo-oPOjLTppYOo5ZpXFG7h6meQz6-tP0gQuNg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjeRgAoKXo-oPOjLTppYOo5ZpXFG7h6meQz6-tP0gQuNg@mail.gmail.com>
+User-Agent: Mutt/1.6.1 (2016-04-27)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 08, 2020 at 12:38 AM CEST, Stanislav Fomichev wrote:
-> I'm getting some garbage in bytes 8 and 9 when doing conversion
-> from sockaddr_in to sockaddr_in6 (leftover from AF_INET?).
-> Let's explicitly clear the higher bytes.
->
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  tools/testing/selftests/bpf/prog_tests/sk_lookup.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/sk_lookup.c b/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
-> index c571584c00f5..9ff0412e1fd3 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
-> @@ -309,6 +309,7 @@ static void v4_to_v6(struct sockaddr_storage *ss)
->  	v6->sin6_addr.s6_addr[10] = 0xff;
->  	v6->sin6_addr.s6_addr[11] = 0xff;
->  	memcpy(&v6->sin6_addr.s6_addr[12], &v4.sin_addr.s_addr, 4);
-> +	memset(&v6->sin6_addr.s6_addr[0], 0, 10);
->  }
->
->  static int udp_recv_send(int server_fd)
+On Sat, Aug 08, 2020 at 11:19:01AM -0700, Linus Torvalds wrote:
+> On Sat, Aug 8, 2020 at 10:45 AM Willy Tarreau <w@1wt.eu> wrote:
+> >
+> >
+> >     WIP: random32: use siphash with a counter for prandom_u32
+> 
+> siphash is good.
+> 
+> But no:
+> 
+> > --- a/drivers/char/random.c
+> > +++ b/drivers/char/random.c
+> > @@ -1277,7 +1277,6 @@ void add_interrupt_randomness(int irq, int irq_flags)
+> >
+> >         fast_mix(fast_pool);
+> >         add_interrupt_bench(cycles);
+> > -       this_cpu_add(net_rand_state.s1, fast_pool->pool[cycles & 3]);
+> >
+> >         if (unlikely(crng_init == 0)) {
+> >                 if ((fast_pool->count >= 64) &&
+> > --- a/include/linux/random.h
+> > +++ b/include/linux/random.h
+> > diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+> > index 026ac01af9da..c9d839c2b179 100644
+> > --- a/kernel/time/timer.c
+> > +++ b/kernel/time/timer.c
+> > @@ -1743,13 +1743,6 @@ void update_process_times(int user_tick)
+> >         scheduler_tick();
+> >         if (IS_ENABLED(CONFIG_POSIX_TIMERS))
+> >                 run_posix_cpu_timers();
+> > -
+> > -       /* The current CPU might make use of net randoms without receiving IRQs
+> > -        * to renew them often enough. Let's update the net_rand_state from a
+> > -        * non-constant value that's not affine to the number of calls to make
+> > -        * sure it's updated when there's some activity (we don't care in idle).
+> > -        */
+> > -       this_cpu_add(net_rand_state.s1, rol32(jiffies, 24) + user_tick);
+> >  }
+> 
+> We're not going back to "don't add noise, just make a stronger
+> analyzable function".
+> 
+> I simply won't take it. See my previous email. I'm 100% fed up with
+> security people screwing up real security by trying to make things
+> overly analyzable.
+> 
+> If siphash is a good enough hash to make the pseudo-random state hard
+> to guess, then it's also a good enough hash to hide the small part of
+> the fast-pool we mix in.
 
-That was badly written. Sorry about that. And thanks for the fix.
+I'm totally fine with that. In fact, my secret goal there was to put
+net_rand_state back to random32.c as a static and reinstall the
+__latent_entropy that we had to remove :-)
 
-I'd even zero out the whole thing:
+I'll need to re-run more correct tests though. My measurements were
+really erratic with some of them showing half an HTTP request rate in
+a test, which makes absolutely no sense and thus disqualifies my
+measurements.
 
-        memset(v6, 0, sizeof(*v6));
+But if the results are correct enough I'm fine with continuing on this
+one and forgetting MSWS.
 
-... because right now IPv4 address is left as sin6_flowinfo.  I can
-follow up with that change, unless you'd like to roll a v2.
+> And while security researchers may hate it because it's hard to
+> analyze, that's the POINT, dammit.
 
-Fixes: 0ab5539f8584 ("selftests/bpf: Tests for BPF_SK_LOOKUP attach point")
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Actually I think there are two approaches which explains the constant
+disagreements in this area. Some people want something provably
+difficult, and others want something that cannot be proven to be easy. 
+Sadly by trying to please everyone we probably got something between
+provably easy and not provably difficult :-/
+
+Willy
