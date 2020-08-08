@@ -2,61 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E40323F8DE
-	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 22:59:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96E6623F8F4
+	for <lists+netdev@lfdr.de>; Sat,  8 Aug 2020 23:07:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726375AbgHHU7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Aug 2020 16:59:34 -0400
-Received: from mx.sdf.org ([205.166.94.24]:54685 "EHLO mx.sdf.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726200AbgHHU7d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Aug 2020 16:59:33 -0400
-Received: from sdf.org (IDENT:lkml@sdf.org [205.166.94.16])
-        by mx.sdf.org (8.15.2/8.14.5) with ESMTPS id 078KxCTd017128
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits) verified NO);
-        Sat, 8 Aug 2020 20:59:13 GMT
-Received: (from lkml@localhost)
-        by sdf.org (8.15.2/8.12.8/Submit) id 078KxCQo019409;
-        Sat, 8 Aug 2020 20:59:12 GMT
-Date:   Sat, 8 Aug 2020 20:59:12 +0000
-From:   George Spelvin <lkml@SDF.ORG>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Willy Tarreau <w@1wt.eu>, netdev@vger.kernel.org,
-        aksecurity@gmail.com, torvalds@linux-foundation.org,
-        edumazet@google.com, Jason@zx2c4.com, luto@kernel.org,
-        keescook@chromium.org, tglx@linutronix.de, peterz@infradead.org,
-        tytso@mit.edu, lkml.mplumb@gmail.com, stephen@networkplumber.org
-Subject: Re: Flaw in "random32: update the net random state on interrupt and
- activity"
-Message-ID: <20200808205912.GE27941@SDF.ORG>
-References: <20200808152628.GA27941@SDF.ORG>
- <20200808174451.GA7429@1wt.eu>
- <20200808191827.GA19310@breakpoint.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200808191827.GA19310@breakpoint.cc>
+        id S1726393AbgHHVH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Aug 2020 17:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726200AbgHHVH4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Aug 2020 17:07:56 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6851DC061756;
+        Sat,  8 Aug 2020 14:07:56 -0700 (PDT)
+Received: from localhost (50-47-102-2.evrt.wa.frontiernet.net [50.47.102.2])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D7A33127275C4;
+        Sat,  8 Aug 2020 13:51:05 -0700 (PDT)
+Date:   Sat, 08 Aug 2020 14:07:50 -0700 (PDT)
+Message-Id: <20200808.140750.1862486660155161038.davem@davemloft.net>
+To:     johannes@sipsolutions.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC 0/4] netlink: binary attribute range validation
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200805140324.72855-1-johannes@sipsolutions.net>
+References: <20200805140324.72855-1-johannes@sipsolutions.net>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 08 Aug 2020 13:51:06 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 08, 2020 at 09:18:27PM +0200, Florian Westphal wrote:
-> Can't we keep prandom_u32 as-is...?  Most of the usage, esp. in the
-> packet schedulers, is fine.
+From: Johannes Berg <johannes@sipsolutions.net>
+Date: Wed,  5 Aug 2020 16:03:20 +0200
+
+> This is something I'd been thinking about for a while; we already
+> have NLA_MIN_LEN, NLA_BINARY (with a max len), and NLA_EXACT_LEN,
+> but in quite a few places (as you can see in the last patch here)
+> we need a range, and we already have a way to encode ranges for
+> integer ranges, so it's pretty easy to use that for binary length
+> ranges as well.
 > 
-> I'd much rather have a prandom_u32_hashed() or whatever for
-> those cases where some bits might leak to the outside and then convert
-> those prandom_u32 users over to the siphashed version.
+> So at least for wireless this seems useful to save some code, and
+> to (mostly) expose the actual limits to userspace via the policy
+> export that we have now.
+> 
+> What do you think?
 
-That's a question I've been asking.  Since this is apparently an
-Important Security Bug that wants backported to -stable, I'm making
-the minimally-invasive change, which is to change prandom_u32() for
-all callers rather that decide which gets what.
-
-But going forward, adding an additional security level between
-the current prandom_u32() and get_random_u32() is possible.
-
-I'm not sure it's a good idea, however.  This entire hullalbaloo stems
-from someone choosing the wrong PRNG.  Adding another option doesn't
-seem likely to prevent a repetition in future.
+This looks great to me.
