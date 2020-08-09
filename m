@@ -2,92 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E76923FD14
-	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 09:05:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A803323FD6E
+	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 10:48:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726335AbgHIHEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Aug 2020 03:04:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49344 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726050AbgHIHEt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 9 Aug 2020 03:04:49 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C9032206C3;
-        Sun,  9 Aug 2020 07:04:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596956688;
-        bh=RXegfO8sfwtCPziOMzKjff9+mTWukqMXNBxcvA/PHQ0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WbjJliggcdbohvw04zRJ7b4Y/r/cKmbBRJpasZ3n26KOioJjq7UsNclBR2x1bdeDt
-         xlZbQXEruW13ZQFEm4tdU81P2XkQOrQ3i7WDcpzgrxamnx1xDAOLngh0sHZGNMUP4D
-         1sgz5yxpQG0vFOT6X9NqnS70c7StKKboPX/plznY=
-Date:   Sun, 9 Aug 2020 10:04:40 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jack Leadford <leadford.jack@gmail.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Joe Perches <joe@perches.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peilin Ye <yepeilin.cs@gmail.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
-Subject: Re: [Linux-kernel-mentees] [PATCH net] rds: Prevent kernel-infoleak
- in rds_notify_queue_get()
-Message-ID: <20200809070440.GA1653394@unreal>
-References: <20200731142148.GA1718799@kroah.com>
- <20200731143604.GF24045@ziepe.ca>
- <20200731171924.GA2014207@kroah.com>
- <20200801053833.GK75549@unreal>
- <20200802221020.GN24045@ziepe.ca>
- <fb7ec4d4ed78e6ae7fa6c04abb24d1c00dc2b0f7.camel@perches.com>
- <20200802222843.GP24045@ziepe.ca>
- <60584f4c0303106b42463ddcfb108ec4a1f0b705.camel@perches.com>
- <20200803230627.GQ24045@ziepe.ca>
- <ff066616-3bb8-b6c8-d329-7de5ab8ee982@gmail.com>
+        id S1726209AbgHIIsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Aug 2020 04:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726012AbgHIIst (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Aug 2020 04:48:49 -0400
+Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58451C061A27
+        for <netdev@vger.kernel.org>; Sun,  9 Aug 2020 01:48:49 -0700 (PDT)
+Received: by mail-ua1-x944.google.com with SMTP id u15so1625891uau.10
+        for <netdev@vger.kernel.org>; Sun, 09 Aug 2020 01:48:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GKI56+bDaX14CCr0kM6K85vrY7pTEhw0ASbGvetXsUY=;
+        b=PvIFeFiDyWS1xZmw3w/29x+ATXIEqrfaERQ5aQWzR1x+gOyXFF4sJIJVlcjSljlZde
+         TPAKbtYU83qY38G65Xda9O3mLX3FJT4pL5VLgi1TiPcSAUOhwHcL2cv3Pv2LEKtHhj7c
+         3vLOBdUjtzzXf7tu/Q+vkDVU4uIcHTT35/2v+xB/FwJqqJPhMK30zAlYOvS/BlNH84Zr
+         Qm/dQeVmm6H+1U3qbm7x2KMcyETgSpgr9rxRurDfc4fLjHZ7K9okCeNAEylzNwRET+Dq
+         deaEeF6M/eX73zVSUg+7iTfbhM1tUkEnzVNsTY5Jclv0ye0YvFuRr3k1rLLWmKw2I433
+         sPNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GKI56+bDaX14CCr0kM6K85vrY7pTEhw0ASbGvetXsUY=;
+        b=jCsfoMfJkNLmNxBs9LF0ryHdbfocU710Y/5p8yny9elMrndVZLf+ABVfDGQxUB5TDk
+         6aydGXItBLl7g5F0T4GqcTjQg5DwXzquNeN0Zr2a2aS6OzuZDNYu7S2/AdL+eZKD9QrH
+         EtCvuOFI8tXs8l6GgbF5nlImPQwP4jmMqtTYwG4XZ0/FZZ614vlq2SNa+3pqUACjRUrk
+         sCq19PdFiWfXh+Kp6APoXVF6/CEIeBsLY7LIK1dFBvHlJEJmAZUkbzWU6PzMLhlk1INv
+         0QTY/sP9Yq5zD8mHeLdyc5PV1AHusOe80mlwoBYv+SGo7L5V3u4t1b+yVo326HaAjgHR
+         7n0w==
+X-Gm-Message-State: AOAM533YY03t+OxJ4ax1mckPU1oj8WT+//v+r3T21yezLiQ584XkwFo2
+        aKn39mvsyeUD20LH/yOONBFVjtcT97Y=
+X-Google-Smtp-Source: ABdhPJyIqKV+fIzGPeh/qC6yCZL37+E68isUkZfdKNl0ISk6zL74J9ESd8bZgUuzwLzRStZSVQzigw==
+X-Received: by 2002:a9f:2e0d:: with SMTP id t13mr15526243uaj.69.1596962926642;
+        Sun, 09 Aug 2020 01:48:46 -0700 (PDT)
+Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com. [209.85.217.42])
+        by smtp.gmail.com with ESMTPSA id y6sm3435056vke.35.2020.08.09.01.48.44
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 09 Aug 2020 01:48:45 -0700 (PDT)
+Received: by mail-vs1-f42.google.com with SMTP id a1so2821323vsp.4
+        for <netdev@vger.kernel.org>; Sun, 09 Aug 2020 01:48:44 -0700 (PDT)
+X-Received: by 2002:a67:fdc4:: with SMTP id l4mr16028144vsq.51.1596962924152;
+ Sun, 09 Aug 2020 01:48:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ff066616-3bb8-b6c8-d329-7de5ab8ee982@gmail.com>
+References: <20200808175251.582781-1-xie.he.0141@gmail.com>
+In-Reply-To: <20200808175251.582781-1-xie.he.0141@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sun, 9 Aug 2020 10:48:07 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSfxWhq0pxEGPtOMjFUB7-4Vax6XMGsLL++28LwSOU5b3g@mail.gmail.com>
+Message-ID: <CA+FuTSfxWhq0pxEGPtOMjFUB7-4Vax6XMGsLL++28LwSOU5b3g@mail.gmail.com>
+Subject: Re: [PATCH net] drivers/net/wan/lapbether: Added needed_tailroom
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Martin Schiller <ms@dev.tdt.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 08, 2020 at 03:57:33PM -0700, Jack Leadford wrote:
-> Hello!
+On Sat, Aug 8, 2020 at 7:53 PM Xie He <xie.he.0141@gmail.com> wrote:
 >
-> Thanks to Jason for getting this conversation back on track.
+> The underlying Ethernet device may request necessary tailroom to be
+> allocated by setting needed_tailroom. This driver should also set
+> needed_tailroom to request the tailroom needed by the underlying
+> Ethernet device to be allocated.
 >
-> Yes: in general, {} or a partial initializer /will/ zero padding bits.
+> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Cc: Martin Schiller <ms@dev.tdt.de>
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
+> ---
+>  drivers/net/wan/lapbether.c | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> However, there is a bug in some versions of GCC where {} will /not/ zero
-> padding bits; actually, Jason's test program in this mail
-> https://lore.kernel.org/lkml/20200731143604.GF24045@ziepe.ca/
-> has the right ingredients to trigger the bug, but the GCC
-> versions used are outside of the bug window. :)
->
-> For more details on these cases and more (including said GCC bug), see my
-> paper at:
->
-> https://www.nccgroup.com/us/about-us/newsroom-and-events/blog/2019/october/padding-the-struct-how-a-compiler-optimization-can-disclose-stack-memory/
->
-> Hopefully this paper can serve as a helpful reference when these cases are
-> encountered in the kernel.
+> diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
+> index 1ea15f2123ed..cc297ea9c6ec 100644
+> --- a/drivers/net/wan/lapbether.c
+> +++ b/drivers/net/wan/lapbether.c
+> @@ -340,6 +340,7 @@ static int lapbeth_new_device(struct net_device *dev)
+>          */
+>         ndev->needed_headroom = -1 + 3 + 2 + dev->hard_header_len
+>                                            + dev->needed_headroom;
+> +       ndev->needed_tailroom = dev->needed_tailroom;
 
-I read the paper and didn't find exact GCC version, only remark that it
-was before GCC 7.
+Does this solve an actual observed bug?
 
-So my question, why is this case different from any other GCC bugs?
-AFAIK, we don't add kernel code to overcome GCC bugs which exist in
-specific versions, which already were fixed.
-
-More on that, this paper talks about specific flow which doesn't exist
-in the discussed patch.
-
-Thanks
+In many ways lapbeth is similar to tunnel devices. This is not common.
