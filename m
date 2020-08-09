@@ -2,131 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 284EE240024
-	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 23:24:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ADFB240025
+	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 23:24:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726412AbgHIVYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Aug 2020 17:24:25 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57476 "EHLO mx2.suse.de"
+        id S1726448AbgHIVY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Aug 2020 17:24:28 -0400
+Received: from mx2.suse.de ([195.135.220.15]:57492 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726307AbgHIVYY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 9 Aug 2020 17:24:24 -0400
+        id S1726307AbgHIVY1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 9 Aug 2020 17:24:27 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id E1F0EABE9
-        for <netdev@vger.kernel.org>; Sun,  9 Aug 2020 21:24:42 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id EB0C6ABE9
+        for <netdev@vger.kernel.org>; Sun,  9 Aug 2020 21:24:45 +0000 (UTC)
 Received: by localhost (Postfix, from userid 1000)
-        id EE8C17F447; Sun,  9 Aug 2020 23:24:22 +0200 (CEST)
-Message-Id: <fb0a0177b4cb7d477ff964a64c9293f7267fdd5c.1597007533.git.mkubecek@suse.cz>
+        id F38557F447; Sun,  9 Aug 2020 23:24:25 +0200 (CEST)
+Message-Id: <0365573afe3649e47c1aa2490e1818a50613ee0a.1597007533.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1597007532.git.mkubecek@suse.cz>
 References: <cover.1597007532.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool 2/7] ioctl: check presence of eeprom length argument
- properly
+Subject: [PATCH ethtool 3/7] ioctl: get rid of signed/unsigned comparison
+ warnings
 To:     netdev@vger.kernel.org
-Date:   Sun,  9 Aug 2020 23:24:22 +0200 (CEST)
+Date:   Sun,  9 Aug 2020 23:24:25 +0200 (CEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In do_geeprom(), do_seprom() and do_getmodule(), check if user used
-"length" command line argument is done by setting the value to -1 before
-parsing and checking if it changed. This is quite ugly and also causes
-compiler warnings as the variable is u32.
-
-Use proper "seen" flag to let parser tell us if the argument was used.
+Comparison between signed and unsigned values is fragile and causes
+compiler warnings with recent compilers and stricter CFLAGS. Prevent such
+comparisons either by properly declaring variables (mostly loop iterators)
+as unsigned or by explicitly casting one side of the comparison.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- ethtool.c | 24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ ethtool.c | 45 ++++++++++++++++++++++++---------------------
+ 1 file changed, 24 insertions(+), 21 deletions(-)
 
 diff --git a/ethtool.c b/ethtool.c
-index c4ad186cd390..4fa7a2c1716f 100644
+index 4fa7a2c1716f..d9dcd0448c02 100644
 --- a/ethtool.c
 +++ b/ethtool.c
-@@ -3184,10 +3184,12 @@ static int do_geeprom(struct cmd_context *ctx)
- 	int geeprom_changed = 0;
- 	int geeprom_dump_raw = 0;
- 	u32 geeprom_offset = 0;
--	u32 geeprom_length = -1;
-+	u32 geeprom_length = 0;
-+	int geeprom_length_seen = 0;
- 	struct cmdline_info cmdline_geeprom[] = {
- 		{ "offset", CMDL_U32, &geeprom_offset, NULL },
--		{ "length", CMDL_U32, &geeprom_length, NULL },
-+		{ "length", CMDL_U32, &geeprom_length, NULL,
-+		  0, &geeprom_length_seen },
- 		{ "raw", CMDL_BOOL, &geeprom_dump_raw, NULL },
- 	};
- 	int err;
-@@ -3204,7 +3206,7 @@ static int do_geeprom(struct cmd_context *ctx)
- 		return 74;
- 	}
- 
--	if (geeprom_length == -1)
-+	if (!geeprom_length_seen)
- 		geeprom_length = drvinfo.eedump_len;
- 
- 	if (drvinfo.eedump_len < geeprom_offset + geeprom_length)
-@@ -3234,14 +3236,16 @@ static int do_seeprom(struct cmd_context *ctx)
+@@ -225,8 +225,8 @@ static void parse_generic_cmdline(struct cmd_context *ctx,
  {
- 	int seeprom_changed = 0;
- 	u32 seeprom_magic = 0;
--	u32 seeprom_length = -1;
-+	u32 seeprom_length = 0;
- 	u32 seeprom_offset = 0;
- 	u8 seeprom_value = 0;
-+	int seeprom_length_seen = 0;
- 	int seeprom_value_seen = 0;
- 	struct cmdline_info cmdline_seeprom[] = {
- 		{ "magic", CMDL_U32, &seeprom_magic, NULL },
- 		{ "offset", CMDL_U32, &seeprom_offset, NULL },
--		{ "length", CMDL_U32, &seeprom_length, NULL },
-+		{ "length", CMDL_U32, &seeprom_length, NULL,
-+		  0, &seeprom_length_seen },
- 		{ "value", CMDL_U8, &seeprom_value, NULL,
- 		  0, &seeprom_value_seen },
+ 	int argc = ctx->argc;
+ 	char **argp = ctx->argp;
+-	int i, idx;
+-	int found;
++	unsigned int idx;
++	int i, found;
+ 
+ 	for (i = 0; i < argc; i++) {
+ 		found = 0;
+@@ -641,8 +641,9 @@ static void dump_link_caps(const char *prefix, const char *an_prefix,
+ 		  "200000baseCR4/Full" },
  	};
-@@ -3262,7 +3266,7 @@ static int do_seeprom(struct cmd_context *ctx)
- 	if (seeprom_value_seen)
- 		seeprom_length = 1;
+ 	int indent;
+-	int did1, new_line_pend, i;
++	int did1, new_line_pend;
+ 	int fecreported = 0;
++	unsigned int i;
  
--	if (seeprom_length == -1)
-+	if (!seeprom_length_seen)
- 		seeprom_length = drvinfo.eedump_len;
+ 	/* Indent just like the separate functions used to */
+ 	indent = strlen(prefix) + 14;
+@@ -1071,7 +1072,7 @@ void dump_hex(FILE *file, const u8 *data, int len, int offset)
+ static int dump_regs(int gregs_dump_raw, int gregs_dump_hex,
+ 		     struct ethtool_drvinfo *info, struct ethtool_regs *regs)
+ {
+-	int i;
++	unsigned int i;
  
- 	if (drvinfo.eedump_len < seeprom_offset + seeprom_length) {
-@@ -4538,15 +4542,17 @@ static int do_getmodule(struct cmd_context *ctx)
- 	struct ethtool_modinfo modinfo;
- 	struct ethtool_eeprom *eeprom;
- 	u32 geeprom_offset = 0;
--	u32 geeprom_length = -1;
-+	u32 geeprom_length = 0;
- 	int geeprom_changed = 0;
- 	int geeprom_dump_raw = 0;
- 	int geeprom_dump_hex = 0;
-+	int geeprom_length_seen = 0;
- 	int err;
+ 	if (gregs_dump_raw) {
+ 		fwrite(regs->data, regs->len, 1, stdout);
+@@ -1128,7 +1129,8 @@ static int dump_eeprom(int geeprom_dump_raw,
+ static int dump_test(struct ethtool_test *test,
+ 		     struct ethtool_gstrings *strings)
+ {
+-	int i, rc;
++	unsigned int i;
++	int rc;
  
- 	struct cmdline_info cmdline_geeprom[] = {
- 		{ "offset", CMDL_U32, &geeprom_offset, NULL },
--		{ "length", CMDL_U32, &geeprom_length, NULL },
-+		{ "length", CMDL_U32, &geeprom_length, NULL,
-+		  0, &geeprom_length_seen },
- 		{ "raw", CMDL_BOOL, &geeprom_dump_raw, NULL },
- 		{ "hex", CMDL_BOOL, &geeprom_dump_hex, NULL },
- 	};
-@@ -4566,7 +4572,7 @@ static int do_getmodule(struct cmd_context *ctx)
- 		return 1;
- 	}
+ 	rc = test->flags & ETH_TEST_FL_FAILED;
+ 	fprintf(stdout, "The test result is %s\n", rc ? "FAIL" : "PASS");
+@@ -1359,7 +1361,7 @@ static void dump_one_feature(const char *indent, const char *name,
+ 	       : "");
+ }
  
--	if (geeprom_length == -1)
-+	if (!geeprom_length_seen)
- 		geeprom_length = modinfo.eeprom_len;
+-static int linux_version_code(void)
++static unsigned int linux_version_code(void)
+ {
+ 	struct utsname utsname;
+ 	unsigned version, patchlevel, sublevel = 0;
+@@ -1375,10 +1377,10 @@ static void dump_features(const struct feature_defs *defs,
+ 			  const struct feature_state *state,
+ 			  const struct feature_state *ref_state)
+ {
+-	int kernel_ver = linux_version_code();
+-	u32 value;
++	unsigned int kernel_ver = linux_version_code();
++	unsigned int i, j;
+ 	int indent;
+-	int i, j;
++	u32 value;
  
- 	if (modinfo.eeprom_len < geeprom_offset + geeprom_length)
+ 	for (i = 0; i < OFF_FLAG_DEF_SIZE; i++) {
+ 		/* Don't show features whose state is unknown on this
+@@ -1411,7 +1413,7 @@ static void dump_features(const struct feature_defs *defs,
+ 
+ 		/* Show matching features */
+ 		for (j = 0; j < defs->n_features; j++) {
+-			if (defs->def[j].off_flag_index != i)
++			if (defs->def[j].off_flag_index != (int)i)
+ 				continue;
+ 			if (defs->off_flag_matched[i] != 1)
+ 				/* Show all matching feature states */
+@@ -1668,8 +1670,8 @@ static struct feature_defs *get_feature_defs(struct cmd_context *ctx)
+ {
+ 	struct ethtool_gstrings *names;
+ 	struct feature_defs *defs;
++	unsigned int i, j;
+ 	u32 n_features;
+-	int i, j;
+ 
+ 	names = get_stringset(ctx, ETH_SS_FEATURES, 0, 1);
+ 	if (names) {
+@@ -2236,8 +2238,8 @@ static int do_sfeatures(struct cmd_context *ctx)
+ 	struct cmdline_info *cmdline_features;
+ 	struct feature_state *old_state, *new_state;
+ 	struct ethtool_value eval;
++	unsigned int i, j;
+ 	int err, rc;
+-	int i, j;
+ 
+ 	defs = get_feature_defs(ctx);
+ 	if (!defs) {
+@@ -2317,7 +2319,7 @@ static int do_sfeatures(struct cmd_context *ctx)
+ 				continue;
+ 
+ 			for (j = 0; j < defs->n_features; j++) {
+-				if (defs->def[j].off_flag_index != i ||
++				if (defs->def[j].off_flag_index != (int)i ||
+ 				    !FEATURE_BIT_IS_SET(
+ 					    old_state->features.features,
+ 					    j, available) ||
+@@ -2724,9 +2726,9 @@ static int do_sset(struct cmd_context *ctx)
+ 	u32 msglvl_wanted = 0;
+ 	u32 msglvl_mask = 0;
+ 	struct cmdline_info cmdline_msglvl[n_flags_msglvl];
+-	int argc = ctx->argc;
++	unsigned int argc = ctx->argc;
+ 	char **argp = ctx->argp;
+-	int i;
++	unsigned int i;
+ 	int err = 0;
+ 
+ 	for (i = 0; i < n_flags_msglvl; i++)
+@@ -3869,7 +3871,7 @@ static int do_srxfh(struct cmd_context *ctx)
+ 	char *hfunc_name = NULL;
+ 	char *hkey = NULL;
+ 	int err = 0;
+-	int i;
++	unsigned int i;
+ 	u32 arg_num = 0, indir_bytes = 0;
+ 	u32 req_hfunc = 0;
+ 	u32 entry_size = sizeof(rss_head.rss_config[0]);
+@@ -3880,7 +3882,7 @@ static int do_srxfh(struct cmd_context *ctx)
+ 	if (ctx->argc < 1)
+ 		exit_bad_args();
+ 
+-	while (arg_num < ctx->argc) {
++	while (arg_num < (unsigned int)ctx->argc) {
+ 		if (!strcmp(ctx->argp[arg_num], "equal")) {
+ 			++arg_num;
+ 			rxfhindir_equal = get_int_range(ctx->argp[arg_num],
+@@ -3894,7 +3896,7 @@ static int do_srxfh(struct cmd_context *ctx)
+ 		} else if (!strcmp(ctx->argp[arg_num], "weight")) {
+ 			++arg_num;
+ 			rxfhindir_weight = ctx->argp + arg_num;
+-			while (arg_num < ctx->argc &&
++			while (arg_num < (unsigned int)ctx->argc &&
+ 			       isdigit((unsigned char)ctx->argp[arg_num][0])) {
+ 				++arg_num;
+ 				++num_weights;
+@@ -4135,7 +4137,8 @@ static int do_flash(struct cmd_context *ctx)
+ 
+ static int do_permaddr(struct cmd_context *ctx)
+ {
+-	int i, err;
++	unsigned int i;
++	int err;
+ 	struct ethtool_perm_addr *epaddr;
+ 
+ 	epaddr = malloc(sizeof(struct ethtool_perm_addr) + MAX_ADDR_LEN);
+@@ -4750,7 +4753,7 @@ static int do_stunable(struct cmd_context *ctx)
+ 	struct cmdline_info cmdline_tunable[TUNABLES_INFO_SIZE];
+ 	struct ethtool_tunable_info *tinfo = tunables_info;
+ 	int changed = 0;
+-	int i;
++	unsigned int i;
+ 
+ 	for (i = 0; i < TUNABLES_INFO_SIZE; i++) {
+ 		cmdline_tunable[i].name = tunable_strings[tinfo[i].t_id];
+@@ -4833,8 +4836,8 @@ static int do_gtunable(struct cmd_context *ctx)
+ 	struct ethtool_tunable_info *tinfo = tunables_info;
+ 	char **argp = ctx->argp;
+ 	int argc = ctx->argc;
++	unsigned int j;
+ 	int i;
+-	int j;
+ 
+ 	if (argc < 1)
+ 		exit_bad_args();
 -- 
 2.28.0
 
