@@ -2,130 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDC1D23FEEB
-	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 17:04:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6379A23FF07
+	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 17:32:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726499AbgHIPE3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 9 Aug 2020 11:04:29 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:59782 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726479AbgHIPEK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Aug 2020 11:04:10 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-108-VOgdpMACM6qGM10Jov_YPw-1; Sun, 09 Aug 2020 11:04:05 -0400
-X-MC-Unique: VOgdpMACM6qGM10Jov_YPw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5A75B18FF68C;
-        Sun,  9 Aug 2020 15:04:03 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.192.79])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 277935F1EA;
-        Sun,  9 Aug 2020 15:03:59 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: [RFC PATCH v11 bpf-next 14/14] selftests/bpf: Add set test to resolve_btfids
-Date:   Sun,  9 Aug 2020 17:03:02 +0200
-Message-Id: <20200809150302.686149-15-jolsa@kernel.org>
-In-Reply-To: <20200809150302.686149-1-jolsa@kernel.org>
-References: <20200809150302.686149-1-jolsa@kernel.org>
+        id S1726210AbgHIPcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Aug 2020 11:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43238 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726175AbgHIPcq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Aug 2020 11:32:46 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E07C061756
+        for <netdev@vger.kernel.org>; Sun,  9 Aug 2020 08:32:44 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id kr4so3436912pjb.2
+        for <netdev@vger.kernel.org>; Sun, 09 Aug 2020 08:32:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rPxyoRq/TgJI7TmnhLluclJ2I+ZFZughTp/LX9Coaw4=;
+        b=iOpaCFmGyC92qRmorEb34NeTPlHMbjBYO+tqhodBUh/xg5tGr1y0Gwq1qRnVIcpDaB
+         KkCzJ+Sd3kqCa2NwxwVNxY/D2a8Yt6fU6Ov2rz6MgFQGzD+dKzrIaPVMpYXTZoPnsU2l
+         3U9GXq9p37TajqA2ZZ8Lf/oNTj3w/zajUpk625ISL6/60pDy2J4YNsHfWxQQxTLWSeUM
+         wfb4ukCc/HLOmvLcgb9qekBzMEzJEMUK0mZXLMMDnm2CAEt+ZlqylDEqQVD2eR1Pr0mh
+         WZDuDXRORfEPp3phUwrfjGuiR1343qPt4UGXpEHlx/f5fwGMxn3rY3TZk8yqmSA5h9L+
+         dA5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rPxyoRq/TgJI7TmnhLluclJ2I+ZFZughTp/LX9Coaw4=;
+        b=Nr4CtX+5cxKSb3WR2n7ykfzYP55rx7ZVG8p37jGPNd5ghiQsej1/SK2OUWLLXqbAJI
+         8AWYELZV4aMU0js5/9txKnd78bR8l3bp/Wv4p/xsw0w065zV8ZqmaNbAthGckcKalYYx
+         WB1JJjmWJqZyCtxCZdJY01MEuBaNW9KNWf61KbiaIotM5tVhE6BhWXWL5yzvrOKuTC+7
+         Kw6LefGMfbPnGvwjpvbARY/JKvdVKikZRiUwBBo2qgaEjh8M6mWhNAc2kM+k4pyKtRYn
+         J73+d11paBJlwwwFssuc85C44NpMHIGL3Pm/XrwLdDrnS6z/UA/iEEW3msxdHrhKZCy0
+         zvUQ==
+X-Gm-Message-State: AOAM533EBPRvI/PXCOcus1zsRRWDXlqdChGNjJwh8PmNyLx/ZFQ3XX0g
+        uE/TwQ1r5N8ngZf9lXmI1A3m11oSrFw=
+X-Google-Smtp-Source: ABdhPJwqk9PUEwC3ca7WjB9rPPo3HAr7ihKiqA9SI3OSR7Ww/ZgiK1N768wophtGobV7i5vY8Wylkw==
+X-Received: by 2002:a17:90a:414d:: with SMTP id m13mr22309053pjg.163.1596987162218;
+        Sun, 09 Aug 2020 08:32:42 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id q25sm15995539pfn.181.2020.08.09.08.32.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 09 Aug 2020 08:32:41 -0700 (PDT)
+Date:   Sun, 9 Aug 2020 08:32:33 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Markus Elfring <Markus.Elfring@web.de>
+Subject: Re: rtnl_trylock() versus SCHED_FIFO lockup
+Message-ID: <20200809083233.00822e44@hermes.lan>
+In-Reply-To: <20200809134924.12056-1-hdanton@sina.com>
+References: <b6eca125-351c-27c5-c34b-08c611ac2511@prevas.dk>
+        <20200805163425.6c13ef11@hermes.lan>
+        <191e0da8-178f-5f91-3d37-9b7cefb61352@prevas.dk>
+        <2a6edf25-b12b-c500-ad33-c0ec9e60cde9@cumulusnetworks.com>
+        <20200806203922.3d687bf2@hermes.lan>
+        <29a82363-411c-6f2b-9f55-97482504e453@prevas.dk>
+        <20200809134924.12056-1-hdanton@sina.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding test to for sets resolve_btfids. We're checking that
-testing set gets properly resolved and sorted.
+On Sun,  9 Aug 2020 21:49:24 +0800
+Hillf Danton <hdanton@sina.com> wrote:
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- .../selftests/bpf/prog_tests/resolve_btfids.c | 39 ++++++++++++++++++-
- 1 file changed, 38 insertions(+), 1 deletion(-)
+> +
+> +static void br_workfn(struct work_struct *w)
+> +{
+> +	struct br_work *brw = container_of(w, struct br_work, work);
+> +
+> +	rtnl_lock();
+> +	brw->err = brw->set(brw->br, brw->val);
+> +	if (!brw->err)
+> +		netdev_state_change(brw->br->dev);
+> +	rtnl_unlock();
+> +
+> +	brw->done = true;
+> +	wake_up(&brw->waitq);
+> +}
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-index 3b127cab4864..8826c652adad 100644
---- a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-+++ b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
-@@ -47,6 +47,15 @@ BTF_ID(struct,  S)
- BTF_ID(union,   U)
- BTF_ID(func,    func)
- 
-+BTF_SET_START(test_set)
-+BTF_ID(typedef, S)
-+BTF_ID(typedef, T)
-+BTF_ID(typedef, U)
-+BTF_ID(struct,  S)
-+BTF_ID(union,   U)
-+BTF_ID(func,    func)
-+BTF_SET_END(test_set)
-+
- static int
- __resolve_symbol(struct btf *btf, int type_id)
- {
-@@ -116,12 +125,40 @@ int test_resolve_btfids(void)
- 	 */
- 	for (j = 0; j < ARRAY_SIZE(test_lists); j++) {
- 		test_list = test_lists[j];
--		for (i = 0; i < ARRAY_SIZE(test_symbols) && !ret; i++) {
-+		for (i = 0; i < ARRAY_SIZE(test_symbols); i++) {
- 			ret = CHECK(test_list[i] != test_symbols[i].id,
- 				    "id_check",
- 				    "wrong ID for %s (%d != %d)\n",
- 				    test_symbols[i].name,
- 				    test_list[i], test_symbols[i].id);
-+			if (ret)
-+				return ret;
-+		}
-+	}
-+
-+	/* Check BTF_SET_START(test_set) IDs */
-+	for (i = 0; i < test_set.cnt; i++) {
-+		bool found = false;
-+
-+		for (j = 0; j < ARRAY_SIZE(test_symbols); j++) {
-+			if (test_symbols[j].id != test_set.ids[i])
-+				continue;
-+			found = true;
-+			break;
-+		}
-+
-+		ret = CHECK(!found, "id_check",
-+			    "ID %d not found in test_symbols\n",
-+			    test_set.ids[i]);
-+		if (ret)
-+			break;
-+
-+		if (i > 0) {
-+			ret = CHECK(test_set.ids[i - 1] > test_set.ids[i],
-+				    "sort_check",
-+				    "test_set is not sorted\n");
-+			if (ret)
-+				break;
- 		}
- 	}
- 
--- 
-2.25.4
-
+Sorry, this is unsafe.
+This has the potential of running when bridge itself has been
+deleted.
