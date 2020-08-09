@@ -2,97 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19FB623FF63
-	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 19:07:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA33E23FF64
+	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 19:11:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726403AbgHIRH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Aug 2020 13:07:27 -0400
-Received: from mx.sdf.org ([205.166.94.24]:50443 "EHLO mx.sdf.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726175AbgHIRH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 9 Aug 2020 13:07:27 -0400
-Received: from sdf.org (IDENT:lkml@faeroes.freeshell.org [205.166.94.9])
-        by mx.sdf.org (8.15.2/8.14.5) with ESMTPS id 079H6fGn001050
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits) verified NO);
-        Sun, 9 Aug 2020 17:06:41 GMT
-Received: (from lkml@localhost)
-        by sdf.org (8.15.2/8.12.8/Submit) id 079H6dBT001615;
-        Sun, 9 Aug 2020 17:06:39 GMT
-Date:   Sun, 9 Aug 2020 17:06:39 +0000
-From:   George Spelvin <lkml@SDF.ORG>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     netdev@vger.kernel.org, aksecurity@gmail.com,
-        torvalds@linux-foundation.org, edumazet@google.com,
-        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
-        tglx@linutronix.de, peterz@infradead.org, tytso@mit.edu,
-        lkml.mplumb@gmail.com, stephen@networkplumber.org, fw@strlen.de,
-        George Spelvin <lkml@SDF.ORG>
-Subject: Re: [DRAFT PATCH] random32: make prandom_u32() output unpredictable
-Message-ID: <20200809170639.GB25124@SDF.ORG>
-References: <20200808152628.GA27941@SDF.ORG>
- <20200809065744.GA17668@SDF.ORG>
- <20200809093805.GA7928@1wt.eu>
+        id S1726299AbgHIRLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Aug 2020 13:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58326 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726175AbgHIRLw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Aug 2020 13:11:52 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9669C061756;
+        Sun,  9 Aug 2020 10:11:51 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id d19so3598517pgl.10;
+        Sun, 09 Aug 2020 10:11:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mgOLBezWt79zIQjvAdBmYqr2eyqE9EwffvrtOtN04PU=;
+        b=oBLCXUjlfrw4Fre6KD2wOrQhSVwagOpit8lWuYFs+toIXiUArJWCy86Re6GKyRN6BY
+         97PeSSdm39pOiofcF7ufAjWYkjLXxjTARF5pAjRPRE3dyo5ZUwOu4W5zt7nBazPcHJj+
+         JVkVGvtc5r0Rn+qCg6pONe+gjA0XH/gKEoOWqmjjE4HoJ+V3HaZKe4shnUSEQpnDpAKz
+         U/v8rZ/Vz7nLgX3lsvyFhGQVgd6x/Hzw38qjqYj8kF4jhHsaPlZqT6rvPTAFu2yTOqH4
+         fZK5HD9vFCbrBw2nczI9YgZbbtHtzVfpwrs2NNGDRHsbEBKoQKyRAgs8zZbZk8fYa68O
+         TqiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mgOLBezWt79zIQjvAdBmYqr2eyqE9EwffvrtOtN04PU=;
+        b=BvPrXew93w8bftw9MkUxKayh1g/2wsJiSoVOpdyCX/rBSFjFNldRTvYuPPF9FBJLOC
+         ic3MRXI5bBLpLGlMCbUEBEH681rTmYwubMpXD/QbzS8/kVmQ3uEyTI7FYFnZEzWKY25O
+         FQNCaR8oL+2MkTBN6ocGJQgiDQ2qGT+T7a/t19vmajUk0ov8VAdhaC/yByLNS7bQJOX4
+         3GhbseMEG9qPF1FFoFVbskVFZ/Rh1hO95rBbWBhaDzs3pcQi3xjyHAr+W6Dz9y6LaHJi
+         5C38nBVCBl2ovLw9EUkxlPBLgJ8gvenNVQU71lLqI4B8Aph0wydo1+pFuCJk5ZFCHFnV
+         Jnqw==
+X-Gm-Message-State: AOAM5306fITPalTwuPVpwZF/wzEUHmN8bUBWAzQH9NogYHucnXfZFV/O
+        bKEbMb79QGT6/8ZMtxO9g0URyyxrl2TnMui971iapLVR
+X-Google-Smtp-Source: ABdhPJyCUol4h225ibfdgf3Jy311kXgBRVjVSzQWrRCBbfv77xoPEuKheCtOWWFlnucf5iy3PKPK7K7qcKWfP896FJk=
+X-Received: by 2002:a62:8303:: with SMTP id h3mr1814729pfe.169.1596993109816;
+ Sun, 09 Aug 2020 10:11:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200809093805.GA7928@1wt.eu>
+References: <20200808175251.582781-1-xie.he.0141@gmail.com> <CA+FuTSfxWhq0pxEGPtOMjFUB7-4Vax6XMGsLL++28LwSOU5b3g@mail.gmail.com>
+In-Reply-To: <CA+FuTSfxWhq0pxEGPtOMjFUB7-4Vax6XMGsLL++28LwSOU5b3g@mail.gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Sun, 9 Aug 2020 10:11:39 -0700
+Message-ID: <CAJht_EM9q9u34LMAeYsYe5voZ54s3Z7OzxtvSomcF9a9wRvuCQ@mail.gmail.com>
+Subject: Re: [PATCH net] drivers/net/wan/lapbether: Added needed_tailroom
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 09, 2020 at 11:38:05AM +0200, Willy Tarreau wrote:
-> So I gave it a quick test under Qemu and it didn't show any obvious
-> performance difference compared to Tausworthe, which is a good thing,
-> even though there's a significant amount of measurement noise in each
-> case.
+On Sun, Aug 9, 2020 at 1:48 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> Does this solve an actual observed bug?
+>
+> In many ways lapbeth is similar to tunnel devices. This is not common.
 
-Thank you very much!  I'm not quite sure how to benchmark this.
-The whole idea is that it's *not* used in a tight cache-hot loop.
-Hopefully someone already has a test setup so I don't have to invent
-one.
+Thank you for your comment!
 
-> However it keeps the problem that the whole sequence is entirely
-> determined at the moment of reseeding, so if one were to be able to
-> access the state, e.g. using l1tf/spectre/meltdown/whatever, then
-> this state could be used to predict the whole ongoing sequence for
-> the next minute. What some view as a security feature, others will
-> see as a backdoor :-/  That's why I really like the noise approach.
-> Even just the below would significantly harm that capability because
-> that state alone isn't sufficient anymore to pre-compute all future
-> values:
-> 
-> --- a/lib/random32.c
-> +++ b/lib/random32.c
-> @@ -375,6 +375,7 @@ static u32 siprand_u32(struct siprand_state *s)
->  {
->         unsigned long v0 = s->v[0], v1 = s->v[1], v2 = s->v[2], v3 = s->v[3];
->  
-> +       v0 += get_cycles();
->         SIPROUND(v0, v1, v2, v3);
->         SIPROUND(v0, v1, v2, v3);
->         s->v[0] = v0;  s->v[1] = v1;  s->v[2] = v2;  s->v[3] = v3;
+This doesn't solve a bug observed by me. But I think this should be
+necessary considering the logic of the code.
 
-As long as:
-1) The periodic catastrophic reseeding remains, and
-2) You use fresh measurements, not the exact same bits
-   that add_*_randomness feeds into /dev/random
-then it doesn't do any real harm, so if it makes you feel better...
-
-But I really want to stress how weak a design drip-reseeding is.
-
-If an attacker has enough local machine access to do a meltdown-style attack,
-then they can calibrate the TSC used in get_cycles very accurately, so the
-remaining timing uncertainty is very low.  This makes a brute-force attack on
-one or two reseedings quite easy.  I.e. if you can see every other output,
-It's straightforward to figure out the ones in between.
-
-I wonder if, on general principles, it would be better to use a more
-SipHash style mixing in of the sample:
-	m = get_cycles();
-	v3 ^= m;
-	SIPROUND(v0, v1, v2, v3);
-	SIPROUND(v0, v1, v2, v3);
-	v0 ^= m;
-
-Not sure if it's worth the extra register (and associated spill/fill).
+Using "grep", I found that there were indeed Ethernet drivers that set
+needed_tailroom. I found it was set in these files:
+    drivers/net/ethernet/sun/sunvnet.c
+    drivers/net/ethernet/sun/ldmvsw.c
+Setting needed_tailroom may be necessary for this driver to run those
+Ethernet devices.
