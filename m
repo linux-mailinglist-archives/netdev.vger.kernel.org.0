@@ -2,146 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9152923FF86
-	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 19:33:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66DF023FFA6
+	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 20:08:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726399AbgHIRd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Aug 2020 13:33:28 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:39606 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726175AbgHIRd0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 9 Aug 2020 13:33:26 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 079HX3YN008045;
-        Sun, 9 Aug 2020 19:33:03 +0200
-Date:   Sun, 9 Aug 2020 19:33:03 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     George Spelvin <lkml@sdf.org>
-Cc:     netdev@vger.kernel.org, aksecurity@gmail.com,
-        torvalds@linux-foundation.org, edumazet@google.com,
-        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
-        tglx@linutronix.de, peterz@infradead.org, tytso@mit.edu,
-        lkml.mplumb@gmail.com, stephen@networkplumber.org, fw@strlen.de
-Subject: Re: [DRAFT PATCH] random32: make prandom_u32() output unpredictable
-Message-ID: <20200809173302.GA8027@1wt.eu>
-References: <20200808152628.GA27941@SDF.ORG>
- <20200809065744.GA17668@SDF.ORG>
- <20200809093805.GA7928@1wt.eu>
- <20200809170639.GB25124@SDF.ORG>
+        id S1726393AbgHISIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Aug 2020 14:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726256AbgHISIa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Aug 2020 14:08:30 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E288BC061756;
+        Sun,  9 Aug 2020 11:08:29 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id t11so3644529plr.5;
+        Sun, 09 Aug 2020 11:08:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JnI5Zda2G6GYzjf6JkoUbCC57qTcJy2fyAg+UqYB/Gc=;
+        b=KrPOsivd52k3uRBpvnaL6ipW32/RWHfoKtJrXmeYT46EeIG0bGjYBSP0tl41cVDLLp
+         frmxxiHIYxmdccRYz8HqEOrGbU9T9GQB1vhCN3iDAoxsOaBWX+4XPf6FbQg2jjG8dKDa
+         sD6zfDsHO1hvkuGUwZ6TZs2AWSF5g2VeJ8FoZp6jARgRqS2T88joPDghqisWRktZ5Ds4
+         VNJFaTPYe8vKVsQDSskcG1sHTSDw0MGbZDmm09PI50r18uqXhXgY9xjmo2CMqdow/na2
+         XQ/WW/qEn+4tMxrzLDjzDFloHwmNtQaJ1EpKRsGNWxgZMw2H2T+YFkje8lEzw2Et2I1t
+         in/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JnI5Zda2G6GYzjf6JkoUbCC57qTcJy2fyAg+UqYB/Gc=;
+        b=HZ2VOeHfMsfR0TTrI/nBJUfMLolw+Pz12WYEeaI6uaN2zYu8ZquOIyWB7EpSZr1vnD
+         gVJDGgpv+ziYvda7FmeTagYceXSIP5uD8IGsm3RP2ocqCopEwR3FNmShcxy/k/6dK1me
+         Veq5qCh5HEmVm0/vPJdhhpGiIsVH0T+/F6uWdlODKxznEDKVyG5Nt6OllwgZU2m7g2dS
+         mptRXNP/I22E5AgR2eaGoNvFbVsXlBzoa0C3HrnvkkwyXKS41DXX7rm+/HoxrNtl+3AY
+         dlTVWzetMUpR6LK2aiKVWXII7chVl1NpcLP0pANeOKC5VS9v2byrgKAUDcp2K9p8VVfO
+         zm2g==
+X-Gm-Message-State: AOAM532eY6uy8UdDwG4ORG557WFV6w2vPQajJ0p5LZ2z9qgMl0bAhxqJ
+        vMnXVRtaL3hO6NzvZimVEChwDdYXpX1jjYrAMBE=
+X-Google-Smtp-Source: ABdhPJzED3XmzqhRh4kzg2qkgCOwR+LnbWeo4Pfv/BBRYx9zI08It7pN0avUmV1KLJnHPrnrDKLI9cEf13r+bbSoH/A=
+X-Received: by 2002:a17:90b:11c4:: with SMTP id gv4mr23059546pjb.198.1596996509272;
+ Sun, 09 Aug 2020 11:08:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200809170639.GB25124@SDF.ORG>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+References: <20200809023548.684217-1-xie.he.0141@gmail.com> <CA+FuTSe-FaQFn4WNvVPJ1v+jVZAghgd1AZc-cWn2+GjPR4GzVQ@mail.gmail.com>
+In-Reply-To: <CA+FuTSe-FaQFn4WNvVPJ1v+jVZAghgd1AZc-cWn2+GjPR4GzVQ@mail.gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Sun, 9 Aug 2020 11:08:18 -0700
+Message-ID: <CAJht_EOao3-kA-W-SdJqKRiFMAFUxw7OARFGY5DL8pXvKd4TLw@mail.gmail.com>
+Subject: Re: [PATCH net] drivers/net/wan/x25_asy: Added needed_headroom and a
+ skb->len check
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 09, 2020 at 05:06:39PM +0000, George Spelvin wrote:
-> On Sun, Aug 09, 2020 at 11:38:05AM +0200, Willy Tarreau wrote:
-> > So I gave it a quick test under Qemu and it didn't show any obvious
-> > performance difference compared to Tausworthe, which is a good thing,
-> > even though there's a significant amount of measurement noise in each
-> > case.
-> 
-> Thank you very much!  I'm not quite sure how to benchmark this.
-> The whole idea is that it's *not* used in a tight cache-hot loop.
-> Hopefully someone already has a test setup so I don't have to invent
-> one.
+On Sun, Aug 9, 2020 at 2:13 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> The patch is analogous to commit c7ca03c216ac
+> ("drivers/net/wan/lapbether: Added needed_headroom and a skb->len
+> check").
+>
+> Seems to make sense based on call stack
+>
+>   x25_asy_xmit               // skb_pull(skb, 1)
+>   lapb_data_request
+>   lapb_kick
+>   lapb_send_iframe        // skb_push(skb, 2)
+>   lapb_transmit_buffer    // skb_push(skb, 1)
+>   lapb_data_transmit
+>   x25_asy_data_transmit
+>   x25_asy_encaps
 
-Due to limited access to representative hardware, the to main tests
-I've been running were on my laptop in qemu, and consisted in :
+Thank you!
 
-   - a connect-accept-close test to stress the accept() code and
-     verify we don't observe a significant drop. The thing is that
-     connect() usually is much slower and running the two on the
-     same machine tends to significantly soften the differences
-     compared to what a real machine would see when handling a
-     DDoS for example.
+> But I frankly don't know this code and would not modify logic that no
+> one has complained about for many years without evidence of a real
+> bug.
 
-   - a packet rate test through this rule (which uses prandom_u32()
-     for each packet and which matches what can be done in packet
-     schedulers or just by users having to deal with random drop) :
+Maybe it's better to submit this patch to "net-next"? I want to do
+this change because:
 
-     iptables -I INPUT -m statistic --probability 0.5 -j ACCEPT
+1) I hope to set needed_headroom properly for all three X.25 drivers
+(lapbether, x25_asy, hdlc_x25) in the kernel. So that the upper layer
+(net/x25) can be changed to use needed_headroom to allocate skb,
+instead of the current way of using a constant to estimate the needed
+headroom.
 
-While these ones are not very relevant, especially in a VM, not
-seeing significant variations tends to indicate we should not see
-a catastrophic loss.
+2) The code quality of this driver is actually very low, and I also
+hope to improve it gradually. Actually this driver had been completely
+broken for many years and no one had noticed this until I fixed it in
+commit 8fdcabeac398 (drivers/net/wan/x25_asy: Fix to make it work)
+last month. This driver has a lot of other issues and I wish I can
+gradually fix them, too.
 
-> > However it keeps the problem that the whole sequence is entirely
-> > determined at the moment of reseeding, so if one were to be able to
-> > access the state, e.g. using l1tf/spectre/meltdown/whatever, then
-> > this state could be used to predict the whole ongoing sequence for
-> > the next minute. What some view as a security feature, others will
-> > see as a backdoor :-/  That's why I really like the noise approach.
-> > Even just the below would significantly harm that capability because
-> > that state alone isn't sufficient anymore to pre-compute all future
-> > values:
-> > 
-> > --- a/lib/random32.c
-> > +++ b/lib/random32.c
-> > @@ -375,6 +375,7 @@ static u32 siprand_u32(struct siprand_state *s)
-> >  {
-> >         unsigned long v0 = s->v[0], v1 = s->v[1], v2 = s->v[2], v3 = s->v[3];
-> >  
-> > +       v0 += get_cycles();
-> >         SIPROUND(v0, v1, v2, v3);
-> >         SIPROUND(v0, v1, v2, v3);
-> >         s->v[0] = v0;  s->v[1] = v1;  s->v[2] = v2;  s->v[3] = v3;
-> 
-> As long as:
-> 1) The periodic catastrophic reseeding remains, and
-> 2) You use fresh measurements, not the exact same bits
->    that add_*_randomness feeds into /dev/random
-> then it doesn't do any real harm, so if it makes you feel better...
-> 
-> But I really want to stress how weak a design drip-reseeding is.
-> 
-> If an attacker has enough local machine access to do a meltdown-style attack,
-> then they can calibrate the TSC used in get_cycles very accurately,
+> Were you able to actually exercise this path, similar to lapb_ether:
+> configure the device, send data from a packet socket? If so, can you
+> share the configuration steps?
 
-Absolutely.
+Yes, I can run this driver. The driver is a software driver that runs
+over TTY links. We can set up a x25_asy link over a virtual TTY link
+using this method:
 
-> so the
-> remaining timing uncertainty is very low.
+First:
+  sudo modprobe lapb
+  sudo modprobe x25_asy
 
-Not that low in fact because they don't know precisely when the call is
-made. I mean, let's say we're in the worst case, with two VMs running on
-two siblings of the same core, with the same TSC, on a 3 GHz machine. The
-attacker can stress the victim at 100k probes per second. That's still
-15 bits of uncertainty on the TSC value estimation which is added to each
-call. Even on the first call this is enough to make a source port
-unguessable, and preventing the attacker from staying synchronized with
-its victim. And I'm only speaking about an idle remote machine, not even
-one taking unobservable traffic, which further adds to the difficulty.
+Then set up a virtual TTY link:
+  socat -d -d pty,cfmakeraw pty,cfmakeraw &
+This will open a pair of PTY ports.
+(The "socat" program can be installed from package managers.)
 
-> This makes a brute-force attack on
-> one or two reseedings quite easy.  I.e. if you can see every other output,
-> It's straightforward to figure out the ones in between.
+Then use a C program to set the line discipline for the two PTY ports:
+Simplified version for reading:
+  int ldisc = N_X25;
+  int fd = open("path/to/pty", O_RDWR);
+  ioctl(fd, TIOCSETD, &ldisc);
+  close(fd);
+Complete version for running:
+  https://github.com/hyanggi/testing_linux/blob/master/network_x25/lapb/set_ldisc.c
+Then we'll get two network interfaces named x25asy0 and x25asy1.
 
-But they already become useless because you're only observing stuff of
-the past.
+Then we do:
+  sudo ip link set x25asyN up
+to bring them up.
 
-> I wonder if, on general principles, it would be better to use a more
-> SipHash style mixing in of the sample:
-> 	m = get_cycles();
-> 	v3 ^= m;
-> 	SIPROUND(v0, v1, v2, v3);
-> 	SIPROUND(v0, v1, v2, v3);
-> 	v0 ^= m;
+After we set up this x25_asy link, we can test it using AF_PACKET sockets:
 
-Probably, if it's the recommended way to mix in other values, yes.
+In the connected-side C program:
+Complete version for running:
+  https://github.com/hyanggi/testing_linux/blob/master/network_x25/lapb/receiver.c
+Simplified version for reading:
+  int sockfd = socket(AF_PACKET, SOCK_DGRAM, htons(ETH_P_ALL));
 
-> Not sure if it's worth the extra register (and associated spill/fill).
+  /* Get interface index */
+  struct ifreq ifr;
+  strcpy(ifr.ifr_name, "interface_name");
+  ioctl(sockfd, SIOCGIFINDEX, &ifr);
+  int ifindex = ifr.ifr_ifindex;
 
-If this makes the hash better, maybe. I can run some tests on this as
-well. I'd really need to try on a cleaner setup, I have remote machines
-at the office but I don't feel safe enough to remotely reboot them and
-risk to lose them :-/
+  struct sockaddr_ll sender_addr;
+  socklen_t sender_addr_len = sizeof sender_addr;
+  char buffer[1500];
 
-I'll also test on arm/arm64 to make sure we don't introduce a significant
-cost there.
+  while (1) {
+      ssize_t length = recvfrom(sockfd, buffer, sizeof buffer, 0,
+                                (struct sockaddr *)&sender_addr,
+                                &sender_addr_len);
+      if (sender_addr.sll_ifindex != ifindex)
+          continue;
+      else if (buffer[0] == 0)
+          printf("Data received.\n");
+      else if (buffer[0] == 1)
+          printf("Connected by the other side.\n");
+      else if (buffer[0] == 2) {
+          printf("Disconnected by the other side.\n");
+          break;
+      }
+  }
 
-Willy
+  close(sockfd);
+
+In the connecting-side C program:
+Complete version for running:
+  https://github.com/hyanggi/testing_linux/blob/master/network_x25/lapb/sender.c
+Simplified version for reading:
+  int sockfd = socket(AF_PACKET, SOCK_DGRAM, htons(ETH_P_ALL));
+
+  /* Get interface index */
+  struct ifreq ifr;
+  strcpy(ifr.ifr_name, "interface_name");
+  ioctl(sockfd, SIOCGIFINDEX, &ifr);
+  int ifindex = ifr.ifr_ifindex;
+
+  struct sockaddr_ll addr = {
+      .sll_family = AF_PACKET,
+      .sll_ifindex = ifindex,
+  };
+
+  /* Connect */
+  sendto(sockfd, "\x01", 1, 0, (struct sockaddr *)&addr, sizeof addr);
+
+  /* Send data */
+  sendto(sockfd, "\x00" "data", 5, 0, (struct sockaddr *)&addr,
+         sizeof addr);
+
+  sleep(1); /* Wait a while before disconnecting */
+
+  /* Disconnect */
+  sendto(sockfd, "\x02", 1, 0, (struct sockaddr *)&addr, sizeof addr);
+
+  close(sockfd);
+
+I'm happy to answer any questions. Thank you so much!
