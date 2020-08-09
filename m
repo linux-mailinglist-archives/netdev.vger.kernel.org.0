@@ -2,118 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 416B023FA8C
-	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 01:43:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 257B623FBF0
+	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 02:31:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728597AbgHHXjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Aug 2020 19:39:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54450 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728579AbgHHXjf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Aug 2020 19:39:35 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C15B52073E;
-        Sat,  8 Aug 2020 23:39:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596929974;
-        bh=cjtdBc3RixVqwCdUJQihsAUyE8l5VSflaCE6otsLWuA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RTMKQpRFU5o2oVXu2H0JhjO2+iopwE+VJWgOGVKAaTKxAJ56JvcdM9lBVmSwIJdFr
-         IWUCnN/HIIVjxV94WHjzL45k4lkgJ+7Yqf9o/XeuHFluDJjVS/M1zWExg3Pnph4DF8
-         QrpwSAstKW7PrlQzoUkd0GR8hjz/GG+Ie/33BP6k=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>, Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 35/40] seccomp: Fix ioctl number for SECCOMP_IOCTL_NOTIF_ID_VALID
-Date:   Sat,  8 Aug 2020 19:38:39 -0400
-Message-Id: <20200808233844.3618823-35-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200808233844.3618823-1-sashal@kernel.org>
-References: <20200808233844.3618823-1-sashal@kernel.org>
+        id S1726207AbgHIA3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Aug 2020 20:29:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725950AbgHIA3u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Aug 2020 20:29:50 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B8EC061756
+        for <netdev@vger.kernel.org>; Sat,  8 Aug 2020 17:29:50 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id 74so3159726pfx.13
+        for <netdev@vger.kernel.org>; Sat, 08 Aug 2020 17:29:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=43crPNxARtv+xw4IVd9zFfM18QY3CsM/wAh7DxWw0s8=;
+        b=JhQKFj0WJl2JIkwXPiuWECOMl0e2/aGoW7tKRev2bi9Odm21BYr5bnM63pw3Oh0P/R
+         fQ9tT1ea6Euhh67avcWNYLivdzkWwf4YCI1HFvShINacct7zNwB8UPRlvr5lhQvSvS1G
+         x7LbXOVqQkqX128VGrLBH+lbYcp2Y1Yq/oSusZRQerPnPmDn3xZiD2Cgx4MxQ7FOX2p4
+         CVOV/BdZedU0rE+90Ftk0ImspChcbqal3wiSyJZ+yCtyssQsvEqKSrGIa1QKG7iPbF8I
+         Kuz3LfzM7ccXUWHevP5efo02sY7vt8L3lEBtEW6qJOpTEqZh87gnOHY+EmAwGoX8616o
+         0Q6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=43crPNxARtv+xw4IVd9zFfM18QY3CsM/wAh7DxWw0s8=;
+        b=Eac1X3k1ge5/EB5/8eOQqBXdSHMNH9ZxICICaYKXlgxF6efWcgWcewH5LXc+Nn1Ems
+         1lSxVuDwtUyEAD/4o7Qg9yW0/KNCYaXq0f3MFBEQ/aP+6rwWbUH1whDm7PYxVnN6MuGQ
+         CUjsObeEzURGk7yB2sxP0JeUyxb2icGmwlKwETn6j/f6WXUu8W+XNuncHrOjH0fCzGp6
+         ASSlkIfQuqceP3iO9pqWuCdNNVsyCKqQHm32zpP85d8wqnqQDJE7w3a7hz0yRU+9H6/6
+         lUhBtxGT+0axYdAKhNl3Flul9kBnKzccVXFMpkZP/j3bB9ZFtU0SjtNQ1g5WBVf4+eu+
+         ZCVw==
+X-Gm-Message-State: AOAM531cTvCGcgwynJnf3sPcAvpg/xenQMoHkaa8j1z9yJ1SkyMlySN/
+        squXt9TWFqxji8Imbqb2x0tDtktP
+X-Google-Smtp-Source: ABdhPJwoMcwsyJzEp9MHSfP2kFuwn1p2mCowPN4sOPzV2CCihg3LzbOX76Anr/CeGYWxyvsfLtr1/w==
+X-Received: by 2002:aa7:960f:: with SMTP id q15mr20789597pfg.79.1596932989691;
+        Sat, 08 Aug 2020 17:29:49 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id y12sm9498013pgi.75.2020.08.08.17.29.48
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 08 Aug 2020 17:29:49 -0700 (PDT)
+Date:   Sat, 8 Aug 2020 17:29:47 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     linux-net-drivers@solarflare.com, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 03/11] sfc_ef100: read Design Parameters at
+ probe time
+Message-ID: <20200809002947.GA92634@roeck-us.net>
+References: <12f836c8-bdd8-a930-a79e-da4227e808d4@solarflare.com>
+ <827807a1-c4d6-d7de-7e9c-939d927d66cc@solarflare.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <827807a1-c4d6-d7de-7e9c-939d927d66cc@solarflare.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+On Mon, Aug 03, 2020 at 09:33:20PM +0100, Edward Cree wrote:
+> Several parts of the EF100 architecture are parameterised (to allow
+>  varying capabilities on FPGAs according to resource constraints), and
+>  these parameters are exposed to the driver through a TLV-encoded
+>  region of the BAR.
+> For the most part we either don't care about these values at all or
+>  just need to sanity-check them against the driver's assumptions, but
+>  there are a number of TSO limits which we record so that we will be
+>  able to check against them in the TX path when handling GSO skbs.
+> 
+> Signed-off-by: Edward Cree <ecree@solarflare.com>
+> ---
+>  drivers/net/ethernet/sfc/ef100_nic.c | 216 +++++++++++++++++++++++++++
+>  drivers/net/ethernet/sfc/ef100_nic.h |   4 +
+>  2 files changed, 220 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+> index c2bec2bdbc1f..9b5e4b42fe51 100644
+> --- a/drivers/net/ethernet/sfc/ef100_nic.c
+> +++ b/drivers/net/ethernet/sfc/ef100_nic.c
 
-[ Upstream commit 47e33c05f9f07cac3de833e531bcac9ae052c7ca ]
+[ ... ]
 
-When SECCOMP_IOCTL_NOTIF_ID_VALID was first introduced it had the wrong
-direction flag set. While this isn't a big deal as nothing currently
-enforces these bits in the kernel, it should be defined correctly. Fix
-the define and provide support for the old command until it is no longer
-needed for backward compatibility.
+> +		if (EFX_MIN_DMAQ_SIZE % reader->value) {
 
-Fixes: 6a21cc50f0c7 ("seccomp: add a return code to trap to userspace")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/uapi/linux/seccomp.h                  | 3 ++-
- kernel/seccomp.c                              | 9 +++++++++
- tools/testing/selftests/seccomp/seccomp_bpf.c | 2 +-
- 3 files changed, 12 insertions(+), 2 deletions(-)
+This is a 64-bit operation (value is 64 bit). Result on 32-bit builds:
 
-diff --git a/include/uapi/linux/seccomp.h b/include/uapi/linux/seccomp.h
-index 90734aa5aa363..b5f901af79f0b 100644
---- a/include/uapi/linux/seccomp.h
-+++ b/include/uapi/linux/seccomp.h
-@@ -93,5 +93,6 @@ struct seccomp_notif_resp {
- #define SECCOMP_IOCTL_NOTIF_RECV	SECCOMP_IOWR(0, struct seccomp_notif)
- #define SECCOMP_IOCTL_NOTIF_SEND	SECCOMP_IOWR(1,	\
- 						struct seccomp_notif_resp)
--#define SECCOMP_IOCTL_NOTIF_ID_VALID	SECCOMP_IOR(2, __u64)
-+#define SECCOMP_IOCTL_NOTIF_ID_VALID	SECCOMP_IOW(2, __u64)
-+
- #endif /* _UAPI_LINUX_SECCOMP_H */
-diff --git a/kernel/seccomp.c b/kernel/seccomp.c
-index 2c697ce7be21f..e0fd972356539 100644
---- a/kernel/seccomp.c
-+++ b/kernel/seccomp.c
-@@ -42,6 +42,14 @@
- #include <linux/uaccess.h>
- #include <linux/anon_inodes.h>
- 
-+/*
-+ * When SECCOMP_IOCTL_NOTIF_ID_VALID was first introduced, it had the
-+ * wrong direction flag in the ioctl number. This is the broken one,
-+ * which the kernel needs to keep supporting until all userspaces stop
-+ * using the wrong command number.
-+ */
-+#define SECCOMP_IOCTL_NOTIF_ID_VALID_WRONG_DIR	SECCOMP_IOR(2, __u64)
-+
- enum notify_state {
- 	SECCOMP_NOTIFY_INIT,
- 	SECCOMP_NOTIFY_SENT,
-@@ -1168,6 +1176,7 @@ static long seccomp_notify_ioctl(struct file *file, unsigned int cmd,
- 		return seccomp_notify_recv(filter, buf);
- 	case SECCOMP_IOCTL_NOTIF_SEND:
- 		return seccomp_notify_send(filter, buf);
-+	case SECCOMP_IOCTL_NOTIF_ID_VALID_WRONG_DIR:
- 	case SECCOMP_IOCTL_NOTIF_ID_VALID:
- 		return seccomp_notify_id_valid(filter, buf);
- 	default:
-diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
-index 96bbda4f10fc6..19c7351eeb74b 100644
---- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-+++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-@@ -177,7 +177,7 @@ struct seccomp_metadata {
- #define SECCOMP_IOCTL_NOTIF_RECV	SECCOMP_IOWR(0, struct seccomp_notif)
- #define SECCOMP_IOCTL_NOTIF_SEND	SECCOMP_IOWR(1,	\
- 						struct seccomp_notif_resp)
--#define SECCOMP_IOCTL_NOTIF_ID_VALID	SECCOMP_IOR(2, __u64)
-+#define SECCOMP_IOCTL_NOTIF_ID_VALID	SECCOMP_IOW(2, __u64)
- 
- struct seccomp_notif {
- 	__u64 id;
--- 
-2.25.1
+ERROR: modpost: "__umoddi3" [drivers/net/ethernet/sfc/sfc.ko] undefined!
 
+Guenter
