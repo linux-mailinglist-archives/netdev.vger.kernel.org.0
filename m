@@ -2,127 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A249B240038
-	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 23:48:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A8AA240070
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 01:47:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgHIVso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Aug 2020 17:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726307AbgHIVsn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Aug 2020 17:48:43 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33FD5C061756
-        for <netdev@vger.kernel.org>; Sun,  9 Aug 2020 14:48:43 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id w14so7530787ljj.4
-        for <netdev@vger.kernel.org>; Sun, 09 Aug 2020 14:48:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xetCWL4C18TqaePuXkSffzZVk3mkOP/4yiWNQDyJksU=;
-        b=IkgyM8ctRhv/sDqGd9sJVc1GcDREg6qVJ+sICx5T3ipq7hDRa4SHPwMKPqfD2uUjWA
-         bC8NkSng73MrUOCUuozufeFG72PV3aqfzDWah+1xLUH14msPyJCkUIP0AjJB8JGu+WC3
-         K/Y4U9BtIr8O7ViDXGfpYeayC/0c2ASh7f9nU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xetCWL4C18TqaePuXkSffzZVk3mkOP/4yiWNQDyJksU=;
-        b=MUDCB3E/aevu+couyjDfA5+rXlF4VZvhY8RqCWa5vw3TLfheXH2cg1OiIw8EQJ1TmK
-         MHLt1gtBIzESmLV3eOGR5iQmlbP9ZvZON9nrIQqmLa6KC6Si52j3myt6Wt/+PmFLMEKB
-         RgWPZB0DBZmhVREIqmhVgdk3R5GzYUankFCslxoCHuewSiNNo9FVDAXlmNdvdPnxvdb9
-         bxON123srQiQ54BoeELPYu2V3ydK9HJz0hCZJetL3lokbE4sSzUfoLQze4FAPSlUee6B
-         d9GWeZZrvbt5u7HCUeD/dqxc6J/ENlCZIhNyHHIE/PHG9ZALEOepTl8GRdGz0L8NQSar
-         aJmQ==
-X-Gm-Message-State: AOAM533/J5FqHezGfDZ/pc6Hfd8yvtSJcZ+NP/kBKpy91Fuadz072Ae8
-        KNGhyCmWUi64EkL/3Y2BSNWsf9vpcak=
-X-Google-Smtp-Source: ABdhPJy6PS2eKpZLoc4ArTy7oE2svSW/NOUi8Y0zYx6vZjJuz086fP8m7PyCbwzil6jTqB6htfsmeA==
-X-Received: by 2002:a2e:b708:: with SMTP id j8mr11253323ljo.375.1597009720777;
-        Sun, 09 Aug 2020 14:48:40 -0700 (PDT)
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com. [209.85.208.179])
-        by smtp.gmail.com with ESMTPSA id j6sm8304643lja.23.2020.08.09.14.48.39
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 09 Aug 2020 14:48:39 -0700 (PDT)
-Received: by mail-lj1-f179.google.com with SMTP id g6so7495684ljn.11
-        for <netdev@vger.kernel.org>; Sun, 09 Aug 2020 14:48:39 -0700 (PDT)
-X-Received: by 2002:a2e:2e04:: with SMTP id u4mr10322251lju.102.1597009718796;
- Sun, 09 Aug 2020 14:48:38 -0700 (PDT)
+        id S1726370AbgHIXrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Aug 2020 19:47:04 -0400
+Received: from ns1.vyex.com ([107.150.29.99]:44116 "EHLO ns1.vyex.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726217AbgHIXrD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 9 Aug 2020 19:47:03 -0400
+X-Greylist: delayed 2789 seconds by postgrey-1.27 at vger.kernel.org; Sun, 09 Aug 2020 19:47:03 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=vyex.com;
+         s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:To:Subject:From:Sender:Reply-To:Cc:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=653emjlao6FFneIN+slUveRhlJoYJhZ29TBkBLd+AeU=; b=VhRjY12t194oVoWyZ8rS/RLdLZ
+        6RNpxhwLQAZEhf4dUBiBtmOj4++xdPY/9MU/xJrsLNO76U3ZNBd92zy6k+FrtEGUX4lRU0V4M63VB
+        yTPCL5AJhd01TixwPd7DIpGDgvDg21hOzOkYbq6xY7cZxMCrSJJqw2dwrX/FoINx0SHThuZf9P6+U
+        rD8PW5JI2fx6DZHXXPXXcRGhYuVx5vBXxG5zftKYgyGGNyUeu6vrhlI9M8FQ1o7hzFYDVnc2/CPx9
+        lwrZO8ZhfGFUB8VjHrvkPy1tFbgX12bJitgQppQxW6v86oqmWynF+pyoT6/B8HiZ0F2WKsgHrGAOq
+        t+VzoeVg==;
+Received: from [98.144.109.174] (port=36678 helo=[172.25.22.30])
+        by echo.vyex.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <dkarr@vyex.com>)
+        id 1k4uIr-0002XB-WA
+        for netdev@vger.kernel.org; Sun, 09 Aug 2020 18:00:34 -0500
+From:   Dave Karr <dkarr@vyex.com>
+Subject: [RFT PATCH] net: fec: Fix MDIO polled IO
+To:     netdev@vger.kernel.org
+Message-ID: <813a0ccb-a309-137d-a340-b9b03b9e230c@vyex.com>
+Date:   Sun, 9 Aug 2020 18:00:33 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <20200808152628.GA27941@SDF.ORG> <20200809065744.GA17668@SDF.ORG>
- <20200809093805.GA7928@1wt.eu> <fdbc7d7d-cba2-ef94-9bde-b3ccae0cfaac@gmail.com>
- <f7070a63-a028-a754-6aeb-2f9328d2e00e@gmail.com>
-In-Reply-To: <f7070a63-a028-a754-6aeb-2f9328d2e00e@gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 9 Aug 2020 14:48:23 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgHd4jNRVuaMQN77Q7f0rddibbBdexznOFhKcjmrr-ZjA@mail.gmail.com>
-Message-ID: <CAHk-=wgHd4jNRVuaMQN77Q7f0rddibbBdexznOFhKcjmrr-ZjA@mail.gmail.com>
-Subject: Re: [DRAFT PATCH] random32: make prandom_u32() output unpredictable
-To:     Marc Plumb <lkml.mplumb@gmail.com>
-Cc:     Willy Tarreau <w@1wt.eu>, George Spelvin <lkml@sdf.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andrew Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Florian Westphal <fw@strlen.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - echo.vyex.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - vyex.com
+X-Get-Message-Sender-Via: echo.vyex.com: authenticated_id: dkarr@vyex.com
+X-Authenticated-Sender: echo.vyex.com: dkarr@vyex.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 9, 2020 at 2:10 PM Marc Plumb <lkml.mplumb@gmail.com> wrote:
->
-> However, I think I'm starting to see your underlying assumptions.
-> You're thinking that raw noise data are the only truly unpredictable
-> thing so you think that adding it is a defense against attacks like
-> foreshadow/spectre/meltdown. You aren't entirely wrong -- if there was
-> a fast noise source then it might be a good option. Just if the noise
-> source is slow, you're just causing far more damage to a far more
-> critical crypto function to get very little benefit.
+Fixes problematic commit f166f890c8f026a931e1bb80f51561a1d2f41b27
 
-The only truly good noise source we have is any CPU native randomness.
+Commit broke Ethernet functionality on i.MX53 with 1 GHz clock due to a
+race condition which may not be observed in the unknown CPU(s) implied
+by comments to depart from FEC behavior documented by Motorola,
+Freescale and NXP.
 
-Sadly, that is usually never really "fast". But we do use that for any
-actual real /dev/random reading. We still whiten it through our
-hashing, and we mix it in rather than use the raw CPU hw-provided
-values (because not everybody trusts the CPU vendors either), but
-/dev/random will most certainly take advantage of it as one source of
-noise.
+During driver initialization the stated intent was to suppress the
+potential generation of a MII interrupt resulting from a write to
+MSCR, but for devices which behave as documented, an interrupt is
+caused by any write to MMFR regardless of value. Testing confirms
+the i.MX53 behaves as documented.
 
-(Honesty in advertising: you can also use other interfaces that don't
-bother with the remixing, and _will_ just return the raw CPU
-randomness).
+The subsequent attempt to clear any pending MII interrupt generated by
+either the MMFR or MSCR write is a race condition dependent upon
+CPU vs. MDC clock speed which permits the interrupt to occur after the
+write to EIR.
 
-So if you make the (imho reasonable) assumption that you're running on
-a modern enough CPU, and that the CPU hw randomness is of reasonable
-quality, then you never need to worry about /dev/random. Every single
-time you extract something from one of the pools, I think we mix in
-that CPU randomness if it's available.
+Prior to the polled IO patch, regardless of what caused an MII
+interrupt, the fec_enet_mdio_read/write functions relied upon the
+interrupt service routine to clear the EIR MII bit and thus the
+critical region between ISR exit and fec_enet_mdio_read/write entry
+was small by comparison.
 
-But the CPU randomness is too slow for the prandom code to use at
-extraction time. It's on the order of a couple of hundred to a couple
-of thousand cycles. That's peanuts for /dev/random, but quite a lot
-for prandom.
+Together, this resulted in the subsequent read of PHYID during PHY
+probing to return before the mdio bus transaction was complete
+causing invalid data to be read from MMFR which in turn resulted in
+improper identification of PHY devices on the bus.
 
-In fact, at the slow end it is slow enough that you don't want to do
-it at any fast granularity (ie not "every interrupt"), it's the "when
-reseeding once a second" kind of slow.
+Fix by eliminating dependency on other functions to clear the EIR MII
+bit and shrink the critical region by clearing the bit immediately
+prior to MMFR write within fec_enet_mdio_read/write functions.
 
-arm64 has randomness too these days too, but that's only of the
-"really slow, useful for seeding" variety. And I'm not sure which (if
-any) CPU implementations out there actually do it yet.
+Remove use of undocumented behavior and replace unconditional reset of
+MII EIR bit with fec_enet_mdio_wait such that NXP can identify whether
+regressions noted in 21615efa6a69891fa287bade979d56dd68b09878 and/or
+0a699302be5986307b3dcf84ac7a0dd30f9e9305 are due to an intentional write
+to MMFR with MSCR equal to zero prior to driver initialization, or the
+result of unpublished or unrealized FEC errata.
 
-Anyway, I suspect /dev/random has been over-engineered (I think we
-have something like three layers of mixing bits _and_ the CPU
-randomness _and_ all the interrupt randomness), and prandom may have
-been left alone too much.
+Reuse FEC_MII_TIMEOUT #define in fec_enet_mdio_wait().
 
-             Linus
+Signed-off-by: Dave Karr <dkarr@vyex.com>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 9934421814b4..a56169a3b0a9 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1792,7 +1792,7 @@ static int fec_enet_mdio_wait(struct fec_enet_private *fep)
+ 	int ret;
+ 
+ 	ret = readl_poll_timeout_atomic(fep->hwp + FEC_IEVENT, ievent,
+-					ievent & FEC_ENET_MII, 2, 30000);
++					ievent & FEC_ENET_MII, 2, FEC_MII_TIMEOUT);
+ 
+ 	if (!ret)
+ 		writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
+@@ -1816,6 +1816,7 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+ 
+ 		/* write address */
+ 		frame_addr = (regnum >> 16);
++		writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
+ 		writel(frame_start | FEC_MMFR_OP_ADDR_WRITE |
+ 		       FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
+ 		       FEC_MMFR_TA | (regnum & 0xFFFF),
+@@ -1838,6 +1839,7 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+ 	}
+ 
+ 	/* start a read op */
++	writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
+ 	writel(frame_start | frame_op |
+ 		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
+ 		FEC_MMFR_TA, fep->hwp + FEC_MII_DATA);
+@@ -1877,6 +1879,7 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+ 
+ 		/* write address */
+ 		frame_addr = (regnum >> 16);
++		writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
+ 		writel(frame_start | FEC_MMFR_OP_ADDR_WRITE |
+ 		       FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
+ 		       FEC_MMFR_TA | (regnum & 0xFFFF),
+@@ -1895,6 +1898,7 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+ 	}
+ 
+ 	/* start a write op */
++	writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
+ 	writel(frame_start | FEC_MMFR_OP_WRITE |
+ 		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
+ 		FEC_MMFR_TA | FEC_MMFR_DATA(value),
+@@ -2114,20 +2118,14 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+ 	if (suppress_preamble)
+ 		fep->phy_speed |= BIT(7);
+ 
+-	/* Clear MMFR to avoid to generate MII event by writing MSCR.
+-	 * MII event generation condition:
+-	 * - writing MSCR:
+-	 *	- mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
+-	 *	  mscr_reg_data_in[7:0] != 0
+-	 * - writing MMFR:
+-	 *	- mscr[7:0]_not_zero
+-	 */
+-	writel(0, fep->hwp + FEC_MII_DATA);
++	/* start with mii interrupt flag clear */
++	writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
+ 
+ 	writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
+ 
+ 	/* Clear any pending transaction complete indication */
+-	writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
++	if (!(fec_enet_mdio_wait(fep)))
++		netdev_dbg(fep->netdev, "MSCR write during init caused mii interrupt\n");
+ 
+ 	fep->mii_bus = mdiobus_alloc();
+ 	if (fep->mii_bus == NULL) {
+-- 
+2.26.2
+
