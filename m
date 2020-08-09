@@ -2,127 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C41AF23FEB8
-	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 16:18:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAE1E23FECC
+	for <lists+netdev@lfdr.de>; Sun,  9 Aug 2020 16:47:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726207AbgHIOSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Aug 2020 10:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60066 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726070AbgHIOSY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Aug 2020 10:18:24 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1106C061756
-        for <netdev@vger.kernel.org>; Sun,  9 Aug 2020 07:18:23 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id k20so5984753wmi.5
-        for <netdev@vger.kernel.org>; Sun, 09 Aug 2020 07:18:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+jxuVdJADwlzmEG3BZhwMflsT916JYhc90rVwcscydM=;
-        b=YZo5dkyCASj7MrbEEFR6gdYMHDpOHJpSNTKKo16slbQ7s8IV7ISoPyCXBdrEjuIcyW
-         yCimg/oY136/hlNUBNpLYFBvioSGEPf24AP6I+6fm95CW0NKvGs93E1UVTiTp3lerqbS
-         Ms4BELld8F3MkCm68GEt7EbVxKiOsJxmSO5W4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+jxuVdJADwlzmEG3BZhwMflsT916JYhc90rVwcscydM=;
-        b=kRjN7go5wyRgfr34cb59syMYQ8evbe0bsXdJOtasL9ZgABItOlYdZh7d+LHTeXpLNu
-         9he/jnsUXHsr9Bph/0uE2tZlaZIJr2qyhXJno/OBlS/KNmrW7oP0wNvNyTaCHEn1o01y
-         +nnxC6+Ke/vMTFE56m5WssJ4KDi7TW6avMbln+lIbVykIKEZ2zH4kn9xrfOYnHaC7dk0
-         h0Qv/guKOJmaPMGqZGU/5zsBq2fm3pqzkPBFwkWIQp0YWPLD5l9hyuTJeN/z4VD1CqLh
-         fGfzwMox4kWbqzNKew8hSPRuRFd3bGwalv1cEs4muJxYSQ44irGqDBMV6lY+S6sxLmlc
-         a5WA==
-X-Gm-Message-State: AOAM533EDLZ9y/w1g9AIdkQCx3ZgejUzb6gOhsGLFzfLCF9LiSAMqJBn
-        hZkj0eGzJvSPXAz3m7DXGhhmDA==
-X-Google-Smtp-Source: ABdhPJxyj2kyyXgZODY/XZ4g7Bp3IXMvQiwgPOEBDDbAhz8Kn0hgCHAuBXlj61OzgUk3jSiIArMxQA==
-X-Received: by 2002:a7b:c195:: with SMTP id y21mr21173602wmi.20.1596982702211;
-        Sun, 09 Aug 2020 07:18:22 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id e16sm17327071wrx.30.2020.08.09.07.18.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 09 Aug 2020 07:18:21 -0700 (PDT)
-Subject: Re: rtnl_trylock() versus SCHED_FIFO lockup
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     Hillf Danton <hdanton@sina.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Network Development <netdev@vger.kernel.org>,
-        Markus Elfring <Markus.Elfring@web.de>
-References: <b6eca125-351c-27c5-c34b-08c611ac2511@prevas.dk>
- <20200805163425.6c13ef11@hermes.lan>
- <191e0da8-178f-5f91-3d37-9b7cefb61352@prevas.dk>
- <2a6edf25-b12b-c500-ad33-c0ec9e60cde9@cumulusnetworks.com>
- <20200806203922.3d687bf2@hermes.lan>
- <29a82363-411c-6f2b-9f55-97482504e453@prevas.dk>
- <20200809134924.12056-1-hdanton@sina.com>
- <b2cabeeb-f36d-189b-2ce2-1f9605af0063@cumulusnetworks.com>
-Message-ID: <b7ff3781-a944-ae04-91d1-14a7cb8187b2@cumulusnetworks.com>
-Date:   Sun, 9 Aug 2020 17:18:20 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726289AbgHIOrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Aug 2020 10:47:18 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:44221 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726199AbgHIOrS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Aug 2020 10:47:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1596984437;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gKK414gvYPxO64jiz+P/8qj08kR5l/OAlU0hgufW1/c=;
+        b=irFd1tVEYIGOHe0dg/P1yfLgaSTl1hI5HfHHNgm2+zbR/X2Yo8yOXtUuiEX/Wac2PcttVV
+        hh2uZSXygrMf05XNoT4CqvuoXIb6skJoVboIeIJrGqCjjHkYZTZjGKWclplL/IzXUu5YyC
+        oAKjwP0IyuRQKTKdszTEiWMcrCf4vXo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-30-PPsk5wR5Mw2jNQC81EhACQ-1; Sun, 09 Aug 2020 10:47:13 -0400
+X-MC-Unique: PPsk5wR5Mw2jNQC81EhACQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6EC768015CE;
+        Sun,  9 Aug 2020 14:47:11 +0000 (UTC)
+Received: from krava (unknown [10.40.192.79])
+        by smtp.corp.redhat.com (Postfix) with SMTP id B150C6179B;
+        Sun,  9 Aug 2020 14:47:07 +0000 (UTC)
+Date:   Sun, 9 Aug 2020 16:47:06 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v10 bpf-next 08/14] bpf: Add btf_struct_ids_match function
+Message-ID: <20200809144706.GD619980@krava>
+References: <20200807094559.571260-1-jolsa@kernel.org>
+ <20200807094559.571260-9-jolsa@kernel.org>
+ <CAEf4BzY8vE8k9c5fBB+3mcEpxOWc38dWBK8ji2aRpHM79nra_Q@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <b2cabeeb-f36d-189b-2ce2-1f9605af0063@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzY8vE8k9c5fBB+3mcEpxOWc38dWBK8ji2aRpHM79nra_Q@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/08/2020 17:12, Nikolay Aleksandrov wrote:
-> On 09/08/2020 16:49, Hillf Danton wrote:
->>
->> On Fri, 7 Aug 2020 08:03:32 -0700 Stephen Hemminger wrote:
->>> On Fri, 7 Aug 2020 10:03:59 +0200
->>> Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
->>>
->>>> On 07/08/2020 05.39, Stephen Hemminger wrote:
->>>>> On Thu, 6 Aug 2020 12:46:43 +0300
->>>>> Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
->>>>>   
->>>>>> On 06/08/2020 12:17, Rasmus Villemoes wrote:  
->>>>>>> On 06/08/2020 01.34, Stephen Hemminger wrote:    
->>>>>>>> On Wed, 5 Aug 2020 16:25:23 +0200  
->>>>
->>>>>>
->>>>>> Hi Rasmus,
->>>>>> I haven't tested anything but git history (and some grepping) points to deadlocks when
->>>>>> sysfs entries are being changed under rtnl.
->>>>>> For example check: af38f2989572704a846a5577b5ab3b1e2885cbfb and 336ca57c3b4e2b58ea3273e6d978ab3dfa387b4c
->>>>>> This is a common usage pattern throughout net/, the bridge is not the only case and there are more
->>>>>> commits which talk about deadlocks.
->>>>>> Again I haven't verified anything but it seems on device delete (w/ rtnl held) -> sysfs delete
->>>>>> would wait for current readers, but current readers might be stuck waiting on rtnl and we can deadlock.
->>>>>>  
->>>>>
->>>>> I was referring to AB BA lock inversion problems.  
->>>>
->>>> Ah, so lock inversion, not priority inversion.
->>
->> Hi folks,
->>
->> Is it likely that kworker helps work around that deadlock, by
->> acquiring the rtnl lock in the case that the current fails to
->> trylock it?
->>
->> Hillf
+On Fri, Aug 07, 2020 at 01:04:26PM -0700, Andrii Nakryiko wrote:
+
+SNIP
+
+> > +                               }
+> >                         }
+> >                 } else if (!fn->check_btf_id(reg->btf_id, arg)) {
 > 
-> You know it's a user writing to a file expecting config change, right?
-> There are numerous problems with deferring it (e.g. error handling).
+> Put this on a wishlist for now. I don't think we should expect
+> fb->check_btf_id() to do btf_struct_ids_match() internally, so to
+> support this, we'd have to call fb->check_btf_id() inside the loop
+> while doing WALK_STRUCT struct. But let's not change all this in this
+> patch set, it's involved enough already.
 > 
-> Thanks,
->  Nik
+> >                         verbose(env, "Helper does not support %s in R%d\n",
+> > @@ -3977,7 +3982,8 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+> >
+> >                         return -EACCES;
+> >                 }
+> > -               if (!tnum_is_const(reg->var_off) || reg->var_off.value || reg->off) {
+> > +               if (!ids_match &&
+> > +                   (!tnum_is_const(reg->var_off) || reg->var_off.value || reg->off)) {
+> 
+> Isn't this still wrong? if ids_match, but reg->var_off is non-zero,
+> that's still bad, right?
+> ids_match just "mitigates" reg->off check, so should be something like this:
+> 
+> if ((reg->off && !ids_match) || !tnum_is_const(reg->var_off) ||
+> reg->var_off.value)
+>  ... then bad ...
 
-OK, admittedly spoke too soon about the error handling. :) 
-But I still think it suffers the same problem if the sysfs files are going to be destroyed
-under rtnl while you're writing in one. Their users are "drained", so it will again wait forever.
-Because neither rtnl will be released, nor the writer will finish.
-And it may become even more interesting if we're trying to remove the bridge module at that time.
+damn you're right, those are separated things,
+I mixed it up, I'll send new version
 
-
+thanks,
+jirka
 
