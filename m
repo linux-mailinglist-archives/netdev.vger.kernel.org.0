@@ -2,177 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A8AA240070
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 01:47:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A69824006F
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 01:41:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726370AbgHIXrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Aug 2020 19:47:04 -0400
-Received: from ns1.vyex.com ([107.150.29.99]:44116 "EHLO ns1.vyex.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726217AbgHIXrD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 9 Aug 2020 19:47:03 -0400
-X-Greylist: delayed 2789 seconds by postgrey-1.27 at vger.kernel.org; Sun, 09 Aug 2020 19:47:03 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=vyex.com;
-         s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:To:Subject:From:Sender:Reply-To:Cc:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=653emjlao6FFneIN+slUveRhlJoYJhZ29TBkBLd+AeU=; b=VhRjY12t194oVoWyZ8rS/RLdLZ
-        6RNpxhwLQAZEhf4dUBiBtmOj4++xdPY/9MU/xJrsLNO76U3ZNBd92zy6k+FrtEGUX4lRU0V4M63VB
-        yTPCL5AJhd01TixwPd7DIpGDgvDg21hOzOkYbq6xY7cZxMCrSJJqw2dwrX/FoINx0SHThuZf9P6+U
-        rD8PW5JI2fx6DZHXXPXXcRGhYuVx5vBXxG5zftKYgyGGNyUeu6vrhlI9M8FQ1o7hzFYDVnc2/CPx9
-        lwrZO8ZhfGFUB8VjHrvkPy1tFbgX12bJitgQppQxW6v86oqmWynF+pyoT6/B8HiZ0F2WKsgHrGAOq
-        t+VzoeVg==;
-Received: from [98.144.109.174] (port=36678 helo=[172.25.22.30])
-        by echo.vyex.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <dkarr@vyex.com>)
-        id 1k4uIr-0002XB-WA
-        for netdev@vger.kernel.org; Sun, 09 Aug 2020 18:00:34 -0500
-From:   Dave Karr <dkarr@vyex.com>
-Subject: [RFT PATCH] net: fec: Fix MDIO polled IO
-To:     netdev@vger.kernel.org
-Message-ID: <813a0ccb-a309-137d-a340-b9b03b9e230c@vyex.com>
-Date:   Sun, 9 Aug 2020 18:00:33 -0500
+        id S1726344AbgHIXlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Aug 2020 19:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33012 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726217AbgHIXll (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Aug 2020 19:41:41 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C7AC061756
+        for <netdev@vger.kernel.org>; Sun,  9 Aug 2020 16:41:41 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id s15so3456941qvv.7
+        for <netdev@vger.kernel.org>; Sun, 09 Aug 2020 16:41:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aGkWFRCdAxvTBF8EM+6jTK5jtDJpgzum4St7QwRRznI=;
+        b=W3ImDcocFqyIVmhzpxx/zE0RI6o/rjfwCMhUG9VIUenCN7GucbaVJaB+kI3+s/vnM2
+         zRPoXDO1Th/hkvmDROkaZzYJAX5m4G9w4Ll8t3Ti7o+OJRCi2OCXwvGK/6Hms+DyyvHe
+         JVQY5WMvNOQfNQqe4tLjx3rOPiExNPMFEgfE4RnN4bA2UH/vq5sDFupBac7Csk23gNQc
+         eiyul1Op9su8QP8x29iBFp+W6Zel8Z5i49SPIhPdZW59w9f6SxiuppQ7hvrgoJPWb4PZ
+         I6IQqFAN49Jh8rrhPB7oxDhMiDIXmgIX1+m2aeKzGfrbz6tdfGn1TRASN/+G6+CAmBTP
+         s9ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aGkWFRCdAxvTBF8EM+6jTK5jtDJpgzum4St7QwRRznI=;
+        b=Xn0+IYNPe5kIOwIXkeBk9x8af+aJV4rqShu3rIYCMvlVZ40NGXGC6lKALR6+xhl4iO
+         5yuEF4KkS315lDPjPuQxR5QVLbO353x0YQYG5zh1xnN/5VVZalgXLwkwyMCyGM4qpP92
+         JAG4Q8LzRgc0x6WG+bt0SksWBn/IxhxYWXd3IEbBeHHliwvOeDYDP4TNGVoznA38v9nk
+         o3hetr8O5SSGKSyDIytnQ5TeMM6i29b1B0sGe3btgayfozu7EDPzcAgcr6ACNM+UNR/U
+         yvw93i2Y7SnMLSSneYvthceHnIUevwzi3orhjCEN74dIKznWJxdTJP/DO9r2+tIQxy75
+         BVTQ==
+X-Gm-Message-State: AOAM5336H+AbfDtPYiEqfUp9X4Xp7ptgLyhBXBxzYiToFRVtPpmsoIWx
+        8fh5VnLmHHvIkvZxw3RIjf2zKA==
+X-Google-Smtp-Source: ABdhPJxbGuEo6oeJFwiQ+bjXtgX0IQFn633m3+gv4Am64qowhQ7m+RkG4UGr65jD8dCDBia1K5jiyQ==
+X-Received: by 2002:ad4:5812:: with SMTP id dd18mr25832357qvb.23.1597016500780;
+        Sun, 09 Aug 2020 16:41:40 -0700 (PDT)
+Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-06-184-148-45-213.dsl.bell.ca. [184.148.45.213])
+        by smtp.googlemail.com with ESMTPSA id e23sm13851165qto.15.2020.08.09.16.41.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 09 Aug 2020 16:41:40 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/1] net/sched: Introduce skb hash classifier
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ariel Levkovich <lariel@mellanox.com>
+References: <20200807222816.18026-1-jhs@emojatatu.com>
+ <CAM_iQpU6j2TVOu2uYFcFWhBdMj_nu1TuLWfnR3O+2F2CPG+Wzw@mail.gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <3ee54212-7830-8b07-4eed-a0ddc5adecab@mojatatu.com>
+Date:   Sun, 9 Aug 2020 19:41:38 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAM_iQpU6j2TVOu2uYFcFWhBdMj_nu1TuLWfnR3O+2F2CPG+Wzw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - echo.vyex.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - vyex.com
-X-Get-Message-Sender-Via: echo.vyex.com: authenticated_id: dkarr@vyex.com
-X-Authenticated-Sender: echo.vyex.com: dkarr@vyex.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes problematic commit f166f890c8f026a931e1bb80f51561a1d2f41b27
+On 2020-08-09 2:15 p.m., Cong Wang wrote:
+> On Fri, Aug 7, 2020 at 3:28 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>>
+>> From: Jamal Hadi Salim <jhs@mojatatu.com>
+>>
+>> his classifier, in the same spirit as the tc skb mark classifier,
+>> provides a generic (fast lookup) approach to filter on the hash value
+>> and optional mask.
+>>
+>> like skb->mark, skb->hash could be set by multiple entities in the
+>> datapath including but not limited to hardware offloaded classification
+>> policies, hardware RSS (which already sets it today), XDP, ebpf programs
+>> and even by other tc actions like skbedit and IFE.
+> 
+> Looks like a lot of code duplication with cls_fw, is there any way to
+> reuse the code?
+> 
 
-Commit broke Ethernet functionality on i.MX53 with 1 GHz clock due to a
-race condition which may not be observed in the unknown CPU(s) implied
-by comments to depart from FEC behavior documented by Motorola,
-Freescale and NXP.
+Yeah, it was the simplest way to code this.
+They are very similar since they both use 32 bit keys.
+I am not exactly thrilled by the current 255 buckets(limited by rcu
+structure) - it limits performance in presence of large number
+of entries (since they can only be spread across 255 buckets).
+If we have a million entries, there will be a lot of hash collisions.
 
-During driver initialization the stated intent was to suppress the
-potential generation of a MII interrupt resulting from a write to
-MSCR, but for devices which behave as documented, an interrupt is
-caused by any write to MMFR regardless of value. Testing confirms
-the i.MX53 behaves as documented.
+> And I wonder if it is time to introduce a filter to match multiple skb
+> fields, as adding a filter for each skb field clearly does not scale.
+> Perhaps something like:
+> 
+> $TC filter add dev $DEV1 parent ffff: protocol ip prio 3 handle X skb \
+> hash Y mark Z flowid 1:12
+> 
 
-The subsequent attempt to clear any pending MII interrupt generated by
-either the MMFR or MSCR write is a race condition dependent upon
-CPU vs. MDC clock speed which permits the interrupt to occur after the
-write to EIR.
+Interesting idea. Note: my experience is that typical setup is
+to have only one of those (from offload perspective). Ariel,
+are your use cases requiring say both fields?
 
-Prior to the polled IO patch, regardless of what caused an MII
-interrupt, the fec_enet_mdio_read/write functions relied upon the
-interrupt service routine to clear the EIR MII bit and thus the
-critical region between ISR exit and fec_enet_mdio_read/write entry
-was small by comparison.
+ From policy perspective, i think above will get more complex
+mostly because you have to deal with either mark or hash
+being optional. It also opens doors for more complex matching
+requirements. Example "match mark X AND hash Y" and
+"match mark X OR hash Y".
+The new classifier will have to deal with that semantic.
 
-Together, this resulted in the subsequent read of PHYID during PHY
-probing to return before the mdio bus transaction was complete
-causing invalid data to be read from MMFR which in turn resulted in
-improper identification of PHY devices on the bus.
+With fw and hash being the complex/optional semantics are easy:
 
-Fix by eliminating dependency on other functions to clear the EIR MII
-bit and shrink the critical region by clearing the bit immediately
-prior to MMFR write within fec_enet_mdio_read/write functions.
+"match mark X AND hash Y":
+$TC filter add dev $DEV1 parent ffff: protocol ip prio 3 handle X 
+skbhash flowid 1:12 action continue
+$TC filter add dev $DEV1 parent ffff: protocol ip prio 4 handle Y fw 
+flowid 1:12 action ok
 
-Remove use of undocumented behavior and replace unconditional reset of
-MII EIR bit with fec_enet_mdio_wait such that NXP can identify whether
-regressions noted in 21615efa6a69891fa287bade979d56dd68b09878 and/or
-0a699302be5986307b3dcf84ac7a0dd30f9e9305 are due to an intentional write
-to MMFR with MSCR equal to zero prior to driver initialization, or the
-result of unpublished or unrealized FEC errata.
+"match mark X OR hash Y":
+$TC filter add dev $DEV1 parent ffff: protocol ip prio 3 handle X 
+skbhash flowid 1:12 action ok
+$TC filter add dev $DEV1 parent ffff: protocol ip prio 4 handle Y fw 
+flowid 1:12 action ok
 
-Reuse FEC_MII_TIMEOUT #define in fec_enet_mdio_wait().
+Then the question is how to implement? is it one hash table for
+both or two(one for mark and one for hash), etc.
 
-Signed-off-by: Dave Karr <dkarr@vyex.com>
----
- drivers/net/ethernet/freescale/fec_main.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 9934421814b4..a56169a3b0a9 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -1792,7 +1792,7 @@ static int fec_enet_mdio_wait(struct fec_enet_private *fep)
- 	int ret;
- 
- 	ret = readl_poll_timeout_atomic(fep->hwp + FEC_IEVENT, ievent,
--					ievent & FEC_ENET_MII, 2, 30000);
-+					ievent & FEC_ENET_MII, 2, FEC_MII_TIMEOUT);
- 
- 	if (!ret)
- 		writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
-@@ -1816,6 +1816,7 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
- 
- 		/* write address */
- 		frame_addr = (regnum >> 16);
-+		writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
- 		writel(frame_start | FEC_MMFR_OP_ADDR_WRITE |
- 		       FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
- 		       FEC_MMFR_TA | (regnum & 0xFFFF),
-@@ -1838,6 +1839,7 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
- 	}
- 
- 	/* start a read op */
-+	writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
- 	writel(frame_start | frame_op |
- 		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
- 		FEC_MMFR_TA, fep->hwp + FEC_MII_DATA);
-@@ -1877,6 +1879,7 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- 
- 		/* write address */
- 		frame_addr = (regnum >> 16);
-+		writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
- 		writel(frame_start | FEC_MMFR_OP_ADDR_WRITE |
- 		       FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
- 		       FEC_MMFR_TA | (regnum & 0xFFFF),
-@@ -1895,6 +1898,7 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- 	}
- 
- 	/* start a write op */
-+	writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
- 	writel(frame_start | FEC_MMFR_OP_WRITE |
- 		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
- 		FEC_MMFR_TA | FEC_MMFR_DATA(value),
-@@ -2114,20 +2118,14 @@ static int fec_enet_mii_init(struct platform_device *pdev)
- 	if (suppress_preamble)
- 		fep->phy_speed |= BIT(7);
- 
--	/* Clear MMFR to avoid to generate MII event by writing MSCR.
--	 * MII event generation condition:
--	 * - writing MSCR:
--	 *	- mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
--	 *	  mscr_reg_data_in[7:0] != 0
--	 * - writing MMFR:
--	 *	- mscr[7:0]_not_zero
--	 */
--	writel(0, fep->hwp + FEC_MII_DATA);
-+	/* start with mii interrupt flag clear */
-+	writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
- 
- 	writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
- 
- 	/* Clear any pending transaction complete indication */
--	writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
-+	if (!(fec_enet_mdio_wait(fep)))
-+		netdev_dbg(fep->netdev, "MSCR write during init caused mii interrupt\n");
- 
- 	fep->mii_bus = mdiobus_alloc();
- 	if (fep->mii_bus == NULL) {
--- 
-2.26.2
-
+cheers,
+jamal
