@@ -2,37 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C01240F27
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 21:20:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C88A240F1D
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 21:20:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729876AbgHJTNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 15:13:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45184 "EHLO mail.kernel.org"
+        id S1729943AbgHJTUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 15:20:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45774 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729858AbgHJTNt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Aug 2020 15:13:49 -0400
+        id S1729928AbgHJTOC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 15:14:02 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7EFF02224D;
-        Mon, 10 Aug 2020 19:13:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 143E122D04;
+        Mon, 10 Aug 2020 19:14:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597086828;
-        bh=WpV52KAFDM0xr311bUeYlAhrwM/hcvWw2VepPjQWodA=;
+        s=default; t=1597086842;
+        bh=ol2mVve6eFfgKC4fO+t6H8muDmioQ64l/6eQK9evxu8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G8s9sivkTJypQYTZtJlZV2Wto+vc3VLNv6YHYaAS/knBXXRP4svKazj6iGegy7y83
-         w5e4kNna4OXDWs5evc4XbqcjuPWhaOOkZ9chuunEmO8IgaxCEtYf4INFQss9WQIYND
-         kjF6h7IoI1Va3uwWrn5m4dZSt7z6ATZSNIQdACfI=
+        b=DRmuN8G3jQ1li14w3MLpqV28+d+9UtjgXC1lFZEUYNg3fLuZ0swZyQVI3Ie0v8cZ+
+         tqKlNU3QapUjZSnTwbqjztIleyMy9BiYW0Bk63N28bBlXXQM+/D/RWyDEmCz9cqIf+
+         UCtKRfFURU1zeu4b8yFz6FJngFvMR2guqtP+wL34=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lihong Kou <koulihong@huawei.com>,
-        syzbot+96414aa0033c363d8458@syzkaller.appspotmail.com,
-        Marcel Holtmann <marcel@holtmann.org>,
+Cc:     Prasanna Kerekoppa <prasanna.kerekoppa@cypress.com>,
+        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 02/22] Bluetooth: add a mutex lock to avoid UAF in do_enale_set
-Date:   Mon, 10 Aug 2020 15:13:24 -0400
-Message-Id: <20200810191345.3795166-2-sashal@kernel.org>
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 12/22] brcmfmac: To fix Bss Info flag definition Bug
+Date:   Mon, 10 Aug 2020 15:13:34 -0400
+Message-Id: <20200810191345.3795166-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200810191345.3795166-1-sashal@kernel.org>
 References: <20200810191345.3795166-1-sashal@kernel.org>
@@ -45,140 +48,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lihong Kou <koulihong@huawei.com>
+From: Prasanna Kerekoppa <prasanna.kerekoppa@cypress.com>
 
-[ Upstream commit f9c70bdc279b191da8d60777c627702c06e4a37d ]
+[ Upstream commit fa3266541b13f390eb35bdbc38ff4a03368be004 ]
 
-In the case we set or free the global value listen_chan in
-different threads, we can encounter the UAF problems because
-the method is not protected by any lock, add one to avoid
-this bug.
+Bss info flag definition need to be fixed from 0x2 to 0x4
+This flag is for rssi info received on channel.
+All Firmware branches defined as 0x4 and this is bug in brcmfmac.
 
-BUG: KASAN: use-after-free in l2cap_chan_close+0x48/0x990
-net/bluetooth/l2cap_core.c:730
-Read of size 8 at addr ffff888096950000 by task kworker/1:102/2868
-
-CPU: 1 PID: 2868 Comm: kworker/1:102 Not tainted 5.5.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine,
-BIOS Google 01/01/2011
-Workqueue: events do_enable_set
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1fb/0x318 lib/dump_stack.c:118
- print_address_description+0x74/0x5c0 mm/kasan/report.c:374
- __kasan_report+0x149/0x1c0 mm/kasan/report.c:506
- kasan_report+0x26/0x50 mm/kasan/common.c:641
- __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:135
- l2cap_chan_close+0x48/0x990 net/bluetooth/l2cap_core.c:730
- do_enable_set+0x660/0x900 net/bluetooth/6lowpan.c:1074
- process_one_work+0x7f5/0x10f0 kernel/workqueue.c:2264
- worker_thread+0xbbc/0x1630 kernel/workqueue.c:2410
- kthread+0x332/0x350 kernel/kthread.c:255
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Allocated by task 2870:
- save_stack mm/kasan/common.c:72 [inline]
- set_track mm/kasan/common.c:80 [inline]
- __kasan_kmalloc+0x118/0x1c0 mm/kasan/common.c:515
- kasan_kmalloc+0x9/0x10 mm/kasan/common.c:529
- kmem_cache_alloc_trace+0x221/0x2f0 mm/slab.c:3551
- kmalloc include/linux/slab.h:555 [inline]
- kzalloc include/linux/slab.h:669 [inline]
- l2cap_chan_create+0x50/0x320 net/bluetooth/l2cap_core.c:446
- chan_create net/bluetooth/6lowpan.c:640 [inline]
- bt_6lowpan_listen net/bluetooth/6lowpan.c:959 [inline]
- do_enable_set+0x6a4/0x900 net/bluetooth/6lowpan.c:1078
- process_one_work+0x7f5/0x10f0 kernel/workqueue.c:2264
- worker_thread+0xbbc/0x1630 kernel/workqueue.c:2410
- kthread+0x332/0x350 kernel/kthread.c:255
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Freed by task 2870:
- save_stack mm/kasan/common.c:72 [inline]
- set_track mm/kasan/common.c:80 [inline]
- kasan_set_free_info mm/kasan/common.c:337 [inline]
- __kasan_slab_free+0x12e/0x1e0 mm/kasan/common.c:476
- kasan_slab_free+0xe/0x10 mm/kasan/common.c:485
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x10d/0x220 mm/slab.c:3757
- l2cap_chan_destroy net/bluetooth/l2cap_core.c:484 [inline]
- kref_put include/linux/kref.h:65 [inline]
- l2cap_chan_put+0x170/0x190 net/bluetooth/l2cap_core.c:498
- do_enable_set+0x66c/0x900 net/bluetooth/6lowpan.c:1075
- process_one_work+0x7f5/0x10f0 kernel/workqueue.c:2264
- worker_thread+0xbbc/0x1630 kernel/workqueue.c:2410
- kthread+0x332/0x350 kernel/kthread.c:255
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-The buggy address belongs to the object at ffff888096950000
- which belongs to the cache kmalloc-2k of size 2048
-The buggy address is located 0 bytes inside of
- 2048-byte region [ffff888096950000, ffff888096950800)
-The buggy address belongs to the page:
-page:ffffea00025a5400 refcount:1 mapcount:0 mapping:ffff8880aa400e00 index:0x0
-flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea00027d1548 ffffea0002397808 ffff8880aa400e00
-raw: 0000000000000000 ffff888096950000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff88809694ff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff88809694ff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff888096950000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                   ^
- ffff888096950080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff888096950100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-Reported-by: syzbot+96414aa0033c363d8458@syzkaller.appspotmail.com
-Signed-off-by: Lihong Kou <koulihong@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Prasanna Kerekoppa <prasanna.kerekoppa@cypress.com>
+Signed-off-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
+Signed-off-by: Wright Feng <wright.feng@cypress.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200604071835.3842-6-wright.feng@cypress.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/6lowpan.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
-index 357475cceec61..9a75f9b00b512 100644
---- a/net/bluetooth/6lowpan.c
-+++ b/net/bluetooth/6lowpan.c
-@@ -57,6 +57,7 @@ static bool enable_6lowpan;
- /* We are listening incoming connections via this channel
-  */
- static struct l2cap_chan *listen_chan;
-+static DEFINE_MUTEX(set_lock);
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h
+index e0d22fedb2b45..05bd636011ec9 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h
+@@ -30,7 +30,7 @@
+ #define BRCMF_ARP_OL_PEER_AUTO_REPLY	0x00000008
  
- struct lowpan_peer {
- 	struct list_head list;
-@@ -1082,12 +1083,14 @@ static void do_enable_set(struct work_struct *work)
+ #define	BRCMF_BSS_INFO_VERSION	109 /* curr ver of brcmf_bss_info_le struct */
+-#define BRCMF_BSS_RSSI_ON_CHANNEL	0x0002
++#define BRCMF_BSS_RSSI_ON_CHANNEL	0x0004
  
- 	enable_6lowpan = set_enable->flag;
- 
-+	mutex_lock(&set_lock);
- 	if (listen_chan) {
- 		l2cap_chan_close(listen_chan, 0);
- 		l2cap_chan_put(listen_chan);
- 	}
- 
- 	listen_chan = bt_6lowpan_listen();
-+	mutex_unlock(&set_lock);
- 
- 	kfree(set_enable);
- }
-@@ -1139,11 +1142,13 @@ static ssize_t lowpan_control_write(struct file *fp,
- 		if (ret == -EINVAL)
- 			return ret;
- 
-+		mutex_lock(&set_lock);
- 		if (listen_chan) {
- 			l2cap_chan_close(listen_chan, 0);
- 			l2cap_chan_put(listen_chan);
- 			listen_chan = NULL;
- 		}
-+		mutex_unlock(&set_lock);
- 
- 		if (conn) {
- 			struct lowpan_peer *peer;
+ #define BRCMF_STA_WME              0x00000002      /* WMM association */
+ #define BRCMF_STA_AUTHE            0x00000008      /* Authenticated */
 -- 
 2.25.1
 
