@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C4832412CD
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 00:06:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43A842412CC
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 00:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726857AbgHJWGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 18:06:50 -0400
-Received: from mail.nic.cz ([217.31.204.67]:42702 "EHLO mail.nic.cz"
+        id S1726800AbgHJWGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 18:06:48 -0400
+Received: from lists.nic.cz ([217.31.204.67]:42718 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726574AbgHJWGt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Aug 2020 18:06:49 -0400
+        id S1726775AbgHJWGs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 18:06:48 -0400
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id 9E916140A40;
+        by mail.nic.cz (Postfix) with ESMTP id B8B69140A42;
         Tue, 11 Aug 2020 00:06:46 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1597097206; bh=6BOC1zCN1oMHIunKiOabSn4wsZ1pIM8I6+T4PsP57dA=;
+        t=1597097206; bh=B1zLheSS8qRHr4MBzfrL7XirvFiyI7+FOXSk6RmlDxs=;
         h=From:To:Date;
-        b=fx+tx1ABg5pO7mxLBv1dnrkIsi6YUVATZbh+5EvrnlIN9UZ6qFR0g6R5ib4xxTnCg
-         tp3nVjPcGdBkJ+kn5GpIbQMYDXArZiIbbFMTnLxENDGAqRc8eYOSuClHT+P3EJKSCl
-         /taqiS9nuhSpI+X2thTp2IFxxf7Q3FISkQ0aAtQE=
+        b=aG7cWZPuBK4fI8QGHi+Epgxnq/G7dO0DBimD2m1zGSBWKGbTNLhu/GYmA/pfx7UfU
+         o1bpMmpfPaCkCAaInWNu+Q8cDEfWUQEOfqEM+f0LwhWIlU9vYQtbJeW3oo3p7y/BXF
+         BVgSk9iygCts38s0NQVHqEyl0RLzK5zTW+rTgTm8=
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     Russell King <rmk+kernel@armlinux.org.uk>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -29,9 +29,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         netdev@vger.kernel.org,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH RFC russell-king 1/4] net: phy: add I2C mdio bus for RollBall compatible SFPs
-Date:   Tue, 11 Aug 2020 00:06:42 +0200
-Message-Id: <20200810220645.19326-2-marek.behun@nic.cz>
+Subject: [PATCH RFC russell-king 2/4] net: phy: sfp: add support for multigig RollBall modules
+Date:   Tue, 11 Aug 2020 00:06:43 +0200
+Message-Id: <20200810220645.19326-3-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200810220645.19326-1-marek.behun@nic.cz>
 References: <20200810220645.19326-1-marek.behun@nic.cz>
@@ -48,325 +48,174 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some multigig SFPs from RollBall and Hilink do not expose functional
-MDIO access to the internal PHY of the SFP via I2C address 0x56
-(although there seems to be read-only clause 22 access on this address).
+This adds support for multigig copper SFP modules from RollBall/Hilink.
+These modules have a specific way to access clause 45 registers of the
+internal PHY.
 
-Instead these SFPs PHY can be accessed via I2C via the SFP Enhanced
-Digital Diagnostic Interface - I2C address 0x51.
-
-This driver adds support for this as a MDIO bus.
+We also need to wait at least 25 seconds after deasserting TX disable
+before accessing the PHY. The code waits for 30 seconds just to be sure.
 
 Signed-off-by: Marek Behún <marek.behun@nic.cz>
 ---
- drivers/net/phy/Makefile            |   2 +-
- drivers/net/phy/mdio-i2c-rollball.c | 238 ++++++++++++++++++++++++++++
- drivers/net/phy/mdio-i2c.h          |   1 +
- drivers/net/phy/sfp.c               |   5 -
- include/linux/sfp.h                 |   5 +
- 5 files changed, 245 insertions(+), 6 deletions(-)
- create mode 100644 drivers/net/phy/mdio-i2c-rollball.c
+ drivers/net/phy/sfp.c | 57 ++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 48 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index 4500050faf64f..ce12d5bf02b1e 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -39,7 +39,7 @@ obj-$(CONFIG_MDIO_BUS_MUX_MULTIPLEXER) += mdio-mux-multiplexer.o
- obj-$(CONFIG_MDIO_CAVIUM)	+= mdio-cavium.o
- obj-$(CONFIG_MDIO_GPIO)		+= mdio-gpio.o
- obj-$(CONFIG_MDIO_HISI_FEMAC)	+= mdio-hisi-femac.o
--obj-$(CONFIG_MDIO_I2C)		+= mdio-i2c.o
-+obj-$(CONFIG_MDIO_I2C)		+= mdio-i2c.o mdio-i2c-rollball.o
- obj-$(CONFIG_MDIO_IPQ4019)	+= mdio-ipq4019.o
- obj-$(CONFIG_MDIO_IPQ8064)	+= mdio-ipq8064.o
- obj-$(CONFIG_MDIO_MOXART)	+= mdio-moxart.o
-diff --git a/drivers/net/phy/mdio-i2c-rollball.c b/drivers/net/phy/mdio-i2c-rollball.c
-new file mode 100644
-index 0000000000000..8355d19fe4192
---- /dev/null
-+++ b/drivers/net/phy/mdio-i2c-rollball.c
-@@ -0,0 +1,238 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* MDIO I2C bridge for RollBall compatible SFPs
-+ *
-+ * Copyright (C) 2020 Marek Behun <marek.behun@nic.cz>
-+ *
-+ * RollBall compatible SFPs expose their internal PHY in a different way
-+ * from the one handled by mdio-i2c.c. This driver exposes interface for
-+ * this RollBall interface.
-+ */
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/phy.h>
-+#include <linux/sfp.h>
-+
-+#include "mdio-i2c.h"
-+
-+/* RollBall SFPs do not access internal PHY via I2C address 0x56, but
-+ * instead via address 0x51, when SFP page is set to 0x03 and password to
-+ * 0xffffffff:
-+ *
-+ * address  size  contents  description
-+ * -------  ----  --------  -----------
-+ * 0x80     1     CMD       0x01/0x02/0x04 for write/read/done
-+ * 0x81     1     DEV       Clause 45 device
-+ * 0x82     2     REG       Clause 45 register
-+ * 0x84     2     VAL       Register value
-+ */
-+#define SFP_DIAG_I2C_ADDR		0x51
-+
-+#define ROLLBALL_SFP_PASSWORD_ADDR	0x7b
-+
-+#define ROLLBALL_SFP_MDIO_PAGE		0x03
-+
-+#define ROLLBALL_CMD_ADDR		0x80
-+#define ROLLBALL_DATA_ADDR		0x81
-+
-+#define ROLLBALL_CMD_WRITE		0x01
-+#define ROLLBALL_CMD_READ		0x02
-+#define ROLLBALL_CMD_DONE		0x04
-+
-+static int i2c_rollball_mii_poll(struct mii_bus *bus, u8 *buf, size_t len)
-+{
-+	struct i2c_adapter *i2c = bus->priv;
-+	struct i2c_msg msgs[2];
-+	u8 buf0[2], *res;
-+	int i, ret;
-+
-+	buf0[0] = ROLLBALL_CMD_ADDR;
-+
-+	msgs[0].addr = SFP_DIAG_I2C_ADDR;
-+	msgs[0].flags = 0;
-+	msgs[0].len = 1;
-+	msgs[0].buf = &buf0[0];
-+
-+	res = buf ? buf : &buf0[1];
-+
-+	msgs[1].addr = SFP_DIAG_I2C_ADDR;
-+	msgs[1].flags = I2C_M_RD;
-+	msgs[1].len = buf ? len : 1;
-+	msgs[1].buf = res;
-+
-+	/* It takes up to 70 ms to access a register for these SFPs. */
-+	i = 10;
-+	do {
-+		msleep(20);
-+
-+		ret = i2c_transfer(i2c, msgs, ARRAY_SIZE(msgs));
-+		if (ret < 0)
-+			return ret;
-+		else if (ret != ARRAY_SIZE(msgs))
-+			return -EIO;
-+
-+		if (*res == ROLLBALL_CMD_DONE)
-+			return 0;
-+	} while (i-- > 0);
-+
-+	dev_dbg(&bus->dev, "poll timed out\n");
-+
-+	return -ETIMEDOUT;
-+}
-+
-+static int i2c_rollball_mii_cmd(struct mii_bus *bus, u8 cmd, u8 *data, size_t len)
-+{
-+	struct i2c_adapter *i2c = bus->priv;
-+	struct i2c_msg msgs[2];
-+	u8 cmdbuf[2];
-+	int ret;
-+
-+	msgs[0].addr = SFP_DIAG_I2C_ADDR;
-+	msgs[0].flags = 0;
-+	msgs[0].len = len;
-+	msgs[0].buf = data;
-+
-+	cmdbuf[0] = ROLLBALL_CMD_ADDR;
-+	cmdbuf[1] = cmd;
-+
-+	msgs[1].addr = SFP_DIAG_I2C_ADDR;
-+	msgs[1].flags = 0;
-+	msgs[1].len = sizeof(cmdbuf);
-+	msgs[1].buf = cmdbuf;
-+
-+	ret = i2c_transfer(i2c, msgs, 2);
-+	if (ret < 0)
-+		return ret;
-+
-+	return ret == ARRAY_SIZE(msgs) ? 0 : -EIO;
-+}
-+
-+static int i2c_rollball_mii_read(struct mii_bus *bus, int phy_id, int reg)
-+{
-+	u8 buf[4], res[6];
-+	u16 val;
-+	int ret;
-+
-+	if (phy_id != SFP_PHY_ADDR)
-+		return 0xffff;
-+
-+	if (!(reg & MII_ADDR_C45))
-+		return -EOPNOTSUPP;
-+
-+	buf[0] = ROLLBALL_DATA_ADDR;
-+	buf[1] = (reg >> 16) & 0x1f;
-+	buf[2] = (reg >> 8) & 0xff;
-+	buf[3] = reg & 0xff;
-+
-+	ret = i2c_rollball_mii_cmd(bus, ROLLBALL_CMD_READ, buf, sizeof(buf));
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_rollball_mii_poll(bus, res, sizeof(res));
-+	if (ret == -ETIMEDOUT)
-+		return 0xffff;
-+	else if (ret < 0)
-+		return ret;
-+
-+	val = res[4];
-+	val <<= 8;
-+	val |= res[5];
-+
-+	dev_dbg(&bus->dev, "read reg %02x:%04x = %04x\n", (reg >> 16) & 0x1f, reg & 0xffff, val);
-+
-+	return val;
-+}
-+
-+static int i2c_rollball_mii_write(struct mii_bus *bus, int phy_id, int reg, u16 val)
-+{
-+	u8 buf[6];
-+	int ret;
-+
-+	if (phy_id != SFP_PHY_ADDR)
-+		return 0;
-+
-+	if (!(reg & MII_ADDR_C45))
-+		return -EOPNOTSUPP;
-+
-+	buf[0] = ROLLBALL_DATA_ADDR;
-+	buf[1] = (reg >> 16) & 0x1f;
-+	buf[2] = (reg >> 8) & 0xff;
-+	buf[3] = reg & 0xff;
-+	buf[4] = val >> 8;
-+	buf[5] = val & 0xff;
-+
-+	ret = i2c_rollball_mii_cmd(bus, ROLLBALL_CMD_WRITE, buf, sizeof(buf));
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_rollball_mii_poll(bus, NULL, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	dev_dbg(&bus->dev, "write reg %02x:%04x = %04x\n", (reg >> 16) & 0x1f, reg & 0xffff, val);
-+
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index a62fa2e5ae4e6..fe72282e96c7d 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -167,6 +167,7 @@ static const enum gpiod_flags gpio_flags[] = {
+ #define T_WAIT			msecs_to_jiffies(50)
+ #define T_START_UP		msecs_to_jiffies(300)
+ #define T_START_UP_BAD_GPON	msecs_to_jiffies(60000)
++#define T_START_UP_LONG_PHY	msecs_to_jiffies(30000)
+ 
+ /* t_reset is the time required to assert the TX_DISABLE signal to reset
+  * an indicated TX_FAULT.
+@@ -243,6 +244,7 @@ struct sfp {
+ 	struct sfp_eeprom_id id;
+ 	unsigned int module_power_mW;
+ 	unsigned int module_t_start_up;
++	bool rollball_mii;
+ 
+ #if IS_ENABLED(CONFIG_HWMON)
+ 	struct sfp_diag diag;
+@@ -394,9 +396,6 @@ static int sfp_i2c_write(struct sfp *sfp, bool a2, u8 dev_addr, void *buf,
+ 
+ static int sfp_i2c_configure(struct sfp *sfp, struct i2c_adapter *i2c)
+ {
+-	struct mii_bus *i2c_mii;
+-	int ret;
+-
+ 	if (!i2c_check_functionality(i2c, I2C_FUNC_I2C))
+ 		return -EINVAL;
+ 
+@@ -404,7 +403,19 @@ static int sfp_i2c_configure(struct sfp *sfp, struct i2c_adapter *i2c)
+ 	sfp->read = sfp_i2c_read;
+ 	sfp->write = sfp_i2c_write;
+ 
+-	i2c_mii = mdio_i2c_alloc(sfp->dev, i2c);
 +	return 0;
 +}
 +
-+static int i2c_rollball_init(struct i2c_adapter *i2c)
++static int sfp_i2c_mii_probe(struct sfp *sfp)
 +{
-+	struct i2c_msg msgs[2];
-+	u8 page[2], password[5];
++	struct mii_bus *i2c_mii;
 +	int ret;
 +
-+	page[0] = SFP_PAGE;
-+	page[1] = ROLLBALL_SFP_MDIO_PAGE;
++	if (sfp->rollball_mii)
++		i2c_mii = mdio_i2c_rollball_alloc(sfp->dev, sfp->i2c);
++	else
++		i2c_mii = mdio_i2c_alloc(sfp->dev, sfp->i2c);
 +
-+	msgs[0].addr = SFP_DIAG_I2C_ADDR;
-+	msgs[0].flags = 0;
-+	msgs[0].len = sizeof(page);
-+	msgs[0].buf = page;
-+
-+	password[0] = ROLLBALL_SFP_PASSWORD_ADDR;
-+	password[1] = 0xff;
-+	password[2] = 0xff;
-+	password[3] = 0xff;
-+	password[4] = 0xff;
-+
-+	msgs[1].addr = SFP_DIAG_I2C_ADDR;
-+	msgs[1].flags = 0;
-+	msgs[1].len = sizeof(password);
-+	msgs[1].buf = password;
-+
-+	ret = i2c_transfer(i2c, msgs, ARRAY_SIZE(msgs));
-+	if (ret < 0)
-+		return ret;
-+
-+	return ret == ARRAY_SIZE(msgs) ? 0 : -EIO;
+ 	if (IS_ERR(i2c_mii))
+ 		return PTR_ERR(i2c_mii);
+ 
+@@ -422,6 +433,14 @@ static int sfp_i2c_configure(struct sfp *sfp, struct i2c_adapter *i2c)
+ 	return 0;
+ }
+ 
++static void sfp_i2c_mii_remove(struct sfp *sfp)
++{
++	if (sfp->i2c_mii) {
++		mdiobus_unregister(sfp->i2c_mii);
++		mdiobus_free(sfp->i2c_mii);
++	}
 +}
 +
-+struct mii_bus *mdio_i2c_rollball_alloc(struct device *parent, struct i2c_adapter *i2c)
-+{
-+	struct mii_bus *mii;
-+	int ret;
+ /* Interface */
+ static int sfp_read(struct sfp *sfp, bool a2, u8 addr, void *buf, size_t len)
+ {
+@@ -1419,6 +1438,7 @@ static void sfp_sm_phy_detach(struct sfp *sfp)
+ 	phy_device_remove(sfp->mod_phy);
+ 	phy_device_free(sfp->mod_phy);
+ 	sfp->mod_phy = NULL;
++	sfp_i2c_mii_remove(sfp);
+ }
+ 
+ static int sfp_sm_probe_phy(struct sfp *sfp, bool is_c45)
+@@ -1426,10 +1446,17 @@ static int sfp_sm_probe_phy(struct sfp *sfp, bool is_c45)
+ 	struct phy_device *phy;
+ 	int err;
+ 
++	err = sfp_i2c_mii_probe(sfp);
++	if (err)
++		return err;
 +
-+	if (!i2c_check_functionality(i2c, I2C_FUNC_I2C))
-+		return ERR_PTR(-EINVAL);
-+
-+	mii = mdiobus_alloc();
-+	if (!mii)
-+		return ERR_PTR(-ENOMEM);
-+
-+	ret = i2c_rollball_init(i2c);
-+	if (ret < 0) {
-+		dev_err(parent, "cannot initialize SFP for MDIO access\n");
-+		return ERR_PTR(ret);
+ 	phy = get_phy_device(sfp->i2c_mii, SFP_PHY_ADDR, is_c45);
+-	if (phy == ERR_PTR(-ENODEV))
++	if (phy == ERR_PTR(-ENODEV)) {
++		sfp_i2c_mii_remove(sfp);
+ 		return PTR_ERR(phy);
++	}
+ 	if (IS_ERR(phy)) {
++		sfp_i2c_mii_remove(sfp);
+ 		dev_err(sfp->dev, "mdiobus scan returned %ld\n", PTR_ERR(phy));
+ 		return PTR_ERR(phy);
+ 	}
+@@ -1437,6 +1464,7 @@ static int sfp_sm_probe_phy(struct sfp *sfp, bool is_c45)
+ 	err = phy_device_register(phy);
+ 	if (err) {
+ 		phy_device_free(phy);
++		sfp_i2c_mii_remove(sfp);
+ 		dev_err(sfp->dev, "phy_device_register failed: %d\n", err);
+ 		return err;
+ 	}
+@@ -1445,6 +1473,7 @@ static int sfp_sm_probe_phy(struct sfp *sfp, bool is_c45)
+ 	if (err) {
+ 		phy_device_remove(phy);
+ 		phy_device_free(phy);
++		sfp_i2c_mii_remove(sfp);
+ 		dev_err(sfp->dev, "sfp_add_phy failed: %d\n", err);
+ 		return err;
+ 	}
+@@ -1665,6 +1694,7 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
+ 	struct sfp_eeprom_id id;
+ 	bool cotsworks_sfbg;
+ 	bool cotsworks;
++	bool rollball;
+ 	u8 check;
+ 	int ret;
+ 
+@@ -1730,7 +1760,17 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
+ 		}
+ 	}
+ 
++	rollball = (!memcmp(id.base.vendor_name, "OEM             ", 16) &&
++		    (!memcmp(id.base.vendor_pn, "SFP-10G-T       ", 16) ||
++		     !memcmp(id.base.vendor_pn, "RTSFP-10        ", 16) ||
++		     !memcmp(id.base.vendor_pn, "RTSFP-2.5G      ", 16)));
++	if (rollball) {
++		/* TODO: try to write this to EEPROM */
++		id.base.extended_cc = SFF8024_ECC_10GBASE_T_SFI;
 +	}
 +
-+	snprintf(mii->id, MII_BUS_ID_SIZE, "i2c-rollball:%s", dev_name(parent));
-+	mii->parent = parent;
-+	mii->read = i2c_rollball_mii_read;
-+	mii->write = i2c_rollball_mii_write;
-+	mii->priv = i2c;
-+
-+	return mii;
-+}
-+EXPORT_SYMBOL_GPL(mdio_i2c_rollball_alloc);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("MDIO I2C bridge library for RollBall compatible SFPs");
-+MODULE_AUTHOR("Marek Behun <marek.behun@nic.cz>");
-diff --git a/drivers/net/phy/mdio-i2c.h b/drivers/net/phy/mdio-i2c.h
-index b1d27f7cd23fb..d96fcfa9637e0 100644
---- a/drivers/net/phy/mdio-i2c.h
-+++ b/drivers/net/phy/mdio-i2c.h
-@@ -12,5 +12,6 @@ struct i2c_adapter;
- struct mii_bus;
+ 	sfp->id = id;
++	sfp->rollball_mii = rollball;
  
- struct mii_bus *mdio_i2c_alloc(struct device *parent, struct i2c_adapter *i2c);
-+struct mii_bus *mdio_i2c_rollball_alloc(struct device *parent, struct i2c_adapter *i2c);
+ 	dev_info(sfp->dev, "module %.*s %.*s rev %.*s sn %.*s dc %.*s\n",
+ 		 (int)sizeof(id.base.vendor_name), id.base.vendor_name,
+@@ -1760,6 +1800,8 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
+ 	if (!memcmp(id.base.vendor_name, "ALCATELLUCENT   ", 16) &&
+ 	    !memcmp(id.base.vendor_pn, "3FE46541AA      ", 16))
+ 		sfp->module_t_start_up = T_START_UP_BAD_GPON;
++	else if (rollball)
++		sfp->module_t_start_up = T_START_UP_LONG_PHY;
+ 	else
+ 		sfp->module_t_start_up = T_START_UP;
  
- #endif
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index c24b0e83dd329..a62fa2e5ae4e6 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -202,11 +202,6 @@ static const enum gpiod_flags gpio_flags[] = {
- #define T_PROBE_RETRY_SLOW	msecs_to_jiffies(5000)
- #define R_PROBE_RETRY_SLOW	12
+@@ -2264,10 +2306,7 @@ static void sfp_cleanup(void *data)
  
--/* SFP modules appear to always have their PHY configured for bus address
-- * 0x56 (which with mdio-i2c, translates to a PHY address of 22).
-- */
--#define SFP_PHY_ADDR	22
--
- struct sff_data {
- 	unsigned int gpios;
- 	bool (*module_supported)(const struct sfp_eeprom_id *id);
-diff --git a/include/linux/sfp.h b/include/linux/sfp.h
-index 2da1a5181779e..035b665ca702e 100644
---- a/include/linux/sfp.h
-+++ b/include/linux/sfp.h
-@@ -3,6 +3,11 @@
- 
- #include <linux/phy.h>
- 
-+/* SFP modules appear to always have their PHY configured for bus address
-+ * 0x56 (which with mdio-i2c, translates to a PHY address of 22).
-+ */
-+#define SFP_PHY_ADDR	22
-+
- struct sfp_eeprom_base {
- 	u8 phys_id;
- 	u8 phys_ext_id;
+ 	cancel_delayed_work_sync(&sfp->poll);
+ 	cancel_delayed_work_sync(&sfp->timeout);
+-	if (sfp->i2c_mii) {
+-		mdiobus_unregister(sfp->i2c_mii);
+-		mdiobus_free(sfp->i2c_mii);
+-	}
++	sfp_i2c_mii_remove(sfp);
+ 	if (sfp->i2c)
+ 		i2c_put_adapter(sfp->i2c);
+ 	kfree(sfp);
 -- 
 2.26.2
 
