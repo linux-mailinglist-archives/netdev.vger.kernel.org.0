@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE9B824109F
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 21:31:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 580E3241093
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 21:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730385AbgHJTbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 15:31:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37052 "EHLO mail.kernel.org"
+        id S1728842AbgHJTKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 15:10:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728800AbgHJTKD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Aug 2020 15:10:03 -0400
+        id S1728828AbgHJTKH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 15:10:07 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 210B021775;
-        Mon, 10 Aug 2020 19:10:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 19D2921775;
+        Mon, 10 Aug 2020 19:10:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597086603;
-        bh=0hpCvABZStLplECItoq4E4rTIl3EAyzd0ZRKA+1fl1o=;
+        s=default; t=1597086606;
+        bh=8Tzd0Aos4HqBT8yzWLrxitqCDm+fIO4pv5Jqk510z8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BWmzyrbkx8aRiC3NFHBYqO0QJWgYJHAOrVp/ciahzhXXCThS+hECezdXIXDS8fYoX
-         UrQ/R1voeeC3cJ+sv0qPOk0BBboZBqEVy9fL96Ncy34M+XNydBerAz407rOrIir45i
-         TgJpl+TOs7BqnlFjvEPcgnlbTFfdgdUvi7qhBUH4=
+        b=Chds1ofYJ+P4YMIYEMKpQmuBRK061cCtf+Bj3hV9rB8+FcFe8j9RFBzBGIG19EZUg
+         BLaVKf8xRkjCICZywmbl0SFnJtQagVtz1iKZzdDdSZxdygh29JgamryatmV9o/OhuL
+         aNUbaPRqteKgPn6VFOKzoQoYsH/s869AGoQmBfEI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bolarinwa Olayemi Saheed <refactormyself@gmail.com>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.8 46/64] iwlegacy: Check the return value of pcie_capability_read_*()
-Date:   Mon, 10 Aug 2020 15:08:41 -0400
-Message-Id: <20200810190859.3793319-46-sashal@kernel.org>
+Cc:     Shannon Nelson <snelson@pensando.io>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.8 49/64] ionic: update eid test for overflow
+Date:   Mon, 10 Aug 2020 15:08:44 -0400
+Message-Id: <20200810190859.3793319-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200810190859.3793319-1-sashal@kernel.org>
 References: <20200810190859.3793319-1-sashal@kernel.org>
@@ -45,43 +43,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bolarinwa Olayemi Saheed <refactormyself@gmail.com>
+From: Shannon Nelson <snelson@pensando.io>
 
-[ Upstream commit 9018fd7f2a73e9b290f48a56b421558fa31e8b75 ]
+[ Upstream commit 3fbc9bb6ca32d12d4d32a7ae32abef67ac95f889 ]
 
-On failure pcie_capability_read_dword() sets it's last parameter, val
-to 0. However, with Patch 14/14, it is possible that val is set to ~0 on
-failure. This would introduce a bug because (x & x) == (~0 & x).
+Fix up our comparison to better handle a potential (but largely
+unlikely) wrap around.
 
-This bug can be avoided without changing the function's behaviour if the
-return value of pcie_capability_read_dword is checked to confirm success.
-
-Check the return value of pcie_capability_read_dword() to ensure success.
-
-Suggested-by: Bjorn Helgaas <bjorn@helgaas.com>
-Signed-off-by: Bolarinwa Olayemi Saheed <refactormyself@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20200713175529.29715-3-refactormyself@gmail.com
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlegacy/common.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlegacy/common.c b/drivers/net/wireless/intel/iwlegacy/common.c
-index 348c17ce72f5c..f78e062df572a 100644
---- a/drivers/net/wireless/intel/iwlegacy/common.c
-+++ b/drivers/net/wireless/intel/iwlegacy/common.c
-@@ -4286,8 +4286,8 @@ il_apm_init(struct il_priv *il)
- 	 *    power savings, even without L1.
- 	 */
- 	if (il->cfg->set_l0s) {
--		pcie_capability_read_word(il->pci_dev, PCI_EXP_LNKCTL, &lctl);
--		if (lctl & PCI_EXP_LNKCTL_ASPM_L1) {
-+		ret = pcie_capability_read_word(il->pci_dev, PCI_EXP_LNKCTL, &lctl);
-+		if (!ret && (lctl & PCI_EXP_LNKCTL_ASPM_L1)) {
- 			/* L1-ASPM enabled; disable(!) L0S  */
- 			il_set_bit(il, CSR_GIO_REG,
- 				   CSR_GIO_REG_VAL_L0S_ENABLED);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index e55d41546cff2..aa93f9a6252df 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -723,7 +723,7 @@ static bool ionic_notifyq_service(struct ionic_cq *cq,
+ 	eid = le64_to_cpu(comp->event.eid);
+ 
+ 	/* Have we run out of new completions to process? */
+-	if (eid <= lif->last_eid)
++	if ((s64)(eid - lif->last_eid) <= 0)
+ 		return false;
+ 
+ 	lif->last_eid = eid;
 -- 
 2.25.1
 
