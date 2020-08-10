@@ -2,99 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2BB8240295
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 09:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CE22240344
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 10:15:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbgHJHcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 03:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726569AbgHJHcX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 03:32:23 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FCAC061756
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 00:32:23 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id q13so3730782vsn.9
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 00:32:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sJo6TZcaNoJonrq3wQzaYlOn0q7KCaKbS7KLCKU2QzA=;
-        b=J526to2DvxuRZ8736kFIZtIMrd+wGpUCmG9v/rejtCm6ZNbh/i5xF906ohsgmAiJ78
-         FPeEcYbsYrJ3+Qiyi7vfxUQIT0YTtEeGabjI+phjc6DvfO3d/No2a/62W+3KjbK9N1yE
-         C8EIRoSvnU2dzVpWyvin8SRVuszcz2foFihxhvFK6OQYA/F+eJS2pfM1+0cTYy/Z4bn3
-         SKofNlcHWdAd0oGfiCt5GOYGUbIDXX+ZVEcHaE/xSSqEV02cBBNtLQs86tNIL+zkUeut
-         lIqtPEQSc3Ru8im6pH2QAvwoxYV0EO8jBYG12kwkquzTCdgHQqKnVDF9bVWjNAizum9R
-         S8Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sJo6TZcaNoJonrq3wQzaYlOn0q7KCaKbS7KLCKU2QzA=;
-        b=CI17sER/iWy1TbXVelfUHLVR3SyEgHV19nVpKEO2BCAbaSqLP9vqczkWqpZrGFrXc7
-         ykNUKUzKJwRIKKwaDTqn54UbUvzTa7Ovf5E6gR+Gigzwr56VViyYad5f1y689UDt/0qp
-         KU6NOLEa7sQN1+BxaWNjTtaBjQ11/cpGX6aLKSbaC0W+KmMwpTOUpbyjMMfTok36Z5PW
-         c5VXbCrqg6iK3ULktcnOvZpOe2IFNoxQWgkRQ5PG+L3YOfFqoIoY2+I7/q52R8sUSRn5
-         UPus773cD+LsTeesW+JCF9AqJuy9hfLN49Zo60r+bqmpESCLwADuTcRsYWEgpBdT3n4G
-         WULw==
-X-Gm-Message-State: AOAM5315ac8kdjngTW8e74lIx5WK5ghtijqiKyoXegUxdq8Ki5H9pm6y
-        3u4hJ+VENnQTGLToaOCYKi5NHoiRr0M=
-X-Google-Smtp-Source: ABdhPJwfj+lqh5UXN4yGfQF1OOn+Td5tS9D3+s3eMOXPR63VH0UhOblIf7+hRiDVTVMGyJ8JX5JuIQ==
-X-Received: by 2002:a67:1a43:: with SMTP id a64mr18715365vsa.235.1597044741713;
-        Mon, 10 Aug 2020 00:32:21 -0700 (PDT)
-Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
-        by smtp.gmail.com with ESMTPSA id d27sm1659121vkl.43.2020.08.10.00.32.20
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Aug 2020 00:32:20 -0700 (PDT)
-Received: by mail-ua1-f45.google.com with SMTP id g20so1242607uap.8
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 00:32:20 -0700 (PDT)
-X-Received: by 2002:a9f:2648:: with SMTP id 66mr13443939uag.37.1597044739732;
- Mon, 10 Aug 2020 00:32:19 -0700 (PDT)
+        id S1726334AbgHJIPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 04:15:32 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:55642 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725846AbgHJIPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 04:15:32 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4A1FF2005A;
+        Mon, 10 Aug 2020 08:15:31 +0000 (UTC)
+Received: from us4-mdac16-4.at1.mdlocal (unknown [10.110.49.155])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 48E28800A4;
+        Mon, 10 Aug 2020 08:15:31 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.30])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C6C1C4004D;
+        Mon, 10 Aug 2020 08:15:30 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8BBCE140053;
+        Mon, 10 Aug 2020 08:15:30 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 10 Aug
+ 2020 09:15:25 +0100
+Subject: Re: [PATCH v3 net-next 03/11] sfc_ef100: read Design Parameters at
+ probe time
+To:     Guenter Roeck <linux@roeck-us.net>
+CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+References: <12f836c8-bdd8-a930-a79e-da4227e808d4@solarflare.com>
+ <827807a1-c4d6-d7de-7e9c-939d927d66cc@solarflare.com>
+ <20200809002947.GA92634@roeck-us.net>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <dcb8dba7-d259-4aa3-96d5-066b725ae84b@solarflare.com>
+Date:   Mon, 10 Aug 2020 09:15:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20200808175251.582781-1-xie.he.0141@gmail.com>
- <CA+FuTSfxWhq0pxEGPtOMjFUB7-4Vax6XMGsLL++28LwSOU5b3g@mail.gmail.com> <CAJht_EM9q9u34LMAeYsYe5voZ54s3Z7OzxtvSomcF9a9wRvuCQ@mail.gmail.com>
-In-Reply-To: <CAJht_EM9q9u34LMAeYsYe5voZ54s3Z7OzxtvSomcF9a9wRvuCQ@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 10 Aug 2020 09:31:43 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSdBNn218kuswND5OE4vZ4mxz3_hTDkcRmZn2Z9-gaYQZg@mail.gmail.com>
-Message-ID: <CA+FuTSdBNn218kuswND5OE4vZ4mxz3_hTDkcRmZn2Z9-gaYQZg@mail.gmail.com>
-Subject: Re: [PATCH net] drivers/net/wan/lapbether: Added needed_tailroom
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200809002947.GA92634@roeck-us.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25594.003
+X-TM-AS-Result: No-4.111400-8.000000-10
+X-TMASE-MatchedRID: O/y65JfDwwvmLzc6AOD8DfHkpkyUphL9SeIjeghh/zNHZg0gWH5yURWQ
+        iJK2ZcM78XVI39JCRnSjfNAVYAJRArmoaxDEjSmvcTela9Ppnny8BJu4qIKvaVAoBBK61BhcZ5t
+        OIILVs8nfWs89M0W8hGrpSxhrLECDvvC0orDlBTeeAiCmPx4NwJwhktVkBBrQjBlWW/k2kQBQSF
+        bL1bvQAVgXepbcl7r7UIpZaoDhfchKkmzCTCQdVGoB23pr+qPpipEPIoQjQ7Nt17tDlbCilYZmJ
+        PKdw1Hk8lFAmlVGCXh9JuBOZpbMw5B4seMC7x758B1+fkPI48NcLq4mdz+nRKyCWSW0HzF0amjO
+        S5qVJMM7pyVyc/F9UH7cGd19dSFd
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--4.111400-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25594.003
+X-MDID: 1597047331-nh5BGh-0_Oe1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 9, 2020 at 7:12 PM Xie He <xie.he.0141@gmail.com> wrote:
+On 09/08/2020 01:29, Guenter Roeck wrote:
+> On Mon, Aug 03, 2020 at 09:33:20PM +0100, Edward Cree wrote:
+>> +		if (EFX_MIN_DMAQ_SIZE % reader->value) {
+> This is a 64-bit operation (value is 64 bit). Result on 32-bit builds:
 >
-> On Sun, Aug 9, 2020 at 1:48 AM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > Does this solve an actual observed bug?
-> >
-> > In many ways lapbeth is similar to tunnel devices. This is not common.
+> ERROR: modpost: "__umoddi3" [drivers/net/ethernet/sfc/sfc.ko] undefined!
 >
-> Thank you for your comment!
->
-> This doesn't solve a bug observed by me. But I think this should be
-> necessary considering the logic of the code.
->
-> Using "grep", I found that there were indeed Ethernet drivers that set
-> needed_tailroom. I found it was set in these files:
->     drivers/net/ethernet/sun/sunvnet.c
->     drivers/net/ethernet/sun/ldmvsw.c
-> Setting needed_tailroom may be necessary for this driver to run those
-> Ethernet devices.
+> Guenter
+Yep, kbuild robot already spotted this, and I'm trying to figureout
+ the cleanest way to deal with it.
+See https://lore.kernel.org/netdev/487d9159-41f8-2757-2e93-01426a527fb5@solarflare.com/
+Any advice would be welcome...
 
-What happens when a tunnel device passes a packet to these devices?
-That will also not have allocated the extra tailroom. Does that cause
-a bug?
+-ed
