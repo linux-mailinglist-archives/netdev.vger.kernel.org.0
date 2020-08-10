@@ -2,61 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7D04240CDC
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 20:20:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 000ED240CE2
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 20:21:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728124AbgHJSU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 14:20:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58876 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727904AbgHJSU2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Aug 2020 14:20:28 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E3D4B207FF;
-        Mon, 10 Aug 2020 18:20:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597083627;
-        bh=RfnvddbXs67O3oANFnS11BjPH1/O5YLPIMd2VCPzBX8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Zedml/KW8R7fTSARLI7t3npnpQH4znnxA2jY40g/JmPcMKxGuO68OHz/gj8kI96XX
-         sgHvL83XU0d5nIHtIRMwMGsKaUq0Yo4SWaOzTtmed8nuswpDYOAK42RzG9x+PWQLYg
-         eebhtcBApvosckI33Vix5cPZsCPJvcu5nls8uW2Q=
-Date:   Mon, 10 Aug 2020 11:20:25 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Jonathan Adams <jwadams@google.com>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        netdev@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jim Mattson <jmattson@google.com>,
-        David Rientjes <rientjes@google.com>
-Subject: Re: [RFC PATCH 0/7] metricfs metric file system and examples
-Message-ID: <20200810112025.05825daf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <191cb2fc-387a-006e-62fd-177096ac480e@gmail.com>
-References: <20200807212916.2883031-1-jwadams@google.com>
-        <20200808020617.GD2028541@lunn.ch>
-        <191cb2fc-387a-006e-62fd-177096ac480e@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1728174AbgHJSV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 14:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728146AbgHJSVY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 14:21:24 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2B7C061787
+        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 11:21:23 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id l13so7836994ybf.5
+        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 11:21:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=2vXzz9RZaTLHmklPgeZMZ7n+eXaXAJl2SzN+35Zb3vY=;
+        b=Xc3Mu/6Iaucr66ZiIbk5IiFY/YxYzRde0HoOqvoidqKKocQZcmyMNmHCUD1yGmMEHv
+         0i+rKIt8gIXiN+GnbFrGOXdGmqRJ4EU/G5Um9yCIx0xBi1LMsThGy/KDS7ZoeREN4w2W
+         2+NejrEwtMLxzu8CUtDmP3kK7KMXYF8aqTFJFjx4asUQSwWsoryPQVtk8lP3bMabFSVY
+         s//DEUkbRWUVZjkzLtOvvfWZbz9H9FyWtL8ol114FD1gJtb4hiSUUYtLv7COxHMQc+mX
+         y8RXSck/OQbIjVlobdxOml68XXLlNO423sWlcMOpcf6UrHnnrZ0LnI9St6JB5Ja/TMG4
+         7a4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=2vXzz9RZaTLHmklPgeZMZ7n+eXaXAJl2SzN+35Zb3vY=;
+        b=l6lx5ggZFKZ6x4uNNRwfiLldGlQ0XbhFVjcCIM/JJtD4ejsE3ZOEGvYesDJTKP4sym
+         NFW0bYj5VeolYZiXJ/wtyQEkw5BCLwLSJEVERonAKTyc72L/FRFd93I3B40P9jkE+PgW
+         MIlrxQowIcCvQDAoNI7KuFJBk9+9345nijZ8sPaCIhYBxL7P3aeGPceVJGcl/uv59Feg
+         r4VxMdxFNCwioNVZv56ojH8SHhxVduOgeTFKsuNUnFy7auColPbVPIoKQIW0+XwsABqe
+         U+6/upIlNNuYyhRoMI0GHR/azj7iwf0agMhYRCmycDFNbUpvAPrHGbxjgTHGgtdbWCfN
+         1qwQ==
+X-Gm-Message-State: AOAM533P3SJnJuTD0sno2kQu98anxIRzv2//j6RP8D4WM/IeqwE0/Kow
+        5xdP6j3HG37E1g3zelkAGE+DPmWuSNh2B9CauQ0=
+X-Google-Smtp-Source: ABdhPJxSruMwwAUl3EcPl4M3H+GVaFfbBao26VCJwXIrm/O/ZLItnCovpcssixNNvTuPahlTJbao0/kgLAD9nNECAS0=
+X-Received: by 2002:a5b:b45:: with SMTP id b5mr41549839ybr.294.1597083682134;
+ Mon, 10 Aug 2020 11:21:22 -0700 (PDT)
+Date:   Mon, 10 Aug 2020 11:21:11 -0700
+Message-Id: <20200810182112.2221964-1-ndesaulniers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.236.gb10cc79966-goog
+Subject: [PATCH v2 net] bitfield.h: don't compile-time validate _val in FIELD_FIT
+From:   Nick Desaulniers <ndesaulniers@google.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, stable@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Alex Elder <elder@linaro.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 8 Aug 2020 09:59:34 -0600 David Ahern wrote:
-> On 8/7/20 8:06 PM, Andrew Lunn wrote:
-> > So i personally don't think netdev statistics is a good idea, i doubt
-> > it scales.  
-> 
-> +1
+From: Jakub Kicinski <kuba@kernel.org>
 
-+1
+When ur_load_imm_any() is inlined into jeq_imm(), it's possible for the
+compiler to deduce a case where _val can only have the value of -1 at
+compile time. Specifically,
 
-Please stop using networking as the example for this.
+/* struct bpf_insn: _s32 imm */
+u64 imm = insn->imm; /* sign extend */
+if (imm >> 32) { /* non-zero only if insn->imm is negative */
+  /* inlined from ur_load_imm_any */
+  u32 __imm = imm >> 32; /* therefore, always 0xffffffff */
+  if (__builtin_constant_p(__imm) && __imm > 255)
+    compiletime_assert_XXX()
 
-We don't want file interfaces for stats, and we already made that very
-clear last time.
+This can result in tripping a BUILD_BUG_ON() in __BF_FIELD_CHECK() that
+checks that a given value is representable in one byte (interpreted as
+unsigned).
+
+FIELD_FIT() should return true or false at runtime for whether a value
+can fit for not. Don't break the build over a value that's too large for
+the mask. We'd prefer to keep the inlining and compiler optimizations
+though we know this case will always return false.
+
+Cc: stable@vger.kernel.org
+Fixes: 1697599ee301a ("bitfield.h: add FIELD_FIT() helper")
+Link: https://lore.kernel.org/kernel-hardening/CAK7LNASvb0UDJ0U5wkYYRzTAdnEs64HjXpEUL7d=V0CXiAXcNw@mail.gmail.com/
+Reported-by: Masahiro Yamada <masahiroy@kernel.org>
+Debugged-by: Sami Tolvanen <samitolvanen@google.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+---
+Changes V1->V2:
+* add Fixes tag.
+
+ include/linux/bitfield.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
+index 48ea093ff04c..4e035aca6f7e 100644
+--- a/include/linux/bitfield.h
++++ b/include/linux/bitfield.h
+@@ -77,7 +77,7 @@
+  */
+ #define FIELD_FIT(_mask, _val)						\
+ 	({								\
+-		__BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_FIT: ");	\
++		__BF_FIELD_CHECK(_mask, 0ULL, 0ULL, "FIELD_FIT: ");	\
+ 		!((((typeof(_mask))_val) << __bf_shf(_mask)) & ~(_mask)); \
+ 	})
+ 
+-- 
+2.28.0.236.gb10cc79966-goog
+
