@@ -2,64 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69D37240505
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 13:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBCA4240573
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 13:47:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726545AbgHJLE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 07:04:27 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:37782 "EHLO a.mx.secunet.com"
+        id S1726446AbgHJLrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 07:47:24 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:39663 "EHLO 1wt.eu"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726146AbgHJLE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Aug 2020 07:04:27 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 5BA3A2056D;
-        Mon, 10 Aug 2020 13:04:25 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id iFtfZQW-AYnX; Mon, 10 Aug 2020 13:04:24 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id E95C7200AA;
-        Mon, 10 Aug 2020 13:04:24 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Mon, 10 Aug 2020 13:04:24 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Mon, 10 Aug
- 2020 13:04:24 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id ECB90318028B;
- Mon, 10 Aug 2020 13:04:23 +0200 (CEST)
-Date:   Mon, 10 Aug 2020 13:04:23 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <kuznet@ms2.inr.ac.ru>, <yoshfuji@linux-ipv6.org>,
-        <kuba@kernel.org>, <lucien.xin@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] ip_vti: Fix unused variable warning
-Message-ID: <20200810110423.GO13121@gauss3.secunet.de>
-References: <20200731064952.36900-1-yuehaibing@huawei.com>
+        id S1726141AbgHJLrX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 07:47:23 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 07ABl0kf008607;
+        Mon, 10 Aug 2020 13:47:00 +0200
+Date:   Mon, 10 Aug 2020 13:47:00 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     George Spelvin <lkml@sdf.org>
+Cc:     netdev@vger.kernel.org, aksecurity@gmail.com,
+        torvalds@linux-foundation.org, edumazet@google.com,
+        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
+        tglx@linutronix.de, peterz@infradead.org, tytso@mit.edu,
+        lkml.mplumb@gmail.com, stephen@networkplumber.org, fw@strlen.de
+Subject: Re: [DRAFT PATCH] random32: make prandom_u32() output unpredictable
+Message-ID: <20200810114700.GB8474@1wt.eu>
+References: <20200808152628.GA27941@SDF.ORG>
+ <20200809065744.GA17668@SDF.ORG>
+ <20200809093805.GA7928@1wt.eu>
+ <20200809170639.GB25124@SDF.ORG>
+ <20200809173302.GA8027@1wt.eu>
+ <20200809183017.GC25124@SDF.ORG>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200731064952.36900-1-yuehaibing@huawei.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <20200809183017.GC25124@SDF.ORG>
+User-Agent: Mutt/1.6.1 (2016-04-27)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 31, 2020 at 02:49:52PM +0800, YueHaibing wrote:
-> If CONFIG_INET_XFRM_TUNNEL is set but CONFIG_IPV6 is n,
-> 
-> net/ipv4/ip_vti.c:493:27: warning: 'vti_ipip6_handler' defined but not used [-Wunused-variable]
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Hi George,
 
-Now applied to the ipsec tree, thanks!
+On Sun, Aug 09, 2020 at 06:30:17PM +0000, George Spelvin wrote:
+> Even something simple like buffering 8 TSC samples, and adding them
+> at 32-bit offsets across the state every 8th call, would make a huge
+> difference.
+
+Doing testing on real hardware showed that retrieving the TSC on every
+call had a non negligible cost, causing a loss of 2.5% on the accept()
+rate and 4% on packet rate when using iptables -m statistics. However
+I reused your idea of accumulating old TSCs to increase the uncertainty
+about their exact value, except that I retrieve it only on 1/8 calls
+and use the previous noise in this case. With this I observe the same
+performance as plain 5.8. Below are the connection rates accepted on
+a single core :
+
+        5.8           5.8+patch     5.8+patch+tsc
+   192900-197900   188800->192200   194500-197500  (conn/s)
+
+This was on a core i7-8700K. I looked at the asm code for the function
+and it remains reasonably light, in the same order of complexity as the
+original one, so I think we could go with that.
+
+My proposed change is below, in case you have any improvements to suggest.
+
+Regards,
+Willy
+
+
+diff --git a/lib/random32.c b/lib/random32.c
+index 2b048e2ea99f..a12d63028106 100644
+--- a/lib/random32.c
++++ b/lib/random32.c
+@@ -317,6 +317,8 @@ static void __init prandom_state_selftest(void)
+ 
+ struct siprand_state {
+ 	unsigned long v[4];
++	unsigned long noise;
++	unsigned long count;
+ };
+ 
+ static DEFINE_PER_CPU(struct siprand_state, net_rand_state) __latent_entropy;
+@@ -334,7 +336,7 @@ static DEFINE_PER_CPU(struct siprand_state, net_rand_state) __latent_entropy;
+ #define K0 (0x736f6d6570736575 ^ 0x6c7967656e657261 )
+ #define K1 (0x646f72616e646f6d ^ 0x7465646279746573 )
+ 
+-#elif BITS_PER_LONG == 23
++#elif BITS_PER_LONG == 32
+ /*
+  * On 32-bit machines, we use HSipHash, a reduced-width version of SipHash.
+  * This is weaker, but 32-bit machines are not used for high-traffic
+@@ -375,6 +377,12 @@ static u32 siprand_u32(struct siprand_state *s)
+ {
+ 	unsigned long v0 = s->v[0], v1 = s->v[1], v2 = s->v[2], v3 = s->v[3];
+ 
++	if (++s->count >= 8) {
++		v3 ^= s->noise;
++		s->noise += random_get_entropy();
++		s->count = 0;
++	}
++
+ 	SIPROUND(v0, v1, v2, v3);
+ 	SIPROUND(v0, v1, v2, v3);
+ 	s->v[0] = v0;  s->v[1] = v1;  s->v[2] = v2;  s->v[3] = v3;
