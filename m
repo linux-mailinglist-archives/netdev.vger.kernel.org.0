@@ -2,40 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E3724075E
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 16:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EC6A240760
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 16:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727008AbgHJOT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 10:19:26 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48724 "EHLO vps0.lunn.ch"
+        id S1726974AbgHJOUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 10:20:07 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48730 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726845AbgHJOTZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Aug 2020 10:19:25 -0400
+        id S1726845AbgHJOUG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 10:20:06 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1k58e4-008xDo-A0; Mon, 10 Aug 2020 16:19:24 +0200
-Date:   Mon, 10 Aug 2020 16:19:24 +0200
+        id 1k58ej-008xEP-Kd; Mon, 10 Aug 2020 16:20:05 +0200
+Date:   Mon, 10 Aug 2020 16:20:05 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Michal Kubecek <mkubecek@suse.cz>
 Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool 3/7] ioctl: get rid of signed/unsigned comparison
- warnings
-Message-ID: <20200810141924.GF2123435@lunn.ch>
+Subject: Re: [PATCH ethtool 4/7] get rid of signed/unsigned comparison
+ warnings in register dump parsers
+Message-ID: <20200810142005.GG2123435@lunn.ch>
 References: <cover.1597007532.git.mkubecek@suse.cz>
- <0365573afe3649e47c1aa2490e1818a50613ee0a.1597007533.git.mkubecek@suse.cz>
+ <e135e814d434e58579969b838c3fc6bd9192f59b.1597007533.git.mkubecek@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0365573afe3649e47c1aa2490e1818a50613ee0a.1597007533.git.mkubecek@suse.cz>
+In-Reply-To: <e135e814d434e58579969b838c3fc6bd9192f59b.1597007533.git.mkubecek@suse.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -	while (arg_num < ctx->argc) {
-> +	while (arg_num < (unsigned int)ctx->argc) {
+On Sun, Aug 09, 2020 at 11:24:29PM +0200, Michal Kubecek wrote:
+> All of these are avoided by declaring a variable (mostly loop iterators)
+> holding only unsigned values as unsigned.
+> 
+> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-Did you try changing ctx->argc to an unsigned int? I guess there would
-be less casts that way, and it is a more logical type for this.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
     Andrew
