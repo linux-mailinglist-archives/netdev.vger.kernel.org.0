@@ -2,100 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD458240B32
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 18:32:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2AFF240B52
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 18:42:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727803AbgHJQcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 12:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46026 "EHLO
+        id S1727872AbgHJQmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 12:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbgHJQcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 12:32:08 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17AB3C061756
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 09:32:08 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id v9so10288357ljk.6
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 09:32:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pFeBvVB1jEfzGpY+bt9baeLPv05boktfenH9hUjB0bo=;
-        b=NLwt1l7ZkTPCOWy4Saoi0bq8GRA0HymCZr2MCX6EUf8yrgMhZYzCKPInB1idIbkf3Q
-         cnY3zIobJzp8OWJPNknRKxwOvWW5ED2J8R3BCImD7hOYyBkEOE4SlteQxYj0Td2SaTEz
-         aFRxvetDuNqc6x6dWJr8upX+Zw/7lLGsJRLt8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pFeBvVB1jEfzGpY+bt9baeLPv05boktfenH9hUjB0bo=;
-        b=CMNy/8MQ+QOjo+DNYuxpKkqgu7i8XR8JXOZB7NhpWchBBmOTt7VutggVkWaKBbyQAQ
-         qfKU5013JItJ2plaviHBdOLoAneL8BTwMMPFqWpTt8k9CmlHHO4gRzK8uNDayA9soCAD
-         EuTsLAdme7BucDvcih4hZwoQFC3rHpiDvHh0s1HN6aCBceNfu5eHenqG7PleW2f2Lpmp
-         +/vXgh7Iy7tUyxBa4eQZaCTjpXSVOWrfywIlH5q6gcaYHWDwkPyMgz67zVfXs5tyAZti
-         aRRzPHlTws38+u066QZw8H52E8h7ux6QSUkFFWFabkH71sthtBZJTOGfKvCOHtJy3aKp
-         SvtQ==
-X-Gm-Message-State: AOAM532zPKsEu9vKMEdSxXHLBXKzWdwSYDmpzT7yBBoo6DalJBo2NdSD
-        QJMPUaMjhl+gjusJTbR+vdsPzxFf+u0=
-X-Google-Smtp-Source: ABdhPJxQnZEsQURQ38y0hLfiO3BN02sFSnohdVksGu51SYCtdPUlDbOaHjkZfEpQ5bqlB8q6plHA9Q==
-X-Received: by 2002:a2e:8510:: with SMTP id j16mr942466lji.196.1597077126218;
-        Mon, 10 Aug 2020 09:32:06 -0700 (PDT)
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com. [209.85.208.178])
-        by smtp.gmail.com with ESMTPSA id s4sm10956691lfc.56.2020.08.10.09.32.04
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Aug 2020 09:32:05 -0700 (PDT)
-Received: by mail-lj1-f178.google.com with SMTP id t23so10292179ljc.3
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 09:32:04 -0700 (PDT)
-X-Received: by 2002:a2e:7615:: with SMTP id r21mr917059ljc.371.1597077124220;
- Mon, 10 Aug 2020 09:32:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200808152628.GA27941@SDF.ORG> <20200809065744.GA17668@SDF.ORG>
- <20200809093805.GA7928@1wt.eu> <20200809170639.GB25124@SDF.ORG>
- <20200809173302.GA8027@1wt.eu> <20200809183017.GC25124@SDF.ORG> <20200810114700.GB8474@1wt.eu>
-In-Reply-To: <20200810114700.GB8474@1wt.eu>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 10 Aug 2020 09:31:48 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wihkv1EtqcKcMS2kUQB86WRykQhknOnH08OcBH0Cz3Jtg@mail.gmail.com>
-Message-ID: <CAHk-=wihkv1EtqcKcMS2kUQB86WRykQhknOnH08OcBH0Cz3Jtg@mail.gmail.com>
-Subject: Re: [DRAFT PATCH] random32: make prandom_u32() output unpredictable
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     George Spelvin <lkml@sdf.org>, Netdev <netdev@vger.kernel.org>,
-        Amit Klein <aksecurity@gmail.com>,
+        with ESMTP id S1726720AbgHJQmX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 12:42:23 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF83C061756;
+        Mon, 10 Aug 2020 09:42:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=0gNEY5Uv1ZkTqXZzTvCE95coh5FKKxp18NgRISISDKM=; b=Z7G2rkO8kDefAvSPfeT4ryYwZB
+        Q83kptDsfUHDNOro3ep1o88Az8fSP/ODnUCCuL4uIescM78U93TfWfCWrliPm15/bF0hrEmgUUHCR
+        zYu63X/4PH+YQ/W1L4ZNeUzEsjd2KevSaw26+oWjmwULxlMRVC416rqNudhrRyiLsPtOeTs1be0bt
+        2ThHGVYy67PLsHVjWTOhrEjCOsiLTc4+QUol1XPk3yoS2I9GWZHLxdLoTkz8VpOL90KhlrYkoqIgE
+        VlXLq6aasjbKoocpeOgPIO+1a9VDvaKrDjw3WlrS9tp5QEhuMEdN/26h782IwtUnnbm2gDdP7GB6D
+        AoZO7Ihw==;
+Received: from [2a02:810d:9c0:47ac::c443] (helo=localhost)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1k5AsJ-0002QK-0W; Mon, 10 Aug 2020 16:42:15 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andrew Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Marc Plumb <lkml.mplumb@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Florian Westphal <fw@strlen.de>
-Content-Type: text/plain; charset="UTF-8"
+        John Stultz <john.stultz@linaro.org>
+Subject: [PATCH] net: Revert "net: optimize the sockptr_t for unified kernel/user address spaces"
+Date:   Mon, 10 Aug 2020 18:42:14 +0200
+Message-Id: <20200810164214.9978-1-hch@lst.de>
+X-Mailer: git-send-email 2.28.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 10, 2020 at 4:47 AM Willy Tarreau <w@1wt.eu> wrote:
->
-> Doing testing on real hardware showed that retrieving the TSC on every
-> call had a non negligible cost, causing a loss of 2.5% on the accept()
-> rate and 4% on packet rate when using iptables -m statistics.
+This reverts commits 6d04fe15f78acdf8e32329e208552e226f7a8ae6 and
+a31edb2059ed4e498f9aa8230c734b59d0ad797a.
 
-And by "real hardware" I assume you mean x86, with a fairly fast and
-high-performance TSC for get_random_entropy().
+It turns out the idea to share a single pointer for both kernel and user
+space address causes various kinds of problems.  So use the slightly less
+optimal version that uses an extra bit, but which is guaranteed to be safe
+everywhere.
 
-Reading the TSC takes on the order of 20-50 cycles, iirc.
+Fixes: 6d04fe15f78a ("net: optimize the sockptr_t for unified kernel/user address spaces")
+Reported-by: Eric Dumazet <edumazet@google.com>
+Reported-by: John Stultz <john.stultz@linaro.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ include/linux/sockptr.h     | 26 ++------------------------
+ net/ipv4/bpfilter/sockopt.c | 14 ++++++--------
+ net/socket.c                |  6 +-----
+ 3 files changed, 9 insertions(+), 37 deletions(-)
 
-But it can actually be *much* more expensive. On non-x86, it can be an
-IO cycle to external chips.
+diff --git a/include/linux/sockptr.h b/include/linux/sockptr.h
+index 96840def9d69cc..ea193414298b7f 100644
+--- a/include/linux/sockptr.h
++++ b/include/linux/sockptr.h
+@@ -8,26 +8,9 @@
+ #ifndef _LINUX_SOCKPTR_H
+ #define _LINUX_SOCKPTR_H
+ 
+-#include <linux/compiler.h>
+ #include <linux/slab.h>
+ #include <linux/uaccess.h>
+ 
+-#ifdef CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+-typedef union {
+-	void		*kernel;
+-	void __user	*user;
+-} sockptr_t;
+-
+-static inline bool sockptr_is_kernel(sockptr_t sockptr)
+-{
+-	return (unsigned long)sockptr.kernel >= TASK_SIZE;
+-}
+-
+-static inline sockptr_t KERNEL_SOCKPTR(void *p)
+-{
+-	return (sockptr_t) { .kernel = p };
+-}
+-#else /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
+ typedef struct {
+ 	union {
+ 		void		*kernel;
+@@ -45,15 +28,10 @@ static inline sockptr_t KERNEL_SOCKPTR(void *p)
+ {
+ 	return (sockptr_t) { .kernel = p, .is_kernel = true };
+ }
+-#endif /* CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE */
+ 
+-static inline int __must_check init_user_sockptr(sockptr_t *sp, void __user *p,
+-		size_t size)
++static inline sockptr_t USER_SOCKPTR(void __user *p)
+ {
+-	if (!access_ok(p, size))
+-		return -EFAULT;
+-	*sp = (sockptr_t) { .user = p };
+-	return 0;
++	return (sockptr_t) { .user = p };
+ }
+ 
+ static inline bool sockptr_is_null(sockptr_t sockptr)
+diff --git a/net/ipv4/bpfilter/sockopt.c b/net/ipv4/bpfilter/sockopt.c
+index 545b2640f0194d..1b34cb9a7708ec 100644
+--- a/net/ipv4/bpfilter/sockopt.c
++++ b/net/ipv4/bpfilter/sockopt.c
+@@ -57,18 +57,16 @@ int bpfilter_ip_set_sockopt(struct sock *sk, int optname, sockptr_t optval,
+ 	return bpfilter_mbox_request(sk, optname, optval, optlen, true);
+ }
+ 
+-int bpfilter_ip_get_sockopt(struct sock *sk, int optname,
+-			    char __user *user_optval, int __user *optlen)
++int bpfilter_ip_get_sockopt(struct sock *sk, int optname, char __user *optval,
++			    int __user *optlen)
+ {
+-	sockptr_t optval;
+-	int err, len;
++	int len;
+ 
+ 	if (get_user(len, optlen))
+ 		return -EFAULT;
+-	err = init_user_sockptr(&optval, user_optval, len);
+-	if (err)
+-		return err;
+-	return bpfilter_mbox_request(sk, optname, optval, len, false);
++
++	return bpfilter_mbox_request(sk, optname, USER_SOCKPTR(optval), len,
++				     false);
+ }
+ 
+ static int __init bpfilter_sockopt_init(void)
+diff --git a/net/socket.c b/net/socket.c
+index aff52e81653ce3..e44b8ac47f6f46 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -2097,7 +2097,7 @@ static bool sock_use_custom_sol_socket(const struct socket *sock)
+ int __sys_setsockopt(int fd, int level, int optname, char __user *user_optval,
+ 		int optlen)
+ {
+-	sockptr_t optval;
++	sockptr_t optval = USER_SOCKPTR(user_optval);
+ 	char *kernel_optval = NULL;
+ 	int err, fput_needed;
+ 	struct socket *sock;
+@@ -2105,10 +2105,6 @@ int __sys_setsockopt(int fd, int level, int optname, char __user *user_optval,
+ 	if (optlen < 0)
+ 		return -EINVAL;
+ 
+-	err = init_user_sockptr(&optval, user_optval, optlen);
+-	if (err)
+-		return err;
+-
+ 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
+ 	if (!sock)
+ 		return err;
+-- 
+2.28.0
 
-And on older hardware VM's in x86, it can be a vm exit etc, so
-thousands of cycles. I hope nobody uses those VM's any more, but it
-would be a reasonable test-case for some non-x86 implementations, so..
-
-IOW, no. You guys are - once again - ignoring reality.
-
-            Linus
