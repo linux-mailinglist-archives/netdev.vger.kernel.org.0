@@ -2,61 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C73A824070A
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 15:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC476240742
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 16:11:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726962AbgHJN4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 09:56:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53342 "EHLO mail.kernel.org"
+        id S1726989AbgHJOLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 10:11:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48704 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726584AbgHJN4j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Aug 2020 09:56:39 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EBC1B2078D;
-        Mon, 10 Aug 2020 13:56:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597067799;
-        bh=SdnRjVTx+XenxW0mx6UmkUexgdMB8KMdeUjFwmhv2yg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GmhHKG+Sjryr43HZGFUTKyF64RRPiYc5FAw9/8cIHo3kkBMjwdVulsEcYeO9BjFR9
-         0eB/ecwLP1aLSHqdyP5XZRAs2wnemDEhF6rSVgnMTdw9pSmFtYSNWu9/eMcE+rzE7F
-         KF1P+dHwCz3uAWpbh18BCdePAyIs0LzPHUOe5JWk=
-Date:   Mon, 10 Aug 2020 15:56:50 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Izabela Bakollari <izabela.bakollari@gmail.com>
-Cc:     nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [Linux-kernel-mentees] [PATCHv2 net-next] dropwatch: Support
- monitoring of dropped frames
-Message-ID: <20200810135650.GA3726113@kroah.com>
-References: <20200707171515.110818-1-izabela.bakollari@gmail.com>
- <20200804160908.46193-1-izabela.bakollari@gmail.com>
- <CAC8tkWDuvz3HQDp=Bb-Sfgiks1ETG-j1SMFn6O2nhyzYL5Cc8Q@mail.gmail.com>
+        id S1726814AbgHJOLY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 10:11:24 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1k58WI-008xB0-9z; Mon, 10 Aug 2020 16:11:22 +0200
+Date:   Mon, 10 Aug 2020 16:11:22 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool 1/7] netlink: get rid of signed/unsigned
+ comparison warnings
+Message-ID: <20200810141122.GD2123435@lunn.ch>
+References: <cover.1597007532.git.mkubecek@suse.cz>
+ <90fd688121efaea8acce2a9547585416433493f3.1597007533.git.mkubecek@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAC8tkWDuvz3HQDp=Bb-Sfgiks1ETG-j1SMFn6O2nhyzYL5Cc8Q@mail.gmail.com>
+In-Reply-To: <90fd688121efaea8acce2a9547585416433493f3.1597007533.git.mkubecek@suse.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 10, 2020 at 03:39:40PM +0200, Izabela Bakollari wrote:
-> I have worked on this feature as part of the Linux Kernel Mentorship
-> Program. Your review would really help me in this learning process.
+On Sun, Aug 09, 2020 at 11:24:19PM +0200, Michal Kubecek wrote:
+> Get rid of compiler warnings about comparison between signed and
+> unsigned integer values in netlink code.
+> 
+> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+> ---
+>  netlink/features.c | 4 ++--
+>  netlink/netlink.c  | 4 ++--
+>  netlink/netlink.h  | 2 +-
+>  netlink/nlsock.c   | 2 +-
+>  netlink/parser.c   | 2 +-
+>  netlink/settings.c | 6 +++---
+>  6 files changed, 10 insertions(+), 10 deletions(-)
+> 
+> diff --git a/netlink/features.c b/netlink/features.c
+> index 8b5b8588ca23..f5862e97a265 100644
+> --- a/netlink/features.c
+> +++ b/netlink/features.c
+> @@ -149,7 +149,7 @@ int dump_features(const struct nlattr *const *tb,
+>  			continue;
+>  
+>  		for (j = 0; j < results.count; j++) {
+> -			if (feature_flags[j] == i) {
+> +			if (feature_flags[j] == (int)i) {
+>  				n_match++;
+>  				flag_value = flag_value ||
+>  					feature_on(results.active, j);
+> @@ -163,7 +163,7 @@ int dump_features(const struct nlattr *const *tb,
+>  		for (j = 0; j < results.count; j++) {
+>  			const char *name = get_string(feature_names, j);
+>  
+> -			if (feature_flags[j] != i)
+> +			if (feature_flags[j] != (int)i)
 
-You sent this just a bit less than 1 week ago, and it's the middle of
-the kernel merge window, where no maintainer can take any new patches
-that are not bugfixes, and they are totally busy with the merge window
-issues.
+Hi Michal
 
-Give people a chance, try resending this after the net-next tree is open
-in a few weeks.
+Would it be better to make feature_flags an unsigned int * ? And
+change the -1 to MAX_UNIT?
 
-thanks,
-
-greg k-h
+       Andrew
