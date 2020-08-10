@@ -2,119 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 634372411BB
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 22:30:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9DAB2411FD
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 23:01:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726422AbgHJUao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 16:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54362 "EHLO
+        id S1726723AbgHJVBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 17:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726412AbgHJUao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 16:30:44 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C46C061756
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 13:30:43 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id z14so11100891ljm.1
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 13:30:43 -0700 (PDT)
+        with ESMTP id S1726115AbgHJVBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 17:01:12 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FFD9C061756;
+        Mon, 10 Aug 2020 14:01:12 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id f24so10820176ejx.6;
+        Mon, 10 Aug 2020 14:01:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=Wx2TL88AwCBQcmpYr8LVVD9gSnGGQQkuczGbUFBwHNU=;
-        b=lRZ/I2ITyYH8yKnqJMpTCHAl0RZOLS0aghIyVE8vmklILdMvvsQV5BJrLRyDPaKImn
-         ILibmO6QjBqY8rqrAE/5JtkeNyoddnQVe0SnU7a9eAhCFcLGk3xN66MesvmUVkFB+c+i
-         N1eE6yVnbukHcAlpzSqo38y9qKVU93ePP8xxU=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kZV6bGMnFRnrq6awOAaMSY2e30ls2hMzYSKPF5lCwco=;
+        b=HRjs9aREtAntyg4GqciKpndEpWsARkaC7dDydsKhlctnpTnTRTNeOF3Up8j1kN4DUF
+         cEZ+smciWZ2F3S8Sd61Y+99pMrJpPbXnmBgY6poR9bOCt1rtubnx9aF4BNDC67qk9U9Q
+         7QHegpaEHT7ofoXyj5JhNOi+YfttJYAejA0voW7tWh66Z6ZRTXcPQ2+IdtvVLwMCVp2l
+         G9KYDA2abpN+yB9VBB4Jm/Z0neY6h4S8emT12USfuWpz5coeO1P1pwA35thBYaKdNLmJ
+         9XeSlYQiHEHrDK9DS/BavI8jtk4EQ673TCApP3AkPwcg6i+5CCehtrJvZzry7WBjuzjA
+         FkjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=Wx2TL88AwCBQcmpYr8LVVD9gSnGGQQkuczGbUFBwHNU=;
-        b=bP10vqwW2EiYdXySc1nH3ZXHHc1MJIfljKlJ6x4h5VcOY63s9s+zDNUPQE4O2m3yVq
-         sy1bdOabeKrDpbxzC1pSAS/vRpGWSLfZxusqG4sGjfd/dEa6LF4eeyWxD6p8tvZob/HS
-         D7DaaABLwAnx9dwFeM7p5YisqmCpUxV/+X5NMkWpHMLH2ZxRmtgh6zWa6DCjbNOH3RHE
-         0P2S7IsR4s2s7IM4Owb1bE9AMhuLTYhUDRDkLJjsZq3fgDMdNhCLpwkFn3pdovxjHHTm
-         rTzuNy5F6DSFi3BfnsEyabiDuIogvA5s0lVdHwtHtZd5Zv8ygAdZO5skyaODWmJmr/cl
-         l8hA==
-X-Gm-Message-State: AOAM531dvkR6O8phUbIBf5wknUoLv+2a+zcqjnmyaCOJ748cYnH7EwSC
-        viPxcAwfjVrNWk1/efXUCwCwMw==
-X-Google-Smtp-Source: ABdhPJwzPpUtd6cyUfe/+Up71tMI4D2v1fkMcIG8zDGa8TM9+ZHXZ2+pquRCSVUKRvUU0nQoW3ygyw==
-X-Received: by 2002:a05:651c:310:: with SMTP id a16mr1308524ljp.250.1597091441235;
-        Mon, 10 Aug 2020 13:30:41 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id p28sm9472447ljn.69.2020.08.10.13.30.40
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kZV6bGMnFRnrq6awOAaMSY2e30ls2hMzYSKPF5lCwco=;
+        b=XeKuDCbmhxraP1iK9adqUIxPMajRHiIgL/cNOnZvgf4lbKrf4ibwR5Dt/93E++et2h
+         rhteQ2VQyVDhtaR/8qE5Gb9DhllSURS4/g1L206me2dnRDIaUJqeoTf02AghHcWB/Owh
+         hidB9V2uecSngEt1AYPOQC4tcqrfGrSA89fJ1jiyjaV0EK3Z4thFWVLUlS5cZGrWfYrg
+         IG9972KrbxWS6W+6ilD5elVCZdTjHvreAh3l+o412w4w+I2FTMao7A7jNYvB52RN3Z+B
+         SIoyOOWuVksFU+nJ27qoYI53q+rQEKvnV7D7WSW3Evz98EqLFt6CEHn+N+g3FCOfPRAd
+         juoA==
+X-Gm-Message-State: AOAM530aEv956FqHTWDnmbu8zlSzRoZfDT+f1EsZ26v6rbcoNnJQOAtE
+        SKzAiUm/Wsv22Pj0Icfk9sQMOuEz
+X-Google-Smtp-Source: ABdhPJwPdRlGb+eBi6Cmds3+VrJd/bOoHNKk9G6ECH60Dx+BX7NZQ5jb2vI7+BoVAA0Om5WDBykP9g==
+X-Received: by 2002:a17:906:eb90:: with SMTP id mh16mr22574283ejb.10.1597093270829;
+        Mon, 10 Aug 2020 14:01:10 -0700 (PDT)
+Received: from skbuf ([86.126.22.216])
+        by smtp.gmail.com with ESMTPSA id e6sm13928333ejd.14.2020.08.10.14.01.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Aug 2020 13:30:40 -0700 (PDT)
-References: <20200807223846.4190917-1-sdf@google.com> <87zh756kn7.fsf@cloudflare.com> <CAKH8qBswCOU6oK2rLkUADRF-NUgwcHB-MyWNV+ug_cLRxnQBeQ@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf] selftests/bpf: fix v4_to_v6 in sk_lookup
-In-reply-to: <CAKH8qBswCOU6oK2rLkUADRF-NUgwcHB-MyWNV+ug_cLRxnQBeQ@mail.gmail.com>
-Date:   Mon, 10 Aug 2020 22:30:39 +0200
-Message-ID: <87sgcus0pc.fsf@cloudflare.com>
+        Mon, 10 Aug 2020 14:01:10 -0700 (PDT)
+Date:   Tue, 11 Aug 2020 00:01:08 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.7 03/60] net: mscc: ocelot: fix encoding
+ destination ports into multicast IPv4 address
+Message-ID: <20200810210108.ystlnglj4atyfrfh@skbuf>
+References: <20200810191028.3793884-1-sashal@kernel.org>
+ <20200810191028.3793884-3-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200810191028.3793884-3-sashal@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 10, 2020 at 06:14 PM CEST, Stanislav Fomichev wrote:
-> On Sat, Aug 8, 2020 at 11:46 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->>
->> On Sat, Aug 08, 2020 at 12:38 AM CEST, Stanislav Fomichev wrote:
->> > I'm getting some garbage in bytes 8 and 9 when doing conversion
->> > from sockaddr_in to sockaddr_in6 (leftover from AF_INET?).
->> > Let's explicitly clear the higher bytes.
->> >
->> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
->> > ---
->> >  tools/testing/selftests/bpf/prog_tests/sk_lookup.c | 1 +
->> >  1 file changed, 1 insertion(+)
->> >
->> > diff --git a/tools/testing/selftests/bpf/prog_tests/sk_lookup.c b/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
->> > index c571584c00f5..9ff0412e1fd3 100644
->> > --- a/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
->> > +++ b/tools/testing/selftests/bpf/prog_tests/sk_lookup.c
->> > @@ -309,6 +309,7 @@ static void v4_to_v6(struct sockaddr_storage *ss)
->> >       v6->sin6_addr.s6_addr[10] = 0xff;
->> >       v6->sin6_addr.s6_addr[11] = 0xff;
->> >       memcpy(&v6->sin6_addr.s6_addr[12], &v4.sin_addr.s_addr, 4);
->> > +     memset(&v6->sin6_addr.s6_addr[0], 0, 10);
->> >  }
->> >
->> >  static int udp_recv_send(int server_fd)
->>
->> That was badly written. Sorry about that. And thanks for the fix.
->>
->> I'd even zero out the whole thing:
->>
->>         memset(v6, 0, sizeof(*v6));
->>
->> ... because right now IPv4 address is left as sin6_flowinfo.  I can
->> follow up with that change, unless you'd like to roll a v2.
-> Up to you, but I'm not sure zeroing out the whole v6 portion is the
-> best way forward.
-> IMO, it's a bit confusing when reading the code.
-> It will work, but only because v4 and v6 address portions don't really
-> overlap :-/
+Hi Sasha,
 
-It's not that hacky :-) We copy sockaddr_in bits before overwriting ss:
+On Mon, Aug 10, 2020 at 03:09:31PM -0400, Sasha Levin wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> [ Upstream commit 0897ecf7532577bda3dbcb043ce046a96948889d ]
+> 
+> The ocelot hardware designers have made some hacks to support multicast
+> IPv4 and IPv6 addresses. Normally, the MAC table matches on MAC
+> addresses and the destination ports are selected through the DEST_IDX
+> field of the respective MAC table entry. The DEST_IDX points to a Port
+> Group ID (PGID) which contains the bit mask of ports that frames should
+> be forwarded to. But there aren't a lot of PGIDs (only 80 or so) and
+> there are clearly many more IP multicast addresses than that, so it
+> doesn't scale to use this PGID mechanism, so something else was done.
+> Since the first portion of the MAC address is known, the hack they did
+> was to use a single PGID for _flooding_ unknown IPv4 multicast
+> (PGID_MCIPV4 == 62), but for known IP multicast, embed the destination
+> ports into the first 3 bytes of the MAC address recorded in the MAC
+> table.
+> 
+> The VSC7514 datasheet explains it like this:
+> 
+>     3.9.1.5 IPv4 Multicast Entries
+> 
+>     MAC table entries with the ENTRY_TYPE = 2 settings are interpreted
+>     as IPv4 multicast entries.
+>     IPv4 multicasts entries match IPv4 frames, which are classified to
+>     the specified VID, and which have DMAC = 0x01005Exxxxxx, where
+>     xxxxxx is the lower 24 bits of the MAC address in the entry.
+>     Instead of a lookup in the destination mask table (PGID), the
+>     destination set is programmed as part of the entry MAC address. This
+>     is shown in the following table.
+> 
+>     Table 78: IPv4 Multicast Destination Mask
+> 
+>         Destination Ports            Record Bit Field
+>         ---------------------------------------------
+>         Ports 10-0                   MAC[34-24]
+> 
+>     Example: All IPv4 multicast frames in VLAN 12 with MAC 01005E112233 are
+>     to be forwarded to ports 3, 8, and 9. This is done by inserting the
+>     following entry in the MAC table entry:
+>     VALID = 1
+>     VID = 12
+>     MAC = 0x000308112233
+>     ENTRY_TYPE = 2
+>     DEST_IDX = 0
+> 
+> But this procedure is not at all what's going on in the driver. In fact,
+> the code that embeds the ports into the MAC address looks like it hasn't
+> actually been tested. This patch applies the procedure described in the
+> datasheet.
+> 
+> Since there are many other fixes to be made around multicast forwarding
+> until it works properly, there is no real reason for this patch to be
+> backported to stable trees, or considered a real fix of something that
+> should have worked.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
 
-	struct sockaddr_in v4 = *(struct sockaddr_in *)ss;
+Could you please drop this patch from the 'stable' queues for 5.7 and
+5.8? I haven't tested it on older kernels and without the other patches
+sent in that series. I would like to avoid unexpected regressions if
+possible.
 
-It could be easier to read, perhaps by copying just the fields we need:
-
-	struct sockaddr_in *v4 = (struct sockaddr_in *)ss;
-	uint32_t addr = v4->sin_addr.saddr;
-	in_port_t port = v4->sin_port;
-
-> I was thinking about adding new, on the stack sin6, fully initializing
-> it and then doing memcpy into ss.
-> But I decided that adding memset is probably good enough :-)
-
-Makes sense. Either way sounds good to me.
+Thanks,
+-Vladimir
