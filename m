@@ -2,47 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01D15240E2D
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 21:13:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1DBB240FAC
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 21:25:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729393AbgHJTLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 15:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42194 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729384AbgHJTLn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 15:11:43 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA250C061756
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 12:11:43 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C979A12752977;
-        Mon, 10 Aug 2020 11:54:57 -0700 (PDT)
-Date:   Mon, 10 Aug 2020 12:11:42 -0700 (PDT)
-Message-Id: <20200810.121142.90211783405052180.davem@davemloft.net>
-To:     kuba@kernel.org
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net] nfp: update maintainer
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200810173204.26222-1-kuba@kernel.org>
-References: <20200810173204.26222-1-kuba@kernel.org>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 10 Aug 2020 11:54:57 -0700 (PDT)
+        id S1729930AbgHJTXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 15:23:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42856 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729604AbgHJTMn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 15:12:43 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D79AD22BEA;
+        Mon, 10 Aug 2020 19:12:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597086762;
+        bh=Dvl4wZjTh9kZL21GzFmX/cOdrfrYvQ6it6+kPYs6ALY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lLVuZGkA+mptuEM9VdwSWrNUlD68iHGEvIeGnGUgnucJeUeZ7z2zYkL4GlJhdgF9w
+         IJiQlQ+R9FiWyxuHbPuaoJ1+zOScAT1mctEaMvSdyiB++8R7qq8Xao4lNtDC4erNg7
+         tMCbSRpaTvbb1RHz+RniaVjfSxd4jUyYt3VCB5BU=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Bolarinwa Olayemi Saheed <refactormyself@gmail.com>,
+        Bjorn Helgaas <bjorn@helgaas.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 34/45] iwlegacy: Check the return value of pcie_capability_read_*()
+Date:   Mon, 10 Aug 2020 15:11:42 -0400
+Message-Id: <20200810191153.3794446-34-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200810191153.3794446-1-sashal@kernel.org>
+References: <20200810191153.3794446-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Mon, 10 Aug 2020 10:32:04 -0700
+From: Bolarinwa Olayemi Saheed <refactormyself@gmail.com>
 
-> I'm not doing much work on the NFP driver any more.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[ Upstream commit 9018fd7f2a73e9b290f48a56b421558fa31e8b75 ]
 
-Applied.
+On failure pcie_capability_read_dword() sets it's last parameter, val
+to 0. However, with Patch 14/14, it is possible that val is set to ~0 on
+failure. This would introduce a bug because (x & x) == (~0 & x).
+
+This bug can be avoided without changing the function's behaviour if the
+return value of pcie_capability_read_dword is checked to confirm success.
+
+Check the return value of pcie_capability_read_dword() to ensure success.
+
+Suggested-by: Bjorn Helgaas <bjorn@helgaas.com>
+Signed-off-by: Bolarinwa Olayemi Saheed <refactormyself@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200713175529.29715-3-refactormyself@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/intel/iwlegacy/common.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlegacy/common.c b/drivers/net/wireless/intel/iwlegacy/common.c
+index 746749f379964..1107b96a8a880 100644
+--- a/drivers/net/wireless/intel/iwlegacy/common.c
++++ b/drivers/net/wireless/intel/iwlegacy/common.c
+@@ -4286,8 +4286,8 @@ il_apm_init(struct il_priv *il)
+ 	 *    power savings, even without L1.
+ 	 */
+ 	if (il->cfg->set_l0s) {
+-		pcie_capability_read_word(il->pci_dev, PCI_EXP_LNKCTL, &lctl);
+-		if (lctl & PCI_EXP_LNKCTL_ASPM_L1) {
++		ret = pcie_capability_read_word(il->pci_dev, PCI_EXP_LNKCTL, &lctl);
++		if (!ret && (lctl & PCI_EXP_LNKCTL_ASPM_L1)) {
+ 			/* L1-ASPM enabled; disable(!) L0S  */
+ 			il_set_bit(il, CSR_GIO_REG,
+ 				   CSR_GIO_REG_VAL_L0S_ENABLED);
+-- 
+2.25.1
+
