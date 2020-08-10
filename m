@@ -2,128 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 898F7240AD2
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 17:51:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A059240AD0
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 17:51:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727800AbgHJPvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727855AbgHJPvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 11:51:51 -0400
+Received: from mx.wizbit.be ([87.237.14.2]:38186 "EHLO mx.wizbit.be"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726338AbgHJPvu (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 10 Aug 2020 11:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39866 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726484AbgHJPvu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 11:51:50 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771B7C061756;
-        Mon, 10 Aug 2020 08:51:50 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id p37so951229pgl.3;
-        Mon, 10 Aug 2020 08:51:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=8ZzO6krlGJtRD/+LRXbveBA4o2Xgr8jl4siKcCp95Rs=;
-        b=eRdnzb8EwOXUMu2u4KxZk9rEvwiwanXfLavWPE+hUtV0e/KDATsXJiC/CgxbDBCBnk
-         GmLW2r+3SLEfweVobCL/0xQf7MYy/Knz51v60SsM46jG+Ry5AimEvpVrG7R/BvtDZwMc
-         Q300hPeRXARxvgzPyA6xTlbSSfcwE0jwOJky/twVX6orerMVGY/ZQoVaICjiNHx4Y4Lu
-         akUb25LnqrGz7PrQzAwAAfhd4q8N/MyPXiGoZE0ByqBILNQSVE1eT1fueOG1JDw3wcmf
-         pJDdp1lq1gysfSfLqZ+6a2t1XyuhXBgdgjWRjI5qUQFK7vfebiXjM0qG6R1L0uyrXIwn
-         WT0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to:user-agent;
-        bh=8ZzO6krlGJtRD/+LRXbveBA4o2Xgr8jl4siKcCp95Rs=;
-        b=NhwEAuAllUcRtCtByoSe8D7ok+0AboRqGWSQ/WLaZs14QtF+r4YhLUCRxlCs8zZThl
-         wQqRAp5YjGSqwVxCu9Avu64h8mvO4oY9H8uRtoaYGfalYe3U80g4fxkql+dBKCzDAers
-         0QfW0Ummdx/dE9dQwTsG650dsHtmFxxsKS4ZqMzpGYgJlMVtWUtW6FFWSK+u1OexuYvr
-         qF3OBMMAjOSY5aBNrRQUkZr+2xqV3Kj179qs3DjM2UzyMbA+439+gohu1uxWnIpcFwME
-         mL8ExqfCnI9Zc2r7rXVpJLhNh0m+CirqK02hddCXTpr9bVXbyp2S7Xd2lAjjJV75h1Lo
-         XK9Q==
-X-Gm-Message-State: AOAM530cOoDyxFKQAZEOUEJ8ObYfN6th8hLFkp0FdqVP6VZzz1m+8XJe
-        XXBL+pyWgb2QzFk/yRn2ims=
-X-Google-Smtp-Source: ABdhPJyjYHbuOtgFfYrASU2QIplM/xpM3JwZFyaDKBzaqpr+xFYrNfS02R+Iopzhf7MofqdWcS28Ng==
-X-Received: by 2002:a62:1803:: with SMTP id 3mr1763866pfy.198.1597074709927;
-        Mon, 10 Aug 2020 08:51:49 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id a15sm21753181pfo.185.2020.08.10.08.51.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 10 Aug 2020 08:51:49 -0700 (PDT)
-Date:   Mon, 10 Aug 2020 08:51:47 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [linux-next:master 13398/13940]
- drivers/net/ethernet/sfc/ef100_nic.c:610: undefined reference to `__umoddi3'
-Message-ID: <20200810155147.GA108014@roeck-us.net>
-References: <202008060723.1gNgVvUi%lkp@intel.com>
- <487d9159-41f8-2757-2e93-01426a527fb5@solarflare.com>
+Received: from [87.237.14.4] (87-237-14-7.powered-by.benesol.be [87.237.14.7])
+        by wizbit.localdomain (Postfix) with ESMTP id BBF746003;
+        Mon, 10 Aug 2020 17:51:48 +0200 (CEST)
+Message-ID: <5F316D22.6080908@mail.wizbit.be>
+Date:   Mon, 10 Aug 2020 17:52:02 +0200
+From:   Bram Yvakh <bram-yvahk@mail.wizbit.be>
+User-Agent: Thunderbird 2.0.0.24 (Windows/20100228)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <487d9159-41f8-2757-2e93-01426a527fb5@solarflare.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+To:     Sabrina Dubroca <sd@queasysnail.net>
+CC:     netdev@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>, xmu@redhat.com
+Subject: Re: [PATCH ipsec] xfrmi: drop ignore_df check before updating pmtu
+References: <70e7c2a65afed5de117dbc16082def459bd39d93.1596531053.git.sd@queasysnail.net> <5F295578.4040004@mail.wizbit.be> <20200807144701.GC906370@bistromath.localdomain> <5F2D7615.6090802@mail.wizbit.be> <20200810122020.GA1128331@bistromath.localdomain>
+In-Reply-To: <20200810122020.GA1128331@bistromath.localdomain>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 06, 2020 at 07:17:43PM +0100, Edward Cree wrote:
-> On 06/08/2020 00:48, kernel test robot wrote:
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-> > head:   d15fe4ec043588beee823781602ddb51d0bc84c8
-> > commit: adcfc3482ffff813fa2c34e5902005853f79c2aa [13398/13940] sfc_ef100: read Design Parameters at probe time
-> > config: microblaze-randconfig-r032-20200805 (attached as .config)
-> > compiler: microblaze-linux-gcc (GCC) 9.3.0
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         git checkout adcfc3482ffff813fa2c34e5902005853f79c2aa
-> >         # save the attached .config to linux build tree
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=microblaze 
-> >
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> >
-> > All errors (new ones prefixed by >>):
-> >
-> >    microblaze-linux-ld: drivers/net/ethernet/sfc/ef100_nic.o: in function `ef100_process_design_param':
-> >>> drivers/net/ethernet/sfc/ef100_nic.c:610: undefined reference to `__umoddi3'
-> >    605			/* Our TXQ and RXQ sizes are always power-of-two and thus divisible by
-> >    606			 * EFX_MIN_DMAQ_SIZE, so we just need to check that
-> >    607			 * EFX_MIN_DMAQ_SIZE is divisible by GRANULARITY.
-> >    608			 * This is very unlikely to fail.
-> >    609			 */
-> >  > 610			if (EFX_MIN_DMAQ_SIZE % reader->value) {
-> So, this is (unsigned long) % (u64), whichI guess doesn't go quite
->  as smoothly 32-bit microcontrollers (though the thought of plugging
->  a 100-gig smartNIC into a microblaze boggles the mind a little ;).
-> And none of the math64.h functions seem to have the shape we want —
->  div_u64_rem() wants to write the remainder through a pointer, and
->  do_div() wants to modify the dividend (which is a constant in this
->  case).  So whatever I do, it's gonna be ugly :(
-> 
-> Maybe I should add a
-> 
-> static inline u32 mod_u64(u64 dividend, u32 divisor)
-> {
->         return do_div(dividend, divisor);
-> }
 
-Your proposed function is an exact replicate of do_div() and thus doesn't
-make much sense. Also, in your case, divisor is a 64-bit value, which is
-causing the problem to start with. You could try something like
+>>> and just run ping on it. ping sets DF, we want an exception
+>>> to be created, but this test prevents it.
+>>>   
+>>>       
+>> As I said dropping the test currently doesn't make sense to me.
+>> I would expect that the 'ignore_df' flag is not set on the device, and
+>> if it's set then I would expect things to work.
+>>     
+>
+> ignore_df is a property of the packet (skb), not of the device. Only
+> gre tunnels have an ignore_df property, not vti or xfrmi.
+>   
+Correct, I noticed my 'typo' after mail was submitted.
 
-	if (reader->value > EFX_MIN_DMAQ_SIZE || EFX_MIN_DMAQ_SIZE % (u32)reader->value)
+>>> The packet ends up being dropped in xfrm_output_one because of the mtu
+>>> check in xfrm4_tunnel_check_size.
+>>>   
+>>>       
+>> That's the bit that does not (yet) make senes to me..
+>> Looking at net-next/master (bfdd5aaa54b0a44d9df550fe4c9db7e1470a11b8)
+>>
+>> ||
+>>
+>> 	static int xfrm4_tunnel_check_size(struct sk_buff *skb)
+>> 	{
+>> 		int mtu, ret = 0;
+>> 	
+>> 		if (IPCB(skb)->flags & IPSKB_XFRM_TUNNEL_SIZE)
+>> 			goto out;
+>> 	
+>> 		if (!(ip_hdr(skb)->frag_off & htons(IP_DF)) || skb->ignore_df)
+>> 			goto out;
+>> 	
+>> 		mtu = dst_mtu(skb_dst(skb));
+>> 		if ((!skb_is_gso(skb) && skb->len > mtu) ||
+>> 		    (skb_is_gso(skb) &&
+>> 		     !skb_gso_validate_network_len(skb, ip_skb_dst_mtu(skb->sk, skb)))) {
+>> 			skb->protocol = htons(ETH_P_IP);
+>> 	
+>> 			if (skb->sk)
+>> 				xfrm_local_error(skb, mtu);
+>> 			else
+>> 				icmp_send(skb, ICMP_DEST_UNREACH,
+>> 					  ICMP_FRAG_NEEDED, htonl(mtu));
+>> 			ret = -EMSGSIZE;
+>> 		}
+>> 	out:
+>> 		return ret;
+>> 	}
+>>
+>> *If* skb->ignore_df is set then it *skips* the mtu check.
+>>     
+>
+> If the packet doesn't have the DF bit set (so the stack can fragment
+> the packet at will), or if the stack decided that it can ignore it and
+> fragment anyway, there's no need to check the mtu, because we'll
+> fragment the packet when we need. Otherwise, we're not allowed to
+> fragment, so we have to check the packet's size against the mtu.
+>   
+Agreed.
+>   
+>> In other words: 'xfrm4_tunnel_check_size' only cares about the mtu if ignore_df isn't set.
+>> The original code in 'xfrmi_xmit2': only checks the mtu if ignore_df isn't set. (-> looks consistent)
+>>     
+>
+> Except that we reset skb->ignore_df in between (just after the mtu
+> handling in xfrmi_xmit2, via xfrmi_scrub_packet).
+>   
+Thanks, that's a bit that was not clear to me;
+> Why should we care about whether we can fragment the packet that's
+> being transmitted over a tunnel? We're not fragmenting it, we're going
+> to encapsulate it inside another IP header, and then we'll have to
+> fragment that outer IP packet.
+>   
+Agreed, but then it makes a bit less sense to be.
+If we don't care if we can fragment the packet then why are we checking
+the packet size?
 
-If EFX_MIN_DMAQ_SIZE is indeed known to be a power of 2, you could also use
-the knowledge that a 2^n value can only be divided by a smaller 2^n value,
-meaning that reader->value must have exactly one bit set. This would also
-avoid divide-by-0 issues if reader->value can be 0.
+Also, assume:
+- ignore_df is set on the skb
+- packet size is > mtu
 
-	if (reader->value > EFX_MIN_DMAQ_SIZE || hweight64(reader->value) != 1)
+Then with your patch applied the code will now send
+ICMP_FRAG_NEEDED/ICMPV6_PKT_TOOBIG icmp which to me doesn't make sense
+since the stack decided that the packet can be fragmented.
+So in what case would in then be appropriate to send the
+ICMP_FPRAG_NEEDED to the client? (which is very likely not expecting a
+ICMP_FRAG_NEEDED icmp)
+But thinking about it some more: I would also expect to see the
+'(ip_hdr(skb)->frag_off & htons(IP_DF))' check... (because again: if the
+packet says it's ok to fragment then it will not expect/handle a
+ICMP_FRAG_NEEDED icmp)
 
-Guenter
+(And a side-note: as to why would we care about fragmentation when we're
+going to encapsulate it? *I* wouldn't care but last time I tried to
+raise an issue/patch with failing to encapsulate IPv6 in IPv6 (with
+xfrm) when pmtu is 1280 (min IPv6 mtu)  I was mostly ignored)
+
