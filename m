@@ -2,93 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B95A2400B9
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 03:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2B1A2400F1
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 04:38:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726398AbgHJBvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Aug 2020 21:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52664 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726219AbgHJBvF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Aug 2020 21:51:05 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718D9C061756;
-        Sun,  9 Aug 2020 18:51:05 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id o13so4051883pgf.0;
-        Sun, 09 Aug 2020 18:51:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=HVElGSlwlATYgy539/6WzioP4UyRz/qtpYOyAnLXtrM=;
-        b=qZRvWI55Nf+L8hoMF+w0JtC8hOskVkbBTTBz9U4OFlN3CUWlg3E97c4OKka25dv1ed
-         wllkw1Ldka1fA3zMgriTCNjotAdi2JGgdqbugeUlrEpuSpsMjyygBpUJPA8wN2fghoRb
-         ZEbjjkTcLoDzG4Y+GI9qXlHTslDZSpNYwHNqlCBHm+y/gsITbGlon48ICQ3ljw1zMRc/
-         GUnycfNAAcs/swOXzQjfGH7OwV8QmXKSW/EhpN1UFKl6dHieFXd8TG2mcSI5mF0EqgYT
-         HbyfKLObMwZhc6hshprcfOIN/Dn78MykPrOELDXY3lv528G8hUFQ5+gQSGEMP7ozqw10
-         JiUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=HVElGSlwlATYgy539/6WzioP4UyRz/qtpYOyAnLXtrM=;
-        b=IgjAAytVyBhvOI4rnZ055DTxJz0SpO7puqK2OW0EF0uBYWsDivYCqttWsIShwXbyqQ
-         yT0SQQ1Zq0nKeya5A+L2Geda6QIMpe0TqSwYxFsSPbWI/cfCT7tugItW88IYG7K1rJ7x
-         pYEKGewfeQbUvE/PWlbR5K+DJeNuRcCgNmTlj+OfWHSRSH3UOHIxrHACZBIfD0aziTUK
-         rok5SIiihDAKRA4wV9vLx8/Eg3pgzrPXLnbOP62maUgoIPjabNadRzUQYnb9yWNo32vg
-         oPwHvUJqF326U4t4VfMJv4G6I7Cr0WV/01EWVqRKIgzCsCvuAN0bUs2Wuqlh3FXHM8oy
-         +6bg==
-X-Gm-Message-State: AOAM5333GC5UksDGZ28T4vbtpcSf8NMk9Gu9U2D2fJnr5xDKWkSLdnpk
-        erhfw0VrB55BLs+7Bja7ed5PPeqi
-X-Google-Smtp-Source: ABdhPJxLRTecHQQbovtcVyeRVmloLQY2UOecijW08IeMzc4QRQwoEc/GU972KzWaHawkpdWK/m/btw==
-X-Received: by 2002:a65:63c8:: with SMTP id n8mr20029351pgv.232.1597024264317;
-        Sun, 09 Aug 2020 18:51:04 -0700 (PDT)
-Received: from oppo (69-172-89-151.static.imsbiz.com. [69.172.89.151])
-        by smtp.gmail.com with ESMTPSA id a7sm10651374pfd.194.2020.08.09.18.51.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Aug 2020 18:51:03 -0700 (PDT)
-Date:   Mon, 10 Aug 2020 09:51:00 +0800
-From:   Qingyu Li <ieatmuttonchuan@gmail.com>
-To:     kuba@kernel.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net/nfc/rawsock.c: add CAP_NET_RAW check.
-Message-ID: <20200810015100.GA11939@oppo>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1726465AbgHJCie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Aug 2020 22:38:34 -0400
+Received: from smtp23.cstnet.cn ([159.226.251.23]:35750 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726219AbgHJCie (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 9 Aug 2020 22:38:34 -0400
+Received: from localhost (unknown [159.226.5.99])
+        by APP-03 (Coremail) with SMTP id rQCowABHTxsfszBfrMpoAQ--.26273S2;
+        Mon, 10 Aug 2020 10:38:23 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     snelson@pensando.io, drivers@pensando.io, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Xu Wang <vulab@iscas.ac.cn>
+Subject: [PATCH] ionic_lif: Use devm_kcalloc() in ionic_qcq_alloc()
+Date:   Mon, 10 Aug 2020 02:38:07 +0000
+Message-Id: <20200810023807.9260-1-vulab@iscas.ac.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: rQCowABHTxsfszBfrMpoAQ--.26273S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7AF1UKw4UGFWDCw17uryfJFb_yoW8Gw1xpa
+        1xJFy2vr1UXF4I9an7Xw4kZa45X3yxGrW3Grsru3s3uwnrJFW8XF48KFW8XFW0kFZ5CF10
+        vF1qy3W3ZFs5A3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkK14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
+        1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
+        6xIIjxv20xvE14v26r1q6rW5McIj6I8E87Iv67AKxVW8Jr0_Cr1UMcvjeVCFs4IE7xkEbV
+        WUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK
+        6r4UMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
+        0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y
+        0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
+        WUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_
+        Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbZ2-5
+        UUUUU==
+X-Originating-IP: [159.226.5.99]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCQUEA102ZfUVcgAAsX
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When creating a raw AF_NFC socket, CAP_NET_RAW needs to be checked first.
+A multiplication for the size determination of a memory allocation
+indicated that an array data structure should be processed.
+Thus use the corresponding function "devm_kcalloc".
 
-Signed-off-by: Qingyu Li <ieatmuttonchuan@gmail.com>
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
 ---
- net/nfc/rawsock.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/nfc/rawsock.c b/net/nfc/rawsock.c
-index ba5ffd3badd3..b5c867fe3232 100644
---- a/net/nfc/rawsock.c
-+++ b/net/nfc/rawsock.c
-@@ -332,10 +332,13 @@ static int rawsock_create(struct net *net, struct socket *sock,
- 	if ((sock->type != SOCK_SEQPACKET) && (sock->type != SOCK_RAW))
- 		return -ESOCKTNOSUPPORT;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 1944bf5264db..26988ad7ec97 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -412,7 +412,7 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
  
--	if (sock->type == SOCK_RAW)
-+	if (sock->type == SOCK_RAW) {
-+		if (!capable(CAP_NET_RAW))
-+			return -EPERM;
- 		sock->ops = &rawsock_raw_ops;
--	else
-+	} else {
- 		sock->ops = &rawsock_ops;
-+	}
+ 	new->flags = flags;
  
- 	sk = sk_alloc(net, PF_NFC, GFP_ATOMIC, nfc_proto->proto, kern);
- 	if (!sk)
+-	new->q.info = devm_kzalloc(dev, sizeof(*new->q.info) * num_descs,
++	new->q.info = devm_kcalloc(dev, num_descs, sizeof(*new->q.info),
+ 				   GFP_KERNEL);
+ 	if (!new->q.info) {
+ 		netdev_err(lif->netdev, "Cannot allocate queue info\n");
+@@ -462,7 +462,7 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
+ 		new->intr.index = IONIC_INTR_INDEX_NOT_ASSIGNED;
+ 	}
+ 
+-	new->cq.info = devm_kzalloc(dev, sizeof(*new->cq.info) * num_descs,
++	new->cq.info = devm_kcalloc(dev, num_descs, sizeof(*new->cq.info),
+ 				    GFP_KERNEL);
+ 	if (!new->cq.info) {
+ 		netdev_err(lif->netdev, "Cannot allocate completion queue info\n");
 -- 
 2.17.1
 
