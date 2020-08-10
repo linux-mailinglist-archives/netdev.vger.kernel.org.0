@@ -2,124 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F29C2406A1
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 15:34:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97C062406A6
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 15:37:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbgHJNej convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 10 Aug 2020 09:34:39 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:31546 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726614AbgHJNei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 09:34:38 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-395-ybAf403CPwebUdQRv3AN3A-1; Mon, 10 Aug 2020 09:34:31 -0400
-X-MC-Unique: ybAf403CPwebUdQRv3AN3A-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 39FBA1009610;
-        Mon, 10 Aug 2020 13:34:30 +0000 (UTC)
-Received: from bistromath.localdomain (ovpn-112-107.ams2.redhat.com [10.36.112.107])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B77C919D7E;
-        Mon, 10 Aug 2020 13:34:28 +0000 (UTC)
-Date:   Mon, 10 Aug 2020 15:34:27 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Scott Dial <scott@scottdial.com>
-Cc:     linux-crypto@vger.kernel.org, Ryan Cox <ryan_cox@byu.edu>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        Antoine Tenart <antoine.tenart@bootlin.com>
-Subject: Re: Severe performance regression in "net: macsec: preserve ingress
- frame ordering"
-Message-ID: <20200810133427.GB1128331@bistromath.localdomain>
-References: <1b0cec71-d084-8153-2ba4-72ce71abeb65@byu.edu>
- <a335c8eb-0450-1274-d1bf-3908dcd9b251@scottdial.com>
+        id S1726831AbgHJNhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 09:37:09 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:23640 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726633AbgHJNhJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 09:37:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1597066627;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b/qxK5C6ePLAWVdlOOgywCTwX3DZjSUnV1UIiKmwyDg=;
+        b=ByifV7GicXk5g52Pd+PddF/ZmZK90SKpSc/SKRlwYM/GN8KH32yHm/6q2oqeWaLLDBSCvl
+        SUiU2qsPS8uc7juaP78BHWvoJvgx7ZkRQGSvE+NBUpgSJvHtHdZq3Qo5gZyuKRN5KOgd9+
+        300ONfMR68viGohDoqV31stCwn6QHSs=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-245-cqTwun9NPmWBmAu0VcthhQ-1; Mon, 10 Aug 2020 09:37:05 -0400
+X-MC-Unique: cqTwun9NPmWBmAu0VcthhQ-1
+Received: by mail-wm1-f69.google.com with SMTP id q15so2874502wmj.6
+        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 06:37:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=b/qxK5C6ePLAWVdlOOgywCTwX3DZjSUnV1UIiKmwyDg=;
+        b=LRCGrRQfwA/tNL3UcUPJfjJsBAhRowsBzUsViQs55yOk0NXjUie9zepobXzWjSwAhj
+         AYEK8QhtB1e3JhDRi1OgAnQHuK1DN38EUUNlkFj9ob31QMGsZ459g0VFjPCbHgMHnouv
+         7D7icINhrAdk+JXc4Wq9tfmgKAjbb0R2Jc1wxPGVrA6csOFOaHH7Lygt8jLaX7hyEtpi
+         tIFUqL8mgCp5BkTxv7gk75Lyj+1pqAG1DKGNmB1RNjJkyI4+HH7noN7TLotqRtxbuMB7
+         t3aJHGC6RSZN76S5ytVJReGj/H7wW2fIhq+mq8WGAe6jb1XBAj67iPil5QzJie1Gkgfu
+         2JkA==
+X-Gm-Message-State: AOAM533eoXCWEkpAlvQdMi4B+8rbWcfqDSwe3pyyYoSUpbffuGTWdRA9
+        142++oYYvhzPDgzH0IITwSNXttlOlhMAnt0o3oXqy4N7V5QA+0LmM6evLpf/lxfSqQFNSGo4ROM
+        SdvtiHWKf4riQ4nlQ
+X-Received: by 2002:a1c:5f44:: with SMTP id t65mr23851985wmb.99.1597066624612;
+        Mon, 10 Aug 2020 06:37:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyntbXKihSaGm5opEK+za7CdlaF4OJ93oO4OKkytJl8FaoN1WxNcKI6KM/HsYZNiaqGUVp/wQ==
+X-Received: by 2002:a1c:5f44:: with SMTP id t65mr23851960wmb.99.1597066624455;
+        Mon, 10 Aug 2020 06:37:04 -0700 (PDT)
+Received: from redhat.com (bzq-109-67-41-16.red.bezeqint.net. [109.67.41.16])
+        by smtp.gmail.com with ESMTPSA id f12sm21591802wmc.46.2020.08.10.06.37.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Aug 2020 06:37:03 -0700 (PDT)
+Date:   Mon, 10 Aug 2020 09:37:00 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        alex.williamson@redhat.com, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, wanpengli@tencent.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, eli@mellanox.com, shahafs@mellanox.com,
+        parav@mellanox.com
+Subject: Re: [PATCH V5 1/6] vhost: introduce vhost_vring_call
+Message-ID: <20200810093630-mutt-send-email-mst@kernel.org>
+References: <20200731065533.4144-1-lingshan.zhu@intel.com>
+ <20200731065533.4144-2-lingshan.zhu@intel.com>
+ <5e646141-ca8d-77a5-6f41-d30710d91e6d@redhat.com>
+ <d51dd4e3-7513-c771-104c-b61f9ee70f30@intel.com>
+ <156b8d71-6870-c163-fdfa-35bf4701987d@redhat.com>
+ <20200804052050-mutt-send-email-mst@kernel.org>
+ <14fd2bf1-e9c1-a192-bd6c-f1ee5fd227f6@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <a335c8eb-0450-1274-d1bf-3908dcd9b251@scottdial.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <14fd2bf1-e9c1-a192-bd6c-f1ee5fd227f6@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[adding the linux-crypto list]
-
-2020-08-06, 23:48:16 -0400, Scott Dial wrote:
-> On 8/6/2020 5:11 PM, Ryan Cox wrote:
-> > With 5.7 I get:
-> > * 9.90 Gb/s with no macsec at all
-> > * 1.80 Gb/s with macsec WITHOUT encryption
-> > * 1.00 Gb/s (sometimes, but often less) with macsec WITH encryption
-> > 
-> > With 5.7 but with ab046a5d4be4c90a3952a0eae75617b49c0cb01b reverted, I get:
-> > * 9.90 Gb/s with no macsec at all
-> > * 7.33 Gb/s with macsec WITHOUT encryption
-> > * 9.83 Gb/s with macsec WITH encryption
-> > 
-> > On tests where performance is bad (including macsec without encryption),
-> > iperf3 is at 100% CPU usage.  I was able to run it under `perf record`on
-> > iperf3 in a number of the tests but, unfortunately, I have had trouble
-> > compiling perf for my own 5.7 compilations (definitely PEBKAC).  If it
-> > would be useful I can work on fixing the perf compilation issues.
+On Wed, Aug 05, 2020 at 10:16:16AM +0800, Jason Wang wrote:
 > 
-> For certain, you are measuring the difference between AES-NI doing
-> gcm(aes) and gcm_base(ctr(aes-aesni),ghash-generic). Specifically, the
-> hotspot is ghash-generic's implementation of ghash_update() function.
-> I appreciate your testing because I was limited in my ability to test
-> beyond 1Gb/s.
+> On 2020/8/4 下午5:21, Michael S. Tsirkin wrote:
+> > > > > >    +struct vhost_vring_call {
+> > > > > > +    struct eventfd_ctx *ctx;
+> > > > > > +    struct irq_bypass_producer producer;
+> > > > > > +    spinlock_t ctx_lock;
+> > > > > It's not clear to me why we need ctx_lock here.
+> > > > > 
+> > > > > Thanks
+> > > > Hi Jason,
+> > > > 
+> > > > we use this lock to protect the eventfd_ctx and irq from race conditions,
+> > > We don't support irq notification from vDPA device driver in this version,
+> > > do we still have race condition?
+> > > 
+> > > Thanks
+> > Jason I'm not sure what you are trying to say here.
 > 
-> The aes-aesni driver is smart enough to use the FPU if it's not busy and
-> fallback to the CPU otherwise. Unfortunately, the ghash-clmulni driver
-> does not have that kind of logic in it and only provides an async version,
-> so we are forced to use the ghash-generic implementation, which is a pure
-> CPU implementation. The ideal would be for aesni_intel to provide a
-> synchronous version of gcm(aes) that fell back to the CPU if the FPU is
-> busy.
-> I don't know if the crypto maintainers would be open to such a change, but
-> if the choice was between reverting and patching the crypto code, then I
-> would work on patching the crypto code.
+> 
+> I meant we change the API from V4 so driver won't notify us if irq is
+> changed.
+> 
+> Then it looks to me there's no need for the ctx_lock, everyhing could be
+> synchronized with vq mutex.
+> 
+> Thanks
 
-To the crypto folks, a bit of context: Scott wrote commit ab046a5d4be4
-("net: macsec: preserve ingress frame ordering"), which made MACsec
-use gcm(aes) with CRYPTO_ALG_ASYNC. This prevents out of order
-decryption, but reduces performance. We'd like to restore performance
-on systems where the FPU is available without breaking MACsec for
-systems where the FPU is often busy.
+Jason do you want to post a cleanup patch simplifying code along these
+lines?
 
-A quick and dirty alternative might be to let the administrator decide
-if they're ok with some out of order. Maybe they know that their FPU
-will be mostly idle so it won't even be an issue (or maybe the
-opposite, ie keep the fast default and let admins fix their setups
-with an extra flag).
+Thanks,
 
-> In any case, you didn't report how many packets arrived out of order, which
-> was the issue being addressed by my change. It would be helpful to get
-> the output of "ip -s macsec show" and specifically the InPktsDelayed
-> counter. Did iperf3 report out-of-order packets with the patch reverted?
-> Otherwise, if this is the only process running on your test servers,
-> then you may not be generating any contention for the FPU, which is the
-> source of the out-of-order issue. Maybe you could run prime95 to busy
-> the FPU to see the issue that I was seeing.
 
-But that's not necessarily a realistic workload for all machines.
-
-> I have a product that is a secure router with a half-dozen MACsec
-> interfaces, boots from a LUKS-encrypted disk, and has a number of TLS
-> control and status interfaces for local devices attached to product.
-> Without this patch, the system was completely unusable due to the
-> out-of-order issue causing TCP retries and UDP out-of-order issues. I
-> have not seen any examples of this MACsec driver in the wild, so I
-> assumed nobody had noticed the out-of-order issue because of synthetic
-> testing.
-
-We have customers using MACsec, and I haven't heard of reports like
-yours.
-
--- 
-Sabrina
+> > 
+> > 
 
