@@ -2,196 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E125240685
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 15:20:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F29C2406A1
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 15:34:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726748AbgHJNUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 09:20:54 -0400
-Received: from mail-m1271.qiye.163.com ([115.236.127.1]:58787 "EHLO
-        mail-m1271.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726330AbgHJNUw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 09:20:52 -0400
-X-Greylist: delayed 587 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 Aug 2020 09:20:50 EDT
-Received: from ubuntu.localdomain (unknown [58.251.74.227])
-        by mail-m1271.qiye.163.com (Hmail) with ESMTPA id 35E3258224D;
-        Mon, 10 Aug 2020 21:11:01 +0800 (CST)
-From:   Jiang Yu <jyu.jiang@vivo.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        zhanglin <zhang.lin16@zte.com.cn>,
-        Kees Cook <keescook@chromium.org>,
-        Andrey Ignatov <rdna@fb.com>,
-        Quentin Monnet <quentin@isovalent.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Cc:     opensource.kernel@vivo.com, Jiang Yu <jyu.jiang@vivo.com>
-Subject: [PATCH] bpf: Add bpf_skb_get_sock_comm() helper
-Date:   Mon, 10 Aug 2020 06:09:48 -0700
-Message-Id: <20200810131014.12057-1-jyu.jiang@vivo.com>
-X-Mailer: git-send-email 2.25.1
+        id S1726890AbgHJNej convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 10 Aug 2020 09:34:39 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:31546 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726614AbgHJNei (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 09:34:38 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-395-ybAf403CPwebUdQRv3AN3A-1; Mon, 10 Aug 2020 09:34:31 -0400
+X-MC-Unique: ybAf403CPwebUdQRv3AN3A-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 39FBA1009610;
+        Mon, 10 Aug 2020 13:34:30 +0000 (UTC)
+Received: from bistromath.localdomain (ovpn-112-107.ams2.redhat.com [10.36.112.107])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B77C919D7E;
+        Mon, 10 Aug 2020 13:34:28 +0000 (UTC)
+Date:   Mon, 10 Aug 2020 15:34:27 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Scott Dial <scott@scottdial.com>
+Cc:     linux-crypto@vger.kernel.org, Ryan Cox <ryan_cox@byu.edu>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        Antoine Tenart <antoine.tenart@bootlin.com>
+Subject: Re: Severe performance regression in "net: macsec: preserve ingress
+ frame ordering"
+Message-ID: <20200810133427.GB1128331@bistromath.localdomain>
+References: <1b0cec71-d084-8153-2ba4-72ce71abeb65@byu.edu>
+ <a335c8eb-0450-1274-d1bf-3908dcd9b251@scottdial.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZTE8ZGR5OT0hIH0xOVkpOQkxLTU5LTUpCTEhVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZVUtZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6K0k6Szo*IT8vNU4dDywuDCIB
-        FAkwCT5VSlVKTkJMS01OS01JSEJNVTMWGhIXVRECDlUREhoVHDsNEg0UVRgUFkVZV1kSC1lBWU5D
-        VUlOSlVMT1VJSUxZV1kIAVlBTUlOTDcG
-X-HM-Tid: 0a73d87ee60098b6kuuu35e3258224d
+In-Reply-To: <a335c8eb-0450-1274-d1bf-3908dcd9b251@scottdial.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-skb distinguished by uid can only recorded to user who consume them.
-in many case, skb should been recorded more specific to process who
-consume them. E.g, the unexpected large data traffic of illegal process
-in metered network.
+[adding the linux-crypto list]
 
-this helper is used in tracing task comm of the sock to which a skb
-belongs.
+2020-08-06, 23:48:16 -0400, Scott Dial wrote:
+> On 8/6/2020 5:11 PM, Ryan Cox wrote:
+> > With 5.7 I get:
+> > * 9.90 Gb/s with no macsec at all
+> > * 1.80 Gb/s with macsec WITHOUT encryption
+> > * 1.00 Gb/s (sometimes, but often less) with macsec WITH encryption
+> > 
+> > With 5.7 but with ab046a5d4be4c90a3952a0eae75617b49c0cb01b reverted, I get:
+> > * 9.90 Gb/s with no macsec at all
+> > * 7.33 Gb/s with macsec WITHOUT encryption
+> > * 9.83 Gb/s with macsec WITH encryption
+> > 
+> > On tests where performance is bad (including macsec without encryption),
+> > iperf3 is at 100% CPU usage.  I was able to run it under `perf record`on
+> > iperf3 in a number of the tests but, unfortunately, I have had trouble
+> > compiling perf for my own 5.7 compilations (definitely PEBKAC).  If it
+> > would be useful I can work on fixing the perf compilation issues.
+> 
+> For certain, you are measuring the difference between AES-NI doing
+> gcm(aes) and gcm_base(ctr(aes-aesni),ghash-generic). Specifically, the
+> hotspot is ghash-generic's implementation of ghash_update() function.
+> I appreciate your testing because I was limited in my ability to test
+> beyond 1Gb/s.
+> 
+> The aes-aesni driver is smart enough to use the FPU if it's not busy and
+> fallback to the CPU otherwise. Unfortunately, the ghash-clmulni driver
+> does not have that kind of logic in it and only provides an async version,
+> so we are forced to use the ghash-generic implementation, which is a pure
+> CPU implementation. The ideal would be for aesni_intel to provide a
+> synchronous version of gcm(aes) that fell back to the CPU if the FPU is
+> busy.
+> I don't know if the crypto maintainers would be open to such a change, but
+> if the choice was between reverting and patching the crypto code, then I
+> would work on patching the crypto code.
 
-Signed-off-by: Jiang Yu <jyu.jiang@vivo.com>
----
- include/net/sock.h             |  1 +
- include/uapi/linux/bpf.h       |  1 +
- net/core/filter.c              | 32 ++++++++++++++++++++++++++++++++
- net/core/sock.c                | 20 ++++++++++++++++++++
- tools/include/uapi/linux/bpf.h |  1 +
- 5 files changed, 55 insertions(+)
+To the crypto folks, a bit of context: Scott wrote commit ab046a5d4be4
+("net: macsec: preserve ingress frame ordering"), which made MACsec
+use gcm(aes) with CRYPTO_ALG_ASYNC. This prevents out of order
+decryption, but reduces performance. We'd like to restore performance
+on systems where the FPU is available without breaking MACsec for
+systems where the FPU is often busy.
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 064637d1ddf6..9c6e8e61940f 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -519,6 +519,7 @@ struct sock {
- #ifdef CONFIG_BPF_SYSCALL
- 	struct bpf_sk_storage __rcu	*sk_bpf_storage;
- #endif
-+	char sk_task_com[TASK_COMM_LEN];
- 	struct rcu_head		sk_rcu;
- };
- 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index b134e679e9db..c7f62215a483 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3538,6 +3538,7 @@ union bpf_attr {
- 	FN(skc_to_tcp_request_sock),	\
- 	FN(skc_to_udp6_sock),		\
- 	FN(get_task_stack),		\
-+	FN(skb_get_sock_comm),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 7124f0fe6974..972c0bf8e7ca 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4313,6 +4313,36 @@ static const struct bpf_func_proto bpf_get_socket_uid_proto = {
- 	.arg1_type      = ARG_PTR_TO_CTX,
- };
- 
-+BPF_CALL_3(bpf_skb_get_sock_comm,     struct sk_buff *, skb, char *, buf, u32, size)
-+{
-+	struct sock *sk;
-+
-+	if (!buf || 0 == size)
-+		return -EINVAL;
-+
-+	sk = sk_to_full_sk(skb->sk);
-+	if (!sk || !sk_fullsock(sk))
-+		goto err_clear;
-+
-+	memcpy(buf, sk->sk_task_com, size);
-+	buf[size - 1] = 0;
-+	return 0;
-+
-+err_clear:
-+	memset(buf, 0, size);
-+	buf[size - 1] = 0;
-+	return -ENOENT;
-+}
-+
-+const struct bpf_func_proto bpf_skb_get_sock_comm_proto = {
-+	.func           = bpf_skb_get_sock_comm,
-+	.gpl_only       = false,
-+	.ret_type       = RET_INTEGER,
-+	.arg1_type      = ARG_PTR_TO_CTX,
-+	.arg2_type      = ARG_PTR_TO_MEM,
-+	.arg3_type      = ARG_CONST_SIZE,
-+};
-+
- #define SOCKOPT_CC_REINIT (1 << 0)
- 
- static int _bpf_setsockopt(struct sock *sk, int level, int optname,
-@@ -6313,6 +6343,8 @@ sk_filter_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_get_socket_cookie_proto;
- 	case BPF_FUNC_get_socket_uid:
- 		return &bpf_get_socket_uid_proto;
-+	case BPF_FUNC_skb_get_sock_comm:
-+		return &bpf_skb_get_sock_comm_proto;
- 	case BPF_FUNC_perf_event_output:
- 		return &bpf_skb_event_output_proto;
- 	default:
-diff --git a/net/core/sock.c b/net/core/sock.c
-index d29709e0790d..79d81afa048f 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2961,6 +2961,24 @@ void sk_stop_timer(struct sock *sk, struct timer_list* timer)
- }
- EXPORT_SYMBOL(sk_stop_timer);
- 
-+void sock_init_task_comm(struct sock *sk)
-+{
-+	struct pid *pid = NULL;
-+	struct task_struct *tgid_task = NULL;
-+
-+	pid = find_get_pid(current->tgid);
-+	if (pid) {
-+		tgid_task = get_pid_task(pid, PIDTYPE_PID);
-+
-+		if (tgid_task) {
-+			snprintf(sk->sk_task_com, TASK_COMM_LEN, tgid_task->comm);
-+			put_task_struct(tgid_task);
-+		}
-+
-+		put_pid(pid);
-+	}
-+}
-+
- void sock_init_data(struct socket *sock, struct sock *sk)
- {
- 	sk_init_common(sk);
-@@ -3031,6 +3049,8 @@ void sock_init_data(struct socket *sock, struct sock *sk)
- 	WRITE_ONCE(sk->sk_pacing_shift, 10);
- 	sk->sk_incoming_cpu = -1;
- 
-+	sock_init_task_comm(sk);
-+
- 	sk_rx_queue_clear(sk);
- 	/*
- 	 * Before updating sk_refcnt, we must commit prior changes to memory
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index b134e679e9db..c7f62215a483 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -3538,6 +3538,7 @@ union bpf_attr {
- 	FN(skc_to_tcp_request_sock),	\
- 	FN(skc_to_udp6_sock),		\
- 	FN(get_task_stack),		\
-+	FN(skb_get_sock_comm),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+A quick and dirty alternative might be to let the administrator decide
+if they're ok with some out of order. Maybe they know that their FPU
+will be mostly idle so it won't even be an issue (or maybe the
+opposite, ie keep the fast default and let admins fix their setups
+with an extra flag).
+
+> In any case, you didn't report how many packets arrived out of order, which
+> was the issue being addressed by my change. It would be helpful to get
+> the output of "ip -s macsec show" and specifically the InPktsDelayed
+> counter. Did iperf3 report out-of-order packets with the patch reverted?
+> Otherwise, if this is the only process running on your test servers,
+> then you may not be generating any contention for the FPU, which is the
+> source of the out-of-order issue. Maybe you could run prime95 to busy
+> the FPU to see the issue that I was seeing.
+
+But that's not necessarily a realistic workload for all machines.
+
+> I have a product that is a secure router with a half-dozen MACsec
+> interfaces, boots from a LUKS-encrypted disk, and has a number of TLS
+> control and status interfaces for local devices attached to product.
+> Without this patch, the system was completely unusable due to the
+> out-of-order issue causing TCP retries and UDP out-of-order issues. I
+> have not seen any examples of this MACsec driver in the wild, so I
+> assumed nobody had noticed the out-of-order issue because of synthetic
+> testing.
+
+We have customers using MACsec, and I haven't heard of reports like
+yours.
+
 -- 
-2.25.1
+Sabrina
 
