@@ -2,80 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE1B82412CE
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 00:06:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1A9E2412D6
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 00:09:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726871AbgHJWGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 18:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
+        id S1726890AbgHJWJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 18:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726841AbgHJWGt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 18:06:49 -0400
-Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F7EC061756
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 15:06:49 -0700 (PDT)
-Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id EF1D1140A45;
-        Tue, 11 Aug 2020 00:06:46 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1597097207; bh=zrLyBlLmagthgXO9pKxdHqn0vb1xhYy9j0Ae2jz4cSI=;
-        h=From:To:Date;
-        b=VMwkPHU0QsM4jblwNTaNDOrspbBrxrn2Ou/HAiAvFbrsN8b/aHS0UcdZFT5ZL+Wsq
-         KiNLaR45FReDG1Ic8c9XJfBcTeOiOzkjWeqeHWhicffV1zKOW1xcoIY+gf9/7Lz8Hl
-         elkIWkhGi4snwPKG3AzBuAC3nCCiFXNUlfyuI3QE=
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Chris Healy <cphealy@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH RFC russell-king 4/4] net: phylink: don't fail attaching phy on 1000base-x/2500base-x mode
-Date:   Tue, 11 Aug 2020 00:06:45 +0200
-Message-Id: <20200810220645.19326-5-marek.behun@nic.cz>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200810220645.19326-1-marek.behun@nic.cz>
-References: <20200810220645.19326-1-marek.behun@nic.cz>
+        with ESMTP id S1726615AbgHJWJF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 18:09:05 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72359C06174A;
+        Mon, 10 Aug 2020 15:09:05 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id n129so4275028qkd.6;
+        Mon, 10 Aug 2020 15:09:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3ZbMbahrrNkhzXHol1Zr0zVJbIcJ6vrUXkY246I6Gww=;
+        b=elE8gXGFCgxGb+WPV22Nwena1f+CuNWdGDIMre+3IYPlJ/dgFxnsv/Nif8jf/9So9g
+         Jfq6u/NSq38DCrgFyDUCnVrtGGmwME440my9SPaB2eKBvqacSCkWOroSb302H/A+6/NC
+         aFFqf3hnQoBHQs4bfAIRRTwhGKzSgh+tqHkZiR1s4ZRMDUflziWLspPza1JmWtc5x5BH
+         hu4Tzumv1CTdCpFez/JNDr9TK5nh5chZTSr0bzMdsoAMlEO6Hm717BFu50YmP2Huc7uT
+         O71KhjXh8z3c2xG1Y5UMQPdQCh0Jh59+6yuOQHl1iV7kGHoV8J8a70s1YKxmLmGKTxYf
+         aS6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3ZbMbahrrNkhzXHol1Zr0zVJbIcJ6vrUXkY246I6Gww=;
+        b=OcvAAcLl0mlJOdi1rKzwVqmE7GxWv8GsQ/Q+Qkx8NWsCOB7Y1Jh3JhQ39jHc4vok+H
+         2llg+c07Q8zbOrQX7HmAe1vVZbtY85+SVu3mUyMnfqTBHw4fZkCKd8CN6kyPMpIgu7oa
+         t5iAJOISHQEE+ibJM6guczLk7dKawTaQC81uCNZeBUWt0AeMwS8IrIdlRh7OFxqbx2jn
+         nu26/Zh7BWBEkNaSBsaQySKeO1mRW6q5gqATvH+AySZYBpEQx0QdxXHCH9RaQZ72TNhp
+         klepKpiq0neJDTheQ40o3RTziTQEjcz+j+LXxcCfD0dAdzBRIhdjUi09NVacssmiG7bL
+         WsJA==
+X-Gm-Message-State: AOAM533uIH4dDj6v3KkEgI7hVWLN70PsiybUjAZ2ANU+jTFJGcyH4Ld2
+        4J1lyvLxEUgffp3kf1HwlA==
+X-Google-Smtp-Source: ABdhPJwB2LGr4Sy6Pe9wMfFj8Jm3p4RuM27hgGOAJBeSaFB5Lh3TbuSGIbsqy+oIYf6RDWfJ0KnCgg==
+X-Received: by 2002:a37:bd46:: with SMTP id n67mr29206337qkf.190.1597097343411;
+        Mon, 10 Aug 2020 15:09:03 -0700 (PDT)
+Received: from localhost.localdomain (146-115-88-66.s3894.c3-0.sbo-ubr1.sbo.ma.cable.rcncustomer.com. [146.115.88.66])
+        by smtp.gmail.com with ESMTPSA id w12sm14192544qkj.116.2020.08.10.15.09.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Aug 2020 15:09:02 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>, Julian Anastasov <ja@ssi.bg>
+Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org
+Subject: [Linux-kernel-mentees] [PATCH net] ipvs: Fix uninit-value in do_ip_vs_set_ctl()
+Date:   Mon, 10 Aug 2020 18:07:03 -0400
+Message-Id: <20200810220703.796718-1-yepeilin.cs@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Spam-Status: No, score=0.00
-X-Spamd-Bar: /
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some SFPs may contain an internal PHY which may in some cases want to
-connect with the host interface in 1000base-x/2500base-x mode.
-Do not fail if such PHY is being attached in one of these PHY interface
-modes.
+do_ip_vs_set_ctl() is referencing uninitialized stack value when `len` is
+zero. Fix it.
 
-Signed-off-by: Marek Behún <marek.behun@nic.cz>
+Reported-and-tested-by: syzbot+23b5f9e7caf61d9a3898@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?id=46ebfb92a8a812621a001ef04d90dfa459520fe2
+Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
 ---
- drivers/net/phy/phylink.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/netfilter/ipvs/ip_vs_ctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 83e14176baba1..e20f6770b5c4b 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -1015,9 +1015,7 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
- static int phylink_attach_phy(struct phylink *pl, struct phy_device *phy,
- 			      phy_interface_t interface)
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index 412656c34f20..c050b6a42786 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -2418,7 +2418,7 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
  {
--	if (WARN_ON(pl->cfg_link_an_mode == MLO_AN_FIXED ||
--		    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
--		     phy_interface_mode_is_8023z(interface))))
-+	if (WARN_ON(pl->cfg_link_an_mode == MLO_AN_FIXED))
- 		return -EINVAL;
- 
- 	if (pl->phydev)
+ 	struct net *net = sock_net(sk);
+ 	int ret;
+-	unsigned char arg[MAX_SET_ARGLEN];
++	unsigned char arg[MAX_SET_ARGLEN] = {};
+ 	struct ip_vs_service_user *usvc_compat;
+ 	struct ip_vs_service_user_kern usvc;
+ 	struct ip_vs_service *svc;
 -- 
-2.26.2
+2.25.1
 
