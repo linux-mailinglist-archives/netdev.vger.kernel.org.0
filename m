@@ -2,76 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DAD2240515
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 13:13:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69D37240505
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 13:04:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726446AbgHJLNw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 10 Aug 2020 07:13:52 -0400
-Received: from mailcow.chernigiv-rada.gov.ua ([195.60.174.57]:39942 "EHLO
-        gate.chernigiv-rada.gov.ua" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726412AbgHJLNt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 07:13:49 -0400
+        id S1726545AbgHJLE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 07:04:27 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:37782 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726146AbgHJLE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 07:04:27 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by gate.chernigiv-rada.gov.ua (Postfix) with ESMTP id 134D2162684E;
-        Mon, 10 Aug 2020 14:03:18 +0300 (EEST)
-Received: from gate.chernigiv-rada.gov.ua ([127.0.0.1])
-        by localhost (gate.chernigiv-rada.gov.ua [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id TBTyNplH3Y0j; Mon, 10 Aug 2020 14:03:17 +0300 (EEST)
-Received: from localhost (localhost [127.0.0.1])
-        by gate.chernigiv-rada.gov.ua (Postfix) with ESMTP id AFA60162684A;
-        Mon, 10 Aug 2020 14:03:13 +0300 (EEST)
-X-Virus-Scanned: amavisd-new at chernigiv-rada.gov.ua
-Received: from gate.chernigiv-rada.gov.ua ([127.0.0.1])
-        by localhost (gate.chernigiv-rada.gov.ua [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id FY9GqfyuTtDX; Mon, 10 Aug 2020 14:03:13 +0300 (EEST)
-Received: from gate.chernigiv-rada.gov.ua (gate.chernigiv-rada.gov.ua [192.168.40.65])
-        by gate.chernigiv-rada.gov.ua (Postfix) with ESMTP id 05B0D1626839;
-        Mon, 10 Aug 2020 14:02:55 +0300 (EEST)
-Date:   Mon, 10 Aug 2020 14:02:54 +0300 (EEST)
-From:   DIRECTION OEA CANADA <dnz37.d@os.chernigiv-rada.gov.ua>
-Reply-To: DIRECTION OEA CANADA <directionoeacanada1@gmail.com>
-Message-ID: <1162836237.1764742.1597057374887.JavaMail.zimbra@os.chernigiv-rada.gov.ua>
-Subject: RECRUTEMENT INTERNATIONALE DE L'OEA CANADA!
+        by a.mx.secunet.com (Postfix) with ESMTP id 5BA3A2056D;
+        Mon, 10 Aug 2020 13:04:25 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id iFtfZQW-AYnX; Mon, 10 Aug 2020 13:04:24 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id E95C7200AA;
+        Mon, 10 Aug 2020 13:04:24 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Mon, 10 Aug 2020 13:04:24 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Mon, 10 Aug
+ 2020 13:04:24 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id ECB90318028B;
+ Mon, 10 Aug 2020 13:04:23 +0200 (CEST)
+Date:   Mon, 10 Aug 2020 13:04:23 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <kuznet@ms2.inr.ac.ru>, <yoshfuji@linux-ipv6.org>,
+        <kuba@kernel.org>, <lucien.xin@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] ip_vti: Fix unused variable warning
+Message-ID: <20200810110423.GO13121@gauss3.secunet.de>
+References: <20200731064952.36900-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [192.168.40.20]
-X-Mailer: Zimbra 8.8.8_GA_3025 (zclient/8.8.8_GA_3025)
-Thread-Index: cnPmrNY3prxtVSMiJaxblz6UvhsmJA==
-Thread-Topic: RECRUTEMENT INTERNATIONALE DE L'OEA CANADA!
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200731064952.36900-1-yuehaibing@huawei.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PROGRAMME DE RECRUTEMENT OEA CANADA
-Vous souhaitez travailler pour OEA au Canada
-Nous avons besoin de plus de travailleurs pour venir travailler au Canada!
-L’expertise, le professionnalisme, l’aptitude à travailler dans un environnement intergouvernemental et multiculturel constituent les principales valeurs communes aux différentes professions de l'OEA. Ainsi pour la promotion de l'emploi et l'insertion professionnelle des jeunes diplômés pour atteindre les objectifs de l'ONU. l'OEA -CANADA lance un programme d'avis de recrutement de personnels de toutes catégories confondus de part le monde entier sans distinction de race, de nationalité et ni de sexe. Ce projet est destiné a toute personne morale prêt à voyager et à s’installer au Canada afin de lutter contre le vieillissement de la population canadienne qui pourrait doubler dans les 10% prochaines années. Nous recherchons avant tout des personnes capables de s’adapter à notre environnement de travail.
+On Fri, Jul 31, 2020 at 02:49:52PM +0800, YueHaibing wrote:
+> If CONFIG_INET_XFRM_TUNNEL is set but CONFIG_IPV6 is n,
+> 
+> net/ipv4/ip_vti.c:493:27: warning: 'vti_ipip6_handler' defined but not used [-Wunused-variable]
+> 
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-Condition normal a remplir
-• Avoir entre 20 et 59 ans au plus
-• Être de bonne moralité
-• Être disponible pour voyager
-• Être titulaire du BACCALAURÉAT ou autre diplôme professionnel
-• Avoir acquis d'expérience professionnelle serait un atout
-• Savoir parler le Français ou l’Anglais
-
-Si vous êtes intéressés, veuillez envoyer votre CV accompagné de votre lettre de motivation adressée au DRH de l'OEA à : directionoeacanada1@gmail.com
-Liste des pièces à fournir
-- Un Curriculum Vitae (CV)
-- Une Lettre de motivation
-- Une Photo d'identité
-- les copies des diplômes
-- les attestations de travail ou les certificats des services rendus.
-
-#IMPORTANT : Seul(e)s les candidat(e)s présélectionnés seront contactés pour suite du recrutement.
-Postulez dès maintenant et connectez-vous à votre carrière.
-
-Bureau de Recrutement l'OEA CANADA
-Le Secrétariat Administratif
-E-mail: directionoeacanada1@gmail.com
-
-#Offre valable jusqu'au 31 AOÛT 2020
-#URGENT [partager ce message avec vos amis,votre famille ainsi que vos contacts]
+Now applied to the ipsec tree, thanks!
