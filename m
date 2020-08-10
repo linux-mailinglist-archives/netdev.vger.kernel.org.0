@@ -2,176 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B96A5240D03
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 20:31:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEC9D240D1C
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 20:43:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728217AbgHJSbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 14:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35934 "EHLO
+        id S1728237AbgHJSn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 14:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728180AbgHJSbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 14:31:01 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4048CC061756;
-        Mon, 10 Aug 2020 11:31:01 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id 77so9304620qkm.5;
-        Mon, 10 Aug 2020 11:31:01 -0700 (PDT)
+        with ESMTP id S1728122AbgHJSnW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 14:43:22 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601D1C061756;
+        Mon, 10 Aug 2020 11:43:22 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id q3so5681041ybp.7;
+        Mon, 10 Aug 2020 11:43:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=flrY2lJlHhxpTaFKprp88SIz0K8XOJ8MpibhcDVgMos=;
-        b=hh4u/0+tiKEnxWRGibP8MASE3vehVJ61dqWOnOyQ01RrS5hlCmha/L7jNVyOmp+9l4
-         Br90ey2/FQBhPfwfm17tKm/MvT0x3M9qXYX7ZudC5IrgeaYCvQM8ZB00MHduyvriF1A2
-         LxF8RFLB1U2TMVU9oIW3+VelASg+PmJ5cjigRZvHMMAGUEOsM9BuwiOTH10MKnmzH3cG
-         ZhRKKiE9ZpeJ/UtvnBgo6ahJoeCl6UNTItEuVFyIrkV22ureBL8un+SCnkqgibw1m+c4
-         zozQcziQ8LwbGj2Hmms1dF/lGlafM1RMXpD62ovxB+EKME/NUGk7ef1670NqsakYGoR7
-         jPbw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=6TJk/fTAPADshSTiLb7E9ncJKjWoZVvq9Eei8Ciqoek=;
+        b=jN3ByG0us6cOH8uL62xPMUyDh4ma6G/mp//w4k0ibrbvYBZqtQ3MoxB9GniqyspdgX
+         M7spWPFfQY1j6+qRwWb3wT/CUJFIqDysNf4eIEcAohJdw1lFi/iBsh3Zg7SQv/D7ffQj
+         IYKUTn+oDmOI8K98VZvG6FqH8hE1JDUsKKe+XHCVm3m0gAGuKhhCzNEhDZZ4UrhC0PuX
+         i7bLxbqcwI98CrJ6H7PwpnJTjAJcWwOgmHpuPSBU9zFSdShpKass5flZyEhJYA5ShOvx
+         4bJxZ1+Mz6MrlaZsZx+0m+lpRi+i7RWewQd7G7xMJxmzSrzrOwzWT571/dPx3A9xTJTk
+         o2cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=flrY2lJlHhxpTaFKprp88SIz0K8XOJ8MpibhcDVgMos=;
-        b=tTeHMjOMNhIq5l4RX1DWCXOyBgFmmhR4r28axOvUcMfsDW69K9DQSfA3nXNsDPhSl7
-         u0j6FGPuklgYOkQ1bbiB1iyzdm1WRgX+SmnlKyl5JVskiTxEIMq80e/1xA7UFqtEjyWD
-         Fk/mE0WDWuvDdnytOsusN2TIwnX1OCc+Gu+iorYV0nhxUg/KtDGLJ8fUqDEqm+aOxF6P
-         cLXHlCFW0tqsKtPDu7ap386KJ6Z+Ml+KbpHXSOralGTboJWZq/4YZ5M5nzq85kMIhVeA
-         ps9EIJ8TSdDJdBHY74I7z5++S6/8E91Y3sWO7vkWDpGVzW4XXCQKZkv8niSp747npe+a
-         BSdw==
-X-Gm-Message-State: AOAM530vJ369TDu1TTuagjXXKE12FN+TUFYCZ275iBUtFSH4QwuRwwE/
-        FG/4A1N7MHTDw7qvW5x47GFGTIn64BA=
-X-Google-Smtp-Source: ABdhPJzWytMFeIsB0IUABIS95TP0e1YbR2VTsanORtht4XLUmeH3thmwCOq6RFq1v0gmwNYlsp+3Dg==
-X-Received: by 2002:a37:27cc:: with SMTP id n195mr26713576qkn.403.1597084260306;
-        Mon, 10 Aug 2020 11:31:00 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f016:5401:5840:1a7c:e646:9161])
-        by smtp.gmail.com with ESMTPSA id o25sm14122837qkm.42.2020.08.10.11.30.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Aug 2020 11:30:59 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 219ABC1D68; Mon, 10 Aug 2020 15:30:57 -0300 (-03)
-Date:   Mon, 10 Aug 2020 15:30:57 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     syzbot <syzbot+8f2165a7b1f2820feffc@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        nhorman@tuxdriver.com, syzkaller-bugs@googlegroups.com,
-        vyasevich@gmail.com, lucien.xin@gmail.com, jonas.falkevik@gmail.com
-Subject: Re: general protection fault in sctp_ulpevent_notify_peer_addr_change
-Message-ID: <20200810183057.GF3399@localhost.localdomain>
-References: <000000000000d4adc705ac87ba8e@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=6TJk/fTAPADshSTiLb7E9ncJKjWoZVvq9Eei8Ciqoek=;
+        b=pU9RqVja517PhU3T3ZSFNruPZEQ8gfwIAP3hSxhO2TzAg6E4n2PIJLOyfGD/Ercdh0
+         XoPKne/dPHVckMvX8rf5BBHP4vw1WivXeRfEHdMvT+qiylOZIEdMEq9XoV3nUpDz7so8
+         2M+l0FQFL+gHrSGsmIAorxjov0ac3rEUXJLuXC3cH7NkNyi9zTbaj1GwAgoYulZww7ub
+         WqM3fdIG/upKfCTqzCkxyG1ILd+tTsMmFUbz3CYmg2TJ+j/NUcTJEEJmFiZ9D4I4c5Fd
+         zPgHWZNKkKA980X7H/HA05jgFBBCdsr8RrWnM9Ua55D/3jh/hJl0Dd3jvL6X0FrddO0X
+         Qf3g==
+X-Gm-Message-State: AOAM533Z4xnIhrKuAobwG2aa+bl16YCB4VfehyHNEFESBNWkfGYArGmi
+        u9d/IhKu9wUYrjborF3CvdIO1pbSvZkAjvOsrJw=
+X-Google-Smtp-Source: ABdhPJxZ3KsKtBwpinpUTiczE18BrN3WSRsllO0BAtkdCeiLl97agLSuvJgPGyHEDBzABr2Z/SZfPdzkiR12XgXGS+0=
+X-Received: by 2002:a25:2ad3:: with SMTP id q202mr40638793ybq.27.1597085001590;
+ Mon, 10 Aug 2020 11:43:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000d4adc705ac87ba8e@google.com>
+References: <20200729230520.693207-1-andriin@fb.com> <874kpa4kag.fsf@toke.dk>
+In-Reply-To: <874kpa4kag.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 10 Aug 2020 11:43:10 -0700
+Message-ID: <CAEf4BzZMC4LWpgOMBgKaLAGLPmt4rz0D7_sNC+i=yaVhEtDG9g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/5] BPF link force-detach support
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 10, 2020 at 08:37:18AM -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    fffe3ae0 Merge tag 'for-linus-hmm' of git://git.kernel.org..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=12f34d3a900000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=50463ec6729f9706
-> dashboard link: https://syzkaller.appspot.com/bug?extid=8f2165a7b1f2820feffc
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1517701c900000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11b7e0e2900000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+8f2165a7b1f2820feffc@syzkaller.appspotmail.com
-> 
-> general protection fault, probably for non-canonical address 0xdffffc000000004c: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x0000000000000260-0x0000000000000267]
-> CPU: 0 PID: 12765 Comm: syz-executor391 Not tainted 5.8.0-syzkaller #0
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-> RIP: 0010:sctp_ulpevent_notify_peer_addr_change+0xa9/0xad0 net/sctp/ulpevent.c:346
+On Mon, Aug 10, 2020 at 8:01 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Andrii Nakryiko <andriin@fb.com> writes:
+>
+> > This patch set adds new BPF link operation, LINK_DETACH, allowing proce=
+sses
+> > with BPF link FD to force-detach it from respective BPF hook, similarly=
+ how
+> > BPF link is auto-detached when such BPF hook (e.g., cgroup, net_device,=
+ netns,
+> > etc) is removed. This facility allows admin to forcefully undo BPF link
+> > attachment, while process that created BPF link in the first place is l=
+eft
+> > intact.
+> >
+> > Once force-detached, BPF link stays valid in the kernel as long as ther=
+e is at
+> > least one FD open against it. It goes into defunct state, just like
+> > auto-detached BPF link.
+> >
+> > bpftool also got `link detach` command to allow triggering this in
+> > non-programmatic fashion.
+>
+> I know this was already merged, but just wanted to add a belated 'thanks
+> for adding this'!
+>
 
-Crashed in code added by 45ebf73ebcec ("sctp: check assoc before
-SCTP_ADDR_{MADE_PRIM, ADDED} event"), but it would have crashed a
-couple of instructions later on already anyway.
+You are welcome!
 
-I can't reproduce this crash, with the same commit and kernel config.
-I'm not seeing how transport->asoc can be null at there.
+> > Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>
+> BTW, I've noticed that you tend to drop Ccs on later versions of your
+> patch series (had to go and lookup v2 of this to check that it was in
+> fact merged). Is that intentional? :)
 
-While trying to reproduce this, when I aborted a test, I actually
-triggerred:
+Hm.. not sure about whether I tend to do that. But in this it was
+intentional and I dropped you from CC because I've seen enough
+reminders about your vacation, didn't need more ;)
 
-[ 1527.736212][ T8008] team0 (unregistering): Port device team_slave_1 removed
-[ 1527.896902][ T8008] team0 (unregistering): Port device team_slave_0 removed
-[ 1528.053936][ T8008] bond0 (unregistering): (slave bond_slave_1): Releasing backup interface
-[ 1528.445113][ T8008] bond0 (unregistering): (slave bond_slave_0): Releasing backup interface
-[ 1528.915669][ T8008] bond0 (unregistering): Released all slaves
-[ 1530.531179][ T8008] ------------[ cut here ]------------
-[ 1530.666414][ T8008] ODEBUG: free active (active state 0) object type: timer_list hint: delayed_work_timer_fn+0x0/0x90
-[ 1530.913574][ T8008] WARNING: CPU: 11 PID: 8008 at lib/debugobjects.c:485 debug_print_object+0x160/0x250
-[ 1531.165944][ T8008] Kernel panic - not syncing: panic_on_warn set ...
-[ 1531.291997][ T8008] CPU: 11 PID: 8008 Comm: kworker/u48:8 Not tainted 5.8.0+ #6
-[ 1531.554397][ T8008] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-2.fc32 04/01/2014
-[ 1531.842844][ T8008] Workqueue: netns cleanup_net
-[ 1531.983054][ T8008] Call Trace:
-[ 1532.122433][ T8008]  dump_stack+0x18f/0x20d
-[ 1532.257582][ T8008]  panic+0x2e3/0x75c
-[ 1532.385158][ T8008]  ? __warn_printk+0xf3/0xf3
-[ 1532.520152][ T8008]  ? console_unlock+0x7f0/0xf30
-[ 1532.643891][ T8008]  ? __warn.cold+0x5/0x45
-[ 1532.763171][ T8008]  ? __warn+0xd6/0x1f2
-[ 1532.884107][ T8008]  ? debug_print_object+0x160/0x250
-[ 1533.011290][ T8008]  __warn.cold+0x20/0x45
-[ 1533.132625][ T8008]  ? wake_up_klogd.part.0+0x8c/0xc0
-[ 1533.248423][ T8008]  ? debug_print_object+0x160/0x250
-[ 1533.370165][ T8008]  report_bug+0x1bd/0x210
-[ 1533.492858][ T8008]  handle_bug+0x38/0x90
-[ 1533.614108][ T8008]  exc_invalid_op+0x14/0x40
-[ 1533.730968][ T8008]  asm_exc_invalid_op+0x12/0x20
-[ 1533.851289][ T8008] RIP: 0010:debug_print_object+0x160/0x250
-[ 1533.964027][ T8008] Code: dd 40 b8 93 88 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 bf 00 00 00 48 8b 14 dd 40 b8 93 88 48 c7 c7 a0 ad 93 88 e8 02 66 a9 fd <0f> 0b 83 05 73 9f 13 07 01 48 83 c4 20 5b 5d 41 5c 41 5d c3 48 89
-[ 1534.313398][ T8008] RSP: 0018:ffffc90000e378a8 EFLAGS: 00010086
-[ 1534.432053][ T8008] RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
-[ 1534.677101][ T8008] RDX: ffff8881331a2300 RSI: ffffffff815d8e17 RDI: fffff520001c6f07
-[ 1534.930977][ T8008] RBP: 0000000000000001 R08: 0000000000000001 R09: ffff888142fa0fcb
-[ 1535.180403][ T8008] R10: 0000000000000000 R11: 0000000000008026 R12: ffffffff89bce120
-[ 1535.424399][ T8008] R13: ffffffff81636500 R14: dead000000000100 R15: dffffc0000000000
-[ 1535.678140][ T8008]  ? calc_wheel_index+0x3f0/0x3f0
-[ 1535.808026][ T8008]  ? vprintk_func+0x97/0x1a6
-[ 1535.939928][ T8008]  ? debug_print_object+0x160/0x250
-[ 1536.072538][ T8008]  debug_check_no_obj_freed+0x301/0x41c
-[ 1536.203742][ T8008]  ? dev_attr_show+0x90/0x90
-[ 1536.343659][ T8008]  kfree+0xf0/0x2c0
-[ 1536.484984][ T8008]  ? dev_attr_show+0x90/0x90
-[ 1536.620853][ T8008]  kvfree+0x42/0x50
-[ 1536.752990][ T8008]  ? netdev_class_remove_file_ns+0x30/0x30
-[ 1536.886457][ T8008]  device_release+0x71/0x200
-[ 1537.015419][ T8008]  ? dev_attr_show+0x90/0x90
-[ 1537.142315][ T8008]  kobject_put+0x171/0x270
-[ 1537.269426][ T8008]  netdev_run_todo+0x765/0xac0
-[ 1537.402993][ T8008]  ? dev_xdp_uninstall+0x3f0/0x3f0
-[ 1537.542007][ T8008]  ? default_device_exit_batch+0x3d0/0x3d0
-[ 1537.679397][ T8008]  ? unregister_netdevice_many+0x50/0x50
-[ 1537.811168][ T8008]  ? sysfs_remove_group+0xc2/0x170
-[ 1537.941789][ T8008]  default_device_exit_batch+0x316/0x3d0
-[ 1538.075268][ T8008]  ? unregister_netdev+0x20/0x20
-[ 1538.209131][ T8008]  ? __init_waitqueue_head+0x110/0x110
-[ 1538.340541][ T8008]  ? cfg802154_switch_netns+0x440/0x440
-[ 1538.468571][ T8008]  ? unregister_netdev+0x20/0x20
-[ 1538.574138][ T8008]  ? dev_change_net_namespace+0x1200/0x1200
-[ 1538.676756][ T8008]  ops_exit_list+0x10d/0x160
-[ 1538.778236][ T8008]  cleanup_net+0x4ea/0xa00
-[ 1538.877412][ T8008]  ? ops_free_list.part.0+0x3d0/0x3d0
-[ 1538.977271][ T8008]  ? lock_is_held_type+0xbb/0xf0
-[ 1539.069114][ T8008]  process_one_work+0x94c/0x1670
-[ 1539.165257][ T8008]  ? lock_release+0x8e0/0x8e0
-[ 1539.257102][ T8008]  ? pwq_dec_nr_in_flight+0x2d0/0x2d0
-[ 1539.343961][ T8008]  ? rwlock_bug.part.0+0x90/0x90
-[ 1539.433524][ T8008]  worker_thread+0x64c/0x1120
-[ 1539.521045][ T8008]  ? process_one_work+0x1670/0x1670
-[ 1539.610356][ T8008]  kthread+0x3b5/0x4a0
-[ 1539.698844][ T8008]  ? __kthread_bind_mask+0xc0/0xc0
-[ 1539.788834][ T8008]  ? __kthread_bind_mask+0xc0/0xc0
-[ 1539.871367][ T8008]  ret_from_fork+0x1f/0x30
-[ 1539.959633][ T8008] Kernel Offset: disabled
-[ 1540.038379][ T8008] Rebooting in 86400 seconds..
+In general, though, I try to keep CC list short, otherwise vger blocks
+my patches. People directly CC'd get them, but they never appear on
+bpf@vger mailing list. So it probably happened a few times where I
+started off with longer CC and had to drop people from it just to get
+my patches into patchworks.
+
+>
+> -Toke
+>
