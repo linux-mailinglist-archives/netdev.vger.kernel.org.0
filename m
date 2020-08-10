@@ -2,105 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBCA4240573
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 13:47:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B774240575
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 13:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726446AbgHJLrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 07:47:24 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:39663 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726141AbgHJLrX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Aug 2020 07:47:23 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 07ABl0kf008607;
-        Mon, 10 Aug 2020 13:47:00 +0200
-Date:   Mon, 10 Aug 2020 13:47:00 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     George Spelvin <lkml@sdf.org>
-Cc:     netdev@vger.kernel.org, aksecurity@gmail.com,
-        torvalds@linux-foundation.org, edumazet@google.com,
-        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
-        tglx@linutronix.de, peterz@infradead.org, tytso@mit.edu,
-        lkml.mplumb@gmail.com, stephen@networkplumber.org, fw@strlen.de
-Subject: Re: [DRAFT PATCH] random32: make prandom_u32() output unpredictable
-Message-ID: <20200810114700.GB8474@1wt.eu>
-References: <20200808152628.GA27941@SDF.ORG>
- <20200809065744.GA17668@SDF.ORG>
- <20200809093805.GA7928@1wt.eu>
- <20200809170639.GB25124@SDF.ORG>
- <20200809173302.GA8027@1wt.eu>
- <20200809183017.GC25124@SDF.ORG>
+        id S1726536AbgHJLr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 07:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58830 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726141AbgHJLr6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 07:47:58 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A99C061756
+        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 04:47:58 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id g8so7364675wmk.3
+        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 04:47:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=dcGCiLM2YR8uQhwchg1CXb9gKLrJV3agYXbyePzTpO0=;
+        b=ioaLuPsHpHLomOf7kC3vabEDcL48JrX75eLoZg0JJY4YxbrZdlSzK/8xx6atCiMzVz
+         X4hZ/k2KukB2PvMlU+G3RZ1RkZtZkgL45sjUAIco+QK0Pz9P5qI2h1UAqZ2M3A4E0zM1
+         uO+uW1k3zNbHIFoeKULpt1AXEw/VjfUuMxrkmNzKyMVlDOGViDlUAe+dyUZqka3BtbcF
+         jzmvc6cs3UiM9C+MZy23bcR4bMnMorxYConVV8rHw3+I34SBQhzLoI8PeEjmlMRxWkwq
+         rZ0DZJEkYacc5ou5g97xa+PsHHLtCUMd+rtiyo9JRTqxHlcx3tVKFxtEFHXGxTEOj4hM
+         Ky5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=dcGCiLM2YR8uQhwchg1CXb9gKLrJV3agYXbyePzTpO0=;
+        b=BtqpBVrP7n+s7233wUEbTfeAdixOOSziPdFAsd5aXirkCTo99JsNnyyeyk12T+0mrR
+         wmTcYKCTBjJK82b3JT8zBD6+JK4xayxfXpU9vbt/WqQ4X6NagDrXCrB3hz2JfalCBtMT
+         XpRbqC09CTASUtTyGWyFTEulnFslSWWJaQQKalwYP76wjJpPv1gJ8XMcosBER4O/A10h
+         29mWUp7zf8GCO2nqiw9uHpXHnoWMjFQRmC+aeNvz5vh9mKk4Uvq152jG7TAJ9nObo7MD
+         n4kplkQ/9U253AjSPZ+ziN6Kv0TbI1bvnlD7aziZXXKBA2qr22GtkU9V/2Nir3M9rqeM
+         nkow==
+X-Gm-Message-State: AOAM53207cT5G7Y1GC8DtARTBv5KmKacwbfk6lS4k0ZSzvZA/W32o+tc
+        sHXrAvsfnHwwqxmNbJnl2tz7UDjZVl7dPyI+jI4=
+X-Google-Smtp-Source: ABdhPJyBxjb8RlP/L7ckaSW0AqhtcyWQb4E/Vl3NQok9R/8YNm7cIv2fU4rmwdeO5odPvK4i/ugNj+LT9eGb4aVDiK8=
+X-Received: by 2002:a7b:c40b:: with SMTP id k11mr25023663wmi.107.1597060077147;
+ Mon, 10 Aug 2020 04:47:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200809183017.GC25124@SDF.ORG>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+References: <20200728190842.1284145-1-anthony.l.nguyen@intel.com> <20200728131653.3b90336b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200728131653.3b90336b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Mon, 10 Aug 2020 13:47:45 +0200
+Message-ID: <CAJ+HfNjBCNcb+KO+V0hmSvo2i5L+Cf52F3=-+7TonXkGJ9dXgA@mail.gmail.com>
+Subject: Re: [net-next 0/6][pull request] 40GbE Intel Wired LAN Driver Updates 2020-07-28
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, nhorman@redhat.com,
+        sassmann@redhat.com, Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi George,
+On Tue, 28 Jul 2020 at 22:20, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 28 Jul 2020 12:08:36 -0700 Tony Nguyen wrote:
+> > This series contains updates to i40e driver only.
+> >
+> > Li RongQing removes binding affinity mask to a fixed CPU and sets
+> > prefetch of Rx buffer page to occur conditionally.
+> >
+> > Bj=C3=B6rn provides AF_XDP performance improvements by not prefetching =
+HW
+> > descriptors, using 16 byte descriptors, increasing budget for AF_XDP
+> > receive, and moving buffer allocation out of Rx processing loop.
+>
+> My comment on patch #2 is really a nit, but for patch 5 I think we
+> should consider carefully a common path rather than "tweak" the drivers
+> like this.
 
-On Sun, Aug 09, 2020 at 06:30:17PM +0000, George Spelvin wrote:
-> Even something simple like buffering 8 TSC samples, and adding them
-> at 32-bit offsets across the state every 8th call, would make a huge
-> difference.
+Yup, I agree that tweaks like this should be avoided, and I said that
+I'll address it in a follow up. However, I was under the impression
+that this series would still be pulled (discussed in patch 5), but I
+can't find it in the tree.
 
-Doing testing on real hardware showed that retrieving the TSC on every
-call had a non negligible cost, causing a loss of 2.5% on the accept()
-rate and 4% on packet rate when using iptables -m statistics. However
-I reused your idea of accumulating old TSCs to increase the uncertainty
-about their exact value, except that I retrieve it only on 1/8 calls
-and use the previous noise in this case. With this I observe the same
-performance as plain 5.8. Below are the connection rates accepted on
-a single core :
-
-        5.8           5.8+patch     5.8+patch+tsc
-   192900-197900   188800->192200   194500-197500  (conn/s)
-
-This was on a core i7-8700K. I looked at the asm code for the function
-and it remains reasonably light, in the same order of complexity as the
-original one, so I think we could go with that.
-
-My proposed change is below, in case you have any improvements to suggest.
-
-Regards,
-Willy
-
-
-diff --git a/lib/random32.c b/lib/random32.c
-index 2b048e2ea99f..a12d63028106 100644
---- a/lib/random32.c
-+++ b/lib/random32.c
-@@ -317,6 +317,8 @@ static void __init prandom_state_selftest(void)
- 
- struct siprand_state {
- 	unsigned long v[4];
-+	unsigned long noise;
-+	unsigned long count;
- };
- 
- static DEFINE_PER_CPU(struct siprand_state, net_rand_state) __latent_entropy;
-@@ -334,7 +336,7 @@ static DEFINE_PER_CPU(struct siprand_state, net_rand_state) __latent_entropy;
- #define K0 (0x736f6d6570736575 ^ 0x6c7967656e657261 )
- #define K1 (0x646f72616e646f6d ^ 0x7465646279746573 )
- 
--#elif BITS_PER_LONG == 23
-+#elif BITS_PER_LONG == 32
- /*
-  * On 32-bit machines, we use HSipHash, a reduced-width version of SipHash.
-  * This is weaker, but 32-bit machines are not used for high-traffic
-@@ -375,6 +377,12 @@ static u32 siprand_u32(struct siprand_state *s)
- {
- 	unsigned long v0 = s->v[0], v1 = s->v[1], v2 = s->v[2], v3 = s->v[3];
- 
-+	if (++s->count >= 8) {
-+		v3 ^= s->noise;
-+		s->noise += random_get_entropy();
-+		s->count = 0;
-+	}
-+
- 	SIPROUND(v0, v1, v2, v3);
- 	SIPROUND(v0, v1, v2, v3);
- 	s->v[0] = v0;  s->v[1] = v1;  s->v[2] = v2;  s->v[3] = v3;
+Thanks,
+Bj=C3=B6rn
