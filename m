@@ -2,100 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76138240CCC
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 20:14:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F8D8240CD6
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 20:17:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728095AbgHJSN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 14:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727904AbgHJSN6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 14:13:58 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E58CC061756;
-        Mon, 10 Aug 2020 11:13:58 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id r4so5438561pls.2;
-        Mon, 10 Aug 2020 11:13:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QWRjJz03fN2iX6SwFzIlTiyYOq7QYK9vU0Yu9DQQqFg=;
-        b=B/RWcC5SUXP+AjseWeNvooqu2enNHgumz6rl6RK/sm6OxOMjpNAPqfgwbC2Uj/pCM2
-         B6EI2DkyqlZY48bqmKCkvj6P7Z9gQxtGM0E9oS6mp1ZMfizCc2/VtqecTG+YJXQFBVpr
-         P8UBvN1bTyo8RHgkypE4UW6SCVoQoDGJKKz0f4s1xKCbDOdfWY82/1eve6yzJaG0lQCi
-         tH0oCJooIUESQKV/+DL6Er88LPwYDlQp8hK2EQT1rIK7gyPas2uDRMsBkDJnECgkBGSR
-         5w1CZVYDTeJ8C+0oZS3iY29eCS5MnHmyz2pTcgNMJN1zErCg/R35id1oJ1Mt8s15lwKN
-         jSJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QWRjJz03fN2iX6SwFzIlTiyYOq7QYK9vU0Yu9DQQqFg=;
-        b=oBAQNoKCnzSSrm/Jtq2rK1bYJLSx+1zkIrlPI3f+mmyti6DSCSjZU+bKlQaG7KCRb1
-         jKnBQsOwhaCRo0rP2dAeOAhROdAQRsx3vaKzkxF97VDqLrYCMiJqrTvPQnUvgHCSg3CT
-         O0O463bKoc+ZL7IxygSdTAuDRtXdFvcpPE9TatgMWA6HABUp6sneaPKjQ+rcUCCDTXBT
-         3DJejbpa6XjqHWsWSlO+AAreR4BNLK0G+T+YhNvKEU/G02cAE0gepgE+JxFxv6yKH4+X
-         amTnCXIfbd8cQjABtc6lfQQVn/WNN1hIXxOrHeoYJ5k7CwjijVcHlmTdk1mf7vipyQgE
-         IZaw==
-X-Gm-Message-State: AOAM533xJyYoMIFR+u6p1Qvbdce68Ew56MhLvyN7FEaTgixupU2AtMqJ
-        wCJynStqfUDs0IDjmB+ChT+JADZJIYd4fUBhJkI=
-X-Google-Smtp-Source: ABdhPJxbl9r/s3RbDzcSSFfduZED7AMMCG8o6kF6ali+og7C3Xr9BVeqjDvPq1jNbLi7nO/qd5k95hpfX+ZnfkTAqZI=
-X-Received: by 2002:a17:902:9892:: with SMTP id s18mr9546077plp.322.1597083237768;
- Mon, 10 Aug 2020 11:13:57 -0700 (PDT)
+        id S1728112AbgHJSRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 14:17:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55750 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727904AbgHJSRa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 14:17:30 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E48CC207FF;
+        Mon, 10 Aug 2020 18:17:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597083449;
+        bh=lhOfgn563/hfQV5pl6qTvLhjlAalh82/pFW+g7YHZAM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QzqKh69tdGzyy6wbQqdcbQzZMcFleuyePwYWtna0RSI6+RzFgFSxN0KZ/p81M9uUL
+         9qAld9F1gS3qa5W7mMVlSIIDUv4GLuIrKg4xxlIbs8P7k6miG4uTMU/QVhsRefABkO
+         VQK+lcO5NAdDibQbw7FS6ueiBRcoJ+pIU4USdqGI=
+Date:   Mon, 10 Aug 2020 11:17:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Moshe Shemesh <moshe@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: Re: [PATCH net-next RFC 01/13] devlink: Add reload level option to
+ devlink reload command
+Message-ID: <20200810111727.6f55943d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <4c25811f-e571-e39d-f25c-59b821264b3f@intel.com>
+References: <20200728130653.7ce2f013@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <04f00024-758c-bc19-c187-49847c24a5a4@mellanox.com>
+        <20200729140708.5f914c15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3352bd96-d10e-6961-079d-5c913a967513@mellanox.com>
+        <20200730161101.48f42c5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <0f2467fd-ee2e-1a51-f9c1-02f8a579d542@mellanox.com>
+        <20200803141442.GB2290@nanopsycho>
+        <20200803135703.16967635@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200804100418.GA2210@nanopsycho>
+        <20200804133946.7246514e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200805110258.GA2169@nanopsycho>
+        <20200806112530.0588b3ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <8b06ade2-dfbe-8894-0d6a-afe9c2f41b4e@mellanox.com>
+        <20200810095305.0b9661ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <4c25811f-e571-e39d-f25c-59b821264b3f@intel.com>
 MIME-Version: 1.0
-References: <20200808175251.582781-1-xie.he.0141@gmail.com>
- <CA+FuTSfxWhq0pxEGPtOMjFUB7-4Vax6XMGsLL++28LwSOU5b3g@mail.gmail.com>
- <CAJht_EM9q9u34LMAeYsYe5voZ54s3Z7OzxtvSomcF9a9wRvuCQ@mail.gmail.com> <CA+FuTSdBNn218kuswND5OE4vZ4mxz3_hTDkcRmZn2Z9-gaYQZg@mail.gmail.com>
-In-Reply-To: <CA+FuTSdBNn218kuswND5OE4vZ4mxz3_hTDkcRmZn2Z9-gaYQZg@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Mon, 10 Aug 2020 11:13:46 -0700
-Message-ID: <CAJht_EPGD1RmnU6-ZJYocXCY-qcPxXeEuurQ6GJod=WGO69-jg@mail.gmail.com>
-Subject: Re: [PATCH net] drivers/net/wan/lapbether: Added needed_tailroom
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 10, 2020 at 12:32 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> What happens when a tunnel device passes a packet to these devices?
-> That will also not have allocated the extra tailroom. Does that cause
-> a bug?
+On Mon, 10 Aug 2020 10:09:20 -0700 Jacob Keller wrote:
+> >> But I am still missing something: fw-activate implies that it will 
+> >> activate a new FW image stored on flash, pending activation. What if the 
+> >> user wants to reset and reload the FW if no new FW pending ? Should we 
+> >> add --force option to fw-activate level ?  
+> > 
+> > Since reload does not check today if anything changed - i.e. if reload
+> > is actually needed, neither should fw-activate, IMO. I'd expect the
+> > "--force behavior" to be the default.
+> >   
+> 
+> Yep. What about if there is HW/FW that can't initiate the fw-activate
+> reset unless there is a pending update? I think ice firmware might
+> respond to the "please reset/activate" command with a specific status
+> code indicating that no update was pending.
+> 
+> I think the simplest solution is to just interpret this as a success.
+> Alternatively we could report a specific error to inform user that no
+> activation took place?
 
-I looked at the code in net/ipv4/ip_tunnel.c. It indeed appeared to me
-that it didn't take needed_tailroom into consideration. However it
-does take needed_headroom into consideration through the macro
-LL_RESERVED_SPACE. I think it would be better for it to take
-needed_tailroom into consideration, too.
-
-However, looking at the comment of needed_tailroom in
-include/linux/netdevice.h, it says "Extra tailroom the hardware may
-need, but not in all cases can this be guaranteed". So if we take this
-comment as the spec, we can consider this to be not a bug. The reason
-the author of this comment said so, might be that he wanted to add
-needed_tailroom to solve some problems, but he was not able to change
-all code to take needed_tailroom into consideration, so he wrote in
-the comment saying that it was not necessary to always guarantee
-needed_tailroom.
-
-If we take this comment as the spec, to prevent bugs, any driver that
-sets needed_tailroom must always check (and re-allocate if necessary)
-before using the tailroom.
-
-However, I still think it would be better to always take into
-consideration needed_tailroom (and needed_headroom, too), so that
-eventually we can remove the words of "but not in all cases can this
-be guaranteed" from the comment. That would make the code more logical
-and consistent.
-
-Thank you for raising this important question about needed_tailroom!
+I'd do EOPNOTSUPP + extack.
