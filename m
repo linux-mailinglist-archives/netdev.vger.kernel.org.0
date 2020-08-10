@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE2372410FF
-	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 21:34:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3D2A241100
+	for <lists+netdev@lfdr.de>; Mon, 10 Aug 2020 21:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728322AbgHJTJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 15:09:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35126 "EHLO mail.kernel.org"
+        id S1729808AbgHJTeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 15:34:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35232 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728284AbgHJTJF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Aug 2020 15:09:05 -0400
+        id S1728308AbgHJTJJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 15:09:09 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2D4DD21775;
-        Mon, 10 Aug 2020 19:09:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EC46A22B4E;
+        Mon, 10 Aug 2020 19:09:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597086543;
-        bh=hA1h9wZ8IJcr0MIhQYceFwDgSJwUNP7M6s/QAIjJbUk=;
+        s=default; t=1597086546;
+        bh=wNpQYJFvzAHC3btzCqiA6w25nsGp1ZuOBw4d9rOui6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kYgzz++5/7lNhRBaX61dpYAB0fgZgmhA1trxGxbCZB6UWGm5Hg3zBPs0Q2IBEtg8M
-         Q+JnExD88XuYIY6TDLfuU2SKP1Kxxqy/qNNv5DjVOxDRH2xfOE+x0KNFdYDrg3zyu7
-         sA2Rtvppgmnc+utynhf8RZQyiujp4Gmc27xCKvU4=
+        b=Uz3ELkLnFDpohYdYAgM+gXIvGOK28Bs5djuZ17sNWKiE/kldOpJ+FYU8htfemuShC
+         taQjJKLf2jzBgfTRbJoJNrz/KT4cTaAwhdjAl3TbkS2BHAqgY7FwWe69OttXJ+/MIg
+         wgHXJ+IMtRHFrTNamn+7GxckUZRLdjK7Xtf516Jw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.8 03/64] net: mscc: ocelot: fix encoding destination ports into multicast IPv4 address
-Date:   Mon, 10 Aug 2020 15:07:58 -0400
-Message-Id: <20200810190859.3793319-3-sashal@kernel.org>
+Cc:     Lihong Kou <koulihong@huawei.com>,
+        syzbot+96414aa0033c363d8458@syzkaller.appspotmail.com,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.8 05/64] Bluetooth: add a mutex lock to avoid UAF in do_enale_set
+Date:   Mon, 10 Aug 2020 15:08:00 -0400
+Message-Id: <20200810190859.3793319-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200810190859.3793319-1-sashal@kernel.org>
 References: <20200810190859.3793319-1-sashal@kernel.org>
@@ -43,115 +45,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Lihong Kou <koulihong@huawei.com>
 
-[ Upstream commit 0897ecf7532577bda3dbcb043ce046a96948889d ]
+[ Upstream commit f9c70bdc279b191da8d60777c627702c06e4a37d ]
 
-The ocelot hardware designers have made some hacks to support multicast
-IPv4 and IPv6 addresses. Normally, the MAC table matches on MAC
-addresses and the destination ports are selected through the DEST_IDX
-field of the respective MAC table entry. The DEST_IDX points to a Port
-Group ID (PGID) which contains the bit mask of ports that frames should
-be forwarded to. But there aren't a lot of PGIDs (only 80 or so) and
-there are clearly many more IP multicast addresses than that, so it
-doesn't scale to use this PGID mechanism, so something else was done.
-Since the first portion of the MAC address is known, the hack they did
-was to use a single PGID for _flooding_ unknown IPv4 multicast
-(PGID_MCIPV4 == 62), but for known IP multicast, embed the destination
-ports into the first 3 bytes of the MAC address recorded in the MAC
-table.
+In the case we set or free the global value listen_chan in
+different threads, we can encounter the UAF problems because
+the method is not protected by any lock, add one to avoid
+this bug.
 
-The VSC7514 datasheet explains it like this:
+BUG: KASAN: use-after-free in l2cap_chan_close+0x48/0x990
+net/bluetooth/l2cap_core.c:730
+Read of size 8 at addr ffff888096950000 by task kworker/1:102/2868
 
-    3.9.1.5 IPv4 Multicast Entries
+CPU: 1 PID: 2868 Comm: kworker/1:102 Not tainted 5.5.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine,
+BIOS Google 01/01/2011
+Workqueue: events do_enable_set
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1fb/0x318 lib/dump_stack.c:118
+ print_address_description+0x74/0x5c0 mm/kasan/report.c:374
+ __kasan_report+0x149/0x1c0 mm/kasan/report.c:506
+ kasan_report+0x26/0x50 mm/kasan/common.c:641
+ __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:135
+ l2cap_chan_close+0x48/0x990 net/bluetooth/l2cap_core.c:730
+ do_enable_set+0x660/0x900 net/bluetooth/6lowpan.c:1074
+ process_one_work+0x7f5/0x10f0 kernel/workqueue.c:2264
+ worker_thread+0xbbc/0x1630 kernel/workqueue.c:2410
+ kthread+0x332/0x350 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
-    MAC table entries with the ENTRY_TYPE = 2 settings are interpreted
-    as IPv4 multicast entries.
-    IPv4 multicasts entries match IPv4 frames, which are classified to
-    the specified VID, and which have DMAC = 0x01005Exxxxxx, where
-    xxxxxx is the lower 24 bits of the MAC address in the entry.
-    Instead of a lookup in the destination mask table (PGID), the
-    destination set is programmed as part of the entry MAC address. This
-    is shown in the following table.
+Allocated by task 2870:
+ save_stack mm/kasan/common.c:72 [inline]
+ set_track mm/kasan/common.c:80 [inline]
+ __kasan_kmalloc+0x118/0x1c0 mm/kasan/common.c:515
+ kasan_kmalloc+0x9/0x10 mm/kasan/common.c:529
+ kmem_cache_alloc_trace+0x221/0x2f0 mm/slab.c:3551
+ kmalloc include/linux/slab.h:555 [inline]
+ kzalloc include/linux/slab.h:669 [inline]
+ l2cap_chan_create+0x50/0x320 net/bluetooth/l2cap_core.c:446
+ chan_create net/bluetooth/6lowpan.c:640 [inline]
+ bt_6lowpan_listen net/bluetooth/6lowpan.c:959 [inline]
+ do_enable_set+0x6a4/0x900 net/bluetooth/6lowpan.c:1078
+ process_one_work+0x7f5/0x10f0 kernel/workqueue.c:2264
+ worker_thread+0xbbc/0x1630 kernel/workqueue.c:2410
+ kthread+0x332/0x350 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
-    Table 78: IPv4 Multicast Destination Mask
+Freed by task 2870:
+ save_stack mm/kasan/common.c:72 [inline]
+ set_track mm/kasan/common.c:80 [inline]
+ kasan_set_free_info mm/kasan/common.c:337 [inline]
+ __kasan_slab_free+0x12e/0x1e0 mm/kasan/common.c:476
+ kasan_slab_free+0xe/0x10 mm/kasan/common.c:485
+ __cache_free mm/slab.c:3426 [inline]
+ kfree+0x10d/0x220 mm/slab.c:3757
+ l2cap_chan_destroy net/bluetooth/l2cap_core.c:484 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ l2cap_chan_put+0x170/0x190 net/bluetooth/l2cap_core.c:498
+ do_enable_set+0x66c/0x900 net/bluetooth/6lowpan.c:1075
+ process_one_work+0x7f5/0x10f0 kernel/workqueue.c:2264
+ worker_thread+0xbbc/0x1630 kernel/workqueue.c:2410
+ kthread+0x332/0x350 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
-        Destination Ports            Record Bit Field
-        ---------------------------------------------
-        Ports 10-0                   MAC[34-24]
+The buggy address belongs to the object at ffff888096950000
+ which belongs to the cache kmalloc-2k of size 2048
+The buggy address is located 0 bytes inside of
+ 2048-byte region [ffff888096950000, ffff888096950800)
+The buggy address belongs to the page:
+page:ffffea00025a5400 refcount:1 mapcount:0 mapping:ffff8880aa400e00 index:0x0
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea00027d1548 ffffea0002397808 ffff8880aa400e00
+raw: 0000000000000000 ffff888096950000 0000000100000001 0000000000000000
+page dumped because: kasan: bad access detected
 
-    Example: All IPv4 multicast frames in VLAN 12 with MAC 01005E112233 are
-    to be forwarded to ports 3, 8, and 9. This is done by inserting the
-    following entry in the MAC table entry:
-    VALID = 1
-    VID = 12
-    MAC = 0x000308112233
-    ENTRY_TYPE = 2
-    DEST_IDX = 0
+Memory state around the buggy address:
+ ffff88809694ff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88809694ff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff888096950000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                   ^
+ ffff888096950080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888096950100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
-But this procedure is not at all what's going on in the driver. In fact,
-the code that embeds the ports into the MAC address looks like it hasn't
-actually been tested. This patch applies the procedure described in the
-datasheet.
-
-Since there are many other fixes to be made around multicast forwarding
-until it works properly, there is no real reason for this patch to be
-backported to stable trees, or considered a real fix of something that
-should have worked.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: syzbot+96414aa0033c363d8458@syzkaller.appspotmail.com
+Signed-off-by: Lihong Kou <koulihong@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ net/bluetooth/6lowpan.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index f17da67a4622e..d0b79cca51840 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1605,14 +1605,14 @@ static int ocelot_port_obj_add_mdb(struct net_device *dev,
- 	addr[0] = 0;
+diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
+index bb55d92691b06..cff4944d5b663 100644
+--- a/net/bluetooth/6lowpan.c
++++ b/net/bluetooth/6lowpan.c
+@@ -50,6 +50,7 @@ static bool enable_6lowpan;
+ /* We are listening incoming connections via this channel
+  */
+ static struct l2cap_chan *listen_chan;
++static DEFINE_MUTEX(set_lock);
  
- 	if (!new) {
--		addr[2] = mc->ports << 0;
--		addr[1] = mc->ports << 8;
-+		addr[1] = mc->ports >> 8;
-+		addr[2] = mc->ports & 0xff;
- 		ocelot_mact_forget(ocelot, addr, vid);
+ struct lowpan_peer {
+ 	struct list_head list;
+@@ -1078,12 +1079,14 @@ static void do_enable_set(struct work_struct *work)
+ 
+ 	enable_6lowpan = set_enable->flag;
+ 
++	mutex_lock(&set_lock);
+ 	if (listen_chan) {
+ 		l2cap_chan_close(listen_chan, 0);
+ 		l2cap_chan_put(listen_chan);
  	}
  
- 	mc->ports |= BIT(port);
--	addr[2] = mc->ports << 0;
--	addr[1] = mc->ports << 8;
-+	addr[1] = mc->ports >> 8;
-+	addr[2] = mc->ports & 0xff;
+ 	listen_chan = bt_6lowpan_listen();
++	mutex_unlock(&set_lock);
  
- 	return ocelot_mact_learn(ocelot, 0, addr, vid, ENTRYTYPE_MACv4);
+ 	kfree(set_enable);
  }
-@@ -1636,9 +1636,9 @@ static int ocelot_port_obj_del_mdb(struct net_device *dev,
- 		return -ENOENT;
+@@ -1135,11 +1138,13 @@ static ssize_t lowpan_control_write(struct file *fp,
+ 		if (ret == -EINVAL)
+ 			return ret;
  
- 	memcpy(addr, mc->addr, ETH_ALEN);
--	addr[2] = mc->ports << 0;
--	addr[1] = mc->ports << 8;
- 	addr[0] = 0;
-+	addr[1] = mc->ports >> 8;
-+	addr[2] = mc->ports & 0xff;
- 	ocelot_mact_forget(ocelot, addr, vid);
++		mutex_lock(&set_lock);
+ 		if (listen_chan) {
+ 			l2cap_chan_close(listen_chan, 0);
+ 			l2cap_chan_put(listen_chan);
+ 			listen_chan = NULL;
+ 		}
++		mutex_unlock(&set_lock);
  
- 	mc->ports &= ~BIT(port);
-@@ -1648,8 +1648,8 @@ static int ocelot_port_obj_del_mdb(struct net_device *dev,
- 		return 0;
- 	}
- 
--	addr[2] = mc->ports << 0;
--	addr[1] = mc->ports << 8;
-+	addr[1] = mc->ports >> 8;
-+	addr[2] = mc->ports & 0xff;
- 
- 	return ocelot_mact_learn(ocelot, 0, addr, vid, ENTRYTYPE_MACv4);
- }
+ 		if (conn) {
+ 			struct lowpan_peer *peer;
 -- 
 2.25.1
 
