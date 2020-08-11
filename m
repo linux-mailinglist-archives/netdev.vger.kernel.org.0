@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79C76242091
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 21:50:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB3D242094
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 21:50:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726576AbgHKTuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 15:50:18 -0400
-Received: from mail.efficios.com ([167.114.26.124]:58234 "EHLO
+        id S1726507AbgHKTuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 15:50:17 -0400
+Received: from mail.efficios.com ([167.114.26.124]:58220 "EHLO
         mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726478AbgHKTuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 15:50:16 -0400
+        with ESMTP id S1725889AbgHKTuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 15:50:14 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id A3F9E2CFAC9;
+        by mail.efficios.com (Postfix) with ESMTP id 70BC72CFA34;
         Tue, 11 Aug 2020 15:50:13 -0400 (EDT)
 Received: from mail.efficios.com ([127.0.0.1])
         by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 8UnJt7RnLKM5; Tue, 11 Aug 2020 15:50:13 -0400 (EDT)
+        with ESMTP id Tdp9EjkuQFHC; Tue, 11 Aug 2020 15:50:13 -0400 (EDT)
 Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id EF8DA2CF8AE;
-        Tue, 11 Aug 2020 15:50:12 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com EF8DA2CF8AE
+        by mail.efficios.com (Postfix) with ESMTP id 188CF2CF8B0;
+        Tue, 11 Aug 2020 15:50:13 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 188CF2CF8B0
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1597175412;
-        bh=axZ8vm59uSefLTXK1iGb3yt9EcNYxg2PNeuSSKaVAUY=;
+        s=default; t=1597175413;
+        bh=wacVchKN4LsmNI6I5pXp9kMKjgCCodEpsngulBK/dAM=;
         h=From:To:Date:Message-Id;
-        b=VU/Wxzljq6JGsvKwhVbEk5cB6Drmdh8WxSrY8otK0yllFr6UQ+63twD9XWr2Q+Dii
-         hk1KYON+aV1JeM47VnChxmaO/TnTZinCrovlwB3Tl+pYcD5wGhc+FZoXzMQ9ug99s+
-         w6B3XppPEkqeGV4r2kcGiaxOuH3oLfVXOU75q0UE6uyYMJ5l7vQcagDAHnQIoni4hf
-         RIyoT9qCO6K9FFZOOMLG+mW1ttusvB5yjgKcdb73B/9gkhf9MmqhhAZ1oP8lI2Oj5D
-         Hmj8t+xu4moqmStS2iQlg1FxhesFkXdU70D6kgak/nXJlesqPlMq/HiMez4HvOw3Y/
-         9xFG+1ilSX84Q==
+        b=vKznxKc1kVIGd+ul3nm15Kde8NQqLbnm6Za/sRG63Ck7cRMEkIZGFQpaAUWDRb6u9
+         DcAovqc+3anF7is0bC2X5HvxVl9oLMtKrR5cxQn1z1ZB4AzebxxsG8c6fyiziJWFbZ
+         HCQVe7AeuQQC3W66tpQEbMvzoteNAxTMX/INvXQT3GxTp9EJECq45N0GqDHseHR+0I
+         0+Mwm4GyiPwJgus5c2e6H3F+AJqD7FrG8v6Pna+4lPcmK+6g3su3Ma573uIWMrp8Rk
+         xpMlPoMgEkzR/Z/TS9Z7jH7QbCY3/+shuSbGd2hn+Gel2qa5KEkTKdC3V1HROBdgID
+         hN4Zqv8iGYSkQ==
 X-Virus-Scanned: amavisd-new at efficios.com
 Received: from mail.efficios.com ([127.0.0.1])
         by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id fSxlRaaZgVKI; Tue, 11 Aug 2020 15:50:12 -0400 (EDT)
+        with ESMTP id fUjH-GAaUQdY; Tue, 11 Aug 2020 15:50:13 -0400 (EDT)
 Received: from localhost.localdomain (192-222-181-218.qc.cable.ebox.net [192.222.181.218])
-        by mail.efficios.com (Postfix) with ESMTPSA id 9C1EB2CFA32;
+        by mail.efficios.com (Postfix) with ESMTPSA id EC2122CF9B6;
         Tue, 11 Aug 2020 15:50:12 -0400 (EDT)
 From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 To:     David Ahern <dsahern@kernel.org>
 Cc:     linux-kernel@vger.kernel.org,
-        Michael Jeanson <mjeanson@efficios.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH 1/3] selftests: Add VRF icmp error route lookup test
-Date:   Tue, 11 Aug 2020 15:50:01 -0400
-Message-Id: <20200811195003.1812-2-mathieu.desnoyers@efficios.com>
+Subject: [PATCH 2/3] ipv4/icmp: l3mdev: Perform icmp error route lookup on source device routing table
+Date:   Tue, 11 Aug 2020 15:50:02 -0400
+Message-Id: <20200811195003.1812-3-mathieu.desnoyers@efficios.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200811195003.1812-1-mathieu.desnoyers@efficios.com>
 References: <20200811195003.1812-1-mathieu.desnoyers@efficios.com>
@@ -54,477 +54,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Jeanson <mjeanson@efficios.com>
+As per RFC792, ICMP errors should be sent to the source host.
 
-The objective is to check that the incoming vrf routing table is selected
-to send an ICMP error back to the source when the ttl of a packet reaches 1
-while it is forwarded between different vrfs.
+However, in configurations with Virtual Routing and Forwarding tables,
+looking up which routing table to use is currently done by using the
+destination net_device.
 
-The first test sends a ping with a ttl of 1 from h1 to h2 and parses the
-output of the command to check that a ttl expired error is received.
+commit 9d1a6c4ea43e ("net: icmp_route_lookup should use rt dev to
+determine L3 domain") changes the interface passed to
+l3mdev_master_ifindex() and inet_addr_type_dev_table() from skb_in->dev
+to skb_dst(skb_in)->dev. This effectively uses the destination device
+rather than the source device for choosing which routing table should be
+used to lookup where to send the ICMP error.
 
-[This may be flaky, I'm open to suggestions of a more robust approch.]
+Therefore, if the source and destination interfaces are within separate
+VRFs, or one in the global routing table and the other in a VRF, looking
+up the source host in the destination interface's routing table will
+fail if the destination interface's routing table contains no route to
+the source host.
 
-The second test runs traceroute from h1 to h2 and parses the output to
-check for a hop on r1.
+One observable effect of this issue is that traceroute does not work in
+the following cases:
 
-Signed-off-by: Michael Jeanson <mjeanson@efficios.com>
+- Route leaking between global routing table and VRF
+- Route leaking between VRFs
+
+Preferably use the source device routing table when sending ICMP error
+messages. If no source device is set, fall-back on the destination
+device routing table.
+
+Fixes: 9d1a6c4ea43e ("net: icmp_route_lookup should use rt dev to determine L3 domain")
+Link: https://tools.ietf.org/html/rfc792
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 Cc: David Ahern <dsahern@kernel.org>
 Cc: David S. Miller <davem@davemloft.net>
 Cc: netdev@vger.kernel.org
 ---
- tools/testing/selftests/net/Makefile          |   1 +
- .../selftests/net/vrf_icmp_error_route.sh     | 429 ++++++++++++++++++
- 2 files changed, 430 insertions(+)
- create mode 100755 tools/testing/selftests/net/vrf_icmp_error_route.sh
+ net/ipv4/icmp.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 9491bbaa0831..a716fbf780b3 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -19,6 +19,7 @@ TEST_PROGS += txtimestamp.sh
- TEST_PROGS += vrf-xfrm-tests.sh
- TEST_PROGS += rxtimestamp.sh
- TEST_PROGS += devlink_port_split.py
-+TEST_PROGS += vrf_icmp_error_route.sh
- TEST_PROGS_EXTENDED := in_netns.sh
- TEST_GEN_FILES =  socket nettest
- TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
-diff --git a/tools/testing/selftests/net/vrf_icmp_error_route.sh b/tools/testing/selftests/net/vrf_icmp_error_route.sh
-new file mode 100755
-index 000000000000..0b15a886bf5b
---- /dev/null
-+++ b/tools/testing/selftests/net/vrf_icmp_error_route.sh
-@@ -0,0 +1,429 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Copyright (c) 2019 David Ahern <dsahern@gmail.com>. All rights reserved.
-+# Copyright (c) 2020 Michael Jeanson <mjeanson@efficios.com>. All rights reserved.
-+#
-+#                     blue         red
-+#                     .253 +----+ .253
-+#                     +----| r1 |----+
-+#                     |    +----+    |
-+# +----+              |              |              +----+
-+# | h1 |--------------+              +--------------| h2 |
-+# +----+ .1           |              |           .2 +----+
-+#         172.16.1/24 |    +----+    | 172.16.2/24
-+#    2001:db8:16:1/64 +----| r2 |----+ 2001:db8:16:2/64
-+#                     .254 +----+ .254
-+#
-+#
-+# Route from h1 to h2 goes through r1, incoming vrf blue has a route to the
-+# outgoing vrf red for the n2 network but red doesn't have a route back to n1.
-+# Route from h2 to h1 goes through r2.
-+#
-+# The objective is to check that the incoming vrf routing table is selected
-+# to send an ICMP error back to the source when the ttl of a packet reaches 1
-+# while it is forwarded between different vrfs.
-+#
-+# The first test sends a ping with a ttl of 1 from h1 to h2 and parses the
-+# output of the command to check that a ttl expired error is received.
-+#
-+# The second test runs traceroute from h1 to h2 and parses the output to check
-+# for a hop on r1.
-+#
-+# Requires CONFIG_NET_VRF, CONFIG_VETH, CONFIG_BRIDGE and CONFIG_NET_NS.
-+
-+VERBOSE=0
-+PAUSE_ON_FAIL=no
-+
-+H1_N1_IP=172.16.1.1
-+R1_N1_IP=172.16.1.253
-+R2_N1_IP=172.16.1.254
-+
-+H1_N1_IP6=2001:db8:16:1::1
-+R1_N1_IP6=2001:db8:16:1::253
-+R2_N1_IP6=2001:db8:16:1::254
-+
-+H2_N2=172.16.2.0/24
-+H2_N2_6=2001:db8:16:2::/64
-+
-+H2_N2_IP=172.16.2.2
-+R1_N2_IP=172.16.2.253
-+R2_N2_IP=172.16.2.254
-+
-+H2_N2_IP6=2001:db8:16:2::2
-+R1_N2_IP6=2001:db8:16:2::253
-+R2_N2_IP6=2001:db8:16:2::254
-+
-+################################################################################
-+# helpers
-+
-+log_section()
-+{
-+	echo
-+	echo "###########################################################################"
-+	echo "$*"
-+	echo "###########################################################################"
-+	echo
-+}
-+
-+log_test()
-+{
-+	local rc=$1
-+	local expected=$2
-+	local msg="$3"
-+
-+	if [ "${rc}" -eq "${expected}" ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "${msg}"
-+		nsuccess=$((nsuccess+1))
-+	else
-+		ret=1
-+		nfail=$((nfail+1))
-+		printf "TEST: %-60s  [FAIL]\n" "${msg}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+			echo
-+			echo "hit enter to continue, 'q' to quit"
-+			read -r a
-+			[ "$a" = "q" ] && exit 1
-+		fi
-+	fi
-+}
-+
-+run_cmd()
-+{
-+	local cmd="$*"
-+	local out
-+	local rc
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		echo "COMMAND: $cmd"
-+	fi
-+
-+	out=$(eval $cmd 2>&1)
-+	rc=$?
-+	if [ "$VERBOSE" = "1" ] && [ -n "$out" ]; then
-+		echo "$out"
-+	fi
-+
-+	[ "$VERBOSE" = "1" ] && echo
-+
-+	return $rc
-+}
-+
-+################################################################################
-+# setup and teardown
-+
-+cleanup()
-+{
-+	local ns
-+
-+	setup=0
-+
-+	for ns in h1 h2 r1 r2; do
-+		ip netns del $ns 2>/dev/null
-+	done
-+}
-+
-+setup_vrf()
-+{
-+	local ns=$1
-+
-+	ip -netns "${ns}" ru del pref 0
-+	ip -netns "${ns}" ru add pref 32765 from all lookup local
-+	ip -netns "${ns}" -6 ru del pref 0
-+	ip -netns "${ns}" -6 ru add pref 32765 from all lookup local
-+}
-+
-+create_vrf()
-+{
-+	local ns=$1
-+	local vrf=$2
-+	local table=$3
-+
-+	ip -netns "${ns}" link add "${vrf}" type vrf table "${table}"
-+	ip -netns "${ns}" link set "${vrf}" up
-+	ip -netns "${ns}" route add vrf "${vrf}" unreachable default metric 8192
-+	ip -netns "${ns}" -6 route add vrf "${vrf}" unreachable default metric 8192
-+
-+	ip -netns "${ns}" addr add 127.0.0.1/8 dev "${vrf}"
-+	ip -netns "${ns}" -6 addr add ::1 dev "${vrf}" nodad
-+}
-+
-+setup()
-+{
-+	local ns
-+
-+	if [ "${setup}" -eq 1 ]; then
-+		return 0
-+	fi
-+
-+	# make sure we are starting with a clean slate
-+	cleanup
-+
-+	setup=1
-+
-+	#
-+	# create nodes as namespaces
-+	#
-+	for ns in h1 h2 r1 r2; do
-+		ip netns add $ns
-+		ip -netns $ns li set lo up
-+
-+		case "${ns}" in
-+		h[12]) ip netns exec $ns sysctl -q -w net.ipv6.conf.all.forwarding=0
-+		       ip netns exec $ns sysctl -q -w net.ipv6.conf.all.keep_addr_on_down=1
-+			;;
-+		r[12]) ip netns exec $ns sysctl -q -w net.ipv4.ip_forward=1
-+		       ip netns exec $ns sysctl -q -w net.ipv6.conf.all.forwarding=1
-+		esac
-+	done
-+
-+	#
-+	# create interconnects
-+	#
-+	ip -netns h1 li add eth0 type veth peer name r1h1
-+	ip -netns h1 li set r1h1 netns r1 name eth0 up
-+
-+	ip -netns h1 li add eth1 type veth peer name r2h1
-+	ip -netns h1 li set r2h1 netns r2 name eth0 up
-+
-+	ip -netns h2 li add eth0 type veth peer name r1h2
-+	ip -netns h2 li set r1h2 netns r1 name eth1 up
-+
-+	ip -netns h2 li add eth1 type veth peer name r2h2
-+	ip -netns h2 li set r2h2 netns r2 name eth1 up
-+
-+	#
-+	# h1
-+	#
-+	ip -netns h1 li add br0 type bridge
-+	ip -netns h1 li set br0 up
-+	ip -netns h1 addr add dev br0 ${H1_N1_IP}/24
-+	ip -netns h1 -6 addr add dev br0 ${H1_N1_IP6}/64 nodad
-+	ip -netns h1 li set eth0 master br0 up
-+	ip -netns h1 li set eth1 master br0 up
-+
-+	# h1 to h2 via r1
-+	ip -netns h1    ro add ${H2_N2} via ${R1_N1_IP} dev br0
-+	ip -netns h1 -6 ro add ${H2_N2_6} via "${R1_N1_IP6}" dev br0
-+
-+	#
-+	# h2
-+	#
-+	ip -netns h2 li add br0 type bridge
-+	ip -netns h2 li set br0 up
-+	ip -netns h2 addr add dev br0 ${H2_N2_IP}/24
-+	ip -netns h2 -6 addr add dev br0 ${H2_N2_IP6}/64 nodad
-+	ip -netns h2 li set eth0 master br0 up
-+	ip -netns h2 li set eth1 master br0 up
-+
-+	ip -netns h2 ro add default via ${R2_N2_IP} dev br0
-+	ip -netns h2 -6 ro add default via ${R2_N2_IP6} dev br0
-+
-+	#
-+	# r1
-+	#
-+	setup_vrf r1
-+	create_vrf r1 blue 1101
-+	create_vrf r1 red 1102
-+	ip -netns r1 li set eth0 vrf blue up
-+	ip -netns r1 li set eth1 vrf red up
-+	ip -netns r1 addr add dev eth0 ${R1_N1_IP}/24
-+	ip -netns r1 -6 addr add dev eth0 ${R1_N1_IP6}/64 nodad
-+	ip -netns r1 addr add dev eth1 ${R1_N2_IP}/24
-+	ip -netns r1 -6 addr add dev eth1 ${R1_N2_IP6}/64 nodad
-+
-+	# Route leak from blue to red
-+	ip -netns r1 route add vrf blue ${H2_N2} dev red
-+	ip -netns r1 -6 route add vrf blue ${H2_N2_6} dev red
-+
-+	#
-+	# r2
-+	#
-+	ip -netns r2 addr add dev eth0 ${R2_N1_IP}/24
-+	ip -netns r2 -6 addr add dev eth0 ${R2_N1_IP6}/64 nodad
-+	ip -netns r2 addr add dev eth1 ${R2_N2_IP}/24
-+	ip -netns r2 -6 addr add dev eth1 ${R2_N2_IP6}/64 nodad
-+
-+	# Wait for ip config to settle
-+	sleep 2
-+}
-+
-+check_connectivity4()
-+{
-+	ip netns exec h1 ping -c1 -w1 ${H2_N2_IP} >/dev/null 2>&1
-+}
-+
-+check_connectivity6()
-+{
-+	ip netns exec h1 "${ping6}" -c1 -w1 ${H2_N2_IP6} >/dev/null 2>&1
-+}
-+
-+ipv4_traceroute()
-+{
-+	log_section "IPv4: VRF ICMP error route lookup traceroute"
-+
-+	if [ ! -x "$(command -v traceroute)" ]; then
-+		echo "SKIP: Could not run IPV4 test without traceroute"
-+		return
-+	fi
-+
-+	setup
-+
-+	# verify connectivity
-+	if ! check_connectivity4; then
-+		echo "Error: Basic connectivity is broken"
-+		ret=1
-+		return
-+	fi
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		run_cmd ip netns exec h1 traceroute ${H2_N2_IP}
-+	fi
-+
-+	ip netns exec h1 traceroute ${H2_N2_IP} | grep -q "${R1_N1_IP}"
-+	log_test $? 0 "Traceroute reports a hop on r1"
-+}
-+
-+ipv6_traceroute()
-+{
-+	log_section "IPv6: VRF ICMP error route lookup traceroute"
-+
-+	if [ ! -x "$(command -v traceroute6)" ]; then
-+		echo "SKIP: Could not run IPV6 test without traceroute6"
-+		return
-+	fi
-+
-+	setup
-+
-+	# verify connectivity
-+	if ! check_connectivity6; then
-+		echo "Error: Basic connectivity is broken"
-+		ret=1
-+		return
-+	fi
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		run_cmd ip netns exec h1 traceroute6 ${H2_N2_IP6}
-+	fi
-+
-+	ip netns exec h1 traceroute6 ${H2_N2_IP6} | grep -q "${R1_N1_IP6}"
-+	log_test $? 0 "Traceroute6 reports a hop on r1"
-+}
-+
-+ipv4_ping()
-+{
-+	log_section "IPv4: VRF ICMP error route lookup ping"
-+
-+	setup
-+
-+	# verify connectivity
-+	if ! check_connectivity4; then
-+		echo "Error: Basic connectivity is broken"
-+		ret=1
-+		return
-+	fi
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		echo "Command to check for ICMP ttl exceeded:"
-+		run_cmd ip netns exec h1 ping -t1 -c1 -W2 ${H2_N2_IP}
-+	fi
-+
-+	ip netns exec h1 ping -t1 -c1 -W2 ${H2_N2_IP} | grep -q "Time to live exceeded"
-+	log_test $? 0 "Ping received ICMP ttl exceeded"
-+}
-+
-+ipv6_ping()
-+{
-+	log_section "IPv6: VRF ICMP error route lookup ping"
-+
-+	setup
-+
-+	# verify connectivity
-+	if ! check_connectivity6; then
-+		echo "Error: Basic connectivity is broken"
-+		ret=1
-+		return
-+	fi
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		echo "Command to check for ICMP ttl exceeded:"
-+		run_cmd ip netns exec h1 "${ping6}" -t1 -c1 -W2 ${H2_N2_IP6}
-+	fi
-+
-+	ip netns exec h1 "${ping6}" -t1 -c1 -W2 ${H2_N2_IP6} | grep -q "Time exceeded: Hop limit"
-+	log_test $? 0 "Ping received ICMP ttl exceeded"
-+}
-+################################################################################
-+# usage
-+
-+usage()
-+{
-+        cat <<EOF
-+usage: ${0##*/} OPTS
-+
-+	-4          IPv4 tests only
-+	-6          IPv6 tests only
-+	-p          Pause on fail
-+	-v          verbose mode (show commands and output)
-+EOF
-+}
-+
-+################################################################################
-+# main
-+
-+# Some systems don't have a ping6 binary anymore
-+command -v ping6 > /dev/null 2>&1 && ping6=$(command -v ping6) || ping6=$(command -v ping)
-+
-+TESTS_IPV4="ipv4_ping ipv4_traceroute"
-+TESTS_IPV6="ipv6_ping ipv6_traceroute"
-+
-+ret=0
-+nsuccess=0
-+nfail=0
-+setup=0
-+
-+while getopts :46pvh o
-+do
-+	case $o in
-+		4) TESTS=ipv4;;
-+		6) TESTS=ipv6;;
-+                p) PAUSE_ON_FAIL=yes;;
-+                v) VERBOSE=1;;
-+		h) usage; exit 0;;
-+                *) usage; exit 1;;
-+	esac
-+done
-+
-+#
-+# show user test config
-+#
-+if [ -z "$TESTS" ]; then
-+        TESTS="$TESTS_IPV4 $TESTS_IPV6"
-+elif [ "$TESTS" = "ipv4" ]; then
-+        TESTS="$TESTS_IPV4"
-+elif [ "$TESTS" = "ipv6" ]; then
-+        TESTS="$TESTS_IPV6"
-+fi
-+
-+for t in $TESTS
-+do
-+	case $t in
-+	ipv4_ping|ping)             ipv4_ping;;
-+	ipv4_traceroute|traceroute) ipv4_traceroute;;
-+
-+	ipv6_ping|ping)             ipv6_ping;;
-+	ipv6_traceroute|traceroute) ipv6_traceroute;;
-+
-+	# setup namespaces and config, but do not run any tests
-+	setup)                      setup; exit 0;;
-+
-+	help)                       echo "Test names: $TESTS"; exit 0;;
-+	esac
-+done
-+
-+cleanup
-+
-+printf "\nTests passed: %3d\n" ${nsuccess}
-+printf "Tests failed: %3d\n"   ${nfail}
-+
-+exit $ret
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index cf36f955bfe6..1eb83d82ec68 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -465,6 +465,7 @@ static struct rtable *icmp_route_lookup(struct net *net,
+ 					int type, int code,
+ 					struct icmp_bxm *param)
+ {
++	struct net_device *route_lookup_dev = NULL;
+ 	struct rtable *rt, *rt2;
+ 	struct flowi4 fl4_dec;
+ 	int err;
+@@ -479,7 +480,17 @@ static struct rtable *icmp_route_lookup(struct net *net,
+ 	fl4->flowi4_proto = IPPROTO_ICMP;
+ 	fl4->fl4_icmp_type = type;
+ 	fl4->fl4_icmp_code = code;
+-	fl4->flowi4_oif = l3mdev_master_ifindex(skb_dst(skb_in)->dev);
++	/*
++	 * The device used for looking up which routing table to use is
++	 * preferably the source whenever it is set, which should ensure
++	 * the icmp error can be sent to the source host, else fallback
++	 * on the destination device.
++	 */
++	if (skb_in->dev)
++		route_lookup_dev = skb_in->dev;
++	else if (skb_dst(skb_in))
++		route_lookup_dev = skb_dst(skb_in)->dev;
++	fl4->flowi4_oif = l3mdev_master_ifindex(route_lookup_dev);
+ 
+ 	security_skb_classify_flow(skb_in, flowi4_to_flowi(fl4));
+ 	rt = ip_route_output_key_hash(net, fl4, skb_in);
+@@ -503,7 +514,7 @@ static struct rtable *icmp_route_lookup(struct net *net,
+ 	if (err)
+ 		goto relookup_failed;
+ 
+-	if (inet_addr_type_dev_table(net, skb_dst(skb_in)->dev,
++	if (inet_addr_type_dev_table(net, route_lookup_dev,
+ 				     fl4_dec.saddr) == RTN_LOCAL) {
+ 		rt2 = __ip_route_output_key(net, &fl4_dec);
+ 		if (IS_ERR(rt2))
 -- 
 2.17.1
 
