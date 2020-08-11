@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D668024224D
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 00:05:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78CD624224F
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 00:06:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726492AbgHKWFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 18:05:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36630 "EHLO
+        id S1726505AbgHKWGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 18:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726023AbgHKWFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 18:05:47 -0400
+        with ESMTP id S1726023AbgHKWGG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 18:06:06 -0400
 Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9FB1C06174A;
-        Tue, 11 Aug 2020 15:05:47 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id r4so187174pls.2;
-        Tue, 11 Aug 2020 15:05:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44DB4C06174A;
+        Tue, 11 Aug 2020 15:06:06 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id f10so173639plj.8;
+        Tue, 11 Aug 2020 15:06:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=Jv34c1zVCW1Zn5DLAPBWJEA8tPhSD/upIhUsB5wLwsc=;
-        b=Glazygkwli4I0GeR7e0TwA3Io1YsUv0TYNj4H3nsJnhtQMCYZuFW/H+//TJwp31rZQ
-         p9vEvYOy3WpDsvCVdJCk9K7BBlJL+sblJP/AXU8VJiQe1e97i9O2oeGYCccEBnx2Eb9d
-         0i9qttnPmUx95Ysq9saKVD6MykgBHkuJYKvZmWVpqqbc8ay6LOR3CS++DzXwGv0MU9/W
-         grMhmYluABPR+wQGx3xOv2woo0dbPyd/nqJk1G6q1IwtCDPc9f8gkfQrRbGt2VYoV8jO
-         gLneTMWSLA2Z+gkjJK/XAi+4eo46w2A7E0Sp1rkz2iFf/UsnDnhz8jgo9S2Dtxfwsyuh
-         oQ5g==
+        bh=1h42nZtQ+tzgt4/mn8ojxC/D96UqAk3QrcGqtyvT3DQ=;
+        b=oV0nsb3elNYaKzAw6+JUtkcJZGR5t8DoE9jW04ZGUpNUXLsI1ckj5XeZYOtI+hwnO2
+         i0qqvPSVPTO99M50fQeUrRATQmk5UWIePgvy3sSgRL0nekZnmZJf/A5oIckvitmi0t89
+         IvGJ6rGlMcvVQfMIIJ2ec2xQz2YOAksxan6AUG+U5NKY1MnSbMhu6v1zgACly3VfIIpi
+         dmwrqAwDsHr+DEmU6V3VHvRToWsz2FbP1FS4pgHHSm84UakRCd0gWTP4ZJPKKrOUS1EP
+         HOgYZmrOFPGRaEKvbkFIV45lpU42iA0K45SQhlaV0K4N+suVada+uRHFx47G6sB6b5Z6
+         klVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=Jv34c1zVCW1Zn5DLAPBWJEA8tPhSD/upIhUsB5wLwsc=;
-        b=f9nXymBg5abPd8CuQZCfs0ce2qn92kCBlBYLRua/1PvLGScQ0dYywQ3rZhzEUjJOeF
-         Dd/3/l7fWAKaGjsmlCMcO18CwmUJOhfsMGfSYIcrcl+jhiHUMCBiNBTpAE4ILJLBOQyG
-         kxucOVJ5lZlQ9iIRQMA/+IJhjYpucec7Y6Xxs0ySEduDzWs1p3RNiRD/TpFlTX7beyhH
-         v+3HVDCJI5Y3cbv4Xzd6npJfMCD8esk8wdMqwihbX+EGG54iJ67o1+fi7jNPBWMGlLPn
-         2aYxfmptjj86WvfurE9+jSSoBl8jYfxmaW6KfF4YUJsLdP+iq0HjRBx1bi20wxlWsEVk
-         Ob8A==
-X-Gm-Message-State: AOAM5326BNbQ/+vfPHJk+mxbsmPoVJKlhaDx8IVtyaT9MN3ybSsotMX0
-        pIcD/jEnUnPbUOZRgbFlAEU=
-X-Google-Smtp-Source: ABdhPJwT7MP8ZcJ2f4sHtYqnqRWYKweUzqtXdXsDQNwIv5plaQD3q9WJ3RTWQtdKDIm2PA6kVVSOfA==
-X-Received: by 2002:a17:90a:d252:: with SMTP id o18mr3075776pjw.146.1597183547305;
-        Tue, 11 Aug 2020 15:05:47 -0700 (PDT)
+        bh=1h42nZtQ+tzgt4/mn8ojxC/D96UqAk3QrcGqtyvT3DQ=;
+        b=dJpHI2IqozSZTiDkjTyEF4iZJPK4uNYHS4Rw1RCRYIK/Y/JVkFRVhbHHR5rCbhu7CW
+         FA8CNxfkmemfTJKvSK2pHwSDn5QgNWC7GfZm/l/Mp+lgMr61W+YZZPPNUS+nCp48uWtu
+         qzvVcxPpanQeaZJ1vDBkR4EkDFVo1beIOEtGCfo35d+pj8PjNoypzLQi09UyFLajPDpW
+         7udHs6cBwN3LFoynS646S04AqqdHXvkNb24pNRl4uSMZNAMBaTiztvMJap3DEca0mX4A
+         jToMXloxFbazIPg7zHERMsjevfvv8qVozeOftNLZdYPng2SXt4NafrqYkFG2/LnWgjE/
+         SyCg==
+X-Gm-Message-State: AOAM53154RiHEfF9u6JLUWVjfXMlqZgxn4K87e2UO+RzNi3K7dizncY/
+        rduq+fGyPHPdhuaFMGzTO24=
+X-Google-Smtp-Source: ABdhPJzyI8Kn4YIfCws0fuvl9hcWvgxJm0o6hLTr4gEhB3FfJjGpRlgd0ipiCtf8qyHHUHDCXKKURg==
+X-Received: by 2002:a17:90b:252:: with SMTP id fz18mr3132692pjb.48.1597183565809;
+        Tue, 11 Aug 2020 15:06:05 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id mr21sm3633652pjb.57.2020.08.11.15.05.41
+        by smtp.gmail.com with ESMTPSA id gm9sm9143pjb.12.2020.08.11.15.05.59
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Aug 2020 15:05:46 -0700 (PDT)
-Subject: [bpf PATCH v3 4/5] bpf,
- selftests: Add tests for sock_ops load with r9, r8.r7 registers
+        Tue, 11 Aug 2020 15:06:05 -0700 (PDT)
+Subject: [bpf PATCH v3 5/5] bpf,
+ selftests: Add tests to sock_ops for loading sk
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     songliubraving@fb.com, kafai@fb.com, daniel@iogearbox.net,
         ast@kernel.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com
-Date:   Tue, 11 Aug 2020 15:05:33 -0700
-Message-ID: <159718353345.4728.8805043614257933227.stgit@john-Precision-5820-Tower>
+Date:   Tue, 11 Aug 2020 15:05:53 -0700
+Message-ID: <159718355325.4728.4163036953345999636.stgit@john-Precision-5820-Tower>
 In-Reply-To: <159718333343.4728.9389284976477402193.stgit@john-Precision-5820-Tower>
 References: <159718333343.4728.9389284976477402193.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
@@ -67,43 +67,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Loads in sock_ops case when using high registers requires extra logic to
-ensure the correct temporary value is used. We need to ensure the temp
-register does not use either the src_reg or dst_reg. Lets add an asm
-test to force the logic is triggered.
+Add tests to directly accesse sock_ops sk field. Then use it to
+ensure a bad pointer access will fault if something goes wrong.
+We do three tests:
 
-The xlated code is here,
+The first test ensures when we read sock_ops sk pointer into the
+same register that we don't fault as described earlier. Here r9
+is chosen as the temp register.  The xlated code is,
 
-  30: (7b) *(u64 *)(r9 +32) = r7
-  31: (61) r7 = *(u32 *)(r9 +28)
-  32: (15) if r7 == 0x0 goto pc+2
-  33: (79) r7 = *(u64 *)(r9 +0)
-  34: (63) *(u32 *)(r7 +916) = r8
-  35: (79) r7 = *(u64 *)(r9 +32)
+  36: (7b) *(u64 *)(r1 +32) = r9
+  37: (61) r9 = *(u32 *)(r1 +28)
+  38: (15) if r9 == 0x0 goto pc+3
+  39: (79) r9 = *(u64 *)(r1 +32)
+  40: (79) r1 = *(u64 *)(r1 +0)
+  41: (05) goto pc+1
+  42: (79) r9 = *(u64 *)(r1 +32)
 
-Notice r9 and r8 are not used for temp registers and r7 is chosen.
+The second test ensures the temp register selection does not collide
+with in-use register r9. Shown here r8 is chosen because r9 is the
+sock_ops pointer. The xlated code is as follows,
+
+  46: (7b) *(u64 *)(r9 +32) = r8
+  47: (61) r8 = *(u32 *)(r9 +28)
+  48: (15) if r8 == 0x0 goto pc+3
+  49: (79) r8 = *(u64 *)(r9 +32)
+  50: (79) r9 = *(u64 *)(r9 +0)
+  51: (05) goto pc+1
+  52: (79) r8 = *(u64 *)(r9 +32)
+
+And finally, ensure we didn't break the base case where dst_reg does
+not equal the source register,
+
+  56: (61) r2 = *(u32 *)(r1 +28)
+  57: (15) if r2 == 0x0 goto pc+1
+  58: (79) r2 = *(u64 *)(r1 +0)
+
+Notice it takes us an extra four instructions when src reg is the
+same as dst reg. One to save the reg, two to restore depending on
+the branch taken and a goto to jump over the second restore.
 
 Acked-by: Song Liu <songliubraving@fb.com>
 Acked-by: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |   21 ++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
 diff --git a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-index f8b13682..6420b61 100644
+index 6420b61..3e6912e 100644
 --- a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
 +++ b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-@@ -75,6 +75,13 @@ int bpf_testcb(struct bpf_sock_ops *skops)
- 		: [skops] "r"(skops)
- 		:);
+@@ -82,6 +82,27 @@ int bpf_testcb(struct bpf_sock_ops *skops)
+ 		:: [skops] "r"(skops)
+ 		: "r9", "r8");
  
 +	asm volatile (
++		"r1 = %[skops];\n"
++		"r1 = *(u64 *)(r1 +184);\n"
++		"if r1 == 0 goto +1;\n"
++		"r1 = *(u32 *)(r1 +4);\n"
++		:: [skops] "r"(skops):"r1");
++
++	asm volatile (
 +		"r9 = %[skops];\n"
-+		"r8 = *(u32 *)(r9 +164);\n"
-+		"*(u32 *)(r9 +164) = r8;\n"
-+		:: [skops] "r"(skops)
-+		: "r9", "r8");
++		"r9 = *(u64 *)(r9 +184);\n"
++		"if r9 == 0 goto +1;\n"
++		"r9 = *(u32 *)(r9 +4);\n"
++		:: [skops] "r"(skops):"r9");
++
++	asm volatile (
++		"r1 = %[skops];\n"
++		"r2 = *(u64 *)(r1 +184);\n"
++		"if r2 == 0 goto +1;\n"
++		"r2 = *(u32 *)(r2 +4);\n"
++		:: [skops] "r"(skops):"r1", "r2");
 +
  	op = (int) skops->op;
  
