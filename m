@@ -2,41 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 067C4241735
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 09:32:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07B60241792
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 09:49:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728228AbgHKHcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 03:32:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37362 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728060AbgHKHcR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Aug 2020 03:32:17 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C6BC020781;
-        Tue, 11 Aug 2020 07:32:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597131136;
-        bh=Chc+S6S4r3jtmXyw0l7GaeOpzr4w4HiPX7etvrVjcLE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s7PpGfrvqPO4nTMUZjQbD0fCOhX3N2vccfusMZT1MrZ9ndsrn9cnHUjC+yItTxn4h
-         Lw0QXQxXWlHG97e3T6ghtnJKKVuPNetopBj9FuKJaLYdFzg3nJq7I7pccS6SSUjVIl
-         2UDxxdiT5nc3u8oIKktXHgBp8JFrPoSADn5SyzeI=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: [PATCH iproute2-rc v1 2/2] rdma: Properly print device and link names in CLI output
-Date:   Tue, 11 Aug 2020 10:32:01 +0300
-Message-Id: <20200811073201.663398-3-leon@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200811073201.663398-1-leon@kernel.org>
-References: <20200811073201.663398-1-leon@kernel.org>
+        id S1728144AbgHKHtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 03:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728133AbgHKHtS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 03:49:18 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4539C061787;
+        Tue, 11 Aug 2020 00:49:16 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id j10so5523284qvo.13;
+        Tue, 11 Aug 2020 00:49:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=OOMSJE9xSBil9mXDx2Lia4KUqWqXBp/e2t+xm7m3Qh8=;
+        b=F1f7ZE4KDjPF6dImWkq/5Gb5Ibw/zsrD+Y+bAFrUMb2y8iUJult1fm9hB0McdzouIP
+         JdDgEL1T2JKzUfHwWYdBwmkOObOmECVPSE43vBjnO8kfMo4FuMKCwhbmdiKeIPv5iz7L
+         IE25z3GCJwOCUWTeQCgIZMZ8PIMkHN+IFDgY8wMNCbsC3ngJJuI7/lB+STIlvY2ysxqF
+         ldKh+gEuY1fZUGum5vnuiVAGZ4fX/Dcx3RTT3RcYeK3t/7XuKa7ZhV+D86LSpYOVn+GG
+         d4Gr2ojxTkHSGSiIKscJVFKq+vyJBGOqJiFz5iMLUNPcjV+SCQjFLjVaYbqOvQ2CLPI0
+         j6gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=OOMSJE9xSBil9mXDx2Lia4KUqWqXBp/e2t+xm7m3Qh8=;
+        b=flffocutCjA8Eh/YhJjeeEisxilaDpD54uIB0rnaNZKZhgAI+2mUwerOTKh5An2PZN
+         uAksgfqeCjsrnaXkxZ5Uj/vw1sztRuuqDNjsBObnL8DsbokzJ2YmEvQrMt5YCxewtSDh
+         W8lQ2VGHlKygEnEeqvHNC8wXbdDWzYTl4RthsM0OGW2vUF/a8PudBG/iSKb7UCHmahdu
+         5og7JaWHHQtwHWlxaFoUgp2Dwx45TgTSYTAXB/nrkxkEZ5yz05LsELPIeDwr8uGC7qZK
+         L7Axf3AOH++f2uKTWnNDstFyZeEJi+9U0DQwMKSVIaB1fHxEc2p4Cj85UgEG/NX6giwV
+         ri3Q==
+X-Gm-Message-State: AOAM532QgwnoCPJwf/LOypc3EMRh6W0/B23UvvQHcQ9fNADavzMj2ouz
+        aa7W7TY0Aa0buECBd7gC0Q==
+X-Google-Smtp-Source: ABdhPJyKvjIhgKI2nli71gIsO+GWvcApvoJ6Cm7TU2kBmCv9kYz8IAaCuRaLy8t1HOMGLqJIMFiQtA==
+X-Received: by 2002:ad4:44e5:: with SMTP id p5mr32058968qvt.197.1597132155990;
+        Tue, 11 Aug 2020 00:49:15 -0700 (PDT)
+Received: from localhost.localdomain (146-115-88-66.s3894.c3-0.sbo-ubr1.sbo.ma.cable.rcncustomer.com. [146.115.88.66])
+        by smtp.gmail.com with ESMTPSA id j16sm16693897qke.87.2020.08.11.00.49.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Aug 2020 00:49:15 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>, Julian Anastasov <ja@ssi.bg>
+Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org
+Subject: [Linux-kernel-mentees] [PATCH net-next v2] ipvs: Fix uninit-value in do_ip_vs_set_ctl()
+Date:   Tue, 11 Aug 2020 03:46:40 -0400
+Message-Id: <20200811074640.841693-1-yepeilin.cs@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200810220703.796718-1-yepeilin.cs@gmail.com>
+References: <20200810220703.796718-1-yepeilin.cs@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -44,68 +75,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+do_ip_vs_set_ctl() is referencing uninitialized stack value when `len` is
+zero. Fix it.
 
-The citied commit broke the CLI output and printed ifindex/ifname
-instead of dev/link.
-
-Before:
-[leonro@vm ~]$ rdma res show qp
-link mlx5_0/lqpn 1 type GSI state RTS sq-psn 0 comm ib_core
-[leonro@vm ~]$ rdma res show cq
-ifindex 0 ifname rocep0s9 cqn 0 cqe 1023 users 2 poll-ctx WORKQUEUE adaptive-moderation on comm ib_core
-
-After:
-[leonro@vm ~]$ rdma res show qp
-link mlx5_0/- lqpn 1 type GSI state RTS sq-psn 0 comm [ib_core]
-[leonro@vm ~]$ rdma res show cq
-dev rocep0s9 cqn 0 cqe 1023 users 2 poll-ctx WORKQUEUE adaptive-moderation on comm [ib_core]
-
-It was missed because rdmatool mostly used in JSON mode.
-
-Fixes: b0a688a542cd ("rdma: Rewrite custom JSON and prints logic to use common API")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Reported-by: syzbot+23b5f9e7caf61d9a3898@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?id=46ebfb92a8a812621a001ef04d90dfa459520fe2
+Suggested-by: Julian Anastasov <ja@ssi.bg>
+Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
 ---
- rdma/res.c | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
+Changes in v2:
+    - Target net-next tree. (Suggested by Julian Anastasov <ja@ssi.bg>)
+    - Reject all `len == 0` requests except `IP_VS_SO_SET_FLUSH`, instead
+      of initializing `arg`. (Suggested by Cong Wang
+      <xiyou.wangcong@gmail.com>, Julian Anastasov <ja@ssi.bg>)
 
-diff --git a/rdma/res.c b/rdma/res.c
-index b7a703f8..dc12bbe4 100644
---- a/rdma/res.c
-+++ b/rdma/res.c
-@@ -166,17 +166,27 @@ void print_comm(struct rd *rd, const char *str, struct nlattr **nla_line)
+ net/netfilter/ipvs/ip_vs_ctl.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
- void print_dev(struct rd *rd, uint32_t idx, const char *name)
- {
--	print_color_int(PRINT_ANY, COLOR_NONE, "ifindex", "ifindex %d ", idx);
--	print_color_string(PRINT_ANY, COLOR_NONE, "ifname", "ifname %s ", name);
-+	print_color_int(PRINT_ANY, COLOR_NONE, "ifindex", NULL, idx);
-+	print_color_string(PRINT_ANY, COLOR_NONE, "ifname", "dev %s ", name);
- }
-
- void print_link(struct rd *rd, uint32_t idx, const char *name, uint32_t port,
- 		struct nlattr **nla_line)
- {
-+	char tmp[64] = {};
-+
- 	print_color_uint(PRINT_JSON, COLOR_NONE, "ifindex", NULL, idx);
--	print_color_string(PRINT_ANY, COLOR_NONE, "ifname", "link %s/", name);
--	if (nla_line[RDMA_NLDEV_ATTR_PORT_INDEX])
--		print_color_uint(PRINT_ANY, COLOR_NONE, "port", "%u ", port);
-+	print_color_string(PRINT_ANY, COLOR_NONE, "ifname", NULL, name);
-+	if (nla_line[RDMA_NLDEV_ATTR_PORT_INDEX]) {
-+		print_color_uint(PRINT_ANY, COLOR_NONE, "port", NULL, port);
-+		snprintf(tmp, sizeof(tmp), "%s/%d", name, port);
-+	} else {
-+		snprintf(tmp, sizeof(tmp), "%s/-", name);
-+	}
-+
-+	if (!rd->json_output)
-+		print_color_string(PRINT_ANY, COLOR_NONE, NULL, "link %s ",
-+				   tmp);
- }
-
- void print_qp_type(struct rd *rd, uint32_t val)
---
-2.26.2
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index 412656c34f20..beeafa42aad7 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -2471,6 +2471,10 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
+ 		/* Set timeout values for (tcp tcpfin udp) */
+ 		ret = ip_vs_set_timeout(ipvs, (struct ip_vs_timeout_user *)arg);
+ 		goto out_unlock;
++	} else if (!len) {
++		/* No more commands with len == 0 below */
++		ret = -EINVAL;
++		goto out_unlock;
+ 	}
+ 
+ 	usvc_compat = (struct ip_vs_service_user *)arg;
+@@ -2547,9 +2551,6 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
+ 		break;
+ 	case IP_VS_SO_SET_DELDEST:
+ 		ret = ip_vs_del_dest(svc, &udest);
+-		break;
+-	default:
+-		ret = -EINVAL;
+ 	}
+ 
+   out_unlock:
+-- 
+2.25.1
 
