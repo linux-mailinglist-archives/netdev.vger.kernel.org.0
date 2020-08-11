@@ -2,45 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF135241EE8
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 19:07:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EA64241EEF
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 19:07:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729184AbgHKRGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 13:06:41 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:55113 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728862AbgHKRGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 13:06:19 -0400
-Received: by mail-io1-f71.google.com with SMTP id z25so10189545ioh.21
-        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 10:06:17 -0700 (PDT)
+        id S1729342AbgHKRH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 13:07:26 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:54376 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729092AbgHKRHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 13:07:15 -0400
+Received: by mail-io1-f72.google.com with SMTP id z25so10191876ioh.21
+        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 10:07:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=3Vhix2QlrP7+/gWO8RD9Xb0nh1rKeNHswNvEEXVVggk=;
-        b=Wh1UrAKAq+FTtWbx6QXgwhCaOddsvXQwFqsYfCmgv88b/DXv67vqDNNt1zF2zTgpvr
-         dAbtk9WjS0afGvjYKnm1FQ5JrP/oXspu9sZeJxv7Kps5swPh07t/ZalU54CfBabgMJKZ
-         4xUyy8q94r4WElMmHp+njA9nH57iUenesWy1bGE24Uimzf7BTTQK5x/XluLvSq3DCk7+
-         Ioc0CW1QXSSYZ7Aj8RnPp5GD6fN3uTPoe4d98pHyX8zW5p4KC7jCRruRHbmkQZ242Odi
-         WRw+HwZoRHspE+Ntp/xcIfft5EiWh+wAHbXy0LVemd6V3xiToGgKLYeaLpN590BxTpo1
-         mMhw==
-X-Gm-Message-State: AOAM532wLjiUGzJwFOILRSzZRr+ad78AqPGo4DoVxsMlr0fIjfCaK1S9
-        fQcm9cXU/TwiLL20GX72S7cLO6Rv7bTlW9bh5usIJgPIP5OI
-X-Google-Smtp-Source: ABdhPJya4bXun/+NQ/qES9zRA+AQVNLy2Qz0OtAXqkV8v7oBezDW3rOulXZRMs+qHM9W8AjOsCoLdjJMu7AGJQaCF65y00BA+kfB
+        bh=3ZPRrfgd4U28dH7RCjAGl0xrthCHCi5aVcTRVhPqTvM=;
+        b=bIsKQ3TFgT27L73lWfxXKCl6myzNLiyUgmZitsnMTRI1LTej/F5H/aY6kyPJsjJIf+
+         ZBYlvOYOSwQroNsnKITJDJKhx6a93w5A5Y8X/jrDAyNF4IxMK/fgqStYoyNz+8VS1xvj
+         wv70vdwMIGgTelsuk+K5oEmU/S5k2DWyFw8GMZHWYBXzqaeAvhzlHMNQEAhU8547wPg8
+         JCsNdsr4ZDQlc8QgDST4bUlI58aW3dGxZNhWpVsuF29jFolx5F9chgCjVoIzw6pf9lGj
+         VukbXEiOs8xC8xXpQ7mPHM9BTXfHOQxRKCuAbAKEu9RGjldOQbmdoXT6qAiMEUqIkVRw
+         jDhQ==
+X-Gm-Message-State: AOAM531KIe3NtzyRZF3eZrSgacKF0ffFD7XsAHyuhnVKUkcbUwlpuA6H
+        8YTGsyqJML92itytR6ANFmvCirgFmvrdsW9HFbKUq/3P+CTZ
+X-Google-Smtp-Source: ABdhPJxK0j2N8H15/HLiv2i5ZMHye9rsVOvMWhuPkrGjHecyzW74B0tXTaV6lYOkeo5F0GQWDSisUUJz/C8OpJqjHcxr0bZjG/ZI
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2246:: with SMTP id o6mr23227895ioo.35.1597165577561;
- Tue, 11 Aug 2020 10:06:17 -0700 (PDT)
-Date:   Tue, 11 Aug 2020 10:06:17 -0700
+X-Received: by 2002:a92:d8d2:: with SMTP id l18mr21745562ilo.94.1597165634421;
+ Tue, 11 Aug 2020 10:07:14 -0700 (PDT)
+Date:   Tue, 11 Aug 2020 10:07:14 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e5ea9e05ac9d16c1@google.com>
-Subject: memory leak in do_seccomp
-From:   syzbot <syzbot+3ad9614a12f80994c32e@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
-        keescook@chromium.org, kpsingh@chromium.org,
-        linux-kernel@vger.kernel.org, luto@amacapital.net,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, wad@chromium.org, yhs@fb.com
+Message-ID: <0000000000004991e705ac9d1a83@google.com>
+Subject: inconsistent lock state in sco_conn_del
+From:   syzbot <syzbot+65684128cd7c35bc66a1@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -51,140 +49,122 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    449dc8c9 Merge tag 'for-v5.9' of git://git.kernel.org/pub/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15d816c2900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4810fa4a53b3aa2c
-dashboard link: https://syzkaller.appspot.com/bug?extid=3ad9614a12f80994c32e
+HEAD commit:    f80535b9 Add linux-next specific files for 20200810
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=152ffd8a900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2055bd0d83d5ee16
+dashboard link: https://syzkaller.appspot.com/bug?extid=65684128cd7c35bc66a1
 compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=153d30e2900000
+
+Unfortunately, I don't have any reproducer for this issue yet.
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+3ad9614a12f80994c32e@syzkaller.appspotmail.com
+Reported-by: syzbot+65684128cd7c35bc66a1@syzkaller.appspotmail.com
 
-2020/08/09 00:29:47 executed programs: 3
-BUG: memory leak
-unreferenced object 0xffff88811310ea80 (size 96):
-  comm "syz-executor.0", pid 6688, jiffies 4294954707 (age 12.810s)
-  hex dump (first 32 bytes):
-    01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 30 e0 00 00 c9 ff ff  .........0......
-  backtrace:
-    [<0000000073bb6e7d>] kmalloc include/linux/slab.h:554 [inline]
-    [<0000000073bb6e7d>] kzalloc include/linux/slab.h:666 [inline]
-    [<0000000073bb6e7d>] seccomp_prepare_filter kernel/seccomp.c:562 [inline]
-    [<0000000073bb6e7d>] seccomp_prepare_user_filter kernel/seccomp.c:604 [inline]
-    [<0000000073bb6e7d>] seccomp_set_mode_filter kernel/seccomp.c:1535 [inline]
-    [<0000000073bb6e7d>] do_seccomp+0x2ec/0xd40 kernel/seccomp.c:1649
-    [<00000000658618a4>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-    [<00000000b8258e4d>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+================================
+WARNING: inconsistent lock state
+5.8.0-next-20200810-syzkaller #0 Not tainted
+--------------------------------
+inconsistent {IN-SOFTIRQ-W} -> {SOFTIRQ-ON-W} usage.
+syz-executor.5/11793 [HC0[0]:SC0[0]:HE1:SE1] takes:
+ffff8880554ec0a0 (slock-AF_BLUETOOTH-BTPROTO_SCO){+.?.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
+ffff8880554ec0a0 (slock-AF_BLUETOOTH-BTPROTO_SCO){+.?.}-{2:2}, at: sco_conn_del+0x128/0x270 net/bluetooth/sco.c:176
+{IN-SOFTIRQ-W} state was registered at:
+  lock_acquire+0x1f1/0xad0 kernel/locking/lockdep.c:5005
+  __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+  _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+  spin_lock include/linux/spinlock.h:354 [inline]
+  sco_sock_timeout+0x24/0x140 net/bluetooth/sco.c:83
+  call_timer_fn+0x1ac/0x760 kernel/time/timer.c:1413
+  expire_timers kernel/time/timer.c:1458 [inline]
+  __run_timers.part.0+0x67c/0xaa0 kernel/time/timer.c:1755
+  __run_timers kernel/time/timer.c:1736 [inline]
+  run_timer_softirq+0xae/0x1a0 kernel/time/timer.c:1768
+  __do_softirq+0x2de/0xa24 kernel/softirq.c:298
+  asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:706
+  __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
+  run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
+  do_softirq_own_stack+0x9d/0xd0 arch/x86/kernel/irq_64.c:77
+  invoke_softirq kernel/softirq.c:393 [inline]
+  __irq_exit_rcu kernel/softirq.c:423 [inline]
+  irq_exit_rcu+0x1f3/0x230 kernel/softirq.c:435
+  sysvec_apic_timer_interrupt+0x51/0xf0 arch/x86/kernel/apic/apic.c:1090
+  asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:581
+  arch_local_irq_enable arch/x86/include/asm/paravirt.h:780 [inline]
+  __local_bh_enable_ip+0x101/0x190 kernel/softirq.c:200
+  spin_unlock_bh include/linux/spinlock.h:399 [inline]
+  batadv_nc_purge_paths+0x2a5/0x3a0 net/batman-adv/network-coding.c:470
+  batadv_nc_worker+0x868/0xe50 net/batman-adv/network-coding.c:721
+  process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+  worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+  kthread+0x3b5/0x4a0 kernel/kthread.c:292
+  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+irq event stamp: 33895
+hardirqs last  enabled at (33895): [<ffffffff81b4172d>] kfree+0x1cd/0x2c0 mm/slab.c:3757
+hardirqs last disabled at (33894): [<ffffffff81b415cf>] kfree+0x6f/0x2c0 mm/slab.c:3746
+softirqs last  enabled at (30344): [<ffffffff88000f2f>] asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:706
+softirqs last disabled at (30333): [<ffffffff88000f2f>] asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:706
 
-BUG: memory leak
-unreferenced object 0xffffc90000e03000 (size 4096):
-  comm "syz-executor.0", pid 6688, jiffies 4294954707 (age 12.810s)
-  hex dump (first 32 bytes):
-    01 00 03 00 00 00 00 00 00 00 00 00 05 00 00 00  ................
-    2d 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  -...............
-  backtrace:
-    [<000000003b6a39af>] __vmalloc_node_range+0x2e1/0x3c0 mm/vmalloc.c:2520
-    [<00000000eee59e12>] __vmalloc_node mm/vmalloc.c:2552 [inline]
-    [<00000000eee59e12>] __vmalloc+0x49/0x50 mm/vmalloc.c:2566
-    [<000000006e13ac2a>] bpf_prog_alloc_no_stats+0x32/0x100 kernel/bpf/core.c:85
-    [<00000000cff3572c>] bpf_prog_alloc+0x1c/0xb0 kernel/bpf/core.c:111
-    [<000000003222ffa9>] bpf_prog_create_from_user+0x5f/0x2a0 net/core/filter.c:1409
-    [<00000000baa576ae>] seccomp_prepare_filter kernel/seccomp.c:567 [inline]
-    [<00000000baa576ae>] seccomp_prepare_user_filter kernel/seccomp.c:604 [inline]
-    [<00000000baa576ae>] seccomp_set_mode_filter kernel/seccomp.c:1535 [inline]
-    [<00000000baa576ae>] do_seccomp+0x32e/0xd40 kernel/seccomp.c:1649
-    [<00000000658618a4>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-    [<00000000b8258e4d>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+other info that might help us debug this:
+ Possible unsafe locking scenario:
 
-BUG: memory leak
-unreferenced object 0xffff888113bc1c00 (size 1024):
-  comm "syz-executor.0", pid 6688, jiffies 4294954707 (age 12.810s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<000000000466b245>] kmalloc include/linux/slab.h:554 [inline]
-    [<000000000466b245>] kzalloc include/linux/slab.h:666 [inline]
-    [<000000000466b245>] bpf_prog_alloc_no_stats+0x73/0x100 kernel/bpf/core.c:89
-    [<00000000cff3572c>] bpf_prog_alloc+0x1c/0xb0 kernel/bpf/core.c:111
-    [<000000003222ffa9>] bpf_prog_create_from_user+0x5f/0x2a0 net/core/filter.c:1409
-    [<00000000baa576ae>] seccomp_prepare_filter kernel/seccomp.c:567 [inline]
-    [<00000000baa576ae>] seccomp_prepare_user_filter kernel/seccomp.c:604 [inline]
-    [<00000000baa576ae>] seccomp_set_mode_filter kernel/seccomp.c:1535 [inline]
-    [<00000000baa576ae>] do_seccomp+0x32e/0xd40 kernel/seccomp.c:1649
-    [<00000000658618a4>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-    [<00000000b8258e4d>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+       CPU0
+       ----
+  lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+  <Interrupt>
+    lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
 
-BUG: memory leak
-unreferenced object 0xffff8881154cb860 (size 32):
-  comm "syz-executor.0", pid 6688, jiffies 4294954707 (age 12.810s)
-  hex dump (first 32 bytes):
-    01 00 73 74 65 6d 64 2d 00 5c d6 19 81 88 ff ff  ..stemd-.\......
-    65 72 76 69 63 65 00 00 00 00 00 00 00 00 00 00  ervice..........
-  backtrace:
-    [<00000000561d65d4>] kmalloc include/linux/slab.h:554 [inline]
-    [<00000000561d65d4>] bpf_prog_store_orig_filter+0x33/0xa0 net/core/filter.c:1131
-    [<000000005d9b7cd2>] bpf_prog_create_from_user+0xda/0x2a0 net/core/filter.c:1422
-    [<00000000baa576ae>] seccomp_prepare_filter kernel/seccomp.c:567 [inline]
-    [<00000000baa576ae>] seccomp_prepare_user_filter kernel/seccomp.c:604 [inline]
-    [<00000000baa576ae>] seccomp_set_mode_filter kernel/seccomp.c:1535 [inline]
-    [<00000000baa576ae>] do_seccomp+0x32e/0xd40 kernel/seccomp.c:1649
-    [<00000000658618a4>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-    [<00000000b8258e4d>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+ *** DEADLOCK ***
 
-BUG: memory leak
-unreferenced object 0xffff888119d65c00 (size 32):
-  comm "syz-executor.0", pid 6688, jiffies 4294954707 (age 12.810s)
-  hex dump (first 32 bytes):
-    06 00 00 00 fb ff ff 7f 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000ad603142>] kmemdup+0x23/0x50 mm/util.c:127
-    [<0000000001d3eabf>] kmemdup include/linux/string.h:479 [inline]
-    [<0000000001d3eabf>] bpf_prog_store_orig_filter+0x5e/0xa0 net/core/filter.c:1138
-    [<000000005d9b7cd2>] bpf_prog_create_from_user+0xda/0x2a0 net/core/filter.c:1422
-    [<00000000baa576ae>] seccomp_prepare_filter kernel/seccomp.c:567 [inline]
-    [<00000000baa576ae>] seccomp_prepare_user_filter kernel/seccomp.c:604 [inline]
-    [<00000000baa576ae>] seccomp_set_mode_filter kernel/seccomp.c:1535 [inline]
-    [<00000000baa576ae>] do_seccomp+0x32e/0xd40 kernel/seccomp.c:1649
-    [<00000000658618a4>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-    [<00000000b8258e4d>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+3 locks held by syz-executor.5/11793:
+ #0: ffff88805b990f40 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_close+0xf5/0x1080 net/bluetooth/hci_core.c:1720
+ #1: ffff88805b990078 (&hdev->lock){+.+.}-{3:3}, at: hci_dev_do_close+0x253/0x1080 net/bluetooth/hci_core.c:1757
+ #2: ffffffff8a9a5c28 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_disconn_cfm include/net/bluetooth/hci_core.h:1435 [inline]
+ #2: ffffffff8a9a5c28 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_conn_hash_flush+0xc7/0x220 net/bluetooth/hci_conn.c:1557
 
-BUG: memory leak
-unreferenced object 0xffff8881131ecb00 (size 96):
-  comm "syz-executor.0", pid 6688, jiffies 4294954707 (age 12.810s)
-  hex dump (first 32 bytes):
-    01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
-    80 ea 10 13 81 88 ff ff 00 b0 d8 00 00 c9 ff ff  ................
-  backtrace:
-    [<0000000073bb6e7d>] kmalloc include/linux/slab.h:554 [inline]
-    [<0000000073bb6e7d>] kzalloc include/linux/slab.h:666 [inline]
-    [<0000000073bb6e7d>] seccomp_prepare_filter kernel/seccomp.c:562 [inline]
-    [<0000000073bb6e7d>] seccomp_prepare_user_filter kernel/seccomp.c:604 [inline]
-    [<0000000073bb6e7d>] seccomp_set_mode_filter kernel/seccomp.c:1535 [inline]
-    [<0000000073bb6e7d>] do_seccomp+0x2ec/0xd40 kernel/seccomp.c:1649
-    [<00000000658618a4>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-    [<00000000b8258e4d>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88811310e400 (size 96):
-  comm "syz-executor.0", pid 6702, jiffies 4294955242 (age 7.460s)
-  hex dump (first 32 bytes):
-    01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 50 e1 00 00 c9 ff ff  .........P......
-  backtrace:
-    [<0000000073bb6e7d>] kmalloc include/linux/slab.h:554 [inline]
-    [<0000000073bb6e7d>] kzalloc include/linux/slab.h:666 [inline]
-    [<0000000073bb6e7d>] seccomp_prepare_filter kernel/seccomp.c:562 [inline]
-    [<0000000073bb6e7d>] seccomp_prepare_user_filter kernel/seccomp.c:604 [inline]
-    [<0000000073bb6e7d>] seccomp_set_mode_filter kernel/seccomp.c:1535 [inline]
-    [<0000000073bb6e7d>] do_seccomp+0x2ec/0xd40 kernel/seccomp.c:1649
-    [<00000000658618a4>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-    [<00000000b8258e4d>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
+stack backtrace:
+CPU: 0 PID: 11793 Comm: syz-executor.5 Not tainted 5.8.0-next-20200810-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ print_usage_bug kernel/locking/lockdep.c:4020 [inline]
+ valid_state kernel/locking/lockdep.c:3361 [inline]
+ mark_lock_irq kernel/locking/lockdep.c:3560 [inline]
+ mark_lock.cold+0x7a/0x7f kernel/locking/lockdep.c:4006
+ mark_usage kernel/locking/lockdep.c:3923 [inline]
+ __lock_acquire+0x8cd/0x5640 kernel/locking/lockdep.c:4380
+ lock_acquire+0x1f1/0xad0 kernel/locking/lockdep.c:5005
+ __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+ _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+ spin_lock include/linux/spinlock.h:354 [inline]
+ sco_conn_del+0x128/0x270 net/bluetooth/sco.c:176
+ sco_disconn_cfm net/bluetooth/sco.c:1178 [inline]
+ sco_disconn_cfm+0x62/0x80 net/bluetooth/sco.c:1171
+ hci_disconn_cfm include/net/bluetooth/hci_core.h:1438 [inline]
+ hci_conn_hash_flush+0x114/0x220 net/bluetooth/hci_conn.c:1557
+ hci_dev_do_close+0x5c6/0x1080 net/bluetooth/hci_core.c:1770
+ hci_unregister_dev+0x1bd/0xe30 net/bluetooth/hci_core.c:3790
+ vhci_release+0x70/0xe0 drivers/bluetooth/hci_vhci.c:340
+ __fput+0x285/0x920 fs/file_table.c:281
+ task_work_run+0xdd/0x190 kernel/task_work.c:135
+ exit_task_work include/linux/task_work.h:25 [inline]
+ do_exit+0xb7d/0x29f0 kernel/exit.c:806
+ do_group_exit+0x125/0x310 kernel/exit.c:903
+ get_signal+0x40b/0x1ee0 kernel/signal.c:2743
+ arch_do_signal+0x82/0x2520 arch/x86/kernel/signal.c:811
+ exit_to_user_mode_loop kernel/entry/common.c:135 [inline]
+ exit_to_user_mode_prepare+0x15d/0x1c0 kernel/entry/common.c:166
+ syscall_exit_to_user_mode+0x59/0x2b0 kernel/entry/common.c:241
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45ce69
+Code: Bad RIP value.
+RSP: 002b:00007fd132defcf8 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
+RAX: fffffffffffffe00 RBX: 000000000118bfc8 RCX: 000000000045ce69
+RDX: 0000000000000000 RSI: 0000000000000080 RDI: 000000000118bfc8
+RBP: 000000000118bfc0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118bfcc
+R13: 00007ffd9693ba5f R14: 00007fd132df09c0 R15: 000000000118bfcc
 
 
 ---
@@ -194,5 +174,3 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
