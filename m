@@ -2,64 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8C8524167F
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 08:51:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 514362416BB
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 08:59:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728272AbgHKGvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 02:51:17 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34292 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727971AbgHKGvQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Aug 2020 02:51:16 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id E2729AD43;
-        Tue, 11 Aug 2020 06:51:35 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id D9FD0DAFD3; Tue, 11 Aug 2020 08:50:13 +0200 (CEST)
-Date:   Tue, 11 Aug 2020 08:50:13 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     syzbot <syzbot+7b1677fecb5976b0a099@syzkaller.appspotmail.com>
-Cc:     clm@fb.com, davem@davemloft.net, dsterba@suse.com,
-        johan.hedberg@gmail.com, josef@toxicpanda.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, marcel@holtmann.org,
-        nborisov@suse.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: use-after-free Write in hci_conn_del
-Message-ID: <20200811065013.GI2026@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        syzbot <syzbot+7b1677fecb5976b0a099@syzkaller.appspotmail.com>,
-        clm@fb.com, davem@davemloft.net, dsterba@suse.com,
-        johan.hedberg@gmail.com, josef@toxicpanda.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, marcel@holtmann.org,
-        nborisov@suse.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <000000000000734f2505ac0f2426@google.com>
- <000000000000f7ec6f05ac91c11d@google.com>
+        id S1728326AbgHKG7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 02:59:53 -0400
+Received: from ja.ssi.bg ([178.16.129.10]:33602 "EHLO ja.ssi.bg"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728170AbgHKG7x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Aug 2020 02:59:53 -0400
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 07B6wk1t005940;
+        Tue, 11 Aug 2020 09:58:46 +0300
+Date:   Tue, 11 Aug 2020 09:58:46 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        lvs-devel@vger.kernel.org,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        coreteam@netfilter.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [Linux-kernel-mentees] [PATCH net] ipvs: Fix uninit-value in
+ do_ip_vs_set_ctl()
+In-Reply-To: <20200811050929.GA821443@PWN>
+Message-ID: <alpine.LFD.2.23.451.2008110936570.3707@ja.home.ssi.bg>
+References: <20200810220703.796718-1-yepeilin.cs@gmail.com> <CAM_iQpWsQubVJ-AYaLHujHwz68+nsHBcbgbf8XPMEPD=Vu+zaA@mail.gmail.com> <20200811050929.GA821443@PWN>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000f7ec6f05ac91c11d@google.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 10, 2020 at 08:35:08PM -0700, syzbot wrote:
-> syzbot has bisected this issue to:
-> 
-> commit 6a3c7f5c87854e948c3c234e5f5e745c7c553722
-> Author: Nikolay Borisov <nborisov@suse.com>
-> Date:   Thu May 28 08:05:13 2020 +0000
-> 
->     btrfs: don't balance btree inode pages from buffered write path
 
-This does not make sense wrt use-after-free in HCI, which is completely
-unrelated subsystem.
+	Hello,
 
-The patch removes a call to function doing some potentially heavy work,
-so this likely affects timing and making the bisection unreliable.
+On Tue, 11 Aug 2020, Peilin Ye wrote:
+
+> On Mon, Aug 10, 2020 at 08:57:19PM -0700, Cong Wang wrote:
+> > On Mon, Aug 10, 2020 at 3:10 PM Peilin Ye <yepeilin.cs@gmail.com> wrote:
+> > >
+> > > do_ip_vs_set_ctl() is referencing uninitialized stack value when `len` is
+> > > zero. Fix it.
+> > 
+> > Which exact 'cmd' is it here?
+> > 
+> > I _guess_ it is one of those uninitialized in set_arglen[], which is 0.
+> 
+> Yes, it was `IP_VS_SO_SET_NONE`, implicitly initialized to zero.
+> 
+> > But if that is the case, should it be initialized to
+> > sizeof(struct ip_vs_service_user) instead because ip_vs_copy_usvc_compat()
+> > is called anyway. Or, maybe we should just ban len==0 case.
+> 
+> I see. I think the latter would be easier, but we cannot ban all of
+> them, since the function does something with `IP_VS_SO_SET_FLUSH`, which
+> is a `len == 0` case.
+> 
+> Maybe we do something like this?
+
+	Yes, only IP_VS_SO_SET_FLUSH uses len 0. We can go with
+this change but you do not need to target net tree, as the
+problem is not fatal net-next works too. What happens is
+that we may lookup services with random search keys which
+is harmless.
+
+	Another option is to add new block after this one:
+
+        } else if (cmd == IP_VS_SO_SET_TIMEOUT) {
+                /* Set timeout values for (tcp tcpfin udp) */
+                ret = ip_vs_set_timeout(ipvs, (struct ip_vs_timeout_user *)arg);
+                goto out_unlock;
+        }
+
+	such as:
+
+	} else if (!len) {
+		/* No more commands with len=0 below */
+		ret = -EINVAL;
+		goto out_unlock;
+	}
+
+	It give more chance for future commands to use len=0
+but the drawback is that the check happens under mutex. So, I'm
+fine with both versions, it is up to you to decide :)
+
+> @@ -2432,6 +2432,8 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
+> 
+>  	if (cmd < IP_VS_BASE_CTL || cmd > IP_VS_SO_SET_MAX)
+>  		return -EINVAL;
+> +	if (len == 0 && cmd != IP_VS_SO_SET_FLUSH)
+> +		return -EINVAL;
+>  	if (len != set_arglen[CMDID(cmd)]) {
+>  		IP_VS_DBG(1, "set_ctl: len %u != %u\n",
+>  			  len, set_arglen[CMDID(cmd)]);
+> @@ -2547,9 +2549,6 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
+>  		break;
+>  	case IP_VS_SO_SET_DELDEST:
+>  		ret = ip_vs_del_dest(svc, &udest);
+> -		break;
+> -	default:
+> -		ret = -EINVAL;
+>  	}
+> 
+>    out_unlock:
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
