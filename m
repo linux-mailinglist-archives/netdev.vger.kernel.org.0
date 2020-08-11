@@ -2,79 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96CA42412DF
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 00:13:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B40E241404
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 02:03:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726778AbgHJWNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 18:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42146 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726640AbgHJWNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 18:13:50 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144CBC06174A
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 15:13:50 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id y11so5050066qvl.4
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 15:13:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pra3SrFuKrdDDwFtqfJoHGXZJG0dtmjCDpaQK1r/zR0=;
-        b=t83KnR3NjuzI9b2nxYCS/bFh3IIDaKSloFhL8qX3AkCwpslJjImZoYb6B/gnm3xt6p
-         d1U3+DUqgTUknEgoClnCWdMeeYzc5qigVOvWeWGhK7yhkU47QYmU4wtzbjcnUQMXmf/e
-         PVxpwnG7DUTshjxqgCCMaPsUU7BGlRPRabLxl941RJGCN3ZXTZ7UoVdss44NqAZMLvYj
-         o0IvHfXz8/7MZ0u0obOLfDJXmi2eaTTcE2LH0E1bbnN9NIS1P3K35HvqsWSA1+5WLY+5
-         YwOqI5WV6wGbWeSsG1vKnhyLGZXMKBBY3VntUdFamp0UCaNHB4wbSGzcWceA6kvfzg3Z
-         XQjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pra3SrFuKrdDDwFtqfJoHGXZJG0dtmjCDpaQK1r/zR0=;
-        b=dZU2/DzFL47lKe1ESa4WRCED/uSMjVPFOnSDUuNh4i1H3TvkxIsPRTjA8qIN2hjMKb
-         GHwQI2aq4ias+Bd9F3U89PZCarkXz7IdoBOf2yQ8liXyQjaTr1jh+DTC2xZTG0p7PGa9
-         JENdKG0rrsHVVhoMd4uVabmJQ+qmmBCJFbrPvD/4gf8dHqbswM2U+41Zjul9tqhydnRN
-         5YNSlR9W94MzmY98X2Gg3XST2OJSP7EW4OjxFU9IQt6ZJVmxIRm+vT7vIdhX3P+ZMttV
-         Lkzv5xDhvKlPI6BsjWRhW1MIkYuQjnsT2TqENAbFeYJbAPQfvYLaAL4JqxP8KQvmhw6z
-         cjHA==
-X-Gm-Message-State: AOAM532UkzmwKVkVSdqBpS0dyYnEz4W0RfNM4NjDrv0ynEIsaBDYEyr3
-        tj8ZtvanzU99x9vpF51w5LqBLo4V
-X-Google-Smtp-Source: ABdhPJwUx5Tx/oPHEkYqnvLAPMSUWAc5AvVrfGqoYzs+vc1lHg7TAZbYQA8KYImdFWw192KDDjhLag==
-X-Received: by 2002:a0c:9cc4:: with SMTP id j4mr29654626qvf.230.1597097628133;
-        Mon, 10 Aug 2020 15:13:48 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:90d2:5bdd:2f7a:d7f2? ([2601:282:803:7700:90d2:5bdd:2f7a:d7f2])
-        by smtp.googlemail.com with ESMTPSA id m26sm18088008qtc.83.2020.08.10.15.13.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Aug 2020 15:13:47 -0700 (PDT)
-Subject: Re: PMTUD broken inside network namespace with multipath routing
-To:     mastertheknife <mastertheknife@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <CANXY5y+iuzMg+4UdkPJW_Efun30KAPL1+h2S7HeSPp4zOrVC7g@mail.gmail.com>
- <c508eeba-c62d-e4d9-98e2-333c76c90161@gmail.com>
- <CANXY5y+gfZuGvv+pjzDOLS8Jp8ZUFpAmNw7k53O6cDuyB1PCnw@mail.gmail.com>
- <1b4ebdb3-8840-810a-0d5e-74e2cf7693bf@gmail.com>
- <CANXY5yJeCeC_FaQHx0GPn88sQCog59k2vmu8o-h6yRrikSQ3vQ@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <deb7a653-a01b-da4f-c58e-15b6c0c51d75@gmail.com>
-Date:   Mon, 10 Aug 2020 16:13:46 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        id S1727799AbgHKADD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 20:03:03 -0400
+Received: from mga02.intel.com ([134.134.136.20]:22100 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726733AbgHKADD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 20:03:03 -0400
+IronPort-SDR: 9RZNHRGXO1ycF7wxPHXYrhoMomwbQ3zoKqEvxp6xQqCpwzN9VEO7E9h9h3c3m9GqJB4UM9YtEL
+ VYOfR8BjjaGg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9709"; a="141498658"
+X-IronPort-AV: E=Sophos;i="5.75,458,1589266800"; 
+   d="scan'208";a="141498658"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2020 17:03:02 -0700
+IronPort-SDR: xoPjqZyc1+7oOVqcu8XRvlVY+BTfSmmneyOXGUhmXC7ZHQbK6nLF7NqOv690CosdLHBAu8hsmz
+ UEfs3ix+nwqw==
+X-IronPort-AV: E=Sophos;i="5.75,458,1589266800"; 
+   d="scan'208";a="469231771"
+Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2020 17:03:02 -0700
+From:   ira.weiny@intel.com
+To:     Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Ilya Lesokhin <ilyal@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net/tls: Fix kmap usage
+Date:   Mon, 10 Aug 2020 17:02:58 -0700
+Message-Id: <20200811000258.2797151-1-ira.weiny@intel.com>
+X-Mailer: git-send-email 2.28.0.rc0.12.gb6a658bd00c9
 MIME-Version: 1.0
-In-Reply-To: <CANXY5yJeCeC_FaQHx0GPn88sQCog59k2vmu8o-h6yRrikSQ3vQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/3/20 12:39 PM, mastertheknife wrote:
-> In summary: It seems that it doesn't matter who is the nexthop. If the
-> ICMP response isn't from the nexthop, it'll be rejected.
-> About why i couldn't reproduce this outside LXC, i don't know yet but
-> i will keep trying to figure this out.
+From: Ira Weiny <ira.weiny@intel.com>
 
-do you have a shell script that reproduces the problem?
+When MSG_OOB is specified to tls_device_sendpage() the mapped page is
+never unmapped.
+
+Hold off mapping the page until after the flags are checked and the page
+is actually needed.
+
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+---
+ net/tls/tls_device.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index 0e55f8365ce2..0cbad566f281 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -561,7 +561,7 @@ int tls_device_sendpage(struct sock *sk, struct page *page,
+ {
+ 	struct tls_context *tls_ctx = tls_get_ctx(sk);
+ 	struct iov_iter	msg_iter;
+-	char *kaddr = kmap(page);
++	char *kaddr;
+ 	struct kvec iov;
+ 	int rc;
+ 
+@@ -576,6 +576,7 @@ int tls_device_sendpage(struct sock *sk, struct page *page,
+ 		goto out;
+ 	}
+ 
++	kaddr = kmap(page);
+ 	iov.iov_base = kaddr + offset;
+ 	iov.iov_len = size;
+ 	iov_iter_kvec(&msg_iter, WRITE, &iov, 1, size);
+-- 
+2.28.0.rc0.12.gb6a658bd00c9
+
