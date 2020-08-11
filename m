@@ -2,71 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D9DD241554
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 05:35:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39AB3241569
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 05:48:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728229AbgHKDfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 23:35:09 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:36001 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727066AbgHKDfJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 23:35:09 -0400
-Received: by mail-io1-f71.google.com with SMTP id h205so8770376iof.3
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 20:35:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=0XXF4gP00AKnsVQiDFXbJzMYIOYWHxHdd4RVsRPAbhc=;
-        b=GYCl0NXmgNNtW1JpwqYRbD/hyTZhQfr0dnzJrHd6ur6np24PEVnIjg9JIa78DuO4Xb
-         FjH+TroEhCTuKOHL+RmYHt4Xnpp4Bxu5kvKxN8KSnJ0BCoTV/5QCF98YPaJGNCWKAG7L
-         UXj/DzUQbZLXq4TROT7oX/H0Lvva4KocWc3pOxcfkISwgDLM938fSResPEEHw3FlYZM4
-         XlmeVGCo+iyNlDAOqm1NC4NBrhLGi2ocIA6BAGYURUkTddN0FdKUiK5QqRX7WJMYub37
-         bb52cGAZCQlTim6Y9k8m/UmMTOktWhq70J9tHpLsSkqRKlo18KDLx9gWNTqFA/AMhZEP
-         RVpQ==
-X-Gm-Message-State: AOAM532YPNQb4fo9/AB6xBsen0k+PzyiADBWw/W7OFQyDCz0G6vYrujc
-        5ElGNbQdsKRK1mS/RC8up3MmNmXOy6LtpMKjRL2CkWiUOZl5
-X-Google-Smtp-Source: ABdhPJxgP7ejVjnfsazNH0Tqy82Cxwho0b25shTclrrEX2JEZZQVzsMpsyfvz791kmnbkiw1QrmUlfEf4tjZSNi1+1P0jsQ/cPE1
+        id S1728142AbgHKDsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 23:48:08 -0400
+Received: from mx.sdf.org ([205.166.94.24]:51391 "EHLO mx.sdf.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727861AbgHKDsH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Aug 2020 23:48:07 -0400
+Received: from sdf.org (IDENT:lkml@faeroes.freeshell.org [205.166.94.9])
+        by mx.sdf.org (8.15.2/8.14.5) with ESMTPS id 07B3lPQq022015
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits) verified NO);
+        Tue, 11 Aug 2020 03:47:25 GMT
+Received: (from lkml@localhost)
+        by sdf.org (8.15.2/8.12.8/Submit) id 07B3lOCD012316;
+        Tue, 11 Aug 2020 03:47:24 GMT
+Date:   Tue, 11 Aug 2020 03:47:24 +0000
+From:   George Spelvin <lkml@SDF.ORG>
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     netdev@vger.kernel.org, aksecurity@gmail.com,
+        torvalds@linux-foundation.org, edumazet@google.com,
+        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
+        tglx@linutronix.de, peterz@infradead.org, tytso@mit.edu,
+        lkml.mplumb@gmail.com, stephen@networkplumber.org, fw@strlen.de,
+        George Spelvin <lkml@SDF.ORG>
+Subject: Re: [DRAFT PATCH] random32: make prandom_u32() output unpredictable
+Message-ID: <20200811034724.GF25124@SDF.ORG>
+References: <20200808152628.GA27941@SDF.ORG>
+ <20200809065744.GA17668@SDF.ORG>
+ <20200809093805.GA7928@1wt.eu>
+ <20200809170639.GB25124@SDF.ORG>
+ <20200809173302.GA8027@1wt.eu>
+ <20200809183017.GC25124@SDF.ORG>
+ <20200810114700.GB8474@1wt.eu>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:5502:: with SMTP id j2mr20825119iob.204.1597116908036;
- Mon, 10 Aug 2020 20:35:08 -0700 (PDT)
-Date:   Mon, 10 Aug 2020 20:35:08 -0700
-In-Reply-To: <000000000000734f2505ac0f2426@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f7ec6f05ac91c11d@google.com>
-Subject: Re: KASAN: use-after-free Write in hci_conn_del
-From:   syzbot <syzbot+7b1677fecb5976b0a099@syzkaller.appspotmail.com>
-To:     clm@fb.com, davem@davemloft.net, dsterba@suse.com,
-        johan.hedberg@gmail.com, josef@toxicpanda.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, marcel@holtmann.org,
-        nborisov@suse.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200810114700.GB8474@1wt.eu>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Mon, Aug 10, 2020 at 01:47:00PM +0200, Willy Tarreau wrote:
+> except that I retrieve it only on 1/8 calls
+> and use the previous noise in this case.
 
-commit 6a3c7f5c87854e948c3c234e5f5e745c7c553722
-Author: Nikolay Borisov <nborisov@suse.com>
-Date:   Thu May 28 08:05:13 2020 +0000
+Er... that's quite different.  I was saying you measure them all, and do:
 
-    btrfs: don't balance btree inode pages from buffered write path
+ struct siprand_state {
+ 	...
++	uint32_t noise[i];
++	unsigned counter;
+ }
+ 	...
++	s->noise[--s->counter] = random_get_entropy();
++
++	if (!s->counter) {
++		for (i = 0; i < 4; i++)
++			s->v[i] += s->noise[2*i] +
++				((unsigned long)s->noise[2*i+1] << BITS_PER_LONG/2);
++		s->counter = 8;
++	}
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14f973c2900000
-start commit:   5631c5e0 Merge tag 'xfs-5.9-merge-7' of git://git.kernel.o..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=16f973c2900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=12f973c2900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=afba7c06f91e56eb
-dashboard link: https://syzkaller.appspot.com/bug?extid=7b1677fecb5976b0a099
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=155d73fa900000
+What you're doing is just decreasing the amount of seeding by a factor
+of 8.  (Roughly.  You do gain log2(8)/2 = 1.5 bits because the sum of
+8 random values has a standard deviation sqrt(8) times as large as
+the inputs.)
 
-Reported-by: syzbot+7b1677fecb5976b0a099@syzkaller.appspotmail.com
-Fixes: 6a3c7f5c8785 ("btrfs: don't balance btree inode pages from buffered write path")
+> diff --git a/lib/random32.c b/lib/random32.c
+> index 2b048e2ea99f..a12d63028106 100644
+> --- a/lib/random32.c
+> +++ b/lib/random32.c
+> @@ -317,6 +317,8 @@ static void __init prandom_state_selftest(void)
+>  
+>  struct siprand_state {
+>  	unsigned long v[4];
+> +	unsigned long noise;
+> +	unsigned long count;
+>  };
+>  
+>  static DEFINE_PER_CPU(struct siprand_state, net_rand_state) __latent_entropy;
+> @@ -334,7 +336,7 @@ static DEFINE_PER_CPU(struct siprand_state, net_rand_state) __latent_entropy;
+>  #define K0 (0x736f6d6570736575 ^ 0x6c7967656e657261 )
+>  #define K1 (0x646f72616e646f6d ^ 0x7465646279746573 )
+>  
+> -#elif BITS_PER_LONG == 23
+> +#elif BITS_PER_LONG == 32
+>  /*
+>   * On 32-bit machines, we use HSipHash, a reduced-width version of SipHash.
+>   * This is weaker, but 32-bit machines are not used for high-traffic
+> @@ -375,6 +377,12 @@ static u32 siprand_u32(struct siprand_state *s)
+>  {
+>  	unsigned long v0 = s->v[0], v1 = s->v[1], v2 = s->v[2], v3 = s->v[3];
+>  
+> +	if (++s->count >= 8) {
+> +		v3 ^= s->noise;
+> +		s->noise += random_get_entropy();
+> +		s->count = 0;
+> +	}
+> +
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+- Can you explain why you save the "noise" until next time?  Is this meant to
+  make it harder for an attacker to observe the time?
+- How about doing away with s->count and making it statistical:
+
++	if ((v3 & 7) == 0)
++		v3 ^= random_get_entropy();
+
+That still does the seed 1/8 of the time, but in a much less regular pattern.
+(Admittedly, it will totally break the branch predictor.  An unlikely()
+might help.)
+
