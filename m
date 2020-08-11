@@ -2,123 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 514362416BB
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 08:59:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A49D52416D4
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 09:02:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728326AbgHKG7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 02:59:53 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:33602 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728170AbgHKG7x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Aug 2020 02:59:53 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 07B6wk1t005940;
-        Tue, 11 Aug 2020 09:58:46 +0300
-Date:   Tue, 11 Aug 2020 09:58:46 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Wensong Zhang <wensong@linux-vs.org>,
-        Simon Horman <horms@verge.net.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        lvs-devel@vger.kernel.org,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        coreteam@netfilter.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [Linux-kernel-mentees] [PATCH net] ipvs: Fix uninit-value in
- do_ip_vs_set_ctl()
-In-Reply-To: <20200811050929.GA821443@PWN>
-Message-ID: <alpine.LFD.2.23.451.2008110936570.3707@ja.home.ssi.bg>
-References: <20200810220703.796718-1-yepeilin.cs@gmail.com> <CAM_iQpWsQubVJ-AYaLHujHwz68+nsHBcbgbf8XPMEPD=Vu+zaA@mail.gmail.com> <20200811050929.GA821443@PWN>
+        id S1728025AbgHKHCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 03:02:14 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:42563 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728239AbgHKHCG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 03:02:06 -0400
+Received: by mail-il1-f200.google.com with SMTP id z1so264065ilz.9
+        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 00:02:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=TCO+CRsxJrzBCsKOBMk3YisLrnkYLPAHpyx6MjWmV2I=;
+        b=HiH1NbUQEBnMrLhbIprcZNaBneiL2YS5pp5T2BWjS4R1awpaBXZ4u6diwC+2nV0o6u
+         c+XREiDq4YesfMs6+dJWjLic9v4hgxkwalEHs9WnitnEdA0bIi6BHzQJksB/FIds2tFw
+         Y+ef0RSWJI1f1YHI3h8nFc2RETa/lX3/cpSPx6M+CUJ8cpn4cA6NAmJnMy8+uq0hxAFK
+         2+NfREHQYNPgux8ENUTpllAIGUPzjNjQo3nKIKKKmClRmGYPeBmL10sCVHqr9fcvPSIR
+         6JEZ9hYIzuvGpVi0ogL5Xuq/JyOIH96WiV8L7RYCZAQJCeP4Fi83q3EXlx0YSwYQ/JIj
+         Cgag==
+X-Gm-Message-State: AOAM530ezsutgLUG3urcb2shYn1m4X62OTcbV0BPHfD2R3MkDi7hzYGX
+        1wswQkHPMLl6rdm5ASjplxgrvr8C8VOkVCzyy0rayp7L13wC
+X-Google-Smtp-Source: ABdhPJyIOSFerfWVR1Xo+/AxlOPWMpkrbzwv7jfTrQQsSCTPmQrSRvQ8Qgc2g4nydi3v0jjeKq2dBeLk3CJlnTSTNsYyiHQh6z0f
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-Received: by 2002:a92:db51:: with SMTP id w17mr1349732ilq.105.1597129325132;
+ Tue, 11 Aug 2020 00:02:05 -0700 (PDT)
+Date:   Tue, 11 Aug 2020 00:02:05 -0700
+In-Reply-To: <00000000000079a77705a8ce6da7@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000015bfd405ac94a6c0@google.com>
+Subject: Re: general protection fault in qrtr_endpoint_post
+From:   syzbot <syzbot+03e343dbccf82a5242a2@syzkaller.appspotmail.com>
+To:     bjorn.andersson@linaro.org, bkkarthik@pesu.pes.edu,
+        dan.carpenter@oracle.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+syzbot suspects this issue was fixed by commit:
 
-	Hello,
+commit 8ff41cc21714704ef0158a546c3c4d07fae2c952
+Author: Dan Carpenter <dan.carpenter@oracle.com>
+Date:   Tue Jun 30 11:46:15 2020 +0000
 
-On Tue, 11 Aug 2020, Peilin Ye wrote:
+    net: qrtr: Fix an out of bounds read qrtr_endpoint_post()
 
-> On Mon, Aug 10, 2020 at 08:57:19PM -0700, Cong Wang wrote:
-> > On Mon, Aug 10, 2020 at 3:10 PM Peilin Ye <yepeilin.cs@gmail.com> wrote:
-> > >
-> > > do_ip_vs_set_ctl() is referencing uninitialized stack value when `len` is
-> > > zero. Fix it.
-> > 
-> > Which exact 'cmd' is it here?
-> > 
-> > I _guess_ it is one of those uninitialized in set_arglen[], which is 0.
-> 
-> Yes, it was `IP_VS_SO_SET_NONE`, implicitly initialized to zero.
-> 
-> > But if that is the case, should it be initialized to
-> > sizeof(struct ip_vs_service_user) instead because ip_vs_copy_usvc_compat()
-> > is called anyway. Or, maybe we should just ban len==0 case.
-> 
-> I see. I think the latter would be easier, but we cannot ban all of
-> them, since the function does something with `IP_VS_SO_SET_FLUSH`, which
-> is a `len == 0` case.
-> 
-> Maybe we do something like this?
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10f1cfe6900000
+start commit:   1590a2e1 Merge tag 'acpi-5.8-rc3' of git://git.kernel.org/..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=20c907630cbdbe5
+dashboard link: https://syzkaller.appspot.com/bug?extid=03e343dbccf82a5242a2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1496f9f9100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1692523d100000
 
-	Yes, only IP_VS_SO_SET_FLUSH uses len 0. We can go with
-this change but you do not need to target net tree, as the
-problem is not fatal net-next works too. What happens is
-that we may lookup services with random search keys which
-is harmless.
+If the result looks correct, please mark the issue as fixed by replying with:
 
-	Another option is to add new block after this one:
+#syz fix: net: qrtr: Fix an out of bounds read qrtr_endpoint_post()
 
-        } else if (cmd == IP_VS_SO_SET_TIMEOUT) {
-                /* Set timeout values for (tcp tcpfin udp) */
-                ret = ip_vs_set_timeout(ipvs, (struct ip_vs_timeout_user *)arg);
-                goto out_unlock;
-        }
-
-	such as:
-
-	} else if (!len) {
-		/* No more commands with len=0 below */
-		ret = -EINVAL;
-		goto out_unlock;
-	}
-
-	It give more chance for future commands to use len=0
-but the drawback is that the check happens under mutex. So, I'm
-fine with both versions, it is up to you to decide :)
-
-> @@ -2432,6 +2432,8 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
-> 
->  	if (cmd < IP_VS_BASE_CTL || cmd > IP_VS_SO_SET_MAX)
->  		return -EINVAL;
-> +	if (len == 0 && cmd != IP_VS_SO_SET_FLUSH)
-> +		return -EINVAL;
->  	if (len != set_arglen[CMDID(cmd)]) {
->  		IP_VS_DBG(1, "set_ctl: len %u != %u\n",
->  			  len, set_arglen[CMDID(cmd)]);
-> @@ -2547,9 +2549,6 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
->  		break;
->  	case IP_VS_SO_SET_DELDEST:
->  		ret = ip_vs_del_dest(svc, &udest);
-> -		break;
-> -	default:
-> -		ret = -EINVAL;
->  	}
-> 
->    out_unlock:
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
