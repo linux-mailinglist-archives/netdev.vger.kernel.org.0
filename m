@@ -2,80 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FBFB241ACF
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 14:12:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D543F241AD9
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 14:17:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728587AbgHKMLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 08:11:38 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:3012 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728423AbgHKMLZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Aug 2020 08:11:25 -0400
-Received: from dggeme753-chm.china.huawei.com (unknown [172.30.72.53])
-        by Forcepoint Email with ESMTP id 2FEF98870F8A34B11D91;
-        Tue, 11 Aug 2020 20:10:50 +0800 (CST)
-Received: from dggeme753-chm.china.huawei.com (10.3.19.99) by
- dggeme753-chm.china.huawei.com (10.3.19.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Tue, 11 Aug 2020 20:10:49 +0800
-Received: from dggeme753-chm.china.huawei.com ([10.7.64.70]) by
- dggeme753-chm.china.huawei.com ([10.7.64.70]) with mapi id 15.01.1913.007;
- Tue, 11 Aug 2020 20:10:49 +0800
-From:   linmiaohe <linmiaohe@huawei.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pshelar@ovn.org" <pshelar@ovn.org>,
-        "martin.varghese@nokia.com" <martin.varghese@nokia.com>,
-        "fw@strlen.de" <fw@strlen.de>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "steffen.klassert@secunet.com" <steffen.klassert@secunet.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "shmulik@metanetworks.com" <shmulik@metanetworks.com>,
-        "kyk.segfault@gmail.com" <kyk.segfault@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: eliminate meaningless memcpy to data in
- pskb_carve_inside_nonlinear()
-Thread-Topic: [PATCH] net: eliminate meaningless memcpy to data in
- pskb_carve_inside_nonlinear()
-Thread-Index: AdZv1p8z2cljr2j1QqmBFzhMwq+yDA==
-Date:   Tue, 11 Aug 2020 12:10:49 +0000
-Message-ID: <40a0b4ba22ff499686a2521998767ae5@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.176.252]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728677AbgHKMRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 08:17:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728556AbgHKMQm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 08:16:42 -0400
+Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F7EC06174A;
+        Tue, 11 Aug 2020 05:16:41 -0700 (PDT)
+Received: by mail-oo1-xc43.google.com with SMTP id y30so2579022ooj.3;
+        Tue, 11 Aug 2020 05:16:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BfaOWSVdZQ07T1WYL8SAoDKGztX/6CbsXqzUzK0St8s=;
+        b=SUZSVEhCg6bsE5g5AFV3Nu7ILrIBK14FCJeQTRW4bRuMioqVg6Xp+cvlp3Yg1AIoqp
+         +KJKITEVIQCC1qHMKKl6em+lfdg+/slX9FriU4yJcV/PdONBjp+w5Vg7c5lA5H/B30xo
+         kbK88mNEzpr+gxCHW2krRACRsrCFrXErLis+oz+OGxiTog21ZC3h/ORMHGljsYc9qYWV
+         ZeSRskj+HxmoIBBv6sNByjudCtnXj72+c/p3RBZs0DnyCBEZoD1zrdj3FaN1e60XJNeh
+         zDBtXC4LSVsOIfENZwvo9yqNGeotY1MPPOUoEKYypDhOkuCUPSA4AiGeNj248+s7ZXKA
+         jOMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BfaOWSVdZQ07T1WYL8SAoDKGztX/6CbsXqzUzK0St8s=;
+        b=dehgjnTXRiHNOkGlKjcTrGnd1GhBC0cslb6IMQqDgBQHpcX53uvuOqLGIbMv5B6odm
+         0isrv9qbXuDuRI8ZNgL55slnmpgjnHDUvOvrLTEdBQvHK84dAcLc2uyN0GqXEIZbYElR
+         iVyPe5Eh9a3IXX+II7b+vyBFCPHSJS6jTSfhm8ZrLRcOfI+7N4eUBqHl+l7iEY1l0VHE
+         /EzUBD1SO3SwJ8+oRxshr0emmx//cKsGRFaljsbSXOIiaOPEOapzqJ0lwWqR/xd/r+yU
+         8Wh4PKgstJZWYdK/RT7/HMR8RWzPd63v8c8cx9nFFBY8Mr/uNsrCa6PAj2OqhYxBlwaa
+         9F2g==
+X-Gm-Message-State: AOAM5321oNah6qdtpwjFo0Bkdy+lwc74yeF3o/LcS2BZjmVsdPM28NMI
+        Pu4eIYcW91tjxbj0mD8HpTfGSY9YPQ3GL/Bna9E=
+X-Google-Smtp-Source: ABdhPJzSaTIBww3RVWzclOnCFAapTOONrFiRaRjDySuKQvXkeW9wMlyEhPPRLW4/2hyPS3tLM0iChxXJ4fWU8jt/XPY=
+X-Received: by 2002:a4a:2c83:: with SMTP id o125mr823335ooo.84.1597148201081;
+ Tue, 11 Aug 2020 05:16:41 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <20200716030847.1564131-1-keescook@chromium.org>
+ <87h7tpa3hg.fsf@nanos.tec.linutronix.de> <202007301113.45D24C9D@keescook> <CAOMdWSJQKHAWY1P297b9koOLd8sVtezEYEyWGtymN1YeY27M6A@mail.gmail.com>
+In-Reply-To: <CAOMdWSJQKHAWY1P297b9koOLd8sVtezEYEyWGtymN1YeY27M6A@mail.gmail.com>
+From:   Allen <allen.lkml@gmail.com>
+Date:   Tue, 11 Aug 2020 17:46:29 +0530
+Message-ID: <CAOMdWSLef4Vy=k-Kfp8RJ++=SsMwCQTU4+hEueK_APDGvJ-PaA@mail.gmail.com>
+Subject: Re: [PATCH 0/3] Modernize tasklet callback API
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oscar Carter <oscar.carter@gmx.com>,
+        Romain Perier <romain.perier@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-usb@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+        alsa-devel@alsa-project.org,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RXJpYyBEdW1hemV0IDxlcmljLmR1bWF6ZXRAZ21haWwuY29tPiB3cm90ZToNCj4gT24gOC8xMC8y
-MCA1OjI4IEFNLCBNaWFvaGUgTGluIHdyb3RlOg0KPj4gVGhlIHNrYl9zaGFyZWRfaW5mbyBwYXJ0
-IG9mIHRoZSBkYXRhIGlzIGFzc2lnbmVkIGluIHRoZSBmb2xsb3dpbmcgDQo+PiBsb29wLiBJdCBp
-cyBtZWFuaW5nbGVzcyB0byBkbyBhIG1lbWNweSBoZXJlLg0KPj4gDQo+DQo+UmVtaW5kZXIgOiBu
-ZXQtbmV4dCBpcyBDTE9TRUQuDQo+DQoNClRoYW5rcyBmb3IgeW91ciByZW1pbmQuIEkgd291bGQg
-d2FpdCBmb3IgaXQgb3Blbi4NCg0KPlRoaXMgaXMgbm90IGNvcnJlY3QuIFdlIHN0aWxsIGhhdmUg
-dG8gY29weSBfc29tZXRoaW5nXw0KPg0KPlNvbWV0aGluZyBsaWtlIDoNCj4NCj5kaWZmIC0tZ2l0
-IGEvbmV0L2NvcmUvc2tidWZmLmMgYi9uZXQvY29yZS9za2J1ZmYuYyBpbmRleCAyODI4ZjZkNWJh
-ODk4YTVlNTBjY2NlNDU1ODliZjEzNzBlNDc0YjBmLi4xYzA1MTk0MjZjN2JhNGIwNDM3N2ZjODA1
-NGM0MjIzYzEzNTg3OWFiIDEwMDY0NA0KPi0tLSBhL25ldC9jb3JlL3NrYnVmZi5jDQo+KysrIGIv
-bmV0L2NvcmUvc2tidWZmLmMNCj5AQCAtNTk1Myw4ICs1OTUzLDggQEAgc3RhdGljIGludCBwc2ti
-X2NhcnZlX2luc2lkZV9ub25saW5lYXIoc3RydWN0IHNrX2J1ZmYgKnNrYiwgY29uc3QgdTMyIG9m
-ZiwNCj4gICAgICAgIHNpemUgPSBTS0JfV0lUSF9PVkVSSEVBRChrc2l6ZShkYXRhKSk7DQo+IA0K
-PiAgICAgICAgbWVtY3B5KChzdHJ1Y3Qgc2tiX3NoYXJlZF9pbmZvICopKGRhdGEgKyBzaXplKSwN
-Cj4tICAgICAgICAgICAgICBza2Jfc2hpbmZvKHNrYiksIG9mZnNldG9mKHN0cnVjdCBza2Jfc2hh
-cmVkX2luZm8sDQo+LSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBmcmFn
-c1tza2Jfc2hpbmZvKHNrYiktPm5yX2ZyYWdzXSkpOw0KPisgICAgICAgICAgICAgIHNrYl9zaGlu
-Zm8oc2tiKSwgb2Zmc2V0b2Yoc3RydWN0IHNrYl9zaGFyZWRfaW5mbywgDQo+KyBmcmFnc1swXSkp
-Ow0KPisNCj4gICAgICAgIGlmIChza2Jfb3JwaGFuX2ZyYWdzKHNrYiwgZ2ZwX21hc2spKSB7DQo+
-ICAgICAgICAgICAgICAgIGtmcmVlKGRhdGEpOw0KPiAgICAgICAgICAgICAgICByZXR1cm4gLUVO
-T01FTTsNCj4NCg0KVGhpcyBsb29rcyBnb29kLiBXaWxsIHNlbmQgYSBwYXRjaCB2MiBzb29uLiBN
-YXkgSSBhZGQgYSBzdWdnZXN0ZWQtYnkgdGFnIG9mIHlvdSA/DQpNYW55IHRoYW5rcy4NCg0K
+Kees,
+
+> >
+>
+> Here's the series re-based on top of 5.8
+> https://github.com/allenpais/tasklets/tree/V3
+>
+> Let me know how you would want these to be reviewed.
+>
+
+  I see the first set of infrastructure patches for tasklets have
+landed in Linus's tree. Good time to send out the ~200 patches?
+
+- Allen
