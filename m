@@ -2,105 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2092524162D
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 08:02:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0F59241647
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 08:26:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726424AbgHKGCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 02:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726083AbgHKGCN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 02:02:13 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF44CC06174A;
-        Mon, 10 Aug 2020 23:02:12 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id a34so6433992ybj.9;
-        Mon, 10 Aug 2020 23:02:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f72giXEo2Ev6K32+YRYkRawWKIMpKtvEahskzW79c/Y=;
-        b=CdErWvnJAmK+G/DeOhxsWcr/qWeTqTKsmfBZTfBhXe6slvdDzMRh3cULy32VFmskTj
-         xHGq3//Aj82NexgJi01dUCbuAQTGSn0pabIBkrtg8vN+N1GU34oh8EUksY+3JWGyajjp
-         Q4/0w4qsZ7iCbVsbHEN7UMAUuzLrsxFuxFJAea53pSMP3LehfjXqvfkdud9YEPWEh03n
-         6TqbUlvo3onVkkDfX9+PU1nqVTWsLptLPSFSrJBLCL4i2kUeBEGMXOX6KC4zex5BKURb
-         wso7PEGL8JodtMeu5Cqlu28AVkU8kuG5hdEei/OiqxUbTzpIhmbWoZptUtSSA5AbSvzQ
-         evDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f72giXEo2Ev6K32+YRYkRawWKIMpKtvEahskzW79c/Y=;
-        b=SUjbGcYIeBfhn5bz6knA1iL/yJu7zufsxAyo8NWIqxuIpFqUOxgDhHOSG6pgd54s3+
-         4FOoXnBAzclI+3JJ5KwP+MNaYLoD2ZuvTufC8fzPYSa7u7yzegj/A5FkAvveNMyn6vC7
-         dtIvPeueq3JNehHS/ntNFjy+YhWcr6EFS28qY0NjgOS+S4QGwI1N1/moMHcbOPL5gOOU
-         6nd9cSHJZyUgQR7by6EegdPT8oQ1uxq/2MSxY12QLQobWFlIpoOi/TlDjOeQIWoKFUdY
-         mvJCRnKwxdmNorgxepsE2Bb4XN+ZN4d+5WFi4+J8aG4UhKb+SVZWGTvdvBc0nzORsQ1B
-         WV/Q==
-X-Gm-Message-State: AOAM531KpZgByjts3yRjY3mpX2U37358zA8vpWIz+/Di6KmiYXtXyzfY
-        2pwWHfYgxU03vjSyIEVMBzjWoB1MQL8BGdk4O3Y=
-X-Google-Smtp-Source: ABdhPJywvhzxo5kO7ujgj2rTL6yQ/I3DYrQfhZ+D+AhBBNrXTrbNa2kpyNjWUN68bZnrpwbjB1Mw4Gv8uVKqQJyXV08=
-X-Received: by 2002:a25:bc50:: with SMTP id d16mr9834708ybk.230.1597125732152;
- Mon, 10 Aug 2020 23:02:12 -0700 (PDT)
+        id S1728021AbgHKG02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 02:26:28 -0400
+Received: from sonic314-15.consmr.mail.bf2.yahoo.com ([74.6.132.125]:35492
+        "EHLO sonic314-15.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726154AbgHKG02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 02:26:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1597127186; bh=gH13qpDo1pe7E7DmJ6M5fxIu4YXvqPHbDbzMZhOfCDs=; h=Date:From:Reply-To:Subject:References:From:Subject; b=B2Lw+ucFaQwtwYdoy5uBMNZe51G7M98bZzY3GMExqV3ujQ6KdF3wcmtTBumo3Hs7KrRDbdyvjk9WHelr9hNnfApfyGdl9tkCQW3NSB054Y6wMhfapzqlkcLA8ACupcAeJZBVxTLWkQu9S4FnZigNUgYOSo6koYUk9N4PegZ7NT1WcrqJmDDRnQlWwx2/KjHrZSiFcnWft+3vfIKQlLv7PFQUXXm++shWxou1eGnhd3cKBzdNHr801+ihmZR6433Z1tTR7c7ZRoZBST4d6b4+OjwNNd1/Ng9xV8gs8A7Zhhe0jjAK81I95qAszMFh447qTYWGMIvQsLb1SrZEvE1kuQ==
+X-YMail-OSG: DtP5xIoVM1lBIAJRtR3z0afnd5cojM90gFG33936SWz_uV3ocaEKJVY1DTt8FAz
+ wqxu1_biWvajEEI7YUS9AL_tvog2jMBBTlegrP3cUiMU0Dic9G49PE6QeCH6TpXGLpixzRkoGmhP
+ MDiPuqYY_Qh1SpsSJOqgX6rE67op_dhsO9A79r9NOuTYIkABJgNYhX8sLqJZEdoqmGCvo8o5i3Tx
+ H3GmOUI.C3Eq6yFXebLNpYclKKZn4kSxKBrfz8Y2Kk7_BEZcJz0ICGe_.HFAz6zqQXkt.cqXHPxE
+ 2jFIQEnB8tDkJhVlshEBdzqvbqjs6lm8IxGSzmpGga4Qlc1w5JMVZY9biXImLS8kpa0JTYTA9J_1
+ LRQtx1CNcblIiueykoRuQ8pXQKZcJMWqTcOvQVk4l4AKrIuhJdrKP0kodB4Ye4fCpQUXKLJv81oG
+ O6a6_MOHV_VbCxjY5lv_nBWjbjC6tnK6pO9UwFXG8Fhf_3W211ceNOpFydR0bUK44eRXsm.27gDr
+ ClWKQ7kdMVDBETFsedjemhLpwb7t7bVpn18x9os3iSz51dQNgYZql4NXK7TBOyIio7LWXI80.tgE
+ G8aRkbcWwVpRC82fHM7EK9ddewM5IFna1PhW3KW0JQGSMtYdXMNpFCZaJ12DpLlFmYq6L8g_ayQq
+ 3zeh1_Q7j3pldRyC6Xd4oeSCTOg.hMeXAuRkc38x_wgftlGB48llDQymIFpqumeDsuLjkckLUJoB
+ Guf2JvjLLHBmgYrZFX9HVwkGU_SNbbGwamBT0m58tozmrEE5cVFWDxvi53MjBjP6AfmbLOowAZSY
+ YVGC.HpP8Sbai2GlscZYpwo10kyYiih9nqyFNU1_lT0GtpIIzbXHplnEZ1MZ2Qo3gXrs5uyytslz
+ EgGABZg9HybIw_3yD4gQUmaQ4nbvmKidm4TLNJT3ZgZBalZcjcxNiX9eelW8MfD6KlrtjEp2I5cA
+ BBNCQViDG26G1X7b1NyyJzDCsdkgwOC8rSc_khgUjcclleSnQ1fOIZInq55_mgTNGnTdYjCKh.85
+ EUycaF0O86fHU5bz7htg73G9.yXt_g0KBBnTEVlhmcZpToRuXMopIYGBJdEVt2ZMq5QbAemKJHGh
+ CwACAvqcmbqsJUMfTyRRqeTaD0F6F1dzwcFoq_PVsrM0zN3h7Kjs_hbhOiu12zl35430hO1vJhik
+ lcl.MM.DxNLcBSpuVmcwvI9vps8vK0oanT2gxtX1I4EbdetiEAztGnfUglDYM8jFUYa_O.DGW5RN
+ SNHhtLS9BeoLsh43FxDayvA2WeSJK2OEll_FKe2XxhzDpmAsGRY4LGvVgA2JUIyMMOVTCQeonV2S
+ gNAyNs.0UHUeoGUw91Gnnz3AIV_5xamqsa7V1nTkVF_c1vKL_E9Xk1amRWxN2gOqNmP5E2LU-
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic314.consmr.mail.bf2.yahoo.com with HTTP; Tue, 11 Aug 2020 06:26:26 +0000
+Date:   Tue, 11 Aug 2020 06:26:22 +0000 (UTC)
+From:   Miss Amina Ibrahim <missaminaibrahim001@gmail.com>
+Reply-To: missaminaibra@gmail.com
+Message-ID: <632694604.94129.1597127182336@mail.yahoo.com>
+Subject: My Name is Miss Amina Ibrahim from Libya, I am 23 years old
 MIME-Version: 1.0
-References: <20200809150302.686149-1-jolsa@kernel.org> <20200809150302.686149-9-jolsa@kernel.org>
-In-Reply-To: <20200809150302.686149-9-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 10 Aug 2020 23:02:01 -0700
-Message-ID: <CAEf4BzZA_qgWEGma+APQZWs5qU07LdJKzKAxxusQThCGGfh2Vw@mail.gmail.com>
-Subject: Re: [RFC PATCH v11 bpf-next 08/14] bpf: Add btf_struct_ids_match function
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <632694604.94129.1597127182336.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16455 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 9, 2020 at 8:05 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Adding btf_struct_ids_match function to check if given address provided
-> by BTF object + offset is also address of another nested BTF object.
->
-> This allows to pass an argument to helper, which is defined via parent
-> BTF object + offset, like for bpf_d_path (added in following changes):
->
->   SEC("fentry/filp_close")
->   int BPF_PROG(prog_close, struct file *file, void *id)
->   {
->     ...
->     ret = bpf_d_path(&file->f_path, ...
->
-> The first bpf_d_path argument is hold by verifier as BTF file object
-> plus offset of f_path member.
->
-> The btf_struct_ids_match function will walk the struct file object and
-> check if there's nested struct path object on the given offset.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
+My Name is Miss Amina Ibrahim from Libya, I am 23 years old, I am in St.Christopher's Parish for refugee in Burkina Faso under United Nations High commission for Refugee, I lost my parents in the recent war in Libya, right now am in Burkina Faso, please save my life i am in danger need your help in transferring my inheritance my father left behind for me in a Bank in Burkina Faso here, I have every document for the transfer, all I need is a foreigner who will stand as the foreign partner to my father and beneficiary of the fund. The money deposited in the Bank was US10.5 MILLION UNITED STATES DOLLAR) with 15 kilo Gold I have confirmed from the bank in Burkina Faso where the Gold was deposited.
 
-LGTM.
+Please I just need this fund to be transfer to your account so that I will come over to your country and complete my education as you know that my country have been in deep crisis due to the war in Libya and I cannot go back there again because I have nobody again all of my family were killed in the war.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Please read this proposal as urgent and get to me as well.
 
->  include/linux/bpf.h   |  2 ++
->  kernel/bpf/btf.c      | 31 +++++++++++++++++++++++++++++++
->  kernel/bpf/verifier.c | 17 +++++++++++------
->  3 files changed, 44 insertions(+), 6 deletions(-)
->
+Yours Faithfully,
 
-[...]
+Miss Amina Ibrahim.
