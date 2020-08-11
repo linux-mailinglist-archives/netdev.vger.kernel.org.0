@@ -2,76 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD9D6241D3C
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 17:33:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEE0A241D47
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 17:35:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729023AbgHKPdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 11:33:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60618 "EHLO
+        id S1728943AbgHKPfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 11:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728859AbgHKPdA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 11:33:00 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E66C06174A;
-        Tue, 11 Aug 2020 08:33:00 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id d188so7818997pfd.2;
-        Tue, 11 Aug 2020 08:33:00 -0700 (PDT)
+        with ESMTP id S1728873AbgHKPfK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 11:35:10 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A8FC06174A;
+        Tue, 11 Aug 2020 08:35:10 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id a79so7802842pfa.8;
+        Tue, 11 Aug 2020 08:35:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=37WdC2DpKlpkgPtRRbtnkLSeSTMLbkdYcrwujx0kflA=;
-        b=WRxdEfgwABYCWPxNXFQkp2sWJHfpiD+vbzCJPapYWGU8+JMlX0rUFqbPjg8MN1lxKn
-         iR7TMR8XzsWTPuJwdfzL464B6YS/406anYjnJ4agumJ4vW1aRln8gXduhVnUbjqu6vKe
-         FzAuPXHLDEt1O9qeiWz83rMO6Ovvikdc+StC2EDkV8/oJwRWiiF71jQrjY3OkduC/RGH
-         dIy1N/HW8TjSLG/RUE7ZiIeY627GxEUbT9yZFl1YvDwE05Mt4h+tuO6x+sc9VLwwZv/i
-         fY5bJb/i+LeDzCFy66/XuRPpFCnkTS/CxcYtFuFnIoNXCVIFrSIFcrAHpu8dcTfpz7gZ
-         evIQ==
+        bh=3NcJIBT/HlNiF+P77zhcDLzGnLCscXOa/4/7lUf9iqM=;
+        b=FIwU9pLX0UbNCO538H8fmYvlUbsTl60KwRFBfeAm5vZlim5Iahw161peY3VQNcCR/8
+         E0ZB8V4/WCJsK089AviUFqN6z7Q0YeYiidosMjeABDGUAD4qaEbh4sj7F9Z3I4/XZHim
+         Xf/guEnD6/ndc6Ir8drf5/RBiEATEd2cdoYdYoZmQ6ZMvCflb4YIgn106S/hDN27NLyt
+         HIdU2iMzmHJ0ZsmElypigGUiHwFDO/Lzk0VgXpOjE2MiucX9J3dKPIg36kPXVHWjEg7z
+         3AMzoLbAb7uKM3WwhgU9NQuMdp1H/C4iUzJFQ9cFHPO4yxdAJAicQ4ZXjccM/Rg6TR8B
+         9wHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=37WdC2DpKlpkgPtRRbtnkLSeSTMLbkdYcrwujx0kflA=;
-        b=aHkm0BjGP1OtTN6AIZJtP6P/sFEZVZDsqt7TPDNqJMsEfEwD/q3upkzPedeJlCRlrS
-         /4JZDnYjWiDiuciq8t8XEIhJGZ2M/UgxdrWRLOL0oYPvptdF0HTNKnLrBjtSlEkcvO4O
-         ZTYW4Y7Yt91V2JfNF+27v/zHrw5+Sm2c6V8OH+YSjSWaX7qafQnRp51liO69QbUCtBb4
-         5YHvl0GChR1LM8rk+a1DL/K3VGH/mRzL3CIlpifEj/sewhPL50Ex2dHlkOhVuXe+fumk
-         DTUC5ABnEbxJ8IC/10z3Irjil4q71C+LVvdBLOM9xijEt+m4e1SIs18yGtg4dXdZMxWF
-         23kQ==
-X-Gm-Message-State: AOAM530c6LbJAY7c+R7dMS4zRoKGgtVJj3sMYjgakajAa9GrZZIPuVww
-        sJEVJAHtY3UoNXSBwzrlZztQz6ir
-X-Google-Smtp-Source: ABdhPJxXxMcM4WtijwyYUtIveBvV0Fh/XebCwvW9MnUglBFEzLNxOZi3ejJO0le6kOk/LK5ZmDlSwA==
-X-Received: by 2002:aa7:968b:: with SMTP id f11mr6655235pfk.63.1597159980059;
-        Tue, 11 Aug 2020 08:33:00 -0700 (PDT)
+        bh=3NcJIBT/HlNiF+P77zhcDLzGnLCscXOa/4/7lUf9iqM=;
+        b=HtDmsmLiwBjyFHStJWWPsiYnpAPlZywilXxtysRwUuNJztKBJoa5U8emsHcM20EQZH
+         pveA/mch8mBDXmUgCTylPdtDVYu+MrCJb1Gx8Fv1+SrqF18qVAO/mIevnFuU5oi4i5ni
+         C+Ho+mo93c0cbU/kwCq64+GC+cZztHj2srgcXIL5ZSinTaenO006Vf+Rye1DruVElxjo
+         xMXuwUYhWxKlyjK9rGrxmvYPxinfWuUuwL+GxRhgegzWrITBGx2PLLqettKZY5Sw5OCh
+         xmjV0rxxvq3gtNF5TwOGI+hDShBAf8i+jJRVugyKq775vVPtFCmj0Q/MxM1ykha6+K/j
+         NrUw==
+X-Gm-Message-State: AOAM532KNLIqR2il8LZdcboDAq3TVxFeeRwxpyKKIbZHRUVpWqv3qnEU
+        FkCK8qIoSLkLe+az8Ja+E7QHGqYZ
+X-Google-Smtp-Source: ABdhPJy4Zd68AFxP2oFzRzoPRHbEG6FpLJxG9EfSIOQIKo4lAlCzjnkLp6QHpSx4okspQPqrflSi7w==
+X-Received: by 2002:a63:a517:: with SMTP id n23mr1273054pgf.122.1597160109738;
+        Tue, 11 Aug 2020 08:35:09 -0700 (PDT)
 Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id m4sm2937988pfh.129.2020.08.11.08.32.58
+        by smtp.gmail.com with ESMTPSA id u24sm25768448pfm.20.2020.08.11.08.35.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Aug 2020 08:32:59 -0700 (PDT)
-Subject: Re: [PATCH v2 4.19] tcp: fix TCP socks unreleased in BBR mode
-To:     Jason Xing <kerneljasonxing@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Neal Cardwell <ncardwell@google.com>,
-        David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        liweishi <liweishi@kuaishou.com>,
-        Shujin Li <lishujin@kuaishou.com>
-References: <20200602080425.93712-1-kerneljasonxing@gmail.com>
- <20200604090014.23266-1-kerneljasonxing@gmail.com>
- <CANn89iKt=3iDZM+vUbCvO_aGuedXFhzdC6OtQMeVTMDxyp9bAg@mail.gmail.com>
- <CAL+tcoCU157eGmMMabT5icdFJTMEWymNUNxHBbxY1OTir0=0FQ@mail.gmail.com>
- <CAL+tcoA9SYUfge02=0dGbVidO0098NtT2+Ab_=OpWXnM82=RWQ@mail.gmail.com>
+        Tue, 11 Aug 2020 08:35:09 -0700 (PDT)
+Subject: Re: [PATCH] net: eliminate meaningless memcpy to data in
+ pskb_carve_inside_nonlinear()
+To:     linmiaohe <linmiaohe@huawei.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pshelar@ovn.org" <pshelar@ovn.org>,
+        "martin.varghese@nokia.com" <martin.varghese@nokia.com>,
+        "fw@strlen.de" <fw@strlen.de>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "steffen.klassert@secunet.com" <steffen.klassert@secunet.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "shmulik@metanetworks.com" <shmulik@metanetworks.com>,
+        "kyk.segfault@gmail.com" <kyk.segfault@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <40a0b4ba22ff499686a2521998767ae5@huawei.com>
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <bcbaf21e-681e-2797-023e-000dbd6434d1@gmail.com>
-Date:   Tue, 11 Aug 2020 08:32:57 -0700
+Message-ID: <9684c26c-9f26-5a7f-3d17-d180afff432c@gmail.com>
+Date:   Tue, 11 Aug 2020 08:35:07 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <CAL+tcoA9SYUfge02=0dGbVidO0098NtT2+Ab_=OpWXnM82=RWQ@mail.gmail.com>
+In-Reply-To: <40a0b4ba22ff499686a2521998767ae5@huawei.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -82,68 +83,48 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 8/11/20 3:37 AM, Jason Xing wrote:
-> Hi everyone,
+On 8/11/20 5:10 AM, linmiaohe wrote:
+> Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>> On 8/10/20 5:28 AM, Miaohe Lin wrote:
+>>> The skb_shared_info part of the data is assigned in the following 
+>>> loop. It is meaningless to do a memcpy here.
+>>>
+>>
+>> Reminder : net-next is CLOSED.
+>>
 > 
-> Could anyone take a look at this issue? I believe it is of high-importance.
-> Though Eric gave the proper patch a few months ago, the stable branch
-> still hasn't applied or merged this fix. It seems this patch was
-> forgotten :(
+> Thanks for your remind. I would wait for it open.
+> 
+>> This is not correct. We still have to copy _something_
+>>
+>> Something like :
+>>
+>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c index 2828f6d5ba898a5e50ccce45589bf1370e474b0f..1c0519426c7ba4b04377fc8054c4223c135879ab 100644
+>> --- a/net/core/skbuff.c
+>> +++ b/net/core/skbuff.c
+>> @@ -5953,8 +5953,8 @@ static int pskb_carve_inside_nonlinear(struct sk_buff *skb, const u32 off,
+>>        size = SKB_WITH_OVERHEAD(ksize(data));
+>>
+>>        memcpy((struct skb_shared_info *)(data + size),
+>> -              skb_shinfo(skb), offsetof(struct skb_shared_info,
+>> -                                        frags[skb_shinfo(skb)->nr_frags]));
+>> +              skb_shinfo(skb), offsetof(struct skb_shared_info, 
+>> + frags[0]));
+>> +
+>>        if (skb_orphan_frags(skb, gfp_mask)) {
+>>                kfree(data);
+>>                return -ENOMEM;
+>>
+> 
+> This looks good. Will send a patch v2 soon. May I add a suggested-by tag of you ?
 
+I would advise not using Suggested-by, as this would imply I suggested the idea of changing
+this function in the first place.
 
-Sure, I'll take care of this shortly.
+I will add a Reviewed-by:  eventually if your v2 submission looks fine to me.
 
 Thanks.
 
+
+> Many thanks.
 > 
-> Thanks,
-> Jason
-> 
-> On Thu, Jun 4, 2020 at 9:47 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
->>
->> On Thu, Jun 4, 2020 at 9:10 PM Eric Dumazet <edumazet@google.com> wrote:
->>>
->>> On Thu, Jun 4, 2020 at 2:01 AM <kerneljasonxing@gmail.com> wrote:
->>>>
->>>> From: Jason Xing <kerneljasonxing@gmail.com>
->>>>
->>>> When using BBR mode, too many tcp socks cannot be released because of
->>>> duplicate use of the sock_hold() in the manner of tcp_internal_pacing()
->>>> when RTO happens. Therefore, this situation maddly increases the slab
->>>> memory and then constantly triggers the OOM until crash.
->>>>
->>>> Besides, in addition to BBR mode, if some mode applies pacing function,
->>>> it could trigger what we've discussed above,
->>>>
->>>> Reproduce procedure:
->>>> 0) cat /proc/slabinfo | grep TCP
->>>> 1) switch net.ipv4.tcp_congestion_control to bbr
->>>> 2) using wrk tool something like that to send packages
->>>> 3) using tc to increase the delay and loss to simulate the RTO case.
->>>> 4) cat /proc/slabinfo | grep TCP
->>>> 5) kill the wrk command and observe the number of objects and slabs in
->>>> TCP.
->>>> 6) at last, you could notice that the number would not decrease.
->>>>
->>>> v2: extend the timer which could cover all those related potential risks
->>>> (suggested by Eric Dumazet and Neal Cardwell)
->>>>
->>>> Signed-off-by: Jason Xing <kerneljasonxing@gmail.com>
->>>> Signed-off-by: liweishi <liweishi@kuaishou.com>
->>>> Signed-off-by: Shujin Li <lishujin@kuaishou.com>
->>>
->>> That is not how things work really.
->>>
->>> I will submit this properly so that stable teams do not have to guess
->>> how to backport this to various kernels.
->>>
->>> Changelog is misleading, this has nothing to do with BBR, we need to be precise.
->>>
->>
->> Thanks for your help. I can finally apply this patch into my kernel.
->>
->> Looking forward to your patchset :)
->>
->> Jason
->>
->>> Thank you.
