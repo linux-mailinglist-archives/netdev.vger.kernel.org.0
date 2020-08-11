@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 464A7241B50
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 15:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D42C9241B8A
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 15:20:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728779AbgHKNAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 09:00:05 -0400
-Received: from kirsty.vergenet.net ([202.4.237.240]:35482 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728556AbgHKNAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 09:00:03 -0400
-Received: from madeliefje.horms.nl (unknown [83.161.246.101])
-        by kirsty.vergenet.net (Postfix) with ESMTPA id 3DE1225B73C;
-        Tue, 11 Aug 2020 23:00:01 +1000 (AEST)
-Received: by madeliefje.horms.nl (Postfix, from userid 7100)
-        id 1E5F7A93; Tue, 11 Aug 2020 14:59:59 +0200 (CEST)
-Date:   Tue, 11 Aug 2020 14:59:59 +0200
-From:   Simon Horman <horms@verge.net.au>
-To:     Julian Anastasov <ja@ssi.bg>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        Wensong Zhang <wensong@linux-vs.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org
-Subject: Re: [Linux-kernel-mentees] [PATCH net-next v2] ipvs: Fix
- uninit-value in do_ip_vs_set_ctl()
-Message-ID: <20200811125956.GA31293@vergenet.net>
-References: <20200810220703.796718-1-yepeilin.cs@gmail.com>
- <20200811074640.841693-1-yepeilin.cs@gmail.com>
- <alpine.LFD.2.23.451.2008111324570.7428@ja.home.ssi.bg>
+        id S1728708AbgHKNUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 09:20:12 -0400
+Received: from www62.your-server.de ([213.133.104.62]:59496 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728516AbgHKNUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 09:20:12 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k5UC8-0004uL-KX; Tue, 11 Aug 2020 15:20:00 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k5UC8-000Bp1-Dr; Tue, 11 Aug 2020 15:20:00 +0200
+Subject: Re: [PATCH bpf-next v2] bpf: fix segmentation fault of test_progs
+To:     Jianlin Lv <Jianlin.Lv@arm.com>, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org, yhs@fb.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20200807172016.150952-1-Jianlin.Lv@arm.com>
+ <20200810153940.125508-1-Jianlin.Lv@arm.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <066bc6b8-8e08-e473-b454-4544e99ad7e0@iogearbox.net>
+Date:   Tue, 11 Aug 2020 15:19:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.LFD.2.23.451.2008111324570.7428@ja.home.ssi.bg>
-Organisation: Horms Solutions BV
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200810153940.125508-1-Jianlin.Lv@arm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25900/Mon Aug 10 14:44:29 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 11, 2020 at 01:29:04PM +0300, Julian Anastasov wrote:
+On 8/10/20 5:39 PM, Jianlin Lv wrote:
+> test_progs reports the segmentation fault as below
 > 
-> 	Hello,
+> $ sudo ./test_progs -t mmap --verbose
+> test_mmap:PASS:skel_open_and_load 0 nsec
+> ......
+> test_mmap:PASS:adv_mmap1 0 nsec
+> test_mmap:PASS:adv_mmap2 0 nsec
+> test_mmap:PASS:adv_mmap3 0 nsec
+> test_mmap:PASS:adv_mmap4 0 nsec
+> Segmentation fault
 > 
-> On Tue, 11 Aug 2020, Peilin Ye wrote:
+> This issue was triggered because mmap() and munmap() used inconsistent
+> length parameters; mmap() creates a new mapping of 3*page_size, but the
+> length parameter set in the subsequent re-map and munmap() functions is
+> 4*page_size; this leads to the destruction of the process space.
 > 
-> > do_ip_vs_set_ctl() is referencing uninitialized stack value when `len` is
-> > zero. Fix it.
-> > 
-> > Reported-by: syzbot+23b5f9e7caf61d9a3898@syzkaller.appspotmail.com
-> > Link: https://syzkaller.appspot.com/bug?id=46ebfb92a8a812621a001ef04d90dfa459520fe2
-> > Suggested-by: Julian Anastasov <ja@ssi.bg>
-> > Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
+> To fix this issue, first create 4 pages of anonymous mapping,then do all
+> the mmap() with MAP_FIXED.
 > 
-> 	Looks good to me, thanks!
+> Another issue is that when unmap the second page fails, the length
+> parameter to delete tmp1 mappings should be 4*page_size.
 > 
-> Acked-by: Julian Anastasov <ja@ssi.bg>
+> Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
 
-Pablo, could you consider this for nf-next or should we repost when
-net-next re-opens?
-
-Reviewed-by: Simon Horman <horms@verge.net.au>
-
+Applied, thanks!
