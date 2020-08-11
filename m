@@ -2,59 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 311C2242244
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 00:04:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBAF3242246
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 00:04:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726255AbgHKWEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 18:04:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36430 "EHLO
+        id S1726366AbgHKWEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 18:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726023AbgHKWEc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 18:04:32 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B5BC06174A;
-        Tue, 11 Aug 2020 15:04:32 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id v15so7288342pgh.6;
-        Tue, 11 Aug 2020 15:04:32 -0700 (PDT)
+        with ESMTP id S1726023AbgHKWEv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 18:04:51 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3FEC06174A;
+        Tue, 11 Aug 2020 15:04:51 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id r4so186178pls.2;
+        Tue, 11 Aug 2020 15:04:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=ma0c9whmshvrI6ZYCGlJjDy8m+CBdr+9jORpR5LDtRM=;
-        b=e/j9OVVLFdWf5BfeP+b3OLkieoTNmqfkGlf7Q/QWKJ0GR0GLy2/iKjkFKYU75QsKln
-         tVkVCeFUtif7i/NOXYQyrjBm0iobhDnlXyHSGJ0cxS+1TqkOd+D2zjFCSYQCc3a3+N6W
-         idIzYHktzIv5bo+SMWNdEDKXb7ggrTOUgN2THzKb5NvtUTaVWNcGZCsffjNQ/ebZAXhz
-         +bzDiahMa1Wcw/pa4DIO8jArkXeSCicBWUicAJdF8Gni3T8s87Wzxy+5pvG9pe0gMv6l
-         noOiTCvjBaj+zn8qNLVps7u9H42oqmSPcfFrWgqlieiaC/gh5V4dFWfL4RO/rEzXckyK
-         KnSw==
+        h=subject:from:to:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=oOkUZ7PNM10aVzQ7R5IQ0mGRZVSmmROZfd/5EDXhFhE=;
+        b=aeI38IEFCE/HjOCSvmctloh+YyrSyBTL7LVQgqLvpkP2uADocVVYafRNQef6MAV/KG
+         5emiwoR+XlxUUr73/Ucp3hzHktElZ4pLmqmqBsUj4CPdZkl51Mn20FccIdtylStR1jj6
+         Nw8A6kMXrhWaBJi4bqu4Y6+itqjt3IC6iTw/Zk3kb2OKzLZkyqRIakBtahjMt4vkygnK
+         6uyz0QB/Wlagv9xuS5RMVpsriQCun0mXqdwPTYupm3BCbL65uXc0w3MAYnPLxxKEPf7t
+         wMPMwr39uevdavoMsaY6p843/vvVutkveNhE4MyLUNznJLBi+JkAHTLN01NCd4mzZbDU
+         dvDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=ma0c9whmshvrI6ZYCGlJjDy8m+CBdr+9jORpR5LDtRM=;
-        b=sGnHj/2u7N76NsIxpl7ISfVOobsKiQ/vIsoCSRTSk2ZGphER7iY6cUNJKxPa1HBRwp
-         /dgAw6u6LNQSgaO9a9gpU7rRf7D34+KCLdl9oEPy8If8SDAo1ChPBZ1ppdOHncpoQzGa
-         keC8ON5eEXwyATPqPa3xOIL5mPkS/Nze18PTB9wRP2GJgkpbcQkMROXZfkmKKhCEFAHx
-         jwg+nfOIbNBdN00wwzacuM5IYvUB4UhaAcbmrSiLmJSlIOeHqCtZoVvtR0ipBKM0orr6
-         PIukGC7qK33dRPtToRK8O7+0Ue4oNcqU3cigk/VS2Cy5F2Yc7upz/x1P/FYXxpw4186C
-         tM1w==
-X-Gm-Message-State: AOAM531NBruVAnrIgQdXx6z8szI6R1/jKah+7jvuLji/Cb4BnKC3FQC8
-        ybTYcHF39iEvfCG2J4tqiYs=
-X-Google-Smtp-Source: ABdhPJwC4lIhHlHM2TvJntuwjH0ABVuIiz3LwvDQU1PrksnY1rgaRGTSS6BEpbC617UkWGY2LEK7eA==
-X-Received: by 2002:a65:6287:: with SMTP id f7mr2508291pgv.307.1597183471755;
-        Tue, 11 Aug 2020 15:04:31 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=oOkUZ7PNM10aVzQ7R5IQ0mGRZVSmmROZfd/5EDXhFhE=;
+        b=Q5noNnxV3pRnTKF6URUZwvjdFkEpkB4L2hsixEKGDp+W6/zzTwi1wCQy9+dG8aCfcI
+         ZPqM1xbpqP8DMDtlStIHA6bRJ658ZPz0wHQ6KfRiNEOytshcpDTcc1XT4YCg76aqsZq0
+         WUJ3OwbADZqQX//HtjrZxPrtab6gRiwRdkucCKbIuaccd+rmwLwNFCkpuThOrx18ujME
+         utvTnoYd/MYji8ppuoUrjP1X9OwCfJzDAzXEA3iSynP0gKC1A24QF7YoCZxOge+TUu5J
+         J9onA3EU3XvJ9hx4Nsl/FWH9y7OSca/PfsoefQDPrk3ERx32gLauqaJ4W/Oxk7UA5bQM
+         ZdEw==
+X-Gm-Message-State: AOAM531EqqsgoliNmaVQzpVxn2wbuQZgWVki9bgdAqiCnxbCcwD+wJk+
+        xG0LPw8tcKmbx1Le5aX2gbv53aAFhJE=
+X-Google-Smtp-Source: ABdhPJymVNdiD7LtgFCjV4kuA9jX45Dlncb9KhRXKIFzI3RFkc+xj17rBW7MtYaKYJupujW1rjQFKA==
+X-Received: by 2002:a17:902:ac84:: with SMTP id h4mr2742926plr.334.1597183490524;
+        Tue, 11 Aug 2020 15:04:50 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id x12sm68753pff.48.2020.08.11.15.04.23
+        by smtp.gmail.com with ESMTPSA id cc23sm3575697pjb.48.2020.08.11.15.04.43
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Aug 2020 15:04:31 -0700 (PDT)
-Subject: [bpf PATCH v3 0/5] Fix sock_ops field read splat
+        Tue, 11 Aug 2020 15:04:49 -0700 (PDT)
+Subject: [bpf PATCH v3 1/5] bpf: sock_ops ctx access may stomp registers in
+ corner case
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     songliubraving@fb.com, kafai@fb.com, daniel@iogearbox.net,
         ast@kernel.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com
-Date:   Tue, 11 Aug 2020 15:04:18 -0700
-Message-ID: <159718333343.4728.9389284976477402193.stgit@john-Precision-5820-Tower>
+Date:   Tue, 11 Aug 2020 15:04:37 -0700
+Message-ID: <159718347772.4728.2781381670567919577.stgit@john-Precision-5820-Tower>
+In-Reply-To: <159718333343.4728.9389284976477402193.stgit@john-Precision-5820-Tower>
+References: <159718333343.4728.9389284976477402193.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -64,51 +67,216 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Doing some refactoring resulted in a kernel splat when reading sock_ops
-fields.
+I had a sockmap program that after doing some refactoring started spewing
+this splat at me:
 
-Patch 1, has the details and proposed fix for sock_ops sk field access.
+[18610.807284] BUG: unable to handle kernel NULL pointer dereference at 0000000000000001
+[...]
+[18610.807359] Call Trace:
+[18610.807370]  ? 0xffffffffc114d0d5
+[18610.807382]  __cgroup_bpf_run_filter_sock_ops+0x7d/0xb0
+[18610.807391]  tcp_connect+0x895/0xd50
+[18610.807400]  tcp_v4_connect+0x465/0x4e0
+[18610.807407]  __inet_stream_connect+0xd6/0x3a0
+[18610.807412]  ? __inet_stream_connect+0x5/0x3a0
+[18610.807417]  inet_stream_connect+0x3b/0x60
+[18610.807425]  __sys_connect+0xed/0x120
 
-Patch 2, has the details and proposed fix for reading sock_ops->sk field
+After some debugging I was able to build this simple reproducer,
 
-Patch 3, Gives a reproducer and test to verify the fix. I used the netcnt
-program to test this because I wanted a splat to be generated which can
-only be done if we have real traffic exercising the code.
+ __section("sockops/reproducer_bad")
+ int bpf_reproducer_bad(struct bpf_sock_ops *skops)
+ {
+        volatile __maybe_unused __u32 i = skops->snd_ssthresh;
+        return 0;
+ }
 
-Patch 4, Is an optional patch. While doing above I wanted to also verify
-loads were OK. The code looked good, but I wanted some xlated code to
-review as well. It seems like a good idea to add it here or at least
-shouldn't hurt. I could push it into bpf-next if folks want.
+And along the way noticed that below program ran without splat,
 
-Patch 5, Add reproducers for reading scok_ops->sk field.
+__section("sockops/reproducer_good")
+int bpf_reproducer_good(struct bpf_sock_ops *skops)
+{
+        volatile __maybe_unused __u32 i = skops->snd_ssthresh;
+        volatile __maybe_unused __u32 family;
 
-I split Patch1 and Patch2 into two two patches because they have different
-fixes tags. Seems like this will help with backporting. They could be
-squashed though if folks want.
+        compiler_barrier();
 
-For selftests I was fairly verbose creating three patches each with the
-associated xlated code to handle each of the three cases. My hope is this
-helps the reader understand issues and review fixes. Its more or less
-how I debugged the issue and created reproducers so it at least helped
-me to have them logically different patches.
+        family = skops->family;
+        return 0;
+}
 
-v2->v3: Updated commit msg in patch1 to include ommited line of asm
-        output, per Daniels comment.
-v1->v2: Added fix sk access case
+So I decided to check out the code we generate for the above two
+programs and noticed each generates the BPF code you would expect,
 
+0000000000000000 <bpf_reproducer_bad>:
+;       volatile __maybe_unused __u32 i = skops->snd_ssthresh;
+       0:       r1 = *(u32 *)(r1 + 96)
+       1:       *(u32 *)(r10 - 4) = r1
+;       return 0;
+       2:       r0 = 0
+       3:       exit
+
+0000000000000000 <bpf_reproducer_good>:
+;       volatile __maybe_unused __u32 i = skops->snd_ssthresh;
+       0:       r2 = *(u32 *)(r1 + 96)
+       1:       *(u32 *)(r10 - 4) = r2
+;       family = skops->family;
+       2:       r1 = *(u32 *)(r1 + 20)
+       3:       *(u32 *)(r10 - 8) = r1
+;       return 0;
+       4:       r0 = 0
+       5:       exit
+
+So we get reasonable assembly, but still something was causing the null
+pointer dereference. So, we load the programs and dump the xlated version
+observing that line 0 above 'r* = *(u32 *)(r1 +96)' is going to be
+translated by the skops access helpers.
+
+int bpf_reproducer_bad(struct bpf_sock_ops * skops):
+; volatile __maybe_unused __u32 i = skops->snd_ssthresh;
+   0: (61) r1 = *(u32 *)(r1 +28)
+   1: (15) if r1 == 0x0 goto pc+2
+   2: (79) r1 = *(u64 *)(r1 +0)
+   3: (61) r1 = *(u32 *)(r1 +2340)
+; volatile __maybe_unused __u32 i = skops->snd_ssthresh;
+   4: (63) *(u32 *)(r10 -4) = r1
+; return 0;
+   5: (b7) r0 = 0
+   6: (95) exit
+
+int bpf_reproducer_good(struct bpf_sock_ops * skops):
+; volatile __maybe_unused __u32 i = skops->snd_ssthresh;
+   0: (61) r2 = *(u32 *)(r1 +28)
+   1: (15) if r2 == 0x0 goto pc+2
+   2: (79) r2 = *(u64 *)(r1 +0)
+   3: (61) r2 = *(u32 *)(r2 +2340)
+; volatile __maybe_unused __u32 i = skops->snd_ssthresh;
+   4: (63) *(u32 *)(r10 -4) = r2
+; family = skops->family;
+   5: (79) r1 = *(u64 *)(r1 +0)
+   6: (69) r1 = *(u16 *)(r1 +16)
+; family = skops->family;
+   7: (63) *(u32 *)(r10 -8) = r1
+; return 0;
+   8: (b7) r0 = 0
+   9: (95) exit
+
+Then we look at lines 0 and 2 above. In the good case we do the zero
+check in r2 and then load 'r1 + 0' at line 2. Do a quick cross-check
+into the bpf_sock_ops check and we can confirm that is the 'struct
+sock *sk' pointer field. But, in the bad case,
+
+   0: (61) r1 = *(u32 *)(r1 +28)
+   1: (15) if r1 == 0x0 goto pc+2
+   2: (79) r1 = *(u64 *)(r1 +0)
+
+Oh no, we read 'r1 +28' into r1, this is skops->fullsock and then in
+line 2 we read the 'r1 +0' as a pointer. Now jumping back to our spat,
+
+[18610.807284] BUG: unable to handle kernel NULL pointer dereference at 0000000000000001
+
+The 0x01 makes sense because that is exactly the fullsock value. And
+its not a valid dereference so we splat.
+
+To fix we need to guard the case when a program is doing a sock_ops field
+access with src_reg == dst_reg. This is already handled in the load case
+where the ctx_access handler uses a tmp register being careful to
+store the old value and restore it. To fix the get case test if
+src_reg == dst_reg and in this case do the is_fullsock test in the
+temporary register. Remembering to restore the temporary register before
+writing to either dst_reg or src_reg to avoid smashing the pointer into
+the struct holding the tmp variable.
+
+Adding this inline code to test_tcpbpf_kern will now be generated
+correctly from,
+
+  9: r2 = *(u32 *)(r2 + 96)
+
+to xlated code,
+
+  12: (7b) *(u64 *)(r2 +32) = r9
+  13: (61) r9 = *(u32 *)(r2 +28)
+  14: (15) if r9 == 0x0 goto pc+4
+  15: (79) r9 = *(u64 *)(r2 +32)
+  16: (79) r2 = *(u64 *)(r2 +0)
+  17: (61) r2 = *(u32 *)(r2 +2348)
+  18: (05) goto pc+1
+  19: (79) r9 = *(u64 *)(r2 +32)
+
+And in the normal case we keep the original code, because really this
+is an edge case. From this,
+
+  9: r2 = *(u32 *)(r6 + 96)
+
+to xlated code,
+
+  22: (61) r2 = *(u32 *)(r6 +28)
+  23: (15) if r2 == 0x0 goto pc+2
+  24: (79) r2 = *(u64 *)(r6 +0)
+  25: (61) r2 = *(u32 *)(r2 +2348)
+
+So three additional instructions if dst == src register, but I scanned
+my current code base and did not see this pattern anywhere so should
+not be a big deal. Further, it seems no one else has hit this or at
+least reported it so it must a fairly rare pattern.
+
+Fixes: 9b1f3d6e5af29 ("bpf: Refactor sock_ops_convert_ctx_access")
+Acked-by: Song Liu <songliubraving@fb.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
+ net/core/filter.c |   26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
-John Fastabend (5):
-      bpf: sock_ops ctx access may stomp registers in corner case
-      bpf: sock_ops sk access may stomp registers when dst_reg = src_reg
-      bpf, selftests: Add tests for ctx access in sock_ops with single register
-      bpf, selftests: Add tests for sock_ops load with r9,r8.r7 registers
-      bpf, selftests: Add tests to sock_ops for loading sk
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 7124f0f..1baeeff 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -8317,15 +8317,31 @@ static u32 sock_ops_convert_ctx_access(enum bpf_access_type type,
+ /* Helper macro for adding read access to tcp_sock or sock fields. */
+ #define SOCK_OPS_GET_FIELD(BPF_FIELD, OBJ_FIELD, OBJ)			      \
+ 	do {								      \
++		int fullsock_reg = si->dst_reg, reg = BPF_REG_9, jmp = 2;     \
+ 		BUILD_BUG_ON(sizeof_field(OBJ, OBJ_FIELD) >		      \
+ 			     sizeof_field(struct bpf_sock_ops, BPF_FIELD));   \
++		if (si->dst_reg == reg || si->src_reg == reg)		      \
++			reg--;						      \
++		if (si->dst_reg == reg || si->src_reg == reg)		      \
++			reg--;						      \
++		if (si->dst_reg == si->src_reg) {			      \
++			*insn++ = BPF_STX_MEM(BPF_DW, si->src_reg, reg,	      \
++					  offsetof(struct bpf_sock_ops_kern,  \
++					  temp));			      \
++			fullsock_reg = reg;				      \
++			jmp += 2;					      \
++		}							      \
+ 		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(			      \
+ 						struct bpf_sock_ops_kern,     \
+ 						is_fullsock),		      \
+-				      si->dst_reg, si->src_reg,		      \
++				      fullsock_reg, si->src_reg,	      \
+ 				      offsetof(struct bpf_sock_ops_kern,      \
+ 					       is_fullsock));		      \
+-		*insn++ = BPF_JMP_IMM(BPF_JEQ, si->dst_reg, 0, 2);	      \
++		*insn++ = BPF_JMP_IMM(BPF_JEQ, fullsock_reg, 0, jmp);	      \
++		if (si->dst_reg == si->src_reg)				      \
++			*insn++ = BPF_LDX_MEM(BPF_DW, reg, si->src_reg,	      \
++				      offsetof(struct bpf_sock_ops_kern,      \
++				      temp));				      \
+ 		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(			      \
+ 						struct bpf_sock_ops_kern, sk),\
+ 				      si->dst_reg, si->src_reg,		      \
+@@ -8334,6 +8350,12 @@ static u32 sock_ops_convert_ctx_access(enum bpf_access_type type,
+ 						       OBJ_FIELD),	      \
+ 				      si->dst_reg, si->dst_reg,		      \
+ 				      offsetof(OBJ, OBJ_FIELD));	      \
++		if (si->dst_reg == si->src_reg)	{			      \
++			*insn++ = BPF_JMP_A(1);				      \
++			*insn++ = BPF_LDX_MEM(BPF_DW, reg, si->src_reg,	      \
++				      offsetof(struct bpf_sock_ops_kern,      \
++				      temp));				      \
++		}							      \
+ 	} while (0)
+ 
+ #define SOCK_OPS_GET_TCP_SOCK_FIELD(FIELD) \
 
-
- net/core/filter.c                                  |   75 +++++++++++++++++---
- .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |   41 +++++++++++
- 2 files changed, 103 insertions(+), 13 deletions(-)
-
---
-Signature
