@@ -2,84 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 665AB242151
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 22:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07EA52421DA
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 23:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726329AbgHKUaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 16:30:15 -0400
-Received: from mx2.suse.de ([195.135.220.15]:38264 "EHLO mx2.suse.de"
+        id S1726483AbgHKVVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 17:21:01 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48068 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726023AbgHKUaP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Aug 2020 16:30:15 -0400
+        id S1726173AbgHKVVA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Aug 2020 17:21:00 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 50565ACB8;
-        Tue, 11 Aug 2020 20:30:35 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 9B448AC46;
+        Tue, 11 Aug 2020 21:21:20 +0000 (UTC)
 Received: by localhost (Postfix, from userid 1000)
-        id E5E217F447; Tue, 11 Aug 2020 22:30:13 +0200 (CEST)
-Date:   Tue, 11 Aug 2020 22:30:13 +0200
+        id 4A9697F447; Tue, 11 Aug 2020 23:20:59 +0200 (CEST)
+Date:   Tue, 11 Aug 2020 23:20:59 +0200
 From:   Michal Kubecek <mkubecek@suse.cz>
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool 1/7] netlink: get rid of signed/unsigned
- comparison warnings
-Message-ID: <20200811203013.bchsqf5syvefpope@carpenter>
+Subject: Re: [PATCH ethtool 3/7] ioctl: get rid of signed/unsigned comparison
+ warnings
+Message-ID: <20200811212059.lhbht3jdfxco2i4m@carpenter>
 References: <cover.1597007532.git.mkubecek@suse.cz>
- <90fd688121efaea8acce2a9547585416433493f3.1597007533.git.mkubecek@suse.cz>
- <20200810141122.GD2123435@lunn.ch>
+ <0365573afe3649e47c1aa2490e1818a50613ee0a.1597007533.git.mkubecek@suse.cz>
+ <20200810141924.GF2123435@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200810141122.GD2123435@lunn.ch>
+In-Reply-To: <20200810141924.GF2123435@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 10, 2020 at 04:11:22PM +0200, Andrew Lunn wrote:
-> On Sun, Aug 09, 2020 at 11:24:19PM +0200, Michal Kubecek wrote:
-> > Get rid of compiler warnings about comparison between signed and
-> > unsigned integer values in netlink code.
-> > 
-> > Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-> > ---
-> >  netlink/features.c | 4 ++--
-> >  netlink/netlink.c  | 4 ++--
-> >  netlink/netlink.h  | 2 +-
-> >  netlink/nlsock.c   | 2 +-
-> >  netlink/parser.c   | 2 +-
-> >  netlink/settings.c | 6 +++---
-> >  6 files changed, 10 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/netlink/features.c b/netlink/features.c
-> > index 8b5b8588ca23..f5862e97a265 100644
-> > --- a/netlink/features.c
-> > +++ b/netlink/features.c
-> > @@ -149,7 +149,7 @@ int dump_features(const struct nlattr *const *tb,
-> >  			continue;
-> >  
-> >  		for (j = 0; j < results.count; j++) {
-> > -			if (feature_flags[j] == i) {
-> > +			if (feature_flags[j] == (int)i) {
-> >  				n_match++;
-> >  				flag_value = flag_value ||
-> >  					feature_on(results.active, j);
-> > @@ -163,7 +163,7 @@ int dump_features(const struct nlattr *const *tb,
-> >  		for (j = 0; j < results.count; j++) {
-> >  			const char *name = get_string(feature_names, j);
-> >  
-> > -			if (feature_flags[j] != i)
-> > +			if (feature_flags[j] != (int)i)
+On Mon, Aug 10, 2020 at 04:19:24PM +0200, Andrew Lunn wrote:
+> > -	while (arg_num < ctx->argc) {
+> > +	while (arg_num < (unsigned int)ctx->argc) {
 > 
-> Hi Michal
+> Did you try changing ctx->argc to an unsigned int? I guess there would
+> be less casts that way, and it is a more logical type for this.
 > 
-> Would it be better to make feature_flags an unsigned int * ? And
-> change the -1 to MAX_UNIT?
+>     Andrew
 
-It certainly would. I was actually thinking about this solution for
-a moment but then I managed to mistake feature_flags with off_flag_def
-and convinced myself that it's shared with ioctl code so that changing
-its type would require changes there as well. Thank you for pointing
-this out.
+I tried now and the number of changes in ethtool.c is not as bad as
+I thought. I even found one missing check which could allow argc to fall
+below 0.
 
 Michal
