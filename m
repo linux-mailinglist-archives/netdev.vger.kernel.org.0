@@ -2,116 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39AB3241569
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 05:48:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7E31241575
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 05:57:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728142AbgHKDsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Aug 2020 23:48:08 -0400
-Received: from mx.sdf.org ([205.166.94.24]:51391 "EHLO mx.sdf.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727861AbgHKDsH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Aug 2020 23:48:07 -0400
-Received: from sdf.org (IDENT:lkml@faeroes.freeshell.org [205.166.94.9])
-        by mx.sdf.org (8.15.2/8.14.5) with ESMTPS id 07B3lPQq022015
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits) verified NO);
-        Tue, 11 Aug 2020 03:47:25 GMT
-Received: (from lkml@localhost)
-        by sdf.org (8.15.2/8.12.8/Submit) id 07B3lOCD012316;
-        Tue, 11 Aug 2020 03:47:24 GMT
-Date:   Tue, 11 Aug 2020 03:47:24 +0000
-From:   George Spelvin <lkml@SDF.ORG>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     netdev@vger.kernel.org, aksecurity@gmail.com,
-        torvalds@linux-foundation.org, edumazet@google.com,
-        Jason@zx2c4.com, luto@kernel.org, keescook@chromium.org,
-        tglx@linutronix.de, peterz@infradead.org, tytso@mit.edu,
-        lkml.mplumb@gmail.com, stephen@networkplumber.org, fw@strlen.de,
-        George Spelvin <lkml@SDF.ORG>
-Subject: Re: [DRAFT PATCH] random32: make prandom_u32() output unpredictable
-Message-ID: <20200811034724.GF25124@SDF.ORG>
-References: <20200808152628.GA27941@SDF.ORG>
- <20200809065744.GA17668@SDF.ORG>
- <20200809093805.GA7928@1wt.eu>
- <20200809170639.GB25124@SDF.ORG>
- <20200809173302.GA8027@1wt.eu>
- <20200809183017.GC25124@SDF.ORG>
- <20200810114700.GB8474@1wt.eu>
+        id S1728249AbgHKD5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Aug 2020 23:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728196AbgHKD5b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Aug 2020 23:57:31 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A22C06174A;
+        Mon, 10 Aug 2020 20:57:31 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id 77so9445547ilc.5;
+        Mon, 10 Aug 2020 20:57:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/Ej3O/P5forMr7lkh8Irj0X/aIJv290wNqPXSY+K8SQ=;
+        b=Dy6m6mzpsrA6AiUFbCE/bSjm0Ha27RRY29MhbJd/pIkrgoNaBTwHAWHseayvDnrnCA
+         HwxjeaxYINZHazGU3LyZTfhUmoxozHW8eUuuTVJ2bChVO3S4jc5gnpGqdixrngOjOvZb
+         pT0JrlO6rdHNLUXHOw+rGQRqzehZQ2t0HR9Ie3vLxrt+zMZ3FFs1DyT/jBuUMxkJfg6h
+         cMxGGUnbb16zLxzIVzIFBfrt08riVQ01vqyYYEiqsVUQRbTPP4a+aQTdOpE7Um4t77vW
+         SGhixNnowuHWYLNeYCXspG6tRjf8su5CFtSR4DePU5Ta+mGtOJLAs6rjesqLj0qHV7qj
+         PU3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/Ej3O/P5forMr7lkh8Irj0X/aIJv290wNqPXSY+K8SQ=;
+        b=T6WOTko7kXd2VZjt6DMoCG1kWM1ouXj1agzkqwbYfTHj/FPvG+a++w+38KVMsFyRiT
+         tAw/v4nKiA5i0SqLNvaD053ffwN4YlyyofJYBFmYYHzzUpTnRU31EV7BavzKauzlSM+6
+         JlKZ+ktVGYOFpUIrnrc1Wg/xqJQ/CplWCxrAITweQiQYWiu8jZ3w4OunjEgnzeCtscIw
+         9+6CJxVTMopMOzEyovkSCl7D7TRhsty4FWyAhdO3htpTauHpSdS2xNJYG0WgBqFaGJ4X
+         Tz0bvSvQTOVlXhemsVXA1hsyKyG2NmTfplMn6AWrNLsgt/CNfZcu0fThXQ051HmMYkJj
+         QtVQ==
+X-Gm-Message-State: AOAM533Cxt3ntDeLP2DK2LoZ8GEqoA0/4xtAUNJ/NSbBxl7H+yDurM2Z
+        bDf9kI2vxKMWl1sPvsR1TKnRX0KEc+2dcZ8AHtY=
+X-Google-Smtp-Source: ABdhPJxJs7CjX3vzQq4fwm46ZTzG5HJ9oYGcb02FW6eIoE2VtGxgiQ6jHAgG+NKiJD5eiy2VkBGZYzjktmLVzpEwS1A=
+X-Received: by 2002:a92:bad5:: with SMTP id t82mr3521374ill.22.1597118250579;
+ Mon, 10 Aug 2020 20:57:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200810114700.GB8474@1wt.eu>
+References: <20200810220703.796718-1-yepeilin.cs@gmail.com>
+In-Reply-To: <20200810220703.796718-1-yepeilin.cs@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 10 Aug 2020 20:57:19 -0700
+Message-ID: <CAM_iQpWsQubVJ-AYaLHujHwz68+nsHBcbgbf8XPMEPD=Vu+zaA@mail.gmail.com>
+Subject: Re: [Linux-kernel-mentees] [PATCH net] ipvs: Fix uninit-value in do_ip_vs_set_ctl()
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        lvs-devel@vger.kernel.org,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        coreteam@netfilter.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 10, 2020 at 01:47:00PM +0200, Willy Tarreau wrote:
-> except that I retrieve it only on 1/8 calls
-> and use the previous noise in this case.
+On Mon, Aug 10, 2020 at 3:10 PM Peilin Ye <yepeilin.cs@gmail.com> wrote:
+>
+> do_ip_vs_set_ctl() is referencing uninitialized stack value when `len` is
+> zero. Fix it.
 
-Er... that's quite different.  I was saying you measure them all, and do:
+Which exact 'cmd' is it here?
 
- struct siprand_state {
- 	...
-+	uint32_t noise[i];
-+	unsigned counter;
- }
- 	...
-+	s->noise[--s->counter] = random_get_entropy();
-+
-+	if (!s->counter) {
-+		for (i = 0; i < 4; i++)
-+			s->v[i] += s->noise[2*i] +
-+				((unsigned long)s->noise[2*i+1] << BITS_PER_LONG/2);
-+		s->counter = 8;
-+	}
+I _guess_ it is one of those uninitialized in set_arglen[], which is 0.
+But if that is the case, should it be initialized to
+sizeof(struct ip_vs_service_user) instead because ip_vs_copy_usvc_compat()
+is called anyway. Or, maybe we should just ban len==0 case.
 
-What you're doing is just decreasing the amount of seeding by a factor
-of 8.  (Roughly.  You do gain log2(8)/2 = 1.5 bits because the sum of
-8 random values has a standard deviation sqrt(8) times as large as
-the inputs.)
+In either case, it does not look like you fix it correctly.
 
-> diff --git a/lib/random32.c b/lib/random32.c
-> index 2b048e2ea99f..a12d63028106 100644
-> --- a/lib/random32.c
-> +++ b/lib/random32.c
-> @@ -317,6 +317,8 @@ static void __init prandom_state_selftest(void)
->  
->  struct siprand_state {
->  	unsigned long v[4];
-> +	unsigned long noise;
-> +	unsigned long count;
->  };
->  
->  static DEFINE_PER_CPU(struct siprand_state, net_rand_state) __latent_entropy;
-> @@ -334,7 +336,7 @@ static DEFINE_PER_CPU(struct siprand_state, net_rand_state) __latent_entropy;
->  #define K0 (0x736f6d6570736575 ^ 0x6c7967656e657261 )
->  #define K1 (0x646f72616e646f6d ^ 0x7465646279746573 )
->  
-> -#elif BITS_PER_LONG == 23
-> +#elif BITS_PER_LONG == 32
->  /*
->   * On 32-bit machines, we use HSipHash, a reduced-width version of SipHash.
->   * This is weaker, but 32-bit machines are not used for high-traffic
-> @@ -375,6 +377,12 @@ static u32 siprand_u32(struct siprand_state *s)
->  {
->  	unsigned long v0 = s->v[0], v1 = s->v[1], v2 = s->v[2], v3 = s->v[3];
->  
-> +	if (++s->count >= 8) {
-> +		v3 ^= s->noise;
-> +		s->noise += random_get_entropy();
-> +		s->count = 0;
-> +	}
-> +
-
-- Can you explain why you save the "noise" until next time?  Is this meant to
-  make it harder for an attacker to observe the time?
-- How about doing away with s->count and making it statistical:
-
-+	if ((v3 & 7) == 0)
-+		v3 ^= random_get_entropy();
-
-That still does the seed 1/8 of the time, but in a much less regular pattern.
-(Admittedly, it will totally break the branch predictor.  An unlikely()
-might help.)
-
+Thanks.
