@@ -2,126 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6C4624161E
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 07:46:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6056241626
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 07:59:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727976AbgHKFqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 01:46:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
+        id S1728160AbgHKF7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 01:59:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726438AbgHKFqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 01:46:30 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30C1C06174A
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 22:46:29 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id f12so10259881wru.13
-        for <netdev@vger.kernel.org>; Mon, 10 Aug 2020 22:46:29 -0700 (PDT)
+        with ESMTP id S1727902AbgHKF7V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 01:59:21 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EB9C06174A;
+        Mon, 10 Aug 2020 22:59:21 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id ba10so8141525edb.3;
+        Mon, 10 Aug 2020 22:59:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sdENeti3PjcBTV2MD8ryoLAaF0AsT7D1lB9LbxQtRAg=;
-        b=oT9q0S9hkeGQCEViqUTO/mht8FkcwSNgauxXDAvs+4AU3J12fBYLq7Hi2HoVc0ANUE
-         3SK3tW9m2/dJC0d6EBMBkSFOuVW1qGJwvWXyOk/jSGaLfAnJVvSghDNDACjo2iCuh55J
-         fdMlBsFxvRU4GPlOXItOqp/yIXiVqaTykH85hHMhzaPTXqgokQ23+hxsfsNPEjqgYhEu
-         oo71jQaD9lHXtkwT2IF5XiV06BETzcb9aDajxklrT6s9obso4Gytm8yY0MWWly2ZN04P
-         pZUJmTkhatms3NCggpEC3f7tdNiSffhY6EetbnIQqKs/QakmLb0w/d6U6JBt0hakZ5WB
-         0RgA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=beTYh/HWHc0eXP30hlszfZTEhjEuMBDK2JJtaNDEqOM=;
+        b=XxRM3ycI7M68dWciccIgwDB+g9vl9ZowsQ5nfcR4BbJsWu6kuS0PCaDnyhGA604R2a
+         f0KW3jLJ+I66CqceiO/PBalkgNoNo3Z3Qi506ZpPqr0nllTx2CsR3yTM9J2UkkJ443jt
+         58zTw5P9rsYj4gJ7GCnCKLGN6UTMkIPM7uKMWZTCxpl4GDm50jHXqbh8l6UNVPT1gvxr
+         D6ICDjcjafCb9GH4Zf05QM8S+lrOhrM4eKlmqXSfxePdoj0YHaT33KkNLSt3wXqrKE34
+         vdH/aCzKBwxXgjwF5pRA/cd5ni25DH44ChsMJ/bVNWcqk3NK0kRcwjh2ezw11kV6B+OE
+         R4pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sdENeti3PjcBTV2MD8ryoLAaF0AsT7D1lB9LbxQtRAg=;
-        b=F4Zl1Z7MkLiAHXuf7b0hVdpxiri1P6sDvsMCoVEADFoiDPRuds/nLkIJ4kRCTFj72g
-         62wABp1WjKjG0apx4MXf2anzwUFoKIPkdTBd5faQ0RcR35TEVankHRayZteuh81Yr7XF
-         Im2ZFHsGQNce4jEe7H6kbJdDc4WqjHgcTz6v9uAUnfuXfRvhxcHUL66KySXO5U2PS70N
-         +LbY6lrsYi92k7ToUe/3CrM+FXkSftET73RBeqcIcq66f3QpYL8KpHnoMLdCLVlhiD9d
-         HX8Z7/i/MMpuqEUHgNsfbP2IUZi4Nm7W73iCFveE7DhUbam9rO64Gfvat7GQZF0mjWq7
-         KCoA==
-X-Gm-Message-State: AOAM532VKi4YX2sctS3qQKrnW8UaUKyNf3eEv5QZu1o/GEJgSufF+BLR
-        R9ntO7Y6PFi82t6UzW5ua6ir0w==
-X-Google-Smtp-Source: ABdhPJxTKzN+uv6VzWavZYndp5cyNmZyzaI1ppoIH5+RJJIUq+oAdwZNzGHpdJQOQBsP6g8WhouVxw==
-X-Received: by 2002:adf:dd01:: with SMTP id a1mr4837577wrm.301.1597124788355;
-        Mon, 10 Aug 2020 22:46:28 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id y84sm3196275wmg.38.2020.08.10.22.46.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Aug 2020 22:46:27 -0700 (PDT)
-Date:   Tue, 11 Aug 2020 07:46:26 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Moshe Shemesh <moshe@mellanox.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: Re: [PATCH net-next RFC 01/13] devlink: Add reload level option to
- devlink reload command
-Message-ID: <20200811054626.GA24082@nanopsycho.orion>
-References: <20200730161101.48f42c5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <0f2467fd-ee2e-1a51-f9c1-02f8a579d542@mellanox.com>
- <20200803141442.GB2290@nanopsycho>
- <20200803135703.16967635@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200804100418.GA2210@nanopsycho>
- <20200804133946.7246514e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200805110258.GA2169@nanopsycho>
- <20200806112530.0588b3ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <8b06ade2-dfbe-8894-0d6a-afe9c2f41b4e@mellanox.com>
- <20200810095305.0b9661ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=beTYh/HWHc0eXP30hlszfZTEhjEuMBDK2JJtaNDEqOM=;
+        b=bybCavPTjhLFdN8kMGEZkxPp8f/icHNCDQ5jd4wWYB4pC68yHJ0S4DuUhSkO8kbi+M
+         JWuBPw7eV0QK/GY1fIt1I5UFif+wQ+C/d2O78Rj+2IVWbBFJ0JzH0Uz0UtD8Mm4fD4lS
+         7vZITFO2A/mmxoy5X/E3rhoCCJRDKbc/PbBjWpgSDRFCCUIjyVV1YFjwsMdXYrbW1BX+
+         lNTL8s31WxHshCE1+Ub2VbqoonnV2N3Uq3zUDMxMzP2/XZGKZa11NWTxSutDbmblW2T7
+         8ZqWed2VEmgEEPzlPeX4A5JHY2wSKKpVnnIE1YZbKuv0SbJ7fhqBEUPnh7//VAZntO9i
+         2Szg==
+X-Gm-Message-State: AOAM532OuZOacyQvzPgpRFmQVrpRFT8EAvQIJ3gWKOkbb70yXQxi10rV
+        8XitHBNsCIL2pv3sW4Fk75QuYHlhSEDPQjlFAQk=
+X-Google-Smtp-Source: ABdhPJzsgDOq4CWIYcLP3+KDXv5QWaPsKrBL2uZyPqiZG4FQwJLaOeqhs3Ebl37mYehjqiQCKb7XpILcqPMUti9QGMA=
+X-Received: by 2002:a50:8f44:: with SMTP id 62mr25374930edy.3.1597125559485;
+ Mon, 10 Aug 2020 22:59:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200810095305.0b9661ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <CA+Sh73MJhqs7PBk6OV2AhzVjYvE1foUQUnwP5DwWR44LHZRZ9w@mail.gmail.com>
+ <58be64c5-9ae4-95ff-629e-f55e47ff020b@gmail.com> <CA+Sh73NeNr+UNZYDfD1nHUXCY-P8mT1vJdm0cEY4MPwo_0PtzQ@mail.gmail.com>
+ <CAEXW_YSSL5+_DjtrYpFp35kGrem782nBF6HuVbgWJ_H3=jeX4A@mail.gmail.com>
+ <20200807222015.GZ4295@paulmck-ThinkPad-P72> <20200810200859.GF2865655@google.com>
+ <20200810202813.GP4295@paulmck-ThinkPad-P72> <CAMDZJNWrPf8AkZE8496g6v5GXvLUbQboXeAhHy=1U1Qhemo8bA@mail.gmail.com>
+ <CAM_iQpXBHSYdqb8Q3ifG8uwa1YfJmGBexHC2BusRoshU0M5X5g@mail.gmail.com>
+ <CAMDZJNU5Cpkcrn5sy=7u_vTGcdMjDfCqzSCJ0WLk-3M5RROh=Q@mail.gmail.com> <CAM_iQpVoHtQn07j9wHp7Qj3XkU8SYFdYzaexx6jeBH5mqYNw6A@mail.gmail.com>
+In-Reply-To: <CAM_iQpVoHtQn07j9wHp7Qj3XkU8SYFdYzaexx6jeBH5mqYNw6A@mail.gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Tue, 11 Aug 2020 13:58:35 +0800
+Message-ID: <CAMDZJNX2G2dOkqFv52ztBMM5CZCY4b0rSz-knv4GY2JP9kbDmg@mail.gmail.com>
+Subject: Re: [ovs-discuss] Double free in recent kernels after memleak fix
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     "Paul E . McKenney" <paulmck@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        =?UTF-8?B?Sm9oYW4gS27DtsO2cw==?= <jknoos@google.com>,
+        Gregory Rose <gvrose8192@gmail.com>,
+        bugs <bugs@openvswitch.org>, Netdev <netdev@vger.kernel.org>,
+        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
+        rcu <rcu@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Aug 10, 2020 at 06:53:05PM CEST, kuba@kernel.org wrote:
->On Sun, 9 Aug 2020 16:21:29 +0300 Moshe Shemesh wrote:
->> Okay, so devlink reload default for mlx5 will include also fw-activate 
->> to align with mlxsw default.
->> 
->> Meaning drivers that supports fw-activate will add it to the default.
+On Tue, Aug 11, 2020 at 12:08 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
->No per-driver default.
+> On Mon, Aug 10, 2020 at 8:27 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> >
+> > On Tue, Aug 11, 2020 at 10:24 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > >
+> > > On Mon, Aug 10, 2020 at 6:16 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> > > > Hi all, I send a patch to fix this. The rcu warnings disappear. I
+> > > > don't reproduce the double free issue.
+> > > > But I guess this patch may address this issue.
+> > > >
+> > > > http://patchwork.ozlabs.org/project/netdev/patch/20200811011001.75690-1-xiangxia.m.yue@gmail.com/
+> > >
+> > > I don't see how your patch address the double-free, as we still
+> > > free mask array twice after your patch: once in tbl_mask_array_realloc()
+> > > and once in ovs_flow_tbl_destroy().
+> > Hi Cong.
+> > Before my patch, we use the ovsl_dereference
+> > (rcu_dereference_protected) in the rcu callback.
+> > ovs_flow_tbl_destroy
+> > ->table_instance_destroy
+> > ->table_instance_flow_free
+> > ->flow_mask_remove
+> > ASSERT_OVSL(will print warning)
+> > ->tbl_mask_array_del_mask
+> > ovsl_dereference(rcu usage warning)
+> >
 >
->Maybe the difference between mlxsw and mlx5 can be simply explained by
->the fact that mlxsw loads firmware from /lib/firmware on every probe
->(more or less).
+> I understand how your patch addresses the RCU annotation issue,
+> which is different from double-free.
 >
->It's only natural for a driver which loads FW from disk to load it on
->driver reload.
+>
+> > so we should invoke the table_instance_destroy or others under
+> > ovs_lock to avoid (ASSERT_OVSL and rcu usage warning).
+>
+> Of course... I never doubt it.
+>
+>
+> > with this patch, we reallocate the mask_array under ovs_lock, and free
+> > it in the rcu callback. Without it, we  reallocate and free it in the
+> > rcu callback.
+> > I think we may fix it with this patch.
+>
+> Does it matter which context tbl_mask_array_realloc() is called?
+> Even with ovs_lock, we can still double free:
+>
+> ovs_lock()
+> tbl_mask_array_realloc()
+>  => call_rcu(&old->rcu, mask_array_rcu_cb);
+> ovs_unlock()
+> ...
+> ovs_flow_tbl_destroy()
+>  => call_rcu(&old->rcu, mask_array_rcu_cb);
+>
+> So still twice, right? To fix the double-free, we have to eliminate one
+> of them, don't we? ;)
+No
+Without my patch: in rcu callback:
+ovs_flow_tbl_destroy
+->call_rcu(&ma->rcu, mask_array_rcu_cb);
+->table_instance_destroy
+->tbl_mask_array_realloc(Shrink the mask array if necessary)
+->call_rcu(&old->rcu, mask_array_rcu_cb);
 
-We don't load it on reaload... We just do reset witn activation.
+With the patch:
+ovs_lock
+table_instance_flow_flush (free the flow)
+tbl_mask_array_realloc(shrink the mask array if necessary, will free
+mask_array in rcu(mask_array_rcu_cb) and rcu_assign_pointer new
+mask_array)
+ovs_unlock
+
+in rcu callback:
+ovs_flow_tbl_destroy
+call_rcu(&ma->rcu, mask_array_rcu_cb);(that is new mask_array)
 
 >
->> The flow of devlink reload default on mlx5 will be:
->> 
->> If there is FW image pending and live patch is suitable to apply, do 
->> live patch and driver re-initialization.
->> 
->> If there is FW image pending but live patch doesn't fit do fw-reset and 
->> driver-initialization.
->> 
->> If no FW image pending just do driver-initialization.
+> >
+> > > Have you tried my patch which is supposed to address this double-free?
+> > I don't reproduce it. but your patch does not avoid ruc usage warning
+> > and ASSERT_OVSL.
 >
->This sounds too complicated. Don't try to guess what the user wants.
+> Sure, I never intend to fix anything else but double-free. The $subject is
+> about double free, I double checked. ;)
 >
->> I still think I should on top of that add the level option to be 
->> selected by the user if he prefers a specific action, so the uAPI would be:
->> 
->> devlink dev reload [ netns { PID | NAME | ID } ] [ level { fw-live-patch 
->> | driver-reinit |fw-activate } ]
->
->I'm all for the level/action.
->
->> But I am still missing something: fw-activate implies that it will 
->> activate a new FW image stored on flash, pending activation. What if the 
->> user wants to reset and reload the FW if no new FW pending ? Should we 
->> add --force option to fw-activate level ?
->
->Since reload does not check today if anything changed - i.e. if reload
->is actually needed, neither should fw-activate, IMO. I'd expect the
->"--force behavior" to be the default.
+> Thanks.
+
+
+
+-- 
+Best regards, Tonghao
