@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B58992419F3
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 12:51:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B84C241A0E
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 13:01:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728558AbgHKKv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 06:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
+        id S1728550AbgHKLBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 07:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728500AbgHKKvz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 06:51:55 -0400
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4570EC06174A
-        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 03:51:55 -0700 (PDT)
-Received: by mail-ot1-x342.google.com with SMTP id h16so9727230oti.7
-        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 03:51:55 -0700 (PDT)
+        with ESMTP id S1728416AbgHKLB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 07:01:29 -0400
+Received: from mail-oo1-xc42.google.com (mail-oo1-xc42.google.com [IPv6:2607:f8b0:4864:20::c42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5BEC06174A
+        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 04:01:29 -0700 (PDT)
+Received: by mail-oo1-xc42.google.com with SMTP id p137so2524282oop.4
+        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 04:01:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:reply-to:from:date:message-id
          :subject:to:cc;
-        bh=UhlzAn4lpRrPkvaXfcTT/BOQCiRqfEE8LdsClAKhmAM=;
-        b=LHLZp8IbHwDDGUjN8Y+RVrJXUEfCYDg1x+2Ds+fma8J+426mrrNJv8NZeQvtMyYB4H
-         aAV8ReOwJrr2GoQlwkRwQLIldPGiQsG1DYfIrldOXtk4D9lmf/9Jb2GcKK7tw/ZLyC8j
-         uPc1F7uatd+PtmzyQA/8JcGrieXkgSQJR9v9csGwELuVdpEl5EcE85WCFA3ECyQftuJ9
-         IxpbhGUdx2NykMaPrQCvNOkDpQdjt5rMzDkw4tUlfAm3j2R6On1wyibgVCM8c9gpd0WU
-         rgnCnnt0BP1TBentnAv8F1li0SEYVhUwUtclXaDNg4PGVYeNoWygKub9M9kt7yfHVhfZ
-         Qjdg==
+        bh=0CfAWiOLHPM+GE/ykTTmqNnylfycowdFemnAk/Vhwgc=;
+        b=FxEre9drYf/9wx+1OzpT7gf93G9SRRMZ6C1duCAmzMPnYl+p6FMEYGe7oNSN7OUpHe
+         KCU7VPV+PTAcJ9JJyb4T5YdeHXfn8WEnjqjkCVhVTaLH02EJnxOGY5IkYXVwRMVoBwEA
+         3e6AfFOjj0zNY2F7XN3lSGyOoNLtXVBUApc4bc5OV1U5PwrO8VmqaenQNidCCo3SHSB+
+         WJkS6D1Nw+NhUrWOQXXMhCEfe93JzHmXK/eT9YIRuHlZ4zwvZDQKBp8nwhXrM1bKHIXC
+         WYKmT/wuYQPEP6BHnlstg71d+MsnzXL14xP2uTCnSh5/1iCpDa/zYBGuNqMgm2nw34cq
+         kKZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
          :from:date:message-id:subject:to:cc;
-        bh=UhlzAn4lpRrPkvaXfcTT/BOQCiRqfEE8LdsClAKhmAM=;
-        b=Tz1R4Xv5LTLRw6yWU7g5cRgh1E39/JG9cGRdwPh9G+BAItqjAU6u8xl5Uihw6FB1mJ
-         zPRJqZD8Xv+VB91sjybDSB4vIbQj86nwn5YfeZk3ZcULgLvD6zEj+WrT5nDYH5yNGlCk
-         nYb4QpvYPuhcN6iv0JWVePnS9v3H6i2k9pbNbxvuztr+0cXzBxApfBwvCdzbwoiwQ1xG
-         D3uOvowYYyKq7DZ3egDLpTl7csaCXy/FP/uRTsEJa6fC0gojAncX+9JOPQslAza/+gjT
-         gAfSoVJXwXlrfeKlJgP9wwT8PqssB926INYYgMdBReP7zyCC06PkbJgZCQ+gqfYGHJ3D
-         KFLQ==
-X-Gm-Message-State: AOAM532HxpqCFcKn2fsG9crFQGf2snM7ks6s77Qu4zXXRUxAEDohzFJG
-        FeuDN1SXXAkqGn6R3bKxOMagGjD3Q9qtWqMiueQ=
-X-Google-Smtp-Source: ABdhPJz+BGd/7ig6kGHwKkEEbZ9XdMMcVll4WZJr4RT0soV9HxD2l0QM2X0gK6v6IQNbxxQSa31Vhh3anQEkxqZwwB8=
-X-Received: by 2002:a9d:7997:: with SMTP id h23mr4680839otm.28.1597143114714;
- Tue, 11 Aug 2020 03:51:54 -0700 (PDT)
+        bh=0CfAWiOLHPM+GE/ykTTmqNnylfycowdFemnAk/Vhwgc=;
+        b=Hb8yXvleZjREdiBkwa9WAswV++o0+QtRnQLNSieaT1CxCABrRQXoSdwkjvDpbnGBmN
+         /QzO0tjIz3fe+Ha9rZk7utr7ghZVFWVc9UN1MRPHYvrM78mkeMTnhbzm7lK+lHcpiC8S
+         T2VDxjQpNqczirFG0O0e9sUeY3jY49n6HV7pm4dFd2lg4YDkp81UrcP+EZw0dam7E8IO
+         AitYEyvITlJX53tcDFyyXf9KhB/FvA2XqnGPSK10+D27xmCmXyzPDnoFpenxqDnJzYDp
+         NdiB09jMCszFSHwtQPWPQOyqUtWasYxDVt8HClXlx/EViS0Jx3X/mcq+6WnlM2f/WShK
+         vXJg==
+X-Gm-Message-State: AOAM532ncuIB798x3zzQan4vGhPg/3coF8sYR/TFrl/bjJikMzHdM2ih
+        Urcgh46hIrmwcSNJNkdcuS8OcVwwE8EZy48EXLk=
+X-Google-Smtp-Source: ABdhPJw1HvS89bbec6J913X2b92xngMe9W+uoHAU+fLOCwZpfG/R2KQ8lSSmQTuHvAmQzas7G0jGSavmX6KHW8mXQqA=
+X-Received: by 2002:a4a:7b4b:: with SMTP id l72mr4609078ooc.74.1597143688606;
+ Tue, 11 Aug 2020 04:01:28 -0700 (PDT)
 MIME-Version: 1.0
 References: <CA+icZUVnsmf1kXPYFYufStQ_MxnLuxL+EWfDS2wQy1VbAEMwkA@mail.gmail.com>
  <20200809235412.GD25124@SDF.ORG> <20200810034948.GB8262@1wt.eu>
  <20200811053455.GH25124@SDF.ORG> <20200811054328.GD9456@1wt.eu>
- <20200811062814.GI25124@SDF.ORG> <20200811074538.GA9523@1wt.eu>
-In-Reply-To: <20200811074538.GA9523@1wt.eu>
+ <20200811062814.GI25124@SDF.ORG> <20200811074538.GA9523@1wt.eu> <CA+icZUVkaKorjHb4PSh1pKnYVF7696cfqH_Q87HsNpy9Qx9mxQ@mail.gmail.com>
+In-Reply-To: <CA+icZUVkaKorjHb4PSh1pKnYVF7696cfqH_Q87HsNpy9Qx9mxQ@mail.gmail.com>
 Reply-To: sedat.dilek@gmail.com
 From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Tue, 11 Aug 2020 12:51:43 +0200
-Message-ID: <CA+icZUVkaKorjHb4PSh1pKnYVF7696cfqH_Q87HsNpy9Qx9mxQ@mail.gmail.com>
+Date:   Tue, 11 Aug 2020 13:01:17 +0200
+Message-ID: <CA+icZUXVpVSRn74N_3b2CNPa_hh+aWXMBmtYStBTRf2ARvr-Xw@mail.gmail.com>
 Subject: Re: [DRAFT PATCH] random32: make prandom_u32() output unpredictable
 To:     Willy Tarreau <w@1wt.eu>
 Cc:     George Spelvin <lkml@sdf.org>, Amit Klein <aksecurity@gmail.com>,
@@ -70,32 +70,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ CC netdev ML ]
+In the previous discussion...
 
-Hi Willy,
+"Flaw in "random32: update the net random state on interrupt and activity"
 
-in [1] you say:
+...someone referred to <luto/linux.git#random/fast>.
 
-> I've applied it on top of George's patch rebased to mainline for simplicity.
-> I've used a separate per_cpu noise variable to keep the net_rand_state static
-> with its __latent_entropy.
+Someone tested this?
+Feedback?
 
-Can you share this "rebased to mainline" version of George's patch?
-Maybe put your work "user-friendly-fetchable" in one of your
-<kernel.org> Git tree (see [2])?
-
-Yesterday random/random32/prandom mainline patches hit Linux
-v5.8.1-rc1 (see [3]).
-
-So, as I asked in my first email what is a suitable base?
-Linux v5.9-rc1 (this Sunday) or if stable Linux v5.8.1 (next 1-2 days)
-
-Thanks.
-
-Regards,
 - Sedat -
 
-
-[1] https://marc.info/?l=linux-netdev&m=159709355528675&w=2
-[2] https://git.kernel.org/pub/scm/linux/kernel/git/wtarreau
-[3] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-5.8.y
+[0] https://marc.info/?t=159658903500002&r=1&w=2
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/luto/linux.git/log/?h=random/fast
