@@ -2,115 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AB97241DEA
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 18:11:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EC2E241E84
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 18:43:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729082AbgHKQLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 12:11:06 -0400
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:14353 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728797AbgHKQLF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 12:11:05 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f32c30c0000>; Tue, 11 Aug 2020 09:10:52 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Tue, 11 Aug 2020 09:11:05 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Tue, 11 Aug 2020 09:11:05 -0700
-Received: from [10.2.60.121] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 11 Aug
- 2020 16:10:56 +0000
-Subject: Re: VDPA Debug/Statistics
-To:     "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>
-CC:     Jason Wang <jasowang@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "eli@mellanox.com" <eli@mellanox.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Majd Dibbiny <majd@nvidia.com>,
-        "Maor Dickman" <maord@nvidia.com>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        "Parav Pandit" <parav@mellanox.com>
-References: <BN8PR12MB342559414BE03DFC992AD03DAB450@BN8PR12MB3425.namprd12.prod.outlook.com>
- <20200811073144-mutt-send-email-mst@kernel.org>
- <BN8PR12MB34259F2AE1FDAF2D40E48C5BAB450@BN8PR12MB3425.namprd12.prod.outlook.com>
- <20200811083803-mutt-send-email-mst@kernel.org>
-From:   Roopa Prabhu <roopa@nvidia.com>
-Message-ID: <16cef93e-7421-a151-65ab-ba21e44cd00f@nvidia.com>
-Date:   Tue, 11 Aug 2020 09:10:52 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1729228AbgHKQm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 12:42:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47230 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729205AbgHKQm5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Aug 2020 12:42:57 -0400
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 19747206DC;
+        Tue, 11 Aug 2020 16:42:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597164176;
+        bh=GI6OEs1EfIlNFpfrrNWl3O0cjrdYTbDR04UTKujfyXE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RZBca4EWElRWJlHtTDeWGhKFRJVENyEt/Hllb0Llzwu6v+APOx2fBW3d1tiHbm/sH
+         BVyaYaGxrgceaNfydKWpeqKem4u07/v7bTtL3EbQ0BzHtt8z1lA66dUArDrY8id0lC
+         SiiaPJhBFhy31BOx4BCTpIuzKAHJyEnBNu8vdbJs=
+Date:   Tue, 11 Aug 2020 12:42:55 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.7 03/60] net: mscc: ocelot: fix encoding
+ destination ports into multicast IPv4 address
+Message-ID: <20200811164255.GJ2975990@sasha-vm>
+References: <20200810191028.3793884-1-sashal@kernel.org>
+ <20200810191028.3793884-3-sashal@kernel.org>
+ <20200810210108.ystlnglj4atyfrfh@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20200811083803-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1597162252; bh=EK1sbFulOF0V9vRXAL3GbYbkOAW9ujbZSox8NAhaWus=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:Content-Type:
-         Content-Transfer-Encoding:Content-Language:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=gS19uwfsH12QJJzg9ZODa7mhQbKSP1lVW35d0TgX5+PAr7ToMbjpXXuaq/R2J2vnZ
-         sEYD47GIu0nqR+rJQtdkjFLU+Yl83CqM3MN7b7BonSD8L5BanYpKbg81YS7Nz8UXL7
-         YlKbwRcNK5liipinpMS67fkeNt6gw9WLVwW6mG+z5419Q78JxjOSAY+U4XHVbghojA
-         PHyzitc4Y9iftdDW7ymuUOn22mRkk3QQ9KI/LJ80d4bAZc6GChOwJkxndt4l4gPuHU
-         fEmP4ctUu244HPPdLw8pmcBQNnlxbwGUPeM1l0YgXZJr830nTrYW/lb0oD+9sa+XmV
-         61sTlM6BQOFDA==
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20200810210108.ystlnglj4atyfrfh@skbuf>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 8/11/20 5:44 AM, Michael S. Tsirkin wrote:
-> External email: Use caution opening links or attachments
+On Tue, Aug 11, 2020 at 12:01:08AM +0300, Vladimir Oltean wrote:
+>Hi Sasha,
 >
->
-> On Tue, Aug 11, 2020 at 11:58:23AM +0000, Eli Cohen wrote:
->> On Tue, Aug 11, 2020 at 11:26:20AM +0000, Eli Cohen wrote:
->>> Hi All
->>>
->>> Currently, the only statistics we get for a VDPA instance comes from the virtio_net device instance. Since VDPA involves hardware acceleration, there can be quite a lot of information that can be fetched from the underlying device. Currently there is no generic method to fetch this information.
->>>
->>> One way of doing this can be to create a the host, a net device for
->>> each VDPA instance, and use it to get this information or do some
->>> configuration. Ethtool can be used in such a case
->>>
->>> I would like to hear what you think about this or maybe you have some other ideas to address this topic.
->>>
->>> Thanks,
->>> Eli
->> Something I'm not sure I understand is how are vdpa instances created on mellanox cards? There's a devlink command for that, is that right?
->> Can that be extended for stats?
+>On Mon, Aug 10, 2020 at 03:09:31PM -0400, Sasha Levin wrote:
+>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 >>
->> Currently any VF will be probed as VDPA device. We're adding devlink support but I am not sure if devlink is suitable for displaying statistics. We will discuss internally but I wanted to know why you guys think.
-> OK still things like specifying the mac are managed through rtnetlink,
-> right?
+>> [ Upstream commit 0897ecf7532577bda3dbcb043ce046a96948889d ]
+>>
+>> The ocelot hardware designers have made some hacks to support multicast
+>> IPv4 and IPv6 addresses. Normally, the MAC table matches on MAC
+>> addresses and the destination ports are selected through the DEST_IDX
+>> field of the respective MAC table entry. The DEST_IDX points to a Port
+>> Group ID (PGID) which contains the bit mask of ports that frames should
+>> be forwarded to. But there aren't a lot of PGIDs (only 80 or so) and
+>> there are clearly many more IP multicast addresses than that, so it
+>> doesn't scale to use this PGID mechanism, so something else was done.
+>> Since the first portion of the MAC address is known, the hack they did
+>> was to use a single PGID for _flooding_ unknown IPv4 multicast
+>> (PGID_MCIPV4 == 62), but for known IP multicast, embed the destination
+>> ports into the first 3 bytes of the MAC address recorded in the MAC
+>> table.
+>>
+>> The VSC7514 datasheet explains it like this:
+>>
+>>     3.9.1.5 IPv4 Multicast Entries
+>>
+>>     MAC table entries with the ENTRY_TYPE = 2 settings are interpreted
+>>     as IPv4 multicast entries.
+>>     IPv4 multicasts entries match IPv4 frames, which are classified to
+>>     the specified VID, and which have DMAC = 0x01005Exxxxxx, where
+>>     xxxxxx is the lower 24 bits of the MAC address in the entry.
+>>     Instead of a lookup in the destination mask table (PGID), the
+>>     destination set is programmed as part of the entry MAC address. This
+>>     is shown in the following table.
+>>
+>>     Table 78: IPv4 Multicast Destination Mask
+>>
+>>         Destination Ports            Record Bit Field
+>>         ---------------------------------------------
+>>         Ports 10-0                   MAC[34-24]
+>>
+>>     Example: All IPv4 multicast frames in VLAN 12 with MAC 01005E112233 are
+>>     to be forwarded to ports 3, 8, and 9. This is done by inserting the
+>>     following entry in the MAC table entry:
+>>     VALID = 1
+>>     VID = 12
+>>     MAC = 0x000308112233
+>>     ENTRY_TYPE = 2
+>>     DEST_IDX = 0
+>>
+>> But this procedure is not at all what's going on in the driver. In fact,
+>> the code that embeds the ports into the MAC address looks like it hasn't
+>> actually been tested. This patch applies the procedure described in the
+>> datasheet.
+>>
+>> Since there are many other fixes to be made around multicast forwarding
+>> until it works properly, there is no real reason for this patch to be
+>> backported to stable trees, or considered a real fix of something that
+>> should have worked.
+>>
+>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>> Signed-off-by: David S. Miller <davem@davemloft.net>
+>> Signed-off-by: Sasha Levin <sashal@kernel.org>
+>> ---
 >
-> Right now it does not look like you can mix stats and vf, they are
-> handled separately:
->
->          if (rtnl_fill_stats(skb, dev))
->                  goto nla_put_failure;
->
->          if (rtnl_fill_vf(skb, dev, ext_filter_mask))
->                  goto nla_put_failure;
->
-> but ability to query vf stats on the host sounds useful generally.
->
-> As another option, we could use a vdpa specific way to retrieve stats,
-> and teach qemu to report them.
+>Could you please drop this patch from the 'stable' queues for 5.7 and
+>5.8? I haven't tested it on older kernels and without the other patches
+>sent in that series. I would like to avoid unexpected regressions if
+>possible.
 
-If you are looking for a place to add additional stats, please, check 
-the RTM_*STATS api
+Will do, thanks!
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/core/rtnetlink.c#n5351
-(Its a place where new interface and protocol stats are being added)
+-- 
+Thanks,
+Sasha
