@@ -2,135 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31DFE241581
-	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 06:08:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FEEA2415E5
+	for <lists+netdev@lfdr.de>; Tue, 11 Aug 2020 07:09:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725889AbgHKEIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 00:08:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
+        id S1726437AbgHKFJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 01:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725813AbgHKEIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 00:08:05 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DB8C06174A;
-        Mon, 10 Aug 2020 21:08:04 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id b17so3721171ion.7;
-        Mon, 10 Aug 2020 21:08:04 -0700 (PDT)
+        with ESMTP id S1726134AbgHKFJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 01:09:33 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47466C06174A;
+        Mon, 10 Aug 2020 22:09:33 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id l64so10640623qkb.8;
+        Mon, 10 Aug 2020 22:09:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7rlp9RK54E/xtTxclcAry71Hgg6ZndHHfb7ihJPzZ2E=;
-        b=W1veYhqUarghcZXeUAjgq+OhgvSQ4ksQY/g8Gy1xNvxharuWnd8Wv+xc609ktVg5T8
-         prN/PpD0eB3Bg4553EppXZHOzc+k7Ko5RkDAfcu5i2L5K8Apk17gFp/HFWVF9a/2gmvz
-         UI0mwXn1A7yU2MtMfJnBl1z63z+cxNKYHuw3lz9q5heBeJQlxvwyTkvg5nrwtmnGShq+
-         N+H/gVHoWhuxihZYCUDzj8QKdmRz+boDNEXFhNfX+NFr0mG1pv15VoMpXZKJEYOA05Ss
-         3prLogVryNE7+MmEXB6dCtxE/q/qOd3I4isHpTrL+PcyFpZvg9J1ueFalyCcgmFpfxdZ
-         LqzA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bMSxjMPm7VjNJMk372pm84tQNgfCuUZD1VrmgkqYZCk=;
+        b=eLBzjVCO5YbxLczQR30kyge47su0iVcJrFjbDeldqpgB2hjXU5IW3vXcQ8JtxRodoF
+         qhbLl6bjXO7Jlw5cfCnfSLBt+UguSzjYM/bCiq6Xxpf+ZkzFhamxpFsXgZzbBx6bwrRb
+         AnpIjg5QVPT1+z+Qpl+qqYHwXJoByhiyqO//u5t9q3f2ygLnkR8e72dL3xFxHLsAbyRH
+         0oluLqNNUANwqEYLXSTn4UMI+9lJTfM97LFe+l/JXOJSCK689qf99iDm1Firfr0u/GSu
+         UpgsbvWWHqyyqD/O1gvgX4uLDpJCVFTDiHOJmuk2+ojKOft0M7v7IHvKcYcncAIGKVzp
+         EkZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7rlp9RK54E/xtTxclcAry71Hgg6ZndHHfb7ihJPzZ2E=;
-        b=KUE3wpcLbJMzZKJGzbyY9cG1N0uJv7Dozz2ss+MbLEBIh2Prt9JrBP9qruIAbExcFk
-         Zdgxp4wD/BHe2PYxG8yWantdl5F+k10Ff0Q6IcB1xYy9DgIhZHr7i6hEI3hhAf1qaBrI
-         y/4FgQ7etOl7+1eJ6+o7K178P+jXLYH7g4CbsTX1Q9Z7b5g5dijGCdQzatNqWYuTRpAn
-         RLbtxp1977ssfgnad6WOIbUYD3qZlGUINtzLs3I4W1INS3s1Dg6qDKt+HLspkpCrbgYZ
-         aCKqh6srsYAu9hg1E2RCvy6lOmIAdDJxWptBPrwQ66yYLqSJpMcLKed6E1Y6gKzprj3L
-         PolA==
-X-Gm-Message-State: AOAM533LPno2aX2ISHG3fsbnUk5dUsTvUcyQnmvtaUHqtX0+7kFTgGZf
-        HLbK6EZB59vm0iYmFUuR89rqMBfS+vBaU2FXLZIJxBW/
-X-Google-Smtp-Source: ABdhPJynTfqKMHYFl5rHfj2ibP1zKy5+27kzwpEyS9tFjaF5apIDTbOUoWM/WPGtJt1EZDFYO13M16RAkfkLVCyiEM4=
-X-Received: by 2002:a02:29ca:: with SMTP id p193mr24301017jap.131.1597118883385;
- Mon, 10 Aug 2020 21:08:03 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bMSxjMPm7VjNJMk372pm84tQNgfCuUZD1VrmgkqYZCk=;
+        b=BTlPSmunqFwuBVPO3p9W4Q28xfTdbKstlBwuNWI81Q0pLMJDT6HinYuNM0rIAEU1DH
+         qN4d0dt21upQPUqchocGiLu+Nv6xurOKV0gjTXSLsdVGFQ/Sa10sWP4ZzHpSfzjRUb3u
+         mCMqN815UgcgHOyOYdY9Nino8YDEsU31zJB593i9VEasGDxU1L7fwAzQUbw15xcjp6OH
+         1IRGidtP3qYERWQcbdat5jbEa3eNGosa1ERzP1NMfcC/sVKwgVek0GCMQKBx5Mrphnv8
+         xucpN93awnxHfKRCQ/ugL7ZDzSd3SE8itwd9CJdstzz8JhyAu6lcyZGFOEVyvrjTue9o
+         yluQ==
+X-Gm-Message-State: AOAM533KN0JLoH61bKUB8TQKJiAicYkedFr6Ly4z7xtPKw5Dg/ciASGY
+        K4DY2B7d37Fe/twe1VJoAg==
+X-Google-Smtp-Source: ABdhPJx2Ee81fca74pCzQRr0gAjmwBmoPjLgb54zYmDsOm6OFBy2IQqatW+oGAXQ0UUv+/hmSrUZKA==
+X-Received: by 2002:ae9:f301:: with SMTP id p1mr28616754qkg.295.1597122572273;
+        Mon, 10 Aug 2020 22:09:32 -0700 (PDT)
+Received: from PWN (146-115-88-66.s3894.c3-0.sbo-ubr1.sbo.ma.cable.rcncustomer.com. [146.115.88.66])
+        by smtp.gmail.com with ESMTPSA id l189sm15659624qke.67.2020.08.10.22.09.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Aug 2020 22:09:31 -0700 (PDT)
+Date:   Tue, 11 Aug 2020 01:09:29 -0400
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        lvs-devel@vger.kernel.org,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        coreteam@netfilter.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [Linux-kernel-mentees] [PATCH net] ipvs: Fix uninit-value in
+ do_ip_vs_set_ctl()
+Message-ID: <20200811050929.GA821443@PWN>
+References: <20200810220703.796718-1-yepeilin.cs@gmail.com>
+ <CAM_iQpWsQubVJ-AYaLHujHwz68+nsHBcbgbf8XPMEPD=Vu+zaA@mail.gmail.com>
 MIME-Version: 1.0
-References: <CA+Sh73MJhqs7PBk6OV2AhzVjYvE1foUQUnwP5DwWR44LHZRZ9w@mail.gmail.com>
- <58be64c5-9ae4-95ff-629e-f55e47ff020b@gmail.com> <CA+Sh73NeNr+UNZYDfD1nHUXCY-P8mT1vJdm0cEY4MPwo_0PtzQ@mail.gmail.com>
- <CAEXW_YSSL5+_DjtrYpFp35kGrem782nBF6HuVbgWJ_H3=jeX4A@mail.gmail.com>
- <20200807222015.GZ4295@paulmck-ThinkPad-P72> <20200810200859.GF2865655@google.com>
- <20200810202813.GP4295@paulmck-ThinkPad-P72> <CAMDZJNWrPf8AkZE8496g6v5GXvLUbQboXeAhHy=1U1Qhemo8bA@mail.gmail.com>
- <CAM_iQpXBHSYdqb8Q3ifG8uwa1YfJmGBexHC2BusRoshU0M5X5g@mail.gmail.com> <CAMDZJNU5Cpkcrn5sy=7u_vTGcdMjDfCqzSCJ0WLk-3M5RROh=Q@mail.gmail.com>
-In-Reply-To: <CAMDZJNU5Cpkcrn5sy=7u_vTGcdMjDfCqzSCJ0WLk-3M5RROh=Q@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 10 Aug 2020 21:07:52 -0700
-Message-ID: <CAM_iQpVoHtQn07j9wHp7Qj3XkU8SYFdYzaexx6jeBH5mqYNw6A@mail.gmail.com>
-Subject: Re: [ovs-discuss] Double free in recent kernels after memleak fix
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     "Paul E . McKenney" <paulmck@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        =?UTF-8?B?Sm9oYW4gS27DtsO2cw==?= <jknoos@google.com>,
-        Gregory Rose <gvrose8192@gmail.com>,
-        bugs <bugs@openvswitch.org>, Netdev <netdev@vger.kernel.org>,
-        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        rcu <rcu@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpWsQubVJ-AYaLHujHwz68+nsHBcbgbf8XPMEPD=Vu+zaA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 10, 2020 at 8:27 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
->
-> On Tue, Aug 11, 2020 at 10:24 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+On Mon, Aug 10, 2020 at 08:57:19PM -0700, Cong Wang wrote:
+> On Mon, Aug 10, 2020 at 3:10 PM Peilin Ye <yepeilin.cs@gmail.com> wrote:
 > >
-> > On Mon, Aug 10, 2020 at 6:16 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
-> > > Hi all, I send a patch to fix this. The rcu warnings disappear. I
-> > > don't reproduce the double free issue.
-> > > But I guess this patch may address this issue.
-> > >
-> > > http://patchwork.ozlabs.org/project/netdev/patch/20200811011001.75690-1-xiangxia.m.yue@gmail.com/
-> >
-> > I don't see how your patch address the double-free, as we still
-> > free mask array twice after your patch: once in tbl_mask_array_realloc()
-> > and once in ovs_flow_tbl_destroy().
-> Hi Cong.
-> Before my patch, we use the ovsl_dereference
-> (rcu_dereference_protected) in the rcu callback.
-> ovs_flow_tbl_destroy
-> ->table_instance_destroy
-> ->table_instance_flow_free
-> ->flow_mask_remove
-> ASSERT_OVSL(will print warning)
-> ->tbl_mask_array_del_mask
-> ovsl_dereference(rcu usage warning)
->
+> > do_ip_vs_set_ctl() is referencing uninitialized stack value when `len` is
+> > zero. Fix it.
+> 
+> Which exact 'cmd' is it here?
+> 
+> I _guess_ it is one of those uninitialized in set_arglen[], which is 0.
 
-I understand how your patch addresses the RCU annotation issue,
-which is different from double-free.
+Yes, it was `IP_VS_SO_SET_NONE`, implicitly initialized to zero.
 
+> But if that is the case, should it be initialized to
+> sizeof(struct ip_vs_service_user) instead because ip_vs_copy_usvc_compat()
+> is called anyway. Or, maybe we should just ban len==0 case.
 
-> so we should invoke the table_instance_destroy or others under
-> ovs_lock to avoid (ASSERT_OVSL and rcu usage warning).
+I see. I think the latter would be easier, but we cannot ban all of
+them, since the function does something with `IP_VS_SO_SET_FLUSH`, which
+is a `len == 0` case.
 
-Of course... I never doubt it.
+Maybe we do something like this?
 
+@@ -2432,6 +2432,8 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
 
-> with this patch, we reallocate the mask_array under ovs_lock, and free
-> it in the rcu callback. Without it, we  reallocate and free it in the
-> rcu callback.
-> I think we may fix it with this patch.
+ 	if (cmd < IP_VS_BASE_CTL || cmd > IP_VS_SO_SET_MAX)
+ 		return -EINVAL;
++	if (len == 0 && cmd != IP_VS_SO_SET_FLUSH)
++		return -EINVAL;
+ 	if (len != set_arglen[CMDID(cmd)]) {
+ 		IP_VS_DBG(1, "set_ctl: len %u != %u\n",
+ 			  len, set_arglen[CMDID(cmd)]);
+@@ -2547,9 +2549,6 @@ do_ip_vs_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
+ 		break;
+ 	case IP_VS_SO_SET_DELDEST:
+ 		ret = ip_vs_del_dest(svc, &udest);
+-		break;
+-	default:
+-		ret = -EINVAL;
+ 	}
 
-Does it matter which context tbl_mask_array_realloc() is called?
-Even with ovs_lock, we can still double free:
+   out_unlock:
 
-ovs_lock()
-tbl_mask_array_realloc()
- => call_rcu(&old->rcu, mask_array_rcu_cb);
-ovs_unlock()
-...
-ovs_flow_tbl_destroy()
- => call_rcu(&old->rcu, mask_array_rcu_cb);
+Thank you,
+Peilin Ye
 
-So still twice, right? To fix the double-free, we have to eliminate one
-of them, don't we? ;)
-
-
->
-> > Have you tried my patch which is supposed to address this double-free?
-> I don't reproduce it. but your patch does not avoid ruc usage warning
-> and ASSERT_OVSL.
-
-Sure, I never intend to fix anything else but double-free. The $subject is
-about double free, I double checked. ;)
-
-Thanks.
+> In either case, it does not look like you fix it correctly.
+> 
+> Thanks.
