@@ -2,94 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A6352425E9
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 09:18:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19648242649
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 09:48:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbgHLHSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 03:18:32 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:57683 "EHLO
+        id S1726807AbgHLHsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 03:48:41 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:20097 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726182AbgHLHSb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 03:18:31 -0400
+        by vger.kernel.org with ESMTP id S1726479AbgHLHsk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 03:48:40 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1597216710;
+        s=mimecast20190719; t=1597218519;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=u5vnrGUSviiSyDo4A1Jti2cqm6vCb7k5wROaco57qD0=;
-        b=c/IGvdeaUMKq+IP9VwQythR6qKjy9n4yJznt4Wkoy+0qBwjmgT75hgg5aAMwzALXo3Xuu+
-        NahRHZ4swRKs8KnQ+B2VEgmF0+3RD6w0u1mzRW/AQn0/h6qJSDpuUa3bqvfgtXHjfksKuF
-        EnEDg7QsNKbGPHkVTKTLEqcl6NpfWQo=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-324-_9FMwMsLOCCKvXJ57GW_lQ-1; Wed, 12 Aug 2020 03:18:25 -0400
-X-MC-Unique: _9FMwMsLOCCKvXJ57GW_lQ-1
-Received: by mail-wm1-f69.google.com with SMTP id f74so559179wmf.1
-        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 00:18:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=u5vnrGUSviiSyDo4A1Jti2cqm6vCb7k5wROaco57qD0=;
-        b=I2UcARneVA5YokMOworMMfPYoHhZxoMmm8JmwdXfp+8Ee3QE4sEkKEvAxe7GnzVzBA
-         hYXDw6MLk+xiLPzcQl1QJ3ya1Sy4dUbQwgytjD7xkGXGpV/Wki6OA4dmDITJjnZpgoxE
-         ge9o5ppKItJBsuTuHMVm2LmWgp7TPzorNNQm0dvSocYg+CWU8zMNArPBO/LPlNS3oftu
-         a7MEGp5XIQq5NxhrfQCJwpWW4Tj+2/LRZPBUlPo7kQfqx4DxH7oNqWOkY3DvGX03hC8E
-         5BF/NjT2ybeR8hf8ko2N46NBkMY25Y+GeIcl3hwa37Oilw1jCDDtG5jBVQa95iuqeDDG
-         j1AA==
-X-Gm-Message-State: AOAM5309CDgryBfdIqQAuAOEadFJahY7zMWhNc6SRLwdJkOwwYKENd9n
-        rlFKYOxjE1ecVd8nhpxopCrTlRp4XMKqizkOCeXGRKdRoPNVokHjNWE/E3tfkLEIfMJpAdm30Fm
-        /PN3aQj5mZhYAyjy7
-X-Received: by 2002:a1c:e0d7:: with SMTP id x206mr7833383wmg.91.1597216704438;
-        Wed, 12 Aug 2020 00:18:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwdYhlEIglOLVe6YV8jXLsNNRYYEwJBGXoch1voDOXD/WBMnFly08DgF2XM7EKR+k6oZDm1/g==
-X-Received: by 2002:a1c:e0d7:: with SMTP id x206mr7833366wmg.91.1597216704160;
-        Wed, 12 Aug 2020 00:18:24 -0700 (PDT)
-Received: from steredhat ([5.180.207.22])
-        by smtp.gmail.com with ESMTPSA id w1sm2236205wmc.18.2020.08.12.00.18.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Aug 2020 00:18:23 -0700 (PDT)
-Date:   Wed, 12 Aug 2020 09:17:42 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     jhansen@vmware.com, netdev@vger.kernel.org, kuba@kernel.org,
-        decui@microsoft.com, linux-kernel@vger.kernel.org,
-        stefanha@redhat.com
-Subject: Re: [PATCH net 0/2] vsock: fix null pointer dereference and cleanup
- in vsock_poll()
-Message-ID: <20200812071742.4zoxlvu44ivunsjd@steredhat>
-References: <20200811095504.25051-1-sgarzare@redhat.com>
- <20200811.102418.1200203139092745562.davem@davemloft.net>
+        bh=eQf3+HvHKnlSe+Z7RG69UMsLhFqyCRv2tFgK/HQL7TE=;
+        b=ir7LywsrfqKoACqHxEV3oJO3K1GX/xjhbsK5/1Q4rTZ19z5/X0i9DMNIQF5tipKp3V4Qel
+        sbPWVWPAzVMkyhfxVgCGsHxbB0Tjr5meohIyXIrpPTvJts8HNN6cnvuiDDnQ5t2Fiu8ZM4
+        YKbuIe04fM1UgrQ3Yc7F+NTV9JGAK/s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-156-OPUD8D2_MLOMpShTcVxnuQ-1; Wed, 12 Aug 2020 03:48:32 -0400
+X-MC-Unique: OPUD8D2_MLOMpShTcVxnuQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 121B6102C805;
+        Wed, 12 Aug 2020 07:48:31 +0000 (UTC)
+Received: from krava (unknown [10.40.194.46])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 0EE5188F29;
+        Wed, 12 Aug 2020 07:48:27 +0000 (UTC)
+Date:   Wed, 12 Aug 2020 09:48:26 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC] bpf: verifier check for dead branch
+Message-ID: <20200812074826.GB754656@krava>
+References: <20200807173045.GC561444@krava>
+ <f13fde40-0c07-ff73-eeb3-3c59c5694f74@fb.com>
+ <20200810135451.GA699846@krava>
+ <e4abe45b-2c80-9448-677c-e352f0ecb24e@fb.com>
+ <20200811071438.GC699846@krava>
+ <f03e2ce3-8cf8-0590-1777-f9e8171cd3fa@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200811.102418.1200203139092745562.davem@davemloft.net>
+In-Reply-To: <f03e2ce3-8cf8-0590-1777-f9e8171cd3fa@fb.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 11, 2020 at 10:24:18AM -0700, David Miller wrote:
-> From: Stefano Garzarella <sgarzare@redhat.com>
-> Date: Tue, 11 Aug 2020 11:55:02 +0200
+On Tue, Aug 11, 2020 at 09:08:13AM -0700, Yonghong Song wrote:
 > 
-> > The first patch fixes a potential null pointer dereference in vsock_poll()
-> > reported by syzbot.
-> > The second patch is a simple cleanup in the same block code. I put this later,
-> > to make it easier to backport the first patch in the stable branches.
 > 
-> Please do not mix cleanups and bug fixes into the same patch series.
+> On 8/11/20 12:14 AM, Jiri Olsa wrote:
+> > On Mon, Aug 10, 2020 at 10:16:12AM -0700, Yonghong Song wrote:
+> > 
+> > SNIP
+> > 
+> > > 
+> > > Thanks for the test case. I can reproduce the issue. The following
+> > > is why this happens in llvm.
+> > > the pseudo IR code looks like
+> > >     data = skb->data
+> > >     data_end = skb->data_end
+> > >     comp = data + 42 > data_end
+> > >     ip = select "comp" nullptr "data + some offset"
+> > >           <=== select return one of nullptr or "data + some offset" based on
+> > > "comp"
+> > >     if comp   // original skb_shorter condition
+> > >        ....
+> > >     ...
+> > >        = ip
+> > > 
+> > > In llvm, bpf backend "select" actually inlined "comp" to generate proper
+> > > control flow. Therefore, comp is computed twice like below
+> > >     data = skb->data
+> > >     data_end = skb->data_end
+> > >     if (data + 42 > data_end) {
+> > >        ip = nullptr; goto block1;
+> > >     } else {
+> > >        ip = data + some_offset;
+> > >        goto block2;
+> > >     }
+> > >     ...
+> > >     if (data + 42 > data_end) // original skb_shorter condition
+> > > 
+> > > The issue can be workarounded the source. Just check data + 42 > data_end
+> > > and if failure return. Then you will be able to assign
+> > > a value to "ip" conditionally.
+> 
+> sorry for typo. The above should be "conditionally" -> "unconditionally".
 
-I did it because I was going through the same part of the code,
-but I won't do it again!
+aaah, ok ;-)
 
 > 
-> net-next is closed, so you should not be submitting non-bugfixes at
-> this time.
+> The following is what I mean:
 > 
+> diff --git a/t.c b/t.c
+> index c6baf28..7bf90dc 100644
+> --- a/t.c
+> +++ b/t.c
+> @@ -37,17 +37,10 @@
+> 
+>  static INLINE struct iphdr *get_iphdr (struct __sk_buff *skb)
+>  {
+> -       struct iphdr *ip = NULL;
+>         struct ethhdr *eth;
+> 
+> -       if (skb_shorter(skb, ETH_IPV4_UDP_SIZE))
+> -               goto out;
+> -
+>         eth = (void *)(long)skb->data;
+> -       ip = (void *)(eth + 1);
+> -
+> -out:
+> -       return ip;
+> +       return (void *)(eth + 1);
+>  }
+> 
+>  int my_prog(struct __sk_buff *skb)
+> @@ -56,9 +49,10 @@ int my_prog(struct __sk_buff *skb)
+>         struct udphdr *udp;
+>         __u8 proto = 0;
+> 
+> -       if (!(ip = get_iphdr(skb)))
+> +       if (skb_shorter(skb, ETH_IPV4_UDP_SIZE))
+>                 goto out;
+> 
+> +       ip = get_iphdr(skb);
+>         proto = ip->protocol;
+> 
+>         if (proto != IPPROTO_UDP)
+> 
+> > 
+> > > 
+> > > Will try to fix this issue in llvm12 as well.
+> > > Thanks!
+> > 
+> > great, could you please CC me on the changes?
+> 
+> This will be a llvm change. Do you have llvm phabricator login name
+> https://reviews.llvm.org/
+> so I can add you as a subscriber?
 
-I'll resend only the first patch, sorry for the noise.
+Jiri (Olsa)
+olsajiri@gmail.com
 
-Thanks,
-Stefano
+thank,
+jirka
 
