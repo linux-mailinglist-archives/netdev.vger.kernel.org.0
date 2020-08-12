@@ -2,87 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F629242F74
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 21:37:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01AE8242FD1
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 22:01:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbgHLTh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 15:37:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37408 "EHLO
+        id S1727838AbgHLUBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 16:01:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726512AbgHLTh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 15:37:28 -0400
-Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566D8C061383;
-        Wed, 12 Aug 2020 12:37:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
-         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
-        :To:From:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=HJVJVLdIn6uscZZTWFNIQe57B5+ja3f7KFs1Tp4MMSM=; b=PsXTMwmvNI7lIcug3RhqxVVlLt
-        WMBcKEROq8WZRc63OTKT/2bz22c197pYzbazzhsOPU0yGKZNTo9heHSGia7m6rCIH8sJ/3Lfp+wUl
-        VqjPhIH5qdNruG84Lo4L72xzAiN7gpkPYz0zKvDrnPQ4qvb6RymphyNo+hJXGwTcsOWe03I+L15oQ
-        O5N4MWFkdRjcvvAlT8faZxpCwmOVgvDFFD29BI8OThjdw9UTh3d/rUzdsRMuVvbjcq0VXyeVoo96s
-        ELtD99MccVnDk2NjfYjyDVXzcB2Owe88jo6aYOv7EaRYFkcZ0+ZMR5GpqqQpFaOdGWwGciONOKExb
-        pbc1jeDw==;
-Received: from noodles by the.earth.li with local (Exim 4.92)
-        (envelope-from <noodles@earth.li>)
-        id 1k5wYt-0002pQ-Ga; Wed, 12 Aug 2020 20:37:23 +0100
-Date:   Wed, 12 Aug 2020 20:37:23 +0100
-From:   Jonathan McDowell <noodles@earth.li>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 2/2] net: ethernet: stmmac: Disable hardware multicast
- filter
-Message-ID: <dc3426bce09689ea2ba5b3a1937d6a77049089f1.1597260787.git.noodles@earth.li>
-References: <cover.1597260787.git.noodles@earth.li>
+        with ESMTP id S1727823AbgHLUBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 16:01:20 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A87DC061383;
+        Wed, 12 Aug 2020 13:01:20 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id g7so450789plq.1;
+        Wed, 12 Aug 2020 13:01:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wuMDcQz/yAkAvvq+/eLeF0b83GDzc+mUTWpncJKa/qc=;
+        b=NTNf73Rg/7lKO7gPPWJL7Kp/SSDCP+Ypoe8V2wNh2rBY2pkh8yd2QWPPvvdnQHkXms
+         hsiZiOz7At1G38+n4DQhedsOjTMvZ6Xdyov8Dhzo9Y77N6e947KTqJBE9E95KT4qJKgA
+         VeIhgrspWRrpnKGDzJgvbCTdt4uKjBsJN0Y89zW/zUlHs3f6rIhBaj+JCxamTsJEUl6z
+         jhfu4m479bL0+8h1gxuw3fCTfacK+9OMdvXflV0kA0Sr7wYbYaaWmcWF8+7zAtxJ35mz
+         PemxQIOKvVd1RML9fmxPBd2L8nl2ORSOM42b0M/P/FXINm7TKLydiV8tGcySNZTnfKKV
+         OipA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wuMDcQz/yAkAvvq+/eLeF0b83GDzc+mUTWpncJKa/qc=;
+        b=GIpuaJENlz5jVDunFpJG8HSkkqzbIzELOZlrvlvpBBr2ph73EaD1VQBXZ1Bp0RuYl2
+         gnjYNyG3F0LSfDfktRuLhQs7ruGv8TKBWVwwYa1e7xQ5wYS84b+lvDwUfDC9oTsTh5k6
+         Kl8Ly1JavAwQChCIrlPW7aQCMiO7sZqIklqJNJA7ELVvRm5ZXsxTF51PSKt2Aqkh6Onr
+         BFAdoDT/ccjd/p0lQgmM9V8xoW/QQbutoyejTFNoeUwOggPpvICFNPMpjRTaryGrW7tR
+         LGVzKk6OYlSTuxpm3HIZJKBrQkwZJqkFjcqfydiitqnYO1bwNqRwPf8iNd9U14C6deB5
+         yReA==
+X-Gm-Message-State: AOAM531Xfb1910iXOfScFhNFIR/Q4WXR5r1Vh3Q9Yw3SJZi0UR1MoMP1
+        CT5cDpcmEccPtnTWVZRFKuL7B7uH
+X-Google-Smtp-Source: ABdhPJxXzsxS3PdJA8JNjlgCS8LmmjKmhrP+b6bTQBg0X8VK3Qf/RX50RwLeUrdCay2M6rLhu2GI5Q==
+X-Received: by 2002:a17:90a:e107:: with SMTP id c7mr1697574pjz.100.1597262478995;
+        Wed, 12 Aug 2020 13:01:18 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id l78sm3284595pfd.130.2020.08.12.13.01.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Aug 2020 13:01:18 -0700 (PDT)
+Subject: Re: [PATCH] ipv4: tunnel: fix compilation on ARCH=um
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Johannes Berg <johannes.berg@intel.com>
+References: <20200812210852.dc434e0b40e9.I618f37993ea3ddb2bec31e9b54e4f4ae2f7b7a51@changeid>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <f400c3f1-8bb3-b8bb-a0c0-8cae9e2179a5@gmail.com>
+Date:   Wed, 12 Aug 2020 13:01:16 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1597260787.git.noodles@earth.li>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200812210852.dc434e0b40e9.I618f37993ea3ddb2bec31e9b54e4f4ae2f7b7a51@changeid>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The IPQ806x does not appear to have a functional multicast ethernet
-address filter. This was observed as a failure to correctly receive IPv6
-packets on a LAN to the all stations address. Checking the vendor driver
-shows that it does not attempt to enable the multicast filter and
-instead falls back to receiving all multicast packets, internally
-setting ALLMULTI.
 
-Use the new fallback support in the dwmac1000 driver to correctly
-achieve the same with the mainline IPQ806x driver. Confirmed to fix IPv6
-functionality on an RB3011 router.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jonathan McDowell <noodles@earth.li>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c | 1 +
- 1 file changed, 1 insertion(+)
+On 8/12/20 12:08 PM, Johannes Berg wrote:
+> From: Johannes Berg <johannes.berg@intel.com>
+> 
+> With certain configurations, a 64-bit ARCH=um errors
+> out here with an unknown csum_ipv6_magic() function.
+> Include the right header file to always have it.
+> 
+> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+> ---
+>  net/ipv4/ip_tunnel_core.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
+> index 9ddee2a0c66d..4ecf0232ba2d 100644
+> --- a/net/ipv4/ip_tunnel_core.c
+> +++ b/net/ipv4/ip_tunnel_core.c
+> @@ -37,6 +37,7 @@
+>  #include <net/geneve.h>
+>  #include <net/vxlan.h>
+>  #include <net/erspan.h>
+> +#include <net/ip6_checksum.h>
+>  
+>  const struct ip_tunnel_encap_ops __rcu *
+>  		iptun_encaps[MAX_IPTUN_ENCAP_OPS] __read_mostly;
+> 
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-index 02102c781a8c..bf3250e0e59c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-@@ -351,6 +351,7 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
- 	plat_dat->has_gmac = true;
- 	plat_dat->bsp_priv = gmac;
- 	plat_dat->fix_mac_speed = ipq806x_gmac_fix_mac_speed;
-+	plat_dat->multicast_filter_bins = 0;
- 
- 	err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
- 	if (err)
--- 
-2.20.1
+Already fixed ?
 
+commit 8ed54f167abda44da48498876953f5b7843378df
+Author: Stefano Brivio <sbrivio@redhat.com>
+Date:   Wed Aug 5 15:39:31 2020 +0200
+
+    ip_tunnel_core: Fix build for archs without _HAVE_ARCH_IPV6_CSUM
+    
+    On architectures defining _HAVE_ARCH_IPV6_CSUM, we get
+    csum_ipv6_magic() defined by means of arch checksum.h headers. On
+    other architectures, we actually need to include net/ip6_checksum.h
+    to be able to use it.
+    
+    Without this include, building with defconfig breaks at least for
+    s390.
+    
+    Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+    Fixes: 4cb47a8644cc ("tunnels: PMTU discovery support for directly bridged IP packets")
+    Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
