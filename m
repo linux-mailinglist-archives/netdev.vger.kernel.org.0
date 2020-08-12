@@ -2,95 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C562428B5
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 13:33:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54D7F2428E7
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 13:53:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727814AbgHLLdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 07:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726804AbgHLLdE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 07:33:04 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DEC0C06174A;
-        Wed, 12 Aug 2020 04:33:03 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id r21so1610951ota.10;
-        Wed, 12 Aug 2020 04:33:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Em9Sp8XmzIpv/p2/XIEVSGX1+QelGDXMy8mBEoKzQGA=;
-        b=svUM0PtlSc/BsJ398hEypGo/dtDceKxpkxJL2XapJiufbso1e8LfFI4bXYobnoySJa
-         SRjvv9f/48b5GJPA7fHwECXPGN7eO/ub5qQngsk3EUO83vMzAXxkqcbbp5j1xemvZIq9
-         s5mftpWisvt6SbOmNG3lr1AFiu06MFhrdLN47I42cpfWHFnGFPC0kmoM7pnxUZpSyLQj
-         +N4Js6sN6aumylIuGGMt2QsXP+hkf1Ol4GBV8Uuo8S00kvpt2DD1ugHsd9sXoZ13vg/2
-         3wLqiAgbMsq3tbjK6M6brM8AX2Uig0dYIzJF4KNHkRmKijkDxBWgQ34F0o2mtUai8o4g
-         hCHA==
+        id S1727801AbgHLLxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 07:53:08 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:45069 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726404AbgHLLxG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 07:53:06 -0400
+Received: by mail-io1-f69.google.com with SMTP id q5so1332669ion.12
+        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 04:53:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Em9Sp8XmzIpv/p2/XIEVSGX1+QelGDXMy8mBEoKzQGA=;
-        b=uU9fnuYM3xvqv6N6V5WwapZ5O7kRbjc4Hp+lGA3cRh01/bXAsVrKF7RHOw8CWuhkXd
-         a/D9YSmqqJBB63Hl3teNWjlDOYF4Hl19mIBKh4r7klyT0Gbk/aowKc2uAcLdKLf8DFb9
-         jJkSoPon5cpwccJhHKkN3DAcaJvrSVrulqQoCTSsTzHZKVWZT9iwXG30e5Mel7ckoKHT
-         EzzxYM+3SoXsMdj1yYYw3Hxq6RWQfiaGm0hfJWUT1GOjwLVjZd8N8rSo5UmwIwDo/a62
-         StrdjAoUZ3BKDj/awLrkAB25cgyFpMgb/ggNsAV3KH91ZpcbcxuUDvOO7rUoDcXKSe+1
-         LIew==
-X-Gm-Message-State: AOAM531/OOF2cNjWO1nugWBXLLtTUpZXelRLUvdAqk0K09lMuL3Q8+BW
-        ZP/dSK+If+b4jKnaIQkRFNZC796z9ht4lTatyA4=
-X-Google-Smtp-Source: ABdhPJyApW1cAsqfCZE8viTLCHhX3eA/ksSTGjILeL6+zxKJ5TOuIeeZt8iyPAiUApQEScansB5N2ki5ANp9kIXSCiU=
-X-Received: by 2002:a9d:128c:: with SMTP id g12mr8585420otg.242.1597231982871;
- Wed, 12 Aug 2020 04:33:02 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=B2XBYhisqp6tEPr1SWV7r0qTPPRBG8RGgFOkZIhiErs=;
+        b=gxDWKP4BEFI/HgLNPt3gfSHaDngsvNvKCcoiYCr+3tLd7aGuXK8F4Lw7s1bCYhFWyC
+         HNHrs3cwcTitlOei/m67lmI/1jkwdiyEcXn3pFAEjpVYOH/yGdH98wKoL/pG1g8Taw/k
+         BmKK3qrixGtz5iy3zvDSr5qUNwXbn6SMBf8ENfQ86/fDGVLitPxvT4mmI+CEDZutNCpZ
+         8mXaVAweMtbtKm8t43L5/NuKmhFIBF85avmmQTCB91NBbPw8JQGVzOpAvw84G0jt3I/o
+         MZwKWFiXrlzh0mzbHiw6zI0tqKgiDWfCpdxPjSO67QJ2nuXEhnJkygBcTU7HI8p5u8JY
+         OMeQ==
+X-Gm-Message-State: AOAM532aecPpeExDldApo/t3dU+NqbZfORyKbOwmF5UneK03L0T+Dj63
+        z53DAGYyF/oIaEqGQMuMmYNkm8J4cxbQ68wiQDLkzGTN5Qu2
+X-Google-Smtp-Source: ABdhPJwSPrkgCaup1SjOCAR16Fo+u9HMyTY31ucZoFvU9HtaLXAhs87kgh1Bhqar1P+Xvom82jDtrsssjIXd6DO1+zkiyXhX5nt2
 MIME-Version: 1.0
-References: <20200716030847.1564131-1-keescook@chromium.org>
- <87h7tpa3hg.fsf@nanos.tec.linutronix.de> <202007301113.45D24C9D@keescook>
- <CAOMdWSJQKHAWY1P297b9koOLd8sVtezEYEyWGtymN1YeY27M6A@mail.gmail.com>
- <202008111427.D00FCCF@keescook> <s5hpn7wz8o6.wl-tiwai@suse.de>
-In-Reply-To: <s5hpn7wz8o6.wl-tiwai@suse.de>
-From:   Allen <allen.lkml@gmail.com>
-Date:   Wed, 12 Aug 2020 17:02:50 +0530
-Message-ID: <CAOMdWS+FJm0NZfbj+yyShX2edX6_9w5K+rA+_u+Z6-rrjcwucg@mail.gmail.com>
-Subject: Re: [PATCH 0/3] Modernize tasklet callback API
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Kees Cook <keescook@chromium.org>, devel@driverdev.osuosl.org,
-        linux-s390@vger.kernel.org, alsa-devel@alsa-project.org,
-        Oscar Carter <oscar.carter@gmx.com>,
-        Kernel Hardening <kernel-hardening@lists.openwall.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-input@vger.kernel.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Romain Perier <romain.perier@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
+X-Received: by 2002:a05:6638:13c7:: with SMTP id i7mr32115461jaj.52.1597233185871;
+ Wed, 12 Aug 2020 04:53:05 -0700 (PDT)
+Date:   Wed, 12 Aug 2020 04:53:05 -0700
+In-Reply-To: <000000000000d411cf05a8ffc4a6@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000aae24a05acacd485@google.com>
+Subject: Re: WARNING: suspicious RCU usage in tipc_l2_send_msg
+From:   syzbot <syzbot+47bbc6b678d317cccbe0@syzkaller.appspotmail.com>
+To:     arnd@arndb.de, davem@davemloft.net, gregkh@linuxfoundation.org,
+        jarkko.sakkinen@linux.intel.com, jgg@ziepe.ca, jmaloy@redhat.com,
+        jsnitsel@redhat.com, kuba@kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, peterhuewe@gmx.de,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->
-> I have a patch set to convert the remaining tasklet usage in sound
-> drivers to either the threaded IRQ or the work, but it wasn't
-> submitted / merged for 5.8 due to the obvious conflict with your API
-> changes.
-> Each conversion is rather simple, but it's always a question of the
-> nature of each tasklet usage which alternative is the best fit.
->
-> FWIW, the current version is found in test/kill-tasklet branch of
-> sound git tree
->   git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git
+syzbot has bisected this issue to:
 
-Great. Currently my tree has these converted to use the new
-tasklet_setup() api. I will add these to my threaded IRQ/work tree
-(which is still wip).
+commit 786a2aa281f4c4ba424ea8b8ea1e85ab62c4a57c
+Author: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+Date:   Mon Jul 6 20:53:42 2020 +0000
 
-Thanks.
+    Revert commit e918e570415c ("tpm_tis: Remove the HID IFX0102")
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12fc36d6900000
+start commit:   4437dd6e Merge tag 'io_uring-5.8-2020-07-12' of git://git...
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=11fc36d6900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16fc36d6900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=66ad203c2bb6d8b
+dashboard link: https://syzkaller.appspot.com/bug?extid=47bbc6b678d317cccbe0
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10c005af100000
 
--- 
-       - Allen
+Reported-by: syzbot+47bbc6b678d317cccbe0@syzkaller.appspotmail.com
+Fixes: 786a2aa281f4 ("Revert commit e918e570415c ("tpm_tis: Remove the HID IFX0102")")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
