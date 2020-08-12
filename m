@@ -2,122 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECB5324242A
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 04:59:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71350242435
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 05:16:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726472AbgHLC7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 22:59:14 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:21966 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726355AbgHLC7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 22:59:14 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 07C2qrEc004361
-        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 19:59:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=nveDaz9ZPnstwHr5avUANBycGpXuyGFPpnu3efd6xbc=;
- b=S5ZH2osG/ZO2UxRjLeMyTaMM/vYBpyP5p7WNrwQ9ns/t6n7Vq0d6SlAV+0vXAog2x+r+
- Q57uUnr5Z89SbYVd2x0+Nr2NoqD/gFagOD4D6eGLR7IqWb+9TjshLPdlyZnyHEF2ftKY
- rHr0uHhWMs9eXWzRKss24vcTPwleM0wwrRk= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 32v0kjt02t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 19:59:12 -0700
-Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 11 Aug 2020 19:59:12 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id C87402EC5953; Tue, 11 Aug 2020 19:59:09 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] tools/bpftool: make skeleton code C++17-friendly by dropping typeof()
-Date:   Tue, 11 Aug 2020 19:59:07 -0700
-Message-ID: <20200812025907.1371956-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726468AbgHLDQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 23:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56072 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726333AbgHLDQK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 23:16:10 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A54C06174A
+        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 20:16:09 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id v6so825876ota.13
+        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 20:16:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=EJWAIhw+Uzk0ukHNEXeQHpgWicYw0kiCzKoWzJ27Ie0=;
+        b=MTLiheTS0XOBt9CbpvE/Jj4f1Il433GG3u58Ab+d+6HqIca4/kDrwGkA1CmcXiMfc4
+         uCajPSlV15+FObD0QezdfhAnpKB1tNVK9ibn+aNsIIH8qGZhIyDi3wgE2024U1mM1zDn
+         vRxJwW3lJ1uS0MOv70Wi4T/IYtUNDWlmg+Skfm5S7+fnKk+sBmuSWy0Lp1R4EyNa9NIr
+         N4xWETu8BNrnqSSWcxToegtT0aca5lNK6Wd0WDiJshO5HyLnkgKks0Bnn73++kuv1iRR
+         nTH+BRc9yVp4AXWbioqyMiqhC87oGMVij1Cnh2ihOzJ/4hD7HbjMbtpMTJg8DXbD0Q8q
+         ulkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EJWAIhw+Uzk0ukHNEXeQHpgWicYw0kiCzKoWzJ27Ie0=;
+        b=Ky79l3j7FT9CWInOPQzyq1zydggRsbJSmOv70ilPFh0DfRma/atny/KcRpkTAH7rQP
+         p5lvHWUZGOYJCjM2ruj5fShOpGVdndip60yZG7OGd6ZowbhjwKCi0zQWWIhjPOzWlxa0
+         BxJnw8SyQK43JlBFqOV9BI2k9sMo8WUMEI5c3ou4eQ+U8octt9eVv60N455kl1DkTu+U
+         Mt8IWhTNybJxI0yzU6VzdwKZ2OO4+f6pRx6T/MEBm23TDU9Rq8TEtrqj5whbmx2YLzCG
+         0atpV6H0TJ/VdibZqaSNu3FhZUIg5n2AIUM1cmVqBlZcwz3Y9wM4A7CT7ko5H3pLoW7+
+         SEyA==
+X-Gm-Message-State: AOAM530iL+iEvO5rT6937w9BcNbKVQsjhLRi8fjKeQ2nNe3vfb9e4ITG
+        l3G6BUHUr5dnGXMN7Zr0qNY=
+X-Google-Smtp-Source: ABdhPJxyFzQD3DAQrsBWAMWsFbliCQWz9Cr4zQVb47PX1fsBOTsn5bOcUY1mROCWXRUD1/UVuW5ULg==
+X-Received: by 2002:a9d:5f0c:: with SMTP id f12mr7322614oti.141.1597202169425;
+        Tue, 11 Aug 2020 20:16:09 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:c1d8:5dca:975d:16e])
+        by smtp.googlemail.com with ESMTPSA id l6sm181837otd.20.2020.08.11.20.16.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Aug 2020 20:16:09 -0700 (PDT)
+Subject: Re: [PATCH net] net: accept an empty mask in
+ /sys/class/net/*/queues/rx-*/rps_cpus
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nitesh Narayan Lal <nitesh@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+References: <20200812013440.851707-1-edumazet@google.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5b61d241-fedb-f694-c0a1-e46b0dedab66@gmail.com>
+Date:   Tue, 11 Aug 2020 21:16:04 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-11_19:2020-08-11,2020-08-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- mlxscore=0 mlxlogscore=868 malwarescore=0 phishscore=0 adultscore=0
- spamscore=0 impostorscore=0 suspectscore=0 priorityscore=1501 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008120019
-X-FB-Internal: deliver
+In-Reply-To: <20200812013440.851707-1-edumazet@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Seems like C++17 standard mode doesn't recognize typeof() anymore. This c=
-an
-be tested by compiling test_cpp test with -std=3Dc++17 or -std=3Dc++1z op=
-tions.
-The use of typeof in skeleton generated code is unnecessary, all types ar=
-e
-well-known at the time of code generation, so remove all typeof()'s to ma=
-ke
-skeleton code more future-proof when interacting with C++ compilers.
+On 8/11/20 7:34 PM, Eric Dumazet wrote:
+> We must accept an empty mask in store_rps_map(), or we are not able
+> to disable RPS on a queue.
 
-Fixes: 985ead416df3 ("bpftool: Add skeleton codegen command")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/bpf/bpftool/gen.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-index 8a4c2b3b0cd6..db80e836816e 100644
---- a/tools/bpf/bpftool/gen.c
-+++ b/tools/bpf/bpftool/gen.c
-@@ -397,7 +397,7 @@ static int do_skeleton(int argc, char **argv)
- 		{							    \n\
- 			struct %1$s *obj;				    \n\
- 									    \n\
--			obj =3D (typeof(obj))calloc(1, sizeof(*obj));	    \n\
-+			obj =3D (struct %1$s *)calloc(1, sizeof(*obj));	    \n\
- 			if (!obj)					    \n\
- 				return NULL;				    \n\
- 			if (%1$s__create_skeleton(obj))			    \n\
-@@ -461,7 +461,7 @@ static int do_skeleton(int argc, char **argv)
- 		{							    \n\
- 			struct bpf_object_skeleton *s;			    \n\
- 									    \n\
--			s =3D (typeof(s))calloc(1, sizeof(*s));		    \n\
-+			s =3D (struct bpf_object_skeleton *)calloc(1, sizeof(*s));\n\
- 			if (!s)						    \n\
- 				return -1;				    \n\
- 			obj->skeleton =3D s;				    \n\
-@@ -479,7 +479,7 @@ static int do_skeleton(int argc, char **argv)
- 				/* maps */				    \n\
- 				s->map_cnt =3D %zu;			    \n\
- 				s->map_skel_sz =3D sizeof(*s->maps);	    \n\
--				s->maps =3D (typeof(s->maps))calloc(s->map_cnt, s->map_skel_sz);\n\
-+				s->maps =3D (struct bpf_map_skeleton *)calloc(s->map_cnt, s->map_ske=
-l_sz);\n\
- 				if (!s->maps)				    \n\
- 					goto err;			    \n\
- 			",
-@@ -515,7 +515,7 @@ static int do_skeleton(int argc, char **argv)
- 				/* programs */				    \n\
- 				s->prog_cnt =3D %zu;			    \n\
- 				s->prog_skel_sz =3D sizeof(*s->progs);	    \n\
--				s->progs =3D (typeof(s->progs))calloc(s->prog_cnt, s->prog_skel_sz);=
-\n\
-+				s->progs =3D (struct bpf_prog_skeleton *)calloc(s->prog_cnt, s->prog=
-_skel_sz);\n\
- 				if (!s->progs)				    \n\
- 					goto err;			    \n\
- 			",
---=20
-2.24.1
-
+0 works. Is that not sufficient?
