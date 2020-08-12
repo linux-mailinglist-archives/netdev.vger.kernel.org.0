@@ -2,56 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 924C4242C45
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 17:44:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6CE242C4E
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 17:47:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726510AbgHLPos (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 11:44:48 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51008 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726226AbgHLPos (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Aug 2020 11:44:48 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k5svc-0099uI-FY; Wed, 12 Aug 2020 17:44:36 +0200
-Date:   Wed, 12 Aug 2020 17:44:36 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Chris Healy <cphealy@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC russell-king 3/4] net: phy: marvell10g: change
- MACTYPE according to phydev->interface
-Message-ID: <20200812154436.GH2141651@lunn.ch>
-References: <20200810220645.19326-1-marek.behun@nic.cz>
- <20200810220645.19326-4-marek.behun@nic.cz>
- <20200811152144.GN1551@shell.armlinux.org.uk>
- <20200812164431.34cf569f@dellmb.labs.office.nic.cz>
- <20200812150054.GP1551@shell.armlinux.org.uk>
+        id S1726521AbgHLPrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 11:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726492AbgHLPrT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 11:47:19 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79F5C061384
+        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 08:47:19 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id s16so1794783qtn.7
+        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 08:47:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=AqtIjZGnF/YoWS6U85MsRctEA34IzLKpCIZZ8q1HDHA=;
+        b=s4LooCt0XRZNigxnyEEdagbjMIEFL4vsZWtcMANW3oso9wVko68kSVK7J+NNQJRcoj
+         A1QKNtGTPwuHkyRN9LzA9iMxpmtEDDSOPqpqD6lRe8JJ53a7Hie4MuKM0axaerkYTiwA
+         DVFBTyuPpVGn4MePa6vQo0bkCEcuy3O8Uf0F1P3D2DNZ1KiN0SdRspXHYVwQyPxYyP00
+         lf7qtwQ8msPa53mb8H7NfPAp/sFLsZresAgXJ1G6z/cHIXNAHNlmEwEu8XUkPAmIRsJ6
+         csW+hAzkxRm1cr4XktWJjsfzOLGSfa5QtEgY/g9rIP7iv1VZ91EBI3P8jQBJIS5DDWTE
+         DstQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=AqtIjZGnF/YoWS6U85MsRctEA34IzLKpCIZZ8q1HDHA=;
+        b=e0VbagkQK80BJajr7xaD5oJekY+2vJdRbPSPZQBb2xm2EzcpM18dQfoWtsTe8Ln/2E
+         0J3z+PLVjRyXRVwkYDv1ftjs8Hadyzc+u8h2hm/z0UYBYYhws7Lm5h5onq0KgkP9ZsrI
+         VGk08jusPLNur5E0lJOn+NJLaAiuLUyK82ipUU8t28yyymRABbwiiPZ7FTgxWjz6rN4f
+         PAq0B0l8Os2MS+uk1h61RSmwawHhEcfcFqA8GVNR9gMnZ05FxS/jJ66KD2KDgXCaMItn
+         d+P0M/xAb3eZy+T5B2Ar8VVNpWsMUm5Bi9m9UJCSOl/PeuXBJyh86uzfDs0m8lZkxL/t
+         TCBQ==
+X-Gm-Message-State: AOAM532ybd6hWCSVFlYmRknepiqKbMIq8pRm1RrX7EcBws7nTtnIRmnb
+        CJPHG5srSNqh6RBEmwRg0JTbxj/OgPjjmkweZC0KpQ==
+X-Google-Smtp-Source: ABdhPJxIcQFDoLKMo668z6GQjaJZbrtLV7n6RgX63h/b6wZG+TBWfA7NGOv36Nea+b7AsuZfSI0foU+yNqLshfe8/gs=
+X-Received: by 2002:ac8:4e2f:: with SMTP id d15mr252258qtw.20.1597247237751;
+ Wed, 12 Aug 2020 08:47:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200812150054.GP1551@shell.armlinux.org.uk>
+References: <20200812022923.1217922-1-andriin@fb.com> <87imdo1ajl.fsf@toke.dk>
+In-Reply-To: <87imdo1ajl.fsf@toke.dk>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 12 Aug 2020 08:47:06 -0700
+Message-ID: <CAKH8qBuz48Ww6S=DCzKRr3f46Eq3LyknvTjDGP_5QRPxtGZ_Hw@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: fix XDP FD-based attach/detach logic around XDP_FLAGS_UPDATE_IF_NOEXIST
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I'm aware of that problem.  I have some experimental patches which add
-> PHY interface mode bitmaps to the MAC, PHY, and SFP module parsing
-> functions.  I have stumbled on some problems though - it's going to be
-> another API change (and people are already whinging about the phylink
-> API changing "too quickly", were too quickly seems to be defined as
-> once in three years), and in some cases, DSA, it's extremely hard to
-> work out how to properly set such a bitmap due to DSA's layered
-> approach.
+On Wed, Aug 12, 2020 at 2:24 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Andrii Nakryiko <andriin@fb.com> writes:
+>
+> > Enforce XDP_FLAGS_UPDATE_IF_NOEXIST only if new BPF program to be attac=
+hed is
+> > non-NULL (i.e., we are not detaching a BPF program).
+> >
+> > Reported-by: Stanislav Fomichev <sdf@google.com>
+> > Fixes: d4baa9368a5e ("bpf, xdp: Extract common XDP program attachment l=
+ogic")
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>
+> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+That fixed it for me, thank you!
 
-Hi Russell
-
-If DSAs layering is causing real problems, we could rip it out, and
-let the driver directly interact with phylink. I'm not opposed to
-that.
-
-	Andrew
+Tested-by: Stanislav Fomichev <sdf@google.com>
