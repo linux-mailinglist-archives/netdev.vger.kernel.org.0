@@ -2,102 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D32242BC1
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 17:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E504242BF1
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 17:13:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbgHLPA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 11:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726226AbgHLPA5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 11:00:57 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A68C061383
-        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 08:00:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=oL4eoDcbzFX3VV+qDqTG7w7eCi+IfPlSB5eO3zYffmY=; b=ZmunQALOydD6xXz4js62mylZB
-        EVEoB849VaiiDcDoQ9xIFhg0PW+DTYuYSYvFjpsiEjom/Mb5zPUhvrnR+TFdmRdaRPVqSMsjIu+WB
-        O3PisUykTxOmuSP0qdrT9ETKPFs0UhAS4oseULC4/2HKJO71Z384N+xMPIFY7xqaRsRMq3PS7yWKV
-        BG/U443I1ABtGa4asjc68LD/exLhO0QBEp7eJITymI1zlRZXGNplasCFyGTu9AAlIHE6o7GJI3ePZ
-        pdpWbEpCuoIWi1MUHweK2y+MNEi2TwQtqZKn5JDOqbB31uINLbcI6NevDuXW4Zgw/qiPFKjshe0cF
-        rRjAwD8sQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51592)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1k5sFL-0002lp-38; Wed, 12 Aug 2020 16:00:55 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1k5sFK-0003tX-E8; Wed, 12 Aug 2020 16:00:54 +0100
-Date:   Wed, 12 Aug 2020 16:00:54 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Chris Healy <cphealy@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC russell-king 3/4] net: phy: marvell10g: change
- MACTYPE according to phydev->interface
-Message-ID: <20200812150054.GP1551@shell.armlinux.org.uk>
-References: <20200810220645.19326-1-marek.behun@nic.cz>
- <20200810220645.19326-4-marek.behun@nic.cz>
- <20200811152144.GN1551@shell.armlinux.org.uk>
- <20200812164431.34cf569f@dellmb.labs.office.nic.cz>
+        id S1726554AbgHLPNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 11:13:13 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:52774 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726226AbgHLPNL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 11:13:11 -0400
+Date:   Wed, 12 Aug 2020 17:13:08 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1597245189;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JCJiGTxrDLupMg+yO16LXfFAQR4TCNL4cbGhGUmaS3M=;
+        b=E5c7MUw1hAOabGrMJkz+wUkYVb56y1C4pjThhNvYaG6Q8BgCxdbQ/Ni5NAIotJ4EdulYfu
+        d6Mh+sUGSzLRCNKj/AVlPwX72cS4JldmQhwouevP++LzPFol6RE5PeujWW4mh77d4r370N
+        vBHHnQkv1zmGZt1Sp886jsExRJdft+75MppzZ6B8gzIgucIorIsKI+6BH4cYsA/Z5QqUmV
+        vhXZSalaX/k82WiW1BqS1esQMG89itxhJoL703lB0GPhdLwUuEgBQWOsCwskSha8Oes01t
+        tTBUgdS5nqlho55R2+yMcYok5QPdqNIiDPO1VpSgf0ZNvzpWp2J8frTXeHln2A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1597245189;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JCJiGTxrDLupMg+yO16LXfFAQR4TCNL4cbGhGUmaS3M=;
+        b=KWDVxnDT6R0PBhPUaht+xH0ck7102Z1DAAFSU8vI3t6hA23W9wEBpaSHasL5DhW8Bz4oVe
+        Qeit6hPBPPLtAbBg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, Jiafei.Pan@nxp.com,
+        kuba@kernel.org, netdev@vger.kernel.org, claudiu.manoil@nxp.com,
+        ioana.ciornei@nxp.com, yangbo.lu@nxp.com,
+        linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] enetc: use napi_schedule to be compatible
+ with PREEMPT_RT
+Message-ID: <20200812151308.rlbtrbxycxfu7tvi@linutronix.de>
+References: <20200803201009.613147-1-olteanv@gmail.com>
+ <20200803201009.613147-2-olteanv@gmail.com>
+ <20200803.182145.2300252460016431673.davem@davemloft.net>
+ <20200812135144.hpsfgxusojdrsewl@linutronix.de>
+ <20200812143430.xuzg2ddsl7ouhn5m@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200812164431.34cf569f@dellmb.labs.office.nic.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200812143430.xuzg2ddsl7ouhn5m@skbuf>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 12, 2020 at 04:44:31PM +0200, Marek Behún wrote:
-> There is another problem though: I think the PHY driver, when deciding
-> whether to set MACTYPE from the XFI with rate matching mode to the
-> 10GBASE-R/5GBASE-R/2500BASE-X/SGMII with AN mode, should check which
-> modes the underlying MAC support.
+On 2020-08-12 17:34:30 [+0300], Vladimir Oltean wrote:
+> I expect the driver maintainers to have something to say about this. I
+> didn't test on stable kernels, and at least for dpaa2-eth, the change
+> would need to go pretty deep down the stable line.
 
-I'm aware of that problem.  I have some experimental patches which add
-PHY interface mode bitmaps to the MAC, PHY, and SFP module parsing
-functions.  I have stumbled on some problems though - it's going to be
-another API change (and people are already whinging about the phylink
-API changing "too quickly", were too quickly seems to be defined as
-once in three years), and in some cases, DSA, it's extremely hard to
-work out how to properly set such a bitmap due to DSA's layered
-approach.
+Yes, each affected and maintained stable kernel. This would also ensure
+that it is part stable-RT trees.
 
-Having bitmaps means that we can take the union of what the MAC and
-PHY supports, and decide which MACTYPE setting would be most suitable.
-However, to do that we're into also changing phylib's interfaces as
-well.
+> Also, not really sure who is using the threadirqs option except for
+> testing purposes.
 
-> driver to phylink in the call to phylink_create. But there is no way
-> for the PHY driver to get this information from phylink currently, and
-> even if phylink exposed a function to return the config member of
-> struct phylink, the problem is that at the time when mv3310_power_up is
-> called, the phydev->phylink is not yet set (this is done in
-> phylink_bringup_phy, and mv3310_power_up is called sometime in the
-> phylink_attach_phy).
+Oh.
 
-We _really_ do not want phylib calling back into phylink functions.
-That would tie phylink functionality into phylib and cause problems
-when phylink is not being used.
+> Thanks,
+> -Vladimir
 
-I would prefer phylib to be passed "the MAC can use these interface
-types, and would prefer to use this interface type" and have the
-phylib layer (along with the phylib driver) make the decision about
-which mode should be used.  That also means that non-phylink MACs
-can also use it.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Sebastian
