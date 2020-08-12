@@ -2,72 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54D7F2428E7
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 13:53:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C178242952
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 14:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727801AbgHLLxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 07:53:08 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:45069 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726404AbgHLLxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 07:53:06 -0400
-Received: by mail-io1-f69.google.com with SMTP id q5so1332669ion.12
-        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 04:53:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=B2XBYhisqp6tEPr1SWV7r0qTPPRBG8RGgFOkZIhiErs=;
-        b=gxDWKP4BEFI/HgLNPt3gfSHaDngsvNvKCcoiYCr+3tLd7aGuXK8F4Lw7s1bCYhFWyC
-         HNHrs3cwcTitlOei/m67lmI/1jkwdiyEcXn3pFAEjpVYOH/yGdH98wKoL/pG1g8Taw/k
-         BmKK3qrixGtz5iy3zvDSr5qUNwXbn6SMBf8ENfQ86/fDGVLitPxvT4mmI+CEDZutNCpZ
-         8mXaVAweMtbtKm8t43L5/NuKmhFIBF85avmmQTCB91NBbPw8JQGVzOpAvw84G0jt3I/o
-         MZwKWFiXrlzh0mzbHiw6zI0tqKgiDWfCpdxPjSO67QJ2nuXEhnJkygBcTU7HI8p5u8JY
-         OMeQ==
-X-Gm-Message-State: AOAM532aecPpeExDldApo/t3dU+NqbZfORyKbOwmF5UneK03L0T+Dj63
-        z53DAGYyF/oIaEqGQMuMmYNkm8J4cxbQ68wiQDLkzGTN5Qu2
-X-Google-Smtp-Source: ABdhPJwSPrkgCaup1SjOCAR16Fo+u9HMyTY31ucZoFvU9HtaLXAhs87kgh1Bhqar1P+Xvom82jDtrsssjIXd6DO1+zkiyXhX5nt2
+        id S1727945AbgHLMbP convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 12 Aug 2020 08:31:15 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:36464 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727780AbgHLMbP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 08:31:15 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-71-kGLdQcsNOBislaL2_Ax9eA-1; Wed, 12 Aug 2020 08:31:09 -0400
+X-MC-Unique: kGLdQcsNOBislaL2_Ax9eA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8A11C1005504;
+        Wed, 12 Aug 2020 12:31:07 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.40.192.161])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DD0FF5D9D3;
+        Wed, 12 Aug 2020 12:31:03 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [RFC PATCH bpf-next] bpf: Iterate through all PT_NOTE sections when looking for build id
+Date:   Wed, 12 Aug 2020 14:31:02 +0200
+Message-Id: <20200812123102.20032-1-jolsa@kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:13c7:: with SMTP id i7mr32115461jaj.52.1597233185871;
- Wed, 12 Aug 2020 04:53:05 -0700 (PDT)
-Date:   Wed, 12 Aug 2020 04:53:05 -0700
-In-Reply-To: <000000000000d411cf05a8ffc4a6@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000aae24a05acacd485@google.com>
-Subject: Re: WARNING: suspicious RCU usage in tipc_l2_send_msg
-From:   syzbot <syzbot+47bbc6b678d317cccbe0@syzkaller.appspotmail.com>
-To:     arnd@arndb.de, davem@davemloft.net, gregkh@linuxfoundation.org,
-        jarkko.sakkinen@linux.intel.com, jgg@ziepe.ca, jmaloy@redhat.com,
-        jsnitsel@redhat.com, kuba@kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, peterhuewe@gmx.de,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0.001
+X-Mimecast-Originator: kernel.org
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+Currently when we look for build id within bpf_get_stackid helper
+call, we check the first NOTE section and we fail if build id is
+not there.
 
-commit 786a2aa281f4c4ba424ea8b8ea1e85ab62c4a57c
-Author: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
-Date:   Mon Jul 6 20:53:42 2020 +0000
+However on some system (Fedora) there can be multiple NOTE sections
+in binaries and build id data is not always the first one, like:
 
-    Revert commit e918e570415c ("tpm_tis: Remove the HID IFX0102")
+  $ readelf -a /usr/bin/ls
+  ...
+  [ 2] .note.gnu.propert NOTE             0000000000000338  00000338
+       0000000000000020  0000000000000000   A       0     0     8358
+  [ 3] .note.gnu.build-i NOTE             0000000000000358  00000358
+       0000000000000024  0000000000000000   A       0     0     437c
+  [ 4] .note.ABI-tag     NOTE             000000000000037c  0000037c
+  ...
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12fc36d6900000
-start commit:   4437dd6e Merge tag 'io_uring-5.8-2020-07-12' of git://git...
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=11fc36d6900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=16fc36d6900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=66ad203c2bb6d8b
-dashboard link: https://syzkaller.appspot.com/bug?extid=47bbc6b678d317cccbe0
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10c005af100000
+So the stack_map_get_build_id function will fail on build id retrieval
+and fallback to BPF_STACK_BUILD_ID_IP.
 
-Reported-by: syzbot+47bbc6b678d317cccbe0@syzkaller.appspotmail.com
-Fixes: 786a2aa281f4 ("Revert commit e918e570415c ("tpm_tis: Remove the HID IFX0102")")
+This patch is changing the stack_map_get_build_id code to iterate
+through all the NOTE sections and try to get build id data from
+each of them.
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+When tracing on sched_switch tracepoint that does bpf_get_stackid
+helper call kernel build, I can see about 60% increase of successful
+build id retrieval. The rest seems fails on -EFAULT.
+
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ kernel/bpf/stackmap.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
+
+diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
+index 4fd830a62be2..cfed0ac44d38 100644
+--- a/kernel/bpf/stackmap.c
++++ b/kernel/bpf/stackmap.c
+@@ -213,11 +213,13 @@ static int stack_map_get_build_id_32(void *page_addr,
+ 
+ 	phdr = (Elf32_Phdr *)(page_addr + sizeof(Elf32_Ehdr));
+ 
+-	for (i = 0; i < ehdr->e_phnum; ++i)
+-		if (phdr[i].p_type == PT_NOTE)
+-			return stack_map_parse_build_id(page_addr, build_id,
+-					page_addr + phdr[i].p_offset,
+-					phdr[i].p_filesz);
++	for (i = 0; i < ehdr->e_phnum; ++i) {
++		if (phdr[i].p_type == PT_NOTE &&
++		    !stack_map_parse_build_id(page_addr, build_id,
++					      page_addr + phdr[i].p_offset,
++					      phdr[i].p_filesz))
++			return 0;
++	}
+ 	return -EINVAL;
+ }
+ 
+@@ -236,11 +238,13 @@ static int stack_map_get_build_id_64(void *page_addr,
+ 
+ 	phdr = (Elf64_Phdr *)(page_addr + sizeof(Elf64_Ehdr));
+ 
+-	for (i = 0; i < ehdr->e_phnum; ++i)
+-		if (phdr[i].p_type == PT_NOTE)
+-			return stack_map_parse_build_id(page_addr, build_id,
+-					page_addr + phdr[i].p_offset,
+-					phdr[i].p_filesz);
++	for (i = 0; i < ehdr->e_phnum; ++i) {
++		if (phdr[i].p_type == PT_NOTE &&
++		    !stack_map_parse_build_id(page_addr, build_id,
++					      page_addr + phdr[i].p_offset,
++					      phdr[i].p_filesz))
++			return 0;
++	}
+ 	return -EINVAL;
+ }
+ 
+-- 
+2.25.4
+
