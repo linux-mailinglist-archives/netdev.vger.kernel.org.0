@@ -2,93 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 210E624306A
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 23:14:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7437324306D
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 23:16:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726547AbgHLVOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 17:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52250 "EHLO
+        id S1726587AbgHLVQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 17:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726030AbgHLVOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 17:14:01 -0400
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA340C061383;
-        Wed, 12 Aug 2020 14:14:01 -0700 (PDT)
-Received: by mail-oi1-x244.google.com with SMTP id 25so3163018oir.0;
-        Wed, 12 Aug 2020 14:14:01 -0700 (PDT)
+        with ESMTP id S1726528AbgHLVQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 17:16:51 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455CCC061383
+        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 14:16:51 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id z6so4585349iow.6
+        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 14:16:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=reyd1vwqqkrdy9zAyokM8csmESFkkcbB8ZgkgSPNKDo=;
-        b=pv1hW/6iYpjj+bJbUU2CLIalE9pyu/RW3RXCByCY7GqeT5V+XHSIBD0EmzfT04x9pZ
-         Hm4iH+1n28Z5+S+qZpyOCszii6Ra+D1glAPRqW3c4oYPNrn6Z4Z09wll8kcjW5uAAbcf
-         DLXfQlIhElgcJ+1UpvlwbS3fIdScBJRlVf09lyntwAMwL6uxAP4xvwJm1tFM+N9LPJPx
-         PqkFpFL+Fa5D7wZGsWhAtB6Y+TqzxSNXYJ+9eD/Sa+Ae4jIMSY9iI4gU2ZIxSgcCwMOT
-         fLNAg929fXM5PM9HxPRihfPeEMqHSioF/WDix27tRjS4YPnroAsH7wz7PLdPhyi4SbfV
-         EvsA==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=h4M69430nR1pS53r9bUi2Zzgztsu1K0gn+/eIjVXJuw=;
+        b=sWuJz7t/efgDisJqydAci5RZKmQiVKgmHkXNG0wqp6jfuNezTlwdzAgXcQmXng4G29
+         w8TInoKXSGhk26Glzi2QYF7/DBGjfE48C1j83hWHPsKJaTMO8P1JSUytOfc8Z6b6TghW
+         xTxQEvmqFCznnCVLub9kl0JOH837L+S9TrHwG+ApTstelDmkm9QsKfFQQgAbSLSTsGzb
+         kQ+V1lgwoCd3+hgwqfVBLkyF1EH4DM/xnAKO3h424sGtNONg3DI2zYjRfcVoeawH/URa
+         lBgdQwLErxV6WdnYFEgC8LOt41O6jt/3tai37SuVq7KTLsbko/ZxBpux0bWn1T18n4lb
+         Vz1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=reyd1vwqqkrdy9zAyokM8csmESFkkcbB8ZgkgSPNKDo=;
-        b=fb1eRYtXoF/okyQczgvSDGzvRDlpPMS2RirHkAbe8XZkOQWklhHwN222RbauG0WEEs
-         F4/tnx0sXBYMJYjgD9Puk8wodYGhjxlhUiEebHec7r068ltG38rDGm70rVtDKuMNnBMF
-         VR+c6OvP5Z9Hc+vFiyYK4Cc7Uu+szBkGAZ23x8IrZM+lt33XginpFFeSxDX6dR+01cGl
-         zxJ16WI41qUBlyBez9MQG1FQNkeoV++tbJzBPh8bhTPToksusoJ4NGGwcwL3NiNPyxCV
-         3aUrbMKZcXJ8hk9bbn/RXNWHTByoPZhPd+oZwjx3+tHZ18YQg1ZcOGdkSNfZISHCKAII
-         lUPA==
-X-Gm-Message-State: AOAM531ipV/Wh1TZo7/93TB1BD5FGtPkxzRPmg/aeEzezSO9fLTz3dIi
-        qBHHvCwF+bn6iDwQ/OonwvY=
-X-Google-Smtp-Source: ABdhPJzx/uSz6TcNEGENiqPatkGerpxhDXYOuqc4Wf65lCKXbsV97NKqjp4sUXUXat6CkafBhZ+1RA==
-X-Received: by 2002:a05:6808:610:: with SMTP id y16mr909433oih.0.1597266840556;
-        Wed, 12 Aug 2020 14:14:00 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:c1d8:5dca:975d:16e])
-        by smtp.googlemail.com with ESMTPSA id y66sm675085otb.37.2020.08.12.14.13.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Aug 2020 14:13:59 -0700 (PDT)
-Subject: Re: [RFC PATCH bpf-next] bpf: add bpf_get_skb_hash helper function
-To:     "Ramamurthy, Harshitha" <harshitha.ramamurthy@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>, "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>, "andriin@fb.com" <andriin@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@chromium.org" <kpsingh@chromium.org>,
-        "hawk@kernel.org" <hawk@kernel.org>
-Cc:     "Herbert, Tom" <tom.herbert@intel.com>,
-        "Keller, Jacob E" <jacob.e.keller@intel.com>,
-        "Duyck, Alexander H" <alexander.h.duyck@intel.com>,
-        "Wyborny, Carolyn" <carolyn.wyborny@intel.com>
-References: <20200810182841.10953-1-harshitha.ramamurthy@intel.com>
- <bf183ea6-7b68-3416-2a61-9d3bbf084230@gmail.com>
- <MW3PR11MB45220E877ED544FEBC1FF01885450@MW3PR11MB4522.namprd11.prod.outlook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <ca36641c-8360-c2d5-7cde-f4c7d933520a@gmail.com>
-Date:   Wed, 12 Aug 2020 15:13:52 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=h4M69430nR1pS53r9bUi2Zzgztsu1K0gn+/eIjVXJuw=;
+        b=UUPtaRcn8UZ8yzB1V1X5BxGvsbnbdSmTjitxtxzxae6Lh/F2xdtYfGgsoL2Ke/F68y
+         4EP/7Mb3Uw6rGDNdaVkGKSuu9AzftXYG+RMPbd2LnJd2Thgvf6BaI9Ic0TjgZm2fkDxl
+         YROK8GgWiofb+1sTiMjP3gOzm40b17RLssoCzOOUCdq/ijoH3IR0c/dQIt/o3RrGFr6i
+         ufw5xojnPJSRRBkvscNvHHoGhjfyOiD8cgiGC9dZnr4lWiqfIIRpyPlSpbJoEQoLjDoh
+         PduJHErlzBjyScVQaiCKVCu1hueCDyLLPRomwD7l8SasVGWx8CcML7+tRLRzcis8Bp6I
+         VQ6Q==
+X-Gm-Message-State: AOAM533wuAxrDOVCb840jN9Hfsv0OBm0uSs85n2CFJGJaoEpBeGj1Z/J
+        jRhljHXY3oSXPww7a4L+vq3T3Q505OMc2BPaSN3522jY/7Y=
+X-Google-Smtp-Source: ABdhPJzt4Lg/xqB67mBF5Ea4UqBNU0rFyf1PVtIlWkqwY1BEYqfFrciEE619ABvC5ZpYbbuRxeM9BBuKauvy7hePR0o=
+X-Received: by 2002:a5d:9c0c:: with SMTP id 12mr1760635ioe.142.1597267010078;
+ Wed, 12 Aug 2020 14:16:50 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <MW3PR11MB45220E877ED544FEBC1FF01885450@MW3PR11MB4522.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From:   Denis Gubin <denis.gubin@gmail.com>
+Date:   Thu, 13 Aug 2020 00:16:16 +0300
+Message-ID: <CAE_-sd=_2Skp4wY51rerHopU0ZiKPDxQ5Hd0F8qZTOrC7qNYRg@mail.gmail.com>
+Subject: tc -j filter show with actions is not json valid
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/11/20 3:55 PM, Ramamurthy, Harshitha wrote:
-> is a pre-cursor to potentially calling the in-kernel flow dissector from
-> a helper function.
-> 
+Hello everybody!
 
-That is going to be a challenge to do in a way that does not impact the
-kernel's ability to change as needed, and I suspect it will be much
-slower than doing in ebpf. Modular ebpf code that can be adapted to use
-cases is going to be more appropriate for XDP for example.
+Could you help me, please?
+
+I use Debian 10 and iproute2 version iproute2
+
+dpkg -l iproute2
+iproute2       4.20.0-2 amd64
+
+My problem is this:
+I can't convert "tc -j filter show u32" command to  json format.
+Here it is command:
+tc qdisc add dev eno1 ingress
+tc filter add dev eno1 parent ffff: protocol all u32 match u8 0 0
+action mirred egress mirror dev lo
+
+Have a look:
+
+~$ tc -j filter show parent ffff: dev eno1
+[{
+        "protocol": "all",
+        "pref": 49152,
+        "kind": "u32",
+        "chain": 0
+    },{
+        "protocol": "all",
+        "pref": 49152,
+        "kind": "u32",
+        "chain": 0,
+        "options": {fh 800: ht divisor 1 }
+    },{
+        "protocol": "all",
+        "pref": 49152,
+        "kind": "u32",
+        "chain": 0,
+        "options": {fh 800::800 order 2048 key ht 800 bkt 0 terminal
+flowid ??? not_in_hw
+  match 00000000/00000000 at 0
+            "actions": [{
+                    "order": 1,
+                    "kind": "mirred",
+                    "mirred_action": "mirror",
+                    "direction": "egress",
+                    "to_dev": "lo",
+                    "control_action": {
+                        "type": "pipe"
+                    },
+                    "index": 1,
+                    "ref": 1,
+                    "bind": 1
+                }]
+        }
+    }
+]
+
+
+May be problem when there is actions in tc filter the problem is... I
+don't know about it.
+Have a look:
+
+"options": {fh 800::800 order 2048 key ht 800 bkt 0 terminal flowid
+??? not_in_hw
+  match 00000000/00000000 at 0
+    "actions":
+
+The json output is not valid.
+Has somebody made a patch for fix it?
+
+Thanks a lot for your answers!
+
+-- 
+Best regards,
+Denis Gubin
