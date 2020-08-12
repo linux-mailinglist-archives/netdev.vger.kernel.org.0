@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29799242B84
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 16:42:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35213242B89
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 16:44:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbgHLOmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 10:42:04 -0400
-Received: from mail.nic.cz ([217.31.204.67]:55636 "EHLO mail.nic.cz"
+        id S1726593AbgHLOoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 10:44:34 -0400
+Received: from lists.nic.cz ([217.31.204.67]:56474 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726434AbgHLOmD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Aug 2020 10:42:03 -0400
+        id S1726434AbgHLOod (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Aug 2020 10:44:33 -0400
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTPSA id C74B5140A47;
-        Wed, 12 Aug 2020 16:42:01 +0200 (CEST)
+        by mail.nic.cz (Postfix) with ESMTPSA id 187301409F0;
+        Wed, 12 Aug 2020 16:44:32 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1597243321; bh=1BHQvUyqiTJjXO5sXvnOxKqytUTIapYn6qKietE0OKo=;
+        t=1597243472; bh=j/Xy/ln7drrzlhjMVqpI25k4TjriVA6TyKFW7xKKb3s=;
         h=Date:From:To;
-        b=rmCIypn2o0A6E7bfwteJHTWjOk4tfuzZ6Th6IJHg6xHJ6DES2f49yYbU/CEOH1eZz
-         PyCVqRmFE162G8MPm8At2yKC/M/Ykhc5l6D/I/toflldtdXbqFA1h4+j7wgQI9ec5W
-         hgLWSYMpPFTY8nEduuKUmWwfrVJ3BBL/6MWeBa3U=
-Date:   Wed, 12 Aug 2020 16:42:01 +0200
+        b=XjykjXMzgVQuVw6/bVtt8nTuyo79SzqDsClomi4E51d75RoUeTsVv0+ZPA9ROy2tt
+         JwOmEB5+h5KSwwcggOs24NuzIxRWFHH6eLhSRvuhcx8hQso9lDrt+w7I/q82MlxHOo
+         nBS5RtX6ZtPVAea0w5561Ln1wuOKnsVRflULzOHE=
+Date:   Wed, 12 Aug 2020 16:44:31 +0200
 From:   Marek =?ISO-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
 To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -28,15 +28,13 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Baruch Siach <baruch@tkos.co.il>,
         Chris Healy <cphealy@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC russell-king 2/4] net: phy: sfp: add support for
- multigig RollBall modules
-Message-ID: <20200812164201.02a2a5c2@dellmb.labs.office.nic.cz>
-In-Reply-To: <20200812143303.GO1551@shell.armlinux.org.uk>
+Subject: Re: [PATCH RFC russell-king 3/4] net: phy: marvell10g: change
+ MACTYPE according to phydev->interface
+Message-ID: <20200812164431.34cf569f@dellmb.labs.office.nic.cz>
+In-Reply-To: <20200811152144.GN1551@shell.armlinux.org.uk>
 References: <20200810220645.19326-1-marek.behun@nic.cz>
-        <20200810220645.19326-3-marek.behun@nic.cz>
-        <20200811151552.GM1551@shell.armlinux.org.uk>
-        <20200812153326.71b84e45@dellmb.labs.office.nic.cz>
-        <20200812143303.GO1551@shell.armlinux.org.uk>
+        <20200810220645.19326-4-marek.behun@nic.cz>
+        <20200811152144.GN1551@shell.armlinux.org.uk>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
@@ -51,53 +49,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Aug 2020 15:33:04 +0100
+On Tue, 11 Aug 2020 16:21:44 +0100
 Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
 
-> On Wed, Aug 12, 2020 at 03:33:26PM +0200, Marek Beh=FAn wrote:
-> > On Tue, 11 Aug 2020 16:15:53 +0100
-> > Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> >  =20
-> > > > +	if (rollball) {
-> > > > +		/* TODO: try to write this to EEPROM */
-> > > > +		id.base.extended_cc =3D
-> > > > SFF8024_ECC_10GBASE_T_SFI;   =20
-> > >=20
-> > > Should we really be "fixing" vendors EEPROMs for them?
-> > >  =20
+> On Tue, Aug 11, 2020 at 12:06:44AM +0200, Marek Beh=FAn wrote:
+> > RollBall SFPs contain Marvell 88X3310 PHY, but they have
+> > configuration pins strapped so that MACTYPE is configured in XFI
+> > with Rate Matching mode.
 > >=20
-> > Are you reffering to the TODO comment or the id.base.extended_cc
-> > assignment?
-> > If the comment, well, your code does it for cotsworks modules, but
-> > I am actually indifferent. =20
+> > When these SFPs are inserted into a device which only supports lower
+> > speeds on host interface, we need to configure the MACTYPE to a mode
+> > in which the H unit changes SerDes speed according to speed on the
+> > copper interface. I chose to use the
+> > 10GBASE-R/5GBASE-R/2500BASE-X/SGMII with AN mode. =20
 >=20
-> No, that's Chris' code, and there's quite a bit of history there:
-> It appears Cotsworks programmed things like the serial number into
-> the EEPROM and did not update the checksums.  After quite some time,
-> it seems Cotsworks have seen sense, and have fixed their production
-> line to properly program the EEPROM, but that leaves a whole bunch
-> of modules with bad checksums.
+> We actually need to have more inteligence in the driver, since we
+> actually assume that it is in the 10GBASE-R/5GBASE-R/2500BASE-X/SGMII
+> mode without really checking.
 >=20
-> I'm more than happy that we should continue issuing the warning, but
-> Chris has decided to fix them up.  I'm not particularly happy with
-> that idea, but I didn't get the chance to express it before David
-> picked up the patch.  So, it's now in mainline.
->=20
-> Fixing the checksum for a module that is known to suffer bad checksums
-> is one thing - it's a single byte write, and as the checksum is wrong,
-> it's likely other systems that know about the issue will ignore it.
->=20
-> However, changing the module description to be "correct" is a
-> completely different level - there are many modules that do not
-> report "correct" data, and, if we start fixing these up, it's likely
-> that fixups that other SFP cage implementations have could stop
-> working since they may not recognise the module.
->=20
-> Remember, things like the extended CC codes are dependent on the SFF
-> spec revisions, so if we start changing the extended CC code in byte
-> 36, should we also change the SFF8472 compliance code as well (to
-> be > rev 11.9)?  Since SFF8472 rev 11.9 changed the definition of this
-> byte.
+> Note that there are differences in the way the mactype field is
+> interpreted depending on exactly what chip we have.  For example,
+> 3310 and 3340 are different.  That said, I've not heard of anyone
+> using the 3340 yet.
 >=20
 
-Thank you Russell for this explanation.
+Russell, I am aware that MACTYPE modes are interpreted differently for
+3310 vs 3340, but this only affects modes 0-3, which the driver does
+not check for even after applying my patch.
+
+There is another problem though: I think the PHY driver, when deciding
+whether to set MACTYPE from the XFI with rate matching mode to the
+10GBASE-R/5GBASE-R/2500BASE-X/SGMII with AN mode, should check which
+modes the underlying MAC support.
+
+If the underlying MAC supports only XFI mode, than the MACTYPE should
+be set to XFI with rate matching. But on Omnia for example the MAC
+supports SGMII/1000base-s/2500base-x, so on Omnia the MACTYPE should be
+changed.
+
+Currently this information is given in your repository by the mvneta
+driver to phylink in the call to phylink_create. But there is no way
+for the PHY driver to get this information from phylink currently, and
+even if phylink exposed a function to return the config member of
+struct phylink, the problem is that at the time when mv3310_power_up is
+called, the phydev->phylink is not yet set (this is done in
+phylink_bringup_phy, and mv3310_power_up is called sometime in the
+phylink_attach_phy).
+
+Marek
+
