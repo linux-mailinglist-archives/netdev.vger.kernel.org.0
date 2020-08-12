@@ -2,108 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39DD0242B66
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 16:33:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6927C242B6A
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 16:34:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726506AbgHLOdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 10:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47072 "EHLO
+        id S1726587AbgHLOef (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 10:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726434AbgHLOdS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 10:33:18 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051CDC061383
-        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 07:33:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=H+EiYUFsn0f/MMkkfRu+W0Mxg6BWj5oggKCfFgDkvWA=; b=MjZ2sfA+BEVEEXMIiK6p4ev8Z
-        16GenDWWxBCusQj1/BNytjlHzM7vC+xMoTKAZAE0cqNnDNkvj+FFjubExWaEnqQ2sl95cM8lVj9cO
-        rEh5k1skg9JngP9ywJmvMcJV3SrybbSe6g4MC2+Xmmtu8ar2ko1yo1hClOnqAYJL6snsbmSIl5dfw
-        +Dn6CB17rwyTugYHBuZj1l5+G4s8XEKkWqia+gyQen1CufMuw9DfZrPoSC5oUAYP/PstknSO4saV0
-        9Y6QSHP3td6K2vVKlBo6/BESQ1T1eg5LAPMUViVP+w9JafgtXjIzqFfZBVgxepGB3tA6gCIjHeXcn
-        vEtebijqg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51590)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1k5roP-0002ib-E8; Wed, 12 Aug 2020 15:33:05 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1k5roO-0003sS-1J; Wed, 12 Aug 2020 15:33:04 +0100
-Date:   Wed, 12 Aug 2020 15:33:04 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Chris Healy <cphealy@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC russell-king 2/4] net: phy: sfp: add support for
- multigig RollBall modules
-Message-ID: <20200812143303.GO1551@shell.armlinux.org.uk>
-References: <20200810220645.19326-1-marek.behun@nic.cz>
- <20200810220645.19326-3-marek.behun@nic.cz>
- <20200811151552.GM1551@shell.armlinux.org.uk>
- <20200812153326.71b84e45@dellmb.labs.office.nic.cz>
+        with ESMTP id S1726515AbgHLOee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 10:34:34 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21357C061383;
+        Wed, 12 Aug 2020 07:34:34 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id g19so2499334ejc.9;
+        Wed, 12 Aug 2020 07:34:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ejiFCkdhVdyCKbo2t7RPl1vTBlePfrxJWk3shyF3YhI=;
+        b=hNw6OlCi8g+P8di5CwbOo8vo/c0XgtZFCHgHTRTkA5qJIU99egb45BeZUoNdRGaL8u
+         gyFX1Ri455JbLeNhGKjub53kG3hgOeyY/iPgFFSDuB0HGI1bnsyvFnk1bwK/tvTWL6zg
+         jZlmB1ZIGznraRBASVuRSZG9RUatybstceQ5L5qohlZi0esLzzkfIjq+itmMoNytCKSH
+         aPKxpTsANDesovrKlAGSUTweVyIXZL+ZPfntkzpMNfkWkHTvAjCUatespNsRmb/trTiY
+         4QYQgREJy/tdxZZvWGGGV35t7X0ASo0Xe3v5WUW4eA6lSwxlnVsGykB8m0Q3K4191Dri
+         UyTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ejiFCkdhVdyCKbo2t7RPl1vTBlePfrxJWk3shyF3YhI=;
+        b=aqNF9AliLqY7ksJOWAz4NeKW/11wcTmkVV4/hKGef1WwwTRl0CEXtFfRfy971XcWCo
+         7qsE94t7KxFsSVaYIPMHldC/VcsPySI9vF+qGgF8E31eNIrfXDU5ZgJL5vl0tOlUEEC8
+         GNC4Z8Hal+gJj0moRlQQk6yE/kdJwL7/cDwMzf4I02IArEqs2BmF0lTVD8FwYi7+q3Ce
+         xti7iCVeJ5brjPsC/tlFMLoSavAZkO86G3LLxFmLc22nrbocckx+FDvQP1enD9cafD1Z
+         FLy04s0aaOFwTGaY3dC52ly8a/kccD0d59/qeJjGP+ALSMIDtv0oqVmWIbrTsNoFNehm
+         3LFg==
+X-Gm-Message-State: AOAM5337NVHLYrU1DcGJPBc8B8rVle6nx2JWI83BZhDzo5iAlS/nerXE
+        v8tAOwtpFKKTV2M/dSzLFE8=
+X-Google-Smtp-Source: ABdhPJwoixtSUaRECdtNhbZS4r9qPHAzAZ8VZH9rSHhwEsMrsXBoKdp0dA/X2v62biITf2fT9SPs/g==
+X-Received: by 2002:a17:906:7e0b:: with SMTP id e11mr77329ejr.540.1597242872873;
+        Wed, 12 Aug 2020 07:34:32 -0700 (PDT)
+Received: from skbuf ([86.126.22.216])
+        by smtp.gmail.com with ESMTPSA id x10sm1550055eds.21.2020.08.12.07.34.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Aug 2020 07:34:32 -0700 (PDT)
+Date:   Wed, 12 Aug 2020 17:34:30 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     David Miller <davem@davemloft.net>, Jiafei.Pan@nxp.com,
+        kuba@kernel.org, netdev@vger.kernel.org, claudiu.manoil@nxp.com,
+        ioana.ciornei@nxp.com, yangbo.lu@nxp.com,
+        linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] enetc: use napi_schedule to be compatible
+ with PREEMPT_RT
+Message-ID: <20200812143430.xuzg2ddsl7ouhn5m@skbuf>
+References: <20200803201009.613147-1-olteanv@gmail.com>
+ <20200803201009.613147-2-olteanv@gmail.com>
+ <20200803.182145.2300252460016431673.davem@davemloft.net>
+ <20200812135144.hpsfgxusojdrsewl@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200812153326.71b84e45@dellmb.labs.office.nic.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200812135144.hpsfgxusojdrsewl@linutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 12, 2020 at 03:33:26PM +0200, Marek Behún wrote:
-> On Tue, 11 Aug 2020 16:15:53 +0100
-> Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> 
-> > > +	if (rollball) {
-> > > +		/* TODO: try to write this to EEPROM */
-> > > +		id.base.extended_cc = SFF8024_ECC_10GBASE_T_SFI;  
+On Wed, Aug 12, 2020 at 03:51:44PM +0200, Sebastian Andrzej Siewior wrote:
+> On 2020-08-03 18:21:45 [-0700], David Miller wrote:
+> > From: Vladimir Oltean <olteanv@gmail.com>
+> > > The driver calls napi_schedule_irqoff() from a context where, in RT,
+> > > hardirqs are not disabled, since the IRQ handler is force-threaded.
+> â€¦
+> > > 
+> > > Signed-off-by: Jiafei Pan <Jiafei.Pan@nxp.com>
+> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > > 
-> > Should we really be "fixing" vendors EEPROMs for them?
-> > 
+> > Applied.
 > 
-> Are you reffering to the TODO comment or the id.base.extended_cc
-> assignment?
-> If the comment, well, your code does it for cotsworks modules, but I am
-> actually indifferent.
+> Could these two patches be forwarded -stable, please? The changelog
+> describes this as a problem on PREEMPT_RT but this also happens on !RT
+> with the `threadirqs' commandline switch.
+> 
+> Sebastian
 
-No, that's Chris' code, and there's quite a bit of history there:
-It appears Cotsworks programmed things like the serial number into
-the EEPROM and did not update the checksums.  After quite some time,
-it seems Cotsworks have seen sense, and have fixed their production
-line to properly program the EEPROM, but that leaves a whole bunch
-of modules with bad checksums.
+I expect the driver maintainers to have something to say about this. I
+didn't test on stable kernels, and at least for dpaa2-eth, the change
+would need to go pretty deep down the stable line.
 
-I'm more than happy that we should continue issuing the warning, but
-Chris has decided to fix them up.  I'm not particularly happy with
-that idea, but I didn't get the chance to express it before David
-picked up the patch.  So, it's now in mainline.
+Also, not really sure who is using the threadirqs option except for
+testing purposes.
 
-Fixing the checksum for a module that is known to suffer bad checksums
-is one thing - it's a single byte write, and as the checksum is wrong,
-it's likely other systems that know about the issue will ignore it.
-
-However, changing the module description to be "correct" is a completely
-different level - there are many modules that do not report "correct"
-data, and, if we start fixing these up, it's likely that fixups that
-other SFP cage implementations have could stop working since they may
-not recognise the module.
-
-Remember, things like the extended CC codes are dependent on the SFF
-spec revisions, so if we start changing the extended CC code in byte
-36, should we also change the SFF8472 compliance code as well (to
-be > rev 11.9)?  Since SFF8472 rev 11.9 changed the definition of this
-byte.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks,
+-Vladimir
