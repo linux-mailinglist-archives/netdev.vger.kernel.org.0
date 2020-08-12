@@ -2,100 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6927C242B6A
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 16:34:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1CF4242B81
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 16:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726587AbgHLOef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 10:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726515AbgHLOee (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 10:34:34 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21357C061383;
-        Wed, 12 Aug 2020 07:34:34 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id g19so2499334ejc.9;
-        Wed, 12 Aug 2020 07:34:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ejiFCkdhVdyCKbo2t7RPl1vTBlePfrxJWk3shyF3YhI=;
-        b=hNw6OlCi8g+P8di5CwbOo8vo/c0XgtZFCHgHTRTkA5qJIU99egb45BeZUoNdRGaL8u
-         gyFX1Ri455JbLeNhGKjub53kG3hgOeyY/iPgFFSDuB0HGI1bnsyvFnk1bwK/tvTWL6zg
-         jZlmB1ZIGznraRBASVuRSZG9RUatybstceQ5L5qohlZi0esLzzkfIjq+itmMoNytCKSH
-         aPKxpTsANDesovrKlAGSUTweVyIXZL+ZPfntkzpMNfkWkHTvAjCUatespNsRmb/trTiY
-         4QYQgREJy/tdxZZvWGGGV35t7X0ASo0Xe3v5WUW4eA6lSwxlnVsGykB8m0Q3K4191Dri
-         UyTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ejiFCkdhVdyCKbo2t7RPl1vTBlePfrxJWk3shyF3YhI=;
-        b=aqNF9AliLqY7ksJOWAz4NeKW/11wcTmkVV4/hKGef1WwwTRl0CEXtFfRfy971XcWCo
-         7qsE94t7KxFsSVaYIPMHldC/VcsPySI9vF+qGgF8E31eNIrfXDU5ZgJL5vl0tOlUEEC8
-         GNC4Z8Hal+gJj0moRlQQk6yE/kdJwL7/cDwMzf4I02IArEqs2BmF0lTVD8FwYi7+q3Ce
-         xti7iCVeJ5brjPsC/tlFMLoSavAZkO86G3LLxFmLc22nrbocckx+FDvQP1enD9cafD1Z
-         FLy04s0aaOFwTGaY3dC52ly8a/kccD0d59/qeJjGP+ALSMIDtv0oqVmWIbrTsNoFNehm
-         3LFg==
-X-Gm-Message-State: AOAM5337NVHLYrU1DcGJPBc8B8rVle6nx2JWI83BZhDzo5iAlS/nerXE
-        v8tAOwtpFKKTV2M/dSzLFE8=
-X-Google-Smtp-Source: ABdhPJwoixtSUaRECdtNhbZS4r9qPHAzAZ8VZH9rSHhwEsMrsXBoKdp0dA/X2v62biITf2fT9SPs/g==
-X-Received: by 2002:a17:906:7e0b:: with SMTP id e11mr77329ejr.540.1597242872873;
-        Wed, 12 Aug 2020 07:34:32 -0700 (PDT)
-Received: from skbuf ([86.126.22.216])
-        by smtp.gmail.com with ESMTPSA id x10sm1550055eds.21.2020.08.12.07.34.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Aug 2020 07:34:32 -0700 (PDT)
-Date:   Wed, 12 Aug 2020 17:34:30 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     David Miller <davem@davemloft.net>, Jiafei.Pan@nxp.com,
-        kuba@kernel.org, netdev@vger.kernel.org, claudiu.manoil@nxp.com,
-        ioana.ciornei@nxp.com, yangbo.lu@nxp.com,
-        linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] enetc: use napi_schedule to be compatible
- with PREEMPT_RT
-Message-ID: <20200812143430.xuzg2ddsl7ouhn5m@skbuf>
-References: <20200803201009.613147-1-olteanv@gmail.com>
- <20200803201009.613147-2-olteanv@gmail.com>
- <20200803.182145.2300252460016431673.davem@davemloft.net>
- <20200812135144.hpsfgxusojdrsewl@linutronix.de>
+        id S1726691AbgHLOkV convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 12 Aug 2020 10:40:21 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28310 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726492AbgHLOkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 10:40:20 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-546-yKQ_PDQhPwW1XR3Cz-T1BQ-1; Wed, 12 Aug 2020 10:40:14 -0400
+X-MC-Unique: yKQ_PDQhPwW1XR3Cz-T1BQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6472218B9EC0;
+        Wed, 12 Aug 2020 14:40:12 +0000 (UTC)
+Received: from p50.redhat.com (ovpn-113-45.ams2.redhat.com [10.36.113.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E384A600C5;
+        Wed, 12 Aug 2020 14:40:10 +0000 (UTC)
+From:   Stefan Assmann <sassmann@kpanic.de>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jeffrey.t.kirsher@intel.com, lihong.yang@intel.com,
+        sassmann@kpanic.de
+Subject: [PATCH] i40e: fix uninitialized variable in i40e_set_vsi_promisc
+Date:   Wed, 12 Aug 2020 16:39:50 +0200
+Message-Id: <20200812143950.11675-1-sassmann@kpanic.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200812135144.hpsfgxusojdrsewl@linutronix.de>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sassmann@kpanic.de
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kpanic.de
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 12, 2020 at 03:51:44PM +0200, Sebastian Andrzej Siewior wrote:
-> On 2020-08-03 18:21:45 [-0700], David Miller wrote:
-> > From: Vladimir Oltean <olteanv@gmail.com>
-> > > The driver calls napi_schedule_irqoff() from a context where, in RT,
-> > > hardirqs are not disabled, since the IRQ handler is force-threaded.
-> …
-> > > 
-> > > Signed-off-by: Jiafei Pan <Jiafei.Pan@nxp.com>
-> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > Applied.
-> 
-> Could these two patches be forwarded -stable, please? The changelog
-> describes this as a problem on PREEMPT_RT but this also happens on !RT
-> with the `threadirqs' commandline switch.
-> 
-> Sebastian
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c: In function ‘i40e_set_vsi_promisc’:
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:1176:14: error: ‘aq_ret’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
+  i40e_status aq_ret;
 
-I expect the driver maintainers to have something to say about this. I
-didn't test on stable kernels, and at least for dpaa2-eth, the change
-would need to go pretty deep down the stable line.
+In case the code inside the if statement and the for loop does not get
+executed aq_ret will be uninitialized when the variable gets returned at
+the end of the function.
 
-Also, not really sure who is using the threadirqs option except for
-testing purposes.
+Fixes: 37d318d7805f ("i40e: Remove scheduling while atomic possibility")
+Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+---
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
--Vladimir
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+index 8e133d6545bd..ae290ebd83cf 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -1173,7 +1173,7 @@ i40e_set_vsi_promisc(struct i40e_vf *vf, u16 seid, bool multi_enable,
+ {
+ 	struct i40e_pf *pf = vf->pf;
+ 	struct i40e_hw *hw = &pf->hw;
+-	i40e_status aq_ret;
++	i40e_status aq_ret = 0;
+ 	int i;
+ 
+ 	/* No VLAN to set promisc on, set on VSI */
+-- 
+2.26.2
+
