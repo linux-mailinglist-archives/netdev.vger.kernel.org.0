@@ -2,90 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 670712425DE
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 09:13:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A6352425E9
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 09:18:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbgHLHNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 03:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726255AbgHLHNi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 03:13:38 -0400
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790D8C06174A
-        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 00:13:38 -0700 (PDT)
-Received: by mail-oi1-x244.google.com with SMTP id o21so942507oie.12
-        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 00:13:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=wj4Ax4hjDfmuJTrGRf1kEOPON3vh6GEwaa/o7TlxCss=;
-        b=u7gKR4Uh61t+Lh6JPAuLIEKr85iYihwPdNqt9S2dN9VHYBzgaLoAon05sa92zzz6+/
-         +O7Qm1FSMotm6bCbLTpZ9kb/Cv71JACLcRDM9TsH5HyCaK8bIZ5zwIvX6egHayv6l3BD
-         2tJ3S+zxxJlmvi2Ql3we4/EZzbE5sYJgsTArXwuvzjVVVnWfcyKYQwfBqE+ZJBRLvI/Q
-         n3egStI4Cr6qpKFQSLcaze+36+Gp6yh7d29PhLHc6fkScwLHQP9le5oC0W8OULUc6yzP
-         22CzvM1mzseD1hBjOoCWhN+MGiiJ+shIcktpDo3LQ0GLjWAHGSu3GoPu70YwZv/T6q/4
-         kdqw==
+        id S1726831AbgHLHSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 03:18:32 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:57683 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726182AbgHLHSb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 03:18:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1597216710;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=u5vnrGUSviiSyDo4A1Jti2cqm6vCb7k5wROaco57qD0=;
+        b=c/IGvdeaUMKq+IP9VwQythR6qKjy9n4yJznt4Wkoy+0qBwjmgT75hgg5aAMwzALXo3Xuu+
+        NahRHZ4swRKs8KnQ+B2VEgmF0+3RD6w0u1mzRW/AQn0/h6qJSDpuUa3bqvfgtXHjfksKuF
+        EnEDg7QsNKbGPHkVTKTLEqcl6NpfWQo=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-324-_9FMwMsLOCCKvXJ57GW_lQ-1; Wed, 12 Aug 2020 03:18:25 -0400
+X-MC-Unique: _9FMwMsLOCCKvXJ57GW_lQ-1
+Received: by mail-wm1-f69.google.com with SMTP id f74so559179wmf.1
+        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 00:18:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=wj4Ax4hjDfmuJTrGRf1kEOPON3vh6GEwaa/o7TlxCss=;
-        b=FtspdeExzLv2lwPjUE9+6MZIagUc/7EjcY0m2+nfNbG3CnV46j9jXmUBwszVBF8BUW
-         ya7byEoZFU3uDI0cExfYV5sjHvt0QBzNz0qnlxUNxFjz6cha5+YIbPUZjSZbVQWJ48Yf
-         JCxcHIN6bNv5QWFnliPISW53fNRnR4Asxh3cQItDs9iJ6KOX1tF4jEcUR6/2Rv7wpVRz
-         aPgf5Tf7x4v6+SgTFeUu+hD4fakPypeGSPjL1g6YYuvvTVQ8FNePHvVGBCUYwn05b3xB
-         Ya3QyZ3204Dv+Er2vbfk0GHE0CLywEq7xiAis1jwpcsjMt1Svr78SDHyVJXVVT2750HP
-         3qww==
-X-Gm-Message-State: AOAM530DlT8alFM6UUMbOgEFZjTedJU654MWv025MnL114gQYl8Rh8tX
-        pRc/3iD9dkbeNfUIGziQOWtkw+c00OIE7b2S82XfaTq6JZ8=
-X-Google-Smtp-Source: ABdhPJwgeAyEykD0QyR908cTn4zDI1hm8zA33ofHwZGsNDwdQjaAmwiEQdVeLerD4tk4QI9BPwsAbqSDtpWuMmYpGmU=
-X-Received: by 2002:aca:4e92:: with SMTP id c140mr6085654oib.70.1597216417938;
- Wed, 12 Aug 2020 00:13:37 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=u5vnrGUSviiSyDo4A1Jti2cqm6vCb7k5wROaco57qD0=;
+        b=I2UcARneVA5YokMOworMMfPYoHhZxoMmm8JmwdXfp+8Ee3QE4sEkKEvAxe7GnzVzBA
+         hYXDw6MLk+xiLPzcQl1QJ3ya1Sy4dUbQwgytjD7xkGXGpV/Wki6OA4dmDITJjnZpgoxE
+         ge9o5ppKItJBsuTuHMVm2LmWgp7TPzorNNQm0dvSocYg+CWU8zMNArPBO/LPlNS3oftu
+         a7MEGp5XIQq5NxhrfQCJwpWW4Tj+2/LRZPBUlPo7kQfqx4DxH7oNqWOkY3DvGX03hC8E
+         5BF/NjT2ybeR8hf8ko2N46NBkMY25Y+GeIcl3hwa37Oilw1jCDDtG5jBVQa95iuqeDDG
+         j1AA==
+X-Gm-Message-State: AOAM5309CDgryBfdIqQAuAOEadFJahY7zMWhNc6SRLwdJkOwwYKENd9n
+        rlFKYOxjE1ecVd8nhpxopCrTlRp4XMKqizkOCeXGRKdRoPNVokHjNWE/E3tfkLEIfMJpAdm30Fm
+        /PN3aQj5mZhYAyjy7
+X-Received: by 2002:a1c:e0d7:: with SMTP id x206mr7833383wmg.91.1597216704438;
+        Wed, 12 Aug 2020 00:18:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwdYhlEIglOLVe6YV8jXLsNNRYYEwJBGXoch1voDOXD/WBMnFly08DgF2XM7EKR+k6oZDm1/g==
+X-Received: by 2002:a1c:e0d7:: with SMTP id x206mr7833366wmg.91.1597216704160;
+        Wed, 12 Aug 2020 00:18:24 -0700 (PDT)
+Received: from steredhat ([5.180.207.22])
+        by smtp.gmail.com with ESMTPSA id w1sm2236205wmc.18.2020.08.12.00.18.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Aug 2020 00:18:23 -0700 (PDT)
+Date:   Wed, 12 Aug 2020 09:17:42 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     jhansen@vmware.com, netdev@vger.kernel.org, kuba@kernel.org,
+        decui@microsoft.com, linux-kernel@vger.kernel.org,
+        stefanha@redhat.com
+Subject: Re: [PATCH net 0/2] vsock: fix null pointer dereference and cleanup
+ in vsock_poll()
+Message-ID: <20200812071742.4zoxlvu44ivunsjd@steredhat>
+References: <20200811095504.25051-1-sgarzare@redhat.com>
+ <20200811.102418.1200203139092745562.davem@davemloft.net>
 MIME-Version: 1.0
-References: <CA+icZUXzW3RTyr5M_r-YYBB_k7Yw_JnurwPV5o0xGNpn7QPgRw@mail.gmail.com>
- <CA+icZUVNt4H5Tm2wTxq-7nS9w3nn7PKVQ=8CW-egyTJqTzUWZQ@mail.gmail.com>
-In-Reply-To: <CA+icZUVNt4H5Tm2wTxq-7nS9w3nn7PKVQ=8CW-egyTJqTzUWZQ@mail.gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Wed, 12 Aug 2020 09:13:26 +0200
-Message-ID: <CA+icZUVa2wuWB-Mk0FW=1GX27ai2mk74aTnF8b1eRcRbXJwDUg@mail.gmail.com>
-Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200811.102418.1200203139092745562.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 12, 2020 at 8:35 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
->
-> [ INSTRUCTIONS ]
->
-> echo 1 > /proc/sys/kernel/sched_schedstats
-> echo prandom_u32 >> /sys/kernel/debug/tracing/set_event
-> echo traceon > /sys/kernel/debug/tracing/events/random/prandom_u32/trigger
-> echo 1 > /sys/kernel/debug/tracing/events/enable
->
-> /home/dileks/bin/perf record -e random:prandom_u32 -a -g -- sleep 10
->
-> That gives me now some perf data.
->
+On Tue, Aug 11, 2020 at 10:24:18AM -0700, David Miller wrote:
+> From: Stefano Garzarella <sgarzare@redhat.com>
+> Date: Tue, 11 Aug 2020 11:55:02 +0200
+> 
+> > The first patch fixes a potential null pointer dereference in vsock_poll()
+> > reported by syzbot.
+> > The second patch is a simple cleanup in the same block code. I put this later,
+> > to make it easier to backport the first patch in the stable branches.
+> 
+> Please do not mix cleanups and bug fixes into the same patch series.
 
-I perf-probed for tcp_v4_connect:
+I did it because I was going through the same part of the code,
+but I won't do it again!
 
-/home/dileks/bin/perf probe --add tcp_v4_connect
+> 
+> net-next is closed, so you should not be submitting non-bugfixes at
+> this time.
+> 
 
-/home/dileks/bin/perf list | grep probe:
-  probe:tcp_v4_connect                               [Tracepoint event]
+I'll resend only the first patch, sorry for the noise.
 
-/home/dileks/bin/perf record -e probe:tcp_v4_connect -a -g -- sleep 10
+Thanks,
+Stefano
 
-/home/dileks/bin/perf record -e
-probe:tcp_v4_connect,random:prandom_u32 -a -g -- sleep 10
-
-/home/dileks/bin/perf report --stdio
-
-- Sedat -
