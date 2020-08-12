@@ -2,171 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AEB32427AF
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 11:34:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FE2A2427F3
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 11:58:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727881AbgHLJep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 05:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
+        id S1727017AbgHLJ6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 05:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726629AbgHLJeo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 05:34:44 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B46C06174A
-        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 02:34:44 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id w14so1480293ljj.4
-        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 02:34:44 -0700 (PDT)
+        with ESMTP id S1726722AbgHLJ6D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 05:58:03 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0995CC06174A;
+        Wed, 12 Aug 2020 02:58:03 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id s15so768594pgc.8;
+        Wed, 12 Aug 2020 02:58:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kn22iNgLDoT2FylS2rp2aS0ljPEs4sl8pUcenyynzLc=;
-        b=hBYZrFO4My7bEJ67J/RTZHMceJ4pDA1vsETQ4pVBLoGZ02rc792kDvN16F2inJzPSE
-         aCn0piArp/T4z/EfRwNx9cb2SnUMuabP8T2wFEnZURgo0/sBc6SaDG3vx1TZ7yth/C2r
-         cPHe1g6y98imhFhfoSPA8dT5U+yQHARjwm0FQ=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P/KV5Nu4GOqpdobD0Vy0F5Lm8c2lLHadx20/MZj2JEU=;
+        b=P8IbN2Az2JiBC5X19oePGVFkVCdEwe5FgB6rEiPXaq6H2i8JwHd2A0jPvgpF5YnrgA
+         Hi++xCJtKlpq5nYC/qjwFPtHKSIB1Yw4UvGUO1ASGbroVdalS0mWXo9OzW2ET+jtj4Wb
+         W/98cGUwha6w9GoR0Tmg16k5spcTKvkLCqRFqcwx94oxv3DhJwi+CAFXTQFiT1zy+qjo
+         8qO6S27/S67qJpIhBqM33dXN3AptS8jCyPDKz8pw+dcsc00Gyv1gNfwoCKn1Wil8IqOf
+         D9nupC1ugpswEsK00jbmJJohVMOpNhp0WNXarh9zT1i8Z1fX2S8hI/ZhQ8+PIoQ6+kD5
+         lH8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kn22iNgLDoT2FylS2rp2aS0ljPEs4sl8pUcenyynzLc=;
-        b=G+f+tTD60Va0VkYAl78LGLcDQDqQIwJxoB89q41kj/sgM4Kf8lNhlZNVZtjfnmNc8v
-         QJ5KyJXcKZYUohGC7Kpm74PbdMwcswBexEUpc0jCsdoJoaWT0Va1KfacSd71BdfsaIw3
-         bxn5XSba3K8+0WFriSuLG8EArWZfUDNStDG6FvlbTI+uyhwmv0Qv9qhlJVq4jeq1vVPi
-         +s1x9qTBANZTy7SdVw9HUxEpw6Gwin1JCxqv2fvDgrO0Jqbl1sFSbudyWpWFEdATiVcI
-         mqya1GWOK3HBu/WlRIcaUvPq8+Q+HY3QEMroC0xkV4MzW400546gvrWl73oEaRe5JTKS
-         nYOA==
-X-Gm-Message-State: AOAM532MUwe69Fkn6c8QF8TtPsoa+wRcjSmTxsyZofPQKUsapkswTsLS
-        WYF5p2Tyo4Q8+97WDi7mk2G66W7QPj4US8WSNJaAzQ==
-X-Google-Smtp-Source: ABdhPJwU0yxulG1HBQCvdYfMzzVBm9t1Urj5zRA+7b8hNJ/06CUxaad9o0JJ2SxSER75I3iHVdcoq7vIXTieMeZTjXI=
-X-Received: by 2002:a2e:9010:: with SMTP id h16mr5056506ljg.316.1597224882556;
- Wed, 12 Aug 2020 02:34:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P/KV5Nu4GOqpdobD0Vy0F5Lm8c2lLHadx20/MZj2JEU=;
+        b=PGJBqYXmmQhxPEgr3niMdHLtCOtD38+xygojyT5F/3oHVkZNb186fgG1pi+zHN7II/
+         VNL+fAxTHMKuAVsBaiBA8/+GQxGfYYNJQtmQVa5YaQcAWs8Ypi0mIvxhqXh1P4Tlfa9t
+         SANlI6jqVvb6XyYoKMyxy7pAFK6nwxWF59h5Q1fib2QhgHXtLuIYzM6eEMUw2tKCylBL
+         i6VKbYzA67btEo+Sa0fD8F9Po1YxOH9bOez+rt8cobFPQrcV7JS2I7W9m2E5ghptSBEg
+         p0+kPQfC8KBC8wldECMfiEAmOy0NgfVq5K5Bhxav1z6H+Fr4MmQkiiItlqNJzkzgvqon
+         EGQg==
+X-Gm-Message-State: AOAM530CVgVHiL63So323YNYNx4oHZCNHD1EWbt600OjZicrW+Bn2m0x
+        UgpcAEaxS8xBvsA6OpJ1OZXc4NYUlJ8I/Q==
+X-Google-Smtp-Source: ABdhPJx7wNeffIDFr8Fk0CGV9iuJuBFDAXnJ24eVMRJnIZ10RsoP0jmt3qxSSpIIvMlAuIcFbyujDg==
+X-Received: by 2002:a63:6dcd:: with SMTP id i196mr4585271pgc.70.1597226282202;
+        Wed, 12 Aug 2020 02:58:02 -0700 (PDT)
+Received: from localhost.localdomain ([106.39.149.188])
+        by smtp.gmail.com with ESMTPSA id p9sm1698436pjm.1.2020.08.12.02.57.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 12 Aug 2020 02:58:01 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     joel@joelfernandes.org, jknoos@google.com, gvrose8192@gmail.com,
+        urezki@gmail.com, paulmck@kernel.org
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org, rcu@vger.kernel.org,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH v2] net: openvswitch: introduce common code for flushing flows
+Date:   Wed, 12 Aug 2020 17:56:39 +0800
+Message-Id: <20200812095639.4062-1-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 2.15.0
 MIME-Version: 1.0
-References: <1595847753-2234-1-git-send-email-moshe@mellanox.com>
- <CAACQVJqNXh0B=oe5W7psiMGc6LzNPujNe2sypWi_SvH5sY=F3Q@mail.gmail.com>
- <a3e20b44-9399-93c1-210f-e3c1172bf60d@intel.com> <CAACQVJo+bAr_k=LjgdTKbOxFEkpbYAsaWbkSDjUepgO7_XQfNA@mail.gmail.com>
- <7a9c315f-fa29-7bd5-31be-3748b8841b29@mellanox.com> <CAACQVJpZZPfiWszZ36E0Awuo2Ad1w5=4C1rgG=d4qPiWVP609Q@mail.gmail.com>
- <7fd63d16-f9fa-9d55-0b30-fe190d0fb1cb@mellanox.com> <CAACQVJqXa-8v4TU+M1DWA2Tfv3ayrAobiH9Fajd=5MCgsfAA6A@mail.gmail.com>
- <da0e4997-73d7-9f3c-d877-f2d3bcc718b9@mellanox.com> <CAACQVJofS2B3y40H=QxBzNaccsa+gNnSqfmoATyML_S686ykfw@mail.gmail.com>
- <da7a2f2d-3ff5-0cd1-f166-79d7355f3df0@mellanox.com>
-In-Reply-To: <da7a2f2d-3ff5-0cd1-f166-79d7355f3df0@mellanox.com>
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Date:   Wed, 12 Aug 2020 15:04:31 +0530
-Message-ID: <CAACQVJqgoas2_pqBiphfHfZAdY5ysku=8AzDWf6Vde3j9Bxr8g@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC 00/13] Add devlink reload level option
-To:     Moshe Shemesh <moshe@mellanox.com>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 5, 2020 at 1:51 PM Moshe Shemesh <moshe@mellanox.com> wrote:
->
->
-> On 8/5/2020 9:55 AM, Vasundhara Volam wrote:
-> > On Wed, Aug 5, 2020 at 12:02 PM Moshe Shemesh <moshe@mellanox.com> wrote:
-> >>
-> >> On 8/4/2020 1:13 PM, Vasundhara Volam wrote:
-> >>> On Mon, Aug 3, 2020 at 7:23 PM Moshe Shemesh <moshe@mellanox.com> wrote:
-> >>>> On 8/3/2020 3:47 PM, Vasundhara Volam wrote:
-> >>>>> On Mon, Aug 3, 2020 at 5:47 PM Moshe Shemesh <moshe@mellanox.com> wrote:
-> >>>>>> On 8/3/2020 1:24 PM, Vasundhara Volam wrote:
-> >>>>>>> On Tue, Jul 28, 2020 at 10:13 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
-> >>>>>>>> On 7/27/2020 10:25 PM, Vasundhara Volam wrote:
-> >>>>>>>>> On Mon, Jul 27, 2020 at 4:36 PM Moshe Shemesh <moshe@mellanox.com> wrote:
-> >>>>>>>>>> Introduce new option on devlink reload API to enable the user to select the
-> >>>>>>>>>> reload level required. Complete support for all levels in mlx5.
-> >>>>>>>>>> The following reload levels are supported:
-> >>>>>>>>>>       driver: Driver entities re-instantiation only.
-> >>>>>>>>>>       fw_reset: Firmware reset and driver entities re-instantiation.
-> >>>>>>>>> The Name is a little confusing. I think it should be renamed to
-> >>>>>>>>> fw_live_reset (in which both firmware and driver entities are
-> >>>>>>>>> re-instantiated).  For only fw_reset, the driver should not undergo
-> >>>>>>>>> reset (it requires a driver reload for firmware to undergo reset).
-> >>>>>>>>>
-> >>>>>>>> So, I think the differentiation here is that "live_patch" doesn't reset
-> >>>>>>>> anything.
-> >>>>>>> This seems similar to flashing the firmware and does not reset anything.
-> >>>>>> The live patch is activating fw change without reset.
-> >>>>>>
-> >>>>>> It is not suitable for any fw change but fw gaps which don't require reset.
-> >>>>>>
-> >>>>>> I can query the fw to check if the pending image change is suitable or
-> >>>>>> require fw reset.
-> >>>>> Okay.
-> >>>>>>>>>>       fw_live_patch: Firmware live patching only.
-> >>>>>>>>> This level is not clear. Is this similar to flashing??
-> >>>>>>>>>
-> >>>>>>>>> Also I have a basic query. The reload command is split into
-> >>>>>>>>> reload_up/reload_down handlers (Please correct me if this behaviour is
-> >>>>>>>>> changed with this patchset). What if the vendor specific driver does
-> >>>>>>>>> not support up/down and needs only a single handler to fire a firmware
-> >>>>>>>>> reset or firmware live reset command?
-> >>>>>>>> In the "reload_down" handler, they would trigger the appropriate reset,
-> >>>>>>>> and quiesce anything that needs to be done. Then on reload up, it would
-> >>>>>>>> restore and bring up anything quiesced in the first stage.
-> >>>>>>> Yes, I got the "reload_down" and "reload_up". Similar to the device
-> >>>>>>> "remove" and "re-probe" respectively.
-> >>>>>>>
-> >>>>>>> But our requirement is a similar "ethtool reset" command, where
-> >>>>>>> ethtool calls a single callback in driver and driver just sends a
-> >>>>>>> firmware command for doing the reset. Once firmware receives the
-> >>>>>>> command, it will initiate the reset of driver and firmware entities
-> >>>>>>> asynchronously.
-> >>>>>> It is similar to mlx5 case here for fw_reset. The driver triggers the fw
-> >>>>>> command to reset and all PFs drivers gets events to handle and do
-> >>>>>> re-initialization.  To fit it to the devlink reload_down and reload_up,
-> >>>>>> I wait for the event handler to complete and it stops at driver unload
-> >>>>>> to have the driver up by devlink reload_up. See patch 8 in this patchset.
-> >>>>>>
-> >>>>> Yes, I see reload_down is triggering the reset. In our driver, after
-> >>>>> triggering the reset through a firmware command, reset is done in
-> >>>>> another context as the driver initiates the reset only after receiving
-> >>>>> an ASYNC event from the firmware.
-> >>>> Same here.
-> >>>>
-> >>>>> Probably, we have to use reload_down() to send firmware command to
-> >>>>> trigger reset and do nothing in reload_up.
-> >>>> I had that in previous version, but its wrong to use devlink reload this
-> >>>> way, so I added wait with timeout for the event handling to complete
-> >>>> before unload_down function ends. See mlx5_fw_wait_fw_reset_done(). Also
-> >>>> the event handler stops before load back to have that done by devlink
-> >>>> reload_up.
-> >>> But "devlink dev reload" will be invoked by the user only on a single
-> >>> dev handler and all function drivers will be re-instantiated upon the
-> >>> ASYNC event. reload_down and reload_up are invoked only the function
-> >>> which the user invoked.
-> >>>
-> >>> Take an example of a 2-port (PF0 and PF1) adapter on a single host and
-> >>> with some VFs loaded on the device. User invokes "devlink dev reload"
-> >>> on PF0, ASYNC event is received on 2 PFs and VFs for reset. All the
-> >>> function drivers will be re-instantiated including PF0.
-> >>>
-> >>> If we wait for some time in reload_down() of PF0 and then call load in
-> >>> reload_up(), this code will be different from other function drivers.
-> >>
-> >> I see your point here, but the user run devlink reload command on one
-> >> PF, in this case of fw-reset it will influence other PFs, but that's a
-> >> result of the fw-reset, the user if asked for params change or namespace
-> >> change that was for this PF.
-> > Right, if any driver is implementing only fw-reset have to leave
-> > reload_up as an empty function.
->
->
-> No, its not only up the driver. The netns option is implemented by
-> devlink and its running between reload_down and reload_up.
-What I mean is, driver will provide a reload_up handler but it will
-not do anything and simply return 0.
->
-> >>>>>     And returning from reload
-> >>>>> does not mean that reset is complete as it is done in another context
-> >>>>> and the driver notifies the health reporter once the reset is
-> >>>>> complete. devlink framework may have to allow drivers to implement
-> >>>>> reload_down only to look more clean or call reload_up only if the
-> >>>>> driver notifies the devlink once reset is completed from another
-> >>>>> context. Please suggest.
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+
+To avoid some issues, for example RCU usage warning and double free,
+we should flush the flows under ovs_lock. This patch refactors
+table_instance_destroy and introduces table_instance_flow_flush
+which can be invoked by __dp_destroy or ovs_flow_tbl_flush.
+
+Fixes: 50b0e61b32ee ("net: openvswitch: fix possible memleak on destroy flow-table")
+Reported-by: Johan Knöös <jknoos@google.com>
+Reported-at: https://mail.openvswitch.org/pipermail/ovs-discuss/2020-August/050489.html
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+---
+v2:
+* Change local var coding style
+* Add reported and fixed tag
+---
+ net/openvswitch/datapath.c   | 10 +++++++++-
+ net/openvswitch/flow_table.c | 35 +++++++++++++++--------------------
+ net/openvswitch/flow_table.h |  3 +++
+ 3 files changed, 27 insertions(+), 21 deletions(-)
+
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index 42f8cc70bb2c..6e47ef7ef036 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -1756,6 +1756,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ /* Called with ovs_mutex. */
+ static void __dp_destroy(struct datapath *dp)
+ {
++	struct flow_table *table = &dp->table;
+ 	int i;
+ 
+ 	for (i = 0; i < DP_VPORT_HASH_BUCKETS; i++) {
+@@ -1774,7 +1775,14 @@ static void __dp_destroy(struct datapath *dp)
+ 	 */
+ 	ovs_dp_detach_port(ovs_vport_ovsl(dp, OVSP_LOCAL));
+ 
+-	/* RCU destroy the flow table */
++	/* Flush sw_flow in the tables. RCU cb only releases resource
++	 * such as dp, ports and tables. That may avoid some issues
++	 * such as RCU usage warning.
++	 */
++	table_instance_flow_flush(table, ovsl_dereference(table->ti),
++				  ovsl_dereference(table->ufid_ti));
++
++	/* RCU destroy the ports, meters and flow tables. */
+ 	call_rcu(&dp->rcu, destroy_dp_rcu);
+ }
+ 
+diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
+index 8c12675cbb67..e2235849a57e 100644
+--- a/net/openvswitch/flow_table.c
++++ b/net/openvswitch/flow_table.c
+@@ -473,19 +473,15 @@ static void table_instance_flow_free(struct flow_table *table,
+ 	flow_mask_remove(table, flow->mask);
+ }
+ 
+-static void table_instance_destroy(struct flow_table *table,
+-				   struct table_instance *ti,
+-				   struct table_instance *ufid_ti,
+-				   bool deferred)
++/* Must be called with OVS mutex held. */
++void table_instance_flow_flush(struct flow_table *table,
++			       struct table_instance *ti,
++			       struct table_instance *ufid_ti)
+ {
+ 	int i;
+ 
+-	if (!ti)
+-		return;
+-
+-	BUG_ON(!ufid_ti);
+ 	if (ti->keep_flows)
+-		goto skip_flows;
++		return;
+ 
+ 	for (i = 0; i < ti->n_buckets; i++) {
+ 		struct sw_flow *flow;
+@@ -497,18 +493,16 @@ static void table_instance_destroy(struct flow_table *table,
+ 
+ 			table_instance_flow_free(table, ti, ufid_ti,
+ 						 flow, false);
+-			ovs_flow_free(flow, deferred);
++			ovs_flow_free(flow, true);
+ 		}
+ 	}
++}
+ 
+-skip_flows:
+-	if (deferred) {
+-		call_rcu(&ti->rcu, flow_tbl_destroy_rcu_cb);
+-		call_rcu(&ufid_ti->rcu, flow_tbl_destroy_rcu_cb);
+-	} else {
+-		__table_instance_destroy(ti);
+-		__table_instance_destroy(ufid_ti);
+-	}
++static void table_instance_destroy(struct table_instance *ti,
++				   struct table_instance *ufid_ti)
++{
++	call_rcu(&ti->rcu, flow_tbl_destroy_rcu_cb);
++	call_rcu(&ufid_ti->rcu, flow_tbl_destroy_rcu_cb);
+ }
+ 
+ /* No need for locking this function is called from RCU callback or
+@@ -523,7 +517,7 @@ void ovs_flow_tbl_destroy(struct flow_table *table)
+ 
+ 	call_rcu(&mc->rcu, mask_cache_rcu_cb);
+ 	call_rcu(&ma->rcu, mask_array_rcu_cb);
+-	table_instance_destroy(table, ti, ufid_ti, false);
++	table_instance_destroy(ti, ufid_ti);
+ }
+ 
+ struct sw_flow *ovs_flow_tbl_dump_next(struct table_instance *ti,
+@@ -641,7 +635,8 @@ int ovs_flow_tbl_flush(struct flow_table *flow_table)
+ 	flow_table->count = 0;
+ 	flow_table->ufid_count = 0;
+ 
+-	table_instance_destroy(flow_table, old_ti, old_ufid_ti, true);
++	table_instance_flow_flush(flow_table, old_ti, old_ufid_ti);
++	table_instance_destroy(old_ti, old_ufid_ti);
+ 	return 0;
+ 
+ err_free_ti:
+diff --git a/net/openvswitch/flow_table.h b/net/openvswitch/flow_table.h
+index 74ce48fecba9..6e7d4ac59353 100644
+--- a/net/openvswitch/flow_table.h
++++ b/net/openvswitch/flow_table.h
+@@ -105,5 +105,8 @@ void ovs_flow_mask_key(struct sw_flow_key *dst, const struct sw_flow_key *src,
+ 		       bool full, const struct sw_flow_mask *mask);
+ 
+ void ovs_flow_masks_rebalance(struct flow_table *table);
++void table_instance_flow_flush(struct flow_table *table,
++			       struct table_instance *ti,
++			       struct table_instance *ufid_ti);
+ 
+ #endif /* flow_table.h */
+-- 
+2.23.0
+
