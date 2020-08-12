@@ -2,113 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E040624305F
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 23:07:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 210E624306A
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 23:14:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726576AbgHLVH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 17:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
+        id S1726547AbgHLVOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 17:14:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726557AbgHLVH1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 17:07:27 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A15C061383
-        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 14:07:26 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id b14so3423234qkn.4
-        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 14:07:26 -0700 (PDT)
+        with ESMTP id S1726030AbgHLVOB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 17:14:01 -0400
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA340C061383;
+        Wed, 12 Aug 2020 14:14:01 -0700 (PDT)
+Received: by mail-oi1-x244.google.com with SMTP id 25so3163018oir.0;
+        Wed, 12 Aug 2020 14:14:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fJAXiWtv3ENsVIdhVjykYqtG1mE3q0gWd4cfM6Uu6RI=;
-        b=Wy2XrhQPxQURScDdynKkkj9CvVAozBUCH6dRkMuUHiGAftZNug/9drAE7zWmrg9Dt4
-         UTqrvt0QUSCpZiCntddL6sxqa208yifZdA86B25XMHf6BQ5Q005WgFXN+BBKN0/KOHey
-         j6XjXK7pe0KQsMobKUcJ1zI96zsVBsNt5isS2/pbGvLFL7ZaRI7LGITKpec9rGXz8ng8
-         rDsyeGGcjuIn7kLRHaUTHAd0R5bIp7gvL4944PeecfGLr9LX//sISR3h4HNidCsTvVOD
-         DVEyB4TdJX82296B6v3BfImAOyOIIHGjfzYSqkauOXBxXxmIZyQs+N1vFYG82cYRH5Nn
-         uF4Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=reyd1vwqqkrdy9zAyokM8csmESFkkcbB8ZgkgSPNKDo=;
+        b=pv1hW/6iYpjj+bJbUU2CLIalE9pyu/RW3RXCByCY7GqeT5V+XHSIBD0EmzfT04x9pZ
+         Hm4iH+1n28Z5+S+qZpyOCszii6Ra+D1glAPRqW3c4oYPNrn6Z4Z09wll8kcjW5uAAbcf
+         DLXfQlIhElgcJ+1UpvlwbS3fIdScBJRlVf09lyntwAMwL6uxAP4xvwJm1tFM+N9LPJPx
+         PqkFpFL+Fa5D7wZGsWhAtB6Y+TqzxSNXYJ+9eD/Sa+Ae4jIMSY9iI4gU2ZIxSgcCwMOT
+         fLNAg929fXM5PM9HxPRihfPeEMqHSioF/WDix27tRjS4YPnroAsH7wz7PLdPhyi4SbfV
+         EvsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fJAXiWtv3ENsVIdhVjykYqtG1mE3q0gWd4cfM6Uu6RI=;
-        b=Xz0dnsakCOPooAfZSeaPE5fj32mEeMjc9BPrHZsi5btQ5RkWKFJFWc0LZu7/WVUAY7
-         H9wqZQchUY6g2nDMe+oea88KP+9qGtX1H4VrxS3Yrn/vTasTZIAvbIpkDKK9o2EGjRVZ
-         GWZjIJqXRRB32EQxAwqwhUYoH4aEEFwpSN3CPmPpvgcy+z1+rlJNMuXOySfZ78vhBFk4
-         /KqlaEmQJspycI3YMWHpQF/pCqupTeBENWU8bSagOcm0VXdykZ17Ou+U3FOTnjHdUU4A
-         8eRzWhQqKwiapPkSgk8INIaadlaeHLRYlDJ9GrtmycgmwSE2G/MxSPwdIZCOMpAMCSq8
-         yQCw==
-X-Gm-Message-State: AOAM530EMYgFtrjic8KKzOeKgcR2hUElNQuxWUnxSJ2q8N6Y4WDpfebZ
-        OTmaLe6zVPfIcXRf1FHsyzA=
-X-Google-Smtp-Source: ABdhPJzo+AfEDzPuo6MHgfvM3Zq0UnBMqruHA9NrVBWzmm/pizOVCN2B9+gAT53YdGFdMxc7h3mMdA==
-X-Received: by 2002:a37:5b41:: with SMTP id p62mr1833305qkb.369.1597266445849;
-        Wed, 12 Aug 2020 14:07:25 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f016:db46:8842:d6f4:b048:5fb1])
-        by smtp.gmail.com with ESMTPSA id j72sm3450743qke.20.2020.08.12.14.07.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Aug 2020 14:07:24 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 15EDFC3259; Wed, 12 Aug 2020 18:07:22 -0300 (-03)
-Date:   Wed, 12 Aug 2020 18:07:21 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ariel Levkovich <lariel@mellanox.com>
-Subject: Re: [PATCH net-next 1/1] net/sched: Introduce skb hash classifier
-Message-ID: <20200812210721.GE3398@localhost.localdomain>
-References: <20200807222816.18026-1-jhs@emojatatu.com>
- <CAM_iQpU6j2TVOu2uYFcFWhBdMj_nu1TuLWfnR3O+2F2CPG+Wzw@mail.gmail.com>
- <3ee54212-7830-8b07-4eed-a0ddc5adecab@mojatatu.com>
- <CAM_iQpU6KE4O6L1qAB5MjJGsc-zeQwx6x3HjgmevExaHntMyzA@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=reyd1vwqqkrdy9zAyokM8csmESFkkcbB8ZgkgSPNKDo=;
+        b=fb1eRYtXoF/okyQczgvSDGzvRDlpPMS2RirHkAbe8XZkOQWklhHwN222RbauG0WEEs
+         F4/tnx0sXBYMJYjgD9Puk8wodYGhjxlhUiEebHec7r068ltG38rDGm70rVtDKuMNnBMF
+         VR+c6OvP5Z9Hc+vFiyYK4Cc7Uu+szBkGAZ23x8IrZM+lt33XginpFFeSxDX6dR+01cGl
+         zxJ16WI41qUBlyBez9MQG1FQNkeoV++tbJzBPh8bhTPToksusoJ4NGGwcwL3NiNPyxCV
+         3aUrbMKZcXJ8hk9bbn/RXNWHTByoPZhPd+oZwjx3+tHZ18YQg1ZcOGdkSNfZISHCKAII
+         lUPA==
+X-Gm-Message-State: AOAM531ipV/Wh1TZo7/93TB1BD5FGtPkxzRPmg/aeEzezSO9fLTz3dIi
+        qBHHvCwF+bn6iDwQ/OonwvY=
+X-Google-Smtp-Source: ABdhPJzx/uSz6TcNEGENiqPatkGerpxhDXYOuqc4Wf65lCKXbsV97NKqjp4sUXUXat6CkafBhZ+1RA==
+X-Received: by 2002:a05:6808:610:: with SMTP id y16mr909433oih.0.1597266840556;
+        Wed, 12 Aug 2020 14:14:00 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:c1d8:5dca:975d:16e])
+        by smtp.googlemail.com with ESMTPSA id y66sm675085otb.37.2020.08.12.14.13.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Aug 2020 14:13:59 -0700 (PDT)
+Subject: Re: [RFC PATCH bpf-next] bpf: add bpf_get_skb_hash helper function
+To:     "Ramamurthy, Harshitha" <harshitha.ramamurthy@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>, "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>, "andriin@fb.com" <andriin@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@chromium.org" <kpsingh@chromium.org>,
+        "hawk@kernel.org" <hawk@kernel.org>
+Cc:     "Herbert, Tom" <tom.herbert@intel.com>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "Duyck, Alexander H" <alexander.h.duyck@intel.com>,
+        "Wyborny, Carolyn" <carolyn.wyborny@intel.com>
+References: <20200810182841.10953-1-harshitha.ramamurthy@intel.com>
+ <bf183ea6-7b68-3416-2a61-9d3bbf084230@gmail.com>
+ <MW3PR11MB45220E877ED544FEBC1FF01885450@MW3PR11MB4522.namprd11.prod.outlook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <ca36641c-8360-c2d5-7cde-f4c7d933520a@gmail.com>
+Date:   Wed, 12 Aug 2020 15:13:52 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpU6KE4O6L1qAB5MjJGsc-zeQwx6x3HjgmevExaHntMyzA@mail.gmail.com>
+In-Reply-To: <MW3PR11MB45220E877ED544FEBC1FF01885450@MW3PR11MB4522.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 11, 2020 at 04:25:43PM -0700, Cong Wang wrote:
-> On Sun, Aug 9, 2020 at 4:41 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> >
-> > Interesting idea. Note: my experience is that typical setup is
-> > to have only one of those (from offload perspective). Ariel,
-> > are your use cases requiring say both fields?
-> >
-> >  From policy perspective, i think above will get more complex
-> > mostly because you have to deal with either mark or hash
-> > being optional. It also opens doors for more complex matching
-> > requirements. Example "match mark X AND hash Y" and
-> > "match mark X OR hash Y".
-> > The new classifier will have to deal with that semantic.
-> >
-> > With fw and hash being the complex/optional semantics are easy:
-> >
-> > "match mark X AND hash Y":
-> > $TC filter add dev $DEV1 parent ffff: protocol ip prio 3 handle X
-> > skbhash flowid 1:12 action continue
-> > $TC filter add dev $DEV1 parent ffff: protocol ip prio 4 handle Y fw
-> > flowid 1:12 action ok
-> >
-> > "match mark X OR hash Y":
-> > $TC filter add dev $DEV1 parent ffff: protocol ip prio 3 handle X
-> > skbhash flowid 1:12 action ok
-> > $TC filter add dev $DEV1 parent ffff: protocol ip prio 4 handle Y fw
-> > flowid 1:12 action ok
+On 8/11/20 3:55 PM, Ramamurthy, Harshitha wrote:
+> is a pre-cursor to potentially calling the in-kernel flow dissector from
+> a helper function.
 > 
-> Not sure if I get you correctly, but with a combined implementation
-> you can do above too, right? Something like:
-> 
-> (AND case)
-> $TC filter add dev $DEV1 parent ffff: protocol ip prio 3 handle 1
-> skb hash Y mark X flowid 1:12 action ok
 
-I probably missed something, but this kind of matching is pretty much
-what flower does today. Is it just to avoid key extraction/flow
-dissector or did I miss something?  I know there was a thread on how
-to match on this hash before, but other than what I just said, I can't
-recall other arguments.
+That is going to be a challenge to do in a way that does not impact the
+kernel's ability to change as needed, and I suspect it will be much
+slower than doing in ebpf. Modular ebpf code that can be adapted to use
+cases is going to be more appropriate for XDP for example.
