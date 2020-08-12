@@ -2,52 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6D96242FE7
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 22:12:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B198D242FEE
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 22:13:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726679AbgHLUMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 16:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42800 "EHLO
+        id S1726834AbgHLUNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 16:13:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726547AbgHLUMQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 16:12:16 -0400
+        with ESMTP id S1726512AbgHLUNs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 16:13:48 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB5BC061383;
-        Wed, 12 Aug 2020 13:12:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3690EC061383;
+        Wed, 12 Aug 2020 13:13:48 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8455E12852AE6;
-        Wed, 12 Aug 2020 12:55:30 -0700 (PDT)
-Date:   Wed, 12 Aug 2020 13:12:15 -0700 (PDT)
-Message-Id: <20200812.131215.1747166244140307990.davem@davemloft.net>
-To:     johannes@sipsolutions.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        johannes.berg@intel.com
-Subject: Re: [PATCH] ipv4: tunnel: fix compilation on ARCH=um
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 51A4012905D74;
+        Wed, 12 Aug 2020 12:57:01 -0700 (PDT)
+Date:   Wed, 12 Aug 2020 13:13:46 -0700 (PDT)
+Message-Id: <20200812.131346.1049273548567735486.davem@davemloft.net>
+To:     noodles@earth.li
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, kuba@kernel.org, mcoquelin.stm32@gmail.com,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 0/2] net: stmmac: Fix multicast filter on IPQ806x
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200812210852.dc434e0b40e9.I618f37993ea3ddb2bec31e9b54e4f4ae2f7b7a51@changeid>
-References: <20200812210852.dc434e0b40e9.I618f37993ea3ddb2bec31e9b54e4f4ae2f7b7a51@changeid>
+In-Reply-To: <cover.1597260787.git.noodles@earth.li>
+References: <cover.1597260787.git.noodles@earth.li>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 12 Aug 2020 12:55:30 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 12 Aug 2020 12:57:01 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes@sipsolutions.net>
-Date: Wed, 12 Aug 2020 21:08:53 +0200
+From: Jonathan McDowell <noodles@earth.li>
+Date: Wed, 12 Aug 2020 20:36:54 +0100
 
-> From: Johannes Berg <johannes.berg@intel.com>
+> This pair of patches are the result of discovering a failure to
+> correctly receive IPv6 multicast packets on such a device (in particular
+> DHCPv6 requests and RA solicitations). Putting the device into
+> promiscuous mode, or allmulti, both resulted in such packets correctly
+> being received. Examination of the vendor driver (nss-gmac from the
+> qsdk) shows that it does not enable the multicast filter and instead
+> falls back to allmulti.
 > 
-> With certain configurations, a 64-bit ARCH=um errors
-> out here with an unknown csum_ipv6_magic() function.
-> Include the right header file to always have it.
-> 
-> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+> Extend the base dwmac1000 driver to fall back when there's no suitable
+> hardware filter, and update the ipq806x platform to request this.
 
-Applied, thank you.
+Series applied, thank you.
