@@ -2,98 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49F4D242403
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 04:19:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D970C242409
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 04:25:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726468AbgHLCTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 22:19:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
+        id S1726430AbgHLCZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 22:25:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726255AbgHLCTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 22:19:35 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1847FC06174A;
-        Tue, 11 Aug 2020 19:19:35 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id i10so520497ybt.11;
-        Tue, 11 Aug 2020 19:19:35 -0700 (PDT)
+        with ESMTP id S1726173AbgHLCZb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 22:25:31 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87342C06174A
+        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 19:25:31 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id k23so985755iom.10
+        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 19:25:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=G1bVfsreZpWFdCZaRw99diS9Jg0LPYJBgsnwoI+PktU=;
-        b=FpQczdBoRP7cVFml5t+val3pYz/7DcoaPh+3jsFET+2p2KNEHaNpUY1kQvWBmVk4Ff
-         JAl0tonnD5mksj6JBTz9h3i7eNssaMNFsQigpy7CB6U7EIOHiuHWrM+0YTvNS04in/Xs
-         dW9ZMeFX2zBeFx3/x87yX8Xbaw/Y/Ne2dKzUL8H86SvHPttBI+4fUxUoQLt8O2Qg0nNe
-         VdtCSlUj+FbXOPkEvwBNBsxy1V3B+sA8C1Ufjt4ynxHZfYvCYWFO1v9aYOlOBtuW7eOj
-         J5J+8n/Nu7iI5qP1uBg6z7L0fkqR8wdtjsNqnoqrjoLhX2FlASguGyX50knc+pnew4Gw
-         hvYA==
+         :cc:content-transfer-encoding;
+        bh=lOhPkOVf6eksGF3MTC8QbHXU2MaE02R97fSDrpg/mSM=;
+        b=YNAzvtU7/KZJa1kM8hw7UdpInLqLehneLtoVNQUoXtgKfvUgzxVSSY+EGeNI7xzpmB
+         H7c4LDHAB1sVnITdIP2vkXoI+/k8sgRJ3uoK5Ef4SuceeN4sM8mrY+/OhMYSMmklUJiT
+         UUMmXQdQ+xkHNH+alAXGwXbnO8c/m9hqIya7BozOyv9zsKR8EX49KisUh+EifoGELkWD
+         R84sVhnTL+A3NhAujt67kmhHQVg6EOyfM2tf4SG4CL9mpUgiY36/mLsTivUNNvs89f8g
+         OQSe6SM35AUWsi4DC0DpwpyKLWcsfesCA4Ac5HoYZhhH95Sqx/2k/51g8sukJoPOj8F1
+         GDiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=G1bVfsreZpWFdCZaRw99diS9Jg0LPYJBgsnwoI+PktU=;
-        b=NsnRPBaXkHiIYW0Z262hWTFryH0096eMzlKv5ViMmh3CsjXfcFDBQ+u85OxQVgy1tx
-         Ebsafxq6lwdxm+A+UAjz7Xuhs2iF8t0fsb6Zb/abZ3lNl8Rmz9lf3EpSX0F5Pi0XgRyv
-         5rNQ4qnz4wir0LHwRjT9NPN+0FPEJW9RoNRytq74nJCujE6Ivyl5m0NlFQHW5FjGYE1l
-         vZAS2FPAWyLFhXEpIsBJEd7puWs2vZ8jFVIsON/USfNvsh01Ai1BLvigoOYby0z1UEfW
-         meUanzxJN3J9pEFQSKh2DmH0tX197J8h+GzhTz36MImIw2xBglM05JfptxRHpk2Qn8iN
-         H19g==
-X-Gm-Message-State: AOAM531Q0yfsfgqFcYj1yowrKdIExXwgkilYocDmLmZF3Xs3fZPQTZm2
-        rSuBDTmEJVbqWzxSPCSy/lMrxFaCzrVitoUPH7HJ3X+g
-X-Google-Smtp-Source: ABdhPJxdESV38bMimv8eahpAiyV3s1/lT1KB7X3KOIIOL37wm29EF35az6qHYuXkVqHZ7dUw5AWvATccxzftQT/UUuA=
-X-Received: by 2002:a25:d84a:: with SMTP id p71mr55243795ybg.347.1597198774354;
- Tue, 11 Aug 2020 19:19:34 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lOhPkOVf6eksGF3MTC8QbHXU2MaE02R97fSDrpg/mSM=;
+        b=f2LTl2CRGeSWvsXBpBsKcwCsS1mf4NKjL2olwqBWcLVfbtTYUfsy7MqWvCR+EpGFwd
+         7ArxiW5G/2y25274kQ050wlL04ilzH6esguGNX9o6Y21ydJ2l3yhBlm97A28sTdOvhaf
+         rDSLDp7xOae/lU+cpF2kM593Gq1yVDfYzm+71ejI6H56hOO6LXjuObzSbxQ5qHBzVsNW
+         tjvVD0sY0US4YUreHypX52dMQB3SPo1ijJIWRZz7ChdsSg19ACi+yStakfqLpkK7p267
+         3Fq0UW/Uxk8YtYEl1UgyqIk4jV/FIeOcP+h7NZ2qjvuKrEn+bCHQc1gTuuaDaAGXD+jd
+         U89A==
+X-Gm-Message-State: AOAM532VxzoNdUdSaGbLXq5/yrXBVL8j2fZswGgis97xN4VIm9tkKOHn
+        mm4/Qod9dLI4+aRyzszETY+6lTqoMk5l36m7+peOIQ==
+X-Google-Smtp-Source: ABdhPJwnE2VWVzfjsMuoyoIrAS5LO7fVZTXv1xvjtdwwo25QmluABscTbGile/aGlYsF1zmrReGv87zWGaJHfdvjCyU=
+X-Received: by 2002:a05:6638:22d0:: with SMTP id j16mr29270233jat.97.1597199130649;
+ Tue, 11 Aug 2020 19:25:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200722064603.3350758-1-andriin@fb.com> <20200722064603.3350758-4-andriin@fb.com>
- <20200811181403.GH184844@google.com>
-In-Reply-To: <20200811181403.GH184844@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 11 Aug 2020 19:19:23 -0700
-Message-ID: <CAEf4BzbXLg2EogSt1+oqmKY54E1gcVo3FLpY78p9jUrBQST_yA@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 3/9] bpf, xdp: extract common XDP program
- attachment logic
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
+References: <20200812013440.851707-1-edumazet@google.com>
+In-Reply-To: <20200812013440.851707-1-edumazet@google.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Tue, 11 Aug 2020 19:25:18 -0700
+Message-ID: <CANP3RGfi3Uo2Rf_w_sidBjd3FY5CtzDsnAYOapzaYPEL6LkGwQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: accept an empty mask in /sys/class/net/*/queues/rx-*/rps_cpus
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nitesh Narayan Lal <nitesh@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 11, 2020 at 11:14 AM <sdf@google.com> wrote:
->
-> On 07/21, Andrii Nakryiko wrote:
-> > Further refactor XDP attachment code. dev_change_xdp_fd() is split into
-> > two
-> > parts: getting bpf_progs from FDs and attachment logic, working with
-> > bpf_progs. This makes attachment  logic a bit more straightforward and
-> > prepares code for bpf_xdp_link inclusion, which will share the common
-> > logic.
-> It looks like this patch breaks xdp tests for me:
-> * test_xdping.sh
-> * test_xdp_vlan.sh
->
-> Can you please verify on your side?
->
-> Looking at tools/testing/selftests/bpf/xdping.c I see it has:
-> static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
->
-> And it attaches program two times in the same net namespace,
-> so I don't see how it could've worked before the change :-/
-> (unless, of coarse, the previous code was buggy).
-
-Ok, so according to the old logic, XDP_FLAGS_UPDATE_IF_NOEXIST flag is
-only checked if new program fd is not -1. So if we are installing a
-new program and specify XDP_FLAGS_UPDATE_IF_NOEXIST, we'll be allowed
-to do this only if there is no BPF program already attached. But we
-are uninstalling program, then XDP_FLAGS_UPDATE_IF_NOEXIST is ignored
-and we are allowed to uninstall any BPF program.
-
-I can easily fix this by moving the XDP_FLAGS_UPDATE_IF_NOEXIST check
-inside `if (new_prog) {}` section. I'm not sure which semantics was
-actually originally intended. Maybe XDP folks can chime in here?
+Reviewed-by: Maciej =C5=BBenczykowski <maze@google.com>
