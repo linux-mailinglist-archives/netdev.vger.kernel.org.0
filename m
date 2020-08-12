@@ -2,128 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C03FE24240D
-	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 04:28:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68E5D24240F
+	for <lists+netdev@lfdr.de>; Wed, 12 Aug 2020 04:29:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgHLC2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Aug 2020 22:28:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48748 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726173AbgHLC2k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 22:28:40 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DE2C06174A
-        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 19:28:40 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id u128so251067pfb.6
-        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 19:28:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=S9ZauU+MArtzbG+Sd73d7Cd6m9Q7FB+/474WYky2Mt0=;
-        b=Ir57dIQjZ9P/kaDW47PxFHfXhKejFwHxDIiZBZX2X+1xPCXldbdikLiQjYxMWGJwe9
-         9Jmf+o+2GcsSjoX9oz6B3dAXqsPR5KWv12r5j8KcE1kBleh1JzQ4c1GWHRhLc04dmIsr
-         nXfJo68XG8ngX+bZYodRFV/rvQ2YMEhQf0uDlGGWb8bVAZTZe7WHgLbf1h8UD7qkAPOR
-         WnDajY91XzYrYGRKo1ihVlOVUh1bvsPAOtUY15eI1syvmfqG7GI5pT1khtleUjy8ScjS
-         3HYF8YV4ekniB69tYT2Vx5nAQcy7VR3rYHLMBU51rNyN/n//8bDIKN+kNzJzc5N7DoTS
-         8/jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=S9ZauU+MArtzbG+Sd73d7Cd6m9Q7FB+/474WYky2Mt0=;
-        b=r+8dAKPyOTuf0MHS/D4G7Et1iTEePADxkMH16Xh5XFqwME66LurL2FUwoxB/9DOwDD
-         2W8hd6CKNiXQ/OjMmTAl/G7qGPTi6cgAhRcwg01Xg1B6qiGTPXqNtkzIlwV0ooJJb6Ek
-         uJzJh6UTcANnStl62spUOSjNtDj9b0VfuqEs1rcRN8s41K2BSU/i8s2jV6+irYsbiMxp
-         /tSmi/yHsHJZ2pnQKoyxNK8ECIk4dYcfjhfcgbfsUdUijDdGkoIhTn/ay3A1LD9EM4zQ
-         FVzJllJlu+cQbHuHiTksT4Q9TCIUNvmwcurRtTKh4VyM5PUL/dybk7NHytbS+GSVUqLu
-         Q+3w==
-X-Gm-Message-State: AOAM531/wIMsp/CqrR0OM2kTjYengAV0rUo5op5wvUkREHEvNY9eCIyJ
-        hXP8sBMfi/LlRLHztsY0uiI=
-X-Google-Smtp-Source: ABdhPJylqwzEWtffaPjbjHIw+4D7jdtcMBs2yxPDB2ySmPUSaW4gonHF08sBnnhRNMrrnzgQuX9kfw==
-X-Received: by 2002:a62:7705:: with SMTP id s5mr8675262pfc.52.1597199319809;
-        Tue, 11 Aug 2020 19:28:39 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 124sm443604pfb.19.2020.08.11.19.28.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Aug 2020 19:28:39 -0700 (PDT)
-Date:   Wed, 12 Aug 2020 10:28:29 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     gnault@redhat.com, netdev@vger.kernel.org, pmachata@gmail.com,
-        roopa@cumulusnetworks.com, dsahern@kernel.org, akaris@redhat.com
-Subject: Re: [PATCH net] Revert "vxlan: fix tos value before xmit"
-Message-ID: <20200812022829.GP2531@dhcp-12-153.nay.redhat.com>
-References: <20200805101807.GN2531@dhcp-12-153.nay.redhat.com>
- <20200805.121110.1918790855908756881.davem@davemloft.net>
- <20200806025241.GO2531@dhcp-12-153.nay.redhat.com>
- <20200811.170223.1397578654908672695.davem@davemloft.net>
+        id S1726469AbgHLC3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Aug 2020 22:29:32 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:31728 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726173AbgHLC3c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Aug 2020 22:29:32 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 07C2SrRC005021
+        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 19:29:31 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=gWuW5eKj6LNbzlC7DSCDOcTS5DYUysXwrd1bdhjydP0=;
+ b=ft3X0B9UF0Qndcn0rg5YQSvikSWGLXdKLOl08Hg5oWjP/Q9xtxDua01UKWABH/j+xLZa
+ h8/SdB0ZRzHYXkWa1aQL0mN1GoahaeMqWqtT/t9y6r80aAQekbTBbT3NXtSjtLrpH5UE
+ bhSKoLWCkczAmMoKDSDhRzokFDyxpFx92yM= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 32v0kjswc0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 11 Aug 2020 19:29:31 -0700
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 11 Aug 2020 19:29:30 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id BBA792EC594F; Tue, 11 Aug 2020 19:29:24 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Stanislav Fomichev <sdf@google.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] bpf: fix XDP FD-based attach/detach logic around XDP_FLAGS_UPDATE_IF_NOEXIST
+Date:   Tue, 11 Aug 2020 19:29:23 -0700
+Message-ID: <20200812022923.1217922-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200811.170223.1397578654908672695.davem@davemloft.net>
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-11_19:2020-08-11,2020-08-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ mlxscore=0 mlxlogscore=406 malwarescore=0 phishscore=0 adultscore=0
+ spamscore=0 impostorscore=0 suspectscore=8 priorityscore=1501 bulkscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008120015
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 11, 2020 at 05:02:23PM -0700, David Miller wrote:
-> From: Hangbin Liu <liuhangbin@gmail.com>
-> Date: Thu, 6 Aug 2020 10:52:41 +0800
-> 
-> > The rough steps are setting vxlan tunnel on OVS. set inner packet tos to
-> > 1011 1010 (0xba) and outer vxlan to 1111 1100(0xfc). The outer packet's tos
-> > should be 0xfe at latest as it inherit the inner ECN bit. But with RT_TOS(tos)
-> > We actually got tos 0x1e as the first 3 bits are omitted.
-> > 
-> > Now here is detailed testing steps:
-> 
-> This explains why we need to revert the RT_TOS() change.
-> 
-> I'm asking what testing you did on the original change that added
-> RT_TOS(), which we reverted, and which didn't fix anything.
+Enforce XDP_FLAGS_UPDATE_IF_NOEXIST only if new BPF program to be attache=
+d is
+non-NULL (i.e., we are not detaching a BPF program).
 
-Oh, I know what you mean now.
-> 
-> I want to know how we got into this situation in the first place,
-> adding a change that only added negative effects.
+Reported-by: Stanislav Fomichev <sdf@google.com>
+Fixes: d4baa9368a5e ("bpf, xdp: Extract common XDP program attachment log=
+ic")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ net/core/dev.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-The reason is still based on the definition of RT_TOS. I have a report
-about the difference tos action between geneve and vxlan.
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 7df6c9617321..b5d1129d8310 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8913,10 +8913,6 @@ static int dev_xdp_attach(struct net_device *dev, =
+struct netlink_ext_ack *extack
+ 		NL_SET_ERR_MSG(extack, "Active program does not match expected");
+ 		return -EEXIST;
+ 	}
+-	if ((flags & XDP_FLAGS_UPDATE_IF_NOEXIST) && cur_prog) {
+-		NL_SET_ERR_MSG(extack, "XDP program already attached");
+-		return -EBUSY;
+-	}
+=20
+ 	/* put effective new program into new_prog */
+ 	if (link)
+@@ -8927,6 +8923,10 @@ static int dev_xdp_attach(struct net_device *dev, =
+struct netlink_ext_ack *extack
+ 		enum bpf_xdp_mode other_mode =3D mode =3D=3D XDP_MODE_SKB
+ 					       ? XDP_MODE_DRV : XDP_MODE_SKB;
+=20
++		if ((flags & XDP_FLAGS_UPDATE_IF_NOEXIST) && cur_prog) {
++			NL_SET_ERR_MSG(extack, "XDP program already attached");
++			return -EBUSY;
++		}
+ 		if (!offload && dev_xdp_prog(dev, other_mode)) {
+ 			NL_SET_ERR_MSG(extack, "Native and generic XDP can't be active at the=
+ same time");
+ 			return -EEXIST;
+--=20
+2.24.1
 
-For geneve:
-
-geneve_get_v4_rt()
-  - fl4->flowi4_tos = RT_TOS(tos);
-geneve_xmit_skb()
-  - tos = ip_tunnel_ecn_encap(fl4.flowi4_tos, ip_hdr(skb), skb);
-
-For vxlan:
-
-vxlan_xmit_one()
-  - tos = ip_tunnel_ecn_encap(tos, old_iph, skb);
-
-So geneve will use RT_TOS(tos) when xmit, while vxlan will take all tos bits.
-At that time I only read the code and thought we should obey the RT_TOS rule,
-So I submit the previous patch.
-
-Later Petr Machata remind me that we need to take care of DSCP fields. So I
-asked you if we should change RT_TOS() to DSCP_TOS()[1]. You replied
-
-"""
-The RT_TOS() value elides the two lowest bits so that we can store other
-pieces of binary state into those two lower bits.
-
-So you can't just blindly change the RT_TOS() definition without breaking
-a bunch of things.
-"""
-
-I'm sorry I didn't take more time to think about the your reply and just
-give up my thoughts. Since we bring up this topic again. Would you please
-help explain about what "The RT_TOS() value elides the two lowest bits"
-means? I'm not sure if you are talking about ECN or not.
-
-[1] https://www.spinics.net/lists/netdev/msg631249.html
-
-Thanks
-Hangbin
