@@ -2,96 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A85CD2432E8
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 05:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFDCA2432F0
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 05:45:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726648AbgHMDnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 23:43:00 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:52298 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726334AbgHMDm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 23:42:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1597290178;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=R1FoOnzwCjmAV3Y/ylWJi6U25gwiEx4EsbhSDsLmSnw=;
-        b=bJ026d377a1q/zrkgD/1A1S9aNZM3xdZcUwew/oHR/QkNwI05rnG7UrlwQGG2jRPHnVuz+
-        85VMUIFhc2nda+morbGrw3Pv0C9OSQtQkA8bt1PdW9SDwwsd2hxW1Nck2BnRpMFIAMD57x
-        9sqdOGv1AFPSSuQQj+H6y9C3ULKu9tY=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-91-IPInJh5fM4-g4ZahHdDU4A-1; Wed, 12 Aug 2020 23:42:56 -0400
-X-MC-Unique: IPInJh5fM4-g4ZahHdDU4A-1
-Received: by mail-oi1-f199.google.com with SMTP id t124so2191878oie.13
-        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 20:42:56 -0700 (PDT)
+        id S1726716AbgHMDpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Aug 2020 23:45:24 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:45005 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726696AbgHMDpY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 23:45:24 -0400
+Received: by mail-io1-f71.google.com with SMTP id m12so3158574iov.11
+        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 20:45:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R1FoOnzwCjmAV3Y/ylWJi6U25gwiEx4EsbhSDsLmSnw=;
-        b=H7ByxhbIIhJLvQQ4Rt7pM1IJKpDUrOBQIv+5pUWZiLtdTuJAM8NHwbdaS25B2SNbc1
-         mLhomyFKf92h+HLKEjKYv8MxxeJHfYeSNVQdxXH7HxtAqBOmbDLKGxLDKn3Z6y5qUzCV
-         5j1xG4O/ez0Hupj8uqvLQ7gncyYnAkGkiRDCYokv67YLGKgvnek+G5RYn1WhhA72AcGA
-         aW7b9VNSvAsOyLj/upb8NxbvToloURbuHe4ZpjZSOFEoPR6Cmg8p0chCWW3J2Jh3xQvz
-         TbImpexY+TtUq7o8q1uiCB3HY3xL3HOt5Xl2p49x9fWtS0QdNbyHE1nizm+sYOSbj3oT
-         KoMQ==
-X-Gm-Message-State: AOAM533IDiqiE7NMynpzioFr3dzrBCgnUHOfHn91MtCE/X6ptvn0v0HY
-        buFxUBRD8oDw4NwFWjucfbttYxWYRlpICRD3ymSzKB6HT3ZlgAUzcTQtf51CA4/K9fXnKsCKDCB
-        trEL004mifLI9GKipHKg2y55dajV3aruI
-X-Received: by 2002:aca:5585:: with SMTP id j127mr1800717oib.120.1597290175477;
-        Wed, 12 Aug 2020 20:42:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxDS/0/RnCjl7yvlZX1lGxi9jH9AckxTm85pIvIQCgpDHn3QsGW2Pzr6GiLgpMCWY2ArFVMA8beH8JSToEOjKM=
-X-Received: by 2002:aca:5585:: with SMTP id j127mr1800707oib.120.1597290175117;
- Wed, 12 Aug 2020 20:42:55 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=5fOerBOgtCPzRD6DaJSK75fAycF0jkD27NVs0k5zNK8=;
+        b=lBCOaYtaArhCsTIo9vR6/bl7A/4PEXRRYyMTK7D9X3IIVefYT16jeTAeHDFqjSwJz/
+         BrHnz4TD6vXytfDyBuuqqzSi/KiPBtrcBkayrpPnS5qJaXVY35Wx6aNBTSHYYk+B5sPl
+         I8ShracgiJ1yN0IjzTAIaLCxNrHQFDXGnS2kuxff9u9BsO6THkvXAr+vkYRbZFP1a2UE
+         V98PL0zmazpEd5at5ror7thkSHgUqr+rXgr0WzIpKvPtTtSXFEruqXhcrNqwL9qfRhZg
+         d2UQ3rfdmJWB3L2nfj6SVPqAVmkvXFTQf/qoB1ggAFzxP1iwLY5HD2uexlQJHgGe/EJV
+         ioDQ==
+X-Gm-Message-State: AOAM5303jcvN0jsCzfcxtZG23sNOd8TmUQljGyTYa0qDPVd9M6AWKyJF
+        BYI/jsKMD+awBT6KPJqPGn5Nnddjvp8zAXVxPraXL1B5+o+I
+X-Google-Smtp-Source: ABdhPJxz4SQu4A4rdaQz1JJUS90biGgjK7Mm9sZZE4NzvdVqRmeRD40WWpsBvRjHG3bQJOxi3NZRYHnot5kBb62meeUF8lLcp2uq
 MIME-Version: 1.0
-References: <CAKfmpSdcvFG0UTNJFJgXwNRqQb-mk-PsrM5zQ_nXX=RqaaawgQ@mail.gmail.com>
- <20200713220016.xy4n7c5uu3xs6dyk@lion.mk-sys.cz> <20200713154118.3a1edd66@hermes.lan>
- <20200714002609.GB1140268@lunn.ch> <CAKfmpSdD2bupC=N8LnK_Uq7wtv+Ms6=e1kk-veeD24EVkMH7wA@mail.gmail.com>
- <20200716031842.GI1211629@lunn.ch> <CAKfmpSdSfrQjio2gSE7wSZnR82ROPwF4zH+Wyy4Xg-aOaOjvsQ@mail.gmail.com>
-In-Reply-To: <CAKfmpSdSfrQjio2gSE7wSZnR82ROPwF4zH+Wyy4Xg-aOaOjvsQ@mail.gmail.com>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Wed, 12 Aug 2020 23:42:44 -0400
-Message-ID: <CAKfmpSfS43zxcAC-f16QJ3MmcQ8SC_h6CJBLsKFF3_c36uaY_g@mail.gmail.com>
-Subject: Re: [RFC] bonding driver terminology change proposal
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Netdev <netdev@vger.kernel.org>
+X-Received: by 2002:a05:6e02:42:: with SMTP id i2mr2552973ilr.184.1597290323164;
+ Wed, 12 Aug 2020 20:45:23 -0700 (PDT)
+Date:   Wed, 12 Aug 2020 20:45:23 -0700
+In-Reply-To: <000000000000ece9db05ac4054e8@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000050c61e05acba22b6@google.com>
+Subject: Re: WARNING in compat_do_ebt_get_ctl
+From:   syzbot <syzbot+5accb5c62faa1d346480@syzkaller.appspotmail.com>
+To:     bridge@lists.linux-foundation.org, coreteam@netfilter.org,
+        davem@davemloft.net, fw@strlen.de, kadlec@netfilter.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        nikolay@cumulusnetworks.com, pablo@netfilter.org,
+        roopa@cumulusnetworks.com, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 16, 2020 at 1:43 AM Jarod Wilson <jarod@redhat.com> wrote:
->
-> On Wed, Jul 15, 2020 at 11:18 PM Andrew Lunn <andrew@lunn.ch> wrote:
-...
-> > I really think that before we consider changes like this, somebody
-> > needs to work on git tooling, so that it knows when mass renames have
-> > happened, and can do the same sort of renames when cherry-picking
-> > across the flag day. Without that, people trying to maintain stable
-> > kernels are going to be very unhappy.
->
-> I'm not familiar enough with git's internals to have a clue where to
-> begin for something like that, but I suspect you're right. Doing
-> blanket renames in stable branches sounds like a terrible idea, even
-> if it would circumvent the cherry-pick issues. I guess now is as good
-> a time as any to start poking around at git's internals...
+syzbot has found a reproducer for the following issue on:
 
-I haven't forgotten about this, just been tied up with other work. I
-spent a bit of time getting lost in git's internals, and the best idea
-I've had suggested to me is some sort of cherry-pick hook that
-executes an external script to massage variables back to old names for
--stable backporting. Could live somewhere in-tree, and maintainers
-would have to know about it, but it would be reasonably painless.
-Ideally, I was thinking a semantic patch to filter the backported
-patch through, but haven't yet spent enough time playing with
-coccinelle to know if that's actually a viable idea, since it's
-designed to run on C code, not a patch, as I understand it.
-Worst-case, it'd be a shell script doing some awk/sed/whatever.
+HEAD commit:    fb893de3 Merge tag 'tag-chrome-platform-for-v5.9' of git:/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1742b31c900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f1fedc63022bf07e
+dashboard link: https://syzkaller.appspot.com/bug?extid=5accb5c62faa1d346480
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+userspace arch: i386
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13280fd6900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1409f4a6900000
 
--- 
-Jarod Wilson
-jarod@redhat.com
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5accb5c62faa1d346480@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+Buffer overflow detected (80 < 137)!
+WARNING: CPU: 0 PID: 6853 at include/linux/thread_info.h:134 copy_overflow include/linux/thread_info.h:134 [inline]
+WARNING: CPU: 0 PID: 6853 at include/linux/thread_info.h:134 check_copy_size include/linux/thread_info.h:143 [inline]
+WARNING: CPU: 0 PID: 6853 at include/linux/thread_info.h:134 copy_to_user include/linux/uaccess.h:151 [inline]
+WARNING: CPU: 0 PID: 6853 at include/linux/thread_info.h:134 compat_do_ebt_get_ctl+0x47e/0x500 net/bridge/netfilter/ebtables.c:2270
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 6853 Comm: syz-executor171 Not tainted 5.8.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:231
+ __warn.cold+0x20/0x45 kernel/panic.c:600
+ report_bug+0x1bd/0x210 lib/bug.c:198
+ handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
+ exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
+ asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
+RIP: 0010:copy_overflow include/linux/thread_info.h:134 [inline]
+RIP: 0010:check_copy_size include/linux/thread_info.h:143 [inline]
+RIP: 0010:copy_to_user include/linux/uaccess.h:151 [inline]
+RIP: 0010:compat_do_ebt_get_ctl+0x47e/0x500 net/bridge/netfilter/ebtables.c:2270
+Code: ba fd ff ff 4c 89 f7 e8 60 07 a2 fa e9 ad fd ff ff e8 36 18 62 fa 4c 89 e2 be 50 00 00 00 48 c7 c7 40 b9 0e 89 e8 94 1f 33 fa <0f> 0b e9 dc fd ff ff 41 bc f2 ff ff ff e9 4f fe ff ff e8 3b 07 a2
+RSP: 0018:ffffc90005667ae8 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 1ffff92000accf5e RCX: 0000000000000000
+RDX: ffff88809458a280 RSI: ffffffff815dbce7 RDI: fffff52000accf4f
+RBP: ffffffff8a8faa60 R08: 0000000000000001 R09: ffff8880ae6318e7
+R10: 0000000000000000 R11: 0000000035383654 R12: 0000000000000089
+R13: 0000000020000000 R14: ffffc90005667d80 R15: ffffc90005667b20
+ do_ebt_get_ctl+0x2b4/0x790 net/bridge/netfilter/ebtables.c:2317
+ nf_getsockopt+0x72/0xd0 net/netfilter/nf_sockopt.c:116
+ ip_getsockopt net/ipv4/ip_sockglue.c:1778 [inline]
+ ip_getsockopt+0x164/0x1c0 net/ipv4/ip_sockglue.c:1757
+ tcp_getsockopt+0x86/0xd0 net/ipv4/tcp.c:3884
+ __sys_getsockopt+0x219/0x4c0 net/socket.c:2179
+ __do_sys_getsockopt net/socket.c:2194 [inline]
+ __se_sys_getsockopt net/socket.c:2191 [inline]
+ __ia32_sys_getsockopt+0xb9/0x150 net/socket.c:2191
+ do_syscall_32_irqs_on arch/x86/entry/common.c:84 [inline]
+ __do_fast_syscall_32+0x57/0x80 arch/x86/entry/common.c:126
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:149
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+RIP: 0023:0xf7f91569
+Code: 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 eb 0d 90 90 90 90 90 90 90 90 90 90 90 90
+RSP: 002b:00000000ffdae08c EFLAGS: 00000292 ORIG_RAX: 000000000000016d
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000000000
+RDX: 0000000000000082 RSI: 0000000020000000 RDI: 0000000020000100
+RBP: 0000000000000012 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
