@@ -2,113 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E28302434CE
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 09:21:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F3D92434AE
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 09:17:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726600AbgHMHVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 03:21:22 -0400
-Received: from mail-eopbgr70083.outbound.protection.outlook.com ([40.107.7.83]:8323
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726081AbgHMHVV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Aug 2020 03:21:21 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ik9hTmrmXxHdVFy2Z7n6inu3gbzC1+4a7R+/7Bsm+6Yrz0UzETuBng2TiRCqnORXZr+1WUkstArrYy7HG6YwwzFmWdocZg7jMB9RlYkEBMeTo8L+mATRuqEUloKLKzbms3uiIJg8KPoKFsWBjNuoHUpJxboztFiqcpRXIm9GMsR5W68lC/xWb7WQVHNNgsDPLon1hgFH11LXh7uAXcRCkLh5qN4OeyxMPaM9D2IF6r9+QQhJ7osQV7YT2tMnX3OdLYOI1O+IBBowh5LIShD15q7v2+Gj8IzF4YDfFUtwjjbcAljuDgZtHXagFlocqlgvwPB+Z2cYFKrBKGoMW9gerQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E69Qn4YtKpd+uH9W/gDAWVs4RGkOQXZtcFKUSgzKQKA=;
- b=C5FA8ePCIC9k+Xy4LCZK2mTC38bpDwyFTA0NjSikajznz2M3Q9vLbhJS9yNdKCQYF0nMcJHpK5kX5CYS22tFMX85kdLsqvxoWr9ex7X5nwAmdREw/P70NEPHxk0NriQI6u/EfcsR6UzyX6xlvlefxKhV0tUsw7AkBzJ7orJ1O62Jy3e0FPbhv0JaZ6sGGvQ+j+0e+FPqEjwSoqb74MO6kb5Dz5C7h0VobprO6kTDqokkikrAFZQpTyeLnYFTT0OxzjAZwwza8z8ehPfvcWyMjXriyUBrKOzYZfokqVEpWkmBIjq+tnN91Zf80B/PRZ6qk3vKNSyfykOO8+JvJVbONg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E69Qn4YtKpd+uH9W/gDAWVs4RGkOQXZtcFKUSgzKQKA=;
- b=dKdAXjDl1O1v4Kclmq+LaXWvF/VxC6Qc7oeYksbV+2L+YlpSEDOzksJjhydGYBiB5C8ydWBGAddUH/V/FsGGoRdiAI9mjfRE3VSgAvH9BzkmIP+MIuSHlOvSiaKBRSDius0T1W/1RhU1/8SYr26KGjTyU2oqIueynRcKG4cv97o=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- (2603:10a6:209:12::18) by AM5PR0401MB2643.eurprd04.prod.outlook.com
- (2603:10a6:203:34::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3283.15; Thu, 13 Aug
- 2020 07:21:16 +0000
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::1813:3947:758d:d754]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::1813:3947:758d:d754%6]) with mapi id 15.20.3283.016; Thu, 13 Aug 2020
- 07:21:16 +0000
-From:   fugang.duan@nxp.com
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, fugang.duan@nxp.com
-Subject: [PATCH net,stable 1/1] net: fec: correct the error path for regulator disable in probe
-Date:   Thu, 13 Aug 2020 15:13:14 +0800
-Message-Id: <20200813071314.6384-1-fugang.duan@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR03CA0103.apcprd03.prod.outlook.com
- (2603:1096:4:7c::31) To AM6PR0402MB3607.eurprd04.prod.outlook.com
- (2603:10a6:209:12::18)
+        id S1726574AbgHMHRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 03:17:33 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:34666 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726224AbgHMHRc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 03:17:32 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07D7Es5M002125
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 00:17:31 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=paUf0/V/leLdAL4wM36Ts0KSKkUM8cGSC8otLvQHEmI=;
+ b=kdoNlDwzSkIu5uuDKC/6ER5+95NkGqAprSjhPOKFipeuSgX1a9Rq8r1wUus1yrKo231V
+ DvxY6TUtJtjPM+YWSjnB4JAFALkVkOSbLPGF3nYeSle/sx6KvOx9A+0J/z7u8EvuwCXi
+ QqASfgSj88VRdHVhtKeybe3bR9aZ7N7Y2TY= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 32v0kd8e8g-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 00:17:31 -0700
+Received: from intmgw004.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 13 Aug 2020 00:17:29 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id E2A502EC5928; Thu, 13 Aug 2020 00:17:24 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf 0/9] Fix various issues with 32-bit libbpf
+Date:   Thu, 13 Aug 2020 00:17:13 -0700
+Message-ID: <20200813071722.2213397-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from b38611-OptiPlex-7040.ap.freescale.net (119.31.174.67) by SG2PR03CA0103.apcprd03.prod.outlook.com (2603:1096:4:7c::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.15 via Frontend Transport; Thu, 13 Aug 2020 07:21:14 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [119.31.174.67]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 4ee840ad-f726-49ec-440b-08d83f59774b
-X-MS-TrafficTypeDiagnostic: AM5PR0401MB2643:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM5PR0401MB2643C0F726B5D2F2EE7C8A59FF430@AM5PR0401MB2643.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2201;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mJGxJXR4O8nZI6LIc+J3dQdjaHVQQwFEDQVJ33hLqKF6z3brZT6WYN54gvJeop7m5rgMcer7I5fCzhRckInkTvNqSgejzWJ2Ns8sx5Liqq0KS+6UDcHnq9IMd4+twf3GbG8TCLVCTgGMpRtreZBvoZzoa2F6B/HogFqndRMq5SQ8gjqOBnpGAa7NrYUsPEYvwCje7aF7BVlqFjSTU0j/DqmpmCftXJu0JDuPYu6rvxLU+h5AEqBUhWzR+AjR3zFKA2ph8oAUb/ruSGiVVAKouSXCOWehQx9idOLJnZyAFt0pmHQw6BHFRoLg8vKJQwcogx31WjL9Z7HL5wigfTUX0mrKNZX83fEzqWbgusUJGZOF65lVRCbeNb8r/f8l/dDs
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(366004)(396003)(39860400002)(136003)(8676002)(8936002)(478600001)(316002)(5660300002)(66556008)(6512007)(9686003)(26005)(66946007)(2906002)(83380400001)(66476007)(6916009)(2616005)(1076003)(6486002)(16526019)(36756003)(4744005)(4326008)(52116002)(86362001)(186003)(956004)(6506007)(142933001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: e5JKMWzoJ0276PuHmMZqA5r15y3zhfo/DNFxeWBonep0jQI/mCBPi5JX4d7rxfTS6GGLTzqXjsKsgCTsmEWI8ef6HT+OEqz1E+RYl+MnC6mdrI88SPsRuR7TNClUFUekug6hoiBWqwhbaU8HQqYwLhJJftosjfs2s0fIAmZKC047i7TdifTBkG50geCiVY8vpoQPnxcD8SKEXDyY1VwJgardKPS/gWJMAgPYr5/fmRJ9Jq8t6SDnYNBx+Hjpjku6cEuKQTR+r1Y/6ZnppOd/fv01rosTAGjKp7dv1u4+WTPmntkl3LbYheP907P78GPa8+N2rpMb+IXxKnYoA/5df+AyNlsuCBclFR7AhsjBOErVynCUGl8eqtMS1F7zt4/bj3BQgo4Mk6P/ppf9WDvAXXP7H6sTUYgZE4ZQGEcxv84182Dyzz2kd+MDW3BgnaTHyZ6iToIr4fXw7xDV6s/JSWmyuEQiPxtXRDjF8q7Hujqv0+Bb0RIZz+PU0QtNOUtedc2BFmLcv1ejKsxX0vjNlAT4wUPLrHyRAsL/RQ1LwsMn7n4VcnfIDUPa06iHFjK7TyTLUQCBy4EHMxKaI8VkwbUV+aqQ+jQK1J5Q84BsTp82RTMo+6d0QddFPKx5a28PqBia+7WoetiruiDyIwviUA==
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4ee840ad-f726-49ec-440b-08d83f59774b
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR0402MB3607.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Aug 2020 07:21:16.4322
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OTmRjZwywNElTWltwNpk85+o/UiPoElszefbDERYYA8pLmML4y3fxjij8BiiA8Y//diPzud90l1lhl7d1TM1hA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0401MB2643
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-13_04:2020-08-13,2020-08-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ suspectscore=8 lowpriorityscore=0 bulkscore=0 mlxlogscore=990
+ clxscore=1015 mlxscore=0 adultscore=0 priorityscore=1501 spamscore=0
+ impostorscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2008130055
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fugang Duan <fugang.duan@nxp.com>
+This patch set contains fixes to libbpf, bpftool, and selftests that were
+found while testing libbpf and selftests built in 32-bit mode. 64-bit nat=
+ure
+of BPF target and 32-bit host environment don't always mix together well
+without extra care, so there were a bunch of problems discovered and fixe=
+d.
 
-Correct the error path for regulator disable.
+Each individual patch contains additional explanations, where necessary.
 
-Fixes: 9269e5560b26 ("net: fec: add phy-reset-gpios PROBE_DEFER check")
-Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
----
- drivers/net/ethernet/freescale/fec_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This series is really a mix of bpf tree fixes and patches that are better
+landed into bpf-next, once it opens. This is due to a bit riskier changes=
+ and
+new APIs added to allow solving this 32/64-bit mix problem. It would be g=
+reat
+to apply patches #1 through #3 to bpf tree right now, and the rest into
+bpf-next, but I would appreciate reviewing all of them, of course.
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 9934421814b4..fb37816a74db 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3715,11 +3715,11 @@ fec_probe(struct platform_device *pdev)
- failed_irq:
- failed_init:
- 	fec_ptp_stop(pdev);
--	if (fep->reg_phy)
--		regulator_disable(fep->reg_phy);
- failed_reset:
- 	pm_runtime_put_noidle(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
-+	if (fep->reg_phy)
-+		regulator_disable(fep->reg_phy);
- failed_regulator:
- 	clk_disable_unprepare(fep->clk_ahb);
- failed_clk_ahb:
--- 
-2.17.1
+Andrii Nakryiko (9):
+  tools/bpftool: fix compilation warnings in 32-bit mode
+  selftest/bpf: fix compilation warnings in 32-bit mode
+  libbpf: fix BTF-defined map-in-map initialization on 32-bit host
+    arches
+  libbpf: handle BTF pointer sizes more carefully
+  selftests/bpf: fix btf_dump test cases on 32-bit arches
+  libbpf: enforce 64-bitness of BTF for BPF object files
+  selftests/bpf: correct various core_reloc 64-bit assumptions
+  tools/bpftool: generate data section struct with conservative
+    alignment
+  selftests/bpf: make test_varlen work with 32-bit user-space arch
+
+ tools/bpf/bpftool/btf_dumper.c                |  2 +-
+ tools/bpf/bpftool/gen.c                       | 14 ++++
+ tools/bpf/bpftool/link.c                      |  4 +-
+ tools/bpf/bpftool/main.h                      | 10 ++-
+ tools/bpf/bpftool/prog.c                      | 16 ++---
+ tools/lib/bpf/btf.c                           | 71 ++++++++++++++++++-
+ tools/lib/bpf/btf.h                           |  2 +
+ tools/lib/bpf/btf_dump.c                      |  4 +-
+ tools/lib/bpf/libbpf.c                        | 20 ++++--
+ tools/lib/bpf/libbpf.map                      |  2 +
+ .../selftests/bpf/prog_tests/bpf_obj_id.c     |  8 +--
+ .../selftests/bpf/prog_tests/btf_dump.c       | 27 +++++--
+ .../selftests/bpf/prog_tests/core_extern.c    |  4 +-
+ .../selftests/bpf/prog_tests/core_reloc.c     | 20 +++---
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |  6 +-
+ .../selftests/bpf/prog_tests/flow_dissector.c |  2 +-
+ .../selftests/bpf/prog_tests/global_data.c    |  6 +-
+ .../selftests/bpf/prog_tests/prog_run_xattr.c |  2 +-
+ .../selftests/bpf/prog_tests/skb_ctx.c        |  2 +-
+ .../testing/selftests/bpf/prog_tests/varlen.c |  8 +--
+ .../selftests/bpf/progs/core_reloc_types.h    | 69 +++++++++---------
+ .../testing/selftests/bpf/progs/test_varlen.c |  6 +-
+ tools/testing/selftests/bpf/test_btf.c        |  8 +--
+ tools/testing/selftests/bpf/test_progs.h      |  5 ++
+ 24 files changed, 221 insertions(+), 97 deletions(-)
+
+--=20
+2.24.1
 
