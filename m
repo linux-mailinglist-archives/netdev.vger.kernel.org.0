@@ -2,164 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B7AE243EBC
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 20:17:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B1A6243F25
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 21:05:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726499AbgHMSRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 14:17:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49322 "EHLO
+        id S1726651AbgHMTFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 15:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726167AbgHMSRO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 14:17:14 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06CBC061757;
-        Thu, 13 Aug 2020 11:17:14 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id 74so3203956pfx.13;
-        Thu, 13 Aug 2020 11:17:14 -0700 (PDT)
+        with ESMTP id S1726305AbgHMTFK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 15:05:10 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A76C061757;
+        Thu, 13 Aug 2020 12:05:09 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id g14so8530469iom.0;
+        Thu, 13 Aug 2020 12:05:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6J6/ZU0XbO+1z0IeOrxIOq56pykTQVgam02T5CujhsY=;
-        b=Sfl2o3IupApdQfJYRrhDbZz83oL0Faj84cpfTA5gWAqGN9YwQD5RH2i4FnYIphPeaM
-         X8p0vHWcaT12XRonncClBL0QtnF2ElVeUHc0qdWV/nlfiOMSRNd+e0OeM/1c63Gl7kdn
-         p4SGfcO14Se72YcMESVTXtgSRQ019N9q1SmTn+Hj61TPrP69fHUJzkKZJLs2NH4yoOMd
-         lx3ujMG8hTKyiIFK3K15aRIWsls80wjLjvB63r77l4bOWz9OC2mcmeYgcd2lYLxZWrF3
-         64/d/mqIihhZm8okdlmWUJqr5q4OuNzCop/snlEs1iZFvCITFs05yfsZ2uVq3LIurAN2
-         J61A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=zMhp2fumVVPLWEb4wUScwu8YBeSNbdB6g4k9dSGOidI=;
+        b=QS4P2T2acqLacdF8h7yq7NKwQlZ2Vbq2p7dDflSKbNr+zhdKoqyVGaQrw88RL4bHGO
+         NqougenqYFijNlnMAHcpvewcw9vF3JFHz6q0KIjYfsFim4UpbeOwfpUM8dAVuOvteJra
+         vXaOGbj+PUJ+o0VkGRXz3NCk36ODuCbfE3TpVkVS8PXub1u5UD7mEsXVUkwQ0ixyXGlM
+         Cq9uKRXOTCCWPHhTox9nYgQojqyuBb1QJVSyoUZ0913NXvZOH36d3XbFsikViX6Ci602
+         YR1UiAXePTj0U23fer568k/cU+9ToAr8/IVZwlmJ7i1Fsz5SBn1sj1iE3vB07zM50YaQ
+         HJRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6J6/ZU0XbO+1z0IeOrxIOq56pykTQVgam02T5CujhsY=;
-        b=SS13T8T+bldFenImW2BcLPW7s3of68PUuWGHC1vzel46kc3ioi7IjJRfGQi00s07pJ
-         Z2xIYRMfXjRrShK6YngFdcMCpy3Yezad1NAc5KY+fKph0fJDJFYErPEmyHFkFgEcJiAp
-         rxwQ/AzVqYAuERTRjB2432JuNYwb6tV6DCvujQsRJUpC+HKe9/Mu6QaqT4LFvHqeRa+Y
-         lTl8i85E7xBc/2fXXHuh/H/G69rHjVfdvGhQseelTtntTqnh7uoNVB8S3vxvFCFXT9Pd
-         6TitP8f29T86qT9Otd64GrL3J5RHM+ppRF+4wItoBd1Gvrphv7UV3McLVACNCRzHm8Wu
-         T/Yw==
-X-Gm-Message-State: AOAM530gBYG1Yv2GACsAPWv8MXqm8IFCRdtcoFvWuncgq74bT+KTftJH
-        vYRl6+loHWLPUQv2L2Gspco=
-X-Google-Smtp-Source: ABdhPJyqwPenOAaISNvhIDlThUwNOmobc4MGRd6N09vIHLbyOdOWHKSNMlh3KmCdUWMOJq3Gh8aiTA==
-X-Received: by 2002:a63:ef46:: with SMTP id c6mr4740468pgk.96.1597342633192;
-        Thu, 13 Aug 2020 11:17:13 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net (c-73-189-11-147.hsd1.ca.comcast.net. [73.189.11.147])
-        by smtp.gmail.com with ESMTPSA id f6sm6169684pje.16.2020.08.13.11.17.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Aug 2020 11:17:12 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Andrew Hendry <andrew.hendry@gmail.com>
-Subject: [PATCH net] drivers/net/wan/hdlc_x25: Added needed_headroom and a skb->len check
-Date:   Thu, 13 Aug 2020 11:17:04 -0700
-Message-Id: <20200813181704.62694-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=zMhp2fumVVPLWEb4wUScwu8YBeSNbdB6g4k9dSGOidI=;
+        b=aBr8HEXudm1qAXzCv7jTQd6UAfEothZIbSUyxsbi6Uv8Zx+YtmeeXd6NgvEcL1U1D1
+         ComAQab6wOzr1qD/4+ALnlUCVcRRO94GX0pwBJpnkRdiIqcUfdjlZpzebeE61ISEXMBU
+         dMsy198vt4JL6t8GGPbu02XSaRt5ZgiZoO7ra9HNgXrciQatitEIufRWtyDXNW6oaMEK
+         U6GQ8wT4hPBm4h7fY35cdruadSpBxGmMUR9jNUJ6f6Qksw140rS3uueFBLyb48H/ksBH
+         GKNdz7ha6vyLBM7eKApfa+HuXNOAId8YZDP5SwiWptphq6w1Ik4FgfHoiMj7mf55PoPq
+         i3Cw==
+X-Gm-Message-State: AOAM533Kwr869ZE9e0E81Fli58c4K04L32oqbh7YkUXLQ+S1bKIuLArL
+        66kd/8tN15Le+XLlHMVSkzAFzezOcH1heIVnqUk=
+X-Google-Smtp-Source: ABdhPJyDSqG2C0hIzDC/Jk/fSLu/HZL3ahHx0IGBHT0UtW2S4rgrzdXiwVm1sG9jvgXTfwbXjJ/+62sjQDZyeZg0lTo=
+X-Received: by 2002:a5d:80ce:: with SMTP id h14mr6268664ior.12.1597345509136;
+ Thu, 13 Aug 2020 12:05:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200812095639.4062-1-xiangxia.m.yue@gmail.com>
+In-Reply-To: <20200812095639.4062-1-xiangxia.m.yue@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 13 Aug 2020 12:04:58 -0700
+Message-ID: <CAM_iQpWUP11mGwXPB=JKsT2=zhyUEf-udXp9YNYS_Fdt73knmg@mail.gmail.com>
+Subject: Re: [PATCH v2] net: openvswitch: introduce common code for flushing flows
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Joel Fernandes <joel@joelfernandes.org>,
+        =?UTF-8?B?Sm9oYW4gS27DtsO2cw==?= <jknoos@google.com>,
+        Gregory Rose <gvrose8192@gmail.com>,
+        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>, dev@openvswitch.org,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        rcu <rcu@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. Added a skb->len check
+On Wed, Aug 12, 2020 at 2:59 AM <xiangxia.m.yue@gmail.com> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> To avoid some issues, for example RCU usage warning and double free,
+> we should flush the flows under ovs_lock. This patch refactors
+> table_instance_destroy and introduces table_instance_flow_flush
+> which can be invoked by __dp_destroy or ovs_flow_tbl_flush.
+>
+> Fixes: 50b0e61b32ee ("net: openvswitch: fix possible memleak on destroy f=
+low-table")
+> Reported-by: Johan Kn=C3=B6=C3=B6s <jknoos@google.com>
+> Reported-at: https://mail.openvswitch.org/pipermail/ovs-discuss/2020-Augu=
+st/050489.html
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-This driver expects upper layers to include a pseudo header of 1 byte
-when passing down a skb for transmission. This driver will read this
-1-byte header. This patch added a skb->len check before reading the
-header to make sure the header exists.
+Reviewed-by: Cong Wang <xiyou.wangcong@gmail.com>
 
-2. Added needed_headroom and set hard_header_len to 0
-
-When this driver transmits data,
-  first this driver will remove a pseudo header of 1 byte,
-  then the lapb module will prepend the LAPB header of 2 or 3 bytes.
-So the value of needed_headroom in this driver should be 3 - 1.
-
-Because this driver has no header_ops, according to the logic of
-af_packet.c, the value of hard_header_len should be 0.
-
-Reason of setting needed_headroom and hard_header_len at this place:
-
-This driver is written using the API of the hdlc module, the hdlc
-module enables this driver (the protocol driver) to run on any hardware
-that has a driver (the hardware driver) written using the API of the
-hdlc module.
-
-Two other hdlc protocol drivers - hdlc_ppp and hdlc_raw_eth, also set
-things like hard_header_len at this place. In hdlc_ppp, it sets
-hard_header_len after attach_hdlc_protocol and before setting dev->type.
-In hdlc_raw_eth, it sets hard_header_len by calling ether_setup after
-attach_hdlc_protocol and after memcpy the settings.
-
-3. Reset needed_headroom when detaching protocols (in hdlc.c)
-
-When detaching a protocol from a hardware device, the hdlc module will
-reset various parameters of the device (including hard_header_len) to
-the default values. We add needed_headroom here so that needed_headroom
-will also be reset.
-
-Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: Martin Schiller <ms@dev.tdt.de>
-Cc: Andrew Hendry <andrew.hendry@gmail.com>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- drivers/net/wan/hdlc.c     |  1 +
- drivers/net/wan/hdlc_x25.c | 17 ++++++++++++++++-
- 2 files changed, 17 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wan/hdlc.c b/drivers/net/wan/hdlc.c
-index dfc16770458d..386ed2aa31fd 100644
---- a/drivers/net/wan/hdlc.c
-+++ b/drivers/net/wan/hdlc.c
-@@ -230,6 +230,7 @@ static void hdlc_setup_dev(struct net_device *dev)
- 	dev->max_mtu		 = HDLC_MAX_MTU;
- 	dev->type		 = ARPHRD_RAWHDLC;
- 	dev->hard_header_len	 = 16;
-+	dev->needed_headroom	 = 0;
- 	dev->addr_len		 = 0;
- 	dev->header_ops		 = &hdlc_null_ops;
- }
-diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
-index f70336bb6f52..f52b9fed0593 100644
---- a/drivers/net/wan/hdlc_x25.c
-+++ b/drivers/net/wan/hdlc_x25.c
-@@ -107,8 +107,14 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	int result;
- 
-+	/* There should be a pseudo header of 1 byte added by upper layers.
-+	 * Check to make sure it is there before reading it.
-+	 */
-+	if (skb->len < 1) {
-+		kfree_skb(skb);
-+		return NETDEV_TX_OK;
-+	}
- 
--	/* X.25 to LAPB */
- 	switch (skb->data[0]) {
- 	case X25_IFACE_DATA:	/* Data to be transmitted */
- 		skb_pull(skb, 1);
-@@ -294,6 +300,15 @@ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
- 			return result;
- 
- 		memcpy(&state(hdlc)->settings, &new_settings, size);
-+
-+		/* There's no header_ops so hard_header_len should be 0. */
-+		dev->hard_header_len = 0;
-+		/* When transmitting data:
-+		 * first we'll remove a pseudo header of 1 byte,
-+		 * then we'll prepend an LAPB header of at most 3 bytes.
-+		 */
-+		dev->needed_headroom = 3 - 1;
-+
- 		dev->type = ARPHRD_X25;
- 		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
- 		netif_dormant_off(dev);
--- 
-2.25.1
-
+Thanks.
