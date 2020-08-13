@@ -2,274 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 764562441A2
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 01:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11F7B2441A5
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 01:14:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726567AbgHMXK7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Aug 2020 19:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
+        id S1726603AbgHMXOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 19:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726205AbgHMXK7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 19:10:59 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEC3C061757;
-        Thu, 13 Aug 2020 16:10:59 -0700 (PDT)
-Received: from localhost (50-47-103-195.evrt.wa.frontiernet.net [50.47.103.195])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E92E3128310D2;
-        Thu, 13 Aug 2020 15:54:12 -0700 (PDT)
-Date:   Thu, 13 Aug 2020 16:10:57 -0700 (PDT)
-Message-Id: <20200813.161057.1210508009320036989.davem@davemloft.net>
-To:     torvalds@linux-foundation.org
-CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT] Networking
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 13 Aug 2020 15:54:13 -0700 (PDT)
+        with ESMTP id S1726205AbgHMXN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 19:13:59 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05CEC061757;
+        Thu, 13 Aug 2020 16:13:58 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id s23so5702610qtq.12;
+        Thu, 13 Aug 2020 16:13:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aCaQeqxDH2mZLoOQajrAorvIOsXMPAEPhcKMCIoXKvI=;
+        b=Gx/yafdoWcR30MKc5hXZC78jMsi0zA187YY+ZcK0x8dZZEodDSXDW8dI0LTc9I7Ihu
+         GYhShZ9JAAYrN6pTrR6CDE86uQMDBVLfuIm9QGXBato4G2QxXijFCsMHpaxjn+vcD66z
+         Eec8Pco0/qdpPuMl1hT3Qi/LN+TCd6lxBJlkulPao0e7QYBvMX132Hrh0G150XQoqpA8
+         p8r9YxAq4Yn5wTMx8h9ls+U43y1hppIwYWaeIR9NO4kw4XFglvD57Im096hEVrxK8+je
+         7XSqZsYWrgmbhs28zBt2jpCeQBGaFIak2SnnPgpWt+tWUGNidDOU5FAgtNnEHr/FStb1
+         ctcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aCaQeqxDH2mZLoOQajrAorvIOsXMPAEPhcKMCIoXKvI=;
+        b=X+w+HWMmRqD42bYJQFI7UdXtu+KdDF8MU6uhZQ1wB/KXXmQXsNc6W3367m23k0xMar
+         FcbZcKNjtvvHUDm2FxXKuTXyG/LP1Zx4aHtYhhgOA2Dc4M6OOKUq0L+E1Q33QLKmqK4p
+         5ZtafF5lBDIh5+jR5BSh+kU9FAyVVKiH5f4/N1zF5w6nuwOTIF6F255EqHPhzf6sOctE
+         q9qfAyBXdofzgTHtaKrYpO05oQrmWxKZ1G35VfLLMj/QurRGz0McO2GTPk6Idzr655z1
+         kFgsaZ+77GZ+S9nUm8oO+feHkMQ2FZuOQT6967lW9cHZ+DTFsx01b6YyYygB65pgc7zM
+         jUcw==
+X-Gm-Message-State: AOAM530SvVA2jxBByWPR/wUZfc6l7BBGQR+vjTv4W9DnbjO9jDZSth5z
+        uGarVo2rf1BM+juhwB+h9Ff8jSs6IeE=
+X-Google-Smtp-Source: ABdhPJwm9r+iOm7RWB36kQ+v8uyA1SSWuMSMTOJC53tuSfMeCGWsjl767WpeRRqx5CbQey+APZc8wg==
+X-Received: by 2002:ac8:445a:: with SMTP id m26mr7539859qtn.253.1597360437795;
+        Thu, 13 Aug 2020 16:13:57 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:1557:417:a433:9b3f? ([2601:282:803:7700:1557:417:a433:9b3f])
+        by smtp.googlemail.com with ESMTPSA id x50sm8795396qtb.10.2020.08.13.16.13.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Aug 2020 16:13:57 -0700 (PDT)
+Subject: Re: [PATCH 1/3] selftests: Add VRF icmp error route lookup test
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Michael Jeanson <mjeanson@efficios.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20200811195003.1812-1-mathieu.desnoyers@efficios.com>
+ <20200811195003.1812-2-mathieu.desnoyers@efficios.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <49f26c7d-b8aa-57e7-02c6-424bec9c3845@gmail.com>
+Date:   Thu, 13 Aug 2020 17:13:55 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
+MIME-Version: 1.0
+In-Reply-To: <20200811195003.1812-2-mathieu.desnoyers@efficios.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8/11/20 1:50 PM, Mathieu Desnoyers wrote:
+> +run_cmd()
+> +{
+> +	local cmd="$*"
+> +	local out
+> +	local rc
+> +
+> +	if [ "$VERBOSE" = "1" ]; then
+> +		echo "COMMAND: $cmd"
+> +	fi
+> +
+> +	out=$(eval $cmd 2>&1)
+> +	rc=$?
+> +	if [ "$VERBOSE" = "1" ] && [ -n "$out" ]; then
+> +		echo "$out"
+> +	fi
+> +
+> +	[ "$VERBOSE" = "1" ] && echo
+> +
+> +	return $rc
+> +}
+> +
 
-Some merge window fallout, some longer term fixes:
+...
 
-1) Handle headroom properly in lapbether and x25_asy drivers,
-   from Xie He.
+> +ipv6_ping()
+> +{
+> +	log_section "IPv6: VRF ICMP error route lookup ping"
+> +
+> +	setup
+> +
+> +	# verify connectivity
+> +	if ! check_connectivity6; then
+> +		echo "Error: Basic connectivity is broken"
+> +		ret=1
+> +		return
+> +	fi
+> +
+> +	if [ "$VERBOSE" = "1" ]; then
+> +		echo "Command to check for ICMP ttl exceeded:"
+> +		run_cmd ip netns exec h1 "${ping6}" -t1 -c1 -W2 ${H2_N2_IP6}
+> +	fi
+> +
+> +	ip netns exec h1 "${ping6}" -t1 -c1 -W2 ${H2_N2_IP6} | grep -q "Time exceeded: Hop limit"
 
-2) Fetch MAC address from correct r8152 device node, from Thierry
-   Reding.
+run_cmd runs the command and if VERBOSE is set to 1 shows the command to
+the user. Something is off with this script and passing the -v arg -- I
+do not get a command list. This applies to the whole script.
 
-3) In the sw kTLS path we should allow MSG_CMSG_COMPAT in sendmsg,
-   from Rouven Czerwinski.
+Since you need to check for output, I suggest modifying run_cmd to
+search the output for the given string.
 
-4) Correct fdputs in socket layer, from Miaohe Lin.
 
-5) Revert troublesome sockptr_t optimization, from Christoph Hellwig.
+> +	log_test $? 0 "Ping received ICMP ttl exceeded"
+> +}
+> +################################################################################
 
-6) Fix TCP TFO key reading on big endian, from Jason Baron.
+missing newline between '}' and '####'
 
-7) Missing CAP_NET_RAW check in nfc, from Qingyu Li.
+> +# usage
+> +
+> +usage()
+> +{
+> +        cat <<EOF
+> +usage: ${0##*/} OPTS
+> +
+> +	-4          IPv4 tests only
+> +	-6          IPv6 tests only
+> +	-p          Pause on fail
+> +	-v          verbose mode (show commands and output)
+> +EOF
+> +}
+> +
+> +################################################################################
+> +# main
+> +
+> +# Some systems don't have a ping6 binary anymore
+> +command -v ping6 > /dev/null 2>&1 && ping6=$(command -v ping6) || ping6=$(command -v ping)
+> +
+> +TESTS_IPV4="ipv4_ping ipv4_traceroute"
+> +TESTS_IPV6="ipv6_ping ipv6_traceroute"
+> +
+> +ret=0
+> +nsuccess=0
+> +nfail=0
+> +setup=0
+> +
+> +while getopts :46pvh o
+> +do
+> +	case $o in
+> +		4) TESTS=ipv4;;
+> +		6) TESTS=ipv6;;
+> +                p) PAUSE_ON_FAIL=yes;;
+> +                v) VERBOSE=1;;
+> +		h) usage; exit 0;;
+> +                *) usage; exit 1;;
 
-8) Fix inet fastreuse optimization with tproxy sockets, from Tim
-   Froidcoeur.
+indentation issues; not using tabs
 
-9) Fix 64-bit divide in new SFC driver, from Edward Cree.
+> +	esac
+> +done
+> +
+> +#
+> +# show user test config
+> +#
+> +if [ -z "$TESTS" ]; then
+> +        TESTS="$TESTS_IPV4 $TESTS_IPV6"
+> +elif [ "$TESTS" = "ipv4" ]; then
+> +        TESTS="$TESTS_IPV4"
+> +elif [ "$TESTS" = "ipv6" ]; then
+> +        TESTS="$TESTS_IPV6"
+> +fi
+> +
+> +for t in $TESTS
+> +do
+> +	case $t in
+> +	ipv4_ping|ping)             ipv4_ping;;
+> +	ipv4_traceroute|traceroute) ipv4_traceroute;;
+> +
+> +	ipv6_ping|ping)             ipv6_ping;;
+> +	ipv6_traceroute|traceroute) ipv6_traceroute;;
+> +
+> +	# setup namespaces and config, but do not run any tests
+> +	setup)                      setup; exit 0;;
 
-10) Add a tracepoint for prandom_u32 so that we can more easily perform
-    usage analysis.  From Eric Dumazet.
+you don't allow '-t setup' so you can remove this part
 
-11) Fix rwlock imbalance in AF_PACKET, from John Ogness.
+> +
+> +	help)                       echo "Test names: $TESTS"; exit 0;;
+> +	esac
+> +done
+> +
+> +cleanup
+> +
+> +printf "\nTests passed: %3d\n" ${nsuccess}
+> +printf "Tests failed: %3d\n"   ${nfail}
+> +
+> +exit $ret
+> 
 
-Please pull, thanks a lot!
-
-The following changes since commit bfdd5aaa54b0a44d9df550fe4c9db7e1470a11b8:
-
-  Merge tag 'Smack-for-5.9' of git://github.com/cschaufler/smack-next (2020-08-06 11:02:23 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git 
-
-for you to fetch changes up to 1f3a090b9033f69de380c03db3ea1a1015c850cf:
-
-  net: openvswitch: introduce common code for flushing flows (2020-08-13 15:53:30 -0700)
-
-----------------------------------------------------------------
-Alan Maguire (1):
-      bpf, doc: Remove references to warning message when using bpf_trace_printk()
-
-Alexei Starovoitov (1):
-      Merge branch 'bpf_iter-uapi-fix'
-
-Andrii Nakryiko (2):
-      selftests/bpf: Prevent runqslower from racing on building bpftool
-      selftests/bpf: Fix silent Makefile output
-
-Christoph Hellwig (1):
-      net: Revert "net: optimize the sockptr_t for unified kernel/user address spaces"
-
-Colin Ian King (1):
-      net: hns3: fix spelling mistake "could'nt" -> "couldn't"
-
-Daniel T. Lee (1):
-      libbf: Fix uninitialized pointer at btf__parse_raw()
-
-David S. Miller (4):
-      Merge git://git.kernel.org/.../bpf/bpf
-      Merge branch 'net-initialize-fastreuse-on-inet_inherit_port'
-      Merge branch 'net-stmmac-Fix-multicast-filter-on-IPQ806x'
-      Revert "ipv4: tunnel: fix compilation on ARCH=um"
-
-Edward Cree (1):
-      sfc: fix ef100 design-param checking
-
-Eric Dumazet (2):
-      net: accept an empty mask in /sys/class/net/*/queues/rx-*/rps_cpus
-      random32: add a tracepoint for prandom_u32()
-
-Ira Weiny (1):
-      net/tls: Fix kmap usage
-
-Jakub Kicinski (2):
-      nfp: update maintainer
-      bitfield.h: don't compile-time validate _val in FIELD_FIT
-
-Jason Baron (1):
-      tcp: correct read of TFO keys on big endian systems
-
-Jianlin Lv (1):
-      bpf: Fix compilation warning of selftests
-
-Jiri Benc (1):
-      selftests: bpf: Switch off timeout
-
-Johan Hovold (1):
-      net: phy: fix memory leak in device-create error path
-
-Johannes Berg (1):
-      ipv4: tunnel: fix compilation on ARCH=um
-
-John Ogness (1):
-      af_packet: TPACKET_V3: fix fill status rwlock imbalance
-
-Jonathan McDowell (2):
-      net: stmmac: dwmac1000: provide multicast filter fallback
-      net: ethernet: stmmac: Disable hardware multicast filter
-
-Luo bin (1):
-      hinic: fix strncpy output truncated compile warnings
-
-Marek Behún (1):
-      net: phy: marvell10g: fix null pointer dereference
-
-Miaohe Lin (6):
-      net: Use helper function fdput()
-      net: Set fput_needed iff FDPUT_FPUT is set
-      net: Remove meaningless jump label out_fs
-      net: Use helper function ip_is_fragment()
-      net: Convert to use the fallthrough macro
-      net: Fix potential memory leak in proto_register()
-
-Paolo Abeni (3):
-      selftests: mptcp: fix dependecies
-      mptcp: more stable diag self-tests
-      mptcp: fix warn at shutdown time for unaccepted msk sockets
-
-Qingyu Li (1):
-      net/nfc/rawsock.c: add CAP_NET_RAW check.
-
-Randy Dunlap (1):
-      bpf: Delete repeated words in comments
-
-Ronak Doshi (1):
-      vmxnet3: use correct tcp hdr length when packet is encapsulated
-
-Rouven Czerwinski (1):
-      net/tls: allow MSG_CMSG_COMPAT in sendmsg
-
-Stanislav Fomichev (2):
-      bpf: Add missing return to resolve_btfids
-      bpf: Remove inline from bpf_do_trace_printk
-
-Stefano Garzarella (1):
-      vsock: fix potential null pointer dereference in vsock_poll()
-
-Thierry Reding (1):
-      r8152: Use MAC address from correct device tree node
-
-Tim Froidcoeur (2):
-      net: refactor bind_bucket fastreuse into helper
-      net: initialize fastreuse on inet_inherit_port
-
-Tonghao Zhang (1):
-      net: openvswitch: introduce common code for flushing flows
-
-Wang Hai (1):
-      net: qcom/emac: add missed clk_disable_unprepare in error path of emac_clks_phase1_init
-
-Xie He (2):
-      drivers/net/wan/lapbether: Added needed_headroom and a skb->len check
-      drivers/net/wan/x25_asy: Added needed_headroom and a skb->len check
-
-Xu Wang (1):
-      ionic_lif: Use devm_kcalloc() in ionic_qcq_alloc()
-
-Yonghong Song (2):
-      bpf: Change uapi for bpf iterator map elements
-      tools/bpf: Support new uapi for map element bpf iterator
-
- Documentation/bpf/bpf_design_QA.rst                              | 11 ----------
- MAINTAINERS                                                      |  3 ++-
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c        |  2 +-
- drivers/net/ethernet/huawei/hinic/hinic_devlink.c                | 32 +++++++++++----------------
- drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h                 |  2 --
- drivers/net/ethernet/pensando/ionic/ionic_lif.c                  |  4 ++--
- drivers/net/ethernet/qualcomm/emac/emac.c                        | 17 ++++++++++++---
- drivers/net/ethernet/sfc/ef100_nic.c                             |  3 ++-
- drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c              |  1 +
- drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c             |  3 +++
- drivers/net/phy/marvell10g.c                                     | 18 ++++++----------
- drivers/net/phy/phy_device.c                                     |  8 +++----
- drivers/net/usb/r8152.c                                          |  2 +-
- drivers/net/vmxnet3/vmxnet3_drv.c                                |  3 ++-
- drivers/net/wan/lapbether.c                                      | 10 ++++++++-
- drivers/net/wan/x25_asy.c                                        | 14 ++++++++++++
- include/linux/bitfield.h                                         |  2 +-
- include/linux/bpf.h                                              | 10 +++++----
- include/linux/sockptr.h                                          | 26 ++--------------------
- include/net/inet_connection_sock.h                               |  4 ++++
- include/net/tcp.h                                                |  2 ++
- include/trace/events/random.h                                    | 17 +++++++++++++++
- include/uapi/linux/bpf.h                                         | 15 +++++++------
- kernel/bpf/bpf_iter.c                                            | 58 ++++++++++++++++++++++++-------------------------
- kernel/bpf/core.c                                                |  2 +-
- kernel/bpf/map_iter.c                                            | 37 ++++++++++++++++++++++++-------
- kernel/bpf/syscall.c                                             |  2 +-
- kernel/bpf/verifier.c                                            |  2 +-
- kernel/trace/bpf_trace.c                                         |  2 +-
- lib/random32.c                                                   |  2 ++
- net/core/bpf_sk_storage.c                                        | 37 ++++++++++++++++++++++++-------
- net/core/net-sysfs.c                                             | 12 ++++++-----
- net/core/skbuff.c                                                |  2 +-
- net/core/sock.c                                                  | 25 ++++++++++++---------
- net/ipv4/bpfilter/sockopt.c                                      | 14 ++++++------
- net/ipv4/inet_connection_sock.c                                  | 97 +++++++++++++++++++++++++++++++++++++++++++++-------------------------------------
- net/ipv4/inet_hashtables.c                                       |  1 +
- net/ipv4/sysctl_net_ipv4.c                                       | 16 ++++----------
- net/ipv4/tcp.c                                                   | 16 ++++----------
- net/ipv4/tcp_fastopen.c                                          | 23 ++++++++++++++++++++
- net/mptcp/subflow.c                                              |  6 +++---
- net/nfc/rawsock.c                                                |  7 ++++--
- net/openvswitch/datapath.c                                       | 10 ++++++++-
- net/openvswitch/flow_table.c                                     | 35 +++++++++++++-----------------
- net/openvswitch/flow_table.h                                     |  3 +++
- net/packet/af_packet.c                                           |  9 ++++++--
- net/socket.c                                                     | 23 +++++++-------------
- net/tls/tls_device.c                                             |  3 ++-
- net/tls/tls_sw.c                                                 |  3 ++-
- net/vmw_vsock/af_vsock.c                                         |  2 +-
- tools/bpf/bpftool/iter.c                                         |  9 +++++---
- tools/bpf/resolve_btfids/main.c                                  |  1 +
- tools/include/uapi/linux/bpf.h                                   | 15 +++++++------
- tools/lib/bpf/bpf.c                                              |  3 +++
- tools/lib/bpf/bpf.h                                              |  5 ++++-
- tools/lib/bpf/btf.c                                              |  2 +-
- tools/lib/bpf/libbpf.c                                           |  6 ++----
- tools/lib/bpf/libbpf.h                                           |  5 +++--
- tools/testing/selftests/bpf/Makefile                             | 53 ++++++++++++++++++++++++---------------------
- tools/testing/selftests/bpf/prog_tests/bpf_iter.c                | 40 +++++++++++++++++++++++++++-------
- tools/testing/selftests/bpf/prog_tests/send_signal.c             | 18 +++++++---------
- tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c |  4 +++-
- tools/testing/selftests/bpf/settings                             |  1 +
- tools/testing/selftests/bpf/test_tcpnotify_user.c                | 13 ++++++++---
- tools/testing/selftests/net/mptcp/config                         |  2 ++
- tools/testing/selftests/net/mptcp/mptcp_connect.c                |  9 ++++----
- 66 files changed, 494 insertions(+), 350 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/settings
