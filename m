@@ -2,70 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 129B92439DD
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 14:35:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68870243A4E
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 14:51:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726605AbgHMMfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 08:35:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52854 "EHLO
+        id S1726777AbgHMMvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 08:51:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726568AbgHMMe6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 08:34:58 -0400
-Received: from mail-vk1-xa42.google.com (mail-vk1-xa42.google.com [IPv6:2607:f8b0:4864:20::a42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB65C061757
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 05:34:58 -0700 (PDT)
-Received: by mail-vk1-xa42.google.com with SMTP id 186so1225918vkx.4
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 05:34:58 -0700 (PDT)
+        with ESMTP id S1726622AbgHMMvD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 08:51:03 -0400
+Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673A9C061384
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 05:51:03 -0700 (PDT)
+Received: by mail-vs1-xe41.google.com with SMTP id q13so2818488vsn.9
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 05:51:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=eR1AQA+XciNBQxQud/+jjbn2IP9UCDB7D06iSV36Ojg=;
-        b=jnatlmUG2VjgQ9S0DEnTL+j7CXiVpgeRSZaSBmnpH92bdHJgou82J/U74TgR/u0s5j
-         Qc3vSzrFG+D6gVEZmdMFK/cBqdQ8BQ0qSjNHuIvoXDM6tWH69+Dg3WsvKoRy/V0VyYHR
-         yn7LrNcpsnyl3J0foUuBdeiK/AdmDAXzUJddc0OMZ1rdyM5LZIghOpbZ3/8T58C/WzLl
-         IkCe01FELN01t17h54qYVM0L5k867YvVEZimumjoWoxY0RhLTKX2aMWDtgCaERg+zNmU
-         wXtnLYG9kNZpv3DUr3dlOIrsukFaFBqR21fP5ZPIVo6BZZsGS/pY4a9jOZmlG51Jw3bu
-         dE4A==
+        bh=z6U+MzbkuK7qE2zWXiIV5fubuG6u2ECbr/eqjOujnCU=;
+        b=JmZ+2cVCvH/NJLMcB8pNKwvmqjinr9zVEEkYBcwRynp3GponnTUIozTMBlSYJeFfdu
+         zD8Gr/YxyMtB/RJR/6DfEFywcsMIfSWRrl3ggZHURB/YMtF/G3hdC7TLebysrh6wtSD7
+         9ftV1qKlcsrxlYfB4KeEN5mi0vMsKes6XHx72Aedcwhs4MDLGD1juvHcouOvufrxtgS3
+         pMLyGwMmSw1uCWFgvjSZZ3LIZE7Q7sTiizR01fR8QcaawF6JfindNjLcZN8R9TPVNljU
+         TDhHRrvmqgKXeV00svNQfAoQ+RGhYBfSep1c/wkp7oP1r+c6h5wl7cX1DJCstRJVnZKK
+         z03Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=eR1AQA+XciNBQxQud/+jjbn2IP9UCDB7D06iSV36Ojg=;
-        b=JS5p21YFztdzE/lEPuupWxPWuE87fIrO/Wc9u/S4NT4XPYD+gHOoQmoSpbv9X1q4Oq
-         Jc4T25lb4g0tYcrUXe4sBzsxo9oXogEEbLJhU3sP6zV+xdMU35AtwefOjUEGZS8LcDPe
-         K4NjbU9IVvZTBkPoDQklAhg8R8UAZU7Etc+Id0r3dLa+Jx2fkYsAM43eKJ2hLHepDcUa
-         Twe4mBq8NncdP6uGUzr1zUKsVIN2n72hZIrX1jKCjtnlIdLl9DxZnZOVhbL7/o+C7W+O
-         fe6nyZfbX30RJwIMQRaMwq9+DJWfLXfI/E1+eYNeAvK0JV8su0PbauuFpnL4KF+9rcah
-         Gh/w==
-X-Gm-Message-State: AOAM531aMOCpivlVJW+tFe3pufvJkqsKe6EChYBgg+MYYJA6ti4MwrR9
-        kYMcJetUBExBZr6KdOYqQoKNnRuJo3c=
-X-Google-Smtp-Source: ABdhPJxsmdGjXhFIHPPsoFgL5/sRswGwmYHrGUC4ifdf8YVegvoL/7SRb0M8jTk038Cn3X99Pnvd2w==
-X-Received: by 2002:a05:6122:2c:: with SMTP id q12mr3123427vkd.39.1597322097043;
-        Thu, 13 Aug 2020 05:34:57 -0700 (PDT)
-Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com. [209.85.217.49])
-        by smtp.gmail.com with ESMTPSA id 67sm699902vsl.13.2020.08.13.05.34.56
+        bh=z6U+MzbkuK7qE2zWXiIV5fubuG6u2ECbr/eqjOujnCU=;
+        b=V0yNoRQ9k7Uhq3m+S9zEcxGPUQpYD+F8QW7rmplS5vJLOhhrlzZh1L1QEalJPsZqkc
+         pn2i0bICrvn2e3wvwXCh50Zqrk/VUIwTSNgfcJ4lfgxjmDRlvJmpPTjAa/28B868lI3h
+         BuFgyW6k7hZ1TISlyl1MPKGPFrzs8oAnZqhr6k5aJImrLqOskoHSe+Byd40uMezZLxVX
+         4IubejYmp8toRR2MwS8WOcKWX2TkrQlPVjLPi9+Acv9bHJgrpUK0+AtnM0IMAkmWqJmn
+         id6LLYJimwiR/AMkqmJfOutxoVLBYlvmQ9dJ8OG2sVfzcLn87CDooc+RU9wVuOWJ50ds
+         jk8A==
+X-Gm-Message-State: AOAM531gjSP18+zwBTTlyW2PAE62YDkF38KibGGiOY08RHmzr+9jZpGm
+        YXtLfL6lQRuvoqZQHWhYVfzLOfbnez4=
+X-Google-Smtp-Source: ABdhPJyHgu+GNz9E3ghppOngKB0FktxEjAprM8YW5pU2F0q10VWtrN0ZThGZQ9EHNwxpDu1VObZMdg==
+X-Received: by 2002:a67:fd8a:: with SMTP id k10mr2900104vsq.59.1597323061266;
+        Thu, 13 Aug 2020 05:51:01 -0700 (PDT)
+Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com. [209.85.221.174])
+        by smtp.gmail.com with ESMTPSA id b21sm785053vkb.30.2020.08.13.05.50.59
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Aug 2020 05:34:56 -0700 (PDT)
-Received: by mail-vs1-f49.google.com with SMTP id i129so2806166vsi.3
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 05:34:56 -0700 (PDT)
-X-Received: by 2002:a67:f5ce:: with SMTP id t14mr2799183vso.240.1597322095624;
- Thu, 13 Aug 2020 05:34:55 -0700 (PDT)
+        Thu, 13 Aug 2020 05:51:00 -0700 (PDT)
+Received: by mail-vk1-f174.google.com with SMTP id s81so1232785vkb.3
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 05:50:59 -0700 (PDT)
+X-Received: by 2002:ac5:c925:: with SMTP id u5mr3013838vkl.68.1597323059280;
+ Thu, 13 Aug 2020 05:50:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200813115800.4546-1-linmiaohe@huawei.com>
-In-Reply-To: <20200813115800.4546-1-linmiaohe@huawei.com>
+References: <20200813121310.23016-1-linmiaohe@huawei.com>
+In-Reply-To: <20200813121310.23016-1-linmiaohe@huawei.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 13 Aug 2020 14:34:19 +0200
-X-Gmail-Original-Message-ID: <CA+FuTScPbXMHZuJWBCTrcs1C3q2kURDrBucF4fvvT_qa1-AyOg@mail.gmail.com>
-Message-ID: <CA+FuTScPbXMHZuJWBCTrcs1C3q2kURDrBucF4fvvT_qa1-AyOg@mail.gmail.com>
-Subject: Re: [PATCH] net: correct zerocopy refcnt with newly allocated UDP or
- RAW uarg
+Date:   Thu, 13 Aug 2020 14:50:22 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSeS9eE_1bsik-0i3qb-WXtQnb3q=mo6+iHOciQjLZ+sHQ@mail.gmail.com>
+Message-ID: <CA+FuTSeS9eE_1bsik-0i3qb-WXtQnb3q=mo6+iHOciQjLZ+sHQ@mail.gmail.com>
+Subject: Re: [PATCH] net: add missing skb_uarg refcount increment in pskb_carve_inside_header()
 To:     Miaohe Lin <linmiaohe@huawei.com>
 Cc:     David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        Florian Westphal <fw@strlen.de>, martin.varghese@nokia.com,
+        pshelar@ovn.org, dcaratti@redhat.com,
+        Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Shmulik Ladkani <shmulik@metanetworks.com>,
+        Yadu Kishore <kyk.segfault@gmail.com>,
+        sowmini.varadhan@oracle.com,
         Network Development <netdev@vger.kernel.org>,
         linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
@@ -74,57 +79,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 13, 2020 at 1:59 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
+On Thu, Aug 13, 2020 at 2:16 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
 >
-> The var extra_uref is introduced to pass the initial reference taken in
-> sock_zerocopy_alloc to the first generated skb. But now we may fail to pass
-> the initial reference with newly allocated UDP or RAW uarg when the skb is
-> zcopied.
->
-> If the skb is zcopied, we always set extra_uref to false. This is fine with
-> reallocted uarg because no extra ref is taken by UDP and RAW zerocopy. But
-> if uarg is newly allocated via sock_zerocopy_alloc(), we lost the initial
-> reference because extra_uref is false and we missed to pass it to the first
-> generated skb.
->
-> To fix this, we should set extra_uref to true if UDP or RAW uarg is newly
-> allocated when the skb is zcopied.
+> If the skb is zcopied, we should increase the skb_uarg refcount before we
+> involve skb_release_data(). See pskb_expand_head() as a reference.
 
-extra_uref is true if there is no previous skb to append to or there
-is a previous skb, but that does not have zerocopy data associated yet
-(because the previous call(s) did not set MSG_ZEROCOPY).
+Did you manage to observe a bug through this datapath in practice?
 
-In other words, when first (allocating and) associating a zerocopy
-struct with the skb.
+pskb_carve_inside_header is called
+  from pskb_carve
+    from pskb_extract
+      from rds_tcp_data_recv
+
+That receive path should not see any packets with zerocopy state associated.
 
 
-
-> Fixes: 522924b58308 ("net: correct udp zerocopy refcnt also when zerocopy only on append")
+> Fixes: 6fa01ccd8830 ("skbuff: Add pskb_extract() helper function")
 > Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  net/ipv4/ip_output.c  | 4 +++-
->  net/ipv6/ip6_output.c | 4 +++-
->  2 files changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-> index 61f802d5350c..78d3b5d48617 100644
-> --- a/net/ipv4/ip_output.c
-> +++ b/net/ipv4/ip_output.c
-> @@ -1019,7 +1019,9 @@ static int __ip_append_data(struct sock *sk,
->                 uarg = sock_zerocopy_realloc(sk, length, skb_zcopy(skb));
->                 if (!uarg)
->                         return -ENOBUFS;
-> -               extra_uref = !skb_zcopy(skb);   /* only ref on new uarg */
-> +               /* Only ref on newly allocated uarg. */
-> +               if (!skb_zcopy(skb) || (sk->sk_type != SOCK_STREAM && skb_zcopy(skb) != uarg))
-> +                       extra_uref = true;
-
-SOCK_STREAM does not use __ip_append_data.
-
-This leaves as new branch skb_zcopy(skb) && skb_zcopy(skb) != uarg.
-
-This function can only acquire a uarg through sock_zerocopy_realloc,
-which on skb_zcopy(skb) only returns the existing uarg or NULL (for
-not SOCK_STREAM).
-
-So I don't see when that condition can happen.
