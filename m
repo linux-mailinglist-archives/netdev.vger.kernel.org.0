@@ -2,74 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4E3B24439F
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 04:53:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E92A2443E4
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 05:13:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726612AbgHNCxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 22:53:07 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:50979 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726615AbgHNCxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 22:53:06 -0400
-Received: by mail-il1-f198.google.com with SMTP id t20so5685278ill.17
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 19:53:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=HxfLWIdBAiPbucnwPKF3cZxaVC8QuNU2YTSLpVJCUKw=;
-        b=Pio6I5TSBfJ6+ITRalhkEcEVfoSLrUiP05vkqJwRXNxJr883VGKHp/A7AQI+SXeZ7k
-         OeKxWKr38HfptbSFzUeV/KeTWTVM1KDIaWTsIUGOCEOYhDkJAvkAHW5nlWFXBB2DTCiQ
-         3kWGXYn+JQS7H1QFljk8i42q0JxKA/KmkVwZr/iahoznb7X87w/ApcSA/sVLky+GSQNk
-         Dw8Wk/GC+9TUboAEEyYNWvvGV4jToJhF2/SK1Opz6BV0/CemV1mQNfsEYSvubJR+oHWZ
-         ZwYomoLQvV/Zdmk6KPKKdjiKtGwV+wRDtYFlvoxpyUjhyw4gO6llQJ01FdaEBm04Zrki
-         xIXA==
-X-Gm-Message-State: AOAM532dc2f8VV8aqL+oAXg+TvsO8nN1huVGJaT2fFWBtntqNbXtO5a0
-        HKGwnVO8GL0zOI1dzpeO8mxo/rX6H8ICqlwVRtY4uAJut56u
-X-Google-Smtp-Source: ABdhPJzryMeKOZ496e+GJ+LGFENqZB41wF2qyZpZxNTovBIXHQqXhdpw9rzntoAMQSMpzfINa/YRJDaIms05Hc/ZO6OshxSkwVFv
+        id S1726627AbgHNDND convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Aug 2020 23:13:03 -0400
+Received: from [186.47.21.114] ([186.47.21.114]:42382 "EHLO mail.hmvi.gob.ec"
+        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726604AbgHNDND (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Aug 2020 23:13:03 -0400
+X-Greylist: delayed 10100 seconds by postgrey-1.27 at vger.kernel.org; Thu, 13 Aug 2020 23:13:03 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.hmvi.gob.ec (Postfix) with ESMTP id 32D39C03366CE;
+        Thu, 13 Aug 2020 13:02:20 -0500 (-05)
+Received: from mail.hmvi.gob.ec ([127.0.0.1])
+        by localhost (mail.hmvi.gob.ec [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id FNEBHZfjJAhl; Thu, 13 Aug 2020 13:02:19 -0500 (-05)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.hmvi.gob.ec (Postfix) with ESMTP id 42BB1C037400F;
+        Thu, 13 Aug 2020 12:44:23 -0500 (-05)
+X-Virus-Scanned: amavisd-new at hmvi.gob.ec
+Received: from mail.hmvi.gob.ec ([127.0.0.1])
+        by localhost (mail.hmvi.gob.ec [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 1vJTHOLZTOzN; Thu, 13 Aug 2020 12:44:23 -0500 (-05)
+Received: from [10.73.80.190] (unknown [105.8.3.183])
+        by mail.hmvi.gob.ec (Postfix) with ESMTPSA id AE9DCC02EFE24;
+        Thu, 13 Aug 2020 12:30:44 -0500 (-05)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-Received: by 2002:a92:dd04:: with SMTP id n4mr789973ilm.70.1597373585198;
- Thu, 13 Aug 2020 19:53:05 -0700 (PDT)
-Date:   Thu, 13 Aug 2020 19:53:05 -0700
-In-Reply-To: <000000000000735f5205a5b02279@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001e967a05accd8573@google.com>
-Subject: Re: BUG: unable to handle kernel paging request in fl_dump_key
-From:   syzbot <syzbot+9c1be56e9317b795e874@syzkaller.appspotmail.com>
-To:     benh@kernel.crashing.org, dalias@libc.org, davem@davemloft.net,
-        jhogan@kernel.org, jhs@mojatatu.com, jiri@mellanox.com,
-        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-sh@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        mpe@ellerman.id.au, netdev@vger.kernel.org, paul.burton@mips.com,
-        paulus@samba.org, ralf@linux-mips.org, shuah@kernel.org,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com,
-        ysato@users.sourceforge.jp
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: =?utf-8?q?Covid_19_Wohlt=C3=A4tigkeitsfonds?=
+To:     Recipients <danny.puetate@mail.hmvi.gob.ec>
+From:   ''Tayeb Souami'' <danny.puetate@mail.hmvi.gob.ec>
+Date:   Thu, 13 Aug 2020 19:30:24 +0200
+Reply-To: Tayebsouam.spende@gmail.com
+Message-Id: <20200813173044.AE9DCC02EFE24@mail.hmvi.gob.ec>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+Lieber Freund,
 
-commit a51486266c3ba8e035a47fa96df67f274fe0c7d0
-Author: Jiri Pirko <jiri@mellanox.com>
-Date:   Sat Jun 15 09:03:49 2019 +0000
+Ich bin Herr Tayeb Souami, New Jersey, Vereinigte Staaten von Amerika,
+der Mega-Gewinner von $ 315million In Mega Millions Jackpot, spende ich
+an 5 zufällige Personen, wenn Sie diese E-Mail erhalten, dann wurde Ihre
+E-Mail nach einem Spinball ausgewählt.Ich habe den größten Teil meines
+Vermögens auf eine Reihe von Wohltätigkeitsorganisationen und
+Organisationen verteilt.Ich habe mich freiwillig dazu entschieden, die
+Summe von € 2.000.000,00 an Sie als eine der ausgewählten 5 zu spenden,
+um meine Gewinne zu überprüfen, sehen Sie bitte meine You Tube Seite
+unten.
 
-    net: sched: remove NET_CLS_IND config option
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17463509900000
-start commit:   1ca0fafd tcp: md5: allow changing MD5 keys in all socket s..
-git tree:       net
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=14c63509900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=10c63509900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=bf3aec367b9ab569
-dashboard link: https://syzkaller.appspot.com/bug?extid=9c1be56e9317b795e874
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1062a40b100000
+UHR MICH HIER: https://www.youtube.com/watch?v=Z6ui8ZDQ6Ks
 
-Reported-by: syzbot+9c1be56e9317b795e874@syzkaller.appspotmail.com
-Fixes: a51486266c3b ("net: sched: remove NET_CLS_IND config option")
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Das ist dein Spendencode: [TS530342018]
+
+
+Antworten Sie mit dem SPENDE-CODE an diese
+
+E-Mail:Tayebsouam.spende@gmail.com
+
+
+Ich hoffe, Sie und Ihre Familie glücklich zu machen.
+
+
+Grüße
+
+Herr Tayeb Souami
