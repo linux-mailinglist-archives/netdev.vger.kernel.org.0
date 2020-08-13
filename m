@@ -2,118 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E13AE2432FB
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 05:55:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10E9A243365
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 06:44:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726680AbgHMDze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Aug 2020 23:55:34 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:27864 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726334AbgHMDze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Aug 2020 23:55:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1597290933;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=tQVpSBd8H4mxwa7+/E4VYo7bjaBiT+FzyTgSS58XOy4=;
-        b=Wpe910Tc0YoEIaCIRkSjOFWOPoAhKNY/HXMi64HNry0zqLnDVYk/zpSndJQec0OOy2yR4o
-        pvXY/eTBC9n3D5I7sISHUBgbpEWHsuBBKZksXLlESsEHZCNiM5AvnFmYsMh1p+1Db5oVW+
-        Da66JIO8tVX83RaDqntmsuhr05SBw4I=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-105-cGpmWOrCOKuNoqayZYf34Q-1; Wed, 12 Aug 2020 23:55:29 -0400
-X-MC-Unique: cGpmWOrCOKuNoqayZYf34Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EA0BE79EC0;
-        Thu, 13 Aug 2020 03:55:27 +0000 (UTC)
-Received: from hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com (hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com [10.16.210.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4697B100AE52;
-        Thu, 13 Aug 2020 03:55:24 +0000 (UTC)
-From:   Jarod Wilson <jarod@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jarod Wilson <jarod@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net] bonding: show saner speed for broadcast mode
-Date:   Wed, 12 Aug 2020 23:55:09 -0400
-Message-Id: <20200813035509.739-1-jarod@redhat.com>
+        id S1726419AbgHMEof (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 00:44:35 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:46404 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbgHMEof (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 00:44:35 -0400
+Received: from mail-pg1-f199.google.com ([209.85.215.199])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <po-hsu.lin@canonical.com>)
+        id 1k656O-0000zZ-Mk
+        for netdev@vger.kernel.org; Thu, 13 Aug 2020 04:44:32 +0000
+Received: by mail-pg1-f199.google.com with SMTP id n32so3213751pgb.22
+        for <netdev@vger.kernel.org>; Wed, 12 Aug 2020 21:44:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Tiz4nVgOo68QI5s9WSMXxhSe1AmwRM+pOa2QZ2cOoyM=;
+        b=jIp/e/GIaE5pq3gMIDOHlc8BUJnCZ4N+h85mz8/a72v98qYjQOvSsRjC645krFIIxP
+         jTP4CKWHleve9RkqakJsM6TACORA0/FY4Bo18E6Xu48B3dLFavfkylK1zKWBPF29a/eZ
+         EsrskctzjCEbJVwkjC2ngeClE4dZaUjkOQu82k2Od0piQKhw2k5mKJLoDCvYOm6o94D+
+         AHJ7jqX+oMjlmQm9O4Vu63+LbncMjjKFeNqAW3WnWyBNmh6+HNYXhd1UHgaZ7kc2LDPG
+         voa32tokDHRYVFlVhq+r6LTsXFGHi59mII9CvtYNvQ7GpS+8QL0mrDK5Bw6fmVojbhyc
+         tZ9Q==
+X-Gm-Message-State: AOAM5330cnQf2KlN9ZpDOpJaQFcFGGuRQIDFOaLMlcyZCwpfUF5JL19p
+        qiqXthJ0r309Hr9fEx4gA+jIJ50FSs/JwJobgasTGRPRT/fUpevCbfQDhEYVdoclAwZo0xN5p6s
+        w/VBRWUvKbO7IOrw3zmMWsvkctm6rgzM1
+X-Received: by 2002:a17:902:c382:: with SMTP id g2mr2231937plg.120.1597293871316;
+        Wed, 12 Aug 2020 21:44:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyKeENi2Ukh3RAG5ReF+7QnR8cHk27E89MALm6sVpQMNi0yPoePWGZ4t0AN8I7VgYJQuDtInw==
+X-Received: by 2002:a17:902:c382:: with SMTP id g2mr2231915plg.120.1597293870861;
+        Wed, 12 Aug 2020 21:44:30 -0700 (PDT)
+Received: from localhost.localdomain (114-136-120-176.emome-ip.hinet.net. [114.136.120.176])
+        by smtp.gmail.com with ESMTPSA id n26sm3854956pgl.42.2020.08.12.21.44.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Aug 2020 21:44:30 -0700 (PDT)
+From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
+To:     davem@davemloft.net, kuba@kernel.org, skhan@linuxfoundation.org
+Cc:     po-hsu.lin@canonical.com, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] selftests: rtnetlink: load fou module for kci_test_encap_fou()
+Date:   Thu, 13 Aug 2020 12:44:22 +0800
+Message-Id: <20200813044422.46713-1-po-hsu.lin@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Broadcast mode bonds transmit a copy of all traffic simultaneously out of
-all interfaces, so the "speed" of the bond isn't really the aggregate of
-all interfaces, but rather, the speed of the lowest active interface.
+The kci_test_encap_fou() test from kci_test_encap() in rtnetlink.sh
+needs the fou module to work. Otherwise it will fail with:
 
-Also, the type of the speed field is u32, not unsigned long, so adjust
-that accordingly, as required to make min() function here without
-complaining about mismatching types.
+  $ ip netns exec "$testns" ip fou add port 7777 ipproto 47
+  RTNETLINK answers: No such file or directory
+  Error talking to the kernel
 
-Fixes: bb5b052f751b ("bond: add support to read speed and duplex via ethtool")
-CC: Jay Vosburgh <j.vosburgh@gmail.com>
-CC: Veaceslav Falico <vfalico@gmail.com>
-CC: Andy Gospodarek <andy@greyhouse.net>
-CC: "David S. Miller" <davem@davemloft.net>
-CC: netdev@vger.kernel.org
-Signed-off-by: Jarod Wilson <jarod@redhat.com>
+Add the CONFIG_NET_FOU into the config file as well.
+
+Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
 ---
- drivers/net/bonding/bond_main.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+ tools/testing/selftests/net/config       | 1 +
+ tools/testing/selftests/net/rtnetlink.sh | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 5ad43aaf76e5..c853ca67058c 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4552,13 +4552,23 @@ static netdev_tx_t bond_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	return ret;
+diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
+index 3b42c06b..96d2763 100644
+--- a/tools/testing/selftests/net/config
++++ b/tools/testing/selftests/net/config
+@@ -31,3 +31,4 @@ CONFIG_NET_SCH_ETF=m
+ CONFIG_NET_SCH_NETEM=y
+ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_KALLSYMS=y
++CONFIG_NET_FOU
+diff --git a/tools/testing/selftests/net/rtnetlink.sh b/tools/testing/selftests/net/rtnetlink.sh
+index bdbf4b3..7931b65 100755
+--- a/tools/testing/selftests/net/rtnetlink.sh
++++ b/tools/testing/selftests/net/rtnetlink.sh
+@@ -521,6 +521,11 @@ kci_test_encap_fou()
+ 		return $ksft_skip
+ 	fi
+ 
++	if ! /sbin/modprobe -q -n fou; then
++		echo "SKIP: module fou is not found"
++		return $ksft_skip
++	fi
++	/sbin/modprobe -q fou
+ 	ip -netns "$testns" fou add port 7777 ipproto 47 2>/dev/null
+ 	if [ $? -ne 0 ];then
+ 		echo "FAIL: can't add fou port 7777, skipping test"
+@@ -541,6 +546,7 @@ kci_test_encap_fou()
+ 		return 1
+ 	fi
+ 
++	/sbin/modprobe -q -r fou
+ 	echo "PASS: fou"
  }
  
-+static u32 bond_mode_bcast_speed(struct slave *slave, u32 speed)
-+{
-+	if (speed == 0 || speed == SPEED_UNKNOWN)
-+		speed = slave->speed;
-+	else
-+		speed = min(speed, slave->speed);
-+
-+	return speed;
-+}
-+
- static int bond_ethtool_get_link_ksettings(struct net_device *bond_dev,
- 					   struct ethtool_link_ksettings *cmd)
- {
- 	struct bonding *bond = netdev_priv(bond_dev);
--	unsigned long speed = 0;
- 	struct list_head *iter;
- 	struct slave *slave;
-+	u32 speed = 0;
- 
- 	cmd->base.duplex = DUPLEX_UNKNOWN;
- 	cmd->base.port = PORT_OTHER;
-@@ -4570,8 +4580,13 @@ static int bond_ethtool_get_link_ksettings(struct net_device *bond_dev,
- 	 */
- 	bond_for_each_slave(bond, slave, iter) {
- 		if (bond_slave_can_tx(slave)) {
--			if (slave->speed != SPEED_UNKNOWN)
--				speed += slave->speed;
-+			if (slave->speed != SPEED_UNKNOWN) {
-+				if (BOND_MODE(bond) == BOND_MODE_BROADCAST)
-+					speed = bond_mode_bcast_speed(slave,
-+								      speed);
-+				else
-+					speed += slave->speed;
-+			}
- 			if (cmd->base.duplex == DUPLEX_UNKNOWN &&
- 			    slave->duplex != DUPLEX_UNKNOWN)
- 				cmd->base.duplex = slave->duplex;
 -- 
-2.20.1
+2.7.4
 
