@@ -2,29 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 929CB24398B
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 14:01:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0E2D2439AB
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 14:14:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbgHMMAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 08:00:43 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:33922 "EHLO huawei.com"
+        id S1726637AbgHMMOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 08:14:35 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:58782 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726570AbgHML7T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Aug 2020 07:59:19 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 43880746B97B89570544;
-        Thu, 13 Aug 2020 19:59:10 +0800 (CST)
-Received: from huawei.com (10.175.104.175) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.487.0; Thu, 13 Aug 2020
- 19:59:04 +0800
+        id S1726583AbgHMMOb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Aug 2020 08:14:31 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 00BB8D67E5A4D6550FBD;
+        Thu, 13 Aug 2020 20:14:26 +0800 (CST)
+Received: from huawei.com (10.175.104.175) by DGGEMS411-HUB.china.huawei.com
+ (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Thu, 13 Aug 2020
+ 20:14:15 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>, <willemb@google.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <fw@strlen.de>,
+        <martin.varghese@nokia.com>, <pshelar@ovn.org>,
+        <dcaratti@redhat.com>, <edumazet@google.com>,
+        <steffen.klassert@secunet.com>, <pabeni@redhat.com>,
+        <shmulik@metanetworks.com>, <kyk.segfault@gmail.com>,
+        <sowmini.varadhan@oracle.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH] net: correct zerocopy refcnt with newly allocated UDP or RAW uarg
-Date:   Thu, 13 Aug 2020 07:58:00 -0400
-Message-ID: <20200813115800.4546-1-linmiaohe@huawei.com>
+Subject: [PATCH] net: add missing skb_uarg refcount increment in pskb_carve_inside_header()
+Date:   Thu, 13 Aug 2020 08:13:10 -0400
+Message-ID: <20200813121310.23016-1-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -36,57 +40,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The var extra_uref is introduced to pass the initial reference taken in
-sock_zerocopy_alloc to the first generated skb. But now we may fail to pass
-the initial reference with newly allocated UDP or RAW uarg when the skb is
-zcopied.
+If the skb is zcopied, we should increase the skb_uarg refcount before we
+involve skb_release_data(). See pskb_expand_head() as a reference.
 
-If the skb is zcopied, we always set extra_uref to false. This is fine with
-reallocted uarg because no extra ref is taken by UDP and RAW zerocopy. But
-if uarg is newly allocated via sock_zerocopy_alloc(), we lost the initial
-reference because extra_uref is false and we missed to pass it to the first
-generated skb.
-
-To fix this, we should set extra_uref to true if UDP or RAW uarg is newly
-allocated when the skb is zcopied.
-
-Fixes: 522924b58308 ("net: correct udp zerocopy refcnt also when zerocopy only on append")
+Fixes: 6fa01ccd8830 ("skbuff: Add pskb_extract() helper function")
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- net/ipv4/ip_output.c  | 4 +++-
- net/ipv6/ip6_output.c | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ net/core/skbuff.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 61f802d5350c..78d3b5d48617 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1019,7 +1019,9 @@ static int __ip_append_data(struct sock *sk,
- 		uarg = sock_zerocopy_realloc(sk, length, skb_zcopy(skb));
- 		if (!uarg)
- 			return -ENOBUFS;
--		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
-+		/* Only ref on newly allocated uarg. */
-+		if (!skb_zcopy(skb) || (sk->sk_type != SOCK_STREAM && skb_zcopy(skb) != uarg))
-+			extra_uref = true;
- 		if (rt->dst.dev->features & NETIF_F_SG &&
- 		    csummode == CHECKSUM_PARTIAL) {
- 			paged = true;
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index c78e67d7747f..0f82923239a9 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1476,7 +1476,9 @@ static int __ip6_append_data(struct sock *sk,
- 		uarg = sock_zerocopy_realloc(sk, length, skb_zcopy(skb));
- 		if (!uarg)
- 			return -ENOBUFS;
--		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
-+		/* Only ref on newly allocated uarg. */
-+		if (!skb_zcopy(skb) || (sk->sk_type != SOCK_STREAM && skb_zcopy(skb) != uarg))
-+			extra_uref = true;
- 		if (rt->dst.dev->features & NETIF_F_SG &&
- 		    csummode == CHECKSUM_PARTIAL) {
- 			paged = true;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 475f9aa51b57..975600558e8b 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5842,6 +5842,8 @@ static int pskb_carve_inside_header(struct sk_buff *skb, const u32 off,
+ 			kfree(data);
+ 			return -ENOMEM;
+ 		}
++		if (skb_zcopy(skb))
++			refcount_inc(&skb_uarg(skb)->refcnt);
+ 		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++)
+ 			skb_frag_ref(skb, i);
+ 		if (skb_has_frag_list(skb))
 -- 
 2.19.1
 
