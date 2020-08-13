@@ -2,85 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B1A6243F25
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 21:05:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05C49243F47
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 21:20:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbgHMTFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 15:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56736 "EHLO
+        id S1726427AbgHMTUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 15:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726305AbgHMTFK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 15:05:10 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A76C061757;
-        Thu, 13 Aug 2020 12:05:09 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id g14so8530469iom.0;
-        Thu, 13 Aug 2020 12:05:09 -0700 (PDT)
+        with ESMTP id S1726244AbgHMTUt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 15:20:49 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DD7BC061757;
+        Thu, 13 Aug 2020 12:20:49 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id j21so3296453pgi.9;
+        Thu, 13 Aug 2020 12:20:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=zMhp2fumVVPLWEb4wUScwu8YBeSNbdB6g4k9dSGOidI=;
-        b=QS4P2T2acqLacdF8h7yq7NKwQlZ2Vbq2p7dDflSKbNr+zhdKoqyVGaQrw88RL4bHGO
-         NqougenqYFijNlnMAHcpvewcw9vF3JFHz6q0KIjYfsFim4UpbeOwfpUM8dAVuOvteJra
-         vXaOGbj+PUJ+o0VkGRXz3NCk36ODuCbfE3TpVkVS8PXub1u5UD7mEsXVUkwQ0ixyXGlM
-         Cq9uKRXOTCCWPHhTox9nYgQojqyuBb1QJVSyoUZ0913NXvZOH36d3XbFsikViX6Ci602
-         YR1UiAXePTj0U23fer568k/cU+9ToAr8/IVZwlmJ7i1Fsz5SBn1sj1iE3vB07zM50YaQ
-         HJRQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Eu04kgJeLeMPTSIDNmL4XAEMIaEJ5W8Pj+0XbxuHnWw=;
+        b=TCBgamhEmpY5CsXYmnz2KguGRGqFo1NU1+B663f1SFpjp/nBviCcXJYTHrS+mHgCra
+         NGv9yf7ZtYIi2ZgVXU4O4VYHHYknHWhHbca2dRN9cRf0/yoLkbuxOodkYhsHpo/ZcLvt
+         HDIiCT1ugIxghvulBMLmWEIfTdExOjUp1d0fJKX5AMFhmFmlpYw54Sjc5vcNz3fc0ccs
+         SfwyZtcBeGCps9gDX3vttKSX6D+YirE8k5rCJkIASodey6XUliLA4gWpGzFST3ybHX+0
+         6CRhdxkb8363JX4Nbozru6uMXb411IR2OLSEq2olQ5GlWiOD33j2lPvTXKwTD90vofFR
+         VRmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=zMhp2fumVVPLWEb4wUScwu8YBeSNbdB6g4k9dSGOidI=;
-        b=aBr8HEXudm1qAXzCv7jTQd6UAfEothZIbSUyxsbi6Uv8Zx+YtmeeXd6NgvEcL1U1D1
-         ComAQab6wOzr1qD/4+ALnlUCVcRRO94GX0pwBJpnkRdiIqcUfdjlZpzebeE61ISEXMBU
-         dMsy198vt4JL6t8GGPbu02XSaRt5ZgiZoO7ra9HNgXrciQatitEIufRWtyDXNW6oaMEK
-         U6GQ8wT4hPBm4h7fY35cdruadSpBxGmMUR9jNUJ6f6Qksw140rS3uueFBLyb48H/ksBH
-         GKNdz7ha6vyLBM7eKApfa+HuXNOAId8YZDP5SwiWptphq6w1Ik4FgfHoiMj7mf55PoPq
-         i3Cw==
-X-Gm-Message-State: AOAM533Kwr869ZE9e0E81Fli58c4K04L32oqbh7YkUXLQ+S1bKIuLArL
-        66kd/8tN15Le+XLlHMVSkzAFzezOcH1heIVnqUk=
-X-Google-Smtp-Source: ABdhPJyDSqG2C0hIzDC/Jk/fSLu/HZL3ahHx0IGBHT0UtW2S4rgrzdXiwVm1sG9jvgXTfwbXjJ/+62sjQDZyeZg0lTo=
-X-Received: by 2002:a5d:80ce:: with SMTP id h14mr6268664ior.12.1597345509136;
- Thu, 13 Aug 2020 12:05:09 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Eu04kgJeLeMPTSIDNmL4XAEMIaEJ5W8Pj+0XbxuHnWw=;
+        b=VnLyd/d8flfGRpBzzizdoguAg/dP3/pqvQSg4H1Xz9IGWVLP+POoZeCLYyCDkrLpZZ
+         +/5/fhMoSLNkOXRetFexI68tydL6AJpZkDfOKoJrT1zs7srj2pPPAqxIrAQQASZERZEg
+         snSYBAePegNx+QxYC4flURsnw0542a9bEfir4TlyhIqpq3ir11lMK2C1YtcJJG0f2Jsd
+         hnVnx1HtYI4d8td8HNSq5M3iGiubtLuDqfC0qAUHYFMZttpeYz29H0KagOcTW6wfPj0P
+         7bhhl9bmZCyP/h/TUpu5qJ16dC09+lmqrCMu9KexSBuOMTzdScmA4Z+ZBcZ7WW9GhRhd
+         aA1w==
+X-Gm-Message-State: AOAM531vI16hUfogvng67lnZZkZ+5KO0IPkFXYLdz8kAG9ROnlnVnmmL
+        grUZ8DZM7iauUy9DuDXQPV826zKa
+X-Google-Smtp-Source: ABdhPJwRjT1WUfNb2iqH23cnQZTuCXtqKskLMw7oFNxOkGOj+T8I9HSTC+JcSkZp+iYv+jsBH1ZJ/w==
+X-Received: by 2002:a05:6a00:81:: with SMTP id c1mr5981705pfj.189.1597346445300;
+        Thu, 13 Aug 2020 12:20:45 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:affd])
+        by smtp.gmail.com with ESMTPSA id x127sm6680655pfd.86.2020.08.13.12.20.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Aug 2020 12:20:44 -0700 (PDT)
+Date:   Thu, 13 Aug 2020 12:20:42 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH bpf 0/9] Fix various issues with 32-bit libbpf
+Message-ID: <20200813192042.ntv6ybry6ck2s6jg@ast-mbp.dhcp.thefacebook.com>
+References: <20200813071722.2213397-1-andriin@fb.com>
 MIME-Version: 1.0
-References: <20200812095639.4062-1-xiangxia.m.yue@gmail.com>
-In-Reply-To: <20200812095639.4062-1-xiangxia.m.yue@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 13 Aug 2020 12:04:58 -0700
-Message-ID: <CAM_iQpWUP11mGwXPB=JKsT2=zhyUEf-udXp9YNYS_Fdt73knmg@mail.gmail.com>
-Subject: Re: [PATCH v2] net: openvswitch: introduce common code for flushing flows
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Joel Fernandes <joel@joelfernandes.org>,
-        =?UTF-8?B?Sm9oYW4gS27DtsO2cw==?= <jknoos@google.com>,
-        Gregory Rose <gvrose8192@gmail.com>,
-        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>, dev@openvswitch.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        rcu <rcu@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200813071722.2213397-1-andriin@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 12, 2020 at 2:59 AM <xiangxia.m.yue@gmail.com> wrote:
->
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->
-> To avoid some issues, for example RCU usage warning and double free,
-> we should flush the flows under ovs_lock. This patch refactors
-> table_instance_destroy and introduces table_instance_flow_flush
-> which can be invoked by __dp_destroy or ovs_flow_tbl_flush.
->
-> Fixes: 50b0e61b32ee ("net: openvswitch: fix possible memleak on destroy f=
-low-table")
-> Reported-by: Johan Kn=C3=B6=C3=B6s <jknoos@google.com>
-> Reported-at: https://mail.openvswitch.org/pipermail/ovs-discuss/2020-Augu=
-st/050489.html
-> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Thu, Aug 13, 2020 at 12:17:13AM -0700, Andrii Nakryiko wrote:
+> This patch set contains fixes to libbpf, bpftool, and selftests that were
+> found while testing libbpf and selftests built in 32-bit mode. 64-bit nature
+> of BPF target and 32-bit host environment don't always mix together well
+> without extra care, so there were a bunch of problems discovered and fixed.
+> 
+> Each individual patch contains additional explanations, where necessary.
+> 
+> This series is really a mix of bpf tree fixes and patches that are better
+> landed into bpf-next, once it opens. This is due to a bit riskier changes and
+> new APIs added to allow solving this 32/64-bit mix problem. It would be great
+> to apply patches #1 through #3 to bpf tree right now, and the rest into
+> bpf-next, but I would appreciate reviewing all of them, of course.
 
-Reviewed-by: Cong Wang <xiyou.wangcong@gmail.com>
-
-Thanks.
+why first three only?
+I think btf__set_pointer_size() and friends are necessary in bpf tree.
+The only thing I would suggest is to rename guess_ptr_size() into
+determine_ptr_size() or something.
+It's not guessing it. Looking for 'long' in BTF is precise.
+We can teach pahole and llvm to always emit 'long' type and libbpf can
+fail parsing BTF if 'long' is not found.
