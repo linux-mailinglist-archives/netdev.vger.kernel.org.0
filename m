@@ -2,116 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0015243841
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 12:11:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7322224388A
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 12:31:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbgHMKLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 06:11:38 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:57594 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726048AbgHMKLi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 06:11:38 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1597313495;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Zt7T8B80Wzzn5EaRMNRRGT8rmn9Iua7ORS/7xToxj6A=;
-        b=l5AbyYj6UEG/LFRXmeb4lns4UZyb+zM5h1OSxoIRbdb643Nus4DzDfMC230BU3Yu8njADB
-        65Di6ehekqWR51FzApTqSbXYVr2AYbLztEv6yOMLJ2aOXetUwm8hiaoHC0lYHm+888lzlL
-        N0xCwpSrICer4U6mFyYN4A6tqSj/urnIMIig/5rwW+Pkdwd5URNTypVn7I1vKQkjQ+W270
-        xL93chWxDIP3sM5Ac87CvH9ilnLCss/tZKjCSFgHLYu1A4yhXrHHZWRUD7hWzGy4VoZJhp
-        24WuQjAMvS5PanfWnsEZFy6x4auYRYBISbuU+Bni92ECnJFDrP8wQ1YAAb3Hvg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1597313495;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Zt7T8B80Wzzn5EaRMNRRGT8rmn9Iua7ORS/7xToxj6A=;
-        b=UjZfb0hO5ibmSxHP4Zm0BPUJiWMT7lgw3ymYW16ppTslnHZnm2ShBEVKRQMQbdeuwEdNi4
-        GfjRNxsNVXQBEXCA==
-To:     Jonathan Adams <jwadams@google.com>, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jim Mattson <jmattson@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Jonathan Adams <jwadams@google.com>
-Subject: Re: [RFC PATCH 6/7] core/metricfs: expose x86-specific irq information through metricfs
-In-Reply-To: <20200807212916.2883031-7-jwadams@google.com>
-References: <20200807212916.2883031-1-jwadams@google.com> <20200807212916.2883031-7-jwadams@google.com>
-Date:   Thu, 13 Aug 2020 12:11:35 +0200
-Message-ID: <87mu2yluso.fsf@nanos.tec.linutronix.de>
+        id S1726605AbgHMKbh convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Aug 2020 06:31:37 -0400
+Received: from hostingweb31-40.netsons.net ([89.40.174.40]:35289 "EHLO
+        hostingweb31-40.netsons.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726048AbgHMKbf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 06:31:35 -0400
+Received: from [37.161.87.136] (port=46755 helo=[192.168.42.162])
+        by hostingweb31.netsons.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <luca@lucaceresoli.net>)
+        id 1k6AW9-000FlW-5k; Thu, 13 Aug 2020 12:31:29 +0200
+Subject: Re: [PATCH] dt-bindings: Whitespace clean-ups in schema files
+To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-spi@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-media@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-mmc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org
+References: <20200812203618.2656699-1-robh@kernel.org>
+From:   Luca Ceresoli <luca@lucaceresoli.net>
+Message-ID: <d5808e9c-07fe-1c28-b9a6-a16abe9df458@lucaceresoli.net>
+Date:   Thu, 13 Aug 2020 12:31:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20200812203618.2656699-1-robh@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8BIT
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lucaceresoli.net
+X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca@lucaceresoli.net
+X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jonathan Adams <jwadams@google.com> writes:
+Hi Rob,
 
-How is that related to core? The x86 subsys prefix is 'x86' and for this
-particular thing it's 'x86/irq:'. That applies to the rest of the series
-as well. 
+On 12/08/20 22:36, Rob Herring wrote:
+> Clean-up incorrect indentation, extra spaces, long lines, and missing
+> EOF newline in schema files. Most of the clean-ups are for list
+> indentation which should always be 2 spaces more than the preceding
+> keyword.
+> 
+> Found with yamllint (which I plan to integrate into the checks).
 
-> Add metricfs support for displaying percpu irq counters for x86.
-> The top directory is /sys/kernel/debug/metricfs/irq_x86.
-> Then there is a subdirectory for each x86-specific irq counter.
-> For example:
->
->    cat /sys/kernel/debug/metricfs/irq_x86/TLB/values
+[...]
 
-What is 'TLB'? I'm not aware of any vector which is named TLB.
+> diff --git a/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml b/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
+> index 3d4e1685cc55..28c6461b9a9a 100644
+> --- a/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
+> +++ b/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
+> @@ -95,10 +95,10 @@ allOf:
+>        # Devices without builtin crystal
+>        properties:
+>          clock-names:
+> -            minItems: 1
+> -            maxItems: 2
+> -            items:
+> -              enum: [ xin, clkin ]
+> +          minItems: 1
+> +          maxItems: 2
+> +          items:
+> +            enum: [ xin, clkin ]
+>          clocks:
+>            minItems: 1
+>            maxItems: 2
 
-The changelog is pretty useless in providing any form of rationale for
-this. It tells the WHAT, but not the WHY.
+Thanks for noticing, LGTM.
 
-Also what is does this file contain? Aggregates, one line per CPU or the
-value of the random CPU of the day? I'm not going to dive into the macro
-zoo to figure that out.
+[...]
 
-> jwadams@google.com: rebased to 5.8-pre6
-> 	This is work originally done by another engineer at
-> 	google, who would rather not have their name associated with
-> 	this patchset. They're okay with me sending it under my name.
+> diff --git a/Documentation/devicetree/bindings/input/touchscreen/touchscreen.yaml b/Documentation/devicetree/bindings/input/touchscreen/touchscreen.yaml
+> index d7dac16a3960..36dc7b56a453 100644
+> --- a/Documentation/devicetree/bindings/input/touchscreen/touchscreen.yaml
+> +++ b/Documentation/devicetree/bindings/input/touchscreen/touchscreen.yaml
+> @@ -33,8 +33,8 @@ properties:
+>      $ref: /schemas/types.yaml#/definitions/uint32
+>  
+>    touchscreen-min-pressure:
+> -    description: minimum pressure on the touchscreen to be achieved in order for the
+> -                 touchscreen driver to report a touch event.
+> +    description: minimum pressure on the touchscreen to be achieved in order
+> +      for the touchscreen driver to report a touch event.
 
-I can understand why they wont have their name associated with this.
+Out of personal taste, I find the original layout more pleasant and
+readable. This third option is also good, especially for long descriptions:
 
-> +#ifdef CONFIG_METRICFS
-> +METRICFS_ITEM(NMI, __nmi_count, "Non-maskable interrupts");
-> +#ifdef CONFIG_X86_LOCAL_APIC
-> +METRICFS_ITEM(LOC, apic_timer_irqs, "Local timer interrupts");
-> +METRICFS_ITEM(SPU, irq_spurious_count, "Spurious interrupts");
-> +METRICFS_ITEM(PMI, apic_perf_irqs, "Performance monitoring interrupts");
-> +METRICFS_ITEM(IWI, apic_irq_work_irqs, "IRQ work interrupts");
-> +METRICFS_ITEM(RTR, icr_read_retry_count, "APIC ICR read retries");
-> +#endif
-....
+  description:
+    minimum pressure on the touchscreen to be achieved in order for the
+    touchscreen driver to report a touch event.
 
-So you are adding NR_CPUS * NR_DIRECT_VECTORS debugfs files which show
-exactly the same information as /proc/interrupts, right? 
+At first glance yamllint seems to support exactly these two by default:
 
-Aside of that _all_ of this information is available via tracepoints as
-well.
-
-That's NR_CPUS * 15 and incomplete because x86 has 23 of those directly
-handled vectors which do not go through the irq core. So with just 15
-and 256 CPUs that's 3840 files.
-
-Impressive number especially without any information why this is useful
-and provides value over the existing mechanisms to retrieve exactly the
-same information.
-
-The cover letter talks a lot about who Google finds this useful, but
-that's not really a convincing argument for this metric failsystem
-addon.
-
-Thanks,
-
-        tglx
+> With indentation: {spaces: 4, check-multi-line-strings: true}
+> 
+> the following code snippet would PASS:
+> 
+> Blaise Pascal:
+>     Je vous écris une longue lettre parce que
+>     je n'ai pas le temps d'en écrire une courte.
+> 
+> the following code snippet would PASS:
+> 
+> Blaise Pascal: Je vous écris une longue lettre parce que
+>                je n'ai pas le temps d'en écrire une courte.
+> 
+> the following code snippet would FAIL:
+> 
+> Blaise Pascal: Je vous écris une longue lettre parce que
+>   je n'ai pas le temps d'en écrire une courte.
+> 
+(https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.indentation)
 
 
+-- 
+Luca
 
