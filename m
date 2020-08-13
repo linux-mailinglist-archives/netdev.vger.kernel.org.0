@@ -2,127 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52695243977
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 13:44:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D8E7243980
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 13:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726611AbgHMLoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 07:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
+        id S1726653AbgHML44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 07:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726583AbgHMLmy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 07:42:54 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94C2C061757
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 04:42:53 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id x24so2840815lfe.11
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 04:42:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=/KnIiWMvMcdCBpsG+OVuDQeKNXTaq/KhRb7ZPYMTP80=;
-        b=J6x06WdbLkWRH6grfMb5iWbKrO3BzrF0LWt08BeWRyMpFFNVHNb0/OVWhuTpGbsy9Q
-         1snqpXCGCacImYNE6AgYxhMtQLO4U/pbn9zXzdz9i7M9s8MUG5gXhf9XD1OapGJtuZng
-         mddOIHXuog/aPSFWdDZ5oE65mR9vkCpzCel+ZJN+a96lur3ZAOqGzyp0fiQwlE+r0t12
-         f5eIufOtqeBq8jDAKEj/oUSE7PQBqvRmHq+Jwu8QVt4kesO2b3zWhpbxM9wQanVhZ1il
-         Hy57zsR2iIQ220LWnevcwvqzKg8xw8p4FCwXrEU45y1/iO5jViUIQ4qv6ZYIoyxYhdJ8
-         /z2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=/KnIiWMvMcdCBpsG+OVuDQeKNXTaq/KhRb7ZPYMTP80=;
-        b=g+R9ZXrGfsockirMT4BGHKXuRBG3VO5792KxmHPnvbrnvs/tMhMQdXcuL5Dw2tXzbq
-         B/SE112F2OyeU/i6lQwVbHVaghKGgjEw0cJOJVULXpBBNXCb2kTNPpXBn1rgT3fczIiG
-         nahPs9BOu/QQm8rd5rK2MSXi5JAGtoLANjK64/wo5Kc/xQDtA0B9Y0LXEeXGiMtDYOQm
-         ObHpyHVXnBdbw5FzixUOwCzuxQt7/3718jo7nDA5X4Vhygw7gQGaJmgPqBzt4rPhuXGO
-         FUHoDuvZcn6yciER5oXlY52FpYDgzBzjflQEqKubjxR9j1VMkazccHUs9u6qXi7ZC0g8
-         nNWg==
-X-Gm-Message-State: AOAM530HGvj9B0mYhD19OFjBhX/gq4WogbelrMGC7BbvjA3RsBwp3oDv
-        PRQ73u7kikCN3OAHca8aGGgNT5oHfdBfaa9/zzM=
-X-Google-Smtp-Source: ABdhPJzl/06dMc+EL86KKAfJ1UMxbMPqnQjvnqNUIxKR2ZFZh3itl14DQPAUj7cWUiIX1WMcD+j5gbQkDUNH7Wba/5o=
-X-Received: by 2002:a05:6512:3138:: with SMTP id p24mr2043810lfd.143.1597318972112;
- Thu, 13 Aug 2020 04:42:52 -0700 (PDT)
+        with ESMTP id S1726253AbgHMLzj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 07:55:39 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B18CC061757
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 04:48:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=XY78ZrubVKageylVNpjo2mmgcQjTd2nDUZ9LqIK6VG4=; b=Yv2xzQPcp8LII2iGt2zhxGMYJP
+        0Y8ov2l46BnbFrWp7eRL0wioIpQKL1EF8oe0B6WrBgbdt1Gtmf5T+Qhq1t6NizlhfLn2AdDO38V/d
+        K3n1k8H25VYTohq/qy+9UGoPQa90/9vE1o/lt63bpnAYzJPMbOSv1gPmGt/K+AP70pQ+atd7qEpGt
+        m4/zmNTzJCKWhdlMVeZgCCuBc8IbFGa0oTCvAYQpmhWM42S9Jenen6sx3sxLz9UZO7ZTraT+krXJz
+        p0YUK8pw9SB5/um8959qOnXxG3j7b6dNagEh2TAuJb6uuaWE5yJUsUGVFy8fICFeZkZ16WNTLF3nh
+        fYXrHnbQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1k6Bil-0002qK-ND; Thu, 13 Aug 2020 11:48:35 +0000
+Date:   Thu, 13 Aug 2020 12:48:35 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Biggers <ebiggers@google.com>,
+        Necip Fazil Yildiran <necip@google.com>
+Subject: Re: [PATCH] qrtr: Convert qrtr_ports from IDR to XArray
+Message-ID: <20200813114835.GG17456@casper.infradead.org>
+References: <20200605120037.17427-1-willy@infradead.org>
+ <9aa67df2-a539-29eb-c9e9-4dddcb73ec19@gmail.com>
+ <CACT4Y+acrZ9VTEONRt1ui++fOO8Lao0r3581jknEKho8GfwYyg@mail.gmail.com>
 MIME-Version: 1.0
-Received: by 2002:ab3:143:0:0:0:0:0 with HTTP; Thu, 13 Aug 2020 04:42:51 -0700 (PDT)
-Reply-To: ambrosecooker389@gmail.com
-From:   Ambrose Cooker <info.interpolbf@gmail.com>
-Date:   Thu, 13 Aug 2020 04:42:51 -0700
-Message-ID: <CAGNDz8AWvaSM_kzuX+DgBGKPnW=0Nh6e7mw-M5o1Ca+Jbtwr_g@mail.gmail.com>
-Subject: ATTENTION PLEASE
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACT4Y+acrZ9VTEONRt1ui++fOO8Lao0r3581jknEKho8GfwYyg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings My Dear Friend,
+On Thu, Aug 13, 2020 at 12:48:10PM +0200, Dmitry Vyukov wrote:
+> On Fri, Jun 5, 2020 at 6:44 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >
+> > On 6/5/20 5:00 AM, Matthew Wilcox wrote:
+> > > From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+> > >
+> > > The XArray interface is easier for this driver to use.  Also fixes a
+> > > bug reported by the improper use of GFP_ATOMIC.
+> > >
+> >
+> > This does not look stable candidate.
+> >
+> > If you try to add a Fixes: tag, you might discover that this bug is old,
+> > and I do not believe XArray has been backported to stable branches ?
+> >
+> >
+> > Please submit a fix suitable for old kernels (as old as v4.7)
+> >
+> > Then when net-next is open in ~2 weeks, the Xarray stuff can be proposed.
+> >
+> > Thanks.
+> 
+> Hello,
+> 
+> What is the status of this patch? Was it merged/superseded by another patch?
+> I don't see it in linux-next nor in net-net.
 
-Please reply to my private email ambrosecooker389@gmail.com
+I don't know.  I didn't understand Eric's response.
 
-Before I introduce myself, I wish to inform you that this letter is
-not a hoax mail and I urge you to treat it serious.This letter must
-come to you as a big surprise, but I believe it is only a day that
-people meet and become great friends and business partners. Please I
-want you to read this letter very carefully and I must apologize for
-barging this message into your mail box without any formal
-introduction due to the urgency and confidentiality of this business.
-I make this contact with you as I believe that you can be of great
-assistance to me. My name is Mr.Ambrose Cooker, from Burkina Faso,
-West Africa. I work in African Development Bank (ADB) as Telex
-manager, please see this as a confidential message and do not reveal
-it to another person and let me know whether you can be of assistance
-regarding my proposal below because it is top secret.
-
-I am about to retire from active Banking service to start a new life
-but I am skeptical to reveal this particular secret to a stranger. You
-must assure me that everything will be handled confidentially because
-we are not going to suffer again in life. It has been 10 years now
-that most of the greedy African Politicians used our bank to launder
-money overseas through the help of their Political advisers. Most of
-the funds which they transferred out of the shores of Africa were gold
-and oil money that was supposed to have been used to develop the
-continent. T heir Political advisers always inflated the amounts
-before
-transferring to foreign accounts, so I also used the opportunity to
-divert part of the funds hence I am aware that there is no official
-trace of how much was transferred as all the accounts used for such
-transfers were being closed after transfer. I acted as the Bank
-Officer to most of the politicians and when I discovered that they
-were using me to succeed in their greedy act; I also cleaned some of
-their banking records from the Bank files and no one cared to ask me
-because the money was too much for them to control. They laundered
-over $5billion Dollars during the process.
-
-Before I send this message to you, I have already diverted
-($10.5million Dollars) to an escrow account belonging to no one in the
-bank. The bank is anxious now to know who the beneficiary to the funds
-because they have made a lot of profits with the funds. It is more
-than Eight years now and most of the politicians are no longer using
-our bank to transfer funds overseas. The ($10.5million Dollars) has
-been laying waste in our bank and I don't want to retire from the bank
-without transferring the funds to a foreign account to enable me share
-the proceeds with the receiver (a foreigner). The money will be shared
-60% for me and 40% for you. There is no one coming to ask you about
-the funds because I secured everything. I only want you to assist me
-by providing a reliable bank account where the funds can be
-transferred.
-
-You are not to face any difficulties or legal implications as I am
-going to handle the transfer personally. If you are capable of
-receiving the funds, do let me know immediately to enable me give you
-a detailed information on what to do. For me, I have not stolen the
-money from anyone because the other people that took the whole money
-did not face any problems. This is my chance to grab my own life
-opportunity but you must keep the details of the funds secret to avoid
-any leakages as no one in the bank knows about my plans.Please get
-back to me if you are interested and capable to handle this project, I
-am looking forward to hear from you immediately for further
-information.Please reply to my private email
-ambrosecooker389@gmail.com
-
-Thanks with my best regards.
-Mr.Ambrose Cooker.
-Telex Manager
-African Development Bank (ADB)
-Burkina Faso.
+> Thanks
+> 
+> > > Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> > > ---
+> > >  net/qrtr/qrtr.c | 39 +++++++++++++--------------------------
+> > >  1 file changed, 13 insertions(+), 26 deletions(-)
+> > >
+> > > diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+> > > index 2d8d6131bc5f..488f8f326ee5 100644
+> > > --- a/net/qrtr/qrtr.c
+> > > +++ b/net/qrtr/qrtr.c
+> > > @@ -20,6 +20,7 @@
+> > >  /* auto-bind range */
+> > >  #define QRTR_MIN_EPH_SOCKET 0x4000
+> > >  #define QRTR_MAX_EPH_SOCKET 0x7fff
+> > > +#define QRTR_PORT_RANGE      XA_LIMIT(QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET)
+> > >
+> > >  /**
+> > >   * struct qrtr_hdr_v1 - (I|R)PCrouter packet header version 1
+> > > @@ -106,8 +107,7 @@ static LIST_HEAD(qrtr_all_nodes);
+> > >  static DEFINE_MUTEX(qrtr_node_lock);
+> > >
+> > >  /* local port allocation management */
+> > > -static DEFINE_IDR(qrtr_ports);
+> > > -static DEFINE_MUTEX(qrtr_port_lock);
+> > > +static DEFINE_XARRAY_ALLOC(qrtr_ports);
+> > >
+> > >  /**
+> > >   * struct qrtr_node - endpoint node
+> > > @@ -623,7 +623,7 @@ static struct qrtr_sock *qrtr_port_lookup(int port)
+> > >               port = 0;
+> > >
+> > >       rcu_read_lock();
+> > > -     ipc = idr_find(&qrtr_ports, port);
+> > > +     ipc = xa_load(&qrtr_ports, port);
+> > >       if (ipc)
+> > >               sock_hold(&ipc->sk);
+> > >       rcu_read_unlock();
+> > > @@ -665,9 +665,7 @@ static void qrtr_port_remove(struct qrtr_sock *ipc)
+> > >
+> > >       __sock_put(&ipc->sk);
+> > >
+> > > -     mutex_lock(&qrtr_port_lock);
+> > > -     idr_remove(&qrtr_ports, port);
+> > > -     mutex_unlock(&qrtr_port_lock);
+> > > +     xa_erase(&qrtr_ports, port);
+> > >
+> > >       /* Ensure that if qrtr_port_lookup() did enter the RCU read section we
+> > >        * wait for it to up increment the refcount */
+> > > @@ -688,25 +686,18 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
+> > >  {
+> > >       int rc;
+> > >
+> > > -     mutex_lock(&qrtr_port_lock);
+> > >       if (!*port) {
+> > > -             rc = idr_alloc(&qrtr_ports, ipc,
+> > > -                            QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET + 1,
+> > > -                            GFP_ATOMIC);
+> > > -             if (rc >= 0)
+> > > -                     *port = rc;
+> > > +             rc = xa_alloc(&qrtr_ports, port, ipc, QRTR_PORT_RANGE,
+> > > +                             GFP_KERNEL);
+> > >       } else if (*port < QRTR_MIN_EPH_SOCKET && !capable(CAP_NET_ADMIN)) {
+> > >               rc = -EACCES;
+> > >       } else if (*port == QRTR_PORT_CTRL) {
+> > > -             rc = idr_alloc(&qrtr_ports, ipc, 0, 1, GFP_ATOMIC);
+> > > +             rc = xa_insert(&qrtr_ports, 0, ipc, GFP_KERNEL);
+> > >       } else {
+> > > -             rc = idr_alloc(&qrtr_ports, ipc, *port, *port + 1, GFP_ATOMIC);
+> > > -             if (rc >= 0)
+> > > -                     *port = rc;
+> > > +             rc = xa_insert(&qrtr_ports, *port, ipc, GFP_KERNEL);
+> > >       }
+> > > -     mutex_unlock(&qrtr_port_lock);
+> > >
+> > > -     if (rc == -ENOSPC)
+> > > +     if (rc == -EBUSY)
+> > >               return -EADDRINUSE;
+> > >       else if (rc < 0)
+> > >               return rc;
+> > > @@ -720,20 +711,16 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
+> > >  static void qrtr_reset_ports(void)
+> > >  {
+> > >       struct qrtr_sock *ipc;
+> > > -     int id;
+> > > -
+> > > -     mutex_lock(&qrtr_port_lock);
+> > > -     idr_for_each_entry(&qrtr_ports, ipc, id) {
+> > > -             /* Don't reset control port */
+> > > -             if (id == 0)
+> > > -                     continue;
+> > > +     unsigned long index;
+> > >
+> > > +     rcu_read_lock();
+> > > +     xa_for_each_start(&qrtr_ports, index, ipc, 1) {
+> > >               sock_hold(&ipc->sk);
+> > >               ipc->sk.sk_err = ENETRESET;
+> > >               ipc->sk.sk_error_report(&ipc->sk);
+> > >               sock_put(&ipc->sk);
+> > >       }
+> > > -     mutex_unlock(&qrtr_port_lock);
+> > > +     rcu_read_unlock();
+> > >  }
+> > >
+> > >  /* Bind socket to address.
+> > >
