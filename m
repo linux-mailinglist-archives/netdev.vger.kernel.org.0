@@ -2,85 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2775B243BAF
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 16:39:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48AF0243BFA
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 16:55:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbgHMOjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 10:39:14 -0400
-Received: from pegase1.c-s.fr ([93.17.236.30]:43718 "EHLO pegase1.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726244AbgHMOjO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Aug 2020 10:39:14 -0400
-Received: from localhost (mailhub1-int [192.168.12.234])
-        by localhost (Postfix) with ESMTP id 4BS8Mx079nzB09ZC;
-        Thu, 13 Aug 2020 16:39:09 +0200 (CEST)
-X-Virus-Scanned: Debian amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
-        with ESMTP id wl3HWTVpgapq; Thu, 13 Aug 2020 16:39:08 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4BS8Mw5d2Rz9vD3t;
-        Thu, 13 Aug 2020 16:39:08 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 7148A8B7A4;
-        Thu, 13 Aug 2020 16:39:10 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id hlroaEI3dq4H; Thu, 13 Aug 2020 16:39:10 +0200 (CEST)
-Received: from po17688vm.idsi0.si.c-s.fr (po15451.idsi0.si.c-s.fr [172.25.230.104])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3E8EB8B7A1;
-        Thu, 13 Aug 2020 16:39:10 +0200 (CEST)
-Received: by po17688vm.idsi0.si.c-s.fr (Postfix, from userid 0)
-        id 36A1C65C8D; Thu, 13 Aug 2020 14:39:10 +0000 (UTC)
-Message-Id: <44e26ec6a1bc01b5b138c29b623c83d5846718b2.1597329390.git.christophe.leroy@csgroup.eu>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: [PATCH] sfc_ef100: Fix build failure on powerpc
-To:     Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Edward Cree <ecree@solarflare.com>,
+        id S1726648AbgHMOzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 10:55:35 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:59884 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726622AbgHMOzd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 10:55:33 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id E1DBF200C9;
+        Thu, 13 Aug 2020 14:55:31 +0000 (UTC)
+Received: from us4-mdac16-65.at1.mdlocal (unknown [10.110.50.184])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id DEBBB800A3;
+        Thu, 13 Aug 2020 14:55:31 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.108])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 6948D100080;
+        Thu, 13 Aug 2020 14:55:31 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2384814005B;
+        Thu, 13 Aug 2020 14:55:31 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 13 Aug
+ 2020 15:55:25 +0100
+Subject: Re: [PATCH] sfc_ef100: Fix build failure on powerpc
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "Solarflare linux maintainers" <linux-net-drivers@solarflare.com>,
         Martin Habets <mhabets@solarflare.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org
-Date:   Thu, 13 Aug 2020 14:39:10 +0000 (UTC)
+        "Jakub Kicinski" <kuba@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
+        <netdev@vger.kernel.org>
+References: <44e26ec6a1bc01b5b138c29b623c83d5846718b2.1597329390.git.christophe.leroy@csgroup.eu>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <fe9bfb29-cef3-51e6-71ab-886e02996ec4@solarflare.com>
+Date:   Thu, 13 Aug 2020 15:55:22 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
+MIME-Version: 1.0
+In-Reply-To: <44e26ec6a1bc01b5b138c29b623c83d5846718b2.1597329390.git.christophe.leroy@csgroup.eu>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25600.005
+X-TM-AS-Result: No-5.375500-8.000000-10
+X-TMASE-MatchedRID: 7ySqCuYCpfgZKb71Tl2YYfZvT2zYoYOwC/ExpXrHizzAlr9zf1x/lojw
+        YzF1DjNPWiR9CUpDXWeo+OAAmru7hxxtkIHKGuMRT3nBCKOvAEvpVMb1xnESMsz/SxKo9mJ4wQ3
+        t1bD9XwKRY9dCWcgj9mJwCsb/Z8alTX7PJ/OU3vKDGx/OQ1GV8vaSyLmE5Bx3+gtHj7OwNO2Ohz
+        Oa6g8KrV90guFwhBetqWzlavUblWzUlw+R3vVZXldVttIi2JlLK2TLqpu5/SM=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.375500-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25600.005
+X-MDID: 1597330531-ci2M3Uh6fLvl
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ppc6xx_defconfig fails building sfc.ko module, complaining
-about the lack of _umoddi3 symbol.
-
-This is due to the following test
-
- 		if (EFX_MIN_DMAQ_SIZE % reader->value) {
-
-Because reader->value is u64.
-
-As EFX_MIN_DMAQ_SIZE value is 512, reader->value is obviously small
-enough for an u32 calculation, so cast it as (u32) for the test, to
-avoid the need for _umoddi3.
-
-Fixes: adcfc3482fff ("sfc_ef100: read Design Parameters at probe time")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- drivers/net/ethernet/sfc/ef100_nic.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-index 36598d0542ed..234400b69b07 100644
---- a/drivers/net/ethernet/sfc/ef100_nic.c
-+++ b/drivers/net/ethernet/sfc/ef100_nic.c
-@@ -979,7 +979,7 @@ static int ef100_process_design_param(struct efx_nic *efx,
- 		 * EFX_MIN_DMAQ_SIZE is divisible by GRANULARITY.
- 		 * This is very unlikely to fail.
- 		 */
--		if (EFX_MIN_DMAQ_SIZE % reader->value) {
-+		if (EFX_MIN_DMAQ_SIZE % (u32)reader->value) {
- 			netif_err(efx, probe, efx->net_dev,
- 				  "%s size granularity is %llu, can't guarantee safety\n",
- 				  reader->type == ESE_EF100_DP_GZ_RXQ_SIZE_GRANULARITY ? "RXQ" : "TXQ",
--- 
-2.25.0
-
+On 13/08/2020 15:39, Christophe Leroy wrote:
+> ppc6xx_defconfig fails building sfc.ko module, complaining
+> about the lack of _umoddi3 symbol.
+>
+> This is due to the following test
+>
+>  		if (EFX_MIN_DMAQ_SIZE % reader->value) {
+>
+> Because reader->value is u64.
+Already fixed in net.git by 41077c990266 ("sfc: fix ef100 design-param checking").
+But thanks anyway.
