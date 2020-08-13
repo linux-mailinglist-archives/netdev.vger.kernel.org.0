@@ -2,132 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88908243FF4
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 22:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC7AE243FFB
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 22:41:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726663AbgHMUkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 16:40:06 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:59894 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726606AbgHMUkF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 16:40:05 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 07DKdbMr026089
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 13:40:03 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=xlKJFWlB+04ldRTWzzBPgR810/7GPQGv3npTM4pfkcs=;
- b=mEboo9UeobmUvk3zX4XBSJfCjj0hCXtdkiSSEdC408D+9emvmebg8N4YXwZnIwlpa247
- LqpOVN6BUZIjtw72j8yyDRMORebGFqsBSE4bcUBwxn/QmaD/NlvML5wuvfrNlihIcQxx
- 7OhaKtcoTb4qJJlnUOn3PTPqXbR00UfA0vc= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0089730.ppops.net with ESMTP id 32v0khbs9w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 13:40:03 -0700
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 13 Aug 2020 13:40:02 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 98BEC2EC596D; Thu, 13 Aug 2020 13:39:59 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf 9/9] selftests/bpf: make test_varlen work with 32-bit user-space arch
-Date:   Thu, 13 Aug 2020 13:39:29 -0700
-Message-ID: <20200813203930.978141-10-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200813203930.978141-1-andriin@fb.com>
-References: <20200813203930.978141-1-andriin@fb.com>
+        id S1726641AbgHMUlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 16:41:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45156 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726499AbgHMUlP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Aug 2020 16:41:15 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C4DAD2078B;
+        Thu, 13 Aug 2020 20:41:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597351274;
+        bh=kGxqP91BSjtS/0aejUyGPdk0U2ERqe1vZu5dp7v4zUo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qEW45v/FRmlS/yRXA85GD3Z61mTPz1LK7lO29eQQST98FPZYVCSstUR+Z6B/a9YuN
+         014S97qQz0YElcSzKS8MkTFEPcEBdhI8Cb4NvUBw+H0DMPRmNgQIDPBa+XXC+MtqwX
+         vGtXLLBqWoOcRHeNwXJQzMXToGHv9FzSYnpaJs7E=
+Date:   Thu, 13 Aug 2020 13:41:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shay Agroskin <shayagr@amazon.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
+        <benh@amazon.com>, <akiyano@amazon.com>, <sameehj@amazon.com>,
+        <ndagan@amazon.com>
+Subject: Re: [PATCH V1 net 1/3] net: ena: Prevent reset after device
+ destruction
+Message-ID: <20200813134111.3d22b6ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <pj41zleeoapv31.fsf@u4b1e9be9d67d5a.ant.amazon.com>
+References: <20200812101059.5501-1-shayagr@amazon.com>
+        <20200812101059.5501-2-shayagr@amazon.com>
+        <20200812105219.4c4e3e3b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <pj41zleeoapv31.fsf@u4b1e9be9d67d5a.ant.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-13_17:2020-08-13,2020-08-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 spamscore=0
- phishscore=0 suspectscore=8 mlxlogscore=636 priorityscore=1501
- adultscore=0 malwarescore=0 clxscore=1015 lowpriorityscore=0
- impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2008130147
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Despite bpftool generating data section memory layout that will work for
-32-bit architectures on user-space side, BPF programs should be careful t=
-o not
-use ambiguous types like `long`, which have different size in 32-bit and
-64-bit environments. Fix that in test by using __u64 explicitly, which is
-a recommended approach anyway.
+On Thu, 13 Aug 2020 15:51:46 +0300 Shay Agroskin wrote:
+> Long answer:
+> The ena_destroy_device() function is called with rtnl_lock() held, 
+> so it cannot run in parallel with the reset function. Also the 
+> destroy function clears the bit ENA_FLAG_TRIGGER_RESET without 
+> which the reset function just exits without doing anything.
+> 
+> A problem can then only happen when some routine sets the 
+> ENA_FLAG_TRIGGER_RESET bit before the reset function is executed, 
+> the following describes all functions from which this bit can be 
+> set:
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/prog_tests/varlen.c | 8 ++++----
- tools/testing/selftests/bpf/progs/test_varlen.c | 6 +++---
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ena_fw_reset_device() runs from a workqueue, it can be preempted right
+before it tries to take the rtnl_lock. Then after arbitrarily long
+delay it will start again, take the lock, and dereference
+adapter->flags. But adapter could have been long freed at this point.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/varlen.c b/tools/test=
-ing/selftests/bpf/prog_tests/varlen.c
-index c75525eab02c..dd324b4933db 100644
---- a/tools/testing/selftests/bpf/prog_tests/varlen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/varlen.c
-@@ -44,25 +44,25 @@ void test_varlen(void)
- 	CHECK_VAL(bss->payload1_len2, size2);
- 	CHECK_VAL(bss->total1, size1 + size2);
- 	CHECK(memcmp(bss->payload1, exp_str, size1 + size2), "content_check",
--	      "doesn't match!");
-+	      "doesn't match!\n");
-=20
- 	CHECK_VAL(data->payload2_len1, size1);
- 	CHECK_VAL(data->payload2_len2, size2);
- 	CHECK_VAL(data->total2, size1 + size2);
- 	CHECK(memcmp(data->payload2, exp_str, size1 + size2), "content_check",
--	      "doesn't match!");
-+	      "doesn't match!\n");
-=20
- 	CHECK_VAL(data->payload3_len1, size1);
- 	CHECK_VAL(data->payload3_len2, size2);
- 	CHECK_VAL(data->total3, size1 + size2);
- 	CHECK(memcmp(data->payload3, exp_str, size1 + size2), "content_check",
--	      "doesn't match!");
-+	      "doesn't match!\n");
-=20
- 	CHECK_VAL(data->payload4_len1, size1);
- 	CHECK_VAL(data->payload4_len2, size2);
- 	CHECK_VAL(data->total4, size1 + size2);
- 	CHECK(memcmp(data->payload4, exp_str, size1 + size2), "content_check",
--	      "doesn't match!");
-+	      "doesn't match!\n");
- cleanup:
- 	test_varlen__destroy(skel);
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_varlen.c b/tools/test=
-ing/selftests/bpf/progs/test_varlen.c
-index cd4b72c55dfe..913acdffd90f 100644
---- a/tools/testing/selftests/bpf/progs/test_varlen.c
-+++ b/tools/testing/selftests/bpf/progs/test_varlen.c
-@@ -15,9 +15,9 @@ int test_pid =3D 0;
- bool capture =3D false;
-=20
- /* .bss */
--long payload1_len1 =3D 0;
--long payload1_len2 =3D 0;
--long total1 =3D 0;
-+__u64 payload1_len1 =3D 0;
-+__u64 payload1_len2 =3D 0;
-+__u64 total1 =3D 0;
- char payload1[MAX_LEN + MAX_LEN] =3D {};
-=20
- /* .data */
---=20
-2.24.1
-
+Unless you flush a workqueue or cancel_work_sync() you can never be
+sure it's not scheduled. And I can only see a flush when module is
+unloaded now.
