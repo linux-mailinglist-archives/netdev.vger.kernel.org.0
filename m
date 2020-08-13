@@ -2,106 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEBF7243951
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 13:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52695243977
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 13:44:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726249AbgHML1I convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Aug 2020 07:27:08 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:29965 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726100AbgHML1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 07:27:08 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-164-UcCwiyjsM8iIhg0LfJrpeA-1; Thu, 13 Aug 2020 07:27:02 -0400
-X-MC-Unique: UcCwiyjsM8iIhg0LfJrpeA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5960A1007461;
-        Thu, 13 Aug 2020 11:27:01 +0000 (UTC)
-Received: from p50.redhat.com (ovpn-113-45.ams2.redhat.com [10.36.113.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B9A2B5C1A3;
-        Thu, 13 Aug 2020 11:26:59 +0000 (UTC)
-From:   Stefan Assmann <sassmann@kpanic.de>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jeffrey.t.kirsher@intel.com, lihong.yang@intel.com,
-        sassmann@kpanic.de, kuba@kernel.org
-Subject: [PATCH v2] i40e: fix return of uninitialized aq_ret in i40e_set_vsi_promisc
-Date:   Thu, 13 Aug 2020 13:26:38 +0200
-Message-Id: <20200813112638.12699-1-sassmann@kpanic.de>
+        id S1726611AbgHMLoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 07:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726583AbgHMLmy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 07:42:54 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94C2C061757
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 04:42:53 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id x24so2840815lfe.11
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 04:42:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=/KnIiWMvMcdCBpsG+OVuDQeKNXTaq/KhRb7ZPYMTP80=;
+        b=J6x06WdbLkWRH6grfMb5iWbKrO3BzrF0LWt08BeWRyMpFFNVHNb0/OVWhuTpGbsy9Q
+         1snqpXCGCacImYNE6AgYxhMtQLO4U/pbn9zXzdz9i7M9s8MUG5gXhf9XD1OapGJtuZng
+         mddOIHXuog/aPSFWdDZ5oE65mR9vkCpzCel+ZJN+a96lur3ZAOqGzyp0fiQwlE+r0t12
+         f5eIufOtqeBq8jDAKEj/oUSE7PQBqvRmHq+Jwu8QVt4kesO2b3zWhpbxM9wQanVhZ1il
+         Hy57zsR2iIQ220LWnevcwvqzKg8xw8p4FCwXrEU45y1/iO5jViUIQ4qv6ZYIoyxYhdJ8
+         /z2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=/KnIiWMvMcdCBpsG+OVuDQeKNXTaq/KhRb7ZPYMTP80=;
+        b=g+R9ZXrGfsockirMT4BGHKXuRBG3VO5792KxmHPnvbrnvs/tMhMQdXcuL5Dw2tXzbq
+         B/SE112F2OyeU/i6lQwVbHVaghKGgjEw0cJOJVULXpBBNXCb2kTNPpXBn1rgT3fczIiG
+         nahPs9BOu/QQm8rd5rK2MSXi5JAGtoLANjK64/wo5Kc/xQDtA0B9Y0LXEeXGiMtDYOQm
+         ObHpyHVXnBdbw5FzixUOwCzuxQt7/3718jo7nDA5X4Vhygw7gQGaJmgPqBzt4rPhuXGO
+         FUHoDuvZcn6yciER5oXlY52FpYDgzBzjflQEqKubjxR9j1VMkazccHUs9u6qXi7ZC0g8
+         nNWg==
+X-Gm-Message-State: AOAM530HGvj9B0mYhD19OFjBhX/gq4WogbelrMGC7BbvjA3RsBwp3oDv
+        PRQ73u7kikCN3OAHca8aGGgNT5oHfdBfaa9/zzM=
+X-Google-Smtp-Source: ABdhPJzl/06dMc+EL86KKAfJ1UMxbMPqnQjvnqNUIxKR2ZFZh3itl14DQPAUj7cWUiIX1WMcD+j5gbQkDUNH7Wba/5o=
+X-Received: by 2002:a05:6512:3138:: with SMTP id p24mr2043810lfd.143.1597318972112;
+ Thu, 13 Aug 2020 04:42:52 -0700 (PDT)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sassmann@kpanic.de
-X-Mimecast-Spam-Score: 0.002
-X-Mimecast-Originator: kpanic.de
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Received: by 2002:ab3:143:0:0:0:0:0 with HTTP; Thu, 13 Aug 2020 04:42:51 -0700 (PDT)
+Reply-To: ambrosecooker389@gmail.com
+From:   Ambrose Cooker <info.interpolbf@gmail.com>
+Date:   Thu, 13 Aug 2020 04:42:51 -0700
+Message-ID: <CAGNDz8AWvaSM_kzuX+DgBGKPnW=0Nh6e7mw-M5o1Ca+Jbtwr_g@mail.gmail.com>
+Subject: ATTENTION PLEASE
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c: In function ‘i40e_set_vsi_promisc’:
-drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:1176:14: error: ‘aq_ret’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
-  i40e_status aq_ret;
+Greetings My Dear Friend,
 
-In case the code inside the if statement and the for loop does not get
-executed aq_ret will be uninitialized when the variable gets returned at
-the end of the function.
+Please reply to my private email ambrosecooker389@gmail.com
 
-Avoid this by changing num_vlans from int to u16, so aq_ret always gets
-set. Making this change in additional places as num_vlans should never
-be negative.
+Before I introduce myself, I wish to inform you that this letter is
+not a hoax mail and I urge you to treat it serious.This letter must
+come to you as a big surprise, but I believe it is only a day that
+people meet and become great friends and business partners. Please I
+want you to read this letter very carefully and I must apologize for
+barging this message into your mail box without any formal
+introduction due to the urgency and confidentiality of this business.
+I make this contact with you as I believe that you can be of great
+assistance to me. My name is Mr.Ambrose Cooker, from Burkina Faso,
+West Africa. I work in African Development Bank (ADB) as Telex
+manager, please see this as a confidential message and do not reveal
+it to another person and let me know whether you can be of assistance
+regarding my proposal below because it is top secret.
 
-Fixes: 37d318d7805f ("i40e: Remove scheduling while atomic possibility")
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
----
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+I am about to retire from active Banking service to start a new life
+but I am skeptical to reveal this particular secret to a stranger. You
+must assure me that everything will be handled confidentially because
+we are not going to suffer again in life. It has been 10 years now
+that most of the greedy African Politicians used our bank to launder
+money overseas through the help of their Political advisers. Most of
+the funds which they transferred out of the shores of Africa were gold
+and oil money that was supposed to have been used to develop the
+continent. T heir Political advisers always inflated the amounts
+before
+transferring to foreign accounts, so I also used the opportunity to
+divert part of the funds hence I am aware that there is no official
+trace of how much was transferred as all the accounts used for such
+transfers were being closed after transfer. I acted as the Bank
+Officer to most of the politicians and when I discovered that they
+were using me to succeed in their greedy act; I also cleaned some of
+their banking records from the Bank files and no one cared to ask me
+because the money was too much for them to control. They laundered
+over $5billion Dollars during the process.
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index 8e133d6545bd..90ef810cba97 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -1115,7 +1115,7 @@ static int i40e_quiesce_vf_pci(struct i40e_vf *vf)
- static int i40e_getnum_vf_vsi_vlan_filters(struct i40e_vsi *vsi)
- {
- 	struct i40e_mac_filter *f;
--	int num_vlans = 0, bkt;
-+	u16 num_vlans = 0, bkt;
- 
- 	hash_for_each(vsi->mac_filter_hash, bkt, f, hlist) {
- 		if (f->vlan >= 0 && f->vlan <= I40E_MAX_VLANID)
-@@ -1134,7 +1134,7 @@ static int i40e_getnum_vf_vsi_vlan_filters(struct i40e_vsi *vsi)
-  *
-  * Called to get number of VLANs and VLAN list present in mac_filter_hash.
-  **/
--static void i40e_get_vlan_list_sync(struct i40e_vsi *vsi, int *num_vlans,
-+static void i40e_get_vlan_list_sync(struct i40e_vsi *vsi, u16 *num_vlans,
- 					   s16 **vlan_list)
- {
- 	struct i40e_mac_filter *f;
-@@ -1169,7 +1169,7 @@ static void i40e_get_vlan_list_sync(struct i40e_vsi *vsi, int *num_vlans,
-  **/
- static i40e_status
- i40e_set_vsi_promisc(struct i40e_vf *vf, u16 seid, bool multi_enable,
--		     bool unicast_enable, s16 *vl, int num_vlans)
-+		     bool unicast_enable, s16 *vl, u16 num_vlans)
- {
- 	struct i40e_pf *pf = vf->pf;
- 	struct i40e_hw *hw = &pf->hw;
-@@ -1258,7 +1258,7 @@ static i40e_status i40e_config_vf_promiscuous_mode(struct i40e_vf *vf,
- 	i40e_status aq_ret = I40E_SUCCESS;
- 	struct i40e_pf *pf = vf->pf;
- 	struct i40e_vsi *vsi;
--	int num_vlans;
-+	u16 num_vlans;
- 	s16 *vl;
- 
- 	vsi = i40e_find_vsi_from_id(pf, vsi_id);
--- 
-2.26.2
+Before I send this message to you, I have already diverted
+($10.5million Dollars) to an escrow account belonging to no one in the
+bank. The bank is anxious now to know who the beneficiary to the funds
+because they have made a lot of profits with the funds. It is more
+than Eight years now and most of the politicians are no longer using
+our bank to transfer funds overseas. The ($10.5million Dollars) has
+been laying waste in our bank and I don't want to retire from the bank
+without transferring the funds to a foreign account to enable me share
+the proceeds with the receiver (a foreigner). The money will be shared
+60% for me and 40% for you. There is no one coming to ask you about
+the funds because I secured everything. I only want you to assist me
+by providing a reliable bank account where the funds can be
+transferred.
 
+You are not to face any difficulties or legal implications as I am
+going to handle the transfer personally. If you are capable of
+receiving the funds, do let me know immediately to enable me give you
+a detailed information on what to do. For me, I have not stolen the
+money from anyone because the other people that took the whole money
+did not face any problems. This is my chance to grab my own life
+opportunity but you must keep the details of the funds secret to avoid
+any leakages as no one in the bank knows about my plans.Please get
+back to me if you are interested and capable to handle this project, I
+am looking forward to hear from you immediately for further
+information.Please reply to my private email
+ambrosecooker389@gmail.com
+
+Thanks with my best regards.
+Mr.Ambrose Cooker.
+Telex Manager
+African Development Bank (ADB)
+Burkina Faso.
