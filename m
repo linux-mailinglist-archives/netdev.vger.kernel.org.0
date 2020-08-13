@@ -2,66 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0E2D2439AB
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 14:14:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3B12439A5
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 14:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726637AbgHMMOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 08:14:35 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:58782 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726583AbgHMMOb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Aug 2020 08:14:31 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 00BB8D67E5A4D6550FBD;
-        Thu, 13 Aug 2020 20:14:26 +0800 (CST)
-Received: from huawei.com (10.175.104.175) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Thu, 13 Aug 2020
- 20:14:15 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <fw@strlen.de>,
-        <martin.varghese@nokia.com>, <pshelar@ovn.org>,
-        <dcaratti@redhat.com>, <edumazet@google.com>,
-        <steffen.klassert@secunet.com>, <pabeni@redhat.com>,
-        <shmulik@metanetworks.com>, <kyk.segfault@gmail.com>,
-        <sowmini.varadhan@oracle.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] net: add missing skb_uarg refcount increment in pskb_carve_inside_header()
-Date:   Thu, 13 Aug 2020 08:13:10 -0400
-Message-ID: <20200813121310.23016-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.19.1
+        id S1726557AbgHMMNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 08:13:55 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:58318 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726053AbgHMMNy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 08:13:54 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1597320831;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tQYvkqXE5EdBVdiO0ISKqxb3rBUgEsMwquDtXOKueGI=;
+        b=GHwpL9zFdxYNR/AGJIiDNIbyE8avRxZkeurRafXu2kWcZkSqLM90dTdOxJJxJsZ8GR0CSh
+        QoKjOqhN6WHbJaSDaH5yyjtJ9ZfvPyw6tmQ3RX5JhqhCAFnqPn7SEchjI6hQW953o9jYAA
+        masmnprKB/aNpB0oS6rBOBL3CfjWLMeJC3pGHvVULsfuRYm0SPa8kj5oWZQ8D9vYvOUaco
+        0qnERYUF7ST3RB9mO2M73iGWMW4cD4j3VDWcCHbrHgsgN9Dhzyltf/Iisawi1PX7HJUjNA
+        98yuKdJ0qNCIEtkD9pyhXp66DvdL7NGOpQNajKWsKtCbhsTU1/g+I3XPnDZBug==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1597320831;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tQYvkqXE5EdBVdiO0ISKqxb3rBUgEsMwquDtXOKueGI=;
+        b=oNP2h9DqtdR+YQ2kEQK018T5aZHXQYYJHc4PVSs8iIXRffNBf4hwBEkf5zMpCzVqlkqAtK
+        61E86EtGA/GAg/DA==
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Adams <jwadams@google.com>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jim Mattson <jmattson@google.com>,
+        David Rientjes <rientjes@google.com>
+Subject: Re: [RFC PATCH 6/7] core/metricfs: expose x86-specific irq information through metricfs
+In-Reply-To: <2500b04e-a890-2621-2f19-be08dfe2e862@redhat.com>
+References: <20200807212916.2883031-1-jwadams@google.com> <20200807212916.2883031-7-jwadams@google.com> <87mu2yluso.fsf@nanos.tec.linutronix.de> <2500b04e-a890-2621-2f19-be08dfe2e862@redhat.com>
+Date:   Thu, 13 Aug 2020 14:13:50 +0200
+Message-ID: <87a6yylp4x.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.175]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the skb is zcopied, we should increase the skb_uarg refcount before we
-involve skb_release_data(). See pskb_expand_head() as a reference.
+Paolo Bonzini <pbonzini@redhat.com> writes:
 
-Fixes: 6fa01ccd8830 ("skbuff: Add pskb_extract() helper function")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- net/core/skbuff.c | 2 ++
- 1 file changed, 2 insertions(+)
+> On 13/08/20 12:11, Thomas Gleixner wrote:
+>>> Add metricfs support for displaying percpu irq counters for x86.
+>>> The top directory is /sys/kernel/debug/metricfs/irq_x86.
+>>> Then there is a subdirectory for each x86-specific irq counter.
+>>> For example:
+>>>
+>>>    cat /sys/kernel/debug/metricfs/irq_x86/TLB/values
+>> What is 'TLB'? I'm not aware of any vector which is named TLB.
+>
+> There's a "TLB" entry in /proc/interrupts.
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 475f9aa51b57..975600558e8b 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5842,6 +5842,8 @@ static int pskb_carve_inside_header(struct sk_buff *skb, const u32 off,
- 			kfree(data);
- 			return -ENOMEM;
- 		}
-+		if (skb_zcopy(skb))
-+			refcount_inc(&skb_uarg(skb)->refcnt);
- 		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++)
- 			skb_frag_ref(skb, i);
- 		if (skb_has_frag_list(skb))
--- 
-2.19.1
+It's TLB shootdowns and not TLB.
+
+Thanks,
+
+        tglx
 
