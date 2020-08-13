@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA4EC243FF7
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 22:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88908243FF4
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 22:40:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbgHMUkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 16:40:10 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:42308 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726669AbgHMUkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 16:40:09 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07DKcluw020858
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 13:40:08 -0700
+        id S1726663AbgHMUkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 16:40:06 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:59894 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726606AbgHMUkF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 16:40:05 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 07DKdbMr026089
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 13:40:03 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=zdOUMlPLM5CeGR3mHvYZL7On1+O0+1hDd4dBEIzkVd4=;
- b=AoqGOZlS15WKBlYcmKcfG8ukFkyRvTq6AsIPPunYVeRohs+FSvmzlEQZvEWxKAir4PQK
- MM8+txVGppEPYO2WD311ZRL3y8w8neg63ozrKjPmTRkRpkQlmxl/oA2Yd5Dj9vkQYnYP
- MUvfeYx5e4+L9PH3dtCMrCgZ/XhkRV5wtes= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32v0kfkxtr-13
+ bh=xlKJFWlB+04ldRTWzzBPgR810/7GPQGv3npTM4pfkcs=;
+ b=mEboo9UeobmUvk3zX4XBSJfCjj0hCXtdkiSSEdC408D+9emvmebg8N4YXwZnIwlpa247
+ LqpOVN6BUZIjtw72j8yyDRMORebGFqsBSE4bcUBwxn/QmaD/NlvML5wuvfrNlihIcQxx
+ 7OhaKtcoTb4qJJlnUOn3PTPqXbR00UfA0vc= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 32v0khbs9w-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 13:40:08 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 13:40:03 -0700
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 13 Aug 2020 13:39:59 -0700
+ 15.1.1979.3; Thu, 13 Aug 2020 13:40:02 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 6D8FD2EC596D; Thu, 13 Aug 2020 13:39:57 -0700 (PDT)
+        id 98BEC2EC596D; Thu, 13 Aug 2020 13:39:59 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -39,9 +39,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf 8/9] tools/bpftool: generate data section struct with conservative alignment
-Date:   Thu, 13 Aug 2020 13:39:28 -0700
-Message-ID: <20200813203930.978141-9-andriin@fb.com>
+Subject: [PATCH v2 bpf 9/9] selftests/bpf: make test_varlen work with 32-bit user-space arch
+Date:   Thu, 13 Aug 2020 13:39:29 -0700
+Message-ID: <20200813203930.978141-10-andriin@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200813203930.978141-1-andriin@fb.com>
 References: <20200813203930.978141-1-andriin@fb.com>
@@ -51,10 +51,10 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-08-13_17:2020-08-13,2020-08-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- adultscore=0 mlxscore=0 clxscore=1015 priorityscore=1501
- lowpriorityscore=0 mlxlogscore=999 suspectscore=8 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 spamscore=0
+ phishscore=0 suspectscore=8 mlxlogscore=636 priorityscore=1501
+ adultscore=0 malwarescore=0 clxscore=1015 lowpriorityscore=0
+ impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-2006250000 definitions=main-2008130147
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -62,42 +62,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The comment in the code describes this in good details. Generate such a m=
-emory
-layout that would work both on 32-bit and 64-bit architectures for user-s=
-pace.
+Despite bpftool generating data section memory layout that will work for
+32-bit architectures on user-space side, BPF programs should be careful t=
+o not
+use ambiguous types like `long`, which have different size in 32-bit and
+64-bit environments. Fix that in test by using __u64 explicitly, which is
+a recommended approach anyway.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/bpf/bpftool/gen.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ tools/testing/selftests/bpf/prog_tests/varlen.c | 8 ++++----
+ tools/testing/selftests/bpf/progs/test_varlen.c | 6 +++---
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-index db80e836816e..f61184653633 100644
---- a/tools/bpf/bpftool/gen.c
-+++ b/tools/bpf/bpftool/gen.c
-@@ -143,6 +143,20 @@ static int codegen_datasec_def(struct bpf_object *ob=
-j,
- 			      var_name, align);
- 			return -EINVAL;
- 		}
-+		/* Assume 32-bit architectures when generating data section
-+		 * struct memory layout. Given bpftool can't know which target
-+		 * host architecture it's emitting skeleton for, we need to be
-+		 * conservative and assume 32-bit one to ensure enough padding
-+		 * bytes are generated for pointer and long types. This will
-+		 * still work correctly for 64-bit architectures, because in
-+		 * the worst case we'll generate unnecessary padding field,
-+		 * which on 64-bit architectures is not strictly necessary and
-+		 * would be handled by natural 8-byte alignment. But it still
-+		 * will be a correct memory layout, based on recorded offsets
-+		 * in BTF.
-+		 */
-+		if (align > 4)
-+			align =3D 4;
+diff --git a/tools/testing/selftests/bpf/prog_tests/varlen.c b/tools/test=
+ing/selftests/bpf/prog_tests/varlen.c
+index c75525eab02c..dd324b4933db 100644
+--- a/tools/testing/selftests/bpf/prog_tests/varlen.c
++++ b/tools/testing/selftests/bpf/prog_tests/varlen.c
+@@ -44,25 +44,25 @@ void test_varlen(void)
+ 	CHECK_VAL(bss->payload1_len2, size2);
+ 	CHECK_VAL(bss->total1, size1 + size2);
+ 	CHECK(memcmp(bss->payload1, exp_str, size1 + size2), "content_check",
+-	      "doesn't match!");
++	      "doesn't match!\n");
 =20
- 		align_off =3D (off + align - 1) / align * align;
- 		if (align_off !=3D need_off) {
+ 	CHECK_VAL(data->payload2_len1, size1);
+ 	CHECK_VAL(data->payload2_len2, size2);
+ 	CHECK_VAL(data->total2, size1 + size2);
+ 	CHECK(memcmp(data->payload2, exp_str, size1 + size2), "content_check",
+-	      "doesn't match!");
++	      "doesn't match!\n");
+=20
+ 	CHECK_VAL(data->payload3_len1, size1);
+ 	CHECK_VAL(data->payload3_len2, size2);
+ 	CHECK_VAL(data->total3, size1 + size2);
+ 	CHECK(memcmp(data->payload3, exp_str, size1 + size2), "content_check",
+-	      "doesn't match!");
++	      "doesn't match!\n");
+=20
+ 	CHECK_VAL(data->payload4_len1, size1);
+ 	CHECK_VAL(data->payload4_len2, size2);
+ 	CHECK_VAL(data->total4, size1 + size2);
+ 	CHECK(memcmp(data->payload4, exp_str, size1 + size2), "content_check",
+-	      "doesn't match!");
++	      "doesn't match!\n");
+ cleanup:
+ 	test_varlen__destroy(skel);
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_varlen.c b/tools/test=
+ing/selftests/bpf/progs/test_varlen.c
+index cd4b72c55dfe..913acdffd90f 100644
+--- a/tools/testing/selftests/bpf/progs/test_varlen.c
++++ b/tools/testing/selftests/bpf/progs/test_varlen.c
+@@ -15,9 +15,9 @@ int test_pid =3D 0;
+ bool capture =3D false;
+=20
+ /* .bss */
+-long payload1_len1 =3D 0;
+-long payload1_len2 =3D 0;
+-long total1 =3D 0;
++__u64 payload1_len1 =3D 0;
++__u64 payload1_len2 =3D 0;
++__u64 total1 =3D 0;
+ char payload1[MAX_LEN + MAX_LEN] =3D {};
+=20
+ /* .data */
 --=20
 2.24.1
 
