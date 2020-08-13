@@ -2,66 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 026E3243B74
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 16:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D4DB243B7E
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 16:24:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726600AbgHMOVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 10:21:40 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:59000 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726082AbgHMOVi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 10:21:38 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1597328496;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=I/ezJHDDZVX9t5zh6Wo6ZZ3cdPlLiUU7pzdzZ1d6E98=;
-        b=Da9toYaR3y7FnnYf0Hf+1boCEfHgY6PtfUGPL0a/nvE12SNAZYuYKihUZmoLg3gltcP9jv
-        Rz8wa0Nx0ruJbqM87OL/TASd9LhGLj5EtXrOngk6+TFQKiCXBX8IzTbWX2QfxkjORcDvo6
-        8t9v9fqnV9EKhjcRri9SP3LOZ4R0VFCJNQfySYe1QcfrvxMSJTcNVWyV1PIBSGiXEm5eiK
-        Cl06MMU0/12ac3iLghAYDa4M3sqJqzuNT1GXspSwY9cfU+g1Uqk6k+1FvzPLLzwb8aaQPn
-        g0VAynzzFFUADw61U11BEjU6dduM6oPqWiLoyOM2duOuQZkvlVWnN0gQjBjNiA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1597328496;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=I/ezJHDDZVX9t5zh6Wo6ZZ3cdPlLiUU7pzdzZ1d6E98=;
-        b=kXca4NHSAmoLO5u1eMw1X42SCZNzhGMNhbyfiFwJRU1QKgScP/BpBm/7juKZPeeEIm3wt8
-        n2dur2vPzXo0BJAg==
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Adams <jwadams@google.com>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jim Mattson <jmattson@google.com>,
-        David Rientjes <rientjes@google.com>
-Subject: Re: [RFC PATCH 6/7] core/metricfs: expose x86-specific irq information through metricfs
-In-Reply-To: <ffeac3eb-fbd5-a605-c6a5-0456813bd918@redhat.com>
-References: <20200807212916.2883031-1-jwadams@google.com> <20200807212916.2883031-7-jwadams@google.com> <87mu2yluso.fsf@nanos.tec.linutronix.de> <2500b04e-a890-2621-2f19-be08dfe2e862@redhat.com> <87a6yylp4x.fsf@nanos.tec.linutronix.de> <ffeac3eb-fbd5-a605-c6a5-0456813bd918@redhat.com>
-Date:   Thu, 13 Aug 2020 16:21:34 +0200
-Message-ID: <87v9hmtymp.fsf@nanos.tec.linutronix.de>
+        id S1726334AbgHMOY4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Aug 2020 10:24:56 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:48040 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726082AbgHMOY4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 10:24:56 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-547-V6j9o2HyMk2_QFsBh3-K-Q-1; Thu, 13 Aug 2020 10:24:49 -0400
+X-MC-Unique: V6j9o2HyMk2_QFsBh3-K-Q-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 344F0CF987;
+        Thu, 13 Aug 2020 14:24:48 +0000 (UTC)
+Received: from hog.localdomain, (unknown [10.40.194.193])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BB2A019C78;
+        Thu, 13 Aug 2020 14:24:46 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     steffen.klassert@secunet.com, Sabrina Dubroca <sd@queasysnail.net>,
+        Xiumei Mu <xmu@redhat.com>
+Subject: [PATCH ipsec] espintcp: restore IP CB before handing the packet to xfrm
+Date:   Thu, 13 Aug 2020 16:24:04 +0200
+Message-Id: <b3c2d120af02d34c0ab6e67b897be502c5106dca.1597328612.git.sd@queasysnail.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sd@queasysnail.net
+X-Mimecast-Spam-Score: 0.001
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paolo Bonzini <pbonzini@redhat.com> writes:
-> On 13/08/20 14:13, Thomas Gleixner wrote:
->>>>>    cat /sys/kernel/debug/metricfs/irq_x86/TLB/values
->>>> What is 'TLB'? I'm not aware of any vector which is named TLB.
->>> There's a "TLB" entry in /proc/interrupts.
->> It's TLB shootdowns and not TLB.
->
-> Yes but it's using the shortcut name on the left of the table.
+Xiumei reported a bug with espintcp over IPv6 in transport mode,
+because xfrm6_transport_finish expects to find IP6CB data (struct
+inet6_skb_cb). Currently, espintcp zeroes the CB, but the relevant
+part is actually preserved by previous layers (first set up by tcp,
+then strparser only zeroes a small part of tcp_skb_tb), so we can just
+relocate it to the start of skb->cb.
 
-Fair enough, that's the first column in /proc/interrupts. I totally
-missed the explanation in the elaborate changelog.
+Fixes: e27cca96cd68 ("xfrm: add espintcp (RFC 8229)")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+---
+ net/xfrm/espintcp.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Thanks,
+diff --git a/net/xfrm/espintcp.c b/net/xfrm/espintcp.c
+index 827ccdf2db57..1f08ebf7d80c 100644
+--- a/net/xfrm/espintcp.c
++++ b/net/xfrm/espintcp.c
+@@ -29,8 +29,12 @@ static void handle_nonesp(struct espintcp_ctx *ctx, struct sk_buff *skb,
+ 
+ static void handle_esp(struct sk_buff *skb, struct sock *sk)
+ {
++	struct tcp_skb_cb *tcp_cb = (struct tcp_skb_cb *)skb->cb;
++
+ 	skb_reset_transport_header(skb);
+-	memset(skb->cb, 0, sizeof(skb->cb));
++
++	/* restore IP CB, we need at least IP6CB->nhoff */
++	memmove(skb->cb, &tcp_cb->header, sizeof(tcp_cb->header));
+ 
+ 	rcu_read_lock();
+ 	skb->dev = dev_get_by_index_rcu(sock_net(sk), skb->skb_iif);
+-- 
+2.27.0
 
-        tglx
