@@ -2,97 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68870243A4E
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 14:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1016243A52
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 14:52:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726777AbgHMMvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 08:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726622AbgHMMvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 08:51:03 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673A9C061384
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 05:51:03 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id q13so2818488vsn.9
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 05:51:03 -0700 (PDT)
+        id S1726600AbgHMMw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 08:52:28 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:36781 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726244AbgHMMw1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 08:52:27 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z6U+MzbkuK7qE2zWXiIV5fubuG6u2ECbr/eqjOujnCU=;
-        b=JmZ+2cVCvH/NJLMcB8pNKwvmqjinr9zVEEkYBcwRynp3GponnTUIozTMBlSYJeFfdu
-         zD8Gr/YxyMtB/RJR/6DfEFywcsMIfSWRrl3ggZHURB/YMtF/G3hdC7TLebysrh6wtSD7
-         9ftV1qKlcsrxlYfB4KeEN5mi0vMsKes6XHx72Aedcwhs4MDLGD1juvHcouOvufrxtgS3
-         pMLyGwMmSw1uCWFgvjSZZ3LIZE7Q7sTiizR01fR8QcaawF6JfindNjLcZN8R9TPVNljU
-         TDhHRrvmqgKXeV00svNQfAoQ+RGhYBfSep1c/wkp7oP1r+c6h5wl7cX1DJCstRJVnZKK
-         z03Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z6U+MzbkuK7qE2zWXiIV5fubuG6u2ECbr/eqjOujnCU=;
-        b=V0yNoRQ9k7Uhq3m+S9zEcxGPUQpYD+F8QW7rmplS5vJLOhhrlzZh1L1QEalJPsZqkc
-         pn2i0bICrvn2e3wvwXCh50Zqrk/VUIwTSNgfcJ4lfgxjmDRlvJmpPTjAa/28B868lI3h
-         BuFgyW6k7hZ1TISlyl1MPKGPFrzs8oAnZqhr6k5aJImrLqOskoHSe+Byd40uMezZLxVX
-         4IubejYmp8toRR2MwS8WOcKWX2TkrQlPVjLPi9+Acv9bHJgrpUK0+AtnM0IMAkmWqJmn
-         id6LLYJimwiR/AMkqmJfOutxoVLBYlvmQ9dJ8OG2sVfzcLn87CDooc+RU9wVuOWJ50ds
-         jk8A==
-X-Gm-Message-State: AOAM531gjSP18+zwBTTlyW2PAE62YDkF38KibGGiOY08RHmzr+9jZpGm
-        YXtLfL6lQRuvoqZQHWhYVfzLOfbnez4=
-X-Google-Smtp-Source: ABdhPJyHgu+GNz9E3ghppOngKB0FktxEjAprM8YW5pU2F0q10VWtrN0ZThGZQ9EHNwxpDu1VObZMdg==
-X-Received: by 2002:a67:fd8a:: with SMTP id k10mr2900104vsq.59.1597323061266;
-        Thu, 13 Aug 2020 05:51:01 -0700 (PDT)
-Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com. [209.85.221.174])
-        by smtp.gmail.com with ESMTPSA id b21sm785053vkb.30.2020.08.13.05.50.59
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Aug 2020 05:51:00 -0700 (PDT)
-Received: by mail-vk1-f174.google.com with SMTP id s81so1232785vkb.3
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 05:50:59 -0700 (PDT)
-X-Received: by 2002:ac5:c925:: with SMTP id u5mr3013838vkl.68.1597323059280;
- Thu, 13 Aug 2020 05:50:59 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1597323146; x=1628859146;
+  h=references:from:to:cc:subject:in-reply-to:message-id:
+   date:mime-version;
+  bh=r0DcpExpJa6djEv/ubJy4Hbk7Y2MtNDr+HK/Q6Qm+D8=;
+  b=ujlwx57hHJZnUzdEyGs58PkclfyvGnCJYMmbkIkK5eIlPsjW0a5WMnX8
+   ZFh13aXXADalcv+vfxxdVPEGXmPNlrQbnLv+eEarunUzEH8QF6YHYnlEM
+   nyE8TV3HqnTefwgxqfCH4NQVpPDINIRGBQCZc/eDMGelC8yZHG2WENk3Q
+   c=;
+IronPort-SDR: 5H1YQ3RPaKv9DxuyBELs6GcZfRRhaPsy2UwJ+1Ai1bKOVt1F922McyNjLfs4juYQW1u0T+EPaj
+ 8Wihn9ugYyew==
+X-IronPort-AV: E=Sophos;i="5.76,308,1592870400"; 
+   d="scan'208";a="47756868"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-1968f9fa.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 13 Aug 2020 12:52:10 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2c-1968f9fa.us-west-2.amazon.com (Postfix) with ESMTPS id 4B7B1A18C0;
+        Thu, 13 Aug 2020 12:52:09 +0000 (UTC)
+Received: from EX13D28EUC001.ant.amazon.com (10.43.164.4) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 13 Aug 2020 12:52:08 +0000
+Received: from u4b1e9be9d67d5a.ant.amazon.com.amazon.com (10.43.162.248) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 13 Aug 2020 12:51:59 +0000
+References: <20200812101059.5501-1-shayagr@amazon.com> <20200812101059.5501-2-shayagr@amazon.com> <20200812105219.4c4e3e3b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-agent: mu4e 1.4.12; emacs 26.3
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
+        <benh@amazon.com>, <akiyano@amazon.com>, <sameehj@amazon.com>,
+        <ndagan@amazon.com>
+Subject: Re: [PATCH V1 net 1/3] net: ena: Prevent reset after device destruction
+In-Reply-To: <20200812105219.4c4e3e3b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <pj41zleeoapv31.fsf@u4b1e9be9d67d5a.ant.amazon.com>
+Date:   Thu, 13 Aug 2020 15:51:46 +0300
 MIME-Version: 1.0
-References: <20200813121310.23016-1-linmiaohe@huawei.com>
-In-Reply-To: <20200813121310.23016-1-linmiaohe@huawei.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 13 Aug 2020 14:50:22 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSeS9eE_1bsik-0i3qb-WXtQnb3q=mo6+iHOciQjLZ+sHQ@mail.gmail.com>
-Message-ID: <CA+FuTSeS9eE_1bsik-0i3qb-WXtQnb3q=mo6+iHOciQjLZ+sHQ@mail.gmail.com>
-Subject: Re: [PATCH] net: add missing skb_uarg refcount increment in pskb_carve_inside_header()
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Westphal <fw@strlen.de>, martin.varghese@nokia.com,
-        pshelar@ovn.org, dcaratti@redhat.com,
-        Eric Dumazet <edumazet@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Shmulik Ladkani <shmulik@metanetworks.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        sowmini.varadhan@oracle.com,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.162.248]
+X-ClientProxiedBy: EX13D10UWA004.ant.amazon.com (10.43.160.64) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 13, 2020 at 2:16 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
+
+Jakub Kicinski <kuba@kernel.org> writes:
+
+> On Wed, 12 Aug 2020 13:10:57 +0300 Shay Agroskin wrote:
+>> This patch also removes the destruction of the timer and reset 
+>> services
+>> from ena_remove() since the timer is destroyed by the 
+>> destruction
+>> routine and the reset work is handled by this patch.
 >
-> If the skb is zcopied, we should increase the skb_uarg refcount before we
-> involve skb_release_data(). See pskb_expand_head() as a reference.
+> You'd still have a use after free if the work runs after the 
+> device is
+> removed. I think cancel_work_sync() gotta stay.
 
-Did you manage to observe a bug through this datapath in practice?
+Hi, thank you for reviewing the patch. Short answer: I verified 
+that the ENA_FLAG_TRIGGER_RESET flag cannot be set after 
+ena_destroy_device() finishes its execution.
 
-pskb_carve_inside_header is called
-  from pskb_carve
-    from pskb_extract
-      from rds_tcp_data_recv
+Long answer:
+The ena_destroy_device() function is called with rtnl_lock() held, 
+so it cannot run in parallel with the reset function. Also the 
+destroy function clears the bit ENA_FLAG_TRIGGER_RESET without 
+which the reset function just exits without doing anything.
 
-That receive path should not see any packets with zerocopy state associated.
+A problem can then only happen when some routine sets the 
+ENA_FLAG_TRIGGER_RESET bit before the reset function is executed, 
+the following describes all functions from which this bit can be 
+set:
 
+- check_* functions: these function are called from the timer 
+  routine which is destroyed in ena_destroy_device(), so by the 
+  time the rtnl_lock() released, the bit is cleared
 
-> Fixes: 6fa01ccd8830 ("skbuff: Add pskb_extract() helper function")
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+- napi related functions (io_poll, xdp_io_poll, validate_rx_req_id 
+  etc.): the napi is de-registered in ena_destroy_device(), so 
+  none of these functions is called after destroying the device.
+
+- xmit functions (ena_xmit_common, ena_tx_timeout): the device is 
+  brought down and all its RX/TX resources are freed before 
+  releasing the lock.
+
+These are all the occurrences I found. Without this bit set, the 
+reset function would fail the 'if' check in this patch, and exit 
+without doing anything. Destroying the reset function explicitly 
+won't help since by the time we do it, the function can already be 
+executed.
