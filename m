@@ -2,60 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 415832440C3
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 23:36:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C44AD2440C5
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 23:36:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726844AbgHMVgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 17:36:16 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57660 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726522AbgHMVgP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Aug 2020 17:36:15 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 4A2C7AD89;
-        Thu, 13 Aug 2020 21:36:36 +0000 (UTC)
-Received: by localhost (Postfix, from userid 1000)
-        id 703E57F447; Thu, 13 Aug 2020 23:36:13 +0200 (CEST)
-Date:   Thu, 13 Aug 2020 23:36:13 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     Jarod Wilson <jarod@redhat.com>, linux-kernel@vger.kernel.org,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] bonding: show saner speed for broadcast mode
-Message-ID: <20200813213613.qvem7gv4ri2trfvv@carpenter>
-References: <20200813035509.739-1-jarod@redhat.com>
- <27389.1597296596@famine>
+        id S1726596AbgHMVgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 17:36:22 -0400
+Received: from www62.your-server.de ([213.133.104.62]:47086 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726522AbgHMVgV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 17:36:21 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k6KtU-0007dv-3b; Thu, 13 Aug 2020 23:36:16 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1k6KtT-0002h9-UF; Thu, 13 Aug 2020 23:36:15 +0200
+Subject: Re: [bpf PATCH v3 0/5] Fix sock_ops field read splat
+To:     John Fastabend <john.fastabend@gmail.com>, songliubraving@fb.com,
+        kafai@fb.com, ast@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <159718333343.4728.9389284976477402193.stgit@john-Precision-5820-Tower>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c55c79df-5c80-1cb4-3f8f-a1ab8d5135a5@iogearbox.net>
+Date:   Thu, 13 Aug 2020 23:36:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <27389.1597296596@famine>
+In-Reply-To: <159718333343.4728.9389284976477402193.stgit@john-Precision-5820-Tower>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25901/Thu Aug 13 09:01:24 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 12, 2020 at 10:29:56PM -0700, Jay Vosburgh wrote:
-> 	Did you notice this by inspection, or did it come up in use
-> somewhere?  I can't recall ever hearing of anyone using broadcast mode,
-> so I'm curious if there is a use for it, but this change seems
-> reasonable enough regardless.
+On 8/12/20 12:04 AM, John Fastabend wrote:
+[...]
+> v2->v3: Updated commit msg in patch1 to include ommited line of asm
+>          output, per Daniels comment.
+> v1->v2: Added fix sk access case
 
-I did actually encountered our customers using broadcast mode twice. But
-I have to disappoint you, their "use for it" was rather an abuse.
-
-One of them had a number of hosts, each having two NICs in broadcast
-mode bond, one connected to one switch and one connected to another
-switch (with no direct connection between the switches). Having each
-packet duplicated when everything worked triggered some corner cases in
-networking stack (IIRC one issue in fragment reassembly and one in TCP
-lockless listener). Thankfully I was eventually able to convince them
-that this kind of redundancy does not really work if one host loses
-connection to one switch and another host to the other.
-
-I don't remember the other use case from the top of my head but I'm
-quite sure it made even less sense.
-
-Michal
+Applied, thanks!
