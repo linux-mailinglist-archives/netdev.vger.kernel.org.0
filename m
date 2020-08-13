@@ -2,89 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3314924352C
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 09:46:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9211E243565
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 09:51:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726564AbgHMHqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 03:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36700 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726204AbgHMHqX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 03:46:23 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57DEDC061757;
-        Thu, 13 Aug 2020 00:46:23 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1k67wL-0000Sg-8E; Thu, 13 Aug 2020 09:46:21 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netfilter-devel@vger.kernel.org>
-Cc:     hch@lst.de, syzkaller-bugs@googlegroups.com,
-        <netdev@vger.kernel.org>, Florian Westphal <fw@strlen.de>,
-        syzbot+5accb5c62faa1d346480@syzkaller.appspotmail.com
-Subject: [PATCH nf] netfilter/ebtables: reject bogus getopt len value
-Date:   Thu, 13 Aug 2020 09:46:11 +0200
-Message-Id: <20200813074611.281558-1-fw@strlen.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <000000000000ece9db05ac4054e8@google.com>
-References: <000000000000ece9db05ac4054e8@google.com>
+        id S1726831AbgHMHvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 03:51:11 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:38760 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726106AbgHMHvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 03:51:09 -0400
+Received: by mail-ot1-f65.google.com with SMTP id q9so4110499oth.5;
+        Thu, 13 Aug 2020 00:51:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eU62SrftExeZEPFtSlHLsBRzbUkLx1KNOgZc6VKFeBQ=;
+        b=RKVY0mqqakUrEXk4TORV8A5/ZSMY0dexhKfXyaOKBp8tYT6+lN9tMY1gCu59dMSnI/
+         6Av5sXCLtCtfska6KBUfoUvPLN8QSlHGcwX+BKv8ZNWhNtirhMGElzBnWp56J7vtBCeA
+         RTsTm+tpM0JqO6hs1Zx9oL0KiDPnHu2wr8nXIFBaGz9jqMUEyZCYMyj21d8ckpZmX8IH
+         sIyh51oPoVvqSR3qDoGMDZJhbXuz4s9KHdaT9j4oPeIaqxws0OL9u53GcL8uZhE7hrov
+         ikjJM0LMxR/OG4BC9tZAySXGXWwQpPbcG9j3oyJJCCrBhecUJhWEIB5ZPymwSBlP+imO
+         EXuw==
+X-Gm-Message-State: AOAM531KpbVTNZA6DQGhlLakjE36ZGk11NQSWXrXhgb2m/BrbDAUDZAN
+        GTNNlK5/qceLxjH+paJhJQLuqYhFPre+GsLWPoc=
+X-Google-Smtp-Source: ABdhPJzAAKS8g3t/W5mSJd2Vboc2FEvoNvVXoru7u4kNP7jabPCwVCki2JjTk/fEfMzVv8QAFC24k07bLAU2LYhSK+k=
+X-Received: by 2002:a05:6830:1b79:: with SMTP id d25mr2990956ote.107.1597305067462;
+ Thu, 13 Aug 2020 00:51:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200812203618.2656699-1-robh@kernel.org>
+In-Reply-To: <20200812203618.2656699-1-robh@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 13 Aug 2020 09:50:55 +0200
+Message-ID: <CAMuHMdVXvSRF-G_TYu4P+Bqa2FZJWsUCyzqFur3Rb-tBExfbsw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Whitespace clean-ups in schema files
+To:     Rob Herring <robh@kernel.org>
+Cc:     "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, linux-hwmon@vger.kernel.org,
+        linux-rtc@vger.kernel.org,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linux-iio@vger.kernel.org,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" 
+        <linux-remoteproc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-input@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzkaller reports splat:
-------------[ cut here ]------------
-Buffer overflow detected (80 < 137)!
-Call Trace:
- do_ebt_get_ctl+0x2b4/0x790 net/bridge/netfilter/ebtables.c:2317
- nf_getsockopt+0x72/0xd0 net/netfilter/nf_sockopt.c:116
- ip_getsockopt net/ipv4/ip_sockglue.c:1778 [inline]
+Hi Rob,
 
-caused by a copy-to-user with a too-large "*len" value.
-This adds a argument check on *len just like in the non-compat version
-of the handler.
+On Wed, Aug 12, 2020 at 10:36 PM Rob Herring <robh@kernel.org> wrote:
+> Clean-up incorrect indentation, extra spaces, long lines, and missing
+> EOF newline in schema files. Most of the clean-ups are for list
+> indentation which should always be 2 spaces more than the preceding
+> keyword.
+>
+> Found with yamllint (which I plan to integrate into the checks).
 
-Before the "Fixes" commit, the reproducer fails with -EINVAL as
-expected:
-1. core calls the "compat" getsockopt version
-2. compat getsockopt version detects the *len value is possibly
-   in 64-bit layout (*len != compat_len)
-3. compat getsockopt version delegates everything to native getsockopt
-   version
-4. native getsockopt rejects invalid *len
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
--> compat handler only sees len == sizeof(compat_struct) for GET_ENTRIES.
+Thanks for your patch!
 
-After the refactor, event sequence is:
-1. getsockopt calls "compat" version (len != native_len)
-2. compat version attempts to copy *len bytes, where *len is random
-   value from userspace
+> --- a/Documentation/devicetree/bindings/clock/renesas,cpg-clocks.yaml
+> +++ b/Documentation/devicetree/bindings/clock/renesas,cpg-clocks.yaml
+> @@ -24,9 +24,9 @@ properties:
+>        - const: renesas,r8a7778-cpg-clocks # R-Car M1
+>        - const: renesas,r8a7779-cpg-clocks # R-Car H1
+>        - items:
+> -        - enum:
+> -            - renesas,r7s72100-cpg-clocks # RZ/A1H
+> -        - const: renesas,rz-cpg-clocks    # RZ/A1
+> +          - enum:
+> +              - renesas,r7s72100-cpg-clocks # RZ/A1H
+> +          - const: renesas,rz-cpg-clocks    # RZ/A1
 
-Fixes: fc66de8e16e ("netfilter/ebtables: clean up compat {get, set}sockopt handling")
-Reported-by: syzbot+5accb5c62faa1d346480@syzkaller.appspotmail.com
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/bridge/netfilter/ebtables.c | 4 ++++
- 1 file changed, 4 insertions(+)
+This change breaks alignment of the comments at the end of each line.
 
-diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
-index 1641f414d1ba..ebe33b60efd6 100644
---- a/net/bridge/netfilter/ebtables.c
-+++ b/net/bridge/netfilter/ebtables.c
-@@ -2238,6 +2238,10 @@ static int compat_do_ebt_get_ctl(struct sock *sk, int cmd,
- 	struct ebt_table *t;
- 	struct net *net = sock_net(sk);
- 
-+	if ((cmd == EBT_SO_GET_INFO || cmd == EBT_SO_GET_INIT_INFO) &&
-+	    *len != sizeof(struct compat_ebt_replace))
-+		return -EINVAL;
-+
- 	if (copy_from_user(&tmp, user, sizeof(tmp)))
- 		return -EFAULT;
- 
+>        - const: renesas,sh73a0-cpg-clocks  # SH-Mobile AG5
+
+(I only checked the files I care about)
+
+If you don't update commit  e0fe7fc6f2ca0781 ("dt-bindings: Whitespace
+clean-ups in schema files"), I can send a patch after v5.9-rc1.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.26.2
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
