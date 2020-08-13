@@ -2,92 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A32243993
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 14:05:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 929CB24398B
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 14:01:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726703AbgHMMEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 08:04:31 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:32736 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726542AbgHML4L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 07:56:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1597319770;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EZlOhHYV75r7YTUyN5H+sCzjVVAp8wKOhPwk4M3cflE=;
-        b=ZXCH/R3Ni1eLV7dh7vzaWHGjOMKRNhwACQOoiCd+i4FjZMhLKHszWpT8E7sFKDVPYEsv8C
-        7lUYNG4QKGJEMw+l7tvXQjKg+8/uPz14dolDTHVM4GZGsp8oLzhibKnc6qcxqLWV1xQvyM
-        zGbaLkQ9WbbMgyxovQLlZ563/Fj9GCU=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-568-8zstYj_hPYK_-u6PggjzWQ-1; Thu, 13 Aug 2020 07:48:01 -0400
-X-MC-Unique: 8zstYj_hPYK_-u6PggjzWQ-1
-Received: by mail-wr1-f71.google.com with SMTP id r14so1997937wrq.3
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 04:48:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EZlOhHYV75r7YTUyN5H+sCzjVVAp8wKOhPwk4M3cflE=;
-        b=cyT9pppIapIQdmENJxMBpwuerxiIGh/q/emHWsBbn8bY7jpS6nVa5mLvSQMVo8tmVM
-         UekYrhke4i1x08pdcyWx3PnIWvWC07/Reb+OpMKMmeOdAKUTz9ZHG9FKVE4Ljppk9Qml
-         q+PTaPyncdQmJR4D411d/DZHJskQLSuQee7pDV3Ah6p8FvG2mV2MlwMOK4QOqbjbAi+S
-         hHnRKRd2SQE2pwkrfnsPVd9bIpeyqcaU0BEgNXxxUnPCvqscPW32XOpVxmkKQQoQMnlj
-         W3OsqoSTlS1nm3R+/wFSAIJUPaMs03DjuDo8X+VwH1xUHIo1wstKoGZw4NnUCtg9eGc9
-         k/ww==
-X-Gm-Message-State: AOAM532vng9/CW6VjmBUU8X2Zm8mFVaW4EIiOo9zr20qmkwaMG0PXoZc
-        LNG/8qzmbJucomIvu13lYk6X2LspKIpmgfbVh7KoY+5I/+E/Dhb2mCxJtF0AviI0s/HpNVIrDyp
-        RTL99KkfFzW388dmD
-X-Received: by 2002:adf:f511:: with SMTP id q17mr3637052wro.414.1597319280148;
-        Thu, 13 Aug 2020 04:48:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz8RW5csMCCrSiBHobEDZMj9QmiDMAx1geqH7u8cSNLCG6KlEWPnnMnrhh1csceZBt9Jv8I0Q==
-X-Received: by 2002:adf:f511:: with SMTP id q17mr3637032wro.414.1597319279937;
-        Thu, 13 Aug 2020 04:47:59 -0700 (PDT)
-Received: from ?IPv6:2001:b07:6468:f312:51ad:9349:1ff0:923e? ([2001:b07:6468:f312:51ad:9349:1ff0:923e])
-        by smtp.gmail.com with ESMTPSA id b14sm10751480wrj.93.2020.08.13.04.47.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Aug 2020 04:47:59 -0700 (PDT)
-Subject: Re: [RFC PATCH 6/7] core/metricfs: expose x86-specific irq
- information through metricfs
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Jonathan Adams <jwadams@google.com>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jim Mattson <jmattson@google.com>,
-        David Rientjes <rientjes@google.com>
-References: <20200807212916.2883031-1-jwadams@google.com>
- <20200807212916.2883031-7-jwadams@google.com>
- <87mu2yluso.fsf@nanos.tec.linutronix.de>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Message-ID: <2500b04e-a890-2621-2f19-be08dfe2e862@redhat.com>
-Date:   Thu, 13 Aug 2020 13:47:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1726557AbgHMMAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 08:00:43 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:33922 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726570AbgHML7T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Aug 2020 07:59:19 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 43880746B97B89570544;
+        Thu, 13 Aug 2020 19:59:10 +0800 (CST)
+Received: from huawei.com (10.175.104.175) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.487.0; Thu, 13 Aug 2020
+ 19:59:04 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>, <willemb@google.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH] net: correct zerocopy refcnt with newly allocated UDP or RAW uarg
+Date:   Thu, 13 Aug 2020 07:58:00 -0400
+Message-ID: <20200813115800.4546-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-In-Reply-To: <87mu2yluso.fsf@nanos.tec.linutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.175]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/08/20 12:11, Thomas Gleixner wrote:
->> Add metricfs support for displaying percpu irq counters for x86.
->> The top directory is /sys/kernel/debug/metricfs/irq_x86.
->> Then there is a subdirectory for each x86-specific irq counter.
->> For example:
->>
->>    cat /sys/kernel/debug/metricfs/irq_x86/TLB/values
-> What is 'TLB'? I'm not aware of any vector which is named TLB.
+The var extra_uref is introduced to pass the initial reference taken in
+sock_zerocopy_alloc to the first generated skb. But now we may fail to pass
+the initial reference with newly allocated UDP or RAW uarg when the skb is
+zcopied.
 
-There's a "TLB" entry in /proc/interrupts.
+If the skb is zcopied, we always set extra_uref to false. This is fine with
+reallocted uarg because no extra ref is taken by UDP and RAW zerocopy. But
+if uarg is newly allocated via sock_zerocopy_alloc(), we lost the initial
+reference because extra_uref is false and we missed to pass it to the first
+generated skb.
 
-Paolo
+To fix this, we should set extra_uref to true if UDP or RAW uarg is newly
+allocated when the skb is zcopied.
+
+Fixes: 522924b58308 ("net: correct udp zerocopy refcnt also when zerocopy only on append")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ net/ipv4/ip_output.c  | 4 +++-
+ net/ipv6/ip6_output.c | 4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 61f802d5350c..78d3b5d48617 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1019,7 +1019,9 @@ static int __ip_append_data(struct sock *sk,
+ 		uarg = sock_zerocopy_realloc(sk, length, skb_zcopy(skb));
+ 		if (!uarg)
+ 			return -ENOBUFS;
+-		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
++		/* Only ref on newly allocated uarg. */
++		if (!skb_zcopy(skb) || (sk->sk_type != SOCK_STREAM && skb_zcopy(skb) != uarg))
++			extra_uref = true;
+ 		if (rt->dst.dev->features & NETIF_F_SG &&
+ 		    csummode == CHECKSUM_PARTIAL) {
+ 			paged = true;
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index c78e67d7747f..0f82923239a9 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1476,7 +1476,9 @@ static int __ip6_append_data(struct sock *sk,
+ 		uarg = sock_zerocopy_realloc(sk, length, skb_zcopy(skb));
+ 		if (!uarg)
+ 			return -ENOBUFS;
+-		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
++		/* Only ref on newly allocated uarg. */
++		if (!skb_zcopy(skb) || (sk->sk_type != SOCK_STREAM && skb_zcopy(skb) != uarg))
++			extra_uref = true;
+ 		if (rt->dst.dev->features & NETIF_F_SG &&
+ 		    csummode == CHECKSUM_PARTIAL) {
+ 			paged = true;
+-- 
+2.19.1
 
