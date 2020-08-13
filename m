@@ -2,98 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EC4224405A
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 23:08:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16026244038
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 23:01:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726622AbgHMVIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 17:08:06 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36332 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726427AbgHMVIG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 17:08:06 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07DL4l9R027820
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 14:08:06 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=lebRymaAfQ9BjFWeAkazJFGEgnkqS8Y68Fu7bbEYQlU=;
- b=UJqKrkvBLGOUvgVvs1EiVE6o4rdjVQGl8qqWbXVT4/ckV+QqKhheP5/UkQtrSGjvylFp
- Xb8Qk0TQ6w4EEQRsgExsHMIx6AfEjwVzTIWHXrah+bs7z8yl3zsQ5yTkY+69rHpf3L4q
- hPQ3yp1TfTaqnDKRxoU8hBHWrtuSsDQSXLk= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 32v0kfm5gd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 14:08:06 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 13 Aug 2020 14:08:05 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 20F582EC597F; Thu, 13 Aug 2020 13:50:04 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf 6/9] libbpf: enforce 64-bitness of BTF for BPF object files
-Date:   Thu, 13 Aug 2020 13:49:42 -0700
-Message-ID: <20200813204945.1020225-7-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200813204945.1020225-1-andriin@fb.com>
-References: <20200813204945.1020225-1-andriin@fb.com>
+        id S1726615AbgHMVBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 17:01:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35270 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726486AbgHMVBz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Aug 2020 17:01:55 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7D05720715;
+        Thu, 13 Aug 2020 21:01:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597352514;
+        bh=XYjE4M7c87GPxUaODyYmsXo++g7jdEEJTfG6obbcGQM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=1KC18ENBKL28GM7Ij9JNqUP1ucQbzQhDoJnXrqH13qjWZM6FiPaS3TdHl8ClfzADV
+         81cZQRc69nExWH4h4aHFTscM6D3u5p/2UjWN5MYceIfVlewbTIpZy+uLGpv6o1Xhgc
+         d0riwa5/ZQyv+SPqUZBDia1Oq1vKfXeot7lUV6IU=
+Date:   Thu, 13 Aug 2020 14:01:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev@vger.kernel.org, Thomas Ptacek <thomas@sockpuppet.org>,
+        Adhipati Blambangan <adhipati@tuta.io>,
+        David Ahern <dsahern@gmail.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Subject: Re: [PATCH net v4] net: xdp: account for layer 3 packets in generic
+ skb handler
+Message-ID: <20200813140152.1aab6068@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200813195816.67222-1-Jason@zx2c4.com>
+References: <20200813195816.67222-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-13_17:2020-08-13,2020-08-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- adultscore=0 mlxscore=0 clxscore=1015 priorityscore=1501
- lowpriorityscore=0 mlxlogscore=999 suspectscore=8 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2008130150
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BPF object files are always targeting 64-bit BPF target architecture, so
-enforce that at BTF level as well.
+On Thu, 13 Aug 2020 21:58:16 +0200 Jason A. Donenfeld wrote:
+> - cls_bpf does not support the same feature set as XDP, and operates at
+>   a slightly different stage in the networking stack.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/libbpf.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Please elaborate.
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 4a8524b2dda1..738579c338a5 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -2434,6 +2434,8 @@ static int bpf_object__init_btf(struct bpf_object *=
-obj,
- 				BTF_ELF_SEC, err);
- 			goto out;
- 		}
-+		/* enforce 8-byte pointers for BPF-targeted BTFs */
-+		btf__set_pointer_size(obj->btf, 8);
- 		err =3D 0;
- 	}
- 	if (btf_ext_data) {
-@@ -2542,6 +2544,8 @@ static int bpf_object__sanitize_and_load_btf(struct=
- bpf_object *obj)
- 		if (IS_ERR(kern_btf))
- 			return PTR_ERR(kern_btf);
-=20
-+		/* enforce 8-byte pointers for BPF-targeted BTFs */
-+		btf__set_pointer_size(obj->btf, 8);
- 		bpf_object__sanitize_btf(obj, kern_btf);
- 	}
-=20
---=20
-2.24.1
+> I had originally dropped this patch, but the issue kept coming up in
+> user reports, so here's a v4 of it. Testing of it is still rather slim,
+> but hopefully that will change in the coming days.
 
+Here an alternative patch, untested:
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index d3d53dc601f9..7f68831bdd4f 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5434,6 +5434,11 @@ static int generic_xdp_install(struct net_device *dev, struct netdev_bpf *xdp)
+        struct bpf_prog *new = xdp->prog;
+        int ret = 0;
+ 
++       if (!dev->hard_header_len) {
++               NL_SET_ERR_MSG(xdp->extack, "generic XDP not supported on L3 devices, please use cls_bpf");
++               return -EINVAL;
++       }
++
+        if (new) {
+                u32 i;
+ 
