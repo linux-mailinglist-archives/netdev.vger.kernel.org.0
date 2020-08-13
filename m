@@ -2,102 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91051244069
-	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 23:18:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B72342440F2
+	for <lists+netdev@lfdr.de>; Thu, 13 Aug 2020 23:55:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726622AbgHMVS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Aug 2020 17:18:28 -0400
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:3584 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726192AbgHMVS2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 17:18:28 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f35aded0000>; Thu, 13 Aug 2020 14:17:33 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Thu, 13 Aug 2020 14:18:27 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Thu, 13 Aug 2020 14:18:27 -0700
-Received: from [10.2.49.245] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 13 Aug
- 2020 21:18:17 +0000
-Subject: Re: [PATCH ethtool v5] Add QSFP-DD support
-To:     Adrian Pop <popadrian1996@gmail.com>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <jiri@mellanox.com>, <vadimp@mellanox.com>, <andrew@lunn.ch>,
-        <mlxsw@mellanox.com>, <idosch@mellanox.com>,
-        <paschmidt@nvidia.com>, <mkubecek@suse.cz>
-References: <20200813150826.16680-1-popadrian1996@gmail.com>
-From:   Roopa Prabhu <roopa@nvidia.com>
-Message-ID: <86ab48ec-b5a6-a92b-db3f-b56f4a7fff56@nvidia.com>
-Date:   Thu, 13 Aug 2020 14:18:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726637AbgHMVzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Aug 2020 17:55:23 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:31694 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726205AbgHMVzW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Aug 2020 17:55:22 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 07DLniZI005108
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 14:55:21 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=9jFR/swBR6mIfdI4hHm84HOYzfseczN9Kk5L2k0LtvY=;
+ b=D5XfHhNOpsvSOtGwaXVwpEuS4DS0UhBKsaVD61ZBcFU4wXwJfaGmiV6AY1Im/2OATDbp
+ N/42wt8BppkYq6nNvoVoAON/49qIZMBRXVddCGXHvluUP6/usiB0eXff9cOmurfaT2IL
+ encD5ZnIHfg5U5IjbMK7xOolwuj26bTClcQ= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 32v0khc5s2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 14:55:21 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 13 Aug 2020 14:55:20 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 1F7F12EC597F; Thu, 13 Aug 2020 13:49:51 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v3 bpf 0/9] Fix various issues with 32-bit libbpf
+Date:   Thu, 13 Aug 2020 13:49:36 -0700
+Message-ID: <20200813204945.1020225-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20200813150826.16680-1-popadrian1996@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1597353453; bh=x70wxmjsg3dzEA6o0AWxdC/qeZ1i4EgFbezQ3wMnlmI=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:Content-Type:
-         Content-Transfer-Encoding:Content-Language:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=Nmzj1M/2D1CX7M7jQm5l0JBPUsui+jaJ8hbSzgF8Hb5bA/BcUMKoHJvPcr5omdahG
-         hEdsIJ/L++XTHqVvkWUoT9g5De29nqn4rm18QEcVrX6fztVb+ijqxkKqClwjqFc92c
-         5MpzxCdvHFoojaSxX3JF1OmrDAx0CKynmbyqx6+fQIXgUuQy3kV8uSYlDgJ4l8foJV
-         Qz35T4CUuGXFz+kP/ZowNvE2rKBM9SqCn/YcFjh9orkfglG7z+wOMG0eoxfoDFOx4k
-         i0daAEqWIsib6RJ3SPThuIJPdbxV9PJiHR/dNaUZgdhYnmjLEBRXFcTxfczBqAuWHi
-         DSNufgApPcFWQ==
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-13_17:2020-08-13,2020-08-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 spamscore=0
+ phishscore=0 suspectscore=8 mlxlogscore=999 priorityscore=1501
+ adultscore=0 malwarescore=0 clxscore=1015 lowpriorityscore=0
+ impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2008130155
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch set contains fixes to libbpf, bpftool, and selftests that were
+found while testing libbpf and selftests built in 32-bit mode. 64-bit nat=
+ure
+of BPF target and 32-bit host environment don't always mix together well
+without extra care, so there were a bunch of problems discovered and fixe=
+d.
 
-On 8/13/20 8:08 AM, Adrian Pop wrote:
-> The Common Management Interface Specification (CMIS) for QSFP-DD shares
-> some similarities with other form factors such as QSFP or SFP, but due to
-> the fact that the module memory map is different, the current ethtool
-> version is not able to provide relevant information about an interface.
->
-> This patch adds QSFP-DD support to ethtool. The changes are similar to
-> the ones already existing in qsfp.c, but customized to use the memory
-> addresses and logic as defined in the specifications document.
->
-> Several functions from qsfp.c could be reused, so an additional parameter
-> was added to each and the functions were moved to sff-common.c.
->
-> Diff from v1:
-> * Report cable length in meters instead of kilometers
-> * Fix bad value for QSFP_DD_DATE_VENDOR_LOT_OFFSET
-> * Fix initialization for struct qsfp_dd_diags
-> * Remove unrelated whitespace cleanups in qsfp.c and Makefile.am
->
-> Diff from v2:
-> * Remove functions assuming the existance of page 0x10 and 0x11
-> * Remove structs and constants related to the page 0x10 and 0x11
->
-> Diff from v3:
-> * Added missing Signed-off-by and Tested-by tags
->
-> Diff from v4:
-> * Fix whitespace formatting problems
->
-> Signed-off-by: Adrian Pop <popadrian1996@gmail.com>
-> Tested-by: Ido Schimmel <idosch@mellanox.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> ---
+Each individual patch contains additional explanations, where necessary.
 
-Reviewed-by: Paul Schmidt <paschmidt@nvidia.com>
+v2->v3:
+  - don't give up if failed to determine ELF class;
+v1->v2:
+  - guess_ptr_sz -> determine_ptr_sz as per Alexei;
+  - added pointer size determination by ELF class.
 
+Andrii Nakryiko (9):
+  tools/bpftool: fix compilation warnings in 32-bit mode
+  selftest/bpf: fix compilation warnings in 32-bit mode
+  libbpf: fix BTF-defined map-in-map initialization on 32-bit host
+    arches
+  libbpf: handle BTF pointer sizes more carefully
+  selftests/bpf: fix btf_dump test cases on 32-bit arches
+  libbpf: enforce 64-bitness of BTF for BPF object files
+  selftests/bpf: correct various core_reloc 64-bit assumptions
+  tools/bpftool: generate data section struct with conservative
+    alignment
+  selftests/bpf: make test_varlen work with 32-bit user-space arch
 
-(proxying for Paul CC'ed, who has reviewed and relayed some offline feedback on v1)
+ tools/bpf/bpftool/btf_dumper.c                |  2 +-
+ tools/bpf/bpftool/gen.c                       | 14 ++++
+ tools/bpf/bpftool/link.c                      |  4 +-
+ tools/bpf/bpftool/main.h                      | 10 ++-
+ tools/bpf/bpftool/prog.c                      | 16 ++--
+ tools/lib/bpf/btf.c                           | 83 ++++++++++++++++++-
+ tools/lib/bpf/btf.h                           |  2 +
+ tools/lib/bpf/btf_dump.c                      |  4 +-
+ tools/lib/bpf/libbpf.c                        | 20 +++--
+ tools/lib/bpf/libbpf.map                      |  2 +
+ .../selftests/bpf/prog_tests/bpf_obj_id.c     |  8 +-
+ .../selftests/bpf/prog_tests/btf_dump.c       | 27 ++++--
+ .../selftests/bpf/prog_tests/core_extern.c    |  4 +-
+ .../selftests/bpf/prog_tests/core_reloc.c     | 20 ++---
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |  6 +-
+ .../selftests/bpf/prog_tests/flow_dissector.c |  2 +-
+ .../selftests/bpf/prog_tests/global_data.c    |  6 +-
+ .../selftests/bpf/prog_tests/prog_run_xattr.c |  2 +-
+ .../selftests/bpf/prog_tests/skb_ctx.c        |  2 +-
+ .../testing/selftests/bpf/prog_tests/varlen.c |  8 +-
+ .../selftests/bpf/progs/core_reloc_types.h    | 69 ++++++++-------
+ .../testing/selftests/bpf/progs/test_varlen.c |  6 +-
+ tools/testing/selftests/bpf/test_btf.c        |  8 +-
+ tools/testing/selftests/bpf/test_progs.h      |  5 ++
+ 24 files changed, 233 insertions(+), 97 deletions(-)
 
-Thanks Adrian and Ido
-
+--=20
+2.24.1
 
