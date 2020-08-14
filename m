@@ -2,93 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1DC6244B9A
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 17:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8CBE244B9F
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 17:08:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728675AbgHNPHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 11:07:04 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:55623 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726311AbgHNPHD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 11:07:03 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1597417622; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=keU1IkAaHe8KBZmZnzwH0xtfGCXWKBz39FSBCFKQ0ss=;
- b=eVA5AXGFDXDMZtKzdeicmN8JAfiFe/xtsgAAUI5Oo3WnAcVFP2rIJUf5S7/a8atiazTcjgnP
- epzw5Bxrwa1LnY9Tct4j48GJ7/bikNO+O9ZT64bSIYenoJ2nGFg8q1ezzQSq+xPs5IjJCFLT
- 4YRVuEYIYJGp2OTJObtWYVuMpyo=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 5f36a88b46ed996674e6aa56 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 14 Aug 2020 15:06:51
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 99459C43395; Fri, 14 Aug 2020 15:06:50 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 01A17C433C9;
-        Fri, 14 Aug 2020 15:06:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 01A17C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728132AbgHNPI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 11:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43676 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726662AbgHNPIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 11:08:25 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5122CC061385
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 08:08:25 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id u126so10970010iod.12
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 08:08:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6/s2FrX3sOZH7no5QOEmHRzOhQVsVJV+GlCWiadD/1Y=;
+        b=LEWYvBdNwTdiV0b8gagS099psX2ZTBY08MCdDLkfhQmHSUVkjzakpT0EfxfiCAYaE8
+         /OkkJXoSbJ6veoGQVa3lmvWYmhsJF9jcEWcztXamvh77ReCnPiG0d1cetjiChrUMi4vf
+         TvWqrjfc1wIT3ogVPxlvE7jo7QJHGBLIcpZF9Zoc/LQby6CVF9FdDkVFf5S99X97VslS
+         qPlRhUMonmBDJLxsx5hj8Hu3cAaDPX5T8Gh2CsbatiS3i39mWQ3efAOzsbdT7ZWO3T/q
+         jx1fhEqDviWXcPyOI2PZ5vjEBUV9/BV04FBlc7tKTj2Q9cBwg/KTZozPjg3a04C+IqT0
+         rhww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6/s2FrX3sOZH7no5QOEmHRzOhQVsVJV+GlCWiadD/1Y=;
+        b=mUhXKwt/xfm5WWdbf0RUE67RR8B6jayFygFIw5oAi+Hat/hYlD0V7pqWmXr8NniYpJ
+         TPKoJkQHlkYeCoG6Becso2XxeYakrjFtEoNp/bA8mFkzEQGO8q7RbPyg/Zv00BU23kVh
+         joV9N0m5VFJSyUR1gy28Vg03nyKkCjcFYritqz2hGvLCEtPFZr2jUyv9kU6zEZvleX1i
+         hHq9n1IvPYwEZ3CahRWafNu/gB32fFtiha4AbfxHOHkiZCqJ5GUNxI70zI8KBmcUp3dE
+         eziCqlbH1PX50rW0euUJjyyFLa7WoGfpuz6YSi6uoHhS/AN34TVkecUJ0k3q5wQ90Vay
+         MBrA==
+X-Gm-Message-State: AOAM530vl3CJ20rMOb/V0023YyDMwaKg/WqZNFabOH71QgvQ6vrYBRH1
+        k91yE6xhJspRVnQNqjQS9txZPhoTjRSEk9DEy+KWoQ==
+X-Google-Smtp-Source: ABdhPJzdGGuDLFD574yj/KgkS3PLqUK92XBd83rc5Qk4H3COqG6GLDYdIApTwhzmJJy7esoAuG0qE1EejRn5qkW3fKM=
+X-Received: by 2002:a02:3f0d:: with SMTP id d13mr3023467jaa.99.1597417702800;
+ Fri, 14 Aug 2020 08:08:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH for v5.9] ath5k: Replace HTTP links with HTTPS ones
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200719104041.57916-1-grandmaster@al2klimov.de>
-References: <20200719104041.57916-1-grandmaster@al2klimov.de>
-To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Cc:     jirislaby@gmail.com, mickflemm@gmail.com, mcgrof@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Alexander A. Klimov" <grandmaster@al2klimov.de>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200814150650.99459C43395@smtp.codeaurora.org>
-Date:   Fri, 14 Aug 2020 15:06:50 +0000 (UTC)
+References: <20200814110428.405051-1-mkl@pengutronix.de> <20200814110428.405051-2-mkl@pengutronix.de>
+ <CAG_fn=U8djv7NEWi5Zc+_=8Bh_srT4M6gObnVFLON+sEkWFv9w@mail.gmail.com>
+In-Reply-To: <CAG_fn=U8djv7NEWi5Zc+_=8Bh_srT4M6gObnVFLON+sEkWFv9w@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 14 Aug 2020 08:08:11 -0700
+Message-ID: <CANn89iLX_w0Bz211qPk_npCqq1NbBQsGMNZkkZQgC_qa7k+KaQ@mail.gmail.com>
+Subject: Re: [PATCH 1/6] can: j1939: fix kernel-infoleak in j1939_sk_sock2sockaddr_can()
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Networking <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
+        kernel@pengutronix.de, syzbot <syzkaller@googlegroups.com>,
+        Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Alexander A. Klimov" <grandmaster@al2klimov.de> wrote:
+On Fri, Aug 14, 2020 at 6:20 AM Alexander Potapenko <glider@google.com> wrote:
+>
+>
+>
+> On Fri, Aug 14, 2020, 13:04 Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>>
+>> From: Eric Dumazet <edumazet@google.com>
 
-> Rationale:
-> Reduces attack surface on kernel devs opening the links for MITM
-> as HTTPS traffic is much harder to manipulate.
-> 
-> Deterministic algorithm:
-> For each file:
->   If not .svg:
->     For each line:
->       If doesn't contain `\bxmlns\b`:
->         For each link, `\bhttp://[^# \t\r\n]*(?:\w|/)`:
-> 	  If neither `\bgnu\.org/license`, nor `\bmozilla\.org/MPL\b`:
->             If both the HTTP and HTTPS versions
->             return 200 OK and serve the same content:
->               Replace HTTP with HTTPS.
-> 
-> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+>>  net/can/j1939/socket.c | 5 +++++
+>>  1 file changed, 5 insertions(+)
+>>
+>> diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
+>> index 78ff9b3f1d40..b634b680177f 100644
+>> --- a/net/can/j1939/socket.c
+>> +++ b/net/can/j1939/socket.c
+>> @@ -553,6 +553,11 @@ static int j1939_sk_connect(struct socket *sock, struct sockaddr *uaddr,
+>>  static void j1939_sk_sock2sockaddr_can(struct sockaddr_can *addr,
+>>                                        const struct j1939_sock *jsk, int peer)
+>>  {
+>> +       /* There are two holes (2 bytes and 3 bytes) to clear to avoid
+>> +        * leaking kernel information to user space.
+>> +        */
+>
+>
+> Do we want to keep these "2 bytes and 3 bytes' in sync with the struct layout in the future? Maybe it's not worth it to mention the exact sizes?
 
-Patch applied to ath-next branch of ath.git, thanks.
-
-5b525ce88af9 ath5k: Replace HTTP links with HTTPS ones
-
--- 
-https://patchwork.kernel.org/patch/11672417/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+struct is uapi, you will have a hard time trying to use these holes,
+since old kernels were sending crap/garbage/passwords ;)
