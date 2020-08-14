@@ -2,93 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8CBE244B9F
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 17:08:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0977C244BA4
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 17:09:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728132AbgHNPI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 11:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726662AbgHNPIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 11:08:25 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5122CC061385
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 08:08:25 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id u126so10970010iod.12
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 08:08:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6/s2FrX3sOZH7no5QOEmHRzOhQVsVJV+GlCWiadD/1Y=;
-        b=LEWYvBdNwTdiV0b8gagS099psX2ZTBY08MCdDLkfhQmHSUVkjzakpT0EfxfiCAYaE8
-         /OkkJXoSbJ6veoGQVa3lmvWYmhsJF9jcEWcztXamvh77ReCnPiG0d1cetjiChrUMi4vf
-         TvWqrjfc1wIT3ogVPxlvE7jo7QJHGBLIcpZF9Zoc/LQby6CVF9FdDkVFf5S99X97VslS
-         qPlRhUMonmBDJLxsx5hj8Hu3cAaDPX5T8Gh2CsbatiS3i39mWQ3efAOzsbdT7ZWO3T/q
-         jx1fhEqDviWXcPyOI2PZ5vjEBUV9/BV04FBlc7tKTj2Q9cBwg/KTZozPjg3a04C+IqT0
-         rhww==
+        id S1728519AbgHNPJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 11:09:21 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:45037 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726196AbgHNPJS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 11:09:18 -0400
+Received: by mail-il1-f199.google.com with SMTP id z15so6747077ile.11
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 08:09:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6/s2FrX3sOZH7no5QOEmHRzOhQVsVJV+GlCWiadD/1Y=;
-        b=mUhXKwt/xfm5WWdbf0RUE67RR8B6jayFygFIw5oAi+Hat/hYlD0V7pqWmXr8NniYpJ
-         TPKoJkQHlkYeCoG6Becso2XxeYakrjFtEoNp/bA8mFkzEQGO8q7RbPyg/Zv00BU23kVh
-         joV9N0m5VFJSyUR1gy28Vg03nyKkCjcFYritqz2hGvLCEtPFZr2jUyv9kU6zEZvleX1i
-         hHq9n1IvPYwEZ3CahRWafNu/gB32fFtiha4AbfxHOHkiZCqJ5GUNxI70zI8KBmcUp3dE
-         eziCqlbH1PX50rW0euUJjyyFLa7WoGfpuz6YSi6uoHhS/AN34TVkecUJ0k3q5wQ90Vay
-         MBrA==
-X-Gm-Message-State: AOAM530vl3CJ20rMOb/V0023YyDMwaKg/WqZNFabOH71QgvQ6vrYBRH1
-        k91yE6xhJspRVnQNqjQS9txZPhoTjRSEk9DEy+KWoQ==
-X-Google-Smtp-Source: ABdhPJzdGGuDLFD574yj/KgkS3PLqUK92XBd83rc5Qk4H3COqG6GLDYdIApTwhzmJJy7esoAuG0qE1EejRn5qkW3fKM=
-X-Received: by 2002:a02:3f0d:: with SMTP id d13mr3023467jaa.99.1597417702800;
- Fri, 14 Aug 2020 08:08:22 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=3Dv/nNZ0R5QJf8EggrUkyhwJ6CWsJ93Cph1VJZyEMSA=;
+        b=Fnl1cYIqZdMq/Ly+nbQlIZgYNG1N0G2ViEz0XE7Tis5aEWaDzWA0RCJjYLIlM9zizP
+         mjgipGHCKBq3XnQ5GsHqSyCdAZk7yV+6z32hvwmZzenJenCj9u4ymuxIj59fwpm9BH3a
+         WbiEuwRRSrYfkAyv+7WON+F6/+rupFxHdNNsEEV7zgfQuYp5MgRvoO2Qh3R3ijVTyUnn
+         lcSI7qLGIUrV7VDf6aA3bY8I7y48c71fEIMpmpKTVQF8DxXpzIwLMxl9enQ1X5ZsmSe8
+         qEcIMy9e4/vFVdEJVFkqlmxJqydiBK0c4rSzZeL7TUZCh74+QY3KmlOyFDkw8ECe6LH+
+         igbQ==
+X-Gm-Message-State: AOAM532SK92evXdBxXhcsdIuNfPzL0CJkDMBGouRlWtkc5D89M0gI5r5
+        pWpKuOtJhBDxhg1bvLz4Y6AalL5CEOH4djo0LHIuZ36IHYpy
+X-Google-Smtp-Source: ABdhPJz1ToDlQKsvW+vJGNVeQUMPYy/AB6pv4ykvLLnYnggx0X8IYBNzKvGeK02QiskysUT1ufVMK4NxeTEY2qdnQnEqVY6c19vl
 MIME-Version: 1.0
-References: <20200814110428.405051-1-mkl@pengutronix.de> <20200814110428.405051-2-mkl@pengutronix.de>
- <CAG_fn=U8djv7NEWi5Zc+_=8Bh_srT4M6gObnVFLON+sEkWFv9w@mail.gmail.com>
-In-Reply-To: <CAG_fn=U8djv7NEWi5Zc+_=8Bh_srT4M6gObnVFLON+sEkWFv9w@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 14 Aug 2020 08:08:11 -0700
-Message-ID: <CANn89iLX_w0Bz211qPk_npCqq1NbBQsGMNZkkZQgC_qa7k+KaQ@mail.gmail.com>
-Subject: Re: [PATCH 1/6] can: j1939: fix kernel-infoleak in j1939_sk_sock2sockaddr_can()
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Networking <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, syzbot <syzkaller@googlegroups.com>,
-        Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
+X-Received: by 2002:a92:1589:: with SMTP id 9mr2904670ilv.234.1597417756817;
+ Fri, 14 Aug 2020 08:09:16 -0700 (PDT)
+Date:   Fri, 14 Aug 2020 08:09:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f3ffc205acd7cd06@google.com>
+Subject: KMSAN: uninit-value in __skb_checksum_complete (5)
+From:   syzbot <syzbot+b024befb3ca7990fea37@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        glider@google.com, kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 14, 2020 at 6:20 AM Alexander Potapenko <glider@google.com> wrote:
->
->
->
-> On Fri, Aug 14, 2020, 13:04 Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->>
->> From: Eric Dumazet <edumazet@google.com>
+Hello,
 
->>  net/can/j1939/socket.c | 5 +++++
->>  1 file changed, 5 insertions(+)
->>
->> diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
->> index 78ff9b3f1d40..b634b680177f 100644
->> --- a/net/can/j1939/socket.c
->> +++ b/net/can/j1939/socket.c
->> @@ -553,6 +553,11 @@ static int j1939_sk_connect(struct socket *sock, struct sockaddr *uaddr,
->>  static void j1939_sk_sock2sockaddr_can(struct sockaddr_can *addr,
->>                                        const struct j1939_sock *jsk, int peer)
->>  {
->> +       /* There are two holes (2 bytes and 3 bytes) to clear to avoid
->> +        * leaking kernel information to user space.
->> +        */
->
->
-> Do we want to keep these "2 bytes and 3 bytes' in sync with the struct layout in the future? Maybe it's not worth it to mention the exact sizes?
+syzbot found the following issue on:
 
-struct is uapi, you will have a hard time trying to use these holes,
-since old kernels were sending crap/garbage/passwords ;)
+HEAD commit:    ce8056d1 wip: changed copy_from_user where instrumented
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=149f894a900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3afe005fb99591f
+dashboard link: https://syzkaller.appspot.com/bug?extid=b024befb3ca7990fea37
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b024befb3ca7990fea37@syzkaller.appspotmail.com
+
+=====================================================
+BUG: KMSAN: uninit-value in __skb_checksum_complete+0x425/0x630 net/core/skbuff.c:2850
+CPU: 1 PID: 8705 Comm: kworker/u4:2 Not tainted 5.8.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: bat_events batadv_iv_send_outstanding_bat_ogm_packet
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x21c/0x280 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ __skb_checksum_complete+0x425/0x630 net/core/skbuff.c:2850
+ nf_ip6_checksum+0x565/0x670 net/netfilter/utils.c:91
+ nf_nat_icmpv6_reply_translation+0x312/0x1360 net/netfilter/nf_nat_proto.c:800
+ nf_nat_ipv6_fn+0x3c4/0x570 net/netfilter/nf_nat_proto.c:873
+ nf_nat_ipv6_local_fn+0xaa/0x800 net/netfilter/nf_nat_proto.c:946
+ nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+ nf_hook_slow+0x17b/0x460 net/netfilter/core.c:512
+ nf_hook include/linux/netfilter.h:262 [inline]
+ __ip6_local_out+0x696/0x7c0 net/ipv6/output_core.c:167
+ ip6_local_out+0xa1/0x1e0 net/ipv6/output_core.c:177
+ ip6_send_skb net/ipv6/ip6_output.c:1865 [inline]
+ ip6_push_pending_frames+0x252/0x5b0 net/ipv6/ip6_output.c:1885
+ icmpv6_push_pending_frames+0x6d1/0x710 net/ipv6/icmp.c:304
+ icmp6_send+0x3979/0x40e0 net/ipv6/icmp.c:617
+ icmpv6_send+0xdf/0x110 net/ipv6/ip6_icmp.c:43
+ ip6_pkt_drop+0x906/0xa00 net/ipv6/route.c:4406
+ ip6_pkt_discard_out+0xbb/0x130 net/ipv6/route.c:4419
+ dst_output include/net/dst.h:443 [inline]
+ ip6_local_out+0x17b/0x1e0 net/ipv6/output_core.c:179
+ ip6tunnel_xmit include/net/ip6_tunnel.h:160 [inline]
+ udp_tunnel6_xmit_skb+0x818/0xf80 net/ipv6/ip6_udp_tunnel.c:109
+ geneve6_xmit_skb drivers/net/geneve.c:973 [inline]
+ geneve_xmit+0x2b5d/0x3200 drivers/net/geneve.c:1002
+ __netdev_start_xmit include/linux/netdevice.h:4611 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4625 [inline]
+ xmit_one+0x3cf/0x750 net/core/dev.c:3556
+ dev_hard_start_xmit net/core/dev.c:3572 [inline]
+ __dev_queue_xmit+0x3aad/0x4470 net/core/dev.c:4131
+ dev_queue_xmit+0x4b/0x60 net/core/dev.c:4164
+ batadv_send_skb_packet+0x622/0x970 net/batman-adv/send.c:108
+ batadv_send_broadcast_skb+0x76/0x90 net/batman-adv/send.c:127
+ batadv_iv_ogm_send_to_if net/batman-adv/bat_iv_ogm.c:393 [inline]
+ batadv_iv_ogm_emit net/batman-adv/bat_iv_ogm.c:419 [inline]
+ batadv_iv_send_outstanding_bat_ogm_packet+0xb2e/0xef0 net/batman-adv/bat_iv_ogm.c:1710
+ process_one_work+0x1688/0x2140 kernel/workqueue.c:2269
+ worker_thread+0x10bc/0x2730 kernel/workqueue.c:2415
+ kthread+0x551/0x590 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+
+Uninit was stored to memory at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
+ kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
+ kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
+ __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
+ csum_partial_copy+0xae/0x100 lib/checksum.c:154
+ skb_copy_and_csum_bits+0x261/0x1360 net/core/skbuff.c:2737
+ icmpv6_getfrag+0x148/0x3b0 net/ipv6/icmp.c:319
+ __ip6_append_data+0x5a33/0x71b0 net/ipv6/ip6_output.c:1623
+ ip6_append_data+0x44b/0x6e0 net/ipv6/ip6_output.c:1757
+ icmp6_send+0x3711/0x40e0 net/ipv6/icmp.c:609
+ icmpv6_send+0xdf/0x110 net/ipv6/ip6_icmp.c:43
+ ip6_pkt_drop+0x906/0xa00 net/ipv6/route.c:4406
+ ip6_pkt_discard_out+0xbb/0x130 net/ipv6/route.c:4419
+ dst_output include/net/dst.h:443 [inline]
+ ip6_local_out+0x17b/0x1e0 net/ipv6/output_core.c:179
+ ip6tunnel_xmit include/net/ip6_tunnel.h:160 [inline]
+ udp_tunnel6_xmit_skb+0x818/0xf80 net/ipv6/ip6_udp_tunnel.c:109
+ geneve6_xmit_skb drivers/net/geneve.c:973 [inline]
+ geneve_xmit+0x2b5d/0x3200 drivers/net/geneve.c:1002
+ __netdev_start_xmit include/linux/netdevice.h:4611 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4625 [inline]
+ xmit_one+0x3cf/0x750 net/core/dev.c:3556
+ dev_hard_start_xmit net/core/dev.c:3572 [inline]
+ __dev_queue_xmit+0x3aad/0x4470 net/core/dev.c:4131
+ dev_queue_xmit+0x4b/0x60 net/core/dev.c:4164
+ batadv_send_skb_packet+0x622/0x970 net/batman-adv/send.c:108
+ batadv_send_broadcast_skb+0x76/0x90 net/batman-adv/send.c:127
+ batadv_iv_ogm_send_to_if net/batman-adv/bat_iv_ogm.c:393 [inline]
+ batadv_iv_ogm_emit net/batman-adv/bat_iv_ogm.c:419 [inline]
+ batadv_iv_send_outstanding_bat_ogm_packet+0xb2e/0xef0 net/batman-adv/bat_iv_ogm.c:1710
+ process_one_work+0x1688/0x2140 kernel/workqueue.c:2269
+ worker_thread+0x10bc/0x2730 kernel/workqueue.c:2415
+ kthread+0x551/0x590 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+
+Uninit was stored to memory at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
+ kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
+ kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
+ __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
+ pskb_expand_head+0x3fd/0x1e30 net/core/skbuff.c:1636
+ __skb_cow include/linux/skbuff.h:3145 [inline]
+ skb_cow_head include/linux/skbuff.h:3179 [inline]
+ geneve_build_skb+0x575/0xf90 drivers/net/geneve.c:754
+ geneve6_xmit_skb drivers/net/geneve.c:969 [inline]
+ geneve_xmit+0x286c/0x3200 drivers/net/geneve.c:1002
+ __netdev_start_xmit include/linux/netdevice.h:4611 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4625 [inline]
+ xmit_one+0x3cf/0x750 net/core/dev.c:3556
+ dev_hard_start_xmit net/core/dev.c:3572 [inline]
+ __dev_queue_xmit+0x3aad/0x4470 net/core/dev.c:4131
+ dev_queue_xmit+0x4b/0x60 net/core/dev.c:4164
+ batadv_send_skb_packet+0x622/0x970 net/batman-adv/send.c:108
+ batadv_send_broadcast_skb+0x76/0x90 net/batman-adv/send.c:127
+ batadv_iv_ogm_send_to_if net/batman-adv/bat_iv_ogm.c:393 [inline]
+ batadv_iv_ogm_emit net/batman-adv/bat_iv_ogm.c:419 [inline]
+ batadv_iv_send_outstanding_bat_ogm_packet+0xb2e/0xef0 net/batman-adv/bat_iv_ogm.c:1710
+ process_one_work+0x1688/0x2140 kernel/workqueue.c:2269
+ worker_thread+0x10bc/0x2730 kernel/workqueue.c:2415
+ kthread+0x551/0x590 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+
+Uninit was stored to memory at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
+ kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
+ kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
+ __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
+ pskb_expand_head+0x3fd/0x1e30 net/core/skbuff.c:1636
+ __skb_cow include/linux/skbuff.h:3145 [inline]
+ skb_cow_head include/linux/skbuff.h:3179 [inline]
+ batadv_skb_head_push+0x2cc/0x410 net/batman-adv/soft-interface.c:75
+ batadv_send_skb_packet+0x1ed/0x970 net/batman-adv/send.c:86
+ batadv_send_broadcast_skb+0x76/0x90 net/batman-adv/send.c:127
+ batadv_iv_ogm_send_to_if net/batman-adv/bat_iv_ogm.c:393 [inline]
+ batadv_iv_ogm_emit net/batman-adv/bat_iv_ogm.c:419 [inline]
+ batadv_iv_send_outstanding_bat_ogm_packet+0xb2e/0xef0 net/batman-adv/bat_iv_ogm.c:1710
+ process_one_work+0x1688/0x2140 kernel/workqueue.c:2269
+ worker_thread+0x10bc/0x2730 kernel/workqueue.c:2415
+ kthread+0x551/0x590 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+
+Uninit was created at:
+ kmsan_save_stack_with_flags+0x3c/0x90 mm/kmsan/kmsan.c:144
+ kmsan_internal_alloc_meta_for_pages mm/kmsan/kmsan_shadow.c:269 [inline]
+ kmsan_alloc_page+0xc5/0x1a0 mm/kmsan/kmsan_shadow.c:293
+ __alloc_pages_nodemask+0xdf0/0x1030 mm/page_alloc.c:4889
+ __alloc_pages include/linux/gfp.h:509 [inline]
+ __alloc_pages_node include/linux/gfp.h:522 [inline]
+ alloc_pages_node include/linux/gfp.h:536 [inline]
+ __page_frag_cache_refill mm/page_alloc.c:4964 [inline]
+ page_frag_alloc+0x35b/0x880 mm/page_alloc.c:4994
+ __netdev_alloc_skb+0xc3d/0xc90 net/core/skbuff.c:456
+ __netdev_alloc_skb_ip_align include/linux/skbuff.h:2826 [inline]
+ netdev_alloc_skb_ip_align include/linux/skbuff.h:2836 [inline]
+ batadv_iv_ogm_aggregate_new net/batman-adv/bat_iv_ogm.c:558 [inline]
+ batadv_iv_ogm_queue_add+0x13bf/0x1c60 net/batman-adv/bat_iv_ogm.c:670
+ batadv_iv_ogm_schedule_buff net/batman-adv/bat_iv_ogm.c:849 [inline]
+ batadv_iv_ogm_schedule+0x126d/0x1660 net/batman-adv/bat_iv_ogm.c:869
+ batadv_iv_send_outstanding_bat_ogm_packet+0xd69/0xef0 net/batman-adv/bat_iv_ogm.c:1722
+ process_one_work+0x1688/0x2140 kernel/workqueue.c:2269
+ worker_thread+0x10bc/0x2730 kernel/workqueue.c:2415
+ kthread+0x551/0x590 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+=====================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
