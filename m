@@ -2,58 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CFD22448EB
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 13:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEB0D244926
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 13:43:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728186AbgHNLkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 07:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
+        id S1727840AbgHNLnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 07:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728090AbgHNLj7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 07:39:59 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4717AC061384
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:39:59 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id a14so8075291wra.5
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:39:59 -0700 (PDT)
+        with ESMTP id S1728150AbgHNLkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 07:40:01 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CD7C061387
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:40:00 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id 3so7677976wmi.1
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:40:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pTidTxM2W7rg3RCDPQVi6+bnqBimLuMVRDwTHQpG6MI=;
-        b=sTJJo5Ao9MoWGnV5QCX1gfI+xXTHpIhbz2b7TURG/31tpUZXShHoedki9o0ukyMbcT
-         WeQin7wucUIH/cENlQCAmqxLxnXtoWT3shSNCql8IQTAlO+WEVakfIOAvmd4+/nrgFIl
-         mPRNqGwMafnkybiB5SOiDMAHnN9corypiRFiy4AQaqkwNH2/YpYQAReihfCZLPb0GV2K
-         tZzhFMv/4jttwAc6jx3p69I3ekCKLngRwL9X2sssocNoNsQBmtUNA05oUBUBoACkZHy0
-         McwdKNFkUFSlyoPzcvhNuOmZ8tbPropQ+tGinR3r4c07PZXzsigSPMHN8fPybCslnLQ+
-         /0wQ==
+        bh=cxyYXnUUCZhHe8dpcSTNmo6M+HTgfG9I0aeJsix4sR8=;
+        b=kOVFd+EKRHcOgiD8HFwFx0XNWvK5zXgOqGzWPcdwz7L45SP9KAQmTDuRgMEtDIWvWC
+         KGy9FZZYUL0hSY1ceRAgUrsIPIdDQn+32RHicdNLMUHSBm3xElj7w47D3lnM8c0afIPG
+         S7doL6pvSFEsK7TSBsbr64SJrCktcAl7x6l7C65t1dkMvqmvd8gC1eNKQOx5K5xJpb7b
+         ysp+60MAN7Ox3BXtQNYCxDLOXGp3dPRn/1KCMDwnJ/xsv7XV1bMdfZ0U7PmHnIlo0aPM
+         ONSPBgUPZLPHemsi/5HkM/Ah2dpCXv5IgY7DsVoFp1chYugRMuxkuEo64po9G+3khXp1
+         CCvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pTidTxM2W7rg3RCDPQVi6+bnqBimLuMVRDwTHQpG6MI=;
-        b=kI16VEY7gzTx6AohF4TVNMI3l19m0ImTeMJuIg/J6qxckKm4Y31yscGejlGTRdUi7p
-         bOJitH05ccxrZ3+pKLDxKTWsGGf8pQocsNh0qkJKScucl0X/zUPYfnSkURbuD3J1QdQ8
-         Dmf2udhZhBegKL0pXvsGo4xyhKP7y0Sxx/2Z9m37dswQUZttWTbcdfzIJttwUoQr8rku
-         KSJNkWMxLgYKlPA52Brqc+4PqWGYQAtR4KGoTkiifI27ZQpURgUbiJhS6B3imy5A6Wkm
-         WUor4SKwtLuIrRZgmHbcfhCENGAL0U9BPSYnnw5exXqX09fBvSxKRsWqk9ZTwom7jvsX
-         s26A==
-X-Gm-Message-State: AOAM530lapqBl8bC4IohI4UR0lRW2AYwZV0r57Wxd5HbeEN1JyC2SD5G
-        mW/w9E+CCmQ+OhNwERdIX7DdhQ==
-X-Google-Smtp-Source: ABdhPJzf2CUoe+r24OZQp0WRqevqIU05NtR3yqlbWBijFHrDWUmeueOOtpTFxEruugLoxyFvD9s9kQ==
-X-Received: by 2002:adf:91a1:: with SMTP id 30mr2554293wri.29.1597405198037;
-        Fri, 14 Aug 2020 04:39:58 -0700 (PDT)
+        bh=cxyYXnUUCZhHe8dpcSTNmo6M+HTgfG9I0aeJsix4sR8=;
+        b=Rv3yIXfLURTfgcXA3B52sxx89InPnUEt4tL9sWz10PKIPZnaHGLUy4+ibCrorx2W9R
+         cQc0v6E9e2FWsYJacNVuTZAZOy+lhY8DwhgIRQe0MOKSypmMf0IhHfVIaqm/L0ZNHHBC
+         Jp7J5UHp9LWsikWaW3+icbvhNE0R4gwCo1Ghqoaik8GZEcSw753qEQXnpJi6eOPxmNYS
+         G28B6373rp0kT4e6cZmUQD2mi3rg3oBBNa/yPvkEx0hHjYP+CiB6rAcUuFzfgFtPqcXp
+         536bXYzSLH1svayNVEpJKPPes2zPBwgCrt4Rt0dsmAt1WRn2sVBP7XAjta4Xk21O4po9
+         wDSA==
+X-Gm-Message-State: AOAM533CupQh5Jp4dzfXje4p+WI948qKo9CDrLXz5XsHSVIq0XqOTdkT
+        hzzj6owBmnud4YfRv7xdJNjztw==
+X-Google-Smtp-Source: ABdhPJx8WHD9X6aqfdX1cuW9YJJqmiV+LKBUDjkV6yfghTL0ztl5sgx19ZXXSWtlxSgA6tCjQrrh6Q==
+X-Received: by 2002:a7b:cd97:: with SMTP id y23mr2284684wmj.21.1597405199406;
+        Fri, 14 Aug 2020 04:39:59 -0700 (PDT)
 Received: from dell.default ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id 32sm16409129wrh.18.2020.08.14.04.39.56
+        by smtp.gmail.com with ESMTPSA id 32sm16409129wrh.18.2020.08.14.04.39.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Aug 2020 04:39:57 -0700 (PDT)
+        Fri, 14 Aug 2020 04:39:58 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Mike McLagan <mike.mclagan@linux.org>, netdev@vger.kernel.org
-Subject: [PATCH 10/30] net: wan: dlci: Remove set but not used variable 'err'
-Date:   Fri, 14 Aug 2020 12:39:13 +0100
-Message-Id: <20200814113933.1903438-11-lee.jones@linaro.org>
+        Kalle Valo <kvalo@codeaurora.org>,
+        Benjamin Reed <breed@users.sourceforge.net>,
+        Javier Achirica <achirica@users.sourceforge.net>,
+        Jean Tourrilhes <jt@hpl.hp.com>,
+        Fabrice Bellet <fabrice@bellet.info>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 11/30] net: wireless: cisco: airo: Place brackets around empty statement
+Date:   Fri, 14 Aug 2020 12:39:14 +0100
+Message-Id: <20200814113933.1903438-12-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200814113933.1903438-1-lee.jones@linaro.org>
 References: <20200814113933.1903438-1-lee.jones@linaro.org>
@@ -67,38 +72,38 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/wan/dlci.c: In function ‘dlci_close’:
- drivers/net/wan/dlci.c:298:8: warning: variable ‘err’ set but not used [-Wunused-but-set-variable]
+ drivers/net/wireless/cisco/airo.c: In function ‘airo_init_module’:
+ drivers/net/wireless/cisco/airo.c:5663:21: warning: suggest braces around empty body in an ‘if’ statement [-Wempty-body]
 
+Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Mike McLagan <mike.mclagan@linux.org>
+Cc: Benjamin Reed <breed@users.sourceforge.net>
+Cc: Javier Achirica <achirica@users.sourceforge.net>
+Cc: Jean Tourrilhes <jt@hpl.hp.com>
+Cc: Fabrice Bellet <fabrice@bellet.info>
+Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/wan/dlci.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/wireless/cisco/airo.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wan/dlci.c b/drivers/net/wan/dlci.c
-index 7bcee41905cfb..3ca4daf633897 100644
---- a/drivers/net/wan/dlci.c
-+++ b/drivers/net/wan/dlci.c
-@@ -295,14 +295,13 @@ static int dlci_close(struct net_device *dev)
- {
- 	struct dlci_local	*dlp;
- 	struct frad_local	*flp;
--	int			err;
+diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
+index 316672486d826..8002a4268e03e 100644
+--- a/drivers/net/wireless/cisco/airo.c
++++ b/drivers/net/wireless/cisco/airo.c
+@@ -5659,8 +5659,9 @@ static int __init airo_init_module( void )
+ 	for (i = 0; i < 4 && io[i] && irq[i]; i++) {
+ 		airo_print_info("", "Trying to configure ISA adapter at irq=%d "
+ 			"io=0x%x", irq[i], io[i] );
+-		if (init_airo_card( irq[i], io[i], 0, NULL ))
++		if (init_airo_card( irq[i], io[i], 0, NULL )) {
+ 			/* do nothing */ ;
++		}
+ 	}
  
- 	netif_stop_queue(dev);
- 
- 	dlp = netdev_priv(dev);
- 
- 	flp = netdev_priv(dlp->slave);
--	err = (*flp->deactivate)(dlp->slave, dev);
-+	(*flp->deactivate)(dlp->slave, dev);
- 
- 	return 0;
- }
+ #ifdef CONFIG_PCI
 -- 
 2.25.1
 
