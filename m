@@ -2,161 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20B7B2448F6
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 13:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BAF324499D
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 14:12:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728272AbgHNLke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 07:40:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39824 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728259AbgHNLk2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 07:40:28 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8E6C06134C
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:40:27 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id p20so8089929wrf.0
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:40:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ERDbFfgstNgY8ZqH90cxmPjJzuqGvYyLAnf6eRHoBY4=;
-        b=nHwifoMpu5zgZPbaWXSh4Q+iAF49QG4RKveJ1/wvYfR/pX2b+hIMQYlTGhmgwHNwGf
-         pdRYfLJgNDqaz+aQLzDTaZBE4JVhtsq0nhvOsKcz5w9UTo1maRGmjP4VeyXyNhPwPffb
-         B6amufXKHd7z1H0uwjrDGYTAFT3I800ydCljxLAasN5LV1JNXyeO/OnFslgaLkZuy0ts
-         VUSwPkYv2uW0yeK33IURmPYK4lchSmb5c16V5V6ErNW3oX78Vo1xQqocwUCMZOsKwgV+
-         Cm2hdfKjE6TIXNXGLsCIPj4ZxWBqTy6j1xETu0pfH6bkN6n9FL0Sj/pZti7luKy/WblI
-         Vs0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ERDbFfgstNgY8ZqH90cxmPjJzuqGvYyLAnf6eRHoBY4=;
-        b=bkcVakPdhItYZT8L8ROmozSKR0m6vB0HT4yiRKXkHsIynr7kpi0TibZwCDp6LZN3vu
-         EnGcv3mZwafaA3ttMsRds8z5gOHr1/f7Oqkhug4jNfhv4uSXMvEjtBDCI4cPyLQ5X57v
-         ngD7RIA1RSn8RG0vzo8ujwD+D7otWCP9KiPL9EPGIJJ4XybKPCUBuvyy6acGk6Tq4ax/
-         BtEqvTlfaTTM2XehAELNHOei/PLOGeQByCaklJYPx8wFBNGafPri0VUpBQNOM0s8r8Ok
-         ajwBrqCMIjNajxRZWZcbnXUvEsS6O3is7czQ0b07pBGNycMhySUHa17SXqZhahnnjCy4
-         LTBA==
-X-Gm-Message-State: AOAM533yFST/iXbnbCSaHJ0XNZbW8V+LYvuItyLnYFfb2Hmz/FaSlH62
-        sZ2UzVoTmN8LEdjH2cPJ4ZBL6Q==
-X-Google-Smtp-Source: ABdhPJyA4Z4Ev0xX+XGgbzZghIa2dEQk7CN3RanlMbTixLJqmXt/FpFJfP8uMAuRCdGfdERbFxOyLw==
-X-Received: by 2002:a5d:4b11:: with SMTP id v17mr2343478wrq.224.1597405226411;
-        Fri, 14 Aug 2020 04:40:26 -0700 (PDT)
-Received: from dell.default ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id 32sm16409129wrh.18.2020.08.14.04.40.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Aug 2020 04:40:25 -0700 (PDT)
-From:   Lee Jones <lee.jones@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "Alexander A. Klimov" <grandmaster@al2klimov.de>,
-        Michael Buesch <m@bues.ch>, linux-wireless@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org
-Subject: [PATCH 30/30] net: wireless: broadcom: b43: phy_n: Add empty braces around empty statements
-Date:   Fri, 14 Aug 2020 12:39:33 +0100
-Message-Id: <20200814113933.1903438-31-lee.jones@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200814113933.1903438-1-lee.jones@linaro.org>
-References: <20200814113933.1903438-1-lee.jones@linaro.org>
+        id S1728442AbgHNMMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 08:12:18 -0400
+Received: from rcdn-iport-8.cisco.com ([173.37.86.79]:63068 "EHLO
+        rcdn-iport-8.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728072AbgHNMMO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 08:12:14 -0400
+X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Fri, 14 Aug 2020 08:12:11 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=6326; q=dns/txt; s=iport;
+  t=1597407132; x=1598616732;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Sx0AGTN3wxNErboCy8QrXuEeasRN2v7iq0kZlP8Hku4=;
+  b=Wrh2Q3EJl2gr/jyy+ED5yTjDItmwS6dZ2GDZRBy8DHYHEFUy3a3pywQV
+   NoOTNwfwfzIRqyLXDpqUFIby9yc/EiL6m5Lo/bVxqKT39DVH6nVmq63Bg
+   WyDFvbhuKu3dOktBjwG5GR5jvfdkbEtT+J6jjfrDpyyCMPcROkUW7ustA
+   w=;
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0BWBADkfDZf/4oNJK1fHgEBCxIMgX8?=
+ =?us-ascii?q?LgXU1gUQBMiyvcIF9CwEBAQ4vBAEBhEyCRwIkNgcOAgMBAQsBAQUBAQECAQY?=
+ =?us-ascii?q?EbYVohh8LAUaBDUSDJoJ9sWGBdTOJJoFAFIEkiCGEeRqBQT+EX4o0BJJCh0S?=
+ =?us-ascii?q?Bapo+gmyaEA8hoB4BshyBWgYtgVczGggbFTuCaVAZDY4rF45EIQMwNwIGCgE?=
+ =?us-ascii?q?BAwmRPgEB?=
+X-IronPort-AV: E=Sophos;i="5.76,312,1592870400"; 
+   d="scan'208";a="811846502"
+Received: from alln-core-5.cisco.com ([173.36.13.138])
+  by rcdn-iport-8.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 14 Aug 2020 12:05:01 +0000
+Received: from sjc-ads-9103.cisco.com (sjc-ads-9103.cisco.com [10.30.208.113])
+        by alln-core-5.cisco.com (8.15.2/8.15.2) with ESMTP id 07EC50DL007126;
+        Fri, 14 Aug 2020 12:05:01 GMT
+Received: by sjc-ads-9103.cisco.com (Postfix, from userid 487941)
+        id C60701588; Fri, 14 Aug 2020 05:05:00 -0700 (PDT)
+From:   Denys Zagorui <dzagorui@cisco.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, xe-linux-external@cisco.com,
+        xiyou.wangcong@gmail.com, ap420073@gmail.com,
+        richardcochran@gmail.com, f.fainelli@gmail.com, andrew@lunn.ch,
+        mkubecek@suse.cz, linux-kernel@vger.kernel.org
+Subject: [RFC][PATCH] net: core: SIOCADDMULTI/SIOCDELMULTI distinguish between uc and mc
+Date:   Fri, 14 Aug 2020 05:05:00 -0700
+Message-Id: <20200814120500.46875-1-dzagorui@cisco.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-Outbound-SMTP-Client: 10.30.208.113, sjc-ads-9103.cisco.com
+X-Outbound-Node: alln-core-5.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes the following W=1 kernel build warning(s):
+SIOCADDMULTI API allows adding multicast/unicast mac addresses but
+doesn't deferentiate them so if someone tries to add secondary
+unicast mac addr it will be added to multicast netdev list which is
+confusing. There is at least one user that allows adding secondary
+unicast through this API.
+(2f41f3358672 i40e/i40evf: fix unicast mac address add)
 
- drivers/net/wireless/broadcom/b43/phy_n.c: In function ‘b43_nphy_workarounds_rev3plus’:
- drivers/net/wireless/broadcom/b43/phy_n.c:3346:3: warning: suggest braces around empty body in an ‘if’ statement [-Wempty-body]
- drivers/net/wireless/broadcom/b43/phy_n.c: In function ‘b43_nphy_spur_workaround’:
- drivers/net/wireless/broadcom/b43/phy_n.c:4608:4: warning: suggest braces around empty body in an ‘else’ statement [-Wempty-body]
- drivers/net/wireless/broadcom/b43/phy_n.c:4641:4: warning: suggest braces around empty body in an ‘else’ statement [-Wempty-body]
- drivers/net/wireless/broadcom/b43/phy_n.c: In function ‘b43_phy_initn’:
- drivers/net/wireless/broadcom/b43/phy_n.c:6170:3: warning: suggest braces around empty body in an ‘if’ statement [-Wempty-body]
- drivers/net/wireless/broadcom/b43/phy_n.c:6215:5: warning: suggest braces around empty body in an ‘if’ statement [-Wempty-body]
+This patch adds check whether passed mac addr is uc or mc and adds
+this mac addr to the corresponding list. Add 'global' variant for
+adding/removing uc addresses similarly to mc.
 
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Cc: Michael Buesch <m@bues.ch>
-Cc: linux-wireless@vger.kernel.org
-Cc: b43-dev@lists.infradead.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Denys Zagorui <dzagorui@cisco.com>
 ---
- drivers/net/wireless/broadcom/b43/phy_n.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ include/linux/netdevice.h    |  2 +
+ include/uapi/linux/sockios.h |  2 +-
+ net/core/dev_addr_lists.c    | 75 +++++++++++++++++++++++++++---------
+ net/core/dev_ioctl.c         | 10 ++++-
+ 4 files changed, 68 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
-index ca2018da97538..9e4d61e64adf5 100644
---- a/drivers/net/wireless/broadcom/b43/phy_n.c
-+++ b/drivers/net/wireless/broadcom/b43/phy_n.c
-@@ -3342,8 +3342,9 @@ static void b43_nphy_workarounds_rev3plus(struct b43_wldev *dev)
- 	b43_phy_write(dev, B43_NPHY_ED_CRS20UDEASSERTTHRESH0, 0x0381);
- 	b43_phy_write(dev, B43_NPHY_ED_CRS20UDEASSERTTHRESH1, 0x0381);
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index b0e303f6603f..9394f369be33 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -4345,8 +4345,10 @@ int dev_addr_init(struct net_device *dev);
  
--	if (dev->phy.rev >= 6 && sprom->boardflags2_lo & B43_BFL2_SINGLEANT_CCK)
-+	if (dev->phy.rev >= 6 && sprom->boardflags2_lo & B43_BFL2_SINGLEANT_CCK) {
- 		; /* TODO: 0x0080000000000000 HF */
-+	}
+ /* Functions used for unicast addresses handling */
+ int dev_uc_add(struct net_device *dev, const unsigned char *addr);
++int dev_uc_add_global(struct net_device *dev, const unsigned char *addr);
+ int dev_uc_add_excl(struct net_device *dev, const unsigned char *addr);
+ int dev_uc_del(struct net_device *dev, const unsigned char *addr);
++int dev_uc_del_global(struct net_device *dev, const unsigned char *addr);
+ int dev_uc_sync(struct net_device *to, struct net_device *from);
+ int dev_uc_sync_multiple(struct net_device *to, struct net_device *from);
+ void dev_uc_unsync(struct net_device *to, struct net_device *from);
+diff --git a/include/uapi/linux/sockios.h b/include/uapi/linux/sockios.h
+index 7d1bccbbef78..f41b152b0268 100644
+--- a/include/uapi/linux/sockios.h
++++ b/include/uapi/linux/sockios.h
+@@ -80,7 +80,7 @@
+ #define SIOCGIFHWADDR	0x8927		/* Get hardware address		*/
+ #define SIOCGIFSLAVE	0x8929		/* Driver slaving support	*/
+ #define SIOCSIFSLAVE	0x8930
+-#define SIOCADDMULTI	0x8931		/* Multicast address lists	*/
++#define SIOCADDMULTI	0x8931		/* Mac address lists	*/
+ #define SIOCDELMULTI	0x8932
+ #define SIOCGIFINDEX	0x8933		/* name -> if_index mapping	*/
+ #define SIOGIFINDEX	SIOCGIFINDEX	/* misprint compatibility :-)	*/
+diff --git a/net/core/dev_addr_lists.c b/net/core/dev_addr_lists.c
+index 54cd568e7c2f..d150c2d84df4 100644
+--- a/net/core/dev_addr_lists.c
++++ b/net/core/dev_addr_lists.c
+@@ -573,6 +573,20 @@ int dev_uc_add_excl(struct net_device *dev, const unsigned char *addr)
  }
+ EXPORT_SYMBOL(dev_uc_add_excl);
  
- static void b43_nphy_workarounds_rev1_2(struct b43_wldev *dev)
-@@ -4602,10 +4603,11 @@ static void b43_nphy_spur_workaround(struct b43_wldev *dev)
++static int __dev_uc_add(struct net_device *dev, const unsigned char *addr,
++			bool global)
++{
++	int err;
++
++	netif_addr_lock_bh(dev);
++	err = __hw_addr_add_ex(&dev->uc, addr, dev->addr_len,
++			       NETDEV_HW_ADDR_T_UNICAST, global, false, 0);
++	if (!err)
++		__dev_set_rx_mode(dev);
++	netif_addr_unlock_bh(dev);
++	return err;
++}
++
+ /**
+  *	dev_uc_add - Add a secondary unicast address
+  *	@dev: device
+@@ -583,18 +597,37 @@ EXPORT_SYMBOL(dev_uc_add_excl);
+  */
+ int dev_uc_add(struct net_device *dev, const unsigned char *addr)
+ {
+-	int err;
+-
+-	netif_addr_lock_bh(dev);
+-	err = __hw_addr_add(&dev->uc, addr, dev->addr_len,
+-			    NETDEV_HW_ADDR_T_UNICAST);
+-	if (!err)
+-		__dev_set_rx_mode(dev);
+-	netif_addr_unlock_bh(dev);
+-	return err;
++	return __dev_uc_add(dev, addr, false);
+ }
+ EXPORT_SYMBOL(dev_uc_add);
  
- 	if (nphy->gband_spurwar_en) {
- 		/* TODO: N PHY Adjust Analog Pfbw (7) */
--		if (channel == 11 && b43_is_40mhz(dev))
-+		if (channel == 11 && b43_is_40mhz(dev)) {
- 			; /* TODO: N PHY Adjust Min Noise Var(2, tone, noise)*/
--		else
-+		} else {
- 			; /* TODO: N PHY Adjust Min Noise Var(0, NULL, NULL)*/
-+		}
- 		/* TODO: N PHY Adjust CRS Min Power (0x1E) */
- 	}
++/**
++ *	dev_uc_add_global - Add a global unicast address
++ *	@dev: device
++ *	@addr: address to add
++ *
++ *	Add a global unicast address to the device.
++ */
++int dev_uc_add_global(struct net_device *dev, const unsigned char *addr)
++{
++	return __dev_uc_add(dev, addr, true);
++}
++EXPORT_SYMBOL(dev_uc_add_global);
++
++static int __dev_uc_del(struct net_device *dev, const unsigned char *addr,
++			bool global)
++{
++	int err;
++
++	netif_addr_lock_bh(dev);
++	err = __hw_addr_del_ex(&dev->uc, addr, dev->addr_len,
++			       NETDEV_HW_ADDR_T_UNICAST, global, false);
++	if (!err)
++		__dev_set_rx_mode(dev);
++	netif_addr_unlock_bh(dev);
++	return err;
++}
++
+ /**
+  *	dev_uc_del - Release secondary unicast address.
+  *	@dev: device
+@@ -605,18 +638,24 @@ EXPORT_SYMBOL(dev_uc_add);
+  */
+ int dev_uc_del(struct net_device *dev, const unsigned char *addr)
+ {
+-	int err;
+-
+-	netif_addr_lock_bh(dev);
+-	err = __hw_addr_del(&dev->uc, addr, dev->addr_len,
+-			    NETDEV_HW_ADDR_T_UNICAST);
+-	if (!err)
+-		__dev_set_rx_mode(dev);
+-	netif_addr_unlock_bh(dev);
+-	return err;
++	return __dev_uc_del(dev, addr, false);
+ }
+ EXPORT_SYMBOL(dev_uc_del);
  
-@@ -4635,10 +4637,11 @@ static void b43_nphy_spur_workaround(struct b43_wldev *dev)
- 			noise[0] = 0;
- 		}
++/**
++ *	dev_uc_del_global - Delete a global unicast address.
++ *	@dev: device
++ *	@addr: address to delete
++ *
++ *	Release reference to a unicast address and remove it
++ *	from the device if the reference count drops to zero.
++ */
++int dev_uc_del_global(struct net_device *dev, const unsigned char *addr)
++{
++	return __dev_uc_del(dev, addr, true);
++}
++EXPORT_SYMBOL(dev_uc_del_global);
++
+ /**
+  *	dev_uc_sync - Synchronize device's unicast list to another device
+  *	@to: destination device
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index b2cf9b7bb7b8..774418f64c05 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -299,7 +299,10 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
+ 			return -EINVAL;
+ 		if (!netif_device_present(dev))
+ 			return -ENODEV;
+-		return dev_mc_add_global(dev, ifr->ifr_hwaddr.sa_data);
++		if (is_multicast_ether_addr(ifr->ifr_hwaddr.sa_data))
++			return dev_mc_add_global(dev, ifr->ifr_hwaddr.sa_data);
++		else
++			return dev_uc_add_global(dev, ifr->ifr_hwaddr.sa_data);
  
--		if (!tone[0] && !noise[0])
-+		if (!tone[0] && !noise[0]) {
- 			; /* TODO: N PHY Adjust Min Noise Var(1, tone, noise)*/
--		else
-+		} else {
- 			; /* TODO: N PHY Adjust Min Noise Var(0, NULL, NULL)*/
-+		}
- 	}
+ 	case SIOCDELMULTI:
+ 		if (!ops->ndo_set_rx_mode ||
+@@ -307,7 +310,10 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
+ 			return -EINVAL;
+ 		if (!netif_device_present(dev))
+ 			return -ENODEV;
+-		return dev_mc_del_global(dev, ifr->ifr_hwaddr.sa_data);
++		if (is_multicast_ether_addr(ifr->ifr_hwaddr.sa_data))
++			return dev_mc_del_global(dev, ifr->ifr_hwaddr.sa_data);
++		else
++			return dev_uc_del_global(dev, ifr->ifr_hwaddr.sa_data);
  
- 	if (nphy->hang_avoid)
-@@ -6166,8 +6169,9 @@ static int b43_phy_initn(struct b43_wldev *dev)
- 
- 	if (nphy->phyrxchain != 3)
- 		b43_nphy_set_rx_core_state(dev, nphy->phyrxchain);
--	if (nphy->mphase_cal_phase_id > 0)
-+	if (nphy->mphase_cal_phase_id > 0) {
- 		;/* TODO PHY Periodic Calibration Multi-Phase Restart */
-+	}
- 
- 	do_rssi_cal = false;
- 	if (phy->rev >= 3) {
-@@ -6211,8 +6215,9 @@ static int b43_phy_initn(struct b43_wldev *dev)
- 				if (!b43_nphy_cal_tx_iq_lo(dev, target, true, false))
- 					if (b43_nphy_cal_rx_iq(dev, target, 2, 0) == 0)
- 						b43_nphy_save_cal(dev);
--			} else if (nphy->mphase_cal_phase_id == 0)
-+			} else if (nphy->mphase_cal_phase_id == 0) {
- 				;/* N PHY Periodic Calibration with arg 3 */
-+			}
- 		} else {
- 			b43_nphy_restore_cal(dev);
- 		}
+ 	case SIOCSIFTXQLEN:
+ 		if (ifr->ifr_qlen < 0)
 -- 
-2.25.1
+2.19.1
 
