@@ -2,87 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C84B7244692
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 10:46:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABD042446AD
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 10:58:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727045AbgHNIqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 04:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726669AbgHNIqe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 04:46:34 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD3AC061383
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 01:46:34 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1k6VM5-00080Q-LP; Fri, 14 Aug 2020 10:46:29 +0200
-Received: from sha by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1k6VM5-0005z1-Cx; Fri, 14 Aug 2020 10:46:29 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     kernel@pengutronix.de, Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH] iproute2: ip maddress: Check multiaddr length
-Date:   Fri, 14 Aug 2020 10:46:26 +0200
-Message-Id: <20200814084626.22953-1-s.hauer@pengutronix.de>
-X-Mailer: git-send-email 2.28.0
+        id S1727793AbgHNI65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 04:58:57 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:54596 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726050AbgHNI64 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 04:58:56 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07E8VQxl187939;
+        Fri, 14 Aug 2020 04:58:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=pp1;
+ bh=3bD+VkoYgERAXYyqXKaVYhVGu32lTtmgYGXCqKyQo7Q=;
+ b=ZddHAH0F7UFwlugExDuDfhw0yeloN8dLRra8nS24qS3PBSzOXPm7Ts+/gEgqyKkAKfhn
+ h9roZ29DfzqyebBDZ+mlvMfNoZwKuUvY/vgVO+UN5xUaYRxyFQQVUBKkS3p2f2UbignO
+ 5qD3k6pQ3eHkE+N969x4BRYPGS5Z5tlHYsTlChV5XhcKrJETbH4owC5Mfth6pRywviD6
+ /hwkPmELQFWY5L8AArjfQdgfHKKTnEM+qOP3eg23gL/vd9vUajWT+kF/wIOGksObU/jK
+ tL4Ny+02NTYyCCgDIY7aMF65xR2FVsBGJ69cT+79WWqRovw+miunECvwubm89GVgpMoE kA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 32w4ba863t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 14 Aug 2020 04:58:41 -0400
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 07E8WUdQ192053;
+        Fri, 14 Aug 2020 04:58:40 -0400
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 32w4ba8637-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 14 Aug 2020 04:58:40 -0400
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07E8pk9c004338;
+        Fri, 14 Aug 2020 08:58:38 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 32skaheefr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 14 Aug 2020 08:58:38 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 07E8wZLf27591046
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 Aug 2020 08:58:35 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A347FA405C;
+        Fri, 14 Aug 2020 08:58:35 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9485AA4064;
+        Fri, 14 Aug 2020 08:58:31 +0000 (GMT)
+Received: from localhost.localdomain.com (unknown [9.85.94.53])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 14 Aug 2020 08:58:31 +0000 (GMT)
+From:   Balamuruhan S <bala24@linux.ibm.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        naveen.n.rao@linux.vnet.ibm.com, ravi.bangoria@linux.ibm.com,
+        sandipan@linux.ibm.com, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, andriin@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org, Balamuruhan S <bala24@linux.ibm.com>
+Subject: [PATCH bpf] selftest/bpf: make bpftool if it is not already built
+Date:   Fri, 14 Aug 2020 14:27:56 +0530
+Message-Id: <20200814085756.205609-1-bala24@linux.ibm.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-14_04:2020-08-14,2020-08-14 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=15 mlxscore=0
+ malwarescore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0
+ priorityscore=1501 clxscore=1011 phishscore=0 spamscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008140060
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ip maddress add|del takes a MAC address as argument, so insist on
-getting a length of ETH_ALEN bytes. This makes sure the passed argument
-is actually a MAC address and especially not an IPv4 address which
-was previously accepted and silently taken as a MAC address.
+test_bpftool error out if bpftool is not available in bpftool dir
+linux/tools/bpf/bpftool, build and clean it as part of test
+bootstrap and teardown.
 
-While at it, do not print *argv in the error path as this has been
-modified by ll_addr_a2n() and doesn't contain the full string anymore,
-which can lead to misleading error messages.
+Error log:
+---------
+test_feature_dev_json (test_bpftool.TestBpftool) ... ERROR
+test_feature_kernel (test_bpftool.TestBpftool) ... ERROR
+test_feature_kernel_full (test_bpftool.TestBpftool) ... ERROR
+test_feature_kernel_full_vs_not_full (test_bpftool.TestBpftool) ... ERROR
+test_feature_macros (test_bpftool.TestBpftool) ... ERROR
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+======================================================================
+ERROR: test_feature_dev_json (test_bpftool.TestBpftool)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ubuntu/disk/linux/tools/testing/selftests/bpf/test_bpftool.py",
+    return f(*args, iface, **kwargs)
+  File "/home/ubuntu/disk/linux/tools/testing/selftests/bpf/test_bpftool.py",
+    res = bpftool_json(["feature", "probe", "dev", iface])
+  File "/home/ubuntu/disk/linux/tools/testing/selftests/bpf/test_bpftool.py",
+    res = _bpftool(args)
+  File "/home/ubuntu/disk/linux/tools/testing/selftests/bpf/test_bpftool.py",
+    return subprocess.check_output(_args)
+  File "/usr/lib/python3.8/subprocess.py", line 411, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+  File "/usr/lib/python3.8/subprocess.py", line 489, in run
+    with Popen(*popenargs, **kwargs) as process:
+  File "/usr/lib/python3.8/subprocess.py", line 854, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.8/subprocess.py", line 1702, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'bpftool'
+
+Signed-off-by: Balamuruhan S <bala24@linux.ibm.com>
 ---
- ip/ipmaddr.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ tools/testing/selftests/bpf/test_bpftool.py | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/ip/ipmaddr.c b/ip/ipmaddr.c
-index 3400e055..9979ed58 100644
---- a/ip/ipmaddr.c
-+++ b/ip/ipmaddr.c
-@@ -291,7 +291,7 @@ static int multiaddr_modify(int cmd, int argc, char **argv)
- {
- 	struct ifreq ifr = {};
- 	int family;
--	int fd;
-+	int fd, len;
+diff --git a/tools/testing/selftests/bpf/test_bpftool.py b/tools/testing/selftests/bpf/test_bpftool.py
+index 4fed2dc25c0a..60357c6891a6 100644
+--- a/tools/testing/selftests/bpf/test_bpftool.py
++++ b/tools/testing/selftests/bpf/test_bpftool.py
+@@ -58,12 +58,25 @@ def default_iface(f):
+     return wrapper
  
- 	if (cmd == RTM_NEWADDR)
- 		cmd = SIOCADDMULTI;
-@@ -313,9 +313,12 @@ static int multiaddr_modify(int cmd, int argc, char **argv)
- 				usage();
- 			if (ifr.ifr_hwaddr.sa_data[0])
- 				duparg("address", *argv);
--			if (ll_addr_a2n(ifr.ifr_hwaddr.sa_data,
--					14, *argv) < 0) {
--				fprintf(stderr, "Error: \"%s\" is not a legal ll address.\n", *argv);
-+			len = ll_addr_a2n(ifr.ifr_hwaddr.sa_data, 14, *argv);
-+			if (len < 0)
-+				exit(1);
+ 
++def make_bpftool(clean=False):
++    cmd = "make"
++    if clean:
++        cmd = "make clean"
++    return subprocess.run(cmd, shell=True, cwd=bpftool_dir, check=True,
++                          stdout=subprocess.DEVNULL)
 +
-+			if (len != ETH_ALEN) {
-+				fprintf(stderr, "Error: Invalid address length %d - must be %d bytes\n", len, ETH_ALEN);
- 				exit(1);
- 			}
- 		}
+ class TestBpftool(unittest.TestCase):
+     @classmethod
+     def setUpClass(cls):
+         if os.getuid() != 0:
+             raise UnprivilegedUserError(
+                 "This test suite needs root privileges")
++        if subprocess.getstatusoutput("bpftool -h")[0]:
++            make_bpftool()
++
++    @classmethod
++    def tearDownClass(cls):
++        make_bpftool(clean=True)
+ 
+     @default_iface
+     def test_feature_dev_json(self, iface):
+
+base-commit: 6e868cf355725fbe9fa512d01b09b8ee7f3358f0
 -- 
-2.28.0
+2.24.1
 
