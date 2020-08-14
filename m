@@ -2,75 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 573A9244F62
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 22:57:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1313244F63
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 22:58:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbgHNU5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 16:57:40 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:60707 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726623AbgHNU5j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Aug 2020 16:57:39 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id bf5f1a45;
-        Fri, 14 Aug 2020 20:31:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :in-reply-to:references:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=+TN2wa+LOq4QM87ME7P9NUTEp60=; b=HOMFuv
-        uzpvALkSBeVcE1qzFX99qQxChE2wW2WX1nv2lF8qEa0s5/GdWMeBkP87MrjZuTwD
-        BxOXbl7SNwjw/ZMb899u6KaUt0SkS2B7lS8OZXYKBbT6+8qjoC1FfLh8LqKJ9w+R
-        Rg79ld2pDDXHz68IY5wZtw3G1UcrGc7btyxh9om/LkHj+j1uLwBtrOOTdcKWaM0+
-        i15hNDOck5n7e8SH4p7g3CE2WFqqgubzX03LkNjSyvYSukaX85PDAR24XJJzlfRP
-        HziGKlyzC1dAAMIOMFWKH6ChAvbAwLgIm5jJUWDTJh0qStqpY5R17JBiikil5AQV
-        yI5A0T7DGSomQ/Yg==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id da41d064 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Fri, 14 Aug 2020 20:31:55 +0000 (UTC)
-Received: by mail-io1-f52.google.com with SMTP id b16so12107234ioj.4;
-        Fri, 14 Aug 2020 13:57:37 -0700 (PDT)
-X-Gm-Message-State: AOAM531cN3ksEC7yPLfUKuSDRgXN+kvaWBBwEB4udDUNRgyz6LNrySdf
-        6kjJcRoJZNV4FoVzzn6yLac9I+X8hoxk+w1t8vc=
-X-Google-Smtp-Source: ABdhPJydifujAdRmCW4r1wpKJqKOGmdl0myw4po/WElOQTXq97MXyEdg0w5t6X9nXhChvUSv7gHDne+iOopcTfRfp3c=
-X-Received: by 2002:a05:6602:15c3:: with SMTP id f3mr3693477iow.25.1597438656291;
- Fri, 14 Aug 2020 13:57:36 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a92:995a:0:0:0:0:0 with HTTP; Fri, 14 Aug 2020 13:57:35
- -0700 (PDT)
-In-Reply-To: <20200814.135546.2266851283177227377.davem@davemloft.net>
-References: <CAHmME9rbRrdV0ePxT0DgurGdEKOWiEi5mH5Wtg=aJwSA6fxwMg@mail.gmail.com>
- <20200814073048.30291-1-Jason@zx2c4.com> <20200814.135546.2266851283177227377.davem@davemloft.net>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 14 Aug 2020 22:57:35 +0200
-X-Gmail-Original-Message-ID: <CAHmME9pQwHeVAseqzA9WYMeh1VHZKRRUc1J=VzWv_0Zoyf8uPg@mail.gmail.com>
-Message-ID: <CAHmME9pQwHeVAseqzA9WYMeh1VHZKRRUc1J=VzWv_0Zoyf8uPg@mail.gmail.com>
-Subject: Re: [PATCH net v5] net: xdp: account for layer 3 packets in generic
- skb handler
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, thomas@sockpuppet.org,
-        adhipati@tuta.io, dsahern@gmail.com, toke@redhat.com,
-        kuba@kernel.org, alexei.starovoitov@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1727830AbgHNU6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 16:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726623AbgHNU6d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 16:58:33 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8299DC061385;
+        Fri, 14 Aug 2020 13:58:33 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 47FD7127471FA;
+        Fri, 14 Aug 2020 13:41:47 -0700 (PDT)
+Date:   Fri, 14 Aug 2020 13:58:32 -0700 (PDT)
+Message-Id: <20200814.135832.2261260970311651260.davem@davemloft.net>
+To:     mkl@pengutronix.de
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: pull-request: can 2020-08-14
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200814110428.405051-1-mkl@pengutronix.de>
+References: <20200814110428.405051-1-mkl@pengutronix.de>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 14 Aug 2020 13:41:47 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/14/20, David Miller <davem@davemloft.net> wrote:
-> From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-> Date: Fri, 14 Aug 2020 09:30:48 +0200
->
->> @@ -4676,6 +4688,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff
->> *skb,
->>  	    (orig_bcast != is_multicast_ether_addr_64bits(eth->h_dest))) {
->>  		__skb_push(skb, ETH_HLEN);
->>  		skb->protocol = eth_type_trans(skb, skb->dev);
->> +		__skb_pull(skb, ETH_HLEN);
->>  	}
->>
->>  	switch (act) {
->
-> This bug fix is separate from your other changes.  Please do not combine
-> them.
->
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+Date: Fri, 14 Aug 2020 13:04:22 +0200
 
-No problem. I'll split this out and resend tomorrow morning.
+> this is a pull request of 6 patches for net/master. All patches fix problems in
+> the j1939 CAN networking stack.
+> 
+> The first patch is by Eric Dumazet fixes a kernel-infoleak in
+> j1939_sk_sock2sockaddr_can().
+> 
+> The remaining 5 patches are by Oleksij Rempel and fix recption of j1939
+> messages not orginated by the stack, a use-after-free in j1939_tp_txtimer(),
+> ensure that the CAN driver has a ml_priv allocated. These problem were found by
+> google's syzbot. Further ETP sessions with block size of less than 255 are
+> fixed and a sanity check was added to j1939_xtp_rx_dat_one() to detect packet
+> corruption.
 
-Jason
+Pulled, thank you Marc.
