@@ -2,59 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A8C6244C1E
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 17:28:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D26F244C2B
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 17:32:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727829AbgHNP2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 11:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726804AbgHNP2F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 11:28:05 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC705C061384
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 08:28:05 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id s15so4695045pgc.8
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 08:28:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=c7uNM8Gy1kbQT64V2s6Yo+EyqpoCo3FsPH5b97bLSdc=;
-        b=lPSFT9SiJvDSCnjFe/xx10qnx5K8l8Af40U9kpab/GlJuUaXO/cMylzlZL0VgmYaQq
-         AcsgXVS76/J8ZlwpKbSkWGspyJ/VvXOTPmt5Z5L4znYPIgT5icLbmTbsiE80+lFeQx/9
-         0NaeSwvCDgGTVeTmawk1/ZtCpl6E79+Lr+M0HB1ZjfJopq0Fb24/thp9RfWO87nQwr0I
-         d/o/FGtF94GA/ZkwJnKyAnhtF+1LZ7XWJc9DM3sLy9RLrrzBsxM07iEu7GReMnZa8hSk
-         Qum4fHn4JTMxW1zRVbzv5JCh50DYdRhli9bLXtqVoD7ijBTCIOquaMSGIMyrLoS+UfZq
-         1ThQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=c7uNM8Gy1kbQT64V2s6Yo+EyqpoCo3FsPH5b97bLSdc=;
-        b=SmGKTTi5skRjUNWYk719hP6ycuZMsNCXJfZ/YuNTVnr/aOGcy5k6c5eOSq1z7cU14e
-         eWljURlC+r4Zf6ryyXQAicUzNHGqOek7mzhl7kQUZaqfHi7hf27SlKB+HcWC/+Q7u0GV
-         66bxZHyVTPK3cPTrUZysplkCJ0GxT/2HcPgD/3O2Wq3ObMhNnibW90FYwaTUxMjm11bO
-         yjb1cqwOqLCM4urs5w2QNrsGUpLrdAVun+5HupKtmEJ2Hpv1FdLxZ/uda1hxeEmwcE4D
-         4tpIG2CXJgpWIgcFNKvECpVxMXuVlElL3BmqhBF01ynm055dj0SzbhLCDRkKwN2qvG6a
-         YAbQ==
-X-Gm-Message-State: AOAM533FCdGW9ui4/ZpJcBDg1T0nMzITKTJwOlAOdSd5BKawbfCg7pYQ
-        +dPsNyRBXTcf7BjP7S/B6o0n7+9J3bTSnw==
-X-Google-Smtp-Source: ABdhPJyyvv1XrOxvuVNb+j1mQt3Eg4zUVp81Q2iuZvC7fWXX5XqHxZXtI4wNg8tWYXcIYtwagtMGyQ==
-X-Received: by 2002:a62:7794:: with SMTP id s142mr2108759pfc.99.1597418885149;
-        Fri, 14 Aug 2020 08:28:05 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id a4sm8600039pju.49.2020.08.14.08.28.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Aug 2020 08:28:04 -0700 (PDT)
-Date:   Fri, 14 Aug 2020 08:27:56 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     netdev@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH] iproute2: ip maddress: Check multiaddr length
-Message-ID: <20200814082756.18888961@hermes.lan>
-In-Reply-To: <20200814084626.22953-1-s.hauer@pengutronix.de>
-References: <20200814084626.22953-1-s.hauer@pengutronix.de>
+        id S1727093AbgHNPcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 11:32:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32864 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726652AbgHNPbz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Aug 2020 11:31:55 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E4A5920716;
+        Fri, 14 Aug 2020 15:31:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597419115;
+        bh=jOHBxpiEEXCGJcWu6VassLagL4Xk2l1CNFHOrYO+bYY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=j26cARGS4bXxo0wmWQl2ZMdAn6Bi1i4ehSN4fj5RCb8Las0LxyegZCBvC/IWKjZ25
+         vmA3N6EMCa95LLiHKACM5BLx4iCspOQqAkTdaCQy0spXCoPRmM9F1WUg4jgYkTyIrb
+         2f+RKUCsSBpZ7hhAKR5M7ocgXtKwpjOcfiz1VCOs=
+Date:   Fri, 14 Aug 2020 08:31:53 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Thomas Ptacek <thomas@sockpuppet.org>,
+        Adhipati Blambangan <adhipati@tuta.io>,
+        David Ahern <dsahern@gmail.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Subject: Re: [PATCH net v4] net: xdp: account for layer 3 packets in generic
+ skb handler
+Message-ID: <20200814083153.06b180b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAHmME9rbRrdV0ePxT0DgurGdEKOWiEi5mH5Wtg=aJwSA6fxwMg@mail.gmail.com>
+References: <20200813195816.67222-1-Jason@zx2c4.com>
+        <20200813140152.1aab6068@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAHmME9rbRrdV0ePxT0DgurGdEKOWiEi5mH5Wtg=aJwSA6fxwMg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -63,43 +47,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Aug 2020 10:46:26 +0200
-Sascha Hauer <s.hauer@pengutronix.de> wrote:
+On Fri, 14 Aug 2020 08:56:48 +0200 Jason A. Donenfeld wrote:
+> On Thu, Aug 13, 2020 at 11:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > I had originally dropped this patch, but the issue kept coming up in
+> > > user reports, so here's a v4 of it. Testing of it is still rather slim,
+> > > but hopefully that will change in the coming days.  
+> >
+> > Here an alternative patch, untested:  
+> 
+> Funny. But come on now... Why would we want to deprive our users of
+> system consistency?
 
-> ip maddress add|del takes a MAC address as argument, so insist on
-> getting a length of ETH_ALEN bytes. This makes sure the passed argument
-> is actually a MAC address and especially not an IPv4 address which
-> was previously accepted and silently taken as a MAC address.
-> 
-> While at it, do not print *argv in the error path as this has been
-> modified by ll_addr_a2n() and doesn't contain the full string anymore,
-> which can lead to misleading error messages.
-> 
-> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> ---
->  ip/ipmaddr.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/ip/ipmaddr.c b/ip/ipmaddr.c
-> index 3400e055..9979ed58 100644
-> --- a/ip/ipmaddr.c
-> +++ b/ip/ipmaddr.c
-> @@ -291,7 +291,7 @@ static int multiaddr_modify(int cmd, int argc, char **argv)
->  {
->  	struct ifreq ifr = {};
->  	int family;
-> -	int fd;
-> +	int fd, len;
->  
->  	if (cmd == RTM_NEWADDR)
->  		cmd = SIOCADDMULTI;
-> @@ -313,9 +313,12 @@ static int multiaddr_modify(int cmd, int argc, char **argv)
->  				usage();
->  			if (ifr.ifr_hwaddr.sa_data[0])
->  				duparg("address", *argv);
-> -			if (ll_addr_a2n(ifr.ifr_hwaddr.sa_data,
-> -					14, *argv) < 0) {
-> -				fprintf(stderr, "Error: \"%s\" is not a legal ll address.\n", *argv);
-> +			len = ll_addr_a2n(ifr.ifr_hwaddr.sa_data, 14, *argv);
+We should try for consistency between xdp and cls_bpf instead.
 
-While you are at it, get rid of the hard code 14 here and use sizeof(ifr.ifr_hwaddr.sa_data)?
+> Doesn't it make sense to allow users to use the same code across
+> interfaces? You actually want them to rewrite their code to use a
+> totally different trigger point just because of some weird kernel
+> internals between interfaces?
+
+We're not building an abstraction over the kernel stack so that users
+won't have to worry how things work. Users need to have a minimal
+understanding of how specific hooks integrate with the stack and what
+they are for. And therefore why cls_bpf is actually more efficient to
+use in L3 tunnel case.
+
+> Why not make XDP more useful and more generic across interfaces? It's
+> very common for systems to be receiving packets with a heavy ethernet
+> card from the current data center, in addition to receiving packets
+> from a tunnel interface connected to a remote data center, with a need
+> to run the same XDP program on both interfaces. Why not support that
+> kind of simplicity?
+> 
+> This is _actually_ something that's come up _repeatedly_. This is a
+> real world need from real users who are doing real things. Why not
+> help them?
+
+I'm sure it comes up repeatedly because we don't return any errors,
+so people waste time investigating why it doesn't work.
+
+> It's not at the expense of any formal consistency, or performance, or
+> even semantic perfection. It costs very little to support these
+> popular use cases.
