@@ -2,67 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A76A824492C
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 13:44:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D68A244923
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 13:43:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728043AbgHNLoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 07:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39668 "EHLO
+        id S1728145AbgHNLjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 07:39:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728106AbgHNLjs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 07:39:48 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE6EC061387
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:39:48 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id f18so8228369wmc.0
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:39:48 -0700 (PDT)
+        with ESMTP id S1728117AbgHNLjv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 07:39:51 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2FBC061385
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:39:50 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id c15so8037461wrs.11
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:39:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Jmvmk4Q+PrpP0fEH57Cf6D9tPKOf5EojpThDuxlUrjQ=;
-        b=lNAS2xDiXBRodT3zZ1ho7xTZfJLW0acXN9AiflPjRb4vW9teDq0sMQJkO9MYu2GBxS
-         ntbuP4119uVsgffokOm2NXa2u1DErGaUo46E7ArfoMQ45/h9eiNYSBSWs6YHMYf6326v
-         szNBfkDOdLfXIXVc56AzHvh9PmIUuK/FtoeyXv60KPRJx/OHem49ax6sF4Zoxw4Jp0HX
-         4XTiroXKVnqtDgCbFW9UMti3Ba15Jc+IOLVu21J3f2ParAy4/9fBFYozDa17nU69147n
-         5ZRUzrvA4a0SLD39Kuzxe9OrBrx+cY4GT5ggzRWIBxQkAGzwbKGyGe9qTc4DKH1hX0zY
-         /cyw==
+        bh=ZMwswRr+OImQYjmw7l/E8TzYSmNdiYoxWwAodNgtACY=;
+        b=UiyD6Jii1LOQLLjARIww/2EHZGil9CEhQQoNcfeOB/w/wxnz8mUJR37gK0yGidtAQQ
+         atVaJI75zk78BsO52FBLhSA5ZTaL2DZn/gDdzbN0e6hCr+OxY0FZjLmXobESjdj2ozmA
+         GLTSmNS2xGD8YZGrjIC38bTfDbkgPVWbXB5zSc3l9KeDKd6+V9Fn51Sp8wQjRycaJz56
+         aDl2/HkDvx8fJScR7BlJXy3nkrhYCSrXzWgi/+c1MFLYWo93CdGeogbHjR8g0Fhl2Lex
+         sEPn0Jxh6eLFznGJcfcEUBu+6xOzgURZMgbdRQ33lRmhkHa+ZFaOv/649GJr3F4SSLOZ
+         Z7jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Jmvmk4Q+PrpP0fEH57Cf6D9tPKOf5EojpThDuxlUrjQ=;
-        b=k28AqhfqKXqtEx2O/ZqRSP5g5l18lWGu7MIyxAp0cex3vmrtBA+A0DK6lEC3yPuk6c
-         /rZ+12Cu5YgRfMQFZdg/3wNSFYR3/0VbsMZ67PyXq5fCzkQkn0yI44eY4B2HAquWbFi0
-         jL4HmJfQEvxmPEqPZyBBIhMUh+nvkYl1sUJIblVSgsO34pB2dtOwy0Unh9nbQZET3bGM
-         Fcuxgw46/a63phMxNGHWytcA2NTbdkpNfxbbyFGo83ZjKtGs00xUvkaMEP/+0UCjbyrh
-         EOyMQ3qdtXXpmUsK/AbtjT2v0IJovoJHjbxLc4VXoFUEjFz99yKhIB2ZuC2I1t/yXLah
-         2FPw==
-X-Gm-Message-State: AOAM533O4txoGRuMfjHLFa8omNN8BdufLrs1QNvJy+i1fxYffBhoyfNH
-        VD+2kQNNZTIh0gfjjFq+ZGX9Uw==
-X-Google-Smtp-Source: ABdhPJy95B9JCQ17J8ciJby1aFSQ7We3ewp78KTdZreaF35CI0bjsdZqnLQGEGuzSVEvTUVXKxgxKA==
-X-Received: by 2002:a1c:f605:: with SMTP id w5mr2184556wmc.26.1597405187342;
-        Fri, 14 Aug 2020 04:39:47 -0700 (PDT)
+        bh=ZMwswRr+OImQYjmw7l/E8TzYSmNdiYoxWwAodNgtACY=;
+        b=gh/Y/oU0d5J5TezC6i1Skr7xbpXIAUpvGpqTAD3pJtTSSZXG2lGiT/qoaJgizhjfbj
+         YtFYOl9Rl3rwOpXH7XoJdHsanduBVLAs6vte0Y2pGlOUmY/Wv+kZcgZ/IQMRVN8vcsP1
+         8Ito3NUUtavdEiAhN3Vuy8QagZaZ+iC6CvIJfdSEr7OlSLLl9o/toTJ7bGJTNvZV3RKb
+         /SUQOErGp2kgoAfaZUOSCmV89faW46dLYEt1q8D0uYkAJcfHKX39Zzs3/k4Q69ImETXU
+         z/FVEy8PBLp+RC6YB1PkMbHcLxxG8fxAF7suHNznj+7SvP/nRldqS3aJXQ3wBmrYBHTB
+         FpdQ==
+X-Gm-Message-State: AOAM531yaZZZ9KTEwh4BSQuNbyq8BUYyg8YLZNuTNNe6OzdiiltUShyR
+        KWBwE08+a4xyDLVcNybWuSorGw==
+X-Google-Smtp-Source: ABdhPJxBIbPtwyMiHlThcvPK2rIwSNAKbuEMthQoEfjESrCTnUINMWJpIWcVBeReVuxX8twgIbmXXw==
+X-Received: by 2002:adf:edc3:: with SMTP id v3mr2355759wro.193.1597405189077;
+        Fri, 14 Aug 2020 04:39:49 -0700 (PDT)
 Received: from dell.default ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id 32sm16409129wrh.18.2020.08.14.04.39.46
+        by smtp.gmail.com with ESMTPSA id 32sm16409129wrh.18.2020.08.14.04.39.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Aug 2020 04:39:46 -0700 (PDT)
+        Fri, 14 Aug 2020 04:39:48 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Martin Habets <mhabets@solarflare.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        William Lee <william@asix.com.tw>,
-        "A. Hinds --" <dahinds@users.sourceforge.net>,
-        reached at <becker@scyld.com>, netdev@vger.kernel.org
-Subject: [PATCH 06/30] net: ethernet: 8390: axnet_cs: Document unused parameter 'txqueue'
-Date:   Fri, 14 Aug 2020 12:39:09 +0100
-Message-Id: <20200814113933.1903438-7-lee.jones@linaro.org>
+        Kalle Valo <kvalo@codeaurora.org>,
+        Martin Langer <martin-langer@gmx.de>,
+        Stefano Brivio <stefano.brivio@polimi.it>,
+        Michael Buesch <m@bues.ch>, van Dyk <kugelfang@gentoo.org>,
+        Andreas Jaggi <andreas.jaggi@waterwave.ch>,
+        Albert Herranz <albert_herranz@yahoo.es>,
+        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
+        netdev@vger.kernel.org
+Subject: [PATCH 07/30] net: wireless: broadcom: b43: main: Add braces around empty statements
+Date:   Fri, 14 Aug 2020 12:39:10 +0100
+Message-Id: <20200814113933.1903438-8-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200814113933.1903438-1-lee.jones@linaro.org>
 References: <20200814113933.1903438-1-lee.jones@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -71,34 +74,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/ethernet/8390/axnet_cs.c:907: warning: Function parameter or member 'txqueue' not described in 'axnet_tx_timeout'
+ drivers/net/wireless/broadcom/b43/main.c: In function ‘b43_dummy_transmission’:
+ drivers/net/wireless/broadcom/b43/main.c:785:3: warning: suggest braces around empty body in an ‘if’ statement [-Wempty-body]
+ drivers/net/wireless/broadcom/b43/main.c: In function ‘b43_do_interrupt_thread’:
+ drivers/net/wireless/broadcom/b43/main.c:2017:3: warning: suggest braces around empty body in an ‘if’ statement [-Wempty-body]
 
+Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Martin Habets <mhabets@solarflare.com>
-Cc: Shannon Nelson <snelson@pensando.io>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: William Lee <william@asix.com.tw>
-Cc: "A. Hinds --" <dahinds@users.sourceforge.net>
-Cc: reached at <becker@scyld.com>
+Cc: Martin Langer <martin-langer@gmx.de>
+Cc: Stefano Brivio <stefano.brivio@polimi.it>
+Cc: Michael Buesch <m@bues.ch>
+Cc: van Dyk <kugelfang@gentoo.org>
+Cc: Andreas Jaggi <andreas.jaggi@waterwave.ch>
+Cc: Albert Herranz <albert_herranz@yahoo.es>
+Cc: linux-wireless@vger.kernel.org
+Cc: b43-dev@lists.infradead.org
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/ethernet/8390/axnet_cs.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/broadcom/b43/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/8390/axnet_cs.c b/drivers/net/ethernet/8390/axnet_cs.c
-index aeae7966a082f..08db4c9da2fa8 100644
---- a/drivers/net/ethernet/8390/axnet_cs.c
-+++ b/drivers/net/ethernet/8390/axnet_cs.c
-@@ -898,6 +898,7 @@ static int ax_close(struct net_device *dev)
- /**
-  * axnet_tx_timeout - handle transmit time out condition
-  * @dev: network device which has apparently fallen asleep
-+ * @txqueue: unused
-  *
-  * Called by kernel when device never acknowledges a transmit has
-  * completed (or failed) - i.e. never posted a Tx related interrupt.
+diff --git a/drivers/net/wireless/broadcom/b43/main.c b/drivers/net/wireless/broadcom/b43/main.c
+index a54dd4f7fa54a..2a29fa69f692c 100644
+--- a/drivers/net/wireless/broadcom/b43/main.c
++++ b/drivers/net/wireless/broadcom/b43/main.c
+@@ -781,8 +781,9 @@ void b43_dummy_transmission(struct b43_wldev *dev, bool ofdm, bool pa_on)
+ 	b43_write16(dev, B43_MMIO_XMTSEL, 0x0826);
+ 	b43_write16(dev, B43_MMIO_TXE0_CTL, 0x0000);
+ 
+-	if (!pa_on && phy->type == B43_PHYTYPE_N)
++	if (!pa_on && phy->type == B43_PHYTYPE_N) {
+ 		; /*b43_nphy_pa_override(dev, false) */
++	}
+ 
+ 	switch (phy->type) {
+ 	case B43_PHYTYPE_N:
+@@ -2013,8 +2014,9 @@ static void b43_do_interrupt_thread(struct b43_wldev *dev)
+ 		handle_irq_beacon(dev);
+ 	if (reason & B43_IRQ_PMQ)
+ 		handle_irq_pmq(dev);
+-	if (reason & B43_IRQ_TXFIFO_FLUSH_OK)
++	if (reason & B43_IRQ_TXFIFO_FLUSH_OK) {
+ 		;/* TODO */
++	}
+ 	if (reason & B43_IRQ_NOISESAMPLE_OK)
+ 		handle_irq_noise(dev);
+ 
 -- 
 2.25.1
 
