@@ -2,89 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B72CF244520
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 08:57:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CDAA24453E
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 09:09:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726455AbgHNG5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 02:57:02 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:33007 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726091AbgHNG5C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Aug 2020 02:57:02 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 67478349
-        for <netdev@vger.kernel.org>;
-        Fri, 14 Aug 2020 06:31:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=QAi5ZfWxfb4Xzi8SgOxteUmhlNQ=; b=YCQmGi
-        4UYlALkG/fl0ofcAUOw/KbvtA9qrGEp5kxMvDyXhg5roMCOAQSYtH8vG2I0WLwU5
-        6nAz4pLqQUvs1H7YARBb9MN6aVh0mt2r5wsfvTkNL2ieV5HVaNKEo0TTgOF6jLKR
-        UyI/TmyPFBaAM4+InIjTM8L6n9mjkbtavktU/ChlDSewcXL/m8O6Iqikv0JBWtP+
-        RY0wlTlzs1Eth2n10Mb1W/sy0anMlQLg9Q8Ut/R0BdvlzgRSz60bfvb4tLVoBRhw
-        yE+m91QgioObFyxQarpzviMoKgo4XzXyGA2IiEhWJnnw+deS1aDKWCwHDgHZUh/p
-        p2kndwbxIOtvCCJg==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2909e36d (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Fri, 14 Aug 2020 06:31:23 +0000 (UTC)
-Received: by mail-io1-f49.google.com with SMTP id z6so9834484iow.6
-        for <netdev@vger.kernel.org>; Thu, 13 Aug 2020 23:57:00 -0700 (PDT)
-X-Gm-Message-State: AOAM531FHuQCB7r73syGdLM9oFX76yTmv1O5j5MBn4HwyPjLK2VF5IoM
-        3Pcrq1NLzbimGW0+Lm6tgyVpXza3OaBTnWjyR4k=
-X-Google-Smtp-Source: ABdhPJwghdP1cc93FiGzF7DYV3YVBQ0OiOTLAXH2S4PepxFfqW7ynGBXvhpsIKs6LGxjAyaWlcHQtS1g8jZD8fBXoXY=
-X-Received: by 2002:a05:6638:1027:: with SMTP id n7mr1543520jan.86.1597388219934;
- Thu, 13 Aug 2020 23:56:59 -0700 (PDT)
+        id S1726237AbgHNHIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 03:08:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726006AbgHNHIo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 03:08:44 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF948C061757
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 00:08:43 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id i10so8894589ljn.2
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 00:08:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uPbmn/u6g9gKyCwRFx78Ln8dhwRaKx1gs+n42Nu7NAo=;
+        b=BxNt+9mWfNNJTTzoL96Zv/fvOr+0b0g7nZfiRCjhDAzt7Qpu5g+mMldRmzL4Awajn2
+         nECkkTFJf7e6iTsXGX0KQ32WKzbuIF6TdM2Ysk3wYjj2MgPHLmAjRZ6+soFtgNkY2VZ5
+         YxpmtHudzvF1bozOcSmJplwADl/FOHmj29xg+v4VdlzOHRTGciNQ8vrCrvbNu1z9zOgu
+         Lj4Jmb7NIofDSe8POL9odaWmGjy+uFOVbMicN0ljR/iAguaaNxYkDyMflx+/ZO+VgD8g
+         eN528dkI8Npo6sVvWOM/iyVzQ4b+FuV68czcmfk2fPobj5GzEtsRbPMlc7CXDUiyKN+K
+         HLyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uPbmn/u6g9gKyCwRFx78Ln8dhwRaKx1gs+n42Nu7NAo=;
+        b=pyFpe7bvpMum/HQib2UmLnSVhq7cL2zV1mHzNGMNQwChuuhzYjjxm9ZCO7pvetIGCo
+         snZS3ypwaEX5uxj5tYvccRPwWrMiDxuuASKj356Jw2AURErYSlywImaF4ucKT1fQ5Ppl
+         zZvJ0PK7nhBr5fDI2iJi0TL5MeIGw3JIURNYriqRWrlalOFx+dmBCYiYxFebc2eV1Ubf
+         s9X6jaxHPBWZyD0qnXhMJmmu7mLb7M9yJ7SqgWD1o67KzsgGrlrKtTZSulKfwzESE7sl
+         +Df1MnXwDxtpuAaj5cgA0OtGDG3MaloWyxP+2kgetLQGQojY/yWGgRrufmIbzzTUpBgh
+         AuQg==
+X-Gm-Message-State: AOAM53002BLsAlz4B6U7RhEDvO7zamuafW0EECaTpYrP+HwsBZDPToyX
+        QqwPuA8gvVognQlVoT4sUbfa1+lISDTSWAqHCFA=
+X-Google-Smtp-Source: ABdhPJzm75kAIrlIPs0GNnEHP7yXUoQI3JB623nqPUcxrWEZvaN8iY7I5jkpHTCTCMopzpXnqeaBkZnfE9UgJNh/+UI=
+X-Received: by 2002:a2e:8999:: with SMTP id c25mr728879lji.430.1597388921873;
+ Fri, 14 Aug 2020 00:08:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200813195816.67222-1-Jason@zx2c4.com> <20200813140152.1aab6068@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200813140152.1aab6068@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 14 Aug 2020 08:56:48 +0200
-X-Gmail-Original-Message-ID: <CAHmME9rbRrdV0ePxT0DgurGdEKOWiEi5mH5Wtg=aJwSA6fxwMg@mail.gmail.com>
-Message-ID: <CAHmME9rbRrdV0ePxT0DgurGdEKOWiEi5mH5Wtg=aJwSA6fxwMg@mail.gmail.com>
-Subject: Re: [PATCH net v4] net: xdp: account for layer 3 packets in generic
- skb handler
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Thomas Ptacek <thomas@sockpuppet.org>,
-        Adhipati Blambangan <adhipati@tuta.io>,
-        David Ahern <dsahern@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+References: <CANXY5y+iuzMg+4UdkPJW_Efun30KAPL1+h2S7HeSPp4zOrVC7g@mail.gmail.com>
+ <c508eeba-c62d-e4d9-98e2-333c76c90161@gmail.com> <CANXY5y+gfZuGvv+pjzDOLS8Jp8ZUFpAmNw7k53O6cDuyB1PCnw@mail.gmail.com>
+ <1b4ebdb3-8840-810a-0d5e-74e2cf7693bf@gmail.com> <CANXY5yJeCeC_FaQHx0GPn88sQCog59k2vmu8o-h6yRrikSQ3vQ@mail.gmail.com>
+ <deb7a653-a01b-da4f-c58e-15b6c0c51d75@gmail.com> <CANXY5yKNOkBWUTVjOCBBPfACTV_R89ydiOi=YiOZ92in_VEp4w@mail.gmail.com>
+ <962617e5-9dec-6715-d550-4cf3ee414cf6@gmail.com>
+In-Reply-To: <962617e5-9dec-6715-d550-4cf3ee414cf6@gmail.com>
+From:   mastertheknife <mastertheknife@gmail.com>
+Date:   Fri, 14 Aug 2020 10:08:30 +0300
+Message-ID: <CANXY5yKW=+e1CsoXCb0p_+6n8ZLz4eoOQz_5OkrrjYF6mpU9ZQ@mail.gmail.com>
+Subject: Re: PMTUD broken inside network namespace with multipath routing
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 13, 2020 at 11:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > I had originally dropped this patch, but the issue kept coming up in
-> > user reports, so here's a v4 of it. Testing of it is still rather slim,
-> > but hopefully that will change in the coming days.
+Hello David,
+
+It's on a production system, vmbr2 is a bridge with eth.X VLAN
+interface inside for the connectivity on that 252.0/24 network. vmbr2
+has address 192.168.252.5 in that case
+192.168.252.250 and 192.168.252.252 are CentOS8 LXCs on another host,
+with libreswan inside for any/any IPSECs with VTi interfaces.
+
+Everything is kernel 5.4.44 LTS
+
+I wish i could fully reproduce all of it in a script, but i am not
+sure how to create such hops that return this ICMP
+
+Thank you,
+Kfir
+
+
+On Wed, Aug 12, 2020 at 10:21 PM David Ahern <dsahern@gmail.com> wrote:
 >
-> Here an alternative patch, untested:
-
-Funny. But come on now... Why would we want to deprive our users of
-system consistency?
-
-Doesn't it make sense to allow users to use the same code across
-interfaces? You actually want them to rewrite their code to use a
-totally different trigger point just because of some weird kernel
-internals between interfaces?
-
-Why not make XDP more useful and more generic across interfaces? It's
-very common for systems to be receiving packets with a heavy ethernet
-card from the current data center, in addition to receiving packets
-from a tunnel interface connected to a remote data center, with a need
-to run the same XDP program on both interfaces. Why not support that
-kind of simplicity?
-
-This is _actually_ something that's come up _repeatedly_. This is a
-real world need from real users who are doing real things. Why not
-help them?
-
-It's not at the expense of any formal consistency, or performance, or
-even semantic perfection. It costs very little to support these
-popular use cases.
-
-[FYI, there's one tweak I'd like to make, so I'll probably send v5 ~soon.]
-
-Jason
+> On 8/12/20 6:37 AM, mastertheknife wrote:
+> > Hello David,
+> >
+> > I tried and it seems i can reproduce it:
+> >
+> > # Create test NS
+> > root@host:~# ip netns add testns
+> > # Create veth pair, veth0 in host, veth1 in NS
+> > root@host:~# ip link add veth0 type veth peer name veth1
+> > root@host:~# ip link set veth1 netns testns
+> > # Configure veth1 (NS)
+> > root@host:~# ip netns exec testns ip addr add 192.168.252.209/24 dev veth1
+> > root@host:~# ip netns exec testns ip link set dev veth1 up
+> > root@host:~# ip netns exec testns ip route add default via 192.168.252.100
+> > root@host:~# ip netns exec testns ip route add 192.168.249.0/24
+> > nexthop via 192.168.252.250 nexthop via 192.168.252.252
+> > # Configure veth0 (host)
+> > root@host:~# brctl addif vmbr2 veth0
+>
+> vmbr2's config is not defined.
+>
+> ip li add vmbr2 type bridge
+> ip li set veth0 master vmbr2
+> ip link set veth0 up
+>
+> anything else? e.g., address for vmbr2? What holds 192.168.252.250 and
+> 192.168.252.252
