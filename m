@@ -2,121 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ACFA244CCC
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 18:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D117244CD2
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 18:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728018AbgHNQih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 12:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57782 "EHLO
+        id S1728002AbgHNQkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 12:40:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726700AbgHNQig (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 12:38:36 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18A2C061384
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 09:38:35 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id 3so8454022wmi.1
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 09:38:35 -0700 (PDT)
+        with ESMTP id S1726196AbgHNQkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 12:40:33 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631A3C061384;
+        Fri, 14 Aug 2020 09:40:33 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id j9so8939921ilc.11;
+        Fri, 14 Aug 2020 09:40:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=SBRnLFjikbgUE3zhul5CZPoOJXI826l4dDRWqFfAQRw=;
-        b=KFwZiGgGsHOEQTkED76nmBtiNDbHKD6KDhybIgSAGbZvZJg0xNdODvEI53hyV7GVQq
-         fv6hqAIMlvAzZZ/H+0svImJXztuW8n+06vvlckdkmKFvtA30QhP8xutcoXJqrxq0GxXk
-         1b5uZAP095ez+KqvWry9UQgjiMeVB4IZkisACV1h9qlAVFN59iLGEeuij5V7ciNXqLrR
-         DAHbNYpEOpitJZR4USDa+8UbITYPbhO6VHr6Rvfmo8CEKofCfAyITHcfBbrxc2szZznV
-         FGGP9j5NnYrV6b8JVilkN+og4BUDJJIFUNq1WvIqeKb8lPc+kwlIO3BQdDraGHhz5SQL
-         0UTw==
+        d=gmail.com; s=20161025;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=6kFd9MKJ26HXWbtZalFdRqvz3pTX7PP0OTXt4UnbRWo=;
+        b=n5LWdSu7L9rgnPtztRpSIfGLxql9kQGyKLAbC+ID0HNw8i12hLRYN9Gg5xTSxvjjFb
+         ENw2YIpZL/fIuLE9nLvTkO2Zf07KDkKCit2uiZQ/IXcqWm28jWQSAYIMcYOmAc5bV3ME
+         U7pYhRgOaci3HKZyFI7lv3QPYVPAdHlsaPplA6kZU0DOkuoj4IVfFxZqZdZJILsJvbw/
+         kKZ1inh/0aRkArdJ6ETKLP3V7+GPJ0tml8UUiesQlR3GhcbDRF2iCgPU8GyiSdnnpQpr
+         B3OS35sJJ7LSn856cPU99tnhpz0XdqMgG+4Vra61B2Gbug1XTAI8FVEtE3TKfiKIVmRE
+         Q71g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=SBRnLFjikbgUE3zhul5CZPoOJXI826l4dDRWqFfAQRw=;
-        b=VBUiIjqLhNit+qE1ddeSoZY6fquIfFulJNu/dCqyfwdswsaMmY67XdZkCllJDvGCTz
-         7Ow5YVcDbnw+EEGkNmWV755LjjwpCE93UkdcarImEL3RjYtAkgREmVj6HWLuweu9dLBN
-         TsB2hfstV81iz0XlC+Kh01v1vlMWRfUIw8H66oAnlmurNPn7JfpzMl3eh0Uu5kHFgXQm
-         38yBCeEO+zRPWqTeFYfd2XV4uFtX8Skkiah+33skRyVgG8qP+yHHFIHeQGEmMF/y0n7u
-         ED4uJ/B2EPhp3VC0EP2svx56GFrwjmrw6in29JptV/B1GatGiCOuO0F8cMOuWsyxNqza
-         x86A==
-X-Gm-Message-State: AOAM531t1cmngZbkipA41TZfUCZ1cWXx/hIwOqi4f3IfIXGFEVneLBdc
-        UOKTtvZ2sV6X1ASJ3lVkwpyqsw==
-X-Google-Smtp-Source: ABdhPJzibn0jjmtjzLY2ilhQ9fx+rMUtqgQREpZcOlyPu6KoHh7sYeqxx1ZLF1RbiozQAYxr3iNwGQ==
-X-Received: by 2002:a1c:3285:: with SMTP id y127mr3273780wmy.104.1597423114464;
-        Fri, 14 Aug 2020 09:38:34 -0700 (PDT)
-Received: from dell ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id r22sm16053717wmh.45.2020.08.14.09.38.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Aug 2020 09:38:33 -0700 (PDT)
-Date:   Fri, 14 Aug 2020 17:38:31 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        Benjamin Reed <breed@users.sourceforge.net>,
-        Javier Achirica <achirica@users.sourceforge.net>,
-        Jean Tourrilhes <jt@hpl.hp.com>,
-        Fabrice Bellet <fabrice@bellet.info>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 12/30] net: wireless: cisco: airo: Fix a myriad of coding
- style issues
-Message-ID: <20200814163831.GN4354@dell>
-References: <20200814113933.1903438-1-lee.jones@linaro.org>
- <20200814113933.1903438-13-lee.jones@linaro.org>
- <87r1s9l0mc.fsf@codeaurora.org>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=6kFd9MKJ26HXWbtZalFdRqvz3pTX7PP0OTXt4UnbRWo=;
+        b=PRvUDJR3fJcmdPwufol1TesfrZRoTCnKckjUGqDxPTb+QDqOvIwee3soCxrOPryAQL
+         OXOh/Vdqe8Aq2qz665tYn/TPTDdHlx7p9wJOq4E9BN/npJEco3Xeb1SyhxOuj3bgMlHC
+         amweigprNBMud5FliKc56Wj4H6yMWLO1AyGG3sN/qDbfawLi+/bAjZjw7LdrhfP6dqgm
+         svMJ4tGURqnylManOdhaYapoN7lAxh9xqyAxI7ZGxjuru+PZr/LxjjxzrSK+jwoF18C/
+         b26BnccPHsXlUIygKy8azTU8avqc3AraWE3T69KCoSBZQKUHwJc8JICUt3phdLlCrdIL
+         TyRA==
+X-Gm-Message-State: AOAM530Q+F6DNl2bvTwgsbrn6gNuN7cv/Y8sZ/HtCe+EJRVTQItESmCS
+        mqXWruRuUwuB2SqZoyxiRY1ykhjlsJWxE1Qw1fQ=
+X-Google-Smtp-Source: ABdhPJzvaBuDiE50Vb6Q7YRhmN5NkFmWlJD3sMdLIyDRDHJv8cYBY5vvXM5zEZduDvaYqXBCYDiGO4BFv2Kg36Hw8PU=
+X-Received: by 2002:a92:98c1:: with SMTP id a62mr3201014ill.195.1597423232780;
+ Fri, 14 Aug 2020 09:40:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87r1s9l0mc.fsf@codeaurora.org>
+Received: by 2002:a05:6602:2815:0:0:0:0 with HTTP; Fri, 14 Aug 2020 09:40:32
+ -0700 (PDT)
+In-Reply-To: <20200814144844.1920-1-tangbin@cmss.chinamobile.com>
+References: <20200814144844.1920-1-tangbin@cmss.chinamobile.com>
+From:   Tom Psyborg <pozega.tomislav@gmail.com>
+Date:   Fri, 14 Aug 2020 18:40:32 +0200
+Message-ID: <CAKR_QVLYeY5g8kuGwCPBj+aRMmE_yAUYx593vW1-UGYZGZnH3w@mail.gmail.com>
+Subject: Re: [PATCH] ath10k: fix the status check and wrong return
+To:     Tang Bin <tangbin@cmss.chinamobile.com>
+Cc:     kvalo@codeaurora.org, davem@davemloft.net,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zhang Shengju <zhangshengju@cmss.chinamobile.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Aug 2020, Kalle Valo wrote:
+On 14/08/2020, Tang Bin <tangbin@cmss.chinamobile.com> wrote:
+> In the function ath10k_ahb_clock_init(), devm_clk_get() doesn't
+> return NULL. Thus use IS_ERR() and PTR_ERR() to validate
+> the returned value instead of IS_ERR_OR_NULL().
+>
+> Signed-off-by: Zhang Shengju <zhangshengju@cmss.chinamobile.com>
+> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+> ---
+>  drivers/net/wireless/ath/ath10k/ahb.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/net/wireless/ath/ath10k/ahb.c
+> b/drivers/net/wireless/ath/ath10k/ahb.c
+> index ed87bc00f..ea669af6a 100644
+> --- a/drivers/net/wireless/ath/ath10k/ahb.c
+> +++ b/drivers/net/wireless/ath/ath10k/ahb.c
+> @@ -87,24 +87,24 @@ static int ath10k_ahb_clock_init(struct ath10k *ar)
+>  	dev = &ar_ahb->pdev->dev;
+>
+>  	ar_ahb->cmd_clk = devm_clk_get(dev, "wifi_wcss_cmd");
+> -	if (IS_ERR_OR_NULL(ar_ahb->cmd_clk)) {
+> +	if (IS_ERR(ar_ahb->cmd_clk)) {
+>  		ath10k_err(ar, "failed to get cmd clk: %ld\n",
+>  			   PTR_ERR(ar_ahb->cmd_clk));
+> -		return ar_ahb->cmd_clk ? PTR_ERR(ar_ahb->cmd_clk) : -ENODEV;
+> +		return PTR_ERR(ar_ahb->cmd_clk);
+>  	}
+>
+>  	ar_ahb->ref_clk = devm_clk_get(dev, "wifi_wcss_ref");
+> -	if (IS_ERR_OR_NULL(ar_ahb->ref_clk)) {
+> +	if (IS_ERR(ar_ahb->ref_clk)) {
+>  		ath10k_err(ar, "failed to get ref clk: %ld\n",
+>  			   PTR_ERR(ar_ahb->ref_clk));
+> -		return ar_ahb->ref_clk ? PTR_ERR(ar_ahb->ref_clk) : -ENODEV;
+> +		return PTR_ERR(ar_ahb->ref_clk);
+>  	}
+>
+>  	ar_ahb->rtc_clk = devm_clk_get(dev, "wifi_wcss_rtc");
+> -	if (IS_ERR_OR_NULL(ar_ahb->rtc_clk)) {
+> +	if (IS_ERR(ar_ahb->rtc_clk)) {
+>  		ath10k_err(ar, "failed to get rtc clk: %ld\n",
+>  			   PTR_ERR(ar_ahb->rtc_clk));
+> -		return ar_ahb->rtc_clk ? PTR_ERR(ar_ahb->rtc_clk) : -ENODEV;
+> +		return PTR_ERR(ar_ahb->rtc_clk);
+>  	}
+>
+>  	return 0;
+> --
+> 2.20.1.windows.1
+>
+>
+>
+>
 
-> Lee Jones <lee.jones@linaro.org> writes:
-> 
-> >  - Ensure spaces appear after {for, if, while, etc}
-> >  - Ensure spaces to not appear after '('
-> >  - Ensure spaces to not appear before ')'
-> >  - Ensure spaces appear between ')' and '{'
-> >  - Ensure spaces appear after ','
-> >  - Ensure spaces do not appear before ','
-> >  - Ensure spaces appear either side of '='
-> >  - Ensure '{'s which open functions are on a new line
-> >  - Remove trailing whitespace
-> >
-> > There are still a whole host of issues with this file, but this
-> > patch certainly breaks the back of them.
-> >
-> > Cc: Kalle Valo <kvalo@codeaurora.org>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Benjamin Reed <breed@users.sourceforge.net>
-> > Cc: Javier Achirica <achirica@users.sourceforge.net>
-> > Cc: Jean Tourrilhes <jt@hpl.hp.com>
-> > Cc: Fabrice Bellet <fabrice@bellet.info>
-> > Cc: linux-wireless@vger.kernel.org
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > ---
-> >  drivers/net/wireless/cisco/airo.c | 897 ++++++++++++++++--------------
-> >  1 file changed, 467 insertions(+), 430 deletions(-)
-> 
-> This is a driver for ancient hardware, I'm not sure if it's worth trying
-> to fix any style issues. Is anyone even using it? Should we instead just
-> remove the driver?
+Hi
 
-Sounds like a reasonable solution to me.
-
-I'm also happy to do it, if there are no objections.
-
-As it stands, it's polluting the code-base and the build-log, so
-something should be done.
-
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+You should've include which HW/FW combination you tested this on
