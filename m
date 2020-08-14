@@ -2,97 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDDCC244B81
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 16:58:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7913A244B90
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 17:05:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728135AbgHNO6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 10:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42166 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726700AbgHNO6c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 10:58:32 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959B3C061384
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 07:58:32 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id o5so4668489pgb.2
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 07:58:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Pcg5CucYS1Dubmcf/WH/5lZ7jSjqcBaoXBcYvG0rEdI=;
-        b=ky8rzvgMFTCFERNv6zjb6o1YDKEATGWA8wJx/tl0MKb4OdELEeQE7mHG91nEY+Ft7A
-         EWU2vYKNzr5Y9JHbWhowzb/mnpsl/BKEm3Wph+O+LavSDHvh/v2FEbvrB0RKE2OwPEOF
-         Se0DyXyvQJyWd3u+3RkgJi+/TBLNHB/SoWEBDLXRynMHTOc8wBq3xeflsaIXpB0SdygH
-         gc2Rd15yxaImLBQ1k0ixR8Q9bA7632r9EsIM+w0yrADGj0Sre1KR+5aTF2yiX0ltyKzw
-         nbCBPmBCT5LpyNtrKKOSbMNRQohKl3hMXNpwKyYZXn0aUvFyjVRncH20YRdAJ4QmmgRD
-         B2CA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Pcg5CucYS1Dubmcf/WH/5lZ7jSjqcBaoXBcYvG0rEdI=;
-        b=bSaUTYz2wPEDU0cYlZOVMhmfRVMHY4dhVkHRZhMtbB1w5xgZ80UQfgwa0O1auZLGMS
-         lP254t7wgdX4c3ZAkOoT5eZLSQkqtCRZEAjAKpVTK16Oeh1fvpNL5VGEMlCrpoLl5shE
-         7rbqS01CuT9aqWhPcGVMYK76cuFLxgDmA+M0zL7olQKikMS1jNVR9Z9NM0lJ+fjFqrry
-         p6t1kMTmy9ra5i1fliOsQCMZBfUdS3SIZLVjfAZgcoWsGPfnzh4kmzyZCATFgqzLCOvj
-         QqzbDIEdrHMYm701uUhMaGyRbFGCmi+CHp4oCFbgyDNEz+lKuQChS7oUL5bx1T+YroJC
-         Qbjg==
-X-Gm-Message-State: AOAM530IPTH2sl4BePGtt5QsDA4H7zI/o8KYqAuTKIGw5F3gsUC1MQnr
-        5a+1tj+4bKqFzqtCf4d5x2S1q89u6WQ=
-X-Google-Smtp-Source: ABdhPJwyjchJLbhnHqjleQOo75tu7U0TwAF6SCX0QakJIxi0+UwI6AKO6NN3bNxldRd+ozglawwW1A==
-X-Received: by 2002:a62:7794:: with SMTP id s142mr2015371pfc.99.1597417111659;
-        Fri, 14 Aug 2020 07:58:31 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id p20sm8486931pjz.49.2020.08.14.07.58.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Aug 2020 07:58:30 -0700 (PDT)
-Subject: Re: [PATCH net 0/3] ethtool-netlink bug fixes
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <20200814131627.32021-1-maximmi@mellanox.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <02b7cf0b-8c02-903e-6838-2108fb51f8ca@gmail.com>
-Date:   Fri, 14 Aug 2020 07:58:29 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.1.1
+        id S1728257AbgHNPFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 11:05:14 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:48930 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726662AbgHNPFK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Aug 2020 11:05:10 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1597417510; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=3h/en/nwSu152PeS5ycUKm35wp0er9Vci4CuflOQWT4=;
+ b=RTlXT+ozSE/liZhC/OXSsbiyoyi83OIpK8LCYVuJ8CMquKQ2dBLz5q7u5dJkZqZlNKAGnU9C
+ m16GSZdlE4SjFD3dkmPD03kP23v6r8+211k/a8uT7PSuw7th4eufhRoBc1aCIz7t+RcFFX57
+ r6fLxcsIACFZzajdg54/iaOHW/Q=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 5f36a7f4d48d4625cae4255f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 14 Aug 2020 15:04:20
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 78DB9C433CA; Fri, 14 Aug 2020 15:04:19 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7AB20C433C6;
+        Fri, 14 Aug 2020 15:04:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7AB20C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20200814131627.32021-1-maximmi@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH][next] ath9k: Use fallthrough pseudo-keyword
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200727193520.GA832@embeddedor>
+References: <20200727193520.GA832@embeddedor>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200814150419.78DB9C433CA@smtp.codeaurora.org>
+Date:   Fri, 14 Aug 2020 15:04:19 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
 
-
-On 8/14/2020 6:16 AM, Maxim Mikityanskiy wrote:
-> This series contains a few bug fixes for ethtool-netlink. These bugs are
-> specific for the netlink interface, and the legacy ioctl interface is
-> not affected. These patches aim to have the same behavior in
-> ethtool-netlink as in the legacy ethtool.
+> Replace the existing /* fall through */ comments and its variants with
+> the new pseudo-keyword macro fallthrough[1].
 > 
-> Please also see the sibling series for the userspace tool.
-
-Since you are targeting the net tree, should not those changes also have 
-corresponding Fixes tag?
-
-Thanks
-
+> [1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
 > 
-> Maxim Mikityanskiy (3):
->    ethtool: Fix preserving of wanted feature bits in netlink interface
->    ethtool: Account for hw_features in netlink interface
->    ethtool: Don't omit the netlink reply if no features were changed
-> 
->   net/ethtool/features.c | 19 ++++++++++---------
->   1 file changed, 10 insertions(+), 9 deletions(-)
-> 
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+
+Patch applied to ath-next branch of ath.git, thanks.
+
+221af8135478 ath9k: Use fallthrough pseudo-keyword
 
 -- 
-Florian
+https://patchwork.kernel.org/patch/11687449/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
