@@ -2,89 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47061244B5B
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 16:48:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08DE8244B7F
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 16:58:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728270AbgHNOr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 10:47:59 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:60288 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726270AbgHNOr7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 10:47:59 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1597416478; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=5bjxNb/F89xa7CS6S3NOKLAf9mAo71elY+kX0Y7RX0c=;
- b=C6O0gpj0ttEdlc+XXEqkC1D3tyzWVNzrmF83J9VQt69FV5NH4fe7Ipx2YwZMlpViwlYWL7IL
- wih4xpmisP9KzCLsvmRZm8ofnRoddtusMy75zeO+2XbOBNC2azhsc7rZRpjap0QUbwEV/0So
- CyMD9JUIdCyebjREyQ2+fM1AMG0=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 5f36a40ed48d4625cad9f375 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 14 Aug 2020 14:47:42
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id DB6D4C43391; Fri, 14 Aug 2020 14:47:41 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 71A77C433C6;
-        Fri, 14 Aug 2020 14:47:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 71A77C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] wil6210: Avoid the use of one-element array
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200715215755.GA21716@embeddedor>
-References: <20200715215755.GA21716@embeddedor>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Maya Erez <merez@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
+        id S1728593AbgHNO6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 10:58:05 -0400
+Received: from cmccmta2.chinamobile.com ([221.176.66.80]:11536 "EHLO
+        cmccmta2.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726662AbgHNO6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 10:58:05 -0400
+X-Greylist: delayed 559 seconds by postgrey-1.27 at vger.kernel.org; Fri, 14 Aug 2020 10:58:01 EDT
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.11]) by rmmx-syy-dmz-app08-12008 (RichMail) with SMTP id 2ee85f36a435f49-726c5; Fri, 14 Aug 2020 22:48:23 +0800 (CST)
+X-RM-TRANSID: 2ee85f36a435f49-726c5
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from localhost.localdomain (unknown[112.0.144.58])
+        by rmsmtp-syy-appsvr06-12006 (RichMail) with SMTP id 2ee65f36a4304e2-9b661;
+        Fri, 14 Aug 2020 22:48:20 +0800 (CST)
+X-RM-TRANSID: 2ee65f36a4304e2-9b661
+From:   Tang Bin <tangbin@cmss.chinamobile.com>
+To:     kvalo@codeaurora.org, davem@davemloft.net
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200814144741.DB6D4C43391@smtp.codeaurora.org>
-Date:   Fri, 14 Aug 2020 14:47:41 +0000 (UTC)
+        Tang Bin <tangbin@cmss.chinamobile.com>,
+        Zhang Shengju <zhangshengju@cmss.chinamobile.com>
+Subject: [PATCH] ath10k: fix the status check and wrong return
+Date:   Fri, 14 Aug 2020 22:48:44 +0800
+Message-Id: <20200814144844.1920-1-tangbin@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.20.1.windows.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
+In the function ath10k_ahb_clock_init(), devm_clk_get() doesn't
+return NULL. Thus use IS_ERR() and PTR_ERR() to validate
+the returned value instead of IS_ERR_OR_NULL().
 
-> One-element arrays are being deprecated[1]. Replace the one-element
-> array with a simple value type 'u8 reserved'[2], once this is just
-> a placeholder for alignment.
-> 
-> [1] https://github.com/KSPP/linux/issues/79
-> [2] https://github.com/KSPP/linux/issues/86
-> 
-> Tested-by: kernel test robot <lkp@intel.com>
-> Link: https://github.com/GustavoARSilva/linux-hardening/blob/master/cii/0-day/wil6210-20200715.md
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Signed-off-by: Zhang Shengju <zhangshengju@cmss.chinamobile.com>
+Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+---
+ drivers/net/wireless/ath/ath10k/ahb.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-I agree with Johannes, I don't see the point of this patch as there are
-no clear benefits.
-
-Patch set to Rejected.
-
+diff --git a/drivers/net/wireless/ath/ath10k/ahb.c b/drivers/net/wireless/ath/ath10k/ahb.c
+index ed87bc00f..ea669af6a 100644
+--- a/drivers/net/wireless/ath/ath10k/ahb.c
++++ b/drivers/net/wireless/ath/ath10k/ahb.c
+@@ -87,24 +87,24 @@ static int ath10k_ahb_clock_init(struct ath10k *ar)
+ 	dev = &ar_ahb->pdev->dev;
+ 
+ 	ar_ahb->cmd_clk = devm_clk_get(dev, "wifi_wcss_cmd");
+-	if (IS_ERR_OR_NULL(ar_ahb->cmd_clk)) {
++	if (IS_ERR(ar_ahb->cmd_clk)) {
+ 		ath10k_err(ar, "failed to get cmd clk: %ld\n",
+ 			   PTR_ERR(ar_ahb->cmd_clk));
+-		return ar_ahb->cmd_clk ? PTR_ERR(ar_ahb->cmd_clk) : -ENODEV;
++		return PTR_ERR(ar_ahb->cmd_clk);
+ 	}
+ 
+ 	ar_ahb->ref_clk = devm_clk_get(dev, "wifi_wcss_ref");
+-	if (IS_ERR_OR_NULL(ar_ahb->ref_clk)) {
++	if (IS_ERR(ar_ahb->ref_clk)) {
+ 		ath10k_err(ar, "failed to get ref clk: %ld\n",
+ 			   PTR_ERR(ar_ahb->ref_clk));
+-		return ar_ahb->ref_clk ? PTR_ERR(ar_ahb->ref_clk) : -ENODEV;
++		return PTR_ERR(ar_ahb->ref_clk);
+ 	}
+ 
+ 	ar_ahb->rtc_clk = devm_clk_get(dev, "wifi_wcss_rtc");
+-	if (IS_ERR_OR_NULL(ar_ahb->rtc_clk)) {
++	if (IS_ERR(ar_ahb->rtc_clk)) {
+ 		ath10k_err(ar, "failed to get rtc clk: %ld\n",
+ 			   PTR_ERR(ar_ahb->rtc_clk));
+-		return ar_ahb->rtc_clk ? PTR_ERR(ar_ahb->rtc_clk) : -ENODEV;
++		return PTR_ERR(ar_ahb->rtc_clk);
+ 	}
+ 
+ 	return 0;
 -- 
-https://patchwork.kernel.org/patch/11666325/
+2.20.1.windows.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
 
