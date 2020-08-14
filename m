@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9CFE2448E4
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 13:39:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C96324492F
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 13:45:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728115AbgHNLjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 07:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
+        id S1728155AbgHNLou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 07:44:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728082AbgHNLjq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 07:39:46 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0033EC061388
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:39:45 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id p20so8088243wrf.0
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:39:45 -0700 (PDT)
+        with ESMTP id S1728037AbgHNLjr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 07:39:47 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C649C061384
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:39:47 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id 184so7676404wmb.0
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:39:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Y77AtHzguUcJCUMjPrpTvjpVQ3AGTioiQPnppwV8VKc=;
-        b=iFWqnNShFxm/D8776BXHu/qVGwFhwXQ+8rfUFDSN73HTnVGrhjwoT90p1MDlIfUelr
-         4u5AzjJC7607Eg0uQQQH5twyO0MQz0DNNC4vZ/3VLlLRboWX+XlyFs04QvCJ7lv/HAb/
-         O71kBtX1paMcjGcapsvpmQJL3lS57YAx1xLl6qEiFielydjRTzc6DLCoP7sU21grqzGO
-         fvp3qnjdaBwwnF3Xl9p4MQpF6U4WSieWI4Ta2lJCCqQShezjah9feA0i6wVahmIWiVIV
-         1PcdyBRtW88tORF12WPdEw244Xm6tUELNaiz5HfmsnpjpxY0m8jhUFgL1ekx1ZZp5VnC
-         BPmg==
+        bh=j3TFuBWvx6taUPZUro4+v5BkkgVZieDFqQLYKGmsIgM=;
+        b=bvKIMDsMikcPYW96Fn3utXtu9dLMKak+fKSEqcxJ2kfKkauaLTlDoFJ7kUu1BATx8u
+         caauFpS9nW9cKPOH+hxpBo0zdLH59ujrwjn2WIQBdnNTtEozhc61dYrIT5+Z6/PwyRZF
+         ug7L/HOwoB+qsPTilK5uOl4XwTvHS8Q9k2Abp8srA2CKV3UW4LGcjKNZLUC10BPa8P1F
+         ERKSRj0rE+4+aMzld1AgI2LMDjGJxoB78sFjSB3/G1ekMVIubuYTwtjqM0TmvuaMUstN
+         igPecR1wuJ7WU5qJnxQ4EUPxQU5WBqgI0CtS7mS4jZWnTi8ECakaQSMtun3+wqjmpi2s
+         Cj2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Y77AtHzguUcJCUMjPrpTvjpVQ3AGTioiQPnppwV8VKc=;
-        b=gXfLU3L3vn5S3XoeP47XoKdhzvcqCoQ5X395/gQXhbahHbVqhAVO+6/+TPZ/Wup98V
-         mesCsMZUZA54gBgyTdI2dJmxfH3DYoxg5FF8L2N5OooGtB/6NJbDGz1PQLdH69u+JONi
-         49xSzGaBQzwaB5uItKiV47H+/fpdE5+6anJfu2lFS4LTqXyXjYAVG8HUzgXcVhjrdoM3
-         icF3ExPxbtDRdpmNNMwIjUuXj0ymRD5J5Wk7vsvG0ChT1QZC9XTboydTodEjgZBKOykR
-         gp1UEehTrVEPQXBTZ7vqZGHPloV7VAPYKFQxCz/lMOlHQYbEfJ04xxxGG6Qqf2F9kUkM
-         LEsg==
-X-Gm-Message-State: AOAM533wWX9AJQdaGNjxNNxp3j0FNCUQ5sC5WCdYh2Jj1iHeRngQMoMT
-        z1VrgSaUgKwE6Z8fQe3HE0I/9Q==
-X-Google-Smtp-Source: ABdhPJzOO5hb0FwyFDV+Y5ePxRrJMQlbWLrBFcALYFBIbUTV5cFeHryeDHp37n3PhcwIn4sRkgmkSQ==
-X-Received: by 2002:a05:6000:1149:: with SMTP id d9mr2276259wrx.335.1597405184635;
-        Fri, 14 Aug 2020 04:39:44 -0700 (PDT)
+        bh=j3TFuBWvx6taUPZUro4+v5BkkgVZieDFqQLYKGmsIgM=;
+        b=IEdtgYjXG0VCdVznPNfhqLLYj+AnX7P8MbY5MJvx7KXE/RVKQkoHhsqeX8T+okfg+q
+         v31nU93HCHMP37ciV7kTZKnslFyX/YRYPBrQ5b63uPZqTLs2bcFDyHycqOL0vs0t5HBB
+         9uUBOlZvAc3PgGAeeWcx4sLA6hfR3j64jjkV5yuIZetm+EBa9HXqs0HxDyx9O8k/k5Nw
+         hJ6Np9xyl66m1G+9xcrIjjqFCp9jzUE/7yptmNhbapHG9zTRlOLIe2ccx1jif68sYBK2
+         m93IH0hFVxvwgSn5YdqG1Ml9wCSS7BSyXbXJtKASr/5yJ4utlc1Y8Ii8eky1y/ciLi7x
+         QN4A==
+X-Gm-Message-State: AOAM531llvZIiStqLR3GEKfhromfYmGcl/B3D5VHOxpqcDspCJP04fi5
+        gC/55iqqMvZxBMhsAsU73q2I+Q==
+X-Google-Smtp-Source: ABdhPJy2P0Di40BugpsK0J8/j2MpwLD0+3D1Hh0XMB1MSchU/UDiuDWLC8amz/EV2MYcASC/3IfBgQ==
+X-Received: by 2002:a05:600c:2302:: with SMTP id 2mr2262779wmo.151.1597405186025;
+        Fri, 14 Aug 2020 04:39:46 -0700 (PDT)
 Received: from dell.default ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id 32sm16409129wrh.18.2020.08.14.04.39.43
+        by smtp.gmail.com with ESMTPSA id 32sm16409129wrh.18.2020.08.14.04.39.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Aug 2020 04:39:44 -0700 (PDT)
+        Fri, 14 Aug 2020 04:39:45 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>, netdev@vger.kernel.org
-Subject: [PATCH 04/30] net: bonding: bond_alb: Describe alb_handle_addr_collision_on_attach()'s 'bond' and 'addr' params
-Date:   Fri, 14 Aug 2020 12:39:07 +0100
-Message-Id: <20200814113933.1903438-5-lee.jones@linaro.org>
+        Simon Kelley <simon@thekelleys.org.uk>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 05/30] net: wireless: atmel: atmel: Demote non-kerneldoc header to standard comment block
+Date:   Fri, 14 Aug 2020 12:39:08 +0100
+Message-Id: <20200814113933.1903438-6-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200814113933.1903438-1-lee.jones@linaro.org>
 References: <20200814113933.1903438-1-lee.jones@linaro.org>
@@ -68,34 +68,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/bonding/bond_alb.c:1222: warning: Function parameter or member 'bond' not described in 'alb_set_mac_address'
+ drivers/net/wireless/atmel/atmel.c:4232: warning: Cannot understand     This file is part of net.russotto.AtmelMACFW, hereto referred to
 
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Cc: Andy Gospodarek <andy@greyhouse.net>
+Cc: Simon Kelley <simon@thekelleys.org.uk>
+Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/bonding/bond_alb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/atmel/atmel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index 095ea51d18539..4e1b7deb724b4 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -1206,8 +1206,8 @@ static int alb_handle_addr_collision_on_attach(struct bonding *bond, struct slav
+diff --git a/drivers/net/wireless/atmel/atmel.c b/drivers/net/wireless/atmel/atmel.c
+index d5875836068c0..7d51f18c3b5c6 100644
+--- a/drivers/net/wireless/atmel/atmel.c
++++ b/drivers/net/wireless/atmel/atmel.c
+@@ -4228,7 +4228,7 @@ static void atmel_wmem32(struct atmel_private *priv, u16 pos, u32 data)
+ /* Copyright 2003 Matthew T. Russotto                                      */
+ /* But derived from the Atmel 76C502 firmware written by Atmel and         */
+ /* included in "atmel wireless lan drivers" package                        */
+-/**
++/*
+     This file is part of net.russotto.AtmelMACFW, hereto referred to
+     as AtmelMACFW
  
- /**
-  * alb_set_mac_address
-- * @bond:
-- * @addr:
-+ * @bond: bonding we're working on
-+ * @addr: MAC address to set
-  *
-  * In TLB mode all slaves are configured to the bond's hw address, but set
-  * their dev_addr field to different addresses (based on their permanent hw
 -- 
 2.25.1
 
