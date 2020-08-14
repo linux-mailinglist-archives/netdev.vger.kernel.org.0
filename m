@@ -2,33 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2888B24489B
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 13:04:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B84F42448A9
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 13:04:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727894AbgHNLEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 07:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
+        id S1727954AbgHNLEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 07:04:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727886AbgHNLEd (ORCPT
+        with ESMTP id S1726576AbgHNLEd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 07:04:33 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8039C061385
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:04:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB5DC061384
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 04:04:33 -0700 (PDT)
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1k6XVe-00040D-Rp; Fri, 14 Aug 2020 13:04:30 +0200
+        id 1k6XVf-00040D-8i; Fri, 14 Aug 2020 13:04:31 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
+        kernel@pengutronix.de, Oleksij Rempel <o.rempel@pengutronix.de>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 1/6] can: j1939: fix kernel-infoleak in j1939_sk_sock2sockaddr_can()
-Date:   Fri, 14 Aug 2020 13:04:23 +0200
-Message-Id: <20200814110428.405051-2-mkl@pengutronix.de>
+Subject: [PATCH 2/6] can: j1939: transport: j1939_simple_recv(): ignore local J1939 messages send not by J1939 stack
+Date:   Fri, 14 Aug 2020 13:04:24 +0200
+Message-Id: <20200814110428.405051-3-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200814110428.405051-1-mkl@pengutronix.de>
 References: <20200814110428.405051-1-mkl@pengutronix.de>
@@ -43,80 +40,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-syzbot found that at least 2 bytes of kernel information
-were leaked during getsockname() on AF_CAN CAN_J1939 socket.
+In current J1939 stack implementation, we process all locally send
+messages as own messages. Even if it was send by CAN_RAW socket.
 
-Since struct sockaddr_can has in fact two holes, simply
-clear the whole area before filling it with useful data.
+To reproduce it use following commands:
+testj1939 -P -r can0:0x80 &
+cansend can0 18238040#0123
 
-BUG: KMSAN: kernel-infoleak in kmsan_copy_to_user+0x81/0x90 mm/kmsan/kmsan_hooks.c:253
-CPU: 0 PID: 8466 Comm: syz-executor511 Not tainted 5.8.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
- kmsan_internal_check_memory+0x238/0x3d0 mm/kmsan/kmsan.c:423
- kmsan_copy_to_user+0x81/0x90 mm/kmsan/kmsan_hooks.c:253
- instrument_copy_to_user include/linux/instrumented.h:91 [inline]
- _copy_to_user+0x18e/0x260 lib/usercopy.c:39
- copy_to_user include/linux/uaccess.h:186 [inline]
- move_addr_to_user+0x3de/0x670 net/socket.c:237
- __sys_getsockname+0x407/0x5e0 net/socket.c:1909
- __do_sys_getsockname net/socket.c:1920 [inline]
- __se_sys_getsockname+0x91/0xb0 net/socket.c:1917
- __x64_sys_getsockname+0x4a/0x70 net/socket.c:1917
- do_syscall_64+0xad/0x160 arch/x86/entry/common.c:386
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x440219
-Code: Bad RIP value.
-RSP: 002b:00007ffe5ee150c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000033
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440219
-RDX: 0000000020000240 RSI: 0000000020000100 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a20
-R13: 0000000000401ab0 R14: 0000000000000000 R15: 0000000000000000
+This step will trigger false positive not critical warning:
+j1939_simple_recv: Received already invalidated message
 
-Local variable ----address@__sys_getsockname created at:
- __sys_getsockname+0x91/0x5e0 net/socket.c:1894
- __sys_getsockname+0x91/0x5e0 net/socket.c:1894
-
-Bytes 2-3 of 24 are uninitialized
-Memory access of size 24 starts at ffff8880ba2c7de8
-Data copied to user address 0000000020000100
+With this patch we add additional check to make sure, related skb is own
+echo message.
 
 Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Robin van der Gracht <robin@protonic.nl>
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: linux-can@vger.kernel.org
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/r/20200813161834.4021638-1-edumazet@google.com
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Link: https://lore.kernel.org/r/20200807105200.26441-2-o.rempel@pengutronix.de
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/can/j1939/socket.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/can/j1939/socket.c    | 1 +
+ net/can/j1939/transport.c | 4 ++++
+ 2 files changed, 5 insertions(+)
 
 diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
-index 78ff9b3f1d40..b634b680177f 100644
+index b634b680177f..ad973370de12 100644
 --- a/net/can/j1939/socket.c
 +++ b/net/can/j1939/socket.c
-@@ -553,6 +553,11 @@ static int j1939_sk_connect(struct socket *sock, struct sockaddr *uaddr,
- static void j1939_sk_sock2sockaddr_can(struct sockaddr_can *addr,
- 				       const struct j1939_sock *jsk, int peer)
- {
-+	/* There are two holes (2 bytes and 3 bytes) to clear to avoid
-+	 * leaking kernel information to user space.
-+	 */
-+	memset(addr, 0, J1939_MIN_NAMELEN);
+@@ -398,6 +398,7 @@ static int j1939_sk_init(struct sock *sk)
+ 	spin_lock_init(&jsk->sk_session_queue_lock);
+ 	INIT_LIST_HEAD(&jsk->sk_session_queue);
+ 	sk->sk_destruct = j1939_sk_sock_destruct;
++	sk->sk_protocol = CAN_J1939;
+ 
+ 	return 0;
+ }
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index 9f99af5b0b11..b135c5e2a86e 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -2017,6 +2017,10 @@ void j1939_simple_recv(struct j1939_priv *priv, struct sk_buff *skb)
+ 	if (!skb->sk)
+ 		return;
+ 
++	if (skb->sk->sk_family != AF_CAN ||
++	    skb->sk->sk_protocol != CAN_J1939)
++		return;
 +
- 	addr->can_family = AF_CAN;
- 	addr->can_ifindex = jsk->ifindex;
- 	addr->can_addr.j1939.pgn = jsk->addr.pgn;
+ 	j1939_session_list_lock(priv);
+ 	session = j1939_session_get_simple(priv, skb);
+ 	j1939_session_list_unlock(priv);
 -- 
 2.28.0
 
