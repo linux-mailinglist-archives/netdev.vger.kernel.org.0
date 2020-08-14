@@ -2,159 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2F172445D8
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 09:31:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38D9C244607
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 09:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726311AbgHNHbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 03:31:01 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:47619 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726091AbgHNHbB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Aug 2020 03:31:01 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 806e3fcd;
-        Fri, 14 Aug 2020 07:05:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
-        :subject:date:message-id:in-reply-to:references:mime-version
-        :content-type:content-transfer-encoding; s=mail; bh=rfLwmOjk2tYm
-        2/AsGhKDhEikx2w=; b=uMAvjW4+5NUxxqtndmjbqPAvW+JQFpNrAfZinlkphign
-        kGNdxVhXh+805SfywPBJqR+OqWLLXx5LmysJUhQjrF8l+NovYV9n/h9Sw5S+lWnm
-        YxMbbCdGaw6ysfSySKCwPydwe3n8x6sANNKiQ3m9j+g9MR1dRulMeVu6c2deN44B
-        uVmWBN9PCxq9QfAzr+EEaocHV3PIB9QjCixuRPYpDz+m4eFNDo4XwxHfUMViq+D4
-        F6492YPPxfMGwXRj5aTufpp2+rg2IX17vRl6xGu0lrzvnz2AKM7J00zxUVO7NXbi
-        UzZLLEThcJgGBbdgJISacJBVtsCwwdMS3bqy3b7sig==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 26a68a7e (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Fri, 14 Aug 2020 07:05:21 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Ptacek <thomas@sockpuppet.org>,
-        Adhipati Blambangan <adhipati@tuta.io>,
-        David Ahern <dsahern@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Subject: [PATCH net v5] net: xdp: account for layer 3 packets in generic skb handler
-Date:   Fri, 14 Aug 2020 09:30:48 +0200
-Message-Id: <20200814073048.30291-1-Jason@zx2c4.com>
-In-Reply-To: <CAHmME9rbRrdV0ePxT0DgurGdEKOWiEi5mH5Wtg=aJwSA6fxwMg@mail.gmail.com>
-References: <CAHmME9rbRrdV0ePxT0DgurGdEKOWiEi5mH5Wtg=aJwSA6fxwMg@mail.gmail.com>
+        id S1726826AbgHNH7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 03:59:35 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:17848 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726807AbgHNH7e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 03:59:34 -0400
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07E7Urap020833;
+        Fri, 14 Aug 2020 03:59:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=lKPuL9AEUwNbEMMrAuSbtDjAunKkNzlLrJkbsfgDB9s=;
+ b=JTV7AYkg4JQ/SJcNxwoof4mVxxnp6ayFqcYoM+/z5SMtp2lW+XbXkbw8ArJNnxqC0cbA
+ sg8aw4NKjQku1M5yJmvXNx9dgVS+w+YkKuSkKW7gvAyIl0K60eUJIhOm7dbtOxHhmc0H
+ d9J9AuXrDJBlD2gXwTrA7ECcvFzTVFOWiqiDW1PAdy/42XXdrt1FKBM+FJEW3SDJ5exm
+ bB/yHdxw8zghEB3ln4TY79B4Iq8yiillfDefcl9NAxsOI3viFZB6a8Jc42q1kRJneEou
+ dJvkfKkhE+f0ATlIbhZofeMTtnpZ5+mx6ZAjiIjGpy4lBgpIiQAHbo/tjjLxICZx7T0q jw== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 32w6tc1er1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 14 Aug 2020 03:59:23 -0400
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07E7u3pq029852;
+        Fri, 14 Aug 2020 07:59:22 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
+        by ppma03wdc.us.ibm.com with ESMTP id 32skp9rfnd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 14 Aug 2020 07:59:22 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 07E7xMEw53674376
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 Aug 2020 07:59:22 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6A6B2AC05B;
+        Fri, 14 Aug 2020 07:59:22 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F374FAC059;
+        Fri, 14 Aug 2020 07:59:21 +0000 (GMT)
+Received: from pompom.ibm.com (unknown [9.160.68.30])
+        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri, 14 Aug 2020 07:59:21 +0000 (GMT)
+From:   Lijun Pan <ljp@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org, Lijun Pan <ljp@linux.ibm.com>
+Subject: [PATCH net 0/5] refactoring of ibmvnic code
+Date:   Fri, 14 Aug 2020 02:59:16 -0500
+Message-Id: <20200814075921.88745-1-ljp@linux.ibm.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-14_02:2020-08-13,2020-08-14 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=1
+ malwarescore=0 priorityscore=1501 mlxlogscore=640 clxscore=1011
+ adultscore=0 spamscore=0 mlxscore=0 phishscore=0 lowpriorityscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008140054
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A user reported that packets from wireguard were possibly ignored by XDP
-[1]. Another user reported that modifying packets from layer 3
-interfaces results in impossible to diagnose drops.
+This patch series refactor reset_init and init functions,
+improve the debugging messages, and make some other cosmetic changes
+to make the code easier to read and debug.
 
-Apparently, the generic skb xdp handler path seems to assume that
-packets will always have an ethernet header, which really isn't always
-the case for layer 3 packets, which are produced by multiple drivers.
-This patch fixes the oversight. If the mac_len is 0 and so is
-hard_header_len, then we know that the skb is a layer 3 packet, and in
-that case prepend a pseudo ethhdr to the packet whose h_proto is copied
-from skb->protocol, which will have the appropriate v4 or v6 ethertype.
-This allows us to keep XDP programs' assumption correct about packets
-always having that ethernet header, so that existing code doesn't break,
-while still allowing layer 3 devices to use the generic XDP handler.
+Lijun Pan (5):
+  ibmvnic: print caller in several error messages
+  ibmvnic: compare adapter->init_done_rc with more readable
+    ibmvnic_rc_codes
+  ibmvnic: improve ibmvnic_init and ibmvnic_reset_init
+  ibmvnic: remove never executed if statement
+  ibmvnic: merge ibmvnic_reset_init and ibmvnic_init
 
-We push on the ethernet header and then pull it right off and set
-mac_len to the ethernet header size, so that the rest of the XDP code
-does not need any changes. That is, it makes it so that the skb has its
-ethernet header just before the data pointer, of size ETH_HLEN. While
-we're at it, this also fixes a small inconsistency from the prior code,
-in which an XDP program that changes skb->protocol would wind up pushing
-the ethernet header back on but would forget to take it back off
-following the h_proto parsing.
+ drivers/net/ethernet/ibm/ibmvnic.c | 98 +++++++++---------------------
+ 1 file changed, 28 insertions(+), 70 deletions(-)
 
-Previous discussions have included the point that maybe XDP should just
-be intentionally broken on layer 3 interfaces, by design, and that layer
-3 people should be using cls_bpf. However, I think there are good
-grounds to reconsider this perspective:
-
-- Complicated deployments wind up applying XDP modifications to a
-  variety of different devices on a given host, some of which are using
-  specialized ethernet cards and other ones using virtual layer 3
-  interfaces, such as WireGuard. Being able to apply one codebase to
-  each of these winds up being essential.
-
-- cls_bpf does not support the same feature set as XDP, and operates at
-  a slightly different stage in the networking stack. You may reply,
-  "then add all the features you want to cls_bpf", but that seems to be
-  missing the point, and would still result in there being two ways to
-  do everything, which is not desirable for anyone actually _using_ this
-  code.
-
-- While XDP was originally made for hardware offloading, and while many
-  look disdainfully upon the generic mode, it nevertheless remains a
-  highly useful and popular way of adding bespoke packet
-  transformations, and from that perspective, a difference between layer
-  2 and layer 3 packets is immaterial if the user is primarily concerned
-  with transformations to layer 3 and beyond.
-
-[1] https://lore.kernel.org/wireguard/M5WzVK5--3-2@tuta.io/
-
-Reported-by: Thomas Ptacek <thomas@sockpuppet.org>
-Reported-by: Adhipati Blambangan <adhipati@tuta.io>
-Cc: David Ahern <dsahern@gmail.com>
-Cc: Toke Høiland-Jørgensen <toke@redhat.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-
-I had originally dropped this patch, but the issue kept coming up in
-user reports, so here's a v4 of it. Testing of it is still rather slim,
-but hopefully that will change in the coming days.
-
-Changes v4->v5:
-- Rather than tracking in a messy manner whether the skb is l3, we just
-  do the check once, and then adjust the skb geometry to be identical to
-  the l2 case. This simplifies the code quite a bit.
-- Fix a preexisting bug where the l2 header remained attached if
-  skb->protocol was updated.
-
-Changes v3->v4:
-- We now preserve the same logic for XDP_TX/XDP_REDIRECT as before.
-- hard_header_len is checked in addition to mac_len.
-
- net/core/dev.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 7df6c9617321..79c15f4244e6 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4630,6 +4630,18 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	 * header.
- 	 */
- 	mac_len = skb->data - skb_mac_header(skb);
-+	if (!mac_len && !skb->dev->hard_header_len) {
-+		/* For l3 packets, we push on a fake mac header, and then
-+		 * pull it off again, so that it has the same skb geometry
-+		 * as for the l2 case.
-+		 */
-+		eth = skb_push(skb, ETH_HLEN);
-+		eth_zero_addr(eth->h_source);
-+		eth_zero_addr(eth->h_dest);
-+		eth->h_proto = skb->protocol;
-+		__skb_pull(skb, ETH_HLEN);
-+		mac_len = ETH_HLEN;
-+	}
- 	hlen = skb_headlen(skb) + mac_len;
- 	xdp->data = skb->data - mac_len;
- 	xdp->data_meta = xdp->data;
-@@ -4676,6 +4688,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	    (orig_bcast != is_multicast_ether_addr_64bits(eth->h_dest))) {
- 		__skb_push(skb, ETH_HLEN);
- 		skb->protocol = eth_type_trans(skb, skb->dev);
-+		__skb_pull(skb, ETH_HLEN);
- 	}
- 
- 	switch (act) {
 -- 
-2.28.0
+2.23.0
 
