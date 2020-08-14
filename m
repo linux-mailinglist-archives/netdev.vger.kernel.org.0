@@ -2,242 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BAF324499D
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 14:12:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B217244959
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 14:05:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728442AbgHNMMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 08:12:18 -0400
-Received: from rcdn-iport-8.cisco.com ([173.37.86.79]:63068 "EHLO
-        rcdn-iport-8.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728072AbgHNMMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 08:12:14 -0400
-X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Fri, 14 Aug 2020 08:12:11 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=6326; q=dns/txt; s=iport;
-  t=1597407132; x=1598616732;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Sx0AGTN3wxNErboCy8QrXuEeasRN2v7iq0kZlP8Hku4=;
-  b=Wrh2Q3EJl2gr/jyy+ED5yTjDItmwS6dZ2GDZRBy8DHYHEFUy3a3pywQV
-   NoOTNwfwfzIRqyLXDpqUFIby9yc/EiL6m5Lo/bVxqKT39DVH6nVmq63Bg
-   WyDFvbhuKu3dOktBjwG5GR5jvfdkbEtT+J6jjfrDpyyCMPcROkUW7ustA
-   w=;
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0BWBADkfDZf/4oNJK1fHgEBCxIMgX8?=
- =?us-ascii?q?LgXU1gUQBMiyvcIF9CwEBAQ4vBAEBhEyCRwIkNgcOAgMBAQsBAQUBAQECAQY?=
- =?us-ascii?q?EbYVohh8LAUaBDUSDJoJ9sWGBdTOJJoFAFIEkiCGEeRqBQT+EX4o0BJJCh0S?=
- =?us-ascii?q?Bapo+gmyaEA8hoB4BshyBWgYtgVczGggbFTuCaVAZDY4rF45EIQMwNwIGCgE?=
- =?us-ascii?q?BAwmRPgEB?=
-X-IronPort-AV: E=Sophos;i="5.76,312,1592870400"; 
-   d="scan'208";a="811846502"
-Received: from alln-core-5.cisco.com ([173.36.13.138])
-  by rcdn-iport-8.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 14 Aug 2020 12:05:01 +0000
-Received: from sjc-ads-9103.cisco.com (sjc-ads-9103.cisco.com [10.30.208.113])
-        by alln-core-5.cisco.com (8.15.2/8.15.2) with ESMTP id 07EC50DL007126;
-        Fri, 14 Aug 2020 12:05:01 GMT
-Received: by sjc-ads-9103.cisco.com (Postfix, from userid 487941)
-        id C60701588; Fri, 14 Aug 2020 05:05:00 -0700 (PDT)
-From:   Denys Zagorui <dzagorui@cisco.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, xe-linux-external@cisco.com,
-        xiyou.wangcong@gmail.com, ap420073@gmail.com,
-        richardcochran@gmail.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        mkubecek@suse.cz, linux-kernel@vger.kernel.org
-Subject: [RFC][PATCH] net: core: SIOCADDMULTI/SIOCDELMULTI distinguish between uc and mc
-Date:   Fri, 14 Aug 2020 05:05:00 -0700
-Message-Id: <20200814120500.46875-1-dzagorui@cisco.com>
-X-Mailer: git-send-email 2.19.1
+        id S1727971AbgHNMFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 08:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726185AbgHNMFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 08:05:46 -0400
+Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AA1C061384;
+        Fri, 14 Aug 2020 05:05:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
+         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
+        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=SxvWcTY927ewF1xPVOlv2UOLzdlmd3CvesyQFMc5CJk=; b=IXWQsHgAPp3K1FKDNCG79SQaWt
+        rrEau+1wFxL/oVTi+xTXEY/ZGlpyseO1jE2ENN+/oUe24ICxPPpmXiezv+bQiYDo1uraBFOzi/89t
+        pJSIWGkXPBzDdLTiujZPR7vasLylpQA1klb9fZKStFh5f3wZy0CUkdgUe98/U8P71gQmLFvfdDvoC
+        jfAvmIpIhe3o3y4sCzQUoPEAWoXcolcMHXG+WJqd8dQ7uLzKr55FHo1O9gJ7GcrogIquYwlnUnNyS
+        svloYBeM51uvoEiAE6IyKiEVIQNJI8LCaEx7vRc73FpWqZt5aAyZKAZlDL/bviPKT40AO677ARIkW
+        +MZV8IDQ==;
+Received: from noodles by the.earth.li with local (Exim 4.92)
+        (envelope-from <noodles@earth.li>)
+        id 1k6YSm-0000mc-88; Fri, 14 Aug 2020 13:05:36 +0100
+Date:   Fri, 14 Aug 2020 13:05:36 +0100
+From:   Jonathan McDowell <noodles@earth.li>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Mickey Rachamim <mickeyr@marvell.com>
+Subject: Re: [net-next v4 1/6] net: marvell: prestera: Add driver for
+ Prestera family ASIC devices
+Message-ID: <20200814120536.GA26106@earth.li>
+References: <20200727122242.32337-1-vadym.kochan@plvision.eu>
+ <20200727122242.32337-2-vadym.kochan@plvision.eu>
+ <20200813080322.GH21409@earth.li>
+ <20200814082054.GD17795@plvision.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-Outbound-SMTP-Client: 10.30.208.113, sjc-ads-9103.cisco.com
-X-Outbound-Node: alln-core-5.cisco.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200814082054.GD17795@plvision.eu>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SIOCADDMULTI API allows adding multicast/unicast mac addresses but
-doesn't deferentiate them so if someone tries to add secondary
-unicast mac addr it will be added to multicast netdev list which is
-confusing. There is at least one user that allows adding secondary
-unicast through this API.
-(2f41f3358672 i40e/i40evf: fix unicast mac address add)
+On Fri, Aug 14, 2020 at 11:20:54AM +0300, Vadym Kochan wrote:
+> On Thu, Aug 13, 2020 at 09:03:22AM +0100, Jonathan McDowell wrote:
+> > On Mon, Jul 27, 2020 at 03:22:37PM +0300, Vadym Kochan wrote:
+> > > Marvell Prestera 98DX326x integrates up to 24 ports of 1GbE with 8
+> > > ports of 10GbE uplinks or 2 ports of 40Gbps stacking for a largely
+> > > wireless SMB deployment.
+> > > 
+> > > The current implementation supports only boards designed for the Marvell
+> > > Switchdev solution and requires special firmware.
+> > > 
+> > > The core Prestera switching logic is implemented in prestera_main.c,
+> > > there is an intermediate hw layer between core logic and firmware. It is
+> > > implemented in prestera_hw.c, the purpose of it is to encapsulate hw
+> > > related logic, in future there is a plan to support more devices with
+> > > different HW related configurations.
+> > 
+> > The Prestera range covers a lot of different silicon. 98DX326x appears
+> > to be AlleyCat3; does this driver definitely support all previous
+> > revisions too? I've started looking at some 98DX4122 (BobCat+) hardware
+> > and while some of the register mappings seem to match up it looks like
+> > the DSA tagging has some extra information at least.
+> > 
+> > Worth making it clear exactly what this driver is expected to support,
+> > and possibly fix up the naming/device tree compatibles as a result.
+> > 
+> Regarding "naming/device tree compatibles", do you mean to add
+> compatible matching for particular ASIC and also for common ? 
+> 
+> Currently 
+> 
+>     compatible = "marvell,prestera"
+> 
+> is used as default, so may be
+> 
+> you mean to support few matching including particular silicon too, like ?
+> 
+> 
+>     compatible = "marvell,prestera"
+>     compatible = "marvell,prestera-ac3x"
+> 
+> Would you please give an example ?
 
-This patch adds check whether passed mac addr is uc or mc and adds
-this mac addr to the corresponding list. Add 'global' variant for
-adding/removing uc addresses similarly to mc.
+AFAICT "Prestera" is the general name for the Marvell
+enterprise/data-centre silicon, comparable to the "LinkStreet"
+designation for their lower end switching. The mv88e* drivers do not
+mention LinkStreet in their compatible strings at all, choosing instead
+to refer to chip IDs (I see mv88e6085, mv88e6190 + mv88e6250).
 
-Signed-off-by: Denys Zagorui <dzagorui@cisco.com>
----
- include/linux/netdevice.h    |  2 +
- include/uapi/linux/sockios.h |  2 +-
- net/core/dev_addr_lists.c    | 75 +++++++++++++++++++++++++++---------
- net/core/dev_ioctl.c         | 10 ++++-
- 4 files changed, 68 insertions(+), 21 deletions(-)
+I do not have enough familiarity with the Prestera range to be able to
+tell what commonality there is between the different versions (it
+appears you need an NDA to get hold of the programming references), but
+even just looking at your driver and the vendor code for the BobCat it
+seems that AlleyCat3 uses an extended DSA header format, and requires a
+firmware with message based access, in comparison to the BobCat which
+uses register poking.
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index b0e303f6603f..9394f369be33 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4345,8 +4345,10 @@ int dev_addr_init(struct net_device *dev);
- 
- /* Functions used for unicast addresses handling */
- int dev_uc_add(struct net_device *dev, const unsigned char *addr);
-+int dev_uc_add_global(struct net_device *dev, const unsigned char *addr);
- int dev_uc_add_excl(struct net_device *dev, const unsigned char *addr);
- int dev_uc_del(struct net_device *dev, const unsigned char *addr);
-+int dev_uc_del_global(struct net_device *dev, const unsigned char *addr);
- int dev_uc_sync(struct net_device *to, struct net_device *from);
- int dev_uc_sync_multiple(struct net_device *to, struct net_device *from);
- void dev_uc_unsync(struct net_device *to, struct net_device *from);
-diff --git a/include/uapi/linux/sockios.h b/include/uapi/linux/sockios.h
-index 7d1bccbbef78..f41b152b0268 100644
---- a/include/uapi/linux/sockios.h
-+++ b/include/uapi/linux/sockios.h
-@@ -80,7 +80,7 @@
- #define SIOCGIFHWADDR	0x8927		/* Get hardware address		*/
- #define SIOCGIFSLAVE	0x8929		/* Driver slaving support	*/
- #define SIOCSIFSLAVE	0x8930
--#define SIOCADDMULTI	0x8931		/* Multicast address lists	*/
-+#define SIOCADDMULTI	0x8931		/* Mac address lists	*/
- #define SIOCDELMULTI	0x8932
- #define SIOCGIFINDEX	0x8933		/* name -> if_index mapping	*/
- #define SIOGIFINDEX	SIOCGIFINDEX	/* misprint compatibility :-)	*/
-diff --git a/net/core/dev_addr_lists.c b/net/core/dev_addr_lists.c
-index 54cd568e7c2f..d150c2d84df4 100644
---- a/net/core/dev_addr_lists.c
-+++ b/net/core/dev_addr_lists.c
-@@ -573,6 +573,20 @@ int dev_uc_add_excl(struct net_device *dev, const unsigned char *addr)
- }
- EXPORT_SYMBOL(dev_uc_add_excl);
- 
-+static int __dev_uc_add(struct net_device *dev, const unsigned char *addr,
-+			bool global)
-+{
-+	int err;
-+
-+	netif_addr_lock_bh(dev);
-+	err = __hw_addr_add_ex(&dev->uc, addr, dev->addr_len,
-+			       NETDEV_HW_ADDR_T_UNICAST, global, false, 0);
-+	if (!err)
-+		__dev_set_rx_mode(dev);
-+	netif_addr_unlock_bh(dev);
-+	return err;
-+}
-+
- /**
-  *	dev_uc_add - Add a secondary unicast address
-  *	@dev: device
-@@ -583,18 +597,37 @@ EXPORT_SYMBOL(dev_uc_add_excl);
-  */
- int dev_uc_add(struct net_device *dev, const unsigned char *addr)
- {
--	int err;
--
--	netif_addr_lock_bh(dev);
--	err = __hw_addr_add(&dev->uc, addr, dev->addr_len,
--			    NETDEV_HW_ADDR_T_UNICAST);
--	if (!err)
--		__dev_set_rx_mode(dev);
--	netif_addr_unlock_bh(dev);
--	return err;
-+	return __dev_uc_add(dev, addr, false);
- }
- EXPORT_SYMBOL(dev_uc_add);
- 
-+/**
-+ *	dev_uc_add_global - Add a global unicast address
-+ *	@dev: device
-+ *	@addr: address to add
-+ *
-+ *	Add a global unicast address to the device.
-+ */
-+int dev_uc_add_global(struct net_device *dev, const unsigned char *addr)
-+{
-+	return __dev_uc_add(dev, addr, true);
-+}
-+EXPORT_SYMBOL(dev_uc_add_global);
-+
-+static int __dev_uc_del(struct net_device *dev, const unsigned char *addr,
-+			bool global)
-+{
-+	int err;
-+
-+	netif_addr_lock_bh(dev);
-+	err = __hw_addr_del_ex(&dev->uc, addr, dev->addr_len,
-+			       NETDEV_HW_ADDR_T_UNICAST, global, false);
-+	if (!err)
-+		__dev_set_rx_mode(dev);
-+	netif_addr_unlock_bh(dev);
-+	return err;
-+}
-+
- /**
-  *	dev_uc_del - Release secondary unicast address.
-  *	@dev: device
-@@ -605,18 +638,24 @@ EXPORT_SYMBOL(dev_uc_add);
-  */
- int dev_uc_del(struct net_device *dev, const unsigned char *addr)
- {
--	int err;
--
--	netif_addr_lock_bh(dev);
--	err = __hw_addr_del(&dev->uc, addr, dev->addr_len,
--			    NETDEV_HW_ADDR_T_UNICAST);
--	if (!err)
--		__dev_set_rx_mode(dev);
--	netif_addr_unlock_bh(dev);
--	return err;
-+	return __dev_uc_del(dev, addr, false);
- }
- EXPORT_SYMBOL(dev_uc_del);
- 
-+/**
-+ *	dev_uc_del_global - Delete a global unicast address.
-+ *	@dev: device
-+ *	@addr: address to delete
-+ *
-+ *	Release reference to a unicast address and remove it
-+ *	from the device if the reference count drops to zero.
-+ */
-+int dev_uc_del_global(struct net_device *dev, const unsigned char *addr)
-+{
-+	return __dev_uc_del(dev, addr, true);
-+}
-+EXPORT_SYMBOL(dev_uc_del_global);
-+
- /**
-  *	dev_uc_sync - Synchronize device's unicast list to another device
-  *	@to: destination device
-diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-index b2cf9b7bb7b8..774418f64c05 100644
---- a/net/core/dev_ioctl.c
-+++ b/net/core/dev_ioctl.c
-@@ -299,7 +299,10 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
- 			return -EINVAL;
- 		if (!netif_device_present(dev))
- 			return -ENODEV;
--		return dev_mc_add_global(dev, ifr->ifr_hwaddr.sa_data);
-+		if (is_multicast_ether_addr(ifr->ifr_hwaddr.sa_data))
-+			return dev_mc_add_global(dev, ifr->ifr_hwaddr.sa_data);
-+		else
-+			return dev_uc_add_global(dev, ifr->ifr_hwaddr.sa_data);
- 
- 	case SIOCDELMULTI:
- 		if (!ops->ndo_set_rx_mode ||
-@@ -307,7 +310,10 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
- 			return -EINVAL;
- 		if (!netif_device_present(dev))
- 			return -ENODEV;
--		return dev_mc_del_global(dev, ifr->ifr_hwaddr.sa_data);
-+		if (is_multicast_ether_addr(ifr->ifr_hwaddr.sa_data))
-+			return dev_mc_del_global(dev, ifr->ifr_hwaddr.sa_data);
-+		else
-+			return dev_uc_del_global(dev, ifr->ifr_hwaddr.sa_data);
- 
- 	case SIOCSIFTXQLEN:
- 		if (ifr->ifr_qlen < 0)
+Based on that I'd recommend not using the bare "marvell,prestera"
+compatible string, but instead something more specific.
+"marvell,prestera-ac3x" seems like a suitable choice, assuming that's
+how these chips are named/generally referred to.
+
+Also I'd expand your Kconfig information to actually include "Marvell
+Prestera 98DX326x" as that's the only supported chip range at present.
+
+J.
+
 -- 
-2.19.1
-
+... "'And the beast shall come forth surrounded by a roiling cloud of
+    vengeance. The house of the unbelievers shall be razed and they shall
+    be scorched to the earth. Their tags shall blink until the end of
+    days.' from The Book of Mozilla, 12:10" -- about:mozilla
