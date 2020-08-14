@@ -2,109 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CDAA24453E
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 09:09:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 351F82445BC
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 09:17:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726237AbgHNHIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 03:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726006AbgHNHIo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 03:08:44 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF948C061757
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 00:08:43 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id i10so8894589ljn.2
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 00:08:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uPbmn/u6g9gKyCwRFx78Ln8dhwRaKx1gs+n42Nu7NAo=;
-        b=BxNt+9mWfNNJTTzoL96Zv/fvOr+0b0g7nZfiRCjhDAzt7Qpu5g+mMldRmzL4Awajn2
-         nECkkTFJf7e6iTsXGX0KQ32WKzbuIF6TdM2Ysk3wYjj2MgPHLmAjRZ6+soFtgNkY2VZ5
-         YxpmtHudzvF1bozOcSmJplwADl/FOHmj29xg+v4VdlzOHRTGciNQ8vrCrvbNu1z9zOgu
-         Lj4Jmb7NIofDSe8POL9odaWmGjy+uFOVbMicN0ljR/iAguaaNxYkDyMflx+/ZO+VgD8g
-         eN528dkI8Npo6sVvWOM/iyVzQ4b+FuV68czcmfk2fPobj5GzEtsRbPMlc7CXDUiyKN+K
-         HLyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uPbmn/u6g9gKyCwRFx78Ln8dhwRaKx1gs+n42Nu7NAo=;
-        b=pyFpe7bvpMum/HQib2UmLnSVhq7cL2zV1mHzNGMNQwChuuhzYjjxm9ZCO7pvetIGCo
-         snZS3ypwaEX5uxj5tYvccRPwWrMiDxuuASKj356Jw2AURErYSlywImaF4ucKT1fQ5Ppl
-         zZvJ0PK7nhBr5fDI2iJi0TL5MeIGw3JIURNYriqRWrlalOFx+dmBCYiYxFebc2eV1Ubf
-         s9X6jaxHPBWZyD0qnXhMJmmu7mLb7M9yJ7SqgWD1o67KzsgGrlrKtTZSulKfwzESE7sl
-         +Df1MnXwDxtpuAaj5cgA0OtGDG3MaloWyxP+2kgetLQGQojY/yWGgRrufmIbzzTUpBgh
-         AuQg==
-X-Gm-Message-State: AOAM53002BLsAlz4B6U7RhEDvO7zamuafW0EECaTpYrP+HwsBZDPToyX
-        QqwPuA8gvVognQlVoT4sUbfa1+lISDTSWAqHCFA=
-X-Google-Smtp-Source: ABdhPJzm75kAIrlIPs0GNnEHP7yXUoQI3JB623nqPUcxrWEZvaN8iY7I5jkpHTCTCMopzpXnqeaBkZnfE9UgJNh/+UI=
-X-Received: by 2002:a2e:8999:: with SMTP id c25mr728879lji.430.1597388921873;
- Fri, 14 Aug 2020 00:08:41 -0700 (PDT)
+        id S1726656AbgHNHPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 03:15:34 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:36696 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727814AbgHNHPb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Aug 2020 03:15:31 -0400
+Received: from dggeme753-chm.china.huawei.com (unknown [172.30.72.56])
+        by Forcepoint Email with ESMTP id 83203560D5CD59C0D5C8;
+        Fri, 14 Aug 2020 15:15:29 +0800 (CST)
+Received: from dggeme753-chm.china.huawei.com (10.3.19.99) by
+ dggeme753-chm.china.huawei.com (10.3.19.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Fri, 14 Aug 2020 15:15:29 +0800
+Received: from dggeme753-chm.china.huawei.com ([10.7.64.70]) by
+ dggeme753-chm.china.huawei.com ([10.7.64.70]) with mapi id 15.01.1913.007;
+ Fri, 14 Aug 2020 15:15:29 +0800
+From:   linmiaohe <linmiaohe@huawei.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        "martin.varghese@nokia.com" <martin.varghese@nokia.com>,
+        "pshelar@ovn.org" <pshelar@ovn.org>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Shmulik Ladkani <shmulik@metanetworks.com>,
+        "Yadu Kishore" <kyk.segfault@gmail.com>,
+        "sowmini.varadhan@oracle.com" <sowmini.varadhan@oracle.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: add missing skb_uarg refcount increment in
+ pskb_carve_inside_header()
+Thread-Topic: [PATCH] net: add missing skb_uarg refcount increment in
+ pskb_carve_inside_header()
+Thread-Index: AdZyCOwMRQ90pG27RJqKlae5o5FvkA==
+Date:   Fri, 14 Aug 2020 07:15:29 +0000
+Message-ID: <e9b280b79ba444a68f5279cea77a84bf@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.176.252]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CANXY5y+iuzMg+4UdkPJW_Efun30KAPL1+h2S7HeSPp4zOrVC7g@mail.gmail.com>
- <c508eeba-c62d-e4d9-98e2-333c76c90161@gmail.com> <CANXY5y+gfZuGvv+pjzDOLS8Jp8ZUFpAmNw7k53O6cDuyB1PCnw@mail.gmail.com>
- <1b4ebdb3-8840-810a-0d5e-74e2cf7693bf@gmail.com> <CANXY5yJeCeC_FaQHx0GPn88sQCog59k2vmu8o-h6yRrikSQ3vQ@mail.gmail.com>
- <deb7a653-a01b-da4f-c58e-15b6c0c51d75@gmail.com> <CANXY5yKNOkBWUTVjOCBBPfACTV_R89ydiOi=YiOZ92in_VEp4w@mail.gmail.com>
- <962617e5-9dec-6715-d550-4cf3ee414cf6@gmail.com>
-In-Reply-To: <962617e5-9dec-6715-d550-4cf3ee414cf6@gmail.com>
-From:   mastertheknife <mastertheknife@gmail.com>
-Date:   Fri, 14 Aug 2020 10:08:30 +0300
-Message-ID: <CANXY5yKW=+e1CsoXCb0p_+6n8ZLz4eoOQz_5OkrrjYF6mpU9ZQ@mail.gmail.com>
-Subject: Re: PMTUD broken inside network namespace with multipath routing
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello David,
-
-It's on a production system, vmbr2 is a bridge with eth.X VLAN
-interface inside for the connectivity on that 252.0/24 network. vmbr2
-has address 192.168.252.5 in that case
-192.168.252.250 and 192.168.252.252 are CentOS8 LXCs on another host,
-with libreswan inside for any/any IPSECs with VTi interfaces.
-
-Everything is kernel 5.4.44 LTS
-
-I wish i could fully reproduce all of it in a script, but i am not
-sure how to create such hops that return this ICMP
-
-Thank you,
-Kfir
-
-
-On Wed, Aug 12, 2020 at 10:21 PM David Ahern <dsahern@gmail.com> wrote:
->
-> On 8/12/20 6:37 AM, mastertheknife wrote:
-> > Hello David,
-> >
-> > I tried and it seems i can reproduce it:
-> >
-> > # Create test NS
-> > root@host:~# ip netns add testns
-> > # Create veth pair, veth0 in host, veth1 in NS
-> > root@host:~# ip link add veth0 type veth peer name veth1
-> > root@host:~# ip link set veth1 netns testns
-> > # Configure veth1 (NS)
-> > root@host:~# ip netns exec testns ip addr add 192.168.252.209/24 dev veth1
-> > root@host:~# ip netns exec testns ip link set dev veth1 up
-> > root@host:~# ip netns exec testns ip route add default via 192.168.252.100
-> > root@host:~# ip netns exec testns ip route add 192.168.249.0/24
-> > nexthop via 192.168.252.250 nexthop via 192.168.252.252
-> > # Configure veth0 (host)
-> > root@host:~# brctl addif vmbr2 veth0
->
-> vmbr2's config is not defined.
->
-> ip li add vmbr2 type bridge
-> ip li set veth0 master vmbr2
-> ip link set veth0 up
->
-> anything else? e.g., address for vmbr2? What holds 192.168.252.250 and
-> 192.168.252.252
+V2lsbGVtIGRlIEJydWlqbiA8d2lsbGVtZGVicnVpam4ua2VybmVsQGdtYWlsLmNvbT4gd3JvdGU6
+DQo+T24gVGh1LCBBdWcgMTMsIDIwMjAgYXQgMjoxNiBQTSBNaWFvaGUgTGluIDxsaW5taWFvaGVA
+aHVhd2VpLmNvbT4gd3JvdGU6DQo+Pg0KPj4gSWYgdGhlIHNrYiBpcyB6Y29waWVkLCB3ZSBzaG91
+bGQgaW5jcmVhc2UgdGhlIHNrYl91YXJnIHJlZmNvdW50IGJlZm9yZSANCj4+IHdlIGludm9sdmUg
+c2tiX3JlbGVhc2VfZGF0YSgpLiBTZWUgcHNrYl9leHBhbmRfaGVhZCgpIGFzIGEgcmVmZXJlbmNl
+Lg0KPg0KPkRpZCB5b3UgbWFuYWdlIHRvIG9ic2VydmUgYSBidWcgdGhyb3VnaCB0aGlzIGRhdGFw
+YXRoIGluIHByYWN0aWNlPw0KPg0KPnBza2JfY2FydmVfaW5zaWRlX2hlYWRlciBpcyBjYWxsZWQN
+Cj4gIGZyb20gcHNrYl9jYXJ2ZQ0KPiAgICBmcm9tIHBza2JfZXh0cmFjdA0KPiAgICAgIGZyb20g
+cmRzX3RjcF9kYXRhX3JlY3YNCj4NCj5UaGF0IHJlY2VpdmUgcGF0aCBzaG91bGQgbm90IHNlZSBh
+bnkgcGFja2V0cyB3aXRoIHplcm9jb3B5IHN0YXRlIGFzc29jaWF0ZWQuDQo+DQoNClRoaXMgd29y
+a3MgZmluZSB5ZXQgYXMgaXRzIGNhbGxlciBpcyBsaW1pdGVkLiBCdXQgd2Ugc2hvdWxkIHRha2Ug
+Y2FyZSBvZiB0aGUgc2tiX3VhcmcgcmVmY291bnQgZm9yIGZ1dHVyZSB1c2UuDQpPbiB0aGUgb3Ro
+ZXIgaGFuZCwgYmVjYXVzZSB0aGlzIGNvZGVwYXRoIHNob3VsZCBub3Qgc2VlIGFueSBwYWNrZXRz
+IHdpdGggemVyb2NvcHkgc3RhdGUgYXNzb2NpYXRlZCwgdGhlbiB3ZQ0Kc2hvdWxkIG5vdCBjYWxs
+IHNrYl9vcnBoYW5fZnJhZ3MgaGVyZS4NCg0KVGhhbmtzLg0KDQo+PiBGaXhlczogNmZhMDFjY2Q4
+ODMwICgic2tidWZmOiBBZGQgcHNrYl9leHRyYWN0KCkgaGVscGVyIGZ1bmN0aW9uIikNCj4+IFNp
+Z25lZC1vZmYtYnk6IE1pYW9oZSBMaW4gPGxpbm1pYW9oZUBodWF3ZWkuY29tPg0K
