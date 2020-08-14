@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA3F4244BC0
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 17:16:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A8C6244C1E
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 17:28:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726898AbgHNPPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 11:15:55 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:31231 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726297AbgHNPPy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 11:15:54 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1597418154; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=DMWgRHrRRjTDJXLtrLvtw3sk3LVQOvR9zSjiVrGpUPE=; b=YB8bFaxVValzgYmmCKmodh3JFu6L8Is4amzGQk9kDGT6Z8dO+A4JLceIaLW6iES4O5cr4ybV
- aIG6DObI47KJOsviRebM6GJ9Zer+3MuCh6/YsxBePzu4k58rZMz6qlWxias9UCFeM/M9rIng
- SfsUxbR1y+Vm2SJEz3jB0gFGTgw=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 5f36aaa01e4d3989d47fc517 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 14 Aug 2020 15:15:44
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 7B6E7C43391; Fri, 14 Aug 2020 15:15:44 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 410CFC433C6;
-        Fri, 14 Aug 2020 15:15:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 410CFC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        Benjamin Reed <breed@users.sourceforge.net>,
-        Javier Achirica <achirica@users.sourceforge.net>,
-        Jean Tourrilhes <jt@hpl.hp.com>,
-        Fabrice Bellet <fabrice@bellet.info>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 12/30] net: wireless: cisco: airo: Fix a myriad of coding style issues
-References: <20200814113933.1903438-1-lee.jones@linaro.org>
-        <20200814113933.1903438-13-lee.jones@linaro.org>
-Date:   Fri, 14 Aug 2020 18:15:39 +0300
-In-Reply-To: <20200814113933.1903438-13-lee.jones@linaro.org> (Lee Jones's
-        message of "Fri, 14 Aug 2020 12:39:15 +0100")
-Message-ID: <87r1s9l0mc.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1727829AbgHNP2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 11:28:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726804AbgHNP2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 11:28:05 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC705C061384
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 08:28:05 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id s15so4695045pgc.8
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 08:28:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=c7uNM8Gy1kbQT64V2s6Yo+EyqpoCo3FsPH5b97bLSdc=;
+        b=lPSFT9SiJvDSCnjFe/xx10qnx5K8l8Af40U9kpab/GlJuUaXO/cMylzlZL0VgmYaQq
+         AcsgXVS76/J8ZlwpKbSkWGspyJ/VvXOTPmt5Z5L4znYPIgT5icLbmTbsiE80+lFeQx/9
+         0NaeSwvCDgGTVeTmawk1/ZtCpl6E79+Lr+M0HB1ZjfJopq0Fb24/thp9RfWO87nQwr0I
+         d/o/FGtF94GA/ZkwJnKyAnhtF+1LZ7XWJc9DM3sLy9RLrrzBsxM07iEu7GReMnZa8hSk
+         Qum4fHn4JTMxW1zRVbzv5JCh50DYdRhli9bLXtqVoD7ijBTCIOquaMSGIMyrLoS+UfZq
+         1ThQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=c7uNM8Gy1kbQT64V2s6Yo+EyqpoCo3FsPH5b97bLSdc=;
+        b=SmGKTTi5skRjUNWYk719hP6ycuZMsNCXJfZ/YuNTVnr/aOGcy5k6c5eOSq1z7cU14e
+         eWljURlC+r4Zf6ryyXQAicUzNHGqOek7mzhl7kQUZaqfHi7hf27SlKB+HcWC/+Q7u0GV
+         66bxZHyVTPK3cPTrUZysplkCJ0GxT/2HcPgD/3O2Wq3ObMhNnibW90FYwaTUxMjm11bO
+         yjb1cqwOqLCM4urs5w2QNrsGUpLrdAVun+5HupKtmEJ2Hpv1FdLxZ/uda1hxeEmwcE4D
+         4tpIG2CXJgpWIgcFNKvECpVxMXuVlElL3BmqhBF01ynm055dj0SzbhLCDRkKwN2qvG6a
+         YAbQ==
+X-Gm-Message-State: AOAM533FCdGW9ui4/ZpJcBDg1T0nMzITKTJwOlAOdSd5BKawbfCg7pYQ
+        +dPsNyRBXTcf7BjP7S/B6o0n7+9J3bTSnw==
+X-Google-Smtp-Source: ABdhPJyyvv1XrOxvuVNb+j1mQt3Eg4zUVp81Q2iuZvC7fWXX5XqHxZXtI4wNg8tWYXcIYtwagtMGyQ==
+X-Received: by 2002:a62:7794:: with SMTP id s142mr2108759pfc.99.1597418885149;
+        Fri, 14 Aug 2020 08:28:05 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id a4sm8600039pju.49.2020.08.14.08.28.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Aug 2020 08:28:04 -0700 (PDT)
+Date:   Fri, 14 Aug 2020 08:27:56 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     netdev@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH] iproute2: ip maddress: Check multiaddr length
+Message-ID: <20200814082756.18888961@hermes.lan>
+In-Reply-To: <20200814084626.22953-1-s.hauer@pengutronix.de>
+References: <20200814084626.22953-1-s.hauer@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lee Jones <lee.jones@linaro.org> writes:
+On Fri, 14 Aug 2020 10:46:26 +0200
+Sascha Hauer <s.hauer@pengutronix.de> wrote:
 
->  - Ensure spaces appear after {for, if, while, etc}
->  - Ensure spaces to not appear after '('
->  - Ensure spaces to not appear before ')'
->  - Ensure spaces appear between ')' and '{'
->  - Ensure spaces appear after ','
->  - Ensure spaces do not appear before ','
->  - Ensure spaces appear either side of '='
->  - Ensure '{'s which open functions are on a new line
->  - Remove trailing whitespace
->
-> There are still a whole host of issues with this file, but this
-> patch certainly breaks the back of them.
->
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Benjamin Reed <breed@users.sourceforge.net>
-> Cc: Javier Achirica <achirica@users.sourceforge.net>
-> Cc: Jean Tourrilhes <jt@hpl.hp.com>
-> Cc: Fabrice Bellet <fabrice@bellet.info>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> ip maddress add|del takes a MAC address as argument, so insist on
+> getting a length of ETH_ALEN bytes. This makes sure the passed argument
+> is actually a MAC address and especially not an IPv4 address which
+> was previously accepted and silently taken as a MAC address.
+> 
+> While at it, do not print *argv in the error path as this has been
+> modified by ll_addr_a2n() and doesn't contain the full string anymore,
+> which can lead to misleading error messages.
+> 
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 > ---
->  drivers/net/wireless/cisco/airo.c | 897 ++++++++++++++++--------------
->  1 file changed, 467 insertions(+), 430 deletions(-)
+>  ip/ipmaddr.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/ip/ipmaddr.c b/ip/ipmaddr.c
+> index 3400e055..9979ed58 100644
+> --- a/ip/ipmaddr.c
+> +++ b/ip/ipmaddr.c
+> @@ -291,7 +291,7 @@ static int multiaddr_modify(int cmd, int argc, char **argv)
+>  {
+>  	struct ifreq ifr = {};
+>  	int family;
+> -	int fd;
+> +	int fd, len;
+>  
+>  	if (cmd == RTM_NEWADDR)
+>  		cmd = SIOCADDMULTI;
+> @@ -313,9 +313,12 @@ static int multiaddr_modify(int cmd, int argc, char **argv)
+>  				usage();
+>  			if (ifr.ifr_hwaddr.sa_data[0])
+>  				duparg("address", *argv);
+> -			if (ll_addr_a2n(ifr.ifr_hwaddr.sa_data,
+> -					14, *argv) < 0) {
+> -				fprintf(stderr, "Error: \"%s\" is not a legal ll address.\n", *argv);
+> +			len = ll_addr_a2n(ifr.ifr_hwaddr.sa_data, 14, *argv);
 
-This is a driver for ancient hardware, I'm not sure if it's worth trying
-to fix any style issues. Is anyone even using it? Should we instead just
-remove the driver?
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+While you are at it, get rid of the hard code 14 here and use sizeof(ifr.ifr_hwaddr.sa_data)?
