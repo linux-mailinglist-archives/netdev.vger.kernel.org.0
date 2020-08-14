@@ -2,76 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 351F82445BC
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 09:17:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2F172445D8
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 09:31:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726656AbgHNHPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 03:15:34 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:36696 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727814AbgHNHPb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Aug 2020 03:15:31 -0400
-Received: from dggeme753-chm.china.huawei.com (unknown [172.30.72.56])
-        by Forcepoint Email with ESMTP id 83203560D5CD59C0D5C8;
-        Fri, 14 Aug 2020 15:15:29 +0800 (CST)
-Received: from dggeme753-chm.china.huawei.com (10.3.19.99) by
- dggeme753-chm.china.huawei.com (10.3.19.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Fri, 14 Aug 2020 15:15:29 +0800
-Received: from dggeme753-chm.china.huawei.com ([10.7.64.70]) by
- dggeme753-chm.china.huawei.com ([10.7.64.70]) with mapi id 15.01.1913.007;
- Fri, 14 Aug 2020 15:15:29 +0800
-From:   linmiaohe <linmiaohe@huawei.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
+        id S1726311AbgHNHbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 03:31:01 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:47619 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726091AbgHNHbB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Aug 2020 03:31:01 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 806e3fcd;
+        Fri, 14 Aug 2020 07:05:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
+        :subject:date:message-id:in-reply-to:references:mime-version
+        :content-type:content-transfer-encoding; s=mail; bh=rfLwmOjk2tYm
+        2/AsGhKDhEikx2w=; b=uMAvjW4+5NUxxqtndmjbqPAvW+JQFpNrAfZinlkphign
+        kGNdxVhXh+805SfywPBJqR+OqWLLXx5LmysJUhQjrF8l+NovYV9n/h9Sw5S+lWnm
+        YxMbbCdGaw6ysfSySKCwPydwe3n8x6sANNKiQ3m9j+g9MR1dRulMeVu6c2deN44B
+        uVmWBN9PCxq9QfAzr+EEaocHV3PIB9QjCixuRPYpDz+m4eFNDo4XwxHfUMViq+D4
+        F6492YPPxfMGwXRj5aTufpp2+rg2IX17vRl6xGu0lrzvnz2AKM7J00zxUVO7NXbi
+        UzZLLEThcJgGBbdgJISacJBVtsCwwdMS3bqy3b7sig==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 26a68a7e (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Fri, 14 Aug 2020 07:05:21 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Thomas Ptacek <thomas@sockpuppet.org>,
+        Adhipati Blambangan <adhipati@tuta.io>,
+        David Ahern <dsahern@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        "martin.varghese@nokia.com" <martin.varghese@nokia.com>,
-        "pshelar@ovn.org" <pshelar@ovn.org>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        Shmulik Ladkani <shmulik@metanetworks.com>,
-        "Yadu Kishore" <kyk.segfault@gmail.com>,
-        "sowmini.varadhan@oracle.com" <sowmini.varadhan@oracle.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: add missing skb_uarg refcount increment in
- pskb_carve_inside_header()
-Thread-Topic: [PATCH] net: add missing skb_uarg refcount increment in
- pskb_carve_inside_header()
-Thread-Index: AdZyCOwMRQ90pG27RJqKlae5o5FvkA==
-Date:   Fri, 14 Aug 2020 07:15:29 +0000
-Message-ID: <e9b280b79ba444a68f5279cea77a84bf@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.176.252]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Subject: [PATCH net v5] net: xdp: account for layer 3 packets in generic skb handler
+Date:   Fri, 14 Aug 2020 09:30:48 +0200
+Message-Id: <20200814073048.30291-1-Jason@zx2c4.com>
+In-Reply-To: <CAHmME9rbRrdV0ePxT0DgurGdEKOWiEi5mH5Wtg=aJwSA6fxwMg@mail.gmail.com>
+References: <CAHmME9rbRrdV0ePxT0DgurGdEKOWiEi5mH5Wtg=aJwSA6fxwMg@mail.gmail.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-V2lsbGVtIGRlIEJydWlqbiA8d2lsbGVtZGVicnVpam4ua2VybmVsQGdtYWlsLmNvbT4gd3JvdGU6
-DQo+T24gVGh1LCBBdWcgMTMsIDIwMjAgYXQgMjoxNiBQTSBNaWFvaGUgTGluIDxsaW5taWFvaGVA
-aHVhd2VpLmNvbT4gd3JvdGU6DQo+Pg0KPj4gSWYgdGhlIHNrYiBpcyB6Y29waWVkLCB3ZSBzaG91
-bGQgaW5jcmVhc2UgdGhlIHNrYl91YXJnIHJlZmNvdW50IGJlZm9yZSANCj4+IHdlIGludm9sdmUg
-c2tiX3JlbGVhc2VfZGF0YSgpLiBTZWUgcHNrYl9leHBhbmRfaGVhZCgpIGFzIGEgcmVmZXJlbmNl
-Lg0KPg0KPkRpZCB5b3UgbWFuYWdlIHRvIG9ic2VydmUgYSBidWcgdGhyb3VnaCB0aGlzIGRhdGFw
-YXRoIGluIHByYWN0aWNlPw0KPg0KPnBza2JfY2FydmVfaW5zaWRlX2hlYWRlciBpcyBjYWxsZWQN
-Cj4gIGZyb20gcHNrYl9jYXJ2ZQ0KPiAgICBmcm9tIHBza2JfZXh0cmFjdA0KPiAgICAgIGZyb20g
-cmRzX3RjcF9kYXRhX3JlY3YNCj4NCj5UaGF0IHJlY2VpdmUgcGF0aCBzaG91bGQgbm90IHNlZSBh
-bnkgcGFja2V0cyB3aXRoIHplcm9jb3B5IHN0YXRlIGFzc29jaWF0ZWQuDQo+DQoNClRoaXMgd29y
-a3MgZmluZSB5ZXQgYXMgaXRzIGNhbGxlciBpcyBsaW1pdGVkLiBCdXQgd2Ugc2hvdWxkIHRha2Ug
-Y2FyZSBvZiB0aGUgc2tiX3VhcmcgcmVmY291bnQgZm9yIGZ1dHVyZSB1c2UuDQpPbiB0aGUgb3Ro
-ZXIgaGFuZCwgYmVjYXVzZSB0aGlzIGNvZGVwYXRoIHNob3VsZCBub3Qgc2VlIGFueSBwYWNrZXRz
-IHdpdGggemVyb2NvcHkgc3RhdGUgYXNzb2NpYXRlZCwgdGhlbiB3ZQ0Kc2hvdWxkIG5vdCBjYWxs
-IHNrYl9vcnBoYW5fZnJhZ3MgaGVyZS4NCg0KVGhhbmtzLg0KDQo+PiBGaXhlczogNmZhMDFjY2Q4
-ODMwICgic2tidWZmOiBBZGQgcHNrYl9leHRyYWN0KCkgaGVscGVyIGZ1bmN0aW9uIikNCj4+IFNp
-Z25lZC1vZmYtYnk6IE1pYW9oZSBMaW4gPGxpbm1pYW9oZUBodWF3ZWkuY29tPg0K
+A user reported that packets from wireguard were possibly ignored by XDP
+[1]. Another user reported that modifying packets from layer 3
+interfaces results in impossible to diagnose drops.
+
+Apparently, the generic skb xdp handler path seems to assume that
+packets will always have an ethernet header, which really isn't always
+the case for layer 3 packets, which are produced by multiple drivers.
+This patch fixes the oversight. If the mac_len is 0 and so is
+hard_header_len, then we know that the skb is a layer 3 packet, and in
+that case prepend a pseudo ethhdr to the packet whose h_proto is copied
+from skb->protocol, which will have the appropriate v4 or v6 ethertype.
+This allows us to keep XDP programs' assumption correct about packets
+always having that ethernet header, so that existing code doesn't break,
+while still allowing layer 3 devices to use the generic XDP handler.
+
+We push on the ethernet header and then pull it right off and set
+mac_len to the ethernet header size, so that the rest of the XDP code
+does not need any changes. That is, it makes it so that the skb has its
+ethernet header just before the data pointer, of size ETH_HLEN. While
+we're at it, this also fixes a small inconsistency from the prior code,
+in which an XDP program that changes skb->protocol would wind up pushing
+the ethernet header back on but would forget to take it back off
+following the h_proto parsing.
+
+Previous discussions have included the point that maybe XDP should just
+be intentionally broken on layer 3 interfaces, by design, and that layer
+3 people should be using cls_bpf. However, I think there are good
+grounds to reconsider this perspective:
+
+- Complicated deployments wind up applying XDP modifications to a
+  variety of different devices on a given host, some of which are using
+  specialized ethernet cards and other ones using virtual layer 3
+  interfaces, such as WireGuard. Being able to apply one codebase to
+  each of these winds up being essential.
+
+- cls_bpf does not support the same feature set as XDP, and operates at
+  a slightly different stage in the networking stack. You may reply,
+  "then add all the features you want to cls_bpf", but that seems to be
+  missing the point, and would still result in there being two ways to
+  do everything, which is not desirable for anyone actually _using_ this
+  code.
+
+- While XDP was originally made for hardware offloading, and while many
+  look disdainfully upon the generic mode, it nevertheless remains a
+  highly useful and popular way of adding bespoke packet
+  transformations, and from that perspective, a difference between layer
+  2 and layer 3 packets is immaterial if the user is primarily concerned
+  with transformations to layer 3 and beyond.
+
+[1] https://lore.kernel.org/wireguard/M5WzVK5--3-2@tuta.io/
+
+Reported-by: Thomas Ptacek <thomas@sockpuppet.org>
+Reported-by: Adhipati Blambangan <adhipati@tuta.io>
+Cc: David Ahern <dsahern@gmail.com>
+Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+
+I had originally dropped this patch, but the issue kept coming up in
+user reports, so here's a v4 of it. Testing of it is still rather slim,
+but hopefully that will change in the coming days.
+
+Changes v4->v5:
+- Rather than tracking in a messy manner whether the skb is l3, we just
+  do the check once, and then adjust the skb geometry to be identical to
+  the l2 case. This simplifies the code quite a bit.
+- Fix a preexisting bug where the l2 header remained attached if
+  skb->protocol was updated.
+
+Changes v3->v4:
+- We now preserve the same logic for XDP_TX/XDP_REDIRECT as before.
+- hard_header_len is checked in addition to mac_len.
+
+ net/core/dev.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 7df6c9617321..79c15f4244e6 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4630,6 +4630,18 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 	 * header.
+ 	 */
+ 	mac_len = skb->data - skb_mac_header(skb);
++	if (!mac_len && !skb->dev->hard_header_len) {
++		/* For l3 packets, we push on a fake mac header, and then
++		 * pull it off again, so that it has the same skb geometry
++		 * as for the l2 case.
++		 */
++		eth = skb_push(skb, ETH_HLEN);
++		eth_zero_addr(eth->h_source);
++		eth_zero_addr(eth->h_dest);
++		eth->h_proto = skb->protocol;
++		__skb_pull(skb, ETH_HLEN);
++		mac_len = ETH_HLEN;
++	}
+ 	hlen = skb_headlen(skb) + mac_len;
+ 	xdp->data = skb->data - mac_len;
+ 	xdp->data_meta = xdp->data;
+@@ -4676,6 +4688,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 	    (orig_bcast != is_multicast_ether_addr_64bits(eth->h_dest))) {
+ 		__skb_push(skb, ETH_HLEN);
+ 		skb->protocol = eth_type_trans(skb, skb->dev);
++		__skb_pull(skb, ETH_HLEN);
+ 	}
+ 
+ 	switch (act) {
+-- 
+2.28.0
+
