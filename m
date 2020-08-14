@@ -2,121 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D117244CD2
-	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 18:40:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43374244CD9
+	for <lists+netdev@lfdr.de>; Fri, 14 Aug 2020 18:41:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728002AbgHNQkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Aug 2020 12:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
+        id S1728116AbgHNQkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Aug 2020 12:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726196AbgHNQkd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 12:40:33 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631A3C061384;
-        Fri, 14 Aug 2020 09:40:33 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id j9so8939921ilc.11;
-        Fri, 14 Aug 2020 09:40:33 -0700 (PDT)
+        with ESMTP id S1726196AbgHNQku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Aug 2020 12:40:50 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3878C061384
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 09:40:49 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id x5so7983849wmi.2
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 09:40:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=6kFd9MKJ26HXWbtZalFdRqvz3pTX7PP0OTXt4UnbRWo=;
-        b=n5LWdSu7L9rgnPtztRpSIfGLxql9kQGyKLAbC+ID0HNw8i12hLRYN9Gg5xTSxvjjFb
-         ENw2YIpZL/fIuLE9nLvTkO2Zf07KDkKCit2uiZQ/IXcqWm28jWQSAYIMcYOmAc5bV3ME
-         U7pYhRgOaci3HKZyFI7lv3QPYVPAdHlsaPplA6kZU0DOkuoj4IVfFxZqZdZJILsJvbw/
-         kKZ1inh/0aRkArdJ6ETKLP3V7+GPJ0tml8UUiesQlR3GhcbDRF2iCgPU8GyiSdnnpQpr
-         B3OS35sJJ7LSn856cPU99tnhpz0XdqMgG+4Vra61B2Gbug1XTAI8FVEtE3TKfiKIVmRE
-         Q71g==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=C0VMfkRWA8AVEJH0W35su4CS32q6ZmoTQPUzDqNON/Q=;
+        b=Hp2szV86GPRdWh24sdQj6GUdqhaQ1TAqh4R2Im75U8JCfrBE71+991QL/Rzg33fCx5
+         oddn1aoEU5jkfCh6fKXF+J635sKxKyXNBntwcDkvwQJ7eCzYddqF24Nomn4vVjV+PL4/
+         8urCVXdG3m38kdamxccY5JQsUFiJSKLPzF3EAydu+BfxtbplzTautPE9qd755XhsZli+
+         m8NEKSrWPHLC9GbuGm7vXg8R9guvAqTZg7QZp9pO29g4opyyhxeJP+kqKcd0OdZmcIsu
+         cFGNjvfHuwZAbhCmI12T+/urrxQxBT4OUb3DYF57EuWrQjkDOqBDnVrQoXr68hbupC6Q
+         5rCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=6kFd9MKJ26HXWbtZalFdRqvz3pTX7PP0OTXt4UnbRWo=;
-        b=PRvUDJR3fJcmdPwufol1TesfrZRoTCnKckjUGqDxPTb+QDqOvIwee3soCxrOPryAQL
-         OXOh/Vdqe8Aq2qz665tYn/TPTDdHlx7p9wJOq4E9BN/npJEco3Xeb1SyhxOuj3bgMlHC
-         amweigprNBMud5FliKc56Wj4H6yMWLO1AyGG3sN/qDbfawLi+/bAjZjw7LdrhfP6dqgm
-         svMJ4tGURqnylManOdhaYapoN7lAxh9xqyAxI7ZGxjuru+PZr/LxjjxzrSK+jwoF18C/
-         b26BnccPHsXlUIygKy8azTU8avqc3AraWE3T69KCoSBZQKUHwJc8JICUt3phdLlCrdIL
-         TyRA==
-X-Gm-Message-State: AOAM530Q+F6DNl2bvTwgsbrn6gNuN7cv/Y8sZ/HtCe+EJRVTQItESmCS
-        mqXWruRuUwuB2SqZoyxiRY1ykhjlsJWxE1Qw1fQ=
-X-Google-Smtp-Source: ABdhPJzvaBuDiE50Vb6Q7YRhmN5NkFmWlJD3sMdLIyDRDHJv8cYBY5vvXM5zEZduDvaYqXBCYDiGO4BFv2Kg36Hw8PU=
-X-Received: by 2002:a92:98c1:: with SMTP id a62mr3201014ill.195.1597423232780;
- Fri, 14 Aug 2020 09:40:32 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=C0VMfkRWA8AVEJH0W35su4CS32q6ZmoTQPUzDqNON/Q=;
+        b=G2/uDxcrFaoDt/pElFK2ChVBtQFSjKl6vznV7e0WMllFlpo4TLr/eUqm6aizNVIQlY
+         0F1KhZWo6tCe9gNV4ph/9wAQ7y3Trbi6eEpPeBtk/f828ZRd6fOQz1TaTuNan8P3ECty
+         gDtYBeXy+4HRYaUPyaF6b+anXw3IzafiyCeI1YlBS8in6tMvMqiBUgtB05Nm7sGqoABl
+         Xy90E/WRFNJFnELt+8ogHKjDUEQcFQgONNDRIKKpNhnULmQDNqgUcAHyzqA8UIk6/i1o
+         aDTYLUM6gVQ8Z3ryyXutKbwlajxXff50g0LPtwtVdiU0sSGmnwY/O/AzpfsS8Ah+56xv
+         5AUg==
+X-Gm-Message-State: AOAM53219iWqm6brcx+YQ4eEq1bhs1zvRJ95BZKfp6/68HOUnIaDLUsQ
+        kUQFe/78Q3PkVx/N/J91EQdqUw==
+X-Google-Smtp-Source: ABdhPJz0626RiN8pqrM5vG3scAtzKYW2Er/MxO4P2GlIrSH0O8ldy/hocYvhf1OzYi6rXeAv0HZ6Yw==
+X-Received: by 2002:a1c:7f4e:: with SMTP id a75mr3142516wmd.62.1597423248697;
+        Fri, 14 Aug 2020 09:40:48 -0700 (PDT)
+Received: from dell ([95.149.164.62])
+        by smtp.gmail.com with ESMTPSA id c4sm16458313wrt.41.2020.08.14.09.40.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Aug 2020 09:40:48 -0700 (PDT)
+Date:   Fri, 14 Aug 2020 17:40:46 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Christian Lamparter <chunkeey@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 08/30] net: wireless: ath: carl9170: Mark 'ar9170_qmap'
+ as __maybe_unused
+Message-ID: <20200814164046.GO4354@dell>
+References: <20200814113933.1903438-1-lee.jones@linaro.org>
+ <20200814113933.1903438-9-lee.jones@linaro.org>
+ <7ef231f2-e6d3-904f-dc3a-7ef82beda6ef@gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6602:2815:0:0:0:0 with HTTP; Fri, 14 Aug 2020 09:40:32
- -0700 (PDT)
-In-Reply-To: <20200814144844.1920-1-tangbin@cmss.chinamobile.com>
-References: <20200814144844.1920-1-tangbin@cmss.chinamobile.com>
-From:   Tom Psyborg <pozega.tomislav@gmail.com>
-Date:   Fri, 14 Aug 2020 18:40:32 +0200
-Message-ID: <CAKR_QVLYeY5g8kuGwCPBj+aRMmE_yAUYx593vW1-UGYZGZnH3w@mail.gmail.com>
-Subject: Re: [PATCH] ath10k: fix the status check and wrong return
-To:     Tang Bin <tangbin@cmss.chinamobile.com>
-Cc:     kvalo@codeaurora.org, davem@davemloft.net,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zhang Shengju <zhangshengju@cmss.chinamobile.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7ef231f2-e6d3-904f-dc3a-7ef82beda6ef@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/08/2020, Tang Bin <tangbin@cmss.chinamobile.com> wrote:
-> In the function ath10k_ahb_clock_init(), devm_clk_get() doesn't
-> return NULL. Thus use IS_ERR() and PTR_ERR() to validate
-> the returned value instead of IS_ERR_OR_NULL().
->
-> Signed-off-by: Zhang Shengju <zhangshengju@cmss.chinamobile.com>
-> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
-> ---
->  drivers/net/wireless/ath/ath10k/ahb.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/wireless/ath/ath10k/ahb.c
-> b/drivers/net/wireless/ath/ath10k/ahb.c
-> index ed87bc00f..ea669af6a 100644
-> --- a/drivers/net/wireless/ath/ath10k/ahb.c
-> +++ b/drivers/net/wireless/ath/ath10k/ahb.c
-> @@ -87,24 +87,24 @@ static int ath10k_ahb_clock_init(struct ath10k *ar)
->  	dev = &ar_ahb->pdev->dev;
->
->  	ar_ahb->cmd_clk = devm_clk_get(dev, "wifi_wcss_cmd");
-> -	if (IS_ERR_OR_NULL(ar_ahb->cmd_clk)) {
-> +	if (IS_ERR(ar_ahb->cmd_clk)) {
->  		ath10k_err(ar, "failed to get cmd clk: %ld\n",
->  			   PTR_ERR(ar_ahb->cmd_clk));
-> -		return ar_ahb->cmd_clk ? PTR_ERR(ar_ahb->cmd_clk) : -ENODEV;
-> +		return PTR_ERR(ar_ahb->cmd_clk);
->  	}
->
->  	ar_ahb->ref_clk = devm_clk_get(dev, "wifi_wcss_ref");
-> -	if (IS_ERR_OR_NULL(ar_ahb->ref_clk)) {
-> +	if (IS_ERR(ar_ahb->ref_clk)) {
->  		ath10k_err(ar, "failed to get ref clk: %ld\n",
->  			   PTR_ERR(ar_ahb->ref_clk));
-> -		return ar_ahb->ref_clk ? PTR_ERR(ar_ahb->ref_clk) : -ENODEV;
-> +		return PTR_ERR(ar_ahb->ref_clk);
->  	}
->
->  	ar_ahb->rtc_clk = devm_clk_get(dev, "wifi_wcss_rtc");
-> -	if (IS_ERR_OR_NULL(ar_ahb->rtc_clk)) {
-> +	if (IS_ERR(ar_ahb->rtc_clk)) {
->  		ath10k_err(ar, "failed to get rtc clk: %ld\n",
->  			   PTR_ERR(ar_ahb->rtc_clk));
-> -		return ar_ahb->rtc_clk ? PTR_ERR(ar_ahb->rtc_clk) : -ENODEV;
-> +		return PTR_ERR(ar_ahb->rtc_clk);
->  	}
->
->  	return 0;
-> --
-> 2.20.1.windows.1
->
->
->
->
+On Fri, 14 Aug 2020, Christian Lamparter wrote:
 
-Hi
+> On 2020-08-14 13:39, Lee Jones wrote:
+> > 'ar9170_qmap' is used in some source files which include carl9170.h,
+> > but not all of them.  Mark it as __maybe_unused to show that this is
+> > not only okay, it's expected.
+> > 
+> > Fixes the following W=1 kernel build warning(s)
+> 
+> Is this W=1 really a "must" requirement? I find it strange having
 
-You should've include which HW/FW combination you tested this on
+Clean W=1 warnings is the dream, yes.
+
+I would have thought most Maintainers would be on-board with this.
+
+The ones I've worked with thus far have certainly been thankful.  Many
+had this on their own TODO lists.
+
+> __maybe_unused in header files as this "suggests" that the
+> definition is redundant.
+
+Not true.
+
+If it were redundant then we would remove the line entirely.
+
+> >   from drivers/net/wireless/ath/carl9170/carl9170.h:57,
+> >   In file included from drivers/net/wireless/ath/carl9170/carl9170.h:57,
+> >   drivers/net/wireless/ath/carl9170/carl9170.h:71:17: warning: ‘ar9170_qmap’ defined but not used [-Wunused-const-variable=]
+> > 
+> > Cc: Christian Lamparter <chunkeey@googlemail.com>
+> > Cc: Kalle Valo <kvalo@codeaurora.org>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Johannes Berg <johannes@sipsolutions.net>
+> > Cc: linux-wireless@vger.kernel.org
+> > Cc: netdev@vger.kernel.org
+> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > ---
+> >   drivers/net/wireless/ath/carl9170/carl9170.h | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/wireless/ath/carl9170/carl9170.h b/drivers/net/wireless/ath/carl9170/carl9170.h
+> > index 237d0cda1bcb0..9d86253081bce 100644
+> > --- a/drivers/net/wireless/ath/carl9170/carl9170.h
+> > +++ b/drivers/net/wireless/ath/carl9170/carl9170.h
+> > @@ -68,7 +68,7 @@
+> >   #define PAYLOAD_MAX	(CARL9170_MAX_CMD_LEN / 4 - 1)
+> > -static const u8 ar9170_qmap[__AR9170_NUM_TXQ] = { 3, 2, 1, 0 };
+> > +static const u8 __maybe_unused ar9170_qmap[__AR9170_NUM_TXQ] = { 3, 2, 1, 0 };
+> >   #define CARL9170_MAX_RX_BUFFER_SIZE		8192
+> > 
+> 
+
+-- 
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
