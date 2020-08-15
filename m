@@ -2,71 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1222D24539C
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 00:03:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BB7C2453E0
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 00:07:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729164AbgHOWDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Aug 2020 18:03:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
+        id S1729980AbgHOWGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Aug 2020 18:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728666AbgHOVvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Aug 2020 17:51:08 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1EDC06124F;
-        Fri, 14 Aug 2020 22:21:55 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id p37so5517425pgl.3;
-        Fri, 14 Aug 2020 22:21:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6kl9CRsSuMe4k5oZIw9J5TSUS7ssSZkQEzpcLwtOTwA=;
-        b=CZUM7UYuw66dEqtL20gVt538tXU2Mcd3v6gBlDG/sqMfeSQonIv/W7kw3D/EHvRDUW
-         e37kICOlAtjhdL/k9lqxN9g+TLhDdAsboP+30w5RG8jGhgisW5e9cyJ8+L9yUHBls/Tq
-         WMXnOJrZhKmwtWDmcJvZiorWK9uktdLLkPiriSn+ecf5YJ+6jX1kyjE+fBvVwbrBosM9
-         oosh7oZJvPHbvGpSQ4OmwRjSeJyQY/q1D3SGVmzJiXAZv2N3Q7DcQyRVDtR2I34U4M/n
-         SOkJD9xAzonFoJ4cgZI+Z2EE6egxkHFhYJBvSD7qQ8K4HYRG81jjGZa+96AWY4BhJfG8
-         o8fA==
+        with ESMTP id S1728400AbgHOVut (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Aug 2020 17:50:49 -0400
+Received: from mail-io1-xd45.google.com (mail-io1-xd45.google.com [IPv6:2607:f8b0:4864:20::d45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E6EC061231
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 22:23:09 -0700 (PDT)
+Received: by mail-io1-xd45.google.com with SMTP id 127so7381362iou.1
+        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 22:23:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6kl9CRsSuMe4k5oZIw9J5TSUS7ssSZkQEzpcLwtOTwA=;
-        b=fJV/RTHFzyYXynNQ9fTDIZBeLjSeLxba9FOFcqR1MGFmE2/sLwjaGyE+Ts87Pai6Wj
-         BR5xYL61KoqnQCKvNd2hLfCn4UOgaiUMyFxrUqKpYcTbi7zRZKco2SpeefBIYhT6Glta
-         1Ql2USFHVlaengPvQkccI1WRY9DEipxylrlG9iJ3Vsyo1qQRht4zKKbOqQna+M9xKkTb
-         JOn2f48igDGtgtGJdZYgexFipE8ia/cADVOo/3X9YYATucB55vDaH/V2M0zjpgYqHopu
-         xIBk2YStiF7xnHhBrs0s2l41eCMKVzeZymGvfaawN93PNtgzN6VAwLvCZgmLUKwDszIw
-         XiGA==
-X-Gm-Message-State: AOAM530GqEIaBQXF8NDOXN01Hrto3Esv28U05DYnLbB4vtIh2+OxvUNi
-        ImFJvfIlolX2QL0gQEr/ZibAtR9mUcGVHyFBeByG1hHy
-X-Google-Smtp-Source: ABdhPJzBOzjTopBXgfQKB/kGjN+7/W+gfuhNpLPnV6yw1t5YbixjJXwZ+GEEytDP161ZDgO22zXLF6btzKM9IMLH6mE=
-X-Received: by 2002:a63:1116:: with SMTP id g22mr3958762pgl.63.1597468914463;
- Fri, 14 Aug 2020 22:21:54 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=+25FmT8dO4pWjXPGwlb17rDpAfTAbCr3FFkhBNcwuAs=;
+        b=p2Am4xj1juCq9D+JuoNanz0nVgRaEl1mCfQ2yThJRMB7gQncD5AiwIkc6TT0jmsO7g
+         kl9JTTMmXatvnLi1K2aL0woM4Waocke5gMtin8ZIMB2cbyyzBH/Ww5v0J3KONxPO+reP
+         HZ3QgY25RFO0jd0X0Qv9e2IvT15XkEAVyXHg0jx1P5t7+tDj33rE7J+IaowcJa3wjldb
+         rjltt2siZRWRwbtvczjx2jUAElcaK+RNKThLYeEfAHg/x7hbMF9yUbMzaHTncZrQTqGX
+         WpNdJEjlfwCwzdlXy3dHDET4Jn3FdXzTu01yXFn0/xKTTCv3CVGhsfFDxiZzAE66A4r1
+         uSGQ==
+X-Gm-Message-State: AOAM532keitR3i8HEYMc4g9aZyXrVwN34pbUYES3Qbg8c4+//MWlh0kR
+        J04B+IWEwzHRObQW0whfdDEI0CPLUnho9z6luS+o8actbKRn
+X-Google-Smtp-Source: ABdhPJydlCxs/36cUc4UNHPK6M0HkLjuUhkbtL2IuaVgPgv4K8a6I+NSpBzJX7MWxkS2M/6tiP8RcVV1wSXKsNQxeGt/4EVo4FU6
 MIME-Version: 1.0
-References: <20200813181704.62694-1-xie.he.0141@gmail.com> <20200814.204121.2301287009173291675.davem@davemloft.net>
-In-Reply-To: <20200814.204121.2301287009173291675.davem@davemloft.net>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Fri, 14 Aug 2020 22:21:43 -0700
-Message-ID: <CAJht_EP_DKC=WXATeO8YKcRas5UW2xLYRx5Qn=pL8A1PZW=E7Q@mail.gmail.com>
-Subject: Re: [PATCH net] drivers/net/wan/hdlc_x25: Added needed_headroom and a
- skb->len check
-To:     David Miller <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Andrew Hendry <andrew.hendry@gmail.com>
+X-Received: by 2002:a92:b712:: with SMTP id k18mr2432857ili.220.1597468988463;
+ Fri, 14 Aug 2020 22:23:08 -0700 (PDT)
+Date:   Fri, 14 Aug 2020 22:23:08 -0700
+In-Reply-To: <000000000000eb6a8e057ab79f82@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000098e02c05ace3bbfb@google.com>
+Subject: Re: WARNING: refcount bug in p9_req_put
+From:   syzbot <syzbot+edec7868af5997928fe9@syzkaller.appspotmail.com>
+To:     asmadeus@codewreck.org, davem@davemloft.net, ericvh@gmail.com,
+        hch@lst.de, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 14, 2020 at 8:41 PM David Miller <davem@davemloft.net> wrote:
->
-> Applied, thanks.
+syzbot suspects this issue was fixed by commit:
 
-Thank you, David!
+commit a39c46067c845a8a2d7144836e9468b7f072343e
+Author: Christoph Hellwig <hch@lst.de>
+Date:   Fri Jul 10 08:57:22 2020 +0000
+
+    net/9p: validate fds in p9_fd_open
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1015f012900000
+start commit:   459e3a21 gcc-9: properly declare the {pv,hv}clock_page sto..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ef1b87b455c397cf
+dashboard link: https://syzkaller.appspot.com/bug?extid=edec7868af5997928fe9
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1642ee48a00000
+
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: net/9p: validate fds in p9_fd_open
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
