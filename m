@@ -2,165 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FF732454F4
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 01:41:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 469702454F8
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 01:55:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728580AbgHOXlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Aug 2020 19:41:24 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:55225 "EHLO mail.zx2c4.com"
+        id S1728830AbgHOXzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Aug 2020 19:55:16 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:57161 "EHLO mail.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726429AbgHOXlY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 Aug 2020 19:41:24 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 57e5ed94;
-        Sat, 15 Aug 2020 07:15:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
-        :subject:date:message-id:in-reply-to:references:mime-version
-        :content-type:content-transfer-encoding; s=mail; bh=8Qjf+nS4+2iB
-        grrnVwyy+Y9pqsY=; b=smtwuOwR5FYc6sJHnacSwvljOMeqrKKkoguT2FImIV8b
-        ZcpZA7/BlZWu97gncg9nSWmizUbp9LbTdTYSObGbPZ7xoJ532y9WnFDfiuEKKXAW
-        03N//42dcDS8noDzIuC22qG9BS5lcagkkfLrFrSwoH+sNm7V1ueDLAkl0mftfPFk
-        6iC+y8t2+aS7pAVhiGSeG5Ly84DRgt+C18njvLiK6Y0OkgYl0ApNSjyZlZds8x3S
-        rW7wKIXTDVqOG4K10jfY5abbGCvyf7BrlLKJcT8IKplrdqTiFjrdhXLVMCfJgPvn
-        2y14U7uryj9B7MDNOUJVcIGTVj3fKWPeDXICw4S0eQ==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f925c602 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Sat, 15 Aug 2020 07:15:30 +0000 (UTC)
+        id S1726429AbgHOXzP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Aug 2020 19:55:15 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 9aa8e9b7
+        for <netdev@vger.kernel.org>;
+        Sat, 15 Aug 2020 07:29:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=zwkte4Bws3IhFK25KApEnosGnhY=; b=gObJ3a
+        8WecvnlwyDV9q20WasYeX+3ConSorJLAhGfNDTcDyq0F6DsNyaptGZmhHmxVtfh2
+        Bc9CdT/m/xiaVsJF0P6mfy9db6uVVtcXT+jViwXS0J91oYq0fHQn9+M0/HUrv/j6
+        suSS7j6RoyeifSJIMBiBV0q2iI23cPwI6Y2H+Ngx/4+mKLKZA2OSOSy5uVGAoiai
+        2LLLdCej1SmUV1DlvBaU6BHvEc+vHgXgBDTgu08YCdpCRT4My97lUbQnvLxY237W
+        g1KOvOKvJMWsKFWD7Z1AGyo+72m89xfWdp1trLclTBMckUT+uARBnGnZCkZtIy7j
+        /Ufp85dXWiZlSMlg==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 0f514774 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Sat, 15 Aug 2020 07:29:23 +0000 (UTC)
+Received: by mail-io1-f45.google.com with SMTP id k23so12896471iom.10
+        for <netdev@vger.kernel.org>; Sat, 15 Aug 2020 00:55:08 -0700 (PDT)
+X-Gm-Message-State: AOAM531bE3QUZuhLIJ15dcI6w3Su49hQwVPJ4K00tkVoeMQ0+TSAhfyV
+        RP70Sebo8hf1aGS8oYUKWPGsucVlM0/A9wXDm84=
+X-Google-Smtp-Source: ABdhPJzU1lCYHKlo+A8DMBSR6OICKoKYtGj8w6/7MW4V0FisblrtQ7IZyE60pXJOo3g7032WqSr9oKfqFHolSJEWDNs=
+X-Received: by 2002:a05:6638:250f:: with SMTP id v15mr6117856jat.75.1597478108200;
+ Sat, 15 Aug 2020 00:55:08 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAHmME9rbRrdV0ePxT0DgurGdEKOWiEi5mH5Wtg=aJwSA6fxwMg@mail.gmail.com>
+ <20200814083153.06b180b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAHmME9rt-8Z1FJo9YSEqQHyEd1178cfizNa08BiakZYr+FR=Wg@mail.gmail.com> <20200814.142656.1061722366614948972.davem@davemloft.net>
+In-Reply-To: <20200814.142656.1061722366614948972.davem@davemloft.net>
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+Date:   Sat, 15 Aug 2020 09:54:56 +0200
+X-Gmail-Original-Message-ID: <CAHmME9pq8iFfuf2EZG_4xQhDekP+hZR8yUDgYEf3gWNONM_3Ew@mail.gmail.com>
+Message-ID: <CAHmME9pq8iFfuf2EZG_4xQhDekP+hZR8yUDgYEf3gWNONM_3Ew@mail.gmail.com>
+Subject: Re: [PATCH net v4] net: xdp: account for layer 3 packets in generic
+ skb handler
+To:     David Miller <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Netdev <netdev@vger.kernel.org>,
         Thomas Ptacek <thomas@sockpuppet.org>,
         Adhipati Blambangan <adhipati@tuta.io>,
         David Ahern <dsahern@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH net v6] net: xdp: account for layer 3 packets in generic skb handler
-Date:   Sat, 15 Aug 2020 09:41:02 +0200
-Message-Id: <20200815074102.5357-1-Jason@zx2c4.com>
-In-Reply-To: <20200814.135546.2266851283177227377.davem@davemloft.net>
-References: <20200814.135546.2266851283177227377.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A user reported that packets from wireguard were possibly ignored by XDP
-[1]. Another user reported that modifying packets from layer 3
-interfaces results in impossible to diagnose drops.
+On Fri, Aug 14, 2020 at 11:27 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+> Date: Fri, 14 Aug 2020 23:04:56 +0200
+>
+> > What? No. It comes up repeatedly because people want to reuse their
+> > XDP processing logic with layer 3 devices.
+>
+> XDP is a layer 2 packet processing technology.  It assumes an L2
+> ethernet and/or VLAN header is going to be there.
+>
+> Putting a pretend ethernet header there doesn't really change that.
 
-Apparently, the generic skb xdp handler path seems to assume that
-packets will always have an ethernet header, which really isn't always
-the case for layer 3 packets, which are produced by multiple drivers.
-This patch fixes the oversight. If the mac_len is 0 and so is
-hard_header_len, then we know that the skb is a layer 3 packet, and in
-that case prepend a pseudo ethhdr to the packet whose h_proto is copied
-from skb->protocol, which will have the appropriate v4 or v6 ethertype.
-This allows us to keep XDP programs' assumption correct about packets
-always having that ethernet header, so that existing code doesn't break,
-while still allowing layer 3 devices to use the generic XDP handler.
+Actually, I wasn't aware that XDP was explicitly limited to L2-only,
+as some kind of fundamental thing. A while back when this patchset
+first came up, I initially posted something that gave unmodified L3
+frames to XDP programs in the generic handler, but commenters pointed
+out that this loses the skb->protocol changing capability, which could
+be useful (e.g. some kind of custom v4->v6 modifying code), and adding
+the pretend ethernet header would allow people to keep the same
+programs for the L2 case as for the L3 case, which seemed *extremely*
+compelling to me. Hence, this patch series has gone in the pretend
+ethernet header direction.
 
-We push on the ethernet header and then pull it right off and set
-mac_len to the ethernet header size, so that the rest of the XDP code
-does not need any changes. That is, it makes it so that the skb has its
-ethernet header just before the data pointer, of size ETH_HLEN.
+But, anyway, as I said, I wasn't aware that XDP was explicitly limited
+to L2-only, as some kind of fundamental thing. This actually surprises
+me. I always thought the original motivation of XDP was that it
+allowed putting a lot of steering and modification logic into the
+network card hardware, for fancy new cards that support eBPF. Later,
+the generic handler got added on so people could reuse those programs
+in heterogeneous environments, where some cards have hardware support
+and others do not. That seemed like a good idea to me. Extending that
+a step further for layer 3 devices seems like a logical next step, in
+the sense that if that step is invalid, surely the previous one of
+adding the generic handler must be invalid too? At least that's my
+impression of the historical evolution of this; I'm confident you know
+much better than I do.
 
-Previous discussions have included the point that maybe XDP should just
-be intentionally broken on layer 3 interfaces, by design, and that layer
-3 people should be using cls_bpf. However, I think there are good
-grounds to reconsider this perspective:
+It makes me wonder, though, what will you say when hardware comes out
+that has layer 3 semantics and a thirst for eBPF? Also deny that
+hardware of XDP, because "XDP is a layer 2 packet processing
+technology"? I know what you'll say now: "we don't design our
+networking stack around hypothetical hardware, so why even bring it
+up? I won't entertain that." But nevertheless, contemplating those
+hypotheticals might be a good exercise for seeing how committed you
+are to the XDP=L2-only assertion. For example, maybe there are
+fundamental L2 semantics that XDP needs, and can't be emulated with my
+pretend ethernet header -- like if you really are relying on the MACs
+for something I'm not aware of; were that the case, it'd be compelling
+to me. But if it's a bit weaker, in the form of, "we just don't want
+to try anything with L3 at all because," then I admit I'm still a bit
+mystified.
 
-- Complicated deployments wind up applying XDP modifications to a
-  variety of different devices on a given host, some of which are using
-  specialized ethernet cards and other ones using virtual layer 3
-  interfaces, such as WireGuard. Being able to apply one codebase to
-  each of these winds up being essential.
+Nevertheless, at the risk of irritating you further, I will willingly
+drop this patchset at your request, even though I don't completely
+understand the entire scope of reasoning for doing so. (For posterity,
+I just posted a v6, which splits out that other bug fix into something
+separate for you to take, so that this one here can exist on its own.)
 
-- cls_bpf does not support the same feature set as XDP, and operates at
-  a slightly different stage in the networking stack. You may reply,
-  "then add all the features you want to cls_bpf", but that seems to be
-  missing the point, and would still result in there being two ways to
-  do everything, which is not desirable for anyone actually _using_ this
-  code.
-
-- While XDP was originally made for hardware offloading, and while many
-  look disdainfully upon the generic mode, it nevertheless remains a
-  highly useful and popular way of adding bespoke packet
-  transformations, and from that perspective, a difference between layer
-  2 and layer 3 packets is immaterial if the user is primarily concerned
-  with transformations to layer 3 and beyond.
-
-- It's not impossible to imagine layer 3 hardware (e.g. a WireGuard PCIe
-  card) including eBPF/XDP functionality built-in. In that case, why
-  limit XDP as a technology to only layer 2? Then, having generic XDP
-  work for layer 3 would naturally fit as well.
-
-[1] https://lore.kernel.org/wireguard/M5WzVK5--3-2@tuta.io/
-
-Reported-by: Thomas Ptacek <thomas@sockpuppet.org>
-Reported-by: Adhipati Blambangan <adhipati@tuta.io>
-Cc: David Ahern <dsahern@gmail.com>
-Cc: Toke Høiland-Jørgensen <toke@redhat.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-
-I had originally dropped this patch, but the issue kept coming up in
-user reports, so here's a v4 of it. Testing of it is still rather slim,
-but hopefully that will change in the coming days.
-
-Changes v5->v6:
-- The fix to the skb->protocol changing case is now in a separate
-  stand-alone patch, and removed from this one, so that it can be
-  evaluated separately.
-
-Changes v4->v5:
-- Rather than tracking in a messy manner whether the skb is l3, we just
-  do the check once, and then adjust the skb geometry to be identical to
-  the l2 case. This simplifies the code quite a bit.
-- Fix a preexisting bug where the l2 header remained attached if
-  skb->protocol was updated.
-
-Changes v3->v4:
-- We now preserve the same logic for XDP_TX/XDP_REDIRECT as before.
-- hard_header_len is checked in addition to mac_len.
-
- net/core/dev.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 151f1651439f..79c15f4244e6 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4630,6 +4630,18 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	 * header.
- 	 */
- 	mac_len = skb->data - skb_mac_header(skb);
-+	if (!mac_len && !skb->dev->hard_header_len) {
-+		/* For l3 packets, we push on a fake mac header, and then
-+		 * pull it off again, so that it has the same skb geometry
-+		 * as for the l2 case.
-+		 */
-+		eth = skb_push(skb, ETH_HLEN);
-+		eth_zero_addr(eth->h_source);
-+		eth_zero_addr(eth->h_dest);
-+		eth->h_proto = skb->protocol;
-+		__skb_pull(skb, ETH_HLEN);
-+		mac_len = ETH_HLEN;
-+	}
- 	hlen = skb_headlen(skb) + mac_len;
- 	xdp->data = skb->data - mac_len;
- 	xdp->data_meta = xdp->data;
--- 
-2.28.0
-
+Jason
