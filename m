@@ -2,99 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB2F024539B
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 00:03:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D28BE245440
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 00:18:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729786AbgHOWDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Aug 2020 18:03:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728675AbgHOVvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Aug 2020 17:51:10 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B448C03B3F0;
-        Sat, 15 Aug 2020 02:47:08 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id t14so9834623wmi.3;
-        Sat, 15 Aug 2020 02:47:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rnjXjcdoa8K1T7AG+e8ZGPlTXdNLEjYT6VnAJIHsZSs=;
-        b=DhC5u+7IZePPcWAY6zRSVw4d9LQe/5vxNN+unplSfogo19W/gQsHWuJWnEfjYUCWZt
-         ofTFVmBSDpb39en0q7gzC9dBmnaQ7ujQ56gfikCxE/T94RZkaPyqJuPWUwzxkR5zh6RV
-         2zeJYqeeaU1Q1DSdMTqqhY/LRakzcWnmcscyAO2j2jUydkp/FfzI4OzZgNMQ1L8kw/dO
-         8TBIMCb35O/0iS3h0EHlOgoUzUUJzgbioSquIoMM8Z4pf3EJ44qo6Vvwwkz35YBAtxYe
-         yD9YOvR1WEkLodQ5GO9kGAohvxI6l1LxEt45qDPE61B6uEJ5Kk1wekFA0TDuU9cxy1kN
-         mmgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rnjXjcdoa8K1T7AG+e8ZGPlTXdNLEjYT6VnAJIHsZSs=;
-        b=NV6Hg8WtvwFk3QnAk8ys1iWczIEc+UBuJJ7GR3dkcCgOzQ7MNNYg/t4DPPieKGbo9z
-         8qNx2M0hKaelKi5zQ2JIvJGM3LpmOLHKsRWDNcAxn4VxKv/tGC8X5PuJ+Bn22FZvX41O
-         1YOd8MJOl9Em7TEfH0fAyq5YGylLGDKb2PPWdkCLWR6PvT/aRThtEVDpYIa6cKenw+OS
-         FHZHVs3WH2UZ+7lI0rlnMf1sw7tYRVechhZQ7C6UlKlqz+ssju7awXbPuaN89iNNDMWq
-         QCBuW3QjFGinJNmSYgMv2XR02QLh2CeInGxMffjIbT2KGfD8rG9QkXwHCiDNU62HfD/h
-         yGPQ==
-X-Gm-Message-State: AOAM533Fa13G66x2xjuj+aSafO70eRcQlOViu7i3pDoKkOM3YGaHgxyl
-        xY8vjm9JSBblmA69rxEDslw=
-X-Google-Smtp-Source: ABdhPJz+QzwjIVRKxXK6BWYp+z7ISU45Y8xLUoCpZCu78YaysKfb9s+pgk2lbhYn93Jdk6qPnYy7kw==
-X-Received: by 2002:a1c:448a:: with SMTP id r132mr6014057wma.158.1597484827372;
-        Sat, 15 Aug 2020 02:47:07 -0700 (PDT)
-Received: from [172.20.10.4] (mob-5-90-172-191.net.vodafone.it. [5.90.172.191])
-        by smtp.gmail.com with ESMTPSA id 31sm21346274wrj.94.2020.08.15.02.47.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 15 Aug 2020 02:47:06 -0700 (PDT)
-Subject: Re: [PATCH] seg6: using DSCP of inner IPv4 packets
-To:     David Miller <davem@davemloft.net>
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrea.mayer@uniroma2.it
-References: <20200804074030.1147-1-ahabdels@gmail.com>
- <20200805.174049.1470539179902962793.davem@davemloft.net>
- <7f8b1def-0a65-d2a4-577e-5f928cee0617@gmail.com>
- <20200807.174342.2147963305722259387.davem@davemloft.net>
-From:   Ahmed Abdelsalam <ahabdels@gmail.com>
-Message-ID: <56fb26ec-f35f-a7e9-53af-2ede1104bd28@gmail.com>
-Date:   Sat, 15 Aug 2020 11:47:04 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        id S1728091AbgHOWS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Aug 2020 18:18:57 -0400
+Received: from correo.us.es ([193.147.175.20]:38936 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728864AbgHOWSx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Aug 2020 18:18:53 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 3C7FBDA886
+        for <netdev@vger.kernel.org>; Sat, 15 Aug 2020 12:32:14 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2BF09DA704
+        for <netdev@vger.kernel.org>; Sat, 15 Aug 2020 12:32:14 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 21822DA840; Sat, 15 Aug 2020 12:32:14 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id DF921DA704;
+        Sat, 15 Aug 2020 12:32:11 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sat, 15 Aug 2020 12:32:11 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [213.143.48.187])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id F0A6942EF4E0;
+        Sat, 15 Aug 2020 12:32:10 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH 0/8] Netfilter fixes for net
+Date:   Sat, 15 Aug 2020 12:31:53 +0200
+Message-Id: <20200815103201.1768-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20200807.174342.2147963305722259387.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Hi,
 
-Sorry for the late reply. I'm on PTO with limited email access.
+The following patchset contains Netfilter fixes for net:
 
-I will revise the patch in the next weeks and make outer IPv6 header 
-inherit Hop limit from Inner packet for the IPv6 case.
+1) Endianness issue in IPv4 option support in nft_exthdr,
+   from Stephen Suryaputra.
 
-Ahmed
+2) Removes the waitcount optimization in nft_compat,
+   from Florian Westphal.
 
+3) Remove ipv6 -> nf_defrag_ipv6 module dependency, from
+   Florian Westphal.
 
-On 08/08/2020 02:43, David Miller wrote:
-> From: Ahmed Abdelsalam <ahabdels@gmail.com>
-> Date: Thu, 6 Aug 2020 08:43:06 +0200
-> 
->> SRv6 as defined in [1][2] does not mandate that the hop_limit of the
->> outer IPv6 header has to be copied from the inner packet.
-> 
-> This is not an issue of seg6 RFCs, but rather generic ip6 in ip6
-> tunnel encapsulation.
-> 
-> Therefore, what the existing ip6 tunnel encap does is our guide,
-> and it inherits from the inner header.
-> 
-> And that's what the original seg6 code almost certainly used to
-> guide the decision making in this area.
-> 
+4) Memleak in chain binding support, also from Florian.
+
+5) Simplify nft_flowtable.sh selftest, from Fabian Frederick.
+
+6) Optional MTU arguments for selftest nft_flowtable.sh,
+   also from Fabian.
+
+7) Remove noise error report when killing process in
+   selftest nft_flowtable.sh, from Fabian Frederick.
+
+8) Reject bogus getsockopt option length in ebtables,
+   from Florian Westphal.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit 7c7ab580db49cc7befe5f4b91bb1920cd6b07575:
+
+  net: Convert to use the fallthrough macro (2020-08-08 14:29:09 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 5c04da55c754c44937b3d19c6522f9023fd5c5d5:
+
+  netfilter: ebtables: reject bogus getopt len value (2020-08-14 11:59:08 +0200)
+
+----------------------------------------------------------------
+Fabian Frederick (3):
+      selftests: netfilter: add checktool function
+      selftests: netfilter: add MTU arguments to flowtables
+      selftests: netfilter: kill running process only
+
+Florian Westphal (4):
+      netfilter: nft_compat: remove flush counter optimization
+      netfilter: avoid ipv6 -> nf_defrag_ipv6 module dependency
+      netfilter: nf_tables: free chain context when BINDING flag is missing
+      netfilter: ebtables: reject bogus getopt len value
+
+Stephen Suryaputra (1):
+      netfilter: nf_tables: nft_exthdr: the presence return value should be little-endian
+
+ include/linux/netfilter_ipv6.h                     | 18 ------
+ net/bridge/netfilter/ebtables.c                    |  4 ++
+ net/bridge/netfilter/nf_conntrack_bridge.c         |  8 ++-
+ net/ipv6/netfilter.c                               |  3 -
+ net/netfilter/nf_tables_api.c                      |  6 +-
+ net/netfilter/nft_compat.c                         | 37 +++++------
+ net/netfilter/nft_exthdr.c                         |  4 +-
+ tools/testing/selftests/netfilter/nft_flowtable.sh | 73 +++++++++++++---------
+ 8 files changed, 73 insertions(+), 80 deletions(-)
