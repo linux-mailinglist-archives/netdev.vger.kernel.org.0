@@ -2,103 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1755624535D
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 00:00:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E7B824535F
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 00:01:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728814AbgHOWA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728819AbgHOWA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 15 Aug 2020 18:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728812AbgHOVvd (ORCPT
+        with ESMTP id S1728810AbgHOVvd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 15 Aug 2020 17:51:33 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4564C06136B
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 20:06:06 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id u128so5457528pfb.6
-        for <netdev@vger.kernel.org>; Fri, 14 Aug 2020 20:06:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5KwR5xhfPXsL2asWzQqM0wpo/ssHwspfKkLxx7jKpKY=;
-        b=ZznlS5MArzxHZ8pvVUMD//i/wDFlZ3Z8h1zlweMrKnvrbjgVuHuwVphK/AemeSie+6
-         ncqgM5F1H45CMne71Yb7bbxvG7jqAckd4B9//Z5orGdPpc/feoH5Zo/tZDfv28uvNOCE
-         RtgoSJVkP+14hEPT/ZIQ+DvHd6iMOK6UTGhXb/b4Z9UV0t7pGbu2CeAZ33xx2IZ4RGoT
-         ByJC/ZTvPR3SbN+AcNkGdR4v5ts7aD/ZBIHKoN00lGswFwtx8fbc6g4OJuTfc42J5q6S
-         VZG5YQ1wQJtKIN6fsyfMwTj77OpqCE9FCpoRn9wSBf2vrjcAwxMBMifH0XTMu+f8NNrm
-         fvAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5KwR5xhfPXsL2asWzQqM0wpo/ssHwspfKkLxx7jKpKY=;
-        b=gYnEmqmicUOmYTYkM4ftjjviDySYRpzhsUlB2Gx76smBbyUMmTWmkTbNtHWpEgGvM1
-         FlHT9M0lsiWfYBsQ10GF2gmOUJFwMJBVWJc0AyVrrHNSYZHQiVMGPc/ifyCT9081OU6z
-         jP9+58MCo7TKFDxghQcVS+wxKlO20fRWxX2ypPl4tEperJ4Bk5fcxyEmUlIPnwQe0xe7
-         WFbb+Z1cB+lXR0ZX6GrcXisPBmmRUJ5OQphN2HIqv+eqmweKqh8QmzMGA9kpFY8jo7iE
-         UBZFnEcm24mr+QkWvjMf9uX6NMSQoU+q0iuUaoP6vfjsnzTVdAogVhoLF1FY0NBGxOSS
-         eKvA==
-X-Gm-Message-State: AOAM5329j+kjxQm3tKYhXfDzeq1mXAAjHxO5qmbGLN2m3T2xT+LmuCWC
-        vamCaZUjMohOXugdeCr4rvJxixm5dG4udA==
-X-Google-Smtp-Source: ABdhPJzBu3kohYxqXAPyRwIoxaYxuDbBRlATYdvHD8geDiX4FtSeWWobcceQAy7aq/qSiCMIp4tR6A==
-X-Received: by 2002:a63:e703:: with SMTP id b3mr3556490pgi.39.1597460765860;
-        Fri, 14 Aug 2020 20:06:05 -0700 (PDT)
-Received: from unknown.linux-6brj.site ([2600:1700:727f::46])
-        by smtp.gmail.com with ESMTPSA id y7sm10157914pjm.3.2020.08.14.20.06.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Aug 2020 20:06:04 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+af23e7f3e0a7e10c8b67@syzkaller.appspotmail.com,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jay Vosburgh <j.vosburgh@gmail.com>
-Subject: [Patch net] bonding: fix a potential double-unregister
-Date:   Fri, 14 Aug 2020 20:05:58 -0700
-Message-Id: <20200815030558.15335-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.28.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D95C0612EF;
+        Fri, 14 Aug 2020 20:41:22 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7D1DC127C1D1F;
+        Fri, 14 Aug 2020 20:24:36 -0700 (PDT)
+Date:   Fri, 14 Aug 2020 20:41:21 -0700 (PDT)
+Message-Id: <20200814.204121.2301287009173291675.davem@davemloft.net>
+To:     xie.he.0141@gmail.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org,
+        willemdebruijn.kernel@gmail.com, ms@dev.tdt.de,
+        andrew.hendry@gmail.com
+Subject: Re: [PATCH net] drivers/net/wan/hdlc_x25: Added needed_headroom
+ and a skb->len check
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200813181704.62694-1-xie.he.0141@gmail.com>
+References: <20200813181704.62694-1-xie.he.0141@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 14 Aug 2020 20:24:36 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we tear down a network namespace, we unregister all
-the netdevices within it. So we may queue a slave device
-and a bonding device together in the same unregister queue.
+From: Xie He <xie.he.0141@gmail.com>
+Date: Thu, 13 Aug 2020 11:17:04 -0700
 
-If the only slave device is non-ethernet, it would
-automatically unregister the bonding device as well. Thus,
-we may end up unregistering the bonding device twice.
+> 1. Added a skb->len check
+> 
+> This driver expects upper layers to include a pseudo header of 1 byte
+> when passing down a skb for transmission. This driver will read this
+> 1-byte header. This patch added a skb->len check before reading the
+> header to make sure the header exists.
+> 
+> 2. Added needed_headroom and set hard_header_len to 0
+> 
+> When this driver transmits data,
+>   first this driver will remove a pseudo header of 1 byte,
+>   then the lapb module will prepend the LAPB header of 2 or 3 bytes.
+> So the value of needed_headroom in this driver should be 3 - 1.
+> 
+> Because this driver has no header_ops, according to the logic of
+> af_packet.c, the value of hard_header_len should be 0.
+> 
+> Reason of setting needed_headroom and hard_header_len at this place:
+> 
+> This driver is written using the API of the hdlc module, the hdlc
+> module enables this driver (the protocol driver) to run on any hardware
+> that has a driver (the hardware driver) written using the API of the
+> hdlc module.
+> 
+> Two other hdlc protocol drivers - hdlc_ppp and hdlc_raw_eth, also set
+> things like hard_header_len at this place. In hdlc_ppp, it sets
+> hard_header_len after attach_hdlc_protocol and before setting dev->type.
+> In hdlc_raw_eth, it sets hard_header_len by calling ether_setup after
+> attach_hdlc_protocol and after memcpy the settings.
+> 
+> 3. Reset needed_headroom when detaching protocols (in hdlc.c)
+> 
+> When detaching a protocol from a hardware device, the hdlc module will
+> reset various parameters of the device (including hard_header_len) to
+> the default values. We add needed_headroom here so that needed_headroom
+> will also be reset.
+> 
+> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Cc: Martin Schiller <ms@dev.tdt.de>
+> Cc: Andrew Hendry <andrew.hendry@gmail.com>
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
 
-Workaround this special case by checking reg_state.
-
-Fixes: 9b5e383c11b0 ("net: Introduce unregister_netdevice_many()")
-Reported-by: syzbot+af23e7f3e0a7e10c8b67@syzkaller.appspotmail.com
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: Andy Gospodarek <andy@greyhouse.net>
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- drivers/net/bonding/bond_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 5ad43aaf76e5..995fcb4eed92 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -2205,7 +2205,8 @@ static int bond_release_and_destroy(struct net_device *bond_dev,
- 	int ret;
- 
- 	ret = __bond_release_one(bond_dev, slave_dev, false, true);
--	if (ret == 0 && !bond_has_slaves(bond)) {
-+	if (ret == 0 && !bond_has_slaves(bond) &&
-+	    bond_dev->reg_state != NETREG_UNREGISTERING) {
- 		bond_dev->priv_flags |= IFF_DISABLE_NETPOLL;
- 		netdev_info(bond_dev, "Destroying bond\n");
- 		bond_remove_proc_entry(bond);
--- 
-2.28.0
-
+Applied, thanks.
