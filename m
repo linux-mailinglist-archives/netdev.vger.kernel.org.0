@@ -2,113 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7097E24544C
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 00:19:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85105245429
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 00:13:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728765AbgHOWTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Aug 2020 18:19:17 -0400
-Received: from correo.us.es ([193.147.175.20]:38942 "EHLO mail.us.es"
+        id S1729892AbgHOWNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Aug 2020 18:13:45 -0400
+Received: from mx2.suse.de ([195.135.220.15]:36294 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728861AbgHOWSy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 Aug 2020 18:18:54 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 32D57DA55D
-        for <netdev@vger.kernel.org>; Sat, 15 Aug 2020 12:32:27 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 23DE9DA844
-        for <netdev@vger.kernel.org>; Sat, 15 Aug 2020 12:32:27 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 18543DA73D; Sat, 15 Aug 2020 12:32:27 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
-        version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id DD5ADDA72F;
-        Sat, 15 Aug 2020 12:32:24 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sat, 15 Aug 2020 12:32:24 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [213.143.48.187])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id F419142EF4E0;
-        Sat, 15 Aug 2020 12:32:23 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH 8/8] netfilter: ebtables: reject bogus getopt len value
-Date:   Sat, 15 Aug 2020 12:32:01 +0200
-Message-Id: <20200815103201.1768-9-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200815103201.1768-1-pablo@netfilter.org>
-References: <20200815103201.1768-1-pablo@netfilter.org>
+        id S1728486AbgHOWNo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Aug 2020 18:13:44 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 40F9AAD4B;
+        Sat, 15 Aug 2020 12:43:26 +0000 (UTC)
+From:   colyli@suse.de
+To:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
+        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
+        Christoph Hellwig <hch@lst.de>, Hannes Reinecke <hare@suse.de>,
+        Jan Kara <jack@suse.com>, Jens Axboe <axboe@kernel.dk>,
+        Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Vlastimil Babka <vbabka@suse.com>
+Subject: [PATCH v4 1/3] net: introduce helper sendpage_ok() in include/linux/net.h
+Date:   Sat, 15 Aug 2020 20:42:52 +0800
+Message-Id: <20200815124254.115076-1-colyli@suse.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Coly Li <colyli@suse.de>
 
-syzkaller reports splat:
-------------[ cut here ]------------
-Buffer overflow detected (80 < 137)!
-Call Trace:
- do_ebt_get_ctl+0x2b4/0x790 net/bridge/netfilter/ebtables.c:2317
- nf_getsockopt+0x72/0xd0 net/netfilter/nf_sockopt.c:116
- ip_getsockopt net/ipv4/ip_sockglue.c:1778 [inline]
+The original problem was from nvme-over-tcp code, who mistakenly uses
+kernel_sendpage() to send pages allocated by __get_free_pages() without
+__GFP_COMP flag. Such pages don't have refcount (page_count is 0) on
+tail pages, sending them by kernel_sendpage() may trigger a kernel panic
+from a corrupted kernel heap, because these pages are incorrectly freed
+in network stack as page_count 0 pages.
 
-caused by a copy-to-user with a too-large "*len" value.
-This adds a argument check on *len just like in the non-compat version
-of the handler.
+This patch introduces a helper sendpage_ok(), it returns true if the
+checking page,
+- is not slab page: PageSlab(page) is false.
+- has page refcount: page_count(page) is not zero
 
-Before the "Fixes" commit, the reproducer fails with -EINVAL as
-expected:
-1. core calls the "compat" getsockopt version
-2. compat getsockopt version detects the *len value is possibly
-   in 64-bit layout (*len != compat_len)
-3. compat getsockopt version delegates everything to native getsockopt
-   version
-4. native getsockopt rejects invalid *len
+All drivers who want to send page to remote end by kernel_sendpage()
+may use this helper to check whether the page is OK. If the helper does
+not return true, the driver should try other non sendpage method (e.g.
+sock_no_sendpage()) to handle the page.
 
--> compat handler only sees len == sizeof(compat_struct) for GET_ENTRIES.
-
-After the refactor, event sequence is:
-1. getsockopt calls "compat" version (len != native_len)
-2. compat version attempts to copy *len bytes, where *len is random
-   value from userspace
-
-Fixes: fc66de8e16ec ("netfilter/ebtables: clean up compat {get, set}sockopt handling")
-Reported-by: syzbot+5accb5c62faa1d346480@syzkaller.appspotmail.com
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Coly Li <colyli@suse.de>
+Cc: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Hannes Reinecke <hare@suse.de>
+Cc: Jan Kara <jack@suse.com>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>
+Cc: Philipp Reisner <philipp.reisner@linbit.com>
+Cc: Sagi Grimberg <sagi@grimberg.me>
+Cc: Vlastimil Babka <vbabka@suse.com>
+Cc: stable@vger.kernel.org
 ---
- net/bridge/netfilter/ebtables.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Changelog:
+v4, change sendpage_ok() as an inline helper, and post it as
+    separate patch.
+v3, introduce a more common sendpage_ok()
+v2, fix typo in patch subject
+v1, the initial version.
+ include/linux/net.h | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
-index 1641f414d1ba..ebe33b60efd6 100644
---- a/net/bridge/netfilter/ebtables.c
-+++ b/net/bridge/netfilter/ebtables.c
-@@ -2238,6 +2238,10 @@ static int compat_do_ebt_get_ctl(struct sock *sk, int cmd,
- 	struct ebt_table *t;
- 	struct net *net = sock_net(sk);
+diff --git a/include/linux/net.h b/include/linux/net.h
+index d48ff1180879..97e8f1a8a427 100644
+--- a/include/linux/net.h
++++ b/include/linux/net.h
+@@ -286,6 +286,21 @@ do {									\
+ #define net_get_random_once_wait(buf, nbytes)			\
+ 	get_random_once_wait((buf), (nbytes))
  
-+	if ((cmd == EBT_SO_GET_INFO || cmd == EBT_SO_GET_INIT_INFO) &&
-+	    *len != sizeof(struct compat_ebt_replace))
-+		return -EINVAL;
++/*
++ * E.g. XFS meta- & log-data is in slab pages, or bcache meta
++ * data pages, or other high order pages allocated by
++ * __get_free_pages() without __GFP_COMP, which have a page_count
++ * of 0 and/or have PageSlab() set. We cannot use send_page for
++ * those, as that does get_page(); put_page(); and would cause
++ * either a VM_BUG directly, or __page_cache_release a page that
++ * would actually still be referenced by someone, leading to some
++ * obscure delayed Oops somewhere else.
++ */
++static inline bool sendpage_ok(struct page *page)
++{
++	return  (!PageSlab(page) && page_count(page) >= 1);
++}
 +
- 	if (copy_from_user(&tmp, user, sizeof(tmp)))
- 		return -EFAULT;
- 
+ int kernel_sendmsg(struct socket *sock, struct msghdr *msg, struct kvec *vec,
+ 		   size_t num, size_t len);
+ int kernel_sendmsg_locked(struct sock *sk, struct msghdr *msg,
 -- 
-2.20.1
+2.26.2
 
