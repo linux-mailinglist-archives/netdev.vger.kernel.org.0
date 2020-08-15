@@ -2,40 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A34B245569
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 04:02:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F4B824556F
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 04:10:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728959AbgHPCCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Aug 2020 22:02:36 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:3478 "EHLO huawei.com"
+        id S1729893AbgHPCKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Aug 2020 22:10:36 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:3479 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727824AbgHPCCg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 Aug 2020 22:02:36 -0400
-Received: from dggeme752-chm.china.huawei.com (unknown [172.30.72.56])
-        by Forcepoint Email with ESMTP id B36A2BC88270589DE43A;
-        Sat, 15 Aug 2020 10:02:18 +0800 (CST)
+        id S1726926AbgHPCKf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Aug 2020 22:10:35 -0400
+Received: from dggeme701-chm.china.huawei.com (unknown [172.30.72.55])
+        by Forcepoint Email with ESMTP id D1DEFC4F7998B15228CD;
+        Sat, 15 Aug 2020 10:09:06 +0800 (CST)
 Received: from dggeme753-chm.china.huawei.com (10.3.19.99) by
- dggeme752-chm.china.huawei.com (10.3.19.98) with Microsoft SMTP Server
+ dggeme701-chm.china.huawei.com (10.1.199.97) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Sat, 15 Aug 2020 10:02:18 +0800
+ 15.1.1913.5; Sat, 15 Aug 2020 10:09:06 +0800
 Received: from dggeme753-chm.china.huawei.com ([10.7.64.70]) by
  dggeme753-chm.china.huawei.com ([10.7.64.70]) with mapi id 15.01.1913.007;
- Sat, 15 Aug 2020 10:02:18 +0800
+ Sat, 15 Aug 2020 10:09:06 +0800
 From:   linmiaohe <linmiaohe@huawei.com>
 To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 CC:     David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "Jakub Kicinski" <kuba@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        "martin.varghese@nokia.com" <martin.varghese@nokia.com>,
+        "pshelar@ovn.org" <pshelar@ovn.org>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Shmulik Ladkani <shmulik@metanetworks.com>,
+        "Yadu Kishore" <kyk.segfault@gmail.com>,
+        "sowmini.varadhan@oracle.com" <sowmini.varadhan@oracle.com>,
         Network Development <netdev@vger.kernel.org>,
         linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: correct zerocopy refcnt with newly allocated UDP or
- RAW uarg
-Thread-Topic: [PATCH] net: correct zerocopy refcnt with newly allocated UDP or
- RAW uarg
-Thread-Index: AdZyp1tkhsmk8znDTaCFo8WdLFJE0Q==
-Date:   Sat, 15 Aug 2020 02:02:18 +0000
-Message-ID: <0627950da21443c2b422d9861e81bf3a@huawei.com>
+Subject: Re: [PATCH] net: add missing skb_uarg refcount increment in
+ pskb_carve_inside_header()
+Thread-Topic: [PATCH] net: add missing skb_uarg refcount increment in
+ pskb_carve_inside_header()
+Thread-Index: AdZyqG0kRQ90pG27RJqKlae5o5FvkA==
+Date:   Sat, 15 Aug 2020 02:09:06 +0000
+Message-ID: <ec28bf85a54c42a7ad03fd33a542023a@huawei.com>
 Accept-Language: zh-CN, en-US
 Content-Language: zh-CN
 X-MS-Has-Attach: 
@@ -51,22 +59,28 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 V2lsbGVtIGRlIEJydWlqbiA8d2lsbGVtZGVicnVpam4ua2VybmVsQGdtYWlsLmNvbT4gd3JvdGU6
-DQo+T24gRnJpLCBBdWcgMTQsIDIwMjAgYXQgMTA6MTcgQU0gbGlubWlhb2hlIDxsaW5taWFvaGVA
-aHVhd2VpLmNvbT4gd3JvdGU6DQo+Pg0KPg0KPkkgZG9uJ3QgdGhpbmsgdGhhdCBjYW4gaGFwcGVu
-Lg0KPg0KPlRoZSBxdWVzdGlvbiBpcyB3aGVuIHRoaXMgYnJhbmNoIGlzIGZhbHNlDQo+DQo+ICAg
-ICAgICAgICAgICAgIG5leHQgPSAodTMyKWF0b21pY19yZWFkKCZzay0+c2tfemNrZXkpOw0KPiAg
-ICAgICAgICAgICAgICBpZiAoKHUzMikodWFyZy0+aWQgKyB1YXJnLT5sZW4pID09IG5leHQpIHsN
-Cj4NCj5JIGNhbm5vdCBjb21lIHVwIHdpdGggYSBjYXNlLiBJIHRoaW5rIGl0IG1pZ2h0IGJlIHZl
-c3RpZ2lhbC4gVGhlIGdvYWwgaXMgdG8gZW5zdXJlIHRvIGFwcGVuZCBvbmx5IGEgY29uc2VjdXRp
-dmUgcmFuZ2Ugb2Ygbm90aWZpY2F0aW9uIElEcy4NCj5FYWNoIG5vdGlmaWNhdGlvbiBJRCBjb3Jy
-ZXNwb25kcyB0byBhIHNlbmRtc2cgaW52b2NhdGlvbiB3aXRoIE1TR19aRVJPQ09QWS4gSW4gYm90
-aCBUQ1AgYW5kIFVEUCB3aXRoIGNvcmtpbmcsIGRhdGEgaXMgb3JkZXJlZCBhbmQgYWNjZXNzIHRv
-IGNoYW5nZXMgdG8gdGhlc2UgZmllbGRzIGhhcHBlbiB0b2dldGhlciBhcyBhIHRyYW5zYWN0aW9u
-Og0KPg0KPiAgICAgICAgICAgICAgICAvKiByZWFsbG9jIG9ubHkgd2hlbiBzb2NrZXQgaXMgbG9j
-a2VkIChUQ1AsIFVEUCBjb3JrKSwNCj4gICAgICAgICAgICAgICAgICogc28gdWFyZy0+bGVuIGFu
-ZCBza196Y2tleSBhY2Nlc3MgaXMgc2VyaWFsaXplZA0KPiAgICAgICAgICAgICAgICAgKi8NCg0K
-U28gd2hhdCBJIGNvbmNlcm5lZCBpcyBqdXN0IGEgdGhlb3JldGljYWxseSBwcm9ibGVtcy4gSWYg
-d2UgY2FuIGFsd2F5cyBndWFyYW50ZWUgc29ja196ZXJvY29weV9yZWFsbG9jIG9ubHkgcmV0dXJu
-cyB0aGUgZXhpc3RpbmcgdWFyZyBvciBOVUxMIHdoZW4gb24gc2tiX3pjb3B5KHNrYiksDQpiYWQg
-dGhpbmdzIHdvbid0IGhhcHBlbi4NCg0KTWFueSB0aGFua3MgZm9yIHlvdXIgZGV0YWlsZWQgZXhw
-bGFpbmF0aW9uLg0KDQo=
+DQo+T24gRnJpLCBBdWcgMTQsIDIwMjAgYXQgOToyMCBBTSBsaW5taWFvaGUgPGxpbm1pYW9oZUBo
+dWF3ZWkuY29tPiB3cm90ZToNCj4+DQo+PiBXaWxsZW0gZGUgQnJ1aWpuIDx3aWxsZW1kZWJydWlq
+bi5rZXJuZWxAZ21haWwuY29tPiB3cm90ZToNCj4+ID5PbiBUaHUsIEF1ZyAxMywgMjAyMCBhdCAy
+OjE2IFBNIE1pYW9oZSBMaW4gPGxpbm1pYW9oZUBodWF3ZWkuY29tPiB3cm90ZToNCj4+ID4+DQo+
+PiA+PiBJZiB0aGUgc2tiIGlzIHpjb3BpZWQsIHdlIHNob3VsZCBpbmNyZWFzZSB0aGUgc2tiX3Vh
+cmcgcmVmY291bnQgDQo+PiA+PiBiZWZvcmUgd2UgaW52b2x2ZSBza2JfcmVsZWFzZV9kYXRhKCku
+IFNlZSBwc2tiX2V4cGFuZF9oZWFkKCkgYXMgYSByZWZlcmVuY2UuDQo+PiA+DQo+PiA+RGlkIHlv
+dSBtYW5hZ2UgdG8gb2JzZXJ2ZSBhIGJ1ZyB0aHJvdWdoIHRoaXMgZGF0YXBhdGggaW4gcHJhY3Rp
+Y2U/DQo+PiA+DQo+PiA+cHNrYl9jYXJ2ZV9pbnNpZGVfaGVhZGVyIGlzIGNhbGxlZA0KPj4gPiAg
+ZnJvbSBwc2tiX2NhcnZlDQo+PiA+ICAgIGZyb20gcHNrYl9leHRyYWN0DQo+PiA+ICAgICAgZnJv
+bSByZHNfdGNwX2RhdGFfcmVjdg0KPj4gPg0KPj4gPlRoYXQgcmVjZWl2ZSBwYXRoIHNob3VsZCBu
+b3Qgc2VlIGFueSBwYWNrZXRzIHdpdGggemVyb2NvcHkgc3RhdGUgYXNzb2NpYXRlZC4NCj4+ID4N
+Cj4+DQo+PiBUaGlzIHdvcmtzIGZpbmUgeWV0IGFzIGl0cyBjYWxsZXIgaXMgbGltaXRlZC4gQnV0
+IHdlIHNob3VsZCB0YWtlIGNhcmUgb2YgdGhlIHNrYl91YXJnIHJlZmNvdW50IGZvciBmdXR1cmUg
+dXNlLg0KPg0KPklmIGEgbmV3IGFwcGxpY2F0aW9uIG9mIHRoaXMgaW50ZXJmYWNlIGlzIHByb3Bv
+c2VkLCB0aGUgYXV0aG9yIHdpbGwgaGF2ZSB0byBtYWtlIHN1cmUgdGhhdCBpdCBpcyBleGVyY2lz
+ZWQgY29ycmVjdGx5Lg0KDQpTdXJlLiBMZXQgdGhlIGF1dGhvciBtYWtlIHN1cmUgdGhhdCBpdCBp
+cyBleGVyY2lzZWQgY29ycmVjdGx5IGlmIGEgbmV3IGFwcGxpY2F0aW9uIG9mIHRoaXMgaW50ZXJm
+YWNlIGlzIHByb3Bvc2VkLg0KDQo+PiBPbiB0aGUgb3RoZXIgaGFuZCwgYmVjYXVzZSB0aGlzIGNv
+ZGVwYXRoIHNob3VsZCBub3Qgc2VlIGFueSBwYWNrZXRzIA0KPj4gd2l0aCB6ZXJvY29weSBzdGF0
+ZSBhc3NvY2lhdGVkLCB0aGVuIHdlIHNob3VsZCBub3QgY2FsbCBza2Jfb3JwaGFuX2ZyYWdzIGhl
+cmUuDQoNCj5JJ20gYWxzbyBub3QgY29udmluY2VkIHRoYXQgdGhlIHNrYl9vcnBoYW5fZnJhZ3Mg
+aGVyZSBhcmUgbmVlZGVkLCBnaXZlbiB0aGUgb25seSBwYXRoIGlzIGZyb20gdGNwX3JlYWRfc29j
+ay4NCg0KTWF5YmUganVzdCBrZWVwIGl0IGhlcmUgYXMgaXQgZG9lc24ndCBodXJ0IGV2ZW4gaWYg
+aXQncyByZWFsbHkgbm90IG5lZWRlZC4NCg0KTWFueSB0aGFua3MuDQoNCg==
