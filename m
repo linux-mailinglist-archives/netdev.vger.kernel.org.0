@@ -2,126 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66A7C2454EA
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 01:29:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FF732454F4
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 01:41:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728589AbgHOX32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Aug 2020 19:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33032 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725984AbgHOX31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Aug 2020 19:29:27 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFBFC061786
-        for <netdev@vger.kernel.org>; Sat, 15 Aug 2020 16:29:27 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id bh1so5722764plb.12
-        for <netdev@vger.kernel.org>; Sat, 15 Aug 2020 16:29:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RFK8iqgXHMzUr2KO1r4TjJdfxGAXKGKq8DIgOslyPQA=;
-        b=i+2YUO9UHawne3rlsWf14nwEBVwZReG89Ejrkb8tuTqw0CBnJPvBJX4+zGurQnetUK
-         4lNYPgUyblO1xGX0JHQr3c08YhxIk1UDih/FRKEMHDA9TfL4cNy/0b/GFoFO/gYkzrFw
-         c5Vm+yKtblmrsoDrxiSRss7YC6cFvHmP2hcoTnyBLckUq81FJx+kXVJ1eKmyJ3FJk44w
-         F1p40KRVx+RQNnab6WsESEqbmujpkV2o9G49bSJyTln4F2NooYs3aokd6GF4AIhAnG7v
-         8Bfj17/5f+qe0IpnqxSp/RlNG6naM9/SdBk5RDUGn3m4dPQdtI+af3IRHC8xiey2+JXW
-         ku7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RFK8iqgXHMzUr2KO1r4TjJdfxGAXKGKq8DIgOslyPQA=;
-        b=bZFryXDN75G8RwAxkWhQl199OZ1wQPm62ihmb5+ewqLA0gDjwyeSh9el7Z4je984LB
-         Eer6fnzPuN0ieGRMz8BvSj85dVfe/+tDs6nzmtnP/mBxt0PmqYORCTJsRv/ysA7MTfH/
-         Nfp38Cd3uA/9LEpCXtSt0IJ7+jcKn3ftV+6duqT3M5KfKJsD7fb4ScHLXgF4dli9vyLv
-         ere+l7gDwulD2/+TXBQGYqwvG4CT6p8CiYOjHvv0FihTHVkuYxDU6AL+BN0jrLQWaDJv
-         cwnZO68YNgdg1wRq+zZzDhKyUR4rYrxc+niQq3HgKmwbjVDi5KqfV0RjyMkuq1j5iEaX
-         fXDg==
-X-Gm-Message-State: AOAM531QPtUPMafRozRim+IiD8e8kvyPfrDLzV8nyofOJO6q7T8NVGCU
-        qfsBndN8TndSzxPBqzZH1nJZocAYm7y/2Q==
-X-Google-Smtp-Source: ABdhPJzJMs4o/dRKYk0k0/ZgP3txtYDg6Apea4Y8GUBY/UqmwDpjYuLFtP9xMzvaScLNPQmjDCHF8g==
-X-Received: by 2002:a17:902:56a:: with SMTP id 97mr6643037plf.130.1597534166723;
-        Sat, 15 Aug 2020 16:29:26 -0700 (PDT)
-Received: from unknown.linux-6brj.site ([2600:1700:727f::46])
-        by smtp.gmail.com with ESMTPSA id y6sm2138239pgy.94.2020.08.15.16.29.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Aug 2020 16:29:26 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+0e7181deafa7e0b79923@syzkaller.appspotmail.com,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        Richard Alpe <richard.alpe@ericsson.com>
-Subject: [Patch net] tipc: fix uninit skb->data in tipc_nl_compat_dumpit()
-Date:   Sat, 15 Aug 2020 16:29:15 -0700
-Message-Id: <20200815232915.17625-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.28.0
+        id S1728580AbgHOXlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Aug 2020 19:41:24 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:55225 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726429AbgHOXlY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Aug 2020 19:41:24 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 57e5ed94;
+        Sat, 15 Aug 2020 07:15:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
+        :subject:date:message-id:in-reply-to:references:mime-version
+        :content-type:content-transfer-encoding; s=mail; bh=8Qjf+nS4+2iB
+        grrnVwyy+Y9pqsY=; b=smtwuOwR5FYc6sJHnacSwvljOMeqrKKkoguT2FImIV8b
+        ZcpZA7/BlZWu97gncg9nSWmizUbp9LbTdTYSObGbPZ7xoJ532y9WnFDfiuEKKXAW
+        03N//42dcDS8noDzIuC22qG9BS5lcagkkfLrFrSwoH+sNm7V1ueDLAkl0mftfPFk
+        6iC+y8t2+aS7pAVhiGSeG5Ly84DRgt+C18njvLiK6Y0OkgYl0ApNSjyZlZds8x3S
+        rW7wKIXTDVqOG4K10jfY5abbGCvyf7BrlLKJcT8IKplrdqTiFjrdhXLVMCfJgPvn
+        2y14U7uryj9B7MDNOUJVcIGTVj3fKWPeDXICw4S0eQ==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f925c602 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Sat, 15 Aug 2020 07:15:30 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Thomas Ptacek <thomas@sockpuppet.org>,
+        Adhipati Blambangan <adhipati@tuta.io>,
+        David Ahern <dsahern@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH net v6] net: xdp: account for layer 3 packets in generic skb handler
+Date:   Sat, 15 Aug 2020 09:41:02 +0200
+Message-Id: <20200815074102.5357-1-Jason@zx2c4.com>
+In-Reply-To: <20200814.135546.2266851283177227377.davem@davemloft.net>
+References: <20200814.135546.2266851283177227377.davem@davemloft.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__tipc_nl_compat_dumpit() has two callers, and it expects them to
-pass a valid nlmsghdr via arg->data. This header is artificial and
-crafted just for __tipc_nl_compat_dumpit().
+A user reported that packets from wireguard were possibly ignored by XDP
+[1]. Another user reported that modifying packets from layer 3
+interfaces results in impossible to diagnose drops.
 
-tipc_nl_compat_publ_dump() does so by putting a genlmsghdr as well
-as some nested attribute, TIPC_NLA_SOCK. But the other caller
-tipc_nl_compat_dumpit() does not, this leaves arg->data uninitialized
-on this call path.
+Apparently, the generic skb xdp handler path seems to assume that
+packets will always have an ethernet header, which really isn't always
+the case for layer 3 packets, which are produced by multiple drivers.
+This patch fixes the oversight. If the mac_len is 0 and so is
+hard_header_len, then we know that the skb is a layer 3 packet, and in
+that case prepend a pseudo ethhdr to the packet whose h_proto is copied
+from skb->protocol, which will have the appropriate v4 or v6 ethertype.
+This allows us to keep XDP programs' assumption correct about packets
+always having that ethernet header, so that existing code doesn't break,
+while still allowing layer 3 devices to use the generic XDP handler.
 
-Fix this by just adding a similar nlmsghdr without any payload in
-tipc_nl_compat_dumpit().
+We push on the ethernet header and then pull it right off and set
+mac_len to the ethernet header size, so that the rest of the XDP code
+does not need any changes. That is, it makes it so that the skb has its
+ethernet header just before the data pointer, of size ETH_HLEN.
 
-This bug exists since day 1, but the recent commit 6ea67769ff33
-("net: tipc: prepare attrs in __tipc_nl_compat_dumpit()") makes it
-easier to appear.
+Previous discussions have included the point that maybe XDP should just
+be intentionally broken on layer 3 interfaces, by design, and that layer
+3 people should be using cls_bpf. However, I think there are good
+grounds to reconsider this perspective:
 
-Reported-and-tested-by: syzbot+0e7181deafa7e0b79923@syzkaller.appspotmail.com
-Fixes: d0796d1ef63d ("tipc: convert legacy nl bearer dump to nl compat")
-Cc: Jon Maloy <jmaloy@redhat.com>
-Cc: Ying Xue <ying.xue@windriver.com>
-Cc: Richard Alpe <richard.alpe@ericsson.com>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+- Complicated deployments wind up applying XDP modifications to a
+  variety of different devices on a given host, some of which are using
+  specialized ethernet cards and other ones using virtual layer 3
+  interfaces, such as WireGuard. Being able to apply one codebase to
+  each of these winds up being essential.
+
+- cls_bpf does not support the same feature set as XDP, and operates at
+  a slightly different stage in the networking stack. You may reply,
+  "then add all the features you want to cls_bpf", but that seems to be
+  missing the point, and would still result in there being two ways to
+  do everything, which is not desirable for anyone actually _using_ this
+  code.
+
+- While XDP was originally made for hardware offloading, and while many
+  look disdainfully upon the generic mode, it nevertheless remains a
+  highly useful and popular way of adding bespoke packet
+  transformations, and from that perspective, a difference between layer
+  2 and layer 3 packets is immaterial if the user is primarily concerned
+  with transformations to layer 3 and beyond.
+
+- It's not impossible to imagine layer 3 hardware (e.g. a WireGuard PCIe
+  card) including eBPF/XDP functionality built-in. In that case, why
+  limit XDP as a technology to only layer 2? Then, having generic XDP
+  work for layer 3 would naturally fit as well.
+
+[1] https://lore.kernel.org/wireguard/M5WzVK5--3-2@tuta.io/
+
+Reported-by: Thomas Ptacek <thomas@sockpuppet.org>
+Reported-by: Adhipati Blambangan <adhipati@tuta.io>
+Cc: David Ahern <dsahern@gmail.com>
+Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: David S. Miller <davem@davemloft.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- net/tipc/netlink_compat.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
-index 217516357ef2..90e3c70a91ad 100644
---- a/net/tipc/netlink_compat.c
-+++ b/net/tipc/netlink_compat.c
-@@ -275,8 +275,9 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
- static int tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
- 				 struct tipc_nl_compat_msg *msg)
- {
--	int err;
-+	struct nlmsghdr *nlh;
- 	struct sk_buff *arg;
-+	int err;
- 
- 	if (msg->req_type && (!msg->req_size ||
- 			      !TLV_CHECK_TYPE(msg->req, msg->req_type)))
-@@ -305,6 +306,15 @@ static int tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
- 		return -ENOMEM;
- 	}
- 
-+	nlh = nlmsg_put(arg, 0, 0, tipc_genl_family.id, 0, NLM_F_MULTI);
-+	if (!nlh) {
-+		kfree_skb(arg);
-+		kfree_skb(msg->rep);
-+		msg->rep = NULL;
-+		return -EMSGSIZE;
+I had originally dropped this patch, but the issue kept coming up in
+user reports, so here's a v4 of it. Testing of it is still rather slim,
+but hopefully that will change in the coming days.
+
+Changes v5->v6:
+- The fix to the skb->protocol changing case is now in a separate
+  stand-alone patch, and removed from this one, so that it can be
+  evaluated separately.
+
+Changes v4->v5:
+- Rather than tracking in a messy manner whether the skb is l3, we just
+  do the check once, and then adjust the skb geometry to be identical to
+  the l2 case. This simplifies the code quite a bit.
+- Fix a preexisting bug where the l2 header remained attached if
+  skb->protocol was updated.
+
+Changes v3->v4:
+- We now preserve the same logic for XDP_TX/XDP_REDIRECT as before.
+- hard_header_len is checked in addition to mac_len.
+
+ net/core/dev.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 151f1651439f..79c15f4244e6 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4630,6 +4630,18 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 	 * header.
+ 	 */
+ 	mac_len = skb->data - skb_mac_header(skb);
++	if (!mac_len && !skb->dev->hard_header_len) {
++		/* For l3 packets, we push on a fake mac header, and then
++		 * pull it off again, so that it has the same skb geometry
++		 * as for the l2 case.
++		 */
++		eth = skb_push(skb, ETH_HLEN);
++		eth_zero_addr(eth->h_source);
++		eth_zero_addr(eth->h_dest);
++		eth->h_proto = skb->protocol;
++		__skb_pull(skb, ETH_HLEN);
++		mac_len = ETH_HLEN;
 +	}
-+	nlmsg_end(arg, nlh);
-+
- 	err = __tipc_nl_compat_dumpit(cmd, msg, arg);
- 	if (err) {
- 		kfree_skb(msg->rep);
+ 	hlen = skb_headlen(skb) + mac_len;
+ 	xdp->data = skb->data - mac_len;
+ 	xdp->data_meta = xdp->data;
 -- 
 2.28.0
 
