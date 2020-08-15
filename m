@@ -2,91 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 620C52454E8
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 01:28:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66A7C2454EA
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 01:29:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728556AbgHOX2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Aug 2020 19:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32870 "EHLO
+        id S1728589AbgHOX32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Aug 2020 19:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725919AbgHOX2W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Aug 2020 19:28:22 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F11C061786;
-        Sat, 15 Aug 2020 16:28:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=+3j2NurwPM3LLxrk7n9WlrLr+R8X2st82AXnLII/9mU=; b=nfcU3KdFM6J0gPxwsYn2MRpRm1
-        s+7c5u7qwtC0zIRgKB3w5F8WU3Ie+Dt3I4QaaGi1S3BXh6RK2kwaZr9DVtadYV2ncmE/2sgMpmpTL
-        Ay/5x82fad558fGdrGD620aYgXQEEQW2u329vd53uxVNNLcXbixQykR75oOoGliUqLBFYXI/xuCH+
-        u48fdJy4gSaOPr2UgsUaQ4ptVUj47Kx7US4pNRkiSHzr0+WFfSxJLOcir1c/B1zb/rCPnNAPW8Pvr
-        BZ4HvzQMFigvbfjjBysOBHD31CU/oSeUQb7chrq/SCu9pR+H+pO7wugRFCwzTNbqLGz8Z79nEFnAu
-        l8Hixq4g==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k75b0-0004qk-Or; Sat, 15 Aug 2020 23:28:19 +0000
-Subject: Re: [PATCH v5 5/6] can: ctucanfd: CTU CAN FD open-source IP core -
- platform/SoC support.
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
-        devicetree@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
-        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>
-References: <cover.1597518433.git.ppisa@pikron.com>
- <4ceda3a9d68263b4e0dfe66521a46f40b2e502f7.1597518433.git.ppisa@pikron.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <73e3dad8-9ab7-2f8f-312c-1957b4572b08@infradead.org>
-Date:   Sat, 15 Aug 2020 16:28:13 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        with ESMTP id S1725984AbgHOX31 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Aug 2020 19:29:27 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFBFC061786
+        for <netdev@vger.kernel.org>; Sat, 15 Aug 2020 16:29:27 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id bh1so5722764plb.12
+        for <netdev@vger.kernel.org>; Sat, 15 Aug 2020 16:29:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RFK8iqgXHMzUr2KO1r4TjJdfxGAXKGKq8DIgOslyPQA=;
+        b=i+2YUO9UHawne3rlsWf14nwEBVwZReG89Ejrkb8tuTqw0CBnJPvBJX4+zGurQnetUK
+         4lNYPgUyblO1xGX0JHQr3c08YhxIk1UDih/FRKEMHDA9TfL4cNy/0b/GFoFO/gYkzrFw
+         c5Vm+yKtblmrsoDrxiSRss7YC6cFvHmP2hcoTnyBLckUq81FJx+kXVJ1eKmyJ3FJk44w
+         F1p40KRVx+RQNnab6WsESEqbmujpkV2o9G49bSJyTln4F2NooYs3aokd6GF4AIhAnG7v
+         8Bfj17/5f+qe0IpnqxSp/RlNG6naM9/SdBk5RDUGn3m4dPQdtI+af3IRHC8xiey2+JXW
+         ku7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RFK8iqgXHMzUr2KO1r4TjJdfxGAXKGKq8DIgOslyPQA=;
+        b=bZFryXDN75G8RwAxkWhQl199OZ1wQPm62ihmb5+ewqLA0gDjwyeSh9el7Z4je984LB
+         Eer6fnzPuN0ieGRMz8BvSj85dVfe/+tDs6nzmtnP/mBxt0PmqYORCTJsRv/ysA7MTfH/
+         Nfp38Cd3uA/9LEpCXtSt0IJ7+jcKn3ftV+6duqT3M5KfKJsD7fb4ScHLXgF4dli9vyLv
+         ere+l7gDwulD2/+TXBQGYqwvG4CT6p8CiYOjHvv0FihTHVkuYxDU6AL+BN0jrLQWaDJv
+         cwnZO68YNgdg1wRq+zZzDhKyUR4rYrxc+niQq3HgKmwbjVDi5KqfV0RjyMkuq1j5iEaX
+         fXDg==
+X-Gm-Message-State: AOAM531QPtUPMafRozRim+IiD8e8kvyPfrDLzV8nyofOJO6q7T8NVGCU
+        qfsBndN8TndSzxPBqzZH1nJZocAYm7y/2Q==
+X-Google-Smtp-Source: ABdhPJzJMs4o/dRKYk0k0/ZgP3txtYDg6Apea4Y8GUBY/UqmwDpjYuLFtP9xMzvaScLNPQmjDCHF8g==
+X-Received: by 2002:a17:902:56a:: with SMTP id 97mr6643037plf.130.1597534166723;
+        Sat, 15 Aug 2020 16:29:26 -0700 (PDT)
+Received: from unknown.linux-6brj.site ([2600:1700:727f::46])
+        by smtp.gmail.com with ESMTPSA id y6sm2138239pgy.94.2020.08.15.16.29.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 15 Aug 2020 16:29:26 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        syzbot+0e7181deafa7e0b79923@syzkaller.appspotmail.com,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Richard Alpe <richard.alpe@ericsson.com>
+Subject: [Patch net] tipc: fix uninit skb->data in tipc_nl_compat_dumpit()
+Date:   Sat, 15 Aug 2020 16:29:15 -0700
+Message-Id: <20200815232915.17625-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <4ceda3a9d68263b4e0dfe66521a46f40b2e502f7.1597518433.git.ppisa@pikron.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/15/20 12:43 PM, Pavel Pisa wrote:
-> diff --git a/drivers/net/can/ctucanfd/Kconfig b/drivers/net/can/ctucanfd/Kconfig
-> index e1636373628a..a8c9cc38f216 100644
-> --- a/drivers/net/can/ctucanfd/Kconfig
-> +++ b/drivers/net/can/ctucanfd/Kconfig
-> @@ -21,4 +21,15 @@ config CAN_CTUCANFD_PCI
->  	  PCIe board with PiKRON.com designed transceiver riser shield is available
->  	  at https://gitlab.fel.cvut.cz/canbus/pcie-ctu_can_fd .
->  
-> +config CAN_CTUCANFD_PLATFORM
-> +	tristate "CTU CAN-FD IP core platform (FPGA, SoC) driver"
-> +	depends on OF
+__tipc_nl_compat_dumpit() has two callers, and it expects them to
+pass a valid nlmsghdr via arg->data. This header is artificial and
+crafted just for __tipc_nl_compat_dumpit().
 
-Can this be
-	depends on OF || COMPILE_TEST
-?
+tipc_nl_compat_publ_dump() does so by putting a genlmsghdr as well
+as some nested attribute, TIPC_NLA_SOCK. But the other caller
+tipc_nl_compat_dumpit() does not, this leaves arg->data uninitialized
+on this call path.
 
-> +	help
-> +	  The core has been tested together with OpenCores SJA1000
-> +	  modified to be CAN FD frames tolerant on MicroZed Zynq based
-> +	  MZ_APO education kits designed by Petr Porazil from PiKRON.com
-> +	  company. FPGA design https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top.
-> +	  The kit description at the Computer Architectures course pages
-> +	  https://cw.fel.cvut.cz/b182/courses/b35apo/documentation/mz_apo/start .
-> +
->  endif
+Fix this by just adding a similar nlmsghdr without any payload in
+tipc_nl_compat_dumpit().
 
+This bug exists since day 1, but the recent commit 6ea67769ff33
+("net: tipc: prepare attrs in __tipc_nl_compat_dumpit()") makes it
+easier to appear.
 
+Reported-and-tested-by: syzbot+0e7181deafa7e0b79923@syzkaller.appspotmail.com
+Fixes: d0796d1ef63d ("tipc: convert legacy nl bearer dump to nl compat")
+Cc: Jon Maloy <jmaloy@redhat.com>
+Cc: Ying Xue <ying.xue@windriver.com>
+Cc: Richard Alpe <richard.alpe@ericsson.com>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+---
+ net/tipc/netlink_compat.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
+index 217516357ef2..90e3c70a91ad 100644
+--- a/net/tipc/netlink_compat.c
++++ b/net/tipc/netlink_compat.c
+@@ -275,8 +275,9 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
+ static int tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
+ 				 struct tipc_nl_compat_msg *msg)
+ {
+-	int err;
++	struct nlmsghdr *nlh;
+ 	struct sk_buff *arg;
++	int err;
+ 
+ 	if (msg->req_type && (!msg->req_size ||
+ 			      !TLV_CHECK_TYPE(msg->req, msg->req_type)))
+@@ -305,6 +306,15 @@ static int tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
+ 		return -ENOMEM;
+ 	}
+ 
++	nlh = nlmsg_put(arg, 0, 0, tipc_genl_family.id, 0, NLM_F_MULTI);
++	if (!nlh) {
++		kfree_skb(arg);
++		kfree_skb(msg->rep);
++		msg->rep = NULL;
++		return -EMSGSIZE;
++	}
++	nlmsg_end(arg, nlh);
++
+ 	err = __tipc_nl_compat_dumpit(cmd, msg, arg);
+ 	if (err) {
+ 		kfree_skb(msg->rep);
 -- 
-~Randy
+2.28.0
 
