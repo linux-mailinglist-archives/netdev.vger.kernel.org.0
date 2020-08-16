@@ -2,31 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C612824564D
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 09:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDB8324565E
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 09:15:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730181AbgHPHIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Aug 2020 03:08:37 -0400
-Received: from mx2.suse.de ([195.135.220.15]:58280 "EHLO mx2.suse.de"
+        id S1728236AbgHPHP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Aug 2020 03:15:27 -0400
+Received: from mx2.suse.de ([195.135.220.15]:59670 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730164AbgHPHIg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 Aug 2020 03:08:36 -0400
+        id S1726025AbgHPHP1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Aug 2020 03:15:27 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id B4F58B182;
-        Sun, 16 Aug 2020 07:08:58 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id A6283B142;
+        Sun, 16 Aug 2020 07:15:49 +0000 (UTC)
 From:   Coly Li <colyli@suse.de>
 To:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org
 Cc:     netdev@vger.kernel.org, stable@vger.kernel.org,
         linux-kernel@vger.kernel.org, Coly Li <colyli@suse.de>,
+        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
+        Christoph Hellwig <hch@lst.de>, Hannes Reinecke <hare@suse.de>,
+        Jan Kara <jack@suse.com>, Jens Axboe <axboe@kernel.dk>,
+        Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>,
         Philipp Reisner <philipp.reisner@linbit.com>,
-        Sagi Grimberg <sagi@grimberg.me>
-Subject: [PATCH v5 3/3] drbd: code cleanup by using sendpage_ok() to check page for kernel_sendpage()
-Date:   Sun, 16 Aug 2020 15:08:14 +0800
-Message-Id: <20200816070814.6806-3-colyli@suse.de>
+        Sagi Grimberg <sagi@grimberg.me>,
+        Vlastimil Babka <vbabka@suse.com>
+Subject: [PATCH v5 1/3] net: introduce helper sendpage_ok() in include/linux/net.h
+Date:   Sun, 16 Aug 2020 15:15:15 +0800
+Message-Id: <20200816071518.6964-1-colyli@suse.de>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200816070814.6806-1-colyli@suse.de>
-References: <20200816070814.6806-1-colyli@suse.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -34,39 +37,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In _drbd_send_page() a page is checked by following code before sending
-it by kernel_sendpage(),
-        (page_count(page) < 1) || PageSlab(page)
-If the check is true, this page won't be send by kernel_sendpage() and
-handled by sock_no_sendpage().
+The original problem was from nvme-over-tcp code, who mistakenly uses
+kernel_sendpage() to send pages allocated by __get_free_pages() without
+__GFP_COMP flag. Such pages don't have refcount (page_count is 0) on
+tail pages, sending them by kernel_sendpage() may trigger a kernel panic
+from a corrupted kernel heap, because these pages are incorrectly freed
+in network stack as page_count 0 pages.
 
-This kind of check is exactly what macro sendpage_ok() does, which is
-introduced into include/linux/net.h to solve a similar send page issue
-in nvme-tcp code.
+This patch introduces a helper sendpage_ok(), it returns true if the
+checking page,
+- is not slab page: PageSlab(page) is false.
+- has page refcount: page_count(page) is not zero
 
-This patch uses macro sendpage_ok() to replace the open coded checks to
-page type and refcount in _drbd_send_page(), as a code cleanup.
+All drivers who want to send page to remote end by kernel_sendpage()
+may use this helper to check whether the page is OK. If the helper does
+not return true, the driver should try other non sendpage method (e.g.
+sock_no_sendpage()) to handle the page.
 
 Signed-off-by: Coly Li <colyli@suse.de>
+Cc: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Hannes Reinecke <hare@suse.de>
+Cc: Jan Kara <jack@suse.com>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>
 Cc: Philipp Reisner <philipp.reisner@linbit.com>
 Cc: Sagi Grimberg <sagi@grimberg.me>
+Cc: Vlastimil Babka <vbabka@suse.com>
+Cc: stable@vger.kernel.org
 ---
- drivers/block/drbd/drbd_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changelog:
+v5, include linux/mm.h in include/linux/net.h
+v4, change sendpage_ok() as an inline helper, and post it as
+    separate patch.
+v3, introduce a more common sendpage_ok()
+v2, fix typo in patch subject
+v1, the initial version.
+ include/linux/net.h | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index cb687ccdbd96..55dc0c91781e 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -1553,7 +1553,7 @@ static int _drbd_send_page(struct drbd_peer_device *peer_device, struct page *pa
- 	 * put_page(); and would cause either a VM_BUG directly, or
- 	 * __page_cache_release a page that would actually still be referenced
- 	 * by someone, leading to some obscure delayed Oops somewhere else. */
--	if (drbd_disable_sendpage || (page_count(page) < 1) || PageSlab(page))
-+	if (drbd_disable_sendpage || !sendpage_ok(page))
- 		return _drbd_no_send_page(peer_device, page, offset, size, msg_flags);
+diff --git a/include/linux/net.h b/include/linux/net.h
+index d48ff1180879..a807fad31958 100644
+--- a/include/linux/net.h
++++ b/include/linux/net.h
+@@ -21,6 +21,7 @@
+ #include <linux/rcupdate.h>
+ #include <linux/once.h>
+ #include <linux/fs.h>
++#include <linux/mm.h>
+ #include <linux/sockptr.h>
  
- 	msg_flags |= MSG_NOSIGNAL;
+ #include <uapi/linux/net.h>
+@@ -286,6 +287,21 @@ do {									\
+ #define net_get_random_once_wait(buf, nbytes)			\
+ 	get_random_once_wait((buf), (nbytes))
+ 
++/*
++ * E.g. XFS meta- & log-data is in slab pages, or bcache meta
++ * data pages, or other high order pages allocated by
++ * __get_free_pages() without __GFP_COMP, which have a page_count
++ * of 0 and/or have PageSlab() set. We cannot use send_page for
++ * those, as that does get_page(); put_page(); and would cause
++ * either a VM_BUG directly, or __page_cache_release a page that
++ * would actually still be referenced by someone, leading to some
++ * obscure delayed Oops somewhere else.
++ */
++static inline bool sendpage_ok(struct page *page)
++{
++	return  (!PageSlab(page) && page_count(page) >= 1);
++}
++
+ int kernel_sendmsg(struct socket *sock, struct msghdr *msg, struct kvec *vec,
+ 		   size_t num, size_t len);
+ int kernel_sendmsg_locked(struct sock *sk, struct msghdr *msg,
 -- 
 2.26.2
 
