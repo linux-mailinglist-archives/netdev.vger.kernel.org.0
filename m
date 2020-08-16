@@ -2,151 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E30082457AA
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 14:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D068D245845
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 17:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726208AbgHPMvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Aug 2020 08:51:43 -0400
-Received: from mail-dm6nam10on2075.outbound.protection.outlook.com ([40.107.93.75]:47282
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725843AbgHPMvh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 Aug 2020 08:51:37 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LaV/2oRk3XXnxG5xtsZXsOIYXMpbihO5c63UxoZbJ191zTRiniAQoPbZJQsREnmQAq+y3aJSmUHPooZ11ssBQ3jyA6KZ2MTDoKMBviHOn4M2mryQylH0ZaWf1xNYGG/HXJphkmaL/T2rUD0iJzEVRA/2JKNdTHrSX4O6mrr732K/jkl/gAs9VrEICXyEh5Hj4uaADomCAioc8jXLXo5g1xiyJsRRt5p/5x7zIQin3Fn8Y5MMgclsudVCJCwbKDm7TgfFOC1jFDRXhL5SaFa5HNCCs6pw4k5FAY3R4wpVixNGuiKrmMWEGW90M5ccJQrh9hXFE2XEnkV845N6ixMvVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1wcR3tBxSpiQe8EiW/zmwIYpK+fdNDmO7OGZngP1Nsg=;
- b=NJx8H60UauJSsQfZO+xCezA10zYBS4IbctSw2RY2DFM++lvn+1GIa2y8mOia1nEBtJH2Immr0kPXUZqSZrO+sfAQ4ODmQw4jjNGUXS177RBcXJDkqw14HdvvfCCCIVS8qv5grhENEoEZj3j7Qr/GIQqeGs9nnYNIyZBe19dsFvii90+Y90peyrDpyqwiTev6knTxbFmMYvVHwIfdSREXOzhPk7dIo7bs+WyOKqc3hB2z9Fd5xYWK+tVtCXYtVBzz813Qb28VHPjcDOx89CBV9HA+upL9R+mC3fR4Z1sv0vQNXV5APV0Im5kM1/GhjjJr6+I4SM2pcuKGoLP3D8Fw9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=windriversystems.onmicrosoft.com;
- s=selector2-windriversystems-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1wcR3tBxSpiQe8EiW/zmwIYpK+fdNDmO7OGZngP1Nsg=;
- b=Hmz1GgM1TkM7BNPgiBMVUsqd6mt5Gc1NoIvrL5dQVyJjgCrI2muzZgelCfiaEHARTSNzbHKa2oB3zqOvWf6flFx3GdVePzSdRYvjgTv3SMQZri1IRmkquFc+jsjZSAfA8EKCKPrDmg3zK2cPw4HK8JHpajVdYUZmNj8quQbeqd4=
-Authentication-Results: ericsson.com; dkim=none (message not signed)
- header.d=none;ericsson.com; dmarc=none action=none header.from=windriver.com;
-Received: from DM6PR11MB2603.namprd11.prod.outlook.com (2603:10b6:5:c6::21) by
- DM6PR11MB4347.namprd11.prod.outlook.com (2603:10b6:5:200::15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3283.22; Sun, 16 Aug 2020 12:51:34 +0000
-Received: from DM6PR11MB2603.namprd11.prod.outlook.com
- ([fe80::b16c:41d1:7e54:1c4e]) by DM6PR11MB2603.namprd11.prod.outlook.com
- ([fe80::b16c:41d1:7e54:1c4e%6]) with mapi id 15.20.3283.027; Sun, 16 Aug 2020
- 12:51:34 +0000
-Subject: Re: [Patch net] tipc: fix uninit skb->data in tipc_nl_compat_dumpit()
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     syzbot+0e7181deafa7e0b79923@syzkaller.appspotmail.com,
-        Jon Maloy <jmaloy@redhat.com>,
-        Richard Alpe <richard.alpe@ericsson.com>
-References: <20200815232915.17625-1-xiyou.wangcong@gmail.com>
-From:   Ying Xue <ying.xue@windriver.com>
-Message-ID: <21e10855-4c78-c35c-19a4-818cbc70f03d@windriver.com>
-Date:   Sun, 16 Aug 2020 20:34:47 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20200815232915.17625-1-xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: HKAPR03CA0017.apcprd03.prod.outlook.com
- (2603:1096:203:c8::22) To DM6PR11MB2603.namprd11.prod.outlook.com
- (2603:10b6:5:c6::21)
+        id S1728477AbgHPPCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Aug 2020 11:02:33 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:40355 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726949AbgHPPCX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Aug 2020 11:02:23 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 07GF1X1J017506;
+        Sun, 16 Aug 2020 17:01:33 +0200
+Date:   Sun, 16 Aug 2020 17:01:33 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Eric Dumazet <edumazet@google.com>, George Spelvin <lkml@sdf.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Sedat Dilek <sedat.dilek@gmail.com>,
+        Amit Klein <aksecurity@gmail.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>, netdev@vger.kernel.org
+Subject: Re: [DRAFT PATCH] random32: make prandom_u32() output unpredictable
+Message-ID: <20200816150133.GA17475@1wt.eu>
+References: <20200811054328.GD9456@1wt.eu>
+ <20200811062814.GI25124@SDF.ORG>
+ <20200811074538.GA9523@1wt.eu>
+ <CA+icZUVkaKorjHb4PSh1pKnYVF7696cfqH_Q87HsNpy9Qx9mxQ@mail.gmail.com>
+ <20200812032139.GA10119@1wt.eu>
+ <CA+icZUXS2OPFuEkDC2oHDd344efkbAoq_oP0agqrvWD5FHDXGA@mail.gmail.com>
+ <20200813080646.GB10907@1wt.eu>
+ <CA+icZUW8oD6BLnyFUzXHS8fFciLaLQAZnus7GgUdCuSZcMg+MQ@mail.gmail.com>
+ <20200814160551.GA11657@1wt.eu>
+ <CA+icZUUVv9DYJHr79FnDcd57QCtXKmzEkt1cYvQ1DT8j1G19Ng@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [128.224.155.99] (60.247.85.82) by HKAPR03CA0017.apcprd03.prod.outlook.com (2603:1096:203:c8::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.15 via Frontend Transport; Sun, 16 Aug 2020 12:51:32 +0000
-X-Originating-IP: [60.247.85.82]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d80fda9c-182d-401c-52fc-08d841e31b10
-X-MS-TrafficTypeDiagnostic: DM6PR11MB4347:
-X-Microsoft-Antispam-PRVS: <DM6PR11MB43476F506E4679DD0E14ECB9845E0@DM6PR11MB4347.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:741;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8HnxWf6PApnwxvxe0czQMe83K0Yc6isJdhELcAXJ3JzzIDznAUXnn0wrxam1d2YxcJkRhZzpp+G3UtPH1NhfXdGoXmdSWUkVmcmgqMtPhKE8mE95+8RPGI8gaSP62uPBFOAPCwF1ZaSlxD5lhog3w+y+bSimSdL4gGhWSBxT+Z/rWBBtSbVMmZDc8rxi6HK8OYmMU9SmU8jMJOmDikQWL/6Z3YNV+XDRrdwXqom6+3Tsny7Nysj1yTet6/hNeqiyGCvlXuYCQTWFYVhWhrA9IYSvVthDo3GG34PspV69zD4pX+NZFR8pWK+/dOY6ncrivRAnxXcw6w420OvpPf4YYWorVmJE40jwpQzzBC/0DU/ndsIHQmFQED5ygbEcL4JhfRSztOCkcQvvl4NzM1HH8Y9Mn7fcOmSrax1jRr+PcB4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(346002)(376002)(52116002)(54906003)(2616005)(66556008)(86362001)(956004)(66476007)(66946007)(44832011)(8936002)(5660300002)(6666004)(16576012)(36756003)(31686004)(2906002)(8676002)(26005)(83380400001)(6486002)(53546011)(4326008)(6706004)(186003)(16526019)(31696002)(508600001)(78286006)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: e0ZvSxO+X4IAvcNYOnO4rz9fj2PQ1FewpGZCRss26JSJQhxyN8TcpMkcUii7w61YjuCaWwvYpD5JKfZ5cswDpdoD+IxAWFVqmA1Jce/1walE4QIkdCslQ32LEvGnZP/11/8c4Ztt8FwuD0ZKFhGzeE3KqwvXEXV2IqA5Fwocw4yS1MqJuxX4O5y1/TDQV7LYq2t0Ko5DyFDJ7nzwsEwmLcibnbzjDzOjaaUMxWPLllCXCeFWNYfQlboHN+lmy3IAhuzz1MsIX0HoBnu5IJ76w/PPv3AviQ1nxG88IhC+pCYyESJWPs4Xgo568tGXsQz79cSh1HOaYTlY8HXujSHRT4AN/heztNC8xfR7luaXvjhH/oSicd2wu+RlN55fnhRuUxlFD0K7UcouFfeuBhVh8ej/JDJAIkpoJF8+/xCFgDfad8Piix+42Qgh7MmZm0GRcpTtwwtF0vjZ7u8zj/UwFDuHRj2Z0Y8VphZT98OcBI/qS0KT0PyzuRLjDfVm+gnfAO+GpUvbjIlVdEnWETuhp85+tdyqd8ItVg1ToBv8pcB0qnA73HHFBh6/+nMtFRdy0J9DXs6sTEmWygrZlRd12iex2EwwV1O0LpmEFaZlb+Nmf0Ec357seUtU4Wd9DrEv8iMBSf5jHu4oXRisPt8xEA==
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d80fda9c-182d-401c-52fc-08d841e31b10
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2020 12:51:34.3789
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xDUd8mXJezYi4ccGsz8/ti1WiYwScLL8BUK5CxjmTV5drGtg/Tt/zxVxE5EGa7SVhGE8Db6qD/khNuosxYMyNQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4347
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+icZUUVv9DYJHr79FnDcd57QCtXKmzEkt1cYvQ1DT8j1G19Ng@mail.gmail.com>
+User-Agent: Mutt/1.6.1 (2016-04-27)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/16/20 7:29 AM, Cong Wang wrote:
-> __tipc_nl_compat_dumpit() has two callers, and it expects them to
-> pass a valid nlmsghdr via arg->data. This header is artificial and
-> crafted just for __tipc_nl_compat_dumpit().
-> 
-> tipc_nl_compat_publ_dump() does so by putting a genlmsghdr as well
-> as some nested attribute, TIPC_NLA_SOCK. But the other caller
-> tipc_nl_compat_dumpit() does not, this leaves arg->data uninitialized
-> on this call path.
-> 
-> Fix this by just adding a similar nlmsghdr without any payload in
-> tipc_nl_compat_dumpit().
-> 
-> This bug exists since day 1, but the recent commit 6ea67769ff33
-> ("net: tipc: prepare attrs in __tipc_nl_compat_dumpit()") makes it
-> easier to appear.
-> 
-> Reported-and-tested-by: syzbot+0e7181deafa7e0b79923@syzkaller.appspotmail.com
-> Fixes: d0796d1ef63d ("tipc: convert legacy nl bearer dump to nl compat")
-> Cc: Jon Maloy <jmaloy@redhat.com>
-> Cc: Ying Xue <ying.xue@windriver.com>
-> Cc: Richard Alpe <richard.alpe@ericsson.com>
-> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+Hi,
 
-Good finding and thanks to fix it!
+so as I mentioned, I could run several test on our lab with variations
+around the various proposals and come to quite positive conclusions.
 
-Acked-by: Ying Xue <ying.xue@windriver.com>
+Synthetic observations: the connection rate and the SYN cookie rate do not
+seem to be affected the same way by the prandom changes. One explanation
+is that the connection rates are less stable across reboots. Another
+possible explanation is that the larger state update is more sensitive
+to cache misses that increase when calling userland. I noticed that the
+compiler didn't inline siprand_u32() for me, resulting in one extra
+function call and noticeable register clobbering that mostly vanish
+once siprand_u32() is inlined, getting back to the original performance.
 
-> ---
->  net/tipc/netlink_compat.c | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
-> index 217516357ef2..90e3c70a91ad 100644
-> --- a/net/tipc/netlink_compat.c
-> +++ b/net/tipc/netlink_compat.c
-> @@ -275,8 +275,9 @@ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
->  static int tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
->  				 struct tipc_nl_compat_msg *msg)
->  {
-> -	int err;
-> +	struct nlmsghdr *nlh;
->  	struct sk_buff *arg;
-> +	int err;
->  
->  	if (msg->req_type && (!msg->req_size ||
->  			      !TLV_CHECK_TYPE(msg->req, msg->req_type)))
-> @@ -305,6 +306,15 @@ static int tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
->  		return -ENOMEM;
->  	}
->  
-> +	nlh = nlmsg_put(arg, 0, 0, tipc_genl_family.id, 0, NLM_F_MULTI);
-> +	if (!nlh) {
-> +		kfree_skb(arg);
-> +		kfree_skb(msg->rep);
-> +		msg->rep = NULL;
-> +		return -EMSGSIZE;
-> +	}
-> +	nlmsg_end(arg, nlh);
-> +
->  	err = __tipc_nl_compat_dumpit(cmd, msg, arg);
->  	if (err) {
->  		kfree_skb(msg->rep);
-> 
+The noise generation was placed as discussed in the xmit calls, however
+the extra function call and state update had a negative effect on
+performance and the noise function alone appeared for up to 0.23% of the
+CPU usage. Simplifying the mix of data by keeping only one long for
+the noise and using one siphash round on 4 input words to keep only
+the last word allowed to use very few instructions and to inline them,
+making the noise collection imperceptible in microbenchmarks. The noise
+is now collected this way (I verified that all inputs are used), this
+performs 3 xor, 2 add and 2 rol, which is way sufficient and already
+better than my initial attempt with a bare add :
+
+  static inline
+  void prandom_u32_add_noise(unsigned long a, unsigned long b,
+                             unsigned long c, unsigned long d)
+  { 
+	/*
+	 * This is not used cryptographically; it's just
+	 * a convenient 4-word hash function. (3 xor, 2 add, 2 rol)
+	 */
+	a ^= __this_cpu_read(net_rand_noise);
+	PRND_SIPROUND(a, b, c, d);
+	__this_cpu_write(net_rand_noise, d);
+  }
+
+My tests were run on a 6-core 12-thread Core i7-8700k equipped with a 40G
+NIC (i40e). I've mainly run two types of tests:
+
+  - connections per second: the machine runs a server which accepts and
+    closes incoming connections. The load generators aim at it and the
+    connection rate is measured once it's stabilized.
+
+  - SYN cookie rate: the load generators flood the machine with enough
+    SYNs to saturate the CPU and the rate of response SYN-ACK is measured.
+
+Both correspond to real world use cases (DDoS protection against SYN flood
+and connection flood).
+
+The base kernel was fc80c51f + Eric's patch to add a tracepoint in
+prandom_u32(). Another test was made by adding George's changes to use
+siphash. Then another test was made with the siprand_u32() function
+inlined and with noise stored as a full siphash state. Then one test
+was run with the noise reduced to a single long. And a final test was
+run with the noise function inlined.
+
+          connections    SYN cookies   Notes
+          per second     emitted/s
+  
+  base:     556k          5.38M
+  
+  siphash:  535k          5.33M
+  
+  siphash inlined
+  +noise:   548k          5.40M    add_noise=0.23%
+  
+  siphash + single-word
+   noise    555k          5.45M    add_noise=0.10%
+  
+  siphash + single-word&inlined
+   noise    559k          5.38M
+
+Actually the last one is better than the previous one because it also
+swallows more packets. There were 10.9M pps in and 5.38M pps out versus
+10.77M in and 5.45M out for the previous one. I didn't report the incoming
+traffic for the other ones as it was mostly irrelevant and always within
+these bounds.
+
+Finally I've added Eric's patch to reuse the skb hash when known in
+tcp_conn_request(), and was happy to see the SYN cookies reach 5.45 Mpps
+again and the connection rate remain unaffected. A perf record during
+the SYN flood showed almost no call to prandom_u32() anymore (just a few
+in tcp_rtx_synack()) so this looks like a desirable optimization.
+
+At the moment the code is ugly, in experimental state (I've pushed all of
+it at https://git.kernel.org/pub/scm/linux/kernel/git/wtarreau/prandom.git/).
+
+My impression on this is that given that it's possible to maintain the
+same level of performance as we currently have while making the PRNG much
+better, there's no more reason for not doing it.
+
+If there's enough interest at this point, I'm OK with restarting from
+George's patches and doing the adjustments there. There's still this
+prandom_seed() which looks very close to prandom_reseed() and that we
+might possibly better remerge, but I'd vote for not changing everything
+at once, it's ugly enough already. Also I suspect we can have an infinite
+loop in prandom_seed() if entropy is 0 and the state is zero as well.
+We'd be unlucky but I'd just make sure entropy is not all zeroes. And
+running tests on 32-bit would be desirable as well.
+
+Finally one can wonder whether it makes sense to keep Tausworthe for
+other cases (basic statistical sampling) or drop it. We could definitely
+drop it and simplify everything given that we now have the same level of
+performance. But if we do it, what should we do with the test patterns ?
+I personally don't think that testing a PRNG against a known sequence
+brings any value by definition, and that the more random we make it the
+less relevant this is.
+
+Thanks,
+Willy
