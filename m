@@ -2,75 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C84702458FB
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 20:30:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19AE1245905
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 20:52:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729259AbgHPS3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Aug 2020 14:29:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37434 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728551AbgHPS3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Aug 2020 14:29:51 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF772C061786
-        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 11:29:50 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id p13so12654159ilh.4
-        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 11:29:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zOKA+DsIH24ZU9YG0zEM6ZNDBhiwBmlwQqaSCjTenjA=;
-        b=Nrm9D+UsIyYSXRU+dYYuli1iIdpB77y7IUhQyTIs3AKDlaKjG9h8Zt275/hROCVHsQ
-         egheSCuxgpsF/uoCSaLbZsIrCXuoPKkp+1mpR8VJwoSEiGF7h1MZX+acYCkn9Cq7OKET
-         1m8v1SHz0Il0Xjr7WJ+oyD1JXzjtGWxv+BUWT08KvH3uRudVUNapfvmkZrAbZpqfsaLy
-         wv/uhVjnEPrJLLtpjWOxAuQCgWxcETHx8z/hZ9WFNr1Fji/9MNJGOjpsP2VRLqzcU9fc
-         zaYSBrHYb/Gcm7Rje4qjxtPM3IVaIv4XIr09rmBetBUL3kVF4O7q0AnB9JLYQu+BVaib
-         90bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zOKA+DsIH24ZU9YG0zEM6ZNDBhiwBmlwQqaSCjTenjA=;
-        b=fdX1F2fNx5Hz523Abe+U8LhOQR/f/k5XMus7td1CBDPuww4lL//j0wZFXy5CUW3SI9
-         z/szpjTs4vnoupDzIdvtBnrTmGX1bniziNXt7Ce/ZjTNUlY4/zltt7Fxi73+xkZPPDRL
-         Q+mRfGaWVq6SblDDpcnN8d4FT8hM/RlyDHXCXFZq9sSMoyqOgTpLwplX7BZn1jY0MtD5
-         R0yMpiJJOjYzf/JNvCR97z+kxId23Pfr2dq354fFR5+AD2aEy7qIaUok12HjewWOmhyo
-         r5U1CMlz6+4tfzJT0zTxDIhGdgdBfBc1Y9z0/JX2Gyunh0t4CG0UN2xR+f4+ueHuV0yf
-         y7Pg==
-X-Gm-Message-State: AOAM532znFo0xYqICsDGeWpVSPdjV27DbPVdp2GPZGXrO2skwf/az8NM
-        nho6bO/csYiLyp6DGxbkaRIA8Jon4RleNhM6shg=
-X-Google-Smtp-Source: ABdhPJyjPufOwAscpP+UqVymmrRGWuFLt5C/Yu1tIIiChCX5YCR/8KdLlhgPv412t+vbpWr5Dwt+qobGttcc4z3kZss=
-X-Received: by 2002:a92:bad5:: with SMTP id t82mr10874246ill.22.1597602585465;
- Sun, 16 Aug 2020 11:29:45 -0700 (PDT)
+        id S1729117AbgHPSwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Aug 2020 14:52:49 -0400
+Received: from mx2.suse.de ([195.135.220.15]:59692 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725873AbgHPSws (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Aug 2020 14:52:48 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 4DA1DAC4C;
+        Sun, 16 Aug 2020 18:53:10 +0000 (UTC)
+Received: by incl.suse.cz (Postfix, from userid 1000)
+        id B5F662B667; Sun, 16 Aug 2020 20:52:44 +0200 (CEST)
+Date:   Sun, 16 Aug 2020 20:52:44 +0200
+From:   Jiri Wiesner <jwiesner@suse.com>
+To:     netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andreas Taschner <Andreas.Taschner@suse.com>,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH net] bonding: fix active-backup failover for current ARP slave
+Message-ID: <20200816185244.GA31426@incl>
 MIME-Version: 1.0
-References: <d20778039a791b9721bb449d493836edb742d1dc.1597570323.git.lucien.xin@gmail.com>
-In-Reply-To: <d20778039a791b9721bb449d493836edb742d1dc.1597570323.git.lucien.xin@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun, 16 Aug 2020 11:29:32 -0700
-Message-ID: <CAM_iQpU7iCjAZ3w4cnzZx1iBpUySzP-d+RDwaoAsqTaDBiVMVQ@mail.gmail.com>
-Subject: Re: [PATCH net] tipc: not enable tipc when ipv6 works as a module
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        tipc-discussion@lists.sourceforge.net,
-        Randy Dunlap <rdunlap@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 16, 2020 at 4:54 AM Xin Long <lucien.xin@gmail.com> wrote:
->
-> When using ipv6_dev_find() in one module, it requires ipv6 not to
-> work as a module. Otherwise, this error occurs in build:
->
->   undefined reference to `ipv6_dev_find'.
->
-> So fix it by adding "depends on IPV6 || IPV6=n" to tipc/Kconfig,
-> as it does in sctp/Kconfig.
+When the ARP monitor is used for link detection, ARP replies are
+validated for all slaves (arp_validate=3) and fail_over_mac is set to
+active, two slaves of an active-backup bond may get stuck in a state
+where both of them are active and pass packets that they receive to
+the bond. This state makes IPv6 duplicate address detection fail. The
+state is reached thus:
+1. The current active slave goes down because the ARP target
+   is not reachable.
+2. The current ARP slave is chosen and made active.
+3. A new slave is enslaved. This new slave becomes the current active
+   slave and can reach the ARP target.
+As a result, the current ARP slave stays active after the enslave
+action has finished and the log is littered with "PROBE BAD" messages:
+> bond0: PROBE: c_arp ens10 && cas ens11 BAD
+The workaround is to remove the slave with "going back" status from
+the bond and re-enslave it. This issue was encountered when DPDK PMD
+interfaces were being enslaved to an active-backup bond.
 
-Or put it into struct ipv6_stub?
+I would be possible to fix the issue in bond_enslave() or
+bond_change_active_slave() but the ARP monitor was fixed instead to
+keep most of the actions changing the current ARP slave in the ARP
+monitor code. The current ARP slave is set as inactive and backup
+during the commit phase. A new state, BOND_LINK_FAIL, has been
+introduced for slaves in the context of the ARP monitor. This allows
+administrators to see how slaves are rotated for sending ARP requests
+and attempts are made to find a new active slave.
+
+Fixes: b2220cad583c9 ("bonding: refactor ARP active-backup monitor")
+Signed-off-by: Jiri Wiesner <jwiesner@suse.com>
+---
+ drivers/net/bonding/bond_main.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index c853ca67058c..0ee59ea357f5 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -2945,6 +2945,9 @@ static int bond_ab_arp_inspect(struct bonding *bond)
+ 			if (bond_time_in_interval(bond, last_rx, 1)) {
+ 				bond_propose_link_state(slave, BOND_LINK_UP);
+ 				commit++;
++			} else if (slave->link == BOND_LINK_BACK) {
++				bond_propose_link_state(slave, BOND_LINK_FAIL);
++				commit++;
+ 			}
+ 			continue;
+ 		}
+@@ -3053,6 +3056,19 @@ static void bond_ab_arp_commit(struct bonding *bond)
+ 
+ 			continue;
+ 
++		case BOND_LINK_FAIL:
++			bond_set_slave_link_state(slave, BOND_LINK_FAIL,
++						  BOND_SLAVE_NOTIFY_NOW);
++			bond_set_slave_inactive_flags(slave,
++						      BOND_SLAVE_NOTIFY_NOW);
++
++			/* A slave has just been enslaved and has become
++			 * the current active slave.
++			 */
++			if (rtnl_dereference(bond->curr_active_slave))
++				RCU_INIT_POINTER(bond->current_arp_slave, NULL);
++			continue;
++
+ 		default:
+ 			slave_err(bond->dev, slave->dev,
+ 				  "impossible: link_new_state %d on slave\n",
+@@ -3103,8 +3119,6 @@ static bool bond_ab_arp_probe(struct bonding *bond)
+ 			return should_notify_rtnl;
+ 	}
+ 
+-	bond_set_slave_inactive_flags(curr_arp_slave, BOND_SLAVE_NOTIFY_LATER);
+-
+ 	bond_for_each_slave_rcu(bond, slave, iter) {
+ 		if (!found && !before && bond_slave_is_up(slave))
+ 			before = slave;
+-- 
+2.26.2
+
