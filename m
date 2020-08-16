@@ -2,85 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F4B824556F
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 04:10:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54F02245573
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 04:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729893AbgHPCKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Aug 2020 22:10:36 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:3479 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726926AbgHPCKf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 Aug 2020 22:10:35 -0400
-Received: from dggeme701-chm.china.huawei.com (unknown [172.30.72.55])
-        by Forcepoint Email with ESMTP id D1DEFC4F7998B15228CD;
-        Sat, 15 Aug 2020 10:09:06 +0800 (CST)
-Received: from dggeme753-chm.china.huawei.com (10.3.19.99) by
- dggeme701-chm.china.huawei.com (10.1.199.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Sat, 15 Aug 2020 10:09:06 +0800
-Received: from dggeme753-chm.china.huawei.com ([10.7.64.70]) by
- dggeme753-chm.china.huawei.com ([10.7.64.70]) with mapi id 15.01.1913.007;
- Sat, 15 Aug 2020 10:09:06 +0800
-From:   linmiaohe <linmiaohe@huawei.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        "martin.varghese@nokia.com" <martin.varghese@nokia.com>,
-        "pshelar@ovn.org" <pshelar@ovn.org>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        Shmulik Ladkani <shmulik@metanetworks.com>,
-        "Yadu Kishore" <kyk.segfault@gmail.com>,
-        "sowmini.varadhan@oracle.com" <sowmini.varadhan@oracle.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: add missing skb_uarg refcount increment in
- pskb_carve_inside_header()
-Thread-Topic: [PATCH] net: add missing skb_uarg refcount increment in
- pskb_carve_inside_header()
-Thread-Index: AdZyqG0kRQ90pG27RJqKlae5o5FvkA==
-Date:   Sat, 15 Aug 2020 02:09:06 +0000
-Message-ID: <ec28bf85a54c42a7ad03fd33a542023a@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.176.252]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1729917AbgHPC20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Aug 2020 22:28:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726926AbgHPC20 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Aug 2020 22:28:26 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B133C061786;
+        Sat, 15 Aug 2020 19:28:26 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id f9so6030001pju.4;
+        Sat, 15 Aug 2020 19:28:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hdWuVMBr25WAMERNCsCJ/+D2iaw+OKauMCpYgioq/Tw=;
+        b=K8mGhCEWw2CjwKCIlw5S56kNnFLiEPTdk3Mrb8NdZYVgqduliLdJ6vmzmb3vbD1PG2
+         JGe1A84KHTwqTQKW3d1oJfFSue6+qIi+4uCzDLp+IqqYo+NCPB28VM2KQZtIzzcDlWIT
+         WfVvUIP/BX89mh1uyMlUClSBXnLvFjcbcXySHn/W14gvEDRtPQhfMqXvFjEQErUHQxi7
+         K/7CzTiSSU4Bn+foCa3gcMvnSfSNjorEu34wn/Trz1ollGXg2zqBFV6qIAWc6Lf/DMQc
+         +oVYWjCCHVexMnoTo3W5SawAseIpYwo/xECcz1Se/byp273PCzfAyV34Rc74GV8CgfWL
+         jxrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hdWuVMBr25WAMERNCsCJ/+D2iaw+OKauMCpYgioq/Tw=;
+        b=mUreC7Sj9bZroGfRp4QAip9cJ343jAXcUDGx+HTLSgAUEhVFYIft+eRx7Y4Jewaxqs
+         aNXKNujyRjUbZPITSDB5XYXSLdA6CP9c7RH/oGPwHnbYnhVNzJLNErE5RiB+1B1RZT9W
+         PY+2HI2W9/tHkK+BIbFCh9uPuVWFoHfI/9ACEBBoVnzjz/thC2t3hkwPpgxDUFHYI5kH
+         1eE2JEERElI/a9im9Ixvv5IRiSj5HMppW3cFgo8tCHaRX8dI9eSQDugE0RjDAtdZgbYw
+         N3jK57gsHz+i1UK06m9c/sPsiPbeG0FSZio9mvxABax/n8aqdokxxxYU81eBYdgtg0KO
+         zlyw==
+X-Gm-Message-State: AOAM532Vth5X3Nr26speEtw4exsKPJl7gLQYe9tGsBazT5bQW7KPfb4L
+        DWmBtBuEYl0v99yefXd6HREJ4GkXGqjq5yvPPKmKIscvhM0=
+X-Google-Smtp-Source: ABdhPJyYExaqaMixUHDjbr013pxxLQEBupwdZZx5tENDQ0DmhxhtR2QkekpSzUPOaLZZP0WrZQzztEmHnNIYV/2wUUE=
+X-Received: by 2002:a17:90a:aa90:: with SMTP id l16mr7583607pjq.210.1597544905667;
+ Sat, 15 Aug 2020 19:28:25 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <20200808175251.582781-1-xie.he.0141@gmail.com>
+ <CA+FuTSfxWhq0pxEGPtOMjFUB7-4Vax6XMGsLL++28LwSOU5b3g@mail.gmail.com>
+ <CAJht_EM9q9u34LMAeYsYe5voZ54s3Z7OzxtvSomcF9a9wRvuCQ@mail.gmail.com>
+ <CA+FuTSdBNn218kuswND5OE4vZ4mxz3_hTDkcRmZn2Z9-gaYQZg@mail.gmail.com> <CAJht_EPGD1RmnU6-ZJYocXCY-qcPxXeEuurQ6GJod=WGO69-jg@mail.gmail.com>
+In-Reply-To: <CAJht_EPGD1RmnU6-ZJYocXCY-qcPxXeEuurQ6GJod=WGO69-jg@mail.gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Sat, 15 Aug 2020 19:28:14 -0700
+Message-ID: <CAJht_EOsQ-QLFBeJCytTRSRuor6jnCEE+zMBV+ngtwr25OSCSQ@mail.gmail.com>
+Subject: Re: [PATCH net] drivers/net/wan/lapbether: Added needed_tailroom
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-V2lsbGVtIGRlIEJydWlqbiA8d2lsbGVtZGVicnVpam4ua2VybmVsQGdtYWlsLmNvbT4gd3JvdGU6
-DQo+T24gRnJpLCBBdWcgMTQsIDIwMjAgYXQgOToyMCBBTSBsaW5taWFvaGUgPGxpbm1pYW9oZUBo
-dWF3ZWkuY29tPiB3cm90ZToNCj4+DQo+PiBXaWxsZW0gZGUgQnJ1aWpuIDx3aWxsZW1kZWJydWlq
-bi5rZXJuZWxAZ21haWwuY29tPiB3cm90ZToNCj4+ID5PbiBUaHUsIEF1ZyAxMywgMjAyMCBhdCAy
-OjE2IFBNIE1pYW9oZSBMaW4gPGxpbm1pYW9oZUBodWF3ZWkuY29tPiB3cm90ZToNCj4+ID4+DQo+
-PiA+PiBJZiB0aGUgc2tiIGlzIHpjb3BpZWQsIHdlIHNob3VsZCBpbmNyZWFzZSB0aGUgc2tiX3Vh
-cmcgcmVmY291bnQgDQo+PiA+PiBiZWZvcmUgd2UgaW52b2x2ZSBza2JfcmVsZWFzZV9kYXRhKCku
-IFNlZSBwc2tiX2V4cGFuZF9oZWFkKCkgYXMgYSByZWZlcmVuY2UuDQo+PiA+DQo+PiA+RGlkIHlv
-dSBtYW5hZ2UgdG8gb2JzZXJ2ZSBhIGJ1ZyB0aHJvdWdoIHRoaXMgZGF0YXBhdGggaW4gcHJhY3Rp
-Y2U/DQo+PiA+DQo+PiA+cHNrYl9jYXJ2ZV9pbnNpZGVfaGVhZGVyIGlzIGNhbGxlZA0KPj4gPiAg
-ZnJvbSBwc2tiX2NhcnZlDQo+PiA+ICAgIGZyb20gcHNrYl9leHRyYWN0DQo+PiA+ICAgICAgZnJv
-bSByZHNfdGNwX2RhdGFfcmVjdg0KPj4gPg0KPj4gPlRoYXQgcmVjZWl2ZSBwYXRoIHNob3VsZCBu
-b3Qgc2VlIGFueSBwYWNrZXRzIHdpdGggemVyb2NvcHkgc3RhdGUgYXNzb2NpYXRlZC4NCj4+ID4N
-Cj4+DQo+PiBUaGlzIHdvcmtzIGZpbmUgeWV0IGFzIGl0cyBjYWxsZXIgaXMgbGltaXRlZC4gQnV0
-IHdlIHNob3VsZCB0YWtlIGNhcmUgb2YgdGhlIHNrYl91YXJnIHJlZmNvdW50IGZvciBmdXR1cmUg
-dXNlLg0KPg0KPklmIGEgbmV3IGFwcGxpY2F0aW9uIG9mIHRoaXMgaW50ZXJmYWNlIGlzIHByb3Bv
-c2VkLCB0aGUgYXV0aG9yIHdpbGwgaGF2ZSB0byBtYWtlIHN1cmUgdGhhdCBpdCBpcyBleGVyY2lz
-ZWQgY29ycmVjdGx5Lg0KDQpTdXJlLiBMZXQgdGhlIGF1dGhvciBtYWtlIHN1cmUgdGhhdCBpdCBp
-cyBleGVyY2lzZWQgY29ycmVjdGx5IGlmIGEgbmV3IGFwcGxpY2F0aW9uIG9mIHRoaXMgaW50ZXJm
-YWNlIGlzIHByb3Bvc2VkLg0KDQo+PiBPbiB0aGUgb3RoZXIgaGFuZCwgYmVjYXVzZSB0aGlzIGNv
-ZGVwYXRoIHNob3VsZCBub3Qgc2VlIGFueSBwYWNrZXRzIA0KPj4gd2l0aCB6ZXJvY29weSBzdGF0
-ZSBhc3NvY2lhdGVkLCB0aGVuIHdlIHNob3VsZCBub3QgY2FsbCBza2Jfb3JwaGFuX2ZyYWdzIGhl
-cmUuDQoNCj5JJ20gYWxzbyBub3QgY29udmluY2VkIHRoYXQgdGhlIHNrYl9vcnBoYW5fZnJhZ3Mg
-aGVyZSBhcmUgbmVlZGVkLCBnaXZlbiB0aGUgb25seSBwYXRoIGlzIGZyb20gdGNwX3JlYWRfc29j
-ay4NCg0KTWF5YmUganVzdCBrZWVwIGl0IGhlcmUgYXMgaXQgZG9lc24ndCBodXJ0IGV2ZW4gaWYg
-aXQncyByZWFsbHkgbm90IG5lZWRlZC4NCg0KTWFueSB0aGFua3MuDQoNCg==
+I took some time to look at the history of needed_tailroom. I found it
+was added in this commit:
+f5184d267c1a (net: Allow netdevices to specify needed head/tailroom)
+
+The author tried to make use of needed_tailroom at various places in
+the kernel by replacing the macro LL_RESERVED_SPACE with his new macro
+LL_ALLOCATED_SPACE.
+
+However, the macro LL_ALLOCATED_SPACE was later found to have
+problems. So it was removed 3 years later and was replaced by explicit
+handling of needed_tailroom. See:
+https://lkml.org/lkml/2011/11/18/198
+
+So maybe only those places considered by these two authors have taken
+needed_tailroom into account.
+
+Other places might not have taken needed_tailroom into account because
+of the rarity of the usage of needed_tailroom.
+
+The second author also said in the commit message of his Patch 5/6
+(which changes af_packet.c), that:
+    While auditing LL_ALLOCATED_SPACE I noticed that packet_sendmsg_spkt
+    did not include needed_tailroom when allocating an skb.  This isn't
+    a fatal error as we should always tolerate inadequate tail room but
+    it isn't optimal.
+
+This shows not taking needed_tailroom into account is not a bug but
+it'd be better to take it into account.
