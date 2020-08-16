@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E73E245962
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 21:44:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7D30245965
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 21:44:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729708AbgHPToC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Aug 2020 15:44:02 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55436 "EHLO vps0.lunn.ch"
+        id S1729749AbgHPToF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Aug 2020 15:44:05 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55470 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729239AbgHPToB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 Aug 2020 15:44:01 -0400
+        id S1729702AbgHPToD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Aug 2020 15:44:03 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1k7OZR-009c8b-UW; Sun, 16 Aug 2020 21:43:57 +0200
+        id 1k7OZR-009c8e-Vg; Sun, 16 Aug 2020 21:43:57 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next 1/7] net: dsa: Add helper to convert from devlink to ds
-Date:   Sun, 16 Aug 2020 21:43:10 +0200
-Message-Id: <20200816194316.2291489-2-andrew@lunn.ch>
+Subject: [PATCH net-next 2/7] net: dsa: Add devlink regions support to DSA
+Date:   Sun, 16 Aug 2020 21:43:11 +0200
+Message-Id: <20200816194316.2291489-3-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200816194316.2291489-1-andrew@lunn.ch>
 References: <20200816194316.2291489-1-andrew@lunn.ch>
@@ -32,68 +32,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Given a devlink instance, return the dsa switch it is associated to.
+Allow DSA drivers to make use of devlink regions, via simple wrappers.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- include/net/dsa.h |  2 ++
- net/dsa/dsa.c     | 20 ++++++++++----------
- 2 files changed, 12 insertions(+), 10 deletions(-)
+ include/net/dsa.h |  6 ++++++
+ net/dsa/dsa.c     | 16 ++++++++++++++++
+ 2 files changed, 22 insertions(+)
 
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 75c8fac82017..63ff6f717307 100644
+index 63ff6f717307..8963440ec7f8 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -629,6 +629,8 @@ struct dsa_switch_ops {
- 	int	(*port_max_mtu)(struct dsa_switch *ds, int port);
- };
- 
-+struct dsa_switch *dsa_devlink_to_ds(struct devlink *dl);
+@@ -660,6 +660,12 @@ void dsa_devlink_resource_occ_get_register(struct dsa_switch *ds,
+ 					   void *occ_get_priv);
+ void dsa_devlink_resource_occ_get_unregister(struct dsa_switch *ds,
+ 					     u64 resource_id);
++struct devlink_region *
++dsa_devlink_region_create(struct dsa_switch *ds,
++			  const struct devlink_region_ops *ops,
++			  u32 region_max_snapshots, u64 region_size);
++void dsa_devlink_region_destroy(struct devlink_region *region);
 +
- #define DSA_DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes)		\
- 	DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes,		\
- 			     dsa_devlink_param_get, dsa_devlink_param_set, NULL)
+ struct dsa_port *dsa_port_from_netdev(struct net_device *netdev);
+ 
+ struct dsa_devlink_priv {
 diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index 1ce9ba8cf545..86351da4e202 100644
+index 86351da4e202..fea2efe5fe68 100644
 --- a/net/dsa/dsa.c
 +++ b/net/dsa/dsa.c
-@@ -327,14 +327,18 @@ int call_dsa_notifiers(unsigned long val, struct net_device *dev,
+@@ -412,6 +412,22 @@ void dsa_devlink_resource_occ_get_unregister(struct dsa_switch *ds,
  }
- EXPORT_SYMBOL_GPL(call_dsa_notifiers);
+ EXPORT_SYMBOL_GPL(dsa_devlink_resource_occ_get_unregister);
  
-+struct dsa_switch *dsa_devlink_to_ds(struct devlink *dl)
++struct devlink_region *
++dsa_devlink_region_create(struct dsa_switch *ds,
++			  const struct devlink_region_ops *ops,
++			  u32 region_max_snapshots, u64 region_size)
 +{
-+	struct dsa_devlink_priv *dl_priv = devlink_priv(dl);
-+
-+	return dl_priv->ds;
++	return devlink_region_create(ds->devlink, ops, region_max_snapshots,
++				     region_size);
 +}
-+EXPORT_SYMBOL_GPL(dsa_devlink_to_ds);
++EXPORT_SYMBOL_GPL(dsa_devlink_region_create);
 +
- int dsa_devlink_param_get(struct devlink *dl, u32 id,
- 			  struct devlink_param_gset_ctx *ctx)
++void dsa_devlink_region_destroy(struct devlink_region *region)
++{
++	devlink_region_destroy(region);
++}
++EXPORT_SYMBOL_GPL(dsa_devlink_region_destroy);
++
+ struct dsa_port *dsa_port_from_netdev(struct net_device *netdev)
  {
--	struct dsa_devlink_priv *dl_priv;
--	struct dsa_switch *ds;
--
--	dl_priv = devlink_priv(dl);
--	ds = dl_priv->ds;
-+	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
- 
- 	if (!ds->ops->devlink_param_get)
- 		return -EOPNOTSUPP;
-@@ -346,11 +350,7 @@ EXPORT_SYMBOL_GPL(dsa_devlink_param_get);
- int dsa_devlink_param_set(struct devlink *dl, u32 id,
- 			  struct devlink_param_gset_ctx *ctx)
- {
--	struct dsa_devlink_priv *dl_priv;
--	struct dsa_switch *ds;
--
--	dl_priv = devlink_priv(dl);
--	ds = dl_priv->ds;
-+	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
- 
- 	if (!ds->ops->devlink_param_set)
- 		return -EOPNOTSUPP;
+ 	if (!netdev || !dsa_slave_dev_check(netdev))
 -- 
 2.28.0
 
