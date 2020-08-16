@@ -2,136 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D2432459B3
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 23:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CA362459B4
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 23:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726700AbgHPVuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Aug 2020 17:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
+        id S1728669AbgHPV4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Aug 2020 17:56:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726331AbgHPVuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Aug 2020 17:50:14 -0400
+        with ESMTP id S1728057AbgHPV4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Aug 2020 17:56:34 -0400
 Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72717C061786
-        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 14:50:13 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id i26so10785953edv.4
-        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 14:50:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4D3C061786
+        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 14:56:34 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id v22so10797225edy.0
+        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 14:56:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=KbIaGpG6pbFS34uHjx3LlPhN6cjB1y3T7ba5E3IPC8Q=;
-        b=IAfdEFfaXMpzp1dj653X7yVJYykYG+pJGpH+rQ2BI4qRb9XGmZjcxP0OeAqVg7TVUY
-         a8C6vCAv83J+qSY2srdhikl7PuCPQ34+Cruhp4a3mVEXNxmKWO032hLTKCp8ZXFYvszu
-         xou9KV9r7oJxjhdnzTX/b9K7hPgpkRBScoa9Mc7nJ86Xxky6N5tnIjXe8Z4cjYT0AHnE
-         Nv8G8YzBr4yqwpK5biRKTeIdZtcdvz4dBIJeCq/F2gYc42WEH7hZRY+x3p01XIgYQG5z
-         1Gl4gJnu3Zibb/DEzXsjOeW44YW8/44AFUYJszutlYMQBALchAEdDr599rnxeTWFdY+K
-         K0aA==
+        bh=KA5z2NtIEOPTm6mIEtGlhhk+Q2EUatq73A29i6BcQzk=;
+        b=oNG98V6cfrlKBcYkscy77LDBnCkc6mtQz0l2wZVoeOhHDdXGbhzqjeLiv0NHhBx7iY
+         DXELG82VIpxzltu17lzhxltKhqvekOCJ/yYZ5iafa8usC39sl8JVlQ999/DT+0aXZhyx
+         /4d4XcVeUC5xw+IKjm//WOCQF/I2n5g3KtFZ5Kt4ItXM8R7RlSukNv1yjutBndWBM0dS
+         /pq83Eh+3F2gkInYse7Rqrie8yGBYazJoLFlfhXY09/LbZccPCQf7/PaWMBzPpyLqPl7
+         641ekwTaaGmNOgRrmjfGEoBXHNykEtwO9cvqeKxaATj/lxkIFJOTmwUswWoGlHJo+P4y
+         27yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=KbIaGpG6pbFS34uHjx3LlPhN6cjB1y3T7ba5E3IPC8Q=;
-        b=R1QkZs5qtVQf8aAA60yGY30vH1B+2E5K0Wb5UCCwcrh0Lp0JGk+OlEUz8sCR2NFhEX
-         5APFBniQdqCV4f9L0g2tanpb+gu/LpjIwpmv/JkvynfCzSuGWPBrIB6Qou2jtZz0XAX0
-         sN/A0q4gt/4VmgANRnlULxV3vrzbDzOE/7G7eJrHqZGL/BT9fAEbla4JKjCxqEunNPhx
-         XSa25wrGGsvEh5Cd3r/vDFHtG6AI3pxfTVVXuI5xEAktDWXv5mhS9sX6f6xn78c4LN2p
-         pb+aUL89QKHQ4sDK/VgZYD1eGOjTdhO1EEim/A6GeOcMhLNP5JkNKPjin/xy0QIO7TKd
-         7FuQ==
-X-Gm-Message-State: AOAM530iXJ0EMRD7N0erw47MFgXQUJPsugbP7bf0yxCB300FSm9PokU0
-        O8vS40gXfYxfuuaBq0M7L6U=
-X-Google-Smtp-Source: ABdhPJyIH+jWZRQVKYZEaZE4O+K2pldsRrE5O4rr/sb/DoLUhlG22pQry39o04pkP4wAxipA7+wN6g==
-X-Received: by 2002:a50:fc0a:: with SMTP id i10mr12491006edr.5.1597614612193;
-        Sun, 16 Aug 2020 14:50:12 -0700 (PDT)
+        bh=KA5z2NtIEOPTm6mIEtGlhhk+Q2EUatq73A29i6BcQzk=;
+        b=GTqMvgTT3UV3m3+z6914J7/dD5ZpC2yfbnwkOF4TwgHoGXOPHYQb+ctRg8uDntfqvE
+         tZijqJ+EebX2+qa5Q7fn5w4s3WqLvy1i42O9+jeHtV6519AK6YB36L6SlvSYWkc7pDUY
+         K1zGr6QG9KltAQadWba7d0gfOaO0QHW6p984QAD8O0OJDQBmfCuEsyX+e+48DyhVUKec
+         Z7Y77WuEYNv9o73XXit//z6BSvWLX+KZla8GjihNPlpKx2bYCc/EZSO4ShVa0pTNMZKh
+         QjWk7DRVZSdmVONxxpCVzvVrDM/8pzYXzblcvUTytjuZ1fiBsT9joPQf0jnTEDCWXQKr
+         Ewlw==
+X-Gm-Message-State: AOAM532O0cpr4Gpz/IRoj6p1rpXrKlySRYR2Zcc5sojTGnzDBTUN6DBP
+        O5NQnSmnfaqA4C9tJowDr4Q=
+X-Google-Smtp-Source: ABdhPJzTrC/CBU0uRU0zzdjMpwYNMZiGT6m1FxRSC75dmcCfbMaXGmE/N02SBy8gXTQC3S8hAWRcwA==
+X-Received: by 2002:a05:6402:1386:: with SMTP id b6mr12126842edv.296.1597614993112;
+        Sun, 16 Aug 2020 14:56:33 -0700 (PDT)
 Received: from skbuf ([86.126.22.216])
-        by smtp.gmail.com with ESMTPSA id u6sm13032843ejf.98.2020.08.16.14.50.11
+        by smtp.gmail.com with ESMTPSA id hk14sm12988525ejb.88.2020.08.16.14.56.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Aug 2020 14:50:11 -0700 (PDT)
-Date:   Mon, 17 Aug 2020 00:50:09 +0300
+        Sun, 16 Aug 2020 14:56:32 -0700 (PDT)
+Date:   Mon, 17 Aug 2020 00:56:30 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     David Miller <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net-next 2/7] net: dsa: Add devlink regions support to DSA
-Message-ID: <20200816215009.m7ovmuwjme3lrl4g@skbuf>
+Subject: Re: [PATCH net-next 6/7] net: dsa: wire up devlink info get
+Message-ID: <20200816215630.l7rdynh4ymx426uq@skbuf>
 References: <20200816194316.2291489-1-andrew@lunn.ch>
- <20200816194316.2291489-3-andrew@lunn.ch>
+ <20200816194316.2291489-7-andrew@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200816194316.2291489-3-andrew@lunn.ch>
+In-Reply-To: <20200816194316.2291489-7-andrew@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 16, 2020 at 09:43:11PM +0200, Andrew Lunn wrote:
-> Allow DSA drivers to make use of devlink regions, via simple wrappers.
+On Sun, Aug 16, 2020 at 09:43:15PM +0200, Andrew Lunn wrote:
+> Allow the DSA drivers to implement the devlink call to get info info,
+> e.g. driver name, firmware version, ASIC ID, etc.
 > 
 > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 > ---
->  include/net/dsa.h |  6 ++++++
->  net/dsa/dsa.c     | 16 ++++++++++++++++
->  2 files changed, 22 insertions(+)
+>  include/net/dsa.h |  5 ++++-
+>  net/dsa/dsa2.c    | 21 ++++++++++++++++++---
+>  2 files changed, 22 insertions(+), 4 deletions(-)
 > 
 > diff --git a/include/net/dsa.h b/include/net/dsa.h
-> index 63ff6f717307..8963440ec7f8 100644
+> index 8963440ec7f8..0e34193d15ba 100644
 > --- a/include/net/dsa.h
 > +++ b/include/net/dsa.h
-> @@ -660,6 +660,12 @@ void dsa_devlink_resource_occ_get_register(struct dsa_switch *ds,
->  					   void *occ_get_priv);
->  void dsa_devlink_resource_occ_get_unregister(struct dsa_switch *ds,
->  					     u64 resource_id);
-> +struct devlink_region *
-> +dsa_devlink_region_create(struct dsa_switch *ds,
-> +			  const struct devlink_region_ops *ops,
-> +			  u32 region_max_snapshots, u64 region_size);
-> +void dsa_devlink_region_destroy(struct devlink_region *region);
-> +
->  struct dsa_port *dsa_port_from_netdev(struct net_device *netdev);
+> @@ -612,11 +612,14 @@ struct dsa_switch_ops {
+>  	bool	(*port_rxtstamp)(struct dsa_switch *ds, int port,
+>  				 struct sk_buff *skb, unsigned int type);
 >  
->  struct dsa_devlink_priv {
-> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-> index 86351da4e202..fea2efe5fe68 100644
-> --- a/net/dsa/dsa.c
-> +++ b/net/dsa/dsa.c
-> @@ -412,6 +412,22 @@ void dsa_devlink_resource_occ_get_unregister(struct dsa_switch *ds,
->  }
->  EXPORT_SYMBOL_GPL(dsa_devlink_resource_occ_get_unregister);
+> -	/* Devlink parameters */
+> +	/* Devlink parameters, etc */
+>  	int	(*devlink_param_get)(struct dsa_switch *ds, u32 id,
+>  				     struct devlink_param_gset_ctx *ctx);
+>  	int	(*devlink_param_set)(struct dsa_switch *ds, u32 id,
+>  				     struct devlink_param_gset_ctx *ctx);
+> +	int	(*devlink_info_get)(struct dsa_switch *ds,
+> +				    struct devlink_info_req *req,
+> +				    struct netlink_ext_ack *extack);
 >  
-> +struct devlink_region *
-> +dsa_devlink_region_create(struct dsa_switch *ds,
-> +			  const struct devlink_region_ops *ops,
-> +			  u32 region_max_snapshots, u64 region_size)
-> +{
-> +	return devlink_region_create(ds->devlink, ops, region_max_snapshots,
-> +				     region_size);
-> +}
-> +EXPORT_SYMBOL_GPL(dsa_devlink_region_create);
-> +
-> +void dsa_devlink_region_destroy(struct devlink_region *region)
-> +{
-> +	devlink_region_destroy(region);
-> +}
-> +EXPORT_SYMBOL_GPL(dsa_devlink_region_destroy);
-> +
->  struct dsa_port *dsa_port_from_netdev(struct net_device *netdev)
+>  	/*
+>  	 * MTU change functionality. Switches can also adjust their MRU through
+> diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+> index c0ffc7a2b65f..860f2fb22fe0 100644
+> --- a/net/dsa/dsa2.c
+> +++ b/net/dsa/dsa2.c
+> @@ -21,9 +21,6 @@
+>  static DEFINE_MUTEX(dsa2_mutex);
+>  LIST_HEAD(dsa_tree_list);
+>  
+> -static const struct devlink_ops dsa_devlink_ops = {
+> -};
+> -
+>  struct dsa_switch *dsa_switch_find(int tree_index, int sw_index)
 >  {
->  	if (!netdev || !dsa_slave_dev_check(netdev))
+>  	struct dsa_switch_tree *dst;
+> @@ -382,6 +379,24 @@ static void dsa_port_teardown(struct dsa_port *dp)
+>  	dp->setup = false;
+>  }
+>  
+> +static int dsa_devlink_info_get(struct devlink *dl,
+> +				struct devlink_info_req *req,
+> +				struct netlink_ext_ack *extack)
+> +{
+> +	struct dsa_switch *ds;
+> +
+> +	ds = dsa_devlink_to_ds(dl);
+> +
+
+Why not place the declaration and the assignment on a single line?
+
+> +	if (ds->ops->devlink_info_get)
+> +		return ds->ops->devlink_info_get(ds, req, extack);
+> +
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static const struct devlink_ops dsa_devlink_ops = {
+> +	.info_get = dsa_devlink_info_get,
+> +};
+> +
+>  static int dsa_switch_setup(struct dsa_switch *ds)
+>  {
+>  	struct dsa_devlink_priv *dl_priv;
 > -- 
 > 2.28.0
 > 
-
-Could we perhaps open-code these from the drivers themselves? There's
-hardly any added value in DSA providing a "helper" for creation of
-devlink resources (regions, shared buffers, etc).
-
-Take the ocelot/felix driver for example. It is a DSA driver whose core
-functionality is provided by drivers/net/ethernet/mscc/ocelot*.c, which
-is non-DSA code. If it were to implement devlink regions, presumably
-that code would live in drivers/net/ethernet/mscc/ and not in
-drivers/net/dsa/.
 
 Thanks,
 -Vladimir
