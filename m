@@ -2,65 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60A1B2458EF
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 20:07:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C77F2458F2
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 20:15:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727973AbgHPSHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Aug 2020 14:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33992 "EHLO
+        id S1729110AbgHPSPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Aug 2020 14:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726699AbgHPSHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Aug 2020 14:07:05 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D9EC061786
-        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 11:07:05 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id u20so7073801pfn.0
-        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 11:07:05 -0700 (PDT)
+        with ESMTP id S1726331AbgHPSPn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Aug 2020 14:15:43 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817F9C061786;
+        Sun, 16 Aug 2020 11:15:43 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id y6so6384372plt.3;
+        Sun, 16 Aug 2020 11:15:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ej3VZeyvhwOmNJYgLPNyMNYic/dGPYAN/hHPqLY5+ko=;
-        b=Eia6f21Ikb453wQv2ngFsm/ISKSyFlRIcBOfMphWHoem2KhnJvKHeR4Z8BZyxLIap+
-         yr5zBb6IDvoJDN1b3J33yethxiFvEQ8u4vkP35956rNFICPc2+lxVGGyitpNZrC2ZRgH
-         3bbA1p1/DiGKkqVA2tVu7yqm8UveNdknUatPLE19LT/L7XP7wUR3OPFxTh8wXc55riXp
-         vW+/6bSKtxcYTpKgfh2vDcTZXIM3Pe7y/MDDjqND83SjwBwWy782scppsr5d49ObSGkb
-         3vskx8xMH4AuxAI5jFW1RGd3TTvJ68Y7CR6PZ/JnVckQRJDoi4n4cwkHG7iP1Q9Zd5fU
-         iCUg==
+        bh=7eITYE/vrrdjskd5W7C36g1IzW1kO3mM/GcgPPbFuKM=;
+        b=HyPaN9HRG0Mi2qCWoWQx2PWfgGD2dBMJy83WaE5KBS0qWZhAdue1tcVB+6k4X3wbWV
+         orTzizKZM0nOpr6g5pdNxG6X1Ai7b0ECGTNhODzbnm4fz2SbWfGMTv+4yg/VWrIk8rP+
+         ceCz3kcdSvD3j0bjsvWCGXfJzKjViIEIq4nxZgOPIgAkKc2GUSpO+lex0X94OZ0PrQxG
+         hkBB1LyvGbrtPdso3OLwC8NQ238kWFtR0S/A1hVYHeBR7JP1oUtMPViMsu313u56BYDG
+         hOZVQpAIk6OtRere0FTLbQQISXsfiEmlxZ8fyHQR/Z8zkeFk7qA0UdhgHNpwdv1x7gGk
+         qXug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Ej3VZeyvhwOmNJYgLPNyMNYic/dGPYAN/hHPqLY5+ko=;
-        b=jOiZTkqVn7Q9jgFVuPrRwSCC4pES9OkdIXve9LGE6Q+A3AVNbI7mCdHBgqCpMgqg4E
-         jgWlf3yRNMO2mXWTalmuc68HGWzd/fS1XJynvEkqBnS5DXUmHL9Gv/RNn+/jvQ8OQ2wN
-         +Vg8hnUdnFTGqs/YlCczffqvel4lN1l2SZ/Dqn18XeDz1+PWWWrzm+447Q1Reno0aOs4
-         IwUmqJYlsaVDnHjBjSwnEu29iZgpK4xnAbSoeeDzafqDTviBltom1c0Tg4yT8KjdNwfK
-         FInE1NqmhKK0n1sbmrmelv+Ys9bO3Q2i+AyzKD9z2fEfpKWTRSUmOQCCrbIeeglPfadC
-         rolA==
-X-Gm-Message-State: AOAM532fUE9sdQahfXKreA/aiRhp1THhQe1mYslg+JRG5DwG3a/reiHJ
-        D6Zgp/T4VgXi4tAan3llevo=
-X-Google-Smtp-Source: ABdhPJyG1kQQyOYtgkuw1BdJ9BEes48Ua7DFbDbGdeTQrGAvORMQCmIxnWiNnS6qloI/kazeEA0EoQ==
-X-Received: by 2002:a63:e057:: with SMTP id n23mr7428767pgj.368.1597601225066;
-        Sun, 16 Aug 2020 11:07:05 -0700 (PDT)
+        bh=7eITYE/vrrdjskd5W7C36g1IzW1kO3mM/GcgPPbFuKM=;
+        b=e6n/iw6zj9w7gGCm6JK9egMeiRqISPgw24vviIEXs2t4eiyu9ciad+OjtvhAmZyFxi
+         f4fNU4A8s5eL28AR+bqR+w6vUftCRcLkO4RiAnZfas2ndKu6LEmvD/R7epokkM+9e87b
+         CSZttHdZIjDfqawV/TYxXMhou0o80VmkomnBUCEBqaA8d2NDgMSpsWOnn0gPCd6gqEWE
+         U7q1b+A2r8Vgqo2Pw1yDJAdzgHCBRarszPwb5VmF1k/lKNPZ14wS2hxsctvcjAV6jMn4
+         aaizefBfiWiyu0hHpGX5hNuIvIjHdzTAw6C3cEIwgPVnQnVfuHcP4z7xPPxkBm2CeL+S
+         urbg==
+X-Gm-Message-State: AOAM530jIrocG3jusvxOyLseEhIf+2fqiHm7SRIuihjO5V+adlCiy4UQ
+        Eli6g3xV9dzttz8H4nTsCpz+DB8afl0=
+X-Google-Smtp-Source: ABdhPJzDVeD/HiVJO3rMb15GrpoaQIdnJhsHTB/12q5ZLb9bhTvfgDd0zzTyp6ouNffxA9p6np8XfA==
+X-Received: by 2002:a17:90a:8c8f:: with SMTP id b15mr9660930pjo.84.1597601743152;
+        Sun, 16 Aug 2020 11:15:43 -0700 (PDT)
 Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id h19sm14344455pjv.41.2020.08.16.11.07.04
+        by smtp.gmail.com with ESMTPSA id q6sm3113098pjr.20.2020.08.16.11.15.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 16 Aug 2020 11:07:04 -0700 (PDT)
-Subject: Re: [PATCH 3/3] net: lantiq: Use napi_complete_done()
-To:     Hauke Mehrtens <hauke@hauke-m.de>, davem@davemloft.net
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        martin.blumenstingl@googlemail.com
-References: <20200815183314.404-1-hauke@hauke-m.de>
- <20200815183314.404-3-hauke@hauke-m.de>
+        Sun, 16 Aug 2020 11:15:42 -0700 (PDT)
+Subject: Re: [PATCH 2/2] net: socket: implement SO_DESCRIPTION
+To:     Pascal Bouchareine <kalou@tfz.net>, linux-kernel@vger.kernel.org
+Cc:     linux-api@vger.kernel.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>
+References: <20200815182344.7469-1-kalou@tfz.net>
+ <20200815182344.7469-3-kalou@tfz.net>
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <17761534-65b1-e575-5e00-55e6f7e3f7b7@gmail.com>
-Date:   Sun, 16 Aug 2020 11:07:03 -0700
+Message-ID: <7c910594-b297-646e-9410-f133fd62a902@gmail.com>
+Date:   Sun, 16 Aug 2020 11:15:41 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200815183314.404-3-hauke@hauke-m.de>
+In-Reply-To: <20200815182344.7469-3-kalou@tfz.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,48 +75,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 8/15/20 11:33 AM, Hauke Mehrtens wrote:
-> Use napi_complete_done() and activate the interrupts when this function
-> returns true. This way the generic NAPI code can take care of activating
-> the interrupts.
+On 8/15/20 11:23 AM, Pascal Bouchareine wrote:
+> This command attaches the zero terminated string in optval to the
+> socket for troubleshooting purposes. The free string is displayed in the
+> process fdinfo file for that fd (/proc/<pid>/fdinfo/<fd>).
 > 
-> Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
-> ---
->  drivers/net/ethernet/lantiq_xrx200.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
+> One intended usage is to allow processes to self-document sockets
+> for netstat and friends to report
 > 
-> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
-> index f34e4dc8c661..674ffb2ecd9a 100644
-> --- a/drivers/net/ethernet/lantiq_xrx200.c
-> +++ b/drivers/net/ethernet/lantiq_xrx200.c
-> @@ -229,10 +229,8 @@ static int xrx200_poll_rx(struct napi_struct *napi, int budget)
->  		}
->  	}
->  
-> -	if (rx < budget) {
-> -		napi_complete(&ch->napi);
-> +	if (napi_complete_done(&ch->napi, rx))
->  		ltq_dma_enable_irq(&ch->dma);
-> -	}
->  
->  	return rx;
->  }
-> @@ -271,10 +269,8 @@ static int xrx200_tx_housekeeping(struct napi_struct *napi, int budget)
->  	if (netif_queue_stopped(net_dev))
->  		netif_wake_queue(net_dev);
->  
-> -	if (pkts < budget) {
-> -		napi_complete(&ch->napi);
-> +	if (napi_complete_done(&ch->napi, pkts))
->  		ltq_dma_enable_irq(&ch->dma);
-> -	}
->  
->  	return pkts;
->  }
+> We ignore optlen and constrain the string to a static max size
 > 
+>
 
+1) You also ignored what would happen at accept() time.
 
-This looks buggy to me.
+Please test your patches with ASAN.
 
-Please look again to other implementations for a correct usage.
+2) Also, why is that description specific to sockets ?
+
+3) When a new socket option is added, it is customary to implement both setsockopt() and getsockopt()
+  for things like CRIU.
 
