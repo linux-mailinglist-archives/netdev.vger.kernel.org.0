@@ -2,118 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19AE1245905
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 20:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3479245910
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 20:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729117AbgHPSwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Aug 2020 14:52:49 -0400
-Received: from mx2.suse.de ([195.135.220.15]:59692 "EHLO mx2.suse.de"
+        id S1729658AbgHPS4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Aug 2020 14:56:41 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55308 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725873AbgHPSws (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 Aug 2020 14:52:48 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 4DA1DAC4C;
-        Sun, 16 Aug 2020 18:53:10 +0000 (UTC)
-Received: by incl.suse.cz (Postfix, from userid 1000)
-        id B5F662B667; Sun, 16 Aug 2020 20:52:44 +0200 (CEST)
-Date:   Sun, 16 Aug 2020 20:52:44 +0200
-From:   Jiri Wiesner <jwiesner@suse.com>
-To:     netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andreas Taschner <Andreas.Taschner@suse.com>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net] bonding: fix active-backup failover for current ARP slave
-Message-ID: <20200816185244.GA31426@incl>
+        id S1729565AbgHPS4g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Aug 2020 14:56:36 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1k7NpV-009blC-Bs; Sun, 16 Aug 2020 20:56:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next v2 0/5] Move MDIO drivers into there own directory
+Date:   Sun, 16 Aug 2020 20:56:06 +0200
+Message-Id: <20200816185611.2290056-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the ARP monitor is used for link detection, ARP replies are
-validated for all slaves (arp_validate=3) and fail_over_mac is set to
-active, two slaves of an active-backup bond may get stuck in a state
-where both of them are active and pass packets that they receive to
-the bond. This state makes IPv6 duplicate address detection fail. The
-state is reached thus:
-1. The current active slave goes down because the ARP target
-   is not reachable.
-2. The current ARP slave is chosen and made active.
-3. A new slave is enslaved. This new slave becomes the current active
-   slave and can reach the ARP target.
-As a result, the current ARP slave stays active after the enslave
-action has finished and the log is littered with "PROBE BAD" messages:
-> bond0: PROBE: c_arp ens10 && cas ens11 BAD
-The workaround is to remove the slave with "going back" status from
-the bond and re-enslave it. This issue was encountered when DPDK PMD
-interfaces were being enslaved to an active-backup bond.
+The phy subdirectory is getting cluttered. It has both PHY drivers and
+MDIO drivers, plus a stray switch driver. Soon more PCS drivers are
+likely to appear.
 
-I would be possible to fix the issue in bond_enslave() or
-bond_change_active_slave() but the ARP monitor was fixed instead to
-keep most of the actions changing the current ARP slave in the ARP
-monitor code. The current ARP slave is set as inactive and backup
-during the commit phase. A new state, BOND_LINK_FAIL, has been
-introduced for slaves in the context of the ARP monitor. This allows
-administrators to see how slaves are rotated for sending ARP requests
-and attempts are made to find a new active slave.
+Move MDIO and PCS drivers into new directories. This requires fixing
+up the xgene driver which uses a relative include path.
 
-Fixes: b2220cad583c9 ("bonding: refactor ARP active-backup monitor")
-Signed-off-by: Jiri Wiesner <jwiesner@suse.com>
----
- drivers/net/bonding/bond_main.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+v2:
+Move the subdirs to drivers/net, rather than drivers/net/phy.
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index c853ca67058c..0ee59ea357f5 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -2945,6 +2945,9 @@ static int bond_ab_arp_inspect(struct bonding *bond)
- 			if (bond_time_in_interval(bond, last_rx, 1)) {
- 				bond_propose_link_state(slave, BOND_LINK_UP);
- 				commit++;
-+			} else if (slave->link == BOND_LINK_BACK) {
-+				bond_propose_link_state(slave, BOND_LINK_FAIL);
-+				commit++;
- 			}
- 			continue;
- 		}
-@@ -3053,6 +3056,19 @@ static void bond_ab_arp_commit(struct bonding *bond)
- 
- 			continue;
- 
-+		case BOND_LINK_FAIL:
-+			bond_set_slave_link_state(slave, BOND_LINK_FAIL,
-+						  BOND_SLAVE_NOTIFY_NOW);
-+			bond_set_slave_inactive_flags(slave,
-+						      BOND_SLAVE_NOTIFY_NOW);
-+
-+			/* A slave has just been enslaved and has become
-+			 * the current active slave.
-+			 */
-+			if (rtnl_dereference(bond->curr_active_slave))
-+				RCU_INIT_POINTER(bond->current_arp_slave, NULL);
-+			continue;
-+
- 		default:
- 			slave_err(bond->dev, slave->dev,
- 				  "impossible: link_new_state %d on slave\n",
-@@ -3103,8 +3119,6 @@ static bool bond_ab_arp_probe(struct bonding *bond)
- 			return should_notify_rtnl;
- 	}
- 
--	bond_set_slave_inactive_flags(curr_arp_slave, BOND_SLAVE_NOTIFY_LATER);
--
- 	bond_for_each_slave_rcu(bond, slave, iter) {
- 		if (!found && !before && bond_slave_is_up(slave))
- 			before = slave;
+Andrew Lunn (5):
+  net: pcs: Move XPCS into new PCS subdirectory
+  net/phy/mdio-i2c: Move header file to include/linux
+  net: xgene: Move shared header file into include/linux
+  net: mdio: Move MDIO drivers into a new subdirectory
+  net: phy: Sort Kconfig and Makefile
+
+ MAINTAINERS                                   |  10 +-
+ drivers/net/Kconfig                           |   4 +
+ drivers/net/Makefile                          |   2 +
+ .../net/ethernet/apm/xgene/xgene_enet_main.h  |   2 +-
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |   2 +-
+ drivers/net/ethernet/stmicro/stmmac/common.h  |   2 +-
+ drivers/net/mdio/Kconfig                      | 241 +++++++++++
+ drivers/net/mdio/Makefile                     |  27 ++
+ drivers/net/{phy => mdio}/mdio-aspeed.c       |   0
+ drivers/net/{phy => mdio}/mdio-bcm-iproc.c    |   0
+ drivers/net/{phy => mdio}/mdio-bcm-unimac.c   |   0
+ drivers/net/{phy => mdio}/mdio-bitbang.c      |   0
+ drivers/net/{phy => mdio}/mdio-cavium.c       |   0
+ drivers/net/{phy => mdio}/mdio-cavium.h       |   0
+ drivers/net/{phy => mdio}/mdio-gpio.c         |   0
+ drivers/net/{phy => mdio}/mdio-hisi-femac.c   |   0
+ drivers/net/{phy => mdio}/mdio-i2c.c          |   3 +-
+ drivers/net/{phy => mdio}/mdio-ipq4019.c      |   0
+ drivers/net/{phy => mdio}/mdio-ipq8064.c      |   0
+ drivers/net/{phy => mdio}/mdio-moxart.c       |   0
+ drivers/net/{phy => mdio}/mdio-mscc-miim.c    |   0
+ .../net/{phy => mdio}/mdio-mux-bcm-iproc.c    |   0
+ drivers/net/{phy => mdio}/mdio-mux-gpio.c     |   0
+ .../net/{phy => mdio}/mdio-mux-meson-g12a.c   |   0
+ drivers/net/{phy => mdio}/mdio-mux-mmioreg.c  |   0
+ .../net/{phy => mdio}/mdio-mux-multiplexer.c  |   0
+ drivers/net/{phy => mdio}/mdio-mux.c          |   0
+ drivers/net/{phy => mdio}/mdio-mvusb.c        |   0
+ drivers/net/{phy => mdio}/mdio-octeon.c       |   0
+ drivers/net/{phy => mdio}/mdio-sun4i.c        |   0
+ drivers/net/{phy => mdio}/mdio-thunder.c      |   0
+ drivers/net/{phy => mdio}/mdio-xgene.c        |   2 +-
+ drivers/net/pcs/Kconfig                       |  20 +
+ drivers/net/pcs/Makefile                      |   4 +
+ .../net/{phy/mdio-xpcs.c => pcs/pcs-xpcs.c}   |   2 +-
+ drivers/net/phy/Kconfig                       | 404 ++++--------------
+ drivers/net/phy/Makefile                      |  37 +-
+ drivers/net/phy/sfp.c                         |   2 +-
+ {drivers/net/phy => include/linux}/mdio-i2c.h |   0
+ .../net/phy => include/linux}/mdio-xgene.h    |   0
+ include/linux/{mdio-xpcs.h => pcs-xpcs.h}     |   8 +-
+ 41 files changed, 403 insertions(+), 369 deletions(-)
+ create mode 100644 drivers/net/mdio/Kconfig
+ create mode 100644 drivers/net/mdio/Makefile
+ rename drivers/net/{phy => mdio}/mdio-aspeed.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-bcm-iproc.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-bcm-unimac.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-bitbang.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-cavium.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-cavium.h (100%)
+ rename drivers/net/{phy => mdio}/mdio-gpio.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-hisi-femac.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-i2c.c (98%)
+ rename drivers/net/{phy => mdio}/mdio-ipq4019.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-ipq8064.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-moxart.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-mscc-miim.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-mux-bcm-iproc.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-mux-gpio.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-mux-meson-g12a.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-mux-mmioreg.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-mux-multiplexer.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-mux.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-mvusb.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-octeon.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-sun4i.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-thunder.c (100%)
+ rename drivers/net/{phy => mdio}/mdio-xgene.c (99%)
+ create mode 100644 drivers/net/pcs/Kconfig
+ create mode 100644 drivers/net/pcs/Makefile
+ rename drivers/net/{phy/mdio-xpcs.c => pcs/pcs-xpcs.c} (99%)
+ rename {drivers/net/phy => include/linux}/mdio-i2c.h (100%)
+ rename {drivers/net/phy => include/linux}/mdio-xgene.h (100%)
+ rename include/linux/{mdio-xpcs.h => pcs-xpcs.h} (88%)
+
 -- 
-2.26.2
+2.28.0
 
