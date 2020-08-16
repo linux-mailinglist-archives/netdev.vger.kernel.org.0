@@ -2,82 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 550A524573A
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 12:48:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7184C245795
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 14:30:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728534AbgHPKr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Aug 2020 06:47:56 -0400
-Received: from ur.lubuskie.pl ([212.109.137.60]:33392 "EHLO ur.lubuskie.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727908AbgHPKry (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 Aug 2020 06:47:54 -0400
-X-Greylist: delayed 12051 seconds by postgrey-1.27 at vger.kernel.org; Sun, 16 Aug 2020 06:47:53 EDT
+        id S1726339AbgHPMaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Aug 2020 08:30:46 -0400
+Received: from lb2-smtp-cloud8.xs4all.net ([194.109.24.25]:57011 "EHLO
+        lb2-smtp-cloud8.xs4all.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726111AbgHPMap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Aug 2020 08:30:45 -0400
+Received: from keetweej.vanheusden.com ([82.161.210.122])
+        by smtp-cloud8.xs4all.net with ESMTP
+        id 7HoAkVXhgzsLP7HoBkPuyT; Sun, 16 Aug 2020 14:30:43 +0200
 Received: from localhost (localhost [127.0.0.1])
-        by ur.lubuskie.pl (Postfix) with ESMTP id 29D931429AB;
-        Sun, 16 Aug 2020 07:46:23 +0200 (CEST)
-Received: from ur.lubuskie.pl ([127.0.0.1])
-        by localhost (mxs01.lubuskie.pl [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id g5p70oO9fYYR; Sun, 16 Aug 2020 07:46:22 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by ur.lubuskie.pl (Postfix) with ESMTP id AD1C9146F45;
-        Sun, 16 Aug 2020 07:46:18 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 ur.lubuskie.pl AD1C9146F45
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lubuskie.pl;
-        s=ACAF454E-EAFA-11E7-B4AB-6366C0A440D3; t=1597556779;
-        bh=850wWB9KJoM2rPYdcoOq+cy3rmqjSF+gOwb24ykRPKA=;
-        h=MIME-Version:To:From:Date:Message-Id;
-        b=M2J3pdHRCw5gBVRlvUc0OJuCGnhr4JQKVVXTP2/k+gESEfOMCUrtxNjonh1rRhWv1
-         17SvUoxDkfN41ouHCaEjVpW3zytXkGieWkDzCNLA/j1G5ZNgB63hcQ7iTCRw6k9ReW
-         jfb68KMRpZWvIt6HWZ6AnSG6Flm3rBd6Ofij/0vk=
-X-Virus-Scanned: amavisd-new at lubuskie.pl
-Received: from ur.lubuskie.pl ([127.0.0.1])
-        by localhost (mxs01.lubuskie.pl [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id VR8DiazR7jtb; Sun, 16 Aug 2020 07:46:18 +0200 (CEST)
-Received: from [192.168.0.130] (unknown [105.112.98.76])
-        by ur.lubuskie.pl (Postfix) with ESMTPSA id 547CE14E2BA;
-        Sun, 16 Aug 2020 07:46:03 +0200 (CEST)
-Content-Type: text/plain; charset="iso-8859-1"
+        by keetweej.vanheusden.com (Postfix) with ESMTP id 2C0301625A3
+        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 14:30:42 +0200 (CEST)
+Received: from keetweej.vanheusden.com ([127.0.0.1])
+        by localhost (mauer.intranet.vanheusden.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id SilGI-wkKosC for <netdev@vger.kernel.org>;
+        Sun, 16 Aug 2020 14:30:41 +0200 (CEST)
+Received: from belle.intranet.vanheusden.com (belle.intranet.vanheusden.com [192.168.64.100])
+        by keetweej.vanheusden.com (Postfix) with ESMTP id 11F1116255F
+        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 14:30:41 +0200 (CEST)
+Received: by belle.intranet.vanheusden.com (Postfix, from userid 1000)
+        id 84D5D1605E0; Sun, 16 Aug 2020 14:30:39 +0200 (CEST)
+Date:   Sun, 16 Aug 2020 14:30:39 +0200
+From:   folkert <folkert@vanheusden.com>
+To:     netdev@vger.kernel.org
+Subject: Re: ping not working
+Message-ID: <20200816123039.GA22273@belle.intranet.vanheusden.com>
+References: <20200816081013.GC16027@belle.intranet.vanheusden.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Spende
-To:     Recipients <m.mizera@lubuskie.pl>
-From:   m.mizera@lubuskie.pl
-Date:   Sat, 15 Aug 2020 22:45:40 -0700
-Reply-To: mariaschaefflergruppe@gmail.com
-X-Antivirus: avast! (VPS 200815-8, 08/15/2020), Outbound message
-X-Antivirus-Status: Clean
-Message-Id: <20200816054604.547CE14E2BA@ur.lubuskie.pl>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200816081013.GC16027@belle.intranet.vanheusden.com>
+Organization: www.vanheusden.com
+X-Chameleon-Return-To: folkert@vanheusden.com
+X-Xfmail-Return-To: folkert@vanheusden.com
+X-Phonenumber: +31-6-41278122
+X-URL:  http://www.vanheusden.com/
+X-PGP-KeyID: 1F077C42
+X-GPG-fingerprint: AC89 09CE 41F2 00B4 FCF2  B174 3019 0E8C 1F28 D8AE
+X-Key:  http://pgp.surfnet.nl:11371/pks/lookup?op=get&search=0x1F077C42
+Read-Receipt-To: <folkert@vanheusden.com>
+Reply-By: ma 17 aug 2020 10:15:07 CEST
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-CMAE-Envelope: MS4wfAwagtEcKaN7U+bPOQ46ndITi8f2j5tDrIVLPcrXldtWNP7i7SbuWJn1SRZcYFo5hl48QP6hPBFb8ALq4L34shYRYpsl02dlnJH/aqVJAC/xaln98LkW
+ Vl7pgpq9TK5hDgYVVX7JPxR4TpZYiYYVwWYFXzGHXQlmLP/9f+Ai0wpbUWHZYEVhNd2KPrrLc6OUJw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hallo,
+Sorry; my problem.
+I had not seen that the ip-header checksum was incorrect.
 
-Ich bin Maria Elisabeth Schaeffler, eine deutsche Gesch=E4ftsfrau, Investor=
-in und Gesch=E4ftsf=FChrerin der Schaeffler Gruppe. Ich bin einer der Eigen=
-t=FCmer der Schaeffler Gruppe. Ich habe 25 Prozent meines pers=F6nlichen Ve=
-rm=F6gens f=FCr wohlt=E4tige Zwecke verschenkt. Und ich habe auch zugesagt,=
- den Rest von 25% in diesem Jahr 2020 an Einzelpersonen zu verschenken. Ich=
- habe beschlossen, Ihnen 1.000.000,00 Euro zu spenden. Wenn Sie an meiner S=
-pende interessiert sind, kontaktieren Sie mich f=FCr weitere Informationen.=
+On Sun, Aug 16, 2020 at 10:10:13AM +0200, folkert wrote:
+> This might be slightly off-topic altough it involves Linux, tap-device
+> and ping.
 
+Folkert van Heusden
 
-Sie k=F6nnen auch mehr =FCber mich =FCber den unten stehenden Link lesen
-
-https://en.wikipedia.org/wiki/Maria-Elisabeth_Schaeffler
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Herzliche Gr=FC=DFe,
-Frau Maria-Elisabeth Schaeffler,
-CEO
-Schaeffler Gruppe.
-E-Mail: mariaschaefflergruppe@gmail.com
-
----
-This email is free from viruses and malware because avast! Antivirus protec=
-tion is active.
-https://www.avast.com/antivirus
-
+-- 
+Curious about the inner workings of your car? Then check O2OO: it'll
+tell you all that there is to know about your car's engine!
+http://www.vanheusden.com/O2OO/
+----------------------------------------------------------------------
+Phone: +31-6-41278122, PGP-key: 1F28D8AE, www.vanheusden.com
