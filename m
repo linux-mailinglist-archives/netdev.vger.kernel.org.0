@@ -2,98 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25404245734
-	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 12:29:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 550A524573A
+	for <lists+netdev@lfdr.de>; Sun, 16 Aug 2020 12:48:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728169AbgHPK0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Aug 2020 06:26:22 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:17323 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727927AbgHPK0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Aug 2020 06:26:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1597573578; x=1629109578;
-  h=references:from:to:cc:subject:in-reply-to:date:
-   message-id:mime-version;
-  bh=WHBq5dCsYow0KmrNsclDpfutbdII4ik+kZyKtOpv8RY=;
-  b=AQ+gKcFln4WsGy0fYF8btbQ8AlLH6Af4RBkW7yyTXHnnBsN23OowBWMW
-   JYWFYP8Z4FVUH2REjY5yanPJ1Nkn3+jCChDKFcTp6Bp1jy7Qo+XwtlXEX
-   WUwNPzx5EbALqQb17cNmqZxyI2bT57fG+bcWu4FZcYSNcl2yNggUfQhaf
-   c=;
-X-IronPort-AV: E=Sophos;i="5.76,319,1592870400"; 
-   d="scan'208";a="47941306"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1a-821c648d.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 16 Aug 2020 10:26:15 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1a-821c648d.us-east-1.amazon.com (Postfix) with ESMTPS id 6AFBDA1CB6;
-        Sun, 16 Aug 2020 10:26:14 +0000 (UTC)
-Received: from EX13D28EUC001.ant.amazon.com (10.43.164.4) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 16 Aug 2020 10:26:13 +0000
-Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.161.244) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 16 Aug 2020 10:26:05 +0000
-References: <20200812101059.5501-1-shayagr@amazon.com> <20200812101059.5501-2-shayagr@amazon.com> <20200812105219.4c4e3e3b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <pj41zleeoapv31.fsf@u4b1e9be9d67d5a.ant.amazon.com> <20200813134111.3d22b6ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-agent: mu4e 1.4.12; emacs 26.3
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>, <sameehj@amazon.com>,
-        <ndagan@amazon.com>
-Subject: Re: [PATCH V1 net 1/3] net: ena: Prevent reset after device destruction
-In-Reply-To: <20200813134111.3d22b6ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Sun, 16 Aug 2020 13:25:45 +0300
-Message-ID: <pj41zlft8mc2fq.fsf@u68c7b5b1d2d758.ant.amazon.com>
+        id S1728534AbgHPKr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Aug 2020 06:47:56 -0400
+Received: from ur.lubuskie.pl ([212.109.137.60]:33392 "EHLO ur.lubuskie.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727908AbgHPKry (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Aug 2020 06:47:54 -0400
+X-Greylist: delayed 12051 seconds by postgrey-1.27 at vger.kernel.org; Sun, 16 Aug 2020 06:47:53 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by ur.lubuskie.pl (Postfix) with ESMTP id 29D931429AB;
+        Sun, 16 Aug 2020 07:46:23 +0200 (CEST)
+Received: from ur.lubuskie.pl ([127.0.0.1])
+        by localhost (mxs01.lubuskie.pl [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id g5p70oO9fYYR; Sun, 16 Aug 2020 07:46:22 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by ur.lubuskie.pl (Postfix) with ESMTP id AD1C9146F45;
+        Sun, 16 Aug 2020 07:46:18 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 ur.lubuskie.pl AD1C9146F45
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lubuskie.pl;
+        s=ACAF454E-EAFA-11E7-B4AB-6366C0A440D3; t=1597556779;
+        bh=850wWB9KJoM2rPYdcoOq+cy3rmqjSF+gOwb24ykRPKA=;
+        h=MIME-Version:To:From:Date:Message-Id;
+        b=M2J3pdHRCw5gBVRlvUc0OJuCGnhr4JQKVVXTP2/k+gESEfOMCUrtxNjonh1rRhWv1
+         17SvUoxDkfN41ouHCaEjVpW3zytXkGieWkDzCNLA/j1G5ZNgB63hcQ7iTCRw6k9ReW
+         jfb68KMRpZWvIt6HWZ6AnSG6Flm3rBd6Ofij/0vk=
+X-Virus-Scanned: amavisd-new at lubuskie.pl
+Received: from ur.lubuskie.pl ([127.0.0.1])
+        by localhost (mxs01.lubuskie.pl [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id VR8DiazR7jtb; Sun, 16 Aug 2020 07:46:18 +0200 (CEST)
+Received: from [192.168.0.130] (unknown [105.112.98.76])
+        by ur.lubuskie.pl (Postfix) with ESMTPSA id 547CE14E2BA;
+        Sun, 16 Aug 2020 07:46:03 +0200 (CEST)
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.161.244]
-X-ClientProxiedBy: EX13D04UWB003.ant.amazon.com (10.43.161.231) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: Spende
+To:     Recipients <m.mizera@lubuskie.pl>
+From:   m.mizera@lubuskie.pl
+Date:   Sat, 15 Aug 2020 22:45:40 -0700
+Reply-To: mariaschaefflergruppe@gmail.com
+X-Antivirus: avast! (VPS 200815-8, 08/15/2020), Outbound message
+X-Antivirus-Status: Clean
+Message-Id: <20200816054604.547CE14E2BA@ur.lubuskie.pl>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hallo,
 
-Jakub Kicinski <kuba@kernel.org> writes:
+Ich bin Maria Elisabeth Schaeffler, eine deutsche Gesch=E4ftsfrau, Investor=
+in und Gesch=E4ftsf=FChrerin der Schaeffler Gruppe. Ich bin einer der Eigen=
+t=FCmer der Schaeffler Gruppe. Ich habe 25 Prozent meines pers=F6nlichen Ve=
+rm=F6gens f=FCr wohlt=E4tige Zwecke verschenkt. Und ich habe auch zugesagt,=
+ den Rest von 25% in diesem Jahr 2020 an Einzelpersonen zu verschenken. Ich=
+ habe beschlossen, Ihnen 1.000.000,00 Euro zu spenden. Wenn Sie an meiner S=
+pende interessiert sind, kontaktieren Sie mich f=FCr weitere Informationen.=
 
-> On Thu, 13 Aug 2020 15:51:46 +0300 Shay Agroskin wrote:
->> Long answer:
->> The ena_destroy_device() function is called with rtnl_lock() 
->> held, 
->> so it cannot run in parallel with the reset function. Also the 
->> destroy function clears the bit ENA_FLAG_TRIGGER_RESET without 
->> which the reset function just exits without doing anything.
->> 
->> A problem can then only happen when some routine sets the 
->> ENA_FLAG_TRIGGER_RESET bit before the reset function is 
->> executed, 
->> the following describes all functions from which this bit can 
->> be 
->> set:
->
-> ena_fw_reset_device() runs from a workqueue, it can be preempted 
-> right
-> before it tries to take the rtnl_lock. Then after arbitrarily 
-> long
-> delay it will start again, take the lock, and dereference
-> adapter->flags. But adapter could have been long freed at this 
-> point.
 
-Missed that the check for the 'flags' field also requires that 
-netdev_priv field (adapter variable) would be allocated. Thank you 
-for pointing that out, this indeed needs to be fixed. I'll add 
-reset work destruction in next patchset.
+Sie k=F6nnen auch mehr =FCber mich =FCber den unten stehenden Link lesen
 
-Thank you for reviewing it
->
-> Unless you flush a workqueue or cancel_work_sync() you can never 
-> be
-> sure it's not scheduled. And I can only see a flush when module 
-> is
-> unloaded now.
+https://en.wikipedia.org/wiki/Maria-Elisabeth_Schaeffler
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Herzliche Gr=FC=DFe,
+Frau Maria-Elisabeth Schaeffler,
+CEO
+Schaeffler Gruppe.
+E-Mail: mariaschaefflergruppe@gmail.com
+
+---
+This email is free from viruses and malware because avast! Antivirus protec=
+tion is active.
+https://www.avast.com/antivirus
 
