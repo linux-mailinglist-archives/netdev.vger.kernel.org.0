@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E208245F3A
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:19:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE05A245F3F
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:20:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728040AbgHQITk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 04:19:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51604 "EHLO
+        id S1728052AbgHQITx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 04:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728021AbgHQITg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:19:36 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12419C061388;
-        Mon, 17 Aug 2020 01:19:36 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id m8so7872604pfh.3;
-        Mon, 17 Aug 2020 01:19:36 -0700 (PDT)
+        with ESMTP id S1726840AbgHQITq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:19:46 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7F5C061388;
+        Mon, 17 Aug 2020 01:19:46 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id y206so7845256pfb.10;
+        Mon, 17 Aug 2020 01:19:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Hn4KAQ3gCFoOl9r0ujaoL0SRctsTF3JFLZ2Rz0kI31Y=;
-        b=UgrPYIJbdqsyAE/Fx6gmPFEQMc7zf7xRzMLMRZQ81mNRQ8r/wsHJ5XnwLrP0u+jzbb
-         dl3/wP7rbEMaBGkc9Dqh7I1vj/vWVr3IK/R+KEaSPz4L/YA1WrTHfP/DZkyv+D2dF8YO
-         fGRQUc6xscqzKG31PNgreYX86TUNQz1GEkpBWD/hgEIQ3mOEeU7i4VyvByRvd2vo5xyX
-         ysyJpOD0qtT+rbSeT3efFP9ythU3610pUWwg6Rnq7OGQiNd5+PSg6HNKzwO4+bFpfjUN
-         htIUzpe4CYMH51WkhSfmWhRu+7rfrE6sTreHEqQTr+ON8HSS40dT+eLoYpXYWUOI8X9f
-         utiA==
+        bh=C5F0nnOTh5Z2C3fK8ewqMRIq3Z/HzN1bhDJR1BeVHS8=;
+        b=Zv4j3ZnQEwlXKTmQMcr9yGw2Wg9syVGPoOFVEo88aRFfTusau3D/jPmgBPE/UoEk7W
+         6hVOMVLjy3IjuqSmajCe4ICoCGHzdbeVf7neS0HcR2YvB15zP0WtFq0EwGdBnKlAumKK
+         pm4gyCCSGQB/BieYkhoO84f8+D2FscxxVCgUc6aTVRfHCkccWQAFyh99LK4NhB4I+ZQy
+         5lM9ffV8CDoqkPhd7hdzLsDaMzhLwQU/QxUNq87pEqaXMMxpEEWlxDhCCQluK5XBiIpg
+         8oLWvIoJkd8CK2/7WfDRfvxHktayMAXa1HOW8Vg+seOGKtokTogysyzUUm3IyE76OF9f
+         RuSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Hn4KAQ3gCFoOl9r0ujaoL0SRctsTF3JFLZ2Rz0kI31Y=;
-        b=glVEqdhiEwsVmQTBz0HGS39ad27gbvJjIiyOEJdJmtaTtBu9VVVoBklpTMjSkSBMqw
-         1HEYEeZkq+4wkVa4RGfn7n6EUh+9d9sZcRJsyhKaDr36I1vnjHCfiFVRxQv2XjAy+F+v
-         yk1kQz2GX9Q+cvn89bcnwDEjX0cKObiRnZc7ffRGBBzfqGQYMau5uYRCOSgtnBO9337M
-         BjvR5WJkTciGZNAmWaNcqt4Cw0d8FafIwmtGDVDRMnlhp9WPQLB1stPDkuXkD+/drUgw
-         E3AXx0HXLeMPfOC+mhBVTcMnGOmXhkIk06kzPyOiJr8iKp8Lh68d423ZPgeVka351HW5
-         QfOA==
-X-Gm-Message-State: AOAM530rjVxRwrceJNkJaG3o3fLBpiuDvOLywjGH+z/2hxfBJRuDH6Mp
-        tfevmR9lJ0lEta2ELIvFz/I=
-X-Google-Smtp-Source: ABdhPJwKzgY7w0A1JlXR4OuCaZ4g4WLJQtisLZUR6BZuNQ4S9PcFCNNh4aK23T5dkHQTo4ssudR52Q==
-X-Received: by 2002:a05:6a00:91:: with SMTP id c17mr10263590pfj.151.1597652375645;
-        Mon, 17 Aug 2020 01:19:35 -0700 (PDT)
+        bh=C5F0nnOTh5Z2C3fK8ewqMRIq3Z/HzN1bhDJR1BeVHS8=;
+        b=nVAT/IAd1j6VBhyFsjUs+U7NXWrhfoaKanZfvtf0MMdDokIUxntqy0fKbqTTUg/uMG
+         8UNyfgeVw6OiJC4pDxcQiP/Oz/dnG/Quk8gow+cU0qrm6Ac5YcLitoXUWCOwdedblnJM
+         +48cNdvONcNs0cBxr23DzIk5g4OVS+p3t93H9MgHhPDxp87XSB+BF3C3KTvkHWO1Ajne
+         E9HUKGDRiIUH5n3pItIox1Mr0s/DCvwPRHWZyW2lTxkWNXgFV9d9XIS/gU+B5cN/EJVY
+         UGS5Dp+I/4KyaVmVi8D/K9Fn5uqq5uX59eny4qBDOV3Zzav+1p/Ch8V6doxvR9rS2cZQ
+         dJBg==
+X-Gm-Message-State: AOAM531zL/JBK+DC1NhtwPd7uHXRYSGce1DxhD7lPIfHy1A8rG08Vrpz
+        P2wJkrciaLUfjtlOKHvLxSE=
+X-Google-Smtp-Source: ABdhPJwNz0WCRvYD0EzUq3bpg+5UrV7v8gJCanPc+Hu+vgv/oJ4AIpPuVHmHeKtfyGccvGps8amOKg==
+X-Received: by 2002:a63:fc4b:: with SMTP id r11mr9016761pgk.342.1597652385686;
+        Mon, 17 Aug 2020 01:19:45 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id d93sm16735334pjk.44.2020.08.17.01.19.26
+        by smtp.gmail.com with ESMTPSA id d93sm16735334pjk.44.2020.08.17.01.19.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 01:19:34 -0700 (PDT)
+        Mon, 17 Aug 2020 01:19:45 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
         festevam@gmail.com, linux-imx@nxp.com, ast@kernel.org,
@@ -60,9 +60,9 @@ Cc:     keescook@chromium.org, linux-kernel@vger.kernel.org,
         linux-mediatek@lists.infradead.org,
         Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH 11/35] dma: ipu: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 13:47:02 +0530
-Message-Id: <20200817081726.20213-12-allen.lkml@gmail.com>
+Subject: [PATCH 12/35] dma: k3dma: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 13:47:03 +0530
+Message-Id: <20200817081726.20213-13-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200817081726.20213-1-allen.lkml@gmail.com>
 References: <20200817081726.20213-1-allen.lkml@gmail.com>
@@ -79,33 +79,33 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/dma/ipu/ipu_idmac.c | 6 +++---
+ drivers/dma/k3dma.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/dma/ipu/ipu_idmac.c b/drivers/dma/ipu/ipu_idmac.c
-index 0457b1f26540..38036db284cb 100644
---- a/drivers/dma/ipu/ipu_idmac.c
-+++ b/drivers/dma/ipu/ipu_idmac.c
-@@ -1299,9 +1299,9 @@ static irqreturn_t idmac_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
+diff --git a/drivers/dma/k3dma.c b/drivers/dma/k3dma.c
+index c5c1aa0dcaed..f609a84c493c 100644
+--- a/drivers/dma/k3dma.c
++++ b/drivers/dma/k3dma.c
+@@ -297,9 +297,9 @@ static int k3_dma_start_txd(struct k3_dma_chan *c)
+ 	return -EAGAIN;
  }
  
--static void ipu_gc_tasklet(unsigned long arg)
-+static void ipu_gc_tasklet(struct tasklet_struct *t)
+-static void k3_dma_tasklet(unsigned long arg)
++static void k3_dma_tasklet(struct tasklet_struct *t)
  {
--	struct ipu *ipu = (struct ipu *)arg;
-+	struct ipu *ipu = from_tasklet(ipu, t, tasklet);
- 	int i;
+-	struct k3_dma_dev *d = (struct k3_dma_dev *)arg;
++	struct k3_dma_dev *d = from_tasklet(d, t, task);
+ 	struct k3_dma_phy *p;
+ 	struct k3_dma_chan *c, *cn;
+ 	unsigned pch, pch_alloc = 0;
+@@ -962,7 +962,7 @@ static int k3_dma_probe(struct platform_device *op)
  
- 	for (i = 0; i < IPU_CHANNELS_NUM; i++) {
-@@ -1740,7 +1740,7 @@ static int __init ipu_probe(struct platform_device *pdev)
- 	if (ret < 0)
- 		goto err_idmac_init;
- 
--	tasklet_init(&ipu_data.tasklet, ipu_gc_tasklet, (unsigned long)&ipu_data);
-+	tasklet_setup(&ipu_data.tasklet, ipu_gc_tasklet);
- 
- 	ipu_data.dev = &pdev->dev;
+ 	spin_lock_init(&d->lock);
+ 	INIT_LIST_HEAD(&d->chan_pending);
+-	tasklet_init(&d->task, k3_dma_tasklet, (unsigned long)d);
++	tasklet_setup(&d->task, k3_dma_tasklet);
+ 	platform_set_drvdata(op, d);
+ 	dev_info(&op->dev, "initialized\n");
  
 -- 
 2.17.1
