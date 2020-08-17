@@ -2,76 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 833A524713B
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 20:23:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2230924716F
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 20:27:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390912AbgHQSX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 14:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60928 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390639AbgHQSXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 14:23:22 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0CEC061343;
-        Mon, 17 Aug 2020 11:23:21 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id i10so2959575pgk.1;
-        Mon, 17 Aug 2020 11:23:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ArklK3xLKYl0ozsXmN0TZa3LItt/yQRXbXI18xhBRkY=;
-        b=KYkok7Lc9wMrqXITauWU1t0NEZU5oDWsKvsZmdrPTIMV4tnbFYq1MLfK8etF6o8j42
-         Us8Pze5iaq7q0QFQvKYC5CG749siGYLQpC7w8Lsp8EgxZnN1cMttsNsfxhLLGylxJqRO
-         h5Xt4MLf/YOjhDZ/3WBeG01Sr8lc0ag9hxEeUDBKz4dSKLps9yXmTROd2NBnKvCQLpN/
-         +gLdr5dJ5z6Lo0ebICaXsd+xuP1rnuIz9OMcGT2eWDNMiuBjqcOg7kF7zW6Rpja5WgE1
-         hhq0C1sduCMvWaD6BSppNfXY+L7G489qJaw465Qo7QQLjcSedkgvZ6kO3+g1EZqHBvHY
-         Vupg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ArklK3xLKYl0ozsXmN0TZa3LItt/yQRXbXI18xhBRkY=;
-        b=jQUVFGHv9EugzmLLuVc1mDZcqH9itF5tocUvgplZHwxqD4NndrbGaC0eG4eYHAv8nP
-         9gAmzFTfC8e+Q+KWZd5Cgdw9AHxJxILui1YNT4tLmrnqdjghYHmLSHyICCvfv7QzpN5Q
-         OXbJAMCQOb+31avFAxxVeIaKinq+BNtYHY+zC56QMfdovf7mF7ZVoJFFf53v3mZ1YcRu
-         fQ8BO2VGhhM2hJU7T8rZ9M+VAHXOFovKOnorf+++7K2GWJ+1yZiAJSZN4o0ypCiAZ8I7
-         fQD+ShpWFEkB6pLSsvtXAwDxwITokxIvIHqkMjRrE9S0k0XFD6EG+X36Gv3EzUQfJdMC
-         A9aA==
-X-Gm-Message-State: AOAM531ZXFX0rTRsRH0FWNVWayEaWKrHI14ypa4n+uEVFjRGLtaCI515
-        NSin0yVfYq/5MAHj3cI4pBeFl14hm6Y=
-X-Google-Smtp-Source: ABdhPJzs5PpPwLX4Lms8EiHz/B3vX66hHPiWWrc1sSTOfZ+Rq2Tb8XiLZLpsLuXic1SOW2APxkAbtA==
-X-Received: by 2002:a63:dc11:: with SMTP id s17mr10602970pgg.254.1597688599235;
-        Mon, 17 Aug 2020 11:23:19 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id c10sm20543527pfc.62.2020.08.17.11.23.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 11:23:18 -0700 (PDT)
-Date:   Mon, 17 Aug 2020 11:23:16 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     min.li.xe@renesas.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] ptp: ptp_clockmatrix: use i2c_master_send for i2c
- write
-Message-ID: <20200817182316.GB4286@hoboy>
-References: <1597678655-842-1-git-send-email-min.li.xe@renesas.com>
+        id S2390970AbgHQS1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 14:27:18 -0400
+Received: from mga03.intel.com ([134.134.136.65]:21849 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390642AbgHQS1K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Aug 2020 14:27:10 -0400
+IronPort-SDR: HR4LeV7N2BZCj/1r30c9YwXFs8saOLgnKCcrstdw0MsNCEmSjamLyDQVFPMAxDPRsLTUhxukeC
+ SQQCkqQlBPjQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9716"; a="154744676"
+X-IronPort-AV: E=Sophos;i="5.76,324,1592895600"; 
+   d="scan'208";a="154744676"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2020 11:27:09 -0700
+IronPort-SDR: weHynqd/VG1QF6VPIaZSV5YF62aHFuJbljqBhoSY7cr8H+o7c3KFXfUy1ayq/zlJIOEzztHXBP
+ nwQcAtnMiC4w==
+X-IronPort-AV: E=Sophos;i="5.76,324,1592895600"; 
+   d="scan'208";a="328711882"
+Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.155.99])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2020 11:27:08 -0700
+Date:   Mon, 17 Aug 2020 11:27:06 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Lee Jones <lee.jones@linaro.org>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
+        Benjamin Reed <breed@users.sourceforge.net>,
+        Javier Achirica <achirica@users.sourceforge.net>,
+        Jean Tourrilhes <jt@hpl.hp.com>,
+        "Fabrice Bellet" <fabrice@bellet.info>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Ondrej Zary <linux@rainbow-software.org>
+Subject: Re: [PATCH 12/30] net: wireless: cisco: airo: Fix a myriad of
+ coding style issues
+Message-ID: <20200817112706.000000f2@intel.com>
+In-Reply-To: <87a6ytmmhm.fsf@codeaurora.org>
+References: <20200814113933.1903438-1-lee.jones@linaro.org>
+        <20200814113933.1903438-13-lee.jones@linaro.org>
+        <87r1s9l0mc.fsf@codeaurora.org>
+        <20200814163831.GN4354@dell>
+        <87a6ytmmhm.fsf@codeaurora.org>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1597678655-842-1-git-send-email-min.li.xe@renesas.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 17, 2020 at 11:37:35AM -0400, min.li.xe@renesas.com wrote:
-> From: Min Li <min.li.xe@renesas.com>
-> 
-> The old code for i2c write would break on some controllers, which fails
-> at handling Repeated Start Condition. So we will just use i2c_master_send
-> to handle write in one transanction.
-> 
-> Signed-off-by: Min Li <min.li.xe@renesas.com>
+On Mon, 17 Aug 2020 16:27:01 +0300
+Kalle Valo <kvalo@codeaurora.org> wrote:
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+> I was surprised to see that someone was using this driver in 2015, so
+> I'm not sure anymore what to do. Of course we could still just remove
+> it and later revert if someone steps up and claims the driver is still
+> usable. Hmm. Does anyone any users of this driver?
+
+What about moving the driver over into staging, which is generally the
+way I understood to move a driver slowly out of the kernel?
+
