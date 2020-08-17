@@ -2,34 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFF1B247A8E
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 00:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5BBA247A9B
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 00:44:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729777AbgHQWkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 18:40:52 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:45531 "EHLO
+        id S1730416AbgHQWom (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 18:44:42 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:45588 "EHLO
         youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728989AbgHQWkv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 18:40:51 -0400
+        with ESMTP id S1729273AbgHQWok (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 18:44:40 -0400
 Received: from [82.43.126.140] (helo=localhost)
         by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.86_2)
         (envelope-from <colin.king@canonical.com>)
-        id 1k7no2-00005w-Be; Mon, 17 Aug 2020 22:40:42 +0000
+        id 1k7nre-0000Pw-63; Mon, 17 Aug 2020 22:44:26 +0000
 From:   Colin King <colin.king@canonical.com>
-To:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+To:     "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: mscc: ocelot: remove duplicate "the the" phrase in Kconfig text
-Date:   Mon, 17 Aug 2020 23:40:42 +0100
-Message-Id: <20200817224042.5826-1-colin.king@canonical.com>
+Subject: [PATCH] net: ipv4: remove duplicate "the the" phrase in Kconfig text
+Date:   Mon, 17 Aug 2020 23:44:25 +0100
+Message-Id: <20200817224425.5988-1-colin.king@canonical.com>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -42,26 +37,38 @@ X-Mailing-List: netdev@vger.kernel.org
 From: Colin Ian King <colin.king@canonical.com>
 
 The Kconfig help text contains the phrase "the the" in the help
-text. Fix this.
+text. Fix this and reformat the block of help text.
 
 Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- drivers/net/dsa/ocelot/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/Kconfig | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
-index f121619d81fe..2d23ccef7d0e 100644
---- a/drivers/net/dsa/ocelot/Kconfig
-+++ b/drivers/net/dsa/ocelot/Kconfig
-@@ -9,7 +9,7 @@ config NET_DSA_MSCC_FELIX
- 	select NET_DSA_TAG_OCELOT
- 	select FSL_ENETC_MDIO
- 	help
--	  This driver supports network switches from the the Vitesse /
-+	  This driver supports network switches from the Vitesse /
- 	  Microsemi / Microchip Ocelot family of switching cores that are
- 	  connected to their host CPU via Ethernet.
- 	  The following switches are supported:
+diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
+index 60db5a6487cc..87983e70f03f 100644
+--- a/net/ipv4/Kconfig
++++ b/net/ipv4/Kconfig
+@@ -661,13 +661,13 @@ config TCP_CONG_BBR
+ 
+ 	  BBR (Bottleneck Bandwidth and RTT) TCP congestion control aims to
+ 	  maximize network utilization and minimize queues. It builds an explicit
+-	  model of the the bottleneck delivery rate and path round-trip
+-	  propagation delay. It tolerates packet loss and delay unrelated to
+-	  congestion. It can operate over LAN, WAN, cellular, wifi, or cable
+-	  modem links. It can coexist with flows that use loss-based congestion
+-	  control, and can operate with shallow buffers, deep buffers,
+-	  bufferbloat, policers, or AQM schemes that do not provide a delay
+-	  signal. It requires the fq ("Fair Queue") pacing packet scheduler.
++	  model of the bottleneck delivery rate and path round-trip propagation
++	  delay. It tolerates packet loss and delay unrelated to congestion. It
++	  can operate over LAN, WAN, cellular, wifi, or cable modem links. It can
++	  coexist with flows that use loss-based congestion control, and can
++	  operate with shallow buffers, deep buffers, bufferbloat, policers, or
++	  AQM schemes that do not provide a delay signal. It requires the fq
++	  ("Fair Queue") pacing packet scheduler.
+ 
+ choice
+ 	prompt "Default TCP congestion control"
 -- 
 2.27.0
 
