@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE05A245F3F
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:20:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D610C245F42
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:20:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728052AbgHQITx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 04:19:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51630 "EHLO
+        id S1728071AbgHQIT5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 04:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726840AbgHQITq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:19:46 -0400
+        with ESMTP id S1728057AbgHQITy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:19:54 -0400
 Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7F5C061388;
-        Mon, 17 Aug 2020 01:19:46 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id y206so7845256pfb.10;
-        Mon, 17 Aug 2020 01:19:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D971DC061388;
+        Mon, 17 Aug 2020 01:19:54 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id m71so7872778pfd.1;
+        Mon, 17 Aug 2020 01:19:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=C5F0nnOTh5Z2C3fK8ewqMRIq3Z/HzN1bhDJR1BeVHS8=;
-        b=Zv4j3ZnQEwlXKTmQMcr9yGw2Wg9syVGPoOFVEo88aRFfTusau3D/jPmgBPE/UoEk7W
-         6hVOMVLjy3IjuqSmajCe4ICoCGHzdbeVf7neS0HcR2YvB15zP0WtFq0EwGdBnKlAumKK
-         pm4gyCCSGQB/BieYkhoO84f8+D2FscxxVCgUc6aTVRfHCkccWQAFyh99LK4NhB4I+ZQy
-         5lM9ffV8CDoqkPhd7hdzLsDaMzhLwQU/QxUNq87pEqaXMMxpEEWlxDhCCQluK5XBiIpg
-         8oLWvIoJkd8CK2/7WfDRfvxHktayMAXa1HOW8Vg+seOGKtokTogysyzUUm3IyE76OF9f
-         RuSw==
+        bh=LXAHZjWOCXqZNRFnEVorFd32pcE4Uer+STR5X7m1T40=;
+        b=IgwVbNVcSBmDm38yYmUrvEmMnA/dM433v1XDeqYJgH3tqNNAT/iGYm+ZViMaYaBo90
+         pApwy+Tu2y78SX96Tga4eXY8SM5KE8XPOZftkkdfMgUpjwInxrimrBUvqiYyWmmU29Ta
+         dxlTZJ3UuRUIRAdpX6GXydlmBzIIeRbVuE6v1MHEuTUEFUe3LmOUfI+ZusiLGIk2ivl7
+         8lrFn4miWWTHAfZpxTm5A4RTgtC5I3iZAxZVgSjFwPm/hIueFW/+tscAApV1Khs0Lc9F
+         CgT9TQWa0eimAOI3NSDZD3viKz+1dycrei3FqN9ipQryGDVM+I5TEliaMkGRLmiPKljz
+         o+hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=C5F0nnOTh5Z2C3fK8ewqMRIq3Z/HzN1bhDJR1BeVHS8=;
-        b=nVAT/IAd1j6VBhyFsjUs+U7NXWrhfoaKanZfvtf0MMdDokIUxntqy0fKbqTTUg/uMG
-         8UNyfgeVw6OiJC4pDxcQiP/Oz/dnG/Quk8gow+cU0qrm6Ac5YcLitoXUWCOwdedblnJM
-         +48cNdvONcNs0cBxr23DzIk5g4OVS+p3t93H9MgHhPDxp87XSB+BF3C3KTvkHWO1Ajne
-         E9HUKGDRiIUH5n3pItIox1Mr0s/DCvwPRHWZyW2lTxkWNXgFV9d9XIS/gU+B5cN/EJVY
-         UGS5Dp+I/4KyaVmVi8D/K9Fn5uqq5uX59eny4qBDOV3Zzav+1p/Ch8V6doxvR9rS2cZQ
-         dJBg==
-X-Gm-Message-State: AOAM531zL/JBK+DC1NhtwPd7uHXRYSGce1DxhD7lPIfHy1A8rG08Vrpz
-        P2wJkrciaLUfjtlOKHvLxSE=
-X-Google-Smtp-Source: ABdhPJwNz0WCRvYD0EzUq3bpg+5UrV7v8gJCanPc+Hu+vgv/oJ4AIpPuVHmHeKtfyGccvGps8amOKg==
-X-Received: by 2002:a63:fc4b:: with SMTP id r11mr9016761pgk.342.1597652385686;
-        Mon, 17 Aug 2020 01:19:45 -0700 (PDT)
+        bh=LXAHZjWOCXqZNRFnEVorFd32pcE4Uer+STR5X7m1T40=;
+        b=FUM5nh4P3N69+WjPqQDYxk1V+WIkCc4oxmYk/IsQmrSkA1Cj2mf/D7KKhstlNLc6HA
+         NfMh8NkCn+fBgn5qV138RlvJP4DROfXisvbWvoj5GhmrXqUWjPE+inBXmBba59Tb8jbe
+         eChjvqFAZxI8Sh1pko2o5OYOwiBvt4iNllkT2gXGxdiKX/EDT6l+zmkJnTvk7LYzw/kX
+         Zg6mGa7Bv8mOv6V97taDPEeLTfvnaR58dXP7J59XCm8K1c2tw28OF/Kb1m5TPYZjrFkn
+         p9xNbvJj0gi0m0MzLcRQRQvSynBpIOyhEP5qbmSAHSm5Ln2AGeKXZ6mR9pkBcWf76FIT
+         08xw==
+X-Gm-Message-State: AOAM530Yz5YX8kwZ5xqU3ZrF41EnhplHfDe0yw05TB8tdxWQFifh0bdd
+        BJtsWYNQZUyaJ0QArhM5MIw=
+X-Google-Smtp-Source: ABdhPJzuT/8j9+SjbGA9NES+f4fyeu03MlTNL30utMUb/RKtQQp9CVCHKYWxptOH5Pi8FhszEQdMZw==
+X-Received: by 2002:aa7:9813:: with SMTP id e19mr10555426pfl.285.1597652394480;
+        Mon, 17 Aug 2020 01:19:54 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id d93sm16735334pjk.44.2020.08.17.01.19.36
+        by smtp.gmail.com with ESMTPSA id d93sm16735334pjk.44.2020.08.17.01.19.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 01:19:45 -0700 (PDT)
+        Mon, 17 Aug 2020 01:19:54 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
         festevam@gmail.com, linux-imx@nxp.com, ast@kernel.org,
@@ -60,9 +60,9 @@ Cc:     keescook@chromium.org, linux-kernel@vger.kernel.org,
         linux-mediatek@lists.infradead.org,
         Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH 12/35] dma: k3dma: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 13:47:03 +0530
-Message-Id: <20200817081726.20213-13-allen.lkml@gmail.com>
+Subject: [PATCH 13/35] dma: mediatek: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 13:47:04 +0530
+Message-Id: <20200817081726.20213-14-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200817081726.20213-1-allen.lkml@gmail.com>
 References: <20200817081726.20213-1-allen.lkml@gmail.com>
@@ -79,33 +79,34 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/dma/k3dma.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/dma/mediatek/mtk-cqdma.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/dma/k3dma.c b/drivers/dma/k3dma.c
-index c5c1aa0dcaed..f609a84c493c 100644
---- a/drivers/dma/k3dma.c
-+++ b/drivers/dma/k3dma.c
-@@ -297,9 +297,9 @@ static int k3_dma_start_txd(struct k3_dma_chan *c)
- 	return -EAGAIN;
+diff --git a/drivers/dma/mediatek/mtk-cqdma.c b/drivers/dma/mediatek/mtk-cqdma.c
+index 6bf838e63be1..41ef9f15d3d5 100644
+--- a/drivers/dma/mediatek/mtk-cqdma.c
++++ b/drivers/dma/mediatek/mtk-cqdma.c
+@@ -356,9 +356,9 @@ static struct mtk_cqdma_vdesc
+ 	return ret;
  }
  
--static void k3_dma_tasklet(unsigned long arg)
-+static void k3_dma_tasklet(struct tasklet_struct *t)
+-static void mtk_cqdma_tasklet_cb(unsigned long data)
++static void mtk_cqdma_tasklet_cb(struct tasklet_struct *t)
  {
--	struct k3_dma_dev *d = (struct k3_dma_dev *)arg;
-+	struct k3_dma_dev *d = from_tasklet(d, t, task);
- 	struct k3_dma_phy *p;
- 	struct k3_dma_chan *c, *cn;
- 	unsigned pch, pch_alloc = 0;
-@@ -962,7 +962,7 @@ static int k3_dma_probe(struct platform_device *op)
+-	struct mtk_cqdma_pchan *pc = (struct mtk_cqdma_pchan *)data;
++	struct mtk_cqdma_pchan *pc = from_tasklet(pc, t, tasklet);
+ 	struct mtk_cqdma_vdesc *cvd = NULL;
+ 	unsigned long flags;
  
- 	spin_lock_init(&d->lock);
- 	INIT_LIST_HEAD(&d->chan_pending);
--	tasklet_init(&d->task, k3_dma_tasklet, (unsigned long)d);
-+	tasklet_setup(&d->task, k3_dma_tasklet);
- 	platform_set_drvdata(op, d);
- 	dev_info(&op->dev, "initialized\n");
+@@ -878,8 +878,7 @@ static int mtk_cqdma_probe(struct platform_device *pdev)
+ 
+ 	/* initialize tasklet for each PC */
+ 	for (i = 0; i < cqdma->dma_channels; ++i)
+-		tasklet_init(&cqdma->pc[i]->tasklet, mtk_cqdma_tasklet_cb,
+-			     (unsigned long)cqdma->pc[i]);
++		tasklet_setup(&cqdma->pc[i]->tasklet, mtk_cqdma_tasklet_cb);
+ 
+ 	dev_info(&pdev->dev, "MediaTek CQDMA driver registered\n");
  
 -- 
 2.17.1
