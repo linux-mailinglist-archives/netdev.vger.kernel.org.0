@@ -2,159 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 246B0246124
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:50:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0647C24612F
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:51:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726727AbgHQIuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 04:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
+        id S1728067AbgHQIvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 04:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726336AbgHQIuW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:50:22 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14FCCC061389
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 01:50:22 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id y3so14139017wrl.4
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 01:50:22 -0700 (PDT)
+        with ESMTP id S1726779AbgHQIvh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:51:37 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B26C061389;
+        Mon, 17 Aug 2020 01:51:36 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id y10so5603518plr.11;
+        Mon, 17 Aug 2020 01:51:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=eQE7UF8DcCewmzSExxx8eeLn2OA5wnv+ShoIew846L0=;
-        b=t2fXnGI8Eiq75t3Fr7pvFXGeaPB45TrrNEcEf2MQZrEzQlzGozv7kzn6K+2YbNFu8Q
-         knbVVXOiR+rUUVo8ZguLLDgascNUPNw/DEuc31brqfInPvx0DpJEMOtcKHzuNVjzpLHT
-         6Uby23FLuB+1E8oBo6am19Y5h4O5YWDDfdagNi1AIQtRWTlh5sdWjyBZX9y4Xw8In+qp
-         oaVWN2rKf+15QA7nWU6+nnUtI9oqcNxN5OaqtKPwG5WJAQ05b8VaPHVfZmkTNIpM9Nl2
-         HWghu2YMdmq0yhsYem1feZIY67Q3zQ/FWocs7vqG0Ffyaiwu5q3i/D5EKfqIrWeE5rUo
-         hMQA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=wOFnP+mIOUunUyi6RmfOX+Q5ALinLxcvae3Yp9Ni+zM=;
+        b=FhPl0yESGUE8TFhEMqa043m95wRC5RdMMRPdR5UgsrxCgGMSnZzudvjAwnJEl2hIJ1
+         oGndCZEaXVgoEMpGLQWbDq4g3kJ7z95+EP4HzK121db5e9kS55CzPp0XdHralL2dfHQh
+         dgpDPajBcs1sN12jaJpV3bPULcS4nizJvfIo9rn/3fx7vilSqLpMAKagKZrY7/vxomUR
+         /JvCYcmXLl2q9Y472Ww1UkCTwD/85BnJRzs3v8oBCg2Xd0tNW8YFSoJqcc2ADB76cSwb
+         2ZTQh2o3tq+8V+wdji6oB02Wot5qgPQpO+XpR/ggCT5pnQeKTXhPd1Wd60Oid5sZ9psL
+         3KfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=eQE7UF8DcCewmzSExxx8eeLn2OA5wnv+ShoIew846L0=;
-        b=TyHEg7cdwn6E4J0YcPZRqohcz/9MOoScQqcyQulzDokE4Remp3cNufbtndzU3EKoZX
-         PyNqMH4EMv3LLTuFhissFCAzIoI8V+TVtZ157kt68ZVWYSW005HY40kNQiDjb5ETBHC1
-         n/HA9De3zkKvEi5apiVw/+CzhyHQvrCziuW33Mr4rg9n+DXbeY5eonGUrp9E4fbY2Gg2
-         TxFZ6Db6M9FZfDpcvdOa7fOyflVyaYLfNLiu9qDP1LRja2ZZ9NyBIrJ4331klkNUI6ha
-         hi9kkCroJ2jY/n+dnRKLU1GO+zQPyMcO8FlWMTMFF2v0uRbxM5L84lHZO/IljzaaCDhB
-         w5oQ==
-X-Gm-Message-State: AOAM532kKRPYUYAJjgq6L8rpmlJpWU951+9AqzyxqrCfwvdbDGpqF6mt
-        1JtTBPmRsNs8Zhagjoqpihe+sA==
-X-Google-Smtp-Source: ABdhPJzBHRCazJeaD7mDx5OHG3g9GCrXdWG7uSkk/PgwI614rp3oMJEXUmBMhVIDuZoNpllti0kOkg==
-X-Received: by 2002:adf:f151:: with SMTP id y17mr15077238wro.179.1597654220812;
-        Mon, 17 Aug 2020 01:50:20 -0700 (PDT)
-Received: from dell ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id h10sm30102985wro.57.2020.08.17.01.50.19
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=wOFnP+mIOUunUyi6RmfOX+Q5ALinLxcvae3Yp9Ni+zM=;
+        b=CcRbs4NcmDfom0OZH1z12y9Az0knzvKtAXBvdPAlAmhVy7MLX3gYqZFk92cfchySs8
+         V1z/WJBpc/YBY/arZRTIRxuK8lKRNW4Btjt7XIhSADpdFbC6hxsXtrf9SYDSeFAiWzlF
+         Y9pRxjfnPtPvMwTxcAo6oqSDNNuRlKXJvCcbVZ78vFZ3KSe4oPOcXBTFmYqh5pGi9fKM
+         h8Znui2VSWjxfqgwstPJxzsv6YijPaZ35IjtUBmTjfwWqs3gCUzuFrlNMb6hN8z4fY6B
+         W614ZG4c77J5MoAE7WXMmMijEGlLa1cahLdasAbdEH+TYh1oO1WfCsoVLBwIrwoaODld
+         1UVQ==
+X-Gm-Message-State: AOAM533EhBRQei4eartpp5/gbi7csWF8Jrsd7ZPw7ll6si5wUR2dk39R
+        Jd+HVHI6Dc4RFfvMqucguvo=
+X-Google-Smtp-Source: ABdhPJwkHrfrADxoARIyFesLt8svDhCVc8Neq3PWKmf9xTMPVNTGXJJNDk1NroIFsEd4Jvyoxz8amQ==
+X-Received: by 2002:a17:90b:1493:: with SMTP id js19mr10627721pjb.223.1597654296487;
+        Mon, 17 Aug 2020 01:51:36 -0700 (PDT)
+Received: from localhost.localdomain ([49.207.202.98])
+        by smtp.gmail.com with ESMTPSA id b185sm18554863pfg.71.2020.08.17.01.51.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 01:50:20 -0700 (PDT)
-Date:   Mon, 17 Aug 2020 09:50:18 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        Martin Langer <martin-langer@gmx.de>,
-        Stefano Brivio <stefano.brivio@polimi.it>,
-        Michael Buesch <m@bues.ch>, van Dyk <kugelfang@gentoo.org>,
-        Andreas Jaggi <andreas.jaggi@waterwave.ch>,
-        Albert Herranz <albert_herranz@yahoo.es>,
-        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 07/30] net: wireless: broadcom: b43: main: Add braces
- around empty statements
-Message-ID: <20200817085018.GT4354@dell>
-References: <20200814113933.1903438-1-lee.jones@linaro.org>
- <20200814113933.1903438-8-lee.jones@linaro.org>
- <87v9hll0ro.fsf@codeaurora.org>
- <20200814164322.GP4354@dell>
- <87eeo9kulw.fsf@codeaurora.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87eeo9kulw.fsf@codeaurora.org>
+        Mon, 17 Aug 2020 01:51:35 -0700 (PDT)
+From:   Allen Pais <allen.cryptic@gmail.com>
+To:     gerrit@erg.abdn.ac.uk, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        johannes@sipsolutions.net, alex.aring@gmail.com,
+        stefan@datenfreihafen.org, santosh.shilimkar@oracle.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us
+Cc:     keescook@chromium.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wpan@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-s390@vger.kernel.org, Allen Pais <allen.lkml@gmail.com>,
+        Romain Perier <romain.perier@gmail.com>
+Subject: [PATCH 1/8] net: dccp: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 14:21:13 +0530
+Message-Id: <20200817085120.24894-1-allen.cryptic@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Aug 2020, Kalle Valo wrote:
+From: Allen Pais <allen.lkml@gmail.com>
 
-> Lee Jones <lee.jones@linaro.org> writes:
-> 
-> > On Fri, 14 Aug 2020, Kalle Valo wrote:
-> >
-> >> Lee Jones <lee.jones@linaro.org> writes:
-> >> 
-> >> > Fixes the following W=1 kernel build warning(s):
-> >> >
-> >> >  drivers/net/wireless/broadcom/b43/main.c: In function ‘b43_dummy_transmission’:
-> >> >  drivers/net/wireless/broadcom/b43/main.c:785:3: warning: suggest
-> >> > braces around empty body in an ‘if’ statement [-Wempty-body]
-> >> >  drivers/net/wireless/broadcom/b43/main.c: In function ‘b43_do_interrupt_thread’:
-> >> >  drivers/net/wireless/broadcom/b43/main.c:2017:3: warning: suggest
-> >> > braces around empty body in an ‘if’ statement [-Wempty-body]
-> >> >
-> >> > Cc: Kalle Valo <kvalo@codeaurora.org>
-> >> > Cc: "David S. Miller" <davem@davemloft.net>
-> >> > Cc: Jakub Kicinski <kuba@kernel.org>
-> >> > Cc: Martin Langer <martin-langer@gmx.de>
-> >> > Cc: Stefano Brivio <stefano.brivio@polimi.it>
-> >> > Cc: Michael Buesch <m@bues.ch>
-> >> > Cc: van Dyk <kugelfang@gentoo.org>
-> >> > Cc: Andreas Jaggi <andreas.jaggi@waterwave.ch>
-> >> > Cc: Albert Herranz <albert_herranz@yahoo.es>
-> >> > Cc: linux-wireless@vger.kernel.org
-> >> > Cc: b43-dev@lists.infradead.org
-> >> > Cc: netdev@vger.kernel.org
-> >> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> >> > ---
-> >> >  drivers/net/wireless/broadcom/b43/main.c | 6 ++++--
-> >> >  1 file changed, 4 insertions(+), 2 deletions(-)
-> >> 
-> >> Please don't copy the full directory structure to the title. I'll change
-> >> the title to more simple version:
-> >> 
-> >> b43: add braces around empty statements
-> >
-> > This seems to go the other way.
-> >
-> > "net: wireless: b43" seems sensible.
-> 
-> Sorry, not understanding what you mean here.
+In preparation for unconditionally passing the
+struct tasklet_struct pointer to all tasklet
+callbacks, switch to using the new tasklet_setup()
+and from_tasklet() to pass the tasklet pointer explicitly.
 
-So I agree that:
+Signed-off-by: Romain Perier <romain.perier@gmail.com>
+Signed-off-by: Allen Pais <allen.lkml@gmail.com>
+---
+ net/dccp/timer.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-  "net: wireless: broadcom: b43: main"
-
-... seems unnecessarily long and verbose.  However, IMHO:
-
-  "b43:"
-
-... is too short and not forthcoming enough.  Obviously this fine when
-something like `git log -- net/wireless`, as you already know what the
-patch pertains to, however when someone who is not in the know (like I
-would be) does `git log` and sees a "b43:" patch, they would have no
-idea which subsystem this patch is adapting.  Even:
-
-  "wireless: b43:"
-
-... would be worlds better.
-
-A Git log which omitted all subsystem tags would be of limited use.
-
-> >> I'll do similar changes to other wireless-drivers patches.
-> >
-> > Thanks.
-> >
-> > Does that mean it's been applied, or is this future tense?
-> 
-> It's not applied yet, there will be an automatic "applied" email once I
-> have done that.
-
-I see.  Thanks for the clarification.
-
+diff --git a/net/dccp/timer.c b/net/dccp/timer.c
+index 0e06dfc32273..f174ecb2fb4e 100644
+--- a/net/dccp/timer.c
++++ b/net/dccp/timer.c
+@@ -220,9 +220,10 @@ static void dccp_delack_timer(struct timer_list *t)
+  *
+  * See the comments above %ccid_dequeueing_decision for supported modes.
+  */
+-static void dccp_write_xmitlet(unsigned long data)
++static void dccp_write_xmitlet(struct tasklet_struct *t)
+ {
+-	struct sock *sk = (struct sock *)data;
++	struct dccp_sock *dp = from_tasklet(dp, t, dccps_xmitlet);
++	struct sock *sk = &dp->dccps_inet_connection.icsk_inet.sk;
+ 
+ 	bh_lock_sock(sk);
+ 	if (sock_owned_by_user(sk))
+@@ -236,16 +237,15 @@ static void dccp_write_xmitlet(unsigned long data)
+ static void dccp_write_xmit_timer(struct timer_list *t)
+ {
+ 	struct dccp_sock *dp = from_timer(dp, t, dccps_xmit_timer);
+-	struct sock *sk = &dp->dccps_inet_connection.icsk_inet.sk;
+ 
+-	dccp_write_xmitlet((unsigned long)sk);
++	dccp_write_xmitlet(&dp->dccps_xmitlet);
+ }
+ 
+ void dccp_init_xmit_timers(struct sock *sk)
+ {
+ 	struct dccp_sock *dp = dccp_sk(sk);
+ 
+-	tasklet_init(&dp->dccps_xmitlet, dccp_write_xmitlet, (unsigned long)sk);
++	tasklet_setup(&dp->dccps_xmitlet, dccp_write_xmitlet);
+ 	timer_setup(&dp->dccps_xmit_timer, dccp_write_xmit_timer, 0);
+ 	inet_csk_init_xmit_timers(sk, &dccp_write_timer, &dccp_delack_timer,
+ 				  &dccp_keepalive_timer);
 -- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.17.1
+
