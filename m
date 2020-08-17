@@ -2,131 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF7682474A6
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 21:13:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FD4D2475B0
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 21:27:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392125AbgHQTMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 15:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40510 "EHLO
+        id S1730596AbgHQT0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 15:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392111AbgHQTMo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 15:12:44 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53445C061389;
-        Mon, 17 Aug 2020 12:12:44 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id o23so19144437ejr.1;
-        Mon, 17 Aug 2020 12:12:44 -0700 (PDT)
+        with ESMTP id S1730418AbgHQT0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 15:26:16 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30FCC061389
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 12:26:15 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id b16so18817436ioj.4
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 12:26:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9J/lb0D5NJq8nshus3wpAPKv03Iej7G41qLDnaD7ZZE=;
-        b=Ri2UXMCbnZeD8m8+99fYky9iiUcTrd0Hp4jVgZsnKftGQBH+Zd//2i2nx/pL9BzQlk
-         IklaxJZuXiu6M6v+In7dXWZqgnG1eaaaqdFC8Iw3m1CztCGA4ddWEIvpYqNXJjwhM/+/
-         TjCZxPZftYk/OytPVS7SyJXJeHfxRlK4darZMN3rAQLRfnEw5DIH2aq+LDGmiVb/ovqV
-         YUbsNCxtO4PT58SemWnGgWrKj1MgT1ALGKAv/1awRMAB38oyIjhQhB2VI/2osEKly2re
-         bul7tvYLdb0lLs0mXm6Tu6n0NsJpIZNdKJ9yPyVx7OYJQ6mPNIxTKf9BM5yT0wkmH0Ze
-         nhjw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=We09K2kpSGTMwiTDa/DNKX90SOIVCSo6B9tkMW6n9SI=;
+        b=A5GEh7BqzYIDgfKHPcKrqz8+N6xXK5PlOdyHStSpSeqyAxr7X2HSoRlNSR/ZGXD9xw
+         ySKGVKJvQf7RdDo1mCpCbn0cbfCWuZygDYdfTxJb85SLVR0xYsoT5r670jMjJJfH33WV
+         IFc8b+P4Nd0bz9lbZTx3/sdU6q5UlOYBLy0oGgtJRuHyYHiFcrYwnLUKyh1nLv+pUUC3
+         /HwxWxG2o/8EKWnBuDXekUkE7W/bj/4KBglr/ifD0TXgLA3zs9rMIIU5dNThZ264g2Jy
+         zRRSW9x1GO1m3wtJyMwrgN3OO9FhYor0tEJZ09I7+9GeNd6PgGosdaS5F0gbU+6/HBG+
+         /iHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9J/lb0D5NJq8nshus3wpAPKv03Iej7G41qLDnaD7ZZE=;
-        b=J3FhOBZBI14Fhb7M36S7gLLMkJb7ETocqM9L9jo5GdiXqJKPWqiET1GJOoNUI06QHK
-         oBA3I8siLzjg8epcR3N6tTYwEiSSN+uJCUb45H7WV78Xic6Pd3FZZadsE3ewzwqdTwmj
-         gasVEJHYv35xdfpbkNjXP+6k9PoLTGZluyI/JSg3koJX/P2zER67ujKMMd8BnSO6hAhG
-         0UFglElv0O5fDpGRKn3J2+LDxGUDSezp5zWPZcjsVCxDIdt0Wg/jZGH9tFJVqK+3QC4R
-         CteWgqiLjh9HnnmjI4TrT0PNpRxfzBpPrKTWRfFwCOlHjZj7u5U8SJXhtwBCkeeBEVes
-         5mTg==
-X-Gm-Message-State: AOAM531/qZuqG3ZFqYO2cv+aWsgkJqns/EOJoWwAgVO1WfP2p0SnI97P
-        Mn1MzWW4A2ASFCVojOZJPdKTYxXEFkY=
-X-Google-Smtp-Source: ABdhPJzTXFH0us7zoscbydo84QvxmlbcWul7hiWHvIo6cki61uxsT1X/URq1+y4jFS25bB5o4POL4Q==
-X-Received: by 2002:a17:907:372:: with SMTP id rs18mr16048513ejb.146.1597691562752;
-        Mon, 17 Aug 2020 12:12:42 -0700 (PDT)
-Received: from debian64.daheim (pd9e293c0.dip0.t-ipconnect.de. [217.226.147.192])
-        by smtp.gmail.com with ESMTPSA id a23sm13944927eds.37.2020.08.17.12.12.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 12:12:41 -0700 (PDT)
-Received: from localhost.daheim ([127.0.0.1])
-        by debian64.daheim with esmtp (Exim 4.94)
-        (envelope-from <chunkeey@gmail.com>)
-        id 1k7kYj-00065j-2d; Mon, 17 Aug 2020 21:12:41 +0200
-Subject: Re: [PATCH 03/16] wireless: ath: convert tasklets to use new
- tasklet_setup() API
-To:     Allen Pais <allen.cryptic@gmail.com>, kvalo@codeaurora.org,
-        kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Allen Pais <allen.lkml@gmail.com>,
-        Romain Perier <romain.perier@gmail.com>
-References: <20200817090637.26887-1-allen.cryptic@gmail.com>
- <20200817090637.26887-4-allen.cryptic@gmail.com>
-From:   Christian Lamparter <chunkeey@gmail.com>
-Message-ID: <e22d8564-b4de-d8a2-e607-d6776db7b38b@gmail.com>
-Date:   Mon, 17 Aug 2020 21:12:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=We09K2kpSGTMwiTDa/DNKX90SOIVCSo6B9tkMW6n9SI=;
+        b=JmokY7CihqCdItpgxCgFiw2FgEoLhrhWrskCHCSNnX6TzzPw13SGzJ5fyhf0ttNitS
+         JKLGTE+ZJPOkQKdk9gquNpC+iuzJaODopbn9GYhHbxrrcgdnouMGIbTxW8vKbUUZnTjm
+         QSfjZiWN4Ca0rlUFvJwhURsdtDdxOC5Jyq3fscaF0Av56MLa69vnIuxCDohkVCSRciEn
+         LEt/+IS3usiLjw6Aa9PASAgS4TEUh0qej3JyC2S4vymxuOoRDd3u2ie4oG+4QVeUPsR6
+         c5jvFNHzvqv2E76MEMJIvPsZbaABhqcias23aVk6+G0o51O3WVRx1ISP+TZ9e0iGIwuy
+         F50A==
+X-Gm-Message-State: AOAM530jLAWGnkAV17cX98nJMRT8Jb54AcAm4kNP4reVgi6perg2Hrlk
+        BvX2/mCqByXtnrS4oarJDpd/sbktHrj4IeB08Gs=
+X-Google-Smtp-Source: ABdhPJwH8d8uUk4/0tuJjy6gwCIH64i9g7tM9CfHzYo115XBXlyxIuy6VjUVDMdzhbAq+BfQUf0orOxz5N2k4N3cGYI=
+X-Received: by 2002:a5d:980f:: with SMTP id a15mr2393586iol.12.1597692375123;
+ Mon, 17 Aug 2020 12:26:15 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200817090637.26887-4-allen.cryptic@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <d20778039a791b9721bb449d493836edb742d1dc.1597570323.git.lucien.xin@gmail.com>
+ <CAM_iQpU7iCjAZ3w4cnzZx1iBpUySzP-d+RDwaoAsqTaDBiVMVQ@mail.gmail.com>
+ <CADvbK_fL=gkc_RFzjsFF0dq+7N1QGwsvzbzpP9e4PzyF7vsO-g@mail.gmail.com>
+ <CAM_iQpWQ6um=-oYK4_sgY3=3PsV1GEgCfGMYXANJ-spYRcz2XQ@mail.gmail.com>
+ <f46edd0e-f44c-e600-2026-2d2ca960a94b@infradead.org> <CAM_iQpVkDg3WKik_j98gdvVirkQdaTQ2zzg8GVzBeij6i+aNnQ@mail.gmail.com>
+ <1b45393f-bc09-d981-03bd-14c4088178ad@infradead.org>
+In-Reply-To: <1b45393f-bc09-d981-03bd-14c4088178ad@infradead.org>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 17 Aug 2020 12:26:03 -0700
+Message-ID: <CAM_iQpWOTLKHsJYDsCM3Pd1fsqPxqj8cSP=nL63Dh0esiJ2QfA@mail.gmail.com>
+Subject: Re: [PATCH net] tipc: not enable tipc when ipv6 works as a module
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        tipc-discussion@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Aug 17, 2020 at 12:00 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> On 8/17/20 11:55 AM, Cong Wang wrote:
+> > On Mon, Aug 17, 2020 at 11:49 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+> >>
+> >> On 8/17/20 11:31 AM, Cong Wang wrote:
+> >>> On Sun, Aug 16, 2020 at 11:37 PM Xin Long <lucien.xin@gmail.com> wrote:
+> >>>>
+> >>>> On Mon, Aug 17, 2020 at 2:29 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >>>>>
+> >>>>> Or put it into struct ipv6_stub?
+> >>>> Hi Cong,
+> >>>>
+> >>>> That could be one way. We may do it when this new function becomes more common.
+> >>>> By now, I think it's okay to make TIPC depend on IPV6 || IPV6=n.
+> >>>
+> >>> I am not a fan of IPV6=m, but disallowing it for one symbol seems
+> >>> too harsh.
+> >>
+> >> Hi,
+> >>
+> >> Maybe I'm not following you, but this doesn't disallow IPV6=m.
+> >
+> > Well, by "disallowing IPV6=m" I meant "disallowing IPV6=m when
+> > enabling TIPC" for sure... Sorry that it misleads you to believe
+> > completely disallowing IPV6=m globally.
+> >
+> >>
+> >> It just restricts how TIPC can be built, so that
+> >> TIPC=y and IPV6=m cannot happen together, which causes
+> >> a build error.
+> >
+> > It also disallows TIPC=m and IPV6=m, right? In short, it disalows
+> > IPV6=m when TIPC is enabled. And this is exactly what I complain,
+> > as it looks too harsh.
+>
+> I haven't tested that specifically, but that should work.
+> This patch won't prevent that from working.
 
-looking at the other patches in this series, I think this patch's 
-subject "ath:" tag was supposed to be "carl9170:"?
+Please give it a try. I do not see how it allows IPV6=m and TIPC=m
+but disallows IPV6=m and TIPC=y.
 
-(so the full subject is:
-"wireless: carl9170: convert tasklets to use new tasklet_setup() API")
+>
+> We have loadable modules calling other loadable modules
+> all over the kernel.
 
-On 2020-08-17 11:06, Allen Pais wrote:
-> From: Allen Pais <allen.lkml@gmail.com>
-> 
-> In preparation for unconditionally passing the
-> struct tasklet_struct pointer to all tasklet
-> callbacks, switch to using the new tasklet_setup()
-> and from_tasklet() to pass the tasklet pointer explicitly.
-> 
-> Signed-off-by: Romain Perier <romain.perier@gmail.com>
-> Signed-off-by: Allen Pais <allen.lkml@gmail.com>
-Seems to work.
+True, we rely on request_module(). But I do not see TIPC calls
+request_module() to request IPV6 module to load "ipv6_dev_find".
 
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-
-> ---
->   drivers/net/wireless/ath/carl9170/usb.c | 7 +++----
->   1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/carl9170/usb.c b/drivers/net/wireless/ath/carl9170/usb.c
-> index ead79335823a..e4eb666c6eea 100644
-> --- a/drivers/net/wireless/ath/carl9170/usb.c
-> +++ b/drivers/net/wireless/ath/carl9170/usb.c
-> @@ -377,9 +377,9 @@ void carl9170_usb_handle_tx_err(struct ar9170 *ar)
->   	}
->   }
->   
-> -static void carl9170_usb_tasklet(unsigned long data)
-> +static void carl9170_usb_tasklet(struct tasklet_struct *t)
->   {
-> -	struct ar9170 *ar = (struct ar9170 *) data;
-> +	struct ar9170 *ar = from_tasklet(ar, t, usb_tasklet);
->   
->   	if (!IS_INITIALIZED(ar))
->   		return;
-> @@ -1082,8 +1082,7 @@ static int carl9170_usb_probe(struct usb_interface *intf,
->   	init_completion(&ar->cmd_wait);
->   	init_completion(&ar->fw_boot_wait);
->   	init_completion(&ar->fw_load_wait);
-> -	tasklet_init(&ar->usb_tasklet, carl9170_usb_tasklet,
-> -		     (unsigned long)ar);
-> +	tasklet_setup(&ar->usb_tasklet, carl9170_usb_tasklet);
->   
->   	atomic_set(&ar->tx_cmd_urbs, 0);
->   	atomic_set(&ar->tx_anch_urbs, 0);
-> 
-
+Thanks.
