@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3B122466B2
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 14:52:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 743522466B3
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 14:53:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728537AbgHQMwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 08:52:55 -0400
-Received: from wnew3-smtp.messagingengine.com ([64.147.123.17]:53713 "EHLO
+        id S1728554AbgHQMxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 08:53:07 -0400
+Received: from wnew3-smtp.messagingengine.com ([64.147.123.17]:51495 "EHLO
         wnew3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728460AbgHQMwy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 08:52:54 -0400
+        by vger.kernel.org with ESMTP id S1728317AbgHQMxG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 08:53:06 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.west.internal (Postfix) with ESMTP id BA6493CA;
-        Mon, 17 Aug 2020 08:52:52 -0400 (EDT)
+        by mailnew.west.internal (Postfix) with ESMTP id 9643E3D4;
+        Mon, 17 Aug 2020 08:53:04 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 17 Aug 2020 08:52:53 -0400
+  by compute4.internal (MEProxy); Mon, 17 Aug 2020 08:53:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=9Yq33ndBPm2JTNKrE2BgBjBPYn1WEP/sFtVlS8Smhq0=; b=awfjKvdn
-        sNkYpmmEApkoGjgvhXKuaDhZN06jPiCQR0mdqqvxEltVmlZ8/7tFurk2exhYBPCL
-        UobOcGIs/117RuVLM64BsGdKVmp4v5R3c1QfjC9+vfGsaSe2VroRuiJJFqssAe+Z
-        tV+D1f3vLf6Zsk9mZE9n08BJEzgBy3g6+svQKyGszqKnGPild73no9SHflhA42IU
-        BqJMbPZ+lmiZLJ6KeI3VeIbMh9yJ7oXwoCdLUBaV7AVdPlV3/9OSHvqMclhOdxr4
-        lWkabrYjjlv/L123/3ri7l+Nvt3UvQVDR936aFVBbkv6GhHuOerq+hmuoc2h+WOt
-        KF68sMCjmNQlWw==
-X-ME-Sender: <xms:pH06X4DWMfOJAIEEDqki3tY5yYQ3k23cxOc20Sy02lga_SoqpJ4Zjw>
+        fm3; bh=1y0pxL/D4napyzVCBXtQaBi7cF5gb039FBxvu0mwCDg=; b=C/cZorCy
+        8Yg0JYXYbuFOR+hzifEjHoDVqOghAGKu9TkB1NuOSsKIDXty39hjzDRe453ty/nL
+        wD7WJj9iSr4WY33zaTXRJ6ZzWMyjce2wPQgqThNUlSkKu8ww9rvwtskQmSS3fuQG
+        e3Udgfx7izK1WLAHusJpvtthU6M80DyThwAIRie2vv7nQ9fjs01lUCX+N0iK+6yv
+        7mOX7EaGM8Dr6+5BLSs9YfSoaBrlY4VT4uXAO1+iaGJuneTAmNe9eBJLRRNyjzI2
+        Md9irkCwCnkq0jLOV7/Lxr14viUWDeqvv/SnqrMOmCOMoUrHZREa+1mj1wF9ju4E
+        aLzQkmPIYmYihA==
+X-ME-Sender: <xms:sH06X6LdhCvyiRC7GOOuqtLOYyvXgOfS7eOpOjEjKJH0drK_YXt8cA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedruddtfedgheeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeejledrudekvddrieefrdegvden
-    ucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    ucevlhhushhtvghrufhiiigvpeegnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:pH06X6hw5VgCKviHp6DcUhPO9bEiloCYPx5GOifEq9v7vmtWqUnXmA>
-    <xmx:pH06X7k_KH-JKePGzl62RInLMm8aE71uncj2LI-50MmBuQr-cTrCjw>
-    <xmx:pH06X-zD0r5-tTzjPvxenCwaNDRLquPJqo0o5OETY3DqRyITy8W_QQ>
-    <xmx:pH06XzDZL0woxLx_hZeXLOR20acRC_A6N-QlvSaTYRk5xTAbGbaNwzNJL_8>
+X-ME-Proxy: <xmx:sH06XyIGAPyXvFyzMha4ssbM1-fVsh4rB7VinZPQJe0LprAq1NE7DQ>
+    <xmx:sH06X6uAPWxKQhYLO_l8dTaHsxwArkKzefCd-li4j-RhG76ShGQExQ>
+    <xmx:sH06X_bWUIT5axZTl2Nzi4fWjCzCtwL8ulF5qvpzGQ-izO3a92Yb-A>
+    <xmx:sH06X1qRUdkE2nfhXYbt8likiqxOK068a61qFeUqTaC8BeYh0id3FLWoZRE>
 Received: from localhost.localdomain (bzq-79-182-63-42.red.bezeqint.net [79.182.63.42])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CD2C03060067;
-        Mon, 17 Aug 2020 08:52:41 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3950030600A3;
+        Mon, 17 Aug 2020 08:52:52 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
@@ -51,9 +51,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         f.fainelli@gmail.com, vivien.didelot@gmail.com, saeedm@nvidia.com,
         tariqt@nvidia.com, ayal@nvidia.com, eranbe@nvidia.com,
         mkubecek@suse.cz, Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next 4/6] mlxsw: reg: Add Tunneling NVE Counters Register
-Date:   Mon, 17 Aug 2020 15:50:57 +0300
-Message-Id: <20200817125059.193242-5-idosch@idosch.org>
+Subject: [RFC PATCH net-next 5/6] mlxsw: reg: Add Tunneling NVE Counters Register Version 2
+Date:   Mon, 17 Aug 2020 15:50:58 +0300
+Message-Id: <20200817125059.193242-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200817125059.193242-1-idosch@idosch.org>
 References: <20200817125059.193242-1-idosch@idosch.org>
@@ -66,85 +66,87 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-The TNCR register exposes counters of NVE encapsulation and
-decapsulation on Spectrum-1.
+The TNCR-V2 register exposes counters of NVE encapsulation and
+decapsulation on Spectrum-2 onwards.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Signed-off-by: Danielle Ratson <danieller@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 51 +++++++++++++++++++++++
- 1 file changed, 51 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 53 +++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 079b080de7f7..9f19127caf83 100644
+index 9f19127caf83..c891fc590ddd 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -10070,6 +10070,56 @@ static inline void mlxsw_reg_tngcr_pack(char *payload,
- 	mlxsw_reg_tngcr_nve_group_size_flood_set(payload, 1);
+@@ -10210,6 +10210,58 @@ static inline void mlxsw_reg_tnumt_pack(char *payload,
+ 	mlxsw_reg_tnumt_record_size_set(payload, record_size);
  }
  
-+/* TNCR - Tunneling NVE Counters Register
-+ * --------------------------------------
-+ * The TNCR register exposes counters of NVE encapsulation and decapsulation.
++/* TNCR-V2 - Tunneling NVE Counters Register Version 2
++ * ---------------------------------------------------
++ * The TNCR-V2 register exposes counters of NVE encapsulation and
++ * decapsulation.
 + *
-+ * Note: Not supported by Spectrum-2 onwards.
++ * Note: Not supported by Spectrum-1.
 + */
-+#define MLXSW_REG_TNCR_ID 0xA002
-+#define MLXSW_REG_TNCR_LEN 0x30
++#define MLXSW_REG_TNCR2_ID 0xA004
++#define MLXSW_REG_TNCR2_LEN 0x38
 +
-+MLXSW_REG_DEFINE(tncr, MLXSW_REG_TNCR_ID, MLXSW_REG_TNCR_LEN);
++MLXSW_REG_DEFINE(tncr2, MLXSW_REG_TNCR2_ID, MLXSW_REG_TNCR2_LEN);
 +
-+/* reg_tncr_clear_counters
++/* reg_tncr2_clear_counters
 + * Clear counters.
 + * Access: OP
 + */
-+MLXSW_ITEM32(reg, tncr, clear_counters, 0x00, 31, 1);
++MLXSW_ITEM32(reg, tncr2, clear_counters, 0x00, 31, 1);
 +
-+/* reg_tncr_count_encap
-+ * Count number of packets which did encapsulation to an NVE tunnel.
-+ * Access: RO
-+ *
-+ * Note: Multicast packets which are encapsulated multiple times are counted
-+ * multiple times.
++enum mlxsw_reg_tncr2_tunnel_port {
++	MLXSW_REG_TNCR2_TUNNEL_PORT_NVE,
++	MLXSW_REG_TNCR2_TUNNEL_PORT_VPLS,
++	MLXSW_REG_TNCR2_TUNNEL_FLEX_TUNNEL0,
++	MLXSW_REG_TNCR2_TUNNEL_FLEX_TUNNEL1,
++};
++
++/* reg_tncr2_tunnel_port
++ * Tunnel port.
++ * Access: Index
 + */
-+MLXSW_ITEM64(reg, tncr, count_encap, 0x10, 0, 64);
++MLXSW_ITEM32(reg, tncr2, tunnel_port, 0x00, 0, 4);
 +
-+/* reg_tncr_count_decap
-+ * Count number of packets which did decapsulation from an NVE tunnel.
-+ * Access: RO
-+ */
-+MLXSW_ITEM64(reg, tncr, count_decap, 0x18, 0, 64);
-+
-+/* reg_tncr_count_decap_errors
-+ * Count number of packets which had decapsulation errors from an NVE tunnel.
-+ * Access: RO
-+ */
-+MLXSW_ITEM64(reg, tncr, count_decap_errors, 0x20, 0, 64);
-+
-+/* reg_tncr_count_decap_discards
++/* reg_tncr2_count_decap_discards
 + * Count number of packets which had decapsulation discards from an NVE tunnel.
 + * Access: RO
 + */
-+MLXSW_ITEM64(reg, tncr, count_decap_discards, 0x28, 0, 64);
++MLXSW_ITEM64(reg, tncr2, count_decap_discards, 0x28, 0, 64);
 +
-+static inline void mlxsw_reg_tncr_pack(char *payload, bool clear_counters)
++/* reg_tncr2_count_encap_discards
++ * Count number of packets which had encapsulation discards to an NVE tunnel.
++ * Access: RO
++ */
++MLXSW_ITEM64(reg, tncr2, count_encap_discards, 0x30, 0, 64);
++
++static inline void mlxsw_reg_tncr2_pack(char *payload,
++					enum mlxsw_reg_tncr2_tunnel_port tport,
++					bool clear_counters)
 +{
-+	MLXSW_REG_ZERO(tncr, payload);
-+	mlxsw_reg_tncr_clear_counters_set(payload, clear_counters);
++	MLXSW_REG_ZERO(tncr2, payload);
++	mlxsw_reg_tncr2_clear_counters_set(payload, clear_counters);
++	mlxsw_reg_tncr2_tunnel_port_set(payload, tport);
 +}
 +
- /* TNUMT - Tunneling NVE Underlay Multicast Table Register
-  * -------------------------------------------------------
-  * The TNUMT register is for building the underlay MC table. It is used
-@@ -11001,6 +11051,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(mtptpt),
- 	MLXSW_REG(mgpir),
+ /* TNQCR - Tunneling NVE QoS Configuration Register
+  * ------------------------------------------------
+  * The TNQCR register configures how QoS is set in encapsulation into the
+@@ -11053,6 +11105,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
  	MLXSW_REG(tngcr),
-+	MLXSW_REG(tncr),
+ 	MLXSW_REG(tncr),
  	MLXSW_REG(tnumt),
++	MLXSW_REG(tncr2),
  	MLXSW_REG(tnqcr),
  	MLXSW_REG(tnqdr),
+ 	MLXSW_REG(tneem),
 -- 
 2.26.2
 
