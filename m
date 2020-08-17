@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5113246DAE
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 19:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B42D246E61
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 19:28:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389394AbgHQRKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 13:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49080 "EHLO
+        id S2389653AbgHQR2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 13:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389328AbgHQRIT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 13:08:19 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8705C061389
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:08:10 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id c6so15119444ilo.13
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:08:10 -0700 (PDT)
+        with ESMTP id S2389323AbgHQRKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 13:10:18 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C87DC061346
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:08:38 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id p13so15167985ilh.4
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:08:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8FxfGANVnuLXspO/vYLwEyykdv7OHcsmx9E5LF2HR/I=;
-        b=YEFKwPzW9Sx6eLaeaQk+CbgAqua9b4QKEBm38U2bhg2VvrnS1QW/8gnGQ9iA37qLrj
-         aoZAeaVRaYKIOlv7GS5ERmF6T6a2uuBrkCwEF6/ikTcnWGpDePbH98hu8ZOxl0R1ydgy
-         zhexexyK8nqO1HBfXqhkHaZtCNjSNPZXTvMWvQtXQ6w+3IPjD8Tir12Jgz1MsQ4hu/v1
-         XtmZqvAzU4rOz6VA0+Y0YGmn+xu1AaLmA0NpmR52XbEtQX2T2sjkTvnMAP/cvFKplMki
-         TP3M+XXAtb3cEiOpNt3SBrizIRd8zTaamhmMy0xJl5Dmdrdrbmrte9LZy1hP993EFLbj
-         3C4A==
+        bh=0396Qk/kkXW8j7MAw7+L0nepbmJzGnj/11pALo007II=;
+        b=tR0pitHjN47EhgzXX5ChcXB/+79ULTqnjnvmr5YE37Awhbf5brZDbVN902QzaFfjdw
+         w32ak2NVMm2/4FHEZ7JSeWTZ36OIatV30xFo8xeRgZ8ZG7nu3PsdvqclElCuIlpm0ajd
+         5ZFbW52mCOAs0DpGYnUThajl03rHrhMiLGGVEyW/naX40n95NFR+rFlsvIJhEAFIzfjV
+         7g4HicbxDForl5oDW16Z0+bj1xFMSCDycK+jfLz+LRc6NvkkFyiideh7WHMRcAcBt+43
+         Ek4tPrYPk792eWBZq+3PVlv8nJL14f7lkT86l8ElhAwTF5a07t3wgKe3hmPkDACM5YS/
+         BD5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=8FxfGANVnuLXspO/vYLwEyykdv7OHcsmx9E5LF2HR/I=;
-        b=US4kqHY6QJ+HrtVLQ65H17c8PUUXZ48rTE/JBd+xcHL7qRwgS3OcV5T86jY1C7Z746
-         3UuOaC9S5U3KCgFGmxViUmuBArtQOP1P70HM1WDfKJ1ZMbom9G0LnrF0b02GwMHaQ1cd
-         Fggf9RKuqSxCZCHf2piXkz5/4+d2DBLWg29xTKbc4iodV8zfhNcu3M6Bt9Oxx1xFQIIG
-         xiGD3I62Kp1chcM2qsWiE3bXVwDhLMlwm6c+4Imolj0VTcIREamrzA1tZf5arZobII+c
-         107ML9NkUeeEgO0Pbl0NBIcyuH9PVXhzuVd837SwJmT0poHjTxjLUudPkKNZctmVl+3O
-         Jkuw==
-X-Gm-Message-State: AOAM531hoc9WEa+p9pDPXZpM3U9P5Twgli86ebrRPf5ByoyeaKpmdQ9/
-        1xeQPi/3dgd5RMWbdXFLmnQ=
-X-Google-Smtp-Source: ABdhPJxu5LQOQnZP2M6D1ns3eZA78cXh8iaRsi8wE4cvYERbnoqol4UQ1UQs5DKt1tCy87fscww/jw==
-X-Received: by 2002:a05:6e02:13f1:: with SMTP id w17mr15067568ilj.131.1597684089993;
-        Mon, 17 Aug 2020 10:08:09 -0700 (PDT)
+        bh=0396Qk/kkXW8j7MAw7+L0nepbmJzGnj/11pALo007II=;
+        b=D/cd7d1r7QZ7ZwyJ/I4JxapAOGAAXLtgGcM7ufAe+wRuanjvJ33lsYB4TY+OxCU2DJ
+         S4PyWaiqfpDaw+Qz0E3aFL0fWqd6dvr+fTv8Sln+udzta35tkp4nhjnOGcevssX8aP1z
+         95CqgMHBeyp2o84EL+OsMw1kaB5wyMoU7NQgAHDLkUKu2FvnInQykCveHKgfxkH+znAW
+         Z21xcaoIlKN3myhdRt5/eWvBRgCAfBLWi36AvnXRKi0IF4oS3/WxYUxQZnHkw3AaVvcZ
+         hJnVbZYv2fVoHjTUm3fA6ELoGrdCopkR5ATNpbF7sDunTCLqszzYPGZK4eim+J4tPJ72
+         xcNQ==
+X-Gm-Message-State: AOAM5332tkZ0rOsgnKRNiY9rbAlOEkHhRBfDz/zK30b29kSArVSKRjP7
+        XL8wsNw8uVRrzENA6DFLwGI=
+X-Google-Smtp-Source: ABdhPJyPsuT7ux0RgwRArOaw5kRGHct/7pL7DL1SBuv7VPGCVi1SnGGRju1LONFHHL2aAWhTXdcGwQ==
+X-Received: by 2002:a05:6e02:ef3:: with SMTP id j19mr14186679ilk.88.1597684117483;
+        Mon, 17 Aug 2020 10:08:37 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y14sm6962705ilq.72.2020.08.17.10.08.08
+        by smtp.googlemail.com with ESMTPSA id u124sm9556756iod.20.2020.08.17.10.08.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Aug 2020 10:08:09 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/7] net: dsa: mv88e6xxx: Add devlink regions
- support
+        Mon, 17 Aug 2020 10:08:36 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/7] net: dsa: Add helper to convert from devlink
+ to ds
 To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>
 References: <20200816194316.2291489-1-andrew@lunn.ch>
+ <20200816194316.2291489-2-andrew@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -109,12 +110,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <021a1883-0f6e-d8ab-49b4-bb85973540f8@gmail.com>
-Date:   Mon, 17 Aug 2020 10:08:07 -0700
+Message-ID: <9c3838dd-a9f8-3661-b9f7-683f9628770b@gmail.com>
+Date:   Mon, 17 Aug 2020 10:08:35 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200816194316.2291489-1-andrew@lunn.ch>
+In-Reply-To: <20200816194316.2291489-2-andrew@lunn.ch>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,24 +125,10 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 8/16/20 12:43 PM, Andrew Lunn wrote:
-> Make use of devlink regions to allow read access to some of the
-> internal of the switches. The switch itself will never trigger a
-> region snapshot, it is assumed it is performed from user space as
-> needed.
+> Given a devlink instance, return the dsa switch it is associated to.
 > 
-> Andrew Lunn (7):
->   net: dsa: Add helper to convert from devlink to ds
->   net: dsa: Add devlink regions support to DSA
->   net: dsa: mv88e6xxx: Move devlink code into its own file
->   net: dsa: mv88e6xxx: Create helper for FIDs in use
->   net: dsa: mv88e6xxx: Add devlink regions
->   net: dsa: wire up devlink info get
->   net: dsa: mv88e6xxx: Implement devlink info get callback
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-Andrew, do you mind copying all DSA maintainers on this patch series
-since it potentially affects other drivers given the standard
-representation you want to see adopted?
-
-Thanks
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
