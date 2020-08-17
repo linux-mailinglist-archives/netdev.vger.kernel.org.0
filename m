@@ -2,250 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E537246FBA
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 19:53:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0130024715C
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 20:26:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731115AbgHQRxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 13:53:02 -0400
-Received: from rcdn-iport-2.cisco.com ([173.37.86.73]:11902 "EHLO
-        rcdn-iport-2.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731600AbgHQRwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 13:52:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=6582; q=dns/txt; s=iport;
-  t=1597686752; x=1598896352;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=JeSwWmzIRAQz6j2ejwjeJoylWXxzdWjzKvU1IpkMkOc=;
-  b=F2yCHAjBkONahjLeoZz8iATsQoNd4cUdmo9BMOp+z4iQXgaCf1INA8vi
-   vojsEscquicST5bN3duFpGUg66xzpBbID9f7JLtGef5BwukF1NuApXCTo
-   GwY9v0siTLk4A4iowILzfU8U4w1Y1Y3tfi6WnNtVZUUvWjS3U9yi1zz+V
-   o=;
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0BbBACIwjpf/5tdJa1fHQEBAQEJARI?=
- =?us-ascii?q?BBQUBggqBdTWBRAEyLLFuCwEBAQ4vBAEBhEyCTwIkOBMCAwEBCwEBBQEBAQI?=
- =?us-ascii?q?BBgRthWiGHwsBRoENMhKDJoJ9sA+BdTOJGYFAgTiIIm2EDhuBQT+EX4o0BJJ?=
- =?us-ascii?q?Ch0SBa5o+gmyaEQ8hoCGSOZ9ngWojgVczGggbFTuCaVAZDY4rF45EIQMwNwI?=
- =?us-ascii?q?GCgEBAwmRLQEB?=
-X-IronPort-AV: E=Sophos;i="5.76,324,1592870400"; 
-   d="scan'208";a="816481828"
-Received: from rcdn-core-4.cisco.com ([173.37.93.155])
-  by rcdn-iport-2.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 17 Aug 2020 17:52:24 +0000
-Received: from sjc-ads-9103.cisco.com (sjc-ads-9103.cisco.com [10.30.208.113])
-        by rcdn-core-4.cisco.com (8.15.2/8.15.2) with ESMTP id 07HHqOF6012615;
-        Mon, 17 Aug 2020 17:52:24 GMT
-Received: by sjc-ads-9103.cisco.com (Postfix, from userid 487941)
-        id 3A37B9A8; Mon, 17 Aug 2020 10:52:24 -0700 (PDT)
-From:   Denys Zagorui <dzagorui@cisco.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     "ikhoronz@cisco.com--cc=xe-linux-external"@cisco.com,
-        xiyou.wangcong@gmail.com, ap420073@gmail.com,
-        richardcochran@gmail.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        mkubecek@suse.cz, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net: core: SIOCADDMULTI/SIOCDELMULTI distinguish between uc and mc
-Date:   Mon, 17 Aug 2020 10:52:24 -0700
-Message-Id: <20200817175224.49608-1-dzagorui@cisco.com>
-X-Mailer: git-send-email 2.19.1
+        id S2390705AbgHQSZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 14:25:43 -0400
+Received: from pbmsgap01.intersil.com ([192.157.179.201]:49106 "EHLO
+        pbmsgap01.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388208AbgHQQCl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 12:02:41 -0400
+X-Greylist: delayed 1493 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Aug 2020 12:02:40 EDT
+Received: from pps.filterd (pbmsgap01.intersil.com [127.0.0.1])
+        by pbmsgap01.intersil.com (8.16.0.27/8.16.0.27) with SMTP id 07HFWv40003023;
+        Mon, 17 Aug 2020 11:37:45 -0400
+Received: from pbmxdp01.intersil.corp (pbmxdp01.pb.intersil.com [132.158.200.222])
+        by pbmsgap01.intersil.com with ESMTP id 32xb7y925u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 17 Aug 2020 11:37:45 -0400
+Received: from pbmxdp02.intersil.corp (132.158.200.223) by
+ pbmxdp01.intersil.corp (132.158.200.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.1979.3; Mon, 17 Aug 2020 11:37:43 -0400
+Received: from localhost (132.158.202.109) by pbmxdp02.intersil.corp
+ (132.158.200.223) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Mon, 17 Aug 2020 11:37:43 -0400
+From:   <min.li.xe@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH net] ptp: ptp_clockmatrix: use i2c_master_send for i2c write
+Date:   Mon, 17 Aug 2020 11:37:35 -0400
+Message-ID: <1597678655-842-1-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Outbound-SMTP-Client: 10.30.208.113, sjc-ads-9103.cisco.com
-X-Outbound-Node: rcdn-core-4.cisco.com
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-17_10:2020-08-17,2020-08-17 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 suspectscore=4 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=834
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-2006250000 definitions=main-2008170118
+X-Proofpoint-Spam-Reason: mlx
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SIOCADDMULTI API allows adding multicast/unicast mac addresses but
-doesn't deferentiate them so if someone tries to add secondary
-unicast mac addr it will be added to multicast netdev list which is
-confusing. There is at least one user that allows adding secondary
-unicast through this API.
-(2f41f3358672 i40e/i40evf: fix unicast mac address add)
+From: Min Li <min.li.xe@renesas.com>
 
-This patch adds check whether passed mac addr is uc or mc and adds
-this mac addr to the corresponding list. Add 'global' variant for
-adding/removing uc addresses similarly to mc.
+The old code for i2c write would break on some controllers, which fails
+at handling Repeated Start Condition. So we will just use i2c_master_send
+to handle write in one transanction.
 
-Signed-off-by: Denys Zagorui <dzagorui@cisco.com>
+Signed-off-by: Min Li <min.li.xe@renesas.com>
 ---
- include/linux/netdevice.h    |  2 +
- include/uapi/linux/sockios.h |  2 +-
- net/core/dev_addr_lists.c    | 75 +++++++++++++++++++++++++++---------
- net/core/dev_ioctl.c         | 13 ++++++-
- 4 files changed, 71 insertions(+), 21 deletions(-)
+ drivers/ptp/ptp_clockmatrix.c | 56 +++++++++++++++++++++++++++++++++----------
+ drivers/ptp/ptp_clockmatrix.h |  4 +++-
+ 2 files changed, 46 insertions(+), 14 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index b0e303f6603f..9394f369be33 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4345,8 +4345,10 @@ int dev_addr_init(struct net_device *dev);
- 
- /* Functions used for unicast addresses handling */
- int dev_uc_add(struct net_device *dev, const unsigned char *addr);
-+int dev_uc_add_global(struct net_device *dev, const unsigned char *addr);
- int dev_uc_add_excl(struct net_device *dev, const unsigned char *addr);
- int dev_uc_del(struct net_device *dev, const unsigned char *addr);
-+int dev_uc_del_global(struct net_device *dev, const unsigned char *addr);
- int dev_uc_sync(struct net_device *to, struct net_device *from);
- int dev_uc_sync_multiple(struct net_device *to, struct net_device *from);
- void dev_uc_unsync(struct net_device *to, struct net_device *from);
-diff --git a/include/uapi/linux/sockios.h b/include/uapi/linux/sockios.h
-index 7d1bccbbef78..f41b152b0268 100644
---- a/include/uapi/linux/sockios.h
-+++ b/include/uapi/linux/sockios.h
-@@ -80,7 +80,7 @@
- #define SIOCGIFHWADDR	0x8927		/* Get hardware address		*/
- #define SIOCGIFSLAVE	0x8929		/* Driver slaving support	*/
- #define SIOCSIFSLAVE	0x8930
--#define SIOCADDMULTI	0x8931		/* Multicast address lists	*/
-+#define SIOCADDMULTI	0x8931		/* Mac address lists	*/
- #define SIOCDELMULTI	0x8932
- #define SIOCGIFINDEX	0x8933		/* name -> if_index mapping	*/
- #define SIOGIFINDEX	SIOCGIFINDEX	/* misprint compatibility :-)	*/
-diff --git a/net/core/dev_addr_lists.c b/net/core/dev_addr_lists.c
-index 54cd568e7c2f..d150c2d84df4 100644
---- a/net/core/dev_addr_lists.c
-+++ b/net/core/dev_addr_lists.c
-@@ -573,6 +573,20 @@ int dev_uc_add_excl(struct net_device *dev, const unsigned char *addr)
+diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
+index 73aaae5..e020faf 100644
+--- a/drivers/ptp/ptp_clockmatrix.c
++++ b/drivers/ptp/ptp_clockmatrix.c
+@@ -142,16 +142,15 @@ static int idtcm_strverscmp(const char *ver1, const char *ver2)
+ 	return result;
  }
- EXPORT_SYMBOL(dev_uc_add_excl);
  
-+static int __dev_uc_add(struct net_device *dev, const unsigned char *addr,
-+			bool global)
-+{
-+	int err;
-+
-+	netif_addr_lock_bh(dev);
-+	err = __hw_addr_add_ex(&dev->uc, addr, dev->addr_len,
-+			       NETDEV_HW_ADDR_T_UNICAST, global, false, 0);
-+	if (!err)
-+		__dev_set_rx_mode(dev);
-+	netif_addr_unlock_bh(dev);
-+	return err;
-+}
-+
- /**
-  *	dev_uc_add - Add a secondary unicast address
-  *	@dev: device
-@@ -583,18 +597,37 @@ EXPORT_SYMBOL(dev_uc_add_excl);
-  */
- int dev_uc_add(struct net_device *dev, const unsigned char *addr)
+-static int idtcm_xfer(struct idtcm *idtcm,
+-		      u8 regaddr,
+-		      u8 *buf,
+-		      u16 count,
+-		      bool write)
++static int idtcm_xfer_read(struct idtcm *idtcm,
++			   u8 regaddr,
++			   u8 *buf,
++			   u16 count)
  {
--	int err;
--
--	netif_addr_lock_bh(dev);
--	err = __hw_addr_add(&dev->uc, addr, dev->addr_len,
--			    NETDEV_HW_ADDR_T_UNICAST);
--	if (!err)
--		__dev_set_rx_mode(dev);
--	netif_addr_unlock_bh(dev);
--	return err;
-+	return __dev_uc_add(dev, addr, false);
- }
- EXPORT_SYMBOL(dev_uc_add);
+ 	struct i2c_client *client = idtcm->client;
+ 	struct i2c_msg msg[2];
+ 	int cnt;
+-	char *fmt = "i2c_transfer failed at %d in %s for %s, at addr: %04X!\n";
++	char *fmt = "i2c_transfer failed at %d in %s, at addr: %04X!\n";
  
-+/**
-+ *	dev_uc_add_global - Add a global unicast address
-+ *	@dev: device
-+ *	@addr: address to add
-+ *
-+ *	Add a global unicast address to the device.
-+ */
-+int dev_uc_add_global(struct net_device *dev, const unsigned char *addr)
+ 	msg[0].addr = client->addr;
+ 	msg[0].flags = 0;
+@@ -159,7 +158,7 @@ static int idtcm_xfer(struct idtcm *idtcm,
+ 	msg[0].buf = &regaddr;
+ 
+ 	msg[1].addr = client->addr;
+-	msg[1].flags = write ? 0 : I2C_M_RD;
++	msg[1].flags = I2C_M_RD;
+ 	msg[1].len = count;
+ 	msg[1].buf = buf;
+ 
+@@ -170,7 +169,6 @@ static int idtcm_xfer(struct idtcm *idtcm,
+ 			fmt,
+ 			__LINE__,
+ 			__func__,
+-			write ? "write" : "read",
+ 			regaddr);
+ 		return cnt;
+ 	} else if (cnt != 2) {
+@@ -182,6 +180,37 @@ static int idtcm_xfer(struct idtcm *idtcm,
+ 	return 0;
+ }
+ 
++static int idtcm_xfer_write(struct idtcm *idtcm,
++			    u8 regaddr,
++			    u8 *buf,
++			    u16 count)
 +{
-+	return __dev_uc_add(dev, addr, true);
++	struct i2c_client *client = idtcm->client;
++	/* we add 1 byte for device register */
++	u8 msg[IDTCM_MAX_WRITE_COUNT + 1];
++	int cnt;
++	char *fmt = "i2c_master_send failed at %d in %s, at addr: %04X!\n";
++
++	if (count > IDTCM_MAX_WRITE_COUNT)
++		return -EINVAL;
++
++	msg[0] = regaddr;
++	memcpy(&msg[1], buf, count);
++
++	cnt = i2c_master_send(client, msg, count + 1);
++
++	if (cnt < 0) {
++		dev_err(&client->dev,
++			fmt,
++			__LINE__,
++			__func__,
++			regaddr);
++		return cnt;
++	}
++
++	return 0;
 +}
-+EXPORT_SYMBOL(dev_uc_add_global);
 +
-+static int __dev_uc_del(struct net_device *dev, const unsigned char *addr,
-+			bool global)
-+{
-+	int err;
-+
-+	netif_addr_lock_bh(dev);
-+	err = __hw_addr_del_ex(&dev->uc, addr, dev->addr_len,
-+			       NETDEV_HW_ADDR_T_UNICAST, global, false);
-+	if (!err)
-+		__dev_set_rx_mode(dev);
-+	netif_addr_unlock_bh(dev);
-+	return err;
-+}
-+
- /**
-  *	dev_uc_del - Release secondary unicast address.
-  *	@dev: device
-@@ -605,18 +638,24 @@ EXPORT_SYMBOL(dev_uc_add);
-  */
- int dev_uc_del(struct net_device *dev, const unsigned char *addr)
+ static int idtcm_page_offset(struct idtcm *idtcm, u8 val)
  {
--	int err;
--
--	netif_addr_lock_bh(dev);
--	err = __hw_addr_del(&dev->uc, addr, dev->addr_len,
--			    NETDEV_HW_ADDR_T_UNICAST);
--	if (!err)
--		__dev_set_rx_mode(dev);
--	netif_addr_unlock_bh(dev);
+ 	u8 buf[4];
+@@ -195,7 +224,7 @@ static int idtcm_page_offset(struct idtcm *idtcm, u8 val)
+ 	buf[2] = 0x10;
+ 	buf[3] = 0x20;
+ 
+-	err = idtcm_xfer(idtcm, PAGE_ADDR, buf, sizeof(buf), 1);
++	err = idtcm_xfer_write(idtcm, PAGE_ADDR, buf, sizeof(buf));
+ 
+ 	if (err) {
+ 		idtcm->page_offset = 0xff;
+@@ -223,11 +252,12 @@ static int _idtcm_rdwr(struct idtcm *idtcm,
+ 	err = idtcm_page_offset(idtcm, hi);
+ 
+ 	if (err)
+-		goto out;
++		return err;
+ 
+-	err = idtcm_xfer(idtcm, lo, buf, count, write);
+-out:
 -	return err;
-+	return __dev_uc_del(dev, addr, false);
- }
- EXPORT_SYMBOL(dev_uc_del);
- 
-+/**
-+ *	dev_uc_del_global - Delete a global unicast address.
-+ *	@dev: device
-+ *	@addr: address to delete
-+ *
-+ *	Release reference to a unicast address and remove it
-+ *	from the device if the reference count drops to zero.
-+ */
-+int dev_uc_del_global(struct net_device *dev, const unsigned char *addr)
-+{
-+	return __dev_uc_del(dev, addr, true);
-+}
-+EXPORT_SYMBOL(dev_uc_del_global);
++	if (write)
++		return idtcm_xfer_write(idtcm, lo, buf, count);
 +
- /**
-  *	dev_uc_sync - Synchronize device's unicast list to another device
-  *	@to: destination device
-diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-index b2cf9b7bb7b8..7883bfd920fd 100644
---- a/net/core/dev_ioctl.c
-+++ b/net/core/dev_ioctl.c
-@@ -7,6 +7,7 @@
- #include <linux/wireless.h>
- #include <net/dsa.h>
- #include <net/wext.h>
-+#include <linux/if_arp.h>
++	return idtcm_xfer_read(idtcm, lo, buf, count);
+ }
  
- /*
-  *	Map an interface index to its name (SIOCGIFNAME)
-@@ -299,7 +300,11 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
- 			return -EINVAL;
- 		if (!netif_device_present(dev))
- 			return -ENODEV;
--		return dev_mc_add_global(dev, ifr->ifr_hwaddr.sa_data);
-+		if (dev->type == ARPHRD_ETHER &&
-+		    is_unicast_ether_addr(ifr->ifr_hwaddr.sa_data))
-+			return dev_uc_add_global(dev, ifr->ifr_hwaddr.sa_data);
-+		else
-+			return dev_mc_add_global(dev, ifr->ifr_hwaddr.sa_data);
+ static int idtcm_read(struct idtcm *idtcm,
+diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
+index ffae56c..344aa04 100644
+--- a/drivers/ptp/ptp_clockmatrix.h
++++ b/drivers/ptp/ptp_clockmatrix.h
+@@ -53,7 +53,9 @@
  
- 	case SIOCDELMULTI:
- 		if (!ops->ndo_set_rx_mode ||
-@@ -307,7 +312,11 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
- 			return -EINVAL;
- 		if (!netif_device_present(dev))
- 			return -ENODEV;
--		return dev_mc_del_global(dev, ifr->ifr_hwaddr.sa_data);
-+		if (dev->type == ARPHRD_ETHER &&
-+		    is_unicast_ether_addr(ifr->ifr_hwaddr.sa_data))
-+			return dev_uc_del_global(dev, ifr->ifr_hwaddr.sa_data);
-+		else
-+			return dev_mc_del_global(dev, ifr->ifr_hwaddr.sa_data);
+ #define OUTPUT_MODULE_FROM_INDEX(index)	(OUTPUT_0 + (index) * 0x10)
  
- 	case SIOCSIFTXQLEN:
- 		if (ifr->ifr_qlen < 0)
+-#define PEROUT_ENABLE_OUTPUT_MASK		(0xdeadbeef)
++#define PEROUT_ENABLE_OUTPUT_MASK	(0xdeadbeef)
++
++#define IDTCM_MAX_WRITE_COUNT		(512)
+ 
+ /* Values of DPLL_N.DPLL_MODE.PLL_MODE */
+ enum pll_mode {
 -- 
-2.19.1
+2.7.4
 
