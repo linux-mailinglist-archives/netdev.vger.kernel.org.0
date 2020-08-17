@@ -2,54 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05C112477BA
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 21:55:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 815332477E1
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 22:03:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729194AbgHQTzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 15:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47268 "EHLO
+        id S1729641AbgHQUDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 16:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729118AbgHQTzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 15:55:43 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB488C061389
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 12:55:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=R4/mKF9SLfdokQkl9A497YjzGH+XhZd8/azQ3JBoLag=; b=qGg6ejxbK4v7X6/cwsM3yFkVOe
-        tQO08uTqemsbnm5I/faigfRiPRUhhatyqUSpYRVj7/7AWyBlBKX+VBIt9UfQefKnVz44AqAimtW94
-        44XgIRx0rciZiE9HGLsA66V+hSjXMlf6Z+Xxn/TiBL6V87XI+W1G2K+YXL78JirSA59a2QtVRrWeW
-        AXX7F0Y1as7OI+jJmjfO75JuFEOxQSaApUOQwULhVr5JZlSzUkE6wjiR9eN7OuGB15T3CM3CHC1Zq
-        bpELVZc3jRBlktRLHaXu9DMOf/IuC9rO3jB1r1uN/YHY65GnI4N0utqh+TEEarY5sk6lGCcTWXAnt
-        5kv+WEPg==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k7lE7-00048q-I7; Mon, 17 Aug 2020 19:55:28 +0000
-Subject: Re: [PATCH net] tipc: not enable tipc when ipv6 works as a module
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        tipc-discussion@lists.sourceforge.net
-References: <d20778039a791b9721bb449d493836edb742d1dc.1597570323.git.lucien.xin@gmail.com>
- <CAM_iQpU7iCjAZ3w4cnzZx1iBpUySzP-d+RDwaoAsqTaDBiVMVQ@mail.gmail.com>
- <CADvbK_fL=gkc_RFzjsFF0dq+7N1QGwsvzbzpP9e4PzyF7vsO-g@mail.gmail.com>
- <CAM_iQpWQ6um=-oYK4_sgY3=3PsV1GEgCfGMYXANJ-spYRcz2XQ@mail.gmail.com>
- <f46edd0e-f44c-e600-2026-2d2ca960a94b@infradead.org>
- <CAM_iQpVkDg3WKik_j98gdvVirkQdaTQ2zzg8GVzBeij6i+aNnQ@mail.gmail.com>
- <1b45393f-bc09-d981-03bd-14c4088178ad@infradead.org>
- <CAM_iQpWOTLKHsJYDsCM3Pd1fsqPxqj8cSP=nL63Dh0esiJ2QfA@mail.gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <98214acb-5e9f-0477-bc97-1f3b2c690f14@infradead.org>
-Date:   Mon, 17 Aug 2020 12:55:24 -0700
+        with ESMTP id S1729422AbgHQUCW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 16:02:22 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 287B6C061343
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 13:02:22 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id m34so8615671pgl.11
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 13:02:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=97DJCt1f0pZE/lulXm7MIIWiJdssbmLKs4FWP+jsWew=;
+        b=aSZhdkNSZ87cEFa5bVOxaRgbLX85Ac+f9y0d86ayXObRrHbI44P6QsGc3j0vxCaOtG
+         T2k2WOgfibXFL7wthStQUZ2a3THDVNOGIm8YJURtA34YheOr2MAVAuh07KvbwkyanYJS
+         0EG510E/ggHXtfUb6SqMiyn275eeX4FnCQjVBA0Ynkest98IGBIFATGO7FCiNvsrRbkh
+         fmWOvmbqhkjk1q/XQS+NvaPIgrNKptwTVoidsz8P1vd8W5lrCq8X1NqQRsc/NszaPSZV
+         B+EkeoLweuq1QOusC/DDv9aQ54VFoeSpo/Y8VIPH3trT8rbQk4iBVBt328RQJCy4a+pu
+         mrUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=97DJCt1f0pZE/lulXm7MIIWiJdssbmLKs4FWP+jsWew=;
+        b=KzEOcL9ZmcSKB36k/Ns+FYI+GF4O7iOVJuS2NbA4yDQDDdtB8BgjKgH45Wf/cUybTw
+         zwiq+kdZJXPAG59vCHSat3D4qWu8EIJLzsvqTmU6y6lpPEjVLSx/E7vZzUsFLMZVzlk4
+         83K/tmJMouLmk0WfHBD2VtqaqZ2dzUIafgbYWQrr1sf63M0hVONR01dHsRsd8jrxX+v2
+         17u/h6Mm5uLpFKeXeCyVgDUbHtR3WAxT2PSdYWUbUVvpmkFyP45VOAk+tp5C17kb7MiI
+         k1k3JbZNhhMIw3An3PTUodytM8nSY+LSRbTcTFxt+wOGGRrwmFfY7eiLC87Sbs2YPxsA
+         1z/g==
+X-Gm-Message-State: AOAM530UTydX3eiWzUh7VK+8pM9ynYuHj/ESsL2BJ/eEV+coQaO+CWEz
+        qd6R1IM5+AGdZHNMbu0LwLeHAA==
+X-Google-Smtp-Source: ABdhPJx6fgKnzdqFet7WfKg8Bw76iQ/G91m6PuMxHTNY08ReQtFVhesqdO2JpfqR2BskRMIqTcZ09Q==
+X-Received: by 2002:a63:d143:: with SMTP id c3mr10873272pgj.306.1597694541448;
+        Mon, 17 Aug 2020 13:02:21 -0700 (PDT)
+Received: from ?IPv6:2605:e000:100e:8c61:bd62:5cef:d7f8:5bff? ([2605:e000:100e:8c61:bd62:5cef:d7f8:5bff])
+        by smtp.gmail.com with ESMTPSA id c27sm18199498pgn.86.2020.08.17.13.02.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Aug 2020 13:02:20 -0700 (PDT)
+Subject: Re: [PATCH] block: convert tasklets to use new tasklet_setup() API
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Allen Pais <allen.cryptic@gmail.com>, jdike@addtoit.com,
+        richard@nod.at, anton.ivanov@cambridgegreys.com, 3chas3@gmail.com,
+        stefanr@s5r6.in-berlin.de, airlied@linux.ie, daniel@ffwll.ch,
+        sre@kernel.org, James.Bottomley@HansenPartnership.com,
+        kys@microsoft.com, deller@gmx.de, dmitry.torokhov@gmail.com,
+        jassisinghbrar@gmail.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, maximlevitsky@gmail.com, oakad@yahoo.com,
+        ulf.hansson@linaro.org, mporter@kernel.crashing.org,
+        alex.bou9@gmail.com, broonie@kernel.org, martyn@welchs.me.uk,
+        manohar.vanga@gmail.com, mitch@sfgoth.com, davem@davemloft.net,
+        kuba@kernel.org, linux-um@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux1394-devel@lists.sourceforge.net,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-hyperv@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-ntb@googlegroups.com, linux-s390@vger.kernel.org,
+        linux-spi@vger.kernel.org, devel@driverdev.osuosl.org,
+        Allen Pais <allen.lkml@gmail.com>,
+        Romain Perier <romain.perier@gmail.com>
+References: <20200817091617.28119-1-allen.cryptic@gmail.com>
+ <20200817091617.28119-2-allen.cryptic@gmail.com>
+ <b5508ca4-0641-7265-2939-5f03cbfab2e2@kernel.dk>
+ <202008171228.29E6B3BB@keescook>
+ <161b75f1-4e88-dcdf-42e8-b22504d7525c@kernel.dk>
+ <202008171246.80287CDCA@keescook>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <df645c06-c30b-eafa-4d23-826b84f2ff48@kernel.dk>
+Date:   Mon, 17 Aug 2020 13:02:17 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpWOTLKHsJYDsCM3Pd1fsqPxqj8cSP=nL63Dh0esiJ2QfA@mail.gmail.com>
+In-Reply-To: <202008171246.80287CDCA@keescook>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -58,73 +94,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/17/20 12:26 PM, Cong Wang wrote:
-> On Mon, Aug 17, 2020 at 12:00 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->>
->> On 8/17/20 11:55 AM, Cong Wang wrote:
->>> On Mon, Aug 17, 2020 at 11:49 AM Randy Dunlap <rdunlap@infradead.org> wrote:
->>>>
->>>> On 8/17/20 11:31 AM, Cong Wang wrote:
->>>>> On Sun, Aug 16, 2020 at 11:37 PM Xin Long <lucien.xin@gmail.com> wrote:
->>>>>>
->>>>>> On Mon, Aug 17, 2020 at 2:29 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->>>>>>>
->>>>>>> Or put it into struct ipv6_stub?
->>>>>> Hi Cong,
->>>>>>
->>>>>> That could be one way. We may do it when this new function becomes more common.
->>>>>> By now, I think it's okay to make TIPC depend on IPV6 || IPV6=n.
+On 8/17/20 12:48 PM, Kees Cook wrote:
+> On Mon, Aug 17, 2020 at 12:44:34PM -0700, Jens Axboe wrote:
+>> On 8/17/20 12:29 PM, Kees Cook wrote:
+>>> On Mon, Aug 17, 2020 at 06:56:47AM -0700, Jens Axboe wrote:
+>>>> On 8/17/20 2:15 AM, Allen Pais wrote:
+>>>>> From: Allen Pais <allen.lkml@gmail.com>
 >>>>>
->>>>> I am not a fan of IPV6=m, but disallowing it for one symbol seems
->>>>> too harsh.
+>>>>> In preparation for unconditionally passing the
+>>>>> struct tasklet_struct pointer to all tasklet
+>>>>> callbacks, switch to using the new tasklet_setup()
+>>>>> and from_tasklet() to pass the tasklet pointer explicitly.
 >>>>
->>>> Hi,
+>>>> Who came up with the idea to add a macro 'from_tasklet' that is just
+>>>> container_of? container_of in the code would be _much_ more readable,
+>>>> and not leave anyone guessing wtf from_tasklet is doing.
 >>>>
->>>> Maybe I'm not following you, but this doesn't disallow IPV6=m.
+>>>> I'd fix that up now before everything else goes in...
 >>>
->>> Well, by "disallowing IPV6=m" I meant "disallowing IPV6=m when
->>> enabling TIPC" for sure... Sorry that it misleads you to believe
->>> completely disallowing IPV6=m globally.
->>>
->>>>
->>>> It just restricts how TIPC can be built, so that
->>>> TIPC=y and IPV6=m cannot happen together, which causes
->>>> a build error.
->>>
->>> It also disallows TIPC=m and IPV6=m, right? In short, it disalows
->>> IPV6=m when TIPC is enabled. And this is exactly what I complain,
->>> as it looks too harsh.
+>>> As I mentioned in the other thread, I think this makes things much more
+>>> readable. It's the same thing that the timer_struct conversion did
+>>> (added a container_of wrapper) to avoid the ever-repeating use of
+>>> typeof(), long lines, etc.
 >>
->> I haven't tested that specifically, but that should work.
->> This patch won't prevent that from working.
+>> But then it should use a generic name, instead of each sub-system using
+>> some random name that makes people look up exactly what it does. I'm not
+>> huge fan of the container_of() redundancy, but adding private variants
+>> of this doesn't seem like the best way forward. Let's have a generic
+>> helper that does this, and use it everywhere.
 > 
-> Please give it a try. I do not see how it allows IPV6=m and TIPC=m
-> but disallows IPV6=m and TIPC=y.
+> I'm open to suggestions, but as things stand, these kinds of treewide
 
-TIPC=m and IPV6=m builds just fine.
+On naming? Implementation is just as it stands, from_tasklet() is
+totally generic which is why I objected to it. from_member()? Not great
+with naming... But I can see this going further and then we'll suddenly
+have tons of these. It's not good for readability.
 
-Having tipc autoload ipv6 is a different problem. (IMO)
+> changes end up getting whole-release delays because of the need to have
+> the API in place for everyone before patches to do the changes can be
+> sent to multiple maintainers, etc.
 
-
-This Kconfig entry:
- menuconfig TIPC
- 	tristate "The TIPC Protocol"
- 	depends on INET
-+	depends on IPV6 || IPV6=n
-
-says:
-If IPV6=n, TIPC can be y/m/n.
-If IPV6=y/m, TIPC is limited to whatever IPV6 is set to.
-TIPC cannot be =y unless IPV6=y.
-
-
->> We have loadable modules calling other loadable modules
->> all over the kernel.
-> 
-> True, we rely on request_module(). But I do not see TIPC calls
-> request_module() to request IPV6 module to load "ipv6_dev_find".
-
+Sure, that's always true of treewide changes like that.
 
 -- 
-~Randy
+Jens Axboe
 
