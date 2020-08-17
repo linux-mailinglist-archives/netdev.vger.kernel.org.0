@@ -2,92 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AA16245E51
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 09:48:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 745BA245ECA
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:06:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbgHQHsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 03:48:18 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:45265 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726587AbgHQHsP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Aug 2020 03:48:15 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 6bfdcc46;
-        Mon, 17 Aug 2020 07:22:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :in-reply-to:references:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=UfEdk9aa6S5dxYeKZTnmjv6glRQ=; b=ovjN9W
-        s9dOHqOsNMvdwOqJhUtFIA1ve7deb9PC3rx6H9x+MSop5g2vx7vGUNM8gb4tqFb/
-        22ZgcyE+oekzVgHdA0ll7iR4/6FC20BFCwxcadSnev3Hx8Zmc4Oligkoc3OnSN4O
-        ktebcGHvSufALKqNEXbp70KVN0VWAczTEZkCHCSGfWfmfZFC0IDi2BxAyzlANJ8j
-        5+0OODJMKTI711bX693VjX/ZDS5bYmEKKiAlzWRVs7UpuS0P6GCtNYhUxduLFJJn
-        y4pLzVbOL7AuxKD/mvpNNnGQorFyqgc4Y/dJsVBwXQTYcV6COoui1bAT+2HGxbLX
-        +KY77IMYDE7N1CCA==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1af569d9 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Mon, 17 Aug 2020 07:22:10 +0000 (UTC)
-Received: by mail-io1-f53.google.com with SMTP id q75so16786261iod.1;
-        Mon, 17 Aug 2020 00:48:11 -0700 (PDT)
-X-Gm-Message-State: AOAM531ZPSc2lfZsdnb8jGx9u9b9gNzW86FP9UtTX41MLero+llC6ltf
-        nezxkvRq1JK9zIiaAesQXrC3sMYr6qDOOZgDnpo=
-X-Google-Smtp-Source: ABdhPJwyjsFwcAS6uI9wLn0QxQTJj4DFx0YIBBWCUxuUJXdF6gK3t3IxHRihGDwEO4luy1wbjVzQiyVdtxTxJwJ3zSc=
-X-Received: by 2002:a6b:5c17:: with SMTP id z23mr11443692ioh.67.1597650490600;
- Mon, 17 Aug 2020 00:48:10 -0700 (PDT)
+        id S1726870AbgHQIG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 04:06:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725765AbgHQIG0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:06:26 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B13C061388;
+        Mon, 17 Aug 2020 01:06:25 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id q3so8953519ybp.7;
+        Mon, 17 Aug 2020 01:06:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RvZPDrvmfEiKC4tHNx7HHIStbbhxJ3KZNZoKmceVCt8=;
+        b=iLdjt5aGTDR2TjfH/YM/zYjVgquCAFjTonvBSjNebP+JplL/9szjGBHNCoIw4A3kzT
+         FlDKeVeq3h6yAVKSRKIfMqF4IxNmb7EwJVykI2N2weat8Qj6zSQbCwHmU/q7S8rjBA7s
+         SSVLIopj6vA9mUZehH+uhO4juamYi2ym5judzl6lFE4/PtBvGnR3iy7WQgf2XYiImavU
+         Sw4kRLnLb5ylIvhXRLrnajIO8p0VG+n3lbl3wodIIq4TUSj+vyvDIWWR3Xhcfgr1zits
+         mck22Jyqro/lL3uFXyqdLPDHK24SxnUx00feSoPus3RGKkO1Q7Dyeq/SOVKoL/L2rxOX
+         SS2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RvZPDrvmfEiKC4tHNx7HHIStbbhxJ3KZNZoKmceVCt8=;
+        b=kVl9CodUWHHbdIjPefjrfda2C7i9Mxv7mm8nfZcTt5pl4QMyJV3Y2I0UZrYss46A2r
+         2lFIu9AZxX40m5IJxGcTtWuHDXybMx26T7L5wQXXioUz54v/ZhvN5dZXs9VYXJ57w/XM
+         FTUJUY237oMEmOnl9BUN1gH0fmg0/CQG8KrbUcNtomDvBnvFSxG/yldMBaDe8sXAiPXo
+         SZR3DtO56PELQm6QVTTdAvQofr9EZtv3R3rZMaT+RwbSkqW0mE2eZyfg0vYWcY9ZyhLy
+         dGSrRiYkonxeQPE0L17ETi7UvQM4y1UwuUNav89k3M30eisjPI0LtWROcwGnoTkjimQL
+         VQXg==
+X-Gm-Message-State: AOAM533qgO08LbzY2OpP/PphglE1foFanrXURRZ831C45W9w2WTHd6+5
+        rb/wZ7JeeVs6ESvWmf8Bfg9OAfitPUd3nNd+VzQ=
+X-Google-Smtp-Source: ABdhPJwuEiUsH+Vvl0Yk+PNDQ+Y5+7C2mO55RV8fSgIhUwox27zfL1LyVmevflabpOJiY5DM9KPz97anKR2APR5znb8=
+X-Received: by 2002:a25:df92:: with SMTP id w140mr18569600ybg.455.1597651583753;
+ Mon, 17 Aug 2020 01:06:23 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:6e02:ed0:0:0:0:0 with HTTP; Mon, 17 Aug 2020 00:48:10
- -0700 (PDT)
-In-Reply-To: <20200817080102.61e109cf@carbon>
-References: <20200815072930.4564-1-Jason@zx2c4.com> <20200816.152937.1107786737475087036.davem@davemloft.net>
- <20200817080102.61e109cf@carbon>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 17 Aug 2020 09:48:10 +0200
-X-Gmail-Original-Message-ID: <CAHmME9ojV+6xgvmEPYV+_oGjzykDG+ZpOe5kct+DG87A+YyLvQ@mail.gmail.com>
-Message-ID: <CAHmME9ojV+6xgvmEPYV+_oGjzykDG+ZpOe5kct+DG87A+YyLvQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: xdp: pull ethernet header off packet after
- computing skb->protocol
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
+References: <20200814113933.1903438-1-lee.jones@linaro.org> <20200814113933.1903438-27-lee.jones@linaro.org>
+In-Reply-To: <20200814113933.1903438-27-lee.jones@linaro.org>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Date:   Mon, 17 Aug 2020 10:06:12 +0200
+Message-ID: <CACna6ryNNyyVftEFNFEwouKc3O21oPaeqie+bjJR4L_Cf8z2BQ@mail.gmail.com>
+Subject: Re: [PATCH 26/30] net: wireless: broadcom: b43: phy_common: Demote
+ non-conformant kerneldoc header
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        Michael Buesch <m@bues.ch>,
+        Stefano Brivio <stefano.brivio@polimi.it>,
+        Andreas Jaggi <andreas.jaggi@waterwave.ch>,
+        Network Development <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        b43-dev <b43-dev@lists.infradead.org>,
+        "Alexander A. Klimov" <grandmaster@al2klimov.de>,
+        Martin Langer <martin-langer@gmx.de>,
+        van Dyk <kugelfang@gentoo.org>,
+        Kalle Valo <kvalo@codeaurora.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/17/20, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-> On Sun, 16 Aug 2020 15:29:37 -0700 (PDT)
-> David Miller <davem@davemloft.net> wrote:
+On Fri, 14 Aug 2020 at 13:41, Lee Jones <lee.jones@linaro.org> wrote:
+> Fixes the following W=1 kernel build warning(s):
 >
->> From: "Jason A. Donenfeld" <Jason@zx2c4.com>
->> Date: Sat, 15 Aug 2020 09:29:30 +0200
->>
->> > When an XDP program changes the ethernet header protocol field,
->> > eth_type_trans is used to recalculate skb->protocol. In order for
->> > eth_type_trans to work correctly, the ethernet header must actually be
->> > part of the skb data segment, so the code first pushes that onto the
->> > head of the skb. However, it subsequently forgets to pull it back off,
->> > making the behavior of the passed-on packet inconsistent between the
->> > protocol modifying case and the static protocol case. This patch fixes
->> > the issue by simply pulling the ethernet header back off of the skb
->> > head.
->> >
->> > Fixes: 297249569932 ("net: fix generic XDP to handle if eth header was
->> > mangled")
->> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
->> > Cc: David S. Miller <davem@davemloft.net>
->> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
->>
->> Applied and queued up for -stable, thanks.
->>
->> Jesper, I wonder how your original patch was tested because it pushes a
->> packet
->> with skb->data pointing at the ethernet header into the stack.  That
->> should be
->> popped at this point as per this fix here.
->
-> I think this patch is wrong, because eth_type_trans() also does a
-> skb_pull_inline(skb, ETH_HLEN).
+>  drivers/net/wireless/broadcom/b43/phy_common.c:467: warning: Function parameter or member 'work' not described in 'b43_phy_txpower_adjust_work'
 
-Huh, wow. That's one unusual and confusing function. But indeed it
-seems like I'm the one who needs to reevaluate testing methodology
-here. I'm very sorry for the noise and hassle.
-
-Jason
+Why you can't document @work instead? Should be quite a better solution.
