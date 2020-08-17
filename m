@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5FB245F26
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:18:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25594245F1D
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:18:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727906AbgHQISu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 04:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
+        id S1726920AbgHQIS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 04:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727107AbgHQISQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:18:16 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C01C061389;
-        Mon, 17 Aug 2020 01:18:16 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id t10so7119076plz.10;
-        Mon, 17 Aug 2020 01:18:16 -0700 (PDT)
+        with ESMTP id S1726817AbgHQISZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:18:25 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E8CC061388;
+        Mon, 17 Aug 2020 01:18:25 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id f10so7122059plj.8;
+        Mon, 17 Aug 2020 01:18:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=VuEUvmYOOxy0cBG1vy1x0k+OUnxToU/d3epXaoj+zgU=;
-        b=N+PqmoMsa7OSrh+YQoRWbjcFhyvAZVpnAGN18Dq9JnExrNg1QK1YiDTfCKZWX0tzAU
-         w0Zv/q4BWvCVtYiBfxDO5AN18qkpPyECLdQM2sHFbyPzeAGVGdx1mGpOCt0IaXqUd3Mg
-         /aiQZlslyJOYdh8VUcL0yXF3dJ7Q1LMsB8zAbDOEGpUcfKrPorsxdu5Qz/XnPbEPdy4B
-         THV+bJCufjjEx4mVBDuLeJQWYBIiHX5Dxiq0N7Fit+YRUFklquEoieue7mHVIO5+HU9y
-         bxOXL9nx9QPjhA9TOMwq1tLPi38SgRYtHGENItORu5NwrcVAl59CHDzoy4jqUksgAt+i
-         rsBA==
+        bh=aYKSRTuJVIPdNCr61TO9wwSP37OM1E0JoVpfKCdbfwU=;
+        b=I6ylsGUaMfCBojePfsAD++yD9Jyf7sQWTNHKgpA2bcqRyX9BAHEfxGWEM9QDDhOFO+
+         1Aj/tmhFnG3KsGf6BolUWSjdZMlfyD2uX2lkAUA42sJHEQ0a9V7YMBisyFpNRtxCnbzp
+         E6oGA/Z4/l5RNBrfBcvJB8Lc5UIEbrVPPtjo0Fw7DFonrQk5k1QAAiUXTN3N6DC07bC9
+         0N3KKLv43BiFGLdhyP8Xcpkrx/H3MWkerEDcMpP9FrmM/hEu60Tv3negE3rEaX21brK1
+         YafNNM8/AZprasmodUSRhhhcuX/BJraUe5FQ5kfZ90HsS2Cjda4MKIVjbS6boph9Y6ks
+         /hKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=VuEUvmYOOxy0cBG1vy1x0k+OUnxToU/d3epXaoj+zgU=;
-        b=p+biaUZNIMKU/nSQaf93UptD+bnJoUCz/NCElmVpsDvKEje0WuoN/2MQD0MSFlY3AW
-         BUIAd4HHmxxTZSeH0cuuTmaJTG63KTAV8IOaMO/u85RhYKr+f6omb80UHZIyO9Fj76RI
-         1dJCbmnHNB0VjMxhunjbppQxzLa2958NwrYKJZoMopekIZLar6CQ75gMrNxXC30E3X44
-         KaWDkXW6F06jzwCRfMMEVH53bELKeJ+5NydYBhtRFXQGSckVUZ9hhoto6PTp0aAa7+k4
-         X42Zb8YukOSJn0FjWaR1iBFNeNomlqDFYgrBqHsiNKc6vIV/wGhWI7atPysnsZtmuX1S
-         yl+g==
-X-Gm-Message-State: AOAM531+9Y/9PD9/Y/5dVvcf3bupNdi9ahduZkO67ilpxG4Ju8QYjjXQ
-        TwW6ee1lGnlWweJL4GsuNRs=
-X-Google-Smtp-Source: ABdhPJxdwkKw4yzWqHKwHEGaahSJ53uh/FCPjaY9jium8wPVcefU6BXuAp+4B0DoFuGrH/xG8g/t3g==
-X-Received: by 2002:a17:90a:46c2:: with SMTP id x2mr11593387pjg.184.1597652296086;
-        Mon, 17 Aug 2020 01:18:16 -0700 (PDT)
+        bh=aYKSRTuJVIPdNCr61TO9wwSP37OM1E0JoVpfKCdbfwU=;
+        b=jstKCu9BYMl3sxQIjOu3WZer+Tj9zPnbu7AlnsDEeeAXEGWF7NZb9mfcbs31cSiMH0
+         MYtk82VrgntzYniLA7eveIJjQhY7TN5MnCcGSd2dXe8olKgU9dR/i1YSoQare/c1oGaJ
+         JHrxwoDV+/WtAR3TvyLYT6p2Emmes6DnAz4dgeHW17I8djG1zMgKrbnzncQ1uR6Q3OJY
+         ZBEb3xTY/ic/hVVfeqNjaz3wEcZHgZQrt0E7tEr/GV8N/JZDH5BjP8LsSlKvl8O+DJUL
+         pafxkOIaGc0ff4rqlQtlMBcDIe6BRkQriDvGTWQZktdHBdYcsZLEWKLPgON4fgPixuLr
+         rs+w==
+X-Gm-Message-State: AOAM531Ga0GYRItuzFqOxKZUiHJA3s2gLFKhMKsK5N7Iq5kcF67QrZkW
+        AA01+Za+bWsvEjJkrqOrOrg=
+X-Google-Smtp-Source: ABdhPJypVY66AJT3+h/SfRYb56ToGyJfJnM+NnJ6R5f1ym1n7hF8zV0Xux1hjYWDHRbRMpD1vPqebw==
+X-Received: by 2002:a17:90b:784:: with SMTP id l4mr11034976pjz.96.1597652305207;
+        Mon, 17 Aug 2020 01:18:25 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id d93sm16735334pjk.44.2020.08.17.01.18.07
+        by smtp.gmail.com with ESMTPSA id d93sm16735334pjk.44.2020.08.17.01.18.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 01:18:15 -0700 (PDT)
+        Mon, 17 Aug 2020 01:18:24 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
         festevam@gmail.com, linux-imx@nxp.com, ast@kernel.org,
@@ -60,9 +60,9 @@ Cc:     keescook@chromium.org, linux-kernel@vger.kernel.org,
         linux-mediatek@lists.infradead.org,
         Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH 03/35] dma: at_xdmac: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 13:46:54 +0530
-Message-Id: <20200817081726.20213-4-allen.lkml@gmail.com>
+Subject: [PATCH 04/35] dma: coh901318: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 13:46:55 +0530
+Message-Id: <20200817081726.20213-5-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200817081726.20213-1-allen.lkml@gmail.com>
 References: <20200817081726.20213-1-allen.lkml@gmail.com>
@@ -79,32 +79,35 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/dma/at_xdmac.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/dma/coh901318.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/dma/at_xdmac.c b/drivers/dma/at_xdmac.c
-index fd92f048c491..18fc0f3f817f 100644
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -1615,7 +1615,7 @@ static void at_xdmac_handle_error(struct at_xdmac_chan *atchan)
- 
- static void at_xdmac_tasklet(unsigned long data)
+diff --git a/drivers/dma/coh901318.c b/drivers/dma/coh901318.c
+index 1092d4ce723e..95b9b2f5358e 100644
+--- a/drivers/dma/coh901318.c
++++ b/drivers/dma/coh901318.c
+@@ -1868,9 +1868,9 @@ static struct coh901318_desc *coh901318_queue_start(struct coh901318_chan *cohc)
+  * This tasklet is called from the interrupt handler to
+  * handle each descriptor (DMA job) that is sent to a channel.
+  */
+-static void dma_tasklet(unsigned long data)
++static void dma_tasklet(struct tasklet_struct *t)
  {
--	struct at_xdmac_chan	*atchan = (struct at_xdmac_chan *)data;
-+	struct at_xdmac_chan	*atchan = from_tasklet(atchan, t, tasklet);
- 	struct at_xdmac_desc	*desc;
- 	u32			error_mask;
+-	struct coh901318_chan *cohc = (struct coh901318_chan *) data;
++	struct coh901318_chan *cohc = from_tasklet(cohc, t, tasklet);
+ 	struct coh901318_desc *cohd_fin;
+ 	unsigned long flags;
+ 	struct dmaengine_desc_callback cb;
+@@ -2615,8 +2615,7 @@ static void coh901318_base_init(struct dma_device *dma, const int *pick_chans,
+ 			INIT_LIST_HEAD(&cohc->active);
+ 			INIT_LIST_HEAD(&cohc->queue);
  
-@@ -2063,8 +2063,7 @@ static int at_xdmac_probe(struct platform_device *pdev)
- 		spin_lock_init(&atchan->lock);
- 		INIT_LIST_HEAD(&atchan->xfers_list);
- 		INIT_LIST_HEAD(&atchan->free_descs_list);
--		tasklet_init(&atchan->tasklet, at_xdmac_tasklet,
--			     (unsigned long)atchan);
-+		tasklet_setup(&atchan->tasklet, at_xdmac_tasklet);
+-			tasklet_init(&cohc->tasklet, dma_tasklet,
+-				     (unsigned long) cohc);
++			tasklet_setup(&cohc->tasklet, dma_tasklet);
  
- 		/* Clear pending interrupts. */
- 		while (at_xdmac_chan_read(atchan, AT_XDMAC_CIS))
+ 			list_add_tail(&cohc->chan.device_node,
+ 				      &dma->channels);
 -- 
 2.17.1
 
