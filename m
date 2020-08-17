@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D6D4246289
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 11:18:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86D5A246298
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 11:18:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728420AbgHQJRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 05:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60964 "EHLO
+        id S1728577AbgHQJSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 05:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726297AbgHQJRp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 05:17:45 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BD4C061389;
-        Mon, 17 Aug 2020 02:17:45 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id ep8so7403314pjb.3;
-        Mon, 17 Aug 2020 02:17:45 -0700 (PDT)
+        with ESMTP id S1726297AbgHQJSA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 05:18:00 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244ACC061389;
+        Mon, 17 Aug 2020 02:18:00 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id y6so7205149plt.3;
+        Mon, 17 Aug 2020 02:18:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Mo6iICj1w8TKwOisUCBNzTZG5p5dM66mXRaY4cwKyZk=;
-        b=TzbwEFTqX0QCsBFflLiO6trddpNRzDxFXlyalb8p8shAuNzSqnVRPY8vMtBs1W5gGO
-         YUc9r1hZWkAsv9H25E5N7kwqFWChbTSHzlTwFhWkQtf63DEW68snGk4kLIJ5B50DmJxW
-         MWiO1udraHvmpV1CUmZxnsCDK3iuigHsru9yj+Oquzzzyly4+EM9iRLcN2KRuZWEdlkQ
-         fk0Czl4+kqYHd4k4r0smEt/HwPMvVApbc9poEuzVer5sNiD49xlJWmv3Z+GjWTQ1m5b+
-         aFLAe1vugsFxn+AMoHEAGT8072rZH7m2jZyN/wKgUUmGiQtrTmT5nZIW44CYFt5Ph9RF
-         ifXw==
+        bh=b4rgdbawNMIYfrAuQkyVo4UViOG64WWeDycX+5MFQIw=;
+        b=PyMcWayBkiZh2L1sh4qEZP3dTK3G8sAqxmaVVytXPS3SWG3GgG94sw6o0Nrcf1df+Q
+         wERBWbwHQv6Qgu7hNTSGUUVnjknbD/6NI8hJDMspn8CczdQvJPM76KBjotTKq1nRqCMz
+         PeaUjGlQDtl3+8tYa2241Lt0gFMVJ1Pj2m5WjIwAk0QPXbTouobbDDQHD7yRGFSTHJfF
+         TGVqoP9D0FSDOwtCHrJQip7z1NvCco4b1IQwWbk2n5T8eRS7cLsH017gTERiI8GS8Tqs
+         077uDrcWAyQImiWo67W3QAf+RCwJGajol8woY3NpuxxUzfr5gmwXTFilhRPsJnsV/onK
+         O2Gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Mo6iICj1w8TKwOisUCBNzTZG5p5dM66mXRaY4cwKyZk=;
-        b=Z6Zjc1vjVWV79qPEGQfKuwJaYlZ8f1aDUtZB0impxNJXgiE9Zj7gw0HKPBJxF5Dm0f
-         04yCWT0ddilX9Lo24pji+G4kz1E12/O/iAIxhiqIAnUYJ3a+S73RqX8yYqyHoxjdTlq8
-         tKRgzffY5chOJ6cfyNVzpL2Uol/kw2+gNFORxcpELiop218D6P1YuwzEmxagrqOR/ygQ
-         G1tcgxrjWO2v0QNu7kXhnGbmBKrYChmIQ/Xk1kKeltyDY7oIUWIQd5sPh/ZKd/O75ceW
-         /4GvJfUc19eenw4NdC1n3Z3krf4UBjn5aKufOU8P/ZO10vHqGB7RnU3xSovCtyoT1tqK
-         yrMg==
-X-Gm-Message-State: AOAM5322ghw9eZeq3TEShopfn4qUZoamXAYzWyfDgtvStDy7Mt8nw1Lx
-        cRRltfKFIw2+lEF0412efyY=
-X-Google-Smtp-Source: ABdhPJwq6UEku9ZvxUlcSd9v3lLdDcS44qfn7fyf+CsiORE4iW8DsxOdwJSiRT3OcMi8Q3GfQoOtrg==
-X-Received: by 2002:a17:90a:2210:: with SMTP id c16mr12286360pje.65.1597655865119;
-        Mon, 17 Aug 2020 02:17:45 -0700 (PDT)
+        bh=b4rgdbawNMIYfrAuQkyVo4UViOG64WWeDycX+5MFQIw=;
+        b=Da4YHMTe7sDVtac4jDQfbvwWVqeQbIwsNSVThjeTf7IFVYK4DfUZqpVou8yneIardL
+         JloCnJiokdtDvhbEX+fG6vuysx9vzabVhzPYVWShCT2SdnzmhQg5/yH0C2jecRhlgqeC
+         TWzPKonB/Txxb/3jke/YtqzzIvKRHlKDKmpBOeKVtfmhD6VzLBPcpS4S2Eoj0iuFja5B
+         CHWcK/LD8yySXwEyu0JlTFaoREhbG3NSPhfQYu0M5ZXBnSWBl7N2Ow3v4vetFBqNPYpE
+         ath1PHn24cP7WsBawrSRdLNI/HIigREup4Im7VqalEk9y5xHZ2nhBQ9sdtOXI7O9iYSh
+         sp+g==
+X-Gm-Message-State: AOAM532Lkk2dD11p4fJ5C3KqgeHPGDy6iJEtbnvWNcBuI3XjmTfxL02i
+        H/B5ckrGJA+sZtatSWLKLPE=
+X-Google-Smtp-Source: ABdhPJwJpNSWTk4IID0rEMXxIuI6kibpl/4HWTcEM39pCyHeMQh+u9mKWbVjT3TDQxfuQPdXa1o+UA==
+X-Received: by 2002:a17:90a:a65:: with SMTP id o92mr11920119pjo.104.1597655879719;
+        Mon, 17 Aug 2020 02:17:59 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id r25sm15971028pgv.88.2020.08.17.02.17.32
+        by smtp.gmail.com with ESMTPSA id r25sm15971028pgv.88.2020.08.17.02.17.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 02:17:44 -0700 (PDT)
+        Mon, 17 Aug 2020 02:17:59 -0700 (PDT)
 From:   Allen Pais <allen.cryptic@gmail.com>
 To:     jdike@addtoit.com, richard@nod.at, anton.ivanov@cambridgegreys.com,
         3chas3@gmail.com, axboe@kernel.dk, stefanr@s5r6.in-berlin.de,
@@ -70,9 +70,9 @@ Cc:     keescook@chromium.org, linux-um@lists.infradead.org,
         linux-spi@vger.kernel.org, devel@driverdev.osuosl.org,
         Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH] drivers: ntb: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 14:46:00 +0530
-Message-Id: <20200817091617.28119-6-allen.cryptic@gmail.com>
+Subject: [PATCH] drivers: rapidio: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 14:46:01 +0530
+Message-Id: <20200817091617.28119-7-allen.cryptic@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200817091617.28119-1-allen.cryptic@gmail.com>
 References: <20200817091617.28119-1-allen.cryptic@gmail.com>
@@ -91,44 +91,35 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/ntb/ntb_transport.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/rapidio/devices/tsi721_dma.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/ntb/ntb_transport.c b/drivers/ntb/ntb_transport.c
-index e6d1f5b298f3..ab3bee2fc803 100644
---- a/drivers/ntb/ntb_transport.c
-+++ b/drivers/ntb/ntb_transport.c
-@@ -273,7 +273,7 @@ enum {
- #define NTB_QP_DEF_NUM_ENTRIES	100
- #define NTB_LINK_DOWN_TIMEOUT	10
- 
--static void ntb_transport_rxc_db(unsigned long data);
-+static void ntb_transport_rxc_db(struct tasklet_struct *t);
- static const struct ntb_ctx_ops ntb_transport_ops;
- static struct ntb_client ntb_transport_client;
- static int ntb_async_tx_submit(struct ntb_transport_qp *qp,
-@@ -1234,8 +1234,7 @@ static int ntb_transport_init_queue(struct ntb_transport_ctx *nt,
- 	INIT_LIST_HEAD(&qp->rx_free_q);
- 	INIT_LIST_HEAD(&qp->tx_free_q);
- 
--	tasklet_init(&qp->rxc_db_work, ntb_transport_rxc_db,
--		     (unsigned long)qp);
-+	tasklet_setup(&qp->rxc_db_work, ntb_transport_rxc_db);
- 
- 	return 0;
- }
-@@ -1685,9 +1684,9 @@ static int ntb_process_rxc(struct ntb_transport_qp *qp)
- 	return 0;
+diff --git a/drivers/rapidio/devices/tsi721_dma.c b/drivers/rapidio/devices/tsi721_dma.c
+index d375c02059f3..4a2bb6d7c692 100644
+--- a/drivers/rapidio/devices/tsi721_dma.c
++++ b/drivers/rapidio/devices/tsi721_dma.c
+@@ -566,9 +566,9 @@ static void tsi721_advance_work(struct tsi721_bdma_chan *bdma_chan,
+ 		  bdma_chan->id);
  }
  
--static void ntb_transport_rxc_db(unsigned long data)
-+static void ntb_transport_rxc_db(struct tasklet_struct *t)
+-static void tsi721_dma_tasklet(unsigned long data)
++static void tsi721_dma_tasklet(struct tasklet_struct *t)
  {
--	struct ntb_transport_qp *qp = (void *)data;
-+	struct ntb_transport_qp *qp = from_tasklet(qp, t, rxc_db_work);
- 	int rc, i;
+-	struct tsi721_bdma_chan *bdma_chan = (struct tsi721_bdma_chan *)data;
++	struct tsi721_bdma_chan *bdma_chan = from_tasklet(bdma_chan, t, tasklet);
+ 	u32 dmac_int, dmac_sts;
  
- 	dev_dbg(&qp->ndev->pdev->dev, "%s: doorbell %d received\n",
+ 	dmac_int = ioread32(bdma_chan->regs + TSI721_DMAC_INT);
+@@ -988,8 +988,7 @@ int tsi721_register_dma(struct tsi721_device *priv)
+ 		INIT_LIST_HEAD(&bdma_chan->queue);
+ 		INIT_LIST_HEAD(&bdma_chan->free_list);
+ 
+-		tasklet_init(&bdma_chan->tasklet, tsi721_dma_tasklet,
+-			     (unsigned long)bdma_chan);
++		tasklet_setup(&bdma_chan->tasklet, tsi721_dma_tasklet);
+ 		list_add_tail(&bdma_chan->dchan.device_node,
+ 			      &mport->dma.channels);
+ 		nr_channels++;
 -- 
 2.17.1
 
