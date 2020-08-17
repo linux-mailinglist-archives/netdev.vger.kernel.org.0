@@ -2,128 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CE3424638C
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 11:39:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEA8C246435
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 12:15:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726792AbgHQJjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 05:39:03 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55865 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728467AbgHQJiS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 05:38:18 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 17 Aug 2020 12:38:14 +0300
-Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 07H9cEeu011441;
-        Mon, 17 Aug 2020 12:38:14 +0300
-Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 07H9cEQ4003256;
-        Mon, 17 Aug 2020 12:38:14 +0300
-Received: (from moshe@localhost)
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 07H9cEGf003251;
-        Mon, 17 Aug 2020 12:38:14 +0300
-From:   Moshe Shemesh <moshe@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net-next RFC v2 13/13] devlink: Add Documentation/networking/devlink/devlink-reload.rst
-Date:   Mon, 17 Aug 2020 12:37:52 +0300
-Message-Id: <1597657072-3130-14-git-send-email-moshe@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1597657072-3130-1-git-send-email-moshe@mellanox.com>
-References: <1597657072-3130-1-git-send-email-moshe@mellanox.com>
+        id S1726780AbgHQKPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 06:15:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41678 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726265AbgHQKPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 06:15:48 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B1EC061389
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 03:15:46 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id 62so14437362qkj.7
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 03:15:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xFMCooV+srfeUmENnqHRgCmMMf+HreBw4sTYYL9L8Po=;
+        b=S/hC8jiE66W4lYiSJD+JBpmqCQ1NfvjXLtgAW2YghalM2AGd/ropK2OJ5QJdgEzxiH
+         0VfSgSO/lBId1OsA+uu31pNhCaZrO04XKj3BVoYxMGceI8XB18gQx328saMF4eRJuhpi
+         wqLu1eOZmjesm4ayKqK7XFDelEm81dqVyV/68=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xFMCooV+srfeUmENnqHRgCmMMf+HreBw4sTYYL9L8Po=;
+        b=H5q5c607gARalqLCn2laZxbii+f9d6t9uAYyabAEeJ1ytKg7JDyZjrlCkgruzcGsZQ
+         amgHjlwFHEHwBifehZvURuYjuuyXzT61od+qcs10z4f94V69bTJJRbfjYQ8MvGuU5VY9
+         fZscwCTO2pRu5wppbkPQG8LRLNwDLpZdQN7bgRmbnw9yKC13anVXY3GEW6xU6EgOrT1Q
+         V5O0Li9023930zah2d4JwmwoLaPgZu1bgwUQNeDyQIE5CkuDbdPq8iIDfMMc+3xmLPz4
+         xXx0hRxMWU8sV32k4azjlCye4Dltx05DiJJxICgNfGxF9kIC3oK9UXtlekuIexPYTrTz
+         eg0w==
+X-Gm-Message-State: AOAM532uW1MG2J/FksZiW9dQN5QLgxTEmvr4y8mNVr12npCozAf2RMtV
+        LwHdTYOtTIf0O0veHonRThSSvg==
+X-Google-Smtp-Source: ABdhPJyPDevAynADokoTMbQeVLyLhvINF5Maw120EPlX6HsYIVPaRj7K4bCyVzLV+ICE4a16V6aJTw==
+X-Received: by 2002:a05:620a:15b0:: with SMTP id f16mr12024373qkk.191.1597659344690;
+        Mon, 17 Aug 2020 03:15:44 -0700 (PDT)
+Received: from [10.230.34.187] ([192.19.248.250])
+        by smtp.gmail.com with ESMTPSA id k5sm17317588qke.18.2020.08.17.03.15.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Aug 2020 03:15:44 -0700 (PDT)
+Subject: Re: [PATCH 07/16] wireless: brcm80211: convert tasklets to use new
+ tasklet_setup() API
+To:     Allen Pais <allen.cryptic@gmail.com>, kvalo@codeaurora.org,
+        kuba@kernel.org, jirislaby@kernel.org, mickflemm@gmail.com,
+        mcgrof@kernel.org, chunkeey@googlemail.com,
+        Larry.Finger@lwfinger.net, stas.yakovlev@gmail.com,
+        helmut.schaa@googlemail.com, pkshih@realtek.com,
+        yhchuang@realtek.com, dsd@gentoo.org, kune@deine-taler.de
+Cc:     keescook@chromium.org, ath11k@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, b43-dev@lists.infradead.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, Allen Pais <allen.lkml@gmail.com>,
+        Romain Perier <romain.perier@gmail.com>
+References: <20200817090637.26887-1-allen.cryptic@gmail.com>
+ <20200817090637.26887-8-allen.cryptic@gmail.com>
+From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <5080db28-3112-7d0a-ec7c-f437f670cfa3@broadcom.com>
+Date:   Mon, 17 Aug 2020 12:15:39 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
+MIME-Version: 1.0
+In-Reply-To: <20200817090637.26887-8-allen.cryptic@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add devlink reload rst documentation file.
-Update index file to include it.
+On 8/17/2020 11:06 AM, Allen Pais wrote:
+> From: Allen Pais <allen.lkml@gmail.com>
+> 
+> In preparation for unconditionally passing the
+> struct tasklet_struct pointer to all tasklet
+> callbacks, switch to using the new tasklet_setup()
+> and from_tasklet() to pass the tasklet pointer explicitly.
 
-Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
----
-- Instead of reload levels driver,fw_reset,fw_live_patch have reload
-  actions driver_reinit,fw_activate,fw_live_patch
----
- .../networking/devlink/devlink-reload.rst     | 54 +++++++++++++++++++
- Documentation/networking/devlink/index.rst    |  1 +
- 2 files changed, 55 insertions(+)
- create mode 100644 Documentation/networking/devlink/devlink-reload.rst
-
-diff --git a/Documentation/networking/devlink/devlink-reload.rst b/Documentation/networking/devlink/devlink-reload.rst
-new file mode 100644
-index 000000000000..9846ea727f3b
---- /dev/null
-+++ b/Documentation/networking/devlink/devlink-reload.rst
-@@ -0,0 +1,54 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+==============
-+Devlink Reload
-+==============
-+
-+``devlink-reload`` provides mechanism to either reload driver entities,
-+applying ``devlink-params`` and ``devlink-resources`` new values or firmware
-+activation depends on reload action selected.
-+
-+Reload actions
-+=============
-+
-+User may select a reload action.
-+By default ``driver_reinit`` action is done.
-+
-+.. list-table:: Possible reload actions
-+   :widths: 5 90
-+
-+   * - Name
-+     - Description
-+   * - ``driver-reinit``
-+     - Driver entities re-initialization, including applying
-+       new values to devlink entities which are used during driver
-+       load such as ``devlink-params`` in configuration mode
-+       ``driverinit`` or ``devlink-resources``
-+   * - ``fw_activate``
-+     - Firmware activate. Can be used for firmware reload or firmware
-+       upgrade if new firmware is stored and driver supports such
-+       firmware upgrade.
-+   * - ``fw_live_patch``
-+     - Firmware live patch, applies firmware changes without reset.
-+
-+Change namespace
-+================
-+
-+All devlink instances are created in init_net and stay there for a
-+lifetime. Allow user to be able to move devlink instances into
-+namespaces during devlink reload operation. That ensures proper
-+re-instantiation of driver objects, including netdevices.
-+
-+example usage
-+-------------
-+
-+.. code:: shell
-+
-+    $ devlink dev reload help
-+    $ devlink dev reload DEV [ netns { PID | NAME | ID } ] [ action { fw_live_patch | driver_reinit | fw_activate } ]
-+
-+    # Run reload command for devlink driver entities re-initialization:
-+    $ devlink dev reload pci/0000:82:00.0 action driver_reinit
-+
-+    # Run reload command to activate firmware:
-+    $ devlink dev reload pci/0000:82:00.0 action fw_activate
-diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
-index 7684ae5c4a4a..d82874760ae2 100644
---- a/Documentation/networking/devlink/index.rst
-+++ b/Documentation/networking/devlink/index.rst
-@@ -20,6 +20,7 @@ general.
-    devlink-params
-    devlink-region
-    devlink-resource
-+   devlink-reload
-    devlink-trap
- 
- Driver-specific documentation
--- 
-2.17.1
-
+Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Signed-off-by: Romain Perier <romain.perier@gmail.com>
+> Signed-off-by: Allen Pais <allen.lkml@gmail.com>
+> ---
+>   .../net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c  | 6 +++---
+>   .../net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.h  | 2 +-
+>   2 files changed, 4 insertions(+), 4 deletions(-)
