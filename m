@@ -2,84 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DF812472EE
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 20:49:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 503F82472FA
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 20:49:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391662AbgHQStD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 14:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36772 "EHLO
+        id S2403871AbgHQStm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 14:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403858AbgHQStA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 14:49:00 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346F9C061389;
-        Mon, 17 Aug 2020 11:49:00 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8468B14CF4D59;
-        Mon, 17 Aug 2020 11:32:13 -0700 (PDT)
-Date:   Mon, 17 Aug 2020 11:48:58 -0700 (PDT)
-Message-Id: <20200817.114858.1800576333370707414.davem@davemloft.net>
-To:     Jason@zx2c4.com
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net] net: xdp: pull ethernet header off packet after
- computing skb->protocol
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CAHmME9ojV+6xgvmEPYV+_oGjzykDG+ZpOe5kct+DG87A+YyLvQ@mail.gmail.com>
-References: <20200816.152937.1107786737475087036.davem@davemloft.net>
-        <20200817080102.61e109cf@carbon>
-        <CAHmME9ojV+6xgvmEPYV+_oGjzykDG+ZpOe5kct+DG87A+YyLvQ@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        with ESMTP id S2389560AbgHQSth (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 14:49:37 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D33C061389
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 11:49:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=Ze63YpEZxuugDTu1ATLuAPoRJArgFsDzypuy3riKUtg=; b=V1+OhIqVUKSytBNJQxcnwtTfsX
+        iSASMinzheDJl7mOUCCCNeDU6dO2Rrgb9snkCQZeKYgV7c3DwzQuFXvER4FfDABreMzSUXIWRF/UY
+        aMW5eKYtJPtD/ATOSxI7tFia8VSq33ZmD4JHIuZEw1hahu+qM/brwJJOLyuoz+3dhT0DaxC74O7xI
+        OF0HHRF+Bd0CvW+WlkD2KiNh2DfEqfKehVY4sCUeJFtMgvBB20gUO6xJ2yZ0GFhbjABSRqIMohKXE
+        GgKgquFTMxXdBbqUUmZRkDtSHDbX5f9tIJvjjqtvTpA9prjPkZgClxsAhju3t0DlCQFjrYOhIuLxN
+        mcj/wGxQ==;
+Received: from [2601:1c0:6280:3f0::19c2]
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1k7kC0-00073X-E4; Mon, 17 Aug 2020 18:49:13 +0000
+Subject: Re: [PATCH net] tipc: not enable tipc when ipv6 works as a module
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        tipc-discussion@lists.sourceforge.net
+References: <d20778039a791b9721bb449d493836edb742d1dc.1597570323.git.lucien.xin@gmail.com>
+ <CAM_iQpU7iCjAZ3w4cnzZx1iBpUySzP-d+RDwaoAsqTaDBiVMVQ@mail.gmail.com>
+ <CADvbK_fL=gkc_RFzjsFF0dq+7N1QGwsvzbzpP9e4PzyF7vsO-g@mail.gmail.com>
+ <CAM_iQpWQ6um=-oYK4_sgY3=3PsV1GEgCfGMYXANJ-spYRcz2XQ@mail.gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <f46edd0e-f44c-e600-2026-2d2ca960a94b@infradead.org>
+Date:   Mon, 17 Aug 2020 11:49:09 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <CAM_iQpWQ6um=-oYK4_sgY3=3PsV1GEgCfGMYXANJ-spYRcz2XQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 17 Aug 2020 11:32:13 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date: Mon, 17 Aug 2020 09:48:10 +0200
-
-> On 8/17/20, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
->> On Sun, 16 Aug 2020 15:29:37 -0700 (PDT)
->> David Miller <davem@davemloft.net> wrote:
+On 8/17/20 11:31 AM, Cong Wang wrote:
+> On Sun, Aug 16, 2020 at 11:37 PM Xin Long <lucien.xin@gmail.com> wrote:
 >>
->>> From: "Jason A. Donenfeld" <Jason@zx2c4.com>
->>> Date: Sat, 15 Aug 2020 09:29:30 +0200
+>> On Mon, Aug 17, 2020 at 2:29 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >>>
->>> > When an XDP program changes the ethernet header protocol field,
->>> > eth_type_trans is used to recalculate skb->protocol. In order for
->>> > eth_type_trans to work correctly, the ethernet header must actually be
->>> > part of the skb data segment, so the code first pushes that onto the
->>> > head of the skb. However, it subsequently forgets to pull it back off,
->>> > making the behavior of the passed-on packet inconsistent between the
->>> > protocol modifying case and the static protocol case. This patch fixes
->>> > the issue by simply pulling the ethernet header back off of the skb
->>> > head.
->>> >
->>> > Fixes: 297249569932 ("net: fix generic XDP to handle if eth header was
->>> > mangled")
->>> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
->>> > Cc: David S. Miller <davem@davemloft.net>
->>> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
->>>
->>> Applied and queued up for -stable, thanks.
->>>
->>> Jesper, I wonder how your original patch was tested because it pushes a
->>> packet
->>> with skb->data pointing at the ethernet header into the stack.  That
->>> should be
->>> popped at this point as per this fix here.
+>>> Or put it into struct ipv6_stub?
+>> Hi Cong,
 >>
->> I think this patch is wrong, because eth_type_trans() also does a
->> skb_pull_inline(skb, ETH_HLEN).
+>> That could be one way. We may do it when this new function becomes more common.
+>> By now, I think it's okay to make TIPC depend on IPV6 || IPV6=n.
 > 
-> Huh, wow. That's one unusual and confusing function. But indeed it
-> seems like I'm the one who needs to reevaluate testing methodology
-> here. I'm very sorry for the noise and hassle.
+> I am not a fan of IPV6=m, but disallowing it for one symbol seems
+> too harsh.
 
-I've reverted this change from my tree.
+Hi,
+
+Maybe I'm not following you, but this doesn't disallow IPV6=m.
+
+It just restricts how TIPC can be built, so that
+TIPC=y and IPV6=m cannot happen together, which causes
+a build error.
+
+-- 
+~Randy
+
