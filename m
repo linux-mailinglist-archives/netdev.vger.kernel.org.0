@@ -2,182 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24FB3246F16
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 19:42:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAE8A246FAE
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 19:51:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731546AbgHQRmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 13:42:37 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:33806 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731550AbgHQRma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 13:42:30 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07HHTGOi017614
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:42:29 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=Wl1nAbsoAEGytOCmCAQ3djPCVpfOiulFd7onoiO/9fM=;
- b=oFcoCiIPc95yosBGp+LMhETVgmaVDUZDY3kIOViM/9ylLnM8EbnU+e/9J3hqXrE0c0Ro
- /NOWM0xF1LOqpsRuANixjF52uVPugssKEB6AE35udjW/u5LblcO2CWYdRDIAgB0b7XX2
- X5+oipHSjRoVTNioAluKKHgqSft6DrIY4Os= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 32xyyp6f1r-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:42:29 -0700
-Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 17 Aug 2020 10:42:26 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id D724D3704B8B; Mon, 17 Aug 2020 10:42:14 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Yonghong Song <yhs@fb.com>
-Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] bpf: use get_file_rcu() instead of get_file() for task_file iterator
-Date:   Mon, 17 Aug 2020 10:42:14 -0700
-Message-ID: <20200817174214.252601-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1731546AbgHQRvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 13:51:42 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:38866 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731387AbgHQRvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 13:51:23 -0400
+Received: by mail-il1-f200.google.com with SMTP id t79so12519914ild.5
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:51:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=jtcE9RlLgcXYjCTz74DN683CktsK5ycgf7I8jYj6CIA=;
+        b=t6qQ7KyXvCYwQpjSNb0CbukKzl6Ewo0R76Mn8q7s0SQRYy4PwXhPPoXcab4XFydL7R
+         Lcqj6k1JPFht+hO4aJwIxrXzOGEFyXTEwtZMDlYJteZlzClTPR/JjfMp1+/mTLByixJi
+         pNJh/ohSFK29JGTFeah9DMWqsPTBA8WmCda/cgZhJp000kFmIQTORnZJiLMYbt67uucy
+         AQioDo7J3t9ITmncS5GDwc9w7M/Evx3um2fxT8mG2M6Gcjx0PbCxIt/MfVvCHxJjtqco
+         tC5+S5dog6P7bXaAj92Fw3ZlBItVbDevpANNRNBdMGpBNdjWID+Lbf3DuPDUSy/sKhAf
+         tQLw==
+X-Gm-Message-State: AOAM532NF5qKwJZiU5GSiWwX7qyC4i0fBZlBsy+Om2FThfIq0mPr2oit
+        bMfpmFDj0edYm49sezrR9E9VCg2clGQ9ilKSAND9FIf5/smP
+X-Google-Smtp-Source: ABdhPJwWXTJZH/tUbtofby2vODuwxMNHTDwDDML2YNXnT1gAkNHwpDyqDv03J3HxAw+N2jEzJgYm6mBzyvQ/fVbnYwNlSrB+VyEJ
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-17_13:2020-08-17,2020-08-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- bulkscore=0 impostorscore=0 mlxscore=0 suspectscore=9 clxscore=1015
- mlxlogscore=815 phishscore=0 lowpriorityscore=0 spamscore=0 adultscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008170127
-X-FB-Internal: deliver
+X-Received: by 2002:a05:6638:419:: with SMTP id q25mr15885995jap.85.1597686681864;
+ Mon, 17 Aug 2020 10:51:21 -0700 (PDT)
+Date:   Mon, 17 Aug 2020 10:51:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000022934305ad166be3@google.com>
+Subject: KASAN: slab-out-of-bounds Write in xt_compat_target_from_user
+From:   syzbot <syzbot+cfc0247ac173f597aaaa@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With latest `bpftool prog` command, we observed the following kernel
-panic.
-    BUG: kernel NULL pointer dereference, address: 0000000000000000
-    #PF: supervisor instruction fetch in kernel mode
-    #PF: error_code(0x0010) - not-present page
-    PGD dfe894067 P4D dfe894067 PUD deb663067 PMD 0
-    Oops: 0010 [#1] SMP
-    CPU: 9 PID: 6023 ...
-    RIP: 0010:0x0
-    Code: Bad RIP value.
-    RSP: 0000:ffffc900002b8f18 EFLAGS: 00010286
-    RAX: ffff8883a405f400 RBX: ffff888e46a6bf00 RCX: 000000008020000c
-    RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff8883a405f400
-    RBP: ffff888e46a6bf50 R08: 0000000000000000 R09: ffffffff81129600
-    R10: ffff8883a405f300 R11: 0000160000000000 R12: 0000000000002710
-    R13: 000000e9494b690c R14: 0000000000000202 R15: 0000000000000009
-    FS:  00007fd9187fe700(0000) GS:ffff888e46a40000(0000) knlGS:000000000=
-0000000
-    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-    CR2: ffffffffffffffd6 CR3: 0000000de5d33002 CR4: 0000000000360ee0
-    DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-    DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-    Call Trace:
-     <IRQ>
-     rcu_core+0x1a4/0x440
-     __do_softirq+0xd3/0x2c8
-     irq_exit+0x9d/0xa0
-     smp_apic_timer_interrupt+0x68/0x120
-     apic_timer_interrupt+0xf/0x20
-     </IRQ>
-    RIP: 0033:0x47ce80
-    Code: Bad RIP value.
-    RSP: 002b:00007fd9187fba40 EFLAGS: 00000206 ORIG_RAX: ffffffffffffff1=
-3
-    RAX: 0000000000000002 RBX: 00007fd931789160 RCX: 000000000000010c
-    RDX: 00007fd9308cdfb4 RSI: 00007fd9308cdfb4 RDI: 00007ffedd1ea0a8
-    RBP: 00007fd9187fbab0 R08: 000000000000000e R09: 000000000000002a
-    R10: 0000000000480210 R11: 00007fd9187fc570 R12: 00007fd9316cc400
-    R13: 0000000000000118 R14: 00007fd9308cdfb4 R15: 00007fd9317a9380
+Hello,
 
-After further analysis, the bug is triggered by
-Commit eaaacd23910f ("bpf: Add task and task/file iterator targets")
-which introduced task_file bpf iterator, which traverses all open file
-descriptors for all tasks in the current namespace.
-The latest `bpftool prog` calls a task_file bpf program to traverse
-all files in the system in order to associate processes with progs/maps, =
-etc.
-When traversing files for a given task, rcu read_lock is taken to
-access all files in a file_struct. But it used get_file() to grab
-a file, which is not right. It is possible file->f_count is 0 and
-get_file() will unconditionally increase it.
-Later put_file() may cause all kind of issues with the above
-as one of sympotoms.
+syzbot found the following issue on:
 
-The failure can be reproduced with the following steps in a few seconds:
-    $ cat t.c
-    #include <stdio.h>
-    #include <sys/types.h>
-    #include <sys/stat.h>
-    #include <fcntl.h>
-    #include <unistd.h>
+HEAD commit:    4b6c093e Merge tag 'block-5.9-2020-08-14' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14741412900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a98b778f5fca0653
+dashboard link: https://syzkaller.appspot.com/bug?extid=cfc0247ac173f597aaaa
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+userspace arch: i386
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1283a731900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10dd10ce900000
 
-    #define N 10000
-    int fd[N];
-    int main() {
-      int i;
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+cfc0247ac173f597aaaa@syzkaller.appspotmail.com
 
-      for (i =3D 0; i < N; i++) {
-        fd[i] =3D open("./note.txt", 'r');
-        if (fd[i] < 0) {
-           fprintf(stderr, "failed\n");
-           return -1;
-        }
-      }
-      for (i =3D 0; i < N; i++)
-        close(fd[i]);
+==================================================================
+BUG: KASAN: slab-out-of-bounds in memset include/linux/string.h:391 [inline]
+BUG: KASAN: slab-out-of-bounds in xt_compat_target_from_user+0x232/0x470 net/netfilter/x_tables.c:1129
+Write of size 4 at addr ffff88809c971ba1 by task syz-executor166/6841
 
-      return 0;
-    }
-    $ gcc -O2 t.c
-    $ cat run.sh
-    #/bin/bash
-    for i in {1..100}
-    do
-      while true; do ./a.out; done &
-    done
-    $ ./run.sh
-    $ while true; do bpftool prog >& /dev/null; done
+CPU: 1 PID: 6841 Comm: syz-executor166 Not tainted 5.8.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xae/0x497 mm/kasan/report.c:383
+ __kasan_report mm/kasan/report.c:513 [inline]
+ kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
+ check_memory_region_inline mm/kasan/generic.c:186 [inline]
+ check_memory_region+0x13d/0x180 mm/kasan/generic.c:192
+ memset+0x20/0x40 mm/kasan/common.c:84
+ memset include/linux/string.h:391 [inline]
+ xt_compat_target_from_user+0x232/0x470 net/netfilter/x_tables.c:1129
+ compat_copy_entry_from_user net/ipv6/netfilter/ip6_tables.c:1392 [inline]
+ translate_compat_table+0x1011/0x1720 net/ipv6/netfilter/ip6_tables.c:1455
+ compat_do_replace.constprop.0+0x1f0/0x470 net/ipv6/netfilter/ip6_tables.c:1526
+ do_ip6t_set_ctl+0x5b0/0xb73 net/ipv6/netfilter/ip6_tables.c:1633
+ nf_setsockopt+0x83/0xe0 net/netfilter/nf_sockopt.c:101
+ ipv6_setsockopt+0x122/0x180 net/ipv6/ipv6_sockglue.c:1008
+ udpv6_setsockopt+0x76/0xc0 net/ipv6/udp.c:1626
+ __sys_setsockopt+0x2db/0x610 net/socket.c:2132
+ __do_sys_setsockopt net/socket.c:2143 [inline]
+ __se_sys_setsockopt net/socket.c:2140 [inline]
+ __ia32_sys_setsockopt+0xb9/0x150 net/socket.c:2140
+ do_syscall_32_irqs_on arch/x86/entry/common.c:84 [inline]
+ __do_fast_syscall_32+0x57/0x80 arch/x86/entry/common.c:126
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:149
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+RIP: 0023:0xf7fd3549
+Code: b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 00 00 00 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 eb 0d 90 90 90 90 90 90 90 90 90 90 90 90
+RSP: 002b:00000000f7fad18c EFLAGS: 00000292 ORIG_RAX: 000000000000016e
+RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 0000000000000029
+RDX: 0000000000000040 RSI: 0000000020000a00 RDI: 0000000000000001
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
 
-This patch used get_file_rcu() which only grabs a file if the
-file->f_count is not zero. This is to ensure the file pointer
-is always valid. The above reproducer did not fail for more
-than 30 minutes.
+Allocated by task 6841:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
+ kasan_set_track mm/kasan/common.c:56 [inline]
+ __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:461
+ kmalloc_node include/linux/slab.h:577 [inline]
+ kvmalloc_node+0x61/0xf0 mm/util.c:574
+ kvmalloc include/linux/mm.h:750 [inline]
+ xt_alloc_table_info+0x3c/0xa0 net/netfilter/x_tables.c:1176
+ translate_compat_table+0xc50/0x1720 net/ipv6/netfilter/ip6_tables.c:1442
+ compat_do_replace.constprop.0+0x1f0/0x470 net/ipv6/netfilter/ip6_tables.c:1526
+ do_ip6t_set_ctl+0x5b0/0xb73 net/ipv6/netfilter/ip6_tables.c:1633
+ nf_setsockopt+0x83/0xe0 net/netfilter/nf_sockopt.c:101
+ ipv6_setsockopt+0x122/0x180 net/ipv6/ipv6_sockglue.c:1008
+ udpv6_setsockopt+0x76/0xc0 net/ipv6/udp.c:1626
+ __sys_setsockopt+0x2db/0x610 net/socket.c:2132
+ __do_sys_setsockopt net/socket.c:2143 [inline]
+ __se_sys_setsockopt net/socket.c:2140 [inline]
+ __ia32_sys_setsockopt+0xb9/0x150 net/socket.c:2140
+ do_syscall_32_irqs_on arch/x86/entry/common.c:84 [inline]
+ __do_fast_syscall_32+0x57/0x80 arch/x86/entry/common.c:126
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:149
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
 
-Fixes: eaaacd23910f ("bpf: Add task and task/file iterator targets")
-Suggested-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
+The buggy address belongs to the object at ffff88809c971800
+ which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 929 bytes inside of
+ 1024-byte region [ffff88809c971800, ffff88809c971c00)
+The buggy address belongs to the page:
+page:00000000d9974640 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88809c971000 pfn:0x9c971
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea000269a448 ffffea00027cc908 ffff8880aa040700
+raw: ffff88809c971000 ffff88809c971000 0000000100000001 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88809c971a80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88809c971b00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff88809c971b80: 00 00 fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                               ^
+ ffff88809c971c00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88809c971c80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
+
+
 ---
- kernel/bpf/task_iter.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
-index 232df29793e9..f21b5e1e4540 100644
---- a/kernel/bpf/task_iter.c
-+++ b/kernel/bpf/task_iter.c
-@@ -178,10 +178,11 @@ task_file_seq_get_next(struct bpf_iter_seq_task_fil=
-e_info *info,
- 		f =3D fcheck_files(curr_files, curr_fd);
- 		if (!f)
- 			continue;
-+		if (!get_file_rcu(f))
-+			continue;
-=20
- 		/* set info->fd */
- 		info->fd =3D curr_fd;
--		get_file(f);
- 		rcu_read_unlock();
- 		return f;
- 	}
---=20
-2.24.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
