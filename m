@@ -2,162 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88BC5246EBF
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 19:36:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24FB3246F16
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 19:42:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729101AbgHQRfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 13:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387770AbgHQQca (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 12:32:30 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69AFAC061343
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 09:32:29 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id o23so18507841ejr.1
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 09:32:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tVOlBPcVZ/MzMiL6He5n035C+p6pS5a2mSrnGwQQ1+k=;
-        b=FGG6BtUjs7Qx29iBsLCSi3ZV/1+funzD3UoWTE5ULfkQEFEOPGzZBlsTGGhsLkG0W1
-         jroF5nqJU8e2oz6a9h7+H2dd0wvdt8kOHZiGHOr+3akLD4BlKpsov6TKLEKV2H9UicmZ
-         rhgcR2DFnsNSuo+yn6vlLRTbgy2lg8hLicHw3abqMRgfbyeUVA78vOJXtEk2P80vVhnL
-         R/rbco7bECPL4rbeWU9DLwa1x/e6aPYJLQkvdGZkJH/OT4Yv3z6pL+2PSfULgBmYQxD/
-         1MLX4qI9qSm+bpoavQwY69B5PmBIebrJyHzqnH9qk7dBeLHtWMgNC5dpIvtGj1DGNxVb
-         Kxiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tVOlBPcVZ/MzMiL6He5n035C+p6pS5a2mSrnGwQQ1+k=;
-        b=AeXlKP4ttntZyHnyV5dWMEsbzuJEMJOIlOdwXIr63opI6Z6mVdoPKYawWOfZE5/Hea
-         Brw7CzJ/nz9uuVdNddpbYCnQozFymuGGKnYrn9ygLc93KZ4LV/rxZiuY7s4b5PsD4R70
-         ObBXf/Aw/jARlvZsn9S9D64eQfqpX/s0ZsHonn30B6WcThkQIGg9IAPBssFU5HG2kk9Y
-         MX4G0MdG1iwbMYUE0ch+XTUWftOh3cqqbCNKNJMULzE7h8z4nUOdXTMpwAVppH4u8RMK
-         J0sMFygkkN1VtjrEFjzq9UnL1sm9M47eMkCXeYu+gPKBXi0k/ZmOc+wcUcfY0eDbSfEq
-         u+mA==
-X-Gm-Message-State: AOAM532c0HNU53XMcEbMc4HlDzHdYT7TMxlna7ppvigzV1vLjhDBZoEN
-        lfGDSWuEP850GVMyf6jmYaQ=
-X-Google-Smtp-Source: ABdhPJwaLM09Sug1ATFth9AkFgx72ETX3+G0lOFBmU1vIs6oQlkqn7k03nIyamGb5D3Qo7xtHA16eg==
-X-Received: by 2002:a17:906:7153:: with SMTP id z19mr15458334ejj.319.1597681944774;
-        Mon, 17 Aug 2020 09:32:24 -0700 (PDT)
-Received: from skbuf ([86.126.22.216])
-        by smtp.gmail.com with ESMTPSA id t6sm14568045ejc.40.2020.08.17.09.32.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 09:32:24 -0700 (PDT)
-Date:   Mon, 17 Aug 2020 19:32:22 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, Jakub Kicinski <kuba@kernel.org>
-Subject: Re: devlink-sb on ocelot switches
-Message-ID: <20200817163222.opf576vyvapk4bqm@skbuf>
-References: <20200814104228.eidqu7fd7mfyur5n@skbuf>
+        id S1731546AbgHQRmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 13:42:37 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:33806 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731550AbgHQRma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 13:42:30 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07HHTGOi017614
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:42:29 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=Wl1nAbsoAEGytOCmCAQ3djPCVpfOiulFd7onoiO/9fM=;
+ b=oFcoCiIPc95yosBGp+LMhETVgmaVDUZDY3kIOViM/9ylLnM8EbnU+e/9J3hqXrE0c0Ro
+ /NOWM0xF1LOqpsRuANixjF52uVPugssKEB6AE35udjW/u5LblcO2CWYdRDIAgB0b7XX2
+ X5+oipHSjRoVTNioAluKKHgqSft6DrIY4Os= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 32xyyp6f1r-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:42:29 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 17 Aug 2020 10:42:26 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id D724D3704B8B; Mon, 17 Aug 2020 10:42:14 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] bpf: use get_file_rcu() instead of get_file() for task_file iterator
+Date:   Mon, 17 Aug 2020 10:42:14 -0700
+Message-ID: <20200817174214.252601-1-yhs@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200814104228.eidqu7fd7mfyur5n@skbuf>
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-17_13:2020-08-17,2020-08-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ bulkscore=0 impostorscore=0 mlxscore=0 suspectscore=9 clxscore=1015
+ mlxlogscore=815 phishscore=0 lowpriorityscore=0 spamscore=0 adultscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008170127
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So after some more fiddling, it looks like I got the diagram wrong.
-Here's how the switch really consumes resources. 4 lookups in parallel,
-they are ORed in 2 pairs (ingress with egress forms a pair), and the
-result is ANDed. The consumptions for ingress and egress are really
-completely independent.
+With latest `bpftool prog` command, we observed the following kernel
+panic.
+    BUG: kernel NULL pointer dereference, address: 0000000000000000
+    #PF: supervisor instruction fetch in kernel mode
+    #PF: error_code(0x0010) - not-present page
+    PGD dfe894067 P4D dfe894067 PUD deb663067 PMD 0
+    Oops: 0010 [#1] SMP
+    CPU: 9 PID: 6023 ...
+    RIP: 0010:0x0
+    Code: Bad RIP value.
+    RSP: 0000:ffffc900002b8f18 EFLAGS: 00010286
+    RAX: ffff8883a405f400 RBX: ffff888e46a6bf00 RCX: 000000008020000c
+    RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff8883a405f400
+    RBP: ffff888e46a6bf50 R08: 0000000000000000 R09: ffffffff81129600
+    R10: ffff8883a405f300 R11: 0000160000000000 R12: 0000000000002710
+    R13: 000000e9494b690c R14: 0000000000000202 R15: 0000000000000009
+    FS:  00007fd9187fe700(0000) GS:ffff888e46a40000(0000) knlGS:000000000=
+0000000
+    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+    CR2: ffffffffffffffd6 CR3: 0000000de5d33002 CR4: 0000000000360ee0
+    DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+    DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+    Call Trace:
+     <IRQ>
+     rcu_core+0x1a4/0x440
+     __do_softirq+0xd3/0x2c8
+     irq_exit+0x9d/0xa0
+     smp_apic_timer_interrupt+0x68/0x120
+     apic_timer_interrupt+0xf/0x20
+     </IRQ>
+    RIP: 0033:0x47ce80
+    Code: Bad RIP value.
+    RSP: 002b:00007fd9187fba40 EFLAGS: 00000206 ORIG_RAX: ffffffffffffff1=
+3
+    RAX: 0000000000000002 RBX: 00007fd931789160 RCX: 000000000000010c
+    RDX: 00007fd9308cdfb4 RSI: 00007fd9308cdfb4 RDI: 00007ffedd1ea0a8
+    RBP: 00007fd9187fbab0 R08: 000000000000000e R09: 000000000000002a
+    R10: 0000000000480210 R11: 00007fd9187fc570 R12: 00007fd9316cc400
+    R13: 0000000000000118 R14: 00007fd9308cdfb4 R15: 00007fd9317a9380
 
-                          Frame forwarding decision taken
-                                       |
-                                       |
-                                       v
-       +--------------------+--------------------+--------------------+
-       |                    |                    |                    |
-       v                    v                    v                    v
- Ingress memory       Egress memory        Ingress frame        Egress frame
-     check                check           reference check      reference check
-       |                    |                    |                    |
-       v                    v                    v                    v
-  BUF_Q_RSRV_I   ok    BUF_Q_RSRV_E   ok    REF_Q_RSRV_I   ok     REF_Q_RSRV_E   ok
-(src port, prio) -+  (dst port, prio) -+  (src port, prio) -+   (dst port, prio) -+
-       |          |         |          |         |          |         |           |
-       | exceeded |         | exceeded |         | exceeded |         | exceeded  |
-       |          |         |          |         |          |         |           |
-       v          |         v          |         v          |         v           |
-  BUF_P_RSRV_I  ok|    BUF_P_RSRV_E  ok|    REF_P_RSRV_I  ok|    REF_P_RSRV_E   ok|
-   (src port) ----+     (dst port) ----+     (src port) ----+     (dst port) -----+
-       |          |         |          |         |          |         |           |
-       | exceeded |         | exceeded |         | exceeded |         | exceeded  |
-       |          |         |          |         |          |         |           |
-       v          |         v          |         v          |         v           |
- BUF_PRIO_SHR_I ok|   BUF_PRIO_SHR_E ok|   REF_PRIO_SHR_I ok|   REF_PRIO_SHR_E  ok|
-     (prio) ------+       (prio) ------+       (prio) ------+       (prio) -------+
-       |          |         |          |         |          |         |           |
-       | exceeded |         | exceeded |         | exceeded |         | exceeded  |
-       |          |         |          |         |          |         |           |
-       v          |         v          |         v          |         v           |
- BUF_COL_SHR_I  ok|   BUF_COL_SHR_E  ok|   REF_COL_SHR_I  ok|   REF_COL_SHR_E   ok|
-      (dp) -------+        (dp) -------+        (dp) -------+        (dp) --------+
-       |          |         |          |         |          |         |           |
-       | exceeded |         | exceeded |         | exceeded |         | exceeded  |
-       |          |         |          |         |          |         |           |
-       v          v         v          v         v          v         v           v
-      fail     success     fail     success     fail     success     fail      success
-       |          |         |          |         |          |         |           |
-       v          v         v          v         v          v         v           v
-       +-----+----+         +-----+----+         +-----+----+         +-----+-----+
-             |                    |                    |                    |
-             +-------> OR <-------+                    +-------> OR <-------+
-                        |                                        |
-                        v                                        v
-                        +----------------> AND <-----------------+
-                                            |
-                                            v
-                                    FIFO drop / accept
+After further analysis, the bug is triggered by
+Commit eaaacd23910f ("bpf: Add task and task/file iterator targets")
+which introduced task_file bpf iterator, which traverses all open file
+descriptors for all tasks in the current namespace.
+The latest `bpftool prog` calls a task_file bpf program to traverse
+all files in the system in order to associate processes with progs/maps, =
+etc.
+When traversing files for a given task, rcu read_lock is taken to
+access all files in a file_struct. But it used get_file() to grab
+a file, which is not right. It is possible file->f_count is 0 and
+get_file() will unconditionally increase it.
+Later put_file() may cause all kind of issues with the above
+as one of sympotoms.
 
-Something which isn't explicitly said in devlink-sb is whether a pool
-bound to a port-TC is allowed to spill over into the port pool. And
-whether the port pool, in turn, is allowed to spill over into something
-else (a shared pool)?
+The failure can be reproduced with the following steps in a few seconds:
+    $ cat t.c
+    #include <stdio.h>
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <fcntl.h>
+    #include <unistd.h>
 
-If they are, then I could expose BUF_P_RSRV_I (buffer reservation per
-ingress port) as the threshold of the port pool, BUF_Q_RSRV_I and
-BUF_Q_RSRV_E (buffer reservations per QoS class of ingress, and egress,
-ports) as port-TC pools, and I could implicitly configure the remaining
-sharing watermarks to consume the rest of the memory available in the
-pool.
+    #define N 10000
+    int fd[N];
+    int main() {
+      int i;
 
-But by looking at some of the selftests, I don't see any clear
-indication of a test where the occupancy of the port-TC exceeds the size
-of that pool, and what should happen in that case.  Just a vague hint,
-in tools/testing/selftests/drivers/net/mlxsw/sch_ets.sh, that once the
-port-TC pool threshold has been exceeded, the excess should be simply
-dropped:
+      for (i =3D 0; i < N; i++) {
+        fd[i] =3D open("./note.txt", 'r');
+        if (fd[i] < 0) {
+           fprintf(stderr, "failed\n");
+           return -1;
+        }
+      }
+      for (i =3D 0; i < N; i++)
+        close(fd[i]);
 
-	# Set the ingress quota high and use the three egress TCs to limit the
-	# amount of traffic that is admitted to the shared buffers. This makes
-	# sure that there is always enough traffic of all types to select from
-	# for the DWRR process.
-	devlink_port_pool_th_set $swp1 0 12
-	devlink_tc_bind_pool_th_set $swp1 0 ingress 0 12
-	devlink_port_pool_th_set $swp2 4 12
-	devlink_tc_bind_pool_th_set $swp2 7 egress 4 5
-	devlink_tc_bind_pool_th_set $swp2 6 egress 4 5
-	devlink_tc_bind_pool_th_set $swp2 5 egress 4 5
+      return 0;
+    }
+    $ gcc -O2 t.c
+    $ cat run.sh
+    #/bin/bash
+    for i in {1..100}
+    do
+      while true; do ./a.out; done &
+    done
+    $ ./run.sh
+    $ while true; do bpftool prog >& /dev/null; done
 
-So I'm guessing that this is not the same behavior as in ocelot. But,
-truth be told, it doesn't really help either that nfp and mlxsw are
-simply passing these parameters to firmware, not really giving any
-insight into how they are interpreted.
+This patch used get_file_rcu() which only grabs a file if the
+file->f_count is not zero. This is to ensure the file pointer
+is always valid. The above reproducer did not fail for more
+than 30 minutes.
 
-Would it be simpler if I just exposed these watermarks as generic
-devlink resources? Although in a way that would be a wasted opportunity
-for devlink-sb. I also don't think I can monitor occupancy if I model
-them as generic resources.
+Fixes: eaaacd23910f ("bpf: Add task and task/file iterator targets")
+Suggested-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: Yonghong Song <yhs@fb.com>
+---
+ kernel/bpf/task_iter.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Am I missing something?
+diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
+index 232df29793e9..f21b5e1e4540 100644
+--- a/kernel/bpf/task_iter.c
++++ b/kernel/bpf/task_iter.c
+@@ -178,10 +178,11 @@ task_file_seq_get_next(struct bpf_iter_seq_task_fil=
+e_info *info,
+ 		f =3D fcheck_files(curr_files, curr_fd);
+ 		if (!f)
+ 			continue;
++		if (!get_file_rcu(f))
++			continue;
+=20
+ 		/* set info->fd */
+ 		info->fd =3D curr_fd;
+-		get_file(f);
+ 		rcu_read_unlock();
+ 		return f;
+ 	}
+--=20
+2.24.1
 
-Thanks,
--Vladimir
