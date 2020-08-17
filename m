@@ -2,70 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2213245B47
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 06:04:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7474F245B4B
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 06:05:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726480AbgHQEEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 00:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
+        id S1726605AbgHQEFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 00:05:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725765AbgHQEEG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 00:04:06 -0400
+        with ESMTP id S1726420AbgHQEFg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 00:05:36 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECBD7C061388
-        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 21:04:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF10C061388
+        for <netdev@vger.kernel.org>; Sun, 16 Aug 2020 21:05:36 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6104D125007E8;
-        Sun, 16 Aug 2020 20:47:19 -0700 (PDT)
-Date:   Sun, 16 Aug 2020 21:04:04 -0700 (PDT)
-Message-Id: <20200816.210404.1864176276185744630.davem@davemloft.net>
-To:     xiyou.wangcong@gmail.com
-Cc:     netdev@vger.kernel.org,
-        syzbot+0e7181deafa7e0b79923@syzkaller.appspotmail.com,
-        jmaloy@redhat.com, ying.xue@windriver.com,
-        richard.alpe@ericsson.com
-Subject: Re: [Patch net] tipc: fix uninit skb->data in
- tipc_nl_compat_dumpit()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 81AA0125007F3;
+        Sun, 16 Aug 2020 20:48:50 -0700 (PDT)
+Date:   Sun, 16 Aug 2020 21:05:35 -0700 (PDT)
+Message-Id: <20200816.210535.10133417009498191.davem@davemloft.net>
+To:     lucien.xin@gmail.com
+Cc:     netdev@vger.kernel.org, jmaloy@redhat.com, ying.xue@windriver.com,
+        tipc-discussion@lists.sourceforge.net, rdunlap@infradead.org
+Subject: Re: [PATCH net] tipc: not enable tipc when ipv6 works as a module
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200815232915.17625-1-xiyou.wangcong@gmail.com>
-References: <20200815232915.17625-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <d20778039a791b9721bb449d493836edb742d1dc.1597570323.git.lucien.xin@gmail.com>
+References: <d20778039a791b9721bb449d493836edb742d1dc.1597570323.git.lucien.xin@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Aug 2020 20:47:19 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Aug 2020 20:48:50 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <xiyou.wangcong@gmail.com>
-Date: Sat, 15 Aug 2020 16:29:15 -0700
+From: Xin Long <lucien.xin@gmail.com>
+Date: Sun, 16 Aug 2020 17:32:03 +0800
 
-> __tipc_nl_compat_dumpit() has two callers, and it expects them to
-> pass a valid nlmsghdr via arg->data. This header is artificial and
-> crafted just for __tipc_nl_compat_dumpit().
+> When using ipv6_dev_find() in one module, it requires ipv6 not to
+> work as a module. Otherwise, this error occurs in build:
 > 
-> tipc_nl_compat_publ_dump() does so by putting a genlmsghdr as well
-> as some nested attribute, TIPC_NLA_SOCK. But the other caller
-> tipc_nl_compat_dumpit() does not, this leaves arg->data uninitialized
-> on this call path.
+>   undefined reference to `ipv6_dev_find'.
 > 
-> Fix this by just adding a similar nlmsghdr without any payload in
-> tipc_nl_compat_dumpit().
+> So fix it by adding "depends on IPV6 || IPV6=n" to tipc/Kconfig,
+> as it does in sctp/Kconfig.
 > 
-> This bug exists since day 1, but the recent commit 6ea67769ff33
-> ("net: tipc: prepare attrs in __tipc_nl_compat_dumpit()") makes it
-> easier to appear.
-> 
-> Reported-and-tested-by: syzbot+0e7181deafa7e0b79923@syzkaller.appspotmail.com
-> Fixes: d0796d1ef63d ("tipc: convert legacy nl bearer dump to nl compat")
-> Cc: Jon Maloy <jmaloy@redhat.com>
-> Cc: Ying Xue <ying.xue@windriver.com>
-> Cc: Richard Alpe <richard.alpe@ericsson.com>
-> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> Fixes: 5a6f6f579178 ("tipc: set ub->ifindex for local ipv6 address")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Acked-by: Randy Dunlap <rdunlap@infradead.org>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-Applied and queued up for -stable, thanks.
+Applied.
