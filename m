@@ -2,116 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A750247846
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 22:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9766247868
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 22:59:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726853AbgHQUn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 16:43:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726366AbgHQUnY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 16:43:24 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6B7C061389
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 13:43:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=iO3xqP7te8z66ftSGeoWPKMsbPuLBk2Um4g86TIl1SY=; b=Bo6MaBUVdGSk0e/yxyA24+297n
-        RUXNp4aVZxxBS3rIXH0vbI724i/wuAppS/ynNN396FFmRSOVNXbtA5Bs5/rM1kYNwodeHZHzvkq2D
-        v1RjZZnEq6iq03Mlxgy3pHmkhzzadGveH4Hc2BioJjn99v3peZz3KUy12OanMLFZbWpwKlcb/0e51
-        oxZd/ZvydKOe8+VlsPMn5qKc2v78sknmss+9HBalz5yc3UBx3YwxbgG8YVzM7OZLOu38agT3igQtV
-        XNxYstbWQPWGL8W36sAYgLkr+sQsZu+eWLQ9CunhAP1FJIMvoxa0xFFuomVyLv22KRQonoMgKkU0l
-        XdFhztWQ==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k7lyK-0007Iv-Dy; Mon, 17 Aug 2020 20:43:13 +0000
-Subject: Re: [PATCH net] tipc: not enable tipc when ipv6 works as a module
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        tipc-discussion@lists.sourceforge.net
-References: <d20778039a791b9721bb449d493836edb742d1dc.1597570323.git.lucien.xin@gmail.com>
- <CAM_iQpU7iCjAZ3w4cnzZx1iBpUySzP-d+RDwaoAsqTaDBiVMVQ@mail.gmail.com>
- <CADvbK_fL=gkc_RFzjsFF0dq+7N1QGwsvzbzpP9e4PzyF7vsO-g@mail.gmail.com>
- <CAM_iQpWQ6um=-oYK4_sgY3=3PsV1GEgCfGMYXANJ-spYRcz2XQ@mail.gmail.com>
- <f46edd0e-f44c-e600-2026-2d2ca960a94b@infradead.org>
- <CAM_iQpVkDg3WKik_j98gdvVirkQdaTQ2zzg8GVzBeij6i+aNnQ@mail.gmail.com>
- <1b45393f-bc09-d981-03bd-14c4088178ad@infradead.org>
- <CAM_iQpWOTLKHsJYDsCM3Pd1fsqPxqj8cSP=nL63Dh0esiJ2QfA@mail.gmail.com>
- <98214acb-5e9f-0477-bc97-1f3b2c690f14@infradead.org>
- <CAM_iQpUQtof+dQseFjS6fxucUZe5tkhUW5EvK+XtZE=cRRq4-A@mail.gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <6d7aa56a-5324-87c9-4150-b73be7e3c0a6@infradead.org>
-Date:   Mon, 17 Aug 2020 13:43:09 -0700
+        id S1727007AbgHQU7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 16:59:18 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:36776 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726228AbgHQU7R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 16:59:17 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 07HKwfO3028875;
+        Mon, 17 Aug 2020 15:58:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1597697921;
+        bh=sZfjcuY3ET6KjajkQkKEOmAhEG2PZKNSiWaJZrOVbUE=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=qvZfWvIjepWO8bOVGrRdhY0HfVM2GRMNoTXv1IuKSV5PLpSydT1/oqq9CtMKbk0b0
+         lvSsBmyWNzmhiANo7LNagRcFeaj8CRGDXSWyxyBpsHyyM4WARy0ICV74XJzEdQ0WOR
+         jMXf7apDG4h0b6wOF6RqrEaKx+F4+Uw/jUNgSFps=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 07HKwfsm116665
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 17 Aug 2020 15:58:41 -0500
+Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 17
+ Aug 2020 15:58:41 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Mon, 17 Aug 2020 15:58:41 -0500
+Received: from [10.250.227.175] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07HKwdLv013286;
+        Mon, 17 Aug 2020 15:58:40 -0500
+Subject: Re: [net-next iproute2 PATCH v4 1/2] iplink: hsr: add support for
+ creating PRP device similar to HSR
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-api@vger.kernel.org>,
+        <nsekhar@ti.com>, <vinicius.gomes@intel.com>,
+        <kuznet@ms2.inr.ac.ru>
+References: <20200806203712.2712-1-m-karicheri2@ti.com>
+ <20200806203712.2712-2-m-karicheri2@ti.com>
+ <20200816154608.0fe0917b@hermes.lan>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <682a636a-a42b-f40d-853c-3ae7d3c4bd82@ti.com>
+Date:   Mon, 17 Aug 2020 16:58:39 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpUQtof+dQseFjS6fxucUZe5tkhUW5EvK+XtZE=cRRq4-A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200816154608.0fe0917b@hermes.lan>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/17/20 1:29 PM, Cong Wang wrote:
-> On Mon, Aug 17, 2020 at 12:55 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->>
->> TIPC=m and IPV6=m builds just fine.
->>
->> Having tipc autoload ipv6 is a different problem. (IMO)
->>
->>
->> This Kconfig entry:
->>  menuconfig TIPC
->>         tristate "The TIPC Protocol"
->>         depends on INET
->> +       depends on IPV6 || IPV6=n
->>
->> says:
->> If IPV6=n, TIPC can be y/m/n.
->> If IPV6=y/m, TIPC is limited to whatever IPV6 is set to.
+
+
+On 8/16/20 6:46 PM, Stephen Hemminger wrote:
+> On Thu, 6 Aug 2020 16:37:11 -0400
+> Murali Karicheri <m-karicheri2@ti.com> wrote:
 > 
-> Hmm, nowadays we _do_ have IPV6=y on popular distros.
-> So this means TIPC would have to be builtin after this patch??
-
-No, it does not mean that. We can still have IPV6=y and TIPC=m.
-
-Hm, maybe I should have said this instead:
-
-  If IPV6=y/m, TIPC is limited _by_ whatever IPV6 is set to.
-                (instead of    _to_ )
-
-Does that help any?
-
-The "limited" in Kconfig rules is a "less than or equal to"
-limit, where 'm' < 'y'.
-
-
-
-> Still sounds harsh, right?
+>> +	
 > 
-> At least on my OpenSUSE I have CONFIG_IPV6=y and
-> CONFIG_TIPC=m.
+>> +		print_int(PRINT_ANY,
+>> +			  "proto",
+>> +			  "proto %d ",
+>> +			  rta_getattr_u8(tb[IFLA_HSR_PROTOCOL]));
 > 
->> TIPC cannot be =y unless IPV6=y.
+> Since this unsigned value, you probably want to use print_uint, or print_hhu.
+> Also please put as many arguments on one line that will fit in 80 (to 90) characters.
 > 
-> Interesting, I never correctly understand that "depends on"
-> behavior.
+> 	if (tb[IFLA_HSR_PROTOCOL])
+> 		print_hhu(PRINT_ANY, "proto", "proto %hhu ",
+> 			  rta_getattr_u8(tb[IFLA_HSR_PROTOCOL]));
 > 
-> But even if it builds, how could TIPC module find and load
-> IPV6 module? Does IPV6 module automatically become its
-> dependency now I think?
-
-Sorry, I don't know about this.
-
-
+Ok. Will send v5 shortly for this.
 -- 
-~Randy
-
+Murali Karicheri
+Texas Instruments
