@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B42D246E61
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 19:28:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 206AA246DD7
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 19:15:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389653AbgHQR2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 13:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49412 "EHLO
+        id S2389563AbgHQRPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 13:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389323AbgHQRKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 13:10:18 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C87DC061346
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:08:38 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id p13so15167985ilh.4
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:08:38 -0700 (PDT)
+        with ESMTP id S2389552AbgHQRPM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 13:15:12 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30978C061389
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:15:12 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id p24so18605932ejf.13
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 10:15:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0396Qk/kkXW8j7MAw7+L0nepbmJzGnj/11pALo007II=;
-        b=tR0pitHjN47EhgzXX5ChcXB/+79ULTqnjnvmr5YE37Awhbf5brZDbVN902QzaFfjdw
-         w32ak2NVMm2/4FHEZ7JSeWTZ36OIatV30xFo8xeRgZ8ZG7nu3PsdvqclElCuIlpm0ajd
-         5ZFbW52mCOAs0DpGYnUThajl03rHrhMiLGGVEyW/naX40n95NFR+rFlsvIJhEAFIzfjV
-         7g4HicbxDForl5oDW16Z0+bj1xFMSCDycK+jfLz+LRc6NvkkFyiideh7WHMRcAcBt+43
-         Ek4tPrYPk792eWBZq+3PVlv8nJL14f7lkT86l8ElhAwTF5a07t3wgKe3hmPkDACM5YS/
-         BD5A==
+        bh=m0louAs209E+viMkPXsjOrvTJteMYbc7vLeOipsYyCY=;
+        b=D4+SCqsfm1z28hXq9eRjLAxOCApG9yyE8ImhuPLCL7Qp7uhZTxbwJ10U0X19cVqisY
+         eIbWTChGFLWfVy0EoB3TkuQ+h3c1rnAV5QPtxf+vNiW+Ltnj6kzCg/xZmYnmatDcNcfO
+         0lUYZnQq1S1lF5lMMwl2e8MLzToUs2CKl7dUkc7TphkaGh8cNI2sq/wuB1SQYfjW3Fao
+         gqWy7AD5WKY625xSBGrKDf3athwuVRoyZl/e+h6PmgAzonwSkxXVbnnrqrhCQO2y4nGP
+         IO8PjIGMWpN8IfAGT7ih62pfWAzdBK7oMXQfMngIq34Wu+Vhy4657MpODgFcX8/IHdAd
+         4FrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=0396Qk/kkXW8j7MAw7+L0nepbmJzGnj/11pALo007II=;
-        b=D/cd7d1r7QZ7ZwyJ/I4JxapAOGAAXLtgGcM7ufAe+wRuanjvJ33lsYB4TY+OxCU2DJ
-         S4PyWaiqfpDaw+Qz0E3aFL0fWqd6dvr+fTv8Sln+udzta35tkp4nhjnOGcevssX8aP1z
-         95CqgMHBeyp2o84EL+OsMw1kaB5wyMoU7NQgAHDLkUKu2FvnInQykCveHKgfxkH+znAW
-         Z21xcaoIlKN3myhdRt5/eWvBRgCAfBLWi36AvnXRKi0IF4oS3/WxYUxQZnHkw3AaVvcZ
-         hJnVbZYv2fVoHjTUm3fA6ELoGrdCopkR5ATNpbF7sDunTCLqszzYPGZK4eim+J4tPJ72
-         xcNQ==
-X-Gm-Message-State: AOAM5332tkZ0rOsgnKRNiY9rbAlOEkHhRBfDz/zK30b29kSArVSKRjP7
-        XL8wsNw8uVRrzENA6DFLwGI=
-X-Google-Smtp-Source: ABdhPJyPsuT7ux0RgwRArOaw5kRGHct/7pL7DL1SBuv7VPGCVi1SnGGRju1LONFHHL2aAWhTXdcGwQ==
-X-Received: by 2002:a05:6e02:ef3:: with SMTP id j19mr14186679ilk.88.1597684117483;
-        Mon, 17 Aug 2020 10:08:37 -0700 (PDT)
+        bh=m0louAs209E+viMkPXsjOrvTJteMYbc7vLeOipsYyCY=;
+        b=oCg58hPiGLyNjni7DYt0q0w+jqchlzyQiytrM8Qo88k3p911CbDXXpvdqpjuzqa0Qj
+         Q4YWeeBkRqeWwBsM3OUuDVPSce94ebHxDUDCgmVxzvYNSeAM4Hqfv94vesRhaMS6R2Hs
+         5w/OYB2QhaTQ+ewXxk1v1OeaGFQ1pdOXd+zKIwC5ktJLN/Y5MhUXXMXQfadNapfxZeGk
+         GsHP0w0hfO4zjzod7jq6Z2WCQWaivew0rXtiKjQKNjjwB1el+4Wx3/bedkzDjyilPQ6Q
+         s73dOrXEzyyukWdrGDAVVf0aNjSF9OlqYel+UzLJBbAGU8Omt4yavPO4wGBj2z00grvA
+         tONQ==
+X-Gm-Message-State: AOAM533Crz2NxEHqPYKjApP6YEHg7u2rXrP689yrBsaH8ha9uc5FrPry
+        Xv86k4/8iBsOHtv+s4k5EwK+aFX7zDE=
+X-Google-Smtp-Source: ABdhPJyjyrEGO47VGjqO9fceakNdpM/3P8hEBUdiTnU7U9nznSfH64FG1SlKDokSXFEvc5krOMMo+Q==
+X-Received: by 2002:a17:906:c8d2:: with SMTP id gc18mr17200792ejb.24.1597684510861;
+        Mon, 17 Aug 2020 10:15:10 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id u124sm9556756iod.20.2020.08.17.10.08.35
+        by smtp.googlemail.com with ESMTPSA id i9sm14616011ejb.48.2020.08.17.10.15.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Aug 2020 10:08:36 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/7] net: dsa: Add helper to convert from devlink
- to ds
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
+        Mon, 17 Aug 2020 10:15:10 -0700 (PDT)
+Subject: Re: [PATCH net-next 5/7] net: dsa: mv88e6xxx: Add devlink regions
+To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>
 References: <20200816194316.2291489-1-andrew@lunn.ch>
- <20200816194316.2291489-2-andrew@lunn.ch>
+ <20200816194316.2291489-6-andrew@lunn.ch>
+ <20200816221205.mspo63dohn7pvxg4@skbuf> <20200816223941.GC2294711@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -110,25 +111,87 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <9c3838dd-a9f8-3661-b9f7-683f9628770b@gmail.com>
-Date:   Mon, 17 Aug 2020 10:08:35 -0700
+Message-ID: <93a2b736-ff45-4529-c63a-b384db12b232@gmail.com>
+Date:   Mon, 17 Aug 2020 10:15:07 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200816194316.2291489-2-andrew@lunn.ch>
+In-Reply-To: <20200816223941.GC2294711@lunn.ch>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/16/20 12:43 PM, Andrew Lunn wrote:
-> Given a devlink instance, return the dsa switch it is associated to.
+On 8/16/20 3:39 PM, Andrew Lunn wrote:
+>>> +static const struct devlink_region_ops *mv88e6xxx_region_port_ops[] = {
+>>> +	&mv88e6xxx_region_port_0_ops,
+>>> +	&mv88e6xxx_region_port_1_ops,
+>>> +	&mv88e6xxx_region_port_2_ops,
+>>> +	&mv88e6xxx_region_port_3_ops,
+>>> +	&mv88e6xxx_region_port_4_ops,
+>>> +	&mv88e6xxx_region_port_5_ops,
+>>> +	&mv88e6xxx_region_port_6_ops,
+>>> +	&mv88e6xxx_region_port_7_ops,
+>>> +	&mv88e6xxx_region_port_8_ops,
+>>> +	&mv88e6xxx_region_port_9_ops,
+>>> +	&mv88e6xxx_region_port_10_ops,
+>>> +	&mv88e6xxx_region_port_11_ops,
+>>> +};
+>>> +
+>>
+>> Sounds like there should maybe be an abstraction for 'per-port regions' in
+>> devlink? I think your approach hardly scales if you start having
+>> switches with more than 11 ports.
 > 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> mv88e6xxx is unlikely to have more an 11 ports. Marvell had to move
+> bits around in registers in non-compatible ways to support the 6390
+> family with this number of ports. I doubt we will ever see a 16 port
+> mv88e6xxx switch, the registers are just too congested.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Any number greater than 1 could justify finding a solution that scales.
+
+> 
+> So this scales as far as it needs to scale.
+> 
+>>> +/* The ATU entry varies between chipset generations. Define a generic
+>>> + * format which covers all the current and hopefully future
+>>> + * generations
+>>> + */
+>>
+>> Could you please present this generic format to us? Maybe my interpretation of
+>> the word "generic" is incorrect in this context?
+> 
+> I mean generic across all mv88e6xxx switches. The fid has been slowly
+> getting bigger from generation to generation. If i remember correctly,
+> it start off as 6 bits. 2 more bits we added, in a different
+> register. Then it got moved into a new register and made 14 bits in
+> size. There are also some bits in the atu_op register which changed
+> meaning over time.
+> 
+> In order to decode any of this information in the regions, you need to
+> known the specific switch the dump came from. But that is the whole
+> point of regions.
+> 
+> https://www.kernel.org/doc/html/latest/networking/devlink/devlink-region.html
+> 
+>    As regions are likely very device or driver specific, no generic
+>    regions are defined. See the driver-specific documentation files
+>    for information on the specific regions a driver supports.
+> 
+> This should also make the context of 'generic' more clear.
+
+Looking at the documentation above (assuming it is up to date), these
+are raw hex dumps of the region, which is mildly useful.
+
+If we were to pretty print those regions such that they can fully
+replace the infamous debugfs interface patch from Vivien that has been
+floated around before, what other information is available (besides the
+driver name) for the user-space tools to do that pretty printing?
+
+Right now, as with any single user facility it is a bit difficult to
+determine whether a DSA common representation would be warranted.
 -- 
 Florian
