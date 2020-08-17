@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EFCF2462E4
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 11:19:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADBA52462F0
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 11:19:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728883AbgHQJTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 05:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33012 "EHLO
+        id S1728897AbgHQJTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 05:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726676AbgHQJTa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 05:19:30 -0400
+        with ESMTP id S1726161AbgHQJTp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 05:19:45 -0400
 Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75806C061389;
-        Mon, 17 Aug 2020 02:19:30 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id y10so5635257plr.11;
-        Mon, 17 Aug 2020 02:19:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95351C061389;
+        Mon, 17 Aug 2020 02:19:45 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id s14so1225261plp.4;
+        Mon, 17 Aug 2020 02:19:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ifLfIrBu1ltO21juvrs7/f94zIPbflxds2FmAIn0JZY=;
-        b=QLC6x/O13MeP0lPsSOPKaI+ocf7oT0PGwI9jaqY5n+w05x+fnihg68gNW9IMTCYLmr
-         QP7/v8OCTappeLr1ZuVp0BsTJ1mH85ENUZ2a6AmLJxjUUhw01jO65HrM9m3jJ/8fkzOD
-         /S951cp1wfO+Ld6aPWrVxO7J0pQj6AA1qxc5UAopaYjDT3vKbgs6OuTAyMB506fY0UDH
-         5Vov97HYXFpYb/YY3HH4v98ijkrDRUNEPcHpqzt4ZRRsovwJz6805sBa4AZVV67aGl1m
-         cckpnrRBYuVhiBXYyB2AdVauJXp4muM3muUnNrrm5+mb6Juwp+3iKvIPDL2fSNnGn3kS
-         Vy6Q==
+        bh=rg9O+UuIrcRklqdLDyvqN900SVFxVyljAa/s7srCNnQ=;
+        b=WvuNpwFGNWbf3ugG14n+zwKOY/otFa6nSLps1Uk3WhYO9QhlgfX29+70gj4yecSVqe
+         YmEaWyKwvwZLdqCS1f4rjFzeI/WYV2mrJXFqK7u1fv3j1mD6vv7ArpSQ8eB9kebxavUo
+         v4gjm/SQe2dmKaNUs5jSYqEpMcOQLTy1XStSEI/HRZPc81UrOC06O4IvkZlb9P+d+J9+
+         6iZP3dRMy48wvQtGHCCdONIoXtX+tgg7bwCEGbZzuseWjZ9rC+VhjkH7FoBRe7RFBqof
+         Eu7g0wB9F52zpe5wgpjT7872Gbi0ZB7cwZGvpBfTBYz4nR6UMl9C43xvhapmPwtLTJTg
+         rU/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ifLfIrBu1ltO21juvrs7/f94zIPbflxds2FmAIn0JZY=;
-        b=S2zM3R+rTji5Sy2aSEw8VnUzNnVaMCTkCZXvuLb8xwIRUr4o4MQt6PPfgozSkzzX8Y
-         k5+uwHjghyUDFv++6dcxGY8Q/FIAXdsFKvBaCpUKizDuZ3TjOy7A0Kxfxd9E+2Svwg6B
-         aNHEEjpyBsfbh49GI3UvdvI4kC19FfCtU+HwUJfiO5Nzx7hEFFksJP2ekXaPv0TzMnaA
-         qPObjNN2zUSS/E2pkOjSKPdaeVCPcV+TDwBoiLp21Y5aegqG/62BDQVFdxqYVD4Qmjqq
-         NRlA2LCCrNvs25vX9GmfefvET3cMSiClPyniloRvRWV77FB+AjmeVqjxO9xerATKp2vL
-         wihA==
-X-Gm-Message-State: AOAM530flyj8iCrJg8pVBxxwuPFhwNnLKdAKRD73tbGAXZeMJ9ibT1Cx
-        viO/8Ie7nx4ddSw4253Pr8o=
-X-Google-Smtp-Source: ABdhPJwQiN0j3I0XTBAoTEh/kHlRdKQRBPrBZjjvBv7FEdQfK+kQb/LL0lHsiyq2Kw2a6+jej7syqg==
-X-Received: by 2002:a17:90a:2210:: with SMTP id c16mr12291145pje.65.1597655969939;
-        Mon, 17 Aug 2020 02:19:29 -0700 (PDT)
+        bh=rg9O+UuIrcRklqdLDyvqN900SVFxVyljAa/s7srCNnQ=;
+        b=lxu1YSH7xQ7rjeymp6hcGLdiBpFDXJpBb++whYOD6eGJqYGlTHprBU8L1mVijUbt+/
+         NgJSpf7xlFYz1dXWiaVnSTrUhpqwPMTyse/oy5biWNBUnCHpk0zWUkq3CAL/zj1Wi1N+
+         GM9fsM5qY2LcVencbbY9/Z/2ZFitQxHImpNRVmEYbTRifhjIzjhp8ZbfFdlzo9D8XS9E
+         u1p0Px4RD55UVdBy0rTdBTMx0U/kX63pQz401pF0/bJd0tMdQ0pQytD8nP7dVT1bUFqa
+         6er39YhVyfDZCk6h0VPbVPbDvpr7mVUltsB80FCPrwp7oSdKlS4gNUGiJmf5UMYddp9+
+         5Srw==
+X-Gm-Message-State: AOAM530bjgW6T0a4QWP4EKVcuDqprbzYkxcI2JO9IPOcdA1RkyFg9FSn
+        Fps+7UUheC8QA0UHPyfc7vo=
+X-Google-Smtp-Source: ABdhPJxVPsBMIEeexKvgRfN8Y85NhtB5FsOgXp8HBPraiCyANuba28QRU7wOPQwsX7fudbCrO/coPA==
+X-Received: by 2002:a17:902:6b05:: with SMTP id o5mr10459515plk.173.1597655985094;
+        Mon, 17 Aug 2020 02:19:45 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id r25sm15971028pgv.88.2020.08.17.02.19.16
+        by smtp.gmail.com with ESMTPSA id r25sm15971028pgv.88.2020.08.17.02.19.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 02:19:29 -0700 (PDT)
+        Mon, 17 Aug 2020 02:19:44 -0700 (PDT)
 From:   Allen Pais <allen.cryptic@gmail.com>
 To:     jdike@addtoit.com, richard@nod.at, anton.ivanov@cambridgegreys.com,
         3chas3@gmail.com, axboe@kernel.dk, stefanr@s5r6.in-berlin.de,
@@ -70,9 +70,9 @@ Cc:     keescook@chromium.org, linux-um@lists.infradead.org,
         linux-spi@vger.kernel.org, devel@driverdev.osuosl.org,
         Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH 1/2] mailbox: bcm: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 14:46:08 +0530
-Message-Id: <20200817091617.28119-14-allen.cryptic@gmail.com>
+Subject: [PATCH 1/2] memstick: jmb38x: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 14:46:09 +0530
+Message-Id: <20200817091617.28119-15-allen.cryptic@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200817091617.28119-1-allen.cryptic@gmail.com>
 References: <20200817091617.28119-1-allen.cryptic@gmail.com>
@@ -91,34 +91,36 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/mailbox/bcm-pdc-mailbox.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/memstick/host/jmb38x_ms.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/mailbox/bcm-pdc-mailbox.c b/drivers/mailbox/bcm-pdc-mailbox.c
-index 53945ca5d785..5b375985f7b8 100644
---- a/drivers/mailbox/bcm-pdc-mailbox.c
-+++ b/drivers/mailbox/bcm-pdc-mailbox.c
-@@ -962,9 +962,9 @@ static irqreturn_t pdc_irq_handler(int irq, void *data)
-  * a DMA receive interrupt. Reenables the receive interrupt.
-  * @data: PDC state structure
-  */
--static void pdc_tasklet_cb(unsigned long data)
-+static void pdc_tasklet_cb(struct tasklet_struct *t)
+diff --git a/drivers/memstick/host/jmb38x_ms.c b/drivers/memstick/host/jmb38x_ms.c
+index 4a6b866b0291..2bcf5ce113bd 100644
+--- a/drivers/memstick/host/jmb38x_ms.c
++++ b/drivers/memstick/host/jmb38x_ms.c
+@@ -603,10 +603,10 @@ static void jmb38x_ms_abort(struct timer_list *t)
+ 	spin_unlock_irqrestore(&host->lock, flags);
+ }
+ 
+-static void jmb38x_ms_req_tasklet(unsigned long data)
++static void jmb38x_ms_req_tasklet(struct tasklet_struct *t)
  {
--	struct pdc_state *pdcs = (struct pdc_state *)data;
-+	struct pdc_state *pdcs = from_tasklet(pdcs, t, rx_tasklet);
+-	struct memstick_host *msh = (struct memstick_host *)data;
+-	struct jmb38x_ms_host *host = memstick_priv(msh);
++	struct jmb38x_ms_host *host = from_tasklet(host, t, notify);
++	struct memstick_host *msh = host->msh;
+ 	unsigned long flags;
+ 	int rc;
  
- 	pdc_receive(pdcs);
+@@ -868,7 +868,7 @@ static struct memstick_host *jmb38x_ms_alloc_host(struct jmb38x_ms *jm, int cnt)
+ 	host->irq = jm->pdev->irq;
+ 	host->timeout_jiffies = msecs_to_jiffies(1000);
  
-@@ -1589,7 +1589,7 @@ static int pdc_probe(struct platform_device *pdev)
- 	pdc_hw_init(pdcs);
+-	tasklet_init(&host->notify, jmb38x_ms_req_tasklet, (unsigned long)msh);
++	tasklet_setup(&host->notify, jmb38x_ms_req_tasklet);
+ 	msh->request = jmb38x_ms_submit_req;
+ 	msh->set_param = jmb38x_ms_set_param;
  
- 	/* Init tasklet for deferred DMA rx processing */
--	tasklet_init(&pdcs->rx_tasklet, pdc_tasklet_cb, (unsigned long)pdcs);
-+	tasklet_setup(&pdcs->rx_tasklet, pdc_tasklet_cb);
- 
- 	err = pdc_interrupts_init(pdcs);
- 	if (err)
 -- 
 2.17.1
 
