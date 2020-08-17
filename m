@@ -2,133 +2,645 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B161247553
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 21:22:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FBFA2474F9
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 21:18:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392428AbgHQTWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 15:22:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730177AbgHQPfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 11:35:52 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5996AC061342
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 08:35:51 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id o184so8488056vsc.0
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 08:35:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cEb0zHexycrquu3SwU59Hw8JXEFzK4Mw7ngI8zvr3VI=;
-        b=V4ZaNW8MWoSUr+VbOvxeL19hA8gW8Jk5UzG/GuZxH3yhK8E3jXJXAP4toAEM8V3oTz
-         q+ijHftIXg0rXyZGC9NaV4x5ytKxFXDJzDuMunixH7RBsWc3j6/g90oTWHTiY3AlodLe
-         wE5X6d//CtVdFRWPCnguXBWnD7GtBrwLoYcLZg/28euJFhXigI4SmNdZy9+p0ahbDYYN
-         XVOyhIepciHW0XE0rv2qeUCdkQEul81K+8bhTHlZVjvM2H6r+Uw4Q1OYzGWDgYANng4m
-         cQJSCb+pRLHAbpE/JvxQDZfrQYTV/Bnp27sRXTjz2GX714jpO0EzmY+iGF3+ZWXtYhXf
-         EzdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cEb0zHexycrquu3SwU59Hw8JXEFzK4Mw7ngI8zvr3VI=;
-        b=IbpDkNIBU852j8TvUWM10DYfsUZs1v8cMK9ImoBXd4ukTSbfuznJVoTIBxBkx7tkiu
-         DEWp4skVQe1etyh2yhDO91QrGyET7RmTVW87ScYZKzy0o7wLMdN+FRRPNRRe5Z18oj8R
-         a9pPw4iauWW8u39J8AYc+bfE2RcSXXOWWBVfC/Y7ohqGMRqcKoA8ykidyBLTrlSlEvXU
-         pNNu85W9Zdb5WuwfLXFPI8NbuPdARKo1Ykl4nLYGamsUOdmIXiEnNBXvsjvZi6hYalBM
-         dahCQbvDMbqf0UH10gcd7apo7E1i7B6yHUykkAGLV3hJvCz9fdKjNWmHpmyITf8fTU12
-         f7CQ==
-X-Gm-Message-State: AOAM531F6MQiM46dD4Tyw8jhS4Qr+c1hF/cfZ+DWDcvDTGTkJWNgHLWe
-        IcOfP9T0mEACaqCNlVBZ82YROlT6Imsmcg==
-X-Google-Smtp-Source: ABdhPJxm+cZDQWLhUiaaEc6b0yojNSzfDjacWpSdPB6vlzrJ6TwI6wpIWcGJ32eAPHtGODq8E00VmA==
-X-Received: by 2002:a67:3249:: with SMTP id y70mr8642932vsy.199.1597678549905;
-        Mon, 17 Aug 2020 08:35:49 -0700 (PDT)
-Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
-        by smtp.gmail.com with ESMTPSA id y6sm3591186vke.35.2020.08.17.08.35.48
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Aug 2020 08:35:48 -0700 (PDT)
-Received: by mail-ua1-f45.google.com with SMTP id z12so4851727uam.12
-        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 08:35:48 -0700 (PDT)
-X-Received: by 2002:ab0:2704:: with SMTP id s4mr7334531uao.141.1597678547765;
- Mon, 17 Aug 2020 08:35:47 -0700 (PDT)
+        id S1730635AbgHQTRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 15:17:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46500 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730599AbgHQPi1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Aug 2020 11:38:27 -0400
+Received: from localhost (104.sub-72-107-126.myvzw.com [72.107.126.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9D7EC22C9F;
+        Mon, 17 Aug 2020 15:38:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597678706;
+        bh=Gyl9MQ8xkPwfq3EZhRpFOHOqF/dyf7RLgybf/ma6nF4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=Iu7VfTG+yTKDSgs3Q6nXRs9PfAM7kKQtC3Lh+8HQEOEsJffynR3M3UIJMmObTQdtE
+         Sr/DPnMeMv4hJFX+WujtKzZuvIciAt8WcYtrjdrCBul+fAI00BXpo9YcqLvip8QyHv
+         6ECpZ5gpQb5m9ePToklVFU/2poN/HjgU7nz/uK8w=
+Date:   Mon, 17 Aug 2020 10:38:24 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@mellanox.com, petrm@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 03/11] mlxsw: spectrum_policer: Add policer core
+Message-ID: <20200817153824.GA1420904@bjorn-Precision-5520>
 MIME-Version: 1.0
-References: <20200804155642.52766-1-tom@herbertland.com> <CA+FuTSfw+XT9kQ4y-dY_M8zc2TksCSSEa-0WY+muyv_yr9_H=A@mail.gmail.com>
- <CALx6S36=C6P2khdWcZXfi3Cg4WktFBWUe_2U8L6=-vPD-ZZ81A@mail.gmail.com>
-In-Reply-To: <CALx6S36=C6P2khdWcZXfi3Cg4WktFBWUe_2U8L6=-vPD-ZZ81A@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 17 Aug 2020 17:35:11 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSfa3yisSj6tm_BX4KhgKBsJFxSeCtvqh4zFUTNHuOE3+g@mail.gmail.com>
-Message-ID: <CA+FuTSfa3yisSj6tm_BX4KhgKBsJFxSeCtvqh4zFUTNHuOE3+g@mail.gmail.com>
-Subject: Re: [PATCH net-next] flow_dissector: Add IPv6 flow label to symmetric keys
-To:     Tom Herbert <tom@herbertland.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200715082733.429610-4-idosch@idosch.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 17, 2020 at 4:44 PM Tom Herbert <tom@herbertland.com> wrote:
->
-> On Wed, Aug 5, 2020 at 1:27 AM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > On Tue, Aug 4, 2020 at 5:57 PM Tom Herbert <tom@herbertland.com> wrote:
-> > >
-> > > The definition for symmetric keys does not include the flow label so
-> > > that when symmetric keys is used a non-zero IPv6 flow label is not
-> > > extracted. Symmetric keys are used in functions to compute the flow
-> > > hash for packets, and these functions also set "stop at flow label".
-> > > The upshot is that for IPv6 packets with a non-zero flow label, hashes
-> > > are only based on the address two tuple and there is no input entropy
-> > > from transport layer information. This patch fixes this bug.
-> >
-> > If this is a bug fix, it should probably target net and have a Fixes tag.
-> >
-> > Should the actual fix be to remove the
-> > FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL argument from
-> > __skb_get_hash_symmetric?
-> >
-> > The original commit mentions the symmetric key flow dissector to
-> > compute a flat symmetric hash over only the protocol, addresses and
-> > ports.
-> >
-> > Autoflowlabel uses symmetric __get_hash_from_flowi6 to derive a flow
-> > label, but this cannot be generally relied on. RFC 6437 suggests
-> > even a PRNG as input, for instance.
->
-> Willem,
->
-> Yes, the "reliability" of flow labels argument is brought up often
-> especially by routing vendors that seemingly want to continue doing
-> their expensive DPI. I'm not exactly what "reliability" means in this
-> context. I think it refers to the fact that some network devices might
-> change the flow label in the middle of a flow (AFAIK we squashed all
-> the instances in Linux stack where flow labels can change mid flow).
-> In reality, our ability to do "reliable" DPI is dwindling anyway due
-> to crypto, UDP encapsulation, and transports like QUIC that don't
-> identify flows solely based 4-tuple.
->
-> In any case, IMO the flow label should be part of the input entropy to
-> the hash even if we do DPI. It's sufficient entropy along with the
-> IPv6 addresses to produce a flow hash with conformant properties in
-> more cases than DPI alone can provide due to the limitations above.
-> One obvious problem with DPI is cost, especially in cases we need to
-> parse over a bunch of headers just to locate transport ports (i.e.
-> potential DOS). If the cost is shown negligible or there's other
-> benefits then maybe we could eliminate
-> FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL.
+You've likely seen this already, but Coverity found this problem:
 
-Yes, I suppose it's fair to assume that if the flowlabel is set, this
-sufficiently identifies the flow.
+  *** CID 1466147:  Control flow issues  (DEADCODE)
+  /drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c: 380 in mlxsw_sp_policers_init()
+  374     	}
+  375     
+  376     	return 0;
+  377     
+  378     err_family_register:
+  379     	for (i--; i >= 0; i--) {
+  >>>     CID 1466147:  Control flow issues  (DEADCODE)
+  >>>     Execution cannot reach this statement: "struct mlxsw_sp_policer_fam...".
+  380     		struct mlxsw_sp_policer_family *family;
+  381     
+  382     		family = mlxsw_sp->policer_core->family_arr[i];
+  383     		mlxsw_sp_policer_family_unregister(mlxsw_sp, family);
+  384     	}
+  385     err_init:
 
-The existing code that breaks out of dissection with
-FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL with only network layer addresses
-as flowhash input is clearly undesirable. Sounds good to fix it by
-using the flowlabel instead of explicit fields.
+I think the problem is that MLXSW_SP_POLICER_TYPE_MAX is 0 because
 
-Then this should go to net with a proper Fixes, or did you have a
-specific reason to target net-next?
+> +enum mlxsw_sp_policer_type {
+> +	MLXSW_SP_POLICER_TYPE_SINGLE_RATE,
+> +
+> +	__MLXSW_SP_POLICER_TYPE_MAX,
+> +	MLXSW_SP_POLICER_TYPE_MAX = __MLXSW_SP_POLICER_TYPE_MAX - 1,
+> +};
+
+so we can only execute the family_register loop once, with i == 0,
+and if we get to err_family_register via the error exit:
+
+> +	for (i = 0; i < MLXSW_SP_POLICER_TYPE_MAX + 1; i++) {
+> +		err = mlxsw_sp_policer_family_register(mlxsw_sp, mlxsw_sp_policer_family_arr[i]);
+> +		if (err)
+> +			goto err_family_register;
+
+i will be 0, so i-- sets i to -1, so we don't enter the
+family_unregister loop body since -1 is not >= 0.
+
+This code is now upstream as 8d3fbae70d8d ("mlxsw: spectrum_policer:
+Add policer core").
+
+Bjorn
+
+On Wed, Jul 15, 2020 at 11:27:25AM +0300, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> Add common code to handle all policer-related functionality in mlxsw.
+> Currently, only policer for policy engines are supported, but it in the
+> future more policer families will be added such as CPU (trap) policers
+> and storm control policers.
+> 
+> The API allows different modules to add / delete policers and read their
+> drop counter.
+> 
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> Reviewed-by: Petr Machata <petrm@mellanox.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlxsw/Makefile  |   2 +-
+>  .../net/ethernet/mellanox/mlxsw/spectrum.c    |  12 +
+>  .../net/ethernet/mellanox/mlxsw/spectrum.h    |  32 ++
+>  .../mellanox/mlxsw/spectrum_policer.c         | 403 ++++++++++++++++++
+>  4 files changed, 448 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/Makefile b/drivers/net/ethernet/mellanox/mlxsw/Makefile
+> index 3709983fbd77..892724380ea2 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/Makefile
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/Makefile
+> @@ -31,7 +31,7 @@ mlxsw_spectrum-objs		:= spectrum.o spectrum_buffers.o \
+>  				   spectrum_qdisc.o spectrum_span.o \
+>  				   spectrum_nve.o spectrum_nve_vxlan.o \
+>  				   spectrum_dpipe.o spectrum_trap.o \
+> -				   spectrum_ethtool.o
+> +				   spectrum_ethtool.o spectrum_policer.o
+>  mlxsw_spectrum-$(CONFIG_MLXSW_SPECTRUM_DCB)	+= spectrum_dcb.o
+>  mlxsw_spectrum-$(CONFIG_PTP_1588_CLOCK)		+= spectrum_ptp.o
+>  obj-$(CONFIG_MLXSW_MINIMAL)	+= mlxsw_minimal.o
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+> index 4ac634bd3571..c6ab61818800 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+> @@ -2860,6 +2860,12 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
+>  		goto err_fids_init;
+>  	}
+>  
+> +	err = mlxsw_sp_policers_init(mlxsw_sp);
+> +	if (err) {
+> +		dev_err(mlxsw_sp->bus_info->dev, "Failed to initialize policers\n");
+> +		goto err_policers_init;
+> +	}
+> +
+>  	err = mlxsw_sp_traps_init(mlxsw_sp);
+>  	if (err) {
+>  		dev_err(mlxsw_sp->bus_info->dev, "Failed to set traps\n");
+> @@ -3019,6 +3025,8 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
+>  err_devlink_traps_init:
+>  	mlxsw_sp_traps_fini(mlxsw_sp);
+>  err_traps_init:
+> +	mlxsw_sp_policers_fini(mlxsw_sp);
+> +err_policers_init:
+>  	mlxsw_sp_fids_fini(mlxsw_sp);
+>  err_fids_init:
+>  	mlxsw_sp_kvdl_fini(mlxsw_sp);
+> @@ -3046,6 +3054,7 @@ static int mlxsw_sp1_init(struct mlxsw_core *mlxsw_core,
+>  	mlxsw_sp->port_type_speed_ops = &mlxsw_sp1_port_type_speed_ops;
+>  	mlxsw_sp->ptp_ops = &mlxsw_sp1_ptp_ops;
+>  	mlxsw_sp->span_ops = &mlxsw_sp1_span_ops;
+> +	mlxsw_sp->policer_core_ops = &mlxsw_sp1_policer_core_ops;
+>  	mlxsw_sp->listeners = mlxsw_sp1_listener;
+>  	mlxsw_sp->listeners_count = ARRAY_SIZE(mlxsw_sp1_listener);
+>  	mlxsw_sp->lowest_shaper_bs = MLXSW_REG_QEEC_LOWEST_SHAPER_BS_SP1;
+> @@ -3074,6 +3083,7 @@ static int mlxsw_sp2_init(struct mlxsw_core *mlxsw_core,
+>  	mlxsw_sp->port_type_speed_ops = &mlxsw_sp2_port_type_speed_ops;
+>  	mlxsw_sp->ptp_ops = &mlxsw_sp2_ptp_ops;
+>  	mlxsw_sp->span_ops = &mlxsw_sp2_span_ops;
+> +	mlxsw_sp->policer_core_ops = &mlxsw_sp2_policer_core_ops;
+>  	mlxsw_sp->lowest_shaper_bs = MLXSW_REG_QEEC_LOWEST_SHAPER_BS_SP2;
+>  
+>  	return mlxsw_sp_init(mlxsw_core, mlxsw_bus_info, extack);
+> @@ -3100,6 +3110,7 @@ static int mlxsw_sp3_init(struct mlxsw_core *mlxsw_core,
+>  	mlxsw_sp->port_type_speed_ops = &mlxsw_sp2_port_type_speed_ops;
+>  	mlxsw_sp->ptp_ops = &mlxsw_sp2_ptp_ops;
+>  	mlxsw_sp->span_ops = &mlxsw_sp3_span_ops;
+> +	mlxsw_sp->policer_core_ops = &mlxsw_sp2_policer_core_ops;
+>  	mlxsw_sp->lowest_shaper_bs = MLXSW_REG_QEEC_LOWEST_SHAPER_BS_SP3;
+>  
+>  	return mlxsw_sp_init(mlxsw_core, mlxsw_bus_info, extack);
+> @@ -3129,6 +3140,7 @@ static void mlxsw_sp_fini(struct mlxsw_core *mlxsw_core)
+>  	mlxsw_sp_buffers_fini(mlxsw_sp);
+>  	mlxsw_sp_devlink_traps_fini(mlxsw_sp);
+>  	mlxsw_sp_traps_fini(mlxsw_sp);
+> +	mlxsw_sp_policers_fini(mlxsw_sp);
+>  	mlxsw_sp_fids_fini(mlxsw_sp);
+>  	mlxsw_sp_kvdl_fini(mlxsw_sp);
+>  }
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+> index c00811178637..82227e87ef7c 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+> @@ -151,6 +151,7 @@ struct mlxsw_sp {
+>  	struct mlxsw_afa *afa;
+>  	struct mlxsw_sp_acl *acl;
+>  	struct mlxsw_sp_fid_core *fid_core;
+> +	struct mlxsw_sp_policer_core *policer_core;
+>  	struct mlxsw_sp_kvdl *kvdl;
+>  	struct mlxsw_sp_nve *nve;
+>  	struct notifier_block netdevice_nb;
+> @@ -173,6 +174,7 @@ struct mlxsw_sp {
+>  	const struct mlxsw_sp_port_type_speed_ops *port_type_speed_ops;
+>  	const struct mlxsw_sp_ptp_ops *ptp_ops;
+>  	const struct mlxsw_sp_span_ops *span_ops;
+> +	const struct mlxsw_sp_policer_core_ops *policer_core_ops;
+>  	const struct mlxsw_listener *listeners;
+>  	size_t listeners_count;
+>  	u32 lowest_shaper_bs;
+> @@ -1196,4 +1198,34 @@ extern const struct ethtool_ops mlxsw_sp_port_ethtool_ops;
+>  extern const struct mlxsw_sp_port_type_speed_ops mlxsw_sp1_port_type_speed_ops;
+>  extern const struct mlxsw_sp_port_type_speed_ops mlxsw_sp2_port_type_speed_ops;
+>  
+> +/* spectrum_policer.c */
+> +extern const struct mlxsw_sp_policer_core_ops mlxsw_sp1_policer_core_ops;
+> +extern const struct mlxsw_sp_policer_core_ops mlxsw_sp2_policer_core_ops;
+> +
+> +enum mlxsw_sp_policer_type {
+> +	MLXSW_SP_POLICER_TYPE_SINGLE_RATE,
+> +
+> +	__MLXSW_SP_POLICER_TYPE_MAX,
+> +	MLXSW_SP_POLICER_TYPE_MAX = __MLXSW_SP_POLICER_TYPE_MAX - 1,
+> +};
+> +
+> +struct mlxsw_sp_policer_params {
+> +	u64 rate;
+> +	u64 burst;
+> +	bool bytes;
+> +};
+> +
+> +int mlxsw_sp_policer_add(struct mlxsw_sp *mlxsw_sp,
+> +			 enum mlxsw_sp_policer_type type,
+> +			 const struct mlxsw_sp_policer_params *params,
+> +			 struct netlink_ext_ack *extack, u16 *p_policer_index);
+> +void mlxsw_sp_policer_del(struct mlxsw_sp *mlxsw_sp,
+> +			  enum mlxsw_sp_policer_type type,
+> +			  u16 policer_index);
+> +int mlxsw_sp_policer_drops_counter_get(struct mlxsw_sp *mlxsw_sp,
+> +				       enum mlxsw_sp_policer_type type,
+> +				       u16 policer_index, u64 *p_drops);
+> +int mlxsw_sp_policers_init(struct mlxsw_sp *mlxsw_sp);
+> +void mlxsw_sp_policers_fini(struct mlxsw_sp *mlxsw_sp);
+> +
+>  #endif
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c
+> new file mode 100644
+> index 000000000000..74766e936e0a
+> --- /dev/null
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c
+> @@ -0,0 +1,403 @@
+> +// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+> +/* Copyright (c) 2020 Mellanox Technologies. All rights reserved */
+> +
+> +#include <linux/idr.h>
+> +#include <linux/log2.h>
+> +#include <linux/mutex.h>
+> +#include <linux/netlink.h>
+> +
+> +#include "spectrum.h"
+> +
+> +struct mlxsw_sp_policer_family {
+> +	enum mlxsw_sp_policer_type type;
+> +	enum mlxsw_reg_qpcr_g qpcr_type;
+> +	struct mlxsw_sp *mlxsw_sp;
+> +	u16 start_index; /* Inclusive */
+> +	u16 end_index; /* Exclusive */
+> +	struct idr policer_idr;
+> +	struct mutex lock; /* Protects policer_idr */
+> +	const struct mlxsw_sp_policer_family_ops *ops;
+> +};
+> +
+> +struct mlxsw_sp_policer {
+> +	struct mlxsw_sp_policer_params params;
+> +	u16 index;
+> +};
+> +
+> +struct mlxsw_sp_policer_family_ops {
+> +	int (*init)(struct mlxsw_sp_policer_family *family);
+> +	void (*fini)(struct mlxsw_sp_policer_family *family);
+> +	int (*policer_index_alloc)(struct mlxsw_sp_policer_family *family,
+> +				   struct mlxsw_sp_policer *policer);
+> +	struct mlxsw_sp_policer * (*policer_index_free)(struct mlxsw_sp_policer_family *family,
+> +							u16 policer_index);
+> +	int (*policer_init)(struct mlxsw_sp_policer_family *family,
+> +			    const struct mlxsw_sp_policer *policer);
+> +	int (*policer_params_check)(const struct mlxsw_sp_policer_family *family,
+> +				    const struct mlxsw_sp_policer_params *params,
+> +				    struct netlink_ext_ack *extack);
+> +};
+> +
+> +struct mlxsw_sp_policer_core {
+> +	struct mlxsw_sp_policer_family *family_arr[MLXSW_SP_POLICER_TYPE_MAX + 1];
+> +	const struct mlxsw_sp_policer_core_ops *ops;
+> +	u8 lowest_bs_bits;
+> +	u8 highest_bs_bits;
+> +};
+> +
+> +struct mlxsw_sp_policer_core_ops {
+> +	int (*init)(struct mlxsw_sp_policer_core *policer_core);
+> +};
+> +
+> +static u64 mlxsw_sp_policer_rate_bytes_ps_kbps(u64 rate_bytes_ps)
+> +{
+> +	return div_u64(rate_bytes_ps, 1000) * BITS_PER_BYTE;
+> +}
+> +
+> +static u8 mlxsw_sp_policer_burst_bytes_hw_units(u64 burst_bytes)
+> +{
+> +	/* Provided burst size is in bytes. The ASIC burst size value is
+> +	 * (2 ^ bs) * 512 bits. Convert the provided size to 512-bit units.
+> +	 */
+> +	u64 bs512 = div_u64(burst_bytes, 64);
+> +
+> +	if (!bs512)
+> +		return 0;
+> +
+> +	return fls64(bs512) - 1;
+> +}
+> +
+> +static int
+> +mlxsw_sp_policer_single_rate_family_init(struct mlxsw_sp_policer_family *family)
+> +{
+> +	struct mlxsw_core *core = family->mlxsw_sp->core;
+> +
+> +	/* CPU policers are allocated from the first N policers in the global
+> +	 * range, so skip them.
+> +	 */
+> +	if (!MLXSW_CORE_RES_VALID(core, MAX_GLOBAL_POLICERS) ||
+> +	    !MLXSW_CORE_RES_VALID(core, MAX_CPU_POLICERS))
+> +		return -EIO;
+> +
+> +	family->start_index = MLXSW_CORE_RES_GET(core, MAX_CPU_POLICERS);
+> +	family->end_index = MLXSW_CORE_RES_GET(core, MAX_GLOBAL_POLICERS);
+> +
+> +	return 0;
+> +}
+> +
+> +static void
+> +mlxsw_sp_policer_single_rate_family_fini(struct mlxsw_sp_policer_family *family)
+> +{
+> +}
+> +
+> +static int
+> +mlxsw_sp_policer_single_rate_index_alloc(struct mlxsw_sp_policer_family *family,
+> +					 struct mlxsw_sp_policer *policer)
+> +{
+> +	int id;
+> +
+> +	mutex_lock(&family->lock);
+> +	id = idr_alloc(&family->policer_idr, policer, family->start_index,
+> +		       family->end_index, GFP_KERNEL);
+> +	mutex_unlock(&family->lock);
+> +
+> +	if (id < 0)
+> +		return id;
+> +
+> +	policer->index = id;
+> +
+> +	return 0;
+> +}
+> +
+> +static struct mlxsw_sp_policer *
+> +mlxsw_sp_policer_single_rate_index_free(struct mlxsw_sp_policer_family *family,
+> +					u16 policer_index)
+> +{
+> +	struct mlxsw_sp_policer *policer;
+> +
+> +	mutex_lock(&family->lock);
+> +	policer = idr_remove(&family->policer_idr, policer_index);
+> +	mutex_unlock(&family->lock);
+> +
+> +	WARN_ON(!policer);
+> +
+> +	return policer;
+> +}
+> +
+> +static int
+> +mlxsw_sp_policer_single_rate_init(struct mlxsw_sp_policer_family *family,
+> +				  const struct mlxsw_sp_policer *policer)
+> +{
+> +	u64 rate_kbps = mlxsw_sp_policer_rate_bytes_ps_kbps(policer->params.rate);
+> +	u8 bs = mlxsw_sp_policer_burst_bytes_hw_units(policer->params.burst);
+> +	struct mlxsw_sp *mlxsw_sp = family->mlxsw_sp;
+> +	char qpcr_pl[MLXSW_REG_QPCR_LEN];
+> +
+> +	mlxsw_reg_qpcr_pack(qpcr_pl, policer->index, MLXSW_REG_QPCR_IR_UNITS_K,
+> +			    true, rate_kbps, bs);
+> +	mlxsw_reg_qpcr_clear_counter_set(qpcr_pl, true);
+> +
+> +	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(qpcr), qpcr_pl);
+> +}
+> +
+> +static int
+> +mlxsw_sp_policer_single_rate_params_check(const struct mlxsw_sp_policer_family *family,
+> +					  const struct mlxsw_sp_policer_params *params,
+> +					  struct netlink_ext_ack *extack)
+> +{
+> +	struct mlxsw_sp_policer_core *policer_core = family->mlxsw_sp->policer_core;
+> +	u64 rate_bps = params->rate * BITS_PER_BYTE;
+> +	u8 bs;
+> +
+> +	if (!params->bytes) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Only bandwidth policing is currently supported by single rate policers");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!is_power_of_2(params->burst)) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Policer burst size is not power of two");
+> +		return -EINVAL;
+> +	}
+> +
+> +	bs = mlxsw_sp_policer_burst_bytes_hw_units(params->burst);
+> +
+> +	if (bs < policer_core->lowest_bs_bits) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Policer burst size lower than limit");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (bs > policer_core->highest_bs_bits) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Policer burst size higher than limit");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (rate_bps < MLXSW_REG_QPCR_LOWEST_CIR_BITS) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Policer rate lower than limit");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (rate_bps > MLXSW_REG_QPCR_HIGHEST_CIR_BITS) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Policer rate higher than limit");
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct mlxsw_sp_policer_family_ops mlxsw_sp_policer_single_rate_ops = {
+> +	.init			= mlxsw_sp_policer_single_rate_family_init,
+> +	.fini			= mlxsw_sp_policer_single_rate_family_fini,
+> +	.policer_index_alloc	= mlxsw_sp_policer_single_rate_index_alloc,
+> +	.policer_index_free	= mlxsw_sp_policer_single_rate_index_free,
+> +	.policer_init		= mlxsw_sp_policer_single_rate_init,
+> +	.policer_params_check	= mlxsw_sp_policer_single_rate_params_check,
+> +};
+> +
+> +static const struct mlxsw_sp_policer_family mlxsw_sp_policer_single_rate_family = {
+> +	.type		= MLXSW_SP_POLICER_TYPE_SINGLE_RATE,
+> +	.qpcr_type	= MLXSW_REG_QPCR_G_GLOBAL,
+> +	.ops		= &mlxsw_sp_policer_single_rate_ops,
+> +};
+> +
+> +static const struct mlxsw_sp_policer_family *mlxsw_sp_policer_family_arr[] = {
+> +	[MLXSW_SP_POLICER_TYPE_SINGLE_RATE]	= &mlxsw_sp_policer_single_rate_family,
+> +};
+> +
+> +int mlxsw_sp_policer_add(struct mlxsw_sp *mlxsw_sp,
+> +			 enum mlxsw_sp_policer_type type,
+> +			 const struct mlxsw_sp_policer_params *params,
+> +			 struct netlink_ext_ack *extack, u16 *p_policer_index)
+> +{
+> +	struct mlxsw_sp_policer_family *family;
+> +	struct mlxsw_sp_policer *policer;
+> +	int err;
+> +
+> +	family = mlxsw_sp->policer_core->family_arr[type];
+> +
+> +	err = family->ops->policer_params_check(family, params, extack);
+> +	if (err)
+> +		return err;
+> +
+> +	policer = kmalloc(sizeof(*policer), GFP_KERNEL);
+> +	if (!policer)
+> +		return -ENOMEM;
+> +	policer->params = *params;
+> +
+> +	err = family->ops->policer_index_alloc(family, policer);
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Failed to allocate policer index");
+> +		goto err_policer_index_alloc;
+> +	}
+> +
+> +	err = family->ops->policer_init(family, policer);
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Failed to initialize policer");
+> +		goto err_policer_init;
+> +	}
+> +
+> +	*p_policer_index = policer->index;
+> +
+> +	return 0;
+> +
+> +err_policer_init:
+> +	family->ops->policer_index_free(family, policer->index);
+> +err_policer_index_alloc:
+> +	kfree(policer);
+> +	return err;
+> +}
+> +
+> +void mlxsw_sp_policer_del(struct mlxsw_sp *mlxsw_sp,
+> +			  enum mlxsw_sp_policer_type type, u16 policer_index)
+> +{
+> +	struct mlxsw_sp_policer_family *family;
+> +	struct mlxsw_sp_policer *policer;
+> +
+> +	family = mlxsw_sp->policer_core->family_arr[type];
+> +	policer = family->ops->policer_index_free(family, policer_index);
+> +	kfree(policer);
+> +}
+> +
+> +int mlxsw_sp_policer_drops_counter_get(struct mlxsw_sp *mlxsw_sp,
+> +				       enum mlxsw_sp_policer_type type,
+> +				       u16 policer_index, u64 *p_drops)
+> +{
+> +	struct mlxsw_sp_policer_family *family;
+> +	char qpcr_pl[MLXSW_REG_QPCR_LEN];
+> +	int err;
+> +
+> +	family = mlxsw_sp->policer_core->family_arr[type];
+> +
+> +	MLXSW_REG_ZERO(qpcr, qpcr_pl);
+> +	mlxsw_reg_qpcr_pid_set(qpcr_pl, policer_index);
+> +	mlxsw_reg_qpcr_g_set(qpcr_pl, family->qpcr_type);
+> +	err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(qpcr), qpcr_pl);
+> +	if (err)
+> +		return err;
+> +
+> +	*p_drops = mlxsw_reg_qpcr_violate_count_get(qpcr_pl);
+> +
+> +	return 0;
+> +}
+> +
+> +static int
+> +mlxsw_sp_policer_family_register(struct mlxsw_sp *mlxsw_sp,
+> +				 const struct mlxsw_sp_policer_family *tmpl)
+> +{
+> +	struct mlxsw_sp_policer_family *family;
+> +	int err;
+> +
+> +	family = kmemdup(tmpl, sizeof(*family), GFP_KERNEL);
+> +	if (!family)
+> +		return -ENOMEM;
+> +
+> +	family->mlxsw_sp = mlxsw_sp;
+> +	idr_init(&family->policer_idr);
+> +	mutex_init(&family->lock);
+> +
+> +	err = family->ops->init(family);
+> +	if (err)
+> +		goto err_family_init;
+> +
+> +	if (WARN_ON(family->start_index >= family->end_index)) {
+> +		err = -EINVAL;
+> +		goto err_index_check;
+> +	}
+> +
+> +	mlxsw_sp->policer_core->family_arr[tmpl->type] = family;
+> +
+> +	return 0;
+> +
+> +err_index_check:
+> +	family->ops->fini(family);
+> +err_family_init:
+> +	mutex_destroy(&family->lock);
+> +	idr_destroy(&family->policer_idr);
+> +	kfree(family);
+> +	return err;
+> +}
+> +
+> +static void
+> +mlxsw_sp_policer_family_unregister(struct mlxsw_sp *mlxsw_sp,
+> +				   struct mlxsw_sp_policer_family *family)
+> +{
+> +	family->ops->fini(family);
+> +	mutex_destroy(&family->lock);
+> +	WARN_ON(!idr_is_empty(&family->policer_idr));
+> +	idr_destroy(&family->policer_idr);
+> +	kfree(family);
+> +}
+> +
+> +int mlxsw_sp_policers_init(struct mlxsw_sp *mlxsw_sp)
+> +{
+> +	struct mlxsw_sp_policer_core *policer_core;
+> +	int i, err;
+> +
+> +	policer_core = kzalloc(sizeof(*policer_core), GFP_KERNEL);
+> +	if (!policer_core)
+> +		return -ENOMEM;
+> +	mlxsw_sp->policer_core = policer_core;
+> +	policer_core->ops = mlxsw_sp->policer_core_ops;
+> +
+> +	err = policer_core->ops->init(policer_core);
+> +	if (err)
+> +		goto err_init;
+> +
+> +	for (i = 0; i < MLXSW_SP_POLICER_TYPE_MAX + 1; i++) {
+> +		err = mlxsw_sp_policer_family_register(mlxsw_sp, mlxsw_sp_policer_family_arr[i]);
+> +		if (err)
+> +			goto err_family_register;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_family_register:
+> +	for (i--; i >= 0; i--) {
+> +		struct mlxsw_sp_policer_family *family;
+> +
+> +		family = mlxsw_sp->policer_core->family_arr[i];
+> +		mlxsw_sp_policer_family_unregister(mlxsw_sp, family);
+> +	}
+> +err_init:
+> +	kfree(mlxsw_sp->policer_core);
+> +	return err;
+> +}
+> +
+> +void mlxsw_sp_policers_fini(struct mlxsw_sp *mlxsw_sp)
+> +{
+> +	int i;
+> +
+> +	for (i = MLXSW_SP_POLICER_TYPE_MAX; i >= 0; i--) {
+> +		struct mlxsw_sp_policer_family *family;
+> +
+> +		family = mlxsw_sp->policer_core->family_arr[i];
+> +		mlxsw_sp_policer_family_unregister(mlxsw_sp, family);
+> +	}
+> +
+> +	kfree(mlxsw_sp->policer_core);
+> +}
+> +
+> +static int
+> +mlxsw_sp1_policer_core_init(struct mlxsw_sp_policer_core *policer_core)
+> +{
+> +	policer_core->lowest_bs_bits = MLXSW_REG_QPCR_LOWEST_CBS_BITS_SP1;
+> +	policer_core->highest_bs_bits = MLXSW_REG_QPCR_HIGHEST_CBS_BITS_SP1;
+> +
+> +	return 0;
+> +}
+> +
+> +const struct mlxsw_sp_policer_core_ops mlxsw_sp1_policer_core_ops = {
+> +	.init = mlxsw_sp1_policer_core_init,
+> +};
+> +
+> +static int
+> +mlxsw_sp2_policer_core_init(struct mlxsw_sp_policer_core *policer_core)
+> +{
+> +	policer_core->lowest_bs_bits = MLXSW_REG_QPCR_LOWEST_CBS_BITS_SP2;
+> +	policer_core->highest_bs_bits = MLXSW_REG_QPCR_HIGHEST_CBS_BITS_SP2;
+> +
+> +	return 0;
+> +}
+> +
+> +const struct mlxsw_sp_policer_core_ops mlxsw_sp2_policer_core_ops = {
+> +	.init = mlxsw_sp2_policer_core_init,
+> +};
+> -- 
+> 2.26.2
+> 
