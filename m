@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED7A02461EF
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 11:08:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4FD524621F
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 11:10:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728788AbgHQJHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 05:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59302 "EHLO
+        id S1728386AbgHQJKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 05:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727807AbgHQJHZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 05:07:25 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84CBC061389;
-        Mon, 17 Aug 2020 02:07:25 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id y206so7898279pfb.10;
-        Mon, 17 Aug 2020 02:07:25 -0700 (PDT)
+        with ESMTP id S1728781AbgHQJHl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 05:07:41 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F85DC06138A;
+        Mon, 17 Aug 2020 02:07:33 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id i10so2274074pgk.1;
+        Mon, 17 Aug 2020 02:07:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=MGsv8A1wVj28a3UQWL19W4pLCqNK/n7XN47Mle0gRf0=;
-        b=g0cmPZRhcILxoEnjZPRTGxSCc+cAfwGWvZIKj7Y+pbzSNHFFO2zTQQN9KYG+34IVwa
-         j3TmLzAjPiU619fIp3yeL9Igsl1XpItyWHlMwXbOP7+NgYacG0jRF242DFUmHleurIWx
-         3Y9yWFTnEOJRCJ7ZC4Vn5W6OcqD4DBy4D9poqtyW+dZlaE7K1b4SArKNzEJ3d2lbjgOx
-         TZUC0SBVVAbOR/qPbgoQgp2C3i3Lg0InJUuvelxpeog5G6YJQfg7UmMBEVCwRQum8OL3
-         Pu1TYq++IQhlG3AKR4qVlVTeSx4EWsVGlBlyUvUlbVpvEEs8bNk+kbthRmKlEmH2HNmW
-         Qhmg==
+        bh=CTxSxCLcXtx7K2nHBX1s0dpHO14GqBxRUYGs9AhPATI=;
+        b=ZxNQMq20uoDRbIr/qBq0gsF0L2FC1tp0+LmN2xpBpa4kZMCpmUWVNhrQqgEgdMGi28
+         zhu6AsjHyMI9ezhcjvSFFhoxeWmCmizBbhaCyiLfu/9DTqCxFcAt6nzHTUHllyARA4DK
+         kPfYw3/LJcqcoYbk9ywZQDsgnOEZBecK/4RZ7vg4Jq6NkgSjmBEAPsKlddCD7iAmqmW3
+         NM5QcO+sdj6jF8gWjr2AL9a+EMxWoDJy1dGJif/dp9Gd2MVVuR/5bo3thrM64GmwYdmn
+         pp4pck/F0ANxVXDC/xb18jS02uOyO4uqTUgsrmfosFPwLIkBheJ1DZQbrPGmvRfOzKHR
+         X5Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=MGsv8A1wVj28a3UQWL19W4pLCqNK/n7XN47Mle0gRf0=;
-        b=lv5uD/JrecHpt+48D85K+DfMyKdvDVsJj4uxu0QOA8rQ4tcWPj67veTazwVEUwcKsJ
-         nCFHAS0PLJ1fNjh/jiqQwzWLm/OKgTtaSZoBYOZHSc8n/PTxAdFpHsOdX9Fb2eCBtyAQ
-         XftxlmfoQP42qb3tuxD5lE+bgAm4r+lYRdYYYJz1Bv5u6MZrtG0LVRRxE65fFSlrTWbC
-         ZhF4ExoWJjZaVIl63R8AKowj3x/+ceDSwJQ/tx8XmO80HQBuq1xSrJdgCizKW3qcoDSh
-         T/1zAA7BEf6xqpS1l03acC/K5ZcXlY1mwqV7029/KU6QQkTe72d0cO0eosJkdsQ9hUXl
-         77Dg==
-X-Gm-Message-State: AOAM533f6wa75+TdxIP+n1JTLS/GY9cqt3Xf8QoO/GJfl1nuXIrOF0+J
-        CiMPo4wq+XSeiN5efWU7hkM=
-X-Google-Smtp-Source: ABdhPJyIoQbr9T/8qnWekXPjsOiorbPCvMa//vMXiCVBRpI1R33p2QuX6J5OeDaVuSprkarw2Orp4w==
-X-Received: by 2002:a63:3241:: with SMTP id y62mr9589717pgy.305.1597655245210;
-        Mon, 17 Aug 2020 02:07:25 -0700 (PDT)
+        bh=CTxSxCLcXtx7K2nHBX1s0dpHO14GqBxRUYGs9AhPATI=;
+        b=FoOsgGe/VQ+nog627bqRgkiNY/UP5ECSkv4SXyn5024V56C/uqXMuYW0blRC9tKPJq
+         WcYU9gLNCiHpTucL12LMovg37DFyAydMKQSzsv+PejSLUJgTOpfz3NtgOE1LzixGIUU9
+         3Vj20D3hS9MNPWTYE0WJV9ncbpJxvTbr0u+QqG9ySMyGwL9LBm8XuCERZpndhx7raAGh
+         h+oI3vExsFalzTNd1lVKniQBgMzmFgH6SIxEyXjbmDMtwVtNtWfQEVjQ7es+MbLCcM2O
+         +oCV2PamlJLhxNBKnPGlITEk0UiJOqXAywvWmrNg64j61vNuuVOiQe97aby7Eclni9/K
+         zAbA==
+X-Gm-Message-State: AOAM532/uaDN0ySWIy+Nqdm82gRxXeQ0TM6LILZZ7ttCi2PffKhmiLg6
+        NLioi5UgQmbPJOJlqme8zmM=
+X-Google-Smtp-Source: ABdhPJw4O6FVlqolZK+ui0NUfpSUYbGTVVcmXQX9MXy4HvFtIoe5YnofINDnVG5/0IBC1eRown9dcA==
+X-Received: by 2002:a63:eb14:: with SMTP id t20mr366676pgh.236.1597655253001;
+        Mon, 17 Aug 2020 02:07:33 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id t14sm16616237pgb.51.2020.08.17.02.07.18
+        by smtp.gmail.com with ESMTPSA id t14sm16616237pgb.51.2020.08.17.02.07.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 02:07:24 -0700 (PDT)
+        Mon, 17 Aug 2020 02:07:32 -0700 (PDT)
 From:   Allen Pais <allen.cryptic@gmail.com>
 To:     kvalo@codeaurora.org, kuba@kernel.org, jirislaby@kernel.org,
         mickflemm@gmail.com, mcgrof@kernel.org, chunkeey@googlemail.com,
@@ -56,10 +56,11 @@ Cc:     keescook@chromium.org, ath11k@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, b43-dev@lists.infradead.org,
         brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, Allen Pais <allen.lkml@gmail.com>
-Subject: [PATCH 04/16] wireless: ath11k: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 14:36:25 +0530
-Message-Id: <20200817090637.26887-5-allen.cryptic@gmail.com>
+        brcm80211-dev-list@cypress.com, Allen Pais <allen.lkml@gmail.com>,
+        Romain Perier <romain.perier@gmail.com>
+Subject: [PATCH 05/16] wireless: atmel: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 14:36:26 +0530
+Message-Id: <20200817090637.26887-6-allen.cryptic@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200817090637.26887-1-allen.cryptic@gmail.com>
 References: <20200817090637.26887-1-allen.cryptic@gmail.com>
@@ -73,39 +74,50 @@ From: Allen Pais <allen.lkml@gmail.com>
 In preparation for unconditionally passing the
 struct tasklet_struct pointer to all tasklet
 callbacks, switch to using the new tasklet_setup()
-and from_tasklet() to pass the tasklet pointer explicitly.
+and from_tasklet() to pass the tasklet pointer explicitly
+and remove .data field.
 
+Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/net/wireless/ath/ath11k/ahb.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/wireless/atmel/at76c50x-usb.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
-index 30092841ac46..28d7e833e27f 100644
---- a/drivers/net/wireless/ath/ath11k/ahb.c
-+++ b/drivers/net/wireless/ath/ath11k/ahb.c
-@@ -675,9 +675,9 @@ static void ath11k_ahb_free_irq(struct ath11k_base *ab)
- 	ath11k_ahb_free_ext_irq(ab);
+diff --git a/drivers/net/wireless/atmel/at76c50x-usb.c b/drivers/net/wireless/atmel/at76c50x-usb.c
+index a63b5c2f1e17..365c2ee19d03 100644
+--- a/drivers/net/wireless/atmel/at76c50x-usb.c
++++ b/drivers/net/wireless/atmel/at76c50x-usb.c
+@@ -1199,7 +1199,6 @@ static void at76_rx_callback(struct urb *urb)
+ {
+ 	struct at76_priv *priv = urb->context;
+ 
+-	priv->rx_tasklet.data = (unsigned long)urb;
+ 	tasklet_schedule(&priv->rx_tasklet);
  }
  
--static void ath11k_ahb_ce_tasklet(unsigned long data)
-+static void ath11k_ahb_ce_tasklet(struct tasklet_struct *t)
+@@ -1545,10 +1544,10 @@ static inline int at76_guess_freq(struct at76_priv *priv)
+ 	return ieee80211_channel_to_frequency(channel, NL80211_BAND_2GHZ);
+ }
+ 
+-static void at76_rx_tasklet(unsigned long param)
++static void at76_rx_tasklet(struct tasklet_struct *t)
  {
--	struct ath11k_ce_pipe *ce_pipe = (struct ath11k_ce_pipe *)data;
-+	struct ath11k_ce_pipe *ce_pipe = from_tasklet(ce_pipe, t, intr_tq);
+-	struct urb *urb = (struct urb *)param;
+-	struct at76_priv *priv = urb->context;
++	struct at76_priv *priv = from_tasklet(priv, t, rx_tasklet);
++	struct urb *urb = priv->rx_urb;
+ 	struct at76_rx_buffer *buf;
+ 	struct ieee80211_rx_status rx_status = { 0 };
  
- 	ath11k_ce_per_engine_service(ce_pipe->ab, ce_pipe->pipe_num);
+@@ -2215,7 +2214,7 @@ static struct at76_priv *at76_alloc_new_device(struct usb_device *udev)
+ 	INIT_WORK(&priv->work_join_bssid, at76_work_join_bssid);
+ 	INIT_DELAYED_WORK(&priv->dwork_hw_scan, at76_dwork_hw_scan);
  
-@@ -827,8 +827,7 @@ static int ath11k_ahb_config_irq(struct ath11k_base *ab)
+-	tasklet_init(&priv->rx_tasklet, at76_rx_tasklet, 0);
++	tasklet_setup(&priv->rx_tasklet, at76_rx_tasklet);
  
- 		irq_idx = ATH11K_IRQ_CE0_OFFSET + i;
- 
--		tasklet_init(&ce_pipe->intr_tq, ath11k_ahb_ce_tasklet,
--			     (unsigned long)ce_pipe);
-+		tasklet_setup(&ce_pipe->intr_tq, ath11k_ahb_ce_tasklet);
- 		irq = platform_get_irq_byname(ab->pdev, irq_name[irq_idx]);
- 		ret = request_irq(irq, ath11k_ahb_ce_interrupt_handler,
- 				  IRQF_TRIGGER_RISING, irq_name[irq_idx],
+ 	priv->pm_mode = AT76_PM_OFF;
+ 	priv->pm_period = 0;
 -- 
 2.17.1
 
