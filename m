@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6904F246027
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:30:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BD16245FCF
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:25:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728576AbgHQI3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 04:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52554 "EHLO
+        id S1728257AbgHQIZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 04:25:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728101AbgHQIZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:25:24 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DC7C061388;
-        Mon, 17 Aug 2020 01:25:24 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id s14so1163851plp.4;
-        Mon, 17 Aug 2020 01:25:24 -0700 (PDT)
+        with ESMTP id S1726840AbgHQIZb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:25:31 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A96C061388;
+        Mon, 17 Aug 2020 01:25:30 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id 189so7127443pgg.13;
+        Mon, 17 Aug 2020 01:25:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=YNvMy4AuY+7swgSlQS3LYVsoHEcImnFolbz565rcKCo=;
-        b=gp0tN+rAx/ViPmdFY3zUwZzTzj/Mg191vxLR90RxlqxOVPK45tXw3AbH1absvhOybR
-         L6XttLKa2rjCShl6MqYQ44QfUdD3CVHD/k57/uefx7mFbw+dvycMW2owDft3AzCYyaXg
-         Y1BmBIF3uILRsHaMGOz6on8xFypoYQ+YpP9K7zS9WIdsZr2rdHgI+e3rRrY/Y1ehFs4z
-         YLfJwdzquI3XniXWrq0BcbCg8tEUFTyHrJPXLn3HnBveGGnmRIaVf9eeW9Dea/WmD2Mg
-         zUc8GkJfzCMUzMW2uxsTdDJiiIf52wovdrIoBeC0iJpmdGWJJbAGwIplKpTw7jseeePb
-         MyVQ==
+        bh=D1aAuZf9AutjEPnD50DCVOQS+d/LorwrTFVRcP8QmrM=;
+        b=JKs6NWf0vnjktIoAD+8hDbWr3FtmUc9bzqVlfLCwWBZjwHv+2lkp9Dt5867df+0KPJ
+         qN52iAZFSKF+EgP/Gopv2oJH282/a9k3AvH1cnmLwxpmykSQf4fvLr0yK2WvpaPcmMy/
+         kxqiGDTf/ypIINy/9AsP+FHMdmLfIFBch/HVd95MzP8G+CQiqVfQKVQVKiDhM0SLuFwx
+         3nQi8/X/5Aq9X8hhpX+lla4EEOd0bc53ZlDlHwg0ORo0MOPb5wTNtyKPFGFr8wQZyikm
+         996XaRO/oaL27tvInl/efvr+UsIX4+NTP72lLp5aEqbcp8B4q1+vqK0wet9HbRFeQBnP
+         tvIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=YNvMy4AuY+7swgSlQS3LYVsoHEcImnFolbz565rcKCo=;
-        b=XI8vejuvSaBrM6ivB/n9RK8AfZqN7e+fTvSEA/TtfCjpV1YeQtzSbItVjJu6NaAjg3
-         On8ef1AySMdCnqvwqZeB0TLJr5RKk/Dj0e8RIjXk4irx8MzXUiPggIN1FPHFlBNJAdRG
-         h4S0fJY/rtqpRIk98T9WJ+sxtTrjIsQ6e07ysRUDN5+yLXaTL6nvH4K+YY7GdWYsTfxm
-         Ylm0HQr0wJV1thlt1rsKlnh1tksDcX2Svo9HWWMu1Vw9HFCKmsZMGrYMscODBsVxv629
-         k8/g8U1mn8JziVfRWVFMwBZaBYwchf2VndHAd/gtUUktiB+nu723iloiiapzGOtCKpkd
-         ygFw==
-X-Gm-Message-State: AOAM532Qe2Uewhu8V7Tgr0W+pIyzWqeOK5beEnxTNhv0XymOSyQGQfwa
-        Hd5d94zqOj2CufcKjiYYm04=
-X-Google-Smtp-Source: ABdhPJzHbNppt+UgUbbnFLVZ8W8+Njht8c/Lw3IR0qTaF2iala6YGQd/m/DGKcMclr2bZnj1397x2A==
-X-Received: by 2002:a17:90b:11c4:: with SMTP id gv4mr11263497pjb.198.1597652724297;
-        Mon, 17 Aug 2020 01:25:24 -0700 (PDT)
+        bh=D1aAuZf9AutjEPnD50DCVOQS+d/LorwrTFVRcP8QmrM=;
+        b=XsJTq6cFrdmnulhLXd3mJm9rm0ROKTdIV6rNUxK6mikPU3u1vcvl3bpS7MOo/LYVrw
+         6qD4K2KSJy6QQRkFgd9MmFHZUvC61x/SisPA8KmNNRMfg9oWbDV9Yr+F5ME5/cfXdlaC
+         5ncJX6AqdI9DjOD2A2tq5l3cA7dCdcGsNvtgWXB1XlI3Sd88JHeVpimFxqqvpEwHUBOe
+         IShVzi+oY+H81f0rqDCyIgwbxFdubTnZNaZwxXTWv6SEuyNE4cs0elJk+zYQOk6+XfZb
+         n8JcAbgFtmNIjv4Zb4MdgPeAEjmf1lRtQYThg/MFmfS8e7ebHqhhKuz9vQXVpcyt1QXz
+         98Tg==
+X-Gm-Message-State: AOAM5335fZPZNd6C5qmvaaY6de1p3SNY+geGPSBS7imdQ4omEce+kJb3
+        d6Op6e9cZJDzIoz0/4k1G6Q=
+X-Google-Smtp-Source: ABdhPJwRNhGVFfrT+4KXAK4vpPuqUG4S51cq+a0x5Buc2BD841a4hjMMe5sXIW8wgdf6LPNclkcTlg==
+X-Received: by 2002:a63:544e:: with SMTP id e14mr9101091pgm.90.1597652730383;
+        Mon, 17 Aug 2020 01:25:30 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id r186sm19928482pfr.162.2020.08.17.01.25.18
+        by smtp.gmail.com with ESMTPSA id r186sm19928482pfr.162.2020.08.17.01.25.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 01:25:23 -0700 (PDT)
+        Mon, 17 Aug 2020 01:25:29 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     jes@trained-monkey.org, davem@davemloft.net, kuba@kernel.org,
         kda@linux-powerpc.org, dougmill@linux.ibm.com,
@@ -56,9 +56,9 @@ Cc:     keescook@chromium.org, linux-acenic@sunsite.dk,
         linuxppc-dev@lists.ozlabs.org, linux-rdma@vger.kernel.org,
         oss-drivers@netronome.com, Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH 05/20] ethernet: cavium: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 13:54:19 +0530
-Message-Id: <20200817082434.21176-7-allen.lkml@gmail.com>
+Subject: [PATCH 06/20] ethernet: chelsio: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 13:54:20 +0530
+Message-Id: <20200817082434.21176-8-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200817082434.21176-1-allen.lkml@gmail.com>
 References: <20200817082434.21176-1-allen.lkml@gmail.com>
@@ -75,153 +75,141 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/net/ethernet/cavium/liquidio/lio_main.c    | 12 ++++++------
- drivers/net/ethernet/cavium/liquidio/octeon_main.h |  1 +
- drivers/net/ethernet/cavium/octeon/octeon_mgmt.c   |  8 ++++----
- drivers/net/ethernet/cavium/thunder/nicvf_main.c   | 10 ++++------
- drivers/net/ethernet/cavium/thunder/nicvf_queues.c |  4 ++--
- drivers/net/ethernet/cavium/thunder/nicvf_queues.h |  2 +-
- 6 files changed, 18 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb/sge.c  | 12 ++++++++----
+ drivers/net/ethernet/chelsio/cxgb3/sge.c | 14 ++++++--------
+ drivers/net/ethernet/chelsio/cxgb4/sge.c | 12 ++++++------
+ 3 files changed, 20 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/cavium/liquidio/lio_main.c b/drivers/net/ethernet/cavium/liquidio/lio_main.c
-index e73bc211779a..41c5f4c6ca22 100644
---- a/drivers/net/ethernet/cavium/liquidio/lio_main.c
-+++ b/drivers/net/ethernet/cavium/liquidio/lio_main.c
-@@ -161,13 +161,13 @@ static int liquidio_set_vf_link_state(struct net_device *netdev, int vfidx,
- static struct handshake handshake[MAX_OCTEON_DEVICES];
- static struct completion first_stage;
- 
--static void octeon_droq_bh(unsigned long pdev)
-+static void octeon_droq_bh(struct tasklet_struct *t)
- {
- 	int q_no;
- 	int reschedule = 0;
--	struct octeon_device *oct = (struct octeon_device *)pdev;
--	struct octeon_device_priv *oct_priv =
--		(struct octeon_device_priv *)oct->priv;
-+	struct octeon_device_priv *oct_priv = from_tasklet(oct_priv, t,
-+							  droq_tasklet);
-+	struct octeon_device *oct = oct_priv->dev;
- 
- 	for (q_no = 0; q_no < MAX_OCTEON_OUTPUT_QUEUES(oct); q_no++) {
- 		if (!(oct->io_qmask.oq & BIT_ULL(q_no)))
-@@ -4194,8 +4194,7 @@ static int octeon_device_init(struct octeon_device *octeon_dev)
- 
- 	/* Initialize the tasklet that handles output queue packet processing.*/
- 	dev_dbg(&octeon_dev->pci_dev->dev, "Initializing droq tasklet\n");
--	tasklet_init(&oct_priv->droq_tasklet, octeon_droq_bh,
--		     (unsigned long)octeon_dev);
-+	tasklet_setup(&oct_priv->droq_tasklet, octeon_droq_bh);
- 
- 	/* Setup the interrupt handler and record the INT SUM register address
- 	 */
-@@ -4299,6 +4298,7 @@ static int octeon_device_init(struct octeon_device *octeon_dev)
- 	complete(&handshake[octeon_dev->octeon_id].init);
- 
- 	atomic_set(&octeon_dev->status, OCT_DEV_HOST_OK);
-+	oct_priv->dev = octeon_dev;
- 
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_main.h b/drivers/net/ethernet/cavium/liquidio/octeon_main.h
-index 073d0647b439..5b4cb725f60f 100644
---- a/drivers/net/ethernet/cavium/liquidio/octeon_main.h
-+++ b/drivers/net/ethernet/cavium/liquidio/octeon_main.h
-@@ -39,6 +39,7 @@ struct octeon_device_priv {
- 	/** Tasklet structures for this device. */
- 	struct tasklet_struct droq_tasklet;
- 	unsigned long napi_mask;
-+	struct octeon_device *dev;
+diff --git a/drivers/net/ethernet/chelsio/cxgb/sge.c b/drivers/net/ethernet/chelsio/cxgb/sge.c
+index 47b5c8e2104b..5f999187038c 100644
+--- a/drivers/net/ethernet/chelsio/cxgb/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb/sge.c
+@@ -239,8 +239,10 @@ struct sched {
+ 	unsigned int	num;		/* num skbs in per port queues */
+ 	struct sched_port p[MAX_NPORTS];
+ 	struct tasklet_struct sched_tsk;/* tasklet used to run scheduler */
++	struct sge *sge;
  };
+-static void restart_sched(unsigned long);
++
++static void restart_sched(struct tasklet_struct *t);
  
- /** This structure is used by NIC driver to store information required
-diff --git a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c b/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
-index 3e17ce0d2314..c745ace07fc3 100644
---- a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
-+++ b/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
-@@ -315,9 +315,9 @@ static void octeon_mgmt_clean_tx_buffers(struct octeon_mgmt *p)
- 		netif_wake_queue(p->netdev);
- }
  
--static void octeon_mgmt_clean_tx_tasklet(unsigned long arg)
-+static void octeon_mgmt_clean_tx_tasklet(struct tasklet_struct *t)
- {
--	struct octeon_mgmt *p = (struct octeon_mgmt *)arg;
-+	struct octeon_mgmt *p = from_tasklet(p, t, tx_clean_tasklet);
- 	octeon_mgmt_clean_tx_buffers(p);
- 	octeon_mgmt_enable_tx_irq(p);
- }
-@@ -1489,8 +1489,8 @@ static int octeon_mgmt_probe(struct platform_device *pdev)
+ /*
+@@ -378,7 +380,8 @@ static int tx_sched_init(struct sge *sge)
+ 		return -ENOMEM;
  
- 	skb_queue_head_init(&p->tx_list);
- 	skb_queue_head_init(&p->rx_list);
--	tasklet_init(&p->tx_clean_tasklet,
--		     octeon_mgmt_clean_tx_tasklet, (unsigned long)p);
-+	tasklet_setup(&p->tx_clean_tasklet,
-+		     octeon_mgmt_clean_tx_tasklet);
+ 	pr_debug("tx_sched_init\n");
+-	tasklet_init(&s->sched_tsk, restart_sched, (unsigned long) sge);
++	tasklet_setup(&s->sched_tsk, restart_sched);
++	s->sge = sge;
+ 	sge->tx_sched = s;
  
- 	netdev->priv_flags |= IFF_UNICAST_FLT;
- 
-diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-index c1378b5c780c..11112b58c88f 100644
---- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-+++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-@@ -985,9 +985,9 @@ static int nicvf_poll(struct napi_struct *napi, int budget)
-  *
-  * As of now only CQ errors are handled
+ 	for (i = 0; i < MAX_NPORTS; i++) {
+@@ -1301,9 +1304,10 @@ static inline void reclaim_completed_tx(struct sge *sge, struct cmdQ *q)
+  * Called from tasklet. Checks the scheduler for any
+  * pending skbs that can be sent.
   */
--static void nicvf_handle_qs_err(unsigned long data)
-+static void nicvf_handle_qs_err(struct tasklet_struct *t)
+-static void restart_sched(unsigned long arg)
++static void restart_sched(struct tasklet_struct *t)
  {
--	struct nicvf *nic = (struct nicvf *)data;
-+	struct nicvf *nic = from_tasklet(nic, t, qs_err_task);
- 	struct queue_set *qs = nic->qs;
- 	int qidx;
- 	u64 status;
-@@ -1493,12 +1493,10 @@ int nicvf_open(struct net_device *netdev)
+-	struct sge *sge = (struct sge *) arg;
++	struct sched *s = from_tasklet(s, t, sched_tsk);
++	struct sge *sge = s->sge;
+ 	struct adapter *adapter = sge->adapter;
+ 	struct cmdQ *q = &sge->cmdQ[0];
+ 	struct sk_buff *skb;
+diff --git a/drivers/net/ethernet/chelsio/cxgb3/sge.c b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+index 6dabbf1502c7..f2c5da465db5 100644
+--- a/drivers/net/ethernet/chelsio/cxgb3/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+@@ -1520,10 +1520,10 @@ static int ctrl_xmit(struct adapter *adap, struct sge_txq *q,
+  *
+  *	Resumes transmission on a suspended Tx control queue.
+  */
+-static void restart_ctrlq(unsigned long data)
++static void restart_ctrlq(struct tasklet_struct *t)
+ {
+ 	struct sk_buff *skb;
+-	struct sge_qset *qs = (struct sge_qset *)data;
++	struct sge_qset *qs = from_tasklet(qs, t, txq[TXQ_CTRL].qresume_tsk);
+ 	struct sge_txq *q = &qs->txq[TXQ_CTRL];
+ 
+ 	spin_lock(&q->lock);
+@@ -1737,10 +1737,10 @@ again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
+  *
+  *	Resumes transmission on a suspended Tx offload queue.
+  */
+-static void restart_offloadq(unsigned long data)
++static void restart_offloadq(struct tasklet_struct *t)
+ {
+ 	struct sk_buff *skb;
+-	struct sge_qset *qs = (struct sge_qset *)data;
++	struct sge_qset *qs = from_tasklet(qs, t, txq[TXQ_OFLD].qresume_tsk);
+ 	struct sge_txq *q = &qs->txq[TXQ_OFLD];
+ 	const struct port_info *pi = netdev_priv(qs->netdev);
+ 	struct adapter *adap = pi->adapter;
+@@ -3084,10 +3084,8 @@ int t3_sge_alloc_qset(struct adapter *adapter, unsigned int id, int nports,
+ 		skb_queue_head_init(&q->txq[i].sendq);
  	}
  
- 	/* Init tasklet for handling Qset err interrupt */
--	tasklet_init(&nic->qs_err_task, nicvf_handle_qs_err,
--		     (unsigned long)nic);
-+	tasklet_setup(&nic->qs_err_task, nicvf_handle_qs_err);
+-	tasklet_init(&q->txq[TXQ_OFLD].qresume_tsk, restart_offloadq,
+-		     (unsigned long)q);
+-	tasklet_init(&q->txq[TXQ_CTRL].qresume_tsk, restart_ctrlq,
+-		     (unsigned long)q);
++	tasklet_setup(&q->txq[TXQ_OFLD].qresume_tsk, restart_offloadq);
++	tasklet_setup(&q->txq[TXQ_CTRL].qresume_tsk, restart_ctrlq);
  
- 	/* Init RBDR tasklet which will refill RBDR */
--	tasklet_init(&nic->rbdr_task, nicvf_rbdr_task,
--		     (unsigned long)nic);
-+	tasklet_setup(&nic->rbdr_task, nicvf_rbdr_task);
- 	INIT_DELAYED_WORK(&nic->rbdr_work, nicvf_rbdr_work);
- 
- 	/* Configure CPI alorithm */
-diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
-index a45223f0cca5..7a141ce32e86 100644
---- a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
-+++ b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
-@@ -460,9 +460,9 @@ void nicvf_rbdr_work(struct work_struct *work)
- }
- 
- /* In Softirq context, alloc rcv buffers in atomic mode */
--void nicvf_rbdr_task(unsigned long data)
-+void nicvf_rbdr_task(struct tasklet_struct *t)
+ 	q->fl[0].gen = q->fl[1].gen = 1;
+ 	q->fl[0].size = p->fl_size;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+index d2b587d1670a..e668e17711c8 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+@@ -2660,11 +2660,11 @@ static int ctrl_xmit(struct sge_ctrl_txq *q, struct sk_buff *skb)
+  *
+  *	Resumes transmission on a suspended Tx control queue.
+  */
+-static void restart_ctrlq(unsigned long data)
++static void restart_ctrlq(struct tasklet_struct *t)
  {
--	struct nicvf *nic = (struct nicvf *)data;
-+	struct nicvf *nic = from_tasklet(nic, t, rbdr_task);
+ 	struct sk_buff *skb;
+ 	unsigned int written = 0;
+-	struct sge_ctrl_txq *q = (struct sge_ctrl_txq *)data;
++	struct sge_ctrl_txq *q = from_tasklet(q, t, qresume_tsk);
  
- 	nicvf_refill_rbdr(nic, GFP_ATOMIC);
- 	if (nic->rb_alloc_fail) {
-diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_queues.h b/drivers/net/ethernet/cavium/thunder/nicvf_queues.h
-index 2460451fc48f..8453defc296c 100644
---- a/drivers/net/ethernet/cavium/thunder/nicvf_queues.h
-+++ b/drivers/net/ethernet/cavium/thunder/nicvf_queues.h
-@@ -348,7 +348,7 @@ void nicvf_xdp_sq_doorbell(struct nicvf *nic, struct snd_queue *sq, int sq_num);
+ 	spin_lock(&q->sendq.lock);
+ 	reclaim_completed_tx_imm(&q->q);
+@@ -2961,9 +2961,9 @@ static int ofld_xmit(struct sge_uld_txq *q, struct sk_buff *skb)
+  *
+  *	Resumes transmission on a suspended Tx offload queue.
+  */
+-static void restart_ofldq(unsigned long data)
++static void restart_ofldq(struct tasklet_struct *t)
+ {
+-	struct sge_uld_txq *q = (struct sge_uld_txq *)data;
++	struct sge_uld_txq *q = from_tasklet(q, t, qresume_tsk);
  
- struct sk_buff *nicvf_get_rcv_skb(struct nicvf *nic,
- 				  struct cqe_rx_t *cqe_rx, bool xdp);
--void nicvf_rbdr_task(unsigned long data);
-+void nicvf_rbdr_task(struct tasklet_struct *t);
- void nicvf_rbdr_work(struct work_struct *work);
- 
- void nicvf_enable_intr(struct nicvf *nic, int int_type, int q_idx);
+ 	spin_lock(&q->sendq.lock);
+ 	q->full = 0;            /* the queue actually is completely empty now */
+@@ -4576,7 +4576,7 @@ int t4_sge_alloc_ctrl_txq(struct adapter *adap, struct sge_ctrl_txq *txq,
+ 	init_txq(adap, &txq->q, FW_EQ_CTRL_CMD_EQID_G(ntohl(c.cmpliqid_eqid)));
+ 	txq->adap = adap;
+ 	skb_queue_head_init(&txq->sendq);
+-	tasklet_init(&txq->qresume_tsk, restart_ctrlq, (unsigned long)txq);
++	tasklet_setup(&txq->qresume_tsk, restart_ctrlq);
+ 	txq->full = 0;
+ 	return 0;
+ }
+@@ -4666,7 +4666,7 @@ int t4_sge_alloc_uld_txq(struct adapter *adap, struct sge_uld_txq *txq,
+ 	txq->q.q_type = CXGB4_TXQ_ULD;
+ 	txq->adap = adap;
+ 	skb_queue_head_init(&txq->sendq);
+-	tasklet_init(&txq->qresume_tsk, restart_ofldq, (unsigned long)txq);
++	tasklet_setup(&txq->qresume_tsk, restart_ofldq);
+ 	txq->full = 0;
+ 	txq->mapping_err = 0;
+ 	return 0;
 -- 
 2.17.1
 
