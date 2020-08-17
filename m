@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C6752468F0
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 16:59:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CD932468F2
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 16:59:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729028AbgHQO7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 10:59:52 -0400
-Received: from mail.intenta.de ([178.249.25.132]:41348 "EHLO mail.intenta.de"
+        id S1729060AbgHQO74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 10:59:56 -0400
+Received: from mail.intenta.de ([178.249.25.132]:41357 "EHLO mail.intenta.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726630AbgHQO7v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Aug 2020 10:59:51 -0400
+        id S1726630AbgHQO7y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Aug 2020 10:59:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
-        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=ul781r9xJv0u1sbu832MaRaQH5Qhz5+ZPGqxs6N/Qao=;
-        b=QLsMuHBiwoheRtu8lP3TPYqL5oKE3GJHAMduSUeTux6oStrwAqs/j7fWh8V55R9OIawQaYxP6Wm6g28v2YIPvJnIS0huFH055yKoAf1mQ14wQhJnXCy6KMdJSYdne44eA+kX6wQG3S22nNSaz1vhe888+2gLfcKomtf0sJavM+3l9OtfvR8ks13aeK1JdOLOEjrqWY2Ibfut8uRuWeuvyqlWvQHLGTKAIbmkctyAmWxRYFwyKtUAjoxsou7Sp9APYUAGzPHVlr1m7fWvpMxs7O2Qtqw+wkglr6qTRoN4aYOIWJL3L9/0V66RMaCZehnpbTkk5U+sbbnS1+RT+ig5sw==;
-Date:   Mon, 17 Aug 2020 16:59:43 +0200
+        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=DdHx8cvx8GNyWolx4FGyEq6qtgvNHmpmJypkc7o70bA=;
+        b=tIB/YheO3b1KvNA9TBQfklbDi5AyBXJTVIscfDp7Z7kro/Qe4fD54pMIonkF0zyKraF6UUFATkHIU/MwtmZVXE2iwoxI9k3GUcaYrDWVL8g6k+l6yGxchJSLrmNtG3RjwSbBZN2jDUgdW7GfVLkekWrt0ljNvWOlimGFjiNXdMzUAmOsCH+lgTwkK0n9v3b4ztGNRR+yQtd2v9f38HGVF5X1aERc7e9BqAF2JXqxWUnJvuYloH9qqwLhyKv2iiD91gzawOV6bRGZOaXcx87Xnc2b2lu6RkgYQZ5hamMNYj3ljlafVvjeYCI80JQp1PlCNfonhiwSWOk9CyNpPUHGWQ==;
+Date:   Mon, 17 Aug 2020 16:59:51 +0200
 From:   Helmut Grohne <helmut.grohne@intenta.de>
 To:     Andrew Lunn <andrew@lunn.ch>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -23,9 +23,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH v2 5/6] net: dsa: microchip: delete unused member
- ksz_device.regs_size
-Message-ID: <1415e9762aedbdd522f28b15e35049a4e1291696.1597675604.git.helmut.grohne@intenta.de>
+Subject: [PATCH v2 6/6] net: dsa: microchip: delete unused member
+ ksz_device.overrides
+Message-ID: <ddc9b570450c9522b45c368dffc098d18d3d7e72.1597675604.git.helmut.grohne@intenta.de>
 References: <20200725174130.GL1472201@lunn.ch>
  <cover.1597675604.git.helmut.grohne@intenta.de>
 MIME-Version: 1.0
@@ -47,17 +47,17 @@ Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
  1 file changed, 1 deletion(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 1791442f04ee..0120f2b72091 100644
+index 0120f2b72091..10ff7774a867 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -69,7 +69,6 @@ struct ksz_device {
- 	int mib_cnt;
- 	int mib_port_cnt;
- 	phy_interface_t interface;
--	u32 regs_size;
- 	bool phy_errata_9477;
- 	bool synclko_125;
- 
+@@ -82,7 +82,6 @@ struct ksz_device {
+ 	u16 mirror_rx;
+ 	u16 mirror_tx;
+ 	u32 features;			/* chip specific features */
+-	u32 overrides;			/* chip functions set by user */
+ 	u16 host_mask;
+ 	u16 port_mask;
+ };
 -- 
 2.20.1
 
