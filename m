@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B90824613E
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:52:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26BDA246143
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:52:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728443AbgHQIwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 04:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56840 "EHLO
+        id S1728498AbgHQIwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 04:52:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727007AbgHQIwD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:52:03 -0400
+        with ESMTP id S1728449AbgHQIwL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:52:11 -0400
 Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B373C061388;
-        Mon, 17 Aug 2020 01:52:03 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id y10so5603974plr.11;
-        Mon, 17 Aug 2020 01:52:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36117C061388;
+        Mon, 17 Aug 2020 01:52:11 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id t10so7157183plz.10;
+        Mon, 17 Aug 2020 01:52:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=/Dwv0Cic7T6kz8Rts1cgLM7pEUoAzAWE8onSffb/CRY=;
-        b=CoGj2d/h+8Kc9CWQDDtSzGXdf08Gnkjryfx4wKEKQ2hzvLKCAnNWJCx1nm0ddyU8YK
-         V6c2cURPPd2WUu91ps+wgkH4s0FZLalYBMI/7HH7gnSRgxdIAUSBxGeiVdRrHzdisAaB
-         rfCXlOTlJIi3uwTXOLf+1FVEWCdjiq/Tq6a8GctK+hotTmNXK33F2ugGf7510Nodjdxo
-         JHMVle1h6yzBVPKVVGK4ZyYyOGM55FRqalHY7jOFE/Te9peW80xoOAA5rblb8aCQ37hO
-         gUNUlxMp+YJz2piUpHaXcpautwjevnR8wGPezLBo0pAOFc36kB+Q/KtJ2p6+z2KxBQUU
-         46zg==
+        bh=FBwgroa5ysfr0mOctJOQjACyLAT2zXIJaPJz3rnhkuM=;
+        b=UNXbknHW6Kjd/+Qrjr+x0igc7PXrS8iFuBBcvR4LmNo7I3d93wK0HQ0pJpE2l810Rc
+         kd5aQJu7Czwuoks2B/EonPDstuPaV9k19zY9NOXOdBzJdZ2fz2bGfyvK7QB1K2cD+ZGd
+         qAUqSPH9fpsLj+EqIOxWOkC/mT4G2fftllOK8kzgjr4DAHXNi8figb6vBuuCQQQfbnZt
+         SA8wtgta58pLjDkKLl/VneyFfZHGTFNDPr+p9r7ut0nAov0NKZBb2bhb7NyI/s2ia3qm
+         UIpkg1fmaJ7tX5Zs3zZbOGpMnkBu1DXVHmS6eglYeAQ2CAtLYtgVCHF9raly2gfaDdV4
+         2fwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=/Dwv0Cic7T6kz8Rts1cgLM7pEUoAzAWE8onSffb/CRY=;
-        b=ijTnR+3O3fgn9rruujy9kWYwQr2fBgy5MN3+VtP6QtS6lqhcddPr/L+2HUG4DCElS2
-         GFQRpVGQ8rZRuKiWvinDB9MTFjrw0wF0hdVpBpj168s1ZxgrcR4Ne8ncVfB4G/TEG8iv
-         B4niU98zTgEK/nQupBKBKWl9OlCRAKYELSTgeGO44FL+xXwEsdMIUYMmANw8Udxch4/u
-         N127IfQMv3Mk3bBobW67Cx309szwMm2VEs9B7TkMImKfLRbzwlMhYMDEi6m3PBzOSNnA
-         KF5zXgPvvdj69fghHQO8cwuTPPZwZpy1j3bFizRz1McauEBTGuFJlAzQMwNzrBJjcZmJ
-         7YKA==
-X-Gm-Message-State: AOAM531inZ5xRzD5ULvwMb3G7XzgOEkhC8Fr+aIpcTaJsaSHZ1s47qjb
-        EeWb8GbSg4/7vg7Kwsdn+Ec=
-X-Google-Smtp-Source: ABdhPJytBX5O91tG68f9TX19wYBPt+IKOmYp94gCzm4N16NATR0r2Ef8mF3P33JY9+mj9FNO5dwIvw==
-X-Received: by 2002:a17:90a:ea91:: with SMTP id h17mr11482982pjz.36.1597654322795;
-        Mon, 17 Aug 2020 01:52:02 -0700 (PDT)
+        bh=FBwgroa5ysfr0mOctJOQjACyLAT2zXIJaPJz3rnhkuM=;
+        b=kNT6uuSwcIPQYl/y2MSOhQUHEsGk17a2L1eBuT082e6mPjm1I+2+mqqe8e99ben01G
+         fLRFRIJZXG8Mnd6dLG6EFdEFZcWtxwujV7MmippJOW6F/ifOMBKxynZzZXSeG+E3l7ot
+         uOSPtupHTc+d2rM4HJlG2WkAHpunbONg75Y2ZrTLmXcERegEzfhe3Ev/kBKsw1FHQsad
+         HAyPC655dU2pcL2zUkt6up9ikCsSQpvHIL0bDQhpiFH4yEElZW/jKsIGAJ7z16WRrQXz
+         JpIpDe5kEZegobZiEOpdjvUKp0xwIhlpRQRpbvTSG85XyQwEDZIfWuR1FQqfMk0zX7KD
+         yZNA==
+X-Gm-Message-State: AOAM5313ojsgGRhWPW/gH0DJG4p7RhpUmoh6n+dm3nLM0M7Kb3yLA3CE
+        n50uDawpgycfZQAEWcBr+XQ=
+X-Google-Smtp-Source: ABdhPJzHWrkDQzqDFcQ5s56yRVeDTo9be/bCA2S56GP8Ll8Uy+wcH4cPFMPncT3lbIdRtXKCLdaq1g==
+X-Received: by 2002:a17:90a:d986:: with SMTP id d6mr11019969pjv.134.1597654330763;
+        Mon, 17 Aug 2020 01:52:10 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id b185sm18554863pfg.71.2020.08.17.01.51.55
+        by smtp.gmail.com with ESMTPSA id b185sm18554863pfg.71.2020.08.17.01.52.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 01:52:02 -0700 (PDT)
+        Mon, 17 Aug 2020 01:52:10 -0700 (PDT)
 From:   Allen Pais <allen.cryptic@gmail.com>
 To:     gerrit@erg.abdn.ac.uk, davem@davemloft.net, kuba@kernel.org,
         edumazet@google.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
@@ -57,9 +57,9 @@ Cc:     keescook@chromium.org, netdev@vger.kernel.org,
         linux-wpan@vger.kernel.org, linux-rdma@vger.kernel.org,
         linux-s390@vger.kernel.org, Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH 4/8] net: mac802154: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 14:21:16 +0530
-Message-Id: <20200817085120.24894-4-allen.cryptic@gmail.com>
+Subject: [PATCH 5/8] net: rds: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 14:21:17 +0530
+Message-Id: <20200817085120.24894-5-allen.cryptic@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200817085120.24894-1-allen.cryptic@gmail.com>
 References: <20200817085120.24894-1-allen.cryptic@gmail.com>
@@ -78,36 +78,50 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- net/mac802154/main.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ net/rds/ib_cm.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/net/mac802154/main.c b/net/mac802154/main.c
-index 06ea0f8bfd5c..520cedc594e1 100644
---- a/net/mac802154/main.c
-+++ b/net/mac802154/main.c
-@@ -20,9 +20,9 @@
- #include "ieee802154_i.h"
- #include "cfg.h"
+diff --git a/net/rds/ib_cm.c b/net/rds/ib_cm.c
+index c3319ff3ee11..2e8872d51fa8 100644
+--- a/net/rds/ib_cm.c
++++ b/net/rds/ib_cm.c
+@@ -314,9 +314,9 @@ static void poll_scq(struct rds_ib_connection *ic, struct ib_cq *cq,
+ 	}
+ }
  
--static void ieee802154_tasklet_handler(unsigned long data)
-+static void ieee802154_tasklet_handler(struct tasklet_struct *t)
+-static void rds_ib_tasklet_fn_send(unsigned long data)
++static void rds_ib_tasklet_fn_send(struct tasklet_struct *t)
  {
--	struct ieee802154_local *local = (struct ieee802154_local *)data;
-+	struct ieee802154_local *local = from_tasklet(local, t, tasklet);
- 	struct sk_buff *skb;
+-	struct rds_ib_connection *ic = (struct rds_ib_connection *)data;
++	struct rds_ib_connection *ic = from_tasklet(ic, t, i_send_tasklet);
+ 	struct rds_connection *conn = ic->conn;
  
- 	while ((skb = skb_dequeue(&local->skb_queue))) {
-@@ -91,9 +91,7 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
- 	INIT_LIST_HEAD(&local->interfaces);
- 	mutex_init(&local->iflist_mtx);
+ 	rds_ib_stats_inc(s_ib_tasklet_call);
+@@ -354,9 +354,9 @@ static void poll_rcq(struct rds_ib_connection *ic, struct ib_cq *cq,
+ 	}
+ }
  
--	tasklet_init(&local->tasklet,
--		     ieee802154_tasklet_handler,
--		     (unsigned long)local);
-+	tasklet_setup(&local->tasklet, ieee802154_tasklet_handler);
+-static void rds_ib_tasklet_fn_recv(unsigned long data)
++static void rds_ib_tasklet_fn_recv(struct tasklet_struct *t)
+ {
+-	struct rds_ib_connection *ic = (struct rds_ib_connection *)data;
++	struct rds_ib_connection *ic = from_tasklet(ic, t, i_recv_tasklet);
+ 	struct rds_connection *conn = ic->conn;
+ 	struct rds_ib_device *rds_ibdev = ic->rds_ibdev;
+ 	struct rds_ib_ack_state state;
+@@ -1218,10 +1218,8 @@ int rds_ib_conn_alloc(struct rds_connection *conn, gfp_t gfp)
+ 	}
  
- 	skb_queue_head_init(&local->skb_queue);
- 
+ 	INIT_LIST_HEAD(&ic->ib_node);
+-	tasklet_init(&ic->i_send_tasklet, rds_ib_tasklet_fn_send,
+-		     (unsigned long)ic);
+-	tasklet_init(&ic->i_recv_tasklet, rds_ib_tasklet_fn_recv,
+-		     (unsigned long)ic);
++	tasklet_setup(&ic->i_send_tasklet, rds_ib_tasklet_fn_send);
++	tasklet_setup(&ic->i_recv_tasklet, rds_ib_tasklet_fn_recv);
+ 	mutex_init(&ic->i_recv_mutex);
+ #ifndef KERNEL_HAS_ATOMIC64
+ 	spin_lock_init(&ic->i_ack_lock);
 -- 
 2.17.1
 
