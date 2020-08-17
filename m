@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48DCD245FDC
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:27:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2527245FF0
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:27:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbgHQI02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 04:26:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52706 "EHLO
+        id S1728170AbgHQI1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 04:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728404AbgHQI0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:26:18 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809D8C061388;
-        Mon, 17 Aug 2020 01:26:18 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id s14so1164890plp.4;
-        Mon, 17 Aug 2020 01:26:18 -0700 (PDT)
+        with ESMTP id S1728250AbgHQI0Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:26:25 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9861AC061388;
+        Mon, 17 Aug 2020 01:26:25 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id t6so7348674pjr.0;
+        Mon, 17 Aug 2020 01:26:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=NGc9GivMW4Gl2PZYS1sshtdVeD119m/l6GvQX46weos=;
-        b=LBLxHBYXHHShApS1V6EqhqlERMx39IJoGg9XyyNS0xxKKPf7wzJlvUp7OZH7MsJNbk
-         Hhy8KpiRMnmdXLU49x03cAV9Hb30GjB3mLnkNXIVN7t7SxDQ0pzRJNjp101YiuBGrc6h
-         +OaSLNfkE2xI7g79vNgCQ+sgLmy75Y0bBKtNhkfSvXuudjABMDUQL5Enx7nI0chgO32d
-         t5Vq04PRATxJxYQ15CIpAo/xswWJNmoEItx+gz7uWetOIqMKbHGTpI5tFRruhMbNCxzv
-         d36pjAk2F3GLgsY9HZ1tEBwdbzTGHHfWhsaWugChVMUm6Bu0PrSMhwW9pPUh7m5In5hF
-         8d0w==
+        bh=Df7yxK//cmVxvAkf6cXduXiAsh32H2X5cVsb6K8GHGM=;
+        b=XNx3Kz/kSLSRc7VTJus4z7RYdORZ86+CFl9HXiWO+FTTDyVpTDjj3setW6Q8pT38mh
+         NmOs1/ct0cRXsbBeRTwvx4W1afRcRX6p+G7YG0U9cG5hRYgnLqPpAHCICNeXp8/3MONy
+         Xb3t+Azgude6qcZ6sxW9JZsKZzsk9pUn+LymdgQuENerjmXXr6xtfYbelZuiw41dEIdz
+         P0wXQ2PtBLxCES+dmV6SBamPReFvL3SyU1HWQp3U4mxHPklRPF+So6pXcy8/wvv8Fb3R
+         /UdfL3Ca2orJ4GrTPiExKanCPWj2W3yP+gt/KsqbHMJLz7Lpae2Pp5SYue11557317bf
+         LDcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=NGc9GivMW4Gl2PZYS1sshtdVeD119m/l6GvQX46weos=;
-        b=WbehfnymTJS+u/d4NtI1QlPz8bVfbZnnukB/8Dmkm7zzrQDKwUv0uSpi1YFNI6+sxs
-         yZ72oSii+Ayeg7m7c0V4MpeGJfyTQirk8cpW/AUeQuzHSxY95hz9CROweSEgOcat4Pcf
-         ByfCHyJK8Nyjhd6mRDLsJOFXNh414yJRztuZAtb6/DsiKFV1/YoeoBz8sg+nNyjZNH2i
-         05hDaw7kmrQrryG26Tide2RvnV3vwev+aOK7Y76i+QouvBae/sNh4FYXkXjc471vL7dD
-         55aGbE8n6mFr7vunfROoFAiul2hxEcqg6jzAm1ei6uh/bbl5gLQ0EW0xm1uJGUxXWniw
-         TTtw==
-X-Gm-Message-State: AOAM531tIP2JDNXu3V/jpXaJVFJ0H5/xd8YK4tt2KCoYPmN3N7d97v4T
-        xcPcmcWDcIrKk8NEGgEKgG0=
-X-Google-Smtp-Source: ABdhPJwRCnCkq0qh6UezjQA0oYu6vWfa6QDQxH8Q19OL3Crbp/QUQGdhIqlSJxXrujdjDsmyU1xEDw==
-X-Received: by 2002:a17:90b:208:: with SMTP id fy8mr11168449pjb.131.1597652778097;
-        Mon, 17 Aug 2020 01:26:18 -0700 (PDT)
+        bh=Df7yxK//cmVxvAkf6cXduXiAsh32H2X5cVsb6K8GHGM=;
+        b=faxjoWPYRJnQEW9g98fuS9hx49aen021prBJqSg+9Eq/93V1rFw0xg0bRDsrbHPoDE
+         dt2u2T9TYOmkYd7J7Bdg4GeKEiiHXr4UI/jmtZqPzKLucFAEXYUrwPj+LAREWqHgBSaq
+         kvi11bji5LD5HyzGc06BgriiTl8l62lRGykiDmgdP8y2AL4nObVTUk4TJzKoSMroXPYU
+         PLfNwyqo3LeQhtm0XllrLlxCyGQkvTO68x/Co1lhb9GxmdeGYLyVPcPmss67+Iwv69L2
+         lmfLgvffNhLOADkg14adjiJaTrF98VyFp2hjZ0BklXPhY+lD2BdEKiOfpFSg0omM/bas
+         GlGQ==
+X-Gm-Message-State: AOAM532Fa1R2v7yLmI/uSomPL2OeHpS2LYcXNFnovMASPy3yBIlnALHL
+        te9GO2oPmUimVnqQKKQt26g=
+X-Google-Smtp-Source: ABdhPJy25qZkwLdPxae9MaYOKgL9LadrOvMoVqZOA4GCkZihBoxS6mmIhsQz13i9lJFXT11QTvGjjQ==
+X-Received: by 2002:a17:902:264:: with SMTP id 91mr10638591plc.88.1597652785215;
+        Mon, 17 Aug 2020 01:26:25 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id r186sm19928482pfr.162.2020.08.17.01.26.10
+        by smtp.gmail.com with ESMTPSA id r186sm19928482pfr.162.2020.08.17.01.26.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 01:26:17 -0700 (PDT)
+        Mon, 17 Aug 2020 01:26:24 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     jes@trained-monkey.org, davem@davemloft.net, kuba@kernel.org,
         kda@linux-powerpc.org, dougmill@linux.ibm.com,
@@ -56,9 +56,9 @@ Cc:     keescook@chromium.org, linux-acenic@sunsite.dk,
         linuxppc-dev@lists.ozlabs.org, linux-rdma@vger.kernel.org,
         oss-drivers@netronome.com, Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH 14/20] ethernet: micrel: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 13:54:28 +0530
-Message-Id: <20200817082434.21176-16-allen.lkml@gmail.com>
+Subject: [PATCH 15/20] ethernet: natsemi: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 13:54:29 +0530
+Message-Id: <20200817082434.21176-17-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200817082434.21176-1-allen.lkml@gmail.com>
 References: <20200817082434.21176-1-allen.lkml@gmail.com>
@@ -75,104 +75,36 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/net/ethernet/micrel/ks8842.c  | 19 ++++++++++---------
- drivers/net/ethernet/micrel/ksz884x.c | 14 ++++++--------
- 2 files changed, 16 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/natsemi/ns83820.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/micrel/ks8842.c b/drivers/net/ethernet/micrel/ks8842.c
-index f3f6dfe3eddc..8fd32f98c494 100644
---- a/drivers/net/ethernet/micrel/ks8842.c
-+++ b/drivers/net/ethernet/micrel/ks8842.c
-@@ -587,10 +587,11 @@ static int __ks8842_start_new_rx_dma(struct net_device *netdev)
- 	return err;
+diff --git a/drivers/net/ethernet/natsemi/ns83820.c b/drivers/net/ethernet/natsemi/ns83820.c
+index 8e24c7acf79b..9157c1bffc79 100644
+--- a/drivers/net/ethernet/natsemi/ns83820.c
++++ b/drivers/net/ethernet/natsemi/ns83820.c
+@@ -923,10 +923,10 @@ static void rx_irq(struct net_device *ndev)
+ 	spin_unlock_irqrestore(&info->lock, flags);
  }
  
--static void ks8842_rx_frame_dma_tasklet(unsigned long arg)
-+static void ks8842_rx_frame_dma_tasklet(struct tasklet_struct *t)
+-static void rx_action(unsigned long _dev)
++static void rx_action(struct tasklet_struct *t)
  {
--	struct net_device *netdev = (struct net_device *)arg;
--	struct ks8842_adapter *adapter = netdev_priv(netdev);
-+	struct ks8842_adapter *adapter = from_tasklet(adapter, t, dma_rx.tasklet);
-+	struct net_device *netdev = (struct net_device *)((char *)adapter -
-+				ALIGN(sizeof(struct net_device), NETDEV_ALIGN));
- 	struct ks8842_rx_dma_ctl *ctl = &adapter->dma_rx;
- 	struct sk_buff *skb = ctl->skb;
- 	dma_addr_t addr = sg_dma_address(&ctl->sg);
-@@ -720,10 +721,11 @@ static void ks8842_handle_rx_overrun(struct net_device *netdev,
- 	netdev->stats.rx_fifo_errors++;
- }
+-	struct net_device *ndev = (void *)_dev;
+-	struct ns83820 *dev = PRIV(ndev);
++	struct ns83820 *dev = from_tasklet(dev, t, rx_tasklet);
++	struct net_device *ndev = dev->ndev;
+ 	rx_irq(ndev);
+ 	writel(ihr, dev->base + IHR);
  
--static void ks8842_tasklet(unsigned long arg)
-+static void ks8842_tasklet(struct tasklet_struct *t)
- {
--	struct net_device *netdev = (struct net_device *)arg;
--	struct ks8842_adapter *adapter = netdev_priv(netdev);
-+	struct ks8842_adapter *adapter = from_tasklet(adapter, t, tasklet);
-+	struct net_device *netdev = (struct net_device *)((char *)adapter -
-+				ALIGN(sizeof(struct net_device), NETDEV_ALIGN));
- 	u16 isr;
- 	unsigned long flags;
- 	u16 entry_bank;
-@@ -953,8 +955,7 @@ static int ks8842_alloc_dma_bufs(struct net_device *netdev)
- 		goto err;
- 	}
+@@ -1927,7 +1927,7 @@ static int ns83820_init_one(struct pci_dev *pci_dev,
+ 	SET_NETDEV_DEV(ndev, &pci_dev->dev);
  
--	tasklet_init(&rx_ctl->tasklet, ks8842_rx_frame_dma_tasklet,
--		(unsigned long)netdev);
-+	tasklet_setup(&rx_ctl->tasklet, ks8842_rx_frame_dma_tasklet);
+ 	INIT_WORK(&dev->tq_refill, queue_refill);
+-	tasklet_init(&dev->rx_tasklet, rx_action, (unsigned long)ndev);
++	tasklet_setup(&dev->rx_tasklet, rx_action);
  
- 	return 0;
- err:
-@@ -1173,7 +1174,7 @@ static int ks8842_probe(struct platform_device *pdev)
- 		adapter->dma_tx.channel = -1;
- 	}
- 
--	tasklet_init(&adapter->tasklet, ks8842_tasklet, (unsigned long)netdev);
-+	tasklet_setup(&adapter->tasklet, ks8842_tasklet);
- 	spin_lock_init(&adapter->lock);
- 
- 	netdev->netdev_ops = &ks8842_netdev_ops;
-diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
-index bb646b65cc95..5130507bbf54 100644
---- a/drivers/net/ethernet/micrel/ksz884x.c
-+++ b/drivers/net/ethernet/micrel/ksz884x.c
-@@ -5159,9 +5159,9 @@ static int dev_rcv_special(struct dev_info *hw_priv)
- 	return received;
- }
- 
--static void rx_proc_task(unsigned long data)
-+static void rx_proc_task(struct tasklet_struct *t)
- {
--	struct dev_info *hw_priv = (struct dev_info *) data;
-+	struct dev_info *hw_priv = from_tasklet(hw_priv, t, rx_tasklet);
- 	struct ksz_hw *hw = &hw_priv->hw;
- 
- 	if (!hw->enabled)
-@@ -5181,9 +5181,9 @@ static void rx_proc_task(unsigned long data)
- 	}
- }
- 
--static void tx_proc_task(unsigned long data)
-+static void tx_proc_task(struct tasklet_struct *t)
- {
--	struct dev_info *hw_priv = (struct dev_info *) data;
-+	struct dev_info *hw_priv = from_tasklet(hw_priv, t, tx_tasklet);
- 	struct ksz_hw *hw = &hw_priv->hw;
- 
- 	hw_ack_intr(hw, KS884X_INT_TX_MASK);
-@@ -5436,10 +5436,8 @@ static int prepare_hardware(struct net_device *dev)
- 	rc = request_irq(dev->irq, netdev_intr, IRQF_SHARED, dev->name, dev);
- 	if (rc)
- 		return rc;
--	tasklet_init(&hw_priv->rx_tasklet, rx_proc_task,
--		     (unsigned long) hw_priv);
--	tasklet_init(&hw_priv->tx_tasklet, tx_proc_task,
--		     (unsigned long) hw_priv);
-+	tasklet_setup(&hw_priv->rx_tasklet, rx_proc_task);
-+	tasklet_setup(&hw_priv->tx_tasklet, tx_proc_task);
- 
- 	hw->promiscuous = 0;
- 	hw->all_multi = 0;
+ 	err = pci_enable_device(pci_dev);
+ 	if (err) {
 -- 
 2.17.1
 
