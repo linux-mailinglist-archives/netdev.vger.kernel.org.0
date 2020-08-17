@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC98245FDF
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:27:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81C57245FE1
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:27:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728444AbgHQI0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 04:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
+        id S1728462AbgHQI0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 04:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728036AbgHQI0b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:26:31 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C187C061389;
-        Mon, 17 Aug 2020 01:26:31 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id k13so7122010plk.13;
-        Mon, 17 Aug 2020 01:26:31 -0700 (PDT)
+        with ESMTP id S1726361AbgHQI0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:26:38 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA70C061388;
+        Mon, 17 Aug 2020 01:26:38 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id f10so7131539plj.8;
+        Mon, 17 Aug 2020 01:26:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=sk5rpeS55SBVIoCz+MRV7vl3Lfu/wV4G0MR5a0P4VHA=;
-        b=R1csLVhAJxc3yHfRuiOVfIM1K1da22Ewqk4d+S/8PeGJ+32fz7zhRbnJDPHJJDKTdz
-         0HXIvVZM3am+i1sKz3hJwGy+Hli5AXl4Fb58zCp5uP0o3pJy80XMhYkUYI8bKRzc0a0o
-         x2TKcQ+dmZMMxwrb2J5ATfaA13xUGsPJruvFtyp4VyUwo47tTFqIxVatUxhNaH4YQfv/
-         mLR9OJhnOIPZ1lAuRwbu8D8nldBsUf/goYQQw3AvOSROT7WNe/UrLkPwTGNuZWTZULaS
-         LEE21diiOErwWO2gIY0BjuOb8+ndEMhUNA/J5gB5GjdJoiJkQeHR/akuo2r5p+ATFRRP
-         5D4Q==
+        bh=o0FMk4NSKHdON29FQ/delLJrHAtl7s1b3Zn2ITn/KyQ=;
+        b=EMmUPSbN+4ipANeDlXBtAnB3UwDY9H6TP8yOz6wWku97mB6+sfEUFOlpE72g1O6h+G
+         eKrUOejHzvHY6tyzDx+IDTwXdbaK3zLGMU/M598ekvxCtnC/7d5d6ZCR/ZcR2UAv3fbe
+         VACi+Zor+zAIOATP/Yas9HdBtd3o20TU5dAvVWXl0gbWV28T+49O1BKHmxBFxvmklfmt
+         SPVaLg+2T0xkD0oIgr1nz1XfAk640XPjM5ZOfmUjy+0G9gOsCqrDT81YmPmeM6i4QCL5
+         edf5DD3C4xCx1GBFsyuZiKQ42c55kRmRuEvQqQ6C2gxiwS4bNYibBkfB32keH/g72ew7
+         ErFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=sk5rpeS55SBVIoCz+MRV7vl3Lfu/wV4G0MR5a0P4VHA=;
-        b=XaJrdYSQwl96jOBU6ce+kj6GENjm3nEv8l8xZnkL6Yg/4nhxsW2OJeEGnbxNXw8yiA
-         4u178yeR4k9urCe3DVw19yhlfD6QphQRsa2UP+qKaS40pwjIiNGl7HNHq0dCfOAZEtrQ
-         Di1vBKVYz8llo19/PZW7G8wRJXTqyTXLW8FxOM2RWNlAYmi5szGeP2pOQ3RNMl/DUES5
-         n4wAqDbv1Ndg9/cJ0+h6veMBokBAPiofZNWUOn5NJQKyNJAlUYNi3/jXL0JIKa8bTCfF
-         PxUig3j4y53A1YXlQ7jeBEp5C0he0OwTT2LFoy4sCPkpk0DmKILBZpnVOu0m+/q9fvxK
-         oRsw==
-X-Gm-Message-State: AOAM531IiBJx28HeZi5hes0JRao5JCj1TRqvFj0vxVMbRiWmijIIbhb8
-        1cX2YLkZgnO5Tu5IuiWK7n0=
-X-Google-Smtp-Source: ABdhPJxel0tdqet5sG9IVVMDhmbxE47JSymBZcwF/5VCrNzd2cjfx/50fzzPWqn2s+vAy5zva75SdQ==
-X-Received: by 2002:a17:90b:3197:: with SMTP id hc23mr11408391pjb.110.1597652790990;
-        Mon, 17 Aug 2020 01:26:30 -0700 (PDT)
+        bh=o0FMk4NSKHdON29FQ/delLJrHAtl7s1b3Zn2ITn/KyQ=;
+        b=ojYs/Cb17MCxM0S8grC8fWkahlgIj1brbIY+WupEzSEeJPnHXFtEuDSUwAr3RXrdZc
+         egAbyBfs6J27bZZCoeVWtHFvMM4bPhLZdOGaExw88uU9SR6EPfMCsWOhczcCtkYFlmAz
+         eK44YyVYEJGaIY5xuUp+cCM8xPLJzH/AR4zArtIrRbJIjGCo9xuBVdY99Ya3cPqGOUhB
+         NEUQX9DoYATJyLyC5lLPJ4JSw/ntUDRud1oC2sDQmDOovVzw7D6CNWJ4+k+okMJGq8il
+         tMV0dSRDaKIROySXR0tNqia+yCKuOfjCB7fwdc512wtdbgV+3fAsXSxkRWLpnAe69vrg
+         iqaQ==
+X-Gm-Message-State: AOAM531sDdsiqUu0gtsRL3kWkrG1Zugu4XMG47Gxu/MdFWHugr0IyEY3
+        pyXxvryyv+BAZOer9611Fxo=
+X-Google-Smtp-Source: ABdhPJybXxJ+dBHrJmIu3dZ4nk6KLcetVg87DxiqclRyCqvNLKi590hC96D0VCcPHISVJroeNA4prQ==
+X-Received: by 2002:a17:90a:eb17:: with SMTP id j23mr11335001pjz.151.1597652797309;
+        Mon, 17 Aug 2020 01:26:37 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id r186sm19928482pfr.162.2020.08.17.01.26.25
+        by smtp.gmail.com with ESMTPSA id r186sm19928482pfr.162.2020.08.17.01.26.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 01:26:30 -0700 (PDT)
+        Mon, 17 Aug 2020 01:26:36 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     jes@trained-monkey.org, davem@davemloft.net, kuba@kernel.org,
         kda@linux-powerpc.org, dougmill@linux.ibm.com,
@@ -56,9 +56,9 @@ Cc:     keescook@chromium.org, linux-acenic@sunsite.dk,
         linuxppc-dev@lists.ozlabs.org, linux-rdma@vger.kernel.org,
         oss-drivers@netronome.com, Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH 16/20] ethernet: netronome: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 13:54:30 +0530
-Message-Id: <20200817082434.21176-18-allen.lkml@gmail.com>
+Subject: [PATCH 17/20] ethernet: ni: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 13:54:31 +0530
+Message-Id: <20200817082434.21176-19-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200817082434.21176-1-allen.lkml@gmail.com>
 References: <20200817082434.21176-1-allen.lkml@gmail.com>
@@ -75,34 +75,34 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 7 +++----
+ drivers/net/ethernet/ni/nixge.c | 7 +++----
  1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index 39ee23e8c0bf..1dcd24d899f5 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -2287,9 +2287,9 @@ static bool nfp_ctrl_rx(struct nfp_net_r_vector *r_vec)
- 	return budget;
+diff --git a/drivers/net/ethernet/ni/nixge.c b/drivers/net/ethernet/ni/nixge.c
+index 4075f5e59955..a6861df9904f 100644
+--- a/drivers/net/ethernet/ni/nixge.c
++++ b/drivers/net/ethernet/ni/nixge.c
+@@ -787,9 +787,9 @@ static irqreturn_t nixge_rx_irq(int irq, void *_ndev)
+ 	return IRQ_HANDLED;
  }
  
--static void nfp_ctrl_poll(unsigned long arg)
-+static void nfp_ctrl_poll(struct tasklet_struct *t)
+-static void nixge_dma_err_handler(unsigned long data)
++static void nixge_dma_err_handler(struct tasklet_struct *t)
  {
--	struct nfp_net_r_vector *r_vec = (void *)arg;
-+	struct nfp_net_r_vector *r_vec = from_tasklet(r_vec, t, tasklet);
+-	struct nixge_priv *lp = (struct nixge_priv *)data;
++	struct nixge_priv *lp = from_tasklet(lp, t, dma_err_tasklet);
+ 	struct nixge_hw_dma_bd *cur_p;
+ 	struct nixge_tx_skb *tx_skb;
+ 	u32 cr, i;
+@@ -879,8 +879,7 @@ static int nixge_open(struct net_device *ndev)
+ 	phy_start(phy);
  
- 	spin_lock(&r_vec->lock);
- 	nfp_net_tx_complete(r_vec->tx_ring, 0);
-@@ -2337,8 +2337,7 @@ static void nfp_net_vecs_init(struct nfp_net *nn)
+ 	/* Enable tasklets for Axi DMA error handling */
+-	tasklet_init(&priv->dma_err_tasklet, nixge_dma_err_handler,
+-		     (unsigned long)priv);
++	tasklet_setup(&priv->dma_err_tasklet, nixge_dma_err_handler);
  
- 			__skb_queue_head_init(&r_vec->queue);
- 			spin_lock_init(&r_vec->lock);
--			tasklet_init(&r_vec->tasklet, nfp_ctrl_poll,
--				     (unsigned long)r_vec);
-+			tasklet_setup(&r_vec->tasklet, nfp_ctrl_poll);
- 			tasklet_disable(&r_vec->tasklet);
- 		}
+ 	napi_enable(&priv->napi);
  
 -- 
 2.17.1
