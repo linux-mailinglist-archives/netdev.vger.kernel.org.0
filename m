@@ -2,109 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1890424685D
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 16:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD8802468BC
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 16:51:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728973AbgHQOaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 10:30:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57184 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728669AbgHQO3z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Aug 2020 10:29:55 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k7g92-009jtJ-Rp; Mon, 17 Aug 2020 16:29:52 +0200
-Date:   Mon, 17 Aug 2020 16:29:52 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, amcohen@nvidia.com, danieller@nvidia.com,
-        mlxsw@nvidia.com, roopa@nvidia.com, dsahern@gmail.com,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com, saeedm@nvidia.com,
-        tariqt@nvidia.com, ayal@nvidia.com, eranbe@nvidia.com,
-        mkubecek@suse.cz, Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next 6/6] mlxsw: spectrum_nve: Expose VXLAN
- counters via devlink-metric
-Message-ID: <20200817142952.GC2291654@lunn.ch>
-References: <20200817125059.193242-1-idosch@idosch.org>
- <20200817125059.193242-7-idosch@idosch.org>
+        id S1729039AbgHQOvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 10:51:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728873AbgHQOvv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 10:51:51 -0400
+X-Greylist: delayed 1582 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 17 Aug 2020 07:51:51 PDT
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F84BC061389
+        for <netdev@vger.kernel.org>; Mon, 17 Aug 2020 07:51:51 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.93.0.4)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1k7g4J-0003Pz-N0; Mon, 17 Aug 2020 16:25:03 +0200
+Date:   Mon, 17 Aug 2020 15:24:38 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     Sven Eckelmann <sven@narfation.org>
+Cc:     gluon@luebeck.freifunk.net,
+        Linus =?iso-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        netdev@vger.kernel.org, Roopa Prabhu <roopa@cumulusnetworks.com>,
+        bridge@lists.linux-foundation.org, openwrt-devel@lists.openwrt.org,
+        "David S . Miller" <davem@davemloft.net>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Subject: Re: [gluon] Re: [RFC PATCH net-next] bridge: Implement MLD Querier
+ wake-up calls / Android bug workaround
+Message-ID: <20200817142438.GB1299@makrotopia.org>
+References: <20200816202424.3526-1-linus.luessing@c0d3.blue>
+ <87zh6t650b.fsf@miraculix.mork.no>
+ <1830568.o5y0iYavLQ@sven-edge>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20200817125059.193242-7-idosch@idosch.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1830568.o5y0iYavLQ@sven-edge>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int mlxsw_sp1_nve_vxlan_metrics_init(struct mlxsw_sp *mlxsw_sp)
-> +{
-> +	struct mlxsw_sp_nve_metrics *metrics = &mlxsw_sp->nve->metrics;
-> +	struct devlink *devlink = priv_to_devlink(mlxsw_sp->core);
-> +	int err;
-> +
-> +	err = mlxsw_sp1_nve_vxlan_counters_clear(mlxsw_sp);
-> +	if (err)
-> +		return err;
-> +
-> +	metrics->counter_encap =
-> +		devlink_metric_counter_create(devlink, "nve_vxlan_encap",
-> +					      &mlxsw_sp1_nve_vxlan_encap_ops,
-> +					      mlxsw_sp);
-> +	if (IS_ERR(metrics->counter_encap))
-> +		return PTR_ERR(metrics->counter_encap);
-> +
-> +	metrics->counter_decap =
-> +		devlink_metric_counter_create(devlink, "nve_vxlan_decap",
-> +					      &mlxsw_sp1_nve_vxlan_decap_ops,
-> +					      mlxsw_sp);
-> +	if (IS_ERR(metrics->counter_decap)) {
-> +		err = PTR_ERR(metrics->counter_decap);
-> +		goto err_counter_decap;
-> +	}
-> +
-> +	metrics->counter_decap_errors =
-> +		devlink_metric_counter_create(devlink, "nve_vxlan_decap_errors",
-> +					      &mlxsw_sp1_nve_vxlan_decap_errors_ops,
-> +					      mlxsw_sp);
-> +	if (IS_ERR(metrics->counter_decap_errors)) {
-> +		err = PTR_ERR(metrics->counter_decap_errors);
-> +		goto err_counter_decap_errors;
-> +	}
-> +
-> +	metrics->counter_decap_discards =
-> +		devlink_metric_counter_create(devlink, "nve_vxlan_decap_discards",
-> +					      &mlxsw_sp1_nve_vxlan_decap_discards_ops,
-> +					      mlxsw_sp);
-> +	if (IS_ERR(metrics->counter_decap_discards)) {
-> +		err = PTR_ERR(metrics->counter_decap_discards);
-> +		goto err_counter_decap_discards;
-> +	}
-> +
-> +	return 0;
+On Mon, Aug 17, 2020 at 03:17:37PM +0200, Sven Eckelmann wrote:
+> On Monday, 17 August 2020 10:39:00 CEST Bjørn Mork wrote:
+> > Linus Lüssing <linus.luessing@c0d3.blue> writes:
+> [...]
+> > This is not a bug.  They are deliberately breaking IPv6 because they
+> > consider this a feature.  You should not try to work around such issues.
+> > It is a fight you cannot win.  Any workaround will only encourage them
+> > to come up with new ways to break IPv6.
+> 
+> Who are "they" and where is this information coming from? And what do they 
+> gain from breaking IPv6? Wouldn't it be easier for them just to disable IPv6 
+> than adding random looking bugs?
 
-Looking at this, i wonder about the scalability of this API. With just
-4 counters it looks pretty ugly. What about 50 counters?
+They are Google and they want IPv6 to be used in a way which exposes
+as much user data as possible to their servers (that's my guess).
+Every additional identifying bit is like gold for them (that's their
+business model).
+Hence they like SLAAC and addressing schemes which reflect the network
+topology and are enforcing that direction beyond good reason (that
+should be obvious[1] to everyone[2] by now[3], no matter what the
+reasons for that are).
+You may say, hey, SLAAC also allows me to use Privary Extension and I'm
+sure your browser will make use of that. But does the DNS resolver?
+And what about all those Google services running in background? I'm not
+sure all of them instruct the kernel to open every single socket using
+a privacy source address...
+Simply, when relying on SLAAC + Privary Extensions it's up to the
+(mobile) client to avoid being very easily tracked.
+When using DHCPv6 the situation is like it was for v4 (ok, it's still
+a bit worse because you can distinguish clients much better).
 
-Maybe move the name into the ops structure. Then add a call
-devlink_metric_counters_create() where you can pass an array and array
-size of op structures? There are plenty of other examples in the
-kernel, e.g. sysfs groups, hwmon, etc. where you register a large
-bunch of things with the core with a single call.
+As a work-around, I've been limiting source EUI-64 addresses from
+leaving my local network -- but that's surely not what everyone would
+want to make sure their local devices MAC addresses aren't leaked and
+also just breaking v6 in yet another way.
+I don't consider NAT66 an option and would like to avoid even
+connection-tracking on v6 as it was promissed :). Tethering should
+work using DHCPv6 prefix delegation imho rather than ND-proxy or
+NAT66 which are both quite a burden for the battery-powered device
+offering the tethering gateway (ie. each forwarded packet then needs
+CPU intervention, I can't see anything great about that).
 
-> +static void mlxsw_sp1_nve_vxlan_metrics_fini(struct mlxsw_sp *mlxsw_sp)
-> +{
-> +	struct mlxsw_sp_nve_metrics *metrics = &mlxsw_sp->nve->metrics;
-> +	struct devlink *devlink = priv_to_devlink(mlxsw_sp->core);
-> +
-> +	devlink_metric_destroy(devlink, metrics->counter_decap_discards);
-> +	devlink_metric_destroy(devlink, metrics->counter_decap_errors);
-> +	devlink_metric_destroy(devlink, metrics->counter_decap);
-> +	devlink_metric_destroy(devlink, metrics->counter_encap);
-> +}
 
-I guess the most frequent use case is to remove all counters,
-e.g. driver unload, or when probe fails. So maybe provide a
-devlink_metric_destroy_all(devlink) ?
 
-    Andrew
+[1]: https://www.nullzero.co.uk/android-does-not-support-dhcpv6-and-google-wont-fix-that/
+
+[2]: https://www.techrepublic.com/article/androids-lack-of-dhcpv6-support-frustrates-enterprise-network-admins/
+
+[3]: https://lostintransit.se/2020/05/22/its-2020-and-androids-ipv6-is-still-broken/
