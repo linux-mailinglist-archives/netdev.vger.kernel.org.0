@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC8F9245F0D
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:17:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D14E245F14
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 10:18:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbgHQIRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 04:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51306 "EHLO
+        id S1727074AbgHQISB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 04:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726196AbgHQIRs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:17:48 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043C9C061388;
-        Mon, 17 Aug 2020 01:17:48 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id f5so7119656plr.9;
-        Mon, 17 Aug 2020 01:17:47 -0700 (PDT)
+        with ESMTP id S1726196AbgHQIR5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 04:17:57 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508C5C061388;
+        Mon, 17 Aug 2020 01:17:57 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id f10so7121491plj.8;
+        Mon, 17 Aug 2020 01:17:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=dcFVRpNADqEtdLi4FpRtkurfxDiB5cQRK9Dfdg9x+Fk=;
-        b=onQhzXUQgU/a+5iv1eiedq708N2qUvbb9hLqPwbNcMZbrafaVgtTLqod6W5S5EvgwW
-         ia2Ga+2FDUNHJJUlvHy5eBfliIeLogU4Wi1w83nBad7XrSZfGbQDw8JL6oyYw8RaTYtb
-         GOxydtPyCELUViaGBMuJFHCNSjMyLoNfpvRMuQgrxT2UY8A3e6JIUTqyPNMAL7rw2Z/z
-         jRmxaeFeF106x1RJs9MwNGIRcjt7SYVS8LunMdKQB2V5M7ITp8JAW4VZ0O73s28t9dSG
-         M8mTaGTmh1K0jOh4sD2d3fwjxfMBFzh2nP52Yc87N5AUdfK33PUFRxYhs2yKIAgHNHgo
-         Nr0Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=PpOwkkESLwiuZVXjbiIFtl9hpeTezLFpf6exIb06VVg=;
+        b=S9KzzLHTf4acEr4iIrHquzS1n+27I5KgmfY2Vx1u17p1+AxZhqIxQadXzBxZLnvNln
+         cdQTO9F9bVR2qRTcZt+wkh9LVW6ePlwnXaNBchj5mrQeeNQaW/cXQCpNqYi3pPruPMeB
+         euSI1bn/bnAnVHWiQrzolM2XtL/krrZaPNWUYlGuQezIoZtZNAJ4283es1PPqvBqE/KD
+         28LtExPpYWRQrTwpX0B9mHTn8dJSAj7OO6qptzXwqtJeDYlCQMj/PIYGkY0+fNJ5yIGB
+         oFYU43VVwYGCrYPAwPEBqA+m8HMoRJ2rACChE/4BIiDiBJ8FnfOx6J7Nh61U7Pnwpowt
+         oC/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=dcFVRpNADqEtdLi4FpRtkurfxDiB5cQRK9Dfdg9x+Fk=;
-        b=he1y93ymJzIHac9nBGCvAf+MmDd3zg3JrjQdD+UUAP9hkdL62S68lFgRVX7fn+luQQ
-         /lXzUUZWxpbL/U2Hh1lUd/SFZX/EC0c3ps3GRghX5wxVNFOq0H3eELvxMwXorPpkooGu
-         zvN5zljIQl2DGmCG7qkmrsTVeZKDe94jd0IfzVfHxUbttfD786nfD69+xQAtlitPlUCe
-         /bI4L81x49hmEgb18Qieq6iV41J5N+K0sT/Czt+L63LbvE8dyPDmLq7vHsZR+X36ZPWC
-         3k+hZPOZliRmRoqmaiH4GXrgOJzpwlwCvnnMEJsjpj2WWkwMrcHsauMRn5NWM0Pz30YK
-         K0Ng==
-X-Gm-Message-State: AOAM533H88ZZiWXke4AHt5nvQIPSKbiYJ5OHCNdk6N3mXvINLfC+TIkL
-        HiLt5o3Ibw0EAmRsMKF1BB8=
-X-Google-Smtp-Source: ABdhPJzb4y/jT+CQHEdRjViuIc33Qdx/u/JnZxpHs/hd00NvayTZxHDE23pPiqS7tepaKyIUna7B1Q==
-X-Received: by 2002:a17:90b:3603:: with SMTP id ml3mr11555104pjb.207.1597652267552;
-        Mon, 17 Aug 2020 01:17:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=PpOwkkESLwiuZVXjbiIFtl9hpeTezLFpf6exIb06VVg=;
+        b=Dd8rS6ahdVsVtzHrTOnFXa747lOdqq96VVSxgvyrhs/TP2xUWZwSCGkDQCE7a5CmAC
+         dKpi39be49l3dK3hbT6WWXqTaNKmczIaGn43GW8cjit0Mq8QMQUoHLDfsHDQ0jKERfX9
+         rFiL2xrWyittymNfMHPAzvwWxipmohDJsJvNibhOapSK6+fCoFqldoJBuCyM0J60fbPc
+         eWGXYfoUx87egJbYDPV0zb1D9a/Tw0P8gf3r/w8Du2JO1EfZvfqJyJN+CUCd63kWG7p7
+         hd6U0q9w0bLDMRDCsjRyhqT6AIkhkRCQjCS+ifoJcZE62s6PhwMRY09UMIcIcE9z7TRZ
+         +ktA==
+X-Gm-Message-State: AOAM533JMIu5RjFsRHfHzPBW9UVmPvKfM7NCF4ArkHDWepckFmjVfO4r
+        Gu8SCv3AMO7NKZs/q5Xwq88=
+X-Google-Smtp-Source: ABdhPJzxyMicWdDqFa9Ms4TwNVlxegk5ZkYrtD4PG9ewuPRixw1owkp8YNo4HUfMixNJVCialhYcJQ==
+X-Received: by 2002:a17:90b:2092:: with SMTP id hb18mr12048549pjb.118.1597652276966;
+        Mon, 17 Aug 2020 01:17:56 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id d93sm16735334pjk.44.2020.08.17.01.17.38
+        by smtp.gmail.com with ESMTPSA id d93sm16735334pjk.44.2020.08.17.01.17.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 01:17:47 -0700 (PDT)
+        Mon, 17 Aug 2020 01:17:56 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
         festevam@gmail.com, linux-imx@nxp.com, ast@kernel.org,
@@ -57,103 +58,55 @@ Cc:     keescook@chromium.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-mediatek@lists.infradead.org,
-        Allen Pais <allen.lkml@gmail.com>
-Subject: [PATCH 00/35] dma: convert tasklets to use new tasklet_setup()
-Date:   Mon, 17 Aug 2020 13:46:51 +0530
-Message-Id: <20200817081726.20213-1-allen.lkml@gmail.com>
+        Allen Pais <allen.lkml@gmail.com>,
+        Romain Perier <romain.perier@gmail.com>
+Subject: [PATCH 01/35] dma: altera-msgdma: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 17 Aug 2020 13:46:52 +0530
+Message-Id: <20200817081726.20213-2-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200817081726.20213-1-allen.lkml@gmail.com>
+References: <20200817081726.20213-1-allen.lkml@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 12cc923f1ccc ("tasklet: Introduce new initialization API")'
-introduced a new tasklet initialization API. This series converts 
-all the dma drivers to use the new tasklet_setup() API
+In preparation for unconditionally passing the
+struct tasklet_struct pointer to all tasklet
+callbacks, switch to using the new tasklet_setup()
+and from_tasklet() to pass the tasklet pointer explicitly.
 
+Signed-off-by: Romain Perier <romain.perier@gmail.com>
+Signed-off-by: Allen Pais <allen.lkml@gmail.com>
+---
+ drivers/dma/altera-msgdma.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Allen Pais (35):
-  dma: altera-msgdma: convert tasklets to use new tasklet_setup() API
-  dma: at_hdmac: convert tasklets to use new tasklet_setup() API
-  dma: at_xdmac: convert tasklets to use new tasklet_setup() API
-  dma: coh901318: convert tasklets to use new tasklet_setup() API
-  dma: dw: convert tasklets to use new tasklet_setup() API
-  dma: ep93xx: convert tasklets to use new tasklet_setup() API
-  dma: fsl: convert tasklets to use new tasklet_setup() API
-  dma: imx-dma: convert tasklets to use new tasklet_setup() API
-  dma: ioat: convert tasklets to use new tasklet_setup() API
-  dma: iop_adma: convert tasklets to use new tasklet_setup() API
-  dma: ipu: convert tasklets to use new tasklet_setup() API
-  dma: k3dma: convert tasklets to use new tasklet_setup() API
-  dma: mediatek: convert tasklets to use new tasklet_setup() API
-  dma: mmp: convert tasklets to use new tasklet_setup() API
-  dma: mpc512x: convert tasklets to use new tasklet_setup() API
-  dma: mv_xor: convert tasklets to use new tasklet_setup() API
-  dma: mxs-dma: convert tasklets to use new tasklet_setup() API
-  dma: nbpfaxi: convert tasklets to use new tasklet_setup() API
-  dma: pch_dma: convert tasklets to use new tasklet_setup() API
-  dma: pl330: convert tasklets to use new tasklet_setup() API
-  dma: ppc4xx: convert tasklets to use new tasklet_setup() API
-  dma: qcom: convert tasklets to use new tasklet_setup() API
-  dma: sa11x0: convert tasklets to use new tasklet_setup() API
-  dma: sirf-dma: convert tasklets to use new tasklet_setup() API
-  dma: ste_dma40: convert tasklets to use new tasklet_setup() API
-  dma: sun6i: convert tasklets to use new tasklet_setup() API
-  dma: tegra20: convert tasklets to use new tasklet_setup() API
-  dma: timb_dma: convert tasklets to use new tasklet_setup() API
-  dma: txx9dmac: convert tasklets to use new tasklet_setup() API
-  dma: virt-dma: convert tasklets to use new tasklet_setup() API
-  dma: xgene: convert tasklets to use new tasklet_setup() API
-  dma: xilinx: convert tasklets to use new tasklet_setup() API
-  dma: plx_dma: convert tasklets to use new tasklet_setup() API
-  dma: sf-pdma: convert tasklets to use new tasklet_setup() API
-  dma: k3-udma: convert tasklets to use new tasklet_setup() API
-
- drivers/dma/altera-msgdma.c      |  6 +++---
- drivers/dma/at_hdmac.c           |  7 +++----
- drivers/dma/at_xdmac.c           |  5 ++---
- drivers/dma/coh901318.c          |  7 +++----
- drivers/dma/dw/core.c            |  6 +++---
- drivers/dma/ep93xx_dma.c         |  7 +++----
- drivers/dma/fsl_raid.c           |  6 +++---
- drivers/dma/fsldma.c             |  6 +++---
- drivers/dma/imx-dma.c            |  7 +++----
- drivers/dma/ioat/dma.c           |  6 +++---
- drivers/dma/ioat/dma.h           |  2 +-
- drivers/dma/ioat/init.c          |  4 +---
- drivers/dma/iop-adma.c           |  8 ++++----
- drivers/dma/ipu/ipu_idmac.c      |  6 +++---
- drivers/dma/k3dma.c              |  6 +++---
- drivers/dma/mediatek/mtk-cqdma.c |  7 +++----
- drivers/dma/mmp_pdma.c           |  6 +++---
- drivers/dma/mmp_tdma.c           |  6 +++---
- drivers/dma/mpc512x_dma.c        |  6 +++---
- drivers/dma/mv_xor.c             |  7 +++----
- drivers/dma/mv_xor_v2.c          |  8 ++++----
- drivers/dma/mxs-dma.c            |  7 +++----
- drivers/dma/nbpfaxi.c            |  6 +++---
- drivers/dma/pch_dma.c            |  7 +++----
- drivers/dma/pl330.c              | 12 ++++++------
- drivers/dma/plx_dma.c            |  7 +++----
- drivers/dma/ppc4xx/adma.c        |  7 +++----
- drivers/dma/qcom/bam_dma.c       |  6 +++---
- drivers/dma/qcom/hidma.c         |  6 +++---
- drivers/dma/qcom/hidma_ll.c      |  6 +++---
- drivers/dma/sa11x0-dma.c         |  6 +++---
- drivers/dma/sf-pdma/sf-pdma.c    | 14 ++++++--------
- drivers/dma/sirf-dma.c           |  6 +++---
- drivers/dma/ste_dma40.c          |  7 +++----
- drivers/dma/sun6i-dma.c          |  6 +++---
- drivers/dma/tegra20-apb-dma.c    |  7 +++----
- drivers/dma/ti/k3-udma.c         |  7 +++----
- drivers/dma/timb_dma.c           |  6 +++---
- drivers/dma/txx9dmac.c           | 14 ++++++--------
- drivers/dma/virt-dma.c           |  6 +++---
- drivers/dma/xgene-dma.c          |  7 +++----
- drivers/dma/xilinx/xilinx_dma.c  |  7 +++----
- drivers/dma/xilinx/zynqmp_dma.c  |  6 +++---
- 43 files changed, 135 insertions(+), 157 deletions(-)
-
+diff --git a/drivers/dma/altera-msgdma.c b/drivers/dma/altera-msgdma.c
+index 321ac3a7aa41..4d6751bf6f11 100644
+--- a/drivers/dma/altera-msgdma.c
++++ b/drivers/dma/altera-msgdma.c
+@@ -680,9 +680,9 @@ static int msgdma_alloc_chan_resources(struct dma_chan *dchan)
+  * msgdma_tasklet - Schedule completion tasklet
+  * @data: Pointer to the Altera sSGDMA channel structure
+  */
+-static void msgdma_tasklet(unsigned long data)
++static void msgdma_tasklet(struct tasklet_struct *t)
+ {
+-	struct msgdma_device *mdev = (struct msgdma_device *)data;
++	struct msgdma_device *mdev = from_tasklet(mdev, t, irq_tasklet);
+ 	u32 count;
+ 	u32 __maybe_unused size;
+ 	u32 __maybe_unused status;
+@@ -830,7 +830,7 @@ static int msgdma_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	tasklet_init(&mdev->irq_tasklet, msgdma_tasklet, (unsigned long)mdev);
++	tasklet_setup(&mdev->irq_tasklet, msgdma_tasklet);
+ 
+ 	dma_cookie_init(&mdev->dmachan);
+ 
 -- 
 2.17.1
 
