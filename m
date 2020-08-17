@@ -2,125 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04784246317
-	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 11:20:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1C94246378
+	for <lists+netdev@lfdr.de>; Mon, 17 Aug 2020 11:38:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728958AbgHQJUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Aug 2020 05:20:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726161AbgHQJU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 05:20:29 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C91C061389;
-        Mon, 17 Aug 2020 02:20:29 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id x6so7813804pgx.12;
-        Mon, 17 Aug 2020 02:20:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=QhPrNAdoeJw7hjMh0pGw+sjN4I+tDKGZ699gTXbu9Pc=;
-        b=cTZNXtt7wNfV+e9cJ76fTsPPVQZeYJIEY2TuWXhYA+6rL5+mQtvGCpP7nLFEEHniIY
-         ttRYkgElaSdYzjheNY+aJq+wt2TbwHocg2rHezNcVM8LeXUN8gM2nT5FPn17bkKOZJ/R
-         FpcUeStKvy2IzIoPd11K1+w6c4p381QKwm4Dhy02AfZUx3SzHjBImZSC4gDgffWV6h+v
-         8YTTF/IpemIy0SQFRYOlz4ZDOq/9HJmYTUqHCVWY4C5ejhmLcUfPEpCe73ql4ONWBhLK
-         UZXD9rMiGnEuf0tCOKH/CAPFPO+ziHa24otJgykW+Fa09Aud/a6J7DqgcJ9+cKbuVreV
-         L6OQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=QhPrNAdoeJw7hjMh0pGw+sjN4I+tDKGZ699gTXbu9Pc=;
-        b=BdQ4t8woOOOlewDc3FItD8QaSe8WAH2WZ/ysm1DYnHvOeaZcA3+uZS01deuOCtm5qM
-         9CmBeqGO6lGCm8/7TANqgYKChxYpFwr7ZdFdCjxsGVPFRce5FCLOW1p9ud8ONiHzUl4C
-         7t5xrUWdWPGcKrrt+P3RG6xJGwp44sxvI66K6kEqoPZigcg2raeta14ZS38OIgy3F6P/
-         J+iJgZ7nM2b3rTLgp/RNirCYOflpndZZkBHHwL7HZD6OE1Px1OX2Jsjk6hrC5/Yf0k7f
-         AQE3GWZ5yl2AhQfO42qHb8xSibQHRpwsGTs3ne2dp8i5Z+vTu0s3kZtnsmWIm8oxQ+h5
-         hPLw==
-X-Gm-Message-State: AOAM531agWFu0iPCQJ5AN76ECwqqZwx95+kBleCwticXVnspVn8DYdEp
-        FQBL7DwrCUQDwNimzKbLJwg=
-X-Google-Smtp-Source: ABdhPJzDyD/NrPXHKKUPdhhRODzrKgFhi3OcVBh0EqkEsk2AwP8x+cz/Kr8PlDriSCVb6p68quAdVw==
-X-Received: by 2002:a63:4545:: with SMTP id u5mr9191366pgk.229.1597656028627;
-        Mon, 17 Aug 2020 02:20:28 -0700 (PDT)
-Received: from localhost.localdomain ([49.207.202.98])
-        by smtp.gmail.com with ESMTPSA id r25sm15971028pgv.88.2020.08.17.02.20.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Aug 2020 02:20:28 -0700 (PDT)
-From:   Allen Pais <allen.cryptic@gmail.com>
-To:     jdike@addtoit.com, richard@nod.at, anton.ivanov@cambridgegreys.com,
-        3chas3@gmail.com, axboe@kernel.dk, stefanr@s5r6.in-berlin.de,
-        airlied@linux.ie, daniel@ffwll.ch, sre@kernel.org,
-        James.Bottomley@HansenPartnership.com, kys@microsoft.com,
-        deller@gmx.de, dmitry.torokhov@gmail.com, jassisinghbrar@gmail.com,
-        shawnguo@kernel.org, s.hauer@pengutronix.de,
-        maximlevitsky@gmail.com, oakad@yahoo.com, ulf.hansson@linaro.org,
-        mporter@kernel.crashing.org, alex.bou9@gmail.com,
-        broonie@kernel.org, martyn@welchs.me.uk, manohar.vanga@gmail.com,
-        mitch@sfgoth.com, davem@davemloft.net, kuba@kernel.org
-Cc:     keescook@chromium.org, linux-um@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux1394-devel@lists.sourceforge.net,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-hyperv@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-ntb@googlegroups.com, linux-s390@vger.kernel.org,
-        linux-spi@vger.kernel.org, devel@driverdev.osuosl.org,
-        Allen Pais <allen.lkml@gmail.com>,
-        Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH] platform: goldfish: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 17 Aug 2020 14:46:12 +0530
-Message-Id: <20200817091617.28119-18-allen.cryptic@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200817091617.28119-1-allen.cryptic@gmail.com>
-References: <20200817091617.28119-1-allen.cryptic@gmail.com>
+        id S1728552AbgHQJiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Aug 2020 05:38:21 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55828 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728268AbgHQJiR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Aug 2020 05:38:17 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
+        with SMTP; 17 Aug 2020 12:38:11 +0300
+Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 07H9cBsk011397;
+        Mon, 17 Aug 2020 12:38:11 +0300
+Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 07H9cBcc003224;
+        Mon, 17 Aug 2020 12:38:11 +0300
+Received: (from moshe@localhost)
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 07H9c8eu003223;
+        Mon, 17 Aug 2020 12:38:08 +0300
+From:   Moshe Shemesh <moshe@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Moshe Shemesh <moshe@mellanox.com>
+Subject: [PATCH net-next RFC v2 00/13] Add devlink reload action option
+Date:   Mon, 17 Aug 2020 12:37:39 +0300
+Message-Id: <1597657072-3130-1-git-send-email-moshe@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Allen Pais <allen.lkml@gmail.com>
+Introduce new option on devlink reload API to enable the user to select the
+reload action required. Complete support for all actions in mlx5.
+The following reload actions are supported:
+  fw_live_patch: firmware live patching.
+  driver_reinit: driver entities re-initialization, applying devlink-params
+                 and devlink-resources values.
+  fw_activate: firmware activate.
 
-In preparation for unconditionally passing the
-struct tasklet_struct pointer to all tasklet
-callbacks, switch to using the new tasklet_setup()
-and from_tasklet() to pass the tasklet pointer explicitly.
+Each driver which support this command should expose the reload actions
+supported.
+The uAPI is backward compatible, if the reload action option is omitted
+from the reload command, the driver reinit action will be used.
+Note that when required to do firmware activation some drivers may need
+to reload the driver. On the other hand some drivers may need to reset
+the firmware to reinitialize the driver entities.
 
-Signed-off-by: Romain Perier <romain.perier@gmail.com>
-Signed-off-by: Allen Pais <allen.lkml@gmail.com>
----
- drivers/platform/goldfish/goldfish_pipe.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+Patch 1 adds the new API reload action option to devlink.
+Patch 2 exposes the supported reload actions on devlink dev get.
+Patches 3-8 add support on mlx5 for devlink reload action fw_activate
+            and handle the firmware reset events.
+Patches 9-10 add devlink enable remote dev reset parameter and use it
+             in mlx5.
+Patches 11-12 mlx5 add devlink reload live patch support and event
+              handling.
+Patch 13 adds documentation file devlink-reload.rst 
 
-diff --git a/drivers/platform/goldfish/goldfish_pipe.c b/drivers/platform/goldfish/goldfish_pipe.c
-index 1ab207ec9c94..b9bead07760c 100644
---- a/drivers/platform/goldfish/goldfish_pipe.c
-+++ b/drivers/platform/goldfish/goldfish_pipe.c
-@@ -577,10 +577,10 @@ static struct goldfish_pipe *signalled_pipes_pop_front(
- 	return pipe;
- }
- 
--static void goldfish_interrupt_task(unsigned long dev_addr)
-+static void goldfish_interrupt_task(struct tasklet_struct *t)
- {
- 	/* Iterate over the signalled pipes and wake them one by one */
--	struct goldfish_pipe_dev *dev = (struct goldfish_pipe_dev *)dev_addr;
-+	struct goldfish_pipe_dev *dev = from_tasklet(dev, t, irq_tasklet);
- 	struct goldfish_pipe *pipe;
- 	int wakes;
- 
-@@ -811,8 +811,7 @@ static int goldfish_pipe_device_init(struct platform_device *pdev,
- {
- 	int err;
- 
--	tasklet_init(&dev->irq_tasklet, &goldfish_interrupt_task,
--		     (unsigned long)dev);
-+	tasklet_setup(&dev->irq_tasklet, &goldfish_interrupt_task);
- 
- 	err = devm_request_irq(&pdev->dev, dev->irq,
- 			       goldfish_pipe_interrupt,
+Command examples:
+
+# Run reload command with fw activate reload action:
+$ devlink dev reload pci/0000:82:00.0 action fw_activate
+
+# Run reload command with driver reload action:
+$ devlink dev reload pci/0000:82:00.0 action driver_reinit
+
+# Run reload command with fw live patch reload action:
+$ devlink dev reload pci/0000:82:00.0 action fw_live_patch
+
+v1 -> v2:
+- Instead of reload levels driver,fw_reset,fw_live_patch have reload
+  actions driver_reinit,fw_activate,fw_live_patch
+- Remove driver default level, the action driver_reinit is the default
+  action for all drivers 
+
+
+Moshe Shemesh (13):
+  devlink: Add reload action option to devlink reload command
+  devlink: Add supported reload actions to dev get
+  net/mlx5: Add functions to set/query MFRL register
+  net/mlx5: Set cap for pci sync for fw update event
+  net/mlx5: Handle sync reset request event
+  net/mlx5: Handle sync reset now event
+  net/mlx5: Handle sync reset abort event
+  net/mlx5: Add support for devlink reload action fw activate
+  devlink: Add enable_remote_dev_reset generic parameter
+  net/mlx5: Add devlink param enable_remote_dev_reset support
+  net/mlx5: Add support for fw live patch event
+  net/mlx5: Add support for devlink reload action live patch
+  devlink: Add Documentation/networking/devlink/devlink-reload.rst
+
+ .../networking/devlink/devlink-params.rst     |   6 +
+ .../networking/devlink/devlink-reload.rst     |  54 +++
+ Documentation/networking/devlink/index.rst    |   1 +
+ drivers/net/ethernet/mellanox/mlx4/main.c     |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 104 +++-
+ .../mellanox/mlx5/core/diag/fw_tracer.c       |  31 ++
+ .../mellanox/mlx5/core/diag/fw_tracer.h       |   1 +
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    | 448 ++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/fw_reset.h    |  19 +
+ .../net/ethernet/mellanox/mlx5/core/health.c  |  35 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  13 +
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |   6 +-
+ drivers/net/netdevsim/dev.c                   |   5 +-
+ include/linux/mlx5/device.h                   |   1 +
+ include/linux/mlx5/driver.h                   |   4 +
+ include/net/devlink.h                         |   9 +-
+ include/uapi/linux/devlink.h                  |  20 +
+ net/core/devlink.c                            |  84 +++-
+ 20 files changed, 812 insertions(+), 37 deletions(-)
+ create mode 100644 Documentation/networking/devlink/devlink-reload.rst
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+
 -- 
 2.17.1
 
