@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E38F9248318
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 12:34:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9802B248334
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 12:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726777AbgHRKeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 06:34:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42624 "EHLO
+        id S1726754AbgHRKia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 06:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726633AbgHRKdc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 06:33:32 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1023BC061345
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 03:33:32 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1597746810;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fA9IzUR7zlcVZjQJDhbU8/ytjoHt5gHLiwUBKGjW9aQ=;
-        b=fdS94GWEwpsrpRpFxlH3Y9nITNeeXNIPaPFnj+/BAZjFlnO4gnXf0e95jPKtY+vcNVz1rU
-        dsP5Zrgm/oUVx53+VX/SfPkLvfR9QY34XpoQ6jthZ1Yx9yi7lPckTmxZrlFQIByKG9+N0x
-        /MIH/DgQXvyCz27w5xUPhYfsrqHWgtzjIwBIEZhUFNMPojn2X6e68r96MOwlATgnFo5R5o
-        DGPq2q9KXYG7cc2QlyXo0ejSkmff0kMm8mS8ytzMM0F9OqXA6DwDE7JgpGy1eR6U10sG43
-        ib1unpsNFA2TCpt+7iux0csruZJ8maudkfBdEThh3S/jJhl/mZNwFnYIhFjmYg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1597746810;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fA9IzUR7zlcVZjQJDhbU8/ytjoHt5gHLiwUBKGjW9aQ=;
-        b=IxgnmWZWOuHh6oXy/UFAbDQRXUyPWC+Pdy634QYuGg0vvLT2xFzeOmSCljUMmTbT72WHl4
-        6M3eFeCsebJENaAg==
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S1726620AbgHRKi3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 06:38:29 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743AEC061389
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 03:38:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=d3/YpbfHe47Dw7rokLAwJ4efmpKWs0Cup8iHReB40Jk=; b=kUdsrOEVKOrLvQ6LI8AKm3FwV
+        KggAyBSZL6nNJFdz3GxDdYjpA+6HfcUvnPBst58vvKVbTnzEUYl1/ZuYLK146dRrf713ShBiq/X95
+        FWQVK8Z0BJhWEFsFvMqPMtsUi8gWtUq5auLBN6dfSdZ3B7kCYdzdDOQ7X4JmfX9Mzxa2ATY/1ZG2b
+        jgT/nv8i2FNrQ0OsFy8/RgJTmwo8yvLDNivR/qJz7OvJaCjWzWnryvm4CE9QKri5iAstdWjZ1SuU9
+        1Jwdgu5W4d7EdIQTQEfVdk8jbWxfD1QTeIB9RlPC0Wc4ZSKawJFNeKdMl6mACBnvp7HtoiDroDN3Z
+        wyxVYPWvA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54018)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1k7z0G-0000Ii-8D; Tue, 18 Aug 2020 11:38:04 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1k7z0A-0001KX-G1; Tue, 18 Aug 2020 11:37:58 +0100
+Date:   Tue, 18 Aug 2020 11:37:58 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -45,44 +46,54 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jiri Pirko <jiri@mellanox.com>,
         Ido Schimmel <idosch@mellanox.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
         Petr Machata <petrm@mellanox.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v4 9/9] ptp: Remove unused macro
-Date:   Tue, 18 Aug 2020 12:32:51 +0200
-Message-Id: <20200818103251.20421-10-kurt@linutronix.de>
-In-Reply-To: <20200818103251.20421-1-kurt@linutronix.de>
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH v4 1/9] ptp: Add generic ptp v2 header parsing function
+Message-ID: <20200818103758.GZ1551@shell.armlinux.org.uk>
 References: <20200818103251.20421-1-kurt@linutronix.de>
+ <20200818103251.20421-2-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200818103251.20421-2-kurt@linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The offset for the control field is not needed anymore. Remove it.
+On Tue, Aug 18, 2020 at 12:32:43PM +0200, Kurt Kanzenbach wrote:
+> Reason: A lot of the ptp drivers - which implement hardware time stamping - need
+> specific fields such as the sequence id from the ptp v2 header. Currently all
+> drivers implement that themselves.
+> 
+> Introduce a generic function to retrieve a pointer to the start of the ptp v2
+> header.
+> 
+> Suggested-by: Russell King <rmk+kernel@armlinux.org.uk>
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> Reviewed-by: Richard Cochran <richardcochran@gmail.com>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- include/linux/ptp_classify.h | 1 -
- 1 file changed, 1 deletion(-)
+Just one small nit, see below.  Otherwise,
 
-diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
-index 39bad015d1d6..cf13c7b15c0c 100644
---- a/include/linux/ptp_classify.h
-+++ b/include/linux/ptp_classify.h
-@@ -36,7 +36,6 @@
- 
- #define OFF_PTP_SOURCE_UUID	22 /* PTPv1 only */
- #define OFF_PTP_SEQUENCE_ID	30
--#define OFF_PTP_CONTROL		32 /* PTPv1 only */
- 
- /* Below defines should actually be removed at some point in time. */
- #define IP6_HLEN	40
+Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
+
+> +/**
+> + * ptp_parse_header - Get pointer to the PTP v2 header
+> + * @skb: packet buffer
+> + * @type: type of the packet (see ptp_classify_raw())
+> + *
+> + * This function takes care of the VLAN, UDP, IPv4 and IPv6 headers. The length
+> + * is checked.
+> + *
+> + * Note, internally skb_mac_header() is used. Make sure, that the @skb is
+> + * initialized accordingly.
+
+No need for the "," there - these aren't separate clauses.
+
 -- 
-2.20.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
