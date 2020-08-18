@@ -2,85 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C1BD24818B
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 11:10:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8481324818F
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 11:11:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726552AbgHRJKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 05:10:51 -0400
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:13968 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726353AbgHRJKv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 05:10:51 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f3b9ae10000>; Tue, 18 Aug 2020 02:09:53 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Tue, 18 Aug 2020 02:10:51 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Tue, 18 Aug 2020 02:10:51 -0700
-Received: from [10.21.180.203] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 18 Aug
- 2020 09:10:40 +0000
-Subject: Re: [PATCH net-next RFC v2 01/13] devlink: Add reload action option
- to devlink reload command
-To:     Jiri Pirko <jiri@resnulli.us>, Moshe Shemesh <moshe@mellanox.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1597657072-3130-1-git-send-email-moshe@mellanox.com>
- <1597657072-3130-2-git-send-email-moshe@mellanox.com>
- <20200817163612.GA2627@nanopsycho>
-From:   Moshe Shemesh <moshe@nvidia.com>
-Message-ID: <3ed1115e-8b44-b398-55f2-cee94ef426fd@nvidia.com>
-Date:   Tue, 18 Aug 2020 12:10:36 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
-MIME-Version: 1.0
-In-Reply-To: <20200817163612.GA2627@nanopsycho>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1597741793; bh=KpcCA1ZEvoZ2dw2EhhZA8Hor+WKkCjTOyzDjT4/nqFc=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:Content-Type:
-         Content-Transfer-Encoding:Content-Language:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=jMyex0Y7h+2Z0BjdTUxln7lQiokb2clNBETbcQHDNQINBfOG1IJRYjM7wz70ElRIn
-         l0niJUKaAXZtR//1HkbZGgdOh4ehKogiqrCKrTE2zOjInz65nN65pBXem4iYwh6HsR
-         YfHCxYAa6HVL+Vmz4e/MOtN1hknnaq0ys7W7QQ9XBWQIV+p8VFb7y7An5tCr4NLkKi
-         2+wMslO+8EHKfAv0a2z7YP1H/UxobmmXd9Df8P1NhYeqC0gUKRgdp9TbLA7Bf7XYG2
-         M4FX3yxxsH1dP6tjrYIjtPrhCI/Lmib/lInCnjAx4bF+c6vGsybQH86A3Iz3SXQNqW
-         kbmBhyRNQWtOA==
+        id S1726671AbgHRJLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 05:11:10 -0400
+Received: from smtp21.cstnet.cn ([159.226.251.21]:33276 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726353AbgHRJLJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Aug 2020 05:11:09 -0400
+Received: from localhost (unknown [159.226.5.99])
+        by APP-01 (Coremail) with SMTP id qwCowACHj28hmztfkV2MAQ--.16438S2;
+        Tue, 18 Aug 2020 17:10:58 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     aelior@marvell.com, GR-everest-linux-l2@marvell.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Xu Wang <vulab@iscas.ac.cn>
+Subject: [PATCH] qed_main: Remove unnecessary cast in kfree
+Date:   Tue, 18 Aug 2020 09:10:56 +0000
+Message-Id: <20200818091056.12309-1-vulab@iscas.ac.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: qwCowACHj28hmztfkV2MAQ--.16438S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7JrWxuryxXFWkJr43urykZrb_yoWxKFb_Kr
+        1jvr4fuF4UJryIkw13KrsrZa4v9F1DZw1fWa12gFWaq39rA3Z8AryUZryxXFWUu347AFyD
+        A3srJFyxAw10kjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbcAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1q6rW5McIj6I8E87Iv67AKxVWxJr0_GcWlOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_GFWl
+        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
+        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
+        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI
+        42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUrCzuDUUUU
+X-Originating-IP: [159.226.5.99]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiAwoMA13qZTqgpAAAsq
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Remove unnecassary casts in the argument to kfree.
 
-On 8/17/2020 7:36 PM, Jiri Pirko wrote:
-> Mon, Aug 17, 2020 at 11:37:40AM CEST, moshe@mellanox.com wrote:
->> Add devlink reload action to allow the user to request a specific reload
->> action. The action parameter is optional, if not specified then devlink
->> driver re-init action is used (backward compatible).
->> Note that when required to do firmware activation some drivers may need
->> to reload the driver. On the other hand some drivers may need to reset
-> Sounds reasonable. I think it would be good to indicate that though. Not
-> sure how...
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+---
+ drivers/net/ethernet/qlogic/qed/qed_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
+index 2558cb680db3..44fff7479e46 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_main.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
+@@ -484,7 +484,7 @@ int qed_fill_dev_info(struct qed_dev *cdev,
+ 
+ static void qed_free_cdev(struct qed_dev *cdev)
+ {
+-	kfree((void *)cdev);
++	kfree(cdev);
+ }
+ 
+ static struct qed_dev *qed_alloc_cdev(struct pci_dev *pdev)
+-- 
+2.17.1
 
-Maybe counters on the actions done ? Actually such counters can be 
-useful on debug, knowing what reloads we had since driver was up.
-
->
->> the firmware to reinitialize the driver entities.
->> Reload actions supported are:
->> driver_reinit: driver entities re-initialization, applying devlink-param
->>                and devlink-resource values.
->> fw_activate: firmware activate.
->> fw_live_patch: firmware live patching.
->>
