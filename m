@@ -2,110 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD547248EF4
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 21:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55FA8248EF5
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 21:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726899AbgHRTph (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 15:45:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45488 "EHLO
+        id S1726632AbgHRTpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 15:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726836AbgHRTpM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 15:45:12 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BB3C061345
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:45:11 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id f5so13565739pfe.2
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:45:11 -0700 (PDT)
+        with ESMTP id S1726840AbgHRTpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 15:45:13 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7114BC061346
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:45:13 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id y13so12831478plr.1
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:45:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=/pKScq4EUsF00dUnxiUm0K80d1FnyiFU5PkdPnp0jKk=;
-        b=o3NG7sfni4T6vKko3R5e+dWL2lupYGtTCLlIbR2LJbiJs7PkAAXEcsmZhX4I3QQXXZ
-         VLzob21oY4k1XevP8FS2u6sabD0ISyLeSHE32fUnB0daluKfGSSMAZPJsAuws9QeyFVY
-         FmQxLsloBdL8Wl571bYK9kBmiHMRZKVEm9AVxKSc4BVThREvoIHUKUBhtjEW+1GszFOT
-         YRPd0tR2BcFdxbI13aRVTzQYCLDGiyUGC5t3sNA96dsSeTCkNqrfC3aR9vIObEL1oC2L
-         L6pYrXliLqfGY0T8nT90Mi8gqeJFSR6w5p76Xa6ni6DH9fdeE5SV1e/IOMbuS1NhReuq
-         8Btg==
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=wuBO91UgNJzk0BjrCEUQYJPVEmRtko20sYkQpxIa0KE=;
+        b=FXZvJi4L45Z/evWgFGevk5DBYxVvwDkYNUtArKaGsPSt98ROHmdSYxXgyUKnNFmUgX
+         i140X+wgciNfygB8QEhw14/CnJOhakh2bjHSClvC8RfoYoWCLqZHYTDpqpyWURswRQxO
+         qPAxyv5UOyRah6ubx+Qxk0PUwKWwISLGKrosYXZBhfVfghecxgvB7ZUPMdi3TXK8w3G2
+         rJQ7PY9XEE6riyLQ9TnENiaAyu4cY1hhKUxIJMWSIAfOBs+gUuIca5lWYiJW7mLzSnxe
+         th7vM69JiJIATeTyMqoKG9e+z3li/cLkY+sSxQSdW6owaDDchRVuXEeyiPtjJluvpYgV
+         ORng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=/pKScq4EUsF00dUnxiUm0K80d1FnyiFU5PkdPnp0jKk=;
-        b=IwBVyGjLIktd8t+wcM7QfTnWFz8bedp/8m23YBH1rO3wBj8xP59ZouPYAwM2SK8hvF
-         hD5s6HH+2aNmOBVrVjsLj/jD0lLjzSL/Ef4IeCGdIxIRRxDpQF3UfGJ5uT91mYGvP7P/
-         N7WMIMekbya3CLfwfCDCu0NpH6xEsGtTPxcQXP0RaDrPitEqIzyffD+GAp4HFIlk8YTA
-         wrz+ZFwh/MuD2lmhGSuR4j9QuZSfk2oXVtFCwGUzH5OE63wTxUkZjoIKilvzXFiRKkwa
-         8UNIvZtLu7KMGOOPkdbyswSS1LL5dhz51rjSDqmX5POSJZ9HvjqQuX98vqCaHt5q66HR
-         TCCw==
-X-Gm-Message-State: AOAM5331pli5wUO+eWffLNKccmDguhePryfikiKlFdL7oeTsXg/9AlJS
-        LLdjs9C3vfXgwYu0R6mSmb2kHqoSvR1oOZ/RV0tIxOhNlXt7jt7ivFwTIOBwnTGu4AK9LDduSVR
-        +fMh5Hg+TF2n/d3Ktdpw5NzZ4Mid2annIlfFbjGQSA5v+41e4TfV4CRjZkTDoJNolQdqmIZPC
-X-Google-Smtp-Source: ABdhPJziAOTVr0xCzrIdTlftt96PULqob6qKabNEZhjYue26W907HKbfZ8/jzPTeLEwtMPVwZHcJuKZKx1rkYeSh
-X-Received: by 2002:a17:902:8d82:: with SMTP id v2mr6943764plo.180.1597779911021;
- Tue, 18 Aug 2020 12:45:11 -0700 (PDT)
-Date:   Tue, 18 Aug 2020 12:44:14 -0700
+        bh=wuBO91UgNJzk0BjrCEUQYJPVEmRtko20sYkQpxIa0KE=;
+        b=hhOU4y6fnZ3NUyEWHl9alv3V2253P5mWqiVXDflh/QdkKa/8/joc3jQEmXtcEmS8w2
+         ywGKch954E0rNU1M+2Bk481qSehpi8+7roMrLoD7Y79f0zGDIFq14jzrN3n8VDDlV7kc
+         K5ltLnOD1n8no9AoKuovKqAdvRvnqPbkw0XSy95188pM45BzgxHs+adAsD5+6TAyOdX3
+         ldr7Z+BVZEVD1loLMv6F/LqOUmcmICK5SA+GI2u41FiIYWBofGiU6gOjRNZkXZu188RL
+         Rcn2hTs4CWfkEikz3pmmdD4d3gZ8Ue4+FoH/IkcNjmApKK4Lp3o6qyWSilq+W6cfSFKR
+         MTXA==
+X-Gm-Message-State: AOAM533CrIVQ6/iC6yOW2KvHGP4pYA4p6XsSESE4rzTAX/NEzaS8oWvU
+        aeKn3BWqea0PfrOvz6oz3ueOPBhUVOjBvQbm7TuTeuXpo3P8Y530CGcU1fdX5hDsytA1unNr1jq
+        4BDS0k5kXQd/iyDFNS4CI5ZTqJkobOvquq6WSADCfILBE4ABA538q5f/TWrs9oznY7chk8Ju9
+X-Google-Smtp-Source: ABdhPJx/ZmpfCpd4ZN3a4tCM42RJ/yESB9kVgZ+zc/KRlfxEuUW7fuKYXzsPrnlXbAbYVO2l9NmLE9rVA/Cl6Qbq
+X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:1ea0:b8ff:fe73:6cc0])
+ (user=awogbemila job=sendgmr) by 2002:a17:90a:f014:: with SMTP id
+ bt20mr369057pjb.0.1597779912604; Tue, 18 Aug 2020 12:45:12 -0700 (PDT)
+Date:   Tue, 18 Aug 2020 12:44:15 -0700
 In-Reply-To: <20200818194417.2003932-1-awogbemila@google.com>
-Message-Id: <20200818194417.2003932-16-awogbemila@google.com>
+Message-Id: <20200818194417.2003932-17-awogbemila@google.com>
 Mime-Version: 1.0
 References: <20200818194417.2003932-1-awogbemila@google.com>
 X-Mailer: git-send-email 2.28.0.220.ged08abb693-goog
-Subject: [PATCH net-next 15/18] gve: Prefetch packet pages and packet descriptors.
+Subject: [PATCH net-next 16/18] gve: Also WARN for skb index equals num_queues.
 From:   David Awogbemila <awogbemila@google.com>
 To:     netdev@vger.kernel.org
-Cc:     Yangchun Fu <yangchun@google.com>, Nathan Lewis <npl@google.com>,
-        David Awogbemila <awogbemila@google.com>
+Cc:     David Awogbemila <awogbemila@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yangchun Fu <yangchun@google.com>
+The WARN condition currently checks if the skb's
+queue_mapping is (strictly) greater than tx_cfg.num_queues.
 
-Prefetching appears to help performance.
+queue_mapping == tx_cfg.num_queues should also be invalid
+and trigger the WARNing.
 
-Signed-off-by: Yangchun Fu <yangchun@google.com>
-Signed-off-by: Nathan Lewis <npl@google.com>
+Use WARN_ON_ONCE instead otherwise the host will be stuck in syslog
+flood.
+
 Signed-off-by: David Awogbemila <awogbemila@google.com>
 ---
- drivers/net/ethernet/google/gve/gve_rx.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/ethernet/google/gve/gve_tx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index c65615b9e602..24bd556f488e 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -447,8 +447,18 @@ static bool gve_rx(struct gve_rx_ring *rx, struct gve_rx_desc *rx_desc,
- 	struct gve_rx_data_slot *data_slot;
- 	struct sk_buff *skb = NULL;
- 	dma_addr_t page_bus;
-+	void *va;
- 	u16 len;
+diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
+index 5d75dec1c520..5beff4d4d2e3 100644
+--- a/drivers/net/ethernet/google/gve/gve_tx.c
++++ b/drivers/net/ethernet/google/gve/gve_tx.c
+@@ -602,8 +602,7 @@ netdev_tx_t gve_tx(struct sk_buff *skb, struct net_device *dev)
+ 	struct gve_tx_ring *tx;
+ 	int nsegs;
  
-+	/* Prefetch two packet pages ahead, we will need it soon. */
-+	page_info = &rx->data.page_info[(idx + 2) & rx->mask];
-+	va = page_info->page_address + GVE_RX_PAD +
-+			page_info->page_offset;
-+
-+	prefetch(page_info->page); // Kernel page struct.
-+	prefetch(va);              // Packet header.
-+	prefetch(va + 64);           // Next cacheline too.
-+
- 	/* drop this packet */
- 	if (unlikely(rx_desc->flags_seq & GVE_RXF_ERR)) {
- 		u64_stats_update_begin(&rx->statss);
-@@ -618,6 +628,10 @@ bool gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
- 			   "[%d] seqno=%d rx->desc.seqno=%d\n",
- 			   rx->q_num, GVE_SEQNO(desc->flags_seq),
- 			   rx->desc.seqno);
-+
-+		// prefetch two descriptors ahead
-+		prefetch(rx->desc.desc_ring + ((cnt + 2) & rx->mask));
-+
- 		dropped = !gve_rx(rx, desc, feat, idx);
- 		if (!dropped) {
- 			bytes += be16_to_cpu(desc->len) - GVE_RX_PAD;
+-	WARN(skb_get_queue_mapping(skb) > priv->tx_cfg.num_queues,
+-	     "skb queue index out of range");
++	WARN_ON_ONCE(skb_get_queue_mapping(skb) >= priv->tx_cfg.num_queues);
+ 	tx = &priv->tx[skb_get_queue_mapping(skb)];
+ 	if (unlikely(gve_maybe_stop_tx(tx, skb))) {
+ 		/* We need to ring the txq doorbell -- we have stopped the Tx
 -- 
 2.28.0.220.ged08abb693-goog
 
