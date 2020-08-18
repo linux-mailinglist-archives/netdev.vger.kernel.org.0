@@ -2,161 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED1EE24819D
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 11:14:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 588B72481A0
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 11:15:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726656AbgHRJOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 05:14:33 -0400
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:8836 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726203AbgHRJOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 05:14:32 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f3b9be90000>; Tue, 18 Aug 2020 02:14:17 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Tue, 18 Aug 2020 02:14:31 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Tue, 18 Aug 2020 02:14:31 -0700
-Received: from [10.21.180.203] (172.20.13.39) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 18 Aug
- 2020 09:14:19 +0000
-Subject: Re: [PATCH net-next RFC v2 13/13] devlink: Add
- Documentation/networking/devlink/devlink-reload.rst
-To:     Jiri Pirko <jiri@resnulli.us>, Moshe Shemesh <moshe@mellanox.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1597657072-3130-1-git-send-email-moshe@mellanox.com>
- <1597657072-3130-14-git-send-email-moshe@mellanox.com>
- <20200817163933.GB2627@nanopsycho>
-From:   Moshe Shemesh <moshe@nvidia.com>
-Message-ID: <a786a68d-df60-cae3-5fb1-3648ca1c69d8@nvidia.com>
-Date:   Tue, 18 Aug 2020 12:14:16 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1726620AbgHRJPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 05:15:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726203AbgHRJPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 05:15:04 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8856EC061389;
+        Tue, 18 Aug 2020 02:15:04 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id a65so15695030otc.8;
+        Tue, 18 Aug 2020 02:15:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W2hKsTS1LvaI0SOO9W3/5fRfJY5aEh/BZWVO9XitBWs=;
+        b=eGoDITciADrWQe3gs29cyT8xT1NKm5rz9rVcVLDn/bbuYp8fgY1hSDfcgcO2Y8A/FE
+         zDJ9bm6G+z2N4IP6u1ELlhwB/iZ+1A+IwLuPDXV50yqTfWBpi2yoklrT0psD6GdMzRGm
+         mKZXpjNtcSxOPcLuAlO8t6rlea5KpMBIJZl+zd87Fs8FGCP4YglR+Cy8uqT+GzI0stq3
+         viuaxAQxm/6lWfM0J1ue15DTH6MQ6CtMtlUoD1oYGIxuyF9v8tv3Vn0TjcM5dSCK8JbS
+         fjcwz39yKbHCwapnbDs3GWnek7Qbumu+oEcYnimX4XO6Q66JRWEkGZLHrLAcc8kim4hs
+         +0yA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W2hKsTS1LvaI0SOO9W3/5fRfJY5aEh/BZWVO9XitBWs=;
+        b=Gg+gEN8DUXLNvd3H4jM2RyIIxCbIyZqazH6jdWzal0lIUTvhZ8zjq2ws+ZwsblG3W6
+         SV0/LrC8a1jWrvZTG9CFDk9sutJWvHr34r2B3y4IJxgBYWiiIHVEoRZ5oHl9IqIi3hvb
+         xlPRm6rnxr2580QuVR9DR0FD2lyJnYs5sccc7wju/2wIrB4Bo2ePAQuZtzOG+zgOpOQ4
+         /4mH59nkYKC6lQOFzR12ec8rDUxHGJyTxs12CofLm8HqqKDgAMf4bdrCHEpMaajMBrEc
+         SY6ejebc95bw4Y0T6hesUgDpDDuHzYooxTVjRaoX5xQ/0qIeT+sVqGPJo1GLaDVE80HC
+         EuVw==
+X-Gm-Message-State: AOAM533C+t6/sLu1xMpNWQjk+UxQaSLw48k9x28hav1/9fyNDFL5fNEA
+        8iMh0vebwTV7a8tzAOoC8aMuuxe+d7dMosLcwPs=
+X-Google-Smtp-Source: ABdhPJzzm5zuxz1BYxytortJNZi40aPY4mo/p0dwJ/cgscBmXy1XrUh5q88EuMzxIjKgJBVv2+jBuBgNQfstKNEw2u4=
+X-Received: by 2002:a9d:774d:: with SMTP id t13mr13781704otl.108.1597742104000;
+ Tue, 18 Aug 2020 02:15:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200817163933.GB2627@nanopsycho>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1597742057; bh=ftMP7LAH7UKvxd8RNXoLVtSTVK7oA55WF9geKbrBmcE=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:Content-Type:
-         Content-Transfer-Encoding:Content-Language:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=Z3pcIsgMoVKMx05ZtLIRf5MOLvyn/eAfEmtyy0uakG5t7eBYY+mhqfg8BO8zC9RVp
-         c0bjMUbpJlEtpRGoMu2K0dJZZ6L7lty1KSlr/AIT2faX1EVCbfujzJP9jXlbbJEf5h
-         CTWd7c1mbRZKWilSmFd9rqoLNJXnU8mBYAg0jw6wHfjT1RIwF5xH8DGFEncqe0k89N
-         /y9KnzSu3OSCINS6CeFqrLrAp1Tv26btG3WtlooHXaZWwzflGzz8HA47D9xshsKiYl
-         zntfFMTdZxPbZOmXNzg5s83hTApM8JFRsjRZwnFpLaE+s95YSDtaPChu379ATH2Dhi
-         gzi/R61XVFG5g==
+References: <20200817082434.21176-1-allen.lkml@gmail.com> <20200817082434.21176-8-allen.lkml@gmail.com>
+ <20200817083216.5367f56a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200817083216.5367f56a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Allen <allen.lkml@gmail.com>
+Date:   Tue, 18 Aug 2020 14:44:52 +0530
+Message-ID: <CAOMdWSL0e8iakwc2FUnF8epMme5eofrUMzrG0MjcBvEz4cimKA@mail.gmail.com>
+Subject: Re: [PATCH 06/20] ethernet: chelsio: convert tasklets to use new
+ tasklet_setup() API
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     jes@trained-monkey.org, David Miller <davem@davemloft.net>,
+        kda@linux-powerpc.org, dougmill@linux.ibm.com,
+        cooldavid@cooldavid.org, mlindner@marvell.com, borisp@mellanox.com,
+        Kees Cook <keescook@chromium.org>, linux-acenic@sunsite.dk,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-rdma@vger.kernel.org,
+        oss-drivers@netronome.com, Romain Perier <romain.perier@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 8/17/2020 7:39 PM, Jiri Pirko wrote:
-> Mon, Aug 17, 2020 at 11:37:52AM CEST, moshe@mellanox.com wrote:
->> Add devlink reload rst documentation file.
->> Update index file to include it.
->>
->> Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
->> ---
->> - Instead of reload levels driver,fw_reset,fw_live_patch have reload
->>   actions driver_reinit,fw_activate,fw_live_patch
->> ---
->> .../networking/devlink/devlink-reload.rst     | 54 +++++++++++++++++++
->> Documentation/networking/devlink/index.rst    |  1 +
->> 2 files changed, 55 insertions(+)
->> create mode 100644 Documentation/networking/devlink/devlink-reload.rst
->>
->> diff --git a/Documentation/networking/devlink/devlink-reload.rst b/Documentation/networking/devlink/devlink-reload.rst
->> new file mode 100644
->> index 000000000000..9846ea727f3b
->> --- /dev/null
->> +++ b/Documentation/networking/devlink/devlink-reload.rst
->> @@ -0,0 +1,54 @@
->> +.. SPDX-License-Identifier: GPL-2.0
->> +
->> +==============
->> +Devlink Reload
->> +==============
->> +
->> +``devlink-reload`` provides mechanism to either reload driver entities,
->> +applying ``devlink-params`` and ``devlink-resources`` new values or firmware
->> +activation depends on reload action selected.
->> +
->> +Reload actions
->> +=============
->> +
->> +User may select a reload action.
->> +By default ``driver_reinit`` action is done.
->> +
->> +.. list-table:: Possible reload actions
->> +   :widths: 5 90
->> +
->> +   * - Name
->> +     - Description
->> +   * - ``driver-reinit``
->> +     - Driver entities re-initialization, including applying
->> +       new values to devlink entities which are used during driver
->> +       load such as ``devlink-params`` in configuration mode
->> +       ``driverinit`` or ``devlink-resources``
->> +   * - ``fw_activate``
->> +     - Firmware activate. Can be used for firmware reload or firmware
->> +       upgrade if new firmware is stored and driver supports such
->> +       firmware upgrade.
-> Does this do the same as "driver-reinit" + fw activation? If yes, it
-> should be written here. If no, it should be written here as well.
 >
+> You need to adjust kdoc when you change functions:
+>
+> drivers/net/ethernet/chelsio/cxgb4/sge.c:2664: warning: Function parameter or member 't' not described in 'restart_ctrlq'
+> drivers/net/ethernet/chelsio/cxgb4/sge.c:2664: warning: Excess function parameter 'data' description in 'restart_ctrlq'
+> drivers/net/ethernet/chelsio/cxgb4/sge.c:2965: warning: Function parameter or member 't' not described in 'restart_ofldq'
+> drivers/net/ethernet/chelsio/cxgb4/sge.c:2965: warning: Excess function parameter 'data' description in 'restart_ofldq'
 
-No, The only thing required here is the action of firmware activation. 
-If a driver needs to do reload to make that happen and do reinit that's 
-ok, but not required.
 
->> +   * - ``fw_live_patch``
->> +     - Firmware live patch, applies firmware changes without reset.
->> +
->> +Change namespace
->> +================
->> +
->> +All devlink instances are created in init_net and stay there for a
->> +lifetime. Allow user to be able to move devlink instances into
->> +namespaces during devlink reload operation. That ensures proper
->> +re-instantiation of driver objects, including netdevices.
->> +
->> +example usage
->> +-------------
->> +
->> +.. code:: shell
->> +
->> +    $ devlink dev reload help
->> +    $ devlink dev reload DEV [ netns { PID | NAME | ID } ] [ action { fw_live_patch | driver_reinit | fw_activate } ]
->> +
->> +    # Run reload command for devlink driver entities re-initialization:
->> +    $ devlink dev reload pci/0000:82:00.0 action driver_reinit
->> +
->> +    # Run reload command to activate firmware:
->> +    $ devlink dev reload pci/0000:82:00.0 action fw_activate
->> diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
->> index 7684ae5c4a4a..d82874760ae2 100644
->> --- a/Documentation/networking/devlink/index.rst
->> +++ b/Documentation/networking/devlink/index.rst
->> @@ -20,6 +20,7 @@ general.
->>     devlink-params
->>     devlink-region
->>     devlink-resource
->> +   devlink-reload
->>     devlink-trap
->>
->> Driver-specific documentation
->> -- 
->> 2.17.1
->>
+Thanks, will fix it and spin V2.
+
+-- 
+       - Allen
