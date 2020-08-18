@@ -2,90 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 289EA24800A
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 09:57:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78B3F24800D
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 09:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726474AbgHRH4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 03:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726043AbgHRH4y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 03:56:54 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244BCC061389;
-        Tue, 18 Aug 2020 00:56:54 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id y206so9548664pfb.10;
-        Tue, 18 Aug 2020 00:56:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=0a8ZXLhEGMn1gXIxhyv1oqNmrc1yvciM66y5dEH31qA=;
-        b=OnMPWYm8lscfbPQyj1djbb0PioZoTGd5x4JH/p04tOQzntO2w3QdMDxT4Vh3tE6Kpp
-         JEfePTroeo3muKV9QU6EQicNZyKS1IUHCaxsGZAe6s8+MGYiA+oAiwz9p5ucVc5j8A/z
-         +3JgFIXMFVippgcpe7Ab4SDXt3aYmlLU+u8nx7Tj+g/zovWtHaOEOv2YXc9//frymD1+
-         p7wAkJFfgHwjxsUzpHXxKKCDlPtBwf46S8k/8QxlMToSmWkj7plbCYY6hbGxptfuKAhv
-         W8oZ/FBjzR/kmFc8lnUnnrfx2KykJWhD4fhHA9k7P0/9WEubGAoG2ln+MWK2q+39qh9A
-         AM5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=0a8ZXLhEGMn1gXIxhyv1oqNmrc1yvciM66y5dEH31qA=;
-        b=sHsvUjuY63MmHIX7X/Azg0PS78IiR2xjrBD9QZWaSaPs2aiuanzGhaT0ET4T3v22IT
-         KGanZHJg/gmpXolC8mS9Sb5bexrqv4rmMz4rRVe2w+HoyCYC9/SnGqiiBZcQBix4zMqq
-         0FclGWM7BrlPxsgoxOt1KU5659vrFM5nJTJrHGwmO/7T/jQQpyj5Qrl3SHwex+11W/kc
-         /KAAXfsoYaf6T8stoFWU0/NRn7zOi5kgMvPFJ9VeEM8Ok1YAxogG8eaHBDzdX3ox4Ts1
-         1j5Ak2p08Rq2UaFZlbp5eFX1WSSO8k+7MMuc5lu4GKTxOMdc8/8wucA5tKyHkKpmKjmL
-         KnSw==
-X-Gm-Message-State: AOAM533EtORE7fQds3hELoSniNnfyMjPPy9QzCZdolVjoHbOCFh2SsQ1
-        Xfr1OSGFFP7mK39ASW2+Xic8kviWlMg=
-X-Google-Smtp-Source: ABdhPJwCldrcVcuZK3TXMeMsmX3YZ82dces6WA6CSG6z3pNHH/qbchCc3BqaDK6HrNnLWrmYWImFHg==
-X-Received: by 2002:aa7:99cc:: with SMTP id v12mr14322545pfi.255.1597737412978;
-        Tue, 18 Aug 2020 00:56:52 -0700 (PDT)
-Received: from oppo (69-172-89-151.static.imsbiz.com. [69.172.89.151])
-        by smtp.gmail.com with ESMTPSA id r28sm23400867pfg.158.2020.08.18.00.56.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2020 00:56:51 -0700 (PDT)
-Date:   Tue, 18 Aug 2020 15:56:48 +0800
-From:   Qingyu Li <ieatmuttonchuan@gmail.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net/bluetooth/hci_sock.c: add CAP_NET_RAW check.
-Message-ID: <20200818075648.GA29124@oppo>
+        id S1726519AbgHRH5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 03:57:44 -0400
+Received: from mail.intenta.de ([178.249.25.132]:42591 "EHLO mail.intenta.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726043AbgHRH5m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Aug 2020 03:57:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=2lNUKZLYV75UG79GoiRAn2THVdEF4AtQF1ysM4RMjMY=;
+        b=M8F6rzg6mEYa9mrn9fiWHiv06CkNSJn4IO0BCPzml2hXLIX5jyoov82sBzsgQrCwxDK4XLC4JRZEBfQsoziWM8TwLG9GrAuOcvk4UGq6/ZMVdi/wNMfKPpLAz69glJQu87zCf/sZPXJre9TtsNUy3Im7dRSVLWVOBzKlzbKX88BmJk5zAwd0ZjkyNWzmKDYRrEkJQM+z7UKAIEhnyFTCE2/vDXUtwrqDSrSuPIykZ7M/ptVpHT7lNppouVnoq04Ikv2EfExUkVzwxtwgaf8YV0VzYx30Zbq4lmw48Kxk37AtyMYl3Tby9yFOqKiL+gmcpRH6m+pddfIqTzcK7fU/Hw==;
+Date:   Tue, 18 Aug 2020 09:57:36 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 0/6] net: dsa: microchip: delete dead code
+Message-ID: <20200818075736.GA1698@laureti-dev>
+References: <20200725174130.GL1472201@lunn.ch>
+ <cover.1597675604.git.helmut.grohne@intenta.de>
+ <73ba5a2a-786d-e847-598a-20cdeef2e1c0@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <73ba5a2a-786d-e847-598a-20cdeef2e1c0@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When creating a raw PF_BLUETOOTH socket,
-CAP_NET_RAW needs to be checked first.
+Hi Florian,
 
-Signed-off-by: Qingyu Li <ieatmuttonchuan@gmail.com>
----
- net/bluetooth/hci_sock.c | 3 +++
- 1 file changed, 3 insertions(+)
+On Mon, Aug 17, 2020 at 08:18:41AM -0700, Florian Fainelli wrote:
+> net-next is currently closed at the moment, and these patches are clearly
+> targeted at that tree:
 
-diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-index 251b9128f530..c0919e209f05 100644
---- a/net/bluetooth/hci_sock.c
-+++ b/net/bluetooth/hci_sock.c
-@@ -2034,6 +2034,9 @@ static int hci_sock_create(struct net *net, struct socket *sock, int protocol,
- 	if (sock->type != SOCK_RAW)
- 		return -ESOCKTNOSUPPORT;
+I agree that these are clearly net-next material.
 
-+	if (!capable(CAP_NET_RAW))
-+		return -EPERM;
-+
- 	sock->ops = &hci_sock_ops;
+> http://vger.kernel.org/~davem/net-next.html
 
- 	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &hci_sk_proto, kern);
---
-2.17.1
+It says "Come in we're open" for me. Maybe that changed over night and I
+was just a day early? I'll check this for future submissions.
 
+> Also, please provide a commit message, even if it is only paraphrasing what
+> the subject does. The changes do look good, so once you fix that, we should
+> be good.
+
+I'm all for writing good commit messages and if you look into the few
+commits I've authored thus far, you see that I usually do explain them
+in detail. In these cases however, I'm left wondering what value any
+further explanation would add. Repeating the subject does not make sense
+to me.
+
+I feel that we're overdoing it here and that there are more important
+aspects to be improved about the driver. I'll be focusing on those.
+
+Helmut
