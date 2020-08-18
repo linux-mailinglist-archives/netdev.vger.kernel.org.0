@@ -2,103 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8A32248211
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 11:41:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8CA4248234
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 11:50:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726585AbgHRJlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 05:41:09 -0400
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:18247 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726370AbgHRJlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 05:41:07 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f3ba1f90001>; Tue, 18 Aug 2020 02:40:09 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Tue, 18 Aug 2020 02:41:07 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Tue, 18 Aug 2020 02:41:07 -0700
-Received: from yaviefel (10.124.1.5) by HQMAIL107.nvidia.com (172.20.187.13)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 18 Aug 2020 09:37:49
- +0000
-References: <20200715082733.429610-4-idosch@idosch.org> <20200817153824.GA1420904@bjorn-Precision-5520> <20200818064151.GA214959@shredder>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@nvidia.com>
-To:     Ido Schimmel <idosch@idosch.org>
-CC:     Bjorn Helgaas <helgaas@kernel.org>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <jiri@mellanox.com>,
-        <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 03/11] mlxsw: spectrum_policer: Add policer core
-In-Reply-To: <20200818064151.GA214959@shredder>
-Date:   Tue, 18 Aug 2020 11:37:45 +0200
-Message-ID: <87wo1we1li.fsf@nvidia.com>
+        id S1726605AbgHRJua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 05:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726539AbgHRJu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 05:50:28 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDFEC061343
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 02:50:28 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id a5so17641339wrm.6
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 02:50:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=KDn/L/KgtGjfXOwvFM3d0ycolsRtvWGhY+IU39u+X2I=;
+        b=sfBZhgvdUnGznJEo+Fcb9wMuFjWPXc+9UyK5W7mn6ZVikBjC9pqwkoJi5IafZR0gkl
+         vgL1ZKVd5RDfHNTuPkY3RFpg7AUtf3pNQi3J0mZpOMUC4qmcxHW5XLiUcOdGEllDSyLf
+         s/Eq4wUgkxMzpcZ5VGQfC2USDRS28oFOKG4naOfGrXD2liqaJDkHhTjmQJfK7qYw/0x1
+         kH3nYgWp/zwaj2VKMDJPyxYcCnAWU/+gx0CeriL/zJ3TjEDFYabY86wIKDQDVhaveEEm
+         pGmuCMyTVATxmjOk3r+EzalELAUljZdQEdjZ+hDwTuOdd6565PXAA36XbpmoOqNP0gOx
+         tSWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=KDn/L/KgtGjfXOwvFM3d0ycolsRtvWGhY+IU39u+X2I=;
+        b=Zt66xM9JY357g1q8k/F5xp2BE0964YQuZr+aJjtqaGBnYhj6ygEOyyY/I/qv70njm9
+         va1qu/Q5hQ7krevF+p4p5m7i6zi0+MeSACUdjhP2jnF5pJIBVP7lKFsIqBjwinJYdYRm
+         466gNxrRZKDQ9iGbVwFJFbq7PWSHvZEe0rIOW589/d7XwIhHRGhXF4VbToMh58Il/kMo
+         XSJtjjyUM0rpviLWT4Wy/kDdBS9TD00UscX78/aXwbb818/eQG0izm1HBGV/cQ0VOGAj
+         0w4/E3QQPNO12LVfSvTB3W8JyqNx1FYy8sv3uolXLupL1nobWA3Ee5nKKx4bHNJkhXc5
+         /20w==
+X-Gm-Message-State: AOAM530O9YSXj0N1MjzXJ5sXEgve0BxZUEJhgFxvdKLuQ+pXm+pOSkZ+
+        NqxYspksKjJ2l48iBKwaGYi9PQ==
+X-Google-Smtp-Source: ABdhPJz1F0Shr79zg0ZgvQ3EF447qJ/7AgvM1fwOZGThYbUCe++2sCbkQwJc4VdZGNq+dmjgy0daFQ==
+X-Received: by 2002:a5d:6348:: with SMTP id b8mr19151821wrw.362.1597744226614;
+        Tue, 18 Aug 2020 02:50:26 -0700 (PDT)
+Received: from dell ([95.149.164.62])
+        by smtp.gmail.com with ESMTPSA id h10sm33963387wro.57.2020.08.18.02.50.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Aug 2020 02:50:25 -0700 (PDT)
+Date:   Tue, 18 Aug 2020 10:50:24 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Christian Lamparter <chunkeey@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 08/30] net: wireless: ath: carl9170: Mark 'ar9170_qmap'
+ as __maybe_unused
+Message-ID: <20200818095024.GZ4354@dell>
+References: <20200814113933.1903438-1-lee.jones@linaro.org>
+ <20200814113933.1903438-9-lee.jones@linaro.org>
+ <7ef231f2-e6d3-904f-dc3a-7ef82beda6ef@gmail.com>
+ <9776eb47-6b83-a891-f057-dd34d14ea16e@rasmusvillemoes.dk>
+ <87eeo5mnr0.fsf@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1597743609; bh=HpTueCmI8dXbky2bWlHCpvB5NTBi0/NU9+a3DcJoAts=;
-        h=X-PGP-Universal:References:User-agent:From:To:CC:Subject:
-         In-Reply-To:Date:Message-ID:MIME-Version:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=LkLTSPfi0rbrrGatX8ULTctCivykYHjlspqPANDBgOLNALtNmpBC5oVsb2FVRpssI
-         SKDz8gkDfFY7ijh+VxmzAxzcFUqg9aY/gvVunBtQ9SygEFqP/otGNkOjjOXu/jTtN4
-         UUuylZhpAxuVy+KNICSSBeMUIvmEsWmwyTKq+v+2vsGkjgSCpMRlf3Wq6LNMyxRP3T
-         BsS3y2mrwaIVSWeWUUMZRLpEIGQ5JuiJvBbvcPvrf86lc2u/E3+6uU69CGoZ4k8hUB
-         LswPEg5w0A/gkYK5wJNzHRfGAeGbxiDbGTl9W8cSAeW51I2I/BXAqFU+LiNl/AFhFg
-         sJHqgKau3rqGg==
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87eeo5mnr0.fsf@codeaurora.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 17 Aug 2020, Kalle Valo wrote:
 
-Ido Schimmel <idosch@idosch.org> writes:
+> Rasmus Villemoes <linux@rasmusvillemoes.dk> writes:
+> 
+> > On 14/08/2020 17.14, Christian Lamparter wrote:
+> >> On 2020-08-14 13:39, Lee Jones wrote:
+> >>> 'ar9170_qmap' is used in some source files which include carl9170.h,
+> >>> but not all of them.  Mark it as __maybe_unused to show that this is
+> >>> not only okay, it's expected.
+> >>>
+> >>> Fixes the following W=1 kernel build warning(s)
+> >> 
+> >> Is this W=1 really a "must" requirement? I find it strange having
+> >> __maybe_unused in header files as this "suggests" that the
+> >> definition is redundant.
+> >
+> > In this case it seems one could replace the table lookup with a
+> >
+> > static inline u8 ar9170_qmap(u8 idx) { return 3 - idx; }
+> >
+> > gcc doesn't warn about unused static inline functions (or one would have
+> > a million warnings to deal with). Just my $0.02.
+> 
+> Yeah, this is much better.
+> 
+> And I think that static variables should not even be in the header
+> files. Doesn't it mean that there's a local copy of the variable
+> everytime the .h file is included? Sure, in this case the overhead is
+> small (4 bytes per include) but still it's wrong.
 
-> On Mon, Aug 17, 2020 at 10:38:24AM -0500, Bjorn Helgaas wrote:
->> You've likely seen this already, but Coverity found this problem:
->> 
->>   *** CID 1466147:  Control flow issues  (DEADCODE)
->>   /drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c: 380 in mlxsw_sp_policers_init()
->>   374     	}
->>   375     
->>   376     	return 0;
->>   377     
->>   378     err_family_register:
->>   379     	for (i--; i >= 0; i--) {
->>   >>>     CID 1466147:  Control flow issues  (DEADCODE)
->>   >>>     Execution cannot reach this statement: "struct mlxsw_sp_policer_fam...".
->>   380     		struct mlxsw_sp_policer_family *family;
->>   381     
->>   382     		family = mlxsw_sp->policer_core->family_arr[i];
->>   383     		mlxsw_sp_policer_family_unregister(mlxsw_sp, family);
->>   384     	}
->>   385     err_init:
->> 
->> I think the problem is that MLXSW_SP_POLICER_TYPE_MAX is 0 because
->> 
->> > +enum mlxsw_sp_policer_type {
->> > +	MLXSW_SP_POLICER_TYPE_SINGLE_RATE,
->> > +
->> > +	__MLXSW_SP_POLICER_TYPE_MAX,
->> > +	MLXSW_SP_POLICER_TYPE_MAX = __MLXSW_SP_POLICER_TYPE_MAX - 1,
->> > +};
->> 
->> so we can only execute the family_register loop once, with i == 0,
->> and if we get to err_family_register via the error exit:
->> 
->> > +	for (i = 0; i < MLXSW_SP_POLICER_TYPE_MAX + 1; i++) {
->> > +		err = mlxsw_sp_policer_family_register(mlxsw_sp, mlxsw_sp_policer_family_arr[i]);
->> > +		if (err)
->> > +			goto err_family_register;
->> 
->> i will be 0, so i-- sets i to -1, so we don't enter the
->> family_unregister loop body since -1 is not >= 0.
->
-> Thanks for the report, but isn't the code doing the right thing here? I
-> mean, it's dead code now, but as soon as we add another family it will
-> be executed. It seems error prone to remove it only to please Coverity
-> and then add it back when it's actually needed.
+It happens a lot.
 
-Agreed.
+As I stated before, the 2 viable options are to a) move it into the
+source files; ensuring code duplication, unnecessary maintenance
+burden and probably disparity over time, or b) create (or locate if
+there is one already) a special header file which is only to be
+included by the users.
+
+The later option gets really complicated if there are a variety of
+tables which are included by any given number of source file
+permutations.
+
+The accepted answer in all of the other subsystems I've worked with so
+far, is to use __maybe_unused.  It's simple, non-intrusive and doesn't
+rely on any functional changes.
+
+> Having a static inline
+> function would solve that problem as well the compiler warning.
+
+This time yes, but it's a hack that will only work with simple,
+linear data.  Try doing that with some of the other, more complicated
+tables, like mwifiex_sdio_sd8*.
+
+-- 
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
