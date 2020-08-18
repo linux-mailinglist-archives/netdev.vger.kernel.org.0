@@ -2,50 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 695752489B7
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 17:25:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 460D42489E4
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 17:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728037AbgHRPZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 11:25:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50094 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728055AbgHRPZP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 11:25:15 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CBF37206DA;
-        Tue, 18 Aug 2020 15:25:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597764312;
-        bh=SSmt1+EOy9Ujvbe+15BXNCpT/eTQv/ZegyIfORgamdo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tqwjH6i/82FuoirOq0MTZIrdpe/m9IozBSEOiaNE6RARs8QXXTrEaJohUWvvIEmHI
-         HPs2N/M1/kMAZQbL3ZktmNP3ahtgi3y/pkCcHKsyhkixDGXfIsTkclcH4Msm2vOCWv
-         e791UMsSZ0zFv9nVnpWnOycDZBDkz17v0FyYbvGI=
-Date:   Tue, 18 Aug 2020 08:25:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andre Edich <andre.edich@microchip.com>
-Cc:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <steve.glendinning@shawell.net>,
-        <Parthiban.Veerasooran@microchip.com>
-Subject: Re: [PATCH net-next v3 3/3] smsc95xx: add phylib support
-Message-ID: <20200818082510.380cd722@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200818111127.176422-4-andre.edich@microchip.com>
-References: <20200818111127.176422-1-andre.edich@microchip.com>
-        <20200818111127.176422-4-andre.edich@microchip.com>
+        id S1727899AbgHRPbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 11:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33548 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726701AbgHRPbB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 11:31:01 -0400
+Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF69C061389
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 08:31:01 -0700 (PDT)
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:8982:ed8c:62b1:c0c8])
+        by mail.nic.cz (Postfix) with ESMTPSA id 5320913FD03;
+        Tue, 18 Aug 2020 17:30:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1597764657; bh=4VfqzOLvYyIhQYihHnDei7UoHLw7PMKGwhah50Lafaw=;
+        h=Date:From:To;
+        b=IzglRlU6mYhHdGgMFVNAwVvIYI/txqkvla08i7piGSoj2lQXjZqAmo0APiXJ4VOPp
+         821JvDocYt4fSOTHutiSaTGE0aZH0Q00XLCQ+pf7oPknHAEon1p/hrFwS+jAgwNtRF
+         f/sFAxdZdZO14imE7gv60kDHP8vfshY+KloyTMiA=
+Date:   Tue, 18 Aug 2020 17:30:55 +0200
+From:   Marek =?ISO-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Chris Healy <cphealy@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC russell-king 0/4] Support for RollBall 10G copper
+ SFP modules
+Message-ID: <20200818173055.01e4bf01@dellmb.labs.office.nic.cz>
+In-Reply-To: <20200818150834.GC1551@shell.armlinux.org.uk>
+References: <20200810220645.19326-1-marek.behun@nic.cz>
+        <20200817134909.GY1551@shell.armlinux.org.uk>
+        <20200818154305.2b7e191c@dellmb.labs.office.nic.cz>
+        <20200818150834.GC1551@shell.armlinux.org.uk>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,URIBL_BLOCKED,
+        USER_IN_WHITELIST shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Aug 2020 13:11:27 +0200 Andre Edich wrote:
-> +static inline int lan87xx_config_aneg(struct phy_device *phydev)
+On Tue, 18 Aug 2020 16:08:35 +0100
+Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
 
-> +static inline int lan87xx_config_aneg_ext(struct phy_device *phydev)
+> > Otherwise it looks nice. I will test this. On what branch does this
+> > apply?  
+> 
+> My unpublished tip of the universe development.  Here's a version on
+> the clearfog branch:
 
-Please don't use static inline in C files, the compiler will know what
-to inline so it's unnecessary, and it hides dead code.
+Russell, it seems you do not have commit
+
+e11703330a5d ("net: phy: marvell10g: support XFI rate matching mode")
+
+in that branch.
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/net/phy/marvell10g.c?id=e11703330a5df48e1fd4167e4d22a102e517253e
