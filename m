@@ -2,77 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A92D24806C
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 10:20:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C41DE24806D
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 10:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbgHRIUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 04:20:23 -0400
-Received: from smtp23.cstnet.cn ([159.226.251.23]:42334 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726043AbgHRIUW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 04:20:22 -0400
-Received: from localhost (unknown [159.226.5.99])
-        by APP-03 (Coremail) with SMTP id rQCowACHjxs5jztfmH8kAw--.22912S2;
-        Tue, 18 Aug 2020 16:20:09 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Xu Wang <vulab@iscas.ac.cn>
-Subject: [PATCH] libbpf: simplify the return expression of build_map_pin_path()
-Date:   Tue, 18 Aug 2020 08:20:08 +0000
-Message-Id: <20200818082008.12143-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: rQCowACHjxs5jztfmH8kAw--.22912S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrGr48AFykWr43Zr4DJF1DJrb_yoWxXrc_A3
-        W8XF4xGrZ8GFWay3yrCrZ0vryxAas5Grs5uFs2qrsxJF1jkFW5ArZrCF95JFyYgw4xKFy7
-        AF93Ary7Ar43ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbg8YjsxI4VWDJwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I
-        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1q6rW5McIj6I8E87Iv67AKxVWxJr0_Gc
-        WlOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0Y40E4IxF1VCIxcxG6Fyj
-        6r4UJwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4
-        AK67AK6r43MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8C
-        rVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8Zw
-        CIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x02
-        67AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI
-        0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7x
-        RM4E_DUUUUU==
-X-Originating-IP: [159.226.5.99]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCQUMA102ZgiJnQAAsS
+        id S1726568AbgHRIVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 04:21:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726043AbgHRIVI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 04:21:08 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FEAC061389;
+        Tue, 18 Aug 2020 01:21:08 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id y6so8882586plt.3;
+        Tue, 18 Aug 2020 01:21:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=R6UfMfJwqHE+FvqFjrSG5hHKZrDmBk/7qX6MpbTswn4=;
+        b=P+O+y6fHin2i63yQXnz5g3IAJ2NyZIMZ1e9cDB3VdSIrWcUAfL5/9ydchAsgXekI/6
+         nNHfNWZovhWixT/cctY0wawTSq7P3mL8gyCOCJtcvt2Rn9Pskgy6Gt6fR517kpfHPXKM
+         FL8uePTrKBJYJZTFqeGjrRUnMWqMScl/eK3kBuVT9xBeRohWi+4O7ALoUGKDUgH9oV91
+         InGy8RhGQJjYhDKiUXaC9K4itTlqZm0OKqvXKocL0qwuc0YiBdIksHA4KX4dQELsPvvZ
+         JplSArwK3psUnHIdO0iKEMCzwvBsr7NthpCB1DYxdISthYp7QD+NTVdCQFD9Up3+AfbC
+         vtZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=R6UfMfJwqHE+FvqFjrSG5hHKZrDmBk/7qX6MpbTswn4=;
+        b=X3xVog0QJIqXEhQfrdGlY+2xbFb6j6d3cEWR11KfEY7u4vfypmgJm4Q9LrjSh8Z/L/
+         kXGa+EtVEQtBSkoXY32rXv0p27zGJDbDKoOpDnlr53QihBtuC7/+TgC8q6G4tQIYvHXg
+         xYmVyTCE/TfNkGvBgDctw6qYLwgpyihdYixfzpG70hpulUSwgGeWQ4ry61embmdcqY+e
+         Qq+bpGKE8SUMuNt9cQV5b6R6fCjPv7p4bZFCehyYy5U9Y33Nf0nSeMrqJvaNpLHg/Crm
+         8xjZGQYK6muG8SMQ5kDT/9CU8jxWL09wl1ahg/htk4nTKaothq1yV1J7Oot/9jID/UdN
+         PfqA==
+X-Gm-Message-State: AOAM533LEMlvPIA3b4C8wCZkxdE/OnJUh4GDBB1CmmfdYhEUo/57D3gu
+        UbBFeyriIRaJJho91CqPWIj2PRAAvxY=
+X-Google-Smtp-Source: ABdhPJw29b/0fFyJtX5wxY8KVFb2zCD7jrzyjFsJtlVcZkoELYesRJIsd5ew9C3u9p0L9p2Qspv+UQ==
+X-Received: by 2002:a17:90b:4a4e:: with SMTP id lb14mr15864480pjb.228.1597738867036;
+        Tue, 18 Aug 2020 01:21:07 -0700 (PDT)
+Received: from oppo (69-172-89-151.static.imsbiz.com. [69.172.89.151])
+        by smtp.gmail.com with ESMTPSA id u65sm23398632pfb.102.2020.08.18.01.21.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Aug 2020 01:21:06 -0700 (PDT)
+Date:   Tue, 18 Aug 2020 16:21:03 +0800
+From:   Qingyu Li <ieatmuttonchuan@gmail.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net/bluetooth/hidp/sock.c: add CAP_NET_RAW check.
+Message-ID: <20200818082103.GA2692@oppo>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify the return expression.
+When creating a raw PF_BLUETOOTH socket,
+CAP_NET_RAW needs to be checked first.
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+Signed-off-by: Qingyu Li <ieatmuttonchuan@gmail.com>
 ---
- tools/lib/bpf/libbpf.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ net/bluetooth/hidp/sock.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 5055e1531e43..b423fdaae0b6 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1935,11 +1935,7 @@ static int build_map_pin_path(struct bpf_map *map, const char *path)
- 	else if (len >= PATH_MAX)
- 		return -ENAMETOOLONG;
- 
--	err = bpf_map__set_pin_path(map, buf);
--	if (err)
--		return err;
--
--	return 0;
-+	return bpf_map__set_pin_path(map, buf);
- }
- 
- 
--- 
+diff --git a/net/bluetooth/hidp/sock.c b/net/bluetooth/hidp/sock.c
+index 595fb3c9d6c3..3dd9c8e0419a 100644
+--- a/net/bluetooth/hidp/sock.c
++++ b/net/bluetooth/hidp/sock.c
+@@ -255,6 +255,9 @@ static int hidp_sock_create(struct net *net, struct socket *sock, int protocol,
+ 	if (sock->type != SOCK_RAW)
+ 		return -ESOCKTNOSUPPORT;
+
++	if (!capable(CAP_NET_RAW))
++		return -EPERM;
++
+ 	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &hidp_proto, kern);
+ 	if (!sk)
+ 		return -ENOMEM;
+--
 2.17.1
 
