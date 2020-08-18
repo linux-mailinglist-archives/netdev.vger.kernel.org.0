@@ -2,68 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F08EC248048
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 10:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 296A424804E
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 10:17:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726519AbgHRIQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 04:16:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48760 "EHLO
+        id S1726391AbgHRIRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 04:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726341AbgHRIQC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 04:16:02 -0400
+        with ESMTP id S1726203AbgHRIRj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 04:17:39 -0400
 Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7095C061389
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 01:16:01 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346ACC061389
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 01:17:39 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.94)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1k7wmm-0067be-0m
-        for netdev@vger.kernel.org; Tue, 18 Aug 2020 10:16:00 +0200
-Message-ID: <0bd2e67bfaa0a4a88bdd790388bbae3b46299e74.camel@sipsolutions.net>
-Subject: Re: [PATCH 3/3] netlink: make NLA_BINARY validation more flexible
+        id 1k7woL-0067dV-I6
+        for netdev@vger.kernel.org; Tue, 18 Aug 2020 10:17:37 +0200
 From:   Johannes Berg <johannes@sipsolutions.net>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Date:   Tue, 18 Aug 2020 10:15:58 +0200
-In-Reply-To: <20200818100639.fa7ed2ad4fb9.Ieb6502e26920e731a04d414245a28254519a26d8@changeid>
-References: <20200818080819.10012-1-johannes@sipsolutions.net>
-         <20200818100639.fa7ed2ad4fb9.Ieb6502e26920e731a04d414245a28254519a26d8@changeid>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+To:     netdev@vger.kernel.org
+Subject: [PATCH v2 0/3] netlink: allow NLA_BINARY length range validation
+Date:   Tue, 18 Aug 2020 10:17:30 +0200
+Message-Id: <20200818081733.10892-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In quite a few places (perhaps particularly in wireless) we need to
+validation an NLA_BINARY attribute with both a minimum and a maximum
+length. Currently, we can do either of the two, but not both, given
+that we have NLA_MIN_LEN (minimum length) and NLA_BINARY (maximum).
 
-> +       if (pt->validation_type == NLA_VALIDATE_RANGE_WARN_TOO_LONG &&
-> +           pt->type == NLA_BINARY && value > range.max) {
-> +               pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
-> +                                   current->comm, pt->type);
-> +               if (validate & NL_VALIDATE_STRICT_ATTRS) {
-> +                       NL_SET_ERR_MSG_ATTR(extack, nla,
-> +                                           "invalid attribute length");
-> +                       return -EINVAL;
-> +               }
-> +
-> +               /* this assumes min < max (don't validate against min) */
-> +               return 0;
+Extend the range mechanisms that we use for integer validation to
+apply to NLA_BINARY as well.
 
-This (return 0) is the only change since the RFC - otherwise we hit the
-error return a few lines later, obviously.
+After converting everything to use NLA_POLICY_MIN_LEN() we can thus
+get rid of the NLA_MIN_LEN type since that's now a special case of
+NLA_BINARY with a minimum length validation. Similarly, NLA_EXACT_LEN
+can be specified using NLA_POLICY_EXACT_LEN() and also maps to the
+new NLA_BINARY validation (min == max == desired length).
 
-I decided that min > max was nonsense and we don't really need to
-validate that the attribute is >=min when it was >max already.
+Finally, NLA_POLICY_EXACT_LEN_WARN() also gets to be a somewhat
+special case of this.
 
-Though in theory, of course, somebody could specify such nonsense, I
-just don't think it's reasonable. It's also very difficult to use
-because we only have the NLA_POLICY_EXACT_LEN_WARN() macro using this,
-so specifying min/max *and* NLA_VALIDATE_RANGE_WARN_TOO_LONG would take
-some special dedication ...
+I haven't included the patch here now that converts nl82011 to use
+this because it doesn't apply without another cleanup patch, but
+we can remove a number of hand-coded min/max length checks and get
+better error messages from the general validation code while doing
+that.
 
-Now that I read this again though of course I see that the comment is
-wrong, it needs to of course say "min <= max". I'll send v2...
+As I had originally built the netlink policy export to userspace in
+a way that has min/max length for NLA_BINARY (for the types that we
+used to call NLA_MIN_LEN, NLA_BINARY and NLA_EXACT_LEN) anyway, it
+doesn't really change anything there except that now there's a chance
+that userspace sees min length < max length, which previously wasn't
+possible.
+
+
+v2:
+ * fix the min<max comment to correctly say min<=max
 
 johannes
+
 
