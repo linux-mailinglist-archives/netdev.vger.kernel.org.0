@@ -2,171 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 235D62484B8
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 14:28:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A7A2484F0
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 14:42:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbgHRM15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 08:27:57 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:9836 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726336AbgHRM1z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 08:27:55 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id C640E5F3FC3BC6CABC40;
-        Tue, 18 Aug 2020 20:27:51 +0800 (CST)
-Received: from huawei.com (10.175.104.175) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Tue, 18 Aug 2020
- 20:27:41 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <idryomov@gmail.com>, <jlayton@kernel.org>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <grandmaster@al2klimov.de>
-CC:     <ceph-devel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH] libceph: Convert to use the preferred fallthrough macro
-Date:   Tue, 18 Aug 2020 08:26:37 -0400
-Message-ID: <20200818122637.21449-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.19.1
+        id S1726690AbgHRMmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 08:42:21 -0400
+Received: from mail29.static.mailgun.info ([104.130.122.29]:16393 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726634AbgHRMmM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 08:42:12 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1597754526; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=Y/RDDb3mAt7QvX6HBbapdibqafkKhm7pXFr4Ti4glJk=;
+ b=MU6VXVvd3S+mFqW2CsVQBS2rtZVgQjXY//pZkkO6PNm751Z8fa9AIDu7ErDgU0AZIti9U0oP
+ w74DIbNwpg2PesSfrP7CmQmWbxSqskLAAQ+w3OevaZmHS0GSzR6R0b3FeQPFw5IhSCX92rWs
+ XAaL6cahIFpB3fzvUZM3OCKtYRo=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n10.prod.us-west-2.postgun.com with SMTP id
+ 5f3bcc8bd96d28d61efbd3e1 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 18 Aug 2020 12:41:47
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 27D1DC43391; Tue, 18 Aug 2020 12:41:47 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 96AC0C433CA;
+        Tue, 18 Aug 2020 12:41:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 96AC0C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.175]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] p54: avoid accessing the data mapped to streaming DMA
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200802132949.26788-1-baijiaju@tsinghua.edu.cn>
+References: <20200802132949.26788-1-baijiaju@tsinghua.edu.cn>
+To:     Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
+Cc:     chunkeey@googlemail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200818124147.27D1DC43391@smtp.codeaurora.org>
+Date:   Tue, 18 Aug 2020 12:41:47 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the uses of fallthrough comments to fallthrough macro.
+Jia-Ju Bai <baijiaju@tsinghua.edu.cn> wrote:
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- net/ceph/ceph_hash.c    | 20 ++++++++++----------
- net/ceph/crush/mapper.c |  2 +-
- net/ceph/messenger.c    |  4 ++--
- net/ceph/mon_client.c   |  2 +-
- net/ceph/osd_client.c   |  4 ++--
- 5 files changed, 16 insertions(+), 16 deletions(-)
+> In p54p_tx(), skb->data is mapped to streaming DMA on line 337:
+>   mapping = pci_map_single(..., skb->data, ...);
+> 
+> Then skb->data is accessed on line 349:
+>   desc->device_addr = ((struct p54_hdr *)skb->data)->req_id;
+> 
+> This access may cause data inconsistency between CPU cache and hardware.
+> 
+> To fix this problem, ((struct p54_hdr *)skb->data)->req_id is stored in
+> a local variable before DMA mapping, and then the driver accesses this
+> local variable instead of skb->data.
+> 
+> Signed-off-by: Jia-Ju Bai <baijiaju@tsinghua.edu.cn>
 
-diff --git a/net/ceph/ceph_hash.c b/net/ceph/ceph_hash.c
-index 81e1e006c540..16a47c0eef37 100644
---- a/net/ceph/ceph_hash.c
-+++ b/net/ceph/ceph_hash.c
-@@ -50,35 +50,35 @@ unsigned int ceph_str_hash_rjenkins(const char *str, unsigned int length)
- 	switch (len) {
- 	case 11:
- 		c = c + ((__u32)k[10] << 24);
--		/* fall through */
-+		fallthrough;
- 	case 10:
- 		c = c + ((__u32)k[9] << 16);
--		/* fall through */
-+		fallthrough;
- 	case 9:
- 		c = c + ((__u32)k[8] << 8);
- 		/* the first byte of c is reserved for the length */
--		/* fall through */
-+		fallthrough;
- 	case 8:
- 		b = b + ((__u32)k[7] << 24);
--		/* fall through */
-+		fallthrough;
- 	case 7:
- 		b = b + ((__u32)k[6] << 16);
--		/* fall through */
-+		fallthrough;
- 	case 6:
- 		b = b + ((__u32)k[5] << 8);
--		/* fall through */
-+		fallthrough;
- 	case 5:
- 		b = b + k[4];
--		/* fall through */
-+		fallthrough;
- 	case 4:
- 		a = a + ((__u32)k[3] << 24);
--		/* fall through */
-+		fallthrough;
- 	case 3:
- 		a = a + ((__u32)k[2] << 16);
--		/* fall through */
-+		fallthrough;
- 	case 2:
- 		a = a + ((__u32)k[1] << 8);
--		/* fall through */
-+		fallthrough;
- 	case 1:
- 		a = a + k[0];
- 		/* case 0: nothing left to add */
-diff --git a/net/ceph/crush/mapper.c b/net/ceph/crush/mapper.c
-index 07e5614eb3f1..7057f8db4f99 100644
---- a/net/ceph/crush/mapper.c
-+++ b/net/ceph/crush/mapper.c
-@@ -987,7 +987,7 @@ int crush_do_rule(const struct crush_map *map,
- 		case CRUSH_RULE_CHOOSELEAF_FIRSTN:
- 		case CRUSH_RULE_CHOOSE_FIRSTN:
- 			firstn = 1;
--			/* fall through */
-+			fallthrough;
- 		case CRUSH_RULE_CHOOSELEAF_INDEP:
- 		case CRUSH_RULE_CHOOSE_INDEP:
- 			if (wsize == 0)
-diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
-index 27d6ab11f9ee..bdfd66ba3843 100644
---- a/net/ceph/messenger.c
-+++ b/net/ceph/messenger.c
-@@ -412,7 +412,7 @@ static void ceph_sock_state_change(struct sock *sk)
- 	switch (sk->sk_state) {
- 	case TCP_CLOSE:
- 		dout("%s TCP_CLOSE\n", __func__);
--		/* fall through */
-+		fallthrough;
- 	case TCP_CLOSE_WAIT:
- 		dout("%s TCP_CLOSE_WAIT\n", __func__);
- 		con_sock_state_closing(con);
-@@ -2751,7 +2751,7 @@ static int try_read(struct ceph_connection *con)
- 			switch (ret) {
- 			case -EBADMSG:
- 				con->error_msg = "bad crc/signature";
--				/* fall through */
-+				fallthrough;
- 			case -EBADE:
- 				ret = -EIO;
- 				break;
-diff --git a/net/ceph/mon_client.c b/net/ceph/mon_client.c
-index 3d8c8015e976..d633a0aeaa55 100644
---- a/net/ceph/mon_client.c
-+++ b/net/ceph/mon_client.c
-@@ -1307,7 +1307,7 @@ static struct ceph_msg *mon_alloc_msg(struct ceph_connection *con,
- 		 * request had a non-zero tid.  Work around this weirdness
- 		 * by allocating a new message.
- 		 */
--		/* fall through */
-+		fallthrough;
- 	case CEPH_MSG_MON_MAP:
- 	case CEPH_MSG_MDS_MAP:
- 	case CEPH_MSG_OSD_MAP:
-diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
-index e4fbcad6e7d8..7901ab6c79fd 100644
---- a/net/ceph/osd_client.c
-+++ b/net/ceph/osd_client.c
-@@ -3854,7 +3854,7 @@ static void scan_requests(struct ceph_osd *osd,
- 			if (!force_resend && !force_resend_writes)
- 				break;
- 
--			/* fall through */
-+			fallthrough;
- 		case CALC_TARGET_NEED_RESEND:
- 			cancel_linger_map_check(lreq);
- 			/*
-@@ -3891,7 +3891,7 @@ static void scan_requests(struct ceph_osd *osd,
- 			     !force_resend_writes))
- 				break;
- 
--			/* fall through */
-+			fallthrough;
- 		case CALC_TARGET_NEED_RESEND:
- 			cancel_map_check(req);
- 			unlink_request(osd, req);
+Can someone review this?
+
 -- 
-2.19.1
+https://patchwork.kernel.org/patch/11696391/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
