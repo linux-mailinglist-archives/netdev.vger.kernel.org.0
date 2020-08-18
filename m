@@ -2,95 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCB5A248E31
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 20:53:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB689248E40
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 20:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726701AbgHRSw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 14:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726435AbgHRSw5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 14:52:57 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E160CC061389;
-        Tue, 18 Aug 2020 11:52:56 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id s14so3670992plp.4;
-        Tue, 18 Aug 2020 11:52:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Ytj+BpqeiCrlRi7pvlYx49LlX+2X2MCiIXaiNwEamZU=;
-        b=ljAN3lAlDQmWRLF/4kSakgZyYJqVjxliynG2w9uxzkZoHlpmCn/LRCXPYkuP6ix001
-         b4bfZdnL5idVfDF6BwQJlHs/CCqo1jPxDFX32xqMRR5Wee5DKc9OXbXY6TxOFEHNbhsG
-         q5PrNLeAyfkhUrThitvq+yh+0HP8zQJEdox4vvFKRBAxbW+JiekwNXZ08L8MvIp0iMUi
-         vvb8QzolBefq6C5G3rXen+6iBPcdMw+yARKM5ELB/i4j0TL+DD9NFn09NJdk9/VGL1YT
-         H1hZrpwX18v278lMfJVvp5Aui9+hCczxa69Bfchu8yHlX6DiYTK23XlfiPqeZ0puiXg8
-         3ZKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Ytj+BpqeiCrlRi7pvlYx49LlX+2X2MCiIXaiNwEamZU=;
-        b=glqTEAn34T2Xhy+uqKFjD5oczhy7PVWSf/hcmX4cMDXthamq7vaLNtST1Wy/15anEJ
-         MV0rwtcyBg1Eufq19u3IEz8LetSVIvk+hNBBeE0E4zTDQlAEzwo0Or7SKg7HgIS9CgMb
-         jEDUu03ETw+Z6w22XwyErt6ER+0KpY2C5o2AXwATd43gkzjzbtV8fxglrM8eC0MV1wAI
-         dvzmQv7beSggDckftlvavQPuoQjYnGv9tJPuzIPGEQPds2h7sCJVsZ+QaexNeOiN7cVQ
-         DmhYowrEXQhO8oVoFCgjRDBhxHavsYzqgaVmKWmEISJUXM3nmoMoi+kLBtHM6y2JJSw9
-         QVZQ==
-X-Gm-Message-State: AOAM530Za9HN3cHzjAOuBUL18CxFiYP6fKYfBVl9FzeDbY04iO3J9v8M
-        kq7G6HsiLfCxJcTSjoRNT0qjHzc1mw3DRA==
-X-Google-Smtp-Source: ABdhPJzvh5vMEZUjEmQMj7IkexRr7QUmC8ecHyrzolXuv+AcJAzPPWTgacFUZ6kqI6LMaABbYD9Pmw==
-X-Received: by 2002:a17:902:b616:: with SMTP id b22mr15843878pls.246.1597776776405;
-        Tue, 18 Aug 2020 11:52:56 -0700 (PDT)
-Received: from localhost.localdomain ([49.207.62.177])
-        by smtp.gmail.com with ESMTPSA id r15sm26774398pfq.189.2020.08.18.11.52.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2020 11:52:55 -0700 (PDT)
-From:   Sumera Priyadarsini <sylphrenadin@gmail.com>
-To:     davem@davemloft.net
-Cc:     claudiu.manoil@nxp.com, kuba@kernel.org, Julia.Lawall@lip6.fr,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sumera Priyadarsini <sylphrenadin@gmail.com>
-Subject: [PATCH] net: gianfar: Add of_node_put() before goto statement
-Date:   Wed, 19 Aug 2020 00:22:41 +0530
-Message-Id: <20200818185241.22277-1-sylphrenadin@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726816AbgHRSyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 14:54:55 -0400
+Received: from mga06.intel.com ([134.134.136.31]:37322 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726746AbgHRSyy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Aug 2020 14:54:54 -0400
+IronPort-SDR: TLHeFtoprP4hkaY73v7fadayHWqi9KHlXqzjqRzlSJRu0P4xrSxSwJII2bexPmAVKjCIrJPLLy
+ 5bJXEjr0plBg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9717"; a="216513838"
+X-IronPort-AV: E=Sophos;i="5.76,328,1592895600"; 
+   d="scan'208";a="216513838"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 11:54:54 -0700
+IronPort-SDR: +7s3CJXK2gDJa0TPz8ssq51eHa81b8kEVxhbC2yiNsY9wAXaKKy3ycnHIveFWhmL3m2Dz7nBk6
+ ilonmNSTCRHw==
+X-IronPort-AV: E=Sophos;i="5.76,328,1592895600"; 
+   d="scan'208";a="471919245"
+Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.158.55])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 11:54:32 -0700
+Date:   Tue, 18 Aug 2020 11:54:32 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH net 1/4] sfc: really check hash is valid before using it
+Message-ID: <20200818115432.00004f3d@intel.com>
+In-Reply-To: <c91aa83a-edf1-8faa-2ca7-a8157cb99623@solarflare.com>
+References: <d8d6cdfc-7d4f-81ec-8b3e-bc207a2c7d50@solarflare.com>
+        <c91aa83a-edf1-8faa-2ca7-a8157cb99623@solarflare.com>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Every iteration of for_each_available_child_of_node() decrements
-reference count of the previous node, however when control
-is transferred from the middle of the loop, as in the case of
-a return or break or goto, there is no decrement thus ultimately
-resulting in a memory leak.
+On Tue, 18 Aug 2020 13:43:30 +0100
+Edward Cree <ecree@solarflare.com> wrote:
 
-Fix a potential memory leak in gianfar.c by inserting of_node_put()
-before the goto statement.
+> Actually hook up the .rx_buf_hash_valid method in EF100's nic_type.
+> 
+> Fixes: 068885434ccb ("sfc: check hash is valid before using it")
+> Reported-by: Martin Habets <mhabets@solarflare.com>
+> Signed-off-by: Edward Cree <ecree@solarflare.com>
 
-Issue found with Coccinelle.
-
-Signed-off-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
----
- drivers/net/ethernet/freescale/gianfar.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index b513b8c5c3b5..41dd3d0f3452 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -750,8 +750,10 @@ static int gfar_of_init(struct platform_device *ofdev, struct net_device **pdev)
- 				continue;
- 
- 			err = gfar_parse_group(child, priv, model);
--			if (err)
-+			if (err) {
-+				of_node_put(child);
- 				goto err_grp_init;
-+			}
- 		}
- 	} else { /* SQ_SG_MODE */
- 		err = gfar_parse_group(np, priv, model);
--- 
-2.17.1
-
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
