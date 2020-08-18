@@ -2,62 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BCEE248EC1
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 21:33:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D18E248EC6
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 21:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726778AbgHRTdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 15:33:47 -0400
-Received: from mga03.intel.com ([134.134.136.65]:26217 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726676AbgHRTdr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 15:33:47 -0400
-IronPort-SDR: 7qH/19wGeprVHN8bksTkKQ4stFIYtm5reiwAxR2OTIYvKqnB1c+2od5Zy94jk+UEApfVIulaY8
- apQBPmSfXH9w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9717"; a="154964147"
-X-IronPort-AV: E=Sophos;i="5.76,328,1592895600"; 
-   d="scan'208";a="154964147"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 12:33:46 -0700
-IronPort-SDR: v5XFWJ+JbbST5YSh2TT6s3AbtjRmYomkCEn+9y76bTsu2i6WchpZ9P7DI5+kwWpUNff3IyVcHp
- SEe4twE0/8qw==
-X-IronPort-AV: E=Sophos;i="5.76,328,1592895600"; 
-   d="scan'208";a="471935034"
-Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.158.55])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 12:33:46 -0700
-Date:   Tue, 18 Aug 2020 12:33:45 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Ganji Aravind <ganji.aravind@chelsio.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <vishal@chelsio.com>, <rahul.lakkireddy@chelsio.com>
-Subject: Re: [PATCH net 1/2] cxgb4: Fix work request size calculation for
- loopback test
-Message-ID: <20200818123345.00007802@intel.com>
-In-Reply-To: <20200818154058.1770002-2-ganji.aravind@chelsio.com>
-References: <20200818154058.1770002-1-ganji.aravind@chelsio.com>
-        <20200818154058.1770002-2-ganji.aravind@chelsio.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726793AbgHRTef convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 18 Aug 2020 15:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726630AbgHRTee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 15:34:34 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985F7C061389
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:34:34 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 64EEE1279E90C;
+        Tue, 18 Aug 2020 12:17:48 -0700 (PDT)
+Date:   Tue, 18 Aug 2020 12:34:33 -0700 (PDT)
+Message-Id: <20200818.123433.794427906392998261.davem@davemloft.net>
+To:     alsi@bang-olufsen.dk
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next] macvlan: validate setting of multiple
+ remote source MAC addresses
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200818085134.3228896-1-alsi@bang-olufsen.dk>
+References: <20200817.145542.1273892481485714633.davem@davemloft.net>
+        <20200818085134.3228896-1-alsi@bang-olufsen.dk>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-15
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 18 Aug 2020 12:17:48 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ganji Aravind wrote:
+From: Alvin ¦ipraga <alsi@bang-olufsen.dk>
+Date: Tue, 18 Aug 2020 10:51:34 +0200
 
-> Work request used for sending loopback packet needs to add
-> the firmware work request only once. So, fix by using
-> correct structure size.
+> Remote source MAC addresses can be set on a 'source mode' macvlan
+> interface via the IFLA_MACVLAN_MACADDR_DATA attribute. This commit
+> tightens the validation of these MAC addresses to match the validation
+> already performed when setting or adding a single MAC address via the
+> IFLA_MACVLAN_MACADDR attribute.
 > 
-> Fixes: 7235ffae3d2c ("cxgb4: add loopback ethtool self-test")
-> Signed-off-by: Ganji Aravind <ganji.aravind@chelsio.com>
+> iproute2 uses IFLA_MACVLAN_MACADDR_DATA for its 'macvlan macaddr set'
+> command, and IFLA_MACVLAN_MACADDR for its 'macvlan macaddr add' command,
+> which demonstrates the inconsistent behaviour that this commit
+> addresses:
+> 
+>  # ip link add link eth0 name macvlan0 type macvlan mode source
+>  # ip link set link dev macvlan0 type macvlan macaddr add 01:00:00:00:00:00
+>  RTNETLINK answers: Cannot assign requested address
+>  # ip link set link dev macvlan0 type macvlan macaddr set 01:00:00:00:00:00
+>  # ip -d link show macvlan0
+>  5: macvlan0@eth0: <BROADCAST,MULTICAST,DYNAMIC,UP,LOWER_UP> mtu 1500 ...
+>      link/ether 2e:ac:fd:2d:69:f8 brd ff:ff:ff:ff:ff:ff promiscuity 0
+>      macvlan mode source remotes (1) 01:00:00:00:00:00 numtxqueues 1 ...
+> 
+> With this change, the 'set' command will (rightly) fail in the same way
+> as the 'add' command.
+> 
+> Signed-off-by: Alvin ¦ipraga <alsi@bang-olufsen.dk>
 
-changes look ok, but to understand why this change fixed the bug, you
-could have just mentioned that the cpl_tx_pkt struct has a _core member
-inside of it, and then I wouldn't have had to waste review time digging
-through the code in the kernel.
-
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Applied, thank you.
