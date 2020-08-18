@@ -2,56 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB689248E40
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 20:54:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 091ED248E4A
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 20:55:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726816AbgHRSyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 14:54:55 -0400
-Received: from mga06.intel.com ([134.134.136.31]:37322 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726746AbgHRSyy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 14:54:54 -0400
-IronPort-SDR: TLHeFtoprP4hkaY73v7fadayHWqi9KHlXqzjqRzlSJRu0P4xrSxSwJII2bexPmAVKjCIrJPLLy
- 5bJXEjr0plBg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9717"; a="216513838"
-X-IronPort-AV: E=Sophos;i="5.76,328,1592895600"; 
-   d="scan'208";a="216513838"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 11:54:54 -0700
-IronPort-SDR: +7s3CJXK2gDJa0TPz8ssq51eHa81b8kEVxhbC2yiNsY9wAXaKKy3ycnHIveFWhmL3m2Dz7nBk6
- ilonmNSTCRHw==
-X-IronPort-AV: E=Sophos;i="5.76,328,1592895600"; 
-   d="scan'208";a="471919245"
-Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.158.55])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 11:54:32 -0700
-Date:   Tue, 18 Aug 2020 11:54:32 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH net 1/4] sfc: really check hash is valid before using it
-Message-ID: <20200818115432.00004f3d@intel.com>
-In-Reply-To: <c91aa83a-edf1-8faa-2ca7-a8157cb99623@solarflare.com>
-References: <d8d6cdfc-7d4f-81ec-8b3e-bc207a2c7d50@solarflare.com>
-        <c91aa83a-edf1-8faa-2ca7-a8157cb99623@solarflare.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S1726835AbgHRSzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 14:55:45 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:39610 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726640AbgHRSzp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 14:55:45 -0400
+Received: from vishal.asicdesigners.com (venkat-suman.asicdesigners.com [10.193.177.205] (may be forged))
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 07IItVln024504;
+        Tue, 18 Aug 2020 11:55:33 -0700
+From:   Vishal Kulkarni <vishal@chelsio.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     rahul.lakkireddy@chelsio.com, Vishal Kulkarni <vishal@chelsio.com>
+Subject: [PATCH net-next] ethtool: allow flow-type ether without IP protocol field
+Date:   Wed, 19 Aug 2020 00:25:03 +0530
+Message-Id: <20200818185503.664-1-vishal@chelsio.com>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Aug 2020 13:43:30 +0100
-Edward Cree <ecree@solarflare.com> wrote:
+Set IP protocol mask only when IP protocol field is set.
+This will allow flow-type ether with vlan rule which don't have
+protocol field to apply.
 
-> Actually hook up the .rx_buf_hash_valid method in EF100's nic_type.
-> 
-> Fixes: 068885434ccb ("sfc: check hash is valid before using it")
-> Reported-by: Martin Habets <mhabets@solarflare.com>
-> Signed-off-by: Edward Cree <ecree@solarflare.com>
+ethtool -N ens5f4 flow-type ether proto 0x8100 vlan 0x600\
+m 0x1FFF action 3 loc 16
 
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Signed-off-by: Vishal Kulkarni <vishal@chelsio.com>
+---
+ net/ethtool/ioctl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 441794e0034f..e6f5cf52023c 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -3025,13 +3025,14 @@ ethtool_rx_flow_rule_create(const struct ethtool_rx_flow_spec_input *input)
+ 	case TCP_V4_FLOW:
+ 	case TCP_V6_FLOW:
+ 		match->key.basic.ip_proto = IPPROTO_TCP;
++		match->mask.basic.ip_proto = 0xff;
+ 		break;
+ 	case UDP_V4_FLOW:
+ 	case UDP_V6_FLOW:
+ 		match->key.basic.ip_proto = IPPROTO_UDP;
++		match->mask.basic.ip_proto = 0xff;
+ 		break;
+ 	}
+-	match->mask.basic.ip_proto = 0xff;
+ 
+ 	match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_BASIC);
+ 	match->dissector.offset[FLOW_DISSECTOR_KEY_BASIC] =
+-- 
+2.21.1
+
