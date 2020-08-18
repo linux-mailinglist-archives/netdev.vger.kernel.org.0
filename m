@@ -2,46 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36DBC248B30
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 18:10:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8558E248B40
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 18:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728030AbgHRQKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 12:10:18 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59362 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726711AbgHRQKG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 12:10:06 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k84BW-009w0Q-Bz; Tue, 18 Aug 2020 18:10:02 +0200
-Date:   Tue, 18 Aug 2020 18:10:02 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Landen Chao <landen.chao@mediatek.com>
-Cc:     f.fainelli@gmail.com, vivien.didelot@savoirfairelinux.com,
-        matthias.bgg@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        davem@davemloft.net, sean.wang@mediatek.com, opensource@vdorst.com,
-        frank-w@public-files.de, dqfext@gmail.com
-Subject: Re: [PATCH net-next v2 6/7] arm64: dts: mt7622: add mt7531 dsa to
- mt7622-rfb1 board
-Message-ID: <20200818161002.GG2330298@lunn.ch>
-References: <cover.1597729692.git.landen.chao@mediatek.com>
- <fb458715fc82b2222674d857d16841da57920990.1597729692.git.landen.chao@mediatek.com>
+        id S1726896AbgHRQOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 12:14:47 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:60190 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726633AbgHRQOn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 12:14:43 -0400
+Date:   Tue, 18 Aug 2020 18:14:39 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1597767280;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=2EJhoSAvrqLLzrWAoDWlLS3RTlTnaiM88eJOyWE45Uo=;
+        b=kTsdcYKWPtMAz96T1w5plwRfulJkYc0BIQ69O7aE53bv9sN9tyAMKapAmjCewyYcXf6Dcc
+        zn1ejL+sKYZg49vcxltDnCTR9Ea+JF3+tNUAYNt2YlFI6zXwiS7HCfHCTUU9J1As21aOmw
+        KqEk/UXpGVD1HvOLPIH4P8kRbHKGpizg4/0gixEIP8TFI4hlppSwTwI/3CE7snShUFnUaC
+        hoUpWuhDPF59CJz9q8PA3tBc4YqAjjYJDEggfBAGY01fmUFM2aQPkPkZhJafan2vCLdDtX
+        t7m/1TUqlykNT3qrKOB9vp/Rzg5twCjHVeooksOlfU1eQctGIAGrjUQgg0z/5w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1597767280;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=2EJhoSAvrqLLzrWAoDWlLS3RTlTnaiM88eJOyWE45Uo=;
+        b=qxKK9yWy8cwdoHWmRYiwc3npz77LgOo+9hCpwSR3EuTRIPDAJd0kHrILEmmfgO/4K6+Wke
+        iV4mbsPtopE2sLCQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Igor Russkikh <irusskikh@marvell.com>, netdev@vger.kernel.org,
+        Mark Starovoytov <mstarovoitov@marvell.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH NET] net: atlantic: Use readx_poll_timeout() for large timeout
+Message-ID: <20200818161439.3dkf6jzp3vuwmvvh@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <fb458715fc82b2222674d857d16841da57920990.1597729692.git.landen.chao@mediatek.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 03:14:11PM +0800, Landen Chao wrote:
-> Add mt7531 dsa to mt7622-rfb1 board for 5 giga Ethernet ports support.
-> mt7622 only supports 1 sgmii interface, so either gmac0 or gmac1 can be
-> configured as sgmii interface. In this patch, change to connet mt7622
+Commit
+   8dcf2ad39fdb2 ("net: atlantic: add hwmon getter for MAC temperature")
 
-connect
+implemented a read callback with an udelay(10000U). This fails to
+compile on ARM because the delay is >1ms. I doubt that it is needed to
+spin for 10ms even if possible on x86.
 
-	Andrew
+From looking at the code, the context appears to be preemptible so using
+usleep() should work and avoid busy spinning.
+
+Use readx_poll_timeout() in the poll loop.
+
+Cc: Mark Starovoytov <mstarovoitov@marvell.com>
+Cc: Igor Russkikh <irusskikh@marvell.com>
+Signed-off-by: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+---
+
+Could someone with hardware please verify it? It compiles, yes.
+
+ drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+index 16a944707ba90..8941ac4df9e37 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+@@ -1631,8 +1631,8 @@ static int hw_atl_b0_get_mac_temp(struct aq_hw_s *self, u32 *temp)
+ 		hw_atl_ts_reset_set(self, 0);
+ 	}
+ 
+-	err = readx_poll_timeout_atomic(hw_atl_b0_ts_ready_and_latch_high_get,
+-					self, val, val == 1, 10000U, 500000U);
++	err = readx_poll_timeout(hw_atl_b0_ts_ready_and_latch_high_get, self,
++				 val, val == 1, 10000U, 500000U);
+ 	if (err)
+ 		return err;
+ 
+-- 
+2.28.0
+
