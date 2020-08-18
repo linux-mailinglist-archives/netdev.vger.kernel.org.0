@@ -2,131 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31555249058
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 23:46:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95086249060
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 23:53:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726747AbgHRVqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 17:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726366AbgHRVqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 17:46:52 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCDEC061389;
-        Tue, 18 Aug 2020 14:46:52 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id t23so16357994qto.3;
-        Tue, 18 Aug 2020 14:46:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+NPoKFR14sGrBIsKe2eHB6lpYI4FJRNAke2pPgTjg8o=;
-        b=MrjLTFlqng8dJIRh6g3fZqEog7z4bG3gbHfhoNA+O5HtIj37LRmmYkf+BdSpniRCxI
-         ijS4+pX5EteofJZThG8wzkaS9XbX/jJ1uLiOKe0htV0pUDn4PsVCJ3FTIpgwfPBbYoiq
-         hC/9AWu8YDQmDj3q6ghfoT+IpS4RU5yD6Cp3w0viHHDGNYnQ6HOB62uOEbhQI0DdgGt5
-         qDzq7QslBfAzpx6hHMk3mQwe8+x/NlApbmpLuqf4exxvboFzP5OWNS0LkDqmuyRQGehv
-         F6xwHnCzwp+YwDaxInK9oGGRt+ZMHd9unLSe50CE92wQ0e8c1sJpEoeNM8xnR83zG8pC
-         kdfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+NPoKFR14sGrBIsKe2eHB6lpYI4FJRNAke2pPgTjg8o=;
-        b=jPrAAP4/ZRSR7Vd2aTKfVD0yZnOHrN2eYq+Q17DapVMcqOqUKJVhbwga4vRBM3fj1P
-         S/mnzKLceK7li2TRwzFxf0NZBuDaEEiD2xjMZXejGG7AkCOdYZc/NGZcVRk0mhDEn4yl
-         iLrnz8kS5/j1UjnPuO2wr+fzXmG6vD5NIO5duVj6kBk+882Bu4Nwj/yeVZy4u2baIpNO
-         NtwQ1kdzIfgVP10eXddcgcUEprcNMqxiWCivEBJ1dFDON+vcwWOWz6FKy9lDvMrAtW9/
-         4crRGI3lJoM37cbFClLuilG9btnGSQU8GsWZb1p6j0I64SfBxObQVzYv7Bw165jFf3G+
-         PFtg==
-X-Gm-Message-State: AOAM530vl8ezBt2hiepnC58bu4NEeQDOXD8UqgTxt6oYHKQwAFNtktQg
-        Xs9s+DJIYlfw0zUAcDmExKS0PsCAv3oK2w==
-X-Google-Smtp-Source: ABdhPJxkwum6RPYxrEcTVeO4v+CdIN55d9AYvAwoURruzCNhUjUm8HFxJK4RYJDwDV+cL5vAMSeMaQ==
-X-Received: by 2002:ac8:4b78:: with SMTP id g24mr20349871qts.248.1597787211844;
-        Tue, 18 Aug 2020 14:46:51 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f016:8002:1323:e13e:9d76:7bc8])
-        by smtp.gmail.com with ESMTPSA id l45sm26034299qtf.11.2020.08.18.14.46.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2020 14:46:51 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 0056EC18A0; Tue, 18 Aug 2020 18:46:48 -0300 (-03)
-Date:   Tue, 18 Aug 2020 18:46:48 -0300
-From:   'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>,
-        "'linux-sctp@vger.kernel.org'" <linux-sctp@vger.kernel.org>
-Subject: Re: [PATCH] net: sctp: Fix negotiation of the number of data streams.
-Message-ID: <20200818214648.GJ3399@localhost.localdomain>
-References: <46079a126ad542d380add5f9ba6ffa85@AcuMS.aculab.com>
+        id S1726841AbgHRVxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 17:53:46 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:17116 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726783AbgHRVxp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 17:53:45 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07ILWaqX184709
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 17:53:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=ODg4W7E3yN5VLjk3A9f3TSaklsDqFaYalvWeYUvnxi4=;
+ b=N9bYw1OdGxjHGAYLnQ+ABKD1WSQy9uJ5bq9k9okUvqKwEuGjk+rwj+o/GJIzyw2PTKwC
+ aMerQTtyajKX0IuHmuUDOHSQ1wLB9vRSlxDQDNw0R3D1CMUX5yK9jqNm2a5K9GLREUCG
+ B7Tcf1dxgxR6GNLx+tgI7jJ7F2FMz3YFxOTh/uXLo23w27zXEEEEjStMktbIkZs1Kohj
+ kBH2497pYvl6GbnrNmtelFfGaWj5/pxffxNr372iP8lbXh/2i6YFEFnAHelNu0MwWEZQ
+ XHIkiUq3OetQ8ginZQJlVUozv62rlLKrDgUmu9DpaLb/zVPtz2f70Acj4WcgclGyKl/r kg== 
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3304nurpc8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 17:53:42 -0400
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07ILoEHj015823
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 21:53:41 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma02wdc.us.ibm.com with ESMTP id 3304scq38h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 21:53:41 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 07ILrfnD53477886
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 18 Aug 2020 21:53:41 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 66CF62805C;
+        Tue, 18 Aug 2020 21:53:41 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EA2EE28058;
+        Tue, 18 Aug 2020 21:53:40 +0000 (GMT)
+Received: from localhost.localdomain (unknown [9.211.83.215])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue, 18 Aug 2020 21:53:40 +0000 (GMT)
+From:   Cristobal Forno <cforno12@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     drt@linux.vnet.ibm.com, Cristobal Forno <cforno12@linux.ibm.com>
+Subject: [PATCH, net-next, v2] ibmvnic: store RX and TX subCRQ handle array in ibmvnic_adapter struct
+Date:   Tue, 18 Aug 2020 16:53:33 -0500
+Message-Id: <20200818215333.53183-1-cforno12@linux.ibm.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <46079a126ad542d380add5f9ba6ffa85@AcuMS.aculab.com>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-18_14:2020-08-18,2020-08-18 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=3
+ adultscore=0 clxscore=1015 priorityscore=1501 phishscore=0 mlxscore=0
+ mlxlogscore=790 spamscore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2008180149
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 02:36:58PM +0000, David Laight wrote:
-> The number of streams offered by the remote system was being ignored.
-> Any data sent on those streams would get discarded by the remote system.
+Currently the driver reads RX and TX subCRQ handle array directly from
+a DMA-mapped buffer address when it needs to make a H_SEND_SUBCRQ
+hcall. This patch stores that information in the ibmvnic_sub_crq_queue
+structure instead of reading from the buffer received at login. The
+overall goal of this patch is so that we can read and save the
+login_rsp buffer within the structure and then remove the buffer.
 
-That's quite brief and not accurate: it was only ignored if 'Xcnt <=
-stream->Xcnt'.
+Signed-off-by: Cristobal Forno <cforno12@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 38 ++++++++++++++++++++----------
+ drivers/net/ethernet/ibm/ibmvnic.h |  1 +
+ 2 files changed, 27 insertions(+), 12 deletions(-)
 
-Other than this and the Fixes tag, LGTM. Passes the tests here. I'll
-ack the v2 then.
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 5afb3c9c52d2..829187182f95 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -306,6 +306,7 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
+ 			      struct ibmvnic_rx_pool *pool)
+ {
+ 	int count = pool->size - atomic_read(&pool->available);
++	u64 handle = adapter->rx_scrq[pool->index]->handle;
+ 	struct device *dev = &adapter->vdev->dev;
+ 	int buffers_added = 0;
+ 	unsigned long lpar_rc;
+@@ -314,7 +315,6 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
+ 	unsigned int offset;
+ 	dma_addr_t dma_addr;
+ 	unsigned char *dst;
+-	u64 *handle_array;
+ 	int shift = 0;
+ 	int index;
+ 	int i;
+@@ -322,10 +322,6 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
+ 	if (!pool->active)
+ 		return;
+ 
+-	handle_array = (u64 *)((u8 *)(adapter->login_rsp_buf) +
+-				      be32_to_cpu(adapter->login_rsp_buf->
+-				      off_rxadd_subcrqs));
+-
+ 	for (i = 0; i < count; ++i) {
+ 		skb = alloc_skb(pool->buff_size, GFP_ATOMIC);
+ 		if (!skb) {
+@@ -369,8 +365,7 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
+ #endif
+ 		sub_crq.rx_add.len = cpu_to_be32(pool->buff_size << shift);
+ 
+-		lpar_rc = send_subcrq(adapter, handle_array[pool->index],
+-				      &sub_crq);
++		lpar_rc = send_subcrq(adapter, handle, &sub_crq);
+ 		if (lpar_rc != H_SUCCESS)
+ 			goto failure;
+ 
+@@ -1524,7 +1519,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	unsigned int offset;
+ 	int num_entries = 1;
+ 	unsigned char *dst;
+-	u64 *handle_array;
++	u64 handle;
+ 	int index = 0;
+ 	u8 proto = 0;
+ 	netdev_tx_t ret = NETDEV_TX_OK;
+@@ -1553,8 +1548,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 
+ 	tx_scrq = adapter->tx_scrq[queue_num];
+ 	txq = netdev_get_tx_queue(netdev, skb_get_queue_mapping(skb));
+-	handle_array = (u64 *)((u8 *)(adapter->login_rsp_buf) +
+-		be32_to_cpu(adapter->login_rsp_buf->off_txsubm_subcrqs));
++	handle = tx_scrq->handle;
+ 
+ 	index = tx_pool->free_map[tx_pool->consumer_index];
+ 
+@@ -1666,14 +1660,14 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 			ret = NETDEV_TX_OK;
+ 			goto tx_err_out;
+ 		}
+-		lpar_rc = send_subcrq_indirect(adapter, handle_array[queue_num],
++		lpar_rc = send_subcrq_indirect(adapter, handle,
+ 					       (u64)tx_buff->indir_dma,
+ 					       (u64)num_entries);
+ 		dma_unmap_single(dev, tx_buff->indir_dma,
+ 				 sizeof(tx_buff->indir_arr), DMA_TO_DEVICE);
+ 	} else {
+ 		tx_buff->num_entries = num_entries;
+-		lpar_rc = send_subcrq(adapter, handle_array[queue_num],
++		lpar_rc = send_subcrq(adapter, handle,
+ 				      &tx_crq);
+ 	}
+ 	if (lpar_rc != H_SUCCESS) {
+@@ -4292,6 +4286,10 @@ static int handle_login_rsp(union ibmvnic_crq *login_rsp_crq,
+ 	struct net_device *netdev = adapter->netdev;
+ 	struct ibmvnic_login_rsp_buffer *login_rsp = adapter->login_rsp_buf;
+ 	struct ibmvnic_login_buffer *login = adapter->login_buf;
++	u64 *tx_handle_array;
++	u64 *rx_handle_array;
++	int num_tx_pools;
++	int num_rx_pools;
+ 	int i;
+ 
+ 	dma_unmap_single(dev, adapter->login_buf_token, adapter->login_buf_sz,
+@@ -4326,6 +4324,22 @@ static int handle_login_rsp(union ibmvnic_crq *login_rsp_crq,
+ 		ibmvnic_remove(adapter->vdev);
+ 		return -EIO;
+ 	}
++
++	num_tx_pools = be32_to_cpu(adapter->login_rsp_buf->num_txsubm_subcrqs);
++	num_rx_pools = be32_to_cpu(adapter->login_rsp_buf->num_rxadd_subcrqs);
++
++	tx_handle_array = (u64 *)((u8 *)(adapter->login_rsp_buf) +
++				  be32_to_cpu(adapter->login_rsp_buf->off_txsubm_subcrqs));
++	rx_handle_array = (u64 *)((u8 *)(adapter->login_rsp_buf) +
++				  be32_to_cpu(adapter->login_rsp_buf->off_rxadd_subcrqs));
++
++	for (i = 0; i < num_tx_pools; i++)
++		adapter->tx_scrq[i]->handle = tx_handle_array[i];
++
++	for (i = 0; i < num_rx_pools; i++)
++		adapter->rx_scrq[i]->handle = rx_handle_array[i];
++
++	release_login_rsp_buffer(adapter);
+ 	release_login_buffer(adapter);
+ 	complete(&adapter->init_done);
+ 
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+index f8416e1d4cf0..d99820212edd 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.h
++++ b/drivers/net/ethernet/ibm/ibmvnic.h
+@@ -875,6 +875,7 @@ struct ibmvnic_sub_crq_queue {
+ 	struct ibmvnic_adapter *adapter;
+ 	atomic_t used;
+ 	char name[32];
++	u64 handle;
+ };
+ 
+ struct ibmvnic_long_term_buff {
+-- 
+2.28.0
 
-> 
-> Fixes 2075e50caf5ea.
-> 
-> Signed-off-by: David Laight <david.laight@aculab.com>
-> ---
->  net/sctp/stream.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> This needs backporting to 5.1 and all later kernels.
-
-A 'net' tree tag in patch tags is welcomed.
-
-> 
-> diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-> index bda2536dd740..6dc95dcc0ff4 100644
-> --- a/net/sctp/stream.c
-> +++ b/net/sctp/stream.c
-> @@ -88,12 +88,13 @@ static int sctp_stream_alloc_out(struct sctp_stream *stream, __u16 outcnt,
->  	int ret;
->  
->  	if (outcnt <= stream->outcnt)
-> -		return 0;
-> +		goto out;
->  
->  	ret = genradix_prealloc(&stream->out, outcnt, gfp);
->  	if (ret)
->  		return ret;
->  
-> +out:
->  	stream->outcnt = outcnt;
->  	return 0;
->  }
-> @@ -104,12 +105,13 @@ static int sctp_stream_alloc_in(struct sctp_stream *stream, __u16 incnt,
->  	int ret;
->  
->  	if (incnt <= stream->incnt)
-> -		return 0;
-> +		goto out;
->  
->  	ret = genradix_prealloc(&stream->in, incnt, gfp);
->  	if (ret)
->  		return ret;
->  
-> +out:
->  	stream->incnt = incnt;
->  	return 0;
->  }
-> -- 
-> 2.25.1
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-> 
