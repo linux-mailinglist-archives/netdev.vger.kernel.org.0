@@ -2,99 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 650C6248BDE
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 18:45:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B168B248BF6
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 18:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728245AbgHRQpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 12:45:08 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:26490 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728230AbgHRQpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 12:45:03 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07IGhufk021143
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 09:45:01 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=facebook;
- bh=uCbEw0zMIkaLhgMxiOrg1zEwe6M/85iawE/FGmZDTrI=;
- b=amaQgC07o1/+ZcoIppiqr5OYJkuA4BpfFY4rmOjUj4WKjrt+X4HiilgvyrvdhWO4JsdV
- EjIne4+lxIZ5kdA1lwXkt15X+NI8YtSZUV6nivvHxXqBMZaFKxKI4Z6L49q1vmq7dn8A
- zrb++9+UZ2+KUmMKALA8maUISsd40GUuDyI= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3304nxknk1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 09:45:01 -0700
-Received: from intmgw003.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 18 Aug 2020 09:45:01 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 615692EC5DE0; Tue, 18 Aug 2020 09:44:58 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] libbpf: fix build on ppc64le architecture
-Date:   Tue, 18 Aug 2020 09:44:56 -0700
-Message-ID: <20200818164456.1181661-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1728214AbgHRQs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 12:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726721AbgHRQsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 12:48:55 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95394C061389;
+        Tue, 18 Aug 2020 09:48:54 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id u6so5893735ybf.1;
+        Tue, 18 Aug 2020 09:48:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1FVN/vdhfkj9uu++nQpjO7/xQUOyX482LKAJmHBQtqs=;
+        b=mgueEoueN7X0W32a57OMhpOjO7p+myebDwrU/k0w2oGsmtRI+F0xwDHTEaZz/p819N
+         tKQgJjbL4AVfwZ2EGe0CEuQR890QFTOz3vPl3DHHvkrl5YIi99eXc4KSEzAPN6i4J+81
+         96yjjGaNwW5tqutypE6P5PQajFi/urRng1MA9IHdmrot5bw0IKICkw95Q71Jvxy3I0Wt
+         rNKwL7JNhsjOBbiydvpjxwDX+nCTvd19Rz9dsYaJHXwhWowNeUh4GZJeAaX0cr3bULea
+         ikh3a6Dkwzt1DzK8leOk2KjDbjybhXg/rkjlvImraX+WRn5MiXmfAXho06nB5Zm0jCsT
+         t15A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1FVN/vdhfkj9uu++nQpjO7/xQUOyX482LKAJmHBQtqs=;
+        b=pIIHC54Y7sl5oO7VmE0vzRUZFcVQuC6cN9RT0R3KLWihj8XWEz17GF6hDNFE+jMCcI
+         jXWvseWAsrq6SKXulVCbySs56SPLw3cQ2mCuh5YoypreiT8iGh8sxEFEzpkfa495Lv/1
+         3s1Vh8Mq9H459LhckYqkCNoYGNAQFx4P2/eU0i+1IkRjVgpoylS96NFKOahV0oxR9hIq
+         lgrrfO6zh1YNcb3Dxd3ophekb2qDNV89VGDap4OBZ1O/XSSloubSZGHvccFNTVpDpn6v
+         HawozxaTXvDfG2HzUnFCnnpVWS9b/hOumsZljb8h3Qfrvheyopb7ofd2mx2zS+SZxsdw
+         grJw==
+X-Gm-Message-State: AOAM531i8vVrZGxUiwe9MCvG/wPqLXFN7r5Ym616kZMxh0YGfgnTv5xN
+        aSLW0bzSgRgRuYGs9wMeKN4GR9KONaYWfJbvRnE=
+X-Google-Smtp-Source: ABdhPJz6lDp1nESPWR3+SI7K+cYnbhnIkU1/J/IjjVIUBuYOrwvUoPCqMtk97dhWtoNZcu5XnfvwqTbMLGAQlDwdzYg=
+X-Received: by 2002:a25:bc50:: with SMTP id d16mr26087623ybk.230.1597769333791;
+ Tue, 18 Aug 2020 09:48:53 -0700 (PDT)
 MIME-Version: 1.0
+References: <20200818162408.836759-1-yhs@fb.com> <20200818162408.836816-1-yhs@fb.com>
+In-Reply-To: <20200818162408.836816-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 18 Aug 2020 09:48:42 -0700
+Message-ID: <CAEf4BzY=YskvOg+cr_XFF42kDWOL3T1mzx=vAoQcS2oAzPOUsQ@mail.gmail.com>
+Subject: Re: [PATCH bpf 1/2] bpf: fix a rcu_sched stall issue with bpf
+ task/task_file iterator
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-18_11:2020-08-18,2020-08-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- impostorscore=0 spamscore=0 bulkscore=0 mlxlogscore=999 clxscore=1015
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 suspectscore=0
- mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008180119
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On ppc64le we get the following warning:
+On Tue, Aug 18, 2020 at 9:26 AM Yonghong Song <yhs@fb.com> wrote:
+>
+> In our production system, we observed rcu stalls when
+> 'bpftool prog` is running.
 
-  In file included from btf_dump.c:16:0:
-  btf_dump.c: In function =E2=80=98btf_dump_emit_struct_def=E2=80=99:
-  ../include/linux/kernel.h:20:17: error: comparison of distinct pointer =
-types lacks a cast [-Werror]
-    (void) (&_max1 =3D=3D &_max2);  \
-                   ^
-  btf_dump.c:882:11: note: in expansion of macro =E2=80=98max=E2=80=99
-      m_sz =3D max(0LL, btf__resolve_size(d->btf, m->type));
-             ^~~
+[...]
 
-Fix by explicitly casting to __s64, which is a return type from
-btf__resolve_size().
+>
+> Note that `bpftool prog` actually calls a task_file bpf iterator
+> program to establish an association between prog/map/link/btf anon
+> files and processes.
+>
+> In the case where the above rcu stall occured, we had a process
+> having 1587 tasks and each task having roughly 81305 files.
+> This implied 129 million bpf prog invocations. Unfortunwtely none of
+> these files are prog/map/link/btf files so bpf iterator/prog needs
+> to traverse all these files and not able to return to user space
+> since there are no seq_file buffer overflow.
+>
+> The fix is to add cond_resched() during traversing tasks
+> and files. So voluntarily releasing cpu gives other tasks, e.g.,
+> rcu resched kthread, a chance to run.
 
-Fixes: 702eddc77a90 ("libbpf: Handle GCC built-in types for Arm NEON")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/btf_dump.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+What are the performance implications of doing this for every task
+and/or file? Have you benchmarked `bpftool prog` before/after? What
+was the difference?
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index fe39bd774697..57c00fa63932 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -879,7 +879,7 @@ static void btf_dump_emit_struct_def(struct btf_dump =
-*d,
- 			btf_dump_printf(d, ": %d", m_sz);
- 			off =3D m_off + m_sz;
- 		} else {
--			m_sz =3D max(0LL, btf__resolve_size(d->btf, m->type));
-+			m_sz =3D max((__s64)0, btf__resolve_size(d->btf, m->type));
- 			off =3D m_off + m_sz * 8;
- 		}
- 		btf_dump_printf(d, ";");
---=20
-2.24.1
+I wonder if it's possible to amortize those cond_resched() and call
+them only ever so often, based on CPU time or number of files/tasks
+processed, if cond_resched() does turn out to slow bpf_iter down.
 
+>
+> Cc: Paul E. McKenney <paulmck@kernel.org>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+>  kernel/bpf/task_iter.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
+> index f21b5e1e4540..885b14cab2c0 100644
+> --- a/kernel/bpf/task_iter.c
+> +++ b/kernel/bpf/task_iter.c
+> @@ -27,6 +27,8 @@ static struct task_struct *task_seq_get_next(struct pid_namespace *ns,
+>         struct task_struct *task = NULL;
+>         struct pid *pid;
+>
+> +       cond_resched();
+> +
+>         rcu_read_lock();
+>  retry:
+>         pid = idr_get_next(&ns->idr, tid);
+> @@ -137,6 +139,8 @@ task_file_seq_get_next(struct bpf_iter_seq_task_file_info *info,
+>         struct task_struct *curr_task;
+>         int curr_fd = info->fd;
+>
+> +       cond_resched();
+> +
+>         /* If this function returns a non-NULL file object,
+>          * it held a reference to the task/files_struct/file.
+>          * Otherwise, it does not hold any reference.
+> --
+> 2.24.1
+>
