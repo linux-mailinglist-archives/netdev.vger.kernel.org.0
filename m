@@ -2,128 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DBDA248504
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 14:45:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB6A124850C
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 14:47:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgHRMo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 08:44:59 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:52702 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726676AbgHRMo7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 08:44:59 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 14E93200A8;
-        Tue, 18 Aug 2020 12:44:58 +0000 (UTC)
-Received: from us4-mdac16-36.at1.mdlocal (unknown [10.110.51.51])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 1353E600A7;
-        Tue, 18 Aug 2020 12:44:58 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.48.234])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A218D220071;
-        Tue, 18 Aug 2020 12:44:57 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        id S1726653AbgHRMra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 08:47:30 -0400
+Received: from mail29.static.mailgun.info ([104.130.122.29]:60070 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726651AbgHRMr0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 08:47:26 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1597754845; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=a6R/W9KIgN7qN5oZwCr+qCvDmiMJowTZkS8J5dJiKGI=;
+ b=p9pnlgL/NAkFMzLJkiwV/APIi+0Do+D7Bjlc9LPqBiJ2cYrbcaeNKQ9+SyF0QwvG/luVAaMN
+ idUC52PW1BPIc/r3IX7ci6ScxE0sc0qe647h2Cdc05VfHU1DX/oYaM96+dtSPCg8J8H5ZHcq
+ GNy6/NIdvgC72tNkylF9DSF84t8=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 5f3bcdd72f4952907dbeb60f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 18 Aug 2020 12:47:19
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 6533FC4339C; Tue, 18 Aug 2020 12:47:19 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 6B42978006B;
-        Tue, 18 Aug 2020 12:44:57 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 18 Aug
- 2020 13:44:53 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net 4/4] sfc: don't free_irq()s if they were never requested
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-References: <d8d6cdfc-7d4f-81ec-8b3e-bc207a2c7d50@solarflare.com>
-Message-ID: <94cf6748-2adb-a85b-9d95-c2dc02fe586e@solarflare.com>
-Date:   Tue, 18 Aug 2020 13:44:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <d8d6cdfc-7d4f-81ec-8b3e-bc207a2c7d50@solarflare.com>
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6F36EC433C6;
+        Tue, 18 Aug 2020 12:47:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6F36EC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25610.005
-X-TM-AS-Result: No-5.273400-8.000000-10
-X-TMASE-MatchedRID: 3xYPTUmvdolvYiFBtKLWhixYq3WqsPihurOlC+PL0QCxLSxkQHtzxt84
-        NUiA4ZF8RshMHFySWyo2ZNtJRz3gK/36sqVF/VZoMIxbvM3AVoh14aBeBfQOLgAheUymmndf035
-        U7xRHgyHJ/hRSI+YUuoo243wxl3VEIeFIFB+CV+wD2WXLXdz+AZ8kBWlYDDNg0SxMhOhuA0RBzv
-        Gtsfv/0T/bLymuCi5PFFGVHCK0F0nxJo5UAYRmglmU3gdLaqKb+eBf9ovw8I2KIo9dsR2z7vi/Q
-        OHQsjAJcZutroCkFkVJPQ34bti/Gvr252PTOmm/RFakFvQb7am6hgVvSdGKo+y9vsxhLmze77Db
-        /s+j3t7i8zVgXoAltkWL4rBlm20vjaPj0W1qn0SyO81X3yak89pWdAlJ0bAmdWYSr9lXkEAlS2i
-        evEPM31ISVucSYrNTt8T/RO37r1h+3BndfXUhXQ==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--5.273400-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25610.005
-X-MDID: 1597754698-P3I2Nat7wpoP
+Subject: Re: [PATCH net-next] brcm80211: fix possible memleak in
+ brcmf_proto_msgbuf_attach
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1595237765-66238-1-git-send-email-wangyufen@huawei.com>
+References: <1595237765-66238-1-git-send-email-wangyufen@huawei.com>
+To:     Wang Yufen <wangyufen@huawei.com>
+Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <brcm80211-dev-list@cypress.com>, <linux-wireless@vger.kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <franky.lin@broadcom.com>, <wright.feng@cypress.com>,
+        Wang Yufen <wangyufen@huawei.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200818124719.6533FC4339C@smtp.codeaurora.org>
+Date:   Tue, 18 Aug 2020 12:47:19 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If efx_nic_init_interrupt fails, or was never run (e.g. due to an earlier
- failure in ef100_net_open), freeing irqs in efx_nic_fini_interrupt is not
- needed and will cause error messages and stack traces.
-So instead, only do this if efx_nic_init_interrupt successfully completed,
- as indicated by the new efx->irqs_hooked flag.
+Wang Yufen <wangyufen@huawei.com> wrote:
 
-Fixes: 965b549f3c20 ("sfc_ef100: implement ndo_open/close and EVQ probing")
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/net_driver.h | 2 ++
- drivers/net/ethernet/sfc/nic.c        | 4 ++++
- 2 files changed, 6 insertions(+)
+> When brcmf_proto_msgbuf_attach fail and msgbuf->txflow_wq != NULL,
+> we should destroy the workqueue.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
 
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index dcb741d8bd11..062462a13847 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -846,6 +846,7 @@ struct efx_async_filter_insertion {
-  * @timer_quantum_ns: Interrupt timer quantum, in nanoseconds
-  * @timer_max_ns: Interrupt timer maximum value, in nanoseconds
-  * @irq_rx_adaptive: Adaptive IRQ moderation enabled for RX event queues
-+ * @irqs_hooked: Channel interrupts are hooked
-  * @irq_rx_mod_step_us: Step size for IRQ moderation for RX event queues
-  * @irq_rx_moderation_us: IRQ moderation time for RX event queues
-  * @msg_enable: Log message enable flags
-@@ -1004,6 +1005,7 @@ struct efx_nic {
- 	unsigned int timer_quantum_ns;
- 	unsigned int timer_max_ns;
- 	bool irq_rx_adaptive;
-+	bool irqs_hooked;
- 	unsigned int irq_mod_step_us;
- 	unsigned int irq_rx_moderation_us;
- 	u32 msg_enable;
-diff --git a/drivers/net/ethernet/sfc/nic.c b/drivers/net/ethernet/sfc/nic.c
-index d994d136bb03..d1e908846f5d 100644
---- a/drivers/net/ethernet/sfc/nic.c
-+++ b/drivers/net/ethernet/sfc/nic.c
-@@ -129,6 +129,7 @@ int efx_nic_init_interrupt(struct efx_nic *efx)
- #endif
- 	}
- 
-+	efx->irqs_hooked = true;
- 	return 0;
- 
-  fail2:
-@@ -154,6 +155,8 @@ void efx_nic_fini_interrupt(struct efx_nic *efx)
- 	efx->net_dev->rx_cpu_rmap = NULL;
- #endif
- 
-+	if (!efx->irqs_hooked)
-+		return;
- 	if (EFX_INT_MODE_USE_MSI(efx)) {
- 		/* Disable MSI/MSI-X interrupts */
- 		efx_for_each_channel(channel, efx)
-@@ -163,6 +166,7 @@ void efx_nic_fini_interrupt(struct efx_nic *efx)
- 		/* Disable legacy interrupt */
- 		free_irq(efx->legacy_irq, efx);
- 	}
-+	efx->irqs_hooked = false;
- }
- 
- /* Register dump */
+Patch applied to wireless-drivers-next.git, thanks.
+
+6c151410d5b5 brcm80211: fix possible memleak in brcmf_proto_msgbuf_attach
+
+-- 
+https://patchwork.kernel.org/patch/11673291/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
