@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D44DB248ABE
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 17:56:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C3EF248AB8
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 17:55:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728355AbgHRP4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 11:56:19 -0400
-Received: from mga11.intel.com ([192.55.52.93]:35749 "EHLO mga11.intel.com"
+        id S1726870AbgHRPzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 11:55:35 -0400
+Received: from mga05.intel.com ([192.55.52.43]:61123 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728183AbgHRPrS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 11:47:18 -0400
-IronPort-SDR: vL9FBaH0TqzJ0GQ11erL/qDWNu9Gl8TR5nz21tju0VQIm3AwwVgBUukPSIDWhddBmSi9LHVFUz
- yQLkUoymPlUw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9716"; a="152563263"
+        id S1728190AbgHRPr1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Aug 2020 11:47:27 -0400
+IronPort-SDR: r7dQqn7+QUSZGBoheLV4Z63jyrzdzBCtFHsYfV5lRwVAwdvYV0UXxKqaKOf2vLBObKXvhjj20v
+ +evYVfM3Bqmg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9716"; a="239764742"
 X-IronPort-AV: E=Sophos;i="5.76,327,1592895600"; 
-   d="scan'208";a="152563263"
+   d="scan'208";a="239764742"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 08:47:18 -0700
-IronPort-SDR: V2LwCJFKDxgzQb5hV91A5IeYw3Ero92nPQ+4CXQK6uEQjJ72/c3Ds8RnGIRtPtb0AlwJEGbUzw
- 4zaYKZhNRABg==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 08:47:24 -0700
+IronPort-SDR: 121Iuk/kNpNnVihru7qa277AOpOByWXGWcz0aX5+kSdpHE1zEwaVpvY85XmcU5zrpdOmcDKv5C
+ 7tu3IVRQwEgA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.76,327,1592895600"; 
-   d="scan'208";a="400530265"
+   d="scan'208";a="400530278"
 Received: from pg-nxl3.altera.com ([10.142.129.93])
-  by fmsmga001.fm.intel.com with ESMTP; 18 Aug 2020 08:47:15 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 18 Aug 2020 08:47:21 -0700
 From:   "Ooi, Joyce" <joyce.ooi@intel.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -37,9 +37,9 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         See Chin Liang <chin.liang.see@intel.com>,
         Dinh Nguyen <dinh.nguyen@intel.com>,
         Dalon Westergreen <dalon.westergreen@intel.com>
-Subject: [PATCH v6 04/10] net: eth: altera: add optional function to start tx dma
-Date:   Tue, 18 Aug 2020 23:46:07 +0800
-Message-Id: <20200818154613.148921-5-joyce.ooi@intel.com>
+Subject: [PATCH v6 05/10] net: eth: altera: Move common functions to altera_utils
+Date:   Tue, 18 Aug 2020 23:46:08 +0800
+Message-Id: <20200818154613.148921-6-joyce.ooi@intel.com>
 X-Mailer: git-send-email 2.13.0
 In-Reply-To: <20200818154613.148921-1-joyce.ooi@intel.com>
 References: <20200818154613.148921-1-joyce.ooi@intel.com>
@@ -50,8 +50,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dalon Westergreen <dalon.westergreen@intel.com>
 
-Allow for optional start up of tx dma if the start_txdma
-function is defined in altera_dmaops.
+Move request_and_map and other shared functions to altera_utils. This
+is the first step to moving common code out of tse specific code so
+that it can be shared with future altera ethernet ip.
 
 Signed-off-by: Dalon Westergreen <dalon.westergreen@intel.com>
 Signed-off-by: Joyce Ooi <joyce.ooi@intel.com>
@@ -63,52 +64,242 @@ v4: no change
 v5: no change
 v6: no change
 ---
- drivers/net/ethernet/altera/altera_tse.h      | 1 +
- drivers/net/ethernet/altera/altera_tse_main.c | 5 +++++
- 2 files changed, 6 insertions(+)
+ drivers/net/ethernet/altera/altera_tse.h         | 45 ---------------------
+ drivers/net/ethernet/altera/altera_tse_ethtool.c |  1 +
+ drivers/net/ethernet/altera/altera_tse_main.c    | 32 +--------------
+ drivers/net/ethernet/altera/altera_utils.c       | 29 ++++++++++++++
+ drivers/net/ethernet/altera/altera_utils.h       | 51 ++++++++++++++++++++++++
+ 5 files changed, 82 insertions(+), 76 deletions(-)
 
 diff --git a/drivers/net/ethernet/altera/altera_tse.h b/drivers/net/ethernet/altera/altera_tse.h
-index 7d0c98fc103e..26c5541fda27 100644
+index 26c5541fda27..fa24ab3c7d6a 100644
 --- a/drivers/net/ethernet/altera/altera_tse.h
 +++ b/drivers/net/ethernet/altera/altera_tse.h
-@@ -401,6 +401,7 @@ struct altera_dmaops {
- 	int (*init_dma)(struct altera_tse_private *priv);
- 	void (*uninit_dma)(struct altera_tse_private *priv);
- 	void (*start_rxdma)(struct altera_tse_private *priv);
-+	void (*start_txdma)(struct altera_tse_private *priv);
- };
+@@ -489,49 +489,4 @@ struct altera_tse_private {
+  */
+ void altera_tse_set_ethtool_ops(struct net_device *);
  
- /* This structure is private to each device.
+-static inline
+-u32 csrrd32(void __iomem *mac, size_t offs)
+-{
+-	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
+-	return readl(paddr);
+-}
+-
+-static inline
+-u16 csrrd16(void __iomem *mac, size_t offs)
+-{
+-	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
+-	return readw(paddr);
+-}
+-
+-static inline
+-u8 csrrd8(void __iomem *mac, size_t offs)
+-{
+-	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
+-	return readb(paddr);
+-}
+-
+-static inline
+-void csrwr32(u32 val, void __iomem *mac, size_t offs)
+-{
+-	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
+-
+-	writel(val, paddr);
+-}
+-
+-static inline
+-void csrwr16(u16 val, void __iomem *mac, size_t offs)
+-{
+-	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
+-
+-	writew(val, paddr);
+-}
+-
+-static inline
+-void csrwr8(u8 val, void __iomem *mac, size_t offs)
+-{
+-	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
+-
+-	writeb(val, paddr);
+-}
+-
+ #endif /* __ALTERA_TSE_H__ */
+diff --git a/drivers/net/ethernet/altera/altera_tse_ethtool.c b/drivers/net/ethernet/altera/altera_tse_ethtool.c
+index 4299f1301149..420d77f00eab 100644
+--- a/drivers/net/ethernet/altera/altera_tse_ethtool.c
++++ b/drivers/net/ethernet/altera/altera_tse_ethtool.c
+@@ -22,6 +22,7 @@
+ #include <linux/phy.h>
+ 
+ #include "altera_tse.h"
++#include "altera_utils.h"
+ 
+ #define TSE_STATS_LEN	31
+ #define TSE_NUM_REGS	128
 diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index a3749ffdcac9..0a724e4d2c8c 100644
+index 0a724e4d2c8c..c9100ce24b0a 100644
 --- a/drivers/net/ethernet/altera/altera_tse_main.c
 +++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -1244,6 +1244,9 @@ static int tse_open(struct net_device *dev)
+@@ -23,7 +23,6 @@
+ #include <linux/if_vlan.h>
+ #include <linux/init.h>
+ #include <linux/interrupt.h>
+-#include <linux/io.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mii.h>
+@@ -33,7 +32,7 @@
+ #include <linux/of_net.h>
+ #include <linux/of_platform.h>
+ #include <linux/phy.h>
+-#include <linux/platform_device.h>
++#include <linux/ptp_classify.h>
+ #include <linux/skbuff.h>
+ #include <asm/cacheflush.h>
  
- 	priv->dmaops->start_rxdma(priv);
+@@ -1320,35 +1319,6 @@ static struct net_device_ops altera_tse_netdev_ops = {
+ 	.ndo_validate_addr	= eth_validate_addr,
+ };
  
-+	if (priv->dmaops->start_txdma)
-+		priv->dmaops->start_txdma(priv);
+-static int request_and_map(struct platform_device *pdev, const char *name,
+-			   struct resource **res, void __iomem **ptr)
+-{
+-	struct resource *region;
+-	struct device *device = &pdev->dev;
+-
+-	*res = platform_get_resource_byname(pdev, IORESOURCE_MEM, name);
+-	if (*res == NULL) {
+-		dev_err(device, "resource %s not defined\n", name);
+-		return -ENODEV;
+-	}
+-
+-	region = devm_request_mem_region(device, (*res)->start,
+-					 resource_size(*res), dev_name(device));
+-	if (region == NULL) {
+-		dev_err(device, "unable to request %s\n", name);
+-		return -EBUSY;
+-	}
+-
+-	*ptr = devm_ioremap(device, region->start,
+-				    resource_size(region));
+-	if (*ptr == NULL) {
+-		dev_err(device, "ioremap of %s failed!", name);
+-		return -ENOMEM;
+-	}
+-
+-	return 0;
+-}
+-
+ /* Probe Altera TSE MAC device
+  */
+ static int altera_tse_probe(struct platform_device *pdev)
+diff --git a/drivers/net/ethernet/altera/altera_utils.c b/drivers/net/ethernet/altera/altera_utils.c
+index e6a7fc9d8fb1..c9bc7d0ea02a 100644
+--- a/drivers/net/ethernet/altera/altera_utils.c
++++ b/drivers/net/ethernet/altera/altera_utils.c
+@@ -31,3 +31,32 @@ int tse_bit_is_clear(void __iomem *ioaddr, size_t offs, u32 bit_mask)
+ 	u32 value = csrrd32(ioaddr, offs);
+ 	return (value & bit_mask) ? 0 : 1;
+ }
 +
- 	/* Start MAC Rx/Tx */
- 	spin_lock(&priv->mac_cfg_lock);
- 	tse_set_mac(priv, true);
-@@ -1646,6 +1649,7 @@ static const struct altera_dmaops altera_dtype_sgdma = {
- 	.init_dma = sgdma_initialize,
- 	.uninit_dma = sgdma_uninitialize,
- 	.start_rxdma = sgdma_start_rxdma,
-+	.start_txdma = NULL,
- };
++int request_and_map(struct platform_device *pdev, const char *name,
++		    struct resource **res, void __iomem **ptr)
++{
++	struct resource *region;
++	struct device *device = &pdev->dev;
++
++	*res = platform_get_resource_byname(pdev, IORESOURCE_MEM, name);
++	if (!*res) {
++		dev_err(device, "resource %s not defined\n", name);
++		return -ENODEV;
++	}
++
++	region = devm_request_mem_region(device, (*res)->start,
++					 resource_size(*res), dev_name(device));
++	if (!region) {
++		dev_err(device, "unable to request %s\n", name);
++		return -EBUSY;
++	}
++
++	*ptr = devm_ioremap(device, region->start,
++			    resource_size(region));
++	if (!*ptr) {
++		dev_err(device, "ioremap of %s failed!", name);
++		return -ENOMEM;
++	}
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/altera/altera_utils.h b/drivers/net/ethernet/altera/altera_utils.h
+index b7d772f2dcbb..fbe985099a44 100644
+--- a/drivers/net/ethernet/altera/altera_utils.h
++++ b/drivers/net/ethernet/altera/altera_utils.h
+@@ -3,7 +3,9 @@
+  * Copyright (C) 2014 Altera Corporation. All rights reserved
+  */
  
- static const struct altera_dmaops altera_dtype_msgdma = {
-@@ -1665,6 +1669,7 @@ static const struct altera_dmaops altera_dtype_msgdma = {
- 	.init_dma = msgdma_initialize,
- 	.uninit_dma = msgdma_uninitialize,
- 	.start_rxdma = msgdma_start_rxdma,
-+	.start_txdma = NULL,
- };
++#include <linux/platform_device.h>
+ #include <linux/kernel.h>
++#include <linux/io.h>
  
- static const struct of_device_id altera_tse_ids[] = {
+ #ifndef __ALTERA_UTILS_H__
+ #define __ALTERA_UTILS_H__
+@@ -12,5 +14,54 @@ void tse_set_bit(void __iomem *ioaddr, size_t offs, u32 bit_mask);
+ void tse_clear_bit(void __iomem *ioaddr, size_t offs, u32 bit_mask);
+ int tse_bit_is_set(void __iomem *ioaddr, size_t offs, u32 bit_mask);
+ int tse_bit_is_clear(void __iomem *ioaddr, size_t offs, u32 bit_mask);
++int request_and_map(struct platform_device *pdev, const char *name,
++		    struct resource **res, void __iomem **ptr);
+ 
++static inline
++u32 csrrd32(void __iomem *mac, size_t offs)
++{
++	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
++
++	return readl(paddr);
++}
++
++static inline
++u16 csrrd16(void __iomem *mac, size_t offs)
++{
++	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
++
++	return readw(paddr);
++}
++
++static inline
++u8 csrrd8(void __iomem *mac, size_t offs)
++{
++	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
++
++	return readb(paddr);
++}
++
++static inline
++void csrwr32(u32 val, void __iomem *mac, size_t offs)
++{
++	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
++
++	writel(val, paddr);
++}
++
++static inline
++void csrwr16(u16 val, void __iomem *mac, size_t offs)
++{
++	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
++
++	writew(val, paddr);
++}
++
++static inline
++void csrwr8(u8 val, void __iomem *mac, size_t offs)
++{
++	void __iomem *paddr = (void __iomem *)((uintptr_t)mac + offs);
++
++	writeb(val, paddr);
++}
+ #endif /* __ALTERA_UTILS_H__*/
 -- 
 2.13.0
 
