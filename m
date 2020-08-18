@@ -2,132 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD31248D44
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 19:36:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED29D248CFA
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 19:32:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728882AbgHRRgc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 18 Aug 2020 13:36:32 -0400
-Received: from wildebeest.demon.nl ([212.238.236.112]:50288 "EHLO
-        gnu.wildebeest.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728532AbgHRRgX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 13:36:23 -0400
-X-Greylist: delayed 381 seconds by postgrey-1.27 at vger.kernel.org; Tue, 18 Aug 2020 13:36:21 EDT
-Received: from tarox.wildebeest.org (tarox.wildebeest.org [172.31.17.39])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by gnu.wildebeest.org (Postfix) with ESMTPSA id 8197F30278CD;
-        Tue, 18 Aug 2020 19:29:56 +0200 (CEST)
-Received: by tarox.wildebeest.org (Postfix, from userid 1000)
-        id 2FDCF401443A; Tue, 18 Aug 2020 19:29:56 +0200 (CEST)
-Message-ID: <c9c4a42ba6b4d36e557a5441e90f7f4961ec3f72.camel@klomp.org>
-Subject: Re: Kernel build error on BTFIDS vmlinux
-From:   Mark Wielaard <mark@klomp.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jiri Olsa <jolsa@redhat.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, sdf@google.com,
-        andriin@fb.com, nickc@redhat.com
-Date:   Tue, 18 Aug 2020 19:29:56 +0200
-In-Reply-To: <20200818183318.2c3fe4a2@carbon>
-References: <20200818105555.51fc6d62@carbon> <20200818091404.GB177896@krava>
-         <20200818105602.GC177896@krava> <20200818134543.GD177896@krava>
-         <20200818183318.2c3fe4a2@carbon>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Mailer: Evolution 3.28.5 (3.28.5-8.el7) 
-Mime-Version: 1.0
+        id S1728624AbgHRRcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 13:32:04 -0400
+Received: from mout.gmx.net ([212.227.15.19]:45577 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728561AbgHRRcA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Aug 2020 13:32:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1597771879;
+        bh=MuzodkzXFlQqlZOXkPhy7wbYV96XJcj5ljN9UAV22AI=;
+        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
+         CC:From;
+        b=bxDdpiJjndCI3UC/MOlheD0Zwd+8I4WIrgbVUKPLJJ4473ryoUygMcTywR689lVo4
+         L5gt8X0boORhnxRKqo+3lqwW0o0CulaGX8SGQ5BVTQ+3XwrxrRo2ZPttzj7lx3WxPR
+         +4czsL3mIigaP5AjunMDCX5IMHl/iY7MJY7tjJY4=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from frank-s9 ([185.53.43.192]) by mail.gmx.com (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MWAOW-1kAvuv1BcY-00XdDL; Tue, 18
+ Aug 2020 19:31:19 +0200
+Date:   Tue, 18 Aug 2020 19:31:01 +0200
+User-Agent: K-9 Mail for Android
+In-Reply-To: <a56f3029b913d31fbd27562b98d485e981815165.1597729692.git.landen.chao@mediatek.com>
+References: <cover.1597729692.git.landen.chao@mediatek.com> <a56f3029b913d31fbd27562b98d485e981815165.1597729692.git.landen.chao@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH net-next v2 3/7] net: dsa: mt7530: Extend device data ready for adding a new hardware
+Reply-to: frank-w@public-files.de
+To:     linux-mediatek@lists.infradead.org,
+        Landen Chao <landen.chao@mediatek.com>, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@savoirfairelinux.com,
+        matthias.bgg@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
+CC:     devicetree@vger.kernel.org, dqfext@gmail.com,
+        netdev@vger.kernel.org, sean.wang@mediatek.com,
+        linux-kernel@vger.kernel.org, opensource@vdorst.com,
+        davem@davemloft.net
+From:   Frank Wunderlich <frank-w@public-files.de>
+Message-ID: <883BB20A-48CD-4B73-9D2F-E5CC21DD2B70@public-files.de>
+X-Provags-ID: V03:K1:RHA4uIrsqvBmFN2vJOdO4H+IjP89S5tlylzz2vL0VK7JvBRx6Zg
+ D2a9/54EsigXuEOoaa6ykZRzsCqJxH8BVSzQlxQMcnlf1RdYxa8ovqah6R/3d2kzFK3PMky
+ x/cq2s51kaoZ9F3ESokT3WIp815pypysw1/mAQehDEoopEiDUrN5JKceIjW34ySZTbyuEpz
+ YTWXV/lC4Hk4rOBll4UJg==
 X-Spam-Flag: NO
-X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=ham autolearn_force=no version=3.4.0
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on gnu.wildebeest.org
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ysoVgdAP2ws=:7hZ0WFuTmv9t+qc2gunHBb
+ ezfwPSqdtyYobAeEzguiyOaA1byPYhC+x84rFOOSNNlvHFl7+2QLMACbva9t0k/h7yfJ2vjjH
+ aD8i25Mq1UGLE7iq1xh9qE59E0st8smtiazLD1OMv01D9dgILIZo5NDXucckz9Cti5yVOYY+u
+ 1dLjMzb5V3CXiujgUabv7fOzEDoBdnUc7mqR4x8ynAIVIXqhiWGMfB0jhE1zAGDqGsNAN/PkI
+ Vs0yW28amGgEw2lIOUS/jPsqSnhI+dclbx2ckHuuVuAqamz+PoOqD+yRVOIH6pAa/9nx1XlCz
+ pgoNaXu0kHuHSAzJRRDqT/KFPjieicTqE2ejiGHjI7YDlifPVzOFT3ctpSIku5+jf0/tpfreP
+ Jyz/9F4yUAMr0frYAbCwwncV9gS7Q5ucivdFLZZPw0MO+y4c5iWpw946WPJGFNa6Oa/BVILqf
+ VQMtGQtqqI9AuypK79mZbw1pjBN5y7l/fGWcKrrLGKV8iUCbaNXhq1PICjTQTAYaE4pRq79v6
+ bLuUHLu8IOQY1SJDpQrEPF3FflBOzDZMVO6Ppt2KStzbc59jGzlXrgBn9sO+v3LkvvJ/lHdgf
+ QF/ej9nebquSZUgMlkVRd1jMr+RlrCrt+g/n24NlJ5d2g1ZkUvNMMI65ZdvuTYmEgS0sDuwCl
+ Bd8Z+zxMiBpCGKsdsaYrx524SQRfOLWABi2YuYT9pOHLkNbgcMX4DgdykiUz46twAY/RIg0Lj
+ zZMyaC3Hmdk9VyEQXuO1r+m6uJOqNx7fZW69PmyWeZNHfzsd2t5If54PdCGVVjoHwHkoM6+1U
+ ANNmoW9MypPAv+8yUWDRcL/4DsuDfRw4C/LPgejZDrdryUmkOG+GzOp1LbLsTZ/64K+/w2F05
+ 9t4Lik0bL/rnBSpb6JUwtmB3tLvNsI/bfoTiw7qFVX5mFk5CY7ROnlOdKx7ksW+xNFkIoX3k2
+ eicVjkRMMvePORhNvVCGIoFWrgYReIB5th+1TktetOteZdmJ3WDFednsZ+01nF4fLg7v7Pxl8
+ j1LuJmsI6ZmdqJwugPfeUJpVyaNQXjZ+9My2maESx8HMA6cUuG6dQJ8ous7Eg2yxkZaBfVEYR
+ mXGOZ7hnhVAU/Qn6Q77IGX4Tg4BcCasVZBMFHLjUpQRLYP3/ByeZGlvUPKPM55Dep4498NMvW
+ IT6oWBUqARVoutnViYuNBshvYsMIfbF4H0mv+P5QmLzyVoA2UKQ5mzzUPyxlFIWrbvmxB6xmT
+ 0EXqjOGY9m4/e8AFST81v0bkWcwfnEPm+sIUh/A==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Just a little typo you've inherited from existing code
 
-Adding Nick, the binutils maintainer, so we can make sure
-binutils/elfutils agree on some ELF section compression corner case.
+>+/* Setup TX circuit incluing relevant PAD and driving */
 
-On Tue, 2020-08-18 at 18:33 +0200, Jesper Dangaard Brouer wrote:
-> On Tue, 18 Aug 2020 15:45:43 +0200
-> Jiri Olsa <jolsa@redhat.com> wrote:
-> 
-> > On Tue, Aug 18, 2020 at 12:56:08PM +0200, Jiri Olsa wrote:
-> > > On Tue, Aug 18, 2020 at 11:14:10AM +0200, Jiri Olsa wrote:  
-> > > > On Tue, Aug 18, 2020 at 10:55:55AM +0200, Jesper Dangaard Brouer wrote:  
-> > > > > 
-> > > > > On latest DaveM net-git tree (06a4ec1d9dc652), after linking (LD vmlinux) the
-> > > > > "BTFIDS vmlinux" fails. Are anybody else experiencing this? Are there already a
-> > > > > fix? (just returned from vacation so not fully up-to-date on ML yet)
-> > > > > 
-> > > > > The tool which is called and error message:
-> > > > >   ./tools/bpf/resolve_btfids/resolve_btfids vmlinux
-> > > > >   FAILED elf_update(WRITE): invalid section alignment  
-> > > > 
-> > > > hi,
-> > > > could you send your .config as well?  
-> > > 
-> > > reproduced.. checking on fix  
-> > 
-> > I discussed this with Mark (cc-ed) it seems to be a problem
-> > with linker when dealing with compressed debug info data,
-> > which is enabled in your .config
-> > 
-> > it works for me when I disable CONFIG_DEBUG_INFO_COMPRESSED option
-> 
-> Thanks for finding this!
-> I confirm that disabling CONFIG_DEBUG_INFO_COMPRESSED fixed the issue.
-> 
-> > Mark will fix this upstream, meanwhile he suggested workaround
-> > we can do in resolve_btfids tool, that I'll try to send shortly
-> 
-> Great!
+including
 
-So, the issue is that there is some confusion about the correct
-alignment of compressed ELF sections.
-
-When an ELF section is compressed using gabi-zlib it contains a header
-(a Elf_Chdr32 or Elf_Chdr64, followed by the compressed data) The
-header explains how the section data is compressed, what the exploded
-size is, what the alignment of that uncompressed data is, etc.
-
-Because of this header the section data should be aligned to 4 (for
-32bit) or 8 (for 64 bit) bytes, but binutils ld sets sh_addralign to 1.
-[*]
-
-elfutils libelf is liberal in what it accepts, and internally fixes up
-the alignment if it is wrong. Which is why we probably didn't see this
-before. But it won't let you write out misaligned data like that. Which
-is slightly confusing, because if you didn't change that section data,
-it is not immediately clear why you are getting an error.
-
-Also if you would decompress the section data to use it and then
-recompress it elfutils libelf would set sh_addralign correctly for you.
-But it won't if you don't use the (uncompressed) data.
-
-The workaround would be to explicitly set the alignment of the
-compressed section before writing out the section. Which is what Jiri
-is now testing.
-
-But it would obviously be better if that wasn't necessary. So I'll try
-to fix libelf so that if it fixes up the alignment when reading the
-compressed data, it also does that when writing out the data again. But
-that would only help for a new version of elfutils.
-
-So it would be nice if binutils ld could also be fixed to write out
-compressed sections with the correct alignment.
-
-Then hopefully if someone has either a new elfutils or a new binutils
-it just works without needing any workarounds.
-
-Cheers,
-
-Mark
-
-[*] If this sounds vaguely familiar then that is because we did have a
-different alignment bug, but for the uncompressed data (which is the
-alignment set in the compression header):
-https://bugzilla.redhat.com/show_bug.cgi?id=1678204
-That bug was about ch_addralign, this bug is about sh_addralign.
+regards Frank
