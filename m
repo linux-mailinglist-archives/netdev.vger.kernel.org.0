@@ -2,113 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51CD3248031
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 10:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3C8F248030
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 10:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbgHRIIf convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 18 Aug 2020 04:08:35 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:60873 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726341AbgHRII3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 04:08:29 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-172-q1b5FOGUNN6Evg-arIgRjA-1; Tue, 18 Aug 2020 09:08:25 +0100
-X-MC-Unique: q1b5FOGUNN6Evg-arIgRjA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Tue, 18 Aug 2020 09:08:24 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 18 Aug 2020 09:08:24 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
-CC:     "'linux-sctp@vger.kernel.org'" <linux-sctp@vger.kernel.org>,
-        'Neil Horman' <nhorman@tuxdriver.com>,
-        "'kent.overstreet@gmail.com'" <kent.overstreet@gmail.com>,
-        'Andrew Morton' <akpm@linux-foundation.org>,
-        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
-Subject: RE: sctp: num_ostreams and max_instreams negotiation
-Thread-Topic: sctp: num_ostreams and max_instreams negotiation
-Thread-Index: AdZyPjABix+HSvLeTmG2b9Vg1HRq1AAFgglgAC9e6TAAZIGjOAAkANEA
-Date:   Tue, 18 Aug 2020 08:08:24 +0000
-Message-ID: <e438e08865a04eac92dde5ba8ce1dbf2@AcuMS.aculab.com>
-References: <9a1bfa6085854387bf98b6171c879b37@AcuMS.aculab.com>
- <868bd24b536345e6a5596f856a0ebe90@AcuMS.aculab.com>
- <0c1621e5da2e41e8905762d0208f9d40@AcuMS.aculab.com>
- <20200817142223.GH3399@localhost.localdomain>
- <20200817143554.GI3399@localhost.localdomain>
-In-Reply-To: <20200817143554.GI3399@localhost.localdomain>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726638AbgHRIId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 04:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47598 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726398AbgHRII2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 04:08:28 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F691C061389;
+        Tue, 18 Aug 2020 01:08:28 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id u128so9583551pfb.6;
+        Tue, 18 Aug 2020 01:08:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=m313s21wEJmxuhmPKtbGUqqWEllj2MTtaFTQwb2enIE=;
+        b=OtufONajKNzIP6gr7YDun/QW3ro9rpD04mkuKT4cs+IerR6bXb0EEfSZrBS86/akD4
+         40cKAY+zckJTFvGRxXLDJV5Q6EKJOWF826rEIUXiuWkZ6++GkoSndNCSw9ZU7GBtrnPJ
+         i7MJyDe0rLgw2grjYZR04unLuVxIcEUuJWxvksVfW0sRqqkrgLpkzBjI8BfX1/iJSifw
+         x6S/P+uJlioFkC+WA1Ir9HVeYPsD6P717k5LZaF9FJcVQv1OrOheoeQGF4fa2YbyLGcB
+         lYGWp9L6RNZmuRKTngHOMi8necWZDhCHsD1I5gDGscs5KYPXc22len0n7aTY2UhIP8u4
+         hx8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=m313s21wEJmxuhmPKtbGUqqWEllj2MTtaFTQwb2enIE=;
+        b=HGzsKhEQK6GjaTuxtmRbBqZ0PsmBO+lmz6VfFuXNkamZbb+iQzYO3+ytHAZupokyqE
+         1okAGiYAahJ/YZt//C5oKFwKaRA+C9t8/vrpzqqoF+scEEysa0/DuG2k/n5XawHNmTFn
+         hB3nQ66U4IjS7cWwmEf0BzZFWl4pi8DmQSIz35bPfhReRr8tjTv7JLbDkNIF7ftPId0Y
+         sFi2ApcFsXDP5wg3V2equSO1Mo7IM9sxT3hH9sqWj48WID8ytcflf54qamuYR/nFfV1A
+         /ijHWGypFzDL9Kvdatb7cxW767yRQQpx+tNtof1GN1RVzJpgwRxZv4SPDOw/RteBuXh0
+         gfMg==
+X-Gm-Message-State: AOAM5319r30R3tDzPV3RyyheTIgNhoaXjlSUlPe6u8S6o4TxTxbW6HYn
+        Adr8cxHkgv/oLqQcmzCaR3E=
+X-Google-Smtp-Source: ABdhPJwQ0ucHp+nnSbkI/I+/r1bCwZGaElzEDSzF9ufRJ5nFtWB5QNUo904wdRubof6ip0h0WAbsIQ==
+X-Received: by 2002:a63:7d3:: with SMTP id 202mr8695071pgh.230.1597738107451;
+        Tue, 18 Aug 2020 01:08:27 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id x28sm23667645pfj.73.2020.08.18.01.08.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Aug 2020 01:08:26 -0700 (PDT)
+Subject: Re: [PATCH v5 1/3] net: introduce helper sendpage_ok() in
+ include/linux/net.h
+To:     Coly Li <colyli@suse.de>, linux-block@vger.kernel.org,
+        linux-nvme@lists.infradead.org
+Cc:     netdev@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
+        Christoph Hellwig <hch@lst.de>, Hannes Reinecke <hare@suse.de>,
+        Jan Kara <jack@suse.com>, Jens Axboe <axboe@kernel.dk>,
+        Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Vlastimil Babka <vbabka@suse.com>
+References: <20200816070814.6806-1-colyli@suse.de>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <66b4f454-dc97-a23e-81d6-0c547dced694@gmail.com>
+Date:   Tue, 18 Aug 2020 01:08:25 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0.001
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200816070814.6806-1-colyli@suse.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcelo Ricardo Leitner
-> Sent: 17 August 2020 15:36
-..
-> > The proper fix here is to move back to the original if() condition,
-> > and put genradix_prealloc() inside it again, as was fa_zero() before.
-> > The if() is not strictly needed, because genradix_prealloc() will
-> > handle it nicely, but it's a nice-to-have optimization anyway.
-> >
-> > Do you want to send a patch?
 
-I can, but my systems aren't really setup for doing it.
-Especially while working from home.
 
-Just deleting the conditionals works for normal connections.
-I don't know what happens if the number of streams is negotiated
-up and down (and up again?) while the connection is active.
+On 8/16/20 12:08 AM, Coly Li wrote:
+> The original problem was from nvme-over-tcp code, who mistakenly uses
+> kernel_sendpage() to send pages allocated by __get_free_pages() without
+> __GFP_COMP flag. Such pages don't have refcount (page_count is 0) on
+> tail pages, sending them by kernel_sendpage() may trigger a kernel panic
+> from a corrupted kernel heap, because these pages are incorrectly freed
+> in network stack as page_count 0 pages.
+> 
+> This patch introduces a helper sendpage_ok(), it returns true if the
+> checking page,
+> - is not slab page: PageSlab(page) is false.
+> - has page refcount: page_count(page) is not zero
+> 
+> All drivers who want to send page to remote end by kernel_sendpage()
+> may use this helper to check whether the page is OK. If the helper does
+> not return true, the driver should try other non sendpage method (e.g.
+> sock_no_sendpage()) to handle the page.
+> 
+>
+> 
+> diff --git a/include/linux/net.h b/include/linux/net.h
+> index d48ff1180879..a807fad31958 100644
+> --- a/include/linux/net.h
+> +++ b/include/linux/net.h
+> @@ -21,6 +21,7 @@
+>  #include <linux/rcupdate.h>
+>  #include <linux/once.h>
+>  #include <linux/fs.h>
+> +#include <linux/mm.h>
+>  #include <linux/sockptr.h>
+>  
+>  #include <uapi/linux/net.h>
+> @@ -286,6 +287,21 @@ do {									\
+>  #define net_get_random_once_wait(buf, nbytes)			\
+>  	get_random_once_wait((buf), (nbytes))
+>  
+> +/*
+> + * E.g. XFS meta- & log-data is in slab pages, or bcache meta
+> + * data pages, or other high order pages allocated by
+> + * __get_free_pages() without __GFP_COMP, which have a page_count
+> + * of 0 and/or have PageSlab() set. We cannot use send_page for
+> + * those, as that does get_page(); put_page(); and would cause
+> + * either a VM_BUG directly, or __page_cache_release a page that
+> + * would actually still be referenced by someone, leading to some
+> + * obscure delayed Oops somewhere else.
+> + */
+> +static inline bool sendpage_ok(struct page *page)
+> +{
+> +	return  (!PageSlab(page) && page_count(page) >= 1);
+> +}
+>
 
-> Note the thread 'Subject: RE: v5.3.12 SCTP Stream Negotiation Problem'
-> though.
+return (A);
 
-The patch you suggested contained a typo:
+Can simply be written :
 
--	if (incnt <= stream->incnt)
--		return 0;
-+	if (incnt > stream->incnt)
-+		goto out;
+return A;
 
-So the 'in' array was never allocated.
+In this case :
 
-The code will still allocate a 'big' array which I think used
-to get shrunk when the value from the peer was processed.
-I suspect the array need not get allocated until after
-that is done (ISTR in process_init).
+return !PageSlab(page) && page_count(page) >= 1;
 
-I also suspect that the genradix lookup is more expensive
-than the sctp code expects.
-I wonder if a straight forward kvmalloc() wouldn't be better.
-You'd actually need kvrealloc().
-
-All the sctp connections we use have a max of 17 streams.
-But if someone allocates 64k and then uses them sparsely
-it still allocates about 700 pages for the genradix arrays.
-
-Also, since the 'gfp' flags are being passed in, I suspect
-the allocate happens in atomic context somewhere.
-I bet allocating 700 pages is very likely to fail!
-Lazy allocation would only require single pages be allocated,
-but would need extra error paths.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+BTW, do you have plans to refine code added with commit a10674bf2406afc2554f9c7d31b2dc65d6a27fd9
+("tcp: detecting the misuse of .sendpage for Slab objects")
