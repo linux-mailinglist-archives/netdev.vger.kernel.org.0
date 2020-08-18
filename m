@@ -2,77 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAB39248E5B
+	by mail.lfdr.de (Postfix) with ESMTP id 5851D248E5A
 	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 20:59:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726745AbgHRS7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 14:59:05 -0400
-Received: from mga17.intel.com ([192.55.52.151]:15613 "EHLO mga17.intel.com"
+        id S1726697AbgHRS7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 14:59:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35910 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726651AbgHRS7D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 14:59:03 -0400
-IronPort-SDR: J2HMOc6BRQu3U7vC8RQ9SBMbbd5Bxf1/kQf2B12Al/gkoTUK5pOpz/zyRV8myk97nZhYyotSmW
- gbRLPgjJO2LQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9717"; a="135056784"
-X-IronPort-AV: E=Sophos;i="5.76,328,1592895600"; 
-   d="scan'208";a="135056784"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 11:58:58 -0700
-IronPort-SDR: xkt5ijKqTdO/rikCt34PLl6yMmwOu+6l8gZyxxaEE5+tKA2iasRtuyh633pS4/CZxUITCTs60B
- zYIipr3Vw8Yw==
-X-IronPort-AV: E=Sophos;i="5.76,328,1592895600"; 
-   d="scan'208";a="471920997"
-Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.158.55])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 11:58:58 -0700
+        id S1726552AbgHRS67 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Aug 2020 14:58:59 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C4441206B5;
+        Tue, 18 Aug 2020 18:58:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597777139;
+        bh=cdDqlxbTJLRPaomvljkcqdnEyM+0X43LsblU5qVipzE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=10yqYHudnQXTl/lRXJhIjD/BGLLpAMZDFa2i3JRLFC8LkAMU/Hkq2cHzaSttmK4yn
+         RXl7puyBg1YHewkND/h2l/hiI+c5MlEPstucK6Cw3T/21tleWqODsTJ2+xAMRvvbHz
+         uKGPav1hrG05rA4NMcpit5Fz1Wf2BXa0gvQ5d5fU=
 Date:   Tue, 18 Aug 2020 11:58:57 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH net 3/4] sfc: null out channel->rps_flow_id after
- freeing it
-Message-ID: <20200818115857.000078e5@intel.com>
-In-Reply-To: <ea34ed03-23e8-568f-ec50-1f238bc0a350@solarflare.com>
-References: <d8d6cdfc-7d4f-81ec-8b3e-bc207a2c7d50@solarflare.com>
-        <ea34ed03-23e8-568f-ec50-1f238bc0a350@solarflare.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Ooi, Joyce" <joyce.ooi@intel.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Dalon Westergreen <dalon.westergreen@linux.intel.com>,
+        Tan Ley Foon <ley.foon.tan@intel.com>,
+        See Chin Liang <chin.liang.see@intel.com>,
+        Dinh Nguyen <dinh.nguyen@intel.com>,
+        Dalon Westergreen <dalon.westergreen@intel.com>
+Subject: Re: [PATCH v6 09/10] net: eth: altera: add msgdma prefetcher
+Message-ID: <20200818115857.78d6b2ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200818154613.148921-10-joyce.ooi@intel.com>
+References: <20200818154613.148921-1-joyce.ooi@intel.com>
+        <20200818154613.148921-10-joyce.ooi@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Edward Cree wrote:
+On Tue, 18 Aug 2020 23:46:12 +0800 Ooi, Joyce wrote:
+> From: Dalon Westergreen <dalon.westergreen@intel.com>
+>=20
+> Add support for the mSGDMA prefetcher.  The prefetcher adds support
+> for a linked list of descriptors in system memory.  The prefetcher
+> feeds these to the mSGDMA dispatcher.
 
-> If an ef100_net_open() fails, ef100_net_stop() may be called without
->  channel->rps_flow_id having been written; thus it may hold the address
->  freed by a previous ef100_net_stop()'s call to efx_remove_filters().
->  This then causes a double-free when efx_remove_filters() is called
->  again, leading to a panic.
-> To prevent this, after freeing it, overwrite it with NULL.
-> 
-> Fixes: a9dc3d5612ce ("sfc_ef100: RX filter table management and related gubbins")
-> Signed-off-by: Edward Cree <ecree@solarflare.com>
-> ---
->  drivers/net/ethernet/sfc/rx_common.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
-> index ef9bca92b0b7..5e29284c89c9 100644
-> --- a/drivers/net/ethernet/sfc/rx_common.c
-> +++ b/drivers/net/ethernet/sfc/rx_common.c
-> @@ -849,6 +849,7 @@ void efx_remove_filters(struct efx_nic *efx)
->  	efx_for_each_channel(channel, efx) {
->  		cancel_delayed_work_sync(&channel->filter_work);
->  		kfree(channel->rps_flow_id);
-> +		channel->rps_flow_id = NULL;
->  	}
->  #endif
->  	down_write(&efx->filter_sem);
-> 
+This generates warnings on 32bit builds:
 
-
+../drivers/net/ethernet/altera/altera_msgdma_prefetcher.c: In function =E2=
+=80=98msgdma_pref_initialize=E2=80=99:
+../drivers/net/ethernet/altera/altera_msgdma_prefetcher.c:97:51: warning: f=
+ormat =E2=80=98%llx=E2=80=99 expects argument of type =E2=80=98long long un=
+signed int=E2=80=99, but argument 4 has type =E2=80=98dma_addr_t=E2=80=99 {=
+aka =E2=80=98unsigned int=E2=80=99} [-Wformat=3D]
+   97 |   netdev_info(priv->dev, "%s: RX Desc mem at 0x%llx\n", __func__,
+      |                                                ~~~^
+      |                                                   |
+      |                                                   long long unsigne=
+d int
+      |                                                %x
+   98 |        priv->pref_rxdescphys);
+      |        ~~~~~~~~~~~~~~~~~~~~~                      =20
+      |            |
+      |            dma_addr_t {aka unsigned int}
+../drivers/net/ethernet/altera/altera_msgdma_prefetcher.c:101:51: warning: =
+format =E2=80=98%llx=E2=80=99 expects argument of type =E2=80=98long long u=
+nsigned int=E2=80=99, but argument 4 has type =E2=80=98dma_addr_t=E2=80=99 =
+{aka =E2=80=98unsigned int=E2=80=99} [-Wformat=3D]
+  101 |   netdev_info(priv->dev, "%s: TX Desc mem at 0x%llx\n", __func__,
+      |                                                ~~~^
+      |                                                   |
+      |                                                   long long unsigne=
+d int
+      |                                                %x
+  102 |        priv->pref_txdescphys);
+      |        ~~~~~~~~~~~~~~~~~~~~~                      =20
+      |            |
+      |            dma_addr_t {aka unsigned int}
