@@ -2,121 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1FD224829F
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 12:10:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B406248310
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 12:33:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbgHRKKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 06:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38874 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726420AbgHRKKg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 06:10:36 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FB7C061389
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 03:10:36 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id 2so17654281qkf.10
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 03:10:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=K44nLHLCzQuJMecWboH9C54UmBPakohQAbAnvZKlIJU=;
-        b=UNG9L9cpgJ+Qx8+CmKvSghq8v0WdN6jNaAbGD8i4Vsr3jOGnzgJ1LVkmadmMC3cLnY
-         h+rbvNKRB4zrp/BH7kujIwqYKyMrQ/yznJ7ssIn0PjgVB8ZSkxPzMzqV96sY2FJxn2I6
-         xX7rLGuW8sDyVfscmhd3u8mtM57gBx8a2mw/TJnqsu+hXG94pqGKWfoyJ2YRMGhRQi4W
-         3XePvzf40fTiNMR+vs/dEc3/vr9qyoZEkrkDxWcrtKcgRuYttqwUXtu+329cIhiar532
-         mRQob5A6VeQCn0kpyHe/Nd0os9sUdQ5laarG5wwjrkubei6WaAYm3NGfsDKhPMp73t7X
-         IhnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=K44nLHLCzQuJMecWboH9C54UmBPakohQAbAnvZKlIJU=;
-        b=Q6r/zQHWHNZXpt5KGJQvKORH/HmAR1VRjutPo8/BfpCuAFSx4hnR1MSIG1AdfoljoE
-         Q0ZcsvFhoLvzN9m/PEDbw80PoMURlEhO/V/sR7I9cHOd4Qaemr2/uDkJRiNJeVYDsIGO
-         HqtKlIKcBT2KcJJS2zJTiOolRZFvcJ/0dWwNNHgJrKYtOaSMRdTT9HecNjYt7SrUHWqC
-         GQboJSxoaL7V1cr1BcunZzKBejnuX6OXv/5BsvEczDbRrF3NlLosJyJN/e8/nX6VUomA
-         mvZ1jBdery22/M2bDE10RJX7Bq5deIFL/SpyZtRjJNA/fadXpRDhMzLLz8QNQJhEsKQ3
-         io5g==
-X-Gm-Message-State: AOAM531H60RObhZisl/11EaYx3DWh5YwTUpXtas1fVLhZnwouI78sKwD
-        LaB/AXE/A2T9PYs0AAdj/yg=
-X-Google-Smtp-Source: ABdhPJzNvhVraJfNijcbgcNuMcjHOwTTaThP97iEc1N8rfE3IsM0gXbCGYs6HsYTe4++ioPCrGIqJQ==
-X-Received: by 2002:a05:620a:13f7:: with SMTP id h23mr16809302qkl.396.1597745435515;
-        Tue, 18 Aug 2020 03:10:35 -0700 (PDT)
-Received: from localhost.localdomain ([50.236.19.102])
-        by smtp.gmail.com with ESMTPSA id 20sm20632139qkh.110.2020.08.18.03.10.32
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Aug 2020 03:10:34 -0700 (PDT)
-From:   xiangxia.m.yue@gmail.com
-To:     dev@openvswitch.org, netdev@vger.kernel.org
-Cc:     pshelar@ovn.org, Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v1 3/3] net: openvswitch: remove unnused keep_flows
-Date:   Tue, 18 Aug 2020 18:09:23 +0800
-Message-Id: <20200818100923.46840-4-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.15.0
-In-Reply-To: <20200818100923.46840-1-xiangxia.m.yue@gmail.com>
-References: <20200818100923.46840-1-xiangxia.m.yue@gmail.com>
+        id S1726689AbgHRKdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 06:33:46 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:58218 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726043AbgHRKd0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 06:33:26 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1597746802;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=tVc5DhRy0m73sc2qGX7U8AY98Dg5sFmMRBAUlIDK2VM=;
+        b=0+NPhxQQFK1oBKTISg10rxq+3Lpy4Iq+1ItSG6EN0Xnns4HwT1rcWyvIQHbpiBpJtXrv/0
+        cexTZiKW+9ygRy8zw+WOTqW+j49+SeElHr2l92Ba97wty6VDyy6QYlhV7cgarvv/XeRBe1
+        ty9b0MIlbgnmvtQBrSC8cDMnhq7xgdPCpGleEuIY1PQd+GKUFk8r8XSBkeoCz2olO1II4I
+        hcUTyqooxdo9chmvidk/mNUHZ95892CWIeMVK+ghxc1r8vKwHBE7xKow0Vr9O1gORgcjUn
+        RfLltju19b3wioAgJGRKDwrD490jiQXDape/J++RjcH7yuqb4tlwWDB9r+nKNw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1597746802;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=tVc5DhRy0m73sc2qGX7U8AY98Dg5sFmMRBAUlIDK2VM=;
+        b=2faXyAoxIGDUb9G4l8Bpjl5fbbGgc3dIyY7EeqN/G82BK8oERWvRo67VIgE4TaMMr33Jbp
+        dkWdRTxZJsm5I+BQ==
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Samuel Zou <zou_wei@huawei.com>, netdev@vger.kernel.org,
+        Petr Machata <petrm@mellanox.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH v4 0/9] ptp: Add generic helper functions
+Date:   Tue, 18 Aug 2020 12:32:42 +0200
+Message-Id: <20200818103251.20421-1-kurt@linutronix.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Hi!
 
-keep_flows was introduced by [1], which used as flag to delete flows or not.
-When rehashing or expanding the table instance, we will not flush the flows.
-Now don't use it anymore, remove it.
+in order to reduce code duplication (and cut'n'paste errors) in the ptp code of
+DSA, Ethernet and Phy drivers, create helper functions and move them to
+ptp_classify. This way all drivers can share the same implementation.
 
-[1] - https://github.com/openvswitch/ovs/commit/acd051f1761569205827dc9b037e15568a8d59f8
-Cc: Pravin B Shelar <pshelar@ovn.org>
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
- net/openvswitch/flow_table.c | 6 ------
- net/openvswitch/flow_table.h | 1 -
- 2 files changed, 7 deletions(-)
+This is version four and contains bugfixes. Implemented as discussed [1] [2]
+[3] [4].
 
-diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index f8a21dd80e72..0473758035b5 100644
---- a/net/openvswitch/flow_table.c
-+++ b/net/openvswitch/flow_table.c
-@@ -166,7 +166,6 @@ static struct table_instance *table_instance_alloc(int new_size)
- 
- 	ti->n_buckets = new_size;
- 	ti->node_ver = 0;
--	ti->keep_flows = false;
- 	get_random_bytes(&ti->hash_seed, sizeof(u32));
- 
- 	return ti;
-@@ -479,9 +478,6 @@ void table_instance_flow_flush(struct flow_table *table,
- {
- 	int i;
- 
--	if (ti->keep_flows)
--		return;
--
- 	for (i = 0; i < ti->n_buckets; i++) {
- 		struct hlist_head *head = &ti->buckets[i];
- 		struct hlist_node *n;
-@@ -598,8 +594,6 @@ static void flow_table_copy_flows(struct table_instance *old,
- 						 lockdep_ovsl_is_held())
- 				table_instance_insert(new, flow);
- 	}
--
--	old->keep_flows = true;
- }
- 
- static struct table_instance *table_instance_rehash(struct table_instance *ti,
-diff --git a/net/openvswitch/flow_table.h b/net/openvswitch/flow_table.h
-index 6e7d4ac59353..d8fb7a3a3dfd 100644
---- a/net/openvswitch/flow_table.h
-+++ b/net/openvswitch/flow_table.h
-@@ -53,7 +53,6 @@ struct table_instance {
- 	struct rcu_head rcu;
- 	int node_ver;
- 	u32 hash_seed;
--	bool keep_flows;
- };
- 
- struct flow_table {
+Previous versions can be found here:
+
+ * https://lkml.kernel.org/netdev/20200723074946.14253-1-kurt@linutronix.de/
+ * https://lkml.kernel.org/netdev/20200727090601.6500-1-kurt@linutronix.de/
+ * https://lkml.kernel.org/netdev/20200730080048.32553-1-kurt@linutronix.de/
+
+Thanks,
+Kurt
+
+Changes sinve v3:
+
+ * Coding style issues (Richard Cochran, Petr Machata)
+ * Add better documentation (Grygorii Strashko)
+ * Fix cpts code (Grygorii Strashko)
+ * Use ntohs() for TI code (Grygorii Strashko)
+ * Add tags
+
+Changes since v2:
+
+ * Make ptp_parse_header() work in all scenarios (Russell King)
+ * Fix msgtype offset for ptp v1 packets
+
+Changes since v1:
+
+ * Fix Kconfig (Richard Cochran)
+ * Include more drivers (Richard Cochran)
+
+[1] - https://lkml.kernel.org/netdev/20200713140112.GB27934@hoboy/
+[2] - https://lkml.kernel.org/netdev/20200720142146.GB16001@hoboy/
+[3] - https://lkml.kernel.org/netdev/20200723074946.14253-1-kurt@linutronix.de/
+[4] - https://lkml.kernel.org/netdev/20200729100257.GX1551@shell.armlinux.org.uk/
+
+Kurt Kanzenbach (9):
+  ptp: Add generic ptp v2 header parsing function
+  ptp: Add generic ptp message type function
+  net: dsa: mv88e6xxx: Use generic helper function
+  mlxsw: spectrum_ptp: Use generic helper function
+  ethernet: ti: am65-cpts: Use generic helper function
+  ethernet: ti: cpts: Use generic helper function
+  net: phy: dp83640: Use generic helper function
+  ptp: ptp_ines: Use generic helper function
+  ptp: Remove unused macro
+
+ drivers/net/dsa/mv88e6xxx/hwtstamp.c          | 59 +++----------
+ .../ethernet/mellanox/mlxsw/spectrum_ptp.c    | 32 ++-----
+ drivers/net/ethernet/ti/am65-cpts.c           | 37 ++------
+ drivers/net/ethernet/ti/cpts.c                | 42 +++------
+ drivers/net/phy/dp83640.c                     | 70 ++++-----------
+ drivers/ptp/ptp_ines.c                        | 88 ++++++-------------
+ include/linux/ptp_classify.h                  | 70 ++++++++++++++-
+ net/core/ptp_classifier.c                     | 30 +++++++
+ 8 files changed, 183 insertions(+), 245 deletions(-)
+
 -- 
-2.23.0
+2.20.1
 
