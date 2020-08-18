@@ -2,40 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42C39248315
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 12:34:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B7D248316
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 12:34:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgHRKeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 06:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726624AbgHRKdb (ORCPT
+        id S1726694AbgHRKeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 06:34:13 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:58352 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726484AbgHRKdb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 06:33:31 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E6BC061344
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 03:33:30 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1597746808;
+        s=2020; t=1597746809;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+ZMUxXva1UnonBim7HrR5QgZlIngVP4NNXBE870xYEA=;
-        b=Husuy4WvaxK2ltYnwvS9TpY1W/hvIYEpOr3YggS9h7A3nW0NQc8jDi9utqh3MA+TxCHD1p
-        zAbghTrnSVRvuX05bruBKs54eBU0DDX2+E3OQOCbuhYiZObHXN9mb2931ddWkVC0D/Rclo
-        spmcriBuN6ugYzvgHr1g1o3oizXiv609Hk2x6gdNX0VOsDbRnUO1t5OC3GF1/xNE/EifGq
-        Dr+trKgJvW08+I7kqUsdSWHMTlSEYhVUC/UM3PZajPfzbJ5SwoP+eXNwIVitisrfAD+4je
-        k8uzpNzgEdZN7iMhuzExZa8vA/8b6BXRXGC2NJFJDnThis/q1yARGjwLEeGm5w==
+        bh=6VrCUVZFBnS+GcQdyP/GgwULlg3idhvphFA/Ayk6BXY=;
+        b=TTIg/w9OeGQ3ndVY4q1cP+l+pBnty3fwqwcBTEyvhK6ognq98Tbd9C3NeAjO7J5WZosRgx
+        vZeCDWMAeBJgYY1e4j02Atu2LsaTeEMyTzP56eueDgvuSmCKi7x/bI12wtFEEZqJcRAwkB
+        cBqO6Gm2Ll8wMpt3vAsaAbP+0aVRrurUyqBmIWCfbDWBdUk0z6InxiWpDr8U7O+Avws+v7
+        fONlhcTEA3nrS0fPdNj1KATJL8XhUvolfsSAMDftKs3/mG3K16n04mcxMqcocC4XFuQbPF
+        HMneNqhv6fIVt9/TPqEjt06D/QPLcjZAG/fma8KZDvykGa44JVfxrESKqj5O/g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1597746808;
+        s=2020e; t=1597746809;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+ZMUxXva1UnonBim7HrR5QgZlIngVP4NNXBE870xYEA=;
-        b=o/GDUadaJXvvLaznn+PS1Zcw2W8a5W9RpPTxsf7e5vgu3A4Iu8yU5XIZLhPfmUlWaMMPU6
-        dwl7ef/sWlbGGyAA==
+        bh=6VrCUVZFBnS+GcQdyP/GgwULlg3idhvphFA/Ayk6BXY=;
+        b=ZDgHNDvzYbkgtniXueC8a2mPrjP3ORXokuYqKKiTxoGomylGrnZsU0/zapVMzA3+HEJizK
+        fUWMpgoBC9eHC9DA==
 To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -51,9 +48,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Petr Machata <petrm@mellanox.com>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v4 6/9] ethernet: ti: cpts: Use generic helper function
-Date:   Tue, 18 Aug 2020 12:32:48 +0200
-Message-Id: <20200818103251.20421-7-kurt@linutronix.de>
+Subject: [PATCH v4 7/9] net: phy: dp83640: Use generic helper function
+Date:   Tue, 18 Aug 2020 12:32:49 +0200
+Message-Id: <20200818103251.20421-8-kurt@linutronix.de>
 In-Reply-To: <20200818103251.20421-1-kurt@linutronix.de>
 References: <20200818103251.20421-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -66,34 +63,90 @@ X-Mailing-List: netdev@vger.kernel.org
 In order to reduce code duplication between ptp drivers, generic helper
 functions were introduced. Use them.
 
-Suggested-by: Grygorii Strashko <grygorii.strashko@ti.com>
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Tested-by: Richard Cochran <richardcochran@gmail.com>
 ---
- drivers/net/ethernet/ti/cpts.c | 42 ++++++++++++----------------------
- 1 file changed, 14 insertions(+), 28 deletions(-)
+ drivers/net/phy/dp83640.c | 70 +++++++++------------------------------
+ 1 file changed, 16 insertions(+), 54 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
-index 7c55d395de2c..ed91916acfcc 100644
---- a/drivers/net/ethernet/ti/cpts.c
-+++ b/drivers/net/ethernet/ti/cpts.c
-@@ -446,41 +446,22 @@ static const struct ptp_clock_info cpts_info = {
- static int cpts_skb_get_mtype_seqid(struct sk_buff *skb, u32 *mtype_seqid)
+diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/dp83640.c
+index 50fb7d16b75a..fc3d747eba55 100644
+--- a/drivers/net/phy/dp83640.c
++++ b/drivers/net/phy/dp83640.c
+@@ -798,51 +798,32 @@ static int decode_evnt(struct dp83640_private *dp83640,
+ 	return parsed;
+ }
+ 
+-#define DP83640_PACKET_HASH_OFFSET	20
+ #define DP83640_PACKET_HASH_LEN		10
+ 
+ static int match(struct sk_buff *skb, unsigned int type, struct rxts *rxts)
  {
- 	unsigned int ptp_class = ptp_classify_raw(skb);
--	u8 *msgtype, *data = skb->data;
 -	unsigned int offset = 0;
--	u16 *seqid;
+-	u8 *msgtype, *data = skb_mac_header(skb);
+-	__be16 *seqid;
 +	struct ptp_header *hdr;
 +	u8 msgtype;
 +	u16 seqid;
+ 	u16 hash;
  
- 	if (ptp_class == PTP_CLASS_NONE)
- 		return 0;
+ 	/* check sequenceID, messageType, 12 bit hash of offset 20-29 */
  
--	if (ptp_class & PTP_CLASS_VLAN)
+-	if (type & PTP_CLASS_VLAN)
 -		offset += VLAN_HLEN;
 -
--	switch (ptp_class & PTP_CLASS_PMASK) {
+-	switch (type & PTP_CLASS_PMASK) {
+-	case PTP_CLASS_IPV4:
+-		offset += ETH_HLEN + IPV4_HLEN(data + offset) + UDP_HLEN;
+-		break;
+-	case PTP_CLASS_IPV6:
+-		offset += ETH_HLEN + IP6_HLEN + UDP_HLEN;
+-		break;
+-	case PTP_CLASS_L2:
+-		offset += ETH_HLEN;
+-		break;
+-	default:
++	hdr = ptp_parse_header(skb, type);
++	if (!hdr)
+ 		return 0;
+-	}
+ 
+-	if (skb->len + ETH_HLEN < offset + OFF_PTP_SEQUENCE_ID + sizeof(*seqid))
+-		return 0;
++	msgtype = ptp_get_msgtype(hdr, type);
+ 
+-	if (unlikely(type & PTP_CLASS_V1))
+-		msgtype = data + offset + OFF_PTP_CONTROL;
+-	else
+-		msgtype = data + offset;
+-	if (rxts->msgtype != (*msgtype & 0xf))
++	if (rxts->msgtype != (msgtype & 0xf))
+ 		return 0;
+ 
+-	seqid = (__be16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
+-	if (rxts->seqid != ntohs(*seqid))
++	seqid = be16_to_cpu(hdr->sequence_id);
++	if (rxts->seqid != seqid)
+ 		return 0;
+ 
+ 	hash = ether_crc(DP83640_PACKET_HASH_LEN,
+-			 data + offset + DP83640_PACKET_HASH_OFFSET) >> 20;
++			 (unsigned char *)&hdr->source_port_identity) >> 20;
+ 	if (rxts->hash != hash)
+ 		return 0;
+ 
+@@ -982,35 +963,16 @@ static void decode_status_frame(struct dp83640_private *dp83640,
+ 
+ static int is_sync(struct sk_buff *skb, int type)
+ {
+-	u8 *data = skb->data, *msgtype;
+-	unsigned int offset = 0;
+-
+-	if (type & PTP_CLASS_VLAN)
+-		offset += VLAN_HLEN;
+-
+-	switch (type & PTP_CLASS_PMASK) {
 -	case PTP_CLASS_IPV4:
 -		offset += ETH_HLEN + IPV4_HLEN(data + offset) + UDP_HLEN;
 -		break;
@@ -107,38 +160,24 @@ index 7c55d395de2c..ed91916acfcc 100644
 -		return 0;
 -	}
 -
--	if (skb->len + ETH_HLEN < offset + OFF_PTP_SEQUENCE_ID + sizeof(*seqid))
-+	hdr = ptp_parse_header(skb, ptp_class);
+-	if (type & PTP_CLASS_V1)
+-		offset += OFF_PTP_CONTROL;
++	struct ptp_header *hdr;
++	u8 msgtype;
+ 
+-	if (skb->len < offset + 1)
++	hdr = ptp_parse_header(skb, type);
 +	if (!hdr)
  		return 0;
  
--	if (unlikely(ptp_class & PTP_CLASS_V1))
--		msgtype = data + offset + OFF_PTP_CONTROL;
--	else
--		msgtype = data + offset;
-+	msgtype = ptp_get_msgtype(hdr, ptp_class);
-+	seqid	= ntohs(hdr->sequence_id);
+-	msgtype = data + offset;
++	msgtype = ptp_get_msgtype(hdr, type);
  
--	seqid = (u16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
--	*mtype_seqid = (*msgtype & MESSAGE_TYPE_MASK) << MESSAGE_TYPE_SHIFT;
--	*mtype_seqid |= (ntohs(*seqid) & SEQUENCE_ID_MASK) << SEQUENCE_ID_SHIFT;
-+	*mtype_seqid  = (msgtype & MESSAGE_TYPE_MASK) << MESSAGE_TYPE_SHIFT;
-+	*mtype_seqid |= (seqid & SEQUENCE_ID_MASK) << SEQUENCE_ID_SHIFT;
- 
- 	return 1;
+-	return (*msgtype & 0xf) == 0;
++	return (msgtype & 0xf) == 0;
  }
-@@ -528,7 +509,11 @@ void cpts_rx_timestamp(struct cpts *cpts, struct sk_buff *skb)
- 	int ret;
- 	u64 ns;
  
-+	/* cpts_rx_timestamp() is called before eth_type_trans(), so
-+	 * skb MAC Hdr properties are not configured yet. Hence need to
-+	 * reset skb MAC header here
-+	 */
-+	skb_reset_mac_header(skb);
- 	ret = cpts_skb_get_mtype_seqid(skb, &skb_cb->skb_mtype_seqid);
- 	if (!ret)
- 		return;
+ static void dp83640_free_clocks(void)
 -- 
 2.20.1
 
