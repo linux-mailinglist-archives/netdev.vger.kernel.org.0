@@ -2,94 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D7F9248F48
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 22:00:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DFCC248F51
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 22:03:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726909AbgHRUAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 16:00:55 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59842 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726675AbgHRUAy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 16:00:54 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k87mu-009yS5-Hi; Tue, 18 Aug 2020 22:00:52 +0200
-Date:   Tue, 18 Aug 2020 22:00:52 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Awogbemila <awogbemila@google.com>
-Cc:     netdev@vger.kernel.org, Kuo Zhao <kuozhao@google.com>,
-        Yangchun Fu <yangchun@google.com>
-Subject: Re: [PATCH net-next 01/18] gve: Get and set Rx copybreak via ethtool
-Message-ID: <20200818200052.GJ2330298@lunn.ch>
-References: <20200818194417.2003932-1-awogbemila@google.com>
- <20200818194417.2003932-2-awogbemila@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200818194417.2003932-2-awogbemila@google.com>
+        id S1726836AbgHRUDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 16:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726763AbgHRUDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 16:03:10 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09BBBC061342
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 13:03:09 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 80308127AA57F;
+        Tue, 18 Aug 2020 12:46:22 -0700 (PDT)
+Date:   Tue, 18 Aug 2020 13:03:07 -0700 (PDT)
+Message-Id: <20200818.130307.1315751913363152890.davem@davemloft.net>
+To:     ganji.aravind@chelsio.com
+Cc:     netdev@vger.kernel.org, vishal@chelsio.com,
+        rahul.lakkireddy@chelsio.com
+Subject: Re: [PATCH net 0/2]cxgb4: Fix ethtool selftest flits calculation
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200818154058.1770002-1-ganji.aravind@chelsio.com>
+References: <20200818154058.1770002-1-ganji.aravind@chelsio.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 18 Aug 2020 12:46:22 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 12:44:00PM -0700, David Awogbemila wrote:
-> From: Kuo Zhao <kuozhao@google.com>
+From: Ganji Aravind <ganji.aravind@chelsio.com>
+Date: Tue, 18 Aug 2020 21:10:56 +0530
+
+> Patch 1 will fix work request size calculation for loopback selftest.
 > 
-> This adds support for getting and setting the RX copybreak
-> value via ethtool.
-> 
-> Reviewed-by: Yangchun Fu <yangchun@google.com>
-> Signed-off-by: Kuo Zhao <kuozhao@google.com>
-> Signed-off-by: David Awogbemila <awogbemila@google.com>
-> ---
->  drivers/net/ethernet/google/gve/gve_ethtool.c | 34 +++++++++++++++++++
->  1 file changed, 34 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-> index d8fa816f4473..469d3332bcd6 100644
-> --- a/drivers/net/ethernet/google/gve/gve_ethtool.c
-> +++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-> @@ -230,6 +230,38 @@ static int gve_user_reset(struct net_device *netdev, u32 *flags)
->  	return -EOPNOTSUPP;
->  }
+> Patch 2 will fix race between loopback selftest and normal Tx handler.
 
+Series applied.
 
-Hi David.
-
-> +static int gve_get_tunable(struct net_device *netdev,
-> +			   const struct ethtool_tunable *etuna, void *value)
-> +{
-> +	struct gve_priv *priv = netdev_priv(netdev);
-> +
-> +	switch (etuna->id) {
-> +	case ETHTOOL_RX_COPYBREAK:
-> +		*(u32 *)value = priv->rx_copybreak;
-> +		return 0;
-> +	default:
-> +		return -EINVAL;
-
-EOPNOTSUPP would be better. Other tunables are not invalid, they are
-simply not supported by this driver.
-
-> +	}
-> +}
-> +
-> +static int gve_set_tunable(struct net_device *netdev,
-> +			   const struct ethtool_tunable *etuna, const void *value)
-> +{
-> +	struct gve_priv *priv = netdev_priv(netdev);
-> +	u32 len;
-> +
-> +	switch (etuna->id) {
-> +	case ETHTOOL_RX_COPYBREAK:
-> +		len = *(u32 *)value;
-> +		if (len > PAGE_SIZE / 2)
-> +			return -EINVAL;
-> +		priv->rx_copybreak = len;
-> +		return 0;
-> +	default:
-> +		return -EINVAL;
-
-Same here.
-
-     Andrew
+Thanks for the review Jesse.
