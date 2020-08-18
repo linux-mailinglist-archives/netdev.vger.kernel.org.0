@@ -2,93 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC101248484
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 14:11:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 235D62484B8
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 14:28:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726807AbgHRMKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 08:10:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33764 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726688AbgHRMKG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 08:10:06 -0400
-Received: from localhost (104.sub-72-107-126.myvzw.com [72.107.126.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D470A204EA;
-        Tue, 18 Aug 2020 12:10:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597752606;
-        bh=124vr7K2HrRgvr5UQMbnrfHKbMJ19rh68+CacxvRWTM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=VCIZQMYUYcPWTY/ckM7+ntjG/hidUg2a3gG8TJPxzSCmU5CpEE/lKI2ix4LRQ9exs
-         At8rKWgr0glSzTik65t1LzZubXyi7fHQw/1TX2gXpt3FXi2dsSQD3UR/jZUP6rdUHh
-         xqjSSy78pwBkDQ2gRnZhQ1hRi32P9K+7uetakSYk=
-Date:   Tue, 18 Aug 2020 07:10:04 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 03/11] mlxsw: spectrum_policer: Add policer core
-Message-ID: <20200818121004.GA1491413@bjorn-Precision-5520>
+        id S1726729AbgHRM15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 08:27:57 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:9836 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726336AbgHRM1z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Aug 2020 08:27:55 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id C640E5F3FC3BC6CABC40;
+        Tue, 18 Aug 2020 20:27:51 +0800 (CST)
+Received: from huawei.com (10.175.104.175) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Tue, 18 Aug 2020
+ 20:27:41 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <idryomov@gmail.com>, <jlayton@kernel.org>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <grandmaster@al2klimov.de>
+CC:     <ceph-devel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
+Subject: [PATCH] libceph: Convert to use the preferred fallthrough macro
+Date:   Tue, 18 Aug 2020 08:26:37 -0400
+Message-ID: <20200818122637.21449-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87wo1we1li.fsf@nvidia.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.175]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 11:37:45AM +0200, Petr Machata wrote:
-> Ido Schimmel <idosch@idosch.org> writes:
-> > On Mon, Aug 17, 2020 at 10:38:24AM -0500, Bjorn Helgaas wrote:
-> >> You've likely seen this already, but Coverity found this problem:
-> >> 
-> >>   *** CID 1466147:  Control flow issues  (DEADCODE)
-> >>   /drivers/net/ethernet/mellanox/mlxsw/spectrum_policer.c: 380 in mlxsw_sp_policers_init()
-> >>   374     	}
-> >>   375     
-> >>   376     	return 0;
-> >>   377     
-> >>   378     err_family_register:
-> >>   379     	for (i--; i >= 0; i--) {
-> >>   >>>     CID 1466147:  Control flow issues  (DEADCODE)
-> >>   >>>     Execution cannot reach this statement: "struct mlxsw_sp_policer_fam...".
-> >>   380     		struct mlxsw_sp_policer_family *family;
-> >>   381     
-> >>   382     		family = mlxsw_sp->policer_core->family_arr[i];
-> >>   383     		mlxsw_sp_policer_family_unregister(mlxsw_sp, family);
-> >>   384     	}
-> >>   385     err_init:
-> >> 
-> >> I think the problem is that MLXSW_SP_POLICER_TYPE_MAX is 0 because
-> >> 
-> >> > +enum mlxsw_sp_policer_type {
-> >> > +	MLXSW_SP_POLICER_TYPE_SINGLE_RATE,
-> >> > +
-> >> > +	__MLXSW_SP_POLICER_TYPE_MAX,
-> >> > +	MLXSW_SP_POLICER_TYPE_MAX = __MLXSW_SP_POLICER_TYPE_MAX - 1,
-> >> > +};
-> >> 
-> >> so we can only execute the family_register loop once, with i == 0,
-> >> and if we get to err_family_register via the error exit:
-> >> 
-> >> > +	for (i = 0; i < MLXSW_SP_POLICER_TYPE_MAX + 1; i++) {
-> >> > +		err = mlxsw_sp_policer_family_register(mlxsw_sp, mlxsw_sp_policer_family_arr[i]);
-> >> > +		if (err)
-> >> > +			goto err_family_register;
-> >> 
-> >> i will be 0, so i-- sets i to -1, so we don't enter the
-> >> family_unregister loop body since -1 is not >= 0.
-> >
-> > Thanks for the report, but isn't the code doing the right thing here? I
-> > mean, it's dead code now, but as soon as we add another family it will
-> > be executed. It seems error prone to remove it only to please Coverity
-> > and then add it back when it's actually needed.
-> 
-> Agreed.
+Convert the uses of fallthrough comments to fallthrough macro.
 
-You're right, I missed the forest for the trees.  Sorry for the noise.
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ net/ceph/ceph_hash.c    | 20 ++++++++++----------
+ net/ceph/crush/mapper.c |  2 +-
+ net/ceph/messenger.c    |  4 ++--
+ net/ceph/mon_client.c   |  2 +-
+ net/ceph/osd_client.c   |  4 ++--
+ 5 files changed, 16 insertions(+), 16 deletions(-)
 
-Bjorn
+diff --git a/net/ceph/ceph_hash.c b/net/ceph/ceph_hash.c
+index 81e1e006c540..16a47c0eef37 100644
+--- a/net/ceph/ceph_hash.c
++++ b/net/ceph/ceph_hash.c
+@@ -50,35 +50,35 @@ unsigned int ceph_str_hash_rjenkins(const char *str, unsigned int length)
+ 	switch (len) {
+ 	case 11:
+ 		c = c + ((__u32)k[10] << 24);
+-		/* fall through */
++		fallthrough;
+ 	case 10:
+ 		c = c + ((__u32)k[9] << 16);
+-		/* fall through */
++		fallthrough;
+ 	case 9:
+ 		c = c + ((__u32)k[8] << 8);
+ 		/* the first byte of c is reserved for the length */
+-		/* fall through */
++		fallthrough;
+ 	case 8:
+ 		b = b + ((__u32)k[7] << 24);
+-		/* fall through */
++		fallthrough;
+ 	case 7:
+ 		b = b + ((__u32)k[6] << 16);
+-		/* fall through */
++		fallthrough;
+ 	case 6:
+ 		b = b + ((__u32)k[5] << 8);
+-		/* fall through */
++		fallthrough;
+ 	case 5:
+ 		b = b + k[4];
+-		/* fall through */
++		fallthrough;
+ 	case 4:
+ 		a = a + ((__u32)k[3] << 24);
+-		/* fall through */
++		fallthrough;
+ 	case 3:
+ 		a = a + ((__u32)k[2] << 16);
+-		/* fall through */
++		fallthrough;
+ 	case 2:
+ 		a = a + ((__u32)k[1] << 8);
+-		/* fall through */
++		fallthrough;
+ 	case 1:
+ 		a = a + k[0];
+ 		/* case 0: nothing left to add */
+diff --git a/net/ceph/crush/mapper.c b/net/ceph/crush/mapper.c
+index 07e5614eb3f1..7057f8db4f99 100644
+--- a/net/ceph/crush/mapper.c
++++ b/net/ceph/crush/mapper.c
+@@ -987,7 +987,7 @@ int crush_do_rule(const struct crush_map *map,
+ 		case CRUSH_RULE_CHOOSELEAF_FIRSTN:
+ 		case CRUSH_RULE_CHOOSE_FIRSTN:
+ 			firstn = 1;
+-			/* fall through */
++			fallthrough;
+ 		case CRUSH_RULE_CHOOSELEAF_INDEP:
+ 		case CRUSH_RULE_CHOOSE_INDEP:
+ 			if (wsize == 0)
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index 27d6ab11f9ee..bdfd66ba3843 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -412,7 +412,7 @@ static void ceph_sock_state_change(struct sock *sk)
+ 	switch (sk->sk_state) {
+ 	case TCP_CLOSE:
+ 		dout("%s TCP_CLOSE\n", __func__);
+-		/* fall through */
++		fallthrough;
+ 	case TCP_CLOSE_WAIT:
+ 		dout("%s TCP_CLOSE_WAIT\n", __func__);
+ 		con_sock_state_closing(con);
+@@ -2751,7 +2751,7 @@ static int try_read(struct ceph_connection *con)
+ 			switch (ret) {
+ 			case -EBADMSG:
+ 				con->error_msg = "bad crc/signature";
+-				/* fall through */
++				fallthrough;
+ 			case -EBADE:
+ 				ret = -EIO;
+ 				break;
+diff --git a/net/ceph/mon_client.c b/net/ceph/mon_client.c
+index 3d8c8015e976..d633a0aeaa55 100644
+--- a/net/ceph/mon_client.c
++++ b/net/ceph/mon_client.c
+@@ -1307,7 +1307,7 @@ static struct ceph_msg *mon_alloc_msg(struct ceph_connection *con,
+ 		 * request had a non-zero tid.  Work around this weirdness
+ 		 * by allocating a new message.
+ 		 */
+-		/* fall through */
++		fallthrough;
+ 	case CEPH_MSG_MON_MAP:
+ 	case CEPH_MSG_MDS_MAP:
+ 	case CEPH_MSG_OSD_MAP:
+diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+index e4fbcad6e7d8..7901ab6c79fd 100644
+--- a/net/ceph/osd_client.c
++++ b/net/ceph/osd_client.c
+@@ -3854,7 +3854,7 @@ static void scan_requests(struct ceph_osd *osd,
+ 			if (!force_resend && !force_resend_writes)
+ 				break;
+ 
+-			/* fall through */
++			fallthrough;
+ 		case CALC_TARGET_NEED_RESEND:
+ 			cancel_linger_map_check(lreq);
+ 			/*
+@@ -3891,7 +3891,7 @@ static void scan_requests(struct ceph_osd *osd,
+ 			     !force_resend_writes))
+ 				break;
+ 
+-			/* fall through */
++			fallthrough;
+ 		case CALC_TARGET_NEED_RESEND:
+ 			cancel_map_check(req);
+ 			unlink_request(osd, req);
+-- 
+2.19.1
+
