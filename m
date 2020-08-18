@@ -2,46 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08578248F86
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 22:15:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55EF4248F87
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 22:17:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726466AbgHRUPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 16:15:03 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59890 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725554AbgHRUPD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 16:15:03 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k880b-009ydn-Lg; Tue, 18 Aug 2020 22:15:01 +0200
-Date:   Tue, 18 Aug 2020 22:15:01 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Awogbemila <awogbemila@google.com>
-Cc:     netdev@vger.kernel.org, Catherine Sullivan <csully@google.com>,
-        Yangchun Fu <yangchun@google.com>
-Subject: Re: [PATCH net-next 04/18] gve: Add support for dma_mask register
-Message-ID: <20200818201501.GL2330298@lunn.ch>
+        id S1726592AbgHRUQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 16:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725767AbgHRUQ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 16:16:58 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96192C061389
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 13:16:58 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 17193127B3373;
+        Tue, 18 Aug 2020 13:00:12 -0700 (PDT)
+Date:   Tue, 18 Aug 2020 13:16:57 -0700 (PDT)
+Message-Id: <20200818.131657.963549389331033291.davem@davemloft.net>
+To:     awogbemila@google.com
+Cc:     netdev@vger.kernel.org, sagis@google.com, yangchun@google.com
+Subject: Re: [PATCH net-next 06/18] gve: Batch AQ commands for creating and
+ destroying queues.
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200818194417.2003932-7-awogbemila@google.com>
 References: <20200818194417.2003932-1-awogbemila@google.com>
- <20200818194417.2003932-5-awogbemila@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200818194417.2003932-5-awogbemila@google.com>
+        <20200818194417.2003932-7-awogbemila@google.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 18 Aug 2020 13:00:12 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 12:44:03PM -0700, David Awogbemila wrote:
-> From: Catherine Sullivan <csully@google.com>
-> 
-> Add the dma_mask register and read it to set the dma_masks.
-> gve_alloc_page will alloc_page with:
->  GFP_DMA if priv->dma_mask is 24,
->  GFP_DMA32 if priv->dma_mask is 32.
+From: David Awogbemila <awogbemila@google.com>
+Date: Tue, 18 Aug 2020 12:44:05 -0700
 
-This needs reviewing by somebody who knows this stuff. My limited
-understanding is the core should take care of most of this, so long as
-you tell it of any device restrictions.
+> -int gve_adminq_execute_cmd(struct gve_priv *priv,
+> -			   union gve_adminq_command *cmd_orig)
+> +static int gve_adminq_issue_cmd(struct gve_priv *priv,
+> +				union gve_adminq_command *cmd_orig)
+>  {
+>  	union gve_adminq_command *cmd;
+> +	u32 tail;
+>  	u32 opcode;
 
-    Andrew
+Please use reverse christmas tree ordering for local variables.
+
+Thanks.
