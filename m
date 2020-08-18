@@ -2,197 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F107248EFA
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 21:46:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F55B248EE8
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 21:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726939AbgHRTqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 15:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45418 "EHLO
+        id S1726819AbgHRTpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 15:45:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726763AbgHRTov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 15:44:51 -0400
+        with ESMTP id S1726790AbgHRToz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 15:44:55 -0400
 Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC50C061389
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:44:51 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id f5so13565261pfe.2
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:44:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC3AC061389
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:44:54 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id b142so13579517pfb.9
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:44:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=NWdyNvsC5gPH455/7zlQJ4yPgaW+4MtM61fOXZENfYI=;
-        b=jHAPxQxGdtHPcEjR+anN3sEjeI3+XbwGlk/rmjQDuflOqRChCP0Kn6lH3mPZtVEGIQ
-         YdYdGynTeoolLIWbwnp6Elc3N4v990K+YH/UJSyZy1lO95QZ7Fapi2DnyvsTbxQNSkPs
-         pQ/K/g1ozU3ee7tqydSO7LH7ghsyqBP7kIhdHxOLKxTCKR8bd3hx1NR3gU7WLiC1OqaF
-         wR6PT5OydJkqCzBAbLbUSSAlmZnYt+UM9SieMr+h60r6rC1JDd0vQBzJMrew3KtIZ7Iv
-         IZ/6Fy9wV8MEp2+MjYOxWzyMDy38uQHsXEtumNpQnJhZRv40gn3H0IlTXqVQfdCS04Pj
-         ygOw==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=y2+qRE+LFQJI7tt5mQPQVpc5mJBAldwHxgYDQuWUzro=;
+        b=qnyT9tKrwtGw/BPVHtAMyDuq05h7DkAS+h+kFsnueXMFw7WDpTjfo74TtgFKHXjkxF
+         +0OPI5Uuhrgswwtj5cUJm/VqkIOshL6gu2YDBhlsX2UNNHMtLL8pk4skGD+JKx+Vnis7
+         oXJYjWZdp/gZAj+Wp//q7eKIeMa2m6DU4jPdHpKI6n22kysf6X2H9g41Z91SXB6vL1uf
+         dXzuGSbJ84QhuQUhIECcmKA3ohtom6P+/eDIy0gmmNSILILAGQOSocWH6yiNb1yrXqyM
+         oKLhk69sx8aHcQ1XLdPq3rwbpV7Xg/H/JabU0RBUcP5nwLMxiKTsAtrLejlyhDuTDQli
+         0y+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=NWdyNvsC5gPH455/7zlQJ4yPgaW+4MtM61fOXZENfYI=;
-        b=DX73tJrWiED54OLbXRYwlNe0JH73ZInfK8mwE+hk0KU2zKUuFLSPg/CBysDpqBj8CZ
-         t5L1I6275UpMJbHzNcdyRZP215HO10m04JhHgRvXzLETAGiCzdGhJFeoy/5b41ABfy9R
-         en/DiWU961NxMovdS+qAGNEBwEldy8mLZiUuQCliAP1qbFP1NhUN/vaikluSz/5+E/9I
-         KVcZ9gOMKV/aiibbB0FLey2nOde8VF5nYaHxfFsgSPbCmyFtCFsR6u/qtpBZCi3TM2Y5
-         7kRM1V8A64tfJqcVV7QqZ2eKiNipRMzlyzVe8vmoErArQbMjCJrMmO8FahDKpSgNq+hP
-         f+6g==
-X-Gm-Message-State: AOAM5313w/MCa2x3f7oKvyusFky/BMa2xzraJXHGg9M3KVQTXnePkKXQ
-        aj02YPQOcb/wWTAkLf5VUFjKDA2Xtq1g481lNPnjccbL1iVgqTeHNKf/1hrHEhQHStVnvq7LkNf
-        2CohStjql6J7eJ/Ah/FRz1TLVdDGs5OPiaRiaYx/C3jLQy7e512EJh9Ax6x1qElLo+Il7Xqba
-X-Google-Smtp-Source: ABdhPJwJorN+tuQ805EX2+PCx5musL5ZS2H98VVf8SLY5wN0uUt1G8rSfn1gd91HynWst7Xl76j7x7HBOb3GvLl+
-X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:1ea0:b8ff:fe73:6cc0])
- (user=awogbemila job=sendgmr) by 2002:a17:90a:ccd:: with SMTP id
- 13mr1165138pjt.123.1597779890733; Tue, 18 Aug 2020 12:44:50 -0700 (PDT)
-Date:   Tue, 18 Aug 2020 12:44:07 -0700
+        bh=y2+qRE+LFQJI7tt5mQPQVpc5mJBAldwHxgYDQuWUzro=;
+        b=RyYo8eBMLoeFFXyNwAokGBQcA6H1UDH3VBs8VL1ngt/zirYrF9lDmjmRXzekL6Ijgb
+         H+QnEbjmBsjOrMA3TWduqfDxIwFZCG0ahKxlzuo6gbjXOf1lxRow8M0ECCUmBUwiTEx0
+         uk7wkjZ4hf2CITuXPoGJWAMMypyFAFgsKzdCHRN1nnoSXTVjTOLr+RxHbiEG5OHgwbaR
+         V+NZj7hIeMh1dRKWuRphjUwyGwCU4kYs/rwqSUgUe1azJVQUS3WmBwPpkXHMpSdbPcdK
+         8a3jHp8L69HeCUl7WtFb0EV0p3pHIjRED0U1WWSrJ71Hkix2e8jJD5/QMBULRnohwo0H
+         A9Lw==
+X-Gm-Message-State: AOAM533NGPmUiGz+ANR17zIzXbVOIWcSE25vPAsYAeRQdmn18z8HH0hW
+        TLZdNtovEmzUixe5OOM/E6ZSaqxRONFOPuBlFc/ERdF6LGY0O3zlzUNA9siFCJCMYuKAuP4d0pw
+        ODJb4NoY1+v6j2PMnvyg9VApk+75v5SwDICQA2+kmGsgHyzWb0g4o/bbGZkjaYxL7IEt3Vz8E
+X-Google-Smtp-Source: ABdhPJylBnXt/XJ42WbST+/u9eYCdIk0WnQroffA2br14sUSE58Bl2ICKF885J8DUJreYomCsMc4Q7drVB0gUNIo
+X-Received: by 2002:aa7:9813:: with SMTP id e19mr16503254pfl.285.1597779894215;
+ Tue, 18 Aug 2020 12:44:54 -0700 (PDT)
+Date:   Tue, 18 Aug 2020 12:44:08 -0700
 In-Reply-To: <20200818194417.2003932-1-awogbemila@google.com>
-Message-Id: <20200818194417.2003932-9-awogbemila@google.com>
+Message-Id: <20200818194417.2003932-10-awogbemila@google.com>
 Mime-Version: 1.0
 References: <20200818194417.2003932-1-awogbemila@google.com>
 X-Mailer: git-send-email 2.28.0.220.ged08abb693-goog
-Subject: [PATCH net-next 08/18] gve: Enable Link Speed Reporting in the driver.
+Subject: [PATCH net-next 09/18] gve: Add support for raw addressing device option
 From:   David Awogbemila <awogbemila@google.com>
 To:     netdev@vger.kernel.org
-Cc:     David Awogbemila <awogbemila@google.com>,
-        Yangchun Fu <yangchun@google.com>
+Cc:     Catherine Sullivan <csully@google.com>,
+        Yangchun Fu <yangchun@google.com>,
+        David Awogbemila <awogbemila@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change allows the driver to report the device link speed
-when the ethtool command:
-	ethtool <nic name>
-is run.
-Getting the link speed is done via a new admin queue command:
-ReportLinkSpeed.
+From: Catherine Sullivan <csully@google.com>
+
+Add support to describe device for parsing device options. As
+the first device option, add raw addressing.
+
+"Raw Addressing" mode (as opposed to the current "qpl" mode) is an
+operational mode which allows the driver avoid bounce buffer copies
+which it currently performs using pre-allocated qpls (queue_page_lists)
+when sending and receiving packets. For egress packets the provided
+skb buffer addresses are dma_map'ed and passed to the device. This
+means that the device can perform DMA directly from these addresses
+and the driver does not have to copy the buffer content into
+pre-allocated buffers/qpls (as in qpl mode). For ingress packets copies
+are also eliminated as buffers are recycled or newly allocated as
+necessary.
+
+Also add the necessary priv field to track the enablement status.
 
 Reviewed-by: Yangchun Fu <yangchun@google.com>
+Signed-off-by: Catherine Sullivan <csully@google.com>
 Signed-off-by: David Awogbemila <awogbemila@google.com>
 ---
- drivers/net/ethernet/google/gve/gve.h         |  3 +++
- drivers/net/ethernet/google/gve/gve_adminq.c  | 27 +++++++++++++++++++
- drivers/net/ethernet/google/gve/gve_adminq.h  |  9 +++++++
- drivers/net/ethernet/google/gve/gve_ethtool.c | 11 ++++++++
- 4 files changed, 50 insertions(+)
+ drivers/net/ethernet/google/gve/gve.h        |  1 +
+ drivers/net/ethernet/google/gve/gve_adminq.c | 49 +++++++++++++++++++-
+ drivers/net/ethernet/google/gve/gve_adminq.h | 15 ++++--
+ drivers/net/ethernet/google/gve/gve_main.c   |  9 ++++
+ 4 files changed, 69 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index bc54059f9b2e..0f5871af36af 100644
+index 0f5871af36af..50565516d1fe 100644
 --- a/drivers/net/ethernet/google/gve/gve.h
 +++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -252,6 +252,9 @@ struct gve_priv {
- 	unsigned long service_timer_period;
- 	struct timer_list service_timer;
+@@ -199,6 +199,7 @@ struct gve_priv {
+ 	u64 num_registered_pages; /* num pages registered with NIC */
+ 	u32 rx_copybreak; /* copy packets smaller than this */
+ 	u16 default_num_queues; /* default num queues to set up */
++	bool raw_addressing; /* true if this dev supports raw addressing */
  
-+	/* Gvnic device link speed from hypervisor. */
-+	u64 link_speed;
-+
-   /* Gvnic device's dma mask, set during probe. */
- 	u8 dma_mask;
- };
+ 	struct gve_queue_config tx_cfg;
+ 	struct gve_queue_config rx_cfg;
 diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
-index 023e6f804972..cf5eaab1cb83 100644
+index cf5eaab1cb83..cf5d172bec83 100644
 --- a/drivers/net/ethernet/google/gve/gve_adminq.c
 +++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-@@ -596,3 +596,30 @@ int gve_adminq_report_stats(struct gve_priv *priv, u64 stats_report_len,
- 	return gve_adminq_execute_cmd(priv, &cmd);
- }
+@@ -456,11 +456,14 @@ int gve_adminq_destroy_rx_queues(struct gve_priv *priv, u32 num_queues)
+ int gve_adminq_describe_device(struct gve_priv *priv)
+ {
+ 	struct gve_device_descriptor *descriptor;
++	struct gve_device_option *dev_opt;
+ 	union gve_adminq_command cmd;
+ 	dma_addr_t descriptor_bus;
++	u16 num_options;
+ 	int err = 0;
+ 	u8 *mac;
+ 	u16 mtu;
++	int i;
  
-+int gve_adminq_report_link_speed(struct gve_priv *priv)
-+{
-+	union gve_adminq_command gvnic_cmd;
-+	dma_addr_t link_speed_region_bus;
-+	u64 *link_speed_region;
-+	int err;
+ 	memset(&cmd, 0, sizeof(cmd));
+ 	descriptor = dma_alloc_coherent(&priv->pdev->dev, PAGE_SIZE,
+@@ -510,10 +513,54 @@ int gve_adminq_describe_device(struct gve_priv *priv)
+ 	priv->rx_pages_per_qpl = be16_to_cpu(descriptor->rx_pages_per_qpl);
+ 	if (priv->rx_pages_per_qpl < priv->rx_desc_cnt) {
+ 		dev_err(&priv->pdev->dev, "rx_pages_per_qpl cannot be smaller than rx_desc_cnt, setting rx_desc_cnt down to %d.\n",
+-			priv->rx_pages_per_qpl);
++			  priv->rx_pages_per_qpl);
+ 		priv->rx_desc_cnt = priv->rx_pages_per_qpl;
+ 	}
+ 	priv->default_num_queues = be16_to_cpu(descriptor->default_num_queues);
++	dev_opt = (struct gve_device_option *)((void *)descriptor +
++							sizeof(*descriptor));
 +
-+	link_speed_region =
-+		dma_alloc_coherent(&priv->pdev->dev, sizeof(*link_speed_region),
-+				   &link_speed_region_bus, GFP_KERNEL);
++	num_options = be16_to_cpu(descriptor->num_device_options);
++	for (i = 0; i < num_options; i++) {
++		u16 option_length = be16_to_cpu(dev_opt->option_length);
++		u16 option_id = be16_to_cpu(dev_opt->option_id);
 +
-+	if (!link_speed_region)
-+		return -ENOMEM;
++		if ((void *)dev_opt + sizeof(*dev_opt) + option_length > (void *)descriptor +
++				      be16_to_cpu(descriptor->total_length)) {
++			dev_err(&priv->dev->dev,
++				"options exceed device_descriptor's total length.\n");
++			err = -EINVAL;
++			goto free_device_descriptor;
++		}
 +
-+	memset(&gvnic_cmd, 0, sizeof(gvnic_cmd));
-+	gvnic_cmd.opcode = cpu_to_be32(GVE_ADMINQ_REPORT_LINK_SPEED);
-+	gvnic_cmd.report_link_speed.link_speed_address =
-+		cpu_to_be64(link_speed_region_bus);
-+
-+	err = gve_adminq_execute_cmd(priv, &gvnic_cmd);
-+
-+	priv->link_speed = be64_to_cpu(*link_speed_region);
-+	dma_free_coherent(&priv->pdev->dev, sizeof(*link_speed_region), link_speed_region,
-+			  link_speed_region_bus);
-+	return err;
-+}
-+
++		switch (option_id) {
++		case GVE_DEV_OPT_ID_RAW_ADDRESSING:
++			/* If the length or feature mask doesn't match,
++			 * continue without enabling the feature.
++			 */
++			if (option_length != GVE_DEV_OPT_LEN_RAW_ADDRESSING ||
++			    be32_to_cpu(dev_opt->feat_mask) !=
++			    GVE_DEV_OPT_FEAT_MASK_RAW_ADDRESSING) {
++				dev_info(&priv->pdev->dev,
++					 "Raw addressing device option not enabled, length or features mask did not match expected.\n");
++				priv->raw_addressing = false;
++			} else {
++				dev_info(&priv->pdev->dev,
++					 "Raw addressing device option enabled.\n");
++				priv->raw_addressing = true;
++			}
++			break;
++		default:
++			/* If we don't recognize the option just continue
++			 * without doing anything.
++			 */
++			dev_info(&priv->pdev->dev,
++				 "Unrecognized device option 0x%hx not enabled.\n",
++				   option_id);
++			break;
++		}
++		dev_opt = (void *)dev_opt + sizeof(*dev_opt) + option_length;
++	}
+ 
+ free_device_descriptor:
+ 	dma_free_coherent(&priv->pdev->dev, sizeof(*descriptor), descriptor,
 diff --git a/drivers/net/ethernet/google/gve/gve_adminq.h b/drivers/net/ethernet/google/gve/gve_adminq.h
-index 784830f75b7c..281de8326bc5 100644
+index 281de8326bc5..af5f586167bd 100644
 --- a/drivers/net/ethernet/google/gve/gve_adminq.h
 +++ b/drivers/net/ethernet/google/gve/gve_adminq.h
-@@ -22,6 +22,7 @@ enum gve_adminq_opcodes {
- 	GVE_ADMINQ_DECONFIGURE_DEVICE_RESOURCES	= 0x9,
- 	GVE_ADMINQ_SET_DRIVER_PARAMETER		= 0xB,
- 	GVE_ADMINQ_REPORT_STATS			= 0xC,
-+	GVE_ADMINQ_REPORT_LINK_SPEED	= 0xD
+@@ -79,12 +79,17 @@ struct gve_device_descriptor {
+ 
+ static_assert(sizeof(struct gve_device_descriptor) == 40);
+ 
+-struct device_option {
+-	__be32 option_id;
+-	__be32 option_length;
++struct gve_device_option {
++	__be16 option_id;
++	__be16 option_length;
++	__be32 feat_mask;
  };
  
- /* Admin queue status codes */
-@@ -181,6 +182,12 @@ struct gve_adminq_report_stats {
- 
- static_assert(sizeof(struct gve_adminq_report_stats) == 24);
- 
-+struct gve_adminq_report_link_speed {
-+	__be64 link_speed_address;
-+};
+-static_assert(sizeof(struct device_option) == 8);
++static_assert(sizeof(struct gve_device_option) == 8);
 +
-+static_assert(sizeof(struct gve_adminq_report_link_speed) == 8);
++#define GVE_DEV_OPT_ID_RAW_ADDRESSING 0x1
++#define GVE_DEV_OPT_LEN_RAW_ADDRESSING 0x0
++#define GVE_DEV_OPT_FEAT_MASK_RAW_ADDRESSING 0x0
+ 
+ struct gve_adminq_configure_device_resources {
+ 	__be64 counter_array;
+@@ -111,6 +116,8 @@ struct gve_adminq_unregister_page_list {
+ 
+ static_assert(sizeof(struct gve_adminq_unregister_page_list) == 4);
+ 
++#define GVE_RAW_ADDRESSING_QPL_ID 0xFFFFFFFF
 +
- struct stats {
- 	__be32 stat_name;
+ struct gve_adminq_create_tx_queue {
  	__be32 queue_id;
-@@ -228,6 +235,7 @@ union gve_adminq_command {
- 			struct gve_adminq_unregister_page_list unreg_page_list;
- 			struct gve_adminq_set_driver_parameter set_driver_param;
- 			struct gve_adminq_report_stats report_stats;
-+			struct gve_adminq_report_link_speed report_link_speed;
- 		};
- 	};
- 	u8 reserved[64];
-@@ -255,4 +263,5 @@ int gve_adminq_unregister_page_list(struct gve_priv *priv, u32 page_list_id);
- int gve_adminq_set_mtu(struct gve_priv *priv, u64 mtu);
- int gve_adminq_report_stats(struct gve_priv *priv, u64 stats_report_len,
- 			    dma_addr_t stats_report_addr, u64 interval);
-+int gve_adminq_report_link_speed(struct gve_priv *priv);
- #endif /* _GVE_ADMINQ_H */
-diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-index 9d778e04b9f4..8bc8383558d8 100644
---- a/drivers/net/ethernet/google/gve/gve_ethtool.c
-+++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-@@ -509,6 +509,16 @@ static int gve_set_priv_flags(struct net_device *netdev, u32 flags)
- 	return 0;
- }
+ 	__be32 reserved;
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index 685f18697fc1..3e9b69747370 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -678,6 +678,10 @@ static int gve_alloc_qpls(struct gve_priv *priv)
+ 	int i, j;
+ 	int err;
  
-+static int gve_get_link_ksettings(struct net_device *netdev,
-+				  struct ethtool_link_ksettings *cmd)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+	int err = gve_adminq_report_link_speed(priv);
++	/* Raw addressing means no QPLs */
++	if (priv->raw_addressing)
++		return 0;
 +
-+	cmd->base.speed = priv->link_speed;
-+	return err;
-+}
+ 	priv->qpls = kvzalloc(num_qpls * sizeof(*priv->qpls), GFP_KERNEL);
+ 	if (!priv->qpls)
+ 		return -ENOMEM;
+@@ -718,6 +722,10 @@ static void gve_free_qpls(struct gve_priv *priv)
+ 	int num_qpls = gve_num_tx_qpls(priv) + gve_num_rx_qpls(priv);
+ 	int i;
+ 
++	/* Raw addressing means no QPLs */
++	if (priv->raw_addressing)
++		return;
 +
- const struct ethtool_ops gve_ethtool_ops = {
- 	.get_drvinfo = gve_get_drvinfo,
- 	.get_strings = gve_get_strings,
-@@ -525,4 +535,5 @@ const struct ethtool_ops gve_ethtool_ops = {
- 	.set_tunable = gve_set_tunable,
- 	.get_priv_flags = gve_get_priv_flags,
- 	.set_priv_flags = gve_set_priv_flags,
-+	.get_link_ksettings = gve_get_link_ksettings
- };
+ 	kvfree(priv->qpl_cfg.qpl_id_map);
+ 
+ 	for (i = 0; i < num_qpls; i++)
+@@ -1075,6 +1083,7 @@ static int gve_init_priv(struct gve_priv *priv, bool skip_describe_device)
+ 	if (skip_describe_device)
+ 		goto setup_device;
+ 
++	priv->raw_addressing = false;
+ 	/* Get the initial information we need from the device */
+ 	err = gve_adminq_describe_device(priv);
+ 	if (err) {
 -- 
 2.28.0.220.ged08abb693-goog
 
