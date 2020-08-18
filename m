@@ -2,83 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB6A124850C
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 14:47:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FBC124850F
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 14:47:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726653AbgHRMra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 08:47:30 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:60070 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726651AbgHRMr0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 08:47:26 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1597754845; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=a6R/W9KIgN7qN5oZwCr+qCvDmiMJowTZkS8J5dJiKGI=;
- b=p9pnlgL/NAkFMzLJkiwV/APIi+0Do+D7Bjlc9LPqBiJ2cYrbcaeNKQ9+SyF0QwvG/luVAaMN
- idUC52PW1BPIc/r3IX7ci6ScxE0sc0qe647h2Cdc05VfHU1DX/oYaM96+dtSPCg8J8H5ZHcq
- GNy6/NIdvgC72tNkylF9DSF84t8=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 5f3bcdd72f4952907dbeb60f (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 18 Aug 2020 12:47:19
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6533FC4339C; Tue, 18 Aug 2020 12:47:19 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6F36EC433C6;
-        Tue, 18 Aug 2020 12:47:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6F36EC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726786AbgHRMr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 08:47:57 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48308 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726635AbgHRMr4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Aug 2020 08:47:56 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 69CAAAD60;
+        Tue, 18 Aug 2020 12:48:19 +0000 (UTC)
+From:   Coly Li <colyli@suse.de>
+To:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, open-iscsi@googlegroups.com,
+        linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Coly Li <colyli@suse.de>,
+        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
+        Chris Leech <cleech@redhat.com>,
+        Christoph Hellwig <hch@lst.de>, Cong Wang <amwang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hannes Reinecke <hare@suse.de>,
+        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.com>,
+        Jeff Layton <jlayton@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Lee Duncan <lduncan@suse.com>,
+        Mike Christie <michaelc@cs.wisc.edu>,
+        Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Sagi Grimberg <sagi@grimberg.me>, stable@vger.kernel.org,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Vlastimil Babka <vbabka@suse.com>
+Subject: [PATCH v6 0/6] Introduce sendpage_ok() to detect misused sendpage in network related drivers
+Date:   Tue, 18 Aug 2020 20:47:30 +0800
+Message-Id: <20200818124736.5790-1-colyli@suse.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH net-next] brcm80211: fix possible memleak in
- brcmf_proto_msgbuf_attach
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1595237765-66238-1-git-send-email-wangyufen@huawei.com>
-References: <1595237765-66238-1-git-send-email-wangyufen@huawei.com>
-To:     Wang Yufen <wangyufen@huawei.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <brcm80211-dev-list@cypress.com>, <linux-wireless@vger.kernel.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <franky.lin@broadcom.com>, <wright.feng@cypress.com>,
-        Wang Yufen <wangyufen@huawei.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200818124719.6533FC4339C@smtp.codeaurora.org>
-Date:   Tue, 18 Aug 2020 12:47:19 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wang Yufen <wangyufen@huawei.com> wrote:
+This series was original by a bug fix in nvme-over-tcp driver which only
+checked whether a page was allocated from slab allcoator, but forgot to
+check its page_count: The page handled by sendpage should be neither a
+Slab page nor 0 page_count page.
 
-> When brcmf_proto_msgbuf_attach fail and msgbuf->txflow_wq != NULL,
-> we should destroy the workqueue.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+As Sagi Grimberg suggested, the original fix is refind to a more common
+inline routine:
+    static inline bool sendpage_ok(struct page *page)
+    {
+    	return  (!PageSlab(page) && page_count(page) >= 1);
+    }
+If sendpage_ok() returns true, the checking page can be handled by the
+zero copy sendpage method in network layer.
 
-Patch applied to wireless-drivers-next.git, thanks.
+The first patch in this series introduces sendpage_ok() in header file
+include/linux/net.h, the second patch fixes the page checking issue in
+nvme-over-tcp driver, the third patch adds page_count check by using
+sendpage_ok() in do_tcp_sendpages() as Eric Dumazet suggested, and all
+rested patches just replace existing open coded checks with the inline
+sendpage_ok() routine.
 
-6c151410d5b5 brcm80211: fix possible memleak in brcmf_proto_msgbuf_attach
+Coly Li
+
+Cc: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
+Cc: Chris Leech <cleech@redhat.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Cong Wang <amwang@redhat.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Hannes Reinecke <hare@suse.de>
+Cc: Ilya Dryomov <idryomov@gmail.com>
+Cc: Jan Kara <jack@suse.com>
+Cc: Jeff Layton <jlayton@kernel.org>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: Lee Duncan <lduncan@suse.com>
+Cc: Mike Christie <michaelc@cs.wisc.edu>
+Cc: Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>
+Cc: Philipp Reisner <philipp.reisner@linbit.com>
+Cc: Sagi Grimberg <sagi@grimberg.me>
+Cc: stable@vger.kernel.org
+Cc: Vasily Averin <vvs@virtuozzo.com>
+Cc: Vlastimil Babka <vbabka@suse.com>
+---
+Changelog:
+v6: fix page check in do_tcp_sendpages(), and replace other open coded
+    checks with sendpage_ok() in libceph, iscsi drivers.
+v5, include linux/mm.h in include/linux/net.h
+v4, change sendpage_ok() as an inline helper, and post it as
+    separate patch.
+v3, introduce a more common sendpage_ok()
+v2, fix typo in patch subject
+v1, the initial version.
+
+Coly Li (6):
+  net: introduce helper sendpage_ok() in include/linux/net.h
+  nvme-tcp: check page by sendpage_ok() before calling kernel_sendpage()
+  tcp: use sendpage_ok() to detect misused .sendpage
+  drbd: code cleanup by using sendpage_ok() to check page for
+    kernel_sendpage()
+  scsi: libiscsi: use sendpage_ok() in iscsi_tcp_segment_map()
+  libceph: use sendpage_ok() in ceph_tcp_sendpage()
+
+ drivers/block/drbd/drbd_main.c |  2 +-
+ drivers/nvme/host/tcp.c        |  7 +++----
+ drivers/scsi/libiscsi_tcp.c    |  2 +-
+ include/linux/net.h            | 16 ++++++++++++++++
+ net/ceph/messenger.c           |  2 +-
+ net/ipv4/tcp.c                 |  3 ++-
+ 6 files changed, 24 insertions(+), 8 deletions(-)
 
 -- 
-https://patchwork.kernel.org/patch/11673291/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.26.2
 
