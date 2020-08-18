@@ -2,183 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37CC62481A6
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 11:15:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1F46248197
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 11:14:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbgHRJPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 05:15:23 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:60682 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726203AbgHRJPT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 05:15:19 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 07I9DP2v034473;
-        Tue, 18 Aug 2020 09:14:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : in-reply-to : message-id : references : mime-version :
- content-type; s=corp-2020-01-29;
- bh=bODkJj/SYYVTqZjf0h99hHqVYgZyhbZHfVzYRtKndNU=;
- b=cDzWxBOzDAfGmrlVpBY8U6MQrsSXYJfpVti+6XDdX+NuNmdKl9krxmYmOOy2BK6BSjuf
- Mik21QRTyeKmrMvFf+2JIzIta1HnByz5R3UEnDk5PkomJlUrARRB1r+VUcKpn9XsqMvg
- IROz1n6dPLMP8JSFUuRzqGPVCq8NDBkygRzH/7ais2DCMhZ+WrR+JnLIuOFXlOgfVG9z
- 26IwEw9JE56qQcp50xZ5Iyh1D4A0y7MBOICPkXj9IEd3Ag3Tc4foTuvyYEwQbrA4Uy8S
- 2Sl2ENDNYQ31o4I6+3QD37w+n1Vt8fNkPU4G2byj0td/YfZUn+xC2QlKjinp2inv5utO fA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 32x7nmbjkt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 18 Aug 2020 09:14:26 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 07I98Cv1084323;
-        Tue, 18 Aug 2020 09:12:25 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 32xsfrmy3v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 18 Aug 2020 09:12:24 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 07I9CK7A026936;
-        Tue, 18 Aug 2020 09:12:20 GMT
-Received: from dhcp-10-175-204-131.vpn.oracle.com (/10.175.204.131)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 18 Aug 2020 02:12:19 -0700
-Date:   Tue, 18 Aug 2020 10:12:05 +0100 (IST)
-From:   Alan Maguire <alan.maguire@oracle.com>
-X-X-Sender: alan@localhost
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-cc:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org,
-        daniel@iogearbox.net, andriin@fb.com, yhs@fb.com,
-        linux@rasmusvillemoes.dk, andriy.shevchenko@linux.intel.com,
-        pmladek@suse.com, kafai@fb.com, songliubraving@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org, shuah@kernel.org,
-        rdna@fb.com, scott.branden@broadcom.com, quentin@isovalent.com,
-        cneirabustos@gmail.com, jakub@cloudflare.com, mingo@redhat.com,
-        rostedt@goodmis.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [RFC PATCH bpf-next 2/4] bpf: make BTF show support generic,
- apply to seq files/bpf_trace_printk
-In-Reply-To: <20200814170120.q5gcmlapm7aldmzg@ast-mbp.dhcp.thefacebook.com>
-Message-ID: <alpine.LRH.2.21.2008180945380.3461@localhost>
-References: <1596724945-22859-1-git-send-email-alan.maguire@oracle.com> <1596724945-22859-3-git-send-email-alan.maguire@oracle.com> <20200813014616.6enltdpq6hzlri6r@ast-mbp.dhcp.thefacebook.com> <alpine.LRH.2.21.2008141344560.6816@localhost>
- <20200814170120.q5gcmlapm7aldmzg@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
+        id S1726484AbgHRJOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 05:14:15 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:31390 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726336AbgHRJOO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 05:14:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1597742053;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SMDXmTL0MOVZaUBN/HCS/BMJjg+pDWRzyiZrwcqiCLA=;
+        b=dddDnPdhy+h+Umy9u/hjC00j47MQpiWXAUCbvNzDSDli5ikVRZfmoAEkPaesBlLE2LEyQH
+        oG5q4UXsimqwWNMsfT3SqXSs7vht8dgtzzSTuSoijBMEyv49bw6jl5cg7uR4KVc9EFgUyj
+        yVzft6wm7l558Er89pRvfvyi6h9Q70s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-283-3qoXk7KpORCRkr6TxxN5KQ-1; Tue, 18 Aug 2020 05:14:11 -0400
+X-MC-Unique: 3qoXk7KpORCRkr6TxxN5KQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E7C071014E0C;
+        Tue, 18 Aug 2020 09:14:09 +0000 (UTC)
+Received: from krava (unknown [10.40.193.152])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 73D127DFC8;
+        Tue, 18 Aug 2020 09:14:05 +0000 (UTC)
+Date:   Tue, 18 Aug 2020 11:14:04 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, sdf@google.com,
+        andriin@fb.com
+Subject: Re: Kernel build error on BTFIDS vmlinux
+Message-ID: <20200818091404.GB177896@krava>
+References: <20200818105555.51fc6d62@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9716 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
- spamscore=0 suspectscore=3 mlxscore=0 phishscore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008180064
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9716 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=3 spamscore=0
- impostorscore=0 priorityscore=1501 adultscore=0 mlxscore=0 mlxlogscore=999
- lowpriorityscore=0 bulkscore=0 phishscore=0 malwarescore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2008180065
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200818105555.51fc6d62@carbon>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Fri, 14 Aug 2020, Alexei Starovoitov wrote:
-
-> On Fri, Aug 14, 2020 at 02:06:37PM +0100, Alan Maguire wrote:
-> > On Wed, 12 Aug 2020, Alexei Starovoitov wrote:
-> > 
-> > > On Thu, Aug 06, 2020 at 03:42:23PM +0100, Alan Maguire wrote:
-> > > > 
-> > > > The bpf_trace_printk tracepoint is augmented with a "trace_id"
-> > > > field; it is used to allow tracepoint filtering as typed display
-> > > > information can easily be interspersed with other tracing data,
-> > > > making it hard to read.  Specifying a trace_id will allow users
-> > > > to selectively trace data, eliminating noise.
-> > > 
-> > > Since trace_id is not seen in trace_pipe, how do you expect users
-> > > to filter by it?
-> > 
-> > Sorry should have specified this.  The approach is to use trace
-> > instances and filtering such that we only see events associated
-> > with a specific trace_id.  There's no need for the trace event to
-> > actually display the trace_id - it's still usable as a filter.
-> > The steps involved are:
-> > 
-> > 1. create a trace instance within which we can specify a fresh
-> >    set of trace event enablings, filters etc.
-> > 
-> > mkdir /sys/kernel/debug/tracing/instances/traceid100
-> > 
-> > 2. enable the filter for the specific trace id
-> > 
-> > echo "trace_id == 100" > 
-> > /sys/kernel/debug/tracing/instances/traceid100/events/bpf_trace/bpf_trace_printk/filter
-> > 
-> > 3. enable the trace event
-> > 
-> > echo 1 > 
-> > /sys/kernel/debug/tracing/instances/events/bpf_trace/bpf_trace_printk/enable
-> > 
-> > 4. ensure the BPF program uses a trace_id 100 when calling bpf_trace_btf()
+On Tue, Aug 18, 2020 at 10:55:55AM +0200, Jesper Dangaard Brouer wrote:
 > 
-> ouch.
-> I think you interpreted the acceptance of the
-> commit 7fb20f9e901e ("bpf, doc: Remove references to warning message when using bpf_trace_printk()")
-> in the wrong way.
+> On latest DaveM net-git tree (06a4ec1d9dc652), after linking (LD vmlinux) the
+> "BTFIDS vmlinux" fails. Are anybody else experiencing this? Are there already a
+> fix? (just returned from vacation so not fully up-to-date on ML yet)
 > 
-> Everything that doc had said is still valid. In particular:
-> -A: This is done to nudge program authors into better interfaces when
-> -programs need to pass data to user space. Like bpf_perf_event_output()
-> -can be used to efficiently stream data via perf ring buffer.
-> -BPF maps can be used for asynchronous data sharing between kernel
-> -and user space. bpf_trace_printk() should only be used for debugging.
+> The tool which is called and error message:
+>   ./tools/bpf/resolve_btfids/resolve_btfids vmlinux
+>   FAILED elf_update(WRITE): invalid section alignment
+
+hi,
+could you send your .config as well?
+
+thanks,
+jirka
+
 > 
-> bpf_trace_printk is for debugging only. _debugging of bpf programs themselves_.
-> What you're describing above is logging and tracing. It's not debugging of programs.
-> perf buffer, ring buffer, and seq_file interfaces are the right
-> interfaces for tracing, logging, and kernel debugging.
+> Note, the tool is only called when CONFIG_DEBUG_INFO_BTF is enabled.
 > 
-> > > It also feels like workaround. May be let bpf prog print the whole
-> > > struct in one go with multiple new lines and call
-> > > trace_bpf_trace_printk(buf) once?
-> > 
-> > We can do that absolutely, but I'd be interested to get your take
-> > on the filtering mechanism before taking that approach.  I'll add
-> > a description of the above mechanism to the cover letter and
-> > patch to be clearer next time too.
+> I saved a copy of vmlinux and ran the tool manually with verbose
+> options, the output is provided below signature.
 > 
-> I think patch 3 is no go, because it takes bpf_trace_printk in
-> the wrong direction.
-> Instead please refactor it to use string buffer or seq_file as an output.
-
-Fair enough. I'm thinking a helper like
-
-long bpf_btf_snprintf(char *str, u32 str_size, struct btf_ptr *ptr,
-		      u32 ptr_size, u64 flags);
-
-Then the user can choose perf event or ringbuf interfaces
-to share the results with userspace.
-
-> If the user happen to use bpf_trace_printk("%s", buf);
-> after that to print that string buffer to trace_pipe that's user's choice.
-> I can see such use case when program author wants to debug
-> their bpf program. That's fine. But for kernel debugging, on demand and
-> "always on" logging and tracing the documentation should point
-> to sustainable interfaces that don't interfere with each other,
-> can be run in parallel by multiple users, etc.
+> - - 
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+> 
+> $ ./tools/bpf/resolve_btfids/resolve_btfids -vv vmlinux.err.bak
+> section(1) .text, size 12588824, link 0, flags 6, type=1
+> section(2) .rodata, size 4424758, link 0, flags 3, type=1
+> section(3) .pci_fixup, size 12736, link 0, flags 2, type=1
+> section(4) __ksymtab, size 58620, link 0, flags 2, type=1
+> section(5) __ksymtab_gpl, size 56592, link 0, flags 2, type=1
+> section(6) __kcrctab, size 19540, link 0, flags 2, type=1
+> section(7) __kcrctab_gpl, size 18864, link 0, flags 2, type=1
+> section(8) __ksymtab_strings, size 180372, link 0, flags 32, type=1
+> section(9) __param, size 14000, link 0, flags 2, type=1
+> section(10) __modver, size 152, link 0, flags 2, type=1
+> section(11) __ex_table, size 21864, link 0, flags 2, type=1
+> section(12) .notes, size 60, link 0, flags 2, type=7
+> section(13) .BTF, size 3345350, link 0, flags 2, type=1
+> section(14) .BTF_ids, size 100, link 0, flags 2, type=1
+> section(15) .data, size 2243456, link 0, flags 3, type=1
+> section(16) __bug_table, size 87804, link 0, flags 3, type=1
+> section(17) .orc_unwind_ip, size 1625580, link 0, flags 2, type=1
+> section(18) .orc_unwind, size 2438370, link 0, flags 2, type=1
+> section(19) .orc_lookup, size 196708, link 0, flags 3, type=8
+> section(20) .vvar, size 4096, link 0, flags 3, type=1
+> section(21) .data..percpu, size 178840, link 0, flags 3, type=1
+> section(22) .init.text, size 349579, link 0, flags 6, type=1
+> section(23) .altinstr_aux, size 3367, link 0, flags 6, type=1
+> section(24) .init.data, size 1584032, link 0, flags 3, type=1
+> section(25) .x86_cpu_dev.init, size 24, link 0, flags 2, type=1
+> section(26) .parainstructions, size 316, link 0, flags 2, type=1
+> section(27) .altinstructions, size 15015, link 0, flags 2, type=1
+> section(28) .altinstr_replacement, size 3756, link 0, flags 6, type=1
+> section(29) .iommu_table, size 160, link 0, flags 2, type=1
+> section(30) .apicdrivers, size 32, link 0, flags 3, type=1
+> section(31) .exit.text, size 5195, link 0, flags 6, type=1
+> section(32) .smp_locks, size 32768, link 0, flags 2, type=1
+> section(33) .data_nosave, size 0, link 0, flags 1, type=1
+> section(34) .bss, size 3805184, link 0, flags 3, type=8
+> section(35) .brk, size 155648, link 0, flags 3, type=8
+> section(36) .comment, size 44, link 0, flags 30, type=1
+> section(37) .debug_aranges, size 45684, link 0, flags 800, type=1
+> section(38) .debug_info, size 129098181, link 0, flags 800, type=1
+> section(39) .debug_abbrev, size 1152583, link 0, flags 800, type=1
+> section(40) .debug_line, size 7374522, link 0, flags 800, type=1
+> section(41) .debug_frame, size 702463, link 0, flags 800, type=1
+> section(42) .debug_str, size 1017606, link 0, flags 830, type=1
+> section(43) .debug_loc, size 3019453, link 0, flags 800, type=1
+> section(44) .debug_ranges, size 1744583, link 0, flags 800, type=1
+> section(45) .symtab, size 2955888, link 46, flags 0, type=2
+> section(46) .strtab, size 2613072, link 0, flags 0, type=3
+> section(47) .shstrtab, size 525, link 0, flags 0, type=3
+> adding symbol seq_file
+> adding symbol bpf_map
+> adding symbol task_struct
+> adding symbol file
+> adding symbol bpf_prog
+> adding symbol bpf_ctx_convert
+> adding symbol sk_buff
+> adding symbol xdp_buff
+> adding symbol inet_sock
+> adding symbol inet_connection_sock
+> adding symbol inet_request_sock
+> adding symbol inet_timewait_sock
+> adding symbol request_sock
+> adding symbol sock
+> adding symbol sock_common
+> adding symbol tcp_sock
+> adding symbol tcp_request_sock
+> adding symbol tcp_timewait_sock
+> adding symbol tcp6_sock
+> adding symbol udp_sock
+> adding symbol udp6_sock
+> adding symbol netlink_sock
+> adding symbol fib6_info
+> patching addr    36: ID   21502 [xdp_buff]
+> patching addr    84: ID   63192 [udp_sock]
+> patching addr    88: ID   63195 [udp6_sock]
+> patching addr    76: ID   66968 [tcp_timewait_sock]
+> patching addr    68: ID   61353 [tcp_sock]
+> patching addr    72: ID   61567 [tcp_request_sock]
+> patching addr    80: ID   63196 [tcp6_sock]
+> patching addr    12: ID     169 [task_struct]
+> patching addr    28: ID     169 [task_struct]
+> patching addr    64: ID    4401 [sock_common]
+> patching addr    60: ID    2894 [sock]
+> patching addr    32: ID    3116 [sk_buff]
+> patching addr     0: ID    1683 [seq_file]
+> patching addr     4: ID    1683 [seq_file]
+> patching addr    56: ID    4458 [request_sock]
+> patching addr    92: ID   65748 [netlink_sock]
+> patching addr    52: ID   66629 [inet_timewait_sock]
+> patching addr    40: ID   37652 [inet_sock]
+> patching addr    48: ID   61566 [inet_request_sock]
+> patching addr    44: ID   61337 [inet_connection_sock]
+> patching addr    16: ID     491 [file]
+> patching addr    96: ID   56653 [fib6_info]
+> patching addr    20: ID    3099 [bpf_prog]
+> patching addr     8: ID    1926 [bpf_map]
+> patching addr    24: ID   21629 [bpf_ctx_convert]
+> FAILED elf_update(WRITE): invalid section alignment
+> update failed for vmlinux.err.bak
+> 
+> 
+> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> index e6e2d9e5ff48..718b2c0ee7ea 100755
+> --- a/scripts/link-vmlinux.sh
+> +++ b/scripts/link-vmlinux.sh
+> @@ -227,6 +227,7 @@ cleanup()
+>         rm -f .tmp_System.map
+>         rm -f .tmp_vmlinux*
+>         rm -f System.map
+> +       cp vmlinux vmlinux.err.bak
+>         rm -f vmlinux
+>         rm -f vmlinux.o
+>  }
 > 
 
-The problem with bpf_trace_printk() under this approach is
-that the string size for %s arguments is very limited;
-bpf_trace_printk() restricts these to 64 bytes in size.
-Looks like bpf_seq_printf() restricts a %s string to 128
-bytes also.  We could add an additional helper for the 
-bpf_seq case which calls bpf_seq_printf() for each component
-in the object, i.e.
-
-long bpf_seq_btf_printf(struct seq_file *m, struct btf_ptr *ptr,
-			u32 ptr_size, u64 flags);
-
-This would steer users away from bpf_trace_printk()
-for this use case - since it can print only a small
-amount of the string - while supporting all 
-the other user-space communication mechanisms.
-
-Alan
