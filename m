@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38317248EEF
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 21:45:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE09248EF0
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 21:45:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726856AbgHRTp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 15:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45474 "EHLO
+        id S1726870AbgHRTp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 15:45:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726828AbgHRTpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 15:45:08 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE40C061389
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:45:08 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id c2so12754208plo.11
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:45:08 -0700 (PDT)
+        with ESMTP id S1726834AbgHRTpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 15:45:10 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C85C061342
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:45:09 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id e30so13561718pfj.0
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 12:45:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=bazRyaRpd4lWfsnoRkwrFUpyZkBuL3CvZya3DQ/BzgQ=;
-        b=lmDHXC0heFriXuxprlGxsC7r4Hr++kBsEsJI06sFg4I4QnhIUIhWgZOmpv8T5eHs5i
-         YlgmGHGYZiKY0eYTKrCpRWitqgf+djv9iEKH+xodIPgZRpheFpT+1W9sfRIWmEuZk93M
-         Q5zfN0PnEryEgF8iv5mZEg/Cq2J4ABpxrZ9SeHPqd4iGbVrCjIrZgbsZUfUGL93T0yQG
-         a3VeEsIb6ES2K7PNfykHpHoQoyqn9FT8QiS33bSYRswca8eaxD/rudhVSMSoQ6o+nLfs
-         HWhZJCCvPxl8VtIaAnAyOvC+WCyg+yyvOitE/LTf8re6fzR1QU9S/0c37apcHG6RA4cO
-         8/Vw==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=ifA7qxZdJvI1VDeaHIOR+Ips3AY9jLHB1Oe8tLsYDro=;
+        b=J2ZerK6ZtPaUlE/NdS08vVR/N1UU/GzlI+USSD5cFYwVZZwIEMEF2jvpWDrM8Ia8cO
+         y+eDRJz1W2T5JpxYIdAcXAxS+gee+0BbwKZixlH3z3W+oReA5EDs+S0zBHkA/ep9g/H+
+         Iz9+fCCoJFP/IIp5UJWHlQfoH/f+q5bSSz9MhgPvmm05g+2mMrL+Lk0vSSSIi684tPbs
+         mRrFrakOcguzB9SQdrjuHqBFewJwJty3Ky727+WcUiUFvYsz6W47gX/HnckuvN3RebWW
+         zf90VLxN5IzX7EGW0ZmC3U8yrwn9vrK62WlS/LjL98elvGuYToXZia13fo+1V7vCnGnw
+         NS2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=bazRyaRpd4lWfsnoRkwrFUpyZkBuL3CvZya3DQ/BzgQ=;
-        b=rkSCTTwPxmBMauFGK9gQZ8m6dQy6amy1mctIZDbDR6Rf2Yhux1Yg5uODRH6TewIuO2
-         Q9+Y3EQPX8Hyjt6Muwz73HYUwT3hAMKpj4OD4xsYxEkTr67rAE/fOZHZHGrtIPvwAzqM
-         vqh6zSXOhrR7R8x5DpF/7d1mtKuzuhSbWyVOjuRoOJSaqn1O8UWEG/GurwhbYnC9UA/s
-         7x3IWXwl/oJBXaaKRRDP/SThejoslic/2yP3X4yTs6i4swe0Af2IT8Zx4eg9pS1Tbpii
-         dC41dF5praYwVprcshXSp8AzbX7IrgeWwEkvFVP3h0FifakXVTcPole9K9OX/zExjAsB
-         0+dw==
-X-Gm-Message-State: AOAM531f4lnrrxEpzaLHwD+veR6GmQgx5PAIQ6Irl+3JRwwCFKBWl2Om
-        agSaTZE85wu6YtPqAXBywmXUPqflpXN4bymSuAafNsmnzonE+xUHSNR3FZviTz6Uq2wWpxfRfLe
-        T89pcJ4dBTUjithL64ujd+vR8tGG6xOLbN3AhNgRMS2F39K03Wwv88/lDS5db8xIzdze07slO
-X-Google-Smtp-Source: ABdhPJwI4lelUW+6oq2KVUEMf5qI2XMymUVEJqnwnZr/Ic3MHT77dmerFSpkMKz6seQpQcndBtgnWTbZQsWaljZl
-X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:1ea0:b8ff:fe73:6cc0])
- (user=awogbemila job=sendgmr) by 2002:a17:90a:c591:: with SMTP id
- l17mr1173159pjt.17.1597779907758; Tue, 18 Aug 2020 12:45:07 -0700 (PDT)
-Date:   Tue, 18 Aug 2020 12:44:12 -0700
+        bh=ifA7qxZdJvI1VDeaHIOR+Ips3AY9jLHB1Oe8tLsYDro=;
+        b=Smlj5lN8vNc6A1MDf8nQrTp8KATu1bVrhwPi0HCHRClAVJGKQ7UVW6wq1uQ+0J4ysI
+         eP/sFMcwB4lgoSs92LOwQYJ/e3ohUt09MTntqdZ8PoWMmxabTF02uOBOcPRUTJjg71ll
+         if0G5PlkbTMnndGqGubXBhI/KFD6xE/cGdpdztgv8WkBHqPXF8kjJT9eEpVoFolYofSN
+         nCOg/zFmnyMGVQqpcJ0JeqphZXj17pKYuEOoUeVXDdtizrzpDoAGrVPuOLO9qLNm0W4w
+         yd/lx08nbLE80A/Jgxhl7jvoWoczb6uy59M4zFxMel4unZEL95Mg/VZgH1QkEjNKnnmX
+         Czdw==
+X-Gm-Message-State: AOAM533BCZxT1ofduy1Rv4I18WITiQWExTQ3HTvJgXehEOlHzo1jsBFE
+        KWzxFEOWPjH22EHiD8BP6EfmMfEse8tk9OMF4SgxlXsN5NyshFl8g4L2b++E1HUng+/nPJiXeem
+        RtXHvImy1cO69AEQ8G2ezanq4Bb9xb89BzUIpunpuO4VtdBHGQU2GX9PjscUd4BSfD0aRdH1O
+X-Google-Smtp-Source: ABdhPJw7x1VgKdGwy0XP9Wwh43MaUAsjMc7g94ncjSK+2xzB0swYF25QdezeaCqv5GfL6WrYmuJQejfn1zvaKSp9
+X-Received: by 2002:a63:b21b:: with SMTP id x27mr14204146pge.284.1597779909353;
+ Tue, 18 Aug 2020 12:45:09 -0700 (PDT)
+Date:   Tue, 18 Aug 2020 12:44:13 -0700
 In-Reply-To: <20200818194417.2003932-1-awogbemila@google.com>
-Message-Id: <20200818194417.2003932-14-awogbemila@google.com>
+Message-Id: <20200818194417.2003932-15-awogbemila@google.com>
 Mime-Version: 1.0
 References: <20200818194417.2003932-1-awogbemila@google.com>
 X-Mailer: git-send-email 2.28.0.220.ged08abb693-goog
-Subject: [PATCH net-next 13/18] gve: Add rx buffer pagecnt bias.
+Subject: [PATCH net-next 14/18] gve: Move the irq db indexes out of the ntfy
+ block struct
 From:   David Awogbemila <awogbemila@google.com>
 To:     netdev@vger.kernel.org
 Cc:     Catherine Sullivan <csully@google.com>,
@@ -65,149 +65,164 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Catherine Sullivan <csully@google.com>
 
-Add a pagecnt bias field to rx buffer info struct to eliminate
-needing to increment the atomic page ref count on every pass in the
-rx hotpath.
-
-We now keep track of whether the nic has the only reference to a page
-by decrementing the bias instead of incrementing the atomic page ref
-count, which could be expensive.
-If the bias is equal to the pagecount, then the nic has the only
-reference to that page. But, if the bias is less than the page count,
-the networking stack is still using the page.
-The pagecount should never be less than the bias.
+Giving the device access to other kernel structs is not ideal.
+Move the indexes into their own array and just keep pointers to
+them in the ntfy block struct.
 
 Reviewed-by: Yangchun Fu <yangchun@google.com>
 Signed-off-by: Catherine Sullivan <csully@google.com>
 Signed-off-by: David Awogbemila <awogbemila@google.com>
 ---
- drivers/net/ethernet/google/gve/gve.h    |  1 +
- drivers/net/ethernet/google/gve/gve_rx.c | 47 ++++++++++++++++++------
- 2 files changed, 36 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/google/gve/gve.h        | 13 ++++---
+ drivers/net/ethernet/google/gve/gve_adminq.c |  2 +-
+ drivers/net/ethernet/google/gve/gve_main.c   | 37 ++++++++++++++------
+ 3 files changed, 36 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index c0f0b22c1ec0..8b1773c45cb6 100644
+index 8b1773c45cb6..bacb4070c755 100644
 --- a/drivers/net/ethernet/google/gve/gve.h
 +++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -50,6 +50,7 @@ struct gve_rx_slot_page_info {
- 	struct page *page;
- 	void *page_address;
- 	u32 page_offset; /* offset to write to in page */
-+	int pagecnt_bias; /* expected pagecnt if only the driver has a ref */
- 	bool can_flip; /* page can be flipped and reused */
+@@ -174,13 +174,13 @@ struct gve_tx_ring {
+  * associated with that irq.
+  */
+ struct gve_notify_block {
+-	__be32 irq_db_index; /* idx into Bar2 - set by device, must be 1st */
++	__be32 *irq_db_index; /* pointer to idx into Bar2 */
+ 	char name[IFNAMSIZ + 16]; /* name registered with the kernel */
+ 	struct napi_struct napi; /* kernel napi struct for this block */
+ 	struct gve_priv *priv;
+ 	struct gve_tx_ring *tx; /* tx rings on this block */
+ 	struct gve_rx_ring *rx; /* rx rings on this block */
+-} ____cacheline_aligned;
++};
+ 
+ /* Tracks allowed and current queue settings */
+ struct gve_queue_config {
+@@ -194,13 +194,18 @@ struct gve_qpl_config {
+ 	unsigned long *qpl_id_map; /* bitmap of used qpl ids */
  };
  
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index ca12f267d08a..c65615b9e602 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -23,6 +23,7 @@ static void gve_rx_free_buffer(struct device *dev,
- 	dma_addr_t dma = (dma_addr_t)(be64_to_cpu(data_slot->addr) -
- 				      page_info->page_offset);
- 
-+	page_ref_sub(page_info->page, page_info->pagecnt_bias - 1);
- 	gve_free_page(dev, page_info->page, dma, DMA_FROM_DEVICE);
- }
- 
-@@ -70,6 +71,9 @@ static void gve_setup_rx_buffer(struct gve_rx_slot_page_info *page_info,
- 	page_info->page_offset = 0;
- 	page_info->page_address = page_address(page);
- 	slot->addr = cpu_to_be64(addr);
++struct gve_irq_db {
++	__be32 index;
++} ____cacheline_aligned;
 +
-+	set_page_count(page, INT_MAX);
-+	page_info->pagecnt_bias = INT_MAX;
- }
- 
- static int gve_prefill_rx_pages(struct gve_rx_ring *rx)
-@@ -347,21 +351,40 @@ static bool gve_rx_can_flip_buffers(struct net_device *netdev)
- #endif
- }
- 
--static int gve_rx_can_recycle_buffer(struct page *page)
-+static int gve_rx_can_recycle_buffer(struct gve_rx_slot_page_info *page_info)
+ struct gve_priv {
+ 	struct net_device *dev;
+ 	struct gve_tx_ring *tx; /* array of tx_cfg.num_queues */
+ 	struct gve_rx_ring *rx; /* array of rx_cfg.num_queues */
+ 	struct gve_queue_page_list *qpls; /* array of num qpls */
+ 	struct gve_notify_block *ntfy_blocks; /* array of num_ntfy_blks */
+-	dma_addr_t ntfy_block_bus;
++	struct gve_irq_db *irq_db_indices; /* array of num_ntfy_blks */
++	dma_addr_t irq_db_indices_bus;
+ 	struct msix_entry *msix_vectors; /* array of num_ntfy_blks + 1 */
+ 	char mgmt_msix_name[IFNAMSIZ + 16];
+ 	u32 mgmt_msix_idx;
+@@ -438,7 +443,7 @@ static inline void gve_clear_report_stats(struct gve_priv *priv)
+ static inline __be32 __iomem *gve_irq_doorbell(struct gve_priv *priv,
+ 					       struct gve_notify_block *block)
  {
--	int pagecount = page_count(page);
-+	int pagecount = page_count(page_info->page);
- 
- 	/* This page is not being used by any SKBs - reuse */
--	if (pagecount == 1) {
-+	if (pagecount == page_info->pagecnt_bias) {
- 		return 1;
- 	/* This page is still being used by an SKB - we can't reuse */
--	} else if (pagecount >= 2) {
-+	} else if (pagecount > page_info->pagecnt_bias) {
- 		return 0;
- 	}
--	WARN(pagecount < 1, "Pagecount should never be < 1");
-+	WARN(pagecount < page_info->pagecnt_bias, "Pagecount should never be less than the bias.");
- 	return -1;
+-	return &priv->db_bar2[be32_to_cpu(block->irq_db_index)];
++	return &priv->db_bar2[be32_to_cpu(*block->irq_db_index)];
  }
  
-+/* Update page reference not by incrementing the page count, but by
-+ * decrementing the "bias" offset from page_count that determines
-+ * whether the nic has the only reference.
-+ */
-+static void gve_rx_update_pagecnt_bias(struct gve_rx_slot_page_info *page_info)
-+{
-+	page_info->pagecnt_bias--;
-+	if (page_info->pagecnt_bias == 0) {
-+		int pagecount = page_count(page_info->page);
+ /* Returns the index into ntfy_blocks of the given tx ring's block
+diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
+index bb21891d06a2..5d6784c4fc41 100644
+--- a/drivers/net/ethernet/google/gve/gve_adminq.c
++++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+@@ -292,7 +292,7 @@ int gve_adminq_configure_device_resources(struct gve_priv *priv,
+ 		.num_counters = cpu_to_be32(num_counters),
+ 		.irq_db_addr = cpu_to_be64(db_array_bus_addr),
+ 		.num_irq_dbs = cpu_to_be32(num_ntfy_blks),
+-		.irq_db_stride = cpu_to_be32(sizeof(priv->ntfy_blocks[0])),
++		.irq_db_stride = cpu_to_be32(sizeof(*priv->irq_db_indices)),
+ 		.ntfy_blk_msix_base_idx =
+ 					cpu_to_be32(GVE_NTFY_BLK_BASE_MSIX_IDX),
+ 	};
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index de22c60d1fea..ee434d3ca5e7 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -239,15 +239,24 @@ static int gve_alloc_notify_blocks(struct gve_priv *priv)
+ 		dev_err(&priv->pdev->dev, "Did not receive management vector.\n");
+ 		goto abort_with_msix_enabled;
+ 	}
+-	priv->ntfy_blocks =
 +
-+		/* If we have run out of bias - set it back up to INT_MAX
-+		 * minus the existing refs.
-+		 */
-+		page_info->pagecnt_bias = INT_MAX - (pagecount);
-+		/* Set pagecount back up to max */
-+		set_page_count(page_info->page, INT_MAX);
++	priv->irq_db_indices =
+ 		dma_alloc_coherent(&priv->pdev->dev,
+ 				   priv->num_ntfy_blks *
+-				   sizeof(*priv->ntfy_blocks),
+-				   &priv->ntfy_block_bus, GFP_KERNEL);
+-	if (!priv->ntfy_blocks) {
++				   sizeof(*priv->irq_db_indices),
++				   &priv->irq_db_indices_bus, GFP_KERNEL);
++	if (!priv->irq_db_indices) {
+ 		err = -ENOMEM;
+ 		goto abort_with_mgmt_vector;
+ 	}
++
++	priv->ntfy_blocks = kvzalloc(priv->num_ntfy_blks *
++				     sizeof(*priv->ntfy_blocks), GFP_KERNEL);
++	if (!priv->ntfy_blocks) {
++		err = -ENOMEM;
++		goto abort_with_irq_db_indices;
 +	}
-+}
 +
- static struct sk_buff *
- gve_rx_raw_addressing(struct device *dev, struct net_device *netdev,
- 		      struct gve_rx_slot_page_info *page_info, u16 len,
-@@ -373,11 +396,11 @@ gve_rx_raw_addressing(struct device *dev, struct net_device *netdev,
- 	if (!skb)
- 		return NULL;
- 
--	/* Optimistically stop the kernel from freeing the page by increasing
--	 * the page bias. We will check the refcount in refill to determine if
--	 * we need to alloc a new page.
-+	/* Optimistically stop the kernel from freeing the page.
-+	 * We will check again in refill to determine if we need to alloc a
-+	 * new page.
- 	 */
--	get_page(page_info->page);
-+	gve_rx_update_pagecnt_bias(page_info);
- 	page_info->can_flip = can_flip;
- 
- 	return skb;
-@@ -400,7 +423,7 @@ gve_rx_qpl(struct device *dev, struct net_device *netdev,
- 		/* No point in recycling if we didn't get the skb */
- 		if (skb) {
- 			/* Make sure the networking stack can't free the page */
--			get_page(page_info->page);
-+			gve_rx_update_pagecnt_bias(page_info);
- 			gve_rx_flip_buffer(page_info, data_slot);
+ 	/* Setup the other blocks - the first n-1 vectors */
+ 	for (i = 0; i < priv->num_ntfy_blks; i++) {
+ 		struct gve_notify_block *block = &priv->ntfy_blocks[i];
+@@ -265,6 +274,7 @@ static int gve_alloc_notify_blocks(struct gve_priv *priv)
  		}
- 	} else {
-@@ -458,7 +481,7 @@ static bool gve_rx(struct gve_rx_ring *rx, struct gve_rx_desc *rx_desc,
- 		int recycle = 0;
- 
- 		if (can_flip) {
--			recycle = gve_rx_can_recycle_buffer(page_info->page);
-+			recycle = gve_rx_can_recycle_buffer(page_info);
- 			if (recycle < 0) {
- 				gve_schedule_reset(priv);
- 				return false;
-@@ -548,7 +571,7 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
- 			 * owns half the page it is impossible to tell which half. Either
- 			 * the whole page is free or it needs to be replaced.
- 			 */
--			int recycle = gve_rx_can_recycle_buffer(page_info->page);
-+			int recycle = gve_rx_can_recycle_buffer(page_info);
- 
- 			if (recycle < 0) {
- 				gve_schedule_reset(priv);
+ 		irq_set_affinity_hint(priv->msix_vectors[msix_idx].vector,
+ 				      get_cpu_mask(i % active_cpus));
++		block->irq_db_index = &priv->irq_db_indices[i].index;
+ 	}
+ 	return 0;
+ abort_with_some_ntfy_blocks:
+@@ -276,10 +286,13 @@ static int gve_alloc_notify_blocks(struct gve_priv *priv)
+ 				      NULL);
+ 		free_irq(priv->msix_vectors[msix_idx].vector, block);
+ 	}
+-	dma_free_coherent(&priv->pdev->dev, priv->num_ntfy_blks *
+-			  sizeof(*priv->ntfy_blocks),
+-			  priv->ntfy_blocks, priv->ntfy_block_bus);
++	kvfree(priv->ntfy_blocks);
+ 	priv->ntfy_blocks = NULL;
++abort_with_irq_db_indices:
++	dma_free_coherent(&priv->pdev->dev, priv->num_ntfy_blks *
++			  sizeof(*priv->irq_db_indices),
++			  priv->irq_db_indices, priv->irq_db_indices_bus);
++	priv->irq_db_indices = NULL;
+ abort_with_mgmt_vector:
+ 	free_irq(priv->msix_vectors[priv->mgmt_msix_idx].vector, priv);
+ abort_with_msix_enabled:
+@@ -303,10 +316,12 @@ static void gve_free_notify_blocks(struct gve_priv *priv)
+ 				      NULL);
+ 		free_irq(priv->msix_vectors[msix_idx].vector, block);
+ 	}
+-	dma_free_coherent(&priv->pdev->dev,
+-			  priv->num_ntfy_blks * sizeof(*priv->ntfy_blocks),
+-			  priv->ntfy_blocks, priv->ntfy_block_bus);
++	kvfree(priv->ntfy_blocks);
+ 	priv->ntfy_blocks = NULL;
++	dma_free_coherent(&priv->pdev->dev, priv->num_ntfy_blks *
++			  sizeof(*priv->irq_db_indices),
++			  priv->irq_db_indices, priv->irq_db_indices_bus);
++	priv->irq_db_indices = NULL;
+ 	free_irq(priv->msix_vectors[priv->mgmt_msix_idx].vector, priv);
+ 	pci_disable_msix(priv->pdev);
+ 	kvfree(priv->msix_vectors);
+@@ -329,7 +344,7 @@ static int gve_setup_device_resources(struct gve_priv *priv)
+ 	err = gve_adminq_configure_device_resources(priv,
+ 						    priv->counter_array_bus,
+ 						    priv->num_event_counters,
+-						    priv->ntfy_block_bus,
++						    priv->irq_db_indices_bus,
+ 						    priv->num_ntfy_blks);
+ 	if (unlikely(err)) {
+ 		dev_err(&priv->pdev->dev,
 -- 
 2.28.0.220.ged08abb693-goog
 
