@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3749A248561
-	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 14:52:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F150248566
+	for <lists+netdev@lfdr.de>; Tue, 18 Aug 2020 14:53:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726576AbgHRMww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 08:52:52 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:26212 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726729AbgHRMwl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 08:52:41 -0400
+        id S1726804AbgHRMxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 08:53:19 -0400
+Received: from mail29.static.mailgun.info ([104.130.122.29]:10162 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726729AbgHRMxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 08:53:18 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1597755161; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1597755198; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=AJEe/qRZ45RZeh5yzMAs+NsXlJGYmx+mOLYSkXXDB/A=;
- b=G8g1tzOJL9vMaDa39UPjV6LzJ1hqbsorVexAHj29PHY3N/zexm6Kf0OzTjbdR4NYFBhoMKuW
- r7iZ3egI2N+xeCy1LYnwoo93vjtLmNOhMFrJNW5cAko3kPYbvaOrXmHHW8jPW7R50xJRd9NA
- WiCqa7a46pB3Id4gLO5LyQN6K0s=
-X-Mailgun-Sending-Ip: 69.72.43.7
+ Content-Type: Sender; bh=UshVlRQX3jZ8s1xPGct9LtJcj6s2/gfPz2Tpohm05y4=;
+ b=p1DTfcqEc31oJYLNg0egbBpuDwEeA/dE9rrqqgMwoYleqJMkE+BmmMQebJUn1kcraeTYRN5x
+ KSA5rNg0exyF/dilAw+aXCDUQpbkj2J8eH2m4CnremPJI6px8yj5+qj5fBnV/8mYcDs4XJHj
+ NeQArQDXEC70iz1RbwJDBg1PcwA=
+X-Mailgun-Sending-Ip: 104.130.122.29
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
- 5f3bcf0c2889723bf8b92ddd (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 18 Aug 2020 12:52:28
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 5f3bcf2eba4c2cd367c98967 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 18 Aug 2020 12:53:02
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4CFD3C433AF; Tue, 18 Aug 2020 12:52:28 +0000 (UTC)
+        id 5F7B7C433A1; Tue, 18 Aug 2020 12:53:01 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -37,62 +37,58 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A4268C433C6;
-        Tue, 18 Aug 2020 12:52:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A4268C433C6
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 08674C433CA;
+        Tue, 18 Aug 2020 12:52:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 08674C433CA
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] mwifiex: Do not use GFP_KERNEL in atomic context
+Subject: Re: [PATCH] rndis_wlan: tighten check of rndis_query_oid return
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200809092906.744621-1-christophe.jaillet@wanadoo.fr>
-References: <20200809092906.744621-1-christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     amitkarwar@gmail.com, ganapathi.bhat@nxp.com,
-        huxinming820@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        yogeshp@marvell.com, bzhao@marvell.com, linville@tuxdriver.com,
+In-Reply-To: <20200811140219.8412-1-trix@redhat.com>
+References: <20200811140219.8412-1-trix@redhat.com>
+To:     trix@redhat.com
+Cc:     jussi.kivilinna@iki.fi, davem@davemloft.net, kuba@kernel.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200818125228.4CFD3C433AF@smtp.codeaurora.org>
-Date:   Tue, 18 Aug 2020 12:52:28 +0000 (UTC)
+Message-Id: <20200818125301.5F7B7C433A1@smtp.codeaurora.org>
+Date:   Tue, 18 Aug 2020 12:53:01 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
+trix@redhat.com wrote:
 
-> A possible call chain is as follow:
->   mwifiex_sdio_interrupt                            (sdio.c)
->     --> mwifiex_main_process                        (main.c)
->       --> mwifiex_process_cmdresp                   (cmdevt.c)
->         --> mwifiex_process_sta_cmdresp             (sta_cmdresp.c)
->           --> mwifiex_ret_802_11_scan               (scan.c)
->             --> mwifiex_parse_single_response_buf   (scan.c)
+> From: Tom Rix <trix@redhat.com>
 > 
-> 'mwifiex_sdio_interrupt()' is an interrupt function.
+> clang static analysis reports this problem
 > 
-> Also note that 'mwifiex_ret_802_11_scan()' already uses GFP_ATOMIC.
+> rndis_wlan.c:3147:25: warning: Assigned value is garbage or undefined
+>                 wiphy->max_num_pmkids = le32_to_cpu(caps.num_pmkids);
+>                                       ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 > 
-> So use GFP_ATOMIC instead of GFP_KERNEL when memory is allocated in
-> 'mwifiex_parse_single_response_buf()'.
+> The setting of caps happens here, with a call to rndis_query_oid()
 > 
-> Fixes: 7c6fa2a843c5 ("mwifiex: use cfg80211 dynamic scan table and cfg80211_get_bss API")
-> or
-> Fixes: 601216e12c65e ("mwifiex: process RX packets in SDIO IRQ thread directly")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> 	retval = rndis_query_oid(usbdev,
+> 	if (retval >= 0) {
+> 
+> Reviewing rndis_query_oid() shows that on success 0 is returned,
+> failure is otherwise.  So the retval check is not tight enough.
+> So tighten the retval check.  Similar problem in
+> rndis_wlan_get_caps().
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-d2ab7f00f432 mwifiex: Do not use GFP_KERNEL in atomic context
+094dd0d73062 rndis_wlan: tighten check of rndis_query_oid return
 
 -- 
-https://patchwork.kernel.org/patch/11706587/
+https://patchwork.kernel.org/patch/11709263/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
