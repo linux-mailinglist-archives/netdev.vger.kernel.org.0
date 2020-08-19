@@ -2,193 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD14D249521
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 08:43:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7445B24955D
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 08:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726938AbgHSGnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 02:43:17 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:45153 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726711AbgHSGnQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 02:43:16 -0400
-Received: by mail-il1-f200.google.com with SMTP id m80so244803ilb.12
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 23:43:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=R3nMeROQnANHQhgA6eIg8Oz1+wqED/F0geLQt6U/548=;
-        b=ouZ+k2vurw3CG1KG3zpTbmiVjb947TTut5TcG1qYLEBfI1kzGWuaEXyQMhPJhlyv44
-         WFSBLKpvXS5nxlUG/0vW/IOs45ZuohmV3dCMSt8qrKjiTh3/PT/c7eVFbrx0qnyEHcyY
-         xzg881/yNzIJzl/BfPqjLCE2hTjF2vsbSAQtW0XTJYZo+/8C2gi0z0u28aFnNb5SRMdq
-         l7WRcZEbEwjcn4QEn6WR4v6GZBG1iBEwntGyzMoOQStGS1EnDTj574SnmawQGwQ50mH2
-         oM2vCAZ897vgQ6CkooFOi7sogP2TD7OdzI5QnOEafzNud/ZuC0fSPLL1mnOmb9Eb1MwG
-         L9tQ==
-X-Gm-Message-State: AOAM5305iHlasMVmaaxREzcUNL+glCUFLnYDGISwAazJqOI4+m2ORMdi
-        T/0v81SGSQd7qBcv3hhvhZHm2v+KI8TE12zPuVr69lAc3YhW
-X-Google-Smtp-Source: ABdhPJyWzUb0Hjy/Tie7V/hTCb5VNPTBqkVusY8sGIyiFIYvW/ROPS85zm+YFnmphK68poFXcJgqV3JCigV9PNg53JCIHqsB6ctN
+        id S1726965AbgHSG4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 02:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36582 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726697AbgHSG4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 02:56:20 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93972C061389;
+        Tue, 18 Aug 2020 23:56:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=z2KvWaZyjho7ndXMH0ORSIBGMLsoLoOlaFmWAQTQuew=; b=uRThKpBVD38wHW4O1Rw+m7ReIB
+        6g8DAFjC8rOV8slo1/sXfbFmSe2ZQ/D8oXBbMOULOMMqWf/LF2YgmRNBRhy6xw/WNcPfIgir5jkfY
+        jMUBZNOtuPrAml+wEbfI5OBf4FZwNLx4AJ6KLMbazwwdxWKTRuJ8t4QvNBD00a4zi7/l8eeZNVCHo
+        TVip/vAV16StqtD9sSi3vWzGnecdc/pw7stv6o2Z7fnoWC5+a2JoL1fYWc4VJinapBZy26rlLUcYn
+        mtr0U1RQYeE7P0ovTcYzaF9TaQqsHNEEbAFwOJIquRs9u5qnSydzfDIu7+tbwzSbcDpvLkPbTkcNu
+        ySmmqGNA==;
+Received: from [2001:4bb8:198:f3b2:86b6:2277:f429:37a1] (helo=localhost)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1k8I0q-0008Kr-1o; Wed, 19 Aug 2020 06:55:57 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Pawel Osciak <pawel@osciak.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        iommu@lists.linux-foundation.org
+Cc:     Tom Lendacky <thomas.lendacky@amd.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, nouveau@lists.freedesktop.org,
+        netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
+        alsa-devel@alsa-project.org
+Subject: a saner API for allocating DMA addressable pages
+Date:   Wed, 19 Aug 2020 08:55:27 +0200
+Message-Id: <20200819065555.1802761-1-hch@lst.de>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:354d:: with SMTP id c74mr19524908ila.27.1597819394434;
- Tue, 18 Aug 2020 23:43:14 -0700 (PDT)
-Date:   Tue, 18 Aug 2020 23:43:14 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006bac5105ad3551e9@google.com>
-Subject: INFO: task can't die in tls_sk_proto_close
-From:   syzbot <syzbot+739db38bc09c5a792e31@syzkaller.appspotmail.com>
-To:     aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
-        davem@davemloft.net, john.fastabend@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi all,
 
-syzbot found the following issue on:
+this series replaced the DMA_ATTR_NON_CONSISTENT flag to dma_alloc_attrs
+with a separate new dma_alloc_pages API, which is available on all
+platforms.  In addition to cleaning up the convoluted code path, this
+ensures that other drivers that have asked for better support for
+non-coherent DMA to pages with incurring bounce buffering over can finally
+be properly supported.
 
-HEAD commit:    4993e4fe Add linux-next specific files for 20200814
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=107ad7d6900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2055bd0d83d5ee16
-dashboard link: https://syzkaller.appspot.com/bug?extid=739db38bc09c5a792e31
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+I'm still a little unsure about the API naming, as alloc_pages sort of
+implies a struct page return value, but we return a kernel virtual
+address.  The other alternative would be to name the API
+dma_alloc_noncoherent, but the whole non-coherent naming seems to put
+people off.  As a follow up I plan to move the implementation of the
+DMA_ATTR_NO_KERNEL_MAPPING flag over to this framework as well, given
+that is also is a fundamentally non coherent allocation.  The replacement
+for that flag would then return a struct page, as it is allowed to
+actually return pages without a kernel mapping as the name suggested
+(although most of the time they will actually have a kernel mapping..)
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+739db38bc09c5a792e31@syzkaller.appspotmail.com
-
-INFO: task syz-executor.4:22039 can't die for more than 143 seconds.
-syz-executor.4  D28360 22039   6861 0x00004004
-Call Trace:
- context_switch kernel/sched/core.c:3778 [inline]
- __schedule+0x8e5/0x21e0 kernel/sched/core.c:4527
- schedule+0xd0/0x2a0 kernel/sched/core.c:4602
- schedule_timeout+0x1d8/0x250 kernel/time/timer.c:1855
- do_wait_for_common kernel/sched/completion.c:85 [inline]
- __wait_for_common kernel/sched/completion.c:106 [inline]
- wait_for_common kernel/sched/completion.c:117 [inline]
- wait_for_completion+0x163/0x260 kernel/sched/completion.c:138
- __flush_work+0x51f/0xab0 kernel/workqueue.c:3046
- __cancel_work_timer+0x5de/0x700 kernel/workqueue.c:3133
- tls_sk_proto_close+0x4a7/0xaf0 net/tls/tls_main.c:305
- inet_release+0x12e/0x280 net/ipv4/af_inet.c:431
- inet6_release+0x4c/0x70 net/ipv6/af_inet6.c:475
- __sock_release+0xcd/0x280 net/socket.c:596
- sock_close+0x18/0x20 net/socket.c:1277
- __fput+0x285/0x920 fs/file_table.c:281
- task_work_run+0xdd/0x190 kernel/task_work.c:135
- tracehook_notify_resume include/linux/tracehook.h:188 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:139 [inline]
- exit_to_user_mode_prepare+0x195/0x1c0 kernel/entry/common.c:166
- syscall_exit_to_user_mode+0x59/0x2b0 kernel/entry/common.c:241
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x416b81
-Code: Bad RIP value.
-RSP: 002b:00007ffedaaf5920 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000416b81
-RDX: 0000000000000000 RSI: 0000000000000be4 RDI: 0000000000000003
-RBP: 0000000000000001 R08: 00000000f2ab2be2 R09: 00000000f2ab2be6
-R10: 00007ffedaaf5a10 R11: 0000000000000293 R12: 000000000118d940
-R13: 000000000118d940 R14: ffffffffffffffff R15: 000000000118cf4c
-INFO: task syz-executor.4:22039 blocked for more than 143 seconds.
-      Not tainted 5.8.0-next-20200814-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-syz-executor.4  D28360 22039   6861 0x00004004
-Call Trace:
- context_switch kernel/sched/core.c:3778 [inline]
- __schedule+0x8e5/0x21e0 kernel/sched/core.c:4527
- schedule+0xd0/0x2a0 kernel/sched/core.c:4602
- schedule_timeout+0x1d8/0x250 kernel/time/timer.c:1855
- do_wait_for_common kernel/sched/completion.c:85 [inline]
- __wait_for_common kernel/sched/completion.c:106 [inline]
- wait_for_common kernel/sched/completion.c:117 [inline]
- wait_for_completion+0x163/0x260 kernel/sched/completion.c:138
- __flush_work+0x51f/0xab0 kernel/workqueue.c:3046
- __cancel_work_timer+0x5de/0x700 kernel/workqueue.c:3133
- tls_sk_proto_close+0x4a7/0xaf0 net/tls/tls_main.c:305
- inet_release+0x12e/0x280 net/ipv4/af_inet.c:431
- inet6_release+0x4c/0x70 net/ipv6/af_inet6.c:475
- __sock_release+0xcd/0x280 net/socket.c:596
- sock_close+0x18/0x20 net/socket.c:1277
- __fput+0x285/0x920 fs/file_table.c:281
- task_work_run+0xdd/0x190 kernel/task_work.c:135
- tracehook_notify_resume include/linux/tracehook.h:188 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:139 [inline]
- exit_to_user_mode_prepare+0x195/0x1c0 kernel/entry/common.c:166
- syscall_exit_to_user_mode+0x59/0x2b0 kernel/entry/common.c:241
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x416b81
-Code: Bad RIP value.
-RSP: 002b:00007ffedaaf5920 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000416b81
-RDX: 0000000000000000 RSI: 0000000000000be4 RDI: 0000000000000003
-RBP: 0000000000000001 R08: 00000000f2ab2be2 R09: 00000000f2ab2be6
-R10: 00007ffedaaf5a10 R11: 0000000000000293 R12: 000000000118d940
-R13: 000000000118d940 R14: ffffffffffffffff R15: 000000000118cf4c
-
-Showing all locks held in the system:
-1 lock held by khungtaskd/1165:
- #0: ffffffff89c66c40 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:5825
-1 lock held by in:imklog/6547:
- #0: ffff88809f2578f0 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:930
-2 locks held by agetty/6565:
- #0: ffff8880a1f98098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:267
- #1: ffffc900025d12e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0x223/0x1a30 drivers/tty/n_tty.c:2156
-3 locks held by kworker/1:3/7601:
- #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
- #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
- #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
- #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
- #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x82b/0x1670 kernel/workqueue.c:2240
- #1: ffffc90008eb7da8 ((work_completion)(&(&sw_ctx_tx->tx_work.work)->work)){+.+.}-{0:0}, at: process_one_work+0x85f/0x1670 kernel/workqueue.c:2244
- #2: ffff888099161cd8 (&ctx->tx_lock){+.+.}-{3:3}, at: tx_work_handler+0x127/0x190 net/tls/tls_sw.c:2251
-1 lock held by syz-executor.3/31922:
- #0: ffff8880a237ae20 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1583 [inline]
- #0: ffff8880a237ae20 (sk_lock-AF_INET6){+.+.}-{0:0}, at: sctp_getsockopt net/sctp/socket.c:7820 [inline]
- #0: ffff8880a237ae20 (sk_lock-AF_INET6){+.+.}-{0:0}, at: sctp_getsockopt+0x249/0x6d0a net/sctp/socket.c:7793
-1 lock held by syz-executor.4/22039:
- #0: ffff8880855f7210 (&sb->s_type->i_mutex_key#13){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:780 [inline]
- #0: ffff8880855f7210 (&sb->s_type->i_mutex_key#13){+.+.}-{3:3}, at: __sock_release+0x86/0x280 net/socket.c:595
-
-=============================================
-
-NMI backtrace for cpu 0
-CPU: 0 PID: 1165 Comm: khungtaskd Not tainted 5.8.0-next-20200814-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- nmi_cpu_backtrace.cold+0x70/0xb1 lib/nmi_backtrace.c:101
- nmi_trigger_cpumask_backtrace+0x1b3/0x223 lib/nmi_backtrace.c:62
- trigger_all_cpu_backtrace include/linux/nmi.h:147 [inline]
- check_hung_uninterruptible_tasks kernel/hung_task.c:253 [inline]
- watchdog+0xd89/0xf30 kernel/hung_task.c:339
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Sending NMI from CPU 0 to CPUs 1:
-NMI backtrace for cpu 1
-CPU: 1 PID: 3891 Comm: systemd-journal Not tainted 5.8.0-next-20200814-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0033:0x558c52df8321
-Code: 3b 44 24 78 0f 85 de 00 00 00 45 31 ed 45 31 e4 e9 f7 fe ff ff 4c 89 fe 48 8b 5c 24 10 44 89 ed e9 d8 fb ff ff e8 2f 31 ff ff <31> ed e9 1c fd ff ff 4c 8b 64 24 60 4d 85 e4 0f 84 bf 00 00 00 48
-RSP: 002b:00007ffc87c71ea0 EFLAGS: 00000246
-RAX: 00007ffc87c72780 RBX: 00007ffc87c74910 RCX: 000000000000004e
-RDX: 00007ffc87c72781 RSI: 000000000000000a RDI: 00007ffc87c72780
-RBP: 00007ffc87c72718 R08: 00007ffc87c72722 R09: 0000000000000000
-R10: 0000000000000000 R11: 00007f22fccae040 R12: 0000000000000000
-R13: 000000000000004f R14: 0000558c52dfb958 R15: 0005acdcf22a81cb
-FS:  00007f22fd9818c0 GS:  0000000000000000
+In addition to the conversions of the existing non-coherent DMA users
+the last three patches also convert the DMA coherent allocations in
+the NVMe driver to use this new framework through a dmapool addition.
+This was both to give me a good testing vehicle, but also because it
+should speed up the NVMe driver on platforms with non-coherent DMA
+nicely, without a downside on platforms with cache coherent DMA.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+A git tree is available here:
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+    git://git.infradead.org/users/hch/misc.git dma_alloc_pages
+
+Gitweb:
+
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma_alloc_pages
+
+
+Diffstat:
+ Documentation/core-api/dma-api.rst                       |   92 ++----
+ Documentation/core-api/dma-attributes.rst                |    8 
+ Documentation/userspace-api/media/v4l/buffer.rst         |   17 -
+ Documentation/userspace-api/media/v4l/vidioc-reqbufs.rst |    1 
+ arch/alpha/kernel/pci_iommu.c                            |    2 
+ arch/arm/include/asm/dma-direct.h                        |    4 
+ arch/arm/mm/dma-mapping-nommu.c                          |    2 
+ arch/arm/mm/dma-mapping.c                                |    4 
+ arch/ia64/Kconfig                                        |    3 
+ arch/ia64/hp/common/sba_iommu.c                          |    2 
+ arch/ia64/kernel/dma-mapping.c                           |   14 
+ arch/ia64/mm/init.c                                      |    3 
+ arch/mips/Kconfig                                        |    1 
+ arch/mips/bmips/dma.c                                    |    4 
+ arch/mips/cavium-octeon/dma-octeon.c                     |    4 
+ arch/mips/include/asm/dma-direct.h                       |    4 
+ arch/mips/include/asm/jazzdma.h                          |    2 
+ arch/mips/jazz/jazzdma.c                                 |  102 +------
+ arch/mips/loongson2ef/fuloong-2e/dma.c                   |    4 
+ arch/mips/loongson2ef/lemote-2f/dma.c                    |    4 
+ arch/mips/loongson64/dma.c                               |    4 
+ arch/mips/mm/dma-noncoherent.c                           |   48 +--
+ arch/mips/pci/pci-ar2315.c                               |    4 
+ arch/mips/pci/pci-xtalk-bridge.c                         |    4 
+ arch/mips/sgi-ip32/ip32-dma.c                            |    4 
+ arch/parisc/Kconfig                                      |    1 
+ arch/parisc/kernel/pci-dma.c                             |    6 
+ arch/powerpc/include/asm/dma-direct.h                    |    4 
+ arch/powerpc/kernel/dma-iommu.c                          |    2 
+ arch/powerpc/platforms/ps3/system-bus.c                  |    4 
+ arch/powerpc/platforms/pseries/vio.c                     |    2 
+ arch/s390/pci/pci_dma.c                                  |    2 
+ arch/x86/kernel/amd_gart_64.c                            |    8 
+ drivers/gpu/drm/exynos/exynos_drm_gem.c                  |    2 
+ drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c      |    3 
+ drivers/iommu/dma-iommu.c                                |    2 
+ drivers/iommu/intel/iommu.c                              |    6 
+ drivers/media/common/videobuf2/videobuf2-core.c          |   36 --
+ drivers/media/common/videobuf2/videobuf2-dma-contig.c    |   19 -
+ drivers/media/common/videobuf2/videobuf2-dma-sg.c        |    3 
+ drivers/media/common/videobuf2/videobuf2-v4l2.c          |   12 
+ drivers/net/ethernet/amd/au1000_eth.c                    |   15 -
+ drivers/net/ethernet/i825xx/lasi_82596.c                 |   36 +-
+ drivers/net/ethernet/i825xx/lib82596.c                   |  148 +++++-----
+ drivers/net/ethernet/i825xx/sni_82596.c                  |   23 -
+ drivers/net/ethernet/seeq/sgiseeq.c                      |   24 -
+ drivers/nvme/host/pci.c                                  |   79 ++---
+ drivers/parisc/ccio-dma.c                                |    2 
+ drivers/parisc/sba_iommu.c                               |    2 
+ drivers/scsi/53c700.c                                    |  120 ++++----
+ drivers/scsi/53c700.h                                    |    9 
+ drivers/scsi/sgiwd93.c                                   |   14 
+ drivers/xen/swiotlb-xen.c                                |    2 
+ include/linux/dma-direct.h                               |   55 ++-
+ include/linux/dma-mapping.h                              |   32 +-
+ include/linux/dma-noncoherent.h                          |   21 -
+ include/linux/dmapool.h                                  |   23 +
+ include/linux/gfp.h                                      |    6 
+ include/media/videobuf2-core.h                           |    3 
+ include/uapi/linux/videodev2.h                           |    2 
+ kernel/dma/Kconfig                                       |    9 
+ kernel/dma/Makefile                                      |    1 
+ kernel/dma/coherent.c                                    |   17 +
+ kernel/dma/direct.c                                      |  112 +++++--
+ kernel/dma/mapping.c                                     |  104 ++-----
+ kernel/dma/ops_helpers.c                                 |   86 ++++++
+ kernel/dma/pool.c                                        |    2 
+ kernel/dma/swiotlb.c                                     |    4 
+ kernel/dma/virt.c                                        |    2 
+ mm/dmapool.c                                             |  211 +++++++++------
+ sound/mips/hal2.c                                        |   58 +---
+ 71 files changed, 872 insertions(+), 803 deletions(-)
