@@ -2,102 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5214F249954
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 11:28:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D066D24996E
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 11:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727818AbgHSJ2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 05:28:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38404 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727098AbgHSJ2Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Aug 2020 05:28:16 -0400
-Received: from localhost (unknown [151.48.139.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AC9EE20786;
-        Wed, 19 Aug 2020 09:28:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597829296;
-        bh=uCS77yLkqSqHmXUtzwGVl98ooeyqgf/ZLwCgUzgk/xo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=b06NkbAjLDXEVHnTv1mMSQKNIJNOR4IR0jYDMXWvE3CPYR3CrM8zQ4Tls6NZkrBGg
-         S+lKphZxDtYXqQDS/0A/HSB0nMKXVl9AoSHI/Nw0OsRkOw9UvNrgFe5JhDnSwXWFKy
-         Le3P2HqZ7adeuT/p4lxms1PlmVGCXedXIV3CIiTo=
-Date:   Wed, 19 Aug 2020 11:28:11 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     andriin@fb.com
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>, ast@kernel.org
-Subject: xdp generic default option
-Message-ID: <20200819092811.GA2420@lore-desk>
+        id S1727005AbgHSJhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 05:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33228 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726931AbgHSJhp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 05:37:45 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13720C061342
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 02:37:45 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id r2so20826779wrs.8
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 02:37:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=trT56ug3tFTbYmD6Zav9ULw7qjw+yiWbjGkC3+1prJQ=;
+        b=QnChpO8CyQ7DfhzJj/0sAcJ5EcEIouiDQuvMPRLsRMMPsoIQz+sUk8Yj1uwxtXvUlb
+         4VHI6MBxP4CIEZm+7nQEaq61lQuM4Zt+V20SBz20sRiIv8Oyy/z6d9m2kW/bi0+7n2Me
+         DEvFZC05tTJvseObbyuk2A7mHqOC0RmmpLUHw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=trT56ug3tFTbYmD6Zav9ULw7qjw+yiWbjGkC3+1prJQ=;
+        b=ROq3xIIMJoRi99dCl8WDZwboFy8wgUKzaX5C4nde6XtnXdh87EfM6MiPqe6XotDmsM
+         gn363hZY8JMxTdVJrSNykQBmzwA5i+de3RpI36mbq2/i1JS5t1YHGmma1v3ACzHUEe9W
+         4Y7PJr8MIKEBq4zKOT2v0HWi4A8adTaHtu2ko3fK94fYYSSdZbYM8Hj81Osznur0ypCq
+         kuTsck9Oe/oH7UKHr96WmuFqp/GaIZzr8IXallhCwkmCYITiCPagiWo4AEJjc/baQQ2m
+         z1MnAjcH+Y8CkTl3MKnmfsbp5zwfXSx+8UajRwJDb79MbFIJt382PgG+rRb9q4q0+Z9b
+         USLg==
+X-Gm-Message-State: AOAM530+RrjsmxJoxUluNVdX47BBvH7NwaHCOTII9SgGlD/ftL0MjaCZ
+        +j/SoYvvD00/sW/2YDsBDdTz6A==
+X-Google-Smtp-Source: ABdhPJxu8EDw9AhuzCpqnoLvDOUsQJXZ8cMHswQeGDq7gOGf99IaBQk99hLKYMwCzOkCZWP4sUu0yQ==
+X-Received: by 2002:a5d:4281:: with SMTP id k1mr3246276wrq.30.1597829863602;
+        Wed, 19 Aug 2020 02:37:43 -0700 (PDT)
+Received: from antares.lan (c.d.0.4.4.2.3.3.e.9.1.6.6.d.0.6.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:60d6:619e:3324:40dc])
+        by smtp.gmail.com with ESMTPSA id 3sm4204565wms.36.2020.08.19.02.37.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Aug 2020 02:37:43 -0700 (PDT)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     jakub@cloudflare.com, john.fastabend@gmail.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH bpf-next 0/6] Allow updating sockmap / sockhash from BPF
+Date:   Wed, 19 Aug 2020 10:24:30 +0100
+Message-Id: <20200819092436.58232-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="vtzGhvizbBRQ85DL"
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+We're currently building a control plane for our BPF socket dispatch
+work. As part of that, we have a need to create a copy of an existing
+sockhash, to allow us to change the keys. I previously proposed allowing
+privileged userspace to look up sockets, which doesn't work due to
+security concerns (see [1]).
 
---vtzGhvizbBRQ85DL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In follow up discussions during BPF office hours we identified bpf_iter
+as a possible solution: instead of accessing sockets from user space
+we can iterate the source sockhash, and insert the values into a new
+map. Enabling this requires two pieces: the ability to iterate
+sockmap and sockhash, as well as being able to call map_update_elem
+from BPF.
 
-Hi Andrii,
+This patch set implements the latter: it's now possible to update
+sockmap from BPF context. As a next step, we can implement bpf_iter
+for sockmap.
 
-working on xdp multi-buff I figured out now xdp generic is the default choi=
-ce
-if not specified by userspace. In particular after commit 7f0a838254bd
-("bpf, xdp: Maintain info on attached XDP BPF programs in net_device"), run=
-ning
-the command below, XDP will run in generic mode even if the underlay driver
-support XDP in native mode:
+The patches are organised as follows:
+* Patches 1-3 are cleanups and simplifications, to make reasoning
+  about the subsequent patches easier.
+* Patch 4 makes map_update_elem return a PTR_TO_SOCKET_OR_NULL for
+  sockmap / sockhash lookups.
+* Patch 5 enables map_update_elem from BPF. There is some locking
+  here that I'm not entirely sure about. Feedback much appreciated.
+* Patch 6 adds a selftest.
 
-$ip link set dev eth0 xdp obj prog.o
-$ip link show dev eth0
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdpgeneric qdisc mq sta=
-te UP mode DEFAULT
-   group default qlen 1024
-   link/ether f0:ad:4e:09:6b:57 brd ff:ff:ff:ff:ff:ff
-   prog/xdp id 1 tag 3b185187f1855c4c jited=20
+1: https://lore.kernel.org/bpf/20200310174711.7490-1-lmb@cloudflare.com/
 
-Is it better to use xdpdrv as default choice if not specified by userspace?
-doing something like:
+Lorenz Bauer (6):
+  net: sk_msg: simplify sk_psock initialization
+  bpf: sockmap: merge sockmap and sockhash update functions
+  bpf: sockmap: call sock_map_update_elem directly
+  bpf: override the meaning of ARG_PTR_TO_MAP_VALUE for sockmap and
+    sockhash
+  bpf: sockmap: allow update from BPF
+  selftests: bpf: test sockmap update from BPF
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a00aa737ce29..1f85880ee412 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -8747,9 +8747,9 @@ static enum bpf_xdp_mode dev_xdp_mode(u32 flags)
- {
- 	if (flags & XDP_FLAGS_HW_MODE)
- 		return XDP_MODE_HW;
--	if (flags & XDP_FLAGS_DRV_MODE)
--		return XDP_MODE_DRV;
--	return XDP_MODE_SKB;
-+	if (flags & XDP_FLAGS_SKB_MODE)
-+		return XDP_MODE_SKB;
-+	return XDP_MODE_DRV;
- }
-=20
- static bpf_op_t dev_xdp_bpf_op(struct net_device *dev, enum bpf_xdp_mode m=
-ode)
+ include/linux/bpf.h                           |   7 +
+ include/linux/skmsg.h                         |  17 ---
+ kernel/bpf/syscall.c                          |   5 +-
+ kernel/bpf/verifier.c                         |  46 +++++-
+ net/core/skmsg.c                              |  34 ++++-
+ net/core/sock_map.c                           | 137 ++++++++----------
+ net/ipv4/tcp_bpf.c                            |  13 +-
+ net/ipv4/udp_bpf.c                            |   9 +-
+ .../selftests/bpf/prog_tests/sockmap_basic.c  |  76 ++++++++++
+ .../selftests/bpf/progs/test_sockmap_copy.c   |  48 ++++++
+ 10 files changed, 274 insertions(+), 118 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_copy.c
 
-Regards,
-Lorenzo
+-- 
+2.25.1
 
---vtzGhvizbBRQ85DL
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXzzwpwAKCRA6cBh0uS2t
-rJakAP9oK/7ojB74ukfFUa67FPpE4FN+Y7HUSlamOIgdLP92WwD/ae+Iksu4We9+
-c1Kvbz+hRLhsAzrcX75+zppCSJ5LugI=
-=nP1f
------END PGP SIGNATURE-----
-
---vtzGhvizbBRQ85DL--
