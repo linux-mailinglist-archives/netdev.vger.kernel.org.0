@@ -2,194 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78C4824A6EE
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 21:31:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AA1424A72D
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 21:49:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726852AbgHSTbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 15:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40730 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726211AbgHSTbK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 15:31:10 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A85C061757;
-        Wed, 19 Aug 2020 12:31:10 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id x2so13936366ybf.12;
-        Wed, 19 Aug 2020 12:31:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+ziAriBUKyH7IkszWBq/xOqvjPZXaDswTd4xrGlRf2M=;
-        b=BNndTF2lL85tNPjkxlknag90CkHNw7/DSlAryWFE9jExpfyKFdSydP5sK95o+/GQr5
-         tA6/mm2oig9WgTOuzFer3eDCGhsUBHYD7vAvobnVqMrIpIxgD9wa4m40uZ6zVWEuEWmM
-         zb8MElmQ3tB5ITEMc6egjZMy+clebjJDwSxZJK435cATG6MVjMMJIEd/TKyusn5lDPW+
-         8ewNgtRTDt0hXl7S5BvpqDIR/R6s8AX9iY7r3bfvpnexRbwlwXAHs30XqEvJ8xpa2Wk/
-         G0jEsDrqMS77Wf+8ecnlAcev1tbdiGGg2oJlvIvyfcl/XSm3WyQCFpfWUParJnwyTvbg
-         QRCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+ziAriBUKyH7IkszWBq/xOqvjPZXaDswTd4xrGlRf2M=;
-        b=CMx07Bp5lmC5va5hGXIuoKbVruOl95PWtg4oOjN/2stoQ9WHSGuM7MwLyCP9feuUEh
-         ewtgbtL0BjA6yrtXfAICtP0twGMTB26a+h+tI8Ky8VXb/3nRdTXi9O5YI61cQFUNzuQb
-         e2F2EXIGpfrmGl6QeVl7GQiOmMD3YtDIg1zzrcWCqbzJcNf6QVAsCNe7mR7hf11OCEDJ
-         CcZgbEHwyfY3Oyh943K45mxdthXexsShtUq+tFi4cjQl6iKmEPbeL+5ThPvif3wJaN9T
-         CseKCf76B8T5HF/v/v9j9K4WpU/ULsT7Wn93JWDMGV0Vd9IUvFB5aee96NGX6qrhm07r
-         /2Wg==
-X-Gm-Message-State: AOAM532Zb5fS5PZPw2baYfVpNHID62SxDnScsY/c9MlGHl/P5j5bmC2w
-        cGPzOMKDJIU7ydcQLmGcD5Tz795F0uE5hFGajx4=
-X-Google-Smtp-Source: ABdhPJxeRyTEqg3TpkoORnTHJbfXhCoegSyxwPkoYvkXtdad7D8FDze1mCNc0bQlyroBYIc0Nvm45kS4Cqt3cle5LUE=
-X-Received: by 2002:a25:2ad3:: with SMTP id q202mr34272934ybq.27.1597865469313;
- Wed, 19 Aug 2020 12:31:09 -0700 (PDT)
+        id S1726971AbgHSTtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 15:49:21 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:26752 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725275AbgHSTtU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 15:49:20 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07JJnJHo023102
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 12:49:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=X/r9VZgrV1LaURTeyhaRs6HnlrElR6hrezVteihKZU4=;
+ b=auveu8FbESV+yQYvC6PjhZV930aY28/fFs87cFkHgOZxnVR1U2JrnkcuKpPwQj140cES
+ taN3eWzUsQquJc7XchWZQKPP2cM+eSNis8aCpK8RQw4IB8g/NP/mktwsXn2LaNw/3oFs
+ UJvgGrDDowBXaI5FuAllMR3Z3PyD/7iVUhg= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3304nxt9sx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 12:49:19 -0700
+Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 19 Aug 2020 12:45:24 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 958232EC5DF2; Wed, 19 Aug 2020 12:45:22 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v3 bpf-next 0/5] Add libbpf support for type- and enum value-based CO-RE relocations
+Date:   Wed, 19 Aug 2020 12:45:14 -0700
+Message-ID: <20200819194519.3375898-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20200819052849.336700-1-andriin@fb.com> <20200819052849.336700-4-andriin@fb.com>
- <077f60a0-c457-15a1-ba5e-b2ec37457fcf@fb.com>
-In-Reply-To: <077f60a0-c457-15a1-ba5e-b2ec37457fcf@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 19 Aug 2020 12:30:58 -0700
-Message-ID: <CAEf4BzZ3QMTJ7r3FKV0ufA8PjOOobM7cHooi=ZGrDk7A-dN3_g@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 3/5] selftests/bpf: add CO-RE relo test for TYPE_ID_LOCAL/TYPE_ID_TARGET
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-19_13:2020-08-19,2020-08-19 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ impostorscore=0 spamscore=0 bulkscore=0 mlxlogscore=811 clxscore=1015
+ priorityscore=1501 malwarescore=0 lowpriorityscore=0 suspectscore=0
+ mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008190161
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 19, 2020 at 9:43 AM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 8/18/20 10:28 PM, Andrii Nakryiko wrote:
-> > Add tests for BTF type ID relocations. To allow testing this, enhance
-> > core_relo.c test runner to allow dynamic initialization of test inputs.
-> > If __builtin_btf_type_id() is not supported by Clang, skip tests.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >   .../selftests/bpf/prog_tests/core_reloc.c     | 168 +++++++++++++++++-
-> >   .../bpf/progs/btf__core_reloc_type_id.c       |   3 +
-> >   ...tf__core_reloc_type_id___missing_targets.c |   3 +
-> >   .../selftests/bpf/progs/core_reloc_types.h    |  40 +++++
-> >   .../bpf/progs/test_core_reloc_type_based.c    |  14 --
-> >   .../bpf/progs/test_core_reloc_type_id.c       | 107 +++++++++++
-> >   6 files changed, 316 insertions(+), 19 deletions(-)
-> >   create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_type_id.c
-> >   create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_type_id___missing_targets.c
-> >   create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_type_id.c
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-> > index b775ce0ede41..ad550510ef69 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-> > @@ -3,6 +3,9 @@
-> >   #include "progs/core_reloc_types.h"
-> >   #include <sys/mman.h>
-> >   #include <sys/syscall.h>
-> > +#include <bpf/btf.h>
-> > +
-> > +static int duration = 0;
-> >
-> >   #define STRUCT_TO_CHAR_PTR(struct_name) (const char *)&(struct struct_name)
-> >
-> [...]
-> > +
-> > +typedef struct a_struct named_struct_typedef;
-> > +
-> > +typedef int (*func_proto_typedef)(long);
-> > +
-> > +typedef char arr_typedef[20];
-> > +
-> > +struct core_reloc_type_id_output {
-> > +     int local_anon_struct;
-> > +     int local_anon_union;
-> > +     int local_anon_enum;
-> > +     int local_anon_func_proto_ptr;
-> > +     int local_anon_void_ptr;
-> > +     int local_anon_arr;
-> > +
-> > +     int local_struct;
-> > +     int local_union;
-> > +     int local_enum;
-> > +     int local_int;
-> > +     int local_struct_typedef;
-> > +     int local_func_proto_typedef;
-> > +     int local_arr_typedef;
-> > +
-> > +     int targ_struct;
-> > +     int targ_union;
-> > +     int targ_enum;
-> > +     int targ_int;
-> > +     int targ_struct_typedef;
-> > +     int targ_func_proto_typedef;
-> > +     int targ_arr_typedef;
-> > +};
-> > +
-> > +/* preserve types even if Clang doesn't support built-in */
-> > +struct a_struct t1 = {};
-> > +union a_union t2 = {};
-> > +enum an_enum t3 = 0;
-> > +named_struct_typedef t4 = {};
-> > +func_proto_typedef t5 = 0;
-> > +arr_typedef t6 = {};
-> > +
-> > +SEC("raw_tracepoint/sys_enter")
-> > +int test_core_type_id(void *ctx)
-> > +{
-> > +#if __has_builtin(__builtin_btf_type_id)
->
-> __builtin_btf_type_id is introduced in llvm11 but has issues for the
-> following case:
->     - struct t { ... } is defined
->     - typedef struct t __t is defined
-> both "struct t" and "__t" are used in __builtin_btf_type_id in the same
-> function. This is a corner case but it will make the test failure with
-> llvm11.
->
-> I suggest to test builtin __builtin_preserve_type_info here with a
-> comment to explain why. This will available test failure with llvm11.
->
+This patch set adds libbpf support for two new classes of CO-RE relocatio=
+ns:
+type-based (TYPE_EXISTS/TYPE_SIZE/TYPE_ID_LOCAL/TYPE_ID_TARGET) and enum
+value-vased (ENUMVAL_EXISTS/ENUMVAL_VALUE):
+  - TYPE_EXISTS allows to detect presence in kernel BTF of a locally-reco=
+rded
+    BTF type. Useful for feature detection (new functionality often comes=
+ with
+    new internal kernel types), as well as handling type renames and bigg=
+er
+    refactorings.
+  - TYPE_SIZE allows to get the real size (in bytes) of a specified kerne=
+l
+    type. Useful for dumping internal structure as-is through perfbuf or
+    ringbuf.
+  - TYPE_ID_LOCAL/TYPE_ID_TARGET allow to capture BTF type ID of a BTF ty=
+pe in
+    program's BTF or kernel BTF, respectively. These could be used for
+    high-performance and space-efficient generic data dumping/logging by
+    relying on small and cheap BTF type ID as a data layout descriptor, f=
+or
+    post-processing on user-space side.
+  - ENUMVAL_EXISTS can be used for detecting the presence of enumerator v=
+alue
+    in kernel's enum type. Most direct application is to detect BPF helpe=
+r
+    support in kernel.
+  - ENUMVAL_VALUE allows to relocate real integer value of kernel enumera=
+tor
+    value, which is subject to change (e.g., always a potential issue for
+    internal, non-UAPI, kernel enums).
 
-ok, makes sense, will add comment and switch
+I've indicated potential applications for these relocations, but relocati=
+ons
+themselves are generic and unassuming and are designed to work correctly =
+even
+in unintended applications. Furthermore, relocated values become constant=
+s,
+known to the verifier and could and would be used for dead branch code
+detection and elimination. This makes them ideal to do all sorts of featu=
+re
+detection and guarding functionality that's not available on some older (=
+but
+still supported by BPF program) kernels, while having to compile and main=
+tain
+one unified source code.
 
->
-> > +     struct core_reloc_type_id_output *out = (void *)&data.out;
-> > +
-> > +     out->local_anon_struct = bpf_core_type_id_local(struct { int marker_field; });
-> > +     out->local_anon_union = bpf_core_type_id_local(union { int marker_field; });
-> > +     out->local_anon_enum = bpf_core_type_id_local(enum { MARKER_ENUM_VAL = 123 });
-> > +     out->local_anon_func_proto_ptr = bpf_core_type_id_local(_Bool(*)(int));
-> > +     out->local_anon_void_ptr = bpf_core_type_id_local(void *);
-> > +     out->local_anon_arr = bpf_core_type_id_local(_Bool[47]);
-> > +
-> > +     out->local_struct = bpf_core_type_id_local(struct a_struct);
-> > +     out->local_union = bpf_core_type_id_local(union a_union);
-> > +     out->local_enum = bpf_core_type_id_local(enum an_enum);
-> > +     out->local_int = bpf_core_type_id_local(int);
-> > +     out->local_struct_typedef = bpf_core_type_id_local(named_struct_typedef);
-> > +     out->local_func_proto_typedef = bpf_core_type_id_local(func_proto_typedef);
-> > +     out->local_arr_typedef = bpf_core_type_id_local(arr_typedef);
-> > +
-> > +     out->targ_struct = bpf_core_type_id_kernel(struct a_struct);
-> > +     out->targ_union = bpf_core_type_id_kernel(union a_union);
-> > +     out->targ_enum = bpf_core_type_id_kernel(enum an_enum);
-> > +     out->targ_int = bpf_core_type_id_kernel(int);
-> > +     out->targ_struct_typedef = bpf_core_type_id_kernel(named_struct_typedef);
-> > +     out->targ_func_proto_typedef = bpf_core_type_id_kernel(func_proto_typedef);
-> > +     out->targ_arr_typedef = bpf_core_type_id_kernel(arr_typedef);
-> > +#else
-> > +     data.skip = true;
-> > +#endif
-> > +
-> > +     return 0;
-> > +}
-> > +
->
-> empty line at the end of file?
+Selftests are added for all the new features. Selftests utilizing new Cla=
+ng
+built-ins are designed such that they will compile with older Clangs and =
+will
+be skipped during test runs. So this shouldn't cause any build and test
+failures on systems with slightly outdated Clang compiler.
+
+LLVM patches adding these relocation in Clang:
+  - __builtin_btf_type_id() ([0], [1], [2]);
+  - __builtin_preserve_type_info(), __builtin_preserve_enum_value() ([3],=
+ [4]).
+
+  [0] https://reviews.llvm.org/D74572
+  [1] https://reviews.llvm.org/D74668
+  [2] https://reviews.llvm.org/D85174
+  [3] https://reviews.llvm.org/D83878
+  [4] https://reviews.llvm.org/D83242
+
+v2->v3:
+  - fix feature detection for __builtin_btf_type_id() test (Yonghong);
+  - fix extra empty lines at the end of files (Yonghong);
+
+v1->v2:
+  - selftests detect built-in support and are skipped if not found (Alexe=
+i).
+
+Andrii Nakryiko (5):
+  libbpf: implement type-based CO-RE relocations support
+  selftests/bpf: test TYPE_EXISTS and TYPE_SIZE CO-RE relocations
+  selftests/bpf: add CO-RE relo test for TYPE_ID_LOCAL/TYPE_ID_TARGET
+  libbpf: implement enum value-based CO-RE relocations
+  selftests/bpf: add tests for ENUMVAL_EXISTS/ENUMVAL_VALUE relocations
+
+ tools/lib/bpf/bpf_core_read.h                 |  80 +++-
+ tools/lib/bpf/libbpf.c                        | 376 ++++++++++++++++--
+ tools/lib/bpf/libbpf_internal.h               |   6 +
+ .../selftests/bpf/prog_tests/core_reloc.c     | 349 ++++++++++++++--
+ .../bpf/progs/btf__core_reloc_enumval.c       |   3 +
+ .../progs/btf__core_reloc_enumval___diff.c    |   3 +
+ .../btf__core_reloc_enumval___err_missing.c   |   3 +
+ .../btf__core_reloc_enumval___val3_missing.c  |   3 +
+ .../bpf/progs/btf__core_reloc_type_based.c    |   3 +
+ ...btf__core_reloc_type_based___all_missing.c |   3 +
+ .../btf__core_reloc_type_based___diff_sz.c    |   3 +
+ ...f__core_reloc_type_based___fn_wrong_args.c |   3 +
+ .../btf__core_reloc_type_based___incompat.c   |   3 +
+ .../bpf/progs/btf__core_reloc_type_id.c       |   3 +
+ ...tf__core_reloc_type_id___missing_targets.c |   3 +
+ .../selftests/bpf/progs/core_reloc_types.h    | 327 ++++++++++++++-
+ .../bpf/progs/test_core_reloc_enumval.c       |  72 ++++
+ .../bpf/progs/test_core_reloc_kernel.c        |   2 +
+ .../bpf/progs/test_core_reloc_type_based.c    | 110 +++++
+ .../bpf/progs/test_core_reloc_type_id.c       | 113 ++++++
+ 20 files changed, 1412 insertions(+), 56 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_enu=
+mval.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_enu=
+mval___diff.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_enu=
+mval___err_missing.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_enu=
+mval___val3_missing.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_typ=
+e_based.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_typ=
+e_based___all_missing.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_typ=
+e_based___diff_sz.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_typ=
+e_based___fn_wrong_args.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_typ=
+e_based___incompat.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_typ=
+e_id.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_typ=
+e_id___missing_targets.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_enu=
+mval.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_typ=
+e_based.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_typ=
+e_id.c
+
+--=20
+2.24.1
+
