@@ -2,84 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E8032497A5
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:45:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F3AE249795
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:39:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726702AbgHSHpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 03:45:51 -0400
-Received: from mailgw01.mediatek.com ([216.200.240.184]:46722 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725601AbgHSHpu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:45:50 -0400
-X-Greylist: delayed 305 seconds by postgrey-1.27 at vger.kernel.org; Wed, 19 Aug 2020 03:45:50 EDT
-X-UUID: f89b5b861c5f43ee874e5302307a12a6-20200818
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=fA1ZbejQFXPVLQG+Xp5gLcjblRbOlo94pfMY0RDgam0=;
-        b=Wq6KxU26E3Hy1RaGgPDFkuiC1wtJh3NWU9TaEzhThMlD9GaXmHENZhNPnsPC7HQnnjXE2BwAhxR3HTpvzjVFRgW27h3lhsGvukd7t/hGDk2y7Wzq9Um8IcuWMPZ8ccC2tLjz+4opqS8oZ16viCadWg7a9/nrJLEIyjPMCuQ/D5Y=;
-X-UUID: f89b5b861c5f43ee874e5302307a12a6-20200818
-Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by mailgw01.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (musrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 1275055599; Tue, 18 Aug 2020 23:40:44 -0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- MTKMBS62DR.mediatek.inc (172.29.94.18) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 19 Aug 2020 00:38:35 -0700
-Received: from [172.21.84.99] (172.21.84.99) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 19 Aug 2020 15:38:23 +0800
-Message-ID: <1597822704.31846.27.camel@mtksdccf07>
-Subject: Re: [PATCH net-next v2 0/7] net-next: dsa: mt7530: add support for
- MT7531
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "vivien.didelot@savoirfairelinux.com" 
-        <vivien.didelot@savoirfairelinux.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        David Miller <davem@davemloft.net>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        =?ISO-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Date:   Wed, 19 Aug 2020 15:38:24 +0800
-In-Reply-To: <CALW65jZRWwW4DqpsCM9J=GRp6KnxqT-9MHUO7WSRJtp4E9vnFw@mail.gmail.com>
-References: <cover.1597729692.git.landen.chao@mediatek.com>
-         <CALW65jZRWwW4DqpsCM9J=GRp6KnxqT-9MHUO7WSRJtp4E9vnFw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
+        id S1727770AbgHSHjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 03:39:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43246 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726685AbgHSHjI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:39:08 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E96C061389;
+        Wed, 19 Aug 2020 00:39:07 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id b17so23751390ion.7;
+        Wed, 19 Aug 2020 00:39:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8v7x6IOn333yPhRdoFI5SCrzReSkQTcm7K4YrEpFEBA=;
+        b=Grv6DZoBH91z1nfQ1nvkNHocRmVDPaW63xN71hqeYCYPlEhyIkJFS4GfIGNTFQ3vKE
+         9DAK9KYUBFIeM77M0+UIm0atCbMH1uMMfmZ+tSv4J0Fe0xiVdhSBfQRcAHHTg1HqQq89
+         Vct7mkLIQ4RE7iC7VtyJHpXPcA+hCKLIRk9+87Ak//jDs01eDQXtcMWpI16+78lTiK4o
+         kInWzYBvvn2J3cLERbI2be3hqOf2XGBTDroDZ8NgTtfd6fPHx7lNCNv++En0pIQEDjp1
+         gm1Bai1vLy37EfiaS9nWETsjZmnxDqs2RWtms3RoooO7A6xlonNo/OQzb8KWBK2zlYKW
+         oR6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8v7x6IOn333yPhRdoFI5SCrzReSkQTcm7K4YrEpFEBA=;
+        b=WGq6z/pNfSLMF63TbNP6SMoP53+A5UL62bDpngfcUzkZkl6S3QEjEnNIhaK+bGIJ7u
+         3JMfnUzc5QLSFtU2rQhqAWvUyLphh3YoY30Bpz31I91MIVbKmWjHT59CDO4oExHKsLWh
+         ciEwTJjAYBzevxSo0fsHU3GePY312v51aTyJVhqCDxQg2a7UWvlKQNsi+4oBjVU7qGkO
+         GdCcblA6z3QiBU3TuQPHjKmTCQi8pr5DBuq28mbwumy0h15gf3zWe3qyVQYPIs4BRd/1
+         EFCnePafIk0dEvKF8/NOg6639qIpa80DuSnIp/NvkMI3yAnDVG8i0yqQHcreYl1xLbl5
+         MMTg==
+X-Gm-Message-State: AOAM530NTuTt/fJMFdzKqXpvg8DHvZJzehw1DVa6FH1ACn+rvYBtPK1X
+        H0i3e7Jmb/Gc7WZhCjdePoWyU6L4JZOZENrPTQA=
+X-Google-Smtp-Source: ABdhPJyLHtqcpAQnWdt0JzqGAGPzOOODIJw2TbTHevPEDtMgnnYOnwAUAI/bToGHrYQolVMZ6j1lGFf9rnA6PRSVw00=
+X-Received: by 2002:a6b:b888:: with SMTP id i130mr19403919iof.182.1597822747082;
+ Wed, 19 Aug 2020 00:39:07 -0700 (PDT)
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+References: <20200818122637.21449-1-linmiaohe@huawei.com> <d713ae02fc02ec4cf5edf1a6d0e9be49f00d5371.camel@kernel.org>
+In-Reply-To: <d713ae02fc02ec4cf5edf1a6d0e9be49f00d5371.camel@kernel.org>
+From:   Ilya Dryomov <idryomov@gmail.com>
+Date:   Wed, 19 Aug 2020 09:39:14 +0200
+Message-ID: <CAOi1vP82zHH3YbyvQujmqzFFtXzwoRn2bvR6z8KBSsMoJwreQg@mail.gmail.com>
+Subject: Re: [PATCH] libceph: Convert to use the preferred fallthrough macro
+To:     Jeff Layton <jlayton@kernel.org>
+Cc:     Miaohe Lin <linmiaohe@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        "Alexander A. Klimov" <grandmaster@al2klimov.de>,
+        Ceph Development <ceph-devel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgREVORywNCg0KTVQ3NTMxIG1pcnJvciBwb3J0IGhhcyBiZWVuIGZpeGVkIGJ5IG5ldyBkZWZp
-bml0aW9uIG9mIHJlZ2lzdGVyIGJhc2UgaW4gDQpoZWFkZXIgZmlsZS4gVGhlIGxvZ2ljIG9mIG1p
-cnJvciBwb3J0IHNldHRpbmcgaW4gNzUzMC5jIGlzIHJldXNlZC4NCg0KQEAgLTQxLDYgKzQyLDMz
-IEBAICBlbnVtIG10NzUzeF9pZCB7DQogI2RlZmluZSAgTUlSUk9SX1BPUlQoeCkJCQkoKHgpICYg
-MHg3KQ0KICNkZWZpbmUgIE1JUlJPUl9NQVNLCQkJMHg3DQogDQorLyogUmVnaXN0ZXJzIGZvciBD
-UFUgZm9yd2FyZCBjb250cm9sICovDQorI2RlZmluZSBNVDc1MzFfQ0ZDCQkJMHg0DQorI2RlZmlu
-ZSAgTVQ3NTMxX01JUlJPUl9FTgkJQklUKDE5KQ0KKyNkZWZpbmUgIE1UNzUzMV9NSVJST1JfTUFT
-SwkJKE1JUlJPUl9NQVNLIDw8IDE2KQ0KKyNkZWZpbmUgIE1UNzUzMV9NSVJST1JfUE9SVF9HRVQo
-eCkJKCgoeCkgPj4gMTYpICYgTUlSUk9SX01BU0spDQorI2RlZmluZSAgTVQ3NTMxX01JUlJPUl9Q
-T1JUX1NFVCh4KQkoKCh4KSAmIE1JUlJPUl9NQVNLKSA8PCAxNikNCisjZGVmaW5lICBNVDc1MzFf
-Q1BVX1BNQVBfTUFTSwkJR0VOTUFTSyg3LCAwKQ0KKw0KKyNkZWZpbmUgTVQ3NTNYX01JUlJPUl9S
-RUcoaWQpCQkoKChpZCkgPT0gSURfTVQ3NTMxKSA/IFwNCisJCQkJCSBNVDc1MzFfQ0ZDIDogTVQ3
-NTMwX01GQykNCisjZGVmaW5lIE1UNzUzWF9NSVJST1JfRU4oaWQpCQkoKChpZCkgPT0gSURfTVQ3
-NTMxKSA/IFwNCisJCQkJCSBNVDc1MzFfTUlSUk9SX0VOIDogTUlSUk9SX0VOKQ0KKyNkZWZpbmUg
-TVQ3NTNYX01JUlJPUl9NQVNLKGlkKQkJKCgoaWQpID09IElEX01UNzUzMSkgPyBcDQorCQkJCQkg
-TVQ3NTMxX01JUlJPUl9NQVNLIDogTUlSUk9SX01BU0spDQoNCg0KT24gV2VkLCAyMDIwLTA4LTE5
-IGF0IDExOjQ5ICswODAwLCBERU5HIFFpbmdmYW5nIHdyb3RlOg0KPiBIaSwNCj4gDQo+IElzIHBv
-cnQgbWlycm9yaW5nIHdvcmtpbmc/IFBvcnQgbWlycm9yaW5nIHJlZ2lzdGVycyBvbiBNVDc1MzEg
-aGF2ZQ0KPiBtb3ZlZCwgYWNjb3JkaW5nIHRvIGJwaSdzIE1UNzUzMSByZWZlcmVuY2UgbWFudWFs
-Lg0KPiBQbGVhc2UgZml4IHRoYXQgYXMgd2VsbC4NCg0K
+On Tue, Aug 18, 2020 at 9:56 PM Jeff Layton <jlayton@kernel.org> wrote:
+>
+> On Tue, 2020-08-18 at 08:26 -0400, Miaohe Lin wrote:
+> > Convert the uses of fallthrough comments to fallthrough macro.
+> >
+> > Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> > ---
+> >  net/ceph/ceph_hash.c    | 20 ++++++++++----------
+> >  net/ceph/crush/mapper.c |  2 +-
+> >  net/ceph/messenger.c    |  4 ++--
+> >  net/ceph/mon_client.c   |  2 +-
+> >  net/ceph/osd_client.c   |  4 ++--
+> >  5 files changed, 16 insertions(+), 16 deletions(-)
+> >
+> > diff --git a/net/ceph/ceph_hash.c b/net/ceph/ceph_hash.c
+> > index 81e1e006c540..16a47c0eef37 100644
+> > --- a/net/ceph/ceph_hash.c
+> > +++ b/net/ceph/ceph_hash.c
+> > @@ -50,35 +50,35 @@ unsigned int ceph_str_hash_rjenkins(const char *str, unsigned int length)
+> >       switch (len) {
+> >       case 11:
+> >               c = c + ((__u32)k[10] << 24);
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case 10:
+> >               c = c + ((__u32)k[9] << 16);
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case 9:
+> >               c = c + ((__u32)k[8] << 8);
+> >               /* the first byte of c is reserved for the length */
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case 8:
+> >               b = b + ((__u32)k[7] << 24);
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case 7:
+> >               b = b + ((__u32)k[6] << 16);
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case 6:
+> >               b = b + ((__u32)k[5] << 8);
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case 5:
+> >               b = b + k[4];
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case 4:
+> >               a = a + ((__u32)k[3] << 24);
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case 3:
+> >               a = a + ((__u32)k[2] << 16);
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case 2:
+> >               a = a + ((__u32)k[1] << 8);
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case 1:
+> >               a = a + k[0];
+> >               /* case 0: nothing left to add */
+> > diff --git a/net/ceph/crush/mapper.c b/net/ceph/crush/mapper.c
+> > index 07e5614eb3f1..7057f8db4f99 100644
+> > --- a/net/ceph/crush/mapper.c
+> > +++ b/net/ceph/crush/mapper.c
+> > @@ -987,7 +987,7 @@ int crush_do_rule(const struct crush_map *map,
+> >               case CRUSH_RULE_CHOOSELEAF_FIRSTN:
+> >               case CRUSH_RULE_CHOOSE_FIRSTN:
+> >                       firstn = 1;
+> > -                     /* fall through */
+> > +                     fallthrough;
+> >               case CRUSH_RULE_CHOOSELEAF_INDEP:
+> >               case CRUSH_RULE_CHOOSE_INDEP:
+> >                       if (wsize == 0)
+> > diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+> > index 27d6ab11f9ee..bdfd66ba3843 100644
+> > --- a/net/ceph/messenger.c
+> > +++ b/net/ceph/messenger.c
+> > @@ -412,7 +412,7 @@ static void ceph_sock_state_change(struct sock *sk)
+> >       switch (sk->sk_state) {
+> >       case TCP_CLOSE:
+> >               dout("%s TCP_CLOSE\n", __func__);
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case TCP_CLOSE_WAIT:
+> >               dout("%s TCP_CLOSE_WAIT\n", __func__);
+> >               con_sock_state_closing(con);
+> > @@ -2751,7 +2751,7 @@ static int try_read(struct ceph_connection *con)
+> >                       switch (ret) {
+> >                       case -EBADMSG:
+> >                               con->error_msg = "bad crc/signature";
+> > -                             /* fall through */
+> > +                             fallthrough;
+> >                       case -EBADE:
+> >                               ret = -EIO;
+> >                               break;
+> > diff --git a/net/ceph/mon_client.c b/net/ceph/mon_client.c
+> > index 3d8c8015e976..d633a0aeaa55 100644
+> > --- a/net/ceph/mon_client.c
+> > +++ b/net/ceph/mon_client.c
+> > @@ -1307,7 +1307,7 @@ static struct ceph_msg *mon_alloc_msg(struct ceph_connection *con,
+> >                * request had a non-zero tid.  Work around this weirdness
+> >                * by allocating a new message.
+> >                */
+> > -             /* fall through */
+> > +             fallthrough;
+> >       case CEPH_MSG_MON_MAP:
+> >       case CEPH_MSG_MDS_MAP:
+> >       case CEPH_MSG_OSD_MAP:
+> > diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+> > index e4fbcad6e7d8..7901ab6c79fd 100644
+> > --- a/net/ceph/osd_client.c
+> > +++ b/net/ceph/osd_client.c
+> > @@ -3854,7 +3854,7 @@ static void scan_requests(struct ceph_osd *osd,
+> >                       if (!force_resend && !force_resend_writes)
+> >                               break;
+> >
+> > -                     /* fall through */
+> > +                     fallthrough;
+> >               case CALC_TARGET_NEED_RESEND:
+> >                       cancel_linger_map_check(lreq);
+> >                       /*
+> > @@ -3891,7 +3891,7 @@ static void scan_requests(struct ceph_osd *osd,
+> >                            !force_resend_writes))
+> >                               break;
+> >
+> > -                     /* fall through */
+> > +                     fallthrough;
+> >               case CALC_TARGET_NEED_RESEND:
+> >                       cancel_map_check(req);
+> >                       unlink_request(osd, req);
+>
+>
+> Looks sane. Merged into ceph-client/testing branch.
 
+I amended this to also cover fs/ceph and rbd.
+
+Thanks,
+
+                Ilya
