@@ -2,121 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE649249E8E
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 14:47:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62859249E83
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 14:47:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728504AbgHSMrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 08:47:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728325AbgHSMpl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 08:45:41 -0400
-Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C488C061342
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 05:45:40 -0700 (PDT)
-Received: from ramsan ([84.195.186.194])
-        by michel.telenet-ops.be with bizsmtp
-        id HQlg230044C55Sk06Qlgcw; Wed, 19 Aug 2020 14:45:40 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1k8NTI-0002Nb-5r; Wed, 19 Aug 2020 14:45:40 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1k8NTI-0005HL-4R; Wed, 19 Aug 2020 14:45:40 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2] dt-bindings: net: renesas,ether: Improve schema validation
-Date:   Wed, 19 Aug 2020 14:45:39 +0200
-Message-Id: <20200819124539.20239-1-geert+renesas@glider.be>
-X-Mailer: git-send-email 2.17.1
+        id S1728382AbgHSMrH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Aug 2020 08:47:07 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:38998 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728559AbgHSMqA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 08:46:00 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-20-1_dRjE57NPqksr6P6Xk02Q-1; Wed, 19 Aug 2020 13:45:53 +0100
+X-MC-Unique: 1_dRjE57NPqksr6P6Xk02Q-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 19 Aug 2020 13:45:52 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 19 Aug 2020 13:45:52 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>,
+        "'linux-sctp@vger.kernel.org'" <linux-sctp@vger.kernel.org>
+CC:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
+Subject: RE: [PATCH v2] net: sctp: Fix negotiation of the number of data
+ streams.
+Thread-Topic: [PATCH v2] net: sctp: Fix negotiation of the number of data
+ streams.
+Thread-Index: AdZ2Jpt5uFDQ+GlJS8asoZmPH8fG2Q==
+Date:   Wed, 19 Aug 2020 12:45:52 +0000
+Message-ID: <3aef12f2fdbb4ee6b885719f5561a997@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 1.001999
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  - Remove pinctrl consumer properties, as they are handled by core
-    dt-schema,
-  - Document missing properties,
-  - Document missing PHY child node,
-  - Add "additionalProperties: false".
+The number of output and input streams was never being reduced, eg when
+processing received INIT or INIT_ACK chunks.
+The effect is that DATA chunks can be sent with invalid stream ids
+and then discarded by the remote system.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Fixes: 2075e50caf5ea ("sctp: convert to genradix")
+Signed-off-by: David Laight <david.laight@aculab.com>
 ---
-v2:
-  - Add Reviewed-by.
----
- .../bindings/net/renesas,ether.yaml           | 22 +++++++++++++------
- 1 file changed, 15 insertions(+), 7 deletions(-)
+ net/sctp/stream.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/renesas,ether.yaml b/Documentation/devicetree/bindings/net/renesas,ether.yaml
-index 08678af5ed9364cd..8ce5ed8a58dd76e6 100644
---- a/Documentation/devicetree/bindings/net/renesas,ether.yaml
-+++ b/Documentation/devicetree/bindings/net/renesas,ether.yaml
-@@ -59,9 +59,15 @@ properties:
-   clocks:
-     maxItems: 1
+This needs backporting to 5.1 and all later kernels.
+
+Changes since v1:
+- Fix 'Fixes' tag.
+- Improve description.
+
+diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+index bda2536dd740..6dc95dcc0ff4 100644
+--- a/net/sctp/stream.c
++++ b/net/sctp/stream.c
+@@ -88,12 +88,13 @@ static int sctp_stream_alloc_out(struct sctp_stream *stream, __u16 outcnt,
+ 	int ret;
  
--  pinctrl-0: true
-+  power-domains:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
+ 	if (outcnt <= stream->outcnt)
+-		return 0;
++		goto out;
  
--  pinctrl-names: true
-+  phy-mode: true
-+
-+  phy-handle: true
+ 	ret = genradix_prealloc(&stream->out, outcnt, gfp);
+ 	if (ret)
+ 		return ret;
  
-   renesas,no-ether-link:
-     type: boolean
-@@ -74,6 +80,11 @@ properties:
-       specify when the Ether LINK signal is active-low instead of normal
-       active-high
++out:
+ 	stream->outcnt = outcnt;
+ 	return 0;
+ }
+@@ -104,12 +105,13 @@ static int sctp_stream_alloc_in(struct sctp_stream *stream, __u16 incnt,
+ 	int ret;
  
-+patternProperties:
-+  "^ethernet-phy@[0-9a-f]$":
-+    type: object
-+    $ref: ethernet-phy.yaml#
-+
- required:
-   - compatible
-   - reg
-@@ -83,7 +94,8 @@ required:
-   - '#address-cells'
-   - '#size-cells'
-   - clocks
--  - pinctrl-0
-+
-+additionalProperties: false
+ 	if (incnt <= stream->incnt)
+-		return 0;
++		goto out;
  
- examples:
-   # Lager board
-@@ -99,8 +111,6 @@ examples:
-         clocks = <&mstp8_clks R8A7790_CLK_ETHER>;
-         phy-mode = "rmii";
-         phy-handle = <&phy1>;
--        pinctrl-0 = <&ether_pins>;
--        pinctrl-names = "default";
-         renesas,ether-link-active-low;
-         #address-cells = <1>;
-         #size-cells = <0>;
-@@ -109,7 +119,5 @@ examples:
-             reg = <1>;
-             interrupt-parent = <&irqc0>;
-             interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
--            pinctrl-0 = <&phy1_pins>;
--            pinctrl-names = "default";
-         };
-     };
+ 	ret = genradix_prealloc(&stream->in, incnt, gfp);
+ 	if (ret)
+ 		return ret;
+ 
++out:
+ 	stream->incnt = incnt;
+ 	return 0;
+ }
 -- 
-2.17.1
+2.25.1
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
