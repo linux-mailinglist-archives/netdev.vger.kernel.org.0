@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE732249416
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 06:28:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30910249417
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 06:28:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726570AbgHSE2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 00:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
+        id S1726698AbgHSE2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 00:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725280AbgHSE2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 00:28:06 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35004C061389;
-        Tue, 18 Aug 2020 21:28:06 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id j13so519446pjd.4;
-        Tue, 18 Aug 2020 21:28:06 -0700 (PDT)
+        with ESMTP id S1725903AbgHSE2H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 00:28:07 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC94C061342;
+        Tue, 18 Aug 2020 21:28:07 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id ds1so198207pjb.1;
+        Tue, 18 Aug 2020 21:28:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=JLtbo5erIXW9fZ8Wma47Tf0AHp1bi1VfpKCia0Xa9ww=;
-        b=i/tFu7wtd0oBJF+mUp3qKXcORYLNJ2fq77wfGSCX0hXTyfy5A6j2NieFFxhRHqIgLT
-         LfePyBt5z0N1vUYHQzrg3icAGvtmkspqGRRJGka9s8r3c0ZYaddPk+AAtZN1kZ2+amGK
-         DFnNvOViMwIumMIZ8QP3CitdsAZZZEVtlx70f1RVoyj1AsqovX8x8WdpawadVaZgZgnB
-         A/4hE7EXbyKOPh44Q0GrvAsdOmDme8e0bPUtvxyYlQVeEIYuDMM/rl45cww78Ds0wQUI
-         bPqbyUyOxVOZICdhyBPCqcWk8pfFwMqV7z3q5Bq5HfvKVjSuGpi9zIIBRO4dGmjMH8Bi
-         P3JA==
+        bh=KI8OZy1Y/mjSCO7OgRxbouN2H002E6+7JQ8LD6ZqKkw=;
+        b=Yx3u86uULOar86dNQHR+O995odYY90AHExKho+xtvYlRjzjuxlPAIAM6ktc47BPMMg
+         PY76XHmN3YyfvdfCPCcOAxiA9t7Il+UvSIiqEj6mBetJHs4K1vir+2qrCdEMoBXLDJhD
+         OR6HCnHzWZ3i5rs4xjTAbbWdxwR2aCqTOG43Vvj4+c9aJgIk8okPc61X5f7RH4iAEYK4
+         1CeMQcxHeELNCckDR6ADIBVsnHM4bQPXU2wHx4Od9lUrERdIzkQhbJz/gf4yksH9Uu3G
+         2dNDHVrtKu+w2If4Fr4bU8YSJErv/GzU3x03SLRed3i53aiVIhubBTVHN4L6eoQCaJyy
+         ic6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=JLtbo5erIXW9fZ8Wma47Tf0AHp1bi1VfpKCia0Xa9ww=;
-        b=nh3x1oV0GnJDjN0HC3V6h9xMpiOaWxuoFQuk3V6J2tNgICP/CBngHFgslL1WJtphAp
-         kATC2c8kD29RtfUxdtXxbP9xeEtooTiSNznqGJbzjN7sLSjpowgbBFk2b4MbLdW7NYKa
-         o1mDGHWuBfX8sb6LvIKsbAT2T/+rsw6ZPq4RFcCbN6UQG2bNzMok8Y9euFGtFgoNxVx2
-         RmhCUDqJ7G2whWzdy3pBiHGiFzJaU/dWSv4TiVH69nbLXmVphng4NLMWsI6+PckQmJRT
-         5Di2BuwnvZlMTv06CJ/7tSs09P4ZZmm8XQ+RF7Zu3c2cg17Jd4a/tX0WbsZAKsvff4Tm
-         X61g==
-X-Gm-Message-State: AOAM530lERHASXfDBOf5iZEvXD0KUTaJzCIezkHfGomKCjrv2LOcuJhM
-        NTvMkw23ww77zbzVWQbKz4jypno6VIw=
-X-Google-Smtp-Source: ABdhPJx3jer5DeIeDdEBfAmF8QWCFRZc43bYtdTV5g+s+HlHybp8jm+SBKOqtUuvXxpFigcv3KGXVw==
-X-Received: by 2002:a17:902:8f82:: with SMTP id z2mr15571243plo.177.1597811285158;
-        Tue, 18 Aug 2020 21:28:05 -0700 (PDT)
+        bh=KI8OZy1Y/mjSCO7OgRxbouN2H002E6+7JQ8LD6ZqKkw=;
+        b=kIajbZ+rbzQ4p5XYb7cNoH5la/tqkRK6uJEXGUXuTpGm4bRk6iOkZjps9qIrO1xBEu
+         PUGrbg4uIrg2gFfnM2z6jH1mX+6Y2Rr3D1cxXDq31l2eiWmJBwWRmL+qPmA3nsy0xOdC
+         +EecR3XweQ1k/QlbcWTh/agcyNuIQanv8zCABzIUyy866AqDgwR369sMl4m+IpLtHJjx
+         N8y7j46s1cPgKXIaNUHqmEcf0BrshlMOoi8XyfJdkSKYh7XWaEjMwNEdcFv+zgOp+VPd
+         MlBqFbUZBHDN4HPwyH7FVh3smJk26buf5S46g8Uckd2sKibhSi4hlVyD0ogfkpaMe6HX
+         nf+Q==
+X-Gm-Message-State: AOAM532L1ujzli6py2MaxI3yUcly/TSXLYwNMfxmaX1aGZHVWfI4lE27
+        jjMp1tFm9rhAp2517BZXr9NPqawIv+k=
+X-Google-Smtp-Source: ABdhPJyVwcHAhuVQBEAjmxMsupFZVxjBO1T+eUHNjoX8+IQ/L5m1s+dD2Mw05a4neRsR1LYA0ji63Q==
+X-Received: by 2002:a17:902:b60d:: with SMTP id b13mr17267237pls.48.1597811286862;
+        Tue, 18 Aug 2020 21:28:06 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id f6sm24132023pga.9.2020.08.18.21.28.03
+        by smtp.gmail.com with ESMTPSA id f6sm24132023pga.9.2020.08.18.21.28.05
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Aug 2020 21:28:04 -0700 (PDT)
+        Tue, 18 Aug 2020 21:28:06 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
         kernel-team@fb.com
-Subject: [PATCH v6 bpf-next 2/4] bpf: Add BPF program and map iterators as built-in BPF programs.
-Date:   Tue, 18 Aug 2020 21:27:57 -0700
-Message-Id: <20200819042759.51280-3-alexei.starovoitov@gmail.com>
+Subject: [PATCH v6 bpf-next 3/4] bpf: Add kernel module with user mode driver that populates bpffs.
+Date:   Tue, 18 Aug 2020 21:27:58 -0700
+Message-Id: <20200819042759.51280-4-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
 In-Reply-To: <20200819042759.51280-1-alexei.starovoitov@gmail.com>
 References: <20200819042759.51280-1-alexei.starovoitov@gmail.com>
@@ -63,656 +63,616 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-The program and map iterators work similar to seq_file-s.
-Once the program is pinned in bpffs it can be read with "cat" tool
-to print human readable output. In this case about BPF programs and maps.
-For example:
-$ cat /sys/fs/bpf/progs.debug
+Add kernel module with user mode driver that populates bpffs with
+BPF iterators.
+
+$ mount bpffs /my/bpffs/ -t bpf
+$ ls -la /my/bpffs/
+total 4
+drwxrwxrwt  2 root root    0 Jul  2 00:27 .
+drwxr-xr-x 19 root root 4096 Jul  2 00:09 ..
+-rw-------  1 root root    0 Jul  2 00:27 maps.debug
+-rw-------  1 root root    0 Jul  2 00:27 progs.debug
+
+The user mode driver will load BPF Type Formats, create BPF maps, populate BPF
+maps, load two BPF programs, attach them to BPF iterators, and finally send two
+bpf_link IDs back to the kernel.
+The kernel will pin two bpf_links into newly mounted bpffs instance under
+names "progs.debug" and "maps.debug". These two files become human readable.
+
+$ cat /my/bpffs/progs.debug
   id name            attached
-   5 dump_bpf_map    bpf_iter_bpf_map
-   6 dump_bpf_prog   bpf_iter_bpf_prog
-$ cat /sys/fs/bpf/maps.debug
-  id name            max_entries
-   3 iterator.rodata     1
+  11 dump_bpf_map    bpf_iter_bpf_map
+  12 dump_bpf_prog   bpf_iter_bpf_prog
+  27 test_pkt_access
+  32 test_main       test_pkt_access test_pkt_access
+  33 test_subprog1   test_pkt_access_subprog1 test_pkt_access
+  34 test_subprog2   test_pkt_access_subprog2 test_pkt_access
+  35 test_subprog3   test_pkt_access_subprog3 test_pkt_access
+  36 new_get_skb_len get_skb_len test_pkt_access
+  37 new_get_skb_ifindex get_skb_ifindex test_pkt_access
+  38 new_get_constant get_constant test_pkt_access
 
-To avoid kernel build dependency on clang 10 separate bpf skeleton generation
-into manual "make" step and instead check-in generated .skel.h into git.
-
-Unlike 'bpftool prog show' in-kernel BTF name is used (when available)
-to print full name of BPF program instead of 16-byte truncated name.
+The BPF program dump_bpf_prog() in iterators.bpf.c is printing this data about
+all BPF programs currently loaded in the system. This information is unstable
+and will change from kernel to kernel as ".debug" suffix conveys.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
 ---
- kernel/bpf/preload/iterators/.gitignore       |   2 +
- kernel/bpf/preload/iterators/Makefile         |  57 +++
- kernel/bpf/preload/iterators/README           |   4 +
- kernel/bpf/preload/iterators/iterators.bpf.c  | 114 +++++
- kernel/bpf/preload/iterators/iterators.skel.h | 410 ++++++++++++++++++
- 5 files changed, 587 insertions(+)
- create mode 100644 kernel/bpf/preload/iterators/.gitignore
- create mode 100644 kernel/bpf/preload/iterators/Makefile
- create mode 100644 kernel/bpf/preload/iterators/README
- create mode 100644 kernel/bpf/preload/iterators/iterators.bpf.c
- create mode 100644 kernel/bpf/preload/iterators/iterators.skel.h
+ init/Kconfig                                  |   2 +
+ kernel/Makefile                               |   2 +-
+ kernel/bpf/Makefile                           |   1 +
+ kernel/bpf/inode.c                            | 116 +++++++++++++++++-
+ kernel/bpf/preload/Kconfig                    |  23 ++++
+ kernel/bpf/preload/Makefile                   |  23 ++++
+ kernel/bpf/preload/bpf_preload.h              |  16 +++
+ kernel/bpf/preload/bpf_preload_kern.c         |  91 ++++++++++++++
+ kernel/bpf/preload/bpf_preload_umd_blob.S     |   7 ++
+ .../preload/iterators/bpf_preload_common.h    |  13 ++
+ kernel/bpf/preload/iterators/iterators.c      |  94 ++++++++++++++
+ net/bpfilter/Kconfig                          |   1 +
+ tools/lib/bpf/Makefile                        |   7 +-
+ 13 files changed, 390 insertions(+), 6 deletions(-)
+ create mode 100644 kernel/bpf/preload/Kconfig
+ create mode 100644 kernel/bpf/preload/Makefile
+ create mode 100644 kernel/bpf/preload/bpf_preload.h
+ create mode 100644 kernel/bpf/preload/bpf_preload_kern.c
+ create mode 100644 kernel/bpf/preload/bpf_preload_umd_blob.S
+ create mode 100644 kernel/bpf/preload/iterators/bpf_preload_common.h
+ create mode 100644 kernel/bpf/preload/iterators/iterators.c
 
-diff --git a/kernel/bpf/preload/iterators/.gitignore b/kernel/bpf/preload/iterators/.gitignore
+diff --git a/init/Kconfig b/init/Kconfig
+index d6a0b31b13dc..fc10f7ede5f6 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1710,6 +1710,8 @@ config BPF_JIT_DEFAULT_ON
+ 	def_bool ARCH_WANT_DEFAULT_BPF_JIT || BPF_JIT_ALWAYS_ON
+ 	depends on HAVE_EBPF_JIT && BPF_JIT
+ 
++source "kernel/bpf/preload/Kconfig"
++
+ config USERFAULTFD
+ 	bool "Enable userfaultfd() system call"
+ 	depends on MMU
+diff --git a/kernel/Makefile b/kernel/Makefile
+index 9a20016d4900..22b0760660fc 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -12,7 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
+ 	    notifier.o ksysfs.o cred.o reboot.o \
+ 	    async.o range.o smpboot.o ucount.o regset.o
+ 
+-obj-$(CONFIG_BPFILTER) += usermode_driver.o
++obj-$(CONFIG_USERMODE_DRIVER) += usermode_driver.o
+ obj-$(CONFIG_MODULES) += kmod.o
+ obj-$(CONFIG_MULTIUSER) += groups.o
+ 
+diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+index e6eb9c0402da..19e137aae40e 100644
+--- a/kernel/bpf/Makefile
++++ b/kernel/bpf/Makefile
+@@ -29,3 +29,4 @@ ifeq ($(CONFIG_BPF_JIT),y)
+ obj-$(CONFIG_BPF_SYSCALL) += bpf_struct_ops.o
+ obj-${CONFIG_BPF_LSM} += bpf_lsm.o
+ endif
++obj-$(CONFIG_BPF_PRELOAD) += preload/
+diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
+index fb878ba3f22f..b48a56f53495 100644
+--- a/kernel/bpf/inode.c
++++ b/kernel/bpf/inode.c
+@@ -20,6 +20,7 @@
+ #include <linux/filter.h>
+ #include <linux/bpf.h>
+ #include <linux/bpf_trace.h>
++#include "preload/bpf_preload.h"
+ 
+ enum bpf_type {
+ 	BPF_TYPE_UNSPEC	= 0,
+@@ -369,9 +370,10 @@ static struct dentry *
+ bpf_lookup(struct inode *dir, struct dentry *dentry, unsigned flags)
+ {
+ 	/* Dots in names (e.g. "/sys/fs/bpf/foo.bar") are reserved for future
+-	 * extensions.
++	 * extensions. That allows popoulate_bpffs() create special files.
+ 	 */
+-	if (strchr(dentry->d_name.name, '.'))
++	if ((dir->i_mode & S_IALLUGO) &&
++	    strchr(dentry->d_name.name, '.'))
+ 		return ERR_PTR(-EPERM);
+ 
+ 	return simple_lookup(dir, dentry, flags);
+@@ -409,6 +411,27 @@ static const struct inode_operations bpf_dir_iops = {
+ 	.unlink		= simple_unlink,
+ };
+ 
++/* pin iterator link into bpffs */
++static int bpf_iter_link_pin_kernel(struct dentry *parent,
++				    const char *name, struct bpf_link *link)
++{
++	umode_t mode = S_IFREG | S_IRUSR;
++	struct dentry *dentry;
++	int ret;
++
++	inode_lock(parent->d_inode);
++	dentry = lookup_one_len(name, parent, strlen(name));
++	if (IS_ERR(dentry)) {
++		inode_unlock(parent->d_inode);
++		return PTR_ERR(dentry);
++	}
++	ret = bpf_mkobj_ops(dentry, mode, link, &bpf_link_iops,
++			    &bpf_iter_fops);
++	dput(dentry);
++	inode_unlock(parent->d_inode);
++	return ret;
++}
++
+ static int bpf_obj_do_pin(const char __user *pathname, void *raw,
+ 			  enum bpf_type type)
+ {
+@@ -638,6 +661,91 @@ static int bpf_parse_param(struct fs_context *fc, struct fs_parameter *param)
+ 	return 0;
+ }
+ 
++struct bpf_preload_ops *bpf_preload_ops;
++EXPORT_SYMBOL_GPL(bpf_preload_ops);
++
++static bool bpf_preload_mod_get(void)
++{
++	/* If bpf_preload.ko wasn't loaded earlier then load it now.
++	 * When bpf_preload is built into vmlinux the module's __init
++	 * function will populate it.
++	 */
++	if (!bpf_preload_ops) {
++		request_module("bpf_preload");
++		if (!bpf_preload_ops)
++			return false;
++	}
++	/* And grab the reference, so the module doesn't disappear while the
++	 * kernel is interacting with the kernel module and its UMD.
++	 */
++	if (!try_module_get(bpf_preload_ops->owner)) {
++		pr_err("bpf_preload module get failed.\n");
++		return false;
++	}
++	return true;
++}
++
++static void bpf_preload_mod_put(void)
++{
++	if (bpf_preload_ops)
++		/* now user can "rmmod bpf_preload" if necessary */
++		module_put(bpf_preload_ops->owner);
++}
++
++static DEFINE_MUTEX(bpf_preload_lock);
++
++static int populate_bpffs(struct dentry *parent)
++{
++	struct bpf_preload_info objs[BPF_PRELOAD_LINKS] = {};
++	struct bpf_link *links[BPF_PRELOAD_LINKS] = {};
++	int err = 0, i;
++
++	/* grab the mutex to make sure the kernel interactions with bpf_preload
++	 * UMD are serialized
++	 */
++	mutex_lock(&bpf_preload_lock);
++
++	/* if bpf_preload.ko wasn't built into vmlinux then load it */
++	if (!bpf_preload_mod_get())
++		goto out;
++
++	if (!bpf_preload_ops->info.tgid) {
++		/* preload() will start UMD that will load BPF iterator programs */
++		err = bpf_preload_ops->preload(objs);
++		if (err)
++			goto out_put;
++		for (i = 0; i < BPF_PRELOAD_LINKS; i++) {
++			links[i] = bpf_link_by_id(objs[i].link_id);
++			if (IS_ERR(links[i])) {
++				err = PTR_ERR(links[i]);
++				goto out_put;
++			}
++		}
++		for (i = 0; i < BPF_PRELOAD_LINKS; i++) {
++			err = bpf_iter_link_pin_kernel(parent,
++						       objs[i].link_name, links[i]);
++			if (err)
++				goto out_put;
++			/* do not unlink successfully pinned links even
++			 * if later link fails to pin
++			 */
++			links[i] = NULL;
++		}
++		/* finish() will tell UMD process to exit */
++		err = bpf_preload_ops->finish();
++		if (err)
++			goto out_put;
++	}
++out_put:
++	bpf_preload_mod_put();
++out:
++	mutex_unlock(&bpf_preload_lock);
++	for (i = 0; i < BPF_PRELOAD_LINKS && err; i++)
++		if (!IS_ERR_OR_NULL(links[i]))
++			bpf_link_put(links[i]);
++	return err;
++}
++
+ static int bpf_fill_super(struct super_block *sb, struct fs_context *fc)
+ {
+ 	static const struct tree_descr bpf_rfiles[] = { { "" } };
+@@ -654,8 +762,8 @@ static int bpf_fill_super(struct super_block *sb, struct fs_context *fc)
+ 	inode = sb->s_root->d_inode;
+ 	inode->i_op = &bpf_dir_iops;
+ 	inode->i_mode &= ~S_IALLUGO;
++	populate_bpffs(sb->s_root);
+ 	inode->i_mode |= S_ISVTX | opts->mode;
+-
+ 	return 0;
+ }
+ 
+@@ -705,6 +813,8 @@ static int __init bpf_init(void)
+ {
+ 	int ret;
+ 
++	mutex_init(&bpf_preload_lock);
++
+ 	ret = sysfs_create_mount_point(fs_kobj, "bpf");
+ 	if (ret)
+ 		return ret;
+diff --git a/kernel/bpf/preload/Kconfig b/kernel/bpf/preload/Kconfig
 new file mode 100644
-index 000000000000..ffdb70230c8b
+index 000000000000..7144e2d01ee4
 --- /dev/null
-+++ b/kernel/bpf/preload/iterators/.gitignore
-@@ -0,0 +1,2 @@
++++ b/kernel/bpf/preload/Kconfig
+@@ -0,0 +1,23 @@
 +# SPDX-License-Identifier: GPL-2.0-only
-+/.output
-diff --git a/kernel/bpf/preload/iterators/Makefile b/kernel/bpf/preload/iterators/Makefile
-new file mode 100644
-index 000000000000..28fa8c1440f4
---- /dev/null
-+++ b/kernel/bpf/preload/iterators/Makefile
-@@ -0,0 +1,57 @@
-+# SPDX-License-Identifier: GPL-2.0
-+OUTPUT := .output
-+CLANG ?= clang
-+LLC ?= llc
-+LLVM_STRIP ?= llvm-strip
-+DEFAULT_BPFTOOL := $(OUTPUT)/sbin/bpftool
-+BPFTOOL ?= $(DEFAULT_BPFTOOL)
-+LIBBPF_SRC := $(abspath ../../../../tools/lib/bpf)
-+BPFOBJ := $(OUTPUT)/libbpf.a
-+BPF_INCLUDE := $(OUTPUT)
-+INCLUDES := -I$(OUTPUT) -I$(BPF_INCLUDE) -I$(abspath ../../../../tools/lib)        \
-+       -I$(abspath ../../../../tools/include/uapi)
-+CFLAGS := -g -Wall
++config USERMODE_DRIVER
++	bool
++	default n
 +
-+abs_out := $(abspath $(OUTPUT))
-+ifeq ($(V),1)
-+Q =
-+msg =
-+else
-+Q = @
-+msg = @printf '  %-8s %s%s\n' "$(1)" "$(notdir $(2))" "$(if $(3), $(3))";
-+MAKEFLAGS += --no-print-directory
-+submake_extras := feature_display=0
++menuconfig BPF_PRELOAD
++	bool "Preload BPF file system with kernel specific program and map iterators"
++	depends on BPF
++	select USERMODE_DRIVER
++	help
++	  This builds kernel module with several embedded BPF programs that are
++	  pinned into BPF FS mount point as human readable files that are
++	  useful in debugging and introspection of BPF programs and maps.
++
++if BPF_PRELOAD
++config BPF_PRELOAD_UMD
++	tristate "bpf_preload kernel module with user mode driver"
++	depends on CC_CAN_LINK
++	depends on m || CC_CAN_LINK_STATIC
++	default m
++	help
++	  This builds bpf_preload kernel module with embedded user mode driver.
 +endif
-+
-+.DELETE_ON_ERROR:
-+
-+.PHONY: all clean
-+
-+all: iterators.skel.h
-+
-+clean:
-+	$(call msg,CLEAN)
-+	$(Q)rm -rf $(OUTPUT) iterators
-+
-+iterators.skel.h: $(OUTPUT)/iterators.bpf.o | $(BPFTOOL)
-+	$(call msg,GEN-SKEL,$@)
-+	$(Q)$(BPFTOOL) gen skeleton $< > $@
-+
-+
-+$(OUTPUT)/iterators.bpf.o: iterators.bpf.c $(BPFOBJ) | $(OUTPUT)
-+	$(call msg,BPF,$@)
-+	$(Q)$(CLANG) -g -O2 -target bpf $(INCLUDES)			      \
-+		 -c $(filter %.c,$^) -o $@ &&				      \
-+	$(LLVM_STRIP) -g $@
-+
-+$(OUTPUT):
-+	$(call msg,MKDIR,$@)
-+	$(Q)mkdir -p $(OUTPUT)
-+
-+$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)
-+	$(Q)$(MAKE) $(submake_extras) -C $(LIBBPF_SRC)			       \
-+		    OUTPUT=$(abspath $(dir $@))/ $(abspath $@)
-+
-+$(DEFAULT_BPFTOOL):
-+	$(Q)$(MAKE) $(submake_extras) -C ../../../../tools/bpf/bpftool			      \
-+		    prefix= OUTPUT=$(abs_out)/ DESTDIR=$(abs_out) install
-diff --git a/kernel/bpf/preload/iterators/README b/kernel/bpf/preload/iterators/README
+diff --git a/kernel/bpf/preload/Makefile b/kernel/bpf/preload/Makefile
 new file mode 100644
-index 000000000000..7fd6d39a9ad2
+index 000000000000..12c7b62b9b6e
 --- /dev/null
-+++ b/kernel/bpf/preload/iterators/README
-@@ -0,0 +1,4 @@
-+WARNING:
-+If you change "iterators.bpf.c" do "make -j" in this directory to rebuild "iterators.skel.h".
-+Make sure to have clang 10 installed.
-+See Documentation/bpf/bpf_devel_QA.rst
-diff --git a/kernel/bpf/preload/iterators/iterators.bpf.c b/kernel/bpf/preload/iterators/iterators.bpf.c
++++ b/kernel/bpf/preload/Makefile
+@@ -0,0 +1,23 @@
++# SPDX-License-Identifier: GPL-2.0
++
++LIBBPF_SRCS = $(srctree)/tools/lib/bpf/
++LIBBPF_A = $(obj)/libbpf.a
++LIBBPF_OUT = $(abspath $(obj))
++
++$(LIBBPF_A):
++	$(Q)$(MAKE) -C $(LIBBPF_SRCS) OUTPUT=$(LIBBPF_OUT)/ $(LIBBPF_OUT)/libbpf.a
++
++userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi \
++	-I $(srctree)/tools/lib/ -Wno-unused-result
++
++userprogs := bpf_preload_umd
++
++bpf_preload_umd-objs := iterators/iterators.o
++bpf_preload_umd-userldlibs := $(LIBBPF_A) -lelf -lz
++
++$(obj)/bpf_preload_umd: $(LIBBPF_A)
++
++$(obj)/bpf_preload_umd_blob.o: $(obj)/bpf_preload_umd
++
++obj-$(CONFIG_BPF_PRELOAD_UMD) += bpf_preload.o
++bpf_preload-objs += bpf_preload_kern.o bpf_preload_umd_blob.o
+diff --git a/kernel/bpf/preload/bpf_preload.h b/kernel/bpf/preload/bpf_preload.h
 new file mode 100644
-index 000000000000..5ded550b2ed6
+index 000000000000..2f9932276f2e
 --- /dev/null
-+++ b/kernel/bpf/preload/iterators/iterators.bpf.c
-@@ -0,0 +1,114 @@
++++ b/kernel/bpf/preload/bpf_preload.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _BPF_PRELOAD_H
++#define _BPF_PRELOAD_H
++
++#include <linux/usermode_driver.h>
++#include "iterators/bpf_preload_common.h"
++
++struct bpf_preload_ops {
++        struct umd_info info;
++	int (*preload)(struct bpf_preload_info *);
++	int (*finish)(void);
++	struct module *owner;
++};
++extern struct bpf_preload_ops *bpf_preload_ops;
++#define BPF_PRELOAD_LINKS 2
++#endif
+diff --git a/kernel/bpf/preload/bpf_preload_kern.c b/kernel/bpf/preload/bpf_preload_kern.c
+new file mode 100644
+index 000000000000..79c5772465f1
+--- /dev/null
++++ b/kernel/bpf/preload/bpf_preload_kern.c
+@@ -0,0 +1,91 @@
++// SPDX-License-Identifier: GPL-2.0
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/pid.h>
++#include <linux/fs.h>
++#include <linux/sched/signal.h>
++#include "bpf_preload.h"
++
++extern char bpf_preload_umd_start;
++extern char bpf_preload_umd_end;
++
++static int preload(struct bpf_preload_info *obj);
++static int finish(void);
++
++static struct bpf_preload_ops umd_ops = {
++	.info.driver_name = "bpf_preload",
++	.preload = preload,
++	.finish = finish,
++	.owner = THIS_MODULE,
++};
++
++static int preload(struct bpf_preload_info *obj)
++{
++	int magic = BPF_PRELOAD_START;
++	loff_t pos = 0;
++	int i, err;
++	ssize_t n;
++
++	err = fork_usermode_driver(&umd_ops.info);
++	if (err)
++		return err;
++
++	/* send the start magic to let UMD proceed with loading BPF progs */
++	n = kernel_write(umd_ops.info.pipe_to_umh,
++			 &magic, sizeof(magic), &pos);
++	if (n != sizeof(magic))
++		return -EPIPE;
++
++	/* receive bpf_link IDs and names from UMD */
++	pos = 0;
++	for (i = 0; i < BPF_PRELOAD_LINKS; i++) {
++		n = kernel_read(umd_ops.info.pipe_from_umh,
++				&obj[i], sizeof(*obj), &pos);
++		if (n != sizeof(*obj))
++			return -EPIPE;
++	}
++	return 0;
++}
++
++static int finish(void)
++{
++	int magic = BPF_PRELOAD_END;
++	struct pid *tgid;
++	loff_t pos = 0;
++	ssize_t n;
++
++	/* send the last magic to UMD. It will do a normal exit. */
++	n = kernel_write(umd_ops.info.pipe_to_umh,
++			 &magic, sizeof(magic), &pos);
++	if (n != sizeof(magic))
++		return -EPIPE;
++	tgid = umd_ops.info.tgid;
++	wait_event(tgid->wait_pidfd, thread_group_exited(tgid));
++	umd_ops.info.tgid = NULL;
++	return 0;
++}
++
++static int __init load_umd(void)
++{
++	int err;
++
++	err = umd_load_blob(&umd_ops.info, &bpf_preload_umd_start,
++			    &bpf_preload_umd_end - &bpf_preload_umd_start);
++	if (err)
++		return err;
++	bpf_preload_ops = &umd_ops;
++	return err;
++}
++
++static void __exit fini_umd(void)
++{
++	bpf_preload_ops = NULL;
++	/* kill UMD in case it's still there due to earlier error */
++	kill_pid(umd_ops.info.tgid, SIGKILL, 1);
++	umd_ops.info.tgid = NULL;
++	umd_unload_blob(&umd_ops.info);
++}
++late_initcall(load_umd);
++module_exit(fini_umd);
++MODULE_LICENSE("GPL");
+diff --git a/kernel/bpf/preload/bpf_preload_umd_blob.S b/kernel/bpf/preload/bpf_preload_umd_blob.S
+new file mode 100644
+index 000000000000..f1f40223b5c3
+--- /dev/null
++++ b/kernel/bpf/preload/bpf_preload_umd_blob.S
+@@ -0,0 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++	.section .init.rodata, "a"
++	.global bpf_preload_umd_start
++bpf_preload_umd_start:
++	.incbin "kernel/bpf/preload/bpf_preload_umd"
++	.global bpf_preload_umd_end
++bpf_preload_umd_end:
+diff --git a/kernel/bpf/preload/iterators/bpf_preload_common.h b/kernel/bpf/preload/iterators/bpf_preload_common.h
+new file mode 100644
+index 000000000000..8464d1a48c05
+--- /dev/null
++++ b/kernel/bpf/preload/iterators/bpf_preload_common.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _BPF_PRELOAD_COMMON_H
++#define _BPF_PRELOAD_COMMON_H
++
++#define BPF_PRELOAD_START 0x5555
++#define BPF_PRELOAD_END 0xAAAA
++
++struct bpf_preload_info {
++	char link_name[16];
++	int link_id;
++};
++
++#endif
+diff --git a/kernel/bpf/preload/iterators/iterators.c b/kernel/bpf/preload/iterators/iterators.c
+new file mode 100644
+index 000000000000..b7ff87939172
+--- /dev/null
++++ b/kernel/bpf/preload/iterators/iterators.c
+@@ -0,0 +1,94 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2020 Facebook */
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_core_read.h>
-+
-+#pragma clang attribute push (__attribute__((preserve_access_index)), apply_to = record)
-+struct seq_file;
-+struct bpf_iter_meta {
-+	struct seq_file *seq;
-+	__u64 session_id;
-+	__u64 seq_num;
-+};
-+
-+struct bpf_map {
-+	__u32 id;
-+	char name[16];
-+	__u32 max_entries;
-+};
-+
-+struct bpf_iter__bpf_map {
-+	struct bpf_iter_meta *meta;
-+	struct bpf_map *map;
-+};
-+
-+struct btf_type {
-+	__u32 name_off;
-+};
-+
-+struct btf_header {
-+	__u32   str_len;
-+};
-+
-+struct btf {
-+	const char *strings;
-+	struct btf_type **types;
-+	struct btf_header hdr;
-+};
-+
-+struct bpf_prog_aux {
-+	__u32 id;
-+	char name[16];
-+	const char *attach_func_name;
-+	struct bpf_prog *linked_prog;
-+	struct bpf_func_info *func_info;
-+	struct btf *btf;
-+};
-+
-+struct bpf_prog {
-+	struct bpf_prog_aux *aux;
-+};
-+
-+struct bpf_iter__bpf_prog {
-+	struct bpf_iter_meta *meta;
-+	struct bpf_prog *prog;
-+};
-+#pragma clang attribute pop
-+
-+static const char *get_name(struct btf *btf, long btf_id, const char *fallback)
-+{
-+	struct btf_type **types, *t;
-+	unsigned int name_off;
-+	const char *str;
-+
-+	if (!btf)
-+		return fallback;
-+	str = btf->strings;
-+	types = btf->types;
-+	bpf_probe_read_kernel(&t, sizeof(t), types + btf_id);
-+	name_off = BPF_CORE_READ(t, name_off);
-+	if (name_off >= btf->hdr.str_len)
-+		return fallback;
-+	return str + name_off;
-+}
-+
-+SEC("iter/bpf_map")
-+int dump_bpf_map(struct bpf_iter__bpf_map *ctx)
-+{
-+	struct seq_file *seq = ctx->meta->seq;
-+	__u64 seq_num = ctx->meta->seq_num;
-+	struct bpf_map *map = ctx->map;
-+
-+	if (!map)
-+		return 0;
-+
-+	if (seq_num == 0)
-+		BPF_SEQ_PRINTF(seq, "  id name             max_entries\n");
-+
-+	BPF_SEQ_PRINTF(seq, "%4u %-16s%6d\n", map->id, map->name, map->max_entries);
-+	return 0;
-+}
-+
-+SEC("iter/bpf_prog")
-+int dump_bpf_prog(struct bpf_iter__bpf_prog *ctx)
-+{
-+	struct seq_file *seq = ctx->meta->seq;
-+	__u64 seq_num = ctx->meta->seq_num;
-+	struct bpf_prog *prog = ctx->prog;
-+	struct bpf_prog_aux *aux;
-+
-+	if (!prog)
-+		return 0;
-+
-+	aux = prog->aux;
-+	if (seq_num == 0)
-+		BPF_SEQ_PRINTF(seq, "  id name             attached\n");
-+
-+	BPF_SEQ_PRINTF(seq, "%4u %-16s %s %s\n", aux->id,
-+		       get_name(aux->btf, aux->func_info[0].type_id, aux->name),
-+		       aux->attach_func_name, aux->linked_prog->aux->name);
-+	return 0;
-+}
-+char LICENSE[] SEC("license") = "GPL";
-diff --git a/kernel/bpf/preload/iterators/iterators.skel.h b/kernel/bpf/preload/iterators/iterators.skel.h
-new file mode 100644
-index 000000000000..c3171357dc4f
---- /dev/null
-+++ b/kernel/bpf/preload/iterators/iterators.skel.h
-@@ -0,0 +1,410 @@
-+/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-+
-+/* THIS FILE IS AUTOGENERATED! */
-+#ifndef __ITERATORS_BPF_SKEL_H__
-+#define __ITERATORS_BPF_SKEL_H__
-+
++#include <argp.h>
++#include <stdio.h>
 +#include <stdlib.h>
++#include <string.h>
++#include <unistd.h>
++#include <fcntl.h>
++#include <sys/resource.h>
 +#include <bpf/libbpf.h>
++#include <bpf/bpf.h>
++#include <sys/mount.h>
++#include "iterators.skel.h"
++#include "bpf_preload_common.h"
 +
-+struct iterators_bpf {
-+	struct bpf_object_skeleton *skeleton;
-+	struct bpf_object *obj;
-+	struct {
-+		struct bpf_map *rodata;
-+	} maps;
-+	struct {
-+		struct bpf_program *dump_bpf_map;
-+		struct bpf_program *dump_bpf_prog;
-+	} progs;
-+	struct {
-+		struct bpf_link *dump_bpf_map;
-+		struct bpf_link *dump_bpf_prog;
-+	} links;
-+	struct iterators_bpf__rodata {
-+		char dump_bpf_map____fmt[35];
-+		char dump_bpf_map____fmt_1[14];
-+		char dump_bpf_prog____fmt[32];
-+		char dump_bpf_prog____fmt_2[17];
-+	} *rodata;
-+};
++int to_kernel = -1;
++int from_kernel = 0;
 +
-+static void
-+iterators_bpf__destroy(struct iterators_bpf *obj)
++static int send_link_to_kernel(struct bpf_link *link, const char *link_name)
 +{
-+	if (!obj)
-+		return;
-+	if (obj->skeleton)
-+		bpf_object__destroy_skeleton(obj->skeleton);
-+	free(obj);
-+}
++	struct bpf_preload_info obj = {};
++	struct bpf_link_info info = {};
++	__u32 info_len = sizeof(info);
++	int err;
 +
-+static inline int
-+iterators_bpf__create_skeleton(struct iterators_bpf *obj);
-+
-+static inline struct iterators_bpf *
-+iterators_bpf__open_opts(const struct bpf_object_open_opts *opts)
-+{
-+	struct iterators_bpf *obj;
-+
-+	obj = (typeof(obj))calloc(1, sizeof(*obj));
-+	if (!obj)
-+		return NULL;
-+	if (iterators_bpf__create_skeleton(obj))
-+		goto err;
-+	if (bpf_object__open_skeleton(obj->skeleton, opts))
-+		goto err;
-+
-+	return obj;
-+err:
-+	iterators_bpf__destroy(obj);
-+	return NULL;
-+}
-+
-+static inline struct iterators_bpf *
-+iterators_bpf__open(void)
-+{
-+	return iterators_bpf__open_opts(NULL);
-+}
-+
-+static inline int
-+iterators_bpf__load(struct iterators_bpf *obj)
-+{
-+	return bpf_object__load_skeleton(obj->skeleton);
-+}
-+
-+static inline struct iterators_bpf *
-+iterators_bpf__open_and_load(void)
-+{
-+	struct iterators_bpf *obj;
-+
-+	obj = iterators_bpf__open();
-+	if (!obj)
-+		return NULL;
-+	if (iterators_bpf__load(obj)) {
-+		iterators_bpf__destroy(obj);
-+		return NULL;
-+	}
-+	return obj;
-+}
-+
-+static inline int
-+iterators_bpf__attach(struct iterators_bpf *obj)
-+{
-+	return bpf_object__attach_skeleton(obj->skeleton);
-+}
-+
-+static inline void
-+iterators_bpf__detach(struct iterators_bpf *obj)
-+{
-+	return bpf_object__detach_skeleton(obj->skeleton);
-+}
-+
-+static inline int
-+iterators_bpf__create_skeleton(struct iterators_bpf *obj)
-+{
-+	struct bpf_object_skeleton *s;
-+
-+	s = (typeof(s))calloc(1, sizeof(*s));
-+	if (!s)
-+		return -1;
-+	obj->skeleton = s;
-+
-+	s->sz = sizeof(*s);
-+	s->name = "iterators_bpf";
-+	s->obj = &obj->obj;
-+
-+	/* maps */
-+	s->map_cnt = 1;
-+	s->map_skel_sz = sizeof(*s->maps);
-+	s->maps = (typeof(s->maps))calloc(s->map_cnt, s->map_skel_sz);
-+	if (!s->maps)
-+		goto err;
-+
-+	s->maps[0].name = "iterator.rodata";
-+	s->maps[0].map = &obj->maps.rodata;
-+	s->maps[0].mmaped = (void **)&obj->rodata;
-+
-+	/* programs */
-+	s->prog_cnt = 2;
-+	s->prog_skel_sz = sizeof(*s->progs);
-+	s->progs = (typeof(s->progs))calloc(s->prog_cnt, s->prog_skel_sz);
-+	if (!s->progs)
-+		goto err;
-+
-+	s->progs[0].name = "dump_bpf_map";
-+	s->progs[0].prog = &obj->progs.dump_bpf_map;
-+	s->progs[0].link = &obj->links.dump_bpf_map;
-+
-+	s->progs[1].name = "dump_bpf_prog";
-+	s->progs[1].prog = &obj->progs.dump_bpf_prog;
-+	s->progs[1].link = &obj->links.dump_bpf_prog;
-+
-+	s->data_sz = 7128;
-+	s->data = (void *)"\
-+\x7f\x45\x4c\x46\x02\x01\x01\0\0\0\0\0\0\0\0\0\x01\0\xf7\0\x01\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\x18\x18\0\0\0\0\0\0\0\0\0\0\x40\0\0\0\0\0\x40\0\x0f\0\
-+\x0e\0\x79\x12\0\0\0\0\0\0\x79\x26\0\0\0\0\0\0\x79\x17\x08\0\0\0\0\0\x15\x07\
-+\x1a\0\0\0\0\0\x79\x21\x10\0\0\0\0\0\x55\x01\x08\0\0\0\0\0\xbf\xa4\0\0\0\0\0\0\
-+\x07\x04\0\0\xe8\xff\xff\xff\xbf\x61\0\0\0\0\0\0\x18\x02\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\xb7\x03\0\0\x23\0\0\0\xb7\x05\0\0\0\0\0\0\x85\0\0\0\x7e\0\0\0\x61\x71\0\
-+\0\0\0\0\0\x7b\x1a\xe8\xff\0\0\0\0\xb7\x01\0\0\x04\0\0\0\xbf\x72\0\0\0\0\0\0\
-+\x0f\x12\0\0\0\0\0\0\x7b\x2a\xf0\xff\0\0\0\0\x61\x71\x14\0\0\0\0\0\x7b\x1a\xf8\
-+\xff\0\0\0\0\xbf\xa4\0\0\0\0\0\0\x07\x04\0\0\xe8\xff\xff\xff\xbf\x61\0\0\0\0\0\
-+\0\x18\x02\0\0\x23\0\0\0\0\0\0\0\0\0\0\0\xb7\x03\0\0\x0e\0\0\0\xb7\x05\0\0\x18\
-+\0\0\0\x85\0\0\0\x7e\0\0\0\xb7\0\0\0\0\0\0\0\x95\0\0\0\0\0\0\0\x79\x12\0\0\0\0\
-+\0\0\x79\x26\0\0\0\0\0\0\x79\x11\x08\0\0\0\0\0\x15\x01\x3b\0\0\0\0\0\x79\x17\0\
-+\0\0\0\0\0\x79\x21\x10\0\0\0\0\0\x55\x01\x08\0\0\0\0\0\xbf\xa4\0\0\0\0\0\0\x07\
-+\x04\0\0\xd0\xff\xff\xff\xbf\x61\0\0\0\0\0\0\x18\x02\0\0\x31\0\0\0\0\0\0\0\0\0\
-+\0\0\xb7\x03\0\0\x20\0\0\0\xb7\x05\0\0\0\0\0\0\x85\0\0\0\x7e\0\0\0\x7b\x6a\xc8\
-+\xff\0\0\0\0\x61\x71\0\0\0\0\0\0\x7b\x1a\xd0\xff\0\0\0\0\xb7\x03\0\0\x04\0\0\0\
-+\xbf\x79\0\0\0\0\0\0\x0f\x39\0\0\0\0\0\0\x79\x71\x28\0\0\0\0\0\x79\x78\x30\0\0\
-+\0\0\0\x15\x08\x18\0\0\0\0\0\xb7\x02\0\0\0\0\0\0\x0f\x21\0\0\0\0\0\0\x61\x11\
-+\x04\0\0\0\0\0\x79\x83\x08\0\0\0\0\0\x67\x01\0\0\x03\0\0\0\x0f\x13\0\0\0\0\0\0\
-+\x79\x86\0\0\0\0\0\0\xbf\xa1\0\0\0\0\0\0\x07\x01\0\0\xf8\xff\xff\xff\xb7\x02\0\
-+\0\x08\0\0\0\x85\0\0\0\x71\0\0\0\xb7\x01\0\0\0\0\0\0\x79\xa3\xf8\xff\0\0\0\0\
-+\x0f\x13\0\0\0\0\0\0\xbf\xa1\0\0\0\0\0\0\x07\x01\0\0\xf4\xff\xff\xff\xb7\x02\0\
-+\0\x04\0\0\0\x85\0\0\0\x04\0\0\0\xb7\x03\0\0\x04\0\0\0\x61\xa1\xf4\xff\0\0\0\0\
-+\x61\x82\x10\0\0\0\0\0\x3d\x21\x02\0\0\0\0\0\x0f\x16\0\0\0\0\0\0\xbf\x69\0\0\0\
-+\0\0\0\x7b\x9a\xd8\xff\0\0\0\0\x79\x71\x18\0\0\0\0\0\x7b\x1a\xe0\xff\0\0\0\0\
-+\x79\x71\x20\0\0\0\0\0\x79\x11\0\0\0\0\0\0\x0f\x31\0\0\0\0\0\0\x7b\x1a\xe8\xff\
-+\0\0\0\0\xbf\xa4\0\0\0\0\0\0\x07\x04\0\0\xd0\xff\xff\xff\x79\xa1\xc8\xff\0\0\0\
-+\0\x18\x02\0\0\x51\0\0\0\0\0\0\0\0\0\0\0\xb7\x03\0\0\x11\0\0\0\xb7\x05\0\0\x20\
-+\0\0\0\x85\0\0\0\x7e\0\0\0\xb7\0\0\0\0\0\0\0\x95\0\0\0\0\0\0\0\x20\x20\x69\x64\
-+\x20\x6e\x61\x6d\x65\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x6d\
-+\x61\x78\x5f\x65\x6e\x74\x72\x69\x65\x73\x0a\0\x25\x34\x75\x20\x25\x2d\x31\x36\
-+\x73\x25\x36\x64\x0a\0\x20\x20\x69\x64\x20\x6e\x61\x6d\x65\x20\x20\x20\x20\x20\
-+\x20\x20\x20\x20\x20\x20\x20\x20\x61\x74\x74\x61\x63\x68\x65\x64\x0a\0\x25\x34\
-+\x75\x20\x25\x2d\x31\x36\x73\x20\x25\x73\x20\x25\x73\x0a\0\x47\x50\x4c\0\x9f\
-+\xeb\x01\0\x18\0\0\0\0\0\0\0\x1c\x04\0\0\x1c\x04\0\0\0\x05\0\0\0\0\0\0\0\0\0\
-+\x02\x02\0\0\0\x01\0\0\0\x02\0\0\x04\x10\0\0\0\x13\0\0\0\x03\0\0\0\0\0\0\0\x18\
-+\0\0\0\x04\0\0\0\x40\0\0\0\0\0\0\0\0\0\0\x02\x08\0\0\0\0\0\0\0\0\0\0\x02\x0d\0\
-+\0\0\0\0\0\0\x01\0\0\x0d\x06\0\0\0\x1c\0\0\0\x01\0\0\0\x20\0\0\0\0\0\0\x01\x04\
-+\0\0\0\x20\0\0\x01\x24\0\0\0\x01\0\0\x0c\x05\0\0\0\xa3\0\0\0\x03\0\0\x04\x18\0\
-+\0\0\xb1\0\0\0\x09\0\0\0\0\0\0\0\xb5\0\0\0\x0b\0\0\0\x40\0\0\0\xc0\0\0\0\x0b\0\
-+\0\0\x80\0\0\0\0\0\0\0\0\0\0\x02\x0a\0\0\0\xc8\0\0\0\0\0\0\x07\0\0\0\0\xd1\0\0\
-+\0\0\0\0\x08\x0c\0\0\0\xd7\0\0\0\0\0\0\x01\x08\0\0\0\x40\0\0\0\x98\x01\0\0\x03\
-+\0\0\x04\x18\0\0\0\xa0\x01\0\0\x0e\0\0\0\0\0\0\0\xa3\x01\0\0\x11\0\0\0\x20\0\0\
-+\0\xa8\x01\0\0\x0e\0\0\0\xa0\0\0\0\xb4\x01\0\0\0\0\0\x08\x0f\0\0\0\xba\x01\0\0\
-+\0\0\0\x01\x04\0\0\0\x20\0\0\0\xc7\x01\0\0\0\0\0\x01\x01\0\0\0\x08\0\0\x01\0\0\
-+\0\0\0\0\0\x03\0\0\0\0\x10\0\0\0\x12\0\0\0\x10\0\0\0\xcc\x01\0\0\0\0\0\x01\x04\
-+\0\0\0\x20\0\0\0\0\0\0\0\0\0\0\x02\x14\0\0\0\x30\x02\0\0\x02\0\0\x04\x10\0\0\0\
-+\x13\0\0\0\x03\0\0\0\0\0\0\0\x43\x02\0\0\x15\0\0\0\x40\0\0\0\0\0\0\0\0\0\0\x02\
-+\x18\0\0\0\0\0\0\0\x01\0\0\x0d\x06\0\0\0\x1c\0\0\0\x13\0\0\0\x48\x02\0\0\x01\0\
-+\0\x0c\x16\0\0\0\x94\x02\0\0\x01\0\0\x04\x08\0\0\0\x9d\x02\0\0\x19\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\x02\x1a\0\0\0\xee\x02\0\0\x06\0\0\x04\x38\0\0\0\xa0\x01\0\0\
-+\x0e\0\0\0\0\0\0\0\xa3\x01\0\0\x11\0\0\0\x20\0\0\0\xfb\x02\0\0\x1b\0\0\0\xc0\0\
-+\0\0\x0c\x03\0\0\x15\0\0\0\0\x01\0\0\x18\x03\0\0\x1d\0\0\0\x40\x01\0\0\x22\x03\
-+\0\0\x1e\0\0\0\x80\x01\0\0\0\0\0\0\0\0\0\x02\x1c\0\0\0\0\0\0\0\0\0\0\x0a\x10\0\
-+\0\0\0\0\0\0\0\0\0\x02\x1f\0\0\0\0\0\0\0\0\0\0\x02\x20\0\0\0\x6c\x03\0\0\x02\0\
-+\0\x04\x08\0\0\0\x7a\x03\0\0\x0e\0\0\0\0\0\0\0\x83\x03\0\0\x0e\0\0\0\x20\0\0\0\
-+\x22\x03\0\0\x03\0\0\x04\x18\0\0\0\x8d\x03\0\0\x1b\0\0\0\0\0\0\0\x95\x03\0\0\
-+\x21\0\0\0\x40\0\0\0\x9b\x03\0\0\x23\0\0\0\x80\0\0\0\0\0\0\0\0\0\0\x02\x22\0\0\
-+\0\0\0\0\0\0\0\0\x02\x24\0\0\0\x9f\x03\0\0\x01\0\0\x04\x04\0\0\0\xaa\x03\0\0\
-+\x0e\0\0\0\0\0\0\0\x13\x04\0\0\x01\0\0\x04\x04\0\0\0\x1c\x04\0\0\x0e\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\x03\0\0\0\0\x1c\0\0\0\x12\0\0\0\x23\0\0\0\x92\x04\0\0\0\0\0\
-+\x0e\x25\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x03\0\0\0\0\x1c\0\0\0\x12\0\0\0\x0e\0\0\0\
-+\xa6\x04\0\0\0\0\0\x0e\x27\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x03\0\0\0\0\x1c\0\0\0\
-+\x12\0\0\0\x20\0\0\0\xbc\x04\0\0\0\0\0\x0e\x29\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x03\
-+\0\0\0\0\x1c\0\0\0\x12\0\0\0\x11\0\0\0\xd1\x04\0\0\0\0\0\x0e\x2b\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\x03\0\0\0\0\x10\0\0\0\x12\0\0\0\x04\0\0\0\xe8\x04\0\0\0\0\0\x0e\
-+\x2d\0\0\0\x01\0\0\0\xf0\x04\0\0\x04\0\0\x0f\0\0\0\0\x26\0\0\0\0\0\0\0\x23\0\0\
-+\0\x28\0\0\0\x23\0\0\0\x0e\0\0\0\x2a\0\0\0\x31\0\0\0\x20\0\0\0\x2c\0\0\0\x51\0\
-+\0\0\x11\0\0\0\xf8\x04\0\0\x01\0\0\x0f\0\0\0\0\x2e\0\0\0\0\0\0\0\x04\0\0\0\0\
-+\x62\x70\x66\x5f\x69\x74\x65\x72\x5f\x5f\x62\x70\x66\x5f\x6d\x61\x70\0\x6d\x65\
-+\x74\x61\0\x6d\x61\x70\0\x63\x74\x78\0\x69\x6e\x74\0\x64\x75\x6d\x70\x5f\x62\
-+\x70\x66\x5f\x6d\x61\x70\0\x69\x74\x65\x72\x2f\x62\x70\x66\x5f\x6d\x61\x70\0\
-+\x30\x3a\x30\0\x2f\x77\x2f\x6e\x65\x74\x2d\x6e\x65\x78\x74\x2f\x6b\x65\x72\x6e\
-+\x65\x6c\x2f\x62\x70\x66\x2f\x70\x72\x65\x6c\x6f\x61\x64\x2f\x69\x74\x65\x72\
-+\x61\x74\x6f\x72\x73\x2f\x69\x74\x65\x72\x61\x74\x6f\x72\x73\x2e\x62\x70\x66\
-+\x2e\x63\0\x09\x73\x74\x72\x75\x63\x74\x20\x73\x65\x71\x5f\x66\x69\x6c\x65\x20\
-+\x2a\x73\x65\x71\x20\x3d\x20\x63\x74\x78\x2d\x3e\x6d\x65\x74\x61\x2d\x3e\x73\
-+\x65\x71\x3b\0\x62\x70\x66\x5f\x69\x74\x65\x72\x5f\x6d\x65\x74\x61\0\x73\x65\
-+\x71\0\x73\x65\x73\x73\x69\x6f\x6e\x5f\x69\x64\0\x73\x65\x71\x5f\x6e\x75\x6d\0\
-+\x73\x65\x71\x5f\x66\x69\x6c\x65\0\x5f\x5f\x75\x36\x34\0\x6c\x6f\x6e\x67\x20\
-+\x6c\x6f\x6e\x67\x20\x75\x6e\x73\x69\x67\x6e\x65\x64\x20\x69\x6e\x74\0\x30\x3a\
-+\x31\0\x09\x73\x74\x72\x75\x63\x74\x20\x62\x70\x66\x5f\x6d\x61\x70\x20\x2a\x6d\
-+\x61\x70\x20\x3d\x20\x63\x74\x78\x2d\x3e\x6d\x61\x70\x3b\0\x09\x69\x66\x20\x28\
-+\x21\x6d\x61\x70\x29\0\x30\x3a\x32\0\x09\x5f\x5f\x75\x36\x34\x20\x73\x65\x71\
-+\x5f\x6e\x75\x6d\x20\x3d\x20\x63\x74\x78\x2d\x3e\x6d\x65\x74\x61\x2d\x3e\x73\
-+\x65\x71\x5f\x6e\x75\x6d\x3b\0\x09\x69\x66\x20\x28\x73\x65\x71\x5f\x6e\x75\x6d\
-+\x20\x3d\x3d\x20\x30\x29\0\x09\x09\x42\x50\x46\x5f\x53\x45\x51\x5f\x50\x52\x49\
-+\x4e\x54\x46\x28\x73\x65\x71\x2c\x20\x22\x20\x20\x69\x64\x20\x6e\x61\x6d\x65\
-+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x6d\x61\x78\x5f\x65\x6e\
-+\x74\x72\x69\x65\x73\x5c\x6e\x22\x29\x3b\0\x62\x70\x66\x5f\x6d\x61\x70\0\x69\
-+\x64\0\x6e\x61\x6d\x65\0\x6d\x61\x78\x5f\x65\x6e\x74\x72\x69\x65\x73\0\x5f\x5f\
-+\x75\x33\x32\0\x75\x6e\x73\x69\x67\x6e\x65\x64\x20\x69\x6e\x74\0\x63\x68\x61\
-+\x72\0\x5f\x5f\x41\x52\x52\x41\x59\x5f\x53\x49\x5a\x45\x5f\x54\x59\x50\x45\x5f\
-+\x5f\0\x09\x42\x50\x46\x5f\x53\x45\x51\x5f\x50\x52\x49\x4e\x54\x46\x28\x73\x65\
-+\x71\x2c\x20\x22\x25\x34\x75\x20\x25\x2d\x31\x36\x73\x25\x36\x64\x5c\x6e\x22\
-+\x2c\x20\x6d\x61\x70\x2d\x3e\x69\x64\x2c\x20\x6d\x61\x70\x2d\x3e\x6e\x61\x6d\
-+\x65\x2c\x20\x6d\x61\x70\x2d\x3e\x6d\x61\x78\x5f\x65\x6e\x74\x72\x69\x65\x73\
-+\x29\x3b\0\x7d\0\x62\x70\x66\x5f\x69\x74\x65\x72\x5f\x5f\x62\x70\x66\x5f\x70\
-+\x72\x6f\x67\0\x70\x72\x6f\x67\0\x64\x75\x6d\x70\x5f\x62\x70\x66\x5f\x70\x72\
-+\x6f\x67\0\x69\x74\x65\x72\x2f\x62\x70\x66\x5f\x70\x72\x6f\x67\0\x09\x73\x74\
-+\x72\x75\x63\x74\x20\x62\x70\x66\x5f\x70\x72\x6f\x67\x20\x2a\x70\x72\x6f\x67\
-+\x20\x3d\x20\x63\x74\x78\x2d\x3e\x70\x72\x6f\x67\x3b\0\x09\x69\x66\x20\x28\x21\
-+\x70\x72\x6f\x67\x29\0\x62\x70\x66\x5f\x70\x72\x6f\x67\0\x61\x75\x78\0\x09\x61\
-+\x75\x78\x20\x3d\x20\x70\x72\x6f\x67\x2d\x3e\x61\x75\x78\x3b\0\x09\x09\x42\x50\
-+\x46\x5f\x53\x45\x51\x5f\x50\x52\x49\x4e\x54\x46\x28\x73\x65\x71\x2c\x20\x22\
-+\x20\x20\x69\x64\x20\x6e\x61\x6d\x65\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\
-+\x20\x20\x20\x61\x74\x74\x61\x63\x68\x65\x64\x5c\x6e\x22\x29\x3b\0\x62\x70\x66\
-+\x5f\x70\x72\x6f\x67\x5f\x61\x75\x78\0\x61\x74\x74\x61\x63\x68\x5f\x66\x75\x6e\
-+\x63\x5f\x6e\x61\x6d\x65\0\x6c\x69\x6e\x6b\x65\x64\x5f\x70\x72\x6f\x67\0\x66\
-+\x75\x6e\x63\x5f\x69\x6e\x66\x6f\0\x62\x74\x66\0\x09\x42\x50\x46\x5f\x53\x45\
-+\x51\x5f\x50\x52\x49\x4e\x54\x46\x28\x73\x65\x71\x2c\x20\x22\x25\x34\x75\x20\
-+\x25\x2d\x31\x36\x73\x20\x25\x73\x20\x25\x73\x5c\x6e\x22\x2c\x20\x61\x75\x78\
-+\x2d\x3e\x69\x64\x2c\0\x30\x3a\x34\0\x30\x3a\x35\0\x09\x69\x66\x20\x28\x21\x62\
-+\x74\x66\x29\0\x62\x70\x66\x5f\x66\x75\x6e\x63\x5f\x69\x6e\x66\x6f\0\x69\x6e\
-+\x73\x6e\x5f\x6f\x66\x66\0\x74\x79\x70\x65\x5f\x69\x64\0\x30\0\x73\x74\x72\x69\
-+\x6e\x67\x73\0\x74\x79\x70\x65\x73\0\x68\x64\x72\0\x62\x74\x66\x5f\x68\x65\x61\
-+\x64\x65\x72\0\x73\x74\x72\x5f\x6c\x65\x6e\0\x09\x74\x79\x70\x65\x73\x20\x3d\
-+\x20\x62\x74\x66\x2d\x3e\x74\x79\x70\x65\x73\x3b\0\x09\x62\x70\x66\x5f\x70\x72\
-+\x6f\x62\x65\x5f\x72\x65\x61\x64\x5f\x6b\x65\x72\x6e\x65\x6c\x28\x26\x74\x2c\
-+\x20\x73\x69\x7a\x65\x6f\x66\x28\x74\x29\x2c\x20\x74\x79\x70\x65\x73\x20\x2b\
-+\x20\x62\x74\x66\x5f\x69\x64\x29\x3b\0\x09\x73\x74\x72\x20\x3d\x20\x62\x74\x66\
-+\x2d\x3e\x73\x74\x72\x69\x6e\x67\x73\x3b\0\x62\x74\x66\x5f\x74\x79\x70\x65\0\
-+\x6e\x61\x6d\x65\x5f\x6f\x66\x66\0\x09\x6e\x61\x6d\x65\x5f\x6f\x66\x66\x20\x3d\
-+\x20\x42\x50\x46\x5f\x43\x4f\x52\x45\x5f\x52\x45\x41\x44\x28\x74\x2c\x20\x6e\
-+\x61\x6d\x65\x5f\x6f\x66\x66\x29\x3b\0\x30\x3a\x32\x3a\x30\0\x09\x69\x66\x20\
-+\x28\x6e\x61\x6d\x65\x5f\x6f\x66\x66\x20\x3e\x3d\x20\x62\x74\x66\x2d\x3e\x68\
-+\x64\x72\x2e\x73\x74\x72\x5f\x6c\x65\x6e\x29\0\x09\x72\x65\x74\x75\x72\x6e\x20\
-+\x73\x74\x72\x20\x2b\x20\x6e\x61\x6d\x65\x5f\x6f\x66\x66\x3b\0\x30\x3a\x33\0\
-+\x64\x75\x6d\x70\x5f\x62\x70\x66\x5f\x6d\x61\x70\x2e\x5f\x5f\x5f\x66\x6d\x74\0\
-+\x64\x75\x6d\x70\x5f\x62\x70\x66\x5f\x6d\x61\x70\x2e\x5f\x5f\x5f\x66\x6d\x74\
-+\x2e\x31\0\x64\x75\x6d\x70\x5f\x62\x70\x66\x5f\x70\x72\x6f\x67\x2e\x5f\x5f\x5f\
-+\x66\x6d\x74\0\x64\x75\x6d\x70\x5f\x62\x70\x66\x5f\x70\x72\x6f\x67\x2e\x5f\x5f\
-+\x5f\x66\x6d\x74\x2e\x32\0\x4c\x49\x43\x45\x4e\x53\x45\0\x2e\x72\x6f\x64\x61\
-+\x74\x61\0\x6c\x69\x63\x65\x6e\x73\x65\0\x9f\xeb\x01\0\x20\0\0\0\0\0\0\0\x24\0\
-+\0\0\x24\0\0\0\x44\x02\0\0\x68\x02\0\0\xa4\x01\0\0\x08\0\0\0\x31\0\0\0\x01\0\0\
-+\0\0\0\0\0\x07\0\0\0\x56\x02\0\0\x01\0\0\0\0\0\0\0\x17\0\0\0\x10\0\0\0\x31\0\0\
-+\0\x09\0\0\0\0\0\0\0\x42\0\0\0\x7b\0\0\0\x1e\x40\x01\0\x08\0\0\0\x42\0\0\0\x7b\
-+\0\0\0\x24\x40\x01\0\x10\0\0\0\x42\0\0\0\xf2\0\0\0\x1d\x48\x01\0\x18\0\0\0\x42\
-+\0\0\0\x13\x01\0\0\x06\x50\x01\0\x20\0\0\0\x42\0\0\0\x22\x01\0\0\x1d\x44\x01\0\
-+\x28\0\0\0\x42\0\0\0\x47\x01\0\0\x06\x5c\x01\0\x38\0\0\0\x42\0\0\0\x5a\x01\0\0\
-+\x03\x60\x01\0\x70\0\0\0\x42\0\0\0\xe0\x01\0\0\x02\x68\x01\0\xf0\0\0\0\x42\0\0\
-+\0\x2e\x02\0\0\x01\x70\x01\0\x56\x02\0\0\x1a\0\0\0\0\0\0\0\x42\0\0\0\x7b\0\0\0\
-+\x1e\x84\x01\0\x08\0\0\0\x42\0\0\0\x7b\0\0\0\x24\x84\x01\0\x10\0\0\0\x42\0\0\0\
-+\x64\x02\0\0\x1f\x8c\x01\0\x18\0\0\0\x42\0\0\0\x88\x02\0\0\x06\x98\x01\0\x20\0\
-+\0\0\x42\0\0\0\xa1\x02\0\0\x0e\xa4\x01\0\x28\0\0\0\x42\0\0\0\x22\x01\0\0\x1d\
-+\x88\x01\0\x30\0\0\0\x42\0\0\0\x47\x01\0\0\x06\xa8\x01\0\x40\0\0\0\x42\0\0\0\
-+\xb3\x02\0\0\x03\xac\x01\0\x80\0\0\0\x42\0\0\0\x26\x03\0\0\x02\xb4\x01\0\xb8\0\
-+\0\0\x42\0\0\0\x61\x03\0\0\x06\x08\x01\0\xd0\0\0\0\x42\0\0\0\0\0\0\0\0\0\0\0\
-+\xd8\0\0\0\x42\0\0\0\xb2\x03\0\0\x0f\x14\x01\0\xe0\0\0\0\x42\0\0\0\xc7\x03\0\0\
-+\x2d\x18\x01\0\xf0\0\0\0\x42\0\0\0\xfe\x03\0\0\x0d\x10\x01\0\0\x01\0\0\x42\0\0\
-+\0\0\0\0\0\0\0\0\0\x08\x01\0\0\x42\0\0\0\xc7\x03\0\0\x02\x18\x01\0\x20\x01\0\0\
-+\x42\0\0\0\x25\x04\0\0\x0d\x1c\x01\0\x38\x01\0\0\x42\0\0\0\0\0\0\0\0\0\0\0\x40\
-+\x01\0\0\x42\0\0\0\x25\x04\0\0\x0d\x1c\x01\0\x58\x01\0\0\x42\0\0\0\x25\x04\0\0\
-+\x0d\x1c\x01\0\x60\x01\0\0\x42\0\0\0\x53\x04\0\0\x1b\x20\x01\0\x68\x01\0\0\x42\
-+\0\0\0\x53\x04\0\0\x06\x20\x01\0\x70\x01\0\0\x42\0\0\0\x76\x04\0\0\x0d\x28\x01\
-+\0\x78\x01\0\0\x42\0\0\0\0\0\0\0\0\0\0\0\x80\x01\0\0\x42\0\0\0\x26\x03\0\0\x02\
-+\xb4\x01\0\xf8\x01\0\0\x42\0\0\0\x2e\x02\0\0\x01\xc4\x01\0\x10\0\0\0\x31\0\0\0\
-+\x07\0\0\0\0\0\0\0\x02\0\0\0\x3e\0\0\0\0\0\0\0\x08\0\0\0\x08\0\0\0\x3e\0\0\0\0\
-+\0\0\0\x10\0\0\0\x02\0\0\0\xee\0\0\0\0\0\0\0\x20\0\0\0\x08\0\0\0\x1e\x01\0\0\0\
-+\0\0\0\x70\0\0\0\x0d\0\0\0\x3e\0\0\0\0\0\0\0\x80\0\0\0\x0d\0\0\0\xee\0\0\0\0\0\
-+\0\0\xa0\0\0\0\x0d\0\0\0\x1e\x01\0\0\0\0\0\0\x56\x02\0\0\x12\0\0\0\0\0\0\0\x14\
-+\0\0\0\x3e\0\0\0\0\0\0\0\x08\0\0\0\x08\0\0\0\x3e\0\0\0\0\0\0\0\x10\0\0\0\x14\0\
-+\0\0\xee\0\0\0\0\0\0\0\x20\0\0\0\x18\0\0\0\x3e\0\0\0\0\0\0\0\x28\0\0\0\x08\0\0\
-+\0\x1e\x01\0\0\0\0\0\0\x80\0\0\0\x1a\0\0\0\x3e\0\0\0\0\0\0\0\x90\0\0\0\x1a\0\0\
-+\0\xee\0\0\0\0\0\0\0\xa8\0\0\0\x1a\0\0\0\x59\x03\0\0\0\0\0\0\xb0\0\0\0\x1a\0\0\
-+\0\x5d\x03\0\0\0\0\0\0\xc0\0\0\0\x1f\0\0\0\x8b\x03\0\0\0\0\0\0\xd8\0\0\0\x20\0\
-+\0\0\xee\0\0\0\0\0\0\0\xf0\0\0\0\x20\0\0\0\x3e\0\0\0\0\0\0\0\x18\x01\0\0\x24\0\
-+\0\0\x3e\0\0\0\0\0\0\0\x50\x01\0\0\x1a\0\0\0\xee\0\0\0\0\0\0\0\x60\x01\0\0\x20\
-+\0\0\0\x4d\x04\0\0\0\0\0\0\x88\x01\0\0\x1a\0\0\0\x1e\x01\0\0\0\0\0\0\x98\x01\0\
-+\0\x1a\0\0\0\x8e\x04\0\0\0\0\0\0\xa0\x01\0\0\x18\0\0\0\x3e\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xd6\0\0\0\0\0\x02\0\x70\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\xc8\0\0\0\0\0\x02\0\xf0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\xcf\0\0\0\0\0\x03\0\x78\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xc1\0\0\0\0\0\x03\0\x80\
-+\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xba\0\0\0\0\0\x03\0\xf8\x01\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\x14\0\0\0\x01\0\x04\0\0\0\0\0\0\0\0\0\x23\0\0\0\0\0\0\0\xf4\0\0\0\
-+\x01\0\x04\0\x23\0\0\0\0\0\0\0\x0e\0\0\0\0\0\0\0\x28\0\0\0\x01\0\x04\0\x31\0\0\
-+\0\0\0\0\0\x20\0\0\0\0\0\0\0\xdd\0\0\0\x01\0\x04\0\x51\0\0\0\0\0\0\0\x11\0\0\0\
-+\0\0\0\0\0\0\0\0\x03\0\x02\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x03\0\x03\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x03\0\x04\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\xb2\0\0\0\x11\0\x05\0\0\0\0\0\0\0\0\0\x04\0\0\0\0\0\0\0\x3d\0\0\0\x12\
-+\0\x02\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\x5b\0\0\0\x12\0\x03\0\0\0\0\0\0\0\0\
-+\0\x08\x02\0\0\0\0\0\0\x48\0\0\0\0\0\0\0\x01\0\0\0\x0c\0\0\0\xc8\0\0\0\0\0\0\0\
-+\x01\0\0\0\x0c\0\0\0\x50\0\0\0\0\0\0\0\x01\0\0\0\x0c\0\0\0\xd0\x01\0\0\0\0\0\0\
-+\x01\0\0\0\x0c\0\0\0\xf0\x03\0\0\0\0\0\0\x0a\0\0\0\x0c\0\0\0\xfc\x03\0\0\0\0\0\
-+\0\x0a\0\0\0\x0c\0\0\0\x08\x04\0\0\0\0\0\0\x0a\0\0\0\x0c\0\0\0\x14\x04\0\0\0\0\
-+\0\0\x0a\0\0\0\x0c\0\0\0\x2c\x04\0\0\0\0\0\0\0\0\0\0\x0d\0\0\0\x2c\0\0\0\0\0\0\
-+\0\0\0\0\0\x0a\0\0\0\x3c\0\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x50\0\0\0\0\0\0\0\0\0\
-+\0\0\x0a\0\0\0\x60\0\0\0\0\0\0\0\0\0\0\0\x0a\0\0\0\x70\0\0\0\0\0\0\0\0\0\0\0\
-+\x0a\0\0\0\x80\0\0\0\0\0\0\0\0\0\0\0\x0a\0\0\0\x90\0\0\0\0\0\0\0\0\0\0\0\x0a\0\
-+\0\0\xa0\0\0\0\0\0\0\0\0\0\0\0\x0a\0\0\0\xb0\0\0\0\0\0\0\0\0\0\0\0\x0a\0\0\0\
-+\xc0\0\0\0\0\0\0\0\0\0\0\0\x0a\0\0\0\xd0\0\0\0\0\0\0\0\0\0\0\0\x0a\0\0\0\xe8\0\
-+\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\xf8\0\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x08\x01\0\0\
-+\0\0\0\0\0\0\0\0\x0b\0\0\0\x18\x01\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x28\x01\0\0\0\
-+\0\0\0\0\0\0\0\x0b\0\0\0\x38\x01\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x48\x01\0\0\0\0\
-+\0\0\0\0\0\0\x0b\0\0\0\x58\x01\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x68\x01\0\0\0\0\0\
-+\0\0\0\0\0\x0b\0\0\0\x78\x01\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x88\x01\0\0\0\0\0\0\
-+\0\0\0\0\x0b\0\0\0\x98\x01\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\xa8\x01\0\0\0\0\0\0\0\
-+\0\0\0\x0b\0\0\0\xb8\x01\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\xc8\x01\0\0\0\0\0\0\0\0\
-+\0\0\x0b\0\0\0\xd8\x01\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\xe8\x01\0\0\0\0\0\0\0\0\0\
-+\0\x0b\0\0\0\xf8\x01\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x08\x02\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\x18\x02\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x28\x02\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\x38\x02\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x48\x02\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\x58\x02\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x68\x02\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\x78\x02\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x94\x02\0\0\0\0\0\0\0\0\0\0\
-+\x0a\0\0\0\xa4\x02\0\0\0\0\0\0\0\0\0\0\x0a\0\0\0\xb4\x02\0\0\0\0\0\0\0\0\0\0\
-+\x0a\0\0\0\xc4\x02\0\0\0\0\0\0\0\0\0\0\x0a\0\0\0\xd4\x02\0\0\0\0\0\0\0\0\0\0\
-+\x0a\0\0\0\xe4\x02\0\0\0\0\0\0\0\0\0\0\x0a\0\0\0\xf4\x02\0\0\0\0\0\0\0\0\0\0\
-+\x0a\0\0\0\x0c\x03\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x1c\x03\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\x2c\x03\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x3c\x03\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\x4c\x03\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x5c\x03\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\x6c\x03\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x7c\x03\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\x8c\x03\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x9c\x03\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\xac\x03\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\xbc\x03\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\xcc\x03\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\xdc\x03\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\xec\x03\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\xfc\x03\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\x0c\x04\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x1c\x04\0\0\0\0\0\0\0\0\0\0\
-+\x0b\0\0\0\x4e\x4f\x41\x42\x43\x44\x4d\0\x2e\x74\x65\x78\x74\0\x2e\x72\x65\x6c\
-+\x2e\x42\x54\x46\x2e\x65\x78\x74\0\x64\x75\x6d\x70\x5f\x62\x70\x66\x5f\x6d\x61\
-+\x70\x2e\x5f\x5f\x5f\x66\x6d\x74\0\x64\x75\x6d\x70\x5f\x62\x70\x66\x5f\x70\x72\
-+\x6f\x67\x2e\x5f\x5f\x5f\x66\x6d\x74\0\x64\x75\x6d\x70\x5f\x62\x70\x66\x5f\x6d\
-+\x61\x70\0\x2e\x72\x65\x6c\x69\x74\x65\x72\x2f\x62\x70\x66\x5f\x6d\x61\x70\0\
-+\x64\x75\x6d\x70\x5f\x62\x70\x66\x5f\x70\x72\x6f\x67\0\x2e\x72\x65\x6c\x69\x74\
-+\x65\x72\x2f\x62\x70\x66\x5f\x70\x72\x6f\x67\0\x2e\x6c\x6c\x76\x6d\x5f\x61\x64\
-+\x64\x72\x73\x69\x67\0\x6c\x69\x63\x65\x6e\x73\x65\0\x2e\x73\x74\x72\x74\x61\
-+\x62\0\x2e\x73\x79\x6d\x74\x61\x62\0\x2e\x72\x6f\x64\x61\x74\x61\0\x2e\x72\x65\
-+\x6c\x2e\x42\x54\x46\0\x4c\x49\x43\x45\x4e\x53\x45\0\x4c\x42\x42\x31\x5f\x37\0\
-+\x4c\x42\x42\x31\x5f\x36\0\x4c\x42\x42\x30\x5f\x34\0\x4c\x42\x42\x31\x5f\x33\0\
-+\x4c\x42\x42\x30\x5f\x33\0\x64\x75\x6d\x70\x5f\x62\x70\x66\x5f\x70\x72\x6f\x67\
-+\x2e\x5f\x5f\x5f\x66\x6d\x74\x2e\x32\0\x64\x75\x6d\x70\x5f\x62\x70\x66\x5f\x6d\
-+\x61\x70\x2e\x5f\x5f\x5f\x66\x6d\x74\x2e\x31\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\x01\0\0\0\x06\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\x40\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x04\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\x4e\0\0\0\x01\0\0\0\x06\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x40\0\0\0\
-+\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\x6d\0\0\0\x01\0\0\0\x06\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x40\x01\0\0\0\0\0\0\x08\
-+\x02\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xa1\0\0\0\
-+\x01\0\0\0\x02\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x48\x03\0\0\0\0\0\0\x62\0\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x89\0\0\0\x01\0\0\0\x03\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xaa\x03\0\0\0\0\0\0\x04\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xad\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\0\xae\x03\0\0\0\0\0\0\x34\x09\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\x0b\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\xe2\x0c\0\0\0\0\0\0\x2c\x04\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\x99\0\0\0\x02\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x10\x11\0\0\0\
-+\0\0\0\x80\x01\0\0\0\0\0\0\x0e\0\0\0\x0d\0\0\0\x08\0\0\0\0\0\0\0\x18\0\0\0\0\0\
-+\0\0\x4a\0\0\0\x09\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x90\x12\0\0\0\0\0\0\
-+\x20\0\0\0\0\0\0\0\x08\0\0\0\x02\0\0\0\x08\0\0\0\0\0\0\0\x10\0\0\0\0\0\0\0\x69\
-+\0\0\0\x09\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xb0\x12\0\0\0\0\0\0\x20\0\0\0\
-+\0\0\0\0\x08\0\0\0\x03\0\0\0\x08\0\0\0\0\0\0\0\x10\0\0\0\0\0\0\0\xa9\0\0\0\x09\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xd0\x12\0\0\0\0\0\0\x50\0\0\0\0\0\0\0\
-+\x08\0\0\0\x06\0\0\0\x08\0\0\0\0\0\0\0\x10\0\0\0\0\0\0\0\x07\0\0\0\x09\0\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x20\x13\0\0\0\0\0\0\xe0\x03\0\0\0\0\0\0\x08\0\0\
-+\0\x07\0\0\0\x08\0\0\0\0\0\0\0\x10\0\0\0\0\0\0\0\x7b\0\0\0\x03\x4c\xff\x6f\0\0\
-+\0\x80\0\0\0\0\0\0\0\0\0\0\0\0\0\x17\0\0\0\0\0\0\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x91\0\0\0\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\
-+\0\0\0\0\0\0\x07\x17\0\0\0\0\0\0\x0a\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\
-+\0\0\0\0\0\0\0\0\0\0\0\0";
-+
++	err = bpf_obj_get_info_by_fd(bpf_link__fd(link), &info, &info_len);
++	if (err)
++		return err;
++	obj.link_id = info.id;
++	if (strlen(link_name) >= sizeof(obj.link_name))
++		return -E2BIG;
++	strcpy(obj.link_name, link_name);
++	if (write(to_kernel, &obj, sizeof(obj)) != sizeof(obj))
++		return -EPIPE;
 +	return 0;
-+err:
-+	bpf_object__destroy_skeleton(s);
-+	return -1;
 +}
 +
-+#endif /* __ITERATORS_BPF_SKEL_H__ */
++int main(int argc, char **argv)
++{
++	struct rlimit rlim = { RLIM_INFINITY, RLIM_INFINITY };
++	struct iterators_bpf *skel;
++	int err, magic;
++	int debug_fd;
++
++	debug_fd = open("/dev/console", O_WRONLY | O_NOCTTY | O_CLOEXEC);
++	if (debug_fd < 0)
++		return 1;
++	to_kernel = dup(1);
++	close(1);
++	dup(debug_fd);
++	/* now stdin and stderr point to /dev/console */
++
++	read(from_kernel, &magic, sizeof(magic));
++	if (magic != BPF_PRELOAD_START) {
++		printf("bad start magic %d\n", magic);
++		return 1;
++	}
++	setrlimit(RLIMIT_MEMLOCK, &rlim);
++	/* libbpf opens BPF object and loads it into the kernel */
++	skel = iterators_bpf__open_and_load();
++	if (!skel) {
++		/* iterators.skel.h is little endian.
++		 * libbpf doesn't support automatic little->big conversion
++		 * of BPF bytecode yet.
++		 * The program load will fail in such case.
++		 */
++		printf("Failed load could be due to wrong endianness\n");
++		return 1;
++	}
++	err = iterators_bpf__attach(skel);
++	if (err)
++		goto cleanup;
++
++	/* send two bpf_link IDs with names to the kernel */
++	err = send_link_to_kernel(skel->links.dump_bpf_map, "maps.debug");
++	if (err)
++		goto cleanup;
++	err = send_link_to_kernel(skel->links.dump_bpf_prog, "progs.debug");
++	if (err)
++		goto cleanup;
++
++	/* The kernel will proceed with pinnging the links in bpffs.
++	 * UMD will wait on read from pipe.
++	 */
++	read(from_kernel, &magic, sizeof(magic));
++	if (magic != BPF_PRELOAD_END) {
++		printf("bad final magic %d\n", magic);
++		err = -EINVAL;
++	}
++cleanup:
++	iterators_bpf__destroy(skel);
++
++	return err != 0;
++}
+diff --git a/net/bpfilter/Kconfig b/net/bpfilter/Kconfig
+index 73d0b12789f1..8ad0233ce497 100644
+--- a/net/bpfilter/Kconfig
++++ b/net/bpfilter/Kconfig
+@@ -2,6 +2,7 @@
+ menuconfig BPFILTER
+ 	bool "BPF based packet filtering framework (BPFILTER)"
+ 	depends on NET && BPF && INET
++	select USERMODE_DRIVER
+ 	help
+ 	  This builds experimental bpfilter framework that is aiming to
+ 	  provide netfilter compatible functionality via BPF
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index c5dbfafdf889..66b2cfadf262 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -1,6 +1,9 @@
+ # SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+ # Most of this file is copied from tools/lib/traceevent/Makefile
+ 
++RM ?= rm
++srctree = $(abs_srctree)
++
+ LIBBPF_VERSION := $(shell \
+ 	grep -oE '^LIBBPF_([0-9.]+)' libbpf.map | \
+ 	sort -rV | head -n1 | cut -d'_' -f2)
+@@ -188,7 +191,7 @@ $(OUTPUT)libbpf.so.$(LIBBPF_VERSION): $(BPF_IN_SHARED)
+ 	@ln -sf $(@F) $(OUTPUT)libbpf.so.$(LIBBPF_MAJOR_VERSION)
+ 
+ $(OUTPUT)libbpf.a: $(BPF_IN_STATIC)
+-	$(QUIET_LINK)$(RM) $@; $(AR) rcs $@ $^
++	$(QUIET_LINK)$(RM) -f $@; $(AR) rcs $@ $^
+ 
+ $(OUTPUT)libbpf.pc:
+ 	$(QUIET_GEN)sed -e "s|@PREFIX@|$(prefix)|" \
+@@ -291,7 +294,7 @@ PHONY += force elfdep zdep bpfdep cscope tags
+ 	cscope -b -q -I $(srctree)/include -f cscope.out
+ 
+ tags:
+-	rm -f TAGS tags
++	$(RM) -f TAGS tags
+ 	ls *.c *.h | xargs $(TAGS_PROG) -a
+ 
+ # Declare the contents of the .PHONY variable as phony.  We keep that
 -- 
 2.23.0
 
