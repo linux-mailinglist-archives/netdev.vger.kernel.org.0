@@ -2,120 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E6E24A79D
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 22:16:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DA5624A7A8
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 22:22:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbgHSUQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 16:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725275AbgHSUQA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 16:16:00 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9AA4C061757;
-        Wed, 19 Aug 2020 13:15:59 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id c15so12750412lfi.3;
-        Wed, 19 Aug 2020 13:15:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xePC5tWQFk10rZ9I7pPcAR7hQMEhWEsraYFUVXFyhu4=;
-        b=f9ikmvVOpDDy6zvzvci9P1KduZsWvp5SQZU6lu4xAojkBwg4XwDyGWrqzA5ygBa+En
-         hZDDcmOC/LrvQrWGch0ibhfkMjJScoAaTfi2ZyfppYRCfmJnl1hktmms/dyVh9lVeufT
-         UOcuwbEPHVv5WlPzeojYTmSwrzCqSTEJCZOwgrhATF9MFk9e52VKWQfO1aRlfL4wFycq
-         f0XPA4/zR3VC0vcCvK/kAyhPw9HyZ5kXsKDEoX9wDhzZKRhAA6KDk4zVPGnmh0pVQ/26
-         w61NpmiCtMFSnTJgbQUkZ47km6yiA6/POVmA40977jEowNMy2LpPVva6SFvOLGHbZ+5r
-         K9yw==
+        id S1726617AbgHSUWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 16:22:33 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:43182 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725275AbgHSUWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 16:22:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1597868551;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=30pRxgpb/X5z76UuhoqOgt/D4/g/GAmm4SymKXd6j4g=;
+        b=GYGQkQ9fruR9nEuRHTw9+r3ZhfSQt5zYeEuONfmwi6El4lDUGuDbAKEFwVnnpaB7906nOR
+        xDd/tAQgNPNePwmLZFxR0VpXl/qraaKRj50s3Lt/M0Ime+EGsLavjWQpDlRAjn8egNz8NX
+        nIQ2gvZ6RfOAvK356gPLsoKNlOHUwSA=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-2-UcSMkTr1MmW-Byd5N3EGHA-1; Wed, 19 Aug 2020 16:22:29 -0400
+X-MC-Unique: UcSMkTr1MmW-Byd5N3EGHA-1
+Received: by mail-ej1-f70.google.com with SMTP id l7so8747860ejr.7
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 13:22:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xePC5tWQFk10rZ9I7pPcAR7hQMEhWEsraYFUVXFyhu4=;
-        b=svFnxpUOoEJ2vABh6tLMljJCjt7s3q5gQxx0clLlIrseAh3w0fybIkw8Zf1s/aaiOz
-         sttk0aZ/XODapcbH7QK8RtNU2VlsZlDwaztAgnhE7GagvG2/HKNNy9zg2gzY343oaXML
-         I+78H2RaxxjjxD6KjuhchLSNJhadYLHwdHLJRio25OCKy5osf49HhJ3JdK3wXFZfnYJr
-         CK57lyI9YhsXpXHYSJyvSDnu/O7PHsvclwKWTEoBpWqOMJwAYYSAMN4bYaDuIJVmanU8
-         mWHt7E9j/wKgt4m25dZMbRLvIIMIkPpx2pWxA0GKM6J+yndfqKQFcpEu68vi9rH9WHkY
-         iaqQ==
-X-Gm-Message-State: AOAM532wGp0rYLaOeLsRprFyRTih3mZXmWrgjHmz7JfhJkwBU3mrWr9U
-        cMDWpaJLDOMmhKcPyTbghOCU1O/+NT9g51lH38rP00fP
-X-Google-Smtp-Source: ABdhPJxrJ74g+H/Tpf8BvpHfeai1Eh4nBaXGsdu1qcZ601EkPlV6Vf3/j3Fs/mJG7DAZ634mtwyr1f8xJNvrAufkn3w=
-X-Received: by 2002:a05:6512:3610:: with SMTP id f16mr12837009lfs.8.1597868158219;
- Wed, 19 Aug 2020 13:15:58 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=30pRxgpb/X5z76UuhoqOgt/D4/g/GAmm4SymKXd6j4g=;
+        b=UdWljBiRcF6m4oXPL5Y212R2wnKptOdwQ7YpdP9g6vG71byCp50zAtHcr3CkgOrxxu
+         Sd/CqzFIZ+VcbK4DzmoZlQHPxV23axik+MJBtWJM7U0P3CfuN4O4I4jJYejFIUEgK3Bh
+         GeXHTRDSoUNvP1IbJUfwM1yRxHl2iQFKSTf3khtWZitKlJHsu0uBXwDQNI4SHchrW8Rz
+         1xnGWRy+Es3pbK9Je8adH76wAOS+re+q1BdtjET3OgGJbbwbdQLxfSIX6qC4yJqdDjhu
+         M6L4ICTBaC6b43fy1TSkMqXRcP46uCA/WHZgk45HCybRcx2vbKKu1xy4xOb/jTC+o1FA
+         q0IA==
+X-Gm-Message-State: AOAM531u/uebVt0on146PwsEtJI2xZJFn4+jg4kP2YR4Um26IqU24qzL
+        fPn9GIfpCHIq35CdCvlAAbt0bABZBi5Xza6U8caj5CB1/ZB6l9wwAQlky+USalaPudeW6Tjo0jf
+        ebO1A9qGQgcaehQgj
+X-Received: by 2002:a17:906:c1c3:: with SMTP id bw3mr78713ejb.8.1597868548047;
+        Wed, 19 Aug 2020 13:22:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyc3avTSjMLasP8V4G4UGGFPClYBfNVuDPI6MBIpYJaTZBOzHzeefmx7boqbsNu5nxkpm5U/g==
+X-Received: by 2002:a17:906:c1c3:: with SMTP id bw3mr78699ejb.8.1597868547845;
+        Wed, 19 Aug 2020 13:22:27 -0700 (PDT)
+Received: from localhost ([151.48.139.80])
+        by smtp.gmail.com with ESMTPSA id h10sm18183609eds.0.2020.08.19.13.22.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Aug 2020 13:22:27 -0700 (PDT)
+Date:   Wed, 19 Aug 2020 22:22:23 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, brouer@redhat.com,
+        echaudro@redhat.com, sameehj@amazon.com
+Subject: Re: [PATCH net-next 6/6] net: mvneta: enable jumbo frames for XDP
+Message-ID: <20200819202223.GA179529@lore-desk>
+References: <cover.1597842004.git.lorenzo@kernel.org>
+ <3e0d98fafaf955868205272354e36f0eccc80430.1597842004.git.lorenzo@kernel.org>
+ <20200819122328.0dab6a53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20200818213356.2629020-1-andriin@fb.com> <20200818213356.2629020-5-andriin@fb.com>
- <e37c5162-3c94-4c73-d598-f2a048b2ff27@fb.com> <CAEf4BzZ8y=fFBhwP_+owtYA45WNaa324OVftUF3jW-=Mgy45Yw@mail.gmail.com>
-In-Reply-To: <CAEf4BzZ8y=fFBhwP_+owtYA45WNaa324OVftUF3jW-=Mgy45Yw@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 19 Aug 2020 13:15:46 -0700
-Message-ID: <CAADnVQLkAMqv0BC13=Z2U241a7EbeecAdTmwT9PCVRQiMEv=Sg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/7] libbpf: sanitize BPF program code for bpf_probe_read_{kernel,user}[_str]
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="IJpNTDwzlM2Ie8A6"
+Content-Disposition: inline
+In-Reply-To: <20200819122328.0dab6a53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 19, 2020 at 1:13 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Aug 18, 2020 at 6:42 PM Yonghong Song <yhs@fb.com> wrote:
-> >
-> >
-> >
-> > On 8/18/20 2:33 PM, Andrii Nakryiko wrote:
-> > > Add BPF program code sanitization pass, replacing calls to BPF
-> > > bpf_probe_read_{kernel,user}[_str]() helpers with bpf_probe_read[_str](), if
-> > > libbpf detects that kernel doesn't support new variants.
-> >
-> > I know this has been merged. The whole patch set looks good to me.
-> > A few nit or questions below.
-> >
-> > >
-> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > ---
-> > >   tools/lib/bpf/libbpf.c | 80 ++++++++++++++++++++++++++++++++++++++++++
-> > >   1 file changed, 80 insertions(+)
-> > >
-> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > > index ab0c3a409eea..bdc08f89a5c0 100644
-> > > --- a/tools/lib/bpf/libbpf.c
-> > > +++ b/tools/lib/bpf/libbpf.c
-> > > @@ -180,6 +180,8 @@ enum kern_feature_id {
-> > >       FEAT_ARRAY_MMAP,
-> > >       /* kernel support for expected_attach_type in BPF_PROG_LOAD */
-> > >       FEAT_EXP_ATTACH_TYPE,
-> > > +     /* bpf_probe_read_{kernel,user}[_str] helpers */
-> > > +     FEAT_PROBE_READ_KERN,
-> > >       __FEAT_CNT,
-> > >   };
-> > >
-> > > @@ -3591,6 +3593,27 @@ static int probe_kern_exp_attach_type(void)
-> > >       return probe_fd(bpf_load_program_xattr(&attr, NULL, 0));
-> > >   }
-> > >
-> > [...]
-> > >
-> > > +static bool insn_is_helper_call(struct bpf_insn *insn, enum bpf_func_id *func_id)
-> > > +{
-> > > +     __u8 class = BPF_CLASS(insn->code);
-> > > +
-> > > +     if ((class == BPF_JMP || class == BPF_JMP32) &&
-> >
-> > Do we support BPF_JMP32 + BPF_CALL ... as a helper call?
-> > I am not aware of this.
->
-> Verifier seems to support both. Check do_check in
-> kernel/bpf/verifier.c, around line 9000. So I decided to also support
-> it, even if Clang doesn't emit it (yet?).
 
-please check few lines below 9000 ;)
-jmp32 | call is rejected.
-I would remove that from libbpf as well.
+--IJpNTDwzlM2Ie8A6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+> On Wed, 19 Aug 2020 15:13:51 +0200 Lorenzo Bianconi wrote:
+> > Enable the capability to receive jumbo frames even if the interface is
+> > running in XDP mode
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>=20
+> Hm, already? Is all the infra in place? Or does it not imply
+> multi-buffer.
+>=20
+
+Hi Jakub,
+
+with this series mvneta supports xdp multi-buff on both rx and tx sides (XD=
+P_TX
+and ndo_xpd_xmit()) so we can remove MTU limitation.
+
+Regards,
+Lorenzo
+
+--IJpNTDwzlM2Ie8A6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXz2J/AAKCRA6cBh0uS2t
+rBhfAQC+AqLFEiEDJqR1kuUxLxcP0xQr0httOlucio2HzQBAPwD+MnElkBxvQd19
+zewpQ1Jodq11yTSnRDGNrzdlciSN5w8=
+=IXWQ
+-----END PGP SIGNATURE-----
+
+--IJpNTDwzlM2Ie8A6--
+
