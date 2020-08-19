@@ -2,117 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F98D24A24B
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 17:00:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A348924A259
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 17:02:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728480AbgHSO7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 10:59:55 -0400
-Received: from bedivere.hansenpartnership.com ([66.63.167.143]:40860 "EHLO
-        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727087AbgHSO7x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 10:59:53 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by bedivere.hansenpartnership.com (Postfix) with ESMTP id D115F8EE17F;
-        Wed, 19 Aug 2020 07:59:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
-        s=20151216; t=1597849189;
-        bh=7PMu9izfvJP0Yqog7vxhcEQb9h62GDKPX1If4m+L8R0=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=OjUAwUTp/ItAZSlbV+f5fOCaWVzt9DqIN+w9yoJxaEE0gnHE6rZZVb54+Hz0c5ZZE
-         Hb/3aibCu54t6gcW2aVqbWIIDHBKiOLbR/fOvAY90fW0SUrQP0QkX8+CeCZ+PSzzdQ
-         ViQuLsoRKTFDhSIJnCWv76g7gqa9l4AuHedfCKt8=
-Received: from bedivere.hansenpartnership.com ([127.0.0.1])
-        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id XOU0COqUWmkB; Wed, 19 Aug 2020 07:59:49 -0700 (PDT)
-Received: from [153.66.254.174] (c-73-35-198-56.hsd1.wa.comcast.net [73.35.198.56])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 6C2C88EE0E9;
-        Wed, 19 Aug 2020 07:59:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
-        s=20151216; t=1597849189;
-        bh=7PMu9izfvJP0Yqog7vxhcEQb9h62GDKPX1If4m+L8R0=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=OjUAwUTp/ItAZSlbV+f5fOCaWVzt9DqIN+w9yoJxaEE0gnHE6rZZVb54+Hz0c5ZZE
-         Hb/3aibCu54t6gcW2aVqbWIIDHBKiOLbR/fOvAY90fW0SUrQP0QkX8+CeCZ+PSzzdQ
-         ViQuLsoRKTFDhSIJnCWv76g7gqa9l4AuHedfCKt8=
-Message-ID: <1597849185.3875.7.camel@HansenPartnership.com>
-Subject: Re: [PATCH] block: convert tasklets to use new tasklet_setup() API
-From:   James Bottomley <James.Bottomley@HansenPartnership.com>
-To:     Jens Axboe <axboe@kernel.dk>, Kees Cook <keescook@chromium.org>
-Cc:     Allen Pais <allen.cryptic@gmail.com>, jdike@addtoit.com,
-        richard@nod.at, anton.ivanov@cambridgegreys.com, 3chas3@gmail.com,
-        stefanr@s5r6.in-berlin.de, airlied@linux.ie, daniel@ffwll.ch,
-        sre@kernel.org, kys@microsoft.com, deller@gmx.de,
-        dmitry.torokhov@gmail.com, jassisinghbrar@gmail.com,
-        shawnguo@kernel.org, s.hauer@pengutronix.de,
-        maximlevitsky@gmail.com, oakad@yahoo.com, ulf.hansson@linaro.org,
-        mporter@kernel.crashing.org, alex.bou9@gmail.com,
-        broonie@kernel.org, martyn@welchs.me.uk, manohar.vanga@gmail.com,
-        mitch@sfgoth.com, davem@davemloft.net, kuba@kernel.org,
-        linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux1394-devel@lists.sourceforge.net,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-hyperv@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-ntb@googlegroups.com, linux-s390@vger.kernel.org,
-        linux-spi@vger.kernel.org, devel@driverdev.osuosl.org,
-        Allen Pais <allen.lkml@gmail.com>,
-        Romain Perier <romain.perier@gmail.com>
-Date:   Wed, 19 Aug 2020 07:59:45 -0700
-In-Reply-To: <f3312928-430c-25f3-7112-76f2754df080@kernel.dk>
-References: <20200817091617.28119-1-allen.cryptic@gmail.com>
-         <20200817091617.28119-2-allen.cryptic@gmail.com>
-         <b5508ca4-0641-7265-2939-5f03cbfab2e2@kernel.dk>
-         <202008171228.29E6B3BB@keescook>
-         <161b75f1-4e88-dcdf-42e8-b22504d7525c@kernel.dk>
-         <202008171246.80287CDCA@keescook>
-         <df645c06-c30b-eafa-4d23-826b84f2ff48@kernel.dk>
-         <1597780833.3978.3.camel@HansenPartnership.com>
-         <f3312928-430c-25f3-7112-76f2754df080@kernel.dk>
+        id S1726809AbgHSPCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 11:02:25 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:37869 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726636AbgHSPCW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 11:02:22 -0400
+Received: by mail-io1-f69.google.com with SMTP id f6so14388772ioa.4
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 08:02:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=67Gh75A1TSpN6NtiARVGU9hWjZqJ15XNNQGywFVosG0=;
+        b=Jyly/yc61+ekpSvGF1cWgA6FjE84UTOvzd72nCByxOgAeUKccQxzSEil94sgKuR/+e
+         fHnydfZZoRvuaoZ2WwL7ymOQIWBokr0Cq1UmTGlshC/5tDYRpuK5tzselOSyFTlDlYPv
+         bXJGj0i4YNRLvbeAUS3sOkmU1Pzs3ViYIkXnbmPBsRdd8T0bqfFolQk0mBQlqu5NQbDf
+         /YkU6PjP8itW3unPJajkoexUx4AZOI5EUzRR2ns0fofzUNVZMyNkXqfnekwKw1LoGjC/
+         lk6EqaBNQ6AOH9OUOgrMLciJHKxTatmyIUzlioDwYMFvAVzteuWIBV25AolqjFoq0R4i
+         uONQ==
+X-Gm-Message-State: AOAM533J0Fiw6wXDxR/OInrViXZqnK7g8FaXmWaumIW0fTAH1lCVNptk
+        Ns4+gSKRZi3/GAxAqS/ERir/z4LOXEyKqM6ah7TJNl5L/zkg
+X-Google-Smtp-Source: ABdhPJyvN4+7Tvk6NZpG6almeZlIMGgzU5iWuaJVJIQJxIvHiNKvtJVyzgAjNmdVi5jHIVN0cpxmVvEtulJN3SDb4OQLAnh8xQ5A
+MIME-Version: 1.0
+X-Received: by 2002:a92:d782:: with SMTP id d2mr24126782iln.167.1597849341396;
+ Wed, 19 Aug 2020 08:02:21 -0700 (PDT)
+Date:   Wed, 19 Aug 2020 08:02:21 -0700
+In-Reply-To: <000000000000a7e38a05a997edb2@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000660e9a05ad3c4ace@google.com>
+Subject: Re: WARNING in __cfg80211_connect_result
+From:   syzbot <syzbot+cc4c0f394e2611edba66@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.26.6 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-08-19 at 07:00 -0600, Jens Axboe wrote:
-> On 8/18/20 1:00 PM, James Bottomley wrote:
-[...]
-> > Since both threads seem to have petered out, let me suggest in
-> > kernel.h:
-> > 
-> > #define cast_out(ptr, container, member) \
-> > 	container_of(ptr, typeof(*container), member)
-> > 
-> > It does what you want, the argument order is the same as
-> > container_of with the only difference being you name the containing
-> > structure instead of having to specify its type.
-> 
-> Not to incessantly bike shed on the naming, but I don't like
-> cast_out, it's not very descriptive. And it has connotations of
-> getting rid of something, which isn't really true.
+syzbot has found a reproducer for the following issue on:
 
-Um, I thought it was exactly descriptive: you're casting to the outer
-container.  I thought about following the C++ dynamic casting style, so
-out_cast(), but that seemed a bit pejorative.  What about outer_cast()?
+HEAD commit:    e3ec1e8c net: eliminate meaningless memcpy to data in pskb..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1664ac89900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3d400a47d1416652
+dashboard link: https://syzkaller.appspot.com/bug?extid=cc4c0f394e2611edba66
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15d9de91900000
 
-> FWIW, I like the from_ part of the original naming, as it has some
-> clues as to what is being done here. Why not just from_container()?
-> That should immediately tell people what it does without having to
-> look up the implementation, even before this becomes a part of the
-> accepted coding norm.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+cc4c0f394e2611edba66@syzkaller.appspotmail.com
 
-I'm not opposed to container_from() but it seems a little less
-descriptive than outer_cast() but I don't really care.  I always have
-to look up container_of() when I'm using it so this would just be
-another macro of that type ...
-
-James
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 234 at net/wireless/sme.c:757 __cfg80211_connect_result+0xf71/0x13a0 net/wireless/sme.c:757
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 234 Comm: kworker/u4:5 Not tainted 5.9.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: cfg80211 cfg80211_event_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:231
+ __warn.cold+0x20/0x4a kernel/panic.c:600
+ report_bug+0x1bd/0x210 lib/bug.c:198
+ handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
+ exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
+ asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
+RIP: 0010:__cfg80211_connect_result+0xf71/0x13a0 net/wireless/sme.c:757
+Code: 89 be ac 02 00 00 48 c7 c7 60 0f 18 89 c6 05 ef ba 2b 03 01 e8 f5 4a d9 f9 e9 4f f6 ff ff e8 d6 cc f2 f9 0f 0b e8 cf cc f2 f9 <0f> 0b e9 0c f2 ff ff e8 c3 cc f2 f9 e8 2e bb 71 00 31 ff 89 c3 89
+RSP: 0018:ffffc900019c7bb8 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff88808ae13000 RCX: ffffffff87816922
+RDX: ffff8880a8b0a540 RSI: ffffffff878174b1 RDI: 0000000000000005
+RBP: ffff88807be34818 R08: 0000000000000001 R09: ffffffff8c5f1a3f
+R10: 0000000000000000 R11: 1ffffffff1835405 R12: 0000000000000000
+R13: ffff88807be34828 R14: ffff88808ae13200 R15: ffff88807be34820
+ cfg80211_process_wdev_events+0x2c6/0x5b0 net/wireless/util.c:893
+ cfg80211_process_rdev_events+0x6e/0x100 net/wireless/util.c:934
+ cfg80211_event_work+0x1a/0x20 net/wireless/core.c:320
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
