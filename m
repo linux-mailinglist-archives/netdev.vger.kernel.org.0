@@ -2,97 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7050F249A78
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 12:37:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E8B0249AE3
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 12:49:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727817AbgHSKhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 06:37:12 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:55188 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726642AbgHSKhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 06:37:11 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 66BC56007D;
-        Wed, 19 Aug 2020 10:37:10 +0000 (UTC)
-Received: from us4-mdac16-31.ut7.mdlocal (unknown [10.7.66.142])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 6423D8009B;
-        Wed, 19 Aug 2020 10:37:10 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.174])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E4AE428004D;
-        Wed, 19 Aug 2020 10:37:09 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 7850A1C007D;
-        Wed, 19 Aug 2020 10:37:09 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 19 Aug
- 2020 11:37:04 +0100
-Subject: Re: ethernet/sfc/ warnings with 32-bit dma_addr_t
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Michael Brown <mbrown@fensystems.co.uk>,
-        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>
-References: <f8f07f47-4ba9-4fd6-1d22-9559e150bc2e@infradead.org>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <79f8e049-e5b3-5b42-a600-b3025ad51adc@solarflare.com>
-Date:   Wed, 19 Aug 2020 11:37:00 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1728072AbgHSKsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 06:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728013AbgHSKs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 06:48:29 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910FCC061757;
+        Wed, 19 Aug 2020 03:48:28 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id h22so18666179otq.11;
+        Wed, 19 Aug 2020 03:48:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JFCS1wWCaky01GdCrS5KhBNLCXiKvx8eu/9Q1CWY57o=;
+        b=SAlnLFGsaJJ2xUQvXdp6/REunLAQzaLpmNpCPkhdMyKVNOL4zXoJc+uTpvFb1PLXQe
+         nN8aQpwx9KlR0QpjA0U0Eq9qCAcvJ1BkG1Pmvfae+wF16AUCkU8W0GDQheD/o4B1VrUX
+         PelVL5WwDQloIppGpod8O4LcRauK/SLT0vBKv+BhPM4L1DU+6rZBrJ0Dt0oV8Ce4u200
+         wfYajuI8k/buRZ/KOQgJS9xFj6qU+vsS6Mi/Pic5cr7hyqCbNaPaM64dCQ32B92C7zpm
+         twdkgIcY8FJxVqqD5N4bDX/Yu8aavznJiTYE5JD98MkyaozlEe8FkOVjNVcv9NBfu1pV
+         5Fgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JFCS1wWCaky01GdCrS5KhBNLCXiKvx8eu/9Q1CWY57o=;
+        b=uV1mk1B8VaF8tL03zX+JPDnTfyoDnCNxK3gH+iz+/rwHDaDH4hm566X1iC7oIitBQH
+         76P+QolpXTnIPEpqoQakVKdpGCMLf9musvyF1ESa7fTgxLvxsLlpc9mPgIglJ6Kdla24
+         N8C0ll+EATzolfkBKVJR3Th4rTUbCZNC/XglL/+byfkSD3y7hRaxWENgiDBdmfdfIh7U
+         Y8u1VPbZ6UuIL0gQsEiUx/i0BCYo7UPKLblql0q/72bOZsBHTbT7d2E3QZ0r9u5OlQ0m
+         V+td2rohBLQWIW0bo8naZ0z3+W9oIiIEvVpYQg8JLKwoORrOSoCIb7L0Ar3cWHzKVTZN
+         wXTA==
+X-Gm-Message-State: AOAM532ZQXvxDI/UlAajImfHfGl6AguDlbcNSDwj79tVy7i26jUl5ncm
+        IzmhgbQKiBsqdofNGeV5Bj3KUQ6wrj+EC22/IMQ=
+X-Google-Smtp-Source: ABdhPJwYTK+IRxToH0hqhLtJ7NIIqDs8lKmtEJkzNzElCKB5MQaF3rOwIOaAYWCB8rMlfnOVuvrNcqGFlbqr+yW4gKM=
+X-Received: by 2002:a9d:128c:: with SMTP id g12mr17527086otg.242.1597834108000;
+ Wed, 19 Aug 2020 03:48:28 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <f8f07f47-4ba9-4fd6-1d22-9559e150bc2e@infradead.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25612.005
-X-TM-AS-Result: No-3.834700-8.000000-10
-X-TMASE-MatchedRID: QfHZjzml1E/mLzc6AOD8DfHkpkyUphL9iRPU6vvejXJjLp8Cm8vwFwoe
-        RRhCZWIByf4UUiPmFLpHBaYvF0hxKAOPKROgEivfg97SgFVEXOoGiajimoogud9RlPzeVuQQyqa
-        t6b4pc93/bv2oZynN5hI8r75u7sxMESTBymy6GdYjCTunWqnclu6jyigxCo6ym7r74KWWSPnHdV
-        eV+rtkthxTd/aq2eqhWzKDMQ9mrUFkffinb4LGEhbwCXv1ucAPPFYmvSWBwkBQmhcK24nKviswW
-        B4d9sE3uhoDEhVVTzhftuJwrFEhTY2j49Ftap9ExlblqLlYqXLLl4mN1zPYGxDfwdeid5t62KWh
-        uuHosRn9eo8OXsNOlqMJAypIdldPsGXXGa7TnN+glh5sp9q4zAraCIaNda80kUg/Se63/mWFcgJ
-        c+QNMwu8bJovJYm8FYupx0XjSQPLDOFVmKqGJ4WptqaeO5a/g
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.834700-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25612.005
-X-MDID: 1597833430-ix0kwY47Kg4J
+References: <20200817091617.28119-1-allen.cryptic@gmail.com>
+ <20200817091617.28119-2-allen.cryptic@gmail.com> <b5508ca4-0641-7265-2939-5f03cbfab2e2@kernel.dk>
+ <202008171228.29E6B3BB@keescook> <161b75f1-4e88-dcdf-42e8-b22504d7525c@kernel.dk>
+ <202008171246.80287CDCA@keescook> <df645c06-c30b-eafa-4d23-826b84f2ff48@kernel.dk>
+ <1597780833.3978.3.camel@HansenPartnership.com> <202008181309.FD3940A2D5@keescook>
+In-Reply-To: <202008181309.FD3940A2D5@keescook>
+From:   Allen <allen.lkml@gmail.com>
+Date:   Wed, 19 Aug 2020 16:18:16 +0530
+Message-ID: <CAOMdWSLi-aUeKDN8Xn-X2uW_LmWsp2n=NL3dPGiUbQKm_MxcAg@mail.gmail.com>
+Subject: Re: [PATCH] block: convert tasklets to use new tasklet_setup() API
+To:     Kees Cook <keescook@chromium.org>
+Cc:     James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Allen Pais <allen.cryptic@gmail.com>, jdike@addtoit.com,
+        richard@nod.at, anton.ivanov@cambridgegreys.com, 3chas3@gmail.com,
+        stefanr@s5r6.in-berlin.de, airlied@linux.ie, daniel@ffwll.ch,
+        sre@kernel.org, kys@microsoft.com, deller@gmx.de,
+        dmitry.torokhov@gmail.com, jassisinghbrar@gmail.com,
+        shawnguo@kernel.org, s.hauer@pengutronix.de,
+        maximlevitsky@gmail.com, oakad@yahoo.com,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        mporter@kernel.crashing.org, alex.bou9@gmail.com,
+        broonie@kernel.org, martyn@welchs.me.uk, manohar.vanga@gmail.com,
+        mitch@sfgoth.com, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-um@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux1394-devel@lists.sourceforge.net,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-hyperv@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-ntb@googlegroups.com, linux-s390@vger.kernel.org,
+        linux-spi@vger.kernel.org, devel@driverdev.osuosl.org,
+        Romain Perier <romain.perier@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/08/2020 01:28, Randy Dunlap wrote:
-> Hi,
+> > > > > > > >
+> > > > > > > > In preparation for unconditionally passing the
+> > > > > > > > struct tasklet_struct pointer to all tasklet
+> > > > > > > > callbacks, switch to using the new tasklet_setup()
+> > > > > > > > and from_tasklet() to pass the tasklet pointer explicitly.
+> > > > > > >
+> > > > > > > Who came up with the idea to add a macro 'from_tasklet' that
+> > > > > > > is just container_of? container_of in the code would be
+> > > > > > > _much_ more readable, and not leave anyone guessing wtf
+> > > > > > > from_tasklet is doing.
+> > > > > > >
+> > > > > > > I'd fix that up now before everything else goes in...
+> > > > > >
+> > > > > > As I mentioned in the other thread, I think this makes things
+> > > > > > much more readable. It's the same thing that the timer_struct
+> > > > > > conversion did (added a container_of wrapper) to avoid the
+> > > > > > ever-repeating use of typeof(), long lines, etc.
+> > > > >
+> > > > > But then it should use a generic name, instead of each sub-system
+> > > > > using some random name that makes people look up exactly what it
+> > > > > does. I'm not huge fan of the container_of() redundancy, but
+> > > > > adding private variants of this doesn't seem like the best way
+> > > > > forward. Let's have a generic helper that does this, and use it
+> > > > > everywhere.
+> > > >
+> > > > I'm open to suggestions, but as things stand, these kinds of
+> > > > treewide
+> > >
+> > > On naming? Implementation is just as it stands, from_tasklet() is
+> > > totally generic which is why I objected to it. from_member()? Not
+> > > great with naming... But I can see this going further and then we'll
+> > > suddenly have tons of these. It's not good for readability.
+> >
+> > Since both threads seem to have petered out, let me suggest in
+> > kernel.h:
+> >
+> > #define cast_out(ptr, container, member) \
+> >       container_of(ptr, typeof(*container), member)
+> >
+> > It does what you want, the argument order is the same as container_of
+> > with the only difference being you name the containing structure
+> > instead of having to specify its type.
 >
-> Does the drivers/net/ethernet/sfc/sfc driver require (expect)
-> dma_addr_t to be 64 bits (as opposed to 32 bits)?
+> I like this! Shall I send this to Linus to see if this can land in -rc2
+> for use going forward?
 >
-> I see that several #defines in ef100_regs.h are 64...
->
-> When used with DMA_BIT_MASK(64), does the value just need to be
-> truncated to 32 bits?  Will that work?
-As far as I can tell, truncation to 32 bits is harmless — the
- called function (efx_init_io) already tries every mask from the
- passed one down to 32 bits in case of PCIe hardware limitations.
 
-The ef10 and siena versions also truncate like this (their
- #defines are 48 and 46 respectively), but because they are
- handled indirectly through efx_nic_type, the compiler isn't able
- to determine this statically as it can with ef100.
-> When I build this driver on i386 with 32-bit dma_addr_t, I see
-> the following build warnings:
-Could you test whether explicitly casting to dma_addr_t suppresses
- the warnings?  I.e.
+Cool, I shall wait for it to be accepted and then spin out V2 with cast_out()
 
-    efx_init_io(efx, bar,
-                (dma_addr_t)DMA_BIT_MASK(ESF_GZ_TX_SEND_ADDR_WIDTH),
-                pci_resource_len(efx->pci_dev, bar));
-
--ed
+-- 
+       - Allen
