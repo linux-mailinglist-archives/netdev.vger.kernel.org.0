@@ -2,92 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F41924A5C7
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 20:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E90224A5E1
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 20:21:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726715AbgHSSRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 14:17:24 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:54780 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726435AbgHSSRW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 14:17:22 -0400
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07JI4B1u128938;
-        Wed, 19 Aug 2020 14:17:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : in-reply-to : references : date : message-id : mime-version :
- content-type; s=pp1; bh=RjslbRhYQcVscmXUK33LJ6GMRcF2scrPR4NsyNA80rg=;
- b=ABxibEDEgwgmMpMEJGD54Q4e9Mdds2PJsu2w/yPe9kww57IDcA72bxj30EJMUTlhKctA
- g/3Uw1eLlykFCE59x+Chrd61sZnPW88ExW7MkfRd8pd15nEpqvjob9lrycJJApPjDIul
- qowatHco72uW4/TvygIlpC8x7UdBjhGsOCJVH95J4s2y3Q21q3T8jM+V2KH3RDOeLjE1
- L1Fa1OmnU01X02pJQwCWujJA0H59v52p+Z5ngzejpmFyv82RH8/jj1eOh2mWZt1xxFtt
- X+26dL4a2m4HZvy6+rHD8H/Uyc1Pb9cqtDg9ZNdeBhE36LLGafcn/2imMJzwbkmaP8wH FQ== 
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3317aabh8y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Aug 2020 14:17:19 -0400
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07JIAXwP012239;
-        Wed, 19 Aug 2020 18:17:18 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma05wdc.us.ibm.com with ESMTP id 3304tgwwrt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Aug 2020 18:17:18 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 07JIHIfT49086830
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 Aug 2020 18:17:18 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DAA16AE05F;
-        Wed, 19 Aug 2020 18:17:17 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 69709AE05C;
-        Wed, 19 Aug 2020 18:17:17 +0000 (GMT)
-Received: from Criss-MacBook-Pro.local (unknown [9.211.59.12])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTPS;
-        Wed, 19 Aug 2020 18:17:17 +0000 (GMT)
-From:   Cris Forno <cforno12@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, drt@linux.vnet.ibm.com
-Subject: Re: [PATCH, net-next, v2] ibmvnic: store RX and TX subCRQ handle array in ibmvnic_adapter struct
-In-Reply-To: <20200818.154401.826640119439302130.davem@davemloft.net>
-References: <20200818215333.53183-1-cforno12@linux.ibm.com> <20200818.154401.826640119439302130.davem@davemloft.net>
-Date:   Wed, 19 Aug 2020 13:17:07 -0500
-Message-ID: <m2y2mabivw.fsf@Criss-MacBook-Pro.local.i-did-not-set--mail-host-address--so-tickle-me>
+        id S1726823AbgHSSVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 14:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58032 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726735AbgHSSVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 14:21:12 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A84C061757;
+        Wed, 19 Aug 2020 11:21:12 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id x24so19831435otp.3;
+        Wed, 19 Aug 2020 11:21:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=zBMYHGoLqcQIDa75kPEyh/KB+iBrkpptU65EqjbhG7Y=;
+        b=o2l1Nfy+8w9JtCsVwTjWxIgVHG2aUehxoeLFi30efLZOoVWoTEEBaUi5FOCfLKi04y
+         b9mZolDBq8uWo4mIHYQnk61/OsVfF0WQUTy1P5jBSM/ArtN0BnwtUTTMMuDym8emq0E3
+         QvRYmTZu1FR1MR378xPRy2DVifzGjzDaCCcZpIleQBJabDFrDcpaGKvYA+zpOW4y9vm0
+         0xoXH4sDB65Re0fDGtrWucPfe7xdPAVtdJ1d50Jze9/V/alujo9zmKnslM/4bmD/FtpJ
+         GZpCnEHAqQIOPt7fLL1TmMrnAQqEhkgghq7JGTZ02MsEd8dU2v195s4TAiunFEIy/2ow
+         RhgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=zBMYHGoLqcQIDa75kPEyh/KB+iBrkpptU65EqjbhG7Y=;
+        b=mOwwuyJwUQJ6S1gCczB6LpUQxkerbdzv07Ny/x/jy5qAaewxvOzI0ZLD6lRFVtek43
+         pHCbtYC2b+7CZvuzZoQmyOVueHr0hXa3Gh/uWAc7tCcXQufN8Q/IHc89d/tT5Yd2eT70
+         axK40Oe6m/1MUYvUNeZOkL6wxFcTc239atuGGwrIBQ7WvWgBLrPLhPdRsbG9sdUBM61R
+         v48Pb2myq89weRKNHrCD5rIPVGtq3o6dJmRJW6ERBhJxg3O7jS6s+uX+kO9FkJpeN0JN
+         Z30tsiVEgUSVdC5uBMVYUdMYoOukjM5UMxamMOJRmtPEQ1VL1s/RtMTwbmnMeVZTU+X3
+         8Ntw==
+X-Gm-Message-State: AOAM532VDnceF/HLiggW9K5/T3UIAqFhOx5Ro0UfyTMV9Foj7KcaV5aw
+        XdT2i5unt1wELI1z0bMeFz9uH6f0IDebtBztnwM=
+X-Google-Smtp-Source: ABdhPJyyFtBGtBDQDC0+qpIvbBVOSiO9PH5RJce1zRO3VRRQKtT74SqDuprv6s1YgJttg07Y2wYBSfyUOU1rwvHn3r0=
+X-Received: by 2002:a9d:429:: with SMTP id 38mr18272918otc.88.1597861271397;
+ Wed, 19 Aug 2020 11:21:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-19_11:2020-08-19,2020-08-19 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
- malwarescore=0 suspectscore=1 spamscore=0 mlxscore=0 lowpriorityscore=0
- bulkscore=0 mlxlogscore=999 phishscore=0 clxscore=1011 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2008190147
+References: <20200813084129.332730-1-josephsih@chromium.org>
+ <20200813164059.v1.2.I03247d3813c6dcbcdbeab26d068f9fd765edb1f5@changeid>
+ <CABBYNZJ-nBXeujF2WkMEPYPQhXAphqKCV39gr-QYFdTC3GvjXg@mail.gmail.com> <20200819143716.iimo4l3uul7lrpjn@pali>
+In-Reply-To: <20200819143716.iimo4l3uul7lrpjn@pali>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Wed, 19 Aug 2020 11:21:00 -0700
+Message-ID: <CABBYNZJVDk6LWqyY7h8=KwpA4Oub+aCb3WEWnxk_AGWPvgmatg@mail.gmail.com>
+Subject: Re: [PATCH v1 2/2] Bluetooth: sco: expose WBS packet length in socket option
+To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Joseph Hwang <josephsih@chromium.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Joseph Hwang <josephsih@google.com>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        Alain Michaud <alainm@chromium.org>,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller <davem@davemloft.net> writes:
+Hi Pali,
 
-> From: Cristobal Forno <cforno12@linux.ibm.com>
-> Date: Tue, 18 Aug 2020 16:53:33 -0500
+On Wed, Aug 19, 2020 at 7:37 AM Pali Roh=C3=A1r <pali@kernel.org> wrote:
 >
->> @@ -1524,7 +1519,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
->>  	unsigned int offset;
->>  	int num_entries = 1;
->>  	unsigned char *dst;
->> -	u64 *handle_array;
->> +	u64 handle;
->>  	int index = 0;
->>  	u8 proto = 0;
->>  	netdev_tx_t ret = NETDEV_TX_OK;
+> On Friday 14 August 2020 12:56:05 Luiz Augusto von Dentz wrote:
+> > Hi Joseph,
+> >
+> > On Thu, Aug 13, 2020 at 1:42 AM Joseph Hwang <josephsih@chromium.org> w=
+rote:
+> > >
+> > > It is desirable to expose the wideband speech packet length via
+> > > a socket option to the user space so that the user space can set
+> > > the value correctly in configuring the sco connection.
+> > >
+> > > Reviewed-by: Alain Michaud <alainm@chromium.org>
+> > > Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> > > Signed-off-by: Joseph Hwang <josephsih@chromium.org>
+> > > ---
+> > >
+> > >  include/net/bluetooth/bluetooth.h | 2 ++
+> > >  net/bluetooth/sco.c               | 8 ++++++++
+> > >  2 files changed, 10 insertions(+)
+> > >
+> > > diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetoot=
+h/bluetooth.h
+> > > index 9125effbf4483d..922cc03143def4 100644
+> > > --- a/include/net/bluetooth/bluetooth.h
+> > > +++ b/include/net/bluetooth/bluetooth.h
+> > > @@ -153,6 +153,8 @@ struct bt_voice {
+> > >
+> > >  #define BT_SCM_PKT_STATUS      0x03
+> > >
+> > > +#define BT_SCO_PKT_LEN         17
+> > > +
+> > >  __printf(1, 2)
+> > >  void bt_info(const char *fmt, ...);
+> > >  __printf(1, 2)
+> > > diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+> > > index dcf7f96ff417e6..97e4e7c7b8cf62 100644
+> > > --- a/net/bluetooth/sco.c
+> > > +++ b/net/bluetooth/sco.c
+> > > @@ -67,6 +67,7 @@ struct sco_pinfo {
+> > >         __u32           flags;
+> > >         __u16           setting;
+> > >         __u8            cmsg_mask;
+> > > +       __u32           pkt_len;
+> > >         struct sco_conn *conn;
+> > >  };
+> > >
+> > > @@ -267,6 +268,8 @@ static int sco_connect(struct sock *sk)
+> > >                 sco_sock_set_timer(sk, sk->sk_sndtimeo);
+> > >         }
+> > >
+> > > +       sco_pi(sk)->pkt_len =3D hdev->sco_pkt_len;
+> > > +
+> > >  done:
+> > >         hci_dev_unlock(hdev);
+> > >         hci_dev_put(hdev);
+> > > @@ -1001,6 +1004,11 @@ static int sco_sock_getsockopt(struct socket *=
+sock, int level, int optname,
+> > >                         err =3D -EFAULT;
+> > >                 break;
+> > >
+> > > +       case BT_SCO_PKT_LEN:
+> > > +               if (put_user(sco_pi(sk)->pkt_len, (u32 __user *)optva=
+l))
+> > > +                       err =3D -EFAULT;
+> > > +               break;
+> >
+> > Couldn't we expose this via BT_SNDMTU/BT_RCVMTU?
 >
-> Please preserve the reverse christmas tree ordering of local variables
-> here.
-Sorry, missed that. Sent v3. Thanks David!
+> Hello!
+>
+> There is already SCO_OPTIONS sock option, uses struct sco_options and
+> contains 'mtu' member.
+>
+> I think that instead of adding new sock option, existing SCO_OPTIONS
+> option should be used.
 
---Cris Forno
+We are moving away from type specific options to so options like
+BT_SNDMTU/BT_RCVMTU should be supported in all socket types.
+
 >
-> Otherwise the patch looks fine to me.
+> > >         default:
+> > >                 err =3D -ENOPROTOOPT;
+> > >                 break;
+> > > --
+> > > 2.28.0.236.gb10cc79966-goog
+> > >
+> >
+> >
+> > --
+> > Luiz Augusto von Dentz
+
+
+
+--=20
+Luiz Augusto von Dentz
