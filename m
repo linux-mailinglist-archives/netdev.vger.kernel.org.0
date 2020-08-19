@@ -2,100 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B43C24A4F1
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 19:29:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 916DB24A4EC
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 19:29:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726803AbgHSR3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 13:29:51 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:47261 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725804AbgHSR3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 13:29:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1597858182; x=1629394182;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=MliiYzzKkWKjfG4i0b3+kOeMkW0YilzxyqHgCxiaXtc=;
-  b=CQWAz5s3wBMmIsWmgeLTFNW48AeoG6nTFKCfWGr7n5I/vKQ5MWqe9Nx1
-   ZL+NJw2JVNZ6nw0hqtqOk16f7fS/VIIjH92qB5xGAJSRr/7GSDqdG7ggj
-   Kw8tXWPldAXsfYBmcj+Xj0pIU0ULVuqBsye1yrU1YEi/R1GoKOpYrmC5n
-   c=;
-X-IronPort-AV: E=Sophos;i="5.76,332,1592870400"; 
-   d="scan'208";a="69242024"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1a-807d4a99.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 19 Aug 2020 17:29:42 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1a-807d4a99.us-east-1.amazon.com (Postfix) with ESMTPS id 3E7F1A1C2F;
-        Wed, 19 Aug 2020 17:29:41 +0000 (UTC)
-Received: from EX13D28EUC001.ant.amazon.com (10.43.164.4) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 19 Aug 2020 17:29:40 +0000
-Received: from u68c7b5b1d2d758.ant.amazon.com (10.43.160.192) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 19 Aug 2020 17:29:32 +0000
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Shay Agroskin <shayagr@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>, <sameehj@amazon.com>,
-        <ndagan@amazon.com>
-Subject: [PATCH V3 net 3/3] net: ena: Make missed_tx stat incremental
-Date:   Wed, 19 Aug 2020 20:28:38 +0300
-Message-ID: <20200819172838.20564-4-shayagr@amazon.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200819172838.20564-1-shayagr@amazon.com>
-References: <20200819172838.20564-1-shayagr@amazon.com>
+        id S1726675AbgHSR3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 13:29:20 -0400
+Received: from mga04.intel.com ([192.55.52.120]:35337 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725804AbgHSR3M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Aug 2020 13:29:12 -0400
+IronPort-SDR: rTRMxi/Gqi5uL7saD2QhA+lThjs3Dlb68+Q75m71V8KB6tjUb4x9MJgjATXP5Z0d9mHx8WIyK5
+ 2VQZAQ3XpnUw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9718"; a="152577296"
+X-IronPort-AV: E=Sophos;i="5.76,332,1592895600"; 
+   d="scan'208";a="152577296"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2020 10:29:11 -0700
+IronPort-SDR: fjTHM9Cqv3sYIY/fdPyfa8pCXMVQNRCtF3fY/Qf7Xvejs7oMp7ACqpmERR6OO1PDjQthPYBVat
+ y1Pn8YDltSBg==
+X-IronPort-AV: E=Sophos;i="5.76,332,1592895600"; 
+   d="scan'208";a="497824286"
+Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.220.26])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2020 10:29:11 -0700
+Date:   Wed, 19 Aug 2020 10:29:09 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        linux- stable <stable@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Masami Hiramatsu <masami.hiramatsu@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, <lkft-triage@lists.linaro.org>,
+        LTP List <ltp@lists.linux.it>
+Subject: Re: NETDEV WATCHDOG: WARNING: at net/sched/sch_generic.c:442
+ dev_watchdog
+Message-ID: <20200819102909.000016ac@intel.com>
+In-Reply-To: <20200819125732.1c296ce7@oasis.local.home>
+References: <CA+G9fYtS_nAX=sPV8zTTs-nOdpJ4uxk9sqeHOZNuS4WLvBcPGg@mail.gmail.com>
+        <20200819125732.1c296ce7@oasis.local.home>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.192]
-X-ClientProxiedBy: EX13P01UWB003.ant.amazon.com (10.43.161.209) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Most statistics in ena driver are incremented, meaning that a stat's
-value is a sum of all increases done to it since driver/queue
-initialization.
+Steven Rostedt wrote:
 
-This patch makes all statistics this way, effectively making missed_tx
-statistic incremental.
-Also added a comment regarding rx_drops and tx_drops to make it
-clearer how these counters are calculated.
+> On Wed, 19 Aug 2020 17:01:06 +0530
+> Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> 
+> > kernel warning noticed on x86_64 while running LTP tracing ftrace-stress-test
+> > case. started noticing on the stable-rc linux-5.8.y branch.
+> > 
+> > This device booted with KASAN config and DYNAMIC tracing configs and more.
+> > This reported issue is not easily reproducible.
+> > 
+> > metadata:
+> >   git branch: linux-5.8.y
+> >   git repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+> >   git commit: ad8c735b1497520df959f675718f39dca8cb8019
+> >   git describe: v5.8.2
+> >   make_kernelversion: 5.8.2
+> >   kernel-config:
+> > https://builds.tuxbuild.com/bOz0eAwkcraRiWALTW9D3Q/kernel.config
+> > 
+> > 
+> > [   88.139387] Scheduler tracepoints stat_sleep, stat_iowait,
+> > stat_blocked and stat_runtime require the kernel parameter
+> > schedstats=enable or kernel.sched_schedstats=1
+> > [   88.139387] Scheduler tracepoints stat_sleep, stat_iowait,
+> > stat_blocked and stat_runtime require the kernel parameter
+> > schedstats=enable or kernel.sched_schedstats=1
+> > [  107.507991] ------------[ cut here ]------------
+> > [  107.513103] NETDEV WATCHDOG: eth0 (igb): transmit queue 2 timed out
+> > [  107.519973] WARNING: CPU: 1 PID: 331 at net/sched/sch_generic.c:442
+> > dev_watchdog+0x4c7/0x4d0
+> > [  107.528907] Modules linked in: x86_pkg_temp_thermal
+> > [  107.534541] CPU: 1 PID: 331 Comm: systemd-journal Not tainted 5.8.2 #1
+> > [  107.541480] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
+> > 2.2 05/23/2018
+> > [  107.549314] RIP: 0010:dev_watchdog+0x4c7/0x4d0
+> > [  107.554226] Code: ff ff 48 8b 5d c8 c6 05 6d f7 94 01 01 48 89 df
+> > e8 9e b4 f8 ff 44 89 e9 48 89 de 48 c7 c7 20 49 51 9c 48 89 c2 e8 91
+> > 7e e9 fe <0f> 0b e9 03 ff ff ff 66 90 e8 9b 23 db fe 55 48 89 e5 41 57
+> 
+> I've triggered this myself in my testing, and I assumed that adding the
+> overhead of tracing and here KASAN too, made some watchdog a bit
+> unhappy. By commenting out the warning, I've seen no ill effects.
+> 
+> Perhaps this is something we need to dig a bit deeper into.
 
-Fixes: 11095fdb712b ("net: ena: add statistics for missed tx packets")
-Signed-off-by: Shay Agroskin <shayagr@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Looked into it a little, igb uses a timeout of 5 seconds, and the stack
+prints the warning if we haven't completed the transmit in that time.
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 233db15c970d..a3a8edf9a734 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3687,7 +3687,7 @@ static int check_missing_comp_in_tx_queue(struct ena_adapter *adapter,
- 	}
- 
- 	u64_stats_update_begin(&tx_ring->syncp);
--	tx_ring->tx_stats.missed_tx = missed_tx;
-+	tx_ring->tx_stats.missed_tx += missed_tx;
- 	u64_stats_update_end(&tx_ring->syncp);
- 
- 	return rc;
-@@ -4556,6 +4556,9 @@ static void ena_keep_alive_wd(void *adapter_data,
- 	tx_drops = ((u64)desc->tx_drops_high << 32) | desc->tx_drops_low;
- 
- 	u64_stats_update_begin(&adapter->syncp);
-+	/* These stats are accumulated by the device, so the counters indicate
-+	 * all drops since last reset.
-+	 */
- 	adapter->dev_stats.rx_drops = rx_drops;
- 	adapter->dev_stats.tx_drops = tx_drops;
- 	u64_stats_update_end(&adapter->syncp);
--- 
-2.17.1
+What I don't understand in the stack trace is this:
+> > [  107.654661] Call Trace:
+> > [  107.657735]  <IRQ>
+> > [  107.663155]  ? ftrace_graph_caller+0xc0/0xc0
+> > [  107.667929]  call_timer_fn+0x3b/0x1b0
+> > [  107.672238]  ? netif_carrier_off+0x70/0x70
+> > [  107.677771]  ? netif_carrier_off+0x70/0x70
+> > [  107.682656]  ? ftrace_graph_caller+0xc0/0xc0
+> > [  107.687379]  run_timer_softirq+0x3e8/0xa10
+> > [  107.694653]  ? call_timer_fn+0x1b0/0x1b0
+> > [  107.699382]  ? trace_event_raw_event_softirq+0xdd/0x150
+> > [  107.706768]  ? ring_buffer_unlock_commit+0xf5/0x210
+> > [  107.712213]  ? call_timer_fn+0x1b0/0x1b0
+> > [  107.716625]  ? __do_softirq+0x155/0x467
 
+
+If the carrier was turned off by something, that could cause the stack
+to timeout since it appears the driver didn't call this itself after
+finishing all transmits like it normally would have.
+
+Is the trace above correct? Usually the ? indicate unsure backtrace due
+to missing symbols, right?
