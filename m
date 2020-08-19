@@ -2,89 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 923E524984B
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 10:33:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C570A24987B
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 10:46:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726414AbgHSIdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 04:33:35 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:60512 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726735AbgHSIdc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Aug 2020 04:33:32 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id C50E1FCE6321FB2555C7;
-        Wed, 19 Aug 2020 16:33:23 +0800 (CST)
-Received: from huawei.com (10.175.104.175) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Wed, 19 Aug 2020
- 16:33:13 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
-        <kafai@fb.com>, <daniel@iogearbox.net>, <jakub@cloudflare.com>,
-        <keescook@chromium.org>, <zhang.lin16@zte.com.cn>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH v2] net: Stop warning about SO_BSDCOMPAT usage
-Date:   Wed, 19 Aug 2020 04:32:08 -0400
-Message-ID: <20200819083208.17825-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.19.1
+        id S1726969AbgHSIqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 04:46:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53632 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726710AbgHSIqq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 04:46:46 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CBAC061757;
+        Wed, 19 Aug 2020 01:46:45 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1k8Jjx-006jl5-TI; Wed, 19 Aug 2020 10:46:38 +0200
+Message-ID: <2893e041597524c19f45fa7e58cf92d8234893e7.camel@sipsolutions.net>
+Subject: Re: [PATCH] cfg80211: switch from WARN() to pr_warn() in
+ is_user_regdom_saved()
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Rustam Kovhaev <rkovhaev@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 19 Aug 2020 10:46:34 +0200
+In-Reply-To: <20200804210546.319249-1-rkovhaev@gmail.com> (sfid-20200804_230749_046801_76E2A4D8)
+References: <20200804210546.319249-1-rkovhaev@gmail.com>
+         (sfid-20200804_230749_046801_76E2A4D8)
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.175]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We've been warning about SO_BSDCOMPAT usage for many years. We may remove
-this code completely now.
+On Tue, 2020-08-04 at 14:05 -0700, Rustam Kovhaev wrote:
+> this warning can be triggered by userspace, so it should not cause a
+> panic if panic_on_warn is set
 
-Suggested-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- net/core/sock.c | 14 --------------
- 1 file changed, 14 deletions(-)
+This is incorrect, it just addresses a particular symptom. I'll make a
+proper fix.
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index e4f40b175acb..64d2aec5ed45 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -413,18 +413,6 @@ static int sock_set_timeout(long *timeo_p, sockptr_t optval, int optlen,
- 	return 0;
- }
- 
--static void sock_warn_obsolete_bsdism(const char *name)
--{
--	static int warned;
--	static char warncomm[TASK_COMM_LEN];
--	if (strcmp(warncomm, current->comm) && warned < 5) {
--		strcpy(warncomm,  current->comm);
--		pr_warn("process `%s' is using obsolete %s SO_BSDCOMPAT\n",
--			warncomm, name);
--		warned++;
--	}
--}
--
- static bool sock_needs_netstamp(const struct sock *sk)
- {
- 	switch (sk->sk_family) {
-@@ -984,7 +972,6 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case SO_BSDCOMPAT:
--		sock_warn_obsolete_bsdism("setsockopt");
- 		break;
- 
- 	case SO_PASSCRED:
-@@ -1387,7 +1374,6 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case SO_BSDCOMPAT:
--		sock_warn_obsolete_bsdism("getsockopt");
- 		break;
- 
- 	case SO_TIMESTAMP_OLD:
--- 
-2.19.1
+johannes
 
