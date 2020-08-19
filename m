@@ -2,123 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A3DC24A3E1
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 18:20:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18F2924A3E5
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 18:21:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbgHSQUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 12:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39322 "EHLO
+        id S1726893AbgHSQVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 12:21:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726752AbgHSQT4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 12:19:56 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F474C061757
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 09:19:56 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id 74so11907848pfx.13
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 09:19:56 -0700 (PDT)
+        with ESMTP id S1726809AbgHSQVD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 12:21:03 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96FAC061383
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 09:21:02 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id g13so11041801ioo.9
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 09:21:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=8eAqA35Qf/4tjfc1n8A1JN4bhkmkwDvEPeJXv/FFPXk=;
-        b=Lz62BD5N+YqUO3mnfinrxMsnZRq5vkVKPiAQnmveJrzNCwQEYt+dO/8zgsg8g8krfL
-         6GECs0D573jH7IJtmPHEY+yGDVCzSeVf4/Vm5QPdfoqUFwCDx67jKUklUY1vQ6csJD03
-         kBSm/F/sHohMEtI1ZQ3p31oIGrGHkx2manqDqaXXN6UTZpBfA1QK970+nz+XdiCJhRbA
-         zltPeGhphcxLufkf9ygWTpoomyXl94/nrC1ccBYfcMrm0xvBo8VIhoVFo60hD+ZKdBO5
-         B+g50PphLGtTOmHmoKqo4ZPbd4svMMOd5ILbQ8Dom5rj4Eq1sIxNh3C4PrMO3WUXQS35
-         OOyg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=haRj08XdgMBFITFsEYrK3/rxakK39Am9hjBwIzkZU0A=;
+        b=kCIidrWfCtD0JO9rdVWGMMAuY60Bgelu6j8UzS1WXodw6LirKrFzMaG9LbYkL1jmxs
+         dshGG0mOWyCX4pjBRfez/2kswtaF0iJ0IjuLfQYI88HPawKOD8+Ld8tghBxZ9P3ScmBY
+         4bpzyITYSRQ+KJOZBLcAEATHEeIffWabc7mL3JNU/HGoewB9T1FS1FOInZVlgCgu7FWV
+         V4PgeS0fjxRQ1n3JIgsNo0Ck2dEGdDHltYA7THW9cz3GFfjmT2U4sZjsrIV679OXU0yS
+         mSGurUU7sIfbOcxMGN8IH5K7wh7FvEtapJjJviQvPvLfzvnz9BcCGNUux2BaDK8OGDl1
+         DpOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8eAqA35Qf/4tjfc1n8A1JN4bhkmkwDvEPeJXv/FFPXk=;
-        b=XB+q0em/VO+DMksmxxaEBQib4JCZnhD7nbzsVyVlc/uBbN7yxyKZW2DWx5RQrgjVBF
-         xG3d+y5AgB3ur8WF3zOE2xv+r0A+bfA82ZITAlqfJJF8lVSDR+fMuVO5WJ3uU6/mI0m+
-         uwKywFnUavbiwbp3EWDadKc84vOBSEe0Nnya4WiilnQgMQEzpdl3egMV/uTSFzGzy7IY
-         nKKGZUcCR8MAHOp9AaLaGjYEmFWFrgvcCjZkjRrK66s3J+HKQtkDJX92sEbDteriBUoh
-         XSma5tZUo6Qtq4qgIsOT2AH0E/DpM5McVA2Gp5nZzVtdcUeWRQM92P1FCeTsHvi2lFt2
-         MxkQ==
-X-Gm-Message-State: AOAM532won4kDU4CrTBDXGsBopXXb0NhBO1042me2nWkE+PGXta6QKYG
-        5FkWoeX4CcDpno6evD03egU=
-X-Google-Smtp-Source: ABdhPJzN5fX5ooauqrGHsG6rfKdG60N1JGqemwfItKIhE1tuRIzCUgvS9vA104FxDVFbFYuFOamiGg==
-X-Received: by 2002:a65:468f:: with SMTP id h15mr17344517pgr.189.1597853995538;
-        Wed, 19 Aug 2020 09:19:55 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id na14sm3213373pjb.6.2020.08.19.09.19.54
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 19 Aug 2020 09:19:54 -0700 (PDT)
-Date:   Wed, 19 Aug 2020 09:19:53 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Igor Russkikh <irusskikh@marvell.com>, netdev@vger.kernel.org,
-        Mark Starovoytov <mstarovoitov@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH NET] net: atlantic: Use readx_poll_timeout() for large
- timeout
-Message-ID: <20200819161953.GA179916@roeck-us.net>
-References: <20200818161439.3dkf6jzp3vuwmvvh@linutronix.de>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=haRj08XdgMBFITFsEYrK3/rxakK39Am9hjBwIzkZU0A=;
+        b=FylwC/Q1mAeOUpCw4LJ7svE2qmaslDbgUPGKO3QK7Y9YpP3HV72UHlKmgPEuGV8RAc
+         rZeIRsqsstCFMS8Ksi5l97gFMXUesgAUlYa5oPzpnr31DTCuCxoUCpWrQoJPyCdEshYH
+         ePy6LPXaNRSyOsY6nZxHcZ1X2Zo0BUfkT8LHb3Ws881FT6uMU0Rob66Dh+G6/c0wK23/
+         7vA/4tgKcXRvorr/ClhomOwAKkEm6NCGpBUyeQJUOPjPVnnrf7iV20sGZsUghS5Mn7JV
+         io7e4Wkp1Mq5H/KD5kk2Pb7tmv2x4QEG/PcItKGr9dJCew+k+iGkztyX5Ux9Qh8LNUQU
+         O0LQ==
+X-Gm-Message-State: AOAM531Y40038eUHYaYHGuO4no0MvXYUiAX9qmb2Hxr3s8aaj0yE/MdP
+        YO4u2vorKq660oyXPfKOpLSkIqj3nTdnFT73kOggWQ==
+X-Google-Smtp-Source: ABdhPJxRHdwbxSUd7bFNc5JFOki0Ey+vQgWaKieAc+v/ZcfnYR7OxA9xOW97JNjT03+c3alRkI00rSP7XwxdQFu0UCg=
+X-Received: by 2002:a6b:f919:: with SMTP id j25mr21437357iog.113.1597854062014;
+ Wed, 19 Aug 2020 09:21:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200818161439.3dkf6jzp3vuwmvvh@linutronix.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200818231719.1813482-1-weiwan@google.com> <20200818224553.71bfa4ee@hermes.lan>
+In-Reply-To: <20200818224553.71bfa4ee@hermes.lan>
+From:   Wei Wang <weiwan@google.com>
+Date:   Wed, 19 Aug 2020 09:20:51 -0700
+Message-ID: <CAEA6p_Aot3Ow46D-hxNNfQ2FemNxasR9+zvEto=AX+P7O+kwsA@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next] iproute2: ss: add support to expose various
+ inet sockopts
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Mahesh Bandewar <maheshb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 06:14:39PM +0200, Sebastian Andrzej Siewior wrote:
-> Commit
->    8dcf2ad39fdb2 ("net: atlantic: add hwmon getter for MAC temperature")
-> 
-> implemented a read callback with an udelay(10000U). This fails to
-> compile on ARM because the delay is >1ms. I doubt that it is needed to
-> spin for 10ms even if possible on x86.
-> 
-> >From looking at the code, the context appears to be preemptible so using
-> usleep() should work and avoid busy spinning.
-> 
-> Use readx_poll_timeout() in the poll loop.
-> 
-> Cc: Mark Starovoytov <mstarovoitov@marvell.com>
-> Cc: Igor Russkikh <irusskikh@marvell.com>
-> Signed-off-by: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+On Tue, Aug 18, 2020 at 10:46 PM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Tue, 18 Aug 2020 16:17:19 -0700
+> Wei Wang <weiwan@google.com> wrote:
+>
+> > +                     if (!oneline)
+> > +                             out("\n\tinet-sockopt: (");
+> > +                     else
+> > +                             out(" inet-sockopt: (");
+> > +                     out("recverr: %d, ", sockopt->recverr);
+> > +                     out("is_icsk: %d, ", sockopt->is_icsk);
+> > +                     out("freebind: %d, ", sockopt->freebind);
+> > +                     out("hdrincl: %d, ", sockopt->hdrincl);
+> > +                     out("mc_loop: %d, ", sockopt->mc_loop);
+> > +                     out("transparent: %d, ", sockopt->transparent);
+> > +                     out("mc_all: %d, ", sockopt->mc_all);
+> > +                     out("nodefrag: %d, ", sockopt->nodefrag);
+> > +                     out("bind_addr_no_port: %d, ", sockopt->bind_address_no_port);
+> > +                     out("recverr_rfc4884: %d, ", sockopt->recverr_rfc4884);
+> > +                     out("defer_connect: %d", sockopt->defer_connect);
+>
+> Since these are all boolean options why not just print them only if on?
+> That saves space and makes more compact output.
+>
+>                         if (sockopt->recverr) out("recverr, ");
 
-Fixes: 8dcf2ad39fdb2 ("net: atlantic: add hwmon getter for MAC temperature")
-Acked-by: Guenter Roeck <linux@roeck-us.net>
 
-As in: This patch does not cause any additional trouble and will fix the
-observed compile failure. However, the submitter of 8dcf2ad39fdb2 might
-consider adding a mutex either into hw_atl_b0_get_mac_temp() or into
-the calling code.
-
-Thanks,
-Guenter
-
-> ---
-> 
-> Could someone with hardware please verify it? It compiles, yes.
-> 
->  drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-> index 16a944707ba90..8941ac4df9e37 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-> +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-> @@ -1631,8 +1631,8 @@ static int hw_atl_b0_get_mac_temp(struct aq_hw_s *self, u32 *temp)
->  		hw_atl_ts_reset_set(self, 0);
->  	}
->  
-> -	err = readx_poll_timeout_atomic(hw_atl_b0_ts_ready_and_latch_high_get,
-> -					self, val, val == 1, 10000U, 500000U);
-> +	err = readx_poll_timeout(hw_atl_b0_ts_ready_and_latch_high_get, self,
-> +				 val, val == 1, 10000U, 500000U);
->  	if (err)
->  		return err;
->  
-> -- 
-> 2.28.0
-> 
+Hmm.. Yes. Will send out v2.
