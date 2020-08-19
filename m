@@ -2,162 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB5F624941F
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 06:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19418249422
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 06:32:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbgHSEaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 00:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
+        id S1725883AbgHSEc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 00:32:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725601AbgHSEaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 00:30:20 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E05C061389
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 21:30:20 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id h12so10760908pgm.7
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 21:30:20 -0700 (PDT)
+        with ESMTP id S1725280AbgHSEcZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 00:32:25 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33277C061389
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 21:32:25 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id mw10so528110pjb.2
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 21:32:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=L/vcUapC1FJA+kOJR7gkKoD6WGo8IXo0Vf27Fev2kxc=;
-        b=YaO1INA/TqhqB9USURQcoNnG4lTwXPWabiuh4/dBrES3V43RRIbKaUDcc764bgBxiz
-         MqMukupZD9LdaS3lReOa6oyZq5oVqLO5JmJGOSmvR/xrwTmrBFUWTAJ5FgOzwOXPaJDJ
-         QPo/YYZly8UzHn3+4buJ9aW/4FwUMdkHeH5jNxCMAX6Te9cEzQv/2ck9m8Pv6Y+ghZtx
-         u4IfF8NAJDyA2g3p2FD/OaMho+CsLxD/HjpByU7v8WiD318mK/PXl2gUQ8Ay1cxm5SgY
-         P44Z10FHj6jY9f+g37EU7TQ+I0qSiu9UBETeUA83wCiwjIyjD3GBSYMxNaZCsdrV0sdY
-         OmWA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B9kaV4wp2TQpcIemG9ojAw5AabFH8rPZrM13pkbLoeQ=;
+        b=YQd/Ka+y2t6IaFNBOpzkKC3JxdPWcr2l1HcMOzPSFpnVCsCVdU14wkiyEbyFEoRJAv
+         WSesWoeopTLRuzA3gjt+gsSIboz+JBePwUylDcUtqST80q44Q7UVlwQLKQTckAfk7eSf
+         Z7F07ZmCamovf4gBt1tsCdVm3z3OposYIjlxPqfT8Bp0tZVa4+nEagnnlPcBXn7y99I2
+         ffw4sP2RClbZy5Vur39xWYX+b/quuavQ+NW6MTpZxoErYBraiJImR4K/dlrszU4nzUi+
+         kCRRLWiGnKm5q807Ra8L6U68vxwi4ZXyKX2nbaIyiWnBuvUb7tc8McN8gD17p5hvYrfu
+         LlqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=L/vcUapC1FJA+kOJR7gkKoD6WGo8IXo0Vf27Fev2kxc=;
-        b=GqqohR8hwwZIYH/n04Rwx2k6hoWt/BbfCoGNwb7QttuNYahPlUbrPo3vn7mrKzRmMh
-         cNn3PeMlPzJQNG78paE0WIOVBbFNPUr4w68+DpaAtarWHsAaS1CymwMtzdSJnHyfiy5U
-         RAYAwEUtXMeQbb0D9mL69FKKa+3C4D185t/tmaoKCWtcNuMNKRT1SlxPrynb08Bsz63k
-         zYDfTNCIBwbv1lqPZwn/v8QM3e+vL41CaZu/lMIrfNLdhzhKSDFQV+lM8SHycgxYX9lh
-         jIo51HOQjVBsvoBTBVzWm+fMTKZLiM+QwXaN+WJjwaEDZ2g6URURnGTk0zL9zVj9gPKR
-         apKQ==
-X-Gm-Message-State: AOAM532hgyAzjv/AFzcAi2A93QjnabwL+apInUNcvn+7KGCOj9CNcfh5
-        Fj2l2aN4bw4EpEyrSsahauY=
-X-Google-Smtp-Source: ABdhPJy8UVLmlKJJ6OTeRWGe9jLDSWvo81aix7egeESGTWMdUzJvVsgZfVZTtJA+sVv0qcBBKbgDjw==
-X-Received: by 2002:a62:1505:: with SMTP id 5mr14126529pfv.41.1597811419447;
-        Tue, 18 Aug 2020 21:30:19 -0700 (PDT)
-Received: from [10.230.30.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id b20sm26258552pfp.140.2020.08.18.21.30.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Aug 2020 21:30:18 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 0/6] devlink: Add device metric support
-To:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@gmail.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, jiri@nvidia.com, amcohen@nvidia.com,
-        danieller@nvidia.com, mlxsw@nvidia.com, roopa@nvidia.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, tariqt@nvidia.com,
-        ayal@nvidia.com, mkubecek@suse.cz, Ido Schimmel <idosch@nvidia.com>
-References: <20200817125059.193242-1-idosch@idosch.org>
- <20200818172419.5b86801b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <58a0356d-3e15-f805-ae52-dc44f265661d@gmail.com>
- <20200818203501.5c51e61a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        bh=B9kaV4wp2TQpcIemG9ojAw5AabFH8rPZrM13pkbLoeQ=;
+        b=YCGmQI3Tfd/TplIM3vFdp/g874eKuIA8sBCdnT9PVMe2YKbStkfln6kHaNMh+KHdEp
+         BJS22Bn3kZ2SR7AzqRzyZKjHPMcvhk6IeXSPBaiJ+Eqv/ZhDP/t5UhSK+0Jp+lrJT98t
+         1SQ+mrWRyBBgagJaXOQNu0EXDoRsShKcaKYM+FPZvtUv9J/vRk8QQ7qHpVahPt2mhaFa
+         1X5DmNEJrR6H6aRst+gcAyYiAOMnzeUqJX6j9nnamL9uM0T1VYLzavwDQSCWi2RAP9Y9
+         KUZCuUKdZwflZ8WZcRAYP+VEsMfwrKOtweIpOOkrA4hK+Y+gHe/ajA+NRcMUkj8wgYwC
+         eTbw==
+X-Gm-Message-State: AOAM531IsTGSVdFM2nI97UIvYMoKs7Xoo8v/HxvdKWasaoJo75Bf5luW
+        5GJEmqmvkswYcX/N2AIYgpmw0YN5WIw=
+X-Google-Smtp-Source: ABdhPJzgNfJw795noYhVKuB881UzPe9spS9zwxmSzOCBc9lOaMmzfn3Hi97OQ1bOZPZx1/Bg6UEOkg==
+X-Received: by 2002:a17:90b:3011:: with SMTP id hg17mr986373pjb.190.1597811544208;
+        Tue, 18 Aug 2020 21:32:24 -0700 (PDT)
+Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id y65sm25942468pfb.155.2020.08.18.21.32.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Aug 2020 21:32:23 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <55e40430-a52f-f77b-0d1e-ef79386a0a53@gmail.com>
-Date:   Tue, 18 Aug 2020 21:30:16 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.1.1
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 0/2] net: dsa: loop: Expose VLAN table through devlink
+Date:   Tue, 18 Aug 2020 21:32:16 -0700
+Message-Id: <20200819043218.19285-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20200818203501.5c51e61a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Changes in v2:
 
+- set the DSA configure_vlan_while_not_filtering boolean
+- return the actual occupancy
 
-On 8/18/2020 8:35 PM, Jakub Kicinski wrote:
-> On Tue, 18 Aug 2020 20:43:11 -0600 David Ahern wrote:
->> On 8/18/20 6:24 PM, Jakub Kicinski wrote:
->>> On Mon, 17 Aug 2020 15:50:53 +0300 Ido Schimmel wrote:
->>>> From: Ido Schimmel <idosch@nvidia.com>
->>>>
->>>> This patch set extends devlink to allow device drivers to expose device
->>>> metrics to user space in a standard and extensible fashion, as opposed
->>>> to the driver-specific debugfs approach.
->>>
->>> I feel like all those loose hardware interfaces are a huge maintenance
->>> burden. I don't know what the solution is, but the status quo is not
->>> great.
->>
->> I don't agree with the 'loose' characterization.
-> 
-> Loose as in not bound by any standard or best practices.
-> 
->> Ido and team are pushing what is arguably a modern version of
->> `ethtool -S`, so it provides a better API for retrieving data.
-> 
-> ethtool -S is absolutely terrible. Everybody comes up with their own
-> names for IEEE stats, and dumps stats which clearly have corresponding
-> fields in rtnl_link_stats64 there. We don't need a modern ethtool -S,
-> we need to get away from that mess.
-> 
->>> I spend way too much time patrolling ethtool -S outputs already.
->>
->> But that's the nature of detailed stats which are often essential to
->> ensuring the system is operating as expected or debugging some problem.
->> Commonality is certainly desired in names when relevant to be able to
->> build tooling around the stats.
-> 
-> There are stats which are clearly detailed and device specific,
-> but what ends up happening is that people expose very much not
-> implementation specific stats through the free form interfaces,
-> because it's the easiest.
-> 
-> And users are left picking up the pieces, having to ask vendors what
-> each stat means, and trying to create abstractions in their user space
-> glue.
+Florian Fainelli (2):
+  net: dsa: loop: Configure VLANs while not filtering
+  net: dsa: loop: Return VLAN table size through devlink
 
-Should we require vendors to either provide a Documentation/ entry for 
-each statistics they have (and be guaranteed that it will be outdated 
-unless someone notices), or would you rather have the statistics 
-description be part of the devlink interface itself? Should we define 
-namespaces such that standard metrics should be under the standard 
-namespace and the vendor standard is the wild west?
+ drivers/net/dsa/dsa_loop.c | 56 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 55 insertions(+), 1 deletion(-)
 
-> 
->> As an example, per-queue stats have been
->> essential to me for recent investigations. ethq has been really helpful
->> in crossing NIC vendors and viewing those stats as it handles the
->> per-vendor naming differences, but it requires changes to show anything
->> else - errors per queue, xdp stats, drops, etc. This part could be simpler.
-> 
-> Sounds like you're agreeing with me?
-> 
->> As for this set, I believe the metrics exposed here are more unique to
->> switch ASICs.
-> 
-> This is the list from patch 6:
-> 
->     * - ``nve_vxlan_encap``
->     * - ``nve_vxlan_decap``
->     * - ``nve_vxlan_decap_errors``
->     * - ``nve_vxlan_decap_discards``
-> 
-> What's so unique?
-> 
->> At least one company I know of has built a business model
->> around exposing detailed telemetry of switch ASICs, so clearly some find
->> them quite valuable.
-> 
-> It's a question of interface, not the value of exposed data.
-> 
-> If I have to download vendor documentation and tooling, or adapt my own
-> scripts for every new vendor, I could have as well downloaded an SDK.
-
-Are not you being a bit over dramatic here with your example? At least 
-you can run the same command to obtain the stats regardless of the 
-driver and vendor, so from that perspective Linux continues to be the 
-abstraction and that is not broken.
 -- 
-Florian
+2.25.1
+
