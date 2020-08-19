@@ -2,143 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E3EC249278
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:38:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1E624927A
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:39:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727893AbgHSBiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 21:38:08 -0400
-Received: from mx20.baidu.com ([111.202.115.85]:52082 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726367AbgHSBiH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 21:38:07 -0400
-Received: from Bc-Mail-Ex13.internal.baidu.com (unknown [172.31.51.53])
-        by Forcepoint Email with ESMTPS id EDC1F408959950DF5B29;
-        Wed, 19 Aug 2020 09:37:58 +0800 (CST)
-Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
- Bc-Mail-Ex13.internal.baidu.com (172.31.51.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1979.3; Wed, 19 Aug 2020 09:37:59 +0800
-Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
- BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
- 15.01.1979.003; Wed, 19 Aug 2020 09:37:58 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-CC:     Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Piotr <piotr.raczynski@intel.com>,
-        Maciej <maciej.machnikowski@intel.com>
-Subject: =?utf-8?B?562U5aSNOiBbSW50ZWwtd2lyZWQtbGFuXSBbUEFUQ0ggMC8yXSBpbnRlbC94?=
- =?utf-8?Q?dp_fixes_for_fliping_rx_buffer?=
-Thread-Topic: [Intel-wired-lan] [PATCH 0/2] intel/xdp fixes for fliping rx
- buffer
-Thread-Index: AQHWdWiRooPzdFWc8kC0ZfZ0v0ywr6k+oKRA
-Date:   Wed, 19 Aug 2020 01:37:58 +0000
-Message-ID: <4268316b200049d58b9973ec4dc4725c@baidu.com>
-References: <1594967062-20674-1-git-send-email-lirongqing@baidu.com>
- <CAJ+HfNi2B+2KYP9A7yCfFUhfUBd=sFPeuGbNZMjhNSdq3GEpMg@mail.gmail.com>
-In-Reply-To: <CAJ+HfNi2B+2KYP9A7yCfFUhfUBd=sFPeuGbNZMjhNSdq3GEpMg@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.198.8]
-x-baidu-bdmsfe-datecheck: 1_Bc-Mail-Ex13_2020-08-19 09:37:59:367
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727856AbgHSBj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 21:39:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726367AbgHSBj0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 21:39:26 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0678FC061389;
+        Tue, 18 Aug 2020 18:39:25 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id a34so12432317ybj.9;
+        Tue, 18 Aug 2020 18:39:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=gUq2e4CgBr1fHk/2rAJErzEp3SApcCE9FrdZ5LYKV+0=;
+        b=rA5owWm5D7deAhf/XCoqQzx5Bqv9AhKuWqGJthnKSIoEEGeCO831HLIOhepxKAT045
+         d2rlpx5AY0rQ51vPV8Wb/Vk204fQqOMxTQcjFiMvzBTqQ/cTSFTljR51RB1FdxjxMyu2
+         Vq0VpigME8Gv7JeleoOYI4xWB4rr8xXSUhwFHAfJJEXO+Ftef2ekv8aOj9Lp0wOpG8pJ
+         NP/h8spERhXY0xfA3mIgiAegenvlhuobVycUEaolIhT84kcwWKfcJgB1UwkT5wzyP9N/
+         a0FG19r82IZ7Y7FWNuEhcSLuv/2T9l/ilN/DD9R9VY7/7w0j0ZboAlSJkaNSpTch0Zyz
+         G2IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=gUq2e4CgBr1fHk/2rAJErzEp3SApcCE9FrdZ5LYKV+0=;
+        b=Ngcv8RLMK5RMd3FwPINWN/JiAERDhcobXKCQwJ0SFYEekjA9rXZWlEIwdGXCRWxp8p
+         /Pck+ZpvEhagAMO6CkNkPSUr5ChsPyt5RYqH5WkBzexZh+FO3nT7b+PgAugdUosZFnl9
+         oZlmvuSzfukE7GlXsMBT8WPgtbTrfH37F7QyyX3Db8pT6/3xksFlktj19njbLOh7wH5t
+         cyxQtgyxhGX2dge+3AGZ/v+6VLpJmvmAL6S1e0AUUnfn3ybVIQZszivngL1RI4o7C98n
+         aV40p77HYxRxqTe91ImD0kwCQq/LukYUvsTRQX2+ff/sAaBWI+IRzTxlxZHSOt7pO1Wg
+         74Zg==
+X-Gm-Message-State: AOAM531QxugKIChQcASqKzkoYGbBKMTh6QnmyC9cSc+S6IR+G2Tevon4
+        BDrnUruqIn/6fJIt6KXf7mh8HbwVfN5Bylm0vXM=
+X-Google-Smtp-Source: ABdhPJx64lCgXZwo4aS3JVCif0ZoY4Vi+/iKIAEqi06W2K6AtKoZsvXtkhWMcArTt17KeSIBBOf9A8ACUsf2ycvcfkY=
+X-Received: by 2002:a25:ad5a:: with SMTP id l26mr29779904ybe.510.1597801165267;
+ Tue, 18 Aug 2020 18:39:25 -0700 (PDT)
 MIME-Version: 1.0
+References: <20200818213356.2629020-1-andriin@fb.com> <20200818213356.2629020-2-andriin@fb.com>
+ <b26b5c66-f335-2e47-bf6c-f557853ce2d7@fb.com>
+In-Reply-To: <b26b5c66-f335-2e47-bf6c-f557853ce2d7@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 18 Aug 2020 18:39:14 -0700
+Message-ID: <CAEf4BzaTWVhymaGuSHHHL8+TCbP=qRFc+YvG+ZMYMNTEg-vA-A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/7] libbpf: disable -Wswitch-enum compiler warning
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IEJqw7ZybiBUw7ZwZWwg
-W21haWx0bzpiam9ybi50b3BlbEBnbWFpbC5jb21dDQo+IOWPkemAgeaXtumXtDogMjAyMOW5tDjm
-nIgxOOaXpSAyMjowNQ0KPiDmlLbku7bkuro6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1
-LmNvbT4NCj4g5oqE6YCBOiBOZXRkZXYgPG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc+OyBpbnRlbC13
-aXJlZC1sYW4NCj4gPGludGVsLXdpcmVkLWxhbkBsaXN0cy5vc3Vvc2wub3JnPjsgS2FybHNzb24s
-IE1hZ251cw0KPiA8bWFnbnVzLmthcmxzc29uQGludGVsLmNvbT47IEJqw7ZybiBUw7ZwZWwgPGJq
-b3JuLnRvcGVsQGludGVsLmNvbT47IGJwZg0KPiA8YnBmQHZnZXIua2VybmVsLm9yZz47IE1hY2ll
-aiBGaWphbGtvd3NraSA8bWFjaWVqLmZpamFsa293c2tpQGludGVsLmNvbT47DQo+IFBpb3RyIDxw
-aW90ci5yYWN6eW5za2lAaW50ZWwuY29tPjsgTWFjaWVqIDxtYWNpZWoubWFjaG5pa293c2tpQGlu
-dGVsLmNvbT4NCj4g5Li76aKYOiBSZTogW0ludGVsLXdpcmVkLWxhbl0gW1BBVENIIDAvMl0gaW50
-ZWwveGRwIGZpeGVzIGZvciBmbGlwaW5nIHJ4IGJ1ZmZlcg0KPiANCj4gT24gRnJpLCAxNyBKdWwg
-MjAyMCBhdCAwODoyNCwgTGkgUm9uZ1FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPiB3cm90ZToN
-Cj4gPg0KPiA+IFRoaXMgZml4ZXMgaWNlL2k0MGUvaXhnYmUvaXhnYmV2Zl9yeF9idWZmZXJfZmxp
-cCBpbiBjb3B5IG1vZGUgeGRwIHRoYXQNCj4gPiBjYW4gbGVhZCB0byBkYXRhIGNvcnJ1cHRpb24u
-DQo+ID4NCj4gPiBJIHNwbGl0IHR3byBwYXRjaGVzLCBzaW5jZSBpNDBlL3hnYmUvaXhnYmV2ZiBz
-dXBwb3J0cyB4c2sgcmVjZWl2aW5nDQo+ID4gZnJvbSA0LjE4LCBwdXQgdGhlaXIgZml4ZXMgaW4g
-YSBwYXRjaA0KPiA+DQo+IA0KPiBMaSwgc29ycnkgZm9yIHRoZSBsb29vbmcgbGF0ZW5jeS4gSSB0
-b29rIGEgbG9vb25nIHZhY2F0aW9uLiA6LVANCj4gDQo+IFRoYW5rcyBmb3IgdGFraW5nIGEgbG9v
-ayBhdCB0aGlzLCBidXQgSSBiZWxpZXZlIHRoaXMgaXMgbm90IGEgYnVnLg0KPiANCj4gVGhlIElu
-dGVsIEV0aGVybmV0IGRyaXZlcnMgKG9idmlvdXNseSBub24temVyb2NvcHkgQUZfWERQIC0tICJn
-b29kIG9sJw0KPiBYRFAiKSB1c2UgYSBwYWdlIHJldXNlIGFsZ29yaXRobS4NCj4gDQo+IEJhc2lj
-IGlkZWEgaXMgdGhhdCBhIHBhZ2UgaXMgYWxsb2NhdGVkIGZyb20gdGhlIHBhZ2UgYWxsb2NhdG9y
-DQo+IChpNDBlX2FsbG9jX21hcHBlZF9wYWdlKCkpLiBUaGUgcmVmY291bnQgaXMgaW5jcmVhc2Vk
-IHRvIFVTSFJUX01BWC4gVGhlDQo+IHBhZ2UgaXMgc3BsaXQgaW50byB0d28gY2h1bmtzIChzaW1w
-bGlmaWVkKS4gSWYgdGhlcmUncyBvbmUgdXNlciBvZiB0aGUgcGFnZSwgdGhlDQo+IHBhZ2UgY2Fu
-IGJlIHJldXNlZCAoZmxpcHBlZCkuIElmIG5vdCwgYSBuZXcgcGFnZSBuZWVkcyB0byBiZSBhbGxv
-Y2F0ZWQgKHdpdGggdGhlDQo+IGxhcmdlIHJlZmNvdW50KS4NCj4gDQo+IFNvLCB0aGUgaWRlYSBp
-cyB0aGF0IHVzdWFsbHkgdGhlIHBhZ2UgY2FuIGJlIHJldXNlZCAoZmxpcHBlZCksIGFuZCB0aGUg
-cGFnZSBvbmx5DQo+IG5lZWRzIHRvIGJlICJwdXQiIG5vdCAiZ2V0IiBzaW5jZSB0aGUgcmVmY291
-bnQgd2FzIGluaXRhbGx5IGJ1bXBlZCB0byBhIGxhcmdlDQo+IHZhbHVlLg0KPiANCj4gQWxsIGZy
-YW1lcyAoZXhjZXB0IFhEUF9EUk9QIHdoaWNoIGNhbiBiZSByZXVzZWQgZGlyZWN0bHkpICJkaWUi
-IHZpYQ0KPiBwYWdlX2ZyYWdfZnJlZSgpIHdoaWNoIGRlY3JlYXNlcyB0aGUgcGFnZSByZWZjb3Vu
-dCwgYW5kIGZyZWVzIHRoZSBwYWdlIGlmIHRoZQ0KPiByZWZjb3VudCBpcyB6ZXJvLg0KPiANCj4g
-TGV0J3MgdGFrZSBzb21lIHNjZW5hcmlvcyBhcyBleGFtcGxlczoNCj4gDQo+IDEuIEEgZnJhbWUg
-aXMgcmVjZWl2ZWQgaW4gInZhbmlsbGEiIFhEUCAoTUVNX1RZUEVfUEFHRV9TSEFSRUQpLCBhbmQN
-Cj4gICAgdGhlIFhEUCBwcm9ncmFtIHZlcmRpY3QgaXMgWERQX1RYLiBUaGUgZnJhbWUgd2lsbCBi
-ZSBwbGFjZWQgb24gdGhlDQo+ICAgIEhXIFR4IHJpbmcsIGFuZCBmcmVlZCogKGFzeW5jKSBpbiBp
-NDBlX2NsZWFuX3R4X2lycToNCj4gICAgICAgICAvKiBmcmVlIHRoZSBza2IvWERQIGRhdGEgKi8N
-Cj4gICAgICAgICBpZiAocmluZ19pc194ZHAodHhfcmluZykpDQo+ICAgICAgICAgICAgIHhkcF9y
-ZXR1cm5fZnJhbWUodHhfYnVmLT54ZHBmKTsgLy8gY2FsbHMgcGFnZV9mcmFnX2ZyZWUoKQ0KPiAN
-Cj4gMi4gQSBmcmFtZSBpcyBwYXNzZWQgdG8gdGhlIHN0YWNrLCBldmVudHVhbGx5IGl0J3MgZnJl
-ZWQqIHZpYQ0KPiAgICBza2JfZnJlZV9mcmFnKCkuDQo+IA0KPiAzLiBBIGZyYW1lIGlzIHBhc3Nl
-ZCB0byBhbiBBRl9YRFAgc29ja2V0LiBUaGUgZGF0YSBpcyBjb3BpZWQgdG8gdGhlDQo+ICAgIHNv
-Y2tldCBkYXRhIGFyZWEsIGFuZCB0aGUgZnJhbWUgaXMgZGlyZWN0bHkgZnJlZWQqLg0KPiANCj4g
-Tm90IHRoZSAqIGJ5IHRoZSBmcmVlZC4gQWN0dWFsbHkgZnJlZWluZyBoZXJlIG1lYW5zIGNhbGxp
-bmcgcGFnZV9mcmFnX2ZyZWUoKSwNCj4gd2hpY2ggbWVhbnMgZGVjcmVhc2luZyB0aGUgcmVmY291
-bnQuIFRoZSBwYWdlIHJldXNlIGFsZ29yaXRobSBtYWtlcyBzdXJlDQo+IHRoYXQgdGhlIGJ1ZmZl
-cnMgYXJlIG5vdCBzdGFsZS4NCj4gDQo+IFRoZSBvbmx5IGRpZmZlcmVuY2UgZnJvbSBYRFBfVFgg
-YW5kIFhEUF9ESVJFQ1QgdG8gZGV2L2NwdW1hcHMsIGNvbXBhcmVkDQo+IHRvIEFGX1hEUCBzb2Nr
-ZXRzIGlzIHRoYXQgdGhlIGxhdHRlciBjYWxscyBwYWdlX2ZyYWdfZnJlZSgpIGRpcmVjdGx5LCB3
-aGVyZWFzDQo+IHRoZSBvdGhlciBkb2VzIGl0IGFzeW5jaHJvbm91cyBmcm9tIHRoZSBUeCBjbGVh
-biB1cCBwaGFzZS4NCj4gDQoNCkhpOg0KDQpUaGFua3MgZm9yIHlvdXIgZXhwbGFuYXRpb24uDQoN
-CkJ1dCB3ZSBjYW4gcmVwcm9kdWNlIHRoaXMgYnVnDQoNCldlIHVzZSBlYnBmIHRvIHJlZGlyZWN0
-IG9ubHktVnhsYW4gcGFja2V0cyB0byBub24temVyb2NvcHkgQUZfWERQLCAgRmlyc3Qgd2Ugc2Vl
-IHBhbmljIG9uIHRjcCBzdGFjaywgaW4gdGNwX2NvbGxhcHNlOiBCVUdfT04ob2Zmc2V0IDwgMCk7
-IGl0IGlzIHZlcnkgaGFyZCB0byByZXByb2R1Y2UuDQoNClRoZW4gd2UgdXNlIHRoZSBzY3AgdG8g
-ZG8gdGVzdCwgYW5kIGhhcyBsb3RzIG9mIHZ4bGFuIHBhY2tldCBhdCB0aGUgc2FtZSB0aW1lLCBz
-Y3Agd2lsbCBiZSBicm9rZW4gZnJlcXVlbnRseS4NCg0KV2l0aCB0aGlzIGZpeGVzLCBzY3AgaGFz
-IG5vdCBiZWVuIGJyb2tlbiBhZ2FpbiwgYW5kIGtlcm5lbCBpcyBub3QgcGFuaWMgYWdhaW4NCg0K
-U2VlbSB5b3VyIGV4cGxhbmF0aW9uIGlzIHVuYWJsZSB0byBzb2x2ZSBteSBhbmFseXNpczoNCg0K
-ICAgICAgIDEuIGZpcnN0IHNrYiBpcyBub3QgZm9yIHhzaywgYW5kIGZvcndhcmRlZCB0byBhbm90
-aGVyIGRldmljZQ0KICAgICAgICAgIG9yIHNvY2tldCBxdWV1ZQ0KICAgICAgIDIuIHNlY29uZHMg
-c2tiIGlzIGZvciB4c2ssIGNvcHkgZGF0YSB0byB4c2sgbWVtb3J5LCBhbmQgcGFnZQ0KICAgICAg
-ICAgIG9mIHNrYi0+ZGF0YSBpcyByZWxlYXNlZA0KICAgICAgIDMuIHJ4X2J1ZmYgaXMgcmV1c2Fi
-bGUgc2luY2Ugb25seSBmaXJzdCBza2IgaXMgaW4gaXQsIGJ1dA0KICAgICAgICAgICpfcnhfYnVm
-ZmVyX2ZsaXAgd2lsbCBtYWtlIHRoYXQgcGFnZV9vZmZzZXQgaXMgc2V0IHRvDQogICAgICAgICAg
-Zmlyc3Qgc2tiIGRhdGENCiAgICAgICA0LiB0aGVuIHJldXNlIHJ4IGJ1ZmZlciwgZmlyc3Qgc2ti
-IHdoaWNoIHN0aWxsIGlzIGxpdmluZw0KICAgICAgICAgIHdpbGwgYmUgY29ycnVwdGVkLg0KDQoN
-ClRoZSByb290IGNhdXNlIGlzIGRpZmZlcmVuY2UgeW91IHNhaWQgdXBwZXIsIHNvIEkgb25seSBm
-aXhlcyBmb3Igbm9uLXplcm9jb3B5IEFGX1hEUA0KDQotTGkNCj4gTGV0IG1lIGtub3cgaWYgaXQn
-cyBzdGlsbCBub3QgY2xlYXIsIGJ1dCB0aGUgYm90dG9tIGxpbmUgaXMgdGhhdCBub25lIG9mIHRo
-ZXNlDQo+IHBhdGNoZXMgYXJlIG5lZWRlZC4NCj4gDQo+IA0KPiBUaGFua3MhDQo+IEJqw7Zybg0K
-PiANCj4gDQo+ID4gTGkgUm9uZ1FpbmcgKDIpOg0KPiA+ICAgeGRwOiBpNDBlOiBpeGdiZTogaXhn
-YmV2Zjogbm90IGZsaXAgcnggYnVmZmVyIGZvciBjb3B5IG1vZGUgeGRwDQo+ID4gICBpY2UveGRw
-OiBub3QgYWRqdXN0IHJ4IGJ1ZmZlciBmb3IgY29weSBtb2RlIHhkcA0KPiA+DQo+ID4gIGRyaXZl
-cnMvbmV0L2V0aGVybmV0L2ludGVsL2k0MGUvaTQwZV90eHJ4LmMgICAgICAgfCA1ICsrKystDQo+
-ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2ljZS9pY2VfdHhyeC5jICAgICAgICAgfCA1
-ICsrKystDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2l4Z2JlL2l4Z2JlX21haW4u
-YyAgICAgfCA1ICsrKystDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2l4Z2JldmYv
-aXhnYmV2Zl9tYWluLmMgfCA1ICsrKystDQo+ID4gIGluY2x1ZGUvbmV0L3hkcC5oICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgfCAzICsrKw0KPiA+ICBuZXQveGRwL3hzay5jICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgNCArKystDQo+ID4gIDYgZmlsZXMgY2hh
-bmdlZCwgMjIgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IC0tDQo+ID4g
-Mi4xNi4yDQo+ID4NCj4gPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXw0KPiA+IEludGVsLXdpcmVkLWxhbiBtYWlsaW5nIGxpc3QNCj4gPiBJbnRlbC13aXJl
-ZC1sYW5Ab3N1b3NsLm9yZw0KPiA+IGh0dHBzOi8vbGlzdHMub3N1b3NsLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2ludGVsLXdpcmVkLWxhbg0K
+On Tue, Aug 18, 2020 at 6:23 PM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 8/18/20 2:33 PM, Andrii Nakryiko wrote:
+> > That compilation warning is more annoying, than helpful.
+>
+> Curious which compiler and which version caused this issue?
+> I did not hit with gcc 8.2 or latest clang in my environment.
+>
+
+Strange, I just tried on bpf-next, removed -Wno-switch-enum and got
+tons of errors:
+
+libbpf.c: In function =E2=80=98bpf_object__sanitize_prog=E2=80=99:
+libbpf.c:5560:3: error: enumeration value =E2=80=98BPF_FUNC_unspec=E2=80=99=
+ not
+handled in switch [-Werror=3Dswitch-enum]
+   switch (func_id) {
+   ^~~~~~
+libbpf.c:5560:3: error: enumeration value =E2=80=98BPF_FUNC_map_lookup_elem=
+=E2=80=99
+not handled in switch [-Werror=3Dswitch-enum]
+libbpf.c:5560:3: error: enumeration value =E2=80=98BPF_FUNC_map_update_elem=
+=E2=80=99
+not handled in switch [-Werror=3Dswitch-enum]
+... and many more ...
+
+My compiler:
+
+$ cc --version
+cc (GCC) 8.2.1 20180801 (Red Hat 8.2.1-2)
+
+
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >   tools/lib/bpf/Makefile | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+> > index bf8ed134cb8a..95c946e94ca5 100644
+> > --- a/tools/lib/bpf/Makefile
+> > +++ b/tools/lib/bpf/Makefile
+> > @@ -107,7 +107,7 @@ ifeq ($(feature-reallocarray), 0)
+> >   endif
+> >
+> >   # Append required CFLAGS
+> > -override CFLAGS +=3D $(EXTRA_WARNINGS)
+> > +override CFLAGS +=3D $(EXTRA_WARNINGS) -Wno-switch-enum
+> >   override CFLAGS +=3D -Werror -Wall
+> >   override CFLAGS +=3D -fPIC
+> >   override CFLAGS +=3D $(INCLUDES)
+> >
