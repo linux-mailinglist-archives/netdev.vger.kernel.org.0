@@ -2,64 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C2F249B46
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 12:57:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 133C8249B4E
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 13:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727846AbgHSK5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 06:57:19 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:54650 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726752AbgHSK5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 06:57:17 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1k8LmK-0007Cy-MF; Wed, 19 Aug 2020 10:57:12 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] ath11k: fix error check on return from call to ath11k_core_firmware_request
-Date:   Wed, 19 Aug 2020 11:57:12 +0100
-Message-Id: <20200819105712.51886-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.27.0
+        id S1727807AbgHSLBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 07:01:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46204 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726710AbgHSLBJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 07:01:09 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6436DC061757
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 04:01:05 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id v22so17733235edy.0
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 04:01:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=P0A2Xb0BW5alB149oxZ3EesEFZvw7ER05pmvkEUl0tM=;
+        b=bp9abS3yhHYNu6IfHsGqzN4h8aubiwQgLNroV/wOhEV0eM4R1P/k34lUFYWRPH2VZK
+         zQiFtx5hBc7tn2AKByOs1Ec8rwb/ri9VrLQdo1VNYK0iVFkDQ3OLo1BKp2S9q+HuIdxX
+         8KyzEcUW2cR0SpFK6SvoGrCoQgK0V9q5e30Waq7vjOMf+5Fn8hwwjFF7sWEx4hMqiU0a
+         OdqhSDwav3iwodvwlxa+fmauhdDBjBVZ8uZ6nFXRNk7csrAjRkKi1sDBtTr4FGLInGv9
+         whSR8u3ZRVbxtR1OKwTqckVh5EdNZqg93LcKztu0q9ALW5vGCE7Jym60NGF+u74b9d7k
+         NE5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=P0A2Xb0BW5alB149oxZ3EesEFZvw7ER05pmvkEUl0tM=;
+        b=q/4CEGSipNYUK82N5ImVlLcu38LBAvf3WeM6Vp00E3UabscdRHGufeuGwjLLSFEvxC
+         FvHtGxWVFytbOVid9TJo33l9bItgxhK+ZilstpUqlP6cf9e+a2QsgnuyfTBsXwgVYHJD
+         seE0wDuJWSu4g11D1yAKetAcLq1huAkiC37x+4ptDwNhhlmNcr5xGWCGetGzh0FT/hMQ
+         jxRulUuxjdFn3DBDGMmO4vywIsa5dFNs94+5VqDsyWpIvWu5h6RhRHo3P8JHwdBll3k8
+         Mhb6gk3SyBNKPROaLUIVIcwC0YBSLviAkAB8YrsW1L+7nz7ukwXrEA4/0n5Kmu5xwmj/
+         XrMw==
+X-Gm-Message-State: AOAM531zf6qbCO3SzU7lI5j8iejeXOo6Dj+wvNE1jgiiMGQp5R4i2DBi
+        1mBClmU9eUm+qkhxfy6UYk1gDyhnaDfxvg==
+X-Google-Smtp-Source: ABdhPJyVO5uIY6FxQud6EK9i76A6NyijWqFRyjMdKHB/vNEomipY0hh9uQMoETnG1+WT5YI8swc1LA==
+X-Received: by 2002:aa7:d70a:: with SMTP id t10mr23587263edq.68.1597834862844;
+        Wed, 19 Aug 2020 04:01:02 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:8106:4619:9f30:5ac7? (p200300ea8f235700810646199f305ac7.dip0.t-ipconnect.de. [2003:ea:8f23:5700:8106:4619:9f30:5ac7])
+        by smtp.googlemail.com with ESMTPSA id l24sm18521036eji.115.2020.08.19.04.01.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Aug 2020 04:01:02 -0700 (PDT)
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/2] r8169: use napi_complete_done return value
+Message-ID: <18f0fcd2-919e-3580-979d-d0270c81a9ad@gmail.com>
+Date:   Wed, 19 Aug 2020 13:00:57 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+Consider the return value of napi_complete_done(), this allows users to
+use the gro_flush_timeout sysfs attribute as an alternative to classic
+interrupt coalescing.
 
-The call to ath11k_core_firmware_request is returning a pointer that
-can be set to an error code, however, this is not being checked.
-Instead ret is being incorrecly checked for the error return. Fix the
-error checking.
+Heiner Kallweit (2):
+  r8169: use napi_complete_done return value
+  r8169: remove member irq_enabled from struct rtl8169_private
 
-Addresses-Coverity: ("Logically dead code")
-Fixes: 7b57b2ddec21 ("ath11k: create a common function to request all firmware files")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/wireless/ath/ath11k/qmi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index 91134510364c..4792857678b9 100644
---- a/drivers/net/wireless/ath/ath11k/qmi.c
-+++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -1886,7 +1886,7 @@ ath11k_qmi_prepare_bdf_download(struct ath11k_base *ab, int type,
- 		break;
- 	case ATH11K_QMI_FILE_TYPE_CALDATA:
- 		fw_entry = ath11k_core_firmware_request(ab, ATH11K_DEFAULT_CAL_FILE);
--		if (ret) {
-+		if (PTR_ERR(fw_entry)) {
- 			ath11k_warn(ab, "failed to load %s: %d\n",
- 				    ATH11K_DEFAULT_CAL_FILE, ret);
- 			goto out;
 -- 
-2.27.0
+2.28.0
 
