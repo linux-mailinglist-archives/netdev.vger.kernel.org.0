@@ -2,78 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3DAF249224
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:08:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F69249228
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:09:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727122AbgHSBIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 21:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39538 "EHLO
+        id S1727782AbgHSBJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 21:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726486AbgHSBIj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 21:08:39 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED946C061389;
-        Tue, 18 Aug 2020 18:08:38 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id c10so415327pjn.1;
-        Tue, 18 Aug 2020 18:08:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MRTjQoKzFBglneMcqPVOSh6rfmDu+GFH72NRY+c7DHU=;
-        b=SsfOk+l5GxCvWOg2Cc5l+TTl8UNn9E35f2N2KmxQXoIAPMP+0HYErihHPF1nQd8T09
-         QfvEb6Oqcexl0hGYr4Hkailivw5yGr081DJAJaA2zdPImpHgwtYqW6lP39fR7f4REk0q
-         S4+UJOSFv3WT3XlDX3TXFRxXTAt+r5q3jJGRoPbcSdFQxiDJZpMaMRqXqCj8lrB/jkIP
-         SesoiepjUZq1x0JU6cphlb8ze1gbtoO+XshjXoW0GVco4j4LPaeixBJCzIo3JBIrM5EX
-         5xF74il0bcrVhZvqUu/YMpwbYUzBK45q/6yV2rEeqlPz1ozOWlhh6+Q7rWbzAGawCcLP
-         91qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MRTjQoKzFBglneMcqPVOSh6rfmDu+GFH72NRY+c7DHU=;
-        b=iDeHXwJHyX3ONoUG32xzyeCBnwq0eOvhezuaFFERgkL1stA14HPeoW3+57CHMdRLGx
-         tJGYwUeYeEkwAnKM9JLgtuCj2AxeUn0jtyP8HeptPEGudxXaDXo8cqLvf/w55kTV1Izn
-         mQ/SmAwo14ZIpRQlOjNtjvDseKk+SXHGnF17VNtDVfWG25hm0yesQkSoWBXmikeDX1qn
-         lRUjnRKd4uUP89DMqk5y5OrBsNAP+RWuEjQGMcQh+fQecy9yAOX48zj52+tLeJqLIhia
-         vFW54ilMLiJWDnoqKRxpf/u/WJFEJK3mz/AD6ZTl8Fn+Myp8KBT1BCL/Gj1v0IjzdBJJ
-         T3Yw==
-X-Gm-Message-State: AOAM532QATNO6BB3YjHG/mhu9UzVlJKVd9xOjT3m5yLLaSWMsjVKnVa0
-        4wzB3nG5Mq65pAveK9jFpXQ9iPV1Aok=
-X-Google-Smtp-Source: ABdhPJwaKsfrkVPAQqrmNPkXeOoV5ojbnFBjbeKZA/jS5qJJ/IayHYWc5lHLQayGyxNzSMj9tj/HtQ==
-X-Received: by 2002:a17:902:d30b:: with SMTP id b11mr17216779plc.107.1597799318500;
-        Tue, 18 Aug 2020 18:08:38 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:20fd])
-        by smtp.gmail.com with ESMTPSA id l78sm26298479pfd.130.2020.08.18.18.08.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2020 18:08:37 -0700 (PDT)
-Date:   Tue, 18 Aug 2020 18:08:35 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 4/4] tools: remove feature-libelf-mmap feature
- detection
-Message-ID: <20200819010835.3r7ch5h4wb4yue6k@ast-mbp.dhcp.thefacebook.com>
-References: <20200818215908.2746786-1-andriin@fb.com>
- <20200818215908.2746786-5-andriin@fb.com>
+        with ESMTP id S1726486AbgHSBJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 21:09:24 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB53C061389;
+        Tue, 18 Aug 2020 18:09:23 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4BWV6m2Zsvz9sPC;
+        Wed, 19 Aug 2020 11:09:19 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1597799360;
+        bh=PZ4f53VeW+am97M+os2kN5bTE89KqaSC9EwrF9k3KBU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=j95hiToEKFsL0BphmgilDDXrzZyUj/guPGnrsc0NyvYWAekP3Fc/8I9io8yEFko1t
+         /ztJl4Viyy8XOITgLCUX7GtcPSXQx4P6KG/Nwwq3T9OFhc1BlKemCfLNrNsW31k5ts
+         KSAdWQD4pF2/QM+ALwmNhY61zPpefLtvaHNpvF2wH/lzEnWdoLstlRJzUMI4mDviKB
+         mhrOZdojm8/euvz35xXg8QPc3By9SolpC8xBYMfY6MjnE2Zb0b0vqqaWXSjjMqwrqj
+         gnALmInD3UB/rNU2MdRmxAE5fkcCRkuUK50NAnU/tvPOmBFvc6kebwrMIPolAC9tD0
+         HZWZRtgmzzmIQ==
+Date:   Wed, 19 Aug 2020 11:09:18 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: linux-next: manual merge of the net-next tree with the kspp-gustavo
+ tree
+Message-ID: <20200819110918.43a7397d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200818215908.2746786-5-andriin@fb.com>
+Content-Type: multipart/signed; boundary="Sig_/LzT7RpsEKCeHL6WWia16gBO";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 02:59:08PM -0700, Andrii Nakryiko wrote:
-> It's trivial to handle missing ELF_C_MMAP_READ support in libelf the way that
-> objtool has solved it in
-> ("774bec3fddcc objtool: Add fallback from ELF_C_READ_MMAP to ELF_C_READ").
-> 
-> So instead of having an entire feature detector for that, just do what objtool
-> does for perf and libbpf. And keep their Makefiles a bit simpler.
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+--Sig_/LzT7RpsEKCeHL6WWia16gBO
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-overall looks good, but this patch doesn't apply to bpf-next.
+Hi all,
+
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  lib/nlattr.c
+
+between commit:
+
+  58e813cceabd ("treewide: Use fallthrough pseudo-keyword")
+
+from the kspp-gustavo tree and commit:
+
+  8aa26c575fb3 ("netlink: make NLA_BINARY validation more flexible")
+
+from the net-next tree.
+
+I fixed it up (the latter removed some of the code updated by the former)
+and can carry the fix as necessary. This is now fixed as far as linux-next
+is concerned, but any non trivial conflicts should be mentioned to your
+upstream maintainer when your tree is submitted for merging.  You may
+also want to consider cooperating with the maintainer of the conflicting
+tree to minimise any particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/LzT7RpsEKCeHL6WWia16gBO
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl88e74ACgkQAVBC80lX
+0GwzEAf/cmJ58ZsosxZvX25OxpXOzuUPtkOtCilLc9vtKYKk0eZpP5F80LPhuTPO
+fluq9y4BpfeCMj2D3WnRwE+Fj7e5oG7aOziMU0L1X097eM8gn4afWhoEcr11BwyP
+y4G+Q1zOhsyB38K7Oo2RhEByc2p9fDtNk8x+kTKSFSzX4OxFWrcN8bZcVoolCYoW
+mSa2Z4mzFKZehDC2hjFa6+OutLuwOMoq0IvJwibpWLXeQzP2lS4waRGxRGFsQD42
+VcZFCsPjFdZkqTHXipXI8sF3mtebnzFCAIqqUGBoWwi+E4EdHUTZwAGeH74eyLBi
+/iz0GK8gJ4+D8yTyPWRz1rOwOzoMAQ==
+=0c+y
+-----END PGP SIGNATURE-----
+
+--Sig_/LzT7RpsEKCeHL6WWia16gBO--
