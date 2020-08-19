@@ -2,95 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C550524A3DD
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 18:18:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3DC24A3E1
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 18:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726640AbgHSQSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 12:18:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44094 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725275AbgHSQSq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Aug 2020 12:18:46 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5A4892078D;
-        Wed, 19 Aug 2020 16:18:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597853926;
-        bh=UM/vkOiUGYTwlF0gUq/HCYB45aeweW+a2Yop53G5kjY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PY5fGyeHte7sfdei7FsW2ESW+2Izu/2HNiFpxeOlcR4be/r5waLqe92PBM/YeO7/M
-         /lc2L2OWfurpBAWGydtRrX4NHobsj7RjtY+sLXNHDZsPmpsZEeeibCLAQ+7E4+3GJs
-         xklKk7ghs3Q8zQsKDDVHnx74XLvrqKK2coaMQb6M=
-Date:   Wed, 19 Aug 2020 09:18:43 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>, Ido Schimmel <idosch@idosch.org>,
-        netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
-        amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
-        roopa@nvidia.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        tariqt@nvidia.com, ayal@nvidia.com, mkubecek@suse.cz,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next 0/6] devlink: Add device metric support
-Message-ID: <20200819091843.33ddd113@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <55e40430-a52f-f77b-0d1e-ef79386a0a53@gmail.com>
-References: <20200817125059.193242-1-idosch@idosch.org>
-        <20200818172419.5b86801b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <58a0356d-3e15-f805-ae52-dc44f265661d@gmail.com>
-        <20200818203501.5c51e61a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <55e40430-a52f-f77b-0d1e-ef79386a0a53@gmail.com>
+        id S1726885AbgHSQUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 12:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39322 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726752AbgHSQT4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 12:19:56 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F474C061757
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 09:19:56 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id 74so11907848pfx.13
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 09:19:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8eAqA35Qf/4tjfc1n8A1JN4bhkmkwDvEPeJXv/FFPXk=;
+        b=Lz62BD5N+YqUO3mnfinrxMsnZRq5vkVKPiAQnmveJrzNCwQEYt+dO/8zgsg8g8krfL
+         6GECs0D573jH7IJtmPHEY+yGDVCzSeVf4/Vm5QPdfoqUFwCDx67jKUklUY1vQ6csJD03
+         kBSm/F/sHohMEtI1ZQ3p31oIGrGHkx2manqDqaXXN6UTZpBfA1QK970+nz+XdiCJhRbA
+         zltPeGhphcxLufkf9ygWTpoomyXl94/nrC1ccBYfcMrm0xvBo8VIhoVFo60hD+ZKdBO5
+         B+g50PphLGtTOmHmoKqo4ZPbd4svMMOd5ILbQ8Dom5rj4Eq1sIxNh3C4PrMO3WUXQS35
+         OOyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8eAqA35Qf/4tjfc1n8A1JN4bhkmkwDvEPeJXv/FFPXk=;
+        b=XB+q0em/VO+DMksmxxaEBQib4JCZnhD7nbzsVyVlc/uBbN7yxyKZW2DWx5RQrgjVBF
+         xG3d+y5AgB3ur8WF3zOE2xv+r0A+bfA82ZITAlqfJJF8lVSDR+fMuVO5WJ3uU6/mI0m+
+         uwKywFnUavbiwbp3EWDadKc84vOBSEe0Nnya4WiilnQgMQEzpdl3egMV/uTSFzGzy7IY
+         nKKGZUcCR8MAHOp9AaLaGjYEmFWFrgvcCjZkjRrK66s3J+HKQtkDJX92sEbDteriBUoh
+         XSma5tZUo6Qtq4qgIsOT2AH0E/DpM5McVA2Gp5nZzVtdcUeWRQM92P1FCeTsHvi2lFt2
+         MxkQ==
+X-Gm-Message-State: AOAM532won4kDU4CrTBDXGsBopXXb0NhBO1042me2nWkE+PGXta6QKYG
+        5FkWoeX4CcDpno6evD03egU=
+X-Google-Smtp-Source: ABdhPJzN5fX5ooauqrGHsG6rfKdG60N1JGqemwfItKIhE1tuRIzCUgvS9vA104FxDVFbFYuFOamiGg==
+X-Received: by 2002:a65:468f:: with SMTP id h15mr17344517pgr.189.1597853995538;
+        Wed, 19 Aug 2020 09:19:55 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id na14sm3213373pjb.6.2020.08.19.09.19.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 19 Aug 2020 09:19:54 -0700 (PDT)
+Date:   Wed, 19 Aug 2020 09:19:53 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Igor Russkikh <irusskikh@marvell.com>, netdev@vger.kernel.org,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH NET] net: atlantic: Use readx_poll_timeout() for large
+ timeout
+Message-ID: <20200819161953.GA179916@roeck-us.net>
+References: <20200818161439.3dkf6jzp3vuwmvvh@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200818161439.3dkf6jzp3vuwmvvh@linutronix.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Aug 2020 21:30:16 -0700 Florian Fainelli wrote:
-> >>> I spend way too much time patrolling ethtool -S outputs already.  
-> >>
-> >> But that's the nature of detailed stats which are often essential to
-> >> ensuring the system is operating as expected or debugging some problem.
-> >> Commonality is certainly desired in names when relevant to be able to
-> >> build tooling around the stats.  
-> > 
-> > There are stats which are clearly detailed and device specific,
-> > but what ends up happening is that people expose very much not
-> > implementation specific stats through the free form interfaces,
-> > because it's the easiest.
-> > 
-> > And users are left picking up the pieces, having to ask vendors what
-> > each stat means, and trying to create abstractions in their user space
-> > glue.  
+On Tue, Aug 18, 2020 at 06:14:39PM +0200, Sebastian Andrzej Siewior wrote:
+> Commit
+>    8dcf2ad39fdb2 ("net: atlantic: add hwmon getter for MAC temperature")
 > 
-> Should we require vendors to either provide a Documentation/ entry for 
-> each statistics they have (and be guaranteed that it will be outdated 
-> unless someone notices), or would you rather have the statistics 
-> description be part of the devlink interface itself? Should we define 
-> namespaces such that standard metrics should be under the standard 
-> namespace and the vendor standard is the wild west?
-
-I'm trying to find a solution which will not require a policeman to
-constantly monitor the compliance. Please see my effort to ensure
-drivers document and use the same ethtool -S stats in the TLS offload
-implementations. I've been trying to improve this situation for a long
-time, and it's getting old.
-
-Please focus on the stats this set adds, instead of fantasizing of what
-could be. These are absolutely not implementation specific!
-
-> > If I have to download vendor documentation and tooling, or adapt my own
-> > scripts for every new vendor, I could have as well downloaded an SDK.  
+> implemented a read callback with an udelay(10000U). This fails to
+> compile on ARM because the delay is >1ms. I doubt that it is needed to
+> spin for 10ms even if possible on x86.
 > 
-> Are not you being a bit over dramatic here with your example? 
+> >From looking at the code, the context appears to be preemptible so using
+> usleep() should work and avoid busy spinning.
+> 
+> Use readx_poll_timeout() in the poll loop.
+> 
+> Cc: Mark Starovoytov <mstarovoitov@marvell.com>
+> Cc: Igor Russkikh <irusskikh@marvell.com>
+> Signed-off-by: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
 
-I hope not. It's very hard/impossible today to run a fleet of Linux
-machines without resorting to vendor tooling.
+Fixes: 8dcf2ad39fdb2 ("net: atlantic: add hwmon getter for MAC temperature")
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 
-> At least  you can run the same command to obtain the stats regardless
-> of the driver and vendor, so from that perspective Linux continues to
-> be the abstraction and that is not broken.
+As in: This patch does not cause any additional trouble and will fix the
+observed compile failure. However, the submitter of 8dcf2ad39fdb2 might
+consider adding a mutex either into hw_atl_b0_get_mac_temp() or into
+the calling code.
 
-Format of the data is no abstraction.
+Thanks,
+Guenter
+
+> ---
+> 
+> Could someone with hardware please verify it? It compiles, yes.
+> 
+>  drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+> index 16a944707ba90..8941ac4df9e37 100644
+> --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+> +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+> @@ -1631,8 +1631,8 @@ static int hw_atl_b0_get_mac_temp(struct aq_hw_s *self, u32 *temp)
+>  		hw_atl_ts_reset_set(self, 0);
+>  	}
+>  
+> -	err = readx_poll_timeout_atomic(hw_atl_b0_ts_ready_and_latch_high_get,
+> -					self, val, val == 1, 10000U, 500000U);
+> +	err = readx_poll_timeout(hw_atl_b0_ts_ready_and_latch_high_get, self,
+> +				 val, val == 1, 10000U, 500000U);
+>  	if (err)
+>  		return err;
+>  
+> -- 
+> 2.28.0
+> 
