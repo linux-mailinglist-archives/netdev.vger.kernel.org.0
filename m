@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC0532495E4
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 08:59:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 929B32495AD
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 08:57:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728035AbgHSG5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 02:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36798 "EHLO
+        id S1726876AbgHSG5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 02:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727824AbgHSG5c (ORCPT
+        with ESMTP id S1727921AbgHSG5c (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 02:57:32 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF00C061389;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9E3C061343;
         Tue, 18 Aug 2020 23:57:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=S03TR+vPtR2uoi+numZ3EHXk4bHn9A8TB4HMLDbtw9o=; b=hBtqzsfxdA3eBap9tMq5cWDCIT
-        tVDsg1btxUDVMpC+PQsRMyu/BiOxC0kqRwDCW7fYAtAN/Z0j7e7ggmEVK1UrS0iUApgfiqyhthYys
-        RRE2LyeCQYE8gu5FDnZXi/JD+Cwz/iRvYyc4cKMlk+5HWn38a6p+ReUsDxDPxwu7LKpRyZOctfypt
-        pHWAAT9cIEd7u9USQ6S8eJOAQWXsmzZ+XH81xpMHy3LP68c+jamixUc70G1yvMv9Kf/nVgy6X8oiX
-        G9j1o5ZOmShbXx8nKtOLZCwYTbHtBsbi4u2r5pWaIhw2OJPmFeIpZ5zhT2F6FZPuBQnQIX1RtMOI2
-        m3esGVig==;
+        bh=3yo70wOVkF5CaNJSKu+AlarDAtI7zXpUGNpkgTYQVWg=; b=Stap9nZF6GC9QOjwOzcCX1NDYx
+        jGVXomD9Kv31rFvbB7gCdBXXUTES2lhRo/Ye9dplxjvmv9GlaKXFAK0d1WTWoWB8yEbJSVAvr30c8
+        9F4Wz/h3LBGX5AUsie/duMpRWbktxOomFvprDLV/zNeZybGiCPY3LG1ggZ2w/RgJmGuqL1PpQrHyd
+        BfSAqDAFvc4rwVO/UOekcEg55Q1BUT0J6zjsbm8NsrVFPbisxVXvjV6RTEBiOWIPm0GL8lsuyZQpI
+        Ybvh9GTiwEe0ZBf+TXtIz+htcpCJlIbiRdGYNQxwcwGhofUTsZ8c2xOQdxxerpc6hNAhN6tmLt14n
+        N+flC3iQ==;
 Received: from [2001:4bb8:198:f3b2:86b6:2277:f429:37a1] (helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k8I1o-00005v-T0; Wed, 19 Aug 2020 06:56:57 +0000
+        id 1k8I1r-00006Q-0Z; Wed, 19 Aug 2020 06:57:00 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -47,9 +47,9 @@ Cc:     Tom Lendacky <thomas.lendacky@amd.com>, linux-doc@vger.kernel.org,
         netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
         linux-scsi@vger.kernel.org, linux-mm@kvack.org,
         alsa-devel@alsa-project.org
-Subject: [PATCH 25/28] dma-mapping: remove dma_cache_sync
-Date:   Wed, 19 Aug 2020 08:55:52 +0200
-Message-Id: <20200819065555.1802761-26-hch@lst.de>
+Subject: [PATCH 26/28] dmapool: add dma_alloc_pages support
+Date:   Wed, 19 Aug 2020 08:55:53 +0200
+Message-Id: <20200819065555.1802761-27-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200819065555.1802761-1-hch@lst.de>
 References: <20200819065555.1802761-1-hch@lst.de>
@@ -61,182 +61,369 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All users are gone now, remove the API.
+Add an new variant of a dmapool that uses non-coherent memory from
+dma_alloc_pages.  Unlike the existing mempool_create this one
+initialized a pool allocated by the caller to avoid a pointless extra
+allocation.  At some point it might be worth to also switch the coherent
+allocation over to a similar dma_pool_init_coherent helper, but that is
+better done as a separate series including a few conversions.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/mips/Kconfig               |  1 -
- arch/mips/jazz/jazzdma.c        |  1 -
- arch/mips/mm/dma-noncoherent.c  |  6 ------
- arch/parisc/Kconfig             |  1 -
- arch/parisc/kernel/pci-dma.c    |  6 ------
- include/linux/dma-mapping.h     |  9 ---------
- include/linux/dma-noncoherent.h | 10 ----------
- kernel/dma/Kconfig              |  3 ---
- kernel/dma/mapping.c            | 14 --------------
- 9 files changed, 51 deletions(-)
+ include/linux/dmapool.h |  23 ++++-
+ mm/dmapool.c            | 211 +++++++++++++++++++++++++---------------
+ 2 files changed, 154 insertions(+), 80 deletions(-)
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index c95fa3a2484cf0..1be91c5d666e61 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -1134,7 +1134,6 @@ config DMA_NONCOHERENT
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
- 	select ARCH_HAS_DMA_SET_UNCACHED
- 	select DMA_NONCOHERENT_MMAP
--	select DMA_NONCOHERENT_CACHE_SYNC
- 	select NEED_DMA_MAP_STATE
+diff --git a/include/linux/dmapool.h b/include/linux/dmapool.h
+index f632ecfb423840..1387525c4e52e8 100644
+--- a/include/linux/dmapool.h
++++ b/include/linux/dmapool.h
+@@ -11,6 +11,10 @@
+ #ifndef LINUX_DMAPOOL_H
+ #define	LINUX_DMAPOOL_H
  
- config SYS_HAS_EARLY_PRINTK
-diff --git a/arch/mips/jazz/jazzdma.c b/arch/mips/jazz/jazzdma.c
-index 0f9a9cb7fe7a95..e2efe43f5f9cc3 100644
---- a/arch/mips/jazz/jazzdma.c
-+++ b/arch/mips/jazz/jazzdma.c
-@@ -614,7 +614,6 @@ const struct dma_map_ops jazz_dma_ops = {
- 	.sync_single_for_device	= jazz_dma_sync_single_for_device,
- 	.sync_sg_for_cpu	= jazz_dma_sync_sg_for_cpu,
- 	.sync_sg_for_device	= jazz_dma_sync_sg_for_device,
--	.cache_sync		= arch_dma_cache_sync,
- 	.mmap			= dma_common_mmap,
- 	.get_sgtable		= dma_common_get_sgtable,
- 	.alloc_pages		= dma_common_alloc_pages,
-diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoherent.c
-index 97a14adbafc99c..f34ad1f09799f1 100644
---- a/arch/mips/mm/dma-noncoherent.c
-+++ b/arch/mips/mm/dma-noncoherent.c
-@@ -137,12 +137,6 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
- }
++#include <linux/dma-direction.h>
++#include <linux/gfp.h>
++#include <linux/spinlock.h>
++#include <linux/list.h>
+ #include <linux/scatterlist.h>
+ #include <asm/io.h>
+ 
+@@ -18,11 +22,28 @@ struct device;
+ 
+ #ifdef CONFIG_HAS_DMA
+ 
++struct dma_pool {		/* the pool */
++	struct list_head page_list;
++	spinlock_t lock;
++	size_t size;
++	struct device *dev;
++	size_t allocation;
++	size_t boundary;
++	bool is_coherent;
++	enum dma_data_direction dir;
++	char name[32];
++	struct list_head pools;
++};
++
+ struct dma_pool *dma_pool_create(const char *name, struct device *dev, 
+ 			size_t size, size_t align, size_t allocation);
+-
+ void dma_pool_destroy(struct dma_pool *pool);
+ 
++int dma_pool_init(struct device *dev, struct dma_pool *pool, const char *name,
++		size_t size, size_t align, size_t boundary,
++		enum dma_data_direction dir);
++void dma_pool_exit(struct dma_pool *pool);
++
+ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
+ 		     dma_addr_t *handle);
+ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t addr);
+diff --git a/mm/dmapool.c b/mm/dmapool.c
+index f9fb9bbd733e0f..c60a48b22c8d6a 100644
+--- a/mm/dmapool.c
++++ b/mm/dmapool.c
+@@ -6,10 +6,10 @@
+  * Copyright 2007 Intel Corporation
+  *   Author: Matthew Wilcox <willy@linux.intel.com>
+  *
+- * This allocator returns small blocks of a given size which are DMA-able by
+- * the given device.  It uses the dma_alloc_coherent page allocator to get
+- * new pages, then splits them up into blocks of the required size.
+- * Many older drivers still have their own code to do this.
++ * This allocator returns small blocks of a given size which are DMA-able by the
++ * given device.  It either uses the dma_alloc_coherent or the dma_alloc_pages
++ * allocator to get new pages, then splits them up into blocks of the required
++ * size.
+  *
+  * The current design of this allocator is fairly simple.  The pool is
+  * represented by the 'struct dma_pool' which keeps a doubly-linked list of
+@@ -39,17 +39,6 @@
+ #define DMAPOOL_DEBUG 1
  #endif
  
--void arch_dma_cache_sync(struct device *dev, void *vaddr, size_t size,
--		enum dma_data_direction direction)
--{
--	dma_sync_virt_for_device(vaddr, size, direction);
--}
+-struct dma_pool {		/* the pool */
+-	struct list_head page_list;
+-	spinlock_t lock;
+-	size_t size;
+-	struct device *dev;
+-	size_t allocation;
+-	size_t boundary;
+-	char name[32];
+-	struct list_head pools;
+-};
 -
- #ifdef CONFIG_DMA_PERDEV_COHERENT
- void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 		const struct iommu_ops *iommu, bool coherent)
-diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
-index 3b0f53dd70bc9b..ed15da1da174e0 100644
---- a/arch/parisc/Kconfig
-+++ b/arch/parisc/Kconfig
-@@ -195,7 +195,6 @@ config PA11
- 	depends on PA7000 || PA7100LC || PA7200 || PA7300LC
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
--	select DMA_NONCOHERENT_CACHE_SYNC
+ struct dma_page {		/* cacheable header for 'allocation' bytes */
+ 	struct list_head page_list;
+ 	void *vaddr;
+@@ -104,74 +93,40 @@ show_pools(struct device *dev, struct device_attribute *attr, char *buf)
  
- config PREFETCH
- 	def_bool y
-diff --git a/arch/parisc/kernel/pci-dma.c b/arch/parisc/kernel/pci-dma.c
-index 38c68e131bbe2a..ce38c0b9158125 100644
---- a/arch/parisc/kernel/pci-dma.c
-+++ b/arch/parisc/kernel/pci-dma.c
-@@ -454,9 +454,3 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+ static DEVICE_ATTR(pools, 0444, show_pools, NULL);
+ 
+-/**
+- * dma_pool_create - Creates a pool of consistent memory blocks, for dma.
+- * @name: name of pool, for diagnostics
+- * @dev: device that will be doing the DMA
+- * @size: size of the blocks in this pool.
+- * @align: alignment requirement for blocks; must be a power of two
+- * @boundary: returned blocks won't cross this power of two boundary
+- * Context: not in_interrupt()
+- *
+- * Given one of these pools, dma_pool_alloc()
+- * may be used to allocate memory.  Such memory will all have "consistent"
+- * DMA mappings, accessible by the device and its driver without using
+- * cache flushing primitives.  The actual size of blocks allocated may be
+- * larger than requested because of alignment.
+- *
+- * If @boundary is nonzero, objects returned from dma_pool_alloc() won't
+- * cross that size boundary.  This is useful for devices which have
+- * addressing restrictions on individual DMA transfers, such as not crossing
+- * boundaries of 4KBytes.
+- *
+- * Return: a dma allocation pool with the requested characteristics, or
+- * %NULL if one can't be created.
+- */
+-struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+-				 size_t size, size_t align, size_t boundary)
++static int __dma_pool_init(struct device *dev, struct dma_pool *pool,
++		const char *name, size_t size, size_t align, size_t boundary)
  {
- 	flush_kernel_dcache_range((unsigned long)phys_to_virt(paddr), size);
- }
+-	struct dma_pool *retval;
+ 	size_t allocation;
+ 	bool empty = false;
+ 
+ 	if (align == 0)
+ 		align = 1;
+-	else if (align & (align - 1))
+-		return NULL;
++	if (align & (align - 1))
++		return -EINVAL;
+ 
+ 	if (size == 0)
+-		return NULL;
+-	else if (size < 4)
+-		size = 4;
 -
--void arch_dma_cache_sync(struct device *dev, void *vaddr, size_t size,
--	       enum dma_data_direction direction)
--{
--	flush_kernel_dcache_range((unsigned long)vaddr, size);
--}
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 73fa6e10c5c8b5..7321df0b9ffc83 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -123,8 +123,6 @@ struct dma_map_ops {
- 	void (*sync_sg_for_device)(struct device *dev,
- 				   struct scatterlist *sg, int nents,
- 				   enum dma_data_direction dir);
--	void (*cache_sync)(struct device *dev, void *vaddr, size_t size,
--			enum dma_data_direction direction);
- 	int (*dma_supported)(struct device *dev, u64 mask);
- 	u64 (*get_required_mask)(struct device *dev);
- 	size_t (*max_mapping_size)(struct device *dev);
-@@ -258,9 +256,6 @@ void *dma_alloc_pages(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		enum dma_data_direction dir, gfp_t gfp);
- void dma_free_pages(struct device *dev, size_t size, void *vaddr,
- 		dma_addr_t dma_handle, enum dma_data_direction dir);
--/* dma_cache_sync is deprecated: don't use in new code */
--void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
--		enum dma_data_direction dir);
- int dma_get_sgtable_attrs(struct device *dev, struct sg_table *sgt,
- 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 		unsigned long attrs);
-@@ -353,10 +348,6 @@ static inline void dma_free_pages(struct device *dev, size_t size, void *vaddr,
- 		dma_addr_t dma_handle, enum dma_data_direction dir)
+-	size = ALIGN(size, align);
++		return -EINVAL;
++	size = ALIGN(min_t(size_t, size, 4), align);
+ 	allocation = max_t(size_t, size, PAGE_SIZE);
+ 
+ 	if (!boundary)
+ 		boundary = allocation;
+-	else if ((boundary < size) || (boundary & (boundary - 1)))
+-		return NULL;
+-
+-	retval = kmalloc_node(sizeof(*retval), GFP_KERNEL, dev_to_node(dev));
+-	if (!retval)
+-		return retval;
+-
+-	strlcpy(retval->name, name, sizeof(retval->name));
+-
+-	retval->dev = dev;
+-
+-	INIT_LIST_HEAD(&retval->page_list);
+-	spin_lock_init(&retval->lock);
+-	retval->size = size;
+-	retval->boundary = boundary;
+-	retval->allocation = allocation;
+-
+-	INIT_LIST_HEAD(&retval->pools);
++	if (boundary < size || (boundary & (boundary - 1)))
++		return -EINVAL;
++
++	strlcpy(pool->name, name, sizeof(pool->name));
++	pool->dev = dev;
++	INIT_LIST_HEAD(&pool->page_list);
++	spin_lock_init(&pool->lock);
++	pool->size = size;
++	pool->boundary = boundary;
++	pool->allocation = allocation;
++	INIT_LIST_HEAD(&pool->pools);
+ 
+ 	/*
+ 	 * pools_lock ensures that the ->dma_pools list does not get corrupted.
+ 	 * pools_reg_lock ensures that there is not a race between
+-	 * dma_pool_create() and dma_pool_destroy() or within dma_pool_create()
++	 * __dma_pool_init() and dma_pool_exit() or within dma_pool_create()
+ 	 * when the first invocation of dma_pool_create() failed on
+ 	 * device_create_file() and the second assumes that it has been done (I
+ 	 * know it is a short window).
+@@ -180,7 +135,7 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+ 	mutex_lock(&pools_lock);
+ 	if (list_empty(&dev->dma_pools))
+ 		empty = true;
+-	list_add(&retval->pools, &dev->dma_pools);
++	list_add(&pool->pools, &dev->dma_pools);
+ 	mutex_unlock(&pools_lock);
+ 	if (empty) {
+ 		int err;
+@@ -188,18 +143,94 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+ 		err = device_create_file(dev, &dev_attr_pools);
+ 		if (err) {
+ 			mutex_lock(&pools_lock);
+-			list_del(&retval->pools);
++			list_del(&pool->pools);
+ 			mutex_unlock(&pools_lock);
+ 			mutex_unlock(&pools_reg_lock);
+-			kfree(retval);
+-			return NULL;
++			return err;
+ 		}
+ 	}
+ 	mutex_unlock(&pools_reg_lock);
+-	return retval;
++	return 0;
++}
++
++/**
++ * dma_pool_create - Creates a pool of consistent memory blocks, for dma.
++ * @name: name of pool, for diagnostics
++ * @dev: device that will be doing the DMA
++ * @size: size of the blocks in this pool.
++ * @align: alignment requirement for blocks; must be a power of two
++ * @boundary: returned blocks won't cross this power of two boundary
++ * Context: not in_interrupt()
++ *
++ * Given one of these pools, dma_pool_alloc()
++ * may be used to allocate memory.  Such memory will all have "consistent"
++ * DMA mappings, accessible by the device and its driver without using
++ * cache flushing primitives.  The actual size of blocks allocated may be
++ * larger than requested because of alignment.
++ *
++ * If @boundary is nonzero, objects returned from dma_pool_alloc() won't
++ * cross that size boundary.  This is useful for devices which have
++ * addressing restrictions on individual DMA transfers, such as not crossing
++ * boundaries of 4KBytes.
++ *  Return: a dma allocation pool with the requested characteristics, or
++ * %NULL if one can't be created.
++ */
++struct dma_pool *dma_pool_create(const char *name, struct device *dev,
++				 size_t size, size_t align, size_t boundary)
++{
++	struct dma_pool *pool;
++
++	pool = kmalloc_node(sizeof(*pool), GFP_KERNEL, dev_to_node(dev));
++	if (!pool)
++		return NULL;
++	if (__dma_pool_init(dev, pool, name, size, align, boundary))
++		goto out_free_pool;
++	pool->is_coherent = true;
++	return pool;
++out_free_pool:
++	kfree(pool);
++	return NULL;
+ }
+ EXPORT_SYMBOL(dma_pool_create);
+ 
++/**
++ * dma_pool_init - initialize a pool DMA addressable memory
++ * @dev:	device that will be doing the DMA
++ * @pool:	pool to initialize
++ * @name:	name of pool, for diagnostics
++ * @size:	size of the blocks in this pool.
++ * @align:	alignment requirement for blocks; must be a power of two
++ * @boundary:	returned blocks won't cross this power of two boundary
++ * @dir:	DMA direction the allocations are going to be used for
++ *
++ * Context:	not in_interrupt()
++ *
++ * Given one of these pools, dma_pool_alloc() may be used to allocate memory.
++ * Such memory will have the same semantics as memory returned from
++ * dma_alloc_pages(), that is ownership needs to be transferred to and from the
++ * device.  The actual size of blocks allocated may be larger than requested
++ * because of alignment.
++ *
++ * If @boundary is nonzero, objects returned from dma_pool_alloc() won't
++ * cross that size boundary.  This is useful for devices which have
++ * addressing restrictions on individual DMA transfers, such as not crossing
++ * boundaries of 4KBytes.
++ */
++int dma_pool_init(struct device *dev, struct dma_pool *pool, const char *name,
++		size_t size, size_t align, size_t boundary,
++		enum dma_data_direction dir)
++{
++	int ret;
++
++	ret = __dma_pool_init(dev, pool, name, size, align, boundary);
++	if (ret)
++		return ret;
++	pool->is_coherent = false;
++	pool->dir = dir;
++	return 0;
++}
++EXPORT_SYMBOL(dma_pool_init);
++
+ static void pool_initialise_page(struct dma_pool *pool, struct dma_page *page)
  {
- }
--static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
--		enum dma_data_direction dir)
--{
--}
- static inline int dma_get_sgtable_attrs(struct device *dev,
- 		struct sg_table *sgt, void *cpu_addr, dma_addr_t dma_addr,
- 		size_t size, unsigned long attrs)
-diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
-index 1eecfd24d434f8..e61283e06576a8 100644
---- a/include/linux/dma-noncoherent.h
-+++ b/include/linux/dma-noncoherent.h
-@@ -59,16 +59,6 @@ static inline pgprot_t dma_pgprot(struct device *dev, pgprot_t prot,
- }
- #endif /* CONFIG_MMU */
- 
--#ifdef CONFIG_DMA_NONCOHERENT_CACHE_SYNC
--void arch_dma_cache_sync(struct device *dev, void *vaddr, size_t size,
--		enum dma_data_direction direction);
--#else
--static inline void arch_dma_cache_sync(struct device *dev, void *vaddr,
--		size_t size, enum dma_data_direction direction)
--{
--}
--#endif /* CONFIG_DMA_NONCOHERENT_CACHE_SYNC */
--
- #ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE
- void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
- 		enum dma_data_direction dir);
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 6cf7f7947ae797..98417f8eef92b2 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -74,9 +74,6 @@ config ARCH_HAS_DMA_PREP_COHERENT
- config ARCH_HAS_FORCE_DMA_UNENCRYPTED
- 	bool
- 
--config DMA_NONCOHERENT_CACHE_SYNC
--	bool
--
- config DMA_VIRT_OPS
- 	bool
- 	depends on HAS_DMA
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index dacdb7226caacd..81b0492332d4c8 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -555,20 +555,6 @@ int dma_set_coherent_mask(struct device *dev, u64 mask)
- EXPORT_SYMBOL(dma_set_coherent_mask);
+ 	unsigned int offset = 0;
+@@ -223,8 +254,12 @@ static struct dma_page *pool_alloc_page(struct dma_pool *pool, gfp_t mem_flags)
+ 	page = kmalloc(sizeof(*page), mem_flags);
+ 	if (!page)
+ 		return NULL;
+-	page->vaddr = dma_alloc_coherent(pool->dev, pool->allocation,
+-					 &page->dma, mem_flags);
++	if (pool->is_coherent)
++		page->vaddr = dma_alloc_coherent(pool->dev, pool->allocation,
++						 &page->dma, mem_flags);
++	else
++		page->vaddr = dma_alloc_pages(pool->dev, pool->allocation,
++					      &page->dma, pool->dir, mem_flags);
+ 	if (page->vaddr) {
+ #ifdef	DMAPOOL_DEBUG
+ 		memset(page->vaddr, POOL_POISON_FREED, pool->allocation);
+@@ -251,20 +286,25 @@ static void pool_free_page(struct dma_pool *pool, struct dma_page *page)
+ #ifdef	DMAPOOL_DEBUG
+ 	memset(page->vaddr, POOL_POISON_FREED, pool->allocation);
  #endif
+-	dma_free_coherent(pool->dev, pool->allocation, page->vaddr, dma);
++	if (pool->is_coherent)
++		dma_free_coherent(pool->dev, pool->allocation, page->vaddr,
++				  dma);
++	else
++		dma_free_pages(pool->dev, pool->allocation, page->vaddr, dma,
++			       pool->dir);
+ 	list_del(&page->page_list);
+ 	kfree(page);
+ }
  
--void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
--		enum dma_data_direction dir)
--{
--	const struct dma_map_ops *ops = get_dma_ops(dev);
--
--	BUG_ON(!valid_dma_direction(dir));
--
--	if (dma_alloc_direct(dev, ops))
--		arch_dma_cache_sync(dev, vaddr, size, dir);
--	else if (ops->cache_sync)
--		ops->cache_sync(dev, vaddr, size, dir);
--}
--EXPORT_SYMBOL(dma_cache_sync);
--
- size_t dma_max_mapping_size(struct device *dev)
+ /**
+- * dma_pool_destroy - destroys a pool of dma memory blocks.
++ * dma_pool_exit - destroys a pool of dma memory blocks.
+  * @pool: dma pool that will be destroyed
+  * Context: !in_interrupt()
+  *
+- * Caller guarantees that no more memory from the pool is in use,
+- * and that nothing will try to use the pool after this call.
++ * Caller guarantees that no more memory from the pool is in use, and that
++ * nothing will try to use the pool after this call.
+  */
+-void dma_pool_destroy(struct dma_pool *pool)
++void dma_pool_exit(struct dma_pool *pool)
  {
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
+ 	bool empty = false;
+ 
+@@ -299,7 +339,20 @@ void dma_pool_destroy(struct dma_pool *pool)
+ 		} else
+ 			pool_free_page(pool, page);
+ 	}
++}
++EXPORT_SYMBOL(dma_pool_exit);
+ 
++/**
++ * dma_pool_destroy - destroys a pool of dma memory blocks.
++ * @pool: dma pool that will be destroyed
++ * Context: !in_interrupt()
++ *
++ * Caller guarantees that no more memory from the pool is in use,
++ * and that nothing will try to use the pool after this call.
++ */
++void dma_pool_destroy(struct dma_pool *pool)
++{
++	dma_pool_exit(pool);
+ 	kfree(pool);
+ }
+ EXPORT_SYMBOL(dma_pool_destroy);
 -- 
 2.28.0
 
