@@ -2,190 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A56124A6EC
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 21:30:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E94B24A6E9
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 21:29:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726923AbgHSTaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 15:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726435AbgHSTaC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 15:30:02 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B4CC061757;
-        Wed, 19 Aug 2020 12:30:02 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id g3so13960032ybc.3;
-        Wed, 19 Aug 2020 12:30:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3CT5ErOBOtyeOjBNV6soZlwbmIzQP8RXf7wZQnGFgjU=;
-        b=QZlVL81wAgM0w97m8DlbMm3171oM2VyecMYu+bKVCMo9lVcTlMw6UoeChwgtwmchxl
-         YXmfdTRXPeF/Dsro2NVUtG0yMTlun7rDhdv+nXmVr9ofNWsW0AqHFm9uXkXDWd6dBXD4
-         jYARR3H8kjPrgT/OvsJB482FZ/rYHbzXCORjhdbWeqBLPC5xcjXAO1eX4cBOP7gjxpFd
-         4XL3uCuvhh786p5IdNL6yHtX2liUhkiOKSgFck0kDrlM1U/o36VQDxFUYUgWmD5MfkdV
-         ejQHsFWriyfsKjiCS9JYTgGc0evLKTjMFVoDVcj4H48XTD659YsRCrK4WDBzJ1zVTUMz
-         q15w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3CT5ErOBOtyeOjBNV6soZlwbmIzQP8RXf7wZQnGFgjU=;
-        b=JR3Glvu8H3RFWhvLxy4vEbABS3uivniS2dB+h6r5lKq1Tr0jCgPDLj6oRI8OeqrP/z
-         AUhUJiz6Ns0/HGGe3OP6QNgPx8WWxYiT8RD/bmzG1PqbjcWmU954jHyGmESDXKhpIufU
-         PmuFuFr3HKbCuNlZ02o7OjdyT3ht6d9w2nNbnyV8BNdmjF4f/bnNfBAAWq7uBB6H49Ek
-         2SNBSCqznEwm5iKI30zATLi/2JUg4PozR9wHJP9Uxqy4HF+swBDMwwA9yALZbDbHHVCF
-         PQamIg38ub3lbPARsyGYDYFgLb2wFYMFsPCkfkhxtdoQDH2QBWYUyekCIQlczRAurM4p
-         vCgA==
-X-Gm-Message-State: AOAM530EJwpp5/l8JCukJgozizqA1F38k5+fENFKJgFiV0lgcRWqAvb6
-        wY2bvYZEjf79tj3lm9ynK1XlS3eiQ76m83apwwj3D2lA
-X-Google-Smtp-Source: ABdhPJwGi3gU34HVjVhmmqw2iXGTQglavFm0z1dzWWXrSiuZdqJbIqUezRKGndvBRiViwt2MMUhLW8rbufBdoJoGPXk=
-X-Received: by 2002:a25:bc50:: with SMTP id d16mr33205467ybk.230.1597865401372;
- Wed, 19 Aug 2020 12:30:01 -0700 (PDT)
+        id S1726887AbgHST34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 15:29:56 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:10121 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726435AbgHST3y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 15:29:54 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f3d7da40000>; Wed, 19 Aug 2020 12:29:40 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Wed, 19 Aug 2020 12:29:54 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Wed, 19 Aug 2020 12:29:54 -0700
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 19 Aug
+ 2020 19:29:53 +0000
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.49) by
+ HQMAIL109.nvidia.com (172.20.187.15) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Wed, 19 Aug 2020 19:29:53 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=m4Bf1W0nvKPi9uslhtMX/Jca2/Efm0IL9sDzPXMIdKUmYU0AkDAMpdJJO2a+94GCDQYDT7k7ZRTYlwIOw5taO/C8VSWLfTjH7GikJivFux1R/maEfP0DuStF8XLXMaUNRFvMHvqJlIz7TPigrpIiPMqoFH2kR8u3L9UdV32vcWiVAfFmmCTd3DNUKzYnRCskg3MBwtat62XFn8wWqrh5eMnhpXy4QvQsRc4FnD0pEbOIIrvtcVKUCeX9BQdrcGuC+iVGdmooSAsGwY9X0gjk2IliTNUe1bBvOEiZjdrBuAEq67V3w+nxGoRmtWl1TA9lVRcLUbhZGNCV1EmMmCrhiA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1PasQ6GxcMDeEN11O8QC3pncaurITKXDSyvn8tMkbDw=;
+ b=ZXHt9yWJ4or6J2E+vtk9ZLPbMgdZNnTk1lq0TlenpfkYTaPfIDIVAIJjic2dg71bMx8pOc5/dvnIc2YqttV+oeMnuPoGrOsQ78W6VSwptzk4EwzNZ4u5V1ZyxmQM4JatY4hMOMX4/BJAXmMZHYytYdGTOvvUIlZzkJn8OBXJHvhCEZfrLQr3zNX4B9qMaxcnORiVL2Dj7baLi+F3673qN+VqYBzVmAZLVJ/NeDiawogSFtPQy1V9fA4ck3i5I3gi81SoxLowBWyki/yt3rJaUlVe0GLm/U7Wn46HE5h0v5mD389y90OeifPtmcreySYAS4xxeIH5aVlWD+W3SUaI0Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
+ by BYAPR12MB2664.namprd12.prod.outlook.com (2603:10b6:a03:69::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3283.23; Wed, 19 Aug
+ 2020 19:29:52 +0000
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::e528:bb9a:b147:94a9]) by BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::e528:bb9a:b147:94a9%5]) with mapi id 15.20.3305.024; Wed, 19 Aug 2020
+ 19:29:52 +0000
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>,
+        "gustavoars@kernel.org" <gustavoars@kernel.org>
+CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] net/mlx5: remove erroneous fallthrough
+Thread-Topic: [PATCH net-next] net/mlx5: remove erroneous fallthrough
+Thread-Index: AQHWbGgclkrvAGzKUkKQzJ7+RKwEoKk/5WUA
+Date:   Wed, 19 Aug 2020 19:29:52 +0000
+Message-ID: <d6eb19690bd2e996d9dfd33361a506af7c53b325.camel@nvidia.com>
+References: <20200803143448.GA346925@mwanda>
+         <20200803154801.GC1726@embeddedor>
+In-Reply-To: <20200803154801.GC1726@embeddedor>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: oracle.com; dkim=none (message not signed)
+ header.d=none;oracle.com; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [24.6.56.119]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1eb02a44-f6f9-41c8-885c-08d844763f1a
+x-ms-traffictypediagnostic: BYAPR12MB2664:
+x-microsoft-antispam-prvs: <BYAPR12MB26648E23F35DFD748F5C0525B35D0@BYAPR12MB2664.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:843;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1QUtvOz/AVCZflI3on4CVv5V0Dfb1fSuvqgcI11M5V6Hmw6bDna5rhDXb6xsn2sEEsh8XH1BY3TkKDquWQYKEBfjxPIfUiw8rgaNxO/mVhZDpFRonPf7tkVMJK8Q/bY2cUuqBXErn3RdfCBx9rTx8SRkTsxb2lyH/2q4iSnKKmiBGlQv/A3U0Y5xhvtITzvuGbRpfFKHfC5qcXFF1pirds3NQLnGWdIVAIWvHG0PK4PzOOv3bWwPyFv4IeX0Qp3ouXkHBRQrGUYqmCpJmG4TeqxBr9vy3cjr/9Bs5R7Zf4dNOvEv92LEhua3BQ71DmDV
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(346002)(366004)(396003)(376002)(316002)(478600001)(2616005)(186003)(6506007)(8676002)(8936002)(83380400001)(4326008)(66476007)(2906002)(6486002)(64756008)(66446008)(4744005)(66556008)(110136005)(36756003)(76116006)(71200400001)(26005)(6512007)(66946007)(86362001)(5660300002)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: fxDzZlwrs24IgR2xJRgjCRqHqZIbRXF6be4K4aLXGdpwZB5siSwazIF3SqBsseqIRORcdHFQAO2PVxOoZHwO8BAvB5PVxHOwXUrYZvvp0hW5SAVagz8uKyWdsd0N2InGo1pML7LyZSJRx4ZTR1XDFm429zkcKtgFApApwP4ekrBl8cUPsIO6JpdX1xR1j/19YZh/S/1S0QoKZP55fpM/vGBmwkXok9NFzQPebPK26gAjlC7coaAy/Fn2FfQ01YjUSlvSYV1mknkAXx2N3JOGRCuzxVzEFHxpuySsy/YxqQgeFqh9I0ecai5SyTBY8HLU5nSCpZeC1r3CGaC97yUEuvuJmOp7/SsKm8VCFtqSAzUhFuGcn6S7VaJo9tbWfEzO+QtMLPf8SHt93uP40tgrLYoCklnGzqNEv3Ym/o95sXuidfFjc6a7qHGDi4kmYr4tRgXIyFULgQj8su5xWqepP+cjqQP4ABOrEo989rvBmEjqYDx9lgWI+8CqXGpD4ZmsPH9G2HyuZjyIh2Cv670vVaVkNA4KXgyq6kOIkTd0SDTujPahyL/4KjlydDjm7/O9pi5b67gTgEmltG3E0ZM8pVXDYtwbJFW7ts8Fs6yLw7LqaMvYUf2Yq2xjUWxHDqWVPt7pCF7rQ53JKVXyhKyQSQ==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9C97AD5E7C9B9041A524DBF546A3DA9F@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200819052849.336700-1-andriin@fb.com> <20200819052849.336700-3-andriin@fb.com>
- <8840d113-86bb-bd55-b97c-1d5a869472fe@fb.com>
-In-Reply-To: <8840d113-86bb-bd55-b97c-1d5a869472fe@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 19 Aug 2020 12:29:49 -0700
-Message-ID: <CAEf4Bzb=6hpK_tURacWUKB7guQN-v3mfOM6sFWiiqbo32L4_yg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 2/5] selftests/bpf: test TYPE_EXISTS and
- TYPE_SIZE CO-RE relocations
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1eb02a44-f6f9-41c8-885c-08d844763f1a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2020 19:29:52.6905
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lOex19YjB/BttcDWDosElHDS2EDq8NF8jsQ/yhtRV2cctZz9sfkTF8BTBw1/OSNvSSzG8X4rgxHZU5jmtTv13g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2664
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1597865380; bh=1PasQ6GxcMDeEN11O8QC3pncaurITKXDSyvn8tMkbDw=;
+        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+         ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
+         Thread-Index:Date:Message-ID:References:In-Reply-To:
+         Accept-Language:Content-Language:X-MS-Has-Attach:
+         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
+         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
+         x-ms-traffictypediagnostic:x-microsoft-antispam-prvs:
+         x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
+         x-microsoft-antispam:x-microsoft-antispam-message-info:
+         x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
+         x-ms-exchange-transport-forked:Content-Type:Content-ID:
+         Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=Y5pNyrvJ6zZyr05TMIuc+YqulNnioSnwX9vSttGiBaxOplXgbKeJa0ntUXb6SFcLV
+         PQQ9hAkPiC865fl7/QmdjBHVf4SjnnTH3DHBx+2XNYdt+BzyYTEymrTauYJEKpyJ+Y
+         Xd3g7Sp2fcujKjs/amFyCTD4iGMp+rctQVzSeuvnv274rWuNmg6b3U35X7BTJ5Psi2
+         YgA2sc8xmCmNMO9PRUHse+N5dikJOzN9m14LIwi6DHvgLiFGIQV1INjdpTUIWXM7HA
+         JQ/rmRsHnbalnlxTF7Te7AKWehE5n3uOMWkgnSY8HefEeqKFDmw9RNy7v6sERWZMTX
+         J/YdvQ39pzmKQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 19, 2020 at 9:31 AM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 8/18/20 10:28 PM, Andrii Nakryiko wrote:
-> > Add selftests for TYPE_EXISTS and TYPE_SIZE relocations, testing correctness
-> > of relocations and handling of type compatiblity/incompatibility.
-> >
-> > If __builtin_preserve_type_info() is not supported by compiler, skip tests.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >   .../selftests/bpf/prog_tests/core_reloc.c     | 125 +++++++++--
-> >   .../bpf/progs/btf__core_reloc_type_based.c    |   3 +
-> >   ...btf__core_reloc_type_based___all_missing.c |   3 +
-> >   .../btf__core_reloc_type_based___diff_sz.c    |   3 +
-> >   ...f__core_reloc_type_based___fn_wrong_args.c |   3 +
-> >   .../btf__core_reloc_type_based___incompat.c   |   3 +
-> >   .../selftests/bpf/progs/core_reloc_types.h    | 203 +++++++++++++++++-
-> >   .../bpf/progs/test_core_reloc_kernel.c        |   2 +
-> >   .../bpf/progs/test_core_reloc_type_based.c    | 125 +++++++++++
-> >   9 files changed, 448 insertions(+), 22 deletions(-)
-> >   create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_type_based.c
-> >   create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_type_based___all_missing.c
-> >   create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_type_based___diff_sz.c
-> >   create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_type_based___fn_wrong_args.c
-> >   create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_type_based___incompat.c
-> >   create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_type_based.c
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-> > index 4d650e99be28..b775ce0ede41 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-> > @@ -177,14 +177,13 @@
-> >       .fails = true,                                                  \
-> >   }
-> >
-> [...]
-> > +/* func_proto with incompatible signature */
-> > +typedef void (*func_proto_typedef___fn_wrong_ret1)(long);
-> > +typedef int * (*func_proto_typedef___fn_wrong_ret2)(long);
-> > +typedef struct { int x; } int_struct_typedef;
-> > +typedef int_struct_typedef (*func_proto_typedef___fn_wrong_ret3)(long);
-> > +typedef int (*func_proto_typedef___fn_wrong_arg)(void *);
-> > +typedef int (*func_proto_typedef___fn_wrong_arg_cnt1)(long, long);
-> > +typedef int (*func_proto_typedef___fn_wrong_arg_cnt2)(void);
-> > +
-> > +struct core_reloc_type_based___fn_wrong_args {
-> > +     /* one valid type to make sure relos still work */
-> > +     struct a_struct f1;
-> > +     func_proto_typedef___fn_wrong_ret1 f2;
-> > +     func_proto_typedef___fn_wrong_ret2 f3;
-> > +     func_proto_typedef___fn_wrong_ret3 f4;
-> > +     func_proto_typedef___fn_wrong_arg f5;
-> > +     func_proto_typedef___fn_wrong_arg_cnt1 f6;
-> > +     func_proto_typedef___fn_wrong_arg_cnt2 f7;
-> > +};
-> > +
->
-> empty line at the end of file?
-
-you cut the line showing which file it is, so I had to guess :) but fixed
-
->
-> > diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c b/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
-> > index aba928fd60d3..145028b52ad8 100644
-> > --- a/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
-> > +++ b/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
-> > @@ -3,6 +3,7 @@
-> >
-> >   #include <linux/bpf.h>
-> >   #include <stdint.h>
-> > +#include <stdbool.h>
-> >   #include <bpf/bpf_helpers.h>
-> >   #include <bpf/bpf_core_read.h>
-> >
-> > @@ -11,6 +12,7 @@ char _license[] SEC("license") = "GPL";
-> >   struct {
-> >       char in[256];
-> >       char out[256];
-> > +     bool skip;
-> >       uint64_t my_pid_tgid;
-> >   } data = {};
-> >
-> [...]
-> > +
-> > +SEC("raw_tracepoint/sys_enter")
-> > +int test_core_type_based(void *ctx)
-> > +{
-> > +#if __has_builtin(__builtin_preserve_type_info)
-> > +     struct core_reloc_type_based_output *out = (void *)&data.out;
-> > +
-> > +     out->struct_exists = bpf_core_type_exists(struct a_struct);
-> > +     out->union_exists = bpf_core_type_exists(union a_union);
-> > +     out->enum_exists = bpf_core_type_exists(enum an_enum);
-> > +     out->typedef_named_struct_exists = bpf_core_type_exists(named_struct_typedef);
-> > +     out->typedef_anon_struct_exists = bpf_core_type_exists(anon_struct_typedef);
-> > +     out->typedef_struct_ptr_exists = bpf_core_type_exists(struct_ptr_typedef);
-> > +     out->typedef_int_exists = bpf_core_type_exists(int_typedef);
-> > +     out->typedef_enum_exists = bpf_core_type_exists(enum_typedef);
-> > +     out->typedef_void_ptr_exists = bpf_core_type_exists(void_ptr_typedef);
-> > +     out->typedef_func_proto_exists = bpf_core_type_exists(func_proto_typedef);
-> > +     out->typedef_arr_exists = bpf_core_type_exists(arr_typedef);
-> > +
-> > +     out->struct_sz = bpf_core_type_size(struct a_struct);
-> > +     out->union_sz = bpf_core_type_size(union a_union);
-> > +     out->enum_sz = bpf_core_type_size(enum an_enum);
-> > +     out->typedef_named_struct_sz = bpf_core_type_size(named_struct_typedef);
-> > +     out->typedef_anon_struct_sz = bpf_core_type_size(anon_struct_typedef);
-> > +     out->typedef_struct_ptr_sz = bpf_core_type_size(struct_ptr_typedef);
-> > +     out->typedef_int_sz = bpf_core_type_size(int_typedef);
-> > +     out->typedef_enum_sz = bpf_core_type_size(enum_typedef);
-> > +     out->typedef_void_ptr_sz = bpf_core_type_size(void_ptr_typedef);
-> > +     out->typedef_func_proto_sz = bpf_core_type_size(func_proto_typedef);
-> > +     out->typedef_arr_sz = bpf_core_type_size(arr_typedef);
-> > +#else
-> > +     data.skip = true;
-> > +#endif
-> > +     return 0;
-> > +}
-> > +
->
-> empty line at the end of file?
-
-fixed
+T24gTW9uLCAyMDIwLTA4LTAzIGF0IDEwOjQ4IC0wNTAwLCBHdXN0YXZvIEEuIFIuIFNpbHZhIHdy
+b3RlOg0KPiBPbiBNb24sIEF1ZyAwMywgMjAyMCBhdCAwNTozNDo0OFBNICswMzAwLCBEYW4gQ2Fy
+cGVudGVyIHdyb3RlOg0KPiA+IFRoaXMgaXNuJ3QgYSBmYWxsIHRocm91Z2ggYmVjYXVzZSBpdCB3
+YXMgYWZ0ZXIgYSByZXR1cm4NCj4gPiBzdGF0ZW1lbnQuICBUaGUNCj4gPiBmYWxsIHRocm91Z2gg
+YW5ub3RhdGlvbiBsZWFkcyB0byBhIFNtYXRjaCB3YXJuaW5nOg0KPiA+IA0KPiA+ICAgICBkcml2
+ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fZXRodG9vbC5jOjI0Ng0KPiA+
+ICAgICBtbHg1ZV9ldGh0b29sX2dldF9zc2V0X2NvdW50KCkgd2FybjogaWdub3JpbmcgdW5yZWFj
+aGFibGUgY29kZS4NCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBEYW4gQ2FycGVudGVyIDxkYW4u
+Y2FycGVudGVyQG9yYWNsZS5jb20+DQo+IA0KPiBSZXZpZXdlZC1ieTogR3VzdGF2byBBLiBSLiBT
+aWx2YSA8Z3VzdGF2b2Fyc0BrZXJuZWwub3JnPg0KPiANCg0KQXBwbGllZCB0byBuZXQtbmV4dC1t
+bHg1DQoNClRoYW5rcyENCg==
