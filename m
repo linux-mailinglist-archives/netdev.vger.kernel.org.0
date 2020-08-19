@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DB3224A07D
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:49:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2A7924A049
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728343AbgHSNtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 09:49:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43240 "EHLO
+        id S1728583AbgHSNos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 09:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727987AbgHSNoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 09:44:01 -0400
+        with ESMTP id S1728571AbgHSNoX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 09:44:23 -0400
 Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C202C061342
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 06:44:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A80C06135D
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 06:44:01 -0700 (PDT)
 Received: from ramsan ([84.195.186.194])
         by xavier.telenet-ops.be with bizsmtp
-        id HRjl2300N4C55Sk01Rjlxa; Wed, 19 Aug 2020 15:43:56 +0200
+        id HRjl2300S4C55Sk01Rjlxb; Wed, 19 Aug 2020 15:43:56 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan with esmtp (Exim 4.90_1)
         (envelope-from <geert@linux-m68k.org>)
-        id 1k8ONV-0003E2-IB; Wed, 19 Aug 2020 15:43:45 +0200
+        id 1k8ONV-0003E6-JN; Wed, 19 Aug 2020 15:43:45 +0200
 Received: from geert by rox.of.borg with local (Exim 4.90_1)
         (envelope-from <geert@linux-m68k.org>)
-        id 1k8ONV-0007Ff-GY; Wed, 19 Aug 2020 15:43:45 +0200
+        id 1k8ONV-0007Fi-Hm; Wed, 19 Aug 2020 15:43:45 +0200
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -41,9 +41,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 5/7] ravb: Add support for explicit internal clock delay configuration
-Date:   Wed, 19 Aug 2020 15:43:42 +0200
-Message-Id: <20200819134344.27813-6-geert+renesas@glider.be>
+Subject: [PATCH v3 6/7] arm64: dts: renesas: rcar-gen3: Convert EtherAVB to explicit delay handling
+Date:   Wed, 19 Aug 2020 15:43:43 +0200
+Message-Id: <20200819134344.27813-7-geert+renesas@glider.be>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200819134344.27813-1-geert+renesas@glider.be>
 References: <20200819134344.27813-1-geert+renesas@glider.be>
@@ -58,119 +58,206 @@ the PHY (using an "rgmii-*id" PHY mode, and/or "[rt]xc-skew-ps"
 properties).
 
 Historically, the EtherAVB driver configured these delays based on the
-"rgmii-*id" PHY mode.  This caused issues with PHY drivers that
-implement PHY internal delays properly[1].  Hence a backwards-compatible
-workaround was added by masking the PHY mode[2].
+"rgmii-*id" PHY mode.  This was wrong, as these are meant solely for the
+PHY, not for the MAC.  Hence properties were introduced for explicit
+configuration of these delays.
 
-Add proper support for explicit configuration of the MAC internal clock
-delays using the new "[rt]x-internal-delay-ps" properties.
-Fall back to the old handling if none of these properties is present.
+Convert the R-Car Gen3 DTS files from the old to the new scheme:
+  - Add default "rx-internal-delay-ps" and "tx-internal-delay-ps"
+    properties to the SoC .dtsi files, to be overridden by board files
+    where needed,
+  - Convert board files from "rgmii-*id" PHY modes to "rgmii", adding
+    the appropriate "rx-internal-delay-ps" and/or "tx-internal-delay-ps"
+    overrides.
 
-[1] Commit bcf3440c6dd78bfe ("net: phy: micrel: add phy-mode support for
-    the KSZ9031 PHY")
-[2] Commit 9b23203c32ee02cd ("ravb: Mask PHY mode to avoid inserting
-    delays twice").
+Notes:
+  - R-Car E3 and D3 do not support TX internal delay handling,
+  - On R-Car D3, TX internal delay handling must always be enabled,
+    hence this fixes a bug on Draak,
+  - On R-Car V3H, RX internal delay handling must always be enabled.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 ---
+This depends on "[PATCH v3 5/7] ravb: Add support for explicit internal
+clock delay configuration", and thus must not be applied before its
+dependency has hit upstream.
+
 v3:
   - No changes,
 
 v2:
-  - Add Reviewed-by,
-  - Split long line,
-  - Replace "renesas,[rt]xc-delay-ps" by "[rt]x-internal-delay-ps",
-  - Use 1 instead of true when assigning to a single-bit bitfield.
+  - Replace "renesas,[rt]xc-delay-ps" by "[rt]x-internal-delay-ps".
 ---
- drivers/net/ethernet/renesas/ravb.h      |  1 +
- drivers/net/ethernet/renesas/ravb_main.c | 36 ++++++++++++++++++------
- 2 files changed, 28 insertions(+), 9 deletions(-)
+ arch/arm64/boot/dts/renesas/r8a77951.dtsi        | 2 ++
+ arch/arm64/boot/dts/renesas/r8a77960.dtsi        | 2 ++
+ arch/arm64/boot/dts/renesas/r8a77961.dtsi        | 2 ++
+ arch/arm64/boot/dts/renesas/r8a77965.dtsi        | 2 ++
+ arch/arm64/boot/dts/renesas/r8a77970-eagle.dts   | 3 ++-
+ arch/arm64/boot/dts/renesas/r8a77970-v3msk.dts   | 3 ++-
+ arch/arm64/boot/dts/renesas/r8a77970.dtsi        | 2 ++
+ arch/arm64/boot/dts/renesas/r8a77980.dtsi        | 2 ++
+ arch/arm64/boot/dts/renesas/r8a77990.dtsi        | 1 +
+ arch/arm64/boot/dts/renesas/r8a77995.dtsi        | 1 +
+ arch/arm64/boot/dts/renesas/salvator-common.dtsi | 2 +-
+ arch/arm64/boot/dts/renesas/ulcb.dtsi            | 2 +-
+ 12 files changed, 20 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-index e5ca12ce93c730a9..7453b17a37a2c8d0 100644
---- a/drivers/net/ethernet/renesas/ravb.h
-+++ b/drivers/net/ethernet/renesas/ravb.h
-@@ -1038,6 +1038,7 @@ struct ravb_private {
- 	unsigned wol_enabled:1;
- 	unsigned rxcidm:1;		/* RX Clock Internal Delay Mode */
- 	unsigned txcidm:1;		/* TX Clock Internal Delay Mode */
-+	unsigned rgmii_override:1;	/* Deprecated rgmii-*id behavior */
- 	int num_tx_desc;		/* TX descriptors per packet */
- };
+diff --git a/arch/arm64/boot/dts/renesas/r8a77951.dtsi b/arch/arm64/boot/dts/renesas/r8a77951.dtsi
+index 9beb8e76d9235b71..1b1a014c829a2e2a 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77951.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a77951.dtsi
+@@ -1250,6 +1250,8 @@
+ 			power-domains = <&sysc R8A7795_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <0>;
++			tx-internal-delay-ps = <0>;
+ 			iommus = <&ipmmu_ds0 16>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/renesas/r8a77960.dtsi b/arch/arm64/boot/dts/renesas/r8a77960.dtsi
+index 4dfb7f07678714e9..e6c88a748692b212 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77960.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a77960.dtsi
+@@ -1126,6 +1126,8 @@
+ 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <0>;
++			tx-internal-delay-ps = <0>;
+ 			iommus = <&ipmmu_ds0 16>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/renesas/r8a77961.dtsi b/arch/arm64/boot/dts/renesas/r8a77961.dtsi
+index 542c44c7dbca30b6..6fdc28a6d2cf0354 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77961.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a77961.dtsi
+@@ -1012,6 +1012,8 @@
+ 			power-domains = <&sysc R8A77961_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <0>;
++			tx-internal-delay-ps = <0>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			status = "disabled";
+diff --git a/arch/arm64/boot/dts/renesas/r8a77965.dtsi b/arch/arm64/boot/dts/renesas/r8a77965.dtsi
+index fe4dc12e2bdfae6f..6206e28f37efae73 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77965.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a77965.dtsi
+@@ -988,6 +988,8 @@
+ 			power-domains = <&sysc R8A77965_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <0>;
++			tx-internal-delay-ps = <0>;
+ 			iommus = <&ipmmu_ds0 16>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/renesas/r8a77970-eagle.dts b/arch/arm64/boot/dts/renesas/r8a77970-eagle.dts
+index 5c28f303e911343c..874a7fc2730b00db 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77970-eagle.dts
++++ b/arch/arm64/boot/dts/renesas/r8a77970-eagle.dts
+@@ -81,7 +81,8 @@
  
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index 59dadd971345e0d1..aa120e3f1e4d4da5 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -1034,11 +1034,8 @@ static int ravb_phy_init(struct net_device *ndev)
- 		pn = of_node_get(np);
- 	}
+ 	renesas,no-ether-link;
+ 	phy-handle = <&phy0>;
+-	phy-mode = "rgmii-id";
++	rx-internal-delay-ps = <1800>;
++	tx-internal-delay-ps = <2000>;
+ 	status = "okay";
  
--	iface = priv->phy_interface;
--	if (priv->chip_id != RCAR_GEN2 && phy_interface_mode_is_rgmii(iface)) {
--		/* ravb_set_delay_mode() takes care of internal delay mode */
--		iface = PHY_INTERFACE_MODE_RGMII;
--	}
-+	iface = priv->rgmii_override ? PHY_INTERFACE_MODE_RGMII
-+				     : priv->phy_interface;
- 	phydev = of_phy_connect(ndev, pn, ravb_adjust_link, 0, iface);
- 	of_node_put(pn);
- 	if (!phydev) {
-@@ -1989,20 +1986,41 @@ static const struct soc_device_attribute ravb_delay_mode_quirk_match[] = {
- };
+ 	phy0: ethernet-phy@0 {
+diff --git a/arch/arm64/boot/dts/renesas/r8a77970-v3msk.dts b/arch/arm64/boot/dts/renesas/r8a77970-v3msk.dts
+index 668a1ece9af00420..7417cf5fea0f0a65 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77970-v3msk.dts
++++ b/arch/arm64/boot/dts/renesas/r8a77970-v3msk.dts
+@@ -102,7 +102,8 @@
  
- /* Set tx and rx clock internal delay modes */
--static void ravb_parse_delay_mode(struct net_device *ndev)
-+static void ravb_parse_delay_mode(struct device_node *np, struct net_device *ndev)
- {
- 	struct ravb_private *priv = netdev_priv(ndev);
-+	bool explicit_delay = false;
-+	u32 delay;
-+
-+	if (!of_property_read_u32(np, "rx-internal-delay-ps", &delay)) {
-+		/* Valid values are 0 and 1800, according to DT bindings */
-+		priv->rxcidm = !!delay;
-+		explicit_delay = true;
-+	}
-+	if (!of_property_read_u32(np, "tx-internal-delay-ps", &delay)) {
-+		/* Valid values are 0 and 2000, according to DT bindings */
-+		priv->txcidm = !!delay;
-+		explicit_delay = true;
-+	}
+ 	renesas,no-ether-link;
+ 	phy-handle = <&phy0>;
+-	phy-mode = "rgmii-id";
++	rx-internal-delay-ps = <1800>;
++	tx-internal-delay-ps = <2000>;
+ 	status = "okay";
  
-+	if (explicit_delay)
-+		return;
-+
-+	/* Fall back to legacy rgmii-*id behavior */
- 	if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
--	    priv->phy_interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+	    priv->phy_interface == PHY_INTERFACE_MODE_RGMII_RXID) {
- 		priv->rxcidm = 1;
-+		priv->rgmii_override = 1;
-+	}
+ 	phy0: ethernet-phy@0 {
+diff --git a/arch/arm64/boot/dts/renesas/r8a77970.dtsi b/arch/arm64/boot/dts/renesas/r8a77970.dtsi
+index 2b9124a5ca860dd2..7be8ad1ca4646d79 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77970.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a77970.dtsi
+@@ -615,6 +615,8 @@
+ 			power-domains = <&sysc R8A77970_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <0>;
++			tx-internal-delay-ps = <0>;
+ 			iommus = <&ipmmu_rt 3>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/renesas/r8a77980.dtsi b/arch/arm64/boot/dts/renesas/r8a77980.dtsi
+index 59f5bbd72161706d..f573dc0552272195 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77980.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a77980.dtsi
+@@ -667,6 +667,8 @@
+ 			power-domains = <&sysc R8A77980_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <0>;
++			tx-internal-delay-ps = <2000>;
+ 			iommus = <&ipmmu_ds1 33>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/renesas/r8a77990.dtsi b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
+index 1991bdc36792f4e3..07c35e9b049ae151 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77990.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
+@@ -938,6 +938,7 @@
+ 			power-domains = <&sysc R8A77990_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <0>;
+ 			iommus = <&ipmmu_ds0 16>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/renesas/r8a77995.dtsi b/arch/arm64/boot/dts/renesas/r8a77995.dtsi
+index 2c2272f5f5b52105..624aaa6d7f20d6d4 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77995.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a77995.dtsi
+@@ -628,6 +628,7 @@
+ 			power-domains = <&sysc R8A77995_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <1800>;
+ 			iommus = <&ipmmu_ds0 16>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/renesas/salvator-common.dtsi b/arch/arm64/boot/dts/renesas/salvator-common.dtsi
+index 1bf77957d2c21db9..6c643ed74fc586bb 100644
+--- a/arch/arm64/boot/dts/renesas/salvator-common.dtsi
++++ b/arch/arm64/boot/dts/renesas/salvator-common.dtsi
+@@ -324,7 +324,7 @@
+ 	pinctrl-0 = <&avb_pins>;
+ 	pinctrl-names = "default";
+ 	phy-handle = <&phy0>;
+-	phy-mode = "rgmii-txid";
++	tx-internal-delay-ps = <2000>;
+ 	status = "okay";
  
- 	if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
- 	    priv->phy_interface == PHY_INTERFACE_MODE_RGMII_TXID) {
- 		if (!WARN(soc_device_match(ravb_delay_mode_quirk_match),
- 			  "phy-mode %s requires TX clock internal delay mode which is not supported by this hardware revision. Please update device tree",
--			  phy_modes(priv->phy_interface)))
-+			  phy_modes(priv->phy_interface))) {
- 			priv->txcidm = 1;
-+			priv->rgmii_override = 1;
-+		}
- 	}
- }
+ 	phy0: ethernet-phy@0 {
+diff --git a/arch/arm64/boot/dts/renesas/ulcb.dtsi b/arch/arm64/boot/dts/renesas/ulcb.dtsi
+index ff88af8e39d3fa10..bd4efdf91afca42b 100644
+--- a/arch/arm64/boot/dts/renesas/ulcb.dtsi
++++ b/arch/arm64/boot/dts/renesas/ulcb.dtsi
+@@ -144,7 +144,7 @@
+ 	pinctrl-0 = <&avb_pins>;
+ 	pinctrl-names = "default";
+ 	phy-handle = <&phy0>;
+-	phy-mode = "rgmii-txid";
++	tx-internal-delay-ps = <2000>;
+ 	status = "okay";
  
-@@ -2148,7 +2166,7 @@ static int ravb_probe(struct platform_device *pdev)
- 	ravb_modify(ndev, GCCR, GCCR_LTI, GCCR_LTI);
- 
- 	if (priv->chip_id != RCAR_GEN2) {
--		ravb_parse_delay_mode(ndev);
-+		ravb_parse_delay_mode(np, ndev);
- 		ravb_set_delay_mode(ndev);
- 	}
- 
+ 	phy0: ethernet-phy@0 {
 -- 
 2.17.1
 
