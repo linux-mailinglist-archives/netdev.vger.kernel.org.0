@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0A86249691
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:08:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8831249657
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:05:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727889AbgHSHIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 03:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
+        id S1726783AbgHSHFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 03:05:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727042AbgHSG4i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 02:56:38 -0400
+        with ESMTP id S1727817AbgHSG5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 02:57:03 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99364C061344;
-        Tue, 18 Aug 2020 23:56:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E42C061344;
+        Tue, 18 Aug 2020 23:57:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=3H4NansDDN6m4kLuhIk/kp+Z4N3mSn8cpB0zE9ycnQw=; b=FfmYzkf9G6zwFUNNR629I5LzS3
-        sycbpl6XBJNQxWdPFjivtYFvAIE2BLJ2qzBGSbrb4qsZMMfJP9/eHP8S4mQZ2+1Qp/sFoX35RiYzA
-        HkdgOwz29iCkQAeMrmvVDYWraKQlEbIhijWnbLTMYghTv+7s9PA7sbl0esYUqgLYg5nrbhp5tTocC
-        MkluoLqBfAzc4H5hViUIudDFe/lF5vGUx/dU2cLYx7jpBj8d8QnwTRzaMwN5nNPDKwz3V69GXE5aG
-        zl6z181fqk4Jsg3atxLUAO9BbSDDhHAHpg0t5QmSPP39kziJBaZbtnr9s/ut+FwVdfRsInPqqIqLh
-        2U/MY4HQ==;
+        bh=ZtUM/olxUf8C2TvkEPmqhqiLEztY8gyw8OoXm4S66J0=; b=joFN0ww+0aa92xQbCzyMJkP7LD
+        8JSoseHLlahhfiaA1lVSRSPW99kkw+xo4xdI9KQUb6l8fcvQ1JFGDjrE7lNY43skYEvkO6sJBvNuI
+        ovuZ3ghLBiC7cimGa0zz0lEel7wTzq1v5puhSiTWO2cPmzjRRujsGdGv+7If4seWQ/HNzI6MHxhU1
+        4byruJvxXeuiKXvhleriuiiuwda79/w7C/U8FbqJUTO3fTp2Ce0hz4Bob299SMDEONrIlqC/49BCx
+        +BqS2Tp5+L35IkWLeY8UQ1J6OQLxl09Os7Wuzp80LKtW6Hs8573Udi+/spUOj3c0bLw4Uerhc3GyD
+        uPnoXnjw==;
 Received: from [2001:4bb8:198:f3b2:86b6:2277:f429:37a1] (helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k8I1A-0008Nq-7N; Wed, 19 Aug 2020 06:56:16 +0000
+        id 1k8I1C-0008OB-DC; Wed, 19 Aug 2020 06:56:19 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -47,9 +47,9 @@ Cc:     Tom Lendacky <thomas.lendacky@amd.com>, linux-doc@vger.kernel.org,
         netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
         linux-scsi@vger.kernel.org, linux-mm@kvack.org,
         alsa-devel@alsa-project.org
-Subject: [PATCH 10/28] MIPS/jazzdma: decouple from dma-direct
-Date:   Wed, 19 Aug 2020 08:55:37 +0200
-Message-Id: <20200819065555.1802761-11-hch@lst.de>
+Subject: [PATCH 11/28] dma-mapping: add (back) arch_dma_mark_clean for ia64
+Date:   Wed, 19 Aug 2020 08:55:38 +0200
+Message-Id: <20200819065555.1802761-12-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200819065555.1802761-1-hch@lst.de>
 References: <20200819065555.1802761-1-hch@lst.de>
@@ -61,84 +61,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The jazzdma ops implement support for a very basic IOMMU.  Thus we really
-should not use the dma-direct code that takes physical address limits
-into account.  This survived through the great MIPS DMA ops cleanup mostly
-because I was lazy, but now it is time to fully split the implementations.
+Add back a hook to optimize dcache flushing after reading executable
+code using DMA.  This gets ia64 out of the business of pretending to
+be dma incoherent just for this optimization.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/mips/jazz/jazzdma.c | 32 +++++++++++++++++++++-----------
- 1 file changed, 21 insertions(+), 11 deletions(-)
+ arch/ia64/Kconfig               |  3 +--
+ arch/ia64/kernel/dma-mapping.c  | 14 +-------------
+ arch/ia64/mm/init.c             |  3 +--
+ include/linux/dma-direct.h      |  3 +++
+ include/linux/dma-noncoherent.h |  8 ++++++++
+ kernel/dma/Kconfig              |  6 ++++++
+ kernel/dma/direct.c             |  3 +++
+ 7 files changed, 23 insertions(+), 17 deletions(-)
 
-diff --git a/arch/mips/jazz/jazzdma.c b/arch/mips/jazz/jazzdma.c
-index fe40dbed04c1d6..d0b5a2ba2b1a8a 100644
---- a/arch/mips/jazz/jazzdma.c
-+++ b/arch/mips/jazz/jazzdma.c
-@@ -16,7 +16,6 @@
- #include <linux/memblock.h>
- #include <linux/spinlock.h>
- #include <linux/gfp.h>
+diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
+index 5b4ec80bf5863a..513ba0c5d33610 100644
+--- a/arch/ia64/Kconfig
++++ b/arch/ia64/Kconfig
+@@ -8,6 +8,7 @@ menu "Processor type and features"
+ 
+ config IA64
+ 	bool
++	select ARCH_HAS_DMA_MARK_CLEAN
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+ 	select ARCH_MIGHT_HAVE_PC_SERIO
+ 	select ACPI
+@@ -32,8 +33,6 @@ config IA64
+ 	select TTY
+ 	select HAVE_ARCH_TRACEHOOK
+ 	select HAVE_VIRT_CPU_ACCOUNTING
+-	select DMA_NONCOHERENT_MMAP
+-	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select VIRT_TO_BUS
+ 	select GENERIC_IRQ_PROBE
+ 	select GENERIC_PENDING_IRQ if SMP
+diff --git a/arch/ia64/kernel/dma-mapping.c b/arch/ia64/kernel/dma-mapping.c
+index 09ef9ce9988d1f..f640ed6fe1d576 100644
+--- a/arch/ia64/kernel/dma-mapping.c
++++ b/arch/ia64/kernel/dma-mapping.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
 -#include <linux/dma-direct.h>
- #include <linux/dma-noncoherent.h>
- #include <asm/mipsregs.h>
- #include <asm/jazz.h>
-@@ -492,26 +491,38 @@ int vdma_get_enable(int channel)
- static void *jazz_dma_alloc(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
++#include <linux/dma-mapping.h>
+ #include <linux/export.h>
+ 
+ /* Set this to 1 if there is a HW IOMMU in the system */
+@@ -7,15 +7,3 @@ int iommu_detected __read_mostly;
+ 
+ const struct dma_map_ops *dma_ops;
+ EXPORT_SYMBOL(dma_ops);
+-
+-void *arch_dma_alloc(struct device *dev, size_t size,
+-		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+-{
+-	return dma_direct_alloc_pages(dev, size, dma_handle, gfp, attrs);
+-}
+-
+-void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
+-		dma_addr_t dma_addr, unsigned long attrs)
+-{
+-	dma_direct_free_pages(dev, size, cpu_addr, dma_addr, attrs);
+-}
+diff --git a/arch/ia64/mm/init.c b/arch/ia64/mm/init.c
+index 0b3fb4c7af2920..02e5aa08294ee0 100644
+--- a/arch/ia64/mm/init.c
++++ b/arch/ia64/mm/init.c
+@@ -73,8 +73,7 @@ __ia64_sync_icache_dcache (pte_t pte)
+  * DMA can be marked as "clean" so that lazy_mmu_prot_update() doesn't have to
+  * flush them when they get mapped into an executable vm-area.
+  */
+-void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+-		enum dma_data_direction dir)
++void arch_dma_mark_clean(phys_addr_t paddr, size_t size)
  {
-+	struct page *page;
- 	void *ret;
+ 	unsigned long pfn = PHYS_PFN(paddr);
  
--	ret = dma_direct_alloc_pages(dev, size, dma_handle, gfp, attrs);
--	if (!ret)
--		return NULL;
-+	if (attrs & DMA_ATTR_NO_WARN)
-+		gfp |= __GFP_NOWARN;
+diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+index 5a3ce2a2479437..738485b3578062 100644
+--- a/include/linux/dma-direct.h
++++ b/include/linux/dma-direct.h
+@@ -153,6 +153,9 @@ static inline void dma_direct_sync_single_for_cpu(struct device *dev,
  
--	*dma_handle = vdma_alloc(virt_to_phys(ret), size);
--	if (*dma_handle == DMA_MAPPING_ERROR) {
--		dma_direct_free_pages(dev, size, ret, *dma_handle, attrs);
-+	size = PAGE_ALIGN(size);
-+	page = alloc_pages(gfp, get_order(size));
-+	if (!page)
- 		return NULL;
--	}
-+	ret = page_address(page);
-+	*dma_handle = vdma_alloc(virt_to_phys(ret), size);
-+	if (*dma_handle == DMA_MAPPING_ERROR)
-+		goto out_free_pages;
+ 	if (unlikely(is_swiotlb_buffer(paddr)))
+ 		swiotlb_tbl_sync_single(dev, paddr, size, dir, SYNC_FOR_CPU);
 +
-+	if (attrs & DMA_ATTR_NON_CONSISTENT)
-+		return ret;
-+	arch_dma_prep_coherent(page, size);
-+	return (void *)(UNCAC_BASE + __pa(ret));
- 
--	return ret;
-+out_free_pages:
-+	__free_pages(page, get_order(size));
-+	return NULL;
++	if (dir == DMA_FROM_DEVICE)
++		arch_dma_mark_clean(paddr, size);
  }
  
- static void jazz_dma_free(struct device *dev, size_t size, void *vaddr,
- 		dma_addr_t dma_handle, unsigned long attrs)
- {
- 	vdma_free(dma_handle);
--	dma_direct_free_pages(dev, size, vaddr, dma_handle, attrs);
-+	if (!(attrs & DMA_ATTR_NON_CONSISTENT))
-+		vaddr = __va(vaddr - UNCAC_BASE);
-+	__free_pages(virt_to_page(vaddr), get_order(size));
+ static inline dma_addr_t dma_direct_map_page(struct device *dev,
+diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+index ca09a4e07d2d3d..b9bc6c557ea46f 100644
+--- a/include/linux/dma-noncoherent.h
++++ b/include/linux/dma-noncoherent.h
+@@ -108,6 +108,14 @@ static inline void arch_dma_prep_coherent(struct page *page, size_t size)
  }
+ #endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
  
- static dma_addr_t jazz_dma_map_page(struct device *dev, struct page *page,
-@@ -608,7 +619,6 @@ const struct dma_map_ops jazz_dma_ops = {
- 	.sync_single_for_device	= jazz_dma_sync_single_for_device,
- 	.sync_sg_for_cpu	= jazz_dma_sync_sg_for_cpu,
- 	.sync_sg_for_device	= jazz_dma_sync_sg_for_device,
--	.dma_supported		= dma_direct_supported,
- 	.cache_sync		= arch_dma_cache_sync,
- 	.mmap			= dma_common_mmap,
- 	.get_sgtable		= dma_common_get_sgtable,
++#ifdef CONFIG_ARCH_HAS_DMA_MARK_CLEAN
++void arch_dma_mark_clean(phys_addr_t paddr, size_t size);
++#else
++static inline void arch_dma_mark_clean(phys_addr_t paddr, size_t size)
++{
++}
++#endif /* ARCH_HAS_DMA_MARK_CLEAN */
++
+ void *arch_dma_set_uncached(void *addr, size_t size);
+ void arch_dma_clear_uncached(void *addr, size_t size);
+ 
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 847a9d1fa6343d..6cf7f7947ae797 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -43,6 +43,12 @@ config ARCH_HAS_DMA_SET_MASK
+ config ARCH_HAS_DMA_WRITE_COMBINE
+ 	bool
+ 
++#
++# Select if the architectures provides the arch_dma_mark_clean hook
++#
++config ARCH_HAS_DMA_MARK_CLEAN
++	bool
++
+ config DMA_DECLARE_COHERENT
+ 	bool
+ 
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index bb0041e9965975..1123e767f4315f 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -340,6 +340,9 @@ void dma_direct_sync_sg_for_cpu(struct device *dev,
+ 		if (unlikely(is_swiotlb_buffer(paddr)))
+ 			swiotlb_tbl_sync_single(dev, paddr, sg->length, dir,
+ 					SYNC_FOR_CPU);
++
++		if (dir == DMA_FROM_DEVICE)
++			arch_dma_mark_clean(paddr, sg->length);
+ 	}
+ 
+ 	if (!dev_is_dma_coherent(dev))
 -- 
 2.28.0
 
