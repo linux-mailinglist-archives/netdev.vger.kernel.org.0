@@ -2,185 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54B0B24A843
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 23:13:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F38324A84B
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 23:14:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727095AbgHSVN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 17:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
+        id S1727108AbgHSVOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 17:14:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726707AbgHSVNR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 17:13:17 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8BEC061343
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 14:13:16 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id t7so20269861otp.0
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 14:13:16 -0700 (PDT)
+        with ESMTP id S1726729AbgHSVOu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 17:14:50 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F2EC061757
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 14:14:50 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id a6so2154456pjd.1
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 14:14:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XGE8dPFSXYEZY67KuvOacTrjS0cJR2sJ8jZigtxvT7c=;
-        b=mPWQgnUIx5fMgmgXzJ6jrT9sIN00Yf+GClMAKr4ClWAdjAA4w+lviTX3XWr3wm1Goo
-         rQjFG51Cdr4YPxAjK35duJTf30LCb6lQNPlTl84h1Epcxt6XdCsf8986cWbmYtNepgvc
-         3xI2HuhFK4CCHgXDgidlZ8WcN6oJg3gLBiQgcpZJxjBCQwneojRxl8lBHm37DZAkSyAY
-         g9kxWUPJqF9KeU0bVW5EUFWEw20lL33GC/9G3DsQSorao8D9u4hE2yYGbpjgm3r2RjUY
-         gg62Gkv18dQ59EXr8xIM7C8mhKafsKXPDWPqhOLmItPb9PP2bDwfwborj/3f029qfjzf
-         aC+g==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=WtpjoRG99P2WIQ2XdHPRtMjdR4vaEZTnoR9fLjcLVZY=;
+        b=SDdcusZPVnL7MEx7p8HdTS0vmEwS3oWDb1L2qjU26LSHN3MJXZgmRB5MElDnNK3Ej3
+         /BoBWkv3jLkpYcnGwILZQnM5g11lL4aYAwHGG5mv5iI8VKTtEBYHoCi4kQVui9S4bIWC
+         d1ZpY35inMAnnWE2UOgQ7zePnlg42a9F760Y0BgHQiyaEqTSZfcA8x/ptSddcvCnLQDZ
+         MmW/hlhHbdeNSNCs+clg9fBf04FE2q9PQP70YbjyGotJuFSz4a/MF/ZDvEEQ1SEzBGWK
+         GWvoPcXKRh1WeMXp/S2M84QA2C3iPLmorhCE+HJT1FfEFRuuAbt2OaP8cLHzB/CSI3fZ
+         IB9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XGE8dPFSXYEZY67KuvOacTrjS0cJR2sJ8jZigtxvT7c=;
-        b=GsOdP5VTJRZjwLs0VccXJG/d1qNisw7qtJOcmxTViuELOPjSsM5u/HDK+tfJm/mqMv
-         Tl1A/PYMf+iBxbJZFdK1MiCSAGvY5iwt9XEGKFRsuXBCvVKARJFJ+bSEMaShmbz6/TKj
-         /Hf3bqMpnxN/Pb/K93vYtIjJeGBUDEEqMdbnU1nMBNFWtQnK+4qrmu9+qSidPmnAfO3e
-         +H38HG/Fqs9aUk6aUTsAH7+mkJteXsSdp5zn3v0DyxCqmB8H0g3ao/FpB0StqdnyX3FL
-         PNdeOoJcOhhr/3dsSSiuNys6GJpiIVj0aN+DFzrjp+9eEOHHAOvwWVyBmWKviHWqWjXj
-         t7Rg==
-X-Gm-Message-State: AOAM530+URKYvRKwZHcyYEs8kv4u8TUFy7OXRqFvZ06vvTDO6TydGC7O
-        S4rc9wdlN72oBWkb+R1n1rVr4rphzSeUVKlDnsLcFg==
-X-Google-Smtp-Source: ABdhPJxhdrorTIm+ix91I8dYTcsNujAlZfMSdVgeY/HYKUOyGno6SluKmoa8UI5RQOyUlsJyf0LVh3NyFOVKbkbzMl4=
-X-Received: by 2002:a9d:6f8f:: with SMTP id h15mr18983475otq.221.1597871595940;
- Wed, 19 Aug 2020 14:13:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1597833138.git.mchehab+huawei@kernel.org>
-In-Reply-To: <cover.1597833138.git.mchehab+huawei@kernel.org>
-From:   John Stultz <john.stultz@linaro.org>
-Date:   Wed, 19 Aug 2020 14:13:05 -0700
-Message-ID: <CALAqxLVRsPKv-xmxQfBFaBa9XOmSfrFj3w9_zyfzNJk8+Kfjug@mail.gmail.com>
-Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linuxarm@huawei.com, mauro.chehab@huawei.com,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Bogdan Togorean <bogdan.togorean@analog.com>,
-        Liwei Cai <cailiwei@hisilicon.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Xinliang Liu <xinliang.liu@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Wanchun Zheng <zhengwanchun@hisilicon.com>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        Xiubin Zhang <zhangxiubin1@huawei.com>,
-        linux-media <linux-media@vger.kernel.org>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Rob Clark <robdclark@chromium.org>,
-        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Liuyao An <anliuyao@huawei.com>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>, Wei Xu <xuwei5@hisilicon.com>,
-        Rongrong Zou <zourongrong@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Chen Feng <puck.chen@hisilicon.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=WtpjoRG99P2WIQ2XdHPRtMjdR4vaEZTnoR9fLjcLVZY=;
+        b=jgJM+ze0xiWSfNM9IwM/YSRbT+IN6iWUU3n1LikMec+cNrRWdcKd0mGepW1d0teg41
+         EwO/dXe13/KcgXmqY289IIYBxxfjW3N1lzSC2yQKnrhNXWw5IT0cACUftn0sZyXdAFGP
+         Gx0wMUmWm2yQp2WvW55PMmV8PyXMZw03Cw2Bmv0FyS62J1cdKGi6VYzIl+sjzU65gWRD
+         opAXpkycd+j0p0gN9hW5Ex1SGrY4fAYUxc2NkljVFqzhItC+Zrm3rjx3MmZAq1xiZt6G
+         ttilpzkxDhBz6yfVEFms0DO0CxzWqXyekuzoZ4/WemCyG8ChrIbFXglOPcMgBQrmgmA9
+         7z3A==
+X-Gm-Message-State: AOAM5329gbu5GsG52xRkX/8gJJUFnEFBpaAQIbFiMXU4gfAla+1HQQ2g
+        s6hrMXkjEghX2OiYvt/mn5+VszgqZ1c4ylZGNWd/ea55jG1OABcJ6cy2Qgku6zHyom2bv9tyj/q
+        vQdIAXo82AOHgjkhRuXPIGX1MLD4b+o0cSm/Vf0mwzCRXt4jyhu2+dVvUi5Xqdw==
+X-Google-Smtp-Source: ABdhPJxOjZ/Oc4R2du7afMPya5A2m3zyaAo7NBY+CHmfrvF1gyeztFxxlCnqCMvo3GZ1mKQNd1Eb3dRCiCQ=
+X-Received: by 2002:a05:6a00:15cb:: with SMTP id o11mr20520199pfu.263.1597871689265;
+ Wed, 19 Aug 2020 14:14:49 -0700 (PDT)
+Date:   Wed, 19 Aug 2020 14:13:54 -0700
+Message-Id: <20200819211354.2049295-1-weiwan@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.297.g1956fa8f8d-goog
+Subject: [PATCH iproute2-next v3] iproute2: ss: add support to expose various
+ inet sockopts
+From:   Wei Wang <weiwan@google.com>
+To:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Mahesh Bandewar <maheshb@google.com>,
+        Roman Mashak <mrv@mojatatu.com>, Wei Wang <weiwan@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 19, 2020 at 4:46 AM Mauro Carvalho Chehab
-<mchehab+huawei@kernel.org> wrote:
-> Yet, I'm submitting it via staging due to the following reasons:
->
-> - It depends on the LDO3 power supply, which is provided by
->   a regulator driver that it is currently on staging;
-> - Due to legal reasons, I need to preserve the authorship of
->   each one responsbile for each patch. So, I need to start from
->   the original patch from Kernel 4.4;
-> - There are still some problems I need to figure out how to solve:
->    - The adv7535 can't get EDID data. Maybe it is a timing issue,
->      but it requires more research to be sure about how to solve it;
+This commit adds support to expose the following inet socket options:
+-- recverr
+-- is_icsk
+-- freebind
+-- hdrincl
+-- mc_loop
+-- transparent
+-- mc_all
+-- nodefrag
+-- bind_address_no_port
+-- recverr_rfc4884
+-- defer_connect
+with the option --inet-sockopt. The individual option is only shown
+when set.
 
-I've seen this on the HiKey960 as well. There is a patch to the
-adv7533 driver I have to add a mdelay that seems to consistently
-resolve the timing problem.  At some point I mentioned it to one of
-the maintainers who seems open to having it added, but it seemed silly
-to submit it until there was a upstream driver that needed such a
-change.  So I think that patch can be submitted as a follow on to this
-(hopefully cleaned up) series.
+Signed-off-by: Wei Wang <weiwan@google.com>
+---
+v1->v2:
+- Change the output to only display sockopts that are set.
 
->    - The driver only accept resolutions on a defined list, as there's
->      a known bug that this driver may have troubles with random
->      resolutions. Probably due to a bug at the pixel clock settings;
+v2->v3:
+- Add manpage modification
 
-So, yes, the SoC clks can't generate proper signals for HDMI
-frequencies (apparently it's not an issue for panels). There is a
-fixed set that we can get "close enough" that most monitors will work,
-but its always a bit iffy (some monitors are strict in what they
-take).
+ include/uapi/linux/inet_diag.h | 18 ++++++++++++++
+ man/man8/ss.8                  |  3 +++
+ misc/ss.c                      | 43 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 64 insertions(+)
 
-On the kirin driver, we were able to do a calculation to figure out if
-the generated frequency would be close enough:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/gpu/drm/hisilicon/kirin/dw_drm_dsi.c#n615
+diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
+index cd83b4f8..ed1c3153 100644
+--- a/include/uapi/linux/inet_diag.h
++++ b/include/uapi/linux/inet_diag.h
+@@ -160,6 +160,7 @@ enum {
+ 	INET_DIAG_ULP_INFO,
+ 	INET_DIAG_SK_BPF_STORAGES,
+ 	INET_DIAG_CGROUP_ID,
++	INET_DIAG_SOCKOPT,
+ 	__INET_DIAG_MAX,
+ };
+ 
+@@ -183,6 +184,23 @@ struct inet_diag_meminfo {
+ 	__u32	idiag_tmem;
+ };
+ 
++/* INET_DIAG_SOCKOPT */
++
++struct inet_diag_sockopt {
++	__u8	recverr:1,
++		is_icsk:1,
++		freebind:1,
++		hdrincl:1,
++		mc_loop:1,
++		transparent:1,
++		mc_all:1,
++		nodefrag:1;
++	__u8	bind_address_no_port:1,
++		recverr_rfc4884:1,
++		defer_connect:1,
++		unused:5;
++};
++
+ /* INET_DIAG_VEGASINFO */
+ 
+ struct tcpvegas_info {
+diff --git a/man/man8/ss.8 b/man/man8/ss.8
+index 3b2559ff..839bab38 100644
+--- a/man/man8/ss.8
++++ b/man/man8/ss.8
+@@ -379,6 +379,9 @@ Display vsock sockets (alias for -f vsock).
+ .B \-\-xdp
+ Display XDP sockets (alias for -f xdp).
+ .TP
++.B \-\-inet-sockopt
++Display inet socket options.
++.TP
+ .B \-f FAMILY, \-\-family=FAMILY
+ Display sockets of type FAMILY.  Currently the following families are
+ supported: unix, inet, inet6, link, netlink, vsock, xdp.
+diff --git a/misc/ss.c b/misc/ss.c
+index e5565725..458e381f 100644
+--- a/misc/ss.c
++++ b/misc/ss.c
+@@ -114,6 +114,7 @@ static int sctp_ino;
+ static int show_tipcinfo;
+ static int show_tos;
+ static int show_cgroup;
++static int show_inet_sockopt;
+ int oneline;
+ 
+ enum col_id {
+@@ -3333,6 +3334,41 @@ static int inet_show_sock(struct nlmsghdr *nlh,
+ 			out(" cgroup:%s", cg_id_to_path(rta_getattr_u64(tb[INET_DIAG_CGROUP_ID])));
+ 	}
+ 
++	if (show_inet_sockopt) {
++		if (tb[INET_DIAG_SOCKOPT] && RTA_PAYLOAD(tb[INET_DIAG_SOCKOPT]) >=
++		    sizeof(struct inet_diag_sockopt)) {
++			const struct inet_diag_sockopt *sockopt =
++					RTA_DATA(tb[INET_DIAG_SOCKOPT]);
++			if (!oneline)
++				out("\n\tinet-sockopt: (");
++			else
++				out(" inet-sockopt: (");
++			if (sockopt->recverr)
++				out(" recverr");
++			if (sockopt->is_icsk)
++				out(" is_icsk");
++			if (sockopt->freebind)
++				out(" freebind");
++			if (sockopt->hdrincl)
++				out(" hdrincl");
++			if (sockopt->mc_loop)
++				out(" mc_loop");
++			if (sockopt->transparent)
++				out(" transparent");
++			if (sockopt->mc_all)
++				out(" mc_all");
++			if (sockopt->nodefrag)
++				out(" nodefrag");
++			if (sockopt->bind_address_no_port)
++				out(" bind_addr_no_port");
++			if (sockopt->recverr_rfc4884)
++				out(" recverr_rfc4884");
++			if (sockopt->defer_connect)
++				out(" defer_connect");
++			out(")");
++		}
++	}
++
+ 	if (show_mem || (show_tcpinfo && s->type != IPPROTO_UDP)) {
+ 		if (!oneline)
+ 			out("\n\t");
+@@ -5210,6 +5246,7 @@ static void _usage(FILE *dest)
+ "   -K, --kill          forcibly close sockets, display what was closed\n"
+ "   -H, --no-header     Suppress header line\n"
+ "   -O, --oneline       socket's data printed on a single line\n"
++"       --inet-sockopt  show various inet socket options\n"
+ "\n"
+ "   -A, --query=QUERY, --socket=QUERY\n"
+ "       QUERY := {all|inet|tcp|mptcp|udp|raw|unix|unix_dgram|unix_stream|unix_seqpacket|packet|netlink|vsock_stream|vsock_dgram|tipc}[,QUERY]\n"
+@@ -5299,6 +5336,8 @@ static int scan_state(const char *state)
+ 
+ #define OPT_CGROUP 261
+ 
++#define OPT_INET_SOCKOPT 262
++
+ static const struct option long_opts[] = {
+ 	{ "numeric", 0, 0, 'n' },
+ 	{ "resolve", 0, 0, 'r' },
+@@ -5341,6 +5380,7 @@ static const struct option long_opts[] = {
+ 	{ "xdp", 0, 0, OPT_XDPSOCK},
+ 	{ "mptcp", 0, 0, 'M' },
+ 	{ "oneline", 0, 0, 'O' },
++	{ "inet-sockopt", 0, 0, OPT_INET_SOCKOPT },
+ 	{ 0 }
+ 
+ };
+@@ -5539,6 +5579,9 @@ int main(int argc, char *argv[])
+ 		case 'O':
+ 			oneline = 1;
+ 			break;
++		case OPT_INET_SOCKOPT:
++			show_inet_sockopt = 1;
++			break;
+ 		case 'h':
+ 			help();
+ 		case '?':
+-- 
+2.28.0.297.g1956fa8f8d-goog
 
-I suspect we could do something similar for the hikey960/70, but I've
-not really had time to dig in deeply there.
-
-Personally, I don't see the allow-list as a problematic short term
-solution, and again, not sure its worth pushing to staging for.
-
->    - Sometimes (at least with 1080p), it generates LDI underflow
->      errors, which in turn causes the DRM to stop working. That
->      happens for example when using gdm on Wayland and
->      gnome on X11;
-
-Interestingly, I've not seen this on HiKey960 (at least with
-Android/Surfaceflinger). The original HiKey board does have the
-trouble where at 1080p the screen sometimes comes up horizontally
-offset due to the LDI underflow, but the patches to address it have
-been worse then the problem, so we reverted those.
-
->    - Probably related to the previous issue, when the monitor
->      suspends due to DPMS, it doesn't return back to life.
->
-
-I don't believe I see this on HiKey960. But if it's the LDI issue on
-the 970 that may explain it.
-
-
-> So, IMO, the best is to keep it on staging for a while, until those
-> remaining bugs gets solved.
-
-I'm not sure I see all of these as compelling for pushing it in via
-staging. And I suspect in the process of submitting the patches for
-review folks may find the cause of some of the problems you list here.
-
-
-> I added this series, together with the regulator driver and
-> a few other patches (including a hack to fix a Kernel 5.8
-> regression at WiFi ) at:
->
->         https://gitlab.freedesktop.org/mchehab_kernel/hikey-970/-/commits/master
->
->
-> Chen Feng (1):
->   staging: hikey9xx: Add hisilicon DRM driver for hikey960/970
->
-> John Stultz (1):
->   staging: hikey9xx/gpu: port it to work with Kernel v4.9
-
-Nit: This is a display driver and has little to do with the GPU (other
-then it will eventually live in drivers/gpu/drm/...), so I might
-suggest using more conventional subject prefix,  "drm: hisilicon:"
-
-thanks
--john
