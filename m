@@ -2,168 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09132249FEC
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C984524A0AC
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:53:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728335AbgHSNaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 09:30:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41806 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726752AbgHSNaT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Aug 2020 09:30:19 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 42672205CB;
-        Wed, 19 Aug 2020 13:30:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597843817;
-        bh=c/KIC1N+AThogXaPD4LYqtNhwTUgeFy5H658qfX3o6Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ybzJlclj7PKty/unc+4cb9Wd4WHHmVOSQ6smTxURwMsk2udx7+cwI/ct/VWqBRcaK
-         TPHq+CA3SbHrkQu/Yr3Og03gF7ak5urBzCx3tlqFTNnNw+aON11BMaSWgLTxyquPrd
-         2nUrrz+cKds/3opgas5LKByGC0micQy3OPDbdyF4=
-Date:   Wed, 19 Aug 2020 15:30:39 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     ulf.hansson@linaro.org, jassisinghbrar@gmail.com,
-        s.hauer@pengutronix.de, manohar.vanga@gmail.com, airlied@linux.ie,
-        linux-hyperv@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        id S1728208AbgHSNxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 09:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727773AbgHSNxj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 09:53:39 -0400
+X-Greylist: delayed 577 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 19 Aug 2020 06:53:38 PDT
+Received: from leibniz.telenet-ops.be (leibniz.telenet-ops.be [IPv6:2a02:1800:110:4::f00:d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8969AC061757
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 06:53:38 -0700 (PDT)
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by leibniz.telenet-ops.be (Postfix) with ESMTPS id 4BWpsQ4ww5zMqcr8
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 15:43:54 +0200 (CEST)
+Received: from ramsan ([84.195.186.194])
+        by baptiste.telenet-ops.be with bizsmtp
+        id HRjl2300T4C55Sk01RjlZi; Wed, 19 Aug 2020 15:43:54 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1k8ONV-0003Dm-Bo; Wed, 19 Aug 2020 15:43:45 +0200
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1k8ONV-0007FR-8G; Wed, 19 Aug 2020 15:43:45 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Magnus Damm <magnus.damm@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        linux1394-devel@lists.sourceforge.net,
-        anton.ivanov@cambridgegreys.com, devel@driverdev.osuosl.org,
-        linux-s390@vger.kernel.org, maximlevitsky@gmail.com,
-        richard@nod.at, deller@gmx.de,
-        linux-atm-general@lists.sourceforge.net, 3chas3@gmail.com,
-        linux-input@vger.kernel.org, kuba@kernel.org,
-        mporter@kernel.crashing.org, jdike@addtoit.com,
-        Kees Cook <keescook@chromium.org>, oakad@yahoo.com,
-        intel-gfx@lists.freedesktop.org, linux-um@lists.infradead.org,
-        linux-block@vger.kernel.org, broonie@kernel.org,
-        openipmi-developer@lists.sourceforge.net, mitch@sfgoth.com,
-        linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
-        netdev@vger.kernel.org, martyn@welchs.me.uk,
-        dmitry.torokhov@gmail.com, linux-mmc@vger.kernel.org,
-        Allen Pais <allen.lkml@gmail.com>, linux-spi@vger.kernel.org,
-        alex.bou9@gmail.com, Allen Pais <allen.cryptic@gmail.com>,
-        stefanr@s5r6.in-berlin.de, daniel@ffwll.ch, sre@kernel.org,
-        linux-ntb@googlegroups.com,
-        Romain Perier <romain.perier@gmail.com>, shawnguo@kernel.org,
-        davem@davemloft.net
-Subject: Re: [PATCH] block: convert tasklets to use new tasklet_setup() API
-Message-ID: <20200819133039.GA3192753@kroah.com>
-References: <20200817091617.28119-2-allen.cryptic@gmail.com>
- <b5508ca4-0641-7265-2939-5f03cbfab2e2@kernel.dk>
- <202008171228.29E6B3BB@keescook>
- <161b75f1-4e88-dcdf-42e8-b22504d7525c@kernel.dk>
- <202008171246.80287CDCA@keescook>
- <df645c06-c30b-eafa-4d23-826b84f2ff48@kernel.dk>
- <1597780833.3978.3.camel@HansenPartnership.com>
- <f3312928-430c-25f3-7112-76f2754df080@kernel.dk>
- <20200819131158.GA2591006@kroah.com>
- <4f5a225d-460f-978f-e3cf-3f505140a515@kernel.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4f5a225d-460f-978f-e3cf-3f505140a515@kernel.dk>
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v3 0/7] net/ravb: Add support for explicit internal clock delay configuration
+Date:   Wed, 19 Aug 2020 15:43:37 +0200
+Message-Id: <20200819134344.27813-1-geert+renesas@glider.be>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 19, 2020 at 07:17:19AM -0600, Jens Axboe wrote:
-> On 8/19/20 6:11 AM, Greg KH wrote:
-> > On Wed, Aug 19, 2020 at 07:00:53AM -0600, Jens Axboe wrote:
-> >> On 8/18/20 1:00 PM, James Bottomley wrote:
-> >>> On Mon, 2020-08-17 at 13:02 -0700, Jens Axboe wrote:
-> >>>> On 8/17/20 12:48 PM, Kees Cook wrote:
-> >>>>> On Mon, Aug 17, 2020 at 12:44:34PM -0700, Jens Axboe wrote:
-> >>>>>> On 8/17/20 12:29 PM, Kees Cook wrote:
-> >>>>>>> On Mon, Aug 17, 2020 at 06:56:47AM -0700, Jens Axboe wrote:
-> >>>>>>>> On 8/17/20 2:15 AM, Allen Pais wrote:
-> >>>>>>>>> From: Allen Pais <allen.lkml@gmail.com>
-> >>>>>>>>>
-> >>>>>>>>> In preparation for unconditionally passing the
-> >>>>>>>>> struct tasklet_struct pointer to all tasklet
-> >>>>>>>>> callbacks, switch to using the new tasklet_setup()
-> >>>>>>>>> and from_tasklet() to pass the tasklet pointer explicitly.
-> >>>>>>>>
-> >>>>>>>> Who came up with the idea to add a macro 'from_tasklet' that
-> >>>>>>>> is just container_of? container_of in the code would be
-> >>>>>>>> _much_ more readable, and not leave anyone guessing wtf
-> >>>>>>>> from_tasklet is doing.
-> >>>>>>>>
-> >>>>>>>> I'd fix that up now before everything else goes in...
-> >>>>>>>
-> >>>>>>> As I mentioned in the other thread, I think this makes things
-> >>>>>>> much more readable. It's the same thing that the timer_struct
-> >>>>>>> conversion did (added a container_of wrapper) to avoid the
-> >>>>>>> ever-repeating use of typeof(), long lines, etc.
-> >>>>>>
-> >>>>>> But then it should use a generic name, instead of each sub-system 
-> >>>>>> using some random name that makes people look up exactly what it
-> >>>>>> does. I'm not huge fan of the container_of() redundancy, but
-> >>>>>> adding private variants of this doesn't seem like the best way
-> >>>>>> forward. Let's have a generic helper that does this, and use it
-> >>>>>> everywhere.
-> >>>>>
-> >>>>> I'm open to suggestions, but as things stand, these kinds of
-> >>>>> treewide
-> >>>>
-> >>>> On naming? Implementation is just as it stands, from_tasklet() is
-> >>>> totally generic which is why I objected to it. from_member()? Not
-> >>>> great with naming... But I can see this going further and then we'll
-> >>>> suddenly have tons of these. It's not good for readability.
-> >>>
-> >>> Since both threads seem to have petered out, let me suggest in
-> >>> kernel.h:
-> >>>
-> >>> #define cast_out(ptr, container, member) \
-> >>> 	container_of(ptr, typeof(*container), member)
-> >>>
-> >>> It does what you want, the argument order is the same as container_of
-> >>> with the only difference being you name the containing structure
-> >>> instead of having to specify its type.
-> >>
-> >> Not to incessantly bike shed on the naming, but I don't like cast_out,
-> >> it's not very descriptive. And it has connotations of getting rid of
-> >> something, which isn't really true.
-> > 
-> > I agree, if we want to bike shed, I don't like this color either.
-> > 
-> >> FWIW, I like the from_ part of the original naming, as it has some clues
-> >> as to what is being done here. Why not just from_container()? That
-> >> should immediately tell people what it does without having to look up
-> >> the implementation, even before this becomes a part of the accepted
-> >> coding norm.
-> > 
-> > Why are people hating on the well-known and used container_of()?
-> > 
-> > If you really hate to type the type and want a new macro, what about
-> > 'container_from()'?  (noun/verb is nicer to sort symbols by...)
-> > 
-> > But really, why is this even needed?
-> 
-> container_from() or from_container(), either works just fine for me
-> in terms of naming.
-> 
-> I think people are hating on it because it makes for _really_ long
-> lines, and it's arguably cleaner/simpler to just pass in the pointer
-> type instead. Then you end up with lines like this:
-> 
-> 	struct request_queue *q =                                               
-> 		container_of(work, struct request_queue, requeue_work.work);  
-> 
-> But I'm not the one that started this addition of from_tasklet(), my
-> objection was adding a private macro for something that should be
-> generic functionality.
+	Hi all,
 
-Agreed.
+Some Renesas EtherAVB variants support internal clock delay
+configuration, which can add larger delays than the delays that are
+typically supported by the PHY (using an "rgmii-*id" PHY mode, and/or
+"[rt]xc-skew-ps" properties).
 
-> Hence I think we either need to provide that, or
-> tell the from_tasklet() folks that they should just use container_of().
+Historically, the EtherAVB driver configured these delays based on the
+"rgmii-*id" PHY mode.  This caused issues with PHY drivers that
+implement PHY internal delays properly[1].  Hence a backwards-compatible
+workaround was added by masking the PHY mode[2].
 
-Also agreed, thanks.
+This patch series implements the next step of the plan outlined in [3],
+and adds proper support for explicit configuration of the MAC internal
+clock delays using new "[rt]x-internal-delay-ps" properties.  If none of
+these properties is present, the driver falls back to the old handling.
 
-greg k-h
+This can be considered the MAC counterpart of commit 9150069bf5fc0e86
+("dt-bindings: net: Add tx and rx internal delays"), which applies to
+the PHY.  Note that unlike commit 92252eec913b2dd5 ("net: phy: Add a
+helper to return the index for of the internal delay"), no helpers are
+provided to parse the DT properties, as so far there is a single user
+only, which supports only zero or a single fixed value.  Of course such
+helpers can be added later, when the need arises, or when deemed useful
+otherwise.
+
+This series consists of 4 parts:
+  1. DT binding updates documenting the new properties, for both the
+     generic ethernet-controller and the EtherAVB-specific bindings,
+     => intended to be merged through net-next.
+
+  2. Conversion to json-schema of the Renesas EtherAVB DT bindings.
+     Technically, the conversion is independent of all of the above.
+     I included it in this series, as it shows how all sanity checks on
+     "[rt]x-internal-delay-ps" values are implemented as DT binding
+     checks.
+     => intended to be merged through net-next, or devicetree (ignoring
+        any conflict due to 1.).
+
+  3. EtherAVB driver update implementing support for the new properties.
+     => intended to be merged through net-next.
+
+  4. DT updates, one for R-Car Gen3 and RZ/G2 SoC families each.
+     => intended to be merged through renesas-devel and arm-soc, but
+	only _after_ 3. has hit upstream.
+
+Changes compared to v2[4]:
+  - Update recently added board DTS files,
+  - Add Reviewed-by.
+
+Changes compared to v1[5]:
+  - Added "[PATCH 1/7] dt-bindings: net: ethernet-controller: Add
+    internal delay properties",
+  - Replace "renesas,[rt]xc-delay-ps" by "[rt]x-internal-delay-ps",
+  - Incorporated EtherAVB DT binding conversion to json-schema,
+  - Add Reviewed-by.
+
+Impacted, tested:
+  - Salvator-X(S) with R-Car H3 ES1.0 and ES2.0, M3-W, and M3-N.
+
+Not impacted, tested:
+  - Ebisu with R-Car E3.
+
+Impacted, not tested:
+  - Salvator-X(S) with other SoC variants,
+  - ULCB with R-Car H3/M3-W/M3-N variants,
+  - V3MSK and Eagle with R-Car V3M,
+  - Draak with R-Car V3H,
+  - HiHope RZ/G2[MN] with RZ/G2M or RZ/G2N,
+  - Beacon EmbeddedWorks RZ/G2M Development Kit.
+
+To ease testing, I have pushed this series to the
+topic/ravb-internal-clock-delays-v3 branch of my renesas-drivers
+repository at
+git://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-drivers.git.
+
+Thanks for your comments!
+
+References:
+  [1] Commit bcf3440c6dd78bfe ("net: phy: micrel: add phy-mode support
+      for the KSZ9031 PHY")
+  [2] Commit 9b23203c32ee02cd ("ravb: Mask PHY mode to avoid inserting
+      delays twice").
+      https://lore.kernel.org/r/20200529122540.31368-1-geert+renesas@glider.be/
+  [3] https://lore.kernel.org/r/CAMuHMdU+MR-2tr3-pH55G0GqPG9HwH3XUd=8HZxprFDMGQeWUw@mail.gmail.com/
+  [4] https://lore.kernel.org/linux-devicetree/20200706143529.18306-1-geert+renesas@glider.be/
+  [5] https://lore.kernel.org/linux-devicetree/20200619191554.24942-1-geert+renesas@glider.be/
+
+Geert Uytterhoeven (7):
+  dt-bindings: net: ethernet-controller: Add internal delay properties
+  dt-bindings: net: renesas,ravb: Document internal clock delay
+    properties
+  dt-bindings: net: renesas,etheravb: Convert to json-schema
+  ravb: Split delay handling in parsing and applying
+  ravb: Add support for explicit internal clock delay configuration
+  arm64: dts: renesas: rcar-gen3: Convert EtherAVB to explicit delay
+    handling
+  arm64: dts: renesas: rzg2: Convert EtherAVB to explicit delay handling
+
+ .../bindings/net/ethernet-controller.yaml     |  14 +
+ .../bindings/net/renesas,etheravb.yaml        | 261 ++++++++++++++++++
+ .../devicetree/bindings/net/renesas,ravb.txt  | 134 ---------
+ .../boot/dts/renesas/beacon-renesom-som.dtsi  |   3 +-
+ .../boot/dts/renesas/hihope-rzg2-ex.dtsi      |   2 +-
+ arch/arm64/boot/dts/renesas/r8a774a1.dtsi     |   2 +
+ arch/arm64/boot/dts/renesas/r8a774b1.dtsi     |   2 +
+ arch/arm64/boot/dts/renesas/r8a774c0.dtsi     |   1 +
+ arch/arm64/boot/dts/renesas/r8a774e1.dtsi     |   2 +
+ arch/arm64/boot/dts/renesas/r8a77951.dtsi     |   2 +
+ arch/arm64/boot/dts/renesas/r8a77960.dtsi     |   2 +
+ arch/arm64/boot/dts/renesas/r8a77961.dtsi     |   2 +
+ arch/arm64/boot/dts/renesas/r8a77965.dtsi     |   2 +
+ .../arm64/boot/dts/renesas/r8a77970-eagle.dts |   3 +-
+ .../arm64/boot/dts/renesas/r8a77970-v3msk.dts |   3 +-
+ arch/arm64/boot/dts/renesas/r8a77970.dtsi     |   2 +
+ arch/arm64/boot/dts/renesas/r8a77980.dtsi     |   2 +
+ arch/arm64/boot/dts/renesas/r8a77990.dtsi     |   1 +
+ arch/arm64/boot/dts/renesas/r8a77995.dtsi     |   1 +
+ .../boot/dts/renesas/salvator-common.dtsi     |   2 +-
+ arch/arm64/boot/dts/renesas/ulcb.dtsi         |   2 +-
+ drivers/net/ethernet/renesas/ravb.h           |   5 +-
+ drivers/net/ethernet/renesas/ravb_main.c      |  53 +++-
+ 23 files changed, 350 insertions(+), 153 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/renesas,ravb.txt
+
+-- 
+2.17.1
+
