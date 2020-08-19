@@ -2,136 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ABCF249815
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 10:17:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7217D249825
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 10:20:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726466AbgHSIRM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 04:17:12 -0400
-Received: from mx20.baidu.com ([111.202.115.85]:41664 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725275AbgHSIRL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Aug 2020 04:17:11 -0400
-Received: from BJHW-Mail-Ex16.internal.baidu.com (unknown [10.127.64.39])
-        by Forcepoint Email with ESMTPS id A7CE815747130467E385;
-        Wed, 19 Aug 2020 16:17:02 +0800 (CST)
-Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
- BJHW-Mail-Ex16.internal.baidu.com (10.127.64.39) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1979.3; Wed, 19 Aug 2020 16:17:02 +0800
-Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
- BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
- 15.01.1979.003; Wed, 19 Aug 2020 16:17:02 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-CC:     Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Piotr <piotr.raczynski@intel.com>,
-        Maciej <maciej.machnikowski@intel.com>
-Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IFtJbnRlbC13aXJlZC1sYW5dIFtQQVRDSCAwLzJd?=
- =?utf-8?Q?_intel/xdp_fixes_for_fliping_rx_buffer?=
-Thread-Topic: =?utf-8?B?562U5aSNOiBbSW50ZWwtd2lyZWQtbGFuXSBbUEFUQ0ggMC8yXSBpbnRlbC94?=
- =?utf-8?Q?dp_fixes_for_fliping_rx_buffer?=
-Thread-Index: AQHWdWiRooPzdFWc8kC0ZfZ0v0ywr6k+oKRA///W0QCAAJeXUA==
-Date:   Wed, 19 Aug 2020 08:17:02 +0000
-Message-ID: <c3695fc71ca140d08a795bbd32d8522f@baidu.com>
-References: <1594967062-20674-1-git-send-email-lirongqing@baidu.com>
- <CAJ+HfNi2B+2KYP9A7yCfFUhfUBd=sFPeuGbNZMjhNSdq3GEpMg@mail.gmail.com>
- <4268316b200049d58b9973ec4dc4725c@baidu.com>
- <83e45ec2-1c66-59f6-e817-d4c523879007@intel.com>
-In-Reply-To: <83e45ec2-1c66-59f6-e817-d4c523879007@intel.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
+        id S1726956AbgHSIUF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Aug 2020 04:20:05 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:32302 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725275AbgHSIUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 04:20:04 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-287-LmcQtodmMOC5j6gVLqFzVg-1; Wed, 19 Aug 2020 09:18:50 +0100
+X-MC-Unique: LmcQtodmMOC5j6gVLqFzVg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 19 Aug 2020 09:18:50 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 19 Aug 2020 09:18:50 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
+CC:     "'linux-sctp@vger.kernel.org'" <linux-sctp@vger.kernel.org>,
+        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
+Subject: RE: Use of genradix in sctp
+Thread-Topic: Use of genradix in sctp
+Thread-Index: AdZ1ckZAY2qe63tNS/O9MsxVdvHiSAALTAcAAANIG8A=
+Date:   Wed, 19 Aug 2020 08:18:50 +0000
+Message-ID: <357ded60999a4957addb766a29431ad7@AcuMS.aculab.com>
+References: <2ffb7752d3e8403ebb220e0a5e2cf3cd@AcuMS.aculab.com>
+ <20200818213800.GJ906397@localhost.localdomain>
+In-Reply-To: <20200818213800.GJ906397@localhost.localdomain>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.198.8]
-x-baidu-bdmsfe-datecheck: 1_BJHW-Mail-Ex16_2020-08-19 16:17:02:415
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0.002
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IEJqw7ZybiBUw7ZwZWwg
-W21haWx0bzpiam9ybi50b3BlbEBpbnRlbC5jb21dDQo+IOWPkemAgeaXtumXtDogMjAyMOW5tDjm
-nIgxOeaXpSAxNDo0NQ0KPiDmlLbku7bkuro6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1
-LmNvbT47IEJqw7ZybiBUw7ZwZWwNCj4gPGJqb3JuLnRvcGVsQGdtYWlsLmNvbT4NCj4g5oqE6YCB
-OiBOZXRkZXYgPG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc+OyBpbnRlbC13aXJlZC1sYW4NCj4gPGlu
-dGVsLXdpcmVkLWxhbkBsaXN0cy5vc3Vvc2wub3JnPjsgS2FybHNzb24sIE1hZ251cw0KPiA8bWFn
-bnVzLmthcmxzc29uQGludGVsLmNvbT47IGJwZiA8YnBmQHZnZXIua2VybmVsLm9yZz47IE1hY2ll
-aiBGaWphbGtvd3NraQ0KPiA8bWFjaWVqLmZpamFsa293c2tpQGludGVsLmNvbT47IFBpb3RyIDxw
-aW90ci5yYWN6eW5za2lAaW50ZWwuY29tPjsgTWFjaWVqDQo+IDxtYWNpZWoubWFjaG5pa293c2tp
-QGludGVsLmNvbT4NCj4g5Li76aKYOiBSZTog562U5aSNOiBbSW50ZWwtd2lyZWQtbGFuXSBbUEFU
-Q0ggMC8yXSBpbnRlbC94ZHAgZml4ZXMgZm9yIGZsaXBpbmcgcnggYnVmZmVyDQo+IA0KPiBPbiAy
-MDIwLTA4LTE5IDAzOjM3LCBMaSxSb25ncWluZyB3cm90ZToNCj4gWy4uLl0NCj4gID4gSGk6DQo+
-ICA+DQo+ICA+IFRoYW5rcyBmb3IgeW91ciBleHBsYW5hdGlvbi4NCj4gID4NCj4gID4gQnV0IHdl
-IGNhbiByZXByb2R1Y2UgdGhpcyBidWcNCj4gID4NCj4gID4gV2UgdXNlIGVicGYgdG8gcmVkaXJl
-Y3Qgb25seS1WeGxhbiBwYWNrZXRzIHRvIG5vbi16ZXJvY29weSBBRl9YRFAsIEZpcnN0IHdlDQo+
-IHNlZSBwYW5pYyBvbiB0Y3Agc3RhY2ssIGluIHRjcF9jb2xsYXBzZTogQlVHX09OKG9mZnNldCA8
-IDApOyBpdCBpcyB2ZXJ5IGhhcmQgdG8NCj4gcmVwcm9kdWNlLg0KPiAgPg0KPiAgPiBUaGVuIHdl
-IHVzZSB0aGUgc2NwIHRvIGRvIHRlc3QsIGFuZCBoYXMgbG90cyBvZiB2eGxhbiBwYWNrZXQgYXQg
-dGhlIHNhbWUNCj4gdGltZSwgc2NwIHdpbGwgYmUgYnJva2VuIGZyZXF1ZW50bHkuDQo+ICA+DQo+
-IA0KPiBPayEgSnVzdCBzbyB0aGF0IEknbSBjZXJ0YWluIG9mIHlvdXIgc2V0dXAuIFlvdSByZWNl
-aXZlIHBhY2tldHMgdG8gYW4gaTQwZSBuZXRkZXYNCj4gd2hlcmUgdGhlcmUncyBhbiBYRFAgcHJv
-Z3JhbS4gVGhlIHByb2dyYW0gZG9lcyBYRFBfUEFTUyBvciBYRFBfUkVESVJFQ1QNCj4gdG8gZS5n
-LiBkZXZtYXAgZm9yIG5vbi12eGxhbiBwYWNrZXRzLiBIb3dldmVyLCB2eGxhbiBwYWNrZXRzIGFy
-ZSByZWRpcmVjdGVkIHRvDQo+IEFGX1hEUCBzb2NrZXQocykgaW4gKmNvcHktbW9kZSouIEFtIEkg
-dW5kZXJzdGFuZGluZyB0aGF0IGNvcnJlY3Q/DQo+IA0KU2ltaWxhciBhcyB5b3VyIGRlc2NyaXB0
-aW9uLCANCg0KYnV0IHRoZSB4ZHAgcHJvZ3JhbSBvbmx5IHJlZGlyZWN0cyB2eGxhbiBwYWNrZXRz
-IHRvIGFmX3hkcCBzb2NrZXQsIG90aGVyIHBhY2tldHMgd2lsbCBnbyB0byBMaW51eCBrZXJuZWwg
-bmV0d29ya2luZyBzdGFjaywgbGlrZSBzY3Avc3NoIHBhY2tldHMNCg0KDQo+IEknbSBhc3N1bWlu
-ZyB0aGlzIGlzIGFuIHg4Ni02NCB3aXRoIDRrIHBhZ2Ugc2l6ZSwgcmlnaHQ/IDotKSBUaGUgcGFn
-ZSBmbGlwcGluZyBpcyBhDQo+IGJpdCBkaWZmZXJlbnQgaWYgdGhlIFBBR0VfU0laRSBpcyBub3Qg
-NGsuDQo+IA0KDQpXZSB1c2UgNGsgcGFnZSBzaXplLCBwYWdlIGZsaXBwaW5nIGlzIDRrLCB3ZSBk
-aWQgbm90IGNoYW5nZSB0aGUgaTQwZSBkcml2ZXJzLCA0LjE5IHN0YWJsZSBrZXJuZWwNCg0KPiAg
-PiBXaXRoIHRoaXMgZml4ZXMsIHNjcCBoYXMgbm90IGJlZW4gYnJva2VuIGFnYWluLCBhbmQga2Vy
-bmVsIGlzIG5vdCBwYW5pYw0KPiBhZ2FpbiAgPg0KPiANCj4gTGV0J3MgZGlnIGludG8geW91ciBz
-Y2VuYXJpby4NCj4gDQo+IEFyZSB5b3Ugc2F5aW5nIHRoZSBmb2xsb3dpbmc6DQo+IA0KPiBQYWdl
-IEE6DQo+ICstLS0tLS0tLS0tLS0NCj4gfCAiZmlyc3Qgc2tiIiAtLS0tPiBSeCBIVyByaW5nIGVu
-dHJ5IFggDQo+ICstLS0tLS0tLS0tLS0NCj4gfCAic2Vjb25kIHNrYiItLS0tPiBSeCBIVyByaW5n
-IGVudHJ5IFgrMSAob3IgWCtuKQ0KPiArLS0tLS0tLS0tLS0tDQo+IA0KDQpMaWtlOg0KDQpGaXJz
-dCBza2Igd2lsbCBiZSBpbnRvIHRjcCBzb2NrZXQgcnggcXVldWUNCg0KU2Vjb25kcyBza2IgaXMg
-dnhsYW4gcGFja2V0LCB3aWxsIGJlIGNvcHkgdG8gYWZfeGRwIHNvY2tldCwgYW5kIHJlbGVhc2Vk
-Lg0KDQo+IFRoaXMgaXMgYSBzY2VuYXJpbyB0aGF0IHNob3VsZG4ndCBiZSBhbGxvd2VkLCBiZWNh
-dXNlIHRoZXJlIGFyZSBub3cgdHdvIHVzZXJzDQo+IG9mIHRoZSBwYWdlLiBJZiB0aGF0J3MgdGhl
-IGNhc2UsIHRoZSByZWZjb3VudGluZyBpcyBicm9rZW4uIElzIHRoYXQgdGhlIGNhc2U/DQo+IA0K
-DQpUcnVlLCBpdCBpcyBicm9rZW4gZm9yIGNvcHkgbW9kZSB4c2sNCg0KLUxpDQoNCj4gQ2hlY2sg
-b3V0IGk0MGVfY2FuX3JldXNlX3J4X3BhZ2UoKS4gVGhlIGlkZWEgd2l0aCBwYWdlIGZsaXBwaW5n
-L3JldXNlIGlzIHRoYXQNCj4gdGhlIHBhZ2UgaXMgb25seSByZXVzZWQgaWYgdGhlcmUgaXMgb25s
-eSBvbmUgdXNlci4NCj4gDQo+ICA+IFNlZW0geW91ciBleHBsYW5hdGlvbiBpcyB1bmFibGUgdG8g
-c29sdmUgbXkgYW5hbHlzaXM6DQo+ICA+DQo+ICA+ICAgICAgICAgMS4gZmlyc3Qgc2tiIGlzIG5v
-dCBmb3IgeHNrLCBhbmQgZm9yd2FyZGVkIHRvIGFub3RoZXIgZGV2aWNlDQo+ICA+ICAgICAgICAg
-ICAgb3Igc29ja2V0IHF1ZXVlDQo+IA0KPiBUaGUgZGF0YSBmb3IgdGhlICJmaXJzdCBza2IiIHJl
-c2lkZXMgb24gYSBwYWdlOg0KPiBBOg0KPiArLS0tLS0tLS0tLS0tDQo+IHwgImZpcnN0IHNrYiIN
-Cj4gKy0tLS0tLS0tLS0tLQ0KPiB8IHRvIGJlIHJldXNlZA0KPiArLS0tLS0tLS0tLS0tDQo+IHJl
-ZmNvdW50ID4+MQ0KPiANCj4gID4gICAgICAgICAyLiBzZWNvbmRzIHNrYiBpcyBmb3IgeHNrLCBj
-b3B5IGRhdGEgdG8geHNrIG1lbW9yeSwgYW5kIHBhZ2UNCj4gID4gICAgICAgICAgICBvZiBza2It
-PmRhdGEgaXMgcmVsZWFzZWQNCj4gDQo+IE5vdGUgdGhhdCBwYWdlIEIgIT0gcGFnZSBBLg0KPiAN
-Cj4gQjoNCj4gKy0tLS0tLS0tLS0tLQ0KPiB8IHRvIGJlIHJldXNlZC9vciB1c2VkIGJ5IHRoZSBz
-dGFjaw0KPiArLS0tLS0tLS0tLS0tDQo+IHwgInNlY29uZCBza2IgZm9yIHhzayINCj4gKy0tLS0t
-LS0tLS0tLQ0KPiByZWZjb3VudCA+PjENCj4gDQo+IGRhdGEgaXMgY29waWVkIHRvIHNvY2tldCwg
-cGFnZV9mcmFnX2ZyZWUoKSBpcyBjYWxsZWQsIGFuZCB0aGUgcGFnZSBjb3VudCBpcw0KPiBkZWNy
-ZWFzZWQuIFRoZSBkcml2ZXIgd2lsbCB0aGVuIGNoZWNrIGlmIHRoZSBwYWdlIGNhbiBiZSByZXVz
-ZWQuIElmIG5vdCwgaXQncyBmcmVlZA0KPiB0byB0aGUgcGFnZSBhbGxvY2F0b3IuDQo+IA0KPiAg
-PiAgICAgICAgIDMuIHJ4X2J1ZmYgaXMgcmV1c2FibGUgc2luY2Ugb25seSBmaXJzdCBza2IgaXMg
-aW4gaXQsIGJ1dA0KPiAgPiAgICAgICAgICAgICpfcnhfYnVmZmVyX2ZsaXAgd2lsbCBtYWtlIHRo
-YXQgcGFnZV9vZmZzZXQgaXMgc2V0IHRvDQo+ICA+ICAgICAgICAgICAgZmlyc3Qgc2tiIGRhdGEN
-Cj4gDQo+IEknbSBoYXZpbmcgdHJvdWJsZSBncmFzcGluZyBob3cgdGhpcyBpcyBwb3NzaWJsZS4g
-TW9yZSB0aGFuIG9uZSB1c2VyIGltcGxpZXMNCj4gdGhhdCBpdCB3b250IGJlIHJldXNlZC4gSWYg
-dGhpcyBpcyBwb3NzaWJsZSwgdGhlIHJlY291bnRpbmcvcmV1c2UgbWVjaGFuaXNtIGlzDQo+IGJy
-b2tlbiwgYW5kIHRoYXQgaXMgd2hhdCBzaG91bGQgYmUgZml4ZWQuDQo+IA0KPiBUaGUgQUZfWERQ
-IHJlZGlyZWN0IHNob3VsZCBub3QgaGF2ZSBzZW1hbnRpY3MgZGlmZmVyZW50IGZyb20sIHNheSwg
-ZGV2bWFwDQo+IHJlZGlyZWN0LiBJdCdzIGp1c3QgdGhhdCB0aGUgcGFnZV9mcmFnX2ZyZWUoKSBp
-cyBjYWxsZWQgZWFybGllciBmb3IgQUZfWERQLCBpbnN0ZWFkDQo+IG9mIGZyb20gaTQwZV9jbGVh
-bl90eF9pcnEoKSBhcyB0aGUgY2FzZSBmb3IgZGV2bWFwL1hEUF9UWC4NCj4gDQo+ICA+ICAgICAg
-ICAgNC4gdGhlbiByZXVzZSByeCBidWZmZXIsIGZpcnN0IHNrYiB3aGljaCBzdGlsbCBpcyBsaXZp
-bmcNCj4gID4gICAgICAgICAgICB3aWxsIGJlIGNvcnJ1cHRlZC4NCj4gID4NCj4gID4NCj4gID4g
-VGhlIHJvb3QgY2F1c2UgaXMgZGlmZmVyZW5jZSB5b3Ugc2FpZCB1cHBlciwgc28gSSBvbmx5IGZp
-eGVzIGZvciBub24temVyb2NvcHkNCj4gQUZfWERQICA+DQo+IA0KPiBJIGhhdmUgb25seSBhZGRy
-ZXNzZWQgbm9uLXplcm9jb3B5LCBzbyB3ZSdyZSBvbiB0aGUgc2FtZSBwYWdlIChwdW4NCj4gaW50
-ZW5kZWQpIGhlcmUhDQo+IA0KPiANCj4gQmrDtnJuDQo+IA0KPiAgPiAtTGkNCg==
+From:'Marcelo Ricardo Leitner
+> Sent: 18 August 2020 22:38
+> 
+> On Tue, Aug 18, 2020 at 03:38:09PM +0000, David Laight wrote:
+> > A few years ago (for 5.1) the 'arrays' that sctp uses for
+> > info about data streams was changed to use the 'genradix'
+> > functions.
+> >
+> > I'm not sure of the reason for the change, but I don't
+> > thing anyone looked at the performance implications.
+> 
+> I don't have something like a CI for it, but I do run some performance
+> benchmarks every now and then and it didn't trigger anything
+> noticeable in my tests.
+
+We have some customers who we think are sending 10000+ short
+SCTP data chunks a second.
+They are probably sending SMS messages, so that is 5000+ text
+messages a second!
+It is hard to stop those being sent with more than one
+data chunk in each ethernet frame!
+
+> Yet, can it be improved? Certainly. Patches welcomed. :-)
+
+I'll apply some of my copious free time to it...
+Actually some simple changes would help:
+
+1) Change SCTP_SO()->x to so=SCTP_SO(); so->x in places
+   where there are multiple references to the same stream.
+
+2) Optimise the genradix lookup for the case where there
+   is a single page - it can be completely inlined.
+
+3) Defer the allocation until the stream is used.
+   for outbound streams this could remove the extra buffer.
+
+> > The code contains lots of SCTP_SI(stream, i) with the
+> > probable expectation that the expansion is basically
+> > stream->foo[i] (a pointer to a big memory array).
+> >
+> > However the genradix functions are far more complicated.
+> > Basically it is a list of pointers to pages, each of
+> > which is split into the maximum number of items.
+> > (With the page pointers being in a tree of pages
+> > for large numbers of large items.)
+> >
+> > So every SCTP_S[IO]() has inline code to calculate
+> > the byte offset:
+> > 	idx / objs_per_page * PAGE_SIZE + idx % objs_per_page * obj_size
+> > (objs_per_page and obj_size are compile time constants)
+> > and then calls a function to do the actual lookup.
+> >
+> > This is all rather horrid when the array isn't even sparse.
+> >
+> > I also doubt it really helps if anyone is trying to allow
+> > a lot of streams. For 64k streams you might be trying to
+> > allocate ~700 pages in atomic context.
+> 
+> Yes, and kvrealloc as you suggested on another email is not a
+> solution, because it can't fallback to vmalloc in atomic contexts.
+> 
+> Genradix here allows it to use several non-contiguous pages, which is
+> a win if compared to a simple kmalloc(..., GFP_ATOMIC) it had before
+> flex_arrays, and anything that we could implement around such scheme
+> would be just re-implementing genradix/flex_arrays again. After all,
+> it does need 64k elements allocated.
+> 
+> How soon it needs them? Well, it already deferred some allocation with
+> the usage of sctp_stream_out_ext (which is only allocated when the
+> stream is actually used, but added another pointer deref), leaving
+> just stuff couldn't be (easily) initialized later, there.
+> 
+> >
+> > For example look at the object code for sctp_stream_clear()
+> > (__genradix_ptr() is in lib/generic-radix-tree.c).
+> 
+> sctp_stream_clear() is rarely called.
+> 
+> Caller graph:
+> sctp_stream_clear
+>   sctp_assoc_update
+>     SCTP_CMD_UPDATE_ASSOC
+>       sctp_sf_do_dupcook_b
+>       sctp_sf_do_dupcook_a
+> 
+> So, well, I'm not worried about it.
+
+I wasn't considering the loop.
+It was just a place where the object code can be looked at.
+
+But there are quite a few places where the same stream
+is looked for lots of times in succession.
+Even saving the pointer is probably noticeable.
+
+> Specs say 64k streams, so we should support that and preferrably
+> without major regressions. Traversing 64k elements each time to find
+> an entry is very not performant.
+> 
+> For a more standard use case, with something like you were saying, 17
+> streams, genradix here doesn't use too much memory. I'm afraid a
+> couple of integer calculations to get an offset is minimal overhead if
+> compared to the rest of the code.
+
+It is probably nearer 40 including a function call - which
+is likely to cause register spills.
+
+> For example, the stream scheduler
+> operations, accessed via struct sctp_sched_ops (due to retpoline), is
+> probably more interesting fixing than genradix effects here.
+
+Hmmm... the most scheduling M3UA/M2PA (etc) want is (probably)
+to send stream 0 first.
+But even the use of stream 0 (for non-data messages) is a
+misunderstanding (of my understanding) of what SCTP streams are.
+IIRC there is only one flow control window.
+I thought that tx data just got added to a single tx queue,
+and the multiple streams just allowed some messages to passed
+on to the receiving application while waiting for retransmissions
+(head of line blocking).
+
+OTOH M2PA seems to wand stream 0 to have the semantics of
+ISO transport 'expedited data' - which can be sent even when
+the main flow is blocked because it has its own credit (of 1).
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
