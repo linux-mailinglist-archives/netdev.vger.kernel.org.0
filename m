@@ -2,103 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC83A24A3C6
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 18:08:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C550524A3DD
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 18:18:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbgHSQIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 12:08:24 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:58100 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726640AbgHSQIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 12:08:22 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 07JG8Mth115806
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 11:08:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1597853302;
-        bh=+9eG03NpZZ3JryGrDd8EdWW/rdijdqGFPRq5pq5xr48=;
-        h=To:From:Subject:Date;
-        b=yMxdZn+cPpscfBkwImeqlY+AVUIVuVHt58kjHeZfXRcRQS2z9JchanOkf5WgwEugI
-         67vwuMzsTsrzHZzqEUDDDj7TsKs1j1qDd1mj5JkdguegmiwXcc+OvBw6MUF3uxVDG3
-         08dZYv4xr/Hd1SOL6ucUp5gzk4GaDZG7cljycF8Q=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 07JG8Muu102433
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL)
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 11:08:22 -0500
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 19
- Aug 2020 11:08:22 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 19 Aug 2020 11:08:22 -0500
-Received: from [10.250.53.226] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07JG8LeR116509;
-        Wed, 19 Aug 2020 11:08:21 -0500
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Subject: VLAN over HSR/PRP - Issue with rx_handler not called for VLAN hw
- acceleration
-Message-ID: <dcea193d-8143-a664-947c-8a1baea7bc2c@ti.com>
-Date:   Wed, 19 Aug 2020 12:08:21 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726640AbgHSQSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 12:18:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44094 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725275AbgHSQSq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Aug 2020 12:18:46 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5A4892078D;
+        Wed, 19 Aug 2020 16:18:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597853926;
+        bh=UM/vkOiUGYTwlF0gUq/HCYB45aeweW+a2Yop53G5kjY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PY5fGyeHte7sfdei7FsW2ESW+2Izu/2HNiFpxeOlcR4be/r5waLqe92PBM/YeO7/M
+         /lc2L2OWfurpBAWGydtRrX4NHobsj7RjtY+sLXNHDZsPmpsZEeeibCLAQ+7E4+3GJs
+         xklKk7ghs3Q8zQsKDDVHnx74XLvrqKK2coaMQb6M=
+Date:   Wed, 19 Aug 2020 09:18:43 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>, Ido Schimmel <idosch@idosch.org>,
+        netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
+        roopa@nvidia.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        tariqt@nvidia.com, ayal@nvidia.com, mkubecek@suse.cz,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/6] devlink: Add device metric support
+Message-ID: <20200819091843.33ddd113@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <55e40430-a52f-f77b-0d1e-ef79386a0a53@gmail.com>
+References: <20200817125059.193242-1-idosch@idosch.org>
+        <20200818172419.5b86801b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <58a0356d-3e15-f805-ae52-dc44f265661d@gmail.com>
+        <20200818203501.5c51e61a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <55e40430-a52f-f77b-0d1e-ef79386a0a53@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All,
+On Tue, 18 Aug 2020 21:30:16 -0700 Florian Fainelli wrote:
+> >>> I spend way too much time patrolling ethtool -S outputs already.  
+> >>
+> >> But that's the nature of detailed stats which are often essential to
+> >> ensuring the system is operating as expected or debugging some problem.
+> >> Commonality is certainly desired in names when relevant to be able to
+> >> build tooling around the stats.  
+> > 
+> > There are stats which are clearly detailed and device specific,
+> > but what ends up happening is that people expose very much not
+> > implementation specific stats through the free form interfaces,
+> > because it's the easiest.
+> > 
+> > And users are left picking up the pieces, having to ask vendors what
+> > each stat means, and trying to create abstractions in their user space
+> > glue.  
+> 
+> Should we require vendors to either provide a Documentation/ entry for 
+> each statistics they have (and be guaranteed that it will be outdated 
+> unless someone notices), or would you rather have the statistics 
+> description be part of the devlink interface itself? Should we define 
+> namespaces such that standard metrics should be under the standard 
+> namespace and the vendor standard is the wild west?
 
-I am working to add VLAN interface creation over HSR/PRP interface.
-It works fine after I fixed the HSR driver to allow creation of
-VLAN over it and with VLAN without hw acceleration. But with hw
-acceleration, the HSR hook is bypassed in net/core/dev.c as
+I'm trying to find a solution which will not require a policeman to
+constantly monitor the compliance. Please see my effort to ensure
+drivers document and use the same ethtool -S stats in the TLS offload
+implementations. I've been trying to improve this situation for a long
+time, and it's getting old.
 
-	if (skb_vlan_tag_present(skb)) {
-		if (pt_prev) {
-			ret = deliver_skb(skb, pt_prev, orig_dev);
-			pt_prev = NULL;
-		}
-		if (vlan_do_receive(&skb))
-			goto another_round;
-		else if (unlikely(!skb))
-			goto out;
-	}
+Please focus on the stats this set adds, instead of fantasizing of what
+could be. These are absolutely not implementation specific!
 
-	rx_handler = rcu_dereference(skb->dev->rx_handler);
-	if (rx_handler) {
-		if (pt_prev) {
-			ret = deliver_skb(skb, pt_prev, orig_dev);
-			pt_prev = NULL;
-		}
-		switch (rx_handler(&skb)) {
-		case RX_HANDLER_CONSUMED:
-			ret = NET_RX_SUCCESS;
-			goto out;
-		case RX_HANDLER_ANOTHER:
-			goto another_round;
-		case RX_HANDLER_EXACT:
-			deliver_exact = true;
-		case RX_HANDLER_PASS:
-			break;
-		default:
-			BUG();
-		}
-	}
+> > If I have to download vendor documentation and tooling, or adapt my own
+> > scripts for every new vendor, I could have as well downloaded an SDK.  
+> 
+> Are not you being a bit over dramatic here with your example? 
 
-What is the best way to address this issue? With VLAN hw acceleration,
-skb_vlan_tag_present(skb) is true and rx_handler() is not called.
+I hope not. It's very hard/impossible today to run a fleet of Linux
+machines without resorting to vendor tooling.
 
-Thanks
+> At least  you can run the same command to obtain the stats regardless
+> of the driver and vendor, so from that perspective Linux continues to
+> be the abstraction and that is not broken.
 
--- 
-Murali Karicheri
-Texas Instruments
+Format of the data is no abstraction.
