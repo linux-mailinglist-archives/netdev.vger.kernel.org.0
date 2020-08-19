@@ -2,141 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EC4724A3AB
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 18:00:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F29D24A3AC
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 18:01:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726715AbgHSQAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 12:00:13 -0400
-Received: from mga09.intel.com ([134.134.136.24]:45702 "EHLO mga09.intel.com"
+        id S1726893AbgHSQBJ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Aug 2020 12:01:09 -0400
+Received: from mga05.intel.com ([192.55.52.43]:13762 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726211AbgHSQAL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Aug 2020 12:00:11 -0400
-IronPort-SDR: 8IJefxkLuFF6i2S3B7jbodNZj7NArrfMNh3MjJoxhGTkl0XQpakV5dh6Onzehoqe0Z5laSo5Qf
- TVEuqw2SmaVA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9717"; a="156209370"
+        id S1726741AbgHSQBG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Aug 2020 12:01:06 -0400
+IronPort-SDR: b5e4uCjYN1ABdXuOdUW0upiXztncDfcVkIgTPagS4C4mwDmuoiwAIT4ElREnOj7fYrsWhXzOpx
+ aArBvgkflGsw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9717"; a="239972238"
 X-IronPort-AV: E=Sophos;i="5.76,331,1592895600"; 
-   d="scan'208";a="156209370"
+   d="scan'208";a="239972238"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2020 09:00:07 -0700
-IronPort-SDR: gc8+3LP9tr8GZVgWgBr/nyC5KEgh/6JlfNvTRq42QwQH1aPYebG2VxYnrNABXOo2/mGgMdLCH9
- gmoC+hbilR4g==
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2020 09:01:04 -0700
+IronPort-SDR: YH6ITDJXazljFOv3u5kX8+PkOv7OtfZUj+i4P3YILMGTNq7X1Ewk5d/QJY4Gc/g/O4qAtzuHPO
+ VWKvfSdRKVyw==
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.76,331,1592895600"; 
-   d="scan'208";a="334719777"
-Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.220.26])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2020 09:00:05 -0700
-Date:   Wed, 19 Aug 2020 09:00:02 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     <sundeep.lkml@gmail.com>
-Cc:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <richardcochran@gmail.com>, <netdev@vger.kernel.org>,
-        <sgoutham@marvell.com>, Aleksey Makarov <amakarov@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: Re: [PATCH v6 net-next 2/3] octeontx2-af: Add support for Marvell
- PTP coprocessor
-Message-ID: <20200819090002.00005f4a@intel.com>
-In-Reply-To: <1597770557-26617-3-git-send-email-sundeep.lkml@gmail.com>
-References: <1597770557-26617-1-git-send-email-sundeep.lkml@gmail.com>
-        <1597770557-26617-3-git-send-email-sundeep.lkml@gmail.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+   d="scan'208";a="337003677"
+Received: from fmsmsx603-2.cps.intel.com (HELO fmsmsx603.amr.corp.intel.com) ([10.18.84.213])
+  by orsmga007.jf.intel.com with ESMTP; 19 Aug 2020 09:01:03 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 19 Aug 2020 09:01:03 -0700
+Received: from fmsmsx157.amr.corp.intel.com (10.18.116.73) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Wed, 19 Aug 2020 09:01:03 -0700
+Received: from fmsmsx101.amr.corp.intel.com ([169.254.1.123]) by
+ FMSMSX157.amr.corp.intel.com ([169.254.14.153]) with mapi id 14.03.0439.000;
+ Wed, 19 Aug 2020 09:01:02 -0700
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [net-next v3 3/4] devlink: introduce flash update overwrite mask
+Thread-Topic: [net-next v3 3/4] devlink: introduce flash update overwrite
+ mask
+Thread-Index: AQHWdb+yM0bJRueYr0avi83VvTOY76k/QtSAgABTn1A=
+Date:   Wed, 19 Aug 2020 16:01:02 +0000
+Message-ID: <02874ECE860811409154E81DA85FBB58C8B9BF18@fmsmsx101.amr.corp.intel.com>
+References: <20200819002821.2657515-1-jacob.e.keller@intel.com>
+        <20200819002821.2657515-4-jacob.e.keller@intel.com>
+ <20200818205451.35191c0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200818205451.35191c0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.5.1.3
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.108]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sundeep.lkml@gmail.com wrote:
 
-> From: Aleksey Makarov <amakarov@marvell.com>
+
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Tuesday, August 18, 2020 8:55 PM
+> To: Keller, Jacob E <jacob.e.keller@intel.com>
+> Cc: netdev@vger.kernel.org
+> Subject: Re: [net-next v3 3/4] devlink: introduce flash update overwrite mask
 > 
-> This patch adds driver for Precision Time
-> Protocol Clock and Timestamping block found on
-> Octeontx2 platform. The driver does initial
-> configuration and exposes a function to adjust
-> PTP hardware clock.
-
-Please explain in the commit message why you have two methods of
-handling the clocks PCI space, as without that it seems like some of
-the code is either un-necessary or not clear why it's there.
-
+> On Tue, 18 Aug 2020 17:28:17 -0700 Jacob Keller wrote:
+> > +The ``devlink-flash`` command allows optionally specifying a mask indicating
+> > +the how the device should handle subsections of flash components when
 > 
-> Co-developed-by: Subbaraya Sundeep <sbhatta@marvell.com>
-> Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-> Signed-off-by: Aleksey Makarov <amakarov@marvell.com>
-> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-> ---
->  drivers/net/ethernet/marvell/octeontx2/af/Makefile |   2 +-
->  drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  17 ++
->  drivers/net/ethernet/marvell/octeontx2/af/ptp.c    | 248 +++++++++++++++++++++
->  drivers/net/ethernet/marvell/octeontx2/af/ptp.h    |  22 ++
->  drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  29 ++-
->  drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   4 +
->  6 files changed, 318 insertions(+), 4 deletions(-)
->  create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/ptp.c
->  create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/ptp.h
+> remove one 'the'?
 > 
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/Makefile b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-> index 1b25948..0bc2410 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-> +++ b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-> @@ -8,4 +8,4 @@ obj-$(CONFIG_OCTEONTX2_AF) += octeontx2_af.o
->  
->  octeontx2_mbox-y := mbox.o
->  octeontx2_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \
-> -		  rvu_reg.o rvu_npc.o rvu_debugfs.o
-> +		  rvu_reg.o rvu_npc.o rvu_debugfs.o ptp.o
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-> index c89b098..4aaef0a 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-> +++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-> @@ -127,6 +127,7 @@ M(ATTACH_RESOURCES,	0x002, attach_resources, rsrc_attach, msg_rsp)	\
->  M(DETACH_RESOURCES,	0x003, detach_resources, rsrc_detach, msg_rsp)	\
->  M(MSIX_OFFSET,		0x005, msix_offset, msg_req, msix_offset_rsp)	\
->  M(VF_FLR,		0x006, vf_flr, msg_req, msg_rsp)		\
-> +M(PTP_OP,		0x007, ptp_op, ptp_req, ptp_rsp)		\
->  M(GET_HW_CAP,		0x008, get_hw_cap, msg_req, get_hw_cap_rsp)	\
->  /* CGX mbox IDs (range 0x200 - 0x3FF) */				\
->  M(CGX_START_RXTX,	0x200, cgx_start_rxtx, msg_req, msg_rsp)	\
-> @@ -862,4 +863,20 @@ struct npc_get_kex_cfg_rsp {
->  	u8 mkex_pfl_name[MKEX_NAME_LEN];
->  };
->  
-> +enum ptp_op {
-> +	PTP_OP_ADJFINE = 0,
-> +	PTP_OP_GET_CLOCK = 1,
-> +};
-> +
-> +struct ptp_req {
-> +	struct mbox_msghdr hdr;
-> +	u8 op;
-> +	s64 scaled_ppm;
-> +};
-> +
-> +struct ptp_rsp {
-> +	struct mbox_msghdr hdr;
-> +	u64 clk;
-> +};
-> +
->  #endif /* MBOX_H */
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-> new file mode 100644
-> index 0000000..e9e131d
-> --- /dev/null
-> +++ b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-> @@ -0,0 +1,248 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Marvell PTP driver */
+> > +updating. This mask indicates the set of sections which are allowed to be
+> > +overwritten.
+> 
+> > diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+> > index ebfc4a698809..74a869fbaa67 100644
+> > --- a/drivers/net/netdevsim/dev.c
+> > +++ b/drivers/net/netdevsim/dev.c
+> > @@ -201,6 +201,8 @@ static int nsim_dev_debugfs_init(struct nsim_dev
+> *nsim_dev)
+> >  		return PTR_ERR(nsim_dev->ports_ddir);
+> >  	debugfs_create_bool("fw_update_status", 0600, nsim_dev->ddir,
+> >  			    &nsim_dev->fw_update_status);
+> > +	debugfs_create_u32("fw_update_overwrite_mask", 0600, nsim_dev-
+> >ddir,
+> > +			    &nsim_dev->fw_update_overwrite_mask);
+> 
+> Nice to see the test, but netdevsim changes could be separated out :S
+> 
 
-Your file is missing Copyrights, is that your intent?
+Yea I can do that
 
-I didn't have any comments for the rest of the patch, except that there
-is a lack of comments and communication of intent of the code. I can
-see what it does, but think of the point of view of a kernel consumer
-getting this code in the future and wanting to extend it or debug it,
-and the code being able to talk to "future you" who has no idea why the
-code was there or what it was trying to do.
+> >  	debugfs_create_u32("max_macs", 0600, nsim_dev->ddir,
+> >  			   &nsim_dev->max_macs);
+> >  	debugfs_create_bool("test1", 0600, nsim_dev->ddir,
+> 
+> > -#define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT	BIT(0)
+> > +#define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT		BIT(0)
+> > +#define DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK	BIT(1)
+> 
+> Since core will check supported flags, I'd be tempted to have a flag
+> for each override type. Saves an 'if' in every driver.
+> 
 
-<snip>
+Combinations might not be valid (as in ice where identifiers alone isn't supportable) but I suppose I could add something for it.
+
+Would it make sense to just add them to the supported_flash_update_params? This results in a bit offset where the "supported" bits don't match the actual used bits in overwrite_mask, so we could also introduce a separate "supported_overwrite_mask" but that might just be overkill since I doubt we'll need to add more than a handlful of overwrite bits...
+
+> >  struct devlink_region;
+> >  struct devlink_info_req;
+> > diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+> > index cfef4245ea5a..1d8bbe9c1ae1 100644
+> > --- a/include/uapi/linux/devlink.h
+> > +++ b/include/uapi/linux/devlink.h
+> > @@ -228,6 +228,28 @@ enum {
+> >  	DEVLINK_ATTR_STATS_MAX = __DEVLINK_ATTR_STATS_MAX - 1
+> >  };
+> >
+> > +/* Specify what sections of a flash component can be overwritten when
+> > + * performing an update. Overwriting of firmware binary sections is always
+> > + * implicitly assumed to be allowed.
+> > + *
+> > + * Each section must be documented in
+> > + * Documentation/networking/devlink/devlink-flash.rst
+> > + *
+> > + */
+> > +enum {
+> > +	DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT,
+> > +	DEVLINK_FLASH_OVERWRITE_IDENTIFIERS_BIT,
+> 
+> IMHO generally a good practice to have 0 be undefined.
+> 
+
+Even for bits? I saw that for attribute values 0 was undefined, but that didn't seem right for a bit position. sending the bitfield with zero bit set means the same as not sending the bitfield.
+
+> > +	__DEVLINK_FLASH_OVERWRITE_MAX_BIT,
+> > +	DEVLINK_FLASH_OVERWRITE_MAX_BIT =
+> __DEVLINK_FLASH_OVERWRITE_MAX_BIT - 1
+> > +};
