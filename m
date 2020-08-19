@@ -2,25 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B22024A10A
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 16:03:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9020824A106
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 16:02:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728341AbgHSOCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 10:02:54 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:19668 "EHLO
+        id S1728125AbgHSOCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 10:02:47 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:44350 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726560AbgHSOCN (ORCPT
+        with ESMTP id S1726703AbgHSOCN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 10:02:13 -0400
 Received: from localhost.localdomain (vardah.blr.asicdesigners.com [10.193.186.1])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 07JE1bcP027304;
-        Wed, 19 Aug 2020 07:01:47 -0700
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 07JE1bcQ027304;
+        Wed, 19 Aug 2020 07:01:51 -0700
 From:   Vinay Kumar Yadav <vinay.yadav@chelsio.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         herbert@gondor.apana.org.au
-Cc:     secdev@chelsio.com, Vinay Kumar Yadav <vinay.yadav@chelsio.com>
-Subject: [PATCH net-next 1/2] chelsio/chtls: separate chelsio tls driver from crypto driver
-Date:   Wed, 19 Aug 2020 19:31:20 +0530
-Message-Id: <20200819140121.20175-2-vinay.yadav@chelsio.com>
+Cc:     secdev@chelsio.com, Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Ayush Sawal <ayush.sawal@chelsio.com>
+Subject: [PATCH net-next 2/2] crypto/chcr: Moving chelsio's inline ipsec functionality to /drivers/net
+Date:   Wed, 19 Aug 2020 19:31:21 +0530
+Message-Id: <20200819140121.20175-3-vinay.yadav@chelsio.com>
 X-Mailer: git-send-email 2.18.1
 In-Reply-To: <20200819140121.20175-1-vinay.yadav@chelsio.com>
 References: <20200819140121.20175-1-vinay.yadav@chelsio.com>
@@ -29,400 +30,538 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-chelsio inline tls driver(chtls) is mostly overlaps with NIC drivers
-but currenty it is part of crypto driver, so move it out to appropriate
-directory for better maintenance.
+This patch seperates inline ipsec functionality from coprocessor
+driver chcr. Now inline ipsec is separate ULD, moved from
+"drivers/crypto/chelsio/" to "drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/"
 
+Signed-off-by: Ayush Sawal <ayush.sawal@chelsio.com>
 Signed-off-by: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
 ---
- MAINTAINERS                                   |  9 ++
- drivers/crypto/chelsio/Kconfig                | 11 ---
- drivers/crypto/chelsio/Makefile               |  1 -
- drivers/crypto/chelsio/chcr_algo.h            | 33 -------
- drivers/crypto/chelsio/chcr_core.h            | 53 -----------
- drivers/net/ethernet/chelsio/Kconfig          |  2 +
- drivers/net/ethernet/chelsio/Makefile         |  1 +
- .../ethernet/chelsio/inline_crypto/Kconfig    | 26 ++++++
- .../ethernet/chelsio/inline_crypto/Makefile   |  2 +
- .../chelsio/inline_crypto}/chtls/Makefile     |  0
- .../chelsio/inline_crypto}/chtls/chtls.h      | 88 +++++++++++++++++++
- .../chelsio/inline_crypto}/chtls/chtls_cm.c   |  0
- .../chelsio/inline_crypto}/chtls/chtls_cm.h   |  0
- .../chelsio/inline_crypto}/chtls/chtls_hw.c   |  0
- .../chelsio/inline_crypto}/chtls/chtls_io.c   |  0
- .../chelsio/inline_crypto}/chtls/chtls_main.c |  2 +-
- 16 files changed, 129 insertions(+), 99 deletions(-)
- create mode 100644 drivers/net/ethernet/chelsio/inline_crypto/Kconfig
- create mode 100644 drivers/net/ethernet/chelsio/inline_crypto/Makefile
- rename drivers/{crypto/chelsio => net/ethernet/chelsio/inline_crypto}/chtls/Makefile (100%)
- rename drivers/{crypto/chelsio => net/ethernet/chelsio/inline_crypto}/chtls/chtls.h (81%)
- rename drivers/{crypto/chelsio => net/ethernet/chelsio/inline_crypto}/chtls/chtls_cm.c (100%)
- rename drivers/{crypto/chelsio => net/ethernet/chelsio/inline_crypto}/chtls/chtls_cm.h (100%)
- rename drivers/{crypto/chelsio => net/ethernet/chelsio/inline_crypto}/chtls/chtls_hw.c (100%)
- rename drivers/{crypto/chelsio => net/ethernet/chelsio/inline_crypto}/chtls/chtls_io.c (100%)
- rename drivers/{crypto/chelsio => net/ethernet/chelsio/inline_crypto}/chtls/chtls_main.c (99%)
+ drivers/crypto/chelsio/Kconfig                |  10 --
+ drivers/crypto/chelsio/Makefile               |   1 -
+ drivers/crypto/chelsio/chcr_core.c            |  42 +------
+ drivers/crypto/chelsio/chcr_core.h            |  31 -----
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |   3 +
+ .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    |   7 +-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_uld.h    |   8 +-
+ drivers/net/ethernet/chelsio/cxgb4/sge.c      |   4 +-
+ .../ethernet/chelsio/inline_crypto/Kconfig    |  12 ++
+ .../ethernet/chelsio/inline_crypto/Makefile   |   1 +
+ .../chelsio/inline_crypto/ch_ipsec/Makefile   |   8 ++
+ .../inline_crypto/ch_ipsec}/chcr_ipsec.c      | 111 +++++++++++++++++-
+ .../inline_crypto/ch_ipsec/chcr_ipsec.h       |  58 +++++++++
+ 13 files changed, 205 insertions(+), 91 deletions(-)
+ create mode 100644 drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/Makefile
+ rename drivers/{crypto/chelsio => net/ethernet/chelsio/inline_crypto/ch_ipsec}/chcr_ipsec.c (88%)
+ create mode 100644 drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.h
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index deaafb617361..57afa6532824 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4692,6 +4692,15 @@ S:	Supported
- W:	http://www.chelsio.com
- F:	drivers/crypto/chelsio
- 
-+CXGB4 INLINE CRYPTO DRIVER
-+M:	Ayush Sawal <ayush.sawal@chelsio.com>
-+M:	Vinay Kumar Yadav <vinay.yadav@chelsio.com>
-+M:	Rohit Maheshwari <rohitm@chelsio.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+W:	http://www.chelsio.com
-+F:	drivers/net/ethernet/chelsio/inline_crypto/
-+
- CXGB4 ETHERNET DRIVER (CXGB4)
- M:	Vishal Kulkarni <vishal@chelsio.com>
- L:	netdev@vger.kernel.org
 diff --git a/drivers/crypto/chelsio/Kconfig b/drivers/crypto/chelsio/Kconfig
-index 2984fdf51e85..89e1d030aada 100644
+index 89e1d030aada..af161dab49bd 100644
 --- a/drivers/crypto/chelsio/Kconfig
 +++ b/drivers/crypto/chelsio/Kconfig
-@@ -32,17 +32,6 @@ config CHELSIO_IPSEC_INLINE
- 	help
- 	  Enable support for IPSec Tx Inline.
+@@ -22,16 +22,6 @@ config CRYPTO_DEV_CHELSIO
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called chcr.
  
--config CRYPTO_DEV_CHELSIO_TLS
--	tristate "Chelsio Crypto Inline TLS Driver"
+-config CHELSIO_IPSEC_INLINE
+-	bool "Chelsio IPSec XFRM Tx crypto offload"
 -	depends on CHELSIO_T4
--	depends on TLS_TOE
--	select CRYPTO_DEV_CHELSIO
+-	depends on CRYPTO_DEV_CHELSIO
+-	depends on XFRM_OFFLOAD
+-	depends on INET_ESP_OFFLOAD || INET6_ESP_OFFLOAD
+-	default n
 -	help
--	  Support Chelsio Inline TLS with Chelsio crypto accelerator.
--
--	  To compile this driver as a module, choose M here: the module
--	  will be called chtls.
+-	  Enable support for IPSec Tx Inline.
 -
  config CHELSIO_TLS_DEVICE
  	bool "Chelsio Inline KTLS Offload"
  	depends on CHELSIO_T4
 diff --git a/drivers/crypto/chelsio/Makefile b/drivers/crypto/chelsio/Makefile
-index 0e9d035927e9..8aeffde4bcde 100644
+index 8aeffde4bcde..f2e8e2fb4e60 100644
 --- a/drivers/crypto/chelsio/Makefile
 +++ b/drivers/crypto/chelsio/Makefile
-@@ -7,4 +7,3 @@ chcr-objs :=  chcr_core.o chcr_algo.o
+@@ -6,4 +6,3 @@ chcr-objs :=  chcr_core.o chcr_algo.o
+ #ifdef CONFIG_CHELSIO_TLS_DEVICE
  chcr-objs += chcr_ktls.o
  #endif
- chcr-$(CONFIG_CHELSIO_IPSEC_INLINE) += chcr_ipsec.o
--obj-$(CONFIG_CRYPTO_DEV_CHELSIO_TLS) += chtls/
-diff --git a/drivers/crypto/chelsio/chcr_algo.h b/drivers/crypto/chelsio/chcr_algo.h
-index d4f6e010dc79..507aafe93f21 100644
---- a/drivers/crypto/chelsio/chcr_algo.h
-+++ b/drivers/crypto/chelsio/chcr_algo.h
-@@ -86,39 +86,6 @@
- 	 KEY_CONTEXT_OPAD_PRESENT_M)
- #define KEY_CONTEXT_OPAD_PRESENT_F      KEY_CONTEXT_OPAD_PRESENT_V(1U)
+-chcr-$(CONFIG_CHELSIO_IPSEC_INLINE) += chcr_ipsec.o
+diff --git a/drivers/crypto/chelsio/chcr_core.c b/drivers/crypto/chelsio/chcr_core.c
+index bd8dac806e7a..b3570b41a737 100644
+--- a/drivers/crypto/chelsio/chcr_core.c
++++ b/drivers/crypto/chelsio/chcr_core.c
+@@ -40,10 +40,6 @@ static const struct tlsdev_ops chcr_ktls_ops = {
+ };
+ #endif
  
--#define TLS_KEYCTX_RXFLIT_CNT_S 24
--#define TLS_KEYCTX_RXFLIT_CNT_V(x) ((x) << TLS_KEYCTX_RXFLIT_CNT_S)
+-#ifdef CONFIG_CHELSIO_IPSEC_INLINE
+-static void update_netdev_features(void);
+-#endif /* CONFIG_CHELSIO_IPSEC_INLINE */
 -
--#define TLS_KEYCTX_RXPROT_VER_S 20
--#define TLS_KEYCTX_RXPROT_VER_M 0xf
--#define TLS_KEYCTX_RXPROT_VER_V(x) ((x) << TLS_KEYCTX_RXPROT_VER_S)
+ static chcr_handler_func work_handlers[NUM_CPL_CMDS] = {
+ 	[CPL_FW6_PLD] = cpl_fw6_pld_handler,
+ #ifdef CONFIG_CHELSIO_TLS_DEVICE
+@@ -60,10 +56,8 @@ static struct cxgb4_uld_info chcr_uld_info = {
+ 	.add = chcr_uld_add,
+ 	.state_change = chcr_uld_state_change,
+ 	.rx_handler = chcr_uld_rx_handler,
+-#if defined(CONFIG_CHELSIO_IPSEC_INLINE) || defined(CONFIG_CHELSIO_TLS_DEVICE)
+-	.tx_handler = chcr_uld_tx_handler,
+-#endif /* CONFIG_CHELSIO_IPSEC_INLINE || CONFIG_CHELSIO_TLS_DEVICE */
+ #if defined(CONFIG_CHELSIO_TLS_DEVICE)
++	.tx_handler = chcr_uld_tx_handler,
+ 	.tlsdev_ops = &chcr_ktls_ops,
+ #endif
+ };
+@@ -241,19 +235,11 @@ int chcr_uld_rx_handler(void *handle, const __be64 *rsp,
+ 	return 0;
+ }
+ 
+-#if defined(CONFIG_CHELSIO_IPSEC_INLINE) || defined(CONFIG_CHELSIO_TLS_DEVICE)
++#if defined(CONFIG_CHELSIO_TLS_DEVICE)
+ int chcr_uld_tx_handler(struct sk_buff *skb, struct net_device *dev)
+ {
+-	/* In case if skb's decrypted bit is set, it's nic tls packet, else it's
+-	 * ipsec packet.
+-	 */
+-#ifdef CONFIG_CHELSIO_TLS_DEVICE
+ 	if (skb->decrypted)
+ 		return chcr_ktls_xmit(skb, dev);
+-#endif
+-#ifdef CONFIG_CHELSIO_IPSEC_INLINE
+-	return chcr_ipsec_xmit(skb, dev);
+-#endif
+ 	return 0;
+ }
+ #endif /* CONFIG_CHELSIO_IPSEC_INLINE || CONFIG_CHELSIO_TLS_DEVICE */
+@@ -305,24 +291,6 @@ static int chcr_uld_state_change(void *handle, enum cxgb4_state state)
+ 	return ret;
+ }
+ 
+-#ifdef CONFIG_CHELSIO_IPSEC_INLINE
+-static void update_netdev_features(void)
+-{
+-	struct uld_ctx *u_ctx, *tmp;
 -
--#define TLS_KEYCTX_RXCIPH_MODE_S 16
--#define TLS_KEYCTX_RXCIPH_MODE_M 0xf
--#define TLS_KEYCTX_RXCIPH_MODE_V(x) ((x) << TLS_KEYCTX_RXCIPH_MODE_S)
+-	mutex_lock(&drv_data.drv_mutex);
+-	list_for_each_entry_safe(u_ctx, tmp, &drv_data.inact_dev, entry) {
+-		if (u_ctx->lldi.crypto & ULP_CRYPTO_IPSEC_INLINE)
+-			chcr_add_xfrmops(&u_ctx->lldi);
+-	}
+-	list_for_each_entry_safe(u_ctx, tmp, &drv_data.act_dev, entry) {
+-		if (u_ctx->lldi.crypto & ULP_CRYPTO_IPSEC_INLINE)
+-			chcr_add_xfrmops(&u_ctx->lldi);
+-	}
+-	mutex_unlock(&drv_data.drv_mutex);
+-}
+-#endif /* CONFIG_CHELSIO_IPSEC_INLINE */
 -
--#define TLS_KEYCTX_RXAUTH_MODE_S 12
--#define TLS_KEYCTX_RXAUTH_MODE_M 0xf
--#define TLS_KEYCTX_RXAUTH_MODE_V(x) ((x) << TLS_KEYCTX_RXAUTH_MODE_S)
+ static int __init chcr_crypto_init(void)
+ {
+ 	INIT_LIST_HEAD(&drv_data.act_dev);
+@@ -332,12 +300,6 @@ static int __init chcr_crypto_init(void)
+ 	drv_data.last_dev = NULL;
+ 	cxgb4_register_uld(CXGB4_ULD_CRYPTO, &chcr_uld_info);
+ 
+-	#ifdef CONFIG_CHELSIO_IPSEC_INLINE
+-	rtnl_lock();
+-	update_netdev_features();
+-	rtnl_unlock();
+-	#endif /* CONFIG_CHELSIO_IPSEC_INLINE */
 -
--#define TLS_KEYCTX_RXCIAU_CTRL_S 11
--#define TLS_KEYCTX_RXCIAU_CTRL_V(x) ((x) << TLS_KEYCTX_RXCIAU_CTRL_S)
--
--#define TLS_KEYCTX_RX_SEQCTR_S 9
--#define TLS_KEYCTX_RX_SEQCTR_M 0x3
--#define TLS_KEYCTX_RX_SEQCTR_V(x) ((x) << TLS_KEYCTX_RX_SEQCTR_S)
--
--#define TLS_KEYCTX_RX_VALID_S 8
--#define TLS_KEYCTX_RX_VALID_V(x) ((x) << TLS_KEYCTX_RX_VALID_S)
--
--#define TLS_KEYCTX_RXCK_SIZE_S 3
--#define TLS_KEYCTX_RXCK_SIZE_M 0x7
--#define TLS_KEYCTX_RXCK_SIZE_V(x) ((x) << TLS_KEYCTX_RXCK_SIZE_S)
--
--#define TLS_KEYCTX_RXMK_SIZE_S 0
--#define TLS_KEYCTX_RXMK_SIZE_M 0x7
--#define TLS_KEYCTX_RXMK_SIZE_V(x) ((x) << TLS_KEYCTX_RXMK_SIZE_S)
--
- #define CHCR_HASH_MAX_DIGEST_SIZE 64
- #define CHCR_MAX_SHA_DIGEST_SIZE 64
+ 	return 0;
+ }
  
 diff --git a/drivers/crypto/chelsio/chcr_core.h b/drivers/crypto/chelsio/chcr_core.h
-index 67d77abd6775..73239aa3fc5f 100644
+index 73239aa3fc5f..81f6e61401e5 100644
 --- a/drivers/crypto/chelsio/chcr_core.h
 +++ b/drivers/crypto/chelsio/chcr_core.h
-@@ -72,54 +72,6 @@ struct _key_ctx {
- 	unsigned char key[];
- };
- 
--#define KEYCTX_TX_WR_IV_S  55
--#define KEYCTX_TX_WR_IV_M  0x1ffULL
--#define KEYCTX_TX_WR_IV_V(x) ((x) << KEYCTX_TX_WR_IV_S)
--#define KEYCTX_TX_WR_IV_G(x) \
--	(((x) >> KEYCTX_TX_WR_IV_S) & KEYCTX_TX_WR_IV_M)
--
--#define KEYCTX_TX_WR_AAD_S 47
--#define KEYCTX_TX_WR_AAD_M 0xffULL
--#define KEYCTX_TX_WR_AAD_V(x) ((x) << KEYCTX_TX_WR_AAD_S)
--#define KEYCTX_TX_WR_AAD_G(x) (((x) >> KEYCTX_TX_WR_AAD_S) & \
--				KEYCTX_TX_WR_AAD_M)
--
--#define KEYCTX_TX_WR_AADST_S 39
--#define KEYCTX_TX_WR_AADST_M 0xffULL
--#define KEYCTX_TX_WR_AADST_V(x) ((x) << KEYCTX_TX_WR_AADST_S)
--#define KEYCTX_TX_WR_AADST_G(x) \
--	(((x) >> KEYCTX_TX_WR_AADST_S) & KEYCTX_TX_WR_AADST_M)
--
--#define KEYCTX_TX_WR_CIPHER_S 30
--#define KEYCTX_TX_WR_CIPHER_M 0x1ffULL
--#define KEYCTX_TX_WR_CIPHER_V(x) ((x) << KEYCTX_TX_WR_CIPHER_S)
--#define KEYCTX_TX_WR_CIPHER_G(x) \
--	(((x) >> KEYCTX_TX_WR_CIPHER_S) & KEYCTX_TX_WR_CIPHER_M)
--
--#define KEYCTX_TX_WR_CIPHERST_S 23
--#define KEYCTX_TX_WR_CIPHERST_M 0x7f
--#define KEYCTX_TX_WR_CIPHERST_V(x) ((x) << KEYCTX_TX_WR_CIPHERST_S)
--#define KEYCTX_TX_WR_CIPHERST_G(x) \
--	(((x) >> KEYCTX_TX_WR_CIPHERST_S) & KEYCTX_TX_WR_CIPHERST_M)
--
--#define KEYCTX_TX_WR_AUTH_S 14
--#define KEYCTX_TX_WR_AUTH_M 0x1ff
--#define KEYCTX_TX_WR_AUTH_V(x) ((x) << KEYCTX_TX_WR_AUTH_S)
--#define KEYCTX_TX_WR_AUTH_G(x) \
--	(((x) >> KEYCTX_TX_WR_AUTH_S) & KEYCTX_TX_WR_AUTH_M)
--
--#define KEYCTX_TX_WR_AUTHST_S 7
--#define KEYCTX_TX_WR_AUTHST_M 0x7f
--#define KEYCTX_TX_WR_AUTHST_V(x) ((x) << KEYCTX_TX_WR_AUTHST_S)
--#define KEYCTX_TX_WR_AUTHST_G(x) \
--	(((x) >> KEYCTX_TX_WR_AUTHST_S) & KEYCTX_TX_WR_AUTHST_M)
--
--#define KEYCTX_TX_WR_AUTHIN_S 0
--#define KEYCTX_TX_WR_AUTHIN_M 0x7f
--#define KEYCTX_TX_WR_AUTHIN_V(x) ((x) << KEYCTX_TX_WR_AUTHIN_S)
--#define KEYCTX_TX_WR_AUTHIN_G(x) \
--	(((x) >> KEYCTX_TX_WR_AUTHIN_S) & KEYCTX_TX_WR_AUTHIN_M)
--
- #define WQ_RETRY	5
- struct chcr_driver_data {
- 	struct list_head act_dev;
-@@ -157,11 +109,6 @@ struct uld_ctx {
+@@ -109,37 +109,6 @@ struct uld_ctx {
  	struct chcr_dev dev;
  };
  
--struct sge_opaque_hdr {
--	void *dev;
--	dma_addr_t addr[MAX_SKB_FRAGS + 1];
+-struct chcr_ipsec_req {
+-	struct ulp_txpkt ulptx;
+-	struct ulptx_idata sc_imm;
+-	struct cpl_tx_sec_pdu sec_cpl;
+-	struct _key_ctx key_ctx;
 -};
 -
- struct chcr_ipsec_req {
- 	struct ulp_txpkt ulptx;
- 	struct ulptx_idata sc_imm;
-diff --git a/drivers/net/ethernet/chelsio/Kconfig b/drivers/net/ethernet/chelsio/Kconfig
-index f6f3ef9a93cf..87cc0ef68b31 100644
---- a/drivers/net/ethernet/chelsio/Kconfig
-+++ b/drivers/net/ethernet/chelsio/Kconfig
-@@ -134,4 +134,6 @@ config CHELSIO_LIB
- 	help
- 	Common library for Chelsio drivers.
+-struct chcr_ipsec_wr {
+-	struct fw_ulptx_wr wreq;
+-	struct chcr_ipsec_req req;
+-};
+-
+-#define ESN_IV_INSERT_OFFSET 12
+-struct chcr_ipsec_aadiv {
+-	__be32 spi;
+-	u8 seq_no[8];
+-	u8 iv[8];
+-};
+-
+-struct ipsec_sa_entry {
+-	int hmac_ctrl;
+-	u16 esn;
+-	u16 resv;
+-	unsigned int enckey_len;
+-	unsigned int kctx_len;
+-	unsigned int authsize;
+-	__be32 key_ctx_hdr;
+-	char salt[MAX_SALT];
+-	char key[2 * AES_MAX_KEY_SIZE];
+-};
+-
+ /*
+  *      sgl_len - calculates the size of an SGL of the given capacity
+  *      @n: the number of SGL entries
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+index 9cb8b229c1b3..e5d5c0fb7f47 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+@@ -1196,6 +1196,9 @@ struct adapter {
+ 	struct cxgb4_tc_u32_table *tc_u32;
+ 	struct chcr_ktls chcr_ktls;
+ 	struct chcr_stats_debug chcr_stats;
++#if IS_ENABLED(CONFIG_CHELSIO_IPSEC_INLINE)
++	struct ch_ipsec_stats_debug ch_ipsec_stats;
++#endif
  
-+source "drivers/net/ethernet/chelsio/inline_crypto/Kconfig"
+ 	/* TC flower offload */
+ 	bool tc_flower_initialized;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+index 05f33b7e3677..42112e8ad687 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+@@ -3542,14 +3542,17 @@ static int chcr_stats_show(struct seq_file *seq, void *v)
+ 		   atomic_read(&adap->chcr_stats.error));
+ 	seq_printf(seq, "Fallback: %10u \n",
+ 		   atomic_read(&adap->chcr_stats.fallback));
+-	seq_printf(seq, "IPSec PDU: %10u\n",
+-		   atomic_read(&adap->chcr_stats.ipsec_cnt));
+ 	seq_printf(seq, "TLS PDU Tx: %10u\n",
+ 		   atomic_read(&adap->chcr_stats.tls_pdu_tx));
+ 	seq_printf(seq, "TLS PDU Rx: %10u\n",
+ 		   atomic_read(&adap->chcr_stats.tls_pdu_rx));
+ 	seq_printf(seq, "TLS Keys (DDR) Count: %10u\n",
+ 		   atomic_read(&adap->chcr_stats.tls_key));
++#if IS_ENABLED(CONFIG_CHELSIO_IPSEC_INLINE)
++	seq_puts(seq, "\nChelsio Inline IPsec Crypto Accelerator Stats\n");
++	seq_printf(seq, "IPSec PDU: %10u\n",
++		   atomic_read(&adap->ch_ipsec_stats.ipsec_cnt));
++#endif
+ #ifdef CONFIG_CHELSIO_TLS_DEVICE
+ 	seq_puts(seq, "\nChelsio KTLS Crypto Accelerator Stats\n");
+ 	seq_printf(seq, "Tx TLS offload refcount:          %20u\n",
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
+index a963fd0b4540..83c8189e4088 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
+@@ -302,6 +302,7 @@ enum cxgb4_uld {
+ 	CXGB4_ULD_ISCSI,
+ 	CXGB4_ULD_ISCSIT,
+ 	CXGB4_ULD_CRYPTO,
++	CXGB4_ULD_IPSEC,
+ 	CXGB4_ULD_TLS,
+ 	CXGB4_ULD_MAX
+ };
+@@ -368,7 +369,6 @@ struct chcr_stats_debug {
+ 	atomic_t complete;
+ 	atomic_t error;
+ 	atomic_t fallback;
+-	atomic_t ipsec_cnt;
+ 	atomic_t tls_pdu_tx;
+ 	atomic_t tls_pdu_rx;
+ 	atomic_t tls_key;
+@@ -394,6 +394,12 @@ struct chcr_stats_debug {
+ #endif
+ };
+ 
++#if IS_ENABLED(CONFIG_CHELSIO_IPSEC_INLINE)
++struct ch_ipsec_stats_debug {
++	atomic_t ipsec_cnt;
++};
++#endif
 +
- endif # NET_VENDOR_CHELSIO
-diff --git a/drivers/net/ethernet/chelsio/Makefile b/drivers/net/ethernet/chelsio/Makefile
-index c0f978d2e8a7..1a6fd8b2bb7d 100644
---- a/drivers/net/ethernet/chelsio/Makefile
-+++ b/drivers/net/ethernet/chelsio/Makefile
-@@ -8,3 +8,4 @@ obj-$(CONFIG_CHELSIO_T3) += cxgb3/
- obj-$(CONFIG_CHELSIO_T4) += cxgb4/
- obj-$(CONFIG_CHELSIO_T4VF) += cxgb4vf/
- obj-$(CONFIG_CHELSIO_LIB) += libcxgb/
-+obj-$(CONFIG_CHELSIO_INLINE_CRYPTO) += inline_crypto/
+ #define OCQ_WIN_OFFSET(pdev, vres) \
+ 	(pci_resource_len((pdev), 2) - roundup_pow_of_two((vres)->ocq.size))
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+index d2b587d1670a..022b1058b7b3 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+@@ -1416,9 +1416,9 @@ static netdev_tx_t cxgb4_eth_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	pi = netdev_priv(dev);
+ 	adap = pi->adapter;
+ 	ssi = skb_shinfo(skb);
+-#ifdef CONFIG_CHELSIO_IPSEC_INLINE
++#if IS_ENABLED(CONFIG_CHELSIO_IPSEC_INLINE)
+ 	if (xfrm_offload(skb) && !ssi->gso_size)
+-		return adap->uld[CXGB4_ULD_CRYPTO].tx_handler(skb, dev);
++		return adap->uld[CXGB4_ULD_IPSEC].tx_handler(skb, dev);
+ #endif /* CHELSIO_IPSEC_INLINE */
+ 
+ #ifdef CONFIG_CHELSIO_TLS_DEVICE
 diff --git a/drivers/net/ethernet/chelsio/inline_crypto/Kconfig b/drivers/net/ethernet/chelsio/inline_crypto/Kconfig
-new file mode 100644
-index 000000000000..cbe9f1b69e3f
---- /dev/null
+index cbe9f1b69e3f..a3ef057031e4 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/Kconfig
 +++ b/drivers/net/ethernet/chelsio/inline_crypto/Kconfig
-@@ -0,0 +1,26 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Chelsio inline crypto configuration
-+#
-+
-+config CHELSIO_INLINE_CRYPTO
-+	bool "Chelsio Inline Crypto support"
-+	default y
-+	help
-+	  Enable support for inline crypto.
-+	  Allows enable/disable from list of inline crypto drivers.
-+
-+if CHELSIO_INLINE_CRYPTO
-+
-+config CRYPTO_DEV_CHELSIO_TLS
-+	tristate "Chelsio Crypto Inline TLS Driver"
-+	depends on CHELSIO_T4
-+	depends on TLS_TOE
-+	help
-+	  Support Chelsio Inline TLS with Chelsio crypto accelerator.
-+	  Enable inline TLS support for Tx and Rx.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called chtls.
-+
-+endif # CHELSIO_INLINE_CRYPTO
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/Makefile b/drivers/net/ethernet/chelsio/inline_crypto/Makefile
-new file mode 100644
-index 000000000000..8c1fb2cc9835
---- /dev/null
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/Makefile
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-$(CONFIG_CRYPTO_DEV_CHELSIO_TLS) += chtls/
-diff --git a/drivers/crypto/chelsio/chtls/Makefile b/drivers/net/ethernet/chelsio/inline_crypto/chtls/Makefile
-similarity index 100%
-rename from drivers/crypto/chelsio/chtls/Makefile
-rename to drivers/net/ethernet/chelsio/inline_crypto/chtls/Makefile
-diff --git a/drivers/crypto/chelsio/chtls/chtls.h b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
-similarity index 81%
-rename from drivers/crypto/chelsio/chtls/chtls.h
-rename to drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
-index 459442704eb1..2d3dfdd2a716 100644
---- a/drivers/crypto/chelsio/chtls/chtls.h
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
-@@ -32,6 +32,94 @@
- #include "chcr_core.h"
- #include "chcr_crypto.h"
+@@ -23,4 +23,16 @@ config CRYPTO_DEV_CHELSIO_TLS
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called chtls.
  
-+#define CHTLS_DRV_VERSION "1.0.0.0-ko"
++config CHELSIO_IPSEC_INLINE
++       tristate "Chelsio IPSec XFRM Tx crypto offload"
++       depends on CHELSIO_T4
++       depends on XFRM_OFFLOAD
++       depends on INET_ESP_OFFLOAD || INET6_ESP_OFFLOAD
++       help
++        Support Chelsio Inline IPsec with Chelsio crypto accelerator.
++        Enable inline IPsec support for Tx.
 +
-+#define TLS_KEYCTX_RXFLIT_CNT_S 24
-+#define TLS_KEYCTX_RXFLIT_CNT_V(x) ((x) << TLS_KEYCTX_RXFLIT_CNT_S)
++        To compile this driver as a module, choose M here: the module
++        will be called ch_ipsec.
 +
-+#define TLS_KEYCTX_RXPROT_VER_S 20
-+#define TLS_KEYCTX_RXPROT_VER_M 0xf
-+#define TLS_KEYCTX_RXPROT_VER_V(x) ((x) << TLS_KEYCTX_RXPROT_VER_S)
+ endif # CHELSIO_INLINE_CRYPTO
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/Makefile b/drivers/net/ethernet/chelsio/inline_crypto/Makefile
+index 8c1fb2cc9835..9a86ee8f1f38 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/Makefile
++++ b/drivers/net/ethernet/chelsio/inline_crypto/Makefile
+@@ -1,2 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_CRYPTO_DEV_CHELSIO_TLS) += chtls/
++obj-$(CONFIG_CHELSIO_IPSEC_INLINE) += ch_ipsec/
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/Makefile b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/Makefile
+new file mode 100644
+index 000000000000..efdcaaebc455
+--- /dev/null
++++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/Makefile
+@@ -0,0 +1,8 @@
++# SPDX-License-Identifier: GPL-2.0-only
++ccflags-y := -I $(srctree)/drivers/net/ethernet/chelsio/cxgb4 \
++             -I $(srctree)/drivers/crypto/chelsio
 +
-+#define TLS_KEYCTX_RXCIPH_MODE_S 16
-+#define TLS_KEYCTX_RXCIPH_MODE_M 0xf
-+#define TLS_KEYCTX_RXCIPH_MODE_V(x) ((x) << TLS_KEYCTX_RXCIPH_MODE_S)
++obj-$(CONFIG_CHELSIO_IPSEC_INLINE) += ch_ipsec.o
++ch_ipsec-objs := chcr_ipsec.o
 +
-+#define TLS_KEYCTX_RXAUTH_MODE_S 12
-+#define TLS_KEYCTX_RXAUTH_MODE_M 0xf
-+#define TLS_KEYCTX_RXAUTH_MODE_V(x) ((x) << TLS_KEYCTX_RXAUTH_MODE_S)
 +
-+#define TLS_KEYCTX_RXCIAU_CTRL_S 11
-+#define TLS_KEYCTX_RXCIAU_CTRL_V(x) ((x) << TLS_KEYCTX_RXCIAU_CTRL_S)
+diff --git a/drivers/crypto/chelsio/chcr_ipsec.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
+similarity index 88%
+rename from drivers/crypto/chelsio/chcr_ipsec.c
+rename to drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
+index 967babd67a51..276f8841becc 100644
+--- a/drivers/crypto/chelsio/chcr_ipsec.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
+@@ -60,9 +60,7 @@
+ #include <crypto/scatterwalk.h>
+ #include <crypto/internal/hash.h>
+ 
+-#include "chcr_core.h"
+-#include "chcr_algo.h"
+-#include "chcr_crypto.h"
++#include "chcr_ipsec.h"
+ 
+ /*
+  * Max Tx descriptor space we allow for an Ethernet packet to be inlined
+@@ -71,11 +69,17 @@
+ #define MAX_IMM_TX_PKT_LEN 256
+ #define GCM_ESP_IV_SIZE     8
+ 
++static LIST_HEAD(uld_ctx_list);
++static DEFINE_MUTEX(dev_mutex);
 +
-+#define TLS_KEYCTX_RX_SEQCTR_S 9
-+#define TLS_KEYCTX_RX_SEQCTR_M 0x3
-+#define TLS_KEYCTX_RX_SEQCTR_V(x) ((x) << TLS_KEYCTX_RX_SEQCTR_S)
-+
-+#define TLS_KEYCTX_RX_VALID_S 8
-+#define TLS_KEYCTX_RX_VALID_V(x) ((x) << TLS_KEYCTX_RX_VALID_S)
-+
-+#define TLS_KEYCTX_RXCK_SIZE_S 3
-+#define TLS_KEYCTX_RXCK_SIZE_M 0x7
-+#define TLS_KEYCTX_RXCK_SIZE_V(x) ((x) << TLS_KEYCTX_RXCK_SIZE_S)
-+
-+#define TLS_KEYCTX_RXMK_SIZE_S 0
-+#define TLS_KEYCTX_RXMK_SIZE_M 0x7
-+#define TLS_KEYCTX_RXMK_SIZE_V(x) ((x) << TLS_KEYCTX_RXMK_SIZE_S)
-+
-+#define KEYCTX_TX_WR_IV_S  55
-+#define KEYCTX_TX_WR_IV_M  0x1ffULL
-+#define KEYCTX_TX_WR_IV_V(x) ((x) << KEYCTX_TX_WR_IV_S)
-+#define KEYCTX_TX_WR_IV_G(x) \
-+	(((x) >> KEYCTX_TX_WR_IV_S) & KEYCTX_TX_WR_IV_M)
-+
-+#define KEYCTX_TX_WR_AAD_S 47
-+#define KEYCTX_TX_WR_AAD_M 0xffULL
-+#define KEYCTX_TX_WR_AAD_V(x) ((x) << KEYCTX_TX_WR_AAD_S)
-+#define KEYCTX_TX_WR_AAD_G(x) (((x) >> KEYCTX_TX_WR_AAD_S) & \
-+				KEYCTX_TX_WR_AAD_M)
-+
-+#define KEYCTX_TX_WR_AADST_S 39
-+#define KEYCTX_TX_WR_AADST_M 0xffULL
-+#define KEYCTX_TX_WR_AADST_V(x) ((x) << KEYCTX_TX_WR_AADST_S)
-+#define KEYCTX_TX_WR_AADST_G(x) \
-+	(((x) >> KEYCTX_TX_WR_AADST_S) & KEYCTX_TX_WR_AADST_M)
-+
-+#define KEYCTX_TX_WR_CIPHER_S 30
-+#define KEYCTX_TX_WR_CIPHER_M 0x1ffULL
-+#define KEYCTX_TX_WR_CIPHER_V(x) ((x) << KEYCTX_TX_WR_CIPHER_S)
-+#define KEYCTX_TX_WR_CIPHER_G(x) \
-+	(((x) >> KEYCTX_TX_WR_CIPHER_S) & KEYCTX_TX_WR_CIPHER_M)
-+
-+#define KEYCTX_TX_WR_CIPHERST_S 23
-+#define KEYCTX_TX_WR_CIPHERST_M 0x7f
-+#define KEYCTX_TX_WR_CIPHERST_V(x) ((x) << KEYCTX_TX_WR_CIPHERST_S)
-+#define KEYCTX_TX_WR_CIPHERST_G(x) \
-+	(((x) >> KEYCTX_TX_WR_CIPHERST_S) & KEYCTX_TX_WR_CIPHERST_M)
-+
-+#define KEYCTX_TX_WR_AUTH_S 14
-+#define KEYCTX_TX_WR_AUTH_M 0x1ff
-+#define KEYCTX_TX_WR_AUTH_V(x) ((x) << KEYCTX_TX_WR_AUTH_S)
-+#define KEYCTX_TX_WR_AUTH_G(x) \
-+	(((x) >> KEYCTX_TX_WR_AUTH_S) & KEYCTX_TX_WR_AUTH_M)
-+
-+#define KEYCTX_TX_WR_AUTHST_S 7
-+#define KEYCTX_TX_WR_AUTHST_M 0x7f
-+#define KEYCTX_TX_WR_AUTHST_V(x) ((x) << KEYCTX_TX_WR_AUTHST_S)
-+#define KEYCTX_TX_WR_AUTHST_G(x) \
-+	(((x) >> KEYCTX_TX_WR_AUTHST_S) & KEYCTX_TX_WR_AUTHST_M)
-+
-+#define KEYCTX_TX_WR_AUTHIN_S 0
-+#define KEYCTX_TX_WR_AUTHIN_M 0x7f
-+#define KEYCTX_TX_WR_AUTHIN_V(x) ((x) << KEYCTX_TX_WR_AUTHIN_S)
-+#define KEYCTX_TX_WR_AUTHIN_G(x) \
-+	(((x) >> KEYCTX_TX_WR_AUTHIN_S) & KEYCTX_TX_WR_AUTHIN_M)
-+
-+struct sge_opaque_hdr {
-+	void *dev;
-+	dma_addr_t addr[MAX_SKB_FRAGS + 1];
+ static int chcr_xfrm_add_state(struct xfrm_state *x);
+ static void chcr_xfrm_del_state(struct xfrm_state *x);
+ static void chcr_xfrm_free_state(struct xfrm_state *x);
+ static bool chcr_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x);
+ static void chcr_advance_esn_state(struct xfrm_state *x);
++static int ch_ipsec_uld_state_change(void *handle, enum cxgb4_state new_state);
++static void *ch_ipsec_uld_add(const struct cxgb4_lld_info *infop);
++static void update_netdev_features(void);
+ 
+ static const struct xfrmdev_ops chcr_xfrmdev_ops = {
+ 	.xdo_dev_state_add      = chcr_xfrm_add_state,
+@@ -102,6 +106,57 @@ void chcr_add_xfrmops(const struct cxgb4_lld_info *lld)
+ 	}
+ }
+ 
++static struct cxgb4_uld_info ch_ipsec_uld_info = {
++	.name = CHIPSEC_DRV_MODULE_NAME,
++	.nrxq = MAX_ULD_QSETS,
++	/* Max ntxq will be derived from fw config file*/
++	.rxq_size = 1024,
++	.add = ch_ipsec_uld_add,
++	.state_change = ch_ipsec_uld_state_change,
++	.tx_handler = chcr_ipsec_xmit,
 +};
 +
- #define MAX_IVS_PAGE			256
- #define TLS_KEY_CONTEXT_SZ		64
- #define CIPHER_BLOCK_SIZE		16
-diff --git a/drivers/crypto/chelsio/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-similarity index 100%
-rename from drivers/crypto/chelsio/chtls/chtls_cm.c
-rename to drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-diff --git a/drivers/crypto/chelsio/chtls/chtls_cm.h b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.h
-similarity index 100%
-rename from drivers/crypto/chelsio/chtls/chtls_cm.h
-rename to drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.h
-diff --git a/drivers/crypto/chelsio/chtls/chtls_hw.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
-similarity index 100%
-rename from drivers/crypto/chelsio/chtls/chtls_hw.c
-rename to drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
-diff --git a/drivers/crypto/chelsio/chtls/chtls_io.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
-similarity index 100%
-rename from drivers/crypto/chelsio/chtls/chtls_io.c
-rename to drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
-diff --git a/drivers/crypto/chelsio/chtls/chtls_main.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.c
-similarity index 99%
-rename from drivers/crypto/chelsio/chtls/chtls_main.c
-rename to drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.c
-index 66d247efd561..9098b3eed4da 100644
---- a/drivers/crypto/chelsio/chtls/chtls_main.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.c
-@@ -638,4 +638,4 @@ module_exit(chtls_unregister);
- MODULE_DESCRIPTION("Chelsio TLS Inline driver");
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Chelsio Communications");
--MODULE_VERSION(DRV_VERSION);
-+MODULE_VERSION(CHTLS_DRV_VERSION);
++static void *ch_ipsec_uld_add(const struct cxgb4_lld_info *infop)
++{
++	struct ipsec_uld_ctx *u_ctx;
++
++	pr_info_once("%s - version %s\n", CHIPSEC_DRV_DESC,
++		     CHIPSEC_DRV_VERSION);
++	u_ctx = kzalloc(sizeof(*u_ctx), GFP_KERNEL);
++	if (!u_ctx) {
++		u_ctx = ERR_PTR(-ENOMEM);
++		goto out;
++	}
++	u_ctx->lldi = *infop;
++out:
++	return u_ctx;
++}
++
++static int ch_ipsec_uld_state_change(void *handle, enum cxgb4_state new_state)
++{
++	struct ipsec_uld_ctx *u_ctx = handle;
++
++	pr_info("new_state %u\n", new_state);
++	switch (new_state) {
++	case CXGB4_STATE_UP:
++		pr_info("%s: Up\n", pci_name(u_ctx->lldi.pdev));
++		mutex_lock(&dev_mutex);
++		list_add_tail(&u_ctx->entry, &uld_ctx_list);
++		mutex_unlock(&dev_mutex);
++		break;
++	case CXGB4_STATE_START_RECOVERY:
++	case CXGB4_STATE_DOWN:
++	case CXGB4_STATE_DETACH:
++		pr_info("%s: Down\n", pci_name(u_ctx->lldi.pdev));
++		list_del(&u_ctx->entry);
++		break;
++	default:
++		break;
++	}
++
++	return 0;
++}
++
+ static inline int chcr_ipsec_setauthsize(struct xfrm_state *x,
+ 					 struct ipsec_sa_entry *sa_entry)
+ {
+@@ -538,7 +593,7 @@ inline void *chcr_crypto_wreq(struct sk_buff *skb,
+ 	unsigned int kctx_len = sa_entry->kctx_len;
+ 	int qid = q->q.cntxt_id;
+ 
+-	atomic_inc(&adap->chcr_stats.ipsec_cnt);
++	atomic_inc(&adap->ch_ipsec_stats.ipsec_cnt);
+ 
+ 	flits = calc_tx_sec_flits(skb, sa_entry, &immediate);
+ 	ndesc = DIV_ROUND_UP(flits, 2);
+@@ -752,3 +807,51 @@ out_free:       dev_kfree_skb_any(skb);
+ 	cxgb4_ring_tx_db(adap, &q->q, ndesc);
+ 	return NETDEV_TX_OK;
+ }
++
++static void update_netdev_features(void)
++{
++	struct ipsec_uld_ctx *u_ctx, *tmp;
++
++	mutex_lock(&dev_mutex);
++	list_for_each_entry_safe(u_ctx, tmp, &uld_ctx_list, entry) {
++		if (u_ctx->lldi.crypto & ULP_CRYPTO_IPSEC_INLINE)
++			chcr_add_xfrmops(&u_ctx->lldi);
++	}
++	mutex_unlock(&dev_mutex);
++}
++
++static int __init chcr_ipsec_init(void)
++{
++	cxgb4_register_uld(CXGB4_ULD_IPSEC, &ch_ipsec_uld_info);
++
++	rtnl_lock();
++	update_netdev_features();
++	rtnl_unlock();
++
++	return 0;
++}
++
++static void __exit chcr_ipsec_exit(void)
++{
++	struct ipsec_uld_ctx *u_ctx, *tmp;
++	struct adapter *adap;
++
++	mutex_lock(&dev_mutex);
++	list_for_each_entry_safe(u_ctx, tmp, &uld_ctx_list, entry) {
++		adap = pci_get_drvdata(u_ctx->lldi.pdev);
++		atomic_set(&adap->ch_ipsec_stats.ipsec_cnt, 0);
++		list_del(&u_ctx->entry);
++		kfree(u_ctx);
++	}
++	mutex_unlock(&dev_mutex);
++	cxgb4_unregister_uld(CXGB4_ULD_IPSEC);
++}
++
++module_init(chcr_ipsec_init);
++module_exit(chcr_ipsec_exit);
++
++MODULE_DESCRIPTION("Crypto IPSEC for Chelsio Terminator cards.");
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Chelsio Communications");
++MODULE_VERSION(CHIPSEC_DRV_VERSION);
++
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.h b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.h
+new file mode 100644
+index 000000000000..1d110d2edd64
+--- /dev/null
++++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.h
+@@ -0,0 +1,58 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* Copyright (c) 2018 Chelsio Communications, Inc. */
++
++#ifndef __CHCR_IPSEC_H__
++#define __CHCR_IPSEC_H__
++
++#include <crypto/algapi.h>
++#include "t4_hw.h"
++#include "cxgb4.h"
++#include "t4_msg.h"
++#include "cxgb4_uld.h"
++
++#include "chcr_core.h"
++#include "chcr_algo.h"
++#include "chcr_crypto.h"
++
++#define CHIPSEC_DRV_MODULE_NAME "ch_ipsec"
++#define CHIPSEC_DRV_VERSION "1.0.0.0-ko"
++#define CHIPSEC_DRV_DESC "Chelsio T6 Crypto Ipsec offload Driver"
++
++struct ipsec_uld_ctx {
++	struct list_head entry;
++	struct cxgb4_lld_info lldi;
++};
++
++struct chcr_ipsec_req {
++	struct ulp_txpkt ulptx;
++	struct ulptx_idata sc_imm;
++	struct cpl_tx_sec_pdu sec_cpl;
++	struct _key_ctx key_ctx;
++};
++
++struct chcr_ipsec_wr {
++	struct fw_ulptx_wr wreq;
++	struct chcr_ipsec_req req;
++};
++
++#define ESN_IV_INSERT_OFFSET 12
++struct chcr_ipsec_aadiv {
++	__be32 spi;
++	u8 seq_no[8];
++	u8 iv[8];
++};
++
++struct ipsec_sa_entry {
++	int hmac_ctrl;
++	u16 esn;
++	u16 resv;
++	unsigned int enckey_len;
++	unsigned int kctx_len;
++	unsigned int authsize;
++	__be32 key_ctx_hdr;
++	char salt[MAX_SALT];
++	char key[2 * AES_MAX_KEY_SIZE];
++};
++
++#endif /* __CHCR_IPSEC_H__ */
++
 -- 
 2.18.1
 
