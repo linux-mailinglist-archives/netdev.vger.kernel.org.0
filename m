@@ -2,98 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51F69249228
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:09:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7385E249231
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:15:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727782AbgHSBJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 21:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726486AbgHSBJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 21:09:24 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB53C061389;
-        Tue, 18 Aug 2020 18:09:23 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4BWV6m2Zsvz9sPC;
-        Wed, 19 Aug 2020 11:09:19 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1597799360;
-        bh=PZ4f53VeW+am97M+os2kN5bTE89KqaSC9EwrF9k3KBU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=j95hiToEKFsL0BphmgilDDXrzZyUj/guPGnrsc0NyvYWAekP3Fc/8I9io8yEFko1t
-         /ztJl4Viyy8XOITgLCUX7GtcPSXQx4P6KG/Nwwq3T9OFhc1BlKemCfLNrNsW31k5ts
-         KSAdWQD4pF2/QM+ALwmNhY61zPpefLtvaHNpvF2wH/lzEnWdoLstlRJzUMI4mDviKB
-         mhrOZdojm8/euvz35xXg8QPc3By9SolpC8xBYMfY6MjnE2Zb0b0vqqaWXSjjMqwrqj
-         gnALmInD3UB/rNU2MdRmxAE5fkcCRkuUK50NAnU/tvPOmBFvc6kebwrMIPolAC9tD0
-         HZWZRtgmzzmIQ==
-Date:   Wed, 19 Aug 2020 11:09:18 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: linux-next: manual merge of the net-next tree with the kspp-gustavo
- tree
-Message-ID: <20200819110918.43a7397d@canb.auug.org.au>
+        id S1727079AbgHSBO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 21:14:58 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:21656 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726890AbgHSBO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 21:14:57 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07J1DW84018300
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 18:14:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=/uUFrz2pplyNeuzwjVTtdWHekCwyi/O0CKqPnUBAh2Y=;
+ b=A08HzhhPElIP8ar1HUd6SO3WoFR2zWYS304bUD3/iGH7tq16rHT9X+6i+bNksEqKJLBo
+ tPJNPbLzpcBnIor4xYyEYi7riZWFWYvmcvYY3NG7BEl+DYk4GgNICA273F6w3AuMIU+L
+ 3tXb3CcQoiPSbZxSgxn7eetJn3yu2L3kzDc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3304kpp0ep-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 18:14:56 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 18 Aug 2020 18:14:54 -0700
+Received: by devbig218.frc2.facebook.com (Postfix, from userid 116055)
+        id 4079D207458; Tue, 18 Aug 2020 18:14:50 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Udip Pant <udippant@fb.com>
+Smtp-Origin-Hostname: devbig218.frc2.facebook.com
+To:     Udip Pant <udippant@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Smtp-Origin-Cluster: frc2c02
+Subject: [PATCH bpf] bpf: verifier: check for packet data access based on target prog
+Date:   Tue, 18 Aug 2020 18:12:44 -0700
+Message-ID: <20200819011244.2027725-1-udippant@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/LzT7RpsEKCeHL6WWia16gBO";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-18_16:2020-08-18,2020-08-18 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1011 spamscore=0
+ impostorscore=0 mlxscore=0 adultscore=0 malwarescore=0 mlxlogscore=880
+ lowpriorityscore=0 suspectscore=0 phishscore=0 bulkscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008190010
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/LzT7RpsEKCeHL6WWia16gBO
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+While using dynamic program extension (of type BPF_PROG_TYPE_EXT), we
+need to check the program type of the target program to grant the read /
+write access to the packet data.
 
-Hi all,
+The BPF_PROG_TYPE_EXT type can be used to extend types such as XDP, SKB
+and others. Since the BPF_PROG_TYPE_EXT program type on itself is just a
+placeholder for those, we need this extended check for those target
+programs to actually work while using this option.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+Tested this with a freplace xdp program. Without this patch, the
+verifier fails with error 'cannot write into packet'.
 
-  lib/nlattr.c
+Signed-off-by: Udip Pant <udippant@fb.com>
+---
+ kernel/bpf/verifier.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-between commit:
-
-  58e813cceabd ("treewide: Use fallthrough pseudo-keyword")
-
-from the kspp-gustavo tree and commit:
-
-  8aa26c575fb3 ("netlink: make NLA_BINARY validation more flexible")
-
-from the net-next tree.
-
-I fixed it up (the latter removed some of the code updated by the former)
-and can carry the fix as necessary. This is now fixed as far as linux-next
-is concerned, but any non trivial conflicts should be mentioned to your
-upstream maintainer when your tree is submitted for merging.  You may
-also want to consider cooperating with the maintainer of the conflicting
-tree to minimise any particularly complex conflicts.
-
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index ef938f17b944..4d7604430994 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -2629,7 +2629,11 @@ static bool may_access_direct_pkt_data(struct bpf_=
+verifier_env *env,
+ 				       const struct bpf_call_arg_meta *meta,
+ 				       enum bpf_access_type t)
+ {
+-	switch (env->prog->type) {
++	struct bpf_prog *prog =3D env->prog;
++	enum bpf_prog_type prog_type =3D prog->aux->linked_prog ?
++	      prog->aux->linked_prog->type : prog->type;
++
++	switch (prog_type) {
+ 	/* Program types only with direct read access go here! */
+ 	case BPF_PROG_TYPE_LWT_IN:
+ 	case BPF_PROG_TYPE_LWT_OUT:
 --=20
-Cheers,
-Stephen Rothwell
+2.24.1
 
---Sig_/LzT7RpsEKCeHL6WWia16gBO
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl88e74ACgkQAVBC80lX
-0GwzEAf/cmJ58ZsosxZvX25OxpXOzuUPtkOtCilLc9vtKYKk0eZpP5F80LPhuTPO
-fluq9y4BpfeCMj2D3WnRwE+Fj7e5oG7aOziMU0L1X097eM8gn4afWhoEcr11BwyP
-y4G+Q1zOhsyB38K7Oo2RhEByc2p9fDtNk8x+kTKSFSzX4OxFWrcN8bZcVoolCYoW
-mSa2Z4mzFKZehDC2hjFa6+OutLuwOMoq0IvJwibpWLXeQzP2lS4waRGxRGFsQD42
-VcZFCsPjFdZkqTHXipXI8sF3mtebnzFCAIqqUGBoWwi+E4EdHUTZwAGeH74eyLBi
-/iz0GK8gJ4+D8yTyPWRz1rOwOzoMAQ==
-=0c+y
------END PGP SIGNATURE-----
-
---Sig_/LzT7RpsEKCeHL6WWia16gBO--
