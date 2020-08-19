@@ -2,171 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89F0024A802
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 22:51:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E18C824A814
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 22:58:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbgHSUv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 16:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53134 "EHLO
+        id S1726948AbgHSU6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 16:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726617AbgHSUvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 16:51:25 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE4CC061757;
-        Wed, 19 Aug 2020 13:51:25 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id y6so11422598plt.3;
-        Wed, 19 Aug 2020 13:51:25 -0700 (PDT)
+        with ESMTP id S1725997AbgHSU6D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 16:58:03 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340EBC061757;
+        Wed, 19 Aug 2020 13:58:03 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id q3so14074291ybp.7;
+        Wed, 19 Aug 2020 13:58:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=9TX9XzKRN7dNPcsRS3b4Jd5+wB3kzX0sXoNzZYYwbG4=;
-        b=I4J73SbBRdIhrd9K2yU3DltmtJFSlUPZownUuVKUKUGA80qDd0RWE1bkktpsiibkFg
-         2rNg7/EbcELJ8poBqgTUXPQBFWv1yKe188Xel2ff4F3fYp4MbnmXqVxzHwqT5yT4IDOO
-         w1r7Ii+hFCyZ/rdAeOS/diB03vXEeWzY7+IBxZhnkNmc4uR/ZbSdBHo1j+t3afJeIR6x
-         KZfnliAJI3XKkvTFyLO1PEU9XoGKm68+0xKm0jmNoKd2cBtAaDj7KSHPX52uQD7V+luH
-         GWzIlodVVmlMoRvpgTSnNvXT3hkJpTQDTo2M0UTjke8AiiYegPrGAjB77w6wHOxMVWYa
-         CHcg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iYJit2DOCfkY8sTCk27/mnZitItuDVeSi6cqy/KAqrQ=;
+        b=X3D6JjWX1lVN31i+amns+xpnTJoYN5eSHu5f8qX0ph8IiMiiNldZ9ptZknDaMxr0Dy
+         5H470R1KOnEBbo8qClnM4KtVMagDi8hK3Y9gxgnqIfo1UmVWjDsOeCA1VN6yNGt4Iezj
+         IvcGapgLDsGhQrj6FiZNWB5Re59G5DG9JkXmUwFrLcrFHUcS8Tgl2R3vWGDKT9dIzB4j
+         Mg5BUImX04CRzQ8ulkniBxj+yBjluzbGJ0RV0TTC2hnPD7W8SATETL8lgT48pO0vTiyb
+         uIVG7E+B7mQ+xxHA1dnPx5hcArCW7zKmIXvpVo13XuTPn5AQ9kUI+pa5hiObi2ThcSZY
+         FZ4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=9TX9XzKRN7dNPcsRS3b4Jd5+wB3kzX0sXoNzZYYwbG4=;
-        b=J2tFn/xJxZtaWZkjY2cvxkPKXE9mRJIGTpJgX5wtvIXFWOvNvueDW7KHOT+YaOFRIw
-         gmImRnmy59VauTveS5Kj1Lu6TaymlRrPbMbgYdjUcL4938VYloUb/1U3dK2QtfdQV0L1
-         TmjFtNWUnx4vEbT1G6XaGrBRsIPL6WFmECPLQ0MM7ve35UNtkMy7K3OBc0BUbHDiHbYF
-         1kUdW7lWilZVokWsfqikThKmrCc6h0JcB6ffxu10B0r9Ne4aMUG/DHfZftYrLmheRVme
-         g/CudwHJYvEK+MgiRWULbIP2Wp1E3XzcgWDp5H5f8kSqylUk9nOKRIw0Z6IqNtxMg93Y
-         Opzg==
-X-Gm-Message-State: AOAM531Lt96EEReeLMej6MHVAMk/VCYp/BMZhqwqrLmcO0WSstNYlA+f
-        VwMmFhiRkq2RJHe445Erzh5d5GLmT+6xhA==
-X-Google-Smtp-Source: ABdhPJxS5VQCC6i1Wt07RlUEsHrnlVzTLdCoR6eMOpbKPKiR4OqLNTj0eciwumkt74USs713xXbh1Q==
-X-Received: by 2002:a17:90a:7f8a:: with SMTP id m10mr3374481pjl.47.1597870284645;
-        Wed, 19 Aug 2020 13:51:24 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id l78sm98024pfd.130.2020.08.19.13.51.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2020 13:51:24 -0700 (PDT)
-Date:   Wed, 19 Aug 2020 13:51:16 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>, jakub@cloudflare.com,
-        john.fastabend@gmail.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-ID: <5f3d90c432246_2c9b2adeefb585bc89@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200819092436.58232-5-lmb@cloudflare.com>
-References: <20200819092436.58232-1-lmb@cloudflare.com>
- <20200819092436.58232-5-lmb@cloudflare.com>
-Subject: RE: [PATCH bpf-next 4/6] bpf: override the meaning of
- ARG_PTR_TO_MAP_VALUE for sockmap and sockhash
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iYJit2DOCfkY8sTCk27/mnZitItuDVeSi6cqy/KAqrQ=;
+        b=JEMsa8U1Gf03ugX+4bVU+ICyo80rV7wc4Eo3X1GKAWL6bgiVILuhbvNNHuLTY78Rd8
+         dvDpgfHGZrvm8xmBVoxS7gWnwXg8llPcTCNwN/3oqjn38MlMLYLI0HMml/7dFpoafrCn
+         Rqebw2z0Dz1AS5v4RdzcNgInmnR4/0gmFzDHXWofeMizWsetmHTMXRtTdqTFWraXdIDM
+         uDz7wSc69x/syuONnuzGhoK7SIkLgF7UIXQgceDS2/3BVEKKiElIuIOsNe4MV113PF7d
+         vqvqzFKEajNkN7Iq+DVFgUKd3X4Tm4Xg8hKaLdCveWR4LBLyqroE98C9+h0hVqWVSo62
+         HuZg==
+X-Gm-Message-State: AOAM530TLcH4RfRNcZG5IIliiG/SOfyEdT+ZGBwHCucKIA3bQ04a0gdi
+        UFgS0LCO5s0qORTkJQgWc6LpsKF/Nq5QuEMCxsA=
+X-Google-Smtp-Source: ABdhPJztJZn/IVNEDq2IoT4pBH8i3ibCqlXWecvwEIvAu21jgNP0NeWjW89k/A8rXWoIqQpg/AEZ1lVtQVjoiMFcvCo=
+X-Received: by 2002:a25:ad5a:: with SMTP id l26mr355253ybe.510.1597870682469;
+ Wed, 19 Aug 2020 13:58:02 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200819092811.GA2420@lore-desk>
+In-Reply-To: <20200819092811.GA2420@lore-desk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 19 Aug 2020 13:57:51 -0700
+Message-ID: <CAEf4BzZSui9r=-yDzy0CjWKVx9zKvQWX6ZBNXmSUTOHCOR+7RA@mail.gmail.com>
+Subject: Re: xdp generic default option
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenz Bauer wrote:
-> The verifier assumes that map values are simple blobs of memory, and
-> therefore treats ARG_PTR_TO_MAP_VALUE, etc. as such. However, there are
-> map types where this isn't true. For example, sockmap and sockhash store
-> sockets. In general this isn't a big problem: we can just
-> write helpers that explicitly requests PTR_TO_SOCKET instead of
-> ARG_PTR_TO_MAP_VALUE.
-> 
-> The one exception are the standard map helpers like map_update_elem,
-> map_lookup_elem, etc. Here it would be nice we could overload the
-> function prototype for different kinds of maps. Unfortunately, this
-> isn't entirely straight forward:
-> We only know the type of the map once we have resolved meta->map_ptr
-> in check_func_arg. This means we can't swap out the prototype
-> in check_helper_call until we're half way through the function.
-> 
-> Instead, modify check_func_arg to treat ARG_PTR_TO_MAP_VALUE* to
-> mean "the native type for the map" instead of "pointer to memory"
-> for sockmap and sockhash. This means we don't have to modify the
-> function prototype at all
-> 
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> ---
->  kernel/bpf/verifier.c | 40 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 40 insertions(+)
-> 
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index b6ccfce3bf4c..47f9b94bb9d4 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -3872,6 +3872,38 @@ static int int_ptr_type_to_size(enum bpf_arg_type type)
->  	return -EINVAL;
+On Wed, Aug 19, 2020 at 2:29 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> Hi Andrii,
+>
+> working on xdp multi-buff I figured out now xdp generic is the default choice
+> if not specified by userspace. In particular after commit 7f0a838254bd
+> ("bpf, xdp: Maintain info on attached XDP BPF programs in net_device"), running
+> the command below, XDP will run in generic mode even if the underlay driver
+> support XDP in native mode:
+>
+> $ip link set dev eth0 xdp obj prog.o
+> $ip link show dev eth0
+> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdpgeneric qdisc mq state UP mode DEFAULT
+>    group default qlen 1024
+>    link/ether f0:ad:4e:09:6b:57 brd ff:ff:ff:ff:ff:ff
+>    prog/xdp id 1 tag 3b185187f1855c4c jited
+>
+> Is it better to use xdpdrv as default choice if not specified by userspace?
+> doing something like:
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index a00aa737ce29..1f85880ee412 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -8747,9 +8747,9 @@ static enum bpf_xdp_mode dev_xdp_mode(u32 flags)
+>  {
+>         if (flags & XDP_FLAGS_HW_MODE)
+>                 return XDP_MODE_HW;
+> -       if (flags & XDP_FLAGS_DRV_MODE)
+> -               return XDP_MODE_DRV;
+> -       return XDP_MODE_SKB;
+> +       if (flags & XDP_FLAGS_SKB_MODE)
+> +               return XDP_MODE_SKB;
+> +       return XDP_MODE_DRV;
 >  }
->  
-> +static int override_map_arg_type(struct bpf_verifier_env *env,
-> +				 const struct bpf_call_arg_meta *meta,
-> +				 enum bpf_arg_type *arg_type)
+>
 
-One nit can we rename this to refine_map_arg_type or resolve_map_arg_type I
-don't like the name "override" we are getting a more precise type here.
+I think the better way would be to choose XDP_MODE_DRV if ndo_bpf !=
+NULL and XDP_MODE_SKB otherwise. That seems to be matching original
+behavior, no?
 
-> +{
-> +	if (!meta->map_ptr) {
-> +		/* kernel subsystem misconfigured verifier */
-> +		verbose(env, "invalid map_ptr to access map->type\n");
-> +		return -EACCES;
-> +	}
-> +
-> +	switch (meta->map_ptr->map_type) {
-> +	case BPF_MAP_TYPE_SOCKMAP:
-> +	case BPF_MAP_TYPE_SOCKHASH:
-> +		switch (*arg_type) {
-> +		case ARG_PTR_TO_MAP_VALUE:
-> +			*arg_type = ARG_PTR_TO_SOCKET;
-> +			break;
-> +		case ARG_PTR_TO_MAP_VALUE_OR_NULL:
-> +			*arg_type = ARG_PTR_TO_SOCKET_OR_NULL;
-> +			break;
-> +		default:
-> +			verbose(env, "invalid arg_type for sockmap/sockhash\n");
+It was not my intent to change the behavior, sorry about that. I'll
+post patch a bit later today.
 
-Might be worth pushing the arg_type into the verbose message so its obvious
-where the types went wrong. We will probably "know" just based on the
-switch in front of this, but users in general wont. Just a suggestion if
-you think its overkill go ahead and skip.
 
-> +			return -EINVAL;
-> +		}
-> +		break;
-> +
-> +	default:
-> +		break;
-> +	}
-> +	return 0;
-> +}
-> +
-
-Otherwise LGTM.
-
->  static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
->  			  struct bpf_call_arg_meta *meta,
->  			  const struct bpf_func_proto *fn)
-> @@ -3904,6 +3936,14 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
->  		return -EACCES;
->  	}
->  
-> +	if (arg_type == ARG_PTR_TO_MAP_VALUE ||
-> +	    arg_type == ARG_PTR_TO_UNINIT_MAP_VALUE ||
-> +	    arg_type == ARG_PTR_TO_MAP_VALUE_OR_NULL) {
-> +		err = override_map_arg_type(env, meta, &arg_type);
-> +		if (err)
-> +			return err;
-> +	}
-> +
->  	if (arg_type == ARG_PTR_TO_MAP_KEY ||
->  	    arg_type == ARG_PTR_TO_MAP_VALUE ||
->  	    arg_type == ARG_PTR_TO_UNINIT_MAP_VALUE ||
-> -- 
-> 2.25.1
-> 
+>  static bpf_op_t dev_xdp_bpf_op(struct net_device *dev, enum bpf_xdp_mode mode)
+>
+> Regards,
+> Lorenzo
