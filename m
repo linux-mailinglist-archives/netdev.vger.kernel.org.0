@@ -2,101 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C89F24A972
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 00:36:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C38024A979
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 00:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727070AbgHSWgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 18:36:31 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:35088 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726209AbgHSWga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 18:36:30 -0400
-Received: by mail-io1-f65.google.com with SMTP id s2so413972ioo.2;
-        Wed, 19 Aug 2020 15:36:29 -0700 (PDT)
+        id S1727791AbgHSWhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 18:37:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726209AbgHSWhv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 18:37:51 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25D4C061757;
+        Wed, 19 Aug 2020 15:37:50 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id e187so74983ybc.5;
+        Wed, 19 Aug 2020 15:37:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X67iRBaKVw9bzFfjGhLxKWPPTMTyIqamnsr23odR9XY=;
+        b=ridks66+D20DomaAE6NDp7VT/uEEYhrLIbrZMay+qDXm1H6jkKbkVjGwOFuZUsOTGH
+         lyfyTsD6IRAZFbX335feY4X8iK7kFYr4+j/dV+7o7hVETd3tBn6iuFGcb0v0/Z0N/5rL
+         6J8guJ3AuUqn8lU49HFJ+Td6ATuIsI+ALotOSvC8Uaw8fRqIHyzUEJavpjs5KOmeLjow
+         jMoZXFWpJ2oAofsF8SpI1mu1gyBBtKXRbyyyzm7n/fj/Hr2laYRxPwRI9eGPcpWtufpo
+         7mb2Vr1pJ/ZL/+iCdS39cbavJGQthmUuyfrmLryyRd58Us1n7KjylUNwBdp4L7XZq32A
+         0USA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bC6aASYEgsmqX0lrYUMvyzWqmXHNI5bk9/vbQX0AirY=;
-        b=SWTs008CEnelWbAez7PJeCHAIGaPzw12nSXnkigcyRglTdj+2qTPIpfbZTB44q3qrP
-         1HUJXJiPEIvKB/RABIWEfsqZHOfxmoX9HmhvgJRHkpvZDRXZcVsdr9MXf1QUDXzOM+UT
-         3ih7/fiAL+le0Nqu6HbHoFGiFQbOe12IFANNzQw/ly8PT9oQ3/j08oUfQF+aYMETyoGc
-         OkQPXAIaUw3OE0EXirbTGsj8WgxV/lpBBruL8lpDG34Se6nLa56Fkm8vQJ6YJbJeKvbq
-         I4DJ6Ma5tvPM8qY3gsVfRtzpf9nsM2MrCFKhcce32Zx31oH/LQ22a0V3gFJZ8es+YRND
-         oFiQ==
-X-Gm-Message-State: AOAM533OPoAraIbyMe+b3nZEUtW9eDpAUW/Z/2qSXESqyIKyBycX76B7
-        aZyNAhhomC6lDdHnp5holQ==
-X-Google-Smtp-Source: ABdhPJyExfthK/G2i9U35sdrsHpH6q4ydgO7dbM/7WUr+hI2m5whIMc2HLDa2NliEenlvW3c4ys8/A==
-X-Received: by 2002:a6b:591a:: with SMTP id n26mr147084iob.122.1597876589103;
-        Wed, 19 Aug 2020 15:36:29 -0700 (PDT)
-Received: from xps15 ([64.188.179.249])
-        by smtp.gmail.com with ESMTPSA id p21sm49152ioj.10.2020.08.19.15.36.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2020 15:36:28 -0700 (PDT)
-Received: (nullmailer pid 2087313 invoked by uid 1000);
-        Wed, 19 Aug 2020 22:36:25 -0000
-Date:   Wed, 19 Aug 2020 16:36:25 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Jesper Dangaard Brouer <hawk@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>, linuxarm@huawei.com,
-        David Airlie <airlied@linux.ie>, Wei Xu <xuwei5@hisilicon.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-kernel@lists.infradead.org, bpf@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        mauro.chehab@huawei.com, Jakub Kicinski <kuba@kernel.org>,
-        John Stultz <john.stultz@linaro.org>
-Subject: Re: [PATCH 49/49] dt: display: Add binds for the DPE and DSI
- controller for Kirin 960/970
-Message-ID: <20200819223625.GA2086431@bogus>
-References: <cover.1597833138.git.mchehab+huawei@kernel.org>
- <6471642f74779fecfc9d5e990d90f9475d8b32d4.1597833138.git.mchehab+huawei@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X67iRBaKVw9bzFfjGhLxKWPPTMTyIqamnsr23odR9XY=;
+        b=K4gGmH59wV7zPFAF1+dmHWAVIG/2BnZFOk+06TOabQHE9ePOrCAkY4YkuWvwqP7zmO
+         CDyELNdHqgTw13JXSi+u8mnTyi04tZ4Ob48iIUix/6Jk/v251NSxzpkt9E4pswyiaAWx
+         3He5z8JMomkQ7JGR+D6lZbkgzl+iqLZ13/6kM0Km+9hOD6TDREu/mWjt6dIZes7lwjx6
+         VCT+NkpLMBZgD1rAXEilIz3HStOHgsCMD5F7K2EWbE+qIeKe1ErxD+DubN+VzqtK2pW5
+         yisIaojZ1YIpkCSlDhijBw0IATrQPEPO1FbP0mcF2nWNCTsXt7+ffd45dat7Hb6XvMJi
+         m/Xw==
+X-Gm-Message-State: AOAM531rvgf5EZvonSWJANwy8613jrgO80rehYzmMts3I/uUZFYtonty
+        laSWG+/6srS6wK0J3S16xoMmbJtNVRPpl0xVurQ=
+X-Google-Smtp-Source: ABdhPJyy0uhxOjfL5wtIHEY0tWHvCeFZmdyd+s9+I5MhkCx1IRh6+xgO3mGgUfTzq3b+7rQxXwXcz/LAiriUtcZKaYQ=
+X-Received: by 2002:a25:2ad3:: with SMTP id q202mr856308ybq.27.1597876670063;
+ Wed, 19 Aug 2020 15:37:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6471642f74779fecfc9d5e990d90f9475d8b32d4.1597833138.git.mchehab+huawei@kernel.org>
+References: <20200819194519.3375898-1-andriin@fb.com> <20200819215846.frvsnoxu6vv4wamt@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200819215846.frvsnoxu6vv4wamt@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 19 Aug 2020 15:37:39 -0700
+Message-ID: <CAEf4BzbOo9OXj0tkv=BGY0fGKxRRONxG9TmKcspbpWnL22rMLA@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 0/5] Add libbpf support for type- and enum
+ value-based CO-RE relocations
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Aug 2020 13:46:17 +0200, Mauro Carvalho Chehab wrote:
-> Add a description of the bindings used by Kirin 960/970 Display
-> Serial Interface (DSI) controller and by its Display Engine (DPE).
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->  .../display/hisilicon,hi3660-dpe.yaml         |  99 +++++++++++++++++
->  .../display/hisilicon,hi3660-dsi.yaml         | 102 ++++++++++++++++++
->  .../boot/dts/hisilicon/hikey970-drm.dtsi      |   4 +-
->  3 files changed, 203 insertions(+), 2 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/display/hisilicon,hi3660-dpe.yaml
->  create mode 100644 Documentation/devicetree/bindings/display/hisilicon,hi3660-dsi.yaml
-> 
+On Wed, Aug 19, 2020 at 2:58 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Aug 19, 2020 at 12:45:14PM -0700, Andrii Nakryiko wrote:
+> >
+> > Selftests are added for all the new features. Selftests utilizing new Clang
+> > built-ins are designed such that they will compile with older Clangs and will
+> > be skipped during test runs. So this shouldn't cause any build and test
+> > failures on systems with slightly outdated Clang compiler.
+> >
+> > LLVM patches adding these relocation in Clang:
+> >   - __builtin_btf_type_id() ([0], [1], [2]);
+> >   - __builtin_preserve_type_info(), __builtin_preserve_enum_value() ([3], [4]).
+> >
+> >   [0] https://reviews.llvm.org/D74572
+> >   [1] https://reviews.llvm.org/D74668
+> >   [2] https://reviews.llvm.org/D85174
+> >   [3] https://reviews.llvm.org/D83878
+> >   [4] https://reviews.llvm.org/D83242
+>
+> Applied.
 
+Thanks!
 
-My bot found errors running 'make dt_binding_check' on your patch:
+> Thank you for listing the above in the commit log, but please follow up with
+> corresponding update to README.rst and mention the same details there: the
+> symptoms of missing clang features, which tests are going to be skipped for
+> older clang, etc.
 
-Error: Documentation/devicetree/bindings/display/hisilicon,hi3660-dsi.example.dts:25.31-32 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:342: Documentation/devicetree/bindings/display/hisilicon,hi3660-dsi.example.dt.yaml] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1367: dt_binding_check] Error 2
+Ok, sure.
 
+>
+> Also progs/test_core_reloc_type_id.c talks about some bug with
+> __builtin_preserve_type_info() please add llvm diff number that fixes
+> it to that .c file.
 
-See https://patchwork.ozlabs.org/patch/1347736
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure dt-schema is up to date:
-
-pip3 install git+https://github.com/devicetree-org/dt-schema.git@master --upgrade
-
-Please check and re-submit.
-
+Ok, that's [2] above.
