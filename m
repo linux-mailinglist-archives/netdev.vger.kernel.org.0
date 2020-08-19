@@ -2,82 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 275B824931B
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 04:55:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E394A249353
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 05:13:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726870AbgHSCzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 22:55:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30764 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726884AbgHSCzp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 22:55:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1597805744;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wzuFejnUa6/7SvIdePc4Dxw6u4PQ7TGHV2322mPlU3g=;
-        b=CVfo1jb12pGm3N322xw68h2JnJn0JtfG0OOP57oSMsOxgxU0MEKMU+CMGxdRhwkxBsbgA5
-        SaYTsqOdGxqqLthUhLAHT1O03FCkbhgIb0TB6UwfbBTNTMP7mdQTFZBOYmukb8IF94LJGB
-        xq+LmKy0YwL9QooMI0kldR32TZ63LVo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-524-oPiGWvAuMPyaXe1nKkF9KA-1; Tue, 18 Aug 2020 22:55:40 -0400
-X-MC-Unique: oPiGWvAuMPyaXe1nKkF9KA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1727942AbgHSDNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 23:13:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47534 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727793AbgHSDNx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Aug 2020 23:13:53 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 817141DDF4;
-        Wed, 19 Aug 2020 02:55:39 +0000 (UTC)
-Received: from [10.72.13.88] (ovpn-13-88.pek2.redhat.com [10.72.13.88])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 22C73BA63;
-        Wed, 19 Aug 2020 02:55:33 +0000 (UTC)
-Subject: Re: [PATCH -next] vdpa: Remove duplicate include
-To:     YueHaibing <yuehaibing@huawei.com>, mst@redhat.com,
-        tiwei.bie@intel.com
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200818114906.58304-1-yuehaibing@huawei.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <13e0a08e-abda-9b0d-53b0-03f6948a80f3@redhat.com>
-Date:   Wed, 19 Aug 2020 10:55:32 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 707852065F;
+        Wed, 19 Aug 2020 03:13:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597806832;
+        bh=6/kg0lAPZtBohkbjIHOUSCLWkwG9hOLDvtGgGljWvEk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=B5BvjPqEV5InWMZGo1QSvS+EEY3uCAeF2bA5+jzxVntDF670CJwsSz1eNiUAJEQwI
+         gzrZkhI1048//C+dv1P85xX5PMBBfz3snEw9C/ygLtF0AYrLp4fqcf0KRrv5vaJd/k
+         bQq9oNsFTqHNZK5Kfa5ByfS1F+jf2pYKZ6YE7b+g=
+Date:   Tue, 18 Aug 2020 20:13:50 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Awogbemila <awogbemila@google.com>
+Cc:     netdev@vger.kernel.org, Kuo Zhao <kuozhao@google.com>,
+        Yangchun Fu <yangchun@google.com>
+Subject: Re: [PATCH net-next 05/18] gve: Add Gvnic stats AQ command and
+ ethtool show/set-priv-flags.
+Message-ID: <20200818201350.58024c28@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200818194417.2003932-6-awogbemila@google.com>
+References: <20200818194417.2003932-1-awogbemila@google.com>
+        <20200818194417.2003932-6-awogbemila@google.com>
 MIME-Version: 1.0
-In-Reply-To: <20200818114906.58304-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 18 Aug 2020 12:44:04 -0700 David Awogbemila wrote:
+> From: Kuo Zhao <kuozhao@google.com>
+> 
+> Changes:
+> - Add a new flag in service_task_flags. Check both this flag and
+> ethtool flag when handle report stats. Update the stats when user turns
+> ethtool flag on.
+> 
+> - In order to expose the NIC stats to the guest even when the ethtool flag
+> is off, share the address and length of report at setup. When the
+> ethtool flag turned off, zero off the gve stats instead of detaching the
+> report. Only detach the report in free_stats_report.
+> 
+> - Adds the NIC stats to ethtool stats. These stats are always
+> exposed to guest no matter the report stats flag is turned
+> on or off.
+> 
+> - Update gve stats once every 20 seconds.
+> 
+> - Add a field for the interval of updating stats report to the AQ
+> command. It will be exposed to USPS so that USPS can use the same
+> interval to update its stats in the report.
+> 
+> Reviewed-by: Yangchun Fu <yangchun@google.com>
+> Signed-off-by: Kuo Zhao <kuozhao@google.com>
+> Signed-off-by: David Awogbemila <awogbemila@google.com>
 
-On 2020/8/18 下午7:49, YueHaibing wrote:
-> Remove duplicate include file
->
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->   drivers/vhost/vdpa.c | 1 -
->   1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 3fab94f88894..95e2b8307a2a 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -22,7 +22,6 @@
->   #include <linux/nospec.h>
->   #include <linux/vhost.h>
->   #include <linux/virtio_net.h>
-> -#include <linux/kernel.h>
->   
->   #include "vhost.h"
->   
+This patch is quite hard to parse, please work on improving its
+readability. Perhaps start by splitting changes to the stats from
+hypervisor from the stats to hypervisor.
 
+> +enum gve_stat_names {
+> +	// stats from gve
+> +	TX_WAKE_CNT			= 1,
+> +	TX_STOP_CNT			= 2,
+> +	TX_FRAMES_SENT			= 3,
+> +	TX_BYTES_SENT			= 4,
+> +	TX_LAST_COMPLETION_PROCESSED	= 5,
+> +	RX_NEXT_EXPECTED_SEQUENCE	= 6,
+> +	RX_BUFFERS_POSTED		= 7,
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+Just out of curiosity - what's the use for the stats reported by VM to
+the hypervisor? 
 
+> +	// stats from NIC
+> +	RX_QUEUE_DROP_CNT		= 65,
+> +	RX_NO_BUFFERS_POSTED		= 66,
+> +	RX_DROPS_PACKET_OVER_MRU	= 67,
+> +	RX_DROPS_INVALID_CHECKSUM	= 68,
 
+Most of these look like a perfect match for members of struct
+rtnl_link_stats64. Please use the standard stats to report the errors,
+wherever possible.
+
+> +};
+> +
+>  union gve_adminq_command {
+>  	struct {
+>  		__be32 opcode;
+
+> +static int gve_set_priv_flags(struct net_device *netdev, u32 flags)
+> +{
+> +	struct gve_priv *priv = netdev_priv(netdev);
+> +	u64 ori_flags, new_flags;
+> +	u32 i;
+> +
+> +	ori_flags = READ_ONCE(priv->ethtool_flags);
+> +	new_flags = ori_flags;
+> +
+> +	for (i = 0; i < GVE_PRIV_FLAGS_STR_LEN; i++) {
+> +		if (flags & BIT(i))
+> +			new_flags |= BIT(i);
+> +		else
+> +			new_flags &= ~(BIT(i));
+> +		priv->ethtool_flags = new_flags;
+> +		/* set report-stats */
+> +		if (strcmp(gve_gstrings_priv_flags[i], "report-stats") == 0) {
+> +			/* update the stats when user turns report-stats on */
+> +			if (flags & BIT(i))
+> +				gve_handle_report_stats(priv);
+> +			/* zero off gve stats when report-stats turned off */
+> +			if (!(flags & BIT(i)) && (ori_flags & BIT(i))) {
+> +				int tx_stats_num = GVE_TX_STATS_REPORT_NUM *
+> +					priv->tx_cfg.num_queues;
+> +				int rx_stats_num = GVE_RX_STATS_REPORT_NUM *
+> +					priv->rx_cfg.num_queues;
+> +				memset(priv->stats_report->stats, 0,
+> +				       (tx_stats_num + rx_stats_num) *
+> +				       sizeof(struct stats));
+
+I don't quite get why you need the knob to disable some statistics.
+Please remove or explain this in the cover letter. Looks unnecessary.
+
+> +			}
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+
+> @@ -880,6 +953,10 @@ static void gve_handle_status(struct gve_priv *priv, u32 status)
+>  		dev_info(&priv->pdev->dev, "Device requested reset.\n");
+>  		gve_set_do_reset(priv);
+>  	}
+> +	if (GVE_DEVICE_STATUS_REPORT_STATS_MASK & status) {
+> +		dev_info(&priv->pdev->dev, "Device report stats on.\n");
+
+How often is this printed?
+
+> +		gve_set_do_report_stats(priv);
+> +	}
+>  }
