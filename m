@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72BFE249734
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E71D4249732
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:27:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728208AbgHSH1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 03:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40944 "EHLO
+        id S1726763AbgHSH1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 03:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728054AbgHSH0J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:26:09 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6557FC0612EC
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:35 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id t14so1120679wmi.3
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:35 -0700 (PDT)
+        with ESMTP id S1728082AbgHSH0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:26:17 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B260BC0612F0
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:36 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id g75so1116952wme.4
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=bBzEfUvbe/jRxzO40K//jsXnpXNEErVa5XTqzMamXvQ=;
-        b=ZPoMu5Mnjwjb2haLK/vWqa5/tiSHCy/nDwn5iNOZzCWhgKIwRtvzNmPbfgsLA9mSCg
-         zRsT6Dl3A9atOt/5phe5ubnK5JMjdzGrA9GilbM4MIWx0166QKyIhojxdypPKC0V5VDK
-         ZnHPLtq4hiYgQpqPWykjq7DJjbaoLzs6L0cejAK7tQXF8sxNxm0iuYv7Nd5EYpxeEDOw
-         RUaCF1WLEKZeRwSl8QLaQmUP5olDYJQF4zxPVdACZYfdP6T2oZBQsW3yHRvpA7zVcJGA
-         Z+xgsDSv/moQJLnT66JMqJgQB0tQMC3JT8GO+kBXgvwGJ4Ol5gE7zRGJOHjC5RGCSU6z
-         qE8A==
+        bh=cz1UC4tnS3N8DfKT/RtvxsKvZMZZyg6WgaNOLEC941U=;
+        b=xP92MXSLUJF3MJNxFN2jeR6pwzN57N/17nqzMGHc349bnPEp6WCiOuot+K7OgLfpJt
+         f0iYoa4HWJlB8sCgu0wHg+/N2DTzUhcBln+Rneg4GeQiflniB8HAy6sxoV0ZNCMJzZvq
+         G3z/S4LMbYHqIfaYEiLpccEGjThSuOHB8PkUjnPqN25gmPp9mNGcrW8CK/iwHlUl2TWV
+         4y0FXqmcVCp22aJZDOBa7fK+OjzFdIEmVnv2xLCQ9JMB6zGygnUjqPecdtoHPsNoX6D2
+         h40jX+Nq2G4g95pz6XLeCpAlECwkZkbtHuyMcS+H8TIY8Nn90RTKYb23YIa+6/o7nmOx
+         1hzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=bBzEfUvbe/jRxzO40K//jsXnpXNEErVa5XTqzMamXvQ=;
-        b=mbpxWyoe69Co62+i4uY2N4d0ZjEuc8FP35/14lGh+AmsVKLjYHk591UmdJ6QtBpph1
-         LTvS/Dqa8GMmkCGAKm883NklgYnZK18mYWzP7g2rY6eoBFkSTchp+i9RA1Cz40x2OWla
-         gdHhtQ5YXpAirNKOjFodbcpPtSI58+cRI3+e78gaqrR1tyYokLW36Y1Ibx9FFA/eYHNq
-         K2H3IGa/jYtEQqSxpMe1qCfm1xo0CaxYjmUwTFrXnEWFz7cmra+sPpZRhSWqBRdXnuFa
-         crwGd+8S+nTXO8kPpWzYyEi4fFSPiqElfhxiTaaymqU6xJDu+UIfJzj17gmZeT7oaVbz
-         afug==
-X-Gm-Message-State: AOAM530mxTq8s7NaO28OP72jJaI3d7HtDX5/sHNJHy8uzL5ZvyD7EGP7
-        paqbmawC6o2uidZbohepFI3oXw==
-X-Google-Smtp-Source: ABdhPJzJQETs3WOG9GwjxbvsGTLFleTEdZEW9PtH52FjwBnrRIrjVmDc7IjdsZMb1v2iOUU/ZscM1w==
-X-Received: by 2002:a7b:cf08:: with SMTP id l8mr3322744wmg.183.1597821874070;
-        Wed, 19 Aug 2020 00:24:34 -0700 (PDT)
+        bh=cz1UC4tnS3N8DfKT/RtvxsKvZMZZyg6WgaNOLEC941U=;
+        b=sraunuwYO1G7P/uZ+Cex1W+KkVG7cxfmt1oEyHfMi/z9cyvlfVpSuqVgRcSOqHS97d
+         KfOO1fTUxebZGJujfOHdrRJXvteuJSeO2TNUApJTInMhWFteV14+zSgwwMyigtg/4f3K
+         3O+2Yi60Tc75IP27cdqRsmljEwa+co3xdZg2EyJzOvTUL8bAf2gNgrv7VCkAC2Iz0i2c
+         cuu36shnItgtGZkPDujVdGsYUGfhz3XtItcFc5/IbvOnqZW6PTgP/p6aTjffuUc9OJol
+         4VzqyZlLo3k8JCuiZE64SprIecgBuY8FA4R/e3yi3KyTCm61RT5KW3A4eS2PrN7i+EsZ
+         621g==
+X-Gm-Message-State: AOAM5335agR3HaxpQj/hmrFB6FwUPA2jOOQKnNqSd0uPdNmaFN5v4pSP
+        4U2VWSDqoEQRe3m7i4mGXQF30A==
+X-Google-Smtp-Source: ABdhPJwtVnZKagyZXI9pcJiwCbCXkQ4Bf54YFPC6HZzcK+Hqr8GYuPzY3WQ0Lkp1eyxkiIw0iE6kGA==
+X-Received: by 2002:a05:600c:2184:: with SMTP id e4mr3459650wme.24.1597821875302;
+        Wed, 19 Aug 2020 00:24:35 -0700 (PDT)
 Received: from dell.default ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id c145sm3795808wmd.7.2020.08.19.00.24.32
+        by smtp.gmail.com with ESMTPSA id c145sm3795808wmd.7.2020.08.19.00.24.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2020 00:24:33 -0700 (PDT)
+        Wed, 19 Aug 2020 00:24:34 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>
-Subject: [PATCH 23/28] wireless: rsi: rsi_91x_hal: File header comments should not be kernel-doc
-Date:   Wed, 19 Aug 2020 08:23:57 +0100
-Message-Id: <20200819072402.3085022-24-lee.jones@linaro.org>
+        Stanislaw Gruszka <stf_xl@wp.pl>,
+        Linux Wireless <ilw@linux.intel.com>
+Subject: [PATCH 24/28] wireless: intel: iwlegacy: 4965: Demote a bunch of nonconformant kernel-doc headers
+Date:   Wed, 19 Aug 2020 08:23:58 +0100
+Message-Id: <20200819072402.3085022-25-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200819072402.3085022-1-lee.jones@linaro.org>
 References: <20200819072402.3085022-1-lee.jones@linaro.org>
@@ -68,30 +68,155 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/wireless/rsi/rsi_91x_hal.c:25: warning: cannot understand function prototype: 'struct ta_metadata metadata_flash_content[] = '
+ drivers/net/wireless/intel/iwlegacy/4965.c:35: warning: Function parameter or member 'il' not described in 'il4965_verify_inst_sparse'
+ drivers/net/wireless/intel/iwlegacy/4965.c:35: warning: Function parameter or member 'image' not described in 'il4965_verify_inst_sparse'
+ drivers/net/wireless/intel/iwlegacy/4965.c:35: warning: Function parameter or member 'len' not described in 'il4965_verify_inst_sparse'
+ drivers/net/wireless/intel/iwlegacy/4965.c:66: warning: Function parameter or member 'il' not described in 'il4965_verify_inst_full'
+ drivers/net/wireless/intel/iwlegacy/4965.c:66: warning: Function parameter or member 'image' not described in 'il4965_verify_inst_full'
+ drivers/net/wireless/intel/iwlegacy/4965.c:66: warning: Function parameter or member 'len' not described in 'il4965_verify_inst_full'
+ drivers/net/wireless/intel/iwlegacy/4965.c:105: warning: Function parameter or member 'il' not described in 'il4965_verify_ucode'
+ drivers/net/wireless/intel/iwlegacy/4965.c:329: warning: Function parameter or member 'il' not described in 'il4965_load_bsm'
+ drivers/net/wireless/intel/iwlegacy/4965.c:416: warning: Function parameter or member 'il' not described in 'il4965_set_ucode_ptrs'
+ drivers/net/wireless/intel/iwlegacy/4965.c:451: warning: Function parameter or member 'il' not described in 'il4965_init_alive_start'
+ drivers/net/wireless/intel/iwlegacy/4965.c:583: warning: Function parameter or member 'eeprom_voltage' not described in 'il4965_get_voltage_compensation'
+ drivers/net/wireless/intel/iwlegacy/4965.c:583: warning: Function parameter or member 'current_voltage' not described in 'il4965_get_voltage_compensation'
+ drivers/net/wireless/intel/iwlegacy/4965.c:668: warning: Function parameter or member 'il' not described in 'il4965_interpolate_chan'
+ drivers/net/wireless/intel/iwlegacy/4965.c:668: warning: Function parameter or member 'channel' not described in 'il4965_interpolate_chan'
+ drivers/net/wireless/intel/iwlegacy/4965.c:668: warning: Function parameter or member 'chan_info' not described in 'il4965_interpolate_chan'
+ drivers/net/wireless/intel/iwlegacy/4965.c:1242: warning: Function parameter or member 'il' not described in 'il4965_send_tx_power'
+ drivers/net/wireless/intel/iwlegacy/4965.c:1537: warning: Function parameter or member 'il' not described in 'il4965_txq_update_byte_cnt_tbl'
+ drivers/net/wireless/intel/iwlegacy/4965.c:1537: warning: Function parameter or member 'txq' not described in 'il4965_txq_update_byte_cnt_tbl'
+ drivers/net/wireless/intel/iwlegacy/4965.c:1537: warning: Function parameter or member 'byte_cnt' not described in 'il4965_txq_update_byte_cnt_tbl'
+ drivers/net/wireless/intel/iwlegacy/4965.c:1564: warning: Function parameter or member 'il' not described in 'il4965_hw_get_temperature'
+ drivers/net/wireless/intel/iwlegacy/4965.c:1564: warning: Excess function parameter 'stats' description in 'il4965_hw_get_temperature'
+ drivers/net/wireless/intel/iwlegacy/4965.c:1633: warning: Function parameter or member 'il' not described in 'il4965_is_temp_calib_needed'
 
-Cc: Amitkumar Karwar <amitkarwar@gmail.com>
-Cc: Siva Rebbagondla <siva8118@gmail.com>
+Cc: Stanislaw Gruszka <stf_xl@wp.pl>
 Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Linux Wireless <ilw@linux.intel.com>
 Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/wireless/rsi/rsi_91x_hal.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlegacy/4965.c | 25 +++++++++++-----------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_hal.c b/drivers/net/wireless/rsi/rsi_91x_hal.c
-index 6f8d5f9a9f7e6..3f7e3cfb6f00d 100644
---- a/drivers/net/wireless/rsi/rsi_91x_hal.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
-@@ -1,4 +1,4 @@
+diff --git a/drivers/net/wireless/intel/iwlegacy/4965.c b/drivers/net/wireless/intel/iwlegacy/4965.c
+index fc8fa5818de7e..9fa556486511c 100644
+--- a/drivers/net/wireless/intel/iwlegacy/4965.c
++++ b/drivers/net/wireless/intel/iwlegacy/4965.c
+@@ -25,7 +25,7 @@
+ #include "common.h"
+ #include "4965.h"
+ 
 -/**
 +/*
-  * Copyright (c) 2014 Redpine Signals Inc.
+  * il_verify_inst_sparse - verify runtime uCode image in card vs. host,
+  *   using sample data 100 bytes apart.  If these sample points are good,
+  *   it's a pretty good bet that everything between them is good, too.
+@@ -57,7 +57,7 @@ il4965_verify_inst_sparse(struct il_priv *il, __le32 * image, u32 len)
+ 	return ret;
+ }
+ 
+-/**
++/*
+  * il4965_verify_inst_full - verify runtime uCode image in card vs. host,
+  *     looking at all data.
+  */
+@@ -96,7 +96,7 @@ il4965_verify_inst_full(struct il_priv *il, __le32 * image, u32 len)
+ 	return ret;
+ }
+ 
+-/**
++/*
+  * il4965_verify_ucode - determine which instruction image is in SRAM,
+  *    and verify its contents
+  */
+@@ -292,7 +292,7 @@ il4965_verify_bsm(struct il_priv *il)
+ 	return 0;
+ }
+ 
+-/**
++/*
+  * il4965_load_bsm - Load bootstrap instructions
   *
-  * Permission to use, copy, modify, and/or distribute this software for any
+  * BSM operation:
+@@ -402,7 +402,7 @@ il4965_load_bsm(struct il_priv *il)
+ 	return 0;
+ }
+ 
+-/**
++/*
+  * il4965_set_ucode_ptrs - Set uCode address location
+  *
+  * Tell initialization uCode where to find runtime uCode.
+@@ -435,7 +435,7 @@ il4965_set_ucode_ptrs(struct il_priv *il)
+ 	return 0;
+ }
+ 
+-/**
++/*
+  * il4965_init_alive_start - Called after N_ALIVE notification received
+  *
+  * Called after N_ALIVE notification received from "initialize" uCode.
+@@ -567,7 +567,7 @@ il4965_math_div_round(s32 num, s32 denom, s32 * res)
+ 	return 1;
+ }
+ 
+-/**
++/*
+  * il4965_get_voltage_compensation - Power supply voltage comp for txpower
+  *
+  * Determines power supply voltage compensation for txpower calculations.
+@@ -654,7 +654,7 @@ il4965_interpolate_value(s32 x, s32 x1, s32 y1, s32 x2, s32 y2)
+ 	}
+ }
+ 
+-/**
++/*
+  * il4965_interpolate_chan - Interpolate factory measurements for one channel
+  *
+  * Interpolates factory measurements from the two sample channels within a
+@@ -1231,7 +1231,7 @@ il4965_fill_txpower_tbl(struct il_priv *il, u8 band, u16 channel, u8 is_ht40,
+ 	return 0;
+ }
+ 
+-/**
++/*
+  * il4965_send_tx_power - Configure the TXPOWER level user limit
+  *
+  * Uses the active RXON for channel, band, and characteristics (ht40, high)
+@@ -1528,7 +1528,7 @@ il4965_hw_channel_switch(struct il_priv *il,
+ 	return il_send_cmd_pdu(il, C_CHANNEL_SWITCH, sizeof(cmd), &cmd);
+ }
+ 
+-/**
++/*
+  * il4965_txq_update_byte_cnt_tbl - Set up entry in Tx byte-count array
+  */
+ static void
+@@ -1553,9 +1553,8 @@ il4965_txq_update_byte_cnt_tbl(struct il_priv *il, struct il_tx_queue *txq,
+ 		    bc_ent;
+ }
+ 
+-/**
++/*
+  * il4965_hw_get_temperature - return the calibrated temperature (in Kelvin)
+- * @stats: Provides the temperature reading from the uCode
+  *
+  * A return of <0 indicates bogus data in the stats
+  */
+@@ -1619,7 +1618,7 @@ il4965_hw_get_temperature(struct il_priv *il)
+ /* Adjust Txpower only if temperature variance is greater than threshold. */
+ #define IL_TEMPERATURE_THRESHOLD   3
+ 
+-/**
++/*
+  * il4965_is_temp_calib_needed - determines if new calibration is needed
+  *
+  * If the temperature changed has changed sufficiently, then a recalibration
 -- 
 2.25.1
 
