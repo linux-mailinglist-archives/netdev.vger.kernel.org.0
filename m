@@ -2,234 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B77B24997F
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 11:38:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7717A2499AD
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 11:53:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727892AbgHSJib (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 05:38:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33292 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727817AbgHSJh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 05:37:58 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B133C061344
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 02:37:55 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id r15so10897013wrp.13
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 02:37:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FDpi2QIDOUNs+oTRdf9VTGQOJTmQUxGd6EEehSUSOqc=;
-        b=rBXwlDqmQW2mi1eDwy4yCmDy+M/G0KgX4nrRLieMNgsDNPMtj48MeMupJpAkXcSfmW
-         UE6FXBfkK6LLbyyWSoydJcxOERfic38uXyWnijiDTbbfTCAqZ48Hex2oF7ewCoviuE08
-         57gSGtLv9G0fKd7/xffCssHOyLaPVJTw9/o00=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FDpi2QIDOUNs+oTRdf9VTGQOJTmQUxGd6EEehSUSOqc=;
-        b=h+Ir4YVs3vRMQtdZyd4WCpfWQjF/OCPSpeerT5sXcBLoqcHinJe9g7EV4jIa9s18Tv
-         R5FT3PuZ/JCe1pI5wLMStLyNtClYPs0sE046WEnHB4KBQeJMZ8xTM8/ISJZEsvtduMwu
-         zEBKS7f0n8yOas0F1SOAXN006qM/Or0oJ91O2hFs6cgQbi51wd+VbLDIIfwrgq9yB4kG
-         Bh8RjCK/SvPYWYGk9VgsRzNlfJ37aF6KOJCBbTwpXeirbIo8C2+mGyAPuLQNQlxUBIie
-         NudxpCluyBTzxIw27c9B3V1GpEnJPfCQXVMzHEuSce0xlq5hYOGnOgrQnVrK+ojaVWf/
-         1HmA==
-X-Gm-Message-State: AOAM530N6ueilX7Op4lbzUHuOC5vN6HBHE/ztiJI1nc4OoZ1na4pgB5E
-        HeRrz00i7VOW8B1nVLC5PknauQ==
-X-Google-Smtp-Source: ABdhPJzJ5o5wV5OdLa3eRVHCRMu61AKEaX+ywMO2j7xpboPjL0u2x/kdvZgCLds8X1cMmb4o0Mr4Sg==
-X-Received: by 2002:adf:9526:: with SMTP id 35mr25432425wrs.326.1597829874068;
-        Wed, 19 Aug 2020 02:37:54 -0700 (PDT)
-Received: from antares.lan (c.d.0.4.4.2.3.3.e.9.1.6.6.d.0.6.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:60d6:619e:3324:40dc])
-        by smtp.gmail.com with ESMTPSA id 3sm4204565wms.36.2020.08.19.02.37.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2020 02:37:53 -0700 (PDT)
-From:   Lorenz Bauer <lmb@cloudflare.com>
-To:     jakub@cloudflare.com, john.fastabend@gmail.com,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next 6/6] selftests: bpf: test sockmap update from BPF
-Date:   Wed, 19 Aug 2020 10:24:36 +0100
-Message-Id: <20200819092436.58232-7-lmb@cloudflare.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200819092436.58232-1-lmb@cloudflare.com>
-References: <20200819092436.58232-1-lmb@cloudflare.com>
+        id S1727794AbgHSJxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 05:53:20 -0400
+Received: from mailgw01.mediatek.com ([216.200.240.184]:41900 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726634AbgHSJxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 05:53:19 -0400
+X-UUID: 3d9f66e13b7e40ffa8561b343d60f52a-20200819
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=kQXoKdKVpI5uaXNaEF7rubWxdg60fBjIip1atnVNx4w=;
+        b=YimcZxgGzFRVHMuCF/1++lAbAs6pvMpBzF+FP/5HaxoW8aRy22AvuDuJtdfkRtssyteU6W7g0oGHGy4cum6VcyXxyvq8TH49+SEocIl6Cc8ktX7mwNSz8exXyCCMzI9j16bcAtuvtEHfxQ2RWURmw/PefF6gWBvpaGwfdBg5XfQ=;
+X-UUID: 3d9f66e13b7e40ffa8561b343d60f52a-20200819
+Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by mailgw01.mediatek.com
+        (envelope-from <landen.chao@mediatek.com>)
+        (musrelay.mediatek.com ESMTP with TLS)
+        with ESMTP id 1431888830; Wed, 19 Aug 2020 01:53:15 -0800
+Received: from mtkcas08.mediatek.inc (172.21.101.126) by
+ MTKMBS62N1.mediatek.inc (172.29.193.41) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 19 Aug 2020 02:44:08 -0700
+Received: from [172.21.84.99] (172.21.84.99) by mtkcas08.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 19 Aug 2020 17:44:06 +0800
+Message-ID: <1597830248.31846.78.camel@mtksdccf07>
+Subject: Re: [PATCH net-next v2 5/7] net: dsa: mt7530: Add the support of
+ MT7531 switch
+From:   Landen Chao <landen.chao@mediatek.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@savoirfairelinux.com" 
+        <vivien.didelot@savoirfairelinux.com>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Sean Wang <Sean.Wang@mediatek.com>,
+        "opensource@vdorst.com" <opensource@vdorst.com>,
+        "frank-w@public-files.de" <frank-w@public-files.de>,
+        "dqfext@gmail.com" <dqfext@gmail.com>
+Date:   Wed, 19 Aug 2020 17:44:08 +0800
+In-Reply-To: <20200818160901.GF2330298@lunn.ch>
+References: <cover.1597729692.git.landen.chao@mediatek.com>
+         <e980fda45e0fb478f55e72765643bb641f352c65.1597729692.git.landen.chao@mediatek.com>
+         <20200818160901.GF2330298@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.2.3-0ubuntu6 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a test which copies a socket from a sockmap into another sockmap
-or sockhash. This excercises bpf_map_update_elem support from BPF
-context. Compare the socket cookies from source and destination to
-ensure that the copy succeeded.
-
-Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
----
- .../selftests/bpf/prog_tests/sockmap_basic.c  | 76 +++++++++++++++++++
- .../selftests/bpf/progs/test_sockmap_copy.c   | 48 ++++++++++++
- 2 files changed, 124 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_copy.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-index 96e7b7f84c65..d30cabc00e9e 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-@@ -4,6 +4,7 @@
- 
- #include "test_progs.h"
- #include "test_skmsg_load_helpers.skel.h"
-+#include "test_sockmap_copy.skel.h"
- 
- #define TCP_REPAIR		19	/* TCP sock is under repair right now */
- 
-@@ -101,6 +102,77 @@ static void test_skmsg_helpers(enum bpf_map_type map_type)
- 	test_skmsg_load_helpers__destroy(skel);
- }
- 
-+static void test_sockmap_copy(enum bpf_map_type map_type)
-+{
-+	struct bpf_prog_test_run_attr attr;
-+	struct test_sockmap_copy *skel;
-+	__u64 src_cookie, dst_cookie;
-+	int err, prog, s, src, dst;
-+	const __u32 zero = 0;
-+	char dummy[14] = {0};
-+
-+	s = connected_socket_v4();
-+	if (CHECK_FAIL(s == -1))
-+		return;
-+
-+	skel = test_sockmap_copy__open_and_load();
-+	if (CHECK_FAIL(!skel)) {
-+		close(s);
-+		perror("test_sockmap_copy__open_and_load");
-+		return;
-+	}
-+
-+	prog = bpf_program__fd(skel->progs.copy_sock_map);
-+	src = bpf_map__fd(skel->maps.src);
-+	if (map_type == BPF_MAP_TYPE_SOCKMAP)
-+		dst = bpf_map__fd(skel->maps.dst_sock_map);
-+	else
-+		dst = bpf_map__fd(skel->maps.dst_sock_hash);
-+
-+	err = bpf_map_update_elem(src, &zero, &s, BPF_NOEXIST);
-+	if (CHECK_FAIL(err)) {
-+		perror("bpf_map_update");
-+		goto out;
-+	}
-+
-+	err = bpf_map_lookup_elem(src, &zero, &src_cookie);
-+	if (CHECK_FAIL(err)) {
-+		perror("bpf_map_lookup_elem(src)");
-+		goto out;
-+	}
-+
-+	attr = (struct bpf_prog_test_run_attr){
-+		.prog_fd = prog,
-+		.repeat = 1,
-+		.data_in = dummy,
-+		.data_size_in = sizeof(dummy),
-+	};
-+
-+	err = bpf_prog_test_run_xattr(&attr);
-+	if (err) {
-+		test__fail();
-+		perror("bpf_prog_test_run");
-+		goto out;
-+	} else if (!attr.retval) {
-+		PRINT_FAIL("bpf_prog_test_run: program returned %u\n",
-+			   attr.retval);
-+		goto out;
-+	}
-+
-+	err = bpf_map_lookup_elem(dst, &zero, &dst_cookie);
-+	if (CHECK_FAIL(err)) {
-+		perror("bpf_map_lookup_elem(dst)");
-+		goto out;
-+	}
-+
-+	if (dst_cookie != src_cookie)
-+		PRINT_FAIL("cookie %llu != %llu\n", dst_cookie, src_cookie);
-+
-+out:
-+	close(s);
-+	test_sockmap_copy__destroy(skel);
-+}
-+
- void test_sockmap_basic(void)
- {
- 	if (test__start_subtest("sockmap create_update_free"))
-@@ -111,4 +183,8 @@ void test_sockmap_basic(void)
- 		test_skmsg_helpers(BPF_MAP_TYPE_SOCKMAP);
- 	if (test__start_subtest("sockhash sk_msg load helpers"))
- 		test_skmsg_helpers(BPF_MAP_TYPE_SOCKHASH);
-+	if (test__start_subtest("sockmap copy"))
-+		test_sockmap_copy(BPF_MAP_TYPE_SOCKMAP);
-+	if (test__start_subtest("sockhash copy"))
-+		test_sockmap_copy(BPF_MAP_TYPE_SOCKHASH);
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_sockmap_copy.c b/tools/testing/selftests/bpf/progs/test_sockmap_copy.c
-new file mode 100644
-index 000000000000..9d0c9f28cab2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_sockmap_copy.c
-@@ -0,0 +1,48 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2020 Cloudflare
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} src SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} dst_sock_map SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKHASH);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} dst_sock_hash SEC(".maps");
-+
-+SEC("classifier/copy_sock_map")
-+int copy_sock_map(void *ctx)
-+{
-+	struct bpf_sock *sk;
-+	bool failed = false;
-+	__u32 key = 0;
-+
-+	sk = bpf_map_lookup_elem(&src, &key);
-+	if (!sk)
-+		return SK_DROP;
-+
-+	if (bpf_map_update_elem(&dst_sock_map, &key, sk, 0))
-+		failed = true;
-+
-+	if (bpf_map_update_elem(&dst_sock_hash, &key, sk, 0))
-+		failed = true;
-+
-+	bpf_sk_release(sk);
-+	return failed ? SK_DROP : SK_PASS;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.25.1
+T24gV2VkLCAyMDIwLTA4LTE5IGF0IDAwOjA5ICswODAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
+T24gVHVlLCBBdWcgMTgsIDIwMjAgYXQgMDM6MTQ6MTBQTSArMDgwMCwgTGFuZGVuIENoYW8gd3Jv
+dGU6DQo+ID4gQWRkIG5ldyBzdXBwb3J0IGZvciBNVDc1MzE6DQo+ID4gDQo+ID4gTVQ3NTMxIGlz
+IHRoZSBuZXh0IGdlbmVyYXRpb24gb2YgTVQ3NTMwLiBJdCBpcyBhbHNvIGEgNy1wb3J0cyBzd2l0
+Y2ggd2l0aA0KPiA+IDUgZ2lnYSBlbWJlZGRlZCBwaHlzLCAyIGNwdSBwb3J0cywgYW5kIHRoZSBz
+YW1lIE1BQyBsb2dpYyBvZiBNVDc1MzAuIENwdQ0KPiA+IHBvcnQgNiBvbmx5IHN1cHBvcnRzIFNH
+TUlJIGludGVyZmFjZS4gQ3B1IHBvcnQgNSBzdXBwb3J0cyBlaXRoZXIgUkdNSUkNCj4gPiBvciBT
+R01JSSBpbiBkaWZmZXJlbnQgSFcgc2t1LiBEdWUgdG8gU0dNSUkgaW50ZXJmYWNlIHN1cHBvcnQs
+IHBsbCwgYW5kDQo+ID4gcGFkIHNldHRpbmcgYXJlIGRpZmZlcmVudCBmcm9tIE1UNzUzMC4gVGhp
+cyBwYXRjaCBhZGRzIGRpZmZlcmVudCBpbml0aWFsDQo+ID4gc2V0dGluZywgYW5kIFNHTUlJIHBo
+eWxpbmsgaGFuZGxlcnMgb2YgTVQ3NTMxLg0KPiA+IA0KPiA+IE1UNzUzMSBTR01JSSBpbnRlcmZh
+Y2UgY2FuIGJlIGNvbmZpZ3VyZWQgaW4gZm9sbG93aW5nIG1vZGU6DQo+ID4gLSAnU0dNSUkgQU4g
+bW9kZScgd2l0aCBpbi1iYW5kIG5lZ290aWF0aW9uIGNhcGFiaWxpdHkNCj4gPiAgICAgd2hpY2gg
+aXMgY29tcGF0aWJsZSB3aXRoIFBIWV9JTlRFUkZBQ0VfTU9ERV9TR01JSS4NCj4gPiAtICdTR01J
+SSBmb3JjZSBtb2RlJyB3aXRob3V0IGluLWJuYWQgbmVnb3RpYXRpb24NCj4gDQo+IGJhbmQNClNv
+cnJ5LCBJJ2xsIGZpeCBpdC4NCj4gDQo+ID4gICAgIHdoaWNoIGlzIGNvbXBhdGlibGUgd2l0aCAx
+MEIvOEIgZW5jb2Rpbmcgb2YNCj4gPiAgICAgUEhZX0lOVEVSRkFDRV9NT0RFXzEwMDBCQVNFWCB3
+aXRoIGZpeGVkIGZ1bGwtZHVwbGV4IGFuZCBmaXhlZCBwYXVzZS4NCj4gPiAtIDIuNSB0aW1lcyBm
+YXN0ZXIgY2xvY2tlZCAnU0dNSUkgZm9yY2UgbW9kZScgd2l0aG91dCBpbi1ibmFkIG5lZ290aWF0
+aW9uDQo+IA0KPiBiYW5kDQpTb3JyeSwgSSdsbCBmaXggaXQuDQo+IA0KPiA+ICtzdGF0aWMgaW50
+IG10NzUzMV9yZ21paV9zZXR1cChzdHJ1Y3QgbXQ3NTMwX3ByaXYgKnByaXYsIHUzMiBwb3J0LA0K
+PiA+ICsJCQkgICAgICBwaHlfaW50ZXJmYWNlX3QgaW50ZXJmYWNlKQ0KPiA+ICt7DQo+ID4gKwl1
+MzIgdmFsOw0KPiA+ICsNCj4gPiArCWlmICghbXQ3NTMxX2lzX3JnbWlpX3BvcnQocHJpdiwgcG9y
+dCkpIHsNCj4gPiArCQlkZXZfZXJyKHByaXYtPmRldiwgIlJHTUlJIG1vZGUgaXMgbm90IGF2YWls
+YWJsZSBmb3IgcG9ydCAlZFxuIiwNCj4gPiArCQkJcG9ydCk7DQo+ID4gKwkJcmV0dXJuIC1FSU5W
+QUw7DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICsJdmFsID0gbXQ3NTMwX3JlYWQocHJpdiwgTVQ3NTMx
+X0NMS0dFTl9DVFJMKTsNCj4gPiArCXZhbCB8PSBHUF9DTEtfRU47DQo+ID4gKwl2YWwgJj0gfkdQ
+X01PREVfTUFTSzsNCj4gPiArCXZhbCB8PSBHUF9NT0RFKE1UNzUzMV9HUF9NT0RFX1JHTUlJKTsN
+Cj4gPiArCXZhbCAmPSB+KFRYQ0xLX05PX1JFVkVSU0UgfCBSWENMS19OT19ERUxBWSk7DQo+ID4g
+Kwlzd2l0Y2ggKGludGVyZmFjZSkgew0KPiA+ICsJY2FzZSBQSFlfSU5URVJGQUNFX01PREVfUkdN
+SUk6DQo+ID4gKwkJdmFsIHw9IFRYQ0xLX05PX1JFVkVSU0U7DQo+ID4gKwkJdmFsIHw9IFJYQ0xL
+X05PX0RFTEFZOw0KPiA+ICsJCWJyZWFrOw0KPiA+ICsJY2FzZSBQSFlfSU5URVJGQUNFX01PREVf
+UkdNSUlfUlhJRDoNCj4gPiArCQl2YWwgfD0gVFhDTEtfTk9fUkVWRVJTRTsNCj4gPiArCQlicmVh
+azsNCj4gPiArCWNhc2UgUEhZX0lOVEVSRkFDRV9NT0RFX1JHTUlJX1RYSUQ6DQo+ID4gKwkJdmFs
+IHw9IFJYQ0xLX05PX0RFTEFZOw0KPiA+ICsJCWJyZWFrOw0KPiA+ICsJY2FzZSBQSFlfSU5URVJG
+QUNFX01PREVfUkdNSUlfSUQ6DQo+ID4gKwkJYnJlYWs7DQo+ID4gKwlkZWZhdWx0Og0KPiA+ICsJ
+CXJldHVybiAtRUlOVkFMOw0KPiA+ICsJfQ0KPiANCj4gWW91IG5lZWQgdG8gYmUgY2FyZWZ1bCBo
+ZXJlLiBJZiB0aGUgTUFDIGlzIGRvaW5nIHRoZSBSR01JSSBkZWxheXMsIHlvdQ0KPiBuZWVkIHRv
+IGVuc3VyZSB0aGUgUEhZIGlzIG5vdC4gV2hhdCBpbnRlcmZhY2UgbW9kZSBpcyBwYXNzZWQgdG8g
+dGhlDQo+IFBIWT8NCkhpIEFuZHJldywNCg0KbXQ3NTMxIFJHTUlJIHBvcnQgaXMgYSBNQUMtb25s
+eSBwb3J0LCBpdCBjYW4gYmUgY29ubmVjdGVkIHRvIENQVSBNQUMgb3INCmV4dGVybmFsIHBoeS4g
+SW4gYnBpLXI2NCBib2FyZCwgbXQ3NTMxIFJHTUlJIGlzIGNvbm5lY3RlZCB0byBDUFUgTUFDLCBz
+bw0KSSB0ZW5kIHRvIGltcGxlbWVudCBSR01JSSBsb2dpYyBmb3IgdXNlIGNhc2Ugb2YgYnBpLXI2
+NC4NCg0KSW4gZ2VuZXJhbCwgYWNjb3JkaW5nIHRvIHBoeS5yc3QsIFJHTUlJIGRlbGF5IHNob3Vs
+ZCBiZSBkb25lIGJ5IHBoeSwgYnV0DQpzb21lIE1vQ0EgcHJvZHVjdCBuZWVkIFJHTUlJIGRlbGF5
+IGluIE1BQy4gVGhlc2UgdHdvIHJlcXVpcmVtZW50cw0KY29uZmxpY3QuIElzIHRoZXJlIGFueSBz
+dWdnZXN0aW9uIHRvIHNvbHZlIHRoZSBjb25mbGljdD8NCg0KSWYgbXQ3NTMxIFJHTUlJIGltcGxl
+bWVudGF0aW9uIG5lZWRzIHRvIHNhdGlzZnkgZWl0aGVyIHBoeS5yc3Qgb3INCnNwZWNpYWwgTW9D
+QSBwcm9kdWN0LCBJIHdvdWxkIGxpa2UgdG8gc2F0aXNmeSBwaHkucnN0IGFuZCByZW1vdmUgTUFD
+DQpSR01JSSBkZWxheSBpbiB2My4gRm9yIHNwZWNpYWwgcHJvZHVjdCBuZWVkcyBNQUMgUkdNSUkg
+ZGVsYXksIHRoaXMgcGF0Y2gNCmNhbiBiZSB1c2VkIGluIGl0cyBsb2NhbCBjb2RlYmFzZS4NCg0K
+TGFuZGVuDQo+IA0KPiAJQW5kcmV3DQoNCg==
 
