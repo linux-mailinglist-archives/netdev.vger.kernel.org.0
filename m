@@ -2,92 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CF8C24A8C7
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 23:58:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E50924A8D4
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 00:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbgHSV6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 17:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35340 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726209AbgHSV6v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 17:58:51 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026AEC061757;
-        Wed, 19 Aug 2020 14:58:51 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id y10so9923218plr.11;
-        Wed, 19 Aug 2020 14:58:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Slmlxej47s8TYSV/lTa7cjH1TUjlzp7BpAXRL++feQY=;
-        b=fV1JUBO+o/DIZy0W7m1xwRfC1efNfPHi9BYLaJ4R+l13kB2GCK6rzdG4/oMHYNcyMO
-         wiebUJkxRTjQUNF9tIJ/IshHTmIlInOJpfDy7VMnUzv0h4bJfeIG7dTbnHSqnoIH/9lj
-         C2nngzmX6g6iPdnZHSapKnDzYltOiBIsc5bK/WFP/LhiIICHOmo6RMj1zc7kRPF6/F9c
-         2bRfYjYB6hRWrUHn3GSksZ8vwWeBI9LkGWp2ZUoPjRlit5ofK1F3hvN00lJjhA3Z8Juf
-         Q8doDsa/hijyVraVTxJ+GtMzMaELlXYoxvMOzkfoeGpsJVNQRWJiohFtA5mQNLbxku8F
-         ir0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Slmlxej47s8TYSV/lTa7cjH1TUjlzp7BpAXRL++feQY=;
-        b=KArmDYJcS6tkhrHWtrpFlQnSvuZ0mQnsZaxRhIwEVA6ugD+agfaf2FxzzGLvWru8bX
-         r67OY0LLw65DFTGCIPOMyiuoeS3vkOTP4ANbAemECctNWpnuvCXM/jCFvWVoZh97zzAq
-         YzI71UlBpe2QoLuxlG/D+cxjH8MJNg9v9aXaDGQsYMw0V6uOFriILTAiWAJT9vEOSltm
-         gsSoqosyj80qUIsnOGHuVSNw59yrgqHM94Xl0mbOBKYcLzSi1ipOYaNJvAoHdDszDhtf
-         TGIPB60u4VJJJ5XSeosiKy2qmOfuBdmgcIrxQ1d+Keexq5mvn/XO9YS5sDcQh5HCqI4L
-         509g==
-X-Gm-Message-State: AOAM530QA55bIJ+gaoVbo3eSr8dX0kaBMuk/IOg8MGmqFykqto9gy7+W
-        ZPz4XCNgEzwnGRLFnZ/VTmyP/7cVaDQ=
-X-Google-Smtp-Source: ABdhPJzYcffqlqVTrh1N+PG6CfMZJCSZPVl+1fxN6fUu5ZI3BkBSyznBNcpDB729GFJhn4Ta/7rkCQ==
-X-Received: by 2002:a17:902:6bc6:: with SMTP id m6mr153197plt.302.1597874329953;
-        Wed, 19 Aug 2020 14:58:49 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:20fd])
-        by smtp.gmail.com with ESMTPSA id h1sm202803pfr.39.2020.08.19.14.58.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2020 14:58:48 -0700 (PDT)
-Date:   Wed, 19 Aug 2020 14:58:46 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 0/5] Add libbpf support for type- and enum
- value-based CO-RE relocations
-Message-ID: <20200819215846.frvsnoxu6vv4wamt@ast-mbp.dhcp.thefacebook.com>
-References: <20200819194519.3375898-1-andriin@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200819194519.3375898-1-andriin@fb.com>
+        id S1727125AbgHSWAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 18:00:15 -0400
+Received: from wildebeest.demon.nl ([212.238.236.112]:53276 "EHLO
+        gnu.wildebeest.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727079AbgHSWAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 18:00:12 -0400
+Received: from tarox.wildebeest.org (tarox.wildebeest.org [172.31.17.39])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by gnu.wildebeest.org (Postfix) with ESMTPSA id D94B4300D92B;
+        Thu, 20 Aug 2020 00:00:09 +0200 (CEST)
+Received: by tarox.wildebeest.org (Postfix, from userid 1000)
+        id BEF6E413CE8D; Thu, 20 Aug 2020 00:00:09 +0200 (CEST)
+Message-ID: <f03e0fec4b29afe24a7a13c43de23e6db6dfce23.camel@klomp.org>
+Subject: Re: Kernel build error on BTFIDS vmlinux
+From:   Mark Wielaard <mark@klomp.org>
+To:     Jiri Olsa <jolsa@redhat.com>, Nick Clifton <nickc@redhat.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, sdf@google.com,
+        andriin@fb.com
+Date:   Thu, 20 Aug 2020 00:00:09 +0200
+In-Reply-To: <20200819171820.GG177896@krava>
+References: <20200818105555.51fc6d62@carbon> <20200818091404.GB177896@krava>
+         <20200818105602.GC177896@krava> <20200818134543.GD177896@krava>
+         <20200818183318.2c3fe4a2@carbon>
+         <c9c4a42ba6b4d36e557a5441e90f7f4961ec3f72.camel@klomp.org>
+         <0ddf7bc5-be05-cc06-05d7-2778c53d023b@redhat.com>
+         <20200819171820.GG177896@krava>
+Content-Type: multipart/mixed; boundary="=-zSplKr7l+VSXfgLRPXF8"
+X-Mailer: Evolution 3.28.5 (3.28.5-8.el7) 
+Mime-Version: 1.0
+X-Spam-Flag: NO
+X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on gnu.wildebeest.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 19, 2020 at 12:45:14PM -0700, Andrii Nakryiko wrote:
-> 
-> Selftests are added for all the new features. Selftests utilizing new Clang
-> built-ins are designed such that they will compile with older Clangs and will
-> be skipped during test runs. So this shouldn't cause any build and test
-> failures on systems with slightly outdated Clang compiler.
-> 
-> LLVM patches adding these relocation in Clang:
->   - __builtin_btf_type_id() ([0], [1], [2]);
->   - __builtin_preserve_type_info(), __builtin_preserve_enum_value() ([3], [4]).
-> 
->   [0] https://reviews.llvm.org/D74572
->   [1] https://reviews.llvm.org/D74668
->   [2] https://reviews.llvm.org/D85174
->   [3] https://reviews.llvm.org/D83878
->   [4] https://reviews.llvm.org/D83242
 
-Applied.
-Thank you for listing the above in the commit log, but please follow up with
-corresponding update to README.rst and mention the same details there: the
-symptoms of missing clang features, which tests are going to be skipped for
-older clang, etc.
+--=-zSplKr7l+VSXfgLRPXF8
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Also progs/test_core_reloc_type_id.c talks about some bug with
-__builtin_preserve_type_info() please add llvm diff number that fixes
-it to that .c file.
+Hi,
+
+On Wed, 2020-08-19 at 19:18 +0200, Jiri Olsa wrote:
+> On Wed, Aug 19, 2020 at 04:34:30PM +0100, Nick Clifton wrote:
+> > > So it would be nice if binutils ld could also be fixed to write out
+> > > compressed sections with the correct alignment.
+> >=20
+> > OK, I will look into doing this.
+> >=20
+> > By any chance is there a small test case that you are using to check
+> > this behaviour ?   If so, please may I have a copy for myself ?
+>=20
+> so when I take empty object and compile like:
+>=20
+>   $ echo 'int main(int argc, char **argv) { return 0; }' | gcc -c -o ex.o=
+ -g -gz=3Dzlib -x c -
+>   $ ld -o ex --compress-debug-sections=3Dzlib ex.o
+>=20
+> then there's .debug_info section that shows sh_addralign =3D 1
+
+Specifically, if you extend the example code a bit so that it has a
+couple more interesting compressed .debug sections (like in an vmlinux
+image) you'll see, eu-readelf -Sz:
+
+Section Headers:
+[Nr] Name                 Type         Addr             Off      Size     E=
+S Flags Lk Inf Al
+     [Compression  Size     Al]
+
+[37] .debug_aranges       PROGBITS     0000000000000000 027ae9f0 0000b274  =
+0 C      0   0 16
+     [ELF ZLIB (1) 00028030 16]
+[38] .debug_info          PROGBITS     0000000000000000 027b9c64 07b1fc3d  =
+0 C      0   0  1
+     [ELF ZLIB (1) 0cb137ad  1]
+[39] .debug_abbrev        PROGBITS     0000000000000000 0a2d98a1 00119647  =
+0 C      0   0  1
+     [ELF ZLIB (1) 0060811f  1]
+[40] .debug_line          PROGBITS     0000000000000000 0a3f2ee8 007086ba  =
+0 C      0   0  1
+     [ELF ZLIB (1) 01557659  1]
+[41] .debug_frame         PROGBITS     0000000000000000 0aafb5a8 000ab7ff  =
+0 C      0   0  8
+     [ELF ZLIB (1) 002a6bf8  8]
+[42] .debug_str           PROGBITS     0000000000000000 0aba6da7 000f86e3  =
+1 MSC    0   0  1
+     [ELF ZLIB (1) 003a8a8e  1]
+[43] .debug_loc           PROGBITS     0000000000000000 0ac9f48a 002e12bd  =
+0 C      0   0  1
+     [ELF ZLIB (1) 00e0c448  1]
+[44] .debug_ranges        PROGBITS     0000000000000000 0af80750 001a9ec7  =
+0 C      0   0 16
+     [ELF ZLIB (1) 00e84b20 16]
+
+Note that the sh_addralign of the sections is set to the same valie as
+ch_addralign. That is the alignment of the decompressed data, what
+sh_addralign would have been if it wasn't a compressed section.
+
+The sh_addralign of a compressed section however should be equal to
+alignment for the datastructure inside it, either 4, for 32bit:
+
+typedef struct
+{
+  Elf32_Word    ch_type;        /* Compression format.  */
+  Elf32_Word    ch_size;        /* Uncompressed data size.  */
+  Elf32_Word    ch_addralign;   /* Uncompressed data alignment.  */
+} Elf32_Chdr;
+
+or 8, for 64bit:
+
+typedef struct
+{
+  Elf64_Word    ch_type;        /* Compression format.  */
+  Elf64_Word    ch_reserved;
+  Elf64_Xword   ch_size;        /* Uncompressed data size.  */
+  Elf64_Xword   ch_addralign;   /* Uncompressed data alignment.  */
+} Elf64_Chdr;
+
+At least, that is what elfutils libelf expects. And which I believe is
+what the ELF spec implies when it says:
+
+   The sh_size and sh_addralign fields of the section header for a
+   compressed section reflect the requirements of the compressed
+   section.  The ch_size and ch_addralign fields in the compression
+   header provide the corresponding values for the uncompressed data,
+   thereby supplying the values that sh_size and sh_addralign would
+   have had if the section had not been compressed.
+
+> after I open the 'ex' obejct with elf_begin and iterate sections
+>=20
+> according to Mark that should be 8 (on 64 bits)
+>=20
+> when I change it to 8, the elf_update call won't fail for me
+> on that elf file
+
+Right, I have a patch that fixes it up in libelf, see attached.
+That should make things work without needing a workaround. But of
+course I just posted it and it isn't even upstream yet. So for now the
+workaround will be needed and it would be nice if binutils ld could
+also be fixed to set the sh_addralign field correctly.
+
+Cheers,
+
+Mark
+
+--=-zSplKr7l+VSXfgLRPXF8
+Content-Disposition: attachment;
+	filename*0=0001-libelf-Fixup-SHF_COMPRESSED-sh_addralign-in-elf_upda.pat;
+	filename*1=ch
+Content-Type: text/x-patch;
+	name="0001-libelf-Fixup-SHF_COMPRESSED-sh_addralign-in-elf_upda.patch";
+	charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+RnJvbSA1NWM1YzlhNTY4ZWQ3MDdiY2VhMTM4OGJmM2E1MjUyMTJkOGNmNGI4IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBNYXJrIFdpZWxhYXJkIDxtYXJrQGtsb21wLm9yZz4KRGF0ZTog
+V2VkLCAxOSBBdWcgMjAyMCAyMzo0MToyNCArMDIwMApTdWJqZWN0OiBbUEFUQ0hdIGxpYmVsZjog
+Rml4dXAgU0hGX0NPTVBSRVNTRUQgc2hfYWRkcmFsaWduIGluIGVsZl91cGRhdGUgaWYKIG5lY2Vz
+c2FyeS4KCkluIGVsZl9nZXRkYXRhLmMgd2UgaGF2ZSB0aGUgZm9sbG93aW5nIHRvIGNvbXBlbnNh
+dGUgZm9yIHBvc3NpYmx5CmJhZCBzaF9hZGRyYWxpZ24gdmFsdWVzIG9mIGNvbXByZXNzZWQgc2Vj
+dGlvbnM6CgogICAgICAvKiBDb21wcmVzc2VkIGRhdGEgaGFzIGEgaGVhZGVyLCBidXQgdGhlbiBj
+b21wcmVzc2VkIGRhdGEuCiAgICAgICAgIE1ha2Ugc3VyZSB0byBzZXQgdGhlIGFsaWdubWVudCBv
+ZiB0aGUgaGVhZGVyIGV4cGxpY2l0bHksCiAgICAgICAgIGRvbid0IHRydXN0IHRoZSBmaWxlIGFs
+aWdubWVudCBmb3IgdGhlIHNlY3Rpb24sIGl0IGlzCiAgICAgICAgIG9mdGVuIHdyb25nLiAgKi8K
+ICAgICAgaWYgKChmbGFncyAmIFNIRl9DT01QUkVTU0VEKSAhPSAwKQogICAgICAgIHsKICAgICAg
+ICAgIGVudHNpemUgPSAxOwogICAgICAgICAgYWxpZ24gPSBfX2xpYmVsZl90eXBlX2FsaWduIChl
+bGYtPmNsYXNzLCBFTEZfVF9DSERSKTsKICAgICAgICB9CgpXaGljaCBtYWtlcyBzdXJlIHRoZSBk
+X2RhdGEgYWxpZ25tZW50IGlzIGNvcnJlY3QgZm9yIHRoZSBDaGRyIHN0cnVjdAphdCB0aGUgc3Rh
+cnQgb2YgdGhlIGNvbXByZXNzZWQgc2VjdGlvbi4KCkJ1dCB0aGlzIG1lYW5zIHRoYXQgaWYgYSB1
+c2VyIGp1c3QgcmVhZHMgc3VjaCBhIGNvbXByZXNzZWQgc2VjdGlvbgp3aXRob3V0IGNoYW5naW5n
+IGl0LCBhbmQgdGhlbiB0cmllcyB0byB3cml0ZSBpdCBvdXQgYWdhaW4gdXNpbmcKZWxmX3VwZGF0
+ZSB0aGV5IGdldCBhbiBlcnJvciBtZXNzYWdlIGFib3V0IGRfYWxpZ24gYW5kIHNoX2FkZHJhbGln
+bgpiZWluZyBvdXQgb2Ygc3luYy4KCldlIGFscmVhZHkgY29ycmVjdCBvYnZpb3VzbHkgaW5jb3Jy
+ZWN0IHNoX2VudHNpemUgZmllbGRzLgpEbyB0aGUgc2FtZSBmb3IgdGhlIHNoX2FkZHJhbGlnbiBm
+aWVsZCBvZiBhIFNIRl9DT01QUkVTU0VEIHNlY3Rpb24uCgpTaWduZWQtb2ZmLWJ5OiBNYXJrIFdp
+ZWxhYXJkIDxtYXJrQGtsb21wLm9yZz4KLS0tCiBsaWJlbGYvQ2hhbmdlTG9nICAgICAgICAgIHwg
+IDUgKysrKysKIGxpYmVsZi9lbGYzMl91cGRhdGVudWxsLmMgfCAxMiArKysrKysrKysrKysKIDIg
+ZmlsZXMgY2hhbmdlZCwgMTcgaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2xpYmVsZi9DaGFu
+Z2VMb2cgYi9saWJlbGYvQ2hhbmdlTG9nCmluZGV4IDhmNmQyZDJkLi43NzA0NGMxYyAxMDA2NDQK
+LS0tIGEvbGliZWxmL0NoYW5nZUxvZworKysgYi9saWJlbGYvQ2hhbmdlTG9nCkBAIC0xLDMgKzEs
+OCBAQAorMjAyMC0wOC0xOSAgTWFyayBXaWVsYWFyZCAgPG1hcmtAa2xvbXAub3JnPgorCisJKiBl
+bGYzMl91cGRhdGVudWxsLmMgKHVwZGF0ZW51bGxfd3Jsb2NrKTogRml4dXAgdGhlIHNoX2FkZHJh
+bGlnbgorCW9mIGFuIFNIRl9DT01QUkVTU0VEIHNlY3Rpb24gaWYgbmVjZXNzYXJ5LgorCiAyMDIw
+LTA2LTA0ICBNYXJrIFdpZWxhYXJkICA8bWFya0BrbG9tcC5vcmc+CiAKIAkqIGVsZi5oOiBVcGRh
+dGUgZnJvbSBnbGliYy4KZGlmZiAtLWdpdCBhL2xpYmVsZi9lbGYzMl91cGRhdGVudWxsLmMgYi9s
+aWJlbGYvZWxmMzJfdXBkYXRlbnVsbC5jCmluZGV4IDVmM2NkYmY2Li5kMGQ0ZDFlYiAxMDA2NDQK
+LS0tIGEvbGliZWxmL2VsZjMyX3VwZGF0ZW51bGwuYworKysgYi9saWJlbGYvZWxmMzJfdXBkYXRl
+bnVsbC5jCkBAIC0yNjcsNiArMjY3LDE4IEBAIF9fZWxmdzIoTElCRUxGQklUUyx1cGRhdGVudWxs
+X3dybG9jaykgKEVsZiAqZWxmLCBpbnQgKmNoYW5nZV9ib3AsIHNpemVfdCBzaG51bSkKIAkgICAg
+ICB1cGRhdGVfaWZfY2hhbmdlZCAoc2hkci0+c2hfZW50c2l6ZSwgc2hfZW50c2l6ZSwKIAkJCQkg
+c2NuLT5zaGRyX2ZsYWdzKTsKIAorCSAgICAgIC8qIExpa2V3aXNlIGZvciB0aGUgYWxpZ25tZW50
+IG9mIGEgY29tcHJlc3NlZCBzZWN0aW9uLgorCSAgICAgICAgIEZvciBhIFNIRl9DT01QUkVTU0VE
+IHNlY3Rpb24gc2V0IHRoZSBjb3JyZWN0CisJICAgICAgICAgc2hfYWRkcmFsaWduIHZhbHVlLCB3
+aGljaCBtdXN0IG1hdGNoIHRoZSBkX2FsaWduIG9mCisJICAgICAgICAgdGhlIGRhdGEgKHNlZSBf
+X2xpYmVsZl9zZXRfcmF3ZGF0YSBpbiBlbGZfZ2V0ZGF0YS5jKS4gICovCisJICAgICAgaWYgKChz
+aGRyLT5zaF9mbGFncyAmIFNIRl9DT01QUkVTU0VEKSAhPSAwKQorCQl7CisJCSAgc2hfYWxpZ24g
+PSBfX2xpYmVsZl90eXBlX2FsaWduIChFTEZXKEVMRkNMQVNTLExJQkVMRkJJVFMpLAorCQkJCQkJ
+ICBFTEZfVF9DSERSKTsKKwkJICB1cGRhdGVfaWZfY2hhbmdlZCAoc2hkci0+c2hfYWRkcmFsaWdu
+LCBzaF9hbGlnbiwKKwkJCQkgICAgIHNjbi0+c2hkcl9mbGFncyk7CisJCX0KKwogCSAgICAgIGlm
+IChzY24tPmRhdGFfcmVhZCA9PSAwCiAJCSAgJiYgX19saWJlbGZfc2V0X3Jhd2RhdGFfd3Jsb2Nr
+IChzY24pICE9IDApCiAJCS8qIFNvbWV0aGluZyB3ZW50IHdyb25nLiAgVGhlIGVycm9yIHZhbHVl
+IGlzIGFscmVhZHkgc2V0LiAgKi8KLS0gCjIuMTguNAoK
+
+
+--=-zSplKr7l+VSXfgLRPXF8--
