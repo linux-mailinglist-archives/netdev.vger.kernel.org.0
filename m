@@ -2,82 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8C61249242
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:21:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71DB1249249
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:22:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727813AbgHSBVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 21:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726367AbgHSBVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 21:21:50 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54112C061389;
-        Tue, 18 Aug 2020 18:21:50 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id r11so10825924pfl.11;
-        Tue, 18 Aug 2020 18:21:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hOnLOGYOZw1L/Zs7Wk9HSyEEtRcxH8Pj0OI4BPHvc4E=;
-        b=KB81QbuyIncm/RIkrN9jQDCY3p8F7gP5OAzdeRw4nVglGtyT/xGwsjZKnqIXNFrGnT
-         VeAcz4Ab/0ddoKqd+Qb8iVjprZfPJpKTfiLaTgPEl/+4KIknNyRirDJ6A1kprA7QcWam
-         2UvTUPqzmxtCQPEDidVMYHlWAnhhHSiDcubtYfwaCS1AvytjjeJT5ckIkv+auU0WzvgM
-         GtHzBRuhP6onYGCc2Hi8AOanAx4F1Yc8YF/hkaQKTcES+8Xnr+gDVtw6E0ESBBPuoFD6
-         VhMpLGrrc+HmKgFI4VL9qTHPLG1vK8IHPC6qEcvPCA3WeeYlaEU6a03tDwqnrORCQUEI
-         ipOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hOnLOGYOZw1L/Zs7Wk9HSyEEtRcxH8Pj0OI4BPHvc4E=;
-        b=j6fRAOjvgR1zu2WXPhEl3aa/Zp+3FwGEXGjzq4G4IBLlLRM3Lm5ofS+5zwheCdSfri
-         PZKdRPaidWLbMxYIEf5WVuipgDuCflToYBTHsFzy/AE38O499yEJmriZOp39s5SPZue1
-         9MD8mwqWUtIEznl5vMh4rTWZyyOBm3aCLCb9cYV/UL8As3Tpsyewsn0uSQGO+V9Jmzvw
-         ziTbMIuznP0s+x4FLkcduVjqma6RjEPcf4Z+KshQNyQ7zEI8wMqjR9rHLv1VkbnLzbTY
-         FV6lAQnDTjqTK3c/r9m96dVts9nIjH/XkguRpVhS4idKgfveb2TCd62sPvEcKKfXjAe8
-         cAUQ==
-X-Gm-Message-State: AOAM533ztOJ4566qyWcpH3s3zBHHK/6KsAf63bLhl13H0lw+Ac32v+EW
-        jrEa42q27RKdsvmukE42AJs=
-X-Google-Smtp-Source: ABdhPJzoiwz3EYotI1mISiIEUcq8e1AjaGnsl9A26h9XJycUT+DFdZ/4bSNZsooxEk8Nduu3INTcIQ==
-X-Received: by 2002:a63:1f11:: with SMTP id f17mr14650053pgf.217.1597800109843;
-        Tue, 18 Aug 2020 18:21:49 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:20fd])
-        by smtp.gmail.com with ESMTPSA id m4sm25381731pfh.129.2020.08.18.18.21.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2020 18:21:49 -0700 (PDT)
-Date:   Tue, 18 Aug 2020 18:21:46 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 0/9] Add support for type-based and enum
- value-based CO-RE relocations
-Message-ID: <20200819012146.okpmhcqcffoe43sw@ast-mbp.dhcp.thefacebook.com>
-References: <20200818223921.2911963-1-andriin@fb.com>
+        id S1727837AbgHSBWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 21:22:12 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38872 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727820AbgHSBWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 21:22:09 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07J1DPb4019385
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 18:22:09 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=RfOg1spZ9WUD78lhjFrzEQjeP7Ngbb2mr6IxNhwpjzs=;
+ b=pZLfkT9HRPGDlkrS9/b2Zboro6HumgoIFXz5SxG7Zl9eb32k5lB5IzgFb5xzMRmEKEgx
+ 2w95H8UJq5rLcyjRojXpON8PTN0ksitrYXPQKQWP4Kqw1FhP+V1za9id85XJAhfReOD5
+ QqepUVP7f34T59vQNsJt2PRClDzBOK0biK8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3304m2x31j-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 18:22:08 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 18 Aug 2020 18:22:06 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id C28942EC5EF4; Tue, 18 Aug 2020 18:21:57 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next 0/4] libbpf: minimize feature detection (reallocarray, libelf-mmap)
+Date:   Tue, 18 Aug 2020 18:21:52 -0700
+Message-ID: <20200819012156.3525852-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200818223921.2911963-1-andriin@fb.com>
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-18_16:2020-08-18,2020-08-18 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=877
+ impostorscore=0 mlxscore=0 bulkscore=0 suspectscore=8 spamscore=0
+ phishscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1015 adultscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008190010
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 03:39:12PM -0700, Andrii Nakryiko wrote:
-> This patch set adds libbpf support to two new classes of CO-RE relocations:
-> type-based (TYPE_EXISTS/TYPE_SIZE/TYPE_ID_LOCAL/TYPE_ID_TARGET) and enum
-> value-vased (ENUMVAL_EXISTS/ENUMVAL_VALUE):
-> 
-> LLVM patches adding these relocation in Clang:
->   - __builtin_btf_type_id() ([0], [1], [2]);
->   - __builtin_preserve_type_info(), __builtin_preserve_enum_value() ([3], [4]).
+Get rid of two feature detectors: reallocarray and libelf-mmap. Optional
+feature detections complicate libbpf Makefile and cause more troubles for
+various applications that want to integrate libbpf as part of their build=
+.
 
-I've applied patches 1-4, since they're somewhat indepedent of new features in 5+.
-What should be the process to land the rest?
-Land llvm first and add to bpf/README.rst that certain llvm commmits are necessary
-to build the tests?
-But CI will start failing. We can wait for that to be fixed,
-but I wonder is there way to detect new clang __builtins automatically in
-selftests and skip them if clang is too old?
+Patch #1 replaces all reallocarray() uses into libbpf-internal reallocarr=
+ay()
+implementation. Patches #2 and #3 makes sure we won't re-introduce
+reallocarray() accidentally. Patch #2 also removes last use of
+libbpf_internal.h header inside bpftool. There is still nlattr.h that's u=
+sed
+by both libbpf and bpftool, but that's left for a follow up patch to spli=
+t.
+Patch #4 removed libelf-mmap feature detector and all its uses, as it's
+trivial to handle missing mmap support in libbpf, the way objtool has bee=
+n
+doing it for a while.
+
+v1->v2:
+  - rebase to latest bpf-next (Alexei).
+
+Andrii Nakryiko (4):
+  libbpf: remove any use of reallocarray() in libbpf
+  tools/bpftool: remove libbpf_internal.h usage in bpftool
+  libbpf: centralize poisoning and poison reallocarray()
+  tools: remove feature-libelf-mmap feature detection
+
+ tools/bpf/bpftool/gen.c                |   2 -
+ tools/bpf/bpftool/net.c                | 299 +++++++++++++++++++++++--
+ tools/build/Makefile.feature           |   1 -
+ tools/build/feature/Makefile           |   4 -
+ tools/build/feature/test-all.c         |   4 -
+ tools/build/feature/test-libelf-mmap.c |   9 -
+ tools/lib/bpf/Makefile                 |  10 +-
+ tools/lib/bpf/bpf.c                    |   3 -
+ tools/lib/bpf/bpf_prog_linfo.c         |   3 -
+ tools/lib/bpf/btf.c                    |  14 +-
+ tools/lib/bpf/btf_dump.c               |   9 +-
+ tools/lib/bpf/hashmap.c                |   3 +
+ tools/lib/bpf/libbpf.c                 |  38 ++--
+ tools/lib/bpf/libbpf_internal.h        |  44 +++-
+ tools/lib/bpf/libbpf_probes.c          |   3 -
+ tools/lib/bpf/netlink.c                | 128 +----------
+ tools/lib/bpf/nlattr.c                 |   9 +-
+ tools/lib/bpf/ringbuf.c                |   8 +-
+ tools/lib/bpf/xsk.c                    |   3 -
+ tools/perf/Makefile.config             |   4 -
+ tools/perf/util/symbol.h               |   2 +-
+ 21 files changed, 353 insertions(+), 247 deletions(-)
+ delete mode 100644 tools/build/feature/test-libelf-mmap.c
+
+--=20
+2.24.1
+
