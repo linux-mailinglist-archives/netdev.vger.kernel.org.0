@@ -2,82 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8FE82499A0
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 11:50:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDBB724999F
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 11:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727042AbgHSJuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 05:50:40 -0400
-Received: from mailgw02.mediatek.com ([216.200.240.185]:48161 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726495AbgHSJui (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 05:50:38 -0400
-X-UUID: 1192dd65be0d4c80beae905e55f63a14-20200819
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=uVPKfloKa5GwHkVwJn0RmJIN/Tl5KQ2eePuutn7nOAQ=;
-        b=dO+ybYB+ZMfqyhqSrEgUhWB1eHCNrnIY6xxoB3vofGTLCkPYzK6UTQ5+eX7J5fAjYkReioch2SFCdpfxTbheDMfYAHtdAJqlPmzqgKoFqByQrNJyroDW9XgOBdBoMgGxcQMUKJBwOvfvgIu3GWaW5hRnoKZeF/CAqdHthkbPO0w=;
-X-UUID: 1192dd65be0d4c80beae905e55f63a14-20200819
-Received: from mtkcas67.mediatek.inc [(172.29.193.45)] by mailgw02.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (musrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 687292246; Wed, 19 Aug 2020 01:50:31 -0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- MTKMBS62N2.mediatek.inc (172.29.193.42) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 19 Aug 2020 02:50:29 -0700
-Received: from [172.21.84.99] (172.21.84.99) by mtkcas08.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 19 Aug 2020 17:50:28 +0800
-Message-ID: <1597830629.31846.83.camel@mtksdccf07>
-Subject: Re: [PATCH net-next v2 5/7] net: dsa: mt7530: Add the support of
- MT7531 switch
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@savoirfairelinux.com" 
-        <vivien.didelot@savoirfairelinux.com>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        "opensource@vdorst.com" <opensource@vdorst.com>,
-        "frank-w@public-files.de" <frank-w@public-files.de>,
-        "dqfext@gmail.com" <dqfext@gmail.com>
-Date:   Wed, 19 Aug 2020 17:50:29 +0800
-In-Reply-To: <20200818082347.353fe926@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <cover.1597729692.git.landen.chao@mediatek.com>
-         <e980fda45e0fb478f55e72765643bb641f352c65.1597729692.git.landen.chao@mediatek.com>
-         <20200818082347.353fe926@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
+        id S1726905AbgHSJui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 05:50:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725804AbgHSJue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 05:50:34 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52322C061757
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 02:50:34 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id f24so25575673ejx.6
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 02:50:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=7JqLKSUFdGdLy72GqIL1pnksOMo8WeFdq7kCu4Cdvdc=;
+        b=m4u5zw2nBjIXera2ZZWcj2hfWIGSn0NPuzFwoXxtA8ynNQ3dXpLhBNQJaB7FZKDkdQ
+         NOqdyoUrQRdgd0S5GQwAJ8h2FOkAwOjG0T7AChYnkjelcmQ0wSGezEffEQdl/b8O/mpU
+         xLHfu3jpt+Wq8KqAvSZLZSO8UIX8z2q3Y7iqBlEHK7csk3JUelvUfDakM1Mvgr1wzi7S
+         03+QDZzVk8epWuvxcHo2BAsz5BgkrwvXJYEsPuxBB7e+04O+Bg1KFalXFbMeLoUAj8sm
+         BS3xK/PjQqqZHb8zFxtHKeZ+jhHXc2/Uf4hSQarkK9WjvnDMf3addKvjm7B0xiBIIYZp
+         6RGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=7JqLKSUFdGdLy72GqIL1pnksOMo8WeFdq7kCu4Cdvdc=;
+        b=BsdTqpEf/Sn47VjBMah7cq7b45mee68R/zcdmt+3SCrdKYuIu1kugaejBq6NHio3Tf
+         /PyGhyr9jZ+u8E8C0wKO1qOBAkkkdZKfaHjQukbr1A6+rPNzzpk5rLrhW0o3CbJ9ScxZ
+         2xe+uij75SkluwWwImiXBCXGs5pbjPU7J75E8kqvZtUhRElDi4h2zBHO4NDFKVeaS1/d
+         yfDzvh4lbqEdX+5qdne/Nwt5WQPWbqSfKtWpoJI9KQcsSsdZHiNm43qrY7p6SIN8nyC2
+         oAQg1neIZYul6VNy0CmMI9vhCaY1OLKyVERS6Uve8M5+qW15xB63ED0CtdIbCkp4Rtz1
+         HkuA==
+X-Gm-Message-State: AOAM533dCkmJ5OhdHFsrzbgNjcf9wwxy45R1i1WSR8/dtezQaspM4+zV
+        Yq9gL1+BvNfCbR0FvqFlGxzf980LfQgtCqEPllE=
+X-Google-Smtp-Source: ABdhPJy8YoGVO+KmFPrWy2tDiuHSEMdM/RP2/yCwQtQVlqt5uQ1abVZJsKxhJ5IdaMfTzN9lWLYG4dW58sMgBju/kHQ=
+X-Received: by 2002:a17:906:811:: with SMTP id e17mr25588958ejd.549.1597830632685;
+ Wed, 19 Aug 2020 02:50:32 -0700 (PDT)
 MIME-Version: 1.0
-X-MTK:  N
+Received: by 2002:a50:3559:0:0:0:0:0 with HTTP; Wed, 19 Aug 2020 02:50:31
+ -0700 (PDT)
+Reply-To: robertandersongood1@gmail.com
+From:   robert <robertandersongood20@gmail.com>
+Date:   Wed, 19 Aug 2020 02:50:31 -0700
+Message-ID: <CAEC7LWEBU42F8_ONf8cxmwiV+evAxeM5R+Bh2pnZy9W56J5ZUA@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgSmFrdWIsDQoNClRoZXNlIDIgZnVuY3Rpb24gYXJlIHVzZWQgaW4gdGhlIHNhbWUgZmlsZSBv
-bmx5Lg0KSSdsbCBmaXggd2FybmluZ3MgYnkgbWFraW5nIDIgZnVuY3Rpb25zICdzdGF0aWMnIGlu
-IHYzLg0KDQpMYW5kZW4NCk9uIFR1ZSwgMjAyMC0wOC0xOCBhdCAyMzoyMyArMDgwMCwgSmFrdWIg
-S2ljaW5za2kgd3JvdGU6DQpbc25pcF0NCj4gUGxlYXNlIGZpeCB0aGVzZSBXPTEgd2FybmluZ3M6
-DQo+IA0KPiAuLi9kcml2ZXJzL25ldC9kc2EvbXQ3NTMwLmM6MTk3NjoxOiB3YXJuaW5nOiBubyBw
-cmV2aW91cyBwcm90b3R5cGUgZm9yIOKAmG10NzUzMV9zZ21paV9saW5rX3VwX2ZvcmNl4oCZIFst
-V21pc3NpbmctcHJvdG90eXBlc10NCj4gIDE5NzYgfCBtdDc1MzFfc2dtaWlfbGlua191cF9mb3Jj
-ZShzdHJ1Y3QgZHNhX3N3aXRjaCAqZHMsIGludCBwb3J0LA0KPiAgICAgICB8IF5+fn5+fn5+fn5+
-fn5+fn5+fn5+fn5+fn5+DQo+IC4uL2RyaXZlcnMvbmV0L2RzYS9tdDc1MzAuYzoyMDgxOjY6IHdh
-cm5pbmc6IG5vIHByZXZpb3VzIHByb3RvdHlwZSBmb3Ig4oCYbXQ3NTMxX3NnbWlpX3Jlc3RhcnRf
-YW7igJkgWy1XbWlzc2luZy1wcm90b3R5cGVzXQ0KPiAgMjA4MSB8IHZvaWQgbXQ3NTMxX3NnbWlp
-X3Jlc3RhcnRfYW4oc3RydWN0IGRzYV9zd2l0Y2ggKmRzLCBpbnQgcG9ydCkNCj4gICAgICAgfCAg
-ICAgIF5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+DQo+IC4uL2RyaXZlcnMvbmV0L2RzYS9tdDc1MzAu
-YzoxOTc2OjE6IHdhcm5pbmc6IHN5bWJvbCAnbXQ3NTMxX3NnbWlpX2xpbmtfdXBfZm9yY2UnIHdh
-cyBub3QgZGVjbGFyZWQuIFNob3VsZCBpdCBiZSBzdGF0aWM/DQo+IC4uL2RyaXZlcnMvbmV0L2Rz
-YS9tdDc1MzAuYzoyMDgxOjY6IHdhcm5pbmc6IHN5bWJvbCAnbXQ3NTMxX3NnbWlpX3Jlc3RhcnRf
-YW4nIHdhcyBub3QgZGVjbGFyZWQuIFNob3VsZCBpdCBiZSBzdGF0aWM/DQoNCg==
-
+KiDQktC90LjQvNCw0L3QuNC1OiDQsdC10L3QtdGE0LjRhtC40LDRgCAqDQoNCiog0KHQvtC+0LHR
+idC40YLQtSwg0YfRgtC+INC80Ysg0L/QvtC70YPRh9C40LvQuCDRg9GC0LLQtdGA0LbQtNC10L3Q
+vdGL0Lkg0YTQsNC50Lsg0L7Qv9C70LDRgtGLINC+0YIgRkVERVJBTA0K0JzQmNCd0JjQodCi0JXQ
+oNCh0KLQktCeINCk0JjQndCQ0J3QodCe0JIg0YHQvtCy0LzQtdGB0YLQvdC+INGBINCc0LXQttC0
+0YPQvdCw0YDQvtC00L3Ri9C8INCy0LDQu9GO0YLQvdGL0Lwg0YTQvtC90LTQvtC8ICjQnNCS0KQp
+DQrQutC+0LzQv9C10L3RgdCw0YbQuNGPINC20LXRgNGC0LLQsNC8INC80L7RiNC10L3QvdC40YfQ
+tdGB0YLQstCwINC4INCy0LDRiCDQsNC00YDQtdGBINGN0LvQtdC60YLRgNC+0L3QvdC+0Lkg0L/Q
+vtGH0YLRiyDQstGF0L7QtNC40YIg0LIg0YHQv9C40YHQvtC6DQrQttC10YDRgtCy0YsuICoNCg0K
+KiDQryDQv9C40YjRgywg0YfRgtC+0LHRiyDRgdC+0L7QsdGJ0LjRgtGMINCy0LDQvCwg0YfRgtC+
+INC80Ysg0LHRg9C00LXQvCDQvtGC0L/RgNCw0LLQu9GP0YLRjCDQstCw0LwgJCA1MDAwLjAwVVNE
+DQrQtdC20LXQtNC90LXQstC90L4g0YENCtC90LDRiCDQvtGE0LjRgSDQt9C00LXRgdGMLCDRgtCw
+0Log0LrQsNC6INC80Ysg0L/QvtC70YPRh9C40LvQuCDQvNCw0L3QtNCw0YIg0L3QsCDQv9C10YDQ
+tdC00LDRh9GDINCy0LDRiNC10LPQviDQv9C+0LvQvdC+0LPQvg0K0LrQvtC80L/QtdC90YHQsNGG
+0LjQvtC90L3Ri9C5INC/0LvQsNGC0LXQtiDQsiDRgNCw0LfQvNC10YDQtSA4MDAgMDAwINC00L7Q
+u9C70LDRgNC+0LIg0KHQqNCQINCc0LXQttC00YPQvdCw0YDQvtC00L3Ri9C8DQrQstCw0LvRjtGC
+0L3Ri9C8INGE0L7QvdC00L7QvA0KKNCc0JLQpCkg0Lgg0KTQtdC00LXRgNCw0LvRjNC90L7QtSDQ
+vNC40L3QuNGB0YLQtdGA0YHRgtCy0L4g0YTQuNC90LDQvdGB0L7Qsi4g0JLQsNGIINC70LjRh9C9
+0YvQuSDQuNC00LXQvdGC0LjRhNC40LrQsNGG0LjQvtC90L3Ri9C5INC90L7QvNC10YANCtC/0YDQ
+tdC00L7RgdGC0LDQstC70LXQvdC+INC60L7QvNCw0L3QtNC+0LkgSS5NLkYgQ1BQMDkyMFRHLiAq
+DQoNCiog0JLQvtGCINC40L3RhNC+0YDQvNCw0YbQuNGPINC+0LEg0L7Qv9C70LDRgtC1LCDQutC+
+0YLQvtGA0YPRjiDQvNGLINCx0YPQtNC10Lwg0LjRgdC/0L7Qu9GM0LfQvtCy0LDRgtGMINC00LvR
+jyDQv9C10YDQtdGB0YvQu9C60Lgg0LLQsNGI0LXQs9C+DQrQtdC20LXQtNC90LXQstC90YvQuSDQ
+v9C10YDQtdCy0L7QtC4gKg0KDQoqINCY0LzRjyDQvtGC0L/RgNCw0LLQuNGC0LXQu9GPOiDQodC4
+0L3RgtC40Y8g0JjQtNC10L0gKg0KKiDQktC+0L/RgNC+0YE6INCe0L/Qu9Cw0YLQsCAqDQoqINCe
+0YLQstC10YI6INCU0LAgKg0KKiDQodGD0LzQvNCwOiA1IDAwMCwwMCDQtNC+0LvQu9Cw0YDQvtCy
+INCh0KjQkCAqDQoqINCT0L7RgNC+0LQ6INCb0L7QvNC1ICoNCiog0KHRgtGA0LDQvdCwOiDQotC+
+0LPQviAqDQoNCiog0J/QoNCY0JzQldCn0JDQndCY0JU6IE1UQ04g0LHRg9C00LXRgiDQvtGC0L/R
+gNCw0LLQu9C10L0g0LLQsNC8INC/0L7RgdC70LUg0LLQsNGI0LXQs9C+INC+0YLQstC10YLQsCDQ
+uCDQv9C+0LTRgtCy0LXRgNC20LTQtdC90LjRjw0K0JjQvdGE0L7RgNC80LDRhtC40Y8g0L4g0LLQ
+sNGI0LXQvCDQv9C+0LvRg9GH0LDRgtC10LvQtSwg0YfRgtC+0LHRiyDQuNC30LHQtdC20LDRgtGM
+INC90LXQv9GA0LDQstC40LvRjNC90L7QuSDQv9C10YDQtdC00LDRh9C4LiAqDQoNCiog0JzRiyDQ
+ttC00LXQvCDQstCw0YjQtdCz0L4g0YHRgNC+0YfQvdC+0LPQviDQvtGC0LLQtdGC0LAg0L/QviDR
+jdGC0L7QvNGDINCw0LTRgNC10YHRgw0KKG1pc3NjeW50aGlhZWRlbjU2QGdtYWlsLmNvbSA8bWlz
+c2N5bnRoaWFlZGVuNTZAZ21haWwuY29tPiksINGH0YLQvtCx0Ysg0L/QvtC30LLQvtC70LjRgtGM
+INC90LDQvA0K0L/RgNC+0LTQvtC70LbQuNGC0Ywg0L7Qv9C70LDRgtGDLiAqDQoNCirQmNGB0LrR
+gNC10L3QvdC1INCy0LDRiCwqDQoNCirQoNGD0LrQvtCy0L7QtNC40YLQtdC70Ywg0YTQuNC70LjQ
+sNC70LA6Kg0KKiDQnNC40YHRgSDQodC40L3RgtC40Y8g0JjQtNC10L0gKg0K
