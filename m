@@ -2,125 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23D192493C2
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 06:16:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAEDF2493D0
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 06:22:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726435AbgHSEQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 00:16:26 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:22780 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725275AbgHSEQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 00:16:24 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07J49QlV022211;
-        Tue, 18 Aug 2020 21:15:32 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=Y2pOw7r5+0LZeek01xdOMmbEFToUq2WUMhMMxSeVkj4=;
- b=gliU6axfQiKrmNJwgFnDuVdRMawTAhPFZxuAgVP1BfBFmnhgQwpoCj+mThpk7XkfDJK5
- KSJtcivQD6HmTTzEy911SvnmxtaTHK6ETpr8Sp6qfeo9I3JOU7SpXztdXowfoaFovqhz
- qedVFY+svGZqUQofm22Ry/PfTtZFJzWYOOY= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3304m2xm4t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 18 Aug 2020 21:15:32 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 18 Aug 2020 21:15:31 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V8B6pXj792wggtllvu1KA0Hwhs99kfMawoPbvTVdytEzD1pttX3UJBRgpaiprXe77Bwkl1jHYm1oFF7TvaGS1UsKl/6C3FmAlhXjVxFO/g/RzXAs43PoKOCrrYFWz6hX8xDjxCSYz0zUwYwshjbG706JZSBcD4u6TW5Z5htrRZVb2lpgYjNvGKXR7hlrI01mwrNyd/eqLN56o3tuSybsuVt/+mz81WBBCTaKlinQMAZ+7aeeA9azdECLNDthX/YXQ1QXdAYRhKsSjqQWoycmeeEB6aliI33TGT/Bk5iFZQV0O1Njm7OREbBakEf7kdBBJWH7JiOCzUeYRAmT+kadSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Y2pOw7r5+0LZeek01xdOMmbEFToUq2WUMhMMxSeVkj4=;
- b=NMfRmBIQTS7JPYltX6QhAZYwb4HVyGNrjZeQkwx9guuw0oJoWG5gvxHx4OF2lyYo4phUwjjY+B+qOPbh2uaFseT3rqkj25E92oGer0ZdScaYIzOK3uf8nf2wnkHHwSlDe+aBWFNDOqeykjgHvarvmUYZZiUYd+PXT1KEOV9ZjDuxdiEHUHNdW3LDnWKv/1b5ksCojfXW9dQm6DBiSUE/DOdnk3DC3KnYa9+4bIPsRNBpKa07TqHKGSGm7mx9j46/Fo/eTDoFrMYCtU/tX7zksK4gRGHoVjehtQXAOYCVpdGnvQQoig1dmkfyk/v6/Z5k3AUf6j4wRc6f+gtx1pV1MQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Y2pOw7r5+0LZeek01xdOMmbEFToUq2WUMhMMxSeVkj4=;
- b=TJDoAMnsniNjQFxo6DKXEZUosIiMMBLd/Gnx4Nsy7J5D8D/7huHSGAYMn7aoIFNo3ZJNC4wHYJaTSvvb2kPzh7uSBTrzuejVl+X0hpNuO+GNrm18jpI3JPVmAoQvkVdy8uTO+YtFGceYrBCzxG/BgWt5pFEVmpHc2HO7cELQBjw=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2840.namprd15.prod.outlook.com (2603:10b6:a03:b2::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3283.20; Wed, 19 Aug
- 2020 04:15:26 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3283.028; Wed, 19 Aug 2020
- 04:15:26 +0000
-Subject: Re: [PATCH bpf-next] libbpf: simplify the return expression of
- build_map_pin_path()
-To:     Xu Wang <vulab@iscas.ac.cn>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <andriin@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@chromium.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>
-References: <20200819025324.14680-1-vulab@iscas.ac.cn>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <5a5f8fb5-3e9d-18df-a313-5809af347c26@fb.com>
-Date:   Tue, 18 Aug 2020 21:15:20 -0700
+        id S1726585AbgHSEWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 00:22:20 -0400
+Received: from mx2.suse.de ([195.135.220.15]:44916 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725275AbgHSEWS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Aug 2020 00:22:18 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 2DEBAB7E7;
+        Wed, 19 Aug 2020 04:22:41 +0000 (UTC)
+Subject: Re: [PATCH v7 1/6] net: introduce helper sendpage_ok() in
+ include/linux/net.h
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, open-iscsi@googlegroups.com,
+        linux-scsi@vger.kernel.org, ceph-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
+        Hannes Reinecke <hare@suse.de>, Jan Kara <jack@suse.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Mikhail Skorzhinskii <mskorzhinskiy@solarflare.com>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Vlastimil Babka <vbabka@suse.com>, stable@vger.kernel.org
+References: <20200818131227.37020-1-colyli@suse.de>
+ <20200818131227.37020-2-colyli@suse.de> <20200818162404.GA27196@lst.de>
+ <217ec0ec-3c5a-a8ed-27d9-c634f0b9a045@suse.de>
+ <20200818194930.GA31966@lst.de>
+From:   Coly Li <colyli@suse.de>
+Autocrypt: addr=colyli@suse.de; keydata=
+ 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
+Message-ID: <04408ff6-f765-8f3e-ead9-aec55043e469@suse.de>
+Date:   Wed, 19 Aug 2020 12:22:05 +0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.11.0
-In-Reply-To: <20200819025324.14680-1-vulab@iscas.ac.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
+MIME-Version: 1.0
+In-Reply-To: <20200818194930.GA31966@lst.de>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL0PR03CA0023.namprd03.prod.outlook.com
- (2603:10b6:208:2d::36) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c0a8:11e8::10d3] (2620:10d:c091:480::1:374f) by BL0PR03CA0023.namprd03.prod.outlook.com (2603:10b6:208:2d::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3283.15 via Frontend Transport; Wed, 19 Aug 2020 04:15:23 +0000
-X-Originating-IP: [2620:10d:c091:480::1:374f]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9b935535-5e9f-4eba-15bf-08d843f67fcd
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2840:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB284043084F93476F173DB936D35D0@BYAPR15MB2840.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:747;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dhLEm36J/o7nDaMzHZkC/u3lFARO6R/EUL251g5psN+xV6rhekdjK6jxBATc6MwMv9vea9arAk0obPOEEBl96qOXs45Em794gCazeo3+UcffDo/7kMSgsBE3aD3ysL+V4uiuCA55d+TIXiiJDW/8O5+XlkrShd86HN18Y4ovilgQWHaTqUyDhi3kwerxk2f//jkW88xZL9CoVmq9+hv58hljBUaLAOgweEagkw9rhA7TT27nGiPncrRu9vPKznTJqkTXCi+zNYa7L4UK8b2Ve+67smHma93AhJL8FuFBkLHTLk1ZA1/AB+ibht+fAJf3UdGzAsQcAMb0kfEObnVvXrxMVaz8PEj2GAY19DkTgg0BnnPCkGLrZ4D6rkTx5pS0gDfYuvOcw2MX0NyXtfMZjA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(39860400002)(376002)(366004)(396003)(346002)(2616005)(53546011)(8936002)(31696002)(66946007)(5660300002)(478600001)(86362001)(2906002)(6486002)(66476007)(316002)(66556008)(52116002)(31686004)(4326008)(36756003)(16526019)(8676002)(558084003)(186003)(921003)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: jI6SO4vc1Y5ERo3VsvQm9SmuE0RzYTzKQPGfy0ylTtJIzh4YtBCI5zKAIIupk+Xgzdc0hh73jKaZKxQdo9lx9z9iqV+xEFDFa1pEOqpQGMcUlmlY6+MxadSCyYg9IIW7LgMAErKJuuN7HsAV9MYpcSXs8k29pNFzieAoujBM00KLRVnsinLf9w+jC3qR227JxNgw1PEbBX61J0dhP9RVsQjVwERpGJEXpO1UdGSsFX/N+5Krz9A4qUuvIeyMJN4EOPr9ImlZHWF47np324x4+iWyO62BFqsRGxa70fNPW2oL9Q06Yr0gL6/SyKrkgZnAL/hfQxssmM8RtWk10ttLLTkiIFm3i2oUfp7f2ighS37Vgj02Osuiu5xgD1W0gDSjkhth6dmb751d27cdpk8uo+GJz3DOboOeK01T2Xsyz8a8+Pb1W6BITFy/EAwltzLFjlCzo6DXJsfc2gFLOKVGGWg9itXC9ZqXU2IX6xCFMGVP5xCDXXzS67iizEwBxAilfUZ7TQ1z4FpuMg4qL3tVjlL90jUZr99eYYOtYtKMbybNzd3O8LuakvaMTW+6gNh+eyinsjgMiu9SvoRpnzR6fI0uuRrHMtUxkQ1ebT6BNHGXshw3rz9vgcg/rh3zh4Q0jI9NICcy8tfFVwkJi+JnfIg88ud7ygir0NPiCq6fGSg=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b935535-5e9f-4eba-15bf-08d843f67fcd
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2020 04:15:26.4694
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: H7oVURZe+ZnZtfFfHWaeN/u5h+5dccZrtLBxhG2CodZ21vvRdxx2xjmxBLsqEmKQ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2840
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-19_02:2020-08-18,2020-08-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=954
- impostorscore=0 mlxscore=0 bulkscore=0 suspectscore=18 spamscore=0
- phishscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1015 adultscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008190036
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 8/18/20 7:53 PM, Xu Wang wrote:
-> Simplify the return expression.
+On 2020/8/19 03:49, Christoph Hellwig wrote:
+> On Wed, Aug 19, 2020 at 12:33:37AM +0800, Coly Li wrote:
+>> On 2020/8/19 00:24, Christoph Hellwig wrote:
+>>> I think we should go for something simple like this instead:
+>>
+>> This idea is fine to me. Should a warning message be through here? IMHO
+>> the driver still sends an improper page in, fix it in silence is too
+>> kind or over nice to the buggy driver(s).
 > 
-> Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+> I don't think a warning is a good idea.  An API that does the right
+> thing underneath and doesn't require boiler plate code in most callers
+> is the right API.
+> 
 
-Acked-by: Yonghong Song <yhs@fb.com>
+Then I don't have more comment.
+
+Thanks.
+
+Coly Li
