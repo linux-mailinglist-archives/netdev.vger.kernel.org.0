@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A7924A049
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:44:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7314724A09C
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:51:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728583AbgHSNos (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 09:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
+        id S1728686AbgHSNvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 09:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728571AbgHSNoX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 09:44:23 -0400
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A80C06135D
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 06:44:01 -0700 (PDT)
+        with ESMTP id S1728351AbgHSNn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 09:43:59 -0400
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DE47C061343
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 06:43:56 -0700 (PDT)
 Received: from ramsan ([84.195.186.194])
-        by xavier.telenet-ops.be with bizsmtp
-        id HRjl2300S4C55Sk01Rjlxb; Wed, 19 Aug 2020 15:43:56 +0200
+        by baptiste.telenet-ops.be with bizsmtp
+        id HRjl2300W4C55Sk01RjlZl; Wed, 19 Aug 2020 15:43:54 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan with esmtp (Exim 4.90_1)
         (envelope-from <geert@linux-m68k.org>)
-        id 1k8ONV-0003E6-JN; Wed, 19 Aug 2020 15:43:45 +0200
+        id 1k8ONV-0003E9-Kd; Wed, 19 Aug 2020 15:43:45 +0200
 Received: from geert by rox.of.borg with local (Exim 4.90_1)
         (envelope-from <geert@linux-m68k.org>)
-        id 1k8ONV-0007Fi-Hm; Wed, 19 Aug 2020 15:43:45 +0200
+        id 1k8ONV-0007Fl-Iz; Wed, 19 Aug 2020 15:43:45 +0200
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -41,9 +41,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 6/7] arm64: dts: renesas: rcar-gen3: Convert EtherAVB to explicit delay handling
-Date:   Wed, 19 Aug 2020 15:43:43 +0200
-Message-Id: <20200819134344.27813-7-geert+renesas@glider.be>
+Subject: [PATCH v3 7/7] arm64: dts: renesas: rzg2: Convert EtherAVB to explicit delay handling
+Date:   Wed, 19 Aug 2020 15:43:44 +0200
+Message-Id: <20200819134344.27813-8-geert+renesas@glider.be>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200819134344.27813-1-geert+renesas@glider.be>
 References: <20200819134344.27813-1-geert+renesas@glider.be>
@@ -62,7 +62,7 @@ Historically, the EtherAVB driver configured these delays based on the
 PHY, not for the MAC.  Hence properties were introduced for explicit
 configuration of these delays.
 
-Convert the R-Car Gen3 DTS files from the old to the new scheme:
+Convert the RZ/G2 DTS files from the old to the new scheme:
   - Add default "rx-internal-delay-ps" and "tx-internal-delay-ps"
     properties to the SoC .dtsi files, to be overridden by board files
     where needed,
@@ -71,10 +71,7 @@ Convert the R-Car Gen3 DTS files from the old to the new scheme:
     overrides.
 
 Notes:
-  - R-Car E3 and D3 do not support TX internal delay handling,
-  - On R-Car D3, TX internal delay handling must always be enabled,
-    hence this fixes a bug on Draak,
-  - On R-Car V3H, RX internal delay handling must always be enabled.
+  - RZ/G2E does not support TX internal delay handling.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
@@ -83,84 +80,26 @@ clock delay configuration", and thus must not be applied before its
 dependency has hit upstream.
 
 v3:
-  - No changes,
+  - Update new beacon-renesom-som.dtsi and r8a774e1.dtsi,
 
 v2:
   - Replace "renesas,[rt]xc-delay-ps" by "[rt]x-internal-delay-ps".
 ---
- arch/arm64/boot/dts/renesas/r8a77951.dtsi        | 2 ++
- arch/arm64/boot/dts/renesas/r8a77960.dtsi        | 2 ++
- arch/arm64/boot/dts/renesas/r8a77961.dtsi        | 2 ++
- arch/arm64/boot/dts/renesas/r8a77965.dtsi        | 2 ++
- arch/arm64/boot/dts/renesas/r8a77970-eagle.dts   | 3 ++-
- arch/arm64/boot/dts/renesas/r8a77970-v3msk.dts   | 3 ++-
- arch/arm64/boot/dts/renesas/r8a77970.dtsi        | 2 ++
- arch/arm64/boot/dts/renesas/r8a77980.dtsi        | 2 ++
- arch/arm64/boot/dts/renesas/r8a77990.dtsi        | 1 +
- arch/arm64/boot/dts/renesas/r8a77995.dtsi        | 1 +
- arch/arm64/boot/dts/renesas/salvator-common.dtsi | 2 +-
- arch/arm64/boot/dts/renesas/ulcb.dtsi            | 2 +-
- 12 files changed, 20 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi | 3 ++-
+ arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi     | 2 +-
+ arch/arm64/boot/dts/renesas/r8a774a1.dtsi           | 2 ++
+ arch/arm64/boot/dts/renesas/r8a774b1.dtsi           | 2 ++
+ arch/arm64/boot/dts/renesas/r8a774c0.dtsi           | 1 +
+ arch/arm64/boot/dts/renesas/r8a774e1.dtsi           | 2 ++
+ 6 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a77951.dtsi b/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-index 9beb8e76d9235b71..1b1a014c829a2e2a 100644
---- a/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-@@ -1250,6 +1250,8 @@
- 			power-domains = <&sysc R8A7795_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <0>;
-+			tx-internal-delay-ps = <0>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77960.dtsi b/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-index 4dfb7f07678714e9..e6c88a748692b212 100644
---- a/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-@@ -1126,6 +1126,8 @@
- 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <0>;
-+			tx-internal-delay-ps = <0>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77961.dtsi b/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-index 542c44c7dbca30b6..6fdc28a6d2cf0354 100644
---- a/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-@@ -1012,6 +1012,8 @@
- 			power-domains = <&sysc R8A77961_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <0>;
-+			tx-internal-delay-ps = <0>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			status = "disabled";
-diff --git a/arch/arm64/boot/dts/renesas/r8a77965.dtsi b/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-index fe4dc12e2bdfae6f..6206e28f37efae73 100644
---- a/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-@@ -988,6 +988,8 @@
- 			power-domains = <&sysc R8A77965_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <0>;
-+			tx-internal-delay-ps = <0>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77970-eagle.dts b/arch/arm64/boot/dts/renesas/r8a77970-eagle.dts
-index 5c28f303e911343c..874a7fc2730b00db 100644
---- a/arch/arm64/boot/dts/renesas/r8a77970-eagle.dts
-+++ b/arch/arm64/boot/dts/renesas/r8a77970-eagle.dts
-@@ -81,7 +81,8 @@
- 
- 	renesas,no-ether-link;
+diff --git a/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi b/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi
+index 97272f5fa0abf92e..8ac167aa18f04743 100644
+--- a/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi
++++ b/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi
+@@ -55,7 +55,8 @@
+ 	pinctrl-0 = <&avb_pins>;
+ 	pinctrl-names = "default";
  	phy-handle = <&phy0>;
 -	phy-mode = "rgmii-id";
 +	rx-internal-delay-ps = <1800>;
@@ -168,75 +107,11 @@ index 5c28f303e911343c..874a7fc2730b00db 100644
  	status = "okay";
  
  	phy0: ethernet-phy@0 {
-diff --git a/arch/arm64/boot/dts/renesas/r8a77970-v3msk.dts b/arch/arm64/boot/dts/renesas/r8a77970-v3msk.dts
-index 668a1ece9af00420..7417cf5fea0f0a65 100644
---- a/arch/arm64/boot/dts/renesas/r8a77970-v3msk.dts
-+++ b/arch/arm64/boot/dts/renesas/r8a77970-v3msk.dts
-@@ -102,7 +102,8 @@
- 
- 	renesas,no-ether-link;
- 	phy-handle = <&phy0>;
--	phy-mode = "rgmii-id";
-+	rx-internal-delay-ps = <1800>;
-+	tx-internal-delay-ps = <2000>;
- 	status = "okay";
- 
- 	phy0: ethernet-phy@0 {
-diff --git a/arch/arm64/boot/dts/renesas/r8a77970.dtsi b/arch/arm64/boot/dts/renesas/r8a77970.dtsi
-index 2b9124a5ca860dd2..7be8ad1ca4646d79 100644
---- a/arch/arm64/boot/dts/renesas/r8a77970.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77970.dtsi
-@@ -615,6 +615,8 @@
- 			power-domains = <&sysc R8A77970_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <0>;
-+			tx-internal-delay-ps = <0>;
- 			iommus = <&ipmmu_rt 3>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77980.dtsi b/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-index 59f5bbd72161706d..f573dc0552272195 100644
---- a/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-@@ -667,6 +667,8 @@
- 			power-domains = <&sysc R8A77980_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <0>;
-+			tx-internal-delay-ps = <2000>;
- 			iommus = <&ipmmu_ds1 33>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77990.dtsi b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-index 1991bdc36792f4e3..07c35e9b049ae151 100644
---- a/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-@@ -938,6 +938,7 @@
- 			power-domains = <&sysc R8A77990_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <0>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77995.dtsi b/arch/arm64/boot/dts/renesas/r8a77995.dtsi
-index 2c2272f5f5b52105..624aaa6d7f20d6d4 100644
---- a/arch/arm64/boot/dts/renesas/r8a77995.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77995.dtsi
-@@ -628,6 +628,7 @@
- 			power-domains = <&sysc R8A77995_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <1800>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/salvator-common.dtsi b/arch/arm64/boot/dts/renesas/salvator-common.dtsi
-index 1bf77957d2c21db9..6c643ed74fc586bb 100644
---- a/arch/arm64/boot/dts/renesas/salvator-common.dtsi
-+++ b/arch/arm64/boot/dts/renesas/salvator-common.dtsi
-@@ -324,7 +324,7 @@
+diff --git a/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi b/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi
+index 178401a34cbf8d38..46f1ca0b7ef5e7c2 100644
+--- a/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi
++++ b/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi
+@@ -19,7 +19,7 @@
  	pinctrl-0 = <&avb_pins>;
  	pinctrl-names = "default";
  	phy-handle = <&phy0>;
@@ -245,19 +120,57 @@ index 1bf77957d2c21db9..6c643ed74fc586bb 100644
  	status = "okay";
  
  	phy0: ethernet-phy@0 {
-diff --git a/arch/arm64/boot/dts/renesas/ulcb.dtsi b/arch/arm64/boot/dts/renesas/ulcb.dtsi
-index ff88af8e39d3fa10..bd4efdf91afca42b 100644
---- a/arch/arm64/boot/dts/renesas/ulcb.dtsi
-+++ b/arch/arm64/boot/dts/renesas/ulcb.dtsi
-@@ -144,7 +144,7 @@
- 	pinctrl-0 = <&avb_pins>;
- 	pinctrl-names = "default";
- 	phy-handle = <&phy0>;
--	phy-mode = "rgmii-txid";
-+	tx-internal-delay-ps = <2000>;
- 	status = "okay";
- 
- 	phy0: ethernet-phy@0 {
+diff --git a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
+index 8e80f50132ad55f5..ed99863f1dd09fd0 100644
+--- a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
+@@ -1115,6 +1115,8 @@
+ 			power-domains = <&sysc R8A774A1_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <0>;
++			tx-internal-delay-ps = <0>;
+ 			iommus = <&ipmmu_ds0 16>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
+index 49e5addcfd97af01..1c76de24d3ea4844 100644
+--- a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
+@@ -989,6 +989,8 @@
+ 			power-domains = <&sysc R8A774B1_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <0>;
++			tx-internal-delay-ps = <0>;
+ 			iommus = <&ipmmu_ds0 16>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
+index 42171190cce4602d..9fdca4c55ba95608 100644
+--- a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
+@@ -960,6 +960,7 @@
+ 			power-domains = <&sysc R8A774C0_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <0>;
+ 			iommus = <&ipmmu_ds0 16>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
+index 0f86cfd524258353..0975bcbc3c502535 100644
+--- a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
+@@ -1139,6 +1139,8 @@
+ 			power-domains = <&sysc R8A774E1_PD_ALWAYS_ON>;
+ 			resets = <&cpg 812>;
+ 			phy-mode = "rgmii";
++			rx-internal-delay-ps = <0>;
++			tx-internal-delay-ps = <0>;
+ 			iommus = <&ipmmu_ds0 16>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
 -- 
 2.17.1
 
