@@ -2,110 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83C3024A390
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 17:54:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EC4724A3AB
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 18:00:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728706AbgHSPyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 11:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35386 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726636AbgHSPyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 11:54:23 -0400
-Received: from mail.nic.cz (lists.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6643EC061757
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 08:54:23 -0700 (PDT)
-Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:8982:ed8c:62b1:c0c8])
-        by mail.nic.cz (Postfix) with ESMTPSA id E051C140A06;
-        Wed, 19 Aug 2020 17:54:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1597852461; bh=yQvzoA6jG0xftRYWRal2bSD4l3UY31KWPkmpcoud5YU=;
-        h=Date:From:To;
-        b=GsIds1N88m7S/q4ykuFTXDEvb/gwBEuxhAwO6gvg4FniyeQfDaG0RmlC1ynfxUN4E
-         m2MRcN0rZiuQC0msUaP4TWs9hfJNGvuoV8jv0M9BOXfG+DytehiHSSzhWGBWKuCVPu
-         6uVOQfFUopX3GTY2mOa8H9Qw8FuSY7RQuuNXSJpI=
-Date:   Wed, 19 Aug 2020 17:54:21 +0200
-From:   Marek =?ISO-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Chris Healy <cphealy@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC russell-king 0/4] Support for RollBall 10G copper
- SFP modules
-Message-ID: <20200819175421.468d2188@dellmb.labs.office.nic.cz>
-In-Reply-To: <20200819174950.3a00d71a@dellmb.labs.office.nic.cz>
-References: <20200810220645.19326-1-marek.behun@nic.cz>
-        <20200817134909.GY1551@shell.armlinux.org.uk>
-        <20200818154305.2b7e191c@dellmb.labs.office.nic.cz>
-        <20200818150834.GC1551@shell.armlinux.org.uk>
-        <20200818173055.01e4bf01@dellmb.labs.office.nic.cz>
-        <20200818153649.GD1551@shell.armlinux.org.uk>
-        <20200818174724.02ea4ab8@dellmb.labs.office.nic.cz>
-        <20200818163415.GE1551@shell.armlinux.org.uk>
-        <20200819174950.3a00d71a@dellmb.labs.office.nic.cz>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726715AbgHSQAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 12:00:13 -0400
+Received: from mga09.intel.com ([134.134.136.24]:45702 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726211AbgHSQAL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Aug 2020 12:00:11 -0400
+IronPort-SDR: 8IJefxkLuFF6i2S3B7jbodNZj7NArrfMNh3MjJoxhGTkl0XQpakV5dh6Onzehoqe0Z5laSo5Qf
+ TVEuqw2SmaVA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9717"; a="156209370"
+X-IronPort-AV: E=Sophos;i="5.76,331,1592895600"; 
+   d="scan'208";a="156209370"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2020 09:00:07 -0700
+IronPort-SDR: gc8+3LP9tr8GZVgWgBr/nyC5KEgh/6JlfNvTRq42QwQH1aPYebG2VxYnrNABXOo2/mGgMdLCH9
+ gmoC+hbilR4g==
+X-IronPort-AV: E=Sophos;i="5.76,331,1592895600"; 
+   d="scan'208";a="334719777"
+Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.220.26])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2020 09:00:05 -0700
+Date:   Wed, 19 Aug 2020 09:00:02 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     <sundeep.lkml@gmail.com>
+Cc:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <richardcochran@gmail.com>, <netdev@vger.kernel.org>,
+        <sgoutham@marvell.com>, Aleksey Makarov <amakarov@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: Re: [PATCH v6 net-next 2/3] octeontx2-af: Add support for Marvell
+ PTP coprocessor
+Message-ID: <20200819090002.00005f4a@intel.com>
+In-Reply-To: <1597770557-26617-3-git-send-email-sundeep.lkml@gmail.com>
+References: <1597770557-26617-1-git-send-email-sundeep.lkml@gmail.com>
+        <1597770557-26617-3-git-send-email-sundeep.lkml@gmail.com>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
-        USER_IN_WHITELIST shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Btw if you want to check out the current status of my work, you can find
-it at
+sundeep.lkml@gmail.com wrote:
 
-https://gitlab.nic.cz/turris/mox-kernel/-/tree/sfp-2020-08-work
+> From: Aleksey Makarov <amakarov@marvell.com>
+> 
+> This patch adds driver for Precision Time
+> Protocol Clock and Timestamping block found on
+> Octeontx2 platform. The driver does initial
+> configuration and exposes a function to adjust
+> PTP hardware clock.
 
-the last patch is the one for marvell10g
+Please explain in the commit message why you have two methods of
+handling the clocks PCI space, as without that it seems like some of
+the code is either un-necessary or not clear why it's there.
 
-On Wed, 19 Aug 2020 17:49:50 +0200
-Marek Beh=FAn <marek.behun@nic.cz> wrote:
+> 
+> Co-developed-by: Subbaraya Sundeep <sbhatta@marvell.com>
+> Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+> Signed-off-by: Aleksey Makarov <amakarov@marvell.com>
+> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+> ---
+>  drivers/net/ethernet/marvell/octeontx2/af/Makefile |   2 +-
+>  drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  17 ++
+>  drivers/net/ethernet/marvell/octeontx2/af/ptp.c    | 248 +++++++++++++++++++++
+>  drivers/net/ethernet/marvell/octeontx2/af/ptp.h    |  22 ++
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  29 ++-
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   4 +
+>  6 files changed, 318 insertions(+), 4 deletions(-)
+>  create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/ptp.c
+>  create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/ptp.h
+> 
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/Makefile b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+> index 1b25948..0bc2410 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+> +++ b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+> @@ -8,4 +8,4 @@ obj-$(CONFIG_OCTEONTX2_AF) += octeontx2_af.o
+>  
+>  octeontx2_mbox-y := mbox.o
+>  octeontx2_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \
+> -		  rvu_reg.o rvu_npc.o rvu_debugfs.o
+> +		  rvu_reg.o rvu_npc.o rvu_debugfs.o ptp.o
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+> index c89b098..4aaef0a 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+> +++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+> @@ -127,6 +127,7 @@ M(ATTACH_RESOURCES,	0x002, attach_resources, rsrc_attach, msg_rsp)	\
+>  M(DETACH_RESOURCES,	0x003, detach_resources, rsrc_detach, msg_rsp)	\
+>  M(MSIX_OFFSET,		0x005, msix_offset, msg_req, msix_offset_rsp)	\
+>  M(VF_FLR,		0x006, vf_flr, msg_req, msg_rsp)		\
+> +M(PTP_OP,		0x007, ptp_op, ptp_req, ptp_rsp)		\
+>  M(GET_HW_CAP,		0x008, get_hw_cap, msg_req, get_hw_cap_rsp)	\
+>  /* CGX mbox IDs (range 0x200 - 0x3FF) */				\
+>  M(CGX_START_RXTX,	0x200, cgx_start_rxtx, msg_req, msg_rsp)	\
+> @@ -862,4 +863,20 @@ struct npc_get_kex_cfg_rsp {
+>  	u8 mkex_pfl_name[MKEX_NAME_LEN];
+>  };
+>  
+> +enum ptp_op {
+> +	PTP_OP_ADJFINE = 0,
+> +	PTP_OP_GET_CLOCK = 1,
+> +};
+> +
+> +struct ptp_req {
+> +	struct mbox_msghdr hdr;
+> +	u8 op;
+> +	s64 scaled_ppm;
+> +};
+> +
+> +struct ptp_rsp {
+> +	struct mbox_msghdr hdr;
+> +	u64 clk;
+> +};
+> +
+>  #endif /* MBOX_H */
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
+> new file mode 100644
+> index 0000000..e9e131d
+> --- /dev/null
+> +++ b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
+> @@ -0,0 +1,248 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Marvell PTP driver */
 
-> Russell,
->=20
-> if you have time please rebase your work on top of Linus' master or
-> net-next.
->=20
-> Btw one of your patches in clearfog branch breaks mvneta
-> (although there are other patches which fix this break).
-> Check this out:
->   patch
->       net: mvneta: move 1ms clock control into mac_prepare/mac_finish
->   removes definition of variables new_clk and gmac_clk in
->   mvneta_mac_config, but does not remove one instance of usage, which
->   can be seen in subsequent patch
->       net: mvneta: convert to phylink pcs operations
->   this is fixed by patch
->       net: mvneta: split out GMAC
->   where all of this is moved to mvgmac.c file.
-> I found out because I did not apply the last patch for some reason
-> (maybe it didn't apply on Linus' master or something, I don't
-> remember), and it failed to compile.
->=20
-> http://git.arm.linux.org.uk/cgit/linux-arm.git/commit/?h=3Dclearfog&id=3D=
-ca096c11e6798b1f4da8466ab0c3bf42b6e9fb81
-> http://git.arm.linux.org.uk/cgit/linux-arm.git/commit/?h=3Dclearfog&id=3D=
-1e345c538cc73d0b0a63c01a13e69a865905b7ae
-> http://git.arm.linux.org.uk/cgit/linux-arm.git/commit/?h=3Dclearfog&id=3D=
-dc33cc833537d06b198c9226d4a230cfc33569a6
->=20
-> I have just sent patches that add 88E6393X switch to mv88e6xxx driver,
-> since I am testing these SFPs on a Marvell Customer Reference Board
-> containing this switch.
->=20
-> The board also contains the other PHY supported by the marvell10g PHY
-> driver, 88E2110, so I will test my changes also on this PHY.
->=20
-> I am waiting for newer documentation for 88E3110, since the one I have
-> is outdated and does not contain descriptions on how to resolve
-> USXGMII auto-negotiation, which I would also like to add.
->=20
-> Marek
+Your file is missing Copyrights, is that your intent?
 
+I didn't have any comments for the rest of the patch, except that there
+is a lack of comments and communication of intent of the code. I can
+see what it does, but think of the point of view of a kernel consumer
+getting this code in the future and wanting to extend it or debug it,
+and the code being able to talk to "future you" who has no idea why the
+code was there or what it was trying to do.
+
+<snip>
