@@ -2,164 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15D9E2496C2
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:11:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F3E72496CB
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:12:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727954AbgHSHLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 03:11:35 -0400
-Received: from mga11.intel.com ([192.55.52.93]:59332 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727927AbgHSHIn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Aug 2020 03:08:43 -0400
-IronPort-SDR: Se8FeWK9kbDFM2wk1mnRyV6C2c916wuK0cvB1gQGmwePJbPQSseJB1MpOAvknDuWbzfssbXHNu
- T0jkmoBVj+bA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9717"; a="152677109"
-X-IronPort-AV: E=Sophos;i="5.76,330,1592895600"; 
-   d="scan'208";a="152677109"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 23:44:36 -0700
-IronPort-SDR: UP/bWo7cvexJr+5xpiXGIF3K+sedaZKf06Sk9pZSmzsB1yW1Bjk6/gql68V9VKeg+yGI7Z06Xj
- mWiOzr0kjyfw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,330,1592895600"; 
-   d="scan'208";a="497126683"
-Received: from skirillo-mobl2.ccr.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.32.199])
-  by fmsmga006.fm.intel.com with ESMTP; 18 Aug 2020 23:44:33 -0700
-Subject: =?UTF-8?B?UmU6IOetlOWkjTogW0ludGVsLXdpcmVkLWxhbl0gW1BBVENIIDAvMl0g?=
- =?UTF-8?Q?intel/xdp_fixes_for_fliping_rx_buffer?=
-To:     "Li,Rongqing" <lirongqing@baidu.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Piotr <piotr.raczynski@intel.com>,
-        Maciej <maciej.machnikowski@intel.com>
-References: <1594967062-20674-1-git-send-email-lirongqing@baidu.com>
- <CAJ+HfNi2B+2KYP9A7yCfFUhfUBd=sFPeuGbNZMjhNSdq3GEpMg@mail.gmail.com>
- <4268316b200049d58b9973ec4dc4725c@baidu.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <83e45ec2-1c66-59f6-e817-d4c523879007@intel.com>
-Date:   Wed, 19 Aug 2020 08:44:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727107AbgHSHLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 03:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726697AbgHSG41 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 02:56:27 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF59FC061389;
+        Tue, 18 Aug 2020 23:56:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description;
+        bh=yG7qWXKBUIxg7RQ3+cci8dpYxavPbFHR4ZLuySoica4=; b=QIUBzW0L+6A9SSAc6/gO+tDQ+b
+        OxXtbUbEFqlmm0USEC/IXSplued4C+C6F0ZF30aKjG8eHH9Hw09fN5oDweD3DjZhb8ZVyBa3oNCMt
+        gHqvdLdvetFUsHVA2naOyxN49WiwYumPj0OJ9vWKMBhULQu9DljH3ttkuIFc8Xzwt6Kk9NdAWGMVc
+        M/hFcqjB5X000cNsrLFGiT0ucDiSShmdbC+Iz8B0HGkVX82jI1lTPPtC7Yho4FRHWN0jDXHB+oQYg
+        jtcO/Q7MNp4OEwi61wxBreFz6GJBwroT31V+Pbx43dXQbOQjKpB13S5G4CjWrDHb//3KK5l+B0jlz
+        QH4CysFQ==;
+Received: from [2001:4bb8:198:f3b2:86b6:2277:f429:37a1] (helo=localhost)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1k8I0s-0008Kv-H4; Wed, 19 Aug 2020 06:55:58 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Pawel Osciak <pawel@osciak.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        iommu@lists.linux-foundation.org
+Cc:     Tom Lendacky <thomas.lendacky@amd.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, nouveau@lists.freedesktop.org,
+        netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
+        alsa-devel@alsa-project.org
+Subject: [PATCH 01/28] mm: turn alloc_pages into an inline function
+Date:   Wed, 19 Aug 2020 08:55:28 +0200
+Message-Id: <20200819065555.1802761-2-hch@lst.de>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200819065555.1802761-1-hch@lst.de>
+References: <20200819065555.1802761-1-hch@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <4268316b200049d58b9973ec4dc4725c@baidu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-08-19 03:37, Li,Rongqing wrote:
-[...]
- > Hi:
- >
- > Thanks for your explanation.
- >
- > But we can reproduce this bug
- >
- > We use ebpf to redirect only-Vxlan packets to non-zerocopy AF_XDP, 
-First we see panic on tcp stack, in tcp_collapse: BUG_ON(offset < 0); it 
-is very hard to reproduce.
- >
- > Then we use the scp to do test, and has lots of vxlan packet at the 
-same time, scp will be broken frequently.
- >
+To prevent a compiler error when a method call alloc_pages is
+added (which I plan to for the dma_map_ops).
 
-Ok! Just so that I'm certain of your setup. You receive packets to an
-i40e netdev where there's an XDP program. The program does XDP_PASS or
-XDP_REDIRECT to e.g. devmap for non-vxlan packets. However, vxlan
-packets are redirected to AF_XDP socket(s) in *copy-mode*. Am I
-understanding that correct?
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ include/linux/gfp.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-I'm assuming this is an x86-64 with 4k page size, right? :-) The page
-flipping is a bit different if the PAGE_SIZE is not 4k.
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+index 67a0774e080b98..dd2577c5407112 100644
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -550,8 +550,10 @@ extern struct page *alloc_pages_vma(gfp_t gfp_mask, int order,
+ #define alloc_hugepage_vma(gfp_mask, vma, addr, order) \
+ 	alloc_pages_vma(gfp_mask, order, vma, addr, numa_node_id(), true)
+ #else
+-#define alloc_pages(gfp_mask, order) \
+-		alloc_pages_node(numa_node_id(), gfp_mask, order)
++static inline struct page *alloc_pages(gfp_t gfp_mask, unsigned int order)
++{
++	return alloc_pages_node(numa_node_id(), gfp_mask, order);
++}
+ #define alloc_pages_vma(gfp_mask, order, vma, addr, node, false)\
+ 	alloc_pages(gfp_mask, order)
+ #define alloc_hugepage_vma(gfp_mask, vma, addr, order) \
+-- 
+2.28.0
 
- > With this fixes, scp has not been broken again, and kernel is not 
-panic again
- >
-
-Let's dig into your scenario.
-
-Are you saying the following:
-
-Page A:
-+------------
-| "first skb" ----> Rx HW ring entry X
-+------------
-| "second skb"----> Rx HW ring entry X+1 (or X+n)
-+------------
-
-This is a scenario that shouldn't be allowed, because there are now
-two users of the page. If that's the case, the refcounting is
-broken. Is that the case?
-
-Check out i40e_can_reuse_rx_page(). The idea with page flipping/reuse
-is that the page is only reused if there is only one user.
-
- > Seem your explanation is unable to solve my analysis:
- >
- >         1. first skb is not for xsk, and forwarded to another device
- >            or socket queue
-
-The data for the "first skb" resides on a page:
-A:
-+------------
-| "first skb"
-+------------
-| to be reused
-+------------
-refcount >>1
-
- >         2. seconds skb is for xsk, copy data to xsk memory, and page
- >            of skb->data is released
-
-Note that page B != page A.
-
-B:
-+------------
-| to be reused/or used by the stack
-+------------
-| "second skb for xsk"
-+------------
-refcount >>1
-
-data is copied to socket, page_frag_free() is called, and the page
-count is decreased. The driver will then check if the page can be
-reused. If not, it's freed to the page allocator.
-
- >         3. rx_buff is reusable since only first skb is in it, but
- >            *_rx_buffer_flip will make that page_offset is set to
- >            first skb data
-
-I'm having trouble grasping how this is possible. More than one user
-implies that it wont be reused. If this is possible, the
-recounting/reuse mechanism is broken, and that is what should be
-fixed.
-
-The AF_XDP redirect should not have semantics different from, say,
-devmap redirect. It's just that the page_frag_free() is called earlier
-for AF_XDP, instead of from i40e_clean_tx_irq() as the case for
-devmap/XDP_TX.
-
- >         4. then reuse rx buffer, first skb which still is living
- >            will be corrupted.
- >
- >
- > The root cause is difference you said upper, so I only fixes for 
-non-zerocopy AF_XDP
- >
-
-I have only addressed non-zerocopy, so we're on the same page (pun
-intended) here!
-
-
-Björn
-
- > -Li
