@@ -2,80 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF2EF24A1EE
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 16:41:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB89624A207
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 16:51:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727932AbgHSOk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 10:40:57 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:45341 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727018AbgHSOk5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 10:40:57 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-125-HuSPjOQMPXi6MMV9atWoQQ-1; Wed, 19 Aug 2020 15:40:53 +0100
-X-MC-Unique: HuSPjOQMPXi6MMV9atWoQQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Wed, 19 Aug 2020 15:40:52 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Wed, 19 Aug 2020 15:40:52 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>,
-        "'linux-sctp@vger.kernel.org'" <linux-sctp@vger.kernel.org>
-CC:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
-Subject: [PATCH v2] net: sctp: Fix negotiation of the number of data streams.
-Thread-Topic: [PATCH v2] net: sctp: Fix negotiation of the number of data
- streams.
-Thread-Index: AdZ2Jpt5uFDQ+GlJS8asoZmPH8fG2QAD/p2w
-Date:   Wed, 19 Aug 2020 14:40:52 +0000
-Message-ID: <1f2ffcb1180e4080aab114683b06efab@AcuMS.aculab.com>
-References: <3aef12f2fdbb4ee6b885719f5561a997@AcuMS.aculab.com>
-In-Reply-To: <3aef12f2fdbb4ee6b885719f5561a997@AcuMS.aculab.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1728494AbgHSOvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 10:51:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727836AbgHSOvt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 10:51:49 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C23C061757
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 07:51:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=vJYkPBAEBN3NMbKDK8twcmvoXro2PdbMjHSgThhTD3c=; b=r6SskpKbOvC7CAks3csi4C1iyK
+        CdHCk2Pb4Dwh00xWFvKaYMv+qxWWpx9E7xkZrLW/95KZbXaOQark+xKmIcPvu1p1C0DFlxEthk5WD
+        V8+iHTnBpLpbd0ltDQ1dIGPY8b7/i6Zbz4uUAKdUefWczlRPihzrX/2B0t1gqyPfo4N5aOUzWvXd1
+        pVcBNwktw6sAIqt3tJdN4YzV7n4UhROqjiUqNcCpkGiBeYFaZd6zT0APckLb8OCAkytyYsMAAKB3F
+        9ckgCXRNipsUSf8cRGY/sDNPYeOt1Jy+tPBPfGZt4bEaaEC4I7gwpKz+HqB81vICjXN1gXTxyzgpi
+        N9R06+VQ==;
+Received: from hch by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1k8PRJ-0007BZ-8S; Wed, 19 Aug 2020 14:51:45 +0000
+Date:   Wed, 19 Aug 2020 15:51:45 +0100
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Michael Brown <mbrown@fensystems.co.uk>,
+        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>
+Subject: Re: ethernet/sfc/ warnings with 32-bit dma_addr_t
+Message-ID: <20200819145145.GA27058@infradead.org>
+References: <f8f07f47-4ba9-4fd6-1d22-9559e150bc2e@infradead.org>
+ <79f8e049-e5b3-5b42-a600-b3025ad51adc@solarflare.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0.002
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <79f8e049-e5b3-5b42-a600-b3025ad51adc@solarflare.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpUaGUgbnVtYmVyIG9mIG91dHB1dCBhbmQgaW5wdXQgc3RyZWFtcyB3YXMgbmV2ZXIgYmVpbmcg
-cmVkdWNlZCwgZWcgd2hlbg0KcHJvY2Vzc2luZyByZWNlaXZlZCBJTklUIG9yIElOSVRfQUNLIGNo
-dW5rcy4NClRoZSBlZmZlY3QgaXMgdGhhdCBEQVRBIGNodW5rcyBjYW4gYmUgc2VudCB3aXRoIGlu
-dmFsaWQgc3RyZWFtIGlkcw0KYW5kIHRoZW4gZGlzY2FyZGVkIGJ5IHRoZSByZW1vdGUgc3lzdGVt
-Lg0KDQpGaXhlczogMjA3NWU1MGNhZjVlYSAoInNjdHA6IGNvbnZlcnQgdG8gZ2VucmFkaXgiKQ0K
-U2lnbmVkLW9mZi1ieTogRGF2aWQgTGFpZ2h0IDxkYXZpZC5sYWlnaHRAYWN1bGFiLmNvbT4NCi0t
-LQ0KIG5ldC9zY3RwL3N0cmVhbS5jIHwgNiArKysrLS0NCiAxIGZpbGUgY2hhbmdlZCwgNCBpbnNl
-cnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KDQpUaGlzIG5lZWRzIGJhY2twb3J0aW5nIHRvIDUu
-MSBhbmQgYWxsIGxhdGVyIGtlcm5lbHMuDQoNCihSZXNlbmQgd2l0aG91dCB0aGUgUkU6KQ0KDQpD
-aGFuZ2VzIHNpbmNlIHYxOg0KLSBGaXggJ0ZpeGVzJyB0YWcuDQotIEltcHJvdmUgZGVzY3JpcHRp
-b24uDQoNCmRpZmYgLS1naXQgYS9uZXQvc2N0cC9zdHJlYW0uYyBiL25ldC9zY3RwL3N0cmVhbS5j
-DQppbmRleCBiZGEyNTM2ZGQ3NDAuLjZkYzk1ZGNjMGZmNCAxMDA2NDQNCi0tLSBhL25ldC9zY3Rw
-L3N0cmVhbS5jDQorKysgYi9uZXQvc2N0cC9zdHJlYW0uYw0KQEAgLTg4LDEyICs4OCwxMyBAQCBz
-dGF0aWMgaW50IHNjdHBfc3RyZWFtX2FsbG9jX291dChzdHJ1Y3Qgc2N0cF9zdHJlYW0gKnN0cmVh
-bSwgX191MTYgb3V0Y250LA0KIAlpbnQgcmV0Ow0KIA0KIAlpZiAob3V0Y250IDw9IHN0cmVhbS0+
-b3V0Y250KQ0KLQkJcmV0dXJuIDA7DQorCQlnb3RvIG91dDsNCiANCiAJcmV0ID0gZ2VucmFkaXhf
-cHJlYWxsb2MoJnN0cmVhbS0+b3V0LCBvdXRjbnQsIGdmcCk7DQogCWlmIChyZXQpDQogCQlyZXR1
-cm4gcmV0Ow0KIA0KK291dDoNCiAJc3RyZWFtLT5vdXRjbnQgPSBvdXRjbnQ7DQogCXJldHVybiAw
-Ow0KIH0NCkBAIC0xMDQsMTIgKzEwNSwxMyBAQCBzdGF0aWMgaW50IHNjdHBfc3RyZWFtX2FsbG9j
-X2luKHN0cnVjdCBzY3RwX3N0cmVhbSAqc3RyZWFtLCBfX3UxNiBpbmNudCwNCiAJaW50IHJldDsN
-CiANCiAJaWYgKGluY250IDw9IHN0cmVhbS0+aW5jbnQpDQotCQlyZXR1cm4gMDsNCisJCWdvdG8g
-b3V0Ow0KIA0KIAlyZXQgPSBnZW5yYWRpeF9wcmVhbGxvYygmc3RyZWFtLT5pbiwgaW5jbnQsIGdm
-cCk7DQogCWlmIChyZXQpDQogCQlyZXR1cm4gcmV0Ow0KIA0KK291dDoNCiAJc3RyZWFtLT5pbmNu
-dCA9IGluY250Ow0KIAlyZXR1cm4gMDsNCiB9DQotLSANCjIuMjUuMQ0KDQotDQpSZWdpc3RlcmVk
-IEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5l
-cywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+On Wed, Aug 19, 2020 at 11:37:00AM +0100, Edward Cree wrote:
+> As far as I can tell, truncation to 32 bits is harmless ??? the
+> ??called function (efx_init_io) already tries every mask from the
+> ??passed one down to 32 bits in case of PCIe hardware limitations.
 
+Which btw isn't needed.  These days dma_set_mask_and_coherent
+and friends never fail because of a "too large" mask - it will
+only fail in the rare case of a too small one.  So the two places
+that set the dma mask could be simplified.
