@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9616C249243
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:22:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B19F249246
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:22:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727824AbgHSBWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 21:22:03 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:28874 "EHLO
+        id S1727828AbgHSBWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 21:22:08 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36290 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726367AbgHSBWC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 21:22:02 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07J1DPrG019362
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 18:22:02 -0700
+        by vger.kernel.org with ESMTP id S1727820AbgHSBWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 21:22:05 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07J1E16I008148
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 18:22:03 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=OLLs9qHScBixmhNwRL7CyKWWSj5D0RmUBHQ6nRdTPc8=;
- b=KIYo7DDKrj5k/4r4h3cN0MGw0kkq8Tn/bA9L4jiAS5nVn8RFA193R3CkZay04EGZYsaD
- Mz/EmKGI+MDD4Kf/VQXcZA76QIZMtyDMgQeWgvDf+lBYcFm1Ml//5Cqt2Whl+psvYUTo
- cmXUhz8Drx/ygSGIyK3RND4E5+QiAtgqSOQ= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3304m2x318-1
+ bh=L22QB57rbbI6IRTtTZoCGLnh+xhOJYWp6OKFcKntTLQ=;
+ b=BW8dkRvRaG3nR4MdbrigvHXqByicVb7cv0oqQVInjFPJQapx4HcjVzVVw19hLP08pZjl
+ NKgFpSsLsYb5NiFK1r1ZY/rZIgeOG5FV5JrZmBxOHVKFUwLCg1u/6A+rLw/aBu2BF2A3
+ Rt/QVE8qryAZrmoZd8c1yI+IYFP7kJoUKYg= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3304p7x5k4-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 18:22:01 -0700
-Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 18:22:03 -0700
+Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 18 Aug 2020 18:22:00 -0700
+ 15.1.1979.3; Tue, 18 Aug 2020 18:22:02 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 1C7DA2EC5EF4; Tue, 18 Aug 2020 18:22:00 -0700 (PDT)
+        id 4D2A12EC5EF4; Tue, 18 Aug 2020 18:22:02 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -39,9 +39,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 1/4] libbpf: remove any use of reallocarray() in libbpf
-Date:   Tue, 18 Aug 2020 18:21:53 -0700
-Message-ID: <20200819012156.3525852-2-andriin@fb.com>
+Subject: [PATCH v2 bpf-next 2/4] tools/bpftool: remove libbpf_internal.h usage in bpftool
+Date:   Tue, 18 Aug 2020 18:21:54 -0700
+Message-ID: <20200819012156.3525852-3-andriin@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200819012156.3525852-1-andriin@fb.com>
 References: <20200819012156.3525852-1-andriin@fb.com>
@@ -51,321 +51,633 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-08-18_16:2020-08-18,2020-08-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- impostorscore=0 mlxscore=0 bulkscore=0 suspectscore=8 spamscore=0
- phishscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1015 adultscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008190010
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
+ adultscore=0 priorityscore=1501 malwarescore=0 mlxlogscore=999
+ clxscore=1015 spamscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0
+ phishscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2008190010
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Re-implement glibc's reallocarray() for libbpf internal-only use.
-reallocarray(), unfortunately, is not available in all versions of glibc,=
- so
-requires extra feature detection and using reallocarray() stub from
-<tools/libc_compat.h> and COMPAT_NEED_REALLOCARRAY. All this complicates =
-build
-of libbpf unnecessarily and is just a maintenance burden. Instead, it's
-trivial to implement libbpf-specific internal version and use it througho=
-ut
-libbpf.
-
-Which is what this patch does, along with converting some realloc() uses =
-that
-should really have been reallocarray() in the first place.
+Most netlink-related functions were unique to bpftool usage, so I moved t=
+hem
+into net.c. Few functions are still used by both bpftool and libbpf itsel=
+f
+internally, so I've copy-pasted them (libbpf_nl_get_link,
+libbpf_netlink_open). It's a bit of duplication of code, but better separ=
+ation
+of libbpf as a library with public API and bpftool, relying on unexposed
+functions in libbpf.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/lib/bpf/Makefile          |  6 +-----
- tools/lib/bpf/btf.c             | 11 +++++------
- tools/lib/bpf/btf_dump.c        |  6 ++----
- tools/lib/bpf/libbpf.c          | 21 ++++++++++-----------
- tools/lib/bpf/libbpf_internal.h | 25 +++++++++++++++++++++++++
- tools/lib/bpf/ringbuf.c         |  5 ++---
- 6 files changed, 45 insertions(+), 29 deletions(-)
+ tools/bpf/bpftool/gen.c         |   2 -
+ tools/bpf/bpftool/net.c         | 299 ++++++++++++++++++++++++++++++--
+ tools/lib/bpf/libbpf_internal.h |  12 --
+ tools/lib/bpf/netlink.c         | 125 +------------
+ 4 files changed, 288 insertions(+), 150 deletions(-)
 
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index 95c946e94ca5..621ad96d06fd 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -56,7 +56,7 @@ ifndef VERBOSE
- endif
+diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+index f61184653633..4033c46d83e7 100644
+--- a/tools/bpf/bpftool/gen.c
++++ b/tools/bpf/bpftool/gen.c
+@@ -19,11 +19,9 @@
+ #include <sys/mman.h>
+ #include <bpf/btf.h>
 =20
- FEATURE_USER =3D .libbpf
--FEATURE_TESTS =3D libelf libelf-mmap zlib bpf reallocarray
-+FEATURE_TESTS =3D libelf libelf-mmap zlib bpf
- FEATURE_DISPLAY =3D libelf zlib bpf
+-#include "bpf/libbpf_internal.h"
+ #include "json_writer.h"
+ #include "main.h"
 =20
- INCLUDES =3D -I. -I$(srctree)/tools/include -I$(srctree)/tools/arch/$(AR=
-CH)/include/uapi -I$(srctree)/tools/include/uapi
-@@ -102,10 +102,6 @@ ifeq ($(feature-libelf-mmap), 1)
-   override CFLAGS +=3D -DHAVE_LIBELF_MMAP_SUPPORT
- endif
-=20
--ifeq ($(feature-reallocarray), 0)
--  override CFLAGS +=3D -DCOMPAT_NEED_REALLOCARRAY
--endif
 -
- # Append required CFLAGS
- override CFLAGS +=3D $(EXTRA_WARNINGS) -Wno-switch-enum
- override CFLAGS +=3D -Werror -Wall
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 7dfca7016aaa..d3dc090364c5 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -61,7 +61,7 @@ static int btf_add_type(struct btf *btf, struct btf_typ=
-e *t)
- 		expand_by =3D max(btf->types_size >> 2, 16U);
- 		new_size =3D min(BTF_MAX_NR_TYPES, btf->types_size + expand_by);
+ #define MAX_OBJ_NAME_LEN 64
 =20
--		new_types =3D realloc(btf->types, sizeof(*new_types) * new_size);
-+		new_types =3D libbpf_reallocarray(btf->types, new_size, sizeof(*new_ty=
-pes));
- 		if (!new_types)
- 			return -ENOMEM;
+ static void sanitize_identifier(char *name)
+diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+index 56c3a2bae3ef..910e7bac6e9e 100644
+--- a/tools/bpf/bpftool/net.c
++++ b/tools/bpf/bpftool/net.c
+@@ -6,22 +6,27 @@
+ #include <fcntl.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <time.h>
+ #include <unistd.h>
+ #include <bpf/bpf.h>
+ #include <bpf/libbpf.h>
+ #include <net/if.h>
+ #include <linux/if.h>
+ #include <linux/rtnetlink.h>
++#include <linux/socket.h>
+ #include <linux/tc_act/tc_bpf.h>
+ #include <sys/socket.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
 =20
-@@ -1575,7 +1575,7 @@ static int btf_dedup_hypot_map_add(struct btf_dedup=
- *d,
- 		__u32 *new_list;
+ #include "bpf/nlattr.h"
+-#include "bpf/libbpf_internal.h"
+ #include "main.h"
+ #include "netlink_dumper.h"
 =20
- 		d->hypot_cap +=3D max((size_t)16, d->hypot_cap / 2);
--		new_list =3D realloc(d->hypot_list, sizeof(__u32) * d->hypot_cap);
-+		new_list =3D libbpf_reallocarray(d->hypot_list, d->hypot_cap, sizeof(_=
-_u32));
- 		if (!new_list)
- 			return -ENOMEM;
- 		d->hypot_list =3D new_list;
-@@ -1871,8 +1871,7 @@ static int btf_dedup_strings(struct btf_dedup *d)
- 			struct btf_str_ptr *new_ptrs;
-=20
- 			strs.cap +=3D max(strs.cnt / 2, 16U);
--			new_ptrs =3D realloc(strs.ptrs,
--					   sizeof(strs.ptrs[0]) * strs.cap);
-+			new_ptrs =3D libbpf_reallocarray(strs.ptrs, strs.cap, sizeof(strs.ptr=
-s[0]));
- 			if (!new_ptrs) {
- 				err =3D -ENOMEM;
- 				goto done;
-@@ -2957,8 +2956,8 @@ static int btf_dedup_compact_types(struct btf_dedup=
- *d)
- 	d->btf->nr_types =3D next_type_id - 1;
- 	d->btf->types_size =3D d->btf->nr_types;
- 	d->btf->hdr->type_len =3D p - types_start;
--	new_types =3D realloc(d->btf->types,
--			    (1 + d->btf->nr_types) * sizeof(struct btf_type *));
-+	new_types =3D libbpf_reallocarray(d->btf->types, (1 + d->btf->nr_types)=
-,
-+					sizeof(struct btf_type *));
- 	if (!new_types)
- 		return -ENOMEM;
- 	d->btf->types =3D new_types;
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index fe39bd774697..1ad852ad0a86 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -323,8 +323,7 @@ static int btf_dump_add_emit_queue_id(struct btf_dump=
- *d, __u32 id)
-=20
- 	if (d->emit_queue_cnt >=3D d->emit_queue_cap) {
- 		new_cap =3D max(16, d->emit_queue_cap * 3 / 2);
--		new_queue =3D realloc(d->emit_queue,
--				    new_cap * sizeof(new_queue[0]));
-+		new_queue =3D libbpf_reallocarray(d->emit_queue, new_cap, sizeof(new_q=
-ueue[0]));
- 		if (!new_queue)
- 			return -ENOMEM;
- 		d->emit_queue =3D new_queue;
-@@ -1003,8 +1002,7 @@ static int btf_dump_push_decl_stack_id(struct btf_d=
-ump *d, __u32 id)
-=20
- 	if (d->decl_stack_cnt >=3D d->decl_stack_cap) {
- 		new_cap =3D max(16, d->decl_stack_cap * 3 / 2);
--		new_stack =3D realloc(d->decl_stack,
--				    new_cap * sizeof(new_stack[0]));
-+		new_stack =3D libbpf_reallocarray(d->decl_stack, new_cap, sizeof(new_s=
-tack[0]));
- 		if (!new_stack)
- 			return -ENOMEM;
- 		d->decl_stack =3D new_stack;
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 775fa6317483..7fafdf4cef70 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -44,7 +44,6 @@
- #include <sys/vfs.h>
- #include <sys/utsname.h>
- #include <sys/resource.h>
--#include <tools/libc_compat.h>
- #include <libelf.h>
- #include <gelf.h>
- #include <zlib.h>
-@@ -567,7 +566,7 @@ bpf_object__add_program(struct bpf_object *obj, void =
-*data, size_t size,
- 	progs =3D obj->programs;
- 	nr_progs =3D obj->nr_programs;
-=20
--	progs =3D reallocarray(progs, nr_progs + 1, sizeof(progs[0]));
-+	progs =3D libbpf_reallocarray(progs, nr_progs + 1, sizeof(progs[0]));
- 	if (!progs) {
- 		/*
- 		 * In this case the original obj->programs
-@@ -1292,7 +1291,7 @@ static struct bpf_map *bpf_object__add_map(struct b=
-pf_object *obj)
- 		return &obj->maps[obj->nr_maps++];
-=20
- 	new_cap =3D max((size_t)4, obj->maps_cap * 3 / 2);
--	new_maps =3D realloc(obj->maps, new_cap * sizeof(*obj->maps));
-+	new_maps =3D libbpf_reallocarray(obj->maps, new_cap, sizeof(*obj->maps)=
-);
- 	if (!new_maps) {
- 		pr_warn("alloc maps for object failed\n");
- 		return ERR_PTR(-ENOMEM);
-@@ -2698,8 +2697,8 @@ static int bpf_object__elf_collect(struct bpf_objec=
-t *obj)
- 				continue;
- 			}
-=20
--			sects =3D reallocarray(sects, nr_sects + 1,
--					     sizeof(*obj->efile.reloc_sects));
-+			sects =3D libbpf_reallocarray(sects, nr_sects + 1,
-+						    sizeof(*obj->efile.reloc_sects));
- 			if (!sects) {
- 				pr_warn("reloc_sects realloc failed\n");
- 				return -ENOMEM;
-@@ -2902,7 +2901,7 @@ static int bpf_object__collect_externs(struct bpf_o=
-bject *obj)
- 			continue;
-=20
- 		ext =3D obj->externs;
--		ext =3D reallocarray(ext, obj->nr_extern + 1, sizeof(*ext));
-+		ext =3D libbpf_reallocarray(ext, obj->nr_extern + 1, sizeof(*ext));
- 		if (!ext)
- 			return -ENOMEM;
- 		obj->externs =3D ext;
-@@ -4299,9 +4298,9 @@ static struct ids_vec *bpf_core_find_cands(const st=
-ruct btf *local_btf,
- 		if (strncmp(local_name, targ_name, local_essent_len) =3D=3D 0) {
- 			pr_debug("[%d] %s: found candidate [%d] %s\n",
- 				 local_type_id, local_name, i, targ_name);
--			new_ids =3D reallocarray(cand_ids->data,
--					       cand_ids->len + 1,
--					       sizeof(*cand_ids->data));
-+			new_ids =3D libbpf_reallocarray(cand_ids->data,
-+						      cand_ids->len + 1,
-+						      sizeof(*cand_ids->data));
- 			if (!new_ids) {
- 				err =3D -ENOMEM;
- 				goto err_out;
-@@ -5091,7 +5090,7 @@ bpf_program__reloc_text(struct bpf_program *prog, s=
-truct bpf_object *obj,
- 			return -LIBBPF_ERRNO__RELOC;
- 		}
- 		new_cnt =3D prog->insns_cnt + text->insns_cnt;
--		new_insn =3D reallocarray(prog->insns, new_cnt, sizeof(*insn));
-+		new_insn =3D libbpf_reallocarray(prog->insns, new_cnt, sizeof(*insn));
- 		if (!new_insn) {
- 			pr_warn("oom in prog realloc\n");
- 			return -ENOMEM;
-@@ -5333,7 +5332,7 @@ static int bpf_object__collect_map_relos(struct bpf=
-_object *obj,
- 		moff /=3D bpf_ptr_sz;
- 		if (moff >=3D map->init_slots_sz) {
- 			new_sz =3D moff + 1;
--			tmp =3D realloc(map->init_slots, new_sz * host_ptr_sz);
-+			tmp =3D libbpf_reallocarray(map->init_slots, new_sz, host_ptr_sz);
- 			if (!tmp)
- 				return -ENOMEM;
- 			map->init_slots =3D tmp;
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_inter=
-nal.h
-index 50d70e90d5f1..2c9fe73b71e0 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -9,6 +9,7 @@
- #ifndef __LIBBPF_LIBBPF_INTERNAL_H
- #define __LIBBPF_LIBBPF_INTERNAL_H
-=20
-+#include <stdlib.h>
- #include "libbpf.h"
-=20
- #define BTF_INFO_ENC(kind, kind_flag, vlen) \
-@@ -23,6 +24,12 @@
- #define BTF_PARAM_ENC(name, type) (name), (type)
- #define BTF_VAR_SECINFO_ENC(type, offset, size) (type), (offset), (size)
-=20
-+#ifndef likely
-+#define likely(x) __builtin_expect(!!(x), 1)
++#ifndef SOL_NETLINK
++#define SOL_NETLINK 270
 +#endif
-+#ifndef unlikely
-+#define unlikely(x) __builtin_expect(!!(x), 0)
-+#endif
- #ifndef min
- # define min(x, y) ((x) < (y) ? (x) : (y))
- #endif
-@@ -63,6 +70,24 @@ do {				\
- #define pr_info(fmt, ...)	__pr(LIBBPF_INFO, fmt, ##__VA_ARGS__)
- #define pr_debug(fmt, ...)	__pr(LIBBPF_DEBUG, fmt, ##__VA_ARGS__)
-=20
-+/*
-+ * Re-implement glibc's reallocarray() for libbpf internal-only use.
-+ * reallocarray(), unfortunately, is not available in all versions of gl=
-ibc,
-+ * so requires extra feature detection and using reallocarray() stub fro=
-m
-+ * <tools/libc_compat.h> and COMPAT_NEED_REALLOCARRAY. All this complica=
-tes
-+ * build of libbpf unnecessarily and is just a maintenance burden. Inste=
-ad,
-+ * it's trivial to implement libbpf-specific internal version and use it
-+ * throughout libbpf.
-+ */
-+static inline void *libbpf_reallocarray(void *ptr, size_t nmemb, size_t =
-size)
-+{
-+	size_t total;
 +
-+	if (unlikely(__builtin_mul_overflow(nmemb, size, &total)))
-+		return NULL;
-+	return realloc(ptr, total);
+ struct ip_devname_ifindex {
+ 	char	devname[64];
+ 	int	ifindex;
+@@ -85,6 +90,266 @@ static enum net_attach_type parse_attach_type(const c=
+har *str)
+ 	return net_attach_type_size;
+ }
+=20
++typedef int (*dump_nlmsg_t)(void *cookie, void *msg, struct nlattr **tb)=
+;
++
++typedef int (*__dump_nlmsg_t)(struct nlmsghdr *nlmsg, dump_nlmsg_t, void=
+ *cookie);
++
++static int netlink_open(__u32 *nl_pid)
++{
++	struct sockaddr_nl sa;
++	socklen_t addrlen;
++	int one =3D 1, ret;
++	int sock;
++
++	memset(&sa, 0, sizeof(sa));
++	sa.nl_family =3D AF_NETLINK;
++
++	sock =3D socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
++	if (sock < 0)
++		return -errno;
++
++	if (setsockopt(sock, SOL_NETLINK, NETLINK_EXT_ACK,
++		       &one, sizeof(one)) < 0) {
++		p_err("Netlink error reporting not supported");
++	}
++
++	if (bind(sock, (struct sockaddr *)&sa, sizeof(sa)) < 0) {
++		ret =3D -errno;
++		goto cleanup;
++	}
++
++	addrlen =3D sizeof(sa);
++	if (getsockname(sock, (struct sockaddr *)&sa, &addrlen) < 0) {
++		ret =3D -errno;
++		goto cleanup;
++	}
++
++	if (addrlen !=3D sizeof(sa)) {
++		ret =3D -LIBBPF_ERRNO__INTERNAL;
++		goto cleanup;
++	}
++
++	*nl_pid =3D sa.nl_pid;
++	return sock;
++
++cleanup:
++	close(sock);
++	return ret;
 +}
 +
- static inline bool libbpf_validate_opts(const char *opts,
- 					size_t opts_sz, size_t user_sz,
- 					const char *type_name)
-diff --git a/tools/lib/bpf/ringbuf.c b/tools/lib/bpf/ringbuf.c
-index 4fc6c6cbb4eb..5bd234be8a14 100644
---- a/tools/lib/bpf/ringbuf.c
-+++ b/tools/lib/bpf/ringbuf.c
-@@ -16,7 +16,6 @@
- #include <asm/barrier.h>
- #include <sys/mman.h>
- #include <sys/epoll.h>
--#include <tools/libc_compat.h>
++static int netlink_recv(int sock, __u32 nl_pid, __u32 seq,
++			    __dump_nlmsg_t _fn, dump_nlmsg_t fn,
++			    void *cookie)
++{
++	bool multipart =3D true;
++	struct nlmsgerr *err;
++	struct nlmsghdr *nh;
++	char buf[4096];
++	int len, ret;
++
++	while (multipart) {
++		multipart =3D false;
++		len =3D recv(sock, buf, sizeof(buf), 0);
++		if (len < 0) {
++			ret =3D -errno;
++			goto done;
++		}
++
++		if (len =3D=3D 0)
++			break;
++
++		for (nh =3D (struct nlmsghdr *)buf; NLMSG_OK(nh, len);
++		     nh =3D NLMSG_NEXT(nh, len)) {
++			if (nh->nlmsg_pid !=3D nl_pid) {
++				ret =3D -LIBBPF_ERRNO__WRNGPID;
++				goto done;
++			}
++			if (nh->nlmsg_seq !=3D seq) {
++				ret =3D -LIBBPF_ERRNO__INVSEQ;
++				goto done;
++			}
++			if (nh->nlmsg_flags & NLM_F_MULTI)
++				multipart =3D true;
++			switch (nh->nlmsg_type) {
++			case NLMSG_ERROR:
++				err =3D (struct nlmsgerr *)NLMSG_DATA(nh);
++				if (!err->error)
++					continue;
++				ret =3D err->error;
++				libbpf_nla_dump_errormsg(nh);
++				goto done;
++			case NLMSG_DONE:
++				return 0;
++			default:
++				break;
++			}
++			if (_fn) {
++				ret =3D _fn(nh, fn, cookie);
++				if (ret)
++					return ret;
++			}
++		}
++	}
++	ret =3D 0;
++done:
++	return ret;
++}
++
++static int __dump_class_nlmsg(struct nlmsghdr *nlh,
++			      dump_nlmsg_t dump_class_nlmsg,
++			      void *cookie)
++{
++	struct nlattr *tb[TCA_MAX + 1], *attr;
++	struct tcmsg *t =3D NLMSG_DATA(nlh);
++	int len;
++
++	len =3D nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*t));
++	attr =3D (struct nlattr *) ((void *) t + NLMSG_ALIGN(sizeof(*t)));
++	if (libbpf_nla_parse(tb, TCA_MAX, attr, len, NULL) !=3D 0)
++		return -LIBBPF_ERRNO__NLPARSE;
++
++	return dump_class_nlmsg(cookie, t, tb);
++}
++
++static int netlink_get_class(int sock, unsigned int nl_pid, int ifindex,
++			     dump_nlmsg_t dump_class_nlmsg, void *cookie)
++{
++	struct {
++		struct nlmsghdr nlh;
++		struct tcmsg t;
++	} req =3D {
++		.nlh.nlmsg_len =3D NLMSG_LENGTH(sizeof(struct tcmsg)),
++		.nlh.nlmsg_type =3D RTM_GETTCLASS,
++		.nlh.nlmsg_flags =3D NLM_F_DUMP | NLM_F_REQUEST,
++		.t.tcm_family =3D AF_UNSPEC,
++		.t.tcm_ifindex =3D ifindex,
++	};
++	int seq =3D time(NULL);
++
++	req.nlh.nlmsg_seq =3D seq;
++	if (send(sock, &req, req.nlh.nlmsg_len, 0) < 0)
++		return -errno;
++
++	return netlink_recv(sock, nl_pid, seq, __dump_class_nlmsg,
++			    dump_class_nlmsg, cookie);
++}
++
++static int __dump_qdisc_nlmsg(struct nlmsghdr *nlh,
++			      dump_nlmsg_t dump_qdisc_nlmsg,
++			      void *cookie)
++{
++	struct nlattr *tb[TCA_MAX + 1], *attr;
++	struct tcmsg *t =3D NLMSG_DATA(nlh);
++	int len;
++
++	len =3D nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*t));
++	attr =3D (struct nlattr *) ((void *) t + NLMSG_ALIGN(sizeof(*t)));
++	if (libbpf_nla_parse(tb, TCA_MAX, attr, len, NULL) !=3D 0)
++		return -LIBBPF_ERRNO__NLPARSE;
++
++	return dump_qdisc_nlmsg(cookie, t, tb);
++}
++
++static int netlink_get_qdisc(int sock, unsigned int nl_pid, int ifindex,
++			     dump_nlmsg_t dump_qdisc_nlmsg, void *cookie)
++{
++	struct {
++		struct nlmsghdr nlh;
++		struct tcmsg t;
++	} req =3D {
++		.nlh.nlmsg_len =3D NLMSG_LENGTH(sizeof(struct tcmsg)),
++		.nlh.nlmsg_type =3D RTM_GETQDISC,
++		.nlh.nlmsg_flags =3D NLM_F_DUMP | NLM_F_REQUEST,
++		.t.tcm_family =3D AF_UNSPEC,
++		.t.tcm_ifindex =3D ifindex,
++	};
++	int seq =3D time(NULL);
++
++	req.nlh.nlmsg_seq =3D seq;
++	if (send(sock, &req, req.nlh.nlmsg_len, 0) < 0)
++		return -errno;
++
++	return netlink_recv(sock, nl_pid, seq, __dump_qdisc_nlmsg,
++			    dump_qdisc_nlmsg, cookie);
++}
++
++static int __dump_filter_nlmsg(struct nlmsghdr *nlh,
++			       dump_nlmsg_t dump_filter_nlmsg,
++			       void *cookie)
++{
++	struct nlattr *tb[TCA_MAX + 1], *attr;
++	struct tcmsg *t =3D NLMSG_DATA(nlh);
++	int len;
++
++	len =3D nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*t));
++	attr =3D (struct nlattr *) ((void *) t + NLMSG_ALIGN(sizeof(*t)));
++	if (libbpf_nla_parse(tb, TCA_MAX, attr, len, NULL) !=3D 0)
++		return -LIBBPF_ERRNO__NLPARSE;
++
++	return dump_filter_nlmsg(cookie, t, tb);
++}
++
++static int netlink_get_filter(int sock, unsigned int nl_pid, int ifindex=
+, int handle,
++			      dump_nlmsg_t dump_filter_nlmsg, void *cookie)
++{
++	struct {
++		struct nlmsghdr nlh;
++		struct tcmsg t;
++	} req =3D {
++		.nlh.nlmsg_len =3D NLMSG_LENGTH(sizeof(struct tcmsg)),
++		.nlh.nlmsg_type =3D RTM_GETTFILTER,
++		.nlh.nlmsg_flags =3D NLM_F_DUMP | NLM_F_REQUEST,
++		.t.tcm_family =3D AF_UNSPEC,
++		.t.tcm_ifindex =3D ifindex,
++		.t.tcm_parent =3D handle,
++	};
++	int seq =3D time(NULL);
++
++	req.nlh.nlmsg_seq =3D seq;
++	if (send(sock, &req, req.nlh.nlmsg_len, 0) < 0)
++		return -errno;
++
++	return netlink_recv(sock, nl_pid, seq, __dump_filter_nlmsg,
++			    dump_filter_nlmsg, cookie);
++}
++
++static int __dump_link_nlmsg(struct nlmsghdr *nlh,
++			     dump_nlmsg_t dump_link_nlmsg, void *cookie)
++{
++	struct nlattr *tb[IFLA_MAX + 1], *attr;
++	struct ifinfomsg *ifi =3D NLMSG_DATA(nlh);
++	int len;
++
++	len =3D nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*ifi));
++	attr =3D (struct nlattr *) ((void *) ifi + NLMSG_ALIGN(sizeof(*ifi)));
++	if (libbpf_nla_parse(tb, IFLA_MAX, attr, len, NULL) !=3D 0)
++		return -LIBBPF_ERRNO__NLPARSE;
++
++	return dump_link_nlmsg(cookie, ifi, tb);
++}
++
++static int netlink_get_link(int sock, unsigned int nl_pid,
++			    dump_nlmsg_t dump_link_nlmsg, void *cookie)
++{
++	struct {
++		struct nlmsghdr nlh;
++		struct ifinfomsg ifm;
++	} req =3D {
++		.nlh.nlmsg_len =3D NLMSG_LENGTH(sizeof(struct ifinfomsg)),
++		.nlh.nlmsg_type =3D RTM_GETLINK,
++		.nlh.nlmsg_flags =3D NLM_F_DUMP | NLM_F_REQUEST,
++		.ifm.ifi_family =3D AF_PACKET,
++	};
++	int seq =3D time(NULL);
++
++	req.nlh.nlmsg_seq =3D seq;
++	if (send(sock, &req, req.nlh.nlmsg_len, 0) < 0)
++		return -errno;
++
++	return netlink_recv(sock, nl_pid, seq, __dump_link_nlmsg,
++			    dump_link_nlmsg, cookie);
++}
++
+ static int dump_link_nlmsg(void *cookie, void *msg, struct nlattr **tb)
+ {
+ 	struct bpf_netdev_t *netinfo =3D cookie;
+@@ -168,14 +433,14 @@ static int show_dev_tc_bpf(int sock, unsigned int n=
+l_pid,
+ 	tcinfo.array_len =3D 0;
 =20
- #include "libbpf.h"
- #include "libbpf_internal.h"
-@@ -82,12 +81,12 @@ int ring_buffer__add(struct ring_buffer *rb, int map_=
-fd,
- 		return -EINVAL;
+ 	tcinfo.is_qdisc =3D false;
+-	ret =3D libbpf_nl_get_class(sock, nl_pid, dev->ifindex,
+-				  dump_class_qdisc_nlmsg, &tcinfo);
++	ret =3D netlink_get_class(sock, nl_pid, dev->ifindex,
++				dump_class_qdisc_nlmsg, &tcinfo);
+ 	if (ret)
+ 		goto out;
+=20
+ 	tcinfo.is_qdisc =3D true;
+-	ret =3D libbpf_nl_get_qdisc(sock, nl_pid, dev->ifindex,
+-				  dump_class_qdisc_nlmsg, &tcinfo);
++	ret =3D netlink_get_qdisc(sock, nl_pid, dev->ifindex,
++				dump_class_qdisc_nlmsg, &tcinfo);
+ 	if (ret)
+ 		goto out;
+=20
+@@ -183,9 +448,9 @@ static int show_dev_tc_bpf(int sock, unsigned int nl_=
+pid,
+ 	filter_info.ifindex =3D dev->ifindex;
+ 	for (i =3D 0; i < tcinfo.used_len; i++) {
+ 		filter_info.kind =3D tcinfo.handle_array[i].kind;
+-		ret =3D libbpf_nl_get_filter(sock, nl_pid, dev->ifindex,
+-					   tcinfo.handle_array[i].handle,
+-					   dump_filter_nlmsg, &filter_info);
++		ret =3D netlink_get_filter(sock, nl_pid, dev->ifindex,
++					 tcinfo.handle_array[i].handle,
++					 dump_filter_nlmsg, &filter_info);
+ 		if (ret)
+ 			goto out;
  	}
+@@ -193,22 +458,22 @@ static int show_dev_tc_bpf(int sock, unsigned int n=
+l_pid,
+ 	/* root, ingress and egress handle */
+ 	handle =3D TC_H_ROOT;
+ 	filter_info.kind =3D "root";
+-	ret =3D libbpf_nl_get_filter(sock, nl_pid, dev->ifindex, handle,
+-				   dump_filter_nlmsg, &filter_info);
++	ret =3D netlink_get_filter(sock, nl_pid, dev->ifindex, handle,
++				 dump_filter_nlmsg, &filter_info);
+ 	if (ret)
+ 		goto out;
 =20
--	tmp =3D reallocarray(rb->rings, rb->ring_cnt + 1, sizeof(*rb->rings));
-+	tmp =3D libbpf_reallocarray(rb->rings, rb->ring_cnt + 1, sizeof(*rb->ri=
-ngs));
- 	if (!tmp)
- 		return -ENOMEM;
- 	rb->rings =3D tmp;
+ 	handle =3D TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_INGRESS);
+ 	filter_info.kind =3D "clsact/ingress";
+-	ret =3D libbpf_nl_get_filter(sock, nl_pid, dev->ifindex, handle,
+-				   dump_filter_nlmsg, &filter_info);
++	ret =3D netlink_get_filter(sock, nl_pid, dev->ifindex, handle,
++				 dump_filter_nlmsg, &filter_info);
+ 	if (ret)
+ 		goto out;
 =20
--	tmp =3D reallocarray(rb->events, rb->ring_cnt + 1, sizeof(*rb->events))=
-;
-+	tmp =3D libbpf_reallocarray(rb->events, rb->ring_cnt + 1, sizeof(*rb->e=
-vents));
- 	if (!tmp)
- 		return -ENOMEM;
- 	rb->events =3D tmp;
+ 	handle =3D TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS);
+ 	filter_info.kind =3D "clsact/egress";
+-	ret =3D libbpf_nl_get_filter(sock, nl_pid, dev->ifindex, handle,
+-				   dump_filter_nlmsg, &filter_info);
++	ret =3D netlink_get_filter(sock, nl_pid, dev->ifindex, handle,
++				 dump_filter_nlmsg, &filter_info);
+ 	if (ret)
+ 		goto out;
+=20
+@@ -386,7 +651,7 @@ static int do_show(int argc, char **argv)
+ 	struct bpf_attach_info attach_info =3D {};
+ 	int i, sock, ret, filter_idx =3D -1;
+ 	struct bpf_netdev_t dev_array;
+-	unsigned int nl_pid;
++	unsigned int nl_pid =3D 0;
+ 	char err_buf[256];
+=20
+ 	if (argc =3D=3D 2) {
+@@ -401,7 +666,7 @@ static int do_show(int argc, char **argv)
+ 	if (ret)
+ 		return -1;
+=20
+-	sock =3D libbpf_netlink_open(&nl_pid);
++	sock =3D netlink_open(&nl_pid);
+ 	if (sock < 0) {
+ 		fprintf(stderr, "failed to open netlink sock\n");
+ 		return -1;
+@@ -416,7 +681,7 @@ static int do_show(int argc, char **argv)
+ 		jsonw_start_array(json_wtr);
+ 	NET_START_OBJECT;
+ 	NET_START_ARRAY("xdp", "%s:\n");
+-	ret =3D libbpf_nl_get_link(sock, nl_pid, dump_link_nlmsg, &dev_array);
++	ret =3D netlink_get_link(sock, nl_pid, dump_link_nlmsg, &dev_array);
+ 	NET_END_ARRAY("\n");
+=20
+ 	if (!ret) {
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_inter=
+nal.h
+index 2c9fe73b71e0..013053c59614 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -130,18 +130,6 @@ int bpf_object__section_size(const struct bpf_object=
+ *obj, const char *name,
+ int bpf_object__variable_offset(const struct bpf_object *obj, const char=
+ *name,
+ 				__u32 *off);
+=20
+-struct nlattr;
+-typedef int (*libbpf_dump_nlmsg_t)(void *cookie, void *msg, struct nlatt=
+r **tb);
+-int libbpf_netlink_open(unsigned int *nl_pid);
+-int libbpf_nl_get_link(int sock, unsigned int nl_pid,
+-		       libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie);
+-int libbpf_nl_get_class(int sock, unsigned int nl_pid, int ifindex,
+-			libbpf_dump_nlmsg_t dump_class_nlmsg, void *cookie);
+-int libbpf_nl_get_qdisc(int sock, unsigned int nl_pid, int ifindex,
+-			libbpf_dump_nlmsg_t dump_qdisc_nlmsg, void *cookie);
+-int libbpf_nl_get_filter(int sock, unsigned int nl_pid, int ifindex, int=
+ handle,
+-			 libbpf_dump_nlmsg_t dump_filter_nlmsg, void *cookie);
+-
+ struct btf_ext_info {
+ 	/*
+ 	 * info points to the individual info section (e.g. func_info and
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+index 312f887570b2..2465538a5ba9 100644
+--- a/tools/lib/bpf/netlink.c
++++ b/tools/lib/bpf/netlink.c
+@@ -22,6 +22,8 @@
+ #define SOL_NETLINK 270
+ #endif
+=20
++typedef int (*libbpf_dump_nlmsg_t)(void *cookie, void *msg, struct nlatt=
+r **tb);
++
+ typedef int (*__dump_nlmsg_t)(struct nlmsghdr *nlmsg, libbpf_dump_nlmsg_=
+t,
+ 			      void *cookie);
+=20
+@@ -31,7 +33,7 @@ struct xdp_id_md {
+ 	struct xdp_link_info info;
+ };
+=20
+-int libbpf_netlink_open(__u32 *nl_pid)
++static int libbpf_netlink_open(__u32 *nl_pid)
+ {
+ 	struct sockaddr_nl sa;
+ 	socklen_t addrlen;
+@@ -283,6 +285,9 @@ static int get_xdp_info(void *cookie, void *msg, stru=
+ct nlattr **tb)
+ 	return 0;
+ }
+=20
++static int libbpf_nl_get_link(int sock, unsigned int nl_pid,
++			      libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie);
++
+ int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
+ 			  size_t info_size, __u32 flags)
+ {
+@@ -368,121 +373,3 @@ int libbpf_nl_get_link(int sock, unsigned int nl_pi=
+d,
+ 	return bpf_netlink_recv(sock, nl_pid, seq, __dump_link_nlmsg,
+ 				dump_link_nlmsg, cookie);
+ }
+-
+-static int __dump_class_nlmsg(struct nlmsghdr *nlh,
+-			      libbpf_dump_nlmsg_t dump_class_nlmsg,
+-			      void *cookie)
+-{
+-	struct nlattr *tb[TCA_MAX + 1], *attr;
+-	struct tcmsg *t =3D NLMSG_DATA(nlh);
+-	int len;
+-
+-	len =3D nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*t));
+-	attr =3D (struct nlattr *) ((void *) t + NLMSG_ALIGN(sizeof(*t)));
+-	if (libbpf_nla_parse(tb, TCA_MAX, attr, len, NULL) !=3D 0)
+-		return -LIBBPF_ERRNO__NLPARSE;
+-
+-	return dump_class_nlmsg(cookie, t, tb);
+-}
+-
+-int libbpf_nl_get_class(int sock, unsigned int nl_pid, int ifindex,
+-			libbpf_dump_nlmsg_t dump_class_nlmsg, void *cookie)
+-{
+-	struct {
+-		struct nlmsghdr nlh;
+-		struct tcmsg t;
+-	} req =3D {
+-		.nlh.nlmsg_len =3D NLMSG_LENGTH(sizeof(struct tcmsg)),
+-		.nlh.nlmsg_type =3D RTM_GETTCLASS,
+-		.nlh.nlmsg_flags =3D NLM_F_DUMP | NLM_F_REQUEST,
+-		.t.tcm_family =3D AF_UNSPEC,
+-		.t.tcm_ifindex =3D ifindex,
+-	};
+-	int seq =3D time(NULL);
+-
+-	req.nlh.nlmsg_seq =3D seq;
+-	if (send(sock, &req, req.nlh.nlmsg_len, 0) < 0)
+-		return -errno;
+-
+-	return bpf_netlink_recv(sock, nl_pid, seq, __dump_class_nlmsg,
+-				dump_class_nlmsg, cookie);
+-}
+-
+-static int __dump_qdisc_nlmsg(struct nlmsghdr *nlh,
+-			      libbpf_dump_nlmsg_t dump_qdisc_nlmsg,
+-			      void *cookie)
+-{
+-	struct nlattr *tb[TCA_MAX + 1], *attr;
+-	struct tcmsg *t =3D NLMSG_DATA(nlh);
+-	int len;
+-
+-	len =3D nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*t));
+-	attr =3D (struct nlattr *) ((void *) t + NLMSG_ALIGN(sizeof(*t)));
+-	if (libbpf_nla_parse(tb, TCA_MAX, attr, len, NULL) !=3D 0)
+-		return -LIBBPF_ERRNO__NLPARSE;
+-
+-	return dump_qdisc_nlmsg(cookie, t, tb);
+-}
+-
+-int libbpf_nl_get_qdisc(int sock, unsigned int nl_pid, int ifindex,
+-			libbpf_dump_nlmsg_t dump_qdisc_nlmsg, void *cookie)
+-{
+-	struct {
+-		struct nlmsghdr nlh;
+-		struct tcmsg t;
+-	} req =3D {
+-		.nlh.nlmsg_len =3D NLMSG_LENGTH(sizeof(struct tcmsg)),
+-		.nlh.nlmsg_type =3D RTM_GETQDISC,
+-		.nlh.nlmsg_flags =3D NLM_F_DUMP | NLM_F_REQUEST,
+-		.t.tcm_family =3D AF_UNSPEC,
+-		.t.tcm_ifindex =3D ifindex,
+-	};
+-	int seq =3D time(NULL);
+-
+-	req.nlh.nlmsg_seq =3D seq;
+-	if (send(sock, &req, req.nlh.nlmsg_len, 0) < 0)
+-		return -errno;
+-
+-	return bpf_netlink_recv(sock, nl_pid, seq, __dump_qdisc_nlmsg,
+-				dump_qdisc_nlmsg, cookie);
+-}
+-
+-static int __dump_filter_nlmsg(struct nlmsghdr *nlh,
+-			       libbpf_dump_nlmsg_t dump_filter_nlmsg,
+-			       void *cookie)
+-{
+-	struct nlattr *tb[TCA_MAX + 1], *attr;
+-	struct tcmsg *t =3D NLMSG_DATA(nlh);
+-	int len;
+-
+-	len =3D nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*t));
+-	attr =3D (struct nlattr *) ((void *) t + NLMSG_ALIGN(sizeof(*t)));
+-	if (libbpf_nla_parse(tb, TCA_MAX, attr, len, NULL) !=3D 0)
+-		return -LIBBPF_ERRNO__NLPARSE;
+-
+-	return dump_filter_nlmsg(cookie, t, tb);
+-}
+-
+-int libbpf_nl_get_filter(int sock, unsigned int nl_pid, int ifindex, int=
+ handle,
+-			 libbpf_dump_nlmsg_t dump_filter_nlmsg, void *cookie)
+-{
+-	struct {
+-		struct nlmsghdr nlh;
+-		struct tcmsg t;
+-	} req =3D {
+-		.nlh.nlmsg_len =3D NLMSG_LENGTH(sizeof(struct tcmsg)),
+-		.nlh.nlmsg_type =3D RTM_GETTFILTER,
+-		.nlh.nlmsg_flags =3D NLM_F_DUMP | NLM_F_REQUEST,
+-		.t.tcm_family =3D AF_UNSPEC,
+-		.t.tcm_ifindex =3D ifindex,
+-		.t.tcm_parent =3D handle,
+-	};
+-	int seq =3D time(NULL);
+-
+-	req.nlh.nlmsg_seq =3D seq;
+-	if (send(sock, &req, req.nlh.nlmsg_len, 0) < 0)
+-		return -errno;
+-
+-	return bpf_netlink_recv(sock, nl_pid, seq, __dump_filter_nlmsg,
+-				dump_filter_nlmsg, cookie);
+-}
 --=20
 2.24.1
 
