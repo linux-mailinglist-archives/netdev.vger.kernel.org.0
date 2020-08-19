@@ -2,161 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7953C249EF0
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:03:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2F1D249F04
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:05:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728574AbgHSNDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 09:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36594 "EHLO
+        id S1728576AbgHSNFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 09:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728529AbgHSNCC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 09:02:02 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325E3C061345
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 06:01:00 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id j13so1083838pjd.4
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 06:01:00 -0700 (PDT)
+        with ESMTP id S1728585AbgHSNEn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 09:04:43 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658A7C061383;
+        Wed, 19 Aug 2020 06:04:42 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id 140so12011976lfi.5;
+        Wed, 19 Aug 2020 06:04:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qNJVZUa8vOnjh3Y4FbI7cu96rnOZczrpWszoc4OM35E=;
-        b=ZtDUAentzHDOfXLt1WNpX0PqLZgZi3vnfEc6anllVjv7Z89UoKoCCMUiljAdsTAGBL
-         DEVHOWuWzMZeIuJcHwUlptWZjkCaOp1ZUKAoSs/2jyyTPejnx1zCbjPUY7C9na+Ftk+x
-         wpw/pPjI4UYNDosNdy4j7LcDWUJhwNxLapyy4W7f1U00+fT6jVYw1uO8CMpHCStxGd8w
-         JLOisGYqnJmeY5ie8I+x4A4vKZtwoQ6PsaOc8UAPD7eTAFlJwORflpx8o8EPJZR8cuSG
-         1j977OWh0YEI5r2DXie/ItwJ0iuosRobp25OObO0Ld6mXVix+wRg8r73enQ5lMOcXAoG
-         tjpA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NDGVB4uc/9L8D6EYysA1otupkiXzJkfvAe8wQHNLxGA=;
+        b=Ard4s932bJYSYryZTKI5z99QM0+nDxvZnETpFePakQOdmcZu0nh6+SK4cSRXAWUpvy
+         DT5JwCtY1KAS+tkXlG6XVjhS2mg/4nCr2Qjud2UWkaVscXSfSV/6edu5jbYGw0CTNiZu
+         YU9/NpNTp42WF76ysCVoai4EnTX8RzIds09S22UUybPEbST6AChWpEjqb6t5yeWy3bIa
+         Kq5W7/lRoV2XtnFAWx+owWqLiAS/CuuXcwUSTcCPgIxwvKJ9GjeJ0Sg6UZr4Qe5aBK2x
+         4RTA0BTT1VTjDZqE2jtc5XJiaGqmzrTTLP7IbVPBneVpm8rHzRpvEe1y/RHD96dZlWqh
+         n4wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qNJVZUa8vOnjh3Y4FbI7cu96rnOZczrpWszoc4OM35E=;
-        b=IbU2He7TKP3iinjE173cPynvfAb0vyhbb788Ivn7sA1YNbFuCue73eNdGwKyEZwy0a
-         Wcf8AvkJ8LOYemkhKs6PsIHvGRMcmh8MwNHuRKqyridB4iGmjsBBsV5EaFekCgiHZC05
-         mpo9TgvGwQnUQ1zCERh7nbeKxf5USo6CkmB+Dmd39Q47/nvOFDb5W7HKgSuDIYkCbg6z
-         SbTo8HAomxGV4k5mnuDcjZ/yYWzrSoW99QMAc0yHPl+AxO+mPA6Tv/lktZ8UsaqW2naj
-         FJzRX7CCKUO43CknW+3PogMsLxnGTmJKRbE9qCW1nwykeFj8LItIc2cccYAma0OFfOor
-         NNdg==
-X-Gm-Message-State: AOAM533nkXCV+U4ls7jQqwvyJwDzyVSk/oVEuPdxwWrDJ2Ydr4haFsdd
-        te6Zw1sLjnETODF1T2JbLAbRyw==
-X-Google-Smtp-Source: ABdhPJwcWyLwqgVIDq5QVfeKWIJZ1zweeStVncOtMpfxCFFFEuEh0sSa6pW/Ah5NefbMm4I9GwEzLw==
-X-Received: by 2002:a17:90b:285:: with SMTP id az5mr3983315pjb.118.1597842058708;
-        Wed, 19 Aug 2020 06:00:58 -0700 (PDT)
-Received: from [192.168.1.182] ([66.219.217.173])
-        by smtp.gmail.com with ESMTPSA id d23sm20502027pgm.11.2020.08.19.06.00.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Aug 2020 06:00:58 -0700 (PDT)
-Subject: Re: [PATCH] block: convert tasklets to use new tasklet_setup() API
-To:     James Bottomley <James.Bottomley@HansenPartnership.com>,
-        Kees Cook <keescook@chromium.org>
-Cc:     Allen Pais <allen.cryptic@gmail.com>, jdike@addtoit.com,
-        richard@nod.at, anton.ivanov@cambridgegreys.com, 3chas3@gmail.com,
-        stefanr@s5r6.in-berlin.de, airlied@linux.ie, daniel@ffwll.ch,
-        sre@kernel.org, kys@microsoft.com, deller@gmx.de,
-        dmitry.torokhov@gmail.com, jassisinghbrar@gmail.com,
-        shawnguo@kernel.org, s.hauer@pengutronix.de,
-        maximlevitsky@gmail.com, oakad@yahoo.com, ulf.hansson@linaro.org,
-        mporter@kernel.crashing.org, alex.bou9@gmail.com,
-        broonie@kernel.org, martyn@welchs.me.uk, manohar.vanga@gmail.com,
-        mitch@sfgoth.com, davem@davemloft.net, kuba@kernel.org,
-        linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux1394-devel@lists.sourceforge.net,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-hyperv@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-ntb@googlegroups.com, linux-s390@vger.kernel.org,
-        linux-spi@vger.kernel.org, devel@driverdev.osuosl.org,
-        Allen Pais <allen.lkml@gmail.com>,
-        Romain Perier <romain.perier@gmail.com>
-References: <20200817091617.28119-1-allen.cryptic@gmail.com>
- <20200817091617.28119-2-allen.cryptic@gmail.com>
- <b5508ca4-0641-7265-2939-5f03cbfab2e2@kernel.dk>
- <202008171228.29E6B3BB@keescook>
- <161b75f1-4e88-dcdf-42e8-b22504d7525c@kernel.dk>
- <202008171246.80287CDCA@keescook>
- <df645c06-c30b-eafa-4d23-826b84f2ff48@kernel.dk>
- <1597780833.3978.3.camel@HansenPartnership.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <f3312928-430c-25f3-7112-76f2754df080@kernel.dk>
-Date:   Wed, 19 Aug 2020 07:00:53 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NDGVB4uc/9L8D6EYysA1otupkiXzJkfvAe8wQHNLxGA=;
+        b=pf41kKNNxH+3hDoKWNpnsQZaurQAPwUqzsj0cU/UDfeWUvLfIanRW5qG0UqriSl+dG
+         PNxNBAfzEE7t3pP6OaJ118hD7x4y/2yWlY0gWd5j7cs/Qz7krUNy+k+Omkixh2jizk21
+         bHt8BAShZZmVWp9pGlqSs2KhEokEf1rhG5ZWVlHwZoTu/Ly4BH1QGW2jjCc3TLSL4yGf
+         +QAj0CevjZl3RYP2nFTcLjchdf/rT5ROnpHJc5532Elj0Ct328A2pzlhVpiSk6hPboZW
+         rfm+W+rZT+cfWWBCn6CCeY+/tMI2sm83ptDwgp0xqz2UIytzHRhAbdLCDSbcvcrTiRHA
+         8pKg==
+X-Gm-Message-State: AOAM530IfzIU0Srkx4o0fCyE+Y+3mlmcnESoyY6gV+nVkCfoT1ttWAjS
+        LnvxoR/DWZBFAKgZGLyCHtmUQ/fE24Q3xY6WdgM=
+X-Google-Smtp-Source: ABdhPJyvznro++qCXyBYE7EoK74ppQEV9P6teSEM88ogypMzGoowstNWZ9Z5nzJX9vWeeM1LsWOd0NxqUwA+aqMfUjQ=
+X-Received: by 2002:a05:6512:3253:: with SMTP id c19mr11944089lfr.139.1597842280844;
+ Wed, 19 Aug 2020 06:04:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1597780833.3978.3.camel@HansenPartnership.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200615154114.13184-1-mayflowerera@gmail.com>
+ <20200615.182343.221546986577273426.davem@davemloft.net> <CAMdQvKvJ7MXihELmPW2LC3PAgXMK2OG6bJjPNJkCgE6eZftDVw@mail.gmail.com>
+ <CAMdQvKtrzFtg9PwZhyMQ96S48ZLG5gAu3gk8m=k+tFVMHeshXQ@mail.gmail.com> <CAMdQvKubUYCMRt0V+koj8nKAq+nZNABJZMAXX7jB-_fRiPeJog@mail.gmail.com>
+In-Reply-To: <CAMdQvKubUYCMRt0V+koj8nKAq+nZNABJZMAXX7jB-_fRiPeJog@mail.gmail.com>
+From:   Era Mayflower <mayflowerera@gmail.com>
+Date:   Wed, 19 Aug 2020 13:03:37 +0000
+Message-ID: <CAMdQvKuDzSXpMRr9N4_jXJO4R5dp9UZ-+WByZW+KRBmCLubN_w@mail.gmail.com>
+Subject: Re: [PATCH] macsec: Support 32bit PN netlink attribute for XPN links
+To:     David Miller <davem@davemloft.net>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/18/20 1:00 PM, James Bottomley wrote:
-> On Mon, 2020-08-17 at 13:02 -0700, Jens Axboe wrote:
->> On 8/17/20 12:48 PM, Kees Cook wrote:
->>> On Mon, Aug 17, 2020 at 12:44:34PM -0700, Jens Axboe wrote:
->>>> On 8/17/20 12:29 PM, Kees Cook wrote:
->>>>> On Mon, Aug 17, 2020 at 06:56:47AM -0700, Jens Axboe wrote:
->>>>>> On 8/17/20 2:15 AM, Allen Pais wrote:
->>>>>>> From: Allen Pais <allen.lkml@gmail.com>
->>>>>>>
->>>>>>> In preparation for unconditionally passing the
->>>>>>> struct tasklet_struct pointer to all tasklet
->>>>>>> callbacks, switch to using the new tasklet_setup()
->>>>>>> and from_tasklet() to pass the tasklet pointer explicitly.
->>>>>>
->>>>>> Who came up with the idea to add a macro 'from_tasklet' that
->>>>>> is just container_of? container_of in the code would be
->>>>>> _much_ more readable, and not leave anyone guessing wtf
->>>>>> from_tasklet is doing.
->>>>>>
->>>>>> I'd fix that up now before everything else goes in...
->>>>>
->>>>> As I mentioned in the other thread, I think this makes things
->>>>> much more readable. It's the same thing that the timer_struct
->>>>> conversion did (added a container_of wrapper) to avoid the
->>>>> ever-repeating use of typeof(), long lines, etc.
->>>>
->>>> But then it should use a generic name, instead of each sub-system 
->>>> using some random name that makes people look up exactly what it
->>>> does. I'm not huge fan of the container_of() redundancy, but
->>>> adding private variants of this doesn't seem like the best way
->>>> forward. Let's have a generic helper that does this, and use it
->>>> everywhere.
->>>
->>> I'm open to suggestions, but as things stand, these kinds of
->>> treewide
->>
->> On naming? Implementation is just as it stands, from_tasklet() is
->> totally generic which is why I objected to it. from_member()? Not
->> great with naming... But I can see this going further and then we'll
->> suddenly have tons of these. It's not good for readability.
-> 
-> Since both threads seem to have petered out, let me suggest in
-> kernel.h:
-> 
-> #define cast_out(ptr, container, member) \
-> 	container_of(ptr, typeof(*container), member)
-> 
-> It does what you want, the argument order is the same as container_of
-> with the only difference being you name the containing structure
-> instead of having to specify its type.
+On Wed, Jun 24, 2020 at 10:23 AM Era Mayflower <mayflowerera@gmail.com> wrote:
+>
+> On Wed, Jun 17, 2020 at 1:32 AM Era Mayflower <mayflowerera@gmail.com> wrote:
+> >
+> > On Wed, Jun 17, 2020 at 10:02 AM Era Mayflower <mayflowerera@gmail.com> wrote:
+> > >
+> > > On Tue, Jun 16, 2020 at 1:23 AM David Miller <davem@davemloft.net> wrote:
+> > > >
+> > > > From: Era Mayflower <mayflowerera@gmail.com>
+> > > > Date: Tue, 16 Jun 2020 00:41:14 +0900
+> > > >
+> > > > > +     if (tb_sa[MACSEC_SA_ATTR_PN]) {
+> > > >
+> > > > validate_add_rxsa() requires that MACSET_SA_ATTR_PN be non-NULL, so
+> > > > you don't need to add this check here.
+> > > >
+> > >
+> > > validate_add_rxsa() did not originally contain that requirement.
+> > > It does exist in validate_add_txsa(), which means that providing a PN
+> > > is necessary only when creating TXSA.
+> > > When creating an RXSA without providing a PN it will be set to 1
+> > > (init_rx_sa+15).
+> > > This is the original behavior which of course can be changed.
+> > >
+> > > - Era.
+> >
+> > Sorry for the time issues, just noticed I sent the previous mail with
+> > future time.
+> > Fixed it permanently on my computer.
+>
+> Hello, is there any news?
+>
+> - Era.
 
-Not to incessantly bike shed on the naming, but I don't like cast_out,
-it's not very descriptive. And it has connotations of getting rid of
-something, which isn't really true.
+This patch is important to help projects like iproute2 use XPN macsec links.
+Please let me know if there is anything I need to fix.
 
-FWIW, I like the from_ part of the original naming, as it has some clues
-as to what is being done here. Why not just from_container()? That
-should immediately tell people what it does without having to look up
-the implementation, even before this becomes a part of the accepted
-coding norm.
-
--- 
-Jens Axboe
-
+- Era.
