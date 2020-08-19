@@ -2,157 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A00C249713
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:24:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C4EE24976E
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:30:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726875AbgHSHYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 03:24:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
+        id S1728172AbgHSHaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 03:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726730AbgHSHYH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:24:07 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F6EC061343
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:07 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id 88so20469654wrh.3
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:07 -0700 (PDT)
+        with ESMTP id S1726796AbgHSHYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:24:10 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A7AC061347
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:09 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id 3so1128644wmi.1
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GsVXzDUh8MSTqm2kJIMH1ILxZMj9Q7PLK1CKvJZ+9l8=;
-        b=V5eeAlOUYEHJ8ZrlTU7nUp0JpgbrlR2tFI101pSt4CnefvbR5TwBmuz8VD2aLBVpCI
-         3jnZo1rpi4o6b18XdWXe5L3XPeb/B/X54N9sD/8SN8LBn0psS9L1Bxo5JyoYe/2J8xx2
-         P1N3C4wIrY8yOVucp3oz+TYyYyEH/rtV/cfSJC4B2VyNWfaCyi0MswYOPP2QxrHGy104
-         /PwQmUf3pMslYjRrFAHfUnrj3ytL+ER0VbKeg0gRGwYXWo0SoWEpToJUlU/h7kSt+hP9
-         C+wFq3AgJIAe9tR5utusBFOeyza5yUUqF86Vpfwf36lQhXW/WFYqmZfIH9gL14dJ7yvG
-         0imA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XPyf3pY78NKZpAoCqUMShqns3N3Vter41E+TCH98irs=;
+        b=pO/tZJ717SIL5qmd78VkicWaF6vFD6SXo8MiuqwrS81DIISf2fmFvV/0SNNkbW2fYi
+         P/E8KCf7dPHNYE0+w2CKdB5QVkmTFfGZEWpHNaWULVE70e8UBxLR/33YDVYmQw0du/5q
+         HG6eho9ClpzTuzi9w98+U1mvCcLbx9Arm0ONOAxw/nAMaSuuv+UN+bVrxXgqyO+zC5Aq
+         8Suz3ZVpr4gBMxVhAIIT27NOUg/VIBE/yQYQoIrsr+ev90YMnUO3kWtJvvrTI9GrvoWD
+         ZQ4aNofJmylhzMjyFGAZ9xx6EhXJDZ36DncwSc22Mtx0S9GNohnyY3Ja2QSPukE6B1xI
+         F9nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GsVXzDUh8MSTqm2kJIMH1ILxZMj9Q7PLK1CKvJZ+9l8=;
-        b=N/E8bWj7jfXF3jPX2YaqUfp1pb+5QjOjxyGGhOlf/MsbYVG4arzhwpK0bGl7MitKZP
-         qKR8i4aBiLg+D6k3oeC+VBa2+RJ/ATPt1ZkubhRSELPBaZs+ZSOvcGs30f2bfG89Gs/k
-         Bfl6qwLabNOPu/glp9p8AMkIfYzPxxTtM5qAubXGCVvM2AA7DDT7R8sKRSeYI7hGrzAs
-         vNb2l+67Kt83FW/t/jhc+dkpAC6/FM4SQdKKUDUeqM43C254xA0SfWZP+5UhKG2dYgJd
-         Ek85CvWXYYv21wBGbc3teEa3CuazHXlasjLd2gOVuuMHIciEjrZvBq6VaGWTSqLa5tGs
-         4fkQ==
-X-Gm-Message-State: AOAM5307CzC6yhn62B/8/C5/49OKDGbvqwubGUDHF5kHkArkkMNLi6VL
-        Qb/zkF0evzjO+GtNFNLxJAnViA==
-X-Google-Smtp-Source: ABdhPJxW3qEO6HuxfNnOg0DDS92mwarpceEYLMHp4h5prZjPvHxa0x42qlIMG/IR4HAdr58OgI2bPw==
-X-Received: by 2002:a5d:4ecf:: with SMTP id s15mr23807713wrv.202.1597821845393;
-        Wed, 19 Aug 2020 00:24:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XPyf3pY78NKZpAoCqUMShqns3N3Vter41E+TCH98irs=;
+        b=tceDtCUGChzzYwstEEmIg5FPF3CLMySUgi7IiaHha6DcLG/dGMImwdyLF1mGDIyeVv
+         n9rgfi6KG0SGMnoJ7F7iFegO1sEHmbQwHPab8T2Pyc9Os49hWS9lnSYBvMpyCy26XzOI
+         LZo9AwFB+sHPI3pNapGJVf1QTYtc27Dbv9EBycSflHdz1Ll/kRvzxrcxfiVHHdhrZzzZ
+         rtrc7pGzeMudidmeLfJT0R6VYUfApHqW1paldJhVUlFSzs78+k2s94C8muBjuEYyrXDy
+         Kc8dR9jiEqEPGb3hGuzXWdpQGVY/ok+Cph8RcTCIFXsAF4zVsazOZpjl7ZAum+5r4MC5
+         Wm5Q==
+X-Gm-Message-State: AOAM532aTgKrT5UjujHmvK57hGjtc5H27jLNe7c1ArbCuklL4j01isTT
+        CbJhkSv2Q8dFvptREr2xv0h6Nw==
+X-Google-Smtp-Source: ABdhPJwQbTJrfV/44Lpom+61UBCm4AdTRe3330us7wYdmYxtjAvw93xalHuDW23gup9fnULbIMEiVA==
+X-Received: by 2002:a1c:4c0e:: with SMTP id z14mr3537549wmf.54.1597821847752;
+        Wed, 19 Aug 2020 00:24:07 -0700 (PDT)
 Received: from dell.default ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id c145sm3795808wmd.7.2020.08.19.00.24.04
+        by smtp.gmail.com with ESMTPSA id c145sm3795808wmd.7.2020.08.19.00.24.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2020 00:24:04 -0700 (PDT)
+        Wed, 19 Aug 2020 00:24:07 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 00/28] Rid W=1 warnings in Wireless
-Date:   Wed, 19 Aug 2020 08:23:34 +0100
-Message-Id: <20200819072402.3085022-1-lee.jones@linaro.org>
+        netdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>
+Subject: [PATCH 02/28] wireless: rsi_91x_main: Fix some kernel-doc issues
+Date:   Wed, 19 Aug 2020 08:23:36 +0100
+Message-Id: <20200819072402.3085022-3-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200819072402.3085022-1-lee.jones@linaro.org>
+References: <20200819072402.3085022-1-lee.jones@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This set is part of a larger effort attempting to clean-up W=1
-kernel builds, which are currently overwhelmingly riddled with
-niggly little warnings.
+The file header should not be kernel-doc.  Add missing 'rec_pkt'
+description.  Update 'rsi_91x_init()'s parameter description.
 
-There are quite a few W=1 warnings in the Wireless.  My plan
-is to work through all of them over the next few weeks.
-Hopefully it won't be too long before drivers/net/wireless
-builds clean with W=1 enabled.
+Fixes the following W=1 kernel build warning(s):
 
-This set brings the total number of (arm, arm64, x86, mips and
-ppc *combined* i.e. some duplicated) warnings down from 6154
-to 4983.
+ drivers/net/wireless/rsi/rsi_91x_main.c:17: warning: Function parameter or member 'fmt' not described in 'pr_fmt'
+ drivers/net/wireless/rsi/rsi_91x_main.c:156: warning: Function parameter or member 'rx_pkt' not described in 'rsi_read_pkt'
+ drivers/net/wireless/rsi/rsi_91x_main.c:287: warning: Function parameter or member 'oper_mode' not described in 'rsi_91x_init'
+ drivers/net/wireless/rsi/rsi_91x_main.c:287: warning: Excess function parameter 'void' description in 'rsi_91x_init'
 
-Lee Jones (28):
-  wireless: intersil: hostap: Mark 'freq_list' as __maybe_unused
-  wireless: rsi_91x_main: Fix some kernel-doc issues
-  wireless: rsi_91x_core: File header should not be kernel-doc
-  wireless: marvell: libertas_tf: Demote non-conformant kernel-doc
-    headers
-  wireless: intel: dvm: Demote non-compliant kernel-doc headers
-  wireless: ti: wlcore: cmd: Fix some parameter description disparities
-  wireless: marvell: libertas_tf: Fix a bunch of function doc formatting
-    issues
-  wireless: intel: iwlwifi: rs: Demote non-compliant kernel-doc headers
-  wireless: intel: iwlegacy: debug: Demote seemingly unintentional
-    kerneldoc header
-  wireless: intel: iwlwifi: dvm: tx: Demote non-compliant kernel-doc
-    headers
-  wireless: intersil: hostap: hostap_ap: Mark 'txt' as __always_unused
-  wireless: intel: iwlwifi: dvm: lib: Demote non-compliant kernel-doc
-    headers
-  wireless: st: cw1200: wsm: Remove 'dummy' variables
-  wireless: marvell: libertas: Fix 'timer_list' stored private data
-    related dot-rot
-  wireless: mediatek: mt7601u: phy: Fix misnaming when documented
-    function parameter 'dac'
-  wireless: marvell: mwifiex: init: Move 'tos_to_tid_inv' to where it's
-    used
-  wireless: rsi: rsi_91x_main: Fix misnamed function parameter 'rx_pkt'
-  wireless: rsi: rsi_91x_mac80211: Fix a few kerneldoc misdemeanours
-  wireless: intel: iwlwifi: calib: Demote seemingly unintentional
-    kerneldoc header
-  wireless: rsi: rsi_91x_mgmt: Fix a myriad of documentation issues
-  wireless: ath: wil6210: debugfs: Fix a couple of formatting issues in
-    'wil6210_debugfs_init'
-  wireless: intel: iwlwifi: dvm: sta: Demote a bunch of nonconformant
-    kernel-doc headers
-  wireless: rsi: rsi_91x_hal: File header comments should not be
-    kernel-doc
-  wireless: intel: iwlegacy: 4965: Demote a bunch of nonconformant
-    kernel-doc headers
-  wireless: broadcom: brcmfmac: p2p: Deal with set but unused variables
-  wireless: marvell: libertas: firmware: Fix misnaming for function
-    param 'device'
-  wireless: marvell: libertas_tf: if_usb: Fix function documentation
-    formatting errors
-  wireless: intersil: hostap_ioctl: Remove set but unused variable
-    'hostscan'
+Cc: Amitkumar Karwar <amitkarwar@gmail.com>
+Cc: Siva Rebbagondla <siva8118@gmail.com>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/net/wireless/rsi/rsi_91x_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
- drivers/net/wireless/ath/wil6210/debugfs.c    |  8 ++--
- .../broadcom/brcm80211/brcmfmac/p2p.c         |  6 +--
- drivers/net/wireless/intel/iwlegacy/4965.c    | 25 ++++++-------
- drivers/net/wireless/intel/iwlegacy/debug.c   |  3 +-
- .../net/wireless/intel/iwlwifi/dvm/calib.c    |  2 +-
- drivers/net/wireless/intel/iwlwifi/dvm/lib.c  |  4 +-
- drivers/net/wireless/intel/iwlwifi/dvm/main.c | 11 +++---
- drivers/net/wireless/intel/iwlwifi/dvm/rs.c   | 12 +++---
- drivers/net/wireless/intel/iwlwifi/dvm/sta.c  | 22 +++++------
- drivers/net/wireless/intel/iwlwifi/dvm/tx.c   |  4 +-
- drivers/net/wireless/intersil/hostap/hostap.h |  6 ++-
- .../net/wireless/intersil/hostap/hostap_ap.c  |  2 +-
- .../wireless/intersil/hostap/hostap_ioctl.c   |  3 +-
- .../net/wireless/marvell/libertas/firmware.c  |  4 +-
- drivers/net/wireless/marvell/libertas/main.c  |  6 +--
- .../net/wireless/marvell/libertas_tf/cmd.c    | 22 +++++------
- .../net/wireless/marvell/libertas_tf/if_usb.c | 37 ++++++++++---------
- .../net/wireless/marvell/libertas_tf/main.c   |  6 +--
- drivers/net/wireless/marvell/mwifiex/init.c   | 16 ++++++++
- drivers/net/wireless/marvell/mwifiex/tdls.c   | 16 ++++++++
- drivers/net/wireless/marvell/mwifiex/wmm.h    | 15 --------
- drivers/net/wireless/mediatek/mt7601u/phy.c   |  2 +-
- drivers/net/wireless/rsi/rsi_91x_core.c       |  2 +-
- drivers/net/wireless/rsi/rsi_91x_hal.c        |  2 +-
- drivers/net/wireless/rsi/rsi_91x_mac80211.c   |  9 +++--
- drivers/net/wireless/rsi/rsi_91x_main.c       |  5 ++-
- drivers/net/wireless/rsi/rsi_91x_mgmt.c       | 30 ++++++++++-----
- drivers/net/wireless/st/cw1200/wsm.c          |  6 +--
- drivers/net/wireless/ti/wlcore/cmd.c          |  5 ++-
- 29 files changed, 157 insertions(+), 134 deletions(-)
-
+diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
+index 29d83049c5f56..576f51f9b4a7e 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_main.c
++++ b/drivers/net/wireless/rsi/rsi_91x_main.c
+@@ -1,4 +1,4 @@
+-/**
++/*
+  * Copyright (c) 2014 Redpine Signals Inc.
+  *
+  * Permission to use, copy, modify, and/or distribute this software for any
+@@ -148,6 +148,7 @@ static struct sk_buff *rsi_prepare_skb(struct rsi_common *common,
+ /**
+  * rsi_read_pkt() - This function reads frames from the card.
+  * @common: Pointer to the driver private structure.
++ * @rcv_pkt: Received pkt.
+  * @rcv_pkt_len: Received pkt length. In case of USB it is 0.
+  *
+  * Return: 0 on success, -1 on failure.
+@@ -279,7 +280,7 @@ void rsi_set_bt_context(void *priv, void *bt_context)
+ 
+ /**
+  * rsi_91x_init() - This function initializes os interface operations.
+- * @void: Void.
++ * @oper_mode: One of DEV_OPMODE_*.
+  *
+  * Return: Pointer to the adapter structure on success, NULL on failure .
+  */
 -- 
 2.25.1
 
