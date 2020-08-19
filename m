@@ -2,347 +2,336 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E33C24A81B
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 23:02:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AEE024A82E
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 23:09:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727064AbgHSVCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 17:02:09 -0400
-Received: from asavdk4.altibox.net ([109.247.116.15]:44682 "EHLO
-        asavdk4.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725275AbgHSVCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 17:02:08 -0400
-Received: from ravnborg.org (unknown [188.228.123.71])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by asavdk4.altibox.net (Postfix) with ESMTPS id E9457804AF;
-        Wed, 19 Aug 2020 23:02:01 +0200 (CEST)
-Date:   Wed, 19 Aug 2020 23:02:00 +0200
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devicetree@vger.kernel.org,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        John Fastabend <john.fastabend@gmail.com>, linuxarm@huawei.com,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Rob Herring <robh+dt@kernel.org>,
-        Wei Xu <xuwei5@hisilicon.com>, netdev@vger.kernel.org,
-        mauro.chehab@huawei.com, Jakub Kicinski <kuba@kernel.org>,
-        bpf@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 49/49] dt: display: Add binds for the DPE and DSI
- controller for Kirin 960/970
-Message-ID: <20200819210200.GA111674@ravnborg.org>
-References: <cover.1597833138.git.mchehab+huawei@kernel.org>
- <6471642f74779fecfc9d5e990d90f9475d8b32d4.1597833138.git.mchehab+huawei@kernel.org>
+        id S1727786AbgHSVJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 17:09:03 -0400
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:37062 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726967AbgHSVJB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 17:09:01 -0400
+Received: from localhost.localdomain ([77.205.40.3])
+        by mwinf5d50 with ME
+        id HZ8v23004045PnR03Z8vTs; Wed, 19 Aug 2020 23:08:58 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Wed, 19 Aug 2020 23:08:58 +0200
+X-ME-IP: 77.205.40.3
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     -kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        vaibhavgupta40@gmail.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] rtl818x_pci: switch from 'pci_' to 'dma_' API
+Date:   Wed, 19 Aug 2020 23:08:52 +0200
+Message-Id: <20200819210852.120826-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6471642f74779fecfc9d5e990d90f9475d8b32d4.1597833138.git.mchehab+huawei@kernel.org>
-X-CMAE-Score: 0
-X-CMAE-Analysis: v=2.3 cv=aP3eV41m c=1 sm=1 tr=0
-        a=S6zTFyMACwkrwXSdXUNehg==:117 a=S6zTFyMACwkrwXSdXUNehg==:17
-        a=kj9zAlcOel0A:10 a=VwQbUJbxAAAA:8 a=gEfo2CItAAAA:8 a=e5mUnYsNAAAA:8
-        a=XeRH_zU2q6342Vot-4MA:9 a=ADdo6PvC8_0S2ZMR:21 a=xHdfXTxBxwXe2MVT:21
-        a=CjuIK1q_8ugA:10 a=AjGcO6oz07-iQ99wixmX:22 a=sptkURWiP4Gy88Gu7hUp:22
-        a=Vxmtnl_E_bksehYqCbjh:22
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mauro.
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-Some feedback in the following.
-Good to see DT schma files and not .txt files - but needs a bit more
-work.
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
 
-	Sam
+When memory is allocated in 'rtl8180_init_rx_ring()' and
+'rtl8180_init_tx_ring()' GFP_KERNEL can be used because both functions are
+called from 'rtl8180_start()', which is a .start function (see struct
+ieee80211_ops)
+.start function can sleep, as explicitly stated in include/net/mac80211.h.
 
-On Wed, Aug 19, 2020 at 01:46:17PM +0200, Mauro Carvalho Chehab wrote:
-> Add a description of the bindings used by Kirin 960/970 Display
-> Serial Interface (DSI) controller and by its Display Engine (DPE).
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->  .../display/hisilicon,hi3660-dpe.yaml         |  99 +++++++++++++++++
->  .../display/hisilicon,hi3660-dsi.yaml         | 102 ++++++++++++++++++
->  .../boot/dts/hisilicon/hikey970-drm.dtsi      |   4 +-
->  3 files changed, 203 insertions(+), 2 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/display/hisilicon,hi3660-dpe.yaml
->  create mode 100644 Documentation/devicetree/bindings/display/hisilicon,hi3660-dsi.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/display/hisilicon,hi3660-dpe.yaml b/Documentation/devicetree/bindings/display/hisilicon,hi3660-dpe.yaml
-> new file mode 100644
-> index 000000000000..074997354417
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/hisilicon,hi3660-dpe.yaml
-> @@ -0,0 +1,99 @@
-> +# SPDX-License-Identifier: GPL-2.0
-New bindings should be dual licensed if poossible.
 
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/display/hisilicon,hi3660-dpe.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: HiSilicon SPMI controller
-> +
-> +maintainers:
-> +  - Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> +
-> +description: |
-> +  The HiSilicon Display Engine (DPE) s the display controller which grab
-s/s/is/
-> +  image data from memory, do composition, do post image processing,
-> +  generate RGB timing stream and transfer to DSI.
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "dpe@[0-9a-f]+"
-compatible will match, no need for the nodename.
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
 
-> +
-> +  compatible:
-> +    enum:
-> +      - hisilicon,kirin960-dpe
-> +      - hisilicon,kirin970-dpe
-> +
-> +  reg:
-> +    minItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    minItems: 1
-> +    description: Clocks used by the ISP and by the display
-All clocks must be described.
-> +
-> +  clock-names:
-> +    description: Names for the clock lines
-Specify clock names here.
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
 
-> +
-> +  dma-coherent: true
-> +
-> +  port:
-> +    type: object
-> +    description: A port node pointing to the display output endpoint.
-> +
-> +
-> +  iommu-info:
-> +    type: object
-> +    description: IOMMU address and size to be used by GPU
-> +
-> +    properties:
-> +      start-addr:
-> +        const: start address for IOMMU
-> +      size:
-> +        const: size of the mapped region
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
 
-additionalProperties: false?
-- So a DT do not use undocumented properties.
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
 
-required:?
-- So a DT always includes the mandatory properties
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
 
-> +
-> +examples:
-> +  - |
-> +    dpe: dpe@e8600000 {
-> +      compatible = "hisilicon,kirin970-dpe";
-> +      memory-region = <&drm_dma_reserved>;
-memory-region not included in the binding.
-> +      reg = <0 0xE8600000 0 0xC0000>,
-> +            <0 0xFFF35000 0 0x1000>,
-> +            <0 0xFFF0A000 0 0x1000>,
-> +            <0 0xE8A09000 0 0x1000>,
-> +            <0 0xE86C0000 0 0x10000>,
-> +            <0 0xFFF31000 0 0x1000>,
-> +            <0 0xE87FF000 0 0x1000>;
-> +
-> +      interrupts = <0 245 4>;
-> +
-> +      clocks = <&media1_crg HI3670_ACLK_GATE_DSS>,
-> +               <&media1_crg HI3670_PCLK_GATE_DSS>,
-> +               <&media1_crg HI3670_CLK_GATE_EDC0>,
-> +               <&media1_crg HI3670_CLK_GATE_LDI0>,
-> +               <&media1_crg HI3670_CLK_GATE_DSS_AXI_MM>,
-> +               <&media1_crg HI3670_PCLK_GATE_MMBUF>,
-> +               <&crg_ctrl   HI3670_PCLK_GATE_PCTRL>;
-The validation will fail as HI3670_PCLK_GATE_PCTRL is unknown.
-Include the relevant header.
-Use make dt_binding_check to validate the binding files.
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
 
-> +
-> +      clock-names = "aclk_dss",
-> +                    "pclk_dss",
-> +                    "clk_edc0",
-> +                    "clk_ldi0",
-> +                    "clk_dss_axi_mm",
-> +                    "pclk_mmbuf",
-> +                    "pclk_pctrl";
-> +
-> +      dma-coherent;
-> +
-> +      port {
-> +        dpe_out: endpoint {
-> +          remote-endpoint = <&dsi_in>;
-> +        };
-> +      };
-> +
-> +      iommu_info {
-> +        start-addr = <0x8000>;
-> +        size = <0xbfff8000>;
-> +      };
-> +    };
-End file with:
-<empty line>
-...
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
 
-> diff --git a/Documentation/devicetree/bindings/display/hisilicon,hi3660-dsi.yaml b/Documentation/devicetree/bindings/display/hisilicon,hi3660-dsi.yaml
-> new file mode 100644
-> index 000000000000..2265267fc53d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/hisilicon,hi3660-dsi.yaml
-> @@ -0,0 +1,102 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/display/hisilicon,hi3660-dsi.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: HiSilicon SPMI controller
-> +
-> +maintainers:
-> +  - Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> +
-> +description: |
-> +  The HiSilicon Display Serial Interface (DSI) Host Controller for
-> +  Kirin 960 and 970 resides in the middle of display controller and
-> +  an external HDMI converter or panel.
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "dsi@[0-9a-f]+"
-Same comment as before.
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
 
-> +
-> +  compatible:
-> +    enum:
-> +      - hisilicon,kirin960-dsi
-> +      - hisilicon,kirin970-dsi
-> +
-> +  reg:
-> +    minItems: 1
-> +    maxItems: 4
-> +
-> +  clocks:
-> +    minItems: 1
-> +    maxItems: 8
-> +    description: Clocks used by the ISP and by the display.
-> +
-> +  clock-names:
-> +    description: Names for the clock lines.
-Add the names.
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
 
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 0
-> +
-> +  mux-gpio:
-> +    description: GPIO used by the mux.
-Must be named mux-gpios - added 's' even with a single gpio.
-> +
-> +  ports:
-> +    type: object
-> +    description: Display input and output ports.
-> +
-> +examples:
-> +  - |
-> +    dsi: dsi@e8601000 {
-> +      compatible = "hisilicon,kirin970-dsi";
-> +      reg = <0 0xE8601000 0 0x7F000>,
-> +        <0 0xFFF35000 0 0x1000>,
-> +        <0 0xE8A09000 0 0x1000>;
-> +
-> +      clocks = <&crg_ctrl HI3670_CLK_GATE_TXDPHY0_REF>,
-> +        <&crg_ctrl HI3670_CLK_GATE_TXDPHY1_REF>,
-> +        <&crg_ctrl HI3670_CLK_GATE_TXDPHY0_CFG>,
-> +        <&crg_ctrl HI3670_CLK_GATE_TXDPHY1_CFG>,
-> +        <&crg_ctrl HI3670_PCLK_GATE_DSI0>,
-> +        <&crg_ctrl HI3670_PCLK_GATE_DSI1>;
-> +      clock-names = "clk_txdphy0_ref",
-> +            "clk_txdphy1_ref",
-> +            "clk_txdphy0_cfg",
-> +            "clk_txdphy1_cfg",
-> +            "pclk_dsi0",
-> +            "pclk_dsi1";
-> +
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      mux-gpio = <&gpio25 7 0>;
-> +
-> +      ports {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        port@0 {
-> +          reg = <0>;
-> +          dsi_in: endpoint {
-> +            remote-endpoint = <&dpe_out>;
-> +          };
-> +        };
-> +
-> +        port@1 {
-> +          #address-cells = <1>;
-> +          #size-cells = <0>;
-> +          reg = <1>;
-> +
-> +          dsi_out0: endpoint@0 {
-> +            reg = <0>;
-> +            remote-endpoint = <&adv7533_in>;
-> +          };
-> +
-> +          dsi_out1: endpoint@1 {
-> +            reg = <1>;
-> +            remote-endpoint = <&panel0_in>;
-> +          };
-> +        };
-> +      };
-> diff --git a/arch/arm64/boot/dts/hisilicon/hikey970-drm.dtsi b/arch/arm64/boot/dts/hisilicon/hikey970-drm.dtsi
-> index 503c7c9425c8..5758d7d181e5 100644
-> --- a/arch/arm64/boot/dts/hisilicon/hikey970-drm.dtsi
-> +++ b/arch/arm64/boot/dts/hisilicon/hikey970-drm.dtsi
-> @@ -1,6 +1,6 @@
->  // SPDX-License-Identifier: GPL-2.0
->  / {
-> -	dpe: dpe@E8600000 {
-> +	dpe: dpe@e8600000 {
->  		compatible = "hisilicon,kirin970-dpe";
->  		memory-region = <&drm_dma_reserved>;
->  		// DSS, PERI_CRG, SCTRL, PCTRL, NOC_DSS_Service_Target, PMCTRL, MEDIA_CRG
-> @@ -44,7 +44,7 @@ iommu_info {
->  		};
->  	};
->  
-> -	dsi: dsi@E8601000 {
-> +	dsi: dsi@e8601000 {
->  		compatible = "hisilicon,kirin970-dsi";
->  		reg = <0 0xE8601000 0 0x7F000>,
->  			<0 0xFFF35000 0 0x1000>,
-> -- 
-> 2.26.2
-> 
-> _______________________________________________
-> dri-devel mailing list
-> dri-devel@lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/dri-devel
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ .../wireless/realtek/rtl818x/rtl8180/dev.c    | 70 ++++++++++---------
+ 1 file changed, 37 insertions(+), 33 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c b/drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c
+index ba3286f732cc..2477e18c7cae 100644
+--- a/drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c
++++ b/drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c
+@@ -260,20 +260,20 @@ static void rtl8180_handle_rx(struct ieee80211_hw *dev)
+ 			if (unlikely(!new_skb))
+ 				goto done;
+ 
+-			mapping = pci_map_single(priv->pdev,
+-					       skb_tail_pointer(new_skb),
+-					       MAX_RX_SIZE, PCI_DMA_FROMDEVICE);
++			mapping = dma_map_single(&priv->pdev->dev,
++						 skb_tail_pointer(new_skb),
++						 MAX_RX_SIZE, DMA_FROM_DEVICE);
+ 
+-			if (pci_dma_mapping_error(priv->pdev, mapping)) {
++			if (dma_mapping_error(&priv->pdev->dev, mapping)) {
+ 				kfree_skb(new_skb);
+ 				dev_err(&priv->pdev->dev, "RX DMA map error\n");
+ 
+ 				goto done;
+ 			}
+ 
+-			pci_unmap_single(priv->pdev,
++			dma_unmap_single(&priv->pdev->dev,
+ 					 *((dma_addr_t *)skb->cb),
+-					 MAX_RX_SIZE, PCI_DMA_FROMDEVICE);
++					 MAX_RX_SIZE, DMA_FROM_DEVICE);
+ 			skb_put(skb, flags & 0xFFF);
+ 
+ 			rx_status.antenna = (flags2 >> 15) & 1;
+@@ -355,8 +355,8 @@ static void rtl8180_handle_tx(struct ieee80211_hw *dev, unsigned int prio)
+ 
+ 		ring->idx = (ring->idx + 1) % ring->entries;
+ 		skb = __skb_dequeue(&ring->queue);
+-		pci_unmap_single(priv->pdev, le32_to_cpu(entry->tx_buf),
+-				 skb->len, PCI_DMA_TODEVICE);
++		dma_unmap_single(&priv->pdev->dev, le32_to_cpu(entry->tx_buf),
++				 skb->len, DMA_TO_DEVICE);
+ 
+ 		info = IEEE80211_SKB_CB(skb);
+ 		ieee80211_tx_info_clear_status(info);
+@@ -473,10 +473,10 @@ static void rtl8180_tx(struct ieee80211_hw *dev,
+ 	prio = skb_get_queue_mapping(skb);
+ 	ring = &priv->tx_ring[prio];
+ 
+-	mapping = pci_map_single(priv->pdev, skb->data,
+-				 skb->len, PCI_DMA_TODEVICE);
++	mapping = dma_map_single(&priv->pdev->dev, skb->data, skb->len,
++				 DMA_TO_DEVICE);
+ 
+-	if (pci_dma_mapping_error(priv->pdev, mapping)) {
++	if (dma_mapping_error(&priv->pdev->dev, mapping)) {
+ 		kfree_skb(skb);
+ 		dev_err(&priv->pdev->dev, "TX DMA mapping error\n");
+ 		return;
+@@ -1004,8 +1004,9 @@ static int rtl8180_init_rx_ring(struct ieee80211_hw *dev)
+ 	else
+ 		priv->rx_ring_sz = sizeof(struct rtl8180_rx_desc);
+ 
+-	priv->rx_ring = pci_zalloc_consistent(priv->pdev, priv->rx_ring_sz * 32,
+-					      &priv->rx_ring_dma);
++	priv->rx_ring = dma_alloc_coherent(&priv->pdev->dev,
++					   priv->rx_ring_sz * 32,
++					   &priv->rx_ring_dma, GFP_KERNEL);
+ 	if (!priv->rx_ring || (unsigned long)priv->rx_ring & 0xFF) {
+ 		wiphy_err(dev->wiphy, "Cannot allocate RX ring\n");
+ 		return -ENOMEM;
+@@ -1018,20 +1019,23 @@ static int rtl8180_init_rx_ring(struct ieee80211_hw *dev)
+ 		dma_addr_t *mapping;
+ 		entry = priv->rx_ring + priv->rx_ring_sz*i;
+ 		if (!skb) {
+-			pci_free_consistent(priv->pdev, priv->rx_ring_sz * 32,
+-					priv->rx_ring, priv->rx_ring_dma);
++			dma_free_coherent(&priv->pdev->dev,
++					  priv->rx_ring_sz * 32,
++					  priv->rx_ring, priv->rx_ring_dma);
+ 			wiphy_err(dev->wiphy, "Cannot allocate RX skb\n");
+ 			return -ENOMEM;
+ 		}
+ 		priv->rx_buf[i] = skb;
+ 		mapping = (dma_addr_t *)skb->cb;
+-		*mapping = pci_map_single(priv->pdev, skb_tail_pointer(skb),
+-					  MAX_RX_SIZE, PCI_DMA_FROMDEVICE);
++		*mapping = dma_map_single(&priv->pdev->dev,
++					  skb_tail_pointer(skb), MAX_RX_SIZE,
++					  DMA_FROM_DEVICE);
+ 
+-		if (pci_dma_mapping_error(priv->pdev, *mapping)) {
++		if (dma_mapping_error(&priv->pdev->dev, *mapping)) {
+ 			kfree_skb(skb);
+-			pci_free_consistent(priv->pdev, priv->rx_ring_sz * 32,
+-					priv->rx_ring, priv->rx_ring_dma);
++			dma_free_coherent(&priv->pdev->dev,
++					  priv->rx_ring_sz * 32,
++					  priv->rx_ring, priv->rx_ring_dma);
+ 			wiphy_err(dev->wiphy, "Cannot map DMA for RX skb\n");
+ 			return -ENOMEM;
+ 		}
+@@ -1054,14 +1058,13 @@ static void rtl8180_free_rx_ring(struct ieee80211_hw *dev)
+ 		if (!skb)
+ 			continue;
+ 
+-		pci_unmap_single(priv->pdev,
+-				 *((dma_addr_t *)skb->cb),
+-				 MAX_RX_SIZE, PCI_DMA_FROMDEVICE);
++		dma_unmap_single(&priv->pdev->dev, *((dma_addr_t *)skb->cb),
++				 MAX_RX_SIZE, DMA_FROM_DEVICE);
+ 		kfree_skb(skb);
+ 	}
+ 
+-	pci_free_consistent(priv->pdev, priv->rx_ring_sz * 32,
+-			    priv->rx_ring, priv->rx_ring_dma);
++	dma_free_coherent(&priv->pdev->dev, priv->rx_ring_sz * 32,
++			  priv->rx_ring, priv->rx_ring_dma);
+ 	priv->rx_ring = NULL;
+ }
+ 
+@@ -1073,8 +1076,8 @@ static int rtl8180_init_tx_ring(struct ieee80211_hw *dev,
+ 	dma_addr_t dma;
+ 	int i;
+ 
+-	ring = pci_zalloc_consistent(priv->pdev, sizeof(*ring) * entries,
+-				     &dma);
++	ring = dma_alloc_coherent(&priv->pdev->dev, sizeof(*ring) * entries,
++				  &dma, GFP_KERNEL);
+ 	if (!ring || (unsigned long)ring & 0xFF) {
+ 		wiphy_err(dev->wiphy, "Cannot allocate TX ring (prio = %d)\n",
+ 			  prio);
+@@ -1103,14 +1106,15 @@ static void rtl8180_free_tx_ring(struct ieee80211_hw *dev, unsigned int prio)
+ 		struct rtl8180_tx_desc *entry = &ring->desc[ring->idx];
+ 		struct sk_buff *skb = __skb_dequeue(&ring->queue);
+ 
+-		pci_unmap_single(priv->pdev, le32_to_cpu(entry->tx_buf),
+-				 skb->len, PCI_DMA_TODEVICE);
++		dma_unmap_single(&priv->pdev->dev, le32_to_cpu(entry->tx_buf),
++				 skb->len, DMA_TO_DEVICE);
+ 		kfree_skb(skb);
+ 		ring->idx = (ring->idx + 1) % ring->entries;
+ 	}
+ 
+-	pci_free_consistent(priv->pdev, sizeof(*ring->desc)*ring->entries,
+-			    ring->desc, ring->dma);
++	dma_free_coherent(&priv->pdev->dev,
++			  sizeof(*ring->desc) * ring->entries, ring->desc,
++			  ring->dma);
+ 	ring->desc = NULL;
+ }
+ 
+@@ -1754,8 +1758,8 @@ static int rtl8180_probe(struct pci_dev *pdev,
+ 		goto err_free_reg;
+ 	}
+ 
+-	if ((err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) ||
+-	    (err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32)))) {
++	if ((err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) ||
++	    (err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32)))) {
+ 		printk(KERN_ERR "%s (rtl8180): No suitable DMA available\n",
+ 		       pci_name(pdev));
+ 		goto err_free_reg;
+-- 
+2.25.1
+
