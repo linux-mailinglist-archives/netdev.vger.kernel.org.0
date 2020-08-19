@@ -2,252 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4171924A321
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 17:31:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 136E324A32B
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 17:32:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728729AbgHSPbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 11:31:10 -0400
-Received: from perceval.ideasonboard.com ([213.167.242.64]:60072 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726570AbgHSPbI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 11:31:08 -0400
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id D205F29E;
-        Wed, 19 Aug 2020 17:31:02 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1597851063;
-        bh=DVs19L0VhTXPW2QTvGxXKfAP7MNmvNDtF8FLDixJwXI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YTWpYxMUFWq/HkzThpPGRLXevQIo6ltyyqaFIjS0BTu/E3WAJAfGMN6nDh16BrBfh
-         osiPwb5zNiVh+z/IgnIXMg1tjG9CHVOm1gKRuCZLViqVpxI9GYzsi+9M1jJn/XcsH+
-         ceXo7IQkWFgTtIgKrYX5c9MpRw8J0Qazzepv3tJE=
-Date:   Wed, 19 Aug 2020 18:30:45 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Sam Ravnborg <sam@ravnborg.org>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Xinliang Liu <xinliang.liu@linaro.org>,
-        Wanchun Zheng <zhengwanchun@hisilicon.com>,
-        linuxarm@huawei.com, dri-devel <dri-devel@lists.freedesktop.org>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        devel@driverdev.osuosl.org, Daniel Borkmann <daniel@iogearbox.net>,
+        id S1728765AbgHSPcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 11:32:39 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:22796 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726792AbgHSPch (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 11:32:37 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07JFVwnh005346;
+        Wed, 19 Aug 2020 08:32:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=PxcfV38LlaY3J75Su5wbXtIs9tgLp2TLBsH77iDnXj4=;
+ b=SopQ3aREpqH9svNRIxzW8oXzss4KCNT0BojJF86xmPMkTnHY9c/so0CKld2P8IBisdX2
+ 0nEgddt3Njw/ufq4HmXNl10cDLsRvK7jPZbL8tS20NSGNkLSZqrB2CiSup8jDM6xTnqd
+ bjKhcGbxo8AeUWfhXdr0XRzKPKpDNpxuFFE= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3304kps359-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 19 Aug 2020 08:32:19 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 19 Aug 2020 08:31:57 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YvHD7jtHDgQBPJiy7H17URfhhhuELUByc1HCdiKoOr9+doT9c2desiXhmQTIAslVJGL9C90tP4m7ozmJ00O7/6pKRFmGb5hFjKWBn76H8jt8O9QMkA/Kz+ElaK5ElGuTj/RO5tpGAvi3F+bGZ2g+BIK/TH+kjn43RuMdRhnMCXYJWMWZgUONHc6EAwZo03VAW4FeRiOGuubKq1LtN4gtyKQURpjZt9iEfLsNmV/UHw5wcudbM+VFOYtT+Bu9Zsi8V7Ri6CdaKtiEb83YwvYV27w1OZM9JDv67U9L+eAqfv34b4ZanXwE4HxciLY8lYKGonXNMxUZZR646D+142PTbw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PxcfV38LlaY3J75Su5wbXtIs9tgLp2TLBsH77iDnXj4=;
+ b=ngbIJAVLb9NM7gGqCQkCAI2JXNEb/3UGlnoJkBQ67h2e8SrJ/IhfSlFx4v/qH3ALyRNKhnE6TEY9lQ9rsSK/PK0vURrJr8g59IWRi6lZQIyxi7upZlLCU7WmXYmqQ1lVAAQ3MFeYWOUMIoS3rSyLr+1OvXwpz9Yi6xBA/v+D8OgmIiXw8OfidHssAeI+sduBFaowQsVSvdfRINWvxn07ytTxdqZIKGZT0CdPBqYS+XAYcvR8iz7RHBhrxTBXPlp8IEQ9o4cX1kf4XdSqnFOP4bisracJ6pvAnsMWEES+pQltvJfrno2DSa6XBl4ZTv7xdvXJEtHQTcHAx4Hn+AFeRQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PxcfV38LlaY3J75Su5wbXtIs9tgLp2TLBsH77iDnXj4=;
+ b=MYdhoeIyiBF6aK5zBjPzc3OPnn42gRE/8CWwL2PC9F/qVCWDFArsHkPDp4d5mgzmK5vOxt5cHtUUiExpsZfrrOGwmDcWTMxIwq6eZRiZ+QcKlKc+k87Cy08toPvP/NnnegmeLEnMxMgdH86NVfaC6VwyWlJE9e/C69pu+HnbHsg=
+Authentication-Results: chromium.org; dkim=none (message not signed)
+ header.d=none;chromium.org; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2376.namprd15.prod.outlook.com (2603:10b6:a02:8c::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.24; Wed, 19 Aug
+ 2020 15:31:56 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3283.028; Wed, 19 Aug 2020
+ 15:31:56 +0000
+Subject: Re: [PATCH bpf-next] tools/resolve_btfids: Fix sections with wrong
+ alignment
+To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+CC:     Mark Wielaard <mjw@redhat.com>, Nick Clifton <nickc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Xiubin Zhang <zhangxiubin1@huawei.com>,
-        Wei Xu <xuwei5@hisilicon.com>, David Airlie <airlied@linux.ie>,
-        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Bogdan Togorean <bogdan.togorean@analog.com>,
-        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        Liwei Cai <cailiwei@hisilicon.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Chen Feng <puck.chen@hisilicon.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        linaro-mm-sig@lists.linaro.org, Rob Herring <robh+dt@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, mauro.chehab@huawei.com,
-        Rob Clark <robdclark@chromium.org>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Liuyao An <anliuyao@huawei.com>,
-        Rongrong Zou <zourongrong@gmail.com>, bpf@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
-Message-ID: <20200819153045.GA18469@pendragon.ideasonboard.com>
-References: <cover.1597833138.git.mchehab+huawei@kernel.org>
- <20200819152120.GA106437@ravnborg.org>
+        KP Singh <kpsingh@chromium.org>
+References: <20200819092342.259004-1-jolsa@kernel.org>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <254246ed-1b76-c435-a7bd-0783a29094d9@fb.com>
+Date:   Wed, 19 Aug 2020 08:31:51 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
+In-Reply-To: <20200819092342.259004-1-jolsa@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL0PR02CA0092.namprd02.prod.outlook.com
+ (2603:10b6:208:51::33) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200819152120.GA106437@ravnborg.org>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c0a8:11e8::10d3] (2620:10d:c091:480::1:9a2) by BL0PR02CA0092.namprd02.prod.outlook.com (2603:10b6:208:51::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3283.18 via Frontend Transport; Wed, 19 Aug 2020 15:31:53 +0000
+X-Originating-IP: [2620:10d:c091:480::1:9a2]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5dfe6a90-d5a9-47ed-1b24-08d84455016b
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2376:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB23766866695E12DA9906FBEFD35D0@BYAPR15MB2376.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XDw3/cRHSwe+DMbb0J/2/ir+hG5D5EOFIEjIhAmrIjO0JSaNUDxWRc2LhS4/krcAOiWRIe/W6Qg/hsklIMu0xgHsnzTs9SPP/fZVht9PwVOy8eymMalfbIajZRD7qgIOyzCtxS5bOrQLB1ynkvojBFZpo7Wakfl4Tlfn00KPMeqQik55F9yP6KLi+0W+Bv+h0PidUgFgrxijN5coUyVRYeEC4Mc9Ypk65KYTRB6CGitkUkWJZtUeCPiHCgZroya34iKbEg2IVCDmV8VNPomWSYDoMyDNdQ4Ka51U2pvS80e0lvfFEjjouQhep1R5bwgnldZHg2f0C/tRl5Jq2R6Rk7RhcPpiGSjXouXJ1+/VtMwBF4QGp+tccinoRcaMqVIa
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(39860400002)(366004)(376002)(346002)(5660300002)(186003)(316002)(86362001)(31696002)(8676002)(66946007)(8936002)(478600001)(2906002)(66476007)(66556008)(53546011)(83380400001)(16526019)(6486002)(4326008)(110136005)(36756003)(54906003)(31686004)(52116002)(2616005)(7416002)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: vxCHG7lHWYBn2wkxtmBofRE1GAkh0TH6Svf79sduQU+Jyu70kliXzMWMC0a1DDYqRlTIM24KUJbJmAaRik7RXaVViRUq3vlhj9BjuZ3CWAtPK0YZWxxILfww7cJr3ts8pqa7pe/0CZLoIEGWMLUYnf0fwy49DR93qn7dsFM0R4/gU+AhnxdCXyin1fDiSD4wsVxSshQ0Kq7pwjMkyzlc8JgrWciP3QHIBkwJg7DF1XnzrlHGRVnqfaGBjCCyYDcfxVhCW+tRtKMgwUQQriWaadOmL1nNpqADvHwudoRW2ddDs8B+kj8C3IKtxmrDcbxfWr/TExF9IbKZwTeEflSCpDhxpxlo4EMtrN52qODk14f3v08sWy3XZ0ENMCWhvNEyCv12WRzhvuMX5U0vsesnpG9BxcXBs5e652iCvna0xLSrOZgnKOpjV2nKhX+FQlyKFiFKV4vnTCBdGi0yp/53m+L7QZW1RzmK85sXqTRX/70nyZdZvhTfAS5XWWYzBG7JQugYhTLzREaMGpFUVnoFyUUiFuekW2smpmcaTil2iYC92T7n+SDS+oAWDlilebsf3F2OQ1u9m/Q7HpG1+DVsv/Vywyj7PeNQFbMom40kAcX/KufZ18xY7RYYw7a40ST9X5EuXEf51oWn46Ug6W7DY2NVLKWfGTYbkhSLiugHuwtIr0/6vMCP+CEooZ+V7W5l
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5dfe6a90-d5a9-47ed-1b24-08d84455016b
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2020 15:31:56.1939
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8pPcHLvXRAC5NUl3oPiL6iLkPTOOqX3E2UeSO64v5JikxKFpD0IIwnE3/wbJSSO7
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2376
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-19_09:2020-08-19,2020-08-19 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1011 spamscore=0
+ impostorscore=0 mlxscore=0 adultscore=0 malwarescore=0 mlxlogscore=999
+ lowpriorityscore=0 suspectscore=0 phishscore=0 bulkscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008190133
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 19, 2020 at 05:21:20PM +0200, Sam Ravnborg wrote:
-> Hi Mauro.
-> 
-> On Wed, Aug 19, 2020 at 01:45:28PM +0200, Mauro Carvalho Chehab wrote:
-> > This patch series port the out-of-tree driver for Hikey 970 (which
-> > should also support Hikey 960) from the official 96boards tree:
-> > 
-> >    https://github.com/96boards-hikey/linux/tree/hikey970-v4.9
-> > 
-> > Based on his history, this driver seems to be originally written
-> > for Kernel 4.4, and was later ported to Kernel 4.9. The original
-> > driver used to depend on ION (from Kernel 4.4) and had its own
-> > implementation for FB dev API.
-> > 
-> > As I need to preserve the original history (with has patches from
-> > both HiSilicon and from Linaro),  I'm starting from the original
-> > patch applied there. The remaining patches are incremental,
-> > and port this driver to work with upstream Kernel.
-> > 
-> > This driver doesn't depend on any firmware or on any special
-> > userspace code. It works as-is with both X11 and Wayland.
-> > 
-> > Yet, I'm submitting it via staging due to the following reasons:
-> > 
-> > - It depends on the LDO3 power supply, which is provided by
-> >   a regulator driver that it is currently on staging;
-> > - Due to legal reasons, I need to preserve the authorship of
-> >   each one responsbile for each patch. So, I need to start from
-> >   the original patch from Kernel 4.4;
-> > - There are still some problems I need to figure out how to solve:
-> >    - The adv7535 can't get EDID data. Maybe it is a timing issue,
-> >      but it requires more research to be sure about how to solve it;
-> >    - The driver only accept resolutions on a defined list, as there's
-> >      a known bug that this driver may have troubles with random
-> >      resolutions. Probably due to a bug at the pixel clock settings;
-> >    - Sometimes (at least with 1080p), it generates LDI underflow
-> >      errors, which in turn causes the DRM to stop working. That
-> >      happens for example when using gdm on Wayland and
-> >      gnome on X11;
-> >    - Probably related to the previous issue, when the monitor
-> >      suspends due to DPMS, it doesn't return back to life.
-> > 
-> > So, IMO, the best is to keep it on staging for a while, until those
-> > remaining bugs gets solved.
-> > 
-> > I added this series, together with the regulator driver and
-> > a few other patches (including a hack to fix a Kernel 5.8 
-> > regression at WiFi ) at:
-> > 
-> > 	https://gitlab.freedesktop.org/mchehab_kernel/hikey-970/-/commits/master
-> > 
-> > 
-> > Chen Feng (1):
-> >   staging: hikey9xx: Add hisilicon DRM driver for hikey960/970
-> > 
-> > John Stultz (1):
-> >   staging: hikey9xx/gpu: port it to work with Kernel v4.9
-> > 
-> > Liwei Cai (2):
-> >   staging: hikey9xx/gpu: solve tearing issue of display
-> >   staging: hikey9xx/gpu: resolve the performance issue by interrupt
-> >     mechanism
-> > 
-> > Mauro Carvalho Chehab (38):
-> >   staging: hikey9xx/gpu: get rid of adv7535 fork
-> Very good - I was in my mind starting a rant why we needed a fork of
-> this driver, but I see it gets deleted again.
-> 
-> I do acknowledge you need to preserve history and all -
-> but this patchset is not easy to review.
 
-Why do we need to preserve history ? Adding relevant Signed-off-by and
-Co-developed-by should be enough, shouldn't it ? Having a public branch
-that contains the history is useful if anyone is interested, but I don't
-think it's required in mainline.
 
-> Could you follow-up with a review-able set of patches as a follow-up
-> for this?
-> I spotted some wrong bridge handling in one patch but I do not know if
-> this got changed in a later patch. And I lost the motivation to go
-> looking for it.
+On 8/19/20 2:23 AM, Jiri Olsa wrote:
+> The data of compressed section should be aligned to 4
+> (for 32bit) or 8 (for 64 bit) bytes.
 > 
-> >   staging: hikey9xx/gpu: rename the Kirin9xx namespace
-> >   staging: hikey9xx/gpu: get rid of kirin9xx_fbdev.c
-> >   staging: hikey9xx/gpu: get rid of some ifdefs
-> >   staging: hikey9xx/gpu: rename the config option for Kirin970
-> >   staging: hikey9xx/gpu: change the includes to reflect upstream
-> >   staging: hikey9xx/gpu: port driver to upstream kAPIs
-> >   staging: hikey9xx/gpu: add a copy of set_reg() function there
-> >   staging: hikey9xx/gpu: get rid of ION headers
-> >   staging: hikey9xx/gpu: add support for using a reserved CMA memory
-> >   staging: hikey9xx/gpu: cleanup encoder attach logic
-> >   staging: hikey9xx/gpu: Change the logic which sets the burst mode
-> >   staging: hikey9xx/gpu: fix the DRM setting logic
-> >   staging: hikey9xx/gpu: do some code cleanups
-> >   staging: hikey9xx/gpu: use default GEM_CMA fops
-> >   staging: hikey9xx/gpu: place vblank enable/disable at the right place
-> >   staging: hikey9xx/gpu: remove an uneeded hack
-> >   staging: hikey9xx/gpu: add a possible implementation for
-> >     atomic_disable
-> >   staging: hikey9xx/gpu: register connector
-> >   staging: hikey9xx/gpu: fix driver name
-> >   staging: hikey9xx/gpu: get rid of iommu_format
-> >   staging: hikey9xx/gpu: re-work the mode validation code
-> >   staging: hikey9xx/gpu: add support for enable/disable ldo3 regulator
-> >   staging: hikey9xx/gpu: add SPMI headers
-> >   staging: hikey9xx/gpu: solve most coding style issues
-> >   staging: hikey9xx/gpu: don't use iommu code
-> >   staging: hikey9xx/gpu: add kirin9xx driver to the building system
-> >   staging: hikey9xx/gpu: get rid of typedefs
-> >   staging: hikey9xx/gpu: get rid of input/output macros
-> >   staging: hikey9xx/gpu: get rid of some unused data
-> >   staging: hikey9xx/gpu: place common definitions at kirin9xx_dpe.h
-> >   staging: hikey9xx/gpu: get rid of DRM_HISI_KIRIN970
-> >   dts: hisilicon: hi3670.dtsi: add I2C settings
-> >   dts: hikey970-pinctrl.dtsi: add missing pinctrl settings
-> >   dt: hisilicon: add support for the PMIC found on Hikey 970
-> >   dts: add support for Hikey 970 DRM
-> >   staging: hikey9xx/gpu: drop kirin9xx_pwm
-> >   dt: display: Add binds for the DPE and DSI controller for Kirin
-> >     960/970
-> > 
-> > Xiubin Zhang (7):
-> >   staging: hikey9xx/gpu: add support to hikey970 HDMI and panel
-> >   staging: hikey9xx/gpu: Solve SR Cannot Display Problems.
-> >   staging: hikey9xx/gpu: Solve HDMI compatibility Problem.
-> >   staging: hikey9xx/gpu: Support MIPI DSI 3 lanes for hikey970.
-> >   staging: hikey9xx/gpu: Solve SR test reset problem for hikey970.
-> >   staging: hikey9xx/gpu: add debug prints for this driver
-> >   staging: hikey9xx/gpu: Add support 10.1 inch special HDMI displays.
-> > 
-> >  .../display/hisilicon,hi3660-dpe.yaml         |   99 +
-> >  .../display/hisilicon,hi3660-dsi.yaml         |  102 +
-> >  .../boot/dts/hisilicon/hi3670-hikey970.dts    |   56 +-
-> >  arch/arm64/boot/dts/hisilicon/hi3670.dtsi     |   77 +
-> >  .../boot/dts/hisilicon/hikey970-drm.dtsi      |   93 +
-> >  .../boot/dts/hisilicon/hikey970-pinctrl.dtsi  |  548 +++-
-> >  .../boot/dts/hisilicon/hikey970-pmic.dtsi     |  197 ++
-> >  drivers/staging/hikey9xx/Kconfig              |    3 +
-> >  drivers/staging/hikey9xx/Makefile             |    1 +
-> >  drivers/staging/hikey9xx/gpu/Kconfig          |   22 +
-> >  drivers/staging/hikey9xx/gpu/Makefile         |    9 +
-> >  drivers/staging/hikey9xx/gpu/kirin960_defs.c  |  378 +++
-> >  .../staging/hikey9xx/gpu/kirin960_dpe_reg.h   |  233 ++
-> >  drivers/staging/hikey9xx/gpu/kirin970_defs.c  |  381 +++
-> >  .../staging/hikey9xx/gpu/kirin970_dpe_reg.h   | 1188 ++++++++
-> >  drivers/staging/hikey9xx/gpu/kirin9xx_dpe.h   | 2437 +++++++++++++++++
-> >  .../hikey9xx/gpu/kirin9xx_drm_dpe_utils.c     | 1178 ++++++++
-> >  .../hikey9xx/gpu/kirin9xx_drm_dpe_utils.h     |  286 ++
-> >  .../staging/hikey9xx/gpu/kirin9xx_drm_drv.c   |  368 +++
-> >  .../staging/hikey9xx/gpu/kirin9xx_drm_drv.h   |   57 +
-> >  .../staging/hikey9xx/gpu/kirin9xx_drm_dss.c   | 1063 +++++++
-> >  .../hikey9xx/gpu/kirin9xx_drm_overlay_utils.c | 1005 +++++++
-> >  .../hikey9xx/gpu/kirin9xx_dw_drm_dsi.c        | 2132 ++++++++++++++
-> >  .../hikey9xx/gpu/kirin9xx_dw_dsi_reg.h        |  146 +
-> >  .../staging/hikey9xx/gpu/kirin9xx_fb_panel.h  |  191 ++
-> >  25 files changed, 12229 insertions(+), 21 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/display/hisilicon,hi3660-dpe.yaml
-> >  create mode 100644 Documentation/devicetree/bindings/display/hisilicon,hi3660-dsi.yaml
+> The binutils ld sets sh_addralign to 1, which makes libelf
+> fail with misaligned section error during the update as
+> reported by Jesper:
 > 
-> Patch that intropduce new bindings must following the submitting patches
-> guidelines for bindings. For once the subject is "dt-bindings: bla bla".
+>     FAILED elf_update(WRITE): invalid section alignment
 > 
-> >  create mode 100644 arch/arm64/boot/dts/hisilicon/hikey970-drm.dtsi
-> >  create mode 100644 arch/arm64/boot/dts/hisilicon/hikey970-pmic.dtsi
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/Kconfig
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/Makefile
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin960_defs.c
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin960_dpe_reg.h
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin970_defs.c
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin970_dpe_reg.h
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin9xx_dpe.h
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin9xx_drm_dpe_utils.c
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin9xx_drm_dpe_utils.h
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin9xx_drm_drv.c
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin9xx_drm_drv.h
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin9xx_drm_dss.c
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin9xx_drm_overlay_utils.c
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin9xx_dw_drm_dsi.c
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin9xx_dw_dsi_reg.h
-> >  create mode 100644 drivers/staging/hikey9xx/gpu/kirin9xx_fb_panel.h
+> While waiting for ld fix, we can fix compressed sections
+> sh_addralign value manually.
+> 
+> Adding warning in -vv mode when the fix is triggered:
+> 
+>    $ ./tools/bpf/resolve_btfids/resolve_btfids -vv vmlinux
+>    ...
+>    section(36) .comment, size 44, link 0, flags 30, type=1
+>    section(37) .debug_aranges, size 45684, link 0, flags 800, type=1
+>     - fixing wrong alignment sh_addralign 16, expected 8
+>    section(38) .debug_info, size 129104957, link 0, flags 800, type=1
+>     - fixing wrong alignment sh_addralign 1, expected 8
+>    section(39) .debug_abbrev, size 1152583, link 0, flags 800, type=1
+>     - fixing wrong alignment sh_addralign 1, expected 8
+>    section(40) .debug_line, size 7374522, link 0, flags 800, type=1
+>     - fixing wrong alignment sh_addralign 1, expected 8
+>    section(41) .debug_frame, size 702463, link 0, flags 800, type=1
+>    section(42) .debug_str, size 1017571, link 0, flags 830, type=1
+>     - fixing wrong alignment sh_addralign 1, expected 8
+>    section(43) .debug_loc, size 3019453, link 0, flags 800, type=1
+>     - fixing wrong alignment sh_addralign 1, expected 8
+>    section(44) .debug_ranges, size 1744583, link 0, flags 800, type=1
+>     - fixing wrong alignment sh_addralign 16, expected 8
+>    section(45) .symtab, size 2955888, link 46, flags 0, type=2
+>    section(46) .strtab, size 2613072, link 0, flags 0, type=3
+>    ...
+>    update ok for vmlinux
+> 
+> Another workaround is to disable compressed debug info data
+> CONFIG_DEBUG_INFO_COMPRESSED kernel option.
 
--- 
-Regards,
+So CONFIG_DEBUG_INFO_COMPRESSED is required to reproduce the bug, right?
 
-Laurent Pinchart
+I turned on CONFIG_DEBUG_INFO_COMPRESSED in my config and got a bunch of
+build failures.
+
+ld: drivers/crypto/virtio/virtio_crypto_algs.o: unable to initialize 
+decompress status for section .debug_info
+ld: drivers/crypto/virtio/virtio_crypto_algs.o: unable to initialize 
+decompress status for section .debug_info
+ld: drivers/crypto/virtio/virtio_crypto_algs.o: unable to initialize 
+decompress status for section .debug_info
+ld: drivers/crypto/virtio/virtio_crypto_algs.o: unable to initialize 
+decompress status for section .debug_info
+drivers/crypto/virtio/virtio_crypto_algs.o: file not recognized: File 
+format not recognized
+
+ld: net/llc/llc_core.o: unable to initialize decompress status for 
+section .debug_info
+ld: net/llc/llc_core.o: unable to initialize decompress status for 
+section .debug_info
+ld: net/llc/llc_core.o: unable to initialize decompress status for 
+section .debug_info
+ld: net/llc/llc_core.o: unable to initialize decompress status for 
+section .debug_info
+net/llc/llc_core.o: file not recognized: File format not recognized
+
+...
+
+The 'ld' in my system:
+
+$ ld -V
+GNU ld version 2.30-74.el8
+   Supported emulations:
+    elf_x86_64
+    elf32_x86_64
+    elf_i386
+    elf_iamcu
+    i386linux
+    elf_l1om
+    elf_k1om
+    i386pep
+    i386pe
+$
+
+Do you know what is the issue here?
+
+> 
+> Fixes: fbbb68de80a4 ("bpf: Add resolve_btfids tool to resolve BTF IDs in ELF object")
+> Cc: Mark Wielaard <mjw@redhat.com>
+> Cc: Nick Clifton <nickc@redhat.com>
+> Reported-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>   tools/bpf/resolve_btfids/main.c | 36 +++++++++++++++++++++++++++++++++
+>   1 file changed, 36 insertions(+)
+> 
+> diff --git a/tools/bpf/resolve_btfids/main.c b/tools/bpf/resolve_btfids/main.c
+> index 4d9ecb975862..0def0bb1f783 100644
+> --- a/tools/bpf/resolve_btfids/main.c
+> +++ b/tools/bpf/resolve_btfids/main.c
+> @@ -233,6 +233,39 @@ static struct btf_id *add_symbol(struct rb_root *root, char *name, size_t size)
+>   	return btf_id__add(root, id, false);
+>   }
+>   
+> +/*
+> + * The data of compressed section should be aligned to 4
+> + * (for 32bit) or 8 (for 64 bit) bytes. The binutils ld
+> + * sets sh_addralign to 1, which makes libelf fail with
+> + * misaligned section error during the update:
+> + *    FAILED elf_update(WRITE): invalid section alignment
+> + *
+> + * While waiting for ld fix, we fix the compressed sections
+> + * sh_addralign value manualy.
+> + */
+> +static int compressed_section_fix(Elf *elf, Elf_Scn *scn, GElf_Shdr *sh)
+> +{
+> +	int expected = gelf_getclass(elf) == ELFCLASS32 ? 4 : 8;
+> +
+> +	if (!(sh->sh_flags & SHF_COMPRESSED))
+> +		return 0;
+> +
+> +	if (sh->sh_addralign == expected)
+> +		return 0;
+> +
+> +	pr_debug2(" - fixing wrong alignment sh_addralign %u, expected %u\n",
+> +		  sh->sh_addralign, expected);
+> +
+> +	sh->sh_addralign = expected;
+> +
+> +	if (gelf_update_shdr(scn, sh) == 0) {
+> +		printf("FAILED cannot update section header: %s\n",
+> +			elf_errmsg(-1));
+> +		return -1;
+> +	}
+> +	return 0;
+> +}
+> +
+>   static int elf_collect(struct object *obj)
+>   {
+>   	Elf_Scn *scn = NULL;
+> @@ -309,6 +342,9 @@ static int elf_collect(struct object *obj)
+>   			obj->efile.idlist_shndx = idx;
+>   			obj->efile.idlist_addr  = sh.sh_addr;
+>   		}
+> +
+> +		if (compressed_section_fix(elf, scn, &sh))
+> +			return -1;
+>   	}
+>   
+>   	return 0;
+> 
