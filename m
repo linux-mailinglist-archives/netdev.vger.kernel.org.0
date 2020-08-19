@@ -2,169 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FADA24A503
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 19:36:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB3CB24A519
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 19:40:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726640AbgHSRgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 13:36:38 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:42791 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725939AbgHSRgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 13:36:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1597858593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oVwS6fO0eqv/szYL1XRxdlPLXVP1y/v8xeaVC13ns4g=;
-        b=jH9YZKUn6UOF6YJkBEMI8/w0GF82nvGkGno4gQoIIpu6beF/uiSl6MaFV7WozAPmD0oTpZ
-        EKqrJeku/it7nDQpqFcrnscMdmO1+hyHkc6wTX5t/Phr2uhEVZj83kFe4KT7Id0kHCA4bn
-        pIQBG917HvqyDtfJjxwt1PsOEz81QAs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-437-tbPqt1txMXGcm8ad9xpa_Q-1; Wed, 19 Aug 2020 13:36:29 -0400
-X-MC-Unique: tbPqt1txMXGcm8ad9xpa_Q-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0A4F351B2;
-        Wed, 19 Aug 2020 17:36:28 +0000 (UTC)
-Received: from krava (unknown [10.40.192.44])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 6B4BD7DFDD;
-        Wed, 19 Aug 2020 17:36:19 +0000 (UTC)
-Date:   Wed, 19 Aug 2020 19:36:18 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Mark Wielaard <mjw@redhat.com>,
-        Nick Clifton <nickc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH bpf-next] tools/resolve_btfids: Fix sections with wrong
- alignment
-Message-ID: <20200819173618.GH177896@krava>
-References: <20200819092342.259004-1-jolsa@kernel.org>
- <254246ed-1b76-c435-a7bd-0783a29094d9@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <254246ed-1b76-c435-a7bd-0783a29094d9@fb.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+        id S1726673AbgHSRkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 13:40:43 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:54770 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725804AbgHSRkl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 13:40:41 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 07JHbmTo002866;
+        Wed, 19 Aug 2020 17:40:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2020-01-29; bh=aJ0lUCXdyfNTjXmXrU81lxUeJv9n2ZYKi+LgxXWycLA=;
+ b=CRMBno42IJuj0Pw4iHyQyTMY6lXlIdlwZTIddMrwfcyCMOVlHCIf4hYIk5LtNJADCN0r
+ /QZSOmLvEWDzldoN1zl2DTkRo65AbTz3PL44YyrxpTJgmhTdrYEFrJfCC02IKuHJJs9G
+ x9gIoh2SRobBO/Tih1akw5nPr7EZ6Z9/eDxcQMaeOb6f99THBPJPDbJCGQVjEF+K33Ix
+ dA9iWdZeSX6RmNM0rpX5eFh8HkO5nG9paqMvGmqV3YbYtpMPXmj/4NEfu+CU4u7aBmxw
+ uKJ8aP/+pGrjGAa71q0/hPh3QbP0ZiWxQFlRKrBnOrV0NzhUhW/nr2n94ps8JMczsH0q SA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 32x7nmkyja-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 19 Aug 2020 17:40:10 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 07JHcISp107375;
+        Wed, 19 Aug 2020 17:40:09 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 32xsftruej-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 19 Aug 2020 17:40:09 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 07JHe4Me015033;
+        Wed, 19 Aug 2020 17:40:04 GMT
+Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 19 Aug 2020 10:40:04 -0700
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
+Subject: Re: [PATCH net-next] SUNRPC: remove duplicate include
+From:   Chuck Lever <chuck.lever@oracle.com>
+In-Reply-To: <20200819024943.26850-1-wanghai38@huawei.com>
+Date:   Wed, 19 Aug 2020 13:40:01 -0400
+Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Bruce Fields <bfields@fieldses.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <EFE54752-7DA7-465C-908B-F46B89DC3C2A@oracle.com>
+References: <20200819024943.26850-1-wanghai38@huawei.com>
+To:     Wang Hai <wanghai38@huawei.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.1)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9718 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
+ spamscore=0 suspectscore=0 mlxscore=0 phishscore=0 bulkscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008190145
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9718 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0
+ impostorscore=0 priorityscore=1501 adultscore=0 mlxscore=0 mlxlogscore=999
+ lowpriorityscore=0 bulkscore=0 phishscore=0 malwarescore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2008190145
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 19, 2020 at 08:31:51AM -0700, Yonghong Song wrote:
-> 
-> 
-> On 8/19/20 2:23 AM, Jiri Olsa wrote:
-> > The data of compressed section should be aligned to 4
-> > (for 32bit) or 8 (for 64 bit) bytes.
-> > 
-> > The binutils ld sets sh_addralign to 1, which makes libelf
-> > fail with misaligned section error during the update as
-> > reported by Jesper:
-> > 
-> >     FAILED elf_update(WRITE): invalid section alignment
-> > 
-> > While waiting for ld fix, we can fix compressed sections
-> > sh_addralign value manually.
-> > 
-> > Adding warning in -vv mode when the fix is triggered:
-> > 
-> >    $ ./tools/bpf/resolve_btfids/resolve_btfids -vv vmlinux
-> >    ...
-> >    section(36) .comment, size 44, link 0, flags 30, type=1
-> >    section(37) .debug_aranges, size 45684, link 0, flags 800, type=1
-> >     - fixing wrong alignment sh_addralign 16, expected 8
-> >    section(38) .debug_info, size 129104957, link 0, flags 800, type=1
-> >     - fixing wrong alignment sh_addralign 1, expected 8
-> >    section(39) .debug_abbrev, size 1152583, link 0, flags 800, type=1
-> >     - fixing wrong alignment sh_addralign 1, expected 8
-> >    section(40) .debug_line, size 7374522, link 0, flags 800, type=1
-> >     - fixing wrong alignment sh_addralign 1, expected 8
-> >    section(41) .debug_frame, size 702463, link 0, flags 800, type=1
-> >    section(42) .debug_str, size 1017571, link 0, flags 830, type=1
-> >     - fixing wrong alignment sh_addralign 1, expected 8
-> >    section(43) .debug_loc, size 3019453, link 0, flags 800, type=1
-> >     - fixing wrong alignment sh_addralign 1, expected 8
-> >    section(44) .debug_ranges, size 1744583, link 0, flags 800, type=1
-> >     - fixing wrong alignment sh_addralign 16, expected 8
-> >    section(45) .symtab, size 2955888, link 46, flags 0, type=2
-> >    section(46) .strtab, size 2613072, link 0, flags 0, type=3
-> >    ...
-> >    update ok for vmlinux
-> > 
-> > Another workaround is to disable compressed debug info data
-> > CONFIG_DEBUG_INFO_COMPRESSED kernel option.
-> 
-> So CONFIG_DEBUG_INFO_COMPRESSED is required to reproduce the bug, right?
 
-correct
 
+> On Aug 18, 2020, at 10:49 PM, Wang Hai <wanghai38@huawei.com> wrote:
 > 
-> I turned on CONFIG_DEBUG_INFO_COMPRESSED in my config and got a bunch of
-> build failures.
+> Remove linux/sunrpc/auth_gss.h which is included more than once
 > 
-> ld: drivers/crypto/virtio/virtio_crypto_algs.o: unable to initialize
-> decompress status for section .debug_info
-> ld: drivers/crypto/virtio/virtio_crypto_algs.o: unable to initialize
-> decompress status for section .debug_info
-> ld: drivers/crypto/virtio/virtio_crypto_algs.o: unable to initialize
-> decompress status for section .debug_info
-> ld: drivers/crypto/virtio/virtio_crypto_algs.o: unable to initialize
-> decompress status for section .debug_info
-> drivers/crypto/virtio/virtio_crypto_algs.o: file not recognized: File format
-> not recognized
-> 
-> ld: net/llc/llc_core.o: unable to initialize decompress status for section
-> .debug_info
-> ld: net/llc/llc_core.o: unable to initialize decompress status for section
-> .debug_info
-> ld: net/llc/llc_core.o: unable to initialize decompress status for section
-> .debug_info
-> ld: net/llc/llc_core.o: unable to initialize decompress status for section
-> .debug_info
-> net/llc/llc_core.o: file not recognized: File format not recognized
-> 
-> ...
-> 
-> The 'ld' in my system:
-> 
-> $ ld -V
-> GNU ld version 2.30-74.el8
->   Supported emulations:
->    elf_x86_64
->    elf32_x86_64
->    elf_i386
->    elf_iamcu
->    i386linux
->    elf_l1om
->    elf_k1om
->    i386pep
->    i386pe
-> $
-> 
-> Do you know what is the issue here?
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
 
-mine's: GNU ld version 2.32-31.fc31
+I've reviewed and compile-tested this, so no objection from me.
 
-there's version info in commit:
-  10e68b02c861 Makefile: support compressed debug info
+Since this duplicate was introduced in nfsd-5.9, I can take this
+for an nfsd-5.9-rc pull, if there are no other objections.
 
-  Compress the debug information using zlib.  Requires GCC 5.0+ or Clang
-  5.0+, binutils 2.26+, and zlib.
 
-cc-ing Nick Desaulniers, author of that patch.. any idea about the error above?
+> ---
+> net/sunrpc/auth_gss/trace.c | 1 -
+> 1 file changed, 1 deletion(-)
+> 
+> diff --git a/net/sunrpc/auth_gss/trace.c b/net/sunrpc/auth_gss/trace.c
+> index d26036a57443..76685abba60f 100644
+> --- a/net/sunrpc/auth_gss/trace.c
+> +++ b/net/sunrpc/auth_gss/trace.c
+> @@ -9,7 +9,6 @@
+> #include <linux/sunrpc/svc_xprt.h>
+> #include <linux/sunrpc/auth_gss.h>
+> #include <linux/sunrpc/gss_err.h>
+> -#include <linux/sunrpc/auth_gss.h>
+> 
+> #define CREATE_TRACE_POINTS
+> #include <trace/events/rpcgss.h>
+> -- 
+> 2.17.1
+> 
 
-thanks,
-jirka
+--
+Chuck Lever
+
+
 
