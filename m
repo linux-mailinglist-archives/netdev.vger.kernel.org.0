@@ -2,165 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEDD72494D0
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 08:04:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD14D249521
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 08:43:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbgHSGD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 02:03:59 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:21290 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725601AbgHSGD6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 02:03:58 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07J601vG014351;
-        Tue, 18 Aug 2020 23:03:54 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=NVJsmiKn5/9d3NYKqPclkm/spQAP2nPm7MLboLy4myA=;
- b=GrMWY0DR0itNSuMZrLmuvaTFvXcvlnGaAwG+wM24O/5cilk9m+Lv1Ug2kA+M2uyaywFi
- 9swIiItuE/8jcc95LrsDhc/dbalvS8Ejd9OHwls59UmqW7PkuzlfWHQ5p7yFaT4l+Ihm
- A5zWDJhZxNzNRBE5kzL9JJ44anRrPRg9bzI= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3304nxptrv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 18 Aug 2020 23:03:53 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 18 Aug 2020 23:03:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ApopTe7h3vGF6W5wYJm3blbFERmO4dY5RidfJt9vCOB80Ut71Q+nbiH3TOCgMMMuX4wqidlJ79gDueizV21IrZq9yzogkAbVAcPSU9FXbL6FEi2dNNHtCvtZHtkXkZj2gSI7uDDtjT9cpjefw4Nki5iLO0UTQVTLFY+GfqJNruCY6Rt9O87JGx+tWZAhbo5GfiBKS/VbTwnqyazpOUuk1XyC8vxjZOXZdhVLUO/McVR1hc2VmSwF2W8PVpoP87vSKNleygS9y6nmgipGul8k/eGZYUU2rJZBcmqlvlUzZlQzwOcNc3FH98fXmkUbxeEFDk4WbU2zYXRQq0/XX6zmZw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NVJsmiKn5/9d3NYKqPclkm/spQAP2nPm7MLboLy4myA=;
- b=hVIjri4xGJheuhrz8Tr34Rgh/ApD3pW9Aix+vbc9D0Dy+yu1MAU1Aehr4D8QCmnqAjhd620IuKPQu8SGDsIUyzwwG7OwoZL1RkM2rZdlnKp3jgZqB6QELAm2VEOlo0ErP0vz6LZrXRFj2jkOTQ+EuVhpCW1sCwdtg8kzAW9NSqv/p3Bg9XM+bCuTL4Ir6R5zy+/laN3ue+qiDFmh8SsH+GXeKEtFxybgM3dZ+eC6Xvvs47jMqf3+n7mLfzXyT8c3SY5x7VX6JdvfnQPkuQpC63iwcQbs96+9q9+/ecRfCfVd7EJaSeAWBPai/KemNp+fMC1Is6Xlq5b50ifW10PHBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NVJsmiKn5/9d3NYKqPclkm/spQAP2nPm7MLboLy4myA=;
- b=XMDmD3STxyfqaYZtYEEmDzYwzklgLg+5iSMz+yjBeHDMBWhIzoYY1nXyKCf4wpSb9DC4hQD4XMSIFeoYRSwvcv1j/7ceeMz9mqBcZkJHl/MbY034ikVBOdsHQDaQrDX8i7guABZSjuiY8jhk9tuFwISDs7Jjy6V2apYtLCCWjN4=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2583.namprd15.prod.outlook.com (2603:10b6:a03:156::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3283.15; Wed, 19 Aug
- 2020 06:03:50 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3283.028; Wed, 19 Aug 2020
- 06:03:50 +0000
-Subject: Re: [PATCH bpf] bpf: verifier: check for packet data access based on
- target prog
-To:     Udip Pant <udippant@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20200819011244.2027725-1-udippant@fb.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <fce8d46c-ff72-f885-b8a4-06813f832375@fb.com>
-Date:   Tue, 18 Aug 2020 23:03:45 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
-In-Reply-To: <20200819011244.2027725-1-udippant@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR11CA0005.namprd11.prod.outlook.com
- (2603:10b6:208:23b::10) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        id S1726938AbgHSGnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 02:43:17 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:45153 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726711AbgHSGnQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 02:43:16 -0400
+Received: by mail-il1-f200.google.com with SMTP id m80so244803ilb.12
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 23:43:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=R3nMeROQnANHQhgA6eIg8Oz1+wqED/F0geLQt6U/548=;
+        b=ouZ+k2vurw3CG1KG3zpTbmiVjb947TTut5TcG1qYLEBfI1kzGWuaEXyQMhPJhlyv44
+         WFSBLKpvXS5nxlUG/0vW/IOs45ZuohmV3dCMSt8qrKjiTh3/PT/c7eVFbrx0qnyEHcyY
+         xzg881/yNzIJzl/BfPqjLCE2hTjF2vsbSAQtW0XTJYZo+/8C2gi0z0u28aFnNb5SRMdq
+         l7WRcZEbEwjcn4QEn6WR4v6GZBG1iBEwntGyzMoOQStGS1EnDTj574SnmawQGwQ50mH2
+         oM2vCAZ897vgQ6CkooFOi7sogP2TD7OdzI5QnOEafzNud/ZuC0fSPLL1mnOmb9Eb1MwG
+         L9tQ==
+X-Gm-Message-State: AOAM5305iHlasMVmaaxREzcUNL+glCUFLnYDGISwAazJqOI4+m2ORMdi
+        T/0v81SGSQd7qBcv3hhvhZHm2v+KI8TE12zPuVr69lAc3YhW
+X-Google-Smtp-Source: ABdhPJyWzUb0Hjy/Tie7V/hTCb5VNPTBqkVusY8sGIyiFIYvW/ROPS85zm+YFnmphK68poFXcJgqV3JCigV9PNg53JCIHqsB6ctN
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c0a8:11e8::10d3] (2620:10d:c091:480::1:374f) by MN2PR11CA0005.namprd11.prod.outlook.com (2603:10b6:208:23b::10) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.24 via Frontend Transport; Wed, 19 Aug 2020 06:03:48 +0000
-X-Originating-IP: [2620:10d:c091:480::1:374f]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b4ce6b35-374b-4e7e-1f88-08d84405a505
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2583:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2583EDE6AE428E2C8C0FA28BD35D0@BYAPR15MB2583.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ub5BJlenDCcEAz2U93iMQCaZK5CkWZ+JjN7AO7WC/2LOXDwUmfTDNao2/s16IUeNZ+yAJE+onbrS89rSdZlUUdrcfdLLjtDrSB+kJ6tSS9BeAXMG5OGl8OEPJCIkp0fIT5r887e3wnPF6PoOqLai3B9Ab8k4EWIpbpmqiFAaktm/ladTwE/f5B0XaCqjzULZ1ZbE4VRwcRdmVICu6oglevT1zmSi5BXNWVr5ItZ5n6bOa2SNiV7v5ZoxMC0zfnfhtZB0bgRDs73rvM6N6vFWBZ2LANi0qhsgww4FPFfc6MzN76B2AumPwKVfKr7sAjZAVfdg6OOqnZiWLY8FQWdngb4m0peAMHqpflKKPefVAwTcukY8UdWzYUprQz1RyL07
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(346002)(366004)(396003)(39860400002)(6486002)(478600001)(36756003)(8676002)(83380400001)(186003)(31696002)(31686004)(5660300002)(4326008)(2906002)(52116002)(16526019)(86362001)(66946007)(66476007)(6666004)(53546011)(66556008)(8936002)(316002)(2616005)(110136005)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: wvXXA2TRgYnoeqYuwuxIRAwEqstWc+bQaJjlTtKfUnR4DvOAZDv56UAmh2WSy6M+63j+gdpCIH1OUd1sBDwTf286XDpx0hc9fcZTOYbHURd1z3hRhX4BImIhzsfCNC8dM8C/vv+KyuWZOTgcLPLkGd50/AccHPOMkkDO3R71hPPlJe2gsJgshDXaV92Jb14hwI0uIbxyEZwX9Jqb2t07Z7qSnqBV8ZMhBvN6n8rZRtKJ5FD0U2yXNefjqrsZYOD8Sk8v9ikuRwxnNFsYXwLoJi1pK0levFIy10py0UuXDVADPr4Y4eM7rv40eQAIiV2DB55GrKwcnD3XIQ/DBQh9PjTBjgm32EHHTEOI3qhbSNpvxpzEFkpmlKQeUi9EB9i3Fm2h1x/iCq2n8cVxQujjg/k+1DUup59dZPzwvaVsBuzK8ryCzOoMINJ8zw4vmTy18Tl5L7TqPIJmkS55W0LkJmGi3fF9TBMHxw3x0vGBJD0W9u810Dl6B7damhcH8QtLx5U8IL0jV2TZIY1Xc5dviMggtyH+u8YdTDCc30t+eBflwBlbQR9uxgziUClKcWthdgifDOnkqby52x8F+gF1Zn54ev4AzAh//bkcikaFyJANx12RzVr6wc9iccIZE4vaCaUNLuKz/dBzloDwF9YMWL+02/7P2JFXaSXiBNeJ2Mi7wf6LWZfc0YxNZw9Suedv
-X-MS-Exchange-CrossTenant-Network-Message-Id: b4ce6b35-374b-4e7e-1f88-08d84405a505
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2020 06:03:50.8845
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1kf8e6AiWH4UCsmh7BTSfLv//iVFtPzqYhL9s7+ymTWaCKv92D7tbZNv0fp+2XYu
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2583
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-19_04:2020-08-18,2020-08-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- impostorscore=0 spamscore=0 bulkscore=0 mlxlogscore=999 clxscore=1015
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 suspectscore=0
- mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008190051
-X-FB-Internal: deliver
+X-Received: by 2002:a92:354d:: with SMTP id c74mr19524908ila.27.1597819394434;
+ Tue, 18 Aug 2020 23:43:14 -0700 (PDT)
+Date:   Tue, 18 Aug 2020 23:43:14 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006bac5105ad3551e9@google.com>
+Subject: INFO: task can't die in tls_sk_proto_close
+From:   syzbot <syzbot+739db38bc09c5a792e31@syzkaller.appspotmail.com>
+To:     aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
+        davem@davemloft.net, john.fastabend@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    4993e4fe Add linux-next specific files for 20200814
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=107ad7d6900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2055bd0d83d5ee16
+dashboard link: https://syzkaller.appspot.com/bug?extid=739db38bc09c5a792e31
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+739db38bc09c5a792e31@syzkaller.appspotmail.com
+
+INFO: task syz-executor.4:22039 can't die for more than 143 seconds.
+syz-executor.4  D28360 22039   6861 0x00004004
+Call Trace:
+ context_switch kernel/sched/core.c:3778 [inline]
+ __schedule+0x8e5/0x21e0 kernel/sched/core.c:4527
+ schedule+0xd0/0x2a0 kernel/sched/core.c:4602
+ schedule_timeout+0x1d8/0x250 kernel/time/timer.c:1855
+ do_wait_for_common kernel/sched/completion.c:85 [inline]
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common kernel/sched/completion.c:117 [inline]
+ wait_for_completion+0x163/0x260 kernel/sched/completion.c:138
+ __flush_work+0x51f/0xab0 kernel/workqueue.c:3046
+ __cancel_work_timer+0x5de/0x700 kernel/workqueue.c:3133
+ tls_sk_proto_close+0x4a7/0xaf0 net/tls/tls_main.c:305
+ inet_release+0x12e/0x280 net/ipv4/af_inet.c:431
+ inet6_release+0x4c/0x70 net/ipv6/af_inet6.c:475
+ __sock_release+0xcd/0x280 net/socket.c:596
+ sock_close+0x18/0x20 net/socket.c:1277
+ __fput+0x285/0x920 fs/file_table.c:281
+ task_work_run+0xdd/0x190 kernel/task_work.c:135
+ tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:139 [inline]
+ exit_to_user_mode_prepare+0x195/0x1c0 kernel/entry/common.c:166
+ syscall_exit_to_user_mode+0x59/0x2b0 kernel/entry/common.c:241
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x416b81
+Code: Bad RIP value.
+RSP: 002b:00007ffedaaf5920 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000416b81
+RDX: 0000000000000000 RSI: 0000000000000be4 RDI: 0000000000000003
+RBP: 0000000000000001 R08: 00000000f2ab2be2 R09: 00000000f2ab2be6
+R10: 00007ffedaaf5a10 R11: 0000000000000293 R12: 000000000118d940
+R13: 000000000118d940 R14: ffffffffffffffff R15: 000000000118cf4c
+INFO: task syz-executor.4:22039 blocked for more than 143 seconds.
+      Not tainted 5.8.0-next-20200814-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+syz-executor.4  D28360 22039   6861 0x00004004
+Call Trace:
+ context_switch kernel/sched/core.c:3778 [inline]
+ __schedule+0x8e5/0x21e0 kernel/sched/core.c:4527
+ schedule+0xd0/0x2a0 kernel/sched/core.c:4602
+ schedule_timeout+0x1d8/0x250 kernel/time/timer.c:1855
+ do_wait_for_common kernel/sched/completion.c:85 [inline]
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common kernel/sched/completion.c:117 [inline]
+ wait_for_completion+0x163/0x260 kernel/sched/completion.c:138
+ __flush_work+0x51f/0xab0 kernel/workqueue.c:3046
+ __cancel_work_timer+0x5de/0x700 kernel/workqueue.c:3133
+ tls_sk_proto_close+0x4a7/0xaf0 net/tls/tls_main.c:305
+ inet_release+0x12e/0x280 net/ipv4/af_inet.c:431
+ inet6_release+0x4c/0x70 net/ipv6/af_inet6.c:475
+ __sock_release+0xcd/0x280 net/socket.c:596
+ sock_close+0x18/0x20 net/socket.c:1277
+ __fput+0x285/0x920 fs/file_table.c:281
+ task_work_run+0xdd/0x190 kernel/task_work.c:135
+ tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:139 [inline]
+ exit_to_user_mode_prepare+0x195/0x1c0 kernel/entry/common.c:166
+ syscall_exit_to_user_mode+0x59/0x2b0 kernel/entry/common.c:241
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x416b81
+Code: Bad RIP value.
+RSP: 002b:00007ffedaaf5920 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000416b81
+RDX: 0000000000000000 RSI: 0000000000000be4 RDI: 0000000000000003
+RBP: 0000000000000001 R08: 00000000f2ab2be2 R09: 00000000f2ab2be6
+R10: 00007ffedaaf5a10 R11: 0000000000000293 R12: 000000000118d940
+R13: 000000000118d940 R14: ffffffffffffffff R15: 000000000118cf4c
+
+Showing all locks held in the system:
+1 lock held by khungtaskd/1165:
+ #0: ffffffff89c66c40 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:5825
+1 lock held by in:imklog/6547:
+ #0: ffff88809f2578f0 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:930
+2 locks held by agetty/6565:
+ #0: ffff8880a1f98098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:267
+ #1: ffffc900025d12e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0x223/0x1a30 drivers/tty/n_tty.c:2156
+3 locks held by kworker/1:3/7601:
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x82b/0x1670 kernel/workqueue.c:2240
+ #1: ffffc90008eb7da8 ((work_completion)(&(&sw_ctx_tx->tx_work.work)->work)){+.+.}-{0:0}, at: process_one_work+0x85f/0x1670 kernel/workqueue.c:2244
+ #2: ffff888099161cd8 (&ctx->tx_lock){+.+.}-{3:3}, at: tx_work_handler+0x127/0x190 net/tls/tls_sw.c:2251
+1 lock held by syz-executor.3/31922:
+ #0: ffff8880a237ae20 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1583 [inline]
+ #0: ffff8880a237ae20 (sk_lock-AF_INET6){+.+.}-{0:0}, at: sctp_getsockopt net/sctp/socket.c:7820 [inline]
+ #0: ffff8880a237ae20 (sk_lock-AF_INET6){+.+.}-{0:0}, at: sctp_getsockopt+0x249/0x6d0a net/sctp/socket.c:7793
+1 lock held by syz-executor.4/22039:
+ #0: ffff8880855f7210 (&sb->s_type->i_mutex_key#13){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:780 [inline]
+ #0: ffff8880855f7210 (&sb->s_type->i_mutex_key#13){+.+.}-{3:3}, at: __sock_release+0x86/0x280 net/socket.c:595
+
+=============================================
+
+NMI backtrace for cpu 0
+CPU: 0 PID: 1165 Comm: khungtaskd Not tainted 5.8.0-next-20200814-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ nmi_cpu_backtrace.cold+0x70/0xb1 lib/nmi_backtrace.c:101
+ nmi_trigger_cpumask_backtrace+0x1b3/0x223 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:147 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:253 [inline]
+ watchdog+0xd89/0xf30 kernel/hung_task.c:339
+ kthread+0x3b5/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 PID: 3891 Comm: systemd-journal Not tainted 5.8.0-next-20200814-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0033:0x558c52df8321
+Code: 3b 44 24 78 0f 85 de 00 00 00 45 31 ed 45 31 e4 e9 f7 fe ff ff 4c 89 fe 48 8b 5c 24 10 44 89 ed e9 d8 fb ff ff e8 2f 31 ff ff <31> ed e9 1c fd ff ff 4c 8b 64 24 60 4d 85 e4 0f 84 bf 00 00 00 48
+RSP: 002b:00007ffc87c71ea0 EFLAGS: 00000246
+RAX: 00007ffc87c72780 RBX: 00007ffc87c74910 RCX: 000000000000004e
+RDX: 00007ffc87c72781 RSI: 000000000000000a RDI: 00007ffc87c72780
+RBP: 00007ffc87c72718 R08: 00007ffc87c72722 R09: 0000000000000000
+R10: 0000000000000000 R11: 00007f22fccae040 R12: 0000000000000000
+R13: 000000000000004f R14: 0000558c52dfb958 R15: 0005acdcf22a81cb
+FS:  00007f22fd9818c0 GS:  0000000000000000
 
 
-On 8/18/20 6:12 PM, Udip Pant wrote:
-> While using dynamic program extension (of type BPF_PROG_TYPE_EXT), we
-> need to check the program type of the target program to grant the read /
-> write access to the packet data.
-> 
-> The BPF_PROG_TYPE_EXT type can be used to extend types such as XDP, SKB
-> and others. Since the BPF_PROG_TYPE_EXT program type on itself is just a
-> placeholder for those, we need this extended check for those target
-> programs to actually work while using this option.
-> 
-> Tested this with a freplace xdp program. Without this patch, the
-> verifier fails with error 'cannot write into packet'.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Could you add a selftest for this? FYI, current selftests/bpf have
-4 freplace programs:
-   fexit_bpf2bpf.c:SEC("freplace/get_skb_len")
-   fexit_bpf2bpf.c:SEC("freplace/get_skb_ifindex")
-   fexit_bpf2bpf.c:SEC("freplace/get_constant")
-   freplace_connect4.c:SEC("freplace/do_bind")
-
-
-> 
-> Signed-off-by: Udip Pant <udippant@fb.com>
-> ---
->   kernel/bpf/verifier.c | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index ef938f17b944..4d7604430994 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -2629,7 +2629,11 @@ static bool may_access_direct_pkt_data(struct bpf_verifier_env *env,
->   				       const struct bpf_call_arg_meta *meta,
->   				       enum bpf_access_type t)
->   {
-> -	switch (env->prog->type) {
-> +	struct bpf_prog *prog = env->prog;
-> +	enum bpf_prog_type prog_type = prog->aux->linked_prog ?
-> +	      prog->aux->linked_prog->type : prog->type;
-> +
-> +	switch (prog_type) {
->   	/* Program types only with direct read access go here! */
->   	case BPF_PROG_TYPE_LWT_IN:
->   	case BPF_PROG_TYPE_LWT_OUT:
-> 
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
