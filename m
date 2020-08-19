@@ -2,161 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73CA5249770
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:30:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E8032497A5
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:45:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727976AbgHSHaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 03:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40956 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726939AbgHSHYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:24:15 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D4BC06134E
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:12 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id k20so1112607wmi.5
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kFIC75bauZ6Rpz/avISlwE77tX9e6rPrMyzEdUSYEvc=;
-        b=lgBo+nLfWw6UD+4pt1UTY/3TXHxDnstMrcNhEXl7QEcvc5h/hM0LeUSSXQEJQQJ1o/
-         JR2AZRhWNJk/NU4uxKd521AxM8XLlKmwKHwCpCIji5uCxzp/sIne5zll2Tc6MdgEse/H
-         9OMRSEnvpPMQLhNCN5EjGfWho9jctYaqnf9oMAyXnLM5TsZBiD0Km+WA1WKErkMt0zmH
-         QQ4alnk4V03ep2zWKQk0LCBVTy66yYt7mhumvKHSbGfyZ9ZueSNxSRiAb//NLqXqe/ur
-         K9EGBqezMx/VP2exyAfHV8+521PHWEr4oMxAjX3ZxFtz+k4s/ry3PJ7aIaAZWNiH7MfQ
-         ohPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kFIC75bauZ6Rpz/avISlwE77tX9e6rPrMyzEdUSYEvc=;
-        b=lO0C47xXKdKjIg6WozekxR/9upOw8Mhkkj7xlqXLMGZq7cVTzdUu0xv1Kfnkqj6kKK
-         2OVNGiu42RNhN35zctLI0DHHkDDsu4jgDSX67EswI7B7Jhj/tO/4CJ8/ivXHvKINil2y
-         mdPqBuHm8kkVBvdrH+zn/1uv/0ad2DrtNtWU4ePy7vVjW5gd0OlDq8bStz4mpNJzpY8z
-         O6QP/ikqB2s4kd5r6OT0iQPpQ0xbVDRRSdihrUZyJJPWB8TTQb+Ji6e+BgrCRGGqxDEm
-         gtCrjMRsZ6E3c+Lc5OI/LPxBHeXWPeOI0F2i48pHWnFVv2MIr4Zx3jvIkTes2A/M6FIc
-         1PIw==
-X-Gm-Message-State: AOAM533aFBnFCHuQVuP0gDBovoMRXcWdwOWvv0ZQUOhk6uPlQ1OYG9w2
-        7nFE3+m/pVOPn1JDPOJR5wQ00A==
-X-Google-Smtp-Source: ABdhPJxep9SAfEgQ3UqQQk5ZftteMUPLH4iMlYCMWjOj95LkdbfBmgFRoszaYn7hm9krZoUxri1XdQ==
-X-Received: by 2002:a1c:f60e:: with SMTP id w14mr3408680wmc.19.1597821851203;
-        Wed, 19 Aug 2020 00:24:11 -0700 (PDT)
-Received: from dell.default ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id c145sm3795808wmd.7.2020.08.19.00.24.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2020 00:24:10 -0700 (PDT)
-From:   Lee Jones <lee.jones@linaro.org>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>
-Subject: [PATCH 05/28] wireless: intel: dvm: Demote non-compliant kernel-doc headers
-Date:   Wed, 19 Aug 2020 08:23:39 +0100
-Message-Id: <20200819072402.3085022-6-lee.jones@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200819072402.3085022-1-lee.jones@linaro.org>
-References: <20200819072402.3085022-1-lee.jones@linaro.org>
+        id S1726702AbgHSHpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 03:45:51 -0400
+Received: from mailgw01.mediatek.com ([216.200.240.184]:46722 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725601AbgHSHpu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:45:50 -0400
+X-Greylist: delayed 305 seconds by postgrey-1.27 at vger.kernel.org; Wed, 19 Aug 2020 03:45:50 EDT
+X-UUID: f89b5b861c5f43ee874e5302307a12a6-20200818
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=fA1ZbejQFXPVLQG+Xp5gLcjblRbOlo94pfMY0RDgam0=;
+        b=Wq6KxU26E3Hy1RaGgPDFkuiC1wtJh3NWU9TaEzhThMlD9GaXmHENZhNPnsPC7HQnnjXE2BwAhxR3HTpvzjVFRgW27h3lhsGvukd7t/hGDk2y7Wzq9Um8IcuWMPZ8ccC2tLjz+4opqS8oZ16viCadWg7a9/nrJLEIyjPMCuQ/D5Y=;
+X-UUID: f89b5b861c5f43ee874e5302307a12a6-20200818
+Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by mailgw01.mediatek.com
+        (envelope-from <landen.chao@mediatek.com>)
+        (musrelay.mediatek.com ESMTP with TLS)
+        with ESMTP id 1275055599; Tue, 18 Aug 2020 23:40:44 -0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ MTKMBS62DR.mediatek.inc (172.29.94.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 19 Aug 2020 00:38:35 -0700
+Received: from [172.21.84.99] (172.21.84.99) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 19 Aug 2020 15:38:23 +0800
+Message-ID: <1597822704.31846.27.camel@mtksdccf07>
+Subject: Re: [PATCH net-next v2 0/7] net-next: dsa: mt7530: add support for
+ MT7531
+From:   Landen Chao <landen.chao@mediatek.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "vivien.didelot@savoirfairelinux.com" 
+        <vivien.didelot@savoirfairelinux.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        David Miller <davem@davemloft.net>,
+        Sean Wang <Sean.Wang@mediatek.com>,
+        =?ISO-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Date:   Wed, 19 Aug 2020 15:38:24 +0800
+In-Reply-To: <CALW65jZRWwW4DqpsCM9J=GRp6KnxqT-9MHUO7WSRJtp4E9vnFw@mail.gmail.com>
+References: <cover.1597729692.git.landen.chao@mediatek.com>
+         <CALW65jZRWwW4DqpsCM9J=GRp6KnxqT-9MHUO7WSRJtp4E9vnFw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.2.3-0ubuntu6 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-None of these headers attempt to document any function parameters.
-
-Fixes the following W=1 kernel build warning(s):
-
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:388: warning: Function parameter or member 't' not described in 'iwl_bg_statistics_periodic'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:545: warning: Function parameter or member 't' not described in 'iwl_bg_ucode_trace'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:771: warning: Function parameter or member 'priv' not described in 'iwl_alive_start'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1692: warning: Function parameter or member 'priv' not described in 'iwl_print_event_log'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1692: warning: Function parameter or member 'start_idx' not described in 'iwl_print_event_log'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1692: warning: Function parameter or member 'num_events' not described in 'iwl_print_event_log'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1692: warning: Function parameter or member 'mode' not described in 'iwl_print_event_log'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1692: warning: Function parameter or member 'pos' not described in 'iwl_print_event_log'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1692: warning: Function parameter or member 'buf' not described in 'iwl_print_event_log'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1692: warning: Function parameter or member 'bufsz' not described in 'iwl_print_event_log'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1772: warning: Function parameter or member 'priv' not described in 'iwl_print_last_event_logs'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1772: warning: Function parameter or member 'capacity' not described in 'iwl_print_last_event_logs'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1772: warning: Function parameter or member 'num_wraps' not described in 'iwl_print_last_event_logs'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1772: warning: Function parameter or member 'next_entry' not described in 'iwl_print_last_event_logs'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1772: warning: Function parameter or member 'size' not described in 'iwl_print_last_event_logs'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1772: warning: Function parameter or member 'mode' not described in 'iwl_print_last_event_logs'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1772: warning: Function parameter or member 'pos' not described in 'iwl_print_last_event_logs'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1772: warning: Function parameter or member 'buf' not described in 'iwl_print_last_event_logs'
- drivers/net/wireless/intel/iwlwifi/dvm/main.c:1772: warning: Function parameter or member 'bufsz' not described in 'iwl_print_last_event_logs'
-
-Cc: Johannes Berg <johannes.berg@intel.com>
-Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Cc: Luca Coelho <luciano.coelho@intel.com>
-Cc: Intel Linux Wireless <linuxwifi@intel.com>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/net/wireless/intel/iwlwifi/dvm/main.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/main.c b/drivers/net/wireless/intel/iwlwifi/dvm/main.c
-index b882705ff66df..461af58311561 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/main.c
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/main.c
-@@ -374,7 +374,7 @@ int iwl_send_statistics_request(struct iwl_priv *priv, u8 flags, bool clear)
- 					&statistics_cmd);
- }
- 
--/**
-+/*
-  * iwl_bg_statistics_periodic - Timer callback to queue statistics
-  *
-  * This callback is provided in order to send a statistics request.
-@@ -533,7 +533,7 @@ static void iwl_continuous_event_trace(struct iwl_priv *priv)
- 	priv->event_log.next_entry = next_entry;
- }
- 
--/**
-+/*
-  * iwl_bg_ucode_trace - Timer callback to log ucode event
-  *
-  * The timer is continually set to execute every
-@@ -762,7 +762,7 @@ static void iwl_send_bt_config(struct iwl_priv *priv)
- 		IWL_ERR(priv, "failed to send BT Coex Config\n");
- }
- 
--/**
-+/*
-  * iwl_alive_start - called after REPLY_ALIVE notification received
-  *                   from protocol/runtime uCode (initialization uCode's
-  *                   Alive gets handled by iwl_init_alive_start()).
-@@ -1682,9 +1682,8 @@ static void iwl_dump_nic_error_log(struct iwl_priv *priv)
- 
- #define EVENT_START_OFFSET  (4 * sizeof(u32))
- 
--/**
-+/*
-  * iwl_print_event_log - Dump error event log to syslog
-- *
-  */
- static int iwl_print_event_log(struct iwl_priv *priv, u32 start_idx,
- 			       u32 num_events, u32 mode,
-@@ -1762,7 +1761,7 @@ static int iwl_print_event_log(struct iwl_priv *priv, u32 start_idx,
- 	return pos;
- }
- 
--/**
-+/*
-  * iwl_print_last_event_logs - Dump the newest # of event log to syslog
-  */
- static int iwl_print_last_event_logs(struct iwl_priv *priv, u32 capacity,
--- 
-2.25.1
+SGkgREVORywNCg0KTVQ3NTMxIG1pcnJvciBwb3J0IGhhcyBiZWVuIGZpeGVkIGJ5IG5ldyBkZWZp
+bml0aW9uIG9mIHJlZ2lzdGVyIGJhc2UgaW4gDQpoZWFkZXIgZmlsZS4gVGhlIGxvZ2ljIG9mIG1p
+cnJvciBwb3J0IHNldHRpbmcgaW4gNzUzMC5jIGlzIHJldXNlZC4NCg0KQEAgLTQxLDYgKzQyLDMz
+IEBAICBlbnVtIG10NzUzeF9pZCB7DQogI2RlZmluZSAgTUlSUk9SX1BPUlQoeCkJCQkoKHgpICYg
+MHg3KQ0KICNkZWZpbmUgIE1JUlJPUl9NQVNLCQkJMHg3DQogDQorLyogUmVnaXN0ZXJzIGZvciBD
+UFUgZm9yd2FyZCBjb250cm9sICovDQorI2RlZmluZSBNVDc1MzFfQ0ZDCQkJMHg0DQorI2RlZmlu
+ZSAgTVQ3NTMxX01JUlJPUl9FTgkJQklUKDE5KQ0KKyNkZWZpbmUgIE1UNzUzMV9NSVJST1JfTUFT
+SwkJKE1JUlJPUl9NQVNLIDw8IDE2KQ0KKyNkZWZpbmUgIE1UNzUzMV9NSVJST1JfUE9SVF9HRVQo
+eCkJKCgoeCkgPj4gMTYpICYgTUlSUk9SX01BU0spDQorI2RlZmluZSAgTVQ3NTMxX01JUlJPUl9Q
+T1JUX1NFVCh4KQkoKCh4KSAmIE1JUlJPUl9NQVNLKSA8PCAxNikNCisjZGVmaW5lICBNVDc1MzFf
+Q1BVX1BNQVBfTUFTSwkJR0VOTUFTSyg3LCAwKQ0KKw0KKyNkZWZpbmUgTVQ3NTNYX01JUlJPUl9S
+RUcoaWQpCQkoKChpZCkgPT0gSURfTVQ3NTMxKSA/IFwNCisJCQkJCSBNVDc1MzFfQ0ZDIDogTVQ3
+NTMwX01GQykNCisjZGVmaW5lIE1UNzUzWF9NSVJST1JfRU4oaWQpCQkoKChpZCkgPT0gSURfTVQ3
+NTMxKSA/IFwNCisJCQkJCSBNVDc1MzFfTUlSUk9SX0VOIDogTUlSUk9SX0VOKQ0KKyNkZWZpbmUg
+TVQ3NTNYX01JUlJPUl9NQVNLKGlkKQkJKCgoaWQpID09IElEX01UNzUzMSkgPyBcDQorCQkJCQkg
+TVQ3NTMxX01JUlJPUl9NQVNLIDogTUlSUk9SX01BU0spDQoNCg0KT24gV2VkLCAyMDIwLTA4LTE5
+IGF0IDExOjQ5ICswODAwLCBERU5HIFFpbmdmYW5nIHdyb3RlOg0KPiBIaSwNCj4gDQo+IElzIHBv
+cnQgbWlycm9yaW5nIHdvcmtpbmc/IFBvcnQgbWlycm9yaW5nIHJlZ2lzdGVycyBvbiBNVDc1MzEg
+aGF2ZQ0KPiBtb3ZlZCwgYWNjb3JkaW5nIHRvIGJwaSdzIE1UNzUzMSByZWZlcmVuY2UgbWFudWFs
+Lg0KPiBQbGVhc2UgZml4IHRoYXQgYXMgd2VsbC4NCg0K
 
