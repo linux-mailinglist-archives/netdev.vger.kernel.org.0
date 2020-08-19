@@ -2,175 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7314724A09C
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:51:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B604824A058
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:46:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728686AbgHSNvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 09:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728351AbgHSNn7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 09:43:59 -0400
-Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DE47C061343
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 06:43:56 -0700 (PDT)
-Received: from ramsan ([84.195.186.194])
-        by baptiste.telenet-ops.be with bizsmtp
-        id HRjl2300W4C55Sk01RjlZl; Wed, 19 Aug 2020 15:43:54 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1k8ONV-0003E9-Kd; Wed, 19 Aug 2020 15:43:45 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1k8ONV-0007Fl-Iz; Wed, 19 Aug 2020 15:43:45 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Magnus Damm <magnus.damm@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v3 7/7] arm64: dts: renesas: rzg2: Convert EtherAVB to explicit delay handling
-Date:   Wed, 19 Aug 2020 15:43:44 +0200
-Message-Id: <20200819134344.27813-8-geert+renesas@glider.be>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200819134344.27813-1-geert+renesas@glider.be>
-References: <20200819134344.27813-1-geert+renesas@glider.be>
+        id S1728646AbgHSNpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 09:45:55 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:15732 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728518AbgHSNoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 09:44:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1597844661; x=1629380661;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=CsYjShdzmZ5D7Eb4dalq4Q5lFeEzadPPyW5FmFvVhRk=;
+  b=r8LhxPOGWHptp6tfaRYMeZlMs5/LUxH6sOeG1UphB2ukVcWWIq2owP2F
+   nD3w7TDFeXBzK89OhDlF40H2UpPIUGGtMNK9aqZqM6x6xNxtRqFpLRVHc
+   eUXxfyJMxWeT/oXA4Fho4/Bg+eZtvGEjIQLzR7yhb5816+bmcj13ANcQ3
+   c=;
+X-IronPort-AV: E=Sophos;i="5.76,331,1592870400"; 
+   d="scan'208";a="48706736"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-87a10be6.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 19 Aug 2020 13:44:04 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2c-87a10be6.us-west-2.amazon.com (Postfix) with ESMTPS id 84BB8A0520;
+        Wed, 19 Aug 2020 13:44:03 +0000 (UTC)
+Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 19 Aug 2020 13:44:03 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
+ EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 19 Aug 2020 13:44:02 +0000
+Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
+ by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Wed, 19 Aug 2020 13:44:02 +0000
+Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
+        id 6374C819EC; Wed, 19 Aug 2020 13:44:02 +0000 (UTC)
+From:   <sameehj@amazon.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
+        <benh@amazon.com>, <akiyano@amazon.com>, <ndagan@amazon.com>
+Subject: [PATCH V2 net-next 0/4] Enhance current features in ena driver
+Date:   Wed, 19 Aug 2020 13:43:45 +0000
+Message-ID: <20200819134349.22129-1-sameehj@amazon.com>
+X-Mailer: git-send-email 2.16.6
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some EtherAVB variants support internal clock delay configuration, which
-can add larger delays than the delays that are typically supported by
-the PHY (using an "rgmii-*id" PHY mode, and/or "[rt]xc-skew-ps"
-properties).
+From: Sameeh Jubran <sameehj@amazon.com>
 
-Historically, the EtherAVB driver configured these delays based on the
-"rgmii-*id" PHY mode.  This was wrong, as these are meant solely for the
-PHY, not for the MAC.  Hence properties were introduced for explicit
-configuration of these delays.
+This series adds the following:
+* Exposes new device stats using ethtool.
+* Adds and exposes the stats of xdp TX queues through ethtool.
 
-Convert the RZ/G2 DTS files from the old to the new scheme:
-  - Add default "rx-internal-delay-ps" and "tx-internal-delay-ps"
-    properties to the SoC .dtsi files, to be overridden by board files
-    where needed,
-  - Convert board files from "rgmii-*id" PHY modes to "rgmii", adding
-    the appropriate "rx-internal-delay-ps" and/or "tx-internal-delay-ps"
-    overrides.
+V1: Use unsigned long for pointer math instead of uintptr_t
 
-Notes:
-  - RZ/G2E does not support TX internal delay handling.
+Sameeh Jubran (4):
+  net: ena: ethtool: use unsigned long for pointer arithmetics
+  net: ena: ethtool: Add new device statistics
+  net: ena: ethtool: add stats printing to XDP queues
+  net: ena: xdp: add queue counters for xdp actions
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-This depends on "[PATCH v3 5/7] ravb: Add support for explicit internal
-clock delay configuration", and thus must not be applied before its
-dependency has hit upstream.
+ drivers/net/ethernet/amazon/ena/ena_admin_defs.h |  37 ++++-
+ drivers/net/ethernet/amazon/ena/ena_com.c        |  19 ++-
+ drivers/net/ethernet/amazon/ena/ena_com.h        |   9 ++
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c    | 170 +++++++++++++++++------
+ drivers/net/ethernet/amazon/ena/ena_netdev.c     |  45 +++++-
+ drivers/net/ethernet/amazon/ena/ena_netdev.h     |   9 ++
+ 6 files changed, 236 insertions(+), 53 deletions(-)
 
-v3:
-  - Update new beacon-renesom-som.dtsi and r8a774e1.dtsi,
-
-v2:
-  - Replace "renesas,[rt]xc-delay-ps" by "[rt]x-internal-delay-ps".
----
- arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi | 3 ++-
- arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi     | 2 +-
- arch/arm64/boot/dts/renesas/r8a774a1.dtsi           | 2 ++
- arch/arm64/boot/dts/renesas/r8a774b1.dtsi           | 2 ++
- arch/arm64/boot/dts/renesas/r8a774c0.dtsi           | 1 +
- arch/arm64/boot/dts/renesas/r8a774e1.dtsi           | 2 ++
- 6 files changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi b/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi
-index 97272f5fa0abf92e..8ac167aa18f04743 100644
---- a/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi
-+++ b/arch/arm64/boot/dts/renesas/beacon-renesom-som.dtsi
-@@ -55,7 +55,8 @@
- 	pinctrl-0 = <&avb_pins>;
- 	pinctrl-names = "default";
- 	phy-handle = <&phy0>;
--	phy-mode = "rgmii-id";
-+	rx-internal-delay-ps = <1800>;
-+	tx-internal-delay-ps = <2000>;
- 	status = "okay";
- 
- 	phy0: ethernet-phy@0 {
-diff --git a/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi b/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi
-index 178401a34cbf8d38..46f1ca0b7ef5e7c2 100644
---- a/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi
-+++ b/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi
-@@ -19,7 +19,7 @@
- 	pinctrl-0 = <&avb_pins>;
- 	pinctrl-names = "default";
- 	phy-handle = <&phy0>;
--	phy-mode = "rgmii-txid";
-+	tx-internal-delay-ps = <2000>;
- 	status = "okay";
- 
- 	phy0: ethernet-phy@0 {
-diff --git a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-index 8e80f50132ad55f5..ed99863f1dd09fd0 100644
---- a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-@@ -1115,6 +1115,8 @@
- 			power-domains = <&sysc R8A774A1_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <0>;
-+			tx-internal-delay-ps = <0>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-index 49e5addcfd97af01..1c76de24d3ea4844 100644
---- a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-@@ -989,6 +989,8 @@
- 			power-domains = <&sysc R8A774B1_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <0>;
-+			tx-internal-delay-ps = <0>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-index 42171190cce4602d..9fdca4c55ba95608 100644
---- a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-@@ -960,6 +960,7 @@
- 			power-domains = <&sysc R8A774C0_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <0>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-index 0f86cfd524258353..0975bcbc3c502535 100644
---- a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-@@ -1139,6 +1139,8 @@
- 			power-domains = <&sysc R8A774E1_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			rx-internal-delay-ps = <0>;
-+			tx-internal-delay-ps = <0>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
 -- 
-2.17.1
+2.16.6
 
