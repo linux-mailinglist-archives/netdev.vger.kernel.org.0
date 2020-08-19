@@ -2,63 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1137B249F54
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:13:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 383E4249FCE
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 15:26:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728570AbgHSNNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 09:13:40 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33328 "EHLO vps0.lunn.ch"
+        id S1728571AbgHSN0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 09:26:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58384 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728477AbgHSNNQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Aug 2020 09:13:16 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k8NtJ-00A5Kz-Mp; Wed, 19 Aug 2020 15:12:33 +0200
-Date:   Wed, 19 Aug 2020 15:12:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Landen Chao <landen.chao@mediatek.com>
-Cc:     "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@savoirfairelinux.com" 
-        <vivien.didelot@savoirfairelinux.com>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        "opensource@vdorst.com" <opensource@vdorst.com>,
-        "frank-w@public-files.de" <frank-w@public-files.de>,
-        "dqfext@gmail.com" <dqfext@gmail.com>
-Subject: Re: [PATCH net-next v2 5/7] net: dsa: mt7530: Add the support of
- MT7531 switch
-Message-ID: <20200819131233.GA2403519@lunn.ch>
-References: <cover.1597729692.git.landen.chao@mediatek.com>
- <e980fda45e0fb478f55e72765643bb641f352c65.1597729692.git.landen.chao@mediatek.com>
- <20200818160901.GF2330298@lunn.ch>
- <1597830248.31846.78.camel@mtksdccf07>
+        id S1728579AbgHSNPv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Aug 2020 09:15:51 -0400
+Received: from lore-desk.redhat.com (unknown [151.48.139.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E9777206FA;
+        Wed, 19 Aug 2020 13:14:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597842878;
+        bh=rmxXFYnJhm6AclYJvk4E3lIKlyPcgCSgmhQTuA+q5ck=;
+        h=From:To:Cc:Subject:Date:From;
+        b=r6WpotYD0apYJ5cM1HQ1ixPr9O9rC2VgtFPSCGeu/GB9bLEjQtt5sdIa6jtVbsXSA
+         0crujSauqlk3Rwqui+PD5s6n8yrqqzqUEXM/xupSLBfW1PbPOcDC/PTHNGW5mcJXCZ
+         6VHkl1xOVjHfoWrcSXRPXHl73gZc7ldqtEAPeA4o=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, davem@davemloft.net,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com,
+        echaudro@redhat.com, sameehj@amazon.com, kuba@kernel.org
+Subject: [PATCH net-next 0/6] mvneta: introduce XDP multi-buffer support
+Date:   Wed, 19 Aug 2020 15:13:45 +0200
+Message-Id: <cover.1597842004.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1597830248.31846.78.camel@mtksdccf07>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> In general, according to phy.rst, RGMII delay should be done by phy, but
-> some MoCA product need RGMII delay in MAC. These two requirements
-> conflict. Is there any suggestion to solve the conflict?
+Finalize XDP multi-buffer support for mvneta driver introducing the capability
+to map non-linear buffers on tx side.
+Introduce multi-buffer bit (mb) in xdp_frame/xdp_buffer to specify if
+shared_info area has been properly initialized.
+Initialize multi-buffer bit (mb) to 0 in all XDP-capable drivers.
+Add multi-buff support to xdp_return_{buff/frame} utility routines.
 
-Implementing the delay in the PHY is just a recommendation, not a
-requirement. However, as i said, you need to be careful what is pass
-to phylib. If the MAC is implementing "rgmii-id", whatever makes it
-way down to phy_attach_direct() needs to be "rgmii". If the MAC
-implements "rgmii-rxid", the phy should be implementing "rgmii-txid",
-etc. If this is wrong, you get both the MAC and the PHY implementing
-delays, and bad things happen.
+Changes since RFC:
+- squash multi-buffer bit initialization in a single patch
+- add mvneta non-linear XDP buff support for tx side
 
-	Andrew
+Lorenzo Bianconi (6):
+  xdp: introduce mb in xdp_buff/xdp_frame
+  xdp: initialize xdp_buff mb bit to 0 in all XDP drivers
+  net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
+  xdp: add multi-buff support to xdp_return_{buff/frame}
+  net: mvneta: add multi buffer support to XDP_TX
+  net: mvneta: enable jumbo frames for XDP
+
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |  1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |  1 +
+ .../net/ethernet/cavium/thunder/nicvf_main.c  |  1 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  1 +
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   |  1 +
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |  1 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  1 +
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |  1 +
+ drivers/net/ethernet/marvell/mvneta.c         | 92 +++++++++++--------
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  1 +
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  1 +
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  1 +
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  1 +
+ drivers/net/ethernet/qlogic/qede/qede_fp.c    |  1 +
+ drivers/net/ethernet/sfc/rx.c                 |  1 +
+ drivers/net/ethernet/socionext/netsec.c       |  1 +
+ drivers/net/ethernet/ti/cpsw.c                |  1 +
+ drivers/net/ethernet/ti/cpsw_new.c            |  1 +
+ drivers/net/hyperv/netvsc_bpf.c               |  1 +
+ drivers/net/tun.c                             |  2 +
+ drivers/net/veth.c                            |  1 +
+ drivers/net/virtio_net.c                      |  2 +
+ drivers/net/xen-netfront.c                    |  1 +
+ include/net/xdp.h                             | 25 ++++-
+ net/core/dev.c                                |  1 +
+ net/core/xdp.c                                | 37 ++++++++
+ 26 files changed, 135 insertions(+), 44 deletions(-)
+
+-- 
+2.26.2
+
