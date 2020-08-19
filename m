@@ -2,117 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB3CB24A519
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 19:40:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF4AA24A5A5
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 20:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726673AbgHSRkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 13:40:43 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:54770 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725804AbgHSRkl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 13:40:41 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 07JHbmTo002866;
-        Wed, 19 Aug 2020 17:40:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2020-01-29; bh=aJ0lUCXdyfNTjXmXrU81lxUeJv9n2ZYKi+LgxXWycLA=;
- b=CRMBno42IJuj0Pw4iHyQyTMY6lXlIdlwZTIddMrwfcyCMOVlHCIf4hYIk5LtNJADCN0r
- /QZSOmLvEWDzldoN1zl2DTkRo65AbTz3PL44YyrxpTJgmhTdrYEFrJfCC02IKuHJJs9G
- x9gIoh2SRobBO/Tih1akw5nPr7EZ6Z9/eDxcQMaeOb6f99THBPJPDbJCGQVjEF+K33Ix
- dA9iWdZeSX6RmNM0rpX5eFh8HkO5nG9paqMvGmqV3YbYtpMPXmj/4NEfu+CU4u7aBmxw
- uKJ8aP/+pGrjGAa71q0/hPh3QbP0ZiWxQFlRKrBnOrV0NzhUhW/nr2n94ps8JMczsH0q SA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 32x7nmkyja-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 19 Aug 2020 17:40:10 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 07JHcISp107375;
-        Wed, 19 Aug 2020 17:40:09 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 32xsftruej-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 Aug 2020 17:40:09 +0000
-Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 07JHe4Me015033;
-        Wed, 19 Aug 2020 17:40:04 GMT
-Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 19 Aug 2020 10:40:04 -0700
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [PATCH net-next] SUNRPC: remove duplicate include
-From:   Chuck Lever <chuck.lever@oracle.com>
-In-Reply-To: <20200819024943.26850-1-wanghai38@huawei.com>
-Date:   Wed, 19 Aug 2020 13:40:01 -0400
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Bruce Fields <bfields@fieldses.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
+        id S1726956AbgHSSHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 14:07:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48554 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726612AbgHSSH2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Aug 2020 14:07:28 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CDBB320658;
+        Wed, 19 Aug 2020 18:07:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597860447;
+        bh=1RSoxbEl3LYTroXQgmInVO+Erwbej0LERCtjRfCnBow=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DmOhIPDLecy7MMIUyEfHSWoHoeRb5b4ijzGQv2c34IwGEQRBUaQ7Jp+oXeo/sPAPc
+         dvrjrjAFaZeb75juUYW2fBBdD3r7jwyafi4XixfjmPO6VVfhos20a9T/41f2C5PWES
+         C9h8nNDdOdxbDxkhrtGIVxPJcBwQRaiAoKb4+/kY=
+Date:   Wed, 19 Aug 2020 11:07:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>, Ido Schimmel <idosch@idosch.org>,
+        netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
+        roopa@nvidia.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        tariqt@nvidia.com, ayal@nvidia.com, mkubecek@suse.cz,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/6] devlink: Add device metric support
+Message-ID: <20200819110725.6e8744ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e4fd9b1c-5f7c-d560-9da0-362ddf93165c@gmail.com>
+References: <20200817125059.193242-1-idosch@idosch.org>
+        <20200818172419.5b86801b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <58a0356d-3e15-f805-ae52-dc44f265661d@gmail.com>
+        <20200818203501.5c51e61a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <55e40430-a52f-f77b-0d1e-ef79386a0a53@gmail.com>
+        <20200819091843.33ddd113@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <e4fd9b1c-5f7c-d560-9da0-362ddf93165c@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <EFE54752-7DA7-465C-908B-F46B89DC3C2A@oracle.com>
-References: <20200819024943.26850-1-wanghai38@huawei.com>
-To:     Wang Hai <wanghai38@huawei.com>
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9718 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
- spamscore=0 suspectscore=0 mlxscore=0 phishscore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008190145
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9718 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0
- impostorscore=0 priorityscore=1501 adultscore=0 mlxscore=0 mlxlogscore=999
- lowpriorityscore=0 bulkscore=0 phishscore=0 malwarescore=0 clxscore=1011
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2008190145
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> On Aug 18, 2020, at 10:49 PM, Wang Hai <wanghai38@huawei.com> wrote:
+On Wed, 19 Aug 2020 10:20:08 -0700 Florian Fainelli wrote:
+> > I'm trying to find a solution which will not require a policeman to
+> > constantly monitor the compliance. Please see my effort to ensure
+> > drivers document and use the same ethtool -S stats in the TLS offload
+> > implementations. I've been trying to improve this situation for a long
+> > time, and it's getting old.  
 > 
-> Remove linux/sunrpc/auth_gss.h which is included more than once
+> Which is why I am asking genuinely what do you think should be done
+> besides doing more code reviews? It does not seem to me that there is an
+> easy way to catch new stats being added with tools/scripts/whatever and
+> then determine what they are about, right?
+
+I don't have a great way forward in mind, sadly. All I can think of is
+that we should try to create more well defined interfaces and steer
+away from free-form ones.
+
+Example, here if the stats are vxlan decap/encap/error - we should
+expose that from the vxlan module. That way vxlan module defines one
+set of stats for everyone.
+
+In general unless we attach stats to the object they relate to, we will
+end up building parallel structures for exposing statistics from the
+drivers. I posted a set once which was implementing hierarchical stats,
+but I've abandoned it for this reason.
+
+> > Please focus on the stats this set adds, instead of fantasizing of what
+> > could be. These are absolutely not implementation specific!  
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+> Not sure if fantasizing is quite what I would use. I am just pointing
+> out that given the inability to standardize on statistics maybe we
+> should have namespaces and try our best to have everything fit into the
+> standard namespace along with a standard set of names, and push back
+> whenever we see vendor stats being added (or more pragmatically, ask
+> what they are). But maybe this very idea is moot.
 
-I've reviewed and compile-tested this, so no objection from me.
+IDK. I just don't feel like this is going to fly, see how many names
+people invented for the CRC error statistic in ethtool -S, even tho
+there is a standard stat for that! And users are actually parsing the
+output of ethtool -S to get CRC stats because (a) it became the go-to
+place for NIC stats and (b) some drivers forget to report in the
+standard place.
 
-Since this duplicate was introduced in nfsd-5.9, I can take this
-for an nfsd-5.9-rc pull, if there are no other objections.
+The cover letter says this set replaces the bad debugfs with a good,
+standard API. It may look good and standard for _vendors_ because they
+will know where to dump their counters, but it makes very little
+difference for _users_. If I have to parse names for every vendor I use,
+I can as well add a per-vendor debugfs path to my script.
 
+The bar for implementation-specific driver stats has to be high.
 
-> ---
-> net/sunrpc/auth_gss/trace.c | 1 -
-> 1 file changed, 1 deletion(-)
+> >>> If I have to download vendor documentation and tooling, or adapt my own
+> >>> scripts for every new vendor, I could have as well downloaded an SDK.    
+> >>
+> >> Are not you being a bit over dramatic here with your example?   
+> > 
+> > I hope not. It's very hard/impossible today to run a fleet of Linux
+> > machines without resorting to vendor tooling.  
 > 
-> diff --git a/net/sunrpc/auth_gss/trace.c b/net/sunrpc/auth_gss/trace.c
-> index d26036a57443..76685abba60f 100644
-> --- a/net/sunrpc/auth_gss/trace.c
-> +++ b/net/sunrpc/auth_gss/trace.c
-> @@ -9,7 +9,6 @@
-> #include <linux/sunrpc/svc_xprt.h>
-> #include <linux/sunrpc/auth_gss.h>
-> #include <linux/sunrpc/gss_err.h>
-> -#include <linux/sunrpc/auth_gss.h>
-> 
-> #define CREATE_TRACE_POINTS
-> #include <trace/events/rpcgss.h>
-> -- 
-> 2.17.1
-> 
+> Your argument was putting on the same level resorting to vendor tooling
+> to extract meaningful statistics/counters versus using a SDK to operate
+> the hardware (this is how I understood it), and I do not believe this is
+> fair.
 
---
-Chuck Lever
-
-
-
+Okay, fair. I just think that in datacenter deployments we are way
+closer to the SDK model than people may want to admit.
