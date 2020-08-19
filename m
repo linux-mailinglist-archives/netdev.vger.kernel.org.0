@@ -2,114 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CB37249275
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:37:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E3EC249278
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:38:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727891AbgHSBhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 21:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726367AbgHSBhH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 21:37:07 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23344C061389;
-        Tue, 18 Aug 2020 18:37:07 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id d188so10855570pfd.2;
-        Tue, 18 Aug 2020 18:37:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rTy6HFqlxocYasXQ/q0NDy2ayNYu7hnpMHqjSN3l5hk=;
-        b=V5PruPQVi7l6N8wdwlONTCnDsUkLp9FiHTtcykZG6XHisFfwRG/ywmhxbDqYH9bpHv
-         BcgpAtbNMg2DsbXmTwbs5tu2KIPAW4l07lS2q5ywMhV2i5NqwiTiSwOTdNRIIBukwwqH
-         mdSVjbNemoa4ViORZeRgJKcN6US2T+RNuf/AnNd8ZpnI6xoums9vhw83DI0rA/Y1ZDaL
-         XNS8xqF03ogktZwbJJ+htSdecsjl+DNC11yTys5GByy75gsFhJiUfTMLtLhXwT0A13jO
-         5uHP9mwHmKb7xGsFFbo9sVYHKt2xZokb1uN72W79CQb8Me4kMWCWz8t1v64gzAJLIuGy
-         owDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rTy6HFqlxocYasXQ/q0NDy2ayNYu7hnpMHqjSN3l5hk=;
-        b=KksmuKqDJjXeHJbBrkfVJMnroP/eLfrpSd4oRQmFStuGYYHFVhfK3SzMT1mjQKdNpx
-         dCekK5sbxzd3r87ehksnuM0Hg/gEnsLrRCFNgjmLAH+Dc+wvccjgwxU6tQi3YezaYJ+8
-         WSvFYNAqkS0rceT8hfsBmI8oGnTOmh1E7/2PBDX/eVmNAlPz+LS3zII0ZK0FPXiTE/zB
-         EYz8K4/BSMn8Nr6CJ1SFMVZNMUwUqQtpJEv4qL24wYDP1tVGUhZSx24oVotGvR3oBmID
-         MUIfnlG2LpWx4h6ZdiK+PLB2d+KBxkHY3TrtYKSUV/mcwL1EB8B8NGpDKsaLgiiZsseE
-         6zvw==
-X-Gm-Message-State: AOAM53081b1ButwtnCw1yD+JiaxGGLtVC5WhkfDL64SoKEfC4U51vZId
-        PL5Fw+wX+hpLkSFxcfGDKmL4fqSCSr0=
-X-Google-Smtp-Source: ABdhPJzauZPtzaZRaMEPGLwPBsT3Vqy8zbtX0togxL4EW2r7gUVcsY3HmXYnb+fPzM3dpDs7JqNKQw==
-X-Received: by 2002:a65:66c4:: with SMTP id c4mr15815180pgw.442.1597801026581;
-        Tue, 18 Aug 2020 18:37:06 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:20fd])
-        by smtp.gmail.com with ESMTPSA id 5sm26716805pfw.25.2020.08.18.18.37.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2020 18:37:05 -0700 (PDT)
-Date:   Tue, 18 Aug 2020 18:37:03 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 0/9] Add support for type-based and enum
- value-based CO-RE relocations
-Message-ID: <20200819013703.cgbty6b6ufp7wuqm@ast-mbp.dhcp.thefacebook.com>
-References: <20200818223921.2911963-1-andriin@fb.com>
- <20200819012146.okpmhcqcffoe43sw@ast-mbp.dhcp.thefacebook.com>
- <CAEf4BzbpJ4M0X2XPEadXPzPM+2cOPf-9QDMp=2qz3VvY+bbqsg@mail.gmail.com>
+        id S1727893AbgHSBiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 21:38:08 -0400
+Received: from mx20.baidu.com ([111.202.115.85]:52082 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726367AbgHSBiH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Aug 2020 21:38:07 -0400
+Received: from Bc-Mail-Ex13.internal.baidu.com (unknown [172.31.51.53])
+        by Forcepoint Email with ESMTPS id EDC1F408959950DF5B29;
+        Wed, 19 Aug 2020 09:37:58 +0800 (CST)
+Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
+ Bc-Mail-Ex13.internal.baidu.com (172.31.51.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1979.3; Wed, 19 Aug 2020 09:37:59 +0800
+Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
+ BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
+ 15.01.1979.003; Wed, 19 Aug 2020 09:37:58 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+CC:     Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Piotr <piotr.raczynski@intel.com>,
+        Maciej <maciej.machnikowski@intel.com>
+Subject: =?utf-8?B?562U5aSNOiBbSW50ZWwtd2lyZWQtbGFuXSBbUEFUQ0ggMC8yXSBpbnRlbC94?=
+ =?utf-8?Q?dp_fixes_for_fliping_rx_buffer?=
+Thread-Topic: [Intel-wired-lan] [PATCH 0/2] intel/xdp fixes for fliping rx
+ buffer
+Thread-Index: AQHWdWiRooPzdFWc8kC0ZfZ0v0ywr6k+oKRA
+Date:   Wed, 19 Aug 2020 01:37:58 +0000
+Message-ID: <4268316b200049d58b9973ec4dc4725c@baidu.com>
+References: <1594967062-20674-1-git-send-email-lirongqing@baidu.com>
+ <CAJ+HfNi2B+2KYP9A7yCfFUhfUBd=sFPeuGbNZMjhNSdq3GEpMg@mail.gmail.com>
+In-Reply-To: <CAJ+HfNi2B+2KYP9A7yCfFUhfUBd=sFPeuGbNZMjhNSdq3GEpMg@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.198.8]
+x-baidu-bdmsfe-datecheck: 1_Bc-Mail-Ex13_2020-08-19 09:37:59:367
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbpJ4M0X2XPEadXPzPM+2cOPf-9QDMp=2qz3VvY+bbqsg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 06:31:51PM -0700, Andrii Nakryiko wrote:
-> On Tue, Aug 18, 2020 at 6:21 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Aug 18, 2020 at 03:39:12PM -0700, Andrii Nakryiko wrote:
-> > > This patch set adds libbpf support to two new classes of CO-RE relocations:
-> > > type-based (TYPE_EXISTS/TYPE_SIZE/TYPE_ID_LOCAL/TYPE_ID_TARGET) and enum
-> > > value-vased (ENUMVAL_EXISTS/ENUMVAL_VALUE):
-> > >
-> > > LLVM patches adding these relocation in Clang:
-> > >   - __builtin_btf_type_id() ([0], [1], [2]);
-> > >   - __builtin_preserve_type_info(), __builtin_preserve_enum_value() ([3], [4]).
-> >
-> > I've applied patches 1-4, since they're somewhat indepedent of new features in 5+.
-> > What should be the process to land the rest?
-> > Land llvm first and add to bpf/README.rst that certain llvm commmits are necessary
-> > to build the tests?
-> 
-> Clang patches landed about two weeks ago, so they are already in Clang
-> nightly builds. libbpf CI should work fine as it uses clang-12 nightly
-> builds.
-> 
-> 
-> > But CI will start failing. We can wait for that to be fixed,
-> > but I wonder is there way to detect new clang __builtins automatically in
-> > selftests and skip them if clang is too old?
-> 
-> There is a way to detect built-ins availability (__has_builtin macro,
-> [0]) from C code. If we want to do it from Makefile, though, we'd need
-> to do feature detection similar to how we did reallocarray and
-> libbpf-elf-mmap detection I just removed in the other patch set :).
-> Then we'll also need to somehow blacklist tests. Maintaining that
-> would be a pain, honestly. So far selftests/bpf assumed the latest
-> Clang, though, so do you think we should change that, or you were
-> worried that patches hadn't landed yet?
-
-I was hoping that libbpf.h can have builtins unconditionally, but selftests can
-do feature detection automatically and mark them as 'skip'.
-People have been forever complaining about constant need to upgrade clang.
-In this case I think the feature is not fundamental enough (unlike the first
-set of builtins) to force adoption of new clang.
-If/when we start using these new builtins beyond selftests
-that would be a different story.
+DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IEJqw7ZybiBUw7ZwZWwg
+W21haWx0bzpiam9ybi50b3BlbEBnbWFpbC5jb21dDQo+IOWPkemAgeaXtumXtDogMjAyMOW5tDjm
+nIgxOOaXpSAyMjowNQ0KPiDmlLbku7bkuro6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1
+LmNvbT4NCj4g5oqE6YCBOiBOZXRkZXYgPG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc+OyBpbnRlbC13
+aXJlZC1sYW4NCj4gPGludGVsLXdpcmVkLWxhbkBsaXN0cy5vc3Vvc2wub3JnPjsgS2FybHNzb24s
+IE1hZ251cw0KPiA8bWFnbnVzLmthcmxzc29uQGludGVsLmNvbT47IEJqw7ZybiBUw7ZwZWwgPGJq
+b3JuLnRvcGVsQGludGVsLmNvbT47IGJwZg0KPiA8YnBmQHZnZXIua2VybmVsLm9yZz47IE1hY2ll
+aiBGaWphbGtvd3NraSA8bWFjaWVqLmZpamFsa293c2tpQGludGVsLmNvbT47DQo+IFBpb3RyIDxw
+aW90ci5yYWN6eW5za2lAaW50ZWwuY29tPjsgTWFjaWVqIDxtYWNpZWoubWFjaG5pa293c2tpQGlu
+dGVsLmNvbT4NCj4g5Li76aKYOiBSZTogW0ludGVsLXdpcmVkLWxhbl0gW1BBVENIIDAvMl0gaW50
+ZWwveGRwIGZpeGVzIGZvciBmbGlwaW5nIHJ4IGJ1ZmZlcg0KPiANCj4gT24gRnJpLCAxNyBKdWwg
+MjAyMCBhdCAwODoyNCwgTGkgUm9uZ1FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPiB3cm90ZToN
+Cj4gPg0KPiA+IFRoaXMgZml4ZXMgaWNlL2k0MGUvaXhnYmUvaXhnYmV2Zl9yeF9idWZmZXJfZmxp
+cCBpbiBjb3B5IG1vZGUgeGRwIHRoYXQNCj4gPiBjYW4gbGVhZCB0byBkYXRhIGNvcnJ1cHRpb24u
+DQo+ID4NCj4gPiBJIHNwbGl0IHR3byBwYXRjaGVzLCBzaW5jZSBpNDBlL3hnYmUvaXhnYmV2ZiBz
+dXBwb3J0cyB4c2sgcmVjZWl2aW5nDQo+ID4gZnJvbSA0LjE4LCBwdXQgdGhlaXIgZml4ZXMgaW4g
+YSBwYXRjaA0KPiA+DQo+IA0KPiBMaSwgc29ycnkgZm9yIHRoZSBsb29vbmcgbGF0ZW5jeS4gSSB0
+b29rIGEgbG9vb25nIHZhY2F0aW9uLiA6LVANCj4gDQo+IFRoYW5rcyBmb3IgdGFraW5nIGEgbG9v
+ayBhdCB0aGlzLCBidXQgSSBiZWxpZXZlIHRoaXMgaXMgbm90IGEgYnVnLg0KPiANCj4gVGhlIElu
+dGVsIEV0aGVybmV0IGRyaXZlcnMgKG9idmlvdXNseSBub24temVyb2NvcHkgQUZfWERQIC0tICJn
+b29kIG9sJw0KPiBYRFAiKSB1c2UgYSBwYWdlIHJldXNlIGFsZ29yaXRobS4NCj4gDQo+IEJhc2lj
+IGlkZWEgaXMgdGhhdCBhIHBhZ2UgaXMgYWxsb2NhdGVkIGZyb20gdGhlIHBhZ2UgYWxsb2NhdG9y
+DQo+IChpNDBlX2FsbG9jX21hcHBlZF9wYWdlKCkpLiBUaGUgcmVmY291bnQgaXMgaW5jcmVhc2Vk
+IHRvIFVTSFJUX01BWC4gVGhlDQo+IHBhZ2UgaXMgc3BsaXQgaW50byB0d28gY2h1bmtzIChzaW1w
+bGlmaWVkKS4gSWYgdGhlcmUncyBvbmUgdXNlciBvZiB0aGUgcGFnZSwgdGhlDQo+IHBhZ2UgY2Fu
+IGJlIHJldXNlZCAoZmxpcHBlZCkuIElmIG5vdCwgYSBuZXcgcGFnZSBuZWVkcyB0byBiZSBhbGxv
+Y2F0ZWQgKHdpdGggdGhlDQo+IGxhcmdlIHJlZmNvdW50KS4NCj4gDQo+IFNvLCB0aGUgaWRlYSBp
+cyB0aGF0IHVzdWFsbHkgdGhlIHBhZ2UgY2FuIGJlIHJldXNlZCAoZmxpcHBlZCksIGFuZCB0aGUg
+cGFnZSBvbmx5DQo+IG5lZWRzIHRvIGJlICJwdXQiIG5vdCAiZ2V0IiBzaW5jZSB0aGUgcmVmY291
+bnQgd2FzIGluaXRhbGx5IGJ1bXBlZCB0byBhIGxhcmdlDQo+IHZhbHVlLg0KPiANCj4gQWxsIGZy
+YW1lcyAoZXhjZXB0IFhEUF9EUk9QIHdoaWNoIGNhbiBiZSByZXVzZWQgZGlyZWN0bHkpICJkaWUi
+IHZpYQ0KPiBwYWdlX2ZyYWdfZnJlZSgpIHdoaWNoIGRlY3JlYXNlcyB0aGUgcGFnZSByZWZjb3Vu
+dCwgYW5kIGZyZWVzIHRoZSBwYWdlIGlmIHRoZQ0KPiByZWZjb3VudCBpcyB6ZXJvLg0KPiANCj4g
+TGV0J3MgdGFrZSBzb21lIHNjZW5hcmlvcyBhcyBleGFtcGxlczoNCj4gDQo+IDEuIEEgZnJhbWUg
+aXMgcmVjZWl2ZWQgaW4gInZhbmlsbGEiIFhEUCAoTUVNX1RZUEVfUEFHRV9TSEFSRUQpLCBhbmQN
+Cj4gICAgdGhlIFhEUCBwcm9ncmFtIHZlcmRpY3QgaXMgWERQX1RYLiBUaGUgZnJhbWUgd2lsbCBi
+ZSBwbGFjZWQgb24gdGhlDQo+ICAgIEhXIFR4IHJpbmcsIGFuZCBmcmVlZCogKGFzeW5jKSBpbiBp
+NDBlX2NsZWFuX3R4X2lycToNCj4gICAgICAgICAvKiBmcmVlIHRoZSBza2IvWERQIGRhdGEgKi8N
+Cj4gICAgICAgICBpZiAocmluZ19pc194ZHAodHhfcmluZykpDQo+ICAgICAgICAgICAgIHhkcF9y
+ZXR1cm5fZnJhbWUodHhfYnVmLT54ZHBmKTsgLy8gY2FsbHMgcGFnZV9mcmFnX2ZyZWUoKQ0KPiAN
+Cj4gMi4gQSBmcmFtZSBpcyBwYXNzZWQgdG8gdGhlIHN0YWNrLCBldmVudHVhbGx5IGl0J3MgZnJl
+ZWQqIHZpYQ0KPiAgICBza2JfZnJlZV9mcmFnKCkuDQo+IA0KPiAzLiBBIGZyYW1lIGlzIHBhc3Nl
+ZCB0byBhbiBBRl9YRFAgc29ja2V0LiBUaGUgZGF0YSBpcyBjb3BpZWQgdG8gdGhlDQo+ICAgIHNv
+Y2tldCBkYXRhIGFyZWEsIGFuZCB0aGUgZnJhbWUgaXMgZGlyZWN0bHkgZnJlZWQqLg0KPiANCj4g
+Tm90IHRoZSAqIGJ5IHRoZSBmcmVlZC4gQWN0dWFsbHkgZnJlZWluZyBoZXJlIG1lYW5zIGNhbGxp
+bmcgcGFnZV9mcmFnX2ZyZWUoKSwNCj4gd2hpY2ggbWVhbnMgZGVjcmVhc2luZyB0aGUgcmVmY291
+bnQuIFRoZSBwYWdlIHJldXNlIGFsZ29yaXRobSBtYWtlcyBzdXJlDQo+IHRoYXQgdGhlIGJ1ZmZl
+cnMgYXJlIG5vdCBzdGFsZS4NCj4gDQo+IFRoZSBvbmx5IGRpZmZlcmVuY2UgZnJvbSBYRFBfVFgg
+YW5kIFhEUF9ESVJFQ1QgdG8gZGV2L2NwdW1hcHMsIGNvbXBhcmVkDQo+IHRvIEFGX1hEUCBzb2Nr
+ZXRzIGlzIHRoYXQgdGhlIGxhdHRlciBjYWxscyBwYWdlX2ZyYWdfZnJlZSgpIGRpcmVjdGx5LCB3
+aGVyZWFzDQo+IHRoZSBvdGhlciBkb2VzIGl0IGFzeW5jaHJvbm91cyBmcm9tIHRoZSBUeCBjbGVh
+biB1cCBwaGFzZS4NCj4gDQoNCkhpOg0KDQpUaGFua3MgZm9yIHlvdXIgZXhwbGFuYXRpb24uDQoN
+CkJ1dCB3ZSBjYW4gcmVwcm9kdWNlIHRoaXMgYnVnDQoNCldlIHVzZSBlYnBmIHRvIHJlZGlyZWN0
+IG9ubHktVnhsYW4gcGFja2V0cyB0byBub24temVyb2NvcHkgQUZfWERQLCAgRmlyc3Qgd2Ugc2Vl
+IHBhbmljIG9uIHRjcCBzdGFjaywgaW4gdGNwX2NvbGxhcHNlOiBCVUdfT04ob2Zmc2V0IDwgMCk7
+IGl0IGlzIHZlcnkgaGFyZCB0byByZXByb2R1Y2UuDQoNClRoZW4gd2UgdXNlIHRoZSBzY3AgdG8g
+ZG8gdGVzdCwgYW5kIGhhcyBsb3RzIG9mIHZ4bGFuIHBhY2tldCBhdCB0aGUgc2FtZSB0aW1lLCBz
+Y3Agd2lsbCBiZSBicm9rZW4gZnJlcXVlbnRseS4NCg0KV2l0aCB0aGlzIGZpeGVzLCBzY3AgaGFz
+IG5vdCBiZWVuIGJyb2tlbiBhZ2FpbiwgYW5kIGtlcm5lbCBpcyBub3QgcGFuaWMgYWdhaW4NCg0K
+U2VlbSB5b3VyIGV4cGxhbmF0aW9uIGlzIHVuYWJsZSB0byBzb2x2ZSBteSBhbmFseXNpczoNCg0K
+ICAgICAgIDEuIGZpcnN0IHNrYiBpcyBub3QgZm9yIHhzaywgYW5kIGZvcndhcmRlZCB0byBhbm90
+aGVyIGRldmljZQ0KICAgICAgICAgIG9yIHNvY2tldCBxdWV1ZQ0KICAgICAgIDIuIHNlY29uZHMg
+c2tiIGlzIGZvciB4c2ssIGNvcHkgZGF0YSB0byB4c2sgbWVtb3J5LCBhbmQgcGFnZQ0KICAgICAg
+ICAgIG9mIHNrYi0+ZGF0YSBpcyByZWxlYXNlZA0KICAgICAgIDMuIHJ4X2J1ZmYgaXMgcmV1c2Fi
+bGUgc2luY2Ugb25seSBmaXJzdCBza2IgaXMgaW4gaXQsIGJ1dA0KICAgICAgICAgICpfcnhfYnVm
+ZmVyX2ZsaXAgd2lsbCBtYWtlIHRoYXQgcGFnZV9vZmZzZXQgaXMgc2V0IHRvDQogICAgICAgICAg
+Zmlyc3Qgc2tiIGRhdGENCiAgICAgICA0LiB0aGVuIHJldXNlIHJ4IGJ1ZmZlciwgZmlyc3Qgc2ti
+IHdoaWNoIHN0aWxsIGlzIGxpdmluZw0KICAgICAgICAgIHdpbGwgYmUgY29ycnVwdGVkLg0KDQoN
+ClRoZSByb290IGNhdXNlIGlzIGRpZmZlcmVuY2UgeW91IHNhaWQgdXBwZXIsIHNvIEkgb25seSBm
+aXhlcyBmb3Igbm9uLXplcm9jb3B5IEFGX1hEUA0KDQotTGkNCj4gTGV0IG1lIGtub3cgaWYgaXQn
+cyBzdGlsbCBub3QgY2xlYXIsIGJ1dCB0aGUgYm90dG9tIGxpbmUgaXMgdGhhdCBub25lIG9mIHRo
+ZXNlDQo+IHBhdGNoZXMgYXJlIG5lZWRlZC4NCj4gDQo+IA0KPiBUaGFua3MhDQo+IEJqw7Zybg0K
+PiANCj4gDQo+ID4gTGkgUm9uZ1FpbmcgKDIpOg0KPiA+ICAgeGRwOiBpNDBlOiBpeGdiZTogaXhn
+YmV2Zjogbm90IGZsaXAgcnggYnVmZmVyIGZvciBjb3B5IG1vZGUgeGRwDQo+ID4gICBpY2UveGRw
+OiBub3QgYWRqdXN0IHJ4IGJ1ZmZlciBmb3IgY29weSBtb2RlIHhkcA0KPiA+DQo+ID4gIGRyaXZl
+cnMvbmV0L2V0aGVybmV0L2ludGVsL2k0MGUvaTQwZV90eHJ4LmMgICAgICAgfCA1ICsrKystDQo+
+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2ljZS9pY2VfdHhyeC5jICAgICAgICAgfCA1
+ICsrKystDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2l4Z2JlL2l4Z2JlX21haW4u
+YyAgICAgfCA1ICsrKystDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2l4Z2JldmYv
+aXhnYmV2Zl9tYWluLmMgfCA1ICsrKystDQo+ID4gIGluY2x1ZGUvbmV0L3hkcC5oICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgfCAzICsrKw0KPiA+ICBuZXQveGRwL3hzay5jICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgNCArKystDQo+ID4gIDYgZmlsZXMgY2hh
+bmdlZCwgMjIgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IC0tDQo+ID4g
+Mi4xNi4yDQo+ID4NCj4gPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXw0KPiA+IEludGVsLXdpcmVkLWxhbiBtYWlsaW5nIGxpc3QNCj4gPiBJbnRlbC13aXJl
+ZC1sYW5Ab3N1b3NsLm9yZw0KPiA+IGh0dHBzOi8vbGlzdHMub3N1b3NsLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2ludGVsLXdpcmVkLWxhbg0K
