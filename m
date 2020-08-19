@@ -2,221 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E71D4249732
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:27:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6960D249743
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:28:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbgHSH1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 03:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41014 "EHLO
+        id S1727785AbgHSH2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 03:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728082AbgHSH0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:26:17 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B260BC0612F0
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:36 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id g75so1116952wme.4
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:36 -0700 (PDT)
+        with ESMTP id S1728111AbgHSH0b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:26:31 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E866C0612F3
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:38 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id p20so20474250wrf.0
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cz1UC4tnS3N8DfKT/RtvxsKvZMZZyg6WgaNOLEC941U=;
-        b=xP92MXSLUJF3MJNxFN2jeR6pwzN57N/17nqzMGHc349bnPEp6WCiOuot+K7OgLfpJt
-         f0iYoa4HWJlB8sCgu0wHg+/N2DTzUhcBln+Rneg4GeQiflniB8HAy6sxoV0ZNCMJzZvq
-         G3z/S4LMbYHqIfaYEiLpccEGjThSuOHB8PkUjnPqN25gmPp9mNGcrW8CK/iwHlUl2TWV
-         4y0FXqmcVCp22aJZDOBa7fK+OjzFdIEmVnv2xLCQ9JMB6zGygnUjqPecdtoHPsNoX6D2
-         h40jX+Nq2G4g95pz6XLeCpAlECwkZkbtHuyMcS+H8TIY8Nn90RTKYb23YIa+6/o7nmOx
-         1hzw==
+        bh=Dn1h7hnv+zK3JmNJ8owg74HJG3E/In8jlICFM66crSs=;
+        b=AZWKgj9gDfQfz4GJLDtrB0WwHshxJJ7tcKzIGuAxvCXY9JzKaybqkdyFJo9GqxZ0EB
+         cjb7K3Y0hkKjGydKVUNbOlWv2YrEYrWD7g5P/SMbHR+45oGCHSkNLx3MVrPUdpjQTGtK
+         Cc9FeveNUUt+Y4PU4Yhf6vZX9l2NA9whyedEPeCib7kXNOVrtpOYtFngn+waNc8AKgTn
+         2NK1gJ/+W7poRuE6u7ADjEKynsQNLU6VZPXee25+pyeIPFCnytPKZqA7ENPd/mAX5NmE
+         4WVaZRSwfO+XjwDfcgIRx6ftAyW2axc4/qBRexeJlRo/He7ZhI6DmesCd5AhqnDy9Ls2
+         TDBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cz1UC4tnS3N8DfKT/RtvxsKvZMZZyg6WgaNOLEC941U=;
-        b=sraunuwYO1G7P/uZ+Cex1W+KkVG7cxfmt1oEyHfMi/z9cyvlfVpSuqVgRcSOqHS97d
-         KfOO1fTUxebZGJujfOHdrRJXvteuJSeO2TNUApJTInMhWFteV14+zSgwwMyigtg/4f3K
-         3O+2Yi60Tc75IP27cdqRsmljEwa+co3xdZg2EyJzOvTUL8bAf2gNgrv7VCkAC2Iz0i2c
-         cuu36shnItgtGZkPDujVdGsYUGfhz3XtItcFc5/IbvOnqZW6PTgP/p6aTjffuUc9OJol
-         4VzqyZlLo3k8JCuiZE64SprIecgBuY8FA4R/e3yi3KyTCm61RT5KW3A4eS2PrN7i+EsZ
-         621g==
-X-Gm-Message-State: AOAM5335agR3HaxpQj/hmrFB6FwUPA2jOOQKnNqSd0uPdNmaFN5v4pSP
-        4U2VWSDqoEQRe3m7i4mGXQF30A==
-X-Google-Smtp-Source: ABdhPJwtVnZKagyZXI9pcJiwCbCXkQ4Bf54YFPC6HZzcK+Hqr8GYuPzY3WQ0Lkp1eyxkiIw0iE6kGA==
-X-Received: by 2002:a05:600c:2184:: with SMTP id e4mr3459650wme.24.1597821875302;
-        Wed, 19 Aug 2020 00:24:35 -0700 (PDT)
+        bh=Dn1h7hnv+zK3JmNJ8owg74HJG3E/In8jlICFM66crSs=;
+        b=DhVOAheI2DrVpG1+gqQbmDO8nGg9kXITHZdrcEcO+IwIjfryoCogALIrjIbJ4/oCPM
+         gGySdQRVreujc6R0O7N7OR094Ji2J4mN+jswt00NJvkxx1EMbOs4+BHjG0SJsOS2kIf1
+         8RLsIeYXi/TYCK9i5542n6yuQXRoJUA6oaSNfg0LKVg0Y8IBOzTbk8AL/YczrblG4oVK
+         01vJ1HOH+VGBdNkBj1kIc8DcsGT1cbuSmGhl2RUCFMlu+ucGlXvjR+XIVXU9x5Yc5IDY
+         BE91qKBtcFkovA1l3Drvzc8e9Pktv+RqE1uY0ifVV3BgEJn/Hmp0BX75iEEJYXiavjeC
+         /C4g==
+X-Gm-Message-State: AOAM532dY7Jws395nDQDH8x/bSUJdedn1nmv2T+BRn1P7AfBdDC4z9Vq
+        PGy7BaJjn319pnDC+Vt6mHQwLg==
+X-Google-Smtp-Source: ABdhPJzxe4bxgtGmVLxxJ5PC5vyocr5/mcvOh70h5bpuA/1A70YlK1XvF3T4ad0uG5qFDu/ARs9BfA==
+X-Received: by 2002:adf:9ed1:: with SMTP id b17mr22842002wrf.140.1597821876705;
+        Wed, 19 Aug 2020 00:24:36 -0700 (PDT)
 Received: from dell.default ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id c145sm3795808wmd.7.2020.08.19.00.24.34
+        by smtp.gmail.com with ESMTPSA id c145sm3795808wmd.7.2020.08.19.00.24.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2020 00:24:34 -0700 (PDT)
+        Wed, 19 Aug 2020 00:24:36 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Linux Wireless <ilw@linux.intel.com>
-Subject: [PATCH 24/28] wireless: intel: iwlegacy: 4965: Demote a bunch of nonconformant kernel-doc headers
-Date:   Wed, 19 Aug 2020 08:23:58 +0100
-Message-Id: <20200819072402.3085022-25-lee.jones@linaro.org>
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        brcm80211-dev-list.pdl@broadcom.com, brcm80211-dev-list@cypress.com
+Subject: [PATCH 25/28] wireless: broadcom: brcmfmac: p2p: Deal with set but unused variables
+Date:   Wed, 19 Aug 2020 08:23:59 +0100
+Message-Id: <20200819072402.3085022-26-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200819072402.3085022-1-lee.jones@linaro.org>
 References: <20200819072402.3085022-1-lee.jones@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+'vif' is a function parameter which is oddly overwritten within the
+function, but never read back.  'timeout' is set, but never checked.
+
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/wireless/intel/iwlegacy/4965.c:35: warning: Function parameter or member 'il' not described in 'il4965_verify_inst_sparse'
- drivers/net/wireless/intel/iwlegacy/4965.c:35: warning: Function parameter or member 'image' not described in 'il4965_verify_inst_sparse'
- drivers/net/wireless/intel/iwlegacy/4965.c:35: warning: Function parameter or member 'len' not described in 'il4965_verify_inst_sparse'
- drivers/net/wireless/intel/iwlegacy/4965.c:66: warning: Function parameter or member 'il' not described in 'il4965_verify_inst_full'
- drivers/net/wireless/intel/iwlegacy/4965.c:66: warning: Function parameter or member 'image' not described in 'il4965_verify_inst_full'
- drivers/net/wireless/intel/iwlegacy/4965.c:66: warning: Function parameter or member 'len' not described in 'il4965_verify_inst_full'
- drivers/net/wireless/intel/iwlegacy/4965.c:105: warning: Function parameter or member 'il' not described in 'il4965_verify_ucode'
- drivers/net/wireless/intel/iwlegacy/4965.c:329: warning: Function parameter or member 'il' not described in 'il4965_load_bsm'
- drivers/net/wireless/intel/iwlegacy/4965.c:416: warning: Function parameter or member 'il' not described in 'il4965_set_ucode_ptrs'
- drivers/net/wireless/intel/iwlegacy/4965.c:451: warning: Function parameter or member 'il' not described in 'il4965_init_alive_start'
- drivers/net/wireless/intel/iwlegacy/4965.c:583: warning: Function parameter or member 'eeprom_voltage' not described in 'il4965_get_voltage_compensation'
- drivers/net/wireless/intel/iwlegacy/4965.c:583: warning: Function parameter or member 'current_voltage' not described in 'il4965_get_voltage_compensation'
- drivers/net/wireless/intel/iwlegacy/4965.c:668: warning: Function parameter or member 'il' not described in 'il4965_interpolate_chan'
- drivers/net/wireless/intel/iwlegacy/4965.c:668: warning: Function parameter or member 'channel' not described in 'il4965_interpolate_chan'
- drivers/net/wireless/intel/iwlegacy/4965.c:668: warning: Function parameter or member 'chan_info' not described in 'il4965_interpolate_chan'
- drivers/net/wireless/intel/iwlegacy/4965.c:1242: warning: Function parameter or member 'il' not described in 'il4965_send_tx_power'
- drivers/net/wireless/intel/iwlegacy/4965.c:1537: warning: Function parameter or member 'il' not described in 'il4965_txq_update_byte_cnt_tbl'
- drivers/net/wireless/intel/iwlegacy/4965.c:1537: warning: Function parameter or member 'txq' not described in 'il4965_txq_update_byte_cnt_tbl'
- drivers/net/wireless/intel/iwlegacy/4965.c:1537: warning: Function parameter or member 'byte_cnt' not described in 'il4965_txq_update_byte_cnt_tbl'
- drivers/net/wireless/intel/iwlegacy/4965.c:1564: warning: Function parameter or member 'il' not described in 'il4965_hw_get_temperature'
- drivers/net/wireless/intel/iwlegacy/4965.c:1564: warning: Excess function parameter 'stats' description in 'il4965_hw_get_temperature'
- drivers/net/wireless/intel/iwlegacy/4965.c:1633: warning: Function parameter or member 'il' not described in 'il4965_is_temp_calib_needed'
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c: In function ‘brcmf_p2p_scan_prep’:
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c:894:31: warning: parameter ‘vif’ set but not used [-Wunused-but-set-parameter]
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c: In function ‘brcmf_p2p_tx_action_frame’:
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c:1549:6: warning: variable ‘timeout’ set but not used [-Wunused-but-set-variable]
 
-Cc: Stanislaw Gruszka <stf_xl@wp.pl>
+Cc: Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc: Franky Lin <franky.lin@broadcom.com>
+Cc: Hante Meuleman <hante.meuleman@broadcom.com>
+Cc: Chi-Hsien Lin <chi-hsien.lin@cypress.com>
+Cc: Wright Feng <wright.feng@cypress.com>
 Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Linux Wireless <ilw@linux.intel.com>
 Cc: linux-wireless@vger.kernel.org
+Cc: brcm80211-dev-list.pdl@broadcom.com
+Cc: brcm80211-dev-list@cypress.com
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/wireless/intel/iwlegacy/4965.c | 25 +++++++++++-----------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlegacy/4965.c b/drivers/net/wireless/intel/iwlegacy/4965.c
-index fc8fa5818de7e..9fa556486511c 100644
---- a/drivers/net/wireless/intel/iwlegacy/4965.c
-+++ b/drivers/net/wireless/intel/iwlegacy/4965.c
-@@ -25,7 +25,7 @@
- #include "common.h"
- #include "4965.h"
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
+index debd887e159e1..7f681a25ab525 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
+@@ -913,8 +913,6 @@ int brcmf_p2p_scan_prep(struct wiphy *wiphy,
+ 		if (err)
+ 			return err;
  
--/**
-+/*
-  * il_verify_inst_sparse - verify runtime uCode image in card vs. host,
-  *   using sample data 100 bytes apart.  If these sample points are good,
-  *   it's a pretty good bet that everything between them is good, too.
-@@ -57,7 +57,7 @@ il4965_verify_inst_sparse(struct il_priv *il, __le32 * image, u32 len)
- 	return ret;
- }
- 
--/**
-+/*
-  * il4965_verify_inst_full - verify runtime uCode image in card vs. host,
-  *     looking at all data.
-  */
-@@ -96,7 +96,7 @@ il4965_verify_inst_full(struct il_priv *il, __le32 * image, u32 len)
- 	return ret;
- }
- 
--/**
-+/*
-  * il4965_verify_ucode - determine which instruction image is in SRAM,
-  *    and verify its contents
-  */
-@@ -292,7 +292,7 @@ il4965_verify_bsm(struct il_priv *il)
- 	return 0;
- }
- 
--/**
-+/*
-  * il4965_load_bsm - Load bootstrap instructions
-  *
-  * BSM operation:
-@@ -402,7 +402,7 @@ il4965_load_bsm(struct il_priv *il)
- 	return 0;
- }
- 
--/**
-+/*
-  * il4965_set_ucode_ptrs - Set uCode address location
-  *
-  * Tell initialization uCode where to find runtime uCode.
-@@ -435,7 +435,7 @@ il4965_set_ucode_ptrs(struct il_priv *il)
- 	return 0;
- }
- 
--/**
-+/*
-  * il4965_init_alive_start - Called after N_ALIVE notification received
-  *
-  * Called after N_ALIVE notification received from "initialize" uCode.
-@@ -567,7 +567,7 @@ il4965_math_div_round(s32 num, s32 denom, s32 * res)
- 	return 1;
- }
- 
--/**
-+/*
-  * il4965_get_voltage_compensation - Power supply voltage comp for txpower
-  *
-  * Determines power supply voltage compensation for txpower calculations.
-@@ -654,7 +654,7 @@ il4965_interpolate_value(s32 x, s32 x1, s32 y1, s32 x2, s32 y2)
+-		vif = p2p->bss_idx[P2PAPI_BSSCFG_DEVICE].vif;
+-
+ 		/* override .run_escan() callback. */
+ 		cfg->escan_info.run = brcmf_p2p_run_escan;
  	}
- }
+@@ -1546,7 +1544,6 @@ static s32 brcmf_p2p_tx_action_frame(struct brcmf_p2p_info *p2p,
+ 	struct brcmf_cfg80211_vif *vif;
+ 	struct brcmf_p2p_action_frame *p2p_af;
+ 	s32 err = 0;
+-	s32 timeout = 0;
  
--/**
-+/*
-  * il4965_interpolate_chan - Interpolate factory measurements for one channel
-  *
-  * Interpolates factory measurements from the two sample channels within a
-@@ -1231,7 +1231,7 @@ il4965_fill_txpower_tbl(struct il_priv *il, u8 band, u16 channel, u8 is_ht40,
- 	return 0;
- }
+ 	brcmf_dbg(TRACE, "Enter\n");
  
--/**
-+/*
-  * il4965_send_tx_power - Configure the TXPOWER level user limit
-  *
-  * Uses the active RXON for channel, band, and characteristics (ht40, high)
-@@ -1528,7 +1528,7 @@ il4965_hw_channel_switch(struct il_priv *il,
- 	return il_send_cmd_pdu(il, C_CHANNEL_SWITCH, sizeof(cmd), &cmd);
- }
+@@ -1582,8 +1579,7 @@ static s32 brcmf_p2p_tx_action_frame(struct brcmf_p2p_info *p2p,
+ 		  (p2p->wait_for_offchan_complete) ?
+ 		   "off-channel" : "on-channel");
  
--/**
-+/*
-  * il4965_txq_update_byte_cnt_tbl - Set up entry in Tx byte-count array
-  */
- static void
-@@ -1553,9 +1553,8 @@ il4965_txq_update_byte_cnt_tbl(struct il_priv *il, struct il_tx_queue *txq,
- 		    bc_ent;
- }
+-	timeout = wait_for_completion_timeout(&p2p->send_af_done,
+-					      P2P_AF_MAX_WAIT_TIME);
++	wait_for_completion_timeout(&p2p->send_af_done, P2P_AF_MAX_WAIT_TIME);
  
--/**
-+/*
-  * il4965_hw_get_temperature - return the calibrated temperature (in Kelvin)
-- * @stats: Provides the temperature reading from the uCode
-  *
-  * A return of <0 indicates bogus data in the stats
-  */
-@@ -1619,7 +1618,7 @@ il4965_hw_get_temperature(struct il_priv *il)
- /* Adjust Txpower only if temperature variance is greater than threshold. */
- #define IL_TEMPERATURE_THRESHOLD   3
- 
--/**
-+/*
-  * il4965_is_temp_calib_needed - determines if new calibration is needed
-  *
-  * If the temperature changed has changed sufficiently, then a recalibration
+ 	if (test_bit(BRCMF_P2P_STATUS_ACTION_TX_COMPLETED, &p2p->status)) {
+ 		brcmf_dbg(TRACE, "TX action frame operation is success\n");
 -- 
 2.25.1
 
