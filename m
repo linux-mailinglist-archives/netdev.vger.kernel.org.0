@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C4EE24976E
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:30:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E4B0249718
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 09:24:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728172AbgHSHaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 03:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40922 "EHLO
+        id S1727079AbgHSHY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 03:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726796AbgHSHYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:24:10 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A7AC061347
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:09 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id 3so1128644wmi.1
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:08 -0700 (PDT)
+        with ESMTP id S1726847AbgHSHYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 03:24:11 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2B6C06134A
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:10 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id 184so1132004wmb.0
+        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 00:24:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XPyf3pY78NKZpAoCqUMShqns3N3Vter41E+TCH98irs=;
-        b=pO/tZJ717SIL5qmd78VkicWaF6vFD6SXo8MiuqwrS81DIISf2fmFvV/0SNNkbW2fYi
-         P/E8KCf7dPHNYE0+w2CKdB5QVkmTFfGZEWpHNaWULVE70e8UBxLR/33YDVYmQw0du/5q
-         HG6eho9ClpzTuzi9w98+U1mvCcLbx9Arm0ONOAxw/nAMaSuuv+UN+bVrxXgqyO+zC5Aq
-         8Suz3ZVpr4gBMxVhAIIT27NOUg/VIBE/yQYQoIrsr+ev90YMnUO3kWtJvvrTI9GrvoWD
-         ZQ4aNofJmylhzMjyFGAZ9xx6EhXJDZ36DncwSc22Mtx0S9GNohnyY3Ja2QSPukE6B1xI
-         F9nQ==
+        bh=XaDsSQHVumJ0BUhRTLnjnxnZZONxfiwBrtcxIjkBvh8=;
+        b=ziVC/1++Ib88HqfjC3EoHwZGANIpB5jltCZO3nejpCxFeZFY0hEcY9Rt2NkQSgdj4w
+         PScZGLSd1YxB9ZlcmgCF6H2voYIxHDd/cvXl3p0RUyBKEHyZvS5kVcOs7ge3aHRXm8k7
+         kQe/RrcbOkv1rNeVoVs0Jm6ikRmWm6Gq88oOD1EaPK32bd5MNp6c9EL/5HiGb6/moAqu
+         s6PEHHYVzxtJ6ic0sJujck1COtO3EM2AzExF1cilJnPAMr/W40eYKkFsj0ylk2Rfwg4f
+         IdlDdqLky+c7ikhRKVfrIoZb1zB0PoDadbiSonR6JWz9mOz9orQIcK/f1FJyLzfm5WPv
+         pZHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XPyf3pY78NKZpAoCqUMShqns3N3Vter41E+TCH98irs=;
-        b=tceDtCUGChzzYwstEEmIg5FPF3CLMySUgi7IiaHha6DcLG/dGMImwdyLF1mGDIyeVv
-         n9rgfi6KG0SGMnoJ7F7iFegO1sEHmbQwHPab8T2Pyc9Os49hWS9lnSYBvMpyCy26XzOI
-         LZo9AwFB+sHPI3pNapGJVf1QTYtc27Dbv9EBycSflHdz1Ll/kRvzxrcxfiVHHdhrZzzZ
-         rtrc7pGzeMudidmeLfJT0R6VYUfApHqW1paldJhVUlFSzs78+k2s94C8muBjuEYyrXDy
-         Kc8dR9jiEqEPGb3hGuzXWdpQGVY/ok+Cph8RcTCIFXsAF4zVsazOZpjl7ZAum+5r4MC5
-         Wm5Q==
-X-Gm-Message-State: AOAM532aTgKrT5UjujHmvK57hGjtc5H27jLNe7c1ArbCuklL4j01isTT
-        CbJhkSv2Q8dFvptREr2xv0h6Nw==
-X-Google-Smtp-Source: ABdhPJwQbTJrfV/44Lpom+61UBCm4AdTRe3330us7wYdmYxtjAvw93xalHuDW23gup9fnULbIMEiVA==
-X-Received: by 2002:a1c:4c0e:: with SMTP id z14mr3537549wmf.54.1597821847752;
-        Wed, 19 Aug 2020 00:24:07 -0700 (PDT)
+        bh=XaDsSQHVumJ0BUhRTLnjnxnZZONxfiwBrtcxIjkBvh8=;
+        b=YR19TduJ6pG96L0F/WSTEb8QST5ga0C+szEjqMWGHR3IxqxNoe6Cl3W4tNG+RMpVCR
+         D871iMiRHtbCf6XOYmSTDBcKm0LwSqTy+cAJeEwlt6AYRW2H2EmDVhUN5Pasct7nNde3
+         1jDgttUq4behR30+btne6AHoPMzqzyLsh2+irZttOdGtkySkG3jeWnjKm1qUkt5tuGKh
+         zhj39Ghde1ybpiAJfZPTAH6ufbrDmDmC0bG/qwXQt5Adb+hwl8vjI8/dMFhVWWPA0Pej
+         oWCExf0gGoLfSP87eaibutaDvg93ypXaCUoBZtzt0j13NWVki3uhur/0samArZwstHEk
+         xUJA==
+X-Gm-Message-State: AOAM530HGwmFt9RUw7PFpamiv38T5uO+V0hZjRv22wdG4Q1CbGLuwVnd
+        sI9BFI8MQwwMC3lCXmV7UUloqw==
+X-Google-Smtp-Source: ABdhPJzjydxh5RW2AnV46iOp6h8091Mjz/MKc4QW6Xm7U6kw+aXK8DwN977c9dsDaoTBL5nabk1SUA==
+X-Received: by 2002:a7b:c1c2:: with SMTP id a2mr3452861wmj.74.1597821848883;
+        Wed, 19 Aug 2020 00:24:08 -0700 (PDT)
 Received: from dell.default ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id c145sm3795808wmd.7.2020.08.19.00.24.06
+        by smtp.gmail.com with ESMTPSA id c145sm3795808wmd.7.2020.08.19.00.24.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Aug 2020 00:24:07 -0700 (PDT)
+        Wed, 19 Aug 2020 00:24:08 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
         Amitkumar Karwar <amitkarwar@gmail.com>,
         Siva Rebbagondla <siva8118@gmail.com>
-Subject: [PATCH 02/28] wireless: rsi_91x_main: Fix some kernel-doc issues
-Date:   Wed, 19 Aug 2020 08:23:36 +0100
-Message-Id: <20200819072402.3085022-3-lee.jones@linaro.org>
+Subject: [PATCH 03/28] wireless: rsi_91x_core: File header should not be kernel-doc
+Date:   Wed, 19 Aug 2020 08:23:37 +0100
+Message-Id: <20200819072402.3085022-4-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200819072402.3085022-1-lee.jones@linaro.org>
 References: <20200819072402.3085022-1-lee.jones@linaro.org>
@@ -66,15 +66,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The file header should not be kernel-doc.  Add missing 'rec_pkt'
-description.  Update 'rsi_91x_init()'s parameter description.
-
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/wireless/rsi/rsi_91x_main.c:17: warning: Function parameter or member 'fmt' not described in 'pr_fmt'
- drivers/net/wireless/rsi/rsi_91x_main.c:156: warning: Function parameter or member 'rx_pkt' not described in 'rsi_read_pkt'
- drivers/net/wireless/rsi/rsi_91x_main.c:287: warning: Function parameter or member 'oper_mode' not described in 'rsi_91x_init'
- drivers/net/wireless/rsi/rsi_91x_main.c:287: warning: Excess function parameter 'void' description in 'rsi_91x_init'
+ drivers/net/wireless/rsi/rsi_91x_core.c:23: warning: Incorrect use of kernel-doc format:  * rsi_determine_min_weight_queue() - This function determines the queue with
+ drivers/net/wireless/rsi/rsi_91x_core.c:30: warning: Function parameter or member 'common' not described in 'rsi_determine_min_weight_queue'
 
 Cc: Amitkumar Karwar <amitkarwar@gmail.com>
 Cc: Siva Rebbagondla <siva8118@gmail.com>
@@ -85,36 +80,19 @@ Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/wireless/rsi/rsi_91x_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/wireless/rsi/rsi_91x_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
-index 29d83049c5f56..576f51f9b4a7e 100644
---- a/drivers/net/wireless/rsi/rsi_91x_main.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_main.c
+diff --git a/drivers/net/wireless/rsi/rsi_91x_core.c b/drivers/net/wireless/rsi/rsi_91x_core.c
+index 3644d7d994638..2d49c5b5eefb4 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_core.c
++++ b/drivers/net/wireless/rsi/rsi_91x_core.c
 @@ -1,4 +1,4 @@
 -/**
 +/*
   * Copyright (c) 2014 Redpine Signals Inc.
   *
   * Permission to use, copy, modify, and/or distribute this software for any
-@@ -148,6 +148,7 @@ static struct sk_buff *rsi_prepare_skb(struct rsi_common *common,
- /**
-  * rsi_read_pkt() - This function reads frames from the card.
-  * @common: Pointer to the driver private structure.
-+ * @rcv_pkt: Received pkt.
-  * @rcv_pkt_len: Received pkt length. In case of USB it is 0.
-  *
-  * Return: 0 on success, -1 on failure.
-@@ -279,7 +280,7 @@ void rsi_set_bt_context(void *priv, void *bt_context)
- 
- /**
-  * rsi_91x_init() - This function initializes os interface operations.
-- * @void: Void.
-+ * @oper_mode: One of DEV_OPMODE_*.
-  *
-  * Return: Pointer to the adapter structure on success, NULL on failure .
-  */
 -- 
 2.25.1
 
