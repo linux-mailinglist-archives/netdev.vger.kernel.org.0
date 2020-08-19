@@ -2,171 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 057F3249289
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EF59249290
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 03:54:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726918AbgHSBvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 21:51:22 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60438 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726372AbgHSBvW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Aug 2020 21:51:22 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k8DG4-00A1BH-A6; Wed, 19 Aug 2020 03:51:20 +0200
-Date:   Wed, 19 Aug 2020 03:51:20 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Andre Edich <andre.edich@microchip.com>
-Cc:     netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        steve.glendinning@shawell.net, Parthiban.Veerasooran@microchip.com
-Subject: Re: [PATCH net-next v3 3/3] smsc95xx: add phylib support
-Message-ID: <20200819015120.GA2347062@lunn.ch>
-References: <20200818111127.176422-1-andre.edich@microchip.com>
- <20200818111127.176422-4-andre.edich@microchip.com>
+        id S1727108AbgHSBy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 21:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726605AbgHSBy2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 21:54:28 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBAEEC061342
+        for <netdev@vger.kernel.org>; Tue, 18 Aug 2020 18:54:27 -0700 (PDT)
+Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id DDC7D8066C;
+        Wed, 19 Aug 2020 13:54:16 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1597802056;
+        bh=2rKnZql4flhpEt10yMfhTzp98YOwJSxB9qrMi1Zc3Iw=;
+        h=From:To:Cc:Subject:Date;
+        b=kO+vFEQFH58owRXzi+DxDztvIFnOmcuenV15O5gBLvZt7nqLy3FCrjSSwOjSUWfvc
+         l6XWYYGUGCiQGDayt3AS5pGgQvDA268MA3cjck6k1EEcLzEeCfPCtSuPID903SaNBX
+         uOva/AuFHn0uOzO823Mprmz6V291helgv29Y1/bQgH08mSQruwuahY98x2EEEhf2fx
+         Uf6VeWdOIpvis7s9veouMczrivs5n68iOnEWM/eXnwJU4W49uAmnYbLD3s1qerGo/a
+         GrkODzBP/t1T4r2tr2zqhiN+rFVkq4aI7dfTGwoQSGiQQ9poYOIOYAUwQL4umfAEJP
+         yZHX818QJMtRg==
+Received: from smtp (Not Verified[10.32.16.33]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
+        id <B5f3c86470000>; Wed, 19 Aug 2020 13:54:15 +1200
+Received: from markto-dl.ws.atlnz.lc (markto-dl.ws.atlnz.lc [10.33.23.25])
+        by smtp (Postfix) with ESMTP id 7D6A513ED33;
+        Wed, 19 Aug 2020 13:54:16 +1200 (NZST)
+Received: by markto-dl.ws.atlnz.lc (Postfix, from userid 1155)
+        id AF68A34110F; Wed, 19 Aug 2020 13:54:16 +1200 (NZST)
+From:   Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
+Subject: [PATCH] gre6: Fix reception with IP6_TNL_F_RCV_DSCP_COPY
+Date:   Wed, 19 Aug 2020 13:53:58 +1200
+Message-Id: <20200819015358.18559-1-mark.tomlinson@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200818111127.176422-4-andre.edich@microchip.com>
+Content-Transfer-Encoding: quoted-printable
+x-atlnz-ls: pat
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 01:11:27PM +0200, Andre Edich wrote:
-> Generally, each PHY has their own configuration and it can be done
-> through an external PHY driver.  The smsc95xx driver uses only the
-> hard-coded internal PHY configuration.
-> 
-> This patch adds phylib support to probe external PHY drivers for
-> configuring external PHYs.
-> 
-> The MDI-X configuration for the internal PHYs moves from
-> drivers/net/usb/smsc95xx.c to drivers/net/phy/smsc.c.
+When receiving an IPv4 packet inside an IPv6 GRE packet, and the
+IP6_TNL_F_RCV_DSCP_COPY flag is set on the tunnel, the IPv4 header would
+get corrupted. This is due to the common ip6_tnl_rcv() function assuming
+that the inner header is always IPv6. This patch checks the tunnel
+protocol for IPv4 inner packets, but still defaults to IPv6.
 
-Please spit this into a separate patch. If this changes causes any
-regression in the PHY driver it will be easier to spot.
+Fixes: 308edfdf1563 ("gre6: Cleanup GREv6 receive path, call common GRE f=
+unctions")
+Signed-off-by: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
+---
+ net/ipv6/ip6_tunnel.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-> 
-> Signed-off-by: Andre Edich <andre.edich@microchip.com>
-> ---
->  drivers/net/phy/smsc.c     |  67 +++++++
->  drivers/net/usb/Kconfig    |   2 +
->  drivers/net/usb/smsc95xx.c | 389 +++++++++++++------------------------
->  3 files changed, 203 insertions(+), 255 deletions(-)
-> 
-> diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-> index 74568ae16125..be24cd359202 100644
-> --- a/drivers/net/phy/smsc.c
-> +++ b/drivers/net/phy/smsc.c
-> @@ -21,6 +21,17 @@
->  #include <linux/netdevice.h>
->  #include <linux/smscphy.h>
->  
-> +/* Vendor-specific PHY Definitions */
-> +/* EDPD NLP / crossover time configuration */
-> +#define PHY_EDPD_CONFIG			16
-> +#define PHY_EDPD_CONFIG_EXT_CROSSOVER_	0x0001
-> +
-> +/* Control/Status Indication Register */
-> +#define SPECIAL_CTRL_STS		27
-> +#define SPECIAL_CTRL_STS_OVRRD_AMDIX_	0x8000
-> +#define SPECIAL_CTRL_STS_AMDIX_ENABLE_	0x4000
-> +#define SPECIAL_CTRL_STS_AMDIX_STATE_	0x2000
-> +
->  struct smsc_hw_stat {
->  	const char *string;
->  	u8 reg;
-> @@ -96,6 +107,54 @@ static int lan911x_config_init(struct phy_device *phydev)
->  	return smsc_phy_ack_interrupt(phydev);
->  }
->  
-> +static inline int lan87xx_config_aneg(struct phy_device *phydev)
-> +{
-> +	int rc;
-> +	int val;
-> +
-> +	switch (phydev->mdix_ctrl) {
-> +	case ETH_TP_MDI:
-> +		val = SPECIAL_CTRL_STS_OVRRD_AMDIX_;
-> +		break;
-> +	case ETH_TP_MDI_X:
-> +		val = SPECIAL_CTRL_STS_OVRRD_AMDIX_ |
-> +			SPECIAL_CTRL_STS_AMDIX_STATE_;
-> +		break;
-> +	case ETH_TP_MDI_AUTO:
-> +		val = SPECIAL_CTRL_STS_AMDIX_ENABLE_;
-> +		break;
-> +	default:
-> +		return genphy_config_aneg(phydev);
-> +	}
-> +
-> +	rc = phy_read(phydev, SPECIAL_CTRL_STS);
-> +	if (rc < 0)
-> +		return rc;
-> +
-> +	rc &= ~(SPECIAL_CTRL_STS_OVRRD_AMDIX_ |
-> +		SPECIAL_CTRL_STS_AMDIX_ENABLE_ |
-> +		SPECIAL_CTRL_STS_AMDIX_STATE_);
-> +	rc |= val;
-> +	phy_write(phydev, SPECIAL_CTRL_STS, rc);
-> +
-> +	phydev->mdix = phydev->mdix_ctrl;
-> +	return genphy_config_aneg(phydev);
-> +}
-> +
-> +static inline int lan87xx_config_aneg_ext(struct phy_device *phydev)
-> +{
-> +	int rc;
-> +
-> +	/* Extend Manual AutoMDIX timer */
-> +	rc = phy_read(phydev, PHY_EDPD_CONFIG);
-> +	if (rc < 0)
-> +		return rc;
-> +
-> +	rc |= PHY_EDPD_CONFIG_EXT_CROSSOVER_;
-> +	phy_write(phydev, PHY_EDPD_CONFIG, rc);
-> +	return lan87xx_config_aneg(phydev);
-> +}
-> +
->  /*
->   * The LAN87xx suffers from rare absence of the ENERGYON-bit when Ethernet cable
->   * plugs in while LAN87xx is in Energy Detect Power-Down mode. This leads to
-> @@ -250,6 +309,9 @@ static struct phy_driver smsc_phy_driver[] = {
->  	.suspend	= genphy_suspend,
->  	.resume		= genphy_resume,
->  }, {
-> +	/* This covers internal PHY (phy_id: 0x0007C0C3) for
-> +	 * LAN9500 (PID: 0x9500), LAN9514 (PID: 0xec00), LAN9505 (PID: 0x9505)
-> +	 */
->  	.phy_id		= 0x0007c0c0, /* OUI=0x00800f, Model#=0x0c */
->  	.phy_id_mask	= 0xfffffff0,
->  	.name		= "SMSC LAN8700",
-> @@ -262,6 +324,7 @@ static struct phy_driver smsc_phy_driver[] = {
->  	.read_status	= lan87xx_read_status,
->  	.config_init	= smsc_phy_config_init,
->  	.soft_reset	= smsc_phy_reset,
-> +	.config_aneg	= lan87xx_config_aneg,
->  
->  	/* IRQ related */
->  	.ack_interrupt	= smsc_phy_ack_interrupt,
-> @@ -293,6 +356,9 @@ static struct phy_driver smsc_phy_driver[] = {
->  	.suspend	= genphy_suspend,
->  	.resume		= genphy_resume,
->  }, {
-> +	/* This covers internal PHY (phy_id: 0x0007C0F0) for
-> +	 * LAN9500A (PID: 0x9E00), LAN9505A (PID: 0x9E01)
-> +	 */
->  	.phy_id		= 0x0007c0f0, /* OUI=0x00800f, Model#=0x0f */
->  	.phy_id_mask	= 0xfffffff0,
->  	.name		= "SMSC LAN8710/LAN8720",
-> @@ -306,6 +372,7 @@ static struct phy_driver smsc_phy_driver[] = {
->  	.read_status	= lan87xx_read_status,
->  	.config_init	= smsc_phy_config_init,
->  	.soft_reset	= smsc_phy_reset,
-> +	.config_aneg	= lan87xx_config_aneg_ext,
+diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
+index f635914f42ec..a0217e5bf3bc 100644
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
+@@ -915,7 +915,15 @@ int ip6_tnl_rcv(struct ip6_tnl *t, struct sk_buff *s=
+kb,
+ 		struct metadata_dst *tun_dst,
+ 		bool log_ecn_err)
+ {
+-	return __ip6_tnl_rcv(t, skb, tpi, tun_dst, ip6ip6_dscp_ecn_decapsulate,
++	int (*dscp_ecn_decapsulate)(const struct ip6_tnl *t,
++				    const struct ipv6hdr *ipv6h,
++				    struct sk_buff *skb);
++
++	dscp_ecn_decapsulate =3D ip6ip6_dscp_ecn_decapsulate;
++	if (tpi->proto =3D=3D htons(ETH_P_IP))
++		dscp_ecn_decapsulate =3D ip4ip6_dscp_ecn_decapsulate;
++
++	return __ip6_tnl_rcv(t, skb, tpi, tun_dst, dscp_ecn_decapsulate,
+ 			     log_ecn_err);
+ }
+ EXPORT_SYMBOL(ip6_tnl_rcv);
+--=20
+2.28.0
 
-As Jakub said, don't use inline in C code. Also, it is pointless
-because you assign the address of the function to .config_aneg, so it
-cannot inline it.
-
-       Andrew
