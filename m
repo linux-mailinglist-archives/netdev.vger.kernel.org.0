@@ -2,97 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B0FE2491C7
-	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 02:24:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAA232491CB
+	for <lists+netdev@lfdr.de>; Wed, 19 Aug 2020 02:28:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726783AbgHSAYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Aug 2020 20:24:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60364 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726367AbgHSAYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Aug 2020 20:24:31 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924E7C061389;
-        Tue, 18 Aug 2020 17:24:30 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id 74so10759699pfx.13;
-        Tue, 18 Aug 2020 17:24:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9hX7/jnnxbAk5wAQIdPFnO+IQaOTQaG5y84ogGkzkX8=;
-        b=F2qDUnNyuI2DLpYA9mbYoROxoPJGf8+FHy/IC6Ty1PJxp7qQ/DX+nqQ32iinAo+SLS
-         gjy1fd0D3l5KBYymj5jTEl1szMB0sGSOEI00umL7nXLW0kCgE6veB2bz2yvdNSL7Bgl9
-         /QBsrhrveOW85YeaikOQumhg0hXSS/x6IZV8ghv3rnDTE0vmw+xn23GMW5v/9tikxJrX
-         hjNSNNpXtcQ2631zvD6BtSAqFsAzHxlfup34LUWC+8KOlxFqbraaP6MbJMRPwXHhK/Rx
-         hb5xBlUgzkRIqLhZbf+pTT4gxVs8rgfoowP/t3Wi8wczf+YxWhHuDgqVTXQ+g+yO/TtD
-         Ke9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9hX7/jnnxbAk5wAQIdPFnO+IQaOTQaG5y84ogGkzkX8=;
-        b=QJazVpsX9sAJRH602qySHBN+QiHal9kIoJQeZybbLmVvcatKiVDG4lCqCopGmhoRlt
-         chUBgmTQXXneB1Cap63O6oLvQ/1dv+RLaC+FpMDFKXRu5XNpN2CnAQnt51A0WMrgQngF
-         bxvVdz9ICPoqeODVL4+M2/QBPNCKgjN/xpfvvQlgbWSIaQ6GqcESCQ9J0V1KVrxXjuRU
-         EfFoZTPjah1gwWij1VEvZO9TPUJUd2V3y6EyKQP4rM2cyHagArJb32o8oz2FaN5MxhxC
-         05cFVuik6Ns72tjG/jlh/+toPfJkv1ms85jSVRv2+tkqPRW1ISw4ozCzPvoHxgrOAcAc
-         eCrg==
-X-Gm-Message-State: AOAM5325WPWOInj2o3qno9kcDVxCmux931sPdzLyAUBjaw4eoF5VwAjj
-        ViCNxl5qRr5tXlZa08cu0hQ3jwgEy5M=
-X-Google-Smtp-Source: ABdhPJyedOQbYrPixXEApg/L/BeIqzF74tc5ExwsPvLnv8GIfL40Dzx0Gdpb1pWB88xYQ4mr/qjFTA==
-X-Received: by 2002:a65:62c3:: with SMTP id m3mr14791972pgv.338.1597796670088;
-        Tue, 18 Aug 2020 17:24:30 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:20fd])
-        by smtp.gmail.com with ESMTPSA id e29sm25811202pfj.92.2020.08.18.17.24.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2020 17:24:28 -0700 (PDT)
-Date:   Tue, 18 Aug 2020 17:24:27 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 0/7] libbpf feature probing and sanitization
- improvements
-Message-ID: <20200819002427.5ktz6us47zb2iazr@ast-mbp.dhcp.thefacebook.com>
-References: <20200818213356.2629020-1-andriin@fb.com>
+        id S1726868AbgHSA2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Aug 2020 20:28:39 -0400
+Received: from mga05.intel.com ([192.55.52.43]:48087 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725554AbgHSA2h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Aug 2020 20:28:37 -0400
+IronPort-SDR: vHcfbvz05MP4GB2/yXMwU0Q2PkdqzVIdnBtS/fHHushQsSyJ+a3f+xFdD20aW5u8+Gi7XlUOzS
+ wlXOkW921ZJg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9717"; a="239856119"
+X-IronPort-AV: E=Sophos;i="5.76,329,1592895600"; 
+   d="scan'208";a="239856119"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2020 17:28:37 -0700
+IronPort-SDR: gH/Q6xkvUvrh/sxCXGvtfuwQxN7rmqB7ENFm6qZ+jKfUVFV3MV7sfHSQ7RYZ4XYXCeRVetiCIO
+ PzHuL8/d8yZg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,329,1592895600"; 
+   d="scan'208";a="320283549"
+Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.33])
+  by fmsmga004.fm.intel.com with ESMTP; 18 Aug 2020 17:28:37 -0700
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+Subject: [net-next v3 0/4] devlink flash update overwrite mask
+Date:   Tue, 18 Aug 2020 17:28:14 -0700
+Message-Id: <20200819002821.2657515-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.28.0.218.ge27853923b9d.dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200818213356.2629020-1-andriin@fb.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 02:33:49PM -0700, Andrii Nakryiko wrote:
-> This patch set refactors libbpf feature probing to be done lazily on as-needed
-> basis, instead of proactively testing all possible features libbpf knows
-> about. This allows to scale such detections and mitigations better, without
-> issuing unnecessary syscalls on each bpf_object__load() call. It's also now
-> memoized globally, instead of per-bpf_object.
-> 
-> Building on that, libbpf will now detect availability of
-> bpf_probe_read_kernel() helper (which means also -user and -str variants), and
-> will sanitize BPF program code by replacing such references to generic
-> variants (bpf_probe_read[_str]()). This allows to migrate all BPF programs
-> into proper -kernel/-user probing helpers, without the fear of breaking them
-> for old kernels.
-> 
-> With that, update BPF_CORE_READ() and related macros to use
-> bpf_probe_read_kernel(), as it doesn't make much sense to do CO-RE relocations
-> against user-space types. And the only class of cases in which BPF program
-> might read kernel type from user-space are UAPI data structures which by
-> definition are fixed in their memory layout and don't need relocating. This is
-> exemplified by test_vmlinux test, which is fixed as part of this patch set as
-> well. BPF_CORE_READ() is useful for chainingg bpf_probe_read_{kernel,user}()
-> calls together even without relocation, so we might add user-space variants,
-> if there is a need.
-> 
-> While at making libbpf more useful for older kernels, also improve handling of
-> a complete lack of BTF support in kernel by not even attempting to load BTF
-> info into kernel. This eliminates annoying warning about lack of BTF support
-> in the kernel and map creation retry without BTF. If user is using features
-> that require kernel BTF support, it will still fail, of course.
+This series introduces support for a new attribute to the flash update
+command: DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK.
 
-Applied, Thanks
+This attribute is a bitfield which allows userspace to specify what set of
+subfields to overwrite when performing a flash update for a device.
+
+The intention is to support the ability to control the behavior of
+overwriting the configuration and identifying fields in the Intel ice device
+flash update process. This is necessary  as the firmware layout for the ice
+device includes some settings and configuration within the same flash
+section as the main firmware binary.
+
+This series, and the accompanying iproute2 series, introduce support for the
+attribute. Once applied, the overwrite support can be be invoked via
+devlink:
+
+  # overwrite settings
+  devlink dev flash pci/0000:af:00.0 file firmware.bin overwrite settings
+
+  # overwrite identifiers and settings
+  devlink dev flash pci/0000:af:00.0 file firmware.bin overwrite settings overwrite identifiers
+
+To aid in the safe addition of new parameters, first some refactoring is
+done to the .flash_update function: its parameters are converted from a
+series of function arguments into a structure. This makes it easier to add
+the new parameter without changing the signature of the .flash_update
+handler in the future. Additionally, a "supported_flash_update_params" field
+is added to devlink_ops. This field is similar to the ethtool
+"supported_coalesc_params" field. The devlink core will now check that the
+DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT bit is set before forwarding the
+component attribute. Similarly, the new overwrite attribute will also
+require a supported bit.
+
+Doing these refactors will aid in adding any other attributes in the future,
+and creates a good pattern for other interfaces to use in the future. By
+requiring drivers to opt-in, we reduce the risk of accidentally breaking
+drivers when ever we add an additional parameter. We also reduce boiler
+plate code in drivers which do not support the parameters.
+
+Cc: Jiri Pirko <jiri@mellanox.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Michael Chan <michael.chan@broadcom.com>
+Cc: Bin Luo <luobin9@huawei.com>
+Cc: Saeed Mahameed <saeedm@mellanox.com>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: Ido Schimmel <idosch@mellanox.com>
+Cc: Danielle Ratson <danieller@mellanox.com>
+
+Changes since v2:
+* split the conversion to a parameters structure and the addition of the
+  supported fields bitmask into separate patches
+* separated the iproute2 patches to their own series
+* provided some examples in the cover letter
+* use nla_bitfield32 instead of a straight u32
+
+Jacob Keller (4):
+  devlink: check flash_update parameter support in net core
+  devlink: convert flash_update to use params structure
+  devlink: introduce flash update overwrite mask
+  ice: add support for flash update overwrite mask
+
+ .../networking/devlink/devlink-flash.rst      | 29 +++++++++++++
+ Documentation/networking/devlink/ice.rst      | 31 ++++++++++++++
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 19 ++++-----
+ .../net/ethernet/huawei/hinic/hinic_devlink.c |  8 +---
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 34 ++++++++++-----
+ .../net/ethernet/intel/ice/ice_fw_update.c    | 16 ++++++-
+ .../net/ethernet/intel/ice/ice_fw_update.h    |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  8 +---
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  6 +--
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  2 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  7 +---
+ .../net/ethernet/netronome/nfp/nfp_devlink.c  |  9 ++--
+ drivers/net/netdevsim/dev.c                   | 21 +++++++---
+ drivers/net/netdevsim/netdevsim.h             |  1 +
+ include/net/devlink.h                         | 35 +++++++++++++++-
+ include/uapi/linux/devlink.h                  | 24 +++++++++++
+ net/core/devlink.c                            | 42 +++++++++++++++----
+ .../drivers/net/netdevsim/devlink.sh          | 21 ++++++++++
+ 18 files changed, 247 insertions(+), 68 deletions(-)
+
+
+base-commit: 06a4ec1d9dc652e17ee3ac2ceb6c7cf6c2b75cdd
+-- 
+2.28.0.218.ge27853923b9d.dirty
+
